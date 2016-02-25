@@ -38,9 +38,10 @@ void unitAssertNull    (char*, void*);
 /*
  * Interface
  */
-void unitHeading();
-void unitSubheading(char*);
-void unitFooter();
+void unitModuleHeading();
+void unitModuleFooter();
+void unitTestHeading(char*);
+void unitTestFooter();
 
 char* unitGreen(char*);
 char* unitRed(char*);

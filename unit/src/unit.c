@@ -7,14 +7,19 @@ void unitSetModuleName (char* name) {
     unitModuleName = name;
 }
 
-void unitHeading() {
+void unitModuleHeading() {
     fprintf(stdout,"---> Start Testing: %s\n",unitModuleName);
 }
 
-void unitSubheading(char* subheading) {
+void unitTestHeading(char* subheading) {
     fprintf(stdout,"* Testing: %s\n",subheading);
 }
-void unitFooter() {
+
+void unitModuleFooter() {
+    fprintf(stdout,"---> Finished Testing: %s\n",unitModuleName);
+}
+
+void unitTestFooter() {
     fprintf(stdout,"---> Finished Testing: %s\n",unitModuleName);
 }
 
