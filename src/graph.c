@@ -105,10 +105,69 @@ void dsgGraphPrintGraph(graph_t* graph) {
 }
 
 void dsgGraphPrintGraphFromNode(graph_t* graph, node_t* node) {
+	fprintf(stderr,"dsgGraphPrintGraphFromNode: Not Yet Implemented\n");
 	return;
 }
 
-void dsgGraphUpdate(graph_t* graph) {
+void dsgGraphUpdateTraRots(graph_t* graph) {
+	int i;
+	node_t* next;
+	for (i=0;i<MAX_NODES;i++) {
+		next = graph->nodes[i];		
+		if (next->parent != NULL) {
+			dsgNodeSumTranslationRotation(next);	
+		}
+	}
+}
+
+void dsgGraphUpdateChildren(graph_t* graph) {
+	int i;
+	node_t* node;
+	for (i=0;i<MAX_NODES;i++) {
+		node = graph->nodes[i];	
+		if (node == NULL) {
+			continue;
+		}
+
+		if (node->children != NULL) {
+			free(node->children);
+		}
+
+		int numChildren = dsgGraphCountChildrenOfNode(graph, node);
+		node->numChildren = numChildren;
+		node->children = (void*)malloc(sizeof(node_t*)*numChildren);
+		dsgGraphPopulateChildren(graph, node);
+	}
+	return;
+}
+
+void dsgGraphPopulateChildren(graph_t* graph, node_t* node) {
+	node_t* next;
+	int i;
+	int childrenFound = 0;
+	for (i=0; i<MAX_NODES, childrenFound < node->numChildren; i++) {
+		next = graph->nodes[i];
+		if (dsgNodeIsChildOf(node, next)) {
+			node_t** childrenArray = (node_t**)node->children;
+			childrenArray[childrenFound] = next;	
+			childrenFound++;
+		}				
+	} 
+}
+
+int dsgGraphCountChildrenOfNode(graph_t* graph, node_t* node) {
+	int retval = 0;
+	int i;
+	for (i=0;i<MAX_NODES;i++) {
+		node_t* next = graph->nodes[i];
+		if (dsgNodeIsChildOf(node,next)) {
+			retval++;
+		}
+	}
+	return retval;
+}
+
+void dsgGraphUpdatePaths(graph_t* graph) {
 	int i;
 	for (i=0;i<MAX_NODES;i++) {
 		node_t* next = graph->nodes[i];	
@@ -164,4 +223,10 @@ void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
 
 int dsgGraphIsRootNode(graph_t* graph, node_t* node) {
 	return graph->rootNode == node;
+}
+
+void dsgGraphUpdateAll(graph_t* graph) {
+	dsgGraphUpdatePaths    (graph);
+	dsgGraphUpdateChildren (graph);
+	dsgGraphUpdateTraRots  (graph);
 }

@@ -32,8 +32,13 @@ int dsgGraphIsRootNode(graph_t*, node_t*);
 node_t* dsgGraphCreateNode(graph_t*);
 node_t* dsgGraphCreateNodeWithName(graph_t*,char*);
 void dsgGraphRemoveNode(graph_t*, node_t*);
+int dsgGraphCountChildrenOfNode(graph_t*, node_t*);
+void dsgGraphPopulateChildren(graph_t*, node_t*);
 
 // Updating
-void dsgGraphUpdate(graph_t*);
+void dsgGraphUpdateAll(graph_t*);
+void dsgGraphUpdatePaths(graph_t*);
+void dsgGraphUpdateOffsets(graph_t*);
+void dsgGraphUpdateChildren(graph_t*);
 
 #endif // GRAPH_H

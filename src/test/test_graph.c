@@ -28,7 +28,8 @@ void testGraph() {
 	dsgNodeSetParent(n3,n4);
 	dsgNodeSetParent(n3,n5);
 
-	dsgGraphUpdate(graph);
+	fprintf(stdout,"Updating Graph\n");
+	dsgGraphUpdateAll(graph);
 
 	// Test Parent Relationships
 	fprintf(stdout, "Testing Parent Relationships\n");
@@ -46,6 +47,14 @@ void testGraph() {
 	unitAssertNotZero("N5 child of N3",dsgNodeIsParentOf(n3,n5));
 	unitAssertNotZero("N5 child of N1",dsgNodeIsParentOf(n1,n5));
 	unitAssertZero("N3 NOT child of N4",dsgNodeIsParentOf(n4,n3));
+
+	// Test counting children
+	unitAssertNotZero("N1 has 4 children",dsgGraphCountChildrenOfNode(graph, n1) == 4);
+	unitAssertNotZero("N2 has 0 children",dsgGraphCountChildrenOfNode(graph, n2) == 0);
+	unitAssertNotZero("N2 has 2 children",dsgGraphCountChildrenOfNode(graph, n3) == 2);
+	unitAssertNotZero("N4 has 0 children",dsgGraphCountChildrenOfNode(graph, n4) == 0);
+	unitAssertNotZero("N5 has 0 children",dsgGraphCountChildrenOfNode(graph, n5) == 0);
+
 
 	unitTestFooter("Graph");
 	return;
