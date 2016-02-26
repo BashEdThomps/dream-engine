@@ -14,8 +14,8 @@ typedef struct {
 } graph_t;
 
 // Init
-void dsgGraphInit(graph_t*);
-void dsgGraphInitWithName(graph_t*, char*);
+graph_t* dsgGraphInit();
+graph_t* dsgGraphInitWithName(char*);
 int dsgGraphGetNextAvailableNode(graph_t*);
 int dsgGraphGetIndexOfNode(graph_t*, node_t*);
 
@@ -28,8 +28,9 @@ void dsgGraphGeneratePathForNode(graph_t*, node_t*);
 
 // Node Management
 void dsgGraphSetRootNode(graph_t*, node_t*); 
-void dsgGraphCreateNode(graph_t*, node_t*);
-void dsgGraphCreateNodeWithName(graph_t*, node_t*,char*);
+int dsgGraphIsRootNode(graph_t*, node_t*);
+node_t* dsgGraphCreateNode(graph_t*);
+node_t* dsgGraphCreateNodeWithName(graph_t*,char*);
 void dsgGraphRemoveNode(graph_t*, node_t*);
 
 // Updating

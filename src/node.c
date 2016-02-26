@@ -24,7 +24,7 @@ void dsgNodeInitTransRot(node_t* node) {
 }
 
 int dsgNodeIsParentOf (node_t* parent, node_t* child) {
-	int retval = -1; 
+	int retval = 0; 
 
 	if (!dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
 	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
@@ -35,15 +35,14 @@ int dsgNodeIsParentOf (node_t* parent, node_t* child) {
 	char* indexOfChild = strstr(child->path,child->name);
 
 	if (indexOfParent != NULL && indexOfChild != NULL) {
-		retval = indexOfParent - indexOfChild;
-		retval = retval > 0;	
+		retval = indexOfChild > indexOfParent;
 	}
 
 	return retval;
 }
 
 int dsgNodeIsChildOf(node_t* parent, node_t* child) {
-	int retval = -1; 
+	int retval = 0; 
 
 	if (!dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
 	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
@@ -53,8 +52,7 @@ int dsgNodeIsChildOf(node_t* parent, node_t* child) {
 	char* indexOfChild = strstr(child->path,child->name);
 
 	if (indexOfParent != NULL && indexOfChild != NULL) {
-		retval = indexOfParent - indexOfChild;
-		retval = retval < 0;	
+		retval = indexOfChild > indexOfParent;
 	}
 
 	return retval;

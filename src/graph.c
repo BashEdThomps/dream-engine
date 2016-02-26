@@ -8,39 +8,41 @@
 #include "node.h"
 #include "graph.h"
 
-void dsgGraphInitWithName(graph_t* graph, char* name) {
-	dsgGraphInit(graph);
-	graph->name = name;
+graph_t* dsgGraphInitWithName(char* name) {
+	graph_t* retval = dsgGraphInit();
+	retval->name = name;
+	return retval;
 }
 
-void dsgGraphInit(graph_t* graph) {
-	graph = (graph_t*)malloc(sizeof(graph_t));
+graph_t* dsgGraphInit() {
+	graph_t* retval = (graph_t*)malloc(sizeof(graph_t));
 	int i;
 	for (i=0;i<MAX_NODES;i++) {
-		graph->nodes[i] = NULL;	
+		retval->nodes[i] = NULL;	
 	}
-	graph->name     = NULL;
-	graph->rootNode = NULL;
-	return;
+	retval->name     = NULL;
+	retval->rootNode = NULL;
+	return retval;
 }
 
-void dsgGraphCreateNodeWithName(graph_t* graph, node_t* node, char* name) {
-	node = (node_t*)malloc(sizeof(node_t));
-	dsgGraphCreateNode(graph, node);
-	node->name = name;
+node_t* dsgGraphCreateNodeWithName(graph_t* graph, char* name) {
+	node_t* retval = dsgGraphCreateNode(graph);
+	retval->name = name;
+	return retval;
 }
 
-void dsgGraphCreateNode(graph_t* graph, node_t* node) {
+node_t* dsgGraphCreateNode(graph_t* graph) {
+	node_t* retval = NULL;
 	int available = dsgGraphGetNextAvailableNode(graph);
 	if (available < 0) {
 		fprintf(stderr,
 			   "Error: Unable to create new node - tree is full\n");
-		return;
+		return NULL;
 	}
-
-	node = (node_t*)malloc(sizeof(node_t));
-	dsgNodeInit(node, NULL);
-	graph->nodes[available] = node;
+	retval = (node_t*)malloc(sizeof(node_t));
+	dsgNodeInit(retval, NULL);
+	graph->nodes[available] = retval;
+	return retval;
 }
 
 int dsgGraphGetNextAvailableNode(graph_t* graph) {
@@ -65,7 +67,6 @@ int dsgGraphGetIndexOfNode(graph_t *graph, node_t *node) {
 		}
 	}
 	return retval;
-
 }
 
 void dsgGraphSetRootNode(graph_t* graph, node_t* root) {
@@ -113,47 +114,54 @@ void dsgGraphUpdate(graph_t* graph) {
 		node_t* next = graph->nodes[i];	
 		if (next != NULL) {
 			dsgGraphGeneratePathForNode(graph, next);
-		} else {
-			fprintf(stdout,"Skip update for NULL node %d\n",i);
-		}
+		} 
 	}
 	return;
 }
 
 void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
+	if (node == NULL) {
+		fprintf(stderr,"Cannot generate path for NULL node.\n");	
+		return;
+	}
+
+	if (graph == NULL) {
+		fprintf(stderr,"Cannot generate path for NULL graph.\n");	
+		return;
+	}
+
 	if (node->name == NULL) {
-		fprintf(stderr,"Cannot generate path for node with no name\n");	
+		fprintf(stderr,"Cannot generate path for node with no name.\n");	
 		return;
 	}
-
-	if (node->parent == NULL) {
-		fprintf(stderr,"Cannot generate path for node with no name\n");	
-		return;
-	}
-
-	fprintf(stdout,"Generating path for node %s with parent %s\n",
-			node->name, ((node_t*)node->parent)->name);
 
 	if (node->path != NULL) {
 		free(node->path);	
 		node->path == NULL;
 	}
 
-	node_t* next;
+	char* pathBuffer = (char*)malloc(sizeof(char)*STR_BUF_SIZE);
 
-	char pathBuffer[STR_BUF_SIZE];
-	size_t nameLen =  strlen(node->name);
-
-	memcpy(pathBuffer,node->name,nameLen);
-
-	pathBuffer[nameLen] = '\0';
-
-	for (/*nout*/; next != NULL; next = node->parent) {
+	if (node->parent == NULL) {
+		if (!dsgGraphIsRootNode(graph,node)) {
+			fprintf(stderr, "Cannot generate path for non-root node with no parent.\n");	
+			return;
+		}
+		fprintf(stdout,"Generating path for node root %s\n", node->name);
 		strncat(pathBuffer, "/", 1);	
-		strncat(pathBuffer, next->name, strlen(next->name));	
+		strncat(pathBuffer, node->name, strlen(node->name));
+	} else {
+		node_t* parent = (node_t*) node->parent;
+		fprintf(stdout,"Generating path for node %s with parent %s\n", node->name, parent->name);
+		strncat(pathBuffer, parent->path, strlen(parent->path));
+		strncat(pathBuffer, "/", 1);	
+		strncat(pathBuffer, node->name, strlen(node->name));	
 	}
-
 	node->path = pathBuffer;
 	fprintf(stdout,"Generated path: %s\n",node->path);
 	return;
+}
+
+int dsgGraphIsRootNode(graph_t* graph, node_t* node) {
+	return graph->rootNode == node;
 }
