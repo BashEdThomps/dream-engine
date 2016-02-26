@@ -13,7 +13,6 @@
 #define UNIT_PASS "PASS"
 #define UNIT_FAIL "FAIL"
 
-char* unitModuleName;
 void unitSetModuleName(char*);
 /*
  * Assertions
@@ -38,10 +37,10 @@ void unitAssertNull    (char*, void*);
 /*
  * Interface
  */
-void unitModuleHeading();
-void unitModuleFooter();
+void unitModuleHeading(char*);
+void unitModuleFooter(char*);
 void unitTestHeading(char*);
-void unitTestFooter();
+void unitTestFooter(char*);
 
 char* unitGreen(char*);
 char* unitRed(char*);

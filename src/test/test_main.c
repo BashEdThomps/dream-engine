@@ -3,10 +3,9 @@
 #include "test_graph.h"
 
 int main(int argc, char** argv) {
-	unitSetModuleName("DreamSceneGraph");
-	unitModuleHeading();
+	unitModuleHeading("DreamSceneGraph");
 	testNode();
 	testGraph();
-	unitModuleFooter();
+	unitModuleFooter("DreamSceneGraph");
 	return 0;
 }

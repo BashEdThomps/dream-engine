@@ -4,18 +4,34 @@
 * node.h
 */
 typedef struct {
-	char* name;
-	struct node_t* parent;
-	int numChildren;
-	struct node_t* children;
+	float transX;
+	float transY;
+	float transZ;
+	float rotX;
+	float rotY;
+	float rotZ;
+} nodeTransRot_t;
+
+typedef struct {
+	char *name;
+	char *path;
+	void *parent;
+	int   numChildren;
+	void *children;
+	nodeTransRot_t *transRot;
 } node_t;
 
-void dsNodeInit(node_t* node);
-void dsNodeInitWithName(node_t* node, char* name);
-void dsNodeAddChild   (node_t* parent, node_t* child);
-void dsNodeRemoveChild(node_t* parent, node_t* child);
-void dsNodePrintGraph (node_t* node);
-int dsNodeIsChildOf  (node_t* parent, node_t* child);
-int dsNodeIsParentOf (node_t* parent, node_t* child);
+// Init
+void dsgNodeInit (node_t*, char*);
+void dsgNodeInitTransRot(node_t*);
+
+// Relationships
+void dsgNodeSetParent (node_t*, node_t*);
+int dsgNodeIsChildOf  (node_t*, node_t*);
+int dsgNodeIsParentOf (node_t*, node_t*);
+
+// Validation
+int dsgNodeHasValidName(node_t*);
+int dsgNodeHasValidPath(node_t*);
 
 #endif // NODE_H

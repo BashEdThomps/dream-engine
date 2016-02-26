@@ -45,6 +45,11 @@ $(BIN_DIR)/$(TARGET).so: $(OBJECTS)
 test: $(BIN_DIR)/$(TEST_BIN)
 	LD_LIBRARY_PATH=unit/bin $(BIN_DIR)/$(TEST_BIN) 
 
+.PHONY: gdb_test
+gdb_test: $(BIN_DIR)/$(TEST_BIN)
+	LD_LIBRARY_PATH=unit/bin gdb $(BIN_DIR)/$(TEST_BIN) 
+
+
 # Link test binary
 $(BIN_DIR)/$(TEST_BIN): $(OBJECTS) $(TEST_OBJECTS)
 	$(MKDIR) bin
@@ -53,7 +58,7 @@ $(BIN_DIR)/$(TEST_BIN): $(OBJECTS) $(TEST_OBJECTS)
 # Build target objects
 $(OBJECTS): $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
 	$(MKDIR) obj
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -g -o $@
 
 # Build test objects
 $(TEST_OBJECTS): $(OBJ_DIR)/%.o : $(TEST_DIR)/%.c

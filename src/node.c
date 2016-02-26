@@ -1,48 +1,73 @@
-#include <stdio.h>
+/*
+* node.c
+*/
+#include <stdlib.h>
+#include <string.h>
 #include "node.h"
 
-
-void dsNodeInit(node_t* node) {
-	node->numChildren = 0;
-	node->children = 0;
-}
-
-void dsNodeInitWithName(node_t* node, char* name) {
+void dsgNodeInit(node_t* node, char* name) {
 	node->name = name;
-	dsNodeInit(node);
+	node->parent = NULL;
+	node->numChildren = 0;
+	node->children = NULL;
+	node->path = NULL;
 }
 
+void dsgNodeInitTransRot(node_t* node) {
+	node->transRot = (nodeTransRot_t*)malloc(sizeof(nodeTransRot_t));
+	node->transRot->transX = 0.0f;
+	node->transRot->transY = 0.0f;
+	node->transRot->transZ = 0.0f;
+	node->transRot->rotX = 0.0f;
+	node->transRot->rotY = 0.0f;
+	node->transRot->rotZ = 0.0f;
+}
 
-void dsNodeAddChild(node_t* parent, node_t* child) {
-	if (parent == 0) {
-		fprintf(stderr,"dsNodeAddChild: Parent cannot be NULL\n");
-		return;	
+int dsgNodeIsParentOf (node_t* parent, node_t* child) {
+	int retval = -1; 
+
+	if (!dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
+	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
+		return retval;	
 	}
-	if (child == 0) {
-		fprintf(stderr,"dsNodeAddChild: Child cannot be NULL\n");
-		return;	
+
+	char* indexOfParent = strstr(child->path,parent->name); 
+	char* indexOfChild = strstr(child->path,child->name);
+
+	if (indexOfParent != NULL && indexOfChild != NULL) {
+		retval = indexOfParent - indexOfChild;
+		retval = retval > 0;	
 	}
-	if (parent->numChildren == 0) {
-		if (parent->children == 0)	{
-			parent->children = (struct node_t*)child;
-			parent->numChildren = 1;
-		}
-	} else {
-	
+
+	return retval;
+}
+
+int dsgNodeIsChildOf(node_t* parent, node_t* child) {
+	int retval = -1; 
+
+	if (!dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
+	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
+		return retval;	
 	}
-	return;
+	char* indexOfParent = strstr(child->path,parent->name);
+	char* indexOfChild = strstr(child->path,child->name);
+
+	if (indexOfParent != NULL && indexOfChild != NULL) {
+		retval = indexOfParent - indexOfChild;
+		retval = retval < 0;	
+	}
+
+	return retval;
 }
 
-void dsNodePrintGraph(node_t* node) {
-	return;
+void dsgNodeSetParent(node_t* parent, node_t* child) {
+	child->parent = parent;
 }
 
-
-int dsNodeIsChildOf  (node_t* parent, node_t* child ) {
-	return 0;
+int dsgNodeHasValidPath(node_t* node) {
+	return node->path != NULL;
 }
 
-int dsNodeIsParentOf (node_t* parent, node_t* child) {
-	return 0;
+int dsgNodeHasValidName(node_t* node) {
+	return node->name != NULL;
 }
-

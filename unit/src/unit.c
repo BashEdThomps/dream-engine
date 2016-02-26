@@ -3,24 +3,20 @@
 #include <stdlib.h>
 #include "unit.h"
 
-void unitSetModuleName (char* name) {
-    unitModuleName = name;
+void unitModuleHeading(char* name) {
+    fprintf(stdout,"---> Start Testing Module: %s <---\n",name);
 }
 
-void unitModuleHeading() {
-    fprintf(stdout,"---> Start Testing: %s\n",unitModuleName);
+void unitTestHeading(char* name) {
+    fprintf(stdout,"** Testing: %s **\n",name);
 }
 
-void unitTestHeading(char* subheading) {
-    fprintf(stdout,"* Testing: %s\n",subheading);
+void unitModuleFooter(char* name) {
+    fprintf(stdout,"---> Finished Testing Module: %s <---\n",name);
 }
 
-void unitModuleFooter() {
-    fprintf(stdout,"---> Finished Testing: %s\n",unitModuleName);
-}
-
-void unitTestFooter() {
-    fprintf(stdout,"---> Finished Testing: %s\n",unitModuleName);
+void unitTestFooter(char* name) {
+    fprintf(stdout,"** Finished Testing: %s **\n",name);
 }
 
 char* unitGreen(char* src) {
