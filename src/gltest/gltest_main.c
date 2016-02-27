@@ -8,8 +8,9 @@
 // System
 #include <stdio.h>
 #include <stdlib.h>
-// GLFW
+// GLFW & GL
 #include <GLFW/glfw3.h>
+#include <GL/gl.h>
 // Project
 #include "../graph.h"
 
@@ -80,25 +81,36 @@ graph_t* setupScenegraph() {
 	graph_t* graph = dsgGraphInitWithName("GLTestGraph");
 	// Create Nodes	
 	fprintf(stdout, "Creating Nodes\n");
-	node_t *n1, *n2, *n3, *n4, *n5;
+
+	node_t *n1, *n2;// *n3, *n4, *n5;
+
 	n1 = dsgGraphCreateNodeWithName(graph,"Node1");
+	n1->localTraRot->transX = -2.0f;
+	n1->localTraRot->transX = -2.0f;
+	n1->localTraRot->transX = -0.0f;
+	
 	n2 = dsgGraphCreateNodeWithName(graph,"Node2");
-	n3 = dsgGraphCreateNodeWithName(graph,"Node3");
-	n4 = dsgGraphCreateNodeWithName(graph,"Node4");
-	n5 = dsgGraphCreateNodeWithName(graph,"Node5");
+	n2->localTraRot->transX = 2.0f;
+	n2->localTraRot->transX = 2.0f;
+	n2->localTraRot->transX = -0.0f;
+	
+	//n3 = dsgGraphCreateNodeWithName(graph,"Node3");
+	//n4 = dsgGraphCreateNodeWithName(graph,"Node4");
+	//n5 = dsgGraphCreateNodeWithName(graph,"Node5");
 	// Establish Relationships
 	fprintf(stdout, "Setting Relationships\n");
 	dsgGraphSetRootNode(graph, n1);
-	dsgNodeSetParent(n1,n2);
-	dsgNodeSetParent(n1,n3);
-	dsgNodeSetParent(n3,n4);
-	dsgNodeSetParent(n3,n5);
+	dsgGraphNodeSetParent(graph,n1,n2);
+	//dsgGraphNodeSetParent(graph,n1,n3);
+	//dsgGraphNodeSetParent(graph,n3,n4);
+	//dsgGraphNodeSetParent(graph,n3,n5);
 	// Create cube vertex buffer
-	int cubeBuffer = dsgGraphAddVertexBuffer(graph, cubeVertexBuffer(1.0f));
+	int cubeBuffer = dsgGraphAddVertexBuffer(graph, cubeVertexBuffer(0.5f));
 	fprintf(stdout,"Cube buffer allcated to %s's VBO %d\n",graph->name,cubeBuffer);
 	// Update
 	fprintf(stdout,"Updating Graph\n");
 	dsgGraphUpdateAll(graph);
+	fprintf(stdout,"Updated\n");
 	dsgGraphPrintGraph(graph);
 	return graph;
 }
@@ -108,8 +120,30 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
+void drawNode(node_t* node, void* arg) {
+	graph_t* graph = (graph_t*)arg;
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(node->globalTraRot->transX,
+		     node->globalTraRot->transY,
+		     node->globalTraRot->transZ);
+	//glRotatef(node->globalTraRot->rotX,1.0f,0.0f,0.0f);
+	//glRotatef(node->globalTraRot->rotY,0.0f,1.0f,0.0f);
+	//glRotatef(node->globalTraRot->rotZ,0.0f,0.0f,1.0f);
+	glBegin(GL_QUADS);
+	int i;
+	for (i=0;i<72;i+=3) {
+		glVertex3f(graph->vertexBuffers[0][i],
+		  	   graph->vertexBuffers[0][i+1],
+			   graph->vertexBuffers[0][i+2]);	
+	}
+	glEnd();
+	glPopMatrix();
+	return; 
+}
+
 void drawGraph(graph_t* graph) {
-	node_t* node;
+	dsgGraphTraverseOrderedNodes(graph,&drawNode,NULL);
 	return;
 }
 
@@ -134,7 +168,10 @@ int main(void) {
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		glLoadIdentity();
+		glTranslatef(0.0f,0.0f,-50.0f);
 		/* Render here */
+		dsgGraphUpdateAll(graph);
 		drawGraph(graph);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

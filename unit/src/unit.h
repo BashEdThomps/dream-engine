@@ -9,11 +9,11 @@
 #define UNIT_MAGENTA "\x1B[35m"
 #define UNIT_CYNAN   "\x1B[36m"
 #define UNIT_WHITE   "\x1B[37m"
+#define UNIT_BOLD    "\x1B[1m"
 
 #define UNIT_PASS "PASS"
 #define UNIT_FAIL "FAIL"
 
-void unitSetModuleName(char*);
 /*
  * Assertions
  */
@@ -41,7 +41,7 @@ void unitModuleHeading(char*);
 void unitModuleFooter(char*);
 void unitTestHeading(char*);
 void unitTestFooter(char*);
-
+void unitPrintComment(char*);
 char* unitGreen(char*);
 char* unitRed(char*);
 #endif // UNIT_H_

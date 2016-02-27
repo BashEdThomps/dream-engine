@@ -35,6 +35,14 @@ char* unitRed(char* src) {
     return dest;
 }
 
+char* unitBold(char* src) {
+    char* dest = NULL;
+    size_t dest_size = (strlen(UNIT_BOLD)+strlen(src)+strlen(UNIT_NORMAL)+1) * sizeof(char);
+    dest = (char*) malloc(dest_size);
+    snprintf(dest,dest_size,"%s%s%s",UNIT_BOLD,src,UNIT_NORMAL);
+    return dest;
+}
+
 void unitAssertFail(char* name) {
     char* formattedText = unitRed(UNIT_FAIL);
     fprintf(stdout,"%s: Assert fail %s\n",name,formattedText);
@@ -191,4 +199,8 @@ void unitAssertNull(char* name, void* val) {
     fprintf(stdout, "%s: Assert null: %s\n",name, formattedText);
     free(formattedText);
     formattedText = NULL;
+}
+
+void unitPrintComment(char* comment) {
+	fprintf(stdout,"%s\n",unitBold(comment));
 }

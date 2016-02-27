@@ -2,17 +2,19 @@
 * node.c
 */
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "node.h"
 
 void dsgNodeInit(node_t* node, char* name) {
 	node->name = name;
-	node->parent = NULL;
-	node->numChildren = 0;
-	node->children = NULL;
+	node->parentIndex = -1;
+	node->numChildren =  0;
+	node->children    = NULL;
 	node->numImmediateChildren = 0;
-	node->immediateChildren = NULL;
+	node->immediateChildren    = NULL;
 	node->path = NULL;
+	dsgNodeInitTranslationRotation(node);
 }
 
 void dsgNodeInitTranslationRotation(node_t* node) {
@@ -33,85 +35,73 @@ void dsgNodeInitTranslationRotation(node_t* node) {
 	node->localTraRot->rotZ = 0.0f;
 }
 
-int dsgNodeIsParentOf (node_t* parent, node_t* child) {
-	int retval = 0; 
-
-	if (!dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
-	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
-		return retval;	
-	}
-
-	char* indexOfParent = strstr(child->path,parent->name); 
-	char* indexOfChild = strstr(child->path,child->name);
-
-	if (indexOfParent != NULL && indexOfChild != NULL) {
-		retval = indexOfChild > indexOfParent;
-	}
-
-	return retval;
-}
-
-int dsgNodeIsChildOf(node_t* parent, node_t* child) {
-	int retval = 0; 
-
-	if (parent == NULL || child == NULL || 
-	    !dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
-	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
-		return retval;	
-	}
-	char* indexOfParent = strstr(child->path,parent->name);
-	char* indexOfChild = strstr(child->path,child->name);
-
-	if (indexOfParent != NULL && indexOfChild != NULL) {
-		retval = indexOfChild > indexOfParent;
-	}
-
-	return retval;
-}
-
-int dsgNodeIsImmediateChildOf(node_t* parent, node_t* child) {
-	int retval = 0; 
-
-	if (parent == NULL || child == NULL || 
-	    !dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
-	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
-		return retval;	
-	}
-	retval = child->parent == (node_t*)parent;
-	return retval;
-}
-void dsgNodeSetParent(node_t* parent, node_t* child) {
-	child->parent = (struct _node_t*)parent;
-}
-
 int dsgNodeHasValidPath(node_t* node) {
+	if (node == NULL) return 0;
 	return node->path != NULL;
 }
 
 int dsgNodeHasValidName(node_t* node) {
+	if (node == NULL) return 0;
 	return node->name != NULL;
 }
 
-void dsgNodeSumWithParentTranslationRotation(node_t* node) {
-	nodeTraRot_t* local  = node->localTraRot;
-
-	if (node->parent == NULL) {
-		node_t* parentNode = (node_t*)node->parent;
-		nodeTraRot_t* parent = parentNode->globalTraRot;	
-		node->globalTraRot->transX = parent->transX + local->transX;
-		node->globalTraRot->transX = parent->transY + local->transY;
-		node->globalTraRot->transX = parent->transZ + local->transZ;
-		node->globalTraRot->rotX = parent->rotX + local->rotX;
-		node->globalTraRot->rotY = parent->rotY + local->rotY;
-		node->globalTraRot->rotZ = parent->rotZ + local->rotZ;
-
-	} else {
-		node->globalTraRot->transX = local->transX;
-		node->globalTraRot->transX = local->transY;
-		node->globalTraRot->transX = local->transZ;
-		node->globalTraRot->rotX = local->rotX;
-		node->globalTraRot->rotY = local->rotY;
-		node->globalTraRot->rotZ = local->rotZ;
+void dsgNodeSumWithParentTranslationRotation(void* arg) {
+	if (arg == NULL) {
+		return;	
 	}
+
+	dsgNodeSumWithParentArg_t* castArg = (dsgNodeSumWithParentArg_t*)arg;
+
+	node_t* node = castArg->node;
+	node_t* parent = castArg->parent;
+
+	if (node == NULL) {
+		fprintf(stderr,"Node is NULL in transform sum\n");	
+		return;
+	}
+
+	nodeTraRot_t* localTr  = node->localTraRot;
+	nodeTraRot_t* globalTr = node->globalTraRot;
+	if (parent == NULL) {
+		fprintf(stderr,"Parent is NULL in transform sum\n");
+		globalTr->transX  = localTr->transX;
+		globalTr->transX  = localTr->transY;
+		globalTr->transX  = localTr->transZ;
+		globalTr->rotX    = localTr->rotX;
+		globalTr->rotY    = localTr->rotY;
+		globalTr->rotZ    = localTr->rotZ;
+		return;
+	}
+	else {
+		nodeTraRot_t* parentTr = parent->globalTraRot;
+
+		if (parentTr == NULL) {
+			fprintf(stderr,"The parent global transformation object is null\n");
+			return;	
+		}
+
+		if (localTr == NULL) {
+			fprintf(stderr,"The local global transformation object is null\n");
+			return;	
+		}
+
+		globalTr->transX = parentTr->transX + localTr->transX;
+		globalTr->transX = parentTr->transY + localTr->transY;
+		globalTr->transX = parentTr->transZ + localTr->transZ;
+		globalTr->rotX   = parentTr->rotX   + localTr->rotX;
+		globalTr->rotY   = parentTr->rotY   + localTr->rotY;
+		globalTr->rotZ   = parentTr->rotZ   + localTr->rotZ;
+	}
+
+	return;
+}
+
+void dsgNodePrint(node_t* node, void* arg) {
+	fprintf(stdout,"%s\n", node->path);
+	return;
+}
+
+void dsgNodeSetParentIndex(int parent, node_t* node) {
+	node->parentIndex = parent;
 	return;
 }

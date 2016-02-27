@@ -15,7 +15,7 @@ CFLAGS := -std=c99 -I./unit/src -fPIC
 
 # Linker Flags
 LFLAGS := -L./unit/bin -L./bin -Wall -lUnit
-GLTEST_LFLAGS := -lglfw 
+GLTEST_LFLAGS := -lGL -lglfw 
 
 # Directories
 SRC_DIR = src
@@ -56,6 +56,11 @@ gdb_test: $(BIN_DIR)/$(TEST_BIN)
 .PHONY: gl_test
 gl_test: $(BIN_DIR)/$(GLTEST_BIN)
 	$(BIN_DIR)/$(GLTEST_BIN) 
+
+.PHONY: gl_test_gdb
+gl_test_gdb: $(BIN_DIR)/$(GLTEST_BIN)
+	$(GDB) $(BIN_DIR)/$(GLTEST_BIN) 
+
 
 # Build Objects ################################################################
 
