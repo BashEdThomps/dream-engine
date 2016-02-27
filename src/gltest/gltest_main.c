@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 // GLFW & GL
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <GL/gl.h>
 // Project
 #include "../graph.h"
 
@@ -25,55 +25,31 @@ float* cubeVertexBuffer(float sz) {
 	buffer[3] =  sz; buffer[4]  =  sz; buffer[5]  = sz;
 	buffer[6] =  sz; buffer[7]  = -sz; buffer[8]  = sz;
 	buffer[9] = -sz; buffer[10] = -sz; buffer[11] = sz;
-	//glVertex3f(-sz, sz, sz);
-	//glVertex3f(sz, sz, sz);
-	//glVertex3f(sz, -sz, sz);
-	//glVertex3f(-sz, -sz, sz);
 	/* Back face */
 	buffer[12] = -sz; buffer[13] = -sz; buffer[14] = -sz;
 	buffer[15] =  sz; buffer[16] = -sz; buffer[17] = -sz;
 	buffer[18] =  sz; buffer[19] =  sz; buffer[20] = -sz;
 	buffer[21] = -sz; buffer[22] =  sz; buffer[23] = -sz;
-	//glVertex3f(-sz, -sz, -sz);
-	//glVertex3f(sz, -sz, -sz);
-	//glVertex3f(sz, sz, -sz);
-	//glVertex3f(-sz, sz, -sz);
 	/* Left face */
 	buffer[24] = -sz; buffer[25] =  sz; buffer[26] =  sz;
 	buffer[27] = -sz; buffer[28] = -sz; buffer[29] =  sz;
 	buffer[30] = -sz; buffer[31] = -sz; buffer[32] = -sz;
 	buffer[33] = -sz; buffer[34] =  sz; buffer[35] = -sz;
-	//glVertex3f(-sz, sz, sz);
-	//glVertex3f(-sz, -sz, sz);
-	//glVertex3f(-sz, -sz, -sz);
-	//glVertex3f(-sz, sz, -sz);
 	/* Right face */
 	buffer[36] = sz; buffer[37] =  sz; buffer[38] = -sz;
 	buffer[39] = sz; buffer[40] = -sz; buffer[41] = -sz;
 	buffer[42] = sz; buffer[43] = -sz; buffer[44] =  sz;
 	buffer[45] = sz; buffer[46] =  sz; buffer[47] =  sz;
-	//glVertex3f(sz, sz, -sz);
-	//glVertex3f(sz, -sz, -sz);
-	//glVertex3f(sz, -sz, sz);
-	//glVertex3f(sz, sz, sz);
 	/* Top face */
 	buffer[48] =  sz; buffer[49] = sz; buffer[50] =  sz;
 	buffer[51] = -sz; buffer[52] = sz; buffer[53] =  sz;
 	buffer[54] = -sz; buffer[55] = sz; buffer[56] = -sz;
 	buffer[57] =  sz; buffer[58] = sz; buffer[59] = -sz;
-	//glVertex3f(sz, sz, sz);
-	//glVertex3f(-sz, sz, sz);
-	//glVertex3f(-sz, sz, -sz);
-	//glVertex3f(sz, sz, -sz);
 	/* Bottom face */
 	buffer[60] =  sz; buffer[61] = -sz; buffer[62] = -sz;
 	buffer[63] = -sz; buffer[64] = -sz; buffer[65] = -sz;
 	buffer[66] = -sz; buffer[67] = -sz; buffer[68] =  sz;
 	buffer[69] =  sz; buffer[70] = -sz; buffer[71] =  sz;
-	//glVertex3f(sz, -sz, -sz);
-	//glVertex3f(-sz, -sz, -sz);
-	//glVertex3f(-sz, -sz, sz);
-	//glVertex3f(sz, -sz, sz);	
 	return buffer;
 }
 
@@ -86,13 +62,13 @@ graph_t* setupScenegraph() {
 
 	n1 = dsgGraphCreateNodeWithName(graph,"Node1");
 	n1->localTraRot->transX = -2.0f;
-	n1->localTraRot->transX = -2.0f;
-	n1->localTraRot->transX = -0.0f;
+	n1->localTraRot->transY = -2.0f;
+	n1->localTraRot->transZ = -0.0f;
 	
 	n2 = dsgGraphCreateNodeWithName(graph,"Node2");
-	n2->localTraRot->transX = 2.0f;
-	n2->localTraRot->transX = 2.0f;
-	n2->localTraRot->transX = -0.0f;
+	n2->localTraRot->transX = 6.0f;
+	n2->localTraRot->transY = 2.0f;
+	n2->localTraRot->transZ = 3.0f;
 	
 	//n3 = dsgGraphCreateNodeWithName(graph,"Node3");
 	//n4 = dsgGraphCreateNodeWithName(graph,"Node4");
@@ -122,23 +98,21 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 
 void drawNode(node_t* node, void* arg) {
 	graph_t* graph = (graph_t*)arg;
-	glPushMatrix();
-	glLoadIdentity();
+
 	glTranslatef(node->globalTraRot->transX,
 		     node->globalTraRot->transY,
 		     node->globalTraRot->transZ);
-	//glRotatef(node->globalTraRot->rotX,1.0f,0.0f,0.0f);
-	//glRotatef(node->globalTraRot->rotY,0.0f,1.0f,0.0f);
-	//glRotatef(node->globalTraRot->rotZ,0.0f,0.0f,1.0f);
-	glBegin(GL_QUADS);
-	int i;
-	for (i=0;i<72;i+=3) {
-		glVertex3f(graph->vertexBuffers[0][i],
-		  	   graph->vertexBuffers[0][i+1],
-			   graph->vertexBuffers[0][i+2]);	
-	}
-	glEnd();
-	glPopMatrix();
+
+	glRotatef(node->globalTraRot->rotX,1.0f,0.0f,0.0f);
+	glRotatef(node->globalTraRot->rotY,0.0f,1.0f,0.0f);
+	glRotatef(node->globalTraRot->rotZ,0.0f,0.0f,1.0f);
+	fprintf(stdout,"Drawing Node %s\n",node->name);
+	glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(3, GL_FLOAT, 0, (GLfloat*)graph->vertexBuffers[0]);
+	/* Send data : 24 vertices */
+	glDrawArrays(GL_QUADS, 0, 24);
+	/* Cleanup states */
+	glDisableClientState(GL_VERTEX_ARRAY);
 	return; 
 }
 
@@ -161,23 +135,41 @@ int main(void) {
 		glfwTerminate();
 		return -1;
 	}
+
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
+
 	/* Setup the key event callback */
 	glfwSetKeyCallback(window, keyCallback);
+
+	/* GL setup*/
+	glEnable(GL_DEPTH_TEST); 
+	glDepthFunc(GL_LEQUAL);
+	glDisable(GL_CULL_FACE);
+	//glCullFace(GL_CCW);
+	glClearColor(0.0f,0.5f,0.2f,0.0f);
+	glLoadIdentity();
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, 640, 480);
+		glMatrixMode(GL_PROJECTION_MATRIX);
 		glLoadIdentity();
-		glTranslatef(0.0f,0.0f,-50.0f);
+		gluPerspective(60, 640.0f/480.0f,0.1f,100.0f);
+		glMatrixMode(GL_MODELVIEW);	
+		glTranslatef(0.0f,0.0f,10.0f);
 		/* Render here */
 		dsgGraphUpdateAll(graph);
+		glColor3f(1.0f,1.0f,1.0f); 
 		drawGraph(graph);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
 }

@@ -15,7 +15,7 @@ CFLAGS := -std=c99 -I./unit/src -fPIC
 
 # Linker Flags
 LFLAGS := -L./unit/bin -L./bin -Wall -lUnit
-GLTEST_LFLAGS := -lGL -lglfw 
+GLTEST_LFLAGS := -lGL -lGLU -lglfw 
 
 # Directories
 SRC_DIR = src

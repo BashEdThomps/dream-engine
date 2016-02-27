@@ -26,6 +26,7 @@ typedef struct {
 // Init
 void dsgNodeInit (node_t*, char*);
 void dsgNodeInitTranslationRotation  (node_t*);
+void dsgNodeDestroy(node_t*);
 
 // Validation
 int dsgNodeHasValidName(node_t*);

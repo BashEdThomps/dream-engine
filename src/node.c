@@ -16,7 +16,13 @@ void dsgNodeInit(node_t* node, char* name) {
 	node->path = NULL;
 	dsgNodeInitTranslationRotation(node);
 }
-
+void dsgNodeDestroy(node_t* node) {
+	if (node->name != NULL)     free(node->name);
+	if (node->children != NULL) free(node->children);
+	if (node->path != NULL)     free(node->path);
+	if (node->globalTraRot != NULL) free(node->globalTraRot);
+	if (node->localTraRot != NULL)  free(node->localTraRot);
+}
 void dsgNodeInitTranslationRotation(node_t* node) {
 	node->globalTraRot = (nodeTraRot_t*) malloc(sizeof(nodeTraRot_t));
 	node->globalTraRot->transX = 0.0f;
@@ -62,15 +68,15 @@ void dsgNodeSumWithParentTranslationRotation(void* arg) {
 
 	nodeTraRot_t* localTr  = node->localTraRot;
 	nodeTraRot_t* globalTr = node->globalTraRot;
+
 	if (parent == NULL) {
 		fprintf(stderr,"Parent is NULL in transform sum\n");
 		globalTr->transX  = localTr->transX;
-		globalTr->transX  = localTr->transY;
-		globalTr->transX  = localTr->transZ;
+		globalTr->transY  = localTr->transY;
+		globalTr->transZ  = localTr->transZ;
 		globalTr->rotX    = localTr->rotX;
 		globalTr->rotY    = localTr->rotY;
 		globalTr->rotZ    = localTr->rotZ;
-		return;
 	}
 	else {
 		nodeTraRot_t* parentTr = parent->globalTraRot;
@@ -86,13 +92,15 @@ void dsgNodeSumWithParentTranslationRotation(void* arg) {
 		}
 
 		globalTr->transX = parentTr->transX + localTr->transX;
-		globalTr->transX = parentTr->transY + localTr->transY;
-		globalTr->transX = parentTr->transZ + localTr->transZ;
+		globalTr->transY = parentTr->transY + localTr->transY;
+		globalTr->transZ = parentTr->transZ + localTr->transZ;
 		globalTr->rotX   = parentTr->rotX   + localTr->rotX;
 		globalTr->rotY   = parentTr->rotY   + localTr->rotY;
 		globalTr->rotZ   = parentTr->rotZ   + localTr->rotZ;
 	}
-
+	fprintf(stdout,"%s T(%.2f,%.2f,%.2f) R(%.2f,%.2f,%.2f)\n",  node->name,
+			globalTr->transX, globalTr->transY, globalTr->transZ,
+			globalTr->rotX, globalTr->rotY, globalTr->rotZ);
 	return;
 }
 
