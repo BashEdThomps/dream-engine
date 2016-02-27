@@ -55,6 +55,7 @@ void testGraph() {
 	unitAssertNotZero("N4 has 0 children",dsgGraphCountChildrenOfNode(graph, n4) == 0);
 	unitAssertNotZero("N5 has 0 children",dsgGraphCountChildrenOfNode(graph, n5) == 0);
 
+	dsgGraphPrintGraph(graph);
 
 	unitTestFooter("Graph");
 	return;
