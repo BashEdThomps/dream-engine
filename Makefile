@@ -7,20 +7,20 @@
 # Project Name
 TARGET = libDreamSceneGraph.so
 TEST_BIN = Test
-GLTEST_BIN = GLTest
+GL_TEST_BIN = GLTest
 
 # Compiler Flags
 CC = gcc
 CFLAGS := -std=c99 -I./unit/src -fPIC
 
 # Linker Flags
-LFLAGS := -L./unit/bin -L./bin -Wall -lUnit
-GLTEST_LFLAGS := -lGL -lGLU -lglfw 
+LFLAGS := -L./unit/bin -L./bin -Wall -lUnit -lm
+GL_TEST_LFLAGS := -lGL -lGLU  -lglut
 
 # Directories
 SRC_DIR = src
 TEST_DIR := $(SRC_DIR)/test
-GLTEST_DIR := $(SRC_DIR)/gltest
+GL_TEST_DIR := $(SRC_DIR)/gl_test
 OBJ_DIR = obj
 BIN_DIR = bin
 
@@ -31,8 +31,10 @@ OBJECTS := $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TEST_SOURCES := $(wildcard $(TEST_DIR)/*.c)
 TEST_OBJECTS := $(TEST_SOURCES:$(TEST_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-GLTEST_SOURCES := $(wildcard $(GLTEST_DIR)/*.c)
-GLTEST_OBJECTS := $(GLTEST_SOURCES:$(GLTEST_DIR)/%.c=$(OBJ_DIR)/%.o)
+GL_TEST_SOURCES := $(wildcard $(GL_TEST_DIR)/*.c)
+GL_TEST_OBJECTS := $(GL_TEST_SOURCES:$(GL_TEST_DIR)/%.c=$(OBJ_DIR)/%.o)
+
+
 
 # Commands
 RM    = rm -rf
@@ -54,13 +56,12 @@ gdb_test: $(BIN_DIR)/$(TEST_BIN)
 	LD_LIBRARY_PATH=unit/bin $(GDB) $(BIN_DIR)/$(TEST_BIN) 
 
 .PHONY: gl_test
-gl_test: $(BIN_DIR)/$(GLTEST_BIN)
-	$(BIN_DIR)/$(GLTEST_BIN) 
+gl_test: $(BIN_DIR)/$(GL_TEST_BIN)
+	$(BIN_DIR)/$(GL_TEST_BIN) 
 
 .PHONY: gl_test_gdb
-gl_test_gdb: $(BIN_DIR)/$(GLTEST_BIN)
-	$(GDB) $(BIN_DIR)/$(GLTEST_BIN) 
-
+gl_test_gdb: $(BIN_DIR)/$(GL_TEST_BIN)
+	$(GDB) $(BIN_DIR)/$(GL_TEST_BIN) 
 
 # Build Objects ################################################################
 
@@ -72,7 +73,7 @@ $(TEST_OBJECTS): $(OBJ_DIR)/%.o : $(TEST_DIR)/%.c
 	$(MKDIR) obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(GLTEST_OBJECTS): $(OBJ_DIR)/%.o : $(GLTEST_DIR)/%.c
+$(GL_TEST_OBJECTS): $(OBJ_DIR)/%.o : $(GL_TEST_DIR)/%.c
 	$(MKDIR) obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -86,9 +87,9 @@ $(BIN_DIR)/$(TEST_BIN): $(OBJECTS) $(TEST_OBJECTS)
 	$(MKDIR) bin
 	$(CC) $(OBJECTS) $(TEST_OBJECTS) $(LFLAGS) -o $@
 
-$(BIN_DIR)/$(GLTEST_BIN): $(OBJECTS) $(GLTEST_OBJECTS)
+$(BIN_DIR)/$(GL_TEST_BIN): $(OBJECTS) $(GL_TEST_OBJECTS)
 	$(MKDIR) bin
-	$(CC) $(OBJECTS) $(GLTEST_OBJECTS) $(LFLAGS) $(GLTEST_LFLAGS) -o $@
+	$(CC) $(OBJECTS) $(GL_TEST_OBJECTS) $(LFLAGS) $(GL_TEST_LFLAGS) -o $@
 
 # Clean ######################################################################## 
 

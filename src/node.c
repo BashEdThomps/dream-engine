@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "node.h"
+
+#define M_PI 3.14159265358979323846
 
 void dsgNodeInit(node_t* node, char* name) {
 	node->name = name;
@@ -51,6 +54,14 @@ int dsgNodeHasValidName(node_t* node) {
 	return node->name != NULL;
 }
 
+float toDegrees(float radians) {
+    return radians * (180.0 / M_PI);
+}
+
+float toRadians(float degrees) {
+	return (M_PI / 180.0f) * degrees;
+}
+
 void dsgNodeSumWithParentTranslationRotation(void* arg) {
 	if (arg == NULL) {
 		return;	
@@ -91,12 +102,19 @@ void dsgNodeSumWithParentTranslationRotation(void* arg) {
 			return;	
 		}
 
-		globalTr->transX = parentTr->transX + localTr->transX;
-		globalTr->transY = parentTr->transY + localTr->transY;
-		globalTr->transZ = parentTr->transZ + localTr->transZ;
-		globalTr->rotX   = parentTr->rotX   + localTr->rotX;
-		globalTr->rotY   = parentTr->rotY   + localTr->rotY;
-		globalTr->rotZ   = parentTr->rotZ   + localTr->rotZ;
+		//globalTr->transX = parentTr->transX + localTr->transX;
+		//globalTr->transY = parentTr->transY + localTr->transY;
+		//globalTr->transZ = parentTr->transZ + localTr->transZ;
+
+		globalTr->rotX   = parentTr->rotX + localTr->rotX;
+		globalTr->rotY   = parentTr->rotY + localTr->rotY;
+		globalTr->rotZ   = parentTr->rotZ + localTr->rotZ;
+
+		float radius = localTr->transX;
+		globalTr->transX = parentTr->transX + toRadians(radius) * cos(globalTr->rotY);
+		globalTr->transZ = parentTr->transZ + toRadians(radius) * sin(globalTr->rotY);
+
+		
 	}
 	fprintf(stdout,"%s T(%.2f,%.2f,%.2f) R(%.2f,%.2f,%.2f)\n",  node->name,
 			globalTr->transX, globalTr->transY, globalTr->transZ,
