@@ -14,7 +14,7 @@ CC = gcc
 CFLAGS := -std=c99 -I./unit/src -fPIC
 
 # Linker Flags
-LFLAGS := -L./unit/bin -L./bin -Wall -lUnit -lm
+LFLAGS := -L./unit/bin -Wall -lUnit -lm
 GL_TEST_LFLAGS := -lGL -lGLU  -lglut
 
 # Directories
@@ -33,8 +33,6 @@ TEST_OBJECTS := $(TEST_SOURCES:$(TEST_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 GL_TEST_SOURCES := $(wildcard $(GL_TEST_DIR)/*.c)
 GL_TEST_OBJECTS := $(GL_TEST_SOURCES:$(GL_TEST_DIR)/%.c=$(OBJ_DIR)/%.o)
-
-
 
 # Commands
 RM    = rm -rf

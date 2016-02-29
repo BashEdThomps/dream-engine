@@ -4,40 +4,28 @@
 /*
 * node.h
 */
-#include "node_trarot.h"
+
+#define NODE_X 0
+#define NODE_Y 1
+#define NODE_Z 2
 
 typedef struct {
-	char *name;
-	char *path;
-	int   parentIndex;
-	int   numChildren;
-	int   numImmediateChildren;
-	int  *children;
-	int  *immediateChildren;
-	nodeTraRot_t *localTraRot;
-	nodeTraRot_t *globalTraRot;
+	char  *name;
+	char  *path;
+	int    parentIndex;
+	int    vertexBufferIndex;
+	float *translation; 	
+	float * rotation;
 } node_t;
 
-typedef struct {
-	node_t* node;
-	node_t* parent;
-} dsgNodeSumWithParentArg_t;
-
-// Init
 void dsgNodeInit (node_t*, char*);
-void dsgNodeInitTranslationRotation  (node_t*);
+void dsgNodeInitTranslationRotation(node_t*);
 void dsgNodeDestroy(node_t*);
-
-// Validation
 int dsgNodeHasValidName(node_t*);
 int dsgNodeHasValidPath(node_t*);
-
-// Math
-void dsgNodeSumWithParentTranslationRotation(void*);
-
-// Debug
 void dsgNodePrint(node_t*, void*);
-
-// Relationships
 void dsgNodeSetParentIndex(int, node_t*);
+void dsgNodeSetTranslation(node_t*, float, float, float);
+void dsgNodeSetRotation(node_t*, float, float, float);
+
 #endif // NODE_H

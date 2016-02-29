@@ -7,6 +7,7 @@
 #define VERT_BUFFERS 256
 #define STR_BUF_SIZE 512
 
+
 // Global Variables
 typedef struct {
 	char*   name;
@@ -35,33 +36,27 @@ void    dsgGraphSetRootNodeIndex     (graph_t*, int);
 void    dsgGraphSetRootNode          (graph_t*, node_t*); 
 int     dsgGraphGetNextAvailableNode (graph_t*);
 int     dsgGraphGetIndexOfNode       (graph_t*, node_t*);
-int     dsgGraphGetNextAvailableOrderedNodeIndex (graph_t*);
 node_t* dsgGraphGetRootNode                  (graph_t*);
 int     dsgGraphGetRootNodeIndex             (graph_t*);
 int     dsgGraphIsRootNode                   (graph_t*, node_t*);
 node_t* dsgGraphCreateNode                   (graph_t*);
-node_t* dsgGraphCreateNodeWithName           (graph_t*,char*);
+node_t* dsgGraphCreateNodeWithName           (graph_t*, char*);
 void    dsgGraphRemoveNode                   (graph_t*, node_t*);
 int     dsgGraphCountChildrenOfNode          (graph_t*, node_t*);
-int     dsgGraphCountImmediateChildrenOfNode (graph_t*, node_t*);
-void    dsgGraphPopulateChildren             (graph_t*, node_t*);
-void    dsgGraphPopulateImmediateChildren    (graph_t*, node_t*);
+node_t* dsgGraphGetNodeByName                (graph_t*, char*);
 
 // Updating
-void dsgGraphUpdateAll                 (graph_t*);
 void dsgGraphUpdatePaths               (graph_t*);
-void dsgGraphUpdateTranslationRotation (graph_t*);
-void dsgGraphUpdateChildren            (graph_t*);
-void dsgGraphUpdateImmediateChildren   (graph_t*);
-void dsgGraphUpdateOrder               (graph_t*);
-void dsgGraphUpdateOrderFromNode       (graph_t*,node_t*);
-void dsgGraphInitOrderedNodes         (graph_t*);
-void dsgGraphTraverseOrderedNodes(graph_t*, void (*)(node_t*, void*), void*); 
+void dsgGraphTraverseNodeVector        (graph_t*, void (*)(node_t*, void*), void*); 
+int  dsgGraphTraversePath              (graph_t*,char*,void (*)(node_t*,void*),void*);
+
 // Node Relationships
 int  dsgGraphNodeIsChildOf           (graph_t*, node_t*, node_t*);
-int  dsgGraphNodeIsImmediateChildOf  (graph_t*, node_t*, node_t*);
 int  dsgGraphNodeIsParentOf          (graph_t*, node_t*, node_t*);
-int  dsgGraphNodeIsImmediateParentOf (graph_t*, node_t*, node_t*);
 void dsgGraphNodeSetParent           (graph_t*, node_t*, node_t*);
 
+void dsgGraphPrintLine(node_t* node, void* arg);
+void dsgGraphPrintGraph(graph_t* graph); 
+
 #endif // GRAPH_H
+

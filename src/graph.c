@@ -8,6 +8,8 @@
 #include "node.h"
 #include "graph.h"
 
+char dsgGraphPathDelimeter  = '/';
+
 graph_t* dsgGraphInitWithName(char* name) {
 	graph_t* retval = dsgGraphInit();
 	retval->name = name;
@@ -75,10 +77,16 @@ void dsgGraphSetRootNode(graph_t* graph, node_t* root) {
 		return;
 	}
 	graph->rootNodeIndex = dsgGraphGetIndexOfNode(graph,root);
+	return;
 }
 
 void dsgGraphSetRootNodeIndex(graph_t* graph, int root) {
+	if (graph == NULL) {
+		fprintf(stderr,"Cannot set root node of NULL graph\n");
+		return;
+	}
 	graph->rootNodeIndex = root;
+	return;
 }
 
 void dsgGraphRemoveNode(graph_t* graph, node_t* node) {
@@ -100,204 +108,81 @@ void dsgGraphRemoveNode(graph_t* graph, node_t* node) {
 
 	free(node);
 	graph->nodes[i] = NULL; 
-}
-
-void dsgGraphUpdateOrder(graph_t* graph) {
-	dsgGraphInitOrderedNodes(graph);
-	node_t* node = dsgGraphGetRootNode(graph); 
-
-	if (graph == NULL) {
-		fprintf(stderr,"Error: Cannot update order on NULL graph!\n");
-		return;
-	}
-
-       	if (node == NULL ) {
-		fprintf(stderr,"Error: Cannot update order on graph from NULL node\n");
-		return;	
-	}
-
-	fprintf(stdout,"Updating Graph Order of %s\n", graph->name ? graph->name : "Untitled Graph");
-	
-	dsgGraphUpdateOrderFromNode(graph,node);
 	return;
 }
 
-void dsgGraphUpdateOrderFromNode(graph_t* graph, node_t* node) {
-	fprintf(stdout,"dsgGUOFN On node %s\n", node->name);
-	int children =  node->numImmediateChildren; 
-	int index = dsgGraphGetNextAvailableOrderedNodeIndex(graph);
-
-	if (index < 0) {
-		fprintf(stderr,"Unable to find an available ordered node index\n");
-		return;
-	}
-
-	graph->orderedNodes[index] = dsgGraphGetIndexOfNode(graph,node);
-
-	if (children > 0) {
-		int i;
-		for (i=0;i<children;i++) {
-			dsgGraphUpdateOrderFromNode(graph, graph->nodes[node->immediateChildren[i]]);	
-		}
-	}
-	return;
-}
-
-int dsgGraphGetNextAvailableOrderedNodeIndex(graph_t* graph) {
-	int i;
-	int index;
-	for(i=0; i < NODES; i++) {
-		index = NODES-i-1;
-		fprintf(stdout,"dsgGGNAODI %d\n",index);
-		if(graph->orderedNodes[index] == -1) {
-			fprintf(stdout,"dsgGGNAODI found\n");
-			return index;	
-		}	
-	}
-	fprintf(stdout,"dsgGGNAODI not found\n");
-	return -1;
-}
-
-void dsgGraphTraverseOrderedNodes(graph_t* graph, void (*function)(node_t*, void*), void* arg) {
+void dsgGraphTraverseNodeVector(graph_t* graph, void (*function)(node_t*, void*), void* arg) {
 	int i;
 	node_t* next;
-	for (i=NODES-1;i>=0;i--) {
-		if (graph->orderedNodes[i] == -1) {
-			break;
-		}
-		next = graph->nodes[graph->orderedNodes[i]];
-		if (next==NULL) {
+	for (i=0;i<NODES;i++) {
+		next = graph->nodes[i];
+		if (next == NULL) {
 			continue;
-		}	
+		}
 		(*function)((void*)next, arg == NULL ? graph : arg);
 	}
 	return;
 }
 
-void dsgGraphPrintGraph(graph_t* graph) {
-	dsgGraphTraverseOrderedNodes(graph,&dsgNodePrint,NULL);
-	return;
-}
-
-void dsgGraphUpdateTranslationRotation(graph_t* graph) {
-	dsgNodeSumWithParentArg_t* arg = (dsgNodeSumWithParentArg_t*)malloc(sizeof(dsgNodeSumWithParentArg_t));
+node_t* dsgGraphGetNodeByName(graph_t* graph, char* name) {
 	int i;
 	node_t* next;
-	for (i=NODES-1;i>=0;i--) {
-		int nextIndex = graph->orderedNodes[i];
-		if (nextIndex < 0) {
-			continue;
-		}
-		next = graph->nodes[nextIndex];
+	for (i=0;i<NODES;i++) {
+		next = graph->nodes[i];
 		if (next == NULL) {
 			continue;
 		}	
-		int parentIndex = next->parentIndex;
-		arg->node = next;
-		arg->parent = NULL;
-		if (parentIndex > -1 ) {
-			fprintf(stdout,"ParentIndex: %d\n",parentIndex);
-			arg->parent = graph->nodes[parentIndex];
-		}
-		(*dsgNodeSumWithParentTranslationRotation)((void*)arg);
-	}
-	free(arg);
-	return;
-}
-
-void dsgGraphUpdateChildren(graph_t* graph) {
-	int i;
-	node_t* node;
-	for (i=0; i<NODES; i++) {
-		node = graph->nodes[i];	
-
-		if (node == NULL) {
+		if (next->name == NULL) {
+			fprintf(stderr,"dsgGraphGetNodeByName: Cannot test node with NULL name\n");
 			continue;
 		}
+		if (strcmp(graph->nodes[i]->name,name) == 0) {
+			return graph->nodes[i];
+		}	
+	}
+	return NULL;
+}
 
-		if (node->children != NULL) {
-			fprintf(stderr,"Freeing node's existing children vector\n");
-			free(node->children);
+int dsgGraphTraversePath(graph_t* graph, char* path, void (*function)(node_t*, void*), void* arg) {
+	char* start    = NULL;
+	char* end      = NULL;
+	int done       = 0;
+	int nameLen    = 0;
+	node_t* target = NULL;
+	//fprintf(stdout,"Traversing path: %s\n",path);
+	start = path+1;
+	if (start == NULL) {
+		fprintf(stderr,"Path is null\n");
+		return done;
+	}
+	while (!done) {
+		nameLen = 0;
+		end = strchr(start+1, dsgGraphPathDelimeter);
+		if (end == NULL) {
+			//fprintf(stdout,"Found end of string\n");
+			end = path+strlen(path); 
+			done = 1;
 		}
-
-		fprintf(stderr,"Counting children of node %s\n", node->name);
-		int numChildren = dsgGraphCountChildrenOfNode(graph, node);
-		node->numChildren = numChildren;
-		fprintf(stdout,"Found %d\n",numChildren);
-		if (numChildren > 0) {
-			fprintf(stderr,"Allocating memory for children\n");
-			node->children = (int*)malloc(sizeof(int)*numChildren);
-			dsgGraphPopulateChildren(graph, node);
+		end += 1;
+		nameLen = (end-start-1);
+		if (nameLen <= 0) {
+			fprintf(stderr,"Traverse nameLen <= 0\n");
+			break;
+		}
+		char* tmp = (char*)malloc(sizeof(char)*nameLen+1);
+		memcpy(tmp,start,nameLen);
+		tmp[nameLen] = '\0';
+		//fprintf(stdout,"Traversed path to: %s\n",tmp);
+		target = dsgGraphGetNodeByName(graph,tmp);
+		if (target != NULL) {
+			function(target,arg);
+			start = end;
 		} else {
-			fprintf(stdout,"No children found for node %s\n",node->name);
+			fprintf(stderr,"%s not found while traversing path\n",tmp);
+			break;
 		}
 	}
-	return;
-}
-
-void dsgGraphUpdateImmediateChildren(graph_t* graph) {
-	int i;
-	node_t* node;
-	for (i=0;i<NODES;i++) {
-		node = graph->nodes[i];	
-
-		if (node == NULL) {
-			continue;
-		}
-
-		if (node->immediateChildren != NULL) {
-			fprintf(stderr,"Freeing node's existing immediate children vector\n");
-			free(node->immediateChildren);
-		}
-
-		fprintf(stderr,"Counting immediate children of node %s\n", node->name);
-		int numImmediateChildren = dsgGraphCountImmediateChildrenOfNode(graph, node);
-		node->numImmediateChildren = numImmediateChildren;
-		fprintf(stdout,"Found %d\n",numImmediateChildren);
-		if (numImmediateChildren > 0) {
-			fprintf(stderr,"Allocating memory for Immediate children\n");
-			node->immediateChildren = (int*) malloc(sizeof(int)*numImmediateChildren);
-			dsgGraphPopulateImmediateChildren(graph, node);
-		} else {
-			fprintf(stderr,"No immediate children found for %s\n",node->name);
-		}
-	}
-	return;
-}
-
-void dsgGraphPopulateChildren(graph_t* graph, node_t* node) {
-	node_t* next;
-	int i;
-	int childrenFound = 0;
-	for (i=0; i < NODES; i++) {
-		next = graph->nodes[i];
-		if (next == NULL) {
-			continue;
-		}
-		if (dsgGraphNodeIsChildOf(graph,node, next)) {
-			fprintf(stdout,"PopulateChildren: child found for %s\n",node->name);
-			int* childrenArray = (int*)node->children;
-			childrenArray[childrenFound] = i;	
-			childrenFound++;
-		}				
-	} 
-}
-
-void dsgGraphPopulateImmediateChildren(graph_t* graph, node_t* node) {
-	node_t* next;
-	int i;
-	int iChildrenFound = 0;
-	for (i=0; i < NODES; i++) {
-		next = graph->nodes[i];
-		if (next == NULL) {
-			continue;
-		}
-		if (dsgGraphNodeIsImmediateChildOf(graph, node, next)) {
-			int* iChildrenArray = (int*)node->immediateChildren;
-			iChildrenArray[iChildrenFound] = i;	
-			iChildrenFound++;
-		}				
-	} 
+	return done;
 }
 
 int dsgGraphCountChildrenOfNode(graph_t* graph, node_t* node) {
@@ -311,18 +196,6 @@ int dsgGraphCountChildrenOfNode(graph_t* graph, node_t* node) {
 		}
 
 		if (dsgGraphNodeIsChildOf(graph, node, next)) {
-			retval++;
-		}
-	}
-	return retval;
-}
-
-int dsgGraphCountImmediateChildrenOfNode(graph_t* graph, node_t* node) {
-	int retval = 0;
-	int i;
-	for (i=0;i<NODES;i++) {
-		node_t* next = graph->nodes[i];
-		if (dsgGraphNodeIsImmediateChildOf(graph, node, next)) {
 			retval++;
 		}
 	}
@@ -371,7 +244,8 @@ void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
 			return;
 		}
 		fprintf(stdout,"Generating path for node root %s\n", node->name);
-		memcpy(pathBuffer, "/\0", 2);	
+		memcpy(pathBuffer, &dsgGraphPathDelimeter, 1);	
+		pathBuffer[2] = '\0';
 		strncat(pathBuffer, node->name, strlen(node->name));
 	} else {
 		node_t* parent = graph->nodes[node->parentIndex];
@@ -381,7 +255,7 @@ void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
 		}
 		fprintf(stdout,"Generating path for node %s with parent %s\n", node->name, parent->name);
 		memcpy(pathBuffer, parent->path, strlen(parent->path)+1);
-		strncat(pathBuffer, "/\0", 2);	
+		strncat(pathBuffer, &dsgGraphPathDelimeter, strlen(&dsgGraphPathDelimeter));	
 		strncat(pathBuffer, node->name, strlen(node->name));	
 	}
 
@@ -399,14 +273,6 @@ void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
 
 int dsgGraphIsRootNode(graph_t* graph, node_t* node) {
 	return graph->rootNodeIndex == dsgGraphGetIndexOfNode(graph,node);
-}
-
-void dsgGraphUpdateAll(graph_t* graph) {
-	dsgGraphUpdatePaths    (graph);
-	dsgGraphUpdateChildren (graph);
-	dsgGraphUpdateImmediateChildren(graph);
-	dsgGraphUpdateOrder(graph);
-	dsgGraphUpdateTranslationRotation(graph);
 }
 
 int dsgGraphAddVertexBuffer(graph_t* graph, void* buffer) {
@@ -469,65 +335,16 @@ int dsgGraphRemoveVertexBuffer(graph_t* graph, void* buffer) {
 	return index;
 }
 
-void dsgGraphInitOrderedNodes(graph_t* graph) {
-	int i;
-	for (i=0; i<NODES; i++) {
-		graph->orderedNodes[i] = -1;	
-	}
-	return;
-}
-
-/* 
- * Node Relationships 
- */
-int dsgGraphNodeIsParentOf (graph_t* graph ,node_t* parent, node_t* child) {
+int dsgGraphNodeIsParentOf (graph_t* graph, node_t* parent, node_t* child) {
 	int retval = 0; 
-
-	if (!dsgNodeHasValidPath(child) || !dsgNodeHasValidPath(parent) ||
-	    !dsgNodeHasValidName(child) || !dsgNodeHasValidName(parent)) {
-		return retval;	
-	}
-
-	char* indexOfParent = strstr(child->path,parent->name); 
-	char* indexOfChild = strstr(child->path,child->name);
-
-	if (indexOfParent != NULL && indexOfChild != NULL) {
-		retval = indexOfChild > indexOfParent;
-	}
-
-	return retval;
-}
-
-int dsgGraphNodeIsImmediateParentOf (graph_t* graph, node_t* parent, node_t* child) {
-	int retval = 0; 
-
 	if (parent < 0 || !dsgNodeHasValidName(child) || !dsgNodeHasValidPath(child)) {
 		return retval;	
 	}
-
 	retval = child->parentIndex == dsgGraphGetIndexOfNode(graph,parent);
 	return retval;
 }
 
 int dsgGraphNodeIsChildOf(graph_t* graph, node_t* parent, node_t* child) {
-	int retval = 0; 
-
-	if (graph == NULL || parent == NULL || child == NULL || 
-	    !dsgNodeHasValidPath(parent) || !dsgNodeHasValidName(parent) ||
-	    !dsgNodeHasValidPath(child) || !dsgNodeHasValidName(child) ) {
-		return retval;	
-	}
-	char* indexOfParent = strstr(child->path,parent->name);
-	char* indexOfChild = strstr(child->path,child->name);
-
-	if (indexOfParent != NULL && indexOfChild != NULL) {
-		retval = indexOfChild > indexOfParent;
-	}
-
-	return retval;
-}
-
-int dsgGraphNodeIsImmediateChildOf(graph_t* graph, node_t* parent, node_t* child) {
 	if (parent == NULL || child == NULL || 
 	    !dsgNodeHasValidPath(child) || 
 	    !dsgNodeHasValidName(child)) {
@@ -538,5 +355,15 @@ int dsgGraphNodeIsImmediateChildOf(graph_t* graph, node_t* parent, node_t* child
 
 void dsgGraphNodeSetParent (graph_t* graph, node_t* parent, node_t* node) {
 	dsgNodeSetParentIndex(dsgGraphGetIndexOfNode(graph,parent),node);
+	return;
+}
+
+void dsgGraphPrintLine(node_t* node, void* arg) {
+	fprintf(stdout,"%s\n",node->path);
+	return;
+}
+
+void dsgGraphPrintGraph(graph_t* graph) {
+	dsgGraphTraverseNodeVector(graph,&dsgGraphPrintLine,NULL);
 	return;
 }

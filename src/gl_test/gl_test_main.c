@@ -68,105 +68,103 @@ float* cubeVertexBuffer(float sz) {
 
 graph_t* setupScenegraph() {
 	graph_t* graph = dsgGraphInitWithName("GLTestGraph");
+
+	// Create cube vertex buffer
+	int cubeBuffer = dsgGraphAddVertexBuffer(graph, cubeVertexBuffer(1.5f));
+	fprintf(stdout,"Cube buffer allcated to %s's VBO %d\n",graph->name,cubeBuffer);
+
 	// Create Nodes	
 	fprintf(stdout, "Creating Nodes\n");
-
-
 	n1 = dsgGraphCreateNodeWithName(graph,"Node1");
-	n1->localTraRot->transX = 0.0f;
-	n1->localTraRot->transY = 0.0f;
-	n1->localTraRot->transZ = 0.0f;
-	
-	n2 = dsgGraphCreateNodeWithName(graph,"Node2");
-	n2->localTraRot->transX = 6.0f;
-	//n2->localTraRot->transY = 2.0f;
-	//n2->localTraRot->transZ = 3.0f;
-	
-	n3 = dsgGraphCreateNodeWithName(graph,"Node3");
-	n3->localTraRot->transX = 3.0f;
-	//n3->localTraRot->transY = 3.0f;
-	//n3->localTraRot->transZ = 3.0f;
-	
+	n1->vertexBufferIndex = cubeBuffer;
 
-	//n4 = dsgGraphCreateNodeWithName(graph,"Node4");
-	//n5 = dsgGraphCreateNodeWithName(graph,"Node5");
+	n2 = dsgGraphCreateNodeWithName(graph,"Node2");
+	n2->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n2,3.0f,2.0f,3.0f);
+
+	n3 = dsgGraphCreateNodeWithName(graph,"Node3");
+	n3->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n3,2.0f,1.0f,3.0f);
+
+	n4 = dsgGraphCreateNodeWithName(graph,"Node4");
+	n4->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n4,2.0f,2.0f,1.0f);
+
+	n5 = dsgGraphCreateNodeWithName(graph,"Node5");
+	n5->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n5,1.0f,2.0f,3.0f);
+	
 	// Establish Relationships
 	fprintf(stdout, "Setting Relationships\n");
 	dsgGraphSetRootNode(graph, n1);
 	dsgGraphNodeSetParent(graph,n1,n2);
 	dsgGraphNodeSetParent(graph,n2,n3);
-	//dsgGraphNodeSetParent(graph,n3,n4);
-	//dsgGraphNodeSetParent(graph,n3,n5);
-	// Create cube vertex buffer
-	int cubeBuffer = dsgGraphAddVertexBuffer(graph, cubeVertexBuffer(0.5f));
-	fprintf(stdout,"Cube buffer allcated to %s's VBO %d\n",graph->name,cubeBuffer);
+	dsgGraphNodeSetParent(graph,n3,n4);
+	dsgGraphNodeSetParent(graph,n3,n5);
+	
 	// Update
 	fprintf(stdout,"Updating Graph\n");
-	dsgGraphUpdateAll(graph);
+	dsgGraphUpdatePaths(graph);
 	fprintf(stdout,"Updated\n");
 	dsgGraphPrintGraph(graph);
 	return graph;
 }
 
+void nodeTraverseFunction(node_t* node,void* arg) {
+	glTranslatef(node->translation[NODE_X], 
+		     node->translation[NODE_Y], 
+		     node->translation[NODE_Z]);
+
+	glRotatef(node->rotation[NODE_X],1.0f,0.0f,0.0f);
+	glRotatef(node->rotation[NODE_Y],0.0f,1.0f,0.0f);
+	glRotatef(node->rotation[NODE_Z],0.0f,0.0f,1.0f);
+	return;
+}
+
 void drawNode(node_t* node, void* arg) {
 	graph_t* graph = (graph_t*)arg;
+	int vbufIndex = node->vertexBufferIndex;
+	dsgGraphTraversePath(graph,node->path,nodeTraverseFunction,NULL);
 
-	//glLoadIdentity();
-
-	//fprintf(stdout,"Translating to %.2f,%.2f.%.2f\n",
-	//		node->globalTraRot->transX, 
-	//		node->globalTraRot->transY, 
-	//		node->globalTraRot->transZ);
-	glTranslatef(node->globalTraRot->transX, node->globalTraRot->transY, node->globalTraRot->transZ);
-	glRotatef(node->globalTraRot->rotX,1.0f,0.0f,0.0f);
-	glRotatef(node->globalTraRot->rotY,0.0f,1.0f,0.0f);
-	glRotatef(node->globalTraRot->rotZ,0.0f,0.0f,1.0f);
-	
-	//fprintf(stdout,"Drawing Node %s\n",node->name);
 	glBegin(GL_QUADS);
-
 	/* Send data : 24 vertices */
 	int i;
 	for (i=0; i<72; i+=3) {
-		//fprintf(stdout,"%.2f,%.2f,%.2f\n", graph->vertexBuffers[0][i],
-		//                                  graph->vertexBuffers[0][i+1],
-		//                                   graph->vertexBuffers[0][i+2]);
-
-		glVertex3f(graph->vertexBuffers[0][i],
-		           graph->vertexBuffers[0][i+1],
-		           graph->vertexBuffers[0][i+2]);
+		glVertex3f(graph->vertexBuffers[vbufIndex][i],
+		           graph->vertexBuffers[vbufIndex][i+1],
+		           graph->vertexBuffers[vbufIndex][i+2]);
 	}
-	
-
 	/* Cleanup states */
 	glEnd();
-
 	return; 
 }
 
 void drawGLScene() {
 	nanosleep(&sleepTime,NULL);
-	n1->localTraRot->rotY += 0.5f;
-	if(n1->localTraRot->rotY  > 360.0f) {
-		n1->localTraRot->rotY  = 0.0f;
+	n1->rotation[NODE_Y] += 0.5f;
+	if(n1->rotation[NODE_Y]  > 360.0f) {
+		n1->rotation[NODE_Y]  = 0.0f;
+	}
+	n1->rotation[NODE_Z] += 0.5f;
+	if(n1->rotation[NODE_Z]  > 360.0f) {
+		n1->rotation[NODE_Z]  = 0.0f;
 	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	gluLookAt(0.0f,0.0f,10.f,
+	gluLookAt(0.0f,0.0f,75.f,
 		   0.0f,0.0f,0.0f,
 		   0.0f,1.0f,0.0f);
 	/* Render here */
-	dsgGraphUpdateAll(graph);
 	glColor3f(1.0f,1.0f,1.0f); 
 	glPushMatrix();
-	dsgGraphTraverseOrderedNodes(graph,&drawNode,NULL);
+	dsgGraphTraverseNodeVector(graph,&drawNode,NULL);
 	glPopMatrix();
 	glutSwapBuffers();
 	return;
 }
 
 void setupGL(){ 
-	/* GL setup*/
+	/* GL Setup */
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glClearDepth(1.0f);
 	glDepthFunc(GL_LESS);
@@ -195,14 +193,11 @@ void resizeGLScene(int width, int height) {
 }
 
 /* The function called whenever a key is pressed. */
-void keyPressed(unsigned char key, int x, int y) 
-{
+void keyPressed(unsigned char key, int x, int y) {
     /* If escape is pressed, kill everything. */
-    if (key == ESCAPE) 
-    { 
+    if (key == ESCAPE) { 
           /* shut down our window */
           glutDestroyWindow(window); 
-          
           /* exit the program...normal termination. */
           exit(0);                   
         }
@@ -214,11 +209,11 @@ int main(int argc, char** argv) {
 	sleepTime.tv_nsec = 1000000000L/60;
 	glutInit(&argc,argv);
 	/* 
-	   Select type of Display mode:   
-	   Double buffer 
-	   RGBA color
-	   Alpha components supported 
-	   Depth buffered for automatic clipping 
+	*  Select type of Display mode:   
+	*  Double buffer 
+	*  RGBA color
+	*  Alpha components supported 
+	*  Depth buffered for automatic clipping 
 	*/  
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);  
 	glutInitWindowSize(windowWidth,windowHeight);  
@@ -228,8 +223,6 @@ int main(int argc, char** argv) {
 	window = glutCreateWindow("DreamSceneGraph GLTest");  
 	/* Register the function to do all our OpenGL drawing. */
 	glutDisplayFunc(&drawGLScene);  
-	/* Go fullscreen.  This is as soon as possible. */
-	//glutFullScreen();
 	/* Even if there are no events, redraw our gl scene. */
 	glutIdleFunc(&drawGLScene);
 	/* Register the function called when our window is resized. */
