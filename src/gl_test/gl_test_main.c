@@ -22,16 +22,14 @@
 
 float windowWidth  = 1600.0f;
 float windowHeight = 900.0f;
+float nearCull     = 0.1f;
+float farCull      = 1000.0f;
 graph_t* graph;
 int window;
-struct timespec sleepTime;
 node_t *n1, *n2, *n3, *n4, *n5;
 
 float* cubeVertexBuffer(float sz) {
-	int bufferSz = 3* // Dimensions
-		       4* // Vertex per face
-		       6; // Faces
-	fprintf(stdout,"Allocating %d floats for cube VBO\n",bufferSz);
+	int bufferSz = 72;
 	float* buffer = (float*)malloc(sizeof(float)*bufferSz);
 	/* Front face */
 	buffer[0] = -sz; buffer[1]  =  sz; buffer[2]  = sz;
@@ -68,31 +66,30 @@ float* cubeVertexBuffer(float sz) {
 
 graph_t* setupScenegraph() {
 	graph_t* graph = dsgGraphInitWithName("GLTestGraph");
-
 	// Create cube vertex buffer
-	int cubeBuffer = dsgGraphAddVertexBuffer(graph, cubeVertexBuffer(1.5f));
+	int cubeBuffer = dsgGraphAddVertexBuffer(graph, cubeVertexBuffer(0.5f));
 	fprintf(stdout,"Cube buffer allcated to %s's VBO %d\n",graph->name,cubeBuffer);
-
 	// Create Nodes	
 	fprintf(stdout, "Creating Nodes\n");
 	n1 = dsgGraphCreateNodeWithName(graph,"Node1");
 	n1->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n1,0.0f,0.0f,0.0f);
 
 	n2 = dsgGraphCreateNodeWithName(graph,"Node2");
 	n2->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n2,3.0f,2.0f,3.0f);
+	dsgNodeSetTranslation(n2,0.0f,2.0f,0.0f);
 
 	n3 = dsgGraphCreateNodeWithName(graph,"Node3");
 	n3->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n3,2.0f,1.0f,3.0f);
+	dsgNodeSetTranslation(n3,2.0f,2.0f,0.0f);
 
 	n4 = dsgGraphCreateNodeWithName(graph,"Node4");
 	n4->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n4,2.0f,2.0f,1.0f);
+	dsgNodeSetTranslation(n4,2.0f,2.0f,-2.0f);
 
 	n5 = dsgGraphCreateNodeWithName(graph,"Node5");
 	n5->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n5,1.0f,2.0f,3.0f);
+	dsgNodeSetTranslation(n5,2.0f,2.0f,2.0f);
 	
 	// Establish Relationships
 	fprintf(stdout, "Setting Relationships\n");
@@ -124,6 +121,7 @@ void nodeTraverseFunction(node_t* node,void* arg) {
 void drawNode(node_t* node, void* arg) {
 	graph_t* graph = (graph_t*)arg;
 	int vbufIndex = node->vertexBufferIndex;
+	glPushMatrix();
 	dsgGraphTraversePath(graph,node->path,nodeTraverseFunction,NULL);
 
 	glBegin(GL_QUADS);
@@ -136,22 +134,28 @@ void drawNode(node_t* node, void* arg) {
 	}
 	/* Cleanup states */
 	glEnd();
+	glPopMatrix();
 	return; 
 }
 
 void drawGLScene() {
-	nanosleep(&sleepTime,NULL);
-	n1->rotation[NODE_Y] += 0.5f;
+	n1->rotation[NODE_X] += 2.5f;
+	n1->rotation[NODE_Y] += 2.5f;
+
+	if(n1->rotation[NODE_X]  > 360.0f) {
+		n1->rotation[NODE_X]  = 0.0f;
+	}
+
 	if(n1->rotation[NODE_Y]  > 360.0f) {
 		n1->rotation[NODE_Y]  = 0.0f;
 	}
-	n1->rotation[NODE_Z] += 0.5f;
+	/*n1->rotation[NODE_Z] += 0.5f;
 	if(n1->rotation[NODE_Z]  > 360.0f) {
 		n1->rotation[NODE_Z]  = 0.0f;
-	}
+	}*/
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	gluLookAt(0.0f,0.0f,75.f,
+	gluLookAt(0.0f,0.0f,25.f,
 		   0.0f,0.0f,0.0f,
 		   0.0f,1.0f,0.0f);
 	/* Render here */
@@ -172,7 +176,7 @@ void setupGL(){
 	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90, windowWidth/windowHeight,0.1f,1000.0f);
+	gluPerspective(90, windowWidth/windowHeight,nearCull,farCull);
 	glMatrixMode(GL_MODELVIEW);	
 	return;
 }
@@ -205,8 +209,6 @@ void keyPressed(unsigned char key, int x, int y) {
 
 int main(int argc, char** argv) {
 	graph = setupScenegraph();
-	sleepTime.tv_sec = 0L;
-	sleepTime.tv_nsec = 1000000000L/60;
 	glutInit(&argc,argv);
 	/* 
 	*  Select type of Display mode:   
