@@ -34,12 +34,18 @@ TEST_OBJECTS := $(TEST_SOURCES:$(TEST_DIR)/%.c=$(OBJ_DIR)/%.o)
 GL_TEST_SOURCES := $(wildcard $(GL_TEST_DIR)/*.c)
 GL_TEST_OBJECTS := $(GL_TEST_SOURCES:$(GL_TEST_DIR)/%.c=$(OBJ_DIR)/%.o)
 
+HEADERS := $(wildcard $(SRC_DIR)/*.h)
+
+PREFIX=/usr/local
+
 # Commands
-RM    = rm -rf
-MKDIR = mkdir -p
-ECHO  = echo
-CP    = cp
-GDB   = gdb
+RM      = rm -rf
+MKDIR   = mkdir -p
+ECHO    = echo
+CP      = cp
+GDB     = gdb
+SUDO    = sudo
+DOXYGEN = doxygen
 
 all: $(BIN_DIR)/$(TARGET)
 
@@ -60,6 +66,14 @@ gl_test: $(BIN_DIR)/$(GL_TEST_BIN)
 .PHONY: gl_test_gdb
 gl_test_gdb: $(BIN_DIR)/$(GL_TEST_BIN)
 	$(GDB) $(BIN_DIR)/$(GL_TEST_BIN) 
+
+.PHONY: docs
+docs: Doxygen
+	$(DOXYGEN)
+
+Doxygen: 
+	$(DOXYGEN) -g
+	vim Doxygen
 
 # Build Objects ################################################################
 
@@ -95,3 +109,15 @@ $(BIN_DIR)/$(GL_TEST_BIN): $(OBJECTS) $(GL_TEST_OBJECTS)
 clean:
 	$(RM) $(OBJ_DIR)
 	$(RM) $(BIN_DIR)
+
+# Install ######################################################################
+
+install: install_lib
+
+.PHONY: install_lib
+install_lib: $(BIN_DIR)/$(TARGET) $(SRC)/$(HEADERS)
+	$(SUDO) $(CP) $(BIN_DIR)/$(TARGET) $(PREFIX)/lib/$(TARGET)
+
+.PHONY: install_headers
+install_headers: $(SRC)/$(HEADERS) 
+	$(SUDO) $(CP) $(SRC)/$@ $(PREFIX)/include/$@

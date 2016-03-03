@@ -27,5 +27,7 @@ void dsgNodePrint(node_t*, void*);
 void dsgNodeSetParentIndex(int, node_t*);
 void dsgNodeSetTranslation(node_t*, float, float, float);
 void dsgNodeSetRotation(node_t*, float, float, float);
+void dsgNodeSetPolarTranslation(node_t*, node_t*, float, float);
+int dsgNodeHasVertexBuffer(node_t*);
 
 #endif // NODE_H

@@ -26,7 +26,9 @@ float nearCull     = 0.1f;
 float farCull      = 1000.0f;
 graph_t* graph;
 int window;
-node_t *n1, *n2, *n3, *n4, *n5;
+node_t *n0; 
+node_t *n1, *n1_1, *n1_2, *n1_3, *n1_4; 
+node_t *n2, *n2_1, *n2_2, *n2_3, *n2_4;
 
 float* cubeVertexBuffer(float sz) {
 	int bufferSz = 72;
@@ -69,36 +71,71 @@ graph_t* setupScenegraph() {
 	// Create cube vertex buffer
 	int cubeBuffer = dsgGraphAddVertexBuffer(graph, cubeVertexBuffer(0.5f));
 	fprintf(stdout,"Cube buffer allcated to %s's VBO %d\n",graph->name,cubeBuffer);
+
 	// Create Nodes	
 	fprintf(stdout, "Creating Nodes\n");
+	n0 = dsgGraphCreateNodeWithName(graph,"Node0");
+	dsgNodeSetTranslation(n0,0.0f,0.0f,0.0f);
+
+	// Node 1
 	n1 = dsgGraphCreateNodeWithName(graph,"Node1");
 	n1->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n1,0.0f,0.0f,0.0f);
+	dsgNodeSetTranslation(n1,-4.0f,0.0f,0.0f);
 
+	n1_1 = dsgGraphCreateNodeWithName(graph,"Node1_1");
+	n1_1->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n1_1,2.0f,0.0f,0.0f);
+
+	n1_2 = dsgGraphCreateNodeWithName(graph,"Node1_2");
+	n1_2->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n1_2,-2.0f,0.0f,0.0f);
+
+	n1_3 = dsgGraphCreateNodeWithName(graph,"Node1_3");
+	n1_3->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n1_3,0.0f,2.0f,0.0f);
+
+	n1_4 = dsgGraphCreateNodeWithName(graph,"Node1_4");
+	n1_4->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n1_4,0.0f,-2.0f,0.0f);
+
+	// Node 2
 	n2 = dsgGraphCreateNodeWithName(graph,"Node2");
 	n2->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n2,0.0f,2.0f,0.0f);
+	dsgNodeSetTranslation(n2,4.0f,0.0f,0.0f);
 
-	n3 = dsgGraphCreateNodeWithName(graph,"Node3");
-	n3->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n3,2.0f,2.0f,0.0f);
+	n2_1 = dsgGraphCreateNodeWithName(graph,"Node2_1");
+	n2_1->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n2_1,2.0f,0.0f,0.0f);
 
-	n4 = dsgGraphCreateNodeWithName(graph,"Node4");
-	n4->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n4,2.0f,2.0f,-2.0f);
+	n2_2 = dsgGraphCreateNodeWithName(graph,"Node2_2");
+	n2_2->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n2_2,-2.0f,0.0f,0.0f);
 
-	n5 = dsgGraphCreateNodeWithName(graph,"Node5");
-	n5->vertexBufferIndex = cubeBuffer;
-	dsgNodeSetTranslation(n5,2.0f,2.0f,2.0f);
-	
+	n2_3 = dsgGraphCreateNodeWithName(graph,"Node2_3");
+	n2_3->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n2_3,0.0f,2.0f,0.0f);
+
+	n2_4 = dsgGraphCreateNodeWithName(graph,"Node2_4");
+	n2_4->vertexBufferIndex = cubeBuffer;
+	dsgNodeSetTranslation(n2_4,0.0f,-2.0f,0.0f);
+
+
 	// Establish Relationships
 	fprintf(stdout, "Setting Relationships\n");
-	dsgGraphSetRootNode(graph, n1);
-	dsgGraphNodeSetParent(graph,n1,n2);
-	dsgGraphNodeSetParent(graph,n2,n3);
-	dsgGraphNodeSetParent(graph,n3,n4);
-	dsgGraphNodeSetParent(graph,n3,n5);
-	
+	dsgGraphSetRootNode(graph, n0);
+
+	dsgGraphNodeSetParent(graph,n0,n1);
+	dsgGraphNodeSetParent(graph,n1,n1_1);
+	dsgGraphNodeSetParent(graph,n1,n1_2);
+	dsgGraphNodeSetParent(graph,n1,n1_3);
+	dsgGraphNodeSetParent(graph,n1,n1_4);
+
+	dsgGraphNodeSetParent(graph,n0,n2);
+	dsgGraphNodeSetParent(graph,n2,n2_1);
+	dsgGraphNodeSetParent(graph,n2,n2_2);
+	dsgGraphNodeSetParent(graph,n2,n2_3);
+	dsgGraphNodeSetParent(graph,n2,n2_4);
+
 	// Update
 	fprintf(stdout,"Updating Graph\n");
 	dsgGraphUpdatePaths(graph);
@@ -120,42 +157,66 @@ void nodeTraverseFunction(node_t* node,void* arg) {
 
 void drawNode(node_t* node, void* arg) {
 	graph_t* graph = (graph_t*)arg;
-	int vbufIndex = node->vertexBufferIndex;
+	int vbufIndex;
 	glPushMatrix();
 	dsgGraphTraversePath(graph,node->path,nodeTraverseFunction,NULL);
-
-	glBegin(GL_QUADS);
-	/* Send data : 24 vertices */
-	int i;
-	for (i=0; i<72; i+=3) {
-		glVertex3f(graph->vertexBuffers[vbufIndex][i],
-		           graph->vertexBuffers[vbufIndex][i+1],
-		           graph->vertexBuffers[vbufIndex][i+2]);
+	if (dsgNodeHasVertexBuffer(node)) {
+		vbufIndex = node->vertexBufferIndex;
+		glBegin(GL_QUADS);
+		/* Send data : 24 vertices */
+		int i;
+		for (i=0; i<72; i+=3) {
+			glVertex3f(graph->vertexBuffers[vbufIndex][i],
+				   graph->vertexBuffers[vbufIndex][i+1],
+				   graph->vertexBuffers[vbufIndex][i+2]);
+		}
+		/* Cleanup states */
+		glEnd();
 	}
-	/* Cleanup states */
-	glEnd();
 	glPopMatrix();
 	return; 
 }
 
+void rotateNode(node_t* node, int dir) {
+	if (dir > 0) {
+		node->rotation[NODE_X] += 0.5f;
+		node->rotation[NODE_Y] += 1.5f;
+		node->rotation[NODE_Z] += 2.5f;
+	} else  {
+		node->rotation[NODE_X] -= 0.5f;
+		node->rotation[NODE_Y] -= 1.5f;
+		node->rotation[NODE_Z] -= 2.5f;
+	}  
+
+
+	if(node->rotation[NODE_X]  > 360.0f) {
+		node->rotation[NODE_X]  = 0.0f;
+	} else if (node->rotation[NODE_X] < 0) {
+		node->rotation[NODE_X]  = 360.0f;
+	}
+
+	if(node->rotation[NODE_Y]  > 360.0f) {
+		node->rotation[NODE_Y]  = 0.0f;
+	} else if (node->rotation[NODE_Y] < 0) {
+		node->rotation[NODE_Y]  = 360.0f;
+	}
+
+	if(node->rotation[NODE_Z]  > 360.0f) {
+		node->rotation[NODE_Z]  = 0.0f;
+	} else if (node->rotation[NODE_Z] < 0) {
+		node->rotation[NODE_Z]  = 360.0f;
+	}
+
+	return;
+}
+
 void drawGLScene() {
-	n1->rotation[NODE_X] += 2.5f;
-	n1->rotation[NODE_Y] += 2.5f;
+	rotateNode(n1, 1);
+	rotateNode(n2,-1);
 
-	if(n1->rotation[NODE_X]  > 360.0f) {
-		n1->rotation[NODE_X]  = 0.0f;
-	}
-
-	if(n1->rotation[NODE_Y]  > 360.0f) {
-		n1->rotation[NODE_Y]  = 0.0f;
-	}
-	/*n1->rotation[NODE_Z] += 0.5f;
-	if(n1->rotation[NODE_Z]  > 360.0f) {
-		n1->rotation[NODE_Z]  = 0.0f;
-	}*/
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	gluLookAt(0.0f,0.0f,25.f,
+	gluLookAt(0.0f,0.0f,15.f,
 		   0.0f,0.0f,0.0f,
 		   0.0f,1.0f,0.0f);
 	/* Render here */

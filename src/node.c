@@ -11,6 +11,7 @@ void dsgNodeInit(node_t* node, char* name) {
 	node->name = name;
 	node->parentIndex = -1;
 	node->path = NULL;
+	node->vertexBufferIndex = -1;
 	dsgNodeInitTranslationRotation(node);
 }
 void dsgNodeDestroy(node_t* node) {
@@ -64,5 +65,15 @@ void dsgNodeSetRotation(node_t* node, float x, float y, float z) {
 	node->rotation[NODE_X] = x;
 	node->rotation[NODE_Y] = y;
 	node->rotation[NODE_Z] = z;
+	return;
+}
+
+int dsgNodeHasVertexBuffer(node_t* node) {
+	return node->vertexBufferIndex > -1;
+}
+void dsgNodeSetPolarTranslation(node_t* node, node_t* parent,float radius, float theta) {
+	node->rotation[NODE_X] = node->rotation[NODE_X];
+	node->rotation[NODE_Y] = node->rotation[NODE_Y];
+	node->rotation[NODE_Z] = node->rotation[NODE_Z];
 	return;
 }
