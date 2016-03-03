@@ -73,7 +73,7 @@ docs: Doxygen
 
 Doxygen: 
 	$(DOXYGEN) -g
-	vim Doxygen
+	vim Doxyfile
 
 # Build Objects ################################################################
 
