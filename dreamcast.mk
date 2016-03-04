@@ -2,6 +2,5 @@
 # Makefile for Dreamcast Target #
 #################################
 
-include unit/Makefile
-include dream-collision-world/Makefile
-include dream-scene-graph/Makefile
+BUILD_TARGET := dreamcast
+CC           := kos-cc
