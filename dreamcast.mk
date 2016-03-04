@@ -2,5 +2,8 @@
 # Makefile for Dreamcast Target #
 #################################
 
-BUILD_TARGET := dreamcast
-CC           := kos-cc
+TARGET := dreamcast
+CC := kos-cc
+CFLAGS :=
+LD :=
+LDFLAGS :=

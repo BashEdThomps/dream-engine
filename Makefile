@@ -1,42 +1,41 @@
 ################################################################################
+#                                                                              #
+# Makefile                                                                     #
+#                                                                              #
 # Makefile for DreamEngine                                                     #
+#                                                                              #
 ################################################################################
 
-BUILD_BASE          := build
-UNIT_DIR            := unit
-SCENEGRAPH_DIR      := dream-scenegraph
+include def.mk
+
+# Submodules
+UNIT_DIR := unit
+SCENEGRAPH_DIR := dream-scenegraph
 COLLISION_WORLD_DIR := dream-collision-world
+# Select target
 
-# Commands
-RM   := rm -rf
-CP   := cp -rf
-MAKE := make
-
-#include Makefile.psp
-#include Makefile.dreamcast
-include Makefile.linux
-
-BUILD_DIR := $(BUILD_BASE)/$(BUILD_TARGET)
-LIB_DIR   := $(BUILD_DIR)/lib
-
-all: make_unit make_scenegraph make_collision_world
+all: make_build_dirs make_unit make_scenegraph make_collision_world
 
 # Make Rules ##################################################################
 
+.PHONY: make_build_dirs
+make_build_dirs:
+	$(MKDIR) $(LIB_OUT_DIR)
+	$(MKDIR) $(CONF_OUT_DIR)
+	$(MKDIR) $(INC_OUT_DIR)
+	$(MKDIR) $(TEST_OUT_DIR)
+
 .PHONY: make_unit
 make_unit:
-	$(CD) $(UNIT_DIR)
-	$(MAKE)
+	$(MAKE) -C $(UNIT_DIR)
 
 .PHONY: make_scenegraph
 make_scenegraph:
-	$(CD) $(SCENEGRAPH_DIR)
-	$(MAKE)
+	$(MAKE) -C $(SCENEGRAPH_DIR)
 
 .PHONY: make_collision_world
 make_collision_world:
-	$(CD) $(COLLISION_WORLD_DIR)
-	$(MAKE)
+	$(MAKE) -C $(COLLISION_WORLD_DIR)
 
 # Documents ####################################################################
 
@@ -51,15 +50,12 @@ clean_build:
 
 .PHONY: clean_unit
 clean_unit: 
-	$(CD) $(UNIT_DIR)
-	$(MAKE) clean
+	$(MAKE) -C $(UNIT_DIR) clean
 
 .PHONY: clean_dream_collision_world
 clean_dream_collision_world:
-	$(CD) $(COLLISION_WORLD_DIR)
-	$(MAKE) clean
+	$(MAKE) -C $(COLLISION_WORLD_DIR) clean
 
 .PHONY: clean_dream_scenegraph
 clean_dream_scenegraph:
-	$(CD) $(SCENEGRAPH_DIR)
-	$(MAKE) clean
+	$(MAKE) -C $(SCENEGRAPH_DIR) clean

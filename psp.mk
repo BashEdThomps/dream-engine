@@ -1,4 +1,7 @@
 # Makefile for PSP
 
-BUILD_TARGET := psp
-CC           := psp-gcc
+TARGET := psp
+CC := psp-gcc
+CFLAGS :=
+LD := psp-ld
+LDFLAGS :=

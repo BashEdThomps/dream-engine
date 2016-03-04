@@ -6,3 +6,4 @@ bin
 unit/bin
 .ycm*
 Doxyfile.bak
+build
