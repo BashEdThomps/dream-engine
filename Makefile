@@ -6,34 +6,35 @@
 #                                                                              #
 ################################################################################
 
+TARGET := linux
+
 # Submodules
 UNIT := unit
 SCENEGRAPH := dream-scenegraph
 COLLISION_WORLD := dream-collision-world
 
-all: setup make_build_dirs make_unit make_scenegraph make_collision_world
+# Commands
+RM      := rm -rf
+CP      := cp -rf
+MAKE    := make
+MKDIR   := mkdir -p
 
-# Setup Make ###################################################################
+ALL   := all
+BUILD := build
+LIB   := lib
+INC   := include
+TEST  := test
+CONF  := conf
+DOCS  := docs
 
-.PHONY: setup
-setup:
-# Directories
-ifeq '$(TARGET)' 'linux'
-include linux.mk
-endif
-ifeq '$(TARGET)' 'psp'
-include psp.mk
-endif
-ifeq '$(TARGET)' 'dreamcast'
-include dreamcast.mk
-endif
-include def.mk
-$(info Executing Makefile for DreamEngine with target: $(TARGET))
-$(info CC: $(CC))
-$(info CFLAGS: $(CFLAS))
-$(info LD: $(LD))
-$(info LFLAGS: $(LFLAGS))
+BUILD_OUT_DIR := $(BUILD)/$(TARGET)
+LIB_OUT_DIR := $(BUILD_OUT_DIR)/$(LIB)
+INC_OUT_DIR := $(BUILD_OUT_DIR)/$(INC)
+TEST_OUT_DIR := $(BUILD_OUT_DIR)/$(TEST)
+CONF_OUT_DIR := $(BUILD_OUT_DIR)/$(CONF)
+DOCS_OUT_DIR := $(BUILD_OUT_DIR)/$(DOCS)
 
+all: make_build_dirs make_unit make_scenegraph make_collision_world
 
 # Make Rules ##################################################################
 
@@ -46,22 +47,24 @@ make_build_dirs:
 
 .PHONY: make_unit
 make_unit:
-	$(MAKE) -C $(UNIT)
+	$(MAKE) -C $(UNIT) $(ALL) $(TEST)
 
 .PHONY: make_scenegraph
 make_scenegraph:
-	$(MAKE) -C $(SCENEGRAPH)
+	$(MAKE) -C $(SCENEGRAPH) $(ALL) $(TEST)
 
 .PHONY: make_collision_world
 make_collision_world:
-	$(MAKE) -C $(COLLISION_WORLD)
+	$(MAKE) -C $(COLLISION_WORLD) $(ALL) $(TEST)
 
 # Documents ####################################################################
 
+.PHONY: docs
+docs: docs_unit docs_dream_collision_world docs_dream_scenegraph
 
 # Clean ########################################################################
 
-clean: setup clean_build clean_unit clean_dream_collision_world clean_dream_scenegraph
+clean: clean_build clean_unit clean_dream_collision_world clean_dream_scenegraph
 
 .PHONY: clean_build
 clean_build:

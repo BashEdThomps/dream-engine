@@ -4,7 +4,7 @@
   Author: Ash Thompson
   Email: ashthompson06@gmail.com
 */
-#include "../src/unit.h"
+#include "../unit.h"
 
 int main() {
     unitModuleHeading("Something");
