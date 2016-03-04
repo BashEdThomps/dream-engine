@@ -3,7 +3,9 @@
 #################################
 
 TARGET := dreamcast
+
 CC := kos-cc
 CFLAGS :=
-LD :=
+
+LD := kos-ld
 LDFLAGS :=
