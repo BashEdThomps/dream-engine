@@ -1,5 +1,11 @@
 # DreamEngine
 
+## What
+
+## Why
+
+## How 
+
 * How to Build
 ```
 	# Select a <target> platform 'linux' or 'psp' or 'dreamcast'
@@ -10,4 +16,4 @@
 	$ make
 ```
 
-This will produce a build iniside of build/<targt>
+This will produce a build iniside of build/target
