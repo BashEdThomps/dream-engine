@@ -16,7 +16,7 @@ void unitModuleHeading(char* name) {
 
 void unitTestHeading(char* name) {
 	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
-	snprintf(buf,BUFFER_SZ," ** Testing: %s **",name);
+	snprintf(buf,BUFFER_SZ,"** Testing: %s **",name);
 	char* formatted = unitBold(buf);
 	fprintf(stdout,"%s\n",formatted);
 	free(buf);
@@ -46,17 +46,17 @@ void unitTestFooter(char* name) {
 
 char* unitGreen(char* src) {
     char* dest = NULL;
-    size_t dest_size = (strlen(UNIT_GREEN)+strlen(src)+strlen(UNIT_NORMAL)+1) * sizeof(char);
+    size_t dest_size = (strlen(UNIT_BOLD)+strlen(UNIT_GREEN)+strlen(src)+strlen(UNIT_NORMAL)+1) * sizeof(char);
     dest = (char*) malloc(dest_size);
-    snprintf(dest,dest_size,"%s%s%s",UNIT_GREEN,src,UNIT_NORMAL);
+    snprintf(dest,dest_size,"%s%s%s%s",UNIT_BOLD,UNIT_GREEN,src,UNIT_NORMAL);
     return dest;
 }
 
 char* unitRed(char* src) {
     char* dest = NULL;
-    size_t dest_size = (strlen(UNIT_RED)+strlen(src)+strlen(UNIT_NORMAL)+1) * sizeof(char);
+    size_t dest_size = (strlen(UNIT_BOLD)+strlen(UNIT_RED)+strlen(src)+strlen(UNIT_NORMAL)+1) * sizeof(char);
     dest = (char*) malloc(dest_size);
-    snprintf(dest,dest_size,"%s%s%s",UNIT_RED,src,UNIT_NORMAL);
+    snprintf(dest,dest_size,"%s%s%s%s",UNIT_BOLD,UNIT_RED,src,UNIT_NORMAL);
     return dest;
 }
 
