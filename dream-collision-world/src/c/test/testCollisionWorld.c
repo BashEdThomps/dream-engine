@@ -1,6 +1,9 @@
 #include <unit.h>
 
 #include "../../cpp/CWrapper/dcwCollisionWorld.h"
+#include "../../cpp/CWrapper/dcwBoxShape.h"
+#include "../../cpp/CWrapper/dcwVector3.h"
+
 #include "testCollisionWorld.h"
 
 void testCollisionWorld(void) {
@@ -16,13 +19,18 @@ void testCollisionWorld(void) {
 
 void testCollisionWorldCreateWorld(void) {
 	unitPrintComment("Testing Create Collision World");
-	dcwCollisionWorld_t* collisionWorld;
+	dcwCollisionWorld* collisionWorld;
 	collisionWorld = dcwCollisionWorldCreate();
 	unitAssertNotNull("Checking collision world is not NULL", collisionWorld);
 	return;
 }
+
 void testColWorldAddObject(void) {
-	unitAssertFail("Add Object");
+	dcwCollisionWorld*  world = dcwCollisionWorldCreate();
+	dcwVector3*         boxSize = dcwVector3Create(2.0f,2.0f,2.0f);
+	dcwBoxShape*        boxShape = dcwBoxShapeCreate(boxShape);
+	dcwCollisionObject* object = dcwCollisionObjectCreate();
+	unitAssertNotZero("Add obbject to Collision",0);
 	return;
 }
 

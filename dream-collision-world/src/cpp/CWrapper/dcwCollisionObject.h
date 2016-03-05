@@ -1,14 +1,17 @@
 #ifndef DCWCOLLISIONOBJECT_H
 #define DCWCOLLISIONOBJECT_H
 
+#include "dcwBoxShape.h"
+
 struct dcwCollisionObject;
 typedef struct dcwCollisionObject dcwCollisionObject;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-	dcwCollisionObject* dcwCollisionObjectCreate  ();
-	void                dcwCollisionObjectDestroy (dcwCollisionObject*);
+	dcwCollisionObject* dcwCollisionObjectCreate              ();
+	dcwCollisionObject* dcwCollisionObjectCreateWithBoxShape  (dcwBoxShape*);
+	void                dcwCollisionObjectDestroy             (dcwCollisionObject*);
 
 #ifdef __cplusplus
 }

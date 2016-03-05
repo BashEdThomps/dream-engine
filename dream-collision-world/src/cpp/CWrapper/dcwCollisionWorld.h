@@ -21,7 +21,6 @@ extern "C" {
 	void               dcwCollisionWorldDestroy (dcwCollisionWorld*);
 	void               dcwAddCollisionObject    (dcwCollisionWorld*, dcwCollisionObject*);
 	void               dcwRemoveCollisionObject (dcwCollisionWorld*, dcwCollisionObject*);
-	void               dcwSetGravity            (dcwCollisionWorld*, dcwVector3*);
 
 #ifdef __cplusplus
 }

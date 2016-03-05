@@ -4,9 +4,12 @@
 extern "C" {
 #endif
 	dcwCollisionObject* dcwCollisionObjectCreate  () {
-		return NULL;
+		return 0;
 	}
 
+	dcwCollisionObject* dcwCollisionObjectCreateWithBoxShape  (dcwBoxShape* box) {
+		return 0;
+	}
 	void dcwCollisionObjectDestroy (dcwCollisionObject* obj) {
 
 		return;

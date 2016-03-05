@@ -29,11 +29,12 @@ extern "C" {
 	}
 
 	void dcwCollisionWorldDestroy(dcwCollisionWorld *v) {
+		// TODO Extract and delete the constructed variables in create
 		delete reinterpret_cast <btCollisionWorld*> (v);
 		return;
 	}
 
-	void dcwAddColisionObject(
+	void dcwAddCollisionObject(
 			dcwCollisionWorld* world, 
 			dcwCollisionObject* collisionObject) {
 		btCollisionWorld*  btColWorld = reinterpret_cast <btCollisionWorld*>(world);
@@ -41,20 +42,11 @@ extern "C" {
 		return;
 	}
 
- 	void dcwAddColisionObject(
+ 	void dcwRemoveCollisionObject(
 			dcwCollisionWorld* world, 
 			dcwCollisionObject* collisionObject) {
 		btCollisionWorld*  btColWorld = reinterpret_cast <btCollisionWorld*>(world);
 		btCollisionObject* btColObj   = reinterpret_cast <btCollisionObject*>(collisionObject);
-		return;
-	}
-
-	void dcwSetGravity(
-			dcwCollisionWorld* world, 
-			dcwVector3* gravity) {
-		btCollisionWorld* btColWorld = reinterpret_cast <btCollisionWorld*>(world);
-		btVector3*        btGrav     = reinterpret_cast <btVector3*>(gravity);
-		btColWorld->setGravity(btGrav);
 		return;
 	}
 
