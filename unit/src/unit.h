@@ -13,6 +13,7 @@
 
 #define UNIT_PASS "PASS"
 #define UNIT_FAIL "FAIL"
+#define BUFFER_SZ 256
 
 /*
  * Assertions
@@ -44,4 +45,5 @@ void unitTestFooter(char*);
 void unitPrintComment(char*);
 char* unitGreen(char*);
 char* unitRed(char*);
+char* unitBold(char*);
 #endif // UNIT_H_

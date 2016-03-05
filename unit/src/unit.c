@@ -1,22 +1,47 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include "unit.h"
 
 void unitModuleHeading(char* name) {
-    fprintf(stdout,"---> Start Testing Module: %s <---\n",name);
+	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
+	snprintf(buf,BUFFER_SZ,"---> Start Testing Module: %s <---",name);
+	char* formatted = unitBold(buf);
+	fprintf(stdout,"%s\n",formatted);
+	free(buf);
+	free(formatted);
+	return;
 }
 
 void unitTestHeading(char* name) {
-    fprintf(stdout,"** Testing: %s **\n",name);
+	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
+	snprintf(buf,BUFFER_SZ," ** Testing: %s **",name);
+	char* formatted = unitBold(buf);
+	fprintf(stdout,"%s\n",formatted);
+	free(buf);
+	free(formatted);
+	return;
 }
 
 void unitModuleFooter(char* name) {
-    fprintf(stdout,"---> Finished Testing Module: %s <---\n",name);
+	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
+	snprintf(buf,BUFFER_SZ,"--> Finished Testing Module: %s <--",name);
+	char* formatted = unitBold(buf);
+	fprintf(stdout,"%s\n",formatted);
+	free(buf);
+	free(formatted);
+	return;
 }
 
 void unitTestFooter(char* name) {
-    fprintf(stdout,"** Finished Testing: %s **\n",name);
+	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
+	snprintf(buf,BUFFER_SZ,"** Finished Testing: %s **",name);
+	char* formatted = unitBold(buf);
+	fprintf(stdout,"%s\n",formatted);
+	free(buf);
+	free(formatted);
+	return;
 }
 
 char* unitGreen(char* src) {

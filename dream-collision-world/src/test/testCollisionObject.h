@@ -1,4 +1,8 @@
-#ifndef TEST_COLLISION_WORLD_H
-#define TEST_COLLISION_WORLD_H
+#ifndef TEST_COLLISION_OBJECT_H
+#define TEST_COLLISION_OBJECT_H
 
-#endif // TEST_COLLISION_WORLD_H
+void testCollisionObject(void);
+void testCollisionObjectCanHoldName(void);
+void testCollisionObjectHasWorldReference(void);
+
+#endif // TEST_COLLISION_OBJECT_H

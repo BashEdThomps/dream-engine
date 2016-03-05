@@ -1,7 +1,12 @@
-#ifndef TEST_COLLISION_OBJECT_H
-#define TEST_COLLISION_OBJECT_H
+#ifndef TEST_COLLISION_WORLD_H
+#define TEST_COLLISION_WORLD_H
 
-void testCollisionObjectCanHoldName(void);
-void testCollisionObjectHasWorldReference(void);
+void testCollisionWorld(void);
+// Manage Objects
+void testColWorldAddObject(void);
+void testColWorldGetNextAvailableObjectInde(void);
+void testColWorldRemoveObject(void); 
+// Udate World
+void testColWorldUpdate(void);
 
-#endif // TEST_COLLISION_OBJECT_H
+#endif // TEST_COLLISION_WORLD_H
