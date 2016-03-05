@@ -1,6 +1,6 @@
 #include <unit.h>
 
-#include "../../cpp/CWrapper/dsgCollisionWorld.h"
+#include "../../cpp/CWrapper/dcwCollisionWorld.h"
 #include "testCollisionWorld.h"
 
 void testCollisionWorld(void) {
@@ -16,8 +16,8 @@ void testCollisionWorld(void) {
 
 void testCollisionWorldCreateWorld(void) {
 	unitPrintComment("Testing Create Collision World");
-	dsgCollisionWorld_t* collisionWorld;
-	collisionWorld = dsgCollisionWorldCreate();
+	dcwCollisionWorld_t* collisionWorld;
+	collisionWorld = dcwCollisionWorldCreate();
 	unitAssertNotNull("Checking collision world is not NULL", collisionWorld);
 	return;
 }
