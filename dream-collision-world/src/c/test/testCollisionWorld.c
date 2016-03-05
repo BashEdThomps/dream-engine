@@ -1,8 +1,11 @@
 #include <unit.h>
+
+#include "../../cpp/CWrapper/dsgCollisionWorld.h"
 #include "testCollisionWorld.h"
 
 void testCollisionWorld(void) {
 	unitTestHeading("Tsting CollisionWord");
+	testCollisionWorldCreateWorld();
 	testColWorldAddObject();
 	testColWorldGetNextAvailableObjectInde();
 	testColWorldRemoveObject();
@@ -11,6 +14,13 @@ void testCollisionWorld(void) {
 	return;
 }
 
+void testCollisionWorldCreateWorld(void) {
+	unitPrintComment("Testing Create Collision World");
+	dsgCollisionWorld_t* collisionWorld;
+	collisionWorld = dsgCollisionWorldCreate();
+	unitAssertNotNull("Checking collision world is not NULL", collisionWorld);
+	return;
+}
 void testColWorldAddObject(void) {
 	unitAssertFail("Add Object");
 	return;
@@ -30,5 +40,3 @@ void testColWorldUpdate(void) {
 	unitAssertFail("Update World");
 	return;
 }
-
-
