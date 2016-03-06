@@ -11,11 +11,11 @@
 #include <stdlib.h>
 #include <time.h>
 // GL & GLU
-#include <GL/glut.h>    // Header File For The GLUT Library 
+#include <GL/glut.h>    // Header File For The GLUT Library
 #include <GL/gl.h>	// Header File For The OpenGL32 Library
 #include <GL/glu.h>	// Header File For The GLu32 Library
 // Project
-#include "../graph.h"
+#include "../dsgScenegraph.h"
 
 /* ASCII code for the escape key. */
 #define ESCAPE 27
@@ -26,8 +26,8 @@ float nearCull     = 0.1f;
 float farCull      = 1000.0f;
 dsgScenegraph* graph;
 int window;
-dsgNode *n0; 
-dsgNode *n1, *n1_1, *n1_2, *n1_3, *n1_4; 
+dsgNode *n0;
+dsgNode *n1, *n1_1, *n1_2, *n1_3, *n1_4;
 dsgNode *n2, *n2_1, *n2_2, *n2_3, *n2_4;
 
 float* cubeVertexBuffer(float sz) {
@@ -72,7 +72,10 @@ dsgScenegraph* setupScenegraph() {
 	int cubeBuffer = dsgScenegraphAddVertexBuffer(graph, cubeVertexBuffer(0.5f));
 	fprintf(stdout,"Cube buffer allcated to %s's VBO %d\n",graph->name,cubeBuffer);
 
-	// Create Nodes	
+	// Set Camera Position
+	dsgCameraSetTranslation(graph->camera,0.0f,0.0f,15.0f);
+
+	// Create Nodes
 	fprintf(stdout, "Creating Nodes\n");
 	n0 = dsgScenegraphCreateNodeWithName(graph,"Node0");
 	dsgNodeSetTranslation(n0,0.0f,0.0f,0.0f);
@@ -145,8 +148,8 @@ dsgScenegraph* setupScenegraph() {
 }
 
 void nodeTraverseFunction(dsgNode* node,void* arg) {
-	glTranslatef(node->translation[NODE_X], 
-		     node->translation[NODE_Y], 
+	glTranslatef(node->translation[NODE_X],
+		     node->translation[NODE_Y],
 		     node->translation[NODE_Z]);
 
 	glRotatef(node->rotation[NODE_X],1.0f,0.0f,0.0f);
@@ -174,7 +177,7 @@ void drawNode(dsgNode* node, void* arg) {
 		glEnd();
 	}
 	glPopMatrix();
-	return; 
+	return;
 }
 
 void rotateNode(dsgNode* node, int dir) {
@@ -186,7 +189,7 @@ void rotateNode(dsgNode* node, int dir) {
 		node->rotation[NODE_X] -= 0.5f;
 		node->rotation[NODE_Y] -= 1.5f;
 		node->rotation[NODE_Z] -= 2.5f;
-	}  
+	}
 
 
 	if(node->rotation[NODE_X]  > 360.0f) {
@@ -216,11 +219,24 @@ void drawGLScene() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
+	/*
 	gluLookAt(0.0f,0.0f,15.f,
 		   0.0f,0.0f,0.0f,
 		   0.0f,1.0f,0.0f);
+	*/
+	gluLookAt(
+		 graph->camera->translation[DSG_CAM_X],
+		 graph->camera->translation[DSG_CAM_Y],
+		 graph->camera->translation[DSG_CAM_Z],
+		 graph->camera->lookAt[DSG_CAM_X],
+		 graph->camera->lookAt[DSG_CAM_Y],
+		 graph->camera->lookAt[DSG_CAM_Z],
+		 graph->camera->up[DSG_CAM_X],
+		 graph->camera->up[DSG_CAM_Y],
+		 graph->camera->up[DSG_CAM_Z]
+	 );
 	/* Render here */
-	glColor3f(1.0f,1.0f,1.0f); 
+	glColor3f(1.0f,1.0f,1.0f);
 	glPushMatrix();
 	dsgScenegraphTraverseNodeVector(graph,&drawNode,NULL);
 	glPopMatrix();
@@ -228,21 +244,21 @@ void drawGLScene() {
 	return;
 }
 
-void setupGL(){ 
+void setupGL(){
 	/* GL Setup */
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glClearDepth(1.0f);
 	glDepthFunc(GL_LESS);
-	glEnable(GL_DEPTH_TEST); 
+	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(90, windowWidth/windowHeight,nearCull,farCull);
-	glMatrixMode(GL_MODELVIEW);	
+	glMatrixMode(GL_MODELVIEW);
 	return;
 }
 
-void resizeGLScene(int width, int height) { 
+void resizeGLScene(int width, int height) {
 	// Prevent A Divide By Zero If The Window Is Too Small
 	if (height == 0){
 		height = 1;
@@ -260,32 +276,32 @@ void resizeGLScene(int width, int height) {
 /* The function called whenever a key is pressed. */
 void keyPressed(unsigned char key, int x, int y) {
     /* If escape is pressed, kill everything. */
-    if (key == ESCAPE) { 
+    if (key == ESCAPE) {
           /* shut down our window */
-          glutDestroyWindow(window); 
+          glutDestroyWindow(window);
           /* exit the program...normal termination. */
-          exit(0);                   
+          exit(0);
         }
 }
 
 int main(int argc, char** argv) {
 	graph = setupScenegraph();
 	glutInit(&argc,argv);
-	/* 
-	*  Select type of Display mode:   
-	*  Double buffer 
+	/*
+	*  Select type of Display mode:
+	*  Double buffer
 	*  RGBA color
-	*  Alpha components supported 
-	*  Depth buffered for automatic clipping 
-	*/  
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);  
-	glutInitWindowSize(windowWidth,windowHeight);  
+	*  Alpha components supported
+	*  Depth buffered for automatic clipping
+	*/
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
+	glutInitWindowSize(windowWidth,windowHeight);
 	/* The window starts at the upper left corner of the screen */
-	glutInitWindowPosition(0, 0);  
-	/* Open a window */  
-	window = glutCreateWindow("DreamSceneGraph GLTest");  
+	glutInitWindowPosition(0, 0);
+	/* Open a window */
+	window = glutCreateWindow("DreamSceneGraph GLTest");
 	/* Register the function to do all our OpenGL drawing. */
-	glutDisplayFunc(&drawGLScene);  
+	glutDisplayFunc(&drawGLScene);
 	/* Even if there are no events, redraw our gl scene. */
 	glutIdleFunc(&drawGLScene);
 	/* Register the function called when our window is resized. */
@@ -294,7 +310,7 @@ int main(int argc, char** argv) {
 	glutKeyboardFunc(&keyPressed);
 	/* Setup Scene */
 	setupGL();
-	/* Start Event Processing Engine */  
-	glutMainLoop();  
+	/* Start Event Processing Engine */
+	glutMainLoop();
 	return 0;
 }

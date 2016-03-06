@@ -10,7 +10,7 @@ dsgCamera* dsgCameraInit(){
 
     retval->up = (float*)malloc(sizeof(float)*DSG_CAM_UP_SZ);
     retval->up[0] = 0.0f;
-    retval->up[1] = 0.0f;
+    retval->up[1] = 1.0f;
     retval->up[2] = 0.0f;
 
     retval->translation = (float*)malloc(sizeof(float)*DSG_CAM_TRANSLATION_SZ);
@@ -19,4 +19,41 @@ dsgCamera* dsgCameraInit(){
     retval->translation[2] = 0.0f;
 
     return retval;
+}
+
+void dsgCameraDestroy(dsgCamera* camera) {
+    free(camera->lookAt);
+    camera->lookAt = NULL;
+
+    free(camera->up);
+    camera->up = NULL;
+
+    free(camera->translation);
+    camera->translation = NULL;
+}
+void dsgCameraSetLookAt(dsgCamera* camera, float x, float y, float z) {
+    if (camera == NULL || camera->lookAt == NULL) {
+        return;
+    }
+    camera->lookAt[DSG_CAM_X] = x;
+    camera->lookAt[DSG_CAM_Y] = y;
+    camera->lookAt[DSG_CAM_Z] = z;
+}
+
+void dsgCameraSetTranslation(dsgCamera* camera, float x, float y, float z) {
+    if (camera == NULL || camera->translation == NULL) {
+        return;
+    }
+    camera->translation[DSG_CAM_X] = x;
+    camera->translation[DSG_CAM_Y] = y;
+    camera->translation[DSG_CAM_Z] = z;
+}
+
+void dsgCameraSetUp(dsgCamera* camera, float x, float y, float z) {
+    if (camera == NULL || camera->up == NULL) {
+        return;
+    }
+    camera->up[DSG_CAM_X] = x;
+    camera->up[DSG_CAM_Y] = y;
+    camera->up[DSG_CAM_Z] = z;
 }

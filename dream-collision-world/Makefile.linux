@@ -98,20 +98,20 @@ Doxyfile:
 # Build Objects ################################################################
 
 $(OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/%.c
-	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
-	@$(CC) $(CFLAGS) -c $< -g -o $@
+	$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
+	$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(CPP_OBJECTS): $(CPP_OBJ)/%.o : $(CPP_SRC)/%.cpp
-	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
-	@$(CPP) $(CPPFLAGS) -c $< -g -o $@
+	$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
+	$(CPP) $(CPPFLAGS) -c $< -g -o $@
 
 $(TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(TEST)/%.c
-	@$(MKDIR) $(C_OBJ)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(MKDIR) $(C_OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(GL_TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(GL_TEST)/%.c
-	@$(MKDIR) $(C_OBJ)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(MKDIR) $(C_OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build Binaries ###############################################################
 
