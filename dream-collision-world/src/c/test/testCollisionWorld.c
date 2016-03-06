@@ -35,6 +35,8 @@ void testColWorldAddObject(void) {
 	dcwVector3*         boxSize = dcwVector3Create(eX,eY,eZ);
 	dcwBoxShape*        boxShape = dcwBoxShapeCreate(boxSize);
 	dcwCollisionObject* object = dcwCollisionObjectCreate();
+	dcwCollisionObjectSetCollisionBoxShape(object, boxShape);
+
 	unitAssertNotZero("Add obbject to Collision",0);
 	return;
 }

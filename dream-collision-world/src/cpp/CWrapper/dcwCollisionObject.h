@@ -9,10 +9,9 @@ typedef struct dcwCollisionObject dcwCollisionObject;
 #ifdef __cplusplus
 extern "C" {
 #endif
-	dcwCollisionObject* dcwCollisionObjectCreate              ();
-	dcwCollisionObject* dcwCollisionObjectCreateWithBoxShape  (dcwBoxShape*);
-	void                dcwCollisionObjectDestroy             (dcwCollisionObject*);
-
+	dcwCollisionObject* dcwCollisionObjectCreate                 ();
+	void                dcwCollisionObjectDestroy                (dcwCollisionObject*);
+	void                dcwCollisionObjectSetCollisionBoxShape   (dcwCollisionObject*, dcwBoxShape*);
 #ifdef __cplusplus
 }
 #endif
