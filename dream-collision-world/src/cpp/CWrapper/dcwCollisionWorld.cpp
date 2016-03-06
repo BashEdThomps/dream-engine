@@ -12,8 +12,8 @@
 extern "C" {
 #endif
 	dcwCollisionWorld* dcwCollisionWorldCreate() {
-		const btVector3 aabbMin(-100,-100,-100);
-		const btVector3 aabbMax(-100,-100,-100);
+		 btVector3 aabbMin(-100,-100,-100);
+		 btVector3 aabbMax(-100,-100,-100);
 
 		btBroadphaseInterface*    broadphasePairCache    = new btAxisSweep3(aabbMin,aabbMax);
 		btCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -29,7 +29,7 @@ extern "C" {
 	}
 
 	void dcwCollisionWorldDestroy(dcwCollisionWorld *v) {
-		// TODO Extract and delete the constructed variables in create
+		// TODO Extract and delete the ructed variables in create
 		delete reinterpret_cast <btCollisionWorld*> (v);
 		return;
 	}

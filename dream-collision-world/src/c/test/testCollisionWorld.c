@@ -27,8 +27,13 @@ void testCollisionWorldCreateWorld(void) {
 
 void testColWorldAddObject(void) {
 	dcwCollisionWorld*  world = dcwCollisionWorldCreate();
-	dcwVector3*         boxSize = dcwVector3Create(2.0f,2.0f,2.0f);
-	dcwBoxShape*        boxShape = dcwBoxShapeCreate(boxShape);
+
+	 dcwScalar* eX = dcwScalarCreate(1.0f);
+	 dcwScalar* eY = dcwScalarCreate(2.0f);
+	 dcwScalar* eZ = dcwScalarCreate(4.0f);
+
+	dcwVector3*         boxSize = dcwVector3Create(eX,eY,eZ);
+	dcwBoxShape*        boxShape = dcwBoxShapeCreate(boxSize);
 	dcwCollisionObject* object = dcwCollisionObjectCreate();
 	unitAssertNotZero("Add obbject to Collision",0);
 	return;

@@ -1,7 +1,7 @@
 #ifndef TEST_COLLISION_WORLD_H
 #define TEST_COLLISION_WORLD_H
 
-// Test Construction of C Object
+// Test ruction of C Object
 void testCollisionWorld(void);
 
 // Manage Objects
