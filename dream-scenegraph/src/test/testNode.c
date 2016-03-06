@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "test_node.h"
-#include "../node.h"
+#include "testNode.h"
+#include "../dsgNode.h"
 
 void testNode() {
 	unitTestHeading("Node");
 
-	node_t* root = (node_t*)malloc(sizeof(*root));
-	node_t* child1 = (node_t*)malloc(sizeof(*child1));
-	node_t* child2 = (node_t*)malloc(sizeof(*child2));
-	node_t* child1_1 = (node_t*)malloc(sizeof(*child1_1));
-	node_t* child1_1_1 = (node_t*)malloc(sizeof(*child1_1_1));
+	dsgNode* root = (dsgNode*)malloc(sizeof(*root));
+	dsgNode* child1 = (dsgNode*)malloc(sizeof(*child1));
+	dsgNode* child2 = (dsgNode*)malloc(sizeof(*child2));
+	dsgNode* child1_1 = (dsgNode*)malloc(sizeof(*child1_1));
+	dsgNode* child1_1_1 = (dsgNode*)malloc(sizeof(*child1_1_1));
 
 	dsgNodeInit(root,"Root");
 	unitAssertZero("Root node name is Root",strcmp(root->name,"Root"));

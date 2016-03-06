@@ -60,25 +60,25 @@ all: $(LIB_OUT_DIR)/$(OUTPUT)
 
 .PHONY: test
 test: $(TEST_OUT_DIR)/$(TEST_BIN)
-	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(TEST_BIN) 
+	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(TEST_BIN)
 
 .PHONY: gdb_test
 gdb_test: $(TEST_OUT_DIR)/$(TEST_BIN)
-	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(GDB) $(TEST_OUT_DIR)/$(TEST_BIN) 
+	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(GDB) $(TEST_OUT_DIR)/$(TEST_BIN)
 
 .PHONY: gl_test
 gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
-	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(GL_TEST_BIN) 
+	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 
 .PHONY: gl_test_gdb
 gl_test_gdb: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
-	LD_LIBRARY_PATH=../$(LIB_OUT_DIR) $(GDB) $(BIN)/$(GL_TEST_BIN) 
+	LD_LIBRARY_PATH=../$(LIB_OUT_DIR) $(GDB) $(BIN)/$(GL_TEST_BIN)
 
 .PHONY: $(DOCS)
 $(DOCS): Doxyfile
 	$(DOXYGEN)
 
-Doxyfile: 
+Doxyfile:
 	$(DOXYGEN) -g
 	$(VIM) Doxyfile
 	$(RM) Doxyfile.bak
@@ -86,16 +86,16 @@ Doxyfile:
 # Build Objects ################################################################
 
 $(OBJECTS): $(OBJ)/%.o : $(SRC)/%.c
-	$(MKDIR) $(OBJ) 
-	$(CC) $(CFLAGS) -c $< -g -o $@
+	@$(MKDIR) $(OBJ)
+	@$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(TEST)/%.c
-	$(MKDIR) $(OBJ) 
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(MKDIR) $(OBJ)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(GL_TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(GL_TEST)/%.c
-	$(MKDIR) $(OBJ) 
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(MKDIR) $(OBJ)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Build Binaries ###############################################################
 
@@ -108,9 +108,9 @@ $(TEST_OUT_DIR)/$(TEST_BIN): $(OBJECTS) $(TEST_OBJECTS)
 $(TEST_OUT_DIR)/$(GL_TEST_BIN): $(OBJECTS) $(GL_TEST_OBJECTS)
 	$(CC) $(OBJECTS) $(GL_TEST_OBJECTS) $(LDFLAGS) $(GL_TEST_LDFLAGS) -o $@
 
-# Clean ######################################################################## 
+# Clean ########################################################################
 
 .PHONY: clean
 clean:
-	$(RM) $(DOCS) 
+	$(RM) $(DOCS)
 	$(RM) $(OBJ)

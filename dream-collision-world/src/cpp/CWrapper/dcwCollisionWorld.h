@@ -20,7 +20,7 @@ extern "C" {
 	dcwCollisionWorld* dcwCollisionWorldCreate                 ();
 	void               dcwCollisionWorldDestroy                (dcwCollisionWorld*);
 	void               dcwCollisionWorldAddCollisionObject     (dcwCollisionWorld*, dcwCollisionObject*);
-	void               dcwCollisioinWorldRemoveCollisionObject (dcwCollisionWorld*, dcwCollisionObject*);
+	void               dcwCollisionWorldRemoveCollisionObject  (dcwCollisionWorld*, dcwCollisionObject*);
 	int                dcwCollisionWorldGetNumCollisionObjects (dcwCollisionWorld*);
 
 #ifdef __cplusplus

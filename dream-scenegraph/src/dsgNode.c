@@ -5,22 +5,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "node.h"
+#include "dsgNode.h"
 
-void dsgNodeInit(node_t* node, char* name) {
+void dsgNodeInit(dsgNode* node, char* name) {
 	node->name = name;
 	node->parentIndex = -1;
 	node->path = NULL;
 	node->vertexBufferIndex = -1;
 	dsgNodeInitTranslationRotation(node);
 }
-void dsgNodeDestroy(node_t* node) {
+void dsgNodeDestroy(dsgNode* node) {
 	if (node->name != NULL)        free(node->name);
 	if (node->path != NULL)        free(node->path);
 	if (node->translation != NULL) free(node->translation);
 	if (node->rotation != NULL)    free(node->rotation);
 }
-void dsgNodeInitTranslationRotation(node_t* node) {
+void dsgNodeInitTranslationRotation(dsgNode* node) {
 	node->translation = (float*)malloc(sizeof(float)*3);
 	node->rotation = (float*)malloc(sizeof(float)*3);
 
@@ -34,44 +34,44 @@ void dsgNodeInitTranslationRotation(node_t* node) {
 	return;
 }
 
-int dsgNodeHasValidPath(node_t* node) {
+int dsgNodeHasValidPath(dsgNode* node) {
 	if (node == NULL) return 0;
 	return node->path != NULL;
 }
 
-int dsgNodeHasValidName(node_t* node) {
+int dsgNodeHasValidName(dsgNode* node) {
 	if (node == NULL) return 0;
 	return node->name != NULL;
 }
 
-void dsgNodePrint(node_t* node, void* arg) {
+void dsgNodePrint(dsgNode* node, void* arg) {
 	fprintf(stdout,"%s\n", node->path);
 	return;
 }
 
-void dsgNodeSetParentIndex(int parent, node_t* node) {
+void dsgNodeSetParentIndex(int parent, dsgNode* node) {
 	node->parentIndex = parent;
 	return;
 }
 
-void dsgNodeSetTranslation(node_t* node, float x, float y, float z) {
+void dsgNodeSetTranslation(dsgNode* node, float x, float y, float z) {
 	node->translation[NODE_X] = x;
 	node->translation[NODE_Y] = y;
 	node->translation[NODE_Z] = z;
 	return;
 }
 
-void dsgNodeSetRotation(node_t* node, float x, float y, float z) {
+void dsgNodeSetRotation(dsgNode* node, float x, float y, float z) {
 	node->rotation[NODE_X] = x;
 	node->rotation[NODE_Y] = y;
 	node->rotation[NODE_Z] = z;
 	return;
 }
 
-int dsgNodeHasVertexBuffer(node_t* node) {
+int dsgNodeHasVertexBuffer(dsgNode* node) {
 	return node->vertexBufferIndex > -1;
 }
-void dsgNodeSetPolarTranslation(node_t* node, node_t* parent,float radius, float theta) {
+void dsgNodeSetPolarTranslation(dsgNode* node, dsgNode* parent,float radius, float theta) {
 	node->rotation[NODE_X] = node->rotation[NODE_X];
 	node->rotation[NODE_Y] = node->rotation[NODE_Y];
 	node->rotation[NODE_Z] = node->rotation[NODE_Z];

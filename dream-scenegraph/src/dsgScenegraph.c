@@ -5,49 +5,50 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "node.h"
-#include "graph.h"
+#include "dsgNode.h"
+#include "dsgScenegraph.h"
 
-char dsgGraphPathDelimeter  = '/';
+char dsgScenegraphPathDelimeter  = '/';
 
-graph_t* dsgGraphInitWithName(char* name) {
-	graph_t* retval = dsgGraphInit();
+dsgScenegraph* dsgScenegraphInitWithName(char* name) {
+	dsgScenegraph* retval = dsgScenegraphInit();
 	retval->name = name;
 	return retval;
 }
 
-graph_t* dsgGraphInit() {
-	graph_t* retval = (graph_t*)malloc(sizeof(graph_t));
+dsgScenegraph* dsgScenegraphInit() {
+	dsgScenegraph* retval = (dsgScenegraph*)malloc(sizeof(dsgScenegraph));
 	int i;
 	for (i=0;i<NODES;i++) {
-		retval->nodes[i] = NULL;	
+		retval->nodes[i] = NULL;
 	}
+	retval->camera = dsgCameraInit();
 	retval->name          =  NULL;
 	retval->rootNodeIndex = -1;
 	return retval;
 }
 
-node_t* dsgGraphCreateNodeWithName(graph_t* graph, char* name) {
-	node_t* retval = dsgGraphCreateNode(graph);
+dsgNode* dsgScenegraphCreateNodeWithName(dsgScenegraph* graph, char* name) {
+	dsgNode* retval = dsgScenegraphCreateNode(graph);
 	retval->name = name;
 	return retval;
 }
 
-node_t* dsgGraphCreateNode(graph_t* graph) {
-	node_t* retval = NULL;
-	int available = dsgGraphGetNextAvailableNode(graph);
+dsgNode* dsgScenegraphCreateNode(dsgScenegraph* graph) {
+	dsgNode* retval = NULL;
+	int available = dsgScenegraphGetNextAvailableNode(graph);
 	if (available < 0) {
 		fprintf(stderr,
 			   "Error: Unable to create new node - tree is full\n");
 		return NULL;
 	}
-	retval = (node_t*)malloc(sizeof(node_t));
+	retval = (dsgNode*)malloc(sizeof(dsgNode));
 	dsgNodeInit(retval, NULL);
 	graph->nodes[available] = retval;
 	return retval;
 }
 
-int dsgGraphGetNextAvailableNode(graph_t* graph) {
+int dsgScenegraphGetNextAvailableNode(dsgScenegraph* graph) {
 	int i;
 	for (i=0; i<NODES; i++) {
 		if (graph->nodes[i] == NULL) {
@@ -57,7 +58,7 @@ int dsgGraphGetNextAvailableNode(graph_t* graph) {
 	return -1;
 }
 
-int dsgGraphGetIndexOfNode(graph_t *graph, node_t *node) {
+int dsgScenegraphGetIndexOfNode(dsgScenegraph *graph, dsgNode *node) {
 	int i;
 	for (i=0; i<NODES; i++) {
 		if (graph->nodes[i] == node) {
@@ -67,20 +68,20 @@ int dsgGraphGetIndexOfNode(graph_t *graph, node_t *node) {
 	return -1;
 }
 
-node_t* dsgGraphGetRootNode(graph_t* graph) {
+dsgNode* dsgScenegraphGetRootNode(dsgScenegraph* graph) {
 	return graph->nodes[graph->rootNodeIndex];
 }
 
-void dsgGraphSetRootNode(graph_t* graph, node_t* root) {
+void dsgScenegraphSetRootNode(dsgScenegraph* graph, dsgNode* root) {
 	if (graph == NULL) {
 		fprintf(stderr,"Cannot set root node of NULL graph.\n");
 		return;
 	}
-	graph->rootNodeIndex = dsgGraphGetIndexOfNode(graph,root);
+	graph->rootNodeIndex = dsgScenegraphGetIndexOfNode(graph,root);
 	return;
 }
 
-void dsgGraphSetRootNodeIndex(graph_t* graph, int root) {
+void dsgScenegraphSetRootNodeIndex(dsgScenegraph* graph, int root) {
 	if (graph == NULL) {
 		fprintf(stderr,"Cannot set root node of NULL graph\n");
 		return;
@@ -89,7 +90,7 @@ void dsgGraphSetRootNodeIndex(graph_t* graph, int root) {
 	return;
 }
 
-void dsgGraphRemoveNode(graph_t* graph, node_t* node) {
+void dsgScenegraphRemoveNode(dsgScenegraph* graph, dsgNode* node) {
 	if (graph == NULL) {
 		fprintf(stderr,"Cannot remove node from NULL graph.\n");
 		return;
@@ -100,20 +101,20 @@ void dsgGraphRemoveNode(graph_t* graph, node_t* node) {
 		return;
 	}
 
-	int i = dsgGraphGetIndexOfNode(graph, node);
+	int i = dsgScenegraphGetIndexOfNode(graph, node);
 	if (i < 0) {
 		fprintf(stderr,"Cannot find node in graph to remove it.\n");
 		return;
 	}
 
 	free(node);
-	graph->nodes[i] = NULL; 
+	graph->nodes[i] = NULL;
 	return;
 }
 
-void dsgGraphTraverseNodeVector(graph_t* graph, void (*function)(node_t*, void*), void* arg) {
+void dsgScenegraphTraverseNodeVector(dsgScenegraph* graph, void (*function)(dsgNode*, void*), void* arg) {
 	int i;
-	node_t* next;
+	dsgNode* next;
 	for (i=0;i<NODES;i++) {
 		next = graph->nodes[i];
 		if (next == NULL) {
@@ -124,31 +125,31 @@ void dsgGraphTraverseNodeVector(graph_t* graph, void (*function)(node_t*, void*)
 	return;
 }
 
-node_t* dsgGraphGetNodeByName(graph_t* graph, char* name) {
+dsgNode* dsgScenegraphGetNodeByName(dsgScenegraph* graph, char* name) {
 	int i;
-	node_t* next;
+	dsgNode* next;
 	for (i=0;i<NODES;i++) {
 		next = graph->nodes[i];
 		if (next == NULL) {
 			continue;
-		}	
+		}
 		if (next->name == NULL) {
-			fprintf(stderr,"dsgGraphGetNodeByName: Cannot test node with NULL name\n");
+			fprintf(stderr,"dsgScenegraphGetNodeByName: Cannot test node with NULL name\n");
 			continue;
 		}
 		if (strcmp(graph->nodes[i]->name,name) == 0) {
 			return graph->nodes[i];
-		}	
+		}
 	}
 	return NULL;
 }
 
-int dsgGraphTraversePath(graph_t* graph, char* path, void (*function)(node_t*, void*), void* arg) {
+int dsgScenegraphTraversePath(dsgScenegraph* graph, char* path, void (*function)(dsgNode*, void*), void* arg) {
 	char* start    = NULL;
 	char* end      = NULL;
 	int done       = 0;
 	int nameLen    = 0;
-	node_t* target = NULL;
+	dsgNode* target = NULL;
 	//fprintf(stdout,"Traversing path: %s\n",path);
 	start = path+1;
 	if (start == NULL) {
@@ -157,10 +158,10 @@ int dsgGraphTraversePath(graph_t* graph, char* path, void (*function)(node_t*, v
 	}
 	while (!done) {
 		nameLen = 0;
-		end = strchr(start+1, dsgGraphPathDelimeter);
+		end = strchr(start+1, dsgScenegraphPathDelimeter);
 		if (end == NULL) {
 			//fprintf(stdout,"Found end of string\n");
-			end = path+strlen(path); 
+			end = path+strlen(path);
 			done = 1;
 		}
 		end += 1;
@@ -173,7 +174,7 @@ int dsgGraphTraversePath(graph_t* graph, char* path, void (*function)(node_t*, v
 		memcpy(tmp,start,nameLen);
 		tmp[nameLen] = '\0';
 		//fprintf(stdout,"Traversed path to: %s\n",tmp);
-		target = dsgGraphGetNodeByName(graph,tmp);
+		target = dsgScenegraphGetNodeByName(graph,tmp);
 		if (target != NULL) {
 			function(target,arg);
 			start = end;
@@ -185,53 +186,53 @@ int dsgGraphTraversePath(graph_t* graph, char* path, void (*function)(node_t*, v
 	return done;
 }
 
-int dsgGraphCountChildrenOfNode(graph_t* graph, node_t* node) {
+int dsgScenegraphCountChildrenOfNode(dsgScenegraph* graph, dsgNode* node) {
 	int retval = 0;
 	int i;
-	node_t* next;
+	dsgNode* next;
 	for (i = 0; i<NODES; i++) {
 		next = graph->nodes[i];
 		if (next == NULL) {
 			continue;
 		}
 
-		if (dsgGraphNodeIsChildOf(graph, node, next)) {
+		if (dsgScenegraphNodeIsChildOf(graph, node, next)) {
 			retval++;
 		}
 	}
 	return retval;
 }
 
-void dsgGraphUpdatePaths(graph_t* graph) {
+void dsgScenegraphUpdatePaths(dsgScenegraph* graph) {
 	int i;
-	node_t* next;
+	dsgNode* next;
 	for (i=0;i<NODES;i++) {
-		next = graph->nodes[i];	
+		next = graph->nodes[i];
 		if (next != NULL) {
-			dsgGraphGeneratePathForNode(graph, next);
-		} 
+			dsgScenegraphGeneratePathForNode(graph, next);
+		}
 	}
 	return;
 }
 
-void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
+void dsgScenegraphGeneratePathForNode(dsgScenegraph* graph, dsgNode* node) {
 	if (node == NULL) {
-		fprintf(stderr,"Cannot generate path for NULL node.\n");	
+		fprintf(stderr,"Cannot generate path for NULL node.\n");
 		return;
 	}
 
 	if (graph == NULL) {
-		fprintf(stderr,"Cannot generate path for NULL graph.\n");	
+		fprintf(stderr,"Cannot generate path for NULL graph.\n");
 		return;
 	}
 
 	if (node->name == NULL) {
-		fprintf(stderr,"Cannot generate path for node with no name.\n");	
+		fprintf(stderr,"Cannot generate path for node with no name.\n");
 		return;
 	}
 
 	if (node->path != NULL) {
-		free(node->path);	
+		free(node->path);
 		node->path = NULL;
 	}
 
@@ -239,24 +240,24 @@ void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
 	// Node has no parent
 	if (node->parentIndex == -1) {
 		// and is not graph root
-		if (!dsgGraphIsRootNode(graph,node)) {
-			fprintf(stderr, "Cannot generate path for non-root node with no parent.\n");	
+		if (!dsgScenegraphIsRootNode(graph,node)) {
+			fprintf(stderr, "Cannot generate path for non-root node with no parent.\n");
 			return;
 		}
 		fprintf(stdout,"Generating path for node root %s\n", node->name);
-		memcpy(pathBuffer, &dsgGraphPathDelimeter, 1);	
+		memcpy(pathBuffer, &dsgScenegraphPathDelimeter, 1);
 		pathBuffer[2] = '\0';
 		strncat(pathBuffer, node->name, strlen(node->name));
 	} else {
-		node_t* parent = graph->nodes[node->parentIndex];
+		dsgNode* parent = graph->nodes[node->parentIndex];
 		if (parent == NULL) {
 			fprintf(stderr,"Error finding node parent to create path\n");
 			return;
 		}
 		fprintf(stdout,"Generating path for node %s with parent %s\n", node->name, parent->name);
 		memcpy(pathBuffer, parent->path, strlen(parent->path)+1);
-		strncat(pathBuffer, &dsgGraphPathDelimeter, strlen(&dsgGraphPathDelimeter));	
-		strncat(pathBuffer, node->name, strlen(node->name));	
+		strncat(pathBuffer, &dsgScenegraphPathDelimeter, strlen(&dsgScenegraphPathDelimeter));
+		strncat(pathBuffer, node->name, strlen(node->name));
 	}
 
 	// Trim buffer fat
@@ -271,13 +272,13 @@ void dsgGraphGeneratePathForNode(graph_t* graph, node_t* node) {
 	return;
 }
 
-int dsgGraphIsRootNode(graph_t* graph, node_t* node) {
-	return graph->rootNodeIndex == dsgGraphGetIndexOfNode(graph,node);
+int dsgScenegraphIsRootNode(dsgScenegraph* graph, dsgNode* node) {
+	return graph->rootNodeIndex == dsgScenegraphGetIndexOfNode(graph,node);
 }
 
-int dsgGraphAddVertexBuffer(graph_t* graph, void* buffer) {
+int dsgScenegraphAddVertexBuffer(dsgScenegraph* graph, void* buffer) {
 	fprintf(stdout,"Adding vertex buffer to graph\n");
-	int index = dsgGraphGetNextAvailableVertexBuffer(graph);
+	int index = dsgScenegraphGetNextAvailableVertexBuffer(graph);
 	if (index < 0) {
 		fprintf(stderr,"Unable to add vertex buffer, graph is full\n");
 		return -1;
@@ -286,7 +287,7 @@ int dsgGraphAddVertexBuffer(graph_t* graph, void* buffer) {
 	return index;
 }
 
-int  dsgGraphGetNextAvailableVertexBuffer(graph_t* graph) {
+int  dsgScenegraphGetNextAvailableVertexBuffer(dsgScenegraph* graph) {
 	if (graph == NULL) {
 		return -1;
 	}
@@ -302,7 +303,7 @@ int  dsgGraphGetNextAvailableVertexBuffer(graph_t* graph) {
 	return retval;
 }
 
-int  dsgGraphGetIndexOfVertexBuffer(graph_t* graph, void* buffer) {
+int  dsgScenegraphGetIndexOfVertexBuffer(dsgScenegraph* graph, void* buffer) {
 	if(graph == NULL || buffer == NULL) {
 		return -1;
 	}
@@ -318,12 +319,12 @@ int  dsgGraphGetIndexOfVertexBuffer(graph_t* graph, void* buffer) {
 	return retval;
 }
 
-int dsgGraphRemoveVertexBuffer(graph_t* graph, void* buffer) {
+int dsgScenegraphRemoveVertexBuffer(dsgScenegraph* graph, void* buffer) {
 	if (graph == NULL || buffer == NULL) {
-		return -1;	
+		return -1;
 	}
 
-	int index = dsgGraphGetIndexOfNode(graph,buffer);
+	int index = dsgScenegraphGetIndexOfNode(graph,buffer);
 	if (index < 0) {
 		fprintf(stderr,"Cannot remove vertex buffer from graph %s, not found\n",
 				                graph->name != NULL ? graph->name : "Unamed Graph");
@@ -335,35 +336,35 @@ int dsgGraphRemoveVertexBuffer(graph_t* graph, void* buffer) {
 	return index;
 }
 
-int dsgGraphNodeIsParentOf (graph_t* graph, node_t* parent, node_t* child) {
-	int retval = 0; 
+int dsgScenegraphNodeIsParentOf (dsgScenegraph* graph, dsgNode* parent, dsgNode* child) {
+	int retval = 0;
 	if (parent < 0 || !dsgNodeHasValidName(child) || !dsgNodeHasValidPath(child)) {
-		return retval;	
+		return retval;
 	}
-	retval = child->parentIndex == dsgGraphGetIndexOfNode(graph,parent);
+	retval = child->parentIndex == dsgScenegraphGetIndexOfNode(graph,parent);
 	return retval;
 }
 
-int dsgGraphNodeIsChildOf(graph_t* graph, node_t* parent, node_t* child) {
-	if (parent == NULL || child == NULL || 
-	    !dsgNodeHasValidPath(child) || 
+int dsgScenegraphNodeIsChildOf(dsgScenegraph* graph, dsgNode* parent, dsgNode* child) {
+	if (parent == NULL || child == NULL ||
+	    !dsgNodeHasValidPath(child) ||
 	    !dsgNodeHasValidName(child)) {
-		return 0;	
+		return 0;
 	}
-	return child->parentIndex == dsgGraphGetIndexOfNode(graph,parent);
+	return child->parentIndex == dsgScenegraphGetIndexOfNode(graph,parent);
 }
 
-void dsgGraphNodeSetParent (graph_t* graph, node_t* parent, node_t* node) {
-	dsgNodeSetParentIndex(dsgGraphGetIndexOfNode(graph,parent),node);
+void dsgScenegraphNodeSetParent (dsgScenegraph* graph, dsgNode* parent, dsgNode* node) {
+	dsgNodeSetParentIndex(dsgScenegraphGetIndexOfNode(graph,parent),node);
 	return;
 }
 
-void dsgGraphPrintLine(node_t* node, void* arg) {
+void dsgScenegraphPrintLine(dsgNode* node, void* arg) {
 	fprintf(stdout,"%s\n",node->path);
 	return;
 }
 
-void dsgGraphPrintGraph(graph_t* graph) {
-	dsgGraphTraverseNodeVector(graph,&dsgGraphPrintLine,NULL);
+void dsgScenegraphPrintGraph(dsgScenegraph* graph) {
+	dsgScenegraphTraverseNodeVector(graph,&dsgScenegraphPrintLine,NULL);
 	return;
 }
