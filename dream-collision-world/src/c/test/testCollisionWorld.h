@@ -7,7 +7,6 @@ void testCollisionWorld(void);
 // Manage Objects
 void testCollisionWorldCreateWorld(void);
 void testColWorldAddObject(void);
-void testColWorldGetNextAvailableObjectInde(void);
 void testColWorldRemoveObject(void);
 // Udate World
 void testColWorldUpdate(void);

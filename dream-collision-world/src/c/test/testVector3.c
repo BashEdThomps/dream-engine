@@ -4,6 +4,7 @@
 #include "../../cpp/CWrapper/dcwVector3.h"
 
 void testVector3(void) {
+	unitPrintComment("Vector3");
 	dcwScalar* expectedX = dcwScalarCreate(1.0f);
 	dcwScalar* expectedY = dcwScalarCreate(2.0f);
 	dcwScalar* expectedZ = dcwScalarCreate(4.0f);

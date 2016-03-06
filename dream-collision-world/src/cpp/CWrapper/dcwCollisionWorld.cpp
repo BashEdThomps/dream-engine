@@ -21,8 +21,8 @@ extern "C" {
 
 		return reinterpret_cast <dcwCollisionWorld*>(
 			new btCollisionWorld(
-				dispatcher, 
-				broadphasePairCache, 
+				dispatcher,
+				broadphasePairCache,
 				collisionConfiguration
 			)
 		);
@@ -34,22 +34,31 @@ extern "C" {
 		return;
 	}
 
-	void dcwAddCollisionObject(
-			dcwCollisionWorld* world, 
+	void dcwCollisionWorldAddCollisionObject(
+			dcwCollisionWorld* world,
 			dcwCollisionObject* collisionObject) {
 		btCollisionWorld*  btColWorld = reinterpret_cast <btCollisionWorld*>(world);
 		btCollisionObject* btColObj   = reinterpret_cast <btCollisionObject*>(collisionObject);
+		btColWorld->addCollisionObject(btColObj);
 		return;
 	}
 
- 	void dcwRemoveCollisionObject(
-			dcwCollisionWorld* world, 
+ 	void dcwCollisionWorldRemoveCollisionObject(
+			dcwCollisionWorld* world,
 			dcwCollisionObject* collisionObject) {
 		btCollisionWorld*  btColWorld = reinterpret_cast <btCollisionWorld*>(world);
 		btCollisionObject* btColObj   = reinterpret_cast <btCollisionObject*>(collisionObject);
+		btColWorld->removeCollisionObject(btColObj);
 		return;
 	}
 
+	int dcwCollisionWorldGetNumCollisionObjects(
+			dcwCollisionWorld* world) {
+				int retval = 0;
+				btCollisionWorld*  btColWorld = reinterpret_cast <btCollisionWorld*>(world);
+				retval = btColWorld->getNumCollisionObjects();
+				return retval;
+	}
 #ifdef __cplusplus
 }
 #endif

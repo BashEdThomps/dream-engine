@@ -7,6 +7,7 @@
 #include "testBoxShape.h"
 
 void testBoxShape(void) {
+	unitPrintComment("Box Shape");
 	dcwScalar *x, *y, *z;
 	x = dcwScalarCreate  (1.0f);
 	y = dcwScalarCreate (2.0f);

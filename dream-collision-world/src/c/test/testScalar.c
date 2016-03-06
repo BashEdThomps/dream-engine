@@ -4,6 +4,7 @@
 #include "testScalar.h"
 
 void testScalar(void) {
+	unitPrintComment("Scalar");
 	unitAssertFail("dcwScalar");
 	return;
 }
