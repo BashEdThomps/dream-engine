@@ -98,11 +98,11 @@ Doxyfile:
 # Build Objects ################################################################
 
 $(OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/%.c
-	$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
+	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
 	$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(CPP_OBJECTS): $(CPP_OBJ)/%.o : $(CPP_SRC)/%.cpp
-	$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
+	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
 	$(CPP) $(CPPFLAGS) -c $< -g -o $@
 
 $(TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(TEST)/%.c

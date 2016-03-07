@@ -59,6 +59,13 @@ extern "C" {
 				retval = btColWorld->getNumCollisionObjects();
 				return retval;
 	}
+
+
+	void dcwCollisionWorldPerformDiscreteCollisionDetection (dcwCollisionWorld* world) {
+		btCollisionWorld* btWorld = reinterpret_cast<btCollisionWorld*>(world);
+		btWorld->performDiscreteCollisionDetection();
+		return;
+	}
 #ifdef __cplusplus
 }
 #endif

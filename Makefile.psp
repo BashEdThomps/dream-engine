@@ -6,7 +6,7 @@
 #                                                                              #
 ################################################################################
 
-TARGET := psp
+TARGET := linux
 
 # Submodules
 UNIT := unit
@@ -47,15 +47,15 @@ make_build_dirs:
 
 .PHONY: make_unit
 make_unit:
-	$(MAKE) -C $(UNIT) -f Makefile.psp $(ALL) 
+	$(MAKE) -C $(UNIT) $(ALL) $(TEST) -f Makefile.linux
 
 .PHONY: make_scenegraph
 make_scenegraph:
-	$(MAKE) -C $(SCENEGRAPH) -f Makefile.psp $(ALL)
+	$(MAKE) -C $(SCENEGRAPH) $(ALL) $(TEST) -f Makefile.linux
 
 .PHONY: make_collision_world
 make_collision_world:
-	$(MAKE) -C $(COLLISION_WORLD) -Makefile.psp $(ALL)
+	$(MAKE) -C $(COLLISION_WORLD) $(ALL) $(TEST) -f Makefile.linux
 
 # Documents ####################################################################
 
@@ -72,12 +72,12 @@ clean_build:
 
 .PHONY: clean_unit
 clean_unit: 
-	$(MAKE) -C $(UNIT) -f Makefile.psp clean
+	$(MAKE) -C $(UNIT) clean -f Makefile.linux
 
 .PHONY: clean_dream_collision_world
 clean_dream_collision_world:
-	$(MAKE) -C $(COLLISION_WORLD) -f Makefile.psp clean
+	$(MAKE) -C $(COLLISION_WORLD) clean -f Makefile.linux
 
 .PHONY: clean_dream_scenegraph
 clean_dream_scenegraph:
-	$(MAKE) -C $(SCENEGRAPH) -f Makefile.psp clean
+	$(MAKE) -C $(SCENEGRAPH) clean -f Makefile.linux

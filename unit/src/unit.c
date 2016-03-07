@@ -166,6 +166,19 @@ void unitAssertEqualFloat(char* name, float val1, float val2) {
     formattedText = NULL;
 }
 
+void unitAssertNotEqualFloat(char* name, float val1, float val2) {
+    char* formattedText = NULL;
+    if (val1 != val2) {
+        formattedText = unitGreen(UNIT_PASS);
+    } else {
+        formattedText = unitRed(UNIT_FAIL);
+    }
+    fprintf(stdout, "%s: Assert '%f' and '%f' are not equal: %s\n", name, val1, val2, formattedText);
+    free(formattedText);
+    formattedText = NULL;
+}
+
+
 void unitAssertEqualDouble(char* name, double val1, double val2) {
     char* formattedText = NULL;
     if (val1 == val2) {

@@ -28,7 +28,10 @@ void unitAssertEqualChar       (char*, char, char);
 void unitAssertEqualShort      (char*, short, short);
 void unitAssertEqualInt        (char*, int, int);
 void unitAssertEqualLong       (char*, long, long);
+
 void unitAssertEqualFloat      (char*, float, float);
+void unitAssertNotEqualFloat   (char*, float, float);
+
 void unitAssertEqualDouble     (char*, double, double);
 void unitAssertEqualLongDouble (char*, long double, long double);
 void unitAssertEqualVoidP      (char*, void*, void*);
