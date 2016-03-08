@@ -13,7 +13,7 @@ dcwSortedOverlappingPairCache* dcwSortedOverlappingPairCacheCreate() {
 	);
 }
 
-void dcwOverlappingPairCacheDestroy(dcwSortedOverlappingPairCache* obj) {
+void dcwSortedOverlappingPairCacheDestroy(dcwSortedOverlappingPairCache* obj) {
 	delete reinterpret_cast<btSortedOverlappingPairCache*>(obj);
 	return;
 }

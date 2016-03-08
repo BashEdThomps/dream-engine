@@ -1,5 +1,5 @@
 ################################################################################
-# DreamCollisionWorld Makefile                                                 #
+# DreamAnimation      Makefile                                                 #
 ################################################################################
 
 TARGET := linux
@@ -10,7 +10,7 @@ CPPFLAGS := -Wall -fPIC
 LD := ld
 
 # Project Name
-NAME     := DreamCollisionWorld
+NAME     := DreamAnimation
 OUTPUT   := lib$(NAME).so
 TEST_BIN := $(NAME)Test
 GL_TEST_BIN = $(NAME)GLTest
