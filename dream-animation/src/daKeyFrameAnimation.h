@@ -1,71 +1,49 @@
-/* 
- * Property of Octronic, 2014
- * http://octronic.org
- * All Rights Reserved
- */
-package org.octronic.graphicsengine.animation;
+#ifndef DA_KEYFRAMEANIMATION_H
+#define DA_KEYFRAMEANIMATION_H
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import org.octronic.graphicsengine.scene.SceneDrawable;
-import org.octronic.graphicsengine.scene.SceneObject;
-import org.octronic.utilities.tracer.Tracer;
+#include "daKeyFrame.h"
+#include "daFrame.h"
 
-/**
- *
- * @author ashley
- */
-public class KeyFrameAnimation
-{
+#define DA_KEYFRAMEANIM_KEYFRAMES_SZ 1024
+#define DA_KEYFRAMEANIM_FRAMES_SZ    1024
+#define DA_KEYFRAMEANIM_DRAWABLES_SZ 1024
 
-    private static final Tracer _Tracer = new Tracer(KeyFrameAnimation.class);
-    private final List<KeyFrame> mKeyFrames;
-    private final List<Frame> mFrames;
-    private final List<SceneDrawable> mDrawables;
-    private int mCurrentFrame;
-    private boolean mDone;
+typedef struct {
+    daKeyFrame **keyFrames;
+    int          numKeyFrames;
+    daFrame    **frames;
+    int         *drawables;
+    int          currentFrame;
+    int          done;
 
-    public KeyFrameAnimation()
-    {
-        mKeyFrames = new LinkedList<>();
-        mFrames = new LinkedList<>();
-        mDrawables = new ArrayList<>();
-        mCurrentFrame = 0;
-    }
+} daKeyFrameAnimation;
 
-    public SceneDrawable getDrawableByID(int id)
-    {
-        for (SceneDrawable sd : mDrawables)
-        {
-            if (sd.getID() == id) return sd;
-        }
-        return null;
-    }
-    
-    public void generateFrames()
-    {
+daKeyFrameAnimation* daKeyFrameAnimationCreate()  {
+    daKeyFrameAnimation* kfa = (daKeyFrameAnimation*) malloc(sizeof(daKeyFrameAnimation));
+    kfa->keyFrames           = (daKeyFrame**) malloc(sizeof(daKeyFrame*) * DA_KEYFRAMEANIM_KEYFRAMES_SZ);
+    kfa->frames              = (daFrame**)    malloc(sizeof(daFrame*)    * DA_KEYFRAMEANIM_FRAMES_SZ   );
+    kfa->drawables           = (int*)         malloc(sizeof(int)         * DA_KEYFRAMEANIM_DRAWABLES_SZ);
+    kfa->currentFrame        = 0;
+    return kfa;
+}
+
+void daKeyFrameAnimationGenerateFrames() {
         int currentKeyFrame = 0;
         int currentFrame = 0;
 
-        while (true)
-        {
-            KeyFrame source = getKeyFrame(currentKeyFrame);
-            KeyFrame target = getKeyFrame(currentKeyFrame + 1);
+        while (true) {
+            daKeyFrame* source = getKeyFrame(currentKeyFrame);
+            daKeyFrame* target = getKeyFrame(currentKeyFrame + 1);
 
-            if (source == null)
-            {
+            if (source == null) {
                 _Tracer.debug("Finished generating frames");
                 break;
             }
 
-            if (target == null)
-            {
-                if (source.isWrap())
-                {
+            if (target == null) {
+                if (source->wrap) {
                     target = getKeyFrame(0);
-                } else
-                {
+                } else {
                     _Tracer.debug("Finished generating frames");
                     break;
                 }
@@ -75,17 +53,16 @@ public class KeyFrameAnimation
 
             int intermediates = source.getIntermediates();
             _Tracer.info("\t with " + intermediates + " intermediate");
-            for (int i = 0; i < intermediates; i++)
-            {
+            int i;
+            for (i = 0; i < intermediates; i++) {
                 Frame f = new Frame(currentFrame);
 
-                for (FrameDelta d : source.getDeltas())
-                {
+                for (FrameDelta d : source.getDeltas()) {
                     //_Tracer.info("Creatng delta for " + d.getDrawableID());
-                    FrameDelta dest = target.getDeltaByDrawableID(d.getDrawableID());
-                    FrameDelta moveBy = d.getMotionDelta(d, dest, intermediates, i);
+                    daKeyFrameDelta* dest = target.getDeltaByDrawableID(d.getDrawableID());
+                    daKeyFrameDelta* moveBy = d.getMotionDelta(d, dest, intermediates, i);
                     //moveBy.show();
-                    f.addMotionDelta(moveBy);
+                    daFrameAddMotionDelta(f,moveBy);
                 }
 
                 mFrames.add(f);
@@ -96,46 +73,17 @@ public class KeyFrameAnimation
         }
     }
 
-    public boolean isDone()
-    {
-        return mDone;
-    }
+void daKeyFrameAnimationAddFrame(daKeyFrameAnimation* keyFrameAnim, daFrame* f) {
+    int index = daKeyFrameAnimationGetNextAvailableFrameIndex(keyFrameAnim);
+    keyFrameAnim->frames[index] = f;
+    mFrames.add(f);
+}
 
-    public KeyFrame getKeyFrame(int index)
-    {
-        for (KeyFrame kf : mKeyFrames)
-        {
-            if (kf.getIndex() == index)
-            {
-                //_Tracer.debug("Returning KeyFrame " + index);
-                return kf;
-            }
-        }
-        //_Tracer.error("KeyFrame " + index + " was not found!");
-        return null;
-    }
-
-    public void addFrame(Frame f)
-    {
-        mFrames.add(f);
-    }
-
-    public Frame getFrame(int index)
-    {
-        for (Frame f : mFrames)
-        {
-            if (f.getIndex() == index)
-            {
-                return f;
-            }
-        }
-        return null;
-    }
-
-    public void addKeyFrame(KeyFrame kf)
-    {
-        mKeyFrames.add(kf);
-    }
+void daKeyFrameAnimationAddKeyFrame(daKeyFrameAnimation *kfa, KeyFrame *kf) {
+    int index = daKeyFrameAnimationGetNextAvailableKeyFrameIndex(kfa);
+    kfa->keyFrames[index] = kf;
+    return;
+}
 
     public void addDrawable(SceneDrawable sd)
     {
@@ -155,36 +103,29 @@ public class KeyFrameAnimation
         }
     }
 
-    public void setCurrentFrame(int frame)
-    {
-        mCurrentFrame = 0;
-    }
+void daKeyFrameAnimationNextFrame(daKeyFrameAnimation* kfa) {
+    // We're done
+    if (kfa->done) return;
 
-    public void nextFrame()
-    {
-        // We're done
-        if (mDone) return;
-        
-        //_Tracer.info("Applying next Frame: " + mCurrentFrame);
-        Frame currentFrame = getFrame(mCurrentFrame);
-        if (currentFrame == null)
+    fprintf(stdout,"Applying next Frame: %d\n" , kfa->currentFrame);
+    daFrame *currentFrame = kfa->frames[kfa->currentFrame];
+
+    if (currentFrame == NULL) {
+        if (kfa->keyFrames[kfa->numKeyFrames]->wrap) {
+            kfa->currentFrame = 0;
+        } else
         {
-            if (getKeyFrame(mKeyFrames.size() - 1).isWrap())
-            {
-                mCurrentFrame = 0;
-            } else
-            {
-                mDone = true;
-                return;
-            }
-            currentFrame = getFrame(mCurrentFrame);
-            //return;
+            kfa->done = true;
+            return;
         }
-        for (FrameDelta d : currentFrame.getMotionDeltas())
-        {
-            SceneObject sd = getDrawableByID(d.getDrawableID());
-            sd.applyDelta(d);
-        }
-        mCurrentFrame++;
+        //return;
     }
+    for (FrameDelta d : currentFrame.getMotionDeltas())
+    {
+        SceneObject sd = getDrawableByID(d.getDrawableID());
+        sd.applyDelta(d);
+    }
+    kfa->currentFrame++;
 }
+
+#endif // DA_KEYFRAMEANIMAITON_H

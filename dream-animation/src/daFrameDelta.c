@@ -1,142 +1,77 @@
-/* 
- * Property of Octronic, 2014
- * http://octronic.org
- * All Rights Reserved
- */
-package org.octronic.graphicsengine.animation;
+#include <stdlib.h>
+#include <stdio.h>
 
-import org.lwjgl.util.vector.Vector3f;
-import org.octronic.graphicsengine.scene.SceneObject;
-import org.octronic.utilities.tracer.Tracer;
+#include "daConstants.h"
+#include "daFrameDelta.h"
 
-/**
- *
- * @author ashley
- */
-public class FrameDelta
-{
+daFrameDelta* daFrameDeltaCreate(int drawableId, int operation) {
+    daFrameDelta* retval = (daFrameDelta*)malloc(sizeof(daFrameDelta));
+    retval->operation            = operation;
+    retval->drawableID           = drawableId;
 
-    private static final Tracer _Tracer = new Tracer(FrameDelta.class);
-    private final int mDrawableID;
-    private Vector3f mPositionDelta;
-    private Vector3f mRotationDelta;
-    private Vector3f mOrbitOffset;
-    private float mScaleDelta;
-    private DeltaOperation mOperation;
+    retval->positionDelta        = (float*)malloc(sizeof(float)*DA_CART_ARY_SZ);
+    retval->positionDelta [DA_X] = 0;
+    retval->positionDelta [DA_Y] = 0;
+    retval->positionDelta [DA_Z] = 0;
 
-    public FrameDelta(int drawableId, DeltaOperation operation)
-    {
-        mOperation     = operation;
-        mDrawableID    = drawableId;
-        mPositionDelta = new Vector3f(0,0,0);
-        mRotationDelta = new Vector3f(0,0,0);
-        mOrbitOffset   = new Vector3f(0,0,0);
-    }
+    retval->rotationDelta        = (float*)malloc(sizeof(float)*DA_CART_ARY_SZ);
+    retval->rotationDelta [DA_X] = 0;
+    retval->rotationDelta [DA_Y] = 0;
+    retval->rotationDelta [DA_Z] = 0;
 
-    public FrameDelta(SceneObject drawable, DeltaOperation operation)
-    {
-        mOperation = operation;
-        mDrawableID = drawable.getID();
-        mPositionDelta = drawable.getPosition();
-        mRotationDelta = drawable.getRotation();
-    }
-    
-    public void setOrbitOffset(Vector3f orbitOffset)
-    {
-        mOrbitOffset = orbitOffset;
-    }
-    
-    public FrameDelta getMotionDelta(FrameDelta start, FrameDelta end, int steps, int stepIndex)
-    {
-        FrameDelta d = new FrameDelta(start.getDrawableID(), start.getOperation());
-        Vector3f posDelta = getVectorDelta(start.getPositioinDelta(), end.getPositioinDelta());
-        Vector3f rotDelta = getVectorDelta(start.getRotationDelta(), end.getRotationDelta());
+    retval->orbitRadius          = 0;
 
-        switch (d.getOperation())
-        {
+    return retval;
+}
+
+daFrameDelta* daFrameDeltaGetMotionDelta(
+    daFrameDelta* start,
+    daFrameDelta* end,
+    int steps,
+    int stepIndex) {
+        daFrameDelta* d = daFrameDeltaCreate(start->drawableID, start->operation);
+        float* posDelta = daFrameDeltaComputeDeltaVector(start->positionDelta, end->positionDelta);
+        float* rotDelta = daFrameDeltaComputeDeltaVector(start->rotationDelta, end->rotationDelta);
+
+        switch (d->operation) {
             default:
-            case LINEAR:
-                posDelta.x /= steps;
-                posDelta.y /= steps;
-                posDelta.z /= steps;
-                d.setPositionDelta(posDelta);
+            case DA_OP_LINEAR:
+                posDelta [DA_X] /= steps;
+                posDelta [DA_Y] /= steps;
+                posDelta [DA_Z] /= steps;
                 break;
-            case ORBIT:
+            case DA_OP_ORBIT:
                 break;
-            case BEZIER:
+            case DA_OP_BEZIER:
                 break;
         }
-        
-        rotDelta.x /= steps;
-        rotDelta.y /= steps;
-        rotDelta.z /= steps;
-        d.setRotationDelta(rotDelta);
-        
+
+
+        rotDelta[DA_X] /= steps;
+        rotDelta[DA_Y] /= steps;
+        rotDelta[DA_Z] /= steps;
+
+        d->positionDelta[DA_X] = posDelta[DA_X];
+        d->positionDelta[DA_Y] = posDelta[DA_Y];
+        d->positionDelta[DA_Z] = posDelta[DA_Z];
+
+        d->rotationDelta[DA_X] = rotDelta[DA_X];
+        d->rotationDelta[DA_Y] = rotDelta[DA_Y];
+        d->rotationDelta[DA_Z] = rotDelta[DA_Z];
+
         return d;
     }
 
-    public void setOperation(DeltaOperation operation)
-    {
-        mOperation = operation;
-    }
+float* daFrameDeltaComputeDeltaVector(float* a, float* b) {
+    float* retval = (float*)malloc(sizeof(float)*DA_CART_ARY_SZ);
+    retval[DA_X] = a[DA_X] - b[DA_X];
+    retval[DA_Y] = a[DA_Y] - b[DA_Y];
+    retval[DA_Z] = a[DA_Z] - b[DA_Z];
+    return retval;
+}
 
-    public DeltaOperation getOperation()
-    {
-        return mOperation;
-    }
-
-    public Vector3f getVectorDelta(Vector3f a, Vector3f b)
-    {
-//        float x = Math.max(a.x,b.x) - Math.min(a.x,b.x);
-//        float y = Math.max(a.y,b.y) - Math.min(a.y,b.y);
-//        float z = Math.max(a.z,b.z) - Math.min(a.z,b.z);
-
-        float x = a.x - b.x;
-        float y = a.y - b.y;
-        float z = a.z - b.z;
-
-        return new Vector3f(x, y, z);
-    }
-
-    public void setScaleDelta(float sd)
-    {
-        mScaleDelta = sd;
-    }
-
-    public float getScaleDelta()
-    {
-        return mScaleDelta;
-    }
-
-    public Vector3f getPositioinDelta()
-    {
-        return mPositionDelta;
-    }
-
-    public void setPositionDelta(Vector3f delta)
-    {
-        mPositionDelta = delta;
-    }
-
-    public Vector3f getRotationDelta()
-    {
-        return mRotationDelta;
-    }
-
-    public void setRotationDelta(Vector3f delta)
-    {
-        mRotationDelta = delta;
-    }
-
-    public int getDrawableID()
-    {
-        return mDrawableID;
-    }
-
-    public void show()
-    {
-        _Tracer.info("Delta for ID: " + mDrawableID);
-        _Tracer.info(String.format("\tPOS: X:%f Y:%f Z:%f", mPositionDelta.x, mPositionDelta.y, mPositionDelta.z));
-        _Tracer.info(String.format("\tROT: X:%f Y:%f Z:%f", mRotationDelta.x, mRotationDelta.y, mRotationDelta.z));
-    }
+void daFrameDeltaPrintDebug(daFrameDelta* obj) {
+    fprintf(stdout,"Delta for ID: %d\n"     , obj->drawableID);
+    fprintf(stdout,"\tPOS: X:%f Y:%f Z:%f\n", obj->positionDelta[DA_X], obj->positionDelta[DA_Y], obj->positionDelta[DA_Z]);
+    fprintf(stdout,"\tROT: X:%f Y:%f Z:%f\n", obj->rotationDelta[DA_X], obj->rotationDelta[DA_Y], obj->rotationDelta[DA_Z]);
 }

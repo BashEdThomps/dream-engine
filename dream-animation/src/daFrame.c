@@ -1,6 +1,6 @@
 #include "daFrame.h"
 
-daFrame *daFrameInit(int index) {
+daFrame* daFrameCreate(int index) {
     daFrame *retval = (daFrame*)malloc(sizeof(daFrame));
     retval->index = index;
     return retval;

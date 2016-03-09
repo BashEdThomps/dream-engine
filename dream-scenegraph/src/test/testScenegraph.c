@@ -1,7 +1,7 @@
 /*
 * test_graph.c
 */
-#include <unit.h>
+#include "../../../unit/src/unit.h"
 #include <stdio.h>
 
 #include "../dsgScenegraph.h"

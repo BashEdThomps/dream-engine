@@ -1,87 +1,24 @@
-/* 
- * Property of Octronic, 2014
- * http://octronic.org
- * All Rights Reserved
- */
-package org.octronic.graphicsengine.animation;
+#ifndef DA_KEYFRAME_H
+#define DA_KEYFRAME_H
 
-import java.util.ArrayList;
-import java.util.List;
-import org.octronic.graphicsengine.scene.Scene;
+#include "daFrameDelta.h"
+#include "../../dream-scenegraph/src/dsgScenegraph.h"
 
-/**
- *
- * @author ashley
- */
-public class KeyFrame implements Comparable
-{
-    private int mIndex;
-    private List<FrameDelta> mDeltas;
-    private long mDuration;
-    private Scene mParent;
-    private boolean mWrap;
-    
-    public KeyFrame(Scene parent, int index, long duration)
-    {
-        mIndex = index;
-        mDuration = duration;
-        mParent = parent;
-        mDeltas = new ArrayList<>();
-    }
-    
-    public void addDelta(FrameDelta d)
-    {
-        mDeltas.add(d);
-    }
-    
-    public List<FrameDelta> getDeltas()
-    {
-        return mDeltas;
-    }
-    
-    public void setDuration(long duration)
-    {
-        mDuration = duration;
-    }
-    
-    public long getDuration()
-    {
-        return mDuration;
-    }
-    
-    public int getIntermediates()
-    {
-        return (int)( (((float)mDuration/1000))*mParent.getFPS());
-    }
-    
-    public int getIndex()
-    {
-        return mIndex;
-    }
-    
-    @Override
-    public int compareTo(Object t)
-    {
-        int otherIndex = ((KeyFrame)t).getIndex();
-        return new Integer(mIndex).compareTo(otherIndex);
-    }
+#define DA_KEYFRAME_DELTAS_SZ 256
 
-    public FrameDelta getDeltaByDrawableID(int drawableID)
-    {
-        for (FrameDelta d : mDeltas)
-        {
-           if (d.getDrawableID() == drawableID) return d; 
-        }
-        return null;
-    }
+typedef struct {
+    int index;
+    daFrameDelta** deltas;
+    long duration;
+    dsgScenegraph* parent;
+    int wrap;
+} daKeyFrame;
 
-    public boolean isWrap()
-    {
-        return mWrap;
-    }
-    
-    public void setWrap(boolean b)
-    {
-        mWrap = b;
-    }
-}
+daKeyFrame*   daKeyFrameCreate                (dsgScenegraph*, int, long);
+void          daKeyFrameAddDelta              (daKeyFrame*, daFrameDelta*);
+int           daKeyFrameGetNextAvailableIndex (daKeyFrame*);
+int           daKeyFrameGetIntermediates      (daKeyFrame*);
+int           daKeyFrameCompareIndicies       (daKeyFrame*, daKeyFrame*);
+daFrameDelta* daKeyFrameGetDeltaByDrawableID  (daKeyFrame*, int);
+
+#endif // DA_KEYFRAME_H

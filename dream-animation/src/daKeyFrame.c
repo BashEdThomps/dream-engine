@@ -1,87 +1,40 @@
-/* 
- * Property of Octronic, 2014
- * http://octronic.org
- * All Rights Reserved
- */
-package org.octronic.graphicsengine.animation;
+#include "daKeyFrame.h"
 
-import java.util.ArrayList;
-import java.util.List;
-import org.octronic.graphicsengine.scene.Scene;
+daKeyFrame* daKeyFrameCreate(dsgScenegraph *parent, int index, long duration) {
+    daKeyFrame *retval = (daKeyFrame*) malloc (sizeof(daKeyFrame));
+    retval->index = index;
+    retval->duration = duration;
+    retval->parent = parent;
+    retval->deltas = (daFrameDelta**) malloc(sizeof(daFrameDelta*)*DA_KEYFRAME_DELTAS_SZ);
+    return retval;
+}
 
-/**
- *
- * @author ashley
- */
-public class KeyFrame implements Comparable
-{
-    private int mIndex;
-    private List<FrameDelta> mDeltas;
-    private long mDuration;
-    private Scene mParent;
-    private boolean mWrap;
-    
-    public KeyFrame(Scene parent, int index, long duration)
-    {
-        mIndex = index;
-        mDuration = duration;
-        mParent = parent;
-        mDeltas = new ArrayList<>();
-    }
-    
-    public void addDelta(FrameDelta d)
-    {
-        mDeltas.add(d);
-    }
-    
-    public List<FrameDelta> getDeltas()
-    {
-        return mDeltas;
-    }
-    
-    public void setDuration(long duration)
-    {
-        mDuration = duration;
-    }
-    
-    public long getDuration()
-    {
-        return mDuration;
-    }
-    
-    public int getIntermediates()
-    {
-        return (int)( (((float)mDuration/1000))*mParent.getFPS());
-    }
-    
-    public int getIndex()
-    {
-        return mIndex;
-    }
-    
-    @Override
-    public int compareTo(Object t)
-    {
-        int otherIndex = ((KeyFrame)t).getIndex();
-        return new Integer(mIndex).compareTo(otherIndex);
-    }
+void daKeyFrameAddDelta(daKeyFrame* keyFrame, daFrameDelta* frameDelta) {
+    int index = daKeyFrameGetNextAvailableIndex(keyFrame);
+    keyFrame->deltas[index] = frameDelta;
+    return;
+}
 
-    public FrameDelta getDeltaByDrawableID(int drawableID)
-    {
-        for (FrameDelta d : mDeltas)
-        {
-           if (d.getDrawableID() == drawableID) return d; 
+int daKeyFrameGetNextAvailableIndex(daKeyFrame* keyFrame) {
+    return -1;
+}
+
+int daKeyFrameGetIntermediates(daKeyFrame* keyFrame) {
+    return (int)((((float)keyFrame->duration/1000))*DA_FPS);
+}
+
+int daKeyFrameCompareIndicies(daKeyFrame* obj1, daKeyFrame* obj2) {
+    return obj2->index - obj1->index;
+}
+
+daFrameDelta* daKeyFrameGetDeltaByDrawableID(daKeyFrame* keyFrame, int drawableID) {
+    daFrameDelta *next = 0;
+    int i;
+    for (i=0;i<DA_KEYFRAME_DELTAS_SZ;i++) {
+        next = keyFrame->deltas[i];
+        if (next->drawableID == drawableID) {
+            return next;
         }
-        return null;
     }
-
-    public boolean isWrap()
-    {
-        return mWrap;
-    }
-    
-    public void setWrap(boolean b)
-    {
-        mWrap = b;
-    }
+    return 0;
 }

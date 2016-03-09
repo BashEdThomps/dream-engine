@@ -1,0 +1,6 @@
+#ifndef TEST_KEYFRAMEANIMATION_H
+#define TEST_KEYFRAMEANIMATION_H
+
+void testKeyFrameAnimation(void);
+
+#endif // TEST_KEYFRAMEANIMATION_H
