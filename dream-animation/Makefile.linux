@@ -49,9 +49,9 @@ TEST_OUT_DIR := $(BUILD_OUT_DIR)/$(TEST)
 CONF_OUT_DIR := $(BUILD_OUT_DIR)/$(CONF)
 DOCS_OUT_DIR := $(BUILD_OUT_DIR)/$(DOCS)
 
-LFLAGS := -L$(LIB_OUT_DIR) -fPIC -lUnit
+LFLAGS := -L$(LIB_OUT_DIR) -fPIC -lUnit -lDreamSceneGraph
 TEST_LFLAGS := $(LFLAGS) -l$(NAME)
-GL_TEST_LFLAGS := $(LFLAGS) -lGL -lGLU  -lglut
+GL_TEST_LFLAGS := $(LFLAGS) -lGL -lGLU  -lglut -lDreamSceneGraph
 
 # Inputs
 SOURCES :=$(shell find $(C_SRC)/ -type f -name '*.c') # $(wildcard $(C_SRC)/*.c)

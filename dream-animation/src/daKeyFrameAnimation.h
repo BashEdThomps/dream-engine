@@ -1,6 +1,8 @@
 #ifndef DA_KEYFRAMEANIMATION_H
 #define DA_KEYFRAMEANIMATION_H
 
+#include <stdlib.h>
+#include <stdio.h>
 #include "daKeyFrame.h"
 #include "daFrame.h"
 
@@ -14,6 +16,7 @@ typedef struct {
     daFrame    **frames;
     int         *drawables;
     int          currentFrame;
+    int          currentKeyFrame;
     int          done;
 
 } daKeyFrameAnimation;
@@ -24,52 +27,56 @@ daKeyFrameAnimation* daKeyFrameAnimationCreate()  {
     kfa->frames              = (daFrame**)    malloc(sizeof(daFrame*)    * DA_KEYFRAMEANIM_FRAMES_SZ   );
     kfa->drawables           = (int*)         malloc(sizeof(int)         * DA_KEYFRAMEANIM_DRAWABLES_SZ);
     kfa->currentFrame        = 0;
+    kfa->currentKeyFrame     = 0;
     return kfa;
 }
 
-void daKeyFrameAnimationGenerateFrames() {
+void daKeyFrameAnimationGenerateFrames(daKeyFrameAnimation* kfa) {
         int currentKeyFrame = 0;
         int currentFrame = 0;
 
-        while (true) {
-            daKeyFrame* source = getKeyFrame(currentKeyFrame);
-            daKeyFrame* target = getKeyFrame(currentKeyFrame + 1);
+        while (1) {
+            daKeyFrame* source = kfa->keyFrames[currentKeyFrame];
+            daKeyFrame* target = kfa->keyFrames[currentKeyFrame+1];
 
-            if (source == null) {
-                _Tracer.debug("Finished generating frames");
+            if (source == NULL) {
+                fprintf(stdout, "Finished generating frames\n");
                 break;
             }
 
-            if (target == null) {
+            if (target == NULL) {
                 if (source->wrap) {
-                    target = getKeyFrame(0);
+                    target = kfa->keyFrames[0];
                 } else {
-                    _Tracer.debug("Finished generating frames");
+                    fprintf(stdout,"Finished generating frames\n");
                     break;
                 }
             }
 
-            _Tracer.info("Generating frames for " + source.getIndex() + " >> " + (target.getIndex()));
+            fprintf(stdout,"Generating frames for %d >> %d\n" , source->index, target->index);
 
-            int intermediates = source.getIntermediates();
-            _Tracer.info("\t with " + intermediates + " intermediate");
+            int intermediates = daKeyFrameGetIntermediates(source);
+            fprintf(stdout, "\t with %d intermediates\n", intermediates);
+
             int i;
             for (i = 0; i < intermediates; i++) {
-                Frame f = new Frame(currentFrame);
-
-                for (FrameDelta d : source.getDeltas()) {
-                    //_Tracer.info("Creatng delta for " + d.getDrawableID());
-                    daKeyFrameDelta* dest = target.getDeltaByDrawableID(d.getDrawableID());
-                    daKeyFrameDelta* moveBy = d.getMotionDelta(d, dest, intermediates, i);
-                    //moveBy.show();
+                daFrame *frame = daFrameCreate(currentFrame);
+                int j;
+                daFrameDelta *nextDelta;
+                for (j=0;i<DA_FRAME_DELTA_SZ;j++) { //FrameDelta d : source.getDeltas()) {
+                    nextDelta = frame->frameDeltas[j];
+                    fprintf(stdout,"Creatng delta for " + d.getDrawableID());
+                    daFrameDelta* dest = target->.getDeltaByDrawableID(d.getDrawableID());
+                    daFrameDelta* moveBy = d.getMotionDelta(d, dest, intermediates, i);
+                    daFrameDeltaPrintDebug(moveBy);
                     daFrameAddMotionDelta(f,moveBy);
                 }
 
                 mFrames.add(f);
-                currentFrame++;
+                kfa->currentFrame++;
             }
             // Move on to the next KeyFrame
-            currentKeyFrame++;
+            kfa->currentKeyFrame++;
         }
     }
 
