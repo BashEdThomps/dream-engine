@@ -15,5 +15,6 @@ void     daFrameAddMotionDelta                  (daFrame*, daFrameDelta*);
 int      daFrameGetNextAvailableFrameDeltaIndex (daFrame*);
 int      daFrameGetIndex                        (daFrame* frame);
 int      daFrameCompareIndecies                 (daFrame*, daFrame*);
+int      daFrameGetNumFrameDeltas               (daFrame*);
 
 #endif // DA_FRAME

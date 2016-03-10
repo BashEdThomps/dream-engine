@@ -1,10 +1,10 @@
+#include <stdlib.h>
 #include "daKeyFrame.h"
 
-daKeyFrame* daKeyFrameCreate(dsgScenegraph *parent, int index, long duration) {
+daKeyFrame* daKeyFrameCreate(int index, long duration) {
     daKeyFrame *retval = (daKeyFrame*) malloc (sizeof(daKeyFrame));
     retval->index = index;
     retval->duration = duration;
-    retval->parent = parent;
     retval->deltas = (daFrameDelta**) malloc(sizeof(daFrameDelta*)*DA_KEYFRAME_DELTAS_SZ);
     return retval;
 }
