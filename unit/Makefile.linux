@@ -31,10 +31,10 @@ LIB     := lib
 INC     := include
 TEST    := test
 CONF    := conf
-DOCS    := docs
 OBJ     := obj
 SRC     := src
 TEST    := test
+DOCS    := docs
 
 # Output Paths
 BUILD_OUT_DIR := ../$(BUILD)/$(TARGET)
@@ -59,8 +59,8 @@ all: $(LIB_OUT_DIR)/$(OUTPUT)
 # Target #######################################################################
 
 $(OBJECTS): $(OBJ)/%.o : $(SRC)/%.c
-	$(MKDIR) $(OBJ) 
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(MKDIR) $(OBJ) 
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIB_OUT_DIR)/$(OUTPUT): $(OBJECTS)
 	$(CC) -shared $(OBJECTS) $(CFLAGS) $(LFLAGS) -o $@
@@ -85,3 +85,15 @@ $(TEST_OBJECTS): $(OBJ)/%.o : $(TEST)/%.c
 .PHONY: clean
 clean:
 	$(RM) $(OBJ)
+
+# Documentation ################################################################
+.PHONY: $(DOCS)
+$(DOCS): Doxyfile
+	$(DOXYGEN)
+
+Doxyfile:
+	$(DOXYGEN) -g
+	$(VIM) Doxyfile
+	$(RM) Doxyfile.bak
+
+

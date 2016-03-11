@@ -99,19 +99,19 @@ Doxyfile:
 
 $(OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/%.c
 	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
-	$(CC) $(CFLAGS) -c $< -g -o $@
+	@$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(CPP_OBJECTS): $(CPP_OBJ)/%.o : $(CPP_SRC)/%.cpp
 	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
-	$(CPP) $(CPPFLAGS) -c $< -g -o $@
+	@$(CPP) $(CPPFLAGS) -c $< -g -o $@
 
 $(TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(TEST)/%.c
 	@$(MKDIR) $(C_OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(GL_TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(GL_TEST)/%.c
 	@$(MKDIR) $(C_OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Build Binaries ###############################################################
 

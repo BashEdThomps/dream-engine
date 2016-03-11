@@ -5,16 +5,23 @@
 
 #include "daFrameDelta.h"
 
+//! TODO - Document
 typedef struct {
     int           index;
     daFrameDelta* frameDeltas[DA_FRAME_DELTA_SZ];
 } daFrame;
 
+//! TODO - Document
 daFrame *daFrameCreate                          (int);
-void     daFrameAddMotionDelta                  (daFrame*, daFrameDelta*);
+//! TODO - Document
+void     daFrameAddFrameDelta                   (daFrame*, daFrameDelta*);
+//! TODO - Document
 int      daFrameGetNextAvailableFrameDeltaIndex (daFrame*);
+//! TODO - Document
 int      daFrameGetIndex                        (daFrame* frame);
+//! TODO - Document
 int      daFrameCompareIndecies                 (daFrame*, daFrame*);
+//! TODO - Document
 int      daFrameGetNumFrameDeltas               (daFrame*);
 
 #endif // DA_FRAME

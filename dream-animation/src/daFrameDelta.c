@@ -24,7 +24,7 @@ daFrameDelta* daFrameDeltaCreate(int drawableId, int operation) {
     return retval;
 }
 
-daFrameDelta* daFrameDeltaGetMotionDelta(
+daFrameDelta* daFrameDeltaComputeFrameDelta(
     daFrameDelta* start,
     daFrameDelta* end,
     int steps,

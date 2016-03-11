@@ -74,6 +74,7 @@ gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 gl_test_gdb: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 	LD_LIBRARY_PATH=../$(LIB_OUT_DIR) $(GDB) $(BIN)/$(GL_TEST_BIN)
 
+# Documentation ################################################################
 .PHONY: $(DOCS)
 $(DOCS): Doxyfile
 	$(DOXYGEN)
@@ -86,16 +87,16 @@ Doxyfile:
 # Build Objects ################################################################
 
 $(OBJECTS): $(OBJ)/%.o : $(SRC)/%.c
-	$(MKDIR) $(OBJ)
-	$(CC) $(CFLAGS) -c $< -g -o $@
+	@$(MKDIR) $(OBJ)
+	@$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(TEST)/%.c
-	$(MKDIR) $(OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(MKDIR) $(OBJ)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(GL_TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(GL_TEST)/%.c
-	$(MKDIR) $(OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(MKDIR) $(OBJ)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Build Binaries ###############################################################
 

@@ -1,11 +1,25 @@
 #ifndef TEST_FRAME_H
 #define TEST_FRAME_H
 
-void testFrame(void);
-void testFrameCreate(void);
-void testFrameAddMotionDelta(void);
+//! Run all daFrame tests.
+void testFrame              (void);
+
+//! Test creating a daFrame.
+void testFrameCreate        (void);
+
+//! Tests adding a daFrameDelta to a daFrame.
+void testFrameAddFrameDelta (void);
+
+//! Run all Frame Tests.
 void testFrameGetNextAvailableFrameDeltaIndex(void);
-void testFrameGetIndex(void);
-void testFrameCompareIndicies(void);
+
+//! Tests getting a daFrame index.
+void testFrameGetIndex          (void);
+
+//! Tests comparing indicies of two daFrames.
+void testFrameCompareIndicies   (void);
+
+//! Tests counting the number of daFrameDeltas held by the frame.
+void testFrameGetNumFrameDeltas (void);
 
 #endif  // TEST_FRAME_H

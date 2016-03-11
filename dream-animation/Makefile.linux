@@ -87,15 +87,15 @@ Doxyfile:
 
 $(OBJECTS): $(OBJ)/%.o : $(SRC)/%.c
 	$(MKDIR) $(OBJ)
-	$(CC) $(CFLAGS) -c $< -g -o $@
+	@$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(TEST)/%.c
 	$(MKDIR) $(OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(GL_TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(GL_TEST)/%.c
 	$(MKDIR) $(OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Build Binaries ###############################################################
 

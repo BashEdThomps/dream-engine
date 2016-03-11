@@ -51,7 +51,7 @@ void daKeyFrameAnimationGenerateFrames(daKeyFrameAnimation* kfa) {
                     daFrameDelta* dest;// = daKeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
                     daFrameDelta* moveBy;// = daKeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
                     daFrameDeltaPrintDebug(moveBy);
-                    daFrameAddMotionDelta(frame,moveBy);
+                    daFrameAddFrameDelta(frame,moveBy);
                 }
 		daKeyFrameAnimationAddFrame(kfa,frame);
                 kfa->currentFrame++;
