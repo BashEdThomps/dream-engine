@@ -13,9 +13,6 @@ void testFrameAddFrameDelta (void);
 //! Run all Frame Tests.
 void testFrameGetNextAvailableFrameDeltaIndex(void);
 
-//! Tests getting a daFrame index.
-void testFrameGetIndex          (void);
-
 //! Tests comparing indicies of two daFrames.
 void testFrameCompareIndicies   (void);
 

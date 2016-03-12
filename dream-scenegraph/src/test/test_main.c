@@ -4,10 +4,9 @@
 #include "testCamera.h"
 
 int main(int argc, char** argv) {
-	unitModuleHeading("DreamSceneGraph");
+	unitModuleHeading("Dream Scenegraph");
 	testNode();
 	testGraph();
 	testCamera();
-	unitModuleFooter("DreamSceneGraph");
 	return 0;
 }

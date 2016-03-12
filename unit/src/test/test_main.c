@@ -12,6 +12,4 @@ int main() {
     unitAssertPass("This shuld pass");
     unitAssertZero("Equal to Zero",0);
     unitAssertNotZero("Not equal to Zero",3);
-    unitTestFooter("Unit Tests");
-    unitModuleFooter("Unit Library");
 }

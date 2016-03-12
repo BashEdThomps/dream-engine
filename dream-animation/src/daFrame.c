@@ -29,10 +29,6 @@ int daFrameGetNextAvailableFrameDeltaIndex(daFrame* frame) {
 	return retval;
 }
 
-int daFrameGetIndex(daFrame* frame) {
-    return frame->index;
-}
-
 int daFrameCompareIndecies(daFrame* frame, daFrame* frame2) {
     return frame2->index - frame->index;
 }

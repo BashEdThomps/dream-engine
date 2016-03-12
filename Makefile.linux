@@ -20,14 +20,15 @@ CP      := cp -rf
 MAKE    := make
 MKDIR   := mkdir -p
 
-ALL   := all
-BUILD := build
-LIB   := lib
-INC   := include
-TEST  := test
-CONF  := conf
-DOCS  := docs
-
+ALL        := all
+BUILD      := build
+LIB        := lib
+INC        := include
+TEST       := test
+BUILD_TEST := build_test
+RUN_TEST   := run_test
+CONF       := conf
+DOCS       := docs
 
 BUILD_OUT_DIR := $(BUILD)/$(TARGET)
 LIB_OUT_DIR := $(BUILD_OUT_DIR)/$(LIB)
@@ -38,7 +39,8 @@ DOCS_OUT_DIR := $(BUILD_OUT_DIR)/$(DOCS)
 
 all: build \
 	docs \
-	test 
+	build_test \
+	run_test 
 
 # Make Rules ###################################################################
 
@@ -46,7 +48,7 @@ build: build_build_dirs \
 	build_unit \
 	build_dream_collision_world \
 	build_dream_animation \
-	build_unit build_dream_scenegraph 
+	build_dream_scenegraph 
 
 .PHONY: build_build_dirs
 build_build_dirs:
@@ -71,29 +73,51 @@ build_dream_collision_world:
 build_dream_animation:
 	$(MAKE) -C $(ANIMATION) $(ALL) -f Makefile.linux
 
-# Test #########################################################################
+# Build Test ###################################################################
 
-test: test_unit \
-	test_dream_animation \
-	test_dream_collision_world \
-	test_dream_scenegraph
+build_test: build_unit_test \
+	build_dream_collision_world_test \
+	build_dream_animation_test \
+	build_dream_scenegraph_test 
 
-.PHONY: test_unit
-test_unit:
-	$(MAKE) -C $(UNIT) $(TEST) -f Makefile.linux
+.PHONY: build_unit_test
+build_unit_test:
+	$(MAKE) -C $(UNIT) $(BUILD_TEST) -f Makefile.linux
 
-.PHONY: test_dream_scenegraph
-test_dream_scenegraph:
-	$(MAKE) -C $(SCENEGRAPH) $(TEST) -f Makefile.linux
+.PHONY: build_dream_scenegraph_test
+build_dream_scenegraph_test:
+	$(MAKE) -C $(SCENEGRAPH) $(BUILD_TEST) -f Makefile.linux
 
-.PHONY: test_dream_collision_world
-test_dream_collision_world:
-	$(MAKE) -C $(COLLISION_WORLD) $(TEST) -f Makefile.linux
+.PHONY: build_dream_collision_world_test
+build_dream_collision_world_test:
+	$(MAKE) -C $(COLLISION_WORLD) $(BUILD_TEST) -f Makefile.linux
 
-.PHONY: test_dream_animation
-test_dream_animation:
-	$(MAKE) -C $(ANIMATION) $(TEST) -f Makefile.linux
+.PHONY: build_dream_animation_test
+build_dream_animation_test:
+	$(MAKE) -C $(ANIMATION) $(BUILD_TEST) -f Makefile.linux
 
+# Run Test #####################################################################
+
+run_test: run_unit_test \
+	run_dream_animation_test \
+	run_dream_collision_world_test \
+	run_dream_scenegraph_test
+
+.PHONY: run_test_unit
+run_unit_test:
+	$(MAKE) -C $(UNIT) $(RUN_TEST) -f Makefile.linux
+
+.PHONY: run_test_dream_scenegraph
+run_dream_scenegraph_test:
+	$(MAKE) -C $(SCENEGRAPH) $(RUN_TEST) -f Makefile.linux
+
+.PHONY: run_dream_collision_world_test
+run_dream_collision_world_test:
+	$(MAKE) -C $(COLLISION_WORLD) $(RUN_TEST) -f Makefile.linux
+
+.PHONY: run_dream_animation_test
+run_dream_animation_test:
+	$(MAKE) -C $(ANIMATION) $(RUN_TEST) -f Makefile.linux
 
 # Documents ####################################################################
 

@@ -18,8 +18,6 @@ void     daFrameAddFrameDelta                   (daFrame*, daFrameDelta*);
 //! TODO - Document
 int      daFrameGetNextAvailableFrameDeltaIndex (daFrame*);
 //! TODO - Document
-int      daFrameGetIndex                        (daFrame* frame);
-//! TODO - Document
 int      daFrameCompareIndecies                 (daFrame*, daFrame*);
 //! TODO - Document
 int      daFrameGetNumFrameDeltas               (daFrame*);

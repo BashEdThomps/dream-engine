@@ -1,5 +1,7 @@
 ################################################################################
+#                                                                              #
 # DreamSceneGraph Makefile                                                     #
+#                                                                              #
 ################################################################################
 
 TARGET := linux
@@ -11,8 +13,8 @@ LD      := ld
 # Project Name
 NAME        := DreamSceneGraph
 OUTPUT      := lib$(NAME).so
-TEST_BIN    := Test
-GL_TEST_BIN := GLTest
+TEST_BIN    := $(NAME)Test
+GL_TEST_BIN := $(NAME)GLTest
 
 # Commands
 RM      := rm -rf
@@ -56,25 +58,26 @@ GL_TEST_OBJECTS := $(GL_TEST_SOURCES:$(SRC)/$(GL_TEST)/%.c=$(OBJ)/%.o)
 
 all: $(LIB_OUT_DIR)/$(OUTPUT)
 
-# Tests irectives ##############################################################
+# Tests Executables ############################################################
 
-.PHONY: test
-test: $(TEST_OUT_DIR)/$(TEST_BIN)
+.PHONY: run_test
+run_test: $(TEST_OUT_DIR)/$(TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(TEST_BIN)
 
-.PHONY: gdb_test
-gdb_test: $(TEST_OUT_DIR)/$(TEST_BIN)
+.PHONY: run_gdb_test
+run_gdb_test: $(TEST_OUT_DIR)/$(TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(GDB) $(TEST_OUT_DIR)/$(TEST_BIN)
 
-.PHONY: gl_test
-gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
+.PHONY: run_gl_test
+run_gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 
-.PHONY: gl_test_gdb
-gl_test_gdb: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
+.PHONY: run_gl_test_gdb
+run_gl_test_gdb: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 	LD_LIBRARY_PATH=../$(LIB_OUT_DIR) $(GDB) $(BIN)/$(GL_TEST_BIN)
 
 # Documentation ################################################################
+
 .PHONY: $(DOCS)
 $(DOCS): Doxyfile
 	$(DOXYGEN)
@@ -84,30 +87,38 @@ Doxyfile:
 	$(VIM) Doxyfile
 	$(RM) Doxyfile.bak
 
-# Build Objects ################################################################
+# Build ########################################################################
 
 $(OBJECTS): $(OBJ)/%.o : $(SRC)/%.c
-	@$(MKDIR) $(OBJ)
-	@$(CC) $(CFLAGS) -c $< -g -o $@
-
-$(TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(TEST)/%.c
-	@$(MKDIR) $(OBJ)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-$(GL_TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(GL_TEST)/%.c
-	@$(MKDIR) $(OBJ)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# Build Binaries ###############################################################
+	$(MKDIR) $(OBJ)
+	$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(LIB_OUT_DIR)/$(OUTPUT): $(OBJECTS)
 	$(CC) -shared $(OBJECTS) $(LDFLAGS) -o $@
 
+# Test Directives ##############################################################
+
+.PHONY: build_test
+build_test: $(TEST_OUT_DIR)/$(TEST_BIN)
+
 $(TEST_OUT_DIR)/$(TEST_BIN): $(OBJECTS) $(TEST_OBJECTS)
 	$(CC) $(OBJECTS) $(TEST_OBJECTS) $(LDFLAGS) -o $@
 
+$(TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(TEST)/%.c
+	$(MKDIR) $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# GL Test Directives ###########################################################
+
+.PHONY: build_gl_test
+build_gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
+
 $(TEST_OUT_DIR)/$(GL_TEST_BIN): $(OBJECTS) $(GL_TEST_OBJECTS)
 	$(CC) $(OBJECTS) $(GL_TEST_OBJECTS) $(LDFLAGS) $(GL_TEST_LDFLAGS) -o $@
+
+$(GL_TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(GL_TEST)/%.c
+	$(MKDIR) $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Clean ########################################################################
 
@@ -115,3 +126,4 @@ $(TEST_OUT_DIR)/$(GL_TEST_BIN): $(OBJECTS) $(GL_TEST_OBJECTS)
 clean:
 	$(RM) $(DOCS)
 	$(RM) $(OBJ)
+	$(RM) $(DOCS)

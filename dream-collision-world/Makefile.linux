@@ -68,21 +68,21 @@ GL_TEST_OBJECTS := $(GL_TEST_SOURCES:$(C_SRC)/$(GL_TEST)/%.c=$(C_OBJ)/%.o)
 
 all: $(LIB_OUT_DIR)/$(OUTPUT)
 
-# Tests irectives ##############################################################
+# Tests Directives #############################################################
 
-.PHONY: test
-test: $(TEST_OUT_DIR)/$(TEST_BIN)
+.PHONY: run_test
+run_test: $(TEST_OUT_DIR)/$(TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(TEST_BIN)
 
-.PHONY: gdb_test
-gdb_test: $(TEST_OUT_DIR)/$(TEST_BIN)
+.PHONY: run_gdb_test
+run_gdb_test: $(TEST_OUT_DIR)/$(TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(GDB) $(TEST_OUT_DIR)/$(TEST_BIN)
 
-.PHONY: gl_test
-gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
+.PHONY: run_gl_test
+run_gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 
-.PHONY: gl_test_gdb
+.PHONY: run_gl_test_gdb
 gl_test_gdb: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(GDB) $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 
@@ -95,34 +95,42 @@ Doxyfile:
 	$(VIM) Doxyfile
 	$(RM)  Doxyfile.bak
 
-# Build Objects ################################################################
+# Build ########################################################################
 
 $(OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/%.c
 	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
-	@$(CC) $(CFLAGS) -c $< -g -o $@
+	$(CC) $(CFLAGS) -c $< -g -o $@
 
 $(CPP_OBJECTS): $(CPP_OBJ)/%.o : $(CPP_SRC)/%.cpp
 	@$(ECHO) $@ | sed 's/\(.*\)\/.*/\1/' | xargs $(MKDIR)
-	@$(CPP) $(CPPFLAGS) -c $< -g -o $@
-
-$(TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(TEST)/%.c
-	@$(MKDIR) $(C_OBJ)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-$(GL_TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(GL_TEST)/%.c
-	@$(MKDIR) $(C_OBJ)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# Build Binaries ###############################################################
+	$(CPP) $(CPPFLAGS) -c $< -g -o $@
 
 $(LIB_OUT_DIR)/$(OUTPUT): $(C_OBJECTS) $(CPP_OBJECTS)
 	$(CPP) -shared $(C_OBJECTS) $(CPP_OBJECTS) $(LFLAGS) -o $@
 
+# Testing ######################################################################
+
+.PHONY: build_test
+build_test: $(TEST_OUT_DIR)/$(TEST_BIN)
+
 $(TEST_OUT_DIR)/$(TEST_BIN): $(C_OBJECTS) $(TEST_OBJECTS)
 	$(CPP) $(C_OBJECTS) $(TEST_OBJECTS) $(TEST_LFLAGS) -o $@
 
+$(TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(TEST)/%.c
+	$(MKDIR) $(C_OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# GL Testing ###################################################################
+
+.PHONY: build_gl_test
+build_gl_test:  $(TEST_OUT_DIR)/$(GL_TEST_BIN)
+
 $(TEST_OUT_DIR)/$(GL_TEST_BIN): $(C_OBJECTS) $(GL_TEST_OBJECTS)
 	$(CPP) $(C_OBJECTS) $(GL_TEST_OBJECTS) $(GL_TEST_LFLAGS) -o $@
+
+$(GL_TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(GL_TEST)/%.c
+	$(MKDIR) $(C_OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Clean ########################################################################
 
@@ -131,14 +139,3 @@ clean:
 	$(RM) $(C_OBJ)
 	$(RM) $(CPP_OBJ)
 	$(RM) $(DOCS)
-
-# Documentation ################################################################
-.PHONY: $(DOCS)
-$(DOCS): Doxyfile
-	$(DOXYGEN)
-
-Doxyfile:
-	$(DOXYGEN) -g
-	$(VIM) Doxyfile
-	$(RM) Doxyfile.bak
-

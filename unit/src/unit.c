@@ -6,7 +6,7 @@
 
 void unitModuleHeading(char* name) {
 	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
-	snprintf(buf,BUFFER_SZ,"---> Start Testing Module: %s <---",name);
+	snprintf(buf,BUFFER_SZ,"===============[ Start Testing Module: %s ]===============",name);
 	char* formatted = unitBold(buf);
 	fprintf(stdout,"%s\n",formatted);
 	free(buf);
@@ -16,7 +16,7 @@ void unitModuleHeading(char* name) {
 
 void unitTestHeading(char* name) {
 	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
-	snprintf(buf,BUFFER_SZ,"** Testing: %s **",name);
+	snprintf(buf,BUFFER_SZ,"-----[ Testing: %s ]-----",name);
 	char* formatted = unitBold(buf);
 	fprintf(stdout,"%s\n",formatted);
 	free(buf);
@@ -26,7 +26,7 @@ void unitTestHeading(char* name) {
 
 void unitModuleFooter(char* name) {
 	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
-	snprintf(buf,BUFFER_SZ,"--> Finished Testing Module: %s <--",name);
+	snprintf(buf,BUFFER_SZ,"===============[ Finished Testing Module: %s ]===============",name);
 	char* formatted = unitBold(buf);
 	fprintf(stdout,"%s\n",formatted);
 	free(buf);
@@ -36,7 +36,7 @@ void unitModuleFooter(char* name) {
 
 void unitTestFooter(char* name) {
 	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
-	snprintf(buf,BUFFER_SZ,"** Finished Testing: %s **",name);
+	snprintf(buf,BUFFER_SZ,"-----[ Finished Testing: %s ]-----",name);
 	char* formatted = unitBold(buf);
 	fprintf(stdout,"%s\n",formatted);
 	free(buf);
@@ -240,5 +240,11 @@ void unitAssertNull(char* name, void* val) {
 }
 
 void unitPrintComment(char* comment) {
-	fprintf(stdout,"%s\n",unitBold(comment));
+	char* buf = (char*)malloc(sizeof(char)*BUFFER_SZ);
+	snprintf(buf,BUFFER_SZ,"-[ %s",comment);
+	char* formatted = unitBold(buf);
+	fprintf(stdout,"%s\n",formatted);
+	free(buf);
+	free(formatted);
+	return;
 }
