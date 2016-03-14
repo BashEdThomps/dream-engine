@@ -4,10 +4,13 @@
 struct dcwCollisionDispatcher;
 typedef struct dcwCollisionDispatcher dcwCollisionDispatcher;
 
+#include "dcwDefaultCollisionConfiguraion.h"
+#include "dcwPersistentManifold.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-	dcwCollisionDispatcher*     dcwCollisionDispatcherCreate  (void);
+	dcwCollisionDispatcher*     dcwCollisionDispatcherCreate  (dcwDefaultCollisionConfiguration*);
 	void                        dcwCollisionDispatcherDestroy (dcwCollisionDispatcher*);
 	int                         dcwCollisionDispatcherGetNumManifolds(dcwCollisionDispatcher*);
 	dcwPersistentManifold*      dcwGetManifoldByIndexInternal(dcwCollisionDispatcher* , int);

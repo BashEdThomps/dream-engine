@@ -6,6 +6,7 @@
 #include "../LinearMath/btVector3.h"
 #endif
 
+#include "dcwPersistentManifold.h"
 #include "dcwCollisionWorld.h"
 
 #ifdef __cplusplus
@@ -65,6 +66,12 @@ extern "C" {
 		btCollisionWorld* btWorld = reinterpret_cast<btCollisionWorld*>(world);
 		btWorld->performDiscreteCollisionDetection();
 		return;
+	}
+
+	dcwCollisionDispatcher* dcwCollisionWorldGetDispatcher(dcwCollisionWorld* world) {
+		return reinterpret_cast<dcwCollisionDispatcher*> (
+			reinterpret_cast<btCollisionWorld*>(world)->getDispatcher()
+		);
 	}
 #ifdef __cplusplus
 }

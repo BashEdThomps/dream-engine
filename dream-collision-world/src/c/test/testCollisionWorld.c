@@ -5,6 +5,7 @@
 #include "../../cpp/CWrapper/dcwVector3.h"
 #include "../../cpp/CWrapper/dcwTransform.h"
 #include "../../cpp/CWrapper/dcwSortedOverlappingPairCache.h"
+#include "../../cpp/CWrapper/dcwManifoldPoint.h"
 
 #include "testCollisionWorld.h"
 
@@ -174,19 +175,25 @@ void testColWorldTwoBoxCollision() {
 	dcwCollisionWorldPerformDiscreteCollisionDetection(world);
 
 	dcwSortedOverlappingPairCache* pairCache = dcwSortedOverlappingPairCacheCreate();
+	dcwCollisionDispatcher* dispatcher = dcwCollisionWorldGetDispatcher(world);
 
-	int numManifolds = dcwCollisionWorldGetDispatcher(world)->getNumManifolds();
-	for (int i=0;i<numManifolds;i++) {
-		dcwPersistentManifold* contactManifold = world->getDispatcher()->getManifoldByIndexInternal(i);
-		dcwCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
-		dcwCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
-		int numContacts = contactManifold->getNumContacts();
+	int numManifolds = dcwCollisionDispatcherGetNumManifolds(dispatcher);
+	int i;
+	dcwPersistentManifold *nextManifold = 0;
+	for (i=0; i<numManifolds; i++) {
+		nextManifold = dcwCollisionDispatcherGetManifoldByIndexInternal(dispatcher, i);
+
+		dcwCollisionObject* obA = dcwPersistentManifoldGetBody0(nextManifold);
+		dcwCollisionObject* obB = dcwPersistentManifoldGetBody1(nextManifold);
+
+		int numContacts = dcwPersistentManifoldGetNumContacts(nextManifold);
+
 		for (int j=0;j<numContacts;j++) {
-			dcwManifoldPoint& pt = contactManifold->getContactPoint(j);
-			if (pt.getDistance()<0.f) {
-				const dcwVector3& ptA = pt.getPositionWorldOnA();
-				const dcwVector3& ptB = pt.getPositionWorldOnB();
-				const dcwVector3& normalOnB = pt.m_normalWorldOnB;
+			dcwManifoldPoint *pt = dcwPersistentManifoldGetContactPoint(nextManifold,j);
+			if (dcwManifoldPointGetDistance(pt) < 0.f) {
+				const dcwVector3* ptA       = dcaManifoldPointGetPositionWorldOnA (pt);
+				const dcwVector3* ptB       = dcwManifoldPointGetPositionWorldOnB (pt);
+				const dcwVector3* normalOnB = dcwManifoldPointGetNormalWorldOnB   (pt);
 			}
 		}
 	}

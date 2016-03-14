@@ -25,14 +25,15 @@ void dcwCollisionDispatcherDestroy(dcwCollisionDispatcher* obj) {
 }
 
 int dcwCollisionDispatcherGetNumManifolds(dcwCollisionDispatcher* obj) {
-	return reinterpret_cast<btDefaultCollisionConfiguration*>(obj)->getNumManifolds();
+	return (reinterpret_cast<btCollisionDispatcher*>(obj))->getNumManifolds();
 }
 
-dcwPersistentManifold* dcwGetManifoldByIndexInternal(dcwCollisionDispatcher* obj , int index) {
+dcwPersistentManifold* dcwCollisionDispatcherGetManifoldByIndexInternal(dcwCollisionDispatcher* obj , int index) {
 	return reinterpret_cast<dcwPersistentManifold*>(
-		(reinterpret_cast<btCollisionDispatcher*>obj)->getManifoldByIndexInternal(index)
+		(reinterpret_cast<btCollisionDispatcher*>(obj))->getManifoldByIndexInternal(index)
 	);
 }
+
 #ifdef __cplusplus
 }
 #endif
