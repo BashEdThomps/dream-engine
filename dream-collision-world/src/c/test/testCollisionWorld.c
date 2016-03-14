@@ -190,8 +190,8 @@ void testColWorldTwoBoxCollision() {
 
 		for (int j=0;j<numContacts;j++) {
 			dcwManifoldPoint *pt = dcwPersistentManifoldGetContactPoint(nextManifold,j);
-			if (dcwManifoldPointGetDistance(pt) < 0.f) {
-				const dcwVector3* ptA       = dcaManifoldPointGetPositionWorldOnA (pt);
+			if (dcwScalarGetValue(dcwManifoldPointGetDistance(pt)) < 0.f) {
+				const dcwVector3* ptA       = dcwManifoldPointGetPositionWorldOnA (pt);
 				const dcwVector3* ptB       = dcwManifoldPointGetPositionWorldOnB (pt);
 				const dcwVector3* normalOnB = dcwManifoldPointGetNormalWorldOnB   (pt);
 			}

@@ -15,10 +15,10 @@ extern "C" {
 dcwPersistentManifold* dcwPersistentManifoldCreate();
 void dcwPersistentManifoldDestroy(dcwPersistentManifold*);
 
-dcwCollisionObject* dcwPersistentManifoldGetBody0(dcwPersistentManifold*);
-dcwCollisionObject* dcwPersistentManifoldGetBody1(dcwPersistentManifold*);
+const dcwCollisionObject* dcwPersistentManifoldGetBody0(dcwPersistentManifold*);
+const dcwCollisionObject* dcwPersistentManifoldGetBody1(dcwPersistentManifold*);
 int dcwPersistentManifoldGetNumContacts(dcwPersistentManifold*);
-dcwManifoldPoint* dcwPersistentManifoldGetContactPoint(dcwPersistentManifold*);
+dcwManifoldPoint* dcwPersistentManifoldGetContactPoint(dcwPersistentManifold*, int);
 
 	//const dcwVector3* dcwManifoldPointGetNormalWorldOnA   (dcwManifoldPoint*);
 #ifdef __cplusplus

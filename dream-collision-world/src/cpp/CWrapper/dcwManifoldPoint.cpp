@@ -1,8 +1,10 @@
+#include "dcwScalar.h"
 #include "dcwManifoldPoint.h"
 #include "dcwVector3.h"
 
 #ifdef __cplusplus
 #include "../BulletCollision/NarrowPhaseCollision/btManifoldPoint.h"
+#include "../LinearMath/btScalar.h"
 #endif
 
 dcwManifoldPoint* dcwManifoldPointCreate(void) {
@@ -42,3 +44,7 @@ dcwVector3* dcwManifoldPointGetNormalWorldOnB  (dcwManifoldPoint* obj) {
 
 }
 
+dcwScalar* dcwManifoldPointGetDistance(dcwManifoldPoint* obj) {
+	btScalar scalar = reinterpret_cast<btManifoldPoint*>(obj)->getDistance();
+	return reinterpret_cast<dcwScalar*>(&scalar);
+}

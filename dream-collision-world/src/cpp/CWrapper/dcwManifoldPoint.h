@@ -1,6 +1,7 @@
 #ifndef DCW_MANIFOLDPOINT_H
 #define DCW_MANIFOLDPOINT_H
 
+#include "dcwScalar.h"
 #include "dcwVector3.h"
 
 struct dcwManifoldPoint;
@@ -17,6 +18,8 @@ extern "C" {
 	const dcwVector3* dcwManifoldPointGetPositionWorldOnB (dcwManifoldPoint*);
 
 	dcwVector3* dcwManifoldPointGetNormalWorldOnB   (dcwManifoldPoint*);
+	dcwScalar* dcwManifoldPointGetDistance          (dcwManifoldPoint* );
+	
 #ifdef __cplusplus
 }
 #endif
