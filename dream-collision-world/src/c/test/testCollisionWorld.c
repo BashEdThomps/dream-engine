@@ -6,16 +6,21 @@
 #include "../../cpp/CWrapper/dcwTransform.h"
 #include "../../cpp/CWrapper/dcwSortedOverlappingPairCache.h"
 #include "../../cpp/CWrapper/dcwManifoldPoint.h"
+#include "../../cpp/CWrapper/dcwAxisSweep3.h"
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "testCollisionWorld.h"
 
 void testCollisionWorld(void) {
-	unitTestHeading("Tsting CollisionWord");
+	unitTestHeading("Testing CollisionWord");
 	testCollisionWorldCreateWorld();
 	testColWorldAddObject();
 	testColWorldRemoveObject();
 	testColWorldPerformDiscreteCollisionDetection();
-	testColWorldTwoBoxCollision(); 
+	testColWorldTwoBoxCollision();
 	unitTestFooter("Finished Testing CollisionWord");
 	return;
 }
@@ -23,14 +28,14 @@ void testCollisionWorld(void) {
 void testCollisionWorldCreateWorld(void) {
 	unitPrintComment("Testing Create Collision World");
 	dcwCollisionWorld* collisionWorld;
-	collisionWorld = dcwCollisionWorldCreate();
+	collisionWorld = _createCollisionWorld();
 	unitAssertNotNull("Checking collision world is not NULL", collisionWorld);
 	return;
 }
 
 void testColWorldAddObject(void) {
 	unitPrintComment("Collision World Add Object");
-	dcwCollisionWorld*  world = dcwCollisionWorldCreate();
+	dcwCollisionWorld *world =  _createCollisionWorld();
 
 	 dcwScalar* eX = dcwScalarCreate(1.0f);
 	 dcwScalar* eY = dcwScalarCreate(2.0f);
@@ -39,6 +44,7 @@ void testColWorldAddObject(void) {
 	dcwVector3*         boxSize = dcwVector3Create(eX,eY,eZ);
 	dcwBoxShape*        boxShape = dcwBoxShapeCreate(boxSize);
 	dcwCollisionObject* object = dcwCollisionObjectCreate();
+
 	dcwCollisionObjectSetCollisionBoxShape(object, boxShape);
 	dcwCollisionWorldAddCollisionObject(world,object);
 
@@ -49,7 +55,7 @@ void testColWorldAddObject(void) {
 
 void testColWorldRemoveObject(void) {
 	unitPrintComment("Remove Object");
-	dcwCollisionWorld*  world = dcwCollisionWorldCreate();
+	dcwCollisionWorld*  world = _createCollisionWorld();
 
 	 dcwScalar* eX = dcwScalarCreate(1.0f);
 	 dcwScalar* eY = dcwScalarCreate(2.0f);
@@ -84,73 +90,58 @@ void testColWorldRemoveObject(void) {
 }
 
 void testColWorldPerformDiscreteCollisionDetection(void) {
-	unitPrintComment("Perform Discrete Collision Detection");
+	dcwScalar* two                = dcwScalarCreate(2.0f);
+	dcwVector3*         boxSize1  = dcwVector3Create(two,two,two);
+	dcwBoxShape*        boxShape1 = dcwBoxShapeCreate(boxSize1);
+	dcwCollisionObject* object1   = dcwCollisionObjectCreate();
+	dcwCollisionWorld *world      = _createCollisionWorld();
 
-	unitPrintComment("PDCD: Collision World Add Objects");
-	dcwCollisionWorld*  world = dcwCollisionWorldCreate();
+	dcwCollisionObjectSetCollisionBoxShape (object1, boxShape1);
+	dcwCollisionWorldAddCollisionObject    (world,object1);
+	unitAssertEqualInt("Add obbject to Collision World", dcwCollisionWorldGetNumCollisionObjects(world),1);
 
-	dcwScalar* eX = dcwScalarCreate(1.0f);
-	dcwScalar* eY = dcwScalarCreate(2.0f);
-	dcwScalar* eZ = dcwScalarCreate(4.0f);
-
-	dcwVector3*         boxSize = dcwVector3Create(eX,eY,eZ);
-	dcwBoxShape*        boxShape = dcwBoxShapeCreate(boxSize);
-
-	dcwCollisionObject* object = dcwCollisionObjectCreate();
+	dcwVector3*         boxSize2  = dcwVector3Create  (two,two,two);
+	dcwBoxShape*        boxShape2 = dcwBoxShapeCreate (boxSize2);
 	dcwCollisionObject* object2 = dcwCollisionObjectCreate();
-
-	dcwCollisionObjectSetCollisionBoxShape(object, boxShape);
-	dcwCollisionObjectSetCollisionBoxShape(object2, boxShape);
-
-	dcwCollisionWorldAddCollisionObject(world,object);
-
-	unitAssertEqualInt("Add obbject to Collision World",
-	                  dcwCollisionWorldGetNumCollisionObjects(world),1);
-
-	dcwCollisionWorldAddCollisionObject(world,object2);
-
-	unitAssertEqualInt("Add obbject2 to Collision World",
-	                  dcwCollisionWorldGetNumCollisionObjects(world), 2);
-
+	dcwCollisionObjectSetCollisionBoxShape (object2, boxShape2);
+	dcwCollisionWorldAddCollisionObject    (world,object2);
+	unitAssertEqualInt("Add obbject2 to Collision World", dcwCollisionWorldGetNumCollisionObjects(world), 2);
 
 	unitPrintComment("Perform Discrete Collision Detection on World");
-
 	dcwCollisionWorldPerformDiscreteCollisionDetection(world);
 
+	unitPrintComment("Done PDCD");
 	return;
 }
 
 void testColWorldTwoBoxCollision() {
 	unitPrintComment("Perform Discrete Collision Detection with two box shapes");
+	dcwCollisionWorld*  world = _createCollisionWorld();
 
-	unitPrintComment("PDCD: Collision World Add Objects");
-	dcwCollisionWorld*  world = dcwCollisionWorldCreate();
+	dcwScalar* eX = dcwScalarCreate(4.0f);
+	dcwScalar* eY = dcwScalarCreate(4.0f);
+	dcwScalar* eZ = dcwScalarCreate(4.0f);
 
-	dcwScalar* eX = dcwScalarCreate(2.0f);
-	dcwScalar* eY = dcwScalarCreate(2.0f);
-	dcwScalar* eZ = dcwScalarCreate(2.0f);
+	dcwVector3*         boxSize1  = dcwVector3Create(eX,eY,eZ);
+	dcwBoxShape*        boxShape1 = dcwBoxShapeCreate(boxSize1);
+	dcwCollisionObject* object1   = dcwCollisionObjectCreate();
+	dcwCollisionObjectSetCollisionBoxShape(object1, boxShape1);
 
-	dcwVector3*         boxSize = dcwVector3Create(eX,eY,eZ);
-	dcwBoxShape*        boxShape = dcwBoxShapeCreate(boxSize);
+	dcwVector3*         boxSize2  = dcwVector3Create(eX,eY,eZ);
+	dcwBoxShape*        boxShape2 = dcwBoxShapeCreate(boxSize2);
+	dcwCollisionObject* object2   = dcwCollisionObjectCreate();
+	dcwCollisionObjectSetCollisionBoxShape(object2, boxShape2);
 
-	dcwCollisionObject* object = dcwCollisionObjectCreate();
-	dcwCollisionObject* object2 = dcwCollisionObjectCreate();
-
-	dcwCollisionObjectSetCollisionBoxShape(object, boxShape);
-	dcwCollisionObjectSetCollisionBoxShape(object2, boxShape);
-
-	dcwCollisionWorldAddCollisionObject(world,object);
-
+	dcwCollisionWorldAddCollisionObject(world,object1);
 	unitAssertEqualInt("Add obbject to Collision World",
 	                  dcwCollisionWorldGetNumCollisionObjects(world),1);
 
 	dcwCollisionWorldAddCollisionObject(world,object2);
-
 	unitAssertEqualInt("Add obbject2 to Collision World",
 	                  dcwCollisionWorldGetNumCollisionObjects(world), 2);
 
 	unitPrintComment("Translating Boxes");
-	dcwScalar *minusOne, *one, *zero; 
+	dcwScalar *minusOne, *one, *zero;
 
 	minusOne = dcwScalarCreate(-1.0f);
 	zero = dcwScalarCreate(0.0f);
@@ -164,27 +155,36 @@ void testColWorldTwoBoxCollision() {
 	dcwTransform *transform2 = dcwTransformCreate();
 	dcwTransformSetOrigin(transform2,transVec2);
 
-	dcwCollisionObjectForceActivationState(object, DISABLE_DEACTIVATION);
-	dcwCollisionObjectSetWorldTransform(object, transform1);
-
+	dcwCollisionObjectForceActivationState(object1, DISABLE_DEACTIVATION);
 	dcwCollisionObjectForceActivationState(object2, DISABLE_DEACTIVATION);
+
+	dcwCollisionObjectSetWorldTransform(object1, transform1);
 	dcwCollisionObjectSetWorldTransform(object2, transform2);
 
 	unitPrintComment("Perform Discrete Collision Detection on World");
-
 	dcwCollisionWorldPerformDiscreteCollisionDetection(world);
 
 	dcwSortedOverlappingPairCache* pairCache = dcwSortedOverlappingPairCacheCreate();
 	dcwCollisionDispatcher* dispatcher = dcwCollisionWorldGetDispatcher(world);
 
 	int numManifolds = dcwCollisionDispatcherGetNumManifolds(dispatcher);
+	char buffer[50];
+	snprintf(&buffer,50,"%d Manifolds",numManifolds);
+	unitPrintComment(buffer);
 	int i;
 	dcwPersistentManifold *nextManifold = 0;
 	for (i=0; i<numManifolds; i++) {
 		nextManifold = dcwCollisionDispatcherGetManifoldByIndexInternal(dispatcher, i);
 
-		dcwCollisionObject* obA = dcwPersistentManifoldGetBody0(nextManifold);
-		dcwCollisionObject* obB = dcwPersistentManifoldGetBody1(nextManifold);
+		if (nextManifold == 0) {
+			unitPrintComment("Found Null Manifold in Dispatcher...");
+			continue;
+		}
+
+		unitPrintComment("Found a Manifold in Dispatcher...");
+
+		const dcwCollisionObject* obA = dcwPersistentManifoldGetBody0(nextManifold);
+		const dcwCollisionObject* obB = dcwPersistentManifoldGetBody1(nextManifold);
 
 		int numContacts = dcwPersistentManifoldGetNumContacts(nextManifold);
 
@@ -200,4 +200,17 @@ void testColWorldTwoBoxCollision() {
 	unitAssertFail("Two Box Collision");
 	return;
 
+}
+
+dcwCollisionWorld* _createCollisionWorld(void) {
+	dcwScalar* minusOneHundred = dcwScalarCreate(-100.0f);
+	dcwScalar* oneHundred      = dcwScalarCreate(100.0f);
+
+	dcwVector3 *aabbMin = dcwVector3Create(minusOneHundred,minusOneHundred,minusOneHundred);
+	dcwVector3 *aabbMax = dcwVector3Create(oneHundred,oneHundred,oneHundred);
+
+	dcwAxisSweep3*                    a3PairCache   = dcwAxisSweep3Create(aabbMin, aabbMax);
+	dcwDefaultCollisionConfiguration* collisionConf = dcwDefaultCollisionConfigurationCreate();
+	dcwCollisionDispatcher*           dispatcher    = dcwCollisionDispatcherCreate(collisionConf);
+	return dcwCollisionWorldCreate(dispatcher, a3PairCache, collisionConf);
 }

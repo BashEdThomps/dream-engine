@@ -45,6 +45,7 @@ dcwVector3* dcwManifoldPointGetNormalWorldOnB  (dcwManifoldPoint* obj) {
 }
 
 dcwScalar* dcwManifoldPointGetDistance(dcwManifoldPoint* obj) {
-	btScalar scalar = reinterpret_cast<btManifoldPoint*>(obj)->getDistance();
-	return reinterpret_cast<dcwScalar*>(&scalar);
+	return reinterpret_cast<dcwScalar*>(
+		new btScalar(reinterpret_cast<btManifoldPoint*>(obj)->getDistance())
+	);
 }

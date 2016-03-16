@@ -9,6 +9,7 @@
 #include "dcwCollisionDispatcher.h"
 #include "dcwVector3.h"
 #include "dcwCollisionObject.h"
+#include "dcwAxisSweep3.h"
 
 struct dcwCollisionWorld;
 typedef struct dcwCollisionWorld dcwCollisionWorld;
@@ -16,7 +17,7 @@ typedef struct dcwCollisionWorld dcwCollisionWorld;
 #ifdef __cplusplus
 extern "C" {
 #endif
-	dcwCollisionWorld*      dcwCollisionWorldCreate                            ();
+	dcwCollisionWorld*      dcwCollisionWorldCreate                            (dcwCollisionDispatcher*,dcwAxisSweep3*,dcwDefaultCollisionConfiguration*);
 	void                    dcwCollisionWorldDestroy                           (dcwCollisionWorld*);
 	void                    dcwCollisionWorldAddCollisionObject                (dcwCollisionWorld*, dcwCollisionObject*);
 	void                    dcwCollisionWorldRemoveCollisionObject             (dcwCollisionWorld*, dcwCollisionObject*);

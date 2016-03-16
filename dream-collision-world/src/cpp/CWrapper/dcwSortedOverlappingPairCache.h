@@ -8,11 +8,8 @@ typedef struct dcwSortedOverlappingPairCache dcwSortedOverlappingPairCache;
 extern "C" {
 #endif
 
-	dcwSortedOverlappingPairCache* 
-		dcwSortedOverlappingPairCacheCreate ();
-
-	void 
-		dcwSortedOverlappingPairCacheDestroy (dcwSortedOverlappingPairCache*); 
+	dcwSortedOverlappingPairCache* dcwSortedOverlappingPairCacheCreate ();
+	void dcwSortedOverlappingPairCacheDestroy (dcwSortedOverlappingPairCache*); 
 
 #ifdef __cplusplus
 }

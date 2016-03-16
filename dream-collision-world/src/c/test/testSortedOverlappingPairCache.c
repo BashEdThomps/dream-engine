@@ -25,6 +25,8 @@ void testSortedOverlappingPairCacheDestroy(void) {
 	unitAssertNotNull("Create and Destroy Sorted Overlapping Pair Cache", pairCache);
 
 	dcwSortedOverlappingPairCacheDestroy(pairCache);
+	pairCache = 0;
+
 	unitAssertNull("PairCache is destroyed",pairCache);
 	return;
 

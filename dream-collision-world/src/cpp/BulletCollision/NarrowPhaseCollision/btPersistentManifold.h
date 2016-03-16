@@ -91,7 +91,8 @@ public:
 	{
 	}
 
-	SIMD_FORCE_INLINE const btCollisionObject* getBody0() const { return m_body0;}
+	 SIMD_FORCE_INLINE const btCollisionObject* getBody0() const { return m_body0;}
+
 	SIMD_FORCE_INLINE const btCollisionObject* getBody1() const { return m_body1;}
 
 	void	setBodies(const btCollisionObject* body0,const btCollisionObject* body1)

@@ -19,7 +19,7 @@ extern "C" {
 
 	dcwVector3* dcwManifoldPointGetNormalWorldOnB   (dcwManifoldPoint*);
 	dcwScalar* dcwManifoldPointGetDistance          (dcwManifoldPoint* );
-	
+
 #ifdef __cplusplus
 }
 #endif

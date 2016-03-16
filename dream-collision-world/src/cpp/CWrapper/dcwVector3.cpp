@@ -17,40 +17,38 @@ extern "C" {
 	sY = reinterpret_cast< btScalar*>(y);
 	sZ = reinterpret_cast< btScalar*>(z);
 
-	return reinterpret_cast< dcwVector3*>(
-		new btVector3(*sX,*sY,*sZ)
-	);
+	return reinterpret_cast< dcwVector3*>(new btVector3(*sX,*sY,*sZ));
 }
 
-void dcwVector3Destroy ( dcwVector3* vector) {
-	delete reinterpret_cast< btVector3*>(vector);
+void dcwVector3Destroy (dcwVector3* vector) {
+	delete reinterpret_cast<btVector3*>(vector);
 	return;
 }
 
-const dcwScalar* dcwVector3GetX ( dcwVector3* vec) {
-	 const dcwScalar* retval = 0;
-	 btVector3* btX = reinterpret_cast< btVector3*>(vec);
-	retval = reinterpret_cast<const dcwScalar*>(&btX->getX());
+const dcwScalar* dcwVector3GetX (dcwVector3* vec) {
+	const dcwScalar* retval = 0;
+	btVector3* btX = reinterpret_cast< btVector3*>(vec);
+	retval = reinterpret_cast<const dcwScalar*>(&(btX->getX()));
 	return retval;
 }
 
-const dcwScalar* dcwVector3GetY ( dcwVector3* vec) {
-	 const dcwScalar* retval = 0;
-	 btVector3* btY = reinterpret_cast< btVector3*>(vec);
-	retval = reinterpret_cast<const dcwScalar*>(&btY->getY());
+const dcwScalar* dcwVector3GetY (dcwVector3* vec) {
+	const dcwScalar* retval = 0;
+	btVector3* btY = reinterpret_cast< btVector3*>(vec);
+	retval = reinterpret_cast<const dcwScalar*>(&(btY->getY()));
 	return retval;
 }
 
 const dcwScalar* dcwVector3GetZ ( dcwVector3* vec) {
-	 const dcwScalar* retval = 0;
-	 btVector3* btZ = reinterpret_cast< btVector3*>(vec);
-	retval = reinterpret_cast<const dcwScalar*>(&btZ->getZ());
+	const dcwScalar* retval = 0;
+	btVector3* btZ = reinterpret_cast<btVector3*>(vec);
+	retval = reinterpret_cast<const dcwScalar*>(&(btZ->getZ()));
 	return retval;
 }
 
 void dcwVector3SetX ( dcwVector3* vec,  dcwScalar* x) {
-	 btScalar* btx = reinterpret_cast< btScalar*>(x);
-	 btVector3* btVec = reinterpret_cast< btVector3*>(vec);
+	btScalar*  btx   = reinterpret_cast<btScalar*>(x);
+	btVector3* btVec = reinterpret_cast<btVector3*>(vec);
 	btVec->setX(*btx);
 	return;
 }

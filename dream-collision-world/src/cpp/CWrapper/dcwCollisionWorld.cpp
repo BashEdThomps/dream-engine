@@ -6,27 +6,25 @@
 #include "../LinearMath/btVector3.h"
 #endif
 
+#include "dcwAxisSweep3.h"
 #include "dcwPersistentManifold.h"
 #include "dcwCollisionWorld.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-	dcwCollisionWorld* dcwCollisionWorldCreate() {
-		 btVector3 aabbMin(-100,-100,-100);
-		 btVector3 aabbMax(-100,-100,-100);
 
-		btBroadphaseInterface*    broadphasePairCache    = new btAxisSweep3(aabbMin,aabbMax);
-		btCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
-		btDispatcher*             dispatcher             = new btCollisionDispatcher(collisionConfiguration);
+	dcwCollisionWorld* dcwCollisionWorldCreate(
+		dcwCollisionDispatcher*           dispatcher,
+		dcwAxisSweep3*                    a3PairCache,
+		dcwDefaultCollisionConfiguration* collisionConf) {
+
+		btCollisionDispatcher*    btDispatcher    = reinterpret_cast<btCollisionDispatcher*>(dispatcher);
+		btAxisSweep3*             bta3PairCache   = reinterpret_cast<btAxisSweep3*>(a3PairCache);
+		btDefaultCollisionConfiguration* btCollisionConf = reinterpret_cast<btDefaultCollisionConfiguration*>(collisionConf);
 
 		return reinterpret_cast <dcwCollisionWorld*>(
-			new btCollisionWorld(
-				dispatcher,
-				broadphasePairCache,
-				collisionConfiguration
-			)
-		);
+			new btCollisionWorld(btDispatcher, bta3PairCache, btCollisionConf));
 	}
 
 	void dcwCollisionWorldDestroy(dcwCollisionWorld *v) {

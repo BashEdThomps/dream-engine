@@ -13,13 +13,13 @@ extern "C" {
 		);
 	}
 
-	void dcwScalarDestroy ( dcwScalar* obj) {
+	void dcwScalarDestroy (dcwScalar* obj) {
 		delete reinterpret_cast< btScalar*>(obj);
 		return;
 	}
 
-	float dcwScalarGetValue( dcwScalar* scalar) {
-		 btScalar* btSc = reinterpret_cast< btScalar*>(scalar);
+	float dcwScalarGetValue(const dcwScalar* scalar) {
+		 const btScalar* btSc = reinterpret_cast<const btScalar*>(scalar);
 		return (float)*btSc;
 	}
 

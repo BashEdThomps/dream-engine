@@ -7,8 +7,8 @@ typedef struct dcwScalar dcwScalar;
 extern "C" {
 #endif
 	 dcwScalar* dcwScalarCreate (float);
-	void dcwScalarDestroy ( dcwScalar*);
-	float dcwScalarGetValue( dcwScalar*);
+	void dcwScalarDestroy (dcwScalar*);
+	float dcwScalarGetValue(const dcwScalar*);
 
 #ifdef __cplusplus
 }

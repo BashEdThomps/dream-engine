@@ -1,6 +1,7 @@
 #include "testScalar.h"
 #include "testVector3.h"
 #include "testBoxShape.h"
+#include "testAxisSweep3.h"
 #include "testCollisionObject.h"
 #include "testSortedOverlappingPairCache.h"
 #include "testCollisionWorld.h"
@@ -10,6 +11,7 @@ int main(int argc, char** argv) {
 	unitModuleHeading("Dream Collision World");
 	testScalar();
 	testVector3();
+	testAxisSweep3();
 	testBoxShape();
 	testCollisionObject();
 	testSortedOverlappingPairCache();

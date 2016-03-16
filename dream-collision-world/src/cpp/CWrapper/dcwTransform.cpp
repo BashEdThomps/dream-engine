@@ -18,7 +18,7 @@ void dcwTransformDestroy (dcwTransform* obj) {
 }
 
 void dcwTransformSetOrigin (dcwTransform* transform, dcwVector3* origin) {
-	btTransform* btTrans = reinterpret_cast <btTransform*>(transform);	
+	btTransform* btTrans = reinterpret_cast <btTransform*>(transform);
 	btVector3* btVec     = reinterpret_cast <btVector3*>  (origin);
 	btTrans->setOrigin(*btVec);
 	return;
