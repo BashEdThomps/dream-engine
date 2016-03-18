@@ -33,7 +33,7 @@ INC     := include
 TEST    := test
 CONF    := conf
 OBJ     := obj
-DOCS    := docs
+DOC     := doc
 SRC     := src
 TEST    := test
 GL_TEST := gl_test
@@ -43,7 +43,7 @@ LIB_OUT_DIR   := $(BUILD_OUT_DIR)/$(LIB)
 INC_OUT_DIR   := $(BUILD_OUT_DIR)/$(INC)
 TEST_OUT_DIR  := $(BUILD_OUT_DIR)/$(TEST)
 CONF_OUT_DIR  := $(BUILD_OUT_DIR)/$(CONF)
-DOCS_OUT_DIR  := $(BUILD_OUT_DIR)/$(DOCS)
+DOC_OUT_DIR   := $(BUILD_OUT_DIR)/$(DOC)
 
 LDFLAGS := -fPIC -L$(LIB_OUT_DIR) -Wall -lUnit -lm
 GL_TEST_LDFLAGS := $(LDFLAGS) -lGL -lGLU  -lglut
@@ -51,8 +51,11 @@ GL_TEST_LDFLAGS := $(LDFLAGS) -lGL -lGLU  -lglut
 # Inputs
 SOURCES      := $(wildcard $(SRC)/*.c)
 OBJECTS      := $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
+HEADERS      := $(wildcard $(SRC)/*.h)
+
 TEST_SOURCES := $(wildcard $(SRC)/$(TEST)/*.c)
 TEST_OBJECTS := $(TEST_SOURCES:$(SRC)/$(TEST)/%.c=$(OBJ)/%.o)
+
 GL_TEST_SOURCES := $(wildcard $(SRC)/$(GL_TEST)/*.c)
 GL_TEST_OBJECTS := $(GL_TEST_SOURCES:$(SRC)/$(GL_TEST)/%.c=$(OBJ)/%.o)
 
@@ -78,8 +81,8 @@ run_gl_test_gdb: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 
 # Documentation ################################################################
 
-.PHONY: $(DOCS)
-$(DOCS): Doxyfile
+.PHONY: $(DOC)
+$(DOC): Doxyfile
 	$(DOXYGEN)
 
 Doxyfile:
@@ -124,6 +127,10 @@ $(GL_TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(GL_TEST)/%.c
 
 .PHONY: clean
 clean:
-	$(RM) $(DOCS)
+	$(RM) $(DOC)
 	$(RM) $(OBJ)
-	$(RM) $(DOCS)
+
+# Install Headers ##############################################################
+.PHONY: install_headers
+install_headers:
+	$(CP) $(HEADERS) $(INC_OUT_DIR)

@@ -24,6 +24,16 @@ void dcwTransformSetOrigin (dcwTransform* transform, dcwVector3* origin) {
 	return;
 }
 
+void dcwTransformSetIdentity (dcwTransform* obj) {
+    reinterpret_cast<btTransform*>(obj)->setIdentity();
+}
+
+dcwVector3* dcwTransformGetOrigin(dcwTransform* obj) {
+    return reinterpret_cast<dcwVector3*>(
+        &reinterpret_cast<btTransform*>(obj)->getOrigin()
+    );
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -10,10 +10,11 @@ typedef struct dcwTransform dcwTransform;
 extern "C" {
 #endif
 
-dcwTransform* dcwTransformCreate  ();
-void          dcwTransformDestroy (dcwTransform*);
-
-void dcwTransformSetOrigin        (dcwTransform*, dcwVector3*);
+dcwTransform* dcwTransformCreate      ();
+void          dcwTransformDestroy     (dcwTransform*);
+void          dcwTransformSetOrigin   (dcwTransform*, dcwVector3*);
+dcwVector3*   dcwTransformGetOrigin   (dcwTransform*);
+void          dcwTransformSetIdentity (dcwTransform*);
 
 #ifdef __cplusplus
 }

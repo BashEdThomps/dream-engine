@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 	dcwSortedOverlappingPairCache* dcwSortedOverlappingPairCacheCreate ();
-	void dcwSortedOverlappingPairCacheDestroy (dcwSortedOverlappingPairCache*); 
+	void dcwSortedOverlappingPairCacheDestroy (dcwSortedOverlappingPairCache*);
 
 #ifdef __cplusplus
 }

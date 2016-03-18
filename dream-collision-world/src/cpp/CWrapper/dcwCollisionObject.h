@@ -17,12 +17,15 @@ typedef struct dcwCollisionObject dcwCollisionObject;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 	dcwCollisionObject* dcwCollisionObjectCreate                 ();
 	void                dcwCollisionObjectDestroy                (dcwCollisionObject*);
 	void                dcwCollisionObjectSetCollisionBoxShape   (dcwCollisionObject*, dcwBoxShape*);
 	void                dcwCollisionObjectSetWorldTransform      (dcwCollisionObject*, dcwTransform*);
 	void                dcwCollisionObjectForceActivationState   (dcwCollisionObject*, int);
-	void dcwCollisionObjectSetWorldTransform                     (dcwCollisionObject*, dcwTransform*);
+	void                dcwCollisionObjectSetWorldTransform      (dcwCollisionObject*, dcwTransform*);
+	dcwTransform*       dcwCollisionObjectGetWorldTransform      (dcwCollisionObject*);
+	
 #ifdef __cplusplus
 }
 #endif

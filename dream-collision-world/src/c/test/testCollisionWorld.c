@@ -7,6 +7,7 @@
 #include "../../cpp/CWrapper/dcwSortedOverlappingPairCache.h"
 #include "../../cpp/CWrapper/dcwManifoldPoint.h"
 #include "../../cpp/CWrapper/dcwAxisSweep3.h"
+#include "../../cpp/CWrapper/dcwScalar.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -118,16 +119,14 @@ void testColWorldTwoBoxCollision() {
 	unitPrintComment("Perform Discrete Collision Detection with two box shapes");
 	dcwCollisionWorld*  world = _createCollisionWorld();
 
-	dcwScalar* eX = dcwScalarCreate(4.0f);
-	dcwScalar* eY = dcwScalarCreate(4.0f);
-	dcwScalar* eZ = dcwScalarCreate(4.0f);
+	dcwScalar* four = dcwScalarCreate(2.5f);
 
-	dcwVector3*         boxSize1  = dcwVector3Create(eX,eY,eZ);
+	dcwVector3*         boxSize1  = dcwVector3Create(four,four,four);
 	dcwBoxShape*        boxShape1 = dcwBoxShapeCreate(boxSize1);
 	dcwCollisionObject* object1   = dcwCollisionObjectCreate();
 	dcwCollisionObjectSetCollisionBoxShape(object1, boxShape1);
 
-	dcwVector3*         boxSize2  = dcwVector3Create(eX,eY,eZ);
+	dcwVector3*         boxSize2  = dcwVector3Create(four,four,four);
 	dcwBoxShape*        boxShape2 = dcwBoxShapeCreate(boxSize2);
 	dcwCollisionObject* object2   = dcwCollisionObjectCreate();
 	dcwCollisionObjectSetCollisionBoxShape(object2, boxShape2);
@@ -149,10 +148,12 @@ void testColWorldTwoBoxCollision() {
 
 	dcwVector3   *transVec1  = dcwVector3Create(minusOne,zero,zero);
 	dcwTransform *transform1 = dcwTransformCreate();
+	dcwTransformSetIdentity(transform1);
 	dcwTransformSetOrigin(transform1,transVec1);
 
 	dcwVector3 *transVec2    = dcwVector3Create(one,zero,zero);
 	dcwTransform *transform2 = dcwTransformCreate();
+	dcwTransformSetIdentity(transform2);
 	dcwTransformSetOrigin(transform2,transVec2);
 
 	dcwCollisionObjectForceActivationState(object1, DISABLE_DEACTIVATION);
@@ -164,13 +165,15 @@ void testColWorldTwoBoxCollision() {
 	unitPrintComment("Perform Discrete Collision Detection on World");
 	dcwCollisionWorldPerformDiscreteCollisionDetection(world);
 
-	dcwSortedOverlappingPairCache* pairCache = dcwSortedOverlappingPairCacheCreate();
+	//dcwSortedOverlappingPairCache* pairCache = dcwSortedOverlappingPairCacheCreate();
 	dcwCollisionDispatcher* dispatcher = dcwCollisionWorldGetDispatcher(world);
 
 	int numManifolds = dcwCollisionDispatcherGetNumManifolds(dispatcher);
-	char buffer[50];
-	snprintf(&buffer,50,"%d Manifolds",numManifolds);
-	unitPrintComment(buffer);
+	char buffer[256];
+	snprintf(&buffer[0],256,"%d Manifolds",numManifolds);
+	unitPrintComment(&buffer[0]);
+	unitAssertNotZero("Num Manifolds found",numManifolds);
+
 	int i;
 	dcwPersistentManifold *nextManifold = 0;
 	for (i=0; i<numManifolds; i++) {
@@ -183,10 +186,32 @@ void testColWorldTwoBoxCollision() {
 
 		unitPrintComment("Found a Manifold in Dispatcher...");
 
-		const dcwCollisionObject* obA = dcwPersistentManifoldGetBody0(nextManifold);
-		const dcwCollisionObject* obB = dcwPersistentManifoldGetBody1(nextManifold);
+		const dcwCollisionObject* objA = dcwPersistentManifoldGetBody0(nextManifold);
+		const dcwCollisionObject* objB = dcwPersistentManifoldGetBody1(nextManifold);
 
 		int numContacts = dcwPersistentManifoldGetNumContacts(nextManifold);
+		snprintf(&buffer[0],256,"%d Contacts found",numManifolds);
+		unitPrintComment(&buffer[0]);
+		unitAssertNotZero("Number of contacts",numContacts);
+
+		dcwTransform* objAWorldTrans    = dcwCollisionObjectGetWorldTransform ((dcwCollisionObject*)objA);
+		dcwVector3*   objAWorldTransVec = dcwTransformGetOrigin               (objAWorldTrans);
+
+		dcwTransform* objBWorldTrans    = dcwCollisionObjectGetWorldTransform ((dcwCollisionObject*)objB);
+		dcwVector3*   objBWorldTransVec = dcwTransformGetOrigin               (objBWorldTrans);
+
+		snprintf(&buffer[0],256,"Contact on objects at:\n\tObjA (%.2f,%.2f,%.2f)\n\tObjB (%.2f,%.2f,%.2f)",
+			// ObjA
+			dcwScalarGetValue(dcwVector3GetX(objAWorldTransVec)),
+			dcwScalarGetValue(dcwVector3GetY(objAWorldTransVec)),
+			dcwScalarGetValue(dcwVector3GetZ(objAWorldTransVec)),
+			// ObjB
+			dcwScalarGetValue(dcwVector3GetX(objBWorldTransVec)),
+			dcwScalarGetValue(dcwVector3GetY(objBWorldTransVec)),
+			dcwScalarGetValue(dcwVector3GetZ(objBWorldTransVec))
+		);
+
+		unitPrintComment(&buffer[0]);
 
 		for (int j=0;j<numContacts;j++) {
 			dcwManifoldPoint *pt = dcwPersistentManifoldGetContactPoint(nextManifold,j);
@@ -194,12 +219,27 @@ void testColWorldTwoBoxCollision() {
 				const dcwVector3* ptA       = dcwManifoldPointGetPositionWorldOnA (pt);
 				const dcwVector3* ptB       = dcwManifoldPointGetPositionWorldOnB (pt);
 				const dcwVector3* normalOnB = dcwManifoldPointGetNormalWorldOnB   (pt);
+
+				snprintf(&buffer[0],256,"Manifold Point At:\n\tptA (%.2f,%.2f,%.2f)\n\tptB (%.2f,%.2f,%.2f)\n\tNormalB (%.2f,%.2f,%.2f)",
+					// PtA
+					dcwScalarGetValue(dcwVector3GetX((dcwVector3*)ptA)),
+					dcwScalarGetValue(dcwVector3GetY((dcwVector3*)ptA)),
+					dcwScalarGetValue(dcwVector3GetZ((dcwVector3*)ptA)),
+					// PtB
+					dcwScalarGetValue(dcwVector3GetX((dcwVector3*)ptB)),
+					dcwScalarGetValue(dcwVector3GetY((dcwVector3*)ptB)),
+					dcwScalarGetValue(dcwVector3GetZ((dcwVector3*)ptB)),
+					// NormalB
+					dcwScalarGetValue(dcwVector3GetX((dcwVector3*)normalOnB)),
+					dcwScalarGetValue(dcwVector3GetY((dcwVector3*)normalOnB)),
+					dcwScalarGetValue(dcwVector3GetZ((dcwVector3*)normalOnB))
+				);
+
+		        unitPrintComment(&buffer[0]);
 			}
 		}
 	}
-	unitAssertFail("Two Box Collision");
 	return;
-
 }
 
 dcwCollisionWorld* _createCollisionWorld(void) {

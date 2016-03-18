@@ -36,6 +36,13 @@ extern "C" {
 		btCo->setWorldTransform(*btTrans);
 	}
 
+
+	dcwTransform* dcwCollisionObjectGetWorldTransform (dcwCollisionObject* obj) {
+		return reinterpret_cast<dcwTransform*>(
+			&reinterpret_cast<btCollisionObject*>(obj)->getWorldTransform()
+		);
+	}
+
 #ifdef __cplusplus
 }
 #endif

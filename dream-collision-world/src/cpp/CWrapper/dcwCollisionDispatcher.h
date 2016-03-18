@@ -10,10 +10,10 @@ typedef struct dcwCollisionDispatcher dcwCollisionDispatcher;
 #ifdef __cplusplus
 extern "C" {
 #endif
-	dcwCollisionDispatcher*     dcwCollisionDispatcherCreate  (dcwDefaultCollisionConfiguration*);
-	void                        dcwCollisionDispatcherDestroy (dcwCollisionDispatcher*);
-	int                         dcwCollisionDispatcherGetNumManifolds(dcwCollisionDispatcher*);
-	dcwPersistentManifold*      dcwGetManifoldByIndexInternal(dcwCollisionDispatcher* , int);
+	dcwCollisionDispatcher*     dcwCollisionDispatcherCreate                     (dcwDefaultCollisionConfiguration*);
+	void                        dcwCollisionDispatcherDestroy                    (dcwCollisionDispatcher*);
+	int                         dcwCollisionDispatcherGetNumManifolds            (dcwCollisionDispatcher*);
+	dcwPersistentManifold*      dcwCollisionDispatcherGetManifoldByIndexInternal (dcwCollisionDispatcher*, int);
 #ifdef __cplusplus
 }
 #endif

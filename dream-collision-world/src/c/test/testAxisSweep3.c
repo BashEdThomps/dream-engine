@@ -30,7 +30,8 @@ void testAxisSweep3Destroy(void) {
 
     dcwAxisSweep3* as3 = dcwAxisSweep3Create(min,max);
     unitAssertNotNull("AxisSweep3Create",as3);
-    
+
     dcwAxisSweep3Destroy(as3);
+    as3 = 0;
     unitAssertNull("AxisSweep3Destroyed",as3);
 }

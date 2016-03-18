@@ -1,6 +1,6 @@
 ################################################################################
 # Unit Makefile                                                                #
-################################################################################ 
+################################################################################
 
 # Project Name
 NAME     := Unit
@@ -11,7 +11,7 @@ TEST_BIN := $(NAME)Test
 TARGET := linux
 CC := gcc
 CFLAGS := -Wall -std=c99 -fPIC
-LD := ld 
+LD := ld
 LFLAGS := -fPIC
 
 # Commands
@@ -34,7 +34,7 @@ CONF    := conf
 OBJ     := obj
 SRC     := src
 TEST    := test
-DOCS    := docs
+DOC     := doc
 
 # Output Paths
 BUILD_OUT_DIR := ../$(BUILD)/$(TARGET)
@@ -42,10 +42,11 @@ LIB_OUT_DIR   := $(BUILD_OUT_DIR)/$(LIB)
 INC_OUT_DIR   := $(BUILD_OUT_DIR)/$(INC)
 TEST_OUT_DIR  := $(BUILD_OUT_DIR)/$(TEST)
 CONF_OUT_DIR  := $(BUILD_OUT_DIR)/$(CONF)
-DOCS_OUT_DIR  := $(BUILD_OUT_DIR)/$(DOCS)
+DOC_OUT_DIR   := $(BUILD_OUT_DIR)/$(DOC)
 
 # Target Variables
 SOURCES  := $(wildcard $(SRC)/*.c)
+HEADERS  := $(wildcard $(SRC)/*.h)
 INCLUDES := $(wildcard $(SRC)/*.h)
 OBJECTS  := $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 
@@ -61,7 +62,7 @@ all: $(LIB_OUT_DIR)/$(OUTPUT)
 # Target #######################################################################
 
 $(OBJECTS): $(OBJ)/%.o : $(SRC)/%.c
-	@$(MKDIR) $(OBJ) 
+	@$(MKDIR) $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIB_OUT_DIR)/$(OUTPUT): $(OBJECTS)
@@ -72,7 +73,7 @@ $(LIB_OUT_DIR)/$(OUTPUT): $(OBJECTS)
 # Run Test
 .PHONY: run_test
 run_test: $(TEST_OUT_DIR)/$(TEST_BIN)
-	$(TEST_OUT_DIR)/$(TEST_BIN) 
+	$(TEST_OUT_DIR)/$(TEST_BIN)
 
 # Build Test Binary
 .PHONY: build_test
@@ -86,7 +87,7 @@ $(TEST_OUT_DIR)/$(TEST_BIN): $(FILTERED_TEST_OBJECTS)
 # Build test objects
 .PHONY: $(TEST_OBJECTS)
 $(TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(TEST)/%.c
-	@$(MKDIR) $(OBJ) 
+	@$(MKDIR) $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Clean ########################################################################
@@ -94,11 +95,11 @@ $(TEST_OBJECTS): $(OBJ)/%.o : $(SRC)/$(TEST)/%.c
 .PHONY: clean
 clean:
 	$(RM) $(OBJ)
-	$(RM) $(DOCS)
+	$(RM) $(DOC)
 
 # Documentation ################################################################
-.PHONY: $(DOCS)
-$(DOCS): Doxyfile
+.PHONY: $(DOC)
+$(DOC): Doxyfile
 	$(DOXYGEN)
 
 Doxyfile:
@@ -106,3 +107,7 @@ Doxyfile:
 	$(VIM) Doxyfile
 	$(RM) Doxyfile.bak
 
+# Install Headers ##############################################################
+.PHONY: install_headers
+install_headers:
+	$(CP) $(HEADERS) $(INC_OUT_DIR)

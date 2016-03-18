@@ -28,19 +28,20 @@ TEST       := test
 BUILD_TEST := build_test
 RUN_TEST   := run_test
 CONF       := conf
-DOCS       := docs
+DOC        := doc
 
 BUILD_OUT_DIR := $(BUILD)/$(TARGET)
 LIB_OUT_DIR := $(BUILD_OUT_DIR)/$(LIB)
 INC_OUT_DIR := $(BUILD_OUT_DIR)/$(INC)
 TEST_OUT_DIR := $(BUILD_OUT_DIR)/$(TEST)
 CONF_OUT_DIR := $(BUILD_OUT_DIR)/$(CONF)
-DOCS_OUT_DIR := $(BUILD_OUT_DIR)/$(DOCS)
+DOC_OUT_DIR  := $(BUILD_OUT_DIR)/$(DOC)
 
 all: build \
-	docs \
+	doc \
+	install_headers \
 	build_test \
-	run_test 
+	run_test
 
 # Make Rules ###################################################################
 
@@ -48,7 +49,7 @@ build: build_build_dirs \
 	build_unit \
 	build_dream_collision_world \
 	build_dream_animation \
-	build_dream_scenegraph 
+	build_dream_scenegraph
 
 .PHONY: build_build_dirs
 build_build_dirs:
@@ -56,6 +57,7 @@ build_build_dirs:
 	$(MKDIR) $(CONF_OUT_DIR)
 	$(MKDIR) $(INC_OUT_DIR)
 	$(MKDIR) $(TEST_OUT_DIR)
+	$(MKDIR) $(DOC_OUT_DIR)
 
 .PHONY: build_unit
 build_unit:
@@ -78,7 +80,7 @@ build_dream_animation:
 build_test: build_unit_test \
 	build_dream_collision_world_test \
 	build_dream_animation_test \
-	build_dream_scenegraph_test 
+	build_dream_scenegraph_test
 
 .PHONY: build_unit_test
 build_unit_test:
@@ -121,26 +123,26 @@ run_dream_animation_test:
 
 # Documents ####################################################################
 
-docs: docs_unit \
-	docs_dream_collision_world \
-	docs_dream_animation \
-	docs_dream_scenegraph 
+doc: doc_unit \
+	doc_dream_collision_world \
+	doc_dream_animation \
+	doc_dream_scenegraph
 
-.PHONY: docs_unit
-docs_unit:
-	$(MAKE) -C $(UNIT) $(DOCS) -f Makefile.linux
+.PHONY: doc_unit
+doc_unit:
+	$(MAKE) -C $(UNIT) $(DOC) -f Makefile.linux
 
-.PHONY: docs_dream_scenegraph
-docs_dream_scenegraph:
-	$(MAKE) -C $(SCENEGRAPH) $(DOCS) -f Makefile.linux
+.PHONY: doc_dream_scenegraph
+doc_dream_scenegraph:
+	$(MAKE) -C $(SCENEGRAPH) $(DOC) -f Makefile.linux
 
-.PHONY: docs_dream_collision_world
-docs_dream_collision_world:
-	$(MAKE) -C $(COLLISION_WORLD) $(DOCS) -f Makefile.linux
+.PHONY: doc_dream_collision_world
+doc_dream_collision_world:
+	$(MAKE) -C $(COLLISION_WORLD) $(DOC) -f Makefile.linux
 
-.PHONY: docs_dream_animation
-docs_dream_animation:
-	$(MAKE) -C $(ANIMATION) $(DOCS) -f Makefile.linux
+.PHONY: doc_dream_animation
+doc_dream_animation:
+	$(MAKE) -C $(ANIMATION) $(DOC) -f Makefile.linux
 
 # Clean ########################################################################
 
@@ -148,7 +150,7 @@ clean: clean_build \
 	clean_unit \
 	clean_dream_collision_world \
 	clean_dream_animation \
-	clean_dream_scenegraph 
+	clean_dream_scenegraph
 
 .PHONY: clean_build
 clean_build:
@@ -170,3 +172,25 @@ clean_dream_scenegraph:
 clean_dream_animation:
 	$(MAKE) -C $(ANIMATION) clean -f Makefile.linux
 
+# Install Headers ##############################################################
+.PHONY: install_headers
+install_headers: install_headers_unit \
+                 install_headers_dream_animation \
+				 install_headers_dream_collision_world \
+				 install_headers_dream_scenegraph
+
+.PHONY: install_headers_unit
+install_headers_unit:
+	$(MAKE) -C $(UNIT) install_headers -f Makefile.linux
+
+.PHONY: install_headers_dream_animation
+install_headers_dream_animation:
+	$(MAKE) -C $(ANIMATION) install_headers -f Makefile.linux
+
+.PHONY: install_headers_dream_collision_world
+install_headers_dream_collision_world:
+	$(MAKE) -C $(COLLISION_WORLD) install_headers -f Makefile.linux
+
+.PHONY: install_headers_dream_scenegraph
+install_headers_dream_scenegraph:
+	$(MAKE) -C $(SCENEGRAPH) install_headers -f Makefile.linux

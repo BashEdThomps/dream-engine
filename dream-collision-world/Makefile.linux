@@ -35,7 +35,7 @@ TEST    := test
 CONF    := conf
 C_OBJ   := c_obj
 CPP_OBJ := cpp_obj
-DOCS    := docs
+DOC     := doc
 C_SRC   := src/c
 CPP_SRC := src/cpp
 TEST    := test
@@ -47,14 +47,15 @@ LIB_OUT_DIR  := $(BUILD_OUT_DIR)/$(LIB)
 INC_OUT_DIR  := $(BUILD_OUT_DIR)/$(INC)
 TEST_OUT_DIR := $(BUILD_OUT_DIR)/$(TEST)
 CONF_OUT_DIR := $(BUILD_OUT_DIR)/$(CONF)
-DOCS_OUT_DIR := $(BUILD_OUT_DIR)/$(DOCS)
+DOC_OUT_DIR :=  $(BUILD_OUT_DIR)/$(DOC)
 
 LFLAGS := -L$(LIB_OUT_DIR) -fPIC -lUnit
 TEST_LFLAGS := $(LFLAGS) -l$(NAME)
 GL_TEST_LFLAGS := $(LFLAGS) -lGL -lGLU  -lglut
 
 # Inputs
-SOURCES :=$(shell find $(C_SRC)/ -type f -name '*.c') # $(wildcard $(C_SRC)/*.c)
+SOURCES := $(shell find $(C_SRC)/ -type f -name '*.c') # $(wildcard $(C_SRC)/*.c)
+HEADERS := $(wildcard $(CPP_SRC)/CWrapper*.c)
 OBJECTS := $(SOURCES:$(C_SRC)/%.c=$(C_OBJ)/%.o)
 
 CPP_SOURCES := $(shell find $(CPP_SRC)/ -type f -name '*.cpp') #$(wildcard $(CPP_SRC)/*.cpp)
@@ -86,8 +87,8 @@ run_gl_test: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 gl_test_gdb: $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 	LD_LIBRARY_PATH=$(LIB_OUT_DIR) $(GDB) $(TEST_OUT_DIR)/$(GL_TEST_BIN)
 
-.PHONY: docs
-docs: Doxyfile
+.PHONY:$(DOC)
+$(DOC): Doxyfile
 	$(DOXYGEN)
 
 Doxyfile:
@@ -138,4 +139,10 @@ $(GL_TEST_OBJECTS): $(C_OBJ)/%.o : $(C_SRC)/$(GL_TEST)/%.c
 clean:
 	$(RM) $(C_OBJ)
 	$(RM) $(CPP_OBJ)
-	$(RM) $(DOCS)
+	$(RM) $(DOC)
+
+
+# Install Headers ##############################################################
+.PHONY: install_headers
+install_headers:
+	$(CP) $(HEADERS) $(INC_OUT_DIR)
