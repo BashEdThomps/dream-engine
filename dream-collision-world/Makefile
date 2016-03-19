@@ -55,7 +55,7 @@ GL_TEST_LFLAGS := $(LFLAGS) -lGL -lGLU  -lglut
 
 # Inputs
 SOURCES := $(shell find $(C_SRC)/ -type f -name '*.c') # $(wildcard $(C_SRC)/*.c)
-HEADERS := $(wildcard $(CPP_SRC)/CWrapper*.c)
+HEADERS := $(wildcard $(CPP_SRC)/CWrapper/*.h)
 OBJECTS := $(SOURCES:$(C_SRC)/%.c=$(C_OBJ)/%.o)
 
 CPP_SOURCES := $(shell find $(CPP_SRC)/ -type f -name '*.cpp') #$(wildcard $(CPP_SRC)/*.cpp)

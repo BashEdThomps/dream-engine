@@ -1,15 +1,16 @@
-# DreamEngine
+# Dream
 
 ## What
 * Platform Agnostic
 * Test Driven
 * High Level
-* Scene Graph
-* 3D Collision Detection
+* Scene Graph with
+	* 3D Collision Detection
+	* Keyframe Animation
 
 ## Why
 * Bare Essentials
-* For Making Multimedia Content
+* For making multimedia content
 * Targeting Older, Resource Limited and Embedded Platforms
 
 ## How

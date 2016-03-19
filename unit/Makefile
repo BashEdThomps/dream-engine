@@ -7,48 +7,6 @@ NAME     := Unit
 OUTPUT   := lib$(NAME).so
 TEST_BIN := $(NAME)Test
 
-# Target Info
-TARGET := linux
-CC := gcc
-CFLAGS := -Wall -std=c99 -fPIC
-LD := ld
-LFLAGS := -fPIC
-
-# Commands
-RM      := rm -rf
-CP      := cp -rf
-CD      := cd
-MAKE    := make
-MKDIR   := mkdir -p
-GDB     := gdb
-SUDO    := sudo
-DOXYGEN := doxygen
-VIM     := vim
-
-# Directories
-BUILD   := build
-LIB     := lib
-INC     := include
-TEST    := test
-CONF    := conf
-OBJ     := obj
-SRC     := src
-TEST    := test
-DOC     := doc
-
-# Output Paths
-BUILD_OUT_DIR := ../$(BUILD)/$(TARGET)
-LIB_OUT_DIR   := $(BUILD_OUT_DIR)/$(LIB)
-INC_OUT_DIR   := $(BUILD_OUT_DIR)/$(INC)
-TEST_OUT_DIR  := $(BUILD_OUT_DIR)/$(TEST)
-CONF_OUT_DIR  := $(BUILD_OUT_DIR)/$(CONF)
-DOC_OUT_DIR   := $(BUILD_OUT_DIR)/$(DOC)
-
-# Target Variables
-SOURCES  := $(wildcard $(SRC)/*.c)
-HEADERS  := $(wildcard $(SRC)/*.h)
-INCLUDES := $(wildcard $(SRC)/*.h)
-OBJECTS  := $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 
 TEST_SOURCES  := $(wildcard $(SRC)/$(TEST)/*.c)
 TEST_INCLUDES := $(wildcard $(SRC)/$(TEST)/*.h)

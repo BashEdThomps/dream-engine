@@ -1,6 +1,6 @@
 #include "daKeyFrame.h"
 #include "daFrameDelta.h"
-#include "daKeyFrameAnimation.h"
+#include "daAnimation.h"
 
 daKeyFrameAnimation* daKeyFrameAnimationCreate()  {
     daKeyFrameAnimation* kfa = (daKeyFrameAnimation*) malloc(sizeof(daKeyFrameAnimation));
@@ -47,7 +47,7 @@ void daKeyFrameAnimationGenerateFrames(daKeyFrameAnimation* kfa) {
                 for (j=0;i<DA_FRAME_DELTA_SZ;j++) { //FrameDelta d : source.getDeltas()) {
                     nextDelta = frame->frameDeltas[j];
                     fprintf(stdout,"Creatng delta for %d\n" , nextDelta->drawableID);
-		    // TODO - FIX THIS 
+		    // TODO - FIX THIS
                     daFrameDelta* dest;// = daKeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
                     daFrameDelta* moveBy;// = daKeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
                     daFrameDeltaPrintDebug(moveBy);
@@ -159,9 +159,9 @@ void daKeyFrameAnimationNextFrame(daKeyFrameAnimation* kfa) {
 }
 
 void daKeyFrameAnimationApplyFrameDeltaToVector(
-		daFrameDelta* delta, 
-		float* posVector, 
-		float* rotVector) { 
+		daFrameDelta* delta,
+		float* posVector,
+		float* rotVector) {
 	posVector[DA_X] += delta->positionDelta[DA_X];
 	posVector[DA_Y] += delta->positionDelta[DA_Y];
 	posVector[DA_Z] += delta->positionDelta[DA_Z];
