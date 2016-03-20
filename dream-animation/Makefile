@@ -1,9 +1,12 @@
 ################################################################################
 # DreamAnimation Makefile                                                      #
 ################################################################################
-include ../Build.mk
-include ../Test.mk
-include ../Headers.mk
+
+NAME := DreamAnimation
+
+include ../mk/Build.mk
+include ../mk/Test.mk
+include ../mk/Headers.mk
 all: $(LIB_OUT_DIR)/$(OUTPUT)
 
 # Build Objects ################################################################

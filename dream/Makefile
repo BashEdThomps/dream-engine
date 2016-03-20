@@ -1,40 +1,9 @@
 ################################################################################
-# Dream          Makefile                                                      #
+# Dream Makefile                                                               #
 ################################################################################
 
-CC      := gcc
-CFLAGS  := -I../unit/src -Wall -std=c99 -fPIC
-LD      := ld
-
 # Project Name
-NAME         := DreamAnimation
-OUTPUT       := lib$(NAME).so
-TEST_BIN     := $(NAME)Test
-GL_TEST_BIN  := $(NAME)GLTest
-DOXYFILE     := Doxyfile
-DOXYFILE_BAK := $(DOXYFILE).bak
-
-# Commands
-RM      := rm -rf
-CP      := cp -rf
-CD      := cd
-MAKE    := make
-MKDIR   := mkdir -p
-GDB     := gdb
-SUDO    := sudo
-DOXYGEN := doxygen
-VIM     := vim
-
-BUILD   := build
-LIB     := lib
-INC     := include
-TEST    := test
-CONF    := conf
-OBJ     := obj
-DOC     := doc
-SRC     := src
-TEST    := test
-GL_TEST := gl_test
+NAME         := Dream
 
 BUILD_OUT_DIR := ../$(BUILD)/$(TARGET)
 LIB_OUT_DIR   := $(BUILD_OUT_DIR)/$(LIB)

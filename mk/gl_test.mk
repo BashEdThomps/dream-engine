@@ -1,6 +1,7 @@
 # GL Test ######################################################################
 
-GL_TEST := gl_test
+GL_TEST_BIN  := $(NAME)GLTest
+GL_TEST      := gl_test
 
 GL_TEST_SOURCES := $(wildcard $(SRC)/$(GL_TEST)/*.c)
 GL_TEST_OBJECTS := $(GL_TEST_SOURCES:$(SRC)/$(GL_TEST)/%.c=$(OBJ)/%.o)

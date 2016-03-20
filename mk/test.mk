@@ -1,4 +1,5 @@
 # Test #########################################################################
+TEST_BIN     := $(NAME)Test
 
 TEST_SOURCES := $(wildcard $(SRC)/$(TEST)/*.c)
 TEST_OBJECTS := $(TEST_SOURCES:$(SRC)/$(TEST)/%.c=$(OBJ)/%.o)

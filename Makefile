@@ -10,7 +10,8 @@ SCENEGRAPH      := dream-scenegraph
 COLLISION_WORLD := dream-collision-world
 ANIMATION       := dream-animation
 
-include makefiles/Commands.mk
+include mk/Commands.mk
+include mk/Build.mk
 
 ALL        := all
 BUILD      := build

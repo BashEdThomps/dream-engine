@@ -7,3 +7,4 @@ unit/bin
 .ycm*
 Doxyfile.bak
 build
+dream-maker/node_modules

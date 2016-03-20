@@ -1,5 +1,7 @@
 # Build.mk #####################################################################
 
+OUTPUT  := lib$(NAME).so
+
 BUILD   := build
 LIB     := lib
 INC     := include
