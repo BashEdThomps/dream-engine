@@ -1,0 +1,21 @@
+.fill {
+    min-height: 100%;
+    height: 100%;
+}
+
+span.glyphicon-toolbar {
+    font-size: 1.2em;
+}
+
+.toast-alert
+{
+  z-index:9999;
+  /*width: -moz-calc(100% - 2em);
+  width: -webkit-calc(100% - 2em);
+  width: calc(100% - 2em);
+  */
+  width: 25%;
+  bottom: 1em;
+  right: 1em;
+  position: fixed;
+}

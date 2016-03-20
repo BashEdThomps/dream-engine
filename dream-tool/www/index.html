@@ -1,0 +1,84 @@
+<html ng-app="DreamTool">
+<head>
+    <title>Dream Tool</title>
+    <!-- Libraries -->
+    <script src="angular.min.js"></script>
+    <script src="ui-bootstrap-tpls.js"></script>
+    <script src="angular-ui-router.min.js"></script>
+    <script src="abn_tree_directive.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="view/css/dream_tool.css">
+    <link rel="stylesheet" href="abn_tree.css">
+    <!-- Controllers -->
+    <script src="controller/app.js"></script>
+    <script src="controller/index.js"></script>
+    <script src="controller/config.js"></script>
+    <script src="controller/generic.js"></script>
+    <script src="controller/home.js"></script>
+    <!-- Modals -->
+    <script src="controller/modals/save_modified.js"></script>
+</head>
+<body ng-controller="index">
+    <!-- Alert Box -->
+    <uib-alert ng-repeat="alert in alerts"
+               class="toast-alert"
+               dismiss-on-timeout="{{ alert.duration }}"
+               type="{{ alert.type }}"
+               close="closeAlert($index)">
+               {{ alert.content }}
+    </uib-alert>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Dream Tool</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="#" ng-click="onNewButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-file"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" ng-click="onOpenButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-folder-open"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" ng-click="onSaveButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-floppy-disk"></span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" ng-click="toggleFullScreen()">
+                        <span ng-class="isFullScreen ? 'glyphicon glyphicon-toolbar glyphicon-resize-small' : 'glyphicon glyphicon-toolbar glyphicon-resize-full'"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Page Container -->
+    <div class="container-fluid">
+        <!-- Page Content -->
+        <div class="row">
+            <div class="col-md-2">
+                <div class="fill well">
+                    <abn-tree tree-data="treeData">
+                    </abn-tree>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <div class="fill well">
+                    <ol class="breadcrumb">
+                        <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
+                    </ol>
+                    <div ui-view></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

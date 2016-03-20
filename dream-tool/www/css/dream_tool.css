@@ -1,0 +1,12 @@
+.fill {
+    min-height: 100%;
+    height: 100%;
+}
+
+body {
+    box-sizing: border-box;
+}
+
+span.glyphicon-toolbar {
+    font-size: 1.2em;
+}
