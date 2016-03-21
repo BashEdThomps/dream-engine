@@ -2,5 +2,5 @@
 
 .PHONY: clean
 clean:
-	$(RM) $(DOC)
+	$(RM) $(DOCS)
 	$(RM) $(OBJ)

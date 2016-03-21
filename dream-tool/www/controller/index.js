@@ -1,27 +1,55 @@
 App.controller("index",["$document","$scope","$uibModal",
 function($document, $scope,$uibModal) {
-    $scope.projectFileModified    = true;
+    $scope.projectModified    = true;
     $scope.modalAnimationsEnabled = true;
     $scope.isFullScreen = false;
 
     $scope.breadcrumbs = [];
-    $scope.projectFile = {
+    $scope.project = {
         name: "Untitled Project",
-        animations: [],
-        collisionWorld: [],
-        scenegraph: [],
+        animation:{
+            enabled: true,
+            objects: [
+                {
+                    name: "An Animation",
+                    keyFrames: [
+                        {
+                            index: 1,
+                            deltas: [
+
+                            ]
+                        }
+                    ]
+
+                }
+            ]
+        },
+        collisionWorld: {
+            enabled: true,
+            aabbMin: -100.0,
+            aabbMax: 100.0,
+            objects: []
+        },
+        scenegraph: {
+            enabled: true,
+            objects: []
+        },
     };
 
     $scope.generateTreeData = function() {
         $scope.treeData = [];
 
         var treeDataRoot = {};
-        treeDataRoot.label = $scope.projectFile.name;
+        treeDataRoot.label = $scope.project.name;
 
-        if ($scope.projectFile.animations.length > 0) {
-            $scope.treeDataRoot.animations = [];
-            $scope.projectFile.animations.forEach(function(animation) {
-                treeDataRoot.animations.push({label:animation.name});
+        if ($scope.project.animation.enabled) {
+            treeDataRoot.animations = [];
+            $scope.project.animation.objects.forEach(function(animation) {
+                treeDataRoot.animations.push(
+                    {
+                        label: animation.name
+                    }
+                );
             });
         }
 
@@ -29,102 +57,104 @@ function($document, $scope,$uibModal) {
     };
 
     $scope.generateBreadcrumbs = function (breadcrumbs) {
-        $scope.breadcrumbs.push($scope.projectFile.name);
+        $scope.breadcrumbs.push($scope.project.name);
     };
 
     // Toolbar Button Callbacks ------------------------------------------------
 
     $scope.onNewButtonClicked = function() {
-        if ($scope.isProjectFileModified()) {
+        if ($scope.isProjectModified()) {
             $scope.showSaveModifiedModal();
         }
-        $scope.showCreateNewFileModal();
+        $scope.showCreateNewModal();
     };
 
     $scope.onOpenButtonClicked = function() {
-        if ($scope.isProjectFileModified()) {
+        if ($scope.isProjectModified()) {
             $scope.showSaveModifiedModal();
         }
-        $scope.showOpenFileModal();
+        $scope.showOpenModal();
     };
 
     $scope.onSaveButtonClicked = function() {
-        $scope.showSaveFileModal();
+        $scope.showSaveModal();
     };
 
-    $scope.isProjectFileModified = function() {
-        return $scope.projectFileModified;
+    $scope.isProjectModified = function() {
+        return $scope.projectModified;
     };
 
     $scope.showSaveModifiedModal = function() {
         var modal = $uibModal.open({
             animation: $scope.modalAnimationsEnabled,
-            templateUrl: 'view/modals/save_modified.html',
+            templateUrl: 'view/partials/modals/save_modified.html',
             controller: 'SaveModifiedModal'
         });
 
         modal.result.then(function (result) {
             if (result) {
-                $scope.showSaveFileModal();
+                $scope.showSaveModal();
             } else {
-                $scope.initialiseProjectFile();
+                $scope.initialiseProject();
             }
         }, function () {
-            console.log('showConfirmNewFileModal dismissed at: ' + new Date());
+            console.log('showConfirmNewModal dismissed at: ' + new Date());
         });
     };
 
-    $scope.showNewFileModal = function() {
+    $scope.showNewModal = function() {
+
+    };
+
+    $scope.showOpenModal = function() {
         var modal = $uibModal.open({
             animation: $scope.modalAnimationsEnabled,
             templateUrl: 'modals/confirm_new_file.html',
-            controller: 'ConfirmNewFileModal'
+            controller: 'ConfirmNewModal'
         });
 
         modal.result.then(function (result) {
             if (result) {
-                $scope.showSaveFileModal();
+                $scope.showSaveModal();
             } else {
-                $scope.initialiseProjectFile();
+                $scope.initialiseProject();
             }
         }, function () {
-            console.log('showConfirmNewFileModal dismissed at: ' + new Date());
+            console.log('showConfirmNewModal dismissed at: ' + new Date());
         });
     };
 
-    $scope.showOpenFileModal = function() {
+    $scope.showSaveModal = function() {
         var modal = $uibModal.open({
             animation: $scope.modalAnimationsEnabled,
             templateUrl: 'modals/confirm_new_file.html',
-            controller: 'ConfirmNewFileModal'
+            controller: 'ConfirmNewModal'
         });
 
         modal.result.then(function (result) {
             if (result) {
-                $scope.showSaveFileModal();
+                $scope.showSaveModal();
             } else {
-                $scope.initialiseProjectFile();
+                $scope.initialiseProject();
             }
         }, function () {
-            console.log('showConfirmNewFileModal dismissed at: ' + new Date());
+            console.log('showConfirmNewModal dismissed at: ' + new Date());
         });
     };
 
-    $scope.showSaveFileModal = function() {
+    $scope.showYesNoModal = function(template, controller,yes,no){
         var modal = $uibModal.open({
             animation: $scope.modalAnimationsEnabled,
-            templateUrl: 'modals/confirm_new_file.html',
-            controller: 'ConfirmNewFileModal'
+            templateUrl: template,
+            controller: controller
         });
 
         modal.result.then(function (result) {
             if (result) {
-                $scope.showSaveFileModal();
+                yes();
             } else {
-                $scope.initialiseProjectFile();
+                no();
             }
-        }, function () {
-            console.log('showConfirmNewFileModal dismissed at: ' + new Date());
         });
     };
 

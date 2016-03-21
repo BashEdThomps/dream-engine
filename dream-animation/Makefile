@@ -4,9 +4,10 @@
 
 NAME := DreamAnimation
 
-include ../mk/Build.mk
-include ../mk/Test.mk
-include ../mk/Headers.mk
+include ../mk/build.mk
+include ../mk/test.mk
+include ../mk/headers.mk
+
 all: $(LIB_OUT_DIR)/$(OUTPUT)
 
 # Build Objects ################################################################

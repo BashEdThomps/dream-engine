@@ -12,11 +12,6 @@ SOURCES  := $(wildcard $(SRC)/*.c)
 HEADERS  := $(wildcard $(SRC)/*.h)
 OBJECTS  := $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 
-CFLAGS  := -I../unit/src -Wall -std=c99 -fPIC
-
-CC      := gcc
-CPP     := g++
-LD      := ld
-
-BUILD_OUT_DIR := $(BUILD)/$(TARGET)
+CFLAGS  := -Wall -std=c99 -fPIC
+BUILD_OUT_DIR := $(BUILD)
 LIB_OUT_DIR := $(BUILD_OUT_DIR)/$(LIB)

@@ -4,14 +4,14 @@
 
 
 # Submodules
-UNIT            := unit
 JSMN            := jsmn
+UNIT            := dream-unit
 SCENEGRAPH      := dream-scenegraph
 COLLISION_WORLD := dream-collision-world
 ANIMATION       := dream-animation
 
-include mk/Commands.mk
-include mk/Build.mk
+include mk/commands.mk
+include mk/build.mk
 
 ALL        := all
 BUILD      := build

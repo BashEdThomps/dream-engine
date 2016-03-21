@@ -47,8 +47,8 @@ int daKeyFrameAnimationGetNextAvailableKeyFrameIndex(daKeyFrameAnimation*);
 int daKeyFrameAnimationGetNextAvailableFrameIndex(daKeyFrameAnimation*);
 //! TODO - Document
 int daKeyFrameAnimationGetNextAvailableDrawableIndex(daKeyFrameAnimation*);
-	
+
 //! TODO - Document
-void daKeyFrameAnimationApplyFrameDeltaToVector(daFrameDelta*,float*,float*); 
+void daKeyFrameAnimationApplyFrameDeltaToVector(daFrameDelta*,float*,float*);
 
 #endif // DA_KEYFRAMEANIMAITON_H

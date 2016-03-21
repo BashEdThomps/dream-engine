@@ -1,0 +1,9 @@
+Create Project
+
+- From any page
+- Click on the new project toolbar button
+- If the current project has any modifications
+  - Ask the user if they want to save their changes
+    - If yes, show the save project modal
+    - else, initialise project object
+- Else, initialise the project object
