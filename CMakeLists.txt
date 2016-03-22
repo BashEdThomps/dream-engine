@@ -1,0 +1,7 @@
+cmake_minimum_required (VERSION 3.2.2)
+project (dream)
+add_subdirectory (dream-unit)
+#add_subdirectory (dream-collision-world)
+#add_subdirectory (dream-animation)
+#add_subdirectory (dream-scenegraph)
+#add_subdirectory (dream)

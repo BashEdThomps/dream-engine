@@ -4,6 +4,8 @@
 #include "dsgNode.h"
 #include "dsgCamera.h"
 
+#define NODES        256
+#define VERT_BUFFERS 256
 #define STR_BUF_SIZE 512
 
 // Global Variables

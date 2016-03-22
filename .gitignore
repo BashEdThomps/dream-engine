@@ -2,8 +2,6 @@
 *.so
 *.a
 *.swp
-bin
-unit/bin
 .ycm*
 Doxyfile.bak
 build
