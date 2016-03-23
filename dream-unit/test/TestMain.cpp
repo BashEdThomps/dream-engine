@@ -12,4 +12,5 @@ int main(int argc, char** argv) {
     unit->assertPass    ("This shuld pass");
     unit->assertZero    ("Equal to Zero",0);
     unit->assertNotZero ("Not equal to Zero",3);
+    return unit->getResult();
 }

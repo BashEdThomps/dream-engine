@@ -1,7 +1,7 @@
-#include "testFrame.h"
-#include "testFrameDelta.h"
-#include "testKeyFrame.h"
-#include "testKeyFrameAnimation.h"
+#include "TestFrame.h"
+#include "TestFrameDelta.h"
+#include "TestKeyFrame.h"
+#include "TestKeyFrameAnimation.h"
 #include "../../../unit/src/unit.h"
 
 int main(void) {

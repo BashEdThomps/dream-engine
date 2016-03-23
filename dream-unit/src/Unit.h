@@ -18,7 +18,14 @@ namespace DreamUnit {
     private:
         static const std::string UNIT_PASS;
         static const std::string UNIT_FAIL;
+        int mResult;
     public:
+        //! Default Constructor
+        Unit(void);
+
+        //! Default Destructor
+        ~Unit(void);
+
         //! Assert Test Passed
         void assertPass(std::string);
 
@@ -26,20 +33,16 @@ namespace DreamUnit {
         void assertFail(std::string);
 
         //! Assert Value is not equal to zero
-        template <typename T>
-        void assertNotZero(std::string, T);
+        void assertNotZero(std::string, int);
 
         //! Assert Value is equal to zero.
-        template <typename T>
-        void assertZero(std::string, T);
+        void assertZero(std::string, int);
 
         //! Assert two objects are equal.
-        template <typename T>
-        void assertEqual(std::string, T, T);
+        void assertEqual(std::string, int, int);
 
         //! Assert two floats are not equal.
-        template <typename T>
-        void assertNotEqual(std::string, T, T);
+        void assertNotEqual(std::string, int, int);
 
         //! Assert pointer is not null;
         void assertNotNull(std::string, void*);
@@ -61,6 +64,9 @@ namespace DreamUnit {
 
         //! Print a comment
         void printComment(std::string);
+
+        //! Get testing result
+        int getResult(void);
     private:
         //! Colour a string green (ANSI)
         std::string green(std::string);

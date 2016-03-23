@@ -7,3 +7,4 @@ mkdir -p $BUILD
 cd $BUILD
 cmake ..
 make
+make test
