@@ -3,10 +3,11 @@
  * Author: Ash Thompson
  * Email: ashthompson06@gmail.com
  */
-#include "../src/Unit.h"
+
+#include "UnitTest.h"
 
 int main(int argc, char** argv) {
-    DreamUnit::Unit *unit = new DreamUnit::Unit();
+    DreamUnitTest::UnitTest *unit = new DreamUnitTest::UnitTest();
     unit->moduleHeading ("Unit Library");
     unit->testHeading   ("Unit Tests");
     unit->assertPass    ("This shuld pass");

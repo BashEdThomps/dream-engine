@@ -3,9 +3,9 @@
 ## What
 * Platform Agnostic
 * Test Driven
-* Multimedia Engine Written in C with
+* Multimedia Engine Written in C++ with
 	* Scenegraph Model
-	* 3D Collision Detection
+	* 3D Collision Detection and Physics (Bullet)
 	* Keyframe Animation
 * Web Based Project Editor
 	* Where Projects are saved in JSON
