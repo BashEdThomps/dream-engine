@@ -1,33 +1,35 @@
-#ifndef NODE_H
-#define NODE_H
-
 /*
 * node.h
 */
+#ifndef NODE_H
+#define NODE_H
 
 #define NODE_X 0
 #define NODE_Y 1
 #define NODE_Z 2
 
-typedef struct {
-	char  *name;
-	char  *path;
-	int    parentIndex;
-	int    vertexBufferIndex;
-	float *translation;
-	float * rotation;
-} dsgNode;
+namespace DreamScenegraph {
+	class Node {
+	protected:
+		std::string mName;
+		std::string mPath;
+		int         mParentIndex;
+		int         mVertexBufferIndex;
+		float       mTranslation;
+		float       mRotation;
+	public:
+		Node(char*);
+		~Node();
 
-void dsgNodeInit (dsgNode*, char*);
-void dsgNodeInitTranslationRotation(dsgNode*);
-void dsgNodeDestroy(dsgNode*);
-int dsgNodeHasValidName(dsgNode*);
-int dsgNodeHasValidPath(dsgNode*);
-void dsgNodePrint(dsgNode*, void*);
-void dsgNodeSetParentIndex(int, dsgNode*);
-void dsgNodeSetTranslation(dsgNode*, float, float, float);
-void dsgNodeSetRotation(dsgNode*, float, float, float);
-void dsgNodeSetPolarTranslation(dsgNode*, dsgNode*, float, float);
-int dsgNodeHasVertexBuffer(dsgNode*);
-
+		void initTranslationRotation();
+		int  hasValidName();
+		int  hasValidPath();
+		void print();
+		void setParentIndex(int);
+		void setTranslation(float, float, float);
+		void setRotation(float, float, float);
+		void setPolarTranslation(float, float);
+		int  hasVertexBuffer();
+	};
+}
 #endif // NODE_H

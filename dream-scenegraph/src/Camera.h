@@ -7,12 +7,12 @@
 #define DSG_CAM_Y 1
 #define DSG_CAM_Z 2
 
-namespace DreamSceneGraph {
+namespace DreamScenegraph {
     class Camera {
     public:
-        float lookAt      [3];
-        float up          [3];
-        float translation [3];
+        float mLookAt      [3];
+        float mUp          [3];
+        float mTranslation [3];
     public:
         Camera();
         ~Camera();

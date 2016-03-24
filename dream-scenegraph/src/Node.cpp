@@ -1,79 +1,70 @@
 /*
-* node.c
+* Node.cpp
 */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include "dsgNode.h"
+#include <string>
+#include <math>
+#include "Node.h"
 
-void dsgNodeInit(dsgNode* node, char* name) {
-	node->name = name;
-	node->parentIndex = -1;
-	node->path = NULL;
-	node->vertexBufferIndex = -1;
-	dsgNodeInitTranslationRotation(node);
-}
-void dsgNodeDestroy(dsgNode* node) {
-	if (node->name != NULL)        free(node->name);
-	if (node->path != NULL)        free(node->path);
-	if (node->translation != NULL) free(node->translation);
-	if (node->rotation != NULL)    free(node->rotation);
-}
-void dsgNodeInitTranslationRotation(dsgNode* node) {
-	node->translation = (float*)malloc(sizeof(float)*3);
-	node->rotation = (float*)malloc(sizeof(float)*3);
+namespace DreamScenegraph {
+	Node(char* name) {
+		mName = name;
+		mParentIndex = -1;
+		mPath = NULL;
+		mVertexBufferIndex = -1;
+		initTranslationRotation(node);
+	}
 
-	node->translation[NODE_X] = 0.0f;
-	node->translation[NODE_Y] = 0.0f;
-	node->translation[NODE_Z] = 0.0f;
+	~Node() {
 
-	node->rotation[NODE_X] =  0.0f;
-	node->rotation[NODE_Y] =  0.0f;
-	node->rotation[NODE_Z] =  0.0f;
-	return;
-}
+	}
+	void Node::initTranslationRotation() {
+		mTranslation[NODE_X] = 0.0f;
+		mTranslation[NODE_Y] = 0.0f;
+		mTranslation[NODE_Z] = 0.0f;
 
-int dsgNodeHasValidPath(dsgNode* node) {
-	if (node == NULL) return 0;
-	return node->path != NULL;
-}
+		mRotation[NODE_X] =  0.0f;
+		mRotation[NODE_Y] =  0.0f;
+		mRotation[NODE_Z] =  0.0f;
+		return;
+	}
 
-int dsgNodeHasValidName(dsgNode* node) {
-	if (node == NULL) return 0;
-	return node->name != NULL;
-}
+	int Node::HasValidPath() {
+		return mPath != NULL;
+	}
 
-void dsgNodePrint(dsgNode* node, void* arg) {
-	fprintf(stdout,"%s\n", node->path);
-	return;
-}
+	int Node::HasValidName() {
+		return mName != NULL;
+	}
 
-void dsgNodeSetParentIndex(int parent, dsgNode* node) {
-	node->parentIndex = parent;
-	return;
-}
+	void Node::print() {
+		std::cout << mPath << std::endl;
+		return;
+	}
 
-void dsgNodeSetTranslation(dsgNode* node, float x, float y, float z) {
-	node->translation[NODE_X] = x;
-	node->translation[NODE_Y] = y;
-	node->translation[NODE_Z] = z;
-	return;
-}
+	void Node::setParentIndex(int parent) {
+		mParentIndex = parent;
+		return;
+	}
 
-void dsgNodeSetRotation(dsgNode* node, float x, float y, float z) {
-	node->rotation[NODE_X] = x;
-	node->rotation[NODE_Y] = y;
-	node->rotation[NODE_Z] = z;
-	return;
-}
+	void Node::setTranslation(float x, float y, float z) {
+		mTranslation[NODE_X] = x;
+		mTranslation[NODE_Y] = y;
+		mTranslation[NODE_Z] = z;
+		return;
+	}
 
-int dsgNodeHasVertexBuffer(dsgNode* node) {
-	return node->vertexBufferIndex > -1;
-}
-void dsgNodeSetPolarTranslation(dsgNode* node, dsgNode* parent,float radius, float theta) {
-	node->rotation[NODE_X] = node->rotation[NODE_X];
-	node->rotation[NODE_Y] = node->rotation[NODE_Y];
-	node->rotation[NODE_Z] = node->rotation[NODE_Z];
-	return;
+	void Node::setRotation(float x, float y, float z) {
+		mRotation[NODE_X] = x;
+		mRotation[NODE_Y] = y;
+		mRotation[NODE_Z] = z;
+		return;
+	}
+
+	int Node::hasVertexBuffer() {
+		return mVertexBufferIndex > -1;
+	}
+
+	void Node::nodeSetPolarTranslation(float radius, float theta) {
+		return;
+	}
 }

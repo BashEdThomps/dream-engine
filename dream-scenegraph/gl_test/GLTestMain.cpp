@@ -1,5 +1,5 @@
 /*
-* gltest_main.c
+* GLTestMain.c
 *
 * GLFW/glew GNU/Linux based testing for DreamSceneGraph.
 *
@@ -15,7 +15,8 @@
 #include <GL/gl.h>	// Header File For The OpenGL32 Library
 #include <GL/glu.h>	// Header File For The GLu32 Library
 // Project
-#include "../dsgScenegraph.h"
+#include "../src/Scenegraph.h"
+#include "../src/Node.h"
 
 /* ASCII code for the escape key. */
 #define ESCAPE 27
@@ -24,11 +25,11 @@ float windowWidth  = 1600.0f;
 float windowHeight = 900.0f;
 float nearCull     = 0.1f;
 float farCull      = 1000.0f;
-dsgScenegraph* graph;
+Scenegraph* graph;
 int window;
-dsgNode *n0;
-dsgNode *n1, *n1_1, *n1_2, *n1_3, *n1_4;
-dsgNode *n2, *n2_1, *n2_2, *n2_3, *n2_4;
+Node *n0;
+Node *n1, *n1_1, *n1_2, *n1_3, *n1_4;
+Node *n2, *n2_1, *n2_2, *n2_3, *n2_4;
 
 float* cubeVertexBuffer(float sz) {
 	int bufferSz = 72;

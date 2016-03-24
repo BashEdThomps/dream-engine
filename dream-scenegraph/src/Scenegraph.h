@@ -1,56 +1,57 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef SCENEGRAPH_H
+#define SCENEGRAPH_H
 
-#include "dsgNode.h"
-#include "dsgCamera.h"
+#include "Node.h"
+#include "Camera.h"
 
 #define NODES        256
 #define VERT_BUFFERS 256
-#define STR_BUF_SIZE 512
 
-// Global Variables
-typedef struct {
-	char*      name;
-	dsgNode**  nodes;
-	float**    vertexBuffers;
-	dsgCamera* camera;
-	int        rootNodeIndex;
-} dsgScenegraph;
+namespace DreamScenegraph {
+	// Global Variables
+	class Scenegraph {
+	protected;
+		std::string mName;
+		Node*       mNodes[NODES];
+		float*      mVertexBuffers[VERT_BUFFERS];
+		Camera*     mCamera;
+		int         mRootNodeIndex;
+	public:
+		// Init
+		Scenegraph(std::string);
+		~Scenegraph();
 
-// Init
-dsgScenegraph* dsgScenegraphCreate         ();
-dsgScenegraph* dsgScenegraphCreateWithName (char*);
-// VertexBuffer
-int dsgScenegraphAddVertexBuffer              (dsgScenegraph*, void*);
-int dsgScenegraphGetNextAvailableVertexBuffer (dsgScenegraph*);
-int dsgScenegraphGetIndexOfVertexBuffer       (dsgScenegraph*, void*);
-int dsgScenegraphRemoveVertexBuffer           (dsgScenegraph*, void*);
-// Display/Debug
-void dsgScenegraphPrintGraph (dsgScenegraph*);
-// Node Management
-void    dsgScenegraphGeneratePathForNode  (dsgScenegraph*, dsgNode*);
-void    dsgScenegraphSetRootNodeIndex     (dsgScenegraph*, int);
-void    dsgScenegraphSetRootNode          (dsgScenegraph*, dsgNode*);
-int     dsgScenegraphGetNextAvailableNode (dsgScenegraph*);
-int     dsgScenegraphGetIndexOfNode       (dsgScenegraph*, dsgNode*);
-dsgNode* dsgScenegraphGetRootNode                  (dsgScenegraph*);
-int     dsgScenegraphGetRootNodeIndex             (dsgScenegraph*);
-int     dsgScenegraphIsRootNode                   (dsgScenegraph*, dsgNode*);
-dsgNode* dsgScenegraphCreateNode                   (dsgScenegraph*);
-dsgNode* dsgScenegraphCreateNodeWithName           (dsgScenegraph*, char*);
-void    dsgScenegraphRemoveNode                   (dsgScenegraph*, dsgNode*);
-int     dsgScenegraphCountChildrenOfNode          (dsgScenegraph*, dsgNode*);
-dsgNode* dsgScenegraphGetNodeByName                (dsgScenegraph*, char*);
-// Updating
-void dsgScenegraphUpdatePaths               (dsgScenegraph*);
-void dsgScenegraphTraverseNodeVector        (dsgScenegraph*, void (*)(dsgNode*, void*), void*);
-int  dsgScenegraphTraversePath              (dsgScenegraph*,char*,void (*)(dsgNode*,void*),void*);
-// Node Relationships
-int  dsgScenegraphNodeIsChildOf           (dsgScenegraph*, dsgNode*, dsgNode*);
-int  dsgScenegraphNodeIsParentOf          (dsgScenegraph*, dsgNode*, dsgNode*);
-void dsgScenegraphNodeSetParent           (dsgScenegraph*, dsgNode*, dsgNode*);
-
-void dsgScenegraphPrintLine(dsgNode* node, void* arg);
-void dsgScenegraphPrintGraph(dsgScenegraph* graph);
-
+		// VertexBuffer
+		int addVertexBuffer(void*);
+		int getNextAvailableVertexBuffer();
+		int getIndexOfVertexBuffer(void*);
+		int removeVertexBuffer(void*);
+		// Display/Debug
+		void printGraph ();
+		// Node Management
+		void generatePathForNode(Node*);
+		void setRootNodeIndex(int);
+		void setRootNode(Node*);
+		int  getNextAvailableNode();
+		int  getIndexOfNode(Node*);
+		Node* getRootNode();
+		int   getRootNodeIndex();
+		int   isRootNode(Node*);
+		Node* createNode();
+		Node* createNodeWithName(std::string);
+		void  removeNode(Node*);
+		int   countChildrenOfNode(Node*);
+		dsgNode* getNodeByName(std::string);
+		// Updating
+		void updatePaths();
+		void traverseNodeVector(void (*)(dsgNode*, void*), void*);
+		int  traversePath(std::string, void (*)(dsgNode*,  void*), void*);
+		// Node Relationships
+		int  isNodeChildOf(Node*,Node*);
+		int  isNodeParentOf(Node*,Node*);
+		void setParentNode(Node*,Node*);
+		// Debug
+		void printGraph();
+	};
+}
 #endif // GRAPH_H
