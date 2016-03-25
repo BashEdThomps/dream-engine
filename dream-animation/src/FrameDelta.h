@@ -1,25 +1,40 @@
 #ifndef DA_FRAMEDELTA_H
 #define DA_FRAMEDELTA_H
 
-#include "daConstants.h"
+#include "Constants.h"
 
-//! TODO - Document
-typedef struct {
-    int    drawableID;
-    float *positionDelta;
-    float *rotationDelta;
-    float *scaleDelta;
-    float  orbitRadius;
-    int    operation;
-} daFrameDelta;
-
-//! Create frame delta with drawableID and Operation
-daFrameDelta* daFrameDeltaCreate             (int, int);
-//! TODO - Document
-daFrameDelta* daFrameDeltaComputeFrameDelta  (daFrameDelta*,daFrameDelta*,int,int);
-//! TODO - Document
-float*        daFrameDeltaComputeDeltaVector (float*, float*);
-//! TODO - Document
-void          daFrameDeltaPrintDebug         (daFrameDelta*);
-
+namespace DreamAnimation {
+	//! TODO - Document
+	class FrameDelta {
+	private:
+		int   mDrawableID;
+		float mPositionDelta [3];
+		float mRotationDelta [3];
+		float mScaleDelta    [3];
+		float mOrbitRadius;
+		int   mOperation;
+	public:
+		//! Create frame delta with drawableID and Operation
+		FrameDelta(int, int);
+		~FrameDelta();
+		//! TODO - Document
+		FrameDelta* computeFrameDelta(FrameDelta*, FrameDelta*, int, int);
+		//! TODO - Document
+		void computeDeltaVector(float*, float*, float*);
+		//! TODO - Document
+		void printDebug();
+		//! TODO - Document
+		int getDrawableID();
+		//! TODO - Document
+		float* getPositionDelta();
+		//! TODO - Document
+		float* getRotationDelta();
+		//! TODO - Document
+		int getOperation();
+		//! TODO - Document
+		void setPositionDelta(float*);
+		//! TODO - Document
+		void setRotationDelta(float*);
+	};
+}
 #endif // DA_FRAMEDELTA_H

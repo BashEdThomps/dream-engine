@@ -1,13 +1,32 @@
 cmake_minimum_required (VERSION 3.2.2)
 project (dream)
+
 # DreamUnit
 add_subdirectory (dream-unit/src)
 add_subdirectory (dream-unit/test)
 
-#add_subdirectory (dream-collision-world)
-#add_subdirectory (dream-animation)
-#add_subdirectory (dream-scenegraph)
-#add_subdirectory (dream)
+# Dream Animation
+add_subdirectory (dream-animation/src)
+#add_subdirectory (dream-animation/test)
 
+# Dream Scenegraph
+#add_subdirectory (dream-scenegraph/src)
+#add_subdirectory (dream-scenegraph/test)
+#add_subdirectory (dream-scenegraph/gl_test)
+
+# Dream
+#add_subdirectory (dream/src)
+#add_subdirectory (dream/test)
+
+# Unit Testing
 enable_testing()
-add_test(NAME DreamUnitTest COMMAND dream-unit/test/Test)
+
+add_test(NAME DreamUnitTest COMMAND dream-unit/test/DreamUnitTest)
+
+#add_test(NAME DreamAnimationTest COMMAND dream-animation/test/DreamAnimationTest)
+
+#add_test(NAME DreamAnimationTest COMMAND dream-scenegraph/test/Test)
+#add_test(NAME DreamAnimationTest COMMAND dream-scenegraph/test/GLTest)
+
+#add_test(NAME DreamAnimationTest COMMAND dream/test/Test)
+#add_test(NAME DreamAnimationTest COMMAND dream/test/GLTest)

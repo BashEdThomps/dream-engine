@@ -17,4 +17,8 @@
 //! How many animation frames interpolated per second
 #define DA_FPS 60
 
+//! TODO - Document
+#define DA_DELTA_SZ 256
+
+
 #endif // DA_CONSTANTS_H

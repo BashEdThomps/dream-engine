@@ -1,172 +1,174 @@
-#include "daKeyFrame.h"
-#include "daFrameDelta.h"
-#include "daAnimation.h"
+#include <iostream>
+#include "KeyFrame.h"
+#include "FrameDelta.h"
+#include "Animation.h"
 
-daKeyFrameAnimation* daKeyFrameAnimationCreate()  {
-    daKeyFrameAnimation* kfa = (daKeyFrameAnimation*) malloc(sizeof(daKeyFrameAnimation));
-    kfa->keyFrames           = (daKeyFrame**) malloc(sizeof(daKeyFrame*) * DA_KEYFRAMEANIM_KEYFRAMES_SZ);
-    kfa->frames              = (daFrame**)    malloc(sizeof(daFrame*)    * DA_KEYFRAMEANIM_FRAMES_SZ   );
-    kfa->drawables           = (int*)         malloc(sizeof(int)         * DA_KEYFRAMEANIM_DRAWABLES_SZ);
-    kfa->currentFrame        = 0;
-    kfa->currentKeyFrame     = 0;
-    return kfa;
-}
-
-void daKeyFrameAnimationGenerateFrames(daKeyFrameAnimation* kfa) {
-        int currentKeyFrame = 0;
-        int currentFrame = 0;
-
-        while (1) {
-            daKeyFrame* source = kfa->keyFrames[currentKeyFrame];
-            daKeyFrame* target = kfa->keyFrames[currentKeyFrame+1];
-
-            if (source == NULL) {
-                fprintf(stdout, "Finished generating frames\n");
-                break;
-            }
-
-            if (target == NULL) {
-                if (source->wrap) {
-                    target = kfa->keyFrames[0];
-                } else {
-                    fprintf(stdout,"Finished generating frames\n");
-                    break;
-                }
-            }
-
-            fprintf(stdout,"Generating frames for %d >> %d\n" , source->index, target->index);
-
-            int intermediates = daKeyFrameGetIntermediates(source);
-            fprintf(stdout, "\t with %d intermediates\n", intermediates);
-
-            int i;
-            for (i = 0; i < intermediates; i++) {
-                daFrame *frame = daFrameCreate(currentFrame);
-                int j;
-                daFrameDelta *nextDelta;
-                for (j=0;i<DA_FRAME_DELTA_SZ;j++) { //FrameDelta d : source.getDeltas()) {
-                    nextDelta = frame->frameDeltas[j];
-                    fprintf(stdout,"Creatng delta for %d\n" , nextDelta->drawableID);
-		    // TODO - FIX THIS
-                    daFrameDelta* dest;// = daKeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
-                    daFrameDelta* moveBy;// = daKeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
-                    daFrameDeltaPrintDebug(moveBy);
-                    daFrameAddFrameDelta(frame,moveBy);
-                }
-		daKeyFrameAnimationAddFrame(kfa,frame);
-                kfa->currentFrame++;
-            }
-            // Move on to the next KeyFrame
-            kfa->currentKeyFrame++;
-        }
-    }
-
-void daKeyFrameAnimationAddFrame(daKeyFrameAnimation* keyFrameAnim, daFrame* f) {
-    int index = daKeyFrameAnimationGetNextAvailableFrameIndex(keyFrameAnim);
-    keyFrameAnim->frames[index] = f;
-}
-
-void daKeyFrameAnimationAddKeyFrame(daKeyFrameAnimation *kfa, daKeyFrame *kf) {
-    int index = daKeyFrameAnimationGetNextAvailableKeyFrameIndex(kfa);
-    kfa->keyFrames[index] = kf;
-    return;
-}
-
-int daKeyFrameAnimationGetNextAvailableKeyFrameIndex(daKeyFrameAnimation* kfa) {
-	int retval = -1;
-	int i;
-	daKeyFrame* next = NULL;
-	for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
-		next=kfa->keyFrames[i];
-		if(next == NULL) {
-			retval = i;
-			break;
-		}
+namespace DreamAnimation {
+	Animation::Animation()  {
+	    mCurrentFrame    = 0;
+	    mCurrentKeyFrame = 0;
 	}
-	return retval;
-}
+	
+	Animation::~Animation() {
 
-int daKeyFrameAnimationGetNextAvailableFrameIndex(daKeyFrameAnimation* kfa) {
-	int retval = -1;
-	int i;
-	daFrame* next = NULL;
-	for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
-		next=kfa->frames[i];
-		if(next == NULL) {
-			retval = i;
-			break;
-		}
 	}
-	return retval;
-}
 
-int daKeyFrameAnimationGetNextAvailableDrawableIndex(daKeyFrameAnimation* kfa) {
-	int retval = -1;
-	int i;
-	int next = -1;
-	for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
-		next=kfa->drawables[i];
-		if(next == -1) {
-			retval = i;
+	void Animation::generateFrames() {
+		int currentKeyFrame = 0;
+		int currentFrame = 0;
+
+		while (1) {
+		    KeyFrame* source = mKeyFrames[currentKeyFrame];
+		    KeyFrame* target = mKeyFrames[currentKeyFrame+1];
+
+		    if (source == NULL) {
+			std::cout << "Finished generating frames" << std::endl;
 			break;
+		    }
+
+		    if (target == NULL) {
+			if (source->getWrap()) {
+			    target = mKeyFrames[0];
+			} else {
+			    std::cout << "Finished generating frames" <<  std::endl;
+			    break;
+			}
+		    }
+
+		    std::cout << "Generating frames for " << source->getIndex() << " >> " << target->getIndex() << std::endl;
+
+		    int intermediates = source->getIntermediateFrameCount();
+		    std::cout << "\t with " << intermediates << " intermediates" << std::endl;
+
+		    int i;
+		    for (i = 0; i < intermediates; i++) {
+			Frame *frame = new Frame(currentFrame);
+			int j;
+			FrameDelta *nextDelta;
+			for (j=0;i<DA_FRAME_DELTA_SZ;j++) { //FrameDelta d : source.getDeltas()) {
+			    nextDelta = frame->getFrameDeltas()[j];
+			    std::cout << "Creatng delta form " <<  nextDelta->getDrawableID() << std::endl;
+			    // TODO - FIX THIS
+			    FrameDelta* dest;// = KeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
+			    FrameDelta* moveBy;// = KeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
+			    moveBy->printDebug();
+			    frame->addFrameDelta(moveBy);
+			}
+			addFrame(frame);
+			mCurrentFrame++;
+		    }
+		    // Move on to the next KeyFrame
+		    mCurrentKeyFrame++;
 		}
+	    }
+
+	void Animation::addFrame(Frame* f) {
+	    int index = getNextAvailableFrameIndex();
+	    mFrames[index] = f;
 	}
-	return retval;
-}
-void daKeyFrameAnimationAddDrawable(daKeyFrameAnimation* kfa, int sd) {
-    int index =  daKeyFrameAnimationGetNextAvailableDrawableIndex(kfa);
-    kfa->drawables[index] = sd;
-    return;
-}
 
-void daKeyFrameAnimationRemoveDrawable(daKeyFrameAnimation *kfa, int dID) {
-    kfa->drawables[dID] = -1;
-    return;
-}
+	void Animation::addKeyFrame(KeyFrame *kf) {
+	    int index = getNextAvailableKeyFrameIndex();
+	    mKeyFrames[index] = kf;
+	    return;
+	}
 
-void daKeyFrameAnimationNextFrame(daKeyFrameAnimation* kfa) {
-    // We're done
-    if (kfa->done) {
-        return;
-    }
+	int Animation::getNextAvailableKeyFrameIndex() {
+		int retval = -1;
+		int i;
+		KeyFrame* next = NULL;
+		for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
+			next=mKeyFrames[i];
+			if(next == NULL) {
+				retval = i;
+				break;
+			}
+		}
+		return retval;
+	}
 
-    fprintf(stdout,"Applying next Frame: %d\n" , kfa->currentFrame);
-    daFrame *currentFrame = kfa->frames[kfa->currentFrame];
+	int Animation::getNextAvailableFrameIndex() {
+		int retval = -1;
+		int i;
+		Frame* next = NULL;
+		for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
+			next=mFrames[i];
+			if(next == NULL) {
+				retval = i;
+				break;
+			}
+		}
+		return retval;
+	}
 
-    if (currentFrame == NULL) {
-        if (kfa->keyFrames[kfa->numKeyFrames]->wrap) {
-            kfa->currentFrame = 0;
-        } else {
-            kfa->done = 1;
-            return;
-        }
-        //return;
-    }
+	int Animation::getNextAvailableDrawableIndex() {
+		int retval = -1;
+		int i;
+		int next = -1;
+		for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
+			next=mDrawables[i];
+			if(next == -1) {
+				retval = i;
+				break;
+			}
+		}
+		return retval;
+	}
+	void Animation::addDrawable(int sd) {
+	    int index =  getNextAvailableDrawableIndex();
+	    mDrawables[index] = sd;
+	    return;
+	}
 
-    int i;
-    daFrameDelta *nextFrameDelta;
-    for (i=0; i<DA_FRAME_DELTA_SZ; i++) {  //FrameDelta d : currentFrame.getMotionDeltas())
-	nextFrameDelta = currentFrame->frameDeltas[i];
-        if(nextFrameDelta == NULL) {
-            continue;
-        }
+	void Animation::removeDrawable(int dID) {
+	    mDrawables[dID] = -1;
+	    return;
+	}
 
-        //SceneObject sd = getDrawableByID(d.getDrawableID());
-        daKeyFrameAnimationApplyFrameDeltaToVector(nextFrameDelta,NULL,NULL);
-    }
+	void Animation::nextFrame() {
+	    // We're done
+	    if (mDone) {
+		return;
+	    }
 
-    kfa->currentFrame++;
-}
+	    std::cout << "Applying next Frame: " << mCurrentFrame << std::endl;
+	    Frame *currentFrame = mFrames[mCurrentFrame];
 
-void daKeyFrameAnimationApplyFrameDeltaToVector(
-		daFrameDelta* delta,
-		float* posVector,
-		float* rotVector) {
-	posVector[DA_X] += delta->positionDelta[DA_X];
-	posVector[DA_Y] += delta->positionDelta[DA_Y];
-	posVector[DA_Z] += delta->positionDelta[DA_Z];
+	    if (currentFrame == NULL) {
+		if (mKeyFrames[mNumKeyFrames]->getWrap()) {
+		    mCurrentFrame = 0;
+		} else {
+		    mDone = 1;
+		    return;
+		}
+	    }
 
-	rotVector[DA_X] += delta->rotationDelta[DA_X];
-	rotVector[DA_Y] += delta->rotationDelta[DA_Y];
-	rotVector[DA_Z] += delta->rotationDelta[DA_Z];
+	    int i;
+	    FrameDelta *nextFrameDelta;
+	    for (i=0; i<DA_FRAME_DELTA_SZ; i++) { 
+		nextFrameDelta = currentFrame->getFrameDeltas()[i];
+		if(nextFrameDelta == NULL) {
+		    continue;
+		}
+
+		//SceneObject sd = getDrawableByID(d.getDrawableID());
+		applyFrameDeltaToVector(nextFrameDelta,NULL,NULL);
+	    }
+
+	    mCurrentFrame++;
+	}
+
+	void Animation::applyFrameDeltaToVector(
+			FrameDelta* delta,
+			float* posVector,
+			float* rotVector) {
+		posVector[DA_X] += delta->getPositionDelta()[DA_X];
+		posVector[DA_Y] += delta->getPositionDelta()[DA_Y];
+		posVector[DA_Z] += delta->getPositionDelta()[DA_Z];
+
+		rotVector[DA_X] += delta->getRotationDelta()[DA_X];
+		rotVector[DA_Y] += delta->getRotationDelta()[DA_Y];
+		rotVector[DA_Z] += delta->getRotationDelta()[DA_Z];
+	}
+
 }

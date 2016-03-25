@@ -1,25 +1,35 @@
 #ifndef DA_FRAME_H
 #define DA_FRAME_H
 
+#include "FrameDelta.h"
+
 #define DA_FRAME_DELTA_SZ 1024
 
-#include "daFrameDelta.h"
+namespace DreamAnimation { 
+	//! TODO - Document
+	class Frame {
+	private:
+	    int         mIndex;
+	    FrameDelta* mFrameDeltas[DA_FRAME_DELTA_SZ];
+	public:
+		//! TODO - Document
+		Frame(int);
+		//! TODO - Document
+		~Frame();
+		//! TODO - Document
+		void addFrameDelta(FrameDelta*);
+		//! TODO - Document
+		int getNextAvailableFrameDeltaIndex();
+		//! TODO - Document
+		int compareIndecies(Frame*);
+		//! TODO - Document
+		int getNumFrameDeltas();
+		//! TODO - Document
+		int getIndex();
+		//! TODO - Document
+		FrameDelta** getFrameDeltas();
 
-//! TODO - Document
-typedef struct {
-    int           index;
-    daFrameDelta* frameDeltas[DA_FRAME_DELTA_SZ];
-} daFrame;
-
-//! TODO - Document
-daFrame *daFrameCreate                          (int);
-//! TODO - Document
-void     daFrameAddFrameDelta                   (daFrame*, daFrameDelta*);
-//! TODO - Document
-int      daFrameGetNextAvailableFrameDeltaIndex (daFrame*);
-//! TODO - Document
-int      daFrameCompareIndecies                 (daFrame*, daFrame*);
-//! TODO - Document
-int      daFrameGetNumFrameDeltas               (daFrame*);
+	};
+}
 
 #endif // DA_FRAME

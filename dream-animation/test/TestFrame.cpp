@@ -1,9 +1,9 @@
 #include "../../../unit/src/unit.h"
 
-#include "testFrame.h"
+#include "TestFrame.h"
 
-#include "../daFrame.h"
-#include "../daFrameDelta.h"
+#include "../src/Frame.h"
+#include "../src/FrameDelta.h"
 
 void testFrame(void) {
 	unitTestHeading("daFrame");

@@ -1,30 +1,41 @@
 #ifndef DA_KEYFRAME_H
 #define DA_KEYFRAME_H
 
-#include "daFrameDelta.h"
+#include "Constants.h"
+#include "FrameDelta.h"
 
-//! TODO - Document
-#define DA_KEYFRAME_DELTAS_SZ 256
-
-//! TODO - Document
-typedef struct {
-    int index;
-    daFrameDelta** deltas;
-    long duration;
-    int wrap;
-} daKeyFrame;
-
-//! TODO - Document
-daKeyFrame*   daKeyFrameCreate                (int, long);
-//! TODO - Document
-void          daKeyFrameAddDelta              (daKeyFrame*, daFrameDelta*);
-//! TODO - Document
-int           daKeyFrameGetNextAvailableIndex (daKeyFrame*);
-//! TODO - Document
-int           daKeyFrameGetIntermediates      (daKeyFrame*);
-//! TODO - Document
-int           daKeyFrameCompareIndicies       (daKeyFrame*, daKeyFrame*);
-//! TODO - Document
-daFrameDelta* daKeyFrameGetDeltaByDrawableID  (daKeyFrame*, int);
+namespace DreamAnimation {
+	//! TODO - Document
+	class KeyFrame {
+	private:
+		//! TODO - Document
+		int mIndex;
+		//! TODO - Document
+		FrameDelta* mDeltas[DA_DELTA_SZ];
+		//! TODO - Document
+		long mDuration;
+		//! TODO - Document
+		int mWrap;
+	public:
+		//! TODO - Document
+		KeyFrame(int, long);
+		//! TODO - Document
+		~KeyFrame();
+		//! TODO - Document
+		void addDelta(FrameDelta*);
+		//! TODO - Document
+		int getNextAvailableIndex();
+		//! TODO - Document
+		int getIntermediateFrameCount();
+		//! TODO - Document
+		int compareIndicies(KeyFrame*);
+		//! TODO - Document
+		FrameDelta* getDeltaByDrawableID(int);
+		//! TODO - Document
+		int getWrap();
+		//! TODO - Document
+		int getIndex();
+	};
+}
 
 #endif // DA_KEYFRAME_H
