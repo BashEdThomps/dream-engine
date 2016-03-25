@@ -13,7 +13,6 @@ namespace DreamUnit {
 	}
 
 	Unit::~Unit() {
-
 	}
 
 	void Unit::moduleHeading(std::string name) {

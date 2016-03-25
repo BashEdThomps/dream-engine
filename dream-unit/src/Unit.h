@@ -24,7 +24,10 @@ namespace DreamUnit {
         Unit(void);
 
         //! Default Destructor
-        ~Unit(void);
+        virtual ~Unit(void) = 0;
+
+        //! Run Method
+        virtual void run(void) = 0;
 
         //! Assert Test Passed
         void assertPass(std::string);

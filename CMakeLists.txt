@@ -7,7 +7,7 @@ add_subdirectory (dream-unit/test)
 
 # Dream Animation
 add_subdirectory (dream-animation/src)
-#add_subdirectory (dream-animation/test)
+add_subdirectory (dream-animation/test)
 
 # Dream Scenegraph
 #add_subdirectory (dream-scenegraph/src)
@@ -23,7 +23,7 @@ enable_testing()
 
 add_test(NAME DreamUnitTest COMMAND dream-unit/test/DreamUnitTest)
 
-#add_test(NAME DreamAnimationTest COMMAND dream-animation/test/DreamAnimationTest)
+add_test(NAME DreamAnimationTest COMMAND dream-animation/test/DreamAnimationTest)
 
 #add_test(NAME DreamAnimationTest COMMAND dream-scenegraph/test/Test)
 #add_test(NAME DreamAnimationTest COMMAND dream-scenegraph/test/GLTest)

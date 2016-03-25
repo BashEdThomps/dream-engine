@@ -5,7 +5,7 @@
 
 #define DA_FRAME_DELTA_SZ 1024
 
-namespace DreamAnimation { 
+namespace DreamAnimation {
 	//! TODO - Document
 	class Frame {
 	private:

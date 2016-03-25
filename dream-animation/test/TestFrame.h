@@ -4,10 +4,10 @@
 #include "../../dream-unit/src/Unit.h"
 
 namespace DreamAnimationTest {
-	class TestFrame : public Unit {
+	class TestFrame : public DreamUnit::Unit {
 	public:
-		//! Run all daFrame tests.
-		void testFrame              (void);
+		//! Run Method
+		void run(void);
 		//! Test creating a daFrame.
 		void testFrameCreate        (void);
 		//! Tests adding a daFrameDelta to a daFrame.

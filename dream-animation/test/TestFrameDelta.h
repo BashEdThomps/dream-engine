@@ -1,10 +1,35 @@
-#ifndef TEST_FRAMEDELTA_H
-#define TEST_FRAMEDELTA_H
+/*
+* TestFrameDelta
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
-//! Run all daFrameDelta tests.
-void testFrameDelta(void);
+#ifndef TESTFRAMEDELTA_H
+#define TESTFRAMEDELTA_H
 
-//! Test computing a daFrameDelta
-void testFrameDeltaComputeFrameDelta(void);
+#include "../../dream-unit/src/Unit.h"
 
-#endif  // TEST_FRAMEDELTA_H
+namespace DreamAnimationTest {
+	class TestFrameDelta : public DreamUnit::Unit {
+	public:
+		TestFrameDelta(void);
+		~TestFrameDelta(void);
+		void run(void);
+		void testComputeFrameDelta();
+	//protected:
+	//private:
+	}; // End of TestFrameDelta
+} // End of DreamAnimationTest
+
+#endif // End of TESTFRAMEDELTA_H

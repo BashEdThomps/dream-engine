@@ -87,9 +87,9 @@ namespace DreamAnimation {
 	}
 
 	void FrameDelta::setPositionDelta(float* pos) {
-		mPositionDelta[DA_X] = pos[DA_X]; 
-		mPositionDelta[DA_Y] = pos[DA_Y]; 
-		mPositionDelta[DA_Z] = pos[DA_Z]; 
+		mPositionDelta[DA_X] = pos[DA_X];
+		mPositionDelta[DA_Y] = pos[DA_Y];
+		mPositionDelta[DA_Z] = pos[DA_Z];
 	}
 
 	void FrameDelta::setRotationDelta(float* rot) {

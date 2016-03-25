@@ -1,5 +1,5 @@
 /*
-* TestFrameDelta
+* TestKeyFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,31 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "TestFrameDelta.h"
-#include "../src/Frame.h"
+#include "TestKeyFrame.h"
 
 namespace DreamAnimationTest {
 
-	TestFrameDelta::TestFrameDelta() {
+	TestKeyFrame::TestKeyFrame() {
 	}
 
-	TestFrameDelta::~TestFrameDelta() {
+	TestKeyFrame::~TestKeyFrame() {
 	}
 
-	void TestFrameDelta::run(void) {
-		testComputeFrameDelta();
-	}
+	void TestKeyFrame::run(void) {
 
-	void TestFrameDelta::testComputeFrameDelta() {
-		DreamAnimation::Frame *frame = new DreamAnimation::Frame(0);
-
-		DreamAnimation::FrameDelta *delta1 = new DreamAnimation::FrameDelta(0,DA_OP_LINEAR);
-		DreamAnimation::FrameDelta *delta2 = new DreamAnimation::FrameDelta(0,DA_OP_LINEAR);
-
-		frame->addFrameDelta(delta1);
-		frame->addFrameDelta(delta2);
-
-		assertNotNull("Frame Delta Computed for Frame",delta1->computeFrameDelta(delta1,delta2,10,5));
-		return;
 	}
 } // End of DreamAnimationTest
