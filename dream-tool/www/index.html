@@ -7,8 +7,8 @@
     <script src="angular-ui-router.min.js"></script>
     <script src="abn_tree_directive.js"></script>
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="view/css/dream_tool.css">
+    <link rel="stylesheet" href="css/bootstrap.cyborg.min.css">
+    <link rel="stylesheet" href="css/dream_tool.css">
     <link rel="stylesheet" href="abn_tree.css">
     <!-- Controllers -->
     <script src="controller/app.js"></script>
@@ -19,22 +19,17 @@
     <!-- Modals -->
     <script src="controller/modals/save.js"></script>
     <script src="controller/modals/yes_no.js"></script>
+    <script src="controller/toast_alerts.js"></script>
 </head>
 <body ng-controller="index">
-    <!-- Alert Box -->
-    <uib-alert ng-repeat="alert in alerts"
-               class="toast-alert"
-               dismiss-on-timeout="{{ alert.duration }}"
-               type="{{ alert.type }}"
-               close="closeAlert($index)">
-               {{ alert.content }}
-    </uib-alert>
+
     <!-- Navigation Bar -->
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Dream Tool</a>
             </div>
+
             <ul class="nav navbar-nav">
                 <li>
                     <a href="#" ng-click="onNewButtonClicked()">
@@ -52,6 +47,7 @@
                     </a>
                 </li>
             </ul>
+
             <ul class="nav navbar-nav navbar-right">
                 <li>
                     <a href="#" ng-click="toggleFullScreen()">
@@ -61,25 +57,33 @@
             </ul>
         </div>
     </nav>
-    <!-- Page Container -->
-    <div class="container-fluid">
-        <!-- Page Content -->
-        <div class="row">
-            <div class="col-md-2">
-                <div class="fill well">
-                    <abn-tree tree-data="treeData">
-                    </abn-tree>
-                </div>
+    <!-- Alert Box -->
+    <uib-alert ng-repeat="alert in alertList"
+    class="toast-alert"
+    dismiss-on-timeout="{{ alert.duration }}"
+    type="{{ alert.type }}"
+    close="closeAlert($index)">
+    {{ alert.text }}
+</uib-alert>
+<!-- Page Container -->
+<div class="container-fluid">
+    <!-- Page Content -->
+    <div class="row">
+        <div class="col-md-2">
+            <div class="fill well">
+                <abn-tree tree-data="treeData">
+                </abn-tree>
             </div>
-            <div class="col-md-10">
-                <div class="fill well">
-                    <ol class="breadcrumb">
-                        <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
-                    </ol>
-                    <div ui-view></div>
-                </div>
+        </div>
+        <div class="col-md-10">
+            <div class="fill well">
+                <ol class="breadcrumb">
+                    <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
+                </ol>
+                <div ui-view></div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

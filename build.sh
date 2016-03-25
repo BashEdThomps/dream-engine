@@ -7,4 +7,4 @@ mkdir -p $BUILD
 cd $BUILD
 cmake ..
 make
-make test
+CTEST_OUTPUT_ON_FAILURE=TRUE make test

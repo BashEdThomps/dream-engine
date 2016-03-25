@@ -1,12 +1,13 @@
 App.factory('toastAlerts',
     function() {
+        var defaultDuration = 3000;
         return {
             // Create an alert object
             newAlert : function(text, type, duration) {
                 return {
                     text: text,
                     type: type,
-                    duration: duration
+                    duration: (duration === undefined ? defaultDuration : duration)
                 };
             },
             // Add an alert to the page

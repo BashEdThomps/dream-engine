@@ -1,18 +1,17 @@
 #ifndef DREAM_H
 #define DREAM_H
 
-#include "../../dream-scenegraph/src/Scenegraph.h"
-#include "../../dream-animation/src/Animation.h"
+#include "Scene.h"
 
 namespace Dream {
-	class DreamInstance {
+	class Dream {
 	protected:
-		Scenegraph      *mSceneGraph;
-		Animation       *mAnimations;
-		btDynamicsWorld *mDynamicsWorld;
+		Scene *mScene;
 	public:
-        Dream(int, ...);
-		~Dream();
+		Dream(void);
+		~Dream(void);
+		Scene* getScene(void);
+		void setScene(Scene*);
 	};
 }
 

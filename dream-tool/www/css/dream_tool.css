@@ -1,12 +1,21 @@
 .fill {
-    min-height: 100%;
-    height: 100%;
-}
-
-body {
-    box-sizing: border-box;
+    min-height: 90%;
+    height: 90%;
 }
 
 span.glyphicon-toolbar {
     font-size: 1.2em;
+}
+
+.toast-alert
+{
+  z-index:9999;
+  /*width: -moz-calc(100% - 2em);
+  width: -webkit-calc(100% - 2em);
+  width: calc(100% - 2em);
+  */
+  width: 20%;
+  bottom: 2em;
+  right: 2.5em;
+  position: fixed;
 }
