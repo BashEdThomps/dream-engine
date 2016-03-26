@@ -4,5 +4,6 @@
     },
     "api": {
         "port": 4001
-    }
+    },
+		"dream_bin": "/usr/bin/dream"
 }

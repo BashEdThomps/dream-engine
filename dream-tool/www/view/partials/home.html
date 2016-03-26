@@ -1,8 +1,77 @@
 <div class="container-fluid">
-    <h1>
-        Welcome to Dream Tool
-    </h1>
-    <p>
-        This tool can be used to create, modify and manage Dream projects.
-    </p>
+	<h2>
+		Welcome to Dream Tool
+	</h2>
+	<h3>
+		Getting Started
+		<br>
+		<small>
+			<strong>This tool is used to create, modify and manage Dream projects.</strong>
+		</small>
+	</h3>
+	<h3>
+		Project Structure
+		<br>
+		<small>
+			<strong>
+				Projects are composed of the objects described below.
+				<br>
+				Click any object to see more information on it's role within a project.
+			</strong>
+		</small>
+	</h3>
+	<br>
+	<div class="row">
+		<div class="col-md-3">
+			<ul>
+				<li><!--Project-->
+					<a href="#" ng-click="onHelpProjectClicked()">Project</a>
+					<ul>
+						<li><!--Configuration-->
+							<a href="#" ng-click="onHelpProjectConfigurationClicked()">Configuration</a>
+						</li><!--Configuration-->
+						<li><!--Scene-->
+							<a href="#" ng-click="onHelpSceneClicked()">Scene</a>
+							<ul>
+								<li><!--SceneObject-->
+									<a href="#" ng-click="onHelpSceneObjectClicked()" >SceneObject</a>
+									<ul>
+										<li>
+											<a href="#" ng-click="onHelpSceneObjectModifierClicked()" >Modifier</a>
+											<ul>
+												<li>
+													<a href="#" ng-click="onHelpScreenObjectModifierCollisionClicked()">Collision</a>
+												</li>
+												<li>
+													<a href="#" ng-click="onHelpScreenObjectModifierPhysicsClicked()">Physics</a>
+												</li>
+												<li>
+													<a href="#" ng-click="onHelpScreenObjectModifierEventListenerClicked()">EventListener</a>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li><!--Close SceneObject-->
+								<li><!--Animation-->
+									<a href="#" ng-click="onHelpAnimationClicked()" >Animation</a>
+									<ul>
+										<li><a href="#" ng-click="onHelpAnimationLinearClicked()" >Linear</a></li>
+										<li><a href="#" ng-click="onHelpAnimationBezierClicked()" >Bezier</a></li>
+										<li><a href="#" ng-click="onHelpAnimationOrbitalClicked()" >Orbital</a></li>
+									</ul>
+								</li><!--Close Animation-->
+								<li><!--Audio-->
+									<a href="#">Audio</a>
+									<ul>
+										<li><a href="#">SoundEffect</a></li>
+										<li><a href="#">Music</a></li>
+									</ul>
+								</li><!--Close Audio-->
+							</ul>
+						</li><!--Close Scene-->
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
 </div>

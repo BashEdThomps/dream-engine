@@ -26,7 +26,35 @@ namespace DreamTest {
 	}
 
 	void SceneTest::run(void) {
-		assertFail("No Tests to Run");
+		testSceneCanStoreName();
+		testSceneCanStoreMultipleSceneObjects();
+		testSceneCanStoreMultipleAnimations();
+		testSceneCanStoreMultipleSoundEffects();
+		testSceneCanStoreMultiplAudioTracks();
+
+	}
+
+	void SceneTest::testSceneCanStoreName(void) {
+		assertInconclusive("SceneCanStoreName: Test Not Implemented");
+	}
+
+	void SceneTest::testSceneCanStoreMultipleSceneObjects(void) {
+		assertInconclusive("SceneCanStoreMultipleSceneObjects: Test Not Implemented");
+
+	}
+
+	void SceneTest::testSceneCanStoreMultipleAnimations(void) {
+		assertInconclusive("SceneCanStoreMultipleAnimation: Test Not Implemented");
+
+	}
+
+	void SceneTest::testSceneCanStoreMultipleSoundEffects(void) {
+		assertInconclusive("SceneCanStoreMultipleSoundEffects: Test Not Implemented");
+
+	}
+
+	void SceneTest::testSceneCanStoreMultiplAudioTracks(void) {
+		assertInconclusive("SceneCanStoreMultipleAudioTracks: Test Not Implemented");
 	}
 
 } // End of DreamTest

@@ -6,6 +6,7 @@
 namespace DreamUnit {
 
 	const std::string Unit::UNIT_PASS = "PASS";
+	const std::string Unit::UNIT_INCONCLUSIVE = "INCONCLUSIVE";
 	const std::string Unit::UNIT_FAIL = "FAIL";
 
 	Unit::Unit() {
@@ -53,11 +54,18 @@ namespace DreamUnit {
 	    return dest.str();
 	}
 
+	std::string Unit::yellow(std::string src) {
+	    std::stringstream dest;
+	    dest << UNIT_BOLD << UNIT_YELLOW << src << UNIT_NORMAL;
+	    return dest.str();
+	}
+
 	std::string Unit::red(std::string src) {
 	    std::stringstream dest;
 	    dest << UNIT_BOLD << UNIT_RED << src << UNIT_NORMAL;
 	    return dest.str();
 	}
+
 
 	std::string Unit::bold(std::string src) {
 	    std::stringstream dest;
@@ -67,14 +75,21 @@ namespace DreamUnit {
 
 	void Unit::assertFail(std::string name) {
 	    std::string formattedText = red(UNIT_FAIL);
-	    std::cout << name << ": Assert fail " << formattedText << std::endl;
+	    std::cout << name << ": " << formattedText << std::endl;
+		mResult += 1;
+		return;
+	}
+
+	void Unit::assertInconclusive(std::string name) {
+		std::string formattedText = yellow(UNIT_INCONCLUSIVE);
+		std::cout << name << ": " << formattedText << std::endl;
 		mResult += 1;
 		return;
 	}
 
 	void Unit::assertPass(std::string name) {
 	    std::string formattedText = green(UNIT_PASS);
-	    std::cout << name << ": Assert pass " << formattedText;
+	    std::cout << name << ": " << formattedText;
 		mResult += 0;
 		return;
 	}

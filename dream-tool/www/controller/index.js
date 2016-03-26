@@ -1,7 +1,6 @@
 App.controller("index",
-    ["$document","$scope","$uibModal", "toastAlerts",
-    function($document, $scope, $uibModal, toastAlerts) {
-        $scope.projectModified = false;
+    ["$state","$scope","$uibModal", "toastAlerts","apiConnector",
+    function($state,$scope, $uibModal, toastAlerts, apiConnector) {
         $scope.modalAnimationsEnabled = true;
         $scope.isFullScreen = false;
         $scope.breadcrumbs = [];
@@ -10,40 +9,36 @@ App.controller("index",
         $scope.initProject = function() {
             $scope.project = {
                 name: "Untitled Project",
-                animation:{
-                    enabled: true,
-                    objects: [
-                        {
-                            name: "Untitled Animation",
-                            keyFrames: [
-                                {
-                                    index: 1,
-                                    deltas: [
-
-                                    ]
-                                }
-                            ]
-
-                        }
-                    ]
-                },
-                collisionWorld: {
-                    enabled: true,
-                    aabbMin: -100.0,
-                    aabbMax: 100.0,
-                    objects: []
-                },
-                scenegraph: {
-                    enabled: true,
-                    objects: []
-                },
+								configuration: {
+									animationEnabled: true,
+								  collisionEnabled: true,
+								  physicsEnabled:   true,
+								},
+								scenes: [ 
+									{
+										name:"Untitled Scene",
+										animations: [ {
+											name: "Untitled Animation",
+										}],
+										audio:{
+											soundEffects: [{
+												name: "Untitled SoundEffect"
+											}],
+											music: [{
+												name: "Untitled Music"
+											}],
+										},
+									}
+								],
+               	isModified: false 
             };
-            $scope.projectModified = false;
+
             $scope.addAlert("New Project Created","success");
             console.log("Project initialised.");
-
         };
 
+				// Alerts --------------------------------------------------------------
+				
         $scope.addAlert = function(message,type) {
             toastAlerts.addAlert($scope.alertList,toastAlerts.newAlert(message,type));
         };
@@ -52,44 +47,103 @@ App.controller("index",
             toastAlerts.closeAlert($scope.alertList, index);
         };
 
+				// Project Tree --------------------------------------------------------
+				
         $scope.generateTreeData = function() {
             $scope.treeData = [];
 
             var treeDataRoot = {};
             treeDataRoot.label = $scope.project.name;
+            treeDataRoot.children = [];
+						treeDataRoot.onSelect = $scope.onTreeProjectInstanceSelected;
 
-            if ($scope.project.animation.enabled) {
-                treeDataRoot.children = [];
-                
-                // Collision World
-                var collisionWorld = {label:"Collision World", children: []};
-                treeDataRoot.children.push(collisionWorld);
-
-                // Scenegraph
-                var scenegraph = {label:"Scenegraph",children:[]};
-                treeDataRoot.children.push(scenegraph);
-
-                // Animations
-                var animations = {label: "Animations", children: []};
-                $scope.project.animation.objects.forEach(function(animation) {
-                    console.log("Adding animation to tree",animation.name);
-                    animations.children.push(
-                        {
-                            label: animation.name
-                        }
-                    );
-                });
-                treeDataRoot.children.push(animations);
-            }
+            $scope.setupTreeConfiguration(treeDataRoot); 
+						$scope.setupTreeScenes(treeDataRoot);
 
             $scope.treeData.push(treeDataRoot);
         };
 
-        $scope.generateBreadcrumbs = function (breadcrumbs) {
+				$scope.setupTreeScenes = function(treeDataRoot) {
+          var scenes = {
+						label:"Scenes",
+						children:[],
+						onSelect: $scope.onTreeSceneListSelected
+					};
+
+					$scope.project.scenes.forEach(function(scene) {
+						console.log("Adding scene to tree:", scene.name);
+
+						var sceneChild = {
+							label    : scene.name,
+							children: [],
+							onSelect : $scope.onTreeSceneInstanceSelected,
+						};
+
+						$scope.setupTreeSceneAnimations(scene, sceneChild);
+						scenes.children.push(sceneChild);
+					});
+
+          treeDataRoot.children.push(scenes);
+				};
+
+				$scope.setupTreeSceneAnimations = function(scene,sceneChild) {
+          var animations = {
+						label: "Animations", 
+						children: []
+					};
+
+          scene.animations.forEach(function(animation) {
+          	console.log("Adding Animation to Tree:", animation.name);
+            animations.children.push( {
+              label: animation.name,
+						  onSelect: $scope.onTreeAnimaionInstanceSelected,
+            });
+          });
+
+					sceneChild.children.push(animations);
+				};
+
+        $scope.setupTreeConfiguration = function(treeDataRoot)  {
+          var configuration = {
+						label:"Configuration", 
+						children: [],
+						onSelect: $scope.onTreeConfigurationSelected
+					};
+          treeDataRoot.children.push(configuration);
+				};
+
+				$scope.onTreeProjectInstanceSelected = function(branch) {
+					console.log("Selected Project:", branch);
+
+				};
+
+				$scope.onTreeConfigurationSelected = function(branch) {
+					console.log("Selected Configuration:",branch);
+				};
+
+				$scope.onTreeSceneListSelected = function(branch) {
+					console.log("Selected Scenes Parent Node:",branch);
+				};
+
+				$scope.onTreeSceneInstanceSelected = function(branch) {
+					console.log("Selected Scene:",branch);
+				};
+
+				$scope.onTreeAnimationInstanceSelected = function(branch) {
+					console.log("Selected Animation:",branch);
+				};
+				
+				// Breadcrumbs ---------------------------------------------------------
+				
+        $scope.generateBreadcrumbs = function () {
             $scope.breadcrumbs.push($scope.project.name);
         };
 
-        // Toolbar Button Callbacks ------------------------------------------------
+        // Toolbar Button Callbacks --------------------------------------------
+	
+        $scope.toggleFullScreen = function() {
+            $scope.isFullScreen = !$scope.isFullScreen;
+        };
 
         $scope.onNewButtonClicked = function() {
             if ($scope.isProjectModified()) {
@@ -109,10 +163,22 @@ App.controller("index",
             $scope.showSaveModal();
         };
 
+				$scope.onPlayButtonClicked = function() {
+					apiConnector.runDreamProject($scope.project,function(success){
+						if (success) {
+							$scope.addAlert("Started " + $scope.project.name, "success");
+						} else {
+							$scope.addAlert("Failed to Start " + $scope.project.name, "danger");
+						}
+					});
+				};
+
         $scope.isProjectModified = function() {
-            return $scope.projectModified;
+            return $scope.project.isModified;
         };
 
+				// Modals --------------------------------------------------------------
+				
         $scope.showSaveModifiedModal = function() {
             var modal = $uibModal.open({
                 animation: $scope.modalAnimationsEnabled,
@@ -183,11 +249,8 @@ App.controller("index",
             });
         };
 
-        $scope.toggleFullScreen = function() {
-            $scope.isFullScreen = !$scope.isFullScreen;
-        };
-
-        /* Load Functions */
+				// onLoad Function Calls -----------------------------------------------
+				
         $scope.initProject();
         $scope.generateTreeData();
         $scope.generateBreadcrumbs();

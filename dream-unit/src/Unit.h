@@ -17,6 +17,7 @@ namespace DreamUnit {
     class Unit {
     private:
         static const std::string UNIT_PASS;
+        static const std::string UNIT_INCONCLUSIVE;
         static const std::string UNIT_FAIL;
         int mResult;
     public:
@@ -34,6 +35,9 @@ namespace DreamUnit {
 
         //! Assert Test Failed
         void assertFail(std::string);
+
+        //! Assert Test Failed
+        void assertInconclusive(std::string);
 
         //! Assert Value is not equal to zero
         void assertNotZero(std::string, int);
@@ -76,6 +80,9 @@ namespace DreamUnit {
 
         //! Colour a string red (ANSI)
         std::string red(std::string);
+
+        //! Colour a string red (ANSI)
+        std::string yellow(std::string);
 
         //! Turn a string bold (ANSI)
         std::string bold(std::string);

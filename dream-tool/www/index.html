@@ -12,10 +12,12 @@
     <link rel="stylesheet" href="abn_tree.css">
     <!-- Controllers -->
     <script src="controller/app.js"></script>
+    <script src="controller/api_connector.js"></script>
     <script src="controller/index.js"></script>
     <script src="controller/config.js"></script>
     <script src="controller/generic.js"></script>
     <script src="controller/home.js"></script>
+    <script src="controller/project/configuration.js"></script>
     <!-- Modals -->
     <script src="controller/modals/save.js"></script>
     <script src="controller/modals/yes_no.js"></script>
@@ -46,6 +48,17 @@
                         <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-floppy-disk"></span>
                     </a>
                 </li>
+								<li>
+									<a href="#" ng-click="onPlayButtonClicked()">
+										<span class="glyphicon glyphicon-play"</span>
+									</a>
+								</li>
+								<li>
+                    <a href="#" ng-click="onHelpButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-question-sign"></span>
+                    </a>
+                </li>
+
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
