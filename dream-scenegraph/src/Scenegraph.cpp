@@ -1,8 +1,9 @@
 /*
 * graph.c
 */
-#include <string>
 
+#include <iostream>
+#include <string>
 #include "Node.h"
 #include "Scenegraph.h"
 
@@ -17,15 +18,15 @@ namespace DreamScenegraph {
 		for (i=0;i<NODES;i++) {
 			mNodes[i] = NULL;
 		}
+
 		mCamera = new Camera();
 		mRootNodeIndex = -1;
 	}
 
 	Node* Scenegraph::createNode() {
-		int available = Scenegraph::GetNextAvailableNode(graph);
+		int available = Scenegraph::getNextAvailableNode(graph);
 		if (available < 0) {
-			fprintf(stderr,
-				   "Error: Unable to create new node - tree is full\n");
+			std::cout << "Error: Unable to create new node - tree is full" << std::endl;
 			return NULL;
 		}
 		Node* retval = new Node();
@@ -68,13 +69,13 @@ namespace DreamScenegraph {
 
 	void Scenegraph::removeNode(Node* node) {
 		if (node == NULL) {
-			fprintf(stderr,"Cannot remove NULL node from graph.\n");
+			std::cout << "Cannot remove NULL node from graph." << std::endl;
 			return;
 		}
 
 		int i = getIndexOfNode(node);
 		if (i < 0) {
-			fprintf(stderr,"Cannot find node in graph to remove it.\n");
+			std::cout <<"Cannot find node in graph to remove it." << std::endl;
 			return;
 		}
 
@@ -83,9 +84,9 @@ namespace DreamScenegraph {
 		return;
 	}
 
-	void Scenegraph::traverseNodeVector(void (*function)(dsgNode*, void*), void* arg) {
+	void Scenegraph::traverseNodeVector(void (*function)(Node*, void*), void* arg) {
 		int i;
-		dsgNode* next;
+		Node* next;
 		for (i=0;i<NODES;i++) {
 			next = graph->nodes[i];
 			if (next == NULL) {
@@ -96,16 +97,16 @@ namespace DreamScenegraph {
 		return;
 	}
 
-	dsgNode* Scenegraph::getNodeByName(std::string name) {
+	Node* Scenegraph::getNodeByName(std::string name) {
 		int i;
-		dsgNode* next;
+		Node* next;
 		for (i=0;i<NODES;i++) {
 			next = graph->nodes[i];
 			if (next == NULL) {
 				continue;
 			}
 			if (next->name == NULL) {
-				fprintf(stderr,"dsgScenegraphGetNodeByName: Cannot test node with NULL name\n");
+				std::cout << "Scenegraph::getNodeByName: Cannot test node with NULL name." << std::endl;
 				continue;
 			}
 			if (strcmp(graph->nodes[i]->name,name) == 0) {
@@ -115,131 +116,114 @@ namespace DreamScenegraph {
 		return NULL;
 	}
 
-	intScenegraph::TraversePath(dsgScenegraph* graph,  std::string path, void (*function)(dsgNode*, void*), void* arg) {
+	intScenegraph::traversePath(std::string path, void (*function)(Node*, void*), void* arg) {
 		 std::string start    = NULL;
 		 std::string end      = NULL;
 		int done       = 0;
 		int nameLen    = 0;
-		dsgNode* target = NULL;
-		//fprintf(stdout,"Traversing path: %s\n",path);
+		Node* target = NULL;
+		std::cout << "Traversing path: " << path << std::endl;
 		start = path+1;
 		if (start == NULL) {
-			fprintf(stderr,"Path is null\n");
+			std::cout << "Path is null" << std::endl;
 			return done;
 		}
 		while (!done) {
 			nameLen = 0;
 			end = strchr(start+1, Scenegraph::PathDelimeter);
 			if (end == NULL) {
-				//fprintf(stdout,"Found end of string\n");
+				std::cout <<"Found end of string" << std::endl;
 				end = path+strlen(path);
 				done = 1;
 			}
 			end += 1;
 			nameLen = (end-start-1);
 			if (nameLen <= 0) {
-				fprintf(stderr,"Traverse nameLen <= 0\n");
+				std::cout <<"Traverse nameLen <= 0" << std::endl;;
 				break;
 			}
 			 std::string tmp = ( std::string)malloc(sizeof(char)*nameLen+1);
 			memcpy(tmp,start,nameLen);
 			tmp[nameLen] = '\0';
-			//fprintf(stdout,"Traversed path to: %s\n",tmp);
-			target =Scenegraph::GetNodeByName(graph,tmp);
+			std::cout <<"Traversed path to: " << tmp << std::endl;
+			target =Scenegraph::getNodeByName(graph,tmp);
 			if (target != NULL) {
 				function(target,arg);
 				start = end;
 			} else {
-				fprintf(stderr,"%s not found while traversing path\n",tmp);
+				std::cout << tmp << " not found while traversing path" << std::endl;
 				break;
 			}
 		}
 		return done;
 	}
 
-	int Scenegraph::CountChildrenOfNode(dsgScenegraph* graph, dsgNode* node) {
+	int Scenegraph::countChildrenOfNode(Node* node) {
 		int retval = 0;
 		int i;
-		dsgNode* next;
+		Node* next;
 		for (i = 0; i<NODES; i++) {
-			next = graph->nodes[i];
+			next = mNodes[i];
 			if (next == NULL) {
 				continue;
 			}
 
-			if (dsgScenegraphNodeIsChildOf(graph, node, next)) {
+			if (nodeIsChildOf(node, next)) {
 				retval++;
 			}
 		}
 		return retval;
 	}
 
-	voidScenegraph::UpdatePaths(dsgScenegraph* graph) {
+	voidScenegraph::updatePaths() {
 		int i;
-		dsgNode* next;
+		Node* next;
 		for (i=0;i<NODES;i++) {
-			next = graph->nodes[i];
+			next = mNodes[i];
 			if (next != NULL) {
-				dsgScenegraphGeneratePathForNode(graph, next);
+				generatePathForNode(next);
 			}
 		}
 		return;
 	}
 
-	void Scenegraph::GeneratePathForNode(dsgScenegraph* graph, dsgNode* node) {
+	void Scenegraph::generatePathForNode(Node* node) {
 		if (node == NULL) {
-			fprintf(stderr,"Cannot generate path for NULL node.\n");
+			std::cout <<"Cannot generate path for NULL node." << std::endl;;
 			return;
 		}
 
-		if (graph == NULL) {
-			fprintf(stderr,"Cannot generate path for NULL graph.\n");
+		if (node->getName().size() == 0) {
+			std::cout <<"Cannot generate path for node with no name." << std::endl;;
 			return;
 		}
 
-		if (node->name == NULL) {
-			fprintf(stderr,"Cannot generate path for node with no name.\n");
-			return;
-		}
 
-		if (node->path != NULL) {
-			free(node->path);
-			node->path = NULL;
-		}
-
-		 std::string pathBuffer = ( std::string)malloc(sizeof(char)*STR_BUF_SIZE);
+		std::stringstream pathBuffer;
 		// Node has no parent
-		if (node->parentIndex == -1) {
+		if (node->getParentIndex() == -1) {
 			// and is not graph root
-			if (!dsgScenegraphIsRootNode(graph,node)) {
-				fprintf(stderr, "Cannot generate path for non-root node with no parent.\n");
+			if (!isRootNode(node)) {
+				std::cout << "Cannot generate path for non-root node with no parent." << std::endl;;
 				return;
 			}
-			fprintf(stdout,"Generating path for node root %s\n", node->name);
-			memcpy(pathBuffer, &dsgScenegraphPathDelimeter, 1);
-			pathBuffer[2] = '\0';
-			strncat(pathBuffer, node->name, strlen(node->name));
+			std::cout << "Generating path for node root " <<  node->getName() << std::endl;
+			pathBuffer << &pathDelimeter;
+			pathBuffer << node->getName();
 		} else {
-			dsgNode* parent = graph->nodes[node->parentIndex];
+			Node* parent = mNodes[node->getParentIndex()];
 			if (parent == NULL) {
-				fprintf(stderr,"Error finding node parent to create path\n");
+				std::cout <<"Error finding node parent to create path" << std::endl;;
 				return;
 			}
-			fprintf(stdout,"Generating path for node %s with parent %s\n", node->name, parent->name);
-			memcpy(pathBuffer, parent->path, strlen(parent->path)+1);
-			strncat(pathBuffer, &dsgScenegraphPathDelimeter, strlen(&dsgScenegraphPathDelimeter));
-			strncat(pathBuffer, node->name, strlen(node->name));
+			std::cout  <<  "Generating path for node " << node->getName() << " with parent " <<  parent->name << std::endl;
+			pathBuffer <<  parent->getPath();
+			pathBuffer << &pathDelimeter;
+			pathBuffer <<  node->name;
 		}
 
-		// Trim buffer fat
-		int compressedLength =  strlen(pathBuffer)+1;
-		 std::string pathBufferCompressed = ( std::string)malloc(sizeof(char)*compressedLength);
-		memcpy(pathBufferCompressed,pathBuffer,compressedLength);
-		pathBufferCompressed[compressedLength-1] = '\0';
-		node->path = pathBufferCompressed;
-		free(pathBuffer);
-
-		fprintf(stdout,"Generated path: %s\n",node->path);
+		node->setPath(pathBuffer.str());
+		std::cout << "Generated path: " << node->getPath() << std::endl;
 		return;
 	}
 
@@ -248,10 +232,10 @@ namespace DreamScenegraph {
 	}
 
 	int Scenegraph::addVertexBuffer(void* buffer) {
-		fprintf(stdout,"Adding vertex buffer to graph\n");
+		std::cout <<"Adding vertex buffer to graph" << std::endl;
 		int index = Scenegraph::getNextAvailableVertexBuffer();
 		if (index < 0) {
-			fprintf(stderr,"Unable to add vertex buffer, graph is full\n");
+			std::cout <<"Unable to add vertex buffer, graph is full" << std::endl;
 			return -1;
 		}
 		mVertexBuffers[index] = (float*)buffer;
@@ -295,8 +279,8 @@ namespace DreamScenegraph {
 		if (index < 0) {
 			std::cerr << "Cannot remove vertex buffer from graph "
 			          << mName != NULL ? graph->name : "Unamed Graph"
-					  << ", not found"
-					  << std::endl;
+				  << ", not found"
+				  << std::endl;
 			return -1;
 		}
 
@@ -323,12 +307,12 @@ namespace DreamScenegraph {
 	}
 
 	void Scenegraph::setParentNode(Node* parent, Node* node) {
-		dsgNodeSetParentIndex(dsgScenegraphGetIndexOfNode(graph,parent),node);
+		node->setParentIndex(getIndexOfNode(parent),node);
 		return;
 	}
 
 	void Scenegraph::printGraph() {
-		traverseNodeVector(dsgScenegraphPrintLine,NULL);
+		std::cout << "NOT IMPLEMENTED" << std::endl;
 		return;
 	}
 

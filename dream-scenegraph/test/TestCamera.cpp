@@ -1,49 +1,59 @@
-#include "../../../unit/src/Unit.h"
 #include "../src/Camera.h"
 #include "TestCamera.h"
 
 namespace DreamScenegraphTest {
-    void CameraTest::testCamera(void) {
-        testHeading("DreamSceneGraph Camera");
 
-        DreamScenegraph::Camera *camera = new DreamScenegraph::Camera();
+	TestCamera::TestCamera() {
+	}
 
-        float laX, laY, laZ;
-        laX =  22.0f;
-        laY = -34.0f;
-        laZ =  0.0f;
+	TestCamera::~TestCamera() {
+	}
 
-        camera->setLookAt(camera, laX,laY,laZ);
+	void CameraTest::run() {
+		testCamera();
+	}
 
-        assertEqualFloat("Camera LookAt X", camera->lookAt[DSG_CAM_X], laX);
-        assertEqualFloat("Camera LookAt Y", camera->lookAt[DSG_CAM_Y], laY);
-        assertEqualFloat("Camera LookAt Z", camera->lookAt[DSG_CAM_Z], laZ);
+	void CameraTest::testCamera(void) {
+		testHeading("DreamSceneGraph Camera");
 
-        float trX, trY, trZ;
-        trX =  10.0f;
-        trY = -10.0f;
-        trZ =  100.0f;
+		DreamScenegraph::Camera *camera = new DreamScenegraph::Camera();
 
-        camera->setTranslation(camera, trX,trY,trZ);
+		float laX, laY, laZ;
+		laX =  22.0f;
+		laY = -34.0f;
+		laZ =  0.0f;
 
-        assertEqualFloat("Camera Translation X", camera->getTranslation()[DSG_CAM_X], trX);
-        assertEqualFloat("Camera Translation Y", camera->getTranslation()[DSG_CAM_Y], trY);
-        assertEqualFloat("Camera Translation Z", camera->getTranslation()[DSG_CAM_Z], trZ);
+		camera->setLookAt(camera, laX,laY,laZ);
 
-        float upX, upY, upZ;
+		assertEqualFloat("Camera LookAt X", camera->lookAt[DSG_CAM_X], laX);
+		assertEqualFloat("Camera LookAt Y", camera->lookAt[DSG_CAM_Y], laY);
+		assertEqualFloat("Camera LookAt Z", camera->lookAt[DSG_CAM_Z], laZ);
 
-        upX = -8.0f;
-        upY =  16.0f;
-        upZ = -32.0f;
+		float trX, trY, trZ;
+		trX =  10.0f;
+		trY = -10.0f;
+		trZ =  100.0f;
 
-        camera->setUp(upX,upY,upZ);
+		camera->setTranslation(camera, trX,trY,trZ);
 
-        assertEqualFloat("Camera Up X", camera->up[DSG_CAM_X], upX);
-        assertEqualFloat("Camera Up Y", camera->up[DSG_CAM_Y], upY);
-        assertEqualFloat("Camera Up Z", camera->up[DSG_CAM_Z], upZ);
+		assertEqualFloat("Camera Translation X", camera->getTranslation()[DSG_CAM_X], trX);
+		assertEqualFloat("Camera Translation Y", camera->getTranslation()[DSG_CAM_Y], trY);
+		assertEqualFloat("Camera Translation Z", camera->getTranslation()[DSG_CAM_Z], trZ);
 
-        delete camera;
+		float upX, upY, upZ;
 
-        testFooter("DreamSceneGraph Camera");
-    }
+		upX = -8.0f;
+		upY =  16.0f;
+		upZ = -32.0f;
+
+		camera->setUp(upX,upY,upZ);
+
+		assertEqualFloat("Camera Up X", camera->up[DSG_CAM_X], upX);
+		assertEqualFloat("Camera Up Y", camera->up[DSG_CAM_Y], upY);
+		assertEqualFloat("Camera Up Z", camera->up[DSG_CAM_Z], upZ);
+
+		delete camera;
+
+		testFooter("DreamSceneGraph Camera");
+	}
 }

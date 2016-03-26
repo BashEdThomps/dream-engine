@@ -15,10 +15,10 @@ namespace DreamScenegraph {
 		std::string mPath;
 		int         mParentIndex;
 		int         mVertexBufferIndex;
-		float       mTranslation;
-		float       mRotation;
+		float       mTranslation[3];
+		float       mRotation[3];
 	public:
-		Node(char*);
+		Node(std::string);
 		~Node();
 
 		void initTranslationRotation();

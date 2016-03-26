@@ -1,12 +1,21 @@
-#include "../../../unit/src/unit.h"
-#include "testNode.h"
-#include "testScenegraph.h"
-#include "testCamera.h"
+#include "TestNode.h"
+#include "TestScenegraph.h"
+#include "TestCamera.h"
 
-int main(int argc, char** argv) {
-	unitModuleHeading("Dream Scenegraph");
-	testNode();
-	testGraph();
-	testCamera();
-	return 0;
+int main(void) {
+	int result = 0;
+
+	TestCamera testCamera;
+	testCamera.run();
+	result += testCamera.getResult();
+
+	TestNode testNode;
+	testNode.run();
+	resut += testNode.getResult();
+
+	TestGraph testScenegraph;
+	testScenegraph.run();
+	result += testScenegraph.getResult();
+
+	return result;
 }

@@ -10,7 +10,7 @@
 namespace DreamScenegraph {
 	// Global Variables
 	class Scenegraph {
-	protected;
+	protected:
 		std::string mName;
 		Node*       mNodes[NODES];
 		float*      mVertexBuffers[VERT_BUFFERS];
@@ -26,14 +26,16 @@ namespace DreamScenegraph {
 		int getNextAvailableVertexBuffer();
 		int getIndexOfVertexBuffer(void*);
 		int removeVertexBuffer(void*);
+
 		// Display/Debug
 		void printGraph ();
+
 		// Node Management
-		void generatePathForNode(Node*);
-		void setRootNodeIndex(int);
-		void setRootNode(Node*);
-		int  getNextAvailableNode();
-		int  getIndexOfNode(Node*);
+		void  generatePathForNode(Node*);
+		void  setRootNodeIndex(int);
+		void  setRootNode(Node*);
+		int   getNextAvailableNode();
+		int   getIndexOfNode(Node*);
 		Node* getRootNode();
 		int   getRootNodeIndex();
 		int   isRootNode(Node*);
@@ -41,17 +43,17 @@ namespace DreamScenegraph {
 		Node* createNodeWithName(std::string);
 		void  removeNode(Node*);
 		int   countChildrenOfNode(Node*);
-		dsgNode* getNodeByName(std::string);
+		Node* getNodeByName(std::string);
+
 		// Updating
 		void updatePaths();
-		void traverseNodeVector(void (*)(dsgNode*, void*), void*);
-		int  traversePath(std::string, void (*)(dsgNode*,  void*), void*);
+		void traverseNodeVector(void (*)(Node*, void*), void*);
+		int  traversePath(std::string, void (*)(Node*,  void*), void*);
+		
 		// Node Relationships
 		int  isNodeChildOf(Node*,Node*);
 		int  isNodeParentOf(Node*,Node*);
 		void setParentNode(Node*,Node*);
-		// Debug
-		void printGraph();
 	};
 }
 #endif // GRAPH_H

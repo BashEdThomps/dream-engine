@@ -1,23 +1,16 @@
 /*
 * Node.cpp
 */
-#include <string>
-#include <math>
+#include <iostream>
+#include <cmath>
 #include "Node.h"
 
 namespace DreamScenegraph {
-	Node(char* name) {
+	Node::Node(std::string name) {
 		mName = name;
 		mParentIndex = -1;
-		mPath = NULL;
 		mVertexBufferIndex = -1;
-		initTranslationRotation(node);
-	}
 
-	~Node() {
-
-	}
-	void Node::initTranslationRotation() {
 		mTranslation[NODE_X] = 0.0f;
 		mTranslation[NODE_Y] = 0.0f;
 		mTranslation[NODE_Z] = 0.0f;
@@ -28,12 +21,16 @@ namespace DreamScenegraph {
 		return;
 	}
 
-	int Node::HasValidPath() {
-		return mPath != NULL;
+	Node::~Node() {
+
 	}
 
-	int Node::HasValidName() {
-		return mName != NULL;
+	int Node::hasValidPath() {
+		return mPath.size() > 0;
+	}
+
+	int Node::hasValidName() {
+		return mName.size() > 0;
 	}
 
 	void Node::print() {
@@ -64,7 +61,7 @@ namespace DreamScenegraph {
 		return mVertexBufferIndex > -1;
 	}
 
-	void Node::nodeSetPolarTranslation(float radius, float theta) {
+	void Node::setPolarTranslation(float radius, float theta) {
 		return;
 	}
 }

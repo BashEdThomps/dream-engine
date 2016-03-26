@@ -1,4 +1,5 @@
 #include "Camera.h"
+
 namespace DreamScenegraph {
 
     Camera::Camera() {
