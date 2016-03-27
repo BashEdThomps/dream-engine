@@ -1,5 +1,12 @@
 App.service('ProjectService', function() {
-    this.project = {};
+    this.project = null;
+
+    this.getProject = function() {
+        if (this.project === null) {
+            this.initialise();
+        }
+        return this.project;
+    };
 
     this.getName = function() {
         return this.project.name;
@@ -60,7 +67,6 @@ App.service('ProjectService', function() {
     this.createScene = function() {
         return {
             name:"New Scene",
-
         };
     };
 
@@ -83,8 +89,9 @@ App.service('ProjectService', function() {
 
     this.initialise = function() {
         this.project = {
-            name: "Untitled Project",
+            name: "New Project",
             author: "Unknown Author",
+            description: "A new Dream project.",
             configuration: {
                 animationEnabled: false,
                 collisionEnabled: false,

@@ -1,32 +1,19 @@
 <div class="container-fluid">
-    <h3>Configuration</h3>
+    <h1>Resources</h1>
     <br />
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Scene Configuration
+                    New Resource
                 </div>
                 <div class="panel-body">
-                    <div class="form-group">
+                    <form class="form-group">
                         <label>Name</label>
-                        <input type="text" class="form-control" ng-model="project.name"/>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.animationEabled"/>Enable Animation</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.audioEnabled"/>Enable Audio</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox"  ng-model="project.configuration.collisionEnabled"/>Enable Collisions</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.physicsEnabled"/>Enable Physics</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.inputEnabled"/>Enable Physics</label>
-                    </div>
+                        <input type="text" class="form-control" ng-model="newResource.name"/>
+                    </form>
+                    <button ng-click="onNewResourceClearButtonClicked()" class="btn btn-danger">Clear</button>
+                    <button ng-click="onNewResourceAddButtonClicked()" class="btn btn-success pull-right">Add</button>
                 </div>
             </div>
         </div>

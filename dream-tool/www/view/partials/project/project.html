@@ -1,11 +1,11 @@
 <div class="container-fluid">
-    <h3>Project</h3>
+    <h1>{{project.name}}</h1>
     <br />
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Project Information
+                    Configuration
                 </div>
                 <div class="panel-body">
                     <form class="form-group">
@@ -20,6 +20,21 @@
                         <label>Description</label>
                         <textarea class="form-control" ng-model="project.description" rows="5"></textarea>
                     </form>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.animationEabled"/>Enable Animation</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.audioEnabled"/>Enable Audio</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox"  ng-model="project.configuration.collisionEnabled"/>Enable Collisions</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.physicsEnabled"/>Enable Physics</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.inputEnabled"/>Enable Input</label>
+                    </div>
                 </div>
             </div>
         </div>

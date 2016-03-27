@@ -7,7 +7,7 @@
     <script src="angular-ui-router.min.js"></script>
     <script src="abn_tree_directive.js"></script>
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.cyborg.min.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/dream_tool.css">
     <link rel="stylesheet" href="abn_tree.css">
     <!-- Controllers -->
@@ -15,15 +15,17 @@
     <script src="controller/api_connector.js"></script>
     <script src="controller/toast_alerts.js"></script>
     <script src="controller/project_service.js"></script>
+    <script src="controller/ui_service.js"></script>
     <script src="controller/index.js"></script>
     <script src="controller/config.js"></script>
     <script src="controller/generic.js"></script>
     <script src="controller/home.js"></script>
     <!-- Project Pages -->
     <script src="controller/project/project.js"></script>
-    <script src="controller/project/configuration.js"></script>
     <script src="controller/project/scene/list.js"></script>
     <script src="controller/project/scene/editor.js"></script>
+    <script src="controller/project/resource/list.js"></script>
+    <script src="controller/project/resource/editor.js"></script>
     <!-- Modals -->
     <script src="controller/modals/save.js"></script>
     <script src="controller/modals/yes_no.js"></script>
@@ -34,7 +36,7 @@
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" >Dream Tool</a>
+                <a href="#home" class="navbar-brand" >Dream Tool</a>
             </div>
 
             <ul class="nav navbar-nav">
@@ -53,14 +55,14 @@
                         <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-floppy-disk"></span>
                     </a>
                 </li>
-								<li>
-									<a  ng-click="onPlayButtonClicked()">
-										<span class="glyphicon glyphicon-play"</span>
-									</a>
-								</li>
-								<li>
-                    <a  ng-click="onHelpButtonClicked()">
-                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-question-sign"></span>
+				<li>
+					<a  ng-click="onPlayButtonClicked()">
+						<span class="glyphicon glyphicon-play"</span>
+					</a>
+				</li>
+				<li>
+                    <a  ng-click="onSettingsButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-cog"></span>
                     </a>
                 </li>
 
@@ -96,7 +98,7 @@
         <div class="col-md-10">
             <div class="fill well">
                 <ol class="breadcrumb">
-                    <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
+                    <li ng-repeat="bc in getBreadcrumbs()">{{ bc }}</li>
                 </ol>
                 <div ui-view></div>
             </div>

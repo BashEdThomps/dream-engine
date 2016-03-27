@@ -30,5 +30,17 @@ App.config(function($stateProvider, $urlRouterProvider) {
         templateUrl : "view/partials/project/scene/editor.html",
         controller  : "ProjectSceneEditor"
     });
+    // Resource List
+    $stateProvider.state('ProjectResourceList', {
+        url         : "/project/resource/list",
+        templateUrl : "view/partials/project/resource/list.html",
+        controller  : "ProjectResourceList"
+    });
+    // Resource Editor
+    $stateProvider.state('ProjectResourceEditor', {
+        url         : "/project/resource/editor/:resource",
+        templateUrl : "view/partials/project/resource/editor.html",
+        controller  : "ProjectResourceEditor"
+    });
 	// Help ----------------------------------------------------------------------
 });

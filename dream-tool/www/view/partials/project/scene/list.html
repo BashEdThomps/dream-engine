@@ -1,18 +1,59 @@
 <div class="container-fluid">
-    <h3>Scenes</h3>
+    <h1>Scenes</h1>
     <br />
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Scenes
+                    New Scene
                 </div>
                 <div class="panel-body">
                     <form class="form-group">
-                        <label>Scene Name</label>
-                        <input type="text" class="form-control" ng-model="project.name"/>
+                        <label>Name</label>
+                        <input type="text" class="form-control" ng-model="newScene.name"/>
                     </form>
+                    <button ng-click="onNewSceneClearButtonClicked()" class="btn btn-danger">Clear</button>
+                    <button ng-click="onNewSceneAddButtonClicked()" class="btn btn-success pull-right">Add</button>
                 </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Scenes
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                TODO
+                            </th>
+                            <th>
+                                TODO
+                            </th>
+                            <th>
+                                Remove
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="scene in projects.scenes">
+                            <td>
+                                {{scene.name}}
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                                <button ng-click="onRemoveSceneButtonClicked(scene.name)"class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-remove"></span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
