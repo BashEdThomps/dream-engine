@@ -1,9 +1,9 @@
-App.factory('apiConnector',
+App.factory('ApiConnector',
     ['$http',
     function($http) {
 			var HOST = "127.0.0.1";
 			var PORT = 4001;
-			var BASE = "http://"+HOST+":"+PORT+"/"; 
+			var BASE = "http://"+HOST+":"+PORT+"/";
       return {
         runDreamProject: function(file, callback) {
 					$http({

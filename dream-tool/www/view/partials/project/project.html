@@ -1,0 +1,27 @@
+<div class="container-fluid">
+    <h3>Project</h3>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Project Information
+                </div>
+                <div class="panel-body">
+                    <form class="form-group">
+                        <label>Name</label>
+                        <input type="text" ng-change="updateUI()" class="form-control" ng-model="project.name"/>
+                    </form>
+                    <form class="form-group">
+                        <label>Author</label>
+                        <input type="text" class="form-control" ng-model="project.author"/>
+                    </form>
+                    <form class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" ng-model="project.description" rows="5"></textarea>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

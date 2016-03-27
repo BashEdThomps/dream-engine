@@ -1,4 +1,4 @@
-App.factory('toastAlerts',
+App.factory('ToastAlerts',
     function() {
         var defaultDuration = 3000;
         return {

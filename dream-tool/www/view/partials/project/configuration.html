@@ -1,2 +1,75 @@
 <div class="container-fluid">
+    <h3>Configuration</h3>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Scene Configuration
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" ng-model="project.name"/>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.animationEabled"/>Enable Animation</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.audioEnabled"/>Enable Audio</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox"  ng-model="project.configuration.collisionEnabled"/>Enable Collisions</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.physicsEnabled"/>Enable Physics</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="project.configuration.inputEnabled"/>Enable Physics</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Resources
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Type
+                            </th>
+                            <th>
+                                Path
+                            </th>
+                            <th>
+                                Remove
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="resource in project.resources">
+                            <td>
+                                {{resource.name}}
+                            </td>
+                            <td>
+                                {{resource.type}}
+                            </td>
+                            <td>
+                                {{resource.path}}
+                            </td>
+                            <td>
+                                <button ng-click="onRemoveResourceButtonClicked(resource.name)"class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-remove"></span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
