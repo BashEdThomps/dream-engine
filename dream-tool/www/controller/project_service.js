@@ -1,4 +1,6 @@
-App.service('ProjectService', function() {
+App.service('ProjectService',
+    ["Blob","FileSaver", function(Blob,FileSaver) {
+
     this.project = null;
 
     this.getProject = function() {
@@ -13,6 +15,7 @@ App.service('ProjectService', function() {
     };
 
     this.setName = function(name) {
+        this.isModified = true;
         this.project.name = name;
     };
 
@@ -21,6 +24,7 @@ App.service('ProjectService', function() {
     };
 
     this.setConfigurationAnimationEnabled = function(enabled) {
+        this.isModified = true;
         this.project.configuration.animationEnabled = enabled;
     };
 
@@ -29,6 +33,7 @@ App.service('ProjectService', function() {
     };
 
     this.setConfigurationCollisionEnabled = function(enabled) {
+        this.isModified = true;
         this.project.configuration.collisionEnabled = enabled;
     };
 
@@ -37,6 +42,7 @@ App.service('ProjectService', function() {
     };
 
     this.setConfigurationPhysicsEnabled = function(enabled) {
+        this.isModified = true;
         this.project.configuration.physicsEnabled = enabled;
     };
 
@@ -45,18 +51,12 @@ App.service('ProjectService', function() {
     };
 
     this.setConfigurationInputEnabled = function(enabled) {
+        this.isModified = true;
         this.project.configuration.inputEnabled = enabled;
     };
-
-    this.createSoundEffect = function(scene,name) {
-        project.resources.audio.soundEffects.push({
-            name:name
-        });
-    };
-
     this.getSoundEffectFromByName = function(scene, name, callback) {
         var retval = null;
-        project.resources.audio.soundEffects.forEach(function(sfx){
+        this.project.resources.audio.soundEffects.forEach(function(sfx){
             if (sfx.name == name) {
                 retval = name;
             }
@@ -64,26 +64,66 @@ App.service('ProjectService', function() {
         callback(retval);
     };
 
-    this.createScene = function() {
-        return {
-            name:"New Scene",
-        };
+
+    this.pushScene = function(scene) {
+        this.isModified = true;
+        this.scenes.push(scene);
     };
 
     this.getResourecTypes = function() {
         return [
-            "Texture",
-            "Shader",
-            "VertexBuffer",
-            "Audio"
+            "Model",
+            "Animation",
+            "Sound Effect",
+            "Music"
         ];
     };
 
-    this.createResource = function() {
+    // Create New Resources ----------------------------------------------------
+
+    this.createScene = function() {
         return {
-            name: "New Resource",
+            name:"New Scene",
+            objects:[this.createSceneObject()],
+        };
+    };
+
+    this.createSceneObject = function() {
+        return {
+            name: "New Scene Object",
+        };
+    };
+
+    this.createSoundEffectResource = function() {
+        return {
+            name: "New Sound Effect",
+            path: "/path/to/soundeffect.wav",
+            type: "Sound Effect"
+        };
+    };
+
+    this.createMusicResource = function() {
+        return {
+            name: "New Music",
+            path: "/path/to/music.wav",
+            type: "Music"
+        };
+    };
+
+    this.createModelResource = function() {
+        return {
+            name: "New Model Resource",
             path: "/path/to/resource",
-            type: "Texture",
+            type: "Model",
+        };
+    };
+
+    this.createAnimationResource = function() {
+        return {
+            name: "New Animation",
+            type: "Animation",
+            path: "In Project",
+            keyframes: [],
         };
     };
 
@@ -99,13 +139,36 @@ App.service('ProjectService', function() {
                 audioEnabled:     false,
                 inputEnabled:     false,
             },
-            scenes: [],
-            resources: [ this.createResource()
-
+            scenes: [
+                this.createScene()
+            ],
+            resources: [
+                this.createAnimationResource(),
+                this.createModelResource(),
+                this.createSoundEffectResource(),
+                this.createMusicResource()
             ],
             isModified: false
         };
     };
 
+    this.saveProject = function () {
+        var blob = this.generateDownloadBlob();
+        console.log("Saving:",blob);
+        FileSaver.saveAs(blob, this.getName()+'.json');
+    };
+
+    this.isModified = function() {
+        return this.project.isModified;
+    };
+
+    this.setProjectModified = function(modified) {
+        this.project.isModified = modified;
+    };
+
+    this.generateDownloadBlob = function() {
+        return new Blob([ JSON.stringify(this.project) ], { type : 'application/octet-stream' });
+    };
+
     return this;
-});
+}]);

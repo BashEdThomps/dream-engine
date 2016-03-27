@@ -1,6 +1,11 @@
+App.config(['$compileProvider',
+    function ($compileProvider) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
+}]);
+
 App.config(function($stateProvider, $urlRouterProvider) {
     // Home Page -----------------------------------------------------------------
-    $urlRouterProvider.otherwise("/home");
+    //$urlRouterProvider.otherwise("/home");
     $stateProvider.state('home', {
         url: "/home",
         templateUrl: "view/partials/home.html",

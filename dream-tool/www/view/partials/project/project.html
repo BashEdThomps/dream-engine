@@ -14,26 +14,46 @@
                     </form>
                     <form class="form-group">
                         <label>Author</label>
-                        <input type="text" class="form-control" ng-model="project.author"/>
+                        <input type="text" ng-change="projectModified()" class="form-control" ng-model="project.author"/>
                     </form>
                     <form class="form-group">
                         <label>Description</label>
-                        <textarea class="form-control" ng-model="project.description" rows="5"></textarea>
+                        <textarea class="form-control"
+                                  ng-change="projectModified()"
+                                  ng-model="project.description"
+                                  rows="5">
+                        </textarea>
                     </form>
                     <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.animationEabled"/>Enable Animation</label>
+                        <label>
+                            <input type="checkbox"
+                                   ng-change="projectModified()"
+                                   ng-model="project.configuration.animationEabled"/>Enable Animation
+                        </label>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.audioEnabled"/>Enable Audio</label>
+                        <label>
+                            <input type="checkbox" ng-change="projectModified()"
+                                   ng-model="project.configuration.audioEnabled"/>Enable Audio
+                        </label>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox"  ng-model="project.configuration.collisionEnabled"/>Enable Collisions</label>
+                        <label>
+                            <input type="checkbox" ng-change="projectModified()"
+                                   ng-model="project.configuration.collisionEnabled"/>Enable Collisions
+                        </label>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.physicsEnabled"/>Enable Physics</label>
+                        <label>
+                            <input type="checkbox" ng-change="projectModified()"
+                                   ng-model="project.configuration.physicsEnabled"/>Enable Physics
+                        </label>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" ng-model="project.configuration.inputEnabled"/>Enable Input</label>
+                        <label>
+                            <input type="checkbox" ng-change="projectModified()"
+                                   ng-model="project.configuration.inputEnabled"/>Enable Input
+                        </label>
                     </div>
                 </div>
             </div>

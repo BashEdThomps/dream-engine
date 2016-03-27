@@ -1,15 +1,15 @@
 App.controller("index",
 ["$state","$scope","$uibModal", "ToastAlerts","ApiConnector","ProjectService",
- "UIService",
+ "UIService", "$window",
 function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
-         UIService) {
+         UIService, $window) {
     $scope.modalAnimationsEnabled = true;
     $scope.isFullScreen = false;
     $scope.breadcrumbs = [];
     $scope.alertList   = [];
     $scope.treeData  = {};
 
-    // Alerts --------------------------------------------------------------
+    // Alerts ------------------------------------------------------------------
 
     $scope.addAlert = function(message,type) {
         ToastAlerts.addAlert($scope.alertList,ToastAlerts.newAlert(message,type));
@@ -19,7 +19,7 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
         ToastAlerts.closeAlert($scope.alertList, index);
     };
 
-    // Project Tree --------------------------------------------------------
+    // Project Tree ------------------------------------------------------------
 
     $scope.generateTreeData = function() {
         $scope.treeData = [];
@@ -50,8 +50,6 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
                 children: [],
                 onSelect : $scope.onTreeSceneInstanceSelected,
             };
-
-            $scope.setupTreeSceneAnimations(scene, sceneChild);
             scenes.children.push(sceneChild);
         });
 
@@ -64,25 +62,16 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
             children: [],
             onSelect: $scope.onTreeResourcesNodeSelected
         };
+        ProjectService.getProject().resources.forEach(function(resource){
+            resourcesNode.children.push({
+                label : resource.name,
+                onSelect: $scope.onTreeProjectResourceInstanceSelected
+            });
+        });
         treeDataRoot.children.push(resourcesNode);
     };
 
-    $scope.setupTreeSceneAnimations = function(scene,sceneChild) {
-        var animations = {
-            label: "Animations",
-            children: []
-        };
-
-        scene.animations.forEach(function(animation) {
-            console.log("Adding Animation to Tree:", animation.name);
-            animations.children.push( {
-                label: animation.name,
-                onSelect: $scope.onTreeAnimaionInstanceSelected,
-            });
-        });
-
-        sceneChild.children.push(animations);
-    };
+    // Tree Event Handlers -----------------------------------------------------
 
     $scope.onTreeProjectNodeSelected = function(branch) {
         console.log("Selected Project:", branch);
@@ -107,29 +96,53 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
     $scope.onTreeAnimationInstanceSelected = function(branch) {
         console.log("Selected Animation:",branch);
     };
-    // Toolbar Button Callbacks --------------------------------------------
+
+    $scope.onTreeProjectResourceInstanceSelected = function(branch) {
+        console.log("Selected Resource:",branch);
+    };
+
+    // Toolbar Button Callbacks ------------------------------------------------
 
     $scope.toggleFullScreen = function() {
         $scope.isFullScreen = !$scope.isFullScreen;
     };
 
     $scope.onNewButtonClicked = function() {
-        if ($scope.isProjectModified()) {
-            $scope.showSaveModifiedModal();
+        if (ProjectService.isModified()) {
+            $scope.showSaveModifiedModal(
+                function yes() {
+                    ProjectService.saveProject();
+                }, function no() {
+                    ProjectService.initialise();
+                    $scope.addAlert("New Project Created","success");
+                    $state.go("Project");
+                    $scope.updateUI();
+                }
+            );
         }
-        ProjectService.initialise();
+
     };
 
     $scope.onOpenButtonClicked = function() {
-        if ($scope.isProjectModified()) {
-            $scope.showSaveModifiedModal();
+        if (ProjectService.isModified() === true) {
+            $scope.showSaveModifiedModal(
+                function yes() {
+                    ProjectService.saveProject();
+                    $scope.showOpenModal();
+                },
+                function no() {
+                    $scope.showOpenModal();
+                }
+            );
+        } else {
+            $scope.showOpenModal();
         }
-        $scope.showOpenModal();
     };
 
     $scope.onSaveButtonClicked = function() {
-        $scope.showSaveModal();
+        ProjectService.saveProject();
     };
+
 
     $scope.onPlayButtonClicked = function() {
         ApiConnector.runDreamProject(ProjectService.project,function(success){
@@ -145,9 +158,9 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
         return ProjectService.project.isModified;
     };
 
-    // Modals --------------------------------------------------------------
+    // Modals ------------------------------------------------------------------
 
-    $scope.showSaveModifiedModal = function() {
+    $scope.showSaveModifiedModal = function(yesCallback,noCallback) {
         var modal = $uibModal.open({
             animation: $scope.modalAnimationsEnabled,
             templateUrl: 'view/partials/modals/save_modified.html',
@@ -156,81 +169,54 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
 
         modal.result.then(function (result) {
             if (result) {
-                $scope.showSaveModal();
+                yesCallback();
             } else {
-                ProjectService.initialise();
+                noCallback();
             }
         }, function () {
-            console.log('showConfirmNewModal dismissed at: ' + new Date());
+            noCallback();
         });
     };
 
     $scope.showOpenModal = function() {
         var modal = $uibModal.open({
             animation: $scope.modalAnimationsEnabled,
-            templateUrl: 'modals/confirm_new_file.html',
-            controller: 'ConfirmNewModal'
+            templateUrl: 'view/partials/modals/open.html',
+            controller: 'OpenFileModal'
         });
 
         modal.result.then(function (result) {
             if (result) {
-                $scope.showSaveModal();
+
             } else {
-                ProjectService.initialise();
+
             }
         }, function () {
-            console.log('showConfirmNewModal dismissed at: ' + new Date());
-        });
-    };
 
-    $scope.showSaveModal = function() {
-        var modal = $uibModal.open({
-            animation: $scope.modalAnimationsEnabled,
-            templateUrl: 'view/partials/modals/save.html',
-            controller: 'SaveModal'
-        });
-
-        modal.result.then(function (result) {
-            if (result) {
-                $scope.showSaveModal();
-            } else {
-                ProjectService.initialise();
-            }
-        }, function () {
-            console.log('showConfirmNewModal dismissed at: ' + new Date());
-        });
-    };
-
-    $scope.showYesNoModal = function(template, controller,yes,no){
-        var modal = $uibModal.open({
-            animation: $scope.modalAnimationsEnabled,
-            templateUrl: template,
-            controller: controller
-        });
-
-        modal.result.then(function (result) {
-            if (result) {
-                yes();
-            } else {
-                no();
-            }
         });
     };
 
     // Breadcrumbs -------------------------------------------------------------
+
     $scope.getBreadcrumbs = function() {
         return UIService.getBreadcrumbs();
     };
-    
-    // onLoad Function Calls -----------------------------------------------
+
+    // onLoad Function Calls ---------------------------------------------------
 
     ProjectService.getProject();
 
+    $scope.projectModified = function() {
+        ProjectService.setProjectModified(true);
+    };
+
     $scope.updateUI = function() {
+        ProjectService.setProjectModified(true);
         $scope.generateTreeData();
         UIService.setBreadcrumbs([ProjectService.project.name]);
         $scope.breadcrumbs = UIService.getBreadcrumbs();
     };
+
     $scope.updateUI();
 }
 ]);

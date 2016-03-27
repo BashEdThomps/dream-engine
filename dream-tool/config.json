@@ -1,9 +1,4 @@
 {
-    "www":{
-        "port": 4000
-    },
-    "api": {
-        "port": 4001
-    },
-		"dream_bin": "/usr/bin/dream"
+    "port": 4000,
+	"dream_bin": "/usr/bin/dream"
 }

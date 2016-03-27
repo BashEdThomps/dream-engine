@@ -6,6 +6,11 @@
     <script src="ui-bootstrap-tpls.js"></script>
     <script src="angular-ui-router.min.js"></script>
     <script src="abn_tree_directive.js"></script>
+    <script src="screenfull.js"></script>
+    <script src="angular-screenfull.js"></script>
+    <script src="FileSaver.js"></script>
+    <script src="Blob.js"></script>
+    <script src="angular-file-saver.min.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/dream_tool.css">
@@ -27,10 +32,10 @@
     <script src="controller/project/resource/list.js"></script>
     <script src="controller/project/resource/editor.js"></script>
     <!-- Modals -->
-    <script src="controller/modals/save.js"></script>
     <script src="controller/modals/yes_no.js"></script>
+    <script src="controller/modals/open.js"></script>
 </head>
-<body ng-controller="index">
+<body ng-controller="index" ngsf-fullscreen class="fullscreen">
 
     <!-- Navigation Bar -->
     <nav class="navbar navbar-default navbar-static-top">
@@ -70,7 +75,7 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a  ng-click="toggleFullScreen()">
+                    <a ngsf-toggle-fullscreen>
                         <span ng-class="isFullScreen ? 'glyphicon glyphicon-toolbar glyphicon-resize-small' : 'glyphicon glyphicon-toolbar glyphicon-resize-full'"></span>
                     </a>
                 </li>

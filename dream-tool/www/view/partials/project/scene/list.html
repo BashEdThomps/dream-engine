@@ -29,7 +29,7 @@
                                 Name
                             </th>
                             <th>
-                                TODO
+                                Objects
                             </th>
                             <th>
                                 TODO
@@ -40,13 +40,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="scene in projects.scenes">
+                        <tr ng-repeat="scene in project.scenes">
                             <td>
                                 {{scene.name}}
                             </td>
                             <td>
+                                {{scene.objects.length}}
                             </td>
                             <td>
+                                TODO
                             </td>
                             <td>
                                 <button ng-click="onRemoveSceneButtonClicked(scene.name)"class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-remove"></span></button>

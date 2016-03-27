@@ -4,5 +4,10 @@ App.controller("ProjectSceneList",
         $scope.project  = ProjectService.getProject();
         $scope.newScene = ProjectService.createScene();
         UIService.setBreadcrumbs([ProjectService.getName(),"Scenes"]);
+
+        $scope.onNewSceneAddButtonClicked = function() {
+            ProjectService.pushScene($scope.newSene);
+            $scope.newScene = ProjectService.createScene();
+        };
     }
 ]);
