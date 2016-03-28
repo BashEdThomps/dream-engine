@@ -36,11 +36,11 @@ public class ObjModel extends SceneDrawable
     private String mPath;
     private float mSmooth = 0.0f;
     public static boolean sDebug = false;
-    
+
     private float mXmin, mXmax;
     private float mYmin, mYmax;
     private float mZmin, mZmax;
-    
+
     public ObjModel(String path)
     {
         this (new File(path));
@@ -82,13 +82,13 @@ public class ObjModel extends SceneDrawable
         }
         determineMinMax();
     }
-    
+
     private void determineMinMax()
     {
         mXmin = Float.MAX_VALUE;
         mYmin = Float.MAX_VALUE;
         mZmin = Float.MAX_VALUE;
-        
+
         mXmax = Float.MIN_VALUE;
         mYmax = Float.MIN_VALUE;
         mZmax = Float.MIN_VALUE;
@@ -125,7 +125,7 @@ public class ObjModel extends SceneDrawable
             }
             GL11.glEnd();
         }
-        
+
         GL11.glPopMatrix();
     }
 

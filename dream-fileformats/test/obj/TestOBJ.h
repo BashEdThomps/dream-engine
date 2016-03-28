@@ -1,5 +1,5 @@
 /*
-* ObjFace
+* TestOBJ
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,25 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OBJFACE_H
-#define OBJFACE_H
+#ifndef TESTOBJ_H
+#define TESTOBJ_H
 
-#include <iostream>
-
-namespace DreamFileFormat {
-	class ObjFace {
-	private:
-		int* mVerts;
-	    int* mNormals;
-	    Material mMaterial;
+namespace DreamFileFormatsTest::Obj {
+	class TestOBJ {
 	public:
-		ObjFace(int*, int*, Material);
-		~ObjFace(void);
-		int* ObjFace::getVerts();
-    	int* ObjFace::getNormals();
-    	Material ObjFace::getMaterial():
-    	std::tring ObjFace::toString();
-	}; // End of ObjFace
-} // End of DreamFileFormat
+		TestOBJ(void);
+		~TestOBJ(void);
+	//protected:
+	//private:
+	}; // End of TestOBJ
+} // End of DreamFileFormats::Obj
 
-#endif // End of OBJFACE_H
+#endif // End of TESTOBJ_H
