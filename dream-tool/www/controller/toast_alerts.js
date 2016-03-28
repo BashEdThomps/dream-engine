@@ -1,5 +1,6 @@
 App.factory('ToastAlerts',
     function() {
+
         var defaultDuration = 3000;
         return {
             // Create an alert object
@@ -11,11 +12,11 @@ App.factory('ToastAlerts',
                 };
             },
             // Add an alert to the page
-   		    addAlert : function(alertList,alert) {
+   		    addAlert : function(alert) {
    			    alertList.push(alert);
    		    },
             // Close an alert from the page
-   		    closeAlert : function(alertList,index) {
+   		    closeAlert : function(index) {
    			    alertList.splice(index, 1);
    		    }
         };

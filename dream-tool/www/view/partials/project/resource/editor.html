@@ -5,10 +5,30 @@
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Heading
+                    Configuration
                 </div>
                 <div class="panel-body">
-                    Body
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" ng-model="resource.name"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select ng-model="resource.type" class="form-control" id="type">
+                            <option ng-repeat="type in getResourecTypes()">{{type}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group" ng-show="resource.type === 'Model'">
+                        <label for="type">Model File Format</label>
+                        <select ng-model="resource.modelFileType" class="form-control" id="type">
+                            <option value="obj">Wavefront OBJ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="path">Path</label>
+                        <input type="text" class="form-control" ng-model="resource.path"/>
+                    </div>
+
                 </div>
             </div>
         </div>

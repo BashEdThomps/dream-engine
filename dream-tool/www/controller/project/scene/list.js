@@ -6,7 +6,12 @@ App.controller("ProjectSceneList",
         UIService.setBreadcrumbs([ProjectService.getName(),"Scenes"]);
 
         $scope.onNewSceneAddButtonClicked = function() {
-            ProjectService.pushScene($scope.newSene);
+            console.log($scope.newScene);
+            ProjectService.pushScene($scope.newScene);
+            $scope.newScene = ProjectService.createScene();
+        };
+
+        $scope.onNewSceneClearButtonClicked = function() {
             $scope.newScene = ProjectService.createScene();
         };
     }

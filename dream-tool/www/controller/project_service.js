@@ -67,7 +67,31 @@ App.service('ProjectService',
 
     this.pushScene = function(scene) {
         this.isModified = true;
-        this.scenes.push(scene);
+        this.project.scenes.push(scene);
+    };
+
+    this.getSceneByName = function(name, callback) {
+        var retval = null;
+        this.project.scenes.forEach(function (scene){
+            if (scene.name === name) {
+                retval = scene;
+            }
+        });
+        callback(retval);
+    };
+    this.pushResource = function(resource) {
+        this.isModified = true;
+        this.project.resources.push(resource);
+    };
+
+    this.getResourceByName = function(name, callback) {
+        var retval = null;
+        this.project.resources.forEach(function (rsc){
+            if (rsc.name === name) {
+                retval = rsc;
+            }
+        });
+        callback(retval);
     };
 
     this.getResourecTypes = function() {
@@ -85,6 +109,11 @@ App.service('ProjectService',
         return {
             name:"New Scene",
             objects:[this.createSceneObject()],
+            animationEnabled: false,
+            collisionEnabled: false,
+            physicsEnabled:   false,
+            audioEnabled:     false,
+            inputEnabled:     false,
         };
     };
 
@@ -132,13 +161,7 @@ App.service('ProjectService',
             name: "New Project",
             author: "Unknown Author",
             description: "A new Dream project.",
-            configuration: {
-                animationEnabled: false,
-                collisionEnabled: false,
-                physicsEnabled:   false,
-                audioEnabled:     false,
-                inputEnabled:     false,
-            },
+
             scenes: [
                 this.createScene()
             ],

@@ -1,4 +1,7 @@
-App.service('UIService', function() {
+App.service('UIService',
+    ["ProjectService","$state",
+    function(ProjectService,$state) {
+
     // Breadcrumbs ---------------------------------------------------------
     this.breadcrumbs = [];
 
@@ -11,5 +14,8 @@ App.service('UIService', function() {
         return this.breadcrumbs;
     };
 
+    
+    // Return UIService --------------------------------------------------------
+
     return this;
-});
+}]);

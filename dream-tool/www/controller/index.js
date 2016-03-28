@@ -5,9 +5,10 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
          UIService, $window) {
     $scope.modalAnimationsEnabled = true;
     $scope.isFullScreen = false;
-    $scope.breadcrumbs = [];
-    $scope.alertList   = [];
-    $scope.treeData  = {};
+    $scope.alertList = [];
+    $scope.treeData = [];
+    $scope.isProjectModified = ProjectService.isModified;
+    $scope.breadcrumbs  = UIService.breadcrumbs;
 
     // Alerts ------------------------------------------------------------------
 
@@ -16,14 +17,14 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
     };
 
     $scope.closeAlert = function(index) {
-        ToastAlerts.closeAlert($scope.alertList, index);
+        ToastAlerts.closeAlert($scope.alertList,index);
     };
 
     // Project Tree ------------------------------------------------------------
 
     $scope.generateTreeData = function() {
+        console.log("Generating Tree Data");
         $scope.treeData = [];
-
         var treeDataRoot = {};
         treeDataRoot.label = ProjectService.project.name;
         treeDataRoot.children = [];
@@ -93,34 +94,37 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
         $state.go("ProjectSceneEditor",{scene:branch.label});
     };
 
-    $scope.onTreeAnimationInstanceSelected = function(branch) {
-        console.log("Selected Animation:",branch);
-    };
-
     $scope.onTreeProjectResourceInstanceSelected = function(branch) {
         console.log("Selected Resource:",branch);
+        $state.go("ProjectResourceEditor",{resource:branch.label});
     };
 
     // Toolbar Button Callbacks ------------------------------------------------
 
-    $scope.toggleFullScreen = function() {
+    $scope.onToggleFullScreenButtonClicked = function() {
         $scope.isFullScreen = !$scope.isFullScreen;
     };
 
     $scope.onNewButtonClicked = function() {
-        if (ProjectService.isModified()) {
+        if (ProjectService.isModified() === true) {
             $scope.showSaveModifiedModal(
                 function yes() {
                     ProjectService.saveProject();
                 }, function no() {
-                    ProjectService.initialise();
-                    $scope.addAlert("New Project Created","success");
-                    $state.go("Project");
-                    $scope.updateUI();
+                    $scope.newProjectAction();
                 }
             );
+        } else {
+            $scope.newProjectAction();
         }
 
+    };
+
+    $scope.newProjectAction = function() {
+        ProjectService.initialise();
+        $scope.addAlert("New Project Created","success");
+        $state.go("Project");
+        //$scope.updateUI();
     };
 
     $scope.onOpenButtonClicked = function() {
@@ -143,7 +147,6 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
         ProjectService.saveProject();
     };
 
-
     $scope.onPlayButtonClicked = function() {
         ApiConnector.runDreamProject(ProjectService.project,function(success){
             if (success) {
@@ -152,10 +155,6 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
                 $scope.addAlert("Failed to Start " + ProjectService.project.name, "danger");
             }
         });
-    };
-
-    $scope.isProjectModified = function() {
-        return ProjectService.project.isModified;
     };
 
     // Modals ------------------------------------------------------------------
@@ -196,12 +195,6 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
         });
     };
 
-    // Breadcrumbs -------------------------------------------------------------
-
-    $scope.getBreadcrumbs = function() {
-        return UIService.getBreadcrumbs();
-    };
-
     // onLoad Function Calls ---------------------------------------------------
 
     ProjectService.getProject();
@@ -211,10 +204,8 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
     };
 
     $scope.updateUI = function() {
-        ProjectService.setProjectModified(true);
         $scope.generateTreeData();
         UIService.setBreadcrumbs([ProjectService.project.name]);
-        $scope.breadcrumbs = UIService.getBreadcrumbs();
     };
 
     $scope.updateUI();
