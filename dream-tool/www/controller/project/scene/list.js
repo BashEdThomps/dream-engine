@@ -14,5 +14,16 @@ App.controller("ProjectSceneList",
         $scope.onNewSceneClearButtonClicked = function() {
             $scope.newScene = ProjectService.createScene();
         };
+
+        $scope.onRemoveSceneButtonClicked = function(name) {
+            ProjectService.getSceneByName(name,function(scene){
+                if (scene !== null) {
+                    ProjectService.removeScene(scene);
+                    UIService.addAlert("Removed scene "+name,"success");
+                } else {
+                    UIService.addAlert("Could not remove "+name,"danger");
+                }
+            });
+        };
     }
 ]);

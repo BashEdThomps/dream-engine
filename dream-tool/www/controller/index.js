@@ -1,76 +1,12 @@
 App.controller("index",
-["$state","$scope","$uibModal", "ToastAlerts","ApiConnector","ProjectService",
+["$state","$scope", "ApiConnector","ProjectService",
  "UIService", "$window",
-function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
-         UIService, $window) {
-    $scope.modalAnimationsEnabled = true;
-    $scope.isFullScreen = false;
-    $scope.alertList = [];
-    $scope.treeData = [];
-    $scope.isProjectModified = ProjectService.isModified;
-    $scope.breadcrumbs  = UIService.breadcrumbs;
+function($state,$scope, ApiConnector, ProjectService,
+     UIService, $window) {
 
     // Alerts ------------------------------------------------------------------
 
-    $scope.addAlert = function(message,type) {
-        ToastAlerts.addAlert($scope.alertList,ToastAlerts.newAlert(message,type));
-    };
-
-    $scope.closeAlert = function(index) {
-        ToastAlerts.closeAlert($scope.alertList,index);
-    };
-
-    // Project Tree ------------------------------------------------------------
-
-    $scope.generateTreeData = function() {
-        console.log("Generating Tree Data");
-        $scope.treeData = [];
-        var treeDataRoot = {};
-        treeDataRoot.label = ProjectService.project.name;
-        treeDataRoot.children = [];
-        treeDataRoot.onSelect = $scope.onTreeProjectNodeSelected;
-
-        $scope.setupTreeScenes(treeDataRoot);
-        $scope.setupTreeResources(treeDataRoot);
-
-        $scope.treeData.push(treeDataRoot);
-    };
-
-    $scope.setupTreeScenes = function(treeDataRoot) {
-        var scenes = {
-            label:"Scenes",
-            children:[],
-            onSelect: $scope.onTreeSceneNodeSelected
-        };
-
-        ProjectService.project.scenes.forEach(function(scene) {
-            console.log("Adding scene to tree:", scene.name);
-
-            var sceneChild = {
-                label    : scene.name,
-                children: [],
-                onSelect : $scope.onTreeSceneInstanceSelected,
-            };
-            scenes.children.push(sceneChild);
-        });
-
-        treeDataRoot.children.push(scenes);
-    };
-
-    $scope.setupTreeResources = function(treeDataRoot) {
-        var resourcesNode = {
-            label: "Resources",
-            children: [],
-            onSelect: $scope.onTreeResourcesNodeSelected
-        };
-        ProjectService.getProject().resources.forEach(function(resource){
-            resourcesNode.children.push({
-                label : resource.name,
-                onSelect: $scope.onTreeProjectResourceInstanceSelected
-            });
-        });
-        treeDataRoot.children.push(resourcesNode);
-    };
+    $scope.closeAlert = UIService.closeAlert;
 
     // Tree Event Handlers -----------------------------------------------------
 
@@ -102,12 +38,12 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
     // Toolbar Button Callbacks ------------------------------------------------
 
     $scope.onToggleFullScreenButtonClicked = function() {
-        $scope.isFullScreen = !$scope.isFullScreen;
+        UIService.isFullScreen = !UIService.isFullScreen;
     };
 
     $scope.onNewButtonClicked = function() {
         if (ProjectService.isModified() === true) {
-            $scope.showSaveModifiedModal(
+            UIService.showSaveModifiedModal(
                 function yes() {
                     ProjectService.saveProject();
                 }, function no() {
@@ -122,24 +58,23 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
 
     $scope.newProjectAction = function() {
         ProjectService.initialise();
-        $scope.addAlert("New Project Created","success");
+        UIService.addAlert("New Project Created","success");
         $state.go("Project");
-        //$scope.updateUI();
     };
 
     $scope.onOpenButtonClicked = function() {
         if (ProjectService.isModified() === true) {
-            $scope.showSaveModifiedModal(
+            UIService.showSaveModifiedModal(
                 function yes() {
                     ProjectService.saveProject();
-                    $scope.showOpenModal();
+                    UIService.showOpenModal();
                 },
                 function no() {
-                    $scope.showOpenModal();
+                    UIService.showOpenModal();
                 }
             );
         } else {
-            $scope.showOpenModal();
+            UIService.showOpenModal();
         }
     };
 
@@ -150,52 +85,14 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
     $scope.onPlayButtonClicked = function() {
         ApiConnector.runDreamProject(ProjectService.project,function(success){
             if (success) {
-                $scope.addAlert("Started " + ProjectService.project.name, "success");
+                UIService.addAlert("Started " + ProjectService.project.name, "success");
             } else {
-                $scope.addAlert("Failed to Start " + ProjectService.project.name, "danger");
+                UIService.addAlert("Failed to Start " + ProjectService.project.name, "danger");
             }
         });
     };
 
-    // Modals ------------------------------------------------------------------
-
-    $scope.showSaveModifiedModal = function(yesCallback,noCallback) {
-        var modal = $uibModal.open({
-            animation: $scope.modalAnimationsEnabled,
-            templateUrl: 'view/partials/modals/save_modified.html',
-            controller: 'YesNoModal'
-        });
-
-        modal.result.then(function (result) {
-            if (result) {
-                yesCallback();
-            } else {
-                noCallback();
-            }
-        }, function () {
-            noCallback();
-        });
-    };
-
-    $scope.showOpenModal = function() {
-        var modal = $uibModal.open({
-            animation: $scope.modalAnimationsEnabled,
-            templateUrl: 'view/partials/modals/open.html',
-            controller: 'OpenFileModal'
-        });
-
-        modal.result.then(function (result) {
-            if (result) {
-
-            } else {
-
-            }
-        }, function () {
-
-        });
-    };
-
-    // onLoad Function Calls ---------------------------------------------------
+        // onLoad Function Calls ---------------------------------------------------
 
     ProjectService.getProject();
 
@@ -203,11 +100,13 @@ function($state,$scope, $uibModal, ToastAlerts, ApiConnector, ProjectService,
         ProjectService.setProjectModified(true);
     };
 
-    $scope.updateUI = function() {
-        $scope.generateTreeData();
-        UIService.setBreadcrumbs([ProjectService.project.name]);
-    };
+    UIService.setHostController($scope);
+    UIService.setBreadcrumbs([ProjectService.project.name]);
+    UIService.update();
+    $scope.alertList = UIService.toastAlertList;
+    $scope.treeData = UIService.treeData;
+    $scope.isProjectModified = ProjectService.isModified;
+    $scope.breadcrumbs  = UIService.breadcrumbs;
 
-    $scope.updateUI();
 }
 ]);

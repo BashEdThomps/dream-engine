@@ -79,6 +79,12 @@ App.service('ProjectService',
         });
         callback(retval);
     };
+
+    this.removeScene = function(scene) {
+        var index = this.project.scenes.indexOf(scene);
+        this.project.scenes.splice(index,1);
+    };
+
     this.pushResource = function(resource) {
         this.isModified = true;
         this.project.resources.push(resource);
@@ -86,12 +92,17 @@ App.service('ProjectService',
 
     this.getResourceByName = function(name, callback) {
         var retval = null;
-        this.project.resources.forEach(function (rsc){
+        this.project.resources.forEach(function (rsc) {
             if (rsc.name === name) {
                 retval = rsc;
             }
         });
         callback(retval);
+    };
+
+    this.removeResource = function(resource) {
+        var index = this.project.resources.indexOf(resource);
+        this.project.resources.splice(index,1);
     };
 
     this.getResourecTypes = function() {
@@ -108,7 +119,9 @@ App.service('ProjectService',
     this.createScene = function() {
         return {
             name:"New Scene",
-            objects:[this.createSceneObject()],
+            objects:[
+                this.createSceneObject()
+            ],
             animationEnabled: false,
             collisionEnabled: false,
             physicsEnabled:   false,
@@ -158,8 +171,8 @@ App.service('ProjectService',
 
     this.initialise = function() {
         this.project = {
-            name: "New Project",
-            author: "Unknown Author",
+            name:        "New Project",
+            author:      "Unknown Author",
             description: "A new Dream project.",
 
             scenes: [

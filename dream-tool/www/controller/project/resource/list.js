@@ -19,5 +19,17 @@ App.controller("ProjectResourceList",
         $scope.onNewResourceClearButtonClicked = function() {
             $scope.newResource = ProjectService.createAnimationResource();
         };
+
+        $scope.onRemoveResourceButtonClicked = function(name) {
+            ProjectService.getResourceByName(name,function(resource){
+                if (resource !== null) {
+                    ProjectService.removeResource(resource);
+                    UIService.addAlert("Removed resource "+name,"success");
+                    UIService.update();
+                } else {
+                    UIService.addAlert("Could not remove resource "+name);
+                }
+            });
+        };
     }
 ]);
