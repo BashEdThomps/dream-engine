@@ -19,8 +19,8 @@ App.controller("ProjectSceneList",
             ProjectService.getSceneByName(name,function(scene){
                 if (scene !== null) {
                     ProjectService.removeScene(scene);
+                    UIService.removeTreeProjectSceneByName(name);
                     UIService.addAlert("Removed scene "+name,"success");
-                    UIService.update();
                 } else {
                     UIService.addAlert("Could not remove "+name,"danger");
                 }

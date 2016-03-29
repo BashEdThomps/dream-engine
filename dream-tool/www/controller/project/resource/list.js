@@ -24,8 +24,8 @@ App.controller("ProjectResourceList",
             ProjectService.getResourceByName(name,function(resource){
                 if (resource !== null) {
                     ProjectService.removeResource(resource);
+                    UIService.removeTreeProjectResourceByName(name);
                     UIService.addAlert("Removed resource "+name,"success");
-                    UIService.update();
                 } else {
                     UIService.addAlert("Could not remove resource "+name);
                 }

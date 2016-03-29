@@ -8,7 +8,7 @@ App.service('UIService',
     this.treeData = [];
     var hostController = null;
 
-    this.setHostController = function(hc){
+    this.setHostController = function(hc) {
         hostController = hc;
         console.log("UIService: Setting host controller",hostController);
     };
@@ -19,46 +19,114 @@ App.service('UIService',
         var treeDataRoot = {};
         treeDataRoot.label = ProjectService.project.name;
         treeDataRoot.children = [];
-        treeDataRoot.onSelect = hostController.onTreeProjectNodeSelected;
-        this.setupTreeScenes(treeDataRoot);
-        this.setupTreeResources(treeDataRoot);
+        treeDataRoot.onSelect = hostController.onTreeProjectSelected;
+        this.generateTreeProjectScenes(treeDataRoot);
+        this.generateTreeProjectResources(treeDataRoot);
         this.treeData.push(treeDataRoot);
     };
 
-    this.setupTreeScenes = function(treeDataRoot) {
-        var scenes = {
+    // Scene -------------------------------------------------------------------
+
+    this.generateTreeProjectScenes = function(treeDataRoot) {
+        this.treeProjectScenes = {
             label:"Scenes",
             children:[],
-            onSelect: hostController.onTreeSceneNodeSelected
+            onSelect: hostController.onTreeProjectSceneSelected
         };
-
+        var ui = this;
         ProjectService.project.scenes.forEach(function(scene) {
             console.log("Adding scene to tree:", scene.name);
-
-            var sceneChild = {
-                label    : scene.name,
-                children: [],
-                onSelect : hostController.onTreeSceneInstanceSelected,
-            };
-            scenes.children.push(sceneChild);
+            ui.treeProjectScenes.children.push(ui.createTreeProjectScene(scene.name));
         });
 
-        treeDataRoot.children.push(scenes);
+        treeDataRoot.children.push(this.treeProjectScenes);
     };
 
-    this.setupTreeResources = function(treeDataRoot) {
-        var resourcesNode = {
+    this.createTreeProjectScene = function(name)
+    {
+        return {
+            label :name,
+            onSelect: hostController.onTreeProjectResourceInstanceSelected
+        };
+    };
+
+    this.getTreeProjectSceneByName = function(name,callback){
+        var retval = null;
+        this.treeProjectScenes.forEach(function(scene) {
+            if (scene.label === name) {
+                retval  = scene;
+            }
+        });
+        callback(scene);
+    };
+
+    this.removeTreeProjectSceneByName = function(name){
+        this.getTreeProjectSceneByName(name,function(scene){
+            if (scene !== null){
+                this.removeTreeProjectScene(scene);
+            }
+        });
+    };
+
+    this.addTreeProjectScene = function(scene) {
+        this.treeProjectScenes.push(scene);
+    };
+
+    this.removeTreeProjectScene = function(scene) {
+        var index = this.treeProjectScenes.indexOf(scene);
+        this.treeProjectScenes.splice(index,1);
+    };
+
+    // Resource ----------------------------------------------------------------
+
+    this.addTreePrjectResource = function(resource) {
+        this.treeProjectResources.push(scene);
+    };
+
+    this.createTreeProjectResource = function(name) {
+        return {
+            label    : name,
+            children : [],
+            onSelect : hostController.onTreeProjectResourceInstanceSelected,
+        };
+    };
+
+    this.generateTreeProjectResources = function(treeDataRoot) {
+        this.treeProjectResources = {
             label: "Resources",
             children: [],
-            onSelect: hostController.onTreeResourcesNodeSelected
+            onSelect: hostController.onTreeProjectResourceSelected
         };
+        var ui = this;
+
         ProjectService.getProject().resources.forEach(function(resource){
-            resourcesNode.children.push({
-                label : resource.name,
-                onSelect: hostController.onTreeProjectResourceInstanceSelected
-            });
+            ui.treeProjectResources.children.push(ui.createTreeProjectResource(resource.name));
         });
-        treeDataRoot.children.push(resourcesNode);
+
+        treeDataRoot.children.push(this.treeProjectResources);
+    };
+
+    this.removeTreeProjectResource = function(resource) {
+        var index = this.treeProjectResources.indexOf(resource);
+        this.treeProjectResources.splice(index,1);
+    };
+
+    this.getTreeProjectResourceByName = function(name,callback){
+        var retval = null;
+        this.treeProjectResources.forEach(function(res) {
+            if (res.label === name) {
+                retval  = res;
+            }
+        });
+        callback(res);
+    };
+
+    this.removeTreeProjectResourceByName = function(name) {
+        this.getTreeProjectResourceByName(name, function(res){
+            if (res !== null) {
+                this.removeTreeProjectResource(res);
+            }
+        });
     };
 
     // Toast Alerts ------------------------------------------------------------
@@ -100,7 +168,6 @@ App.service('UIService',
 
     this.update = function() {
         console.log("Updating UI");
-        this.generateTreeData();
         hostController.alertList = this.toastAlertList;
         hostController.treeData = this.treeData;
         hostController.isProjectModified = ProjectService.isModified;

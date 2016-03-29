@@ -121,26 +121,28 @@ function($state,$scope, ApiConnector, ProjectService,
 
     // Alerts ------------------------------------------------------------------
 
-    $scope.closeAlert = UIService.closeAlert;
+    $scope.closeAlert = function(index) {
+        UIService.closeAlert(index);
+    };
 
     // Tree Event Handlers -----------------------------------------------------
 
-    $scope.onTreeProjectNodeSelected = function(branch) {
+    $scope.onTreeProjectSelected = function(branch) {
         console.log("Selected Project:", branch);
         $state.go("Project");
     };
 
-    $scope.onTreeSceneNodeSelected = function(branch) {
+    $scope.onTreeProjectSceneSelected = function(branch) {
         console.log("Selected Scenes Parent Node:",branch);
         $state.go("ProjectSceneList");
     };
 
-    $scope.onTreeResourcesNodeSelected = function(branch) {
+    $scope.onTreeProjectResourceSelected = function(branch) {
         console.log("Selected Resources Parent Node:",branch);
         $state.go("ProjectResourceList");
     };
 
-    $scope.onTreeSceneInstanceSelected = function(branch) {
+    $scope.onTreeProjectSceneInstanceSelected = function(branch) {
         console.log("Selected Scene:",branch);
         $state.go("ProjectSceneEditor",{scene:branch.label});
     };
@@ -157,7 +159,7 @@ function($state,$scope, ApiConnector, ProjectService,
     };
 
     $scope.onNewButtonClicked = function() {
-        if (ProjectService.isModified() === true) {
+        if (ProjectService.isModified()) {
             UIService.showSaveModifiedModal(
                 function yes() {
                     ProjectService.saveProject();
@@ -178,7 +180,7 @@ function($state,$scope, ApiConnector, ProjectService,
     };
 
     $scope.onOpenButtonClicked = function() {
-        if (ProjectService.isModified() === true) {
+        if (ProjectService.isModified()) {
             UIService.showSaveModifiedModal(
                 function yes() {
                     ProjectService.saveProject();
@@ -217,6 +219,7 @@ function($state,$scope, ApiConnector, ProjectService,
 
     UIService.setHostController($scope);
     UIService.setBreadcrumbs([ProjectService.project.name]);
+    UIService.generateTreeData();
     UIService.update();
 
 

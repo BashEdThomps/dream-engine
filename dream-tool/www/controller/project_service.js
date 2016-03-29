@@ -140,7 +140,8 @@ App.service('ProjectService',
         return {
             name: "New Sound Effect",
             path: "/path/to/soundeffect.wav",
-            type: "Sound Effect"
+            type: "Sound Effect",
+            format: "wav"
         };
     };
 
@@ -157,7 +158,7 @@ App.service('ProjectService',
             name: "New Model Resource",
             path: "/path/to/resource",
             type: "Model",
-            modelFileType: "obj",
+            format: "obj",
         };
     };
 
