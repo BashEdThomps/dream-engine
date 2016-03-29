@@ -53,17 +53,17 @@
 								</ul>
 							</li><!--Close Scene-->
 							<li><!--Resources-->
-								<a ng-lick="onHelpProjectResourcesClicked()">Resource</a>
+								<a ng-click="onHelpProjectResourceClicked()">Resource</a>
 								<ul>
 									<li>
-										<a ng-click="onHelpProjectResourcesModelsClicked()">Model</a>
+										<a ng-click="onHelpProjectResourceModelClicked()">Model</a>
 									</li>
 									<li><!--Animation-->
-										<a  ng-click="onHelpProjectResourcesAnimationClicked()">Animation</a>
+										<a  ng-click="onHelpProjectResourceAnimationClicked()">Animation</a>
 										<ul>
-											<li><a  ng-click="onHelpProjectResourcesAnimationLinearClicked()">Linear</a></li>
-											<li><a  ng-click="onHelpProjectResourcesAnimationBezierClicked()">Bezier</a></li>
-											<li><a  ng-click="onHelpProjectResourcesAnimationOrbitalClicked()">Orbital</a></li>
+											<li><a  ng-click="onHelpProjectResourceAnimationBezierClicked()">Bezier</a></li>
+											<li><a  ng-click="onHelpProjectResourceAnimationLinearClicked()">Linear</a></li>
+											<li><a  ng-click="onHelpProjectResourceAnimationOrbitalClicked()">Orbital</a></li>
 										</ul>
 									</li><!--Close Animation-->
 									<li><!--Audio-->
@@ -128,6 +128,16 @@
 				</div>
 					<div ng-show="showHelpProjectResourceAudio">
 					<h2>Audio</h2>
+					<br />
+				</div>
+				</div>
+					<div ng-show="showHelpProjectResourceAudioSoundEffect">
+					<h2>Sound Effect</h2>
+					<br />
+				</div>
+				</div>
+					<div ng-show="showHelpProjectResourceAudioMusic">
+					<h2>Music</h2>
 					<br />
 				</div>
 			</div>

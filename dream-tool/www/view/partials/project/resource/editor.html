@@ -24,11 +24,13 @@
                             <option value="obj">Wavefront OBJ</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="path">Path</label>
-                        <input type="text" class="form-control" ng-model="resource.path"/>
+                    <div class="form-group" ng-model="resource.path" ng-show="resource.type === 'Model'">
+                        <label for="file">Model</label>
+                        <input type="file" id="model-file" name="model-file" />
+                        <br/>
+                        <label for="file">Material</label>
+                        <input type="file" id="material-file" name="material-file" />
                     </div>
-
                 </div>
             </div>
         </div>

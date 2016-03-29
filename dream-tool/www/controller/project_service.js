@@ -157,6 +157,7 @@ App.service('ProjectService',
             name: "New Model Resource",
             path: "/path/to/resource",
             type: "Model",
+            modelFileType: "obj",
         };
     };
 

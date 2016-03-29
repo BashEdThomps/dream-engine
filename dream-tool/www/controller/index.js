@@ -5,7 +5,7 @@ function($state,$scope, ApiConnector, ProjectService,
      UIService, $window) {
 
     // Help Pages --------------------------------------------------------------
-    
+
     $scope.showHelpProject = true;
 
     $scope.onHelpProjectClicked = function() {
@@ -48,16 +48,75 @@ function($state,$scope, ApiConnector, ProjectService,
         $scope.showHelpProjectSceneSceneObjectModifierEventListener = true;
     };
 
+    $scope.onHelpProjectResourceClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResource = true;
+    };
+
+    $scope.onHelpProjectResourceModelClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResource = true;
+    };
+
+    $scope.onHelpProjectResourceAnimationClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResourceAnimation = true;
+    };
+
+    $scope.onHelpProjectResourceAnimationBezierClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResourceAnimationBezier = true;
+    };
+
+    $scope.onHelpProjectResourceAnimationLinearClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResourceAnimationLinear = true;
+    };
+
+    $scope.onHelpProjectResourceAnimationOrbitalClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResourceAnimationOrbital = true;
+    };
+
+    $scope.onHelpProjectResourceAudioClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResourceAudio = true;
+    };
+
+    $scope.onHelpProjectResourceAudioSoundEffectClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResourceAudioSoundEffect = true;
+    };
+
+    $scope.onHelpProjectResourceAudioMusicClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectResourceAudioMusic = true;
+    };
     $scope.hideAllHelp = function() {
         $scope.showHelpProject                 = false;
+
         $scope.showHelpProjectConfiguration    = false;
+
         $scope.showHelpProjectScene            = false;
         $scope.showHelpProjectSceneScenegraph  = false;
         $scope.showHelpProjectSceneBulletWorld = false;
         $scope.showHelpProjectSceneSceneObject = false;
         $scope.showHelpProjectSceneSceneObject = false;
         $scope.showHelpProjectSceneSceneObjectModifier = false;
-        $scope.showHelpProjectSceneSceneObjectModifierEveneListener = false;
+        $scope.showHelpProjectSceneSceneObjectModifierEventListener = false;
+
+        $scope.showHelpProjectResource          = false;
+
+        $scope.showHelpProjectResourceModel     = false;
+
+        $scope.showHelpProjectResourceAnimation = false;
+        $scope.showHelpProjectResourceAnimationBezier = false;
+        $scope.showHelpProjectResourceAnimationLinear = false;
+        $scope.showHelpProjectResourceAnimationOrbital = false;
+
+        $scope.showHelpProjectResourceAudio            = false;
+        $scope.showHelpProjectResourceAudioSoundEffect = false;
+        $scope.showHelpProjectResourceAudioMusic       = false;
     };
 
     // Alerts ------------------------------------------------------------------
