@@ -4,6 +4,62 @@ App.controller("index",
 function($state,$scope, ApiConnector, ProjectService,
      UIService, $window) {
 
+    // Help Pages --------------------------------------------------------------
+    
+    $scope.showHelpProject = true;
+
+    $scope.onHelpProjectClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProject = true;
+    };
+
+    $scope.onHelpProjectConfigurationClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectConfiguration = true;
+    };
+
+    $scope.onHelpProjectSceneClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectScene = true;
+    };
+
+    $scope.onHelpProjectSceneScenegraphClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectSceneScenegraph = true;
+    };
+
+    $scope.onHelpProjectSceneBulletWorldClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectSceneBulletWorld = true;
+    };
+
+    $scope.onHelpProjectSceneSceneObjectClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectSceneSceneObject = true;
+    };
+
+    $scope.onHelpProjectSceneSceneObjectModifierClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectSceneSceneObjectModifier = true;
+    };
+
+    $scope.onHelpProjectSceneSceneObjectModifierEventListenerClicked = function() {
+        $scope.hideAllHelp();
+        $scope.showHelpProjectSceneSceneObjectModifierEventListener = true;
+    };
+
+    $scope.hideAllHelp = function() {
+        $scope.showHelpProject                 = false;
+        $scope.showHelpProjectConfiguration    = false;
+        $scope.showHelpProjectScene            = false;
+        $scope.showHelpProjectSceneScenegraph  = false;
+        $scope.showHelpProjectSceneBulletWorld = false;
+        $scope.showHelpProjectSceneSceneObject = false;
+        $scope.showHelpProjectSceneSceneObject = false;
+        $scope.showHelpProjectSceneSceneObjectModifier = false;
+        $scope.showHelpProjectSceneSceneObjectModifierEveneListener = false;
+    };
+
     // Alerts ------------------------------------------------------------------
 
     $scope.closeAlert = UIService.closeAlert;
@@ -103,10 +159,7 @@ function($state,$scope, ApiConnector, ProjectService,
     UIService.setHostController($scope);
     UIService.setBreadcrumbs([ProjectService.project.name]);
     UIService.update();
-    $scope.alertList = UIService.toastAlertList;
-    $scope.treeData = UIService.treeData;
-    $scope.isProjectModified = ProjectService.isModified;
-    $scope.breadcrumbs  = UIService.breadcrumbs;
+
 
 }
 ]);

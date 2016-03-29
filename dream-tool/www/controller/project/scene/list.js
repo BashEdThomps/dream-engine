@@ -20,6 +20,7 @@ App.controller("ProjectSceneList",
                 if (scene !== null) {
                     ProjectService.removeScene(scene);
                     UIService.addAlert("Removed scene "+name,"success");
+                    UIService.update();
                 } else {
                     UIService.addAlert("Could not remove "+name,"danger");
                 }
