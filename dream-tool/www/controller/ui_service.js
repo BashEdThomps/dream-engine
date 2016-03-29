@@ -52,18 +52,19 @@ App.service('UIService',
 
     this.getTreeProjectSceneByName = function(name,callback){
         var retval = null;
-        this.treeProjectScenes.forEach(function(scene) {
+        this.treeProjectScenes.children.forEach(function(scene) {
             if (scene.label === name) {
                 retval  = scene;
             }
         });
-        callback(scene);
+        callback(retval);
     };
 
     this.removeTreeProjectSceneByName = function(name){
+        var ui = this;
         this.getTreeProjectSceneByName(name,function(scene){
             if (scene !== null){
-                this.removeTreeProjectScene(scene);
+                ui.removeTreeProjectScene(scene);
             }
         });
     };
@@ -73,8 +74,8 @@ App.service('UIService',
     };
 
     this.removeTreeProjectScene = function(scene) {
-        var index = this.treeProjectScenes.indexOf(scene);
-        this.treeProjectScenes.splice(index,1);
+        var index = this.treeProjectScenes.children.indexOf(scene);
+        this.treeProjectScenes.children.splice(index,1);
     };
 
     // Resource ----------------------------------------------------------------
@@ -107,24 +108,25 @@ App.service('UIService',
     };
 
     this.removeTreeProjectResource = function(resource) {
-        var index = this.treeProjectResources.indexOf(resource);
-        this.treeProjectResources.splice(index,1);
+        var index = this.treeProjectResources.children.indexOf(resource);
+        this.treeProjectResources.children.splice(index,1);
     };
 
     this.getTreeProjectResourceByName = function(name,callback){
         var retval = null;
-        this.treeProjectResources.forEach(function(res) {
+        this.treeProjectResources.children.forEach(function(res) {
             if (res.label === name) {
                 retval  = res;
             }
         });
-        callback(res);
+        callback(retval);
     };
 
     this.removeTreeProjectResourceByName = function(name) {
+        var ui = this;
         this.getTreeProjectResourceByName(name, function(res){
             if (res !== null) {
-                this.removeTreeProjectResource(res);
+                ui.removeTreeProjectResource(res);
             }
         });
     };
