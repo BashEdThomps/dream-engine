@@ -49,7 +49,7 @@ namespace DreamScenegraph {
 		void updatePaths();
 		void traverseNodeVector(void (*)(Node*, void*), void*);
 		int  traversePath(std::string, void (*)(Node*,  void*), void*);
-		
+
 		// Node Relationships
 		int  isNodeChildOf(Node*,Node*);
 		int  isNodeParentOf(Node*,Node*);

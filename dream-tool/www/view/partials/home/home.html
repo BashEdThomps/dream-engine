@@ -82,64 +82,20 @@
 		</div>
 		<div class="col-md-8 fill">
 			<div class="well fill">
-				<div ng-show="showHelpProject">
-					<h2>Project</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectConfiguration">
-					<h2>Configuration</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectScene">
-					<h2>Scene</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectSceneScenegraph">
-					<h2>Scenegraph</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectSceneBulletWorld">
-					<h2>Bullet World</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectSceneSceneObject">
-					<h2>Scene Object</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectSceneSceneOjectModifier">
-					<h2>Modifier</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectSceneSceneObjectModifierEventListener">
-					<h2>Event Listener</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectResource">
-					<h2>Resource</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectResourceAnimation">
-					<h2>Animation</h2>
-					<br />
-				</div>
-				<div ng-show="showHelpProjectResourceModel">
-					<h2>Model</h2>
-					<br />
-				</div>
-					<div ng-show="showHelpProjectResourceAudio">
-					<h2>Audio</h2>
-					<br />
-				</div>
-				</div>
-					<div ng-show="showHelpProjectResourceAudioSoundEffect">
-					<h2>Sound Effect</h2>
-					<br />
-				</div>
-				</div>
-					<div ng-show="showHelpProjectResourceAudioMusic">
-					<h2>Music</h2>
-					<br />
-				</div>
+				<div ng-show="showHelpProject" ng-include="'view/partials/home/help/project/project.html'"></div>
+				<div ng-show="showHelpProjectConfiguration" ng-include="'view/partials/home/help/project/configuration.html'"></div>
+				<div ng-show="showHelpProjectScene" ng-include="'view/partials/home/help/project/scene/scene.html'"></div>
+				<div ng-show="showHelpProjectSceneScenegraph" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectSceneBulletWorld" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectSceneSceneObject" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectSceneSceneOjectModifier" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectSceneSceneObjectModifierEventListener" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectResource" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectResourceAnimation" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectResourceModel" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectResourceAudio" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectResourceAudioSoundEffect" ng-include="'view/partials/home/help/project/'"></div>
+				<div ng-show="showHelpProjectResourceAudioMusic" ng-include="'view/partials/home/help/project/'"></div>
 			</div>
 		</div>
 	</div>

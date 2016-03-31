@@ -1,5 +1,5 @@
 /*
-* TestFrameDelta
+* Dream::Animation::Test::TestFrameDelta
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,30 +16,34 @@
 */
 
 #include "TestFrameDelta.h"
-#include "../src/Frame.h"
+#include "../../src/animation/Frame.h"
 
-namespace DreamAnimationTest {
+namespace Dream {
+	namespace Animation {
+		namespace Test {
+			TestFrameDelta::TestFrameDelta() {
+			}
 
-	TestFrameDelta::TestFrameDelta() {
-	}
+			TestFrameDelta::~TestFrameDelta() {
+			}
 
-	TestFrameDelta::~TestFrameDelta() {
-	}
+			void TestFrameDelta::run(void) {
+				testComputeFrameDelta();
+			}
 
-	void TestFrameDelta::run(void) {
-		testComputeFrameDelta();
-	}
+			void TestFrameDelta::testComputeFrameDelta() {
+				Dream::Animation::Frame *frame = new Dream::Animation::Frame(0);
 
-	void TestFrameDelta::testComputeFrameDelta() {
-		DreamAnimation::Frame *frame = new DreamAnimation::Frame(0);
+				Dream::Animation::FrameDelta *delta1 = new Dream::Animation::FrameDelta(0,DA_OP_LINEAR);
+				Dream::Animation::FrameDelta *delta2 = new Dream::Animation::FrameDelta(0,DA_OP_LINEAR);
 
-		DreamAnimation::FrameDelta *delta1 = new DreamAnimation::FrameDelta(0,DA_OP_LINEAR);
-		DreamAnimation::FrameDelta *delta2 = new DreamAnimation::FrameDelta(0,DA_OP_LINEAR);
+				frame->addFrameDelta(delta1);
+				frame->addFrameDelta(delta2);
 
-		frame->addFrameDelta(delta1);
-		frame->addFrameDelta(delta2);
+				assertNotNull("Frame Delta Computed for Frame",delta1->computeFrameDelta(delta1,delta2,10,5));
+				return;
+			}
 
-		assertNotNull("Frame Delta Computed for Frame",delta1->computeFrameDelta(delta1,delta2,10,5));
-		return;
-	}
-} // End of DreamAnimationTest
+		} // End of Test
+	} // End of Animation
+} // End of Dream

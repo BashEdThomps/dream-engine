@@ -18,14 +18,16 @@
 #ifndef LUARUNTIME_H
 #define LUARUNTIME_H
 
-namespace DreamExternal {
-	class LuaRuntime {
-	public:
-		LuaRuntime(void);
-		~LuaRuntime(void);
-	//protected:
-	//private:
-	}; // End of LuaRuntime
-} // End of DreamExternal
+namespace Dream {
+	namespace Lua {
+		class LuaRuntime {
+		public:
+			LuaRuntime(void);
+			~LuaRuntime(void);
+		//protected:
+		//private:
+		}; // End of LuaRuntime
+	} // End of Lua
+} // End of Dream
 
 #endif // End of LUARUNTIME_H

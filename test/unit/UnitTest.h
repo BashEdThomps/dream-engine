@@ -18,17 +18,20 @@
 #ifndef UNITTEST_H
 #define UNITTEST_H
 
-#include "../src/Unit.h"
+#include "../../src/unit/Unit.h"
 
-namespace DreamUnitTest {
-	class UnitTest : public DreamUnit::Unit {
-	public:
-		UnitTest(void);
-		~UnitTest(void);
-		void run(void);
-	//protected:
-	//private:
-	}; // End of UnitTest
-} // End of DreamUnitTest
-
+namespace Dream {
+	namespace Unit {
+		namespace Test {
+			class UnitTest : public DreamUnit::Unit {
+			public:
+				UnitTest(void);
+				~UnitTest(void);
+				void run(void);
+			//protected:
+			//private:
+			}; // End of UnitTest
+		} // End of Test
+	} // End of Unit
+} // End of Dream
 #endif // End of UNITTEST_H

@@ -1,5 +1,5 @@
 /*
-* TestKeyFrame
+* Dream::Animation::Test::TestKeyFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,18 @@
 
 #include "TestKeyFrame.h"
 
-namespace DreamAnimationTest {
+namespace Dream {
+	namespace Animation {
+		namespace Test {
+			TestKeyFrame::TestKeyFrame() {
+			}
 
-	TestKeyFrame::TestKeyFrame() {
-	}
+			TestKeyFrame::~TestKeyFrame() {
+			}
 
-	TestKeyFrame::~TestKeyFrame() {
-	}
+			void TestKeyFrame::run(void) {
 
-	void TestKeyFrame::run(void) {
-
-	}
-} // End of DreamAnimationTest
+			}
+		} // End of Test
+	} // End of Animation
+} // End of Dream

@@ -17,12 +17,13 @@
 
 #include "LuaRuntime.h"
 
-namespace DreamExternal {
+namespace Dream {
+	namespace Lua {
+		LuaRuntime::LuaRuntime(void) {
+		}
 
-	LuaRuntime::LuaRuntime(void) {
-	}
+		LuaRuntime::~LuaRuntime(void) {
+		}
 
-	LuaRuntime::~LuaRuntime(void) {
-	}
-
-} // End of DreamExternal
+	} // End of Lua
+} // End of Dream

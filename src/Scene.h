@@ -18,13 +18,14 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "../../dream-scenegraph/src/Scenegraph.h"
+#include "scenegraph/Scenegraph.h"
+
 #define D_MAX_SCENE_OBJECTS 512
 
 namespace Dream {
 	class Scene {
 	private:
-		Scenegraph mScenegraph;
+		Dream::Scenegraph mScenegraph;
 	public:
 		Scene();
 		~Scene();

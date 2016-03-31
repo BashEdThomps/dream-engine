@@ -4,6 +4,9 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <iostream>
+#include "../Resource.h"
+
 #define NODE_X 0
 #define NODE_Y 1
 #define NODE_Z 2
@@ -33,7 +36,7 @@ namespace DreamScenegraph {
 		void setPolarTranslation(float, float);
 		int  hasVertexBuffer();
 		int countChildren();
-		void addResource(Resource*);
+		void addResource(Dream::Resource*);
 	};
 }
 #endif // NODE_H

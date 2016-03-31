@@ -1,5 +1,5 @@
 /*
-* Dream::Animation::Test::TestAnimation
+* Resource
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "TestAnimation.h"
+#ifndef RESOURCE_H
+#define RESOURCE_H
 
 namespace Dream {
-	namespace Animation {
-		namespace Test {
-			TestAnimation::TestAnimation() {
-			}
-
-			TestAnimation::~TestAnimation() {
-			}
-
-			void TestAnimation::run() {
-
-			}
-
-		} // End of Test
-	} // End of Animation
+	class Resource {
+	public:
+		Resource(void);
+		~Resource(void);
+	//protected:
+	//private:
+	}; // End of Resource
 } // End of Dream
+
+#endif // End of RESOURCE_H

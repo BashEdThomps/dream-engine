@@ -20,7 +20,7 @@
 
 #include "Scene.h"
 
-#define D_MAX_SCENES = 64;
+#define D_MAX_SCENES 64
 
 namespace Dream {
 	class Project {

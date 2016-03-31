@@ -1,5 +1,5 @@
 /*
-* TestKeyFrame
+* Dream::Animation::Test::TestKeyFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,21 @@
 #ifndef TESTKEYFRAME_H
 #define TESTKEYFRAME_H
 
-#include "../../dream-unit/src/Unit.h"
+#include "../../src/unit/Unit.h"
 
-namespace DreamAnimationTest {
-	class TestKeyFrame : public DreamUnit::Unit {
-	public:
-		TestKeyFrame(void);
-		~TestKeyFrame(void);
-		void run(void);
-	//protected:
-	//private:
-	}; // End of TestKeyFrame
-} // End of DreamAnimationTest
+namespace Dream {
+	namespace Animation {
+		namespace Test {
+			class TestKeyFrame : public DreamUnit::Unit {
+			public:
+				TestKeyFrame(void);
+				~TestKeyFrame(void);
+				void run(void);
+			//protected:
+			//private:
+			}; // End of TestKeyFrame
+		} // End of Test
+	} // End of Animation
+} // End of Dream
 
 #endif // End of TESTKEYFRAME_H

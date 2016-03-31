@@ -17,20 +17,24 @@
 
 #include "UnitTest.h"
 
-namespace DreamUnitTest {
-	UnitTest::UnitTest() {
+namespace Dream {
+	namespace Unit {
+		namespace Test {
+			UnitTest::UnitTest() {
 
-	}
+			}
 
-	UnitTest::~UnitTest() {
+			UnitTest::~UnitTest() {
 
-	}
+			}
 
-	void UnitTest::run() {
-		moduleHeading ("Unit Library");
-	    testHeading   ("Unit Tests");
-	    assertPass    ("This shuld pass");
-	    assertZero    ("Equal to Zero",0);
-	    assertNotZero ("Not equal to Zero",3);
-	}
-} // End of DreamUnitTest
+			void UnitTest::run() {
+				moduleHeading ("Unit Library");
+			    testHeading   ("Unit Tests");
+			    assertPass    ("This shuld pass");
+			    assertZero    ("Equal to Zero",0);
+			    assertNotZero ("Not equal to Zero",3);
+			}
+		} // End of Test
+	} // End of Unit
+} // End of Dream

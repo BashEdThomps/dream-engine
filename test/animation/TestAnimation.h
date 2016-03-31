@@ -1,5 +1,5 @@
 /*
-* TestAnimation
+* Dream::Animation::Test::TestAnimation
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,21 @@
 #ifndef TESTANIMATION_H
 #define TESTANIMATION_H
 
-#include "../../dream-unit/src/Unit.h"
+#include "../../src/unit/Unit.h"
 
-namespace DreamAnimationTest {
-	class TestAnimation : public DreamUnit::Unit{
-	public:
-		TestAnimation();
-		~TestAnimation();
-		void run();
-	//protected:
-	//private:
-	}; // End of TestAnimation
-} // End of DreamAnimationTest
+namespace Dream  {
+	namespace Animation {
+		namespace Test {
+			class TestAnimation : public DreamUnit::Unit{
+			public:
+				TestAnimation();
+				~TestAnimation();
+				void run();
+			//protected:
+			//private:
+			}; // End of TestAnimation
+		} // End of Test
+	} // End of Animation
+} // End of Dream
 
 #endif // End of TESTANIMATION_H

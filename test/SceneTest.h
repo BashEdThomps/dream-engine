@@ -18,21 +18,24 @@
 #ifndef DREAMSCENETEST_H
 #define DREAMSCENETEST_H
 
-#include "../../dream-unit/src/Unit.h"
-namespace DreamTest {
-	class SceneTest : public DreamUnit::Unit {
-	public:
-		SceneTest(void);
-		~SceneTest(void);
-		void run(void);
-		void testSceneCanStoreName(void);
-		void testSceneCanStoreMultipleSceneObjects(void);
-		void testSceneCanStoreMultipleAnimations(void);
-		void testSceneCanStoreMultipleSoundEffects(void);
-		void testSceneCanStoreMultiplAudioTracks(void);
-	//protected:
-	//private:
-	}; // End of DreamSceneTest
-} // End of DreamTest
+#include "../../src/unit/Unit.h"
+
+namespace Dream {
+	namespace Test {
+		class SceneTest : public DreamUnit::Unit {
+		public:
+			SceneTest(void);
+			~SceneTest(void);
+			void run(void);
+			void testSceneCanStoreName(void);
+			void testSceneCanStoreMultipleSceneObjects(void);
+			void testSceneCanStoreMultipleAnimations(void);
+			void testSceneCanStoreMultipleSoundEffects(void);
+			void testSceneCanStoreMultiplAudioTracks(void);
+		//protected:
+		//private:
+		}; // End of SceneTest
+	} // End of Test
+} // End of Dream
 
 #endif // End of DREAMSCENETEST_H
