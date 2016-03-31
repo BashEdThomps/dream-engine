@@ -8,7 +8,7 @@ App.config(function($stateProvider, $urlRouterProvider) {
     //$urlRouterProvider.otherwise("/home");
     $stateProvider.state('home', {
         url: "/home",
-        templateUrl: "view/partials/home.html",
+        templateUrl: "view/partials/home/home.html",
         controller: "home"
     });
     // Project -------------------------------------------------------------------

@@ -1,0 +1,146 @@
+<div class="container-fluid">
+	<h1>
+		<strong>Dream Tool</strong>
+	</h1>
+	<br />
+	<div class="row">
+		<div class="col-md-4 fill">
+			<div class="well fill">
+				<h2>
+					Getting Started
+				</h2>
+				<p>
+					This tool is used to create, modify and manage Dream projects.
+				</p>
+				<h2>
+					Project Structure
+				</h2>
+				<p>
+					Projects are composed of the objects described below.
+					<br>
+					Click any object to see more information about it's role within a project.
+				</p>
+				<br>
+				<ul>
+					<li><!--Project-->
+						<a  ng-click="onHelpProjectClicked()">Project</a>
+						<ul>
+							<li><!--Configuration-->
+								<a  ng-click="onHelpProjectConfigurationClicked()">Configuration</a>
+							</li><!--Configuration-->
+							<li><!--Scene-->
+								<a  ng-click="onHelpProjectSceneClicked()">Scene</a>
+								<ul>
+									<li>
+										<a ng-click="onHelpProjectSceneScenegraphClicked()">Scene Graph</a>
+									</li>
+									<li>
+										<a ng-click="onHelpProjectSceneBulletWorldClicked()">Bullet World</a>
+									</li>
+									<li><!--Scene Object-->
+										<a  ng-click="onHelpProjectSceneSceneObjectClicked()" >Scene Object</a>
+										<ul>
+											<li>
+												<a  ng-click="onHelpProjectSceneSceneObjectModifierClicked()" >Modifier</a>
+												<ul>
+													<li>
+														<a  ng-click="onHelpProjectSceneSceneObjectModifierEventListenerClicked()">Event Listener</a>
+													</li>
+												</ul>
+											</li>
+										</ul>
+									</li><!--Close SceneObject-->
+								</ul>
+							</li><!--Close Scene-->
+							<li><!--Resources-->
+								<a ng-click="onHelpProjectResourceClicked()">Resource</a>
+								<ul>
+									<li>
+										<a ng-click="onHelpProjectResourceModelClicked()">Model</a>
+									</li>
+									<li><!--Animation-->
+										<a  ng-click="onHelpProjectResourceAnimationClicked()">Animation</a>
+										<ul>
+											<li><a  ng-click="onHelpProjectResourceAnimationBezierClicked()">Bezier</a></li>
+											<li><a  ng-click="onHelpProjectResourceAnimationLinearClicked()">Linear</a></li>
+											<li><a  ng-click="onHelpProjectResourceAnimationOrbitalClicked()">Orbital</a></li>
+										</ul>
+									</li><!--Close Animation-->
+									<li><!--Audio-->
+										<a >Audio</a>
+										<ul>
+											<li><a >Sound Effect</a></li>
+											<li><a >Music</a></li>
+										</ul>
+									</li><!--Close Audio-->
+								</ul>
+							</li><!--Close Resources-->
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-md-8 fill">
+			<div class="well fill">
+				<div ng-show="showHelpProject">
+					<h2>Project</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectConfiguration">
+					<h2>Configuration</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectScene">
+					<h2>Scene</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectSceneScenegraph">
+					<h2>Scenegraph</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectSceneBulletWorld">
+					<h2>Bullet World</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectSceneSceneObject">
+					<h2>Scene Object</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectSceneSceneOjectModifier">
+					<h2>Modifier</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectSceneSceneObjectModifierEventListener">
+					<h2>Event Listener</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectResource">
+					<h2>Resource</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectResourceAnimation">
+					<h2>Animation</h2>
+					<br />
+				</div>
+				<div ng-show="showHelpProjectResourceModel">
+					<h2>Model</h2>
+					<br />
+				</div>
+					<div ng-show="showHelpProjectResourceAudio">
+					<h2>Audio</h2>
+					<br />
+				</div>
+				</div>
+					<div ng-show="showHelpProjectResourceAudioSoundEffect">
+					<h2>Sound Effect</h2>
+					<br />
+				</div>
+				</div>
+					<div ng-show="showHelpProjectResourceAudioMusic">
+					<h2>Music</h2>
+					<br />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
