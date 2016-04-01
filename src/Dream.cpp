@@ -1,4 +1,5 @@
 #include "Dream.h"
+#include "Project.h"
 
 namespace Dream {
 	Dream::Dream() {
@@ -7,11 +8,11 @@ namespace Dream {
 	Dream::~Dream() {
 	}
 
-	Scene* Dream::getScene() {
-		return mScene;
+	Project* Dream::getProject() {
+		return mProject;
 	}
 
-	void Dream::setScene(Scene* scene) {
-		mScene = scene;
+	void Dream::setProject(Project* project) {
+		mProject = project;
 	}
 }

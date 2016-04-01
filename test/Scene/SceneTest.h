@@ -1,5 +1,5 @@
 /*
-* UnitTest
+* DreamSceneTest
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,23 +15,29 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UNITTEST_H
-#define UNITTEST_H
+#ifndef DREAMSCENETEST_H
+#define DREAMSCENETEST_H
 
 #include "../../src/Unit/Unit.h"
 
 namespace Dream {
-	namespace Unit {
+	namespace Scene {
 		namespace Test {
-			class UnitTest : public Dream::Unit::Unit {
+			class SceneTest : public Dream::Unit::Unit {
 			public:
-				UnitTest(void);
-				~UnitTest(void);
+				SceneTest(void);
+				~SceneTest(void);
 				void run(void);
+				void testSceneCanStoreName(void);
+				void testSceneCanStoreMultipleSceneObjects(void);
+				void testSceneCanStoreMultipleAnimationResources(void);
+				void testSceneCanStoreMultipleSoundEffectResources(void);
+				void testSceneCanStoreMultipleMusicResources(void);
 			//protected:
 			//private:
-			}; // End of UnitTest
+			}; // End of SceneTest
 		} // End of Test
-	} // End of Unit
+	} // End of Scene
 } // End of Dream
-#endif // End of UNITTEST_H
+
+#endif // End of DREAMSCENETEST_H

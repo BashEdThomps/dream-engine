@@ -19,15 +19,17 @@
 #define LUARUNTIME_H
 
 namespace Dream {
-	namespace Lua {
-		class LuaRuntime {
-		public:
-			LuaRuntime(void);
-			~LuaRuntime(void);
-		//protected:
-		//private:
-		}; // End of LuaRuntime
-	} // End of Lua
+	namespace Resource {
+		namespace Lua {
+			class LuaRuntime {
+			public:
+				LuaRuntime(void);
+				~LuaRuntime(void);
+			//protected:
+			//private:
+			}; // End of LuaRuntime
+		} // End of Lua
+	} // End Resource
 } // End of Dream
 
 #endif // End of LUARUNTIME_H

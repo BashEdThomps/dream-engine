@@ -18,22 +18,27 @@
 #include "DreamTest.h"
 #include "../src/Dream.h"
 
-namespace DreamTest {
+namespace Dream {
+	namespace Test {
+		DreamTest::DreamTest() {
+		}
 
-	DreamTest::DreamTest() {
-	}
+		DreamTest::~DreamTest() {
+		}
 
-	DreamTest::~DreamTest() {
-	}
+		void DreamTest::run() {
+			testCanHoldProject();
+			testCanLoadProjectFromJSON();
+		}
 
-	void DreamTest::run() {
-		testCanHoldScene();
-	}
+		void DreamTest::testCanHoldProject() {
+			Dream dream;
+			dream.setProject(new Project());
+			assertNotNull("Dream can hold Project",dream.getProject());
+		}
 
-	void DreamTest::testCanHoldScene() {
-		Dream::Dream dream;
-		dream.setScene(new Dream::Scene());
-		assertNotNull("Dream can hold Scene object",dream.getScene());
-	}
-
-} // End of DreamTest
+		void DreamTest::testCanLoadProjectFromJSON() {
+			assertInconclusive("Dream can load project from JSON");
+		};
+	} // End of Test
+} // End of Dream

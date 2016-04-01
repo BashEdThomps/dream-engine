@@ -16,37 +16,38 @@
 */
 
 #include "ProjectTest.h"
+#include "../src/Project.h"
 
-namespace DreamTest {
+namespace Dream {
+	namespace Test {
+		ProjectTest::ProjectTest(void) {
+		}
 
-	ProjectTest::ProjectTest(void) {
-	}
+		ProjectTest::~ProjectTest(void) {
+		}
 
-	ProjectTest::~ProjectTest(void) {
-	}
+		void ProjectTest::run(void) {
 
-	void ProjectTest::run(void) {
+		}
 
-	}
+		void ProjectTest::testProjectCanStoreName() {
+			assertInconclusive("Project Can Store Name");
+		}
 
-	void ProjectTest::testProjectCanHoldName() {
-		assertInconclusive("Project Can Hold Name");
-	}
+		void ProjectTest::testProjectCanStoreAuthor(void) {
+			assertInconclusive("ProjectCanStoreName: Test Not Implemented");
+		}
 
-	void ProjectTest::testSceneCanStoreAuthor(void) {
-		assertInconclusive("SceneCanStoreName: Test Not Implemented");
-	}
+		void ProjectTest::testProjectCanStoreDescription(void) {
+			assertInconclusive("ProjectCanStoreName: Test Not Implemented");
+		}
 
-	void ProjectTest::testSceneCanStoreDescription(void) {
-		assertInconclusive("SceneCanStoreName: Test Not Implemented");
-	}
+		void ProjectTest::testProjectCanStoreMultipleScenes() {
+			assertInconclusive("Project Can Hold Multiple Secnes");
+		}
 
-	void ProjectTest::testProjectCanHoldMultipleScenes() {
-		assertInconclusive("Project Can Hold Multiple Secnes");
-	}
-
-	void ProjectTest::testProjectCanHoldMultipleResources() {
-		assertInconclusive("Project can hold multiple resources");
-	}
-
-} // End of DreamTest
+		void ProjectTest::testProjectCanStoreMultipleResources() {
+			assertInconclusive("Project can hold multiple resources");
+		}
+	} // End of Test
+} // End of Dream

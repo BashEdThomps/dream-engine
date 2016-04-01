@@ -15,17 +15,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "DreamTest.h"
-//#include "SceneTest.h"
-//#include "ProjectTest.h"
-
+#include "DreamTest.h"
+#include "ProjectTest.h"
 #include "Unit/UnitTest.h"
-#include "Animation/TestFrame.h"
-#include "Animation/TestFrameDelta.h"
-#include "Animation/TestKeyFrame.h"
-#include "Animation/TestAnimation.h"
+#include "Scene/SceneTest.h"
+#include "Resource/Animation/TestFrame.h"
+#include "Resource/Animation/TestFrameDelta.h"
+#include "Resource/Animation/TestKeyFrame.h"
+#include "Resource/Animation/TestAnimation.h"
 
-int main(void) {
+int main(int argc, char** argv) {
 	int result = 0;
 
 	// Unit
@@ -34,32 +33,32 @@ int main(void) {
     result += unit->getResult();
 
 	// Animation
-	Dream::Animation::Test::TestFrame testFrame;
+	Dream::Resource::Animation::Test::TestFrame testFrame;
 	testFrame.run();
 	result += testFrame.getResult();
 
-	Dream::Animation::Test::TestFrameDelta testFrameDelta;
+	Dream::Resource::Animation::Test::TestFrameDelta testFrameDelta;
 	testFrameDelta.testComputeFrameDelta();
 	result += testFrameDelta.getResult();
 
-	Dream::Animation::Test::TestKeyFrame testKeyFrame;
+	Dream::Resource::Animation::Test::TestKeyFrame testKeyFrame;
 	result += testKeyFrame.getResult();
 
-	Dream::Animation::Test::TestAnimation testAnimation;
+	Dream::Resource::Animation::Test::TestAnimation testAnimation;
 	result += testAnimation.getResult();
 
-	/* Dream
-	DreamTest::DreamTest dreamTest;
+	// Dream
+	Dream::Test::DreamTest dreamTest;
 	dreamTest.run();
 	result += dreamTest.getResult();
 
-	DreamTest::ProjectTest projectTest;
+	Dream::Test::ProjectTest projectTest;
 	projectTest.run();
 	result += projectTest.getResult();
 
-	DreamTest::SceneTest sceneTest;
+	Dream::Scene::Test::SceneTest sceneTest;
 	sceneTest.run();
 	result += sceneTest.getResult();
-    */
+
 	return result;
 }

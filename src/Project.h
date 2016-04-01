@@ -18,17 +18,19 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-#include "Scene.h"
+#include "Scene/Scene.h"
 
 #define D_MAX_SCENES 64
 
 namespace Dream {
 	class Project {
 	private:
-		Scene mScenes[D_MAX_SCENES];
+		Dream::Scene::Scene* mScenes[D_MAX_SCENES];
 	public:
 		Project(void);
 		~Project(void);
+		void addScene(Dream::Scene::Scene*);
+		int  getNextAvailableSceneIndex();
 	//protected:
 	//private:
 	}; // End of Project

@@ -18,12 +18,14 @@
 #include "LuaRuntime.h"
 
 namespace Dream {
-	namespace Lua {
-		LuaRuntime::LuaRuntime(void) {
-		}
+	namespace Resource {
+		namespace Lua {
+			LuaRuntime::LuaRuntime(void) {
+			}
 
-		LuaRuntime::~LuaRuntime(void) {
-		}
+			LuaRuntime::~LuaRuntime(void) {
+			}
 
-	} // End of Lua
+		} // End of Lua
+	} // End Resource
 } // End of Dream

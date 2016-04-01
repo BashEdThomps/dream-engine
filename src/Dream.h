@@ -1,19 +1,19 @@
 #ifndef DREAM_H
 #define DREAM_H
 
-#include "Scene.h"
+#include "Scene/Scene.h"
+#include "Project.h"
 
 namespace Dream {
 	class Dream {
 	protected:
-		Scene *mScene;
+		Project* mProject;
 	public:
 		Dream(void);
 		~Dream(void);
-		Scene* getScene(void);
-		void setScene(Scene*);
+		Project* getProject(void);
+		void setProject(Project*);
 	};
 }
-
 
 #endif // DREAM_H

@@ -18,22 +18,24 @@
 #ifndef PROJECTTEST_H
 #define PROJECTTEST_H
 
-#include "../../dream-unit/src/Unit.h"
+#include "../src/Unit/Unit.h"
 
-namespace DreamTest {
-	class ProjectTest : public DreamUnit::Unit {
-	public:
-		ProjectTest(void);
-		~ProjectTest(void);
-		void run(void);
-		void testProjectCanHoldName();
-		void testProjectCanHoldAuthor();
-		void testProjectCanHoldDescription();
-		void testProjectCanHoldMultipleScenes();
-		void testProjectCanHoldMultipleResources();
-	//protected:
-	//private:
-	}; // End of ProjectTest
-} // End of DreamTest
+namespace Dream {
+	namespace Test {
+		class ProjectTest : public Dream::Unit::Unit {
+		public:
+			ProjectTest(void);
+			~ProjectTest(void);
+			void run(void);
+			void testProjectCanStoreName();
+			void testProjectCanStoreAuthor();
+			void testProjectCanStoreDescription();
+			void testProjectCanStoreMultipleScenes();
+			void testProjectCanStoreMultipleResources();
+		//protected:
+		//private:
+		}; // End of ProjectTest
+	} // End of Test
+} // End of Dream
 
 #endif // End of PROJECTTEST_H

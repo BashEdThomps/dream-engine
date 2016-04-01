@@ -18,18 +18,21 @@
 #ifndef DREAMTEST_H
 #define DREAMTEST_H
 
-#include "../../dream-unit/src/Unit.h"
+#include "../src/Unit/Unit.h"
 
-namespace DreamTest {
-	class DreamTest : public DreamUnit::Unit {
-	public:
-		DreamTest();
-		~DreamTest();
-		void run();
-		void testCanHoldScene();
-	//protected:
-	//private:
-	}; // End of DreamTest
-} // End of DreamTest
+namespace Dream {
+	namespace Test {
+		class DreamTest : public Dream::Unit::Unit {
+		public:
+			DreamTest();
+			~DreamTest();
+			void run();
+			void testCanHoldProject();
+			void testCanLoadProjectFromJSON();
+		//protected:
+		//private:
+		}; // End of DreamTest
+	} // End of Test
+} // End of Dream
 
 #endif // End of DREAMTEST_H

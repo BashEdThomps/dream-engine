@@ -25,5 +25,18 @@ namespace Dream {
 	Project::~Project(void) {
 	}
 
+	void Project::addScene(Dream::Scene::Scene *scene) {
 
+	}
+
+	int  Project::getNextAvailableSceneIndex() {
+		int retval = -1;
+		for (int i=0;i<D_MAX_SCENES;i++) {
+			if (mScenes[i]==NULL) {
+				retval = i;
+				break;
+			}
+		}
+		return retval;
+	}
 } // End of Dream
