@@ -1,5 +1,5 @@
 /*
-* Dream::Animation::Test::TestFrameDelta
+* UnitTest
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,25 +15,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTFRAMEDELTA_H
-#define TESTFRAMEDELTA_H
+#ifndef UNITTEST_H
+#define UNITTEST_H
 
-#include "../../src/unit/Unit.h"
+#include "../../src/Unit/Unit.h"
 
 namespace Dream {
-	namespace Animation {
+	namespace Unit {
 		namespace Test {
-			class TestFrameDelta : public DreamUnit::Unit {
+			class UnitTest : public DreamUnit::Unit {
 			public:
-				TestFrameDelta(void);
-				~TestFrameDelta(void);
+				UnitTest(void);
+				~UnitTest(void);
 				void run(void);
-				void testComputeFrameDelta();
 			//protected:
 			//private:
-			}; // End of TestFrameDelta
+			}; // End of UnitTest
 		} // End of Test
-	} // End of Animation
+	} // End of Unit
 } // End of Dream
-
-#endif // End of TESTFRAMEDELTA_H
+#endif // End of UNITTEST_H

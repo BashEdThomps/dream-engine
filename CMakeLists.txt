@@ -7,4 +7,4 @@ add_subdirectory (test)
 
 # Unit Testing
 enable_testing()
-add_test(NAME DreamTest COMMAND DreamTest)
+add_test(NAME DreamTest COMMAND test/DreamTest)

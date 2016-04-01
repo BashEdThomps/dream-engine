@@ -33,6 +33,14 @@ namespace DreamTest {
 		assertInconclusive("Project Can Hold Name");
 	}
 
+	void ProjectTest::testSceneCanStoreAuthor(void) {
+		assertInconclusive("SceneCanStoreName: Test Not Implemented");
+	}
+
+	void ProjectTest::testSceneCanStoreDescription(void) {
+		assertInconclusive("SceneCanStoreName: Test Not Implemented");
+	}
+
 	void ProjectTest::testProjectCanHoldMultipleScenes() {
 		assertInconclusive("Project Can Hold Multiple Secnes");
 	}

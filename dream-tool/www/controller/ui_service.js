@@ -46,7 +46,7 @@ App.service('UIService',
     {
         return {
             label :name,
-            onSelect: hostController.onTreeProjectResourceInstanceSelected
+            onSelect: hostController.onTreeProjectSceneInstanceSelected
         };
     };
 

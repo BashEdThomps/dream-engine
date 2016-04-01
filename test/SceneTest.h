@@ -18,7 +18,7 @@
 #ifndef DREAMSCENETEST_H
 #define DREAMSCENETEST_H
 
-#include "../../src/unit/Unit.h"
+#include "../../src/Unit/Unit.h"
 
 namespace Dream {
 	namespace Test {

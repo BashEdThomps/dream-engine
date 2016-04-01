@@ -18,7 +18,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "scenegraph/Scenegraph.h"
+#include "ScenegraphScenegraph.h"
 
 #define D_MAX_SCENE_OBJECTS 512
 
@@ -26,6 +26,11 @@ namespace Dream {
 	class Scene {
 	private:
 		Dream::Scenegraph mScenegraph;
+		bool mCollisionEnabled;
+		bool mPhysicsEnabled;
+		bool mAnimationEnabled;
+		bool mInputEnabled;
+		bool mAudioEnabled;
 	public:
 		Scene();
 		~Scene();

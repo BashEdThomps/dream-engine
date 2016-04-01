@@ -16,8 +16,7 @@ namespace DreamScenegraph {
 	}
 
 	void Node::init() {
-		mParentIndex = -1;
-		mVertexBufferIndex = -1;
+		mParent = NULL;
 
 		mTranslation[NODE_X] = 0.0f;
 		mTranslation[NODE_Y] = 0.0f;
@@ -48,14 +47,13 @@ namespace DreamScenegraph {
 		return mName;
 	}
 
-
 	void Node::print() {
 		std::cout << mPath << std::endl;
 		return;
 	}
 
-	void Node::setParentIndex(int parent) {
-		mParentIndex = parent;
+	void Node::setParent(Node* parent) {
+		mParent = parent;
 		return;
 	}
 
@@ -73,10 +71,6 @@ namespace DreamScenegraph {
 		return;
 	}
 
-	int Node::hasVertexBuffer() {
-		return mVertexBufferIndex > -1;
-	}
-
 	void Node::setPolarTranslation(float radius, float theta) {
 		return;
 	}
@@ -85,5 +79,13 @@ namespace DreamScenegraph {
 		int retval = 0;
 		std::cerr << "Count children is not implemented" << std::endl;
 		return retval;
+	}
+
+
+	std::string Node::getPath() {
+		return mPath;
+	}
+	void Node::setPath(std::string path) {
+		mPath = path;
 	}
 }

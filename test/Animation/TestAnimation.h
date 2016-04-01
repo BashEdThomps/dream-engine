@@ -1,5 +1,5 @@
 /*
-* UnitTest
+* Dream::Animation::Test::TestAnimation
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,23 +15,24 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UNITTEST_H
-#define UNITTEST_H
+#ifndef TESTANIMATION_H
+#define TESTANIMATION_H
 
-#include "../../src/unit/Unit.h"
+#include "../../src/Unit/Unit.h"
 
-namespace Dream {
-	namespace Unit {
+namespace Dream  {
+	namespace Animation {
 		namespace Test {
-			class UnitTest : public DreamUnit::Unit {
+			class TestAnimation : public DreamUnit::Unit{
 			public:
-				UnitTest(void);
-				~UnitTest(void);
-				void run(void);
+				TestAnimation();
+				~TestAnimation();
+				void run();
 			//protected:
 			//private:
-			}; // End of UnitTest
+			}; // End of TestAnimation
 		} // End of Test
-	} // End of Unit
+	} // End of Animation
 } // End of Dream
-#endif // End of UNITTEST_H
+
+#endif // End of TESTANIMATION_H

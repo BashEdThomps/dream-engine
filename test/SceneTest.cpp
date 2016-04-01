@@ -38,22 +38,22 @@ namespace DreamTest {
 		assertInconclusive("SceneCanStoreName: Test Not Implemented");
 	}
 
+
 	void SceneTest::testSceneCanStoreMultipleSceneObjects(void) {
 		assertInconclusive("SceneCanStoreMultipleSceneObjects: Test Not Implemented");
 
 	}
 
-	void SceneTest::testSceneCanStoreMultipleAnimations(void) {
+	void SceneTest::testSceneCanStoreMultipleAnimationResources(void) {
 		assertInconclusive("SceneCanStoreMultipleAnimation: Test Not Implemented");
 
 	}
-
-	void SceneTest::testSceneCanStoreMultipleSoundEffects(void) {
+	void SceneTest::testSceneCanStoreMultipleSoundEffectResources(void) {
 		assertInconclusive("SceneCanStoreMultipleSoundEffects: Test Not Implemented");
 
 	}
 
-	void SceneTest::testSceneCanStoreMultiplAudioTracks(void) {
+	void SceneTest::testSceneCanStoreMultiplMusicResources(void) {
 		assertInconclusive("SceneCanStoreMultipleAudioTracks: Test Not Implemented");
 	}
 

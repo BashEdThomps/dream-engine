@@ -27,6 +27,8 @@ namespace DreamTest {
 		~ProjectTest(void);
 		void run(void);
 		void testProjectCanHoldName();
+		void testProjectCanHoldAuthor();
+		void testProjectCanHoldDescription();
 		void testProjectCanHoldMultipleScenes();
 		void testProjectCanHoldMultipleResources();
 	//protected:

@@ -16,7 +16,7 @@
 */
 
 #include "TestFrameDelta.h"
-#include "../../src/animation/Frame.h"
+#include "../../src/Animation/Frame.h"
 
 namespace Dream {
 	namespace Animation {

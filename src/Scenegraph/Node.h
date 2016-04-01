@@ -5,7 +5,7 @@
 #define NODE_H
 
 #include <iostream>
-#include "../Resource.h"
+//#include "../Resource.h"
 
 #define NODE_X 0
 #define NODE_Y 1
@@ -27,16 +27,20 @@ namespace DreamScenegraph {
 		void initTranslationRotation();
 		int  hasValidName();
 		int  hasValidPath();
+		std::string getPath();
+		void setPath(std::string);
 		bool hasName(std::string);
 		std::string getName();
 		void print();
-		void setParentIndex(int);
+		void setParent(Node*);
 		void setTranslation(float, float, float);
 		void setRotation(float, float, float);
 		void setPolarTranslation(float, float);
-		int  hasVertexBuffer();
+		Node* getParent();
+		bool  isChildOf(Node*);
+		bool  isParentOf(Node*);
 		int countChildren();
-		void addResource(Dream::Resource*);
+		//void addResource(Dream::Resource*);
 	};
 }
 #endif // NODE_H

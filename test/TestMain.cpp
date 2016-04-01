@@ -1,5 +1,5 @@
 /*
-* Main 
+* Main
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,14 +15,15 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DreamTest.h"
-#include "SceneTest.h"
-#include "ProjectTest.h"
+//#include "DreamTest.h"
+//#include "SceneTest.h"
+//#include "ProjectTest.h"
 
-#include "TestFrame.h"
-#include "TestFrameDelta.h"
-#include "TestKeyFrame.h"
-#include "TestAnimation.h"
+#include "Unit/UnitTest.h"
+#include "Animation/TestFrame.h"
+#include "Animation/TestFrameDelta.h"
+#include "Animation/TestKeyFrame.h"
+#include "Animation/TestAnimation.h"
 
 int main(void) {
 	int result = 0;
@@ -33,23 +34,21 @@ int main(void) {
     result += unit->getResult();
 
 	// Animation
-	TestFrame testFrame();
+	Dream::Animation::Test::TestFrame testFrame;
 	testFrame.run();
-	result += testFrame->getResult();
+	result += testFrame.getResult();
 
-	TestFrameDelta testFrameDelta;
+	Dream::Animation::Test::TestFrameDelta testFrameDelta;
 	testFrameDelta.testComputeFrameDelta();
 	result += testFrameDelta.getResult();
 
-	TestKeyFrame testKeyFrame();
+	Dream::Animation::Test::TestKeyFrame testKeyFrame;
 	result += testKeyFrame.getResult();
-	delete testKeyFrame;
 
-	TestAnimation testAnimation;
+	Dream::Animation::Test::TestAnimation testAnimation;
 	result += testAnimation.getResult();
-	delete testAnimation;
 
-	// Dream
+	/* Dream
 	DreamTest::DreamTest dreamTest;
 	dreamTest.run();
 	result += dreamTest.getResult();
@@ -61,6 +60,6 @@ int main(void) {
 	DreamTest::SceneTest sceneTest;
 	sceneTest.run();
 	result += sceneTest.getResult();
-
+    */
 	return result;
 }
