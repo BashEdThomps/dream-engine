@@ -3,9 +3,11 @@
 # Unit
 file(GLOB TEST_UNIT_SRC "Unit/*.h" "Unit/*.cpp")
 
+# JSON
+file(GLOB TEST_JSON_SRC "JSON/*.h" "JSON/*.cpp")
+
 # Scene
 file(GLOB TEST_SCENE_SRC "Scene/*.h" "Scene/*.cpp")
-file(GLOB TEST_SCENE_SCENEGRAPH_SRC "Scene/Scenegraph*.h" "Scene/Scenegraph*.cpp")
 
 # Resource
 file(GLOB TEST_RESOURCE_SRC "Resource/*.h" "Resource/*.cpp")
@@ -17,5 +19,5 @@ file(GLOB TEST_RESOURCE_ANIMATION_SRC "Resource/Animation/*.h" "Resource/Animati
 file(GLOB TEST_DREAM_SRC "*.h" "*.cpp")
 
 # Targets
-add_executable (DreamTest ${TEST_UNIT_SRC} ${TEST_UTIL_SRC} ${TEST_RESOURCE_SRC} ${TEST_RESOURCE_ANIMATION_SRC} ${TEST_SCENE_SRC} ${TEST_SCENE_SCENEGRAPH_SRC} ${TEST_DREAM_SRC})
+add_executable (DreamTest ${TEST_UNIT_SRC} ${TEST_JSON_SRC} ${TEST_UTIL_SRC} ${TEST_RESOURCE_SRC} ${TEST_RESOURCE_ANIMATION_SRC} ${TEST_SCENE_SRC} ${TEST_DREAM_SRC})
 target_link_libraries(DreamTest Dream)

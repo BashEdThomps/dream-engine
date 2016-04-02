@@ -18,9 +18,15 @@
 #include "Unit/UnitTest.h"
 
 #include "DreamTest.h"
+
 #include "ProjectTest.h"
 
+#include "JSON/FileReaderTest.h"
+
 #include "Scene/SceneTest.h"
+#include "Scene/TestSceneObject.h"
+#include "Scene/TestScenegraph.h"
+#include "Scene/TestCamera.h"
 
 #include "Resource/TestResource.h"
 #include "Resource/Animation/TestFrame.h"
@@ -30,18 +36,30 @@
 
 int testUnit() {
 	int result = 0;
+
 	Dream::Unit::Test::UnitTest unit;
     unit.run();
     result += unit.getResult();
-	return result;
 
+	return result;
 }
 
+int testJSON() {
+	int res = 0;
+
+	Dream::JSON::Test::FileReaderTest jsonFileReaderTest;
+	jsonFileReaderTest.run();
+	res += jsonFileReaderTest.getResult();
+
+	return res;
+}
 int testResource() {
 	int result = 0;
+
 	Dream::Resource::Test::TestResource testResource;
 	testResource.run();
 	result += testResource.getResult();
+
 	return result;
 }
 
@@ -53,13 +71,15 @@ int testResourceAnimation() {
 	result += testFrame.getResult();
 
 	Dream::Resource::Animation::Test::TestFrameDelta testFrameDelta;
-	testFrameDelta.testComputeFrameDelta();
+	testFrameDelta.run();
 	result += testFrameDelta.getResult();
 
 	Dream::Resource::Animation::Test::TestKeyFrame testKeyFrame;
+	testKeyFrame.run();
 	result += testKeyFrame.getResult();
 
 	Dream::Resource::Animation::Test::TestAnimation testAnimation;
+	testAnimation.run();
 	result += testAnimation.getResult();
 
 	return result;
@@ -68,10 +88,17 @@ int testResourceAnimation() {
 int testScene() {
 	int result = 0;
 
-	Dream::Scene::Test::SceneTest sceneTest;
-	sceneTest.run();
-	result += sceneTest.getResult();
+	Dream::Scene::Test::TestCamera testCamera;
+	testCamera.run();
+	result += testCamera.getResult();
 
+	Dream::Scene::Test::TestSceneObject testSceneObject;
+	testSceneObject.run();
+	result += testSceneObject.getResult();
+
+	Dream::Scene::Test::TestScenegraph testScenegraph;
+	testScenegraph.run();
+	result += testScenegraph.getResult();
 	return result;
 }
 
@@ -92,6 +119,7 @@ int testDream() {
 int main(int argc, char** argv) {
 	int result = 0;
 	result += testUnit();
+	result += testJSON();
 	result += testResourceAnimation();
 	result += testResource();
 	result += testScene();

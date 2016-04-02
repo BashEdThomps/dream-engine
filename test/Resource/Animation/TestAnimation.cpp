@@ -29,6 +29,7 @@ namespace Dream {
 
 				void TestAnimation::run() {
 					header();
+					assertInconclusive("No tests to run");
 				}
 
 			}

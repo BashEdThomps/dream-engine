@@ -1,5 +1,5 @@
 /*
-* Scene
+* JSONFileReaderTest
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,26 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Scene.h"
+#include "../../src/Unit/Unit.h"
+#include "FileReaderTest.h"
 
 namespace Dream {
-	namespace  Scene {
-		Scene::Scene() {
-			mCamera = new Camera();
-			mScenegraph = new Scenegraph();
-			mCollisionEnabled = false;;
-			mPhysicsEnabled   = false;
-			mAnimationEnabled = false;
-			mInputEnabled     = false;
-			mAudioEnabled     = false;
-		}
+	namespace JSON {
+		namespace Test {
+			FileReaderTest::FileReaderTest(void) : Dream::Unit::Unit("Dream::JSON::FileReader") {
+			}
 
-		Scene::~Scene() {
-		}
+			FileReaderTest::~FileReaderTest(void) {
+			}
 
-		std::string Scene::getName() {
-			return mName;
-		}
+			void FileReaderTest::run() {
+				header();
+				testOpenFile();
+			}
 
-		void Scene::setName(std::string name) {
-			mName = name;
-		}
-
-		Scenegraph* Scene::getScenegraph() {
-			return mScenegraph;
-		}
-
-	}// End of Scene
+			void FileReaderTest::testOpenFile() {
+				assertInconclusive("Open file");
+			}
+		} // End of Test
+	} // End of JSON
 } // End of Dream

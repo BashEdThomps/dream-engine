@@ -1,5 +1,5 @@
 /*
-* Scene
+* JSONFileReader
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,21 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Scene.h"
+#ifndef JSONFILEREADER_H
+#define JSONFILEREADER_H
+
+#include <iostream>
 
 namespace Dream {
-	namespace  Scene {
-		Scene::Scene() {
-			mCamera = new Camera();
-			mScenegraph = new Scenegraph();
-			mCollisionEnabled = false;;
-			mPhysicsEnabled   = false;
-			mAnimationEnabled = false;
-			mInputEnabled     = false;
-			mAudioEnabled     = false;
-		}
-
-		Scene::~Scene() {
-		}
-
-		std::string Scene::getName() {
-			return mName;
-		}
-
-		void Scene::setName(std::string name) {
-			mName = name;
-		}
-
-		Scenegraph* Scene::getScenegraph() {
-			return mScenegraph;
-		}
-
-	}// End of Scene
+	class JSONFileReader {
+	private:
+		std::string mPath;
+	public:
+		JSONFileReader(std::string);
+		~JSONFileReader(void);
+	//protected:
+	//private:
+	}; // End of JSONFileReader
 } // End of Dream
+
+#endif // End of JSONFILEREADER_H

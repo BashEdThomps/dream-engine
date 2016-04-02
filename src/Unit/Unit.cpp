@@ -81,7 +81,7 @@ namespace Dream {
 		        formattedText = red(UNIT_FAIL);
 				retval = 1;
 		    }
-		    std::cout << name << ": Assert not zero: " << formattedText << std::endl;
+		    std::cout << name << ": " << formattedText << std::endl;
 			mResult += retval;
 			return;
 		}
@@ -155,7 +155,7 @@ namespace Dream {
 		        formattedText = red(UNIT_FAIL);
 				retval = 1;
 		    }
-		    std::cout << name << ": Assert '"<< val1 << "' and '"<< val2 << "' are not equal: " << formattedText << std::endl;
+		    std::cout << name << ": '"<< val1 << "' and '"<< val2 << "' are not equal: " << formattedText << std::endl;
 			mResult += retval;
 			return;
 		}
@@ -170,7 +170,7 @@ namespace Dream {
 		        formattedText = red(UNIT_FAIL);
 				retval = 1;
 		    }
-		    std::cout << name << ": Assert not null: " << formattedText << std::endl;
+		    std::cout << name << ": " << formattedText << std::endl;
 			mResult += retval;
 			return;
 		}
@@ -185,7 +185,7 @@ namespace Dream {
 		        formattedText = red(UNIT_FAIL);
 				retval = 1;
 		    }
-		    std::cout << name << ": Assert null: " << formattedText << std::endl;
+		    std::cout << name << ": " << formattedText << std::endl;
 			mResult += retval;
 			return;
 		}
