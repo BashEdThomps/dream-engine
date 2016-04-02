@@ -18,14 +18,16 @@
 #ifndef UNITTEST_H
 #define UNITTEST_H
 
+#include <iostream>
 #include "../../src/Unit/Unit.h"
 
 namespace Dream {
 	namespace Unit {
 		namespace Test {
 			class UnitTest : public Dream::Unit::Unit {
+			private:
 			public:
-				UnitTest(void);
+				UnitTest();
 				~UnitTest(void);
 				void run(void);
 			//protected:

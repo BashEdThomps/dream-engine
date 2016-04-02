@@ -26,6 +26,8 @@ namespace Dream {
 			namespace Test {
 				class TestFrame : public Dream::Unit::Unit {
 				public:
+					TestFrame();
+					~TestFrame();
 					//! Run Method
 					void run(void);
 					//! Test creating a daFrame.

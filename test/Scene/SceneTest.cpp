@@ -20,13 +20,14 @@
 namespace Dream {
 	namespace Scene {
 		namespace Test {
-			SceneTest::SceneTest() {
+			SceneTest::SceneTest() : Dream::Unit::Unit("Dream::Scene::Scene"){
 			}
 
 			SceneTest::~SceneTest() {
 			}
 
 			void SceneTest::run(void) {
+				header();
 				testSceneCanStoreName();
 				testSceneCanStoreMultipleSceneObjects();
 				testSceneCanStoreMultipleAnimationResources();

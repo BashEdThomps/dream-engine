@@ -21,14 +21,15 @@ namespace Dream {
 	namespace Resource {
 		namespace Animation {
 			namespace Test {
-				TestKeyFrame::TestKeyFrame() {
+				TestKeyFrame::TestKeyFrame() : Dream::Unit::Unit("Dream::Resource::Animation::KeyFrame"){
 				}
 
 				TestKeyFrame::~TestKeyFrame() {
 				}
 
 				void TestKeyFrame::run(void) {
-
+					header();
+					assertInconclusive("No Tests to Run.");
 				}
 			} // End of Test
 		} // End of Animation

@@ -22,19 +22,19 @@ namespace Dream {
 	namespace Resource {
 		namespace Animation {
 			namespace Test {
-				TestFrameDelta::TestFrameDelta() {
+				TestFrameDelta::TestFrameDelta() : Dream::Unit::Unit("Dream::Resource::Animation::FrameDelta"){
 				}
 
 				TestFrameDelta::~TestFrameDelta() {
 				}
 
 				void TestFrameDelta::run(void) {
+					header();
 					testComputeFrameDelta();
 				}
 
 				void TestFrameDelta::testComputeFrameDelta() {
 					Dream::Resource::Animation::Frame *frame = new Dream::Resource::Animation::Frame(0);
-
 					Dream::Resource::Animation::FrameDelta *delta1 = new Dream::Resource::Animation::FrameDelta(0,DA_OP_LINEAR);
 					Dream::Resource::Animation::FrameDelta *delta2 = new Dream::Resource::Animation::FrameDelta(0,DA_OP_LINEAR);
 

@@ -20,13 +20,14 @@
 
 namespace Dream {
 	namespace Test {
-		DreamTest::DreamTest() {
+		DreamTest::DreamTest() : Unit("Dream::Dream") {
 		}
 
 		DreamTest::~DreamTest() {
 		}
 
 		void DreamTest::run() {
+			header();
 			testCanHoldProject();
 			testCanLoadProjectFromJSON();
 		}

@@ -20,26 +20,40 @@
 
 namespace Dream {
 	namespace Test {
-		ProjectTest::ProjectTest(void) {
+		ProjectTest::ProjectTest(void) : Dream::Unit::Unit("Dream::Project") {
 		}
 
 		ProjectTest::~ProjectTest(void) {
 		}
 
 		void ProjectTest::run(void) {
-
+			header();
+			testProjectCanStoreName();
+			testProjectCanStoreAuthor();
+			testProjectCanStoreDescription();
+			testProjectCanStoreMultipleResources();
+			testProjectCanStoreMultipleScenes();
 		}
 
 		void ProjectTest::testProjectCanStoreName() {
-			assertInconclusive("Project Can Store Name");
+			Project p;
+			std::string name = "ProjectName";
+			p.setName(name);
+			assertZero("Project name is stored", name.compare(p.getName()));
 		}
 
 		void ProjectTest::testProjectCanStoreAuthor(void) {
-			assertInconclusive("ProjectCanStoreName: Test Not Implemented");
+			Project p;
+			std::string author = "Project Author";
+			p.setAuthor(author);
+			assertZero("Project author is stored",author.compare(p.getAuthor()));
 		}
 
 		void ProjectTest::testProjectCanStoreDescription(void) {
-			assertInconclusive("ProjectCanStoreName: Test Not Implemented");
+			Project p;
+			std::string description = "Project Description";
+			p.setDescription(description);
+			assertZero("Project description is stored",description.compare(p.getDescription()));
 		}
 
 		void ProjectTest::testProjectCanStoreMultipleScenes() {

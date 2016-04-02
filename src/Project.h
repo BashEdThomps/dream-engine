@@ -19,18 +19,41 @@
 #define PROJECT_H
 
 #include "Scene/Scene.h"
+#include "Resource/Resource.h"
 
 #define D_MAX_SCENES 64
+#define D_MAX_RESOURCES 512
 
 namespace Dream {
 	class Project {
 	private:
+		std::string mName;
+		std::string mDescription;
+		std::string mAuthor;
 		Dream::Scene::Scene* mScenes[D_MAX_SCENES];
+		Dream::Resource::Resource* mResources[D_MAX_RESOURCES];
 	public:
 		Project(void);
 		~Project(void);
+
+		void setName(std::string);
+		std::string getName();
+
+		void setDescription(std::string);
+		std::string getDescription(void);
+
+		void setAuthor(std::string);
+		std::string getAuthor();
+
 		void addScene(Dream::Scene::Scene*);
 		int  getNextAvailableSceneIndex();
+		Dream::Scene::Scene* getSceneAtIndex(int);
+		void removeScene(Dream::Scene::Scene*);
+
+		void addResource(Dream::Resource::Resource*);
+		int getNextAvailableResourceIndex();
+		Dream::Resource::Resource* getResourceAtIndex(int);
+		void removeResource(Dream::Resource::Resource*);
 	//protected:
 	//private:
 	}; // End of Project

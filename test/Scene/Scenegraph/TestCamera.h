@@ -1,16 +1,22 @@
 #ifndef TEST_DSGCAMERA_H
 #define TEST_DSGCAMERA_H
 
-#include "../../dream-unit/src/Unit.h"
+#include "../../src/Unit/Unit.h"
 
-namespace DreamScenegraphTest {
-	class TestCamera : public Dream::Unit::Unit {
-	public:
-		TestCamera(void);
-		~TestCamera(void);
-		void run(void);
-		void testCamera(void);
-	};
+namespace Dream {
+	namespace Scene {
+		namespace Scenegraph {
+			namespace Test {
+				class TestCamera : public Dream::Unit::Unit {
+				public:
+					TestCamera(void);
+					~TestCamera(void);
+					void run(void);
+					void testCamera(void);
+				};
+			}
+		}
+	}
 }
 
 #endif  //TEST_DSGCAMERA_H

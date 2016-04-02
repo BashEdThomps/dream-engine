@@ -18,18 +18,23 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
+#include <iostream>
+
 namespace Dream {
 	namespace Resource {
-		namespace Scene {
-			class Resource {
-			public:
-				Resource(void);
-				~Resource(void);
-			//protected:
-			//private:
-			}; // End of Resource
-		}
-	} // End of Dream
-}
+		class Resource {
+			std::string mName;
+		public:
+			Resource(void);
+			~Resource(void);
+
+			void setName(std::string);
+			std::string getName();
+
+		//protected:
+		//private:
+		}; // End of Resource
+	}
+} // End of Dream
 
 #endif // End of RESOURCE_H

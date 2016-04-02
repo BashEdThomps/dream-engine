@@ -9,40 +9,17 @@ namespace Dream {
 		const std::string Unit::UNIT_INCONCLUSIVE = "INCONCLUSIVE";
 		const std::string Unit::UNIT_FAIL = "FAIL";
 
-		Unit::Unit() {
+		Unit::Unit(std::string name) {
+			mName = name;
 			mResult = 0;
 		}
 
 		Unit::~Unit() {
 		}
 
-		void Unit::moduleHeading(std::string name) {
+		void Unit::header() {
 			std::stringstream stream;
-			stream << "===============[ Start Testing Module: " << name << " ]===============";
-			std::string formatted = bold(stream.str());
-			std::cout << formatted << std::endl;
-			return;
-		}
-
-		void Unit::testHeading(std::string name) {
-			std::stringstream stream;
-			stream << "-----[ Testing: "<< name <<" ]-----";
-			std::string formatted = bold(stream.str());
-			std::cout << formatted << std::endl;;
-			return;
-		}
-
-		void Unit::moduleFooter(std::string name) {
-			std::stringstream stream;
-			stream << "===============[ Finished Testing Module: "<< name << " ]===============";
-			std::string formatted = bold(stream.str());
-			std::cout << formatted << std::endl;
-			return;
-		}
-
-		void Unit::testFooter(std::string name) {
-			std::stringstream stream;
-			stream << "-----[ Finished Testing: " << name << " ]-----";
+			stream << "========== [ Start Testing: " << mName << " ] ==========";
 			std::string formatted = bold(stream.str());
 			std::cout << formatted << std::endl;
 			return;
@@ -184,9 +161,9 @@ namespace Dream {
 			return;
 		}
 
-		void Unit::printComment(std::string comment) {
+		void Unit::comment(std::string comment) {
 			std::stringstream buf;
-			buf << "-[ " << comment;
+			buf << "---> " << comment;
 			std::string formatted = bold(buf.str());
 			std::cout << formatted << std::endl;
 			return;

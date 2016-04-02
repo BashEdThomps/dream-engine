@@ -25,11 +25,35 @@ namespace Dream {
 	Project::~Project(void) {
 	}
 
+	void Project::setName(std::string name) {
+		mName = name;
+	}
+
+	std::string Project::getName() {
+		return mName;
+	}
+
+	void Project::setDescription(std::string description) {
+		mDescription = description;
+	}
+
+	std::string Project::getDescription(void) {
+		return mDescription;
+	}
+
+	void Project::setAuthor(std::string author) {
+		mAuthor = author;
+	}
+
+	std::string Project::getAuthor() {
+		return mAuthor;
+	}
+
 	void Project::addScene(Dream::Scene::Scene *scene) {
 
 	}
 
-	int  Project::getNextAvailableSceneIndex() {
+	int Project::getNextAvailableSceneIndex() {
 		int retval = -1;
 		for (int i=0;i<D_MAX_SCENES;i++) {
 			if (mScenes[i]==NULL) {
@@ -39,4 +63,6 @@ namespace Dream {
 		}
 		return retval;
 	}
+
+
 } // End of Dream

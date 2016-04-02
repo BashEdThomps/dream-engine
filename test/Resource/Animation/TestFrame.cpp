@@ -24,8 +24,17 @@ namespace Dream {
 	namespace Resource {
 		namespace Animation {
 			namespace Test {
+				TestFrame::TestFrame() :
+				Dream::Unit::Unit("Dream::Resource::Animation:Frame") {
+
+				}
+
+				TestFrame::~TestFrame() {
+
+				}
+
 				void TestFrame::run() {
-					testHeading("Dream::Resource::Animation::Frame");
+					header();
 					testFrameCreate();
 					testFrameAddFrameDelta();
 					testFrameGetNextAvailableFrameDeltaIndex();
@@ -34,7 +43,7 @@ namespace Dream {
 				}
 
 				void TestFrame::testFrameCreate(void) {
-					printComment("Create Frame");
+					comment("Create Frame");
 					Dream::Resource::Animation::Frame *frame = new Dream::Resource::Animation::Frame(0);
 					assertNotNull("Frame Constructor", frame);
 					return;

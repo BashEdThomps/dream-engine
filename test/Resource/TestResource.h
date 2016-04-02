@@ -1,5 +1,5 @@
 /*
-* Dream::Animation::Test::TestAnimation
+* TestResource
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,23 +15,25 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "TestAnimation.h"
+#ifndef TESTRESOURCE_H
+#define TESTRESOURCE_H
+
+#include "../../src/Unit/Unit.h"
 
 namespace Dream {
 	namespace Resource {
-		namespace Animation {
-			namespace Test {
-				TestAnimation::TestAnimation() : Dream::Unit::Unit("Dream::Resource::Animation::Animation") {
-				}
+		namespace Test {
+			class TestResource : public Dream::Unit::Unit {
+			public:
+				TestResource(void);
+				~TestResource(void);
+				void run();
+				void testResourceCanStoreName();
+			//protected:
+			//private:
+			}; // End of TestResource
+		} // End of Test
+	} // End of Resource
+} // End of Dream
 
-				TestAnimation::~TestAnimation() {
-				}
-
-				void TestAnimation::run() {
-					header();
-				}
-
-			}
-		}
-	}
-}
+#endif // End of TESTRESOURCE_H

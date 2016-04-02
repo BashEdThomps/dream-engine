@@ -24,5 +24,14 @@ namespace Dream {
 
 		Resource::~Resource(void) {
 		}
+
+		void Resource::setName(std::string name) {
+			mName = name;
+		}
+
+		std::string Resource::getName() {
+			return mName;
+		}
+
 	}
 } // End of Dream

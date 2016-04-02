@@ -20,10 +20,11 @@ namespace Dream {
             static const std::string UNIT_PASS;
             static const std::string UNIT_INCONCLUSIVE;
             static const std::string UNIT_FAIL;
-            int mResult;
+            int         mResult;
+            std::string mName;
         public:
             //! Default Constructor
-            Unit(void);
+            Unit(std::string);
 
             //! Default Destructor
             virtual ~Unit(void) = 0;
@@ -59,19 +60,10 @@ namespace Dream {
             void assertNull(std::string, void*);
 
             //! Print the heading for a module
-            void moduleHeading(std::string);
-
-            //! Print the footer for a module
-            void moduleFooter(std::string);
-
-            //! Print the heading for a test section
-            void testHeading(std::string);
-
-            //! Print the footer for a test section
-            void testFooter(std::string);
+            void header();
 
             //! Print a comment
-            void printComment(std::string);
+            void comment(std::string);
 
             //! Get testing result
             int getResult(void);

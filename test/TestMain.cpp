@@ -15,24 +15,39 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Unit/UnitTest.h"
+
 #include "DreamTest.h"
 #include "ProjectTest.h"
-#include "Unit/UnitTest.h"
+
 #include "Scene/SceneTest.h"
+
+#include "Resource/TestResource.h"
 #include "Resource/Animation/TestFrame.h"
 #include "Resource/Animation/TestFrameDelta.h"
 #include "Resource/Animation/TestKeyFrame.h"
 #include "Resource/Animation/TestAnimation.h"
 
-int main(int argc, char** argv) {
+int testUnit() {
+	int result = 0;
+	Dream::Unit::Test::UnitTest unit;
+    unit.run();
+    result += unit.getResult();
+	return result;
+
+}
+
+int testResource() {
+	int result = 0;
+	Dream::Resource::Test::TestResource testResource;
+	testResource.run();
+	result += testResource.getResult();
+	return result;
+}
+
+int testResourceAnimation() {
 	int result = 0;
 
-	// Unit
-	Dream::Unit::Test::UnitTest *unit = new Dream::Unit::Test::UnitTest();
-    unit->run();
-    result += unit->getResult();
-
-	// Animation
 	Dream::Resource::Animation::Test::TestFrame testFrame;
 	testFrame.run();
 	result += testFrame.getResult();
@@ -47,7 +62,22 @@ int main(int argc, char** argv) {
 	Dream::Resource::Animation::Test::TestAnimation testAnimation;
 	result += testAnimation.getResult();
 
-	// Dream
+	return result;
+}
+
+int testScene() {
+	int result = 0;
+
+	Dream::Scene::Test::SceneTest sceneTest;
+	sceneTest.run();
+	result += sceneTest.getResult();
+
+	return result;
+}
+
+int testDream() {
+	int result = 0;
+
 	Dream::Test::DreamTest dreamTest;
 	dreamTest.run();
 	result += dreamTest.getResult();
@@ -56,9 +86,15 @@ int main(int argc, char** argv) {
 	projectTest.run();
 	result += projectTest.getResult();
 
-	Dream::Scene::Test::SceneTest sceneTest;
-	sceneTest.run();
-	result += sceneTest.getResult();
+	return result;
+}
 
+int main(int argc, char** argv) {
+	int result = 0;
+	result += testUnit();
+	result += testResourceAnimation();
+	result += testResource();
+	result += testScene();
+	result += testDream();
 	return result;
 }

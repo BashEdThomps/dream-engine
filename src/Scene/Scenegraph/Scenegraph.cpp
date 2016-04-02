@@ -27,7 +27,7 @@ namespace Dream {
 			SceneObject* Scenegraph::createSceneObject() {
 				int available = getNextAvailableSceneObjectIndex();
 				if (available < 0) {
-					std::cout << "Error: Unable to create new node - tree is full" << std::endl;
+					std::cout << "Error: Unable to create new Scene Object - tree is full" << std::endl;
 					return NULL;
 				}
 

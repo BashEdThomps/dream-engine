@@ -3,7 +3,7 @@
 
 #include "../../dream-unit/src/Unit.h"
 
-namespace DreamScenegraphTest {
+namespace Dream { namespace Scene { namespace Scenegraph { namespace Test {
 	class TestSceneObject : public Dream::Unit::Unit {
 	public:
 		TestSceneObject::TestSceneObject(void);

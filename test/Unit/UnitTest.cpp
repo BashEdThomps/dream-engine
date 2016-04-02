@@ -20,8 +20,7 @@
 namespace Dream {
 	namespace Unit {
 		namespace Test {
-			UnitTest::UnitTest() {
-
+			UnitTest::UnitTest() : Dream::Unit::Unit("Dream::Unit::Unit") {
 			}
 
 			UnitTest::~UnitTest() {
@@ -29,8 +28,7 @@ namespace Dream {
 			}
 
 			void UnitTest::run() {
-				moduleHeading ("Unit Library");
-			    testHeading   ("Unit Tests");
+				header();
 			    assertPass    ("This shuld pass");
 			    assertZero    ("Equal to Zero",0);
 			    assertNotZero ("Not equal to Zero",3);
