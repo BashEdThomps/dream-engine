@@ -26,7 +26,7 @@ namespace Dream {
 	namespace Scene {
 		class Scene {
 		private:
-			Dream::Scene::Scenegraph::Scenegraph* mScenegraph;
+			Dream::Scene::Scenegraph::Scenegraph mScenegraph;
 			bool mCollisionEnabled;
 			bool mPhysicsEnabled;
 			bool mAnimationEnabled;

@@ -19,7 +19,7 @@ namespace Dream {
 
 		void Unit::header() {
 			std::stringstream stream;
-			stream << "========== [ Start Testing: " << mName << " ] ==========";
+			stream << "========== [ Testing: " << mName << " ] ==========";
 			std::string formatted = bold(stream.str());
 			std::cout << formatted << std::endl;
 			return;
@@ -86,6 +86,35 @@ namespace Dream {
 			return;
 		}
 
+		void Unit::assertTrue(std::string name, bool value) {
+			int retval;
+		    std::string formattedText;
+		    if (value) {
+		        formattedText = green(UNIT_PASS);
+				retval = 0;
+		    } else {
+		        formattedText = red(UNIT_FAIL);
+				retval = 1;
+		    }
+		    std::cout << name << ": " << formattedText << std::endl;
+			mResult += retval;
+			return;
+		}
+
+		void Unit::assertFalse(std::string name, bool value) {
+			int retval;
+		    std::string formattedText;
+		    if (!value) {
+		        formattedText = green(UNIT_PASS);
+				retval = 0;
+		    } else {
+		        formattedText = red(UNIT_FAIL);
+				retval = 1;
+		    }
+		    std::cout << name << ": " << formattedText << std::endl;
+			mResult += retval;
+			return;
+		}
 		void Unit::assertZero(std::string name, int value) {
 			int retval;
 		    std::string formattedText;
@@ -96,7 +125,7 @@ namespace Dream {
 		        formattedText = red(UNIT_FAIL);
 				retval = 1;
 		    }
-		    std::cout << name << ": Assert zero: " << formattedText << std::endl;
+		    std::cout << name << ": " << formattedText << std::endl;
 			mResult += retval;
 			return;
 		}
@@ -111,7 +140,7 @@ namespace Dream {
 		        formattedText = red(UNIT_FAIL);
 				retval = 0;
 		    }
-		    std::cout << name << ": Assert zero: " << formattedText << std::endl;
+		    std::cout << name << ": " << formattedText << std::endl;
 			mResult += retval;
 			return;
 		}

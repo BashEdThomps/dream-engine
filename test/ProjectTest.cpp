@@ -16,7 +16,9 @@
 */
 
 #include "ProjectTest.h"
+
 #include "../src/Project.h"
+#include "../src/Resource/Resource.h"
 
 namespace Dream {
 	namespace Test {
@@ -61,7 +63,18 @@ namespace Dream {
 		}
 
 		void ProjectTest::testProjectCanStoreMultipleResources() {
-			assertInconclusive("Project can hold multiple resources");
+			Project p;
+
+			Dream::Resource::Resource a,b,c;
+			a.setName("A");
+			b.setName("B");
+			c.setName("C");
+
+			p.addResource(&a);
+			p.addResource(&b);
+			p.addResource(&c);
+
+			assertEqual("Project has 3 resources", 3, p.getNumberOfResources());
 		}
 	} // End of Test
 } // End of Dream

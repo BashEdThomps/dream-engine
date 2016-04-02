@@ -63,7 +63,7 @@ namespace Dream {
 			SceneObject* SceneObject::getParent() {
 				return mParent;
 			}
-			
+
 			void SceneObject::setTranslation(float x, float y, float z) {
 				mTranslation[NODE_X] = x;
 				mTranslation[NODE_Y] = y;

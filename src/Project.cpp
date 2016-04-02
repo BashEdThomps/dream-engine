@@ -64,5 +64,34 @@ namespace Dream {
 		return retval;
 	}
 
+	void Project::addResource(Dream::Resource::Resource* resource) {
+		int index = getNextAvailableResourceIndex();
+		if (index > -1) {
+			mResources[index] = resource;
+		}
+	}
+
+	int Project::getNextAvailableResourceIndex() {
+		return -1;
+	}
+
+	Dream::Resource::Resource* Project::getResourceAtIndex(int index) {
+		return NULL;
+	}
+
+	void Project::removeResource(Dream::Resource::Resource*) {
+
+	}
+
+	int Project::getNumberOfResources() {
+		int retval = 0;
+		for (int i=0;i<D_MAX_RESOURCES;i++) {
+			if (mResources[i] != NULL) {
+				retval++;
+			}
+		}
+		return retval;
+	}
+
 
 } // End of Dream

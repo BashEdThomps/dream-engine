@@ -6,7 +6,8 @@
 namespace Dream {
 	namespace Resource {
 		namespace Animation {
-			Animation::Animation()  {
+			Animation::Animation(int fps)  {
+				mFramesPerSecond = fps;
 			    mCurrentFrame    = 0;
 			    mCurrentKeyFrame = 0;
 			}
@@ -47,12 +48,13 @@ namespace Dream {
 					Frame *frame = new Frame(currentFrame);
 					int j;
 					FrameDelta *nextDelta;
-					for (j=0;i<DA_FRAME_DELTA_SZ;j++) { //FrameDelta d : source.getDeltas()) {
+					int max = frame->getNumFrameDeltas();
+					for (j=0;i<max;j++) { //FrameDelta d : source.getDeltas()) {
 					    nextDelta = frame->getFrameDeltas()[j];
 					    std::cout << "Creatng delta form " <<  nextDelta->getDrawableID() << std::endl;
 					    // TODO - FIX THIS
-					    FrameDelta* dest;// = KeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
-					    FrameDelta* moveBy;// = KeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
+					    FrameDelta* dest = NULL;// = KeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
+					    FrameDelta* moveBy = NULL;// = KeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
 					    moveBy->printDebug();
 					    frame->addFrameDelta(moveBy);
 					}
@@ -62,63 +64,19 @@ namespace Dream {
 				    // Move on to the next KeyFrame
 				    mCurrentKeyFrame++;
 				}
-			    }
+			}
 
 			void Animation::addFrame(Frame* f) {
-			    int index = getNextAvailableFrameIndex();
-			    mFrames[index] = f;
+			    mFrames.push_back(f);
 			}
 
 			void Animation::addKeyFrame(KeyFrame *kf) {
-			    int index = getNextAvailableKeyFrameIndex();
-			    mKeyFrames[index] = kf;
+			    mKeyFrames.push_back(kf);
 			    return;
 			}
 
-			int Animation::getNextAvailableKeyFrameIndex() {
-				int retval = -1;
-				int i;
-				KeyFrame* next = NULL;
-				for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
-					next=mKeyFrames[i];
-					if(next == NULL) {
-						retval = i;
-						break;
-					}
-				}
-				return retval;
-			}
-
-			int Animation::getNextAvailableFrameIndex() {
-				int retval = -1;
-				int i;
-				Frame* next = NULL;
-				for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
-					next=mFrames[i];
-					if(next == NULL) {
-						retval = i;
-						break;
-					}
-				}
-				return retval;
-			}
-
-			int Animation::getNextAvailableDrawableIndex() {
-				int retval = -1;
-				int i;
-				int next = -1;
-				for(i=0;i<DA_KEYFRAMEANIM_FRAMES_SZ;i++){
-					next=mDrawables[i];
-					if(next == -1) {
-						retval = i;
-						break;
-					}
-				}
-				return retval;
-			}
 			void Animation::addDrawable(int sd) {
-			    int index =  getNextAvailableDrawableIndex();
-			    mDrawables[index] = sd;
+			    mDrawables.push_back(sd);
 			    return;
 			}
 
@@ -130,32 +88,33 @@ namespace Dream {
 			void Animation::nextFrame() {
 			    // We're done
 			    if (mDone) {
-				return;
+					return;
 			    }
 
 			    std::cout << "Applying next Frame: " << mCurrentFrame << std::endl;
 			    Frame *currentFrame = mFrames[mCurrentFrame];
 
 			    if (currentFrame == NULL) {
-				if (mKeyFrames[mNumKeyFrames]->getWrap()) {
-				    mCurrentFrame = 0;
-				} else {
-				    mDone = 1;
-				    return;
-				}
+					if (mKeyFrames[mNumKeyFrames]->getWrap()) {
+					    mCurrentFrame = 0;
+					} else {
+					    mDone = 1;
+					    return;
+					}
 			    }
 
 			    int i;
 			    FrameDelta *nextFrameDelta;
-			    for (i=0; i<DA_FRAME_DELTA_SZ; i++) {
-				nextFrameDelta = currentFrame->getFrameDeltas()[i];
-				if(nextFrameDelta == NULL) {
-				    continue;
-				}
+				int max = currentFrame->getNumFrameDeltas();
+			    for (i=0; i<max; i++) {
+					nextFrameDelta = currentFrame->getFrameDeltas()[i];
+					if(nextFrameDelta == NULL) {
+					    continue;
+					}
 
-				//SceneObject sd = getDrawableByID(d.getDrawableID());
-				applyFrameDeltaToVector(nextFrameDelta,NULL,NULL);
-			    }
+					//SceneObject sd = getDrawableByID(d.getDrawableID());
+					applyFrameDeltaToVector(nextFrameDelta,NULL,NULL);
+				}
 
 			    mCurrentFrame++;
 			}
@@ -164,15 +123,19 @@ namespace Dream {
 					FrameDelta* delta,
 					float* posVector,
 					float* rotVector) {
-				posVector[DA_X] += delta->getPositionDelta()[DA_X];
-				posVector[DA_Y] += delta->getPositionDelta()[DA_Y];
-				posVector[DA_Z] += delta->getPositionDelta()[DA_Z];
 
-				rotVector[DA_X] += delta->getRotationDelta()[DA_X];
-				rotVector[DA_Y] += delta->getRotationDelta()[DA_Y];
-				rotVector[DA_Z] += delta->getRotationDelta()[DA_Z];
+				posVector[0] += delta->getPositionDelta()[0];
+				posVector[1] += delta->getPositionDelta()[1];
+				posVector[2] += delta->getPositionDelta()[2];
+
+				rotVector[0] += delta->getRotationDelta()[0];
+				rotVector[1] += delta->getRotationDelta()[1];
+				rotVector[2] += delta->getRotationDelta()[2];
 			}
 
+			int Animation::getFramesPerSecond() {
+				return mFramesPerSecond;
+			}
 		}
 	}
 }

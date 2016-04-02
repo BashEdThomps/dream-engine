@@ -1,7 +1,10 @@
 #ifndef DA_FRAMEDELTA_H
 #define DA_FRAMEDELTA_H
 
-#include "Constants.h"
+//! Delta Operations
+#define DA_OP_LINEAR 0
+#define DA_OP_BEZIER 1
+#define DA_OP_ORBIT  2
 
 namespace Dream {
 	namespace Resource {

@@ -47,6 +47,12 @@ namespace Dream {
             //! Assert Value is equal to zero.
             void assertZero(std::string, int);
 
+            //! Assert Value is equal to true.
+            void assertTrue(std::string, bool);
+
+            //! Assert Value is equal to false.
+            void assertFalse(std::string, bool);
+
             //! Assert two objects are equal.
             void assertEqual(std::string, int, int);
 

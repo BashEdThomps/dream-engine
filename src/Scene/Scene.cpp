@@ -20,7 +20,6 @@
 namespace Dream {
 	namespace  Scene {
 		Scene::Scene() {
-			mScenegraph       = NULL;
 			mCollisionEnabled = false;;
 			mPhysicsEnabled   = false;
 			mAnimationEnabled = false;

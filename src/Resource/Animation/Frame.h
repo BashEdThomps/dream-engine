@@ -1,9 +1,8 @@
 #ifndef DA_FRAME_H
 #define DA_FRAME_H
 
+#include <vector>
 #include "FrameDelta.h"
-
-#define DA_FRAME_DELTA_SZ 1024
 
 namespace Dream {
 	namespace Resource {
@@ -12,7 +11,7 @@ namespace Dream {
 			class Frame {
 			private:
 			    int         mIndex;
-			    FrameDelta* mFrameDeltas[DA_FRAME_DELTA_SZ];
+			    std::vector<FrameDelta*> mFrameDeltas;
 			public:
 				//! TODO - Document
 				Frame(int);
@@ -21,15 +20,13 @@ namespace Dream {
 				//! TODO - Document
 				void addFrameDelta(FrameDelta*);
 				//! TODO - Document
-				int getNextAvailableFrameDeltaIndex();
-				//! TODO - Document
 				int compareIndecies(Frame*);
 				//! TODO - Document
 				int getNumFrameDeltas();
 				//! TODO - Document
 				int getIndex();
 				//! TODO - Document
-				FrameDelta** getFrameDeltas();
+				std::vector<FrameDelta*> getFrameDeltas();
 
 			};
 		}

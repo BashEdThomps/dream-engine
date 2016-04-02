@@ -54,6 +54,7 @@ namespace Dream {
 		int getNextAvailableResourceIndex();
 		Dream::Resource::Resource* getResourceAtIndex(int);
 		void removeResource(Dream::Resource::Resource*);
+		int getNumberOfResources();
 	//protected:
 	//private:
 	}; // End of Project

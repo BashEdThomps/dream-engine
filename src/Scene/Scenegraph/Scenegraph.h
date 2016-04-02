@@ -1,11 +1,10 @@
 #ifndef SCENEGRAPH_H
 #define SCENEGRAPH_H
 
+#include <vector>
+#include <iostream>
 #include "SceneObject.h"
 #include "Camera.h"
-
-#define NODES        256
-#define VERT_BUFFERS 256
 
 namespace Dream {
 	namespace Scene {
@@ -13,30 +12,28 @@ namespace Dream {
 			// Global Variables
 			class Scenegraph {
 			protected:
-				std::string mName;
-				SceneObject*       mSceneObjects[NODES];
-				Camera*     mCamera;
-				SceneObject*       mRootSceneObject;
+				std::vector<SceneObject*> mSceneObjects;
+				Camera*                   mCamera;
+				SceneObject*              mRootSceneObject;
 			public:
 				// Init
-				Scenegraph(std::string);
+				Scenegraph();
 				~Scenegraph();
-
 				// Display/Debug
 				void printGraph ();
-
 				// SceneObject Management
 				void  generatePathForSceneObject(SceneObject*);
-				void  setRootSceneObject(SceneObject*);
-				int   getNextAvailableSceneObjectIndex();
-				int   getIndexOfSceneObject(SceneObject*);
+
+				void         setRootSceneObject(SceneObject*);
 				SceneObject* getRootSceneObject();
-				int   getRootSceneObjectIndex();
-				bool   isRootSceneObject(SceneObject*);
+				bool         isRootSceneObject(SceneObject*);
+
 				SceneObject* createSceneObject();
 				SceneObject* createSceneObjectWithName(std::string);
+
 				void  removeSceneObject(SceneObject*);
 				int   countChildrenOfSceneObject(SceneObject*);
+
 				SceneObject* getSceneObjectByName(std::string);
 
 				// Updating
@@ -45,7 +42,6 @@ namespace Dream {
 				//int  traversePath(std::string, void (*)(SceneObject*,  void*), void*);
 
 				// SceneObject Relationships
-
 			};
 		}
 	}

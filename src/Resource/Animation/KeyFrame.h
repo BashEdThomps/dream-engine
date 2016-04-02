@@ -1,7 +1,7 @@
 #ifndef DA_KEYFRAME_H
 #define DA_KEYFRAME_H
 
-#include "Constants.h"
+#include <vector>
 #include "FrameDelta.h"
 
 namespace Dream {
@@ -13,20 +13,22 @@ namespace Dream {
 				//! TODO - Document
 				int mIndex;
 				//! TODO - Document
-				FrameDelta* mDeltas[DA_DELTA_SZ];
+				std::vector<FrameDelta*> mDeltas;
 				//! TODO - Document
 				long mDuration;
 				//! TODO - Document
 				int mWrap;
+				//! TODO - Document
+				int mFramesPerSecond;
 			public:
 				//! TODO - Document
-				KeyFrame(int, long);
+				KeyFrame(int, int, long);
 				//! TODO - Document
 				~KeyFrame();
 				//! TODO - Document
 				void addDelta(FrameDelta*);
 				//! TODO - Document
-				int getNextAvailableIndex();
+				int getNumberOfFrameDeltas();
 				//! TODO - Document
 				int getIntermediateFrameCount();
 				//! TODO - Document

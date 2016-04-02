@@ -25,7 +25,6 @@ namespace Dream {
 	namespace Unit {
 		namespace Test {
 			class UnitTest : public Dream::Unit::Unit {
-			private:
 			public:
 				UnitTest();
 				~UnitTest(void);

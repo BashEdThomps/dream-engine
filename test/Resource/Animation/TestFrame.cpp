@@ -37,7 +37,6 @@ namespace Dream {
 					header();
 					testFrameCreate();
 					testFrameAddFrameDelta();
-					testFrameGetNextAvailableFrameDeltaIndex();
 					testFrameCompareIndicies();
 					testFrameGetNumFrameDeltas ();
 				}
@@ -56,24 +55,6 @@ namespace Dream {
 					frame->addFrameDelta(delta1);
 					frame->addFrameDelta(delta2);
 					assertEqual("Number of deltas in frame is 2", frame->getNumFrameDeltas(),2);
-					return;
-				}
-				void TestFrame::testFrameGetNextAvailableFrameDeltaIndex(void){
-					Dream::Resource::Animation::Frame* frame = new Dream::Resource::Animation::Frame(0);
-
-					assertEqual(
-						"Get Next Available Frame Delta Index of empty frame is 0",
-						frame->getNextAvailableFrameDeltaIndex(),
-						0
-					);
-
-					Dream::Resource::Animation::FrameDelta* delta = new Dream::Resource::Animation::FrameDelta(0,DA_OP_LINEAR);
-					frame->addFrameDelta(delta);
-					assertEqual(
-						"Get Next Available Frame Delta Index of frame with 1 delta is 1",
-						frame->getNextAvailableFrameDeltaIndex(),
-						1
-					);
 					return;
 				}
 

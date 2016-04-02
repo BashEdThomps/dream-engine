@@ -11,13 +11,13 @@ namespace Dream {
 
 			   mOrbitRadius          = 0;
 
-			   mPositionDelta [DA_X] = 0;
-			   mPositionDelta [DA_Y] = 0;
-			   mPositionDelta [DA_Z] = 0;
+			   mPositionDelta [0] = 0;
+			   mPositionDelta [1] = 0;
+			   mPositionDelta [2] = 0;
 
-			   mRotationDelta [DA_X] = 0;
-			   mRotationDelta [DA_Y] = 0;
-			   mRotationDelta [DA_Z] = 0;
+			   mRotationDelta [0] = 0;
+			   mRotationDelta [1] = 0;
+			   mRotationDelta [2] = 0;
 			}
 
 			FrameDelta::~FrameDelta() {
@@ -39,9 +39,9 @@ namespace Dream {
 				switch (d->getOperation()) {
 				    default:
 				    case DA_OP_LINEAR:
-					posDelta [DA_X] /= steps;
-					posDelta [DA_Y] /= steps;
-					posDelta [DA_Z] /= steps;
+					posDelta [0] /= steps;
+					posDelta [1] /= steps;
+					posDelta [2] /= steps;
 					break;
 				    case DA_OP_ORBIT:
 					break;
@@ -49,9 +49,9 @@ namespace Dream {
 					break;
 				}
 
-				rotDelta[DA_X] /= steps;
-				rotDelta[DA_Y] /= steps;
-				rotDelta[DA_Z] /= steps;
+				rotDelta[0] /= steps;
+				rotDelta[1] /= steps;
+				rotDelta[2] /= steps;
 
 				d->setPositionDelta(posDelta);
 				d->setRotationDelta(rotDelta);
@@ -60,15 +60,15 @@ namespace Dream {
 			    }
 
 			void FrameDelta::computeDeltaVector(float* buffer, float* a, float* b) {
-			    buffer[DA_X] = a[DA_X] - b[DA_X];
-			    buffer[DA_Y] = a[DA_Y] - b[DA_Y];
-			    buffer[DA_Z] = a[DA_Z] - b[DA_Z];
+			    buffer[0] = a[0] - b[0];
+			    buffer[1] = a[1] - b[1];
+			    buffer[2] = a[2] - b[2];
 			}
 
 			void FrameDelta::printDebug() {
 			    std::cout << "Delta for ID: " << mDrawableID << std::endl;
-			    std::cout <<"\tPOS: X: " << mPositionDelta[DA_X] << " Y: " << mPositionDelta[DA_Y] << " Z: " << mRotationDelta[DA_Z] << std::endl;
-			    std::cout <<"\tROT: X: " << mRotationDelta[DA_X] << " Y: " << mRotationDelta[DA_Y] << " Z: " << mRotationDelta[DA_Z] << std::endl;
+			    std::cout <<"\tPOS: X: " << mPositionDelta[0] << " Y: " << mPositionDelta[1] << " Z: " << mRotationDelta[2] << std::endl;
+			    std::cout <<"\tROT: X: " << mRotationDelta[0] << " Y: " << mRotationDelta[1] << " Z: " << mRotationDelta[2] << std::endl;
 			}
 
 			int FrameDelta::getDrawableID() {
@@ -89,15 +89,15 @@ namespace Dream {
 			}
 
 			void FrameDelta::setPositionDelta(float* pos) {
-				mPositionDelta[DA_X] = pos[DA_X];
-				mPositionDelta[DA_Y] = pos[DA_Y];
-				mPositionDelta[DA_Z] = pos[DA_Z];
+				mPositionDelta[0] = pos[0];
+				mPositionDelta[1] = pos[1];
+				mPositionDelta[2] = pos[2];
 			}
 
 			void FrameDelta::setRotationDelta(float* rot) {
-				mRotationDelta[DA_X] = rot[DA_X];
-				mRotationDelta[DA_Y] = rot[DA_Y];
-				mRotationDelta[DA_Z] = rot[DA_Z];
+				mRotationDelta[0] = rot[0];
+				mRotationDelta[1] = rot[1];
+				mRotationDelta[2] = rot[2];
 			}
 		}
 	}

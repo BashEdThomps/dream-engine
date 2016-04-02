@@ -17,5 +17,5 @@ file(GLOB TEST_RESOURCE_ANIMATION_SRC "Resource/Animation/*.h" "Resource/Animati
 file(GLOB TEST_DREAM_SRC "*.h" "*.cpp")
 
 # Targets
-add_executable (DreamTest ${TEST_UNIT_SRC} ${TEST_RESOURCE_SRC} ${TEST_RESOURCE_ANIMATION_SRC} ${TEST_SCENE_SRC} ${TEST_SCENE_SCENEGRAPH_SRC} ${TEST_DREAM_SRC})
+add_executable (DreamTest ${TEST_UNIT_SRC} ${TEST_UTIL_SRC} ${TEST_RESOURCE_SRC} ${TEST_RESOURCE_ANIMATION_SRC} ${TEST_SCENE_SRC} ${TEST_SCENE_SCENEGRAPH_SRC} ${TEST_DREAM_SRC})
 target_link_libraries(DreamTest Dream)

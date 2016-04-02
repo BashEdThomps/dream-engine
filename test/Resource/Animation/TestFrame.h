@@ -34,8 +34,6 @@ namespace Dream {
 					void testFrameCreate        (void);
 					//! Tests adding a daFrameDelta to a daFrame.
 					void testFrameAddFrameDelta (void);
-					//! Run all Frame Tests.
-					void testFrameGetNextAvailableFrameDeltaIndex(void);
 					//! Tests comparing indicies of two daFrames.
 					void testFrameCompareIndicies   (void);
 					//! Tests counting the number of daFrameDeltas held by the frame.

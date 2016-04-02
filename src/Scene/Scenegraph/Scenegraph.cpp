@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 #include "SceneObject.h"
 #include "Scenegraph.h"
 
@@ -13,47 +14,19 @@
 namespace Dream {
 	namespace Scene {
 		namespace Scenegraph {
-			Scenegraph::Scenegraph(std::string name) {
-				mName = name;
-
-				for (int i=0;i<NODES;i++) {
-					mSceneObjects[i] = NULL;
-				}
-
+			Scenegraph::Scenegraph() {
 				mCamera = new Camera();
 				mRootSceneObject = NULL;
 			}
 
+			Scenegraph::~Scenegraph() {
+
+			}
+			
 			SceneObject* Scenegraph::createSceneObject() {
-				int available = getNextAvailableSceneObjectIndex();
-				if (available < 0) {
-					std::cout << "Error: Unable to create new Scene Object - tree is full" << std::endl;
-					return NULL;
-				}
-
 				SceneObject* retval = new SceneObject();
-				mSceneObjects[available] = retval;
+				mSceneObjects.push_back(retval);
 				return retval;
-			}
-
-			int Scenegraph::getNextAvailableSceneObjectIndex() {
-				int i;
-				for (i=0; i<NODES; i++) {
-					if (mSceneObjects[i] == NULL) {
-						return i;
-					}
-				}
-				return -1;
-			}
-
-			int Scenegraph::getIndexOfSceneObject(SceneObject *node) {
-				int i;
-				for (i=0; i<NODES; i++) {
-					if (mSceneObjects[i] == node) {
-						return i;
-					}
-				}
-				return -1;
 			}
 
 			SceneObject* Scenegraph::getRootSceneObject() {
@@ -64,107 +37,38 @@ namespace Dream {
 				mRootSceneObject = root;
 			}
 
-			void Scenegraph::removeSceneObject(SceneObject* node) {
-				if (node == NULL) {
+			void Scenegraph::removeSceneObject(SceneObject* so) {
+				if (so == NULL) {
 					std::cout << "Cannot remove NULL node from graph." << std::endl;
 					return;
 				}
 
-				int i = getIndexOfSceneObject(node);
-				if (i < 0) {
-					std::cout <<"Cannot find node in graph to remove it." << std::endl;
-					return;
-				}
-
-				delete node;
-				mSceneObjects[i] = NULL;
+				mSceneObjects.erase(std::remove(mSceneObjects.begin(), mSceneObjects.end(), so), mSceneObjects.end());
+				delete so;
 				return;
 			}
-
-			/*void Scenegraph::traverseSceneObjectVector(void (*function)(SceneObject*, void*), void* arg) {
-				int i;
-				SceneObject* next;
-				for (i=0;i<NODES;i++) {
-					next = mSceneObjects[i];
-					if (next == NULL) {
-						continue;
-					}
-					std::cerr << "This is not implemented :{" << std::endl;
-					//(*function)((void*)next, arg == NULL ? this : arg);
-				}
-				return;
-			}
-		    */
 
 			SceneObject* Scenegraph::getSceneObjectByName(std::string name) {
-				int i;
-				SceneObject* next;
-				for (i=0;i<NODES;i++) {
-					next = mSceneObjects[i];
-					if (next == NULL) {
-						continue;
-					}
-					if (next->hasName("")) {
+				for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin() ;
+				     next != mSceneObjects.end();
+					 ++next) {
+					if ((*next)->hasName("")) {
 						std::cout << "Scenegraph::getSceneObjectByName: Cannot test node with empty name." << std::endl;
 						continue;
 					}
-					if (next->hasName(name)) {
-						return mSceneObjects[i];
+					if ((*next)->hasName(name)) {
+						return (*next);
 					}
 				}
 				return NULL;
 			}
 
-			/*int Scenegraph::traversePath(std::string path, void (*function)(SceneObject*, void*), void* arg) {
-				std::string start    = NULL;
-				std::string end      = NULL;
-				int done       = 0;
-				int nameLen    = 0;
-				SceneObject* target = NULL;
-				std::cout << "Traversing path: " << path << std::endl;
-				start = path+1;
-				if (start == NULL) {
-					std::cout << "Path is null" << std::endl;
-					return done;
-				}
-				while (!done) {
-					nameLen = 0;
-					end = strchr(start+1, Scenegraph::PathDelimeter);
-					if (end == NULL) {
-						std::cout <<"Found end of string" << std::endl;
-						end = path+strlen(path);
-						done = 1;
-					}
-					end += 1;
-					nameLen = (end-start-1);
-					if (nameLen <= 0) {
-						std::cout <<"Traverse nameLen <= 0" << std::endl;;
-						break;
-					}
-					 std::string tmp = ( std::string)malloc(sizeof(char)*nameLen+1);
-					memcpy(tmp,start,nameLen);
-					tmp[nameLen] = '\0';
-					std::cout <<"Traversed path to: " << tmp << std::endl;
-					target =Scenegraph::getSceneObjectByName(graph,tmp);
-					if (target != NULL) {
-						function(target,arg);
-						start = end;
-					} else {
-						std::cout << tmp << " not found while traversing path" << std::endl;
-						break;
-					}
-				}
-				return done;
-			}*/
-
-
 			void Scenegraph::updatePaths() {
-				int i;
-				SceneObject* next;
-				for (i=0;i<NODES;i++) {
-					next = mSceneObjects[i];
-					if (next != NULL) {
-						generatePathForSceneObject(next);
+				for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin() ;
+				     next != mSceneObjects.end();
+					 ++next) {
+					if (*next != NULL) {
+						generatePathForSceneObject(*next);
 					}
 				}
 				return;
