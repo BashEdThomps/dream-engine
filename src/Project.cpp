@@ -50,33 +50,11 @@ namespace Dream {
 	}
 
 	void Project::addScene(Dream::Scene::Scene *scene) {
-
-	}
-
-	int Project::getNextAvailableSceneIndex() {
-		int retval = -1;
-		for (int i=0;i<D_MAX_SCENES;i++) {
-			if (mScenes[i]==NULL) {
-				retval = i;
-				break;
-			}
-		}
-		return retval;
+		mScenes.push_back(scene);
 	}
 
 	void Project::addResource(Dream::Resource::Resource* resource) {
-		int index = getNextAvailableResourceIndex();
-		if (index > -1) {
-			mResources[index] = resource;
-		}
-	}
-
-	int Project::getNextAvailableResourceIndex() {
-		return -1;
-	}
-
-	Dream::Resource::Resource* Project::getResourceAtIndex(int index) {
-		return NULL;
+		mResources.push_back(resource);
 	}
 
 	void Project::removeResource(Dream::Resource::Resource*) {
@@ -84,14 +62,10 @@ namespace Dream {
 	}
 
 	int Project::getNumberOfResources() {
-		int retval = 0;
-		for (int i=0;i<D_MAX_RESOURCES;i++) {
-			if (mResources[i] != NULL) {
-				retval++;
-			}
-		}
-		return retval;
+		return mResources.size();
 	}
 
-
+	int Project::getNumberOfScenes() {
+		return mScenes.size();
+	}
 } // End of Dream

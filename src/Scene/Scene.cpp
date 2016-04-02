@@ -20,6 +20,7 @@
 namespace Dream {
 	namespace  Scene {
 		Scene::Scene() {
+			mScenegraph = new Scenegraph::Scenegraph();
 			mCollisionEnabled = false;;
 			mPhysicsEnabled   = false;
 			mAnimationEnabled = false;
@@ -29,5 +30,18 @@ namespace Dream {
 
 		Scene::~Scene() {
 		}
+
+		std::string Scene::getName() {
+			return mName;
+		}
+
+		void Scene::setName(std::string name) {
+			mName = name;
+		}
+
+		Scenegraph::Scenegraph* Scene::getScenegraph() {
+			return mScenegraph;
+		}
+
 	}// End of Scene
 } // End of Dream

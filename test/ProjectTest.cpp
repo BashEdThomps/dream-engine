@@ -18,6 +18,7 @@
 #include "ProjectTest.h"
 
 #include "../src/Project.h"
+#include "../src/Scene/Scene.h"
 #include "../src/Resource/Resource.h"
 
 namespace Dream {
@@ -59,7 +60,17 @@ namespace Dream {
 		}
 
 		void ProjectTest::testProjectCanStoreMultipleScenes() {
-			assertInconclusive("Project Can Hold Multiple Secnes");
+			Project p;
+			Dream::Scene::Scene a,b,c;
+			a.setName("A");
+			b.setName("B");
+			c.setName("C");
+
+			p.addScene(&a);
+			p.addScene(&b);
+			p.addScene(&c);
+
+			assertTrue("Project has 3 scenes",p.getNumberOfScenes() == 3);
 		}
 
 		void ProjectTest::testProjectCanStoreMultipleResources() {

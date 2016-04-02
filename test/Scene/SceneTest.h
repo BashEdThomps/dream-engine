@@ -29,6 +29,7 @@ namespace Dream {
 				~SceneTest(void);
 				void run(void);
 				void testSceneCanStoreName(void);
+				void testSceneHasScenegraph();
 				void testSceneCanStoreMultipleSceneObjects(void);
 				void testSceneCanStoreMultipleAnimationResources(void);
 				void testSceneCanStoreMultipleSoundEffectResources(void);

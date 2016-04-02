@@ -22,7 +22,7 @@ namespace Dream {
 			Scenegraph::~Scenegraph() {
 
 			}
-			
+
 			SceneObject* Scenegraph::createSceneObject() {
 				SceneObject* retval = new SceneObject();
 				mSceneObjects.push_back(retval);

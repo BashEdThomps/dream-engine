@@ -16,6 +16,7 @@
 */
 
 #include "SceneTest.h"
+#include "../../src/Scene/Scene.h"
 
 namespace Dream {
 	namespace Scene {
@@ -36,7 +37,15 @@ namespace Dream {
 			}
 
 			void SceneTest::testSceneCanStoreName(void) {
-				assertInconclusive("SceneCanStoreName: Test Not Implemented");
+				Dream::Scene::Scene s;
+				std::string name = "TestScene";
+				s.setName(name);
+				assertTrue("Scene has name",s.getName().compare(name) == 0);
+			}
+
+			void SceneTest::testSceneHasScenegraph() {
+				Scene s;
+				assertNotNull("Scene has Scenegraph",s.getScenegraph());
 			}
 
 			void SceneTest::testSceneCanStoreMultipleSceneObjects(void) {

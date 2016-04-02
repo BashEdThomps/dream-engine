@@ -18,11 +18,10 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
+#include <vector>
 #include "Scene/Scene.h"
 #include "Resource/Resource.h"
 
-#define D_MAX_SCENES 64
-#define D_MAX_RESOURCES 512
 
 namespace Dream {
 	class Project {
@@ -30,8 +29,8 @@ namespace Dream {
 		std::string mName;
 		std::string mDescription;
 		std::string mAuthor;
-		Dream::Scene::Scene* mScenes[D_MAX_SCENES];
-		Dream::Resource::Resource* mResources[D_MAX_RESOURCES];
+		std::vector<Dream::Scene::Scene*> mScenes;
+		std::vector<Dream::Resource::Resource*> mResources;
 	public:
 		Project(void);
 		~Project(void);
@@ -46,13 +45,10 @@ namespace Dream {
 		std::string getAuthor();
 
 		void addScene(Dream::Scene::Scene*);
-		int  getNextAvailableSceneIndex();
-		Dream::Scene::Scene* getSceneAtIndex(int);
 		void removeScene(Dream::Scene::Scene*);
+		int getNumberOfScenes();
 
 		void addResource(Dream::Resource::Resource*);
-		int getNextAvailableResourceIndex();
-		Dream::Resource::Resource* getResourceAtIndex(int);
 		void removeResource(Dream::Resource::Resource*);
 		int getNumberOfResources();
 	//protected:

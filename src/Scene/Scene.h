@@ -18,6 +18,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <iostream>
 #include "Scenegraph/Scenegraph.h"
 
 #define D_MAX_SCENE_OBJECTS 512
@@ -26,7 +27,8 @@ namespace Dream {
 	namespace Scene {
 		class Scene {
 		private:
-			Dream::Scene::Scenegraph::Scenegraph mScenegraph;
+			std::string mName;
+			Scenegraph::Scenegraph *mScenegraph;
 			bool mCollisionEnabled;
 			bool mPhysicsEnabled;
 			bool mAnimationEnabled;
@@ -35,6 +37,9 @@ namespace Dream {
 		public:
 			Scene();
 			~Scene();
+			std::string getName();
+			void        setName(std::string);
+			Scenegraph::Scenegraph* getScenegraph();
 		//protected:
 		//private:
 		}; // End of Scene
