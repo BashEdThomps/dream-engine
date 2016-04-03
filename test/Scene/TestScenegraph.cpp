@@ -83,7 +83,7 @@ namespace Dream {
 				assertFalse("N3 NOT child of N4",n3->isChildOf(n4));
 
 				// Test counting children
-				assertTrue("N1 has 2 children", graph->countChildrenOfSceneObject(n1) == 4);
+				assertTrue("N1 has 2 children", graph->countChildrenOfSceneObject(n1) == 2);
 				assertTrue("N2 has 0 children", graph->countChildrenOfSceneObject(n2) == 0);
 				assertTrue("N2 has 2 children", graph->countChildrenOfSceneObject(n3) == 2);
 				assertTrue("N4 has 0 children", graph->countChildrenOfSceneObject(n4) == 0);

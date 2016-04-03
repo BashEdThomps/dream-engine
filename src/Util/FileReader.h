@@ -1,5 +1,5 @@
 /*
-* JSONFileReaderTest
+* Dream::Util::FileReader
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,32 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef JSONFILEREADERTEST_H
-#define JSONFILEREADERTEST_H
+#ifndef FILEREADER_H
+#define FILEREADER_H
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 namespace Dream {
-	namespace JSON {
-		namespace Test {
-			class FileReaderTest : public Dream::Unit::Unit {
-			public:
-				FileReaderTest(void);
-				~FileReaderTest(void);
-				void run();
-				void testOpenFile();
-			}; // End of JSONFileReaderTest
-		} // End of Test
-	} // End of JSON
+	namespace Util {
+		class FileReader {
+		private:
+			std::stringstream mStringStream;
+			std::ifstream     mInputStream;
+			std::string       mPath;
+		public:
+			FileReader(std::string);
+			~FileReader(void);
+
+			std::string       getPath();
+			bool              readIntoStringStream();
+			std::string       getContentsAsString();
+			bool              readIntoBinaryStream();
+			char*             getContentsAsBinaryArray();
+		}; // End of FileReader
+	} // End of Util
 } // End of Dream
 
-#endif // End of JSONFILEREADERTEST_H
+#endif // End of JSONFILEREADER_H

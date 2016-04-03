@@ -15,13 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../src/Unit/Unit.h"
 #include "FileReaderTest.h"
 
+#include "../../src/Util/FileReader.h"
+
+#include <iostream>
+#include <string>
+
 namespace Dream {
-	namespace JSON {
+	namespace Util {
 		namespace Test {
-			FileReaderTest::FileReaderTest(void) : Dream::Unit::Unit("Dream::JSON::FileReader") {
+			FileReaderTest::FileReaderTest(void) : Dream::Unit::Unit("Dream::Util::FileReader") {
 			}
 
 			FileReaderTest::~FileReaderTest(void) {
@@ -29,12 +33,22 @@ namespace Dream {
 
 			void FileReaderTest::run() {
 				header();
-				testOpenFile();
+				testReadIntoBinaryStream();
+				testReadIntoStringStream();
 			}
 
-			void FileReaderTest::testOpenFile() {
-				assertInconclusive("Open file");
+			void FileReaderTest::testReadIntoStringStream() {
+				FileReader testFileReader(TEST_JSON);
+				comment(testFileReader.getPath());
+				assertTrue("Read into string stream", testFileReader.readIntoStringStream());
+				std::string stringContent = testFileReader.getContentsAsString();
+				assertNotZero("Read > 0 length from test.json",stringContent.length());
+				comment(stringContent);
+			}
+
+			void FileReaderTest::testReadIntoBinaryStream() {
+				assertInconclusive("Read file as binary stream");
 			}
 		} // End of Test
-	} // End of JSON
+	} // End of Util
 } // End of Dream

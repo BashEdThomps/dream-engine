@@ -1,5 +1,5 @@
 /*
-* JSONFileReader
+* JSONFileReaderTest
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,15 +15,25 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "JSONFileReader.h"
+#ifndef FILEREADERTEST_H
+#define FILEREADERTEST_H
+
+#include "../../src/Unit/Unit.h"
+#define TEST_JSON "test/test.json"
 
 namespace Dream {
-
-	JSONFileReader::JSONFileReader(std::string path) {
-		mPath = path;
-	}
-
-	JSONFileReader::~JSONFileReader(void) {
-	}
-
+	namespace Util {
+		namespace Test {
+			class FileReaderTest : public Dream::Unit::Unit {
+			public:
+				FileReaderTest(void);
+				~FileReaderTest(void);
+				void run();
+				void testReadIntoStringStream();
+				void testReadIntoBinaryStream();
+			}; // End of JSONFileReaderTest
+		} // End of Test
+	} // End of Util
 } // End of Dream
+
+#endif // End of FILEREADERTEST_H

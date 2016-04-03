@@ -3,6 +3,9 @@
 # Unit
 file(GLOB UNIT_SRC "Unit/*.h" "Unit/*.cpp")
 
+# Util
+file(GLOB UTIL_SRC "Util/*.h" "Util/*.cpp")
+
 # JSON
 file(GLOB JSON_SRC "JSON/json.hpp")
 

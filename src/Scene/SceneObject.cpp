@@ -111,6 +111,9 @@ namespace Dream {
 					 stream << PATH_DELIMETER << *it;
 			 }
 			 mPath = stream.str();
+			 #ifdef DEBUG
+			 	std::cout << "Generated SceneObject path: " << getPath() << std::endl;
+			 #endif
 		}
 
 		void SceneObject::setPath(std::string path) {

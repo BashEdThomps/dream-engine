@@ -16,10 +16,16 @@
 */
 
 #include "Project.h"
+#include "JSON/json.hpp"
 
 namespace Dream {
 
 	Project::Project(void) {
+
+	}
+
+	Project::Project(std::string json) {
+
 	}
 
 	Project::~Project(void) {

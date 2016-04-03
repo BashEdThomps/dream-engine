@@ -4,8 +4,9 @@
 #ifndef NODE_H
 #define NODE_H
 
+#define DEBUG 1
+
 #include <iostream>
-//#include "../Resource.h"
 
 #define NODE_X 0
 #define NODE_Y 1

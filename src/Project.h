@@ -33,6 +33,7 @@ namespace Dream {
 		std::vector<Dream::Resource::Resource*> mResources;
 	public:
 		Project(void);
+		Project(std::string);
 		~Project(void);
 
 		void setName(std::string);

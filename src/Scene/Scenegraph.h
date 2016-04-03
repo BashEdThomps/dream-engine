@@ -1,6 +1,7 @@
 #ifndef SCENEGRAPH_H
 #define SCENEGRAPH_H
 
+
 #include <vector>
 #include <iostream>
 #include "SceneObject.h"
@@ -26,6 +27,7 @@ namespace Dream {
 			void         updatePaths();
 			void         addSceneObjectTo(SceneObject*, SceneObject*);
 			int          getNumberOfSceneObjects();
+			bool         hasSceneObect(SceneObject*);
 		};
 	}
 }

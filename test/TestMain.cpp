@@ -21,7 +21,7 @@
 
 #include "ProjectTest.h"
 
-#include "JSON/FileReaderTest.h"
+#include "Util/FileReaderTest.h"
 
 #include "Scene/SceneTest.h"
 #include "Scene/TestSceneObject.h"
@@ -44,15 +44,6 @@ int testUnit() {
 	return result;
 }
 
-int testJSON() {
-	int res = 0;
-
-	Dream::JSON::Test::FileReaderTest jsonFileReaderTest;
-	jsonFileReaderTest.run();
-	res += jsonFileReaderTest.getResult();
-
-	return res;
-}
 int testResource() {
 	int result = 0;
 
@@ -116,10 +107,18 @@ int testDream() {
 	return result;
 }
 
+int testUtil() {
+	int res = 0;
+	Dream::Util::Test::FileReaderTest fileReaderTest;
+	fileReaderTest.run();
+	res += fileReaderTest.getResult();
+	return res;
+}
+
 int main(int argc, char** argv) {
 	int result = 0;
 	result += testUnit();
-	result += testJSON();
+	result += testUtil();
 	result += testResourceAnimation();
 	result += testResource();
 	result += testScene();
