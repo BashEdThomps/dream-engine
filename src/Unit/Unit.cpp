@@ -7,7 +7,7 @@ namespace Dream {
 	namespace Unit {
 		const std::string Unit::UNIT_PASS = "PASS";
 		const std::string Unit::UNIT_INCONCLUSIVE = "INCONCLUSIVE";
-		const std::string Unit::UNIT_FAIL = "FAIL";
+		const std::string Unit::UNIT_FAIL = "FAILED";
 
 		Unit::Unit(std::string name) {
 			mName = name;

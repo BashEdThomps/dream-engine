@@ -9,7 +9,6 @@ namespace Dream {
 	namespace Scene {
 		class Scenegraph {
 		protected:
-			std::string               mPathDelimeter;
 			std::vector<SceneObject*> mSceneObjects;
 			SceneObject*              mRootSceneObject;
 		public:

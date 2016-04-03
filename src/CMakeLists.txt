@@ -21,4 +21,9 @@ list(REMOVE_ITEM DREAM_SRC "Main.cpp")
 # Targets
 add_library (Dream SHARED ${JSON_SRC} ${UTIL_SRC} ${UNIT_SRC} ${RESOURCE_SRC} ${RESOURCE_ANIMATION_SRC} ${SCENE_SRC} ${DREAM_SRC})
 add_executable (DreamMain Main.cpp)
-target_link_libraries(DreamMain Dream)
+target_link_libraries(DreamMain
+    Dream
+    -lBulletDynamics
+    -lBulletCollision
+    -lLinearMath
+    -lGL -lGLU)

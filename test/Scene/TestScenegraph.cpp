@@ -19,6 +19,8 @@ namespace Dream {
 
 			void TestScenegraph::run() {
 				header();
+				testCanGetSceneObjectByName();
+				testCanEstablishRelationships();
 				testCanStoreMultipleSceneObjects();
 			}
 
@@ -26,11 +28,16 @@ namespace Dream {
 				Dream::Scene::Scenegraph* graph = new Dream::Scene::Scenegraph();
 				Dream::Scene::SceneObject *n1, *n2, *n3, *n4, *n5;
 
-				n1 = new SceneObject("SceneObject1");
-				n2 = new SceneObject("SceneObject2");
-				n3 = new SceneObject("SceneObject3");
-				n4 = new SceneObject("SceneObject4");
-				n5 = new SceneObject("SceneObject5");
+				n1 = new SceneObject();
+				n1->setName("SceneObject1");
+				n2 = new SceneObject();
+				n2->setName("SceneObject2");
+				n3 = new SceneObject();
+				n3->setName("SceneObject3");
+				n4 = new SceneObject();
+				n4->setName("SceneObject4");
+				n5 = new SceneObject();
+				n5->setName("SceneObject5");
 
 				graph->setRootSceneObject(n1);
 				graph->addSceneObjectTo(n2,n1);
@@ -45,11 +52,16 @@ namespace Dream {
 				Dream::Scene::Scenegraph* graph = new Dream::Scene::Scenegraph();
 				Dream::Scene::SceneObject *n1, *n2, *n3, *n4, *n5;
 
-				n1 = new SceneObject("SceneObject1");
-				n2 = new SceneObject("SceneObject2");
-				n3 = new SceneObject("SceneObject3");
-				n4 = new SceneObject("SceneObject4");
-				n5 = new SceneObject("SceneObject5");
+				n1 = new SceneObject();
+				n1->setName("SceneObject1");
+				n2 = new SceneObject();
+				n2->setName("SceneObject2");
+				n3 = new SceneObject();
+				n3->setName("SceneObject3");
+				n4 = new SceneObject();
+				n4->setName("SceneObject4");
+				n5 = new SceneObject();
+				n5->setName("SceneObject5");
 
 				graph->setRootSceneObject(n1);
 				graph->addSceneObjectTo(n2,n1);
@@ -82,11 +94,16 @@ namespace Dream {
 				Dream::Scene::Scenegraph* graph = new Dream::Scene::Scenegraph();
 				Dream::Scene::SceneObject *n1, *n2, *n3, *n4, *n5;
 
-				n1 = new SceneObject("SceneObject1");
-				n2 = new SceneObject("SceneObject2");
-				n3 = new SceneObject("SceneObject3");
-				n4 = new SceneObject("SceneObject4");
-				n5 = new SceneObject("SceneObject5");
+				n1 = new SceneObject();
+				n1->setName("SceneObject1");
+				n2 = new SceneObject();
+				n2->setName("SceneObject2");
+				n3 = new SceneObject();
+				n3->setName("SceneObject3");
+				n4 = new SceneObject();
+				n4->setName("SceneObject4");
+				n5 = new SceneObject();
+				n5->setName("SceneObject5");
 
 				graph->setRootSceneObject(n1);
 				graph->addSceneObjectTo(n2,n1);

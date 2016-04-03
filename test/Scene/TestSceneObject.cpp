@@ -22,7 +22,7 @@ namespace Dream {
 				SceneObject s;
 				std::string name = "TestSceneObject";
 				s.setName(name);
-				assertZero("Can store name",s.getName().compare(name) == 0);
+				assertTrue("Can store name",s.getName().compare(name) == 0);
 			}
 
 			void TestSceneObject::testRelationships() {

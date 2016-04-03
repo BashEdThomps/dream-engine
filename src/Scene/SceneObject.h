@@ -22,10 +22,8 @@ namespace Dream {
 			float        mRotation[3];
 		public:
 			SceneObject  ();
-			SceneObject  (std::string);
 			~SceneObject ();
 
-			void init();
 			void initTranslationRotation();
 
 			int  hasValidPath();

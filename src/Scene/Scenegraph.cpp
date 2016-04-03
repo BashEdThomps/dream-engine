@@ -11,9 +11,7 @@
 
 namespace Dream {
 	namespace Scene {
-
 		Scenegraph::Scenegraph() {
-			mPathDelimeter = "/";
 			mRootSceneObject = NULL;
 		}
 

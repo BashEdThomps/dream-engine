@@ -3,20 +3,16 @@
 */
 #include <iostream>
 #include <cmath>
+#include <sstream>
+#include <vector>
+#include <algorithm>
 #include "SceneObject.h"
+
+#define PATH_DELIMETER "/"
 
 namespace Dream {
 	namespace Scene {
-		SceneObject::SceneObject(std::string name) {
-			mName = name;
-			init();
-		}
-
 		SceneObject::SceneObject() {
-			init();
-		}
-
-		void SceneObject::init() {
 			mParent = NULL;
 			mTranslation[NODE_X] = 0.0f;
 			mTranslation[NODE_Y] = 0.0f;
@@ -102,7 +98,19 @@ namespace Dream {
 		}
 
 		void SceneObject::generatePath() {
-			std::cerr << "Generate Path Not Implemented" << std::endl;
+			std::stringstream stream;
+			std::vector<std::string> pathVector;
+			SceneObject* next = this;
+			while (next != NULL) {
+				pathVector.push_back(next->getName());
+				next = next->getParent();
+			}
+			std::reverse(pathVector.begin(),pathVector.end());
+			for (std::vector<std::string>::iterator it = pathVector.begin();
+			     it != pathVector.end(); ++it) {
+					 stream << PATH_DELIMETER << *it;
+			 }
+			 mPath = stream.str();
 		}
 
 		void SceneObject::setPath(std::string path) {
