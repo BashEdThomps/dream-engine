@@ -21,6 +21,14 @@
 #include <iostream>
 #include "Scenegraph.h"
 #include "Camera.h"
+#include "../JSON/json.hpp"
+
+#define SCENE_JSON_NAME              "name"
+#define SCENE_JSON_ANIMATION_ENABLED "animationEnabled"
+#define SCENE_JSON_AUDIO_ENABLED     "audioEnabled"
+#define SCENE_JSON_COLLISION_ENABLED "collisionEnabled"
+#define SCENE_JSON_PHYSICS_ENABLED   "physicsEnabled"
+#define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
 
 namespace Dream {
 	namespace Scene {
@@ -36,12 +44,17 @@ namespace Dream {
 			bool mAudioEnabled;
 		public:
 			Scene();
+			Scene(nlohmann::json);
 			~Scene();
+			void init();
 			std::string getName();
 			void        setName(std::string);
 			Scenegraph* getScenegraph();
-		//protected:
-		//private:
+			bool isAudioEnabled();
+			bool isAnimationEnabled();
+			bool isPhysicsEnabled();
+			bool isCollisionEnabled();
+			bool isInputEnabled();
 		}; // End of Scene
 	} // End of Scene
 } // End of Dream

@@ -19,7 +19,7 @@
 #define FILEREADERTEST_H
 
 #include "../../src/Unit/Unit.h"
-#define TEST_JSON "test/test.json"
+#define TEST_JSON "test/Ash's Test Project.json"
 
 namespace Dream {
 	namespace Util {

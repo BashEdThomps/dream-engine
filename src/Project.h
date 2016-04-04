@@ -19,9 +19,14 @@
 #define PROJECT_H
 
 #include <vector>
+#include "JSON/json.hpp"
 #include "Scene/Scene.h"
 #include "Resource/Resource.h"
 
+#define PROJECT_JSON_NAME        "name"
+#define PROJECT_JSON_AUTHOR      "author"
+#define PROJECT_JSON_DESCRIPTION "description"
+#define PROJECT_JSON_SCENE_ARRAY "scenes"
 
 namespace Dream {
 	class Project {
@@ -36,6 +41,7 @@ namespace Dream {
 		Project(std::string);
 		~Project(void);
 
+		void loadScenesFromJson(nlohmann::json);
 		void setName(std::string);
 		std::string getName();
 
@@ -48,6 +54,7 @@ namespace Dream {
 		void addScene(Dream::Scene::Scene*);
 		void removeScene(Dream::Scene::Scene*);
 		int getNumberOfScenes();
+		Dream::Scene::Scene* getSceneByName(std::string);
 
 		void addResource(Dream::Resource::Resource*);
 		void removeResource(Dream::Resource::Resource*);

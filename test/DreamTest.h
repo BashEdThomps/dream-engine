@@ -19,6 +19,7 @@
 #define DREAMTEST_H
 
 #include "../src/Unit/Unit.h"
+#include "../src/Scene/Scene.h"
 
 namespace Dream {
 	namespace Test {

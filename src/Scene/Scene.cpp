@@ -20,8 +20,7 @@
 namespace Dream {
 	namespace  Scene {
 		Scene::Scene() {
-			mCamera = new Camera();
-			mScenegraph = new Scenegraph();
+			init();
 			mCollisionEnabled = false;;
 			mPhysicsEnabled   = false;
 			mAnimationEnabled = false;
@@ -29,7 +28,22 @@ namespace Dream {
 			mAudioEnabled     = false;
 		}
 
-		Scene::~Scene() {
+		Scene::Scene(nlohmann::json jsonScene) {
+			init();
+			mName             = jsonScene [SCENE_JSON_NAME];
+			mCollisionEnabled = jsonScene [SCENE_JSON_COLLISION_ENABLED];
+			mPhysicsEnabled   = jsonScene [SCENE_JSON_PHYSICS_ENABLED];
+			mAnimationEnabled = jsonScene [SCENE_JSON_ANIMATION_ENABLED];
+			mInputEnabled     = jsonScene [SCENE_JSON_INPUT_ENABLED];
+			mAudioEnabled     = jsonScene [SCENE_JSON_AUDIO_ENABLED];
+		}
+
+		Scene::~Scene() {}
+
+		void Scene::init() {
+
+		mCamera = new Camera();
+			mScenegraph = new Scenegraph();
 		}
 
 		std::string Scene::getName() {
@@ -42,6 +56,26 @@ namespace Dream {
 
 		Scenegraph* Scene::getScenegraph() {
 			return mScenegraph;
+		}
+
+		bool Scene::isAudioEnabled() {
+			return mAudioEnabled;
+		}
+
+		bool Scene::isAnimationEnabled() {
+			return mAnimationEnabled;
+		}
+
+		bool Scene::isPhysicsEnabled() {
+			return mPhysicsEnabled;
+		}
+
+		bool Scene::isCollisionEnabled() {
+			return mCollisionEnabled;
+		}
+
+		bool Scene::isInputEnabled() {
+			return mInputEnabled;
 		}
 
 	}// End of Scene

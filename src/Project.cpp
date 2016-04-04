@@ -16,7 +16,6 @@
 */
 
 #include "Project.h"
-#include "JSON/json.hpp"
 
 namespace Dream {
 
@@ -26,7 +25,10 @@ namespace Dream {
 
 	Project::Project(std::string jsonStr) {
 		nlohmann::json jsonProject = nlohmann::json::parse(jsonStr);
-
+		mName        = jsonProject [PROJECT_JSON_NAME];
+		mAuthor      = jsonProject [PROJECT_JSON_AUTHOR];
+		mDescription = jsonProject [PROJECT_JSON_DESCRIPTION];
+		loadScenesFromJson(jsonProject[PROJECT_JSON_SCENE_ARRAY]);
 	}
 
 	Project::~Project(void) {
@@ -34,6 +36,12 @@ namespace Dream {
 
 	void Project::setName(std::string name) {
 		mName = name;
+	}
+
+	void Project::loadScenesFromJson(nlohmann::json jsonSceneArray) {
+		for (nlohmann::json::iterator it = jsonSceneArray.begin(); it != jsonSceneArray.end(); ++it) {
+			addScene(new Dream::Scene::Scene((*it)));
+		}
 	}
 
 	std::string Project::getName() {
@@ -74,5 +82,18 @@ namespace Dream {
 
 	int Project::getNumberOfScenes() {
 		return mScenes.size();
+	}
+
+
+	Dream::Scene::Scene* Project::getSceneByName(std::string name) {
+		Dream::Scene::Scene* retval = NULL;
+		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin();
+	        it != mScenes.end(); ++it) {
+				if ((*it)->getName().compare(name) == 0) {
+					retval = (*it);
+					break;
+				}
+			}
+		return retval;
 	}
 } // End of Dream

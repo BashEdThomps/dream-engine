@@ -18,6 +18,8 @@
 #include "DreamTest.h"
 #include "../src/Dream.h"
 
+#define TEST_PROJECT "test/Ash's Test Project.json"
+
 namespace Dream {
 	namespace Test {
 		DreamTest::DreamTest() : Unit("Dream::Dream") {
@@ -39,7 +41,25 @@ namespace Dream {
 		}
 
 		void DreamTest::testCanLoadProjectFromJSON() {
-			assertInconclusive("Dream can load project from JSON");
+			Dream dream;
+			dream.loadProjectFromJsonFile(TEST_PROJECT);
+			std::string expectedName        = "Ash's Test Project";
+			std::string expectedAuthor      = "Ashley Thompson";
+			std::string expectedDescription = "A Test Dream project.";
+
+			assertZero("Project Got Name from JSON",       dream.getProject()->getName().compare(expectedName));
+			assertZero("Project Got Author from JSON",     dream.getProject()->getAuthor().compare(expectedAuthor));
+			assertZero("Project Got Description from JSON",dream.getProject()->getDescription().compare(expectedDescription));
+
+			std::string sceneName = "First Scene";
+			Scene::Scene* firstScene = dream.getProject()->getSceneByName(sceneName);
+
+			assertTrue("Got first scene from project by name", firstScene != NULL);
+			assertFalse("Project Scene has animation enabled", firstScene->isAnimationEnabled());
+			assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
+			assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
+			assertTrue("Project Scene has collision enabled",  firstScene->isCollisionEnabled());
+			assertTrue("Project Scene has input enabled",      firstScene->isInputEnabled());
 		};
 	} // End of Test
 } // End of Dream
