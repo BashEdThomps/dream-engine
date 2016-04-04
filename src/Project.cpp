@@ -24,7 +24,8 @@ namespace Dream {
 
 	}
 
-	Project::Project(std::string json) {
+	Project::Project(std::string jsonStr) {
+		nlohmann::json jsonProject = nlohmann::json::parse(jsonStr);
 
 	}
 
