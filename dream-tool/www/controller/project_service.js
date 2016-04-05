@@ -1,5 +1,6 @@
 App.service('ProjectService',
-    ["Blob","FileSaver", function(Blob,FileSaver) {
+    ["Blob","FileSaver","UtilService",
+     function(Blob, FileSaver, UtilService) {
 
     this.project = null;
 
@@ -54,10 +55,10 @@ App.service('ProjectService',
         this.isModified = true;
         this.project.configuration.inputEnabled = enabled;
     };
-    this.getSoundEffectFromByName = function(scene, name, callback) {
+    this.getSoundEffectFromByUUID = function(scene, name, callback) {
         var retval = null;
         this.project.resources.audio.soundEffects.forEach(function(sfx){
-            if (sfx.name == name) {
+            if (sfx.uuid == name) {
                 retval = name;
             }
         });
@@ -70,10 +71,10 @@ App.service('ProjectService',
         this.project.scenes.push(scene);
     };
 
-    this.getSceneByName = function(name, callback) {
+    this.getSceneByUUID = function(name, callback) {
         var retval = null;
         this.project.scenes.forEach(function (scene){
-            if (scene.name === name) {
+            if (scene.uuid === name) {
                 retval = scene;
             }
         });
@@ -90,10 +91,10 @@ App.service('ProjectService',
         this.project.resources.push(resource);
     };
 
-    this.getResourceByName = function(name, callback) {
+    this.getResourceByUUID = function(uuid, callback) {
         var retval = null;
         this.project.resources.forEach(function (rsc) {
-            if (rsc.name === name) {
+            if (rsc.uuid === uuid) {
                 retval = rsc;
             }
         });
@@ -118,6 +119,7 @@ App.service('ProjectService',
 
     this.createScene = function() {
         return {
+            uuid: UtilService.generateUUID(),
             name:"New Scene",
             objects:[
                 this.createSceneObject()
@@ -132,12 +134,14 @@ App.service('ProjectService',
 
     this.createSceneObject = function() {
         return {
+            uuid: UtilService.generateUUID(),
             name: "New Scene Object",
         };
     };
 
     this.createSoundEffectResource = function() {
         return {
+            uuid: UtilService.generateUUID(),
             name: "New Sound Effect",
             path: "/path/to/soundeffect.wav",
             type: "Sound Effect",
@@ -147,6 +151,7 @@ App.service('ProjectService',
 
     this.createMusicResource = function() {
         return {
+            uuid: UtilService.generateUUID(),
             name: "New Music",
             path: "/path/to/music.wav",
             type: "Music"
@@ -155,15 +160,17 @@ App.service('ProjectService',
 
     this.createModelResource = function() {
         return {
-            name: "New Model Resource",
-            path: "/path/to/resource",
-            type: "Model",
+            uuid:   UtilService.generateUUID(),
+            name:   "New Model Resource",
+            path:   "/path/to/resource",
+            type:   "Model",
             format: "obj",
         };
     };
 
     this.createAnimationResource = function() {
         return {
+            uuid: UtilService.generateUUID(),
             name: "New Animation",
             type: "Animation",
             path: "In Project",
@@ -173,10 +180,10 @@ App.service('ProjectService',
 
     this.initialise = function() {
         this.project = {
+            uuid:        UtilService.generateUUID(),
             name:        "New Project",
             author:      "Unknown Author",
             description: "A new Dream project.",
-
             scenes: [
                 this.createScene()
             ],
@@ -205,6 +212,7 @@ App.service('ProjectService',
     };
 
     this.generateDownloadBlob = function() {
+        delete this.project.isModified;
         return new Blob([ JSON.stringify(this.project) ], { type : 'application/octet-stream' });
     };
 

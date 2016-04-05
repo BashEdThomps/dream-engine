@@ -2,7 +2,7 @@ App.controller("ProjectSceneEditor",
     ["$scope","$state","$stateParams","ProjectService","UIService",
     function($scope,$state,$stateParams,ProjectService,UIService) {
         $scope.sceneName = $stateParams.scene;
-         ProjectService.getSceneByName($scope.sceneName,function (scene){
+         ProjectService.getSceneByUUID($scope.sceneName,function (scene){
              if (scene === null) {
                 $scope.scene = ProjectService.createScene();
             } else {

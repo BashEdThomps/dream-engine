@@ -1,29 +1,18 @@
 # Dream
-
 ## What
-
-
+A Tasty 3D Engine. Written to utilize modern technologies.
+* 3D Graphics with Vulkan.
+* 3D Audio with OpenAL.
+* Physics Simulation with Bullet.
+* Web based project editor, DreamTool.
+* JSON Project Structure.
+* Open software and formats only!
 ## Why
-
-
 ## How
-
-# Scenegraph
-
-## What
-
-## Why
-
-## How
-
-## Unit
-
-### What
-* A lightweight unit testing and assertion library.
-
-### Why
-* Allow small projects to be test driven without extra bloat.
-
-### How 
-* cout mostly, with some ANSI formatting.
-
+### Dream
+* C++
+* Bullet Physics
+### DreamTool
+* NodeJS
+* Koa
+* AngularUI Bootstrap

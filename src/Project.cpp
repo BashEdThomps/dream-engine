@@ -16,6 +16,7 @@
 */
 
 #include "Project.h"
+#include "Resource/Model/ModelResource.h"
 
 namespace Dream {
 
@@ -47,7 +48,23 @@ namespace Dream {
  	void Project::loadResourcesFromJson(nlohmann::json jsonResourceArray) {
 		for (nlohmann::json::iterator it = jsonResourceArray.begin();
 		     it != jsonResourceArray.end(); ++it) {
-			std::cout << "load resources not implemented" << std::endl;
+			Dream::Resource::Resource* resource = NULL;
+
+			std::string resourceType = (*it)[RESOURCE_JSON_TYPE];
+
+			if (resourceType.compare(RESOURCE_TYPE_MODEL) == 0) {
+				resource = new Dream::Resource::Model::ModelResource((*it));
+			} else if (resourceType.compare(RESOURCE_TYPE_ANIMATION) == 0) {
+
+			} else if (resourceType.compare(RESOURCE_TYPE_MUSIC) == 0) {
+
+			} else if (resourceType.compare(RESOURCE_TYPE_SOUND_EFFECT) == 0) {
+
+			}
+
+			if (resource != NULL) {
+				addResource(resource);
+			}
 		}
 	}
 

@@ -21,10 +21,10 @@ App.controller("ProjectResourceList",
         };
 
         $scope.onRemoveResourceButtonClicked = function(name) {
-            ProjectService.getResourceByName(name,function(resource){
+            ProjectService.getResourceByUUID(name,function(resource){
                 if (resource !== null) {
                     ProjectService.removeResource(resource);
-                    UIService.removeTreeProjectResourceByName(name);
+                    UIService.removeTreeProjectResourceByUUID(name);
                     UIService.addAlert("Removed resource "+name,"success");
                 } else {
                     UIService.addAlert("Could not remove resource "+name);

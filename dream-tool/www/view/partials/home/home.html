@@ -25,31 +25,31 @@
 					<li><!--Project-->
 						<a  ng-click="onHelpProjectClicked()">Project</a>
 						<ul>
-							<li><!--Configuration-->
-								<a  ng-click="onHelpProjectConfigurationClicked()">Configuration</a>
-							</li><!--Configuration-->
 							<li><!--Scene-->
 								<a  ng-click="onHelpProjectSceneClicked()">Scene</a>
 								<ul>
 									<li>
 										<a ng-click="onHelpProjectSceneScenegraphClicked()">Scene Graph</a>
+										<ul>
+											<li><!--Scene Object-->
+												<a  ng-click="onHelpProjectSceneSceneObjectClicked()" >Scene Object</a>
+												<ul>
+													<li>
+														<a  ng-click="onHelpProjectSceneSceneObjectModifierClicked()" >Modifier</a>
+														<ul>
+															<li>
+																<a  ng-click="onHelpProjectSceneSceneObjectModifierEventListenerClicked()">Event Listener</a>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</li><!--Close SceneObject-->
+										</ul>
 									</li>
 									<li>
 										<a ng-click="onHelpProjectSceneBulletWorldClicked()">Bullet World</a>
 									</li>
-									<li><!--Scene Object-->
-										<a  ng-click="onHelpProjectSceneSceneObjectClicked()" >Scene Object</a>
-										<ul>
-											<li>
-												<a  ng-click="onHelpProjectSceneSceneObjectModifierClicked()" >Modifier</a>
-												<ul>
-													<li>
-														<a  ng-click="onHelpProjectSceneSceneObjectModifierEventListenerClicked()">Event Listener</a>
-													</li>
-												</ul>
-											</li>
-										</ul>
-									</li><!--Close SceneObject-->
+
 								</ul>
 							</li><!--Close Scene-->
 							<li><!--Resources-->

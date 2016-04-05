@@ -8,6 +8,7 @@ App.controller("ProjectSceneList",
         $scope.onNewSceneAddButtonClicked = function() {
             console.log($scope.newScene);
             ProjectService.pushScene($scope.newScene);
+            UIService.addTreeProjectScene(UIService.createTreeProjectScene($scope.newScene.name));
             $scope.newScene = ProjectService.createScene();
         };
 
@@ -16,10 +17,10 @@ App.controller("ProjectSceneList",
         };
 
         $scope.onRemoveSceneButtonClicked = function(name) {
-            ProjectService.getSceneByName(name,function(scene){
+            ProjectService.getSceneByUUID(name,function(scene){
                 if (scene !== null) {
                     ProjectService.removeScene(scene);
-                    UIService.removeTreeProjectSceneByName(name);
+                    UIService.removeTreeProjectSceneByUUID(name);
                     UIService.addAlert("Removed scene "+name,"success");
                 } else {
                     UIService.addAlert("Could not remove "+name,"danger");

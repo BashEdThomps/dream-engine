@@ -6,3 +6,5 @@
 Doxyfile.bak
 build
 dream-tool/node_modules
+.tags*
+tags

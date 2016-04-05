@@ -14,6 +14,7 @@ file(GLOB TEST_SCENE_SRC "Scene/*.h" "Scene/*.cpp")
 
 # Resource
 file(GLOB TEST_RESOURCE_SRC "Resource/*.h" "Resource/*.cpp")
+file(GLOB TEST_RESOURCE_MODEL_SRC "Resource/Model/*.h" "Resource/Model/*.cpp")
 file(GLOB TEST_RESOURCE_ANIMATION_SRC "Resource/Animation/*.h" "Resource/Animation/*.cpp")
 #file(GLOB LUA_SRC "Lua/*.h" "Lua/*.cpp")
 #file(GLOB OBJ_SRC "Obj*.h" "Obj*.cpp")
@@ -22,6 +23,22 @@ file(GLOB TEST_RESOURCE_ANIMATION_SRC "Resource/Animation/*.h" "Resource/Animati
 file(GLOB TEST_DREAM_SRC "*.h" "*.cpp")
 
 # Targets & Stuff
-add_executable (DreamTest ${TEST_UNIT_SRC} ${TEST_JSON_SRC} ${TEST_UTIL_SRC} ${TEST_RESOURCE_SRC} ${TEST_RESOURCE_ANIMATION_SRC} ${TEST_SCENE_SRC} ${TEST_DREAM_SRC})
-add_custom_command(TARGET DreamTest PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/test/test_resources $<TARGET_FILE_DIR:DreamTest>)
+add_executable (
+    DreamTest
+    ${TEST_UNIT_SRC}
+    ${TEST_JSON_SRC}
+    ${TEST_UTIL_SRC}
+    ${TEST_RESOURCE_SRC}
+    ${TEST_RESOURCE_MODEL_SRC}
+    ${TEST_RESOURCE_ANIMATION_SRC}
+    ${TEST_SCENE_SRC}
+    ${TEST_DREAM_SRC}
+)
+
+add_custom_command(
+    TARGET DreamTest
+    PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/test/test_resources $<TARGET_FILE_DIR:DreamTest>
+)
+
 target_link_libraries(DreamTest Dream)

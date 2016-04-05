@@ -17,6 +17,7 @@ App.service('UIService',
         console.log("Generating Tree Data");
         this.treeData = [];
         var treeDataRoot = {};
+
         treeDataRoot.label = ProjectService.project.name;
         treeDataRoot.children = [];
         treeDataRoot.onSelect = hostController.onTreeProjectSelected;
@@ -36,21 +37,19 @@ App.service('UIService',
         var ui = this;
         ProjectService.project.scenes.forEach(function(scene) {
             console.log("Adding scene to tree:", scene.name);
-            ui.treeProjectScenes.children.push(ui.createTreeProjectScene(scene.name));
+            ui.addTreeProjectScene(ui.createTreeProjectScene(scene.name));
         });
-
         treeDataRoot.children.push(this.treeProjectScenes);
     };
 
-    this.createTreeProjectScene = function(name)
-    {
+    this.createTreeProjectScene = function(name) {
         return {
             label :name,
             onSelect: hostController.onTreeProjectSceneInstanceSelected
         };
     };
 
-    this.getTreeProjectSceneByName = function(name,callback){
+    this.getTreeProjectSceneByUUID = function(name,callback){
         var retval = null;
         this.treeProjectScenes.children.forEach(function(scene) {
             if (scene.label === name) {
@@ -60,9 +59,9 @@ App.service('UIService',
         callback(retval);
     };
 
-    this.removeTreeProjectSceneByName = function(name){
+    this.removeTreeProjectSceneByUUID = function(name) {
         var ui = this;
-        this.getTreeProjectSceneByName(name,function(scene){
+        this.getTreeProjectSceneByUUID(name,function(scene) {
             if (scene !== null){
                 ui.removeTreeProjectScene(scene);
             }
@@ -70,7 +69,7 @@ App.service('UIService',
     };
 
     this.addTreeProjectScene = function(scene) {
-        this.treeProjectScenes.push(scene);
+        this.treeProjectScenes.children.push(scene);
     };
 
     this.removeTreeProjectScene = function(scene) {
@@ -99,11 +98,9 @@ App.service('UIService',
             onSelect: hostController.onTreeProjectResourceSelected
         };
         var ui = this;
-
         ProjectService.getProject().resources.forEach(function(resource){
             ui.treeProjectResources.children.push(ui.createTreeProjectResource(resource.name));
         });
-
         treeDataRoot.children.push(this.treeProjectResources);
     };
 
@@ -112,7 +109,7 @@ App.service('UIService',
         this.treeProjectResources.children.splice(index,1);
     };
 
-    this.getTreeProjectResourceByName = function(name,callback){
+    this.getTreeProjectResourceByUUID = function(name,callback){
         var retval = null;
         this.treeProjectResources.children.forEach(function(res) {
             if (res.label === name) {
@@ -122,9 +119,9 @@ App.service('UIService',
         callback(retval);
     };
 
-    this.removeTreeProjectResourceByName = function(name) {
+    this.removeTreeProjectResourceByUUID = function(name) {
         var ui = this;
-        this.getTreeProjectResourceByName(name, function(res){
+        this.getTreeProjectResourceByUUID(name, function(res){
             if (res !== null) {
                 ui.removeTreeProjectResource(res);
             }
@@ -186,7 +183,6 @@ App.service('UIService',
             templateUrl: 'view/partials/modals/save_modified.html',
             controller: 'YesNoModal'
         });
-
         modal.result.then(function (result) {
             if (result) {
                 yesCallback();
@@ -204,7 +200,6 @@ App.service('UIService',
             templateUrl: 'view/partials/modals/open.html',
             controller: 'OpenFileModal'
         });
-
         modal.result.then(function (result) {
             if (result) {
 
@@ -217,6 +212,6 @@ App.service('UIService',
     };
 
     // Return UIService --------------------------------------------------------
-
+    
     return this;
 }]);
