@@ -7,11 +7,15 @@ A Tasty 3D Engine. Written to utilize modern technologies.
 * Web based project editor, DreamTool.
 * JSON Project Structure.
 * Open software and formats only!
+
 ## Why
+
 ## How
+
 ### Dream
 * C++
 * Bullet Physics
+
 ### DreamTool
 * NodeJS
 * Koa
