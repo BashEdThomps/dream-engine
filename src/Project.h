@@ -23,10 +23,11 @@
 #include "Scene/Scene.h"
 #include "Resource/Resource.h"
 
-#define PROJECT_JSON_NAME        "name"
-#define PROJECT_JSON_AUTHOR      "author"
-#define PROJECT_JSON_DESCRIPTION "description"
-#define PROJECT_JSON_SCENE_ARRAY "scenes"
+#define PROJECT_JSON_NAME           "name"
+#define PROJECT_JSON_AUTHOR         "author"
+#define PROJECT_JSON_DESCRIPTION    "description"
+#define PROJECT_JSON_SCENE_ARRAY    "scenes"
+#define PROJECT_JSON_RESOURCE_ARRAY "resources"
 
 namespace Dream {
 	class Project {
@@ -38,10 +39,12 @@ namespace Dream {
 		std::vector<Dream::Resource::Resource*> mResources;
 	public:
 		Project(void);
-		Project(std::string);
+		Project(nlohmann::json);
 		~Project(void);
 
 		void loadScenesFromJson(nlohmann::json);
+		void loadResourcesFromJson(nlohmann::json);
+
 		void setName(std::string);
 		std::string getName();
 
@@ -59,8 +62,6 @@ namespace Dream {
 		void addResource(Dream::Resource::Resource*);
 		void removeResource(Dream::Resource::Resource*);
 		int getNumberOfResources();
-	//protected:
-	//private:
 	}; // End of Project
 } // End of Dream
 

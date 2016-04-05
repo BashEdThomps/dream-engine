@@ -19,6 +19,7 @@
 #define RESOURCE_H
 
 #include <iostream>
+#include "../JSON/json.hpp"
 
 namespace Dream {
 	namespace Resource {
@@ -26,6 +27,7 @@ namespace Dream {
 			std::string mName;
 		public:
 			Resource(void);
+			Resource(nlohmann::json);
 			~Resource(void);
 
 			void setName(std::string);

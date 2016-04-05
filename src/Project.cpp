@@ -23,11 +23,11 @@ namespace Dream {
 
 	}
 
-	Project::Project(std::string jsonStr) {
-		nlohmann::json jsonProject = nlohmann::json::parse(jsonStr);
+	Project::Project(nlohmann::json jsonProject) {
 		mName        = jsonProject [PROJECT_JSON_NAME];
 		mAuthor      = jsonProject [PROJECT_JSON_AUTHOR];
 		mDescription = jsonProject [PROJECT_JSON_DESCRIPTION];
+		loadResourcesFromJson(jsonProject[PROJECT_JSON_RESOURCE_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_JSON_SCENE_ARRAY]);
 	}
 
@@ -41,6 +41,13 @@ namespace Dream {
 	void Project::loadScenesFromJson(nlohmann::json jsonSceneArray) {
 		for (nlohmann::json::iterator it = jsonSceneArray.begin(); it != jsonSceneArray.end(); ++it) {
 			addScene(new Dream::Scene::Scene((*it)));
+		}
+	}
+
+ 	void Project::loadResourcesFromJson(nlohmann::json jsonResourceArray) {
+		for (nlohmann::json::iterator it = jsonResourceArray.begin();
+		     it != jsonResourceArray.end(); ++it) {
+			std::cout << "load resources not implemented" << std::endl;
 		}
 	}
 

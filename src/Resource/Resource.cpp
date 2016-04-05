@@ -22,6 +22,9 @@ namespace Dream {
 		Resource::Resource(void) {
 		}
 
+		Resource::Resource(nlohmann::json json) {
+		}
+
 		Resource::~Resource(void) {
 		}
 
