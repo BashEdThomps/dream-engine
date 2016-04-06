@@ -13,6 +13,7 @@ App.controller("ProjectResourceList",
 
         $scope.onNewResourceAddButtonClicked = function() {
             ProjectService.pushResource($scope.newResource);
+            UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.newResource));
             $scope.newResource = ProjectService.createAnimationResource();
         };
 
@@ -20,14 +21,13 @@ App.controller("ProjectResourceList",
             $scope.newResource = ProjectService.createAnimationResource();
         };
 
-        $scope.onRemoveResourceButtonClicked = function(name) {
-            ProjectService.getResourceByUUID(name,function(resource){
+        $scope.onRemoveResourceButtonClicked = function(uuid) {
+            ProjectService.getResourceByUUID(uuid,function(resource){
                 if (resource !== null) {
                     ProjectService.removeResource(resource);
-                    UIService.removeTreeProjectResourceByUUID(name);
-                    UIService.addAlert("Removed resource "+name,"success");
+                    UIService.removeTreeProjectResourceByUUID(uuid);
                 } else {
-                    UIService.addAlert("Could not remove resource "+name);
+                    UIService.addAlert("Error: Could not remove resource! ","danger");
                 }
             });
         };

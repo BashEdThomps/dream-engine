@@ -55,16 +55,6 @@ App.service('ProjectService',
         this.isModified = true;
         this.project.configuration.inputEnabled = enabled;
     };
-    this.getSoundEffectFromByUUID = function(scene, name, callback) {
-        var retval = null;
-        this.project.resources.audio.soundEffects.forEach(function(sfx){
-            if (sfx.uuid == name) {
-                retval = name;
-            }
-        });
-        callback(retval);
-    };
-
 
     this.pushScene = function(scene) {
         this.isModified = true;
@@ -143,7 +133,7 @@ App.service('ProjectService',
         return {
             uuid: UtilService.generateUUID(),
             name: "New Sound Effect",
-            path: "/path/to/soundeffect.wav",
+            path: "/resources/audio/soundeffects/",
             type: "Sound Effect",
             format: "wav"
         };
@@ -153,7 +143,7 @@ App.service('ProjectService',
         return {
             uuid: UtilService.generateUUID(),
             name: "New Music",
-            path: "/path/to/music.wav",
+            path: "/resources/audio/music/",
             type: "Music"
         };
     };
@@ -162,7 +152,7 @@ App.service('ProjectService',
         return {
             uuid:   UtilService.generateUUID(),
             name:   "New Model Resource",
-            path:   "/path/to/resource",
+            path:   "/resources/models/",
             type:   "Model",
             format: "obj",
         };
@@ -173,7 +163,7 @@ App.service('ProjectService',
             uuid: UtilService.generateUUID(),
             name: "New Animation",
             type: "Animation",
-            path: "In Project",
+            path: "/resources/animations/",
             keyframes: [],
         };
     };

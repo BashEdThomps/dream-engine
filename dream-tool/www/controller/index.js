@@ -144,12 +144,12 @@ function($state,$scope, ApiConnector, ProjectService,
 
     $scope.onTreeProjectSceneInstanceSelected = function(branch) {
         console.log("Selected Scene:",branch);
-        $state.go("ProjectSceneEditor",{scene:branch.label});
+        $state.go("ProjectSceneEditor",{scene:branch.uuid});
     };
 
     $scope.onTreeProjectResourceInstanceSelected = function(branch) {
         console.log("Selected Resource:",branch);
-        $state.go("ProjectResourceEditor",{resource:branch.label});
+        $state.go("ProjectResourceEditor",{resource:branch.uuid});
     };
 
     // Toolbar Button Callbacks ------------------------------------------------

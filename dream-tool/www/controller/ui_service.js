@@ -37,32 +37,33 @@ App.service('UIService',
         var ui = this;
         ProjectService.project.scenes.forEach(function(scene) {
             console.log("Adding scene to tree:", scene.name);
-            ui.addTreeProjectScene(ui.createTreeProjectScene(scene.name));
+            ui.addTreeProjectScene(ui.createTreeProjectScene(scene));
         });
         treeDataRoot.children.push(this.treeProjectScenes);
     };
 
-    this.createTreeProjectScene = function(name) {
+    this.createTreeProjectScene = function(scene) {
         return {
-            label :name,
-            onSelect: hostController.onTreeProjectSceneInstanceSelected
+            label    : scene.name,
+            uuid     : scene.uuid,
+            onSelect : hostController.onTreeProjectSceneInstanceSelected
         };
     };
 
     this.getTreeProjectSceneByUUID = function(name,callback){
         var retval = null;
         this.treeProjectScenes.children.forEach(function(scene) {
-            if (scene.label === name) {
+            if (scene.uuid === name) {
                 retval  = scene;
             }
         });
         callback(retval);
     };
 
-    this.removeTreeProjectSceneByUUID = function(name) {
+    this.removeTreeProjectSceneByUUID = function(uuid) {
         var ui = this;
-        this.getTreeProjectSceneByUUID(name,function(scene) {
-            if (scene !== null){
+        this.getTreeProjectSceneByUUID(uuid,function(scene) {
+            if (scene !== null) {
                 ui.removeTreeProjectScene(scene);
             }
         });
@@ -79,14 +80,14 @@ App.service('UIService',
 
     // Resource ----------------------------------------------------------------
 
-    this.addTreePrjectResource = function(resource) {
-        this.treeProjectResources.push(scene);
+    this.addTreeProjectResource = function(resource) {
+        this.treeProjectResources.children.push(resource);
     };
 
-    this.createTreeProjectResource = function(name) {
+    this.createTreeProjectResource = function(resource) {
         return {
-            label    : name,
-            children : [],
+            label    : resource.name,
+            uuid     : resource.uuid,
             onSelect : hostController.onTreeProjectResourceInstanceSelected,
         };
     };
@@ -99,7 +100,7 @@ App.service('UIService',
         };
         var ui = this;
         ProjectService.getProject().resources.forEach(function(resource){
-            ui.treeProjectResources.children.push(ui.createTreeProjectResource(resource.name));
+            ui.treeProjectResources.children.push(ui.createTreeProjectResource(resource));
         });
         treeDataRoot.children.push(this.treeProjectResources);
     };
@@ -109,19 +110,19 @@ App.service('UIService',
         this.treeProjectResources.children.splice(index,1);
     };
 
-    this.getTreeProjectResourceByUUID = function(name,callback){
+    this.getTreeProjectResourceByUUID = function(uuid,callback){
         var retval = null;
         this.treeProjectResources.children.forEach(function(res) {
-            if (res.label === name) {
+            if (res.uuid === uuid) {
                 retval  = res;
             }
         });
         callback(retval);
     };
 
-    this.removeTreeProjectResourceByUUID = function(name) {
+    this.removeTreeProjectResourceByUUID = function(uuid) {
         var ui = this;
-        this.getTreeProjectResourceByUUID(name, function(res){
+        this.getTreeProjectResourceByUUID(uuid, function(res){
             if (res !== null) {
                 ui.removeTreeProjectResource(res);
             }
@@ -212,6 +213,6 @@ App.service('UIService',
     };
 
     // Return UIService --------------------------------------------------------
-    
+
     return this;
 }]);
