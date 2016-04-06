@@ -43,7 +43,7 @@ namespace Dream {
 				assertTrue("Read into string stream", testFileReader.readIntoStringStream());
 				std::string stringContent = testFileReader.getContentsAsString();
 				assertNotZero("Read > 0 length from test.json",stringContent.length());
-				comment(stringContent);
+				//comment(stringContent);
 			}
 
 			void FileReaderTest::testReadIntoBinaryStream() {

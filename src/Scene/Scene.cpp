@@ -41,13 +41,20 @@ namespace Dream {
 		Scene::~Scene() {}
 
 		void Scene::init() {
-
-		mCamera = new Camera();
+			mCamera = new Camera();
 			mScenegraph = new Scenegraph();
 		}
 
 		std::string Scene::getName() {
 			return mName;
+		}
+
+		std::string Scene::getUUID() {
+			return mUUID;
+		}
+
+		void Scene::setUUID(std::string uuid) {
+			mUUID = uuid;
 		}
 
 		void Scene::setName(std::string name) {

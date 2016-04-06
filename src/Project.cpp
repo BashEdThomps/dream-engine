@@ -25,6 +25,7 @@ namespace Dream {
 	}
 
 	Project::Project(nlohmann::json jsonProject) {
+		mUUID        = jsonProject [PROJECT_JSON_UUID];
 		mName        = jsonProject [PROJECT_JSON_NAME];
 		mAuthor      = jsonProject [PROJECT_JSON_AUTHOR];
 		mDescription = jsonProject [PROJECT_JSON_DESCRIPTION];
@@ -37,6 +38,14 @@ namespace Dream {
 
 	void Project::setName(std::string name) {
 		mName = name;
+	}
+
+	void Project::setUUID(std::string uuid) {
+		mUUID = uuid;
+	}
+
+	std::string Project::getUUID() {
+		return mUUID;
 	}
 
 	void Project::loadScenesFromJson(nlohmann::json jsonSceneArray) {

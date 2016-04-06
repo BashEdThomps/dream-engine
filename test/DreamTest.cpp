@@ -42,11 +42,15 @@ namespace Dream {
 
 		void DreamTest::testCanLoadProjectFromJSON() {
 			Dream dream;
+
 			dream.loadProjectFromJsonFile(TEST_PROJECT);
+
+			std::string expectedUUID        = "bd94-d5c9-50b0-2c7b";
 			std::string expectedName        = "Ash's Test Project";
 			std::string expectedAuthor      = "Ashley Thompson";
 			std::string expectedDescription = "A Test Dream project.";
 
+			assertZero("Project Got UUID from JSON",       dream.getProject()->getUUID().compare(expectedUUID));
 			assertZero("Project Got Name from JSON",       dream.getProject()->getName().compare(expectedName));
 			assertZero("Project Got Author from JSON",     dream.getProject()->getAuthor().compare(expectedAuthor));
 			assertZero("Project Got Description from JSON",dream.getProject()->getDescription().compare(expectedDescription));

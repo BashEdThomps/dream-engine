@@ -29,7 +29,15 @@ namespace Dream {
 
 			void TestResource::run() {
 				header();
+				testResourceCanStoreUUID();
 				testResourceCanStoreName();
+			}
+
+			void TestResource::testResourceCanStoreUUID() {
+				Dream::Resource::Resource r;
+				std::string uuid = "1234-abcd-3382-efda";
+				r.setUUID(uuid);
+				assertZero("Resource can store UUID",uuid.compare(r.getUUID()));
 			}
 
 			void TestResource::testResourceCanStoreName() {

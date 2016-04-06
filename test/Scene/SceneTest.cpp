@@ -29,11 +29,16 @@ namespace Dream {
 
 			void SceneTest::run(void) {
 				header();
+				testSceneCanStoreUUID();
 				testSceneCanStoreName();
-				testSceneCanStoreMultipleSceneObjects();
-				testSceneCanStoreMultipleAnimationResources();
-				testSceneCanStoreMultipleSoundEffectResources();
-				testSceneCanStoreMultipleMusicResources();
+				testSceneHasScenegraph();
+			}
+
+			void SceneTest::testSceneCanStoreUUID() {
+				Scene p;
+				std::string uuid = "12ab-34cd-56ef-78af";
+				p.setUUID(uuid);
+				assertTrue("Stores UUID",p.getUUID().compare(uuid) == 0);
 			}
 
 			void SceneTest::testSceneCanStoreName(void) {
@@ -46,22 +51,6 @@ namespace Dream {
 			void SceneTest::testSceneHasScenegraph() {
 				Scene s;
 				assertNotNull("Scene has Scenegraph",s.getScenegraph());
-			}
-
-			void SceneTest::testSceneCanStoreMultipleSceneObjects(void) {
-				assertInconclusive("SceneCanStoreMultipleSceneObjects: Test Not Implemented");
-			}
-
-			void SceneTest::testSceneCanStoreMultipleAnimationResources(void) {
-				assertInconclusive("SceneCanStoreMultipleAnimation: Test Not Implemented");
-			}
-
-			void SceneTest::testSceneCanStoreMultipleSoundEffectResources(void) {
-				assertInconclusive("SceneCanStoreMultipleSoundEffects: Test Not Implemented");
-			}
-
-			void SceneTest::testSceneCanStoreMultipleMusicResources(void) {
-				assertInconclusive("SceneCanStoreMultipleAudioTracks: Test Not Implemented");
 			}
 		} // End of Test
 	} // End of Scene

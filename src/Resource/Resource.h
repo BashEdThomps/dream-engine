@@ -31,11 +31,15 @@
 namespace Dream {
 	namespace Resource {
 		class Resource {
+			std::string mUUID;
 			std::string mName;
 		public:
 			Resource(void);
 			Resource(nlohmann::json);
 			~Resource(void);
+
+			void setUUID(std::string);
+			std::string getUUID();
 
 			void setName(std::string);
 			std::string getName();

@@ -31,11 +31,19 @@ namespace Dream {
 
 		void ProjectTest::run(void) {
 			header();
+			testProjectCanStoreUUID();
 			testProjectCanStoreName();
 			testProjectCanStoreAuthor();
 			testProjectCanStoreDescription();
 			testProjectCanStoreMultipleResources();
 			testProjectCanStoreMultipleScenes();
+		}
+
+		void ProjectTest::testProjectCanStoreUUID() {
+			Project p;
+			std::string uuid = "12ab-34cd-56ef-78af";
+			p.setUUID(uuid);
+			assertTrue("Stores UUID",p.getUUID().compare(uuid) == 0);
 		}
 
 		void ProjectTest::testProjectCanStoreName() {

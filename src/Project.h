@@ -23,6 +23,7 @@
 #include "Scene/Scene.h"
 #include "Resource/Resource.h"
 
+#define PROJECT_JSON_UUID           "uuid"
 #define PROJECT_JSON_NAME           "name"
 #define PROJECT_JSON_AUTHOR         "author"
 #define PROJECT_JSON_DESCRIPTION    "description"
@@ -32,6 +33,7 @@
 namespace Dream {
 	class Project {
 	private:
+		std::string mUUID;
 		std::string mName;
 		std::string mDescription;
 		std::string mAuthor;
@@ -45,13 +47,16 @@ namespace Dream {
 		void loadScenesFromJson(nlohmann::json);
 		void loadResourcesFromJson(nlohmann::json);
 
-		void setName(std::string);
+		void        setUUID(std::string);
+		std::string getUUID();
+
+		void        setName(std::string);
 		std::string getName();
 
-		void setDescription(std::string);
+		void        setDescription(std::string);
 		std::string getDescription(void);
 
-		void setAuthor(std::string);
+		void        setAuthor(std::string);
 		std::string getAuthor();
 
 		void addScene(Dream::Scene::Scene*);

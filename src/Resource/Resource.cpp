@@ -28,6 +28,14 @@ namespace Dream {
 		Resource::~Resource(void) {
 		}
 
+		void Resource::setUUID(std::string uuid) {
+			mUUID = uuid;
+		}
+
+		std::string Resource::getUUID() {
+			return mUUID;
+		}
+
 		void Resource::setName(std::string name) {
 			mName = name;
 		}

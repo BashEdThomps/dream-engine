@@ -27,6 +27,7 @@ namespace Dream {
 			ProjectTest(void);
 			~ProjectTest(void);
 			void run(void);
+			void testProjectCanStoreUUID();
 			void testProjectCanStoreName();
 			void testProjectCanStoreAuthor();
 			void testProjectCanStoreDescription();

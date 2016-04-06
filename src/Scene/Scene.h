@@ -23,6 +23,7 @@
 #include "Camera.h"
 #include "../JSON/json.hpp"
 
+#define SCENE_JSON_UUID              "uuid"
 #define SCENE_JSON_NAME              "name"
 #define SCENE_JSON_ANIMATION_ENABLED "animationEnabled"
 #define SCENE_JSON_AUDIO_ENABLED     "audioEnabled"
@@ -34,6 +35,7 @@ namespace Dream {
 	namespace Scene {
 		class Scene {
 		private:
+			std::string mUUID;
 			std::string mName;
 			Scenegraph *mScenegraph;
 			Camera* mCamera;
@@ -46,9 +48,15 @@ namespace Dream {
 			Scene();
 			Scene(nlohmann::json);
 			~Scene();
+
 			void init();
+
+			std::string getUUID();
+			void setUUID(std::string);
+
 			std::string getName();
 			void        setName(std::string);
+
 			Scenegraph* getScenegraph();
 			bool isAudioEnabled();
 			bool isAnimationEnabled();

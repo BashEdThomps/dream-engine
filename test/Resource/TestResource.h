@@ -28,6 +28,7 @@ namespace Dream {
 				TestResource(void);
 				~TestResource(void);
 				void run();
+				void testResourceCanStoreUUID();
 				void testResourceCanStoreName();
 			//protected:
 			//private:

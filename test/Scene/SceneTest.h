@@ -28,14 +28,9 @@ namespace Dream {
 				SceneTest(void);
 				~SceneTest(void);
 				void run(void);
+				void testSceneCanStoreUUID(void);
 				void testSceneCanStoreName(void);
-				void testSceneHasScenegraph();
-				void testSceneCanStoreMultipleSceneObjects(void);
-				void testSceneCanStoreMultipleAnimationResources(void);
-				void testSceneCanStoreMultipleSoundEffectResources(void);
-				void testSceneCanStoreMultipleMusicResources(void);
-			//protected:
-			//private:
+				void testSceneHasScenegraph(void);
 			}; // End of SceneTest
 		} // End of Test
 	} // End of Scene

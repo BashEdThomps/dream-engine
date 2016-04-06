@@ -79,6 +79,10 @@ int testResourceAnimation() {
 int testScene() {
 	int result = 0;
 
+	Dream::Scene::Test::SceneTest sceneTest;
+	sceneTest.run();
+	result += sceneTest.getResult();
+
 	Dream::Scene::Test::TestCamera testCamera;
 	testCamera.run();
 	result += testCamera.getResult();
@@ -90,6 +94,7 @@ int testScene() {
 	Dream::Scene::Test::TestScenegraph testScenegraph;
 	testScenegraph.run();
 	result += testScenegraph.getResult();
+	
 	return result;
 }
 
