@@ -1,6 +1,6 @@
 App.service('UIService',
-    ["ProjectService",'$uibModal',
-    function(ProjectService,$uibModal) {
+    ['ProjectService','$uibModal','ngToast',
+    function(ProjectService,$uibModal,ngToast) {
 
     this.isFullScreen = false;
 
@@ -21,7 +21,7 @@ App.service('UIService',
         treeDataRoot.label = ProjectService.project.name;
         treeDataRoot.children = [];
         treeDataRoot.onSelect = hostController.onTreeProjectSelected;
-        
+
         this.generateTreeProjectScenes(treeDataRoot);
         this.generateTreeProjectResources(treeDataRoot);
         this.treeData.push(treeDataRoot);
@@ -132,26 +132,17 @@ App.service('UIService',
 
     // Toast Alerts ------------------------------------------------------------
 
-    this.defaultToastDuration = 3000;
-    this.toastAlertList = [];
-
-    // Create an alert object
-    this.newAlert = function(text, type, duration) {
-        return {
-            text: text,
-            type: type,
-            duration: (duration === undefined ? this.defaultToastDuration : duration)
-        };
-    };
-
     // Add an alert to the page
   	this.addAlert = function(msg,type) {
-  	    this.toastAlertList.push(this.newAlert(msg,type,this.defaultToastDuration));
+        ngToast.create({
+            className : type,
+            content   : msg,
+        });
   	};
 
     // Close an alert from the page
   	this.closeAlert = function(index) {
-  	    this.toastAlertList.splice(index, 1);
+  	    ngToast.dismiss(index);
  	};
 
     // Breadcrumbs ---------------------------------------------------------

@@ -1,17 +1,18 @@
 App.controller("OpenFileModal",
-    ["$scope","$uibModalInstance","ProjectService",
-    function($scope, $uibModalInstance,ProjectService) {
+    ["$scope","$uibModalInstance","ProjectService","UtilService","UIService",
+    function($scope, $uibModalInstance,ProjectService,UtilService,UIService) {
 
         $scope.open = function () {
-            var f = document.getElementById('file').files[0],
-            r = new FileReader();
-            r.onloadend = function(e){
-                var data = e.target.result;
-                console.log("Data?",data);
-                ProjectService.openProject(JSON.parse(data));
-                $uibModalInstance.close(true);
-            };
-            r.readAsText(f);
+            var fileElement = document.getElementById('file');
+
+            UtilService.readFileAsTextFromElement(fileElement,function(data){
+                if (data !== null) {
+                    ProjectService.openProject(JSON.parse(data));
+                    $uibModalInstance.close(true);
+                } else {
+                    UIService.addalert("Unable to load file!","danger");
+                }
+            });
         };
 
         $scope.cancel = function () {

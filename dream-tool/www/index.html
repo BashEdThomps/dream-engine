@@ -7,14 +7,17 @@
     <script src="angular-ui-router.min.js"></script>
     <script src="abn_tree_directive.js"></script>
     <script src="screenfull.js"></script>
-    <script src="angular-screenfull.js"></script>
     <script src="FileSaver.js"></script>
     <script src="Blob.js"></script>
     <script src="angular-file-saver.min.js"></script>
+    <script src="angular-animate.min.js"></script>
+    <script src="angular-sanitize.min.js"></script>
+    <script src="ngToast.min.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/dream_tool.css">
     <link rel="stylesheet" href="abn_tree.css">
+    <link rel="stylesheet" href="ngToast.min.css">
     <!-- Controllers -->
     <script src="controller/app.js"></script>
     <script src="controller/api_service.js"></script>
@@ -36,7 +39,6 @@
     <script src="controller/modals/open.js"></script>
 </head>
 <body ng-controller="index" ngsf-fullscreen class="fullscreen">
-
     <!-- Navigation Bar -->
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container-fluid">
@@ -74,50 +76,38 @@
                         <span class="glyphicon glyphicon-gift"></span>
                     </a>
                 </li>
-				<li>
-                    <a  ng-click="onSettingsButtonClicked()">
-                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-cog"></span>
-                    </a>
-                </li>
-
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a ngsf-toggle-fullscreen>
-                        <span ng-class="isFullScreen ? 'glyphicon glyphicon-toolbar glyphicon-resize-small' : 'glyphicon glyphicon-toolbar glyphicon-resize-full'"></span>
+                    <a  ng-click="onSettingsButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-cog"></span>
                     </a>
                 </li>
             </ul>
         </div>
     </nav>
-    <!-- Alert Box -->
-    <uib-alert ng-repeat="alert in alertList"
-    class="toast-alert"
-    dismiss-on-timeout="{{ alert.duration }}"
-    type="{{ alert.type }}"
-    close="closeAlert($index)">
-    {{ alert.text }}
-</uib-alert>
-<!-- Page Container -->
-<div class="container-fluid">
-    <!-- Page Content -->
-    <div class="row">
-        <div class="col-md-2">
-            <div class="fill well">
-                <abn-tree expand-level="5" tree-data="treeData">
-                </abn-tree>
+    <!-- Toast Alerts -->
+    <toast></toast>
+    <!-- Page Container -->
+    <div class="container-fluid">
+        <!-- Page Content -->
+        <div class="row">
+            <div class="col-md-2">
+                <div class="fill well">
+                    <abn-tree expand-level="5" tree-data="treeData">
+                    </abn-tree>
+                </div>
             </div>
-        </div>
-        <div class="col-md-10">
-            <div class="fill well">
-                <ol class="breadcrumb">
-                    <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
-                </ol>
-                <div ui-view></div>
+            <div class="col-md-10">
+                <div class="fill well">
+                    <ol class="breadcrumb">
+                        <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
+                    </ol>
+                    <div ui-view></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>

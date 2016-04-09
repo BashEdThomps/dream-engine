@@ -1,6 +1,6 @@
 App.controller("ProjectResourceEditor",
-    ["$scope","$state","$stateParams","ProjectService","UIService",
-    function($scope,$state,$stateParams,ProjectService,UIService) {
+    ["$scope","$state","$stateParams","ProjectService","UIService","UtilService","ApiService",
+    function($scope,$state,$stateParams,ProjectService,UIService,UtilService,ApiService) {
         $scope.resourceUUID = $stateParams.resource;
         ProjectService.getResourceByUUID($scope.resourceUUID, function(resource) {
             if (resource === null) {
@@ -16,19 +16,62 @@ App.controller("ProjectResourceEditor",
 
         $scope.getResourecTypes = ProjectService.getResourecTypes;
 
-        $scope.fileNameChanged = function(element) {
-            console.log("File selected...");
+        $scope.onResourceModelWavefrontUploadButtonClicked = function() {
+            var objFile = document.getElementById('wf-obj-file');
+            UtilService.readFileAsBinaryFromElement(objFile, function(data) {
+                var path = "resource/models/"+$scope.resourceUUID+"/obj";
+                ApiService.uploadResource(path,data,function(success){
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
 
-            var file = document.getElementById('file1').files[0];
-            var reader = new FileReader();
+            var mtlFile = document.getElementById('wf-mtl-file');
+            UtilService.readFileAsBinaryFromElement(mtlFile, function (data) {
+                var path = "resource/models/"+$scope.resourceUUID+"/mtl";
+                ApiService.uploadResource(path,data,function(success) {
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
+        };
 
-            reader.onloadend = function(e){
-                var data = e.target.result;
-                console.log("Data:",data);
-                //send you binary data via $http or $resource or do anything else with it
-            };
+        $scope.onResourceAudioWaveUploadButtonClicked = function() {
+            var wavFile = document.getElementById('wav-file');
+            UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
+                var path = "resource/audio/"+$scope.resourceUUID;
+                ApiService.uploadResource(path,data,function(success){
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
+        };
 
-            reader.readAsArrayBuffer(file);
+        $scope.onResourceAudioOggUploadButtonClicked = function() {
+            var oggFile = document.getElementById('ogg-file');
+            UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
+                var path = "resource/audio/"+$scope.resourceUUID;
+                ApiService.uploadResource(path,data,function(success){
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
         };
     }
 ]);

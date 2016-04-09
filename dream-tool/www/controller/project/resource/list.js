@@ -3,7 +3,7 @@ App.controller("ProjectResourceList",
     function($scope,$state,ProjectService,UIService) {
 
         $scope.project = ProjectService.getProject();
-        $scope.newResource = ProjectService.createAnimationResource();
+        $scope.newResource = ProjectService.createResource();
 
         UIService.setBreadcrumbs([ProjectService.getName(),"Resources"]);
 
@@ -14,11 +14,11 @@ App.controller("ProjectResourceList",
         $scope.onNewResourceAddButtonClicked = function() {
             ProjectService.pushResource($scope.newResource);
             UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.newResource));
-            $scope.newResource = ProjectService.createAnimationResource();
+            $scope.newResource = ProjectService.createResource();
         };
 
         $scope.onNewResourceClearButtonClicked = function() {
-            $scope.newResource = ProjectService.createAnimationResource();
+            $scope.newResource = ProjectService.createResource();
         };
 
         $scope.onRemoveResourceButtonClicked = function(uuid) {

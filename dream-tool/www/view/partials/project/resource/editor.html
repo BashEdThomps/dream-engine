@@ -24,21 +24,48 @@
                             <option value="obj">Wavefront OBJ</option>
                         </select>
                         <br />
-                        <label for="file">Model</label>
-                        <input type="file" id="model-file" name="model-file" />
-                        <br/>
-                        <label for="file">Material</label>
-                        <input type="file" id="material-file" name="material-file" />
+                        <div id="wf-obj-files" ng-show="resource.format == 'obj'">
+                            <label for="file">Model</label>
+                            <input type="file" id="wf-obj-file" accept=".obj" name="model-file" />
+                            <br/>
+                            <label for="file">Material</label>
+                            <input type="file" id="wf-mtl-file" accept=".mtl" name="material-file" />
+                            <br />
+                            <button
+                                id="wf-upload-button" class="btn btn-success pull-right"
+                                ng-click="onResourceModelWavefrontUploadButtonClicked()">
+                                Upload
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group" ng-show="resource.type === 'Sound Effect' || resource.type === 'Music'">
-                        <label for="type">Sound File Format</label>
+                    <div class="form-group" ng-show="resource.type === 'Audio'">
+                        <label for="type">Format</label>
                         <select ng-model="resource.format" class="form-control" id="type">
-                            <option value="wav">WAVE</option>
+                            <option value="wav">Wave</option>
                             <option value="ogg">Ogg Vorbis</option>
                         </select>
                         <br />
-                        <label>Sound File</label>
-                        <input type="file" id="file1" onchange="angular.element(this).scope().fileNameChanged(this)"/>
+                        <div ng-show="resource.format === 'wav'">
+                            <label>Sound File</label>
+                            <input type="file" id="wav-file" accept=".wav" name="wav-file"/>
+                            <br />
+                            <button
+                                id="wav-upload-button" class="btn btn-success pull-right"
+                                ng-click="onResourceAudioWaveUploadButtonClicked()">
+                                Upload
+                            </button>
+                        </div>
+                        <br />
+                        <div ng-show="resource.format === 'ogg'">
+                            <label>Sound File</label>
+                            <input type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>
+                            <br />
+                            <button
+                                id="ogg-upload-button" class="btn btn-success pull-right"
+                                ng-click="onResourceAudioOggUploadButtonClicked()">
+                                Upload
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

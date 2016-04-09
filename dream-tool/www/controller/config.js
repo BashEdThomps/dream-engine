@@ -6,7 +6,7 @@ App.config(['$compileProvider',
 App.config(function($stateProvider, $urlRouterProvider) {
     // Home Page -----------------------------------------------------------------
     //$urlRouterProvider.otherwise("/home");
-    $stateProvider.state('home', {
+    $stateProvider.state('Home', {
         url: "/home",
         templateUrl: "view/partials/home/home.html",
         controller: "home"
@@ -49,3 +49,12 @@ App.config(function($stateProvider, $urlRouterProvider) {
     });
 	// Help ----------------------------------------------------------------------
 });
+
+App.config(['ngToastProvider',function(ngToast) {
+    ngToast.configure({
+        verticalPosition   : 'bottom',
+        horizontalPosition : 'right',
+        maxNumber          : 5,
+        animation          : 'slide'
+    });
+}]);

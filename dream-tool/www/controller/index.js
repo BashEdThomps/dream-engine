@@ -62,6 +62,7 @@ function($state,$scope, ApiService, ProjectService,
         ProjectService.initialise();
         UIService.addAlert("New Project Created","success");
         $state.go("Project");
+        $scope.reloadUI();
     };
 
     $scope.onOpenButtonClicked = function() {
@@ -84,7 +85,8 @@ function($state,$scope, ApiService, ProjectService,
         UIService.showOpenModal(function(openResult){
             if (openResult) {
                 $scope.reloadUI();
-                $state.go("home");
+                UIService.addAlert("Project Opened Successfuly!","success");
+                $state.go("Project");
             }
         });
     };

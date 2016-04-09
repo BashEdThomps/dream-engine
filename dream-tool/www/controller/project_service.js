@@ -100,8 +100,7 @@ App.service('ProjectService',
         return [
             "Model",
             "Animation",
-            "Sound Effect",
-            "Music"
+            "Audio"
         ];
     };
 
@@ -110,7 +109,7 @@ App.service('ProjectService',
     this.createScene = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name:"New Scene",
+            name:"",
             objects:[
                 this.createSceneObject()
             ],
@@ -125,65 +124,26 @@ App.service('ProjectService',
     this.createSceneObject = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name: "New Scene Object",
+            name: "",
         };
     };
 
-    this.createSoundEffectResource = function() {
+    this.createResource = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name: "New Sound Effect",
-            path: "/resources/audio/soundeffects/",
-            type: "Sound Effect",
-            format: "wav"
-        };
-    };
-
-    this.createMusicResource = function() {
-        return {
-            uuid: UtilService.generateUUID(),
-            name: "New Music",
-            path: "/resources/audio/music/",
-            type: "Music",
-            format : "wav"
-        };
-    };
-
-    this.createModelResource = function() {
-        return {
-            uuid:   UtilService.generateUUID(),
-            name:   "New Model Resource",
-            path:   "/resources/models/",
-            type:   "Model",
-            format: "obj",
-        };
-    };
-
-    this.createAnimationResource = function() {
-        return {
-            uuid: UtilService.generateUUID(),
-            name: "New Animation",
-            type: "Animation",
-            path: "/resources/animations/",
-            keyframes: [],
+            name: "",
+            type: "",
         };
     };
 
     this.initialise = function() {
         this.project = {
             uuid:        UtilService.generateUUID(),
-            name:        "New Project",
-            author:      "Unknown Author",
-            description: "A new Dream project.",
-            scenes: [
-                this.createScene()
-            ],
-            resources: [
-                this.createAnimationResource(),
-                this.createModelResource(),
-                this.createSoundEffectResource(),
-                this.createMusicResource()
-            ],
+            name:        "New Dream Project",
+            author:      "",
+            description: "",
+            scenes: [],
+            resources: [],
             isModified: false
         };
     };

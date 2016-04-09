@@ -10,15 +10,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "angular-animate": "^1.5.3",
     "angular-bootstrap-nav-tree": "^0.2.1",
     "angular-file-saver": "^1.1.0",
+    "angular-sanitize": "^1.5.3",
     "angular-screenfull": "^0.1.0",
     "angular-ui-bootstrap": "^1.2.4",
     "angular-ui-router": "^0.2.18",
     "bootstrap": "^3.3.6",
     "co-body": "^4.0.0",
     "koa": "^1.2.0",
+    "koa-bodyparser": "^2.0.1",
     "koa-static": "^2.0.0",
+    "ng-toast": "^2.0.0",
     "screenfull": "^3.0.0",
     "tar.gz": "^1.0.3"
   }
