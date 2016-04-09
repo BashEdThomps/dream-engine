@@ -1,123 +1,8 @@
 App.controller("index",
-["$state","$scope", "ApiConnector","ProjectService",
+["$state","$scope", "ApiService","ProjectService",
  "UIService", "$window",
-function($state,$scope, ApiConnector, ProjectService,
+function($state,$scope, ApiService, ProjectService,
      UIService, $window) {
-
-    // Help Pages --------------------------------------------------------------
-
-    $scope.showHelpProject = true;
-
-    $scope.onHelpProjectClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProject = true;
-    };
-
-    $scope.onHelpProjectConfigurationClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectConfiguration = true;
-    };
-
-    $scope.onHelpProjectSceneClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectScene = true;
-    };
-
-    $scope.onHelpProjectSceneScenegraphClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectSceneScenegraph = true;
-    };
-
-    $scope.onHelpProjectSceneBulletWorldClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectSceneBulletWorld = true;
-    };
-
-    $scope.onHelpProjectSceneSceneObjectClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectSceneSceneObject = true;
-    };
-
-    $scope.onHelpProjectSceneSceneObjectModifierClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectSceneSceneObjectModifier = true;
-    };
-
-    $scope.onHelpProjectSceneSceneObjectModifierEventListenerClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectSceneSceneObjectModifierEventListener = true;
-    };
-
-    $scope.onHelpProjectResourceClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResource = true;
-    };
-
-    $scope.onHelpProjectResourceModelClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResource = true;
-    };
-
-    $scope.onHelpProjectResourceAnimationClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResourceAnimation = true;
-    };
-
-    $scope.onHelpProjectResourceAnimationBezierClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResourceAnimationBezier = true;
-    };
-
-    $scope.onHelpProjectResourceAnimationLinearClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResourceAnimationLinear = true;
-    };
-
-    $scope.onHelpProjectResourceAnimationOrbitalClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResourceAnimationOrbital = true;
-    };
-
-    $scope.onHelpProjectResourceAudioClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResourceAudio = true;
-    };
-
-    $scope.onHelpProjectResourceAudioSoundEffectClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResourceAudioSoundEffect = true;
-    };
-
-    $scope.onHelpProjectResourceAudioMusicClicked = function() {
-        $scope.hideAllHelp();
-        $scope.showHelpProjectResourceAudioMusic = true;
-    };
-    $scope.hideAllHelp = function() {
-        $scope.showHelpProject                 = false;
-
-        $scope.showHelpProjectConfiguration    = false;
-
-        $scope.showHelpProjectScene            = false;
-        $scope.showHelpProjectSceneScenegraph  = false;
-        $scope.showHelpProjectSceneBulletWorld = false;
-        $scope.showHelpProjectSceneSceneObject = false;
-        $scope.showHelpProjectSceneSceneObject = false;
-        $scope.showHelpProjectSceneSceneObjectModifier = false;
-        $scope.showHelpProjectSceneSceneObjectModifierEventListener = false;
-
-        $scope.showHelpProjectResource          = false;
-
-        $scope.showHelpProjectResourceModel     = false;
-
-        $scope.showHelpProjectResourceAnimation = false;
-        $scope.showHelpProjectResourceAnimationBezier = false;
-        $scope.showHelpProjectResourceAnimationLinear = false;
-        $scope.showHelpProjectResourceAnimationOrbital = false;
-
-        $scope.showHelpProjectResourceAudio            = false;
-        $scope.showHelpProjectResourceAudioSoundEffect = false;
-        $scope.showHelpProjectResourceAudioMusic       = false;
-    };
 
     // Alerts ------------------------------------------------------------------
 
@@ -184,15 +69,24 @@ function($state,$scope, ApiConnector, ProjectService,
             UIService.showSaveModifiedModal(
                 function yes() {
                     ProjectService.saveProject();
-                    UIService.showOpenModal();
+                    $scope.afterOpenConfirmed();
                 },
                 function no() {
-                    UIService.showOpenModal();
+                    $scope.afterOpenConfirmed();
                 }
             );
         } else {
-            UIService.showOpenModal();
+            $scope.afterOpenConfirmed();
         }
+    };
+
+    $scope.afterOpenConfirmed = function() {
+        UIService.showOpenModal(function(openResult){
+            if (openResult) {
+                $scope.reloadUI();
+                $state.go("home");
+            }
+        });
     };
 
     $scope.onSaveButtonClicked = function() {
@@ -209,19 +103,20 @@ function($state,$scope, ApiConnector, ProjectService,
         });
     };
 
-        // onLoad Function Calls ---------------------------------------------------
-
+    // onLoad Function Calls ---------------------------------------------------
     ProjectService.getProject();
 
     $scope.projectModified = function() {
         ProjectService.setProjectModified(true);
     };
 
-    UIService.setHostController($scope);
-    UIService.setBreadcrumbs([ProjectService.project.name]);
-    UIService.generateTreeData();
-    UIService.update();
+    $scope.reloadUI = function() {
+        UIService.setHostController($scope);
+        UIService.setBreadcrumbs([ProjectService.project.name]);
+        UIService.generateTreeData();
+        UIService.update();
+    };
 
-
+    $scope.reloadUI();
 }
 ]);

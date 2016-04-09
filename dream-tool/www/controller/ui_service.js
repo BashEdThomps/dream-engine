@@ -21,6 +21,7 @@ App.service('UIService',
         treeDataRoot.label = ProjectService.project.name;
         treeDataRoot.children = [];
         treeDataRoot.onSelect = hostController.onTreeProjectSelected;
+        
         this.generateTreeProjectScenes(treeDataRoot);
         this.generateTreeProjectResources(treeDataRoot);
         this.treeData.push(treeDataRoot);
@@ -195,21 +196,13 @@ App.service('UIService',
         });
     };
 
-    this.showOpenModal = function() {
+    this.showOpenModal = function(callback) {
         var modal = $uibModal.open({
             animation: this.odalAnimationsEnabled,
             templateUrl: 'view/partials/modals/open.html',
             controller: 'OpenFileModal'
         });
-        modal.result.then(function (result) {
-            if (result) {
-
-            } else {
-
-            }
-        }, function () {
-
-        });
+        modal.result.then(callback);
     };
 
     // Return UIService --------------------------------------------------------

@@ -30,15 +30,15 @@
                         <label for="file">Material</label>
                         <input type="file" id="material-file" name="material-file" />
                     </div>
-                    <div class="form-group" ng-show="resource.type === 'Sound Effect'">
+                    <div class="form-group" ng-show="resource.type === 'Sound Effect' || resource.type === 'Music'">
                         <label for="type">Sound File Format</label>
                         <select ng-model="resource.format" class="form-control" id="type">
                             <option value="wav">WAVE</option>
                             <option value="ogg">Ogg Vorbis</option>
                         </select>
                         <br />
-                        <label for="file">Sound File</label>
-                        <input type="file" id="model-file" name="model-file" />
+                        <label>Sound File</label>
+                        <input type="file" id="file1" onchange="angular.element(this).scope().fileNameChanged(this)"/>
                     </div>
                 </div>
             </div>

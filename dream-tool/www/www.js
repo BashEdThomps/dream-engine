@@ -5,6 +5,7 @@ var app       = koa();
 var sys       = require('sys');
 var exec      = require('child_process').exec;
 var parse     = require('co-body');
+var project   = require('./model/project');
 
 // Directory Constants
 var WWW                        = "www";
@@ -33,7 +34,7 @@ app.use(koaStatic(BOOTSTRAP));
 app.use(koaStatic(SCREENFUL));
 
 var runDream = function(project) {
-	var child = exec(config.dream_bin + " \"" + JSON.stringify(project) +"\"", function (error, stdout, stderr) {
+	var child = exec(config.dream_bin+" "+project+".tar.gz", function (error, stdout, stderr) {
   	sys.print('stdout: ' + stdout);
   	sys.print('stderr: ' + stderr);
   	if (error !== null) {
@@ -42,18 +43,6 @@ var runDream = function(project) {
   });
 	console.log("exec'd child:");
 };
-
-app.use(function *(next){
-	if ('POST' !== this.method) {
-		return next;
-	}
-
-	var project = yield parse(this, {limit: '1024kb'});
-	console.log("Executing Project:",project);
-	runDream(project);
-	this.body   = { message: "OK" };
-	this.status =  200;
-});
 
 module.exports.listen = function() {
     console.log("DreamTool WWW is starting on port", config.port);

@@ -144,7 +144,8 @@ App.service('ProjectService',
             uuid: UtilService.generateUUID(),
             name: "New Music",
             path: "/resources/audio/music/",
-            type: "Music"
+            type: "Music",
+            format : "wav"
         };
     };
 
@@ -191,6 +192,11 @@ App.service('ProjectService',
         var blob = this.generateDownloadBlob();
         console.log("Saving:",blob);
         FileSaver.saveAs(blob, this.getName()+'.json');
+    };
+
+    this.openProject = function(project) {
+        this.project = project;
+        this.project.isModified = false;
     };
 
     this.isModified = function() {

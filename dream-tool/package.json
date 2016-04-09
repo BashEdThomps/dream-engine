@@ -19,6 +19,7 @@
     "co-body": "^4.0.0",
     "koa": "^1.2.0",
     "koa-static": "^2.0.0",
-    "screenfull": "^3.0.0"
+    "screenfull": "^3.0.0",
+    "tar.gz": "^1.0.3"
   }
 }

@@ -4,7 +4,7 @@ App.controller("ProjectSceneEditor",
         $scope.sceneUUID = $stateParams.scene;
          ProjectService.getSceneByUUID($scope.sceneUUID,function (scene){
              if (scene === null) {
-                UIService.addAlert("Error: Unable to find scene!"+$scop.sceneUUID,"danger");
+                UIService.addAlert("Error: Unable to find scene: "+$scope.sceneUUID,"danger");
             } else {
                 $scope.scene = scene;
                 UIService.setBreadcrumbs([ProjectService.getName(),"Scenes",$scope.scene.name]);
