@@ -22,63 +22,6 @@
 				</p>
 				<br>
 				<abn-tree expand-level="5" tree-data="helpTreeData">
-				<ul>
-					<li><!--Project-->
-						<a  ng-click="onHelpProjectClicked()">Project</a>
-						<ul>
-							<li><!--Scene-->
-								<a  ng-click="onHelpProjectSceneClicked()">Scene</a>
-								<ul>
-									<li>
-										<a ng-click="onHelpProjectSceneScenegraphClicked()">Scene Graph</a>
-										<ul>
-											<li><!--Scene Object-->
-												<a  ng-click="onHelpProjectSceneSceneObjectClicked()" >Scene Object</a>
-												<ul>
-													<li>
-														<a  ng-click="onHelpProjectSceneSceneObjectModifierClicked()" >Modifier</a>
-														<ul>
-															<li>
-																<a  ng-click="onHelpProjectSceneSceneObjectModifierEventListenerClicked()">Event Listener</a>
-															</li>
-														</ul>
-													</li>
-												</ul>
-											</li><!--Close SceneObject-->
-										</ul>
-									</li>
-									<li>
-										<a ng-click="onHelpProjectSceneBulletWorldClicked()">Bullet World</a>
-									</li>
-
-								</ul>
-							</li><!--Close Scene-->
-							<li><!--Resources-->
-								<a ng-click="onHelpProjectResourceClicked()">Resource</a>
-								<ul>
-									<li>
-										<a ng-click="onHelpProjectResourceModelClicked()">Model</a>
-									</li>
-									<li><!--Animation-->
-										<a  ng-click="onHelpProjectResourceAnimationClicked()">Animation</a>
-										<ul>
-											<li><a  ng-click="onHelpProjectResourceAnimationBezierClicked()">Bezier</a></li>
-											<li><a  ng-click="onHelpProjectResourceAnimationLinearClicked()">Linear</a></li>
-											<li><a  ng-click="onHelpProjectResourceAnimationOrbitalClicked()">Orbital</a></li>
-										</ul>
-									</li><!--Close Animation-->
-									<li><!--Audio-->
-										<a >Audio</a>
-										<ul>
-											<li><a >Sound Effect</a></li>
-											<li><a >Music</a></li>
-										</ul>
-									</li><!--Close Audio-->
-								</ul>
-							</li><!--Close Resources-->
-						</ul>
-					</li>
-				</ul>
 			</div>
 		</div>
 		<div class="col-md-8 fill">
@@ -92,6 +35,9 @@
 				<div ng-show="showProjectSceneScenegraph"
 				     ng-include="'view/partials/home/project/scene/scenegraph/scenegraph.html'"></div>
 
+				<div ng-show="showProjectSceneBulletWorld"
+				     ng-include="'view/partials/home/project/scene/bulletworld.html'"></div>
+
 				<div ng-show="showProjectSceneScenegraphSceneObject"
 				     ng-include="'view/partials/home/project/scene/scenegraph/sceneobject/sceneobject.html'"></div>
 
@@ -103,26 +49,15 @@
 
 				<div ng-show="showProjectResource"
 				     ng-include="'view/partials/home/project/resource/resource.html'"></div>
-
-
-				<div ng-show="showProjectSceneBulletWorld"
-				     ng-include="'view/partials/home/project/scene/bulletworld.html'"></div>
-
 				<div ng-show="showProjectResourceAnimation"
-				     ng-include="'view/partials/home/project/'"></div>
+				     ng-include="'view/partials/home/project/resource/animation.html'"></div>
 
 				<div ng-show="showProjectResourceModel"
-				     ng-include="'view/partials/home/project/'"></div>
+				     ng-include="'view/partials/home/project/resource/model.html'"></div>
 
 				<div ng-show="showProjectResourceAudio"
-				     ng-include="'view/partials/home/project/'"></div>
-
-				<div ng-show="showProjectResourceAudioSoundEffect"
-				     ng-include="'view/partials/home/project/'"></div>
-
-				<div ng-show="showProjectResourceAudioMusic"
-				     ng-include="'view/partials/home/project/'"></div -->
-			</div>
+				     ng-include="'view/partials/home/project/resource/audio.html'"></div>
+			 </div>
 		</div>
 	</div>
 </div>
