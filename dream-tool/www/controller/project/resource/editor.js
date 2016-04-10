@@ -19,7 +19,7 @@ App.controller("ProjectResourceEditor",
         $scope.onResourceModelWavefrontUploadButtonClicked = function() {
             var objFile = document.getElementById('wf-obj-file');
             UtilService.readFileAsBinaryFromElement(objFile, function(data) {
-                var path = "resource/models/"+$scope.resourceUUID+"/obj";
+                var path = ProjectService.getProjectUUID()+"/resource/models/"+$scope.resourceUUID+"/obj";
                 ApiService.uploadResource(path,data,function(success){
                     if (success) {
                         UIService.addAlert("Resource uploaded successfuly.","success");
@@ -32,7 +32,7 @@ App.controller("ProjectResourceEditor",
 
             var mtlFile = document.getElementById('wf-mtl-file');
             UtilService.readFileAsBinaryFromElement(mtlFile, function (data) {
-                var path = "resource/models/"+$scope.resourceUUID+"/mtl";
+                var path = ProjectService.getProjectUUID()+"/resource/models/"+$scope.resourceUUID+"/mtl";
                 ApiService.uploadResource(path,data,function(success) {
                     if (success) {
                         UIService.addAlert("Resource uploaded successfuly.","success");
@@ -47,7 +47,7 @@ App.controller("ProjectResourceEditor",
         $scope.onResourceAudioWaveUploadButtonClicked = function() {
             var wavFile = document.getElementById('wav-file');
             UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
-                var path = "resource/audio/"+$scope.resourceUUID;
+                var path = ProjectService.getProjectUUID()+"/resource/audio/"+$scope.resourceUUID+"/wav";
                 ApiService.uploadResource(path,data,function(success){
                     if (success) {
                         UIService.addAlert("Resource uploaded successfuly.","success");
@@ -62,8 +62,9 @@ App.controller("ProjectResourceEditor",
         $scope.onResourceAudioOggUploadButtonClicked = function() {
             var oggFile = document.getElementById('ogg-file');
             UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
-                var path = "resource/audio/"+$scope.resourceUUID;
-                ApiService.uploadResource(path,data,function(success){
+                var path = ProjectService.getProjectUUID()+"/resource/audio/"+$scope.resourceUUID+"/ogg";
+                ApiService.uploadResource(path,data,
+                    function(success){
                     if (success) {
                         UIService.addAlert("Resource uploaded successfuly.","success");
                     }

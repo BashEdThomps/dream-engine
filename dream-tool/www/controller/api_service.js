@@ -29,6 +29,18 @@ App.service('ApiService',
             );
         };
 
+        this.createProjectDirectory = function(projectUUID,callback) {
+            $http({
+                url    : '/create',
+                data   : {uuid : projectUUID},
+                method : 'POST'
+            }).then(function success() {
+                callback(true);
+            }, function error() {
+                callback(false);
+            });
+        };
+
         return this;
     }
 ]);

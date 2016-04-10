@@ -60,9 +60,18 @@ function($state,$scope, ApiService, ProjectService,
 
     $scope.newProjectAction = function() {
         ProjectService.initialise();
-        UIService.addAlert("New Project Created","success");
-        $state.go("Project");
-        $scope.reloadUI();
+        ApiService.createProjectStructure(ProjectService.getProjectUUID(),function(success) {
+            if (success) {
+                UIService.addAlert("New Project Created","success");
+                $state.go("Project");
+                $scope.reloadUI();
+            } else {
+                UIService.addAlert("Unable to create new project","danger");
+                $state.go("Home");
+                $scope.reloadUI();
+            }
+        });
+
     };
 
     $scope.onOpenButtonClicked = function() {
@@ -107,6 +116,13 @@ function($state,$scope, ApiService, ProjectService,
 
     // onLoad Function Calls ---------------------------------------------------
     ProjectService.getProject();
+    ApiService.createProjectDirectory(ProjectService.getProjectUUID(),function(success){
+        if (success) {
+            UIService.addAlert("Created new project "+ProjectService.getProjectUUID(),"success");
+        } else {
+            UIService.addAlert("Unable to create new project "+ProjectService.getProjectUUID(),"danger");
+        }
+    });
 
     $scope.projectModified = function() {
         ProjectService.setProjectModified(true);

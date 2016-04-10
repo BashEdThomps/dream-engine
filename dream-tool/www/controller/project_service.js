@@ -11,6 +11,10 @@ App.service('ProjectService',
         return this.project;
     };
 
+    this.getProjectUUID = function() {
+        return this.project.uuid;
+    };
+
     this.getName = function() {
         return this.project.name;
     };

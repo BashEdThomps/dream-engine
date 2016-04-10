@@ -1,14 +1,15 @@
-var config    = require ('../config.json');
-var koa       = require('koa');
-var koaStatic = require('koa-static');
-var bodyParser = require('koa-bodyparser');
-var app       = koa();
-var sys       = require('sys');
-var exec      = require('child_process').exec;
-var parse     = require('co-body');
-var project   = require('./model/project');
+var config         = require ('../config.json');
+var fs             = require('fs');
+var koa            = require('koa');
+var koaRouter      = require('koa-router')();
+var koaStatic      = require('koa-static');
+var bodyParser     = require('koa-bodyparser');
+var app            = koa();
+var dreamDirectory = require('./model/DreamDirectory');
+var dreamExecutor  = require('./model/DreamExecutor');
 
 // Directory Constants
+
 var WWW                        = "www";
 var NODE_MODULES               = __dirname    + "/../node_modules/";
 var ANGULAR                    = NODE_MODULES + "angular";
@@ -29,6 +30,9 @@ app.use(bodyParser({
 	formLimit:"100mb",
 	jsonLimit:"100mb"
 }));
+
+// Static Pages ----------------------------------------------------------------
+
 app.use(koaStatic(WWW));
 app.use(koaStatic(ANGULAR));
 app.use(koaStatic(ANGULAR_BOOTSTRAP_NAV_TREE));
@@ -44,35 +48,35 @@ app.use(koaStatic(NG_TOAST));
 app.use(koaStatic(ANGULAR_SANITIZE));
 app.use(koaStatic(ANGULAR_ANIMATE));
 
-// Api
+// Api -------------------------------------------------------------------------
 
-app.use(function *(next) {
-	console.log("API Request URL: ",this.request.url,"Method:",this.request.method);
-
-	// POST to /resource/*
-	if (this.request.url.indexOf('resource') > -1 && this.request.method == "POST")
-	{
-		var resourcePath = this.method.url;
-		this.status = 200;
-		//console.log("Body:",this.request.body);
-		this.body = "Success";
-	} else {
-		this.status = 404;
-		this.body = "Unable to handle this request";
-	}
+// Log requet
+app.use(function *(next){
+	console.log(
+		"API Request"+
+		"\n\tURL:",this.request.url,
+		"\n\tMethod:",this.request.method
+	);
 	yield next;
 });
 
-var runDream = function(project) {
-	var child = exec(config.dream_bin+" "+project+".tar.gz", function (error, stdout, stderr) {
-  	sys.print('stdout: ' + stdout);
-  	sys.print('stderr: ' + stderr);
-  	if (error !== null) {
-    	console.log('exec error: ' + error);
-  	}
-  });
-	console.log("exec'd child:");
-};
+// POST to /create
+koaRouter.post("/create",function* (next) {
+	var uuid = this.request.body.uuid;
+	this.status = 200;
+	yield dreamDirectory.createProjectDirectory(uuid,next);
+});
+
+// POST to /uuid/resource/*
+koaRouter.post("/:uuid/resource/", function* () {
+	var resourcePath = this.request.url;
+	var reqData = this.request.body;
+	this.status = 200;
+	yield dreamDirectory.writeResource(resourcePath,reqData,next);
+});
+
+app.use(koaRouter.routes());
+app.use(koaRouter.allowedMethods());
 
 module.exports.listen = function() {
     console.log("DreamTool WWW is starting on port", config.port);

@@ -33,7 +33,7 @@ add_library (
     ${RESOURCE_SRC}
     ${RESOURCE_ANIMATION_SRC}
     ${RESOURCE_MODEL_SRC}
-    
+
     ${SCENE_SRC}
     ${DREAM_SRC}
 )
@@ -46,5 +46,6 @@ target_link_libraries(
     -lBulletDynamics
     -lBulletCollision
     -lLinearMath
-    -lGL -lGLU
+    -lalut
+    -lopenal
 )
