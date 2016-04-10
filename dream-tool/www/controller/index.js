@@ -101,7 +101,15 @@ function($state,$scope, ApiService, ProjectService,
     };
 
     $scope.onSaveButtonClicked = function() {
-        ProjectService.saveProject();
+        var project = ProjectService.getProject();
+        delete project.isModified;
+        ApiService.saveProjectFile(project,function(success) {
+            if (success) {
+                UIService.addAlert(project.name+" saved with id: "+project.uuid,"success");
+            } else {
+                UIService.addAlert("Unable to save"+project.name+" saved with id: "+project.uuid,"danger");
+            }
+        });
     };
 
     $scope.onPlayButtonClicked = function() {

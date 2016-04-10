@@ -82,6 +82,14 @@ koaRouter.post("/:proj/resource/:dir/:rsc/:format", function* (next) {
 	);
 });
 
+// POST to /save/:project_id to save project json file
+koaRouter.post("/save/:project_id",function* (next){
+	var projData = this.request.body.project;
+	console.log("ProjData:",projData);
+	this.status = 200;
+	yield dreamDirectory.writeProjectFile(this.params.project_id,projData,next);
+});
+
 app.use(koaRouter.routes());
 app.use(koaRouter.allowedMethods());
 

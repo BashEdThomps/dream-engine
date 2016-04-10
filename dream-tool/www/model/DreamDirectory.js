@@ -97,6 +97,16 @@ var getResourceDirectoryByFormat = function(format) {
     return UNKNOWN_FMT;
 };
 
+module.exports.writeProjectFile = function* (proj,data,next) {
+    var projPath =
+        dreamDirectory+path.sep+
+        proj+path.sep+
+        proj+".json";
+
+    fs.writeFileSync(projPath,JSON.stringify(data));
+    console.log("Project file written to",projPath);
+    yield next;
+};
 module.exports.writeResource = function* (proj, dir, rsc, format, data, next) {
     console.log("Project is",   proj);
     console.log("Directory is", dir);

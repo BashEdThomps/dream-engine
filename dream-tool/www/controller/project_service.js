@@ -152,11 +152,9 @@ App.service('ProjectService',
         };
     };
 
-    this.saveProject = function () {
-        var blob = this.generateDownloadBlob();
-        console.log("Saving:",blob);
-        FileSaver.saveAs(blob, this.getName()+'.json');
-    };
+    this.saveProject = function() {
+
+    }
 
     this.openProject = function(project) {
         this.project = project;

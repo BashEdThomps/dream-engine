@@ -41,6 +41,17 @@ App.service('ApiService',
             });
         };
 
+        this.saveProjectFile = function(projObj,callback) {
+            $http({
+                url    : '/save/'+projObj.uuid,
+                method : 'POST',
+                data   : { project : projObj }
+            }).then(function success() {
+                callback(true);
+            }, function failure() {
+                callback(false);
+            });
+        };
         return this;
     }
 ]);
