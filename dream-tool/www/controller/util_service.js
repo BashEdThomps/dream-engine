@@ -35,7 +35,7 @@ App.service('UtilService',
                 var data = e.target.result;
                 callback(data);
             };
-            r.readAsBinaryString(f);
+            r.readAsDataURL(f);
         };
 
         return this;

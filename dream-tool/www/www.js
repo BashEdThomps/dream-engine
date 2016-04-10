@@ -68,11 +68,18 @@ koaRouter.post("/create",function* (next) {
 });
 
 // POST to /uuid/resource/*
-koaRouter.post("/:uuid/resource/", function* () {
+koaRouter.post("/:proj/resource/:dir/:rsc/:format", function* (next) {
 	var resourcePath = this.request.url;
-	var reqData = this.request.body;
+	var reqData = this.request.body.data;
 	this.status = 200;
-	yield dreamDirectory.writeResource(resourcePath,reqData,next);
+	yield dreamDirectory.writeResource(
+		this.params.proj,
+		this.params.dir,
+		this.params.rsc,
+		this.params.format,
+		reqData,
+		next
+	);
 });
 
 app.use(koaRouter.routes());

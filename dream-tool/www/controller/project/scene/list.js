@@ -6,10 +6,13 @@ App.controller("ProjectSceneList",
         UIService.setBreadcrumbs([ProjectService.getName(),"Scenes"]);
 
         $scope.onNewSceneAddButtonClicked = function() {
-            console.log($scope.newScene);
-            ProjectService.pushScene($scope.newScene);
-            UIService.addTreeProjectScene(UIService.createTreeProjectScene($scope.newScene));
-            $scope.newScene = ProjectService.createScene();
+            if ($scope.newScene.name === "") {
+                UIService.addAlert("Scene name cannot be blank.","danger");
+            } else {
+                ProjectService.pushScene($scope.newScene);
+                UIService.addTreeProjectScene(UIService.createTreeProjectScene($scope.newScene));
+                $scope.newScene = ProjectService.createScene();
+            }
         };
 
         $scope.onNewSceneClearButtonClicked = function() {

@@ -12,9 +12,13 @@ App.controller("ProjectResourceList",
         };
 
         $scope.onNewResourceAddButtonClicked = function() {
-            ProjectService.pushResource($scope.newResource);
-            UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.newResource));
-            $scope.newResource = ProjectService.createResource();
+            if ($scope.newResource.name === "") {
+                UIService.addAlert("Resource name cannot be blank.","danger");
+            } else {
+                ProjectService.pushResource($scope.newResource);
+                UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.newResource));
+                $scope.newResource = ProjectService.createResource();
+            }
         };
 
         $scope.onNewResourceClearButtonClicked = function() {

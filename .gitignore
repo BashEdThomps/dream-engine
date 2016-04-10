@@ -8,3 +8,4 @@ build
 dream-tool/node_modules
 .tags*
 tags
+npm-debug.log

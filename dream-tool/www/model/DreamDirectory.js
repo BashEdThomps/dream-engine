@@ -9,6 +9,12 @@ var MODELS_DIR          = "models";
 var AUDIO_DIR           = "audio";
 var ANIMATION_DIR       = "animation";
 
+var AUDIO_WAV_FMT = "wav";
+var AUDIO_OGG_FMT = "ogg";
+
+var MODEL_OBJ_FMT = "obj";
+var MODEL_MTL_FMT = "mtl";
+
 var getUserHome = function() {
   return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 };
@@ -77,11 +83,45 @@ var createDreamToolDirInHome = function(callback) {
 	});
 };
 
-module.exports.writeResource = function* (rscPath, data, next) {
-    var projectUUID = rscPath.substr(1,19);
-    console.log("Project is",projectUUID);
-    var absolutePath = dreamDirectory + rscPath;
+var getResourceDirectoryByFormat = function(format) {
+    switch (format) {
+        case AUDIO_WAV_FMT:
+        case AUDIO_OGG_FMT:
+            return AUDIO_DIR;
+        case MODEL_OBJ_FMT:
+        case MODEL_MTL_FMT:
+            return MODEL_DIR;
+        default:
+            return UNKNOWN_FMT;
+    }
+    return UNKNOWN_FMT;
+};
+
+module.exports.writeResource = function* (proj, dir, rsc, format, data, next) {
+    console.log("Project is",   proj);
+    console.log("Directory is", dir);
+    console.log("Resource is",  rsc);
+    console.log("Format is ",   format);
+
+    var projPath     = dreamDirectory  + path.sep + proj;
+    var dirPath      = projPath + path.sep + RESOURCE_DIR + path.sep + dir;
+    var rscPath      = dirPath  + path.sep + rsc;
+    var absolutePath = rscPath  + path.sep + format;
+
     console.log("Writing Resource to",absolutePath);
+
+    try {
+        fs.mkdirSync(rscPath);
+    } catch (e) {
+        console.log(rscPath,"exists");
+    }
+
+    try {
+        fs.writeFileSync(absolutePath,new Buffer(data.split(",")[1],'base64'));
+    } catch (e) {
+        console.log("Could not write file to",absolutePath);
+    }
+    console.log("Successfuly written", absolutePath);
     yield next;
 };
 
