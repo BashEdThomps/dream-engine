@@ -1,8 +1,6 @@
 App.controller("index",
-["$state","$scope", "ApiService","ProjectService",
- "UIService", "$window",
-function($state,$scope, ApiService, ProjectService,
-     UIService, $window) {
+    ["$state","$scope","ApiService","ProjectService","UIService","$window",
+    function($state,$scope,ApiService,ProjectService,UIService,$window) {
 
     // Alerts ------------------------------------------------------------------
 
@@ -39,10 +37,6 @@ function($state,$scope, ApiService, ProjectService,
 
     // Toolbar Button Callbacks ------------------------------------------------
 
-    $scope.onToggleFullScreenButtonClicked = function() {
-        UIService.isFullScreen = !UIService.isFullScreen;
-    };
-
     $scope.onNewButtonClicked = function() {
         if (ProjectService.isModified()) {
             UIService.showSaveModifiedModal(
@@ -55,7 +49,6 @@ function($state,$scope, ApiService, ProjectService,
         } else {
             $scope.newProjectAction();
         }
-
     };
 
     $scope.newProjectAction = function() {
@@ -113,11 +106,28 @@ function($state,$scope, ApiService, ProjectService,
     };
 
     $scope.onPlayButtonClicked = function() {
-        ApiConnector.runDreamProject(ProjectService.project,function(success){
+        ApiService.runDreamProject(ProjectService.project,function(success){
             if (success) {
                 UIService.addAlert("Started " + ProjectService.project.name, "success");
             } else {
                 UIService.addAlert("Failed to Start " + ProjectService.project.name, "danger");
+            }
+        });
+    };
+
+    $scope.onDownloadTarballButtonClicked = function() {
+        ApiService.saveProjectTarball(ProjectService.project,function(success,resp){
+            if (success) {
+                console.log("Got Tarball Response",resp);
+                var blob = new Blob([resp.data], { type: 'application/octet-binary' });
+                var url = $window.URL || $window.webkitURL;
+                var tarUrl = url.createObjectURL(blob);
+                var downloadButton = angular.element(document.querySelector('#DownloadTarballButton'));
+                downloadButton.attr("download",ProjectService.getProject().name+".tar.gz");
+                $window.location = tarUrl;
+                UIService.addAlert("Saved project "+ProjectService.getProjectUUID()+" as tarball.","success");
+            } else {
+                UIService.addAlert("Error: Unable to save project "+ProjectService.getProjectUUID()+" as tarball.","danger");
             }
         });
     };

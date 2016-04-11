@@ -55,10 +55,13 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     yield next;
 };
 
-var compressProjectDirectory = function(projectUUID) {
+module.exports.compressProject = function *(projectUUID, koaObj, next) {
+    console.log("Compressing project",projectUUID);
     var read = targz().createReadStream(dreamDirectory+path.sep+projectUUID);
-    var write = fs.createWriteStream(dreamDirectory+path.sep+projectName+'.tar.gz');
-    read.pipe(write);
+    read.pipe(koaObj.body);
+    yield next;
+    //var write = fs.createWriteStream(dreamDirectory+path.sep+projectName+'.tar.gz');
+    //yield read.pipe(write);
 };
 
 
@@ -107,6 +110,7 @@ module.exports.writeProjectFile = function* (proj,data,next) {
     console.log("Project file written to",projPath);
     yield next;
 };
+
 module.exports.writeResource = function* (proj, dir, rsc, format, data, next) {
     console.log("Project is",   proj);
     console.log("Directory is", dir);

@@ -90,6 +90,12 @@ koaRouter.post("/save/:project_id",function* (next){
 	yield dreamDirectory.writeProjectFile(this.params.project_id,projData,next);
 });
 
+// GET /compress/:uuid to get a compressed project
+koaRouter.get("/compress/:uuid", function *(next){
+	this.status = 200;
+	yield dreamDirectory.compressProject(this.params.uuid,this,next);
+});
+
 app.use(koaRouter.routes());
 app.use(koaRouter.allowedMethods());
 

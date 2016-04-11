@@ -41,4 +41,12 @@ add_custom_command(
     ${CMAKE_SOURCE_DIR}/test/test_resources $<TARGET_FILE_DIR:DreamTest>
 )
 
-target_link_libraries(DreamTest Dream)
+target_link_libraries(
+    DreamTest
+    Dream
+    -lBulletDynamics
+    -lBulletCollision
+    -lLinearMath
+    -lalut
+    -lopenal
+)

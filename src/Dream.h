@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Util/FileReader.h"
 #include "Scene/Scene.h"
+#include "ArgumentParser.h"
 #include "Project.h"
 
 namespace Dream {
@@ -14,6 +15,7 @@ namespace Dream {
 	public:
 		Dream(void);
 		~Dream(void);
+		bool loadFromArgumentParser(ArgumentParser*);
 		bool loadProjectFromJsonFile(std::string);
 		Project* getProject(void);
 		void setProject(Project*);

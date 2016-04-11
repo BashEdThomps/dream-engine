@@ -22,5 +22,5 @@ rm -rf $BUILD
 mkdir -p $BUILD
 cd $BUILD
 cmake ..
-make
-CTEST_OUTPUT_ON_FAILURE=TRUE make test
+VEROBSE=1 make
+VERBOSE=1 CTEST_OUTPUT_ON_FAILURE=TRUE make test

@@ -52,6 +52,19 @@ App.service('ApiService',
                 callback(false);
             });
         };
+
+        this.saveProjectTarball = function(projObj,callback) {
+            console.log("Saveing project as tarball...");
+            $http({
+                url    : '/compress/'+projObj.uuid,
+                method : 'GET'
+            }).then(function success(resp){
+                callback(true,resp);
+            },function failure(resp){
+                callback(false,resp);
+            });
+        };
+
         return this;
     }
 ]);

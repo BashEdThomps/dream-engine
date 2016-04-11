@@ -16,12 +16,11 @@
 */
 
 #include "Unit/UnitTest.h"
+#include "Util/FileReaderTest.h"
 
 #include "DreamTest.h"
-
 #include "ProjectTest.h"
-
-#include "Util/FileReaderTest.h"
+#include "ArgumentParserTest.h"
 
 #include "Scene/SceneTest.h"
 #include "Scene/TestSceneObject.h"
@@ -94,7 +93,7 @@ int testScene() {
 	Dream::Scene::Test::TestScenegraph testScenegraph;
 	testScenegraph.run();
 	result += testScenegraph.getResult();
-	
+
 	return result;
 }
 
@@ -108,6 +107,10 @@ int testDream() {
 	Dream::Test::ProjectTest projectTest;
 	projectTest.run();
 	result += projectTest.getResult();
+
+	Dream::Test::ArgumentParserTest argumentParserTest;
+	argumentParserTest.run();
+	result += argumentParserTest.getResult();
 
 	return result;
 }
