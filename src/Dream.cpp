@@ -26,4 +26,12 @@ namespace Dream {
 		delete mProjectFileReader;
 		return false;
 	}
+
+	bool Dream::loadFromArgumentParser(ArgumentParser *parser) {
+		return false;
+	}
+
+	int Dream::runProject() {
+		return -1;
+	}
 }

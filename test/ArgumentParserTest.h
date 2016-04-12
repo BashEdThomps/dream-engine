@@ -18,7 +18,9 @@
 #ifndef ARGUMENTPARSERTEST_H
 #define ARGUMENTPARSERTEST_H
 
+#include <iostream>
 #include "../src/Unit/Unit.h"
+#include "../src/ArgumentParser.h"
 
 namespace Dream {
 	namespace Test {
@@ -28,6 +30,8 @@ namespace Dream {
 			~ArgumentParserTest(void);
 			void run(void);
 			void testCanGetDirectoryFromArgs(void);
+			void testCanGetProjectUUIDFromDirectoryArg(void);
+			void testCanGetProjectFilePathFromDirectoryArg(void);
 		};
 	} // End of ArgumentParserTest
 } // End of Dream

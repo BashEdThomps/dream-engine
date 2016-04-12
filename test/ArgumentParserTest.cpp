@@ -30,10 +30,44 @@ namespace Dream {
 		void ArgumentParserTest::run(void) {
 			header();
 			testCanGetDirectoryFromArgs();
+			testCanGetProjectUUIDFromDirectoryArg();
+			testCanGetProjectFilePathFromDirectoryArg();
 		}
 
 		void ArgumentParserTest::testCanGetDirectoryFromArgs(void) {
-			assertInconclusive("testCanGetDirectoryFromArgs is not implemented");
+			int argc = 3;
+			const char* argv[argc];
+			std::string dir = "/home/user/.dreamtool/0123-4567-89ab-cdef";
+			argv[0]   = std::string("Dream").c_str();
+			argv[1]   = std::string(PROJECT_DIRECTORY_ARG).c_str();
+			argv[2]   = dir.c_str();
+			ArgumentParser ap(argc,argv);
+			assertZero("testCanGetDirectoryFromArgs",ap.getProjectDirectory().compare(dir));
+		}
+
+		void ArgumentParserTest::testCanGetProjectUUIDFromDirectoryArg(void) {
+			int argc = 3;
+			const char* argv[argc];
+			std::string dir = "/home/user/.dreamtool/0123-4567-89ab-cdef";
+			std::string projUUID = "0123-4567-89ab-cdef";
+			argv[0]   = std::string("Dream").c_str();
+			argv[1]   = std::string(PROJECT_DIRECTORY_ARG).c_str();
+			argv[2]   = dir.c_str();
+			ArgumentParser ap(argc,argv);
+			assertZero("testCanGetProjectUUIDFromDirectoryArg",ap.getProjectUUID().compare(projUUID));
+		}
+
+		void ArgumentParserTest::testCanGetProjectFilePathFromDirectoryArg() {
+			int argc = 3;
+			const char* argv[argc];
+			std::string dir = "/home/user/.dreamtool/0123-4567-89ab-cdef";
+			std::string projFilePath = "/home/user/.dreamtool/0123-4567-89ab-cdef/0123-4567-89ab-cdef.json";
+			argv[0]   = std::string("Dream").c_str();
+			argv[1]   = std::string(PROJECT_DIRECTORY_ARG).c_str();
+			argv[2]   = dir.c_str();
+			ArgumentParser ap(argc,argv);
+			//`comment(ap.getProjectFilePath());
+			assertZero("testCanGetProjectFilePathFromDirectoryArg",ap.getProjectFilePath().compare(projFilePath));
 		}
 	} // End of Test
 } // End of Dream

@@ -19,10 +19,45 @@
 
 namespace Dream {
 
-	ArgumentParser::ArgumentParser(int argc, char** argv) {
+	ArgumentParser::ArgumentParser(int argc, const char** argv) {
+		mArgc = argc;
+		mArgv = argv;
+		parse();
 	}
 
 	ArgumentParser::~ArgumentParser(void) {
+
 	}
 
+	void ArgumentParser::parse() {
+		std::string *nextArg;
+		for (int i=0;i<mArgc;i++) {
+			nextArg = new std::string(mArgv[i]);
+			if (nextArg->compare(PROJECT_DIRECTORY_ARG) == 0) {
+				if (mArgc > i) {
+					mProjectDirectory = std::string(mArgv[i+1]);
+					size_t projectDirectoryLength = mProjectDirectory.length();
+					size_t uuidStart  = projectDirectoryLength - PROJECT_UUID_LENGTH;
+					mProjectUUID      = mProjectDirectory.substr(uuidStart,projectDirectoryLength);
+					mProjectFilePath  = mProjectDirectory + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;
+				} else {
+					return;
+				}
+			}
+			delete nextArg;
+			nextArg = NULL;
+		}
+	}
+
+	std::string ArgumentParser::getProjectDirectory() {
+		return mProjectDirectory;
+	}
+
+	std::string ArgumentParser::getProjectUUID() {
+		return mProjectUUID;
+	}
+
+	std::string ArgumentParser::getProjectFilePath() {
+		return mProjectFilePath;
+	}
 } // End of Dream

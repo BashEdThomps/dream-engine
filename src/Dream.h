@@ -19,6 +19,7 @@ namespace Dream {
 		bool loadProjectFromJsonFile(std::string);
 		Project* getProject(void);
 		void setProject(Project*);
+		int runProject();
 	};
 }
 

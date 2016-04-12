@@ -18,14 +18,28 @@
 #ifndef ARGUMENTPARSER_H
 #define ARGUMENTPARSER_H
 
+#include <iostream>
+
+#define PROJECT_DIRECTORY_ARG "--project-dir"
+#define PROJECT_UUID_LENGTH   19
+#define PROJECT_EXTENSION     ".json"
+#define PROJECT_PATH_SEP      "/"
+
 namespace Dream {
 	class ArgumentParser {
 	private:
-		int    mArgc;
-		char** mArgv;
+		int           mArgc;
+		const char**  mArgv;
+		std::string   mProjectDirectory;
+		std::string   mProjectFilePath;
+		std::string   mProjectUUID;
 	public:
-		ArgumentParser(int,char**);
+		ArgumentParser(int,const char**);
 		~ArgumentParser(void);
+		void parse();
+		std::string getProjectDirectory();
+		std::string getProjectUUID();
+		std::string getProjectFilePath();
 	}; // End of ArgumentParser
 } // End of Dream
 
