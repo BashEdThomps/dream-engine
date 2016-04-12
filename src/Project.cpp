@@ -129,4 +129,12 @@ namespace Dream {
 			}
 		return retval;
 	}
+
+	std::string Project::getDirectory() {
+		return mDirectory;
+	}
+
+	void Project::setDirectory(std::string dir) {
+		mDirectory = dir;
+	}
 } // End of Dream

@@ -63,6 +63,11 @@
                     </a>
                 </li>
                 <li>
+                    <a ng-click="onUploadProjectButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon glyphicon-open-file"></span>
+                    </a>
+                </li>
+                <li>
                     <a  ng-click="onSaveButtonClicked()">
                         <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-floppy-disk"></span>
                     </a>
@@ -80,9 +85,14 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                <li>
+                <!--li>
                     <a ng-click="onSettingsButtonClicked()">
                         <span class="glyphicon-toolbar glyphicon glyphicon-cog"></span>
+                    </a>
+                </li-->
+                <li>
+                    <a ng-click="onDeleteProjectButtonClicked()">
+                        <span class="glyphicon glyphicon-remove"></span>
                     </a>
                 </li>
             </ul>

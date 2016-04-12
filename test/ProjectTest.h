@@ -31,6 +31,7 @@ namespace Dream {
 			void testProjectCanStoreName();
 			void testProjectCanStoreAuthor();
 			void testProjectCanStoreDescription();
+			void testProjectCanStoreDirectory();
 			void testProjectCanStoreMultipleScenes();
 			void testProjectCanStoreMultipleResources();
 		//protected:

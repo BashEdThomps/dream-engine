@@ -10,13 +10,12 @@
 namespace Dream {
 	class Dream {
 	protected:
-		Util::FileReader* mProjectFileReader;
 		Project*          mProject;
 	public:
 		Dream(void);
 		~Dream(void);
 		bool loadFromArgumentParser(ArgumentParser*);
-		bool loadProjectFromJsonFile(std::string);
+		bool loadProjectFromFileReader(Util::FileReader*);
 		Project* getProject(void);
 		void setProject(Project*);
 		int runProject();

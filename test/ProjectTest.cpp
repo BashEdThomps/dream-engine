@@ -95,5 +95,13 @@ namespace Dream {
 
 			assertEqual("Project has 3 resources", 3, p.getNumberOfResources());
 		}
+
+		void ProjectTest::testProjectCanStoreDirectory() {
+			std::string directory = "/home/ash/.dreamtool/0123-4567-89ab-cdef";
+			Project p;
+			p.setDirectory(directory);
+			assertZero("Project can store directory",p.getDirectory().compare(directory));
+		}
+
 	} // End of Test
 } // End of Dream

@@ -84,7 +84,7 @@ App.controller("index",
     };
 
     $scope.afterOpenConfirmed = function() {
-        UIService.showOpenModal(function(openResult){
+        UIService.showOpenProjectModal(function(openResult){
             if (openResult) {
                 $scope.reloadUI();
                 UIService.addAlert("Project Opened Successfuly!","success");

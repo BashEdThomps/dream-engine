@@ -65,6 +65,17 @@ App.service('ApiService',
             });
         };
 
+        this.readProjectList = function (callback) {
+            $http({
+                url    : "/projectlist",
+                method : 'GET',
+            }).then(function success(resp) {
+                callback(resp.data);
+            },function error(resp){
+                callback(null);
+            });
+        };
+
         return this;
     }
 ]);

@@ -36,6 +36,7 @@ namespace Dream {
 		std::string mUUID;
 		std::string mName;
 		std::string mDescription;
+		std::string mDirectory;
 		std::string mAuthor;
 		std::vector<Dream::Scene::Scene*> mScenes;
 		std::vector<Dream::Resource::Resource*> mResources;
@@ -67,6 +68,9 @@ namespace Dream {
 		void addResource(Dream::Resource::Resource*);
 		void removeResource(Dream::Resource::Resource*);
 		int getNumberOfResources();
+
+		std::string getDirectory();
+		void setDirectory(std::string);
 	}; // End of Project
 } // End of Dream
 

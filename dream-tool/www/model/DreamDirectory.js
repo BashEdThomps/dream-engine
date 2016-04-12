@@ -139,4 +139,9 @@ module.exports.writeResource = function* (proj, dir, rsc, format, data, next) {
     yield next;
 };
 
+module.exports.listProjects = function () {
+    var uuidList = fs.readdirSync(dreamDirectory);
+    return uuidList;
+};
+
 createDreamToolDirInHome();

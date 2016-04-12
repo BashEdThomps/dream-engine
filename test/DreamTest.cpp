@@ -17,6 +17,7 @@
 
 #include "DreamTest.h"
 #include "../src/Dream.h"
+#include "../src/Util/FileReader.h"
 
 #define TEST_PROJECT "test/Ash's Test Project.json"
 
@@ -42,8 +43,9 @@ namespace Dream {
 
 		void DreamTest::testCanLoadProjectFromJSON() {
 			Dream dream;
-
-			dream.loadProjectFromJsonFile(TEST_PROJECT);
+			Util::FileReader* fileReader = new Util::FileReader(TEST_PROJECT);
+			fileReader->readIntoStringStream();
+			dream.loadProjectFromFileReader(fileReader);
 
 			std::string expectedUUID        = "bd94-d5c9-50b0-2c7b";
 			std::string expectedName        = "Ash's Test Project";
@@ -64,6 +66,8 @@ namespace Dream {
 			assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
 			assertTrue("Project Scene has collision enabled",  firstScene->isCollisionEnabled());
 			assertTrue("Project Scene has input enabled",      firstScene->isInputEnabled());
+
+			delete fileReader;
 		};
 	} // End of Test
 } // End of Dream

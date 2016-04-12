@@ -96,6 +96,13 @@ koaRouter.get("/compress/:uuid", function *(next){
 	yield dreamDirectory.compressProject(this.params.uuid,this,next);
 });
 
+// GET /projectlist to list stored projects
+koaRouter.get("/projectlist",function *(next) {
+	this.status = 200;
+	this.body = dreamDirectory.listProjects();
+	yield next;
+});
+
 app.use(koaRouter.routes());
 app.use(koaRouter.allowedMethods());
 

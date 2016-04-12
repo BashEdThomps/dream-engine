@@ -17,13 +17,10 @@ namespace Dream {
 		mProject = project;
 	}
 
-	bool Dream::loadProjectFromJsonFile(std::string path) {
-		mProjectFileReader = new Util::FileReader(path);
-		mProjectFileReader->readIntoStringStream();
-		std::string projectJsonStr = mProjectFileReader->getContentsAsString();
+	bool Dream::loadProjectFromFileReader(Util::FileReader* reader) {
+		std::string projectJsonStr = reader->getContentsAsString();
 		nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
 		setProject(new Project(projectJson));
-		delete mProjectFileReader;
 		return false;
 	}
 

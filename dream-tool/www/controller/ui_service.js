@@ -187,11 +187,20 @@ App.service('UIService',
         });
     };
 
-    this.showOpenModal = function(callback) {
+    this.showUploadModal = function(callback) {
         var modal = $uibModal.open({
-            animation: this.odalAnimationsEnabled,
+            animation: this.modalAnimationsEnabled,
+            templateUrl: 'view/partials/modals/upload.html',
+            controller: 'UploadProjectModal'
+        });
+        modal.result.then(callback);
+    };
+
+    this.showOpenProjectModal = function(callback) {
+        var modal = $uibModal.open({
+            animation: this.modalAnimationsEnabled,
             templateUrl: 'view/partials/modals/open.html',
-            controller: 'OpenFileModal'
+            controller: 'OpenProjectModal'
         });
         modal.result.then(callback);
     };
