@@ -1,6 +1,6 @@
 App.controller("home",["$scope","ProjectService","UIService",
     function($scope,ProjectService,UIService) {
-        UIService.setBreadcrumbs([ProjectService.getName(),"Home"]);
+        UIService.setBreadcrumbs(["Home"]);
         // Help Pages --------------------------------------------------------------
 
         $scope.showProject = true;

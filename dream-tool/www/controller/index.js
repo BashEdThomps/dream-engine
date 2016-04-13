@@ -12,27 +12,47 @@ App.controller("index",
 
     $scope.onTreeProjectSelected = function(branch) {
         console.log("Selected Project:", branch);
-        $state.go("Project");
+        if (ProjectService.isProjectOpen()) {
+            $state.go("Project");
+        } else {
+            UIService.addAlert("Please Create or Open a Project","danger");
+        }
     };
 
     $scope.onTreeProjectSceneSelected = function(branch) {
         console.log("Selected Scenes Parent Node:",branch);
-        $state.go("ProjectSceneList");
+        if (ProjectService.isProjectOpen()) {
+            $state.go("ProjectSceneList");
+        } else {
+            UIService.addAlert("Please Create or Open a Project","danger");
+        }
     };
 
     $scope.onTreeProjectResourceSelected = function(branch) {
         console.log("Selected Resources Parent Node:",branch);
-        $state.go("ProjectResourceList");
+        if (ProjectService.isProjectOpen()) {
+            $state.go("ProjectResourceList");
+        } else {
+            UIService.addAlert("Please Create or Open a Project","danger");
+        }
     };
 
     $scope.onTreeProjectSceneInstanceSelected = function(branch) {
         console.log("Selected Scene:",branch);
-        $state.go("ProjectSceneEditor",{scene:branch.uuid});
+        if (ProjectService.isProjectOpen()) {
+            $state.go("ProjectSceneEditor",{scene:branch.uuid});
+        } else {
+            UIService.addAlert("Please Create or Open a Project","danger");
+        }
     };
 
     $scope.onTreeProjectResourceInstanceSelected = function(branch) {
         console.log("Selected Resource:",branch);
-        $state.go("ProjectResourceEditor",{resource:branch.uuid});
+        if (ProjectService.isProjectOpen()) {
+            $state.go("ProjectResourceEditor",{resource:branch.uuid});
+        } else {
+            UIService.addAlert("Please Create or Open a Project","danger");
+        }
     };
 
     // Toolbar Button Callbacks ------------------------------------------------
@@ -53,18 +73,9 @@ App.controller("index",
 
     $scope.newProjectAction = function() {
         ProjectService.initialise();
-        ApiService.createProjectStructure(ProjectService.getProjectUUID(),function(success) {
-            if (success) {
-                UIService.addAlert("New Project Created","success");
-                $state.go("Project");
-                $scope.reloadUI();
-            } else {
-                UIService.addAlert("Unable to create new project","danger");
-                $state.go("Home");
-                $scope.reloadUI();
-            }
-        });
-
+        UIService.addAlert("New Project Created","success");
+        $state.go("Project");
+        $scope.reloadUI();
     };
 
     $scope.onOpenButtonClicked = function() {
@@ -89,11 +100,22 @@ App.controller("index",
                 $scope.reloadUI();
                 UIService.addAlert("Project Opened Successfuly!","success");
                 $state.go("Project");
+            } else {
+                UIService.addAlert("Failed to Open "+ProjectService.getName(),"danger");
             }
         });
     };
 
+    $scope.onUploadButtonClicked = function() {
+        UIService.addAlert("Not Available","warning");
+    };
+
     $scope.onSaveButtonClicked = function() {
+        if (!ProjectService.isProjectOpen()) {
+            UIService.addAlert("No project open to save!","danger");
+            return;
+        }
+        
         var project = ProjectService.getProject();
         delete project.isModified;
         ApiService.saveProjectFile(project,function(success) {
@@ -116,7 +138,8 @@ App.controller("index",
     };
 
     $scope.onDownloadTarballButtonClicked = function() {
-        ApiService.saveProjectTarball(ProjectService.project,function(success,resp){
+        UIService.addAlert("Not Available","warning");
+        /*ApiService.saveProjectTarball(ProjectService.project,function(success,resp){
             if (success) {
                 console.log("Got Tarball Response",resp);
                 var blob = new Blob([resp.data], { type: 'application/octet-binary' });
@@ -130,17 +153,12 @@ App.controller("index",
                 UIService.addAlert("Error: Unable to save project "+ProjectService.getProjectUUID()+" as tarball.","danger");
             }
         });
+        */
     };
 
-    // onLoad Function Calls ---------------------------------------------------
-    ProjectService.getProject();
-    ApiService.createProjectDirectory(ProjectService.getProjectUUID(),function(success){
-        if (success) {
-            UIService.addAlert("Created new project "+ProjectService.getProjectUUID(),"success");
-        } else {
-            UIService.addAlert("Unable to create new project "+ProjectService.getProjectUUID(),"danger");
-        }
-    });
+    $scope.onDeleteButtonClicked = function() {
+        UIService.addAlert("Not Available","warning");
+    };
 
     $scope.projectModified = function() {
         ProjectService.setProjectModified(true);
@@ -148,10 +166,17 @@ App.controller("index",
 
     $scope.reloadUI = function() {
         UIService.setHostController($scope);
-        UIService.setBreadcrumbs([ProjectService.project.name]);
-        UIService.generateTreeData();
+        if(ProjectService.getProject())
+        {
+            UIService.setBreadcrumbs([ProjectService.project.name]);
+            UIService.generateTreeData();
+        } else {
+            UIService.setBreadcrumbs(["Home"]);
+        }
         UIService.update();
     };
+
+
 
     $scope.reloadUI();
 }

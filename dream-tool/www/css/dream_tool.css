@@ -7,6 +7,9 @@ span.glyphicon-toolbar {
     font-size: 1.2em;
 }
 
+input {
+    color:white;
+}
 /*body {
     background-image : url("../img/giphy.1.gif");
     background-size: 100% 100%;

@@ -1,6 +1,10 @@
 App.controller("Project",
-	["$scope","ProjectService",
-	function($scope,ProjectService) {
-		$scope.project = ProjectService.getProject();
+	["$scope","ProjectService","UIService",
+	function($scope,ProjectService,UIService) {
+		if (ProjectService.isProjectOpen()){
+			$scope.project = ProjectService.getProject();
+			UIService.setBreadcrumbs([$scope.project.name]);
+			UIService.update();
+		}
 	}
 ]);

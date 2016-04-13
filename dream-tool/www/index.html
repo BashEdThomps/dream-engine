@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="css/dream_tool.css">
     <link rel="stylesheet" href="abn_tree.css">
     <link rel="stylesheet" href="ngToast.min.css">
+    <link rel="stylesheet" href="ngToast-animations.min.css">
     <!-- Controllers -->
     <script src="controller/app.js"></script>
     <script src="controller/api_service.js"></script>
@@ -44,6 +45,9 @@
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container-fluid">
             <div class="navbar-header">
+                <a class="navbar-brand" href="#home">
+                    <img alt="Brand" width="20" height="20" src="/favicon.png">
+                </a>
                 <a href="#home" class="navbar-brand">
                     <strong>
                         Dream Tool
@@ -63,7 +67,7 @@
                     </a>
                 </li>
                 <li>
-                    <a ng-click="onUploadProjectButtonClicked()">
+                    <a ng-click="onUploadButtonClicked()">
                         <span aria-hidden="true" class="glyphicon glyphicon-open-file"></span>
                     </a>
                 </li>
@@ -74,25 +78,28 @@
                 </li>
 				<li>
 					<a  ng-click="onPlayButtonClicked()">
-						<span class="glyphicon glyphicon-play"</span>
+						<span aria-hidden="true" class="glyphicon glyphicon-play"</span>
 					</a>
 				</li>
                 <li>
                     <a id="DownloadTarballButton" ng-click="onDownloadTarballButtonClicked()">
-                        <span class="glyphicon glyphicon-floppy-save"></span>
+                        <span aria-hidden="true" class="glyphicon glyphicon-floppy-save"></span>
                     </a>
+                </li>
+                <li>
+                    <a ng-click="onDeleteButtonClicked()"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a>
                 </li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                <!--li>
-                    <a ng-click="onSettingsButtonClicked()">
-                        <span class="glyphicon-toolbar glyphicon glyphicon-cog"></span>
-                    </a>
-                </li-->
                 <li>
-                    <a ng-click="onDeleteProjectButtonClicked()">
-                        <span class="glyphicon glyphicon-remove"></span>
+                    <a ng-click="onSettingsButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-cog"></span>
+                    </a>
+                </li>
+                <li>
+                    <a ng-click="onCloseProjectButtonClicked()">
+                        <span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
                     </a>
                 </li>
             </ul>

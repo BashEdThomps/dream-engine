@@ -1,10 +1,13 @@
 <div class="container-fluid">
+	<a class="navbar-brand" href="#home">
+		<img alt="Brand" width="50" height="50" src="/favicon.png">
+	</a>
 	<h1>
 		<strong>Dream Tool</strong>
 	</h1>
 	<br />
 	<div class="row">
-		<div class="col-md-4 fill">
+		<div class="col-md-3 fill">
 			<div class="well fill">
 				<h2>
 					Getting Started
@@ -17,14 +20,13 @@
 				</h2>
 				<p>
 					Projects are composed of the objects described below.
-					<br>
 					Click any object to see more information about it's role within a project.
 				</p>
 				<br>
 				<abn-tree expand-level="5" tree-data="helpTreeData">
 			</div>
 		</div>
-		<div class="col-md-8 fill">
+		<div class="col-md-9 fill">
 			<div class="well fill">
 				<div ng-show="showProject"
 				     ng-include="'view/partials/home/project/project.html'"></div>

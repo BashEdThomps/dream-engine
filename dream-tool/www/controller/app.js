@@ -4,6 +4,7 @@ var App = angular.module('DreamTool',
         'ui.router',
         'angularBootstrapNavTree',
         'ngFileSaver',
+        'ngAnimate',
         'ngToast'
     ]
 );

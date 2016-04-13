@@ -139,9 +139,31 @@ module.exports.writeResource = function* (proj, dir, rsc, format, data, next) {
     yield next;
 };
 
+module.exports.readProjectFile = function(uuid) {
+    var retval = require(getProjectFilePathFromUUID(uuid));
+    return retval;
+};
+
+var getProjectFilePathFromUUID = function(uuid) {
+    return dreamDirectory+path.sep+uuid+path.sep+uuid+".json";
+};
+
 module.exports.listProjects = function () {
+    var retval = [];
     var uuidList = fs.readdirSync(dreamDirectory);
-    return uuidList;
+    uuidList.forEach(function(projFolder) {
+        var name = "untitled";
+        try {
+            name = require(getProjectFilePathFromUUID(projFolder)).name || "Untitled";
+        } catch (ex) {
+            console.log("exception while reading project dir list",ex);
+        }
+        retval.push({
+            uuid: projFolder,
+            name: name
+        });
+    });
+    return retval;
 };
 
 createDreamToolDirInHome();

@@ -4,6 +4,6 @@
 <div class="panel-body">
     <abn-tree tree-data="projectTreeData"></abn-tree>
     <br />
-    <button class="btn btn-success pull-right" ng-click="open()">Open</button>
     <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-success pull-right" ng-disabled="selectedForOpen === null" ng-click="open()">Open</button>
 </div>

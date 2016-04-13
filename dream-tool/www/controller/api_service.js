@@ -42,6 +42,37 @@ App.service('ApiService',
         };
 
         this.saveProjectFile = function(projObj,callback) {
+            var api = this;
+            this.projectDirectoryExists(projObj,function(exists){
+                if (exists) {
+                    api.saveProjectAction(projObj,function(success3) {
+                        callback(success3);
+                    });
+                } else {
+                    api.createProjectDirectory(projObj.uuid,function(success2) {
+                        console.log("Created project directory for",projObj.uuid);
+                        api.saveProjectAction(projObj,function(success2){
+                            callback(success2);
+                        });
+                    });
+                }
+            });
+        };
+
+        this.projectDirectoryExists = function(projObj, callback) {
+            this.readProjectList(function(projList){
+                var retval = false;
+                projList.forEach(function(proj){
+                    if (proj.uuid === projObj.uuid) {
+                        retval = true;
+                        return;
+                    }
+                });
+                callback(retval);
+            });
+        };
+
+        this.saveProjectAction = function(projObj,callback) {
             $http({
                 url    : '/save/'+projObj.uuid,
                 method : 'POST',
@@ -72,6 +103,17 @@ App.service('ApiService',
             }).then(function success(resp) {
                 callback(resp.data);
             },function error(resp){
+                callback(null);
+            });
+        };
+
+        this.readProjectFile = function(project,callback){
+            $http({
+                method: 'GET',
+                url: "/projectfile/"+project
+            }).then(function success(resp) {
+                callback(resp.data);
+            },function failure(resp) {
                 callback(null);
             });
         };

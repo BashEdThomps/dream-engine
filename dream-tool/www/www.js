@@ -103,6 +103,13 @@ koaRouter.get("/projectlist",function *(next) {
 	yield next;
 });
 
+// GET /projectfile/:uuid to read a project file
+koaRouter.get("/projectfile/:uuid",function* (next){
+	this.status = 200;
+	this.body = dreamDirectory.readProjectFile(this.params.uuid);
+	yield next;
+});
+
 app.use(koaRouter.routes());
 app.use(koaRouter.allowedMethods());
 

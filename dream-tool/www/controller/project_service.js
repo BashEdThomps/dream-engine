@@ -1,13 +1,14 @@
 App.service('ProjectService',
-    ["Blob","FileSaver","UtilService",
-     function(Blob, FileSaver, UtilService) {
+    ["Blob","FileSaver","UtilService","ApiService",
+     function(Blob, FileSaver, UtilService, ApiService) {
 
     this.project = null;
 
+    this.isProjectOpen = function() {
+        return this.project !== null;
+    };
+
     this.getProject = function() {
-        if (this.project === null) {
-            this.initialise();
-        }
         return this.project;
     };
 
@@ -87,6 +88,12 @@ App.service('ProjectService',
 
     this.getResourceByUUID = function(uuid, callback) {
         var retval = null;
+
+        if (this.project === null) {
+            callback(retval);
+            return;
+        }
+
         this.project.resources.forEach(function (rsc) {
             if (rsc.uuid === uuid) {
                 retval = rsc;
@@ -152,17 +159,23 @@ App.service('ProjectService',
         };
     };
 
-    this.saveProject = function() {
-
-    }
-
-    this.openProject = function(project) {
-        this.project = project;
-        this.project.isModified = false;
+    this.openProject = function(uuid, callback) {
+        var svc = this;
+        ApiService.readProjectFile(uuid, function(data){
+            if (data === null) {
+                callback(false);
+            } else {
+                svc.project = data;
+                console.log("Opened project",svc.project);
+                svc.project.isModified = false;
+                callback(true);
+            }
+        });
     };
 
     this.isModified = function() {
-        return this.project.isModified;
+        if (this.project !== null) return this.project.isModified;
+        return false;
     };
 
     this.setProjectModified = function(modified) {

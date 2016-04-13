@@ -2,10 +2,12 @@ App.controller("ProjectResourceList",
     ["$scope","$state","ProjectService","UIService",
     function($scope,$state,ProjectService,UIService) {
 
-        $scope.project = ProjectService.getProject();
-        $scope.newResource = ProjectService.createResource();
-
-        UIService.setBreadcrumbs([ProjectService.getName(),"Resources"]);
+        if (ProjectService.isProjectOpen()) {
+            $scope.project = ProjectService.getProject();
+            $scope.newResource = ProjectService.createResource();
+            UIService.setBreadcrumbs([ProjectService.getName(),"Resources"]);
+            UIService.update();
+        }
 
         $scope.getResourecTypes = function() {
             return ProjectService.getResourecTypes();

@@ -1,8 +1,7 @@
 <div class="container-fluid">
-    <h1>Scene Editor</h1>
-    <br />
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-2">
+            <h2>Scene Editor</h2>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Configuration
@@ -28,12 +27,6 @@
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" ng-change="projectModified()"
-                                   ng-model="scene.collisionEnabled"/>Enable Collisions
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" ng-change="projectModified()"
                                    ng-model="scene.physicsEnabled"/>Enable Physics
                         </label>
                     </div>
@@ -43,16 +36,22 @@
                                    ng-model="scene.inputEnabled"/>Enable Input
                         </label>
                     </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-change="projectModified()"
+                                   ng-model="scene.collisionEnabled"/>Enable Collisions
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-2">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Scenegraph
                 </div>
                 <div class="panel-body">
-                    data
+                    <abn-tree tree-data="scenegraphTree"></abn-tree>
                 </div>
             </div>
         </div>
