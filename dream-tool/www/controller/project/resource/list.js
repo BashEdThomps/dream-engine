@@ -4,9 +4,11 @@ App.controller("ProjectResourceList",
 
         if (ProjectService.isProjectOpen()) {
             $scope.project = ProjectService.getProject();
-            $scope.newResource = ProjectService.createResource();
+            $scope.currentResource = ProjectService.createResource();
             UIService.setBreadcrumbs([ProjectService.getName(),"Resources"]);
             UIService.update();
+        } else {
+            $state.go("Home");
         }
 
         $scope.getResourecTypes = function() {
@@ -14,17 +16,17 @@ App.controller("ProjectResourceList",
         };
 
         $scope.onNewResourceAddButtonClicked = function() {
-            if ($scope.newResource.name === "") {
+            if ($scope.currentResource.name === "") {
                 UIService.addAlert("Resource name cannot be blank.","danger");
             } else {
-                ProjectService.pushResource($scope.newResource);
-                UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.newResource));
-                $scope.newResource = ProjectService.createResource();
+                ProjectService.pushResource($scope.currentResource);
+                UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.currentResource));
+                $scope.currentResource = ProjectService.createResource();
             }
         };
 
         $scope.onNewResourceClearButtonClicked = function() {
-            $scope.newResource = ProjectService.createResource();
+            $scope.currentResource = ProjectService.createResource();
         };
 
         $scope.onRemoveResourceButtonClicked = function(uuid) {
@@ -35,6 +37,13 @@ App.controller("ProjectResourceList",
                 } else {
                     UIService.addAlert("Error: Could not remove resource! ","danger");
                 }
+            });
+        };
+
+        $scope.onResourceSelected = function(uuid) {
+            console.log("Selected Resource",uuid);
+            ProjectService.getResourceByUUID(uuid,function(resource){
+                $scope.currentResource = resource;
             });
         };
     }

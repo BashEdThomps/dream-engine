@@ -115,7 +115,7 @@ App.controller("index",
             UIService.addAlert("No project open to save!","danger");
             return;
         }
-        
+
         var project = ProjectService.getProject();
         delete project.isModified;
         ApiService.saveProjectFile(project,function(success) {
@@ -159,6 +159,20 @@ App.controller("index",
     $scope.onDeleteButtonClicked = function() {
         UIService.addAlert("Not Available","warning");
     };
+
+    $scope.onSettingsThemeClicked = function() {
+        UIService.showSettingsThemeModal();
+    };
+
+    $scope.onSettingsHelpClicked = function() {
+        UIService.showSettingsHelpModal();
+    };
+
+    $scope.onSettingsAboutClicked = function() {
+        UIService.showSettingsAboutModal();
+    };
+
+    // Helpers -----------------------------------------------------------------
 
     $scope.projectModified = function() {
         ProjectService.setProjectModified(true);

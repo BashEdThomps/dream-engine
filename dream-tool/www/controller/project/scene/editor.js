@@ -2,7 +2,20 @@ App.controller("ProjectSceneEditor",
     ["$scope","$state","$stateParams","ProjectService","UIService",
     function($scope,$state,$stateParams,ProjectService,UIService) {
         $scope.sceneUUID = $stateParams.scene;
-        $scope.scenegraphTree = {};
+        $scope.scenegraphTree = [];
+
+        $scope.initScenegraphTree = function() {
+            $scope.scenegraphTree.push({
+                label    : $scope.scene.name,
+                onSelect :  null,
+                children : [],
+            });
+        };
+
+        $scope.projectModified = function () {
+            ProjectService.setProjectModified(true);
+            UIService.update();
+        };
 
         if (ProjectService.isProjectOpen()) {
             ProjectService.getSceneByUUID($scope.sceneUUID,function (scene){
@@ -14,20 +27,7 @@ App.controller("ProjectSceneEditor",
                     UIService.update();
                     $scope.initScenegraphTree();
                 }
-             });
-         }
-
-         $scope.initScenegraphTree = function() {
-            $scope.scenegraphTree = {
-                label: $scope.scene.name,
-                onSelect: null,
-                children: []
-            };
-        };
-
-        $scope.projectModified = function () {
-            ProjectService.setProjectModified(true);
-            UIService.update();
-        };
+            });
+        }
     }
 ]);

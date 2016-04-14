@@ -1,6 +1,4 @@
 <div class="container-fluid">
-    <h1>{{project.name}}</h1>
-    <br />
     <div class="row">
         <div class="col-md-3">
             <div class="panel panel-default">
@@ -10,15 +8,15 @@
                 <div class="panel-body">
                     <form class="form-group">
                         <label>Name</label>
-                        <input type="text" ng-change="updateUI()" class="form-control" ng-model="project.name"/>
+                        <input type="text" ng-change="updateUI()" class="form-control input-sm" ng-model="project.name"/>
                     </form>
                     <form class="form-group">
                         <label>Author</label>
-                        <input type="text" ng-change="projectModified()" class="form-control" ng-model="project.author"/>
+                        <input type="text" ng-change="projectModified()" class="form-control input-sm" ng-model="project.author"/>
                     </form>
                     <form class="form-group">
                         <label>Description</label>
-                        <textarea class="form-control"
+                        <textarea class="form-control input-sm"
                                   ng-change="projectModified()"
                                   ng-model="project.description"
                                   rows="5">

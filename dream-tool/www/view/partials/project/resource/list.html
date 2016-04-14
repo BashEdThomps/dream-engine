@@ -1,6 +1,4 @@
 <div class="container-fluid">
-    <h1>Resources</h1>
-    <br />
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
@@ -10,10 +8,73 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" class="form-control" ng-model="newResource.name"/>
+                        <input type="text" class="form-control input-sm" ng-model="currentResource.name"/>
                     </div>
-                    <button ng-click="onNewResourceClearButtonClicked()" class="btn btn-danger">Clear</button>
-                    <button ng-click="onNewResourceAddButtonClicked()" class="btn btn-success pull-right">Add</button>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select ng-model="currentResource.type" class="form-control input-sm" id="type">
+                            <option ng-repeat="type in getResourecTypes()">{{type}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group" ng-show="currentResource.type === 'Model'">
+                        <label for="type">Model File Format</label>
+                        <select ng-model="currentResource.format" class="form-control input-sm" id="type">
+                            <option value="obj">Wavefront OBJ</option>
+                        </select>
+                        <br />
+                        <div class="well"  id="wf-obj-files" ng-show="currentResource.format == 'obj'">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="file">Model</label>
+                                    <input type="file" id="wf-obj-file" accept=".obj" name="model-file" />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="file">Material</label>
+                                    <input type="file" id="wf-mtl-file" accept=".mtl" name="material-file" />
+                                </div>
+                            </div>
+                            <br/>
+                            <button
+                                id="wf-upload-button" class="btn btn-sm btn btn-success pull-right"
+                                ng-click="onResourceModelWavefrontUploadButtonClicked()">
+                                Upload
+                            </button>
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="currentResource.type === 'Audio'">
+                        <label for="type">Format</label>
+                        <select ng-model="currentResource.format" class="form-control input-sm" id="type">
+                            <option value="wav">Wave</option>
+                            <option value="ogg">Ogg Vorbis</option>
+                        </select>
+                        <br />
+                        <div ng-show="currentResource.format === 'wav'">
+                            <label>Sound File</label>
+                            <input type="file" id="wav-file" accept=".wav" name="wav-file"/>
+                            <br />
+                            <button
+                                id="wav-upload-button" class="btn btn-sm btn btn-success pull-right"
+                                ng-click="onResourceAudioWaveUploadButtonClicked()">
+                                Upload
+                            </button>
+                        </div>
+                        <div ng-show="currentResource.format === 'ogg'">
+                            <label>Sound File</label>
+                            <input type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>
+                            <br />
+                            <button
+                                id="ogg-upload-button" class="btn btn-sm btn btn-success pull-right"
+                                ng-click="onResourceAudioOggUploadButtonClicked()">
+                                Upload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button ng-click="onNewResourceClearButtonClicked()" class="btn btn-sm btn btn-danger">Clear</button>
+                    <button ng-click="onNewResourceAddButtonClicked()" class="btn btn-sm btn btn-success pull-right">Add</button>
                 </div>
             </div>
         </div>
@@ -22,7 +83,7 @@
                 <div class="panel-heading">
                     Resources
                 </div>
-                <table class="table table-striped">
+                <table class="table table-hover table-striped">
                     <thead>
                         <tr>
                             <th>
@@ -32,7 +93,7 @@
                                 Type
                             </th>
                             <th>
-                                Path
+                                UUID
                             </th>
                             <th>
                                 Remove
@@ -40,7 +101,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="resource in project.resources">
+                        <tr ng-repeat="resource in project.resources" ng-click="onResourceSelected(resource.uuid)">
                             <td>
                                 {{resource.name}}
                             </td>
@@ -48,10 +109,10 @@
                                 {{resource.type}}
                             </td>
                             <td>
-                                {{resource.path}}
+                                {{resource.uuid.toUpperCase()}}
                             </td>
                             <td>
-                                <button ng-click="onRemoveResourceButtonClicked(resource.uuid)"class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-remove"></span></button>
+                                <button ng-click="onRemoveResourceButtonClicked(resource.uuid)"class="btn btn-sm btn btn-danger btn btn-sm-sm"><span class="glyphicon glyphicon-remove"></span></button>
                             </td>
                         </tr>
                     </tbody>

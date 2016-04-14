@@ -3,6 +3,10 @@
     height: 88%;
 }
 
+.fill-full {
+    /*min-height: 85%;*/
+    height: 100%;
+}
 span.glyphicon-toolbar {
     font-size: 1.2em;
 }

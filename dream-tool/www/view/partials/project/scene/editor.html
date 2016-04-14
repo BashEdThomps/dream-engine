@@ -1,59 +1,7 @@
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2">
-            <h2>Scene Editor</h2>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Configuration
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" ng-change="projectModified()" class="form-control" ng-model="scene.name"/>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox"
-                                   ng-change="projectModified()"
-                                   ng-model="scene.animationEabled"/>Enable Animation
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" ng-change="projectModified()"
-                                   ng-model="scene.audioEnabled"/>Enable Audio
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" ng-change="projectModified()"
-                                   ng-model="scene.physicsEnabled"/>Enable Physics
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" ng-change="projectModified()"
-                                   ng-model="scene.inputEnabled"/>Enable Input
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" ng-change="projectModified()"
-                                   ng-model="scene.collisionEnabled"/>Enable Collisions
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Scenegraph
-                </div>
-                <div class="panel-body">
-                    <abn-tree tree-data="scenegraphTree"></abn-tree>
-                </div>
-            </div>
+<div class=" container-fluid">
+    <div class=" row">
+        <div class=" col-md-2">
+            <abn-tree tree-data="scenegraphTree"></abn-tree>
         </div>
     </div>
 </div>

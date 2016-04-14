@@ -197,12 +197,36 @@ App.service('UIService',
     };
 
     this.showOpenProjectModal = function(callback) {
-        var modal = $uibModal.open({
-            animation: this.modalAnimationsEnabled,
-            templateUrl: 'view/partials/modals/open.html',
-            controller: 'OpenProjectModal'
-        });
+        var modal = $uibModal.open(
+            {
+                animation: this.modalAnimationsEnabled,
+                templateUrl: 'view/partials/modals/open.html',
+                controller: 'OpenProjectModal'
+            }
+        );
         modal.result.then(callback);
+    };
+
+    this.showSettingsThemeModal = function() {
+        var modal = $uibModal.open(
+            {
+                animation: this.modalAnimationsEnabled,
+                templateUrl: 'view/partials/modals/settings/theme.html',
+                controller: 'SettingsThemeModal'
+            }
+        );
+        modal.result.then(function(){});
+    };
+
+    this.showSettingsAboutModal = function() {
+        var modal = $uibModal.open(
+            {
+                animation: this.modalAnimationsEnabled,
+                templateUrl: 'view/partials/modals/settings/about.html',
+                controller: 'SettingsAboutModal'
+            }
+        );
+        modal.result.then(function(){});
     };
 
     // Return UIService --------------------------------------------------------
