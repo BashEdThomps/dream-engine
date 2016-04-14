@@ -25,42 +25,6 @@ App.service('ProjectService',
         this.project.name = name;
     };
 
-    this.getConfigurationAnimationEnabled = function() {
-        return this.project.configuration.animationEnabled;
-    };
-
-    this.setConfigurationAnimationEnabled = function(enabled) {
-        this.isModified = true;
-        this.project.configuration.animationEnabled = enabled;
-    };
-
-    this.getConfigurationCollisionEnabled = function() {
-        return this.project.configuration.collisionEnabled;
-    };
-
-    this.setConfigurationCollisionEnabled = function(enabled) {
-        this.isModified = true;
-        this.project.configuration.collisionEnabled = enabled;
-    };
-
-    this.getConfigurationPhysicsEnabled = function() {
-        return this.project.configuration.physicsEnabled;
-    };
-
-    this.setConfigurationPhysicsEnabled = function(enabled) {
-        this.isModified = true;
-        this.project.configuration.physicsEnabled = enabled;
-    };
-
-    this.getConfigurationInputEnabled = function() {
-        return this.project.configuration.inputEnabled;
-    };
-
-    this.setConfigurationInputEnabled = function(enabled) {
-        this.isModified = true;
-        this.project.configuration.inputEnabled = enabled;
-    };
-
     this.pushScene = function(scene) {
         this.isModified = true;
         this.project.scenes.push(scene);
@@ -120,29 +84,28 @@ App.service('ProjectService',
     this.createScene = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name:"",
+            name:"New Scene",
             objects:[
                 this.createSceneObject()
             ],
-            animationEnabled: false,
-            collisionEnabled: false,
-            physicsEnabled:   false,
-            audioEnabled:     false,
-            inputEnabled:     false,
+            animationEnabled : false,
+            bulletEnabled    : false,
+            audioEnabled     : false,
+            inputEnabled     : false,
         };
     };
 
     this.createSceneObject = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name: "",
+            name: "New Scene Object",
         };
     };
 
     this.createResource = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name: "",
+            name: "New Resource",
             type: "",
         };
     };
@@ -185,6 +148,40 @@ App.service('ProjectService',
     this.generateDownloadBlob = function() {
         delete this.project.isModified;
         return new Blob([ JSON.stringify(this.project) ], { type : 'application/octet-stream' });
+    };
+
+    this.setSceneAnimationEnabled = function(scene) {
+        this.getSceneByUUID(scene.uuid,function(projScene){
+            projScene.animationEnabled = scene.animationEnabled;
+        });
+    };
+
+    this.setSceneInputEnabled = function(scene) {
+        this.getSceneByUUID(scene.uuid,function(projScene){
+            projScene.inputEnabled = scene.inputEnabled;
+        });
+    };
+
+    this.setSceneAudioEnabled = function(scene){
+        this.getSceneByUUID(scene.uuid,function(projScene){
+            projScene.audioEnabled = scene.audioEnabled;
+        });
+    };
+
+    this.setSceneBulletEnabled = function(scene) {
+        this.getSceneByUUID(scene.uuid,function(projScene){
+            projScene.bulletEnabled = scene.bulletEnabled;
+        });
+    };
+
+    this.setSceneName = function(scene) {
+        this.getSceneByUUID(scene.uuid,function(projScene){
+            projScene.name = scene.name;
+        });
+    };
+
+    this.closeProject = function() {
+        this.project = null;
     };
 
     return this;

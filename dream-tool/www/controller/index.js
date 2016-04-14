@@ -160,6 +160,13 @@ App.controller("index",
         UIService.addAlert("Not Available","warning");
     };
 
+    $scope.onCloseProjectButtonClicked = function() {
+        ProjectService.closeProject();
+        $scope.reloadUI();
+        $state.go("Home");
+        UIService.addAlert("Project Closed","success");
+    };
+
     $scope.onSettingsThemeClicked = function() {
         UIService.showSettingsThemeModal();
     };
@@ -189,8 +196,6 @@ App.controller("index",
         }
         UIService.update();
     };
-
-
 
     $scope.reloadUI();
 }

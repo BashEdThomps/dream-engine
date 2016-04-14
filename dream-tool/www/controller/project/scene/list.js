@@ -4,24 +4,15 @@ App.controller("ProjectSceneList",
         if (ProjectService.isProjectOpen()) {
             UIService.setBreadcrumbs([ProjectService.getName(),"Scenes"]);
             $scope.project  = ProjectService.getProject();
-            $scope.currentScene = ProjectService.createScene();
             UIService.update();
         } else {
             $state.go("Home");
         }
 
-        $scope.onNewSceneAddButtonClicked = function() {
-            if ($scope.currentScene.name === "") {
-                UIService.addAlert("Scene name cannot be blank.","danger");
-            } else {
-                ProjectService.pushScene($scope.currentScene);
-                UIService.addTreeProjectScene(UIService.createTreeProjectScene($scope.currentScene));
-                $scope.currentScene = ProjectService.createScene();
-            }
-        };
-
-        $scope.onNewSceneClearButtonClicked = function() {
+        $scope.onNewSceneButtonClicked = function() {
             $scope.currentScene = ProjectService.createScene();
+            ProjectService.pushScene($scope.currentScene);
+            UIService.addTreeProjectScene(UIService.createTreeProjectScene($scope.currentScene));
         };
 
         $scope.onRemoveSceneButtonClicked = function(uuid) {
@@ -41,6 +32,14 @@ App.controller("ProjectSceneList",
             ProjectService.getSceneByUUID(uuid,function(scene) {
                 $scope.currentScene = scene;
             });
+        };
+
+        $scope.modified = function() {
+            ProjectService.setSceneAnimationEnabled($scope.currentScene);
+            ProjectService.setSceneInputEnabled($scope.currentScene);
+            ProjectService.setSceneAudioEnabled($scope.currentScene);
+            ProjectService.setSceneBulletEnabled($scope.currentScene);
+            ProjectService.setSceneName($scope.currentScene);
         };
     }
 ]);

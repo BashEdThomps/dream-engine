@@ -10,6 +10,14 @@ App.controller("ProjectSceneEditor",
                 onSelect :  null,
                 children : [],
             });
+            $scope.scene.objects.forEach(function(sceneObject){
+                $scope.scenegraphTree[0].children.push({
+                    label:sceneObject.name,
+                    uuid:sceneObject.uuid,
+                    onSelect: null,
+                    children: [],
+                });
+            });
         };
 
         $scope.projectModified = function () {
@@ -28,6 +36,8 @@ App.controller("ProjectSceneEditor",
                     $scope.initScenegraphTree();
                 }
             });
+        } else {
+            $state.go("Home");
         }
     }
 ]);

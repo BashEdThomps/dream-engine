@@ -15,42 +15,36 @@
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox"
-                                           ng-change="projectModified()"
+                                           ng-change="modified()"
                                            ng-model="currentScene.animationEabled"/>Enable Animation
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" ng-change="projectModified()"
+                                    <input type="checkbox" ng-change="modified()"
                                            ng-model="currentScene.audioEnabled"/>Enable Audio
-                                </label>
-                            </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" ng-change="projectModified()"
-                                           ng-model="currentScene.physicsEnabled"/>Enable Physics
                                 </label>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" ng-change="projectModified()"
+                                    <input type="checkbox" ng-change="modified()"
                                            ng-model="currentScene.inputEnabled"/>Enable Input
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" ng-change="projectModified()"
-                                           ng-model="currentScene.collisionEnabled"/>Enable Collisions
+                                    <input type="checkbox" ng-change="modified()"
+                                           ng-model="currentScene.bulletEnabled"/>Enable Bullet 
                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <button ng-click="onNewSceneClearButtonClicked()" class="btn btn-sm btn btn-danger">Clear</button>
-                    <button ng-click="onNewSceneAddButtonClicked()" class="btn btn-sm btn btn-success pull-right">Add</button>
+                    <button ng-click="onNewSceneButtonClicked()" class="btn btn-sm btn btn-success">New Scene</button>
+                    <br/>
                 </div>
             </div>
         </div>
