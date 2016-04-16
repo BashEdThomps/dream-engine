@@ -38,5 +38,11 @@ App.controller("ProjectResourceList",
                 $scope.currentResource = resource;
             });
         };
+
+        $scope.modified = function() {
+            console.log("Resource List Item Modified");
+            ProjectService.updateResource($scope.currentResource);
+            UIService.updateResource($scope.currentResource);
+        };
     }
 ]);

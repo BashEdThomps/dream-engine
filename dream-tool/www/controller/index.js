@@ -61,7 +61,7 @@ App.controller("index",
         if (ProjectService.isModified()) {
             UIService.showSaveModifiedModal(
                 function yes() {
-                    ProjectService.saveProject();
+                    $scope.saveProject();
                 }, function no() {
                     $scope.newProjectAction();
                 }
@@ -110,7 +110,7 @@ App.controller("index",
         UIService.addAlert("Not Available","warning");
     };
 
-    $scope.onSaveButtonClicked = function() {
+    $scope.saveProject = function() {
         if (!ProjectService.isProjectOpen()) {
             UIService.addAlert("No project open to save!","danger");
             return;
@@ -125,6 +125,10 @@ App.controller("index",
                 UIService.addAlert("Unable to save"+project.name+" saved with id: "+project.uuid,"danger");
             }
         });
+    };
+
+    $scope.onSaveButtonClicked = function() {
+        $scope.saveProject();
     };
 
     $scope.onSettingsHelpButtonClicked  = function() {

@@ -35,11 +35,9 @@ App.controller("ProjectSceneList",
         };
 
         $scope.modified = function() {
-            ProjectService.setSceneAnimationEnabled($scope.currentScene);
-            ProjectService.setSceneInputEnabled($scope.currentScene);
-            ProjectService.setSceneAudioEnabled($scope.currentScene);
-            ProjectService.setSceneBulletEnabled($scope.currentScene);
-            ProjectService.setSceneName($scope.currentScene);
+            console.log("Scene List Modified Event");
+            ProjectService.updateScene($scope.currentScene);
+            UIService.updateScene($scope.currentScene);
         };
     }
 ]);

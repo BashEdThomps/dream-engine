@@ -21,23 +21,34 @@ App.service('ProjectService',
     };
 
     this.setName = function(name) {
-        this.isModified = true;
+        this.project.isModified = true;
         this.project.name = name;
     };
 
     this.setAuthor = function(author) {
-        this.isModified = true;
+        this.project.isModified = true;
         this.project.author = author;
     };
 
     this.setDescription = function(description) {
-        this.isModified = true;
+        this.project.isModified = true;
         this.project.description = description;
 
     };
 
+    this.updateProject = function(project) {
+        this.setName        (project.name);
+        this.setAuthor      (project.author);
+        this.setDescription (project.description);
+        this.setOpenAL      (project.openAL);
+        this.setBullet2     (project.bullet2);
+        this.setBullet3     (project.bullet3);
+        this.setOpenGL      (project.openGL);
+        this.setVulkan      (project.vulkan);
+    };
+
     this.pushScene = function(scene) {
-        this.isModified = true;
+        this.project.isModified = true;
         this.project.scenes.push(scene);
     };
 
@@ -57,7 +68,7 @@ App.service('ProjectService',
     };
 
     this.pushResource = function(resource) {
-        this.isModified = true;
+        this.project.isModified = true;
         this.project.resources.push(resource);
     };
 
@@ -148,12 +159,37 @@ App.service('ProjectService',
         };
     };
 
+    this.setOpenAL = function(openAL) {
+        this.project.openAL = openAL;
+    };
+
+    this.setBullet2 = function(b2) {
+        this.project.bullet2 = b2;
+    };
+
+    this.setBullet3 = function(b3) {
+        this.project.bullet3 = b3;
+    };
+
+    this.setOpenGL = function(openGL) {
+        this.project.openGL = openGL;
+    };
+
+    this.setVulkan = function(vulkan) {
+        this.project.vulkan = vulkan;
+    };
+
     this.initialise = function() {
         this.project = {
             uuid:        UtilService.generateUUID(),
             name:        "New Dream Project",
             author:      "",
             description: "",
+            openAL : false,
+            bullet2: false,
+            bullet3: false,
+            openGL: false,
+            vulkan: false,
             scenes: [],
             resources: [],
             isModified: false
@@ -186,6 +222,31 @@ App.service('ProjectService',
     this.generateDownloadBlob = function() {
         delete this.project.isModified;
         return new Blob([ JSON.stringify(this.project) ], { type : 'application/octet-stream' });
+    };
+
+    this.updateResource = function(resource) {
+        this.setResourceName(resource);
+        this.setResourceType(resource);
+    };
+
+    this.setResourceName = function(resource) {
+        this.getResourceByUUID(resource.uuid,function(rsc){
+            rsc.name = resource.name;
+        });
+    };
+
+    this.setResourceType = function(resource) {
+        this.getResourceByUUID(resource.uuid,function(rsc){
+            rsc.type = resource.type;
+        });
+    };
+
+    this.updateScene = function(scene) {
+        this.setSceneAnimationEnabled(scene);
+        this.setSceneInputEnabled(scene);
+        this.setSceneAudioEnabled(scene);
+        this.setSceneBulletEnabled(scene);
+        this.setSceneName(scene);
     };
 
     this.setSceneAnimationEnabled = function(scene) {

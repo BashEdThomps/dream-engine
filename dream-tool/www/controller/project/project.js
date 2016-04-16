@@ -10,10 +10,9 @@ App.controller("Project",
 		}
 
 		$scope.modified = function() {
-			console.log("Modified");
-			ProjectService.setName($scoope.project.name);
-			ProjectService.setAuthor($scoope.project.author);
-			ProjectService.setDescription($scoope.project.description);
+			console.log("Project Modified");
+			ProjectService.updateProject($scope.project);
+			UIService.updateProject($scope.project);
 		};
 	}
 ]);

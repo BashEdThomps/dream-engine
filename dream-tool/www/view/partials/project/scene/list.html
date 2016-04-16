@@ -11,6 +11,7 @@
                         <input id="name"
                                ng-disabled="currentScene === undefined"
                                type="text"
+                               ng-change="modified()"
                                class="form-control input-sm"
                                ng-model="currentScene.name"/>
                     </div>
