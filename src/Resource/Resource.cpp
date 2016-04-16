@@ -23,9 +23,8 @@ namespace Dream {
 		}
 
 		Resource::Resource(nlohmann::json json) {
-		}
-
-		Resource::~Resource(void) {
+			mUUID = json [RESOURCE_JSON_UUID];
+			mName = json [RESOURCE_JSON_NAME];
 		}
 
 		void Resource::setUUID(std::string uuid) {

@@ -21,12 +21,13 @@
 #include <iostream>
 #include "../JSON/json.hpp"
 
+#define RESOURCE_JSON_UUID "uuid"
+#define RESOURCE_JSON_NAME "name"
 #define RESOURCE_JSON_TYPE "type"
 
-#define RESOURCE_TYPE_ANIMATION    "Animation"
-#define RESOURCE_TYPE_MODEL        "Model"
-#define RESOURCE_TYPE_SOUND_EFFECT "SoundEffect"
-#define RESOURCE_TYPE_MUSIC        "Music"
+#define RESOURCE_TYPE_ANIMATION "Animation"
+#define RESOURCE_TYPE_MODEL     "Model"
+#define RESOURCE_TYPE_MUSIC     "Audio"
 
 namespace Dream {
 	namespace Resource {
@@ -36,16 +37,13 @@ namespace Dream {
 		public:
 			Resource(void);
 			Resource(nlohmann::json);
-			~Resource(void);
+			virtual ~Resource(void) = 0;
 
 			void setUUID(std::string);
 			std::string getUUID();
 
 			void setName(std::string);
 			std::string getName();
-
-		//protected:
-		//private:
 		}; // End of Resource
 	}
 } // End of Dream

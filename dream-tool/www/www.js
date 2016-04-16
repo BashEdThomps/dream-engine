@@ -25,6 +25,8 @@ var FILESAVER                  = NODE_MODULES + "FileSaver.js";
 var NG_TOAST                   = NODE_MODULES + "ng-toast/dist";
 var ANGULAR_SANITIZE           = NODE_MODULES + "angular-sanitize";
 var ANGULAR_ANIMATE            = NODE_MODULES + "angular-animate";
+var D3                         = NODE_MODULES + "d3";
+var FONT_AWESOME               = NODE_MODULES + "font-awesome";
 
 app.use(bodyParser({
 	formLimit:"100mb",
@@ -47,6 +49,8 @@ app.use(koaStatic(SCREENFUL));
 app.use(koaStatic(NG_TOAST));
 app.use(koaStatic(ANGULAR_SANITIZE));
 app.use(koaStatic(ANGULAR_ANIMATE));
+app.use(koaStatic(D3));
+app.use(koaStatic(FONT_AWESOME));
 
 // Api -------------------------------------------------------------------------
 

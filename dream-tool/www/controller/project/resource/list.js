@@ -4,7 +4,6 @@ App.controller("ProjectResourceList",
 
         if (ProjectService.isProjectOpen()) {
             $scope.project = ProjectService.getProject();
-            $scope.currentResource = ProjectService.createResource();
             UIService.setBreadcrumbs([ProjectService.getName(),"Resources"]);
             UIService.update();
         } else {
@@ -15,18 +14,11 @@ App.controller("ProjectResourceList",
             return ProjectService.getResourecTypes();
         };
 
-        $scope.onNewResourceAddButtonClicked = function() {
-            if ($scope.currentResource.name === "") {
-                UIService.addAlert("Resource name cannot be blank.","danger");
-            } else {
-                ProjectService.pushResource($scope.currentResource);
-                UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.currentResource));
-                $scope.currentResource = ProjectService.createResource();
-            }
-        };
-
-        $scope.onNewResourceClearButtonClicked = function() {
+        $scope.onNewResourceButtonClicked = function() {
             $scope.currentResource = ProjectService.createResource();
+            ProjectService.pushResource($scope.currentResource);
+            UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.currentResource));
+            UIService.update();
         };
 
         $scope.onRemoveResourceButtonClicked = function(uuid) {

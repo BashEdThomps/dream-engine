@@ -127,6 +127,10 @@ App.controller("index",
         });
     };
 
+    $scope.onSettingsHelpButtonClicked  = function() {
+        $state.go("Home");
+    };
+
     $scope.onPlayButtonClicked = function() {
         ApiService.runDreamProject(ProjectService.project,function(success){
             if (success) {

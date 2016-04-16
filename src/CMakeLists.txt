@@ -19,6 +19,15 @@ file(GLOB RESOURCE_MODEL_SRC "Resource/Model/*.h" "Resource/Model/*.cpp")
 #file(GLOB LUA_SRC "Lua/*.h" "Lua/*.cpp")
 #file(GLOB OBJ_SRC "Obj*.h" "Obj*.cpp")
 
+# Audio
+file(GLOB AUDIO_SRC "Audio/*.h" "Audio/*.cpp")
+
+# Video
+file(GLOB VIDEO_SRC "Video/*.h" "Video/*.cpp")
+
+# Physics
+file (GLOB PHYSICS_SRC "Physics/*.h" "Physics/*.cpp")
+
 # Dream
 file(GLOB DREAM_SRC "*.h" "*.cpp")
 list(REMOVE_ITEM DREAM_SRC "Main.cpp")
@@ -29,6 +38,9 @@ add_library (
     ${JSON_SRC}
     ${UTIL_SRC}
     ${UNIT_SRC}
+    ${AUDIO_SRC}
+    ${VIDEO_SRC}
+    ${PHYSICS_SRC}
 
     ${RESOURCE_SRC}
     ${RESOURCE_ANIMATION_SRC}

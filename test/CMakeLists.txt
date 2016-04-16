@@ -12,6 +12,15 @@ file(GLOB TEST_JSON_SRC "JSON/*.h" "JSON/*.cpp")
 # Scene
 file(GLOB TEST_SCENE_SRC "Scene/*.h" "Scene/*.cpp")
 
+# Audio
+file(GLOB TEST_AUDIO_SRC "Audio/*.h" "Audio/*.cpp")
+
+# Video
+file(GLOB TEST_VIDEO_SRC "Video/*.h" "Video/*.cpp")
+
+# Physics
+file(GLOB TEST_PHYSICS_SRC "Physics/*.h" "Physics/*.cpp")
+
 # Resource
 file(GLOB TEST_RESOURCE_SRC "Resource/*.h" "Resource/*.cpp")
 file(GLOB TEST_RESOURCE_MODEL_SRC "Resource/Model/*.h" "Resource/Model/*.cpp")
@@ -28,6 +37,9 @@ add_executable (
     ${TEST_UNIT_SRC}
     ${TEST_JSON_SRC}
     ${TEST_UTIL_SRC}
+    ${TEST_AUDIO_SRC}
+    ${TEST_VIDEO_SRC}
+    ${TEST_PHYSICS_SRC}
     ${TEST_RESOURCE_SRC}
     ${TEST_RESOURCE_MODEL_SRC}
     ${TEST_RESOURCE_ANIMATION_SRC}

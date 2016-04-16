@@ -1,5 +1,5 @@
 /*
-* ModelResource
+* PhysicsInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ModelResource.h"
-
+#ifndef PHYSICSINTERFACE_H
+#define PHYSICSINTERFACE_H
 
 namespace Dream {
-	namespace Resource {
-		namespace Model {
-			ModelResource::ModelResource() : Dream::Resource::Resource() {
-
-			}
-
-			ModelResource::ModelResource(nlohmann::json jsonRsc) : Dream::Resource::Resource(jsonRsc) {
-
-			}
-		} // End of Model
-	} // End of Resource
+	namespace Physics {
+		class PhysicsInterface {
+		public:
+			PhysicsInterface(void);
+			~PhysicsInterface(void);
+		}; // End of PhysicsInterface
+	} // End of Physics
 } // End of Dream
+
+#endif // End of PHYSICSINTERFACE_H

@@ -8,5 +8,12 @@ App.controller("Project",
 		} else {
 			$state.go("Home");
 		}
+
+		$scope.modified = function() {
+			console.log("Modified");
+			ProjectService.setName($scoope.project.name);
+			ProjectService.setAuthor($scoope.project.author);
+			ProjectService.setDescription($scoope.project.description);
+		};
 	}
 ]);

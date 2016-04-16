@@ -19,6 +19,8 @@
     "angular-ui-router": "^0.2.18",
     "bootstrap": "^3.3.6",
     "co-body": "^4.0.0",
+    "d3": "^3.5.16",
+    "font-awesome": "^4.6.1",
     "koa": "^1.2.0",
     "koa-bodyparser": "^2.0.1",
     "koa-router": "^5.4.0",

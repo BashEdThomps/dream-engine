@@ -6,23 +6,54 @@
                     Configuration
                 </div>
                 <div class="panel-body">
-                    <form class="form-group">
+                    <h4>Project Information</h4>
+                    <div class="form-group">
                         <label>Name</label>
-                        <input type="text" ng-change="updateUI()" class="form-control input-sm" ng-model="project.name"/>
-                    </form>
-                    <form class="form-group">
+                        <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.name"/>
+                    </div>
+                    <div class="form-group">
                         <label>Author</label>
-                        <input type="text" ng-change="projectModified()" class="form-control input-sm" ng-model="project.author"/>
-                    </form>
-                    <form class="form-group">
+                        <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.author"/>
+                    </div>
+                    <div class="form-group">
                         <label>Description</label>
                         <textarea class="form-control input-sm"
-                                  ng-change="projectModified()"
+                                  ng-change="modified()"
                                   ng-model="project.description"
                                   rows="5">
                         </textarea>
-                    </form>
-
+                    </div>
+                    <hr/>
+                    <h4>Interfaces</h4>
+                    <strong>Audio</strong>
+                    <div class="form-group">
+                        <div class="checkbox checkbox-info">
+                          <input type="checkbox" id="openAL">
+                          <label for="openAL">OpenAL</label>
+                        </div>
+                    </div>
+                    <strong>Physics</strong>
+                    <div class="form-group">
+                        <div class="checkbox checkbox-info">
+                          <input type="checkbox" id="bullet2">
+                          <label for="bullet2">Bullet 2</label>
+                        </div>
+                        <div class="checkbox checkbox-info">
+                          <input type="checkbox" id="bullet3">
+                          <label for="bullet3">Bullet 3</label>
+                        </div>
+                    </div>
+                    <strong>Video</strong>
+                    <div class="form-group">
+                        <div class="checkbox checkbox-info">
+                          <input type="checkbox" id="openGL">
+                          <label for="openGL">OpenGL</label>
+                        </div>
+                        <div class="checkbox checkbox-info">
+                          <input type="checkbox" id="vulkan">
+                          <label for="vulkan">Vulkan (Coming Soon)</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

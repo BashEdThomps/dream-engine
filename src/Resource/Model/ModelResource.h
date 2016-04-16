@@ -27,7 +27,7 @@ namespace Dream {
 			public:
 				ModelResource(void);
 				ModelResource(nlohmann::json);
-				~ModelResource(void);
+				virtual ~ModelResource(void) = 0;
 			}; // End of ModelResource
 		} // End of Model
 	}// End of Resource

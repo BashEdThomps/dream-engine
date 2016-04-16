@@ -1,5 +1,5 @@
 /*
-* ModelResource
+* BulletPhysics
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ModelResource.h"
-
+#include "BulletPhysics.h"
 
 namespace Dream {
-	namespace Resource {
-		namespace Model {
-			ModelResource::ModelResource() : Dream::Resource::Resource() {
+	namespace Physics {
+		BulletPhysics::BulletPhysics(void) {
+		}
 
-			}
-
-			ModelResource::ModelResource(nlohmann::json jsonRsc) : Dream::Resource::Resource(jsonRsc) {
-
-			}
-		} // End of Model
-	} // End of Resource
+		BulletPhysics::~BulletPhysics(void) {
+			delete mSolver;
+			delete mDispatcher;
+			delete mCollisionConfiguration;
+			delete mBroadphase;
+			delete mDynamicsWorld;
+		}
+	} // End of Scene
 } // End of Dream

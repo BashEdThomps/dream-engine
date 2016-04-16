@@ -25,6 +25,17 @@ App.service('ProjectService',
         this.project.name = name;
     };
 
+    this.setAuthor = function(author) {
+        this.isModified = true;
+        this.project.author = author;
+    };
+
+    this.setDescription = function(description) {
+        this.isModified = true;
+        this.project.description = description;
+
+    };
+
     this.pushScene = function(scene) {
         this.isModified = true;
         this.project.scenes.push(scene);
@@ -73,10 +84,36 @@ App.service('ProjectService',
 
     this.getResourecTypes = function() {
         return [
-            "Model",
             "Animation",
-            "Audio"
+            "Audio",
+            "Collision Shape",
+            "Model",
+            "Shader",
         ];
+    };
+
+    this.addResourceLinkToSceneObject = function(sceneUUID,sceneObjectUUID,resourceUUID){
+        var proj = this;
+        console.log("Adding Resource Link",sceneObjectUUID,resourceUUID);
+        this.getSceneByUUID(sceneUUID,function(scene){
+            proj.getSceneObjectByUUID(scene,sceneObjectUUID,function(sceneObject){
+                if (sceneObject.resourceLinks === undefined) {
+                    sceneObject.resourceLinks = [];
+                }
+                if (sceneObject.resourceLinks.indexOf(sceneObjectUUID) < 0) {
+                    sceneObject.resourceLinks.push(resourceUUID);
+                    console.log(sceneObjectUUID,"contains links",sceneObject.resourceLinks);
+                }
+            });
+        });
+    };
+
+    this.getSceneObjectByUUID = function(scene,sceneObjectUUID,callback) {
+        scene.objects.forEach(function(sceneObject){
+            if (sceneObject.uuid == sceneObjectUUID) {
+                callback(sceneObject);
+            }
+        });
     };
 
     // Create New Resources ----------------------------------------------------
@@ -99,6 +136,7 @@ App.service('ProjectService',
         return {
             uuid: UtilService.generateUUID(),
             name: "New Scene Object",
+            resourceLinks: [],
         };
     };
 
@@ -182,6 +220,10 @@ App.service('ProjectService',
 
     this.closeProject = function() {
         this.project = null;
+    };
+
+    this.getResourceList = function(callback) {
+        callback(this.project.resources);
     };
 
     return this;

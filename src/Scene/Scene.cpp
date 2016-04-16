@@ -21,24 +21,26 @@ namespace Dream {
 	namespace  Scene {
 		Scene::Scene() {
 			init();
-			mCollisionEnabled = false;;
 			mPhysicsEnabled   = false;
 			mAnimationEnabled = false;
 			mInputEnabled     = false;
 			mAudioEnabled     = false;
+			mVideoEnabled     = false;
 		}
 
 		Scene::Scene(nlohmann::json jsonScene) {
 			init();
 			mName             = jsonScene [SCENE_JSON_NAME];
-			mCollisionEnabled = jsonScene [SCENE_JSON_COLLISION_ENABLED];
 			mPhysicsEnabled   = jsonScene [SCENE_JSON_PHYSICS_ENABLED];
 			mAnimationEnabled = jsonScene [SCENE_JSON_ANIMATION_ENABLED];
 			mInputEnabled     = jsonScene [SCENE_JSON_INPUT_ENABLED];
 			mAudioEnabled     = jsonScene [SCENE_JSON_AUDIO_ENABLED];
+			mVideoEnabled     = jsonScene [SCENE_JSON_VIDEO_ENABLED];
 		}
 
-		Scene::~Scene() {}
+		Scene::~Scene() {
+
+		}
 
 		void Scene::init() {
 			mCamera = new Camera();
@@ -83,6 +85,22 @@ namespace Dream {
 
 		bool Scene::isInputEnabled() {
 			return mInputEnabled;
+		}
+
+		bool Scene::initBullet() {
+			mBroadphase = new btDbvtBroadphase();
+			mCollisionConfiguration = new btDefaultCollisionConfiguration();
+			mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
+			mSolver = new btSequentialImpulseConstraintSolver();
+			mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
+		}
+
+		bool Scene::setGravity3f(float x, float y, float z) {
+			setGravityBtVector(new btVector3(x,y,z));
+		}
+
+		bool Scene::setGravityBtVector3(Gravity) {
+			mDynamicsWorld->setGravity(gravity);
 		}
 
 	}// End of Scene

@@ -1,5 +1,5 @@
 /*
-* ModelResource
+* VideoInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ModelResource.h"
-
+#ifndef VIDEOINTERFACE_H
+#define VIDEOINTERFACE_H
 
 namespace Dream {
-	namespace Resource {
-		namespace Model {
-			ModelResource::ModelResource() : Dream::Resource::Resource() {
-
-			}
-
-			ModelResource::ModelResource(nlohmann::json jsonRsc) : Dream::Resource::Resource(jsonRsc) {
-
-			}
-		} // End of Model
-	} // End of Resource
+	class VideoInterface {
+	public:
+		VideoInterface(void);
+		virtual ~VideoInterface(void) = 0;
+		virtual void render(void) = 0;
+	}; // End of VideoInterface
 } // End of Dream
+
+#endif // End of VIDEOINTERFACE_H

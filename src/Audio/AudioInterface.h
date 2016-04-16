@@ -1,5 +1,5 @@
 /*
-* ModelResource
+* AudioInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ModelResource.h"
-
+#ifndef AUDIOINTERFACE_H
+#define AUDIOINTERFACE_H
 
 namespace Dream {
-	namespace Resource {
-		namespace Model {
-			ModelResource::ModelResource() : Dream::Resource::Resource() {
-
-			}
-
-			ModelResource::ModelResource(nlohmann::json jsonRsc) : Dream::Resource::Resource(jsonRsc) {
-
-			}
-		} // End of Model
-	} // End of Resource
+	class AudioInterface {
+	public:
+		AudioInterface(void);
+		~AudioInterface(void);
+	//protected:
+	//private:
+	}; // End of AudioInterface
 } // End of Dream
+
+#endif // End of AUDIOINTERFACE_H

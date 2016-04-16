@@ -23,6 +23,7 @@
 #include "Camera.h"
 #include "../JSON/json.hpp"
 
+
 #define SCENE_JSON_UUID              "uuid"
 #define SCENE_JSON_NAME              "name"
 #define SCENE_JSON_ANIMATION_ENABLED "animationEnabled"
@@ -30,20 +31,23 @@
 #define SCENE_JSON_COLLISION_ENABLED "collisionEnabled"
 #define SCENE_JSON_PHYSICS_ENABLED   "physicsEnabled"
 #define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
+#define SCENE_JSON_VIDEO_ENABLED     "videoEnabled"
 
 namespace Dream {
 	namespace Scene {
 		class Scene {
 		private:
-			std::string mUUID;
-			std::string mName;
-			Scenegraph *mScenegraph;
-			Camera* mCamera;
-			bool mCollisionEnabled;
-			bool mPhysicsEnabled;
-			bool mAnimationEnabled;
-			bool mInputEnabled;
-			bool mAudioEnabled;
+			std::string   mUUID;
+			std::string   mName;
+
+			bool          mAnimationEnabled;
+			bool          mAudioEnabled;
+			bool          mInputEnabled;
+			bool          mPhysicsEnabled;
+			bool          mVideoEnabled;
+
+			Scenegraph   *mScenegraph;
+			Camera       *mCamera;
 		public:
 			Scene();
 			Scene(nlohmann::json);
@@ -60,9 +64,8 @@ namespace Dream {
 			Scenegraph* getScenegraph();
 			bool isAudioEnabled();
 			bool isAnimationEnabled();
-			bool isPhysicsEnabled();
-			bool isCollisionEnabled();
 			bool isInputEnabled();
+			bool initBullet();
 		}; // End of Scene
 	} // End of Scene
 } // End of Dream

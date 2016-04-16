@@ -3,40 +3,59 @@
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    New Scene
+                    Configure Scene
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" class="form-control input-sm" ng-model="currentScene.name"/>
+                        <label for="name">Name</label>
+                        <input id="name"
+                               ng-disabled="currentScene === undefined"
+                               type="text"
+                               class="form-control input-sm"
+                               ng-model="currentScene.name"/>
                     </div>
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox"
-                                           ng-change="modified()"
-                                           ng-model="currentScene.animationEabled"/>Enable Animation
+                            <div class="checkbox checkbox-info">
+                                <input type="checkbox"
+                                       id="enableAnimation"
+                                       ng-disabled="currentScene === undefined"
+                                       ng-change="modified()"
+                                       ng-model="currentScene.animationEabled"/>
+                                <label for="enableAnimation">
+                                    Enable Animation
                                 </label>
                             </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" ng-change="modified()"
-                                           ng-model="currentScene.audioEnabled"/>Enable Audio
+                            <div class="checkbox checkbox-info">
+                                <input id="enableAudio"
+                                       type="checkbox"
+                                       ng-change="modified()"
+                                       ng-disabled="currentScene === undefined"
+                                       ng-model="currentScene.audioEnabled"/>
+                                <label for="enableAudio">
+                                    Enable Audio
                                 </label>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" ng-change="modified()"
-                                           ng-model="currentScene.inputEnabled"/>Enable Input
+                            <div class="checkbox checkbox-info">
+                                <input id="enableInput"
+                                       type="checkbox"
+                                       ng-change="modified()"
+                                       ng-disabled="currentScene === undefined"
+                                       ng-model="currentScene.inputEnabled"/>
+                                <label for="enableInput">
+                                    Enable Input
                                 </label>
                             </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" ng-change="modified()"
-                                           ng-model="currentScene.bulletEnabled"/>Enable Bullet 
+                            <div class="checkbox checkbox-info">
+                                <input id="enableBullet"
+                                       type="checkbox"
+                                       ng-change="modified()"
+                                       ng-disabled="currentScene === undefined"
+                                       ng-model="currentScene.bulletEnabled"/>
+                                <label for="enableBullet">
+                                    Enable Bullet
                                 </label>
                             </div>
                         </div>
@@ -53,7 +72,7 @@
                 <div class="panel-heading">
                     Scenes
                 </div>
-                <table class="table table-hover table-striped">
+                <table class="table table-hover  table-condensed table-striped">
                     <thead>
                         <tr>
                             <th>
