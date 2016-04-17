@@ -55,13 +55,18 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     yield next;
 };
 
-module.exports.compressProject = function *(projectUUID, koaObj, next) {
+module.exports.compressProject = function (projectUUID,callback) {
     console.log("Compressing project",projectUUID);
-    var read = targz().createReadStream(dreamDirectory+path.sep+projectUUID);
-    read.pipe(koaObj.body);
-    yield next;
-    //var write = fs.createWriteStream(dreamDirectory+path.sep+projectName+'.tar.gz');
-    //yield read.pipe(write);
+    var srcPath = dreamDirectory+path.sep+projectUUID+path.sep;
+    var archPath = dreamDirectory+path.sep+projectUUID+'.tar.gz';
+    var read = targz().createReadStream(srcPath);
+    var write = fs.createWriteStream(archPath);
+
+    read.on('close',function(){
+        callback(fs.createReadStream(archPath));
+    });
+
+    read.pipe(write);
 };
 
 
@@ -100,7 +105,7 @@ var getResourceDirectoryByFormat = function(format) {
     return UNKNOWN_FMT;
 };
 
-module.exports.writeProjectFile = function* (proj,data,next) {
+module.exports.writeProjectFile = function(proj,data) {
     var projPath =
         dreamDirectory+path.sep+
         proj+path.sep+
@@ -108,10 +113,9 @@ module.exports.writeProjectFile = function* (proj,data,next) {
 
     fs.writeFileSync(projPath,JSON.stringify(data));
     console.log("Project file written to",projPath);
-    yield next;
 };
 
-module.exports.writeResource = function* (proj, dir, rsc, format, data, next) {
+module.exports.writeResource = function(proj, dir, rsc, format, data, next) {
     console.log("Project is",   proj);
     console.log("Directory is", dir);
     console.log("Resource is",  rsc);
@@ -134,9 +138,10 @@ module.exports.writeResource = function* (proj, dir, rsc, format, data, next) {
         fs.writeFileSync(absolutePath,new Buffer(data.split(",")[1],'base64'));
     } catch (e) {
         console.log("Could not write file to",absolutePath);
+        return;
     }
     console.log("Successfuly written", absolutePath);
-    yield next;
+    return;
 };
 
 module.exports.readProjectFile = function(uuid) {

@@ -46,12 +46,14 @@ App.service('ApiService',
             this.projectDirectoryExists(projObj,function(exists){
                 if (exists) {
                     api.saveProjectAction(projObj,function(success3) {
+                        console.log("Project Saved",projObj);
                         callback(success3);
                     });
                 } else {
                     api.createProjectDirectory(projObj.uuid,function(success2) {
                         console.log("Created project directory for",projObj.uuid);
                         api.saveProjectAction(projObj,function(success2){
+                            console.log("Project Saved",projObj);
                             callback(success2);
                         });
                     });
@@ -88,8 +90,9 @@ App.service('ApiService',
             console.log("Saveing project as tarball...");
             $http({
                 url    : '/compress/'+projObj.uuid,
-                method : 'GET'
+                method : 'GET',
             }).then(function success(resp){
+                console.log("compression response",resp);
                 callback(true,resp);
             },function failure(resp){
                 callback(false,resp);

@@ -146,8 +146,8 @@ App.controller("index",
     };
 
     $scope.onDownloadTarballButtonClicked = function() {
-        UIService.addAlert("Not Available","warning");
-        /*ApiService.saveProjectTarball(ProjectService.project,function(success,resp){
+        //UIService.addAlert("Not Available","warning");
+        ApiService.saveProjectTarball(ProjectService.project,function(success,resp){
             if (success) {
                 console.log("Got Tarball Response",resp);
                 var blob = new Blob([resp.data], { type: 'application/octet-binary' });
@@ -161,7 +161,6 @@ App.controller("index",
                 UIService.addAlert("Error: Unable to save project "+ProjectService.getProjectUUID()+" as tarball.","danger");
             }
         });
-        */
     };
 
     $scope.onDeleteButtonClicked = function() {

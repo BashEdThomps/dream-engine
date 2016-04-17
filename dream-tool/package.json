@@ -1,14 +1,14 @@
 {
   "name": "dream-tool",
   "version": "1.0.0",
-  "description": "Tool for Dream projects.",
+  "description": "Tool for octronic Dream projects.",
   "main": "dream_tool.js",
   "scripts": {
     "start": "nodemon dream_tool.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Ash Thompson @ octronic",
+  "license": "GPLv3",
   "dependencies": {
     "angular-animate": "^1.5.3",
     "angular-bootstrap-nav-tree": "^0.2.1",
@@ -26,7 +26,6 @@
     "koa-router": "^5.4.0",
     "koa-static": "^2.0.0",
     "ng-toast": "^2.0.0",
-    "screenfull": "^3.0.0",
     "tar.gz": "^1.0.3"
   }
 }

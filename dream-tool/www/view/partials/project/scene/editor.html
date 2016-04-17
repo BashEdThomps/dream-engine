@@ -31,17 +31,15 @@
                     </tbody>
                 </table>
                 <div class="panel-footer">
-                    <div style="padding:0px; margin:0px;" class="row">
-                        <div style="padding:0px; margin:0px;" class="col-sm-2">
-                            <button ng-click="onAddResourceLinkButtonClicked()" class="btn btn-sm btn-success">Add Link</button>&nbsp;
-                        </div>
-                        <div style="padding:0px; margin:0px;" class="col-sm-10">
-                            <select class="form-control input-sm" ng-model="selectedNewResourceLink">
-                                <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">
-                                    {{ resource.name }}
-                                </option>
-                            </select>
-                        </div>
+                    <div class="input-group">
+                      <div class="input-group-btn">
+                        <button ng-click="onAddResourceLinkButtonClicked()" class="btn btn-sm btn-success">Add Link</button>
+                      </div>
+                      <select class="form-control input-sm" ng-model="selectedNewResourceLink">
+                          <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">
+                              {{ resource.name }}
+                          </option>
+                      </select>
                     </div>
                 </div>
             </div>

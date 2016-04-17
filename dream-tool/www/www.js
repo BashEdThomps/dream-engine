@@ -76,28 +76,37 @@ koaRouter.post("/:proj/resource/:dir/:rsc/:format", function* (next) {
 	var resourcePath = this.request.url;
 	var reqData = this.request.body.data;
 	this.status = 200;
-	yield dreamDirectory.writeResource(
+	dreamDirectory.writeResource(
 		this.params.proj,
 		this.params.dir,
 		this.params.rsc,
 		this.params.format,
-		reqData,
-		next
+		reqData
 	);
+	yield next;
 });
 
 // POST to /save/:project_id to save project json file
 koaRouter.post("/save/:project_id",function* (next){
 	var projData = this.request.body.project;
-	console.log("ProjData:",projData);
+	console.log("Saving Project:",projData);
+	dreamDirectory.writeProjectFile(this.params.project_id,projData);
 	this.status = 200;
-	yield dreamDirectory.writeProjectFile(this.params.project_id,projData,next);
+	yield next;
 });
 
 // GET /compress/:uuid to get a compressed project
 koaRouter.get("/compress/:uuid", function *(next){
-	this.status = 200;
-	yield dreamDirectory.compressProject(this.params.uuid,this,next);
+	var uuid = this.params.uuid;
+	console.log("Compressing project",uuid);
+	var req = this;
+	var promise = new Promise ( function(resolve,reject) {
+		dreamDirectory.compressProject(uuid,function(stream){
+			req.body = stream;
+		    return resolve();
+		});
+	});
+	yield promise;
 });
 
 // GET /projectlist to list stored projects

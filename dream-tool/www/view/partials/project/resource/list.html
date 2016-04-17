@@ -20,9 +20,7 @@
                                 ng-change="modified()"
                                 ng-model="currentResource.type"
                                 class="form-control input-sm" id="type">
-                            <option ng-repeat="type in getResourecTypes()">
-                                {{type}}
-                            </option>
+                            <option ng-repeat="type in getResourecTypes()" value="{{type}}">{{type}}</option>
                         </select>
                     </div>
                     <div class="form-group" ng-show="currentResource.type === 'Model'">
@@ -30,10 +28,8 @@
                         <select ng-change="modified()"
                                 ng-model="currentResource.format"
                                 class="form-control input-sm"
-                                id="type">
-                            <option value="obj">
-                                Wavefront OBJ
-                            </option>
+                                id="audioFormat">
+                            <option value="obj">Wavefront OBJ</option>
                         </select>
                         <br />
                         <div class="well"
