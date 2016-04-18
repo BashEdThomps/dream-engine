@@ -9,6 +9,10 @@ App.controller("ProjectSceneList",
             $state.go("Home");
         }
 
+        $scope.goToSceneEditor = function(uuid) {
+            $state.go("ProjectSceneEditor",{scene: uuid});
+        };
+
         $scope.onNewSceneButtonClicked = function() {
             $scope.currentScene = ProjectService.createScene();
             ProjectService.pushScene($scope.currentScene);

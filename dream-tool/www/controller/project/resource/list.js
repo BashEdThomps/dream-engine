@@ -10,6 +10,10 @@ App.controller("ProjectResourceList",
             $state.go("Home");
         }
 
+        $scope.goToResourceEditor = function(uuid) {
+            $state.go("ProjectResourceEditor",{resource: uuid});
+        };
+
         $scope.getResourecTypes = function() {
             return ProjectService.getResourecTypes();
         };

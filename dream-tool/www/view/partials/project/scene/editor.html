@@ -3,43 +3,65 @@
         <div class=" col-md-2">
             <abn-tree tree-data="scenegraphTree"></abn-tree>
         </div>
-        <div ng-show="selectedSceneObject !== null" class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Resource Links
+        <div  class="row" ng-show="selectedSceneObject !== null" >
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Configuration
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="SceneObjectName">Name</label>
+                            <input ng-change="modified()" class="input-sm form-control" type="text" ng-model="selectedSceneObject.name" />
+                        </div>
+                    </div>
                 </div>
-                <table class="table table-condensed table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>
-                                Resource
-                            </th>
-                            <th>
-                                Type
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="link in selectedSceneObject.resourceLinks">
-                            <td>
-
-                            </td>
-                            <td>
-
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="panel-footer">
-                    <div class="input-group">
-                      <div class="input-group-btn">
-                        <button ng-click="onAddResourceLinkButtonClicked()" class="btn btn-sm btn-success">Add Link</button>
-                      </div>
-                      <select class="form-control input-sm" ng-model="selectedNewResourceLink">
-                          <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">
-                              {{ resource.name }}
-                          </option>
-                      </select>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Resource Links
+                    </div>
+                    <table class="table table-condensed table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                </th>
+                                <th>
+                                    Resource
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="link in selectedSceneObject.resourceLinks">
+                                <td>
+                                    <button ng-click="goToResourceEditor(link)" class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    {{ getResourceByUUID(link).name }}
+                                </td>
+                                <td>
+                                    {{ getResourceByUUID(link).type }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="panel-footer">
+                        <div class="input-group">
+                          <div class="input-group-btn">
+                            <button ng-click="onAddResourceLinkButtonClicked()" class="btn btn-sm btn-success">Add Link</button>
+                          </div>
+                          <select class="form-control input-sm" ng-model="selectedNewResourceLink">
+                              <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">
+                                  {{ resource.name }}
+                              </option>
+                          </select>
+                        </div>
                     </div>
                 </div>
             </div>

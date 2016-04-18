@@ -15,6 +15,9 @@ var AUDIO_OGG_FMT = "ogg";
 var MODEL_OBJ_FMT = "obj";
 var MODEL_MTL_FMT = "mtl";
 
+var JSON_EXTENSION = ".json";
+var TAR_GZ_EXTENSION = ".tar.gz";
+
 var getUserHome = function() {
   return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 };
@@ -58,7 +61,7 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
 module.exports.compressProject = function (projectUUID,callback) {
     console.log("Compressing project",projectUUID);
     var srcPath = dreamDirectory+path.sep+projectUUID+path.sep;
-    var archPath = dreamDirectory+path.sep+projectUUID+'.tar.gz';
+    var archPath = dreamDirectory+path.sep+projectUUID+TAR_GZ_EXTENSION;
     var read = targz().createReadStream(srcPath);
     var write = fs.createWriteStream(archPath);
 
@@ -150,23 +153,25 @@ module.exports.readProjectFile = function(uuid) {
 };
 
 var getProjectFilePathFromUUID = function(uuid) {
-    return dreamDirectory+path.sep+uuid+path.sep+uuid+".json";
+    return dreamDirectory+path.sep+uuid+path.sep+uuid+JSON_EXTENSION;
 };
 
 module.exports.listProjects = function () {
     var retval = [];
     var uuidList = fs.readdirSync(dreamDirectory);
     uuidList.forEach(function(projFolder) {
-        var name = "untitled";
-        try {
-            name = require(getProjectFilePathFromUUID(projFolder)).name || "Untitled";
-        } catch (ex) {
-            console.log("exception while reading project dir list",ex);
+        if (projFolder.indexOf(TAR_GZ_EXTENSION) < 0) {
+            var name = "Untitled Project";
+            try {
+                name = require(getProjectFilePathFromUUID(projFolder)).name || name;
+            } catch (ex) {
+                console.log("exception while reading project dir list",ex);
+            }
+            retval.push({
+                uuid: projFolder,
+                name: name
+            });
         }
-        retval.push({
-            uuid: projFolder,
-            name: name
-        });
     });
     return retval;
 };

@@ -105,15 +105,16 @@ App.service('ProjectService',
 
     this.addResourceLinkToSceneObject = function(sceneUUID,sceneObjectUUID,resourceUUID){
         var proj = this;
-        console.log("Adding Resource Link",sceneObjectUUID,resourceUUID);
+        console.log("Adding Resource Link",sceneObjectUUID,"to",resourceUUID);
         this.getSceneByUUID(sceneUUID,function(scene){
             proj.getSceneObjectByUUID(scene,sceneObjectUUID,function(sceneObject){
                 if (sceneObject.resourceLinks === undefined) {
                     sceneObject.resourceLinks = [];
                 }
-                if (sceneObject.resourceLinks.indexOf(sceneObjectUUID) < 0) {
+                if (sceneObject.resourceLinks.indexOf(resourceUUID) < 0) {
                     sceneObject.resourceLinks.push(resourceUUID);
-                    console.log(sceneObjectUUID,"contains links",sceneObject.resourceLinks);
+                } else {
+                    console.log(sceneObjectUUID,"allready has link to",resourceUUID);
                 }
             });
         });
@@ -247,6 +248,7 @@ App.service('ProjectService',
         this.setSceneAudioEnabled(scene);
         this.setSceneBulletEnabled(scene);
         this.setSceneName(scene);
+        //this.setSceneObjects(scene);
     };
 
     this.setSceneAnimationEnabled = function(scene) {

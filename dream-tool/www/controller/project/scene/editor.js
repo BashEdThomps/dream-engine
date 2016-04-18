@@ -1,10 +1,11 @@
 App.controller("ProjectSceneEditor",
     ["$scope","$state","$stateParams","ProjectService","UIService",
     function($scope,$state,$stateParams,ProjectService,UIService) {
-        $scope.sceneUUID           = $stateParams.scene;
-        $scope.scenegraphTree      = [];
-        $scope.selectedSceneObject = null;
-        $scope.resourceList        = null;
+        $scope.sceneUUID               = $stateParams.scene;
+        $scope.scenegraphTree          = [];
+        $scope.selectedSceneObject     = null;
+        $scope.selectedSceneObjectUUID = null;
+        $scope.resourceList            = null;
 
         $scope.initScenegraphTree = function() {
             $scope.scenegraphTree.push({
@@ -22,19 +23,36 @@ App.controller("ProjectSceneEditor",
             });
         };
 
-        $scope.onScenegraphTreeSelection = function(branch) {
-            $scope.selectedSceneObject = branch.uuid;
+        $scope.goToResourceEditor = function(uuid) {
+            $state.go("ProjectResourceEditor",{resource: uuid});
         };
 
-        $scope.projectModified = function () {
-            ProjectService.setProjectModified(true);
-            UIService.update();
+        $scope.getResourceByUUID = function(uuid) {
+            var retval = null;
+            ProjectService.getResourceByUUID(uuid,function(rsc)
+            {
+                retval = rsc;
+            });
+            return retval;
+        };
+
+        $scope.onScenegraphTreeSelection = function(branch) {
+            $scope.selectedSceneObjectUUID = branch.uuid;
+            ProjectService.getSceneObjectByUUID($scope.scene,$scope.selectedSceneObjectUUID,function(so) {
+                $scope.selectedSceneObject = so;
+            });
+        };
+
+        $scope.modified = function () {
+            console.log("Scene Modified");
+            ProjectService.updateScene($scope.scene);
+            UIService.updateScene($scope.scene);
         };
 
         $scope.onAddResourceLinkButtonClicked = function() {
             ProjectService.addResourceLinkToSceneObject(
                 $scope.sceneUUID,
-                $scope.selectedSceneObject,
+                $scope.selectedSceneObjectUUID,
                 $scope.selectedNewResourceLink
             );
         };

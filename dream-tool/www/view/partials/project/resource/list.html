@@ -112,6 +112,9 @@
                     <thead>
                         <tr>
                             <th>
+
+                            </th>
+                            <th>
                                 Name
                             </th>
                             <th>
@@ -128,6 +131,11 @@
                     <tbody>
                         <tr ng-repeat="resource in project.resources"
                             ng-click="onResourceSelected(resource.uuid)">
+                            <td>
+                                <button ng-click="goToResourceEditor(resource.uuid)" class="btn btn-sm btn-default">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </button>
+                            </td>
                             <td>
                                 {{resource.name}}
                             </td>
