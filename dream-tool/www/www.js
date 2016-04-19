@@ -27,6 +27,7 @@ var ANGULAR_SANITIZE           = NODE_MODULES + "angular-sanitize";
 var ANGULAR_ANIMATE            = NODE_MODULES + "angular-animate";
 var D3                         = NODE_MODULES + "d3";
 var FONT_AWESOME               = NODE_MODULES + "font-awesome";
+var ACE_BUILDS                 = NODE_MODULES + "ace-builds/src-noconflict";
 
 app.use(bodyParser({
 	formLimit:"100mb",
@@ -51,6 +52,7 @@ app.use(koaStatic(ANGULAR_SANITIZE));
 app.use(koaStatic(ANGULAR_ANIMATE));
 app.use(koaStatic(D3));
 app.use(koaStatic(FONT_AWESOME));
+app.use(koaStatic(ACE_BUILDS));
 
 // Api -------------------------------------------------------------------------
 

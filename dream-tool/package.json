@@ -10,6 +10,7 @@
   "author": "Ash Thompson @ octronic",
   "license": "GPLv3",
   "dependencies": {
+    "ace-builds": "^1.2.2",
     "angular-animate": "^1.5.3",
     "angular-bootstrap-nav-tree": "^0.2.1",
     "angular-file-saver": "^1.1.0",

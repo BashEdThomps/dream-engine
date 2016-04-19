@@ -100,6 +100,7 @@ App.service('ProjectService',
             "Collision Shape",
             "Model",
             "Shader",
+            "Script"
         ];
     };
 

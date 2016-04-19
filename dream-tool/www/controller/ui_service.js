@@ -45,10 +45,24 @@ App.service('UIService',
     };
 
     this.createTreeProjectScene = function(scene) {
-        return {
+        var ui = this;
+        var retval = {
             label    : scene.name,
             uuid     : scene.uuid,
-            onSelect : hostController.onTreeProjectSceneInstanceSelected
+            onSelect : hostController.onTreeProjectSceneInstanceSelected,
+            children : []
+        };
+        scene.objects.forEach(function(sceneObject){
+            retval.children.push(ui.createTreeProjectSceneSceneObject(sceneObject));
+        });
+        return retval;
+    };
+
+    this.createTreeProjectSceneSceneObject = function(sceneObject) {
+        return {
+            label : sceneObject.name,
+            uuit  : sceneObject.uuid,
+            onSelect : null
         };
     };
 

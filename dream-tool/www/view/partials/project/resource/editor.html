@@ -1,4 +1,5 @@
 <div class="container-fluid">
-    <div ng-include="'/view/partials/project/resource/editors/animation.html'">
-    </div>
+    <div ng-show="resource.type === 'Animation'" ng-include="'/view/partials/project/resource/editors/animation.html'"></div>
+    <div ng-show="resource.type === 'Model'"     ng-include="'/view/partials/project/resource/editors/model.html'"></div>
+    <div ng-show="resource.type === 'Script'"    ng-include="'/view/partials/project/resource/editors/script.html'"></div>
 </div>
