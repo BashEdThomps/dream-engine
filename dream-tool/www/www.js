@@ -125,6 +125,18 @@ koaRouter.get("/projectfile/:uuid",function* (next){
 	yield next;
 });
 
+// GET /resource_exists/:uuid/type/format
+koaRouter.get("/resource_exists/:project/:type/:uuid/:format",function* (next) {
+	this.status = 200;
+	this.body = dreamDirectory.resourceExists(
+		this.params.project,
+		this.params.uuid,
+		this.params.type,
+		this.params.format
+	);
+	yield next;
+});
+
 app.use(koaRouter.routes());
 app.use(koaRouter.allowedMethods());
 

@@ -290,5 +290,25 @@ App.service('ProjectService',
         callback(this.project.resources);
     };
 
+    this.resourceHasModelObj = function(uuid,callback){
+        ApiService.resourceExists(
+            this.project.uuid,
+            "models",
+            uuid,
+            "obj",
+            callback
+        );
+    };
+
+    this.resourceHasModelMtl = function(uuid,callback){
+        ApiService.resourceExists(
+            this.project.uuid,
+            "models",
+            uuid,
+            "mtl",
+            callback
+        );
+    };
+
     return this;
 }]);

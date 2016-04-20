@@ -1,6 +1,6 @@
 App.controller("ProjectResourceList",
-    ["$scope","$state","ProjectService","UIService",
-    function($scope,$state,ProjectService,UIService) {
+    ["$scope","$state","ProjectService","UIService","UtilService","ApiService",
+    function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
 
         if (ProjectService.isProjectOpen()) {
             $scope.project = ProjectService.getProject();
@@ -40,6 +40,16 @@ App.controller("ProjectResourceList",
             console.log("Selected Resource",uuid);
             ProjectService.getResourceByUUID(uuid,function(resource){
                 $scope.currentResource = resource;
+                $scope.updateResourceUIVariables();
+            });
+        };
+
+        $scope.updateResourceUIVariables = function() {
+            ProjectService.resourceHasModelObj($scope.currentResource.uuid,function(result) {
+                $scope.hasModelObj = result;
+            });
+            ProjectService.resourceHasModelMtl($scope.currentResource.uuid,function(result){
+                $scope.hasModelMtl = result;
             });
         };
 
@@ -47,6 +57,65 @@ App.controller("ProjectResourceList",
             console.log("Resource List Item Modified");
             ProjectService.updateResource($scope.currentResource);
             UIService.updateResource($scope.currentResource);
+        };
+
+        $scope.onResourceModelWavefrontUploadButtonClicked = function() {
+            var objFile = document.getElementById('wf-obj-file');
+            UtilService.readFileAsBinaryFromElement(objFile, function(data) {
+                var path = ProjectService.getProjectUUID()+"/resource/models/"+$scope.currentResource.uuid+"/obj";
+                ApiService.uploadResource(path,data,function(success){
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
+
+            var mtlFile = document.getElementById('wf-mtl-file');
+            UtilService.readFileAsBinaryFromElement(mtlFile, function (data) {
+                var path = ProjectService.getProjectUUID()+"/resource/models/"+$scope.currentResource.uuid+"/mtl";
+                ApiService.uploadResource(path,data,function(success) {
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
+        };
+
+        $scope.onResourceAudioWaveUploadButtonClicked = function() {
+            var wavFile = document.getElementById('wav-file');
+            UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
+                var path = ProjectService.getProjectUUID()+"/resource/audio/"+$scope.currentResource.uuid+"/wav";
+                ApiService.uploadResource(path,data,function(success){
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
+        };
+
+        $scope.onResourceAudioOggUploadButtonClicked = function() {
+            var oggFile = document.getElementById('ogg-file');
+            UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
+                var path = ProjectService.getProjectUUID()+"/resource/audio/"+$scope.currentResource.uuid+"/ogg";
+                ApiService.uploadResource(path,data,
+                    function(success){
+                    if (success) {
+                        UIService.addAlert("Resource uploaded successfuly.","success");
+                    }
+                    else {
+                        UIService.addAlert("Error uploading resource.","danger");
+                    }
+                });
+            });
         };
     }
 ]);

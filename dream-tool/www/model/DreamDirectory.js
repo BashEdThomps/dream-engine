@@ -176,4 +176,17 @@ module.exports.listProjects = function () {
     return retval;
 };
 
+module.exports.resourceExists = function(project,uuid,type,format) {
+    var retval = false;
+    var absResourcePath =
+        dreamDirectory + path.sep +
+        project        + path.sep +
+        "resources"    + path.sep +
+        type           + path.sep +
+        uuid           + path.sep +
+        format;
+    retval = fs.existsSync(absResourcePath);
+    return retval;
+};
+
 createDreamToolDirInHome();

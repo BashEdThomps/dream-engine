@@ -18,7 +18,7 @@ App.service('ApiService',
         this.uploadResource = function(path,data,callback) {
             $http({
                 url    : path,
-                data   : {data: data},
+                data   : { data: data },
                 method : "POST"
             }).then(
                 function successCallback() {
@@ -29,10 +29,21 @@ App.service('ApiService',
             );
         };
 
+        this.resourceExists = function(project,type,uuid,format,callback) {
+            $http({
+                url    : "/resource_exists/"+project+"/"+type+"/"+uuid+"/"+format,
+                method : "get",
+            }).then(function success(resp){
+                callback(JSON.parse(resp.data));
+            },function failure(){
+                callback(false);
+            });
+        };
+
         this.createProjectDirectory = function(projectUUID,callback) {
             $http({
                 url    : '/create',
-                data   : {uuid : projectUUID},
+                data   : { uuid : projectUUID },
                 method : 'POST'
             }).then(function success() {
                 callback(true);

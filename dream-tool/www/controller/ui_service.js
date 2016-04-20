@@ -5,8 +5,8 @@ App.service('UIService',
     this.isFullScreen = false;
 
     // Project Tree ------------------------------------------------------------
-    this.treeData = [];
-    this.treeDataRoot = {};
+    this.treeData       = [];
+    this.treeDataRoot   = {};
     this.hostController = null;
 
     this.setHostController = function(hc) {
@@ -16,10 +16,10 @@ App.service('UIService',
 
     this.generateTreeData = function() {
         console.log("Generating Tree Data");
-        this.treeData = [];
+        this.treeData     = [];
         this.treeDataRoot = {};
 
-        this.treeDataRoot.label = ProjectService.project.name;
+        this.treeDataRoot.label    = ProjectService.project.name;
         this.treeDataRoot.children = [];
         this.treeDataRoot.onSelect = hostController.onTreeProjectSelected;
 
@@ -32,9 +32,9 @@ App.service('UIService',
 
     this.generateTreeProjectScenes = function() {
         this.treeProjectScenes = {
-            label:"Scenes",
-            children:[],
-            onSelect: hostController.onTreeProjectSceneSelected
+            label    : "Scenes",
+            children : [],
+            onSelect : hostController.onTreeProjectSceneSelected
         };
         var ui = this;
         ProjectService.project.scenes.forEach(function(scene) {

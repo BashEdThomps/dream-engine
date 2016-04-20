@@ -24,11 +24,11 @@
                         </select>
                     </div>
                     <div class="form-group" ng-show="currentResource.type === 'Model'">
-                        <label for="type">Format</label>
+                        <label for="modelFormat">Format</label>
                         <select ng-change="modified()"
                                 ng-model="currentResource.format"
                                 class="form-control input-sm"
-                                id="audioFormat">
+                                id="modelFormat">
                             <option value="obj">Wavefront OBJ</option>
                         </select>
                         <br />
@@ -38,12 +38,24 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <label for="file">Model</label>
-                                    <input type="file" id="wf-obj-file"
+                                    <button ng-show="hasModelObj"
+                                            class="pull-right btn-sm btn btn-danger">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <input ng-show="!hasModelObj"
+                                           type="file"
+                                           id="wf-obj-file"
                                            accept=".obj" name="model-file" />
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="file">Material</label>
-                                    <input type="file" id="wf-mtl-file"
+                                    <button ng-show="hasModelMtl"
+                                            class="pull-right btn-sm btn btn-danger">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <input ng-show="!hasModelMtl"
+                                           type="file"
+                                           id="wf-mtl-file"
                                            accept=".mtl" name="material-file" />
                                 </div>
                             </div>
