@@ -79,29 +79,8 @@ namespace Dream {
 			return mPhysicsEnabled;
 		}
 
-		bool Scene::isCollisionEnabled() {
-			return mCollisionEnabled;
-		}
-
 		bool Scene::isInputEnabled() {
 			return mInputEnabled;
 		}
-
-		bool Scene::initBullet() {
-			mBroadphase = new btDbvtBroadphase();
-			mCollisionConfiguration = new btDefaultCollisionConfiguration();
-			mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
-			mSolver = new btSequentialImpulseConstraintSolver();
-			mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
-		}
-
-		bool Scene::setGravity3f(float x, float y, float z) {
-			setGravityBtVector(new btVector3(x,y,z));
-		}
-
-		bool Scene::setGravityBtVector3(Gravity) {
-			mDynamicsWorld->setGravity(gravity);
-		}
-
 	}// End of Scene
 } // End of Dream

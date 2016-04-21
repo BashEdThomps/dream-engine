@@ -19,6 +19,8 @@
 #define TESTRESOURCE_H
 
 #include "../../src/Unit/Unit.h"
+#include "../../src/Resource/Resource.h"
+#include "TestResourceImpl.h"
 
 namespace Dream {
 	namespace Resource {
@@ -30,8 +32,6 @@ namespace Dream {
 				void run();
 				void testResourceCanStoreUUID();
 				void testResourceCanStoreName();
-			//protected:
-			//private:
 			}; // End of TestResource
 		} // End of Test
 	} // End of Resource

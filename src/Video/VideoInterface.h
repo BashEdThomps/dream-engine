@@ -19,12 +19,14 @@
 #define VIDEOINTERFACE_H
 
 namespace Dream {
-	class VideoInterface {
-	public:
-		VideoInterface(void);
-		virtual ~VideoInterface(void) = 0;
-		virtual void render(void) = 0;
-	}; // End of VideoInterface
+	namespace Video {
+		class VideoInterface {
+		public:
+			VideoInterface(void);
+			virtual ~VideoInterface(void) {};
+			virtual void render(void) = 0;
+		}; // End of VideoInterface
+	} // End of Video
 } // End of Dream
 
 #endif // End of VIDEOINTERFACE_H

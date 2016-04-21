@@ -23,7 +23,7 @@ namespace Dream {
 		class PhysicsInterface {
 		public:
 			PhysicsInterface(void);
-			~PhysicsInterface(void);
+			virtual ~PhysicsInterface(void) {};
 		}; // End of PhysicsInterface
 	} // End of Physics
 } // End of Dream

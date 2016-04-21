@@ -62,12 +62,10 @@ namespace Dream {
 			std::string resourceType = (*it)[RESOURCE_JSON_TYPE];
 
 			if (resourceType.compare(RESOURCE_TYPE_MODEL) == 0) {
-				resource = new Dream::Resource::Model::ModelResource((*it));
+				//resource = new Dream::Resource::Model::ModelResource((*it));
 			} else if (resourceType.compare(RESOURCE_TYPE_ANIMATION) == 0) {
 
-			} else if (resourceType.compare(RESOURCE_TYPE_MUSIC) == 0) {
-
-			} else if (resourceType.compare(RESOURCE_TYPE_SOUND_EFFECT) == 0) {
+			} else if (resourceType.compare(RESOURCE_TYPE_AUDIO) == 0) {
 
 			}
 

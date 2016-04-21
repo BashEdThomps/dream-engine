@@ -20,6 +20,7 @@
 #include "../src/Project.h"
 #include "../src/Scene/Scene.h"
 #include "../src/Resource/Resource.h"
+#include "Resource/TestResourceImpl.h"
 
 namespace Dream {
 	namespace Test {
@@ -84,7 +85,7 @@ namespace Dream {
 		void ProjectTest::testProjectCanStoreMultipleResources() {
 			Project p;
 
-			Dream::Resource::Resource a,b,c;
+			Dream::Resource::Test::TestResourceImpl a,b,c;
 			a.setName("A");
 			b.setName("B");
 			c.setName("C");
@@ -102,6 +103,5 @@ namespace Dream {
 			p.setDirectory(directory);
 			assertZero("Project can store directory",p.getDirectory().compare(directory));
 		}
-
 	} // End of Test
 } // End of Dream

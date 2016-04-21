@@ -19,22 +19,25 @@
 #define AUDIOPLAYBACK_H
 #include <AL/al.h>
 #include <AL/alc.h>
+#include "AudioInterface.h"
 
 namespace Dream {
-	class OALAudio {
-	private:
-		ALCdevice*  mDevice;
-		ALCcontext* mContext;
-	public:
-		OALAudio(void);
-		~OALAudio(void);
-		bool init(void);
+	namespace Audio {
+		class OALAudio : public AudioInterface {
+		private:
+			ALCdevice*  mDevice;
+			ALCcontext* mContext;
+		public:
+			OALAudio(void);
+			~OALAudio(void);
+			bool init(void);
 
-		ALuint generateBuffer();
-		void playSource(ALuint);
-		void stopSource(ALuint);
-		void pauseSource(ALuint);
-	}; // End of OALAudio
+			ALuint generateBuffer();
+			void playSource(ALuint);
+			void stopSource(ALuint);
+			void pauseSource(ALuint);
+		}; // End of OALAudio
+	} // End of Audio
 } // End of Dream
 
 #endif // End of AUDIOPLAYBACK_H

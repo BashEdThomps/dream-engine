@@ -4,10 +4,11 @@ var targz = require('tar.gz');
 
 var DREAM_TOOL_HOME_DIR = ".dreamtool";
 var PROJECT_FILE        = "project.json";
-var RESOURCE_DIR        = "resources";
-var MODELS_DIR          = "models";
+var RESOURCE_DIR        = "resource";
+var MODELS_DIR          = "model";
 var AUDIO_DIR           = "audio";
 var ANIMATION_DIR       = "animation";
+var SCRIPT_DIR          = "script";
 
 var AUDIO_WAV_FMT = "wav";
 var AUDIO_OGG_FMT = "ogg";

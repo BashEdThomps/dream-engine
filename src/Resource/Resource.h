@@ -27,7 +27,8 @@
 
 #define RESOURCE_TYPE_ANIMATION "Animation"
 #define RESOURCE_TYPE_MODEL     "Model"
-#define RESOURCE_TYPE_MUSIC     "Audio"
+#define RESOURCE_TYPE_AUDIO     "Audio"
+#define RESOURCE_TYPE_SCRIPT    "Script"
 
 namespace Dream {
 	namespace Resource {
@@ -37,7 +38,7 @@ namespace Dream {
 		public:
 			Resource(void);
 			Resource(nlohmann::json);
-			virtual ~Resource(void) = 0;
+			virtual ~Resource(void) {};
 
 			void setUUID(std::string);
 			std::string getUUID();

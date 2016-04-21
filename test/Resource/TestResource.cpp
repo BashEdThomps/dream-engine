@@ -16,7 +16,6 @@
 */
 
 #include "TestResource.h"
-#include "../../src/Resource/Resource.h"
 
 namespace Dream {
 	namespace Resource {
@@ -34,14 +33,14 @@ namespace Dream {
 			}
 
 			void TestResource::testResourceCanStoreUUID() {
-				Dream::Resource::Resource r;
+				Dream::Resource::Test::TestResourceImpl r;
 				std::string uuid = "1234-abcd-3382-efda";
 				r.setUUID(uuid);
 				assertZero("Resource can store UUID",uuid.compare(r.getUUID()));
 			}
 
 			void TestResource::testResourceCanStoreName() {
-				Dream::Resource::Resource r;
+				Dream::Resource::Test::TestResourceImpl r;
 				std::string name = "TestResource";
 				r.setName(name);
 				assertZero("Resource can store name",name.compare(r.getName()));

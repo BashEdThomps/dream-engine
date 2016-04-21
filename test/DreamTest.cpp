@@ -64,7 +64,6 @@ namespace Dream {
 			assertFalse("Project Scene has animation enabled", firstScene->isAnimationEnabled());
 			assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
 			assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
-			assertTrue("Project Scene has collision enabled",  firstScene->isCollisionEnabled());
 			assertTrue("Project Scene has input enabled",      firstScene->isInputEnabled());
 
 			delete fileReader;

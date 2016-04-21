@@ -18,22 +18,27 @@
 #ifndef PHYSICSWORLD_H
 #define PHYSICSWORLD_H
 
+#include "PhysicsInterface.h"
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/LinearMath/btVector3.h>
 
 namespace Dream {
 	namespace Physics {
-		class BulletPhysics {
+		class BulletPhysics : public PhysicsInterface {
 		private:
 			// Bullet
 			btDynamicsWorld                     *mDynamicsWorld;
-			btBroadphaseInterface               *mBroadphase
+			btBroadphaseInterface               *mBroadphase;
 			btDefaultCollisionConfiguration     *mCollisionConfiguration;
 			btCollisionDispatcher               *mDispatcher;
 			btSequentialImpulseConstraintSolver *mSolver;
 		public:
 			BulletPhysics(void);
 			~BulletPhysics(void);
+			void initBullet();
+			void setGravity3f(float,float,float);
+			void setGravityBtVector3(btVector3);
+
 		}; // End of BulletPhysics
 	} // End of Scene
 } // End of Dream

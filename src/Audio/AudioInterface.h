@@ -19,13 +19,13 @@
 #define AUDIOINTERFACE_H
 
 namespace Dream {
-	class AudioInterface {
-	public:
-		AudioInterface(void);
-		~AudioInterface(void);
-	//protected:
-	//private:
-	}; // End of AudioInterface
+	namespace Audio {
+		class AudioInterface {
+		public:
+			AudioInterface(void);
+			virtual ~AudioInterface(void) {};
+		}; // End of AudioInterface
+	} // End of Audio
 } // End of Dream
 
 #endif // End of AUDIOINTERFACE_H

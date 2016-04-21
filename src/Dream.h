@@ -6,6 +6,10 @@
 #include "Scene/Scene.h"
 #include "ArgumentParser.h"
 #include "Project.h"
+#include "Audio/AudioInterface.h"
+#include "Physics/PhysicsInterface.h"
+#include "Video/VideoInterface.h"
+
 
 namespace Dream {
 	class Dream {
@@ -15,7 +19,7 @@ namespace Dream {
 		Audio::AudioInterface     *mAudioInterface;
 		Video::VideoInterface     *mVideoInterface;
 		Physics::PhysicsInterface *mPhysicsInterface;
-		
+
 	public:
 		Dream(void);
 		~Dream(void);

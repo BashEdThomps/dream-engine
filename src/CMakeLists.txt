@@ -16,7 +16,6 @@ file(GLOB SCENE_SRC "Scene/*.h" "Scene/*.cpp")
 file(GLOB RESOURCE_SRC "Resource/*.h" "Resource/*.cpp")
 file(GLOB RESOURCE_ANIMATION_SRC "Resource/Animation/*.h" "Resource/Animation/*.cpp")
 file(GLOB RESOURCE_MODEL_SRC "Resource/Model/*.h" "Resource/Model/*.cpp")
-#file(GLOB LUA_SRC "Lua/*.h" "Lua/*.cpp")
 #file(GLOB OBJ_SRC "Obj*.h" "Obj*.cpp")
 
 # Audio
@@ -31,6 +30,9 @@ file (GLOB PHYSICS_SRC "Physics/*.h" "Physics/*.cpp")
 # Dream
 file(GLOB DREAM_SRC "*.h" "*.cpp")
 list(REMOVE_ITEM DREAM_SRC "Main.cpp")
+
+# Bullet Headers
+include_directories(/usr/include/bullet)
 
 # Targets
 add_library (

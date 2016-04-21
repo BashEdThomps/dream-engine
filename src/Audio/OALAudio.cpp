@@ -19,35 +19,35 @@
 
 #include <iostream>
 namespace Dream {
+	namespace Audio {
+		OALAudio::OALAudio(void) : AudioInterface() {
+		}
 
-	OALAudio::OALAudio(void) {
-	}
+		OALAudio::~OALAudio(void) {
+		}
 
-	OALAudio::~OALAudio(void) {
-	}
-
-	bool OALAudio::init() {
-		mDevice = alcOpenDevice(NULL);
-		if (mDevice  == NULL) {
+		bool OALAudio::init() {
+			mDevice = alcOpenDevice(NULL);
+			if (mDevice  == NULL) {
+				return false;
+			}
+			mContext = alcCreateContext(mDevice,NULL);
+			if (mContext == NULL)  {
+				return false;
+			}
+			alcMakeContextCurrent(mContext);
 			return false;
 		}
-		mContext = alcCreateContext(mDevice,NULL);
-		if (mContext == NULL)  {
-			return false;
-		}
-		alcMakeContextCurrent(mContext);
-		return false;
-	}
 
-	ALuint OALAudio::generateBuffer() {
-		alGetError();
-		ALuint buffer;
-		alGenBuffers( 1, &buffer );
-		ALenum error = alGetError();
-		if ( error != AL_NO_ERROR ){
-			return -1;
+		ALuint OALAudio::generateBuffer() {
+			alGetError();
+			ALuint buffer;
+			alGenBuffers( 1, &buffer );
+			ALenum error = alGetError();
+			if ( error != AL_NO_ERROR ){
+				return -1;
+			}
+			return buffer;
 		}
-		return buffer;
-	}
-
+	} // End of Audio
 } // End of Dream

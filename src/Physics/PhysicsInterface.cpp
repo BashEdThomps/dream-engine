@@ -19,10 +19,6 @@
 
 namespace Dream {
 	namespace Physics {
-		PhysicsInterface::PhysicsInterface(void) {
-		}
-
-		PhysicsInterface::~PhysicsInterface(void) {
-		}
+		PhysicsInterface::PhysicsInterface(void) {};
 	} // End of Physics
 } // End of Dream

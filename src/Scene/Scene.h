@@ -28,7 +28,6 @@
 #define SCENE_JSON_NAME              "name"
 #define SCENE_JSON_ANIMATION_ENABLED "animationEnabled"
 #define SCENE_JSON_AUDIO_ENABLED     "audioEnabled"
-#define SCENE_JSON_COLLISION_ENABLED "collisionEnabled"
 #define SCENE_JSON_PHYSICS_ENABLED   "physicsEnabled"
 #define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
 #define SCENE_JSON_VIDEO_ENABLED     "videoEnabled"
@@ -65,7 +64,7 @@ namespace Dream {
 			bool isAudioEnabled();
 			bool isAnimationEnabled();
 			bool isInputEnabled();
-			bool initBullet();
+			bool isPhysicsEnabled();
 		}; // End of Scene
 	} // End of Scene
 } // End of Dream

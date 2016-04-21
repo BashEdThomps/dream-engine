@@ -293,7 +293,7 @@ App.service('ProjectService',
     this.resourceHasModelObj = function(uuid,callback){
         ApiService.resourceExists(
             this.project.uuid,
-            "models",
+            "model",
             uuid,
             "obj",
             callback
@@ -303,7 +303,7 @@ App.service('ProjectService',
     this.resourceHasModelMtl = function(uuid,callback){
         ApiService.resourceExists(
             this.project.uuid,
-            "models",
+            "model",
             uuid,
             "mtl",
             callback
