@@ -1,8 +1,10 @@
 var sys       = require('sys');
 var exec      = require('child_process').exec;
 
-var runDream = function(project) {
-	var child = exec(config.dream_bin+" "+project+".tar.gz", function (error, stdout, stderr) {
+module.exports.execDream = function(bin,projDir,uuid) {
+	var fullExec = bin +" --project-dir "+projDir+" --uuid "+uuid;
+	console.log("Executing:",fullExec);
+	var child = exec(fullExec, function (error, stdout, stderr) {
   	sys.print('stdout: ' + stdout);
   	sys.print('stderr: ' + stderr);
   	if (error !== null) {

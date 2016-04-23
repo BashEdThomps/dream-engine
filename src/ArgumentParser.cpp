@@ -36,10 +36,15 @@ namespace Dream {
 			if (nextArg->compare(PROJECT_DIRECTORY_ARG) == 0) {
 				if (mArgc > i) {
 					mProjectDirectory = std::string(mArgv[i+1]);
-					size_t projectDirectoryLength = mProjectDirectory.length();
-					size_t uuidStart  = projectDirectoryLength - PROJECT_UUID_LENGTH;
-					mProjectUUID      = mProjectDirectory.substr(uuidStart,projectDirectoryLength);
-					mProjectFilePath  = mProjectDirectory + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;
+					std::cout << "ArgumentParser: Got Projects Directory " << mProjectDirectory << std::endl;
+				} else {
+					return;
+				}
+			}
+			else if (nextArg->compare(PROJECT_UUID_ARG) == 0) {
+				if (mArgc > i) {
+					mProjectUUID = std::string(mArgv[i+1]);
+					std::cout << "ArgumentParser: Got Project UUID " << mProjectUUID << std::endl;
 				} else {
 					return;
 				}
@@ -58,6 +63,6 @@ namespace Dream {
 	}
 
 	std::string ArgumentParser::getProjectFilePath() {
-		return mProjectFilePath;
+		return mProjectDirectory + PROJECT_PATH_SEP + mProjectUUID + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;
 	}
 } // End of Dream

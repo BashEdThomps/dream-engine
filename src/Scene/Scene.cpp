@@ -25,17 +25,32 @@ namespace Dream {
 			mAnimationEnabled = false;
 			mInputEnabled     = false;
 			mAudioEnabled     = false;
-			mVideoEnabled     = false;
 		}
 
 		Scene::Scene(nlohmann::json jsonScene) {
 			init();
+			mUUID             = jsonScene [SCENE_JSON_UUID];
 			mName             = jsonScene [SCENE_JSON_NAME];
-			mPhysicsEnabled   = jsonScene [SCENE_JSON_PHYSICS_ENABLED];
-			mAnimationEnabled = jsonScene [SCENE_JSON_ANIMATION_ENABLED];
-			mInputEnabled     = jsonScene [SCENE_JSON_INPUT_ENABLED];
-			mAudioEnabled     = jsonScene [SCENE_JSON_AUDIO_ENABLED];
-			mVideoEnabled     = jsonScene [SCENE_JSON_VIDEO_ENABLED];
+
+			mPhysicsEnabled = (
+				jsonScene [SCENE_JSON_PHYSICS_ENABLED].is_null() ?
+				false : (bool)jsonScene [SCENE_JSON_PHYSICS_ENABLED]
+			);
+
+			mAnimationEnabled = (
+				jsonScene [SCENE_JSON_ANIMATION_ENABLED].is_null() ?
+				false : (bool)jsonScene [SCENE_JSON_ANIMATION_ENABLED]
+			);
+
+			mInputEnabled = (
+				jsonScene [SCENE_JSON_INPUT_ENABLED].is_null() ?
+				false :(bool)jsonScene [SCENE_JSON_INPUT_ENABLED]
+			);
+
+			mAudioEnabled = (
+				jsonScene [SCENE_JSON_AUDIO_ENABLED].is_null() ?
+				false : (bool)jsonScene [SCENE_JSON_AUDIO_ENABLED]
+			);
 		}
 
 		Scene::~Scene() {
@@ -81,6 +96,16 @@ namespace Dream {
 
 		bool Scene::isInputEnabled() {
 			return mInputEnabled;
+		}
+
+		void Scene::showStatus() {
+			std::cout << "Scene:" << std::endl;
+			std::cout << "\tUUID: " << mUUID << std::endl;
+			std::cout << "\tName: " << mName << std::endl;
+			std::cout << "\tAudio Enabled: "	 << isAudioEnabled() << std::endl;
+			std::cout << "\tAnimation Enabled: " << isAnimationEnabled() << std::endl;
+			std::cout << "\tInput Enabled: "	 << isInputEnabled() << std::endl;
+			std::cout << "\tPhysics Enabled: "	 << isPhysicsEnabled() << std::endl;
 		}
 	}// End of Scene
 } // End of Dream

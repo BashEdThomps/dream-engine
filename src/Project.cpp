@@ -29,8 +29,50 @@ namespace Dream {
 		mName        = jsonProject [PROJECT_JSON_NAME];
 		mAuthor      = jsonProject [PROJECT_JSON_AUTHOR];
 		mDescription = jsonProject [PROJECT_JSON_DESCRIPTION];
+
+
+		mOpenALEnabled  = (
+			jsonProject [PROJECT_JSON_OPENAL_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_JSON_OPENAL_ENABLED]
+		);
+
+		mBullet2Enabled = (
+			jsonProject [PROJECT_JSON_BULLET2_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_JSON_BULLET2_ENABLED]
+		);
+
+		mBullet3Enabled = (
+			jsonProject [PROJECT_JSON_BULLET3_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_JSON_BULLET3_ENABLED]
+		);
+
+		mOpenGLEnabled  = (
+			jsonProject [PROJECT_JSON_OPENGL_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_JSON_OPENGL_ENABLED]
+		);
+
+		mVulkanEnabled  = (
+			jsonProject [PROJECT_JSON_VULKAN_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_JSON_VULKAN_ENABLED]
+		);
+
+		showStatus();
+
 		loadResourcesFromJson(jsonProject[PROJECT_JSON_RESOURCE_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_JSON_SCENE_ARRAY]);
+	}
+
+	void Project::showStatus() {
+		std::cout << "Project: New Project"  << std::endl;
+		std::cout << "               UUID: " << mUUID           << std::endl;
+		std::cout << "               Name: " << mName           << std::endl;
+		std::cout << "             Author: " << mAuthor         << std::endl;
+		std::cout << "        Description: " << mDescription    << std::endl;
+		std::cout << "     OpenAL Enabled: " << mOpenALEnabled  << std::endl;
+		std::cout << "    Bullet2 Enabled: " << mBullet2Enabled << std::endl;
+		std::cout << "    Bullet3 Enabled: " << mBullet3Enabled << std::endl;
+		std::cout << "     OpenGL Enabled: " << mOpenGLEnabled  << std::endl;
+		std::cout << "     Vulkan Enabled: " << mVulkanEnabled  << std::endl;
 	}
 
 	Project::~Project(void) {
@@ -49,12 +91,16 @@ namespace Dream {
 	}
 
 	void Project::loadScenesFromJson(nlohmann::json jsonSceneArray) {
+		std::cout << "Project: Loading Scenes from JSON Array" << std::endl;
 		for (nlohmann::json::iterator it = jsonSceneArray.begin(); it != jsonSceneArray.end(); ++it) {
-			addScene(new Dream::Scene::Scene((*it)));
+			Dream::Scene::Scene *nextScene = new Dream::Scene::Scene((*it));
+			nextScene->showStatus();
+			addScene(nextScene);
 		}
 	}
 
  	void Project::loadResourcesFromJson(nlohmann::json jsonResourceArray) {
+		std::cout << "Project: Loading Resources from JSON Array" << std::endl;
 		for (nlohmann::json::iterator it = jsonResourceArray.begin();
 		     it != jsonResourceArray.end(); ++it) {
 			Dream::Resource::Resource* resource = NULL;
@@ -134,5 +180,25 @@ namespace Dream {
 
 	void Project::setDirectory(std::string dir) {
 		mDirectory = dir;
+	}
+
+	bool Project::isOpenALEnabled() {
+		return mOpenALEnabled;
+	}
+
+	bool Project::isBullet2Enabled() {
+		return mBullet2Enabled;
+	}
+
+	bool Project::isBullet3Enabled() {
+		return mBullet3Enabled;
+	}
+
+	bool Project::isOpenGLEnabled() {
+		return mOpenGLEnabled;
+	}
+
+	bool Project::isVulkanEnabled() {
+		return mVulkanEnabled;
 	}
 } // End of Dream

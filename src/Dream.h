@@ -15,7 +15,6 @@ namespace Dream {
 	class Dream {
 	protected:
 		Project *mProject;
-
 		Audio::AudioInterface     *mAudioInterface;
 		Video::VideoInterface     *mVideoInterface;
 		Physics::PhysicsInterface *mPhysicsInterface;
@@ -28,6 +27,7 @@ namespace Dream {
 		Project* getProject(void);
 		void setProject(Project*);
 		int runProject();
+		bool isProjectLoaded();
 	};
 }
 

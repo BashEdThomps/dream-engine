@@ -31,7 +31,7 @@ App.controller("ProjectResourceList",
                     ProjectService.removeResource(resource);
                     UIService.removeTreeProjectResourceByUUID(uuid);
                 } else {
-                    UIService.addAlert("Error: Could not remove resource! ","danger");
+                    UIService.addAlert("Error: Could not remove resource!","danger");
                 }
             });
         };
@@ -45,10 +45,14 @@ App.controller("ProjectResourceList",
         };
 
         $scope.updateResourceUIVariables = function() {
+            console.log("Updating resource variables");
             ProjectService.resourceHasModelObj($scope.currentResource.uuid,function(result) {
+                console.log("ModelObj Resource Exists",result);
                 $scope.hasModelObj = result;
             });
+
             ProjectService.resourceHasModelMtl($scope.currentResource.uuid,function(result){
+                console.log("ModelMtl Resource Exists",result);
                 $scope.hasModelMtl = result;
             });
         };
@@ -62,7 +66,7 @@ App.controller("ProjectResourceList",
         $scope.onResourceModelWavefrontUploadButtonClicked = function() {
             var objFile = document.getElementById('wf-obj-file');
             UtilService.readFileAsBinaryFromElement(objFile, function(data) {
-                var path = ProjectService.getProjectUUID()+"/resource/models/"+$scope.currentResource.uuid+"/obj";
+                var path = ProjectService.getProjectUUID()+"/resource/model/"+$scope.currentResource.uuid+"/obj";
                 ApiService.uploadResource(path,data,function(success){
                     if (success) {
                         UIService.addAlert("Resource uploaded successfuly.","success");
@@ -75,7 +79,7 @@ App.controller("ProjectResourceList",
 
             var mtlFile = document.getElementById('wf-mtl-file');
             UtilService.readFileAsBinaryFromElement(mtlFile, function (data) {
-                var path = ProjectService.getProjectUUID()+"/resource/models/"+$scope.currentResource.uuid+"/mtl";
+                var path = ProjectService.getProjectUUID()+"/resource/model/"+$scope.currentResource.uuid+"/mtl";
                 ApiService.uploadResource(path,data,function(success) {
                     if (success) {
                         UIService.addAlert("Resource uploaded successfuly.","success");

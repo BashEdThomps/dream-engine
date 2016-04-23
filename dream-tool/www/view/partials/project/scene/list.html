@@ -22,7 +22,7 @@
                                        id="enableAnimation"
                                        ng-disabled="currentScene === undefined"
                                        ng-change="modified()"
-                                       ng-model="currentScene.animationEabled"/>
+                                       ng-model="currentScene.animationEnabled"/>
                                 <label for="enableAnimation">
                                     Enable Animation
                                 </label>
@@ -54,9 +54,9 @@
                                        type="checkbox"
                                        ng-change="modified()"
                                        ng-disabled="currentScene === undefined"
-                                       ng-model="currentScene.bulletEnabled"/>
-                                <label for="enableBullet">
-                                    Enable Bullet
+                                       ng-model="currentScene.physicsEnabled"/>
+                                <label for="enablePhysics">
+                                    Enable Physics
                                 </label>
                             </div>
                         </div>

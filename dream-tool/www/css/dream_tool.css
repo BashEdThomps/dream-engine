@@ -11,8 +11,11 @@ span.glyphicon-toolbar {
     font-size: 1.2em;
 }
 
-input {
+/*input {
     color:white;
+}*/
+.description-textarea {
+    resize: none;
 }
 /*body {
     background-image : url("../img/giphy.1.gif");

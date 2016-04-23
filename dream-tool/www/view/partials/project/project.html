@@ -6,7 +6,6 @@
                     Configuration
                 </div>
                 <div class="panel-body">
-                    <h4>Project Information</h4>
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.name"/>
@@ -17,14 +16,21 @@
                     </div>
                     <div class="form-group">
                         <label>Description</label>
-                        <textarea class="form-control input-sm"
+                        <textarea class="description-textarea form-control input-sm"
                                   ng-change="modified()"
                                   ng-model="project.description"
                                   rows="5">
                         </textarea>
                     </div>
-                    <hr/>
-                    <h4>Interfaces</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Interfaces
+                </div>
+                <div class="panel-body">
                     <strong>Audio</strong>
                     <div class="form-group">
                         <div class="checkbox checkbox-info">
@@ -32,6 +38,7 @@
                           <label for="openAL">OpenAL</label>
                         </div>
                     </div>
+                    <hr />
                     <strong>Physics</strong>
                     <div class="form-group">
                         <div class="checkbox checkbox-info">
@@ -43,6 +50,7 @@
                           <label for="bullet3">Bullet 3</label>
                         </div>
                     </div>
+                    <hr />
                     <strong>Video</strong>
                     <div class="form-group">
                         <div class="checkbox checkbox-info">

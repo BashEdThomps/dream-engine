@@ -37,6 +37,7 @@ var projectDirectoryExists = function(projectUUID,callback) {
 
 module.exports.createProjectDirectory = function *(projectUUID, next) {
     var projectPrefix =  dreamDirectory +path.sep+ projectUUID + path.sep;
+
     console.log("Creating project directory structure for",projectPrefix);
     fs.mkdirSync(projectPrefix);
     console.log("mkdir",projectPrefix,"ok");
@@ -54,8 +55,12 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     console.log("mkdir",audio,"ok");
 
     var anim = resourcePrefix + path.sep + ANIMATION_DIR;
-    fs.mkdir(anim);
+    fs.mkdirSync(anim);
     console.log("mkdir",anim,"ok");
+
+    var script = resourcePrefix + path.sep + SCRIPT_DIR;
+    fs.mkdirSync(script);
+    console.log("mkdir",script,"ok");
     yield next;
 };
 
@@ -149,7 +154,7 @@ module.exports.writeResource = function(proj, dir, rsc, format, data, next) {
 };
 
 module.exports.readProjectFile = function(uuid) {
-    var retval = require(getProjectFilePathFromUUID(uuid));
+    var retval = fs.readFileSync(getProjectFilePathFromUUID(uuid));
     return retval;
 };
 
@@ -182,12 +187,17 @@ module.exports.resourceExists = function(project,uuid,type,format) {
     var absResourcePath =
         dreamDirectory + path.sep +
         project        + path.sep +
-        "resources"    + path.sep +
+        RESOURCE_DIR   + path.sep +
         type           + path.sep +
         uuid           + path.sep +
         format;
+    console.log("Checking for",absResourcePath);
     retval = fs.existsSync(absResourcePath);
     return retval;
+};
+
+module.exports.getProjectDirectory = function() {
+    return dreamDirectory;
 };
 
 createDreamToolDirInHome();

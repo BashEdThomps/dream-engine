@@ -139,7 +139,7 @@ App.service('ProjectService',
                 this.createSceneObject()
             ],
             animationEnabled : false,
-            bulletEnabled    : false,
+            physicsEnabled    : false,
             audioEnabled     : false,
             inputEnabled     : false,
         };
@@ -270,9 +270,9 @@ App.service('ProjectService',
         });
     };
 
-    this.setSceneBulletEnabled = function(scene) {
+    this.setScenePhysicsEnabled = function(scene) {
         this.getSceneByUUID(scene.uuid,function(projScene){
-            projScene.bulletEnabled = scene.bulletEnabled;
+            projScene.physicsEnabled = scene.physicsEnabled;
         });
     };
 

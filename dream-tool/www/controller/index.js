@@ -1,6 +1,6 @@
 App.controller("index",
-    ["$state","$scope","ApiService","ProjectService","UIService","$window",
-    function($state,$scope,ApiService,ProjectService,UIService,$window) {
+    ["$state","$scope","ApiService","ProjectService","UIService","$window","CookieService","cssInjector",
+    function($state,$scope,ApiService,ProjectService,UIService,$window,CookieService,cssInjector) {
 
     // Alerts ------------------------------------------------------------------
 
@@ -131,18 +131,18 @@ App.controller("index",
         $scope.saveProject();
     };
 
-    $scope.onSettingsHelpButtonClicked  = function() {
-        $state.go("Home");
-    };
-
     $scope.onPlayButtonClicked = function() {
-        ApiService.runDreamProject(ProjectService.project,function(success){
-            if (success) {
-                UIService.addAlert("Started " + ProjectService.project.name, "success");
-            } else {
-                UIService.addAlert("Failed to Start " + ProjectService.project.name, "danger");
-            }
-        });
+        if (ProjectService.isProjectOpen()) {
+            ApiService.execDream(CookieService.getDreamExecPath(),ProjectService.project.uuid,function(success){
+                if (success) {
+                    UIService.addAlert("Started " + ProjectService.project.name, "success");
+                } else {
+                    UIService.addAlert("Failed to Start " + ProjectService.project.name, "danger");
+                }
+            });
+        } else {
+            UIService.addAlert("No project open to run","danger");
+        }
     };
 
     $scope.onDownloadTarballButtonClicked = function() {
@@ -174,12 +174,13 @@ App.controller("index",
         UIService.addAlert("Project Closed","success");
     };
 
-    $scope.onSettingsThemeClicked = function() {
-        UIService.showSettingsThemeModal();
+    $scope.onSettingsClicked = function() {
+        UIService.showSettingsModal();
     };
 
     $scope.onSettingsHelpClicked = function() {
-        UIService.showSettingsHelpModal();
+        console.log("Showing Help");
+        $state.go("Home");
     };
 
     $scope.onSettingsAboutClicked = function() {
@@ -205,5 +206,7 @@ App.controller("index",
     };
 
     $scope.reloadUI();
+
+    cssInjector.add("css/"+CookieService.getTheme()+".css");
 }
 ]);

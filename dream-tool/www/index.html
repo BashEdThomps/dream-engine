@@ -4,6 +4,7 @@
     <title>Dream Tool</title>
     <!-- Libraries -->
     <script src="angular.min.js"></script>
+    <script src="angular-cookies.js"></script>
     <script src="ui-bootstrap-tpls.js"></script>
     <script src="angular-ui-router.min.js"></script>
     <script src="abn_tree_directive.js"></script>
@@ -14,8 +15,9 @@
     <script src="angular-animate.min.js"></script>
     <script src="angular-sanitize.min.js"></script>
     <script src="ngToast.min.js"></script>
+    <script src="js/angular-css-injector.js"></script>
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.slate.css">
+    <!--link rel="stylesheet" href="css/bootstrap.min.css"-->
     <link rel="stylesheet" href="css/dream_tool.css">
     <link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
@@ -27,6 +29,7 @@
     <script src="controller/d3_factory.js"></script>
     <script src="controller/animation_timeline_factory.js"></script>
     <script src="controller/animation_timeline.js"></script>
+    <script src="controller/cookie_service.js"></script>
     <script src="controller/api_service.js"></script>
     <script src="controller/project_service.js"></script>
     <script src="controller/ui_service.js"></script>
@@ -46,7 +49,7 @@
     <script src="controller/modals/open.js"></script>
     <script src="controller/modals/upload.js"></script>
     <script src="controller/modals/settings/about.js"></script>
-    <script src="controller/modals/settings/theme.js"></script>
+    <script src="controller/modals/settings/settings.js"></script>
 </head>
 <body ng-controller="index" ngsf-fullscreen class="fullscreen">
     <!-- Navigation Bar -->
@@ -75,11 +78,6 @@
                     </a>
                 </li>
                 <li>
-                    <a ng-click="onUploadButtonClicked()">
-                        <span aria-hidden="true" class="glyphicon glyphicon-open-file"></span>
-                    </a>
-                </li>
-                <li>
                     <a  ng-click="onSaveButtonClicked()">
                         <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-floppy-disk"></span>
                     </a>
@@ -89,11 +87,6 @@
 						<span aria-hidden="true" class="glyphicon glyphicon-play"</span>
 					</a>
 				</li>
-                <li>
-                    <a id="DownloadTarballButton" ng-click="onDownloadTarballButtonClicked()">
-                        <span aria-hidden="true" class="glyphicon glyphicon-floppy-save"></span>
-                    </a>
-                </li>
                 <li>
                     <a ng-click="onDeleteButtonClicked()"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a>
                 </li>
@@ -105,9 +98,8 @@
                           <span aria-hidden="true" class="glyphicon-toolbar glyphicon glyphicon-cog"></span>
                       </a>
                       <ul class="dropdown-menu" uib-dropdown-menu role="menu">
-                        <li role="menuitem"><a>Settings</a></li>
+                        <li role="menuitem"><a ng-click="onSettingsClicked()">Settings</a></li>
                         <li class="divider"></li>
-                        <li role="menuitem"><a ng-click="onSettingsThemeClicked()">Theme</a></li>
                         <li role="menuitem"><a ng-click="onSettingsHelpClicked()">Help</a></li>
                         <li role="menuitem"><a ng-click="onSettingsAboutClicked()">About</a></li>
                       </ul>

@@ -23,12 +23,17 @@
 #include "Scene/Scene.h"
 #include "Resource/Resource.h"
 
-#define PROJECT_JSON_UUID           "uuid"
-#define PROJECT_JSON_NAME           "name"
-#define PROJECT_JSON_AUTHOR         "author"
-#define PROJECT_JSON_DESCRIPTION    "description"
-#define PROJECT_JSON_SCENE_ARRAY    "scenes"
-#define PROJECT_JSON_RESOURCE_ARRAY "resources"
+#define PROJECT_JSON_UUID            "uuid"
+#define PROJECT_JSON_NAME            "name"
+#define PROJECT_JSON_AUTHOR          "author"
+#define PROJECT_JSON_DESCRIPTION     "description"
+#define PROJECT_JSON_SCENE_ARRAY     "scenes"
+#define PROJECT_JSON_RESOURCE_ARRAY  "resources"
+#define PROJECT_JSON_OPENAL_ENABLED  "openAL"
+#define PROJECT_JSON_BULLET2_ENABLED "bullet2"
+#define PROJECT_JSON_BULLET3_ENABLED "bullet3"
+#define PROJECT_JSON_OPENGL_ENABLED  "openGL"
+#define PROJECT_JSON_VULKAN_ENABLED  "vulkan"
 
 namespace Dream {
 	class Project {
@@ -38,6 +43,13 @@ namespace Dream {
 		std::string mDescription;
 		std::string mDirectory;
 		std::string mAuthor;
+
+		bool mOpenALEnabled;
+		bool mBullet2Enabled;
+		bool mBullet3Enabled;
+		bool mOpenGLEnabled;
+		bool mVulkanEnabled;
+
 		std::vector<Dream::Scene::Scene*> mScenes;
 		std::vector<Dream::Resource::Resource*> mResources;
 	public:
@@ -71,6 +83,14 @@ namespace Dream {
 
 		std::string getDirectory();
 		void setDirectory(std::string);
+
+		void showStatus();
+
+		bool isOpenALEnabled();
+		bool isBullet2Enabled();
+		bool isBullet3Enabled();
+		bool isOpenGLEnabled();
+		bool isVulkanEnabled();
 	}; // End of Project
 } // End of Dream
 

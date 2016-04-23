@@ -30,7 +30,6 @@
 #define SCENE_JSON_AUDIO_ENABLED     "audioEnabled"
 #define SCENE_JSON_PHYSICS_ENABLED   "physicsEnabled"
 #define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
-#define SCENE_JSON_VIDEO_ENABLED     "videoEnabled"
 
 namespace Dream {
 	namespace Scene {
@@ -43,7 +42,6 @@ namespace Dream {
 			bool          mAudioEnabled;
 			bool          mInputEnabled;
 			bool          mPhysicsEnabled;
-			bool          mVideoEnabled;
 
 			Scenegraph   *mScenegraph;
 			Camera       *mCamera;
@@ -65,6 +63,7 @@ namespace Dream {
 			bool isAnimationEnabled();
 			bool isInputEnabled();
 			bool isPhysicsEnabled();
+			void showStatus();
 		}; // End of Scene
 	} // End of Scene
 } // End of Dream

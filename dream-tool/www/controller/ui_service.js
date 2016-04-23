@@ -245,12 +245,12 @@ App.service('UIService',
         modal.result.then(callback);
     };
 
-    this.showSettingsThemeModal = function() {
+    this.showSettingsModal = function() {
         var modal = $uibModal.open(
             {
                 animation: this.modalAnimationsEnabled,
-                templateUrl: 'view/partials/modals/settings/theme.html',
-                controller: 'SettingsThemeModal'
+                templateUrl: 'view/partials/modals/settings/settings.html',
+                controller: 'SettingsModal'
             }
         );
         modal.result.then(function(){});

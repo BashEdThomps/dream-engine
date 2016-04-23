@@ -47,24 +47,32 @@ namespace Dream {
 			fileReader->readIntoStringStream();
 			dream.loadProjectFromFileReader(fileReader);
 
-			std::string expectedUUID        = "bd94-d5c9-50b0-2c7b";
-			std::string expectedName        = "Ash's Test Project";
-			std::string expectedAuthor      = "Ashley Thompson";
-			std::string expectedDescription = "A Test Dream project.";
+			std::string expectedUUID        = "577f-1113-370f-2c12";
+			std::string expectedName        = "Ash's Dream Project";
+			std::string expectedAuthor      = "Ash Thompson";
+			std::string expectedDescription = "A Test Dream Project";
 
 			assertZero("Project Got UUID from JSON",       dream.getProject()->getUUID().compare(expectedUUID));
 			assertZero("Project Got Name from JSON",       dream.getProject()->getName().compare(expectedName));
 			assertZero("Project Got Author from JSON",     dream.getProject()->getAuthor().compare(expectedAuthor));
 			assertZero("Project Got Description from JSON",dream.getProject()->getDescription().compare(expectedDescription));
 
+			assertTrue("Project Got OpenAL Enabled from JSON",   dream.getProject()->isOpenALEnabled()  );
+			assertTrue("Project Got Bullet2 Enabled from JSON",  dream.getProject()->isBullet2Enabled() );
+			assertFalse("Project Got Bullet3 Enabled from JSON", dream.getProject()->isBullet3Enabled() );
+			assertTrue("Project Got OpenGL Enabled from JSON",   dream.getProject()->isOpenGLEnabled()  );
+			assertFalse("Project Got Vulkan Enabled from JSON",  dream.getProject()->isVulkanEnabled()  );
+
 			std::string sceneName = "First Scene";
 			Scene::Scene* firstScene = dream.getProject()->getSceneByName(sceneName);
 
 			assertTrue("Got first scene from project by name", firstScene != NULL);
-			assertFalse("Project Scene has animation enabled", firstScene->isAnimationEnabled());
-			assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
-			assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
-			assertTrue("Project Scene has input enabled",      firstScene->isInputEnabled());
+			if (firstScene != NULL) {
+				assertFalse("Project Scene has animation enabled", firstScene->isAnimationEnabled());
+				assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
+				assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
+				assertTrue("Project Scene has input enabled",      firstScene->isInputEnabled());
+			}
 
 			delete fileReader;
 		};

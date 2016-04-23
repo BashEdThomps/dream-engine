@@ -1,11 +1,14 @@
 App.service('ApiService',
     ['$http',
     function($http) {
-        this.runDreamProject = function(projectName, callback) {
+        this.execDream = function(exec, uuid, callback) {
 			$http({
-				url: "/run",
+				url: "/exec",
 				method: "POST",
-				data: projectName
+				data: {
+                    exec: exec,
+                    uuid: uuid
+                }
 			}).then(
                 function successCallback() {
 				    callback(true);
