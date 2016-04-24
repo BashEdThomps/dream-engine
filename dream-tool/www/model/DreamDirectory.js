@@ -125,10 +125,10 @@ module.exports.writeProjectFile = function(proj,data) {
 };
 
 module.exports.writeResource = function(proj, dir, rsc, format, data, next) {
-    console.log("Project is",   proj);
-    console.log("Directory is", dir);
-    console.log("Resource is",  rsc);
-    console.log("Format is ",   format);
+    console.log("  Project is:", proj);
+    console.log("Directory is:", dir);
+    console.log(" Resource is:", rsc);
+    console.log("   Format is:", format);
 
     var projPath     = dreamDirectory  + path.sep + proj;
     var dirPath      = projPath + path.sep + RESOURCE_DIR + path.sep + dir;
@@ -139,17 +139,29 @@ module.exports.writeResource = function(proj, dir, rsc, format, data, next) {
 
     try {
         fs.mkdirSync(rscPath);
+        console.log("Created directory",rscPath);
     } catch (e) {
         console.log(rscPath,"exists");
     }
 
     try {
-        fs.writeFileSync(absolutePath,new Buffer(data.split(",")[1],'base64'));
+        var writeData = null;
+        if (dir === SCRIPT_DIR) {
+            writeData = data;
+            console.log("Data identified as NOT b64 buffer");
+        } else {
+            writeData = new Buffer(data.split(",")[1],'base64');
+            console.log("Data identified as b64 buffer");
+        }
+
+        if (writeData !== null) {
+            fs.writeFileSync(absolutePath,writeData);
+            console.log("Successfuly written", absolutePath);
+        }
     } catch (e) {
         console.log("Could not write file to",absolutePath);
         return;
     }
-    console.log("Successfuly written", absolutePath);
     return;
 };
 
@@ -193,6 +205,20 @@ module.exports.resourceExists = function(project,uuid,type,format) {
         format;
     console.log("Checking for",absResourcePath);
     retval = fs.existsSync(absResourcePath);
+    return retval;
+};
+
+module.exports.readResource = function(project,uuid,type,format) {
+    var retval = null;
+    var absResourcePath =
+        dreamDirectory + path.sep +
+        project        + path.sep +
+        RESOURCE_DIR   + path.sep +
+        type           + path.sep +
+        uuid           + path.sep +
+        format;
+    console.log("Checking for",absResourcePath);
+    retval = fs.readFileSync(absResourcePath);
     return retval;
 };
 

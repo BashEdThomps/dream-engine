@@ -310,5 +310,17 @@ App.service('ProjectService',
         );
     };
 
+    this.saveScriptResource = function(resource,script,callback) {
+        ApiService.uploadResource(
+            "/"+this.project.uuid+"/resource/script/"+resource.uuid+"/"+"js",
+            script,
+            callback
+        );
+    };
+
+    this.readResource = function(resource,callback) {
+        ApiService.readResource(this.project, resource,callback);
+    };
+
     return this;
 }]);

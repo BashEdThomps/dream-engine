@@ -28,7 +28,8 @@ var ANGULAR_SANITIZE           = NODE_MODULES + "angular-sanitize";
 var ANGULAR_ANIMATE            = NODE_MODULES + "angular-animate";
 var D3                         = NODE_MODULES + "d3";
 var FONT_AWESOME               = NODE_MODULES + "font-awesome";
-var ACE_BUILDS                 = NODE_MODULES + "ace-builds/src-noconflict";
+var ACE_BUILDS                 = NODE_MODULES + "ace-builds";
+var THREE_JS                   = NODE_MODULES + "three";
 
 app.use(bodyParser({
 	formLimit:"100mb",
@@ -55,6 +56,7 @@ app.use(koaStatic(ANGULAR_ANIMATE));
 app.use(koaStatic(D3));
 app.use(koaStatic(FONT_AWESOME));
 app.use(koaStatic(ACE_BUILDS));
+app.use(koaStatic(THREE_JS));
 
 // Api -------------------------------------------------------------------------
 
@@ -131,6 +133,18 @@ koaRouter.get("/projectfile/:uuid",function* (next){
 koaRouter.get("/resource_exists/:project/:type/:uuid/:format",function* (next) {
 	this.status = 200;
 	this.body = dreamDirectory.resourceExists(
+		this.params.project,
+		this.params.uuid,
+		this.params.type,
+		this.params.format
+	);
+	yield next;
+});
+
+// GET /resource_exists/:uuid/type/format
+koaRouter.get("/resource/:project/:type/:uuid/:format",function* (next) {
+	this.status = 200;
+	this.body = dreamDirectory.readResource (
 		this.params.project,
 		this.params.uuid,
 		this.params.type,

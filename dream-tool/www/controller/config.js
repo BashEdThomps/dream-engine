@@ -54,7 +54,7 @@ App.config(['ngToastProvider',function(ngToast) {
     ngToast.configure({
         verticalPosition   : 'bottom',
         horizontalPosition : 'center',
-        maxNumber          : 5,
+        maxNumber          : 3,
         animation          : 'slide'
     });
 }]);

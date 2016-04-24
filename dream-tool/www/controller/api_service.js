@@ -43,6 +43,17 @@ App.service('ApiService',
             });
         };
 
+        this.readResource = function(project,type,uuid,format,callback) {
+            $http({
+                url    : "/resource/"+project+"/"+type+"/"+uuid+"/"+format,
+                method : "get",
+            }).then(function success(resp){
+                callback(resp.data);
+            },function failure(){
+                callback(false);
+            });
+        };
+
         this.createProjectDirectory = function(projectUUID,callback) {
             $http({
                 url    : '/create',

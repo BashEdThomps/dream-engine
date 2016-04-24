@@ -1,29 +1,10 @@
-<style type="text/css" >
-    body {
-        overflow: hidden;
-    }
-
-    #editor {
-        position: relative;
-        min-height:82%;
-        max-height:82%;
-    }
-</style>
-<div class="container-fluid">
-    <h2>Script Resource
-        <button ng-click="onScriptSaveButtonClicked()" class="btn btn-sm btn-success pull-right">Save</button>
-    </h2>
-    <pre id="editor">
-    var test = function(msg) {
-        alert("This is a test!",msg);
-    };
-    </pre>
-<script src="ace.js" type="text/javascript" charset="utf-8"></script>
-<script>
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/vibrant_ink");
-    editor.getSession().setMode("ace/mode/javascript");
-    editor.setReadOnly(false);
-    editor.setHighlightActiveLine(true);
-</script>
-</div>
+<h2>Script Editor
+    <div class="btn-toolbar pull-right" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group btn-group-sm" role="group" aria-label="First group">
+            <!--button ng-click="onScriptEditorVimModeClicked()" class="btn btn-primary">Vim Mode</button-->
+            <button ng-click="onScriptEditorSaveClicked()" class="btn btn-success">Save Script</button>
+        </div>
+    </div>
+</h2>
+<br />
+<div id="editor"></div>
