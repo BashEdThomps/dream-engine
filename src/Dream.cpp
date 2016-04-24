@@ -38,6 +38,10 @@ namespace Dream {
 		return loadSuccess;
 	}
 
+	bool Dream::createInterfaces() {
+		return false;
+	}
+
 	int Dream::runProject() {
 		return 0;
 	}

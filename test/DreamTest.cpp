@@ -27,12 +27,14 @@ namespace Dream {
 		}
 
 		DreamTest::~DreamTest() {
+
 		}
 
 		void DreamTest::run() {
 			header();
 			testCanHoldProject();
 			testCanLoadProjectFromJSON();
+			testCreateInterfaces();
 		}
 
 		void DreamTest::testCanHoldProject() {
@@ -71,7 +73,7 @@ namespace Dream {
 			std::string sceneUUID = "03bb-9210-2e76-26a8";
 			firstScene = dream.getProject()->getSceneByUUID(sceneUUID);
 			assertTrue("Got first scene from project by UUID",firstScene != NULL);
-			
+
 			if (firstScene != NULL) {
 				assertTrue("Project Scene has animation enabled", firstScene->isAnimationEnabled());
 				assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
@@ -80,6 +82,10 @@ namespace Dream {
 			}
 
 			delete fileReader;
-		};
+		}
+
+		void DreamTest::testCreateInterfaces() {
+			assertInconclusive("Test Create Interfaces");
+		}
 	} // End of Test
 } // End of Dream

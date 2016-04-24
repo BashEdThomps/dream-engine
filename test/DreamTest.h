@@ -30,8 +30,7 @@ namespace Dream {
 			void run();
 			void testCanHoldProject();
 			void testCanLoadProjectFromJSON();
-		//protected:
-		//private:
+			void testCreateInterfaces();
 		}; // End of DreamTest
 	} // End of Test
 } // End of Dream

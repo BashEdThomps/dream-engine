@@ -20,6 +20,11 @@
 namespace Dream {
 	namespace Physics {
 		BulletPhysics::BulletPhysics(void) : PhysicsInterface() {
+			mBroadphase = new btDbvtBroadphase();
+			mCollisionConfiguration = new btDefaultCollisionConfiguration();
+			mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
+			mSolver = new btSequentialImpulseConstraintSolver();
+			mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
 		}
 
 		BulletPhysics::~BulletPhysics(void) {
@@ -28,14 +33,6 @@ namespace Dream {
 			delete mCollisionConfiguration;
 			delete mBroadphase;
 			delete mDynamicsWorld;
-		}
-
-		void BulletPhysics::initBullet() {
-			mBroadphase = new btDbvtBroadphase();
-			mCollisionConfiguration = new btDefaultCollisionConfiguration();
-			mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
-			mSolver = new btSequentialImpulseConstraintSolver();
-			mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
 		}
 
 		void BulletPhysics::setGravity3f(float x, float y, float z) {

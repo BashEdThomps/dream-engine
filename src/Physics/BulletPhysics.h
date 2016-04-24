@@ -35,7 +35,6 @@ namespace Dream {
 		public:
 			BulletPhysics(void);
 			~BulletPhysics(void);
-			void initBullet();
 			void setGravity3f(float,float,float);
 			void setGravityBtVector3(btVector3);
 

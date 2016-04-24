@@ -5,7 +5,7 @@ add it to your project! This allows for better conservation of runtime resources
 
 ### Modularity
 
-Dream works by allowing you to implement your favorite interfaces. Where an
+Dream works by allowing you to implement high-level interfaces, where an
 interface may be to a graphics library, input device or other fancy piece of I/O
 tech. Those listed below are included as part of Dream. There is just one rule I
 ask that you follow when implementing an extension... **use open software and
@@ -16,6 +16,8 @@ formats!**
 * **GraphicsInterface**
     * OpenGL
     * Vulkan (soon)
+* **InputInterface**
+    * ...
 * **PhysicsInterface**
     * Bullet2
     * Bullet3 (soon)

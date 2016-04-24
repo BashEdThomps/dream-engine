@@ -20,15 +20,15 @@
 namespace Dream {
 	namespace Scripting {
 		V8Scripting::V8Scripting(void) : ScriptingInterface() {
-		}
-
-		void V8Scripting::init(void) {
 			// Initialize V8.
 			v8::V8::InitializeICU();
 			//V8::InitializeExternalStartupData(argv[0]);
 			mPlatform = v8::platform::CreateDefaultPlatform();
 			v8::V8::InitializePlatform(mPlatform);
 			v8::V8::Initialize();
+			mIsolate = v8::Isolate::GetCurrent();
+			v8::Isolate::Scope isolate_scope(mIsolate);
+			mContext.Reset(mIsolate, v8::Context::New(mIsolate));
 		}
 
 		V8Scripting::~V8Scripting(void) {

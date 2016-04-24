@@ -30,7 +30,6 @@ namespace Dream {
 		public:
 			OALAudio(void);
 			~OALAudio(void);
-			bool init(void);
 
 			ALuint generateBuffer();
 			void playSource(ALuint);

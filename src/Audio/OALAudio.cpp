@@ -21,22 +21,12 @@
 namespace Dream {
 	namespace Audio {
 		OALAudio::OALAudio(void) : AudioInterface() {
+			mDevice = alcOpenDevice(NULL);
+			mContext = alcCreateContext(mDevice,NULL);
+			alcMakeContextCurrent(mContext);
 		}
 
 		OALAudio::~OALAudio(void) {
-		}
-
-		bool OALAudio::init() {
-			mDevice = alcOpenDevice(NULL);
-			if (mDevice  == NULL) {
-				return false;
-			}
-			mContext = alcCreateContext(mDevice,NULL);
-			if (mContext == NULL)  {
-				return false;
-			}
-			alcMakeContextCurrent(mContext);
-			return false;
 		}
 
 		ALuint OALAudio::generateBuffer() {

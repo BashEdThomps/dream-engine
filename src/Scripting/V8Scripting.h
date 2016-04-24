@@ -34,7 +34,6 @@ namespace Dream {
 		public:
 			V8Scripting(void);
 			~V8Scripting(void);
-			void init(void);
 		}; // End of V8Scripting
 	} // End of Scripting
 } // End of Dream
