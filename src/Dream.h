@@ -9,15 +9,17 @@
 #include "Audio/AudioInterface.h"
 #include "Physics/PhysicsInterface.h"
 #include "Video/VideoInterface.h"
+#include "Scripting/ScriptingInterface.h"
 
 
 namespace Dream {
 	class Dream {
 	protected:
 		Project *mProject;
-		Audio::AudioInterface     *mAudioInterface;
-		Video::VideoInterface     *mVideoInterface;
-		Physics::PhysicsInterface *mPhysicsInterface;
+		Audio::AudioInterface         *mAudioInterface;
+		Video::VideoInterface         *mVideoInterface;
+		Physics::PhysicsInterface     *mPhysicsInterface;
+		Scripting::ScriptingInterface *mScriptingInterface;
 
 	public:
 		Dream(void);

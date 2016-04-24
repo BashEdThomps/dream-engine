@@ -161,6 +161,17 @@ namespace Dream {
 		return mScenes.size();
 	}
 
+	Dream::Scene::Scene* Project::getSceneByUUID(std::string uuid) {
+		Dream::Scene::Scene* retval = NULL;
+		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin();
+	        it != mScenes.end(); ++it) {
+				if ((*it)->getUUID().compare(uuid) == 0) {
+					retval = (*it);
+					break;
+				}
+			}
+		return retval;
+	}
 
 	Dream::Scene::Scene* Project::getSceneByName(std::string name) {
 		Dream::Scene::Scene* retval = NULL;

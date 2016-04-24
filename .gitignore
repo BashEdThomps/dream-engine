@@ -4,7 +4,7 @@
 *.swp
 .ycm*
 Doxyfile.bak
-build
+out
 dream-tool/node_modules
 .tags*
 tags

@@ -1,25 +1,25 @@
 ## Dream
 
-Dream is a modular and utilitarian 3D Engine. If you don't need it, don't add it
-to your project! This allows for better conservation of runtime resources.
+Dream is a modular and utilitarian 3D Engine. If you don't need a feature, don't
+add it to your project! This allows for better conservation of runtime resources.
 
 ### Modularity
 
 Dream works by allowing you to implement your favorite interfaces. Where an
 interface may be to a graphics library, input device or other fancy piece of I/O
 tech. Those listed below are included as part of Dream. There is just one rule I
-ask that you follow when implementing an extension... '''use open software and
-formats!'''
+ask that you follow when implementing an extension... **use open software and
+formats!**
 
-* '''AudioInterface'''
+* **AudioInterface**
     * OpenAL
-* '''GraphicsInterface'''
+* **GraphicsInterface**
     * OpenGL
     * Vulkan (soon)
-* '''PhysicsInterface'''
+* **PhysicsInterface**
     * Bullet2
     * Bullet3 (soon)
-* '''ScriptingInterface'''
+* **ScriptingInterface**
     * v8 (Google's JavaScript Engine)
 
 ### Dream Project Information

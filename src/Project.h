@@ -76,6 +76,7 @@ namespace Dream {
 		void removeScene(Dream::Scene::Scene*);
 		int getNumberOfScenes();
 		Dream::Scene::Scene* getSceneByName(std::string);
+		Dream::Scene::Scene* getSceneByUUID(std::string);
 
 		void addResource(Dream::Resource::Resource*);
 		void removeResource(Dream::Resource::Resource*);

@@ -61,4 +61,12 @@ target_link_libraries(
     -lLinearMath
     -lalut
     -lopenal
+    /usr/lib/libv8_base.a
+    /usr/lib/libv8_external_snapshot.a
+    /usr/lib/libv8_libbase.a
+    /usr/lib/libv8_libplatform.a
+    /usr/lib/libv8_nosnapshot.a
+    /usr/lib/libv8.so
+    -lpthread
+    -ldl
 )

@@ -67,11 +67,16 @@ namespace Dream {
 			Scene::Scene* firstScene = dream.getProject()->getSceneByName(sceneName);
 
 			assertTrue("Got first scene from project by name", firstScene != NULL);
+
+			std::string sceneUUID = "03bb-9210-2e76-26a8";
+			firstScene = dream.getProject()->getSceneByUUID(sceneUUID);
+			assertTrue("Got first scene from project by UUID",firstScene != NULL);
+			
 			if (firstScene != NULL) {
-				assertFalse("Project Scene has animation enabled", firstScene->isAnimationEnabled());
+				assertTrue("Project Scene has animation enabled", firstScene->isAnimationEnabled());
 				assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
 				assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
-				assertTrue("Project Scene has input enabled",      firstScene->isInputEnabled());
+				assertFalse("Project Scene has input enabled",      firstScene->isInputEnabled());
 			}
 
 			delete fileReader;

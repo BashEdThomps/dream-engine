@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOST=`uname -a`
-BUILD=build
+BUILD=out
 
 echo HOST is $HOST
 

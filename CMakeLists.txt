@@ -10,7 +10,6 @@ add_subdirectory (src)
 
 # Dream Unit Tests
 add_subdirectory (test)
-
 # Enable Unit Testing
 enable_testing()
 add_test(NAME DreamTest COMMAND test/DreamTest)
