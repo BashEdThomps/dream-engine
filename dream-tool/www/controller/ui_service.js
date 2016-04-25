@@ -52,9 +52,11 @@ App.service('UIService',
             onSelect : hostController.onTreeProjectSceneInstanceSelected,
             children : []
         };
+        /*
         scene.objects.forEach(function(sceneObject){
             retval.children.push(ui.createTreeProjectSceneSceneObject(sceneObject));
         });
+        */
         return retval;
     };
 

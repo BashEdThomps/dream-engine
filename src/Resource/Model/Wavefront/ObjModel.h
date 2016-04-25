@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Script::ScriptResource
+* Model
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,18 +15,26 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ScriptResource.h"
+#ifndef OBJMODEL_H
+#define OBJMODEL_H
+
+#include "../Model.h"
+
+#define RESOURCE_FORMAT_WAVEFRONT  "obj"
 
 namespace Dream {
 	namespace Resource {
-		namespace Script {
+		namespace Model {
+			namespace Wavefront {
+				class ObjModel : public Dream::Resource::Model::Model {
+				public:
+					ObjModel(void);
+					ObjModel(nlohmann::json);
+					~ObjModel(void);
+				};// End of ObjModel
+			} // End of Wavefront
+		} // End of Model
+	} // End of Obj
+} // End of DreamFileFormats
 
-			ScriptResource::ScriptResource(nlohmann::json json) : Dream::Resource::Resource(json) {
-			}
-
-			ScriptResource::~ScriptResource(void) {
-			}
-
-		} // End of Script
-	} // End of Resource
-} // End of Dream
+#endif // End of OBJMODEL_H

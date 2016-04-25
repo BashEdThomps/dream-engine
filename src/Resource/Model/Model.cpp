@@ -1,5 +1,5 @@
 /*
-* FileReader
+* Dream::Resource::Model::Model
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,18 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OBJFILEREADER_H
-#define OBJFILEREADER_H
+#include "Model.h"
 
-namespace DreamFileFormats {
-	namespace Obj {
-		class FileReader {
-		public:
-			FileReader(void);
-			~FileReader(void);
-		//protected:
-		//private:
-		}; // End of FileReader
-	} // End of Obj
-}
+namespace Dream {
+	namespace Resource {
+		namespace Model {
+			Model::Model() : Dream::Resource::Resource() {
 
-#endif // End of OBJFILEREADER_H
+			}
+
+			Model::Model(nlohmann::json jsonRsc) : Dream::Resource::Resource(jsonRsc) {
+
+			}
+		} // End of Model
+	} // End of Resource
+} // End of Dream

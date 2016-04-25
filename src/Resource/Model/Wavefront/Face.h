@@ -1,5 +1,5 @@
 /*
-* Model
+* Face
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,33 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Model.h"
+#ifndef OBJFACE_H
+#define OBJFACE_H
 
-namespace DreamFileFormats {
-	namespace Obj {
+#include <iostream>
+#include <string>
+#include "Material.h"
 
-		Model::Model(void) {
-		}
+namespace Dream {
+	namespace Resource {
+		namespace Model {
+			namespace Wavefront {
+				class Face {
+				private:
+					int* mVerts;
+				    int* mNormals;
+				    Material* mMaterial;
+				public:
+					Face(int*, int*, Material*);
+					~Face(void);
+					int* getVerts();
+			    	int* getNormals();
+			    	Material* getMaterial();
+			    	std::string toString();
+				}; // End of Face
+			} // End of Wavefront
+		} // End of Model
+	} // End of Resource
+} // End of Dream
 
-		Model::~Model(void) {
-		}
-
-	} // End of Obj
-} // End of DreamFileFormats
+#endif // End of OBJFACE_H

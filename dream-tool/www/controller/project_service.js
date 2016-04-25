@@ -104,18 +104,33 @@ App.service('ProjectService',
         ];
     };
 
-    this.addResourceLinkToSceneObject = function(sceneUUID,sceneObjectUUID,resourceUUID){
+    this.addResourceInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,resourceUUID){
         var proj = this;
-        console.log("Adding Resource Link",sceneObjectUUID,"to",resourceUUID);
+        console.log("Adding Resource Instance",sceneObjectUUID,"to",resourceUUID);
         this.getSceneByUUID(sceneUUID,function(scene){
             proj.getSceneObjectByUUID(scene,sceneObjectUUID,function(sceneObject){
-                if (sceneObject.resourceLinks === undefined) {
-                    sceneObject.resourceLinks = [];
+                if (sceneObject.resourceInstances === undefined) {
+                    sceneObject.resourceInstances = [];
                 }
-                if (sceneObject.resourceLinks.indexOf(resourceUUID) < 0) {
-                    sceneObject.resourceLinks.push(resourceUUID);
+                if (sceneObject.resourceInstances.indexOf(resourceUUID) < 0) {
+                    sceneObject.resourceInstances.push(resourceUUID);
                 } else {
-                    console.log(sceneObjectUUID,"allready has link to",resourceUUID);
+                    console.log(sceneObjectUUID,"allready has instance to",resourceUUID);
+                }
+            });
+        });
+    };
+
+    this.removeResourceInstanceFromSceneObject = function(sceneUUID,sceneObjectUUID,resourceUUID){
+        var proj = this;
+        console.log("Removing Resource Instance",resourceUUID,"from",sceneObjectUUID);
+        this.getSceneByUUID(sceneUUID, function(scene){
+            proj.getSceneObjectByUUID(scene,sceneObjectUUID,function(sceneObject){
+                var indexOf = sceneObject.resourceInstances.indexOf(resourceUUID);
+                if (indexOf > -1) {
+                    sceneObject.resourceInstances.splice(indexOf,1);
+                } else {
+                    console.log(sceneObjectUUID,": unable to remove instance of",resourceUUID);
                 }
             });
         });
@@ -149,7 +164,7 @@ App.service('ProjectService',
         return {
             uuid: UtilService.generateUUID(),
             name: "New Scene Object",
-            resourceLinks: [],
+            resourceInstances: [],
         };
     };
 

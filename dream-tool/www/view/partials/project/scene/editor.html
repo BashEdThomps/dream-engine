@@ -1,7 +1,14 @@
 <div class=" container-fluid">
     <div class=" row">
         <div class=" col-md-2">
-            <abn-tree tree-data="scenegraphTree"></abn-tree>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Scenegraph
+                </div>
+                <div class="panel-body">
+                    <abn-tree tree-data="scenegraphTree"></abn-tree>
+                </div>
+            </div>
         </div>
         <div  class="row" ng-show="selectedSceneObject !== null" >
             <div class="col-md-4">
@@ -20,7 +27,7 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Resource Links
+                        Resource Instances
                     </div>
                     <table class="table table-condensed table-striped table-hover">
                         <thead>
@@ -39,20 +46,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="link in selectedSceneObject.resourceLinks">
+                            <tr ng-repeat="instance in selectedSceneObject.resourceInstances">
                                 <td>
-                                    <button ng-click="goToResourceEditor(link)" class="btn btn-sm btn-default">
+                                    <button ng-click="goToResourceEditor(instance)" class="btn btn-sm btn-default">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </button>
                                 </td>
                                 <td>
-                                    {{ getResourceByUUID(link).name }}
+                                    {{ getResourceByUUID(instance).name }}
                                 </td>
                                 <td>
-                                    {{ getResourceByUUID(link).type }}
+                                    {{ getResourceByUUID(instance).type }}
                                 </td>
                                 <td>
-                                    <button ng-click="onRemoveResourceLinkButtonClicked(link)" class="btn btn-sm btn-danger">
+                                    <button ng-click="onRemoveResourceInstanceButtonClicked(instance)" class="btn btn-sm btn-danger">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </button>
                                 </td>
@@ -62,9 +69,9 @@
                     <div class="panel-footer">
                         <div class="input-group">
                           <div class="input-group-btn">
-                            <button ng-disabled="selectedNewResourceLink === ''" ng-click="onAddResourceLinkButtonClicked()" class="btn btn-sm btn-success">Add Link</button>
+                            <button ng-disabled="selectedNewResourceInstance === ''" ng-click="onAddResourceInstanceButtonClicked()" class="btn btn-sm btn-success">Add Instance</button>
                           </div>
-                          <select  class="form-control input-sm" ng-model="selectedNewResourceLink">
+                          <select  class="form-control input-sm" ng-model="selectedNewResourceInstance">
                               <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">
                                   {{ resource.name }}
                               </option>

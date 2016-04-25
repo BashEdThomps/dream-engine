@@ -1,5 +1,5 @@
 /*
-* ModelResource
+* Dream::Resource::Model::Model
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,22 +15,22 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MODELRESOURCE_H
-#define MODELRESOURCE_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #include "../Resource.h"
 
 namespace Dream {
 	namespace Resource {
 		namespace Model {
-			class ModelResource : public Resource {
+			class Model : public Resource {
 			public:
-				ModelResource(void);
-				ModelResource(nlohmann::json);
-				virtual ~ModelResource(void) = 0;
-			}; // End of ModelResource
+				Model(void);
+				Model(nlohmann::json);
+				virtual ~Model(void) {};
+			}; // End of Model
 		} // End of Model
 	}// End of Resource
 } // End of Dream
 
-#endif // End of MODELRESOURCE_H
+#endif // End of MODEL_H

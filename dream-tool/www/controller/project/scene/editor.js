@@ -49,12 +49,16 @@ App.controller("ProjectSceneEditor",
             UIService.updateScene($scope.scene);
         };
 
-        $scope.onAddResourceLinkButtonClicked = function() {
-            ProjectService.addResourceLinkToSceneObject(
+        $scope.onAddResourceInstanceButtonClicked = function() {
+            ProjectService.addResourceInstanceToSceneObject(
                 $scope.sceneUUID,
                 $scope.selectedSceneObjectUUID,
-                $scope.selectedNewResourceLink
+                $scope.selectedNewResourceInstance
             );
+        };
+
+        $scope.onRemoveResourceInstanceButtonClicked = function(instance) {
+            ProjectService.removeResourceInstanceFromSceneObject($scope.sceneUUID,$scope.selectedSceneObjectUUID,instance);
         };
 
         if (ProjectService.isProjectOpen()) {
@@ -74,5 +78,6 @@ App.controller("ProjectSceneEditor",
         } else {
             $state.go("Home");
         }
+
     }
 ]);

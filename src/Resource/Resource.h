@@ -21,9 +21,10 @@
 #include <iostream>
 #include "../JSON/json.hpp"
 
-#define RESOURCE_JSON_UUID "uuid"
-#define RESOURCE_JSON_NAME "name"
-#define RESOURCE_JSON_TYPE "type"
+#define RESOURCE_JSON_UUID   "uuid"
+#define RESOURCE_JSON_NAME   "name"
+#define RESOURCE_JSON_TYPE   "type"
+#define RESOURCE_JSON_FORMAT "format"
 
 #define RESOURCE_TYPE_ANIMATION "Animation"
 #define RESOURCE_TYPE_MODEL     "Model"
@@ -46,7 +47,7 @@ namespace Dream {
 			void setName(std::string);
 			std::string getName();
 		}; // End of Resource
-	}
+	} // End of Resource
 } // End of Dream
 
 #endif // End of RESOURCE_H

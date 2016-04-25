@@ -74,5 +74,6 @@ App.controller("ProjectResourceEditor",
             var handler = ace.getKeyboardHandler();
             UIService.addAlert("Vim Mode: "+handler,"success");
         };
+
     }
 ]);

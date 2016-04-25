@@ -121,5 +121,6 @@ App.controller("ProjectResourceList",
                 });
             });
         };
+
     }
 ]);

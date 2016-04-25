@@ -1,5 +1,5 @@
 /*
-* Face
+* Dream::Resource::Script::Script
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,25 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OBJFACE_H
-#define OBJFACE_H
+#ifndef JAVASCRIPT_H
+#define JAVASCRIPT_H
 
-#include <iostream>
-#include <string>
-#include "Material.h"
+#define RESOURCE_FORMAT_JAVASCRIPT "js"
 
-namespace DreamFileFormats {
-	namespace Obj {
-		class Face {
-		private:
-			int* mVerts;
-		    int* mNormals;
-		    Material* mMaterial;
-		public:
-			Face(int*, int*, Material*);
-			~Face(void);
-			int* getVerts();
-	    	int* getNormals();
-	    	Material* getMaterial();
-	    	std::string toString();
-		}; // End of Face
-	}// End of Obj
-} // End of DreamFileFormat
+#include "../Script.h"
 
-#endif // End of OBJFACE_H
+namespace Dream {
+	namespace Resource {
+		namespace Script {
+			namespace JavaScript {
+				class JavaScript : public Dream::Resource::Script::Script {
+				public:
+					JavaScript(nlohmann::json);
+					~JavaScript(void);
+				}; // End of JavaScript
+			} // End of JavaScript
+		} // End of Script
+	} // End of Resource
+} // End of Dream
+
+#endif // End of SCRIPT_H

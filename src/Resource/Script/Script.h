@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Script::ScriptResource
+* Dream::Resource::Script::Script
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,21 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCRIPTRESOURCE_H
-#define SCRIPTRESOURCE_H
+#ifndef SCRIPT_H
+#define SCRIPT_H
 
 #include "../Resource.h"
 
 namespace Dream {
 	namespace Resource {
 		namespace Script {
-			class ScriptResource : public Dream::Resource::Resource {
+			class Script : public Dream::Resource::Resource {
 			public:
-				ScriptResource(nlohmann::json);
-				~ScriptResource(void);
-			}; // End of ScriptResource
+				Script(nlohmann::json);
+				~Script(void);
+			}; // End of Script
 		} // End of Script
 	} // End of Resource
 } // End of Dream
-#endif // End of SCRIPTRESOURCE_H
+
+#endif // End of SCRIPT_H

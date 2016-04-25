@@ -1,5 +1,5 @@
 /*
-* FileReader
+* Dream::Resource::Script::Script
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,14 +15,18 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "FileReader.h"
+#include "Script.h"
 
-namespace DreamFileFormats {
-	namespace Obj {
-		FileReader::FileReader(void) {
-		}
+namespace Dream {
+	namespace Resource {
+		namespace Script {
 
-		FileReader::~FileReader(void) {
-		}
-	} // End of Obj
-}
+			Script::Script(nlohmann::json json) : Dream::Resource::Resource(json) {
+			}
+
+			Script::~Script(void) {
+			}
+			
+		} // End of Script
+	} // End of Resource
+} // End of Dream
