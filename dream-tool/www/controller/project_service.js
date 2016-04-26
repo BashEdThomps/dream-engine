@@ -165,6 +165,7 @@ App.service('ProjectService',
             uuid: UtilService.generateUUID(),
             name: "New Scene Object",
             resourceInstances: [],
+            children: []
         };
     };
 

@@ -1,120 +1,103 @@
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Configure Scene
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input id="name"
-                               ng-disabled="currentScene === undefined"
-                               type="text"
-                               ng-change="modified()"
-                               class="form-control input-sm"
-                               ng-model="currentScene.name"/>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="checkbox checkbox-info">
-                                <input type="checkbox"
-                                       id="enableAnimation"
-                                       ng-disabled="currentScene === undefined"
-                                       ng-change="modified()"
-                                       ng-model="currentScene.animationEnabled"/>
-                                <label for="enableAnimation">
-                                    Enable Animation
-                                </label>
-                            </div>
-                            <div class="checkbox checkbox-info">
-                                <input id="enableAudio"
-                                       type="checkbox"
-                                       ng-change="modified()"
-                                       ng-disabled="currentScene === undefined"
-                                       ng-model="currentScene.audioEnabled"/>
-                                <label for="enableAudio">
-                                    Enable Audio
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="checkbox checkbox-info">
-                                <input id="enableInput"
-                                       type="checkbox"
-                                       ng-change="modified()"
-                                       ng-disabled="currentScene === undefined"
-                                       ng-model="currentScene.inputEnabled"/>
-                                <label for="enableInput">
-                                    Enable Input
-                                </label>
-                            </div>
-                            <div class="checkbox checkbox-info">
-                                <input id="enableBullet"
-                                       type="checkbox"
-                                       ng-change="modified()"
-                                       ng-disabled="currentScene === undefined"
-                                       ng-model="currentScene.physicsEnabled"/>
-                                <label for="enablePhysics">
-                                    Enable Physics
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <button ng-click="onNewSceneButtonClicked()" class="btn btn-sm btn btn-success">New Scene</button>
-                    <br/>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Configure Scene
         </div>
-        <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Scenes
-                </div>
-                <table class="table table-hover  table-condensed table-striped">
-                    <thead>
-                        <tr>
-                            <th>
-                            </th>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Objects
-                            </th>
-                            <th>
-                                UUID
-                            </th>
-                            <th>
-                                Remove
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="scene in project.scenes" ng-click="onSceneSelected(scene.uuid)">
-                            <td>
-                                <button ng-click="goToSceneEditor(scene.uuid)" class="btn btn-sm btn-default">
-                                    <span class="glyphicon glyphicon-edit"></span>
-                                </button>
-                            </td>
-                            <td>
-                                {{scene.name}}
-                            </td>
-                            <td>
-                                {{scene.objects.length}}
-                            </td>
-                            <td>
-                                {{scene.uuid.toUpperCase()}}
-                            </td>
-                            <td>
-                                <button ng-click="onRemoveSceneButtonClicked(scene.uuid)"class="btn btn-sm btn btn-danger btn btn-sm-sm"><span class="glyphicon glyphicon-remove"></span></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="panel-body">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" ng-disabled="currentScene === undefined" type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentScene.name" />
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="checkbox checkbox-info">
+                <input type="checkbox" id="enableAnimation" ng-disabled="currentScene === undefined" ng-change="modified()" ng-model="currentScene.animationEnabled" />
+                <label for="enableAnimation">
+                  Enable Animation
+                </label>
+              </div>
+              <div class="checkbox checkbox-info">
+                <input id="enableAudio" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.audioEnabled" />
+                <label for="enableAudio">
+                  Enable Audio
+                </label>
+              </div>
             </div>
+            <div class="col-sm-6">
+              <div class="checkbox checkbox-info">
+                <input id="enableInput" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.inputEnabled" />
+                <label for="enableInput">
+                  Enable Input
+                </label>
+              </div>
+              <div class="checkbox checkbox-info">
+                <input id="enableBullet" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.physicsEnabled" />
+                <label for="enablePhysics">
+                  Enable Physics
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea class="form-control" width="100%" rows 10></textarea>
+          </div>
         </div>
+        <div class="panel-footer">
+          <button ng-click="onNewSceneButtonClicked()" class="btn btn-sm btn btn-success">New Scene</button>
+          <br/>
+        </div>
+      </div>
     </div>
+    <div class="col-md-8">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Scenes
+        </div>
+        <table class="table table-hover  table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>
+              </th>
+              <th>
+                Name
+              </th>
+              <th>
+                Objects
+              </th>
+              <th>
+                UUID
+              </th>
+              <th>
+                Remove
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="scene in project.scenes" ng-click="onSceneSelected(scene.uuid)">
+              <td>
+                <button ng-click="goToSceneEditor(scene.uuid)" class="btn btn-sm btn-default">
+                  <span class="glyphicon glyphicon-edit"></span>
+                </button>
+              </td>
+              <td>
+                {{scene.name}}
+              </td>
+              <td>
+                {{scene.objects.length}}
+              </td>
+              <td>
+                {{scene.uuid.toUpperCase()}}
+              </td>
+              <td>
+                <button ng-click="onRemoveSceneButtonClicked(scene.uuid)" class="btn btn-sm btn btn-danger btn btn-sm-sm"><span class="glyphicon glyphicon-remove"></span></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>

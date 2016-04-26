@@ -63,6 +63,7 @@ namespace Dream {
 			bool isAnimationEnabled();
 			bool isInputEnabled();
 			bool isPhysicsEnabled();
+			void loadSceneObjectsFromJSONArray(nlohmann::json);
 			void showStatus();
 		}; // End of Scene
 	} // End of Scene

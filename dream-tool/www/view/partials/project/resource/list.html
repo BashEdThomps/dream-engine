@@ -67,6 +67,17 @@
                             </button>
                         </div>
                     </div>
+
+                    <div class="form-group" ng-show="currentResource.type === 'Script'">
+                        <label for="type">Format</label>
+                        <select ng-change="modified()"
+                                ng-model="currentResource.format"
+                                class="form-control input-sm"
+                                id="type">
+                            <option value="js">JavaScript</option>
+                        </select>
+                    </div>
+
                     <div class="form-group" ng-show="currentResource.type === 'Audio'">
                         <label for="type">Format</label>
                         <select ng-change="modified()"

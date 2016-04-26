@@ -1,14 +1,9 @@
-/*
-* graph.c
-*/
-
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <algorithm>
 #include "SceneObject.h"
 #include "Scenegraph.h"
-
 
 namespace Dream {
 	namespace Scene {
@@ -45,9 +40,7 @@ namespace Dream {
 
 		void Scenegraph::removeSceneObject(SceneObject* so) {
 			if (so == NULL) {
-				#ifdef DEBUG
 				std::cout << "Cannot remove NULL node from graph." << std::endl;
-				#endif
 				return;
 			}
 
@@ -57,13 +50,9 @@ namespace Dream {
 		}
 
 		SceneObject* Scenegraph::getSceneObjectByName(std::string name) {
-			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin() ;
-			     next != mSceneObjects.end();
-				 ++next) {
+			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
 				if ((*next)->hasName("")) {
-					#ifdef DEBUG
 					std::cout << "Scenegraph::getSceneObjectByName: Cannot test node with empty name." << std::endl;
-					#endif
 					continue;
 				}
 				if ((*next)->hasName(name)) {
@@ -89,12 +78,12 @@ namespace Dream {
 
 		int Scenegraph::countChildrenOfSceneObject(SceneObject* obj) {
 			int count = 0;
-			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin() ;
-			     next != mSceneObjects.end();
-				 ++next) {
-					 if ((*next)->getParent() == obj) count++;
-				 }
-				 return count;
+			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
+				if ((*next)->getParent() == obj) {
+					count++;
+				}
+			}
+			return count;
 		}
 	}
 }

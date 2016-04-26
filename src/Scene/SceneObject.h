@@ -4,9 +4,8 @@
 #ifndef NODE_H
 #define NODE_H
 
-#define DEBUG 1
-
 #include <iostream>
+#include "../JSON/json.hpp"
 
 #define NODE_X 0
 #define NODE_Y 1
@@ -23,6 +22,7 @@ namespace Dream {
 			float        mRotation[3];
 		public:
 			SceneObject  ();
+			SceneObject  (nlohmann::json);
 			~SceneObject ();
 
 			void initTranslationRotation();

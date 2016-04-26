@@ -98,6 +98,12 @@ namespace Dream {
 			return mInputEnabled;
 		}
 
+		void Scene::loadSceneObjectsFromJSONArray(nlohmann::json jsonArray) {
+			for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
+
+			}
+		}
+
 		void Scene::showStatus() {
 			std::cout << "Scene:" << std::endl;
 			std::cout << "\tUUID: " << mUUID << std::endl;

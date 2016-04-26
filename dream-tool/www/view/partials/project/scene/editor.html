@@ -1,85 +1,100 @@
 <div class=" container-fluid">
-    <div class=" row">
-        <div class=" col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Scenegraph
-                </div>
-                <div class="panel-body">
-                    <abn-tree tree-data="scenegraphTree"></abn-tree>
-                </div>
-            </div>
+  <div class=" row">
+    <div class=" col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">Scenegraph</div>
+        <div class="panel-body">
+          <abn-tree tree-data="scenegraphTree"></abn-tree>
         </div>
-        <div  class="row" ng-show="selectedSceneObject !== null" >
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Configuration
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label for="SceneObjectName">Name</label>
-                            <input ng-change="modified()" class="input-sm form-control" type="text" ng-model="selectedSceneObject.name" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Resource Instances
-                    </div>
-                    <table class="table table-condensed table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>
-                                </th>
-                                <th>
-                                    Resource
-                                </th>
-                                <th>
-                                    Type
-                                </th>
-                                <th>
-                                    Remove
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="instance in selectedSceneObject.resourceInstances">
-                                <td>
-                                    <button ng-click="goToResourceEditor(instance)" class="btn btn-sm btn-default">
-                                        <span class="glyphicon glyphicon-edit"></span>
-                                    </button>
-                                </td>
-                                <td>
-                                    {{ getResourceByUUID(instance).name }}
-                                </td>
-                                <td>
-                                    {{ getResourceByUUID(instance).type }}
-                                </td>
-                                <td>
-                                    <button ng-click="onRemoveResourceInstanceButtonClicked(instance)" class="btn btn-sm btn-danger">
-                                        <span class="glyphicon glyphicon-remove"></span>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="panel-footer">
-                        <div class="input-group">
-                          <div class="input-group-btn">
-                            <button ng-disabled="selectedNewResourceInstance === ''" ng-click="onAddResourceInstanceButtonClicked()" class="btn btn-sm btn-success">Add Instance</button>
-                          </div>
-                          <select  class="form-control input-sm" ng-model="selectedNewResourceInstance">
-                              <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">
-                                  {{ resource.name }}
-                              </option>
-                          </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+    <div class="col-md-9">
+      <div class="row" ng-show="selectedSceneObject !== null">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">Configuration</div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label for="SceneObjectName">Name</label>
+                <input ng-change="modified()" class="input-sm form-control" type="text" ng-model="selectedSceneObject.name" />
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">Resource Instances</div>
+            <table class="table table-condensed table-striped table-hover">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Resource</th>
+                  <th>Type</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="instance in selectedSceneObject.resourceInstances">
+                  <td>
+                    <button ng-click="goToResourceEditor(instance)" class="btn btn-sm btn-default">
+                      <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                  </td>
+                  <td>{{ getResourceByUUID(instance).name }}</td>
+                  <td>{{ getResourceByUUID(instance).type }}</td>
+                  <td>
+                    <button ng-click="onRemoveResourceInstanceButtonClicked(instance)" class="btn btn-sm btn-danger">
+                      <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="panel-footer">
+              <div class="input-group">
+                <div class="input-group-btn">
+                  <button ng-disabled="selectedNewResourceInstance === ''" ng-click="onAddResourceInstanceButtonClicked()" class="btn btn-sm btn-success">Add Instance</button>
+                </div>
+                <select class="form-control input-sm" ng-model="selectedNewResourceInstance">
+                  <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">{{ resource.name }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">Children</div>
+            <table class="table table-condensed table-striped table-hover">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>UUID</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="child in selectedSceneObject.children">
+                  <td>
+                    <button ng-click="goToSceneEditor(child)" class="btn btn-sm btn-default">
+                      <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                  </td>
+                  <td>{{ getSceneObjectByUUID(child).name }}</td>
+                  <td>{{ child }}</td>
+                  <td>
+                    <button ng-click="onRemoveChildButtonClicked(child)" class="btn btn-sm btn-danger">
+                      <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="panel-footer">
+              <button ng-click="onAddChildButtonClicked()" class="btn btn-sm btn-success">Add Child</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

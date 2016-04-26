@@ -14,6 +14,7 @@ namespace Dream {
 			SceneObject*              mRootSceneObject;
 		public:
 			Scenegraph();
+			Scenegraph();
 			~Scenegraph();
 			void         printGraph ();
 			std::string  getPathDelimeter();

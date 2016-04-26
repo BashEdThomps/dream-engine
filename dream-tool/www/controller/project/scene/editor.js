@@ -1,83 +1,90 @@
 App.controller("ProjectSceneEditor",
-    ["$scope","$state","$stateParams","ProjectService","UIService",
-    function($scope,$state,$stateParams,ProjectService,UIService) {
-        $scope.sceneUUID               = $stateParams.scene;
-        $scope.scenegraphTree          = [];
-        $scope.selectedSceneObject     = null;
-        $scope.selectedSceneObjectUUID = null;
-        $scope.resourceList            = null;
+["$scope","$state","$stateParams","ProjectService","UIService",
+  function($scope,$state,$stateParams,ProjectService,UIService) {
+    $scope.sceneUUID               = $stateParams.scene;
+    $scope.scenegraphTree          = [];
+    $scope.selectedSceneObject     = null;
+    $scope.selectedSceneObjectUUID = null;
+    $scope.resourceList            = null;
 
-        $scope.initScenegraphTree = function() {
-            $scope.scenegraphTree.push({
-                label    : $scope.scene.name,
-                onSelect :  $scope.onScenegraphTreeSelection,
-                children : [],
-            });
-            $scope.scene.objects.forEach(function(sceneObject){
-                $scope.scenegraphTree[0].children.push({
-                    label:sceneObject.name,
-                    uuid:sceneObject.uuid,
-                    onSelect: $scope.onScenegraphTreeSelection,
-                    children: [],
-                });
-            });
-        };
+    $scope.initScenegraphTree = function() {
+      $scope.scenegraphTree.push({
+        label    : $scope.scene.name,
+        onSelect :  $scope.onScenegraphTreeSelection,
+        children : [],
+      });
+      $scope.scene.objects.forEach(function(sceneObject){
+        $scope.scenegraphTree[0].children.push({
+          label:sceneObject.name,
+          uuid:sceneObject.uuid,
+          onSelect: $scope.onScenegraphTreeSelection,
+          children: [],
+        });
+      });
+    };
 
-        $scope.goToResourceEditor = function(uuid) {
-            $state.go("ProjectResourceEditor",{resource: uuid});
-        };
+    $scope.goToResourceEditor = function(uuid) {
+      $state.go("ProjectResourceEditor",{resource: uuid});
+    };
 
-        $scope.getResourceByUUID = function(uuid) {
-            var retval = null;
-            ProjectService.getResourceByUUID(uuid,function(rsc)
-            {
-                retval = rsc;
-            });
-            return retval;
-        };
+    $scope.getResourceByUUID = function(uuid) {
+      var retval = null;
+      ProjectService.getResourceByUUID(uuid,function(rsc)
+      {
+        retval = rsc;
+      });
+      return retval;
+    };
 
-        $scope.onScenegraphTreeSelection = function(branch) {
-            $scope.selectedSceneObjectUUID = branch.uuid;
-            ProjectService.getSceneObjectByUUID($scope.scene,$scope.selectedSceneObjectUUID,function(so) {
-                $scope.selectedSceneObject = so;
-            });
-        };
+    $scope.onScenegraphTreeSelection = function(branch) {
+      $scope.selectedSceneObjectUUID = branch.uuid;
+      ProjectService.getSceneObjectByUUID($scope.scene,$scope.selectedSceneObjectUUID,function(so) {
+        $scope.selectedSceneObject = so;
+      });
+    };
 
-        $scope.modified = function () {
-            console.log("Scene Modified");
-            ProjectService.updateScene($scope.scene);
-            UIService.updateScene($scope.scene);
-        };
+    $scope.modified = function () {
+      console.log("Scene Modified");
+      ProjectService.updateScene($scope.scene);
+      UIService.updateScene($scope.scene);
+    };
 
-        $scope.onAddResourceInstanceButtonClicked = function() {
-            ProjectService.addResourceInstanceToSceneObject(
-                $scope.sceneUUID,
-                $scope.selectedSceneObjectUUID,
-                $scope.selectedNewResourceInstance
-            );
-        };
+    $scope.onAddResourceInstanceButtonClicked = function() {
+      ProjectService.addResourceInstanceToSceneObject(
+        $scope.sceneUUID,
+        $scope.selectedSceneObjectUUID,
+        $scope.selectedNewResourceInstance
+      );
+    };
 
-        $scope.onRemoveResourceInstanceButtonClicked = function(instance) {
-            ProjectService.removeResourceInstanceFromSceneObject($scope.sceneUUID,$scope.selectedSceneObjectUUID,instance);
-        };
+    $scope.onRemoveResourceInstanceButtonClicked = function(instance) {
+      ProjectService.removeResourceInstanceFromSceneObject($scope.sceneUUID,$scope.selectedSceneObjectUUID,instance);
+    };
 
-        if (ProjectService.isProjectOpen()) {
-            ProjectService.getSceneByUUID($scope.sceneUUID,function (scene){
-                if (scene === null) {
-                    UIService.addAlert("Error: Unable to find scene: "+$scope.sceneUUID,"danger");
-                } else {
-                    $scope.scene = scene;
-                    UIService.setBreadcrumbs([ProjectService.getName(),"Scenes",$scope.scene.name]);
-                    UIService.update();
-                    $scope.initScenegraphTree();
-                }
-            });
-            ProjectService.getResourceList(function(list){
-                $scope.resourceList = list;
-            });
+    if (ProjectService.isProjectOpen()) {
+      ProjectService.getSceneByUUID($scope.sceneUUID,function (scene){
+        if (scene === null) {
+          UIService.addAlert("Error: Unable to find scene: "+$scope.sceneUUID,"danger");
         } else {
-            $state.go("Home");
+          $scope.scene = scene;
+          UIService.setBreadcrumbs([ProjectService.getName(),"Scenes",$scope.scene.name]);
+          UIService.update();
+          $scope.initScenegraphTree();
         }
-
+      });
+      ProjectService.getResourceList(function(list){
+        $scope.resourceList = list;
+      });
+    } else {
+      $state.go("Home");
     }
+
+    $scope.onAddChildButtonClicked = function() {
+      if ($scope.selectedSceneObject !== null) {
+        var child = ProjectService.createSceneObject();
+        child.parent = $scope.selectedSceneObjectUUID;
+        $scope.selectedSceneObject.children.push(child);
+      }
+    };
+  }
 ]);
