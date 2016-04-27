@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include "SceneObject.h"
+#include "../JSON/json.hpp"
 
 namespace Dream {
 	namespace Scene {
@@ -14,7 +15,7 @@ namespace Dream {
 			SceneObject*              mRootSceneObject;
 		public:
 			Scenegraph();
-			Scenegraph();
+			Scenegraph(nlohmann::json);
 			~Scenegraph();
 			void         printGraph ();
 			std::string  getPathDelimeter();

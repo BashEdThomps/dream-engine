@@ -75,12 +75,12 @@
               <tbody>
                 <tr ng-repeat="child in selectedSceneObject.children">
                   <td>
-                    <button ng-click="goToSceneEditor(child)" class="btn btn-sm btn-default">
+                    <button ng-click="goToSceneObjectEditor(child)" class="btn btn-sm btn-default">
                       <span class="glyphicon glyphicon-edit"></span>
                     </button>
                   </td>
-                  <td>{{ getSceneObjectByUUID(child).name }}</td>
-                  <td>{{ child }}</td>
+                  <td>{{ child.name }}</td>
+                  <td>{{ child.uuid.toUpperCase() }}</td>
                   <td>
                     <button ng-click="onRemoveChildButtonClicked(child)" class="btn btn-sm btn-danger">
                       <span class="glyphicon glyphicon-remove"></span>

@@ -14,7 +14,8 @@
         "objects": [{
             "uuid": "83d4-3300-f140-6774",
             "name": "Test Scene Object",
-            "resourceInstances": ["8ff5-318b-9354-1b9e"]
+            "resourceInstances": ["8ff5-318b-9354-1b9e"],
+            "children": []
         }],
         "animationEnabled": true,
         "physicsEnabled": false,

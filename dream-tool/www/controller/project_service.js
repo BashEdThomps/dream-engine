@@ -136,12 +136,24 @@ App.service('ProjectService',
         });
     };
 
-    this.getSceneObjectByUUID = function(scene,sceneObjectUUID,callback) {
-        scene.objects.forEach(function(sceneObject){
-            if (sceneObject.uuid == sceneObjectUUID) {
-                callback(sceneObject);
-            }
-        });
+    this.getSceneObjectByUUID = function(scene,uuid,callback) {
+      var ps = this;
+      scene.objects.forEach(function(sceneObject) {
+        ps.lookForSceneObject(sceneObject,uuid,callback);
+      });
+    };
+
+    this.lookForSceneObject = function(sceneObject, uuid, callback) {
+      var ps = this;
+      if (sceneObject.uuid == uuid) {
+        callback(sceneObject);
+      } else {
+        if (sceneObject.children !== undefined) {
+          sceneObject.children.forEach(function(so) {
+            ps.lookForSceneObject(so,uuid,callback);
+          });
+        }
+      }
     };
 
     // Create New Resources ----------------------------------------------------
@@ -263,9 +275,7 @@ App.service('ProjectService',
         this.setSceneAnimationEnabled(scene);
         this.setSceneInputEnabled(scene);
         this.setSceneAudioEnabled(scene);
-        this.setSceneBulletEnabled(scene);
         this.setSceneName(scene);
-        //this.setSceneObjects(scene);
     };
 
     this.setSceneAnimationEnabled = function(scene) {

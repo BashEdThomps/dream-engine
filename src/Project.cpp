@@ -95,6 +95,7 @@ namespace Dream {
 	void Project::loadScenesFromJson(nlohmann::json jsonSceneArray) {
 		std::cout << "Project: Loading Scenes from JSON Array" << std::endl;
 		for (nlohmann::json::iterator it = jsonSceneArray.begin(); it != jsonSceneArray.end(); ++it) {
+			std::cout << "Project: Creating Scene" << std::endl;
 			Dream::Scene::Scene *nextScene = new Dream::Scene::Scene((*it));
 			nextScene->showStatus();
 			addScene(nextScene);

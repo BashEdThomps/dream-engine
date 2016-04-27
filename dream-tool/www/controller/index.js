@@ -207,6 +207,6 @@ App.controller("index",
 
     $scope.reloadUI();
 
-    cssInjector.add("css/"+CookieService.getTheme()+".css");
+    cssInjector.add("css/"+( CookieService.getTheme() || "bootstrap" )+".css");
 }
 ]);

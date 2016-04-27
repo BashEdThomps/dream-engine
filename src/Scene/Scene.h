@@ -1,5 +1,5 @@
 /*
-* Scene
+* Dream::Scene::Scene
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #define SCENE_JSON_AUDIO_ENABLED     "audioEnabled"
 #define SCENE_JSON_PHYSICS_ENABLED   "physicsEnabled"
 #define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
+#define SCENE_JSON_SCENE_OBJECTS     "objects"
 
 namespace Dream {
 	namespace Scene {

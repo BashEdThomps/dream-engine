@@ -2,9 +2,7 @@ App.directive("threeModelViewer", [
   function () {
 		return {
 			restrict: "E",
-			scope: {
-				assimpUrl: "=assimpUrl"
-			},
+			scope: {},
 			link: function (scope, elem, attr) {
 				var camera;
 				var scene;
@@ -12,30 +10,20 @@ App.directive("threeModelViewer", [
 				var previous;
         var width = 800;
         var height = 600;
-
+        var modelUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/obj/male02/male02.obj";
 				// init scene
 				init();
 
 				// Load jeep model using the AssimpJSONLoader
-				var loader1 = new THREE.OBJLoader();
-
-				scope.$watch("assimpUrl", function(newValue, oldValue) {
-					if (newValue != oldValue) loadModel(newValue);
-				});
+				var loader = new THREE.OBJLoader();
 
 				function loadModel(modelUrl) {
-					/*loader1.load(modelUrl, function (assimpjson) {
-						assimpjson.scale.x = assimpjson.scale.y = assimpjson.scale.z = 0.2;
-						assimpjson.updateMatrix();
-						if (previous) scene.remove(previous);
-						scene.add(assimpjson);
-
-						previous = assimpjson;
+					loader.load(modelUrl, function (obj) {
+						scene.add(obj);
 					});
-          */
 				}
 
-				loadModel(scope.assimpUrl);
+				loadModel(null);
 				animate();
 
 				function init() {

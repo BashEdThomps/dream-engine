@@ -8,12 +8,30 @@
 #include <algorithm>
 #include "SceneObject.h"
 
-#define PATH_DELIMETER "/"
 
 namespace Dream {
 	namespace Scene {
 		SceneObject::SceneObject() {
+			init();
+		}
+
+		SceneObject::SceneObject(nlohmann::json soJson){
+			init();
+			if(!soJson[SCENE_OBJECT_JSON_UUID].is_null()){
+				mUUID = soJson[SCENE_OBJECT_JSON_UUID];
+			}
+
+			if (!soJson[SCENE_OBJECT_JSON_NAME].is_null()) {
+				mName = soJson[SCENE_OBJECT_JSON_NAME];
+			}
+		}
+
+		void SceneObject::init() {
 			mParent = NULL;
+			initTranslationRotation();
+		}
+
+		void SceneObject::initTranslationRotation() {
 			mTranslation[NODE_X] = 0.0f;
 			mTranslation[NODE_Y] = 0.0f;
 			mTranslation[NODE_Z] = 0.0f;
@@ -27,15 +45,11 @@ namespace Dream {
 
 		}
 
-		int SceneObject::hasValidPath() {
-			return mPath.size() > 0;
-		}
-
 		bool SceneObject::hasName(std::string name) {
 			return mName == name;
 		}
 
-		int SceneObject::hasValidName() {
+		bool SceneObject::hasValidName() {
 			return mName.size() > 0;
 		}
 
@@ -47,8 +61,12 @@ namespace Dream {
 			return mName;
 		}
 
-		void SceneObject::print() {
-			std::cout << mPath << std::endl;
+		void SceneObject::showStatus() {
+			std::cout << "SceneObject:"     << std::endl;
+			std::cout << "          UUID: " << getUUID()       << std::endl;
+			std::cout << "    ParentUUID: " << getParentUUID() << std::endl;
+			std::cout << "          Name: " << getName()       << std::endl;
+			std::cout << "          Path: " << generatePath()  << std::endl;
 			return;
 		}
 
@@ -68,6 +86,10 @@ namespace Dream {
 			return;
 		}
 
+		float* SceneObject::getTranslation() {
+			return mTranslation;
+		}
+
 		void SceneObject::setRotation(float x, float y, float z) {
 			mRotation[NODE_X] = x;
 			mRotation[NODE_Y] = y;
@@ -75,8 +97,8 @@ namespace Dream {
 			return;
 		}
 
-		void SceneObject::setPolarTranslation(float radius, float theta) {
-			return;
+		float* SceneObject::getRotation() {
+			return mRotation;
 		}
 
 		int SceneObject::countChildren() {
@@ -93,31 +115,38 @@ namespace Dream {
 			return child->getParent() == this;
 		}
 
-		std::string SceneObject::getPath() {
-			return mPath;
+		void SceneObject::setParentUUID(std::string uuid) {
+			mParentUUID = uuid;
 		}
 
-		void SceneObject::generatePath() {
+		std::string SceneObject::getParentUUID() {
+			return mParentUUID;
+		}
+
+		void SceneObject::setUUID(std::string uuid) {
+			mUUID = uuid;
+		}
+
+		std::string SceneObject::getUUID() {
+			return mUUID;
+		}
+
+
+		std::string SceneObject::generatePath() {
 			std::stringstream stream;
 			std::vector<std::string> pathVector;
 			SceneObject* next = this;
 			while (next != NULL) {
-				pathVector.push_back(next->getName());
+				pathVector.push_back(next->getUUID());
 				next = next->getParent();
 			}
 			std::reverse(pathVector.begin(),pathVector.end());
 			for (std::vector<std::string>::iterator it = pathVector.begin();
 			     it != pathVector.end(); ++it) {
 					 stream << PATH_DELIMETER << *it;
-			 }
-			 mPath = stream.str();
-			 #ifdef DEBUG
-			 	std::cout << "Generated SceneObject path: " << getPath() << std::endl;
-			 #endif
-		}
-
-		void SceneObject::setPath(std::string path) {
-			mPath = path;
+			}
+			std::string retval = stream.str();
+			return retval;
 		}
 	}
 }

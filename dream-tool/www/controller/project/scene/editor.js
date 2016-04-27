@@ -8,23 +8,40 @@ App.controller("ProjectSceneEditor",
     $scope.resourceList            = null;
 
     $scope.initScenegraphTree = function() {
+      $scope.scenegraphTree = [];
       $scope.scenegraphTree.push({
         label    : $scope.scene.name,
         onSelect :  $scope.onScenegraphTreeSelection,
         children : [],
       });
       $scope.scene.objects.forEach(function(sceneObject){
-        $scope.scenegraphTree[0].children.push({
-          label:sceneObject.name,
-          uuid:sceneObject.uuid,
-          onSelect: $scope.onScenegraphTreeSelection,
-          children: [],
-        });
+        $scope.scenegraphTree[0].children.push(
+          $scope.generateSceneObjectTreeNode(sceneObject)
+        );
       });
+    };
+
+    $scope.generateSceneObjectTreeNode = function(sceneObject) {
+      var retval = {
+        label: sceneObject.name,
+        uuid: sceneObject.uuid,
+        onSelect: $scope.onScenegraphTreeSelection,
+        children: [],
+      };
+      if (sceneObject.children !== undefined) {
+        sceneObject.children.forEach(function(child){
+          retval.children.push($scope.generateSceneObjectTreeNode(child));
+        });
+      }
+      return retval;
     };
 
     $scope.goToResourceEditor = function(uuid) {
       $state.go("ProjectResourceEditor",{resource: uuid});
+    };
+
+    $scope.goToSceneObjectEditor = function(so) {
+      $scope.selectedSceneObject = so;
     };
 
     $scope.getResourceByUUID = function(uuid) {
@@ -83,7 +100,11 @@ App.controller("ProjectSceneEditor",
       if ($scope.selectedSceneObject !== null) {
         var child = ProjectService.createSceneObject();
         child.parent = $scope.selectedSceneObjectUUID;
+        if ($scope.selectedSceneObject.children === undefined) {
+          $scope.selectedSceneObject.children = [];
+        }
         $scope.selectedSceneObject.children.push(child);
+        $scope.initScenegraphTree();
       }
     };
   }

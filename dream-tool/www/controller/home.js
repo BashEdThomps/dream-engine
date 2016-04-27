@@ -124,6 +124,10 @@ App.controller("home",["$scope","ProjectService","UIService",
                             {
                                 label:"Model",
                                 onSelect : $scope.onProjectResourceModelClicked
+                            },
+                            {
+                                label:"Script",
+                                onSelect : $scope.onProjectResourceScriptClicked
                             }
                         ]
                     }

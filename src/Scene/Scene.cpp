@@ -1,5 +1,5 @@
 /*
-* Scene
+* Dream::Scene::Scene
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -29,28 +29,34 @@ namespace Dream {
 
 		Scene::Scene(nlohmann::json jsonScene) {
 			init();
-			mUUID             = jsonScene [SCENE_JSON_UUID];
-			mName             = jsonScene [SCENE_JSON_NAME];
+			mUUID = jsonScene[SCENE_JSON_UUID];
+			mName = jsonScene[SCENE_JSON_NAME];
 
 			mPhysicsEnabled = (
-				jsonScene [SCENE_JSON_PHYSICS_ENABLED].is_null() ?
-				false : (bool)jsonScene [SCENE_JSON_PHYSICS_ENABLED]
+				jsonScene[SCENE_JSON_PHYSICS_ENABLED].is_null() ?
+				false : (bool)jsonScene[SCENE_JSON_PHYSICS_ENABLED]
 			);
 
 			mAnimationEnabled = (
-				jsonScene [SCENE_JSON_ANIMATION_ENABLED].is_null() ?
-				false : (bool)jsonScene [SCENE_JSON_ANIMATION_ENABLED]
+				jsonScene[SCENE_JSON_ANIMATION_ENABLED].is_null() ?
+				false : (bool)jsonScene[SCENE_JSON_ANIMATION_ENABLED]
 			);
 
 			mInputEnabled = (
-				jsonScene [SCENE_JSON_INPUT_ENABLED].is_null() ?
-				false :(bool)jsonScene [SCENE_JSON_INPUT_ENABLED]
+				jsonScene[SCENE_JSON_INPUT_ENABLED].is_null() ?
+				false :(bool)jsonScene[SCENE_JSON_INPUT_ENABLED]
 			);
 
 			mAudioEnabled = (
-				jsonScene [SCENE_JSON_AUDIO_ENABLED].is_null() ?
-				false : (bool)jsonScene [SCENE_JSON_AUDIO_ENABLED]
+				jsonScene[SCENE_JSON_AUDIO_ENABLED].is_null() ?
+				false : (bool)jsonScene[SCENE_JSON_AUDIO_ENABLED]
 			);
+
+			nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
+
+			if (!sceneObjects.is_null() && sceneObjects.is_array()) {
+				loadSceneObjectsFromJSONArray(sceneObjects);
+			}
 		}
 
 		Scene::~Scene() {
@@ -100,7 +106,10 @@ namespace Dream {
 
 		void Scene::loadSceneObjectsFromJSONArray(nlohmann::json jsonArray) {
 			for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
-
+				std::cout << "Scene: Creating SceneObject" << std::endl;
+				SceneObject *nextSceneObject = new SceneObject(*it);
+				nextSceneObject->showStatus();
+				//mScenegraph->addSceneObjectTo(nextSceneObject->getParent(),nextSceneObject);
 			}
 		}
 
