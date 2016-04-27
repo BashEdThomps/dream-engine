@@ -19,10 +19,9 @@
 #define SCENE_H
 
 #include <iostream>
-#include "Scenegraph.h"
 #include "Camera.h"
 #include "../JSON/json.hpp"
-
+#include "SceneObject.h"
 
 #define SCENE_JSON_UUID              "uuid"
 #define SCENE_JSON_NAME              "name"
@@ -36,38 +35,45 @@ namespace Dream {
 	namespace Scene {
 		class Scene {
 		private:
+
 			std::string   mUUID;
 			std::string   mName;
-
 			bool          mAnimationEnabled;
 			bool          mAudioEnabled;
 			bool          mInputEnabled;
 			bool          mPhysicsEnabled;
-
-			Scenegraph   *mScenegraph;
 			Camera       *mCamera;
+
+			std::vector<SceneObject*> mSceneObjects;
+
 		public:
+
 			Scene();
 			Scene(nlohmann::json);
 			~Scene();
 
-			void init();
+			void         init();
+			std::string  getUUID();
+			void         setUUID(std::string);
+			std::string  getName();
+			void         setName(std::string);
+			bool         isAudioEnabled();
+			bool         isAnimationEnabled();
+			bool         isInputEnabled();
+			bool         isPhysicsEnabled();
+			void         loadSceneObjectsFromJSONArray(nlohmann::json);
+			void         removeSceneObject(SceneObject*);
+			int          countChildrenOfSceneObject(SceneObject*);
+			void         addSceneObject(SceneObject*);
+			int          getNumberOfSceneObjects();
+			bool         hasSceneObect(SceneObject*);
+			SceneObject* getSceneObjectByName(std::string);
+			SceneObject* getSceneObjectByUUID(std::string);
+			std::string  generateSceneObjectPath(SceneObject*);
+			void         showStatus();
 
-			std::string getUUID();
-			void setUUID(std::string);
-
-			std::string getName();
-			void        setName(std::string);
-
-			Scenegraph* getScenegraph();
-			bool isAudioEnabled();
-			bool isAnimationEnabled();
-			bool isInputEnabled();
-			bool isPhysicsEnabled();
-			void loadSceneObjectsFromJSONArray(nlohmann::json);
-			void showStatus();
 		}; // End of Scene
-	} // End of Scene
-} // End of Dream
+	}    // End of Scene
+}      // End of Dream
 
 #endif // End of SCENE_H

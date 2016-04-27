@@ -26,25 +26,7 @@ namespace Dream {
 			}
 
 			void TestSceneObject::testRelationships() {
-				SceneObject* root = new SceneObject();
-				SceneObject* child1 = new SceneObject();
-				SceneObject* child2 = new SceneObject();
-				SceneObject* child1_1 = new SceneObject();
-				SceneObject* child1_1_1 = new SceneObject();
-
-				root->setName("Root");
-
-				child1->setName("Child1");
-				child1->setParent(root);
-
-				child2->setName("Child2");
-				child2->setParent(root);
-
-				child1_1->setName("Child1_1");
-				child1_1->setParent(child1);
-
-				child1_1_1->setName("Child1_1_1");
-				child1_1_1->setParent(child1_1);
+				assertInconclusive("Test Relationships (never ends well)");
 			}
 		}
 	}

@@ -24,7 +24,6 @@
 
 #include "Scene/SceneTest.h"
 #include "Scene/TestSceneObject.h"
-#include "Scene/TestScenegraph.h"
 #include "Scene/TestCamera.h"
 
 #include "Resource/TestResource.h"
@@ -89,10 +88,6 @@ int testScene() {
 	Dream::Scene::Test::TestSceneObject testSceneObject;
 	testSceneObject.run();
 	result += testSceneObject.getResult();
-
-	Dream::Scene::Test::TestScenegraph testScenegraph;
-	testScenegraph.run();
-	result += testScenegraph.getResult();
 
 	return result;
 }

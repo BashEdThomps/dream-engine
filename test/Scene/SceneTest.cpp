@@ -31,7 +31,6 @@ namespace Dream {
 				header();
 				testSceneCanStoreUUID();
 				testSceneCanStoreName();
-				testSceneHasScenegraph();
 			}
 
 			void SceneTest::testSceneCanStoreUUID() {
@@ -46,11 +45,6 @@ namespace Dream {
 				std::string name = "TestScene";
 				s.setName(name);
 				assertTrue("Scene has name",s.getName().compare(name) == 0);
-			}
-
-			void SceneTest::testSceneHasScenegraph() {
-				Scene s;
-				assertNotNull("Scene has Scenegraph",s.getScenegraph());
 			}
 		} // End of Test
 	} // End of Scene

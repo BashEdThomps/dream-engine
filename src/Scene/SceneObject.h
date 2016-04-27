@@ -8,23 +8,25 @@
 #define NODE_Y 1
 #define NODE_Z 2
 
-#define SCENE_OBJECT_JSON_UUID     "uuid"
-#define SCENE_OBJECT_JSON_NAME     "name"
-#define SCENE_OBJECT_JSON_CHILDREN "children"
-#define PATH_DELIMETER             "/"
+#define SCENE_OBJECT_JSON_UUID        "uuid"
+#define SCENE_OBJECT_JSON_PARENT_UUID "parentUuid"
+#define SCENE_OBJECT_JSON_NAME        "name"
+#define SCENE_OBJECT_JSON_CHILDREN    "children"
+#define PATH_DELIMETER                "/"
 
 namespace Dream {
 	namespace Scene {
 		class SceneObject {
 		protected:
-			SceneObject* mParent;
+
 			std::string  mParentUUID;
 			std::string  mUUID;
 			std::string  mName;
+			float        mTranslation[3];
+			float        mRotation[3];
 
-			float mTranslation[3];
-			float mRotation[3];
 		public:
+
 			SceneObject  ();
 			SceneObject  (nlohmann::json);
 			~SceneObject ();
@@ -32,11 +34,11 @@ namespace Dream {
 			void init();
 			void initTranslationRotation();
 
-			std::string generatePath();
 
 			void setParentUUID(std::string);
 			std::string getParentUUID();
 
+			bool hasUUID(std::string);
 			void setUUID(std::string);
 			std::string getUUID();
 
@@ -47,18 +49,11 @@ namespace Dream {
 
 			void showStatus();
 
-			void setParent(SceneObject*);
-			SceneObject* getParent();
-
 			void setTranslation(float, float, float);
 			float* getTranslation();
 
 			void setRotation(float, float, float);
 			float* getRotation();
-
-			bool isChildOf(SceneObject*);
-			bool isParentOf(SceneObject*);
-			int  countChildren();
 		};
 	}
 }

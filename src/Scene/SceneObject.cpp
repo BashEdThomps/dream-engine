@@ -1,13 +1,9 @@
-/*
-* SceneObject.cpp
-*/
 #include <iostream>
 #include <cmath>
 #include <sstream>
 #include <vector>
 #include <algorithm>
 #include "SceneObject.h"
-
 
 namespace Dream {
 	namespace Scene {
@@ -27,7 +23,6 @@ namespace Dream {
 		}
 
 		void SceneObject::init() {
-			mParent = NULL;
 			initTranslationRotation();
 		}
 
@@ -66,17 +61,8 @@ namespace Dream {
 			std::cout << "          UUID: " << getUUID()       << std::endl;
 			std::cout << "    ParentUUID: " << getParentUUID() << std::endl;
 			std::cout << "          Name: " << getName()       << std::endl;
-			std::cout << "          Path: " << generatePath()  << std::endl;
+			//std::cout << "          Path: " << generatePath()  << std::endl;
 			return;
-		}
-
-		void SceneObject::setParent(SceneObject* parent) {
-			mParent = parent;
-			return;
-		}
-
-		SceneObject* SceneObject::getParent() {
-			return mParent;
 		}
 
 		void SceneObject::setTranslation(float x, float y, float z) {
@@ -101,20 +87,6 @@ namespace Dream {
 			return mRotation;
 		}
 
-		int SceneObject::countChildren() {
-			int retval = 0;
-			std::cerr << "Count children is not implemented" << std::endl;
-			return retval;
-		}
-
-		bool SceneObject::isChildOf(SceneObject* parent) {
-			return mParent == parent;
-		}
-
-		bool SceneObject::isParentOf(SceneObject* child) {
-			return child->getParent() == this;
-		}
-
 		void SceneObject::setParentUUID(std::string uuid) {
 			mParentUUID = uuid;
 		}
@@ -123,30 +95,16 @@ namespace Dream {
 			return mParentUUID;
 		}
 
+		bool SceneObject::hasUUID(std::string uuid) {
+			return (mUUID.compare(uuid) == 0);
+		}
+
 		void SceneObject::setUUID(std::string uuid) {
 			mUUID = uuid;
 		}
 
 		std::string SceneObject::getUUID() {
 			return mUUID;
-		}
-
-
-		std::string SceneObject::generatePath() {
-			std::stringstream stream;
-			std::vector<std::string> pathVector;
-			SceneObject* next = this;
-			while (next != NULL) {
-				pathVector.push_back(next->getUUID());
-				next = next->getParent();
-			}
-			std::reverse(pathVector.begin(),pathVector.end());
-			for (std::vector<std::string>::iterator it = pathVector.begin();
-			     it != pathVector.end(); ++it) {
-					 stream << PATH_DELIMETER << *it;
-			}
-			std::string retval = stream.str();
-			return retval;
 		}
 	}
 }

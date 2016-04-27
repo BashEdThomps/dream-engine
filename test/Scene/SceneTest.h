@@ -30,7 +30,6 @@ namespace Dream {
 				void run(void);
 				void testSceneCanStoreUUID(void);
 				void testSceneCanStoreName(void);
-				void testSceneHasScenegraph(void);
 			}; // End of SceneTest
 		} // End of Test
 	} // End of Scene

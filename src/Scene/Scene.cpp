@@ -65,7 +65,6 @@ namespace Dream {
 
 		void Scene::init() {
 			mCamera = new Camera();
-			mScenegraph = new Scenegraph();
 		}
 
 		std::string Scene::getName() {
@@ -82,10 +81,6 @@ namespace Dream {
 
 		void Scene::setName(std::string name) {
 			mName = name;
-		}
-
-		Scenegraph* Scene::getScenegraph() {
-			return mScenegraph;
 		}
 
 		bool Scene::isAudioEnabled() {
@@ -109,18 +104,86 @@ namespace Dream {
 				std::cout << "Scene: Creating SceneObject" << std::endl;
 				SceneObject *nextSceneObject = new SceneObject(*it);
 				nextSceneObject->showStatus();
-				//mScenegraph->addSceneObjectTo(nextSceneObject->getParent(),nextSceneObject);
+				addSceneObject(nextSceneObject);
 			}
 		}
 
+		bool Scene::hasSceneObect(SceneObject *obj) {
+			return std::find(mSceneObjects.begin(), mSceneObjects.end(), obj) != mSceneObjects.end();
+		}
+
+		void Scene::addSceneObject(SceneObject* so) {
+			mSceneObjects.push_back(so);
+		}
+
+		void Scene::removeSceneObject(SceneObject* so) {
+			if (so == NULL) {
+				return;
+			}
+			mSceneObjects.erase(std::remove(mSceneObjects.begin(), mSceneObjects.end(), so), mSceneObjects.end());
+			return;
+		}
+
+		std::string Scene::generateSceneObjectPath(SceneObject* so) {
+			std::stringstream stream;
+			std::vector<std::string> pathVector;
+
+			SceneObject* next = so;
+			while (next != NULL) {
+				pathVector.push_back(next->getUUID());
+				next = getSceneObjectByUUID(next->getParentUUID());
+			}
+
+			std::reverse(pathVector.begin(),pathVector.end());
+			for (std::vector<std::string>::iterator it = pathVector.begin();
+					 it != pathVector.end(); ++it) {
+					 stream << PATH_DELIMETER << *it;
+			}
+			std::string retval = stream.str();
+			return retval;
+		}
+
+		SceneObject* Scene::getSceneObjectByName(std::string name) {
+			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
+				if ((*next)->hasName(name)) {
+					return (*next);
+				}
+			}
+			return NULL;
+		}
+
+		SceneObject* Scene::getSceneObjectByUUID(std::string uuid) {
+			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
+				if ((*next)->hasUUID(uuid)) {
+					return (*next);
+				}
+			}
+			return NULL;
+		}
+
+		int Scene::getNumberOfSceneObjects() {
+			return mSceneObjects.size();
+		}
+
+		int Scene::countChildrenOfSceneObject(SceneObject* obj) {
+			int count = 0;
+			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
+				if ((*next)->getParentUUID().compare(obj->getUUID()) == 0) {
+					count++;
+				}
+			}
+			return count;
+		}
+
 		void Scene::showStatus() {
-			std::cout << "Scene:" << std::endl;
-			std::cout << "\tUUID: " << mUUID << std::endl;
-			std::cout << "\tName: " << mName << std::endl;
-			std::cout << "\tAudio Enabled: "	 << isAudioEnabled() << std::endl;
-			std::cout << "\tAnimation Enabled: " << isAnimationEnabled() << std::endl;
-			std::cout << "\tInput Enabled: "	 << isInputEnabled() << std::endl;
-			std::cout << "\tPhysics Enabled: "	 << isPhysicsEnabled() << std::endl;
+			std::cout << "Scene:"                                               << std::endl;
+			std::cout << "             UUID: " << mUUID                     << std::endl;
+			std::cout << "             Name: " << mName                     << std::endl;
+			std::cout << "    Audio Enabled: " << isAudioEnabled()          << std::endl;
+			std::cout << "Animation Enabled: " << isAnimationEnabled()      << std::endl;
+			std::cout << "    Input Enabled: " << isInputEnabled()          << std::endl;
+			std::cout << "  Physics Enabled: " << isPhysicsEnabled()        << std::endl;
+			std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
 		}
 	}// End of Scene
 } // End of Dream
