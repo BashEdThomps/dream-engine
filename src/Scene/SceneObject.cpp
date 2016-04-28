@@ -44,10 +44,6 @@ namespace Dream {
 			return mName == name;
 		}
 
-		bool SceneObject::hasValidName() {
-			return mName.size() > 0;
-		}
-
 		void SceneObject::setName(std::string name) {
 			mName = name;
 		}
@@ -58,9 +54,17 @@ namespace Dream {
 
 		void SceneObject::showStatus() {
 			std::cout << "SceneObject:"     << std::endl;
-			std::cout << "          UUID: " << getUUID()       << std::endl;
-			std::cout << "    ParentUUID: " << getParentUUID() << std::endl;
-			std::cout << "          Name: " << getName()       << std::endl;
+			std::cout << "          UUID: " << getUUID() << std::endl;
+			std::cout << "    ParentUUID: ";
+			SceneObject* parent = getParent();
+			if (parent != NULL) {
+				 std::cout << getParent()->getUUID();
+			} else {
+				std::cout << "None";
+			}
+			std::cout << std::endl;
+
+			std::cout << "          Name: " << getName() << std::endl;
 			//std::cout << "          Path: " << generatePath()  << std::endl;
 			return;
 		}
@@ -87,12 +91,12 @@ namespace Dream {
 			return mRotation;
 		}
 
-		void SceneObject::setParentUUID(std::string uuid) {
-			mParentUUID = uuid;
+		void SceneObject::setParent(SceneObject* parent) {
+			mParent = parent;
 		}
 
-		std::string SceneObject::getParentUUID() {
-			return mParentUUID;
+		SceneObject* SceneObject::getParent() {
+			return mParent;
 		}
 
 		bool SceneObject::hasUUID(std::string uuid) {
@@ -105,6 +109,68 @@ namespace Dream {
 
 		std::string SceneObject::getUUID() {
 			return mUUID;
+		}
+
+		int  SceneObject::countAllChildren() {
+			return -1;
+		}
+
+		int  SceneObject::countChildren() {
+			return mChildren.size();
+		}
+
+		void SceneObject::addChild(SceneObject* child) {
+			mChildren.push_back(child);
+		}
+
+		void SceneObject::removeChild(SceneObject* child) {
+
+		}
+
+		bool SceneObject::isChildOfDeep(SceneObject* parent) {
+			return mParent == parent;
+		}
+
+		bool SceneObject::isChildOf(SceneObject* parent) {
+			return mParent == parent;
+		}
+
+		bool SceneObject::isParentOf(SceneObject*) {
+			return false;
+		}
+
+		bool SceneObject::isParentOfDeep(SceneObject*) {
+			return false;
+		}
+
+		std::string SceneObject::getNameUUIDString() {
+			return getName()+" ("+getUUID()+")";
+		}
+
+		void SceneObject::getChildrenVectorDeep(std::vector<SceneObject*>* vector) {
+			vector->push_back(this);
+			for (
+				std::vector<SceneObject*>::iterator it = mChildren.begin();
+				it != mChildren.end();
+				it++) {
+					(*it)->getChildrenVectorDeep(vector);
+			}
+		}
+
+		void SceneObject::generatePath() {
+				mPath = "";
+				SceneObject* current = this;
+				while (current != NULL) {
+					mPath = current->getUUID()+mPath;
+					current = current->getParent();
+					if (current != NULL) {
+						mPath = PATH_DELIMETER+mPath;
+					}
+				}
+		}
+
+		std::string SceneObject::getPath() {
+			return mPath;
 		}
 	}
 }

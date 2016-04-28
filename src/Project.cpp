@@ -58,23 +58,25 @@ namespace Dream {
 			false : (bool) jsonProject [PROJECT_JSON_VULKAN_ENABLED]
 		);
 
-		showStatus();
-
 		loadResourcesFromJson(jsonProject[PROJECT_JSON_RESOURCE_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_JSON_SCENE_ARRAY]);
+
+		showStatus();
 	}
 
 	void Project::showStatus() {
 		std::cout << "Project: New Project"  << std::endl;
-		std::cout << "               UUID: " << mUUID           << std::endl;
-		std::cout << "               Name: " << mName           << std::endl;
-		std::cout << "             Author: " << mAuthor         << std::endl;
-		std::cout << "        Description: " << mDescription    << std::endl;
-		std::cout << "     OpenAL Enabled: " << mOpenALEnabled  << std::endl;
-		std::cout << "    Bullet2 Enabled: " << mBullet2Enabled << std::endl;
-		std::cout << "    Bullet3 Enabled: " << mBullet3Enabled << std::endl;
-		std::cout << "     OpenGL Enabled: " << mOpenGLEnabled  << std::endl;
-		std::cout << "     Vulkan Enabled: " << mVulkanEnabled  << std::endl;
+		std::cout << "               UUID: " << mUUID                  << std::endl;
+		std::cout << "               Name: " << mName                  << std::endl;
+		std::cout << "             Author: " << mAuthor                << std::endl;
+		std::cout << "        Description: " << mDescription           << std::endl;
+		std::cout << "     OpenAL Enabled: " << mOpenALEnabled         << std::endl;
+		std::cout << "    Bullet2 Enabled: " << mBullet2Enabled        << std::endl;
+		std::cout << "    Bullet3 Enabled: " << mBullet3Enabled        << std::endl;
+		std::cout << "     OpenGL Enabled: " << mOpenGLEnabled         << std::endl;
+		std::cout << "     Vulkan Enabled: " << mVulkanEnabled         << std::endl;
+		std::cout << "             Scenes: " << getNumberOfScenes()    << std::endl;
+		std::cout << "          Resources: " << getNumberOfResources() << std::endl;
 	}
 
 	Project::~Project(void) {

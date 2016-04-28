@@ -55,7 +55,7 @@ namespace Dream {
 			nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
 
 			if (!sceneObjects.is_null() && sceneObjects.is_array()) {
-				loadSceneObjectsFromJSONArray(sceneObjects);
+				loadSceneObjectsFromJSONArray(sceneObjects,NULL);
 			}
 		}
 
@@ -99,29 +99,28 @@ namespace Dream {
 			return mInputEnabled;
 		}
 
-		void Scene::loadSceneObjectsFromJSONArray(nlohmann::json jsonArray) {
-			for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
-				std::cout << "Scene: Creating SceneObject" << std::endl;
-				SceneObject *nextSceneObject = new SceneObject(*it);
-				nextSceneObject->showStatus();
-				addSceneObject(nextSceneObject);
+		void Scene::loadSceneObjectsFromJSONArray(nlohmann::json jsonArray, SceneObject* parent) {
+			//std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
+			if (!jsonArray.is_null()) {
+				for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
+					std::cout << "Scene: Creating SceneObject " << std::endl;
+					SceneObject *nextSceneObject = new SceneObject(*it);
+					if (parent != NULL) {
+						nextSceneObject->setParent(parent);
+						parent->addChild(nextSceneObject);
+					} else {
+						setRootSceneObject(nextSceneObject);
+					}
+					nextSceneObject->showStatus();
+					if (!((*it)[SCENE_OBJECT_JSON_CHILDREN]).is_null()){
+						loadSceneObjectsFromJSONArray((*it)[SCENE_OBJECT_JSON_CHILDREN],nextSceneObject);
+					}
+				}
 			}
 		}
 
 		bool Scene::hasSceneObect(SceneObject *obj) {
-			return std::find(mSceneObjects.begin(), mSceneObjects.end(), obj) != mSceneObjects.end();
-		}
-
-		void Scene::addSceneObject(SceneObject* so) {
-			mSceneObjects.push_back(so);
-		}
-
-		void Scene::removeSceneObject(SceneObject* so) {
-			if (so == NULL) {
-				return;
-			}
-			mSceneObjects.erase(std::remove(mSceneObjects.begin(), mSceneObjects.end(), so), mSceneObjects.end());
-			return;
+			return mRootSceneObject == obj || mRootSceneObject->isParentOfDeep(obj);
 		}
 
 		std::string Scene::generateSceneObjectPath(SceneObject* so) {
@@ -131,7 +130,7 @@ namespace Dream {
 			SceneObject* next = so;
 			while (next != NULL) {
 				pathVector.push_back(next->getUUID());
-				next = getSceneObjectByUUID(next->getParentUUID());
+				next = next->getParent();
 			}
 
 			std::reverse(pathVector.begin(),pathVector.end());
@@ -143,40 +142,16 @@ namespace Dream {
 			return retval;
 		}
 
-		SceneObject* Scene::getSceneObjectByName(std::string name) {
-			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
-				if ((*next)->hasName(name)) {
-					return (*next);
-				}
-			}
-			return NULL;
-		}
-
 		SceneObject* Scene::getSceneObjectByUUID(std::string uuid) {
-			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
-				if ((*next)->hasUUID(uuid)) {
-					return (*next);
-				}
-			}
 			return NULL;
 		}
 
 		int Scene::getNumberOfSceneObjects() {
-			return mSceneObjects.size();
-		}
-
-		int Scene::countChildrenOfSceneObject(SceneObject* obj) {
-			int count = 0;
-			for (std::vector<SceneObject*>::iterator next = mSceneObjects.begin(); next != mSceneObjects.end(); ++next) {
-				if ((*next)->getParentUUID().compare(obj->getUUID()) == 0) {
-					count++;
-				}
-			}
-			return count;
+			return mRootSceneObject->countAllChildren(); //mSceneObjects.size();
 		}
 
 		void Scene::showStatus() {
-			std::cout << "Scene:"                                               << std::endl;
+			std::cout << "Scene:"                                           << std::endl;
 			std::cout << "             UUID: " << mUUID                     << std::endl;
 			std::cout << "             Name: " << mName                     << std::endl;
 			std::cout << "    Audio Enabled: " << isAudioEnabled()          << std::endl;
@@ -184,6 +159,47 @@ namespace Dream {
 			std::cout << "    Input Enabled: " << isInputEnabled()          << std::endl;
 			std::cout << "  Physics Enabled: " << isPhysicsEnabled()        << std::endl;
 			std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
+		  showScenegraph();
+		}
+
+		void Scene::showScenegraph() {
+			if (mRootSceneObject == NULL) {
+				std::cout << "Scenegraph is empty!" << std::endl;
+				return;
+			}
+
+			generateScenegraphVector();
+			generateSceneObjectPaths();
+			for(std::vector<SceneObject*>::iterator it = mScenegraphVector.begin();
+		      it != mScenegraphVector.end(); it++) {
+					std::cout << (*it)->getNameUUIDString()
+					          << " @ "
+										<< (*it)->getPath()
+										<< std::endl;
+			}
+		}
+
+		void Scene::setRootSceneObject(SceneObject* root) {
+			mRootSceneObject = root;
+		}
+
+		SceneObject* Scene::getRootSceneObject() {
+			return mRootSceneObject;
+		}
+
+		void Scene::generateScenegraphVector() {
+			mScenegraphVector.clear();
+			mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
+		}
+
+		void Scene::generateSceneObjectPaths() {
+			if (mScenegraphVector.empty()) {
+				generateScenegraphVector();
+			}
+			for(std::vector<SceneObject*>::iterator it = mScenegraphVector.begin();
+		      it != mScenegraphVector.end(); it++) {
+					 (*it)->generatePath();
+			}
 		}
 	}// End of Scene
 } // End of Dream

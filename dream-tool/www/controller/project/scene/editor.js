@@ -99,7 +99,7 @@ App.controller("ProjectSceneEditor",
     $scope.onAddChildButtonClicked = function() {
       if ($scope.selectedSceneObject !== null) {
         var child = ProjectService.createSceneObject();
-        child.parent = $scope.selectedSceneObjectUUID;
+        //child.parent = $scope.selectedSceneObjectUUID;
         if ($scope.selectedSceneObject.children === undefined) {
           $scope.selectedSceneObject.children = [];
         }

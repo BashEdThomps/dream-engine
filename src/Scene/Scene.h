@@ -19,6 +19,7 @@
 #define SCENE_H
 
 #include <iostream>
+#include <vector>
 #include "Camera.h"
 #include "../JSON/json.hpp"
 #include "SceneObject.h"
@@ -35,7 +36,6 @@ namespace Dream {
 	namespace Scene {
 		class Scene {
 		private:
-
 			std::string   mUUID;
 			std::string   mName;
 			bool          mAnimationEnabled;
@@ -43,15 +43,13 @@ namespace Dream {
 			bool          mInputEnabled;
 			bool          mPhysicsEnabled;
 			Camera       *mCamera;
-
-			std::vector<SceneObject*> mSceneObjects;
+			SceneObject* mRootSceneObject;
+			std::vector<SceneObject*> mScenegraphVector;
 
 		public:
-
 			Scene();
 			Scene(nlohmann::json);
 			~Scene();
-
 			void         init();
 			std::string  getUUID();
 			void         setUUID(std::string);
@@ -61,17 +59,20 @@ namespace Dream {
 			bool         isAnimationEnabled();
 			bool         isInputEnabled();
 			bool         isPhysicsEnabled();
-			void         loadSceneObjectsFromJSONArray(nlohmann::json);
-			void         removeSceneObject(SceneObject*);
+			void         loadSceneObjectsFromJSONArray(nlohmann::json,SceneObject*);
 			int          countChildrenOfSceneObject(SceneObject*);
-			void         addSceneObject(SceneObject*);
+			void         setRootSceneObject(SceneObject*);
+			SceneObject* getRootSceneObject();
 			int          getNumberOfSceneObjects();
 			bool         hasSceneObect(SceneObject*);
 			SceneObject* getSceneObjectByName(std::string);
 			SceneObject* getSceneObjectByUUID(std::string);
 			std::string  generateSceneObjectPath(SceneObject*);
 			void         showStatus();
-
+			void         showScenegraph();
+			std::string  indent(int);
+			void generateScenegraphVector();
+			void generateSceneObjectPaths();
 		}; // End of Scene
 	}    // End of Scene
 }      // End of Dream
