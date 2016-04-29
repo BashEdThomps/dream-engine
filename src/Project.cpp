@@ -29,7 +29,8 @@ namespace Dream {
 
 	}
 
-	Project::Project(nlohmann::json jsonProject) {
+	Project::Project(std::string projectPath, nlohmann::json jsonProject) {
+		mProjectPath = projectPath;
 		mUUID        = jsonProject [PROJECT_JSON_UUID];
 		mName        = jsonProject [PROJECT_JSON_NAME];
 		mAuthor      = jsonProject [PROJECT_JSON_AUTHOR];
@@ -147,6 +148,7 @@ namespace Dream {
 			}
 
 			if (resource != NULL) {
+				resource->generateAbsolutePaths(getProjectPath(),getUUID());
 				addResource(resource);
 			}
 		}
@@ -216,12 +218,12 @@ namespace Dream {
 		return retval;
 	}
 
-	std::string Project::getDirectory() {
-		return mDirectory;
+	std::string Project::getProjectPath() {
+		return mProjectPath;
 	}
 
-	void Project::setDirectory(std::string dir) {
-		mDirectory = dir;
+	void Project::setProjectPath(std::string dir) {
+		mProjectPath = dir;
 	}
 
 	bool Project::isOpenALEnabled() {

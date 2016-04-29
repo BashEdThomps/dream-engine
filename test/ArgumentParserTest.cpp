@@ -45,7 +45,7 @@ namespace Dream {
 			argv[3]   = std::string(PROJECT_UUID_ARG).c_str();
 			argv[4]   = projUUID.c_str();
 			ArgumentParser ap(argc,argv);
-			assertZero("testCanGetDirectoryFromArgs",ap.getProjectDirectory().compare(dir));
+			assertZero("testCanGetDirectoryFromArgs",ap.getDreamPath().compare(dir));
 		}
 
 		void ArgumentParserTest::testCanGetProjectUUIDFromDirectoryArg(void) {

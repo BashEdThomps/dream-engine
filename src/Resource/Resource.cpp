@@ -42,13 +42,5 @@ namespace Dream {
 		std::string Resource::getName() {
 			return mName;
 		}
-
-		void Resource::setAbsolutePath(std::string absPath) {
-			mAbsolutePath = absPath;
-		}
-
-		std::string Resource::getAbsolutePath() {
-			return mAbsolutePath;
-		}
 	} // End of Resource
 } // End of Dream

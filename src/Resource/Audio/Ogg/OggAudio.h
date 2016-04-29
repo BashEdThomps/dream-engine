@@ -27,10 +27,14 @@ namespace Dream {
 		namespace Audio {
 			namespace Ogg {
 				class OggAudio : public Dream::Resource::Audio::Audio {
+				private:
+					std::string mOggPath;
 				public:
 					OggAudio(void);
 					OggAudio(nlohmann::json);
 					~OggAudio(void);
+					void generateAbsolutePaths(std::string,std::string);
+					std::string getOggPath();
 				}; // End of OggAudio
 			} // End of Ogg
 		} // End of Audio

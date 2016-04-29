@@ -20,13 +20,9 @@
 namespace Dream {
 	namespace Resource {
 		namespace Test {
-			TestResourceImpl::TestResourceImpl() : Dream::Resource::Resource() {
-
-			}
-
-			TestResourceImpl::~TestResourceImpl(void) {
-
-			}
+			TestResourceImpl::TestResourceImpl() : Dream::Resource::Resource() {}
+			TestResourceImpl::~TestResourceImpl(void) {}
+			void TestResourceImpl::generateAbsolutePaths(std::string projDir, std::string projUUID) {}
 		}
 	}
 } // End of Dream

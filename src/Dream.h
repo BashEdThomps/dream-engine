@@ -25,7 +25,7 @@ namespace Dream {
 		Dream(void);
 		~Dream(void);
 		bool loadFromArgumentParser(ArgumentParser*);
-		bool loadProjectFromFileReader(Util::FileReader*);
+		bool loadProjectFromFileReader(std::string projectPath, Util::FileReader*);
 		Project* getProject(void);
 		void setProject(Project*);
 		int runProject();

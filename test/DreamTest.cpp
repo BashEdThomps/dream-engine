@@ -47,7 +47,7 @@ namespace Dream {
 			Dream dream;
 			Util::FileReader* fileReader = new Util::FileReader(TEST_PROJECT);
 			fileReader->readIntoStringStream();
-			dream.loadProjectFromFileReader(fileReader);
+			dream.loadProjectFromFileReader("",fileReader);
 
 			std::string expectedUUID        = "577f-1113-370f-2c12";
 			std::string expectedName        = "Ash's Dream Project";

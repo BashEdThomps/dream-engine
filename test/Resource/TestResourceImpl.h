@@ -27,6 +27,7 @@ namespace Dream {
 			public:
 				TestResourceImpl();
 				~TestResourceImpl();
+				void generateAbsolutePaths(std::string,std::string);
 			};
 		}
 	}

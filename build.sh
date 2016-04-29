@@ -2,6 +2,7 @@
 
 HOST=`uname -a`
 BUILD=out
+MAKE_ARGS=-j4
 
 echo HOST is $HOST
 
@@ -22,5 +23,5 @@ rm -rf $BUILD
 mkdir -p $BUILD
 cd $BUILD
 cmake ..
-VEROBSE=1 make
-VERBOSE=1 CTEST_OUTPUT_ON_FAILURE=TRUE make test
+VEROBSE=1 make ${MAKE_ARGS}
+VERBOSE=1 CTEST_OUTPUT_ON_FAILURE=TRUE make ${MAKE_ARGS} test

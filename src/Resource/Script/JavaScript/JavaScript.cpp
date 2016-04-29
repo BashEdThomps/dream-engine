@@ -27,7 +27,11 @@ namespace Dream {
 
 				JavaScript::~JavaScript(void) {
 				}
-				
+
+				void JavaScript::generateAbsolutePaths(std::string projectsDir, std::string projectUUID) {
+
+				}
+
 			} // End JavaScript
 		} // End of Script
 	} // End of Resource

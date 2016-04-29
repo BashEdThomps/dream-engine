@@ -31,13 +31,16 @@ namespace Dream {
 	private:
 		int           mArgc;
 		const char**  mArgv;
-		std::string   mProjectDirectory;
+		std::string   mDreamPath;
+		std::string   mProjectPath;
 		std::string   mProjectUUID;
+		std::string   mProjectFilePath;
 	public:
 		ArgumentParser(int,const char**);
 		~ArgumentParser(void);
 		void parse();
-		std::string getProjectDirectory();
+		std::string getDreamPath();
+		std::string getProjectPath();
 		std::string getProjectUUID();
 		std::string getProjectFilePath();
 	}; // End of ArgumentParser

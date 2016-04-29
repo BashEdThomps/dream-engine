@@ -30,6 +30,7 @@ namespace Dream {
 				public:
 					JavaScript(nlohmann::json);
 					~JavaScript(void);
+					void generateAbsolutePaths(std::string, std::string);
 				}; // End of JavaScript
 			} // End of JavaScript
 		} // End of Script

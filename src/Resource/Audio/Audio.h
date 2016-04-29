@@ -20,6 +20,9 @@
 
 #include "../Resource.h"
 
+#define RESOURCE_TYPE_AUDIO "Audio"
+#define RESOURCE_DIR_AUDIO  "audio"
+
 namespace Dream {
 	namespace Resource {
 		namespace Audio {

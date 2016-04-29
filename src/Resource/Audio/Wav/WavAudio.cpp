@@ -31,6 +31,10 @@ namespace Dream {
 				WavAudio::~WavAudio(void) {
 				}
 
+				void WavAudio::generateAbsolutePaths(std::string projectDir, std::string projectUUID) {
+					mWavPath = "";
+				}
+
 			}
 		}
 	}

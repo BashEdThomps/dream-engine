@@ -21,15 +21,12 @@ namespace Dream {
 	namespace Resource {
 		namespace Model {
 			namespace Wavefront {
-				ObjModel::ObjModel(void) : Dream::Resource::Model::Model() {
-
-				}
-
-				ObjModel::ObjModel(nlohmann::json json) : Dream::Resource::Model::Model(json) {
-
-				}
-
-				ObjModel::~ObjModel(void) {
+				ObjModel::ObjModel(void) : Dream::Resource::Model::Model() {}
+				ObjModel::ObjModel(nlohmann::json json) : Dream::Resource::Model::Model(json) {}
+				ObjModel::~ObjModel(void) {}
+				void ObjModel::generateAbsolutePaths(std::string projectDir,std::string projectUUID){
+					mObjPath = "";
+					mMtlPath = "";
 				}
 			} // End of Wavefront
 		} // End of Model

@@ -21,11 +21,11 @@ namespace Dream {
 		return mProject != NULL;
 	}
 
-	bool Dream::loadProjectFromFileReader(Util::FileReader* reader) {
+	bool Dream::loadProjectFromFileReader(std::string projectPath, Util::FileReader* reader) {
 		std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
 		std::string projectJsonStr = reader->getContentsAsString();
 		nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
-		setProject(new Project(projectJson));
+		setProject(new Project(projectPath, projectJson));
 		return isProjectLoaded();
 	}
 
@@ -33,8 +33,9 @@ namespace Dream {
 		std::cout << "Dream: Loading from ArgumentParser" << std::endl;
 		Util::FileReader *proj = new Util::FileReader(parser->getProjectFilePath());
 		proj->readIntoStringStream();
-		bool loadSuccess = loadProjectFromFileReader(proj);
+		bool loadSuccess = loadProjectFromFileReader(parser->getProjectPath(), proj);
 		delete proj;
+		delete parser;
 		return loadSuccess;
 	}
 

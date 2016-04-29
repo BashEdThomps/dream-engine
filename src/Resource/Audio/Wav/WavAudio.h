@@ -27,10 +27,13 @@ namespace Dream {
 		namespace Audio {
 			namespace Wav {
 				class WavAudio : public Dream::Resource::Audio::Audio {
+				private:
+					std::string mWavPath;
 				public:
 					WavAudio(void);
 					WavAudio(nlohmann::json);
 					~WavAudio(void);
+					void generateAbsolutePaths(std::string,std::string);
 				};
 			}
 		}

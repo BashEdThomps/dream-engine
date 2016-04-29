@@ -17,7 +17,11 @@ namespace Dream {
 			}
 
 			Animation::~Animation() {
-				
+
+			}
+
+			void Animation::generateAbsolutePaths(std::string projectDirs, std::string projectUUID) {
+				mAnimationPath = "";
 			}
 
 			void Animation::generateFrames() {

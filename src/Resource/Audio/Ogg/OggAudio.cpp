@@ -22,13 +22,23 @@ namespace Dream {
 		namespace Audio {
 			namespace Ogg {
 
-				OggAudio::OggAudio(void) : Dream::Resource::Audio::Audio () {
+				OggAudio::OggAudio(void) : Dream::Resource::Audio::Audio () {}
+
+				OggAudio::OggAudio(nlohmann::json jsonOgg) : Dream::Resource::Audio::Audio (jsonOgg) {}
+
+				OggAudio::~OggAudio(void) {}
+
+				void OggAudio::generateAbsolutePaths(std::string projectDir, std::string projectUUID) {
+					mOggPath = projectDir         + PATH_SEP +
+					           RESOURCE_DIR       + PATH_SEP +
+										 RESOURCE_DIR_AUDIO + PATH_SEP +
+										 getUUID()          + PATH_SEP +
+										 RESOURCE_FORMAT_OGG;
+					std::cout << "Generated path for ogg resource: " << mOggPath << std::endl;
 				}
 
-				OggAudio::OggAudio(nlohmann::json jsonOgg) : Dream::Resource::Audio::Audio (jsonOgg) {
-				}
-
-				OggAudio::~OggAudio(void) {
+				std::string OggAudio::getOggPath() {
+					return mOggPath;
 				}
 
 			} // End of Ogg

@@ -27,10 +27,14 @@ namespace Dream {
 		namespace Model {
 			namespace Wavefront {
 				class ObjModel : public Dream::Resource::Model::Model {
+				private:
+					std::string mObjPath;
+					std::string mMtlPath;
 				public:
 					ObjModel(void);
 					ObjModel(nlohmann::json);
 					~ObjModel(void);
+					void generateAbsolutePaths(std::string,std::string);
 				};// End of ObjModel
 			} // End of Wavefront
 		} // End of Model

@@ -41,8 +41,8 @@ namespace Dream {
 		std::string mUUID;
 		std::string mName;
 		std::string mDescription;
-		std::string mDirectory;
 		std::string mAuthor;
+		std::string mProjectPath;
 
 		bool mOpenALEnabled;
 		bool mBullet2Enabled;
@@ -54,7 +54,7 @@ namespace Dream {
 		std::vector<Dream::Resource::Resource*> mResources;
 	public:
 		Project(void);
-		Project(nlohmann::json);
+		Project(std::string, nlohmann::json);
 		~Project(void);
 
 		void loadScenesFromJson(nlohmann::json);
@@ -82,8 +82,8 @@ namespace Dream {
 		void removeResource(Dream::Resource::Resource*);
 		int getNumberOfResources();
 
-		std::string getDirectory();
-		void setDirectory(std::string);
+		std::string getProjectPath();
+		void        setProjectPath(std::string);
 
 		void showStatus();
 

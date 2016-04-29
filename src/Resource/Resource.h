@@ -25,18 +25,14 @@
 #define RESOURCE_JSON_NAME   "name"
 #define RESOURCE_JSON_TYPE   "type"
 #define RESOURCE_JSON_FORMAT "format"
-
-#define RESOURCE_TYPE_ANIMATION "Animation"
-#define RESOURCE_TYPE_MODEL     "Model"
-#define RESOURCE_TYPE_AUDIO     "Audio"
-#define RESOURCE_TYPE_SCRIPT    "Script"
+#define RESOURCE_DIR         "resource"
+#define PATH_SEP             "/"
 
 namespace Dream {
 	namespace Resource {
 		class Resource {
 			std::string mUUID;
 			std::string mName;
-			std::string mAbsolutePath;
 		public:
 			Resource(void);
 			Resource(nlohmann::json);
@@ -48,8 +44,7 @@ namespace Dream {
 			void setName(std::string);
 			std::string getName();
 
-			void setAbsolutePath(std::string);
-			std::string getAbsolutePath();
+			virtual void generateAbsolutePaths(std::string, std::string) = 0;
 		}; // End of Resource
 	} // End of Resource
 } // End of Dream
