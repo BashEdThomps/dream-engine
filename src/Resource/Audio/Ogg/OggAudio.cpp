@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Resource
+* OggAudio
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,40 +15,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Resource.h"
+#include "OggAudio.h"
 
 namespace Dream {
 	namespace Resource {
-		Resource::Resource(void) {
-		}
+		namespace Audio {
+			namespace Ogg {
 
-		Resource::Resource(nlohmann::json json) {
-			mUUID = json [RESOURCE_JSON_UUID];
-			mName = json [RESOURCE_JSON_NAME];
-		}
+				OggAudio::OggAudio(void) : Dream::Resource::Audio::Audio () {
+				}
 
-		void Resource::setUUID(std::string uuid) {
-			mUUID = uuid;
-		}
+				OggAudio::OggAudio(nlohmann::json jsonOgg) : Dream::Resource::Audio::Audio (jsonOgg) {
+				}
 
-		std::string Resource::getUUID() {
-			return mUUID;
-		}
+				OggAudio::~OggAudio(void) {
+				}
 
-		void Resource::setName(std::string name) {
-			mName = name;
-		}
-
-		std::string Resource::getName() {
-			return mName;
-		}
-
-		void Resource::setAbsolutePath(std::string absPath) {
-			mAbsolutePath = absPath;
-		}
-
-		std::string Resource::getAbsolutePath() {
-			return mAbsolutePath;
-		}
+			} // End of Ogg
+		} // End of Audio
 	} // End of Resource
 } // End of Dream

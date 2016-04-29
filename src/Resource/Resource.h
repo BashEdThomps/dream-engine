@@ -36,6 +36,7 @@ namespace Dream {
 		class Resource {
 			std::string mUUID;
 			std::string mName;
+			std::string mAbsolutePath;
 		public:
 			Resource(void);
 			Resource(nlohmann::json);
@@ -46,6 +47,9 @@ namespace Dream {
 
 			void setName(std::string);
 			std::string getName();
+
+			void setAbsolutePath(std::string);
+			std::string getAbsolutePath();
 		}; // End of Resource
 	} // End of Resource
 } // End of Dream

@@ -19,6 +19,9 @@
 #include "Resource/Model/Model.h"
 #include "Resource/Model/Wavefront/ObjModel.h"
 #include "Resource/Script/JavaScript/JavaScript.h"
+#include "Resource/Audio/Ogg/OggAudio.h"
+#include "Resource/Audio/Wav/WavAudio.h"
+#include "Resource/Animation/Animation.h"
 
 namespace Dream {
 
@@ -110,21 +113,33 @@ namespace Dream {
 		     it != jsonResourceArray.end(); ++it) {
 			Dream::Resource::Resource* resource = NULL;
 
-			std::string resourceType   = (*it)[RESOURCE_JSON_TYPE];
-			std::string resourceFormat = (*it)[RESOURCE_JSON_FORMAT];
+			std::string resourceType = "";
+			if (!(*it)[RESOURCE_JSON_TYPE].is_null()) {
+				resourceType = (*it)[RESOURCE_JSON_TYPE];
+			}
+
+			std::string resourceFormat = "";
+			if (!(*it)[RESOURCE_JSON_FORMAT].is_null()) {
+				resourceFormat = (*it)[RESOURCE_JSON_FORMAT];
+			}
 
 			if (resourceType.compare(RESOURCE_TYPE_MODEL) == 0) {
-				std::cout << "Project: Creating Model Resource" << std::endl;
 				if (resourceFormat.compare(RESOURCE_FORMAT_WAVEFRONT) == 0) {
 					std::cout << "Project: Creating Wavefront Model Resource" << std::endl;
 					resource = new Dream::Resource::Model::Wavefront::ObjModel((*it));
 				}
 			} else if (resourceType.compare(RESOURCE_TYPE_ANIMATION) == 0) {
 				std::cout << "Project: Creating Animation Resource" << std::endl;
+				resource = new Dream::Resource::Animation::Animation((*it));
 			} else if (resourceType.compare(RESOURCE_TYPE_AUDIO) == 0) {
-				std::cout << "Project: Creating Audio Resource" << std::endl;
+				if (resourceFormat.compare(RESOURCE_FORMAT_OGG) == 0) {
+					std::cout << "Project: Creating OGG Audio Resource" << std::endl;
+					resource = new Dream::Resource::Audio::Ogg::OggAudio((*it));
+				} else if (resourceFormat.compare(RESOURCE_FORMAT_WAV) == 0) {
+					std::cout << "Project: Creating WAV Audio Resource" << std::endl;
+					resource = new Dream::Resource::Audio::Wav::WavAudio((*it));
+				}
 			} else if (resourceType.compare(RESOURCE_TYPE_SCRIPT) == 0) {
-				std::cout << "Project: Creating Script Resource" << std::endl;
 				if (resourceFormat.compare(RESOURCE_FORMAT_JAVASCRIPT) == 0) {
 					std::cout << "Project: Creating JavaScript Resource" << std::endl;
 					resource = new Dream::Resource::Script::JavaScript::JavaScript((*it));

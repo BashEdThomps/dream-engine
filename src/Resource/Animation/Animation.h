@@ -4,12 +4,13 @@
 #include <vector>
 #include "KeyFrame.h"
 #include "Frame.h"
+#include "../Resource.h"
 
 //! TODO - Document
 namespace Dream {
     namespace Resource {
         namespace Animation {
-            class Animation {
+            class Animation : public Dream::Resource::Resource {
             private:
                 std::vector<KeyFrame*> mKeyFrames;
                 std::vector<Frame*>    mFrames;
@@ -23,6 +24,7 @@ namespace Dream {
             public:
                 //! TODO - Document
                 Animation(int fps = 60);
+                Animation(nlohmann::json);
                 ~Animation();
                 //! TODO - Document
                 void generateFrames();

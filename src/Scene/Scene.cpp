@@ -143,11 +143,22 @@ namespace Dream {
 		}
 
 		SceneObject* Scene::getSceneObjectByUUID(std::string uuid) {
+			if (mScenegraphVector.empty()) {
+				generateScenegraphVector();
+			}
+			for (std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
+			  if ((*it)->hasUUID(uuid)){
+					return (*it);
+				}
+			}
 			return NULL;
 		}
 
 		int Scene::getNumberOfSceneObjects() {
-			return mRootSceneObject->countAllChildren(); //mSceneObjects.size();
+			if (mScenegraphVector.empty()) {
+				generateScenegraphVector();
+			}
+			return mScenegraphVector.size();
 		}
 
 		void Scene::showStatus() {

@@ -13,17 +13,15 @@ file(GLOB JSON_SRC "JSON/json.hpp")
 file(GLOB SCENE_SRC "Scene/*.h" "Scene/*.cpp")
 
 # Resource
-file(GLOB RESOURCE_SRC "Resource/*.h" "Resource/*.cpp")
-
-file(GLOB RESOURCE_ANIMATION_SRC "Resource/Animation/*.h" "Resource/Animation/*.cpp")
-
-
-file(GLOB RESOURCE_MODEL_SRC "Resource/Model/*.h" "Resource/Model/*.cpp")
-file(GLOB RESOURCE_MODEL_WAVEFRONT_SRC "Resource/Model/Wavefront/*.h" "Resource/Model/Wavefront/*.cpp")
-
-file(GLOB RESOURCE_SCRIPT_SRC "Resource/Script/*.h" "Resource/Script/*.cpp")
-file(GLOB RESOURCE_SCRIPT_JS_SRC "Resource/Script/JavaScript/*.h" "Resource/Script/JavaScript/*.cpp")
-#file(GLOB OBJ_SRC "Obj*.h" "Obj*.cpp")
+file(GLOB RESOURCE_SRC                 "Resource/*.h"                   "Resource/*.cpp"                   )
+file(GLOB RESOURCE_ANIMATION_SRC       "Resource/Animation/*.h"         "Resource/Animation/*.cpp"         )
+file(GLOB RESOURCE_AUDIO_SRC           "Resource/Audio/*.h"             "Resource/Audio/*.cpp"             )
+file(GLOB RESOURCE_AUDIO_OGG_SRC       "Resource/Audio/Ogg/*.h"         "Resource/Audio/Ogg/*.cpp"         )
+file(GLOB RESOURCE_AUDIO_WAV_SRC       "Resource/Audio/Wav/*.h"         "Resource/Audio/Wav/*.cpp"         )
+file(GLOB RESOURCE_MODEL_SRC           "Resource/Model/*.h"             "Resource/Model/*.cpp"             )
+file(GLOB RESOURCE_MODEL_WAVEFRONT_SRC "Resource/Model/Wavefront/*.h"   "Resource/Model/Wavefront/*.cpp"   )
+file(GLOB RESOURCE_SCRIPT_SRC          "Resource/Script/*.h"            "Resource/Script/*.cpp"            )
+file(GLOB RESOURCE_SCRIPT_JS_SRC       "Resource/Script/JavaScript/*.h" "Resource/Script/JavaScript/*.cpp" )
 
 # Audio
 file(GLOB AUDIO_SRC "Audio/*.h" "Audio/*.cpp")
@@ -54,6 +52,9 @@ add_library (
 
     ${RESOURCE_SRC}
     ${RESOURCE_ANIMATION_SRC}
+    ${RESOURCE_AUDIO_SRC}
+    ${RESOURCE_AUDIO_OGG_SRC}
+    ${RESOURCE_AUDIO_WAV_SRC}
     ${RESOURCE_MODEL_SRC}
     ${RESOURCE_MODEL_WAVEFRONT_SRC}
     ${RESOURCE_SCRIPT_SRC}

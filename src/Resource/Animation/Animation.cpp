@@ -6,14 +6,18 @@
 namespace Dream {
 	namespace Resource {
 		namespace Animation {
-			Animation::Animation(int fps)  {
+			Animation::Animation(int fps) : Dream::Resource::Resource() {
 				mFramesPerSecond = fps;
 			    mCurrentFrame    = 0;
 			    mCurrentKeyFrame = 0;
 			}
 
-			Animation::~Animation() {
+			Animation::Animation(nlohmann::json jsonAnimation) : Dream::Resource::Resource(jsonAnimation) {
 
+			}
+
+			Animation::~Animation() {
+				
 			}
 
 			void Animation::generateFrames() {
