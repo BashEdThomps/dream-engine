@@ -41,6 +41,9 @@ namespace Dream {
 					return mOggPath;
 				}
 
+				ResourceInstance* OggAudio::createInstance() {
+					return NULL;
+				}
 			} // End of Ogg
 		} // End of Audio
 	} // End of Resource

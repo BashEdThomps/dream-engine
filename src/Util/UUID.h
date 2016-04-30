@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Audio::Ogg::OggAudio
+* UUID
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,31 +15,20 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OGGAUDIO_H
-#define OGGAUDIO_H
+#ifndef UUID_H
+#define UUID_H
 
-#include "../Audio.h"
-
-#define RESOURCE_FORMAT_OGG "ogg"
+#include <iostream>
 
 namespace Dream {
-	namespace Resource {
-		namespace Audio {
-			namespace Ogg {
-				class OggAudio : public Dream::Resource::Audio::Audio {
-				private:
-					std::string mOggPath;
-				public:
-					OggAudio(void);
-					OggAudio(nlohmann::json);
-					~OggAudio(void);
-					void generateAbsolutePaths(std::string,std::string);
-					std::string getOggPath();
-					ResourceInstance* createInstance();
-				}; // End of OggAudio
-			} // End of Ogg
-		} // End of Audio
-	} // End of Resource
-} // End of Dream
+	namespace Util {
+		class UUID {
+		public:
+			UUID(void);
+			~UUID(void);
+			static std::string generateUUID();
+		}; // End of UUID
+	}    // End of Util
+}      // End of Dream
 
-#endif // End of OGGAUDIO_H
+#endif // End of UUID_H

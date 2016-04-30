@@ -17,13 +17,24 @@
 
 #include "ObjModel.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+
 namespace Dream {
 	namespace Resource {
 		namespace Model {
 			namespace Wavefront {
-				ObjModel::ObjModel(void) : Dream::Resource::Model::Model() {}
-				ObjModel::ObjModel(nlohmann::json json) : Dream::Resource::Model::Model(json) {}
-				ObjModel::~ObjModel(void) {}
+
+				ObjModel::ObjModel(void) : Dream::Resource::Model::Model() {
+				}
+
+				ObjModel::ObjModel(nlohmann::json json) : Dream::Resource::Model::Model(json) {
+				}
+
+				ObjModel::~ObjModel(void) {
+
+				}
+
+
 				void ObjModel::generateAbsolutePaths(std::string projectDir,std::string projectUUID){
 					mObjPath = projectDir         + PATH_SEP +
 										 RESOURCE_DIR       + PATH_SEP +
@@ -31,13 +42,20 @@ namespace Dream {
 										 getUUID()          + PATH_SEP +
 										 RESOURCE_FORMAT_OBJ;
 					std::cout << "Generated path for obj resource: " << mObjPath << std::endl;
+					/*
 					mMtlPath = projectDir         + PATH_SEP +
 										 RESOURCE_DIR       + PATH_SEP +
 										 RESOURCE_DIR_MODEL + PATH_SEP +
 										 getUUID()          + PATH_SEP +
 										 RESOURCE_FORMAT_MTL;
 					std::cout << "Generated path for mtl resource: " << mMtlPath << std::endl;
+					*/
 				}
+
+				ResourceInstance* ObjModel::createInstance() {
+					return NULL;
+				}
+
 			} // End of Wavefront
 		} // End of Model
 	} // End of Resource

@@ -41,7 +41,7 @@ file(GLOB DREAM_SRC "*.h" "*.cpp")
 list(REMOVE_ITEM DREAM_SRC "Main.cpp")
 # Targets
 add_library (
-    Dream SHARED
+    DreamBase SHARED
     ${JSON_SRC}
     ${UTIL_SRC}
     ${UNIT_SRC}
@@ -67,11 +67,11 @@ add_library (
 # Bullet Headers
 include_directories(/usr/include/bullet)
 
-add_executable (DreamMain Main.cpp)
+add_executable (Dream Main.cpp)
 
 target_link_libraries(
-    DreamMain
     Dream
+    DreamBase
     -lBulletDynamics
     -lBulletCollision
     -lLinearMath

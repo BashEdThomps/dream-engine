@@ -55,7 +55,7 @@ add_custom_command(
 
 target_link_libraries(
     DreamTest
-    Dream
+    DreamBase
     -lBulletDynamics
     -lBulletCollision
     -lLinearMath

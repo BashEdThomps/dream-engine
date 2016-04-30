@@ -34,6 +34,7 @@ namespace Dream {
 					WavAudio(nlohmann::json);
 					~WavAudio(void);
 					void generateAbsolutePaths(std::string,std::string);
+					ResourceInstance* createInstance();
 				};
 			}
 		}

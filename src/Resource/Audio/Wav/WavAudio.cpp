@@ -40,6 +40,9 @@ namespace Dream {
 					std::cout << "Generated path for wav resource: " << mWavPath << std::endl;
 				}
 
+				ResourceInstance* WavAudio::createInstance() {
+					return NULL;
+				}
 			}
 		}
 	}

@@ -19,6 +19,7 @@
 #define RESOURCE_H
 
 #include <iostream>
+#include "ResourceInstance.h"
 #include "../JSON/json.hpp"
 
 #define RESOURCE_JSON_UUID   "uuid"
@@ -45,6 +46,7 @@ namespace Dream {
 			std::string getName();
 
 			virtual void generateAbsolutePaths(std::string, std::string) = 0;
+			virtual ResourceInstance* createInstance() = 0;
 		}; // End of Resource
 	} // End of Resource
 } // End of Dream

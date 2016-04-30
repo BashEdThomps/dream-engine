@@ -33,6 +33,7 @@ namespace Dream {
 					JavaScript(nlohmann::json);
 					~JavaScript(void);
 					void generateAbsolutePaths(std::string, std::string);
+					ResourceInstance* createInstance();
 				}; // End of JavaScript
 			} // End of JavaScript
 		} // End of Script

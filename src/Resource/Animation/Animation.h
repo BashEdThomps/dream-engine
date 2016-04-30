@@ -38,6 +38,7 @@ namespace Dream {
         bool isDone();
         int getFramesPerSecond();
 		    void generateAbsolutePaths(std::string,std::string);
+        ResourceInstance* createInstance();
   	  };
     }
   }

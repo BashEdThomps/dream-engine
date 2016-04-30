@@ -17,6 +17,7 @@
 
 #include "Unit/UnitTest.h"
 #include "Util/FileReaderTest.h"
+#include "Util/UUIDTest.h"
 
 #include "DreamTest.h"
 #include "ProjectTest.h"
@@ -112,9 +113,14 @@ int testDream() {
 
 int testUtil() {
 	int res = 0;
+
 	Dream::Util::Test::FileReaderTest fileReaderTest;
 	fileReaderTest.run();
 	res += fileReaderTest.getResult();
+
+	Dream::Util::Test::UUIDTest uuidTest;
+	uuidTest.run();
+	res += uuidTest.getResult();
 	return res;
 }
 

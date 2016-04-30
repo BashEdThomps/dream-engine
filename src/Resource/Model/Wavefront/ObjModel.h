@@ -19,6 +19,7 @@
 #define OBJMODEL_H
 
 #include "../Model.h"
+#include "tiny_obj_loader.h"
 
 #define RESOURCE_FORMAT_WAVEFRONT  "obj"
 #define RESOURCE_FORMAT_MTL        "mtl"
@@ -31,12 +32,13 @@ namespace Dream {
 				class ObjModel : public Dream::Resource::Model::Model {
 				private:
 					std::string mObjPath;
-					std::string mMtlPath;
+					//std::string mMtlPath;
 				public:
 					ObjModel(void);
 					ObjModel(nlohmann::json);
 					~ObjModel(void);
 					void generateAbsolutePaths(std::string,std::string);
+					ResourceInstance* createInstance();
 				};// End of ObjModel
 			} // End of Wavefront
 		} // End of Model

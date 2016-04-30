@@ -146,6 +146,10 @@ namespace Dream {
 			int Animation::getFramesPerSecond() {
 				return mFramesPerSecond;
 			}
+
+			ResourceInstance* Animation::createInstance() {
+					return NULL;
+			}
 		}
 	}
 }

@@ -37,6 +37,9 @@ namespace Dream {
 					std::cout << "Generated path for JavaScript resource: " << mScriptPath << std::endl;
 				}
 
+				ResourceInstance* JavaScript::createInstance() {
+					return NULL;
+				}
 			} // End JavaScript
 		} // End of Script
 	} // End of Resource

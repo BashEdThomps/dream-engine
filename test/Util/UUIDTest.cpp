@@ -1,5 +1,5 @@
 /*
-* TestResourceImpl
+* UUIDTest
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,23 +15,29 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTRESOURCEIMPL_H
-#define TESTRESOURCEIMPL_H
-
-#include "../../src/Resource/Resource.h"
+#include "UUIDTest.h"
+#include "../../src/Util/UUID.h"
 
 namespace Dream {
-	namespace Resource {
+	namespace Util {
 		namespace Test {
-			class TestResourceImpl : public Dream::Resource::Resource {
-			public:
-				TestResourceImpl();
-				~TestResourceImpl();
-				void generateAbsolutePaths(std::string,std::string);
-				ResourceInstance* createInstance();
-			};
-		}
-	}
-} // End of Dream
 
-#endif // End of TESTRESOURCEIMPL_H
+			UUIDTest::UUIDTest(void) : Dream::Unit::Unit("Dream::Util::UUID") {
+			}
+
+			UUIDTest::~UUIDTest(void) {
+			}
+
+			void UUIDTest::run() {
+					testGenerateUUID();
+			}
+
+			void UUIDTest::testGenerateUUID() {
+				assertInconclusive("No Tests To Run, but check this uuid I just made...");
+				std::string uuid = Dream::Util::UUID::generateUUID();
+				comment(uuid);
+			}
+
+		} // End of Test
+	} // End of Util
+} // End of Dream
