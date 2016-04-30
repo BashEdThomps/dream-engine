@@ -8,6 +8,7 @@
 
 #define RESOURCE_TYPE_ANIMATION "Animation"
 #define RESOURCE_DIR_ANIMATION "animation"
+#define RESOURCE_FORMAT_ANIMATION "animation"
 
 namespace Dream {
   namespace Resource {

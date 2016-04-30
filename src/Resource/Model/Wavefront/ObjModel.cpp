@@ -25,8 +25,18 @@ namespace Dream {
 				ObjModel::ObjModel(nlohmann::json json) : Dream::Resource::Model::Model(json) {}
 				ObjModel::~ObjModel(void) {}
 				void ObjModel::generateAbsolutePaths(std::string projectDir,std::string projectUUID){
-					mObjPath = "";
-					mMtlPath = "";
+					mObjPath = projectDir         + PATH_SEP +
+										 RESOURCE_DIR       + PATH_SEP +
+										 RESOURCE_DIR_MODEL + PATH_SEP +
+										 getUUID()          + PATH_SEP +
+										 RESOURCE_FORMAT_OBJ;
+					std::cout << "Generated path for obj resource: " << mObjPath << std::endl;
+					mMtlPath = projectDir         + PATH_SEP +
+										 RESOURCE_DIR       + PATH_SEP +
+										 RESOURCE_DIR_MODEL + PATH_SEP +
+										 getUUID()          + PATH_SEP +
+										 RESOURCE_FORMAT_MTL;
+					std::cout << "Generated path for mtl resource: " << mMtlPath << std::endl;
 				}
 			} // End of Wavefront
 		} // End of Model

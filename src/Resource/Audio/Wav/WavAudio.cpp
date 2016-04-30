@@ -32,7 +32,12 @@ namespace Dream {
 				}
 
 				void WavAudio::generateAbsolutePaths(std::string projectDir, std::string projectUUID) {
-					mWavPath = "";
+					mWavPath = projectDir         + PATH_SEP +
+					           RESOURCE_DIR       + PATH_SEP +
+										 RESOURCE_DIR_AUDIO + PATH_SEP +
+										 getUUID()          + PATH_SEP +
+										 RESOURCE_FORMAT_WAV;
+					std::cout << "Generated path for wav resource: " << mWavPath << std::endl;
 				}
 
 			}

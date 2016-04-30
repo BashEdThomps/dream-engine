@@ -21,6 +21,8 @@
 #include "../Model.h"
 
 #define RESOURCE_FORMAT_WAVEFRONT  "obj"
+#define RESOURCE_FORMAT_MTL        "mtl"
+#define RESOURCE_FORMAT_OBJ        "obj"
 
 namespace Dream {
 	namespace Resource {

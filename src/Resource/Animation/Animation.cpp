@@ -20,8 +20,10 @@ namespace Dream {
 
 			}
 
-			void Animation::generateAbsolutePaths(std::string projectDirs, std::string projectUUID) {
-				mAnimationPath = "";
+			void Animation::generateAbsolutePaths(std::string projectDir, std::string projectUUID) {
+				mAnimationPath = projectDir + PATH_SEP + RESOURCE_DIR + PATH_SEP +
+												 RESOURCE_DIR_ANIMATION + PATH_SEP + getUUID() + PATH_SEP + RESOURCE_FORMAT_ANIMATION;
+				std::cout << "Generated path for Animation resource: " << mAnimationPath << std::endl;
 			}
 
 			void Animation::generateFrames() {

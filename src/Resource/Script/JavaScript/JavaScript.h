@@ -27,6 +27,8 @@ namespace Dream {
 		namespace Script {
 			namespace JavaScript {
 				class JavaScript : public Dream::Resource::Script::Script {
+				private:
+					std::string mScriptPath;
 				public:
 					JavaScript(nlohmann::json);
 					~JavaScript(void);

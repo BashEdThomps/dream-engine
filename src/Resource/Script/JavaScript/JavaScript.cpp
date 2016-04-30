@@ -28,8 +28,13 @@ namespace Dream {
 				JavaScript::~JavaScript(void) {
 				}
 
-				void JavaScript::generateAbsolutePaths(std::string projectsDir, std::string projectUUID) {
-
+				void JavaScript::generateAbsolutePaths(std::string projectDir, std::string projectUUID) {
+					mScriptPath = projectDir          + PATH_SEP +
+										    RESOURCE_DIR        + PATH_SEP +
+										    RESOURCE_DIR_SCRIPT + PATH_SEP +
+										    getUUID()           + PATH_SEP +
+										    RESOURCE_FORMAT_JAVASCRIPT;
+					std::cout << "Generated path for JavaScript resource: " << mScriptPath << std::endl;
 				}
 
 			} // End JavaScript
