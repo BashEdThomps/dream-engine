@@ -11,7 +11,7 @@ then
 	echo Building for MacOS X
 	if [[ "$HOST" == *"PPC"* ]];
 	then
-		echo Building for PowerPC
+		echo Building for PowerPC with MacPorts GCC
 		export CC=/opt/local/bin/gcc-mp-4.9
 		export CXX=/opt/local/bin/g++-mp-4.9
 	else

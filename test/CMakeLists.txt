@@ -1,4 +1,4 @@
-# Build the Dream::Unit Library and Test executable.
+# Build the Dream Test executable.
 
 # Unit
 file(GLOB TEST_UNIT_SRC "Unit/*.h" "Unit/*.cpp")
@@ -25,8 +25,6 @@ file(GLOB TEST_PHYSICS_SRC "Physics/*.h" "Physics/*.cpp")
 file(GLOB TEST_RESOURCE_SRC "Resource/*.h" "Resource/*.cpp")
 file(GLOB TEST_RESOURCE_MODEL_SRC "Resource/Model/*.h" "Resource/Model/*.cpp")
 file(GLOB TEST_RESOURCE_ANIMATION_SRC "Resource/Animation/*.h" "Resource/Animation/*.cpp")
-#file(GLOB LUA_SRC "Lua/*.h" "Lua/*.cpp")
-#file(GLOB OBJ_SRC "Obj*.h" "Obj*.cpp")
 
 # Dream
 file(GLOB TEST_DREAM_SRC "*.h" "*.cpp")
@@ -53,20 +51,20 @@ add_custom_command(
     ${CMAKE_SOURCE_DIR}/test/test_resources $<TARGET_FILE_DIR:DreamTest>
 )
 
+
 target_link_libraries(
     DreamTest
     DreamBase
-    -lBulletDynamics
-    -lBulletCollision
-    -lLinearMath
-    -lalut
-    -lopenal
-    /usr/lib/libv8_base.a
-    /usr/lib/libv8_external_snapshot.a
-    /usr/lib/libv8_libbase.a
-    /usr/lib/libv8_libplatform.a
-    /usr/lib/libv8_nosnapshot.a
-    /usr/lib/libv8.so
-    -lpthread
-    -ldl
+    ${BULLET_DYNAMICS}
+    ${BULLET_COLLISION}
+    ${LINEAR_MATH}
+    ${OPENAL}
+    ${V8_BASE}
+    ${V8_EXT_SNAP}
+    ${V8_LIBBASE}
+    ${V8_LIBPLATFORM}
+    ${V8_NOSNAPSHOT}
+    ${V8}
+    ${PTHREAD}
+    ${DL}
 )

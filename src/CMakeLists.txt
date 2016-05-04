@@ -39,6 +39,7 @@ file (GLOB SCRIPTING_SRC "Scripting/*.h" "Scripting/*.cpp")
 # Dream
 file(GLOB DREAM_SRC "*.h" "*.cpp")
 list(REMOVE_ITEM DREAM_SRC "Main.cpp")
+
 # Targets
 add_library (
     DreamBase SHARED
@@ -65,24 +66,25 @@ add_library (
 )
 
 # Bullet Headers
-include_directories(/usr/include/bullet)
+include_directories(/usr/local/include/bullet)
+include_directories(/usr/local/include/v8)
+link_directories(/usr/local/lib)
 
 add_executable (Dream Main.cpp)
 
 target_link_libraries(
     Dream
     DreamBase
-    -lBulletDynamics
-    -lBulletCollision
-    -lLinearMath
-    -lalut
-    -lopenal
-    /usr/lib/libv8_base.a
-    /usr/lib/libv8_external_snapshot.a
-    /usr/lib/libv8_libbase.a
-    /usr/lib/libv8_libplatform.a
-    /usr/lib/libv8_nosnapshot.a
-    /usr/lib/libv8.so
-    -lpthread
-    -ldl
+    ${BULLET_DYNAMICS}
+    ${BULLET_COLLISION}
+    ${LINEAR_MATH}
+    ${OPENAL}
+    ${V8_BASE}
+    ${V8_EXT_SNAP}
+    ${V8_LIBBASE}
+    ${V8_LIBPLATFORM}
+    ${V8_NOSNAPSHOT}
+    ${V8}
+    ${PTHREAD}
+    ${DL}
 )
