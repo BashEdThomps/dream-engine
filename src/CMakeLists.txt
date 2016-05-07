@@ -1,4 +1,5 @@
 # Build the Dream Library and Executable.
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Unit
 file(GLOB UNIT_SRC "Unit/*.h" "Unit/*.cpp")
@@ -40,6 +41,37 @@ file (GLOB SCRIPTING_SRC "Scripting/*.h" "Scripting/*.cpp")
 file(GLOB DREAM_SRC "*.h" "*.cpp")
 list(REMOVE_ITEM DREAM_SRC "Main.cpp")
 
+# Find Required Libraries
+find_package(OPENAL COMPONENTS OpenAL REQUIRED)
+if (NOT OPENAL_FOUND)
+  message(FATAL_ERROR "Package OpenAL not found")
+endif()
+
+find_package(PTHREAD COMPONENTS pthread REQUIRED)
+if (NOT PTHREAD_FOUND)
+  message(FATAL_ERROR "Package pthread not found")
+endif()
+
+find_package(DL COMPONENTS dl REQUIRED)
+if (NOT DL_FOUND)
+  message(FATAL_ERROR "Package dl not found")
+endif()
+
+find_package(BULLET_DYNAMICS COMPONENTS BulletDynamics REQUIRED)
+if (NOT BULLET_DYNAMICS_FOUND)
+  message(FATAL_ERROR "Package BulletDynamics not found")
+endif()
+
+find_package(BULLET_COLLISION COMPONENTS BulletCollision REQUIRED)
+if (NOT BULLET_COLLISION_FOUND)
+  message(FATAL_ERROR "Package BulletCollision not found")
+endif()
+
+find_library(LINEAR_MATH COMPONENTS LinearMath REQUIRED)
+if (NOT LINEAR_MATH_FOUND)
+  message(FATAL_ERROR "Package LinearMath not found")
+endif()
+
 # Targets
 add_library (
     DreamBase SHARED
@@ -50,7 +82,6 @@ add_library (
     ${VIDEO_SRC}
     ${PHYSICS_SRC}
     ${SCRIPTING_SRC}
-
     ${RESOURCE_SRC}
     ${RESOURCE_ANIMATION_SRC}
     ${RESOURCE_AUDIO_SRC}
@@ -60,31 +91,30 @@ add_library (
     ${RESOURCE_MODEL_WAVEFRONT_SRC}
     ${RESOURCE_SCRIPT_SRC}
     ${RESOURCE_SCRIPT_JS_SRC}
-
     ${SCENE_SRC}
     ${DREAM_SRC}
 )
 
-# Bullet Headers
-include_directories(/usr/local/include/bullet)
-include_directories(/usr/local/include/v8)
-link_directories(/usr/local/lib)
+include_directories(
+  ${OPENAL_INCLUDES}
+  ${PTHREAD_INCLUDES}
+  ${DL_INCLUDES}
+  ${V8_INCLUDES}
+  ${BULLET_DYNAMICS_INCLUDES}
+  ${BULLET_COLLISION_INCLUDES}
+  ${LINEAR_MATH_INCLUDES}
+)
 
 add_executable (Dream Main.cpp)
 
 target_link_libraries(
-    Dream
-    DreamBase
-    ${BULLET_DYNAMICS}
-    ${BULLET_COLLISION}
-    ${LINEAR_MATH}
-    ${OPENAL}
-    ${V8_BASE}
-    ${V8_EXT_SNAP}
-    ${V8_LIBBASE}
-    ${V8_LIBPLATFORM}
-    ${V8_NOSNAPSHOT}
-    ${V8}
-    ${PTHREAD}
-    ${DL}
+  Dream
+  DreamBase
+  ${OPENAL_LIBS}
+  ${PTHREAD_LIBS}
+  ${DL_LIBS}
+  ${V8_LIBRARY}
+  ${BULLET_DYNAMICS_LIBS}
+  ${BULLET_COLLISION_LIBS}
+  ${LINEAR_MATH_LIBS}
 )
