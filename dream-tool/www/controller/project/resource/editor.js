@@ -21,7 +21,7 @@ App.controller("ProjectResourceEditor",
                                 editor.setTheme("ace/theme/vibrant_ink");
                                 editor.getSession().setMode("ace/mode/javascript");
                                 editor.setShowPrintMargin(false);
-                                editor.setFontSize(18);
+                                editor.setFontSize(14);
                                 editor.setKeyboardHandler('ace/keyboard/vim');
                                 var editorElement = $scope.getAceEditorElement();
                                 editorElement.style.position = "relative";

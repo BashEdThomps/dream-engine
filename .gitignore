@@ -10,3 +10,4 @@ dream-tool/node_modules
 tags
 npm-debug.log
 .DS_Store
+*.gch

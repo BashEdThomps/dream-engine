@@ -1,5 +1,5 @@
 /*
-* VideoInterface
+* Dream::Interface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VIDEOINTERFACE_H
-#define VIDEOINTERFACE_H
-
-#include "../Interface.h"
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
 namespace Dream {
-	namespace Video {
-		class VideoInterface : public Dream::Interface {
-		public:
-			VideoInterface(void);
-			virtual ~VideoInterface(void) {};
-			virtual void render(void) = 0;
-		}; // End of VideoInterface
-	} // End of Video
+	class Interface {
+	public:
+		Interface(void);
+		~Interface(void);
+		virtual void initialise() = 0;
+	}; // End of Interface
 } // End of Dream
 
-#endif // End of VIDEOINTERFACE_H
+#endif // End of INTERFACE_H

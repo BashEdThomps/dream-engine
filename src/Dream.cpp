@@ -3,11 +3,9 @@
 #include "JSON/json.hpp"
 
 namespace Dream {
-	Dream::Dream() {
-	}
 
-	Dream::~Dream() {
-	}
+	Dream::Dream() {}
+	Dream::~Dream() {}
 
 	Project* Dream::getProject() {
 		return mProject;
@@ -44,6 +42,7 @@ namespace Dream {
 	}
 
 	int Dream::runProject() {
+		createInterfaces();
 		return 0;
 	}
 }
