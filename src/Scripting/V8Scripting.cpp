@@ -36,7 +36,7 @@ namespace Dream {
 			mIsolate->Dispose();
 			v8::V8::Dispose();
 			v8::V8::ShutdownPlatform();
-			delete mPlatform;
+			//delete mPlatform;
 		}
 	} // End of Scripting
 } // End of Dream

@@ -5,241 +5,156 @@
 # V8_INCLUDE_DIR, where to find the headers
 
 FIND_PATH(V8_INCLUDE_DIR v8.h
-    ${V8_DIR}/include
-    $ENV{V8_DIR}/include
-    $ENV{V8_DIR}
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /usr/local/include
-    /usr/include
-    /sw/include # Fink
-    /opt/local/include # DarwinPorts
-    /opt/csw/include # Blastwave
-    /opt/include
-    /usr/freeware/include
-    /devel
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/include/v8
+  /usr/include/v8
+  /sw/include/v8
+  /opt/local/include/v8
+  /opt/csw/include/v8
+  /opt/include/v8
+  /usr/freeware/include/v8
+  /devel
+)
+FIND_LIBRARY(V8
+  NAMES v8 v8.ia32 v8.x64 libv8
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/lib
+  /usr/lib
+  /sw/lib
+  /opt/local/lib
+  /opt/csw/lib
+  /opt/lib
+  /usr/freeware/lib64
 )
 
-# On non-Unix platforms (Mac and Windows specifically based on the forum),
-# V8 builds separate shared (or at least linkable) libraries for v8_base and v8_snapshot
-IF(NOT UNIX)
-    FIND_LIBRARY(V8_BASE_LIBRARY
-        NAMES v8_base v8_base.ia32 v8_base.x64 libv8_base
-        PATHS
-        ${V8_DIR}
-        ${V8_DIR}/lib
-        ${V8_DIR}/build/Release/lib
-        $ENV{V8_DIR}
-        $ENV{V8_DIR}/lib
-        ~/Library/Frameworks
-        /Library/Frameworks
-        /usr/local/lib
-        /usr/lib
-        /sw/lib
-        /opt/local/lib
-        /opt/csw/lib
-        /opt/lib
-        /usr/freeware/lib64
-    )
+FIND_LIBRARY(V8_BASE_LIBRARY
+  NAMES v8_base v8_base.ia32 v8_base.x64 libv8_base
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/lib
+  /usr/lib
+  /sw/lib
+  /opt/local/lib
+  /opt/csw/lib
+  /opt/lib
+  /usr/freeware/lib64
+)
 
-    FIND_LIBRARY(V8_BASE_LIBRARY_DEBUG
-        NAMES v8_base v8_base.ia32 v8_base.x64 libv8_base
-        PATHS
-        ${V8_DIR}
-        ${V8_DIR}/lib
-        ${V8_DIR}/build/Debug/lib
-        $ENV{V8_DIR}
-        $ENV{V8_DIR}/lib
-        ~/Library/Frameworks
-        /Library/Frameworks
-        /usr/local/lib
-        /usr/lib
-        /sw/lib
-        /opt/local/lib
-        /opt/csw/lib
-        /opt/lib
-        /usr/freeware/lib64
-    )
+FIND_LIBRARY(V8_LIBBASE_LIBRARY
+  NAMES v8_libbase v8_libbase.ia32 v8_libbase.x64 libv8_libbase
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/lib
+  /usr/lib
+  /sw/lib
+  /opt/local/lib
+  /opt/csw/lib
+  /opt/lib
+  /usr/freeware/lib64
+)
 
-    FIND_LIBRARY(V8_SNAPSHOT_LIBRARY
-        NAMES v8_snapshot libv8_snapshot
-        PATHS
-        ${V8_DIR}
-        ${V8_DIR}/lib
-        ${V8_DIR}/build/Release/lib
-        $ENV{V8_DIR}
-        $ENV{V8_DIR}/lib
-        ~/Library/Frameworks
-        /Library/Frameworks
-        /usr/local/lib
-        /usr/lib
-        /sw/lib
-        /opt/local/lib
-        /opt/csw/lib
-        /opt/lib
-        /usr/freeware/lib64
-    )
-
-    FIND_LIBRARY(V8_SNAPSHOT_LIBRARY_DEBUG
-        NAMES v8_snapshot libv8_snapshot
-        PATHS
-        ${V8_DIR}
-        ${V8_DIR}/lib
-        ${V8_DIR}/build/Debug/lib
-        $ENV{V8_DIR}
-        $ENV{V8_DIR}/lib
-        ~/Library/Frameworks
-        /Library/Frameworks
-        /usr/local/lib
-        /usr/lib
-        /sw/lib
-        /opt/local/lib
-        /opt/csw/lib
-        /opt/lib
-        /usr/freeware/lib64
-    )
-
-# On Linux, there is just a libv8.so shared library built.
-# (well, there are pseudo-static libraries libv8_base.a and libv8_snapshot.a
-# but they don't seem to link correctly)
-ELSE()
-    FIND_LIBRARY(V8_LIBRARY
-        NAMES v8
-        PATHS
-        ${V8_DIR}
-        ${V8_DIR}/lib
-        ${V8_DIR}/build/Release/lib
-        # Having both architectures listed is problematic if both have been
-        # built (which is the default)
-        ${V8_DIR}/out/ia32.release/lib.target/
-        ${V8_DIR}/out/x64.release/lib.target/
-        $ENV{V8_DIR}
-        $ENV{V8_DIR}/lib
-        ~/Library/Frameworks
-        /Library/Frameworks
-        /usr/local/lib
-        /usr/lib
-        /sw/lib
-        /opt/local/lib
-        /opt/csw/lib
-        /opt/lib
-        /usr/freeware/lib64
-    )
-
-    FIND_LIBRARY(V8_LIBRARY_DEBUG
-        NAMES v8
-        PATHS
-        ${V8_DIR}
-        ${V8_DIR}/lib
-        ${V8_DIR}/build/Debug/lib
-        ${V8_DIR}/out/ia32.debug/lib.target/
-        ${V8_DIR}/out/x64.debug/lib.target/
-        $ENV{V8_DIR}
-        $ENV{V8_DIR}/lib
-        ~/Library/Frameworks
-        /Library/Frameworks
-        /usr/local/lib
-        /usr/lib
-        /sw/lib
-        /opt/local/lib
-        /opt/csw/lib
-        /opt/lib
-        /usr/freeware/lib64
-    )
-ENDIF(NOT UNIX)
+FIND_LIBRARY(V8_LIBPLATFORM_LIBRARY
+  NAMES v8_libplatform v8_libplatform.ia32 v8_libplatform.x64 libv8_libplatform
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/lib
+  /usr/lib
+  /sw/lib
+  /opt/local/lib
+  /opt/csw/lib
+  /opt/lib
+  /usr/freeware/lib64
+)
+FIND_LIBRARY(V8_NOSNAPSHOT_LIBRARY
+  NAMES v8_nosnapshot libv8_nosnapshot
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/lib
+  /usr/lib
+  /sw/lib
+  /opt/local/lib
+  /opt/csw/lib
+  /opt/lib
+  /usr/freeware/lib64
+)
 
 # icuuc and icui18n build fine on all platforms
 FIND_LIBRARY(V8_ICUUC_LIBRARY
-    NAMES icuuc libicuuc
-    PATHS
-    ${V8_DIR}
-    ${V8_DIR}/lib
-    ${V8_DIR}/build/Release/lib
-    ${V8_DIR}/out/ia32.release/lib.target/
-    ${V8_DIR}/out/x64.release/lib.target/
-    $ENV{V8_DIR}
-    $ENV{V8_DIR}/lib
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /usr/local/lib
-    /usr/lib
-    /sw/lib
-    /opt/local/lib
-    /opt/csw/lib
-    /opt/lib
-    /usr/freeware/lib64
-)
-
-FIND_LIBRARY(V8_ICUUC_LIBRARY_DEBUG
-    NAMES icuuc libicuuc
-    PATHS
-    ${V8_DIR}
-    ${V8_DIR}/lib
-    ${V8_DIR}/build/Debug/lib
-    ${V8_DIR}/out/ia32.debug/lib.target/
-    ${V8_DIR}/out/x64.debug/lib.target/
-    $ENV{V8_DIR}
-    $ENV{V8_DIR}/lib
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /usr/local/lib
-    /usr/lib
-    /sw/lib
-    /opt/local/lib
-    /opt/csw/lib
-    /opt/lib
-    /usr/freeware/lib64
+  NAMES icuuc libicuuc
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/lib
+  /usr/lib
+  /sw/lib
+  /opt/local/lib
+  /opt/csw/lib
+  /opt/lib
+  /usr/freeware/lib64
 )
 
 FIND_LIBRARY(V8_ICUI18N_LIBRARY
-    NAMES icui18n libicui18n
-    PATHS
-    ${V8_DIR}
-    ${V8_DIR}/lib
-    ${V8_DIR}/build/Release/lib
-    ${V8_DIR}/out/ia32.release/lib.target/
-    ${V8_DIR}/out/x64.release/lib.target/
-    $ENV{V8_DIR}
-    $ENV{V8_DIR}/lib
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /usr/local/lib
-    /usr/lib
-    /sw/lib
-    /opt/local/lib
-    /opt/csw/lib
-    /opt/lib
-    /usr/freeware/lib64
+  NAMES icui18n libicui18n
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/lib
+  /usr/lib
+  /sw/lib
+  /opt/local/lib
+  /opt/csw/lib
+  /opt/lib
+  /usr/freeware/lib64
 )
 
-FIND_LIBRARY(V8_ICUI18N_LIBRARY_DEBUG
-    NAMES icui18n libicui18n
-    PATHS
-    ${V8_DIR}
-    ${V8_DIR}/lib
-    ${V8_DIR}/build/Debug/lib
-    ${V8_DIR}/out/ia32.debug/lib.target/
-    ${V8_DIR}/out/x64.debug/lib.target/
-    $ENV{V8_DIR}
-    $ENV{V8_DIR}/lib
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /usr/local/lib
-    /usr/lib
-    /sw/lib
-    /opt/local/lib
-    /opt/csw/lib
-    /opt/lib
-    /usr/freeware/lib64
-)
+message("V8 Include Path " ${V8_INCLUDE_DIR})
+message("V8 Lib " ${V8})
+message("V8 libplatform Lib " ${V8_LIBPLATFORM_LIBRARY})
+message("V8 Base Lib " ${V8_BASE_LIBRARY})
+message("V8 Libbase Lib " ${V8_LIBBASE_LIBRARY})
+message("V8 NoSnapshot Lib " ${V8_NOSNAPSHOT_LIBRARY})
+message("V8 ICUUC Lib " ${V8_ICUUC_LIBRARY})
+message("V8 ICU I18N Lib " ${V8_ICUI18N_LIBRARY})
 
 SET(V8_FOUND "NO")
-IF(NOT UNIX)
-    IF(V8_BASE_LIBRARY AND V8_SNAPSHOT_LIBRARY AND V8_ICUUC_LIBRARY AND V8_ICUI18N_LIBRARY AND V8_INCLUDE_DIR)
-        SET(V8_FOUND "YES")
-    ENDIF(V8_BASE_LIBRARY AND V8_SNAPSHOT_LIBRARY AND V8_ICUUC_LIBRARY AND V8_ICUI18N_LIBRARY AND V8_INCLUDE_DIR)
-ELSEIF(V8_LIBRARY AND V8_ICUUC_LIBRARY AND V8_ICUI18N_LIBRARY AND V8_INCLUDE_DIR)
-    SET(V8_FOUND "YES")
-ENDIF(NOT UNIX)
 
-
+IF(
+  V8                     AND
+  V8_BASE_LIBRARY        AND
+  V8_LIBBASE_LIBRARY     AND
+  V8_LIBPLATFORM_LIBRARY AND
+  V8_NOSNAPSHOT_LIBRARY  AND
+  V8_ICUUC_LIBRARY       AND
+  V8_ICUI18N_LIBRARY     AND
+  V8_INCLUDE_DIR)
+  SET(V8_FOUND "YES")
+  message("Found v8 Libraries")
+  set(
+    V8_LIBRARY
+    ${V8}
+    ${V8_BASE_LIBRARY}
+    ${V8_LIBBASE_LIBRARY}
+    ${V8_LIBPLATFORM_LIBRARY}
+    ${V8_NOSNAPSHOT_LIBRARY}
+    ${V8_ICUUC_LIBRARY}
+    ${V8_ICUI18N_LIBRARY}
+  )
+ELSE()
+  message(FATAL_ERROR "Unable to find v8 Libraries")
+ENDIF(
+  V8                     AND
+  V8_BASE_LIBRARY        AND
+  V8_LIBBASE_LIBRARY     AND
+  V8_LIBPLATFORM_LIBRARY AND
+  V8_NOSNAPSHOT_LIBRARY  AND
+  V8_ICUUC_LIBRARY       AND
+  V8_ICUI18N_LIBRARY     AND
+  V8_INCLUDE_DIR
+)

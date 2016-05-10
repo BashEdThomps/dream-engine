@@ -19,8 +19,8 @@
 #define PHYSICSWORLD_H
 
 #include "PhysicsInterface.h"
-#include <bullet/btBulletDynamicsCommon.h>
-#include <bullet/LinearMath/btVector3.h>
+#include <btBulletDynamicsCommon.h>
+#include <LinearMath/btVector3.h>
 
 namespace Dream {
 	namespace Physics {

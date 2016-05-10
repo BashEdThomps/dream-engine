@@ -19,8 +19,8 @@
 #define V8SCRIPTING_H
 
 #include "ScriptingInterface.h"
-#include "v8/libplatform.h"
-#include "v8/v8.h"
+#include <libplatform.h>
+#include <v8.h>
 
 //using namespace v8;
 
