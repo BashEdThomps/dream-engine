@@ -6,10 +6,12 @@
 #include "Scene/Scene.h"
 #include "ArgumentParser.h"
 #include "Project.h"
-#include "Audio/AudioInterface.h"
-#include "Physics/PhysicsInterface.h"
-#include "Video/VideoInterface.h"
-#include "Scripting/ScriptingInterface.h"
+
+#include "Interfaces/Interface.h"
+#include "Interfaces/AudioInterface.h"
+#include "Interfaces/PhysicsInterface.h"
+#include "Interfaces/VideoInterface.h"
+#include "Interfaces/ScriptingInterface.h"
 
 
 namespace Dream {

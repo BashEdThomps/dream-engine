@@ -18,7 +18,7 @@
 #ifndef V8SCRIPTING_H
 #define V8SCRIPTING_H
 
-#include "ScriptingInterface.h"
+#include "../Interfaces/ScriptingInterface.h"
 #include <libplatform.h>
 #include <v8.h>
 

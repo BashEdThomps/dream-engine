@@ -20,13 +20,14 @@
 #include <iostream>
 namespace Dream {
 	namespace Audio {
-		OALAudio::OALAudio(void) : AudioInterface() {
+		OALAudio::OALAudio(void) : AudioInterface() {}
+		OALAudio::~OALAudio(void) {}
+
+		bool OALAudio::init() {
 			mDevice = alcOpenDevice(NULL);
 			mContext = alcCreateContext(mDevice,NULL);
 			alcMakeContextCurrent(mContext);
-		}
-
-		OALAudio::~OALAudio(void) {
+			return false;
 		}
 
 		ALuint OALAudio::generateBuffer() {

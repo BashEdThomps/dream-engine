@@ -15,11 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "VideoInterface.h"
+#ifndef VIDEOINTERFACE_H
+#define VIDEOINTERFACE_H
+
+#include "Interface.h"
 
 namespace Dream {
 	namespace Video {
-		VideoInterface::VideoInterface(void) {
-		}
+		class VideoInterface : public Dream::Interface {
+		public:
+			VideoInterface(void);
+			virtual ~VideoInterface(void) {};
+		}; // End of VideoInterface
 	} // End of Video
 } // End of Dream
+
+#endif // End of VIDEOINTERFACE_H

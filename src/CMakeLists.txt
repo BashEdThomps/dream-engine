@@ -24,6 +24,9 @@ file(GLOB RESOURCE_MODEL_WAVEFRONT_SRC "Resource/Model/Wavefront/*.h"   "Resourc
 file(GLOB RESOURCE_SCRIPT_SRC          "Resource/Script/*.h"            "Resource/Script/*.cpp"            )
 file(GLOB RESOURCE_SCRIPT_JS_SRC       "Resource/Script/JavaScript/*.h" "Resource/Script/JavaScript/*.cpp" )
 
+# Interfaces
+file(GLOB INTERFACES_SRC "Interfaces/*.h" "Interfaces/*.cpp")
+
 # Audio
 file(GLOB AUDIO_SRC "Audio/*.h" "Audio/*.cpp")
 
@@ -57,6 +60,11 @@ if (NOT V8_FOUND)
   message(FATAL_ERROR "Package v8 not found")
 endif()
 
+find_package(GLFW COMPONENTS GLFW REQUIRED)
+if (NOT GLFW_FOUND)
+  message(FATAL_ERROR "Package GLFW Not Found")
+endif()
+
 # Targets
 add_library (
     DreamBase SHARED
@@ -67,6 +75,7 @@ add_library (
     ${VIDEO_SRC}
     ${PHYSICS_SRC}
     ${SCRIPTING_SRC}
+    ${INTERFACES_SRC}
     ${RESOURCE_SRC}
     ${RESOURCE_ANIMATION_SRC}
     ${RESOURCE_AUDIO_SRC}
@@ -82,15 +91,17 @@ add_library (
 
 target_link_libraries(
   DreamBase
-  ${OPENAL_LIBRARY}
   -lpthread
   -ldl
+  ${OPENAL_LIBRARY}
+  ${GLFW_LIBRARIES}
   ${V8_LIBRARY}
   ${BULLET_LIBRARY}
 )
 
 include_directories(
   ${OPENAL_INCLUDE_DIR}
+  ${GLFW_INCLUDE_DIR}
   ${V8_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}
 )
@@ -100,9 +111,10 @@ add_executable (Dream Main.cpp)
 target_link_libraries(
   Dream
   DreamBase
-  ${OPENAL_LIBRARY}
   -lpthread
   -ldl
+  ${OPENAL_LIBRARY}
+  ${GLFW_LIBRARIES}
   ${V8_LIBRARY}
   ${BULLET_LIBRARY}
 )

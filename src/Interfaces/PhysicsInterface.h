@@ -15,10 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PhysicsInterface.h"
+#ifndef PHYSICSINTERFACE_H
+#define PHYSICSINTERFACE_H
+
+#include "Interface.h"
 
 namespace Dream {
 	namespace Physics {
-		PhysicsInterface::PhysicsInterface(void) {};
+		class PhysicsInterface : public Dream::Interface {
+		public:
+			PhysicsInterface(void);
+			virtual ~PhysicsInterface(void) {};
+		}; // End of PhysicsInterface
 	} // End of Physics
 } // End of Dream
+
+#endif // End of PHYSICSINTERFACE_H

@@ -18,9 +18,11 @@
 #ifndef AUDIOINTERFACE_H
 #define AUDIOINTERFACE_H
 
+#include "Interface.h"
+
 namespace Dream {
 	namespace Audio {
-		class AudioInterface {
+		class AudioInterface : public Dream::Interface {
 		public:
 			AudioInterface(void);
 			virtual ~AudioInterface(void) {};

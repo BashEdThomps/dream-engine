@@ -1,5 +1,5 @@
 /*
-* AudioInterface
+* Dream::Scripting::ScriptingInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "AudioInterface.h"
+#ifndef SCRIPTINGINTERFACE_H
+#define SCRIPTINGINTERFACE_H
+
+#include "Interface.h"
 
 namespace Dream {
-	namespace Audio {
-		AudioInterface::AudioInterface(void) {}
-	} // End of Audio
-} // End of Dream
+	namespace Scripting {
+		class ScriptingInterface : public Dream::Interface {
+		public:
+			ScriptingInterface(void);
+			virtual ~ScriptingInterface(void) {}
+		}; // End of ScriptingInterface
+	} // End of Scripting
+}// End of Dream
+
+#endif // End of SCRIPTINGINTERFACE_H

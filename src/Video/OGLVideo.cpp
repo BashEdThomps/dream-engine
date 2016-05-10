@@ -23,10 +23,33 @@ namespace Dream {
 		}
 
 		OGLVideo::~OGLVideo(void) {
+	    glfwTerminate();
 		}
 
-		void OGLVideo::render(void) {
+		bool OGLVideo::init(void) {
+			/* Initialize the library */
+	    if (!glfwInit()) {
+				return false;
+			}
+	    /* Create a windowed mode window and its OpenGL context */
+	    mWindow = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	    if (!mWindow) {
+	        glfwTerminate();
+	        return false;
+	    }
+	    /* Make the window's context current */
+	    glfwMakeContextCurrent(mWindow);
+	    /* Loop until the user closes the window */
+	    while (!glfwWindowShouldClose(mWindow)) {
+	        /* Render here */
+					// ...
 
+	        /* Swap front and back buffers */
+	        glfwSwapBuffers(mWindow);
+	        /* Poll for and process events */
+	        glfwPollEvents();
+	    }
+	    return true;
 		}
 	} // End of Video
 } // End of Dream

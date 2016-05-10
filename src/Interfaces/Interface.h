@@ -1,5 +1,5 @@
 /*
-* PhysicsInterface
+* Dream::Interface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,17 +15,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PHYSICSINTERFACE_H
-#define PHYSICSINTERFACE_H
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
 namespace Dream {
-	namespace Physics {
-		class PhysicsInterface {
-		public:
-			PhysicsInterface(void);
-			virtual ~PhysicsInterface(void) {};
-		}; // End of PhysicsInterface
-	} // End of Physics
+	class Interface {
+	public:
+		Interface(void);
+		virtual ~Interface(void) {}
+		virtual bool init() = 0;
+	}; // End of Interface
 } // End of Dream
 
-#endif // End of PHYSICSINTERFACE_H
+#endif // End of INTERFACE_H

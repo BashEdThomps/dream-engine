@@ -18,15 +18,18 @@
 #ifndef OGLVIDEO_H
 #define OGLVIDEO_H
 
-#include "VideoInterface.h"
+#include "../Interfaces/VideoInterface.h"
+#include <GLFW/glfw3.h>
 
 namespace Dream {
 	namespace Video {
 		class OGLVideo : public VideoInterface {
+		private:
+			GLFWwindow *mWindow;
 		public:
 			OGLVideo(void);
 			~OGLVideo(void);
-			void render(void);
+			bool init(void);
 		}; // End of OGLVideo
 	} // End of Video
 } // End of Dream

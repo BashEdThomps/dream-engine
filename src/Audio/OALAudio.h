@@ -26,7 +26,7 @@
 	#include <AL/alc.h>
 #endif
 
-#include "AudioInterface.h"
+#include "../Interfaces/AudioInterface.h"
 
 namespace Dream {
 	namespace Audio {
@@ -37,6 +37,7 @@ namespace Dream {
 		public:
 			OALAudio(void);
 			~OALAudio(void);
+			bool init(void);
 
 			ALuint generateBuffer();
 			void playSource(ALuint);
