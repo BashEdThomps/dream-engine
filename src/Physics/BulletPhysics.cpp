@@ -1,5 +1,5 @@
 /*
-* BulletPhysics
+* Dream::Physics::BulletPhysics
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,14 @@ namespace Dream {
 
 		void BulletPhysics::setGravityBtVector3(btVector3 gravity) {
 			mDynamicsWorld->setGravity(gravity);
+		}
+
+		bool BulletPhysics::init(void) {
+			return false;
+		}
+
+		void BulletPhysics::update(void) {
+
 		}
 	} // End of Scene
 } // End of Dream

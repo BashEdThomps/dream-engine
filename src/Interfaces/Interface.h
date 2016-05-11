@@ -24,6 +24,7 @@ namespace Dream {
 		Interface(void);
 		virtual ~Interface(void) {}
 		virtual bool init() = 0;
+		virtual void update() = 0;
 	}; // End of Interface
 } // End of Dream
 

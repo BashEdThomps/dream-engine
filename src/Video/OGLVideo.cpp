@@ -40,16 +40,21 @@ namespace Dream {
 	    /* Make the window's context current */
 	    glfwMakeContextCurrent(mWindow);
 	    /* Loop until the user closes the window */
-	    while (!glfwWindowShouldClose(mWindow)) {
-	        /* Render here */
-					// ...
+			return true;
+		}
+
+		void OGLVideo::update(void) {
+	    if (!glfwWindowShouldClose(mWindow)) {
+				
+	        /*
+					 * Render here
+					 */
 
 	        /* Swap front and back buffers */
 	        glfwSwapBuffers(mWindow);
 	        /* Poll for and process events */
 	        glfwPollEvents();
 	    }
-	    return true;
 		}
 	} // End of Video
 } // End of Dream

@@ -40,5 +40,8 @@ namespace Dream {
 			}
 			return buffer;
 		}
+
+		void OALAudio::update() {}
+
 	} // End of Audio
 } // End of Dream

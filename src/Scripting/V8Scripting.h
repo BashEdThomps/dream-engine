@@ -1,5 +1,5 @@
 /*
-* V8Scripting
+* Dream::Scripting::V8Scripting
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@ namespace Dream {
 		public:
 			V8Scripting(void);
 			~V8Scripting(void);
+			bool init(void);
+			void update(void);
 		}; // End of V8Scripting
 	} // End of Scripting
 } // End of Dream

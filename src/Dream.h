@@ -9,10 +9,16 @@
 
 #include "Interfaces/Interface.h"
 #include "Interfaces/AudioInterface.h"
-#include "Interfaces/PhysicsInterface.h"
-#include "Interfaces/VideoInterface.h"
-#include "Interfaces/ScriptingInterface.h"
+#include "Audio/OALAudio.h"
 
+#include "Interfaces/PhysicsInterface.h"
+#include "Physics/BulletPhysics.h"
+
+#include "Interfaces/VideoInterface.h"
+#include "Video/OGLVideo.h"
+
+#include "Interfaces/ScriptingInterface.h"
+#include "Scripting/V8Scripting.h"
 
 namespace Dream {
 	class Dream {
@@ -22,6 +28,7 @@ namespace Dream {
 		Video::VideoInterface         *mVideoInterface;
 		Physics::PhysicsInterface     *mPhysicsInterface;
 		Scripting::ScriptingInterface *mScriptingInterface;
+		bool mRunning;
 
 	public:
 		Dream(void);
@@ -33,6 +40,7 @@ namespace Dream {
 		int runProject();
 		bool isProjectLoaded();
 		bool createInterfaces();
+		void updateInterfaces();
 	};
 }
 

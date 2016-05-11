@@ -38,11 +38,113 @@ namespace Dream {
 	}
 
 	bool Dream::createInterfaces() {
-		return false;
+		std::cout << "Dream: Creating Interfaces..." << std::endl;
+
+		if (mScriptingInterface == NULL) {
+			mScriptingInterface = new Scripting::V8Scripting();
+			if (!mScriptingInterface->init())
+			{
+				std::cerr << "Unable to initialise V8Scripting." << std::endl;
+				return false;
+			}
+		} else {
+			std::cerr << "Unable to create V8Scripting. Scripting interface allready exists." << std::endl;
+			return false;
+		}
+
+		if (mProject->isOpenALEnabled()) {
+				if (mAudioInterface == NULL) {
+					mAudioInterface = new Audio::OALAudio();
+					if (!mAudioInterface->init())
+					{
+						std::cerr << "Unable to initialise OALAudio." << std::endl;
+						return false;
+					}
+				} else {
+					std::cerr << "Unable to create OALAudio. Audio interface allready exists." << std::endl;
+					return false;
+				}
+		}
+
+		if (mProject->isBullet2Enabled()) {
+			if (mPhysicsInterface == NULL) {
+					mPhysicsInterface = new Physics::BulletPhysics();
+					if (!mPhysicsInterface->init())
+					{
+						std::cerr << "Unable to initialise BulletPhysics." << std::endl;
+						return false;
+					}
+				} else {
+					std::cerr << "Unable to create BulletPhysics. Physics interface allready exists." << std::endl;
+					return false;
+				}
+		}
+
+		if (mProject->isBullet3Enabled()) {
+			/*if (mPhysicsInterface == NULL) {
+					mPhysicsInterface = new Physics::Bullet3Physics();
+					if (!mPhysicsInterface->init())
+					{
+						std::cerr << "Unable to initialise Bullet3Physics." << std::endl;
+						return false;
+					}
+				} else {
+					std::cerr << "Unable to create Bullet3Physics. Physics interface allready exists." << std::endl;
+					return false;
+				}
+				*/
+				std::cerr << "Bullet3Physics is not yet implemented." << std::endl;
+				return false;
+		}
+
+		if (mProject->isOpenGLEnabled())  {
+			if (mVideoInterface == NULL) {
+					mVideoInterface = new Video::OGLVideo();
+					if (!mVideoInterface->init())
+					{
+						std::cerr << "Unable to initialise OGLVideo." << std::endl;
+						return false;
+					}
+				} else {
+					std::cerr << "Unable to create OGLVideo. Video interface allready exists." << std::endl;
+					return false;
+				}
+		}
+
+		if (mProject->isVulkanEnabled())  {
+			/*if (mVideoInterface == NULL) {
+					mVideoInterface = new Video::VulkanVideo();
+					if (!mVideoInterface->init())
+					{
+						std::cerr << "Unable to initialise VulkanVideo." << std::endl;
+						return false;
+					}
+				} else {
+					std::cerr << "Unable to create VulkanVideo. Video interface allready exists." << std::endl;
+					return false;
+				}
+				*/
+				std::cerr << "VulkanVideo interface is not yet implemented" << std::endl;
+				return false;
+		}
+
+		std::cout << "Dream: Successfuly created interfaces." << std::endl;
+		return true;
 	}
 
 	int Dream::runProject() {
 		createInterfaces();
+		mRunning = true;
+		while(mRunning) {
+			updateInterfaces();
+		}
 		return 0;
+	}
+
+	void Dream::updateInterfaces(void) {
+			if (mScriptingInterface != NULL) mScriptingInterface->update();
+			if (mPhysicsInterface   != NULL) mPhysicsInterface->update();
+			if (mAudioInterface     != NULL) mAudioInterface->update();
+			if (mVideoInterface     != NULL) mVideoInterface->update();
 	}
 }

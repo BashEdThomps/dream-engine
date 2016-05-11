@@ -38,6 +38,7 @@ namespace Dream {
 			OALAudio(void);
 			~OALAudio(void);
 			bool init(void);
+			void update(void);
 
 			ALuint generateBuffer();
 			void playSource(ALuint);

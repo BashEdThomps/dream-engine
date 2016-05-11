@@ -1,5 +1,5 @@
 /*
-* V8Scripting
+* Dream::Scripting::V8Scripting
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,18 @@
 namespace Dream {
 	namespace Scripting {
 		V8Scripting::V8Scripting(void) : ScriptingInterface() {
+
+		}
+
+		V8Scripting::~V8Scripting(void) {
+			mContext.Reset();
+			mIsolate->Dispose();
+			v8::V8::Dispose();
+			v8::V8::ShutdownPlatform();
+			//delete mPlatform;
+		}
+
+		bool V8Scripting::init()  {
 			// Initialize V8.
 			v8::V8::InitializeICU();
 			//V8::InitializeExternalStartupData(argv[0]);
@@ -29,14 +41,11 @@ namespace Dream {
 			mIsolate = v8::Isolate::GetCurrent();
 			v8::Isolate::Scope isolate_scope(mIsolate);
 			mContext.Reset(mIsolate, v8::Context::New(mIsolate));
+			return true;
 		}
 
-		V8Scripting::~V8Scripting(void) {
-			mContext.Reset();
-			mIsolate->Dispose();
-			v8::V8::Dispose();
-			v8::V8::ShutdownPlatform();
-			//delete mPlatform;
+		void V8Scripting::update() {
+
 		}
 	} // End of Scripting
 } // End of Dream
