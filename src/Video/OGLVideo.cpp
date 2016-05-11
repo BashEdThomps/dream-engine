@@ -27,6 +27,7 @@ namespace Dream {
 		}
 
 		bool OGLVideo::init(void) {
+			std::cout << "OGLVideo: Initialising...";
 			/* Initialize the library */
 	    if (!glfwInit()) {
 				return false;
@@ -40,12 +41,13 @@ namespace Dream {
 	    /* Make the window's context current */
 	    glfwMakeContextCurrent(mWindow);
 	    /* Loop until the user closes the window */
+			std::cout << "done." << std::endl;
 			return true;
 		}
 
 		void OGLVideo::update(void) {
 	    if (!glfwWindowShouldClose(mWindow)) {
-				
+
 	        /*
 					 * Render here
 					 */

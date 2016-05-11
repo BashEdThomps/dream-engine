@@ -24,10 +24,12 @@ namespace Dream {
 		OALAudio::~OALAudio(void) {}
 
 		bool OALAudio::init() {
+			std::cout << "OALAudio: Initialising...";
 			mDevice = alcOpenDevice(NULL);
 			mContext = alcCreateContext(mDevice,NULL);
 			alcMakeContextCurrent(mContext);
-			return false;
+			std::cout << "done." << std::endl;
+			return true;
 		}
 
 		ALuint OALAudio::generateBuffer() {

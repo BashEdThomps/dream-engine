@@ -33,13 +33,20 @@ namespace Dream {
 	public:
 		Dream(void);
 		~Dream(void);
+
 		bool loadFromArgumentParser(ArgumentParser*);
 		bool loadProjectFromFileReader(std::string projectPath, Util::FileReader*);
+
 		Project* getProject(void);
 		void setProject(Project*);
 		int runProject();
 		bool isProjectLoaded();
+
 		bool createInterfaces();
+		bool createScriptingInterfaces();
+		bool createPhysicsInterfaces();
+		bool createVideoInterfaces();
+		bool createAudioInterfaces();
 		void updateInterfaces();
 	};
 }

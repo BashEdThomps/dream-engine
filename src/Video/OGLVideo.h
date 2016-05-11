@@ -20,6 +20,7 @@
 
 #include "../Interfaces/VideoInterface.h"
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 namespace Dream {
 	namespace Video {

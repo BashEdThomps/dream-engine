@@ -32,6 +32,8 @@ namespace Dream {
 		}
 
 		bool V8Scripting::init()  {
+			std::cout << "V8Scripting: Initialising...";
+			/*
 			// Initialize V8.
 			v8::V8::InitializeICU();
 			//V8::InitializeExternalStartupData(argv[0]);
@@ -41,6 +43,8 @@ namespace Dream {
 			mIsolate = v8::Isolate::GetCurrent();
 			v8::Isolate::Scope isolate_scope(mIsolate);
 			mContext.Reset(mIsolate, v8::Context::New(mIsolate));
+			*/
+			std::cout << "done." << std::endl;
 			return true;
 		}
 

@@ -20,12 +20,7 @@
 namespace Dream {
 	namespace Physics {
 		BulletPhysics::BulletPhysics(void) : PhysicsInterface() {
-			mBroadphase = new btDbvtBroadphase();
-			mCollisionConfiguration = new btDefaultCollisionConfiguration();
-			mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
-			mSolver = new btSequentialImpulseConstraintSolver();
-			mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
-		}
+					}
 
 		BulletPhysics::~BulletPhysics(void) {
 			delete mSolver;
@@ -45,7 +40,14 @@ namespace Dream {
 		}
 
 		bool BulletPhysics::init(void) {
-			return false;
+			std::cout << "BulletPhysics: Initialising...";
+			mBroadphase = new btDbvtBroadphase();
+			mCollisionConfiguration = new btDefaultCollisionConfiguration();
+			mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
+			mSolver = new btSequentialImpulseConstraintSolver();
+			mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
+			std::cout << "done." << std::endl;
+			return true;
 		}
 
 		void BulletPhysics::update(void) {

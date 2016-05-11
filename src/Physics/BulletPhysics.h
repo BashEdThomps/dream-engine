@@ -21,6 +21,7 @@
 #include "../Interfaces/PhysicsInterface.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
+#include <iostream>
 
 namespace Dream {
 	namespace Physics {

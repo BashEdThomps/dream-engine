@@ -18,6 +18,8 @@
 #ifndef AUDIOPLAYBACK_H
 #define AUDIOPLAYBACK_H
 
+#include <iostream>
+
 #ifdef __APPLE__
 	#include <OpenAL/al.h>
 	#include <OpenAL/alc.h>

@@ -21,6 +21,7 @@
 #include "../Interfaces/ScriptingInterface.h"
 #include <libplatform.h>
 #include <v8.h>
+#include <iostream>
 
 //using namespace v8;
 
