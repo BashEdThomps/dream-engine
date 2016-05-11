@@ -23,10 +23,19 @@
 #include <v8.h>
 #include <iostream>
 
-//using namespace v8;
-
 namespace Dream {
 	namespace Scripting {
+
+		class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
+		 public:
+		  virtual void* Allocate(size_t length) {
+			  void* data = AllocateUninitialized(length);
+			  return data == NULL ? data : memset(data, 0, length);
+			}
+		  virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
+		  virtual void Free(void* data, size_t) { free(data); }
+		};
+
 		class V8Scripting : public ScriptingInterface {
 		private:
 			v8::Platform *mPlatform;

@@ -11,9 +11,7 @@ namespace Dream {
 		mPhysicsInterface   = NULL;
 	}
 
-	Dream::~Dream() {
-		
-	}
+	Dream::~Dream() {}
 
 	Project* Dream::getProject() {
 		return mProject;
@@ -78,23 +76,25 @@ namespace Dream {
 			std::cerr << "Unable to create V8Scripting. Scripting interface allready exists." << std::endl;
 			return false;
 		}
+		return false;
 	}
 
 	bool Dream::createAudioInterfaces() {
 		if (mProject->isOpenALEnabled()) {
-				if (mAudioInterface == NULL) {
-					mAudioInterface = new Audio::OALAudio();
-					if (mAudioInterface->init()) {
-						return true;
-					} else {
-						std::cerr << "Unable to initialise OALAudio." << std::endl;
-						return false;
-					}
+			if (mAudioInterface == NULL) {
+				mAudioInterface = new Audio::OALAudio();
+				if (mAudioInterface->init()) {
+					return true;
 				} else {
-					std::cerr << "Unable to create OALAudio. Audio interface allready exists." << std::endl;
+					std::cerr << "Unable to initialise OALAudio." << std::endl;
 					return false;
 				}
+			} else {
+				std::cerr << "Unable to create OALAudio. Audio interface allready exists." << std::endl;
+				return false;
+			}
 		}
+		return false;
 	}
 
 	bool Dream::createPhysicsInterfaces() {
@@ -127,6 +127,7 @@ namespace Dream {
 			std::cerr << "Bullet3Physics is not yet implemented." << std::endl;
 			return false;
 		}
+		return false;
 	}
 
 	bool Dream::createVideoInterfaces() {
@@ -159,6 +160,7 @@ namespace Dream {
 			std::cerr << "VulkanVideo interface is not yet implemented" << std::endl;
 			return false;
 		}
+		return false;
 	}
 
 	int Dream::runProject() {

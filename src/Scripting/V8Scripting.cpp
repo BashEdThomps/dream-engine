@@ -19,6 +19,10 @@
 
 namespace Dream {
 	namespace Scripting {
+
+		v8::Isolate::CreateParams _CreateParams;
+		ArrayBufferAllocator      _ArrayBufferAllocator;
+
 		V8Scripting::V8Scripting(void) : ScriptingInterface() {
 
 		}
@@ -28,22 +32,24 @@ namespace Dream {
 			mIsolate->Dispose();
 			v8::V8::Dispose();
 			v8::V8::ShutdownPlatform();
-			//delete mPlatform;
 		}
 
 		bool V8Scripting::init()  {
 			std::cout << "V8Scripting: Initialising...";
-			/*
-			// Initialize V8.
 			v8::V8::InitializeICU();
-			//V8::InitializeExternalStartupData(argv[0]);
 			mPlatform = v8::platform::CreateDefaultPlatform();
 			v8::V8::InitializePlatform(mPlatform);
 			v8::V8::Initialize();
 			mIsolate = v8::Isolate::GetCurrent();
+
+			if(mIsolate == NULL) {
+  			_CreateParams.array_buffer_allocator = &_ArrayBufferAllocator;
+			  mIsolate = v8::Isolate::New(_CreateParams);
+			  mIsolate->Enter();
+			}
+
 			v8::Isolate::Scope isolate_scope(mIsolate);
 			mContext.Reset(mIsolate, v8::Context::New(mIsolate));
-			*/
 			std::cout << "done." << std::endl;
 			return true;
 		}
