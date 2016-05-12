@@ -25,6 +25,7 @@ namespace Dream {
 			mAnimationEnabled = false;
 			mInputEnabled     = false;
 			mAudioEnabled     = false;
+            mScriptingEnabled = false;
 		}
 
 		Scene::Scene(nlohmann::json jsonScene) {
@@ -51,6 +52,11 @@ namespace Dream {
 				jsonScene[SCENE_JSON_AUDIO_ENABLED].is_null() ?
 				false : (bool)jsonScene[SCENE_JSON_AUDIO_ENABLED]
 			);
+            
+            mScriptingEnabled = (
+                jsonScene[SCENE_JSON_SCRIPTING_ENABLED].is_null() ?
+                false : (bool)jsonScene[SCENE_JSON_SCRIPTING_ENABLED]
+            );
 
 			nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
 

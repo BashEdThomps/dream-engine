@@ -29,6 +29,8 @@
 #define PROJECT_JSON_DESCRIPTION     "description"
 #define PROJECT_JSON_SCENE_ARRAY     "scenes"
 #define PROJECT_JSON_RESOURCE_ARRAY  "resources"
+#define PROJECT_JSON_V8_ENABLED      "v8"
+#define PROJECT_JSON_CHAI_ENABLED    "chai"
 #define PROJECT_JSON_OPENAL_ENABLED  "openAL"
 #define PROJECT_JSON_BULLET2_ENABLED "bullet2"
 #define PROJECT_JSON_BULLET3_ENABLED "bullet3"
@@ -44,6 +46,8 @@ namespace Dream {
 		std::string mAuthor;
 		std::string mProjectPath;
 
+		bool mChaiEnabled;
+		bool mV8Enabled;
 		bool mOpenALEnabled;
 		bool mBullet2Enabled;
 		bool mBullet3Enabled;
@@ -87,6 +91,8 @@ namespace Dream {
 
 		void showStatus();
 
+		bool isChaiEnabled();
+		bool isV8Enabled();
 		bool isOpenALEnabled();
 		bool isBullet2Enabled();
 		bool isBullet3Enabled();

@@ -1,5 +1,5 @@
 /*
-* AudioInterface
+* OGLVideo
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,29 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AUDIOINTERFACE_H
-#define AUDIOINTERFACE_H
+#ifndef OGLVIDEO_H
+#define OGLVIDEO_H
 
-#include "Interface.h"
+#include "../../../PluginInterfaces/VideoInterface.h"
+#include <GLFW/glfw3.h>
+#include <iostream>
 
 namespace Dream {
-	namespace Audio {
-		class AudioInterface : public Dream::Interface {
-		public:
-			AudioInterface(void);
-			virtual ~AudioInterface(void) {};
-		}; // End of AudioInterface
-	} // End of Audio
+	namespace Plugins {
+		namespace Video {
+			namespace OpenGL {
+				class OGLVideo : public VideoInterface {
+				private:
+					GLFWwindow *mWindow;
+				public:
+					OGLVideo(void);
+					~OGLVideo(void);
+					bool init(void);
+					void update(void);
+				}; // End of OGLVideo
+			} // End of OpenGL
+		} // End of Video
+	} // End of Plugins
 } // End of Dream
 
-#endif // End of AUDIOINTERFACE_H
+#endif // End of OGLVIDEO_H

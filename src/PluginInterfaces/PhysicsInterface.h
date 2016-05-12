@@ -1,5 +1,5 @@
 /*
-* Dream::Scripting::ScriptingInterface
+* PhysicsInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,21 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCRIPTINGINTERFACE_H
-#define SCRIPTINGINTERFACE_H
+#ifndef PHYSICSINTERFACE_H
+#define PHYSICSINTERFACE_H
 
 #include "Interface.h"
 
 namespace Dream {
-	namespace Scripting {
-		class ScriptingInterface : public Dream::Interface {
-		public:
-			ScriptingInterface(void);
-			virtual ~ScriptingInterface(void) {}
-		}; // End of ScriptingInterface
-	} // End of Scripting
-}// End of Dream
+	namespace Plugins {
+		namespace Physics {
+			class PhysicsInterface : public Dream::Plugins::Interface {
+			public:
+				PhysicsInterface(void);
+				virtual ~PhysicsInterface(void) {};
+			}; // End of PhysicsInterface
+		} // End of Physics
+	}// End of Plugins
+} // End of Dream
 
-#endif // End of SCRIPTINGINTERFACE_H
+#endif // End of PHYSICSINTERFACE_H

@@ -41,6 +41,8 @@ App.service('ProjectService',
         this.setAuthor      (project.author);
         this.setDescription (project.description);
         this.setOpenAL      (project.openAL);
+        this.setChai        (project.chai);
+        this.setV8          (project.v8);
         this.setBullet2     (project.bullet2);
         this.setBullet3     (project.bullet3);
         this.setOpenGL      (project.openGL);
@@ -165,6 +167,7 @@ App.service('ProjectService',
             objects:[
                 this.createSceneObject()
             ],
+            scriptingEnabled : false,
             animationEnabled : false,
             physicsEnabled    : false,
             audioEnabled     : false,
@@ -188,6 +191,14 @@ App.service('ProjectService',
             type: "",
         };
     };
+
+    this.setChai = function(chai) {
+        this.project.chai = chai;
+    };
+
+    this.setV8 = function(v8) {
+        this.project.v8 = v8;
+    };;
 
     this.setOpenAL = function(openAL) {
         this.project.openAL = openAL;
@@ -272,10 +283,17 @@ App.service('ProjectService',
     };
 
     this.updateScene = function(scene) {
-        this.setSceneAnimationEnabled(scene);
-        this.setSceneInputEnabled(scene);
-        this.setSceneAudioEnabled(scene);
-        this.setSceneName(scene);
+      this.setSceneScriptingEnabled(scene);
+      this.setSceneAnimationEnabled(scene);
+      this.setSceneInputEnabled(scene);
+      this.setSceneAudioEnabled(scene);
+      this.setSceneName(scene);
+    };
+
+    this.setSceneScriptingEnabled = function(scene) {
+      this.getSceneByUUID(scene.uuid,function(projScene) {
+          projScene.scriptingEnabled = scene.scriptingEnabled;
+      });
     };
 
     this.setSceneAnimationEnabled = function(scene) {

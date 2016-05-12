@@ -1,5 +1,5 @@
 /*
-* OALAudio
+* Dream::Plugins::Interface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,35 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OALAudio.h"
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
-#include <iostream>
 namespace Dream {
-	namespace Audio {
-		OALAudio::OALAudio(void) : AudioInterface() {}
-		OALAudio::~OALAudio(void) {}
-
-		bool OALAudio::init() {
-			std::cout << "OALAudio: Initialising...";
-			mDevice = alcOpenDevice(NULL);
-			mContext = alcCreateContext(mDevice,NULL);
-			alcMakeContextCurrent(mContext);
-			std::cout << "done." << std::endl;
-			return true;
-		}
-
-		ALuint OALAudio::generateBuffer() {
-			alGetError();
-			ALuint buffer;
-			alGenBuffers( 1, &buffer );
-			ALenum error = alGetError();
-			if ( error != AL_NO_ERROR ){
-				return -1;
-			}
-			return buffer;
-		}
-
-		void OALAudio::update() {}
-
-	} // End of Audio
+	namespace Plugins {
+		class Interface {
+		public:
+			Interface(void);
+			virtual ~Interface(void) {}
+			virtual bool init() = 0;
+			virtual void update() = 0;
+		}; // End of Interface
+	} // End of Plugins
 } // End of Dream
+
+#endif // End of INTERFACE_H

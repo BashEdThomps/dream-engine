@@ -18,31 +18,35 @@
 #ifndef PHYSICSWORLD_H
 #define PHYSICSWORLD_H
 
-#include "../Interfaces/PhysicsInterface.h"
+#include "../../../PluginInterfaces/PhysicsInterface.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
 #include <iostream>
 
 namespace Dream {
-	namespace Physics {
-		class BulletPhysics : public PhysicsInterface {
-		private:
-			// Bullet
-			btDynamicsWorld                     *mDynamicsWorld;
-			btBroadphaseInterface               *mBroadphase;
-			btDefaultCollisionConfiguration     *mCollisionConfiguration;
-			btCollisionDispatcher               *mDispatcher;
-			btSequentialImpulseConstraintSolver *mSolver;
-		public:
-			BulletPhysics(void);
-			~BulletPhysics(void);
-			void setGravity3f(float,float,float);
-			void setGravityBtVector3(btVector3);
-			bool init(void);
-			void update(void);
+	namespace Plugins {
+		namespace Physics {
+			namespace Bullet {
+				class BulletPhysics : public PhysicsInterface {
+				private:
+					// Bullet
+					btDynamicsWorld                     *mDynamicsWorld;
+					btBroadphaseInterface               *mBroadphase;
+					btDefaultCollisionConfiguration     *mCollisionConfiguration;
+					btCollisionDispatcher               *mDispatcher;
+					btSequentialImpulseConstraintSolver *mSolver;
+				public:
+					BulletPhysics(void);
+					~BulletPhysics(void);
+					void setGravity3f(float,float,float);
+					void setGravityBtVector3(btVector3);
+					bool init(void);
+					void update(void);
 
-		}; // End of BulletPhysics
-	} // End of Scene
+				}; // End of BulletPhysics
+			} // End of Bullet
+		} // End of Scene
+	} // End of Plugins
 } // End of Dream
 
 #endif // End of PHYSICSWORLD_H

@@ -30,6 +30,7 @@
 #define SCENE_JSON_AUDIO_ENABLED     "audioEnabled"
 #define SCENE_JSON_PHYSICS_ENABLED   "physicsEnabled"
 #define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
+#define SCENE_JSON_SCRIPTING_ENABLED "scriptingEnabled"
 #define SCENE_JSON_SCENE_OBJECTS     "objects"
 
 namespace Dream {
@@ -38,10 +39,13 @@ namespace Dream {
 		private:
 			std::string   mUUID;
 			std::string   mName;
+            
 			bool          mAnimationEnabled;
 			bool          mAudioEnabled;
 			bool          mInputEnabled;
 			bool          mPhysicsEnabled;
+            bool          mScriptingEnabled;
+            
 			Camera       *mCamera;
 			SceneObject* mRootSceneObject;
 			std::vector<SceneObject*> mScenegraphVector;

@@ -24,21 +24,22 @@ file(GLOB RESOURCE_MODEL_WAVEFRONT_SRC "Resource/Model/Wavefront/*.h"   "Resourc
 file(GLOB RESOURCE_SCRIPT_SRC          "Resource/Script/*.h"            "Resource/Script/*.cpp"            )
 file(GLOB RESOURCE_SCRIPT_JS_SRC       "Resource/Script/JavaScript/*.h" "Resource/Script/JavaScript/*.cpp" )
 
-# Interfaces
-file(GLOB INTERFACES_SRC "Interfaces/*.h" "Interfaces/*.cpp")
+# PluginInterfaces
+file(GLOB PLUGIN_INTERFACES_SRC "PluginInterfaces/*.h" "PluginInterfaces/*.cpp")
 
-# Audio
-file(GLOB AUDIO_SRC "Audio/*.h" "Audio/*.cpp")
+# Plugins::Audio::OpenAL
+file(GLOB PLUGINS_AUDIO_OPENAL_SRC "Plugins/Audio/OpenAL/*.h" "Plugins/Audio/OpenAL/*.cpp")
 
-# Video
-file(GLOB VIDEO_SRC "Video/*.h" "Video/*.cpp")
+# Plugins::Video::OpenGL
+file(GLOB PLUGINS_VIDEO_OPENGL_SRC "Plugins/Video/OpenGL/*.h" "Plugins/Video/OpenGL/*.cpp")
 
-# Physics
-file (GLOB PHYSICS_SRC "Physics/*.h" "Physics/*.cpp")
+# Plugins::Physics::Bullet
+file (GLOB PLUGINS_PHYSICS_BULLET_SRC "Plugins/Physics/Bullet/*.h" "Plugins/Physics/Bullet/*.cpp")
 
 
 # Scripting
-file (GLOB SCRIPTING_SRC "Scripting/*.h" "Scripting/*.cpp")
+file (GLOB PLUGINS_SCRIPTING_CHAI_SRC "Plugins/Scripting/Chai/*.h" "Plugins/Scripting/Chai/*.cpp")
+file (GLOB PLUGINS_SCRIPTING_V8_SRC "Plugins/Scripting/v8/*.h" "Plugins/Scripting/v8/*.cpp")
 
 # Dream
 file(GLOB DREAM_SRC "*.h" "*.cpp")
@@ -65,17 +66,23 @@ if (NOT GLFW_FOUND)
   message(FATAL_ERROR "Package GLFW Not Found")
 endif()
 
+find_package(CHAISCRIPT COMPONENTS Chaiscript REQUIRED)
+if (NOT CHAISCRIPT_FOUND)
+  message(FATAL_ERROR "Package ChaiScript was not found")
+endif()
+
 # Targets
 add_library (
     DreamBase SHARED
     ${JSON_SRC}
     ${UTIL_SRC}
     ${UNIT_SRC}
-    ${AUDIO_SRC}
-    ${VIDEO_SRC}
-    ${PHYSICS_SRC}
-    ${SCRIPTING_SRC}
-    ${INTERFACES_SRC}
+    ${PLUGINS_AUDIO_OPENAL_SRC}
+    ${PLUGINS_VIDEO_OPENGL_SRC}
+    ${PLUGINS_PHYSICS_BULLET_SRC}
+    ${PLUGINS_SCRIPTING_CHAI_SRC}
+    ${PLUGINS_SCRIPTING_V8_SRC}
+    ${PLUGIN_INTERFACES_SRC}
     ${RESOURCE_SRC}
     ${RESOURCE_ANIMATION_SRC}
     ${RESOURCE_AUDIO_SRC}
@@ -85,6 +92,7 @@ add_library (
     ${RESOURCE_MODEL_WAVEFRONT_SRC}
     ${RESOURCE_SCRIPT_SRC}
     ${RESOURCE_SCRIPT_JS_SRC}
+    ${RESOURCE_SCRIPT_CHAI_SRC}
     ${SCENE_SRC}
     ${DREAM_SRC}
 )
@@ -100,6 +108,7 @@ target_link_libraries(
 )
 
 include_directories(
+  ${CHAISCRIPT_INCLUDE_DIR}
   ${OPENAL_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
   ${V8_INCLUDE_DIR}

@@ -1,5 +1,5 @@
 /*
-* OGLVideo
+* PhysicsInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,25 +15,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OGLVIDEO_H
-#define OGLVIDEO_H
-
-#include "../Interfaces/VideoInterface.h"
-#include <GLFW/glfw3.h>
-#include <iostream>
+#include "PhysicsInterface.h"
 
 namespace Dream {
-	namespace Video {
-		class OGLVideo : public VideoInterface {
-		private:
-			GLFWwindow *mWindow;
-		public:
-			OGLVideo(void);
-			~OGLVideo(void);
-			bool init(void);
-			void update(void);
-		}; // End of OGLVideo
-	} // End of Video
+	namespace Plugins {
+		namespace Physics {
+			PhysicsInterface::PhysicsInterface(void) : Dream::Plugins::Interface() {}
+		} // End of Physics
+	} // End of Plugins
 } // End of Dream
-
-#endif // End of OGLVIDEO_H

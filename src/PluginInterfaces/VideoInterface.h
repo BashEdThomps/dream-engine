@@ -1,5 +1,5 @@
 /*
-* PhysicsInterface
+* VideoInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,21 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PHYSICSINTERFACE_H
-#define PHYSICSINTERFACE_H
+#ifndef VIDEOINTERFACE_H
+#define VIDEOINTERFACE_H
 
 #include "Interface.h"
 
 namespace Dream {
-	namespace Physics {
-		class PhysicsInterface : public Dream::Interface {
-		public:
-			PhysicsInterface(void);
-			virtual ~PhysicsInterface(void) {};
-		}; // End of PhysicsInterface
-	} // End of Physics
+	namespace Plugins {
+		namespace Video {
+			class VideoInterface : public Dream::Plugins::Interface {
+			public:
+				VideoInterface(void);
+				virtual ~VideoInterface(void) {};
+			}; // End of VideoInterface
+		} // End of Video
+	} // End of Plugins
 } // End of Dream
 
-#endif // End of PHYSICSINTERFACE_H
+#endif // End of VIDEOINTERFACE_H

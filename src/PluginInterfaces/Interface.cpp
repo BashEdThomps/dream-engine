@@ -1,5 +1,5 @@
 /*
-* Dream::Interface
+* Dream::Plugins::Interface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,5 +18,7 @@
 #include "Interface.h"
 
 namespace Dream {
-	Interface::Interface(void) {}
+	namespace Plugins {
+		Interface::Interface(void) {}
+	}
 } // End of Dream

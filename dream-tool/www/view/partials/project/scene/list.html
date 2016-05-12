@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="panel panel-default">
         <div class="panel-heading">
           Configure Scene
@@ -10,40 +10,43 @@
             <label for="name">Name</label>
             <input id="name" ng-disabled="currentScene === undefined" type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentScene.name" />
           </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="checkbox checkbox-info">
-                <input type="checkbox" id="enableAnimation" ng-disabled="currentScene === undefined" ng-change="modified()" ng-model="currentScene.animationEnabled" />
-                <label for="enableAnimation">
-                  Enable Animation
-                </label>
-              </div>
-              <div class="checkbox checkbox-info">
-                <input id="enableAudio" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.audioEnabled" />
-                <label for="enableAudio">
-                  Enable Audio
-                </label>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="checkbox checkbox-info">
-                <input id="enableInput" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.inputEnabled" />
-                <label for="enableInput">
-                  Enable Input
-                </label>
-              </div>
-              <div class="checkbox checkbox-info">
-                <input id="enableBullet" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.physicsEnabled" />
-                <label for="enablePhysics">
-                  Enable Physics
-                </label>
-              </div>
-            </div>
-          </div>
           <div class="form-group">
             <label>Notes</label>
             <textarea class="form-control" width="100%" rows 10></textarea>
           </div>
+          <hr/>
+          <label>Using Plugins</label>
+          <div class="checkbox checkbox-info">
+            <input type="checkbox" id="enableAnimation" ng-disabled="currentScene === undefined" ng-change="modified()" ng-model="currentScene.animationEnabled" />
+            <label for="enableAnimation">
+              Animation
+            </label>
+          </div>
+          <div class="checkbox checkbox-info">
+            <input id="enableAudio" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.audioEnabled" />
+            <label for="enableAudio">
+              Audio
+            </label>
+          </div>
+          <div class="checkbox checkbox-info">
+            <input id="enableInput" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.inputEnabled" />
+            <label for="enableInput">
+              Input
+            </label>
+          </div>
+          <div class="checkbox checkbox-info">
+            <input id="enableBullet" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.physicsEnabled" />
+            <label for="enablePhysics">
+              Physics
+            </label>
+          </div>
+          <div class="checkbox checkbox-info">
+            <input id="enableScripting" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.scriptingEnabled" />
+            <label for="enableScripting">
+              Scripting
+            </label>
+          </div>
+
         </div>
         <div class="panel-footer">
           <button ng-click="onNewSceneButtonClicked()" class="btn btn-sm btn btn-success">New Scene</button>
@@ -51,7 +54,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
           Scenes

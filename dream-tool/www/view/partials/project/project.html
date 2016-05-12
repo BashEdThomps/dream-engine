@@ -1,69 +1,81 @@
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Configuration
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.name"/>
-                    </div>
-                    <div class="form-group">
-                        <label>Author</label>
-                        <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.author"/>
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea class="description-textarea form-control input-sm"
-                                  ng-change="modified()"
-                                  ng-model="project.description"
-                                  rows="5">
-                        </textarea>
-                    </div>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Configuration
         </div>
-        <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Interfaces
-                </div>
-                <div class="panel-body">
-                    <strong>Audio</strong>
-                    <div class="form-group">
-                        <div class="checkbox checkbox-info">
-                          <input ng-change="modified()" ng-model="project.openAL" type="checkbox" id="openAL">
-                          <label for="openAL">OpenAL</label>
-                        </div>
-                    </div>
-                    <hr />
-                    <strong>Physics</strong>
-                    <div class="form-group">
-                        <div class="checkbox checkbox-info">
-                          <input ng-change="modified()" ng-model="project.bullet2" type="checkbox" id="bullet2">
-                          <label for="bullet2">Bullet 2</label>
-                        </div>
-                        <div class="checkbox checkbox-info">
-                          <input ng-change="modified()" ng-model="project.bullet3" type="checkbox" id="bullet3">
-                          <label for="bullet3">Bullet 3</label>
-                        </div>
-                    </div>
-                    <hr />
-                    <strong>Video</strong>
-                    <div class="form-group">
-                        <div class="checkbox checkbox-info">
-                          <input ng-change="modified()" ng-model="project.openGL" type="checkbox" id="openGL">
-                          <label for="openGL">OpenGL</label>
-                        </div>
-                        <div class="checkbox checkbox-info">
-                          <input ng-change="modified()" ng-model="project.vulkan" type="checkbox" id="vulkan">
-                          <label for="vulkan">Vulkan (Coming Soon)</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.name"/>
+          </div>
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.author"/>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="description-textarea form-control input-sm"
+            ng-change="modified()"
+            ng-model="project.description"
+            rows="5">
+          </textarea>
         </div>
+      </div>
     </div>
+  </div>
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Plugins
+      </div>
+      <div class="panel-body">
+        <strong>Scripting</strong>
+        <div class="form-group">
+          <div class="checkbox checkbox-info">
+            <input ng-change="modified()" ng-model="project.chai" type="checkbox" id="chai">
+            <label for="chai">Chai</label>
+          </div>
+          <div class="checkbox checkbox-info">
+            <input disabled ng-change="modified()" ng-model="project.v8" type="checkbox" id="v8">
+            <label for="v8">V8 (JavaScript)</label>
+          </div>
+        </div>
+        <hr/>
+        <strong>Audio</strong>
+        <div class="form-group">
+          <div class="checkbox checkbox-info">
+            <input ng-change="modified()" ng-model="project.openAL" type="checkbox" id="openAL">
+            <label for="openAL">OpenAL</label>
+          </div>
+        </div>
+        <hr />
+        <strong>Physics</strong>
+        <div class="form-group">
+          <div class="checkbox checkbox-info">
+            <input ng-change="modified()" ng-model="project.bullet2" type="checkbox" id="bullet2">
+            <label for="bullet2">Bullet 2</label>
+          </div>
+          <div class="checkbox checkbox-info">
+            <input disabled ng-change="modified()" ng-model="project.bullet3" type="checkbox" id="bullet3">
+            <label for="bullet3">Bullet 3</label>
+          </div>
+        </div>
+        <hr />
+        <strong>Video</strong>
+        <div class="form-group">
+          <div class="checkbox checkbox-info">
+            <input ng-change="modified()" ng-model="project.openGL" type="checkbox" id="openGL">
+            <label for="openGL">OpenGL</label>
+          </div>
+          <div class="checkbox checkbox-info">
+            <input disabled ng-change="modified()" ng-model="project.vulkan" type="checkbox" id="vulkan">
+            <label for="vulkan">Vulkan</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </div>

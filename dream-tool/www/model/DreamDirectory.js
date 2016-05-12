@@ -174,11 +174,18 @@ var getProjectFilePathFromUUID = function(uuid) {
     return dreamDirectory+path.sep+uuid+path.sep+uuid+JSON_EXTENSION;
 };
 
+var isValidProjectFolder = function(projFolder) {
+    return (
+      projFolder.indexOf(TAR_GZ_EXTENSION) < 0 &&
+      projFolder[0] != "."
+  );
+};
+
 module.exports.listProjects = function () {
     var retval = [];
     var uuidList = fs.readdirSync(dreamDirectory);
     uuidList.forEach(function(projFolder) {
-        if (projFolder.indexOf(TAR_GZ_EXTENSION) < 0) {
+        if (isValidProjectFolder(projFolder)) {
             var name = "Untitled Project";
             try {
                 name = require(getProjectFilePathFromUUID(projFolder)).name || name;

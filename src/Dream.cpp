@@ -46,43 +46,59 @@ namespace Dream {
 	bool Dream::createInterfaces() {
 		if (!isProjectLoaded()) {
 			std::cerr << "Dream: Cannot load interfaces, no project is loaded" << std::endl;
+            return false;
 		}
-
-		bool result = true;
 
 		std::cout << "Dream: Creating Interfaces..." << std::endl;
 
-		result = result && createScriptingInterfaces();
-		result = result && createAudioInterfaces();
-		result = result && createPhysicsInterfaces();
-		result = result && createVideoInterfaces();
+        if(!createScriptingInterfaces()) return false;
+        if(!createAudioInterfaces())     return false;
+        if(!createPhysicsInterfaces())   return false;
+        if(!createVideoInterfaces())     return false;
 
-		if (result) {
-			std::cout << "Dream: Successfuly created interfaces." << std::endl;
-		}
-		return result;
+		std::cout << "Dream: Successfuly created interfaces." << std::endl;
+        return true;
 	}
 
   bool Dream::createScriptingInterfaces() {
-		if (mScriptingInterface == NULL) {
-			mScriptingInterface = new Scripting::V8Scripting();
-			if (mScriptingInterface->init()) {
-				return true;
+		// Chai
+		if (mProject->isChaiEnabled()){
+			if (mScriptingInterface == NULL) {
+				mScriptingInterface = new Plugins::Scripting::Chai::ChaiScripting();
+				if (mScriptingInterface->init()) {
+					return true;
+				} else {
+					std::cerr << "Unable to initialise ChaiScripting." << std::endl;
+					return false;
+				}
 			} else {
-				std::cerr << "Unable to initialise V8Scripting." << std::endl;
+				std::cerr << "Unable to create ChaiScripting. Scripting interface allready exists." << std::endl;
 				return false;
 			}
-		} else {
-			std::cerr << "Unable to create V8Scripting. Scripting interface allready exists." << std::endl;
-			return false;
+		}
+		// V8
+		else if (mProject->isV8Enabled()){
+			if (mScriptingInterface == NULL) {
+				mScriptingInterface = new Plugins::Scripting::V8::V8Scripting();
+				if (mScriptingInterface->init()) {
+					return true;
+				} else {
+					std::cerr << "Unable to initialise V8Scripting." << std::endl;
+					return false;
+				}
+			} else {
+				std::cerr << "Unable to create V8Scripting. Scripting interface allready exists." << std::endl;
+				return false;
+			}
 		}
 		return false;
 	}
 
 	bool Dream::createAudioInterfaces() {
+		// OpenAL
 		if (mProject->isOpenALEnabled()) {
 			if (mAudioInterface == NULL) {
-				mAudioInterface = new Audio::OALAudio();
+				mAudioInterface = new Plugins::Audio::OpenAL::OALAudio();
 				if (mAudioInterface->init()) {
 					return true;
 				} else {
@@ -98,9 +114,10 @@ namespace Dream {
 	}
 
 	bool Dream::createPhysicsInterfaces() {
+		// Bullet 2
 		if (mProject->isBullet2Enabled()) {
 			if (mPhysicsInterface == NULL) {
-				mPhysicsInterface = new Physics::BulletPhysics();
+				mPhysicsInterface = new Plugins::Physics::Bullet::BulletPhysics();
 				if (mPhysicsInterface->init()) {
 					return true;
 				} else {
@@ -111,7 +128,9 @@ namespace Dream {
 				std::cerr << "Unable to create BulletPhysics. Physics interface allready exists." << std::endl;
 				return false;
 			}
-		} else if (mProject->isBullet3Enabled()) {
+		}
+		// Bullet3
+		else if (mProject->isBullet3Enabled()) {
 			/*if (mPhysicsInterface == NULL) {
 				mPhysicsInterface = new Physics::Bullet3Physics();
 				if (!mPhysicsInterface->init())
@@ -131,9 +150,10 @@ namespace Dream {
 	}
 
 	bool Dream::createVideoInterfaces() {
+		// OpenGL
 		if (mProject->isOpenGLEnabled()) {
 			if (mVideoInterface == NULL) {
-				mVideoInterface = new Video::OGLVideo();
+				mVideoInterface = new Plugins::Video::OpenGL::OGLVideo();
 				if (mVideoInterface->init()) {
 					return true;
 				} else {
@@ -144,7 +164,9 @@ namespace Dream {
 				std::cerr << "Unable to create OGLVideo. Video interface allready exists." << std::endl;
 				return false;
 			}
-		} else if (mProject->isVulkanEnabled())  {
+		}
+		// Vulkan
+		else if (mProject->isVulkanEnabled())  {
 			/*if (mVideoInterface == NULL) {
 				mVideoInterface = new Video::VulkanVideo();
 				if (!mVideoInterface->init())

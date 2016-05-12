@@ -15,11 +15,21 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ScriptingInterface.h"
+#ifndef SCRIPTINGINTERFACE_H
+#define SCRIPTINGINTERFACE_H
+
+#include "Interface.h"
 
 namespace Dream {
-	namespace Scripting {
-		ScriptingInterface::ScriptingInterface(void) {
-		}
-	} // End of Scripting
-} // End of Dream
+	namespace Plugins {
+		namespace Scripting {
+			class ScriptingInterface : public Dream::Plugins::Interface {
+			public:
+				ScriptingInterface(void);
+				virtual ~ScriptingInterface(void) {}
+			}; // End of ScriptingInterface
+		} // End of Scripting
+	}// End of Plugins
+}// End of Dream
+
+#endif // End of SCRIPTINGINTERFACE_H

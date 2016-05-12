@@ -7,27 +7,31 @@
 #include "ArgumentParser.h"
 #include "Project.h"
 
-#include "Interfaces/Interface.h"
-#include "Interfaces/AudioInterface.h"
-#include "Audio/OALAudio.h"
+#include "PluginInterfaces/Interface.h"
+#include "PluginInterfaces/AudioInterface.h"
+#include "Plugins/Audio/OpenAL/OALAudio.h"
 
-#include "Interfaces/PhysicsInterface.h"
-#include "Physics/BulletPhysics.h"
+#include "PluginInterfaces/PhysicsInterface.h"
+#include "Plugins/Physics/Bullet/BulletPhysics.h"
 
-#include "Interfaces/VideoInterface.h"
-#include "Video/OGLVideo.h"
+#include "PluginInterfaces/VideoInterface.h"
+#include "Plugins/Video/OpenGL/OGLVideo.h"
 
-#include "Interfaces/ScriptingInterface.h"
-#include "Scripting/V8Scripting.h"
+#include "PluginInterfaces/ScriptingInterface.h"
+#include "Plugins/Scripting/v8/V8Scripting.h"
+#include "Plugins/Scripting/Chai/ChaiScripting.h"
 
 namespace Dream {
 	class Dream {
 	protected:
-		Project                       *mProject;
-		Audio::AudioInterface         *mAudioInterface;
-		Video::VideoInterface         *mVideoInterface;
-		Physics::PhysicsInterface     *mPhysicsInterface;
-		Scripting::ScriptingInterface *mScriptingInterface;
+		// Project
+		Project *mProject;
+		// Plugins
+		Plugins::Audio::AudioInterface         *mAudioInterface;
+		Plugins::Video::VideoInterface         *mVideoInterface;
+		Plugins::Physics::PhysicsInterface     *mPhysicsInterface;
+		Plugins::Scripting::ScriptingInterface *mScriptingInterface;
+		// Engine Running
 		bool mRunning;
 
 	public:

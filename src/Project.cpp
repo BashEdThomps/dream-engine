@@ -37,6 +37,16 @@ namespace Dream {
 		mDescription = jsonProject [PROJECT_JSON_DESCRIPTION];
 
 
+		mChaiEnabled  = (
+			jsonProject [PROJECT_JSON_CHAI_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_JSON_CHAI_ENABLED]
+		);
+
+		mV8Enabled  = (
+			jsonProject [PROJECT_JSON_V8_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_JSON_V8_ENABLED]
+		);
+
 		mOpenALEnabled  = (
 			jsonProject [PROJECT_JSON_OPENAL_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_JSON_OPENAL_ENABLED]
@@ -74,6 +84,8 @@ namespace Dream {
 		std::cout << "               Name: " << mName                  << std::endl;
 		std::cout << "             Author: " << mAuthor                << std::endl;
 		std::cout << "        Description: " << mDescription           << std::endl;
+		std::cout << "       Chai Enabled: " << mChaiEnabled           << std::endl;
+		std::cout << "         v8 Enabled: " << mV8Enabled             << std::endl;
 		std::cout << "     OpenAL Enabled: " << mOpenALEnabled         << std::endl;
 		std::cout << "    Bullet2 Enabled: " << mBullet2Enabled        << std::endl;
 		std::cout << "    Bullet3 Enabled: " << mBullet3Enabled        << std::endl;
@@ -228,6 +240,14 @@ namespace Dream {
 
 	bool Project::isOpenALEnabled() {
 		return mOpenALEnabled;
+	}
+
+	bool Project::isChaiEnabled() {
+		return mChaiEnabled;
+	}
+
+	bool Project::isV8Enabled() {
+		return mV8Enabled;
 	}
 
 	bool Project::isBullet2Enabled() {

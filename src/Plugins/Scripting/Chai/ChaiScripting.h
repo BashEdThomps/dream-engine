@@ -1,5 +1,5 @@
 /*
-* PhysicsInterface
+* Dream::Scripting::ChaiScripting
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,26 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PhysicsInterface.h"
+#ifndef CHAISCRIPTING_H
+#define CHAISCRIPTING_H
+
+#include "../../../PluginInterfaces/ScriptingInterface.h"
+#include <chaiscript/chaiscript.hpp>
 
 namespace Dream {
-	namespace Physics {
-		PhysicsInterface::PhysicsInterface(void) : Dream::Interface() {
-
-		}
-	} // End of Physics
+	namespace Plugins {
+		namespace Scripting {
+			namespace Chai {
+				class ChaiScripting : public ScriptingInterface {
+				public:
+					ChaiScripting(void);
+					~ChaiScripting(void);
+					bool init();
+					void update();
+				}; // End of ChaiScripting
+			} // End of Chai
+		} // End Scripting
+	} // End of Plugins
 } // End of Dream
+
+#endif // End of CHAISCRIPTING_H
