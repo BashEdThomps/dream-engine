@@ -20,7 +20,35 @@
 namespace Dream {
 	namespace Plugins {
 		namespace Video {
-			VideoInterface::VideoInterface(void) : Dream::Plugins::Interface() {}
+            VideoInterface::VideoInterface(void) : Dream::Plugins::Interface() {
+                setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
+                setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
+            }
+            
+            void VideoInterface::setScreenWidth(int width) {
+                mScreenWidth = width;
+            }
+            
+            int  VideoInterface::getScreenWidth() {
+                return mScreenWidth;
+            }
+                
+            void VideoInterface::setScreenHeight(int height) {
+                mScreenHeight = height;
+            }
+            
+            int  VideoInterface::getScreenHeight() {
+                return mScreenHeight;
+            }
+                
+            void VideoInterface::setScreenName(std::string name) {
+                mScreenName = name;
+            }
+            
+            std::string VideoInterface::getScreenName() {
+                return mScreenName;
+            }
+                
 		} // End of Video
 	} // End of Plugins
 } // End of Dream

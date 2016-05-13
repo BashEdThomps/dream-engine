@@ -9,6 +9,9 @@ namespace Dream {
 		mAudioInterface     = NULL;
 		mVideoInterface     = NULL;
 		mPhysicsInterface   = NULL;
+
+		mRunning = false;
+		mError   = false;
 	}
 
 	Dream::~Dream() {}
@@ -154,6 +157,7 @@ namespace Dream {
 		if (mProject->isOpenGLEnabled()) {
 			if (mVideoInterface == NULL) {
 				mVideoInterface = new Plugins::Video::OpenGL::OGLVideo();
+                mVideoInterface->setScreenName(mProject->getName());
 				if (mVideoInterface->init()) {
 					return true;
 				} else {
@@ -169,6 +173,7 @@ namespace Dream {
 		else if (mProject->isVulkanEnabled())  {
 			/*if (mVideoInterface == NULL) {
 				mVideoInterface = new Video::VulkanVideo();
+                mVideoInterface->setScreenName(mProject->getName());
 				if (!mVideoInterface->init())
 				{
 					std::cerr << "Unable to initialise VulkanVideo." << std::endl;
@@ -186,9 +191,15 @@ namespace Dream {
 	}
 
 	int Dream::runProject() {
-		createInterfaces();
+		mError = !createInterfaces();
 		mRunning = true;
 		while(mRunning) {
+
+			if (mError) {
+				std::cerr << "Dream: A fatal error has occurred, exiting main loop" << std::endl;
+				break;
+			}
+			
 			updateInterfaces();
 		}
 		return 0;

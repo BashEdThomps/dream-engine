@@ -33,6 +33,7 @@ namespace Dream {
 		Plugins::Scripting::ScriptingInterface *mScriptingInterface;
 		// Engine Running
 		bool mRunning;
+		bool mError;
 
 	public:
 		Dream(void);

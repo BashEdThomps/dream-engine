@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "../JSON/json.hpp"
+#include "../Resource/ResourceInstance.h"
 
 #define NODE_X 0
 #define NODE_Y 1
@@ -21,6 +22,7 @@ namespace Dream {
 
 			SceneObject* mParent;
 			std::vector<SceneObject*> mChildren;
+            std::vector<Dream::Resource::ResourceInstance*> mResourceInstances;
 
 			std::string  mUUID;
 			std::string  mName;
@@ -66,9 +68,12 @@ namespace Dream {
 			bool isParentOf(SceneObject*);
 			bool isParentOfDeep(SceneObject*);
 			void setParent(SceneObject*);
+            
 			SceneObject* getParent();
 			void generatePath();
 			std::string getPath();
+            
+            void addResourceInstance(Dream::Resource::ResourceInstance*);
 		};
 	}
 }

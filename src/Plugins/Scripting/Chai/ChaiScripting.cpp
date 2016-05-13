@@ -25,10 +25,12 @@ namespace Dream {
 				ChaiScripting::~ChaiScripting(void) {}
 
 				bool ChaiScripting::init() {
-					return false;
+					return true;
 				}
 
-				void ChaiScripting::update() {}
+				void ChaiScripting::update() {
+                    
+                }
 			} // End of Chai
 		} // End of Scripting
 	} // End of Plugins

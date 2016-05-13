@@ -18,15 +18,33 @@
 #ifndef VIDEOINTERFACE_H
 #define VIDEOINTERFACE_H
 
+#include <iostream>
 #include "Interface.h"
+
+#define VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH  1280
+#define VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
 
 namespace Dream {
 	namespace Plugins {
 		namespace Video {
 			class VideoInterface : public Dream::Plugins::Interface {
+            protected:
+                int mScreenWidth;
+                int mScreenHeight;
+                std::string mScreenName;
 			public:
 				VideoInterface(void);
 				virtual ~VideoInterface(void) {};
+                
+                void setScreenWidth(int);
+                int  getScreenWidth();
+                
+                void setScreenHeight(int);
+                int  getScreenHeight();
+                
+                void        setScreenName(std::string);
+                std::string getScreenName();
+                
 			}; // End of VideoInterface
 		} // End of Video
 	} // End of Plugins

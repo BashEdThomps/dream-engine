@@ -1,4 +1,4 @@
-/*
+    /*
 * OGLVideo
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ namespace Dream {
 				}
 
 				OGLVideo::~OGLVideo(void) {
-			    glfwTerminate();
+                    glfwTerminate();
 				}
 
 				bool OGLVideo::init(void) {
@@ -35,7 +35,7 @@ namespace Dream {
 						return false;
 					}
 			    /* Create a windowed mode window and its OpenGL context */
-			    mWindow = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+			    mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, mScreenName.c_str(), NULL, NULL);
 			    if (!mWindow) {
 			        glfwTerminate();
 			        return false;
