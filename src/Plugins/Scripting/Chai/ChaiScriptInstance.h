@@ -29,10 +29,10 @@ namespace Dream {
                 class ChaiScriptInstance : public Dream::Resource::ResourceInstance {
                 private:
                     std::string mObjectUUID;
-                   chaiscript::ChaiScript *mScript;
+                    chaiscript::ChaiScript* mEngine;
 				public:
-                    ChaiScriptInstance();
-                    ChaiScriptInstance(std::string, const std::string, bool);
+                    ChaiScriptInstance(chaiscript::ChaiScript*);
+                    ChaiScriptInstance(chaiscript::ChaiScript*, std::string, const std::string, bool);
 					~ChaiScriptInstance(void);
                     
                     void setScriptFromFile(const std::string);

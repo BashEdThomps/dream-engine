@@ -21,12 +21,24 @@ namespace Dream {
 	namespace Plugins {
 		namespace Scripting {
 			namespace Chai {
-				ChaiScripting::ChaiScripting(void) : ScriptingInterface() {}
+				ChaiScripting::ChaiScripting(void) : ScriptingInterface() {
+                    mChai = NULL;
+                }
+                
 				ChaiScripting::~ChaiScripting(void) {}
 
 				bool ChaiScripting::init() {
-					return true;
+                    if (mChai != NULL) {
+                        delete mChai;
+                    }
+                    
+                    mChai = new chaiscript::ChaiScript(chaiscript::Std_Lib::library());
+					return mChai != NULL;
 				}
+                
+                chaiscript::ChaiScript* ChaiScripting::getChaiEngine() {
+                    return mChai;
+                }
 
 				void ChaiScripting::update() {
                     

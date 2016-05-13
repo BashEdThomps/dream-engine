@@ -20,15 +20,21 @@
 
 #include "../../../PluginInterfaces/ScriptingInterface.h"
 #include <chaiscript/chaiscript.hpp>
+#include <chaiscript/chaiscript_stdlib.hpp>
 
 namespace Dream {
 	namespace Plugins {
 		namespace Scripting {
 			namespace Chai {
 				class ChaiScripting : public ScriptingInterface {
+                private:
+                   chaiscript::ChaiScript *mChai;
 				public:
 					ChaiScripting(void);
 					~ChaiScripting(void);
+                    
+                    chaiscript::ChaiScript* getChaiEngine();
+                    
 					bool init();
 					void update();
 				}; // End of ChaiScripting

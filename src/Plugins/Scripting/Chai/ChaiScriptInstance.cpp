@@ -22,9 +22,13 @@ namespace Dream {
 		namespace Scripting {
 			namespace Chai {
                 
-                ChaiScriptInstance::ChaiScriptInstance() : Dream::Resource::ResourceInstance() {}
+                ChaiScriptInstance::ChaiScriptInstance(chaiscript::ChaiScript* engine) : Dream::Resource::ResourceInstance() {
+                    mEngine = engine;
+                }
                 
-                ChaiScriptInstance::ChaiScriptInstance(std::string objectUUID, const std::string script, bool fromFile) : Dream::Resource::ResourceInstance(){
+                ChaiScriptInstance::ChaiScriptInstance(chaiscript::ChaiScript* engine, std::string objectUUID,
+                                                       const std::string script, bool fromFile) : Dream::Resource::ResourceInstance(){
+                    mEngine = engine;
                     setObjectUUID(objectUUID);
                     if (fromFile) {
                         setScriptFromFile(script);
@@ -37,20 +41,11 @@ namespace Dream {
 				ChaiScriptInstance::~ChaiScriptInstance(void) {}
                 
                 void ChaiScriptInstance::setScriptFromString(const std::string script) {
-                    if (mScript != NULL) {
-                        delete mScript;
-                    }
-                    
-                    mScript = new chaiscript::ChaiScript();
-                    mScript->eval(script);
+                    mEngine->eval(script);
                 }
                 
                 void ChaiScriptInstance::setScriptFromFile(const std::string scriptFile) {
-                    if (mScript != NULL) {
-                        delete mScript;
-                    }
-                    mScript = new chaiscript::ChaiScript();
-                    mScript->eval_file(scriptFile);
+                    mEngine->eval_file(scriptFile);
                 }
                 
                 std::string ChaiScriptInstance::getObjectUUID() {
