@@ -2,24 +2,28 @@
 #define DREAM_H
 
 #include <iostream>
-#include "Util/FileReader.h"
-#include "Scene/Scene.h"
+
 #include "ArgumentParser.h"
-#include "Project.h"
 
-#include "PluginInterfaces/Interface.h"
-#include "PluginInterfaces/AudioInterface.h"
-#include "Plugins/Audio/OpenAL/OALAudio.h"
+#include "../JSON/json.hpp"
+#include "../Util/FileReader.h"
+#include "../Scene/Scene.h"
+#include "../Project/Project.h"
 
-#include "PluginInterfaces/PhysicsInterface.h"
-#include "Plugins/Physics/Bullet/BulletPhysics.h"
+#include "../Plugins/Interfaces/Interface.h"
+#include "../Plugins/Interfaces/AudioInterface.h"
+#include "../Plugins/Interfaces/ScriptingInterface.h"
+#include "../Plugins/Interfaces/PhysicsInterface.h"
+#include "../Plugins/Interfaces/VideoInterface.h"
 
-#include "PluginInterfaces/VideoInterface.h"
-#include "Plugins/Video/OpenGL/OGLVideo.h"
+#include "../Plugins/Audio/OpenAL/OALAudio.h"
 
-#include "PluginInterfaces/ScriptingInterface.h"
-#include "Plugins/Scripting/v8/V8Scripting.h"
-#include "Plugins/Scripting/Chai/ChaiScripting.h"
+#include "../Plugins/Physics/Bullet/BulletPhysics.h"
+
+#include "../Plugins/Scripting/v8/V8Scripting.h"
+#include "../Plugins/Scripting/Chai/ChaiScripting.h"
+
+#include "../Plugins/Video/OpenGL/OGLVideo.h"
 
 namespace Dream {
 	class Dream {

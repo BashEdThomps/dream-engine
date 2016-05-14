@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Script::Script
+* Dream::Resource::Script::JavaScript
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,18 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Script.h"
+#include "JavaScript.h"
 
 namespace Dream {
 	namespace Resource {
 		namespace Script {
+			namespace JavaScript {
 
-			Script::Script(nlohmann::json json) : Dream::Resource::Resource(json) {
-			}
+				JavaScript::JavaScript() : Dream::Resource::Instance::ResourceInstance() {
+				}
 
-			Script::~Script(void) {
-			}
-			
+				JavaScript::~JavaScript(void) {
+				}
+			} // End JavaScript
 		} // End of Script
 	} // End of Resource
 } // End of Dream

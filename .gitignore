@@ -6,7 +6,7 @@
 .ycm*
 Doxyfile.bak
 out
-dream-tool/node_modules
+DreamTool/node_modules
 .tags*
 tags
 npm-debug.log

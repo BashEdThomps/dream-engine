@@ -20,8 +20,7 @@
 
 #include "../Resource.h"
 
-#define RESOURCE_TYPE_MODEL "Model"
-#define RESOURCE_DIR_MODEL  "model"
+
 
 namespace Dream {
 	namespace Resource {

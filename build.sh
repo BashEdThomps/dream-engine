@@ -2,7 +2,7 @@
 
 HOST=`uname -a`
 BUILD=out
-MAKE_ARGS=-j4
+MAKE_ARGS=-j1
 
 echo HOST is $HOST
 

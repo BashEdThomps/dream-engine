@@ -16,13 +16,6 @@
 */
 
 #include "Project.h"
-#include "Resource/Model/Model.h"
-#include "Resource/Model/Wavefront/ObjModel.h"
-#include "Resource/Script/JavaScript/JavaScript.h"
-#include "Resource/Audio/Ogg/OggAudio.h"
-#include "Resource/Audio/Wav/WavAudio.h"
-#include "Resource/Animation/Animation.h"
-
 namespace Dream {
 
 	Project::Project(void) {
@@ -35,8 +28,13 @@ namespace Dream {
 		mName        = jsonProject [PROJECT_JSON_NAME];
 		mAuthor      = jsonProject [PROJECT_JSON_AUTHOR];
 		mDescription = jsonProject [PROJECT_JSON_DESCRIPTION];
+		enablePluginFlags(jsonProject);
+		loadResourcesFromJson(jsonProject[PROJECT_JSON_RESOURCE_ARRAY]);
+		loadScenesFromJson(jsonProject[PROJECT_JSON_SCENE_ARRAY]);
+		showStatus();
+	}
 
-
+	void Project::enablePluginFlags(nlohmann::json jsonProject) {
 		mChaiEnabled  = (
 			jsonProject [PROJECT_JSON_CHAI_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_JSON_CHAI_ENABLED]
@@ -71,11 +69,6 @@ namespace Dream {
 			jsonProject [PROJECT_JSON_VULKAN_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_JSON_VULKAN_ENABLED]
 		);
-
-		loadResourcesFromJson(jsonProject[PROJECT_JSON_RESOURCE_ARRAY]);
-		loadScenesFromJson(jsonProject[PROJECT_JSON_SCENE_ARRAY]);
-
-		showStatus();
 	}
 
 	void Project::showStatus() {
@@ -124,7 +117,7 @@ namespace Dream {
 		std::cout << "Project: Loading Resources from JSON Array" << std::endl;
 		for (nlohmann::json::iterator it = jsonResourceArray.begin();
 		     it != jsonResourceArray.end(); ++it) {
-			Dream::Resource::Resource* resource = NULL;
+            Dream::Resource::Instance::ResourceInstance* resource = NULL;
 
 			std::string resourceType = "";
 			if (!(*it)[RESOURCE_JSON_TYPE].is_null()) {
@@ -139,23 +132,23 @@ namespace Dream {
 			if (resourceType.compare(RESOURCE_TYPE_MODEL) == 0) {
 				if (resourceFormat.compare(RESOURCE_FORMAT_WAVEFRONT) == 0) {
 					std::cout << "Project: Creating Wavefront Model Resource" << std::endl;
-					resource = new Dream::Resource::Model::Wavefront::ObjModel((*it));
+					resource = new Resource::Instance::Model::WaveFront::ObjModelInstance((*it));
 				}
 			} else if (resourceType.compare(RESOURCE_TYPE_ANIMATION) == 0) {
 				std::cout << "Project: Creating Animation Resource" << std::endl;
-				resource = new Dream::Resource::Animation::Animation((*it));
+                resource = new Dream::Resource::Instance::Animation::AnimationInstance((*it));
 			} else if (resourceType.compare(RESOURCE_TYPE_AUDIO) == 0) {
 				if (resourceFormat.compare(RESOURCE_FORMAT_OGG) == 0) {
 					std::cout << "Project: Creating OGG Audio Resource" << std::endl;
-					resource = new Dream::Resource::Audio::Ogg::OggAudio((*it));
+                    resource = new Dream::Resource::Instance::Audio::Ogg::OggAudioInstance((*it));
 				} else if (resourceFormat.compare(RESOURCE_FORMAT_WAV) == 0) {
 					std::cout << "Project: Creating WAV Audio Resource" << std::endl;
-					resource = new Dream::Resource::Audio::Wav::WavAudio((*it));
+                    resource = new Dream::Resource::Instance::Audio::Wav::WavAudioInstance((*it));
 				}
 			} else if (resourceType.compare(RESOURCE_TYPE_SCRIPT) == 0) {
 				if (resourceFormat.compare(RESOURCE_FORMAT_JAVASCRIPT) == 0) {
 					std::cout << "Project: Creating JavaScript Resource" << std::endl;
-					resource = new Dream::Resource::Script::JavaScript::JavaScript((*it));
+                    resource = new Dream::Resource::Instance::Script::JavaScript::JavaScriptInstance((*it));
 				}
 			}
 

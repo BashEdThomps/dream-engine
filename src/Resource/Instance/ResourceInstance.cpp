@@ -19,24 +19,26 @@
 
 namespace Dream {
 	namespace Resource {
+	namespace Instance {
 
-		ResourceInstance::ResourceInstance(void) {}
+			ResourceInstance::ResourceInstance(void) {}
 
-		void ResourceInstance::setUUID(std::string uuid) {
-			mUUID = uuid;
-		}
+			void ResourceInstance::setUUID(std::string uuid) {
+				mUUID = uuid;
+			}
 
-		std::string ResourceInstance::getUUID() {
-			return mUUID;
-		}
+			std::string ResourceInstance::getUUID() {
+				return mUUID;
+			}
 
-		void ResourceInstance::setName(std::string name) {
-			mName = name;
-		}
+			void ResourceInstance::setName(std::string name) {
+				mName = name;
+			}
 
-		std::string ResourceInstance::getName() {
-			return mName;
-		}
+			std::string ResourceInstance::getName() {
+				return mName;
+			}
 
+		} // End of Instance
 	} // End of Resource
 } // End of Dream

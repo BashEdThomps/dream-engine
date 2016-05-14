@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Audio::Audio
+* WavAudio
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,13 +15,26 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Audio.h"
+#ifndef WAVAUDIO_H
+#define WAVAUDIO_H
+
+#include "../../ResourceInstance.h"
+
+#define RESOURCE_FORMAT_WAV  "wav"
 
 namespace Dream {
 	namespace Resource {
-		namespace Audio {
-			Audio::Audio(void) : Dream::Resource::Resource() {}
-			Audio::Audio(nlohmann::json jsonAudio) : Dream::Resource::Resource(jsonAudio) {}
-		}  // End of Audio
-	} // End of Resource
-} // End of Dream
+		namespace Instance {
+			namespace Audio {
+				namespace Wav {
+					class WavAudioInstance : public Dream::Resource::Instance::ResourceInstance {
+					public:
+						WavAudioInstance(void);
+						~WavAudioInstance(void);
+					};
+				}
+			}
+		}
+	}
+}
+#endif // End of WAVAUDIO_H

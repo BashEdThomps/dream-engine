@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Script::JavaScript
+* Dream::Resource::Script::Script
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,32 +15,25 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "JavaScript.h"
+#ifndef JAVASCRIPT_H
+#define JAVASCRIPT_H
+
+#define RESOURCE_FORMAT_JAVASCRIPT "js"
+
+#include "../../ResourceInstance.h"
 
 namespace Dream {
 	namespace Resource {
 		namespace Script {
 			namespace JavaScript {
-
-				JavaScript::JavaScript(nlohmann::json json) : Dream::Resource::Script::Script(json) {
-				}
-
-				JavaScript::~JavaScript(void) {
-				}
-
-				void JavaScript::generateAbsolutePaths(std::string projectDir, std::string projectUUID) {
-					mScriptPath = projectDir          + PATH_SEP +
-										    RESOURCE_DIR        + PATH_SEP +
-										    RESOURCE_DIR_SCRIPT + PATH_SEP +
-										    getUUID()           + PATH_SEP +
-										    RESOURCE_FORMAT_JAVASCRIPT;
-					std::cout << "Generated path for JavaScript resource: " << mScriptPath << std::endl;
-				}
-
-				ResourceInstance* JavaScript::createInstance() {
-					return NULL;
-				}
-			} // End JavaScript
+				class JavaScript : public Dream::Resource::Instance::ResourceInstance {
+				public:
+					JavaScript();
+					~JavaScript(void);
+				}; // End of JavaScript
+			} // End of JavaScript
 		} // End of Script
 	} // End of Resource
 } // End of Dream
+
+#endif // End of SCRIPT_H

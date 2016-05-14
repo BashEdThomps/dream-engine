@@ -20,8 +20,7 @@
 
 #include "../Resource.h"
 
-#define RESOURCE_TYPE_SCRIPT "Script"
-#define RESOURCE_DIR_SCRIPT  "script"
+
 
 namespace Dream {
 	namespace Resource {

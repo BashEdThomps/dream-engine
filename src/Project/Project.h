@@ -19,9 +19,16 @@
 #define PROJECT_H
 
 #include <vector>
-#include "JSON/json.hpp"
-#include "Scene/Scene.h"
-#include "Resource/Resource.h"
+#include "../JSON/json.hpp"
+#include "../Scene/Scene.h"
+#include "../Resource/Model/Model.h"
+#include "../Resource/Instance/ResourceInstance.h"
+#include "../Resource/Instance/Model/WaveFront/ObjModelInstance.h"
+#include "../Resource/Instance/Script/JavaScript/JavaScriptInstance.h"
+#include "../Resource/Instance/Script/ChaiScript/ChaiScriptInstance.h"
+#include "../Resource/Instance/Audio/Ogg/OggAudioInstance.h"
+#include "../Resource/Instance/Audio/Wav/WavAudioInstance.h"
+#include "../Resource/Instance/Animation/AnimationInstance.h"
 
 #define PROJECT_JSON_UUID            "uuid"
 #define PROJECT_JSON_NAME            "name"
@@ -55,12 +62,13 @@ namespace Dream {
 		bool mVulkanEnabled;
 
 		std::vector<Dream::Scene::Scene*> mScenes;
-		std::vector<Dream::Resource::Resource*> mResources;
+        std::vector<Dream::Resource::Instance::ResourceInstance*> mResourcesInstances;
 	public:
 		Project(void);
 		Project(std::string, nlohmann::json);
 		~Project(void);
 
+		void enablePluginFlags(nlohmann::json);
 		void loadScenesFromJson(nlohmann::json);
 		void loadResourcesFromJson(nlohmann::json);
 

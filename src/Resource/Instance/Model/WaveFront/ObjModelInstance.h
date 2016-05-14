@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Audio::Ogg::OggAudio
+* Model
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,31 +15,34 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OGGAUDIO_H
-#define OGGAUDIO_H
+#ifndef OBJMODEL_H
+#define OBJMODEL_H
 
-#include "../Audio.h"
+#include "../../../Instance/ResourceInstance.h"
+#include "tiny_obj_loader.h"
 
-#define RESOURCE_FORMAT_OGG "ogg"
+#define RESOURCE_FORMAT_WAVEFRONT  "obj"
+#define RESOURCE_FORMAT_MTL        "mtl"
+#define RESOURCE_FORMAT_OBJ        "obj"
 
 namespace Dream {
 	namespace Resource {
-		namespace Audio {
-			namespace Ogg {
-				class OggAudio : public Dream::Resource::Audio::Audio {
-				private:
-					std::string mOggPath;
-				public:
-					OggAudio(void);
-					OggAudio(nlohmann::json);
-					~OggAudio(void);
-					void generateAbsolutePaths(std::string,std::string);
-					std::string getOggPath();
-					ResourceInstance* createInstance();
-				}; // End of OggAudio
-			} // End of Ogg
-		} // End of Audio
+		namespace Instance {
+			namespace Model {
+				namespace WaveFront {
+					class ObjModelInstance : public Dream::Resource::Instance::ResourceInstance {
+					private:
+						std::string mObjPath;
+						std::string mMtlPath;
+					public:
+						ObjModelInstance(void);
+						~ObjModelInstance(void);
+						void generateAbsolutePaths(std::string,std::string);
+					};// End of ObjModel
+				} // End of WaveFront
+			} // End of Model
+		} // End of Instance
 	} // End of Resource
 } // End of Dream
 
-#endif // End of OGGAUDIO_H
+#endif // End of OBJMODEL_H

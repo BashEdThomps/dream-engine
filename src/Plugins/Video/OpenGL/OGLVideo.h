@@ -18,7 +18,7 @@
 #ifndef OGLVIDEO_H
 #define OGLVIDEO_H
 
-#include "../../../PluginInterfaces/VideoInterface.h"
+#include "../../../Plugins/Interfaces/VideoInterface.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 

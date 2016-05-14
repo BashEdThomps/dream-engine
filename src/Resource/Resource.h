@@ -18,22 +18,32 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
+
 #include <iostream>
-#include "ResourceInstance.h"
+#include <map>
+
+#include "Instance/ResourceInstance.h"
 #include "../JSON/json.hpp"
 
 #define RESOURCE_JSON_UUID   "uuid"
 #define RESOURCE_JSON_NAME   "name"
 #define RESOURCE_JSON_TYPE   "type"
 #define RESOURCE_JSON_FORMAT "format"
-#define RESOURCE_DIR         "resource"
-#define PATH_SEP             "/"
+
+#define DIR_PATH_SEP        "/"
+#define RESOURCE_DIR        "resource"
+#define RESOURCE_DIR_MODEL  "model"
+#define RESOURCE_DIR_AUDIO  "audio"
+#define RESOURCE_DIR_SCRIPT "script"
+
+#define RESOURCE_TYPE_MODEL  "Model"
+#define RESOURCE_TYPE_AUDIO  "Audio"
+#define RESOURCE_TYPE_SCRIPT "Script"
 
 namespace Dream {
 	namespace Resource {
 		class Resource {
-			std::string mUUID;
-			std::string mName;
+			std::map<std::string,std::string> mAttributes;
 		public:
 			Resource(void);
 			Resource(nlohmann::json);
@@ -46,7 +56,7 @@ namespace Dream {
 			std::string getName();
 
 			virtual void generateAbsolutePaths(std::string, std::string) = 0;
-			virtual ResourceInstance* createInstance() = 0;
+			virtual Instance::ResourceInstance* createInstance() = 0;
 		}; // End of Resource
 	} // End of Resource
 } // End of Dream

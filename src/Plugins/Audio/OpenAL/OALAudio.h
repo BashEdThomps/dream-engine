@@ -28,7 +28,7 @@
 	#include <AL/alc.h>
 #endif
 
-#include "../../../PluginInterfaces/AudioInterface.h"
+#include "../../../Plugins/Interfaces/AudioInterface.h"
 
 namespace Dream {
 	namespace Plugins {

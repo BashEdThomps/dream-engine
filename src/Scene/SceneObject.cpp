@@ -172,10 +172,11 @@ namespace Dream {
 		std::string SceneObject::getPath() {
 			return mPath;
 		}
-        
-        
-        void SceneObject::addResourceInstance(Dream::Resource::ResourceInstance *resourceInstance) {
-            mResourceInstances.push_back(resourceInstance);
-        }
+
+
+    void SceneObject::addResourceInstance(
+			Dream::Resource::Instance::ResourceInstance *resourceInstance) {
+        mResourceInstances.push_back(resourceInstance);
+    }
 	}
 }

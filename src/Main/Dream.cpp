@@ -1,6 +1,4 @@
 #include "Dream.h"
-#include "Project.h"
-#include "JSON/json.hpp"
 
 namespace Dream {
 
@@ -199,7 +197,7 @@ namespace Dream {
 				std::cerr << "Dream: A fatal error has occurred, exiting main loop" << std::endl;
 				break;
 			}
-			
+
 			updateInterfaces();
 		}
 		return 0;

@@ -25,18 +25,20 @@
 
 namespace Dream {
 	namespace Resource {
-		class ResourceInstance {
-		private:
-			std::string mUUID;
-			std::string mName;
-		public:
-			ResourceInstance(void);
-			virtual ~ResourceInstance(void) {};
-			void setUUID(std::string);
-			std::string getUUID();
-			void setName(std::string);
-			std::string getName();
-		}; // End of ResourceInstance
+		namespace Instance {
+			class ResourceInstance {
+			private:
+				std::string mUUID;
+				std::string mName;
+			public:
+				ResourceInstance(void);
+				virtual ~ResourceInstance(void) {};
+				void setUUID(std::string);
+				std::string getUUID();
+				void setName(std::string);
+				std::string getName();
+			}; // End of ResourceInstance
+		} // End of Instance
 	} // End of Resource
 } // End of Dream
 

@@ -1,5 +1,5 @@
 /*
-* Dream::Resource::Script::Script
+* OggAudio
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef JAVASCRIPT_H
-#define JAVASCRIPT_H
-
-#define RESOURCE_FORMAT_JAVASCRIPT "js"
-
-#include "../Script.h"
+#include "OggAudioInstance.h"
 
 namespace Dream {
 	namespace Resource {
-		namespace Script {
-			namespace JavaScript {
-				class JavaScript : public Dream::Resource::Script::Script {
-				private:
-					std::string mScriptPath;
-				public:
-					JavaScript(nlohmann::json);
-					~JavaScript(void);
-					void generateAbsolutePaths(std::string, std::string);
-					ResourceInstance* createInstance();
-				}; // End of JavaScript
-			} // End of JavaScript
-		} // End of Script
+		namespace Instance {
+			namespace Audio {
+				namespace Ogg {
+					OggAudioInstance::OggAudioInstance(void) : Dream::Resource::Instance::ResourceInstance() {}
+          OggAudioInstance::~OggAudioInstance(void) {}
+				} // End of Ogg
+			} // End of Audio
+		} // End of Instance
 	} // End of Resource
 } // End of Dream
-
-#endif // End of SCRIPT_H

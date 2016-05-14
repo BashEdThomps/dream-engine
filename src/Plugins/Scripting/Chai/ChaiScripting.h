@@ -18,7 +18,7 @@
 #ifndef CHAISCRIPTING_H
 #define CHAISCRIPTING_H
 
-#include "../../../PluginInterfaces/ScriptingInterface.h"
+#include "../../../Plugins/Interfaces/ScriptingInterface.h"
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
 
@@ -32,9 +32,9 @@ namespace Dream {
 				public:
 					ChaiScripting(void);
 					~ChaiScripting(void);
-                    
+
                     chaiscript::ChaiScript* getChaiEngine();
-                    
+
 					bool init();
 					void update();
 				}; // End of ChaiScripting
