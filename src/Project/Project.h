@@ -36,6 +36,7 @@
 #define PROJECT_DESCRIPTION     "description"
 #define PROJECT_SCENE_ARRAY     "scenes"
 #define PROJECT_RESOURCE_ARRAY  "resources"
+#define PROJECT_STARTUP_SCENE   "startupScene"
 #define PROJECT_V8_ENABLED      "v8"
 #define PROJECT_CHAI_ENABLED    "chai"
 #define PROJECT_OPENAL_ENABLED  "openAL"
@@ -52,6 +53,7 @@ namespace Dream {
 		std::string mDescription;
 		std::string mAuthor;
 		std::string mProjectPath;
+		std::string mStartupScene;
 
 		bool mChaiEnabled;
 		bool mV8Enabled;
@@ -68,7 +70,8 @@ namespace Dream {
 		Project(std::string, nlohmann::json);
 		~Project(void);
 
-		void enablePluginFlags(nlohmann::json);
+		void setMetadata(nlohmann::json);
+		void setPluginFlags(nlohmann::json);
 		void loadScenesFromJson(nlohmann::json);
 		void loadResourcesFromJson(nlohmann::json);
 
@@ -83,12 +86,18 @@ namespace Dream {
 
 		void        setAuthor(std::string);
 		std::string getAuthor();
-
+		
+		void        setStartupSceneUUID(std::string);
+		std::string getStartupSceneUUID();
+		Dream::Scene::Scene* getStartupScene();
+		
 		void addScene(Dream::Scene::Scene*);
 		void removeScene(Dream::Scene::Scene*);
 		int getNumberOfScenes();
+		
 		Dream::Scene::Scene* getSceneByName(std::string);
 		Dream::Scene::Scene* getSceneByUUID(std::string);
+		
 
 		void addResource(Dream::Resource::Resource*);
 		void removeResource(Dream::Resource::Resource*);

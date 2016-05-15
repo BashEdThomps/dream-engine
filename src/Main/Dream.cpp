@@ -7,7 +7,10 @@ namespace Dream {
 		mAudioInterface     = NULL;
 		mVideoInterface     = NULL;
 		mPhysicsInterface   = NULL;
-
+		
+		mCurrentScene       = NULL;
+		mProject            = NULL;
+		
 		mRunning = false;
 		mError   = false;
 	}
@@ -29,6 +32,7 @@ namespace Dream {
 	bool Dream::loadProjectFromFileReader(std::string projectPath, Util::FileReader* reader) {
 		std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
 		std::string projectJsonStr = reader->getContentsAsString();
+		std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
 		nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
 		setProject(new Project(projectPath, projectJson));
 		return isProjectLoaded();
@@ -132,18 +136,6 @@ namespace Dream {
 		}
 		// Bullet3
 		else if (mProject->isBullet3Enabled()) {
-			/*if (mPhysicsInterface == NULL) {
-				mPhysicsInterface = new Physics::Bullet3Physics();
-				if (!mPhysicsInterface->init())
-				{
-					std::cerr << "Unable to initialise Bullet3Physics." << std::endl;
-					return false;
-				}
-			} else {
-				std::cerr << "Unable to create Bullet3Physics. Physics interface allready exists." << std::endl;
-				return false;
-			}
-			*/
 			std::cerr << "Bullet3Physics is not yet implemented." << std::endl;
 			return false;
 		}
@@ -169,19 +161,6 @@ namespace Dream {
 		}
 		// Vulkan
 		else if (mProject->isVulkanEnabled())  {
-			/*if (mVideoInterface == NULL) {
-				mVideoInterface = new Video::VulkanVideo();
-                mVideoInterface->setScreenName(mProject->getName());
-				if (!mVideoInterface->init())
-				{
-					std::cerr << "Unable to initialise VulkanVideo." << std::endl;
-					return false;
-				}
-			} else {
-				std::cerr << "Unable to create VulkanVideo. Video interface allready exists." << std::endl;
-				return false;
-			}
-			*/
 			std::cerr << "VulkanVideo interface is not yet implemented" << std::endl;
 			return false;
 		}
@@ -190,14 +169,21 @@ namespace Dream {
 
 	int Dream::runProject() {
 		mError = !createInterfaces();
+		mCurrentScene = mProject->getStartupScene();
+		
+		if (mCurrentScene == NULL) {
+			std::cerr << "Dream: Unable to find startup scene. Cannot Continue." << std::endl;
+			return 1;
+		}
+		
+		std::cout << "Dream: Starting Scene - " << mCurrentScene->getName() << " (" << mCurrentScene->getUUID() << ")" << std::endl;
 		mRunning = true;
+		
 		while(mRunning) {
-
 			if (mError) {
 				std::cerr << "Dream: A fatal error has occurred, exiting main loop" << std::endl;
 				break;
 			}
-
 			updateInterfaces();
 		}
 		return 0;

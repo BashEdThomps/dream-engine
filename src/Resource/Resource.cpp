@@ -23,10 +23,29 @@ namespace Resource {
 	Resource::~Resource(void) {}
 
 	Resource::Resource(nlohmann::json json) {
-		setUUID   (json [RESOURCE_UUID]   );
-		setName   (json [RESOURCE_NAME]   );
-		setFormat (json [RESOURCE_FORMAT] );
-		setType   (json [RESOURCE_TYPE]   );
+		if (json[RESOURCE_UUID].is_null()) {
+			std::cerr << "Resource: Construction Resource from JSON with NULL UUID." << std::endl;;
+		} else {
+			setUUID(json[RESOURCE_UUID]);
+		}
+		
+		if (json[RESOURCE_NAME].is_null()) {
+			std::cerr << "Resource: Construction Resource from JSON with NULL Name." << std::endl;;
+		} else {
+			setName(json[RESOURCE_NAME]);
+		}
+		
+		if (json[RESOURCE_TYPE].is_null()) {
+			std::cerr << "Resource: Construction Resource from JSON with NULL Type" << std::endl;;
+		} else {
+			setType(json[RESOURCE_TYPE]);
+		}
+		
+		if (json[RESOURCE_FORMAT].is_null()) {
+			std::cerr << "Resource: Construction Resource from JSON with NULL Format" << std::endl;;
+		} else {
+			setFormat(json[RESOURCE_FORMAT]);
+		}
 	}
 
 	std::pair<std::string,std::string> Resource::mapPair(std::string key, std::string value) {

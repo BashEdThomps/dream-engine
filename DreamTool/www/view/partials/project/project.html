@@ -22,6 +22,12 @@
             rows="5">
           </textarea>
         </div>
+        <div class="form-group">
+          <label>Startup Scene</label>
+            <select ng-model="project.startupScene" ng-change="modified()" class="form-control input-sm">
+              <option ng-repeat="scene in sceneList" value="{{scene.uuid}}">{{scene.name}}</option>
+            </select>
+        </div>
       </div>
     </div>
   </div>

@@ -1,6 +1,7 @@
 App.directive("threeModelViewer", [
   function () {
 		return {
+      require: 'ngModel',
 			restrict: "E",
 			scope: {},
 			link: function (scope, elem, attr) {

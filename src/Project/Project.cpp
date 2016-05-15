@@ -23,18 +23,48 @@ namespace Dream {
 	}
 
 	Project::Project(std::string projectPath, nlohmann::json jsonProject) {
-		mProjectPath = projectPath;
-		mUUID        = jsonProject [PROJECT_UUID];
-		mName        = jsonProject [PROJECT_NAME];
-		mAuthor      = jsonProject [PROJECT_AUTHOR];
-		mDescription = jsonProject [PROJECT_DESCRIPTION];
-		enablePluginFlags(jsonProject);
+		setProjectPath(projectPath);
+		setMetadata(jsonProject);
+		setPluginFlags(jsonProject);
 		loadResourcesFromJson(jsonProject[PROJECT_RESOURCE_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
 		showStatus();
 	}
+	
+	void Project::setMetadata(nlohmann::json jsonProject) {
+		if (jsonProject [PROJECT_UUID].is_null()) {
+			std::cerr << "Project: UUID is NULL." << std::endl;
+		} else {
+			setUUID(jsonProject[PROJECT_UUID]);
+		}
+		
+		if (jsonProject[PROJECT_NAME].is_null()) {
+			std::cerr << "Project: Name is NULL." << std::endl;
+		} else {
+			setName(jsonProject[PROJECT_NAME]);
+		}
+		
+		if (jsonProject[PROJECT_AUTHOR].is_null()) {
+			std::cerr << "Project: Author is NULL." << std::endl;
+		} else {
+			setAuthor(jsonProject[PROJECT_AUTHOR]);
+		}
+		
+		if (jsonProject[PROJECT_DESCRIPTION].is_null()) {
+			std::cerr << "Project: Descriptiont is NULL." << std::endl;
+		} else {
+			setDescription(jsonProject[PROJECT_DESCRIPTION]);
+		}
+		
+		if (jsonProject[PROJECT_STARTUP_SCENE].is_null()) {
+			std::cerr << "Project: Startup Scene is NULL." << std::endl;
+		} else {
+			setStartupSceneUUID(jsonProject[PROJECT_STARTUP_SCENE]);
+		}
+		
+	}
 
-	void Project::enablePluginFlags(nlohmann::json jsonProject) {
+	void Project::setPluginFlags(nlohmann::json jsonProject) {
 		mChaiEnabled  = (
 			jsonProject [PROJECT_CHAI_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_CHAI_ENABLED]
@@ -85,11 +115,11 @@ namespace Dream {
 		std::cout << "     OpenGL Enabled: " << mOpenGLEnabled         << std::endl;
 		std::cout << "     Vulkan Enabled: " << mVulkanEnabled         << std::endl;
 		std::cout << "             Scenes: " << getNumberOfScenes()    << std::endl;
+		std::cout << "      Startup Scene: " << getStartupSceneUUID()  << std::endl;
 		std::cout << "          Resources: " << getNumberOfResources() << std::endl;
 	}
 
-	Project::~Project(void) {
-	}
+	Project::~Project(void) {}
 
 	void Project::setName(std::string name) {
 		mName = name;
@@ -120,6 +150,18 @@ namespace Dream {
 		}
 	}
 
+	void Project::setStartupSceneUUID(std::string sceneUUID) {
+		mStartupScene = sceneUUID;
+	}
+	
+	std::string Project::getStartupSceneUUID() {
+		return mStartupScene;
+	}
+	
+	Dream::Scene::Scene* Project::getStartupScene() {
+		return getSceneByUUID(getStartupSceneUUID());
+	}
+	
 	std::string Project::getName() {
 		return mName;
 	}
@@ -162,8 +204,7 @@ namespace Dream {
 
 	Dream::Scene::Scene* Project::getSceneByUUID(std::string uuid) {
 		Dream::Scene::Scene* retval = NULL;
-		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin();
-	        it != mScenes.end(); ++it) {
+		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it) {
 				if ((*it)->getUUID().compare(uuid) == 0) {
 					retval = (*it);
 					break;
@@ -174,8 +215,7 @@ namespace Dream {
 
 	Dream::Scene::Scene* Project::getSceneByName(std::string name) {
 		Dream::Scene::Scene* retval = NULL;
-		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin();
-	        it != mScenes.end(); ++it) {
+		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it) {
 				if ((*it)->getName().compare(name) == 0) {
 					retval = (*it);
 					break;

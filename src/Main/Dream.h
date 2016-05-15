@@ -29,13 +29,16 @@ namespace Dream {
 	class Dream {
 	protected:
 		// Project
-		Project *mProject;
+		Project      *mProject;
+		Scene::Scene *mCurrentScene;
+		
 		// Plugins
 		Plugins::Audio::AudioInterface         *mAudioInterface;
 		Plugins::Video::VideoInterface         *mVideoInterface;
 		Plugins::Physics::PhysicsInterface     *mPhysicsInterface;
 		Plugins::Scripting::ScriptingInterface *mScriptingInterface;
-		// Engine Running
+		
+		// Engine Variables 
 		bool mRunning;
 		bool mError;
 

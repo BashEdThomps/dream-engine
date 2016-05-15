@@ -36,6 +36,11 @@ App.service('ProjectService',
 
     };
 
+    this.setStartupScene = function(startupScene) {
+      this.project.isModified = true;
+      this.project.startupScene = startupScene;
+    }
+
     this.updateProject = function(project) {
         this.setName        (project.name);
         this.setAuthor      (project.author);
@@ -47,6 +52,17 @@ App.service('ProjectService',
         this.setBullet3     (project.bullet3);
         this.setOpenGL      (project.openGL);
         this.setVulkan      (project.vulkan);
+        this.setStartupScene(project.startupScene);
+    };
+
+    this.getSceneList = function(callback) {
+        var retval = [];
+        this.project.scenes.forEach(function(nextScene){
+          retval.push({
+            uuid: nextScene.uuid,
+            name: nextScene.name});
+        });
+        callback(retval);
     };
 
     this.pushScene = function(scene) {

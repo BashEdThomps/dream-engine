@@ -3,6 +3,11 @@ App.controller("Project",
 	function($scope,$state,ProjectService,UIService) {
 		if (ProjectService.isProjectOpen()){
 			$scope.project = ProjectService.getProject();
+
+			ProjectService.getSceneList(function(sceneList) {
+				$scope.sceneList = sceneList;
+			});
+
 			UIService.setBreadcrumbs([$scope.project.name]);
 			UIService.update();
 		} else {
