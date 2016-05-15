@@ -1,0 +1,8 @@
+/Users/Ashley/Software/DreamXcode/CMakeFiles/RUN_TESTS.dir
+/Users/Ashley/Software/DreamXcode/CMakeFiles/ALL_BUILD.dir
+/Users/Ashley/Software/DreamXcode/CMakeFiles/ZERO_CHECK.dir
+/Users/Ashley/Software/DreamXcode/src/CMakeFiles/Dream.dir
+/Users/Ashley/Software/DreamXcode/src/CMakeFiles/RUN_TESTS.dir
+/Users/Ashley/Software/DreamXcode/src/CMakeFiles/DreamBase.dir
+/Users/Ashley/Software/DreamXcode/test/CMakeFiles/RUN_TESTS.dir
+/Users/Ashley/Software/DreamXcode/test/CMakeFiles/DreamTest.dir

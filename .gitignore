@@ -12,3 +12,5 @@ tags
 npm-debug.log
 .DS_Store
 *.gch*
+Xcode/*/dream.build
+*.log
