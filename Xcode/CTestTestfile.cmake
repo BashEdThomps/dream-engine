@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
 # Source directory: /Users/Ashley/Software/Dream
-# Build directory: /Users/Ashley/Software/DreamXcode
+# Build directory: /Users/Ashley/Software/Dream/Xcode
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

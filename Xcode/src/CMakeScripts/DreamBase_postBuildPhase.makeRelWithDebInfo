@@ -7,4 +7,4 @@ all: \
 
 DreamBase_buildpart_0: 
 	echo "Creating symlinks"
-	/opt/local/bin/cmake -E cmake_symlink_library /Users/Ashley/Software/DreamXcode/src/RelWithDebInfo/libDreamBase.dylib /Users/Ashley/Software/DreamXcode/src/RelWithDebInfo/libDreamBase.dylib /Users/Ashley/Software/DreamXcode/src/RelWithDebInfo/libDreamBase.dylib
+	/opt/local/bin/cmake -E cmake_symlink_library /Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo/libDreamBase.dylib /Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo/libDreamBase.dylib /Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo/libDreamBase.dylib

@@ -29,8 +29,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/Ashley/Software/DreamXcode/src/cmake_install.cmake")
-  include("/Users/Ashley/Software/DreamXcode/test/cmake_install.cmake")
+  include("/Users/Ashley/Software/Dream/Xcode/src/cmake_install.cmake")
+  include("/Users/Ashley/Software/Dream/Xcode/test/cmake_install.cmake")
 
 endif()
 
@@ -42,5 +42,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/Ashley/Software/DreamXcode/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/Ashley/Software/Dream/Xcode/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

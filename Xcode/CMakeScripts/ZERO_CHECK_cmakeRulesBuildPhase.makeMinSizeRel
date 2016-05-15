@@ -2,9 +2,9 @@
 # Custom rules for ZERO_CHECK
 .SUFFIXES: 
 all: \
-	/Users/Ashley/Software/DreamXcode/CMakeFiles/ZERO_CHECK
+	/Users/Ashley/Software/Dream/Xcode/CMakeFiles/ZERO_CHECK
 
 
-/Users/Ashley/Software/DreamXcode/CMakeFiles/ZERO_CHECK: 
+/Users/Ashley/Software/Dream/Xcode/CMakeFiles/ZERO_CHECK: 
 	echo ""
-	make -f /Users/Ashley/Software/DreamXcode/CMakeScripts/ReRunCMake.make
+	make -f /Users/Ashley/Software/Dream/Xcode/CMakeScripts/ReRunCMake.make
