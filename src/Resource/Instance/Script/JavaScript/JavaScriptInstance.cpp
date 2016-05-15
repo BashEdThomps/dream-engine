@@ -15,19 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "JavaScript.h"
+#include "JavaScriptInstance.h"
 
 namespace Dream {
 	namespace Resource {
-		namespace Script {
-			namespace JavaScript {
-
-				JavaScript::JavaScript() : Dream::Resource::Instance::ResourceInstance() {
-				}
-
-				JavaScript::~JavaScript(void) {
-				}
-			} // End JavaScript
-		} // End of Script
+        namespace Instance {
+    		namespace Script {
+    			namespace JavaScript {
+    				JavaScriptInstance::JavaScriptInstance() : Dream::Resource::Instance::ResourceInstance() {}
+    				JavaScriptInstance::~JavaScriptInstance(void) {}
+    			} // End JavaScript
+            } // End of Script
+        } // End of Instance
 	} // End of Resource
 } // End of Dream

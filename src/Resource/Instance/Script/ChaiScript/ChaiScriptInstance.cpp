@@ -18,47 +18,45 @@
 #include "ChaiScriptInstance.h"
 
 namespace Dream {
-	namespace Plugins {
-		namespace Instance
-			namespace Script {
-				namespace ChaiScript {
-	      	ChaiScriptInstance::ChaiScriptInstance(chaiscript::ChaiScript* engine) :
-						Dream::Resource::Instance::ResourceInstance() {
-	            mEngine = engine;
-	        }
+namespace Resource {
+namespace Instance {
+namespace Script {
+namespace ChaiScript {
+    
+    ChaiScriptInstance::ChaiScriptInstance(chaiscript::ChaiScript* engine) : Dream::Resource::Instance::ResourceInstance() {
+        mEngine = engine;
+    }
 
-	        ChaiScriptInstance::ChaiScriptInstance(
-						chaiscript::ChaiScript* engine,
-						std::string objectUUID,
-	          const std::string script,
-						bool fromFile) : Dream::Resource::Instance::ResourceInstance(){
-	            mEngine = engine;
-	            setObjectUUID(objectUUID);
-	            if (fromFile) {
-	                setScriptFromFile(script);
-	            } else {
-	                setScriptFromString(script);
-	            }
-	        }
+    ChaiScriptInstance::ChaiScriptInstance(chaiscript::ChaiScript* engine, std::string objectUUID, const std::string script, bool fromFile) : Dream::Resource::Instance::ResourceInstance(){
+		mEngine = engine;
+	    setObjectUUID(objectUUID);
+	    if (fromFile) {
+			setScriptFromFile(script);
+	    } else {
+	        setScriptFromString(script);
+	    }
+	}
 
-					ChaiScriptInstance::~ChaiScriptInstance(void) {}
-	        void ChaiScriptInstance::setScriptFromString(const std::string script) {
-	            mEngine->eval(script);
-	        }
+	ChaiScriptInstance::~ChaiScriptInstance(void) {}
+	
+    void ChaiScriptInstance::setScriptFromString(const std::string script) {
+		mEngine->eval(script);
+	}
 
-	        void ChaiScriptInstance::setScriptFromFile(const std::string scriptFile) {
-	            mEngine->eval_file(scriptFile);
-	        }
+	void ChaiScriptInstance::setScriptFromFile(const std::string scriptFile) {
+		mEngine->eval_file(scriptFile);
+	}
 
-	        std::string ChaiScriptInstance::getObjectUUID() {
-	            return mObjectUUID;
-	        }
+    std::string ChaiScriptInstance::getObjectUUID() {
+		return mObjectUUID;
+	}
 
-	        void ChaiScriptInstance::setObjectUUID(std::string objectUUID) {
-	            mObjectUUID = objectUUID;
-	        }
-				} // End of ChaiScript
-			} // End of Script
-		} // End of Instance
-	} // End of Resource
+	void ChaiScriptInstance::setObjectUUID(std::string objectUUID) {
+		mObjectUUID = objectUUID;
+	}
+	
+} // End of ChaiScript
+} // End of Script
+} // End of Instance
+} // End of Resource
 } // End of Dream

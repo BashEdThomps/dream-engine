@@ -17,7 +17,7 @@
 
 #include "ProjectTest.h"
 
-#include "../src/Project.h"
+#include "../src/Project/Project.h"
 #include "../src/Scene/Scene.h"
 #include "../src/Resource/Resource.h"
 #include "Resource/TestResourceImpl.h"

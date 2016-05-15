@@ -24,50 +24,50 @@ namespace Dream {
 
 	Project::Project(std::string projectPath, nlohmann::json jsonProject) {
 		mProjectPath = projectPath;
-		mUUID        = jsonProject [PROJECT_JSON_UUID];
-		mName        = jsonProject [PROJECT_JSON_NAME];
-		mAuthor      = jsonProject [PROJECT_JSON_AUTHOR];
-		mDescription = jsonProject [PROJECT_JSON_DESCRIPTION];
+		mUUID        = jsonProject [PROJECT_UUID];
+		mName        = jsonProject [PROJECT_NAME];
+		mAuthor      = jsonProject [PROJECT_AUTHOR];
+		mDescription = jsonProject [PROJECT_DESCRIPTION];
 		enablePluginFlags(jsonProject);
-		loadResourcesFromJson(jsonProject[PROJECT_JSON_RESOURCE_ARRAY]);
-		loadScenesFromJson(jsonProject[PROJECT_JSON_SCENE_ARRAY]);
+		loadResourcesFromJson(jsonProject[PROJECT_RESOURCE_ARRAY]);
+		loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
 		showStatus();
 	}
 
 	void Project::enablePluginFlags(nlohmann::json jsonProject) {
 		mChaiEnabled  = (
-			jsonProject [PROJECT_JSON_CHAI_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_JSON_CHAI_ENABLED]
+			jsonProject [PROJECT_CHAI_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_CHAI_ENABLED]
 		);
 
 		mV8Enabled  = (
-			jsonProject [PROJECT_JSON_V8_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_JSON_V8_ENABLED]
+			jsonProject [PROJECT_V8_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_V8_ENABLED]
 		);
 
 		mOpenALEnabled  = (
-			jsonProject [PROJECT_JSON_OPENAL_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_JSON_OPENAL_ENABLED]
+			jsonProject [PROJECT_OPENAL_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_OPENAL_ENABLED]
 		);
 
 		mBullet2Enabled = (
-			jsonProject [PROJECT_JSON_BULLET2_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_JSON_BULLET2_ENABLED]
+			jsonProject [PROJECT_BULLET2_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_BULLET2_ENABLED]
 		);
 
 		mBullet3Enabled = (
-			jsonProject [PROJECT_JSON_BULLET3_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_JSON_BULLET3_ENABLED]
+			jsonProject [PROJECT_BULLET3_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_BULLET3_ENABLED]
 		);
 
 		mOpenGLEnabled  = (
-			jsonProject [PROJECT_JSON_OPENGL_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_JSON_OPENGL_ENABLED]
+			jsonProject [PROJECT_OPENGL_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_OPENGL_ENABLED]
 		);
 
 		mVulkanEnabled  = (
-			jsonProject [PROJECT_JSON_VULKAN_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_JSON_VULKAN_ENABLED]
+			jsonProject [PROJECT_VULKAN_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_VULKAN_ENABLED]
 		);
 	}
 
@@ -115,47 +115,8 @@ namespace Dream {
 
  	void Project::loadResourcesFromJson(nlohmann::json jsonResourceArray) {
 		std::cout << "Project: Loading Resources from JSON Array" << std::endl;
-		for (nlohmann::json::iterator it = jsonResourceArray.begin();
-		     it != jsonResourceArray.end(); ++it) {
-            Dream::Resource::Instance::ResourceInstance* resource = NULL;
-
-			std::string resourceType = "";
-			if (!(*it)[RESOURCE_JSON_TYPE].is_null()) {
-				resourceType = (*it)[RESOURCE_JSON_TYPE];
-			}
-
-			std::string resourceFormat = "";
-			if (!(*it)[RESOURCE_JSON_FORMAT].is_null()) {
-				resourceFormat = (*it)[RESOURCE_JSON_FORMAT];
-			}
-
-			if (resourceType.compare(RESOURCE_TYPE_MODEL) == 0) {
-				if (resourceFormat.compare(RESOURCE_FORMAT_WAVEFRONT) == 0) {
-					std::cout << "Project: Creating Wavefront Model Resource" << std::endl;
-					resource = new Resource::Instance::Model::WaveFront::ObjModelInstance((*it));
-				}
-			} else if (resourceType.compare(RESOURCE_TYPE_ANIMATION) == 0) {
-				std::cout << "Project: Creating Animation Resource" << std::endl;
-                resource = new Dream::Resource::Instance::Animation::AnimationInstance((*it));
-			} else if (resourceType.compare(RESOURCE_TYPE_AUDIO) == 0) {
-				if (resourceFormat.compare(RESOURCE_FORMAT_OGG) == 0) {
-					std::cout << "Project: Creating OGG Audio Resource" << std::endl;
-                    resource = new Dream::Resource::Instance::Audio::Ogg::OggAudioInstance((*it));
-				} else if (resourceFormat.compare(RESOURCE_FORMAT_WAV) == 0) {
-					std::cout << "Project: Creating WAV Audio Resource" << std::endl;
-                    resource = new Dream::Resource::Instance::Audio::Wav::WavAudioInstance((*it));
-				}
-			} else if (resourceType.compare(RESOURCE_TYPE_SCRIPT) == 0) {
-				if (resourceFormat.compare(RESOURCE_FORMAT_JAVASCRIPT) == 0) {
-					std::cout << "Project: Creating JavaScript Resource" << std::endl;
-                    resource = new Dream::Resource::Instance::Script::JavaScript::JavaScriptInstance((*it));
-				}
-			}
-
-			if (resource != NULL) {
-				resource->generateAbsolutePaths(getProjectPath(),getUUID());
-				addResource(resource);
-			}
+		for (nlohmann::json::iterator it = jsonResourceArray.begin(); it != jsonResourceArray.end(); ++it) {
+			addResource(new Dream::Resource::Resource((*it)));
 		}
 	}
 
@@ -188,7 +149,7 @@ namespace Dream {
 	}
 
 	void Project::removeResource(Dream::Resource::Resource*) {
-
+		std::cout << "Project: Remove Resource is not yet Implemented" << std::endl;
 	}
 
 	int Project::getNumberOfResources() {

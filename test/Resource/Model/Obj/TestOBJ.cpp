@@ -17,12 +17,12 @@
 
 #include "TestOBJ.h"
 
-namespace DreamFileFormatsTest::Obj {
-
-	TestOBJ::TestOBJ(void) {
-	}
-
-	TestOBJ::~TestOBJ(void) {
-	}
-
-} // End of DreamFileFormats::Obj
+namespace DreamFileFormatsTest {
+namespace Obj {
+	
+	TestOBJ::TestOBJ(void) {}
+	
+	TestOBJ::~TestOBJ(void) {}
+	
+} // End of Obj
+} // End of DreamFileFormats

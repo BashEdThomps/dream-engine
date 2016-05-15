@@ -16,76 +16,76 @@
 */
 
 #include "DreamTest.h"
-#include "../src/Dream.h"
+#include "../src/Main/Dream.h"
 #include "../src/Util/FileReader.h"
 
 #define TEST_PROJECT "test/Ash's Test Project.json"
 
 namespace Dream {
-	namespace Test {
-		DreamTest::DreamTest() : Unit("Dream::Dream") {
+namespace Test {
+	DreamTest::DreamTest() : Unit("Dream::Dream") {
+	}
+
+	DreamTest::~DreamTest() {
+
+	}
+
+	void DreamTest::run() {
+		header();
+		testCanHoldProject();
+		testCanLoadProjectFromJSON();
+		testCreateInterfaces();
+	}
+
+	void DreamTest::testCanHoldProject() {
+		Dream dream;
+		dream.setProject(new Project());
+		assertNotNull("Dream can hold Project",dream.getProject());
+	}
+
+	void DreamTest::testCanLoadProjectFromJSON() {
+		Dream dream;
+		Util::FileReader* fileReader = new Util::FileReader(TEST_PROJECT);
+		fileReader->readIntoStringStream();
+		dream.loadProjectFromFileReader("",fileReader);
+
+		std::string expectedUUID        = "577f-1113-370f-2c12";
+		std::string expectedName        = "Ash's Dream Project";
+		std::string expectedAuthor      = "Ash Thompson";
+		std::string expectedDescription = "A Test Dream Project";
+
+		assertZero("Project Got UUID from JSON",       dream.getProject()->getUUID().compare(expectedUUID));
+		assertZero("Project Got Name from JSON",       dream.getProject()->getName().compare(expectedName));
+		assertZero("Project Got Author from JSON",     dream.getProject()->getAuthor().compare(expectedAuthor));
+		assertZero("Project Got Description from JSON",dream.getProject()->getDescription().compare(expectedDescription));
+
+		assertTrue("Project Got OpenAL Enabled from JSON",   dream.getProject()->isOpenALEnabled()  );
+		assertTrue("Project Got Bullet2 Enabled from JSON",  dream.getProject()->isBullet2Enabled() );
+		assertFalse("Project Got Bullet3 Enabled from JSON", dream.getProject()->isBullet3Enabled() );
+		assertTrue("Project Got OpenGL Enabled from JSON",   dream.getProject()->isOpenGLEnabled()  );
+		assertFalse("Project Got Vulkan Enabled from JSON",  dream.getProject()->isVulkanEnabled()  );
+
+		std::string sceneName = "First Scene";
+		Scene::Scene* firstScene = dream.getProject()->getSceneByName(sceneName);
+
+		assertTrue("Got first scene from project by name", firstScene != NULL);
+
+		std::string sceneUUID = "03bb-9210-2e76-26a8";
+		firstScene = dream.getProject()->getSceneByUUID(sceneUUID);
+		assertTrue("Got first scene from project by UUID",firstScene != NULL);
+
+		if (firstScene != NULL) {
+			assertTrue("Project Scene has animation enabled", firstScene->isAnimationEnabled());
+			assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
+			assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
+			assertFalse("Project Scene has input enabled",      firstScene->isInputEnabled());
 		}
 
-		DreamTest::~DreamTest() {
+		delete fileReader;
+	}
 
-		}
-
-		void DreamTest::run() {
-			header();
-			testCanHoldProject();
-			testCanLoadProjectFromJSON();
-			testCreateInterfaces();
-		}
-
-		void DreamTest::testCanHoldProject() {
-			Dream dream;
-			dream.setProject(new Project());
-			assertNotNull("Dream can hold Project",dream.getProject());
-		}
-
-		void DreamTest::testCanLoadProjectFromJSON() {
-			Dream dream;
-			Util::FileReader* fileReader = new Util::FileReader(TEST_PROJECT);
-			fileReader->readIntoStringStream();
-			dream.loadProjectFromFileReader("",fileReader);
-
-			std::string expectedUUID        = "577f-1113-370f-2c12";
-			std::string expectedName        = "Ash's Dream Project";
-			std::string expectedAuthor      = "Ash Thompson";
-			std::string expectedDescription = "A Test Dream Project";
-
-			assertZero("Project Got UUID from JSON",       dream.getProject()->getUUID().compare(expectedUUID));
-			assertZero("Project Got Name from JSON",       dream.getProject()->getName().compare(expectedName));
-			assertZero("Project Got Author from JSON",     dream.getProject()->getAuthor().compare(expectedAuthor));
-			assertZero("Project Got Description from JSON",dream.getProject()->getDescription().compare(expectedDescription));
-
-			assertTrue("Project Got OpenAL Enabled from JSON",   dream.getProject()->isOpenALEnabled()  );
-			assertTrue("Project Got Bullet2 Enabled from JSON",  dream.getProject()->isBullet2Enabled() );
-			assertFalse("Project Got Bullet3 Enabled from JSON", dream.getProject()->isBullet3Enabled() );
-			assertTrue("Project Got OpenGL Enabled from JSON",   dream.getProject()->isOpenGLEnabled()  );
-			assertFalse("Project Got Vulkan Enabled from JSON",  dream.getProject()->isVulkanEnabled()  );
-
-			std::string sceneName = "First Scene";
-			Scene::Scene* firstScene = dream.getProject()->getSceneByName(sceneName);
-
-			assertTrue("Got first scene from project by name", firstScene != NULL);
-
-			std::string sceneUUID = "03bb-9210-2e76-26a8";
-			firstScene = dream.getProject()->getSceneByUUID(sceneUUID);
-			assertTrue("Got first scene from project by UUID",firstScene != NULL);
-
-			if (firstScene != NULL) {
-				assertTrue("Project Scene has animation enabled", firstScene->isAnimationEnabled());
-				assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
-				assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
-				assertFalse("Project Scene has input enabled",      firstScene->isInputEnabled());
-			}
-
-			delete fileReader;
-		}
-
-		void DreamTest::testCreateInterfaces() {
-			assertInconclusive("Test Create Interfaces");
-		}
-	} // End of Test
+	void DreamTest::testCreateInterfaces() {
+		assertInconclusive("Test Create Interfaces");
+	}
+} // End of Test
 } // End of Dream

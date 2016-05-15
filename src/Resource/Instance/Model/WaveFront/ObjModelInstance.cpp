@@ -15,43 +15,24 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ObjModel.h"
+#include "ObjModelInstance.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 
-namespace Dream {
-	namespace Resource {
-		namespace Instance {
-			namespace Model {
-				namespace WaveFront {
+namespace Dream     {
+namespace Resource  {
+namespace Instance  {
+namespace Model     {
+namespace WaveFront {
 
-					ObjModelInstance::ObjModelInstance(void) :
-						Dream::Resource::Instance::ResourceInstance() {
+	ObjModelInstance::ObjModelInstance(void) :
+		Dream::Resource::Instance::ResourceInstance() {
+	}
 
-					}
-
-					ObjModelInstance::~ObjModelInstance(void) {
-
-					}
-
-					void ObjModelInstance::generateAbsolutePaths(std::string projectDir,std::string projectUUID){
-						mObjPath = projectDir         + PATH_SEP +
-											 RESOURCE_DIR       + PATH_SEP +
-											 RESOURCE_DIR_MODEL + PATH_SEP +
-											 getUUID()          + PATH_SEP +
-											 RESOURCE_FORMAT_OBJ;
-						std::cout << "Generated path for obj resource: " << mObjPath << std::endl;
-						/*
-						mMtlPath = projectDir         + PATH_SEP +
-											 RESOURCE_DIR       + PATH_SEP +
-											 RESOURCE_DIR_MODEL + PATH_SEP +
-											 getUUID()          + PATH_SEP +
-											 RESOURCE_FORMAT_MTL;
-						std::cout << "Generated path for mtl resource: " << mMtlPath << std::endl;
-						*/
-					}
-				} // End of Wavefront
-			} // End of Model
-		} // End of Instance
-	} // End of Resource
+	ObjModelInstance::~ObjModelInstance(void) {}
+    
+} // End of WaveFront
+} // End of Model
+} // End of Instance
+} // End of Resource
 } // End of DreamFileFormats

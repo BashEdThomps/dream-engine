@@ -25,10 +25,10 @@
 #include "Instance/ResourceInstance.h"
 #include "../JSON/json.hpp"
 
-#define RESOURCE_JSON_UUID   "uuid"
-#define RESOURCE_JSON_NAME   "name"
-#define RESOURCE_JSON_TYPE   "type"
-#define RESOURCE_JSON_FORMAT "format"
+#define RESOURCE_UUID   "uuid"
+#define RESOURCE_NAME   "name"
+#define RESOURCE_TYPE   "type"
+#define RESOURCE_FORMAT "format"
 
 #define DIR_PATH_SEP        "/"
 #define RESOURCE_DIR        "resource"
@@ -47,7 +47,9 @@ namespace Dream {
 		public:
 			Resource(void);
 			Resource(nlohmann::json);
-			virtual ~Resource(void) {};
+			~Resource(void);
+			
+			std::pair<std::string,std::string> mapPair(std::string,std::string);
 
 			void setUUID(std::string);
 			std::string getUUID();
@@ -55,8 +57,11 @@ namespace Dream {
 			void setName(std::string);
 			std::string getName();
 
-			virtual void generateAbsolutePaths(std::string, std::string) = 0;
-			virtual Instance::ResourceInstance* createInstance() = 0;
+			void setType(std::string);
+			std::string getType();
+
+			void setFormat(std::string);
+			std::string getFormat();
 		}; // End of Resource
 	} // End of Resource
 } // End of Dream

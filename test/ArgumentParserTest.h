@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include "../src/Unit/Unit.h"
-#include "../src/ArgumentParser.h"
+#include "../src/Main/ArgumentParser.h"
 
 namespace Dream {
 	namespace Test {

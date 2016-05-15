@@ -1,88 +1,85 @@
 #include <iostream>
 #include "KeyFrame.h"
 #include "FrameDelta.h"
-#include "Animation.h"
+#include "AnimationInstance.h"
 
 namespace Dream {
 	namespace Resource {
 		namespace Instance {
-			namespace AnimationInstance {
-				AnimationInstance::AnimationInstance(int fps) :
-	      	Dream::Resource::Instance::ResourceInstance() {
-	          mFramesPerSecond = fps;
+			namespace Animation {
+				AnimationInstance::AnimationInstance(int fps) : Dream::Resource::Instance::ResourceInstance() {
+                    mFramesPerSecond = fps;
 				    mCurrentFrame    = 0;
 				    mCurrentKeyFrame = 0;
 				}
 
-				AnimationInstance::~AnimationInstance() {
-
-				}
+				AnimationInstance::~AnimationInstance() {}
 
 				void AnimationInstance::generateFrames() {
 					int currentKeyFrame = 0;
 					int currentFrame = 0;
 
 					while (1) {
-	        	KeyFrame* source = mKeyFrames[currentKeyFrame];
-	          KeyFrame* target = mKeyFrames[currentKeyFrame+1];
+                        KeyFrame* source = mKeyFrames[currentKeyFrame];
+                        KeyFrame* target = mKeyFrames[currentKeyFrame+1];
 
-					  if (source == NULL) {
+                        if (source == NULL) {
 							std::cout << "Finished generating frames" << std::endl;
 							break;
-					  }
+                        }
 
-					  if (target == NULL) {
+                        if (target == NULL) {
 							if (source->getWrap()) {
 						    target = mKeyFrames[0];
 							} else {
 						    std::cout << "Finished generating frames" <<  std::endl;
 						    break;
 							}
-					  }
+                        }
 
-					  std::cout << "Generating frames for " << source->getIndex() << " >> " << target->getIndex() << std::endl;
+                        std::cout << "Generating frames for " << source->getIndex() << " >> " << target->getIndex() << std::endl;
 
-					  int intermediates = source->getIntermediateFrameCount();
-					  std::cout << "\t with " << intermediates << " intermediates" << std::endl;
+                        int intermediates = source->getIntermediateFrameCount();
+                        std::cout << "\t with " << intermediates << " intermediates" << std::endl;
 
-					  int i;
-					  for (i = 0; i < intermediates; i++) {
-	            Frame *frame = new Frame(currentFrame);
-	    				int j;
-	            Animation::FrameDelta *nextDelta;
-	    				int max = frame->getNumFrameDeltas();
-	    				for (j=0;i<max;j++) { //FrameDelta d : source.getDeltas()) {
-	    				  nextDelta = frame->getFrameDeltas()[j];
-	    				  std::cout << "Creatng delta form " <<  nextDelta->getDrawableID() << std::endl;
-	    				  // TODO - FIX THIS
-	    				  FrameDelta* dest = NULL;// = KeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
-	    				  FrameDelta* moveBy = NULL;// = KeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
-	    				  moveBy->printDebug();
-	    				  frame->addFrameDelta(moveBy);
-	    				}
-	    				addFrame(frame);
-	    				mCurrentFrame++;
+                        int i;
+                        for (i = 0; i < intermediates; i++) {
+                            Frame *frame = new Frame(currentFrame);
+                            int j;
+                            Animation::FrameDelta *nextDelta;
+                            int max = frame->getNumFrameDeltas();
+                            for (j=0;i<max;j++) { //FrameDelta d : source.getDeltas()) {
+                                nextDelta = frame->getFrameDeltas()[j];
+                                std::cout << "Creatng delta form " <<  nextDelta->getDrawableID() << std::endl;
+                                // TODO - FIX THIS
+                                //FrameDelta* dest = NULL;// = KeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
+                                FrameDelta* moveBy = NULL;// = KeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
+                                moveBy->printDebug();
+                                frame->addFrameDelta(moveBy);
+                            }
+                            addFrame(frame);
+                            mCurrentFrame++;
 					  }
 					  // Move on to the next KeyFrame
 					  mCurrentKeyFrame++;
 					}
 				}
 
-				void Animation::addFrame(Frame* f) {
+				void AnimationInstance::addFrame(Frame* f) {
 				    mFrames.push_back(f);
 				}
 
-				void Animation::addKeyFrame(KeyFrame *kf) {
+				void AnimationInstance::addKeyFrame(KeyFrame *kf) {
 				    mKeyFrames.push_back(kf);
 				    return;
 				}
 
-				void Animation::addDrawable(int sd) {
+				void AnimationInstance::addDrawable(int sd) {
 				    mDrawables.push_back(sd);
 				    return;
 				}
 
-				void Animation::removeDrawable(int dID) {
+				void AnimationInstance::removeDrawable(int dID) {
 				    mDrawables[dID] = -1;
 				    return;
 				}
@@ -137,10 +134,6 @@ namespace Dream {
 
 				int AnimationInstance::getFramesPerSecond() {
 					return mFramesPerSecond;
-				}
-
-				ResourceInstance* AnimationInstance::createInstance() {
-						return NULL;
 				}
 			}
 		}

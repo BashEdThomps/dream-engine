@@ -18,14 +18,16 @@
 #ifndef TESTOBJ_H
 #define TESTOBJ_H
 
-namespace DreamFileFormatsTest::Obj {
-	class TestOBJ {
-	public:
-		TestOBJ(void);
-		~TestOBJ(void);
-	//protected:
-	//private:
-	}; // End of TestOBJ
-} // End of DreamFileFormats::Obj
+namespace DreamFileFormatsTest {
+namespace Obj {
+    
+    class TestOBJ {
+    public:
+        TestOBJ(void);
+        ~TestOBJ(void);
+    }; // End of TestOBJ
+    
+} // End of Obj
+} // End of DreamFileFormats
 
 #endif // End of TESTOBJ_H

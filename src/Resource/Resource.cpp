@@ -18,29 +18,52 @@
 #include "Resource.h"
 
 namespace Dream {
-	namespace Resource {
-		Resource::Resource(void) {
-		}
+namespace Resource {
+	Resource::Resource(void) {}
+	Resource::~Resource(void) {}
 
-		Resource::Resource(nlohmann::json json) {
-			setUUID(json [RESOURCE_JSON_UUID]);
-			setName(json [RESOURCE_JSON_NAME]);
-		}
+	Resource::Resource(nlohmann::json json) {
+		setUUID   (json [RESOURCE_UUID]   );
+		setName   (json [RESOURCE_NAME]   );
+		setFormat (json [RESOURCE_FORMAT] );
+		setType   (json [RESOURCE_TYPE]   );
+	}
 
-		void Resource::setUUID(std::string uuid) {
-			mUUID = uuid;
-		}
+	std::pair<std::string,std::string> Resource::mapPair(std::string key, std::string value) {
+		return std::pair<std::string,std::string>(key,value);
+	}
+		
+	void Resource::setUUID(std::string uuid) {
+		mAttributes.insert(mapPair(RESOURCE_UUID, uuid));
+	}
 
-		std::string Resource::getUUID() {
-			return mUUID;
-		}
+	std::string Resource::getUUID() {
+		return mAttributes.at(RESOURCE_UUID);
+	}
 
-		void Resource::setName(std::string name) {
-			mName = name;
-		}
+	void Resource::setName(std::string name) {
+		mAttributes.insert(mapPair(RESOURCE_NAME,name));
+	}
 
-		std::string Resource::getName() {
-			return mName;
-		}
-	} // End of Resource
+	std::string Resource::getName() {
+		return mAttributes.at(RESOURCE_NAME);
+	}
+
+	void Resource::setType(std::string type) {
+		mAttributes.insert(mapPair(RESOURCE_TYPE,type));
+	}
+
+	std::string Resource::getType() {
+		return mAttributes.at(RESOURCE_TYPE);
+	}
+
+	void Resource::setFormat(std::string format) {
+		mAttributes.insert(mapPair(RESOURCE_FORMAT,format));
+	}
+
+	std::string Resource::getFormat() {
+		return mAttributes.at(RESOURCE_FORMAT);
+	}
+		
+} // End of Resource
 } // End of Dream

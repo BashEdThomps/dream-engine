@@ -24,15 +24,17 @@
 
 namespace Dream {
 	namespace Resource {
-		namespace Script {
-			namespace JavaScript {
-				class JavaScript : public Dream::Resource::Instance::ResourceInstance {
-				public:
-					JavaScript();
-					~JavaScript(void);
-				}; // End of JavaScript
-			} // End of JavaScript
-		} // End of Script
+        namespace Instance {
+    		namespace Script {
+    			namespace JavaScript {
+    				class JavaScriptInstance : public Dream::Resource::Instance::ResourceInstance {
+    				public:
+    					JavaScriptInstance();
+    					~JavaScriptInstance(void);
+    				}; // End of JavaScript
+    			} // End of JavaScript
+            } // End of Script
+        } // End of Instance
 	} // End of Resource
 } // End of Dream
 

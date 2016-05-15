@@ -22,31 +22,33 @@
 #include <chaiscript/chaiscript.hpp>
 #include "../../ResourceInstance.h"
 
-namespace Dream {
-	namespace Plugins {
-		namespace Script {
-			namespace Instance {
-				namespace Chai {
-	      	class ChaiScriptInstance : public Dream::Resource::Instance::ResourceInstance {
-	        private:
-	        	std::string mObjectUUID;
-	          chaiscript::ChaiScript* mEngine;
-					public:
-	          ChaiScriptInstance(chaiscript::ChaiScript*);
-	          ChaiScriptInstance(chaiscript::ChaiScript*, std::string, const std::string, bool);
-						~ChaiScriptInstance(void);
+namespace Dream      {
+namespace Resource   {
+namespace Instance   {
+namespace Script     {
+namespace ChaiScript {
+    
+    class ChaiScriptInstance : public Dream::Resource::Instance::ResourceInstance {
+    private:
+        std::string mObjectUUID;
+        chaiscript::ChaiScript* mEngine;
+    public:
+        ChaiScriptInstance(chaiscript::ChaiScript*);
+        ChaiScriptInstance(chaiscript::ChaiScript*, std::string, const std::string, bool);
+        ~ChaiScriptInstance(void);
 
-	          void setScriptFromFile(const std::string);
-	          void setScriptFromString(const std::string);
+        void setScriptFromFile(const std::string);
+        void setScriptFromString(const std::string);
 
-	          std::string getObjectUUID();
-	          void setObjectUUID(std::string);
+        std::string getObjectUUID();
+        void setObjectUUID(std::string);
 
-					}; // End of ChaiScriptInstance
-				} // End of ChaiScript
-			} // End of Script
-		} // End of Instance
-	} // End of Resource
+    }; // End of ChaiScriptInstance
+    
+} // End of ChaiScript
+} // End of Script
+} // End of Instance
+} // End of Resource
 } // End of Dream
 
 #endif // End of CHAISCRIPT_H

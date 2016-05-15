@@ -21,7 +21,7 @@
 #include <vector>
 #include "../JSON/json.hpp"
 #include "../Scene/Scene.h"
-#include "../Resource/Model/Model.h"
+#include "../Resource/Resource.h"
 #include "../Resource/Instance/ResourceInstance.h"
 #include "../Resource/Instance/Model/WaveFront/ObjModelInstance.h"
 #include "../Resource/Instance/Script/JavaScript/JavaScriptInstance.h"
@@ -30,19 +30,19 @@
 #include "../Resource/Instance/Audio/Wav/WavAudioInstance.h"
 #include "../Resource/Instance/Animation/AnimationInstance.h"
 
-#define PROJECT_JSON_UUID            "uuid"
-#define PROJECT_JSON_NAME            "name"
-#define PROJECT_JSON_AUTHOR          "author"
-#define PROJECT_JSON_DESCRIPTION     "description"
-#define PROJECT_JSON_SCENE_ARRAY     "scenes"
-#define PROJECT_JSON_RESOURCE_ARRAY  "resources"
-#define PROJECT_JSON_V8_ENABLED      "v8"
-#define PROJECT_JSON_CHAI_ENABLED    "chai"
-#define PROJECT_JSON_OPENAL_ENABLED  "openAL"
-#define PROJECT_JSON_BULLET2_ENABLED "bullet2"
-#define PROJECT_JSON_BULLET3_ENABLED "bullet3"
-#define PROJECT_JSON_OPENGL_ENABLED  "openGL"
-#define PROJECT_JSON_VULKAN_ENABLED  "vulkan"
+#define PROJECT_UUID            "uuid"
+#define PROJECT_NAME            "name"
+#define PROJECT_AUTHOR          "author"
+#define PROJECT_DESCRIPTION     "description"
+#define PROJECT_SCENE_ARRAY     "scenes"
+#define PROJECT_RESOURCE_ARRAY  "resources"
+#define PROJECT_V8_ENABLED      "v8"
+#define PROJECT_CHAI_ENABLED    "chai"
+#define PROJECT_OPENAL_ENABLED  "openAL"
+#define PROJECT_BULLET2_ENABLED "bullet2"
+#define PROJECT_BULLET3_ENABLED "bullet3"
+#define PROJECT_OPENGL_ENABLED  "openGL"
+#define PROJECT_VULKAN_ENABLED  "vulkan"
 
 namespace Dream {
 	class Project {
@@ -62,7 +62,7 @@ namespace Dream {
 		bool mVulkanEnabled;
 
 		std::vector<Dream::Scene::Scene*> mScenes;
-        std::vector<Dream::Resource::Instance::ResourceInstance*> mResourcesInstances;
+		std::vector<Dream::Resource::Resource*> mResources;
 	public:
 		Project(void);
 		Project(std::string, nlohmann::json);
