@@ -40,7 +40,7 @@ namespace Dream {
                     return mChai;
                 }
 
-				void ChaiScripting::update() {
+				void ChaiScripting::update(Dream::Scene::Scene* scene) {
                     
                 }
 			} // End of Chai

@@ -20,16 +20,18 @@
 
 #include "Interface.h"
 
-namespace Dream {
-	namespace Plugins {
-		namespace Audio {
-			class AudioInterface : public Dream::Plugins::Interface {
-			public:
-				AudioInterface(void);
-				virtual ~AudioInterface(void) {};
-			}; // End of AudioInterface
-		} // End of Plugins
-	} // End of Audio
+namespace Dream   {
+namespace Plugins {
+namespace Audio   {
+	
+	class AudioInterface : public Dream::Plugins::Interface {
+	public:
+		AudioInterface(void);
+		virtual ~AudioInterface(void) {};
+	}; // End of AudioInterface
+	
+} // End of Plugins
+} // End of Audio
 } // End of Dream
 
 #endif // End of AUDIOINTERFACE_H

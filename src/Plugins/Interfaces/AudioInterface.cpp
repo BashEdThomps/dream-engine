@@ -17,10 +17,12 @@
 
 #include "AudioInterface.h"
 
-namespace Dream {
-	namespace Plugins {
-		namespace Audio {
-			AudioInterface::AudioInterface(void) : Dream::Plugins::Interface() {}
-		} // End of Audio
-	} // End of Plugins
+namespace Dream   {
+namespace Plugins {
+namespace Audio   {
+	
+	AudioInterface::AudioInterface(void) : Dream::Plugins::Interface() {}
+	
+} // End of Audio
+} // End of Plugins
 } // End of Dream

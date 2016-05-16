@@ -46,7 +46,7 @@ namespace Dream {
 					V8Scripting(void);
 					~V8Scripting(void);
 					bool init(void);
-					void update(void);
+					void update(Dream::Scene::Scene*);
 				}; // End of V8Scripting
 			} // End of V8
 		} // End of Scripting

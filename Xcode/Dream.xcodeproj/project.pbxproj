@@ -47,6 +47,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		AB11EC781CEA3B9400773F52 /* GLFWInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB11EC761CEA3B9400773F52 /* GLFWInput.cpp */; };
+		AB11EC7B1CEA3BB800773F52 /* DreamAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB11EC791CEA3BB800773F52 /* DreamAnimation.cpp */; };
 		ABC50B141CE92E2E00EC3254 /* ArgumentParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50AAC1CE92E2E00EC3254 /* ArgumentParser.cpp */; };
 		ABC50B171CE92E2E00EC3254 /* OALAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50AB41CE92E2E00EC3254 /* OALAudio.cpp */; };
 		ABC50B181CE92E2E00EC3254 /* AudioInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50AB71CE92E2E00EC3254 /* AudioInterface.cpp */; };
@@ -99,6 +101,8 @@
 		ABC50B761CE92E3D00EC3254 /* UUIDTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50B631CE92E3D00EC3254 /* UUIDTest.cpp */; };
 		ABC50B781CE92F7100EC3254 /* Dream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50AAE1CE92E2E00EC3254 /* Dream.cpp */; };
 		ABC50B791CE92F7500EC3254 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50AB01CE92E2E00EC3254 /* Main.cpp */; };
+		ABC50B7D1CE9352400EC3254 /* InputInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50B7B1CE9352400EC3254 /* InputInterface.cpp */; };
+		ABC50B801CE9353F00EC3254 /* AnimationInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABC50B7E1CE9353F00EC3254 /* AnimationInterface.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +173,10 @@
 
 /* Begin PBXFileReference section */
 		9C763422EE8241DCB27DB90A /* DreamTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = DreamTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB11EC761CEA3B9400773F52 /* GLFWInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLFWInput.cpp; sourceTree = "<group>"; };
+		AB11EC771CEA3B9400773F52 /* GLFWInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLFWInput.h; sourceTree = "<group>"; };
+		AB11EC791CEA3BB800773F52 /* DreamAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DreamAnimation.cpp; sourceTree = "<group>"; };
+		AB11EC7A1CEA3BB800773F52 /* DreamAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DreamAnimation.h; sourceTree = "<group>"; };
 		ABC50AA81CE92E2E00EC3254 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		ABC50AAA1CE92E2E00EC3254 /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
 		ABC50AAC1CE92E2E00EC3254 /* ArgumentParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArgumentParser.cpp; sourceTree = "<group>"; };
@@ -180,10 +188,8 @@
 		ABC50AB51CE92E2E00EC3254 /* OALAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OALAudio.h; sourceTree = "<group>"; };
 		ABC50AB71CE92E2E00EC3254 /* AudioInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioInterface.cpp; sourceTree = "<group>"; };
 		ABC50AB81CE92E2E00EC3254 /* AudioInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioInterface.h; sourceTree = "<group>"; };
-		ABC50AB91CE92E2E00EC3254 /* AudioInterface.h.gch */ = {isa = PBXFileReference; lastKnownFileType = file; path = AudioInterface.h.gch; sourceTree = "<group>"; };
 		ABC50ABA1CE92E2E00EC3254 /* Interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Interface.cpp; sourceTree = "<group>"; };
 		ABC50ABB1CE92E2E00EC3254 /* Interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interface.h; sourceTree = "<group>"; };
-		ABC50ABC1CE92E2E00EC3254 /* Interface.h.gch */ = {isa = PBXFileReference; lastKnownFileType = file; path = Interface.h.gch; sourceTree = "<group>"; };
 		ABC50ABD1CE92E2E00EC3254 /* PhysicsInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicsInterface.cpp; sourceTree = "<group>"; };
 		ABC50ABE1CE92E2E00EC3254 /* PhysicsInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhysicsInterface.h; sourceTree = "<group>"; };
 		ABC50ABF1CE92E2E00EC3254 /* ScriptingInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScriptingInterface.cpp; sourceTree = "<group>"; };
@@ -192,11 +198,8 @@
 		ABC50AC21CE92E2E00EC3254 /* VideoInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoInterface.h; sourceTree = "<group>"; };
 		ABC50AC51CE92E2E00EC3254 /* BulletPhysics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletPhysics.cpp; sourceTree = "<group>"; };
 		ABC50AC61CE92E2E00EC3254 /* BulletPhysics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletPhysics.h; sourceTree = "<group>"; };
-		ABC50AC91CE92E2E00EC3254 /* ChaiScript.h.gch */ = {isa = PBXFileReference; lastKnownFileType = file; path = ChaiScript.h.gch; sourceTree = "<group>"; };
 		ABC50ACA1CE92E2E00EC3254 /* ChaiScripting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChaiScripting.cpp; sourceTree = "<group>"; };
 		ABC50ACB1CE92E2E00EC3254 /* ChaiScripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChaiScripting.h; sourceTree = "<group>"; };
-		ABC50ACC1CE92E2E00EC3254 /* ChaiScripting.h.gch-762ca3fb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ChaiScripting.h.gch-762ca3fb"; sourceTree = "<group>"; };
-		ABC50ACD1CE92E2E00EC3254 /* ChaiScripting.h.gch-f9387170 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ChaiScripting.h.gch-f9387170"; sourceTree = "<group>"; };
 		ABC50ACF1CE92E2E00EC3254 /* V8Scripting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = V8Scripting.cpp; sourceTree = "<group>"; };
 		ABC50AD01CE92E2E00EC3254 /* V8Scripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = V8Scripting.h; sourceTree = "<group>"; };
 		ABC50AD31CE92E2E00EC3254 /* OGLVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OGLVideo.cpp; sourceTree = "<group>"; };
@@ -283,6 +286,11 @@
 		ABC50B621CE92E3D00EC3254 /* FileReaderTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileReaderTest.h; sourceTree = "<group>"; };
 		ABC50B631CE92E3D00EC3254 /* UUIDTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UUIDTest.cpp; sourceTree = "<group>"; };
 		ABC50B641CE92E3D00EC3254 /* UUIDTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UUIDTest.h; sourceTree = "<group>"; };
+		ABC50B7A1CE9315400EC3254 /* octronic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = octronic.png; path = resources/images/octronic.png; sourceTree = "<group>"; };
+		ABC50B7B1CE9352400EC3254 /* InputInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputInterface.cpp; sourceTree = "<group>"; };
+		ABC50B7C1CE9352400EC3254 /* InputInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputInterface.h; sourceTree = "<group>"; };
+		ABC50B7E1CE9353F00EC3254 /* AnimationInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationInterface.cpp; sourceTree = "<group>"; };
+		ABC50B7F1CE9353F00EC3254 /* AnimationInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationInterface.h; sourceTree = "<group>"; };
 		DC9359161D64411E9A0C0B81 /* libDreamBase.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libDreamBase.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE877B8A1CC84C0790E73DD9 /* Dream */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = Dream; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -291,8 +299,27 @@
 		6D4E085C58B34DADB754A02D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				ABC50B7A1CE9315400EC3254 /* octronic.png */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		AB11EC741CEA3B6200773F52 /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				AB11EC791CEA3BB800773F52 /* DreamAnimation.cpp */,
+				AB11EC7A1CEA3BB800773F52 /* DreamAnimation.h */,
+			);
+			path = Animation;
+			sourceTree = "<group>";
+		};
+		AB11EC751CEA3B6200773F52 /* Input */ = {
+			isa = PBXGroup;
+			children = (
+				AB11EC761CEA3B9400773F52 /* GLFWInput.cpp */,
+				AB11EC771CEA3B9400773F52 /* GLFWInput.h */,
+			);
+			path = Input;
 			sourceTree = "<group>";
 		};
 		ABC50AA71CE92E2E00EC3254 /* src */ = {
@@ -334,6 +361,8 @@
 		ABC50AB11CE92E2E00EC3254 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				AB11EC741CEA3B6200773F52 /* Animation */,
+				AB11EC751CEA3B6200773F52 /* Input */,
 				ABC50AB21CE92E2E00EC3254 /* Audio */,
 				ABC50AB61CE92E2E00EC3254 /* Interfaces */,
 				ABC50AC31CE92E2E00EC3254 /* Physics */,
@@ -365,16 +394,18 @@
 			children = (
 				ABC50AB71CE92E2E00EC3254 /* AudioInterface.cpp */,
 				ABC50AB81CE92E2E00EC3254 /* AudioInterface.h */,
-				ABC50AB91CE92E2E00EC3254 /* AudioInterface.h.gch */,
 				ABC50ABA1CE92E2E00EC3254 /* Interface.cpp */,
 				ABC50ABB1CE92E2E00EC3254 /* Interface.h */,
-				ABC50ABC1CE92E2E00EC3254 /* Interface.h.gch */,
 				ABC50ABD1CE92E2E00EC3254 /* PhysicsInterface.cpp */,
 				ABC50ABE1CE92E2E00EC3254 /* PhysicsInterface.h */,
 				ABC50ABF1CE92E2E00EC3254 /* ScriptingInterface.cpp */,
 				ABC50AC01CE92E2E00EC3254 /* ScriptingInterface.h */,
 				ABC50AC11CE92E2E00EC3254 /* VideoInterface.cpp */,
 				ABC50AC21CE92E2E00EC3254 /* VideoInterface.h */,
+				ABC50B7B1CE9352400EC3254 /* InputInterface.cpp */,
+				ABC50B7C1CE9352400EC3254 /* InputInterface.h */,
+				ABC50B7E1CE9353F00EC3254 /* AnimationInterface.cpp */,
+				ABC50B7F1CE9353F00EC3254 /* AnimationInterface.h */,
 			);
 			path = Interfaces;
 			sourceTree = "<group>";
@@ -408,11 +439,8 @@
 		ABC50AC81CE92E2E00EC3254 /* Chai */ = {
 			isa = PBXGroup;
 			children = (
-				ABC50AC91CE92E2E00EC3254 /* ChaiScript.h.gch */,
 				ABC50ACA1CE92E2E00EC3254 /* ChaiScripting.cpp */,
 				ABC50ACB1CE92E2E00EC3254 /* ChaiScripting.h */,
-				ABC50ACC1CE92E2E00EC3254 /* ChaiScripting.h.gch-762ca3fb */,
-				ABC50ACD1CE92E2E00EC3254 /* ChaiScripting.h.gch-f9387170 */,
 			);
 			path = Chai;
 			sourceTree = "<group>";
@@ -455,21 +483,11 @@
 		ABC50AD81CE92E2E00EC3254 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
-				ABC50AD91CE92E2E00EC3254 /* Audio */,
 				ABC50ADA1CE92E2E00EC3254 /* Instance */,
-				ABC50AFF1CE92E2E00EC3254 /* Model */,
 				ABC50B001CE92E2E00EC3254 /* Resource.cpp */,
 				ABC50B011CE92E2E00EC3254 /* Resource.h */,
-				ABC50B021CE92E2E00EC3254 /* Script */,
 			);
 			path = Resource;
-			sourceTree = "<group>";
-		};
-		ABC50AD91CE92E2E00EC3254 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Audio;
 			sourceTree = "<group>";
 		};
 		ABC50ADA1CE92E2E00EC3254 /* Instance */ = {
@@ -583,20 +601,6 @@
 				ABC50AFE1CE92E2E00EC3254 /* JavaScriptInstance.h */,
 			);
 			path = JavaScript;
-			sourceTree = "<group>";
-		};
-		ABC50AFF1CE92E2E00EC3254 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		ABC50B021CE92E2E00EC3254 /* Script */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Script;
 			sourceTree = "<group>";
 		};
 		ABC50B031CE92E2E00EC3254 /* Scene */ = {
@@ -953,6 +957,7 @@
 				ABC50B2A1CE92E2E00EC3254 /* Material.cpp in Sources */,
 				ABC50B141CE92E2E00EC3254 /* ArgumentParser.cpp in Sources */,
 				ABC50B2C1CE92E2E00EC3254 /* ChaiScriptInstance.cpp in Sources */,
+				ABC50B801CE9353F00EC3254 /* AnimationInterface.cpp in Sources */,
 				ABC50B231CE92E2E00EC3254 /* Frame.cpp in Sources */,
 				ABC50B321CE92E2E00EC3254 /* Unit.cpp in Sources */,
 				ABC50B1B1CE92E2E00EC3254 /* ScriptingInterface.cpp in Sources */,
@@ -964,6 +969,7 @@
 				ABC50B331CE92E2E00EC3254 /* FileReader.cpp in Sources */,
 				ABC50B2F1CE92E2E00EC3254 /* Camera.cpp in Sources */,
 				ABC50B301CE92E2E00EC3254 /* Scene.cpp in Sources */,
+				AB11EC7B1CEA3BB800773F52 /* DreamAnimation.cpp in Sources */,
 				ABC50B341CE92E2E00EC3254 /* StringUtils.cpp in Sources */,
 				ABC50B261CE92E2E00EC3254 /* OggAudioInstance.cpp in Sources */,
 				ABC50B191CE92E2E00EC3254 /* Interface.cpp in Sources */,
@@ -971,8 +977,10 @@
 				ABC50B1F1CE92E2E00EC3254 /* V8Scripting.cpp in Sources */,
 				ABC50B781CE92F7100EC3254 /* Dream.cpp in Sources */,
 				ABC50B221CE92E2E00EC3254 /* AnimationInstance.cpp in Sources */,
+				ABC50B7D1CE9352400EC3254 /* InputInterface.cpp in Sources */,
 				ABC50B291CE92E2E00EC3254 /* Face.cpp in Sources */,
 				ABC50B211CE92E2E00EC3254 /* Project.cpp in Sources */,
+				AB11EC781CEA3B9400773F52 /* GLFWInput.cpp in Sources */,
 				ABC50B171CE92E2E00EC3254 /* OALAudio.cpp in Sources */,
 				ABC50B351CE92E2E00EC3254 /* UUID.cpp in Sources */,
 				ABC50B241CE92E2E00EC3254 /* FrameDelta.cpp in Sources */,

@@ -60,6 +60,8 @@ namespace Dream {
         if(!createAudioInterfaces())     return false;
         if(!createPhysicsInterfaces())   return false;
         if(!createVideoInterfaces())     return false;
+		if(!createInputInterfaces())     return false;
+		if(!createAnimationInterfaces()) return false;
 
 		std::cout << "Dream: Successfuly created interfaces." << std::endl;
         return true;
@@ -167,6 +169,35 @@ namespace Dream {
 		return false;
 	}
 
+	bool Dream::createAnimationInterfaces() {
+		mAnimationInterface = new Plugins::Animation::DreamAnimation();
+		if (mAnimationInterface->init()) {
+			return true;
+		} else {
+			std::cerr << "Dream: Unable to initialise DreamAnimation." << std::endl;
+			return false;
+		}
+		return true;
+	}
+	
+	bool Dream::createInputInterfaces() {
+		if (mProject->isOpenGLEnabled()) {
+			if (mInputInterface == NULL) {
+				mInputInterface = new Plugins::Input::GLFWInput();
+				if (mInputInterface->init()) {
+					return true;
+				} else {
+					std::cerr << "Dream: Unable to initialise GLFWInputInterface." << std::endl;
+				}
+			} else {
+				std::cerr << "Dream: Cannot create GLFWInput. Input Interface all ready exists." << std::endl;
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	int Dream::runProject() {
 		mError = !createInterfaces();
 		mCurrentScene = mProject->getStartupScene();
@@ -184,15 +215,18 @@ namespace Dream {
 				std::cerr << "Dream: A fatal error has occurred, exiting main loop" << std::endl;
 				break;
 			}
-			updateInterfaces();
+			
+			updateAll();
 		}
 		return 0;
 	}
 
-	void Dream::updateInterfaces(void) {
-			if (mScriptingInterface != NULL) mScriptingInterface->update();
-			if (mPhysicsInterface   != NULL) mPhysicsInterface->update();
-			if (mAudioInterface     != NULL) mAudioInterface->update();
-			if (mVideoInterface     != NULL) mVideoInterface->update();
+	void Dream::updateAll(void) {
+		if (mInputInterface     != NULL) mInputInterface->update     (mCurrentScene);
+		if (mScriptingInterface != NULL) mScriptingInterface->update (mCurrentScene);
+		if (mPhysicsInterface   != NULL) mPhysicsInterface->update   (mCurrentScene);
+		if (mAnimationInterface != NULL) mAnimationInterface->update (mCurrentScene);
+		if (mAudioInterface     != NULL) mAudioInterface->update     (mCurrentScene);
+		if (mVideoInterface     != NULL) mVideoInterface->update     (mCurrentScene);
 	}
 }

@@ -45,7 +45,7 @@ namespace Dream {
 					return buffer;
 				}
 
-				void OALAudio::update() {}
+				void OALAudio::update(Dream::Scene::Scene*) {}
 			} // End of OpenAL
 		} // End of Audio
 	} // End of Plugins

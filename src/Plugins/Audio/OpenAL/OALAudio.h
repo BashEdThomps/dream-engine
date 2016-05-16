@@ -42,7 +42,7 @@ namespace Dream {
 					OALAudio(void);
 					~OALAudio(void);
 					bool init(void);
-					void update(void);
+					void update(Dream::Scene::Scene*);
 
 					ALuint generateBuffer();
 					void playSource(ALuint);

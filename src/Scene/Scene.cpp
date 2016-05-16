@@ -218,5 +218,10 @@ namespace Dream {
 					 (*it)->generatePath();
 			}
 		}
+		
+		void Scene::update() {
+			
+		}
+		
 	}// End of Scene
 } // End of Dream

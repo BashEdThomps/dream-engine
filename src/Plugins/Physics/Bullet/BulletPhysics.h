@@ -41,7 +41,7 @@ namespace Dream {
 					void setGravity3f(float,float,float);
 					void setGravityBtVector3(btVector3);
 					bool init(void);
-					void update();
+					void update(Dream::Scene::Scene*);
 
 				}; // End of BulletPhysics
 			} // End of Bullet

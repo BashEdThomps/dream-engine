@@ -52,7 +52,7 @@ namespace Dream {
 					return true;
 				}
 
-				void BulletPhysics::update(void) {
+				void BulletPhysics::update(Dream::Scene::Scene*) {
 
 				}
 			} // End of Bullet

@@ -33,7 +33,7 @@ namespace Dream {
 					OGLVideo(void);
 					~OGLVideo(void);
 					bool init(void);
-					void update(void);
+					void update(Dream::Scene::Scene*);
 				}; // End of OGLVideo
 			} // End of OpenGL
 		} // End of Video

@@ -75,8 +75,12 @@ namespace Dream {
 			void         showStatus();
 			void         showScenegraph();
 			std::string  indent(int);
+			
 			void generateScenegraphVector();
 			void generateSceneObjectPaths();
+			
+			void update();
+			
 		}; // End of Scene
 	}    // End of Scene
 }      // End of Dream

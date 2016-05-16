@@ -6,6 +6,7 @@
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Material.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/ArgumentParser.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/ChaiScriptInstance.o
+/Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/AnimationInterface.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Frame.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Unit.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/ScriptingInterface.o
@@ -17,6 +18,7 @@
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/FileReader.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Camera.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Scene.o
+/Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/DreamAnimation.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/StringUtils.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/OggAudioInstance.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Interface.o
@@ -24,8 +26,10 @@
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/V8Scripting.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Dream.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/AnimationInstance.o
+/Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/InputInterface.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Face.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/Project.o
+/Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/GLFWInput.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/OALAudio.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/UUID.o
 /Users/Ashley/Software/Dream/Xcode/src/Dream.build/Debug/DreamBase.build/Objects-normal/x86_64/FrameDelta.o

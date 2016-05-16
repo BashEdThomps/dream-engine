@@ -14,16 +14,16 @@
 #include "../Plugins/Interfaces/AudioInterface.h"
 #include "../Plugins/Interfaces/ScriptingInterface.h"
 #include "../Plugins/Interfaces/PhysicsInterface.h"
-#include "../Plugins/Interfaces/VideoInterface.h"
+#include "../Plugins/Interfaces/InputInterface.h"
+#include "../Plugins/Interfaces/AnimationInterface.h"
 
 #include "../Plugins/Audio/OpenAL/OALAudio.h"
-
 #include "../Plugins/Physics/Bullet/BulletPhysics.h"
-
 #include "../Plugins/Scripting/v8/V8Scripting.h"
 #include "../Plugins/Scripting/Chai/ChaiScripting.h"
-
 #include "../Plugins/Video/OpenGL/OGLVideo.h"
+#include "../Plugins/Animation/DreamAnimation.h"
+#include "../Plugins/Input/GLFWInput.h"
 
 namespace Dream {
 	class Dream {
@@ -37,6 +37,8 @@ namespace Dream {
 		Plugins::Video::VideoInterface         *mVideoInterface;
 		Plugins::Physics::PhysicsInterface     *mPhysicsInterface;
 		Plugins::Scripting::ScriptingInterface *mScriptingInterface;
+		Plugins::Input::InputInterface         *mInputInterface;
+		Plugins::Animation::AnimationInterface *mAnimationInterface;
 		
 		// Engine Variables 
 		bool mRunning;
@@ -59,7 +61,10 @@ namespace Dream {
 		bool createPhysicsInterfaces();
 		bool createVideoInterfaces();
 		bool createAudioInterfaces();
-		void updateInterfaces();
+		bool createInputInterfaces();
+		bool createAnimationInterfaces();
+		
+		void updateAll();
 	};
 }
 

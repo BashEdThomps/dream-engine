@@ -55,7 +55,7 @@ namespace Dream {
 					return true;
 				}
 
-				void V8Scripting::update() {
+				void V8Scripting::update(Dream::Scene::Scene* scene) {
 
 				}
 			} // End of V8

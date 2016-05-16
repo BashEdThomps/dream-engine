@@ -1,5 +1,5 @@
 /*
-* Dream::Plugins::Interface
+* Dream::Plugins::Input::InputInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,23 +15,20 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef INTERFACE_H
-#define INTERFACE_H
-
-#include "../../Scene/Scene.h"
+#include "InputInterface.h"
 
 namespace Dream {
 namespace Plugins {
+namespace Input {
 	
-	class Interface {
-	public:
-		Interface(void);
-		virtual ~Interface(void) {}
-		virtual bool init() = 0;
-		virtual void update(Dream::Scene::Scene*) = 0;
-	}; // End of Interface
+	InputInterface::InputInterface() : Dream::Plugins::Interface() {
+    	
+    }
+
+    InputInterface::~InputInterface() {
+    	
+    }
 	
+} // End of Input
 } // End of Plugins
 } // End of Dream
-
-#endif // End of INTERFACE_H

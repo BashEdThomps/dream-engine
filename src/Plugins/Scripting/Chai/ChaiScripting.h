@@ -36,7 +36,7 @@ namespace Dream {
                     chaiscript::ChaiScript* getChaiEngine();
 
 					bool init();
-					void update();
+					void update(Dream::Scene::Scene*);
 				}; // End of ChaiScripting
 			} // End of Chai
 		} // End Scripting

@@ -47,12 +47,11 @@ namespace Dream {
 					return true;
 				}
 
-				void OGLVideo::update(void) {
+				void OGLVideo::update(Dream::Scene::Scene* scene) {
 			    if (!glfwWindowShouldClose(mWindow)) {
-
 			        /*
-							 * Render here
-							 */
+					 * Render here
+					 */
 
 			        /* Swap front and back buffers */
 			        glfwSwapBuffers(mWindow);

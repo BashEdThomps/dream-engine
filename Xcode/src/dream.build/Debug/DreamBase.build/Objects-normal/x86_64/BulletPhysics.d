@@ -3,6 +3,11 @@ dependencies: \
   /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/BulletPhysics.h \
   /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/PhysicsInterface.h \
   /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/Interface.h \
+  /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/Scene.h \
+  /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/Camera.h \
+  /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/../JSON/json.hpp \
+  /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/SceneObject.h \
+  /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/../Resource/Instance/ResourceInstance.h \
   /usr/local/include/bullet/btBulletDynamicsCommon.h \
   /usr/local/include/bullet/btBulletCollisionCommon.h \
   /usr/local/include/bullet/BulletCollision/CollisionDispatch/btCollisionWorld.h \

@@ -52,7 +52,8 @@ dependencies: /Users/Ashley/Software/Dream/src/Main/Dream.cpp \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/AudioInterface.h \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/ScriptingInterface.h \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/PhysicsInterface.h \
-  /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/VideoInterface.h \
+  /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/InputInterface.h \
+  /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/AnimationInterface.h \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Audio/OpenAL/OALAudio.h \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Physics/Bullet/BulletPhysics.h \
   /usr/local/include/bullet/btBulletDynamicsCommon.h \
@@ -167,4 +168,7 @@ dependencies: /Users/Ashley/Software/Dream/src/Main/Dream.cpp \
   /usr/local/include/chaiscript/utility/json_wrap.hpp \
   /usr/local/include/chaiscript/dispatchkit/../utility/json.hpp \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Video/OpenGL/OGLVideo.h \
-  /usr/local/include/GLFW/glfw3.h
+  /Users/Ashley/Software/Dream/src/Main/../Plugins/Video/OpenGL/../../../Plugins/Interfaces/VideoInterface.h \
+  /usr/local/include/GLFW/glfw3.h \
+  /Users/Ashley/Software/Dream/src/Main/../Plugins/Animation/DreamAnimation.h \
+  /Users/Ashley/Software/Dream/src/Main/../Plugins/Input/GLFWInput.h
