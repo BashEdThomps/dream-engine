@@ -10,6 +10,7 @@
 #define GLFWInput_hpp
 
 #include "../Interfaces/InputInterface.h"
+#include <GLFW/glfw3.h>
 
 namespace Dream   {
 namespace Plugins {

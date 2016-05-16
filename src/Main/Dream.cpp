@@ -67,7 +67,7 @@ namespace Dream {
         return true;
 	}
 
-  bool Dream::createScriptingInterfaces() {
+	bool Dream::createScriptingInterfaces() {
 		// Chai
 		if (mProject->isChaiEnabled()){
 			if (mScriptingInterface == NULL) {

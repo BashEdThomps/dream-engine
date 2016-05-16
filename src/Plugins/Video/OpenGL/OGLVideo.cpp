@@ -1,4 +1,4 @@
-    /*
+/*
 * OGLVideo
 *
 * This program is free software: you can redistribute it and/or modify
@@ -18,48 +18,43 @@
 #include "OGLVideo.h"
 
 namespace Dream {
-	namespace Plugins {
-		namespace Video {
-			namespace OpenGL {
-				OGLVideo::OGLVideo(void) : VideoInterface() {
-				}
+namespace Plugins {
+namespace Video {
+namespace OpenGL {
+	
+	OGLVideo::OGLVideo(void) : VideoInterface() {}
+	
+	OGLVideo::~OGLVideo(void) {
+		glfwTerminate();
+	}
 
-				OGLVideo::~OGLVideo(void) {
-                    glfwTerminate();
-				}
+	bool OGLVideo::init(void) {
+		std::cout << "OGLVideo: Initialising...";
+		/* Initialize the library */
+	    if (!glfwInit()) {
+			return false;
+		}
+		/* Create a windowed mode window and its OpenGL context */
+		mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, mScreenName.c_str(), NULL, NULL);
+		if (!mWindow) {
+			glfwTerminate();
+			return false;
+		}
+	    /* Make the window's context current */
+	    glfwMakeContextCurrent(mWindow);
+	    /* Loop until the user closes the window */
+		std::cout << "done." << std::endl;
+		return true;
+	}
 
-				bool OGLVideo::init(void) {
-					std::cout << "OGLVideo: Initialising...";
-					/* Initialize the library */
-			    if (!glfwInit()) {
-						return false;
-					}
-			    /* Create a windowed mode window and its OpenGL context */
-			    mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, mScreenName.c_str(), NULL, NULL);
-			    if (!mWindow) {
-			        glfwTerminate();
-			        return false;
-			    }
-			    /* Make the window's context current */
-			    glfwMakeContextCurrent(mWindow);
-			    /* Loop until the user closes the window */
-					std::cout << "done." << std::endl;
-					return true;
-				}
-
-				void OGLVideo::update(Dream::Scene::Scene* scene) {
-			    if (!glfwWindowShouldClose(mWindow)) {
-			        /*
-					 * Render here
-					 */
-
-			        /* Swap front and back buffers */
-			        glfwSwapBuffers(mWindow);
-			        /* Poll for and process events */
-			        glfwPollEvents();
-			    }
-				}
-			} // End of OpenGL
-		} // End of Video
-	} // End of Plugins
+	void OGLVideo::update(Dream::Scene::Scene* scene) {
+	    if (!glfwWindowShouldClose(mWindow)) {
+			// Render Here
+    		glfwSwapBuffers(mWindow);
+		}
+	}
+	
+} // End of OpenGL
+} // End of Video
+} // End of Plugins
 } // End of Dream

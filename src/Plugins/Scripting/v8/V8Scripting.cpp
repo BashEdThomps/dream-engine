@@ -18,47 +18,46 @@
 #include "V8Scripting.h"
 
 namespace Dream {
-	namespace Plugins {
-		namespace Scripting {
-			namespace V8 {
-				v8::Isolate::CreateParams _CreateParams;
-				ArrayBufferAllocator      _ArrayBufferAllocator;
+namespace Plugins {
+namespace Scripting {
+namespace V8 {
+	
+	v8::Isolate::CreateParams _CreateParams;
+	ArrayBufferAllocator      _ArrayBufferAllocator;
 
-				V8Scripting::V8Scripting(void) : ScriptingInterface() {
+	V8Scripting::V8Scripting(void) : ScriptingInterface() {}
 
-				}
+	V8Scripting::~V8Scripting(void) {
+		mContext.Reset();
+		mIsolate->Dispose();
+		v8::V8::Dispose();
+		v8::V8::ShutdownPlatform();
+	}
 
-				V8Scripting::~V8Scripting(void) {
-					mContext.Reset();
-					mIsolate->Dispose();
-					v8::V8::Dispose();
-					v8::V8::ShutdownPlatform();
-				}
+	bool V8Scripting::init()  {
+		std::cout << "V8Scripting: Initialising...";
+		v8::V8::InitializeICU();
+		mPlatform = v8::platform::CreateDefaultPlatform();
+		v8::V8::InitializePlatform(mPlatform);
+		v8::V8::Initialize();
+		mIsolate = v8::Isolate::GetCurrent();
 
-				bool V8Scripting::init()  {
-					std::cout << "V8Scripting: Initialising...";
-					v8::V8::InitializeICU();
-					mPlatform = v8::platform::CreateDefaultPlatform();
-					v8::V8::InitializePlatform(mPlatform);
-					v8::V8::Initialize();
-					mIsolate = v8::Isolate::GetCurrent();
+		if(mIsolate == NULL) {
+			_CreateParams.array_buffer_allocator = &_ArrayBufferAllocator;
+			mIsolate = v8::Isolate::New(_CreateParams);
+			mIsolate->Enter();
+		}
 
-					if(mIsolate == NULL) {
-		  			_CreateParams.array_buffer_allocator = &_ArrayBufferAllocator;
-					  mIsolate = v8::Isolate::New(_CreateParams);
-					  mIsolate->Enter();
-					}
+		v8::Isolate::Scope isolate_scope(mIsolate);
+		mContext.Reset(mIsolate, v8::Context::New(mIsolate));
+		std::cout << "done." << std::endl;
+		return true;
+	}
 
-					v8::Isolate::Scope isolate_scope(mIsolate);
-					mContext.Reset(mIsolate, v8::Context::New(mIsolate));
-					std::cout << "done." << std::endl;
-					return true;
-				}
-
-				void V8Scripting::update(Dream::Scene::Scene* scene) {
-
-				}
-			} // End of V8
-		} // End of Scripting
-	} // End of Plugins
+	void V8Scripting::update(Dream::Scene::Scene* scene) {
+	}
+	
+} // End of V8
+} // End of Scripting
+} // End of Plugins
 } // End of Dream

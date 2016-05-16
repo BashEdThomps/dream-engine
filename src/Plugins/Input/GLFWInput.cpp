@@ -21,11 +21,12 @@ namespace Input {
 	}
 	
 	bool GLFWInput::init() {
-		return false;
+		std::cout << "GLFWInput: No Initialisation Required." << std::endl;
+		return true;
 	}
 	
 	void GLFWInput::update(Dream::Scene::Scene *scene) {
-	
+		glfwPollEvents();
 	}
 	
 } // End of Input

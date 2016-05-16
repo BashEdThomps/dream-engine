@@ -34,55 +34,52 @@
 #define SCENE_JSON_SCENE_OBJECTS     "objects"
 
 namespace Dream {
-	namespace Scene {
-		class Scene {
-		private:
-			std::string   mUUID;
-			std::string   mName;
-            
-			bool          mAnimationEnabled;
-			bool          mAudioEnabled;
-			bool          mInputEnabled;
-			bool          mPhysicsEnabled;
-            bool          mScriptingEnabled;
-            
-			Camera       *mCamera;
-			SceneObject* mRootSceneObject;
-			std::vector<SceneObject*> mScenegraphVector;
-
-		public:
-			Scene();
-			Scene(nlohmann::json);
-			~Scene();
-			void         init();
-			std::string  getUUID();
-			void         setUUID(std::string);
-			std::string  getName();
-			void         setName(std::string);
-			bool         isAudioEnabled();
-			bool         isAnimationEnabled();
-			bool         isInputEnabled();
-			bool         isPhysicsEnabled();
-			void         loadSceneObjectsFromJSONArray(nlohmann::json,SceneObject*);
-			int          countChildrenOfSceneObject(SceneObject*);
-			void         setRootSceneObject(SceneObject*);
-			SceneObject* getRootSceneObject();
-			int          getNumberOfSceneObjects();
-			bool         hasSceneObect(SceneObject*);
-			SceneObject* getSceneObjectByName(std::string);
-			SceneObject* getSceneObjectByUUID(std::string);
-			std::string  generateSceneObjectPath(SceneObject*);
-			void         showStatus();
-			void         showScenegraph();
-			std::string  indent(int);
-			
-			void generateScenegraphVector();
-			void generateSceneObjectPaths();
-			
-			void update();
-			
-		}; // End of Scene
-	}    // End of Scene
-}      // End of Dream
+namespace Scene {
+	
+	class Scene {
+	private:
+		std::string   mUUID;
+		std::string   mName;
+		bool          mAnimationEnabled;
+		bool          mAudioEnabled;
+		bool          mInputEnabled;
+		bool          mPhysicsEnabled;
+		bool          mScriptingEnabled;
+		Camera       *mCamera;
+		SceneObject* mRootSceneObject;
+		std::vector<SceneObject*> mScenegraphVector;
+	public:
+		Scene();
+		Scene(nlohmann::json);
+		~Scene();
+		void         init();
+		std::string  getUUID();
+		void         setUUID(std::string);
+		std::string  getName();
+		void         setName(std::string);
+		bool         isAudioEnabled();
+		bool         isAnimationEnabled();
+		bool         isInputEnabled();
+		bool         isPhysicsEnabled();
+		void         loadSceneObjectsFromJSONArray(nlohmann::json,SceneObject*);
+		int          countChildrenOfSceneObject(SceneObject*);
+		void         setRootSceneObject(SceneObject*);
+		SceneObject* getRootSceneObject();
+		int          getNumberOfSceneObjects();
+		bool         hasSceneObect(SceneObject*);
+		SceneObject* getSceneObjectByName(std::string);
+		SceneObject* getSceneObjectByUUID(std::string);
+		std::string  generateSceneObjectPath(SceneObject*);
+		void         showStatus();
+		void         showScenegraph();
+		std::string  indent(int);
+		void         initSceneObjects();
+		void         generateScenegraphVector();
+		void         generateSceneObjectPaths();
+		bool         isScenegraphVectorEmpty();
+	}; // End of Scene
+	
+} // End of Scene
+} // End of Dream
 
 #endif // End of SCENE_H

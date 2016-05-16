@@ -22,11 +22,11 @@ namespace Animation {
 	}
 	
 	bool DreamAnimation::init() {
-		return false;
+		std::cout << "DreamAnimation: Provisional init returning true" << std::endl;
+		return true;
 	}
 	
 	void DreamAnimation::update(Dream::Scene::Scene *scene) {
-		
 	}
 	
 } // End of Animation
