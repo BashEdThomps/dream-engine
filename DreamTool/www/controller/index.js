@@ -28,10 +28,10 @@ App.controller("index",
         }
     };
 
-    $scope.onTreeProjectResourceSelected = function(branch) {
-        console.log("Selected Resources Parent Node:",branch);
+    $scope.onTreeProjectAssetSelected = function(branch) {
+        console.log("Selected Assets Parent Node:",branch);
         if (ProjectService.isProjectOpen()) {
-            $state.go("ProjectResourceList");
+            $state.go("ProjectAssetList");
         } else {
             UIService.addAlert("Please Create or Open a Project","danger");
         }
@@ -46,10 +46,10 @@ App.controller("index",
         }
     };
 
-    $scope.onTreeProjectResourceInstanceSelected = function(branch) {
-        console.log("Selected Resource:",branch);
+    $scope.onTreeProjectAssetInstanceSelected = function(branch) {
+        console.log("Selected Asset:",branch);
         if (ProjectService.isProjectOpen()) {
-            $state.go("ProjectResourceEditor",{resource:branch.uuid});
+            $state.go("ProjectAssetEditor",{asset:branch.uuid});
         } else {
             UIService.addAlert("Please Create or Open a Project","danger");
         }

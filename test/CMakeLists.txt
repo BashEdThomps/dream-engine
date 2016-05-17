@@ -33,7 +33,7 @@ add_executable (
 add_custom_command(
     TARGET DreamTest
     PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/test/test_resources $<TARGET_FILE_DIR:DreamTest>
+    ${CMAKE_SOURCE_DIR}/test/test_assets $<TARGET_FILE_DIR:DreamTest>
 )
 
 

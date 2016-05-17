@@ -26,7 +26,7 @@ namespace Dream {
 		setProjectPath(projectPath);
 		setMetadata(jsonProject);
 		setPluginFlags(jsonProject);
-		loadResourcesFromJson(jsonProject[PROJECT_RESOURCE_ARRAY]);
+		loadAssetsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
 		showStatus();
 	}
@@ -116,7 +116,7 @@ namespace Dream {
 		std::cout << "     Vulkan Enabled: " << mVulkanEnabled         << std::endl;
 		std::cout << "             Scenes: " << getNumberOfScenes()    << std::endl;
 		std::cout << "      Startup Scene: " << getStartupSceneUUID()  << std::endl;
-		std::cout << "          Resources: " << getNumberOfResources() << std::endl;
+		std::cout << "          Assets: " << getNumberOfAssets() << std::endl;
 	}
 
 	Project::~Project(void) {}
@@ -143,10 +143,10 @@ namespace Dream {
 		}
 	}
 
- 	void Project::loadResourcesFromJson(nlohmann::json jsonResourceArray) {
-		std::cout << "Project: Loading Resources from JSON Array" << std::endl;
-		for (nlohmann::json::iterator it = jsonResourceArray.begin(); it != jsonResourceArray.end(); ++it) {
-			addResource(new Dream::Resource::Resource((*it)));
+ 	void Project::loadAssetsFromJson(nlohmann::json jsonAssetArray) {
+		std::cout << "Project: Loading Assets from JSON Array" << std::endl;
+		for (nlohmann::json::iterator it = jsonAssetArray.begin(); it != jsonAssetArray.end(); ++it) {
+			addAsset(new Dream::Asset::Asset((*it)));
 		}
 	}
 
@@ -186,16 +186,16 @@ namespace Dream {
 		mScenes.push_back(scene);
 	}
 
-	void Project::addResource(Dream::Resource::Resource* resource) {
-		mResources.push_back(resource);
+	void Project::addAsset(Dream::Asset::Asset* asset) {
+		mAssets.push_back(asset);
 	}
 
-	void Project::removeResource(Dream::Resource::Resource*) {
-		std::cout << "Project: Remove Resource is not yet Implemented" << std::endl;
+	void Project::removeAsset(Dream::Asset::Asset*) {
+		std::cout << "Project: Remove Asset is not yet Implemented" << std::endl;
 	}
 
-	int Project::getNumberOfResources() {
-		return mResources.size();
+	int Project::getNumberOfAssets() {
+		return mAssets.size();
 	}
 
 	int Project::getNumberOfScenes() {

@@ -4,8 +4,8 @@ App.service('CookieService',
 
         var COOKIE_EXEC_PATH = "dream-bin";
         var COOKIE_THEME     = "theme";
-        var DEFAULT_THEME    = "darkly";
-        var DEFAULT_PATH     = "/home/ashley/software/dream/out/src/Dream";
+        var DEFAULT_THEME    = "cosmo";
+        var DEFAULT_PATH     = "/Users/Ashley/Software/Dream/Xcode/src/Debug/Dream";
 
         this.setTheme = function(theme) {
             $cookieStore.put(COOKIE_THEME,theme);

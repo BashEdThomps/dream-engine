@@ -18,7 +18,7 @@ App.service('ApiService',
             );
         };
 
-        this.uploadResource = function(path,data,callback) {
+        this.uploadAsset = function(path,data,callback) {
             $http({
                 url    : path,
                 data   : { data: data },
@@ -32,9 +32,9 @@ App.service('ApiService',
             );
         };
 
-        this.resourceExists = function(project,type,uuid,format,callback) {
+        this.assetExists = function(project,type,uuid,format,callback) {
             $http({
-                url    : "/resource_exists/"+project+"/"+type+"/"+uuid+"/"+format,
+                url    : "/asset_exists/"+project+"/"+type+"/"+uuid+"/"+format,
                 method : "get",
             }).then(function success(resp){
                 callback(JSON.parse(resp.data));
@@ -43,9 +43,9 @@ App.service('ApiService',
             });
         };
 
-        this.readResource = function(project,type,uuid,format,callback) {
+        this.readAsset = function(project,type,uuid,format,callback) {
             $http({
-                url    : "/resource/"+project+"/"+type+"/"+uuid+"/"+format,
+                url    : "/asset/"+project+"/"+type+"/"+uuid+"/"+format,
                 method : "get",
             }).then(function success(resp){
                 callback(resp.data);

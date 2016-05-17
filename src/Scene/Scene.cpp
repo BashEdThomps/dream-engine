@@ -69,18 +69,25 @@ namespace  Scene {
 		}
 	}
 
-	void Scene::init() {
+	bool Scene::init() {
+		std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
+		bool result = true;
 		mCamera = new Camera();
-		void initSceneObjects();
+		result = result && initSceneObjects();
+		return result;
 	}
 
-	void Scene::initSceneObjects() {
+	bool Scene::initSceneObjects() {
 		if (isScenegraphVectorEmpty()) {
 			generateScenegraphVector();
 		}
 		for (std::vector<SceneObject*>::iterator sgIterator = mScenegraphVector.begin(); sgIterator != mScenegraphVector.end(); sgIterator++) {
-			(*sgIterator)->init();
+			if (!(*sgIterator)->init()){
+				return false;
+			}
+			(*sgIterator)->showStatus();
 		}
+		return true;
 	}
 	
 	bool Scene::isScenegraphVectorEmpty() {

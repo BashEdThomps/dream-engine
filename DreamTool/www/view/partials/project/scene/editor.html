@@ -21,27 +21,27 @@
             </div>
           </div>
           <div class="panel panel-default">
-            <div class="panel-heading">Resource Instances</div>
+            <div class="panel-heading">Asset Instances</div>
             <table class="table table-condensed table-striped table-hover">
               <thead>
                 <tr>
                   <th></th>
-                  <th>Resource</th>
+                  <th>Asset</th>
                   <th>Type</th>
                   <th>Remove</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="instance in selectedSceneObject.resourceInstances">
+                <tr ng-repeat="instance in selectedSceneObject.assetInstances">
                   <td>
-                    <button ng-click="goToResourceEditor(instance)" class="btn btn-sm btn-default">
+                    <button ng-click="goToAssetEditor(instance)" class="btn btn-sm btn-default">
                       <span class="glyphicon glyphicon-edit"></span>
                     </button>
                   </td>
-                  <td>{{ getResourceByUUID(instance).name }}</td>
-                  <td>{{ getResourceByUUID(instance).type }}</td>
+                  <td>{{ getAssetByUUID(instance).name }}</td>
+                  <td>{{ getAssetByUUID(instance).type }}</td>
                   <td>
-                    <button ng-click="onRemoveResourceInstanceButtonClicked(instance)" class="btn btn-sm btn-danger">
+                    <button ng-click="onRemoveAssetInstanceButtonClicked(instance)" class="btn btn-sm btn-danger">
                       <span class="glyphicon glyphicon-remove"></span>
                     </button>
                   </td>
@@ -51,10 +51,10 @@
             <div class="panel-footer">
               <div class="input-group">
                 <div class="input-group-btn">
-                  <button ng-disabled="selectedNewResourceInstance === ''" ng-click="onAddResourceInstanceButtonClicked()" class="btn btn-sm btn-success">Add Instance</button>
+                  <button ng-disabled="selectedNewAssetInstance === ''" ng-click="onAddAssetInstanceButtonClicked()" class="btn btn-sm btn-success">Add Instance</button>
                 </div>
-                <select class="form-control input-sm" ng-model="selectedNewResourceInstance">
-                  <option ng-repeat="resource in resourceList" value="{{resource.uuid}}">{{ resource.name }}</option>
+                <select class="form-control input-sm" ng-model="selectedNewAssetInstance">
+                  <option ng-repeat="asset in assetList" value="{{asset.uuid}}">{{ asset.name }}</option>
                 </select>
               </div>
             </div>

@@ -5,7 +5,7 @@ App.controller("ProjectSceneEditor",
     $scope.scenegraphTree          = [];
     $scope.selectedSceneObject     = null;
     $scope.selectedSceneObjectUUID = null;
-    $scope.resourceList            = null;
+    $scope.assetList            = null;
 
     $scope.initScenegraphTree = function() {
       $scope.scenegraphTree = [];
@@ -36,17 +36,17 @@ App.controller("ProjectSceneEditor",
       return retval;
     };
 
-    $scope.goToResourceEditor = function(uuid) {
-      $state.go("ProjectResourceEditor",{resource: uuid});
+    $scope.goToAssetEditor = function(uuid) {
+      $state.go("ProjectAssetEditor",{asset: uuid});
     };
 
     $scope.goToSceneObjectEditor = function(so) {
       $scope.selectedSceneObject = so;
     };
 
-    $scope.getResourceByUUID = function(uuid) {
+    $scope.getAssetByUUID = function(uuid) {
       var retval = null;
-      ProjectService.getResourceByUUID(uuid,function(rsc)
+      ProjectService.getAssetByUUID(uuid,function(rsc)
       {
         retval = rsc;
       });
@@ -66,16 +66,16 @@ App.controller("ProjectSceneEditor",
       UIService.updateScene($scope.scene);
     };
 
-    $scope.onAddResourceInstanceButtonClicked = function() {
-      ProjectService.addResourceInstanceToSceneObject(
+    $scope.onAddAssetInstanceButtonClicked = function() {
+      ProjectService.addAssetInstanceToSceneObject(
         $scope.sceneUUID,
         $scope.selectedSceneObjectUUID,
-        $scope.selectedNewResourceInstance
+        $scope.selectedNewAssetInstance
       );
     };
 
-    $scope.onRemoveResourceInstanceButtonClicked = function(instance) {
-      ProjectService.removeResourceInstanceFromSceneObject($scope.sceneUUID,$scope.selectedSceneObjectUUID,instance);
+    $scope.onRemoveAssetInstanceButtonClicked = function(instance) {
+      ProjectService.removeAssetInstanceFromSceneObject($scope.sceneUUID,$scope.selectedSceneObjectUUID,instance);
     };
 
     if (ProjectService.isProjectOpen()) {
@@ -89,8 +89,8 @@ App.controller("ProjectSceneEditor",
           $scope.initScenegraphTree();
         }
       });
-      ProjectService.getResourceList(function(list){
-        $scope.resourceList = list;
+      ProjectService.getAssetList(function(list){
+        $scope.assetList = list;
       });
     } else {
       $state.go("Home");

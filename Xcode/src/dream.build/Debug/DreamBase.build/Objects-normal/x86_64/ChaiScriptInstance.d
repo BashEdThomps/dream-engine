@@ -1,6 +1,6 @@
 dependencies: \
-  /Users/Ashley/Software/Dream/src/Resource/Instance/Script/ChaiScript/ChaiScriptInstance.cpp \
-  /Users/Ashley/Software/Dream/src/Resource/Instance/Script/ChaiScript/ChaiScriptInstance.h \
+  /Users/Ashley/Software/Dream/src/Asset/Instance/Script/ChaiScript/ChaiScriptInstance.cpp \
+  /Users/Ashley/Software/Dream/src/Asset/Instance/Script/ChaiScript/ChaiScriptInstance.h \
   /usr/local/include/chaiscript/chaiscript.hpp \
   /usr/local/include/chaiscript/chaiscript_defines.hpp \
   /usr/local/include/chaiscript/dispatchkit/dispatchkit.hpp \
@@ -30,4 +30,4 @@ dependencies: \
   /usr/local/include/chaiscript/language/chaiscript_engine.hpp \
   /usr/local/include/chaiscript/dispatchkit/../language/../dispatchkit/exception_specification.hpp \
   /usr/local/include/chaiscript/dispatchkit/../language/chaiscript_parser.hpp \
-  /Users/Ashley/Software/Dream/src/Resource/Instance/Script/ChaiScript/../../ResourceInstance.h
+  /Users/Ashley/Software/Dream/src/Asset/Instance/Script/ChaiScript/../../AssetInstance.h

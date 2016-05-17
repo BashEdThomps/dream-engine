@@ -27,11 +27,11 @@
 #include "Scene/TestSceneObject.h"
 #include "Scene/TestCamera.h"
 
-#include "Resource/TestResource.h"
-#include "Resource/Animation/TestFrame.h"
-#include "Resource/Animation/TestFrameDelta.h"
-#include "Resource/Animation/TestKeyFrame.h"
-#include "Resource/Animation/TestAnimation.h"
+#include "Asset/TestAsset.h"
+#include "Asset/Animation/TestFrame.h"
+#include "Asset/Animation/TestFrameDelta.h"
+#include "Asset/Animation/TestKeyFrame.h"
+#include "Asset/Animation/TestAnimation.h"
 
 int testUnit() {
 	int result = 0;
@@ -43,32 +43,32 @@ int testUnit() {
 	return result;
 }
 
-int testResource() {
+int testAsset() {
 	int result = 0;
 
-	Dream::Resource::Test::TestResource testResource;
-	testResource.run();
-	result += testResource.getResult();
+	Dream::Asset::Test::TestAsset testAsset;
+	testAsset.run();
+	result += testAsset.getResult();
 
 	return result;
 }
 
-int testResourceAnimation() {
+int testAssetAnimation() {
 	int result = 0;
 
-	Dream::Resource::Animation::Test::TestFrame testFrame;
+	Dream::Asset::Animation::Test::TestFrame testFrame;
 	testFrame.run();
 	result += testFrame.getResult();
 
-	Dream::Resource::Animation::Test::TestFrameDelta testFrameDelta;
+	Dream::Asset::Animation::Test::TestFrameDelta testFrameDelta;
 	testFrameDelta.run();
 	result += testFrameDelta.getResult();
 
-	Dream::Resource::Animation::Test::TestKeyFrame testKeyFrame;
+	Dream::Asset::Animation::Test::TestKeyFrame testKeyFrame;
 	testKeyFrame.run();
 	result += testKeyFrame.getResult();
 
-	Dream::Resource::Animation::Test::TestAnimation testAnimation;
+	Dream::Asset::Animation::Test::TestAnimation testAnimation;
 	testAnimation.run();
 	result += testAnimation.getResult();
 
@@ -128,8 +128,8 @@ int main(int argc, char** argv) {
 	int result = 0;
 	result += testUnit();
 	result += testUtil();
-	result += testResourceAnimation();
-	result += testResource();
+	result += testAssetAnimation();
+	result += testAsset();
 	result += testScene();
 	result += testDream();
 	return result;

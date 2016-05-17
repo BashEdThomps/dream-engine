@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "../JSON/json.hpp"
-#include "../Resource/Instance/ResourceInstance.h"
+#include "../Asset/Instance/AssetInstance.h"
 
 #define NODE_X 0
 #define NODE_Y 1
@@ -26,6 +26,8 @@
 #define SCENE_OBJECT_POSITION_TYPE_OFFSET   "offset"
 #define SCENE_OBJECT_POSITION_TYPE_ABSOLUTE "absolute"
 
+#define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
+
 namespace Dream {
 namespace Scene {
 	
@@ -33,7 +35,8 @@ namespace Scene {
 	protected:
 		SceneObject* mParent;
 		std::vector<SceneObject*> mChildren;
-		std::vector<Dream::Resource::Instance::ResourceInstance*> mResourceInstances;
+		std::vector<std::string>  mAssetInstanceUUIDs;
+		std::vector<Dream::Asset::Instance::AssetInstance*> mAssetInstances;
 		std::string  mUUID;
 		std::string  mName;
 		std::string  mPath;
@@ -44,9 +47,10 @@ namespace Scene {
 		SceneObject  ();
 		SceneObject  (nlohmann::json);
 		~SceneObject ();
-		void         init();
+		void         loadAssetInstances(nlohmann::json);
+		bool         init();
 		void         initTranslationRotation();
-		void         initResourceInstances();
+		bool         initAssetInstances();
 		bool         hasUUID(std::string);
 		void         setUUID(std::string);
 		std::string  getUUID();
@@ -72,7 +76,7 @@ namespace Scene {
 		SceneObject* getParent();
 		void         generatePath();
 		std::string  getPath();
-		void addResourceInstance(Dream::Resource::Instance::ResourceInstance*);
+		void addAssetInstance(Dream::Asset::Instance::AssetInstance*);
 	}; // End of SceneObject
 	
 } // End of Scene

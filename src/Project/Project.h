@@ -21,21 +21,21 @@
 #include <vector>
 #include "../JSON/json.hpp"
 #include "../Scene/Scene.h"
-#include "../Resource/Resource.h"
-#include "../Resource/Instance/ResourceInstance.h"
-#include "../Resource/Instance/Model/WaveFront/ObjModelInstance.h"
-#include "../Resource/Instance/Script/JavaScript/JavaScriptInstance.h"
-#include "../Resource/Instance/Script/ChaiScript/ChaiScriptInstance.h"
-#include "../Resource/Instance/Audio/Ogg/OggAudioInstance.h"
-#include "../Resource/Instance/Audio/Wav/WavAudioInstance.h"
-#include "../Resource/Instance/Animation/AnimationInstance.h"
+#include "../Asset/Asset.h"
+#include "../Asset/Instance/AssetInstance.h"
+#include "../Asset/Instance/Model/WaveFront/ObjModelInstance.h"
+#include "../Asset/Instance/Script/JavaScript/JavaScriptInstance.h"
+#include "../Asset/Instance/Script/ChaiScript/ChaiScriptInstance.h"
+#include "../Asset/Instance/Audio/Ogg/OggAudioInstance.h"
+#include "../Asset/Instance/Audio/Wav/WavAudioInstance.h"
+#include "../Asset/Instance/Animation/AnimationInstance.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"
 #define PROJECT_AUTHOR          "author"
 #define PROJECT_DESCRIPTION     "description"
 #define PROJECT_SCENE_ARRAY     "scenes"
-#define PROJECT_RESOURCE_ARRAY  "resources"
+#define PROJECT_ASSET_ARRAY  "assets"
 #define PROJECT_STARTUP_SCENE   "startupScene"
 #define PROJECT_V8_ENABLED      "v8"
 #define PROJECT_CHAI_ENABLED    "chai"
@@ -64,7 +64,7 @@ namespace Dream {
 		bool mVulkanEnabled;
 
 		std::vector<Dream::Scene::Scene*> mScenes;
-		std::vector<Dream::Resource::Resource*> mResources;
+		std::vector<Dream::Asset::Asset*> mAssets;
 	public:
 		Project(void);
 		Project(std::string, nlohmann::json);
@@ -73,7 +73,7 @@ namespace Dream {
 		void setMetadata(nlohmann::json);
 		void setPluginFlags(nlohmann::json);
 		void loadScenesFromJson(nlohmann::json);
-		void loadResourcesFromJson(nlohmann::json);
+		void loadAssetsFromJson(nlohmann::json);
 
 		void        setUUID(std::string);
 		std::string getUUID();
@@ -99,9 +99,9 @@ namespace Dream {
 		Dream::Scene::Scene* getSceneByUUID(std::string);
 		
 
-		void addResource(Dream::Resource::Resource*);
-		void removeResource(Dream::Resource::Resource*);
-		int getNumberOfResources();
+		void addAsset(Dream::Asset::Asset*);
+		void removeAsset(Dream::Asset::Asset*);
+		int getNumberOfAssets();
 
 		std::string getProjectPath();
 		void        setProjectPath(std::string);

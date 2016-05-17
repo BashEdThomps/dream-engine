@@ -36,12 +36,21 @@ namespace Scene {
 			mRotation [NODE_Y] = rotation[SCENE_OBJECT_Y];
 			mRotation [NODE_Z] = rotation[SCENE_OBJECT_Z];
 		}
+		
+		if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null() && soJson[SCENE_OBJECT_ASSET_INSTANCES].is_array()) {
+			loadAssetInstances(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
+		}
+	}
+	
+	void SceneObject::loadAssetInstances(nlohmann::json assetInstancesJson) {
+		for (nlohmann::json::iterator it = assetInstancesJson.begin(); it != assetInstancesJson.end(); it++) {
+			mAssetInstanceUUIDs.push_back((*it));
+		}
 	}
 
-	void SceneObject::init() {
+	bool SceneObject::init() {
 		initTranslationRotation();
-		initResourceInstances();
-		showStatus();
+		return initAssetInstances();
 	}
 
 	void SceneObject::initTranslationRotation() {
@@ -171,8 +180,8 @@ namespace Scene {
 		return mPath;
 	}
 
-	void SceneObject::addResourceInstance(Dream::Resource::Instance::ResourceInstance *resourceInstance) {
-       mResourceInstances.push_back(resourceInstance);
+	void SceneObject::addAssetInstance(Dream::Asset::Instance::AssetInstance *assetInstance) {
+       mAssetInstances.push_back(assetInstance);
     }
 	
 	void SceneObject::showStatus() {
@@ -200,8 +209,11 @@ namespace Scene {
 		                                << std::endl;
 	}
 	
-	void SceneObject::initResourceInstances() {
-		std::cerr << "SceneObject: Init Resource Instances not yet implemented." << std::endl;
+	bool SceneObject::initAssetInstances() {
+		for (std::vector<std::string>::iterator nextUUID = mAssetInstanceUUIDs.begin(); nextUUID != mAssetInstanceUUIDs.end(); nextUUID++) {
+			//addAssetInstance(createAssetInstance((*nextUUID)));
+		}
+		return true;
 	}
 	
 } // End of Scene

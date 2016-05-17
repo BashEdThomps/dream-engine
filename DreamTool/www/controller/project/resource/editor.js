@@ -1,19 +1,19 @@
-App.controller("ProjectResourceEditor",
+App.controller("ProjectAssetEditor",
 ["$scope","$state","$stateParams","$window","ProjectService","UIService","UtilService","ApiService",
 function($scope,$state,$stateParams,$window,ProjectService,UIService,UtilService,ApiService) {
-  $scope.resourceUUID = $stateParams.resource;
+  $scope.assetUUID = $stateParams.asset;
   if (ProjectService.isProjectOpen()) {
     $scope.project = ProjectService.getProject();
     $scope.getResourecTypes = ProjectService.getResourecTypes;
-    ProjectService.getResourceByUUID($scope.resourceUUID, function(resource) {
-      if (resource === null) {
-        UIService.addAlert("Error: Unable to find resource"+$scope.resourceUUID,"danger");
+    ProjectService.getAssetByUUID($scope.assetUUID, function(asset) {
+      if (asset === null) {
+        UIService.addAlert("Error: Unable to find asset"+$scope.assetUUID,"danger");
       } else {
-        $scope.resource = resource;
-        console.log("Editing Resource:",$scope.resource.name);
-        UIService.setBreadcrumbs([ProjectService.getName(),"Resources",$scope.resource.name]);
+        $scope.asset = asset;
+        console.log("Editing Asset:",$scope.asset.name);
+        UIService.setBreadcrumbs([ProjectService.getName(),"Assets",$scope.asset.name]);
         UIService.update();
-        switch ($scope.resource.type) {
+        switch ($scope.asset.type) {
           case "Script":
           $window.setTimeout(function() {
             console.log("setting up script editor");
@@ -41,7 +41,7 @@ function($scope,$state,$stateParams,$window,ProjectService,UIService,UtilService
   }
 
   $scope.getScriptContent = function() {
-    ApiService.readResource(ProjectService.getProjectUUID(),$scope.resource.type.toLowerCase(),$scope.resource.uuid,"js",function(data)
+    ApiService.readAsset(ProjectService.getProjectUUID(),$scope.asset.type.toLowerCase(),$scope.asset.uuid,"js",function(data)
     {
       $scope.getAceEditor().setValue(data);
     });
@@ -59,7 +59,7 @@ function($scope,$state,$stateParams,$window,ProjectService,UIService,UtilService
     var ace = $scope.getAceEditor();
     var script = ace.getValue();
     console.log("Saving script",script);
-    ProjectService.saveScriptResource($scope.resource,script,function(success) {
+    ProjectService.saveScriptAsset($scope.asset,script,function(success) {
       if (success) {
         UIService.addAlert("Saved Script","success");
       }

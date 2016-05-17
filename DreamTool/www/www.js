@@ -77,12 +77,12 @@ koaRouter.post("/create",function* (next) {
 	yield dreamDirectory.createProjectDirectory(uuid,next);
 });
 
-// POST to /uuid/resource/*
-koaRouter.post("/:proj/resource/:dir/:rsc/:format", function* (next) {
-	var resourcePath = this.request.url;
+// POST to /uuid/asset/*
+koaRouter.post("/:proj/asset/:dir/:rsc/:format", function* (next) {
+	var assetPath = this.request.url;
 	var reqData = this.request.body.data;
 	this.status = 200;
-	dreamDirectory.writeResource(
+	dreamDirectory.writeAsset(
 		this.params.proj,
 		this.params.dir,
 		this.params.rsc,
@@ -129,10 +129,10 @@ koaRouter.get("/projectfile/:uuid",function* (next){
 	yield next;
 });
 
-// GET /resource_exists/:uuid/type/format
-koaRouter.get("/resource_exists/:project/:type/:uuid/:format",function* (next) {
+// GET /asset_exists/:uuid/type/format
+koaRouter.get("/asset_exists/:project/:type/:uuid/:format",function* (next) {
 	this.status = 200;
-	this.body = dreamDirectory.resourceExists(
+	this.body = dreamDirectory.assetExists(
 		this.params.project,
 		this.params.uuid,
 		this.params.type,
@@ -141,10 +141,10 @@ koaRouter.get("/resource_exists/:project/:type/:uuid/:format",function* (next) {
 	yield next;
 });
 
-// GET /resource_exists/:uuid/type/format
-koaRouter.get("/resource/:project/:type/:uuid/:format",function* (next) {
+// GET /asset_exists/:uuid/type/format
+koaRouter.get("/asset/:project/:type/:uuid/:format",function* (next) {
 	this.status = 200;
-	this.body = dreamDirectory.readResource (
+	this.body = dreamDirectory.readAsset (
 		this.params.project,
 		this.params.uuid,
 		this.params.type,

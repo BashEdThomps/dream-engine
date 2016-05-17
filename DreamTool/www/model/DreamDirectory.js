@@ -4,7 +4,7 @@ var targz = require('tar.gz');
 
 var DREAM_TOOL_HOME_DIR = ".dreamtool";
 var PROJECT_FILE        = "project.json";
-var RESOURCE_DIR        = "resource";
+var ASSET_DIR        = "asset";
 var MODELS_DIR          = "model";
 var AUDIO_DIR           = "audio";
 var ANIMATION_DIR       = "animation";
@@ -42,23 +42,23 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     fs.mkdirSync(projectPrefix);
     console.log("mkdir",projectPrefix,"ok");
 
-    var resourcePrefix = projectPrefix + RESOURCE_DIR;
-    fs.mkdirSync(resourcePrefix);
-    console.log("mkdir",resourcePrefix,"ok");
+    var assetPrefix = projectPrefix + ASSET_DIR;
+    fs.mkdirSync(assetPrefix);
+    console.log("mkdir",assetPrefix,"ok");
 
-    var models = resourcePrefix + path.sep + MODELS_DIR;
+    var models = assetPrefix + path.sep + MODELS_DIR;
     fs.mkdirSync(models);
     console.log("mkdir",models,"ok");
 
-    var audio = resourcePrefix + path.sep + AUDIO_DIR;
+    var audio = assetPrefix + path.sep + AUDIO_DIR;
     fs.mkdirSync(audio);
     console.log("mkdir",audio,"ok");
 
-    var anim = resourcePrefix + path.sep + ANIMATION_DIR;
+    var anim = assetPrefix + path.sep + ANIMATION_DIR;
     fs.mkdirSync(anim);
     console.log("mkdir",anim,"ok");
 
-    var script = resourcePrefix + path.sep + SCRIPT_DIR;
+    var script = assetPrefix + path.sep + SCRIPT_DIR;
     fs.mkdirSync(script);
     console.log("mkdir",script,"ok");
     yield next;
@@ -100,7 +100,7 @@ var createDreamToolDirInHome = function(callback) {
 	});
 };
 
-var getResourceDirectoryByFormat = function(format) {
+var getAssetDirectoryByFormat = function(format) {
     switch (format) {
         case AUDIO_WAV_FMT:
         case AUDIO_OGG_FMT:
@@ -124,18 +124,18 @@ module.exports.writeProjectFile = function(proj,data) {
     console.log("Project file written to",projPath);
 };
 
-module.exports.writeResource = function(proj, dir, rsc, format, data, next) {
+module.exports.writeAsset = function(proj, dir, rsc, format, data, next) {
     console.log("  Project is:", proj);
     console.log("Directory is:", dir);
-    console.log(" Resource is:", rsc);
+    console.log(" Asset is:", rsc);
     console.log("   Format is:", format);
 
     var projPath     = dreamDirectory  + path.sep + proj;
-    var dirPath      = projPath + path.sep + RESOURCE_DIR + path.sep + dir;
+    var dirPath      = projPath + path.sep + ASSET_DIR + path.sep + dir;
     var rscPath      = dirPath  + path.sep + rsc;
     var absolutePath = rscPath  + path.sep + format;
 
-    console.log("Writing Resource to",absolutePath);
+    console.log("Writing Asset to",absolutePath);
 
     try {
         fs.mkdirSync(rscPath);
@@ -201,31 +201,31 @@ module.exports.listProjects = function () {
     return retval;
 };
 
-module.exports.resourceExists = function(project,uuid,type,format) {
+module.exports.assetExists = function(project,uuid,type,format) {
     var retval = false;
-    var absResourcePath =
+    var absAssetPath =
         dreamDirectory + path.sep +
         project        + path.sep +
-        RESOURCE_DIR   + path.sep +
+        ASSET_DIR   + path.sep +
         type           + path.sep +
         uuid           + path.sep +
         format;
-    console.log("Checking for",absResourcePath);
-    retval = fs.existsSync(absResourcePath);
+    console.log("Checking for",absAssetPath);
+    retval = fs.existsSync(absAssetPath);
     return retval;
 };
 
-module.exports.readResource = function(project,uuid,type,format) {
+module.exports.readAsset = function(project,uuid,type,format) {
     var retval = null;
-    var absResourcePath =
+    var absAssetPath =
         dreamDirectory + path.sep +
         project        + path.sep +
-        RESOURCE_DIR   + path.sep +
+        ASSET_DIR   + path.sep +
         type           + path.sep +
         uuid           + path.sep +
         format;
-    console.log("Checking for",absResourcePath);
-    retval = fs.readFileSync(absResourcePath);
+    console.log("Checking for",absAssetPath);
+    retval = fs.readFileSync(absAssetPath);
     return retval;
 };
 

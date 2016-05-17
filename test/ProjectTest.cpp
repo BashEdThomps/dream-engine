@@ -19,8 +19,8 @@
 
 #include "../src/Project/Project.h"
 #include "../src/Scene/Scene.h"
-#include "../src/Resource/Resource.h"
-#include "Resource/TestResourceImpl.h"
+#include "../src/Asset/Asset.h"
+#include "Asset/TestAssetImpl.h"
 
 namespace Dream {
 	namespace Test {
@@ -36,7 +36,7 @@ namespace Dream {
 			testProjectCanStoreName();
 			testProjectCanStoreAuthor();
 			testProjectCanStoreDescription();
-			testProjectCanStoreMultipleResources();
+			testProjectCanStoreMultipleAssets();
 			testProjectCanStoreMultipleScenes();
 		}
 
@@ -82,19 +82,19 @@ namespace Dream {
 			assertTrue("Project has 3 scenes",p.getNumberOfScenes() == 3);
 		}
 
-		void ProjectTest::testProjectCanStoreMultipleResources() {
+		void ProjectTest::testProjectCanStoreMultipleAssets() {
 			Project p;
 
-			Dream::Resource::Test::TestResourceImpl a,b,c;
+			Dream::Asset::Test::TestAssetImpl a,b,c;
 			a.setName("A");
 			b.setName("B");
 			c.setName("C");
 
-			p.addResource(&a);
-			p.addResource(&b);
-			p.addResource(&c);
+			p.addAsset(&a);
+			p.addAsset(&b);
+			p.addAsset(&c);
 
-			assertEqual("Project has 3 resources", 3, p.getNumberOfResources());
+			assertEqual("Project has 3 assets", 3, p.getNumberOfAssets());
 		}
 
 		void ProjectTest::testProjectCanStoreDirectory() {

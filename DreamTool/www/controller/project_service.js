@@ -85,12 +85,12 @@ App.service('ProjectService',
         this.project.scenes.splice(index,1);
     };
 
-    this.pushResource = function(resource) {
+    this.pushAsset = function(asset) {
         this.project.isModified = true;
-        this.project.resources.push(resource);
+        this.project.assets.push(asset);
     };
 
-    this.getResourceByUUID = function(uuid, callback) {
+    this.getAssetByUUID = function(uuid, callback) {
         var retval = null;
 
         if (this.project === null) {
@@ -98,7 +98,7 @@ App.service('ProjectService',
             return;
         }
 
-        this.project.resources.forEach(function (rsc) {
+        this.project.assets.forEach(function (rsc) {
             if (rsc.uuid === uuid) {
                 retval = rsc;
             }
@@ -106,9 +106,9 @@ App.service('ProjectService',
         callback(retval);
     };
 
-    this.removeResource = function(resource) {
-        var index = this.project.resources.indexOf(resource);
-        this.project.resources.splice(index,1);
+    this.removeAsset = function(asset) {
+        var index = this.project.assets.indexOf(asset);
+        this.project.assets.splice(index,1);
     };
 
     this.getResourecTypes = function() {
@@ -122,33 +122,33 @@ App.service('ProjectService',
         ];
     };
 
-    this.addResourceInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,resourceUUID){
+    this.addAssetInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,assetUUID){
         var proj = this;
-        console.log("Adding Resource Instance",sceneObjectUUID,"to",resourceUUID);
+        console.log("Adding Asset Instance",sceneObjectUUID,"to",assetUUID);
         this.getSceneByUUID(sceneUUID,function(scene){
             proj.getSceneObjectByUUID(scene,sceneObjectUUID,function(sceneObject){
-                if (sceneObject.resourceInstances === undefined) {
-                    sceneObject.resourceInstances = [];
+                if (sceneObject.assetInstances === undefined) {
+                    sceneObject.assetInstances = [];
                 }
-                if (sceneObject.resourceInstances.indexOf(resourceUUID) < 0) {
-                    sceneObject.resourceInstances.push(resourceUUID);
+                if (sceneObject.assetInstances.indexOf(assetUUID) < 0) {
+                    sceneObject.assetInstances.push(assetUUID);
                 } else {
-                    console.log(sceneObjectUUID,"allready has instance to",resourceUUID);
+                    console.log(sceneObjectUUID,"allready has instance to",assetUUID);
                 }
             });
         });
     };
 
-    this.removeResourceInstanceFromSceneObject = function(sceneUUID,sceneObjectUUID,resourceUUID){
+    this.removeAssetInstanceFromSceneObject = function(sceneUUID,sceneObjectUUID,assetUUID){
         var proj = this;
-        console.log("Removing Resource Instance",resourceUUID,"from",sceneObjectUUID);
+        console.log("Removing Asset Instance",assetUUID,"from",sceneObjectUUID);
         this.getSceneByUUID(sceneUUID, function(scene){
             proj.getSceneObjectByUUID(scene,sceneObjectUUID,function(sceneObject){
-                var indexOf = sceneObject.resourceInstances.indexOf(resourceUUID);
+                var indexOf = sceneObject.assetInstances.indexOf(assetUUID);
                 if (indexOf > -1) {
-                    sceneObject.resourceInstances.splice(indexOf,1);
+                    sceneObject.assetInstances.splice(indexOf,1);
                 } else {
-                    console.log(sceneObjectUUID,": unable to remove instance of",resourceUUID);
+                    console.log(sceneObjectUUID,": unable to remove instance of",assetUUID);
                 }
             });
         });
@@ -174,7 +174,7 @@ App.service('ProjectService',
       }
     };
 
-    // Create New Resources ----------------------------------------------------
+    // Create New Assets ----------------------------------------------------
 
     this.createScene = function() {
         return {
@@ -195,15 +195,15 @@ App.service('ProjectService',
         return {
             uuid: UtilService.generateUUID(),
             name: "New Scene Object",
-            resourceInstances: [],
+            assetInstances: [],
             children: []
         };
     };
 
-    this.createResource = function() {
+    this.createAsset = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name: "New Resource",
+            name: "New Asset",
             type: "",
         };
     };
@@ -248,7 +248,7 @@ App.service('ProjectService',
             openGL: false,
             vulkan: false,
             scenes: [],
-            resources: [],
+            assets: [],
             isModified: false
         };
     };
@@ -281,20 +281,20 @@ App.service('ProjectService',
         return new Blob([ JSON.stringify(this.project) ], { type : 'application/octet-stream' });
     };
 
-    this.updateResource = function(resource) {
-        this.setResourceName(resource);
-        this.setResourceType(resource);
+    this.updateAsset = function(asset) {
+        this.setAssetName(asset);
+        this.setAssetType(asset);
     };
 
-    this.setResourceName = function(resource) {
-        this.getResourceByUUID(resource.uuid,function(rsc){
-            rsc.name = resource.name;
+    this.setAssetName = function(asset) {
+        this.getAssetByUUID(asset.uuid,function(rsc){
+            rsc.name = asset.name;
         });
     };
 
-    this.setResourceType = function(resource) {
-        this.getResourceByUUID(resource.uuid,function(rsc){
-            rsc.type = resource.type;
+    this.setAssetType = function(asset) {
+        this.getAssetByUUID(asset.uuid,function(rsc){
+            rsc.type = asset.type;
         });
     };
 
@@ -346,12 +346,12 @@ App.service('ProjectService',
         this.project = null;
     };
 
-    this.getResourceList = function(callback) {
-        callback(this.project.resources);
+    this.getAssetList = function(callback) {
+        callback(this.project.assets);
     };
 
-    this.resourceHasModelObj = function(uuid,callback){
-        ApiService.resourceExists(
+    this.assetHasModelObj = function(uuid,callback){
+        ApiService.assetExists(
             this.project.uuid,
             "model",
             uuid,
@@ -360,8 +360,8 @@ App.service('ProjectService',
         );
     };
 
-    this.resourceHasModelMtl = function(uuid,callback){
-        ApiService.resourceExists(
+    this.assetHasModelMtl = function(uuid,callback){
+        ApiService.assetExists(
             this.project.uuid,
             "model",
             uuid,
@@ -370,16 +370,16 @@ App.service('ProjectService',
         );
     };
 
-    this.saveScriptResource = function(resource,script,callback) {
-        ApiService.uploadResource(
-            "/"+this.project.uuid+"/resource/script/"+resource.uuid+"/"+"js",
+    this.saveScriptAsset = function(asset,script,callback) {
+        ApiService.uploadAsset(
+            "/"+this.project.uuid+"/asset/script/"+asset.uuid+"/"+"js",
             script,
             callback
         );
     };
 
-    this.readResource = function(resource,callback) {
-        ApiService.readResource(this.project, resource,callback);
+    this.readAsset = function(asset,callback) {
+        ApiService.readAsset(this.project, asset,callback);
     };
 
     return this;

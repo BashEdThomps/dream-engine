@@ -1,0 +1,5 @@
+<div class="container-fluid">
+    <div ng-show="asset.type === 'Animation'" ng-include="'/view/partials/project/asset/editors/animation.html'"></div>
+    <div ng-show="asset.type === 'Model'"     ng-include="'/view/partials/project/asset/editors/model.html'"></div>
+    <div ng-show="asset.type === 'Script'"    ng-include="'/view/partials/project/asset/editors/script.html'"></div>
+</div>

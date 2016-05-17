@@ -45,24 +45,24 @@ App.controller("home",["$scope","ProjectService","UIService",
             $scope.showProjectSceneScenegraphSceneObjectModifierEventListener = true;
         };
 
-        $scope.onProjectResourceClicked = function() {
+        $scope.onProjectAssetClicked = function() {
             $scope.hideAllHelp();
-            $scope.showProjectResource = true;
+            $scope.showProjectAsset = true;
         };
 
-        $scope.onProjectResourceModelClicked = function() {
+        $scope.onProjectAssetModelClicked = function() {
             $scope.hideAllHelp();
-            $scope.showProjectResourceModel = true;
+            $scope.showProjectAssetModel = true;
         };
 
-        $scope.onProjectResourceAnimationClicked = function() {
+        $scope.onProjectAssetAnimationClicked = function() {
             $scope.hideAllHelp();
-            $scope.showProjectResourceAnimation = true;
+            $scope.showProjectAssetAnimation = true;
         };
 
-        $scope.onProjectResourceAudioClicked = function() {
+        $scope.onProjectAssetAudioClicked = function() {
             $scope.hideAllHelp();
-            $scope.showProjectResourceAudio = true;
+            $scope.showProjectAssetAudio = true;
         };
 
         $scope.hideAllHelp = function() {
@@ -74,10 +74,10 @@ App.controller("home",["$scope","ProjectService","UIService",
             $scope.showProjectSceneScenegraphSceneObject = false;
             $scope.showProjectSceneScenegraphSceneObjectModifier = false;
             $scope.showProjectSceneScenegraphSceneObjectEventListener = false;
-            $scope.showProjectResource          = false;
-            $scope.showProjectResourceModel     = false;
-            $scope.showProjectResourceAnimation = false;
-            $scope.showProjectResourceAudio     = false;
+            $scope.showProjectAsset          = false;
+            $scope.showProjectAssetModel     = false;
+            $scope.showProjectAssetAnimation = false;
+            $scope.showProjectAssetAudio     = false;
         };
 
         // Tree Data
@@ -110,24 +110,24 @@ App.controller("home",["$scope","ProjectService","UIService",
                         ]
                     },
                     {
-                        label    : "Resource",
-                        onSelect  : $scope.onProjectResourceClicked,
+                        label    : "Asset",
+                        onSelect  : $scope.onProjectAssetClicked,
                         children : [
                             {
                                 label:"Animation",
-                                onSelect : $scope.onProjectResourceAnimationClicked
+                                onSelect : $scope.onProjectAssetAnimationClicked
                             },
                             {
                                 label:"Audio",
-                                onSelect : $scope.onProjectResourceAudioClicked
+                                onSelect : $scope.onProjectAssetAudioClicked
                             },
                             {
                                 label:"Model",
-                                onSelect : $scope.onProjectResourceModelClicked
+                                onSelect : $scope.onProjectAssetModelClicked
                             },
                             {
                                 label:"Script",
-                                onSelect : $scope.onProjectResourceScriptClicked
+                                onSelect : $scope.onProjectAssetScriptClicked
                             }
                         ]
                     }

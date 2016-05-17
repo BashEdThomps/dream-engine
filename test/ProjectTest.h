@@ -33,7 +33,7 @@ namespace Dream {
 			void testProjectCanStoreDescription();
 			void testProjectCanStoreDirectory();
 			void testProjectCanStoreMultipleScenes();
-			void testProjectCanStoreMultipleResources();
+			void testProjectCanStoreMultipleAssets();
 		//protected:
 		//private:
 		}; // End of ProjectTest

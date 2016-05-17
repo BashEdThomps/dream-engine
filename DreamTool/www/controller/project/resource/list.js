@@ -1,122 +1,122 @@
-App.controller("ProjectResourceList",
+App.controller("ProjectAssetList",
     ["$scope","$state","ProjectService","UIService","UtilService","ApiService",
     function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
 
         if (ProjectService.isProjectOpen()) {
             $scope.project = ProjectService.getProject();
-            UIService.setBreadcrumbs([ProjectService.getName(),"Resources"]);
+            UIService.setBreadcrumbs([ProjectService.getName(),"Assets"]);
             UIService.update();
         } else {
             $state.go("Home");
         }
 
-        $scope.goToResourceEditor = function(uuid) {
-            $state.go("ProjectResourceEditor",{resource: uuid});
+        $scope.goToAssetEditor = function(uuid) {
+            $state.go("ProjectAssetEditor",{asset: uuid});
         };
 
         $scope.getResourecTypes = function() {
             return ProjectService.getResourecTypes();
         };
 
-        $scope.onNewResourceButtonClicked = function() {
-            $scope.currentResource = ProjectService.createResource();
-            ProjectService.pushResource($scope.currentResource);
-            UIService.addTreeProjectResource(UIService.createTreeProjectResource($scope.currentResource));
+        $scope.onNewAssetButtonClicked = function() {
+            $scope.currentAsset = ProjectService.createAsset();
+            ProjectService.pushAsset($scope.currentAsset);
+            UIService.addTreeProjectAsset(UIService.createTreeProjectAsset($scope.currentAsset));
             UIService.update();
         };
 
-        $scope.onRemoveResourceButtonClicked = function(uuid) {
-            ProjectService.getResourceByUUID(uuid,function(resource){
-                if (resource !== null) {
-                    ProjectService.removeResource(resource);
-                    UIService.removeTreeProjectResourceByUUID(uuid);
+        $scope.onRemoveAssetButtonClicked = function(uuid) {
+            ProjectService.getAssetByUUID(uuid,function(asset){
+                if (asset !== null) {
+                    ProjectService.removeAsset(asset);
+                    UIService.removeTreeProjectAssetByUUID(uuid);
                 } else {
-                    UIService.addAlert("Error: Could not remove resource!","danger");
+                    UIService.addAlert("Error: Could not remove asset!","danger");
                 }
             });
         };
 
-        $scope.onResourceSelected = function(uuid) {
-            console.log("Selected Resource",uuid);
-            ProjectService.getResourceByUUID(uuid,function(resource){
-                $scope.currentResource = resource;
-                $scope.updateResourceUIVariables();
+        $scope.onAssetSelected = function(uuid) {
+            console.log("Selected Asset",uuid);
+            ProjectService.getAssetByUUID(uuid,function(asset){
+                $scope.currentAsset = asset;
+                $scope.updateAssetUIVariables();
             });
         };
 
-        $scope.updateResourceUIVariables = function() {
-            console.log("Updating resource variables");
-            ProjectService.resourceHasModelObj($scope.currentResource.uuid,function(result) {
-                console.log("ModelObj Resource Exists",result);
+        $scope.updateAssetUIVariables = function() {
+            console.log("Updating asset variables");
+            ProjectService.assetHasModelObj($scope.currentAsset.uuid,function(result) {
+                console.log("ModelObj Asset Exists",result);
                 $scope.hasModelObj = result;
             });
 
-            ProjectService.resourceHasModelMtl($scope.currentResource.uuid,function(result){
-                console.log("ModelMtl Resource Exists",result);
+            ProjectService.assetHasModelMtl($scope.currentAsset.uuid,function(result){
+                console.log("ModelMtl Asset Exists",result);
                 $scope.hasModelMtl = result;
             });
         };
 
         $scope.modified = function() {
-            console.log("Resource List Item Modified");
-            ProjectService.updateResource($scope.currentResource);
-            UIService.updateResource($scope.currentResource);
+            console.log("Asset List Item Modified");
+            ProjectService.updateAsset($scope.currentAsset);
+            UIService.updateAsset($scope.currentAsset);
         };
 
-        $scope.onResourceModelWavefrontUploadButtonClicked = function() {
+        $scope.onAssetModelWavefrontUploadButtonClicked = function() {
             var objFile = document.getElementById('wf-obj-file');
             UtilService.readFileAsBinaryFromElement(objFile, function(data) {
-                var path = ProjectService.getProjectUUID()+"/resource/model/"+$scope.currentResource.uuid+"/obj";
-                ApiService.uploadResource(path,data,function(success){
+                var path = ProjectService.getProjectUUID()+"/asset/model/"+$scope.currentAsset.uuid+"/obj";
+                ApiService.uploadAsset(path,data,function(success){
                     if (success) {
-                        UIService.addAlert("Resource uploaded successfuly.","success");
+                        UIService.addAlert("Asset uploaded successfuly.","success");
                     }
                     else {
-                        UIService.addAlert("Error uploading resource.","danger");
+                        UIService.addAlert("Error uploading asset.","danger");
                     }
                 });
             });
 
             var mtlFile = document.getElementById('wf-mtl-file');
             UtilService.readFileAsBinaryFromElement(mtlFile, function (data) {
-                var path = ProjectService.getProjectUUID()+"/resource/model/"+$scope.currentResource.uuid+"/mtl";
-                ApiService.uploadResource(path,data,function(success) {
+                var path = ProjectService.getProjectUUID()+"/asset/model/"+$scope.currentAsset.uuid+"/mtl";
+                ApiService.uploadAsset(path,data,function(success) {
                     if (success) {
-                        UIService.addAlert("Resource uploaded successfuly.","success");
+                        UIService.addAlert("Asset uploaded successfuly.","success");
                     }
                     else {
-                        UIService.addAlert("Error uploading resource.","danger");
+                        UIService.addAlert("Error uploading asset.","danger");
                     }
                 });
             });
         };
 
-        $scope.onResourceAudioWaveUploadButtonClicked = function() {
+        $scope.onAssetAudioWaveUploadButtonClicked = function() {
             var wavFile = document.getElementById('wav-file');
             UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
-                var path = ProjectService.getProjectUUID()+"/resource/audio/"+$scope.currentResource.uuid+"/wav";
-                ApiService.uploadResource(path,data,function(success){
+                var path = ProjectService.getProjectUUID()+"/asset/audio/"+$scope.currentAsset.uuid+"/wav";
+                ApiService.uploadAsset(path,data,function(success){
                     if (success) {
-                        UIService.addAlert("Resource uploaded successfuly.","success");
+                        UIService.addAlert("Asset uploaded successfuly.","success");
                     }
                     else {
-                        UIService.addAlert("Error uploading resource.","danger");
+                        UIService.addAlert("Error uploading asset.","danger");
                     }
                 });
             });
         };
 
-        $scope.onResourceAudioOggUploadButtonClicked = function() {
+        $scope.onAssetAudioOggUploadButtonClicked = function() {
             var oggFile = document.getElementById('ogg-file');
             UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
-                var path = ProjectService.getProjectUUID()+"/resource/audio/"+$scope.currentResource.uuid+"/ogg";
-                ApiService.uploadResource(path,data,
+                var path = ProjectService.getProjectUUID()+"/asset/audio/"+$scope.currentAsset.uuid+"/ogg";
+                ApiService.uploadAsset(path,data,
                     function(success){
                     if (success) {
-                        UIService.addAlert("Resource uploaded successfuly.","success");
+                        UIService.addAlert("Asset uploaded successfuly.","success");
                     }
                     else {
-                        UIService.addAlert("Error uploading resource.","danger");
+                        UIService.addAlert("Error uploading asset.","danger");
                     }
                 });
             });

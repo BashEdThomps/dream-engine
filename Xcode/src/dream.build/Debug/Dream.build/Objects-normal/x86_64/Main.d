@@ -6,13 +6,13 @@ dependencies: /Users/Ashley/Software/Dream/src/Main/Main.cpp \
   /Users/Ashley/Software/Dream/src/Main/../Scene/Scene.h \
   /Users/Ashley/Software/Dream/src/Main/../Scene/Camera.h \
   /Users/Ashley/Software/Dream/src/Main/../Scene/SceneObject.h \
-  /Users/Ashley/Software/Dream/src/Main/../Scene/../Resource/Instance/ResourceInstance.h \
+  /Users/Ashley/Software/Dream/src/Main/../Scene/../Asset/Instance/AssetInstance.h \
   /Users/Ashley/Software/Dream/src/Main/../Project/Project.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Resource.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Model/WaveFront/ObjModelInstance.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Model/WaveFront/tiny_obj_loader.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Script/JavaScript/JavaScriptInstance.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Script/ChaiScript/ChaiScriptInstance.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Asset.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Model/WaveFront/ObjModelInstance.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Model/WaveFront/tiny_obj_loader.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Script/JavaScript/JavaScriptInstance.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Script/ChaiScript/ChaiScriptInstance.h \
   /usr/local/include/chaiscript/chaiscript.hpp \
   /usr/local/include/chaiscript/chaiscript_defines.hpp \
   /usr/local/include/chaiscript/dispatchkit/dispatchkit.hpp \
@@ -42,12 +42,12 @@ dependencies: /Users/Ashley/Software/Dream/src/Main/Main.cpp \
   /usr/local/include/chaiscript/language/chaiscript_engine.hpp \
   /usr/local/include/chaiscript/dispatchkit/../language/../dispatchkit/exception_specification.hpp \
   /usr/local/include/chaiscript/dispatchkit/../language/chaiscript_parser.hpp \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Audio/Ogg/OggAudioInstance.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Audio/Wav/WavAudioInstance.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Animation/AnimationInstance.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Animation/KeyFrame.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Animation/FrameDelta.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Resource/Instance/Animation/Frame.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Audio/Ogg/OggAudioInstance.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Audio/Wav/WavAudioInstance.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Animation/AnimationInstance.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Animation/KeyFrame.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Animation/FrameDelta.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Animation/Frame.h \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/Interface.h \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/AudioInterface.h \
   /Users/Ashley/Software/Dream/src/Main/../Plugins/Interfaces/ScriptingInterface.h \

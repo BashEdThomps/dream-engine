@@ -7,7 +7,7 @@ dependencies: \
   /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/Camera.h \
   /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/../JSON/json.hpp \
   /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/SceneObject.h \
-  /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/../Resource/Instance/ResourceInstance.h \
+  /Users/Ashley/Software/Dream/src/Plugins/Physics/Bullet/../../../Plugins/Interfaces/../../Scene/../Asset/Instance/AssetInstance.h \
   /usr/local/include/bullet/btBulletDynamicsCommon.h \
   /usr/local/include/bullet/btBulletCollisionCommon.h \
   /usr/local/include/bullet/BulletCollision/CollisionDispatch/btCollisionWorld.h \

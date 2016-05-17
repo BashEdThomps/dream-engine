@@ -52,7 +52,7 @@ namespace Scene {
 		Scene();
 		Scene(nlohmann::json);
 		~Scene();
-		void         init();
+		bool         init();
 		std::string  getUUID();
 		void         setUUID(std::string);
 		std::string  getName();
@@ -73,7 +73,7 @@ namespace Scene {
 		void         showStatus();
 		void         showScenegraph();
 		std::string  indent(int);
-		void         initSceneObjects();
+		bool         initSceneObjects();
 		void         generateScenegraphVector();
 		void         generateSceneObjectPaths();
 		bool         isScenegraphVectorEmpty();

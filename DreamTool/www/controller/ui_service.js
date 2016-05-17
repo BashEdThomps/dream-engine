@@ -24,7 +24,7 @@ App.service('UIService',
         this.treeDataRoot.onSelect = hostController.onTreeProjectSelected;
 
         this.generateTreeProjectScenes();
-        this.generateTreeProjectResources();
+        this.generateTreeProjectAssets();
         this.treeData.push(this.treeDataRoot);
     };
 
@@ -96,41 +96,41 @@ App.service('UIService',
         this.treeProjectScenes.children.splice(index,1);
     };
 
-    // Resource ----------------------------------------------------------------
+    // Asset ----------------------------------------------------------------
 
-    this.addTreeProjectResource = function(resource) {
-        this.treeProjectResources.children.push(resource);
+    this.addTreeProjectAsset = function(asset) {
+        this.treeProjectAssets.children.push(asset);
     };
 
-    this.createTreeProjectResource = function(resource) {
+    this.createTreeProjectAsset = function(asset) {
         return {
-            label    : resource.name,
-            uuid     : resource.uuid,
-            onSelect : hostController.onTreeProjectResourceInstanceSelected,
+            label    : asset.name,
+            uuid     : asset.uuid,
+            onSelect : hostController.onTreeProjectAssetInstanceSelected,
         };
     };
 
-    this.generateTreeProjectResources = function() {
-        this.treeProjectResources = {
-            label: "Resources",
+    this.generateTreeProjectAssets = function() {
+        this.treeProjectAssets = {
+            label: "Assets",
             children: [],
-            onSelect: hostController.onTreeProjectResourceSelected
+            onSelect: hostController.onTreeProjectAssetSelected
         };
         var ui = this;
-        ProjectService.getProject().resources.forEach(function(resource){
-            ui.treeProjectResources.children.push(ui.createTreeProjectResource(resource));
+        ProjectService.getProject().assets.forEach(function(asset){
+            ui.treeProjectAssets.children.push(ui.createTreeProjectAsset(asset));
         });
-        ui.treeDataRoot.children.push(this.treeProjectResources);
+        ui.treeDataRoot.children.push(this.treeProjectAssets);
     };
 
-    this.removeTreeProjectResource = function(resource) {
-        var index = this.treeProjectResources.children.indexOf(resource);
-        this.treeProjectResources.children.splice(index,1);
+    this.removeTreeProjectAsset = function(asset) {
+        var index = this.treeProjectAssets.children.indexOf(asset);
+        this.treeProjectAssets.children.splice(index,1);
     };
 
-    this.getTreeProjectResourceByUUID = function(uuid,callback){
+    this.getTreeProjectAssetByUUID = function(uuid,callback){
         var retval = null;
-        this.treeProjectResources.children.forEach(function(res) {
+        this.treeProjectAssets.children.forEach(function(res) {
             if (res.uuid === uuid) {
                 retval  = res;
             }
@@ -138,11 +138,11 @@ App.service('UIService',
         callback(retval);
     };
 
-    this.removeTreeProjectResourceByUUID = function(uuid) {
+    this.removeTreeProjectAssetByUUID = function(uuid) {
         var ui = this;
-        this.getTreeProjectResourceByUUID(uuid, function(res){
+        this.getTreeProjectAssetByUUID(uuid, function(res){
             if (res !== null) {
-                ui.removeTreeProjectResource(res);
+                ui.removeTreeProjectAsset(res);
             }
         });
     };
@@ -151,13 +151,13 @@ App.service('UIService',
         this.treeDataRoot.label = project.name;
     };
 
-    this.updateResource = function(resourceObject) {
-        this.updateTreeResourceName(resourceObject);
+    this.updateAsset = function(assetObject) {
+        this.updateTreeAssetName(assetObject);
     };
 
-    this.updateTreeResourceName = function(resourceObject) {
-        this.getTreeProjectResourceByUUID(resourceObject.uuid,function(branch){
-            branch.label = resourceObject.name;
+    this.updateTreeAssetName = function(assetObject) {
+        this.getTreeProjectAssetByUUID(assetObject.uuid,function(branch){
+            branch.label = assetObject.name;
         });
     };
 

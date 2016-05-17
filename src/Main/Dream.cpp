@@ -40,10 +40,10 @@ namespace Dream {
 
 	bool Dream::loadFromArgumentParser(ArgumentParser *parser) {
 		std::cout << "Dream: Loading from ArgumentParser" << std::endl;
-		Util::FileReader *proj = new Util::FileReader(parser->getProjectFilePath());
-		proj->readIntoStringStream();
-		bool loadSuccess = loadProjectFromFileReader(parser->getProjectPath(), proj);
-		delete proj;
+		Util::FileReader *projectFileReader = new Util::FileReader(parser->getProjectFilePath());
+		projectFileReader->readIntoStringStream();
+		bool loadSuccess = loadProjectFromFileReader(parser->getProjectPath(), projectFileReader);
+		delete projectFileReader;
 		delete parser;
 		return loadSuccess;
 	}
@@ -207,15 +207,19 @@ namespace Dream {
 			return 1;
 		}
 		
-		std::cout << "Dream: Starting Scene - " << mCurrentScene->getName() << " (" << mCurrentScene->getUUID() << ")" << std::endl;
-		mRunning = true;
 		
+		if (!mCurrentScene->init()) {
+			std::cerr << "Dream: Unable to initialise Current Scene." << std::endl;
+			return 1;
+		}
+		
+		mRunning = true;
+		std::cout << "Dream: Starting Scene - " << mCurrentScene->getName() << " (" << mCurrentScene->getUUID() << ")" << std::endl;
 		while(mRunning) {
 			if (mError) {
 				std::cerr << "Dream: A fatal error has occurred, exiting main loop" << std::endl;
-				break;
+				return 1;
 			}
-			
 			updateAll();
 		}
 		return 0;
