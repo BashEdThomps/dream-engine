@@ -37,7 +37,7 @@ namespace Scene {
 			mRotation [NODE_Z] = rotation[SCENE_OBJECT_Z];
 		}
 		
-		if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null() && soJson[SCENE_OBJECT_ASSET_INSTANCES].is_array()) {
+		if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null()) {
 			loadAssetInstances(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
 		}
 	}
@@ -47,13 +47,8 @@ namespace Scene {
 			mAssetInstanceUUIDs.push_back((*it));
 		}
 	}
-
-	bool SceneObject::init() {
-		initTranslationRotation();
-		return initAssetInstances();
-	}
-
-	void SceneObject::initTranslationRotation() {
+	
+	void SceneObject::resetTranslationRotation() {
 		mTranslation [NODE_X] = 0.0f;
 		mTranslation [NODE_Y] = 0.0f;
 		mTranslation [NODE_Z] = 0.0f;
@@ -209,11 +204,8 @@ namespace Scene {
 		                                << std::endl;
 	}
 	
-	bool SceneObject::initAssetInstances() {
-		for (std::vector<std::string>::iterator nextUUID = mAssetInstanceUUIDs.begin(); nextUUID != mAssetInstanceUUIDs.end(); nextUUID++) {
-			//addAssetInstance(createAssetInstance((*nextUUID)));
-		}
-		return true;
+	std::vector<std::string> SceneObject::getAssetInstanceUUIDVector() {
+		return mAssetInstanceUUIDs;
 	}
 	
 } // End of Scene

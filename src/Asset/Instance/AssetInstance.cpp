@@ -18,27 +18,27 @@
 #include "AssetInstance.h"
 
 namespace Dream {
-	namespace Asset {
-	namespace Instance {
+namespace Asset {
+namespace Instance {
 
-			AssetInstance::AssetInstance(void) {}
+	AssetInstance::AssetInstance(void) {}
 
-			void AssetInstance::setUUID(std::string uuid) {
-				mUUID = uuid;
-			}
+	void AssetInstance::setUUID(std::string uuid) {
+		mUUID = uuid;
+	}
 
-			std::string AssetInstance::getUUID() {
-				return mUUID;
-			}
+	std::string AssetInstance::getUUID() {
+		return mUUID;
+	}
 
-			void AssetInstance::setName(std::string name) {
-				mName = name;
-			}
+	void AssetInstance::setName(std::string name) {
+		mName = name;
+	}
 
-			std::string AssetInstance::getName() {
-				return mName;
-			}
-
-		} // End of Instance
-	} // End of Asset
+	std::string AssetInstance::getName() {
+		return mName;
+	}
+		
+} // End of Instance
+} // End of Asset
 } // End of Dream

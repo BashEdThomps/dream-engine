@@ -26,7 +26,7 @@ namespace Dream {
 		setProjectPath(projectPath);
 		setMetadata(jsonProject);
 		setPluginFlags(jsonProject);
-		loadAssetsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
+		loadAssetsDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
 		showStatus();
 	}
@@ -103,20 +103,20 @@ namespace Dream {
 
 	void Project::showStatus() {
 		std::cout << "Project: New Project"  << std::endl;
-		std::cout << "               UUID: " << mUUID                  << std::endl;
-		std::cout << "               Name: " << mName                  << std::endl;
-		std::cout << "             Author: " << mAuthor                << std::endl;
-		std::cout << "        Description: " << mDescription           << std::endl;
-		std::cout << "       Chai Enabled: " << mChaiEnabled           << std::endl;
-		std::cout << "         v8 Enabled: " << mV8Enabled             << std::endl;
-		std::cout << "     OpenAL Enabled: " << mOpenALEnabled         << std::endl;
-		std::cout << "    Bullet2 Enabled: " << mBullet2Enabled        << std::endl;
-		std::cout << "    Bullet3 Enabled: " << mBullet3Enabled        << std::endl;
-		std::cout << "     OpenGL Enabled: " << mOpenGLEnabled         << std::endl;
-		std::cout << "     Vulkan Enabled: " << mVulkanEnabled         << std::endl;
-		std::cout << "             Scenes: " << getNumberOfScenes()    << std::endl;
-		std::cout << "      Startup Scene: " << getStartupSceneUUID()  << std::endl;
-		std::cout << "          Assets: " << getNumberOfAssets() << std::endl;
+		std::cout << "               UUID: " << mUUID   << std::endl;
+		std::cout << "               Name: " << mName   << std::endl;
+		std::cout << "             Author: " << mAuthor << std::endl;
+		std::cout << "        Description: " << mDescription    << std::endl;
+		std::cout << "       Chai Enabled: " << mChaiEnabled    << std::endl;
+		std::cout << "         v8 Enabled: " << mV8Enabled      << std::endl;
+		std::cout << "     OpenAL Enabled: " << mOpenALEnabled  << std::endl;
+		std::cout << "    Bullet2 Enabled: " << mBullet2Enabled << std::endl;
+		std::cout << "    Bullet3 Enabled: " << mBullet3Enabled << std::endl;
+		std::cout << "     OpenGL Enabled: " << mOpenGLEnabled  << std::endl;
+		std::cout << "     Vulkan Enabled: " << mVulkanEnabled  << std::endl;
+		std::cout << "             Scenes: " << getNumberOfScenes()   << std::endl;
+		std::cout << "      Startup Scene: " << getStartupSceneUUID() << std::endl;
+		std::cout << " Assets Definitions: " << getNumberOfAssetDefinitions() << std::endl;
 	}
 
 	Project::~Project(void) {}
@@ -143,10 +143,10 @@ namespace Dream {
 		}
 	}
 
- 	void Project::loadAssetsFromJson(nlohmann::json jsonAssetArray) {
+ 	void Project::loadAssetsDefinitionsFromJson(nlohmann::json jsonAssetArray) {
 		std::cout << "Project: Loading Assets from JSON Array" << std::endl;
 		for (nlohmann::json::iterator it = jsonAssetArray.begin(); it != jsonAssetArray.end(); ++it) {
-			addAsset(new Dream::Asset::Asset((*it)));
+			addAssetDefinition(new Dream::Asset::AssetDefinition((*it)));
 		}
 	}
 
@@ -186,16 +186,16 @@ namespace Dream {
 		mScenes.push_back(scene);
 	}
 
-	void Project::addAsset(Dream::Asset::Asset* asset) {
-		mAssets.push_back(asset);
+	void Project::addAssetDefinition(Dream::Asset::AssetDefinition* assetDefinition) {
+		mAssetDefinitions.push_back(assetDefinition);
 	}
 
-	void Project::removeAsset(Dream::Asset::Asset*) {
+	void Project::removeAssetDefinition(Dream::Asset::AssetDefinition*) {
 		std::cout << "Project: Remove Asset is not yet Implemented" << std::endl;
 	}
 
-	int Project::getNumberOfAssets() {
-		return mAssets.size();
+	int Project::getNumberOfAssetDefinitions() {
+		return mAssetDefinitions.size();
 	}
 
 	int Project::getNumberOfScenes() {
@@ -205,22 +205,22 @@ namespace Dream {
 	Dream::Scene::Scene* Project::getSceneByUUID(std::string uuid) {
 		Dream::Scene::Scene* retval = NULL;
 		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it) {
-				if ((*it)->getUUID().compare(uuid) == 0) {
-					retval = (*it);
-					break;
-				}
+			if ((*it)->getUUID().compare(uuid) == 0) {
+				retval = (*it);
+				break;
 			}
+		}
 		return retval;
 	}
 
 	Dream::Scene::Scene* Project::getSceneByName(std::string name) {
 		Dream::Scene::Scene* retval = NULL;
 		for(std::vector<Dream::Scene::Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it) {
-				if ((*it)->getName().compare(name) == 0) {
-					retval = (*it);
-					break;
-				}
+			if ((*it)->getName().compare(name) == 0) {
+				retval = (*it);
+				break;
 			}
+		}
 		return retval;
 	}
 
@@ -258,5 +258,16 @@ namespace Dream {
 
 	bool Project::isVulkanEnabled() {
 		return mVulkanEnabled;
+	}
+	
+	Dream::Asset::AssetDefinition* Project::getAssetDefinitionByUUID(std::string uuid) {
+		Dream::Asset::AssetDefinition* retval = NULL;
+		for (std::vector<Dream::Asset::AssetDefinition*>::iterator it = mAssetDefinitions.begin(); it != mAssetDefinitions.end(); it++) {
+			if ((*it)->getUUID().compare(uuid) == 0) {
+				retval = (*it);
+				break;
+			}
+		}
+		return retval;
 	}
 } // End of Dream

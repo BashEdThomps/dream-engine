@@ -25,20 +25,19 @@ namespace Animation {
 		FrameDelta* d = new FrameDelta(start->getDrawableID(), start->getOperation());
 		float posDelta[3];
 		float rotDelta[3];
-
 		computeDeltaVector(&posDelta[0], start->getPositionDelta(), end->getPositionDelta());
 		computeDeltaVector(&rotDelta[0], start->getRotationDelta(), end->getRotationDelta());
 
 		switch (d->getOperation()) {
 		    default:
-		    case DA_OP_LINEAR:
+		    case FRAME_DELTA_OP_LINEAR:
 				posDelta [0] /= steps;
 				posDelta [1] /= steps;
 				posDelta [2] /= steps;
 				break;
-		    case DA_OP_ORBIT:
+		    case FRAME_DELTA_OP_ORBIT:
 				break;
-			case DA_OP_BEZIER:
+			case FRAME_DELTA_OP_BEZIER:
 				break;
 		}
 
@@ -53,10 +52,10 @@ namespace Animation {
 	void FrameDelta::computeDeltaVector(float* buffer, float* a, float* b) {
 	    buffer[0] = a[0] - b[0];
 	    buffer[1] = a[1] - b[1];
-			    buffer[2] = a[2] - b[2];
+		buffer[2] = a[2] - b[2];
 	}
 
-	void FrameDelta::printDebug() {
+	void FrameDelta::showStatus() {
 	    std::cout << "Delta for ID: " << mDrawableID << std::endl;
 	    std::cout <<"\tPOS: X: " << mPositionDelta[0] << " Y: " << mPositionDelta[1] << " Z: " << mRotationDelta[2] << std::endl;
 	    std::cout <<"\tROT: X: " << mRotationDelta[0] << " Y: " << mRotationDelta[1] << " Z: " << mRotationDelta[2] << std::endl;

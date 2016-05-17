@@ -47,7 +47,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		ABBCBAD51CEB40160053BCBF /* Asset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABBCBA681CEB40150053BCBF /* Asset.cpp */; };
+		ABBCBAD51CEB40160053BCBF /* AssetDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABBCBA681CEB40150053BCBF /* AssetDefinition.cpp */; };
 		ABBCBAD61CEB40160053BCBF /* AnimationInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABBCBA6C1CEB40150053BCBF /* AnimationInstance.cpp */; };
 		ABBCBAD71CEB40160053BCBF /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABBCBA6E1CEB40150053BCBF /* Frame.cpp */; };
 		ABBCBAD81CEB40160053BCBF /* FrameDelta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABBCBA701CEB40150053BCBF /* FrameDelta.cpp */; };
@@ -174,8 +174,8 @@
 /* Begin PBXFileReference section */
 		18279BC1C1E541828728293E /* Dream */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = Dream; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C69C815A5D54784AE08C259 /* libDreamBase.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libDreamBase.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABBCBA681CEB40150053BCBF /* Asset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Asset.cpp; sourceTree = "<group>"; };
-		ABBCBA691CEB40150053BCBF /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Asset.h; sourceTree = "<group>"; };
+		ABBCBA681CEB40150053BCBF /* AssetDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssetDefinition.cpp; sourceTree = "<group>"; };
+		ABBCBA691CEB40150053BCBF /* AssetDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssetDefinition.h; sourceTree = "<group>"; };
 		ABBCBA6C1CEB40150053BCBF /* AnimationInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationInstance.cpp; sourceTree = "<group>"; };
 		ABBCBA6D1CEB40150053BCBF /* AnimationInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationInstance.h; sourceTree = "<group>"; };
 		ABBCBA6E1CEB40150053BCBF /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frame.cpp; sourceTree = "<group>"; };
@@ -341,8 +341,8 @@
 		ABBCBA671CEB40150053BCBF /* Asset */ = {
 			isa = PBXGroup;
 			children = (
-				ABBCBA681CEB40150053BCBF /* Asset.cpp */,
-				ABBCBA691CEB40150053BCBF /* Asset.h */,
+				ABBCBA681CEB40150053BCBF /* AssetDefinition.cpp */,
+				ABBCBA691CEB40150053BCBF /* AssetDefinition.h */,
 				ABBCBA6A1CEB40150053BCBF /* Instance */,
 			);
 			path = Asset;
@@ -959,7 +959,7 @@
 				ABBCBAF11CEB40160053BCBF /* V8Scripting.cpp in Sources */,
 				ABBCBAE61CEB40160053BCBF /* OALAudio.cpp in Sources */,
 				ABBCBAF71CEB40160053BCBF /* Unit.cpp in Sources */,
-				ABBCBAD51CEB40160053BCBF /* Asset.cpp in Sources */,
+				ABBCBAD51CEB40160053BCBF /* AssetDefinition.cpp in Sources */,
 				ABBCBADD1CEB40160053BCBF /* ObjModelInstance.cpp in Sources */,
 				ABBCBAF81CEB40160053BCBF /* FileReader.cpp in Sources */,
 				ABBCBAE91CEB40160053BCBF /* AudioInterface.cpp in Sources */,

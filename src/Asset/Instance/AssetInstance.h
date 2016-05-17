@@ -20,26 +20,28 @@
 
 #include <iostream>
 
-#define ASSET_JSON_UUID "uuid"
-#define ASSET_JSON_NAME "name"
+#define ASSET_UUID "uuid"
+#define ASSET_NAME "name"
 
 namespace Dream {
-	namespace Asset {
-		namespace Instance {
-			class AssetInstance {
-			private:
-				std::string mUUID;
-				std::string mName;
-			public:
-				AssetInstance(void);
-				virtual ~AssetInstance(void) {};
-				void setUUID(std::string);
-				std::string getUUID();
-				void setName(std::string);
-				std::string getName();
-			}; // End of AssetInstance
-		} // End of Instance
-	} // End of Asset
+namespace Asset {
+namespace Instance {
+	
+	class AssetInstance {
+	private:
+		std::string mUUID;
+		std::string mName;
+	public:
+		AssetInstance(void);
+		virtual ~AssetInstance(void) {};
+		void setUUID(std::string);
+		std::string getUUID();
+		void setName(std::string);
+		std::string getName();
+	}; // End of AssetInstance
+	
+} // End of Instance
+} // End of Asset
 } // End of Dream
 
 #endif // End of ASSETINSTANCE_H

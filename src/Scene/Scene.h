@@ -77,6 +77,7 @@ namespace Scene {
 		void         generateScenegraphVector();
 		void         generateSceneObjectPaths();
 		bool         isScenegraphVectorEmpty();
+		std::vector<SceneObject*> getScenegraphVector();
 	}; // End of Scene
 	
 } // End of Scene

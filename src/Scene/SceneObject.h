@@ -49,7 +49,7 @@ namespace Scene {
 		~SceneObject ();
 		void         loadAssetInstances(nlohmann::json);
 		bool         init();
-		void         initTranslationRotation();
+		void         resetTranslationRotation();
 		bool         initAssetInstances();
 		bool         hasUUID(std::string);
 		void         setUUID(std::string);
@@ -77,6 +77,7 @@ namespace Scene {
 		void         generatePath();
 		std::string  getPath();
 		void addAssetInstance(Dream::Asset::Instance::AssetInstance*);
+		std::vector<std::string> getAssetInstanceUUIDVector();
 	}; // End of SceneObject
 	
 } // End of Scene

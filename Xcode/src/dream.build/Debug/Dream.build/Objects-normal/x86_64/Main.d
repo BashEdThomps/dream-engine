@@ -8,7 +8,7 @@ dependencies: /Users/Ashley/Software/Dream/src/Main/Main.cpp \
   /Users/Ashley/Software/Dream/src/Main/../Scene/SceneObject.h \
   /Users/Ashley/Software/Dream/src/Main/../Scene/../Asset/Instance/AssetInstance.h \
   /Users/Ashley/Software/Dream/src/Main/../Project/Project.h \
-  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Asset.h \
+  /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/AssetDefinition.h \
   /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Model/WaveFront/ObjModelInstance.h \
   /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Model/WaveFront/tiny_obj_loader.h \
   /Users/Ashley/Software/Dream/src/Main/../Project/../Asset/Instance/Script/JavaScript/JavaScriptInstance.h \

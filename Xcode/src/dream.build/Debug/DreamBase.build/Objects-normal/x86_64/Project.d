@@ -5,7 +5,7 @@ dependencies: /Users/Ashley/Software/Dream/src/Project/Project.cpp \
   /Users/Ashley/Software/Dream/src/Project/../Scene/Camera.h \
   /Users/Ashley/Software/Dream/src/Project/../Scene/SceneObject.h \
   /Users/Ashley/Software/Dream/src/Project/../Scene/../Asset/Instance/AssetInstance.h \
-  /Users/Ashley/Software/Dream/src/Project/../Asset/Asset.h \
+  /Users/Ashley/Software/Dream/src/Project/../Asset/AssetDefinition.h \
   /Users/Ashley/Software/Dream/src/Project/../Asset/Instance/Model/WaveFront/ObjModelInstance.h \
   /Users/Ashley/Software/Dream/src/Project/../Asset/Instance/Model/WaveFront/tiny_obj_loader.h \
   /Users/Ashley/Software/Dream/src/Project/../Asset/Instance/Script/JavaScript/JavaScriptInstance.h \

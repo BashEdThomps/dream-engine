@@ -71,25 +71,14 @@ namespace  Scene {
 
 	bool Scene::init() {
 		std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
-		bool result = true;
 		mCamera = new Camera();
-		result = result && initSceneObjects();
-		return result;
-	}
-
-	bool Scene::initSceneObjects() {
 		if (isScenegraphVectorEmpty()) {
+			std::cout << "Scene: Creating Scenegraph vector." << std::endl;
 			generateScenegraphVector();
-		}
-		for (std::vector<SceneObject*>::iterator sgIterator = mScenegraphVector.begin(); sgIterator != mScenegraphVector.end(); sgIterator++) {
-			if (!(*sgIterator)->init()){
-				return false;
-			}
-			(*sgIterator)->showStatus();
 		}
 		return true;
 	}
-	
+
 	bool Scene::isScenegraphVectorEmpty() {
 		return mScenegraphVector.empty();
 	}
@@ -130,7 +119,7 @@ namespace  Scene {
 		//std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
 		if (!jsonArray.is_null()) {
 			for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
-				std::cout << "Scene: Creating SceneObject " << std::endl;
+				//std::cout << "Scene: Creating SceneObject " << std::endl;
 				SceneObject *nextSceneObject = new SceneObject(*it);
 				if (parent != NULL) {
 					nextSceneObject->setParent(parent);
@@ -233,6 +222,10 @@ namespace  Scene {
 			 (*it)->generatePath();
 		}
 	}
-		
-	}// End of Scene
+	
+	std::vector<SceneObject*> Scene::getScenegraphVector() {
+		return mScenegraphVector;
+	}
+	
+}// End of Scene
 } // End of Dream

@@ -21,7 +21,7 @@
 #include <vector>
 #include "../JSON/json.hpp"
 #include "../Scene/Scene.h"
-#include "../Asset/Asset.h"
+#include "../Asset/AssetDefinition.h"
 #include "../Asset/Instance/AssetInstance.h"
 #include "../Asset/Instance/Model/WaveFront/ObjModelInstance.h"
 #include "../Asset/Instance/Script/JavaScript/JavaScriptInstance.h"
@@ -64,7 +64,7 @@ namespace Dream {
 		bool mVulkanEnabled;
 
 		std::vector<Dream::Scene::Scene*> mScenes;
-		std::vector<Dream::Asset::Asset*> mAssets;
+		std::vector<Dream::Asset::AssetDefinition*> mAssetDefinitions;
 	public:
 		Project(void);
 		Project(std::string, nlohmann::json);
@@ -73,7 +73,7 @@ namespace Dream {
 		void setMetadata(nlohmann::json);
 		void setPluginFlags(nlohmann::json);
 		void loadScenesFromJson(nlohmann::json);
-		void loadAssetsFromJson(nlohmann::json);
+		void loadAssetsDefinitionsFromJson(nlohmann::json);
 
 		void        setUUID(std::string);
 		std::string getUUID();
@@ -93,15 +93,16 @@ namespace Dream {
 		
 		void addScene(Dream::Scene::Scene*);
 		void removeScene(Dream::Scene::Scene*);
-		int getNumberOfScenes();
+		int  getNumberOfScenes();
 		
 		Dream::Scene::Scene* getSceneByName(std::string);
 		Dream::Scene::Scene* getSceneByUUID(std::string);
 		
 
-		void addAsset(Dream::Asset::Asset*);
-		void removeAsset(Dream::Asset::Asset*);
-		int getNumberOfAssets();
+		void addAssetDefinition(Dream::Asset::AssetDefinition*);
+		void removeAssetDefinition(Dream::Asset::AssetDefinition*);
+		int  getNumberOfAssetDefinitions();
+		Dream::Asset::AssetDefinition* getAssetDefinitionByUUID(std::string);
 
 		std::string getProjectPath();
 		void        setProjectPath(std::string);

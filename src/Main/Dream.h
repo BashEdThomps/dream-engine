@@ -25,6 +25,8 @@
 #include "../Plugins/Animation/DreamAnimation.h"
 #include "../Plugins/Input/GLFWInput.h"
 
+#include "../Asset/Instance/AssetInstance.h"
+
 namespace Dream {
 	class Dream {
 	protected:
@@ -50,6 +52,7 @@ namespace Dream {
 
 		bool loadFromArgumentParser(ArgumentParser*);
 		bool loadProjectFromFileReader(std::string projectPath, Util::FileReader*);
+		bool loadScene(Scene::Scene*);
 
 		Project* getProject(void);
 		void setProject(Project*);
@@ -64,6 +67,15 @@ namespace Dream {
 		bool createInputInterfaces();
 		bool createAnimationInterfaces();
 		
+		bool createAssetInstances();
+		Asset::Instance::AssetInstance* createAssetInstance(Asset::AssetDefinition*);
+		Asset::Instance::AssetInstance* createAssetInstanceFromUUID(std::string);
+		
+		Asset::Instance::AssetInstance* createAnimationAssetInstance(Asset::AssetDefinition*);
+		Asset::Instance::AssetInstance* createAudioAssetInstance(Asset::AssetDefinition*);
+		Asset::Instance::AssetInstance* createModelAssetInstance(Asset::AssetDefinition*);
+		Asset::Instance::AssetInstance* createScriptAssetInstance(Asset::AssetDefinition*);
+	
 		void updateAll();
 	};
 }

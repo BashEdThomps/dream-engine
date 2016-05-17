@@ -198,21 +198,121 @@ namespace Dream {
 		return false;
 	}
 	
-	int Dream::runProject() {
-		mError = !createInterfaces();
-		mCurrentScene = mProject->getStartupScene();
+	bool Dream::loadScene(Scene::Scene* scene) {
+		std::cout << "Dream: Loading Scene " << scene->getName() << std::endl;
+		
+		mCurrentScene = scene;
 		
 		if (mCurrentScene == NULL) {
 			std::cerr << "Dream: Unable to find startup scene. Cannot Continue." << std::endl;
-			return 1;
+			return false;
 		}
-		
 		
 		if (!mCurrentScene->init()) {
 			std::cerr << "Dream: Unable to initialise Current Scene." << std::endl;
-			return 1;
+			return false;
+		}
+	
+		if (!createAssetInstances()) {
+			std::cerr << "Dream: Fatal Error, unable to create asset instances" << std::endl;
+			return false;
 		}
 		
+		return true;
+	}
+	
+	bool Dream::createAssetInstances() {
+		std::vector<Scene::SceneObject*> scenegraph = mCurrentScene->getScenegraphVector();
+		std::vector<Scene::SceneObject*>::iterator scenegraphIterator;
+		
+		std::vector<std::string> assetInstanceUUIDVector;
+		std::vector<std::string>::iterator assetInstanceUUIDIterator;
+		
+		for (scenegraphIterator = scenegraph.begin();
+			 scenegraphIterator != scenegraph.end(); scenegraphIterator++) {
+			
+			Scene::SceneObject* currentSceneObject = (*scenegraphIterator);
+			assetInstanceUUIDVector = currentSceneObject->getAssetInstanceUUIDVector();
+			
+			for (assetInstanceUUIDIterator = assetInstanceUUIDVector.begin();
+				 assetInstanceUUIDIterator != assetInstanceUUIDVector.end();
+				 assetInstanceUUIDIterator++) {
+				
+				std::string assetDefinitionUUID = *assetInstanceUUIDIterator;
+				Asset::Instance::AssetInstance* newAsset = createAssetInstanceFromUUID(assetDefinitionUUID);
+				if (newAsset == NULL) {
+					std::cerr << "Dream: Unable to instanciate asset " << assetDefinitionUUID << std::endl;
+					return false;
+				} else {
+					currentSceneObject->addAssetInstance(newAsset);
+				}
+			}
+		}
+		return true;
+	}
+	
+	Asset::Instance::AssetInstance* Dream::createAssetInstanceFromUUID(std::string uuid) {
+		Asset::AssetDefinition* assetDefinition = mProject->getAssetDefinitionByUUID(uuid);
+		return createAssetInstance(assetDefinition);
+	}
+	
+	Asset::Instance::AssetInstance* Dream::createAssetInstance(Asset::AssetDefinition* definition) {
+		Asset::Instance::AssetInstance* retval = NULL;
+		if (definition->isTypeAnimation()) {
+			createAnimationAssetInstance(definition);
+		} else if (definition->isTypeAudio()) {
+			createAudioAssetInstance(definition);
+		} else if (definition->isTypeModel()) {
+			createModelAssetInstance(definition);
+		} else if (definition->isTypeScript()){
+			createScriptAssetInstance(definition);
+		}
+		return retval;
+	}
+	
+	Asset::Instance::AssetInstance* Dream::createAnimationAssetInstance(Asset::AssetDefinition* definition) {
+		Asset::Instance::AssetInstance* retval = NULL;
+		
+		return retval;
+	}
+	
+	
+	Asset::Instance::AssetInstance* Dream::createAudioAssetInstance(Asset::AssetDefinition* definition) {
+		Asset::Instance::AssetInstance* retval = NULL;
+		if (definition->isAudioFormatOgg()) {
+			
+		} else if (definition->isAudioFormatWav()) {
+			
+		}
+		return retval;
+	}
+	
+	Asset::Instance::AssetInstance* Dream::createModelAssetInstance(Asset::AssetDefinition* definition) {
+		Asset::Instance::AssetInstance* retval = NULL;
+		if (definition->isModelFormatWaveFront()) {
+			
+		}
+		return retval;
+	}
+	
+	Asset::Instance::AssetInstance* Dream::createScriptAssetInstance(Asset::AssetDefinition* definition) {
+		Asset::Instance::AssetInstance* retval = NULL;
+		if (definition->isScriptFormatJavaScript()) {
+			
+		} else if (definition->isScriptFormatChaiScript()) {
+			
+		}
+		return retval;
+	}
+	
+	int Dream::runProject() {
+		mError = !createInterfaces();
+		
+		if (!loadScene(mProject->getStartupScene())) {
+			std::cerr << "Dream: Unable to load scene." << std::endl;
+			return 1;
+		}
+	
 		mRunning = true;
 		std::cout << "Dream: Starting Scene - " << mCurrentScene->getName() << " (" << mCurrentScene->getUUID() << ")" << std::endl;
 		while(mRunning) {
