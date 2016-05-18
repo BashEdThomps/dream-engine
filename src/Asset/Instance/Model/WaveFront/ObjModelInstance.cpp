@@ -20,13 +20,13 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 
 namespace Dream     {
-namespace Asset  {
+namespace Asset     {
 namespace Instance  {
 namespace Model     {
 namespace WaveFront {
 
-	ObjModelInstance::ObjModelInstance(void) :
-		Dream::Asset::Instance::AssetInstance() {
+	ObjModelInstance::ObjModelInstance(Dream::Asset::AssetDefinition* definition) :
+		Dream::Asset::Instance::AssetInstance(definition) {
 	}
 
 	ObjModelInstance::~ObjModelInstance(void) {}

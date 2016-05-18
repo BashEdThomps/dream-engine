@@ -17,15 +17,23 @@
 
 #include "WavAudioInstance.h"
 
-namespace Dream {
-	namespace Asset {
-		namespace Instance {
-			namespace Audio {
-				namespace Wav {
-					WavAudioInstance::WavAudioInstance(void) : Dream::Asset::Instance::AssetInstance() {}
-					WavAudioInstance::~WavAudioInstance(void) {}
-				}
-			}
-		}
+namespace Dream    {
+namespace Asset    {
+namespace Instance {
+namespace Audio    {
+namespace Wav      {
+	
+	WavAudioInstance::WavAudioInstance(Dream::Asset::AssetDefinition* definition) :
+		Dream::Asset::Instance::AssetInstance(definition) {
+			
 	}
-}
+					
+	WavAudioInstance::~WavAudioInstance(void) {
+		
+	}
+
+} // End of Wav
+} // End of Audio
+} // End of Instance
+} // End of Asset
+} // End of Dream

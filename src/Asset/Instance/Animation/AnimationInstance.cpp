@@ -8,7 +8,8 @@ namespace Asset {
 namespace Instance {
 namespace Animation {
 	
-	AnimationInstance::AnimationInstance(int fps) : Dream::Asset::Instance::AssetInstance() {
+	AnimationInstance::AnimationInstance(Dream::Asset::AssetDefinition* definition, int fps) :
+		Dream::Asset::Instance::AssetInstance(definition) {
 		mFramesPerSecond = fps;
 	    mCurrentFrame    = 0;
 	    mCurrentKeyFrame = 0;

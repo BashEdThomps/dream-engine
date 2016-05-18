@@ -21,7 +21,10 @@ namespace Dream {
 namespace Asset {
 namespace Instance {
 
-	AssetInstance::AssetInstance(void) {}
+	AssetInstance::AssetInstance(Dream::Asset::AssetDefinition* definition) {
+		setUUID(definition->getUUID());
+		setName(definition->getName());
+	}
 
 	void AssetInstance::setUUID(std::string uuid) {
 		mUUID = uuid;

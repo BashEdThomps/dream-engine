@@ -302,7 +302,8 @@ namespace Dream {
 		if (definition->isScriptFormatJavaScript()) {
 			retval = new Asset::Instance::Script::JavaScript::JavaScriptInstance(definition);
 		} else if (definition->isScriptFormatChaiScript()) {
-			retval = new Asset::Instance::Script::ChaiScript::ChaiScriptInstance(definition);
+			retval = new Asset::Instance::Script::ChaiScript::ChaiScriptInstance(definition,
+						dynamic_cast<Plugins::Scripting::Chai::ChaiScripting*>(mScriptingInterface)->getChaiEngine());
 		}
 		return retval;
 	}

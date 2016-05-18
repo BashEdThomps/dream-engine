@@ -25,24 +25,27 @@
 #define ASSET_FORMAT_MTL        "mtl"
 #define ASSET_FORMAT_OBJ        "obj"
 
-namespace Dream {
-	namespace Asset {
-		namespace Instance {
-			namespace Model {
-				namespace WaveFront {
-					class ObjModelInstance : public Dream::Asset::Instance::AssetInstance {
-					private:
-						std::string mObjPath;
-						std::string mMtlPath;
-					public:
-						ObjModelInstance(void);
-						~ObjModelInstance(void);
-						void generateAbsolutePaths(std::string,std::string);
-					};// End of ObjModel
-				} // End of WaveFront
-			} // End of Model
-		} // End of Instance
-	} // End of Asset
+namespace Dream     {
+namespace Asset     {
+namespace Instance  {
+namespace Model     {
+namespace WaveFront {
+	
+	class ObjModelInstance : public Dream::Asset::Instance::AssetInstance {
+	private:
+		std::string mObjPath;
+		std::string mMtlPath;
+	public:
+		ObjModelInstance(Dream::Asset::AssetDefinition*);
+		~ObjModelInstance(void);
+		
+		void generateAbsolutePaths(std::string,std::string);
+	}; // End of ObjModel
+	
+} // End of WaveFront
+} // End of Model
+} // End of Instance
+} // End of Asset
 } // End of Dream
 
 #endif // End of OBJMODEL_H

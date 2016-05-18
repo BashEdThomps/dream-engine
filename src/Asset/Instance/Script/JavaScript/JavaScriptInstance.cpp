@@ -18,14 +18,22 @@
 #include "JavaScriptInstance.h"
 
 namespace Dream {
-	namespace Asset {
-        namespace Instance {
-    		namespace Script {
-    			namespace JavaScript {
-    				JavaScriptInstance::JavaScriptInstance() : Dream::Asset::Instance::AssetInstance() {}
-    				JavaScriptInstance::~JavaScriptInstance(void) {}
-    			} // End JavaScript
-            } // End of Script
-        } // End of Instance
-	} // End of Asset
+namespace Asset {
+namespace Instance {
+namespace Script {
+namespace JavaScript {
+	
+	JavaScriptInstance::JavaScriptInstance(Dream::Asset::AssetDefinition* definition) :
+		Dream::Asset::Instance::AssetInstance(definition) {
+			
+	}
+	
+	JavaScriptInstance::~JavaScriptInstance(void) {
+		
+	}
+	
+} // End JavaScript
+} // End of Script
+} // End of Instance
+} // End of Asset
 } // End of Dream

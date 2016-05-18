@@ -1,5 +1,5 @@
 /*
-* OggAudio
+* Dream::Asset::Instance::Audio::Ogg::OggAudio
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,21 @@
 #include "OggAudioInstance.h"
 
 namespace Dream {
-	namespace Asset {
-		namespace Instance {
-			namespace Audio {
-				namespace Ogg {
-					OggAudioInstance::OggAudioInstance(void) : Dream::Asset::Instance::AssetInstance() {}
-          OggAudioInstance::~OggAudioInstance(void) {}
-				} // End of Ogg
-			} // End of Audio
-		} // End of Instance
-	} // End of Asset
+namespace Asset {
+namespace Instance {
+namespace Audio {
+namespace Ogg {
+	
+	OggAudioInstance::OggAudioInstance(Dream::Asset::AssetDefinition* definition) :
+		Dream::Asset::Instance::AssetInstance(definition) {
+	}
+	
+    OggAudioInstance::~OggAudioInstance(void) {
+	
+	}
+	
+} // End of Ogg
+} // End of Audio
+} // End of Instance
+} // End of Asset
 } // End of Dream

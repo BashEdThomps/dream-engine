@@ -22,7 +22,6 @@
 #include <iostream>
 #include <map>
 
-#include "Instance/AssetInstance.h"
 #include "../JSON/json.hpp"
 
 #define ASSET_UUID   "uuid"

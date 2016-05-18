@@ -18,6 +18,7 @@
 #ifndef ASSETINSTANCE_H
 #define ASSETINSTANCE_H
 
+#include "../AssetDefinition.h"
 #include <iostream>
 
 #define ASSET_UUID "uuid"
@@ -32,7 +33,7 @@ namespace Instance {
 		std::string mUUID;
 		std::string mName;
 	public:
-		AssetInstance(void);
+		AssetInstance(Dream::Asset::AssetDefinition*);
 		virtual ~AssetInstance(void) {};
 		void setUUID(std::string);
 		std::string getUUID();

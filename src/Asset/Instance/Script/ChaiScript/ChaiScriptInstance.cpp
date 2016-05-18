@@ -23,19 +23,10 @@ namespace Instance {
 namespace Script {
 namespace ChaiScript {
     
-    ChaiScriptInstance::ChaiScriptInstance(chaiscript::ChaiScript* engine) : Dream::Asset::Instance::AssetInstance() {
+	ChaiScriptInstance::ChaiScriptInstance(Dream::Asset::AssetDefinition* definition, chaiscript::ChaiScript* engine) :
+		Dream::Asset::Instance::AssetInstance(definition) {
         mEngine = engine;
     }
-
-    ChaiScriptInstance::ChaiScriptInstance(chaiscript::ChaiScript* engine, std::string objectUUID, const std::string script, bool fromFile) : Dream::Asset::Instance::AssetInstance(){
-		mEngine = engine;
-	    setObjectUUID(objectUUID);
-	    if (fromFile) {
-			setScriptFromFile(script);
-	    } else {
-	        setScriptFromString(script);
-	    }
-	}
 
 	ChaiScriptInstance::~ChaiScriptInstance(void) {}
 	

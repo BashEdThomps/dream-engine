@@ -22,19 +22,22 @@
 
 #define ASSET_FORMAT_WAV  "wav"
 
-namespace Dream {
-	namespace Asset {
-		namespace Instance {
-			namespace Audio {
-				namespace Wav {
-					class WavAudioInstance : public Dream::Asset::Instance::AssetInstance {
-					public:
-						WavAudioInstance(void);
-						~WavAudioInstance(void);
-					};
-				}
-			}
-		}
-	}
+namespace Dream    {
+namespace Asset    {
+namespace Instance {
+namespace Audio    {
+namespace Wav      {
+	
+	class WavAudioInstance : public Dream::Asset::Instance::AssetInstance {
+	public:
+		WavAudioInstance(Dream::Asset::AssetDefinition*);
+		~WavAudioInstance(void);
+	};
+	
 }
+}
+}
+}
+}
+
 #endif // End of WAVAUDIO_H

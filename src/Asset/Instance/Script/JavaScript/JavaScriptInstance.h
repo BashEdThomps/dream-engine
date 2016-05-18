@@ -23,19 +23,21 @@
 #include "../../AssetInstance.h"
 
 namespace Dream {
-	namespace Asset {
-        namespace Instance {
-    		namespace Script {
-    			namespace JavaScript {
-    				class JavaScriptInstance : public Dream::Asset::Instance::AssetInstance {
-    				public:
-    					JavaScriptInstance();
-    					~JavaScriptInstance(void);
-    				}; // End of JavaScript
-    			} // End of JavaScript
-            } // End of Script
-        } // End of Instance
-	} // End of Asset
+namespace Asset {
+namespace Instance {
+namespace Script {
+namespace JavaScript {
+	
+	class JavaScriptInstance : public Dream::Asset::Instance::AssetInstance {
+	public:
+		JavaScriptInstance(Dream::Asset::AssetDefinition*);
+		~JavaScriptInstance(void);
+	}; // End of JavaScript
+	
+} // End of JavaScript
+} // End of Script
+} // End of Instance
+} // End of Asset
 } // End of Dream
 
 #endif // End of SCRIPT_H

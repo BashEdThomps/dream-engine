@@ -23,21 +23,23 @@
 #define ASSET_FORMAT_OGG "ogg"
 
 namespace Dream {
-	namespace Asset {
-		namespace Instance {
-			namespace Audio {
-				namespace Ogg {
-					class OggAudioInstance : public Dream::Asset::Instance::AssetInstance {
-					private:
-						std::string mOggPath;
-					public:
-						OggAudioInstance(void);
-						~OggAudioInstance(void);
-					}; // End of OggAudio
-				} // End of Ogg
-			} // End of Audio
-		} // End of Instnace
-	} // End of Asset
+namespace Asset {
+namespace Instance {
+namespace Audio {
+namespace Ogg {
+	
+	class OggAudioInstance : public Dream::Asset::Instance::AssetInstance {
+	private:
+		std::string mOggPath;
+	public:
+		OggAudioInstance(Dream::Asset::AssetDefinition*);
+		~OggAudioInstance(void);
+	}; // End of OggAudio
+	
+} // End of Ogg
+} // End of Audio
+} // End of Instnace
+} // End of Asset
 } // End of Dream
 
 #endif // End of OGGAUDIO_H

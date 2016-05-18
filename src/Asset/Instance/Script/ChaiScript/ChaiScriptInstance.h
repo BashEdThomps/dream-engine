@@ -33,8 +33,7 @@ namespace ChaiScript {
         std::string mObjectUUID;
         chaiscript::ChaiScript* mEngine;
     public:
-        ChaiScriptInstance(chaiscript::ChaiScript*);
-        ChaiScriptInstance(chaiscript::ChaiScript*, std::string, const std::string, bool);
+		ChaiScriptInstance(Dream::Asset::AssetDefinition*, chaiscript::ChaiScript*);
         ~ChaiScriptInstance(void);
 
         void setScriptFromFile(const std::string);

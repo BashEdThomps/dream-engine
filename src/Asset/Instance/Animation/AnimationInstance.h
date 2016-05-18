@@ -31,8 +31,8 @@ namespace Dream {
 
         public:
 
-          AnimationInstance(int fps = 60);
-          ~AnimationInstance();
+			AnimationInstance(Dream::Asset::AssetDefinition*, int fps = 60);
+			~AnimationInstance();
 
           void generateFrames();
           void addFrame(Frame*);
