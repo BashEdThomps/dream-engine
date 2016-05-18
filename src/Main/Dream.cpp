@@ -259,20 +259,22 @@ namespace Dream {
 	Asset::Instance::AssetInstance* Dream::createAssetInstance(Asset::AssetDefinition* definition) {
 		Asset::Instance::AssetInstance* retval = NULL;
 		if (definition->isTypeAnimation()) {
-			createAnimationAssetInstance(definition);
+			retval = createAnimationAssetInstance(definition);
 		} else if (definition->isTypeAudio()) {
-			createAudioAssetInstance(definition);
+			retval = createAudioAssetInstance(definition);
 		} else if (definition->isTypeModel()) {
-			createModelAssetInstance(definition);
+			retval = createModelAssetInstance(definition);
 		} else if (definition->isTypeScript()){
-			createScriptAssetInstance(definition);
+			retval = createScriptAssetInstance(definition);
 		}
 		return retval;
 	}
 	
 	Asset::Instance::AssetInstance* Dream::createAnimationAssetInstance(Asset::AssetDefinition* definition) {
 		Asset::Instance::AssetInstance* retval = NULL;
-		
+		if (definition->isAnimationFormatDream()) {
+			retval = new Asset::Instance::Animation::AnimationInstance(definition);
+		}
 		return retval;
 	}
 	
@@ -280,9 +282,9 @@ namespace Dream {
 	Asset::Instance::AssetInstance* Dream::createAudioAssetInstance(Asset::AssetDefinition* definition) {
 		Asset::Instance::AssetInstance* retval = NULL;
 		if (definition->isAudioFormatOgg()) {
-			
+			retval = new Asset::Instance::Audio::Ogg::OggAudioInstance(definition);
 		} else if (definition->isAudioFormatWav()) {
-			
+			retval = new Asset::Instance::Audio::Wav::WavAudioInstance(definition);
 		}
 		return retval;
 	}
@@ -290,7 +292,7 @@ namespace Dream {
 	Asset::Instance::AssetInstance* Dream::createModelAssetInstance(Asset::AssetDefinition* definition) {
 		Asset::Instance::AssetInstance* retval = NULL;
 		if (definition->isModelFormatWaveFront()) {
-			
+			retval = new Asset::Instance::Model::WaveFront::ObjModelInstance(definition);
 		}
 		return retval;
 	}
@@ -298,9 +300,9 @@ namespace Dream {
 	Asset::Instance::AssetInstance* Dream::createScriptAssetInstance(Asset::AssetDefinition* definition) {
 		Asset::Instance::AssetInstance* retval = NULL;
 		if (definition->isScriptFormatJavaScript()) {
-			
+			retval = new Asset::Instance::Script::JavaScript::JavaScriptInstance(definition);
 		} else if (definition->isScriptFormatChaiScript()) {
-			
+			retval = new Asset::Instance::Script::ChaiScript::ChaiScriptInstance(definition);
 		}
 		return retval;
 	}
