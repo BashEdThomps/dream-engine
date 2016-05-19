@@ -1,5 +1,5 @@
 /*
-* OALAudio
+* Dream::Plugins::Physics::PhysicsInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,46 +15,24 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AUDIOPLAYBACK_H
-#define AUDIOPLAYBACK_H
+#ifndef PHYSICSINTERFACE_H
+#define PHYSICSINTERFACE_H
 
-#include <iostream>
+#include "../PluginInterface.h"
 
-#ifdef __APPLE__
-	#include <OpenAL/al.h>
-	#include <OpenAL/alc.h>
-#else
-	#include <AL/al.h>
-	#include <AL/alc.h>
-#endif
-
-#include "../AudioInterface.h"
-
-namespace Dream   {
+namespace Dream {
 namespace Plugins {
-namespace Audio   {
-namespace OpenAL  {
+namespace Physics {
 	
-	class OALAudio : public AudioInterface {
-	private:
-		ALCdevice*  mDevice;
-		ALCcontext* mContext;
+	class PhysicsInterface : public Dream::Plugins::PluginInterface {
 	public:
-		OALAudio(void);
-		~OALAudio(void);
-		bool init(void);
-		void update(Dream::Scene::Scene*);
-
-	protected:
-		ALuint generateBuffer();
-		void playSource(ALuint);
-		void stopSource(ALuint);
-		void pauseSource(ALuint);
-	}; // End of OALAudio
+		PhysicsInterface(void);
+		virtual ~PhysicsInterface(void) {};
+		
+	};// End of PhysicsInterface
 	
-} // End of OpenAL
-} // End of Audio
+} // End of Physics
 } // End of Plugins
 } // End of Dream
 
-#endif // End of AUDIOPLAYBACK_H
+#endif // End of PHYSICSINTERFACE_H

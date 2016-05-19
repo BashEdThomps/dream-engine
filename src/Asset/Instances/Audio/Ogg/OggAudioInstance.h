@@ -1,5 +1,5 @@
 /*
-* Dream::Scripting::ChaiScripting
+* Dream::Asset::Audio::Ogg::OggAudio
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,31 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHAISCRIPTING_H
-#define CHAISCRIPTING_H
+#ifndef OGGAUDIO_H
+#define OGGAUDIO_H
 
-#include "../ScriptingInterface.h"
-#include <chaiscript/chaiscript.hpp>
-#include <chaiscript/chaiscript_stdlib.hpp>
+#include "../../../AssetInstance.h"
+
+#define ASSET_FORMAT_OGG "ogg"
 
 namespace Dream     {
-namespace Plugins   {
-namespace Scripting {
-namespace Chai      {
+namespace Asset     {
+namespace Instances {
+namespace Audio     {
+namespace Ogg       {
 	
-	class ChaiScripting : public ScriptingInterface {
+	class OggAudioInstance : public Dream::Asset::AssetInstance {
 	private:
-		chaiscript::ChaiScript *mChai;
+		std::string mOggPath;
 	public:
-		ChaiScripting(void);
-		~ChaiScripting(void);
-
-		chaiscript::ChaiScript* getChaiEngine();
-
-		bool init();
-		void update(Dream::Scene::Scene*);
-	}; // End of ChaiScripting
+		OggAudioInstance(Dream::Asset::AssetDefinition*);
+		~OggAudioInstance(void);
+	}; // End of OggAudio
 	
-} // End of Chai
-} // End Scripting
-} // End of Plugins
+} // End of Ogg
+} // End of Audio
+} // End of Instnace
+} // End of Asset
 } // End of Dream
 
-#endif // End of CHAISCRIPTING_H
+#endif // End of OGGAUDIO_H

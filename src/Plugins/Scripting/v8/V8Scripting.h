@@ -18,38 +18,48 @@
 #ifndef V8SCRIPTING_H
 #define V8SCRIPTING_H
 
-#include "../../../Plugins/Interfaces/ScriptingInterface.h"
+#include "../ScriptingInterface.h"
+
 #include <libplatform.h>
 #include <v8.h>
 #include <iostream>
 
 namespace Dream {
-	namespace Plugins {
-		namespace Scripting {
-			namespace V8 {
-				class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
-				 public:
-				  virtual void* Allocate(size_t length) {
-					  void* data = AllocateUninitialized(length);
-					  return data == NULL ? data : memset(data, 0, length);
-					}
-				  virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
-				  virtual void Free(void* data, size_t) { free(data); }
-				};
+namespace Plugins {
+namespace Scripting {
+namespace V8 {
+	
+	class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
+	public:
+		virtual void* Allocate(size_t length) {
+			void* data = AllocateUninitialized(length);
+			return data == NULL ? data : memset(data, 0, length);
+		}
+		
+		virtual void* AllocateUninitialized(size_t length) {
+			return malloc(length);
+		}
+		
+		virtual void Free(void* data, size_t) {
+			free(data);
+		}
+	}; // End of ArrayBuffer Allocator
 
-				class V8Scripting : public ScriptingInterface {
-				private:
-					v8::Platform *mPlatform;
-					v8::Isolate  *mIsolate;
-					v8::Persistent<v8::Context> mContext;
-				public:
-					V8Scripting(void);
-					~V8Scripting(void);
-					bool init(void);
-					void update(Dream::Scene::Scene*);
-				}; // End of V8Scripting
-			} // End of V8
-		} // End of Scripting
-	} // End of Plugins
+	class V8Scripting : public ScriptingInterface {
+	private:
+		v8::Platform *mPlatform;
+		v8::Isolate  *mIsolate;
+		v8::Persistent<v8::Context> mContext;
+	public:
+		V8Scripting(void);
+		~V8Scripting(void);
+		bool init(void);
+		void update(Dream::Scene::Scene*);
+	}; // End of V8Scripting
+	
+} // End of V8
+} // End of Scripting
+} // End of Plugins
 } // End of Dream
+
 #endif // End of V8SCRIPTING_H

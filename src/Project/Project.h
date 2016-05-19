@@ -1,5 +1,5 @@
 /*
-* Dream::Project
+* Dream::Project::Project
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,13 @@
 #include "../JSON/json.hpp"
 #include "../Scene/Scene.h"
 #include "../Asset/AssetDefinition.h"
-#include "../Asset/Instance/AssetInstance.h"
-#include "../Asset/Instance/Model/WaveFront/ObjModelInstance.h"
-#include "../Asset/Instance/Script/JavaScript/JavaScriptInstance.h"
-#include "../Asset/Instance/Script/ChaiScript/ChaiScriptInstance.h"
-#include "../Asset/Instance/Audio/Ogg/OggAudioInstance.h"
-#include "../Asset/Instance/Audio/Wav/WavAudioInstance.h"
-#include "../Asset/Instance/Animation/AnimationInstance.h"
+#include "../Asset/AssetInstance.h"
+#include "../Asset/Instances/Model/WaveFront/ObjModelInstance.h"
+#include "../Asset/Instances/Script/JavaScript/JavaScriptInstance.h"
+#include "../Asset/Instances/Script/ChaiScript/ChaiScriptInstance.h"
+#include "../Asset/Instances/Audio/Ogg/OggAudioInstance.h"
+#include "../Asset/Instances/Audio/Wav/WavAudioInstance.h"
+#include "../Asset/Instances/Animation/Dream/AnimationInstance.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"
@@ -46,6 +46,7 @@
 #define PROJECT_VULKAN_ENABLED  "vulkan"
 
 namespace Dream {
+namespace Project {
 	class Project {
 	private:
 		std::string mUUID;
@@ -65,6 +66,8 @@ namespace Dream {
 
 		std::vector<Dream::Scene::Scene*> mScenes;
 		std::vector<Dream::Asset::AssetDefinition*> mAssetDefinitions;
+		Scene::Scene *mActiveScene;
+		
 	public:
 		Project(void);
 		Project(std::string, nlohmann::json);
@@ -116,7 +119,13 @@ namespace Dream {
 		bool isBullet3Enabled();
 		bool isOpenGLEnabled();
 		bool isVulkanEnabled();
+		
+		void setActiveScene(Scene::Scene*);
+		Scene::Scene* getActiveScene();
+		
 	}; // End of Project
+	
+} // End of Project
 } // End of Dream
 
 #endif // End of PROJECT_H

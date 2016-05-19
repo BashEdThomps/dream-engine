@@ -46,7 +46,7 @@
 #define ASSET_DEF_FORMAT_MODEL_WAVEFRONT   "obj"
 #define ASSET_DEF_FORMAT_AUDIO_WAV         "wav"
 #define ASSET_DEF_FORMAT_AUDIO_OGG         "ogg"
-#define ASSET_DEF_FORMAT_ANIMATION_DREAM   "d_anim"
+#define ASSET_DEF_FORMAT_ANIMATION_DREAM   "dream_anim"
 
 namespace Dream {
 namespace Asset {
@@ -66,6 +66,9 @@ namespace Asset {
 		std::string getType();
 		void setFormat(std::string);
 		std::string getFormat();
+		
+		std::string getAttribute(std::string);
+		void addAttribute(std::string,std::string);
 		
 		bool isTypeAnimation();
 		bool isTypeAudio();

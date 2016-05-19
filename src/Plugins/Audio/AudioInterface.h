@@ -1,5 +1,5 @@
 /*
-* OALAudio
+* AudioInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,46 +15,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AUDIOPLAYBACK_H
-#define AUDIOPLAYBACK_H
+#ifndef AUDIOINTERFACE_H
+#define AUDIOINTERFACE_H
 
-#include <iostream>
-
-#ifdef __APPLE__
-	#include <OpenAL/al.h>
-	#include <OpenAL/alc.h>
-#else
-	#include <AL/al.h>
-	#include <AL/alc.h>
-#endif
-
-#include "../AudioInterface.h"
+#include "../PluginInterface.h"
 
 namespace Dream   {
 namespace Plugins {
 namespace Audio   {
-namespace OpenAL  {
 	
-	class OALAudio : public AudioInterface {
-	private:
-		ALCdevice*  mDevice;
-		ALCcontext* mContext;
+	class AudioInterface : public Dream::Plugins::PluginInterface {
 	public:
-		OALAudio(void);
-		~OALAudio(void);
-		bool init(void);
-		void update(Dream::Scene::Scene*);
-
-	protected:
-		ALuint generateBuffer();
-		void playSource(ALuint);
-		void stopSource(ALuint);
-		void pauseSource(ALuint);
-	}; // End of OALAudio
+		AudioInterface(void);
+		virtual ~AudioInterface(void) {};
+	}; // End of AudioInterface
 	
-} // End of OpenAL
-} // End of Audio
 } // End of Plugins
+} // End of Audio
 } // End of Dream
 
-#endif // End of AUDIOPLAYBACK_H
+#endif // End of AUDIOINTERFACE_H

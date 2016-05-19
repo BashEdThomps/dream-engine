@@ -18,7 +18,7 @@
 #ifndef PHYSICSWORLD_H
 #define PHYSICSWORLD_H
 
-#include "../../../Plugins/Interfaces/PhysicsInterface.h"
+#include "../PhysicsInterface.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
 #include <iostream>

@@ -1,5 +1,5 @@
 /*
-* OALAudio
+* Dream::Asset::AssetInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,46 +15,32 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AUDIOPLAYBACK_H
-#define AUDIOPLAYBACK_H
+#ifndef ASSETINSTANCE_H
+#define ASSETINSTANCE_H
 
+#include "AssetDefinition.h"
 #include <iostream>
 
-#ifdef __APPLE__
-	#include <OpenAL/al.h>
-	#include <OpenAL/alc.h>
-#else
-	#include <AL/al.h>
-	#include <AL/alc.h>
-#endif
+#define ASSET_UUID "uuid"
+#define ASSET_NAME "name"
 
-#include "../AudioInterface.h"
-
-namespace Dream   {
-namespace Plugins {
-namespace Audio   {
-namespace OpenAL  {
+namespace Dream {
+namespace Asset {
 	
-	class OALAudio : public AudioInterface {
+	class AssetInstance {
 	private:
-		ALCdevice*  mDevice;
-		ALCcontext* mContext;
+		std::string mUUID;
+		std::string mName;
 	public:
-		OALAudio(void);
-		~OALAudio(void);
-		bool init(void);
-		void update(Dream::Scene::Scene*);
-
-	protected:
-		ALuint generateBuffer();
-		void playSource(ALuint);
-		void stopSource(ALuint);
-		void pauseSource(ALuint);
-	}; // End of OALAudio
+		AssetInstance(Dream::Asset::AssetDefinition*);
+		virtual ~AssetInstance(void) {};
+		void setUUID(std::string);
+		std::string getUUID();
+		void setName(std::string);
+		std::string getName();
+	}; // End of AssetInstance
 	
-} // End of OpenAL
-} // End of Audio
-} // End of Plugins
+} // End of Asset
 } // End of Dream
 
-#endif // End of AUDIOPLAYBACK_H
+#endif // End of ASSETINSTANCE_H

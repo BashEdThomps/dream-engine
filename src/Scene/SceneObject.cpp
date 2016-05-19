@@ -175,7 +175,7 @@ namespace Scene {
 		return mPath;
 	}
 
-	void SceneObject::addAssetInstance(Dream::Asset::Instance::AssetInstance *assetInstance) {
+	void SceneObject::addAssetInstance(Dream::Asset::AssetInstance *assetInstance) {
        mAssetInstances.push_back(assetInstance);
     }
 	

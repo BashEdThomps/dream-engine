@@ -1,5 +1,5 @@
 /*
-* Dream::Scripting::ChaiScripting
+* Model
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,35 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHAISCRIPTING_H
-#define CHAISCRIPTING_H
+#ifndef OBJMODEL_H
+#define OBJMODEL_H
 
-#include "../ScriptingInterface.h"
-#include <chaiscript/chaiscript.hpp>
-#include <chaiscript/chaiscript_stdlib.hpp>
+#include "../../../AssetInstance.h"
+#include "tiny_obj_loader.h"
 
-namespace Dream     {
-namespace Plugins   {
-namespace Scripting {
-namespace Chai      {
+#define ASSET_FORMAT_WAVEFRONT  "obj"
+#define ASSET_FORMAT_MTL        "mtl"
+#define ASSET_FORMAT_OBJ        "obj"
+
+namespace Dream      {
+namespace Asset      {
+namespace Instances  {
+namespace Model      {
+namespace WaveFront  {
 	
-	class ChaiScripting : public ScriptingInterface {
+	class ObjModelInstance : public Dream::Asset::AssetInstance {
 	private:
-		chaiscript::ChaiScript *mChai;
+		std::string mObjPath;
+		std::string mMtlPath;
 	public:
-		ChaiScripting(void);
-		~ChaiScripting(void);
-
-		chaiscript::ChaiScript* getChaiEngine();
-
-		bool init();
-		void update(Dream::Scene::Scene*);
-	}; // End of ChaiScripting
+		ObjModelInstance(Dream::Asset::AssetDefinition*);
+		~ObjModelInstance(void);
+	}; // End of ObjModel
 	
-} // End of Chai
-} // End Scripting
-} // End of Plugins
+} // End of WaveFront
+} // End of Model
+} // End of Instance
+} // End of Asset
 } // End of Dream
 
-#endif // End of CHAISCRIPTING_H
+#endif // End of OBJMODEL_H

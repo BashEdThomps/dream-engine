@@ -1,5 +1,5 @@
 /*
-* OGLVideo
+* Dream::Asset::AssetInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,31 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OGLVIDEO_H
-#define OGLVIDEO_H
-
-#include "../VideoInterface.h"
-#include <GLFW/glfw3.h>
-#include <iostream>
+#include "AssetInstance.h"
 
 namespace Dream {
-	namespace Plugins {
-		namespace Video {
-			namespace OpenGL {
-				class OGLVideo : public VideoInterface {
-				private:
-					GLFWwindow *mWindow;
-				public:
-					OGLVideo(void);
-					~OGLVideo(void);
-					bool init(void);
-					void update(Dream::Scene::Scene*);
-				}; // End of OGLVideo
-			} // End of OpenGL
-		} // End of Video
-	} // End of Plugins
-} // End of Dream
+namespace Asset {
 
-#endif // End of OGLVIDEO_H
+	AssetInstance::AssetInstance(Dream::Asset::AssetDefinition* definition) {
+		setUUID(definition->getUUID());
+		setName(definition->getName());
+	}
+
+	void AssetInstance::setUUID(std::string uuid) {
+		mUUID = uuid;
+	}
+
+	std::string AssetInstance::getUUID() {
+		return mUUID;
+	}
+
+	void AssetInstance::setName(std::string name) {
+		mName = name;
+	}
+
+	std::string AssetInstance::getName() {
+		return mName;
+	}
+		
+} // End of Asset
+} // End of Dream

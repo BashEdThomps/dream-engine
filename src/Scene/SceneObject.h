@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "../JSON/json.hpp"
-#include "../Asset/Instance/AssetInstance.h"
+#include "../Asset/AssetInstance.h"
 
 #define NODE_X 0
 #define NODE_Y 1
@@ -36,7 +36,7 @@ namespace Scene {
 		SceneObject* mParent;
 		std::vector<SceneObject*> mChildren;
 		std::vector<std::string>  mAssetInstanceUUIDs;
-		std::vector<Dream::Asset::Instance::AssetInstance*> mAssetInstances;
+		std::vector<Dream::Asset::AssetInstance*> mAssetInstances;
 		std::string  mUUID;
 		std::string  mName;
 		std::string  mPath;
@@ -76,7 +76,7 @@ namespace Scene {
 		SceneObject* getParent();
 		void         generatePath();
 		std::string  getPath();
-		void addAssetInstance(Dream::Asset::Instance::AssetInstance*);
+		void addAssetInstance(Dream::Asset::AssetInstance*);
 		std::vector<std::string> getAssetInstanceUUIDVector();
 	}; // End of SceneObject
 	

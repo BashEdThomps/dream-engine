@@ -10,29 +10,32 @@
 #include "../Scene/Scene.h"
 #include "../Project/Project.h"
 
-#include "../Plugins/Interfaces/Interface.h"
-#include "../Plugins/Interfaces/AudioInterface.h"
-#include "../Plugins/Interfaces/ScriptingInterface.h"
-#include "../Plugins/Interfaces/PhysicsInterface.h"
-#include "../Plugins/Interfaces/InputInterface.h"
-#include "../Plugins/Interfaces/AnimationInterface.h"
+#include "../Plugins/PluginInterface.h"
+#include "../Plugins/Audio/AudioInterface.h"
+#include "../Plugins/Scripting/ScriptingInterface.h"
+#include "../Plugins/Physics/PhysicsInterface.h"
+#include "../Plugins/Input/InputInterface.h"
+#include "../Plugins/Video/VideoInterface.h"
 
 #include "../Plugins/Audio/OpenAL/OALAudio.h"
 #include "../Plugins/Physics/Bullet/BulletPhysics.h"
 #include "../Plugins/Scripting/v8/V8Scripting.h"
 #include "../Plugins/Scripting/Chai/ChaiScripting.h"
 #include "../Plugins/Video/OpenGL/OGLVideo.h"
-#include "../Plugins/Animation/DreamAnimation.h"
-#include "../Plugins/Input/GLFWInput.h"
+#include "../Plugins/Animation/Dream/DreamAnimation.h"
+#include "../Plugins/Input/GLFW/GLFWInput.h"
 
-#include "../Asset/Instance/AssetInstance.h"
+#include "../Asset/AssetInstance.h"
+#include "../Asset/AssetManager.h"
 
 namespace Dream {
+	
 	class Dream {
 	protected:
 		// Project
-		Project      *mProject;
-		Scene::Scene *mCurrentScene;
+		Project::Project    *mProject;
+		Scene::Scene        *mCurrentScene;
+		Asset::AssetManager *mAssetManager;
 		
 		// Plugins
 		Plugins::Audio::AudioInterface         *mAudioInterface;
@@ -54,11 +57,12 @@ namespace Dream {
 		bool loadProjectFromFileReader(std::string projectPath, Util::FileReader*);
 		bool loadScene(Scene::Scene*);
 
-		Project* getProject(void);
-		void setProject(Project*);
+		Project::Project* getProject(void);
+		void setProject(Project::Project*);
 		int runProject();
 		bool isProjectLoaded();
 
+		bool createAssetManager();
 		bool createInterfaces();
 		bool createScriptingInterfaces();
 		bool createPhysicsInterfaces();
@@ -67,17 +71,10 @@ namespace Dream {
 		bool createInputInterfaces();
 		bool createAnimationInterfaces();
 		
-		bool createAssetInstances();
-		Asset::Instance::AssetInstance* createAssetInstance(Asset::AssetDefinition*);
-		Asset::Instance::AssetInstance* createAssetInstanceFromUUID(std::string);
 		
-		Asset::Instance::AssetInstance* createAnimationAssetInstance(Asset::AssetDefinition*);
-		Asset::Instance::AssetInstance* createAudioAssetInstance(Asset::AssetDefinition*);
-		Asset::Instance::AssetInstance* createModelAssetInstance(Asset::AssetDefinition*);
-		Asset::Instance::AssetInstance* createScriptAssetInstance(Asset::AssetDefinition*);
-	
 		void updateAll();
 	};
-}
+	
+} // End of Dream
 
 #endif // DREAM_H

@@ -54,35 +54,49 @@ namespace Asset {
 	}
 		
 	void AssetDefinition::setUUID(std::string uuid) {
-		mAttributes.insert(mapPair(ASSET_UUID, uuid));
+		addAttribute(ASSET_UUID, uuid);
+	}
+	
+	void AssetDefinition::addAttribute(std::string key, std::string value) {
+		mAttributes.insert(mapPair(key,value));
+	}
+	
+	std::string AssetDefinition::getAttribute(std::string attribute) {
+		try {
+			return mAttributes.at(attribute);
+		} catch (std::exception ex) {
+			std::cerr << "AssetDefinition: Unable to get attribute: " << attribute << std::endl;
+			std::cerr << "Exception: " << ex.what() << std::endl;
+			return "";
+		}
 	}
 
 	std::string AssetDefinition::getUUID() {
-		return mAttributes.at(ASSET_UUID);
+		return getAttribute(ASSET_UUID);
 	}
 
 	void AssetDefinition::setName(std::string name) {
-		mAttributes.insert(mapPair(ASSET_NAME,name));
+		addAttribute(ASSET_NAME,name);
 	}
 
 	std::string AssetDefinition::getName() {
-		return mAttributes.at(ASSET_NAME);
+		return getAttribute(ASSET_NAME);
 	}
 
 	void AssetDefinition::setType(std::string type) {
-		mAttributes.insert(mapPair(ASSET_TYPE,type));
+		addAttribute(ASSET_TYPE,type);
 	}
 
 	std::string AssetDefinition::getType() {
-		return mAttributes.at(ASSET_TYPE);
+		return getAttribute(ASSET_TYPE);
 	}
 
 	void AssetDefinition::setFormat(std::string format) {
-		mAttributes.insert(mapPair(ASSET_FORMAT,format));
+		addAttribute(ASSET_FORMAT,format);
 	}
 
 	std::string AssetDefinition::getFormat() {
-		return mAttributes.at(ASSET_FORMAT);
+		return getAttribute(ASSET_FORMAT);
 	}
 	
 	

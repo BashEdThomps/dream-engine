@@ -1,5 +1,5 @@
 /*
-* Dream::Scripting::ChaiScripting
+* Chai::ChaiScriptInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,29 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHAISCRIPTING_H
-#define CHAISCRIPTING_H
+#ifndef CHAISCRIPTINSTANCE_H
+#define CHAISCRIPTINSTANCE_H
 
-#include "../ScriptingInterface.h"
+#include <iostream>
 #include <chaiscript/chaiscript.hpp>
-#include <chaiscript/chaiscript_stdlib.hpp>
+#include "../../../AssetInstance.h"
 
-namespace Dream     {
-namespace Plugins   {
-namespace Scripting {
-namespace Chai      {
-	
-	class ChaiScripting : public ScriptingInterface {
-	private:
-		chaiscript::ChaiScript *mChai;
-	public:
-		ChaiScripting(void);
-		~ChaiScripting(void);
-
-		chaiscript::ChaiScript* getChaiEngine();
-
-		bool init();
-		void update(Dream::Scene::Scene*);
-	}; // End of ChaiScripting
-	
-} // End of Chai
-} // End Scripting
-} // End of Plugins
+namespace Dream      {
+namespace Asset      {
+namespace Instances  {
+namespace Script     {
+namespace ChaiScript {
+    
+    class ChaiScriptInstance : public Dream::Asset::AssetInstance {
+    public:
+		ChaiScriptInstance(Dream::Asset::AssetDefinition*);
+        ~ChaiScriptInstance(void);
+    }; // End of ChaiScriptInstance
+    
+} // End of ChaiScript
+} // End of Script
+} // End of Instance
+} // End of Asset
 } // End of Dream
 
-#endif // End of CHAISCRIPTING_H
+#endif // End of CHAISCRIPT_H

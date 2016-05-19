@@ -1,5 +1,5 @@
 /*
-* Dream::Project
+* Dream::Project::Project
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,10 @@
 */
 
 #include "Project.h"
-namespace Dream {
 
+namespace Dream {
+namespace Project {
+	
 	Project::Project(void) {
 
 	}
@@ -270,4 +272,15 @@ namespace Dream {
 		}
 		return retval;
 	}
+	
+
+	void Project::setActiveScene(Scene::Scene* scene) {
+		mActiveScene = scene;
+	}
+	
+	Scene::Scene* Project::getActiveScene() {
+		return mActiveScene;
+	}
+	
+} // End of Project
 } // End of Dream

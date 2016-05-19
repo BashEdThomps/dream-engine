@@ -1,5 +1,5 @@
 /*
-* OGLVideo
+* Dream::Asset::Model::Wavefront::ObjModel
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,24 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OGLVIDEO_H
-#define OGLVIDEO_H
+#include "ObjModelInstance.h"
 
-#include "../VideoInterface.h"
-#include <GLFW/glfw3.h>
-#include <iostream>
+#define TINYOBJLOADER_IMPLEMENTATION
 
-namespace Dream {
-	namespace Plugins {
-		namespace Video {
-			namespace OpenGL {
-				class OGLVideo : public VideoInterface {
-				private:
-					GLFWwindow *mWindow;
-				public:
-					OGLVideo(void);
-					~OGLVideo(void);
-					bool init(void);
-					void update(Dream::Scene::Scene*);
-				}; // End of OGLVideo
-			} // End of OpenGL
-		} // End of Video
-	} // End of Plugins
-} // End of Dream
+namespace Dream      {
+namespace Asset      {
+namespace Instances  {
+namespace Model      {
+namespace WaveFront  {
 
-#endif // End of OGLVIDEO_H
+	ObjModelInstance::ObjModelInstance(Dream::Asset::AssetDefinition* definition) :
+		Dream::Asset::AssetInstance(definition) {
+	}
+
+	ObjModelInstance::~ObjModelInstance(void) {}
+    
+} // End of WaveFront
+} // End of Model
+} // End of Instance
+} // End of Asset
+} // End of DreamFileFormats

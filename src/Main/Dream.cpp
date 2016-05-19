@@ -8,8 +8,9 @@ namespace Dream {
 		mVideoInterface     = NULL;
 		mPhysicsInterface   = NULL;
 		
-		mCurrentScene       = NULL;
-		mProject            = NULL;
+		mCurrentScene = NULL;
+		mProject      = NULL;
+		mAssetManager = NULL;
 		
 		mRunning = false;
 		mError   = false;
@@ -17,11 +18,11 @@ namespace Dream {
 
 	Dream::~Dream() {}
 
-	Project* Dream::getProject() {
+	Project::Project* Dream::getProject() {
 		return mProject;
 	}
 
-	void Dream::setProject(Project* project) {
+	void Dream::setProject(Project::Project* project) {
 		mProject = project;
 	}
 
@@ -34,8 +35,23 @@ namespace Dream {
 		std::string projectJsonStr = reader->getContentsAsString();
 		std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
 		nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
-		setProject(new Project(projectPath, projectJson));
+		setProject(new Project::Project(projectPath, projectJson));
+		createAssetManager();
 		return isProjectLoaded();
+	}
+	
+	bool Dream::createAssetManager() {
+		if (mProject == NULL) {
+			std::cerr << "Dream: Cannot create Asset Manager without a Project." << std::endl;
+			return false;
+		}
+		
+		if (mAssetManager != NULL) {
+			std::cout << "Dream: Destroying existing Asset Manager." << std::endl;
+			delete mAssetManager;
+		}
+		mAssetManager = new Asset::AssetManager(getProject());
+		return mAssetManager != NULL;
 	}
 
 	bool Dream::loadFromArgumentParser(ArgumentParser *parser) {
@@ -183,7 +199,7 @@ namespace Dream {
 	bool Dream::createInputInterfaces() {
 		if (mProject->isOpenGLEnabled()) {
 			if (mInputInterface == NULL) {
-				mInputInterface = new Plugins::Input::GLFWInput();
+				mInputInterface = new Plugins::Input::GLFW::GLFWInput();
 				if (mInputInterface->init()) {
 					return true;
 				} else {
@@ -213,101 +229,14 @@ namespace Dream {
 			return false;
 		}
 	
-		if (!createAssetInstances()) {
+		if (!mAssetManager->createAssetInstances()) {
 			std::cerr << "Dream: Fatal Error, unable to create asset instances" << std::endl;
 			return false;
 		}
 		
 		return true;
 	}
-	
-	bool Dream::createAssetInstances() {
-		std::vector<Scene::SceneObject*> scenegraph = mCurrentScene->getScenegraphVector();
-		std::vector<Scene::SceneObject*>::iterator scenegraphIterator;
-		
-		std::vector<std::string> assetInstanceUUIDVector;
-		std::vector<std::string>::iterator assetInstanceUUIDIterator;
-		
-		for (scenegraphIterator = scenegraph.begin();
-			 scenegraphIterator != scenegraph.end(); scenegraphIterator++) {
-			
-			Scene::SceneObject* currentSceneObject = (*scenegraphIterator);
-			assetInstanceUUIDVector = currentSceneObject->getAssetInstanceUUIDVector();
-			
-			for (assetInstanceUUIDIterator = assetInstanceUUIDVector.begin();
-				 assetInstanceUUIDIterator != assetInstanceUUIDVector.end();
-				 assetInstanceUUIDIterator++) {
-				
-				std::string assetDefinitionUUID = *assetInstanceUUIDIterator;
-				Asset::Instance::AssetInstance* newAsset = createAssetInstanceFromUUID(assetDefinitionUUID);
-				if (newAsset == NULL) {
-					std::cerr << "Dream: Unable to instanciate asset " << assetDefinitionUUID << std::endl;
-					return false;
-				} else {
-					currentSceneObject->addAssetInstance(newAsset);
-				}
-			}
-		}
-		return true;
-	}
-	
-	Asset::Instance::AssetInstance* Dream::createAssetInstanceFromUUID(std::string uuid) {
-		Asset::AssetDefinition* assetDefinition = mProject->getAssetDefinitionByUUID(uuid);
-		return createAssetInstance(assetDefinition);
-	}
-	
-	Asset::Instance::AssetInstance* Dream::createAssetInstance(Asset::AssetDefinition* definition) {
-		Asset::Instance::AssetInstance* retval = NULL;
-		if (definition->isTypeAnimation()) {
-			retval = createAnimationAssetInstance(definition);
-		} else if (definition->isTypeAudio()) {
-			retval = createAudioAssetInstance(definition);
-		} else if (definition->isTypeModel()) {
-			retval = createModelAssetInstance(definition);
-		} else if (definition->isTypeScript()){
-			retval = createScriptAssetInstance(definition);
-		}
-		return retval;
-	}
-	
-	Asset::Instance::AssetInstance* Dream::createAnimationAssetInstance(Asset::AssetDefinition* definition) {
-		Asset::Instance::AssetInstance* retval = NULL;
-		if (definition->isAnimationFormatDream()) {
-			retval = new Asset::Instance::Animation::AnimationInstance(definition);
-		}
-		return retval;
-	}
-	
-	
-	Asset::Instance::AssetInstance* Dream::createAudioAssetInstance(Asset::AssetDefinition* definition) {
-		Asset::Instance::AssetInstance* retval = NULL;
-		if (definition->isAudioFormatOgg()) {
-			retval = new Asset::Instance::Audio::Ogg::OggAudioInstance(definition);
-		} else if (definition->isAudioFormatWav()) {
-			retval = new Asset::Instance::Audio::Wav::WavAudioInstance(definition);
-		}
-		return retval;
-	}
-	
-	Asset::Instance::AssetInstance* Dream::createModelAssetInstance(Asset::AssetDefinition* definition) {
-		Asset::Instance::AssetInstance* retval = NULL;
-		if (definition->isModelFormatWaveFront()) {
-			retval = new Asset::Instance::Model::WaveFront::ObjModelInstance(definition);
-		}
-		return retval;
-	}
-	
-	Asset::Instance::AssetInstance* Dream::createScriptAssetInstance(Asset::AssetDefinition* definition) {
-		Asset::Instance::AssetInstance* retval = NULL;
-		if (definition->isScriptFormatJavaScript()) {
-			retval = new Asset::Instance::Script::JavaScript::JavaScriptInstance(definition);
-		} else if (definition->isScriptFormatChaiScript()) {
-			retval = new Asset::Instance::Script::ChaiScript::ChaiScriptInstance(definition,
-						dynamic_cast<Plugins::Scripting::Chai::ChaiScripting*>(mScriptingInterface)->getChaiEngine());
-		}
-		return retval;
-	}
-	
+
 	int Dream::runProject() {
 		mError = !createInterfaces();
 		
