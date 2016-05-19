@@ -8,10 +8,10 @@ namespace Dream   {
 namespace Plugins {
 namespace Input   {
 	
-	class InputInterface : public Dream::Plugins::PluginInterface {
+	class InputPluginInterface : public Dream::Plugins::PluginInterface {
 	public:
-		InputInterface();
-		~InputInterface();
+		InputPluginInterface();
+		~InputPluginInterface();
 	}; // End of InputInterface
 	
 } // End of Input

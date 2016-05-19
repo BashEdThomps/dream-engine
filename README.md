@@ -1,42 +1,38 @@
 ## Dream
 
-Dream is a modular and utilitarian 3D Engine. If you don't need a feature, don't
-add it to your project! This allows for better conservation of runtime resources.
+Dream is a modular and utilitarian 3D Engine. 
 
 ### Modularity
 
-Dream works by allowing you to implement high-level interfaces, where an
-interface may be to a graphics library, input device or other fancy piece of I/O
-tech. Those listed below are included as part of Dream. There is just one rule I
-ask that you follow when implementing an extension... **use open software and
-formats!**
+Dream allows you to implement plug-ins for your favorite tech. A plug-in may be to a graphics library, input device or other fancy piece of I/O tech. Those listed below are included as part of Dream. I've chosen to utilise open software and formats for obvious reasons.
 
-* **AudioInterface**
+* **Animation**
+    * DreamAnimation
+* **Audio**
     * OpenAL
-* **GraphicsInterface**
-    * OpenGL
+* **Graphics**
+    * OpenGL (GLFW)
     * Vulkan (soon)
-* **InputInterface**
-    * ...
-* **PhysicsInterface**
+* **Input**
+    * GLFW
+* **Physics**
     * Bullet2
     * Bullet3 (soon)
-* **ScriptingInterface**
-    * v8 (Google's JavaScript Engine)
+* **Scripting**
+    * v8 (JavaScripte)
+    * ChaiScript
 
-### Dream Project Information
-* JSON Project Structure.
-* Scriptable in JavaScript
-* Supported Audio Formats
-    * Ogg
-    * Wav
-* Supported Model Formats
-    * Wavefront OBJ
+### Project Files
+
+Dream implements it's own project structure with the following key attributes
+
+* JSON Project definition file.
+* Accompanying structured assets directory.
 
 ### DreamTool - Project Editor
-* Web Based
-* Cross Platform
-* Implemented with NodeJS
-* Koa
-* AngularUI Bootstrap
+* Web Based - May move to electron in future.
+* Hosted Locally.
+* Implemented with NodeJS.
+* Koa.
+* AngularUI Bootstrap.
 * And Loads of Angular Plug-Ins.

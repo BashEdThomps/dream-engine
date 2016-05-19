@@ -27,14 +27,14 @@
 namespace Dream {
 	namespace Plugins {
 		namespace Video {
-			class VideoInterface : public Dream::Plugins::PluginInterface {
+			class VideoPluginInterface : public Dream::Plugins::PluginInterface {
             protected:
                 int mScreenWidth;
                 int mScreenHeight;
                 std::string mScreenName;
 			public:
-				VideoInterface(void);
-				virtual ~VideoInterface(void) {};
+				VideoPluginInterface(void);
+				virtual ~VideoPluginInterface(void) {};
                 
                 void setScreenWidth(int);
                 int  getScreenWidth();

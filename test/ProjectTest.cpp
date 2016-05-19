@@ -19,89 +19,84 @@
 
 #include "../src/Project/Project.h"
 #include "../src/Scene/Scene.h"
-#include "../src/Asset/Asset.h"
-#include "Asset/TestAssetImpl.h"
+#include "../src/Asset/AssetDefinition.h"
 
 namespace Dream {
-	namespace Test {
-		ProjectTest::ProjectTest(void) : Dream::Unit::Unit("Dream::Project") {
-		}
+namespace Test {
+	
+	ProjectTest::ProjectTest(void) : Dream::Unit::Unit("Dream::Project") {}
+	ProjectTest::~ProjectTest(void) {}
 
-		ProjectTest::~ProjectTest(void) {
-		}
+	void ProjectTest::run(void) {
+		header();
+		testProjectCanStoreUUID();
+		testProjectCanStoreName();
+		testProjectCanStoreAuthor();
+		testProjectCanStoreDescription();
+		testProjectCanStoreMultipleAssets();
+		testProjectCanStoreMultipleScenes();
+	}
 
-		void ProjectTest::run(void) {
-			header();
-			testProjectCanStoreUUID();
-			testProjectCanStoreName();
-			testProjectCanStoreAuthor();
-			testProjectCanStoreDescription();
-			testProjectCanStoreMultipleAssets();
-			testProjectCanStoreMultipleScenes();
-		}
+	void ProjectTest::testProjectCanStoreUUID() {
+		Project::Project p;
+		std::string uuid = "12ab-34cd-56ef-78af";
+		p.setUUID(uuid);
+		assertTrue("Stores UUID",p.getUUID().compare(uuid) == 0);
+	}
 
-		void ProjectTest::testProjectCanStoreUUID() {
-			Project p;
-			std::string uuid = "12ab-34cd-56ef-78af";
-			p.setUUID(uuid);
-			assertTrue("Stores UUID",p.getUUID().compare(uuid) == 0);
-		}
+	void ProjectTest::testProjectCanStoreName() {
+		Project::Project p;
+		std::string name = "ProjectName";
+		p.setName(name);
+		assertZero("Project name is stored", name.compare(p.getName()));
+	}
 
-		void ProjectTest::testProjectCanStoreName() {
-			Project p;
-			std::string name = "ProjectName";
-			p.setName(name);
-			assertZero("Project name is stored", name.compare(p.getName()));
-		}
+	void ProjectTest::testProjectCanStoreAuthor(void) {
+		Project::Project p;
+		std::string author = "Project Author";
+		p.setAuthor(author);
+		assertZero("Project author is stored",author.compare(p.getAuthor()));
+	}
 
-		void ProjectTest::testProjectCanStoreAuthor(void) {
-			Project p;
-			std::string author = "Project Author";
-			p.setAuthor(author);
-			assertZero("Project author is stored",author.compare(p.getAuthor()));
-		}
+	void ProjectTest::testProjectCanStoreDescription(void) {
+		Project::Project p;
+		std::string description = "Project Description";
+		p.setDescription(description);
+		assertZero("Project description is stored",description.compare(p.getDescription()));
+	}
 
-		void ProjectTest::testProjectCanStoreDescription(void) {
-			Project p;
-			std::string description = "Project Description";
-			p.setDescription(description);
-			assertZero("Project description is stored",description.compare(p.getDescription()));
-		}
+	void ProjectTest::testProjectCanStoreMultipleScenes() {
+		Project::Project p;
+		Dream::Scene::Scene a,b,c;
+		a.setName("A");
+		b.setName("B");
+		c.setName("C");
 
-		void ProjectTest::testProjectCanStoreMultipleScenes() {
-			Project p;
-			Dream::Scene::Scene a,b,c;
-			a.setName("A");
-			b.setName("B");
-			c.setName("C");
+		p.addScene(&a);
+		p.addScene(&b);
+		p.addScene(&c);
 
-			p.addScene(&a);
-			p.addScene(&b);
-			p.addScene(&c);
+		assertTrue("Project has 3 scenes",p.getNumberOfScenes() == 3);
+	}
 
-			assertTrue("Project has 3 scenes",p.getNumberOfScenes() == 3);
-		}
+	void ProjectTest::testProjectCanStoreMultipleAssets() {
+		Project::Project p;
+		Dream::Asset::AssetDefinition a,b,c;
+		a.setName("A");
+		b.setName("B");
+		c.setName("C");
+		p.addAssetDefinition(&a);
+		p.addAssetDefinition(&b);
+		p.addAssetDefinition(&c);
+		assertEqual("Project has 3 AssetDefinitions", 3, p.getNumberOfAssetDefinitions());
+	}
 
-		void ProjectTest::testProjectCanStoreMultipleAssets() {
-			Project p;
-
-			Dream::Asset::Test::TestAssetImpl a,b,c;
-			a.setName("A");
-			b.setName("B");
-			c.setName("C");
-
-			p.addAsset(&a);
-			p.addAsset(&b);
-			p.addAsset(&c);
-
-			assertEqual("Project has 3 assets", 3, p.getNumberOfAssets());
-		}
-
-		void ProjectTest::testProjectCanStoreDirectory() {
-			std::string directory = "/home/ash/.dreamtool/0123-4567-89ab-cdef";
-			Project p;
-			p.setProjectPath(directory);
-			assertZero("Project can store directory",p.getProjectPath().compare(directory));
-		}
-	} // End of Test
+	void ProjectTest::testProjectCanStoreDirectory() {
+		std::string directory = "/home/ash/.dreamtool/0123-4567-89ab-cdef";
+		Project::Project p;
+		p.setProjectPath(directory);
+		assertZero("Project can store directory",p.getProjectPath().compare(directory));
+	}
+	
+} // End of Test
 } // End of Dream

@@ -1,5 +1,5 @@
 /*
-* Dream::Scripting::ScriptingInterface
+* Dream::Plugins::Input::InputInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,23 +15,15 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCRIPTINGINTERFACE_H
-#define SCRIPTINGINTERFACE_H
+#include "InputPluginInterface.h"
 
-#include "../PluginInterface.h"
-
-namespace Dream {
+namespace Dream   {
 namespace Plugins {
-namespace Scripting {
+namespace Input   {
 	
-	class ScriptingInterface : public Dream::Plugins::PluginInterface {
-	public:
-		ScriptingInterface(void);
-		virtual ~ScriptingInterface(void) {}
-	}; // End of ScriptingInterface
+	InputPluginInterface::InputPluginInterface  () : Dream::Plugins::PluginInterface() {}
+    InputPluginInterface::~InputPluginInterface () {}
 	
-} // End of Scripting
-}// End of Plugins
-}// End of Dream
-
-#endif // End of SCRIPTINGINTERFACE_H
+} // End of Input
+} // End of Plugins
+} // End of Dream

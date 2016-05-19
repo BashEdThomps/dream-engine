@@ -39,7 +39,7 @@ namespace Test {
 
 	void DreamTest::testCanHoldProject() {
 		Dream dream;
-		dream.setProject(new Project());
+		dream.setProject(new Project::Project());
 		assertNotNull("Dream can hold Project",dream.getProject());
 	}
 

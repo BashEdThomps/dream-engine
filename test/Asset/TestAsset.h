@@ -19,22 +19,23 @@
 #define TESTASSET_H
 
 #include "../../src/Unit/Unit.h"
-#include "../../src/Asset/Asset.h"
-#include "TestAssetImpl.h"
+#include "../../src/Asset/AssetDefinition.h"
 
 namespace Dream {
-	namespace Asset {
-		namespace Test {
-			class TestAsset : public Dream::Unit::Unit {
-			public:
-				TestAsset(void);
-				~TestAsset(void);
-				void run();
-				void testAssetCanStoreUUID();
-				void testAssetCanStoreName();
-			}; // End of TestAsset
-		} // End of Test
-	} // End of Asset
+namespace Asset {
+namespace Test {
+	
+	class TestAsset : public Dream::Unit::Unit {
+	public:
+		TestAsset(void);
+		~TestAsset(void);
+		void run();
+		void testAssetCanStoreUUID();
+		void testAssetCanStoreName();
+	}; // End of TestAsset
+	
+} // End of Test
+} // End of Asset
 } // End of Dream
 
 #endif // End of TESTASSET_H

@@ -22,7 +22,7 @@ namespace Plugins   {
 namespace Scripting {
 namespace Chai      {
 	
-	ChaiScripting::ChaiScripting(void) : ScriptingInterface() {
+	ChaiScripting::ChaiScripting(void) : ScriptingPluginInterface() {
 		mChai = NULL;
 	}
 				

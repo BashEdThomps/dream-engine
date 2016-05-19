@@ -13,7 +13,7 @@ namespace Plugins {
 namespace Input   {
 namespace GLFW    {
 	
-	GLFWInput::GLFWInput() : Dream::Plugins::Input::InputInterface() {
+	GLFWInput::GLFWInput() : Dream::Plugins::Input::InputPluginInterface() {
 		
 	}
 	

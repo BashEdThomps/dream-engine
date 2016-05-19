@@ -122,6 +122,8 @@ namespace Project {
 		
 		void setActiveScene(Scene::Scene*);
 		Scene::Scene* getActiveScene();
+		bool hasActiveScene();
+		bool initActiveScene();
 		
 	}; // End of Project
 	

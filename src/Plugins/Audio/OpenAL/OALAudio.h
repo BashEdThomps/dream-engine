@@ -28,14 +28,14 @@
 	#include <AL/alc.h>
 #endif
 
-#include "../AudioInterface.h"
+#include "../AudioPluginInterface.h"
 
 namespace Dream   {
 namespace Plugins {
 namespace Audio   {
 namespace OpenAL  {
 	
-	class OALAudio : public AudioInterface {
+	class OALAudio : public AudioPluginInterface {
 	private:
 		ALCdevice*  mDevice;
 		ALCcontext* mContext;

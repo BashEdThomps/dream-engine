@@ -22,7 +22,7 @@ namespace Dream {
 	namespace Plugins {
 		namespace Audio {
 			namespace OpenAL {
-				OALAudio::OALAudio(void) : AudioInterface() {}
+				OALAudio::OALAudio(void) : AudioPluginInterface() {}
 				OALAudio::~OALAudio(void) {}
 
 				bool OALAudio::init() {

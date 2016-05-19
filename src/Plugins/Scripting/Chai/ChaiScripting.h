@@ -18,7 +18,7 @@
 #ifndef CHAISCRIPTING_H
 #define CHAISCRIPTING_H
 
-#include "../ScriptingInterface.h"
+#include "../ScriptingPluginInterface.h"
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
 
@@ -27,7 +27,7 @@ namespace Plugins   {
 namespace Scripting {
 namespace Chai      {
 	
-	class ChaiScripting : public ScriptingInterface {
+	class ChaiScripting : public ScriptingPluginInterface {
 	private:
 		chaiscript::ChaiScript *mChai;
 	public:

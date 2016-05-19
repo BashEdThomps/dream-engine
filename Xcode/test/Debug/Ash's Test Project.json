@@ -14,7 +14,7 @@
         "objects": [{
             "uuid": "83d4-3300-f140-6774",
             "name": "Test Scene Object",
-            "resourceInstances": ["8ff5-318b-9354-1b9e"],
+            "assetInstances": ["8ff5-318b-9354-1b9e"],
             "children": []
         }],
         "animationEnabled": true,
@@ -22,7 +22,7 @@
         "audioEnabled": false,
         "inputEnabled": false
     }],
-    "resources": [{
+    "assets": [{
         "uuid"   : "8ff5-318b-9354-1b9e",
         "name"   : "Tux",
         "type"   : "Model",

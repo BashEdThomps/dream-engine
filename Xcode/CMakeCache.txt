@@ -139,7 +139,7 @@ CMAKE_OSX_DEPLOYMENT_TARGET:STRING=
 CMAKE_OSX_SYSROOT:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=dream
+CMAKE_PROJECT_NAME:STATIC=Dream
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib
@@ -192,6 +192,12 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Dependencies for the target
 DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/usr/local/lib/libv8.dylib;general;/usr/local/lib/libv8_base.a;general;/usr/local/lib/libv8_libbase.a;general;/usr/local/lib/libv8_libplatform.a;general;/usr/local/lib/libv8_nosnapshot.a;general;/usr/local/lib/libicuuc.dylib;general;/usr/local/lib/libicui18n.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
+
+//Value Computed by CMake
+Dream_BINARY_DIR:STATIC=/Users/Ashley/Software/Dream/Xcode
+
+//Value Computed by CMake
+Dream_SOURCE_DIR:STATIC=/Users/Ashley/Software/Dream
 
 //The directory where GLFW/glfw3.h resides
 GLFW_INCLUDE_DIR:PATH=/usr/local/include
@@ -386,6 +392,8 @@ GLFW_INCLUDE_DIR-ADVANCED:INTERNAL=1
 GLFW_cocoa_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: GLFW_glfw_LIBRARY
 GLFW_glfw_LIBRARY-ADVANCED:INTERNAL=1
+//Stored Xcode object GUID
+PROJECT_Dream_GUID_CMAKE:INTERNAL=F81AF5709E3540D6ACC01622
 //Stored Xcode object GUID
 PROJECT_dream_GUID_CMAKE:INTERNAL=200930EE9F644D8AA718AC87
 //Stored Xcode object GUID

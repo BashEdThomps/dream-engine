@@ -1,5 +1,5 @@
 /*
-* TestAssetImpl
+* Dream::Scripting::ScriptingInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTASSETIMPL_H
-#define TESTASSETIMPL_H
-
-#include "../../src/Asset/Asset.h"
+#include "ScriptingPluginInterface.h"
 
 namespace Dream {
-	namespace Asset {
-		namespace Test {
-			class TestAssetImpl : public Dream::Asset::Asset {
-			public:
-				TestAssetImpl();
-				~TestAssetImpl();
-			};
-		}
-	}
+	namespace Plugins {
+		namespace Scripting {
+			ScriptingPluginInterface::ScriptingPluginInterface(void) {
+			}
+		} // End of Scripting
+	} // End of Plugins
 } // End of Dream
-
-#endif // End of TESTASSETIMPL_H

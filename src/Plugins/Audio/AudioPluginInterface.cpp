@@ -1,5 +1,5 @@
 /*
-* TestAssetImpl
+* AudioInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,13 +15,14 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "TestAssetImpl.h"
+#include "AudioPluginInterface.h"
 
-namespace Dream {
-	namespace Asset {
-		namespace Test {
-			TestAssetImpl::TestAssetImpl() : Dream::Asset::Asset() {}
-			TestAssetImpl::~TestAssetImpl(void) {}
-		}
-	}
+namespace Dream   {
+namespace Plugins {
+namespace Audio   {
+	
+	AudioPluginInterface::AudioPluginInterface(void) : Dream::Plugins::PluginInterface() {}
+	
+} // End of Audio
+} // End of Plugins
 } // End of Dream

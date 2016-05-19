@@ -15,37 +15,37 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "VideoInterface.h"
+#include "VideoPluginInterface.h"
 
 namespace Dream {
 	namespace Plugins {
 		namespace Video {
-            VideoInterface::VideoInterface(void) : Dream::Plugins::PluginInterface() {
+            VideoPluginInterface::VideoPluginInterface(void) : Dream::Plugins::PluginInterface() {
                 setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
                 setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
             }
             
-            void VideoInterface::setScreenWidth(int width) {
+            void VideoPluginInterface::setScreenWidth(int width) {
                 mScreenWidth = width;
             }
             
-            int  VideoInterface::getScreenWidth() {
+            int  VideoPluginInterface::getScreenWidth() {
                 return mScreenWidth;
             }
                 
-            void VideoInterface::setScreenHeight(int height) {
+            void VideoPluginInterface::setScreenHeight(int height) {
                 mScreenHeight = height;
             }
             
-            int  VideoInterface::getScreenHeight() {
+            int  VideoPluginInterface::getScreenHeight() {
                 return mScreenHeight;
             }
                 
-            void VideoInterface::setScreenName(std::string name) {
+            void VideoPluginInterface::setScreenName(std::string name) {
                 mScreenName = name;
             }
             
-            std::string VideoInterface::getScreenName() {
+            std::string VideoPluginInterface::getScreenName() {
                 return mScreenName;
             }
                 

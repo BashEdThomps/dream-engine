@@ -1,5 +1,5 @@
 /*
-* AudioInterface
+* PhysicsInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,14 +15,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "AudioInterface.h"
+#include "PhysicsPluginInterface.h"
 
-namespace Dream   {
+namespace Dream {
 namespace Plugins {
-namespace Audio   {
-	
-	AudioInterface::AudioInterface(void) : Dream::Plugins::PluginInterface() {}
-	
-} // End of Audio
+namespace Physics {
+	PhysicsPluginInterface::PhysicsPluginInterface(void) : Dream::Plugins::PluginInterface() {}
+} // End of Physics
 } // End of Plugins
 } // End of Dream

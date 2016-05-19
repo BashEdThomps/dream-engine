@@ -1,5 +1,5 @@
 /*
-* Dream::Plugins::Input::InputInterface
+* AudioInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,15 +15,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "InputInterface.h"
+#ifndef AUDIOINTERFACE_H
+#define AUDIOINTERFACE_H
+
+#include "../PluginInterface.h"
 
 namespace Dream   {
 namespace Plugins {
-namespace Input   {
+namespace Audio   {
 	
-	InputInterface::InputInterface  () : Dream::Plugins::PluginInterface() {}
-    InputInterface::~InputInterface () {}
+	class AudioPluginInterface : public Dream::Plugins::PluginInterface {
+	public:
+		AudioPluginInterface(void);
+		virtual ~AudioPluginInterface(void) {};
+	}; // End of AudioPluginInterface
 	
-} // End of Input
 } // End of Plugins
+} // End of Audio
 } // End of Dream
+
+#endif // End of AUDIOINTERFACE_H

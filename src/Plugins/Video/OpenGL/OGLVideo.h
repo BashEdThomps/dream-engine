@@ -18,26 +18,28 @@
 #ifndef OGLVIDEO_H
 #define OGLVIDEO_H
 
-#include "../VideoInterface.h"
+#include "../VideoPluginInterface.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 
 namespace Dream {
-	namespace Plugins {
-		namespace Video {
-			namespace OpenGL {
-				class OGLVideo : public VideoInterface {
-				private:
-					GLFWwindow *mWindow;
-				public:
-					OGLVideo(void);
-					~OGLVideo(void);
-					bool init(void);
-					void update(Dream::Scene::Scene*);
-				}; // End of OGLVideo
-			} // End of OpenGL
-		} // End of Video
-	} // End of Plugins
+namespace Plugins {
+namespace Video {
+namespace OpenGL {
+	
+	class OGLVideo : public VideoPluginInterface {
+	private:
+		GLFWwindow *mWindow;
+	public:
+		OGLVideo(void);
+		~OGLVideo(void);
+		bool init(void);
+		void update(Dream::Scene::Scene*);
+	}; // End of OGLVideo
+	
+} // End of OpenGL
+} // End of Video
+} // End of Plugins
 } // End of Dream
 
 #endif // End of OGLVIDEO_H

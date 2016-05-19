@@ -16,7 +16,7 @@
 */
 
 #include "TestFrameDelta.h"
-#include "../../../src/Asset/Instance/Animation/Frame.h"
+#include "../../../src/Asset/Instances/Animation/Dream/Frame.h"
 
 namespace Dream {
 	namespace Asset {
@@ -34,14 +34,14 @@ namespace Dream {
 				}
 
 				void TestFrameDelta::testComputeFrameDelta() {
-                    Dream::Asset::Instance::Animation::Frame *frame =
-                        new Dream::Asset::Instance::Animation::Frame(0);
+					Dream::Asset::Instances::Animation::DreamAnimation::Frame *frame =
+					new Dream::Asset::Instances::Animation::DreamAnimation::Frame(0);
+					
+					Instances::Animation::DreamAnimation::FrameDelta *delta1 =
+                        new Instances::Animation::DreamAnimation::FrameDelta(0,FRAME_DELTA_OP_LINEAR);
                     
-					Dream::Asset::Instance::Animation::FrameDelta *delta1 =
-                        new Dream::Asset::Instance::Animation::FrameDelta(0,DA_OP_LINEAR);
-                    
-					Dream::Asset::Instance::Animation::FrameDelta *delta2 =
-                        new Dream::Asset::Instance::Animation::FrameDelta(0,DA_OP_LINEAR);
+					Instances::Animation::DreamAnimation::FrameDelta *delta2 =
+                        new Instances::Animation::DreamAnimation::FrameDelta(0,FRAME_DELTA_OP_LINEAR);
 
 					frame->addFrameDelta(delta1);
 					frame->addFrameDelta(delta2);

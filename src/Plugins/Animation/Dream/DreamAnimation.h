@@ -19,13 +19,13 @@
 #ifndef DreamAnimation_hpp
 #define DreamAnimation_hpp
 
-#include "../AnimationInterface.h"
+#include "../AnimationPluginInterface.h"
 
 namespace Dream {
 namespace Plugins {
 namespace Animation {
 	
-	class DreamAnimation : public AnimationInterface {
+	class DreamAnimation : public AnimationPluginInterface {
 	public :
 		DreamAnimation();
 		~DreamAnimation();

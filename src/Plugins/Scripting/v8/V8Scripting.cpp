@@ -25,7 +25,7 @@ namespace V8 {
 	v8::Isolate::CreateParams _CreateParams;
 	ArrayBufferAllocator      _ArrayBufferAllocator;
 
-	V8Scripting::V8Scripting(void) : ScriptingInterface() {}
+	V8Scripting::V8Scripting(void) : ScriptingPluginInterface() {}
 
 	V8Scripting::~V8Scripting(void) {
 		mContext.Reset();

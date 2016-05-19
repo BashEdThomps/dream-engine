@@ -1,5 +1,5 @@
 /*
-* Dream::Plugins::Animaition::AnimationInterface
+* Dream::Scripting::ScriptingInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,24 +15,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#ifndef AnimationInterface_hpp
-#define AnimationInterface_hpp
+#ifndef SCRIPTINGINTERFACE_H
+#define SCRIPTINGINTERFACE_H
 
 #include "../PluginInterface.h"
 
 namespace Dream {
 namespace Plugins {
-namespace Animation {
+namespace Scripting {
 	
-	class AnimationInterface : public Dream::Plugins::PluginInterface {
+	class ScriptingPluginInterface : public Dream::Plugins::PluginInterface {
 	public:
-    	AnimationInterface();
-    	~AnimationInterface();
-	}; // End of AnimationInterface
+		ScriptingPluginInterface(void);
+		virtual ~ScriptingPluginInterface(void) {}
+	}; // End of ScriptingPluginInterface
 	
-} // End of Animation
-} // End of Plugins
-} // End of Dream
+} // End of Scripting
+}// End of Plugins
+}// End of Dream
 
-#endif /* AnimationInterface_hpp */
+#endif // End of SCRIPTINGINTERFACE_H

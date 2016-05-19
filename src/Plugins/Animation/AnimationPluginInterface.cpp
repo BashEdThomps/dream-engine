@@ -16,14 +16,14 @@
 */
 
 
-#include "AnimationInterface.h"
+#include "AnimationPluginInterface.h"
 
 namespace Dream     {
 namespace Plugins   {
 namespace Animation {
 	
-	AnimationInterface::AnimationInterface() : Dream::Plugins::PluginInterface() {}
-	AnimationInterface::~AnimationInterface() {}
+	AnimationPluginInterface::AnimationPluginInterface() : Dream::Plugins::PluginInterface() {}
+	AnimationPluginInterface::~AnimationPluginInterface() {}
 	
 } // End of Animation
 } // End of Plugins

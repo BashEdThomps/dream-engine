@@ -18,7 +18,7 @@
 #ifndef V8SCRIPTING_H
 #define V8SCRIPTING_H
 
-#include "../ScriptingInterface.h"
+#include "../ScriptingPluginInterface.h"
 
 #include <libplatform.h>
 #include <v8.h>
@@ -45,7 +45,7 @@ namespace V8 {
 		}
 	}; // End of ArrayBuffer Allocator
 
-	class V8Scripting : public ScriptingInterface {
+	class V8Scripting : public ScriptingPluginInterface {
 	private:
 		v8::Platform *mPlatform;
 		v8::Isolate  *mIsolate;

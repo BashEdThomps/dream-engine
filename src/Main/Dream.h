@@ -9,45 +9,20 @@
 #include "../Util/FileReader.h"
 #include "../Scene/Scene.h"
 #include "../Project/Project.h"
-
-#include "../Plugins/PluginInterface.h"
-#include "../Plugins/Audio/AudioInterface.h"
-#include "../Plugins/Scripting/ScriptingInterface.h"
-#include "../Plugins/Physics/PhysicsInterface.h"
-#include "../Plugins/Input/InputInterface.h"
-#include "../Plugins/Video/VideoInterface.h"
-
-#include "../Plugins/Audio/OpenAL/OALAudio.h"
-#include "../Plugins/Physics/Bullet/BulletPhysics.h"
-#include "../Plugins/Scripting/v8/V8Scripting.h"
-#include "../Plugins/Scripting/Chai/ChaiScripting.h"
-#include "../Plugins/Video/OpenGL/OGLVideo.h"
-#include "../Plugins/Animation/Dream/DreamAnimation.h"
-#include "../Plugins/Input/GLFW/GLFWInput.h"
-
 #include "../Asset/AssetInstance.h"
 #include "../Asset/AssetManager.h"
+#include "../Plugins/PluginManager.h"
 
 namespace Dream {
 	
 	class Dream {
 	protected:
-		// Project
-		Project::Project    *mProject;
-		Scene::Scene        *mCurrentScene;
-		Asset::AssetManager *mAssetManager;
+		Project::Project       *mProject;
 		
-		// Plugins
-		Plugins::Audio::AudioInterface         *mAudioInterface;
-		Plugins::Video::VideoInterface         *mVideoInterface;
-		Plugins::Physics::PhysicsInterface     *mPhysicsInterface;
-		Plugins::Scripting::ScriptingInterface *mScriptingInterface;
-		Plugins::Input::InputInterface         *mInputInterface;
-		Plugins::Animation::AnimationInterface *mAnimationInterface;
+		Asset::AssetManager    *mAssetManager;
+		Plugins::PluginManager *mPluginManager;
 		
-		// Engine Variables 
 		bool mRunning;
-		bool mError;
 
 	public:
 		Dream(void);
@@ -59,20 +34,13 @@ namespace Dream {
 
 		Project::Project* getProject(void);
 		void setProject(Project::Project*);
-		int runProject();
+		int  runProject();
 		bool isProjectLoaded();
 
 		bool createAssetManager();
-		bool createInterfaces();
-		bool createScriptingInterfaces();
-		bool createPhysicsInterfaces();
-		bool createVideoInterfaces();
-		bool createAudioInterfaces();
-		bool createInputInterfaces();
-		bool createAnimationInterfaces();
+		bool createPluginManager();
 		
-		
-		void updateAll();
+		void update();
 	};
 	
 } // End of Dream

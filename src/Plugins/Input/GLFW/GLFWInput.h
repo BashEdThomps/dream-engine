@@ -9,7 +9,7 @@
 #ifndef GLFWInput_hpp
 #define GLFWInput_hpp
 
-#include "../InputInterface.h"
+#include "../InputPluginInterface.h"
 #include <GLFW/glfw3.h>
 
 namespace Dream   {
@@ -17,7 +17,7 @@ namespace Plugins {
 namespace Input   {
 namespace GLFW {
 	
-	class GLFWInput : public InputInterface {
+	class GLFWInput : public InputPluginInterface {
 	public:
 		GLFWInput();
 		~GLFWInput();

@@ -17,8 +17,8 @@
 
 #include "TestFrame.h"
 
-#include "../../../src/Asset/Instance/Animation/Frame.h"
-#include "../../../src/Asset/Instance/Animation/FrameDelta.h"
+#include "../../../src/Asset/Instances/Animation/Dream/Frame.h"
+#include "../../../src/Asset/Instances/Animation/Dream/FrameDelta.h"
 
 namespace Dream {
 	namespace Asset {
@@ -43,22 +43,22 @@ namespace Dream {
 
 				void TestFrame::testFrameCreate(void) {
 					comment("Create Frame");
-                    Dream::Asset::Instance::Animation::Frame *frame =
-                        new Dream::Asset::Instance::Animation::Frame(0);
+					Dream::Asset::Instances::Animation::DreamAnimation::Frame *frame =
+					new Dream::Asset::Instances::Animation::DreamAnimation::Frame(0);
 					assertNotNull("Frame Constructor", frame);
 					return;
 				}
 
 				void TestFrame::testFrameAddFrameDelta(void) {
-                    Dream::Asset::Instance::Animation::Frame *frame =
-                        new Dream::Asset::Instance::Animation::Frame(0);
+					Dream::Asset::Instances::Animation::DreamAnimation::Frame *frame =
+					new Dream::Asset::Instances::Animation::DreamAnimation::Frame(0);
+					
+					Dream::Asset::Instances::Animation::DreamAnimation::FrameDelta *delta1 =
                     
-					Dream::Asset::Instance::Animation::FrameDelta *delta1 =
+					new Dream::Asset::Instances::Animation::DreamAnimation::FrameDelta(0,FRAME_DELTA_OP_LINEAR);
                     
-                        new Dream::Asset::Instance::Animation::FrameDelta(0,DA_OP_LINEAR);
-                    
-					Dream::Asset::Instance::Animation::FrameDelta *delta2 =
-                        new Dream::Asset::Instance::Animation::FrameDelta(0,DA_OP_LINEAR);
+					Dream::Asset::Instances::Animation::DreamAnimation::FrameDelta *delta2 =
+					new Dream::Asset::Instances::Animation::DreamAnimation::FrameDelta(0,FRAME_DELTA_OP_LINEAR);
                     
 					frame->addFrameDelta(delta1);
 					frame->addFrameDelta(delta2);
@@ -67,11 +67,11 @@ namespace Dream {
 				}
 
 				void TestFrame::testFrameCompareIndicies(void) {
-					Dream::Asset::Instance::Animation::Frame *frame1;
-					Dream::Asset::Instance::Animation::Frame *frame2;
+					Dream::Asset::Instances::Animation::DreamAnimation::Frame *frame1;
+					Dream::Asset::Instances::Animation::DreamAnimation::Frame *frame2;
 
-					frame1 = new Dream::Asset::Instance::Animation::Frame(100);
-					frame2 = new Dream::Asset::Instance::Animation::Frame(200);
+					frame1 = new Dream::Asset::Instances::Animation::DreamAnimation::Frame(100);
+					frame2 = new Dream::Asset::Instances::Animation::DreamAnimation::Frame(200);
 
 					int result1 = frame1->compareIndecies(frame2);
 					int result2 = frame2->compareIndecies(frame1);
@@ -82,15 +82,15 @@ namespace Dream {
 				}
 
 				void TestFrame::testFrameGetNumFrameDeltas(void) {
-					Dream::Asset::Instance::Animation::Frame* frame =
-                        new Dream::Asset::Instance::Animation::Frame(0);
+					Dream::Asset::Instances::Animation::DreamAnimation::Frame* frame =
+                        new Dream::Asset::Instances::Animation::DreamAnimation::Frame(0);
 
-					Dream::Asset::Instance::Animation::FrameDelta *delta1, *delta2;
-					delta1 = new Dream::Asset::Instance::Animation::FrameDelta(0,0);
+					Dream::Asset::Instances::Animation::DreamAnimation::FrameDelta *delta1, *delta2;
+					delta1 = new Dream::Asset::Instances::Animation::DreamAnimation::FrameDelta(0,0);
 					frame->addFrameDelta(delta1);
 					assertEqual("Get Num Frame Deltas == 1",frame->getNumFrameDeltas(),1);
 
-					delta2 = new Dream::Asset::Instance::Animation::FrameDelta(0,0);
+					delta2 = new Dream::Asset::Instances::Animation::DreamAnimation::FrameDelta(0,0);
 					frame->addFrameDelta(delta2);
 					assertEqual("Get Num Frame Deltas == 2",frame->getNumFrameDeltas(),2);
 					return;

@@ -18,44 +18,43 @@
 #include "BulletPhysics.h"
 
 namespace Dream {
-	namespace Plugins {
-		namespace Physics {
-			namespace Bullet {
-				BulletPhysics::BulletPhysics(void) : PhysicsInterface() {
-							}
+namespace Plugins {
+namespace Physics {
+namespace Bullet {
+	
+	BulletPhysics::BulletPhysics(void) : PhysicsPluginInterface() {}
 
-				BulletPhysics::~BulletPhysics(void) {
-					delete mSolver;
-					delete mDispatcher;
-					delete mCollisionConfiguration;
-					delete mBroadphase;
-					delete mDynamicsWorld;
-				}
+	BulletPhysics::~BulletPhysics(void) {
+		delete mSolver;
+		delete mDispatcher;
+		delete mCollisionConfiguration;
+		delete mBroadphase;
+		delete mDynamicsWorld;
+	}
 
-				void BulletPhysics::setGravity3f(float x, float y, float z) {
-					btVector3 gravity = btVector3(x,y,z);
-					setGravityBtVector3(gravity);
-				}
+	void BulletPhysics::setGravity3f(float x, float y, float z) {
+		btVector3 gravity = btVector3(x,y,z);
+		setGravityBtVector3(gravity);
+	}
 
-				void BulletPhysics::setGravityBtVector3(btVector3 gravity) {
-					mDynamicsWorld->setGravity(gravity);
-				}
+	void BulletPhysics::setGravityBtVector3(btVector3 gravity) {
+		mDynamicsWorld->setGravity(gravity);
+	}
 
-				bool BulletPhysics::init(void) {
-					std::cout << "BulletPhysics: Initialising...";
-					mBroadphase = new btDbvtBroadphase();
-					mCollisionConfiguration = new btDefaultCollisionConfiguration();
-					mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
-					mSolver = new btSequentialImpulseConstraintSolver();
-					mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
-					std::cout << "done." << std::endl;
-					return true;
-				}
+	bool BulletPhysics::init(void) {
+		std::cout << "BulletPhysics: Initialising...";
+		mBroadphase = new btDbvtBroadphase();
+		mCollisionConfiguration = new btDefaultCollisionConfiguration();
+		mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
+		mSolver = new btSequentialImpulseConstraintSolver();
+		mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
+		std::cout << "done." << std::endl;
+		return true;
+	}
 
-				void BulletPhysics::update(Dream::Scene::Scene*) {
-
-				}
-			} // End of Bullet
-		} // End of Scene
-	} // End of Plugins
+	void BulletPhysics::update(Dream::Scene::Scene*) {}
+	
+} // End of Bullet
+} // End of Scene
+} // End of Plugins
 } // End of Dream

@@ -22,7 +22,7 @@ namespace Plugins {
 namespace Video {
 namespace OpenGL {
 	
-	OGLVideo::OGLVideo(void) : VideoInterface() {}
+	OGLVideo::OGLVideo(void) : VideoPluginInterface() {}
 	
 	OGLVideo::~OGLVideo(void) {
 		glfwTerminate();

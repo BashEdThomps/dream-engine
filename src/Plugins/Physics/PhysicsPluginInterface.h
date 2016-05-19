@@ -24,10 +24,10 @@ namespace Dream {
 namespace Plugins {
 namespace Physics {
 	
-	class PhysicsInterface : public Dream::Plugins::PluginInterface {
+	class PhysicsPluginInterface : public Dream::Plugins::PluginInterface {
 	public:
-		PhysicsInterface(void);
-		virtual ~PhysicsInterface(void) {};
+		PhysicsPluginInterface(void);
+		virtual ~PhysicsPluginInterface(void) {};
 		
 	};// End of PhysicsInterface
 	

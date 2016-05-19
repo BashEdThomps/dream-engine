@@ -22,7 +22,7 @@ namespace Dream {
 namespace Plugins {
 namespace Animation {
 	
-	DreamAnimation::DreamAnimation() : AnimationInterface() {
+	DreamAnimation::DreamAnimation() : AnimationPluginInterface() {
 		
 	}
 	

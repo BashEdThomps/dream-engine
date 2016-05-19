@@ -18,33 +18,32 @@
 #include "TestAsset.h"
 
 namespace Dream {
-	namespace Asset {
-		namespace Test {
-			TestAsset::TestAsset(void) : Dream::Unit::Unit("Dream::Asset::Asset") {
-			}
+namespace Asset {
+namespace Test  {
+	
+	TestAsset::TestAsset(void) : Dream::Unit::Unit("Dream::Asset::Asset") {}
+	TestAsset::~TestAsset(void) {}
 
-			TestAsset::~TestAsset(void) {
-			}
-
-			void TestAsset::run() {
-				header();
-				testAssetCanStoreUUID();
-				testAssetCanStoreName();
-			}
-
-			void TestAsset::testAssetCanStoreUUID() {
-				Dream::Asset::Test::TestAssetImpl r;
-				std::string uuid = "1234-abcd-3382-efda";
-				r.setUUID(uuid);
-				assertZero("Asset can store UUID",uuid.compare(r.getUUID()));
-			}
-
-			void TestAsset::testAssetCanStoreName() {
-				Dream::Asset::Test::TestAssetImpl r;
-				std::string name = "TestAsset";
-				r.setName(name);
-				assertZero("Asset can store name",name.compare(r.getName()));
-			}
-		}
+	void TestAsset::run() {
+		header();
+		testAssetCanStoreUUID();
+		testAssetCanStoreName();
 	}
+
+	void TestAsset::testAssetCanStoreUUID() {
+		Dream::Asset::AssetDefinition r;
+		std::string uuid = "1234-abcd-3382-efda";
+		r.setUUID(uuid);
+		assertZero("Asset can store UUID",uuid.compare(r.getUUID()));
+	}
+
+	void TestAsset::testAssetCanStoreName() {
+		Dream::Asset::AssetDefinition r;
+		std::string name = "TestAsset";
+		r.setName(name);
+		assertZero("Asset can store name",name.compare(r.getName()));
+	}
+	
+} // End of Test
+} // End of Asset
 } // End of Dream

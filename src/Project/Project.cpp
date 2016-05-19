@@ -282,5 +282,16 @@ namespace Project {
 		return mActiveScene;
 	}
 	
+	bool Project::hasActiveScene() {
+		return getActiveScene() != NULL;
+	}
+	
+	bool Project::initActiveScene() {
+		if (mActiveScene != NULL) {
+			return mActiveScene->init();
+		}
+		return false;
+	}
+	
 } // End of Project
 } // End of Dream
