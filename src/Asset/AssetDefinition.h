@@ -29,8 +29,8 @@
 #define ASSET_TYPE   "type"
 #define ASSET_FORMAT "format"
 
-#define DIR_PATH_SEP        "/"
-#define ASSET_DIR        "asset"
+#define DIR_PATH_SEP     "/"
+#define ASSET_DIR        "assets"
 #define ASSET_DIR_MODEL  "model"
 #define ASSET_DIR_AUDIO  "audio"
 #define ASSET_DIR_SCRIPT "script"
@@ -84,6 +84,8 @@ namespace Asset {
 		bool isAudioFormatOgg();
 		
 		bool isAnimationFormatDream();
+		
+		std::string getAssetPath();
 		
 	}; // End of AssetDefinition
 	

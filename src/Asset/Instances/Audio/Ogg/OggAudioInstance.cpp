@@ -24,11 +24,12 @@ namespace Audio     {
 namespace Ogg       {
 	
 	OggAudioInstance::OggAudioInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {
-	}
+		Dream::Asset::AssetInstance(definition) {}
 	
-    OggAudioInstance::~OggAudioInstance(void) {
+    OggAudioInstance::~OggAudioInstance(void) {}
 	
+	bool OggAudioInstance::load(Dream::Util::FileReader* file) {
+		return false;
 	}
 	
 } // End of Ogg

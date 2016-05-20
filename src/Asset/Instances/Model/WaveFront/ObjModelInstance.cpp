@@ -30,6 +30,22 @@ namespace WaveFront  {
 	}
 
 	ObjModelInstance::~ObjModelInstance(void) {}
+	
+	bool ObjModelInstance::load(Dream::Util::FileReader *file) {
+		std::string path = file->getPath();
+		std::cout << "ObjModelInstance: Loading Model from " << path << std::endl;
+		
+		if(!tinyobj::LoadObj(mShapes, mMaterials, mError, path.c_str())) {
+			std::cerr << mError << std::endl;
+			return false;
+		}
+		
+		std::cout << "ObjModelInstance: Loaded Instance"      << std::endl;
+    	std::cout << "# of shapes    : " << mShapes.size()    << std::endl;
+    	std::cout << "# of materials : " << mMaterials.size() << std::endl;
+	
+		return true;
+	}
     
 } // End of WaveFront
 } // End of Model

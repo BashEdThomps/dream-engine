@@ -32,12 +32,13 @@ namespace Wav       {
 	public:
 		WavAudioInstance(Dream::Asset::AssetDefinition*);
 		~WavAudioInstance(void);
+		bool load(Dream::Util::FileReader*);
 	};
 	
-}
-}
-}
-}
-}
+} // End of Wav
+} // End of Audio
+} // End of Instances
+} // End of Asset
+} // End of Dream
 
 #endif // End of WAVAUDIO_H

@@ -78,6 +78,7 @@ namespace Dream {
 	
 	bool Dream::loadScene(Scene::Scene* scene) {
 		std::cout << "Dream: Loading Scene " << scene->getName() << std::endl;
+		
 		mProject->setActiveScene(scene);
 		
 		if (!mProject->hasActiveScene()) {

@@ -32,6 +32,9 @@ namespace JavaScript {
 	public:
 		JavaScriptInstance(Dream::Asset::AssetDefinition*);
 		~JavaScriptInstance(void);
+		
+		bool load(Dream::Util::FileReader*);
+		
 	}; // End of JavaScript
 	
 } // End of JavaScript

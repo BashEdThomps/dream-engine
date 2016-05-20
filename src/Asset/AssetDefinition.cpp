@@ -141,6 +141,12 @@ namespace Asset {
 	bool AssetDefinition::isAnimationFormatDream() {
 		return getFormat().compare(ASSET_DEF_FORMAT_ANIMATION_DREAM) == 0;
 	}
-		
+	
+	std::string AssetDefinition::getAssetPath() {
+		std::stringstream pathStream;
+		pathStream << DIR_PATH_SEP << ASSET_DIR << DIR_PATH_SEP << getType() << DIR_PATH_SEP << getFormat();
+		return pathStream.str();
+	}
+	
 } // End of AssetDefinition
 } // End of Dream

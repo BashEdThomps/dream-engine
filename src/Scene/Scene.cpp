@@ -78,7 +78,7 @@ namespace  Scene {
 		}
 		return true;
 	}
-
+	
 	bool Scene::isScenegraphVectorEmpty() {
 		return mScenegraphVector.empty();
 	}
@@ -127,10 +127,11 @@ namespace  Scene {
 				} else {
 					setRootSceneObject(nextSceneObject);
 				}
-				//nextSceneObject->showStatus();
 				if (!((*it)[SCENE_OBJECT_CHILDREN]).is_null()){
 					loadSceneObjectsFromJSONArray((*it)[SCENE_OBJECT_CHILDREN],nextSceneObject);
 				}
+				
+				nextSceneObject->showStatus();
 			}
 		}
 	}

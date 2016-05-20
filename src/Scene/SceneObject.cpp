@@ -192,6 +192,7 @@ namespace Scene {
 			std::cout << "None";
 		}
 		std::cout << std::endl;
+		std::cout << "     Children: " << mChildren.size() << std::endl;
 		
 		std::cout << "Position Type: " << mPositionType << std::endl;
 		std::cout << "  Translation: (" << mTranslation[NODE_X] << ","

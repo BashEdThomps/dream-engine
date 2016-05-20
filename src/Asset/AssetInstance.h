@@ -18,6 +18,7 @@
 #ifndef ASSETINSTANCE_H
 #define ASSETINSTANCE_H
 
+#include "../Util/FileReader.h"
 #include "AssetDefinition.h"
 #include <iostream>
 
@@ -29,15 +30,19 @@ namespace Asset {
 	
 	class AssetInstance {
 	private:
-		std::string mUUID;
-		std::string mName;
+		Dream::Asset::AssetDefinition* mDefinition;
 	public:
 		AssetInstance(Dream::Asset::AssetDefinition*);
 		virtual ~AssetInstance(void) {};
+		
 		void setUUID(std::string);
 		std::string getUUID();
+		
 		void setName(std::string);
 		std::string getName();
+		
+		virtual bool load(Dream::Util::FileReader*) = 0;
+		
 	}; // End of AssetInstance
 	
 } // End of Asset

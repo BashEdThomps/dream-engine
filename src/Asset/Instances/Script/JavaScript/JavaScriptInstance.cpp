@@ -24,12 +24,12 @@ namespace Script {
 namespace JavaScript {
 	
 	JavaScriptInstance::JavaScriptInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {
-			
-	}
+		Dream::Asset::AssetInstance(definition) {}
 	
-	JavaScriptInstance::~JavaScriptInstance(void) {
-		
+	JavaScriptInstance::~JavaScriptInstance(void) {}
+	
+	bool JavaScriptInstance::load(Dream::Util::FileReader* file) {
+		return false;
 	}
 	
 } // End JavaScript

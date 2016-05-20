@@ -22,25 +22,31 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace Dream {
-	namespace Util {
-		class FileReader {
-		private:
-			std::stringstream mStringStream;
-			std::ifstream     mInputStream;
-			std::string       mPath;
-		public:
-			FileReader(std::string);
-			~FileReader(void);
+namespace Util {
+	
+	class FileReader {
+	private:
+		std::stringstream *mStringStream;
+		std::vector<char> *mBinaryVector;
+		std::ifstream     mInputStream;
+		std::string       mPath;
+	public:
+		FileReader(std::string);
+		~FileReader(void);
 
-			std::string       getPath();
-			bool              readIntoStringStream();
-			std::string       getContentsAsString();
-			bool              readIntoBinaryStream();
-			char*             getContentsAsBinaryArray();
-		}; // End of FileReader
-	} // End of Util
+		std::string        getPath();
+		bool               readIntoStringStream();
+		std::string        getContentsAsString();
+		bool               readIntoBinaryVector();
+		std::vector<char>* getContentsAsBinaryVector();
+		int                getFileSize();
+		
+	}; // End of FileReader
+	
+} // End of Util
 } // End of Dream
 
 #endif // End of JSONFILEREADER_H

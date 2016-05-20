@@ -24,10 +24,13 @@ namespace Script     {
 namespace ChaiScript {
     
 	ChaiScriptInstance::ChaiScriptInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {
-    }
+		Dream::Asset::AssetInstance(definition) {}
 
 	ChaiScriptInstance::~ChaiScriptInstance(void) {}
+	
+	bool ChaiScriptInstance::load(Dream::Util::FileReader* file) {
+		return false;
+	}
 	
 } // End of ChaiScript
 } // End of Script

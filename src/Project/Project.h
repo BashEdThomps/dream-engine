@@ -35,7 +35,7 @@
 #define PROJECT_AUTHOR          "author"
 #define PROJECT_DESCRIPTION     "description"
 #define PROJECT_SCENE_ARRAY     "scenes"
-#define PROJECT_ASSET_ARRAY  "assets"
+#define PROJECT_ASSET_ARRAY     "assets"
 #define PROJECT_STARTUP_SCENE   "startupScene"
 #define PROJECT_V8_ENABLED      "v8"
 #define PROJECT_CHAI_ENABLED    "chai"

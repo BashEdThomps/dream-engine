@@ -24,12 +24,12 @@ namespace Audio     {
 namespace Wav       {
 	
 	WavAudioInstance::WavAudioInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {
-			
-	}
+		Dream::Asset::AssetInstance(definition) {}
 					
-	WavAudioInstance::~WavAudioInstance(void) {
-		
+	WavAudioInstance::~WavAudioInstance(void) {}
+	
+	bool WavAudioInstance::load(Dream::Util::FileReader* fileReader) {
+		return false;
 	}
 
 } // End of Wav

@@ -73,7 +73,6 @@ namespace Scene {
 		void         showStatus();
 		void         showScenegraph();
 		std::string  indent(int);
-		bool         initSceneObjects();
 		void         generateScenegraphVector();
 		void         generateSceneObjectPaths();
 		bool         isScenegraphVectorEmpty();

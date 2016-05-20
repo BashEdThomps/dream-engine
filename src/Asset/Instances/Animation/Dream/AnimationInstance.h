@@ -35,6 +35,9 @@ namespace DreamAnimation {
     public:
         AnimationInstance(Dream::Asset::AssetDefinition*, int fps = 60);
         ~AnimationInstance();
+		
+		bool load(Dream::Util::FileReader*);
+		
         void generateFrames();
         void addFrame(Frame*);
         void addKeyFrame(KeyFrame*);

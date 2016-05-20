@@ -33,11 +33,13 @@ namespace WaveFront  {
 	
 	class ObjModelInstance : public Dream::Asset::AssetInstance {
 	private:
-		std::string mObjPath;
-		std::string mMtlPath;
+		std::vector<tinyobj::shape_t> mShapes;
+		std::vector<tinyobj::material_t> mMaterials;
+		std::string mError;
 	public:
 		ObjModelInstance(Dream::Asset::AssetDefinition*);
 		~ObjModelInstance(void);
+		bool load(Dream::Util::FileReader*);
 	}; // End of ObjModel
 	
 } // End of WaveFront

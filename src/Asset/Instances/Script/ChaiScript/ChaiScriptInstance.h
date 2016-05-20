@@ -32,6 +32,9 @@ namespace ChaiScript {
     public:
 		ChaiScriptInstance(Dream::Asset::AssetDefinition*);
         ~ChaiScriptInstance(void);
+		
+		bool load(Dream::Util::FileReader*);
+		
     }; // End of ChaiScriptInstance
     
 } // End of ChaiScript

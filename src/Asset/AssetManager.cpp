@@ -89,6 +89,11 @@ namespace Asset {
 		} else if (definition->isTypeScript()){
 			retval = createScriptAssetInstance(definition);
 		}
+		
+		if (retval != NULL) {
+			std::cout << "AssetManager: Loading Asset Data for " << definition->getName() << std::endl;
+			retval->load(new Dream::Util::FileReader(mProject->getProjectPath()+definition->getAssetPath()));
+		}
 		return retval;
 	}
 	

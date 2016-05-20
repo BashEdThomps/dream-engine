@@ -15,6 +15,10 @@ namespace DreamAnimation {
 	}
 
 	AnimationInstance::~AnimationInstance() {}
+	
+	bool AnimationInstance::load(Dream::Util::FileReader* fileReader) {
+		return false;
+	}
 
 	void AnimationInstance::generateFrames() {
 		int currentKeyFrame = 0;
