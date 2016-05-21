@@ -15,9 +15,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ObjModelInstance.h"
-
 #define TINYOBJLOADER_IMPLEMENTATION
+
+#include "ObjModelInstance.h"
 
 namespace Dream      {
 namespace Asset      {
@@ -41,10 +41,19 @@ namespace WaveFront  {
 		}
 		
 		std::cout << "ObjModelInstance: Loaded Instance"      << std::endl;
-    	std::cout << "# of shapes    : " << mShapes.size()    << std::endl;
-    	std::cout << "# of materials : " << mMaterials.size() << std::endl;
+    	std::cout << "\t# of shapes    : " << mShapes.size()    << std::endl;
+    	std::cout << "\t# of materials : " << mMaterials.size() << std::endl;
 	
 		return true;
+	}
+	
+	
+	std::vector<tinyobj::shape_t> ObjModelInstance::getShapesVector() {
+		return mShapes;
+	}
+	
+	std::vector<tinyobj::material_t> ObjModelInstance::getMaterialsVector() {
+		return mMaterials;
 	}
     
 } // End of WaveFront

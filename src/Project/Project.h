@@ -124,6 +124,7 @@ namespace Project {
 		Scene::Scene* getActiveScene();
 		bool hasActiveScene();
 		bool initActiveScene();
+		std::string boolToYesNo(bool);
 		
 	}; // End of Project
 	

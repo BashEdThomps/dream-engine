@@ -29,16 +29,18 @@
 #define ASSET_TYPE   "type"
 #define ASSET_FORMAT "format"
 
-#define DIR_PATH_SEP     "/"
-#define ASSET_DIR        "assets"
-#define ASSET_DIR_MODEL  "model"
-#define ASSET_DIR_AUDIO  "audio"
-#define ASSET_DIR_SCRIPT "script"
+#define DIR_PATH_SEP        "/"
+#define ASSET_DIR           "assets"
 
-#define ASSET_TYPE_MODEL     "Model"
-#define ASSET_TYPE_AUDIO     "Audio"
-#define ASSET_TYPE_SCRIPT    "Script"
+#define ASSET_DIR_ANIMATION "animation"
+#define ASSET_DIR_AUDIO     "audio"
+#define ASSET_DIR_MODEL     "model"
+#define ASSET_DIR_SCRIPT    "script"
+
 #define ASSET_TYPE_ANIMATION "Animation"
+#define ASSET_TYPE_AUDIO     "Audio"
+#define ASSET_TYPE_MODEL     "Model"
+#define ASSET_TYPE_SCRIPT    "Script"
 
 
 #define ASSET_DEF_FORMAT_SCRIPT_JAVASCRIPT "js"
@@ -69,6 +71,8 @@ namespace Asset {
 		
 		std::string getAttribute(std::string);
 		void addAttribute(std::string,std::string);
+		
+		std::string getAssetTypeDirectory();
 		
 		bool isTypeAnimation();
 		bool isTypeAudio();

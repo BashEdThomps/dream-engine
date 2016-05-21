@@ -31,6 +31,14 @@ if (NOT CHAISCRIPT_FOUND)
   message(FATAL_ERROR "Package ChaiScript was not found")
 endif()
 
+find_package(OPENGL COMPONENTS OpenGL REQUIRED)
+if (NOT OPENGL_FOUND)
+  message(FATAL_ERROR "Package OpenGL was not found")
+else()
+  message("OpenGL Headers found at " ${OPENGL_INCLUDE_DIR})
+  message("OpenGL Lib found at " ${OPENGL_LIBRARIES})
+endif()
+
 # Targets
 add_library (
     DreamBase SHARED
@@ -42,6 +50,7 @@ target_link_libraries(
   -lpthread
   -ldl
   ${OPENAL_LIBRARY}
+  ${OPENGL_LIBRARIES}
   ${GLFW_LIBRARIES}
   ${V8_LIBRARY}
   ${BULLET_LIBRARY}
@@ -50,6 +59,7 @@ target_link_libraries(
 include_directories(
   ${CHAISCRIPT_INCLUDE_DIR}
   ${OPENAL_INCLUDE_DIR}
+  ${OPENGL_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
   ${V8_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}

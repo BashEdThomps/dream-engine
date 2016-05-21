@@ -40,6 +40,10 @@ namespace WaveFront  {
 		ObjModelInstance(Dream::Asset::AssetDefinition*);
 		~ObjModelInstance(void);
 		bool load(Dream::Util::FileReader*);
+		
+		std::vector<tinyobj::shape_t>    getShapesVector();
+		std::vector<tinyobj::material_t> getMaterialsVector();
+		
 	}; // End of ObjModel
 	
 } // End of WaveFront

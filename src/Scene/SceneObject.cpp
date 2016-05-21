@@ -21,6 +21,8 @@ namespace Scene {
 		
 		if (!soJson[SCENE_OBJECT_POSITION_TYPE].is_null()) {
 			mPositionType = soJson[SCENE_OBJECT_POSITION_TYPE];
+		} else {
+			mPositionType = SCENE_OBJECT_POSITION_TYPE_OFFSET;
 		}
 		
 		if (!soJson[SCENE_OBJECT_TRANSLATION].is_null()) {
@@ -28,6 +30,10 @@ namespace Scene {
 			mTranslation [NODE_X] = translation[SCENE_OBJECT_X];
 			mTranslation [NODE_Y] = translation[SCENE_OBJECT_Y];
 			mTranslation [NODE_Z] = translation[SCENE_OBJECT_Z];
+		} else {
+			mTranslation [NODE_X] = 0.0f;
+			mTranslation [NODE_Y] = 0.0f;
+			mTranslation [NODE_Z] = 0.0f;
 		}
 			
 		if (!soJson[SCENE_OBJECT_ROTATION].is_null()) {
@@ -35,6 +41,10 @@ namespace Scene {
 			mRotation [NODE_X] = rotation[SCENE_OBJECT_X];
 			mRotation [NODE_Y] = rotation[SCENE_OBJECT_Y];
 			mRotation [NODE_Z] = rotation[SCENE_OBJECT_Z];
+		} else {
+			mRotation [NODE_X] = 0.0f;
+			mRotation [NODE_Y] = 0.0f;
+			mRotation [NODE_Z] = 0.0f;
 		}
 		
 		if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null()) {
@@ -43,8 +53,14 @@ namespace Scene {
 	}
 	
 	void SceneObject::loadAssetInstances(nlohmann::json assetInstancesJson) {
+		
+		mAnimationAssetInstance = NULL;
+		mAudioAssetInstance     = NULL;
+		mModelAssetInstance     = NULL;
+		mScriptAssetInstance    = NULL;
+		
 		for (nlohmann::json::iterator it = assetInstancesJson.begin(); it != assetInstancesJson.end(); it++) {
-			mAssetInstanceUUIDs.push_back((*it));
+			mAssetInstanceUUIDsToLoad.push_back((*it));
 		}
 	}
 	
@@ -175,10 +191,6 @@ namespace Scene {
 		return mPath;
 	}
 
-	void SceneObject::addAssetInstance(Dream::Asset::AssetInstance *assetInstance) {
-       mAssetInstances.push_back(assetInstance);
-    }
-	
 	void SceneObject::showStatus() {
 		std::cout << "SceneObject:" << std::endl;
 		std::cout << "         UUID: " << mUUID << std::endl;
@@ -205,9 +217,40 @@ namespace Scene {
 		                                << std::endl;
 	}
 	
-	std::vector<std::string> SceneObject::getAssetInstanceUUIDVector() {
-		return mAssetInstanceUUIDs;
+	std::vector<std::string> SceneObject::getAssetInstanceUUIDsToLoad() {
+		return mAssetInstanceUUIDsToLoad;
 	}
 	
+	void SceneObject::setAnimationAssetInstance(Dream::Asset::AssetInstance* animationAsset) {
+		mAnimationAssetInstance = animationAsset;
+	}
+	
+	Dream::Asset::AssetInstance* SceneObject::getAnimationAssetInstance() {
+		return mAnimationAssetInstance;
+	}
+	
+	void SceneObject::setAudioAssetInstance(Dream::Asset::AssetInstance* audioAsset) {
+		mAudioAssetInstance = audioAsset;
+	}
+	Dream::Asset::AssetInstance* SceneObject::getAudioAssetInstance() {
+		return mAudioAssetInstance;
+	}
+	
+	void SceneObject::setModelAssetInstance(Dream::Asset::AssetInstance* modelAsset) {
+		mModelAssetInstance = modelAsset;
+	}
+	
+	Dream::Asset::AssetInstance* SceneObject::getModelAssetInstance() {
+		return mModelAssetInstance;
+	}
+	
+	void SceneObject::setScriptAssetInstance(Dream::Asset::AssetInstance* scriptAsset) {
+		mScriptAssetInstance = scriptAsset;
+	}
+	
+	Dream::Asset::AssetInstance* SceneObject::getScripAssetInstance() {
+		return mScriptAssetInstance;
+	}
+		
 } // End of Scene
 } // End of Dream

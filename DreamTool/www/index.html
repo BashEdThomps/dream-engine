@@ -17,9 +17,6 @@
   <script src="js/angular-css-injector.js"></script>
   <script src="/src-noconflict/ace.js"></script>
   <script src="/src-min-noconflict/keybinding-vim.js"></script>
-  <script src="three.js"></script>
-  <script src="js/OBJLoader.js"></script>
-  <script src="js/XHRLoader.js"></script>
   <!-- CSS -->
   <link rel="stylesheet" href="css/dream_tool.css">
   <link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
@@ -29,13 +26,11 @@
   <link rel="stylesheet" href="ngToast-animations.min.css">
   <!-- Controllers -->
   <script src="controller/app.js"></script>
-  <script src="controller/d3_factory.js"></script>
   <script src="controller/cookie_service.js"></script>
   <script src="controller/api_service.js"></script>
   <script src="controller/project_service.js"></script>
   <script src="controller/ui_service.js"></script>
   <script src="controller/util_service.js"></script>
-  <script src="controller/three_directive.js"></script>
   <script src="controller/index.js"></script>
   <script src="controller/config.js"></script>
   <script src="controller/generic.js"></script>
@@ -120,13 +115,13 @@
     <div class="container-fluid">
       <!-- Page Content -->
       <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-3">
           <div class="fill well">
             <abn-tree expand-level="5" tree-data="treeData">
             </abn-tree>
           </div>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-9">
           <div class="fill well">
             <ol class="breadcrumb">
               <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>

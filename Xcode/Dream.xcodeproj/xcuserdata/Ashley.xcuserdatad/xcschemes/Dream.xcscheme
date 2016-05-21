@@ -67,7 +67,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--uuid 8376-e93e-8e79-a7ea"
+            argument = "--uuid 3c9f-c580-45d2-ff7b"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

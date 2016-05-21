@@ -3,8 +3,7 @@ var path  = require('path');
 var targz = require('tar.gz');
 
 var DREAM_TOOL_HOME_DIR = ".dreamtool";
-var PROJECT_FILE        = "project.json";
-var ASSET_DIR        = "asset";
+var ASSET_DIR           = "assets";
 var MODELS_DIR          = "model";
 var AUDIO_DIR           = "audio";
 var ANIMATION_DIR       = "animation";

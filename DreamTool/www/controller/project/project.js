@@ -3,6 +3,9 @@ App.controller("Project",
 	function($scope,$state,ProjectService,UIService) {
 		if (ProjectService.isProjectOpen()){
 			$scope.project = ProjectService.getProject();
+			ProjectService.getSelectedPlugins(function(selectedPlugins) {
+				$scope.selectedPlugins = selectedPlugins;
+			});
 
 			ProjectService.getSceneList(function(sceneList) {
 				$scope.sceneList = sceneList;
@@ -16,6 +19,7 @@ App.controller("Project",
 
 		$scope.modified = function() {
 			console.log("Project Modified");
+			ProjectService.setSelectedPlugins($scope.selectedPlugins);
 			ProjectService.updateProject($scope.project);
 			UIService.updateProject($scope.project);
 		};

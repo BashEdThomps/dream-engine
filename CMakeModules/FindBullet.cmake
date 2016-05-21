@@ -87,7 +87,7 @@ FIND_LIBRARY(LINEARMATH_LIB
   /usr/freeware/lib64
 )
 
-message("Bullet Headers "        ${BULLET_INC_DIR})
+message("Bullet Headers "        ${BULLET_INCLUDE_DIR})
 message("LinearMath "            ${LINEARMATH_LIB})
 message("BulletCollision "       ${BULLET_COLLISION_LIB})
 message("BulletDynamics "        ${BULLET_DYNAMICS_LIB})
@@ -106,7 +106,7 @@ IF(
 )
   SET(BULLET_FOUND "YES")
 
-  SET(BULLET_INCLUDE_DIR ${_BULLET_INC_DIR})
+  #SET(BULLET_INCLUDE_DIR ${_BULLET_INCLUDE_DIR})
   SET(BULLET_LIBRARY
     ${LINEARMATH_LIB}
     ${BULLET_COLLISION_LIB}
@@ -114,12 +114,12 @@ IF(
     ${BULLET_SOFT_BODY_LIB}
     ${BULLET_INVERSE_DYNAMICS_LIB}
   )
-    message("Found Bullet Headers " ${BULLET_INC_DIR})
+    message("Found Bullet Headers " ${BULLET_INCLUDE_DIR})
     message("Found Bullet Libs " ${BULLET_LIS})
 ELSE()
   message(FATAL_ERROR "Unable to find Bullet")
 ENDIF(
-  BULLET_INCLUDE_DIR              AND
+  BULLET_INCLUDE_DIR          AND
   LINEARMATH_LIB              AND
   BULLET_DYNAMICS_LIB         AND
   BULLET_INVERSE_DYNAMICS_LIB AND

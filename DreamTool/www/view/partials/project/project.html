@@ -1,85 +1,91 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
-          Configuration
+          Project Configuration
         </div>
-        <div class="panel-body">
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.name"/>
-          </div>
-          <div class="form-group">
-            <label>Author</label>
-            <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.author"/>
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea class="description-textarea form-control input-sm"
-            ng-change="modified()"
-            ng-model="project.description"
-            rows="5">
-          </textarea>
-        </div>
-        <div class="form-group">
-          <label>Startup Scene</label>
-            <select ng-model="project.startupScene" ng-change="modified()" class="form-control input-sm">
-              <option ng-repeat="scene in sceneList" value="{{scene.uuid}}">{{scene.name}}</option>
-            </select>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Plugins
-      </div>
-      <div class="panel-body">
-        <strong>Scripting</strong>
-        <div class="form-group">
-          <div class="checkbox checkbox-info">
-            <input ng-change="modified()" ng-model="project.chai" type="checkbox" id="chai">
-            <label for="chai">Chai</label>
-          </div>
-          <div class="checkbox checkbox-info">
-            <input disabled ng-change="modified()" ng-model="project.v8" type="checkbox" id="v8">
-            <label for="v8">V8 (JavaScript)</label>
-          </div>
-        </div>
-        <hr/>
-        <strong>Audio</strong>
-        <div class="form-group">
-          <div class="checkbox checkbox-info">
-            <input ng-change="modified()" ng-model="project.openAL" type="checkbox" id="openAL">
-            <label for="openAL">OpenAL</label>
-          </div>
-        </div>
-        <hr />
-        <strong>Physics</strong>
-        <div class="form-group">
-          <div class="checkbox checkbox-info">
-            <input ng-change="modified()" ng-model="project.bullet2" type="checkbox" id="bullet2">
-            <label for="bullet2">Bullet 2</label>
-          </div>
-          <div class="checkbox checkbox-info">
-            <input disabled ng-change="modified()" ng-model="project.bullet3" type="checkbox" id="bullet3">
-            <label for="bullet3">Bullet 3</label>
-          </div>
-        </div>
-        <hr />
-        <strong>Video</strong>
-        <div class="form-group">
-          <div class="checkbox checkbox-info">
-            <input ng-change="modified()" ng-model="project.openGL" type="checkbox" id="openGL">
-            <label for="openGL">OpenGL</label>
-          </div>
-          <div class="checkbox checkbox-info">
-            <input disabled ng-change="modified()" ng-model="project.vulkan" type="checkbox" id="vulkan">
-            <label for="vulkan">Vulkan</label>
-          </div>
-        </div>
+        <table class="table table-condensed table-bordered table-striped">
+          <tbody>
+            <tr>
+              <td>Name</td>
+              <td>
+                <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.name"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Author</td>
+              <td>
+                <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="project.author"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Description</td>
+              <td>
+                <input type="text" class="form-control input-sm" ng-change="modified()" ng-model="project.description" />
+              </td>
+            </tr>
+            <tr>
+              <td>Startup Scene</td>
+              <td>
+                <select ng-model="project.startupScene" ng-change="modified()" class="form-control input-sm">
+                  <option ng-repeat="scene in sceneList" value="{{scene.uuid}}">{{scene.name}}</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>
+                <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.animationPlugin">
+                  <option value="dreamAnim">Dream</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Audio</td>
+              <td>
+                <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.audioPlugin">
+                  <option value="openAL">OpenAL</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Input</td>
+              <td>
+                <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.inputPlugin">
+                  <option value="glfwInput">GLFW Input</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Physics</td>
+              <td>
+                <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.physicsPlugin">
+                  <option value="bullet2">Bullet 2</option>
+                  <option value="bullet3">Bullet 3</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Scripting</td>
+              <td>
+                <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.scriptingPlugin">
+                  <option value="chai">ChaiScript</option>
+                  <option value="v8">JavaScript (v8)</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Video</td>
+              <td>
+                <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.videoPlugin">
+                  <option value="openGL">OpenGL</option>
+                  <option value="vulkan">Vulkan</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

@@ -23,6 +23,18 @@ namespace Asset {
 	AssetInstance::AssetInstance(Dream::Asset::AssetDefinition* definition) {
 		mDefinition = definition;
 	}
+	
+	std::string AssetInstance::getName() {
+		return mDefinition->getName();
+	}
+	
+	std::string AssetInstance::getUUID() {
+		return mDefinition->getUUID();
+	}
+	
+	std::string AssetInstance::getNameAndUUIDString() {
+		return getName() + " (" + getUUID() + ")";
+	}
 
 } // End of Asset
 } // End of Dream

@@ -35,11 +35,10 @@ namespace Asset {
 		AssetInstance(Dream::Asset::AssetDefinition*);
 		virtual ~AssetInstance(void) {};
 		
-		void setUUID(std::string);
 		std::string getUUID();
-		
-		void setName(std::string);
 		std::string getName();
+		
+		std::string getNameAndUUIDString();
 		
 		virtual bool load(Dream::Util::FileReader*) = 0;
 		

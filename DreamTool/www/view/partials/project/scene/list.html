@@ -1,59 +1,5 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-3">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          Configure Scene
-        </div>
-        <div class="panel-body">
-          <div class="form-group">
-            <label for="name">Name</label>
-            <input id="name" ng-disabled="currentScene === undefined" type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentScene.name" />
-          </div>
-          <div class="form-group">
-            <label>Notes</label>
-            <textarea class="form-control" width="100%" rows 10></textarea>
-          </div>
-          <hr/>
-          <label>Using Plugins</label>
-          <div class="checkbox checkbox-info">
-            <input type="checkbox" id="enableAnimation" ng-disabled="currentScene === undefined" ng-change="modified()" ng-model="currentScene.animationEnabled" />
-            <label for="enableAnimation">
-              Animation
-            </label>
-          </div>
-          <div class="checkbox checkbox-info">
-            <input id="enableAudio" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.audioEnabled" />
-            <label for="enableAudio">
-              Audio
-            </label>
-          </div>
-          <div class="checkbox checkbox-info">
-            <input id="enableInput" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.inputEnabled" />
-            <label for="enableInput">
-              Input
-            </label>
-          </div>
-          <div class="checkbox checkbox-info">
-            <input id="enableBullet" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.physicsEnabled" />
-            <label for="enablePhysics">
-              Physics
-            </label>
-          </div>
-          <div class="checkbox checkbox-info">
-            <input id="enableScripting" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.scriptingEnabled" />
-            <label for="enableScripting">
-              Scripting
-            </label>
-          </div>
-
-        </div>
-        <div class="panel-footer">
-          <button ng-click="onNewSceneButtonClicked()" class="btn btn-sm btn btn-success">New Scene</button>
-          <br/>
-        </div>
-      </div>
-    </div>
     <div class="col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -100,6 +46,88 @@
             </tr>
           </tbody>
         </table>
+        <div class="panel-footer">
+          <button ng-click="onNewSceneButtonClicked()" class="btn btn-sm btn btn-success">New Scene</button>
+          <br/>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div ng-show="currentScene !== undefined && currentScene !== null" class="panel panel-default">
+        <div class="panel-heading">
+          Configure Scene
+        </div>
+        <table class="table table-condensed table-bordered table-striped">
+          <tbody>
+            <tr>
+              <td>Name</td>
+              <td>
+                <input id="name" ng-disabled="currentScene === undefined" type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentScene.name" />
+              </td>
+            </tr>
+            <tr>
+              <td>Notes</td>
+              <td>
+                <input type="text" ng-model="currentScene.notes" ng-change="modified()" class="form-control input-sm"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Animation</td>
+              <td>
+                <div class="checkbox checkbox-info">
+                  <input type="checkbox" id="enableAnimation" ng-disabled="currentScene === undefined" ng-change="modified()" ng-model="currentScene.animationEnabled" />
+                  <label></label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Audio</td>
+              <td>
+                <div class="checkbox checkbox-info">
+                  <input id="enableAudio" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.audioEnabled" />
+                  <label></label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Input</td>
+              <td>
+                <div class="checkbox checkbox-info">
+                  <input id="enableInput" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.inputEnabled" />
+                  <label></label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Physics</td>
+              <td>
+                <div class="checkbox checkbox-info">
+                  <input id="enableBullet" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.physicsEnabled" />
+                  <label></label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Scripting</td>
+              <td>
+                <div class="checkbox checkbox-info">
+                  <input id="enableScripting" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.scriptingEnabled" />
+                  <label></label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Video</td>
+              <td>
+                <div class="checkbox checkbox-info">
+                  <input id="enableVideo" type="checkbox" ng-change="modified()" ng-disabled="currentScene === undefined" ng-model="currentScene.videoEnabled" />
+                  <label></label>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
       </div>
     </div>
   </div>

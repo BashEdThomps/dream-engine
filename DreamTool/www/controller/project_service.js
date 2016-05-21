@@ -2,6 +2,16 @@ App.service('ProjectService',
     ["Blob","FileSaver","UtilService","ApiService",
      function(Blob, FileSaver, UtilService, ApiService) {
 
+    this.PLUGIN_ANIMATION_DREAM = "dreamAnim";
+    this.PLUGIN_AUDIO_OPENAL    = "openAL";
+    this.PLUGIN_INPUT_GLFW      = "glfwInput"
+    this.PLUGIN_SCRIPTING_V8    = "v8";
+    this.PLUGIN_SCRIPTING_CHAI  = "chai";
+    this.PLUGIN_PHYSICS_BULLET2 = "bullet2";
+    this.PLUGIN_PHYSICS_BULLET3 = "bullet3";
+    this.PLUGIN_VIDEO_OPENGL    = "openGL";
+    this.PLUGIN_VIDEO_VULKAN    = "vulkan";
+
     this.project = null;
 
     this.isProjectOpen = function() {
@@ -174,8 +184,6 @@ App.service('ProjectService',
       }
     };
 
-    // Create New Assets ----------------------------------------------------
-
     this.createScene = function() {
         return {
             uuid: UtilService.generateUUID(),
@@ -208,6 +216,14 @@ App.service('ProjectService',
         };
     };
 
+    this.setDreamAnimation = function(dreamAnim) {
+      this.project.dreamAnimation = dreamAnim;
+    };
+
+    this.setGLFWInput = function(glfw) {
+      this.project.glfwInput = glfw;
+    };
+
     this.setChai = function(chai) {
         this.project.chai = chai;
     };
@@ -234,6 +250,98 @@ App.service('ProjectService',
 
     this.setVulkan = function(vulkan) {
         this.project.vulkan = vulkan;
+    };
+
+    this.setSelectedPlugins = function(selectedPlugins) {
+      this.project.isModified = true;
+      // Animation
+      switch (selectedPlugins.animationPlugin) {
+        case this.PLUGIN_ANIMATION_DREAM:
+          this.project.dreamAnim = true;
+          break;
+      }
+      // Audio
+      switch (selectedPlugins.audioPlugin) {
+        case this.PLUGIN_AUDIO_OPENAL:
+          this.project.openAL = true;
+          break;
+      }
+      // Input
+      switch (selectedPlugins.inputPlugin) {
+        case this.PLUGIN_INPUT_GLFW:
+          this.project.glfwInput = true;
+          break;
+      }
+      // Scripting
+      switch (selectedPlugins.scriptingPlugin) {
+        case this.PLUGIN_SCRIPTING_V8:
+          this.project.v8 = true;
+          this.project.chai = false;
+          break;
+        case this.PLUGIN_SCRIPTING_CHAI:
+          this.project.chai = true;
+          this.project.v8 = false;
+          break;
+      }
+      // Physics
+      switch (selectedPlugins.physicsPlugin) {
+        case this.PLUGIN_PHYSICS_BULLET2:
+          this.project.bullet2 = true;
+          this.project.bullet3 = false;
+          break;
+        case this.PLUGIN_PHYSICS_BULLET3:
+          this.project.bullet3 = true;
+          this.project.bullet2 = false;
+          break;
+      }
+      // Video
+      switch (selectedPlugins.videoPlugin) {
+          case this.PLUGIN_VIDEO_OPENGL:
+            this.project.openGL = true;
+            this.project.vulkan = false;
+            break;
+          case this.PLUGIN_VIDEO_VULKAN:
+            this.project.vulkan = true;
+            this.projet.openGL = false;
+            break;
+      }
+    };
+
+    this.getSelectedPlugins = function(callback) {
+        var retval = {};
+
+        // Animation
+        if (this.project.dreamAnim) {
+          retval.animationPlugin = this.PLUGIN_ANIMATION_DREAM;
+        }
+        // Audio
+        if (this.project.openAL) {
+          retval.audioPlugin = this.PLUGIN_AUDIO_OPENAL;
+        }
+        // Input
+        if (this.project.glfwInput) {
+          retval.inputPlugin = this.PLUGIN_INPUT_GLFW;
+        }
+        // Physics
+        if (this.project.bullet2) {
+            retval.physicsPlugin = this.PLUGIN_PHYSICS_BULLET2;
+        } else if (this.project.bullet3) {
+            retval.physicsPlugin = this.PLUGIN_PHYSICS_BULLET3;
+        }
+        // Scripting
+        if (this.project.v8) {
+          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_V8;
+        } else if (this.project.chai) {
+          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_CHAI;
+        }
+        // Video
+        if (this.project.openGL) {
+          retval.videoPlugin = this.PLUGIN_VIDEO_OPENGL;
+        } else if (this.project.vulkan) {
+          retval.videoPlugin = this.PLUGIN_VIDEO_VULKAN;
+        }
+
+        callback(retval);
     };
 
     this.initialise = function() {

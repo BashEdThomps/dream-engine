@@ -142,9 +142,28 @@ namespace Asset {
 		return getFormat().compare(ASSET_DEF_FORMAT_ANIMATION_DREAM) == 0;
 	}
 	
+	std::string AssetDefinition::getAssetTypeDirectory() {
+		std::string type = getType();
+		if (type.compare(ASSET_TYPE_ANIMATION)==0) {
+			return ASSET_DIR_ANIMATION;
+		} else if (type.compare(ASSET_TYPE_AUDIO)==0) {
+			return ASSET_DIR_AUDIO;
+		} else if (type.compare(ASSET_TYPE_MODEL)==0) {
+			return ASSET_DIR_MODEL;
+		} else if (type.compare(ASSET_TYPE_SCRIPT)==0) {
+			return ASSET_DIR_SCRIPT;
+		} else {
+			return "Type Not Found";
+		}
+	}
+	
 	std::string AssetDefinition::getAssetPath() {
 		std::stringstream pathStream;
-		pathStream << DIR_PATH_SEP << ASSET_DIR << DIR_PATH_SEP << getType() << DIR_PATH_SEP << getFormat();
+		pathStream << DIR_PATH_SEP
+		           << ASSET_DIR << DIR_PATH_SEP
+		           << getAssetTypeDirectory() << DIR_PATH_SEP
+		           << getUUID() << DIR_PATH_SEP
+		           << getFormat();
 		return pathStream.str();
 	}
 	

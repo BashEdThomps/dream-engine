@@ -41,12 +41,13 @@ namespace Asset {
 		void destroyAssetInstances();
 		void addAssetInstance(Asset::AssetInstance*);
 		
-		Asset::AssetInstance* createAssetInstanceFromUUID(std::string);
-		Asset::AssetInstance* createAssetInstance(Asset::AssetDefinition*);
-		Asset::AssetInstance* createAnimationAssetInstance(Asset::AssetDefinition*);
-		Asset::AssetInstance* createAudioAssetInstance(Asset::AssetDefinition*);
-		Asset::AssetInstance* createModelAssetInstance(Asset::AssetDefinition*);
-		Asset::AssetInstance* createScriptAssetInstance(Asset::AssetDefinition*);
+		Asset::AssetInstance* createAssetInstanceFromUUID  (Dream::Scene::SceneObject*, std::string);
+		Asset::AssetInstance* createAssetInstance          (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
+		Asset::AssetInstance* createAnimationAssetInstance (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
+		Asset::AssetInstance* createAudioAssetInstance     (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
+		Asset::AssetInstance* createModelAssetInstance     (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
+		Asset::AssetInstance* createScriptAssetInstance    (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
+		
 		void showStatus();
 	};
 	

@@ -18,7 +18,9 @@
 #ifndef OGLVIDEO_H
 #define OGLVIDEO_H
 
+#include "../../../Asset/Instances/Model/WaveFront/ObjModelInstance.h"
 #include "../VideoPluginInterface.h"
+
 #include <GLFW/glfw3.h>
 #include <iostream>
 

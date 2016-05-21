@@ -7,7 +7,6 @@ namespace Dream {
 		mProject       = NULL;
 		mAssetManager  = NULL;
 		mPluginManager = NULL;
-		
 		mRunning = false;
 	}
 
@@ -74,8 +73,6 @@ namespace Dream {
 		return loadSuccess;
 	}
 
-	
-	
 	bool Dream::loadScene(Scene::Scene* scene) {
 		std::cout << "Dream: Loading Scene " << scene->getName() << std::endl;
 		

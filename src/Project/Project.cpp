@@ -105,20 +105,24 @@ namespace Project {
 
 	void Project::showStatus() {
 		std::cout << "Project: New Project"  << std::endl;
-		std::cout << "               UUID: " << mUUID   << std::endl;
-		std::cout << "               Name: " << mName   << std::endl;
-		std::cout << "             Author: " << mAuthor << std::endl;
-		std::cout << "        Description: " << mDescription    << std::endl;
-		std::cout << "       Chai Enabled: " << mChaiEnabled    << std::endl;
-		std::cout << "         v8 Enabled: " << mV8Enabled      << std::endl;
-		std::cout << "     OpenAL Enabled: " << mOpenALEnabled  << std::endl;
-		std::cout << "    Bullet2 Enabled: " << mBullet2Enabled << std::endl;
-		std::cout << "    Bullet3 Enabled: " << mBullet3Enabled << std::endl;
-		std::cout << "     OpenGL Enabled: " << mOpenGLEnabled  << std::endl;
-		std::cout << "     Vulkan Enabled: " << mVulkanEnabled  << std::endl;
-		std::cout << "             Scenes: " << getNumberOfScenes()   << std::endl;
-		std::cout << "      Startup Scene: " << getStartupSceneUUID() << std::endl;
+		std::cout << "               UUID: " << mUUID        << std::endl;
+		std::cout << "               Name: " << mName        << std::endl;
+		std::cout << "             Author: " << mAuthor      << std::endl;
+		std::cout << "        Description: " << mDescription << std::endl;
+		std::cout << "       Chai Enabled: " << boolToYesNo(mChaiEnabled)     << std::endl;
+		std::cout << "         v8 Enabled: " << boolToYesNo(mV8Enabled)       << std::endl;
+		std::cout << "     OpenAL Enabled: " << boolToYesNo(mOpenALEnabled)   << std::endl;
+		std::cout << "    Bullet2 Enabled: " << boolToYesNo(mBullet2Enabled)  << std::endl;
+		std::cout << "    Bullet3 Enabled: " << boolToYesNo(mBullet3Enabled)  << std::endl;
+		std::cout << "     OpenGL Enabled: " << boolToYesNo(mOpenGLEnabled)   << std::endl;
+		std::cout << "     Vulkan Enabled: " << boolToYesNo(mVulkanEnabled)   << std::endl;
+		std::cout << "             Scenes: " << getNumberOfScenes()           << std::endl;
+		std::cout << "      Startup Scene: " << getStartupSceneUUID()         << std::endl;
 		std::cout << " Assets Definitions: " << getNumberOfAssetDefinitions() << std::endl;
+	}
+	
+	std::string Project::boolToYesNo(bool value) {
+		return (value ? "Yes" : "No");
 	}
 
 	Project::~Project(void) {}
