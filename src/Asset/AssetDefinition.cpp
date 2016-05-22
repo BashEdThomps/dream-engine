@@ -117,7 +117,11 @@ namespace Asset {
 	bool AssetDefinition::isTypeScript() {
 		return getType().compare(ASSET_TYPE_SCRIPT) == 0;
 	}
-		
+	
+	bool AssetDefinition::isTypeShader() {
+		return getType().compare(ASSET_TYPE_SHADER) == 0;
+	}
+			
 	bool AssetDefinition::isScriptFormatJavaScript() {
 		return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_JAVASCRIPT) == 0;
 	}
@@ -152,6 +156,8 @@ namespace Asset {
 			return ASSET_DIR_MODEL;
 		} else if (type.compare(ASSET_TYPE_SCRIPT)==0) {
 			return ASSET_DIR_SCRIPT;
+		} else if (type.compare(ASSET_TYPE_SHADER) == 0) {
+			return ASSET_DIR_SHADER;
 		} else {
 			return "Type Not Found";
 		}

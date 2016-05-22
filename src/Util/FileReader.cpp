@@ -21,6 +21,8 @@ namespace Dream {
 namespace Util {
 	FileReader::FileReader(std::string path) {
 		mPath = path;
+		mStringStream = NULL;
+		mBinaryVector = NULL;
 	}
 
 	FileReader::~FileReader(void) {

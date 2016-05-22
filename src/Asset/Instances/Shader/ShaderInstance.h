@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::Instance::Audio::Ogg::OggAudio
+* Dream::Asset::Instance::Shader::ShaderInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,25 +15,34 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OggAudioInstance.h"
+#ifndef SHADERINSTANCE_H
+#define SHADERINSTANCE_H
 
-namespace Dream     {
-namespace Asset     {
-namespace Instances {
-namespace Audio     {
-namespace Ogg       {
-	
-	OggAudioInstance::OggAudioInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {}
-	
-    OggAudioInstance::~OggAudioInstance(void) {}
-	
-	bool OggAudioInstance::load(std::string projectPath) {
-		return false;
-	}
-	
-} // End of Ogg
-} // End of Audio
+#include <iostream>
+#include "../../AssetInstance.h"
+
+#define SHADER_VERTEX   "vertex"
+#define SHADER_FRAGMENT "fragment"
+
+namespace Dream      {
+namespace Asset      {
+namespace Instances  {
+namespace Shader     {
+    
+    class ShaderInstance : public Dream::Asset::AssetInstance {
+		private:
+			std::string mVertexShaderSource;
+			std::string mFragmentShaderSource;
+    public:
+			ShaderInstance(Dream::Asset::AssetDefinition*);
+			~ShaderInstance(void);
+			bool load(std::string);
+		
+    }; // End of ShaderInstance
+    
+} // End of Shader
 } // End of Instance
 } // End of Asset
 } // End of Dream
+
+#endif // End of SHADERINSTANCE_H

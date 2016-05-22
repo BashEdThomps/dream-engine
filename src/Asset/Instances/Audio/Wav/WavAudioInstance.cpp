@@ -28,7 +28,7 @@ namespace Wav       {
 					
 	WavAudioInstance::~WavAudioInstance(void) {}
 	
-	bool WavAudioInstance::load(Dream::Util::FileReader* fileReader) {
+	bool WavAudioInstance::load(std::string projectPath) {
 		return false;
 	}
 

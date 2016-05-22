@@ -122,7 +122,7 @@ namespace Plugins {
 		if (mProject->isOpenGLEnabled()) {
 			if (mVideoPlugin == NULL) {
 				mVideoPlugin = new Plugins::Video::OpenGL::OGLVideo();
-                mVideoPlugin->setScreenName(mProject->getName());
+                mVideoPlugin->setScreenName(mProject->getName() + " :: " + mProject->getDescription());
 				if (mVideoPlugin->init()) {
 					return true;
 				} else {

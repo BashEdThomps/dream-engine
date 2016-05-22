@@ -33,7 +33,7 @@ namespace JavaScript {
 		JavaScriptInstance(Dream::Asset::AssetDefinition*);
 		~JavaScriptInstance(void);
 		
-		bool load(Dream::Util::FileReader*);
+		bool load(std::string);
 		
 	}; // End of JavaScript
 	

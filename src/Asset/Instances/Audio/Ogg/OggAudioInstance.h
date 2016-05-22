@@ -35,7 +35,7 @@ namespace Ogg       {
 		OggAudioInstance(Dream::Asset::AssetDefinition*);
 		~OggAudioInstance(void);
 		
-		bool load(Dream::Util::FileReader*);
+		bool load(std::string);
 		
 	}; // End of OggAudio
 	

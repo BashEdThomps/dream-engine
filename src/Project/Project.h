@@ -22,13 +22,6 @@
 #include "../JSON/json.hpp"
 #include "../Scene/Scene.h"
 #include "../Asset/AssetDefinition.h"
-#include "../Asset/AssetInstance.h"
-#include "../Asset/Instances/Model/WaveFront/ObjModelInstance.h"
-#include "../Asset/Instances/Script/JavaScript/JavaScriptInstance.h"
-#include "../Asset/Instances/Script/ChaiScript/ChaiScriptInstance.h"
-#include "../Asset/Instances/Audio/Ogg/OggAudioInstance.h"
-#include "../Asset/Instances/Audio/Wav/WavAudioInstance.h"
-#include "../Asset/Instances/Animation/Dream/AnimationInstance.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"

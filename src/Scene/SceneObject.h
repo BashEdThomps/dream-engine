@@ -52,6 +52,7 @@ namespace Scene {
 		Dream::Asset::AssetInstance* mAudioAssetInstance;
 		Dream::Asset::AssetInstance* mModelAssetInstance;
 		Dream::Asset::AssetInstance* mScriptAssetInstance;
+		Dream::Asset::AssetInstance* mShaderAssetInstance;
 		
 	public:
 		SceneObject  ();
@@ -105,7 +106,10 @@ namespace Scene {
 		Dream::Asset::AssetInstance*   getModelAssetInstance();
 		
 		void setScriptAssetInstance    (Dream::Asset::AssetInstance*);
-		Dream::Asset::AssetInstance*   getScripAssetInstance();
+		Dream::Asset::AssetInstance*   getScriptAssetInstance();
+		
+		void setShaderAssetInstance    (Dream::Asset::AssetInstance*);
+		Dream::Asset::AssetInstance*   getShaderAssetInstance();
 		
 		std::vector<std::string> getAssetInstanceUUIDsToLoad();
 		

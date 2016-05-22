@@ -22,9 +22,18 @@
 #include <iostream>
 #include <vector>
 
+#include "../Project/Project.h"
+
 #include "AssetInstance.h"
 #include "AssetDefinition.h"
-#include "../Project/Project.h"
+
+#include "Instances/Model/WaveFront/ObjModelInstance.h"
+#include "Instances/Script/JavaScript/JavaScriptInstance.h"
+#include "Instances/Script/ChaiScript/ChaiScriptInstance.h"
+#include "Instances/Audio/Ogg/OggAudioInstance.h"
+#include "Instances/Audio/Wav/WavAudioInstance.h"
+#include "Instances/Animation/Dream/AnimationInstance.h"
+#include "Instances/Shader/ShaderInstance.h"
 
 namespace Dream {
 namespace Asset {
@@ -47,6 +56,7 @@ namespace Asset {
 		Asset::AssetInstance* createAudioAssetInstance     (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
 		Asset::AssetInstance* createModelAssetInstance     (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
 		Asset::AssetInstance* createScriptAssetInstance    (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
+		Asset::AssetInstance* createShaderAssetInstance    (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
 		
 		void showStatus();
 	};

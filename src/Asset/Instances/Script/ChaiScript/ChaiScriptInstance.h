@@ -30,10 +30,10 @@ namespace ChaiScript {
     
     class ChaiScriptInstance : public Dream::Asset::AssetInstance {
     public:
-		ChaiScriptInstance(Dream::Asset::AssetDefinition*);
-        ~ChaiScriptInstance(void);
+			ChaiScriptInstance(Dream::Asset::AssetDefinition*);
+			~ChaiScriptInstance(void);
 		
-		bool load(Dream::Util::FileReader*);
+			bool load(std::string);
 		
     }; // End of ChaiScriptInstance
     

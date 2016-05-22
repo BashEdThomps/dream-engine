@@ -28,7 +28,7 @@ namespace JavaScript {
 	
 	JavaScriptInstance::~JavaScriptInstance(void) {}
 	
-	bool JavaScriptInstance::load(Dream::Util::FileReader* file) {
+	bool JavaScriptInstance::load(std::string projectPath) {
 		return false;
 	}
 	

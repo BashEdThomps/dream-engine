@@ -248,8 +248,16 @@ namespace Scene {
 		mScriptAssetInstance = scriptAsset;
 	}
 	
-	Dream::Asset::AssetInstance* SceneObject::getScripAssetInstance() {
+	Dream::Asset::AssetInstance* SceneObject::getScriptAssetInstance() {
 		return mScriptAssetInstance;
+	}
+	
+	void SceneObject::setShaderAssetInstance(Dream::Asset::AssetInstance* shaderAsset) {
+		mShaderAssetInstance = shaderAsset;
+	}
+	
+	Dream::Asset::AssetInstance* SceneObject::getShaderAssetInstance() {
+		return mShaderAssetInstance;
 	}
 		
 } // End of Scene

@@ -28,7 +28,7 @@ namespace ChaiScript {
 
 	ChaiScriptInstance::~ChaiScriptInstance(void) {}
 	
-	bool ChaiScriptInstance::load(Dream::Util::FileReader* file) {
+	bool ChaiScriptInstance::load(std::string projectPath) {
 		return false;
 	}
 	

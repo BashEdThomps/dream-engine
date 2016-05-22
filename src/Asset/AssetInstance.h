@@ -29,7 +29,7 @@ namespace Dream {
 namespace Asset {
 	
 	class AssetInstance {
-	private:
+	protected:
 		Dream::Asset::AssetDefinition* mDefinition;
 	public:
 		AssetInstance(Dream::Asset::AssetDefinition*);
@@ -40,7 +40,7 @@ namespace Asset {
 		
 		std::string getNameAndUUIDString();
 		
-		virtual bool load(Dream::Util::FileReader*) = 0;
+		virtual bool load(std::string) = 0;
 		
 	}; // End of AssetInstance
 	

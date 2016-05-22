@@ -76,7 +76,7 @@ namespace OpenGL {
     				if (objModel != NULL) {
     					std::vector<tinyobj::shape_t>    shapes    = objModel->getShapesVector();
     					std::vector<tinyobj::material_t> materials = objModel->getMaterialsVector();
-							
+						/*
 							GLenum errorCode = 0;
 							GLuint vertex_buffer;
 							// Copy data to GPU
@@ -131,6 +131,7 @@ namespace OpenGL {
 							{
 								fprintf(stderr, "Error data: %s, code %d\n", glewGetErrorString(errorCode), errorCode);
 							}
+						 */
     				}
 					} catch (std::exception exception) {
 						std::cerr << "OGLVideo: Unable to cast model to ObjModelInstance, " << exception.what() << std::endl;

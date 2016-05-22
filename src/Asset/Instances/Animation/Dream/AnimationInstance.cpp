@@ -16,7 +16,7 @@ namespace DreamAnimation {
 
 	AnimationInstance::~AnimationInstance() {}
 	
-	bool AnimationInstance::load(Dream::Util::FileReader* fileReader) {
+	bool AnimationInstance::load(std::string projectPath) {
 		return false;
 	}
 

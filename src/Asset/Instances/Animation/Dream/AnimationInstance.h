@@ -11,7 +11,6 @@
 #include "KeyFrame.h"
 #include "Frame.h"
 
-#define ASSET_TYPE_ANIMATION   "Animation"
 #define ASSET_DIR_ANIMATION    "animation"
 #define ASSET_FORMAT_ANIMATION "animation"
 
@@ -36,7 +35,7 @@ namespace DreamAnimation {
         AnimationInstance(Dream::Asset::AssetDefinition*, int fps = 60);
         ~AnimationInstance();
 		
-		bool load(Dream::Util::FileReader*);
+				bool load(std::string);
 		
         void generateFrames();
         void addFrame(Frame*);

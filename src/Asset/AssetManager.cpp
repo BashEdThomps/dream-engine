@@ -88,11 +88,13 @@ namespace Asset {
 			retval = createModelAssetInstance(sceneObject, definition);
 		} else if (definition->isTypeScript()){
 			retval = createScriptAssetInstance(sceneObject, definition);
+		} else if (definition->isTypeShader()) {
+			retval = createShaderAssetInstance(sceneObject, definition);
 		}
 		
 		if (retval != NULL) {
 			std::cout << "AssetManager: Loading Asset Data for " << definition->getName() << std::endl;
-			retval->load(new Dream::Util::FileReader(mProject->getProjectPath()+definition->getAssetPath()));
+			retval->load(mProject->getProjectPath());
 		}
 		
 		return retval;
@@ -150,6 +152,15 @@ namespace Asset {
 		sceneObject->setScriptAssetInstance(retval);
 		return retval;
 	}
+	
+	Asset::AssetInstance* AssetManager::createShaderAssetInstance(Dream::Scene::SceneObject* sceneObject, Asset::AssetDefinition* definition) {
+		std::cout << "Dream: Creating Shader asset instance." << std::endl;
+		Asset::AssetInstance* retval = NULL;
+		retval = new Instances::Shader::ShaderInstance(definition);
+		sceneObject->setShaderAssetInstance(retval);
+		return retval;
+	}
+	
 	
 } // End of Instance
 } // End of Dream

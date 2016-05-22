@@ -31,8 +31,8 @@ namespace WaveFront  {
 
 	ObjModelInstance::~ObjModelInstance(void) {}
 	
-	bool ObjModelInstance::load(Dream::Util::FileReader *file) {
-		std::string path = file->getPath();
+	bool ObjModelInstance::load(std::string projectPath) {
+		std::string path = projectPath+mDefinition->getAssetPath();
 		std::cout << "ObjModelInstance: Loading Model from " << path << std::endl;
 		
 		if(!tinyobj::LoadObj(mShapes, mMaterials, mError, path.c_str())) {

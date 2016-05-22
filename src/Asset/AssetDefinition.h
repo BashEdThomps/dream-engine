@@ -36,11 +36,14 @@
 #define ASSET_DIR_AUDIO     "audio"
 #define ASSET_DIR_MODEL     "model"
 #define ASSET_DIR_SCRIPT    "script"
+#define ASSET_DIR_SHADER    "shader"
 
-#define ASSET_TYPE_ANIMATION "Animation"
-#define ASSET_TYPE_AUDIO     "Audio"
-#define ASSET_TYPE_MODEL     "Model"
-#define ASSET_TYPE_SCRIPT    "Script"
+#define ASSET_TYPE_ANIMATION       "animation"
+#define ASSET_TYPE_AUDIO           "audio"
+#define ASSET_TYPE_COLLISION_SHAPE "collisionShape"
+#define ASSET_TYPE_MODEL           "model"
+#define ASSET_TYPE_SCRIPT          "script"
+#define ASSET_TYPE_SHADER          "shader"
 
 
 #define ASSET_DEF_FORMAT_SCRIPT_JAVASCRIPT "js"
@@ -78,6 +81,7 @@ namespace Asset {
 		bool isTypeAudio();
 		bool isTypeModel();
 		bool isTypeScript();
+		bool isTypeShader();
 		
 		bool isScriptFormatJavaScript();
 		bool isScriptFormatChaiScript();

@@ -32,7 +32,7 @@ namespace Wav       {
 	public:
 		WavAudioInstance(Dream::Asset::AssetDefinition*);
 		~WavAudioInstance(void);
-		bool load(Dream::Util::FileReader*);
+		bool load(std::string);
 	};
 	
 } // End of Wav
