@@ -8,12 +8,16 @@ var MODELS_DIR          = "model";
 var AUDIO_DIR           = "audio";
 var ANIMATION_DIR       = "animation";
 var SCRIPT_DIR          = "script";
+var SHADER_DIR          = "shader";
 
 var AUDIO_WAV_FMT = "wav";
 var AUDIO_OGG_FMT = "ogg";
 
 var MODEL_OBJ_FMT = "obj";
 var MODEL_MTL_FMT = "mtl";
+
+var SHADER_VERT_FMT = "vertex";
+var SHADER_FRAG_FMT = "fragment";
 
 var JSON_EXTENSION = ".json";
 var TAR_GZ_EXTENSION = ".tar.gz";
@@ -60,6 +64,10 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     var script = assetPrefix + path.sep + SCRIPT_DIR;
     fs.mkdirSync(script);
     console.log("mkdir",script,"ok");
+
+    var shader = assetPrefix + path.sep + SHADER_DIR;
+    fs.mkdirSync(shader);
+    console.log("mkdir",shader,"ok");
     yield next;
 };
 
@@ -89,10 +97,10 @@ var createDreamToolDirInHome = function(callback) {
 			fs.mkdir(dreamDirectory,function(err,folder) {
 				if (err) {
 					console.log("Error creating",dreamDirectory);
-                    if (callback) callback(false);
+          if (callback) callback(false);
 				} else  {
 					console.log(dreamDirectory,"created!");
-                    if (callback) callback(true);
+          if (callback) callback(true);
 				}
 			});
 		}
@@ -145,7 +153,8 @@ module.exports.writeAsset = function(proj, dir, rsc, format, data, next) {
 
     try {
         var writeData = null;
-        if (dir === SCRIPT_DIR) {
+
+        if (dir === SCRIPT_DIR || dir === SHADER_DIR) {
             writeData = data;
             console.log("Data identified as NOT b64 buffer");
         } else {
@@ -205,7 +214,7 @@ module.exports.assetExists = function(project,uuid,type,format) {
     var absAssetPath =
         dreamDirectory + path.sep +
         project        + path.sep +
-        ASSET_DIR   + path.sep +
+        ASSET_DIR      + path.sep +
         type           + path.sep +
         uuid           + path.sep +
         format;
@@ -219,7 +228,7 @@ module.exports.readAsset = function(project,uuid,type,format) {
     var absAssetPath =
         dreamDirectory + path.sep +
         project        + path.sep +
-        ASSET_DIR   + path.sep +
+        ASSET_DIR      + path.sep +
         type           + path.sep +
         uuid           + path.sep +
         format;

@@ -12,6 +12,41 @@ App.service('ProjectService',
     this.PLUGIN_VIDEO_OPENGL    = "openGL";
     this.PLUGIN_VIDEO_VULKAN    = "vulkan";
 
+    this.ASSET_TYPE_AUDIO       = "audio";
+    this.ASSET_FORMAT_AUDIO_OGG = "ogg";
+    this.ASSET_FORMAT_AUDIO_WAV = "wav";
+
+    this.ASSET_TYPE_ANIMATION         = "animation";
+    this.ASSET_FORMAT_ANIMATION_DREAM = "dream";
+
+    this.ASSET_TYPE_MODEL                 = "model";
+    this.ASSET_FORMAT_MODEL_WAVEFRONT_OBJ = "obj";
+    this.ASSET_FORMAT_MODEL_WAVEFRONT_MTL = "mtl";
+
+    this.ASSET_TYPE_SCRIPT        = "script";
+    this.ASSET_FORMAT_SCRIPT_JS   = "js";
+    this.ASSET_FORMAT_SCRIPT_CHAI = "chai";
+
+    this.ASSET_TYPE_SHADER            = "shader";
+    this.ASSET_FORMAT_SHADER_VERTEX   = "vertex";
+    this.ASSET_FORMAT_SHADER_FRAGMENT = "fragment";
+
+    this.ASSET_TYPE_NAME_ANIMATION       = "Animation";
+    this.ASSET_TYPE_NAME_AUDIO           = "Audio";
+    this.ASSET_TYPE_NAME_COLLISION_SHAPE = "Collision Shape";
+    this.ASSET_TYPE_NAME_MODEL           = "Model";
+    this.ASSET_TYPE_NAME_SHADER          = "Shader";
+    this.ASSET_TYPE_NAME_SCRIPT          = "Script";
+
+    this.ASSET_TYPE_NAMES = [
+      this.ASSET_TYPE_NAME_ANIMATION,
+      this.ASSET_TYPE_NAME_AUDIO,
+      this.ASSET_TYPE_NAME_COLLISION_SHAPE,
+      this.ASSET_TYPE_NAME_MODEL,
+      this.ASSET_TYPE_NAME_SHADER,
+      this.ASSET_TYPE_NAME_SCRIPT,
+    ];
+
     this.project = null;
 
     this.isProjectOpen = function() {
@@ -121,15 +156,8 @@ App.service('ProjectService',
         this.project.assets.splice(index,1);
     };
 
-    this.getResourecTypes = function() {
-        return [
-            "Animation",
-            "Audio",
-            "Collision Shape",
-            "Model",
-            "Shader",
-            "Script"
-        ];
+    this.getAssetTypeNames = function() {
+      return this.ASSET_TYPE_NAMES;
     };
 
     this.addAssetInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,assetUUID){
@@ -193,7 +221,7 @@ App.service('ProjectService',
             ],
             scriptingEnabled : false,
             animationEnabled : false,
-            physicsEnabled    : false,
+            physicsEnabled   : false,
             audioEnabled     : false,
             inputEnabled     : false,
         };
@@ -350,14 +378,14 @@ App.service('ProjectService',
             name:        "New Dream Project",
             author:      "",
             description: "",
-            openAL : false,
-            bullet2: false,
-            bullet3: false,
-            openGL: false,
-            vulkan: false,
-            scenes: [],
-            assets: [],
-            isModified: false
+            openAL :     false,
+            bullet2:     false,
+            bullet3:     false,
+            openGL:      false,
+            vulkan:      false,
+            scenes:      [],
+            assets:      [],
+            isModified:  false
         };
     };
 
@@ -407,11 +435,11 @@ App.service('ProjectService',
     };
 
     this.updateScene = function(scene) {
-      this.setSceneScriptingEnabled(scene);
-      this.setSceneAnimationEnabled(scene);
-      this.setSceneInputEnabled(scene);
-      this.setSceneAudioEnabled(scene);
-      this.setSceneName(scene);
+      this.setSceneScriptingEnabled (scene);
+      this.setSceneAnimationEnabled (scene);
+      this.setSceneInputEnabled     (scene);
+      this.setSceneAudioEnabled     (scene);
+      this.setSceneName             (scene);
     };
 
     this.setSceneScriptingEnabled = function(scene) {
@@ -461,9 +489,9 @@ App.service('ProjectService',
     this.assetHasModelObj = function(uuid,callback){
         ApiService.assetExists(
             this.project.uuid,
-            "model",
+            this.ASSET_TYPE_MODEL,
             uuid,
-            "obj",
+            this.ASSET_FORMAT_MODEL_WAVEFRONT_OBJ,
             callback
         );
     };
@@ -471,19 +499,65 @@ App.service('ProjectService',
     this.assetHasModelMtl = function(uuid,callback){
         ApiService.assetExists(
             this.project.uuid,
-            "model",
+            this.ASSET_TYPE_MODEL,
             uuid,
-            "mtl",
+            this.ASSET_FORMAT_MODEL_WAVEFRONT_MTL,
             callback
         );
     };
 
-    this.saveScriptAsset = function(asset,script,callback) {
-        ApiService.uploadAsset(
-            "/"+this.project.uuid+"/asset/script/"+asset.uuid+"/"+"js",
-            script,
+    this.assetHasVertexShader = function(uuid,callback){
+        ApiService.assetExists(
+            this.project.uuid,
+            this.ASSET_TYPE_SHADER,
+            uuid,
+            this.ASSET_FORMAT_SHADER_VERTEX,
             callback
         );
+    };
+
+    this.assetHasFragmentShader = function(uuid,callback){
+      ApiService.assetExists(
+        this.project.uuid,
+        this.ASSET_TYPE_SHADER,
+        uuid,
+        this.ASSET_FORMAT_SHADER_FRAGMENT,
+        callback
+      );
+    };
+
+    this.saveScriptAsset = function(asset,script,callback) {
+      ApiService.uploadAsset(
+        "/"+this.project.uuid+"/asset/script/"+asset.uuid+"/"+asset.format,
+        script,
+        callback
+      );
+    };
+
+    this.saveVertexShaderAsset = function(asset,content,callback) {
+      ApiService.uploadAsset(
+        "/" +
+        this.project.uuid +
+        "/asset/" +
+        this.ASSET_TYPE_SHADER +
+        "/" + asset.uuid +
+        "/" + this.ASSET_FORMAT_SHADER_VERTEX,
+        content,
+        callback
+      );
+    };
+
+    this.saveFragmentShaderAsset = function(asset,content,callback) {
+      ApiService.uploadAsset(
+        "/" +
+        this.project.uuid +
+        "/asset/" +
+        this.ASSET_TYPE_SHADER +
+        "/" + asset.uuid + "/" +
+        this.ASSET_FORMAT_SHADER_FRAGMENT,
+        content,
+        callback
+      );
     };
 
     this.readAsset = function(asset,callback) {

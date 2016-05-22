@@ -51,7 +51,7 @@
               <td>Type</td>
               <td>
                 <select ng-disabled="currentAsset === undefined" ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
-                  <option ng-repeat="type in getResourecTypes()" value="{{type}}">{{type}}</option>
+                  <option ng-repeat="type in getAssetTypeNames()" value="{{type}}">{{type}}</option>
                 </select>
               </td>
             </tr>
