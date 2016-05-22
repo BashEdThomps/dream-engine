@@ -31,6 +31,8 @@ App.service('ProjectService',
     this.ASSET_FORMAT_SHADER_VERTEX   = "vertex";
     this.ASSET_FORMAT_SHADER_FRAGMENT = "fragment";
 
+    this.ASSET_TYPE_COLLISION_SHAPE = "collisionShape";
+
     this.ASSET_TYPE_NAME_ANIMATION       = "Animation";
     this.ASSET_TYPE_NAME_AUDIO           = "Audio";
     this.ASSET_TYPE_NAME_COLLISION_SHAPE = "Collision Shape";
@@ -38,13 +40,31 @@ App.service('ProjectService',
     this.ASSET_TYPE_NAME_SHADER          = "Shader";
     this.ASSET_TYPE_NAME_SCRIPT          = "Script";
 
-    this.ASSET_TYPE_NAMES = [
-      this.ASSET_TYPE_NAME_ANIMATION,
-      this.ASSET_TYPE_NAME_AUDIO,
-      this.ASSET_TYPE_NAME_COLLISION_SHAPE,
-      this.ASSET_TYPE_NAME_MODEL,
-      this.ASSET_TYPE_NAME_SHADER,
-      this.ASSET_TYPE_NAME_SCRIPT,
+    this.ASSET_TYPES = [
+      {
+        name:     this.ASSET_TYPE_NAME_ANIMATION,
+        projType: this.ASSET_TYPE_ANIMATION,
+      },
+      {
+        name:     this.ASSET_TYPE_NAME_AUDIO,
+        projType: this.ASSET_TYPE_AUDIO,
+      },
+      {
+        name:     this.ASSET_TYPE_NAME_COLLISION_SHAPE,
+        projType: this.ASSET_TYPE_COLLISION_SHAPE,
+      },
+      {
+        name:     this.ASSET_TYPE_NAME_MODEL,
+        projType: this.ASSET_TYPE_MODEL,
+      },
+      {
+        name:     this.ASSET_TYPE_NAME_SHADER,
+        projType: this.ASSET_TYPE_SHADER,
+      },
+      {
+        name:     this.ASSET_TYPE_NAME_SCRIPT,
+        projType: this.ASSET_TYPE_SCRIPT,
+      }
     ];
 
     this.project = null;
@@ -156,8 +176,8 @@ App.service('ProjectService',
         this.project.assets.splice(index,1);
     };
 
-    this.getAssetTypeNames = function() {
-      return this.ASSET_TYPE_NAMES;
+    this.getAssetTypes = function() {
+      return this.ASSET_TYPES;
     };
 
     this.addAssetInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,assetUUID){
@@ -522,6 +542,26 @@ App.service('ProjectService',
         this.ASSET_TYPE_SHADER,
         uuid,
         this.ASSET_FORMAT_SHADER_FRAGMENT,
+        callback
+      );
+    };
+
+    this.assetHasAudioWav = function(uuid,callback) {
+      ApiService.assetExists(
+        this.project.uuid,
+        this.ASSET_TYPE_AUDIO,
+        uuid,
+        this.ASSET_FORMAT_AUDIO_WAV,
+        callback
+      );
+    };
+
+    this.assetHasAudioOgg = function(uuid,callback) {
+      ApiService.assetExists(
+        this.project.uuid,
+        this.ASSET_TYPE_AUDIO,
+        uuid,
+        this.ASSET_FORMAT_AUDIO_OGG,
         callback
       );
     };

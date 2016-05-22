@@ -1,7 +1,20 @@
 <div class="container-fluid">
-  <div ng-show="asset.type === 'Animation'" ng-include="'/view/partials/project/asset/editors/animation.html'"></div>
-  <div ng-show="asset.type === 'Audio'"     ng-include="'/view/partials/project/asset/editors/audio.html'"></div>
-  <div ng-show="asset.type === 'Model'"     ng-include="'/view/partials/project/asset/editors/model.html'"></div>
-  <div ng-show="asset.type === 'Script'"    ng-include="'/view/partials/project/asset/editors/script.html'"></div>
-  <div ng-show="asset.type === 'Shader'"    ng-include="'/view/partials/project/asset/editors/shader.html'"></div>
+  <div ng-show="asset.type == 'animation'"
+       ng-include="'/view/partials/project/asset/editors/animation.html'">
+  </div>
+  <div ng-show="asset.type == 'audio'"
+       ng-include="'/view/partials/project/asset/editors/audio.html'">
+  </div>
+  <div ng-show="asset.type == 'collisionShape'"
+       ng-include="'/view/partials/project/asset/editors/collisionShape.html'">
+  </div>
+  <div ng-show="asset.type == 'model'"
+       ng-include="'/view/partials/project/asset/editors/model.html'">
+  </div>
+  <div ng-show="asset.type == 'script'"
+       ng-include="'/view/partials/project/asset/editors/script.html'">
+  </div>
+  <div ng-show="asset.type == 'shader'"
+       ng-include="'/view/partials/project/asset/editors/shader.html'">
+  </div>
 </div>

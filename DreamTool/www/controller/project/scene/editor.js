@@ -107,5 +107,13 @@ App.controller("ProjectSceneEditor",
         $scope.initScenegraphTree();
       }
     };
+
+    $scope.onRemoveChildButtonClicked = function(child) {
+      if ($scope.selectedSceneObject !== null) {
+        var childIndex = $scope.selectedSceneObject.children.indexOf(child);
+        $scope.selectedSceneObject.children.splice(childIndex,1);
+        $scope.initScenegraphTree();
+      }
+    };
   }
 ]);

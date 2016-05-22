@@ -7,6 +7,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     UIService.setBreadcrumbs([ProjectService.getName(),"Assets"]);
     UIService.update();
   } else {
+    UIService.addAlert("No Project Open!","danger");
     $state.go("Home");
   }
 
@@ -14,8 +15,8 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     $state.go("ProjectAssetEditor",{asset: uuid});
   };
 
-  $scope.getAssetTypeNames = function() {
-    return ProjectService.getAssetTypeNames();
+  $scope.getAssetTypes = function() {
+    return ProjectService.getAssetTypes();
   };
 
   $scope.onNewAssetButtonClicked = function() {
@@ -45,9 +46,23 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
   };
 
   $scope.updateAssetUIVariables = function() {
-    console.log("Updating asset variables");
-    if ($scope.currentAsset.type === ProjectService.ASSET_TYPE_MODEL) {
-      if ($scope.currentAsset.format === ProjectService.ASSET_FORMAT_WAVEFRONT) {
+    console.log("Updating Asset Variables for",$scope.currentAsset);
+    if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_AUDIO) {
+      console.log("Checking for existing audio asset");
+      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_WAV) {
+        ProjectService.assetHasAudioWav($scope.currentAsset.uuid,function(result){
+          console.log("AudioWav Asset Exists",result);
+          $scope.hasAudioWav = result;
+        });
+      } else if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_OGG) {
+        ProjectService.assetHasAudioOgg($scope.currentAsset.uuid,function(result){
+          console.log("AudioOgg Asset Exists",result);
+          $scope.hasAudioOgg = result;
+        });
+      }
+    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_MODEL) {
+      console.log("Checking for existing model asset");
+      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_MODEL_WAVEFRONT_OBJ) {
         ProjectService.assetHasModelObj($scope.currentAsset.uuid,function(result) {
           console.log("ModelObj Asset Exists",result);
           $scope.hasModelObj = result;
@@ -57,7 +72,8 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
           $scope.hasModelMtl = result;
         });
       }
-    } else if ($scope.currentAsset.type === ProjectService.ASSET_TYPE_SHADER) {
+    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_SHADER) {
+      console.log("Checking for existsing shader asset");
       ProjectService.assetHasVertexShader($scope.currentAsset.uuid,function(result){
         console.log("VertexShader asset exists",result);
         $scope.hasVertexShader = result;
@@ -122,17 +138,14 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     var oggFile = document.getElementById('ogg-file');
     UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
       var path = ProjectService.getProjectUUID()+"/asset/audio/"+$scope.currentAsset.uuid+"/ogg";
-      ApiService.uploadAsset(path,data,
-        function(success){
-          if (success) {
-            UIService.addAlert("Asset uploaded successfuly.","success");
-          }
-          else {
-            UIService.addAlert("Error uploading asset.","danger");
-          }
-        });
+      ApiService.uploadAsset(path,data, function(success){
+        if (success) {
+          UIService.addAlert("Asset uploaded successfuly.","success");
+        }
+        else {
+          UIService.addAlert("Error uploading asset.","danger");
+        }
       });
-    };
-
-  }
-]);
+    });
+  };
+}]);

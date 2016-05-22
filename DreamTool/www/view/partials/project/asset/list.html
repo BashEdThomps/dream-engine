@@ -44,18 +44,18 @@
             <tr>
               <td>Name</td>
               <td>
-                <input ng-disabled="currentAsset === undefined" type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name"/>
+                <input ng-disabled="currentAsset == undefined" type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name"/>
               </td>
             </tr>
             <tr>
               <td>Type</td>
               <td>
-                <select ng-disabled="currentAsset === undefined" ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
-                  <option ng-repeat="type in getAssetTypeNames()" value="{{type}}">{{type}}</option>
+                <select ng-disabled="currentAsset == undefined" ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
+                  <option ng-repeat="type in getAssetTypes()" value="{{type.projType}}">{{type.name}}</option>
                 </select>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type === 'Model'">
+            <tr ng-show="currentAsset.type == 'model'">
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="modelFormat">
@@ -63,24 +63,33 @@
                 </select>
               </td>
             </tr>
-            <tr id="wf-obj-files" ng-show="currentAsset.type ==='Model' && currentAsset.format === 'obj'">
+            <tr id="wf-obj-files" ng-show="currentAsset.type == 'model' && currentAsset.format == 'obj'">
               <td>Model</td>
               <td>
+                <button ng-show="hasModelObj" class="pull-right btn-sm btn btn-danger">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <button id="wf-upload-button" ng-click="onAssetModelWaveFrontObjUploadButtonClicked()"
+                        ng-show="!hasModelObj" class="pull-right btn-sm btn btn-success">
+                        <span class="glyphicon glyphicon-open"></span>
+                </button>
                 <input ng-show="!hasModelObj" type="file" id="wf-obj-file" accept=".obj" name="model-file" />
-                <button ng-show="hasModelObj" class="pull-right btn-sm btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type === 'Model' && currentAsset.format === 'obj'">
+            <tr ng-show="currentAsset.type == 'model' && currentAsset.format == 'obj'">
               <td>Material</td>
               <td>
-                <button ng-show="hasModelMtl" class="pull-right btn-sm btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-                <button id="wf-upload-button" ng-click="onAssetModelWavefrontUploadButtonClicked()" ng-show="!hasModelMtl" class="pull-right btn-sm btn btn-success">
+                <button ng-show="hasModelMtl" class="pull-right btn-sm btn btn-danger">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <button id="wf-upload-button" ng-click="onAssetModelWavefrontUploadButtonClicked()"
+                        ng-show="!hasModelMtl" class="pull-right btn-sm btn btn-success">
                   <span class="glyphicon glyphicon-open"></span>
                 </button>
                 <input ng-show="!hasModelMtl" type="file" id="wf-mtl-file" accept=".mtl" name="material-file" />
               </td>
             </tr>
-            <tr ng-show="currentAsset.type === 'Script'">
+            <tr ng-show="currentAsset.type == 'script'">
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
@@ -89,7 +98,7 @@
                 </select>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type === 'Audio'">
+            <tr ng-show="currentAsset.type == 'audio'">
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
@@ -98,33 +107,33 @@
                 </select>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type ==='Audio' && currentAsset.format === 'wav'">
+            <tr ng-show="currentAsset.type == 'audio' && currentAsset.format == 'wav'">
               <td>Wav File</td>
               <td>
-                <button ng-show="hasWavFile"  class="pull-right btn-sm btn btn-danger"
+                <button ng-show="hasAudioWav"  class="pull-right btn-sm btn btn-danger"
                         ng-click="">
                   <span class="glyphicon glyphicon-remove"></span>
                 </button>
-                <button ng-show="!hasWavFile" class="pull-right btn btn-sm btn btn-success"
+                <button ng-show="!hasAudioWav" class="pull-right btn btn-sm btn btn-success"
                         ng-click="onAssetAudioWavUploadButtonClicked()">
                   <span class="glyphicon glyphicon-open"></span>
                 </button>
-                <input ng-show="!hasWavFIle" type="file" id="wav-file" accept=".wav" name="wav-file"/>
+                <input ng-show="!hasAudioWav" type="file" id="wav-file" accept=".wav" name="wav-file"/>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type ==='Audio' && currentAsset.format === 'ogg'">
+            <tr ng-show="currentAsset.type =='audio' && currentAsset.format == 'ogg'">
               <td>Ogg File</td>
               <td>
-                <button ng-show="hasOggFile" class="pull-right btn btn-sm btn-danger" ng-click="">
+                <button ng-show="hasAudioOgg" class="pull-right btn btn-sm btn-danger" ng-click="">
                   <span class="glyphicon glyphicon-remove"></span>
                 </button>
-                <button ng-show="!hasOggFile" class="pull-right btn btn-sm btn-success" ng-click="onAssetAudioOggUploadButtonClicked()">
+                <button ng-show="!hasAudioOgg" class="pull-right btn btn-sm btn-success" ng-click="onAssetAudioOggUploadButtonClicked()">
                   <span class="glyphicon glyphicon-open"></span>
                 </button>
-                <input ng-show="!hasOggFile" type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>
+                <input ng-show="!hasAudioOgg" type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type === 'Audio'">
+            <tr ng-show="currentAsset.type == 'audio'">
               <td>Loop</td>
               <td>
                 <div class="checkbox checkbox-info">

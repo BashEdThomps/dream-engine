@@ -108,7 +108,7 @@ App.controller("ProjectAssetEditor",
         ProjectService.getProjectUUID(),
         $scope.asset.type.toLowerCase(),
         $scope.asset.uuid,
-        ProjectService.ASSET_FORMAT_SHADER_VERTEX
+        ProjectService.ASSET_FORMAT_SHADER_VERTEX,
         function(data) {
           if (data) {
             $scope.getVertexShaderEditor().setValue(data);
@@ -212,15 +212,15 @@ App.controller("ProjectAssetEditor",
           UIService.update();
           setTimeout(function() {
             switch ($scope.asset.type) {
-              case "Script":
+              case ProjectService.ASSET_TYPE_SCRIPT:
                 $scope.createScriptEditor();
                 break;
-              case "Shader":
+              case ProjectService.ASSET_TYPE_SHADER:
                 $scope.createVertexShaderEditor();
                 $scope.createFragmentShaderEditor();
                 break;
             }
-          },1000);
+          },100);
         }
       });
     } else {
