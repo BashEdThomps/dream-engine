@@ -7,6 +7,7 @@ var App = angular.module('DreamTool',
         'ngAnimate',
         'ngToast',
         'ngCookies',
-        'angular.css.injector'
+        'angular.css.injector',
+        'ngAudio'
     ]
 );

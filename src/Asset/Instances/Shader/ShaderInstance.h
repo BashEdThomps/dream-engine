@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include "../../AssetInstance.h"
+#include <OpenGL/gl3.h>
 
 #define SHADER_VERTEX   "vertex"
 #define SHADER_FRAGMENT "fragment"
@@ -32,11 +33,32 @@ namespace Shader     {
     class ShaderInstance : public Dream::Asset::AssetInstance {
 		private:
 			std::string mVertexShaderSource;
+			GLuint      mVertexShader;
+			GLuint      mIsVertexShaderCompiled;
+			char*       mVertexShaderCompilerLog;
+			
 			std::string mFragmentShaderSource;
+			GLuint      mFragmentShader;
+			GLuint      mIsFragmentShaderCompiled;
+			char*       mFragmentShaderCompilerLog;
+			
+			GLuint mShaderProgram;
+			GLuint mIsShaderLinked;
+			char*  mShaderLinkerLog;
+			
     public:
 			ShaderInstance(Dream::Asset::AssetDefinition*);
 			~ShaderInstance(void);
+			
 			bool load(std::string);
+			bool compileShaderProgram();
+			bool compileVertexShader();
+			bool compileFragmentShader();
+			bool linkShader();
+			
+			GLuint getShaderProgram();
+			void useShader();
+			void bindAttributeLocation(GLuint,GLchar*);
 		
     }; // End of ShaderInstance
     

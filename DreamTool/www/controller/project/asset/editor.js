@@ -1,92 +1,110 @@
 App.controller("ProjectAssetEditor",
-  ["$scope","$state","$stateParams","$window","ProjectService","UIService","UtilService","ApiService",
-  function($scope,$state,$stateParams,$window,ProjectService,UIService,UtilService,ApiService) {
+  ["$scope","$state","$stateParams","$window","ProjectService","UIService","UtilService","ApiService",'ngAudio',
+  function($scope,$state,$stateParams,$window,ProjectService,UIService,UtilService,ApiService,ngAudio) {
 
     var SCRIPT_EDITOR                  = "script-editor";
     var VERTEX_SHADER_EDITOR           = "vertex-shader-editor";
     var FRAGMENT_SHADER_EDITOR         = "fragment-shader-editor";
 
     $scope.assetUUID = $stateParams.asset;
+    $scope.hasScriptEditor = false;
+    $scope.hasVertexShaderEditor = false;
+    $scope.hasFragmentShaderEditor = false;
 
     $scope.createScriptEditor = function() {
-      console.log("Creating New Script Editor");
-      var editor = $scope.getScriptEditor();
-      if (!editor){
-        console.error("Could Not Find Script Editor");
-        return;
+      if (!$scope.hasScriptEditor) {
+        console.log("Creating New Script Editor");
+        var editor = $scope.getScriptEditor();
+        if (!editor){
+          console.error("Could Not Find Script Editor");
+          return;
+        }
+        editor.setTheme("ace/theme/vibrant_ink");
+        editor.setShowPrintMargin(false);
+        editor.setFontSize(14);
+        editor.setKeyboardHandler('ace/keyboard/vim');
+        if ($scope.asset.format === ProjectService.ASSET_FORMAT_SCRIPT_JS) {
+          editor.getSession().setMode("ace/mode/javascript");
+        } else if ($scope.asset.format === ProjectService.ASSET_FORMAT_SCRIPT_CHAI) {
+          //editor.getSession().setMode("ace/mode/chaiscript");
+        }
+        var editorElement = $scope.getScriptEditorElement();
+        if (!editorElement) {
+          console.error("Could not find Editor Element");
+          return;
+        }
+        editorElement.style.position = "relative";
+        editorElement.style.height   = "50%";
+        editorElement.style.bottom   = "0px";
+        editorElement.style.left     = "0px";
+        editorElement.style.right    = "0px";
+        $scope.getScriptContent();
+        $scope.hasScriptEditor = true;
+      } else {
+        console.log("Script Editor Exists");
       }
-      editor.setTheme("ace/theme/vibrant_ink");
-      editor.setShowPrintMargin(false);
-      editor.setFontSize(14);
-      editor.setKeyboardHandler('ace/keyboard/vim');
-      if ($scope.asset.format === ProjectService.ASSET_FORMAT_SCRIPT_JS) {
-        editor.getSession().setMode("ace/mode/javascript");
-      } else if ($scope.asset.format === ProjectService.ASSET_FORMAT_SCRIPT_CHAI) {
-        //editor.getSession().setMode("ace/mode/chaiscript");
-      }
-      var editorElement = $scope.getScriptEditorElement();
-      if (!editorElement) {
-        console.error("Could not find Editor Element");
-        return;
-      }
-      editorElement.style.position = "relative";
-      editorElement.style.height   = "100%";
-      editorElement.style.bottom   = "0px";
-      editorElement.style.left     = "0px";
-      editorElement.style.right    = "0px";
-      $scope.getScriptContent();
     };
 
     $scope.createVertexShaderEditor = function() {
-      console.log("Creating New Vertex Shader Editor");
-      var editor = $scope.getVertexShaderEditor();
-      if (!editor){
-        console.error("Could Not Find Vertex Shader Editor");
-        return;
-      }
-      editor.setTheme("ace/theme/vibrant_ink");
-      editor.setShowPrintMargin(false);
-      editor.setFontSize(14);
-      editor.setKeyboardHandler('ace/keyboard/vim');
-      editor.getSession().setMode("ace/mode/glsl");
+      if (!$scope.hasVertexShaderEditor) {
+        console.log("Creating New Vertex Shader Editor");
+        var editor = $scope.getVertexShaderEditor();
+        if (!editor){
+          console.error("Could Not Find Vertex Shader Editor");
+          return;
+        }
+        editor.setTheme("ace/theme/vibrant_ink");
+        editor.setShowPrintMargin(false);
+        editor.setFontSize(14);
+        editor.setKeyboardHandler('ace/keyboard/vim');
+        editor.getSession().setMode("ace/mode/glsl");
 
-      var editorElement = $scope.getVertexShaderEditorElement();
-      if (!editorElement) {
-        console.error("Could not find Vertex Shader Editor Element");
-        return;
+        var editorElement = $scope.getVertexShaderEditorElement();
+        if (!editorElement) {
+          console.error("Could not find Vertex Shader Editor Element");
+          return;
+        }
+        editorElement.style.position = "relative";
+        editorElement.style.height   = "50%";
+        editorElement.style.bottom   = "0px";
+        editorElement.style.left     = "0px";
+        editorElement.style.right    = "0px";
+        $scope.getVertexShaderContent();
+        $scope.hasVertexShaderEditor = true;
+      } else {
+        console.log("Vertex editor exists");
       }
-      editorElement.style.position = "relative";
-      editorElement.style.height   = "100%";
-      editorElement.style.bottom   = "0px";
-      editorElement.style.left     = "0px";
-      editorElement.style.right    = "0px";
-      $scope.getVertexShaderContent();
     };
 
     $scope.createFragmentShaderEditor = function() {
-      console.log("Creating New Fragment Shader Editor");
-      var editor = $scope.getFragmentShaderEditor();
-      if (!editor){
-        console.error("Could Not Find Fragment Shader Editor");
-        return;
-      }
-      editor.setTheme("ace/theme/vibrant_ink");
-      editor.setShowPrintMargin(false);
-      editor.setFontSize(14);
-      editor.setKeyboardHandler('ace/keyboard/vim');
-      editor.getSession().setMode("ace/mode/glsl");
+      if (!$scope.hasFragmentShaderEditor) {
+        console.log("Creating New Fragment Shader Editor");
+        var editor = $scope.getFragmentShaderEditor();
+        if (!editor){
+          console.error("Could Not Find Fragment Shader Editor");
+          return;
+        }
+        editor.setTheme("ace/theme/vibrant_ink");
+        editor.setShowPrintMargin(false);
+        editor.setFontSize(14);
+        editor.setKeyboardHandler('ace/keyboard/vim');
+        editor.getSession().setMode("ace/mode/glsl");
 
-      var editorElement = $scope.getFragmentShaderEditorElement();
-      if (!editorElement) {
-        console.error("Could not find Fragment Shader Editor Element");
-        return;
+        var editorElement = $scope.getFragmentShaderEditorElement();
+        if (!editorElement) {
+          console.error("Could not find Fragment Shader Editor Element");
+          return;
+        }
+        editorElement.style.position = "relative";
+        editorElement.style.height   = "50%";
+        editorElement.style.bottom   = "0px";
+        editorElement.style.left     = "0px";
+        editorElement.style.right    = "0px";
+        $scope.getFragmentShaderContent();
+        $scope.hasFragmentShaderEditor = true;
+      } else {
+        console.log("Fragment Shader Editor Exists");
       }
-      editorElement.style.position = "relative";
-      editorElement.style.height   = "100%";
-      editorElement.style.bottom   = "0px";
-      editorElement.style.left     = "0px";
-      editorElement.style.right    = "0px";
-      $scope.getFragmentShaderContent();
     };
 
     $scope.getScriptContent = function() {
@@ -197,6 +215,11 @@ App.controller("ProjectAssetEditor",
       });
     };
 
+    $scope.loadAudioResource = function() {
+      console.log("Loading Audio Resource");
+      $scope.audio = ngAudio.load("app/audio/song1.mp3");
+    };
+
     // On Load
 
     if (ProjectService.isProjectOpen()) {
@@ -219,8 +242,11 @@ App.controller("ProjectAssetEditor",
                 $scope.createVertexShaderEditor();
                 $scope.createFragmentShaderEditor();
                 break;
+            case ProjectService.ASSET_TYPE_AUDIO:
+                $scope.loadAudioResource();
+                break;
             }
-          },100);
+          },50);
         }
       });
     } else {

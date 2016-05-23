@@ -19,6 +19,7 @@
 #define OGLVIDEO_H
 
 #include "../../../Asset/Instances/Model/WaveFront/ObjModelInstance.h"
+#include "../../../Asset/Instances/Shader/ShaderInstance.h"
 #include "../VideoPluginInterface.h"
 
 #include <GLFW/glfw3.h>
@@ -37,6 +38,10 @@ namespace OpenGL {
 		~OGLVideo(void);
 		bool init(void);
 		void update(Dream::Scene::Scene*);
+		void drawObjModel(
+			Dream::Asset::Instances::Model::WaveFront::ObjModelInstance*,
+			Dream::Asset::Instances::Shader::ShaderInstance*
+		);
 	}; // End of OGLVideo
 	
 } // End of OpenGL

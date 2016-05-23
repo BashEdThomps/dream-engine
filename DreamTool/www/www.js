@@ -13,6 +13,7 @@ var dreamExecutor  = require('./model/DreamExecutor');
 var WWW                        = "www";
 var NODE_MODULES               = __dirname    + "/../node_modules/";
 var ANGULAR                    = NODE_MODULES + "angular";
+var ANGULAR_AUDIO              = NODE_MODULES + "angular-audio";
 var ANGULAR_COOKIES            = NODE_MODULES + "angular-cookies";
 var ANGULAR_UI_ROUTER          = NODE_MODULES + "angular-ui-router/release";
 var ANGULAR_UI_BOOTSTRAP       = NODE_MODULES + "angular-ui-bootstrap/dist";
@@ -40,6 +41,7 @@ app.use(bodyParser({
 
 app.use(koaStatic(WWW));
 app.use(koaStatic(ANGULAR));
+app.use(koaStatic(ANGULAR_AUDIO));
 app.use(koaStatic(ANGULAR_COOKIES));
 app.use(koaStatic(ANGULAR_BOOTSTRAP_NAV_TREE));
 app.use(koaStatic(ANGULAR_SCREENFUL));

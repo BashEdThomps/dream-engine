@@ -66,72 +66,19 @@ namespace OpenGL {
 			
 			for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
 				Dream::Scene::SceneObject* sceneObject = (*it);
-				Dream::Asset::AssetInstance* modelAsset = sceneObject->getModelAssetInstance();
+				Dream::Asset::AssetInstance *modelAsset  = sceneObject->getModelAssetInstance();
+				Dream::Asset::AssetInstance *shaderAsset = sceneObject->getShaderAssetInstance();
 				
-				if (modelAsset) {
+				if (modelAsset && shaderAsset) {
 					try {
 						Dream::Asset::Instances::Model::WaveFront::ObjModelInstance* objModel = NULL;
+						Dream::Asset::Instances::Shader::ShaderInstance* shader;
+						
     				objModel = dynamic_cast<Dream::Asset::Instances::Model::WaveFront::ObjModelInstance*>(modelAsset);
-    						
-    				if (objModel != NULL) {
-    					std::vector<tinyobj::shape_t>    shapes    = objModel->getShapesVector();
-    					std::vector<tinyobj::material_t> materials = objModel->getMaterialsVector();
-						/*
-							GLenum errorCode = 0;
-							GLuint vertex_buffer;
-							// Copy data to GPU
-							
-							// Vertex
-							size_t vertex_buffer_size = 0;
-							for (size_t i = 0; i < shapes.size(); i++) {
-								vertex_buffer_size += sizeof(float)* shapes[i].mesh.positions.size();
-							}
-							
-							glGenBuffers(1, &vertex_buffer);
-							glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-							glBufferData(GL_ARRAY_BUFFER, vertex_buffer_size, NULL, GL_STATIC_DRAW);
-							vertex_buffer_size = 0;
-							for (size_t i = 0; i < shapes.size(); i++) {
-								glBufferSubData(GL_ARRAY_BUFFER, vertex_buffer_size, sizeof(float)* shapes[i].mesh.positions.size(), &shapes[i].mesh.positions[0]);
-								vertex_buffer_size += sizeof(float)* shapes[i].mesh.positions.size();
-							}
-							glBindBuffer(GL_ARRAY_BUFFER, 0);
-							
-							// Index
-							GLuint index_buffer;
-							
-							size_t index_buffer_size = 0;
-							for (size_t i = 0; i < shapes.size(); i++) {
-								index_buffer_size += sizeof(unsigned int)* shapes[i].mesh.indices.size();
-							}
-							
-							glGenBuffers(1, &index_buffer);
-							glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-							glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_size, NULL, GL_STATIC_DRAW);
-							index_buffer_size = 0;
-							for (size_t i = 0; i < shapes.size(); i++) {
-								glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_size, sizeof(unsigned int)* shapes[i].mesh.indices.size(), &shapes[i].mesh.indices[0]);
-								index_buffer_size += sizeof(unsigned int)* shapes[i].mesh.indices.size();
-							}
-							glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-							
-							// draw multiple objects with one draw call
-							GLuint vertex_array_object;
-							
-							glGenVertexArrays(1, &vertex_array_object);
-							glBindVertexArray(vertex_array_object);
-							glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-							glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-							glBindVertexArray(0);
-							
-							uniform_mvp = glGetUniformLocation(shader_program, "MVP");
-							
-							errorCode = glGetError();
-							if (errorCode != 0)
-							{
-								fprintf(stderr, "Error data: %s, code %d\n", glewGetErrorString(errorCode), errorCode);
-							}
-						 */
+						shader = dynamic_cast<Dream::Asset::Instances::Shader::ShaderInstance*>(shaderAsset);
+						
+    				if (objModel && shader) {
+							drawObjModel(objModel,shader);
     				}
 					} catch (std::exception exception) {
 						std::cerr << "OGLVideo: Unable to cast model to ObjModelInstance, " << exception.what() << std::endl;
@@ -142,6 +89,110 @@ namespace OpenGL {
 			glEnd();
     	glfwSwapBuffers(mWindow);
 		}
+	}
+	
+	void OGLVideo::drawObjModel(
+		Dream::Asset::Instances::Model::WaveFront::ObjModelInstance* model,
+		Dream::Asset::Instances::Shader::ShaderInstance* shader) {
+		
+		std::vector<tinyobj::shape_t>    shapes    = model->getShapesVector();
+  	std::vector<tinyobj::material_t> materials = model->getMaterialsVector();
+							
+		GLenum errorCode = 0;
+		GLuint vertexBuffer, indexBuffer, vertexArrayObject;
+		
+		// Copy data to GPU
+		
+		// Vertex
+		size_t vertexBufferSize = 0;
+		for (size_t i = 0; i < shapes.size(); i++) {
+			vertexBufferSize += sizeof(float) * shapes[i].mesh.positions.size();
+		}
+		
+		glGenBuffers(1, &vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, NULL, GL_STATIC_DRAW);
+		
+		vertexBufferSize = 0;
+		for (size_t i = 0; i < shapes.size(); i++) {
+			glBufferSubData(
+				GL_ARRAY_BUFFER,
+				vertexBufferSize,
+				sizeof(float) * shapes[i].mesh.positions.size(),
+				&shapes[i].mesh.positions[0]
+			);
+			vertexBufferSize += sizeof(float) * shapes[i].mesh.positions.size();
+		}
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		// Index
+		size_t indexBufferSize = 0;
+		for (size_t i = 0; i < shapes.size(); i++) {
+			indexBufferSize += sizeof(unsigned int)* shapes[i].mesh.indices.size();
+		}
+		
+		glGenBuffers(1, &indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, NULL, GL_STATIC_DRAW);
+		
+		indexBufferSize = 0;
+		for (size_t i = 0; i < shapes.size(); i++) {
+			glBufferSubData(
+				GL_ELEMENT_ARRAY_BUFFER,
+				indexBufferSize,
+				sizeof(unsigned int) * shapes[i].mesh.indices.size(),
+				&shapes[i].mesh.indices[0]
+			);
+			indexBufferSize += sizeof(unsigned int) * shapes[i].mesh.indices.size();
+		}
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		// draw multiple objects with one draw call
+		glGenVertexArrays(1, &vertexArrayObject);
+		glBindVertexArray(vertexArrayObject);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glBindVertexArray(0);
+		
+		uniformMvp = glGetUniformLocation(shaderProgram, "MVP");
+		
+		errorCode = glGetError();
+		if (errorCode != 0) {
+			std::cerr << "Error data: " << glewGetErrorString(errorCode) << ", code " <<  errorCode << std::endl;
+		}
+		
+		// Use our shader
+		glUseProgram(shader->getShaderProgram());
+		
+		// Send our transformation to the currently bound shader, in the "MVP" uniform
+		glUniformMatrix4fv(uniformMvp, 1, GL_FALSE, glm::value_ptr(cam.calculateMVP()));
+		
+		glBindVertexArray(vertexArrayObject);
+		glEnableVertexAttribArray(0);
+		
+		size_t vertexBufferSize = 0;
+		size_t indexBufferSize  = 0;
+		
+		for (size_t i = 0; i < shapes.size(); i++) {
+			
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)vertex_buffer_size);
+			glDrawElements(GL_TRIANGLES, shapes[i].mesh.indices.size(), GL_UNSIGNED_INT, (void*)indexBufferSize);
+			
+			vertexBufferSize += sizeof (float) * shapes[i].mesh.positions.size();
+			indexBufferSize  += sizeof (unsigned int) * shapes[i].mesh.indices.size();
+			
+			if (errorCode != 0) {
+				std::cerr << "Error rendering shape[" << i << "].name = " << shapes[i].name << "." << std::endl
+				          << "Error name: " << glewGetErrorString(errorCode) << "." << std::endl
+				          << "Error code code: " << errorCode << std::endl;
+			}
+		}
+		
+		glDisableVertexAttribArray(0);
+		glBindVertexArray(0);
+		
+		glUseProgram(0);
 	}
 	
 } // End of OpenGL
