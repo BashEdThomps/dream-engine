@@ -22,17 +22,28 @@ namespace Plugins {
 namespace Video {
 namespace OpenGL {
 	
-	OGLVideo::OGLVideo(void) : VideoPluginInterface() {}
+	OGLVideo::OGLVideo(void) : VideoPluginInterface() {
+		mCamera = new Camera();
+	}
 	
 	OGLVideo::~OGLVideo(void) {
-		if (mWindow) glfwDestroyWindow(mWindow);
+		if (mCamera) {
+			delete mCamera;
+		}
+		
+		if (mWindow) {
+  		glfwDestroyWindow(mWindow);
+  	}
+		
 		glfwTerminate();
 	}
 
 	bool OGLVideo::init(void) {
-		std::cout << "OGLVideo: Initialising...";
+		std::cout << "OGLVideo: Initialising..." << std::endl;
+		
 		
 		if (!glfwInit()) {
+			std::cerr << "\tOGLVideo: GLFW failed to initialise." << std::endl;
 			return false;
 		}
 		
@@ -45,24 +56,64 @@ namespace OpenGL {
 		glfwMakeContextCurrent(mWindow);
 		glfwSwapInterval(1);
 		
-		std::cout << "done." << std::endl;
+		checkGLError(-10);
+		
+		std::cout << "\tOGLVideo: Initialised GLFW" << std::endl;
+		
+		int glewInitResult = glewInit();
+		if (glewInitResult != GLEW_OK) {
+			std::cerr << "\tOGLVideo: GLEW failed to initialise." << std::endl;
+			return false;
+		}
+		checkGLError(-20);
+		
+		int width, height;
+		glfwGetFramebufferSize(mWindow, &width, &height);
+		checkGLError(50);
+		
+		mScreenRatio = width / (float) height;
+		glViewport(0, 0, width, height);
+		checkGLError(51);
+		
+		//glEnable(GL_DEPTH_TEST);
+		//checkGLError(101);
+		
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		checkGLError(52);
+		
+		//glClearDepth(1.0f);
+		checkGLError(53);
+		
+		std::cout << "\tOGLVideo: Initialised GLEW." << std::endl;
+		std::cout << "OGLVideo: Initialisation Done." << std::endl;
+		
 		return true;
+	}
+	
+	void OGLVideo::setupView(Dream::Scene::Scene* scene) {
+		glClear(GL_COLOR_BUFFER_BIT);
+		checkGLError(54);
+		
+		glMatrixMode(GL_PROJECTION);
+		checkGLError(55);
+		
+		glLoadIdentity();
+		checkGLError(56);
+		
+		glOrtho(-mScreenRatio, mScreenRatio, -1.f, 1.f, 1.f, -1.f);
+		checkGLError(57);
+		
+		glMatrixMode(GL_MODELVIEW);
+		checkGLError(58);
+		
+		glLoadIdentity();
+		checkGLError(59);
 	}
 
 	void OGLVideo::update(Dream::Scene::Scene* scene) {
 		std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
 		if (!glfwWindowShouldClose(mWindow)) {
-			float ratio;
-			int width, height;
-			glfwGetFramebufferSize(mWindow, &width, &height);
-			ratio = width / (float) height;
-			glViewport(0, 0, width, height);
-			glClear(GL_COLOR_BUFFER_BIT);
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
+			setupView(scene);
 			
 			for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
 				Dream::Scene::SceneObject* sceneObject = (*it);
@@ -98,101 +149,162 @@ namespace OpenGL {
 		std::vector<tinyobj::shape_t>    shapes    = model->getShapesVector();
   	std::vector<tinyobj::material_t> materials = model->getMaterialsVector();
 							
-		GLenum errorCode = 0;
-		GLuint vertexBuffer, indexBuffer, vertexArrayObject;
+		GLuint vertexBuffer       = 0;
+		GLuint indexBuffer        = 0;
+		//GLuint vertexArrayObject  = 0;
+		size_t vertexBufferSize   = 0;
+		size_t vertexBufferOffset = 0;
+		size_t indexBufferSize    = 0;
+		size_t indexBufferOffset  = 0;
 		
-		// Copy data to GPU
-		
-		// Vertex
-		size_t vertexBufferSize = 0;
+		// Copy Vertex Data
 		for (size_t i = 0; i < shapes.size(); i++) {
 			vertexBufferSize += sizeof(float) * shapes[i].mesh.positions.size();
 		}
+		
+		std::cout << "OGLVideo: VertexBufferSize: " << vertexBufferSize << std::endl;
 		
 		glGenBuffers(1, &vertexBuffer);
+		checkGLError(-3);
+		
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		checkGLError(-2);
+		
 		glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, NULL, GL_STATIC_DRAW);
+		checkGLError(-4);
 		
-		vertexBufferSize = 0;
 		for (size_t i = 0; i < shapes.size(); i++) {
-			glBufferSubData(
-				GL_ARRAY_BUFFER,
-				vertexBufferSize,
-				sizeof(float) * shapes[i].mesh.positions.size(),
-				&shapes[i].mesh.positions[0]
-			);
-			vertexBufferSize += sizeof(float) * shapes[i].mesh.positions.size();
+			size_t nPositions = sizeof(float) * shapes[i].mesh.positions.size();
+			glBufferSubData(GL_ARRAY_BUFFER,vertexBufferOffset,nPositions,&shapes[i].mesh.positions[0]);
+			vertexBufferOffset += nPositions;
+			checkGLError(-5);
+			return;
 		}
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
-		// Index
-		size_t indexBufferSize = 0;
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		checkGLError(-1);
+		
+		// Copy Index Data
 		for (size_t i = 0; i < shapes.size(); i++) {
 			indexBufferSize += sizeof(unsigned int)* shapes[i].mesh.indices.size();
 		}
+		
+		std::cout << "OGLVideo: IndexBufferSize: " << indexBufferSize << std::endl;
 		
 		glGenBuffers(1, &indexBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, NULL, GL_STATIC_DRAW);
 		
-		indexBufferSize = 0;
 		for (size_t i = 0; i < shapes.size(); i++) {
-			glBufferSubData(
-				GL_ELEMENT_ARRAY_BUFFER,
-				indexBufferSize,
-				sizeof(unsigned int) * shapes[i].mesh.indices.size(),
-				&shapes[i].mesh.indices[0]
-			);
-			indexBufferSize += sizeof(unsigned int) * shapes[i].mesh.indices.size();
+			size_t nPositions = sizeof(unsigned int) * shapes[i].mesh.indices.size();
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER,indexBufferOffset,nPositions,&shapes[i].mesh.indices[0]);
+			indexBufferOffset += nPositions;
 		}
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		checkGLError(0);
 		
 		// draw multiple objects with one draw call
-		glGenVertexArrays(1, &vertexArrayObject);
-		glBindVertexArray(vertexArrayObject);
+		//glGenVertexArraysAPPLE(1, &vertexArrayObject);
+		//glBindVertexArrayAPPLE(vertexArrayObject);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-		glBindVertexArray(0);
+		glBindVertexArrayAPPLE(0);
 		
-		uniformMvp = glGetUniformLocation(shaderProgram, "MVP");
+		//GLint uniformMvp = glGetUniformLocation(shader->getShaderProgram(), "MVP");
 		
-		errorCode = glGetError();
-		if (errorCode != 0) {
-			std::cerr << "Error data: " << glewGetErrorString(errorCode) << ", code " <<  errorCode << std::endl;
-		}
+	  checkGLError(1);
 		
 		// Use our shader
-		glUseProgram(shader->getShaderProgram());
+		if (!shader->areShadersCompiled()) {
+  		shader->compileShaderProgram();
+		}
+		
+		shader->showStatus();
+		checkGLError(4);
 		
 		// Send our transformation to the currently bound shader, in the "MVP" uniform
-		glUniformMatrix4fv(uniformMvp, 1, GL_FALSE, glm::value_ptr(cam.calculateMVP()));
+		//glUniformMatrix4fv(uniformMvp, 1, GL_FALSE, glm::value_ptr(mCamera->calculateModelViewProjection()));
+		//glBindVertexArrayAPPLE(vertexArrayObject);
 		
-		glBindVertexArray(vertexArrayObject);
+		checkGLError(2);
+		
 		glEnableVertexAttribArray(0);
 		
-		size_t vertexBufferSize = 0;
-		size_t indexBufferSize  = 0;
+		shader->linkShader();
+		shader->showStatus();
+		
+		if (shader->isShaderLinked()) {
+			shader->useShader();
+		}
+		
+		checkGLError(5);
+		
+	  vertexBufferOffset = 0;
+	  indexBufferOffset  = 0;
 		
 		for (size_t i = 0; i < shapes.size(); i++) {
 			
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)vertex_buffer_size);
-			glDrawElements(GL_TRIANGLES, shapes[i].mesh.indices.size(), GL_UNSIGNED_INT, (void*)indexBufferSize);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)vertexBufferOffset);
+			glDrawElements(GL_TRIANGLES, shapes[i].mesh.indices.size(), GL_UNSIGNED_INT, (void*)indexBufferOffset);
 			
-			vertexBufferSize += sizeof (float) * shapes[i].mesh.positions.size();
-			indexBufferSize  += sizeof (unsigned int) * shapes[i].mesh.indices.size();
+			vertexBufferOffset += sizeof (float) * shapes[i].mesh.positions.size();
+			indexBufferOffset  += sizeof (unsigned int) * shapes[i].mesh.indices.size();
 			
-			if (errorCode != 0) {
-				std::cerr << "Error rendering shape[" << i << "].name = " << shapes[i].name << "." << std::endl
-				          << "Error name: " << glewGetErrorString(errorCode) << "." << std::endl
-				          << "Error code code: " << errorCode << std::endl;
-			}
+			checkGLError(3);
 		}
 		
-		glDisableVertexAttribArray(0);
-		glBindVertexArray(0);
+		shader->detatchShader();
 		
+		glDeleteBuffers(1, &vertexBuffer);
+		glDeleteBuffers(1, &indexBuffer);
+		//glDeleteVertexArraysAPPLE(1, &vertexArrayObject);
+		glDisableVertexAttribArray(0);
+		glBindVertexArrayAPPLE(0);
 		glUseProgram(0);
+		
+		checkGLError(6);
+		std::cout << "OGLVideo: *** DrawObjModel Success ***" << std::endl;
+	}
+	
+	bool OGLVideo::checkGLError(int errorIndex) {
+		GLenum errorCode = 0;
+		bool wasError = false;
+		do {
+			errorCode = glGetError();
+			if (errorCode!=0) {
+  			std::cerr << "OGLVideo: Error Check " << errorIndex << ": " << std::endl;
+				switch (errorCode)
+        {
+    			case GL_NO_ERROR:
+						std::cerr << "\tGL_NO_ERROR" << std::endl;
+						break;
+    			case GL_INVALID_ENUM:
+						std::cerr << "\tGL_INVALID_ENUM" << std::endl;
+						break;
+    			case GL_INVALID_VALUE:
+						std::cerr << "\tGL_INVALID_VALUE" << std::endl;
+						break;
+    			case GL_INVALID_OPERATION:
+						std::cerr << "\tGL_INVALID_OPERATION" << std::endl;
+						break;
+    			case GL_INVALID_FRAMEBUFFER_OPERATION:
+						std::cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << std::endl;
+						break;
+    			case GL_OUT_OF_MEMORY:
+						std::cerr << "\tGL_OUT_OF_MEMORY" << std::endl;
+						break;
+    		}
+				std::cerr << "\tName: " << glewGetErrorString(errorCode) << std::endl;
+				std::cerr << "\tCode: " << errorCode << std::endl;
+  			wasError = true;
+			}
+		} while(errorCode != 0);
+		
+		/*if (!wasError) {
+			std::cout<< "\tNo Error at " << errorIndex << std::endl;
+		}*/
+		return wasError;
 	}
 	
 } // End of OpenGL

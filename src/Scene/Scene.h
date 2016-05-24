@@ -20,7 +20,6 @@
 
 #include <iostream>
 #include <vector>
-#include "Camera.h"
 #include "../JSON/json.hpp"
 #include "SceneObject.h"
 
@@ -45,7 +44,6 @@ namespace Scene {
 		bool          mInputEnabled;
 		bool          mPhysicsEnabled;
 		bool          mScriptingEnabled;
-		Camera       *mCamera;
 		SceneObject* mRootSceneObject;
 		std::vector<SceneObject*> mScenegraphVector;
 	public:

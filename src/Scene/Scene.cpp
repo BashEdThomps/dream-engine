@@ -24,7 +24,7 @@ namespace  Scene {
 		mAnimationEnabled = false;
 		mInputEnabled     = false;
 		mAudioEnabled     = false;
-        mScriptingEnabled = false;
+    mScriptingEnabled = false;
 	}
 
 	Scene::Scene(nlohmann::json jsonScene) {
@@ -64,14 +64,10 @@ namespace  Scene {
 	}
 
 	Scene::~Scene() {
-		if (mCamera != NULL) {
-			delete mCamera;
-		}
 	}
 
 	bool Scene::init() {
 		std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
-		mCamera = new Camera();
 		if (isScenegraphVectorEmpty()) {
 			std::cout << "Scene: Creating Scenegraph vector." << std::endl;
 			generateScenegraphVector();
@@ -114,7 +110,7 @@ namespace  Scene {
 	bool Scene::isInputEnabled() {
 		return mInputEnabled;
 	}
-
+	
 	void Scene::loadSceneObjectsFromJSONArray(nlohmann::json jsonArray, SceneObject* parent) {
 		//std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
 		if (!jsonArray.is_null()) {

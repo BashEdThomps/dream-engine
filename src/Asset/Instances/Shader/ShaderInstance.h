@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include "../../AssetInstance.h"
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
 
 #define SHADER_VERTEX   "vertex"
 #define SHADER_FRAGMENT "fragment"
@@ -33,17 +33,18 @@ namespace Shader     {
     class ShaderInstance : public Dream::Asset::AssetInstance {
 		private:
 			std::string mVertexShaderSource;
+			std::vector<GLuint> mBoundAttributesVector;
 			GLuint      mVertexShader;
-			GLuint      mIsVertexShaderCompiled;
+			GLint       mIsVertexShaderCompiled;
 			char*       mVertexShaderCompilerLog;
 			
 			std::string mFragmentShaderSource;
 			GLuint      mFragmentShader;
-			GLuint      mIsFragmentShaderCompiled;
+			GLint       mIsFragmentShaderCompiled;
 			char*       mFragmentShaderCompilerLog;
 			
 			GLuint mShaderProgram;
-			GLuint mIsShaderLinked;
+			GLint  mIsShaderLinked;
 			char*  mShaderLinkerLog;
 			
     public:
@@ -52,13 +53,22 @@ namespace Shader     {
 			
 			bool load(std::string);
 			bool compileShaderProgram();
+			bool isShaderCompiledAndLinked();
 			bool compileVertexShader();
 			bool compileFragmentShader();
 			bool linkShader();
 			
+			bool isVertexShaderCompiled();
+			bool isFragmentShaderCompiled();
+			bool areShadersCompiled();
+			bool isShaderLinked();
+			
 			GLuint getShaderProgram();
 			void useShader();
+			void detatchShader();
 			void bindAttributeLocation(GLuint,GLchar*);
+			void unbindAllAttributeLocations();
+			void showStatus();
 		
     }; // End of ShaderInstance
     

@@ -25,10 +25,8 @@ if (NOT GLFW_FOUND)
 endif()
 
 # Targets & Stuff
-add_executable (
-    DreamTest
-    ${TEST_DREAM_SRC}
-)
+add_executable (DreamTest ${TEST_DREAM_SRC})
+source_group(DremTest FILES ${TEST_DREAM_SRC})
 
 add_custom_command(
     TARGET DreamTest

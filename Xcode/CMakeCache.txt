@@ -191,13 +191,19 @@ CMAKE_STRIP:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/Xcode
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Dependencies for the target
-DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/usr/local/lib/libv8.dylib;general;/usr/local/lib/libv8_base.a;general;/usr/local/lib/libv8_libbase.a;general;/usr/local/lib/libv8_libplatform.a;general;/usr/local/lib/libv8_nosnapshot.a;general;/usr/local/lib/libicuuc.dylib;general;/usr/local/lib/libicui18n.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
+DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/opt/local/lib/libGLEW.dylib;general;/usr/local/lib/libv8.dylib;general;/usr/local/lib/libv8_base.a;general;/usr/local/lib/libv8_libbase.a;general;/usr/local/lib/libv8_libplatform.a;general;/usr/local/lib/libv8_nosnapshot.a;general;/usr/local/lib/libicuuc.dylib;general;/usr/local/lib/libicui18n.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
 
 //Value Computed by CMake
 Dream_BINARY_DIR:STATIC=/Users/Ashley/Software/Dream/Xcode
 
 //Value Computed by CMake
 Dream_SOURCE_DIR:STATIC=/Users/Ashley/Software/Dream
+
+//Path to a file.
+GLEW_INCLUDE_DIR:PATH=/opt/local/include
+
+//Path to a library.
+GLEW_LIBRARY:FILEPATH=/opt/local/lib/libGLEW.dylib
 
 //The directory where GLFW/glfw3.h resides
 GLFW_INCLUDE_DIR:PATH=/usr/local/include
@@ -216,6 +222,9 @@ GLFW_glfw_LIBRARY:FILEPATH=/usr/local/lib/libglfw3.a
 
 //IOKit framework for OSX
 GLFW_iokit_LIBRARY:STRING=-framework IOKit
+
+//The directory where glm/glm.hpp resides
+GLM_INCLUDE_DIR:PATH=/opt/local/include
 
 //Path to a library.
 LINEARMATH_LIB:FILEPATH=/usr/local/lib/libLinearMath.a
@@ -393,10 +402,16 @@ DreamBase_GUID_CMAKE:INTERNAL=6A85F1D89B134E54A5D97351
 DreamTest_GUID_CMAKE:INTERNAL=D0E8E07AE6E44CF8A9483B3F
 //Stored Xcode object GUID
 Dream_GUID_CMAKE:INTERNAL=F92D53C17B4A42839D326ED8
+//Details about finding GLEW
+FIND_PACKAGE_MESSAGE_DETAILS_GLEW:INTERNAL=[/opt/local/include][/opt/local/lib/libGLEW.dylib][v()]
 //Details about finding GLFW
 FIND_PACKAGE_MESSAGE_DETAILS_GLFW:INTERNAL=[/usr/local/include][/usr/local/lib/libglfw3.a;;-framework Cocoa;-framework IOKit;-framework CoreVideo;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;-framework Carbon][v3.2.0()]
 //Details about finding OpenGL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework][/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework][v()]
+//ADVANCED property for variable: GLEW_INCLUDE_DIR
+GLEW_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GLEW_LIBRARY
+GLEW_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: GLFW_INCLUDE_DIR
 GLFW_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: GLFW_cocoa_LIBRARY

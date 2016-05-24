@@ -48,13 +48,7 @@ namespace Shader     {
 			free (mShaderLinkerLog);
 		}
 		
-		if (mShaderProgram && mVertexShader) {
-			glDetachShader(mShaderProgram, mVertexShader);
-		}
-		
-		if (mShaderProgram && mFragmentShader) {
-			glDetachShader(mShaderProgram, mFragmentShader);
-		}
+		detatchShader();
 		
 		if (mShaderProgram) {
 			glDeleteProgram(mShaderProgram);
@@ -115,18 +109,23 @@ namespace Shader     {
 		mShaderProgram = glCreateProgram();
 		glAttachShader(mShaderProgram, mVertexShader);
 		glAttachShader(mShaderProgram, mFragmentShader);
-	
 		return true;
 	}
 	
 	bool ShaderInstance::compileVertexShader() {
-		size_t maxLogLength;
+		std::cout << "ShaderInstance: Compiling Vertex Shader" << std::endl;
+		GLint maxLogLength;
 		mVertexShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(mVertexShader, 1, (const GLchar**)mVertexShaderSource.c_str(), 0);
+		const GLchar* source = mVertexShaderSource.c_str();
+		glShaderSource(mVertexShader, 1, &source, 0);
 		glCompileShader(mVertexShader);
 		
 		glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &mIsVertexShaderCompiled);
-		if(mIsVertexShaderCompiled == FALSE) {
+		if(mIsVertexShaderCompiled != GL_TRUE) {
+			if (mVertexShaderCompilerLog != NULL) {
+				free(mVertexShaderCompilerLog);
+				mVertexShaderCompilerLog = NULL;
+			}
 			glGetShaderiv(mVertexShader, GL_INFO_LOG_LENGTH, &maxLogLength);
 			mVertexShaderCompilerLog = (char *)malloc(maxLogLength);
 			glGetShaderInfoLog(mVertexShader, maxLogLength, &maxLogLength, mVertexShaderCompilerLog);
@@ -135,14 +134,40 @@ namespace Shader     {
 		return true;
 	}
 	
+	bool ShaderInstance::isShaderCompiledAndLinked() {
+		return areShadersCompiled() && isShaderLinked();
+	}
+	
+	bool ShaderInstance::isVertexShaderCompiled() {
+		return mIsVertexShaderCompiled != 0;
+	}
+	
+	bool ShaderInstance::isFragmentShaderCompiled() {
+		return mIsFragmentShaderCompiled != 0;
+	}
+	
+	bool ShaderInstance::areShadersCompiled() {
+		return isVertexShaderCompiled() && isFragmentShaderCompiled();
+	}
+	
+	bool ShaderInstance::isShaderLinked() {
+		return mIsShaderLinked != 0;
+	}
+	
 	bool ShaderInstance::compileFragmentShader() {
-		size_t maxLogLength;
+		std::cout << "ShaderInstance: Compiling Fragment Shader" << std::endl;
+		GLint maxLogLength;
 		mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(mFragmentShader, 1, (const GLchar**)mFragmentShaderSource.c_str(), 0);
+		const GLchar* source = mFragmentShaderSource.c_str();
+		glShaderSource(mFragmentShader, 1, &source, 0);
 		glCompileShader(mFragmentShader);
-		
 		glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &mIsFragmentShaderCompiled);
-		if(mIsFragmentShaderCompiled == FALSE) {
+		
+		if(mIsFragmentShaderCompiled != GL_TRUE) {
+			if (mFragmentShaderCompilerLog != NULL) {
+				free(mFragmentShaderCompilerLog);
+				mFragmentShaderCompilerLog = NULL;
+			}
 			glGetShaderiv(mFragmentShader, GL_INFO_LOG_LENGTH, &maxLogLength);
 			mFragmentShaderCompilerLog = (char *)malloc(maxLogLength);
 			glGetShaderInfoLog(mFragmentShader, maxLogLength, &maxLogLength, mFragmentShaderCompilerLog);
@@ -156,7 +181,9 @@ namespace Shader     {
 	}
 	
 	bool ShaderInstance::linkShader() {
-		size_t maxLogLength;
+		std::cout << "ShaderInstance: Linking Shader" << std::endl;
+		GLint maxLogLength;
+		
 		/* Link our program */
 		/* At this stage, the vertex and fragment programs are inspected, optimized and a binary code is generated for the shader. */
 		/* The binary code is uploaded to the GPU, if there is no error. */
@@ -165,27 +192,78 @@ namespace Shader     {
 		/* Again, we must check and make sure that it linked. If it fails, it would mean either there is a mismatch between the vertex */
 		/* and fragment shaders. It might be that you have surpassed your GPU's abilities. Perhaps too many ALU operations or */
 		/* too many texel fetch instructions or too many interpolators or dynamic loops. */
-		glGetProgramiv(mShaderProgram, GL_LINK_STATUS, (int *)&mIsShaderLinked);
-		if(mIsShaderLinked == FALSE) {
-			/* Noticed that glGetProgramiv is used to get the length for a shader program, not glGetShaderiv. */
-			glGetProgramiv(mShaderProgram, GL_INFO_LOG_LENGTH, &maxLogLength);
+		glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &mIsShaderLinked);
+		
+		if(mIsShaderLinked == 0) {
 			
 			/* The maxLength includes the NULL character */
+			if (mShaderLinkerLog != NULL) {
+				free(mShaderLinkerLog);
+				mShaderLinkerLog = NULL;
+			}
+			
+			/* Noticed that glGetProgramiv is used to get the length for a shader program, not glGetShaderiv. */
+			glGetProgramiv(mShaderProgram, GL_INFO_LOG_LENGTH, &maxLogLength);
 			mShaderLinkerLog = (char *)malloc(maxLogLength);
 			
 			/* Notice that glGetProgramInfoLog, not glGetShaderInfoLog. */
 			glGetProgramInfoLog(mShaderProgram, maxLogLength, &maxLogLength, mShaderLinkerLog);
+			
 			return false;
 		}
 		return true;
 	}
 	
 	void ShaderInstance::useShader() {
+		std::cout << "ShaderInstance: Using Shader" << std::endl;
 		glUseProgram(mShaderProgram);
 	}
 	
 	void ShaderInstance::bindAttributeLocation(GLuint location, GLchar* variable) {
+		mBoundAttributesVector.push_back(location);
+		std::cout << "ShaderInstance: Binding Shader" << std::endl
+		          << "\tAttribute: " << location << std::endl
+		          << "\t    Value: " << variable << std::endl;
 		glBindAttribLocation(mShaderProgram,location,variable);
+	}
+	
+	void ShaderInstance::unbindAllAttributeLocations() {
+		for (std::vector<GLuint>::iterator it = mBoundAttributesVector.begin(); it != mBoundAttributesVector.end(); it++) {
+			glDisableVertexAttribArray((*it));
+		}
+		mBoundAttributesVector.clear();
+	}
+	
+	void ShaderInstance::showStatus() {
+		GLenum errorCode = 0;
+		
+		while ((errorCode = glGetError()) != 0) {
+			std::cerr << "ShaderInstance: Error Status: " << std::endl
+			<< "\tName: " << glewGetErrorString(errorCode) << std::endl
+			<< "\tCode: " << errorCode << std::endl;
+		}
+		
+		if (mVertexShaderCompilerLog != NULL) {
+			std::cerr << "ShaderInstance: Vertex Shader Compiler Log:" << std::endl << mVertexShaderCompilerLog << std::endl;
+		}
+		
+		if (mFragmentShaderCompilerLog != NULL) {
+			std::cerr << "ShaderInstance: Fragment Shader Compiler Log:" << std::endl << mFragmentShaderCompilerLog << std::endl;
+		}
+		
+		if (mShaderLinkerLog != NULL) {
+			std::cerr << "ShaderInstance: Shader Linker Log:" << std::endl << mShaderLinkerLog << std::endl;
+		}
+	}
+	
+	void ShaderInstance::detatchShader() {
+		if (mShaderProgram && mVertexShader) {
+			glDetachShader(mShaderProgram, mVertexShader);
+		}
+		
+		if (mShaderProgram && mFragmentShader) {
+			glDetachShader(mShaderProgram, mFragmentShader);
+		}
 	}
 	
 } // End of Shader

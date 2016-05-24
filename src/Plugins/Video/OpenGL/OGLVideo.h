@@ -18,12 +18,19 @@
 #ifndef OGLVIDEO_H
 #define OGLVIDEO_H
 
-#include "../../../Asset/Instances/Model/WaveFront/ObjModelInstance.h"
-#include "../../../Asset/Instances/Shader/ShaderInstance.h"
+#include "Camera.h"
+
 #include "../VideoPluginInterface.h"
 
-#include <GLFW/glfw3.h>
+#include "../../../Asset/Instances/Model/WaveFront/ObjModelInstance.h"
+#include "../../../Asset/Instances/Shader/ShaderInstance.h"
+
 #include <iostream>
+
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Dream {
 namespace Plugins {
@@ -33,15 +40,21 @@ namespace OpenGL {
 	class OGLVideo : public VideoPluginInterface {
 	private:
 		GLFWwindow *mWindow;
+		Camera     *mCamera;
+		float       mScreenRatio;
 	public:
 		OGLVideo(void);
 		~OGLVideo(void);
 		bool init(void);
+		void setupView(Dream::Scene::Scene*);
 		void update(Dream::Scene::Scene*);
 		void drawObjModel(
 			Dream::Asset::Instances::Model::WaveFront::ObjModelInstance*,
 			Dream::Asset::Instances::Shader::ShaderInstance*
 		);
+		
+		bool checkGLError(int);
+		
 	}; // End of OGLVideo
 	
 } // End of OpenGL

@@ -39,11 +39,25 @@ else()
   message("OpenGL Lib found at " ${OPENGL_LIBRARIES})
 endif()
 
+find_package(GLM COMPONENTS glm REQUIRED)
+if (NOT GLM_FOUND)
+ message(FATAL_ERROR "GLM Package was Not Found")
+else()
+	message("Found GLM Headers at " ${GLM_INCLUDE_DIR})
+endif()
+
+find_package(GLEW COMPONENTS glew REQUIRED)
+if (NOT GLEW_FOUND)
+ message(FATAL_ERROR "GLEW Package was Not Found")
+else()
+	message("Found GLEW Headers at " ${GLEW_INCLUDE_DIRS})
+	message("Found GLEW Libs at "    ${GLEW_LIBRARIES})
+endif()
+
+
 # Targets
-add_library (
-    DreamBase SHARED
-    ${DREAM_SRC}
-)
+add_library (DreamBase SHARED ${DREAM_SRC})
+source_group(DreamBase FILES ${DREAM_SRC})
 
 target_link_libraries(
   DreamBase
@@ -52,6 +66,7 @@ target_link_libraries(
   ${OPENAL_LIBRARY}
   ${OPENGL_LIBRARIES}
   ${GLFW_LIBRARIES}
+	${GLEW_LIBRARIES}
   ${V8_LIBRARY}
   ${BULLET_LIBRARY}
 )
@@ -61,11 +76,14 @@ include_directories(
   ${OPENAL_INCLUDE_DIR}
   ${OPENGL_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
+	${GLEW_INCLUDE_DIRS}
+  ${GLM_INCLUDE_DIR}
   ${V8_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}
 )
 
-add_executable (Dream Main/Main.cpp)
+add_executable (Dream "Main/Main.cpp")
+source_group(DreamMain FILES "Main/Main.cpp")
 
 target_link_libraries(
   Dream
@@ -74,6 +92,7 @@ target_link_libraries(
   -ldl
   ${OPENAL_LIBRARY}
   ${GLFW_LIBRARIES}
+  ${GLEW_LIBRARIES}
   ${V8_LIBRARY}
   ${BULLET_LIBRARY}
 )
