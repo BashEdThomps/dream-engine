@@ -90,6 +90,7 @@
 		A624276FBD374013B5ABFED2 /* SceneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31C5AC5BF4264325BE8A2486 /* SceneTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		A9A871C5B5034F5EB565C144 /* ArgumentParserTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 670725CC81CD48B196533396 /* ArgumentParserTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		A9E72C606E054D94A8B46EA2 /* PluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C3C5E740D04F83AE9DF2EA /* PluginManager.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		AB34166E1CF5E618004D9D3E /* DrawData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB34166C1CF5E618004D9D3E /* DrawData.cpp */; };
 		AC742FEB977B470B93D5F6FE /* ScriptingPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75185F17621E4D929179C8C3 /* ScriptingPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		AF3C3BBE0E6B44AE9D621D55 /* FileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE5E8215DE994FF5910B782E /* FileReader.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		B14B13C5E6954604BDF30DEA /* TestFrameDelta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F9A067AEEAE46668BC0AA71 /* TestFrameDelta.cpp */; settings = {COMPILER_FLAGS = ""; }; };
@@ -246,6 +247,8 @@
 		A13EE5A9527C439785665D3A /* ProjectTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ProjectTest.cpp; path = test/ProjectTest.cpp; sourceTree = SOURCE_ROOT; };
 		A86BB473F090481899B11663 /* V8Scripting.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = V8Scripting.h; path = src/Plugins/Scripting/v8/V8Scripting.h; sourceTree = SOURCE_ROOT; };
 		A9BD061D6A7F45CF95EB979A /* Project.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Project.cpp; path = src/Project/Project.cpp; sourceTree = SOURCE_ROOT; };
+		AB34166C1CF5E618004D9D3E /* DrawData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DrawData.cpp; path = src/Plugins/Video/OpenGL/DrawData.cpp; sourceTree = "<group>"; };
+		AB34166D1CF5E618004D9D3E /* DrawData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DrawData.h; path = src/Plugins/Video/OpenGL/DrawData.h; sourceTree = "<group>"; };
 		AD007800CB1E4762A4166952 /* Dream.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Dream.cpp; path = src/Main/Dream.cpp; sourceTree = SOURCE_ROOT; };
 		AE7F8403AC8644A99684CA8C /* ChaiScriptInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ChaiScriptInstance.h; path = src/Asset/Instances/Script/ChaiScript/ChaiScriptInstance.h; sourceTree = SOURCE_ROOT; };
 		B01BF564B77543E7A5C87A34 /* libDreamBase.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libDreamBase.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -522,6 +525,8 @@
 				72755939B13C46B69374C389 /* VideoPluginInterface.h */,
 				1DDA25DA7C17487F8C8929A2 /* WavAudioInstance.cpp */,
 				CB3CB137120B4BDEA496BC60 /* WavAudioInstance.h */,
+				AB34166C1CF5E618004D9D3E /* DrawData.cpp */,
+				AB34166D1CF5E618004D9D3E /* DrawData.h */,
 			);
 			name = DreamBase;
 			sourceTree = "<group>";
@@ -725,6 +730,7 @@
 				292263595FFA4BB7925B138B /* WavAudioInstance.cpp in Sources */,
 				7C87230E395D4DA88C7241CA /* ObjModelInstance.cpp in Sources */,
 				A07EC27E1D6C47778D9706E1 /* ChaiScriptInstance.cpp in Sources */,
+				AB34166E1CF5E618004D9D3E /* DrawData.cpp in Sources */,
 				5A654976850A4BBCB6F9C1DF /* JavaScriptInstance.cpp in Sources */,
 				D9B8DF6ED38C47938DEAE084 /* ShaderInstance.cpp in Sources */,
 				04EDB9BBC7C44A4281F3DDAD /* ArgumentParser.cpp in Sources */,

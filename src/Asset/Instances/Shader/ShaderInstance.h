@@ -69,6 +69,7 @@ namespace Shader     {
 			void bindAttributeLocation(GLuint,GLchar*);
 			void unbindAllAttributeLocations();
 			void showStatus();
+			void deleteShaderProgram();
 		
     }; // End of ShaderInstance
     

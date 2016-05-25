@@ -19,6 +19,7 @@
 #define OGLVIDEO_H
 
 #include "Camera.h"
+#include "DrawData.h"
 
 #include "../VideoPluginInterface.h"
 
@@ -26,6 +27,7 @@
 #include "../../../Asset/Instances/Shader/ShaderInstance.h"
 
 #include <iostream>
+#include <map>
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -42,6 +44,7 @@ namespace OpenGL {
 		GLFWwindow *mWindow;
 		Camera     *mCamera;
 		float       mScreenRatio;
+		std::map<Dream::Asset::AssetInstance*,DrawData*> mDrawDataMap;
 	public:
 		OGLVideo(void);
 		~OGLVideo(void);
@@ -54,6 +57,8 @@ namespace OpenGL {
 		);
 		
 		bool checkGLError(int);
+		bool initDrawData();
+		bool clearDrawData();
 		
 	}; // End of OGLVideo
 	

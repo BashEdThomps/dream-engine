@@ -55,7 +55,6 @@ namespace OpenGL {
 		
 		glfwMakeContextCurrent(mWindow);
 		glfwSwapInterval(1);
-		
 		checkGLError(-10);
 		
 		std::cout << "\tOGLVideo: Initialised GLFW" << std::endl;
@@ -82,7 +81,7 @@ namespace OpenGL {
 		checkGLError(52);
 		
 		//glClearDepth(1.0f);
-		checkGLError(53);
+		//checkGLError(53);
 		
 		std::cout << "\tOGLVideo: Initialised GLEW." << std::endl;
 		std::cout << "OGLVideo: Initialisation Done." << std::endl;
@@ -112,7 +111,16 @@ namespace OpenGL {
 
 	void OGLVideo::update(Dream::Scene::Scene* scene) {
 		std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
+		
 		if (!glfwWindowShouldClose(mWindow)) {
+			GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
+			if (fbStatus == GL_FRAMEBUFFER_COMPLETE) {
+				std::cout << "OGLVideo: FrameBuffer Status: GL_FRAMEBUFFER_COMPLETE" << std::endl;
+			} else {
+				std::cerr << "OGLVideo: glCheckFramebufferStatus error: " << fbStatus << std::endl;
+				return;
+			}
+			
 			setupView(scene);
 			
 			for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
@@ -142,6 +150,39 @@ namespace OpenGL {
 		}
 	}
 	
+	bool OGLVideo::initDrawData() {
+		std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
+		for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
+			Dream::Scene::SceneObject* sceneObject = (*it);
+			Dream::Asset::AssetInstance *modelAsset  = sceneObject->getModelAssetInstance();
+			Dream::Asset::AssetInstance *shaderAsset = sceneObject->getShaderAssetInstance();
+				
+			if (modelAsset && shaderAsset) {
+				try {
+					Dream::Asset::Instances::Model::WaveFront::ObjModelInstance* objModel = NULL;
+					Dream::Asset::Instances::Shader::ShaderInstance* shader;
+    			objModel = dynamic_cast<Dream::Asset::Instances::Model::WaveFront::ObjModelInstance*>(modelAsset);
+					shader = dynamic_cast<Dream::Asset::Instances::Shader::ShaderInstance*>(shaderAsset);
+    			if (objModel && shader) {
+						if (!initDrawDataForObjModel(objModel,shader)) {
+							return false;
+						}
+    			}
+				} catch (std::exception exception) {
+					std::cerr << "OGLVideo: initDrawData, Unable to cast model to ObjModelInstance, " << exception.what() << std::endl;
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	void OGLVideo::initDrawDataForObjModel(
+	  Dream::Asset::Instances::Model::WaveFront::ObjModelInstance* model,
+	  Dream::Asset::Instances::Shader::ShaderInstance* shader) {
+		
+	}
+	
 	void OGLVideo::drawObjModel(
 		Dream::Asset::Instances::Model::WaveFront::ObjModelInstance* model,
 		Dream::Asset::Instances::Shader::ShaderInstance* shader) {
@@ -151,7 +192,7 @@ namespace OpenGL {
 							
 		GLuint vertexBuffer       = 0;
 		GLuint indexBuffer        = 0;
-		//GLuint vertexArrayObject  = 0;
+		GLuint vertexArrayObject  = 0;
 		size_t vertexBufferSize   = 0;
 		size_t vertexBufferOffset = 0;
 		size_t indexBufferSize    = 0;
@@ -178,7 +219,6 @@ namespace OpenGL {
 			glBufferSubData(GL_ARRAY_BUFFER,vertexBufferOffset,nPositions,&shapes[i].mesh.positions[0]);
 			vertexBufferOffset += nPositions;
 			checkGLError(-5);
-			return;
 		}
 		
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -205,11 +245,16 @@ namespace OpenGL {
 		checkGLError(0);
 		
 		// draw multiple objects with one draw call
-		//glGenVertexArraysAPPLE(1, &vertexArrayObject);
-		//glBindVertexArrayAPPLE(vertexArrayObject);
+		glGenVertexArraysAPPLE(1, &vertexArrayObject);
+		checkGLError(20);
+		glBindVertexArrayAPPLE(vertexArrayObject);
+		checkGLError(21);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		checkGLError(22);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		checkGLError(23);
 		glBindVertexArrayAPPLE(0);
+		checkGLError(24);
 		
 		//GLint uniformMvp = glGetUniformLocation(shader->getShaderProgram(), "MVP");
 		
@@ -225,7 +270,7 @@ namespace OpenGL {
 		
 		// Send our transformation to the currently bound shader, in the "MVP" uniform
 		//glUniformMatrix4fv(uniformMvp, 1, GL_FALSE, glm::value_ptr(mCamera->calculateModelViewProjection()));
-		//glBindVertexArrayAPPLE(vertexArrayObject);
+		glBindVertexArrayAPPLE(vertexArrayObject);
 		
 		checkGLError(2);
 		
@@ -233,37 +278,45 @@ namespace OpenGL {
 		
 		shader->linkShader();
 		shader->showStatus();
+		checkGLError(41);
 		
 		if (shader->isShaderLinked()) {
 			shader->useShader();
 		}
-		
 		checkGLError(5);
 		
 	  vertexBufferOffset = 0;
 	  indexBufferOffset  = 0;
-		
 		for (size_t i = 0; i < shapes.size(); i++) {
-			
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)vertexBufferOffset);
 			glDrawElements(GL_TRIANGLES, shapes[i].mesh.indices.size(), GL_UNSIGNED_INT, (void*)indexBufferOffset);
-			
 			vertexBufferOffset += sizeof (float) * shapes[i].mesh.positions.size();
 			indexBufferOffset  += sizeof (unsigned int) * shapes[i].mesh.indices.size();
-			
 			checkGLError(3);
 		}
 		
-		shader->detatchShader();
-		
-		glDeleteBuffers(1, &vertexBuffer);
-		glDeleteBuffers(1, &indexBuffer);
-		//glDeleteVertexArraysAPPLE(1, &vertexArrayObject);
-		glDisableVertexAttribArray(0);
-		glBindVertexArrayAPPLE(0);
+		// 1
 		glUseProgram(0);
-		
+		checkGLError(16);
+		// 2
+		glDisableVertexAttribArray(0);
+		checkGLError(9);
+		// 3
+		shader->detatchShader();
+		checkGLError(31);
+		//4
+		glDeleteBuffers(1, &vertexBuffer);
 		checkGLError(6);
+		glDeleteBuffers(1, &indexBuffer);
+		checkGLError(7);
+		// 5
+		glDeleteVertexArraysAPPLE(1, &vertexArrayObject);
+		checkGLError(8);
+		
+	  // 6?
+		//glBindVertexArrayAPPLE(0);
+		//checkGLError(15);
+		
 		std::cout << "OGLVideo: *** DrawObjModel Success ***" << std::endl;
 	}
 	

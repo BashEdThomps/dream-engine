@@ -48,8 +48,8 @@ namespace Shader     {
 			free (mShaderLinkerLog);
 		}
 		
-		detatchShader();
-		
+	}
+	void ShaderInstance::deleteShaderProgram() {
 		if (mShaderProgram) {
 			glDeleteProgram(mShaderProgram);
 		}
