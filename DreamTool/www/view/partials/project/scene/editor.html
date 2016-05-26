@@ -13,12 +13,64 @@
         <div class="col-md-12">
           <div class="panel panel-default">
             <div class="panel-heading">Configuration</div>
-            <div class="panel-body">
-              <div class="form-group">
-                <label for="SceneObjectName">Name</label>
-                <input ng-change="modified()" class="input-sm form-control" type="text" ng-model="selectedSceneObject.name" />
-              </div>
-            </div>
+            <table class="table table-bordered table-condensed">
+              <tbody>
+                <tr>
+                  <td class="col-md-4">Name</td>
+                  <td class="col-md-8">
+                    <input ng-change="modified()" class="input-sm form-control" type="text" ng-model="selectedSceneObject.name" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Translation</td>
+                  <td>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.translation.x" class="form-control input-sm" type="number"/>
+                      </div>
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.translation.y" class="form-control input-sm" type="number"/>
+                      </div>
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.translation.z" class="form-control input-sm" type="number"/>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Rotation</td>
+                  <td>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.rotation.x" class="form-control input-sm" type="number"/>
+                      </div>
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.rotation.y" class="form-control input-sm" type="number"/>
+                      </div>
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.rotation.z" class="form-control input-sm" type="number"/>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Scale</td>
+                  <td>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.scale.x" class="form-control input-sm" type="number"/>
+                      </div>
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.scale.y" class="form-control input-sm" type="number"/>
+                      </div>
+                      <div class="col-md-4">
+                        <input ng-change="modified()" ng-model="selectedSceneObject.scale.z" class="form-control input-sm" type="number"/>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
         <div class="col-md-12">

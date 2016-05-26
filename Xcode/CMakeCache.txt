@@ -191,7 +191,7 @@ CMAKE_STRIP:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/Xcode
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Dependencies for the target
-DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/opt/local/lib/libGLEW.dylib;general;/usr/local/lib/libv8.dylib;general;/usr/local/lib/libv8_base.a;general;/usr/local/lib/libv8_libbase.a;general;/usr/local/lib/libv8_libplatform.a;general;/usr/local/lib/libv8_nosnapshot.a;general;/usr/local/lib/libicuuc.dylib;general;/usr/local/lib/libicui18n.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
+DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libassimp.dylib;general;/usr/local/lib/libSOIL.a;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/opt/local/lib/libGLEW.dylib;general;/usr/local/lib/libv8.dylib;general;/usr/local/lib/libv8_base.a;general;/usr/local/lib/libv8_libbase.a;general;/usr/local/lib/libv8_libplatform.a;general;/usr/local/lib/libv8_nosnapshot.a;general;/usr/local/lib/libicuuc.dylib;general;/usr/local/lib/libicui18n.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
 
 //Value Computed by CMake
 Dream_BINARY_DIR:STATIC=/Users/Ashley/Software/Dream/Xcode
@@ -244,6 +244,12 @@ OPENGL_gl_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/
 //GLU library for OS X (usually same as OpenGL library)
 OPENGL_glu_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework
 
+//Path to a file.
+SOIL_INCLUDE_DIR:PATH=/usr/local/include
+
+//Path to a library.
+SOIL_LIBRARY:FILEPATH=/usr/local/lib/libSOIL.a
+
 //Path to a library.
 V8:FILEPATH=/usr/local/lib/libv8.dylib
 
@@ -267,6 +273,12 @@ V8_LIBPLATFORM_LIBRARY:FILEPATH=/usr/local/lib/libv8_libplatform.a
 
 //Path to a library.
 V8_NOSNAPSHOT_LIBRARY:FILEPATH=/usr/local/lib/libv8_nosnapshot.a
+
+//Path to a file.
+assimp_INCLUDE_DIRS:PATH=/usr/local/include
+
+//Path to a library.
+assimp_LIBRARIES:FILEPATH=/usr/local/lib/libassimp.dylib
 
 //Value Computed by CMake
 dream_BINARY_DIR:STATIC=/Users/Ashley/Software/Dream/Xcode

@@ -6,7 +6,9 @@
 /Users/Ashley/Software/Dream/CMakeModules/FindGLFW.cmake\
 /Users/Ashley/Software/Dream/CMakeModules/FindGLM.cmake\
 /Users/Ashley/Software/Dream/CMakeModules/FindOPENAL.cmake\
+/Users/Ashley/Software/Dream/CMakeModules/FindSOIL.cmake\
 /Users/Ashley/Software/Dream/CMakeModules/FindV8.cmake\
+/Users/Ashley/Software/Dream/CMakeModules/Findassimp.cmake\
 /Users/Ashley/Software/Dream/Xcode/CMakeFiles/3.5.2/CMakeCCompiler.cmake\
 /Users/Ashley/Software/Dream/Xcode/CMakeFiles/3.5.2/CMakeCXXCompiler.cmake\
 /Users/Ashley/Software/Dream/Xcode/CMakeFiles/3.5.2/CMakeSystem.cmake\

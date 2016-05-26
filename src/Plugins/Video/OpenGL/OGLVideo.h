@@ -18,21 +18,27 @@
 #ifndef OGLVIDEO_H
 #define OGLVIDEO_H
 
+// Dream
+#include "../VideoPluginInterface.h"
+#include "../../../Asset/Instances/Model/Assimp/AssimpModelInstance.h"
+#include "../../../Asset/Instances/Shader/ShaderInstance.h"
 #include "Camera.h"
 #include "DrawData.h"
 
-#include "../VideoPluginInterface.h"
-
-#include "../../../Asset/Instances/Model/WaveFront/ObjModelInstance.h"
-#include "../../../Asset/Instances/Shader/ShaderInstance.h"
-
+// STD LIB
 #include <iostream>
 #include <map>
 
+// GLFW
 #include <GLFW/glfw3.h>
+
+// GLM
 #include <glm/glm.hpp>
-#include <glm/matrix.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/matrix.hpp>
 
 namespace Dream {
 namespace Plugins {
@@ -43,22 +49,15 @@ namespace OpenGL {
 	private:
 		GLFWwindow *mWindow;
 		Camera     *mCamera;
-		float       mScreenRatio;
-		std::map<Dream::Asset::AssetInstance*,DrawData*> mDrawDataMap;
+		GLfloat     mDeltaTime;
+		GLfloat     mLastFrame;
 	public:
 		OGLVideo(void);
 		~OGLVideo(void);
 		bool init(void);
-		void setupView(Dream::Scene::Scene*);
 		void update(Dream::Scene::Scene*);
-		void drawObjModel(
-			Dream::Asset::Instances::Model::WaveFront::ObjModelInstance*,
-			Dream::Asset::Instances::Shader::ShaderInstance*
-		);
-		
+		void drawSceneObject(Dream::Scene::SceneObject*);
 		bool checkGLError(int);
-		bool initDrawData();
-		bool clearDrawData();
 		
 	}; // End of OGLVideo
 	

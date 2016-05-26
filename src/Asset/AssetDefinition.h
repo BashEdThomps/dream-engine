@@ -48,7 +48,7 @@
 
 #define ASSET_DEF_FORMAT_SCRIPT_JAVASCRIPT "js"
 #define ASSET_DEF_FORMAT_SCRIPT_CHAISCRIPT "chai"
-#define ASSET_DEF_FORMAT_MODEL_WAVEFRONT   "obj"
+#define ASSET_DEF_FORMAT_MODEL_ASSIMP      "assimp"
 #define ASSET_DEF_FORMAT_AUDIO_WAV         "wav"
 #define ASSET_DEF_FORMAT_AUDIO_OGG         "ogg"
 #define ASSET_DEF_FORMAT_ANIMATION_DREAM   "dream_anim"
@@ -86,7 +86,7 @@ namespace Asset {
 		bool isScriptFormatJavaScript();
 		bool isScriptFormatChaiScript();
 		
-		bool isModelFormatWaveFront();
+		bool isModelFormatAssimp();
 		
 		bool isAudioFormatWav();
 		bool isAudioFormatOgg();

@@ -54,6 +54,22 @@ else()
 	message("Found GLEW Libs at "    ${GLEW_LIBRARIES})
 endif()
 
+find_package(assimp COMPONENTS assimp REQUIRED)
+if (NOT assimp_FOUND)
+	message(FATAL_ERROR "Assimp Package Not Found")
+else()
+	message("Found AssImp Headers " ${assimp_INCLUDE_DIRS})
+	message("Found AssImp Libs " ${assimp_LIBRARIES})
+endif()
+
+find_package(SOIL COMPONENTS SOIL REQUIRED)
+if (NOT SOIL_FOUND)
+	message(FATAL_ERROR "SOIL Package Not Found")
+else()
+	message("Found SOIL Headers "   ${SOIL_INCLUDE_DIR})
+	message("Found SOIL Libraries " ${SOIL_LIBRARIES})
+endif()
+
 
 # Targets
 add_library (DreamBase SHARED ${DREAM_SRC})
@@ -65,6 +81,8 @@ target_link_libraries(
   -ldl
   ${OPENAL_LIBRARY}
   ${OPENGL_LIBRARIES}
+	${assimp_LIBRARIES}
+	${SOIL_LIBRARIES}
   ${GLFW_LIBRARIES}
 	${GLEW_LIBRARIES}
   ${V8_LIBRARY}
@@ -77,6 +95,8 @@ include_directories(
   ${OPENGL_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
 	${GLEW_INCLUDE_DIRS}
+	${assimp_INCLUDE_DIRS}
+	${SOIL_INCLUDE_DIR}
   ${GLM_INCLUDE_DIR}
   ${V8_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}
@@ -93,6 +113,8 @@ target_link_libraries(
   ${OPENAL_LIBRARY}
   ${GLFW_LIBRARIES}
   ${GLEW_LIBRARIES}
+	${assimp_LIBRARIES}
+	${SOIL_LIBRARIES}
   ${V8_LIBRARY}
   ${BULLET_LIBRARY}
 )

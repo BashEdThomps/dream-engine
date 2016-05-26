@@ -33,43 +33,17 @@ namespace Shader     {
     class ShaderInstance : public Dream::Asset::AssetInstance {
 		private:
 			std::string mVertexShaderSource;
-			std::vector<GLuint> mBoundAttributesVector;
 			GLuint      mVertexShader;
-			GLint       mIsVertexShaderCompiled;
-			char*       mVertexShaderCompilerLog;
-			
 			std::string mFragmentShaderSource;
 			GLuint      mFragmentShader;
-			GLint       mIsFragmentShaderCompiled;
-			char*       mFragmentShaderCompilerLog;
-			
 			GLuint mShaderProgram;
-			GLint  mIsShaderLinked;
-			char*  mShaderLinkerLog;
-			
     public:
 			ShaderInstance(Dream::Asset::AssetDefinition*);
 			~ShaderInstance(void);
 			
 			bool load(std::string);
-			bool compileShaderProgram();
-			bool isShaderCompiledAndLinked();
-			bool compileVertexShader();
-			bool compileFragmentShader();
-			bool linkShader();
-			
-			bool isVertexShaderCompiled();
-			bool isFragmentShaderCompiled();
-			bool areShadersCompiled();
-			bool isShaderLinked();
-			
+			void use();
 			GLuint getShaderProgram();
-			void useShader();
-			void detatchShader();
-			void bindAttributeLocation(GLuint,GLchar*);
-			void unbindAllAttributeLocations();
-			void showStatus();
-			void deleteShaderProgram();
 		
     }; // End of ShaderInstance
     

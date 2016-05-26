@@ -130,8 +130,8 @@ namespace Asset {
 		return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_CHAISCRIPT) == 0;
 	}
 		
-	bool AssetDefinition::isModelFormatWaveFront() {
-		return getFormat().compare(ASSET_DEF_FORMAT_MODEL_WAVEFRONT) == 0;
+	bool AssetDefinition::isModelFormatAssimp() {
+		return getFormat().compare(ASSET_DEF_FORMAT_MODEL_ASSIMP) == 0;
 	}
 	
 	bool AssetDefinition::isAudioFormatWav() {

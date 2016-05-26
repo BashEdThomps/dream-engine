@@ -19,9 +19,8 @@ App.service('ProjectService',
     this.ASSET_TYPE_ANIMATION         = "animation";
     this.ASSET_FORMAT_ANIMATION_DREAM = "dream";
 
-    this.ASSET_TYPE_MODEL                 = "model";
-    this.ASSET_FORMAT_MODEL_WAVEFRONT_OBJ = "obj";
-    this.ASSET_FORMAT_MODEL_WAVEFRONT_MTL = "mtl";
+    this.ASSET_TYPE_MODEL          = "model";
+    this.ASSET_FORMAT_MODEL_ASSIMP = "assimp";
 
     this.ASSET_TYPE_SCRIPT        = "script";
     this.ASSET_FORMAT_SCRIPT_JS   = "js";
@@ -506,12 +505,12 @@ App.service('ProjectService',
         callback(this.project.assets);
     };
 
-    this.assetHasModelObj = function(uuid,callback){
+    this.assetHasModelAssimp = function(uuid,callback){
         ApiService.assetExists(
             this.project.uuid,
             this.ASSET_TYPE_MODEL,
             uuid,
-            this.ASSET_FORMAT_MODEL_WAVEFRONT_OBJ,
+            this.ASSET_FORMAT_MODEL_ASSIMP,
             callback
         );
     };

@@ -98,7 +98,7 @@ namespace Dream {
 	
 	int Dream::runProject() {
 		if(!mPluginManager->createPlugins()){
-			std::cerr << "Dream: Unable to create interfaces." << std::endl;
+			std::cerr << "Dream: Unable to create plugins." << std::endl;
 			return 1;
 		}
 		
@@ -106,13 +106,14 @@ namespace Dream {
 			std::cerr << "Dream: unable to load startup scene." << std::endl;
 			return 1;
 		}
-	
+		
 		mRunning = true;
 		std::cout << "Dream: Starting Scene - " << mProject->getActiveScene()->getName()
 		          << " (" << mProject->getActiveScene()->getUUID() << ")" << std::endl;
 		
 		while(mRunning) {
 			update();
+			usleep(1000000/60);
 		}
 		
 		return 0;

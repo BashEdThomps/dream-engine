@@ -59,34 +59,21 @@
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="modelFormat">
-                  <option value="obj">WaveFront OBJ</option>
+                  <option value="assimp">Assimp Compatible Model</option>
                 </select>
               </td>
             </tr>
-            <tr id="wf-obj-files" ng-show="currentAsset.type == 'model' && currentAsset.format == 'obj'">
-              <td>Model</td>
+            <tr id="wf-assimp-files" ng-show="currentAsset.type == 'model' && currentAsset.format == 'assimp'">
+              <td>Model File</td>
               <td>
-                <button ng-show="hasModelObj" class="pull-right btn-sm btn btn-danger">
+                <button ng-show="hasModelAssimp" class="pull-right btn-sm btn btn-danger">
                   <span class="glyphicon glyphicon-remove"></span>
                 </button>
-                <button id="wf-upload-button" ng-click="onAssetModelWaveFrontObjUploadButtonClicked()"
-                        ng-show="!hasModelObj" class="pull-right btn-sm btn btn-success">
+                <button id="wf-upload-button" ng-click="onAssetModelAssimpUploadButtonClicked()"
+                        ng-show="!hasModelAssimp" class="pull-right btn-sm btn btn-success">
                         <span class="glyphicon glyphicon-open"></span>
                 </button>
-                <input ng-show="!hasModelObj" type="file" id="wf-obj-file" accept=".obj" name="model-file" />
-              </td>
-            </tr>
-            <tr ng-show="currentAsset.type == 'model' && currentAsset.format == 'obj'">
-              <td>Material</td>
-              <td>
-                <button ng-show="hasModelMtl" class="pull-right btn-sm btn btn-danger">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-                <button id="wf-upload-button" ng-click="onAssetModelWavefrontUploadButtonClicked()"
-                        ng-show="!hasModelMtl" class="pull-right btn-sm btn btn-success">
-                  <span class="glyphicon glyphicon-open"></span>
-                </button>
-                <input ng-show="!hasModelMtl" type="file" id="wf-mtl-file" accept=".mtl" name="material-file" />
+                <input ng-show="!hasModelAssimp" type="file" id="wf-assimp-file"  name="model-file" />
               </td>
             </tr>
             <tr ng-show="currentAsset.type == 'script'">

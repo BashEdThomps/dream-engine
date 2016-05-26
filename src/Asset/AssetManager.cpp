@@ -131,8 +131,8 @@ namespace Asset {
 		std::cout << "Dream: Creating model asset instance." << std::endl;
 		Asset::AssetInstance* retval = NULL;
 		
-		if (definition->isModelFormatWaveFront()) {
-			retval = new Asset::Instances::Model::WaveFront::ObjModelInstance(definition);
+		if (definition->isModelFormatAssimp()) {
+			retval = new Asset::Instances::Model::Assimp::AssimpModelInstance(definition);
 		}
 		
 		sceneObject->setModelAssetInstance(retval);

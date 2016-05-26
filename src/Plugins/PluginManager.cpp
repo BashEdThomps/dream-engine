@@ -48,11 +48,11 @@ namespace Plugins {
 				if (mScriptingPlugin->init()) {
 					return true;
 				} else {
-					std::cerr << "Unable to initialise ChaiScripting." << std::endl;
+					std::cerr << "PluginManager: Unable to initialise ChaiScripting." << std::endl;
 					return false;
 				}
 			} else {
-				std::cerr << "Unable to create ChaiScripting. Scripting Plugin allready exists." << std::endl;
+				std::cerr << "PluginManager: Unable to create ChaiScripting. Scripting Plugin allready exists." << std::endl;
 				return false;
 			}
 		}
@@ -63,11 +63,11 @@ namespace Plugins {
 				if (mScriptingPlugin->init()) {
 					return true;
 				} else {
-					std::cerr << "Unable to initialise V8Scripting." << std::endl;
+					std::cerr << "PluginManager: Unable to initialise V8Scripting." << std::endl;
 					return false;
 				}
 			} else {
-				std::cerr << "Unable to create V8Scripting. Scripting Plugin allready exists." << std::endl;
+				std::cerr << "PluginManager: Unable to create V8Scripting. Scripting Plugin allready exists." << std::endl;
 				return false;
 			}
 		}
@@ -82,11 +82,11 @@ namespace Plugins {
 				if (mAudioPlugin->init()) {
 					return true;
 				} else {
-					std::cerr << "Unable to initialise OALAudio." << std::endl;
+					std::cerr << "PluginManager: Unable to initialise OALAudio." << std::endl;
 					return false;
 				}
 			} else {
-				std::cerr << "Unable to create OALAudio. Audio Plugin allready exists." << std::endl;
+				std::cerr << "PluginManager: Unable to create OALAudio. Audio Plugin allready exists." << std::endl;
 				return false;
 			}
 		}
@@ -101,17 +101,17 @@ namespace Plugins {
 				if (mPhysicsPlugin->init()) {
 					return true;
 				} else {
-					std::cerr << "Unable to initialise BulletPhysics." << std::endl;
+					std::cerr << "PluginManager: Unable to initialise BulletPhysics." << std::endl;
 					return false;
 				}
 			} else {
-				std::cerr << "Unable to create BulletPhysics. Physics Plugin allready exists." << std::endl;
+				std::cerr << "PluginManager: Unable to create BulletPhysics. Physics Plugin allready exists." << std::endl;
 				return false;
 			}
 		}
 		// Bullet3
 		else if (mProject->isBullet3Enabled()) {
-			std::cerr << "Bullet3Physics is not yet implemented." << std::endl;
+			std::cerr << "PluginManager: Bullet3Physics is not yet implemented." << std::endl;
 			return false;
 		}
 		return false;
@@ -126,17 +126,17 @@ namespace Plugins {
 				if (mVideoPlugin->init()) {
 					return true;
 				} else {
-					std::cerr << "Unable to initialise OGLVideo." << std::endl;
+					std::cerr << "PluginManager: Unable to initialise OGLVideo." << std::endl;
 					return false;
 				}
 			} else {
-				std::cerr << "Unable to create OGLVideo. Video Plugin allready exists." << std::endl;
+				std::cerr << "PluginManager: Unable to create OGLVideo. Video Plugin allready exists." << std::endl;
 				return false;
 			}
 		}
 		// Vulkan
 		else if (mProject->isVulkanEnabled())  {
-			std::cerr << "VulkanVideo Plugin is not yet implemented" << std::endl;
+			std::cerr << "PluginManager: VulkanVideo Plugin is not yet implemented" << std::endl;
 			return false;
 		}
 		return false;

@@ -27,13 +27,13 @@
 #include "AssetInstance.h"
 #include "AssetDefinition.h"
 
-#include "Instances/Model/WaveFront/ObjModelInstance.h"
 #include "Instances/Script/JavaScript/JavaScriptInstance.h"
 #include "Instances/Script/ChaiScript/ChaiScriptInstance.h"
 #include "Instances/Audio/Ogg/OggAudioInstance.h"
 #include "Instances/Audio/Wav/WavAudioInstance.h"
 #include "Instances/Animation/Dream/AnimationInstance.h"
 #include "Instances/Shader/ShaderInstance.h"
+#include "Instances/Model/Assimp/AssimpModelInstance.h"
 
 namespace Dream {
 namespace Asset {

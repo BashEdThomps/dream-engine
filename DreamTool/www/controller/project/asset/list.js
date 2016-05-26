@@ -62,14 +62,10 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       }
     } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_MODEL) {
       console.log("Checking for existing model asset");
-      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_MODEL_WAVEFRONT_OBJ) {
-        ProjectService.assetHasModelObj($scope.currentAsset.uuid,function(result) {
-          console.log("ModelObj Asset Exists",result);
-          $scope.hasModelObj = result;
-        });
-        ProjectService.assetHasModelMtl($scope.currentAsset.uuid,function(result){
-          console.log("ModelMtl Asset Exists",result);
-          $scope.hasModelMtl = result;
+      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_MODEL_ASSIMP) {
+        ProjectService.assetHasModelAssimp($scope.currentAsset.uuid,function(result) {
+          console.log("Model Assimp Asset Exists",result);
+          $scope.hasModelAssimp = result;
         });
       }
     } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_SHADER) {
@@ -91,13 +87,13 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     UIService.updateAsset($scope.currentAsset);
   };
 
-  $scope.onAssetModelWavefrontUploadButtonClicked = function() {
-    var objFile = document.getElementById('wf-obj-file');
-    UtilService.readFileAsBinaryFromElement(objFile, function(data) {
-      var path = ProjectService.getProjectUUID()+"/asset/model/"+$scope.currentAsset.uuid+"/obj";
+  $scope.onAssetModelAssimpUploadButtonClicked = function() {
+    var assimpFile = document.getElementById('wf-assimp-file');
+    UtilService.readFileAsBinaryFromElement(assimpFile, function(data) {
+      var path = ProjectService.getProjectUUID()+"/asset/model/"+$scope.currentAsset.uuid+"/assimp";
       ApiService.uploadAsset(path,data,function(success){
         if (success) {
-          UIService.addAlert("Asset uploaded successfuly.","success");
+          UIService.addAlert("Model Asset Uploaded Successfuly!","success");
         }
         else {
           UIService.addAlert("Error uploading asset.","danger");
