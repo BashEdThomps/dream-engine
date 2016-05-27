@@ -58,6 +58,8 @@ namespace OpenGL {
 		void update(Dream::Scene::Scene*);
 		void drawSceneObject(Dream::Scene::SceneObject*);
 		bool checkGLError(int);
+		void setupWindowEventHandlers();
+		bool isWindowShouldCloseFlagSet();
 		
 	}; // End of OGLVideo
 	

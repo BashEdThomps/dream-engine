@@ -24,30 +24,32 @@
 #define VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH  1280
 #define VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
 
-namespace Dream {
-	namespace Plugins {
-		namespace Video {
-			class VideoPluginInterface : public Dream::Plugins::PluginInterface {
-            protected:
-                int mScreenWidth;
-                int mScreenHeight;
-                std::string mScreenName;
-			public:
-				VideoPluginInterface(void);
-				virtual ~VideoPluginInterface(void) {};
-                
-                void setScreenWidth(int);
-                int  getScreenWidth();
-                
-                void setScreenHeight(int);
-                int  getScreenHeight();
-                
-                void        setScreenName(std::string);
-                std::string getScreenName();
-                
-			}; // End of VideoInterface
-		} // End of Video
-	} // End of Plugins
+namespace Dream   {
+namespace Plugins {
+namespace Video   {
+	
+	class VideoPluginInterface : public Dream::Plugins::PluginInterface {
+	protected:
+		int mScreenWidth;
+		int mScreenHeight;
+		std::string mScreenName;
+		bool mWindowShouldClose;
+	public:
+		VideoPluginInterface(void);
+		virtual ~VideoPluginInterface(void) {};
+    void setScreenWidth(int);
+    int  getScreenWidth();
+    void setScreenHeight(int);
+    int  getScreenHeight();
+    void setScreenName(std::string);
+    std::string getScreenName();
+		void setupWindowEventHandlers();
+		bool isWindowShouldCloseFlagSet();
+		
+	}; // End of VideoInterface
+	
+} // End of Video
+} // End of Plugins
 } // End of Dream
 
 #endif // End of VIDEOINTERFACE_H

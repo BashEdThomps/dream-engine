@@ -172,6 +172,7 @@ namespace Plugins {
 	}
 	
 	void PluginManager::update() {
+		mDone = mVideoPlugin->isWindowShouldCloseFlagSet();
 		Scene::Scene* scene = mProject->getActiveScene();
 		if (mInputPlugin     != NULL) mInputPlugin->update     (scene);
 		if (mScriptingPlugin != NULL) mScriptingPlugin->update (scene);
@@ -179,6 +180,10 @@ namespace Plugins {
 		if (mAnimationPlugin != NULL) mAnimationPlugin->update (scene);
 		if (mAudioPlugin     != NULL) mAudioPlugin->update     (scene);
 		if (mVideoPlugin     != NULL) mVideoPlugin->update     (scene);
+	}
+	
+	bool PluginManager::isDone() {
+		return mDone;
 	}
 	
 } // End of Plugins

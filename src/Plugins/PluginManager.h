@@ -26,32 +26,27 @@ namespace Plugins {
 	
 	class PluginManager {
 	private:
-		Project::Project* mProject;
-		
-		// Plugins
+		Project::Project                             *mProject;
 		Plugins::Audio::AudioPluginInterface         *mAudioPlugin;
 		Plugins::Video::VideoPluginInterface         *mVideoPlugin;
 		Plugins::Physics::PhysicsPluginInterface     *mPhysicsPlugin;
 		Plugins::Scripting::ScriptingPluginInterface *mScriptingPlugin;
 		Plugins::Input::InputPluginInterface         *mInputPlugin;
 		Plugins::Animation::AnimationPluginInterface *mAnimationPlugin;
-		
+		bool mDone;
 	public:
 		PluginManager(Project::Project*);
 		~PluginManager();
-		
 		bool createPlugins();
 		void destroyPlugins();
-		
 		bool createAnimationPlugin();
 		bool createAudioPlugin();
 		bool createInputPlugin();
 		bool createPhysicsPlugin();
 		bool createScriptingPlugin();
 		bool createVideoPlugin();
-		
 		void update();
-		
+		bool isDone();
 	}; // End of PluginManager
 	
 } // End of Plugins

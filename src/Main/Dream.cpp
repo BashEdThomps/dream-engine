@@ -120,6 +120,7 @@ namespace Dream {
 	}
 
 	void Dream::update(void) {
+		mRunning = !mPluginManager->isDone();
 		mPluginManager->update();
 	}
 }

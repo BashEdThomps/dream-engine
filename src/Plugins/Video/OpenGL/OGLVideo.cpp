@@ -17,10 +17,25 @@
 
 #include "OGLVideo.h"
 
-namespace Dream {
+namespace Dream   {
 namespace Plugins {
-namespace Video {
-namespace OpenGL {
+namespace Video   {
+namespace OpenGL  {
+	
+	// Global Event Handlers
+	void onWindowSizeChangedEvent(GLFWwindow *window, int width, int height) {
+		std::cout << "OGLVideo: Window Resized " << width << "," << height << std::endl;
+	}
+	
+	void onWindowCloseEvent(GLFWwindow *window) {
+		std::cout << "OGLVideo: Window Close Event." << std::endl;
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+	
+	void onFramebufferSizeEvent(GLFWwindow *window, int width, int height ) {
+		std::cout << "OGLVideo: Framebuffer Resized " << width << "," << height << std::endl;
+		glViewport(0, 0, width, height);
+	}
 	
 	OGLVideo::OGLVideo(void) : VideoPluginInterface() {
 		mCamera = new Camera();
@@ -62,6 +77,7 @@ namespace OpenGL {
 			return false;
 		}
 		
+		setupWindowEventHandlers();
 		glfwMakeContextCurrent(mWindow);
 		glfwSwapInterval(1);
 		checkGLError(-10);
@@ -90,8 +106,14 @@ namespace OpenGL {
 		return true;
 	}
 	
+	void OGLVideo::setupWindowEventHandlers() {
+		glfwSetWindowSizeCallback  (mWindow, onWindowSizeChangedEvent);
+		glfwSetWindowCloseCallback (mWindow, onWindowCloseEvent);
+		glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeEvent);
+	}
+	
 	void OGLVideo::update(Dream::Scene::Scene* scene) {
-		std::cout << "OGLVideo: Update" << std::endl;
+		//std::cout << "OGLVideo: Update" << std::endl;
 		std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
 		if (!glfwWindowShouldClose(mWindow)) {
 			// Set frame time
@@ -114,6 +136,8 @@ namespace OpenGL {
 			
     	glfwSwapBuffers(mWindow);
 			checkGLError(99);
+		} else {
+			mWindowShouldClose = true;
 		}
 	}
 	

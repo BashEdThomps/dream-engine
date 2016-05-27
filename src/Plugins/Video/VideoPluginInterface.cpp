@@ -17,38 +17,43 @@
 
 #include "VideoPluginInterface.h"
 
-namespace Dream {
-	namespace Plugins {
-		namespace Video {
-            VideoPluginInterface::VideoPluginInterface(void) : Dream::Plugins::PluginInterface() {
-                setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
-                setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
-            }
+namespace Dream   {
+namespace Plugins {
+namespace Video   {
+	
+	VideoPluginInterface::VideoPluginInterface(void) : Dream::Plugins::PluginInterface() {
+		setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
+    setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
+  }
             
-            void VideoPluginInterface::setScreenWidth(int width) {
-                mScreenWidth = width;
-            }
+  void VideoPluginInterface::setScreenWidth(int width) {
+		mScreenWidth = width;
+  }
             
-            int  VideoPluginInterface::getScreenWidth() {
-                return mScreenWidth;
-            }
+  int  VideoPluginInterface::getScreenWidth() {
+		return mScreenWidth;
+  }
                 
-            void VideoPluginInterface::setScreenHeight(int height) {
-                mScreenHeight = height;
-            }
-            
-            int  VideoPluginInterface::getScreenHeight() {
-                return mScreenHeight;
-            }
-                
-            void VideoPluginInterface::setScreenName(std::string name) {
-                mScreenName = name;
-            }
-            
-            std::string VideoPluginInterface::getScreenName() {
-                return mScreenName;
-            }
-                
-		} // End of Video
-	} // End of Plugins
+  void VideoPluginInterface::setScreenHeight(int height) {
+      mScreenHeight = height;
+  }
+  
+  int  VideoPluginInterface::getScreenHeight() {
+      return mScreenHeight;
+  }
+      
+  void VideoPluginInterface::setScreenName(std::string name) {
+      mScreenName = name;
+  }
+  
+  std::string VideoPluginInterface::getScreenName() {
+      return mScreenName;
+  }
+		
+	bool VideoPluginInterface::isWindowShouldCloseFlagSet() {
+		return mWindowShouldClose;
+ 	}
+
+} // End of Video
+} // End of Plugins
 } // End of Dream
