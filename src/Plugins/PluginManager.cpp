@@ -12,6 +12,7 @@ namespace Plugins {
 		mScriptingPlugin = NULL;
 		mPhysicsPlugin   = NULL;
 		mVideoPlugin     = NULL;
+		mDone            = false;
 		
 	}
 	
@@ -157,6 +158,14 @@ namespace Plugins {
 		if (mProject->isOpenGLEnabled()) {
 			if (mInputPlugin == NULL) {
 				mInputPlugin = new Plugins::Input::GLFW::GLFWInput();
+				try {
+					Dream::Plugins::Video::OpenGL::OGLVideo* ogl   = dynamic_cast<Dream::Plugins::Video::OpenGL::OGLVideo*>(mVideoPlugin);
+					Dream::Plugins::Input::GLFW::GLFWInput*  input = dynamic_cast<Dream::Plugins::Input::GLFW::GLFWInput*>(mInputPlugin);
+					input->setWindow(ogl->getWindow());
+				} catch (std::exception ex) {
+					std::cerr << "PluginManager: " << ex.what() << std::endl;
+				}
+				
 				if (mInputPlugin->init()) {
 					return true;
 				} else {

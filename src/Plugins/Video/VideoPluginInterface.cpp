@@ -24,6 +24,7 @@ namespace Video   {
 	VideoPluginInterface::VideoPluginInterface(void) : Dream::Plugins::PluginInterface() {
 		setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
     setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
+		mWindowShouldClose = false;
   }
             
   void VideoPluginInterface::setScreenWidth(int width) {

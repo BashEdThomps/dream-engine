@@ -21,8 +21,23 @@ namespace Dream   {
 namespace Plugins {
 namespace Input   {
 	
-	InputPluginInterface::InputPluginInterface  () : Dream::Plugins::PluginInterface() {}
-    InputPluginInterface::~InputPluginInterface () {}
+	static std::vector<InputEvent> sInputEventVector;
+	
+	InputPluginInterface::InputPluginInterface  ()
+	  : Dream::Plugins::PluginInterface() {}
+	
+	void InputPluginInterface::pushEvent(InputEvent event) {
+		sInputEventVector.push_back(event);
+	}
+
+	void InputPluginInterface::clearInputEvents() {
+		sInputEventVector.clear();
+	}
+	
+	std::vector<InputEvent> InputPluginInterface::getInputEventVector() {
+		return sInputEventVector;
+	}
+	
 	
 } // End of Input
 } // End of Plugins

@@ -179,7 +179,7 @@ App.service('ProjectService',
       return this.ASSET_TYPES;
     };
 
-    this.addAssetInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,assetUUID){
+    this.addAssetInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,assetUUID,callback){
         var proj = this;
         console.log("Adding Asset Instance",sceneObjectUUID,"to",assetUUID);
         this.getSceneByUUID(sceneUUID,function(scene){
@@ -189,8 +189,10 @@ App.service('ProjectService',
                 }
                 if (sceneObject.assetInstances.indexOf(assetUUID) < 0) {
                     sceneObject.assetInstances.push(assetUUID);
+                    callback(true);
                 } else {
                     console.log(sceneObjectUUID,"allready has instance to",assetUUID);
+                    callback(false);
                 }
             });
         });
@@ -251,7 +253,22 @@ App.service('ProjectService',
             uuid: UtilService.generateUUID(),
             name: "New Scene Object",
             assetInstances: [],
-            children: []
+            children: [],
+            translation: {
+              x: 0,
+              y: 0,
+              z: 0
+            },
+            rotation: {
+              x: 0,
+              y: 0,
+              z: 0
+            },
+            scale: {
+              x: 0,
+              y: 0,
+              z: 0
+            }
         };
     };
 

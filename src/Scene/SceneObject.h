@@ -10,13 +10,14 @@
 #define NODE_Y 1
 #define NODE_Z 2
 
-#define SCENE_OBJECT_UUID          "uuid"
-#define SCENE_OBJECT_NAME          "name"
-#define SCENE_OBJECT_CHILDREN      "children"
-#define PATH_DELIMETER             "::"
+#define SCENE_OBJECT_UUID     "uuid"
+#define SCENE_OBJECT_NAME     "name"
+#define SCENE_OBJECT_CHILDREN "children"
+#define PATH_DELIMETER        "::"
 
-#define SCENE_OBJECT_TRANSLATION   "translation"
-#define SCENE_OBJECT_ROTATION      "rotation"
+#define SCENE_OBJECT_TRANSLATION "translation"
+#define SCENE_OBJECT_ROTATION    "rotation"
+#define SCENE_OBJECT_SCALE       "scale"
 
 #define SCENE_OBJECT_X "x"
 #define SCENE_OBJECT_Y "y"
@@ -44,8 +45,9 @@ namespace Scene {
 		std::string  mPositionType;
 		
 		// Position
-		float        mTranslation[3];
-		float        mRotation[3];
+		float mTranslation[3];
+		float mRotation[3];
+		float mScale[3];
 		
 		// Asset Instances
 		Dream::Asset::AssetInstance* mAnimationAssetInstance;
@@ -53,34 +55,28 @@ namespace Scene {
 		Dream::Asset::AssetInstance* mModelAssetInstance;
 		Dream::Asset::AssetInstance* mScriptAssetInstance;
 		Dream::Asset::AssetInstance* mShaderAssetInstance;
-		
 	public:
 		SceneObject  ();
 		SceneObject  (nlohmann::json);
 		~SceneObject ();
-		
 		bool         init();
-		
 		void         loadAssetInstances(nlohmann::json);
 		bool         initAssetInstances();
-		
 		bool         hasUUID(std::string);
 		void         setUUID(std::string);
 		std::string  getUUID();
-		
 		bool         hasName(std::string);
 		void         setName(std::string);
 		std::string  getName();
-		
 		std::string  getNameUUIDString();
 		void         showStatus();
-		
 		void         setTranslation(float, float, float);
 		float*       getTranslation();
 		void         setRotation(float, float, float);
 		float*       getRotation();
+		void         setScale(float, float, float);
+		float*       getScale();
 		void         resetTranslationRotation();
-		
 		int          countAllChildren();
 		int          countChildren();
 		void         addChild(SceneObject*);
@@ -92,27 +88,21 @@ namespace Scene {
 		bool         isParentOfDeep(SceneObject*);
 		void         setParent(SceneObject*);
 		SceneObject* getParent();
-		
 		void         generatePath();
 		std::string  getPath();
-		
 		void setAnimationAssetInstance (Dream::Asset::AssetInstance*);
 		Dream::Asset::AssetInstance*   getAnimationAssetInstance();
-		
 		void setAudioAssetInstance     (Dream::Asset::AssetInstance*);
 		Dream::Asset::AssetInstance*   getAudioAssetInstance();
-		
 		void setModelAssetInstance     (Dream::Asset::AssetInstance*);
 		Dream::Asset::AssetInstance*   getModelAssetInstance();
-		
 		void setScriptAssetInstance    (Dream::Asset::AssetInstance*);
 		Dream::Asset::AssetInstance*   getScriptAssetInstance();
-		
 		void setShaderAssetInstance    (Dream::Asset::AssetInstance*);
 		Dream::Asset::AssetInstance*   getShaderAssetInstance();
-		
 		std::vector<std::string> getAssetInstanceUUIDsToLoad();
-		
+		bool hasModelAssetInstance();
+		bool hasShaderAssetInstance();
 	}; // End of SceneObject
 	
 } // End of Scene

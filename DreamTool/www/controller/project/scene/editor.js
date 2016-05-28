@@ -70,7 +70,12 @@ App.controller("ProjectSceneEditor",
       ProjectService.addAssetInstanceToSceneObject(
         $scope.sceneUUID,
         $scope.selectedSceneObjectUUID,
-        $scope.selectedNewAssetInstance
+        $scope.selectedNewAssetInstance,
+        function(success) {
+          if (!success) {
+            UIService.addAlert("SceneObject all ready contains an instance to this Asset","danger");
+          }
+        }
       );
     };
 

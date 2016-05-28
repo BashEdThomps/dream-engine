@@ -60,6 +60,7 @@ namespace OpenGL {
 		bool checkGLError(int);
 		void setupWindowEventHandlers();
 		bool isWindowShouldCloseFlagSet();
+		GLFWwindow* getWindow();
 		
 	}; // End of OGLVideo
 	

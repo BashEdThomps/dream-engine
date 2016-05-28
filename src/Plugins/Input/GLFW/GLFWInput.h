@@ -9,8 +9,14 @@
 #ifndef GLFWInput_hpp
 #define GLFWInput_hpp
 
-#include "../InputPluginInterface.h"
+#include <vector>
 #include <GLFW/glfw3.h>
+
+#include "../InputPluginInterface.h"
+#include "../InputEvent.h"
+#include "MouseInputEvent.h"
+#include "KeyboardInputEvent.h"
+#include "JoystickInputEvent.h"
 
 namespace Dream   {
 namespace Plugins {
@@ -18,9 +24,12 @@ namespace Input   {
 namespace GLFW {
 	
 	class GLFWInput : public InputPluginInterface {
+	private:
+		GLFWwindow *mWindow;
 	public:
 		GLFWInput();
 		~GLFWInput();
+		void setWindow(GLFWwindow*);
 		bool init();
 		void update(Dream::Scene::Scene*);
 	};

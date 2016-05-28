@@ -27,24 +27,35 @@ namespace Scene {
 		
 		if (!soJson[SCENE_OBJECT_TRANSLATION].is_null()) {
 			nlohmann::json translation = soJson[SCENE_OBJECT_TRANSLATION];
-			mTranslation [NODE_X] = translation[SCENE_OBJECT_X];
-			mTranslation [NODE_Y] = translation[SCENE_OBJECT_Y];
-			mTranslation [NODE_Z] = translation[SCENE_OBJECT_Z];
+			mTranslation[NODE_X] = translation[SCENE_OBJECT_X];
+			mTranslation[NODE_Y] = translation[SCENE_OBJECT_Y];
+			mTranslation[NODE_Z] = translation[SCENE_OBJECT_Z];
 		} else {
-			mTranslation [NODE_X] = 0.0f;
-			mTranslation [NODE_Y] = 0.0f;
-			mTranslation [NODE_Z] = 0.0f;
+			mTranslation[NODE_X] = 0.0f;
+			mTranslation[NODE_Y] = 0.0f;
+			mTranslation[NODE_Z] = 0.0f;
 		}
 			
 		if (!soJson[SCENE_OBJECT_ROTATION].is_null()) {
 			nlohmann::json rotation = soJson[SCENE_OBJECT_ROTATION];
-			mRotation [NODE_X] = rotation[SCENE_OBJECT_X];
-			mRotation [NODE_Y] = rotation[SCENE_OBJECT_Y];
-			mRotation [NODE_Z] = rotation[SCENE_OBJECT_Z];
+			mRotation[NODE_X] = rotation[SCENE_OBJECT_X];
+			mRotation[NODE_Y] = rotation[SCENE_OBJECT_Y];
+			mRotation[NODE_Z] = rotation[SCENE_OBJECT_Z];
 		} else {
-			mRotation [NODE_X] = 0.0f;
-			mRotation [NODE_Y] = 0.0f;
-			mRotation [NODE_Z] = 0.0f;
+			mRotation[NODE_X] = 0.0f;
+			mRotation[NODE_Y] = 0.0f;
+			mRotation[NODE_Z] = 0.0f;
+		}
+		
+		if (!soJson[SCENE_OBJECT_SCALE].is_null()) {
+			nlohmann::json scale = soJson[SCENE_OBJECT_SCALE];
+			mScale[NODE_X] = scale[SCENE_OBJECT_X];
+			mScale[NODE_Y] = scale[SCENE_OBJECT_Y];
+			mScale[NODE_Z] = scale[SCENE_OBJECT_Z];
+		} else {
+			mScale[NODE_X] = 0.0f;
+			mScale[NODE_Y] = 0.0f;
+			mScale[NODE_Z] = 0.0f;
 		}
 		
 		if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null()) {
@@ -258,6 +269,14 @@ namespace Scene {
 	
 	Dream::Asset::AssetInstance* SceneObject::getShaderAssetInstance() {
 		return mShaderAssetInstance;
+	}
+	
+	bool SceneObject::hasModelAssetInstance() {
+		return mModelAssetInstance != NULL;
+	}
+	
+	bool SceneObject::hasShaderAssetInstance() {
+		return mShaderAssetInstance != NULL;
 	}
 		
 } // End of Scene

@@ -122,7 +122,7 @@ namespace OpenGL  {
 			mLastFrame = currentFrame;
 			
 			// Clear the colorbuffer
-			glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			checkGLError(541);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			checkGLError(542);
@@ -130,8 +130,15 @@ namespace OpenGL  {
 			
 			std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
 			for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
-				drawSceneObject((*it));
-				checkGLError(555);
+				Dream::Scene::SceneObject *object = (*it);
+				if (object->hasModelAssetInstance()) {
+					if (object->hasShaderAssetInstance()){
+    				drawSceneObject(object);
+    				checkGLError(555);
+					} else {
+						std::cerr << "OGLVideo: Object " << object->getUUID() << " has no ShaderInstance assigned." << std::endl;
+					}
+				}
 			}
 			
     	glfwSwapBuffers(mWindow);
@@ -206,6 +213,10 @@ namespace OpenGL  {
 			}
 		} while(errorCode != 0);
 		return wasError;
+	}
+	
+	GLFWwindow* OGLVideo::getWindow() {
+		return mWindow;
 	}
 	
 } // End of OpenGL

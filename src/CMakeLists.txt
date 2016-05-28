@@ -73,7 +73,36 @@ endif()
 
 # Targets
 add_library (DreamBase SHARED ${DREAM_SRC})
-source_group(DreamBase FILES ${DREAM_SRC})
+
+# Source Groups
+
+file(GLOB_RECURSE _ASSET_SRC "Asset/*.h" "Asset/*.cpp")
+source_group(Asset FILES ${_ASSET_SRC})
+
+file(GLOB_RECURSE _JSON_SRC "JSON/j*")
+source_group(Json FILES ${_JSON_SRC})
+
+file(GLOB_RECURSE _MAIN_SRC "Main/*.h" "Main/*.cpp")
+list(REMOVE_ITEM  _MAIN_SRC "Main/Main.cpp")
+source_group(Main FILES ${_MAIN_SRC})
+
+file(GLOB_RECURSE _PLUGINS_SRC "Plugins/*.h" "Plugins/*.cpp")
+source_group(Plugins FILES ${_PLUGINS_SRC})
+
+file(GLOB_RECURSE _PROJECT_SRC "Project/*.h" "Project/*.cpp")
+source_group(Project FILES ${_PROJECT_SRC})
+
+file(GLOB_RECURSE _SCENE_SRC "Scene/*.h" "Scene/*.cpp")
+source_group(Scene FILES ${_SCENE_SRC})
+
+file(GLOB_RECURSE _UNIT_SRC "Unit/*.h" "Unit/*.cpp")
+source_group(Unit FILES ${_UNIT_SRC})
+
+file(GLOB_RECURSE _UTIL_SRC "Util/*.h" "Util/*.cpp")
+source_group(Util FILES ${_UTIL_SRC})
+
+
+# Libraries
 
 target_link_libraries(
   DreamBase
@@ -103,7 +132,7 @@ include_directories(
 )
 
 add_executable (Dream "Main/Main.cpp")
-source_group(DreamMain FILES "Main/Main.cpp")
+source_group(Main FILES "Main/Main.cpp")
 
 target_link_libraries(
   Dream

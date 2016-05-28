@@ -18,35 +18,37 @@
 #include "OALAudio.h"
 
 #include <iostream>
-namespace Dream {
-	namespace Plugins {
-		namespace Audio {
-			namespace OpenAL {
-				OALAudio::OALAudio(void) : AudioPluginInterface() {}
-				OALAudio::~OALAudio(void) {}
+namespace Dream   {
+namespace Plugins {
+namespace Audio   {
+namespace OpenAL  {
+	
+	OALAudio::OALAudio(void) : AudioPluginInterface() {}
+	OALAudio::~OALAudio(void) {}
 
-				bool OALAudio::init() {
-					std::cout << "OALAudio: Initialising...";
-					mDevice = alcOpenDevice(NULL);
-					mContext = alcCreateContext(mDevice,NULL);
-					alcMakeContextCurrent(mContext);
-					std::cout << "done." << std::endl;
-					return true;
-				}
+	bool OALAudio::init() {
+		std::cout << "OALAudio: Initialising...";
+		mDevice = alcOpenDevice(NULL);
+		mContext = alcCreateContext(mDevice,NULL);
+		alcMakeContextCurrent(mContext);
+		std::cout << "done." << std::endl;
+		return true;
+	}
 
-				ALuint OALAudio::generateBuffer() {
-					alGetError();
-					ALuint buffer;
-					alGenBuffers( 1, &buffer );
-					ALenum error = alGetError();
-					if ( error != AL_NO_ERROR ){
-						return -1;
-					}
-					return buffer;
-				}
+	ALuint OALAudio::generateBuffer() {
+		alGetError();
+		ALuint buffer;
+		alGenBuffers( 1, &buffer );
+		ALenum error = alGetError();
+		if ( error != AL_NO_ERROR ){
+			return -1;
+		}
+		return buffer;
+	}
 
-				void OALAudio::update(Dream::Scene::Scene*) {}
-			} // End of OpenAL
-		} // End of Audio
-	} // End of Plugins
+	void OALAudio::update(Dream::Scene::Scene*) {}
+	
+} // End of OpenAL
+} // End of Audio
+} // End of Plugins
 } // End of Dream
