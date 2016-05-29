@@ -32,9 +32,6 @@ BULLET_SOFT_BODY_LIB:FILEPATH=/usr/local/lib/libBulletSoftBody.a
 //Path to a library.
 CARBON_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework
 
-//Path to a file.
-CHAISCRIPT_INCLUDE_DIR:PATH=/usr/local/include
-
 //Path to a program.
 CMAKE_AR:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar
 
@@ -191,7 +188,7 @@ CMAKE_STRIP:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/Xcode
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Dependencies for the target
-DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libassimp.dylib;general;/usr/local/lib/libSOIL.a;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/opt/local/lib/libGLEW.dylib;general;/usr/local/lib/libv8.dylib;general;/usr/local/lib/libv8_base.a;general;/usr/local/lib/libv8_libbase.a;general;/usr/local/lib/libv8_libplatform.a;general;/usr/local/lib/libv8_nosnapshot.a;general;/usr/local/lib/libicuuc.dylib;general;/usr/local/lib/libicui18n.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
+DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libassimp.dylib;general;/usr/local/lib/libSOIL.a;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/opt/local/lib/libGLEW.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
 
 //Value Computed by CMake
 Dream_BINARY_DIR:STATIC=/Users/Ashley/Software/Dream/Xcode
@@ -250,41 +247,11 @@ SOIL_INCLUDE_DIR:PATH=/usr/local/include
 //Path to a library.
 SOIL_LIBRARY:FILEPATH=/usr/local/lib/libSOIL.a
 
-//Path to a library.
-V8:FILEPATH=/usr/local/lib/libv8.dylib
-
-//Path to a library.
-V8_BASE_LIBRARY:FILEPATH=/usr/local/lib/libv8_base.a
-
-//Path to a library.
-V8_ICUI18N_LIBRARY:FILEPATH=/usr/local/lib/libicui18n.dylib
-
-//Path to a library.
-V8_ICUUC_LIBRARY:FILEPATH=/usr/local/lib/libicuuc.dylib
-
-//Path to a file.
-V8_INCLUDE_DIR:PATH=/usr/local/include/v8
-
-//Path to a library.
-V8_LIBBASE_LIBRARY:FILEPATH=/usr/local/lib/libv8_libbase.a
-
-//Path to a library.
-V8_LIBPLATFORM_LIBRARY:FILEPATH=/usr/local/lib/libv8_libplatform.a
-
-//Path to a library.
-V8_NOSNAPSHOT_LIBRARY:FILEPATH=/usr/local/lib/libv8_nosnapshot.a
-
 //Path to a file.
 assimp_INCLUDE_DIRS:PATH=/usr/local/include
 
 //Path to a library.
 assimp_LIBRARIES:FILEPATH=/usr/local/lib/libassimp.dylib
-
-//Value Computed by CMake
-dream_BINARY_DIR:STATIC=/Users/Ashley/Software/Dream/Xcode
-
-//Value Computed by CMake
-dream_SOURCE_DIR:STATIC=/Users/Ashley/Software/Dream
 
 
 ########################
@@ -292,7 +259,7 @@ dream_SOURCE_DIR:STATIC=/Users/Ashley/Software/Dream
 ########################
 
 //Stored Xcode object GUID
-ALL_BUILD_GUID_CMAKE:INTERNAL=FF55FB10E72C4791BB12E193
+ALL_BUILD_GUID_CMAKE:INTERNAL=E04F9CA6A8234A67ABBBA123
 //ADVANCED property for variable: CMAKE_AR
 CMAKE_AR-ADVANCED:INTERNAL=1
 //This is the directory where this CMakeCache.txt was created
@@ -409,11 +376,11 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Stored Xcode object GUID
-DreamBase_GUID_CMAKE:INTERNAL=6A85F1D89B134E54A5D97351
+DreamBase_GUID_CMAKE:INTERNAL=C59783EBFA1B4603A99DE96C
 //Stored Xcode object GUID
-DreamTest_GUID_CMAKE:INTERNAL=D0E8E07AE6E44CF8A9483B3F
+DreamTest_GUID_CMAKE:INTERNAL=9E2EAA986A8F49298126185F
 //Stored Xcode object GUID
-Dream_GUID_CMAKE:INTERNAL=F92D53C17B4A42839D326ED8
+Dream_GUID_CMAKE:INTERNAL=0713E8A2C55D40A48856167B
 //Details about finding GLEW
 FIND_PACKAGE_MESSAGE_DETAILS_GLEW:INTERNAL=[/opt/local/include][/opt/local/lib/libGLEW.dylib][v()]
 //Details about finding GLFW
@@ -437,11 +404,9 @@ OPENGL_gl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_glu_LIBRARY
 OPENGL_glu_LIBRARY-ADVANCED:INTERNAL=1
 //Stored Xcode object GUID
-PROJECT_Dream_GUID_CMAKE:INTERNAL=F81AF5709E3540D6ACC01622
+PROJECT_Dream_GUID_CMAKE:INTERNAL=C054EAB54DA74C8DBC511388
 //Stored Xcode object GUID
-PROJECT_dream_GUID_CMAKE:INTERNAL=200930EE9F644D8AA718AC87
+RUN_TESTS_GUID_CMAKE:INTERNAL=09C1D5E91C174D4791CBB84B
 //Stored Xcode object GUID
-RUN_TESTS_GUID_CMAKE:INTERNAL=62D9B4C3AEA846EE85B4CCB4
-//Stored Xcode object GUID
-ZERO_CHECK_GUID_CMAKE:INTERNAL=EA0555B58F8F4DB1BCE1A6AB
+ZERO_CHECK_GUID_CMAKE:INTERNAL=DB4681BEE02745B8B0A93F69
 
