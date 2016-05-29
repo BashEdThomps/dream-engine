@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9E2EAA986A8F49298126185F"
+               BlueprintIdentifier = "190B97795D244B01B1633138"
                BuildableName = "DreamTest"
                BlueprintName = "DreamTest"
                ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9E2EAA986A8F49298126185F"
+            BlueprintIdentifier = "190B97795D244B01B1633138"
             BuildableName = "DreamTest"
             BlueprintName = "DreamTest"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9E2EAA986A8F49298126185F"
+            BlueprintIdentifier = "190B97795D244B01B1633138"
             BuildableName = "DreamTest"
             BlueprintName = "DreamTest"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -74,7 +74,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9E2EAA986A8F49298126185F"
+            BlueprintIdentifier = "190B97795D244B01B1633138"
             BuildableName = "DreamTest"
             BlueprintName = "DreamTest"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">

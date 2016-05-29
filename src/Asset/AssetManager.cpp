@@ -37,7 +37,6 @@ namespace Asset {
 	}
 	
 	bool AssetManager::createAssetInstances() {
-		// Scene Script
 		Scene::Scene *activeScene = mProject->getActiveScene();
 		
 		if (!activeScene){
@@ -159,10 +158,8 @@ namespace Asset {
 		std::cout << "AssetManager: Creating script asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		
-		if (definition->isScriptFormatJavaScript()) {
-			retval = new Instance::Script::JavaScript::JavaScriptInstance(definition);
-		} else if (definition->isScriptFormatChaiScript()) {
-			retval = new Instances::Script::ChaiScript::ChaiScriptInstance(definition);
+		if (definition->isScriptFormatLua()) {
+			retval = new Instances::Script::Lua::LuaScriptInstance(definition);
 		}
 	
 		if (sceneObject) {

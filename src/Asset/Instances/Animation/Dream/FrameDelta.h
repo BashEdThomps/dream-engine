@@ -17,7 +17,7 @@ namespace DreamAnimation {
 		int   mDrawableID;
 		float mPositionDelta [3];
 		float mRotationDelta [3];
-		float mScaleDelta    [3];
+		//float mScaleDelta    [3];
 		float mOrbitRadius;
 		int   mOperation;
 	public:

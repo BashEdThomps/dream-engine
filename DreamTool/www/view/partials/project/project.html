@@ -54,7 +54,6 @@
               <td>
                 <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.physicsPlugin">
                   <option value="bullet2">Bullet 2</option>
-                  <option value="bullet3">Bullet 3</option>
                 </select>
               </td>
             </tr>
@@ -62,8 +61,7 @@
               <td>Scripting</td>
               <td>
                 <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.scriptingPlugin">
-                  <option value="chai">ChaiScript</option>
-                  <option value="v8">JavaScript (v8)</option>
+                  <option value="lua">Lua</option>
                 </select>
               </td>
             </tr>
@@ -72,7 +70,6 @@
               <td>
                 <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.videoPlugin">
                   <option value="openGL">OpenGL</option>
-                  <option value="vulkan">Vulkan</option>
                 </select>
               </td>
             </tr>
@@ -86,7 +83,8 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      <div class="panel-footer">Project UUID: {{project.uuid}}</div>
+    </div>
     </div>
   </div>
 </div>

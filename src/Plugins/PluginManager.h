@@ -14,8 +14,7 @@
 
 #include "../Plugins/Audio/OpenAL/OALAudio.h"
 #include "../Plugins/Physics/Bullet/BulletPhysics.h"
-#include "../Plugins/Scripting/v8/V8Scripting.h"
-#include "../Plugins/Scripting/Chai/ChaiScripting.h"
+#include "../Plugins/Scripting/Lua/LuaScripting.h"
 #include "../Plugins/Video/OpenGL/OGLVideo.h"
 #include "../Plugins/Animation/Dream/DreamAnimation.h"
 #include "../Plugins/Input/GLFW/GLFWInput.h"

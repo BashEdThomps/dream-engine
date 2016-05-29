@@ -2,6 +2,7 @@
 #define DREAM_H
 
 #include <iostream>
+#include <unistd.h>
 
 #include "ArgumentParser.h"
 

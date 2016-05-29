@@ -23,7 +23,6 @@
 #include "../../../Asset/Instances/Model/Assimp/AssimpModelInstance.h"
 #include "../../../Asset/Instances/Shader/ShaderInstance.h"
 #include "Camera.h"
-#include "DrawData.h"
 
 // STD LIB
 #include <iostream>

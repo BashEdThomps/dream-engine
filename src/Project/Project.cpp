@@ -67,14 +67,9 @@ namespace Project {
 	}
 
 	void Project::setPluginFlags(nlohmann::json jsonProject) {
-		mChaiEnabled  = (
-			jsonProject [PROJECT_CHAI_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_CHAI_ENABLED]
-		);
-
-		mV8Enabled  = (
-			jsonProject [PROJECT_V8_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_V8_ENABLED]
+		mLuaEnabled = (
+		  jsonProject[PROJECT_LUA_ENABLED].is_null() ?
+			false : (bool) jsonProject[PROJECT_LUA_ENABLED]
 		);
 
 		mOpenALEnabled  = (
@@ -87,42 +82,24 @@ namespace Project {
 			false : (bool) jsonProject [PROJECT_BULLET2_ENABLED]
 		);
 
-		mBullet3Enabled = (
-			jsonProject [PROJECT_BULLET3_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_BULLET3_ENABLED]
-		);
-
 		mOpenGLEnabled  = (
 			jsonProject [PROJECT_OPENGL_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_OPENGL_ENABLED]
-		);
-
-		mVulkanEnabled  = (
-			jsonProject [PROJECT_VULKAN_ENABLED].is_null() ?
-			false : (bool) jsonProject [PROJECT_VULKAN_ENABLED]
 		);
 	}
 
 	void Project::showStatus() {
 		std::cout << "Project: New Project"  << std::endl;
-		std::cout << "               UUID: " << mUUID        << std::endl;
-		std::cout << "               Name: " << mName        << std::endl;
-		std::cout << "             Author: " << mAuthor      << std::endl;
+		std::cout << "               UUID: " << mUUID << std::endl;
+		std::cout << "               Name: " << mName << std::endl;
+		std::cout << "             Author: " << mAuthor << std::endl;
 		std::cout << "        Description: " << mDescription << std::endl;
-		std::cout << "       Chai Enabled: " << boolToYesNo(mChaiEnabled)     << std::endl;
-		std::cout << "         v8 Enabled: " << boolToYesNo(mV8Enabled)       << std::endl;
-		std::cout << "     OpenAL Enabled: " << boolToYesNo(mOpenALEnabled)   << std::endl;
-		std::cout << "    Bullet2 Enabled: " << boolToYesNo(mBullet2Enabled)  << std::endl;
-		std::cout << "    Bullet3 Enabled: " << boolToYesNo(mBullet3Enabled)  << std::endl;
-		std::cout << "     OpenGL Enabled: " << boolToYesNo(mOpenGLEnabled)   << std::endl;
-		std::cout << "     Vulkan Enabled: " << boolToYesNo(mVulkanEnabled)   << std::endl;
-		std::cout << "             Scenes: " << getNumberOfScenes()           << std::endl;
-		std::cout << "      Startup Scene: " << getStartupSceneUUID()         << std::endl;
+		std::cout << "      Startup Scene: " << getStartupSceneUUID() << std::endl;
+		std::cout << "        Lua Enabled: " << Util::StringUtils::boolToYesNo(mLuaEnabled) << std::endl;
+		std::cout << "     OpenAL Enabled: " << Util::StringUtils::boolToYesNo(mOpenALEnabled) << std::endl;
+		std::cout << "    Bullet2 Enabled: " << Util::StringUtils::boolToYesNo(mBullet2Enabled) << std::endl;
+		std::cout << "     OpenGL Enabled: " << Util::StringUtils::boolToYesNo(mOpenGLEnabled) << std::endl;
 		std::cout << " Assets Definitions: " << getNumberOfAssetDefinitions() << std::endl;
-	}
-	
-	std::string Project::boolToYesNo(bool value) {
-		return (value ? "Yes" : "No");
 	}
 
 	Project::~Project(void) {}
@@ -242,28 +219,12 @@ namespace Project {
 		return mOpenALEnabled;
 	}
 
-	bool Project::isChaiEnabled() {
-		return mChaiEnabled;
-	}
-
-	bool Project::isV8Enabled() {
-		return mV8Enabled;
-	}
-
 	bool Project::isBullet2Enabled() {
 		return mBullet2Enabled;
 	}
 
-	bool Project::isBullet3Enabled() {
-		return mBullet3Enabled;
-	}
-
 	bool Project::isOpenGLEnabled() {
 		return mOpenGLEnabled;
-	}
-
-	bool Project::isVulkanEnabled() {
-		return mVulkanEnabled;
 	}
 	
 	Dream::Asset::AssetDefinition* Project::getAssetDefinitionByUUID(std::string uuid) {
@@ -295,6 +256,10 @@ namespace Project {
 			return mActiveScene->init();
 		}
 		return false;
+	}
+	
+	bool Project::isLuaEnabled() {
+		return mLuaEnabled;
 	}
 	
 } // End of Project

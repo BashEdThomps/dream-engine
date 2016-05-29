@@ -2,31 +2,22 @@
 
 # Dream
 file(GLOB_RECURSE TEST_DREAM_SRC "*.h" "*.cpp")
+source_group(DremTest FILES ${TEST_DREAM_SRC})
 
-# Find Required Libraries
-find_package(OPENAL COMPONENTS OpenAL REQUIRED)
-if (NOT OPENAL_FOUND)
-  message(FATAL_ERROR "Package OpenAL not found")
-endif()
+# Find Required Packages
+find_package(OPENAL REQUIRED)
+find_package(BULLET REQUIRED)
+find_package(GLFW   REQUIRED)
+find_package(OPENGL REQUIRED)
+find_package(GLM    REQUIRED)
+find_package(GLEW   REQUIRED)
+find_package(assimp REQUIRED)
+find_package(SOIL   REQUIRED)
+find_package(LUA    REQUIRED)
 
-find_package(BULLET COMPONENTS Bullet REQUIRED)
-if (NOT BULLET_FOUND)
-  message(FATAL_ERROR "Package Bullet not found")
-endif()
-
-find_package(V8 COMPONENTS V8 REQUIRED)
-if (NOT V8_FOUND)
-  message(FATAL_ERROR "Package v8 not found")
-endif()
-
-find_package(GLFW COMPONENTS GLFW REQUIRED)
-if (NOT GLFW_FOUND)
-  message(FATAL_ERROR "Package GLFW Not Found")
-endif()
 
 # Targets & Stuff
 add_executable (DreamTest ${TEST_DREAM_SRC})
-source_group(DremTest FILES ${TEST_DREAM_SRC})
 
 add_custom_command(
     TARGET DreamTest
@@ -41,14 +32,22 @@ target_link_libraries(
   -lpthread
   -ldl
   ${OPENAL_LIBRARY}
+  ${OPENGL_LIBRARIES}
+  ${assimp_LIBRARIES}
+  ${SOIL_LIBRARIES}
   ${GLFW_LIBRARIES}
-  ${V8_LIBRARY}
+  ${GLEW_LIBRARIES}
   ${BULLET_LIBRARY}
+  ${LUA_LIBRARIES}
 )
 
 include_directories(
   ${OPENAL_INCLUDE_DIR}
+  ${OPENGL_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
-  ${V8_INCLUDE_DIR}
+  ${GLEW_INCLUDE_DIRS}
+  ${assimp_INCLUDE_DIRS}
+  ${SOIL_INCLUDE_DIR}
+  ${GLM_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}
-)
+  ${LUA_INCLUDE_DIR})

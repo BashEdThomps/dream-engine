@@ -23,10 +23,8 @@ App.controller("ProjectAssetEditor",
         editor.setShowPrintMargin(false);
         editor.setFontSize(14);
         editor.setKeyboardHandler('ace/keyboard/vim');
-        if ($scope.asset.format === ProjectService.ASSET_FORMAT_SCRIPT_JS) {
-          editor.getSession().setMode("ace/mode/javascript");
-        } else if ($scope.asset.format === ProjectService.ASSET_FORMAT_SCRIPT_CHAI) {
-          //editor.getSession().setMode("ace/mode/chaiscript");
+        if ($scope.asset.format == ProjectService.ASSET_FORMAT_SCRIPT_LUA) {
+          editor.getSession().setMode("ace/mode/lua");
         }
         var editorElement = $scope.getScriptEditorElement();
         if (!editorElement) {

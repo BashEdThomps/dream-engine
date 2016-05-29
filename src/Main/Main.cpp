@@ -2,9 +2,33 @@
 #include "ArgumentParser.h"
 #include <iostream>
 
+#define MINIMUM_ARGUMENTS 3
+
+void showUsage(const char** argv) {
+	std::cout << "Usage:" << std::endl
+	          << argv[0] << std::endl
+	          << "\t" << PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool> "
+						<< "\t" << PROJECT_UUID_ARG      << "<project_uuid>"
+						<< std::endl;
+}
+
 int main(int argc, const char** argv) {
-    std::cout << "Dream: Starting..." << std::endl;
-    Dream::Dream dream;
-    dream.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
-    return dream.runProject();
+  std::cout << "Dream: Starting..." << std::endl;
+	
+	if (argc < MINIMUM_ARGUMENTS) {
+		std::cerr << "Dream: FATAL - Minimum Number of Arguments Were Not Found." << std::endl;
+		showUsage(argv);
+		return 1;
+	}
+	
+  Dream::Dream dream;
+	
+  bool loaded = dream.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
+	
+  if (loaded) {
+		return dream.runProject();
+	} else {
+		std::cerr << "Dream: FATAL - Failed to Load Project." << std::endl;
+		return 1;
+	}
 }

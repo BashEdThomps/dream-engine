@@ -122,14 +122,10 @@ namespace Asset {
 		return getType().compare(ASSET_TYPE_SHADER) == 0;
 	}
 			
-	bool AssetDefinition::isScriptFormatJavaScript() {
-		return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_JAVASCRIPT) == 0;
+	bool AssetDefinition::isScriptFormatLua() {
+		return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_LUA) == 0;
 	}
 	
-	bool AssetDefinition::isScriptFormatChaiScript() {
-		return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_CHAISCRIPT) == 0;
-	}
-		
 	bool AssetDefinition::isModelFormatAssimp() {
 		return getFormat().compare(ASSET_DEF_FORMAT_MODEL_ASSIMP) == 0;
 	}

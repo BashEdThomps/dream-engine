@@ -20,8 +20,10 @@
 
 #include <iostream>
 #include <vector>
-#include "../JSON/json.hpp"
+
 #include "SceneObject.h"
+#include "../JSON/json.hpp"
+#include "../Util/StringUtils.h"
 
 #define SCENE_JSON_UUID              "uuid"
 #define SCENE_JSON_NAME              "name"

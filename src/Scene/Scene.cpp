@@ -174,13 +174,13 @@ namespace  Scene {
 	}
 
 	void Scene::showStatus() {
-		std::cout << "Scene:"                                           << std::endl;
-		std::cout << "             UUID: " << mUUID                     << std::endl;
-		std::cout << "             Name: " << mName                     << std::endl;
-		std::cout << "    Audio Enabled: " << isAudioEnabled()          << std::endl;
-		std::cout << "Animation Enabled: " << isAnimationEnabled()      << std::endl;
-		std::cout << "    Input Enabled: " << isInputEnabled()          << std::endl;
-		std::cout << "  Physics Enabled: " << isPhysicsEnabled()        << std::endl;
+		std::cout << "Scene:" << std::endl;
+		std::cout << "             UUID: " << mUUID << std::endl;
+		std::cout << "             Name: " << mName << std::endl;
+		std::cout << "    Audio Enabled: " << Util::StringUtils::boolToYesNo(isAudioEnabled()) << std::endl;
+		std::cout << "Animation Enabled: " << Util::StringUtils::boolToYesNo(isAnimationEnabled()) << std::endl;
+		std::cout << "    Input Enabled: " << Util::StringUtils::boolToYesNo(isInputEnabled()) << std::endl;
+		std::cout << "  Physics Enabled: " << Util::StringUtils::boolToYesNo(isPhysicsEnabled()) << std::endl;
 		std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
 		showScenegraph();
 	}

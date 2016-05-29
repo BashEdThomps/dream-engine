@@ -27,6 +27,7 @@ namespace Dream {
 			StringUtils(void);
 			~StringUtils(void);
 			static std::string indent(int);
+			static std::string boolToYesNo(bool);
 		}; // End of StringUtils
 	}    // End Util
 }      // End of Dream

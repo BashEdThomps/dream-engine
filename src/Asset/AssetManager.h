@@ -27,8 +27,7 @@
 #include "AssetInstance.h"
 #include "AssetDefinition.h"
 
-#include "Instances/Script/JavaScript/JavaScriptInstance.h"
-#include "Instances/Script/ChaiScript/ChaiScriptInstance.h"
+#include "Instances/Script/Lua/LuaScriptInstance.h"
 #include "Instances/Audio/Ogg/OggAudioInstance.h"
 #include "Instances/Audio/Wav/WavAudioInstance.h"
 #include "Instances/Animation/Dream/AnimationInstance.h"

@@ -128,13 +128,13 @@ namespace Assimp     {
 		}
 		
 		// Process material
-		if(mesh->mMaterialIndex >= 0) {
+		//if(mesh->mMaterialIndex >= 0) {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 			std::vector<Texture> diffuseMaps = loadMaterialTextures(material,aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 			std::vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-		}
+		//}
 		
 		return Mesh(vertices, indices, textures);
 	}

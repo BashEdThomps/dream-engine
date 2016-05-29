@@ -5,72 +5,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 file(GLOB_RECURSE DREAM_SRC "*.h" "*.cpp")
 list(REMOVE_ITEM DREAM_SRC "Main/Main.cpp")
 
-# Find Required Libraries
-find_package(OPENAL COMPONENTS OpenAL REQUIRED)
-if (NOT OPENAL_FOUND)
-  message(FATAL_ERROR "Package OpenAL not found")
-endif()
-
-find_package(BULLET COMPONENTS Bullet REQUIRED)
-if (NOT BULLET_FOUND)
-  message(FATAL_ERROR "Package Bullet not found")
-endif()
-
-find_package(V8 COMPONENTS V8 REQUIRED)
-if (NOT V8_FOUND)
-  message(FATAL_ERROR "Package v8 not found")
-endif()
-
-find_package(GLFW COMPONENTS GLFW REQUIRED)
-if (NOT GLFW_FOUND)
-  message(FATAL_ERROR "Package GLFW Not Found")
-endif()
-
-find_package(CHAISCRIPT COMPONENTS Chaiscript REQUIRED)
-if (NOT CHAISCRIPT_FOUND)
-  message(FATAL_ERROR "Package ChaiScript was not found")
-endif()
-
-find_package(OPENGL COMPONENTS OpenGL REQUIRED)
-if (NOT OPENGL_FOUND)
-  message(FATAL_ERROR "Package OpenGL was not found")
-else()
-  message("OpenGL Headers found at " ${OPENGL_INCLUDE_DIR})
-  message("OpenGL Lib found at " ${OPENGL_LIBRARIES})
-endif()
-
-find_package(GLM COMPONENTS glm REQUIRED)
-if (NOT GLM_FOUND)
- message(FATAL_ERROR "GLM Package was Not Found")
-else()
-	message("Found GLM Headers at " ${GLM_INCLUDE_DIR})
-endif()
-
-find_package(GLEW COMPONENTS glew REQUIRED)
-if (NOT GLEW_FOUND)
- message(FATAL_ERROR "GLEW Package was Not Found")
-else()
-	message("Found GLEW Headers at " ${GLEW_INCLUDE_DIRS})
-	message("Found GLEW Libs at "    ${GLEW_LIBRARIES})
-endif()
-
-find_package(assimp COMPONENTS assimp REQUIRED)
-if (NOT assimp_FOUND)
-	message(FATAL_ERROR "Assimp Package Not Found")
-else()
-	message("Found AssImp Headers " ${assimp_INCLUDE_DIRS})
-	message("Found AssImp Libs " ${assimp_LIBRARIES})
-endif()
-
-find_package(SOIL COMPONENTS SOIL REQUIRED)
-if (NOT SOIL_FOUND)
-	message(FATAL_ERROR "SOIL Package Not Found")
-else()
-	message("Found SOIL Headers "   ${SOIL_INCLUDE_DIR})
-	message("Found SOIL Libraries " ${SOIL_LIBRARIES})
-endif()
-
-
 # Targets
 add_library (DreamBase SHARED ${DREAM_SRC})
 
@@ -102,6 +36,17 @@ file(GLOB_RECURSE _UTIL_SRC "Util/*.h" "Util/*.cpp")
 source_group(Util FILES ${_UTIL_SRC})
 
 
+# Find Required Packages
+find_package(OPENAL REQUIRED)
+find_package(BULLET REQUIRED)
+find_package(GLFW   REQUIRED)
+find_package(OPENGL REQUIRED)
+find_package(GLM    REQUIRED)
+find_package(GLEW   REQUIRED)
+find_package(assimp REQUIRED)
+find_package(SOIL   REQUIRED)
+find_package(Lua52  REQUIRED)
+
 # Libraries
 
 target_link_libraries(
@@ -114,12 +59,11 @@ target_link_libraries(
 	${SOIL_LIBRARIES}
   ${GLFW_LIBRARIES}
 	${GLEW_LIBRARIES}
-  ${V8_LIBRARY}
   ${BULLET_LIBRARY}
+  ${LUA_LIBRARIES}
 )
 
 include_directories(
-  ${CHAISCRIPT_INCLUDE_DIR}
   ${OPENAL_INCLUDE_DIR}
   ${OPENGL_INCLUDE_DIR}
   ${GLFW_INCLUDE_DIR}
@@ -127,8 +71,8 @@ include_directories(
 	${assimp_INCLUDE_DIRS}
 	${SOIL_INCLUDE_DIR}
   ${GLM_INCLUDE_DIR}
-  ${V8_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}
+  ${LUA_INCLUDE_DIR}
 )
 
 add_executable (Dream "Main/Main.cpp")
@@ -144,6 +88,6 @@ target_link_libraries(
   ${GLEW_LIBRARIES}
 	${assimp_LIBRARIES}
 	${SOIL_LIBRARIES}
-  ${V8_LIBRARY}
   ${BULLET_LIBRARY}
+  ${LUA_LIBRARIES}
 )

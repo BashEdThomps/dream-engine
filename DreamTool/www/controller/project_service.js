@@ -2,15 +2,12 @@ App.service('ProjectService',
     ["Blob","FileSaver","UtilService","ApiService",
      function(Blob, FileSaver, UtilService, ApiService) {
 
-    this.PLUGIN_ANIMATION_DREAM = "dreamAnim";
-    this.PLUGIN_AUDIO_OPENAL    = "openAL";
-    this.PLUGIN_INPUT_GLFW      = "glfwInput"
-    this.PLUGIN_SCRIPTING_V8    = "v8";
-    this.PLUGIN_SCRIPTING_CHAI  = "chai";
-    this.PLUGIN_PHYSICS_BULLET2 = "bullet2";
-    this.PLUGIN_PHYSICS_BULLET3 = "bullet3";
-    this.PLUGIN_VIDEO_OPENGL    = "openGL";
-    this.PLUGIN_VIDEO_VULKAN    = "vulkan";
+    this.PLUGIN_ANIMATION_DREAM  = "dreamAnim";
+    this.PLUGIN_AUDIO_OPENAL     = "openAL";
+    this.PLUGIN_INPUT_GLFW       = "glfwInput"
+    this.PLUGIN_SCRIPTING_LUA    = "lua";
+    this.PLUGIN_PHYSICS_BULLET2  = "bullet2";
+    this.PLUGIN_VIDEO_OPENGL     = "openGL";
 
     this.ASSET_TYPE_AUDIO       = "audio";
     this.ASSET_FORMAT_AUDIO_OGG = "ogg";
@@ -22,9 +19,8 @@ App.service('ProjectService',
     this.ASSET_TYPE_MODEL          = "model";
     this.ASSET_FORMAT_MODEL_ASSIMP = "assimp";
 
-    this.ASSET_TYPE_SCRIPT        = "script";
-    this.ASSET_FORMAT_SCRIPT_JS   = "js";
-    this.ASSET_FORMAT_SCRIPT_CHAI = "chai";
+    this.ASSET_TYPE_SCRIPT          = "script";
+    this.ASSET_FORMAT_SCRIPT_LUA    = "lua";
 
     this.ASSET_TYPE_SHADER            = "shader";
     this.ASSET_FORMAT_SHADER_VERTEX   = "vertex";
@@ -64,6 +60,10 @@ App.service('ProjectService',
         name:     this.ASSET_TYPE_NAME_SCRIPT,
         projType: this.ASSET_TYPE_SCRIPT,
       }
+    ];
+
+    this.ASSET_SCRIPT_FORMATS = [
+        this.ASSET_FORMAT_SCRIPT_LUA,
     ];
 
     this.project = null;
@@ -109,13 +109,12 @@ App.service('ProjectService',
         this.setName        (project.name);
         this.setAuthor      (project.author);
         this.setDescription (project.description);
-        this.setOpenAL      (project.openAL);
-        this.setChai        (project.chai);
-        this.setV8          (project.v8);
-        this.setBullet2     (project.bullet2);
-        this.setBullet3     (project.bullet3);
-        this.setOpenGL      (project.openGL);
-        this.setVulkan      (project.vulkan);
+
+        this.setOpenAL  (project.openAL);
+        this.setLua     (project.lua);
+        this.setBullet2 (project.bullet2);
+        this.setOpenGL  (project.openGL);
+
         this.setStartupScene(project.startupScene);
     };
 
@@ -288,13 +287,9 @@ App.service('ProjectService',
       this.project.glfwInput = glfw;
     };
 
-    this.setChai = function(chai) {
-        this.project.chai = chai;
+    this.setLua = function(lua) {
+        this.project.lua = lua;
     };
-
-    this.setV8 = function(v8) {
-        this.project.v8 = v8;
-    };;
 
     this.setOpenAL = function(openAL) {
         this.project.openAL = openAL;
@@ -304,16 +299,8 @@ App.service('ProjectService',
         this.project.bullet2 = b2;
     };
 
-    this.setBullet3 = function(b3) {
-        this.project.bullet3 = b3;
-    };
-
     this.setOpenGL = function(openGL) {
         this.project.openGL = openGL;
-    };
-
-    this.setVulkan = function(vulkan) {
-        this.project.vulkan = vulkan;
     };
 
     this.setSelectedPlugins = function(selectedPlugins) {
@@ -338,23 +325,19 @@ App.service('ProjectService',
       }
       // Scripting
       switch (selectedPlugins.scriptingPlugin) {
-        case this.PLUGIN_SCRIPTING_V8:
-          this.project.v8 = true;
-          this.project.chai = false;
+        case this.PLUGIN_SCRIPTING_LUA:
+          this.project.lua = true;
           break;
-        case this.PLUGIN_SCRIPTING_CHAI:
-          this.project.chai = true;
-          this.project.v8 = false;
+        default:
+          this.project.lua = false;
           break;
       }
       // Physics
       switch (selectedPlugins.physicsPlugin) {
         case this.PLUGIN_PHYSICS_BULLET2:
           this.project.bullet2 = true;
-          this.project.bullet3 = false;
           break;
-        case this.PLUGIN_PHYSICS_BULLET3:
-          this.project.bullet3 = true;
+        default:
           this.project.bullet2 = false;
           break;
       }
@@ -362,11 +345,6 @@ App.service('ProjectService',
       switch (selectedPlugins.videoPlugin) {
           case this.PLUGIN_VIDEO_OPENGL:
             this.project.openGL = true;
-            this.project.vulkan = false;
-            break;
-          case this.PLUGIN_VIDEO_VULKAN:
-            this.project.vulkan = true;
-            this.projet.openGL = false;
             break;
       }
     };
@@ -389,14 +367,10 @@ App.service('ProjectService',
         // Physics
         if (this.project.bullet2) {
             retval.physicsPlugin = this.PLUGIN_PHYSICS_BULLET2;
-        } else if (this.project.bullet3) {
-            retval.physicsPlugin = this.PLUGIN_PHYSICS_BULLET3;
         }
         // Scripting
-        if (this.project.v8) {
-          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_V8;
-        } else if (this.project.chai) {
-          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_CHAI;
+        if (this.project.lua) {
+          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_LUA;
         }
         // Video
         if (this.project.openGL) {

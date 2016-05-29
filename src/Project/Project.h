@@ -22,6 +22,7 @@
 #include "../JSON/json.hpp"
 #include "../Scene/Scene.h"
 #include "../Asset/AssetDefinition.h"
+#include "../Util/StringUtils.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"
@@ -30,13 +31,11 @@
 #define PROJECT_SCENE_ARRAY     "scenes"
 #define PROJECT_ASSET_ARRAY     "assets"
 #define PROJECT_STARTUP_SCENE   "startupScene"
-#define PROJECT_V8_ENABLED      "v8"
-#define PROJECT_CHAI_ENABLED    "chai"
+
+#define PROJECT_LUA_ENABLED     "lua"
 #define PROJECT_OPENAL_ENABLED  "openAL"
 #define PROJECT_BULLET2_ENABLED "bullet2"
-#define PROJECT_BULLET3_ENABLED "bullet3"
 #define PROJECT_OPENGL_ENABLED  "openGL"
-#define PROJECT_VULKAN_ENABLED  "vulkan"
 
 namespace Dream {
 namespace Project {
@@ -49,13 +48,10 @@ namespace Project {
 		std::string mProjectPath;
 		std::string mStartupScene;
 
-		bool mChaiEnabled;
-		bool mV8Enabled;
+		bool mLuaEnabled;
 		bool mOpenALEnabled;
 		bool mBullet2Enabled;
-		bool mBullet3Enabled;
 		bool mOpenGLEnabled;
-		bool mVulkanEnabled;
 
 		std::vector<Dream::Scene::Scene*> mScenes;
 		std::vector<Dream::Asset::AssetDefinition*> mAssetDefinitions;
@@ -105,13 +101,10 @@ namespace Project {
 
 		void showStatus();
 
-		bool isChaiEnabled();
-		bool isV8Enabled();
+		bool isLuaEnabled();
 		bool isOpenALEnabled();
 		bool isBullet2Enabled();
-		bool isBullet3Enabled();
 		bool isOpenGLEnabled();
-		bool isVulkanEnabled();
 		
 		void setActiveScene(Scene::Scene*);
 		Scene::Scene* getActiveScene();

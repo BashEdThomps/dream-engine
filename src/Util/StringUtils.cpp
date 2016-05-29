@@ -34,5 +34,9 @@ namespace Dream {
 			retval += "* ";
 			return retval;
 		}
+		
+		std::string StringUtils::boolToYesNo(bool value) {
+			return (value ? "Yes" : "No");
+		}
 	} // End Util
 }   // End of Dream

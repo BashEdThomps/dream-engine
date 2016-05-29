@@ -46,8 +46,7 @@
 #define ASSET_TYPE_SHADER          "shader"
 
 
-#define ASSET_DEF_FORMAT_SCRIPT_JAVASCRIPT "js"
-#define ASSET_DEF_FORMAT_SCRIPT_CHAISCRIPT "chai"
+#define ASSET_DEF_FORMAT_SCRIPT_LUA "lua"
 #define ASSET_DEF_FORMAT_MODEL_ASSIMP      "assimp"
 #define ASSET_DEF_FORMAT_AUDIO_WAV         "wav"
 #define ASSET_DEF_FORMAT_AUDIO_OGG         "ogg"
@@ -62,18 +61,20 @@ namespace Asset {
 		AssetDefinition(void);
 		AssetDefinition(nlohmann::json);
 		~AssetDefinition(void);
+		
 		std::pair<std::string,std::string> mapPair(std::string,std::string);
-		void setUUID(std::string);
+		
+		void        setUUID(std::string);
 		std::string getUUID();
-		void setName(std::string);
+		void        setName(std::string);
 		std::string getName();
-		void setType(std::string);
+		void        setType(std::string);
 		std::string getType();
-		void setFormat(std::string);
+		void        setFormat(std::string);
 		std::string getFormat();
 		
 		std::string getAttribute(std::string);
-		void addAttribute(std::string,std::string);
+		void        addAttribute(std::string,std::string);
 		
 		std::string getAssetTypeDirectory();
 		
@@ -83,14 +84,10 @@ namespace Asset {
 		bool isTypeScript();
 		bool isTypeShader();
 		
-		bool isScriptFormatJavaScript();
-		bool isScriptFormatChaiScript();
-		
+		bool isScriptFormatLua();
 		bool isModelFormatAssimp();
-		
 		bool isAudioFormatWav();
 		bool isAudioFormatOgg();
-		
 		bool isAnimationFormatDream();
 		
 		std::string getAssetPath();
