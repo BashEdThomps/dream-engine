@@ -278,6 +278,10 @@ namespace Scene {
 	bool SceneObject::hasShaderAssetInstance() {
 		return mShaderAssetInstance != NULL;
 	}
-		
+	
+	bool SceneObject::hasScriptAssetInstance() {
+		return mScriptAssetInstance != NULL;
+	}
+	
 } // End of Scene
 } // End of Dream

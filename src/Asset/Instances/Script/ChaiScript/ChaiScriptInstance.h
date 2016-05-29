@@ -29,6 +29,8 @@ namespace Script     {
 namespace ChaiScript {
     
     class ChaiScriptInstance : public Dream::Asset::AssetInstance {
+		private:
+			chaiscript::ChaiScript* mScript;
     public:
 			ChaiScriptInstance(Dream::Asset::AssetDefinition*);
 			~ChaiScriptInstance(void);

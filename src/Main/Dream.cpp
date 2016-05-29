@@ -27,7 +27,7 @@ namespace Dream {
 	bool Dream::loadProjectFromFileReader(std::string projectPath, Util::FileReader* reader) {
 		std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
 		std::string projectJsonStr = reader->getContentsAsString();
-		std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
+		//std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
 		nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
 		setProject(new Project::Project(projectPath, projectJson));
 		createPluginManager();

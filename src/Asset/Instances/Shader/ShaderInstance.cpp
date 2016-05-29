@@ -56,10 +56,10 @@ namespace Shader     {
 		delete fragmentReader;
 		
 		std::cout << "ShaderInstance: Loading Shader..." << std::endl
-		          << "\t  Vertex: " << absVertexPath     << std::endl
-		          << std::endl << mVertexShaderSource    << std::endl
-		          << "\tFragment: " << absFragmentPath   << std::endl
-		          << std::endl << mFragmentShaderSource  << std::endl;
+		<< "\t  Vertex: " << absVertexPath     << std::endl
+		//<< std::endl << mVertexShaderSource    << std::endl
+		<< "\tFragment: " << absFragmentPath   << std::endl;
+		//<< std::endl << mFragmentShaderSource  << std::endl;
 		
 		// 2. Compile shaders
 		GLint success;

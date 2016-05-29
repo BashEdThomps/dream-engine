@@ -103,6 +103,7 @@ namespace Scene {
 		std::vector<std::string> getAssetInstanceUUIDsToLoad();
 		bool hasModelAssetInstance();
 		bool hasShaderAssetInstance();
+		bool hasScriptAssetInstance();
 	}; // End of SceneObject
 	
 } // End of Scene

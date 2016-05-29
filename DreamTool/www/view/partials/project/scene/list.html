@@ -72,6 +72,14 @@
               </td>
             </tr>
             <tr>
+              <td>Scene Script</td>
+              <td>
+                <select ng-model="currentScene.sceneScript" ng-change="modified()" class="form-control input-sm">
+                  <option ng-repeat="script in scriptAssetsList" value="{{script.uuid}}">{{script.name}}</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
               <td>Animation</td>
               <td>
                 <div class="checkbox checkbox-info">

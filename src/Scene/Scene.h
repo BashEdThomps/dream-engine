@@ -37,14 +37,14 @@ namespace Scene {
 	
 	class Scene {
 	private:
-		std::string   mUUID;
-		std::string   mName;
-		bool          mAnimationEnabled;
-		bool          mAudioEnabled;
-		bool          mInputEnabled;
-		bool          mPhysicsEnabled;
-		bool          mScriptingEnabled;
-		SceneObject* mRootSceneObject;
+		std::string               mUUID;
+		std::string               mName;
+		bool                      mAnimationEnabled;
+		bool                      mAudioEnabled;
+		bool                      mInputEnabled;
+		bool                      mPhysicsEnabled;
+		bool                      mScriptingEnabled;
+		SceneObject              *mRootSceneObject;
 		std::vector<SceneObject*> mScenegraphVector;
 	public:
 		Scene();

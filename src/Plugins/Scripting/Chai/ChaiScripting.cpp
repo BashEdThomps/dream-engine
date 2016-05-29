@@ -42,6 +42,19 @@ namespace Chai      {
 	}
 
 	void ChaiScripting::update(Dream::Scene::Scene* scene) {
+		Dream::Scene::SceneObject* root = scene->getRootSceneObject();
+		if (root->hasScriptAssetInstance()) try {
+			std::cout << "ChaiScripting: Invoking RootSceneObject Update Script" << std::endl;
+			Asset::Instances::Script::ChaiScript::ChaiScriptInstance* script;
+			script = dynamic_cast<Asset::Instances::Script::ChaiScript::ChaiScriptInstance*>(
+					root->getScriptAssetInstance()
+			);
+		} catch (std::exception ex) {
+			std::cerr << "ChaiScripting: Could not cast Root Scene Object's Script AssetInstance to ChaiScriptInstance"
+			          << std::endl
+			          << ex.what()
+			          << std::endl;
+		}
 	}
 	
 } // End of Chai

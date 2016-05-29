@@ -19,6 +19,8 @@
 #define CHAISCRIPTING_H
 
 #include "../ScriptingPluginInterface.h"
+#include "../../../Asset/Instances/Script/ChaiScript/ChaiScriptInstance.h"
+
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
 

@@ -55,7 +55,7 @@ namespace  Scene {
 			jsonScene[SCENE_JSON_SCRIPTING_ENABLED].is_null() ?
             false : (bool)jsonScene[SCENE_JSON_SCRIPTING_ENABLED]
        );
-
+		
 		nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
 
 		if (!sceneObjects.is_null() && sceneObjects.is_array()) {

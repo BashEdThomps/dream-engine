@@ -26,14 +26,6 @@
               </td>
             </tr>
             <tr>
-              <td>Startup Scene</td>
-              <td>
-                <select ng-model="project.startupScene" ng-change="modified()" class="form-control input-sm">
-                  <option ng-repeat="scene in sceneList" value="{{scene.uuid}}">{{scene.name}}</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
               <td>Animation</td>
               <td>
                 <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.animationPlugin">
@@ -81,6 +73,14 @@
                 <select class="form-control input-sm" ng-change="modified()" ng-model="selectedPlugins.videoPlugin">
                   <option value="openGL">OpenGL</option>
                   <option value="vulkan">Vulkan</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Startup Scene</td>
+              <td>
+                <select ng-model="project.startupScene" ng-change="modified()" class="form-control input-sm">
+                  <option ng-repeat="scene in sceneList" value="{{scene.uuid}}">{{scene.name}}</option>
                 </select>
               </td>
             </tr>

@@ -522,6 +522,17 @@ App.service('ProjectService',
         callback(this.project.assets);
     };
 
+    this.getScriptAssetList = function(callback) {
+      var retval = [];
+      var projSvc = this;
+      this.project.assets.forEach(function(asset){
+        if (asset.type == projSvc.ASSET_TYPE_SCRIPT) {
+          retval.push(asset);
+        }
+      });
+      callback(retval);
+    };
+
     this.assetHasModelAssimp = function(uuid,callback){
         ApiService.assetExists(
             this.project.uuid,

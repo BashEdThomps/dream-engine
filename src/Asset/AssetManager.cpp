@@ -1,5 +1,5 @@
 /*
-* Dream::Project::AssetManager
+* Dream::Asset::AssetManager
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -30,14 +30,23 @@ namespace Asset {
 	}
 	
 	void AssetManager::destroyAssetInstances() {
-		for (std::vector<Asset::AssetInstance*>::iterator instanceIt = mAssetInstances.begin();
+		for (std::vector<AssetInstance*>::iterator instanceIt = mAssetInstances.begin();
 			 instanceIt != mAssetInstances.end(); instanceIt++) {
 			delete (*instanceIt);
 		}
 	}
 	
 	bool AssetManager::createAssetInstances() {
-		std::vector<Scene::SceneObject*> scenegraph = mProject->getActiveScene()->getScenegraphVector();
+		// Scene Script
+		Scene::Scene *activeScene = mProject->getActiveScene();
+		
+		if (!activeScene){
+			std::cerr << "AssetManager: Cannot create assets, no active scene." << std::endl;
+			return false;
+		}
+		
+		// Other Assets
+		std::vector<Scene::SceneObject*> scenegraph = activeScene->getScenegraphVector();
 		std::vector<Scene::SceneObject*>::iterator scenegraphIterator;
 		
 		std::vector<std::string> assetInstanceUUIDsToLoad;
@@ -51,9 +60,9 @@ namespace Asset {
 				 assetInstanceUUIDIterator != assetInstanceUUIDsToLoad.end(); assetInstanceUUIDIterator++) {
 				
 				std::string assetDefinitionUUID = *assetInstanceUUIDIterator;
-				Asset::AssetInstance* newAsset = createAssetInstanceFromUUID(currentSceneObject, assetDefinitionUUID);
+				AssetInstance* newAsset = createAssetInstanceFromUUID(currentSceneObject, assetDefinitionUUID);
 				if (newAsset == NULL) {
-					std::cerr << "Dream: Unable to instanciate asset instance for " << assetDefinitionUUID << std::endl;
+					std::cerr << "AssetManager: Unable to instanciate asset instance for " << assetDefinitionUUID << std::endl;
 					return false;
 				} else {
 					addAssetInstance(newAsset);
@@ -63,12 +72,12 @@ namespace Asset {
 		return true;
 	}
 	
-	void AssetManager::addAssetInstance(Asset::AssetInstance* instance) {
+	void AssetManager::addAssetInstance(AssetInstance* instance) {
 		mAssetInstances.push_back(instance);
 	}
 	
-	Asset::AssetInstance* AssetManager::createAssetInstanceFromUUID(Dream::Scene::SceneObject* sceneObject, std::string uuid) {
-		Asset::AssetDefinition* assetDefinition = mProject->getAssetDefinitionByUUID(uuid);
+	AssetInstance* AssetManager::createAssetInstanceFromUUID(Dream::Scene::SceneObject* sceneObject, std::string uuid) {
+		AssetDefinition* assetDefinition = mProject->getAssetDefinitionByUUID(uuid);
 		return createAssetInstance(sceneObject, assetDefinition);
 	}
 	
@@ -76,9 +85,9 @@ namespace Asset {
 		
 	}
 	
-	Asset::AssetInstance* AssetManager::createAssetInstance(Dream::Scene::SceneObject* sceneObject,Asset::AssetDefinition* definition) {
-		Asset::AssetInstance* retval = NULL;
-		std::cout << "Dream: Create Asset Intance from definition: " << definition->getName() << " (" << definition->getType() << ")" << std::endl;
+	AssetInstance* AssetManager::createAssetInstance(Dream::Scene::SceneObject* sceneObject,AssetDefinition* definition) {
+		AssetInstance* retval = NULL;
+		std::cout << "AssetManager: Create Asset Intance from definition: " << definition->getName() << " (" << definition->getType() << ")" << std::endl;
 		
 		if (definition->isTypeAnimation()) {
 			retval = createAnimationAssetInstance(sceneObject, definition);
@@ -100,67 +109,78 @@ namespace Asset {
 		return retval;
 	}
 	
-	Asset::AssetInstance* AssetManager::createAnimationAssetInstance(Dream::Scene::SceneObject* sceneObject,Asset::AssetDefinition* definition) {
-		std::cout << "Dream: Creating animation asset instance." << std::endl;
-		Asset::AssetInstance* retval = NULL;
+	AssetInstance* AssetManager::createAnimationAssetInstance(Dream::Scene::SceneObject* sceneObject,AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating animation asset instance." << std::endl;
+		AssetInstance* retval = NULL;
 		
 		if (definition->isAnimationFormatDream()) {
-			retval = new Asset::Instances::Animation::DreamAnimation::AnimationInstance(definition);
+			retval = new Instances::Animation::DreamAnimation::AnimationInstance(definition);
 		}
 		
-		sceneObject->setAnimationAssetInstance(retval);
+		if (sceneObject){
+			sceneObject->setAnimationAssetInstance(retval);
+		}
 		return retval;
 	}
 	
 	
-	Asset::AssetInstance* AssetManager::createAudioAssetInstance(Dream::Scene::SceneObject* sceneObject, Asset::AssetDefinition* definition) {
-		std::cout << "Dream: Creating audio asset instance." << std::endl;
-		Asset::AssetInstance* retval = NULL;
+	AssetInstance* AssetManager::createAudioAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating audio asset instance." << std::endl;
+		AssetInstance* retval = NULL;
 		
 		if (definition->isAudioFormatOgg()) {
-			retval = new Asset::Instances::Audio::Ogg::OggAudioInstance(definition);
+			retval = new Instances::Audio::Ogg::OggAudioInstance(definition);
 		} else if (definition->isAudioFormatWav()) {
-			retval = new Asset::Instances::Audio::Wav::WavAudioInstance(definition);
+			retval = new Instances::Audio::Wav::WavAudioInstance(definition);
 		}
 		
-		sceneObject->setAudioAssetInstance(retval);
+		if (sceneObject) {
+			sceneObject->setAudioAssetInstance(retval);
+		}
 		return retval;
 	}
 	
-	Asset::AssetInstance* AssetManager::createModelAssetInstance(Dream::Scene::SceneObject* sceneObject, Asset::AssetDefinition* definition) {
-		std::cout << "Dream: Creating model asset instance." << std::endl;
-		Asset::AssetInstance* retval = NULL;
+	AssetInstance* AssetManager::createModelAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating model asset instance." << std::endl;
+		AssetInstance* retval = NULL;
 		
 		if (definition->isModelFormatAssimp()) {
-			retval = new Asset::Instances::Model::Assimp::AssimpModelInstance(definition);
+			retval = new Instances::Model::Assimp::AssimpModelInstance(definition);
+		}
+	
+		if (sceneObject) {
+			sceneObject->setModelAssetInstance(retval);
 		}
 		
-		sceneObject->setModelAssetInstance(retval);
 		return retval;
 	}
 	
-	Asset::AssetInstance* AssetManager::createScriptAssetInstance(Dream::Scene::SceneObject* sceneObject, Asset::AssetDefinition* definition) {
-		std::cout << "Dream: Creating script asset instance." << std::endl;
-		Asset::AssetInstance* retval = NULL;
+	AssetInstance* AssetManager::createScriptAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating script asset instance." << std::endl;
+		AssetInstance* retval = NULL;
 		
 		if (definition->isScriptFormatJavaScript()) {
 			retval = new Instance::Script::JavaScript::JavaScriptInstance(definition);
 		} else if (definition->isScriptFormatChaiScript()) {
-			retval = new Asset::Instances::Script::ChaiScript::ChaiScriptInstance(definition);
+			retval = new Instances::Script::ChaiScript::ChaiScriptInstance(definition);
+		}
+	
+		if (sceneObject) {
+			sceneObject->setScriptAssetInstance(retval);
 		}
 		
-		sceneObject->setScriptAssetInstance(retval);
 		return retval;
 	}
 	
-	Asset::AssetInstance* AssetManager::createShaderAssetInstance(Dream::Scene::SceneObject* sceneObject, Asset::AssetDefinition* definition) {
-		std::cout << "Dream: Creating Shader asset instance." << std::endl;
-		Asset::AssetInstance* retval = NULL;
+	AssetInstance* AssetManager::createShaderAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
+		AssetInstance* retval = NULL;
 		retval = new Instances::Shader::ShaderInstance(definition);
-		sceneObject->setShaderAssetInstance(retval);
+		if (sceneObject) {
+			sceneObject->setShaderAssetInstance(retval);
+		}
 		return retval;
 	}
-	
 	
 } // End of Instance
 } // End of Dream

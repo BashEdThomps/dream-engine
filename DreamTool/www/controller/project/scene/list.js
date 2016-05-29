@@ -4,6 +4,9 @@ App.controller("ProjectSceneList",
         if (ProjectService.isProjectOpen()) {
             UIService.setBreadcrumbs([ProjectService.getName(),"Scenes"]);
             $scope.project  = ProjectService.getProject();
+            ProjectService.getScriptAssetList (function(assets) {
+              $scope.scriptAssetsList = assets;
+            });
             UIService.update();
         } else {
             $state.go("Home");

@@ -68,11 +68,6 @@ namespace GLFW    {
 	
 	void GLFWInput::update(Dream::Scene::Scene *scene) {
 		glfwPollEvents();
-		std::vector<InputEvent> inputs = InputPluginInterface::getInputEventVector();
-		for (std::vector<InputEvent>::iterator it = inputs.begin(); it != inputs.end(); it++) {
-			std::cout << "Input Event" << std::endl;
-		}
-		InputPluginInterface::clearInputEvents();
 	}
 	
 } // End of GLFW

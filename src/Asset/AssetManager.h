@@ -1,5 +1,5 @@
 /*
-* Dream::Project::AssetManager
+* Dream::Asset::AssetManager
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -40,25 +40,24 @@ namespace Asset {
 	
 	class AssetManager {
 	private:
-		Project::Project* mProject;
-		std::vector<Asset::AssetInstance*> mAssetInstances;
+		Project::Project            *mProject;
+		std::vector<AssetInstance*>  mAssetInstances;
 	public:
 		AssetManager(Project::Project* project);
 		~AssetManager();
 		
 		bool createAssetInstances();
 		void destroyAssetInstances();
-		void addAssetInstance(Asset::AssetInstance*);
+		void addAssetInstance(AssetInstance*);
 		
-		Asset::AssetInstance* createAssetInstanceFromUUID  (Dream::Scene::SceneObject*, std::string);
-		Asset::AssetInstance* createAssetInstance          (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
-		Asset::AssetInstance* createAnimationAssetInstance (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
-		Asset::AssetInstance* createAudioAssetInstance     (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
-		Asset::AssetInstance* createModelAssetInstance     (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
-		Asset::AssetInstance* createScriptAssetInstance    (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
-		Asset::AssetInstance* createShaderAssetInstance    (Dream::Scene::SceneObject*, Asset::AssetDefinition*);
-		
-		void showStatus();
+		AssetInstance* createAssetInstanceFromUUID  (Dream::Scene::SceneObject*, std::string);
+		AssetInstance* createAssetInstance          (Dream::Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createAnimationAssetInstance (Dream::Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createAudioAssetInstance     (Dream::Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createModelAssetInstance     (Dream::Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createScriptAssetInstance    (Dream::Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createShaderAssetInstance    (Dream::Scene::SceneObject*, AssetDefinition*);
+		void           showStatus                   ();
 	};
 	
 } // End of Asset
