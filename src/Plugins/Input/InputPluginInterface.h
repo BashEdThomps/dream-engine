@@ -12,13 +12,13 @@ namespace Input   {
 	
 	class InputPluginInterface : public Dream::Plugins::PluginInterface {
 	public:
+		static std::vector<InputEvent> sInputEventsVector;
+	public:
 		InputPluginInterface();
 		virtual ~InputPluginInterface() {}
-		
 		static void pushEvent(InputEvent);
 		static std::vector<InputEvent> getInputEventVector();
 		static void clearInputEvents();
-		
 	}; // End of InputInterface
 	
 } // End of Input

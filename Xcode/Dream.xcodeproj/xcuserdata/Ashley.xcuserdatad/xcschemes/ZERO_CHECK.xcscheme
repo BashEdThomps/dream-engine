@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AFCEA5CE151C40BB9217B1F1"
+               BlueprintIdentifier = "31235E5EB8A84A31A5D8D553"
                BuildableName = "ZERO_CHECK"
                BlueprintName = "ZERO_CHECK"
                ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AFCEA5CE151C40BB9217B1F1"
+            BlueprintIdentifier = "31235E5EB8A84A31A5D8D553"
             BuildableName = "ZERO_CHECK"
             BlueprintName = "ZERO_CHECK"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -63,7 +63,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AFCEA5CE151C40BB9217B1F1"
+            BlueprintIdentifier = "31235E5EB8A84A31A5D8D553"
             BuildableName = "ZERO_CHECK"
             BlueprintName = "ZERO_CHECK"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">

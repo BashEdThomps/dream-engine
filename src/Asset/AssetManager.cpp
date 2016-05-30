@@ -16,6 +16,7 @@
 */
 
 
+#include "../Project/Project.h"
 #include "AssetManager.h"
 
 namespace Dream {
@@ -86,7 +87,7 @@ namespace Asset {
 	
 	AssetInstance* AssetManager::createAssetInstance(Dream::Scene::SceneObject* sceneObject,AssetDefinition* definition) {
 		AssetInstance* retval = NULL;
-		std::cout << "AssetManager: Create Asset Intance from definition: " << definition->getName() << " (" << definition->getType() << ")" << std::endl;
+		std::cout << "AssetManager: Creating Asset Intance from definition: " << definition->getName() << " (" << definition->getType() << ")" << std::endl;
 		
 		if (definition->isTypeAnimation()) {
 			retval = createAnimationAssetInstance(sceneObject, definition);
@@ -158,8 +159,10 @@ namespace Asset {
 		std::cout << "AssetManager: Creating script asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		
-		if (definition->isScriptFormatLua()) {
-			retval = new Instances::Script::Lua::LuaScriptInstance(definition);
+		if (definition->isScriptFormatChai()) {
+			std::cout << "AssetManager: Creating Chai Script asset instance." << std::endl;
+			Instances::Script::Chai::ChaiScriptInstance* newScript = new Instances::Script::Chai::ChaiScriptInstance(definition);
+			retval = newScript;
 		}
 	
 		if (sceneObject) {

@@ -14,9 +14,6 @@
 
 #include "../InputPluginInterface.h"
 #include "../InputEvent.h"
-#include "MouseInputEvent.h"
-#include "KeyboardInputEvent.h"
-#include "JoystickInputEvent.h"
 
 namespace Dream   {
 namespace Plugins {

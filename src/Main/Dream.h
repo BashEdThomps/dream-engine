@@ -2,7 +2,6 @@
 #define DREAM_H
 
 #include <iostream>
-#include <unistd.h>
 
 #include "ArgumentParser.h"
 
@@ -11,19 +10,14 @@
 #include "../Scene/Scene.h"
 #include "../Project/Project.h"
 #include "../Asset/AssetInstance.h"
-#include "../Asset/AssetManager.h"
-#include "../Plugins/PluginManager.h"
+
 
 namespace Dream {
 	
 	class Dream {
 	protected:
-		Project::Project       *mProject;
-		
-		Asset::AssetManager    *mAssetManager;
-		Plugins::PluginManager *mPluginManager;
-		
-		bool mRunning;
+		Project::Project *mProject;
+		bool              mRunning;
 
 	public:
 		Dream(void);
@@ -35,13 +29,8 @@ namespace Dream {
 
 		Project::Project* getProject(void);
 		void setProject(Project::Project*);
-		int  runProject();
+		bool runProject();
 		bool isProjectLoaded();
-
-		bool createAssetManager();
-		bool createPluginManager();
-		
-		void update();
 	};
 	
 } // End of Dream

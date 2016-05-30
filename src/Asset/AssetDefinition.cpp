@@ -122,8 +122,8 @@ namespace Asset {
 		return getType().compare(ASSET_TYPE_SHADER) == 0;
 	}
 			
-	bool AssetDefinition::isScriptFormatLua() {
-		return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_LUA) == 0;
+	bool AssetDefinition::isScriptFormatChai() {
+		return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_CHAI) == 0;
 	}
 	
 	bool AssetDefinition::isModelFormatAssimp() {

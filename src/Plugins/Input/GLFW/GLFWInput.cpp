@@ -14,7 +14,7 @@ namespace Input   {
 namespace GLFW    {
 	
 	void onKeyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
-		KeyboardInputEvent keyboardEvent;
+		InputEvent keyboardEvent(KEYBOARD);
 		keyboardEvent.setKey(key);
 		keyboardEvent.setScancode(scancode);
 		keyboardEvent.setAction(action);
@@ -23,7 +23,7 @@ namespace GLFW    {
 	}
 	
 	void onMouseButtonEvent(GLFWwindow* window, int button, int action, int mods) {
-		MouseInputEvent mouseEvent(BUTTON);
+		InputEvent mouseEvent(MOUSE_BUTTON);
 		mouseEvent.setButton(button);
 		mouseEvent.setAction(action);
 		mouseEvent.setMods(mods);
@@ -31,14 +31,14 @@ namespace GLFW    {
 	}
 	
 	void onMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
-		MouseInputEvent mouseEvent(SCROLL);
+		InputEvent mouseEvent(MOUSE_SCROLL);
 		mouseEvent.setXScrollOffset(xoffset);
 		mouseEvent.setYScrollOffset(yoffset);
 		InputPluginInterface::pushEvent(mouseEvent);
 	}
 	
 	void onMousePositionEvent(GLFWwindow* window, double xpos, double ypos) {
-		MouseInputEvent mouseEvent(POSITION);
+		InputEvent mouseEvent(MOUSE_POSITION);
 		mouseEvent.setXPosition(xpos);
 		mouseEvent.setYPosition(ypos);
 		InputPluginInterface::pushEvent(mouseEvent);

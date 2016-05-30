@@ -32,6 +32,9 @@ BULLET_SOFT_BODY_LIB:FILEPATH=/usr/local/lib/libBulletSoftBody.a
 //Path to a library.
 CARBON_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework
 
+//Path to a file.
+CHAISCRIPT_INCLUDE_DIR:PATH=/usr/local/include
+
 //Path to a program.
 CMAKE_AR:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar
 
@@ -188,7 +191,7 @@ CMAKE_STRIP:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/Xcode
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Dependencies for the target
-DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libassimp.dylib;general;/usr/local/lib/libSOIL.a;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/opt/local/lib/libGLEW.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;general;/usr/local/lib/liblua.a;
+DreamBase_LIB_DEPENDS:STATIC=general;-lpthread;general;-ldl;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework;general;/usr/local/lib/libassimp.dylib;general;/usr/local/lib/libSOIL.a;general;/usr/local/lib/libglfw3.a;general;-framework Cocoa;general;-framework IOKit;general;-framework CoreVideo;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;general;-framework Carbon;general;/opt/local/lib/libGLEW.dylib;general;/usr/local/lib/libLinearMath.a;general;/usr/local/lib/libBulletCollision.a;general;/usr/local/lib/libBulletDynamics.a;general;/usr/local/lib/libBulletSoftBody.a;general;/usr/local/lib/libBulletInverseDynamics.a;
 
 //Value Computed by CMake
 Dream_BINARY_DIR:STATIC=/Users/Ashley/Software/Dream/Xcode
@@ -227,15 +230,6 @@ GLM_INCLUDE_DIR:PATH=/opt/local/include
 LINEARMATH_LIB:FILEPATH=/usr/local/lib/libLinearMath.a
 
 //Path to a file.
-LUA_INCLUDE_DIR:PATH=/usr/local/include
-
-//Lua Libraries
-LUA_LIBRARIES:STRING=/usr/local/lib/liblua.a
-
-//Path to a library.
-LUA_LIBRARY:FILEPATH=/usr/local/lib/liblua.a
-
-//Path to a file.
 OPENAL_INCLUDE_DIR:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers
 
 //Path to a library.
@@ -268,7 +262,7 @@ assimp_LIBRARIES:FILEPATH=/usr/local/lib/libassimp.dylib
 ########################
 
 //Stored Xcode object GUID
-ALL_BUILD_GUID_CMAKE:INTERNAL=0FE07B56FDD5450A9DFFB1D1
+ALL_BUILD_GUID_CMAKE:INTERNAL=1E3E69EC8D544D5293476E05
 //ADVANCED property for variable: CMAKE_AR
 CMAKE_AR-ADVANCED:INTERNAL=1
 //This is the directory where this CMakeCache.txt was created
@@ -385,19 +379,15 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Stored Xcode object GUID
-DreamBase_GUID_CMAKE:INTERNAL=55DA360C07A5462089A17CE8
+DreamBase_GUID_CMAKE:INTERNAL=738C537C082E49D38D7503B6
 //Stored Xcode object GUID
-DreamTest_GUID_CMAKE:INTERNAL=190B97795D244B01B1633138
+DreamTest_GUID_CMAKE:INTERNAL=D11CAF412648469E9718A050
 //Stored Xcode object GUID
-Dream_GUID_CMAKE:INTERNAL=F4A78218E383470CAB8F1553
+Dream_GUID_CMAKE:INTERNAL=93D2A5EE06264C29B5350C6E
 //Details about finding GLEW
 FIND_PACKAGE_MESSAGE_DETAILS_GLEW:INTERNAL=[/opt/local/include][/opt/local/lib/libGLEW.dylib][v()]
 //Details about finding GLFW
 FIND_PACKAGE_MESSAGE_DETAILS_GLFW:INTERNAL=[/usr/local/include][/usr/local/lib/libglfw3.a;;-framework Cocoa;-framework IOKit;-framework CoreVideo;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Carbon.framework;-framework Carbon][v3.2.0()]
-//Details about finding Lua
-FIND_PACKAGE_MESSAGE_DETAILS_Lua:INTERNAL=[/usr/local/lib/liblua.a][/usr/local/include][v5.2.4()]
-//Details about finding Lua52
-FIND_PACKAGE_MESSAGE_DETAILS_Lua52:INTERNAL=[/usr/local/lib/liblua.a][/usr/local/include][v()]
 //Details about finding OpenGL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework][/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework][v()]
 //ADVANCED property for variable: GLEW_INCLUDE_DIR
@@ -410,12 +400,6 @@ GLFW_INCLUDE_DIR-ADVANCED:INTERNAL=1
 GLFW_cocoa_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: GLFW_glfw_LIBRARY
 GLFW_glfw_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: LUA_INCLUDE_DIR
-LUA_INCLUDE_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: LUA_LIBRARIES
-LUA_LIBRARIES-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: LUA_LIBRARY
-LUA_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_INCLUDE_DIR
 OPENGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_gl_LIBRARY
@@ -423,9 +407,9 @@ OPENGL_gl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_glu_LIBRARY
 OPENGL_glu_LIBRARY-ADVANCED:INTERNAL=1
 //Stored Xcode object GUID
-PROJECT_Dream_GUID_CMAKE:INTERNAL=098C2A86CE924816B8CD7344
+PROJECT_Dream_GUID_CMAKE:INTERNAL=A3B7616885AA428184CF5130
 //Stored Xcode object GUID
-RUN_TESTS_GUID_CMAKE:INTERNAL=09BAD830A54C4279B0C36A25
+RUN_TESTS_GUID_CMAKE:INTERNAL=E8C9276EBAF54594BBFF964A
 //Stored Xcode object GUID
-ZERO_CHECK_GUID_CMAKE:INTERNAL=AFCEA5CE151C40BB9217B1F1
+ZERO_CHECK_GUID_CMAKE:INTERNAL=31235E5EB8A84A31A5D8D553
 

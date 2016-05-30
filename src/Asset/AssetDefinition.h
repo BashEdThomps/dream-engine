@@ -46,11 +46,11 @@
 #define ASSET_TYPE_SHADER          "shader"
 
 
-#define ASSET_DEF_FORMAT_SCRIPT_LUA "lua"
-#define ASSET_DEF_FORMAT_MODEL_ASSIMP      "assimp"
-#define ASSET_DEF_FORMAT_AUDIO_WAV         "wav"
-#define ASSET_DEF_FORMAT_AUDIO_OGG         "ogg"
-#define ASSET_DEF_FORMAT_ANIMATION_DREAM   "dream_anim"
+#define ASSET_DEF_FORMAT_SCRIPT_CHAI     "chai"
+#define ASSET_DEF_FORMAT_MODEL_ASSIMP    "assimp"
+#define ASSET_DEF_FORMAT_AUDIO_WAV       "wav"
+#define ASSET_DEF_FORMAT_AUDIO_OGG       "ogg"
+#define ASSET_DEF_FORMAT_ANIMATION_DREAM "dream_anim"
 
 namespace Dream {
 namespace Asset {
@@ -84,7 +84,7 @@ namespace Asset {
 		bool isTypeScript();
 		bool isTypeShader();
 		
-		bool isScriptFormatLua();
+		bool isScriptFormatChai();
 		bool isModelFormatAssimp();
 		bool isAudioFormatWav();
 		bool isAudioFormatOgg();

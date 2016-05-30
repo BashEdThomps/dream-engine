@@ -3,11 +3,7 @@
 namespace Dream {
 
 	Dream::Dream() {
-	
-		mProject       = NULL;
-		mAssetManager  = NULL;
-		mPluginManager = NULL;
-		mRunning = false;
+		mProject = NULL;
 	}
 
 	Dream::~Dream() {}
@@ -28,45 +24,13 @@ namespace Dream {
 		std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
 		std::string projectJsonStr = reader->getContentsAsString();
 		//std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
-		
 		if (projectJsonStr.empty()) {
 			std::cerr << "Dream: Loading Failed. Project Content is Empty" << std::endl;
 			return false;
 		}
-		
 		nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
 		setProject(new Project::Project(projectPath, projectJson));
-		createPluginManager();
-		createAssetManager();
 		return isProjectLoaded();
-	}
-	
-	bool Dream::createPluginManager() {
-		if (mPluginManager != NULL) {
-			std::cout << "Dream: Destroying existing PluginManager." << std::endl;
-			delete mPluginManager;
-		}
-		if (mProject == NULL) {
-			std::cerr << "Dream: Cannot create Plugin Manager without Project." << std::endl;
-			return false;
-		}
-		mPluginManager = new Plugins::PluginManager(mProject);
-		return mPluginManager != NULL;
-	}
-	
-	bool Dream::createAssetManager() {
-		if (mProject == NULL) {
-			std::cerr << "Dream: Cannot create Asset Manager without a Project." << std::endl;
-			return false;
-		}
-		
-		if (mAssetManager != NULL) {
-			std::cout << "Dream: Destroying existing Asset Manager." << std::endl;
-			delete mAssetManager;
-		}
-		
-		mAssetManager = new Asset::AssetManager(getProject());
-		return mAssetManager != NULL;
 	}
 
 	bool Dream::loadFromArgumentParser(ArgumentParser *parser) {
@@ -78,55 +42,8 @@ namespace Dream {
 		delete parser;
 		return loadSuccess;
 	}
-
-	bool Dream::loadScene(Scene::Scene* scene) {
-		std::cout << "Dream: Loading Scene " << scene->getName() << std::endl;
-		
-		mProject->setActiveScene(scene);
-		
-		if (!mProject->hasActiveScene()) {
-			std::cerr << "Dream: Unable to find active scene. Cannot Continue." << std::endl;
-			return false;
-		}
-		
-		if (!mProject->initActiveScene()) {
-			std::cerr << "Dream: Unable to initialise Current Scene." << std::endl;
-			return false;
-		}
 	
-		if (!mAssetManager->createAssetInstances()) {
-			std::cerr << "Dream: Fatal Error, unable to create asset instances" << std::endl;
-			return false;
-		}
-		
-		return true;
-	}
-	
-	int Dream::runProject() {
-		if(!mPluginManager->createPlugins()){
-			std::cerr << "Dream: Unable to create plugins." << std::endl;
-			return 1;
-		}
-		
-		if (!loadScene(mProject->getStartupScene())) {
-			std::cerr << "Dream: unable to load startup scene." << std::endl;
-			return 1;
-		}
-		
-		mRunning = true;
-		std::cout << "Dream: Starting Scene - " << mProject->getActiveScene()->getName()
-		          << " (" << mProject->getActiveScene()->getUUID() << ")" << std::endl;
-		
-		while(mRunning) {
-			update();
-			usleep(1000000/60);
-		}
-		
-		return 0;
-	}
-
-	void Dream::update(void) {
-		mRunning = !mPluginManager->isDone();
-		mPluginManager->update();
+	bool Dream::runProject() {
+		return mProject->run();
 	}
 }

@@ -23,8 +23,8 @@ App.controller("ProjectAssetEditor",
         editor.setShowPrintMargin(false);
         editor.setFontSize(14);
         editor.setKeyboardHandler('ace/keyboard/vim');
-        if ($scope.asset.format == ProjectService.ASSET_FORMAT_SCRIPT_LUA) {
-          editor.getSession().setMode("ace/mode/lua");
+        if ($scope.asset.format == ProjectService.ASSET_FORMAT_CHAI) {
+          console.log("Ace does not support Chai syntax highlighting");
         }
         var editorElement = $scope.getScriptEditorElement();
         if (!editorElement) {

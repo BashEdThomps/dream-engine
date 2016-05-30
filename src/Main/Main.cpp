@@ -26,7 +26,14 @@ int main(int argc, const char** argv) {
   bool loaded = dream.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 	
   if (loaded) {
-		return dream.runProject();
+		if(!dream.runProject())
+		{
+			std::cerr << "Dream: Exiting Before It's Time :(" << std::endl;
+			return 1;
+		} else {
+			std::cout << "Dream: Exiting Triumphantly >:D" << std::endl;
+			return 0;
+		}
 	} else {
 		std::cerr << "Dream: FATAL - Failed to Load Project." << std::endl;
 		return 1;

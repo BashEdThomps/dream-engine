@@ -21,15 +21,22 @@ namespace Dream {
 namespace Project {
 	
 	Project::Project(void) {
-
+		mAssetManager = NULL;
+		mPluginManager = NULL;
+		mDone = false;
 	}
 
 	Project::Project(std::string projectPath, nlohmann::json jsonProject) {
+		mPluginManager = NULL;
+		mAssetManager  = NULL;
+		mDone          = false;
 		setProjectPath(projectPath);
 		setMetadata(jsonProject);
 		setPluginFlags(jsonProject);
 		loadAssetsDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
+		createPluginManager();
+		createAssetManager();
 		showStatus();
 	}
 	
@@ -67,11 +74,11 @@ namespace Project {
 	}
 
 	void Project::setPluginFlags(nlohmann::json jsonProject) {
-		mLuaEnabled = (
-		  jsonProject[PROJECT_LUA_ENABLED].is_null() ?
-			false : (bool) jsonProject[PROJECT_LUA_ENABLED]
+		mChaiEnabled  = (
+			jsonProject [PROJECT_CHAI_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_CHAI_ENABLED]
 		);
-
+		
 		mOpenALEnabled  = (
 			jsonProject [PROJECT_OPENAL_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_OPENAL_ENABLED]
@@ -95,7 +102,7 @@ namespace Project {
 		std::cout << "             Author: " << mAuthor << std::endl;
 		std::cout << "        Description: " << mDescription << std::endl;
 		std::cout << "      Startup Scene: " << getStartupSceneUUID() << std::endl;
-		std::cout << "        Lua Enabled: " << Util::StringUtils::boolToYesNo(mLuaEnabled) << std::endl;
+		std::cout << "       Chai Enabled: " << Util::StringUtils::boolToYesNo(mChaiEnabled) << std::endl;
 		std::cout << "     OpenAL Enabled: " << Util::StringUtils::boolToYesNo(mOpenALEnabled) << std::endl;
 		std::cout << "    Bullet2 Enabled: " << Util::StringUtils::boolToYesNo(mBullet2Enabled) << std::endl;
 		std::cout << "     OpenGL Enabled: " << Util::StringUtils::boolToYesNo(mOpenGLEnabled) << std::endl;
@@ -253,13 +260,78 @@ namespace Project {
 	
 	bool Project::initActiveScene() {
 		if (mActiveScene != NULL) {
-			return mActiveScene->init();
+			if (!mActiveScene->init()) {
+				return false;
+			}
 		}
-		return false;
+		
+		if (!mAssetManager->createAssetInstances()) {
+			std::cerr << "Project: Fatal Error, unable to create asset instances" << std::endl;
+			return false;
+		}
+		return true;
 	}
 	
-	bool Project::isLuaEnabled() {
-		return mLuaEnabled;
+	bool Project::isChaiEnabled() {
+		return mChaiEnabled;
+	}
+	
+	bool Project::createPluginManager() {
+		if (mPluginManager != NULL) {
+			std::cout << "Project: Destroying existing PluginManager." << std::endl;
+			delete mPluginManager;
+		}
+		mPluginManager = new Dream::Plugins::PluginManager(this);
+		return mPluginManager != NULL;
+	}
+	
+	bool Project::createAssetManager() {
+		if (mAssetManager != NULL) {
+			std::cout << "Project: Destroying existing Asset Manager." << std::endl;
+			delete mAssetManager;
+		}
+		mAssetManager = new Dream::Asset::AssetManager(this);
+		return mAssetManager != NULL;
+	}
+	
+	bool Project::loadScene(Scene::Scene* scene) {
+		std::cout << "Project: Loading Scene " << scene->getName() << std::endl;
+		setActiveScene(scene);
+		if (!hasActiveScene()) {
+			std::cerr << "Project: Unable to find active scene. Cannot Continue." << std::endl;
+			return false;
+		}
+		if (!initActiveScene()) {
+			std::cerr << "Project: Unable to initialise Current Scene." << std::endl;
+			return false;
+		}
+		return true;
+	}
+	
+	bool Project::run (){
+		if(!mPluginManager->createPlugins()){
+			std::cerr << "Project: Unable to create plugins." << std::endl;
+			return false;
+		}
+		
+		if (!loadScene(getStartupScene())) {
+			std::cerr << "Project: unable to load startup scene." << std::endl;
+			return false;
+		}
+		std::cout << "Project: Starting Scene - " << getActiveScene()->getName()
+		          << " (" << getActiveScene()->getUUID() << ")" << std::endl;
+		
+		while(!mDone) {
+			update();
+			usleep(1000000/60);
+		}
+		
+		return mDone;
+	}
+	
+	void Project::update(void) {
+		mDone = mPluginManager->isDone();
+		mPluginManager->update();
 	}
 	
 } // End of Project

@@ -18,11 +18,14 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
+#include <unistd.h>
 #include <vector>
 #include "../JSON/json.hpp"
 #include "../Scene/Scene.h"
 #include "../Asset/AssetDefinition.h"
 #include "../Util/StringUtils.h"
+#include "../Asset/AssetManager.h"
+#include "../Plugins/PluginManager.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"
@@ -33,6 +36,7 @@
 #define PROJECT_STARTUP_SCENE   "startupScene"
 
 #define PROJECT_LUA_ENABLED     "lua"
+#define PROJECT_CHAI_ENABLED    "chai"
 #define PROJECT_OPENAL_ENABLED  "openAL"
 #define PROJECT_BULLET2_ENABLED "bullet2"
 #define PROJECT_OPENGL_ENABLED  "openGL"
@@ -47,12 +51,13 @@ namespace Project {
 		std::string mAuthor;
 		std::string mProjectPath;
 		std::string mStartupScene;
-
-		bool mLuaEnabled;
+		Asset::AssetManager    *mAssetManager;
+		Plugins::PluginManager *mPluginManager;
+		bool mChaiEnabled;
 		bool mOpenALEnabled;
 		bool mBullet2Enabled;
 		bool mOpenGLEnabled;
-
+    bool mDone;
 		std::vector<Dream::Scene::Scene*> mScenes;
 		std::vector<Dream::Asset::AssetDefinition*> mAssetDefinitions;
 		Scene::Scene *mActiveScene;
@@ -100,8 +105,8 @@ namespace Project {
 		void        setProjectPath(std::string);
 
 		void showStatus();
-
-		bool isLuaEnabled();
+		
+		bool isChaiEnabled();
 		bool isOpenALEnabled();
 		bool isBullet2Enabled();
 		bool isOpenGLEnabled();
@@ -110,7 +115,13 @@ namespace Project {
 		Scene::Scene* getActiveScene();
 		bool hasActiveScene();
 		bool initActiveScene();
-		std::string boolToYesNo(bool);
+		
+		bool createAssetManager();
+		bool createPluginManager();
+		
+		bool loadScene(Scene::Scene*);
+		bool run();
+		void update();
 		
 	}; // End of Project
 	

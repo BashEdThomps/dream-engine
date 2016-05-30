@@ -1,11 +1,11 @@
+#include "../Project/Project.h"
 #include "PluginManager.h"
 
 namespace Dream {
 namespace Plugins {
 	
 	PluginManager::PluginManager(Project::Project* project) {
-		mProject = project;
-		
+		mProject         = project;
 		mAnimationPlugin = NULL;
 		mAudioPlugin     = NULL;
 		mInputPlugin     = NULL;
@@ -42,21 +42,21 @@ namespace Plugins {
 	}
 
 	bool PluginManager::createScriptingPlugin() {
-		if (mProject->isLuaEnabled()) {
+		// Chai
+		if (mProject->isChaiEnabled()){
 			if (mScriptingPlugin == NULL) {
-				mScriptingPlugin = new Plugins::Scripting::Lua::LuaScripting();
+				mScriptingPlugin = new Plugins::Scripting::Chai::ChaiScripting();
 				if (mScriptingPlugin->init()) {
 					return true;
 				} else {
-					std::cerr << "PluginManager: Unable to initialise LuaScripting." << std::endl;
+					std::cerr << "PluginManager: Unable to initialise ChaiScripting." << std::endl;
 					return false;
 				}
 			} else {
-				std::cerr << "PluginManager: Unable to create LuaScripting. Scripting Plugin allready exists." << std::endl;
+				std::cerr << "PluginManager: Unable to create ChaiScripting. Scripting Plugin allready exists." << std::endl;
 				return false;
 			}
-			return false;
-		}	
+		}
 		return false;
 	}
 

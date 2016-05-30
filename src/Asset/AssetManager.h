@@ -22,19 +22,24 @@
 #include <iostream>
 #include <vector>
 
-#include "../Project/Project.h"
-
 #include "AssetInstance.h"
 #include "AssetDefinition.h"
 
-#include "Instances/Script/Lua/LuaScriptInstance.h"
+#include "Instances/Script/Chai/ChaiScriptInstance.h"
 #include "Instances/Audio/Ogg/OggAudioInstance.h"
 #include "Instances/Audio/Wav/WavAudioInstance.h"
 #include "Instances/Animation/Dream/AnimationInstance.h"
 #include "Instances/Shader/ShaderInstance.h"
 #include "Instances/Model/Assimp/AssimpModelInstance.h"
 
+
 namespace Dream {
+	
+// Project Forward Declaration
+namespace Project {
+	class Project;
+}
+	
 namespace Asset {
 	
 	class AssetManager {

@@ -45,34 +45,35 @@ find_package(GLM    REQUIRED)
 find_package(GLEW   REQUIRED)
 find_package(assimp REQUIRED)
 find_package(SOIL   REQUIRED)
-find_package(Lua52  REQUIRED)
+find_package(Chaiscript REQUIRED)
 
 # Libraries
 
 target_link_libraries(
-  DreamBase
-  -lpthread
-  -ldl
-  ${OPENAL_LIBRARY}
-  ${OPENGL_LIBRARIES}
+	DreamBase
+	-lpthread
+	-ldl
+	${OPENAL_LIBRARY}
+	${OPENGL_LIBRARIES}
 	${assimp_LIBRARIES}
 	${SOIL_LIBRARIES}
-  ${GLFW_LIBRARIES}
+	${GLFW_LIBRARIES}
 	${GLEW_LIBRARIES}
-  ${BULLET_LIBRARY}
-  ${LUA_LIBRARIES}
+	${BULLET_LIBRARY}
+	${LUA_LIBRARIES}
 )
 
 include_directories(
-  ${OPENAL_INCLUDE_DIR}
-  ${OPENGL_INCLUDE_DIR}
-  ${GLFW_INCLUDE_DIR}
+	${CHAISCRIPT_INCLUDE_DIR}
+	${OPENAL_INCLUDE_DIR}
+	${OPENGL_INCLUDE_DIR}
+	${GLFW_INCLUDE_DIR}
 	${GLEW_INCLUDE_DIRS}
 	${assimp_INCLUDE_DIRS}
 	${SOIL_INCLUDE_DIR}
-  ${GLM_INCLUDE_DIR}
-  ${BULLET_INCLUDE_DIR}
-  ${LUA_INCLUDE_DIR}
+	${GLM_INCLUDE_DIR}
+	${BULLET_INCLUDE_DIR}
+	${LUA_INCLUDE_DIR}
 )
 
 add_executable (Dream "Main/Main.cpp")

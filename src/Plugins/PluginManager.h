@@ -2,7 +2,6 @@
 #define PluginManager_hpp
 
 #include <iostream>
-#include "../Project/Project.h"
 
 #include "../Plugins/PluginInterface.h"
 #include "../Plugins/Animation/AnimationPluginInterface.h"
@@ -14,13 +13,19 @@
 
 #include "../Plugins/Audio/OpenAL/OALAudio.h"
 #include "../Plugins/Physics/Bullet/BulletPhysics.h"
-#include "../Plugins/Scripting/Lua/LuaScripting.h"
+#include "../Plugins/Scripting/Chai/ChaiScripting.h"
 #include "../Plugins/Video/OpenGL/OGLVideo.h"
 #include "../Plugins/Animation/Dream/DreamAnimation.h"
 #include "../Plugins/Input/GLFW/GLFWInput.h"
 
 
 namespace Dream {
+
+// Project Forward Declaration
+namespace Project {
+	class Project;
+}
+	
 namespace Plugins {
 	
 	class PluginManager {

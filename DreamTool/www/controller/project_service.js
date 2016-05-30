@@ -5,7 +5,7 @@ App.service('ProjectService',
     this.PLUGIN_ANIMATION_DREAM  = "dreamAnim";
     this.PLUGIN_AUDIO_OPENAL     = "openAL";
     this.PLUGIN_INPUT_GLFW       = "glfwInput"
-    this.PLUGIN_SCRIPTING_LUA    = "lua";
+    this.PLUGIN_SCRIPTING_CHAI   = "chai";
     this.PLUGIN_PHYSICS_BULLET2  = "bullet2";
     this.PLUGIN_VIDEO_OPENGL     = "openGL";
 
@@ -20,7 +20,7 @@ App.service('ProjectService',
     this.ASSET_FORMAT_MODEL_ASSIMP = "assimp";
 
     this.ASSET_TYPE_SCRIPT          = "script";
-    this.ASSET_FORMAT_SCRIPT_LUA    = "lua";
+    this.ASSET_FORMAT_SCRIPT_CHAI   = "chai";
 
     this.ASSET_TYPE_SHADER            = "shader";
     this.ASSET_FORMAT_SHADER_VERTEX   = "vertex";
@@ -63,7 +63,7 @@ App.service('ProjectService',
     ];
 
     this.ASSET_SCRIPT_FORMATS = [
-        this.ASSET_FORMAT_SCRIPT_LUA,
+        this.ASSET_FORMAT_SCRIPT_CHAI,
     ];
 
     this.project = null;
@@ -111,7 +111,7 @@ App.service('ProjectService',
         this.setDescription (project.description);
 
         this.setOpenAL  (project.openAL);
-        this.setLua     (project.lua);
+        this.setChai     (project.chai);
         this.setBullet2 (project.bullet2);
         this.setOpenGL  (project.openGL);
 
@@ -287,8 +287,8 @@ App.service('ProjectService',
       this.project.glfwInput = glfw;
     };
 
-    this.setLua = function(lua) {
-        this.project.lua = lua;
+    this.setChai = function(chai) {
+        this.project.chai = chai;
     };
 
     this.setOpenAL = function(openAL) {
@@ -325,11 +325,11 @@ App.service('ProjectService',
       }
       // Scripting
       switch (selectedPlugins.scriptingPlugin) {
-        case this.PLUGIN_SCRIPTING_LUA:
-          this.project.lua = true;
+        case this.PLUGIN_SCRIPTING_CHAI:
+          this.project.chai = true;
           break;
         default:
-          this.project.lua = false;
+          this.project.chai = false;
           break;
       }
       // Physics
@@ -369,8 +369,8 @@ App.service('ProjectService',
             retval.physicsPlugin = this.PLUGIN_PHYSICS_BULLET2;
         }
         // Scripting
-        if (this.project.lua) {
-          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_LUA;
+        if (this.project.chai) {
+          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_CHAI;
         }
         // Video
         if (this.project.openGL) {

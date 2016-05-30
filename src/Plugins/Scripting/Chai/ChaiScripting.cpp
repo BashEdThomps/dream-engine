@@ -1,5 +1,5 @@
 /*
- * Dream::Scripting::LuaScripting
+ * Dream::Scripting::ChaiScripting
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,44 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#include "LuaScripting.h"
+#include "ChaiScripting.h"
 
 namespace Dream     {
 namespace Plugins   {
 namespace Scripting {
-namespace Lua    {
+namespace Chai      {
+	
+	ChaiScripting::ChaiScripting(void) : ScriptingPluginInterface() {}
+	ChaiScripting::~ChaiScripting(void) {}
 				
-	LuaScripting::LuaScripting(void) : ScriptingPluginInterface() {
+	bool ChaiScripting::init() {
+		std::cout << "ChaiScripting: Initialising..." << std::endl;
+		return true;
 	}
 				
-	LuaScripting::~LuaScripting(void) {
-		if (mState) {
-			lua_close(mState);
-		}
-	}
-				
-	bool LuaScripting::init() {
-		mState = luaL_newstate();
-		return mState != NULL;
-	}
-				
-	void LuaScripting::update(Dream::Scene::Scene* scene) {
+	void ChaiScripting::update(Dream::Scene::Scene* scene) {
 		Dream::Scene::SceneObject* root = scene->getRootSceneObject();
 		if (root->hasScriptAssetInstance()) try {
-			std::cout << "LuaScripting: Invoking RootSceneObject Update Script" << std::endl;
-			Asset::Instances::Script::Lua::LuaScriptInstance* script;
-			script = dynamic_cast<Asset::Instances::Script::Lua::LuaScriptInstance*>(root->getScriptAssetInstance());
-			script->update(scene);
-		} catch (std::exception ex) {
-			std::cerr << "LuaScripting: Could not cast Root Scene Object's Script AssetInstance to LuaScriptInstance"
-								<< std::endl
-								<< ex.what()
-								<< std::endl;
+			Asset::Instances::Script::Chai::ChaiScriptInstance* script;
+			script = dynamic_cast<Asset::Instances::Script::Chai::ChaiScriptInstance*>(
+					root->getScriptAssetInstance()
+			);
+			script->processInputs(Input::InputPluginInterface::sInputEventsVector);
+			Input::InputPluginInterface::clearInputEvents();
+		} catch (const std::exception &ex) {
+			std::cerr << "ChaiScripting: Exception Processing Inputs"
+			          << std::endl
+			          << ex.what()
+			          << std::endl;
 		}
 	}
-				
-} // End of Lua
+	
+} // End of Chai
 } // End of Scripting
 } // End of Plugins
 } // End of Dream
