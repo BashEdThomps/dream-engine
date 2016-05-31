@@ -31,20 +31,41 @@ namespace Chai      {
 	}
 				
 	void ChaiScripting::update(Dream::Scene::Scene* scene) {
-		Dream::Scene::SceneObject* root = scene->getRootSceneObject();
-		if (root->hasScriptAssetInstance()) try {
-			Asset::Instances::Script::Chai::ChaiScriptInstance* script;
-			script = dynamic_cast<Asset::Instances::Script::Chai::ChaiScriptInstance*>(
-					root->getScriptAssetInstance()
-			);
-			script->processInputs(Input::InputPluginInterface::sInputEventsVector);
-			Input::InputPluginInterface::clearInputEvents();
-		} catch (const std::exception &ex) {
-			std::cerr << "ChaiScripting: Exception Processing Inputs"
-			          << std::endl
-			          << ex.what()
-			          << std::endl;
+		handleInputs(scene->getRootSceneObject());
+		std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
+		std::vector<Dream::Scene::SceneObject*>::iterator sgIter;
+		for (sgIter = scenegraph.begin(); sgIter != scenegraph.end(); sgIter++) {
+			Dream::Scene::SceneObject *currentSceneObject = (*sgIter);
+			if (currentSceneObject->hasScriptAssetInstance()) {
+				try {
+					Asset::Instances::Script::Chai::ChaiScriptInstance* script;
+    			script = dynamic_cast<Asset::Instances::Script::Chai::ChaiScriptInstance*>(currentSceneObject->getScriptAssetInstance());
+    			script->update();
+				} catch (const std::exception &ex) {
+					std::cerr << "ChaiScripting: Exception Running Update on "
+				    << currentSceneObject->getNameUUIDString() << std::endl << ex.what() << std::endl;
+				}
+			}
 		}
+	}
+	
+	void ChaiScripting::handleInputs(Dream::Scene::SceneObject* root) {
+		if (root->hasScriptAssetInstance()) {
+  		try {
+  			Asset::Instances::Script::Chai::ChaiScriptInstance* script;
+  			script = dynamic_cast<Asset::Instances::Script::Chai::ChaiScriptInstance*>(
+  					root->getScriptAssetInstance()
+  			);
+  			script->processInputs(Input::InputPluginInterface::sInputEventsVector);
+  		} catch (const std::exception &ex) {
+  			std::cerr << "ChaiScripting: Exception Handling Inputs"
+  			          << std::endl
+  			          << ex.what()
+  			          << std::endl;
+  		}
+			Input::InputPluginInterface::clearInputEvents();
+		}
+		
 	}
 	
 } // End of Chai

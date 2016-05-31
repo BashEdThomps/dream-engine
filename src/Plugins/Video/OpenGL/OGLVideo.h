@@ -33,6 +33,7 @@
 
 // GLM
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec2.hpp>
@@ -45,9 +46,10 @@ namespace Video {
 namespace OpenGL {
 	
 	class OGLVideo : public VideoPluginInterface {
+	public:
+		static Camera sCamera;
 	private:
 		GLFWwindow *mWindow;
-		Camera     *mCamera;
 		GLfloat     mDeltaTime;
 		GLfloat     mLastFrame;
 	public:

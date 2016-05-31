@@ -1,5 +1,5 @@
 /*
-* Chai::ChaiScriptInstance
+* Dream::Asset::Instances::Script::Chai::ChaiScriptInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <chaiscript/chaiscript.hpp>
 #include "../../../AssetInstance.h"
 #include "../../../../Plugins/Scripting/Chai/ChaiScripting.h"
-#include "../../../../Plugins/Input/InputEvent.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -40,6 +39,9 @@ namespace Chai      {
 			bool load(std::string);
 			void update();
 			void processInputs(std::vector<Plugins::Input::InputEvent>);
+			void initInputEventInChaiScript();
+			void initCameraInChaiScript();
+			void initGlfwTimeInChaiScript();
     }; // End of ChaiScriptInstance
     
 } // End of ChaiScript

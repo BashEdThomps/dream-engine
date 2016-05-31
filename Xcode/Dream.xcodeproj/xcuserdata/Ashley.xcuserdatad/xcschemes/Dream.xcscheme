@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "93D2A5EE06264C29B5350C6E"
+               BlueprintIdentifier = "C07186FECD234D4ABF2E24F9"
                BuildableName = "Dream"
                BlueprintName = "Dream"
                ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "93D2A5EE06264C29B5350C6E"
+            BlueprintIdentifier = "C07186FECD234D4ABF2E24F9"
             BuildableName = "Dream"
             BlueprintName = "Dream"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "93D2A5EE06264C29B5350C6E"
+            BlueprintIdentifier = "C07186FECD234D4ABF2E24F9"
             BuildableName = "Dream"
             BlueprintName = "Dream"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">
@@ -63,11 +63,11 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "--uuid 3c9f-c580-45d2-ff7b"
+            argument = "--project-dir /Users/Ashley/.dreamtool"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--project-dir /Users/Ashley/.dreamtool"
+            argument = "--uuid 3c9f-c580-45d2-ff7b"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -84,7 +84,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "93D2A5EE06264C29B5350C6E"
+            BlueprintIdentifier = "C07186FECD234D4ABF2E24F9"
             BuildableName = "Dream"
             BlueprintName = "Dream"
             ReferencedContainer = "container:Xcode/Dream.xcodeproj">

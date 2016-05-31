@@ -4,7 +4,9 @@ namespace Dream   {
 namespace Plugins {
 namespace Input   {
 	
-  InputEvent::InputEvent(InputEventSource src) {
+	InputEvent InputEvent::LastEvent = InputEvent::InputEvent(INPUT_TYPE_NO_EVENT);
+	
+  InputEvent::InputEvent(int src) {
 		mSource        = src;
 		mKey           = 0;
 		mScancode      = 0;
@@ -17,9 +19,11 @@ namespace Input   {
 		mButton        = 0;
 	}
 	
-  InputEvent::~InputEvent() {}
+  InputEvent::~InputEvent() {
 	
-	int  InputEvent::getMods() {
+	}
+	
+	int InputEvent::getMods() {
 		return mMods;
 	}
 	
@@ -91,8 +95,24 @@ namespace Input   {
 		mButton = button;
 	}
 	
-	InputEventSource InputEvent::getSource() {
+	int InputEvent::getSource() {
 		return mSource;
+	}
+	
+	int InputEvent::getXPositionOffset() {
+		if (LastEvent.getSource() == INPUT_TYPE_MOUSE_POSITION) {
+			return getXPosition() - LastEvent.getXPosition();
+		} else {
+			return 0;
+		}
+	}
+	
+	int InputEvent::getYPositionOffset() {
+		if (LastEvent.getSource() == INPUT_TYPE_MOUSE_POSITION) {
+			return getYPosition() - LastEvent.getYPosition();
+		} else {
+			return 0;
+		}
 	}
 	
 } // End of Input

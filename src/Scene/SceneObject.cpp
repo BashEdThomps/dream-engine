@@ -53,9 +53,9 @@ namespace Scene {
 			mScale[NODE_Y] = scale[SCENE_OBJECT_Y];
 			mScale[NODE_Z] = scale[SCENE_OBJECT_Z];
 		} else {
-			mScale[NODE_X] = 0.0f;
-			mScale[NODE_Y] = 0.0f;
-			mScale[NODE_Z] = 0.0f;
+			mScale[NODE_X] = 1.0f;
+			mScale[NODE_Y] = 1.0f;
+			mScale[NODE_Z] = 1.0f;
 		}
 		
 		if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null()) {
@@ -281,6 +281,10 @@ namespace Scene {
 	
 	bool SceneObject::hasScriptAssetInstance() {
 		return mScriptAssetInstance != NULL;
+	}
+	
+	float* SceneObject::getScale() {
+		return mScale;
 	}
 	
 } // End of Scene

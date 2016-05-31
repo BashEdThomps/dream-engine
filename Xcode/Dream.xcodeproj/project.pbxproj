@@ -7,686 +7,658 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		1E3E69EC8D544D5293476E05 /* ALL_BUILD */ = {
+		6E7C2B921797474FBAF92C3F /* RUN_TESTS */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = F51C74F7A7CC412FBEA7F88D /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildConfigurationList = A5F733A1E7D4439F8351203A /* Build configuration list for PBXAggregateTarget "RUN_TESTS" */;
 			buildPhases = (
-				B0ACBEEA2DD3493C8907A817 /* CMake Rules */,
-			);
-			dependencies = (
-				E428076226E64148894E04D7 /* PBXTargetDependency */,
-				8FEA533CB75943AB8D9B9F61 /* PBXTargetDependency */,
-				07950B9123974B868E515B9A /* PBXTargetDependency */,
-				6145780EFD864D249BB28DBC /* PBXTargetDependency */,
-			);
-			name = ALL_BUILD;
-			productName = ALL_BUILD;
-		};
-		31235E5EB8A84A31A5D8D553 /* ZERO_CHECK */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 4692D68FE28E408FA00B621B /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
-			buildPhases = (
-				28B622C9DF3D4C83BFB0DDF6 /* CMake Rules */,
-			);
-			dependencies = (
-			);
-			name = ZERO_CHECK;
-			productName = ZERO_CHECK;
-		};
-		E8C9276EBAF54594BBFF964A /* RUN_TESTS */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = A855BAB6AA0F4C27957829B6 /* Build configuration list for PBXAggregateTarget "RUN_TESTS" */;
-			buildPhases = (
-				E3A4465E34894A93B5556FFC /* CMake PostBuild Rules */,
+				ED551E3FF687406081BA1A3E /* CMake PostBuild Rules */,
 			);
 			dependencies = (
 			);
 			name = RUN_TESTS;
 			productName = RUN_TESTS;
 		};
+		DEED9AB7D90640CE96D68305 /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 31BADBEEBD9B4EB3AC3C7A8E /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				D10F3A2C6B704B0BBA984B64 /* CMake Rules */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		FE00120B357F48DF9E673EEA /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = B990D010E48947BC81C146F5 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				97C0B0195A4E4348840568E9 /* CMake Rules */,
+			);
+			dependencies = (
+				A6671F43A4BE419DA09B8930 /* PBXTargetDependency */,
+				5B05327413EB4190B9425434 /* PBXTargetDependency */,
+				35E81886545C48B3BDD31C1F /* PBXTargetDependency */,
+				78FC1FEEA9BC434280175A5A /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		0269E2A722FF46C8ACDB4D50 /* AnimationPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCA1EA6D740E476F8A88B174 /* AnimationPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		0288A8CF10084BBE8891103B /* TestFrameDelta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8053FA31836A47E080C65FB7 /* TestFrameDelta.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		08D48B3F197A41E3ACD82C32 /* VideoPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C331319CF2D44B74B5A7B46D /* VideoPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		0B887FA836F34194BCF4D9B8 /* SceneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A3CC046E9A246779950B623 /* SceneTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		12A20A073EC44CB4B901DA09 /* TestFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9B0B9232C0744CB380B612DD /* TestFrame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		15268711A42F49B69DF058B9 /* ModelAssetTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C41EC4DCAA54ECE91CA049B /* ModelAssetTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		1548873BB5B94863B18DC945 /* Project.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F791AA34E3AF443E84018314 /* Project.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		17CEF6D2FBF34D6E819BE41F /* TestSceneObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AF28D2514B9544789D390436 /* TestSceneObject.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		18A903EBEB0A4C42BFB223F8 /* InputEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0648DA76D1884C55B8D02BD2 /* InputEvent.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		1CB8B9E45C7A491CB6AD57DB /* TestKeyFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E24AFBE39A604F698A39BA15 /* TestKeyFrame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		211AEE4BC19047A9B14D53C5 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70AD437791164759BB1D26E9 /* Main.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		21955EAE727C47149F2AE8E8 /* FileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 33ABDF59342941C5B5FCDA4F /* FileReader.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		219CB5AC465A416884D6EC2A /* AssimpModelInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCD0263B46C94F1DBE9FB290 /* AssimpModelInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		224654EA3BFE440D80B7D5E1 /* SceneObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 460A2133984345CA8ED4F75B /* SceneObject.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		2ACF472E165D453E8F13E9D9 /* TestOBJ.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7011F0B96E034343BD8EBB6D /* TestOBJ.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		429179F60ABC45D791C582FC /* UnitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870100A32A0044C59DC896D5 /* UnitTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		447F90A24522406A8A432A31 /* TestAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8695A6389AA24F9DB27DE30F /* TestAnimation.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		477BCD95D2A24328B7933BB2 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F82F842EC5C14D0A81FAECE5 /* Mesh.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		4FE4432B0B1A487CBCF96FB7 /* PhysicsPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91939A5A21AA416FA3881F84 /* PhysicsPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		539F6D89BE7C4C06BD0E9636 /* OALAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A973BBCAF864079810C3479 /* OALAudio.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		58697FF9986F4EFC9FC3B984 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 486B512F051C4E8CB4705C84 /* Scene.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		5C2F101838FE4C49AA2512E9 /* AudioPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1291C4D86FD94F8CBF5815DF /* AudioPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		5C6297CFE58F4CAD95162F99 /* OGLVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 64B1E9D4CB8F42F48733EA6B /* OGLVideo.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		625F782A825248BDAED3D933 /* UUID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E1D4CD49057416E8A82F589 /* UUID.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		6C9E93B0C43D42819EC2BADC /* FrameDelta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 489F7B197259404FB5A9DF1F /* FrameDelta.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		736F4ADCB0CE4123A224BEA0 /* PluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94201C9CA36049759AD22A9F /* PluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		77900785FBEF43EBB02F8DE1 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436490160ACE4526B2748E0F /* Camera.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		78B48AB4D9DC4E7488378242 /* ArgumentParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 35C277E1C5064396830A453B /* ArgumentParser.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		7C93661B62C444469B6DC20E /* AssetDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B721A51F1524338849EC899 /* AssetDefinition.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		83E8638FD0B5408283BB7A37 /* KeyFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01267E2AE18340E1A0575E23 /* KeyFrame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		8575DF0042FF471EA8A71492 /* PluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 191BC0553DFB4F189EB6D306 /* PluginManager.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		89EF22C0D3E6415B89FC8EEA /* Dream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F36A291484AA49EB8CAC3DB0 /* Dream.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		A8008AB061C74B46AB3915C9 /* AssetInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1170FF91CCF94B9FACDC769A /* AssetInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		AB48F2BBC7F74489BFBC8BE8 /* ChaiScriptInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0517669F38043C8A50D8FA7 /* ChaiScriptInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		ABB5F738916E49968DA43A9C /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CBC17669BD3F4C689563F51C /* Main.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		B14FDF52E069401CBD4710AE /* BulletPhysics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F36B19781CE34776A106C489 /* BulletPhysics.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		B2994CE8BA204C719870E8F6 /* AnimationInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B397DB2E195F47FEA5035A2B /* AnimationInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		B84E1C46DDAF489FA6946A75 /* TestAsset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2541AF9EF5F4697A1EBB7DD /* TestAsset.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		BBCEA2BD2A234566A6140B7A /* UUIDTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AF82232AC2484DE9ADE80748 /* UUIDTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		BEB31C23F145467686E68739 /* ChaiScripting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74A64374E9304DA586A9AB3F /* ChaiScripting.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		C10C878A16A24F51AD317792 /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9412774E235437F84DE7519 /* Frame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		C321038AA366429F9554023F /* InputPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B1C32DF69A4402A5490F84 /* InputPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		C564DBB07C5F4D1F98FEE093 /* FileReaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E070E2AE626A4C1EB5AC3728 /* FileReaderTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		C9A5699F88CF49658D458D4E /* WavAudioInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32481DFEF21A4C7DB04DCC40 /* WavAudioInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		C9F99931FEB5423CB20DB7D8 /* TestMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D83F1195865345DB8140B62C /* TestMain.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		CB0C0EB08AC14E759CAC13E9 /* ProjectTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB8EEF3C345E4621BE84E263 /* ProjectTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		D7AF12DD596243B4B476A7A2 /* GLFWInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E7D67A26EB941108215782F /* GLFWInput.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		D8BE20999AC741BD83B254D0 /* AssetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 693C56D209834BB1A577651C /* AssetManager.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		DB2833885DD44C9B882C7CE4 /* Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74F1CC9A01794B04AD797F49 /* Unit.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		DF23EB8DEF3B4E6B93C428F4 /* ArgumentParserTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AF601D78ED472D845F7E82 /* ArgumentParserTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		E32AC1743E0541F8928DC8E2 /* OggAudioInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0D175FFFBB6F449E999E1477 /* OggAudioInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		E504BA35032C480DB7405E5C /* ScriptingPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD809F50AB144FEFA369719C /* ScriptingPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		E6402C4F83714F478E49D087 /* StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C0D36800E4A4ED784EB345A /* StringUtils.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		ECAD9BCA62014F28A75435EB /* DreamTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 71448E2119D941FC8DC0D08D /* DreamTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		EF2B67B2358E4AEA92FD8CAC /* DreamAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F8839F88F8E4316BD1F3F09 /* DreamAnimation.cpp */; settings = {COMPILER_FLAGS = ""; }; };
-		F57202E909E74F4ABED616AE /* ShaderInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1ECE9309CA3543CFB14D334D /* ShaderInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		00B3CF4BD59C4B49AA98C238 /* OALAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 193D0E036B46432C870B5088 /* OALAudio.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		0D68C6D97CA54319AB1CF30A /* FileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8D77F3CA8D442EA79452C6 /* FileReader.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		0E98709F3AA34614A350D289 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 904512276EAC44CBAC83AB08 /* Scene.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		11199AAFB1464926B7500C68 /* InputEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC3233B07B66458298C4339F /* InputEvent.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		1411EA8819E245ECB215EBFF /* Project.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69C30712F9DA4DF4BC131F03 /* Project.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		1595549525E8489ABB625602 /* KeyFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60E71AEC73C5442E96AEA1DB /* KeyFrame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		1636A1D150F04B07B04C5EF0 /* FrameDelta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A153044F97248F7AAD6B342 /* FrameDelta.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		1E5C65E78DD848688313011A /* SceneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC2AA17CB5C845FAAFEAB795 /* SceneTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		25A64B4FA5E145AE9BED02AC /* ModelAssetTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C1D022ED208D4640BB033F4D /* ModelAssetTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		3780FA2853984227B16EB560 /* AnimationPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC11072FC0C943C7875D973D /* AnimationPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		38559FE65FBB4836A6DF4BFA /* TestAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DF19EEA5AC7416E9CF07BCD /* TestAnimation.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		38E6A2FE19C84C2B9111004B /* ProjectTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55478285C1CE49C9ADC5089E /* ProjectTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		3AD786350B3C4AA39E494301 /* ShaderInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68A8143EAE184DAABD2A4C47 /* ShaderInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		3B650A47829D40768B0F94F6 /* ChaiScripting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C594355985044CFA71B8A98 /* ChaiScripting.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		3BEA306F8DBB44A1877B4E32 /* AssetInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C750BA5874F84BAFB898EEA0 /* AssetInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		3C5A11F42904486190DB9A2C /* InputPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C997A723584CEEBB2D186A /* InputPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		3F277A69AFE6419A93C3FB16 /* TestAsset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30F491B16EB444C7ACF3BA80 /* TestAsset.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		4823A224237B4A3186FC1F91 /* PluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D605AC54A6F4D6D9D4603BC /* PluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		48C8BDE31C4945ED8061C4F4 /* VideoPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0DB74D46382434C8F9D6B92 /* VideoPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		4EE7000E57484137AA9EE5D8 /* ScriptingPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 644ED45D886C47C19633D24F /* ScriptingPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		50D33BD19F064B08B268D2B7 /* TestFrameDelta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 35A9506F4D6546549159DC6B /* TestFrameDelta.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		535C434D71014CE6B1FBD9BD /* OGLVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A166AE5BA17B4F20BC988739 /* OGLVideo.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		6E08E566C4344C0DA7553103 /* AudioPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E42962C3024D45A4A7BE198D /* AudioPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		814084B95B66405FA32C3B01 /* UUIDTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76673E880FBE43B49E73D25D /* UUIDTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		861B1269DC4145EAA2A0300D /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 510A59AEB5594E9AB1BD9234 /* Frame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		86F0D9B53D0D4D83984211DF /* UnitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90B3536A80F437BAC7BC96D /* UnitTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		911E612AB34F4818AF8AF18F /* PluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0383614FB1CE4C60B0FED2E3 /* PluginManager.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		9C200F9057914BD484B9DBF9 /* SceneObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C37B6A7C81784F079106E3FF /* SceneObject.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		9E23A19D4B2C448EBCD7977B /* BulletPhysics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1EC000D0DBFA499AA7625B9A /* BulletPhysics.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		9EB13DAA04FE4FF786B63E99 /* AssimpModelInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8EE06478751746A2A78F2AAC /* AssimpModelInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		A60EFE38271842649728B55C /* Dream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3C569C198CD4E01B6E67D84 /* Dream.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		A62D6FDBF4314DE7B0946C8D /* StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8A9B3AB97604CAA906E79F5 /* StringUtils.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		A9854396CF494B66BDECD9A5 /* TestFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81B0F7CF93A3440BA775E782 /* TestFrame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		AA7A337EF92E4BF6B46F0869 /* ArgumentParserTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73663B8B12914581BA682EF3 /* ArgumentParserTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		AB2473C81CFE1D81008A90CF /* GLFWTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB2473C51CFE153C008A90CF /* GLFWTime.cpp */; };
+		ADBBBFCEC1F245A8AF98BE48 /* TestSceneObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 82F96102DD1B44B8A29C11D3 /* TestSceneObject.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		B0D015035E0444C68D550D08 /* Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D334DD690C24D5B987B0522 /* Unit.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		B18972409CE74F1BB0B7AB6D /* ChaiScriptInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD1B362CB8274C3A8337014D /* ChaiScriptInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		B31EA21D78C04463B636E2E0 /* UUID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 06337BFD5E874F3E83EDB660 /* UUID.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		B6C5A74EF124496A9F717FED /* WavAudioInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E889D2DFBCC4971B0EA1DF5 /* WavAudioInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		BB34835067514E8DB6A23A37 /* AssetDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C27A0E15784304ACB7CA01 /* AssetDefinition.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		C02B470C3C4B471EAEBC47AD /* PhysicsPluginInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B661A78AC54741AD9FFB2CE8 /* PhysicsPluginInterface.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		C4F065033A524A23B32A3E3C /* ArgumentParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A49516391F3459598CD3943 /* ArgumentParser.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		C5295C760C9040E4B5C4EEBD /* FileReaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8EE6F37AD320432D870DC823 /* FileReaderTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		C93CCC07BF7847468907A377 /* DreamTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD42D93C869148E88EDAFA3B /* DreamTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		CAFE322032F24CA39E7FAF53 /* AssetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C7B2AACFF1459DAE1DC52F /* AssetManager.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		DCE77DAB2CE0446E85329D9E /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DB39157665AB4BBCB7B4BDE9 /* Main.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		DED3C2D6FA8F4555BA1FEBBF /* TestMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 662BC73267B94B5998BAEB68 /* TestMain.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		DFB1C4CE3D8841B5868936C1 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D160DFF7CECE453B8E6C0049 /* Camera.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		E179788FEAD042D9BB5CB456 /* TestKeyFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77439A44C61F4947BCE189BA /* TestKeyFrame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		E45A422E39394313B23BEE64 /* AnimationInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84A378D546EB403083C5DA5D /* AnimationInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		EB9AB79BF617432392529B98 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 239F5FB9D7804290B900EA7C /* Mesh.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		EF356D0A8B2344AC8058AB7F /* GLFWInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A09651248CF4F5085CDE24A /* GLFWInput.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		F35CC02D6F344BB18BE9E4F8 /* OggAudioInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41DD519682794AB88AD6632D /* OggAudioInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		F92D1DA6501642F4BDDBEBC3 /* DreamAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9B4AA7942BFB403BA811085B /* DreamAnimation.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		FCAD4CE4E2DB4AA7B9492A80 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5023683B0AC4FC7A8BE9F93 /* Main.cpp */; settings = {COMPILER_FLAGS = ""; }; };
+		FEF845A167754E28AF105E73 /* TestOBJ.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD7BA7E28DF6407EB6DD5F4C /* TestOBJ.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		16B1B11FE1214BA9ABDC0223 /* PBXContainerItemProxy */ = {
+		273340FC05874066AFBA1216 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 93D2A5EE06264C29B5350C6E;
+			remoteGlobalIDString = C07186FECD234D4ABF2E24F9;
 			remoteInfo = Dream;
 		};
-		3530125DFBAE411DB74E6558 /* PBXContainerItemProxy */ = {
+		438DCE38F4D643C7A0FE54E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 738C537C082E49D38D7503B6;
+			remoteGlobalIDString = FEA72D465D2847E886C89B0E;
 			remoteInfo = DreamBase;
 		};
-		47768365E34841009B83AC56 /* PBXContainerItemProxy */ = {
+		8C29BAB42F414C55AFACB6F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 738C537C082E49D38D7503B6;
+			remoteGlobalIDString = FEA72D465D2847E886C89B0E;
 			remoteInfo = DreamBase;
 		};
-		4B7C72BC7A0541CF9B3962E6 /* PBXContainerItemProxy */ = {
+		B34755F8C47145658F47CFF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 31235E5EB8A84A31A5D8D553;
-			remoteInfo = ZERO_CHECK;
+			remoteGlobalIDString = FEA72D465D2847E886C89B0E;
+			remoteInfo = DreamBase;
 		};
-		84826BF9E0DF4C719FFA19F8 /* PBXContainerItemProxy */ = {
+		C16F9445F17F4FE0BCA291B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 31235E5EB8A84A31A5D8D553;
-			remoteInfo = ZERO_CHECK;
-		};
-		A8E10D00C3C84717A5EC24DE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D11CAF412648469E9718A050;
+			remoteGlobalIDString = 0228F5E19F71408EB361FA74;
 			remoteInfo = DreamTest;
 		};
-		B841336C4D7B40528738CD68 /* PBXContainerItemProxy */ = {
+		C946C87DB6184FB3BFA2373D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 31235E5EB8A84A31A5D8D553;
+			remoteGlobalIDString = DEED9AB7D90640CE96D68305;
 			remoteInfo = ZERO_CHECK;
 		};
-		D2BA7CB2A94F4A3494CF72CD /* PBXContainerItemProxy */ = {
+		DF3EB45A3C1B4DC696AA5B05 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 31235E5EB8A84A31A5D8D553;
+			remoteGlobalIDString = DEED9AB7D90640CE96D68305;
 			remoteInfo = ZERO_CHECK;
 		};
-		D621364CFBD24F79A21C133B /* PBXContainerItemProxy */ = {
+		EA86FE3855E94061B77C29A0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3B7616885AA428184CF5130 /* Project object */;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 738C537C082E49D38D7503B6;
-			remoteInfo = DreamBase;
+			remoteGlobalIDString = DEED9AB7D90640CE96D68305;
+			remoteInfo = ZERO_CHECK;
+		};
+		EC2CB59B7AAB4D7AB37E64A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E469E3AFEDA44D03888FF850 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DEED9AB7D90640CE96D68305;
+			remoteInfo = ZERO_CHECK;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00F1F9EAF47F43128BF65C42 /* Mesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Mesh.h; path = src/Asset/Instances/Model/Assimp/Mesh.h; sourceTree = SOURCE_ROOT; };
-		01267E2AE18340E1A0575E23 /* KeyFrame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = KeyFrame.cpp; path = src/Asset/Instances/Animation/Dream/KeyFrame.cpp; sourceTree = SOURCE_ROOT; };
-		0648DA76D1884C55B8D02BD2 /* InputEvent.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = InputEvent.cpp; path = src/Plugins/Input/InputEvent.cpp; sourceTree = SOURCE_ROOT; };
-		07EB6ABEC28547A0BCEBF727 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		0A2FA821192F409CBE5E3016 /* AnimationPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AnimationPluginInterface.h; path = src/Plugins/Animation/AnimationPluginInterface.h; sourceTree = SOURCE_ROOT; };
-		0A3CC046E9A246779950B623 /* SceneTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SceneTest.cpp; path = test/Scene/SceneTest.cpp; sourceTree = SOURCE_ROOT; };
-		0ADD78B0E90B4903B2C053E2 /* Project.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Project.h; path = src/Project/Project.h; sourceTree = SOURCE_ROOT; };
-		0C41EC4DCAA54ECE91CA049B /* ModelAssetTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ModelAssetTest.cpp; path = test/Asset/Model/ModelAssetTest.cpp; sourceTree = SOURCE_ROOT; };
-		0D175FFFBB6F449E999E1477 /* OggAudioInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OggAudioInstance.cpp; path = src/Asset/Instances/Audio/Ogg/OggAudioInstance.cpp; sourceTree = SOURCE_ROOT; };
-		0E1D4CD49057416E8A82F589 /* UUID.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = UUID.cpp; path = src/Util/UUID.cpp; sourceTree = SOURCE_ROOT; };
-		1170FF91CCF94B9FACDC769A /* AssetInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssetInstance.cpp; path = src/Asset/AssetInstance.cpp; sourceTree = SOURCE_ROOT; };
-		1291C4D86FD94F8CBF5815DF /* AudioPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AudioPluginInterface.cpp; path = src/Plugins/Audio/AudioPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
-		16F544A151C64D96BCB6B299 /* TestKeyFrame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestKeyFrame.h; path = test/Asset/Animation/TestKeyFrame.h; sourceTree = SOURCE_ROOT; };
-		177885B741904B968BA0BFC4 /* TestFrameDelta.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestFrameDelta.h; path = test/Asset/Animation/TestFrameDelta.h; sourceTree = SOURCE_ROOT; };
-		191BC0553DFB4F189EB6D306 /* PluginManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PluginManager.cpp; path = src/Plugins/PluginManager.cpp; sourceTree = SOURCE_ROOT; };
-		1A99CAB15A294E379B23ED6D /* ModelAssetTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ModelAssetTest.h; path = test/Asset/Model/ModelAssetTest.h; sourceTree = SOURCE_ROOT; };
-		1E5D753B9C314547977B894D /* DreamAnimation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = DreamAnimation.h; path = src/Plugins/Animation/Dream/DreamAnimation.h; sourceTree = SOURCE_ROOT; };
-		1ECE9309CA3543CFB14D334D /* ShaderInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShaderInstance.cpp; path = src/Asset/Instances/Shader/ShaderInstance.cpp; sourceTree = SOURCE_ROOT; };
-		20136100A72B47FAB2872760 /* WavAudioInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = WavAudioInstance.h; path = src/Asset/Instances/Audio/Wav/WavAudioInstance.h; sourceTree = SOURCE_ROOT; };
-		27388F08660B460CB0D0F063 /* TestOBJ.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestOBJ.h; path = test/Asset/Model/Obj/TestOBJ.h; sourceTree = SOURCE_ROOT; };
-		2985E801D1864554B1CEF6DB /* SceneTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SceneTest.h; path = test/Scene/SceneTest.h; sourceTree = SOURCE_ROOT; };
-		2A689A57CB7543DA9795CFDA /* AudioPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AudioPluginInterface.h; path = src/Plugins/Audio/AudioPluginInterface.h; sourceTree = SOURCE_ROOT; };
-		2B721A51F1524338849EC899 /* AssetDefinition.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssetDefinition.cpp; path = src/Asset/AssetDefinition.cpp; sourceTree = SOURCE_ROOT; };
-		304E5CC6C83948F3B4B64022 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		32481DFEF21A4C7DB04DCC40 /* WavAudioInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WavAudioInstance.cpp; path = src/Asset/Instances/Audio/Wav/WavAudioInstance.cpp; sourceTree = SOURCE_ROOT; };
-		32E8F2F7329E4A70B10D89D4 /* OALAudio.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OALAudio.h; path = src/Plugins/Audio/OpenAL/OALAudio.h; sourceTree = SOURCE_ROOT; };
-		33ABDF59342941C5B5FCDA4F /* FileReader.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FileReader.cpp; path = src/Util/FileReader.cpp; sourceTree = SOURCE_ROOT; };
-		35C277E1C5064396830A453B /* ArgumentParser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ArgumentParser.cpp; path = src/Main/ArgumentParser.cpp; sourceTree = SOURCE_ROOT; };
-		35E3CF04F7C940E791B69B60 /* DreamTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = DreamTest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3762EC72AACA45448D0163A1 /* UUIDTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = UUIDTest.h; path = test/Util/UUIDTest.h; sourceTree = SOURCE_ROOT; };
-		39F83C762BB74837B8E4D962 /* ArgumentParser.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ArgumentParser.h; path = src/Main/ArgumentParser.h; sourceTree = SOURCE_ROOT; };
-		3A962769E84A45D3B9C3D4A0 /* Dream */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = Dream; sourceTree = BUILT_PRODUCTS_DIR; };
-		3AFC14CA537C4A3993F6847D /* UnitTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = UnitTest.h; path = test/Unit/UnitTest.h; sourceTree = SOURCE_ROOT; };
-		3E7D67A26EB941108215782F /* GLFWInput.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = GLFWInput.cpp; path = src/Plugins/Input/GLFW/GLFWInput.cpp; sourceTree = SOURCE_ROOT; };
-		42492472B14F4CDDB666AC97 /* DreamTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = DreamTest.h; path = test/DreamTest.h; sourceTree = SOURCE_ROOT; };
-		436490160ACE4526B2748E0F /* Camera.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Camera.cpp; path = src/Plugins/Video/OpenGL/Camera.cpp; sourceTree = SOURCE_ROOT; };
-		460A2133984345CA8ED4F75B /* SceneObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SceneObject.cpp; path = src/Scene/SceneObject.cpp; sourceTree = SOURCE_ROOT; };
-		486B512F051C4E8CB4705C84 /* Scene.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Scene.cpp; path = src/Scene/Scene.cpp; sourceTree = SOURCE_ROOT; };
-		489F7B197259404FB5A9DF1F /* FrameDelta.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FrameDelta.cpp; path = src/Asset/Instances/Animation/Dream/FrameDelta.cpp; sourceTree = SOURCE_ROOT; };
-		4A973BBCAF864079810C3479 /* OALAudio.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OALAudio.cpp; path = src/Plugins/Audio/OpenAL/OALAudio.cpp; sourceTree = SOURCE_ROOT; };
-		4B8A6045B7C5455E9E3B681E /* Frame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Frame.h; path = src/Asset/Instances/Animation/Dream/Frame.h; sourceTree = SOURCE_ROOT; };
-		4E97CEED5050485EB491DD18 /* FrameDelta.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = FrameDelta.h; path = src/Asset/Instances/Animation/Dream/FrameDelta.h; sourceTree = SOURCE_ROOT; };
-		4FFAE034416542B6B681B5CC /* KeyFrame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = KeyFrame.h; path = src/Asset/Instances/Animation/Dream/KeyFrame.h; sourceTree = SOURCE_ROOT; };
-		560009110F7B4D1C98581BCE /* InputEvent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = InputEvent.h; path = src/Plugins/Input/InputEvent.h; sourceTree = SOURCE_ROOT; };
-		5809A2FF35264BE3B556D90A /* ChaiScripting.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ChaiScripting.h; path = src/Plugins/Scripting/Chai/ChaiScripting.h; sourceTree = SOURCE_ROOT; };
-		589597CDBCD541D2A3D487B3 /* GLFWInput.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = GLFWInput.h; path = src/Plugins/Input/GLFW/GLFWInput.h; sourceTree = SOURCE_ROOT; };
-		58B1C32DF69A4402A5490F84 /* InputPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = InputPluginInterface.cpp; path = src/Plugins/Input/InputPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
-		5ACDB480E9234DDB96173E4B /* PluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = PluginInterface.h; path = src/Plugins/PluginInterface.h; sourceTree = SOURCE_ROOT; };
-		64B1E9D4CB8F42F48733EA6B /* OGLVideo.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OGLVideo.cpp; path = src/Plugins/Video/OpenGL/OGLVideo.cpp; sourceTree = SOURCE_ROOT; };
-		693C56D209834BB1A577651C /* AssetManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssetManager.cpp; path = src/Asset/AssetManager.cpp; sourceTree = SOURCE_ROOT; };
-		69A8EA346E8B4F4E950F8FCC /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		6A07E94AD70C47FA9D22CCD4 /* BulletPhysics.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = BulletPhysics.h; path = src/Plugins/Physics/Bullet/BulletPhysics.h; sourceTree = SOURCE_ROOT; };
-		6CB430525807485489D06552 /* TestAsset.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestAsset.h; path = test/Asset/TestAsset.h; sourceTree = SOURCE_ROOT; };
-		6F8AD9E8F35F4E5BAC622F84 /* PluginManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = PluginManager.h; path = src/Plugins/PluginManager.h; sourceTree = SOURCE_ROOT; };
-		7011F0B96E034343BD8EBB6D /* TestOBJ.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestOBJ.cpp; path = test/Asset/Model/Obj/TestOBJ.cpp; sourceTree = SOURCE_ROOT; };
-		70AD437791164759BB1D26E9 /* Main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Main.cpp; path = src/Main/Main.cpp; sourceTree = SOURCE_ROOT; };
-		71448E2119D941FC8DC0D08D /* DreamTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DreamTest.cpp; path = test/DreamTest.cpp; sourceTree = SOURCE_ROOT; };
-		74A64374E9304DA586A9AB3F /* ChaiScripting.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ChaiScripting.cpp; path = src/Plugins/Scripting/Chai/ChaiScripting.cpp; sourceTree = SOURCE_ROOT; };
-		74F1CC9A01794B04AD797F49 /* Unit.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Unit.cpp; path = src/Unit/Unit.cpp; sourceTree = SOURCE_ROOT; };
-		79104BBC4E7D4856BB150964 /* PhysicsPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = PhysicsPluginInterface.h; path = src/Plugins/Physics/PhysicsPluginInterface.h; sourceTree = SOURCE_ROOT; };
-		7C0D36800E4A4ED784EB345A /* StringUtils.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = StringUtils.cpp; path = src/Util/StringUtils.cpp; sourceTree = SOURCE_ROOT; };
-		7EEF4FB41C1F478E88D21C3E /* ArgumentParserTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ArgumentParserTest.h; path = test/ArgumentParserTest.h; sourceTree = SOURCE_ROOT; };
-		8053FA31836A47E080C65FB7 /* TestFrameDelta.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestFrameDelta.cpp; path = test/Asset/Animation/TestFrameDelta.cpp; sourceTree = SOURCE_ROOT; };
-		837B117EE3214D3187B8CBB0 /* TestAnimation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestAnimation.h; path = test/Asset/Animation/TestAnimation.h; sourceTree = SOURCE_ROOT; };
-		867E7E6C42BD404CA21B27D2 /* StringUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = StringUtils.h; path = src/Util/StringUtils.h; sourceTree = SOURCE_ROOT; };
-		8695A6389AA24F9DB27DE30F /* TestAnimation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestAnimation.cpp; path = test/Asset/Animation/TestAnimation.cpp; sourceTree = SOURCE_ROOT; };
-		870100A32A0044C59DC896D5 /* UnitTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = UnitTest.cpp; path = test/Unit/UnitTest.cpp; sourceTree = SOURCE_ROOT; };
-		891ED972B7944D1C8AEFC52E /* AssetDefinition.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssetDefinition.h; path = src/Asset/AssetDefinition.h; sourceTree = SOURCE_ROOT; };
-		8D2E56046F7C4A1B9716648E /* Dream.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Dream.h; path = src/Main/Dream.h; sourceTree = SOURCE_ROOT; };
-		8E58BEC695AA4205AC11B7B1 /* AssetInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssetInstance.h; path = src/Asset/AssetInstance.h; sourceTree = SOURCE_ROOT; };
-		91939A5A21AA416FA3881F84 /* PhysicsPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PhysicsPluginInterface.cpp; path = src/Plugins/Physics/PhysicsPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
-		9367B6649D2E4966ACAE3C69 /* ChaiScriptInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ChaiScriptInstance.h; path = src/Asset/Instances/Script/Chai/ChaiScriptInstance.h; sourceTree = SOURCE_ROOT; };
-		94201C9CA36049759AD22A9F /* PluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PluginInterface.cpp; path = src/Plugins/PluginInterface.cpp; sourceTree = SOURCE_ROOT; };
-		9B0B9232C0744CB380B612DD /* TestFrame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestFrame.cpp; path = test/Asset/Animation/TestFrame.cpp; sourceTree = SOURCE_ROOT; };
-		9F8839F88F8E4316BD1F3F09 /* DreamAnimation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DreamAnimation.cpp; path = src/Plugins/Animation/Dream/DreamAnimation.cpp; sourceTree = SOURCE_ROOT; };
-		A134E396361442D2AD9E0C94 /* FileReader.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = FileReader.h; path = src/Util/FileReader.h; sourceTree = SOURCE_ROOT; };
-		A58D8635746B402F96162894 /* FileReaderTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = FileReaderTest.h; path = test/Util/FileReaderTest.h; sourceTree = SOURCE_ROOT; };
-		AF28D2514B9544789D390436 /* TestSceneObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestSceneObject.cpp; path = test/Scene/TestSceneObject.cpp; sourceTree = SOURCE_ROOT; };
-		AF652F2704D04EE78F391764 /* Camera.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Camera.h; path = src/Plugins/Video/OpenGL/Camera.h; sourceTree = SOURCE_ROOT; };
-		AF82232AC2484DE9ADE80748 /* UUIDTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = UUIDTest.cpp; path = test/Util/UUIDTest.cpp; sourceTree = SOURCE_ROOT; };
-		B0517669F38043C8A50D8FA7 /* ChaiScriptInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ChaiScriptInstance.cpp; path = src/Asset/Instances/Script/Chai/ChaiScriptInstance.cpp; sourceTree = SOURCE_ROOT; };
-		B397DB2E195F47FEA5035A2B /* AnimationInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AnimationInstance.cpp; path = src/Asset/Instances/Animation/Dream/AnimationInstance.cpp; sourceTree = SOURCE_ROOT; };
-		B677D56FA0E24EB09D85FD18 /* AnimationInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AnimationInstance.h; path = src/Asset/Instances/Animation/Dream/AnimationInstance.h; sourceTree = SOURCE_ROOT; };
-		BB8EEF3C345E4621BE84E263 /* ProjectTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ProjectTest.cpp; path = test/ProjectTest.cpp; sourceTree = SOURCE_ROOT; };
-		BD2C910005B1455FB26CF714 /* ScriptingPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ScriptingPluginInterface.h; path = src/Plugins/Scripting/ScriptingPluginInterface.h; sourceTree = SOURCE_ROOT; };
-		BD809F50AB144FEFA369719C /* ScriptingPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ScriptingPluginInterface.cpp; path = src/Plugins/Scripting/ScriptingPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
-		C331319CF2D44B74B5A7B46D /* VideoPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = VideoPluginInterface.cpp; path = src/Plugins/Video/VideoPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
-		C635979194FA45DF9F77773F /* OGLVideo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OGLVideo.h; path = src/Plugins/Video/OpenGL/OGLVideo.h; sourceTree = SOURCE_ROOT; };
-		CBC17669BD3F4C689563F51C /* Main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Main.cpp; path = src/Main/Main.cpp; sourceTree = SOURCE_ROOT; };
-		CCA1EA6D740E476F8A88B174 /* AnimationPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AnimationPluginInterface.cpp; path = src/Plugins/Animation/AnimationPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
-		CCD0263B46C94F1DBE9FB290 /* AssimpModelInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssimpModelInstance.cpp; path = src/Asset/Instances/Model/Assimp/AssimpModelInstance.cpp; sourceTree = SOURCE_ROOT; };
-		CE2E6290121F4FCB83647EFD /* AssimpModelInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssimpModelInstance.h; path = src/Asset/Instances/Model/Assimp/AssimpModelInstance.h; sourceTree = SOURCE_ROOT; };
-		D16262C255D0456E93E73BE6 /* AssetManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssetManager.h; path = src/Asset/AssetManager.h; sourceTree = SOURCE_ROOT; };
-		D1D1B0575992497FB135B021 /* UUID.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = UUID.h; path = src/Util/UUID.h; sourceTree = SOURCE_ROOT; };
-		D20F9FEA5A394520A89C6621 /* ProjectTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ProjectTest.h; path = test/ProjectTest.h; sourceTree = SOURCE_ROOT; };
-		D83F1195865345DB8140B62C /* TestMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestMain.cpp; path = test/TestMain.cpp; sourceTree = SOURCE_ROOT; };
-		DCCDA01FE9D1484895B07E70 /* TestSceneObject.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestSceneObject.h; path = test/Scene/TestSceneObject.h; sourceTree = SOURCE_ROOT; };
-		E070E2AE626A4C1EB5AC3728 /* FileReaderTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FileReaderTest.cpp; path = test/Util/FileReaderTest.cpp; sourceTree = SOURCE_ROOT; };
-		E24AFBE39A604F698A39BA15 /* TestKeyFrame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestKeyFrame.cpp; path = test/Asset/Animation/TestKeyFrame.cpp; sourceTree = SOURCE_ROOT; };
-		E3A973BFC36A4501B117ED53 /* TestFrame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestFrame.h; path = test/Asset/Animation/TestFrame.h; sourceTree = SOURCE_ROOT; };
-		E3D2D58CB72348F2A2452522 /* VideoPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = VideoPluginInterface.h; path = src/Plugins/Video/VideoPluginInterface.h; sourceTree = SOURCE_ROOT; };
-		E7AF601D78ED472D845F7E82 /* ArgumentParserTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ArgumentParserTest.cpp; path = test/ArgumentParserTest.cpp; sourceTree = SOURCE_ROOT; };
-		E8F9FAB908D442BD89C112F9 /* Unit.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Unit.h; path = src/Unit/Unit.h; sourceTree = SOURCE_ROOT; };
-		E9412774E235437F84DE7519 /* Frame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Frame.cpp; path = src/Asset/Instances/Animation/Dream/Frame.cpp; sourceTree = SOURCE_ROOT; };
-		EA8D0BBFB95B48DE919CDAFA /* Scene.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Scene.h; path = src/Scene/Scene.h; sourceTree = SOURCE_ROOT; };
-		EAC93396794E46A5936B90E0 /* libDreamBase.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libDreamBase.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		ECE44B13294D471480110FA5 /* OggAudioInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OggAudioInstance.h; path = src/Asset/Instances/Audio/Ogg/OggAudioInstance.h; sourceTree = SOURCE_ROOT; };
-		ED79AF989ECF4F109D3DBAAA /* SceneObject.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SceneObject.h; path = src/Scene/SceneObject.h; sourceTree = SOURCE_ROOT; };
-		EEA64D4C32BF4163AB028F36 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = test/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		F0E34C69290A494E8C423429 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		F2541AF9EF5F4697A1EBB7DD /* TestAsset.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestAsset.cpp; path = test/Asset/TestAsset.cpp; sourceTree = SOURCE_ROOT; };
-		F36A291484AA49EB8CAC3DB0 /* Dream.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Dream.cpp; path = src/Main/Dream.cpp; sourceTree = SOURCE_ROOT; };
-		F36B19781CE34776A106C489 /* BulletPhysics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = BulletPhysics.cpp; path = src/Plugins/Physics/Bullet/BulletPhysics.cpp; sourceTree = SOURCE_ROOT; };
-		F791AA34E3AF443E84018314 /* Project.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Project.cpp; path = src/Project/Project.cpp; sourceTree = SOURCE_ROOT; };
-		F82F842EC5C14D0A81FAECE5 /* Mesh.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Mesh.cpp; path = src/Asset/Instances/Model/Assimp/Mesh.cpp; sourceTree = SOURCE_ROOT; };
-		FC1FAF8B22E14240BCAEBF36 /* ShaderInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ShaderInstance.h; path = src/Asset/Instances/Shader/ShaderInstance.h; sourceTree = SOURCE_ROOT; };
-		FEB1E6AB65F24DAC8FD82198 /* InputPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = InputPluginInterface.h; path = src/Plugins/Input/InputPluginInterface.h; sourceTree = SOURCE_ROOT; };
+		0383614FB1CE4C60B0FED2E3 /* PluginManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PluginManager.cpp; path = src/Plugins/PluginManager.cpp; sourceTree = SOURCE_ROOT; };
+		06337BFD5E874F3E83EDB660 /* UUID.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = UUID.cpp; path = src/Util/UUID.cpp; sourceTree = SOURCE_ROOT; };
+		068403C780044FA6A5BD7D7D /* StringUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = StringUtils.h; path = src/Util/StringUtils.h; sourceTree = SOURCE_ROOT; };
+		06A2A8B2896745B9A180CDE9 /* UnitTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = UnitTest.h; path = test/Unit/UnitTest.h; sourceTree = SOURCE_ROOT; };
+		0F456AD1D019417BA633801A /* Project.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Project.h; path = src/Project/Project.h; sourceTree = SOURCE_ROOT; };
+		1733B12542F74BEB978B3FE1 /* TestFrameDelta.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestFrameDelta.h; path = test/Asset/Animation/TestFrameDelta.h; sourceTree = SOURCE_ROOT; };
+		175A27F104DD4813A659ADF9 /* DreamAnimation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = DreamAnimation.h; path = src/Plugins/Animation/Dream/DreamAnimation.h; sourceTree = SOURCE_ROOT; };
+		193D0E036B46432C870B5088 /* OALAudio.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OALAudio.cpp; path = src/Plugins/Audio/OpenAL/OALAudio.cpp; sourceTree = SOURCE_ROOT; };
+		1B321CE80BC54834A8E7256F /* DreamTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = DreamTest.h; path = test/DreamTest.h; sourceTree = SOURCE_ROOT; };
+		1BC509B93BB44FB3B5DBC5C5 /* Camera.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Camera.h; path = src/Plugins/Video/OpenGL/Camera.h; sourceTree = SOURCE_ROOT; };
+		1D334DD690C24D5B987B0522 /* Unit.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Unit.cpp; path = src/Unit/Unit.cpp; sourceTree = SOURCE_ROOT; };
+		1EC000D0DBFA499AA7625B9A /* BulletPhysics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = BulletPhysics.cpp; path = src/Plugins/Physics/Bullet/BulletPhysics.cpp; sourceTree = SOURCE_ROOT; };
+		239F5FB9D7804290B900EA7C /* Mesh.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Mesh.cpp; path = src/Asset/Instances/Model/Assimp/Mesh.cpp; sourceTree = SOURCE_ROOT; };
+		269B801F5B8740C6B4174710 /* OGLVideo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OGLVideo.h; path = src/Plugins/Video/OpenGL/OGLVideo.h; sourceTree = SOURCE_ROOT; };
+		2871EDA890A0480AA6E9582C /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		28C19543D5AB4F8BB14C6FE3 /* PluginManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = PluginManager.h; path = src/Plugins/PluginManager.h; sourceTree = SOURCE_ROOT; };
+		2D605AC54A6F4D6D9D4603BC /* PluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PluginInterface.cpp; path = src/Plugins/PluginInterface.cpp; sourceTree = SOURCE_ROOT; };
+		2DF19EEA5AC7416E9CF07BCD /* TestAnimation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestAnimation.cpp; path = test/Asset/Animation/TestAnimation.cpp; sourceTree = SOURCE_ROOT; };
+		2E62424D94B94097AB083C41 /* ModelAssetTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ModelAssetTest.h; path = test/Asset/Model/ModelAssetTest.h; sourceTree = SOURCE_ROOT; };
+		30F491B16EB444C7ACF3BA80 /* TestAsset.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestAsset.cpp; path = test/Asset/TestAsset.cpp; sourceTree = SOURCE_ROOT; };
+		32DDA61B6F204B6C86E6E870 /* GLFWInput.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = GLFWInput.h; path = src/Plugins/Input/GLFW/GLFWInput.h; sourceTree = SOURCE_ROOT; };
+		35A8D30FB4974D45BA7AC42D /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		35A9506F4D6546549159DC6B /* TestFrameDelta.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestFrameDelta.cpp; path = test/Asset/Animation/TestFrameDelta.cpp; sourceTree = SOURCE_ROOT; };
+		3887A208D11643C180D677E6 /* OALAudio.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OALAudio.h; path = src/Plugins/Audio/OpenAL/OALAudio.h; sourceTree = SOURCE_ROOT; };
+		3A153044F97248F7AAD6B342 /* FrameDelta.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FrameDelta.cpp; path = src/Asset/Instances/Animation/Dream/FrameDelta.cpp; sourceTree = SOURCE_ROOT; };
+		3A49516391F3459598CD3943 /* ArgumentParser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ArgumentParser.cpp; path = src/Main/ArgumentParser.cpp; sourceTree = SOURCE_ROOT; };
+		3A5BD00BD08547CF8B9057EA /* UUIDTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = UUIDTest.h; path = test/Util/UUIDTest.h; sourceTree = SOURCE_ROOT; };
+		3B659B6AF7E2436D92F9D165 /* DreamTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = DreamTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C594355985044CFA71B8A98 /* ChaiScripting.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ChaiScripting.cpp; path = src/Plugins/Scripting/Chai/ChaiScripting.cpp; sourceTree = SOURCE_ROOT; };
+		3FA246127C7D452593D96561 /* WavAudioInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = WavAudioInstance.h; path = src/Asset/Instances/Audio/Wav/WavAudioInstance.h; sourceTree = SOURCE_ROOT; };
+		41DD519682794AB88AD6632D /* OggAudioInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OggAudioInstance.cpp; path = src/Asset/Instances/Audio/Ogg/OggAudioInstance.cpp; sourceTree = SOURCE_ROOT; };
+		49C7B2AACFF1459DAE1DC52F /* AssetManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssetManager.cpp; path = src/Asset/AssetManager.cpp; sourceTree = SOURCE_ROOT; };
+		510A59AEB5594E9AB1BD9234 /* Frame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Frame.cpp; path = src/Asset/Instances/Animation/Dream/Frame.cpp; sourceTree = SOURCE_ROOT; };
+		5173F655752E49BFACF18225 /* FrameDelta.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = FrameDelta.h; path = src/Asset/Instances/Animation/Dream/FrameDelta.h; sourceTree = SOURCE_ROOT; };
+		51CA35C84AED40B8822207EF /* AnimationInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AnimationInstance.h; path = src/Asset/Instances/Animation/Dream/AnimationInstance.h; sourceTree = SOURCE_ROOT; };
+		55478285C1CE49C9ADC5089E /* ProjectTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ProjectTest.cpp; path = test/ProjectTest.cpp; sourceTree = SOURCE_ROOT; };
+		603852B4D2A244A2BF440A13 /* TestOBJ.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestOBJ.h; path = test/Asset/Model/Obj/TestOBJ.h; sourceTree = SOURCE_ROOT; };
+		60E71AEC73C5442E96AEA1DB /* KeyFrame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = KeyFrame.cpp; path = src/Asset/Instances/Animation/Dream/KeyFrame.cpp; sourceTree = SOURCE_ROOT; };
+		60F246CF709643B7BF62A416 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		641F2EDEA4804392A510148D /* UUID.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = UUID.h; path = src/Util/UUID.h; sourceTree = SOURCE_ROOT; };
+		644ED45D886C47C19633D24F /* ScriptingPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ScriptingPluginInterface.cpp; path = src/Plugins/Scripting/ScriptingPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
+		662BC73267B94B5998BAEB68 /* TestMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestMain.cpp; path = test/TestMain.cpp; sourceTree = SOURCE_ROOT; };
+		667E8351E3EA47E2AFCEABBE /* TestFrame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestFrame.h; path = test/Asset/Animation/TestFrame.h; sourceTree = SOURCE_ROOT; };
+		67E77FF2E35F4105ABB25BCD /* FileReaderTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = FileReaderTest.h; path = test/Util/FileReaderTest.h; sourceTree = SOURCE_ROOT; };
+		68A8143EAE184DAABD2A4C47 /* ShaderInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShaderInstance.cpp; path = src/Asset/Instances/Shader/ShaderInstance.cpp; sourceTree = SOURCE_ROOT; };
+		68E92DE86D5440BEAFA5E8D5 /* Dream */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = Dream; sourceTree = BUILT_PRODUCTS_DIR; };
+		6922B58657DF4A3189F05CD5 /* AssetDefinition.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssetDefinition.h; path = src/Asset/AssetDefinition.h; sourceTree = SOURCE_ROOT; };
+		69C30712F9DA4DF4BC131F03 /* Project.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Project.cpp; path = src/Project/Project.cpp; sourceTree = SOURCE_ROOT; };
+		69FC852FA66344F38DD0D9FA /* AnimationPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AnimationPluginInterface.h; path = src/Plugins/Animation/AnimationPluginInterface.h; sourceTree = SOURCE_ROOT; };
+		6C2C12D7BE614EF0962C1EC1 /* Unit.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Unit.h; path = src/Unit/Unit.h; sourceTree = SOURCE_ROOT; };
+		6E889D2DFBCC4971B0EA1DF5 /* WavAudioInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WavAudioInstance.cpp; path = src/Asset/Instances/Audio/Wav/WavAudioInstance.cpp; sourceTree = SOURCE_ROOT; };
+		6EEBF5B04D184A2FB476ABEA /* PhysicsPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = PhysicsPluginInterface.h; path = src/Plugins/Physics/PhysicsPluginInterface.h; sourceTree = SOURCE_ROOT; };
+		72C27A0E15784304ACB7CA01 /* AssetDefinition.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssetDefinition.cpp; path = src/Asset/AssetDefinition.cpp; sourceTree = SOURCE_ROOT; };
+		73663B8B12914581BA682EF3 /* ArgumentParserTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ArgumentParserTest.cpp; path = test/ArgumentParserTest.cpp; sourceTree = SOURCE_ROOT; };
+		76673E880FBE43B49E73D25D /* UUIDTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = UUIDTest.cpp; path = test/Util/UUIDTest.cpp; sourceTree = SOURCE_ROOT; };
+		77439A44C61F4947BCE189BA /* TestKeyFrame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestKeyFrame.cpp; path = test/Asset/Animation/TestKeyFrame.cpp; sourceTree = SOURCE_ROOT; };
+		7A841FE97E4E4E4B9B5DAFA0 /* ArgumentParser.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ArgumentParser.h; path = src/Main/ArgumentParser.h; sourceTree = SOURCE_ROOT; };
+		7D5EA9C26A984422AB72CDD7 /* OggAudioInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OggAudioInstance.h; path = src/Asset/Instances/Audio/Ogg/OggAudioInstance.h; sourceTree = SOURCE_ROOT; };
+		7DA594A585494FD699C476FC /* FileReader.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = FileReader.h; path = src/Util/FileReader.h; sourceTree = SOURCE_ROOT; };
+		7DDE8B5A5415493897039CEB /* AssetManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssetManager.h; path = src/Asset/AssetManager.h; sourceTree = SOURCE_ROOT; };
+		808284F595204042B8F16513 /* TestSceneObject.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestSceneObject.h; path = test/Scene/TestSceneObject.h; sourceTree = SOURCE_ROOT; };
+		80FF54B62B734647911EB5DB /* ShaderInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ShaderInstance.h; path = src/Asset/Instances/Shader/ShaderInstance.h; sourceTree = SOURCE_ROOT; };
+		81B0F7CF93A3440BA775E782 /* TestFrame.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestFrame.cpp; path = test/Asset/Animation/TestFrame.cpp; sourceTree = SOURCE_ROOT; };
+		82F96102DD1B44B8A29C11D3 /* TestSceneObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestSceneObject.cpp; path = test/Scene/TestSceneObject.cpp; sourceTree = SOURCE_ROOT; };
+		84A378D546EB403083C5DA5D /* AnimationInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AnimationInstance.cpp; path = src/Asset/Instances/Animation/Dream/AnimationInstance.cpp; sourceTree = SOURCE_ROOT; };
+		871B6BBC98654EBDB62B04D9 /* TestAnimation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestAnimation.h; path = test/Asset/Animation/TestAnimation.h; sourceTree = SOURCE_ROOT; };
+		8B698CA9148A4E4EBE39DB25 /* SceneTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SceneTest.h; path = test/Scene/SceneTest.h; sourceTree = SOURCE_ROOT; };
+		8EE06478751746A2A78F2AAC /* AssimpModelInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssimpModelInstance.cpp; path = src/Asset/Instances/Model/Assimp/AssimpModelInstance.cpp; sourceTree = SOURCE_ROOT; };
+		8EE6F37AD320432D870DC823 /* FileReaderTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FileReaderTest.cpp; path = test/Util/FileReaderTest.cpp; sourceTree = SOURCE_ROOT; };
+		904512276EAC44CBAC83AB08 /* Scene.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Scene.cpp; path = src/Scene/Scene.cpp; sourceTree = SOURCE_ROOT; };
+		9469F997A5C54F829584AD3A /* KeyFrame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = KeyFrame.h; path = src/Asset/Instances/Animation/Dream/KeyFrame.h; sourceTree = SOURCE_ROOT; };
+		9A09651248CF4F5085CDE24A /* GLFWInput.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = GLFWInput.cpp; path = src/Plugins/Input/GLFW/GLFWInput.cpp; sourceTree = SOURCE_ROOT; };
+		9B4AA7942BFB403BA811085B /* DreamAnimation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DreamAnimation.cpp; path = src/Plugins/Animation/Dream/DreamAnimation.cpp; sourceTree = SOURCE_ROOT; };
+		A125486E40F245669C60AE4D /* ScriptingPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ScriptingPluginInterface.h; path = src/Plugins/Scripting/ScriptingPluginInterface.h; sourceTree = SOURCE_ROOT; };
+		A166AE5BA17B4F20BC988739 /* OGLVideo.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OGLVideo.cpp; path = src/Plugins/Video/OpenGL/OGLVideo.cpp; sourceTree = SOURCE_ROOT; };
+		A1C997A723584CEEBB2D186A /* InputPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = InputPluginInterface.cpp; path = src/Plugins/Input/InputPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
+		A29A99922D434C178697C0F7 /* Mesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Mesh.h; path = src/Asset/Instances/Model/Assimp/Mesh.h; sourceTree = SOURCE_ROOT; };
+		A8A9B3AB97604CAA906E79F5 /* StringUtils.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = StringUtils.cpp; path = src/Util/StringUtils.cpp; sourceTree = SOURCE_ROOT; };
+		AA392E14C9EE4E1C84542162 /* AudioPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AudioPluginInterface.h; path = src/Plugins/Audio/AudioPluginInterface.h; sourceTree = SOURCE_ROOT; };
+		AAE30E4A4CB641DF8E043EE5 /* Scene.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Scene.h; path = src/Scene/Scene.h; sourceTree = SOURCE_ROOT; };
+		AB1444E930604E1CBF0BECB7 /* TestKeyFrame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestKeyFrame.h; path = test/Asset/Animation/TestKeyFrame.h; sourceTree = SOURCE_ROOT; };
+		AB2473C51CFE153C008A90CF /* GLFWTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLFWTime.cpp; path = src/Plugins/Video/OpenGL/GLFWTime.cpp; sourceTree = "<group>"; };
+		AB2473C61CFE153C008A90CF /* GLFWTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLFWTime.h; path = src/Plugins/Video/OpenGL/GLFWTime.h; sourceTree = "<group>"; };
+		AC2AA17CB5C845FAAFEAB795 /* SceneTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SceneTest.cpp; path = test/Scene/SceneTest.cpp; sourceTree = SOURCE_ROOT; };
+		AC3233B07B66458298C4339F /* InputEvent.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = InputEvent.cpp; path = src/Plugins/Input/InputEvent.cpp; sourceTree = SOURCE_ROOT; };
+		AD1B362CB8274C3A8337014D /* ChaiScriptInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ChaiScriptInstance.cpp; path = src/Asset/Instances/Script/Chai/ChaiScriptInstance.cpp; sourceTree = SOURCE_ROOT; };
+		B196C5312DCC4ACFA7819D0F /* ArgumentParserTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ArgumentParserTest.h; path = test/ArgumentParserTest.h; sourceTree = SOURCE_ROOT; };
+		B41BE8EFDB764B02AEC05AEC /* InputEvent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = InputEvent.h; path = src/Plugins/Input/InputEvent.h; sourceTree = SOURCE_ROOT; };
+		B56ED5CD8A5740B3A1246162 /* ChaiScriptInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ChaiScriptInstance.h; path = src/Asset/Instances/Script/Chai/ChaiScriptInstance.h; sourceTree = SOURCE_ROOT; };
+		B661A78AC54741AD9FFB2CE8 /* PhysicsPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PhysicsPluginInterface.cpp; path = src/Plugins/Physics/PhysicsPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
+		B961FD99F9FD4C338E5C9A84 /* InputPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = InputPluginInterface.h; path = src/Plugins/Input/InputPluginInterface.h; sourceTree = SOURCE_ROOT; };
+		BBAEF4F0F98547A8BAE976AF /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = test/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		BC11072FC0C943C7875D973D /* AnimationPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AnimationPluginInterface.cpp; path = src/Plugins/Animation/AnimationPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
+		BF533B228E9C429EA98BF927 /* libDreamBase.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libDreamBase.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1D022ED208D4640BB033F4D /* ModelAssetTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ModelAssetTest.cpp; path = test/Asset/Model/ModelAssetTest.cpp; sourceTree = SOURCE_ROOT; };
+		C2BFBD820F174C44BE8B3D11 /* ProjectTest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ProjectTest.h; path = test/ProjectTest.h; sourceTree = SOURCE_ROOT; };
+		C37B6A7C81784F079106E3FF /* SceneObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SceneObject.cpp; path = src/Scene/SceneObject.cpp; sourceTree = SOURCE_ROOT; };
+		C59018EB5DFE48A396FC7AC8 /* BulletPhysics.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = BulletPhysics.h; path = src/Plugins/Physics/Bullet/BulletPhysics.h; sourceTree = SOURCE_ROOT; };
+		C750BA5874F84BAFB898EEA0 /* AssetInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AssetInstance.cpp; path = src/Asset/AssetInstance.cpp; sourceTree = SOURCE_ROOT; };
+		D0DB74D46382434C8F9D6B92 /* VideoPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = VideoPluginInterface.cpp; path = src/Plugins/Video/VideoPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
+		D160DFF7CECE453B8E6C0049 /* Camera.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Camera.cpp; path = src/Plugins/Video/OpenGL/Camera.cpp; sourceTree = SOURCE_ROOT; };
+		D4D3B28B1A5B4317BDF895EA /* VideoPluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = VideoPluginInterface.h; path = src/Plugins/Video/VideoPluginInterface.h; sourceTree = SOURCE_ROOT; };
+		D5023683B0AC4FC7A8BE9F93 /* Main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Main.cpp; path = src/Main/Main.cpp; sourceTree = SOURCE_ROOT; };
+		D964B3EDA44C45D981DF5BFD /* Frame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Frame.h; path = src/Asset/Instances/Animation/Dream/Frame.h; sourceTree = SOURCE_ROOT; };
+		DB39157665AB4BBCB7B4BDE9 /* Main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Main.cpp; path = src/Main/Main.cpp; sourceTree = SOURCE_ROOT; };
+		DC8D77F3CA8D442EA79452C6 /* FileReader.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FileReader.cpp; path = src/Util/FileReader.cpp; sourceTree = SOURCE_ROOT; };
+		DD42D93C869148E88EDAFA3B /* DreamTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DreamTest.cpp; path = test/DreamTest.cpp; sourceTree = SOURCE_ROOT; };
+		E31E60BA6A0A4258AC401EA1 /* TestAsset.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestAsset.h; path = test/Asset/TestAsset.h; sourceTree = SOURCE_ROOT; };
+		E34A219242A6440BAD0D0030 /* Dream.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = Dream.h; path = src/Main/Dream.h; sourceTree = SOURCE_ROOT; };
+		E42962C3024D45A4A7BE198D /* AudioPluginInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AudioPluginInterface.cpp; path = src/Plugins/Audio/AudioPluginInterface.cpp; sourceTree = SOURCE_ROOT; };
+		F349EB1102D24EBFA7E9AE86 /* SceneObject.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SceneObject.h; path = src/Scene/SceneObject.h; sourceTree = SOURCE_ROOT; };
+		F3C569C198CD4E01B6E67D84 /* Dream.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Dream.cpp; path = src/Main/Dream.cpp; sourceTree = SOURCE_ROOT; };
+		F68726CAF8074A14AB465E9E /* ChaiScripting.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ChaiScripting.h; path = src/Plugins/Scripting/Chai/ChaiScripting.h; sourceTree = SOURCE_ROOT; };
+		F90B3536A80F437BAC7BC96D /* UnitTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = UnitTest.cpp; path = test/Unit/UnitTest.cpp; sourceTree = SOURCE_ROOT; };
+		F927169CF63B42ABA1111B52 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		FD7627132B6B4BF78016C104 /* PluginInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = PluginInterface.h; path = src/Plugins/PluginInterface.h; sourceTree = SOURCE_ROOT; };
+		FD7BA7E28DF6407EB6DD5F4C /* TestOBJ.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TestOBJ.cpp; path = test/Asset/Model/Obj/TestOBJ.cpp; sourceTree = SOURCE_ROOT; };
+		FDBD14CF0213439EA6B30FBA /* AssetInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssetInstance.h; path = src/Asset/AssetInstance.h; sourceTree = SOURCE_ROOT; };
+		FEF2B70884464D9994D0B71C /* AssimpModelInstance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = AssimpModelInstance.h; path = src/Asset/Instances/Model/Assimp/AssimpModelInstance.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		0206EB31BA9347CEB3849257 /* DreamBase */ = {
+		032AF2CA38DE4D40AEF762DA /* Scene */ = {
 			isa = PBXGroup;
 			children = (
-				F65D2F07AF8947BA902504D9 /* Asset */,
-				964CECA7F8B0433F84821B91 /* Main */,
-				54E55050134D4C0E96BB63DF /* Plugins */,
-				58D17686BFEE4D419FAAC607 /* Project */,
-				20A55D5630D74C96A60D6118 /* Scene */,
-				66EDF653E757489C95287A48 /* Unit */,
-				BEE6A3EEB34B46BC97F0077E /* Util */,
-				F0E34C69290A494E8C423429 /* CMakeLists.txt */,
+				904512276EAC44CBAC83AB08 /* Scene.cpp */,
+				AAE30E4A4CB641DF8E043EE5 /* Scene.h */,
+				C37B6A7C81784F079106E3FF /* SceneObject.cpp */,
+				F349EB1102D24EBFA7E9AE86 /* SceneObject.h */,
 			);
-			name = DreamBase;
+			name = Scene;
 			sourceTree = "<group>";
 		};
-		1E30B7EBF1A64FE9805F97E0 /* CMake Rules */ = {
+		03963E375A104ACF88C347E2 /* Project */ = {
+			isa = PBXGroup;
+			children = (
+				69C30712F9DA4DF4BC131F03 /* Project.cpp */,
+				0F456AD1D019417BA633801A /* Project.h */,
+			);
+			name = Project;
+			sourceTree = "<group>";
+		};
+		051B6E85FCF24C528159545D /* CMake Rules */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = "CMake Rules";
 			sourceTree = "<group>";
 		};
-		20A55D5630D74C96A60D6118 /* Scene */ = {
+		10E1CA9101EB49C2825FE987 /* ALL_BUILD */ = {
 			isa = PBXGroup;
 			children = (
-				486B512F051C4E8CB4705C84 /* Scene.cpp */,
-				EA8D0BBFB95B48DE919CDAFA /* Scene.h */,
-				460A2133984345CA8ED4F75B /* SceneObject.cpp */,
-				ED79AF989ECF4F109D3DBAAA /* SceneObject.h */,
+				A57660A4309B44BDAE4FDD55 /* CMake Rules */,
+				60F246CF709643B7BF62A416 /* CMakeLists.txt */,
 			);
-			name = Scene;
+			name = ALL_BUILD;
 			sourceTree = "<group>";
 		};
-		3DC79CD480954A6BBF4CB0FA /* DremTest */ = {
+		16AC679B3FF74CDEA07149FE /* DremTest */ = {
 			isa = PBXGroup;
 			children = (
-				E7AF601D78ED472D845F7E82 /* ArgumentParserTest.cpp */,
-				7EEF4FB41C1F478E88D21C3E /* ArgumentParserTest.h */,
-				8695A6389AA24F9DB27DE30F /* TestAnimation.cpp */,
-				837B117EE3214D3187B8CBB0 /* TestAnimation.h */,
-				9B0B9232C0744CB380B612DD /* TestFrame.cpp */,
-				E3A973BFC36A4501B117ED53 /* TestFrame.h */,
-				8053FA31836A47E080C65FB7 /* TestFrameDelta.cpp */,
-				177885B741904B968BA0BFC4 /* TestFrameDelta.h */,
-				E24AFBE39A604F698A39BA15 /* TestKeyFrame.cpp */,
-				16F544A151C64D96BCB6B299 /* TestKeyFrame.h */,
-				0C41EC4DCAA54ECE91CA049B /* ModelAssetTest.cpp */,
-				1A99CAB15A294E379B23ED6D /* ModelAssetTest.h */,
-				7011F0B96E034343BD8EBB6D /* TestOBJ.cpp */,
-				27388F08660B460CB0D0F063 /* TestOBJ.h */,
-				F2541AF9EF5F4697A1EBB7DD /* TestAsset.cpp */,
-				6CB430525807485489D06552 /* TestAsset.h */,
-				71448E2119D941FC8DC0D08D /* DreamTest.cpp */,
-				42492472B14F4CDDB666AC97 /* DreamTest.h */,
-				BB8EEF3C345E4621BE84E263 /* ProjectTest.cpp */,
-				D20F9FEA5A394520A89C6621 /* ProjectTest.h */,
-				0A3CC046E9A246779950B623 /* SceneTest.cpp */,
-				2985E801D1864554B1CEF6DB /* SceneTest.h */,
-				AF28D2514B9544789D390436 /* TestSceneObject.cpp */,
-				DCCDA01FE9D1484895B07E70 /* TestSceneObject.h */,
-				D83F1195865345DB8140B62C /* TestMain.cpp */,
-				870100A32A0044C59DC896D5 /* UnitTest.cpp */,
-				3AFC14CA537C4A3993F6847D /* UnitTest.h */,
-				E070E2AE626A4C1EB5AC3728 /* FileReaderTest.cpp */,
-				A58D8635746B402F96162894 /* FileReaderTest.h */,
-				AF82232AC2484DE9ADE80748 /* UUIDTest.cpp */,
-				3762EC72AACA45448D0163A1 /* UUIDTest.h */,
+				73663B8B12914581BA682EF3 /* ArgumentParserTest.cpp */,
+				B196C5312DCC4ACFA7819D0F /* ArgumentParserTest.h */,
+				2DF19EEA5AC7416E9CF07BCD /* TestAnimation.cpp */,
+				871B6BBC98654EBDB62B04D9 /* TestAnimation.h */,
+				81B0F7CF93A3440BA775E782 /* TestFrame.cpp */,
+				667E8351E3EA47E2AFCEABBE /* TestFrame.h */,
+				35A9506F4D6546549159DC6B /* TestFrameDelta.cpp */,
+				1733B12542F74BEB978B3FE1 /* TestFrameDelta.h */,
+				77439A44C61F4947BCE189BA /* TestKeyFrame.cpp */,
+				AB1444E930604E1CBF0BECB7 /* TestKeyFrame.h */,
+				C1D022ED208D4640BB033F4D /* ModelAssetTest.cpp */,
+				2E62424D94B94097AB083C41 /* ModelAssetTest.h */,
+				FD7BA7E28DF6407EB6DD5F4C /* TestOBJ.cpp */,
+				603852B4D2A244A2BF440A13 /* TestOBJ.h */,
+				30F491B16EB444C7ACF3BA80 /* TestAsset.cpp */,
+				E31E60BA6A0A4258AC401EA1 /* TestAsset.h */,
+				DD42D93C869148E88EDAFA3B /* DreamTest.cpp */,
+				1B321CE80BC54834A8E7256F /* DreamTest.h */,
+				55478285C1CE49C9ADC5089E /* ProjectTest.cpp */,
+				C2BFBD820F174C44BE8B3D11 /* ProjectTest.h */,
+				AC2AA17CB5C845FAAFEAB795 /* SceneTest.cpp */,
+				8B698CA9148A4E4EBE39DB25 /* SceneTest.h */,
+				82F96102DD1B44B8A29C11D3 /* TestSceneObject.cpp */,
+				808284F595204042B8F16513 /* TestSceneObject.h */,
+				662BC73267B94B5998BAEB68 /* TestMain.cpp */,
+				F90B3536A80F437BAC7BC96D /* UnitTest.cpp */,
+				06A2A8B2896745B9A180CDE9 /* UnitTest.h */,
+				8EE6F37AD320432D870DC823 /* FileReaderTest.cpp */,
+				67E77FF2E35F4105ABB25BCD /* FileReaderTest.h */,
+				76673E880FBE43B49E73D25D /* UUIDTest.cpp */,
+				3A5BD00BD08547CF8B9057EA /* UUIDTest.h */,
 			);
 			name = DremTest;
 			sourceTree = "<group>";
 		};
-		54E55050134D4C0E96BB63DF /* Plugins */ = {
+		3CF1B96C48574DBC967AC931 /* Dream */ = {
 			isa = PBXGroup;
 			children = (
-				CCA1EA6D740E476F8A88B174 /* AnimationPluginInterface.cpp */,
-				0A2FA821192F409CBE5E3016 /* AnimationPluginInterface.h */,
-				9F8839F88F8E4316BD1F3F09 /* DreamAnimation.cpp */,
-				1E5D753B9C314547977B894D /* DreamAnimation.h */,
-				1291C4D86FD94F8CBF5815DF /* AudioPluginInterface.cpp */,
-				2A689A57CB7543DA9795CFDA /* AudioPluginInterface.h */,
-				4A973BBCAF864079810C3479 /* OALAudio.cpp */,
-				32E8F2F7329E4A70B10D89D4 /* OALAudio.h */,
-				3E7D67A26EB941108215782F /* GLFWInput.cpp */,
-				589597CDBCD541D2A3D487B3 /* GLFWInput.h */,
-				0648DA76D1884C55B8D02BD2 /* InputEvent.cpp */,
-				560009110F7B4D1C98581BCE /* InputEvent.h */,
-				58B1C32DF69A4402A5490F84 /* InputPluginInterface.cpp */,
-				FEB1E6AB65F24DAC8FD82198 /* InputPluginInterface.h */,
-				F36B19781CE34776A106C489 /* BulletPhysics.cpp */,
-				6A07E94AD70C47FA9D22CCD4 /* BulletPhysics.h */,
-				91939A5A21AA416FA3881F84 /* PhysicsPluginInterface.cpp */,
-				79104BBC4E7D4856BB150964 /* PhysicsPluginInterface.h */,
-				94201C9CA36049759AD22A9F /* PluginInterface.cpp */,
-				5ACDB480E9234DDB96173E4B /* PluginInterface.h */,
-				191BC0553DFB4F189EB6D306 /* PluginManager.cpp */,
-				6F8AD9E8F35F4E5BAC622F84 /* PluginManager.h */,
-				74A64374E9304DA586A9AB3F /* ChaiScripting.cpp */,
-				5809A2FF35264BE3B556D90A /* ChaiScripting.h */,
-				BD809F50AB144FEFA369719C /* ScriptingPluginInterface.cpp */,
-				BD2C910005B1455FB26CF714 /* ScriptingPluginInterface.h */,
-				436490160ACE4526B2748E0F /* Camera.cpp */,
-				AF652F2704D04EE78F391764 /* Camera.h */,
-				64B1E9D4CB8F42F48733EA6B /* OGLVideo.cpp */,
-				C635979194FA45DF9F77773F /* OGLVideo.h */,
-				C331319CF2D44B74B5A7B46D /* VideoPluginInterface.cpp */,
-				E3D2D58CB72348F2A2452522 /* VideoPluginInterface.h */,
+				FC2CA3C60577434CBE0E7A5D /* Main */,
+				F927169CF63B42ABA1111B52 /* CMakeLists.txt */,
 			);
-			name = Plugins;
+			name = Dream;
 			sourceTree = "<group>";
 		};
-		58D17686BFEE4D419FAAC607 /* Project */ = {
+		3E67842C95DC49768193BC1E /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F791AA34E3AF443E84018314 /* Project.cpp */,
-				0ADD78B0E90B4903B2C053E2 /* Project.h */,
+				10E1CA9101EB49C2825FE987 /* ALL_BUILD */,
+				7A7843EEBFD34A00BC04F07C /* ZERO_CHECK */,
+				3CF1B96C48574DBC967AC931 /* Dream */,
+				89216642B94A40DD84639850 /* DreamBase */,
+				457FD1617988425E992BCE5F /* DreamTest */,
 			);
-			name = Project;
+			name = Sources;
 			sourceTree = "<group>";
 		};
-		66EDF653E757489C95287A48 /* Unit */ = {
+		457FD1617988425E992BCE5F /* DreamTest */ = {
 			isa = PBXGroup;
 			children = (
-				74F1CC9A01794B04AD797F49 /* Unit.cpp */,
-				E8F9FAB908D442BD89C112F9 /* Unit.h */,
+				16AC679B3FF74CDEA07149FE /* DremTest */,
+				BBAEF4F0F98547A8BAE976AF /* CMakeLists.txt */,
 			);
-			name = Unit;
+			name = DreamTest;
 			sourceTree = "<group>";
 		};
-		84C8917C28344696B7AB0232 /* Main */ = {
+		631ABBA3ABD2466282F6DBCF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CBC17669BD3F4C689563F51C /* Main.cpp */,
+				68E92DE86D5440BEAFA5E8D5 /* Dream */,
+				BF533B228E9C429EA98BF927 /* libDreamBase.dylib */,
+				3B659B6AF7E2436D92F9D165 /* DreamTest */,
 			);
-			name = Main;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		8D275511974843DDA611B353 /* Resources */ = {
+		6D8C8D190C61497096AA1E72 /* Asset */ = {
+			isa = PBXGroup;
+			children = (
+				72C27A0E15784304ACB7CA01 /* AssetDefinition.cpp */,
+				6922B58657DF4A3189F05CD5 /* AssetDefinition.h */,
+				C750BA5874F84BAFB898EEA0 /* AssetInstance.cpp */,
+				FDBD14CF0213439EA6B30FBA /* AssetInstance.h */,
+				49C7B2AACFF1459DAE1DC52F /* AssetManager.cpp */,
+				7DDE8B5A5415493897039CEB /* AssetManager.h */,
+				84A378D546EB403083C5DA5D /* AnimationInstance.cpp */,
+				51CA35C84AED40B8822207EF /* AnimationInstance.h */,
+				510A59AEB5594E9AB1BD9234 /* Frame.cpp */,
+				D964B3EDA44C45D981DF5BFD /* Frame.h */,
+				3A153044F97248F7AAD6B342 /* FrameDelta.cpp */,
+				5173F655752E49BFACF18225 /* FrameDelta.h */,
+				60E71AEC73C5442E96AEA1DB /* KeyFrame.cpp */,
+				9469F997A5C54F829584AD3A /* KeyFrame.h */,
+				41DD519682794AB88AD6632D /* OggAudioInstance.cpp */,
+				7D5EA9C26A984422AB72CDD7 /* OggAudioInstance.h */,
+				6E889D2DFBCC4971B0EA1DF5 /* WavAudioInstance.cpp */,
+				3FA246127C7D452593D96561 /* WavAudioInstance.h */,
+				8EE06478751746A2A78F2AAC /* AssimpModelInstance.cpp */,
+				FEF2B70884464D9994D0B71C /* AssimpModelInstance.h */,
+				239F5FB9D7804290B900EA7C /* Mesh.cpp */,
+				A29A99922D434C178697C0F7 /* Mesh.h */,
+				AD1B362CB8274C3A8337014D /* ChaiScriptInstance.cpp */,
+				B56ED5CD8A5740B3A1246162 /* ChaiScriptInstance.h */,
+				68A8143EAE184DAABD2A4C47 /* ShaderInstance.cpp */,
+				80FF54B62B734647911EB5DB /* ShaderInstance.h */,
+			);
+			name = Asset;
+			sourceTree = "<group>";
+		};
+		6E6813F07B0741FA9CFFECCC /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				DC8D77F3CA8D442EA79452C6 /* FileReader.cpp */,
+				7DA594A585494FD699C476FC /* FileReader.h */,
+				A8A9B3AB97604CAA906E79F5 /* StringUtils.cpp */,
+				068403C780044FA6A5BD7D7D /* StringUtils.h */,
+				06337BFD5E874F3E83EDB660 /* UUID.cpp */,
+				641F2EDEA4804392A510148D /* UUID.h */,
+			);
+			name = Util;
+			sourceTree = "<group>";
+		};
+		7A7843EEBFD34A00BC04F07C /* ZERO_CHECK */ = {
+			isa = PBXGroup;
+			children = (
+				051B6E85FCF24C528159545D /* CMake Rules */,
+				35A8D30FB4974D45BA7AC42D /* CMakeLists.txt */,
+			);
+			name = ZERO_CHECK;
+			sourceTree = "<group>";
+		};
+		83A0F3F177B04BA48C150965 = {
+			isa = PBXGroup;
+			children = (
+				3E67842C95DC49768193BC1E /* Sources */,
+				A78AFD17221F46CB80FA9AC8 /* Resources */,
+				631ABBA3ABD2466282F6DBCF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		89216642B94A40DD84639850 /* DreamBase */ = {
+			isa = PBXGroup;
+			children = (
+				6D8C8D190C61497096AA1E72 /* Asset */,
+				D5B9D15E9167415FBCC6C485 /* Main */,
+				C00628E7D20C4C0F9AF39D9B /* Plugins */,
+				03963E375A104ACF88C347E2 /* Project */,
+				032AF2CA38DE4D40AEF762DA /* Scene */,
+				F4576AD45A61435F9F9B4F06 /* Unit */,
+				6E6813F07B0741FA9CFFECCC /* Util */,
+				2871EDA890A0480AA6E9582C /* CMakeLists.txt */,
+			);
+			name = DreamBase;
+			sourceTree = "<group>";
+		};
+		A57660A4309B44BDAE4FDD55 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		A78AFD17221F46CB80FA9AC8 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		964CECA7F8B0433F84821B91 /* Main */ = {
+		C00628E7D20C4C0F9AF39D9B /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				35C277E1C5064396830A453B /* ArgumentParser.cpp */,
-				39F83C762BB74837B8E4D962 /* ArgumentParser.h */,
-				F36A291484AA49EB8CAC3DB0 /* Dream.cpp */,
-				8D2E56046F7C4A1B9716648E /* Dream.h */,
-				70AD437791164759BB1D26E9 /* Main.cpp */,
+				BC11072FC0C943C7875D973D /* AnimationPluginInterface.cpp */,
+				69FC852FA66344F38DD0D9FA /* AnimationPluginInterface.h */,
+				9B4AA7942BFB403BA811085B /* DreamAnimation.cpp */,
+				175A27F104DD4813A659ADF9 /* DreamAnimation.h */,
+				E42962C3024D45A4A7BE198D /* AudioPluginInterface.cpp */,
+				AA392E14C9EE4E1C84542162 /* AudioPluginInterface.h */,
+				193D0E036B46432C870B5088 /* OALAudio.cpp */,
+				3887A208D11643C180D677E6 /* OALAudio.h */,
+				9A09651248CF4F5085CDE24A /* GLFWInput.cpp */,
+				32DDA61B6F204B6C86E6E870 /* GLFWInput.h */,
+				AC3233B07B66458298C4339F /* InputEvent.cpp */,
+				B41BE8EFDB764B02AEC05AEC /* InputEvent.h */,
+				A1C997A723584CEEBB2D186A /* InputPluginInterface.cpp */,
+				B961FD99F9FD4C338E5C9A84 /* InputPluginInterface.h */,
+				1EC000D0DBFA499AA7625B9A /* BulletPhysics.cpp */,
+				C59018EB5DFE48A396FC7AC8 /* BulletPhysics.h */,
+				B661A78AC54741AD9FFB2CE8 /* PhysicsPluginInterface.cpp */,
+				6EEBF5B04D184A2FB476ABEA /* PhysicsPluginInterface.h */,
+				2D605AC54A6F4D6D9D4603BC /* PluginInterface.cpp */,
+				FD7627132B6B4BF78016C104 /* PluginInterface.h */,
+				0383614FB1CE4C60B0FED2E3 /* PluginManager.cpp */,
+				28C19543D5AB4F8BB14C6FE3 /* PluginManager.h */,
+				3C594355985044CFA71B8A98 /* ChaiScripting.cpp */,
+				F68726CAF8074A14AB465E9E /* ChaiScripting.h */,
+				644ED45D886C47C19633D24F /* ScriptingPluginInterface.cpp */,
+				A125486E40F245669C60AE4D /* ScriptingPluginInterface.h */,
+				D160DFF7CECE453B8E6C0049 /* Camera.cpp */,
+				1BC509B93BB44FB3B5DBC5C5 /* Camera.h */,
+				A166AE5BA17B4F20BC988739 /* OGLVideo.cpp */,
+				269B801F5B8740C6B4174710 /* OGLVideo.h */,
+				D0DB74D46382434C8F9D6B92 /* VideoPluginInterface.cpp */,
+				D4D3B28B1A5B4317BDF895EA /* VideoPluginInterface.h */,
+				AB2473C51CFE153C008A90CF /* GLFWTime.cpp */,
+				AB2473C61CFE153C008A90CF /* GLFWTime.h */,
+			);
+			name = Plugins;
+			sourceTree = "<group>";
+		};
+		D5B9D15E9167415FBCC6C485 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				3A49516391F3459598CD3943 /* ArgumentParser.cpp */,
+				7A841FE97E4E4E4B9B5DAFA0 /* ArgumentParser.h */,
+				F3C569C198CD4E01B6E67D84 /* Dream.cpp */,
+				E34A219242A6440BAD0D0030 /* Dream.h */,
+				DB39157665AB4BBCB7B4BDE9 /* Main.cpp */,
 			);
 			name = Main;
 			sourceTree = "<group>";
 		};
-		99574341632F4C5193DF3A8F /* CMake Rules */ = {
+		F4576AD45A61435F9F9B4F06 /* Unit */ = {
 			isa = PBXGroup;
 			children = (
+				1D334DD690C24D5B987B0522 /* Unit.cpp */,
+				6C2C12D7BE614EF0962C1EC1 /* Unit.h */,
 			);
-			name = "CMake Rules";
+			name = Unit;
 			sourceTree = "<group>";
 		};
-		9F2E3641E6E34CEFB56D6B3F /* Sources */ = {
+		FC2CA3C60577434CBE0E7A5D /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				CDA5C96CAF7A4ADE9C6C8752 /* ALL_BUILD */,
-				B8418B8EB27C4128A6C04F6A /* ZERO_CHECK */,
-				AC470FBC8F654B6B8B396438 /* Dream */,
-				0206EB31BA9347CEB3849257 /* DreamBase */,
-				D80807194E8544AD8A358FA4 /* DreamTest */,
+				D5023683B0AC4FC7A8BE9F93 /* Main.cpp */,
 			);
-			name = Sources;
-			sourceTree = "<group>";
-		};
-		AC470FBC8F654B6B8B396438 /* Dream */ = {
-			isa = PBXGroup;
-			children = (
-				84C8917C28344696B7AB0232 /* Main */,
-				69A8EA346E8B4F4E950F8FCC /* CMakeLists.txt */,
-			);
-			name = Dream;
-			sourceTree = "<group>";
-		};
-		B5CC033014EB44CEAD7A1C0E = {
-			isa = PBXGroup;
-			children = (
-				9F2E3641E6E34CEFB56D6B3F /* Sources */,
-				8D275511974843DDA611B353 /* Resources */,
-				F7610D02993C4567BAD8B20C /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		B8418B8EB27C4128A6C04F6A /* ZERO_CHECK */ = {
-			isa = PBXGroup;
-			children = (
-				1E30B7EBF1A64FE9805F97E0 /* CMake Rules */,
-				07EB6ABEC28547A0BCEBF727 /* CMakeLists.txt */,
-			);
-			name = ZERO_CHECK;
-			sourceTree = "<group>";
-		};
-		BEE6A3EEB34B46BC97F0077E /* Util */ = {
-			isa = PBXGroup;
-			children = (
-				33ABDF59342941C5B5FCDA4F /* FileReader.cpp */,
-				A134E396361442D2AD9E0C94 /* FileReader.h */,
-				7C0D36800E4A4ED784EB345A /* StringUtils.cpp */,
-				867E7E6C42BD404CA21B27D2 /* StringUtils.h */,
-				0E1D4CD49057416E8A82F589 /* UUID.cpp */,
-				D1D1B0575992497FB135B021 /* UUID.h */,
-			);
-			name = Util;
-			sourceTree = "<group>";
-		};
-		CDA5C96CAF7A4ADE9C6C8752 /* ALL_BUILD */ = {
-			isa = PBXGroup;
-			children = (
-				99574341632F4C5193DF3A8F /* CMake Rules */,
-				304E5CC6C83948F3B4B64022 /* CMakeLists.txt */,
-			);
-			name = ALL_BUILD;
-			sourceTree = "<group>";
-		};
-		D80807194E8544AD8A358FA4 /* DreamTest */ = {
-			isa = PBXGroup;
-			children = (
-				3DC79CD480954A6BBF4CB0FA /* DremTest */,
-				EEA64D4C32BF4163AB028F36 /* CMakeLists.txt */,
-			);
-			name = DreamTest;
-			sourceTree = "<group>";
-		};
-		F65D2F07AF8947BA902504D9 /* Asset */ = {
-			isa = PBXGroup;
-			children = (
-				2B721A51F1524338849EC899 /* AssetDefinition.cpp */,
-				891ED972B7944D1C8AEFC52E /* AssetDefinition.h */,
-				1170FF91CCF94B9FACDC769A /* AssetInstance.cpp */,
-				8E58BEC695AA4205AC11B7B1 /* AssetInstance.h */,
-				693C56D209834BB1A577651C /* AssetManager.cpp */,
-				D16262C255D0456E93E73BE6 /* AssetManager.h */,
-				B397DB2E195F47FEA5035A2B /* AnimationInstance.cpp */,
-				B677D56FA0E24EB09D85FD18 /* AnimationInstance.h */,
-				E9412774E235437F84DE7519 /* Frame.cpp */,
-				4B8A6045B7C5455E9E3B681E /* Frame.h */,
-				489F7B197259404FB5A9DF1F /* FrameDelta.cpp */,
-				4E97CEED5050485EB491DD18 /* FrameDelta.h */,
-				01267E2AE18340E1A0575E23 /* KeyFrame.cpp */,
-				4FFAE034416542B6B681B5CC /* KeyFrame.h */,
-				0D175FFFBB6F449E999E1477 /* OggAudioInstance.cpp */,
-				ECE44B13294D471480110FA5 /* OggAudioInstance.h */,
-				32481DFEF21A4C7DB04DCC40 /* WavAudioInstance.cpp */,
-				20136100A72B47FAB2872760 /* WavAudioInstance.h */,
-				CCD0263B46C94F1DBE9FB290 /* AssimpModelInstance.cpp */,
-				CE2E6290121F4FCB83647EFD /* AssimpModelInstance.h */,
-				F82F842EC5C14D0A81FAECE5 /* Mesh.cpp */,
-				00F1F9EAF47F43128BF65C42 /* Mesh.h */,
-				B0517669F38043C8A50D8FA7 /* ChaiScriptInstance.cpp */,
-				9367B6649D2E4966ACAE3C69 /* ChaiScriptInstance.h */,
-				1ECE9309CA3543CFB14D334D /* ShaderInstance.cpp */,
-				FC1FAF8B22E14240BCAEBF36 /* ShaderInstance.h */,
-			);
-			name = Asset;
-			sourceTree = "<group>";
-		};
-		F7610D02993C4567BAD8B20C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				3A962769E84A45D3B9C3D4A0 /* Dream */,
-				EAC93396794E46A5936B90E0 /* libDreamBase.dylib */,
-				35E3CF04F7C940E791B69B60 /* DreamTest */,
-			);
-			name = Products;
+			name = Main;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		738C537C082E49D38D7503B6 /* DreamBase */ = {
+		0228F5E19F71408EB361FA74 /* DreamTest */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A72A5A2FE7694C2FBD862EF3 /* Build configuration list for PBXNativeTarget "DreamBase" */;
+			buildConfigurationList = C2201DEC27B74B0E9AE59B02 /* Build configuration list for PBXNativeTarget "DreamTest" */;
 			buildPhases = (
-				0926190635004AC781E79CB3 /* Sources */,
-				39AE0CDB527B4D2483DD9931 /* CMake PostBuild Rules */,
+				13C911A8EFEF4F4C8E398CB9 /* CMake PreBuild Rules */,
+				BA3524CD9866498D8B544B94 /* Sources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				CA482E2652554939AEAAC0A3 /* PBXTargetDependency */,
-			);
-			name = DreamBase;
-			productName = DreamBase;
-			productReference = EAC93396794E46A5936B90E0 /* libDreamBase.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
-		93D2A5EE06264C29B5350C6E /* Dream */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 5D2B556A168B418B98DFA18E /* Build configuration list for PBXNativeTarget "Dream" */;
-			buildPhases = (
-				41577996864A44589EA61000 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3EB361EE2D1F41EABF7DFC0A /* PBXTargetDependency */,
-				C900CD56FC88462A8800693D /* PBXTargetDependency */,
-			);
-			name = Dream;
-			productName = Dream;
-			productReference = 3A962769E84A45D3B9C3D4A0 /* Dream */;
-			productType = "com.apple.product-type.tool";
-		};
-		D11CAF412648469E9718A050 /* DreamTest */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 24329D922A664680AF2FD876 /* Build configuration list for PBXNativeTarget "DreamTest" */;
-			buildPhases = (
-				C93151881D9347AA8B687C83 /* CMake PreBuild Rules */,
-				1FF051C5A1AF4B54A0AB5DFA /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				42E42B264067405EBDC8F6FE /* PBXTargetDependency */,
-				B32D08EFF7724FD9975C1B69 /* PBXTargetDependency */,
+				AC2A2FD310E84F68934EE5E2 /* PBXTargetDependency */,
+				D2DF712A4AE94F10B9D13E9D /* PBXTargetDependency */,
 			);
 			name = DreamTest;
 			productName = DreamTest;
-			productReference = 35E3CF04F7C940E791B69B60 /* DreamTest */;
+			productReference = 3B659B6AF7E2436D92F9D165 /* DreamTest */;
 			productType = "com.apple.product-type.tool";
+		};
+		C07186FECD234D4ABF2E24F9 /* Dream */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C337C40FA714F999391D7BB /* Build configuration list for PBXNativeTarget "Dream" */;
+			buildPhases = (
+				0E0359CAAEE04DCA9A91E753 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D15EEADCA2B142B5BE254C81 /* PBXTargetDependency */,
+				B8A64C14D0724024A94D66E9 /* PBXTargetDependency */,
+			);
+			name = Dream;
+			productName = Dream;
+			productReference = 68E92DE86D5440BEAFA5E8D5 /* Dream */;
+			productType = "com.apple.product-type.tool";
+		};
+		FEA72D465D2847E886C89B0E /* DreamBase */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5FBF5F09879C47A2BB9F192B /* Build configuration list for PBXNativeTarget "DreamBase" */;
+			buildPhases = (
+				218A799675B24ADBBAD30676 /* Sources */,
+				E7F434551AE346858A4739D3 /* CMake PostBuild Rules */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3F06D198AAC041F3A72FCD07 /* PBXTargetDependency */,
+			);
+			name = DreamBase;
+			productName = DreamBase;
+			productReference = BF533B228E9C429EA98BF927 /* libDreamBase.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		A3B7616885AA428184CF5130 /* Project object */ = {
+		E469E3AFEDA44D03888FF850 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 0730;
 			};
-			buildConfigurationList = D9EF16C97D1246B0BC12C7CB /* Build configuration list for PBXProject "Dream" */;
+			buildConfigurationList = 04F3EFE3573E4A9DB404325B /* Build configuration list for PBXProject "Dream" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = B5CC033014EB44CEAD7A1C0E;
+			mainGroup = 83A0F3F177B04BA48C150965;
 			projectDirPath = ../;
 			projectRoot = "";
 			targets = (
-				1E3E69EC8D544D5293476E05 /* ALL_BUILD */,
-				E8C9276EBAF54594BBFF964A /* RUN_TESTS */,
-				31235E5EB8A84A31A5D8D553 /* ZERO_CHECK */,
-				93D2A5EE06264C29B5350C6E /* Dream */,
-				738C537C082E49D38D7503B6 /* DreamBase */,
-				D11CAF412648469E9718A050 /* DreamTest */,
+				FE00120B357F48DF9E673EEA /* ALL_BUILD */,
+				6E7C2B921797474FBAF92C3F /* RUN_TESTS */,
+				DEED9AB7D90640CE96D68305 /* ZERO_CHECK */,
+				C07186FECD234D4ABF2E24F9 /* Dream */,
+				FEA72D465D2847E886C89B0E /* DreamBase */,
+				0228F5E19F71408EB361FA74 /* DreamTest */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		28B622C9DF3D4C83BFB0DDF6 /* CMake Rules */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "CMake Rules";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "make -C /Users/Ashley/Software/Dream/Xcode -f /Users/Ashley/Software/Dream/Xcode/CMakeScripts/ZERO_CHECK_cmakeRulesBuildPhase.make$CONFIGURATION all";
-			showEnvVarsInLog = 0;
-		};
-		39AE0CDB527B4D2483DD9931 /* CMake PostBuild Rules */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "CMake PostBuild Rules";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "make -C /Users/Ashley/Software/Dream/Xcode/src -f /Users/Ashley/Software/Dream/Xcode/src/CMakeScripts/DreamBase_postBuildPhase.make$CONFIGURATION all";
-			showEnvVarsInLog = 0;
-		};
-		B0ACBEEA2DD3493C8907A817 /* CMake Rules */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "CMake Rules";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "make -C /Users/Ashley/Software/Dream/Xcode -f /Users/Ashley/Software/Dream/Xcode/CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION all";
-			showEnvVarsInLog = 0;
-		};
-		C93151881D9347AA8B687C83 /* CMake PreBuild Rules */ = {
+		13C911A8EFEF4F4C8E398CB9 /* CMake PreBuild Rules */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -697,7 +669,40 @@
 			shellScript = "make -C /Users/Ashley/Software/Dream/Xcode/test -f /Users/Ashley/Software/Dream/Xcode/test/CMakeScripts/DreamTest_preBuildCommands.make$CONFIGURATION all";
 			showEnvVarsInLog = 0;
 		};
-		E3A4465E34894A93B5556FFC /* CMake PostBuild Rules */ = {
+		97C0B0195A4E4348840568E9 /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/Ashley/Software/Dream/Xcode -f /Users/Ashley/Software/Dream/Xcode/CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION all";
+			showEnvVarsInLog = 0;
+		};
+		D10F3A2C6B704B0BBA984B64 /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/Ashley/Software/Dream/Xcode -f /Users/Ashley/Software/Dream/Xcode/CMakeScripts/ZERO_CHECK_cmakeRulesBuildPhase.make$CONFIGURATION all";
+			showEnvVarsInLog = 0;
+		};
+		E7F434551AE346858A4739D3 /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/Ashley/Software/Dream/Xcode/src -f /Users/Ashley/Software/Dream/Xcode/src/CMakeScripts/DreamBase_postBuildPhase.make$CONFIGURATION all";
+			showEnvVarsInLog = 0;
+		};
+		ED551E3FF687406081BA1A3E /* CMake PostBuild Rules */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -711,507 +716,136 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0926190635004AC781E79CB3 /* Sources */ = {
+		0E0359CAAEE04DCA9A91E753 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C93661B62C444469B6DC20E /* AssetDefinition.cpp in Sources */,
-				A8008AB061C74B46AB3915C9 /* AssetInstance.cpp in Sources */,
-				D8BE20999AC741BD83B254D0 /* AssetManager.cpp in Sources */,
-				B2994CE8BA204C719870E8F6 /* AnimationInstance.cpp in Sources */,
-				C10C878A16A24F51AD317792 /* Frame.cpp in Sources */,
-				6C9E93B0C43D42819EC2BADC /* FrameDelta.cpp in Sources */,
-				83E8638FD0B5408283BB7A37 /* KeyFrame.cpp in Sources */,
-				E32AC1743E0541F8928DC8E2 /* OggAudioInstance.cpp in Sources */,
-				C9A5699F88CF49658D458D4E /* WavAudioInstance.cpp in Sources */,
-				219CB5AC465A416884D6EC2A /* AssimpModelInstance.cpp in Sources */,
-				477BCD95D2A24328B7933BB2 /* Mesh.cpp in Sources */,
-				AB48F2BBC7F74489BFBC8BE8 /* ChaiScriptInstance.cpp in Sources */,
-				F57202E909E74F4ABED616AE /* ShaderInstance.cpp in Sources */,
-				78B48AB4D9DC4E7488378242 /* ArgumentParser.cpp in Sources */,
-				89EF22C0D3E6415B89FC8EEA /* Dream.cpp in Sources */,
-				211AEE4BC19047A9B14D53C5 /* Main.cpp in Sources */,
-				0269E2A722FF46C8ACDB4D50 /* AnimationPluginInterface.cpp in Sources */,
-				EF2B67B2358E4AEA92FD8CAC /* DreamAnimation.cpp in Sources */,
-				5C2F101838FE4C49AA2512E9 /* AudioPluginInterface.cpp in Sources */,
-				539F6D89BE7C4C06BD0E9636 /* OALAudio.cpp in Sources */,
-				D7AF12DD596243B4B476A7A2 /* GLFWInput.cpp in Sources */,
-				18A903EBEB0A4C42BFB223F8 /* InputEvent.cpp in Sources */,
-				C321038AA366429F9554023F /* InputPluginInterface.cpp in Sources */,
-				B14FDF52E069401CBD4710AE /* BulletPhysics.cpp in Sources */,
-				4FE4432B0B1A487CBCF96FB7 /* PhysicsPluginInterface.cpp in Sources */,
-				736F4ADCB0CE4123A224BEA0 /* PluginInterface.cpp in Sources */,
-				8575DF0042FF471EA8A71492 /* PluginManager.cpp in Sources */,
-				BEB31C23F145467686E68739 /* ChaiScripting.cpp in Sources */,
-				E504BA35032C480DB7405E5C /* ScriptingPluginInterface.cpp in Sources */,
-				77900785FBEF43EBB02F8DE1 /* Camera.cpp in Sources */,
-				5C6297CFE58F4CAD95162F99 /* OGLVideo.cpp in Sources */,
-				08D48B3F197A41E3ACD82C32 /* VideoPluginInterface.cpp in Sources */,
-				1548873BB5B94863B18DC945 /* Project.cpp in Sources */,
-				58697FF9986F4EFC9FC3B984 /* Scene.cpp in Sources */,
-				224654EA3BFE440D80B7D5E1 /* SceneObject.cpp in Sources */,
-				DB2833885DD44C9B882C7CE4 /* Unit.cpp in Sources */,
-				21955EAE727C47149F2AE8E8 /* FileReader.cpp in Sources */,
-				E6402C4F83714F478E49D087 /* StringUtils.cpp in Sources */,
-				625F782A825248BDAED3D933 /* UUID.cpp in Sources */,
+				FCAD4CE4E2DB4AA7B9492A80 /* Main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1FF051C5A1AF4B54A0AB5DFA /* Sources */ = {
+		218A799675B24ADBBAD30676 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF23EB8DEF3B4E6B93C428F4 /* ArgumentParserTest.cpp in Sources */,
-				447F90A24522406A8A432A31 /* TestAnimation.cpp in Sources */,
-				12A20A073EC44CB4B901DA09 /* TestFrame.cpp in Sources */,
-				0288A8CF10084BBE8891103B /* TestFrameDelta.cpp in Sources */,
-				1CB8B9E45C7A491CB6AD57DB /* TestKeyFrame.cpp in Sources */,
-				15268711A42F49B69DF058B9 /* ModelAssetTest.cpp in Sources */,
-				2ACF472E165D453E8F13E9D9 /* TestOBJ.cpp in Sources */,
-				B84E1C46DDAF489FA6946A75 /* TestAsset.cpp in Sources */,
-				ECAD9BCA62014F28A75435EB /* DreamTest.cpp in Sources */,
-				CB0C0EB08AC14E759CAC13E9 /* ProjectTest.cpp in Sources */,
-				0B887FA836F34194BCF4D9B8 /* SceneTest.cpp in Sources */,
-				17CEF6D2FBF34D6E819BE41F /* TestSceneObject.cpp in Sources */,
-				C9F99931FEB5423CB20DB7D8 /* TestMain.cpp in Sources */,
-				429179F60ABC45D791C582FC /* UnitTest.cpp in Sources */,
-				C564DBB07C5F4D1F98FEE093 /* FileReaderTest.cpp in Sources */,
-				BBCEA2BD2A234566A6140B7A /* UUIDTest.cpp in Sources */,
+				BB34835067514E8DB6A23A37 /* AssetDefinition.cpp in Sources */,
+				3BEA306F8DBB44A1877B4E32 /* AssetInstance.cpp in Sources */,
+				CAFE322032F24CA39E7FAF53 /* AssetManager.cpp in Sources */,
+				E45A422E39394313B23BEE64 /* AnimationInstance.cpp in Sources */,
+				861B1269DC4145EAA2A0300D /* Frame.cpp in Sources */,
+				1636A1D150F04B07B04C5EF0 /* FrameDelta.cpp in Sources */,
+				1595549525E8489ABB625602 /* KeyFrame.cpp in Sources */,
+				F35CC02D6F344BB18BE9E4F8 /* OggAudioInstance.cpp in Sources */,
+				B6C5A74EF124496A9F717FED /* WavAudioInstance.cpp in Sources */,
+				9EB13DAA04FE4FF786B63E99 /* AssimpModelInstance.cpp in Sources */,
+				EB9AB79BF617432392529B98 /* Mesh.cpp in Sources */,
+				B18972409CE74F1BB0B7AB6D /* ChaiScriptInstance.cpp in Sources */,
+				3AD786350B3C4AA39E494301 /* ShaderInstance.cpp in Sources */,
+				C4F065033A524A23B32A3E3C /* ArgumentParser.cpp in Sources */,
+				A60EFE38271842649728B55C /* Dream.cpp in Sources */,
+				DCE77DAB2CE0446E85329D9E /* Main.cpp in Sources */,
+				3780FA2853984227B16EB560 /* AnimationPluginInterface.cpp in Sources */,
+				F92D1DA6501642F4BDDBEBC3 /* DreamAnimation.cpp in Sources */,
+				6E08E566C4344C0DA7553103 /* AudioPluginInterface.cpp in Sources */,
+				00B3CF4BD59C4B49AA98C238 /* OALAudio.cpp in Sources */,
+				EF356D0A8B2344AC8058AB7F /* GLFWInput.cpp in Sources */,
+				11199AAFB1464926B7500C68 /* InputEvent.cpp in Sources */,
+				3C5A11F42904486190DB9A2C /* InputPluginInterface.cpp in Sources */,
+				9E23A19D4B2C448EBCD7977B /* BulletPhysics.cpp in Sources */,
+				C02B470C3C4B471EAEBC47AD /* PhysicsPluginInterface.cpp in Sources */,
+				4823A224237B4A3186FC1F91 /* PluginInterface.cpp in Sources */,
+				911E612AB34F4818AF8AF18F /* PluginManager.cpp in Sources */,
+				3B650A47829D40768B0F94F6 /* ChaiScripting.cpp in Sources */,
+				AB2473C81CFE1D81008A90CF /* GLFWTime.cpp in Sources */,
+				4EE7000E57484137AA9EE5D8 /* ScriptingPluginInterface.cpp in Sources */,
+				DFB1C4CE3D8841B5868936C1 /* Camera.cpp in Sources */,
+				535C434D71014CE6B1FBD9BD /* OGLVideo.cpp in Sources */,
+				48C8BDE31C4945ED8061C4F4 /* VideoPluginInterface.cpp in Sources */,
+				1411EA8819E245ECB215EBFF /* Project.cpp in Sources */,
+				0E98709F3AA34614A350D289 /* Scene.cpp in Sources */,
+				9C200F9057914BD484B9DBF9 /* SceneObject.cpp in Sources */,
+				B0D015035E0444C68D550D08 /* Unit.cpp in Sources */,
+				0D68C6D97CA54319AB1CF30A /* FileReader.cpp in Sources */,
+				A62D6FDBF4314DE7B0946C8D /* StringUtils.cpp in Sources */,
+				B31EA21D78C04463B636E2E0 /* UUID.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		41577996864A44589EA61000 /* Sources */ = {
+		BA3524CD9866498D8B544B94 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABB5F738916E49968DA43A9C /* Main.cpp in Sources */,
+				AA7A337EF92E4BF6B46F0869 /* ArgumentParserTest.cpp in Sources */,
+				38559FE65FBB4836A6DF4BFA /* TestAnimation.cpp in Sources */,
+				A9854396CF494B66BDECD9A5 /* TestFrame.cpp in Sources */,
+				50D33BD19F064B08B268D2B7 /* TestFrameDelta.cpp in Sources */,
+				E179788FEAD042D9BB5CB456 /* TestKeyFrame.cpp in Sources */,
+				25A64B4FA5E145AE9BED02AC /* ModelAssetTest.cpp in Sources */,
+				FEF845A167754E28AF105E73 /* TestOBJ.cpp in Sources */,
+				3F277A69AFE6419A93C3FB16 /* TestAsset.cpp in Sources */,
+				C93CCC07BF7847468907A377 /* DreamTest.cpp in Sources */,
+				38E6A2FE19C84C2B9111004B /* ProjectTest.cpp in Sources */,
+				1E5C65E78DD848688313011A /* SceneTest.cpp in Sources */,
+				ADBBBFCEC1F245A8AF98BE48 /* TestSceneObject.cpp in Sources */,
+				DED3C2D6FA8F4555BA1FEBBF /* TestMain.cpp in Sources */,
+				86F0D9B53D0D4D83984211DF /* UnitTest.cpp in Sources */,
+				C5295C760C9040E4B5C4EEBD /* FileReaderTest.cpp in Sources */,
+				814084B95B66405FA32C3B01 /* UUIDTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		07950B9123974B868E515B9A /* PBXTargetDependency */ = {
+		35E81886545C48B3BDD31C1F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 738C537C082E49D38D7503B6 /* DreamBase */;
-			targetProxy = 47768365E34841009B83AC56 /* PBXContainerItemProxy */;
+			target = 0228F5E19F71408EB361FA74 /* DreamTest */;
+			targetProxy = C16F9445F17F4FE0BCA291B4 /* PBXContainerItemProxy */;
 		};
-		3EB361EE2D1F41EABF7DFC0A /* PBXTargetDependency */ = {
+		3F06D198AAC041F3A72FCD07 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 738C537C082E49D38D7503B6 /* DreamBase */;
-			targetProxy = 3530125DFBAE411DB74E6558 /* PBXContainerItemProxy */;
+			target = DEED9AB7D90640CE96D68305 /* ZERO_CHECK */;
+			targetProxy = EA86FE3855E94061B77C29A0 /* PBXContainerItemProxy */;
 		};
-		42E42B264067405EBDC8F6FE /* PBXTargetDependency */ = {
+		5B05327413EB4190B9425434 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 738C537C082E49D38D7503B6 /* DreamBase */;
-			targetProxy = D621364CFBD24F79A21C133B /* PBXContainerItemProxy */;
+			target = FEA72D465D2847E886C89B0E /* DreamBase */;
+			targetProxy = B34755F8C47145658F47CFF5 /* PBXContainerItemProxy */;
 		};
-		6145780EFD864D249BB28DBC /* PBXTargetDependency */ = {
+		78FC1FEEA9BC434280175A5A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 31235E5EB8A84A31A5D8D553 /* ZERO_CHECK */;
-			targetProxy = 84826BF9E0DF4C719FFA19F8 /* PBXContainerItemProxy */;
+			target = DEED9AB7D90640CE96D68305 /* ZERO_CHECK */;
+			targetProxy = DF3EB45A3C1B4DC696AA5B05 /* PBXContainerItemProxy */;
 		};
-		8FEA533CB75943AB8D9B9F61 /* PBXTargetDependency */ = {
+		A6671F43A4BE419DA09B8930 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 93D2A5EE06264C29B5350C6E /* Dream */;
-			targetProxy = 16B1B11FE1214BA9ABDC0223 /* PBXContainerItemProxy */;
+			target = C07186FECD234D4ABF2E24F9 /* Dream */;
+			targetProxy = 273340FC05874066AFBA1216 /* PBXContainerItemProxy */;
 		};
-		B32D08EFF7724FD9975C1B69 /* PBXTargetDependency */ = {
+		AC2A2FD310E84F68934EE5E2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 31235E5EB8A84A31A5D8D553 /* ZERO_CHECK */;
-			targetProxy = D2BA7CB2A94F4A3494CF72CD /* PBXContainerItemProxy */;
+			target = FEA72D465D2847E886C89B0E /* DreamBase */;
+			targetProxy = 438DCE38F4D643C7A0FE54E4 /* PBXContainerItemProxy */;
 		};
-		C900CD56FC88462A8800693D /* PBXTargetDependency */ = {
+		B8A64C14D0724024A94D66E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 31235E5EB8A84A31A5D8D553 /* ZERO_CHECK */;
-			targetProxy = 4B7C72BC7A0541CF9B3962E6 /* PBXContainerItemProxy */;
+			target = DEED9AB7D90640CE96D68305 /* ZERO_CHECK */;
+			targetProxy = C946C87DB6184FB3BFA2373D /* PBXContainerItemProxy */;
 		};
-		CA482E2652554939AEAAC0A3 /* PBXTargetDependency */ = {
+		D15EEADCA2B142B5BE254C81 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 31235E5EB8A84A31A5D8D553 /* ZERO_CHECK */;
-			targetProxy = B841336C4D7B40528738CD68 /* PBXContainerItemProxy */;
+			target = FEA72D465D2847E886C89B0E /* DreamBase */;
+			targetProxy = 8C29BAB42F414C55AFACB6F9 /* PBXContainerItemProxy */;
 		};
-		E428076226E64148894E04D7 /* PBXTargetDependency */ = {
+		D2DF712A4AE94F10B9D13E9D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D11CAF412648469E9718A050 /* DreamTest */;
-			targetProxy = A8E10D00C3C84717A5EC24DE /* PBXContainerItemProxy */;
+			target = DEED9AB7D90640CE96D68305 /* ZERO_CHECK */;
+			targetProxy = EC2CB59B7AAB4D7AB37E64A3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		06F9B0C9E82C44F08AEA547D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = "";
-				EXECUTABLE_SUFFIX = "";
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/usr/local/include,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/Release;
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-					"-DNDEBUG",
-				);
-				OTHER_LDFLAGS = (
-					"-Wl,-search_paths_first",
-					"-Wl,-headerpad_max_install_names",
-					/Users/Ashley/Software/Dream/Xcode/src/Release/libDreamBase.dylib,
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = DreamTest;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = Release;
-		};
-		0B621236557B428286848B52 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = "";
-				EXECUTABLE_SUFFIX = "";
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 2;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/usr/local/include,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo;
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-					"-DNDEBUG",
-				);
-				OTHER_LDFLAGS = (
-					"-Wl,-search_paths_first",
-					"-Wl,-headerpad_max_install_names",
-					/Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo/libDreamBase.dylib,
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Dream;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = RelWithDebInfo;
-		};
-		1F9D6642A391486C8B46F246 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = "";
-				EXECUTABLE_SUFFIX = "";
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/usr/local/include,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/MinSizeRel;
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-					"-DNDEBUG",
-				);
-				OTHER_LDFLAGS = (
-					"-Wl,-search_paths_first",
-					"-Wl,-headerpad_max_install_names",
-					/Users/Ashley/Software/Dream/Xcode/src/MinSizeRel/libDreamBase.dylib,
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Dream;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = MinSizeRel;
-		};
-		2617BFAEBE7044D7AC6FD6B4 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = RUN_TESTS;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = RelWithDebInfo;
-		};
-		31EDEACA4BE144DF9DFEB532 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = Debug;
-		};
-		4A4299F598624200851AEAB7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = "";
-				DYLIB_CURRENT_VERSION = "";
-				EXECUTABLE_PREFIX = lib;
-				EXECUTABLE_SUFFIX = .dylib;
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
-					DreamBase_EXPORTS,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/usr/local/include,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "@rpath";
-				LIBRARY_SEARCH_PATHS = "";
-				LIBRARY_STYLE = DYNAMIC;
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-					"-fPIC",
-				);
-				OTHER_LDFLAGS = (
-					"-dynamiclib",
-					"-Wl,-headerpad_max_install_names",
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = DreamBase;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = Debug;
-		};
-		4B398DCD2E9B433B9AF1CD0F /* RelWithDebInfo */ = {
+		01361384EB044518BECF39BD /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1286,126 +920,7 @@
 			};
 			name = RelWithDebInfo;
 		};
-		4C6325411434429890CFDAA9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
-			};
-			name = Debug;
-		};
-		5A670D3818B7411092D90DC7 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
-			};
-			name = MinSizeRel;
-		};
-		6CF3638AD1FA4E1B9D632FE7 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = "";
-				EXECUTABLE_SUFFIX = "";
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 2;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/usr/local/include,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo;
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-					"-DNDEBUG",
-				);
-				OTHER_LDFLAGS = (
-					"-Wl,-search_paths_first",
-					"-Wl,-headerpad_max_install_names",
-					/Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo/libDreamBase.dylib,
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = DreamTest;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = RelWithDebInfo;
-		};
-		747AA65B83DD4CE5BD0648E0 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = RelWithDebInfo;
-		};
-		8A8A612772E4419B8667E8FD /* Release */ = {
+		0874FEB213B043B09FBC0D56 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1430,370 +945,7 @@
 			};
 			name = Release;
 		};
-		8D28DB4918ED487DBC6FEE23 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = Debug;
-		};
-		94FDF9304F854E8FB98BE3E4 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
-			};
-			name = RelWithDebInfo;
-		};
-		9603DFFB1F5F4C94960AA739 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
-			};
-			name = Release;
-		};
-		A177D0AEF8C24A29B3C3AFE2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = "";
-				EXECUTABLE_SUFFIX = "";
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/usr/local/include,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/Debug;
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-				);
-				OTHER_LDFLAGS = (
-					"-Wl,-search_paths_first",
-					"-Wl,-headerpad_max_install_names",
-					/Users/Ashley/Software/Dream/Xcode/src/Debug/libDreamBase.dylib,
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = DreamTest;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = Debug;
-		};
-		B986C818B6694C9A9B51B2AC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = Release;
-		};
-		BA29EFADB02F4AA19721DA3D /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = MinSizeRel;
-		};
-		BDA633C64BDB46808671914C /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = RUN_TESTS;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = MinSizeRel;
-		};
-		C8A2FE16C4FD4BEB9CCC98FB /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = "";
-				EXECUTABLE_SUFFIX = "";
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/usr/local/include,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/MinSizeRel;
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-					"-DNDEBUG",
-				);
-				OTHER_LDFLAGS = (
-					"-Wl,-search_paths_first",
-					"-Wl,-headerpad_max_install_names",
-					/Users/Ashley/Software/Dream/Xcode/src/MinSizeRel/libDreamBase.dylib,
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = DreamTest;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = MinSizeRel;
-		};
-		CA7A0DABC1DF498B8A24D033 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = "";
-				DYLIB_CURRENT_VERSION = "";
-				EXECUTABLE_PREFIX = lib;
-				EXECUTABLE_SUFFIX = .dylib;
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
-					DreamBase_EXPORTS,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					/usr/local/include,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
-					/opt/local/include,
-					/usr/local/include/bullet,
-				);
-				INSTALL_PATH = "@rpath";
-				LIBRARY_SEARCH_PATHS = "";
-				LIBRARY_STYLE = DYNAMIC;
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wall",
-					"-std=gnu++0x",
-					"-DNDEBUG",
-					"-fPIC",
-				);
-				OTHER_LDFLAGS = (
-					"-dynamiclib",
-					"-Wl,-headerpad_max_install_names",
-					"-lpthread",
-					"-ldl",
-					"-framework",
-					OpenAL,
-					"-framework",
-					OpenGL,
-					/usr/local/lib/libassimp.dylib,
-					/usr/local/lib/libSOIL.a,
-					/usr/local/lib/libglfw3.a,
-					"-framework",
-					Cocoa,
-					"-framework",
-					IOKit,
-					"-framework",
-					CoreVideo,
-					"-framework",
-					Carbon,
-					"-framework",
-					Carbon,
-					/opt/local/lib/libGLEW.dylib,
-					/usr/local/lib/libLinearMath.a,
-					/usr/local/lib/libBulletCollision.a,
-					/usr/local/lib/libBulletDynamics.a,
-					/usr/local/lib/libBulletSoftBody.a,
-					/usr/local/lib/libBulletInverseDynamics.a,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = DreamBase;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = MinSizeRel;
-		};
-		CF50148D928A40D38CFE1D2A /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"$(inherited)",
-				);
-			};
-			name = MinSizeRel;
-		};
-		DAD882F5E0924FE5A986D3DB /* Release */ = {
+		189EC6ED1AFA4A09AAA30AAD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1882,7 +1034,439 @@
 			};
 			name = Release;
 		};
-		DC7A34B03BA14C43927D2468 /* Debug */ = {
+		1E3E03C5C27D4419AE5F8B56 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					DreamBase_EXPORTS,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "@rpath";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+					"-DNDEBUG",
+					"-fPIC",
+				);
+				OTHER_LDFLAGS = (
+					"-dynamiclib",
+					"-Wl,-headerpad_max_install_names",
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = DreamBase;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = MinSizeRel;
+		};
+		3192DF013971429B80013814 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/usr/local/include,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/Debug;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-search_paths_first",
+					"-Wl,-headerpad_max_install_names",
+					/Users/Ashley/Software/Dream/Xcode/src/Debug/libDreamBase.dylib,
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = DreamTest;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = Debug;
+		};
+		31D8B10BB7FE4C4BB71813E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/usr/local/include,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/Release;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+					"-DNDEBUG",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-search_paths_first",
+					"-Wl,-headerpad_max_install_names",
+					/Users/Ashley/Software/Dream/Xcode/src/Release/libDreamBase.dylib,
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = DreamTest;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = Release;
+		};
+		3A7245B1BAD643A5B8708EE8 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
+			};
+			name = RelWithDebInfo;
+		};
+		43E8C3D626EC4977AE355772 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
+			};
+			name = MinSizeRel;
+		};
+		4BA6DCAEBFB14DC79344E464 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = RUN_TESTS;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = RelWithDebInfo;
+		};
+		4C78FA808F6140938A91C574 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = RelWithDebInfo;
+		};
+		53318E8B4B914420B7FF6B9E /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/usr/local/include,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+					"-DNDEBUG",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-search_paths_first",
+					"-Wl,-headerpad_max_install_names",
+					/Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo/libDreamBase.dylib,
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = DreamTest;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = RelWithDebInfo;
+		};
+		5843D9E227EB415C8B7140B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					DreamBase_EXPORTS,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "@rpath";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+					"-fPIC",
+				);
+				OTHER_LDFLAGS = (
+					"-dynamiclib",
+					"-Wl,-headerpad_max_install_names",
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = DreamBase;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = Debug;
+		};
+		62354CA0800A4B478FB6193A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1970,7 +1554,107 @@
 			};
 			name = Debug;
 		};
-		E41B75B6C69F4F70AA60DF83 /* Release */ = {
+		6B484A68A6FD47068A96066B /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = MinSizeRel;
+		};
+		76FFA5C5BEEF45949BA043FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = Debug;
+		};
+		7B95A5D2DB1D4477A4A8BD33 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = RUN_TESTS;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = Release;
+		};
+		83490A8E301842CBB3B09F85 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = RelWithDebInfo;
+		};
+		8364F94E76EB471DB80C691E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2045,7 +1729,96 @@
 			};
 			name = Release;
 		};
-		E7E056C4F967458C930E4249 /* RelWithDebInfo */ = {
+		893A1DF5B15F4A77B272A371 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+					"-DNDEBUG",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-search_paths_first",
+					"-Wl,-headerpad_max_install_names",
+					/Users/Ashley/Software/Dream/Xcode/src/RelWithDebInfo/libDreamBase.dylib,
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Dream;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = RelWithDebInfo;
+		};
+		96DA0863D765497884DD19A5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2057,7 +1830,7 @@
 				INSTALL_PATH = "";
 				OTHER_LDFLAGS = " ";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
+				PRODUCT_NAME = ALL_BUILD;
 				SECTORDER_FLAGS = "";
 				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
 				USE_HEADERMAP = NO;
@@ -2068,9 +1841,9 @@
 					"$(inherited)",
 				);
 			};
-			name = RelWithDebInfo;
+			name = Release;
 		};
-		ED2DD343612A4FEF9624A2F8 /* Debug */ = {
+		9FA930C10B12475895476775 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2095,7 +1868,44 @@
 			};
 			name = Debug;
 		};
-		F9AF8467C9AB47B6BFC7E654 /* Release */ = {
+		9FF4DFF615B84DB08938EC63 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = MinSizeRel;
+		};
+		A2349CF4D7E448A8B707AB17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
+			};
+			name = Release;
+		};
+		AB650103ACA44205BFA3937A /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2118,89 +1928,285 @@
 					"$(inherited)",
 				);
 			};
-			name = Release;
+			name = MinSizeRel;
+		};
+		CFD7444095BE44C583B6FEE6 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/MinSizeRel;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+					"-DNDEBUG",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-search_paths_first",
+					"-Wl,-headerpad_max_install_names",
+					/Users/Ashley/Software/Dream/Xcode/src/MinSizeRel/libDreamBase.dylib,
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Dream;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = MinSizeRel;
+		};
+		D307EB98DC7B4EA48CAA29A7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk;
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/build;
+			};
+			name = Debug;
+		};
+		F56FE98C27FC42DBA4EED14B /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenAL.framework/Headers,
+					/usr/local/include,
+					/opt/local/include,
+					/usr/local/include/bullet,
+				);
+				INSTALL_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = /Users/Ashley/Software/Dream/Xcode/src/MinSizeRel;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"-Wall",
+					"-std=gnu++0x",
+					"-DNDEBUG",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-search_paths_first",
+					"-Wl,-headerpad_max_install_names",
+					/Users/Ashley/Software/Dream/Xcode/src/MinSizeRel/libDreamBase.dylib,
+					"-lpthread",
+					"-ldl",
+					"-framework",
+					OpenAL,
+					"-framework",
+					OpenGL,
+					/usr/local/lib/libassimp.dylib,
+					/usr/local/lib/libSOIL.a,
+					/usr/local/lib/libglfw3.a,
+					"-framework",
+					Cocoa,
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Carbon,
+					"-framework",
+					Carbon,
+					/opt/local/lib/libGLEW.dylib,
+					/usr/local/lib/libLinearMath.a,
+					/usr/local/lib/libBulletCollision.a,
+					/usr/local/lib/libBulletDynamics.a,
+					/usr/local/lib/libBulletSoftBody.a,
+					/usr/local/lib/libBulletInverseDynamics.a,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = DreamTest;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode/test;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = MinSizeRel;
+		};
+		FE7CBFE9C2B845E2BBD879D4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/Ashley/Software/Dream/Xcode;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"$(inherited)",
+				);
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		24329D922A664680AF2FD876 /* Build configuration list for PBXNativeTarget "DreamTest" */ = {
+		04F3EFE3573E4A9DB404325B /* Build configuration list for PBXProject "Dream" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A177D0AEF8C24A29B3C3AFE2 /* Debug */,
-				06F9B0C9E82C44F08AEA547D /* Release */,
-				C8A2FE16C4FD4BEB9CCC98FB /* MinSizeRel */,
-				6CF3638AD1FA4E1B9D632FE7 /* RelWithDebInfo */,
+				D307EB98DC7B4EA48CAA29A7 /* Debug */,
+				A2349CF4D7E448A8B707AB17 /* Release */,
+				43E8C3D626EC4977AE355772 /* MinSizeRel */,
+				3A7245B1BAD643A5B8708EE8 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		4692D68FE28E408FA00B621B /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+		2C337C40FA714F999391D7BB /* Build configuration list for PBXNativeTarget "Dream" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D28DB4918ED487DBC6FEE23 /* Debug */,
-				8A8A612772E4419B8667E8FD /* Release */,
-				CF50148D928A40D38CFE1D2A /* MinSizeRel */,
-				E7E056C4F967458C930E4249 /* RelWithDebInfo */,
+				62354CA0800A4B478FB6193A /* Debug */,
+				189EC6ED1AFA4A09AAA30AAD /* Release */,
+				CFD7444095BE44C583B6FEE6 /* MinSizeRel */,
+				893A1DF5B15F4A77B272A371 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		5D2B556A168B418B98DFA18E /* Build configuration list for PBXNativeTarget "Dream" */ = {
+		31BADBEEBD9B4EB3AC3C7A8E /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DC7A34B03BA14C43927D2468 /* Debug */,
-				DAD882F5E0924FE5A986D3DB /* Release */,
-				1F9D6642A391486C8B46F246 /* MinSizeRel */,
-				0B621236557B428286848B52 /* RelWithDebInfo */,
+				76FFA5C5BEEF45949BA043FB /* Debug */,
+				0874FEB213B043B09FBC0D56 /* Release */,
+				6B484A68A6FD47068A96066B /* MinSizeRel */,
+				4C78FA808F6140938A91C574 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		A72A5A2FE7694C2FBD862EF3 /* Build configuration list for PBXNativeTarget "DreamBase" */ = {
+		5FBF5F09879C47A2BB9F192B /* Build configuration list for PBXNativeTarget "DreamBase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4A4299F598624200851AEAB7 /* Debug */,
-				E41B75B6C69F4F70AA60DF83 /* Release */,
-				CA7A0DABC1DF498B8A24D033 /* MinSizeRel */,
-				4B398DCD2E9B433B9AF1CD0F /* RelWithDebInfo */,
+				5843D9E227EB415C8B7140B8 /* Debug */,
+				8364F94E76EB471DB80C691E /* Release */,
+				1E3E03C5C27D4419AE5F8B56 /* MinSizeRel */,
+				01361384EB044518BECF39BD /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		A855BAB6AA0F4C27957829B6 /* Build configuration list for PBXAggregateTarget "RUN_TESTS" */ = {
+		A5F733A1E7D4439F8351203A /* Build configuration list for PBXAggregateTarget "RUN_TESTS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				ED2DD343612A4FEF9624A2F8 /* Debug */,
-				F9AF8467C9AB47B6BFC7E654 /* Release */,
-				BDA633C64BDB46808671914C /* MinSizeRel */,
-				2617BFAEBE7044D7AC6FD6B4 /* RelWithDebInfo */,
+				9FA930C10B12475895476775 /* Debug */,
+				7B95A5D2DB1D4477A4A8BD33 /* Release */,
+				AB650103ACA44205BFA3937A /* MinSizeRel */,
+				4BA6DCAEBFB14DC79344E464 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		D9EF16C97D1246B0BC12C7CB /* Build configuration list for PBXProject "Dream" */ = {
+		B990D010E48947BC81C146F5 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4C6325411434429890CFDAA9 /* Debug */,
-				9603DFFB1F5F4C94960AA739 /* Release */,
-				5A670D3818B7411092D90DC7 /* MinSizeRel */,
-				94FDF9304F854E8FB98BE3E4 /* RelWithDebInfo */,
+				FE7CBFE9C2B845E2BBD879D4 /* Debug */,
+				96DA0863D765497884DD19A5 /* Release */,
+				9FF4DFF615B84DB08938EC63 /* MinSizeRel */,
+				83490A8E301842CBB3B09F85 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F51C74F7A7CC412FBEA7F88D /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+		C2201DEC27B74B0E9AE59B02 /* Build configuration list for PBXNativeTarget "DreamTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				31EDEACA4BE144DF9DFEB532 /* Debug */,
-				B986C818B6694C9A9B51B2AC /* Release */,
-				BA29EFADB02F4AA19721DA3D /* MinSizeRel */,
-				747AA65B83DD4CE5BD0648E0 /* RelWithDebInfo */,
+				3192DF013971429B80013814 /* Debug */,
+				31D8B10BB7FE4C4BB71813E0 /* Release */,
+				F56FE98C27FC42DBA4EED14B /* MinSizeRel */,
+				53318E8B4B914420B7FF6B9E /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = A3B7616885AA428184CF5130 /* Project object */;
+	rootObject = E469E3AFEDA44D03888FF850 /* Project object */;
 }

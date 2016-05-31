@@ -1,19 +1,20 @@
 #ifndef InputEvent_hpp
 #define InputEvent_hpp
+#define INPUT_TYPE_NO_EVENT      -1
+#define INPUT_TYPE_MOUSE_POSITION 0
+#define INPUT_TYPE_MOUSE_SCROLL   1
+#define INPUT_TYPE_MOUSE_BUTTON   2
+#define INPUT_TYPE_KEYBOARD       3
+#define INPUT_TYPE_JOYSTICK       4
+
+#include <iostream>
 
 namespace Dream   {
 namespace Plugins {
 namespace Input   {
-	
-	enum InputEventSource {
-		MOUSE_POSITION,
-		MOUSE_SCROLL,
-		MOUSE_BUTTON,
-		KEYBOARD,
-		JOYSTICK
-	};
-	
 	class InputEvent {
+	public:
+		static InputEvent LastEvent;
 	private:
 		int mKey;
 		int mScancode;
@@ -24,21 +25,21 @@ namespace Input   {
 		int mXPosition;
 		int mYPosition;
 		int mButton;
-		InputEventSource mSource;
+		int mSource;
 	public:
-		InputEvent(InputEventSource source);
+		InputEvent(int source);
 		~InputEvent();
 		
 		int  getMods();
 		void setMods(int);
 		
-		int getKey();
+		int  getKey();
 		void setKey(int);
 		
-		int getAction();
+		int  getAction();
 		void setAction(int);
 		
-		int getScancode();
+		int  getScancode();
 		void setScancode(int);
 		
 		int  getXScrollOffset();
@@ -53,10 +54,13 @@ namespace Input   {
 		void setYPosition(int);
 		int  getYPosition();
 		
-		int getButton();
+		int getXPositionOffset();
+		int getYPositionOffset();
+		
+		int  getButton();
 		void setButton(int);
 		
-		InputEventSource getSource();
+		int getSource();
 	};
 			
 }

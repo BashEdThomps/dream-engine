@@ -22,6 +22,9 @@ namespace Plugins {
 namespace Video   {
 namespace OpenGL  {
 	
+	// Global Camera
+	Camera OGLVideo::sCamera = Camera();
+	
 	// Global Event Handlers
 	void onWindowSizeChangedEvent(GLFWwindow *window, int width, int height) {
 		std::cout << "OGLVideo: Window Resized " << width << "," << height << std::endl;
@@ -38,16 +41,11 @@ namespace OpenGL  {
 	}
 	
 	OGLVideo::OGLVideo(void) : VideoPluginInterface() {
-		mCamera = new Camera();
 		mDeltaTime = 0.0f;
 		mLastFrame = 0.0f;
 	}
 	
 	OGLVideo::~OGLVideo(void) {
-		if (mCamera) {
-			delete mCamera;
-		}
-		
 		if (mWindow) {
   		glfwDestroyWindow(mWindow);
   	}
@@ -58,7 +56,6 @@ namespace OpenGL  {
 	bool OGLVideo::init(void) {
 		std::cout << "OGLVideo: Initialising..." << std::endl;
 		
-		
 		if (!glfwInit()) {
 			std::cerr << "OGLVideo: GLFW failed to initialise." << std::endl;
 			return false;
@@ -68,7 +65,6 @@ namespace OpenGL  {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		//glfwWind§owHint(GLFW_RESIZABLE, GL_FALSE);
 		
 		mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, mScreenName.c_str(), NULL, NULL);
 		if (!mWindow) {
@@ -107,8 +103,9 @@ namespace OpenGL  {
 	}
 	
 	void OGLVideo::setupWindowEventHandlers() {
-		glfwSetWindowSizeCallback  (mWindow, onWindowSizeChangedEvent);
-		glfwSetWindowCloseCallback (mWindow, onWindowCloseEvent);
+		glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetWindowSizeCallback(mWindow, onWindowSizeChangedEvent);
+		glfwSetWindowCloseCallback(mWindow, onWindowCloseEvent);
 		glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeEvent);
 	}
 	
@@ -157,20 +154,25 @@ namespace OpenGL  {
 		shader->use();
 		checkGLError(1201);
 		// Transformation matrices
-		glm::mat4 projection = glm::perspective(mCamera->mZoom, (float)mScreenWidth/(float)mScreenHeight, 0.1f, 100.0f);
-		glm::mat4 view = mCamera->getViewMatrix();
+		glm::mat4 projection = glm::perspective(sCamera.mZoom, (float)mScreenWidth/(float)mScreenHeight, 0.1f, 100.0f);
+		glm::mat4 view = sCamera.getViewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(view));
 		checkGLError(1202);
 		// Draw the loaded model
 		glm::mat4 modelMatrix;
 		float *translation = sceneObject->getTranslation();
-		//float *rotation    = sceneObject->getRotation();
-		//float *scale       = sceneObject->getScale();
+		float *rotation    = sceneObject->getRotation();
+		float *scale       = sceneObject->getScale();
 		checkGLError(1203);
-		modelMatrix = glm::translate (modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
-		//modelMatrix = glm::rotate    (modelMatrix, glm::vec3( rotation[0],    rotation[1],    rotation[2]    ));
-		//model = glm::scale     (model, glm::vec3(0.2f, 0.2f, 0.2f));	// It's a bit toor our scene, so scale it down
+		// Translate
+		modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
+	  // Rotate
+		modelMatrix = glm::rotate(modelMatrix, rotation[0], glm::vec3(1,0,0));
+		modelMatrix = glm::rotate(modelMatrix, rotation[1], glm::vec3(0,1,0));
+		modelMatrix = glm::rotate(modelMatrix, rotation[2], glm::vec3(0,0,1));
+		// Scale
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
 		checkGLError(1204);
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		checkGLError(1205);

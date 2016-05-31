@@ -37,6 +37,7 @@ namespace Chai      {
 		~ChaiScripting(void);
 		bool init();
 		void update(Dream::Scene::Scene*);
+		void handleInputs(Dream::Scene::SceneObject*);
 	}; // End of ChaiScripting
 	
 } // End of Chai

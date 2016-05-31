@@ -1,10 +1,10 @@
 ## Dream
 
-Dream is a modular and utilitarian 3D Engine. 
+Dream is a modular and utilitarian 3D Engine.
 
 ### Modularity
 
-Dream allows you to implement plug-ins for your favorite tech. A plug-in may be to a graphics library, input device or other fancy piece of I/O tech. Those listed below are included as part of Dream. I've chosen to utilise open software and formats for obvious reasons.
+Dream allows you to implement plug-ins for your favorite tech. A plug-in may be to a graphics library, input device or other fancy piece of I/O tech. Those listed below are included as part of Dream.
 
 * **Animation**
     * DreamAnimation
@@ -12,14 +12,12 @@ Dream allows you to implement plug-ins for your favorite tech. A plug-in may be 
     * OpenAL
 * **Graphics**
     * OpenGL (GLFW)
-    * Vulkan (soon)
+    * Vulkan (In the Future)
 * **Input**
     * GLFW
 * **Physics**
     * Bullet2
-    * Bullet3 (soon)
 * **Scripting**
-    * v8 (JavaScripte)
     * ChaiScript
 
 ### Project Files
