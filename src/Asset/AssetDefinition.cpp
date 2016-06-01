@@ -24,6 +24,14 @@ namespace Asset {
 	AssetDefinition::~AssetDefinition(void) {}
 
 	AssetDefinition::AssetDefinition(nlohmann::json json) {
+		loadMetadata(json);
+		if (isTypeCollisionShape()) {
+			loadCollisionShapeAttributes(json);
+		}
+		showStatus();
+	}
+	
+	void AssetDefinition::loadMetadata(nlohmann::json json) {
 		if (json[ASSET_UUID].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL UUID." << std::endl;;
 		} else {
@@ -46,6 +54,13 @@ namespace Asset {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Format" << std::endl;;
 		} else {
 			setFormat(json[ASSET_FORMAT]);
+		}
+	}
+	
+	void AssetDefinition::loadCollisionShapeAttributes(nlohmann::json json) {
+		// Mass
+		if (!json[ASSET_ATTRIBUTE_MASS].is_null() && json[ASSET_ATTRIBUTE_MASS].is_number()) {
+			addAttribute(ASSET_ATTRIBUTE_MASS, std::to_string((long)json[ASSET_ATTRIBUTE_MASS]));
 		}
 	}
 
@@ -99,6 +114,9 @@ namespace Asset {
 		return getAttribute(ASSET_FORMAT);
 	}
 	
+	bool AssetDefinition::isTypeCollisionShape() {
+		return getType().compare(ASSET_TYPE_COLLISION_SHAPE) == 0;
+	}
 	
 	bool AssetDefinition::isTypeAnimation() {
 		return getType().compare(ASSET_TYPE_ANIMATION) == 0;
@@ -167,6 +185,14 @@ namespace Asset {
 		           << getUUID() << DIR_PATH_SEP
 		           << getFormat();
 		return pathStream.str();
+	}
+	
+	void AssetDefinition::showStatus() {
+		std::cout << "AssetDefinition: Showing Definition..." << std::endl;
+		for (const auto& any : mAttributes) {
+			std::string value = any.second;
+			std::cout << "\t" << any.first << " : " << value << std::endl;
+		}
 	}
 	
 } // End of AssetDefinition

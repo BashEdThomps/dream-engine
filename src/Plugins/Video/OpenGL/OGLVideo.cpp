@@ -90,7 +90,7 @@ namespace OpenGL  {
 		
 		std::cout << "OGLVideo: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 		// Define the viewport dimensions
-		glViewport(0, 0, mScreenWidth, mScreenHeight);
+		glViewport(0, 0, mScreenWidth*2, mScreenHeight*2);
 		checkGLError(50);
 		
 		// Setup some OpenGL options

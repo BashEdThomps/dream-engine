@@ -39,9 +39,12 @@ namespace Chai      {
 			bool load(std::string);
 			void update();
 			void processInputs(std::vector<Plugins::Input::InputEvent>);
+			
+			// API Exposure
 			void initInputEventInChaiScript();
 			void initCameraInChaiScript();
 			void initGlfwTimeInChaiScript();
+			void initSceneObjectInChaiScript();
     }; // End of ChaiScriptInstance
     
 } // End of ChaiScript

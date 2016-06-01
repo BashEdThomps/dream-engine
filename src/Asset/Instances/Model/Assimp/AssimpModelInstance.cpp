@@ -102,10 +102,12 @@ namespace Assimp     {
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
 			
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.Normal = vector;
+			if (mesh->mNormals) {
+  			vector.x = mesh->mNormals[i].x;
+  			vector.y = mesh->mNormals[i].y;
+  			vector.z = mesh->mNormals[i].z;
+  			vertex.Normal = vector;
+			}
 			
 			if(mesh->mTextureCoords[0]) {
 				glm::vec2 vec;

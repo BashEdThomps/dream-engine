@@ -2,6 +2,7 @@ App.service('ProjectService',
     ["Blob","FileSaver","UtilService","ApiService",
      function(Blob, FileSaver, UtilService, ApiService) {
 
+    // Plugin Constants
     this.PLUGIN_ANIMATION_DREAM  = "dreamAnim";
     this.PLUGIN_AUDIO_OPENAL     = "openAL";
     this.PLUGIN_INPUT_GLFW       = "glfwInput"
@@ -9,62 +10,240 @@ App.service('ProjectService',
     this.PLUGIN_PHYSICS_BULLET2  = "bullet2";
     this.PLUGIN_VIDEO_OPENGL     = "openGL";
 
-    this.ASSET_TYPE_AUDIO       = "audio";
-    this.ASSET_FORMAT_AUDIO_OGG = "ogg";
-    this.ASSET_FORMAT_AUDIO_WAV = "wav";
-
+    // Asset Constants
+    this.ASSET_TYPE_NAME_ANIMATION    = "Animation";
     this.ASSET_TYPE_ANIMATION         = "animation";
+    this.ASSET_FORMAT_NAME_DREAM      = "Dream Animation";
     this.ASSET_FORMAT_ANIMATION_DREAM = "dream";
 
+    this.ASSET_TYPE_NAME_AUDIO  = "Audio";
+    this.ASSET_TYPE_AUDIO       = "audio";
+    this.ASSET_FORMAT_NAME_OGG  = "Ogg Vorbis";
+    this.ASSET_FORMAT_AUDIO_OGG = "ogg";
+    this.ASSET_FORMAT_NAME_WAV  = "Wave File";
+    this.ASSET_FORMAT_AUDIO_WAV = "wav";
+
+    this.ASSET_TYPE_NAME_COLLISION_SHAPE = "Collision Shape";
+    this.ASSET_TYPE_COLLISION_SHAPE      = "collisionShape";
+
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SHPERE = "Shpere";
+    this.ASSET_FORMAT_COLLISION_SHAPE_SHPERE = "btShpereShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_BOX = "Box";
+    this.ASSET_FORMAT_COLLISION_SHAPE_BOX = "btBoxShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CYLINDER = "Cylinder";
+    this.ASSET_FORMAT_COLLISION_SHAPE_CYLINDER = "btCylinderShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CAPSULE = "Capsule";
+    this.ASSET_FORMAT_COLLISION_SHAPE_CAPSULE = "btCapsuleShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONE = "Cone";
+    this.ASSET_FORMAT_COLLISION_SHAPE_CONE = "btConeShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_MULTI_SPHERE = "Multi Sphere";
+    this.ASSET_FORMAT_COLLISION_SHAPE_MULTI_SPHERE = "btMultiSphereShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_HULL = "Convex Hull";
+    this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_HULL = "btConvexHullShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH = "Convex Triangle Mesh";
+    this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH = "btConvexTriangleMeshShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH = "Bvh Triangle Mesh";
+    this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH = "btBvhTriangleMeshShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN = "Heightfield Terrain";
+    this.ASSET_FORMAT_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN = "btHeightfieldTerrainShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_STATIC_PLANE = "Static Plane";
+    this.ASSET_FORMAT_COLLISION_SHAPE_STATIC_PLANE = "btStaticPlaneShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_COMPOUND = "Compound";
+    this.ASSET_FORMAT_COLLISION_SHAPE_COMPOUND = "btCompoundShape";
+
+    this.ASSET_TYPE_NAME_MODEL     = "Model";
     this.ASSET_TYPE_MODEL          = "model";
+    this.ASSET_FORMAT_NAME_ASSIMP  = "Assimp";
     this.ASSET_FORMAT_MODEL_ASSIMP = "assimp";
 
-    this.ASSET_TYPE_SCRIPT          = "script";
-    this.ASSET_FORMAT_SCRIPT_CHAI   = "chai";
 
+    this.ASSET_TYPE_NAME_SCRIPT   = "Script";
+    this.ASSET_TYPE_SCRIPT        = "script";
+    this.ASSET_FORMAT_NAME_CHAI   = "ChaiScript";
+    this.ASSET_FORMAT_SCRIPT_CHAI = "chai";
+
+    this.ASSET_TYPE_NAME_SHADER       = "Shader";
     this.ASSET_TYPE_SHADER            = "shader";
     this.ASSET_FORMAT_SHADER_VERTEX   = "vertex";
     this.ASSET_FORMAT_SHADER_FRAGMENT = "fragment";
 
-    this.ASSET_TYPE_COLLISION_SHAPE = "collisionShape";
-
-    this.ASSET_TYPE_NAME_ANIMATION       = "Animation";
-    this.ASSET_TYPE_NAME_AUDIO           = "Audio";
-    this.ASSET_TYPE_NAME_COLLISION_SHAPE = "Collision Shape";
-    this.ASSET_TYPE_NAME_MODEL           = "Model";
-    this.ASSET_TYPE_NAME_SHADER          = "Shader";
-    this.ASSET_TYPE_NAME_SCRIPT          = "Script";
-
     this.ASSET_TYPES = [
+      // Animation
       {
-        name:     this.ASSET_TYPE_NAME_ANIMATION,
-        projType: this.ASSET_TYPE_ANIMATION,
+        name: this.ASSET_TYPE_NAME_ANIMATION,
+        type: this.ASSET_TYPE_ANIMATION,
+        formats: [
+          {
+            name:   this.ASSET_FORMAT_NAME_DREAM,
+            format: this.ASSET_FORMAT_ANIMATION_DREAM
+          }
+        ]
       },
+      // Audio
       {
-        name:     this.ASSET_TYPE_NAME_AUDIO,
-        projType: this.ASSET_TYPE_AUDIO,
+        name: this.ASSET_TYPE_NAME_AUDIO,
+        type: this.ASSET_TYPE_AUDIO,
+        formats: [
+          {
+            name:   this.ASSET_FORMAT_NAME_OGG,
+            format: this.ASSET_FORMAT_AUDIO_OGG
+          },
+          {
+            name:   this.ASSET_FORMAT_NAME_WAV,
+            format: this.ASSET_FORMAT_AUDIO_WAV
+          }
+        ]
       },
+      // Collision Shape
       {
-        name:     this.ASSET_TYPE_NAME_COLLISION_SHAPE,
-        projType: this.ASSET_TYPE_COLLISION_SHAPE,
+        name: this.ASSET_TYPE_NAME_COLLISION_SHAPE,
+        type: this.ASSET_TYPE_COLLISION_SHAPE,
+        formats: [
+          {
+            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SHPERE,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_SHPERE
+          },{
+            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_BOX,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_BOX
+          },{
+            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CYLINDER,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_CYLINDER
+          },{
+            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CAPSULE,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_CAPSULE
+          },{
+            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONE,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONE
+          },{
+            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_MULTI_SPHERE,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_MULTI_SPHERE
+          },{
+            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_HULL,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_HULL
+          },{
+            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH
+          },{
+            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH
+          },{
+            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN
+          },{
+            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_STATIC_PLANE,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_STATIC_PLANE
+          },{
+            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_COMPOUND,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_COMPOUND
+          }
+        ]
       },
+      // Model
       {
-        name:     this.ASSET_TYPE_NAME_MODEL,
-        projType: this.ASSET_TYPE_MODEL,
+        name: this.ASSET_TYPE_NAME_MODEL,
+        type: this.ASSET_TYPE_MODEL,
+        formats: [
+          {
+            name: this.ASSET_FORMAT_NAME_ASSIMP,
+            format: this.ASSET_FORMAT_MODEL_ASSIMP
+          }
+        ]
       },
+      // Shader
       {
-        name:     this.ASSET_TYPE_NAME_SHADER,
-        projType: this.ASSET_TYPE_SHADER,
+        name: this.ASSET_TYPE_NAME_SHADER,
+        type: this.ASSET_TYPE_SHADER,
+        formats: []
       },
+      // Script
       {
-        name:     this.ASSET_TYPE_NAME_SCRIPT,
-        projType: this.ASSET_TYPE_SCRIPT,
+        name: this.ASSET_TYPE_NAME_SCRIPT,
+        type: this.ASSET_TYPE_SCRIPT,
+        formats: [
+          {
+            name:   this.ASSET_FORMAT_NAME_CHAI,
+            format: this.ASSET_FORMAT_SCRIPT_CHAI,
+          }
+        ]
       }
     ];
 
-    this.ASSET_SCRIPT_FORMATS = [
-        this.ASSET_FORMAT_SCRIPT_CHAI,
-    ];
+    this.getFormatsByAssetType = function(assetType,callback) {
+      var retval = [];
+      this.ASSET_TYPES.forEach(function(type) {
+        if (type.name == assetType) {
+          retval = type.formats;
+        }
+      });
+      callback(retval);
+    };
+
+    this.getAssetTypes = function(callback) {
+      var retval = [];
+      this.ASSET_TYPES.forEach(function(assetType) {
+        retval.push(assetType.type);
+      });
+      callback(retval);
+    };
+
+    this.getAssetTypesObject = function(callback) {
+      callback(this.ASSET_TYPES);
+    };
+
+    this.getAssetTypeNames = function(callback) {
+      var retval = [];
+      this.ASSET_TYPES.forEach(function(assetType) {
+        retval.push(assetType.name);
+      });
+      callback(retval);
+    };
+
+    this.getAnimationAssetFormats = function(callback) {
+      var ps = this;
+      this.ASSET_TYPES.forEach(function(assetType){
+        if (assetType.type == ps.ASSET_TYPE_ANIMATION) {
+          callback(assetType.formats);
+        }
+      });
+    };
+
+    this.getAudioAssetFormats = function(callback) {
+      var ps = this;
+      this.ASSET_TYPES.forEach(function(assetType){
+        if (assetType.type == ps.ASSET_TYPE_AUDIO) {
+          callback(assetType.formats);
+        }
+      });
+    };
+
+    this.getCollisionShapeAssetFormats = function(callback) {
+      var ps = this;
+      this.ASSET_TYPES.forEach(function(assetType){
+        if (assetType.type == ps.ASSET_TYPE_COLLISION_SHAPE) {
+          callback(assetType.formats);
+        }
+      });
+    };
+
+    this.getModelAssetFormats = function(callback) {
+      var ps = this;
+      this.ASSET_TYPES.forEach(function(assetType){
+        if (assetType.type == ps.ASSET_TYPE_MODEL) {
+          callback(assetType.formats);
+        }
+      });
+    };
+
+    this.getScriptAssetFormats = function(callback) {
+      var ps = this;
+      this.ASSET_TYPES.forEach(function(assetType){
+        if (assetType.type == ps.ASSET_TYPE_SCRIPT) {
+          callback(assetType.formats);
+        }
+      });
+    };
+
+    // Functions && Variables --------------------------------------------------
 
     this.project = null;
 
@@ -174,9 +353,6 @@ App.service('ProjectService',
         this.project.assets.splice(index,1);
     };
 
-    this.getAssetTypes = function() {
-      return this.ASSET_TYPES;
-    };
 
     this.addAssetInstanceToSceneObject = function(sceneUUID,sceneObjectUUID,assetUUID,callback){
         var proj = this;
@@ -264,9 +440,9 @@ App.service('ProjectService',
               z: 0
             },
             scale: {
-              x: 0,
-              y: 0,
-              z: 0
+              x: 1,
+              y: 1,
+              z: 1
             }
         };
     };
@@ -388,11 +564,6 @@ App.service('ProjectService',
             name:        "New Dream Project",
             author:      "",
             description: "",
-            openAL :     false,
-            bullet2:     false,
-            bullet3:     false,
-            openGL:      false,
-            vulkan:      false,
             scenes:      [],
             assets:      [],
             isModified:  false

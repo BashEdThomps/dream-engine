@@ -41,29 +41,46 @@
         <div class="panel-heading">Configure Asset</div>
         <table class="table table-condensed table-striped table-bordered">
           <tbody>
+            <!-- Metadata -->
             <tr>
               <td>Name</td>
               <td>
-                <input ng-disabled="currentAsset == undefined" type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name"/>
+                <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name"/>
               </td>
             </tr>
             <tr>
               <td>Type</td>
               <td>
-                <select ng-disabled="currentAsset == undefined" ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
-                  <option ng-repeat="type in getAssetTypes()" value="{{type.projType}}">{{type.name}}</option>
+                <select ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
+                  <option ng-repeat="type in assetTypesObject" value="{{type.type}}">{{type.name}}</option>
                 </select>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type == 'model'">
+            <!-- Collision Shape-->
+            <tr ng-show="isAssetTypeCollisionShape()">
+              <td>Collision Shape Type</td>
+              <td>
+                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="collisionShapeFormat">
+                  <option ng-repeat="fmt in assetFormats.collisionShape" value="{{fmt.format}}">{{fmt.name}}</option>
+                </select>
+              </td>
+            </tr>
+            <tr ng-show="isAssetTypeCollisionShape()">
+              <td>Mass</td>
+              <td>
+                <input ng-change="modified()" ng-model="currentAsset.mass" class="form-control input-sm" type="number"/>
+              </td>
+            </tr>
+            <!-- Model -->
+            <tr ng-show="isAssetTypeModel()">
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="modelFormat">
-                  <option value="assimp">Assimp Compatible Model</option>
+                  <option ng-repeat="fmt in assetFormats.model" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
             </tr>
-            <tr id="wf-assimp-files" ng-show="currentAsset.type == 'model' && currentAsset.format == 'assimp'">
+            <tr id="wf-assimp-files" ng-show="isAssetTypeModel() && isModelAssetFormatAssimp()">
               <td>Model File</td>
               <td>
                 <button ng-show="hasModelAssimp" class="pull-right btn-sm btn btn-danger">
@@ -76,24 +93,25 @@
                 <input ng-show="!hasModelAssimp" type="file" id="wf-assimp-file"  name="model-file" />
               </td>
             </tr>
-            <tr ng-show="currentAsset.type == 'script'">
+            <!-- Script -->
+            <tr ng-show="isAssetTypeScript()">
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
-                  <option value="chai">Chai Script</option>
+                  <option ng-repeat="fmt in assetFormats.script" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type == 'audio'">
+            <!-- Audio -->
+            <tr ng-show="isAssetTypeAudio()">
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
-                  <option value="wav">Wave</option>
-                  <option value="ogg">Ogg Vorbis</option>
+                  <option ng-repeat="fmt in assetFormats.audio" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type == 'audio' && currentAsset.format == 'wav'">
+            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatWav()">
               <td>Wav File</td>
               <td>
                 <button ng-show="hasAudioWav"  class="pull-right btn-sm btn btn-danger"
@@ -107,7 +125,7 @@
                 <input ng-show="!hasAudioWav" type="file" id="wav-file" accept=".wav" name="wav-file"/>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type =='audio' && currentAsset.format == 'ogg'">
+            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatOgg()">
               <td>Ogg File</td>
               <td>
                 <button ng-show="hasAudioOgg" class="pull-right btn btn-sm btn-danger" ng-click="">
@@ -119,7 +137,7 @@
                 <input ng-show="!hasAudioOgg" type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>
               </td>
             </tr>
-            <tr ng-show="currentAsset.type == 'audio'">
+            <tr ng-show="isAssetTypeAudio()">
               <td>Loop</td>
               <td>
                 <div class="checkbox checkbox-info">

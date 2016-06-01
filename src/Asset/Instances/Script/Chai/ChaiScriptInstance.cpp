@@ -110,6 +110,10 @@ namespace Chai      {
 		mScript->add_global(chaiscript::const_var(GLFW_KEY_D),"KEY_D");
 	}
 	
+	void ChaiScriptInstance::initSceneObjectInChaiScript() {
+		mScript->add(chaiscript::user_type<Dream::Scene::SceneObject>(),"SceneObject");
+	}
+	
 	void ChaiScriptInstance::update() {
 		auto updateFunction = mScript->eval<std::function<void(void)>>("update");
 		updateFunction();

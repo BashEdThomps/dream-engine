@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <map>
+#include <string>
 
 #include "../JSON/json.hpp"
 
@@ -45,12 +46,14 @@
 #define ASSET_TYPE_SCRIPT          "script"
 #define ASSET_TYPE_SHADER          "shader"
 
-
 #define ASSET_DEF_FORMAT_SCRIPT_CHAI     "chai"
 #define ASSET_DEF_FORMAT_MODEL_ASSIMP    "assimp"
 #define ASSET_DEF_FORMAT_AUDIO_WAV       "wav"
 #define ASSET_DEF_FORMAT_AUDIO_OGG       "ogg"
 #define ASSET_DEF_FORMAT_ANIMATION_DREAM "dream_anim"
+
+// Collision Shape Attributes
+#define ASSET_ATTRIBUTE_MASS "mass"
 
 namespace Dream {
 namespace Asset {
@@ -83,6 +86,7 @@ namespace Asset {
 		bool isTypeModel();
 		bool isTypeScript();
 		bool isTypeShader();
+		bool isTypeCollisionShape();
 		
 		bool isScriptFormatChai();
 		bool isModelFormatAssimp();
@@ -92,6 +96,10 @@ namespace Asset {
 		
 		std::string getAssetPath();
 		
+		void loadMetadata(nlohmann::json);
+		void loadCollisionShapeAttributes(nlohmann::json);
+		
+		void showStatus();
 	}; // End of AssetDefinition
 	
 } // End of Asset

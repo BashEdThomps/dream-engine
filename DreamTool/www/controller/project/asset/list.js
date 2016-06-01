@@ -2,21 +2,98 @@ App.controller("ProjectAssetList",
 ["$scope","$state","ProjectService","UIService","UtilService","ApiService",
 function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
 
-  if (ProjectService.isProjectOpen()) {
-    $scope.project = ProjectService.getProject();
-    UIService.setBreadcrumbs([ProjectService.getName(),"Assets"]);
-    UIService.update();
-  } else {
-    UIService.addAlert("No Project Open!","danger");
-    $state.go("Home");
-  }
+  $scope.assetFormats = {};
+
+  $scope.doOnLoad = function() {
+    if (ProjectService.isProjectOpen()) {
+      $scope.project = ProjectService.getProject();
+      UIService.setBreadcrumbs([ProjectService.getName(),"Assets"]);
+      UIService.update();
+    } else {
+      UIService.addAlert("No Project Open!","danger");
+      $state.go("Home");
+    }
+
+    ProjectService.getAssetTypesObject(function(assetTypesObj) {
+      $scope.assetTypesObject = assetTypesObj;
+    });
+
+    ProjectService.getAudioAssetFormats (function(audioFormats) {
+        $scope.assetFormats.audio = audioFormats;
+    });
+
+    ProjectService.getAnimationAssetFormats(function(animFormats){
+      $scope.assetFormats.animation = animFormats;
+    })
+
+    ProjectService.getCollisionShapeAssetFormats(function(colShapeFormats){
+      $scope.assetFormats.collisionShape = colShapeFormats;
+    });
+
+    ProjectService.getModelAssetFormats(function(modelFormats) {
+      $scope.assetFormats.model = modelFormats;
+    });
+
+    ProjectService.getScriptAssetFormats(function(scriptFormats){
+        $scope.assetFormats.script = scriptFormats;
+    });
+
+    console.log("Asset Formats:",$scope.assetFormats)
+  };
+
+  $scope.isAssetTypeAnimation = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_ANIMATION;
+  };
+
+  $scope.isAssetTypeAudio = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_AUDIO;
+  };
+
+  $scope.isAssetTypeCollisionShape = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_COLLISION_SHAPE;
+  };
+
+  $scope.isAssetTypeModel = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_MODEL;
+  };
+
+  $scope.isAssetTypeScript= function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_SCRIPT;
+  };
+
+  $scope.isAssetTypeShader = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_SHADER;
+  };
+
+  $scope.isAudioAssetFormatOgg = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_OGG;
+  };
+
+  $scope.isAudioAssetFormatWav = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_WAV;
+  };
+
+  $scope.isModelAssetFormatAssimp = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_MODEL_ASSIMP;
+  };
+
+  $scope.isScriptAssetFormatChai = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_SCRIPT_CHAI;
+  };
 
   $scope.goToAssetEditor = function(uuid) {
     $state.go("ProjectAssetEditor",{asset: uuid});
-  };
-
-  $scope.getAssetTypes = function() {
-    return ProjectService.getAssetTypes();
+    return;
   };
 
   $scope.onNewAssetButtonClicked = function() {
@@ -144,4 +221,6 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       });
     });
   };
+
+  $scope.doOnLoad();
 }]);
