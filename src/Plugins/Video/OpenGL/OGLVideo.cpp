@@ -40,10 +40,7 @@ namespace OpenGL  {
 		glViewport(0, 0, width, height);
 	}
 	
-	OGLVideo::OGLVideo(void) : VideoPluginInterface() {
-		mDeltaTime = 0.0f;
-		mLastFrame = 0.0f;
-	}
+	OGLVideo::OGLVideo(void) : VideoPluginInterface() {}
 	
 	OGLVideo::~OGLVideo(void) {
 		if (mWindow) {
@@ -76,7 +73,9 @@ namespace OpenGL  {
 		setupWindowEventHandlers();
 		glfwMakeContextCurrent(mWindow);
 		glfwSwapInterval(1);
-		checkGLError(-10);
+		#ifdef VERBOSE
+			checkGLError(-10);
+		#endif
 		
 		std::cout << "OGLVideo: Initialised GLFW" << std::endl;
 		// Initialize GLEW to setup the OpenGL Function pointers
@@ -86,16 +85,24 @@ namespace OpenGL  {
 			std::cerr << "OGLVideo: GLEW failed to initialise." << std::endl;
 			return false;
 		}
-		checkGLError(-20);
+		
+		#ifdef VERBOSE
+			checkGLError(-20);
+		#endif
 		
 		std::cout << "OGLVideo: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 		// Define the viewport dimensions
 		glViewport(0, 0, mScreenWidth*2, mScreenHeight*2);
-		checkGLError(50);
+		#ifdef VERBOSE
+			checkGLError(50);
+		#endif
 		
 		// Setup some OpenGL options
 		glEnable(GL_DEPTH_TEST);
-		checkGLError(51);
+		
+		#ifdef VERBOSE
+			checkGLError(51);
+		#endif
 		
 		std::cout << "OGLVideo: Initialised GLEW." << std::endl;
 		std::cout << "OGLVideo: Initialisation Done." << std::endl;
@@ -113,17 +120,17 @@ namespace OpenGL  {
 		//std::cout << "OGLVideo: Update" << std::endl;
 		std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
 		if (!glfwWindowShouldClose(mWindow)) {
-			// Set frame time
-			GLfloat currentFrame = glfwGetTime();
-			mDeltaTime = currentFrame - mLastFrame;
-			mLastFrame = currentFrame;
-			
 			// Clear the colorbuffer
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			checkGLError(541);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			checkGLError(542);
+			#ifdef VERBOSE
+				checkGLError(541);
+			#endif
 			
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			#ifdef VERBOSE
+				checkGLError(542);
+			#endif
 			
 			std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
 			for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
@@ -131,7 +138,11 @@ namespace OpenGL  {
 				if (object->hasModelAssetInstance()) {
 					if (object->hasShaderAssetInstance()){
     				drawSceneObject(object);
-    				checkGLError(555);
+						
+						#ifdef VERBOSE
+							checkGLError(555);
+						#endif
+						
 					} else {
 						std::cerr << "OGLVideo: Object " << object->getUUID() << " has no ShaderInstance assigned." << std::endl;
 					}
@@ -139,7 +150,9 @@ namespace OpenGL  {
 			}
 			
     	glfwSwapBuffers(mWindow);
-			checkGLError(99);
+			#ifdef VERBOSE
+				checkGLError(99);
+			#endif
 		} else {
 			mWindowShouldClose = true;
 		}
@@ -152,19 +165,29 @@ namespace OpenGL  {
 		shader = dynamic_cast<Dream::Asset::Instances::Shader::ShaderInstance*>(sceneObject->getShaderAssetInstance());
 		
 		shader->use();
-		checkGLError(1201);
+		#ifdef VERBOSE
+			checkGLError(1201);
+		#endif
+		
 		// Transformation matrices
 		glm::mat4 projection = glm::perspective(sCamera.mZoom, (float)mScreenWidth/(float)mScreenHeight, 0.1f, 100.0f);
 		glm::mat4 view = sCamera.getViewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(view));
-		checkGLError(1202);
+		
+		#ifdef VERBOSE
+			checkGLError(1202);
+		#endif
 		// Draw the loaded model
 		glm::mat4 modelMatrix;
 		float *translation = sceneObject->getTranslation();
 		float *rotation    = sceneObject->getRotation();
 		float *scale       = sceneObject->getScale();
-		checkGLError(1203);
+		
+		#ifdef VERBOSE
+			checkGLError(1203);
+		#endif
+		
 		// Translate
 		modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
 	  // Rotate
@@ -173,13 +196,28 @@ namespace OpenGL  {
 		modelMatrix = glm::rotate(modelMatrix, rotation[2], glm::vec3(0,0,1));
 		// Scale
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
-		checkGLError(1204);
+		
+		#ifdef VERBOSE
+			checkGLError(1204);
+		#endif
+		
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		checkGLError(1205);
+		
+		#ifdef VERBOSE
+			checkGLError(1205);
+		#endif
+		
 		model->draw(shader);
-		checkGLError(1206);
+		
+		#ifdef VERBOSE
+			checkGLError(1206);
+		#endif
+		
 		glUseProgram(0);
-		checkGLError(1207);
+		
+		#ifdef VERBOSE
+			checkGLError(1207);
+		#endif
 	}
 	
 	bool OGLVideo::checkGLError(int errorIndex) {

@@ -16,6 +16,7 @@
 */
 
 #include "BulletPhysics.h"
+#include "../../Video/OpenGL/GLFWTime.h"
 
 namespace Dream {
 namespace Plugins {
@@ -52,7 +53,13 @@ namespace Bullet {
 		return true;
 	}
 
-	void BulletPhysics::update(Dream::Scene::Scene*) {}
+	void BulletPhysics::update(Dream::Scene::Scene* scene) {
+		btScalar stepValue = Video::OpenGL::GLFWTime::getInstance()->getTimeDelta();
+		#ifdef VERBOSE
+			std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
+		#endif
+		mDynamicsWorld->stepSimulation(stepValue);
+	}
 	
 } // End of Bullet
 } // End of Scene

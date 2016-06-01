@@ -23,7 +23,9 @@ namespace Dream {
 	bool Dream::loadProjectFromFileReader(std::string projectPath, Util::FileReader* reader) {
 		std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
 		std::string projectJsonStr = reader->getContentsAsString();
-		//std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
+		#ifdef VERBOSE
+			std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
+		#endif
 		if (projectJsonStr.empty()) {
 			std::cerr << "Dream: Loading Failed. Project Content is Empty" << std::endl;
 			return false;

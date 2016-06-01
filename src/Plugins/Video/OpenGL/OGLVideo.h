@@ -50,8 +50,6 @@ namespace OpenGL {
 		static Camera sCamera;
 	private:
 		GLFWwindow *mWindow;
-		GLfloat     mDeltaTime;
-		GLfloat     mLastFrame;
 	public:
 		OGLVideo(void);
 		~OGLVideo(void);

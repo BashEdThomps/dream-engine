@@ -46,52 +46,82 @@ namespace Assimp     {
 	
 	void Mesh::init() {
 		glGenVertexArrays(1, &mVAO);
-		checkGLError(1);
+		#ifdef VERBOSE
+			checkGLError(1);
+		#endif
 		
 		glGenBuffers(1, &mVBO);
-		checkGLError(2);
+		#ifdef VERBOSE
+			checkGLError(2);
+		#endif
 		
 		glGenBuffers(1, &mEBO);
-		checkGLError(3);
+		#ifdef VERBOSE
+			checkGLError(3);
+		#endif
 		
 		glBindVertexArray(mVAO);
-		checkGLError(4);
+		#ifdef VERBOSE
+			checkGLError(4);
+		#endif
 		
 		glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-		checkGLError(5);
+		#ifdef VERBOSE
+			checkGLError(5);
+		#endif
 		
 		glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), &mVertices[0], GL_STATIC_DRAW);
-		checkGLError(6);
+		#ifdef VERBOSE
+			checkGLError(6);
+		#endif
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-		checkGLError(7);
+		#ifdef VERBOSE
+			checkGLError(7);
+		#endif
 		
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(GLuint),&mIndices[0], GL_STATIC_DRAW);
-		checkGLError(8);
+		#ifdef VERBOSE
+			checkGLError(8);
+		#endif
 		
 		// Vertex Positions
 		glEnableVertexAttribArray(0);
-		checkGLError(9);
+		#ifdef VERBOSE
+			checkGLError(9);
+		#endif
 		
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-		checkGLError(10);
+		#ifdef VERBOSE
+			checkGLError(10);
+		#endif
 		
 		// Vertex Normals
 		glEnableVertexAttribArray(1);
-		checkGLError(11);
+		#ifdef VERBOSE
+			checkGLError(11);
+		#endif
 		
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
-		checkGLError(12);
+		#ifdef VERBOSE
+			checkGLError(12);
+		#endif
 		
 		// Vertex Texture Coords
 		glEnableVertexAttribArray(2);
-		checkGLError(13);
+		#ifdef VERBOSE
+			checkGLError(13);
+		#endif
 		
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
-		checkGLError(14);
+		#ifdef VERBOSE
+			checkGLError(14);
+		#endif
 		
 		glBindVertexArray(0);
-		checkGLError(15);
+		#ifdef VERBOSE
+			checkGLError(15);
+		#endif
 	}
 	
 	bool Mesh::checkGLError(int errorIndex) {

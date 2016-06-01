@@ -43,12 +43,12 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initGlfwTimeInChaiScript() {
-		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::GLFWTime>(),            "GLFWTime"      );
-		mScript->add_global(chaiscript::var(new Plugins::Video::OpenGL::GLFWTime()),       "gTime"         );
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::update),           "update"        );
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getCurrentTime),   "getCurrentTime");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getLastTime),      "getLastTime"   );
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getTimeDelta),     "getTimeDelta"  );
+		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::GLFWTime>(),               "GLFWTime"      );
+		mScript->add_global(chaiscript::var(Plugins::Video::OpenGL::GLFWTime::getInstance()), "gTime"         );
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::update),              "update"        );
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getCurrentTime),      "getCurrentTime");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getLastTime),         "getLastTime"   );
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getTimeDelta),        "getTimeDelta"  );
 	}
 	
 	void ChaiScriptInstance::initCameraInChaiScript() {
