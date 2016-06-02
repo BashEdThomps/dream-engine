@@ -76,14 +76,12 @@ namespace Asset {
 		mAssetInstances.push_back(instance);
 	}
 	
-	AssetInstance* AssetManager::createAssetInstanceFromUUID(Dream::Scene::SceneObject* sceneObject, std::string uuid) {
+	AssetInstance* AssetManager::createAssetInstanceFromUUID(Scene::SceneObject* sceneObject, std::string uuid) {
 		AssetDefinition* assetDefinition = mProject->getAssetDefinitionByUUID(uuid);
 		return createAssetInstance(sceneObject, assetDefinition);
 	}
 	
-	void AssetManager::showStatus() {
-		
-	}
+	void AssetManager::showStatus() {}
 	
 	AssetInstance* AssetManager::createAssetInstance(Dream::Scene::SceneObject* sceneObject,AssetDefinition* definition) {
 		AssetInstance* retval = NULL;
@@ -99,6 +97,8 @@ namespace Asset {
 			retval = createScriptAssetInstance(sceneObject, definition);
 		} else if (definition->isTypeShader()) {
 			retval = createShaderAssetInstance(sceneObject, definition);
+		} else if (definition->isTypeCollisionShape()) {
+			retval = createCollisionShapeAssetInstance(sceneObject,definition);
 		}
 		
 		if (retval != NULL) {
@@ -109,7 +109,17 @@ namespace Asset {
 		return retval;
 	}
 	
-	AssetInstance* AssetManager::createAnimationAssetInstance(Dream::Scene::SceneObject* sceneObject,AssetDefinition* definition) {
+	AssetInstance* AssetManager::createCollisionShapeAssetInstance(Scene::SceneObject *sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating CollisionShape asset instance." << std::endl;
+		AssetInstance* retval = new Instances::Physics::Bullet::CollisionShapeInstance(definition);
+		
+		if (sceneObject) {
+			sceneObject->setCollisionShapeAssetInstance(retval);
+		}
+		return retval;
+	}
+	
+	AssetInstance* AssetManager::createAnimationAssetInstance(Scene::SceneObject* sceneObject, AssetDefinition* definition) {
 		std::cout << "AssetManager: Creating animation asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		

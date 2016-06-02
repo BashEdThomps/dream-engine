@@ -23,9 +23,7 @@ namespace Instances {
 namespace Audio     {
 namespace Wav       {
 	
-	WavAudioInstance::WavAudioInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {}
-					
+	WavAudioInstance::WavAudioInstance(AssetDefinition* definition) : AssetInstance(definition) {}
 	WavAudioInstance::~WavAudioInstance(void) {}
 	
 	bool WavAudioInstance::load(std::string projectPath) {

@@ -28,11 +28,11 @@ namespace Instances {
 namespace Audio     {
 namespace Ogg       {
 	
-	class OggAudioInstance : public Dream::Asset::AssetInstance {
+	class OggAudioInstance : public AssetInstance {
 	private:
 		std::string mOggPath;
 	public:
-		OggAudioInstance(Dream::Asset::AssetDefinition*);
+		OggAudioInstance(AssetDefinition*);
 		~OggAudioInstance(void);
 		
 		bool load(std::string);

@@ -46,7 +46,7 @@ namespace Assimp     {
 		return textureID;
 	}
 	
-	AssimpModelInstance::AssimpModelInstance(Dream::Asset::AssetDefinition* definition) : Dream::Asset::AssetInstance(definition) {
+	AssimpModelInstance::AssimpModelInstance(AssetDefinition* definition) : AssetInstance(definition) {
 			
 	}
 
@@ -68,7 +68,7 @@ namespace Assimp     {
 		return true;
 	}
 	
-	void AssimpModelInstance::draw(Dream::Asset::Instances::Shader::ShaderInstance* shader) {
+	void AssimpModelInstance::draw(Shader::ShaderInstance* shader) {
 		GLuint nMeshes = mMeshes.size();
 		for(GLuint i = 0; i < nMeshes; i++ ) {
 			mMeshes[i].draw(shader);

@@ -58,9 +58,17 @@ namespace Asset {
 	}
 	
 	void AssetDefinition::loadCollisionShapeAttributes(nlohmann::json json) {
+		// Margin
+		if (!json[ASSET_ATTR_MARGIN].is_null() && json[ASSET_ATTR_MARGIN].is_number()) {
+			addAttribute(ASSET_ATTR_MARGIN, std::to_string((float)json[ASSET_ATTR_MARGIN]));
+		}
 		// Mass
-		if (!json[ASSET_ATTRIBUTE_MASS].is_null() && json[ASSET_ATTRIBUTE_MASS].is_number()) {
-			addAttribute(ASSET_ATTRIBUTE_MASS, std::to_string((long)json[ASSET_ATTRIBUTE_MASS]));
+		if (!json[ASSET_ATTR_MASS].is_null() && json[ASSET_ATTR_MASS].is_number()) {
+			addAttribute(ASSET_ATTR_MASS, std::to_string((float)json[ASSET_ATTR_MASS]));
+		}
+		// Radius
+		if (!json[ASSET_ATTR_RADIUS].is_null() && json[ASSET_ATTR_RADIUS].is_number()) {
+			addAttribute(ASSET_ATTR_RADIUS, std::to_string((float)json[ASSET_ATTR_RADIUS]));
 		}
 	}
 
@@ -84,6 +92,30 @@ namespace Asset {
 			std::cerr << "Exception: " << ex.what() << std::endl;
 			return "";
 		}
+	}
+	
+	int AssetDefinition::getAttributeAsInt(std::string attr) {
+		return std::stoi(getAttribute(attr));
+	}
+	
+	float AssetDefinition::getAttributeAsFloat(std::string attr) {
+		return std::stof(getAttribute(attr));
+	}
+	
+	double AssetDefinition::getAttributeAsDouble(std::string attr) {
+		return std::stod(getAttribute(attr));
+	}
+	
+	bool AssetDefinition::getAttributeAsBool(std::string attr) {
+		return strcasecmp("true",getAttribute(attr).c_str()) == 0;
+	}
+	
+	long AssetDefinition::getAttributeAsLong(std::string attr) {
+		return std::stol(getAttribute(attr));
+	}
+	
+	char AssetDefinition::getAttributeAsChar(std::string attr) {
+		return getAttribute(attr).c_str()[0];
 	}
 
 	std::string AssetDefinition::getUUID() {

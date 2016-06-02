@@ -26,8 +26,8 @@ App.service('ProjectService',
     this.ASSET_TYPE_NAME_COLLISION_SHAPE = "Collision Shape";
     this.ASSET_TYPE_COLLISION_SHAPE      = "collisionShape";
 
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SHPERE = "Shpere";
-    this.ASSET_FORMAT_COLLISION_SHAPE_SHPERE = "btShpereShape";
+    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SPHERE = "Shpere";
+    this.ASSET_FORMAT_COLLISION_SHAPE_SPHERE = "btShpereShape";
     this.ASSET_FORMAT_NAME_COLLISION_SHAPE_BOX = "Box";
     this.ASSET_FORMAT_COLLISION_SHAPE_BOX = "btBoxShape";
     this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CYLINDER = "Cylinder";
@@ -100,8 +100,8 @@ App.service('ProjectService',
         type: this.ASSET_TYPE_COLLISION_SHAPE,
         formats: [
           {
-            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SHPERE,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_SHPERE
+            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SPHERE,
+            format: this.ASSET_FORMAT_COLLISION_SHAPE_SPHERE
           },{
             name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_BOX,
             format: this.ASSET_FORMAT_COLLISION_SHAPE_BOX

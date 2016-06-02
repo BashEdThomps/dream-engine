@@ -20,7 +20,7 @@ namespace Instances      {
 namespace Animation      {
 namespace DreamAnimation {
 	
-    class AnimationInstance : public Dream::Asset::AssetInstance {
+    class AnimationInstance : public AssetInstance {
     private:
         std::string            mAnimationPath;
         std::vector<KeyFrame*> mKeyFrames;
@@ -32,7 +32,7 @@ namespace DreamAnimation {
         int       mFramesPerSecond;
         bool      mDone;
     public:
-        AnimationInstance(Dream::Asset::AssetDefinition*, int fps = 60);
+        AnimationInstance(AssetDefinition*, int fps = 60);
         ~AnimationInstance();
 		
 				bool load(std::string);

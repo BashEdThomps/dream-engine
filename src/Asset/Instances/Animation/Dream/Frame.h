@@ -12,15 +12,15 @@ namespace DreamAnimation {
 	
 	class Frame {
 	private:
-		int mIndex;
+		int                      mIndex;
 		std::vector<FrameDelta*> mFrameDeltas;
 	public:
 		Frame(int);
 		~Frame();
 		void addFrameDelta(FrameDelta*);
-		int compareIndecies(Frame*);
-		int getNumFrameDeltas();
-		int getIndex();
+		int  compareIndecies(Frame*);
+		int  getNumFrameDeltas();
+		int  getIndex();
 		std::vector<FrameDelta*> getFrameDeltas();
 	}; // End Frame
 	

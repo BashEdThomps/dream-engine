@@ -30,15 +30,15 @@ namespace Asset      {
 namespace Instances  {
 namespace Shader     {
     
-    class ShaderInstance : public Dream::Asset::AssetInstance {
+    class ShaderInstance : public AssetInstance {
 		private:
 			std::string mVertexShaderSource;
 			GLuint      mVertexShader;
 			std::string mFragmentShaderSource;
 			GLuint      mFragmentShader;
-			GLuint mShaderProgram;
+			GLuint      mShaderProgram;
     public:
-			ShaderInstance(Dream::Asset::AssetDefinition*);
+			ShaderInstance(AssetDefinition*);
 			~ShaderInstance(void);
 			
 			bool load(std::string);

@@ -71,6 +71,18 @@
                 <input ng-change="modified()" ng-model="currentAsset.mass" class="form-control input-sm" type="number"/>
               </td>
             </tr>
+            <tr ng-show="isAssetTypeCollisionShape()">
+              <td>Margin</td>
+              <td>
+                <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number"/>
+              </td>
+            </tr>
+            <tr ng-show="isAssetTypeCollisionShape() && isCollisionShapeAssetFormatSphere()">
+              <td>Radius</td>
+              <td>
+                <input ng-change="modified()" ng-model="currentAsset.radius" class="form-control input-sm" type="number"/>
+              </td>
+            </tr>
             <!-- Model -->
             <tr ng-show="isAssetTypeModel()">
               <td>Format</td>

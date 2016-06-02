@@ -11,26 +11,26 @@ namespace DreamAnimation {
 		mIndex = index;
 	}
 
-    void  Frame::addFrameDelta(FrameDelta* frameDelta) {
-      mFrameDeltas.push_back(frameDelta);
-      return;
-    }
+  void Frame::addFrameDelta(FrameDelta* frameDelta) {
+    mFrameDeltas.push_back(frameDelta);
+    return;
+  }
 
-    int Frame::compareIndecies(Frame *frame2) {
-      return frame2->getIndex() - getIndex();
-    }
+  int Frame::compareIndecies(Frame *frame2) {
+    return frame2->getIndex() - getIndex();
+  }
 
-    int Frame::getNumFrameDeltas() {
-      return mFrameDeltas.size();
-    }
+  int Frame::getNumFrameDeltas() {
+    return mFrameDeltas.size();
+  }
 
-    int Frame::getIndex() {
-      return mIndex;
-    }
+  int Frame::getIndex() {
+    return mIndex;
+  }
 
-    std::vector<FrameDelta*> Frame::getFrameDeltas() {
-      return mFrameDeltas;
-    }
+  std::vector<FrameDelta*> Frame::getFrameDeltas() {
+    return mFrameDeltas;
+  }
 
 } // End of Dream
 } // End of Animation

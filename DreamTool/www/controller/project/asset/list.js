@@ -91,6 +91,11 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_SCRIPT_CHAI;
   };
 
+  $scope.isCollisionShapeAssetFormatSphere = function() {
+      if (!$scope.currentAsset) return false;
+      return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_COLLISION_SHAPE_SPHERE;
+  };
+
   $scope.goToAssetEditor = function(uuid) {
     $state.go("ProjectAssetEditor",{asset: uuid});
     return;

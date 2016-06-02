@@ -287,5 +287,13 @@ namespace Scene {
 		return mScale;
 	}
 	
+	void SceneObject::setCollisionShapeAssetInstance(Asset::AssetInstance* collisionShape) {
+		mCollisionShapeAssetInstance = collisionShape;
+	}
+	
+	Asset::AssetInstance* SceneObject::getCollisionShapeAssetInstance() {
+		return mCollisionShapeAssetInstance;
+	}
+	
 } // End of Scene
 } // End of Dream

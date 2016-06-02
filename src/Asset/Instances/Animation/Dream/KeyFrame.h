@@ -12,21 +12,21 @@ namespace DreamAnimation {
 	
 	class KeyFrame {
 	private:
-		int mIndex;
+		int                      mIndex;
 		std::vector<FrameDelta*> mDeltas;
-		long mDuration;
-		int mWrap;
-		int mFramesPerSecond;
+		long                     mDuration;
+		int                      mWrap;
+		int                      mFramesPerSecond;
 	public:
 		KeyFrame(int, int, long);
 		~KeyFrame();
-		void addDelta(FrameDelta*);
-		int getNumberOfFrameDeltas();
-		int getIntermediateFrameCount();
-		int compareIndicies(KeyFrame*);
+		void        addDelta(FrameDelta*);
+		int         getNumberOfFrameDeltas();
+		int         getIntermediateFrameCount();
+		int         compareIndicies(KeyFrame*);
 		FrameDelta* getDeltaByDrawableID(int);
-		int getWrap();
-		int getIndex();
+		int         getWrap();
+		int         getIndex();
 	};
 	
 } // End of DreamAnimation

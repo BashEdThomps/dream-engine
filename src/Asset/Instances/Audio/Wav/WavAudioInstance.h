@@ -28,9 +28,9 @@ namespace Instances {
 namespace Audio     {
 namespace Wav       {
 	
-	class WavAudioInstance : public Dream::Asset::AssetInstance {
+	class WavAudioInstance : public AssetInstance {
 	public:
-		WavAudioInstance(Dream::Asset::AssetDefinition*);
+		WavAudioInstance(AssetDefinition*);
 		~WavAudioInstance(void);
 		bool load(std::string);
 	};

@@ -20,7 +20,7 @@
 namespace Dream {
 namespace Asset {
 
-	AssetInstance::AssetInstance(Dream::Asset::AssetDefinition* definition) {
+	AssetInstance::AssetInstance(AssetDefinition* definition) {
 		mDefinition = definition;
 	}
 	

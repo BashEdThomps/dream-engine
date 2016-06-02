@@ -30,9 +30,9 @@ namespace Asset {
 	
 	class AssetInstance {
 	protected:
-		Dream::Asset::AssetDefinition* mDefinition;
+		AssetDefinition* mDefinition;
 	public:
-		AssetInstance(Dream::Asset::AssetDefinition*);
+		AssetInstance(AssetDefinition*);
 		virtual ~AssetInstance(void) {};
 		
 		std::string getUUID();

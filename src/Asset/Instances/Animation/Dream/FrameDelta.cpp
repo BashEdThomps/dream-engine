@@ -9,15 +9,15 @@ namespace Animation      {
 namespace DreamAnimation {
 	
 	FrameDelta::FrameDelta(int drawableId, int operation) {
-		mOperation            = operation;
-		mDrawableID           = drawableId;
-		mOrbitRadius          = 0;
-		mPositionDelta [0] = 0;
-		mPositionDelta [1] = 0;
-		mPositionDelta [2] = 0;
-		mRotationDelta [0] = 0;
-		mRotationDelta [1] = 0;
-		mRotationDelta [2] = 0;
+		mOperation        = operation;
+		mDrawableID       = drawableId;
+		mOrbitRadius      = 0;
+		mPositionDelta[0] = 0;
+		mPositionDelta[1] = 0;
+		mPositionDelta[2] = 0;
+		mRotationDelta[0] = 0;
+		mRotationDelta[1] = 0;
+		mRotationDelta[2] = 0;
 	}
 
 	FrameDelta::~FrameDelta() {}

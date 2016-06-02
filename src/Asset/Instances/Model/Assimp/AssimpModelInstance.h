@@ -40,7 +40,7 @@ namespace Assimp     {
 	
   GLint TextureFromFile(const char* path, std::string directory);
 	
-	class AssimpModelInstance : public Dream::Asset::AssetInstance {
+	class AssimpModelInstance : public AssetInstance {
 	private:
 		// Variables
 		std::vector<Mesh>    mMeshes;
@@ -52,10 +52,10 @@ namespace Assimp     {
 		void loadModel(std::string);
 		std::vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, std::string);
 	public:
-		AssimpModelInstance(Dream::Asset::AssetDefinition*);
+		AssimpModelInstance(AssetDefinition*);
 		~AssimpModelInstance();
 		bool load(std::string);
-		void draw(Dream::Asset::Instances::Shader::ShaderInstance*);
+		void draw(Shader::ShaderInstance*);
 		bool checkGLError(int);
 	}; // End of ObjModel
 	

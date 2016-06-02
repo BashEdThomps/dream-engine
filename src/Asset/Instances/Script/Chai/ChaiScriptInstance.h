@@ -30,11 +30,11 @@ namespace Instances {
 namespace Script    {
 namespace Chai      {
     
-    class ChaiScriptInstance : public Dream::Asset::AssetInstance {
+    class ChaiScriptInstance : public AssetInstance {
 		private:
 			chaiscript::ChaiScript *mScript;
     public:
-			ChaiScriptInstance(Dream::Asset::AssetDefinition*);
+			ChaiScriptInstance(AssetDefinition*);
 			~ChaiScriptInstance(void);
 			bool load(std::string);
 			void update();

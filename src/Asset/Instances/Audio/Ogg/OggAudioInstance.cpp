@@ -23,10 +23,8 @@ namespace Instances {
 namespace Audio     {
 namespace Ogg       {
 	
-	OggAudioInstance::OggAudioInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {}
-	
-    OggAudioInstance::~OggAudioInstance(void) {}
+	OggAudioInstance::OggAudioInstance(AssetDefinition* definition) : AssetInstance(definition) {}
+  OggAudioInstance::~OggAudioInstance(void) {}
 	
 	bool OggAudioInstance::load(std::string projectPath) {
 		return false;

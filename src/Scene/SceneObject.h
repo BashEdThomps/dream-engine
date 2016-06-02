@@ -50,11 +50,13 @@ namespace Scene {
 		float mScale[3];
 		
 		// Asset Instances
-		Dream::Asset::AssetInstance* mAnimationAssetInstance;
-		Dream::Asset::AssetInstance* mAudioAssetInstance;
-		Dream::Asset::AssetInstance* mModelAssetInstance;
-		Dream::Asset::AssetInstance* mScriptAssetInstance;
-		Dream::Asset::AssetInstance* mShaderAssetInstance;
+		Asset::AssetInstance* mAnimationAssetInstance;
+		Asset::AssetInstance* mAudioAssetInstance;
+		Asset::AssetInstance* mModelAssetInstance;
+		Asset::AssetInstance* mScriptAssetInstance;
+		Asset::AssetInstance* mShaderAssetInstance;
+		Asset::AssetInstance* mCollisionShapeAssetInstance;
+		
 	public:
 		SceneObject  ();
 		SceneObject  (nlohmann::json);
@@ -90,16 +92,25 @@ namespace Scene {
 		SceneObject* getParent();
 		void         generatePath();
 		std::string  getPath();
-		void setAnimationAssetInstance (Dream::Asset::AssetInstance*);
-		Dream::Asset::AssetInstance*   getAnimationAssetInstance();
-		void setAudioAssetInstance     (Dream::Asset::AssetInstance*);
-		Dream::Asset::AssetInstance*   getAudioAssetInstance();
-		void setModelAssetInstance     (Dream::Asset::AssetInstance*);
-		Dream::Asset::AssetInstance*   getModelAssetInstance();
-		void setScriptAssetInstance    (Dream::Asset::AssetInstance*);
-		Dream::Asset::AssetInstance*   getScriptAssetInstance();
-		void setShaderAssetInstance    (Dream::Asset::AssetInstance*);
-		Dream::Asset::AssetInstance*   getShaderAssetInstance();
+		
+		void setAnimationAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getAnimationAssetInstance();
+		
+		void setAudioAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getAudioAssetInstance();
+		
+		void setModelAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getModelAssetInstance();
+		
+		void setScriptAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getScriptAssetInstance();
+		
+		void setShaderAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getShaderAssetInstance();
+		
+		void setCollisionShapeAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getCollisionShapeAssetInstance();
+		
 		std::vector<std::string> getAssetInstanceUUIDsToLoad();
 		bool hasModelAssetInstance();
 		bool hasShaderAssetInstance();

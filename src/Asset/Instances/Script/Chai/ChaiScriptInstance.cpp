@@ -26,11 +26,8 @@ namespace Asset     {
 namespace Instances {
 namespace Script    {
 namespace Chai      {
-    
-	ChaiScriptInstance::ChaiScriptInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {
-	}
-
+	
+	ChaiScriptInstance::ChaiScriptInstance(AssetDefinition* definition) : AssetInstance(definition) {}
 	ChaiScriptInstance::~ChaiScriptInstance(void) {}
 	
 	bool ChaiScriptInstance::load(std::string projectPath) {
@@ -70,7 +67,7 @@ namespace Chai      {
 	
 	void ChaiScriptInstance::initInputEventInChaiScript() {
 		// Class Definition
-		mScript->add(chaiscript::user_type<Dream::Plugins::Input::InputEvent>(),     "InputEvent");
+		mScript->add(chaiscript::user_type<Plugins::Input::InputEvent>(),     "InputEvent");
 		// Methods
 		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getSource),        "getSource");
 		
@@ -111,7 +108,7 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initSceneObjectInChaiScript() {
-		mScript->add(chaiscript::user_type<Dream::Scene::SceneObject>(),"SceneObject");
+		mScript->add(chaiscript::user_type<Scene::SceneObject>(),"SceneObject");
 	}
 	
 	void ChaiScriptInstance::update() {

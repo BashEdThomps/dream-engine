@@ -22,8 +22,7 @@ namespace Asset      {
 namespace Instances  {
 namespace Shader     {
     
-	ShaderInstance::ShaderInstance(Dream::Asset::AssetDefinition* definition) :
-		Dream::Asset::AssetInstance(definition) {
+	ShaderInstance::ShaderInstance(AssetDefinition* definition) : AssetInstance(definition) {
 			mShaderProgram             = 0;
 			mVertexShader              = 0;
 			mFragmentShader            = 0;

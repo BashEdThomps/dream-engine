@@ -53,7 +53,10 @@
 #define ASSET_DEF_FORMAT_ANIMATION_DREAM "dream_anim"
 
 // Collision Shape Attributes
-#define ASSET_ATTRIBUTE_MASS "mass"
+
+#define ASSET_ATTR_MASS   "mass"
+#define ASSET_ATTR_MARGIN "margin"
+#define ASSET_ATTR_RADIUS "radius"
 
 namespace Dream {
 namespace Asset {
@@ -76,8 +79,15 @@ namespace Asset {
 		void        setFormat(std::string);
 		std::string getFormat();
 		
-		std::string getAttribute(std::string);
-		void        addAttribute(std::string,std::string);
+		void         addAttribute(std::string,std::string);
+		
+		std::string  getAttribute         (std::string);
+		int          getAttributeAsInt    (std::string);
+		float        getAttributeAsFloat  (std::string);
+		double       getAttributeAsDouble (std::string);
+		bool         getAttributeAsBool   (std::string);
+		long         getAttributeAsLong   (std::string);
+		char         getAttributeAsChar   (std::string);
 		
 		std::string getAssetTypeDirectory();
 		

@@ -16,8 +16,8 @@
 */
 
 
-#ifndef AssetManager_hpp
-#define AssetManager_hpp
+#ifndef AssetManager_h
+#define AssetManager_h
 
 #include <iostream>
 #include <vector>
@@ -31,6 +31,7 @@
 #include "Instances/Animation/Dream/AnimationInstance.h"
 #include "Instances/Shader/ShaderInstance.h"
 #include "Instances/Model/Assimp/AssimpModelInstance.h"
+#include "Instances/Physics/Bullet/CollisionShapeInstance.h"
 
 
 namespace Dream {
@@ -54,14 +55,15 @@ namespace Asset {
 		void destroyAssetInstances();
 		void addAssetInstance(AssetInstance*);
 		
-		AssetInstance* createAssetInstanceFromUUID  (Dream::Scene::SceneObject*, std::string);
-		AssetInstance* createAssetInstance          (Dream::Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createAnimationAssetInstance (Dream::Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createAudioAssetInstance     (Dream::Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createModelAssetInstance     (Dream::Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createScriptAssetInstance    (Dream::Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createShaderAssetInstance    (Dream::Scene::SceneObject*, AssetDefinition*);
-		void           showStatus                   ();
+		AssetInstance* createAssetInstanceFromUUID       (Scene::SceneObject*, std::string);
+		AssetInstance* createAssetInstance               (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createAnimationAssetInstance      (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createAudioAssetInstance          (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createModelAssetInstance          (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createScriptAssetInstance         (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createShaderAssetInstance         (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createCollisionShapeAssetInstance (Scene::SceneObject*, AssetDefinition*);
+		void           showStatus                        ();
 	};
 	
 } // End of Asset
