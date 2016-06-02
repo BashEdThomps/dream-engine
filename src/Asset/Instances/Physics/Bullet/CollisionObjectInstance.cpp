@@ -1,4 +1,4 @@
-#include "CollisionShapeInstance.h"
+#include "CollisionObjectInstance.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -6,14 +6,31 @@ namespace Instances {
 namespace Physics   {
 namespace Bullet    {
 	
-	CollisionShapeInstance::CollisionShapeInstance(AssetDefinition* definition) : AssetInstance(definition){}
-	CollisionShapeInstance::~CollisionShapeInstance() {}
+	CollisionObjectInstance::CollisionObjectInstance(AssetDefinition* definition) : AssetInstance(definition){}
 	
-	btCollisionShape* CollisionShapeInstance::getCollisionShape() {
+	CollisionObjectInstance::~CollisionObjectInstance() {
+		delete mRigidBody;
+		delete mRigidBodyConstructionInfo;
+		delete mMotionState;
+		delete mCollisionShape;
+	}
+	
+	btCollisionShape* CollisionObjectInstance::getCollisionShape() {
 		return mCollisionShape;
 	}
 		
-	bool CollisionShapeInstance::load(std::string projectPath) {
+	bool CollisionObjectInstance::load(std::string projectPath) {
+		if (!createCollisionShape()){
+			std::cerr << "CollisionObjectInstance: Unable to create collision shape" << std::endl;
+			return false;
+		}
+		mMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
+		mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(0, mMotionState, mCollisionShape, btVector3(0, 0, 0));
+		mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
+		return mRigidBody != NULL;
+	}
+	
+	bool CollisionObjectInstance::createCollisionShape() {
 		std::string format = mDefinition->getFormat();
 		//btScalar mass = mDefinition->getAttributeAsFloat(ASSET_ATTR_MASS);
 		
@@ -49,6 +66,14 @@ namespace Bullet    {
 			mCollisionShape->setMargin(margin);
 		}
 		return mCollisionShape != NULL;
+	}
+	
+	btRigidBody* CollisionObjectInstance::getRigidBody() {
+		return mRigidBody;
+	}
+	
+	void CollisionObjectInstance::getWorldTransform(btTransform &transform) {
+		mMotionState->getWorldTransform(transform);
 	}
 	
 } // End of Bullet

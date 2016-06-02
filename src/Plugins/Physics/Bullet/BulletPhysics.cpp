@@ -61,6 +61,20 @@ namespace Bullet {
 		mDynamicsWorld->stepSimulation(stepValue);
 	}
 	
+	void BulletPhysics::addRigidBody(btRigidBody *rigidBody) {
+    #ifdef VERBOSE
+			std::cout << "BulletPhysics: Adding Rigid Body to Dynamics World" << std::endl;
+    #endif
+		mDynamicsWorld->addRigidBody(rigidBody);
+	}
+	
+	void BulletPhysics::removeRigidBody(btRigidBody *rigidBody) {
+		#ifdef VERBOSE
+			std::cout << "BulletPhysics: Removing Rigid Body from Dynamics World" << std::endl;
+    #endif
+		mDynamicsWorld->removeRigidBody(rigidBody);
+	}
+	
 } // End of Bullet
 } // End of Scene
 } // End of Plugins

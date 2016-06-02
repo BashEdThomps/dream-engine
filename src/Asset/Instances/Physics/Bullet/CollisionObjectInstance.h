@@ -1,5 +1,5 @@
-#ifndef CollisionShapeInstance_h
-#define CollisionShapeInstance_h
+#ifndef CollisionObjectInstance_h
+#define CollisionObjectInstance_h
 
 #include "../../../AssetInstance.h"
 #include <btBulletDynamicsCommon.h>
@@ -23,15 +23,21 @@ namespace Instances {
 namespace Physics   {
 namespace Bullet    {
 	
-	class CollisionShapeInstance : public Asset::AssetInstance {
+	class CollisionObjectInstance : public Asset::AssetInstance {
 	private:
-		btCollisionShape *mCollisionShape;
+		btCollisionShape                         *mCollisionShape;
+		btDefaultMotionState                     *mMotionState;
+		btRigidBody                              *mRigidBody;
+		btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
 	public:
-		CollisionShapeInstance(AssetDefinition*);
-		~CollisionShapeInstance();
+		CollisionObjectInstance(AssetDefinition*);
+		~CollisionObjectInstance();
 		bool load(std::string);
+		bool createCollisionShape();
 		btCollisionShape* getCollisionShape();
-	}; // End of CollisionShapeInstance
+		btRigidBody*      getRigidBody();
+		void              getWorldTransform(btTransform&);
+	}; // End of CollisionObjectInstance
 	
 } // End of Bullet
 } // End of Physics
@@ -39,4 +45,4 @@ namespace Bullet    {
 } // End of Assets
 } // End of Dream
 
-#endif /* CollisionShapeInstance_h */
+#endif /* CollisionObjectInstance_h */

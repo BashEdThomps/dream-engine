@@ -30,7 +30,6 @@ namespace Bullet {
 	
 	class BulletPhysics : public PhysicsPluginInterface {
 	private:
-		// Bullet
 		btDynamicsWorld                     *mDynamicsWorld;
 		btBroadphaseInterface               *mBroadphase;
 		btDefaultCollisionConfiguration     *mCollisionConfiguration;
@@ -43,6 +42,8 @@ namespace Bullet {
 		void setGravityBtVector3(btVector3);
 		bool init(void);
 		void update(Dream::Scene::Scene*);
+		void addRigidBody(btRigidBody*);
+		void removeRigidBody(btRigidBody*);
 	}; // End of BulletPhysics
 	
 } // End of Bullet

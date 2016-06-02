@@ -98,7 +98,7 @@ namespace Asset {
 		} else if (definition->isTypeShader()) {
 			retval = createShaderAssetInstance(sceneObject, definition);
 		} else if (definition->isTypeCollisionShape()) {
-			retval = createCollisionShapeAssetInstance(sceneObject,definition);
+			retval = createCollisionObjectAssetInstance(sceneObject,definition);
 		}
 		
 		if (retval != NULL) {
@@ -109,9 +109,9 @@ namespace Asset {
 		return retval;
 	}
 	
-	AssetInstance* AssetManager::createCollisionShapeAssetInstance(Scene::SceneObject *sceneObject, AssetDefinition* definition) {
-		std::cout << "AssetManager: Creating CollisionShape asset instance." << std::endl;
-		AssetInstance* retval = new Instances::Physics::Bullet::CollisionShapeInstance(definition);
+	AssetInstance* AssetManager::createCollisionObjectAssetInstance(Scene::SceneObject *sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating Collision Object Asset Instance." << std::endl;
+		AssetInstance* retval = new Instances::Physics::Bullet::CollisionObjectInstance(definition);
 		
 		if (sceneObject) {
 			sceneObject->setCollisionShapeAssetInstance(retval);

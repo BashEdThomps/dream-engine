@@ -31,7 +31,7 @@
 #include "Instances/Animation/Dream/AnimationInstance.h"
 #include "Instances/Shader/ShaderInstance.h"
 #include "Instances/Model/Assimp/AssimpModelInstance.h"
-#include "Instances/Physics/Bullet/CollisionShapeInstance.h"
+#include "Instances/Physics/Bullet/CollisionObjectInstance.h"
 
 
 namespace Dream {
@@ -62,7 +62,7 @@ namespace Asset {
 		AssetInstance* createModelAssetInstance          (Scene::SceneObject*, AssetDefinition*);
 		AssetInstance* createScriptAssetInstance         (Scene::SceneObject*, AssetDefinition*);
 		AssetInstance* createShaderAssetInstance         (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createCollisionShapeAssetInstance (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createCollisionObjectAssetInstance (Scene::SceneObject*, AssetDefinition*);
 		void           showStatus                        ();
 	};
 	
