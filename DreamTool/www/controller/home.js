@@ -1,138 +1,120 @@
 App.controller("home",["$scope","ProjectService","UIService",
-    function($scope,ProjectService,UIService) {
-        UIService.setBreadcrumbs(["Home"]);
-        // Help Pages --------------------------------------------------------------
+function($scope,ProjectService,UIService) {
+  UIService.setBreadcrumbs(["Home"]);
+  // Help Pages --------------------------------------------------------------
 
-        $scope.showProject = true;
+  $scope.showProject = true;
 
-        $scope.onProjectClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProject = true;
-        };
+  $scope.onProjectClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProject = true;
+  };
 
-        $scope.onProjectConfigurationSelected = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectConfiguration = true;
-        };
+  $scope.onProjectConfigurationSelected = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectConfiguration = true;
+  };
 
-        $scope.onProjectSceneClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectScene = true;
-        };
+  $scope.onProjectSceneClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectScene = true;
+  };
 
-        $scope.onProjectSceneScenegraphClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectSceneScenegraph = true;
-        };
+  $scope.onProjectSceneSceneObjectClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectSceneSceneObject = true;
+  };
 
-        $scope.onProjectSceneBulletWorldClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectSceneBulletWorld = true;
-        };
+  // Assets ----------------------------------------------------------------------
 
-        $scope.onProjectSceneScenegraphSceneObjectClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectSceneScenegraphSceneObject = true;
-        };
+  $scope.onProjectAssetsClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssets = true;
+  };
 
-        $scope.onProjectSceneScenegraphSceneObjectModifierClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectSceneScenegraphSceneObjectModifier = true;
-        };
+  $scope.onProjectAssetsAnimationClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssetsAnimation = true;
+  };
 
-        $scope.onProjectSceneScenegraphSceneObjectModifierEventListenerClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectSceneScenegraphSceneObjectModifierEventListener = true;
-        };
+  $scope.onProjectAssetsAudioClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssetsAudio = true;
+  };
 
-        $scope.onProjectAssetClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectAsset = true;
-        };
+  $scope.onProjectAssetsModelClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssetsModel = true;
+  };
 
-        $scope.onProjectAssetModelClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectAssetModel = true;
-        };
 
-        $scope.onProjectAssetAnimationClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectAssetAnimation = true;
-        };
+  $scope.onProjectAssetsLightClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssetsLight = true;
+  };
 
-        $scope.onProjectAssetAudioClicked = function() {
-            $scope.hideAllHelp();
-            $scope.showProjectAssetAudio = true;
-        };
 
-        $scope.hideAllHelp = function() {
-            $scope.showProject                 = false;
-            $scope.showProjectConfiguration    = false;
-            $scope.showProjectScene            = false;
-            $scope.showProjectSceneScenegraph  = false;
-            $scope.showProjectSceneBulletWorld = false;
-            $scope.showProjectSceneScenegraphSceneObject = false;
-            $scope.showProjectSceneScenegraphSceneObjectModifier = false;
-            $scope.showProjectSceneScenegraphSceneObjectEventListener = false;
-            $scope.showProjectAsset          = false;
-            $scope.showProjectAssetModel     = false;
-            $scope.showProjectAssetAnimation = false;
-            $scope.showProjectAssetAudio     = false;
-        };
+  $scope.onProjectAssetsPhysicsObjectClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssetsPhysicsObject = true;
+  };
 
-        // Tree Data
 
-        $scope.helpTreeData = [
-            {
-                label    : "Project",
-                onSelect  : $scope.onProjectClicked,
-                children : [
-                    {
-                        label    : "Scene",
-                        onSelect  : $scope.onProjectSceneClicked,
-                        children : [
-                            {
-                                label    : "Scenegraph",
-                                onSelect  : $scope.onProjectSceneScenegraphClicked,
-                                children : [
-                                    {
-                                        label    : "Scene Object",
-                                        onSelect  : $scope.onProjectSceneScenegraphSceneObjectClicked,
-                                        children : []
-                                    }
-                                ]
-                            },
-                            {
-                                label: "Bullet World",
-                                onSelect: $scope.onProjectSceneBulletWorldClicked,
-                                children: []
-                            }
-                        ]
-                    },
-                    {
-                        label    : "Asset",
-                        onSelect  : $scope.onProjectAssetClicked,
-                        children : [
-                            {
-                                label:"Animation",
-                                onSelect : $scope.onProjectAssetAnimationClicked
-                            },
-                            {
-                                label:"Audio",
-                                onSelect : $scope.onProjectAssetAudioClicked
-                            },
-                            {
-                                label:"Model",
-                                onSelect : $scope.onProjectAssetModelClicked
-                            },
-                            {
-                                label:"Script",
-                                onSelect : $scope.onProjectAssetScriptClicked
-                            }
-                        ]
-                    }
-                ],
-            }
-        ];
+  $scope.onProjectAssetsShaderClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssetsShader = true;
+  };
+
+
+  $scope.onProjectAssetsScriptClicked = function() {
+    $scope.hideAllHelp();
+    $scope.showProjectAssetsScript = true;
+  };
+
+  // Hide All --------------------------------------------------------------------
+
+  $scope.hideAllHelp = function() {
+    $scope.showProject                    = false;
+    $scope.showProjectConfiguration       = false;
+    $scope.showProjectScene               = false;
+    $scope.showProjectSceneSceneObject    = false;
+    $scope.showProjectAssets              = false;
+    $scope.showProjectAssetsAnimation     = false;
+    $scope.showProjectAssetsAudio         = false;
+    $scope.showProjectAssetsLight         = false;
+    $scope.showProjectAssetsModel         = false;
+    $scope.showProjectAssetsPhysicsObject = false;
+    $scope.showProjectAssetsShader        = false;
+    $scope.showProjectAssetsScript        = false;
+  };
+
+  // Tree Data
+
+  $scope.helpTreeData = [{
+      label: "Project", onSelect: $scope.onProjectClicked,
+      children:
+      [
+        {
+          label: "Scene", onSelect: $scope.onProjectSceneClicked,
+          children:
+          [
+            { label: "Scene Object", onSelect: $scope.onProjectSceneSceneObjectClicked }
+          ]
+        },
+        {
+          label: "Assets", onSelect: $scope.onProjectAssetsClicked,
+          children :
+          [
+            { label: "Animation",      onSelect: $scope.onProjectAssetsAnimationClicked     },
+            { label: "Audio",          onSelect: $scope.onProjectAssetsAudioClicked         },
+            { label: "Light",          onSelect: $scope.onProjectAssetsLightClicked         },
+            { label: "Model",          onSelect: $scope.onProjectAssetsModelClicked         },
+            { label: "Physics Object", onSelect: $scope.onProjectAssetsPhysicsObjectClicked },
+            { label: "Shader",         onSelect: $scope.onProjectAssetsShaderClicked        },
+            { label: "Script",         onSelect: $scope.onProjectAssetsScriptClicked        }
+          ]
+        }
+      ],
     }
-]);
+  ];
+}]);

@@ -215,7 +215,24 @@ App.controller("ProjectAssetEditor",
 
     $scope.loadAudioResource = function() {
       console.log("Loading Audio Resource");
-      $scope.audio = ngAudio.load("app/audio/song1.mp3");
+      var assetURL = ApiService.generateAssetURL(
+        ProjectService.getProjectUUID(),
+        $scope.asset.type,
+        $scope.asset.uuid,
+        $scope.asset.format);
+        console.log("AssetEditor: Loading audio asset from",assetURL);
+      $scope.audio = ngAudio.load(assetURL);
+    };
+
+    $scope.getAudioPlaybackPercentage = function() {
+      var percent = 0;
+      if ($scope.audio) {
+          percent =  Math.round((100/$scope.audio.duration) * $scope.audio.currentTime);
+      }
+      
+      return {
+        width : percent+'%'
+      };
     };
 
     // On Load

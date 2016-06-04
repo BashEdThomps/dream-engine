@@ -56,16 +56,16 @@ namespace Asset {
 		void destroyAllAssetInstances();
 		void addAssetInstance(AssetInstance*);
 		
-		AssetInstance* createAssetInstanceFromUUID       (Scene::SceneObject*, std::string);
-		AssetInstance* createAssetInstance               (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createAnimationAssetInstance      (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createAudioAssetInstance          (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createModelAssetInstance          (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createScriptAssetInstance         (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createShaderAssetInstance         (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createPhysicsObjectAssetInstance  (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createLightAssetInstance          (Scene::SceneObject*, AssetDefinition*);
-		void           showStatus                        ();
+		AssetInstance* createAssetInstanceFromDefinitionUUID(Scene::SceneObject*, std::string);
+		AssetInstance* createAssetInstance              (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createAnimationAssetInstance     (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createAudioAssetInstance         (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createModelAssetInstance         (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createScriptAssetInstance        (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createShaderAssetInstance        (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createPhysicsObjectAssetInstance (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createLightAssetInstance         (Scene::SceneObject*, AssetDefinition*);
+		void           showStatus                       ();
 		std::vector<Scene::SceneObject*> getSceneObjectsWithPhysicsObjects();
 	};
 	

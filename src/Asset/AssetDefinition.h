@@ -41,7 +41,7 @@
 
 #define ASSET_TYPE_ANIMATION       "animation"
 #define ASSET_TYPE_AUDIO           "audio"
-#define ASSET_TYPE_LIGHT           "ligh"
+#define ASSET_TYPE_LIGHT           "light"
 #define ASSET_TYPE_MODEL           "model"
 #define ASSET_TYPE_PHYSICS_OBJECT  "physicsObject"
 #define ASSET_TYPE_SCRIPT          "script"
@@ -51,7 +51,7 @@
 #define ASSET_DEF_FORMAT_MODEL_ASSIMP    "assimp"
 #define ASSET_DEF_FORMAT_AUDIO_WAV       "wav"
 #define ASSET_DEF_FORMAT_AUDIO_OGG       "ogg"
-#define ASSET_DEF_FORMAT_ANIMATION_DREAM "dream_anim"
+#define ASSET_DEF_FORMAT_ANIMATION_DREAM "dreamAnimation"
 
 // Collision Shape Attributes
 
@@ -98,6 +98,7 @@ namespace Asset {
 		bool isTypeScript();
 		bool isTypeShader();
 		bool isTypePhysicsObject();
+		bool isTypeLight();
 		
 		bool isScriptFormatChai();
 		bool isModelFormatAssimp();

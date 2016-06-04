@@ -146,6 +146,10 @@ namespace Asset {
 		return getAttribute(ASSET_FORMAT);
 	}
 	
+	bool AssetDefinition::isTypeLight() {
+		return getType().compare(ASSET_TYPE_LIGHT) == 0;
+	}
+	
 	bool AssetDefinition::isTypePhysicsObject() {
 		return getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0;
 	}
@@ -156,12 +160,10 @@ namespace Asset {
 	
 	bool AssetDefinition::isTypeAudio() {
 		return getType().compare(ASSET_TYPE_AUDIO) == 0;
-		
 	}
 	
 	bool AssetDefinition::isTypeModel() {
 		return getType().compare(ASSET_TYPE_MODEL) == 0;
-	
 	}
 	
 	bool AssetDefinition::isTypeScript() {
@@ -220,7 +222,7 @@ namespace Asset {
 	}
 	
 	void AssetDefinition::showStatus() {
-		std::cout << "AssetDefinition: Showing Definition..." << std::endl;
+		std::cout << "AssetDefinition:" << std::endl;
 		for (const auto& any : mAttributes) {
 			std::string value = any.second;
 			std::cout << "\t" << any.first << " : " << value << std::endl;

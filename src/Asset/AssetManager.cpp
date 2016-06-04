@@ -60,9 +60,11 @@ namespace Asset {
 				 assetInstanceUUIDIterator != assetInstanceUUIDsToLoad.end(); assetInstanceUUIDIterator++) {
 				
 				std::string assetDefinitionUUID = *assetInstanceUUIDIterator;
-				AssetInstance* newAsset = createAssetInstanceFromUUID(currentSceneObject, assetDefinitionUUID);
+				AssetInstance* newAsset = createAssetInstanceFromDefinitionUUID(currentSceneObject, assetDefinitionUUID);
 				if (newAsset == NULL) {
-					std::cerr << "AssetManager: Unable to instanciate asset instance for " << assetDefinitionUUID << std::endl;
+					AssetDefinition* definition = mProject->getAssetDefinitionByUUID(assetDefinitionUUID);
+					std::cerr << "AssetManager: Unable to instanciate asset instance for "
+					          << definition->getName() << " (" << definition->getUUID() << ")" << std::endl;
 					return false;
 				} else {
 					addAssetInstance(newAsset);
@@ -76,14 +78,14 @@ namespace Asset {
 		mAssetInstances.push_back(instance);
 	}
 	
-	AssetInstance* AssetManager::createAssetInstanceFromUUID(Scene::SceneObject* sceneObject, std::string uuid) {
+	AssetInstance* AssetManager::createAssetInstanceFromDefinitionUUID(Scene::SceneObject* sceneObject, std::string uuid) {
 		AssetDefinition* assetDefinition = mProject->getAssetDefinitionByUUID(uuid);
 		return createAssetInstance(sceneObject, assetDefinition);
 	}
 	
 	void AssetManager::showStatus() {}
 	
-	AssetInstance* AssetManager::createAssetInstance(Dream::Scene::SceneObject* sceneObject,AssetDefinition* definition) {
+	AssetInstance* AssetManager::createAssetInstance(Scene::SceneObject* sceneObject,AssetDefinition* definition) {
 		AssetInstance* retval = NULL;
 		std::cout << "AssetManager: Creating Asset Intance from definition: " << definition->getName() << " (" << definition->getType() << ")" << std::endl;
 		
@@ -99,6 +101,8 @@ namespace Asset {
 			retval = createShaderAssetInstance(sceneObject, definition);
 		} else if (definition->isTypePhysicsObject()) {
 			retval = createPhysicsObjectAssetInstance(sceneObject,definition);
+		} else if (definition->isTypeLight()) {
+			retval = createLightAssetInstance(sceneObject, definition);
 		}
 		
 		if (retval != NULL) {
@@ -134,7 +138,7 @@ namespace Asset {
 		return retval;
 	}
 	
-	AssetInstance* AssetManager::createAudioAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+	AssetInstance* AssetManager::createAudioAssetInstance(Scene::SceneObject* sceneObject, AssetDefinition* definition) {
 		std::cout << "AssetManager: Creating audio asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		
@@ -150,7 +154,7 @@ namespace Asset {
 		return retval;
 	}
 	
-	AssetInstance* AssetManager::createModelAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+	AssetInstance* AssetManager::createModelAssetInstance(Scene::SceneObject* sceneObject, AssetDefinition* definition) {
 		std::cout << "AssetManager: Creating model asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		
@@ -165,7 +169,7 @@ namespace Asset {
 		return retval;
 	}
 	
-	AssetInstance* AssetManager::createScriptAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+	AssetInstance* AssetManager::createScriptAssetInstance(Scene::SceneObject* sceneObject, AssetDefinition* definition) {
 		std::cout << "AssetManager: Creating script asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		
@@ -182,7 +186,7 @@ namespace Asset {
 		return retval;
 	}
 	
-	AssetInstance* AssetManager::createShaderAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
+	AssetInstance* AssetManager::createShaderAssetInstance(Scene::SceneObject* sceneObject, AssetDefinition* definition) {
 		std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		retval = new Instances::Shader::ShaderInstance(definition);
@@ -200,6 +204,7 @@ namespace Asset {
 		std::cout << "AssetManager: Creating Light Asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		retval = new Instances::Light::LightInstance(definition);
+		
 		if (sceneObject) {
 			sceneObject->setLightAssetInstance(retval);
 		}

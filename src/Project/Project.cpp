@@ -266,7 +266,7 @@ namespace Project {
 		}
 		
 		if (!mAssetManager->createAllAssetInstances()) {
-			std::cerr << "Project: Fatal Error, unable to create asset instances" << std::endl;
+			std::cerr << "Project: Unable to create asset instances." << std::endl;
 			return false;
 		}
 		mPluginManager->populatePhysicsWorld(mAssetManager->getSceneObjectsWithPhysicsObjects());
@@ -317,7 +317,7 @@ namespace Project {
 		}
 		// Init Scene with Asset Instances
 		if (!loadScene(getStartupScene())) {
-			std::cerr << "Project: unable to load startup scene." << std::endl;
+			std::cerr << "Project: Unable to load startup scene." << std::endl;
 			return false;
 		}
 		std::cout << "Project: Starting Scene - " << getActiveScene()->getName()

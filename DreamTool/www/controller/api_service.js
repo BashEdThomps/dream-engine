@@ -43,9 +43,13 @@ function($http) {
     });
   };
 
+  this.generateAssetURL = function(project,type,uuid,format) {
+    return "/asset/"+project+"/"+type+"/"+uuid+"/"+format;
+  };
+
   this.readAsset = function(project,type,uuid,format,callback) {
     $http({
-      url    : "/asset/"+project+"/"+type+"/"+uuid+"/"+format,
+      url    : this.generateAssetURL(project,type,uuid,format),
       method : "get",
     }).then(function success(resp){
       callback(resp.data);
