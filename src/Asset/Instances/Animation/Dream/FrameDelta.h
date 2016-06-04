@@ -6,18 +6,18 @@
 #define FRAME_DELTA_OP_BEZIER 1
 #define FRAME_DELTA_OP_ORBIT  2
 
-namespace Dream          {
-namespace Asset          {
-namespace Instances      {
-namespace Animation      {
-namespace DreamAnimation {
+namespace Dream     {
+namespace Asset     {
+namespace Instances {
+namespace Animation {
+namespace Dream     {
 	
 	class FrameDelta {
 	private:
 		int   mDrawableID;
 		float mPositionDelta [3];
 		float mRotationDelta [3];
-		//float mScaleDelta    [3];
+		float mScaleDelta    [3];
 		float mOrbitRadius;
 		int   mOperation;
 	public:
@@ -32,11 +32,13 @@ namespace DreamAnimation {
 		int         getOperation();
 		void        setPositionDelta(float*);
 		void        setRotationDelta(float*);
+		float*      getScaleDelta();
+		void        setScaleDelta(float*);
 	};
 	
 } // End of Dream
 } // End of Animation
-} // End of Instance
+} // End of Instances
 } // End of Asset
 } // End of Dream
 

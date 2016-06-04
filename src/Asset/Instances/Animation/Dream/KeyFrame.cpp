@@ -1,15 +1,15 @@
 #include "KeyFrame.h"
 
-namespace Dream          {
-namespace Asset          {
-namespace Instances      {
-namespace Animation      {
-namespace DreamAnimation {
+namespace Dream     {
+namespace Asset     {
+namespace Instances {
+namespace Animation {
+namespace Dream     {
 	
 	KeyFrame::KeyFrame(int fps, int index, long duration) {
 		mFramesPerSecond = fps;
-	    mIndex = index;
-	    mDuration = duration;
+	  mIndex = index;
+	  mDuration = duration;
 	}
 
 	KeyFrame::~KeyFrame() {}

@@ -4,11 +4,11 @@
 #include <vector>
 #include "FrameDelta.h"
 
-namespace Dream          {
-namespace Asset          {
-namespace Instances      {
-namespace Animation      {
-namespace DreamAnimation {
+namespace Dream     {
+namespace Asset     {
+namespace Instances {
+namespace Animation {
+namespace Dream     {
 	
 	class Frame {
 	private:

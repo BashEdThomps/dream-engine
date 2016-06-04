@@ -131,14 +131,25 @@ koaRouter.get("/projectfile/:uuid",function* (next){
 	yield next;
 });
 
-// GET /asset_exists/:uuid/type/format
-koaRouter.get("/asset_exists/:project/:type/:uuid/:format",function* (next) {
+// GET Asset Exists
+koaRouter.get("/asset/exists/:project/:type/:uuid/:format",function* (next) {
 	this.status = 200;
 	this.body = dreamDirectory.assetExists(
 		this.params.project,
 		this.params.uuid,
 		this.params.type,
 		this.params.format
+	);
+	yield next;
+});
+
+// DELETE Asset Data
+koaRouter.delete("/asset/delete/:project/:type/:uuid",function* (next) {
+	this.status = 200;
+	this.body = dreamDirectory.deleteAssetData(
+		this.params.project,
+		this.params.uuid,
+		this.params.type
 	);
 	yield next;
 });

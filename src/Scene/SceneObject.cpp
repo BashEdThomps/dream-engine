@@ -232,42 +232,50 @@ namespace Scene {
 		return mAssetInstanceUUIDsToLoad;
 	}
 	
-	void SceneObject::setAnimationAssetInstance(Dream::Asset::AssetInstance* animationAsset) {
+	void SceneObject::setAnimationAssetInstance(Asset::AssetInstance* animationAsset) {
 		mAnimationAssetInstance = animationAsset;
 	}
 	
-	Dream::Asset::AssetInstance* SceneObject::getAnimationAssetInstance() {
+	Asset::AssetInstance* SceneObject::getAnimationAssetInstance() {
 		return mAnimationAssetInstance;
 	}
 	
-	void SceneObject::setAudioAssetInstance(Dream::Asset::AssetInstance* audioAsset) {
+	void SceneObject::setAudioAssetInstance(Asset::AssetInstance* audioAsset) {
 		mAudioAssetInstance = audioAsset;
 	}
-	Dream::Asset::AssetInstance* SceneObject::getAudioAssetInstance() {
+	
+	Asset::AssetInstance* SceneObject::getAudioAssetInstance() {
 		return mAudioAssetInstance;
 	}
 	
-	void SceneObject::setModelAssetInstance(Dream::Asset::AssetInstance* modelAsset) {
+	void SceneObject::setModelAssetInstance(Asset::AssetInstance* modelAsset) {
 		mModelAssetInstance = modelAsset;
 	}
 	
-	Dream::Asset::AssetInstance* SceneObject::getModelAssetInstance() {
+	Asset::AssetInstance* SceneObject::getModelAssetInstance() {
 		return mModelAssetInstance;
 	}
 	
-	void SceneObject::setScriptAssetInstance(Dream::Asset::AssetInstance* scriptAsset) {
+	void SceneObject::setScriptAssetInstance(Asset::AssetInstance* scriptAsset) {
 		mScriptAssetInstance = scriptAsset;
 	}
 	
-	Dream::Asset::AssetInstance* SceneObject::getScriptAssetInstance() {
+	Asset::AssetInstance* SceneObject::getScriptAssetInstance() {
 		return mScriptAssetInstance;
 	}
 	
-	void SceneObject::setShaderAssetInstance(Dream::Asset::AssetInstance* shaderAsset) {
+	void SceneObject::setShaderAssetInstance(Asset::AssetInstance* shaderAsset) {
 		mShaderAssetInstance = shaderAsset;
 	}
 	
-	Dream::Asset::AssetInstance* SceneObject::getShaderAssetInstance() {
+	void SceneObject::setLightAssetInstance(Asset::AssetInstance* lightAsset) {
+		mLightAssetInstance = lightAsset;
+	}
+	Asset::AssetInstance* SceneObject::getLightAssetInstance() {
+		return mLightAssetInstance;
+	}
+	
+	Asset::AssetInstance* SceneObject::getShaderAssetInstance() {
 		return mShaderAssetInstance;
 	}
 	
@@ -287,12 +295,12 @@ namespace Scene {
 		return mScale;
 	}
 	
-	void SceneObject::setCollisionShapeAssetInstance(Asset::AssetInstance* collisionShape) {
-		mCollisionShapeAssetInstance = collisionShape;
+	void SceneObject::setPhysicsObjectAssetInstance(Asset::AssetInstance* physicsObject) {
+		mPhysicsObjectAssetInstance = physicsObject;
 	}
 	
-	Asset::AssetInstance* SceneObject::getCollisionShapeAssetInstance() {
-		return mCollisionShapeAssetInstance;
+	Asset::AssetInstance* SceneObject::getPhysicsObjectAssetInstance() {
+		return mPhysicsObjectAssetInstance;
 	}
 	
 } // End of Scene

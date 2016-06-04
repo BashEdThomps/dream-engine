@@ -23,39 +23,41 @@ App.service('ProjectService',
     this.ASSET_FORMAT_NAME_WAV  = "Wave File";
     this.ASSET_FORMAT_AUDIO_WAV = "wav";
 
-    this.ASSET_TYPE_NAME_COLLISION_SHAPE = "Collision Shape";
-    this.ASSET_TYPE_COLLISION_SHAPE      = "collisionShape";
+    this.ASSET_TYPE_LIGHT = "light";
+    this.ASSET_TYPE_NAME_LIGHT = "Light";
 
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SPHERE = "Shpere";
-    this.ASSET_FORMAT_COLLISION_SHAPE_SPHERE = "btShpereShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_BOX = "Box";
-    this.ASSET_FORMAT_COLLISION_SHAPE_BOX = "btBoxShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CYLINDER = "Cylinder";
-    this.ASSET_FORMAT_COLLISION_SHAPE_CYLINDER = "btCylinderShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CAPSULE = "Capsule";
-    this.ASSET_FORMAT_COLLISION_SHAPE_CAPSULE = "btCapsuleShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONE = "Cone";
-    this.ASSET_FORMAT_COLLISION_SHAPE_CONE = "btConeShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_MULTI_SPHERE = "Multi Sphere";
-    this.ASSET_FORMAT_COLLISION_SHAPE_MULTI_SPHERE = "btMultiSphereShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_HULL = "Convex Hull";
-    this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_HULL = "btConvexHullShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH = "Convex Triangle Mesh";
-    this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH = "btConvexTriangleMeshShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH = "Bvh Triangle Mesh";
-    this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH = "btBvhTriangleMeshShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN = "Heightfield Terrain";
-    this.ASSET_FORMAT_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN = "btHeightfieldTerrainShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_STATIC_PLANE = "Static Plane";
-    this.ASSET_FORMAT_COLLISION_SHAPE_STATIC_PLANE = "btStaticPlaneShape";
-    this.ASSET_FORMAT_NAME_COLLISION_SHAPE_COMPOUND = "Compound";
-    this.ASSET_FORMAT_COLLISION_SHAPE_COMPOUND = "btCompoundShape";
+    this.ASSET_TYPE_NAME_PHYSICS_OBJECT = "Physics Object";
+    this.ASSET_TYPE_PHYSICS_OBJECT      = "physicsObject";
+
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_SPHERE = "Shpere";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_SPHERE = "btShpereShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_BOX = "Box";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_BOX = "btBoxShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CYLINDER = "Cylinder";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_CYLINDER = "btCylinderShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CAPSULE = "Capsule";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_CAPSULE = "btCapsuleShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONE = "Cone";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_CONE = "btConeShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_MULTI_SPHERE = "Multi Sphere";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_MULTI_SPHERE = "btMultiSphereShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_HULL = "Convex Hull";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_HULL = "btConvexHullShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH = "Convex Triangle Mesh";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH = "btConvexTriangleMeshShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH = "Bvh Triangle Mesh";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH = "btBvhTriangleMeshShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN = "Heightfield Terrain";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN = "btHeightfieldTerrainShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_STATIC_PLANE = "Static Plane";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_STATIC_PLANE = "btStaticPlaneShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_COMPOUND = "Compound";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_COMPOUND = "btCompoundShape";
 
     this.ASSET_TYPE_NAME_MODEL     = "Model";
     this.ASSET_TYPE_MODEL          = "model";
     this.ASSET_FORMAT_NAME_ASSIMP  = "Assimp";
     this.ASSET_FORMAT_MODEL_ASSIMP = "assimp";
-
 
     this.ASSET_TYPE_NAME_SCRIPT   = "Script";
     this.ASSET_TYPE_SCRIPT        = "script";
@@ -94,47 +96,53 @@ App.service('ProjectService',
           }
         ]
       },
-      // Collision Shape
+      // Light
       {
-        name: this.ASSET_TYPE_NAME_COLLISION_SHAPE,
-        type: this.ASSET_TYPE_COLLISION_SHAPE,
+        name:    this.ASSET_TYPE_NAME_LIGHT,
+        type:    this.ASSET_TYPE_LIGHT,
+        formats: []
+      },
+      // Physics Object
+      {
+        name: this.ASSET_TYPE_NAME_PHYSICS_OBJECT,
+        type: this.ASSET_TYPE_PHYSICS_OBJECT,
         formats: [
           {
-            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_SPHERE,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_SPHERE
+            name:   this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_SPHERE,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_SPHERE
           },{
-            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_BOX,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_BOX
+            name:   this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_BOX,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_BOX
           },{
-            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CYLINDER,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_CYLINDER
+            name:   this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CYLINDER,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_CYLINDER
           },{
-            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CAPSULE,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_CAPSULE
+            name:   this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CAPSULE,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_CAPSULE
           },{
-            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONE,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONE
+            name:   this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONE,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_CONE
           },{
-            name:   this.ASSET_FORMAT_NAME_COLLISION_SHAPE_MULTI_SPHERE,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_MULTI_SPHERE
+            name:   this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_MULTI_SPHERE,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_MULTI_SPHERE
           },{
-            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_HULL,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_HULL
+            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_HULL,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_HULL
           },{
-            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_TRIANGLE_MESH
+            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH
           },{
-            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH
+            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH
           },{
-            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_HEIGHTFIELD_TERRAIN
+            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN
           },{
-            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_STATIC_PLANE,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_STATIC_PLANE
+            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_STATIC_PLANE,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_STATIC_PLANE
           },{
-            name: this.ASSET_FORMAT_NAME_COLLISION_SHAPE_COMPOUND,
-            format: this.ASSET_FORMAT_COLLISION_SHAPE_COMPOUND
+            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_COMPOUND,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_COMPOUND
           }
         ]
       },
@@ -216,10 +224,10 @@ App.service('ProjectService',
       });
     };
 
-    this.getCollisionShapeAssetFormats = function(callback) {
+    this.getPhysicsObjectAssetFormats = function(callback) {
       var ps = this;
       this.ASSET_TYPES.forEach(function(assetType){
-        if (assetType.type == ps.ASSET_TYPE_COLLISION_SHAPE) {
+        if (assetType.type == ps.ASSET_TYPE_PHYSICS_OBJECT) {
           callback(assetType.formats);
         }
       });
@@ -773,7 +781,11 @@ App.service('ProjectService',
     };
 
     this.readAsset = function(asset,callback) {
-        ApiService.readAsset(this.project, asset,callback);
+      ApiService.readAsset(this.project, asset,callback);
+    };
+
+    this.deleteAssetData = function(asset,callback) {
+      ApiService.deleteAssetData(this.project.uuid,asset.type,asset.uuid,callback);
     };
 
     return this;

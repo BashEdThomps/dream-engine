@@ -23,8 +23,7 @@ namespace Input   {
 	
 	std::vector<InputEvent> InputPluginInterface::sInputEventsVector = std::vector<InputEvent>();
 	
-	InputPluginInterface::InputPluginInterface  ()
-	  : Dream::Plugins::PluginInterface() {}
+	InputPluginInterface::InputPluginInterface() : Dream::Plugins::PluginInterface() {}
 	
 	void InputPluginInterface::pushEvent(InputEvent event) {
 		sInputEventsVector.push_back(event);

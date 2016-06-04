@@ -1,4 +1,4 @@
-#include "CollisionObjectInstance.h"
+#include "PhysicsObjectInstance.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -6,31 +6,31 @@ namespace Instances {
 namespace Physics   {
 namespace Bullet    {
 	
-	CollisionObjectInstance::CollisionObjectInstance(AssetDefinition* definition) : AssetInstance(definition){}
+	PhysicsObjectInstance::PhysicsObjectInstance(AssetDefinition* definition) : AssetInstance(definition){}
 	
-	CollisionObjectInstance::~CollisionObjectInstance() {
+	PhysicsObjectInstance::~PhysicsObjectInstance() {
 		delete mRigidBody;
 		delete mRigidBodyConstructionInfo;
 		delete mMotionState;
 		delete mCollisionShape;
 	}
 	
-	btCollisionShape* CollisionObjectInstance::getCollisionShape() {
+	btCollisionShape* PhysicsObjectInstance::getCollisionShape() {
 		return mCollisionShape;
 	}
 		
-	bool CollisionObjectInstance::load(std::string projectPath) {
+	bool PhysicsObjectInstance::load(std::string projectPath) {
 		if (!createCollisionShape()){
-			std::cerr << "CollisionObjectInstance: Unable to create collision shape" << std::endl;
+			std::cerr << "PhysicsObjectInstance: Unable to create collision shape" << std::endl;
 			return false;
 		}
-		mMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
+		mMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
 		mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(0, mMotionState, mCollisionShape, btVector3(0, 0, 0));
 		mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 		return mRigidBody != NULL;
 	}
 	
-	bool CollisionObjectInstance::createCollisionShape() {
+	bool PhysicsObjectInstance::createCollisionShape() {
 		std::string format = mDefinition->getFormat();
 		//btScalar mass = mDefinition->getAttributeAsFloat(ASSET_ATTR_MASS);
 		
@@ -68,11 +68,11 @@ namespace Bullet    {
 		return mCollisionShape != NULL;
 	}
 	
-	btRigidBody* CollisionObjectInstance::getRigidBody() {
+	btRigidBody* PhysicsObjectInstance::getRigidBody() {
 		return mRigidBody;
 	}
 	
-	void CollisionObjectInstance::getWorldTransform(btTransform &transform) {
+	void PhysicsObjectInstance::getWorldTransform(btTransform &transform) {
 		mMotionState->getWorldTransform(transform);
 	}
 	

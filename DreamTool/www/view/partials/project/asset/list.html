@@ -56,28 +56,28 @@
                 </select>
               </td>
             </tr>
-            <!-- Collision Shape-->
-            <tr ng-show="isAssetTypeCollisionShape()">
-              <td>Collision Shape Type</td>
+            <!-- Physics Object-->
+            <tr ng-show="isAssetTypePhysicsObject()">
+              <td>Collision Shape</td>
               <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="collisionShapeFormat">
-                  <option ng-repeat="fmt in assetFormats.collisionShape" value="{{fmt.format}}">{{fmt.name}}</option>
+                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="physicsObjectFormat">
+                  <option ng-repeat="fmt in assetFormats.physicsObject" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
             </tr>
-            <tr ng-show="isAssetTypeCollisionShape()">
+            <tr ng-show="isAssetTypePhysicsObject()">
               <td>Mass</td>
               <td>
                 <input ng-change="modified()" ng-model="currentAsset.mass" class="form-control input-sm" type="number"/>
               </td>
             </tr>
-            <tr ng-show="isAssetTypeCollisionShape()">
+            <tr ng-show="isAssetTypePhysicsObject()">
               <td>Margin</td>
               <td>
                 <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number"/>
               </td>
             </tr>
-            <tr ng-show="isAssetTypeCollisionShape() && isCollisionShapeAssetFormatSphere()">
+            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatSphere()">
               <td>Radius</td>
               <td>
                 <input ng-change="modified()" ng-model="currentAsset.radius" class="form-control input-sm" type="number"/>
@@ -127,11 +127,11 @@
               <td>Wav File</td>
               <td>
                 <button ng-show="hasAudioWav"  class="pull-right btn-sm btn btn-danger"
-                        ng-click="">
+                        ng-click="onDeleteAssetDataButtonClicked()">
                   <span class="glyphicon glyphicon-remove"></span>
                 </button>
                 <button ng-show="!hasAudioWav" class="pull-right btn btn-sm btn btn-success"
-                        ng-click="onAssetAudioWavUploadButtonClicked()">
+                        ng-click="onAssetAudioUploadButtonClicked()">
                   <span class="glyphicon glyphicon-open"></span>
                 </button>
                 <input ng-show="!hasAudioWav" type="file" id="wav-file" accept=".wav" name="wav-file"/>
@@ -140,10 +140,10 @@
             <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatOgg()">
               <td>Ogg File</td>
               <td>
-                <button ng-show="hasAudioOgg" class="pull-right btn btn-sm btn-danger" ng-click="">
+                <button ng-show="hasAudioOgg" class="pull-right btn btn-sm btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                   <span class="glyphicon glyphicon-remove"></span>
                 </button>
-                <button ng-show="!hasAudioOgg" class="pull-right btn btn-sm btn-success" ng-click="onAssetAudioOggUploadButtonClicked()">
+                <button ng-show="!hasAudioOgg" class="pull-right btn btn-sm btn-success" ng-click="onAssetAudioUploadButtonClicked()">
                   <span class="glyphicon glyphicon-open"></span>
                 </button>
                 <input ng-show="!hasAudioOgg" type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>

@@ -5,8 +5,8 @@
   <div ng-show="asset.type == 'audio'"
        ng-include="'/view/partials/project/asset/editors/audio.html'">
   </div>
-  <div ng-show="asset.type == 'collisionShape'"
-       ng-include="'/view/partials/project/asset/editors/collisionShape.html'">
+  <div ng-show="asset.type == 'physicsObject'"
+       ng-include="'/view/partials/project/asset/editors/physicsObject.html'">
   </div>
   <div ng-show="asset.type == 'model'"
        ng-include="'/view/partials/project/asset/editors/model.html'">
@@ -16,5 +16,8 @@
   </div>
   <div ng-show="asset.type == 'shader'"
        ng-include="'/view/partials/project/asset/editors/shader.html'">
+  </div>
+  <div ng-show="asset.type == 'light'"
+       ng-include="'/view/partials/project/asset/editors/light.html'">
   </div>
 </div>

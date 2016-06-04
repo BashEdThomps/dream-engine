@@ -111,10 +111,10 @@ namespace Project {
 		bool isBullet2Enabled();
 		bool isOpenGLEnabled();
 		
-		void setActiveScene(Scene::Scene*);
-		Scene::Scene* getActiveScene();
-		bool hasActiveScene();
-		bool initActiveScene();
+		void          setActiveScene(Scene::Scene*);
+		Scene::Scene *getActiveScene();
+		bool          hasActiveScene();
+		bool          initActiveScene();
 		
 		bool createAssetManager();
 		bool createPluginManager();

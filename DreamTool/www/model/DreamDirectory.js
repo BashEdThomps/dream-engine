@@ -1,6 +1,7 @@
 var fs    = require('fs');
 var path  = require('path');
 var targz = require('tar.gz');
+var rimraf = require('rimraf');
 
 var DREAM_TOOL_HOME_DIR = ".dreamtool";
 var ASSET_DIR           = "assets";
@@ -220,6 +221,19 @@ module.exports.assetExists = function(project,uuid,type,format) {
         format;
     console.log("Checking for",absAssetPath);
     retval = fs.existsSync(absAssetPath);
+    return retval;
+};
+
+module.exports.deleteAssetData = function(project,uuid,type) {
+    var retval = false;
+    var absAssetPath =
+        dreamDirectory + path.sep +
+        project        + path.sep +
+        ASSET_DIR      + path.sep +
+        type           + path.sep +
+        uuid;
+    console.log("Deleting",absAssetPath);
+    retval = rimraf.sync(absAssetPath);
     return retval;
 };
 

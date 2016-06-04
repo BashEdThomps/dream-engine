@@ -2,11 +2,11 @@
 
 #include "FrameDelta.h"
 
-namespace Dream          {
-namespace Asset          {
-namespace Instances      {
-namespace Animation      {
-namespace DreamAnimation {
+namespace Dream     {
+namespace Asset     {
+namespace Instances {
+namespace Animation {
+namespace Dream     {
 	
 	FrameDelta::FrameDelta(int drawableId, int operation) {
 		mOperation        = operation;
@@ -90,6 +90,16 @@ namespace DreamAnimation {
 		mRotationDelta[0] = rot[0];
 		mRotationDelta[1] = rot[1];
 		mRotationDelta[2] = rot[2];
+	}
+	
+	void FrameDelta::setScaleDelta(float *scaleDelta) {
+		mScaleDelta[0] = scaleDelta[0];
+		mScaleDelta[1] = scaleDelta[1];
+		mScaleDelta[2] = scaleDelta[2];
+	}
+	
+	float* FrameDelta::getScaleDelta() {
+		return mScaleDelta;
 	}
 	
 } // End of Dream

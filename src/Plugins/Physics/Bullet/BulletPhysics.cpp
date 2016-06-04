@@ -75,6 +75,10 @@ namespace Bullet {
 		mDynamicsWorld->removeRigidBody(rigidBody);
 	}
 	
+	void BulletPhysics::addPhysicsObjectInstance(Asset::Instances::Physics::Bullet::PhysicsObjectInstance *physicsObjejct){
+		addRigidBody(physicsObjejct->getRigidBody());
+	}
+	
 } // End of Bullet
 } // End of Scene
 } // End of Plugins

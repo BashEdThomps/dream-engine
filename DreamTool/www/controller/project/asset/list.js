@@ -26,8 +26,8 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       $scope.assetFormats.animation = animFormats;
     })
 
-    ProjectService.getCollisionShapeAssetFormats(function(colShapeFormats){
-      $scope.assetFormats.collisionShape = colShapeFormats;
+    ProjectService.getPhysicsObjectAssetFormats(function(colShapeFormats){
+      $scope.assetFormats.physicsObject = colShapeFormats;
     });
 
     ProjectService.getModelAssetFormats(function(modelFormats) {
@@ -51,9 +51,9 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.type == ProjectService.ASSET_TYPE_AUDIO;
   };
 
-  $scope.isAssetTypeCollisionShape = function() {
+  $scope.isAssetTypePhysicsObject = function() {
     if (!$scope.currentAsset) return false;
-    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_COLLISION_SHAPE;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_PHYSICS_OBJECT;
   };
 
   $scope.isAssetTypeModel = function() {
@@ -91,9 +91,9 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_SCRIPT_CHAI;
   };
 
-  $scope.isCollisionShapeAssetFormatSphere = function() {
+  $scope.isPhysicsObjectAssetFormatSphere = function() {
       if (!$scope.currentAsset) return false;
-      return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_COLLISION_SHAPE_SPHERE;
+      return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_SPHERE;
   };
 
   $scope.goToAssetEditor = function(uuid) {
@@ -197,25 +197,10 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     });
   };
 
-  $scope.onAssetAudioWaveUploadButtonClicked = function() {
-    var wavFile = document.getElementById('wav-file');
-    UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
-      var path = ProjectService.getProjectUUID()+"/asset/audio/"+$scope.currentAsset.uuid+"/wav";
-      ApiService.uploadAsset(path,data,function(success){
-        if (success) {
-          UIService.addAlert("Asset uploaded successfuly.","success");
-        }
-        else {
-          UIService.addAlert("Error uploading asset.","danger");
-        }
-      });
-    });
-  };
-
-  $scope.onAssetAudioOggUploadButtonClicked = function() {
+  $scope.onAssetAudioUploadButtonClicked = function() {
     var oggFile = document.getElementById('ogg-file');
     UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
-      var path = ProjectService.getProjectUUID()+"/asset/audio/"+$scope.currentAsset.uuid+"/ogg";
+      var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/"+$scope.currentAsset.format;
       ApiService.uploadAsset(path,data, function(success){
         if (success) {
           UIService.addAlert("Asset uploaded successfuly.","success");
@@ -226,6 +211,16 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       });
     });
   };
+
+  $scope.onDeleteAssetDataButtonClicked = function() {
+    ProjectService.deleteAssetData($scope.currentAsset,function(success) {
+      if (success){
+        UIService.addAlert("Asset Data Deleted", "success");
+      } else {
+        UIService.addAlert("Unable to Remove Asset Data", "succes");
+      }
+    });
+  }
 
   $scope.doOnLoad();
 }]);

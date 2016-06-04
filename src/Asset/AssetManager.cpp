@@ -27,17 +27,17 @@ namespace Asset {
 	}
 	
 	AssetManager::~AssetManager() {
-		destroyAssetInstances();
+		destroyAllAssetInstances();
 	}
 	
-	void AssetManager::destroyAssetInstances() {
+	void AssetManager::destroyAllAssetInstances() {
 		for (std::vector<AssetInstance*>::iterator instanceIt = mAssetInstances.begin();
 			 instanceIt != mAssetInstances.end(); instanceIt++) {
 			delete (*instanceIt);
 		}
 	}
 	
-	bool AssetManager::createAssetInstances() {
+	bool AssetManager::createAllAssetInstances() {
 		Scene::Scene *activeScene = mProject->getActiveScene();
 		
 		if (!activeScene){
@@ -87,7 +87,7 @@ namespace Asset {
 		AssetInstance* retval = NULL;
 		std::cout << "AssetManager: Creating Asset Intance from definition: " << definition->getName() << " (" << definition->getType() << ")" << std::endl;
 		
-		if (definition->isTypeAnimation()) {
+		if(definition->isTypeAnimation()) {
 			retval = createAnimationAssetInstance(sceneObject, definition);
 		} else if (definition->isTypeAudio()) {
 			retval = createAudioAssetInstance(sceneObject, definition);
@@ -97,8 +97,8 @@ namespace Asset {
 			retval = createScriptAssetInstance(sceneObject, definition);
 		} else if (definition->isTypeShader()) {
 			retval = createShaderAssetInstance(sceneObject, definition);
-		} else if (definition->isTypeCollisionShape()) {
-			retval = createCollisionObjectAssetInstance(sceneObject,definition);
+		} else if (definition->isTypePhysicsObject()) {
+			retval = createPhysicsObjectAssetInstance(sceneObject,definition);
 		}
 		
 		if (retval != NULL) {
@@ -109,12 +109,13 @@ namespace Asset {
 		return retval;
 	}
 	
-	AssetInstance* AssetManager::createCollisionObjectAssetInstance(Scene::SceneObject *sceneObject, AssetDefinition* definition) {
-		std::cout << "AssetManager: Creating Collision Object Asset Instance." << std::endl;
-		AssetInstance* retval = new Instances::Physics::Bullet::CollisionObjectInstance(definition);
+	AssetInstance* AssetManager::createPhysicsObjectAssetInstance(Scene::SceneObject *sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating Physics Object Asset Instance." << std::endl;
+		AssetInstance* retval = new Instances::Physics::Bullet::PhysicsObjectInstance(definition);
 		
 		if (sceneObject) {
-			sceneObject->setCollisionShapeAssetInstance(retval);
+			sceneObject->setPhysicsObjectAssetInstance(retval);
+			mSceneObjectsWithPhysicsObjects.push_back(sceneObject);
 		}
 		return retval;
 	}
@@ -124,15 +125,14 @@ namespace Asset {
 		AssetInstance* retval = NULL;
 		
 		if (definition->isAnimationFormatDream()) {
-			retval = new Instances::Animation::DreamAnimation::AnimationInstance(definition);
+			retval = new Instances::Animation::Dream::AnimationInstance(definition);
 		}
 		
-		if (sceneObject){
+		if (sceneObject) {
 			sceneObject->setAnimationAssetInstance(retval);
 		}
 		return retval;
 	}
-	
 	
 	AssetInstance* AssetManager::createAudioAssetInstance(Dream::Scene::SceneObject* sceneObject, AssetDefinition* definition) {
 		std::cout << "AssetManager: Creating audio asset instance." << std::endl;
@@ -188,6 +188,20 @@ namespace Asset {
 		retval = new Instances::Shader::ShaderInstance(definition);
 		if (sceneObject) {
 			sceneObject->setShaderAssetInstance(retval);
+		}
+		return retval;
+	}
+	
+	std::vector<Scene::SceneObject*> AssetManager::getSceneObjectsWithPhysicsObjects() {
+		return mSceneObjectsWithPhysicsObjects;
+	}
+	
+	AssetInstance* AssetManager::createLightAssetInstance(Scene::SceneObject *sceneObject, AssetDefinition* definition) {
+		std::cout << "AssetManager: Creating Light Asset instance." << std::endl;
+		AssetInstance* retval = NULL;
+		retval = new Instances::Light::LightInstance(definition);
+		if (sceneObject) {
+			sceneObject->setLightAssetInstance(retval);
 		}
 		return retval;
 	}

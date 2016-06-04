@@ -41,8 +41,9 @@
 
 #define ASSET_TYPE_ANIMATION       "animation"
 #define ASSET_TYPE_AUDIO           "audio"
-#define ASSET_TYPE_COLLISION_SHAPE "collisionShape"
+#define ASSET_TYPE_LIGHT           "ligh"
 #define ASSET_TYPE_MODEL           "model"
+#define ASSET_TYPE_PHYSICS_OBJECT  "physicsObject"
 #define ASSET_TYPE_SCRIPT          "script"
 #define ASSET_TYPE_SHADER          "shader"
 
@@ -96,7 +97,7 @@ namespace Asset {
 		bool isTypeModel();
 		bool isTypeScript();
 		bool isTypeShader();
-		bool isTypeCollisionShape();
+		bool isTypePhysicsObject();
 		
 		bool isScriptFormatChai();
 		bool isModelFormatAssimp();
@@ -107,7 +108,7 @@ namespace Asset {
 		std::string getAssetPath();
 		
 		void loadMetadata(nlohmann::json);
-		void loadCollisionShapeAttributes(nlohmann::json);
+		void loadPhysicsObjectAttributes(nlohmann::json);
 		
 		void showStatus();
 	}; // End of AssetDefinition

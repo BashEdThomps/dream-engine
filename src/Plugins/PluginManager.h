@@ -51,6 +51,7 @@ namespace Plugins {
 		bool createVideoPlugin();
 		void update();
 		bool isDone();
+		void populatePhysicsWorld(std::vector<Scene::SceneObject*>);
 	}; // End of PluginManager
 	
 } // End of Plugins

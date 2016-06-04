@@ -25,8 +25,8 @@ namespace Asset {
 
 	AssetDefinition::AssetDefinition(nlohmann::json json) {
 		loadMetadata(json);
-		if (isTypeCollisionShape()) {
-			loadCollisionShapeAttributes(json);
+		if (isTypePhysicsObject()) {
+			loadPhysicsObjectAttributes(json);
 		}
 		showStatus();
 	}
@@ -57,7 +57,7 @@ namespace Asset {
 		}
 	}
 	
-	void AssetDefinition::loadCollisionShapeAttributes(nlohmann::json json) {
+	void AssetDefinition::loadPhysicsObjectAttributes(nlohmann::json json) {
 		// Margin
 		if (!json[ASSET_ATTR_MARGIN].is_null() && json[ASSET_ATTR_MARGIN].is_number()) {
 			addAttribute(ASSET_ATTR_MARGIN, std::to_string((float)json[ASSET_ATTR_MARGIN]));
@@ -146,8 +146,8 @@ namespace Asset {
 		return getAttribute(ASSET_FORMAT);
 	}
 	
-	bool AssetDefinition::isTypeCollisionShape() {
-		return getType().compare(ASSET_TYPE_COLLISION_SHAPE) == 0;
+	bool AssetDefinition::isTypePhysicsObject() {
+		return getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0;
 	}
 	
 	bool AssetDefinition::isTypeAnimation() {

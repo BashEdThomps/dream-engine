@@ -34,7 +34,7 @@ function($http) {
 
   this.assetExists = function(project,type,uuid,format,callback) {
     $http({
-      url    : "/asset_exists/"+project+"/"+type+"/"+uuid+"/"+format,
+      url    : "/asset/exists/"+project+"/"+type+"/"+uuid+"/"+format,
       method : "get",
     }).then(function success(resp){
       callback(JSON.parse(resp.data));
@@ -145,6 +145,18 @@ function($http) {
       callback(null);
     });
   };
+
+  this.deleteAssetData = function(project,type,uuid,callback) {
+    $http({
+      method:"DELETE",
+      url: "/asset/delete/"+project+"/"+type+"/"+uuid
+    }
+    ).then(function success(response) {
+
+    },function error(response) {
+
+    });
+  }
 
   return this;
 }

@@ -4,11 +4,11 @@
 #include <vector>
 #include "FrameDelta.h"
 
-namespace Dream          {
-namespace Asset          {
-namespace Instances      {
-namespace Animation      {
-namespace DreamAnimation {
+namespace Dream     {
+namespace Asset     {
+namespace Instances {
+namespace Animation {
+namespace Dream     {
 	
 	class KeyFrame {
 	private:
@@ -29,7 +29,7 @@ namespace DreamAnimation {
 		int         getIndex();
 	};
 	
-} // End of DreamAnimation
+} // End of Dream
 } // End of Animation
 } // End of Instances
 } // End of Asset

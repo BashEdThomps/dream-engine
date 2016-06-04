@@ -55,7 +55,8 @@ namespace Scene {
 		Asset::AssetInstance* mModelAssetInstance;
 		Asset::AssetInstance* mScriptAssetInstance;
 		Asset::AssetInstance* mShaderAssetInstance;
-		Asset::AssetInstance* mCollisionShapeAssetInstance;
+		Asset::AssetInstance* mPhysicsObjectAssetInstance;
+		Asset::AssetInstance* mLightAssetInstance;
 		
 	public:
 		SceneObject  ();
@@ -108,8 +109,11 @@ namespace Scene {
 		void setShaderAssetInstance(Asset::AssetInstance*);
 		Asset::AssetInstance* getShaderAssetInstance();
 		
-		void setCollisionShapeAssetInstance(Asset::AssetInstance*);
-		Asset::AssetInstance* getCollisionShapeAssetInstance();
+		void setPhysicsObjectAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getPhysicsObjectAssetInstance();
+		
+		void setLightAssetInstance(Asset::AssetInstance*);
+		Asset::AssetInstance* getLightAssetInstance();
 		
 		std::vector<std::string> getAssetInstanceUUIDsToLoad();
 		bool hasModelAssetInstance();

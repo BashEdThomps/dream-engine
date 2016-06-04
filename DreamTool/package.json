@@ -29,6 +29,7 @@
     "koa-router": "^5.4.0",
     "koa-static": "^2.0.0",
     "ng-toast": "^2.0.0",
+    "rimraf": "^2.5.2",
     "tar.gz": "^1.0.3",
     "three.js": "^0.73.2"
   }

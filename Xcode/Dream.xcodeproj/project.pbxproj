@@ -82,7 +82,8 @@
 		A9854396CF494B66BDECD9A5 /* TestFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81B0F7CF93A3440BA775E782 /* TestFrame.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		AA7A337EF92E4BF6B46F0869 /* ArgumentParserTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73663B8B12914581BA682EF3 /* ArgumentParserTest.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		AB2473C81CFE1D81008A90CF /* GLFWTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB2473C51CFE153C008A90CF /* GLFWTime.cpp */; };
-		AB2473CB1D00BB4C008A90CF /* CollisionObjectInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB2473C91D00BB4C008A90CF /* CollisionObjectInstance.cpp */; };
+		AB2473CB1D00BB4C008A90CF /* PhysicsObjectInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB2473C91D00BB4C008A90CF /* PhysicsObjectInstance.cpp */; };
+		AB8046571D02FE1500A04934 /* LightInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB8046551D02FE1500A04934 /* LightInstance.cpp */; };
 		ADBBBFCEC1F245A8AF98BE48 /* TestSceneObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 82F96102DD1B44B8A29C11D3 /* TestSceneObject.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		B0D015035E0444C68D550D08 /* Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D334DD690C24D5B987B0522 /* Unit.cpp */; settings = {COMPILER_FLAGS = ""; }; };
 		B18972409CE74F1BB0B7AB6D /* ChaiScriptInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD1B362CB8274C3A8337014D /* ChaiScriptInstance.cpp */; settings = {COMPILER_FLAGS = ""; }; };
@@ -257,8 +258,10 @@
 		AB1444E930604E1CBF0BECB7 /* TestKeyFrame.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = TestKeyFrame.h; path = test/Asset/Animation/TestKeyFrame.h; sourceTree = SOURCE_ROOT; };
 		AB2473C51CFE153C008A90CF /* GLFWTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLFWTime.cpp; path = src/Plugins/Video/OpenGL/GLFWTime.cpp; sourceTree = "<group>"; };
 		AB2473C61CFE153C008A90CF /* GLFWTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLFWTime.h; path = src/Plugins/Video/OpenGL/GLFWTime.h; sourceTree = "<group>"; };
-		AB2473C91D00BB4C008A90CF /* CollisionObjectInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionObjectInstance.cpp; path = src/Asset/Instances/Physics/Bullet/CollisionObjectInstance.cpp; sourceTree = "<group>"; };
-		AB2473CA1D00BB4C008A90CF /* CollisionObjectInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CollisionObjectInstance.h; path = src/Asset/Instances/Physics/Bullet/CollisionObjectInstance.h; sourceTree = "<group>"; };
+		AB2473C91D00BB4C008A90CF /* PhysicsObjectInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicsObjectInstance.cpp; path = src/Asset/Instances/Physics/Bullet/PhysicsObjectInstance.cpp; sourceTree = "<group>"; };
+		AB2473CA1D00BB4C008A90CF /* PhysicsObjectInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhysicsObjectInstance.h; path = src/Asset/Instances/Physics/Bullet/PhysicsObjectInstance.h; sourceTree = "<group>"; };
+		AB8046551D02FE1500A04934 /* LightInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LightInstance.cpp; path = src/Asset/Instances/Light/LightInstance.cpp; sourceTree = "<group>"; };
+		AB8046561D02FE1500A04934 /* LightInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LightInstance.h; path = src/Asset/Instances/Light/LightInstance.h; sourceTree = "<group>"; };
 		AC2AA17CB5C845FAAFEAB795 /* SceneTest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SceneTest.cpp; path = test/Scene/SceneTest.cpp; sourceTree = SOURCE_ROOT; };
 		AC3233B07B66458298C4339F /* InputEvent.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = InputEvent.cpp; path = src/Plugins/Input/InputEvent.cpp; sourceTree = SOURCE_ROOT; };
 		AD1B362CB8274C3A8337014D /* ChaiScriptInstance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ChaiScriptInstance.cpp; path = src/Asset/Instances/Script/Chai/ChaiScriptInstance.cpp; sourceTree = SOURCE_ROOT; };
@@ -441,8 +444,10 @@
 				B56ED5CD8A5740B3A1246162 /* ChaiScriptInstance.h */,
 				68A8143EAE184DAABD2A4C47 /* ShaderInstance.cpp */,
 				80FF54B62B734647911EB5DB /* ShaderInstance.h */,
-				AB2473C91D00BB4C008A90CF /* CollisionObjectInstance.cpp */,
-				AB2473CA1D00BB4C008A90CF /* CollisionObjectInstance.h */,
+				AB2473C91D00BB4C008A90CF /* PhysicsObjectInstance.cpp */,
+				AB2473CA1D00BB4C008A90CF /* PhysicsObjectInstance.h */,
+				AB8046551D02FE1500A04934 /* LightInstance.cpp */,
+				AB8046561D02FE1500A04934 /* LightInstance.h */,
 			);
 			name = Asset;
 			sourceTree = "<group>";
@@ -734,6 +739,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB34835067514E8DB6A23A37 /* AssetDefinition.cpp in Sources */,
+				AB8046571D02FE1500A04934 /* LightInstance.cpp in Sources */,
 				3BEA306F8DBB44A1877B4E32 /* AssetInstance.cpp in Sources */,
 				CAFE322032F24CA39E7FAF53 /* AssetManager.cpp in Sources */,
 				E45A422E39394313B23BEE64 /* AnimationInstance.cpp in Sources */,
@@ -767,7 +773,7 @@
 				535C434D71014CE6B1FBD9BD /* OGLVideo.cpp in Sources */,
 				48C8BDE31C4945ED8061C4F4 /* VideoPluginInterface.cpp in Sources */,
 				1411EA8819E245ECB215EBFF /* Project.cpp in Sources */,
-				AB2473CB1D00BB4C008A90CF /* CollisionObjectInstance.cpp in Sources */,
+				AB2473CB1D00BB4C008A90CF /* PhysicsObjectInstance.cpp in Sources */,
 				0E98709F3AA34614A350D289 /* Scene.cpp in Sources */,
 				9C200F9057914BD484B9DBF9 /* SceneObject.cpp in Sources */,
 				B0D015035E0444C68D550D08 /* Unit.cpp in Sources */,

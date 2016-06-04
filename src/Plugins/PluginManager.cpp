@@ -38,7 +38,7 @@ namespace Plugins {
 		if(!createInputPlugin())     return false;
 		if(!createAnimationPlugin()) return false;
 		std::cout << "PluginManager: Successfuly created Plugins." << std::endl;
-        return true;
+    return true;
 	}
 
 	bool PluginManager::createScriptingPlugin() {
@@ -168,6 +168,27 @@ namespace Plugins {
 	
 	bool PluginManager::isDone() {
 		return mDone;
+	}
+	
+	void PluginManager::populatePhysicsWorld(std::vector<Scene::SceneObject*> soWithPhysicsObjects) {
+		std::cout << "PluginManager: Populating Physics World" << std::endl;
+		try {
+			std::vector<Scene::SceneObject*>::iterator soIter;
+			Plugins::Physics::Bullet::BulletPhysics* bulletPhysicsPlugin;
+			bulletPhysicsPlugin = dynamic_cast<Plugins::Physics::Bullet::BulletPhysics*>(mPhysicsPlugin);
+			for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
+				#ifdef VERBOSE
+					std::cout << "PluginManager: Adding SceneObject " << (*soIter)->getuid()
+				            << " to PhysicsPlugin World" << std::endl;
+				#endif
+				Asset::Instances::Physics::Bullet::PhysicsObjectInstance* physicsObject;
+				physicsObject = dynamic_cast<Asset::Instances::Physics::Bullet::PhysicsObjectInstance*>((*soIter)->getPhysicsObjectAssetInstance());
+				bulletPhysicsPlugin->addPhysicsObjectInstance(physicsObject);
+			}
+		} catch (const std::exception &ex) {
+			std::cerr << "PluginManager: Exception thrown while populating physics world..."
+			          << std::endl << ex.what() << std::endl;;
+		}
 	}
 	
 } // End of Plugins

@@ -31,8 +31,8 @@
 #include "Instances/Animation/Dream/AnimationInstance.h"
 #include "Instances/Shader/ShaderInstance.h"
 #include "Instances/Model/Assimp/AssimpModelInstance.h"
-#include "Instances/Physics/Bullet/CollisionObjectInstance.h"
-
+#include "Instances/Physics/Bullet/PhysicsObjectInstance.h"
+#include "Instances/Light/LightInstance.h"
 
 namespace Dream {
 	
@@ -45,14 +45,15 @@ namespace Asset {
 	
 	class AssetManager {
 	private:
-		Project::Project            *mProject;
-		std::vector<AssetInstance*>  mAssetInstances;
+		Project::Project                 *mProject;
+		std::vector<AssetInstance*>      mAssetInstances;
+		std::vector<Scene::SceneObject*> mSceneObjectsWithPhysicsObjects;
 	public:
 		AssetManager(Project::Project* project);
 		~AssetManager();
 		
-		bool createAssetInstances();
-		void destroyAssetInstances();
+		bool createAllAssetInstances();
+		void destroyAllAssetInstances();
 		void addAssetInstance(AssetInstance*);
 		
 		AssetInstance* createAssetInstanceFromUUID       (Scene::SceneObject*, std::string);
@@ -62,8 +63,10 @@ namespace Asset {
 		AssetInstance* createModelAssetInstance          (Scene::SceneObject*, AssetDefinition*);
 		AssetInstance* createScriptAssetInstance         (Scene::SceneObject*, AssetDefinition*);
 		AssetInstance* createShaderAssetInstance         (Scene::SceneObject*, AssetDefinition*);
-		AssetInstance* createCollisionObjectAssetInstance (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createPhysicsObjectAssetInstance  (Scene::SceneObject*, AssetDefinition*);
+		AssetInstance* createLightAssetInstance          (Scene::SceneObject*, AssetDefinition*);
 		void           showStatus                        ();
+		std::vector<Scene::SceneObject*> getSceneObjectsWithPhysicsObjects();
 	};
 	
 } // End of Asset

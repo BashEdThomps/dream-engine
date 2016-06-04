@@ -1,11 +1,11 @@
 
 #include "AnimationInstance.h"
 
-namespace Dream          {
-namespace Asset          {
-namespace Instances      {
-namespace Animation      {
-namespace DreamAnimation {
+namespace Dream     {
+namespace Asset     {
+namespace Instances {
+namespace Animation {
+namespace Dream     {
 	
 	AnimationInstance::AnimationInstance(AssetDefinition* definition, int fps) : AssetInstance(definition) {
 		mFramesPerSecond = fps;
@@ -28,7 +28,7 @@ namespace DreamAnimation {
 			KeyFrame* target = mKeyFrames[currentKeyFrame+1];
 
 			if (source == NULL) {
-				std::cout << "Finished generating frames" << std::endl;
+				std::cout << "Animation: Finished generating frames" << std::endl;
 				break;
 			}
 
@@ -36,12 +36,12 @@ namespace DreamAnimation {
 				if (source->getWrap()) {
 					target = mKeyFrames[0];
 				} else {
-			    std::cout << "Finished generating frames" <<  std::endl;
+			    std::cout << "Animation: Finished generating frames" <<  std::endl;
 			    break;
 				}
 			}
 
-			std::cout << "Generating frames for " << source->getIndex() << " >> " << target->getIndex() << std::endl;
+			std::cout << "Animation: Generating frames for " << source->getIndex() << " >> " << target->getIndex() << std::endl;
 			int intermediates = source->getIntermediateFrameCount();
 			std::cout << "\t with " << intermediates << " intermediates" << std::endl;
 
@@ -49,9 +49,9 @@ namespace DreamAnimation {
 				Frame *frame = new Frame(currentFrame);
 				FrameDelta *nextDelta;
 				int max = frame->getNumFrameDeltas();
-				for (int j=0;i<max;j++) { //FrameDelta d : source.getDeltas()) {
+				for (int j=0;i<max;j++) {
 					nextDelta = frame->getFrameDeltas()[j];
-					std::cout << "Creatng delta form " <<  nextDelta->getDrawableID() << std::endl;
+					std::cout << "Animation: Creatng delta" << std::endl;
 					// TODO - FIX THIS
 					//FrameDelta* dest = NULL;// = KeyFrameDeltaGetDrawaltarget->getDeltaByDrawableID(d.getDrawableID());
 					FrameDelta* moveBy = NULL;// = KeyFrameAnimationComputeMotionDelta(nextDelta, dest, intermediates, i);
@@ -74,21 +74,13 @@ namespace DreamAnimation {
 		mKeyFrames.push_back(kf);
 	}
 
-	void AnimationInstance::addDrawable(int sd) {
-		mDrawables.push_back(sd);
-	}
-
-	void AnimationInstance::removeDrawable(int dID) {
-	    mDrawables[dID] = -1;
-	}
-
 	void AnimationInstance::nextFrame() {
 		// We're done
 		if (mDone) {
 			return;
 		}
 
-		std::cout << "Applying next Frame: " << mCurrentFrame << std::endl;
+		std::cout << "Animation: Applying next Frame: " << mCurrentFrame << std::endl;
 		Frame *currentFrame = mFrames[mCurrentFrame];
 
 		if (currentFrame == NULL) {
@@ -107,22 +99,25 @@ namespace DreamAnimation {
 			if(nextFrameDelta == NULL) {
 		    continue;
 			}
-			//SceneObject sd = getDrawableByID(d.getDrawableID());
-			applyFrameDeltaToVector(nextFrameDelta,NULL,NULL);
+			applyFrameDeltaToSceneObject(nextFrameDelta);
 		}
 		mCurrentFrame++;
 	}
 
-	void AnimationInstance::applyFrameDeltaToVector(FrameDelta* delta, float* posVector, float* rotVector) {
-		float* posDelta = delta->getPositionDelta();
-		posVector[0] += posDelta[0];
-		posVector[1] += posDelta[1];
-		posVector[2] += posDelta[2];
+	void AnimationInstance::applyFrameDeltaToSceneObject(FrameDelta* delta) {
+		float* translationDelta = delta->getPositionDelta();
+		float* soTranslation = mSceneObject->getTranslation();
+		float tX = soTranslation[0] += translationDelta[0];
+		float tY = soTranslation[1] += translationDelta[1];
+		float tZ = soTranslation[2] += translationDelta[2];
+		mSceneObject->setTranslation(tX, tY, tZ);
 		
-		float* rotDelta = delta->getRotationDelta();
-		rotVector[0] += rotDelta[0];
-		rotVector[1] += rotDelta[1];
-		rotVector[2] += rotDelta[2];
+		float* rotationDelta = delta->getRotationDelta();
+		float* soRotation = mSceneObject->getRotation();
+		float rX = soRotation[0] += rotationDelta[0];
+		float rY = soRotation[1] += rotationDelta[1];
+		float rZ = soRotation[2] += rotationDelta[2];
+		mSceneObject->setRotation(rX, rY, rZ);
 	}
 
 	int AnimationInstance::getFramesPerSecond() {
@@ -130,7 +125,7 @@ namespace DreamAnimation {
 	}
 	
 } // End of Dream
-} // End of AnimationInstance
 } // End of Animation
+} // End of Instances
 } // End of Asset
 } // End of Dream

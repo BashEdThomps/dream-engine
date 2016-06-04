@@ -265,10 +265,11 @@ namespace Project {
 			}
 		}
 		
-		if (!mAssetManager->createAssetInstances()) {
+		if (!mAssetManager->createAllAssetInstances()) {
 			std::cerr << "Project: Fatal Error, unable to create asset instances" << std::endl;
 			return false;
 		}
+		mPluginManager->populatePhysicsWorld(mAssetManager->getSceneObjectsWithPhysicsObjects());
 		return true;
 	}
 	
@@ -309,23 +310,23 @@ namespace Project {
 	}
 	
 	bool Project::run (){
+		// Create Plugins
 		if(!mPluginManager->createPlugins()){
 			std::cerr << "Project: Unable to create plugins." << std::endl;
 			return false;
 		}
-		
+		// Init Scene with Asset Instances
 		if (!loadScene(getStartupScene())) {
 			std::cerr << "Project: unable to load startup scene." << std::endl;
 			return false;
 		}
 		std::cout << "Project: Starting Scene - " << getActiveScene()->getName()
 		          << " (" << getActiveScene()->getUUID() << ")" << std::endl;
-		
+		// GameLoop
 		while(!mDone) {
 			update();
 			usleep(1000000/60);
 		}
-		
 		return mDone;
 	}
 	

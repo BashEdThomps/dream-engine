@@ -19,6 +19,7 @@
 #define PHYSICSWORLD_H
 
 #include "../PhysicsPluginInterface.h"
+#include "../../../Asset/Instances/Physics/Bullet/PhysicsObjectInstance.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
 #include <iostream>
@@ -41,7 +42,8 @@ namespace Bullet {
 		void setGravity3f(float,float,float);
 		void setGravityBtVector3(btVector3);
 		bool init(void);
-		void update(Dream::Scene::Scene*);
+		void update(Scene::Scene*);
+		void addPhysicsObjectInstance(Asset::Instances::Physics::Bullet::PhysicsObjectInstance*);
 		void addRigidBody(btRigidBody*);
 		void removeRigidBody(btRigidBody*);
 	}; // End of BulletPhysics

@@ -1,11 +1,11 @@
 #include <iostream>
 #include "Frame.h"
 
-namespace Dream          {
-namespace Asset          {
-namespace Instances      {
-namespace Animation      {
-namespace DreamAnimation {
+namespace Dream     {
+namespace Asset     {
+namespace Instances {
+namespace Animation {
+namespace Dream     {
 	
 	Frame::Frame(int index) {
 		mIndex = index;
@@ -34,6 +34,6 @@ namespace DreamAnimation {
 
 } // End of Dream
 } // End of Animation
-} // End of Instance
+} // End of Instances
 } // End of Asset
 } // End of Dream
