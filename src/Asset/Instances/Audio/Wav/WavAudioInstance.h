@@ -18,7 +18,7 @@
 #ifndef WAVAUDIO_H
 #define WAVAUDIO_H
 
-#include "../../../AssetInstance.h"
+#include "../AudioAssetInstance.h"
 
 #define ASSET_FORMAT_WAV  "wav"
 
@@ -28,10 +28,10 @@ namespace Instances {
 namespace Audio     {
 namespace Wav       {
 	
-	class WavAudioInstance : public AssetInstance {
+	class WavAudioInstance : public AudioAssetInstance {
 	public:
 		WavAudioInstance(AssetDefinition*);
-		~WavAudioInstance(void);
+		~WavAudioInstance();
 		bool load(std::string);
 	};
 	

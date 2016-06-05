@@ -46,6 +46,7 @@ find_package(GLEW   REQUIRED)
 find_package(assimp REQUIRED)
 find_package(SOIL   REQUIRED)
 find_package(Chaiscript REQUIRED)
+find_package(OggVorbis REQUIRED)
 
 # Libraries
 
@@ -60,7 +61,7 @@ target_link_libraries(
 	${GLFW_LIBRARIES}
 	${GLEW_LIBRARIES}
 	${BULLET_LIBRARY}
-	${LUA_LIBRARIES}
+	${OGGVORBIS_LIBRARIES}
 )
 
 include_directories(
@@ -73,7 +74,7 @@ include_directories(
 	${SOIL_INCLUDE_DIR}
 	${GLM_INCLUDE_DIR}
 	${BULLET_INCLUDE_DIR}
-	${LUA_INCLUDE_DIR}
+	${VORBIS_INCLUDE_DIR}
 )
 
 add_executable (Dream "Main/Main.cpp")
@@ -90,5 +91,5 @@ target_link_libraries(
 	${assimp_LIBRARIES}
 	${SOIL_LIBRARIES}
   ${BULLET_LIBRARY}
-  ${LUA_LIBRARIES}
+  ${OGGVORBIS_LIBRARIES}
 )

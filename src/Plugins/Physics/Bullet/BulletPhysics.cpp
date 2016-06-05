@@ -16,7 +16,7 @@
 */
 
 #include "BulletPhysics.h"
-#include "../../Video/OpenGL/GLFWTime.h"
+#include "../../../Project/Project.h"
 
 namespace Dream {
 namespace Plugins {
@@ -54,7 +54,7 @@ namespace Bullet {
 	}
 
 	void BulletPhysics::update(Dream::Scene::Scene* scene) {
-		btScalar stepValue = Video::OpenGL::GLFWTime::getInstance()->getTimeDelta();
+		btScalar stepValue = Project::Project::getTime()->getTimeDelta();
 		#ifdef VERBOSE
 			std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
 		#endif

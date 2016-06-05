@@ -65,7 +65,6 @@ namespace Chai      {
   		}
 			Input::InputPluginInterface::clearInputEvents();
 		}
-		
 	}
 	
 } // End of Chai

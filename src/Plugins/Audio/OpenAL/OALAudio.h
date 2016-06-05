@@ -1,5 +1,5 @@
 /*
-* OALAudio
+* Dream::Plugnis::Audio::OpenAL::OALAudio
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #define AUDIOPLAYBACK_H
 
 #include <iostream>
+#include <vector>
 
 #ifdef __APPLE__
 	#include <OpenAL/al.h>
@@ -37,19 +38,46 @@ namespace OpenAL  {
 	
 	class OALAudio : public AudioPluginInterface {
 	private:
+		std::vector<ALuint> mPlayQueue;
+		std::vector<ALuint> mPauseQueue;
+		std::vector<ALuint> mStopQueue;
+		std::vector<ALuint> mSources;
+		std::vector<ALuint> mBuffers;
 		ALCdevice*  mDevice;
 		ALCcontext* mContext;
 	public:
-		OALAudio(void);
-		~OALAudio(void);
-		bool init(void);
-		void update(Dream::Scene::Scene*);
-
+		OALAudio();
+		~OALAudio();
+		bool init();
+		void update(Scene::Scene*);
+	
+		void   setSourcePosision(ALuint, float, float, float);
+		void   setListenerPosition(float, float, float);
+		
+		void   pushToPlayQueue(ALuint);
+		void   pushToPauseQueue(ALuint);
+		void   pushToStopQueue(ALuint);
+		
 	protected:
-		ALuint generateBuffer();
-		void playSource(ALuint);
-		void stopSource(ALuint);
-		void pauseSource(ALuint);
+		ALuint generateBuffers(size_t);
+		ALuint generateSources(size_t);
+		
+		void   deleteBuffers(int, ALuint);
+		void   deleteSources(int, ALuint);
+		
+		void   playSource(ALuint);
+		void   stopSource(ALuint);
+		void   pauseSource(ALuint);
+		
+		ALenum getSourceState(ALuint);
+	
+		void   updatePlayQueue();
+		void   updatePauseQueue();
+		void   updateStopQueue();
+		
+		void deleteAllSources();
+		void deleteAllBuffers();
+		
 	}; // End of OALAudio
 	
 } // End of OpenAL

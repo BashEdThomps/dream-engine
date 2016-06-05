@@ -1,6 +1,8 @@
 #include "Dream.h"
 
 namespace Dream {
+	
+	Project::Project *Dream::mProject = NULL;
 
 	Dream::Dream() {
 		mProject = NULL;

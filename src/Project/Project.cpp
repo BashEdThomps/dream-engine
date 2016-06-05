@@ -20,6 +20,12 @@
 namespace Dream {
 namespace Project {
 	
+	Plugins::Video::OpenGL::GLFWTime *Project::sTime = new Plugins::Video::OpenGL::GLFWTime();
+	
+	Plugins::Video::OpenGL::GLFWTime *Project::getTime() {
+		return sTime;
+	}
+	
 	Project::Project(void) {
 		mAssetManager = NULL;
 		mPluginManager = NULL;
@@ -331,8 +337,17 @@ namespace Project {
 	}
 	
 	void Project::update(void) {
+		sTime->update();
 		mDone = mPluginManager->isDone();
 		mPluginManager->update();
+	}
+	
+	Plugins::PluginManager* Project::getPluginManager() {
+		return mPluginManager;
+	}
+	
+	Asset::AssetManager* Project::getAssetManager() {
+		return mAssetManager;
 	}
 	
 } // End of Project

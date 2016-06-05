@@ -15,9 +15,9 @@
 namespace Dream {
 	
 	class Dream {
-	protected:
-		Project::Project *mProject;
-		bool              mRunning;
+	private:
+		static Project::Project *mProject;
+		bool   mRunning;
 
 	public:
 		Dream(void);
@@ -27,10 +27,11 @@ namespace Dream {
 		bool loadProjectFromFileReader(std::string projectPath, Util::FileReader*);
 		bool loadScene(Scene::Scene*);
 
-		Project::Project* getProject(void);
+		static Project::Project* getProject();
 		void setProject(Project::Project*);
 		bool runProject();
 		bool isProjectLoaded();
+		
 	};
 	
 } // End of Dream

@@ -23,8 +23,14 @@ namespace Instances {
 namespace Audio     {
 namespace Wav       {
 	
-	WavAudioInstance::WavAudioInstance(AssetDefinition* definition) : AssetInstance(definition) {}
-	WavAudioInstance::~WavAudioInstance(void) {}
+	WavAudioInstance::WavAudioInstance(AssetDefinition* definition)
+		: AudioAssetInstance(definition) {
+			
+	}
+	
+	WavAudioInstance::~WavAudioInstance() {
+		
+	}
 	
 	bool WavAudioInstance::load(std::string projectPath) {
 		return false;

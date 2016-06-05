@@ -13,11 +13,9 @@ namespace OpenGL   {
   	double mCurrentTime;
   	double mLastTime;
   	double mTimeDelta;
-		static GLFWTime *sInstance;
+	public:
 		GLFWTime();
 		~GLFWTime();
-	public:
-		static GLFWTime *getInstance();
   	double getCurrentTime();
   	double getLastTime();
   	double getTimeDelta();

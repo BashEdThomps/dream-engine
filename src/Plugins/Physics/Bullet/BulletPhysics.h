@@ -24,10 +24,10 @@
 #include <LinearMath/btVector3.h>
 #include <iostream>
 
-namespace Dream {
+namespace Dream   {
 namespace Plugins {
 namespace Physics {
-namespace Bullet {
+namespace Bullet  {
 	
 	class BulletPhysics : public PhysicsPluginInterface {
 	private:

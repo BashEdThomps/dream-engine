@@ -26,6 +26,7 @@
 #include "../Util/StringUtils.h"
 #include "../Asset/AssetManager.h"
 #include "../Plugins/PluginManager.h"
+#include "../Plugins/Video/OpenGL/GLFWTime.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"
@@ -44,6 +45,10 @@
 namespace Dream {
 namespace Project {
 	class Project {
+	// Static Variables
+	private:
+		static Plugins::Video::OpenGL::GLFWTime* sTime;
+	// Instance Variables
 	private:
 		std::string mUUID;
 		std::string mName;
@@ -62,6 +67,10 @@ namespace Project {
 		std::vector<Dream::Asset::AssetDefinition*> mAssetDefinitions;
 		Scene::Scene *mActiveScene;
 		
+		// Static Methods
+	public:
+		static Plugins::Video::OpenGL::GLFWTime* getTime();
+	// Instance Methods
 	public:
 		Project(void);
 		Project(std::string, nlohmann::json);
@@ -117,7 +126,10 @@ namespace Project {
 		bool          initActiveScene();
 		
 		bool createAssetManager();
+		Asset::AssetManager* getAssetManager();
+		
 		bool createPluginManager();
+		Plugins::PluginManager* getPluginManager();
 		
 		bool loadScene(Scene::Scene*);
 		bool run();

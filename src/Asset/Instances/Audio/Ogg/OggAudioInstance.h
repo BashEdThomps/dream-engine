@@ -18,7 +18,19 @@
 #ifndef OGGAUDIO_H
 #define OGGAUDIO_H
 
-#include "../../../AssetInstance.h"
+#include "../AudioAssetInstance.h"
+#include <vorbis/vorbisfile.h>
+
+#ifdef __APPLE__
+	#include <OpenAL/al.h>
+	#include <OpenAL/alc.h>
+#else
+	#include <AL/al.h>
+	#include <AL/alc.h>
+#endif
+
+// 32 KB buffers
+#define BUFFER_SIZE 32768
 
 #define ASSET_FORMAT_OGG "ogg"
 
@@ -28,15 +40,16 @@ namespace Instances {
 namespace Audio     {
 namespace Ogg       {
 	
-	class OggAudioInstance : public AssetInstance {
+	class OggAudioInstance : public AudioAssetInstance {
 	private:
-		std::string mOggPath;
+		ALenum mFormat;
+		ALsizei mFrequency;
+		std::vector<char> mOggDataBuffer;
 	public:
 		OggAudioInstance(AssetDefinition*);
-		~OggAudioInstance(void);
-		
+		~OggAudioInstance();
+		bool loadOGG(std::string);
 		bool load(std::string);
-		
 	}; // End of OggAudio
 	
 } // End of Ogg

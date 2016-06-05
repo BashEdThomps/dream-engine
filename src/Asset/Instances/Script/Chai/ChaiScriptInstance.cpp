@@ -16,10 +16,7 @@
 */
 
 #include "ChaiScriptInstance.h"
-#include "../../../../Plugins/Input/InputEvent.h"
-#include "../../../../Plugins/Video/OpenGL/OGLVideo.h"
-#include "../../../../Plugins/Video/OpenGL/Camera.h"
-#include "../../../../Plugins/Video/OpenGL/GLFWTime.h"
+#include "../../../../Main/Dream.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -33,72 +30,95 @@ namespace Chai      {
 	bool ChaiScriptInstance::load(std::string projectPath) {
 		mScript = new chaiscript::ChaiScript(chaiscript::Std_Lib::library());
 		chaiscript::Boxed_Value result = mScript->eval_file(projectPath+mDefinition->getAssetPath());
-		initInputEventInChaiScript();
-		initGlfwTimeInChaiScript();
-		initCameraInChaiScript();
+		initAPIs();
 		return !result.is_null();
 	}
 	
-	void ChaiScriptInstance::initGlfwTimeInChaiScript() {
-		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::GLFWTime>(),               "GLFWTime"      );
-		mScript->add_global(chaiscript::var(Plugins::Video::OpenGL::GLFWTime::getInstance()), "gTime"         );
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::update),              "update"        );
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getCurrentTime),      "getCurrentTime");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getLastTime),         "getLastTime"   );
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getTimeDelta),        "getTimeDelta"  );
+	void ChaiScriptInstance::initAPIs() {
+		initAssetManagerAPI();
+		initCameraAPI();
+		initGlfwTimeAPI();
+		initInputEventAPI();
+		initPluginManagerAPI();
+		initProjectAPI();
+		initSceneObjectAPI();
 	}
 	
-	void ChaiScriptInstance::initCameraInChaiScript() {
+	void ChaiScriptInstance::initProjectAPI() {
+		mScript->add(chaiscript::user_type<Project::Project>(),"Project");
+		mScript->add_global(chaiscript::var(Dream::getProject()),"gProject");
+		mScript->add(chaiscript::fun(&Project::Project::getPluginManager),"getPluginManager");
+		mScript->add(chaiscript::fun(&Project::Project::getAssetManager),"getAssetManager");
+	}
+	
+	void ChaiScriptInstance::initAssetManagerAPI() {
+		mScript->add(chaiscript::user_type<AssetManager>(),"AssetManager");
+	}
+	
+	void ChaiScriptInstance::initPluginManagerAPI() {
+		mScript->add(chaiscript::user_type<Plugins::PluginManager>(),"PluginManager");
+	}
+	
+	void ChaiScriptInstance::initGlfwTimeAPI() {
+		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::GLFWTime>(),"GLFWTime");
+		mScript->add_global(chaiscript::var(Project::Project::getTime()),"gTime");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::update),"update");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getCurrentTime),"getCurrentTime");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getLastTime),"getLastTime");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getTimeDelta),"getTimeDelta");
+	}
+	
+	void ChaiScriptInstance::initCameraAPI() {
 		// Class Definition
 		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::Camera>(),"Camera");
 		// Methods
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processMouseScroll),   "processMouseScroll");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processKeyboard),      "processKeyboard");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processMouseMovement), "processMouseMovement");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processMouseScroll),"processMouseScroll");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processKeyboard),"processKeyboard");
+		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processMouseMovement),"processMouseMovement");
 		// Global Variables
-		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_FORWARD),  "CAMERA_MOVEMENT_FORWARD");
-		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_BACKWARD), "CAMERA_MOVEMENT_BACKWARD");
-		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_LEFT),     "CAMERA_MOVEMENT_LEFT");
-		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_RIGHT),    "CAMERA_MOVEMENT_RIGHT");
+		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_FORWARD), "CAMERA_MOVEMENT_FORWARD");
+		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_BACKWARD),"CAMERA_MOVEMENT_BACKWARD");
+		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_LEFT),"CAMERA_MOVEMENT_LEFT");
+		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_RIGHT),"CAMERA_MOVEMENT_RIGHT");
 		// Camera Instance
 		mScript->add_global(chaiscript::var(&Plugins::Video::OpenGL::OGLVideo::sCamera),"GLCamera");
 		
 	}
 	
-	void ChaiScriptInstance::initInputEventInChaiScript() {
+	void ChaiScriptInstance::initInputEventAPI() {
 		// Class Definition
-		mScript->add(chaiscript::user_type<Plugins::Input::InputEvent>(),     "InputEvent");
+		mScript->add(chaiscript::user_type<Plugins::Input::InputEvent>(),"InputEvent");
 		// Methods
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getSource),        "getSource");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getSource),"getSource");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXPosition),     "getXPosition");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYPosition),     "getYPosition");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXPosition),"getXPosition");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYPosition),"getYPosition");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXPositionOffset), "getXPositionOffset");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYPositionOffset), "getYPositionOffset");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXPositionOffset),"getXPositionOffset");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYPositionOffset),"getYPositionOffset");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXScrollOffset), "getXScrollOffset");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYScrollOffset), "getYScrollOffset");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXScrollOffset),"getXScrollOffset");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYScrollOffset),"getYScrollOffset");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getKey),           "getKey");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getMods),          "getMods");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getAction),        "getAction");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getButton),        "getButton");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getScancode),      "getScancode");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getKey),"getKey");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getMods),"getMods");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getAction),"getAction");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getButton),"getButton");
+		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getScancode),"getScancode");
 		// Constants
-		mScript->add_global(chaiscript::const_var(INPUT_TYPE_JOYSTICK),       "INPUT_TYPE_JOYSTICK");
-		mScript->add_global(chaiscript::const_var(INPUT_TYPE_KEYBOARD),       "INPUT_TYPE_KEYBOARD");
-		mScript->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_BUTTON),   "INPUT_TYPE_MOUSE_BUTTON");
-		mScript->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_POSITION), "INPUT_TYPE_MOUSE_POSITION");
-		mScript->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_SCROLL),   "INPUT_TYPE_MOUSE_SCROLL");
+		mScript->add_global(chaiscript::const_var(INPUT_TYPE_JOYSTICK),"INPUT_TYPE_JOYSTICK");
+		mScript->add_global(chaiscript::const_var(INPUT_TYPE_KEYBOARD),"INPUT_TYPE_KEYBOARD");
+		mScript->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_BUTTON),"INPUT_TYPE_MOUSE_BUTTON");
+		mScript->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_POSITION),"INPUT_TYPE_MOUSE_POSITION");
+		mScript->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_SCROLL),"INPUT_TYPE_MOUSE_SCROLL");
 		// Input Actions
-		mScript->add_global(chaiscript::const_var(GLFW_PRESS),   "INPUT_PRESS");
-		mScript->add_global(chaiscript::const_var(GLFW_RELEASE), "INPUT_RELEASE");
-		mScript->add_global(chaiscript::const_var(GLFW_REPEAT),  "INPUT_REPEAT");
+		mScript->add_global(chaiscript::const_var(GLFW_PRESS),"INPUT_PRESS");
+		mScript->add_global(chaiscript::const_var(GLFW_RELEASE),"INPUT_RELEASE");
+		mScript->add_global(chaiscript::const_var(GLFW_REPEAT),"INPUT_REPEAT");
 		// Cursor Keys
-		mScript->add_global(chaiscript::const_var(GLFW_KEY_UP),   "KEY_UP");
-		mScript->add_global(chaiscript::const_var(GLFW_KEY_DOWN), "KEY_DOWN");
-		mScript->add_global(chaiscript::const_var(GLFW_KEY_LEFT), "KEY_LEFT");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_UP),"KEY_UP");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_DOWN),"KEY_DOWN");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_LEFT),"KEY_LEFT");
 		mScript->add_global(chaiscript::const_var(GLFW_KEY_RIGHT),"KEY_RIGHT");
 		// WASD
 		mScript->add_global(chaiscript::const_var(GLFW_KEY_W),"KEY_W");
@@ -107,7 +127,7 @@ namespace Chai      {
 		mScript->add_global(chaiscript::const_var(GLFW_KEY_D),"KEY_D");
 	}
 	
-	void ChaiScriptInstance::initSceneObjectInChaiScript() {
+	void ChaiScriptInstance::initSceneObjectAPI() {
 		mScript->add(chaiscript::user_type<Scene::SceneObject>(),"SceneObject");
 	}
 	
