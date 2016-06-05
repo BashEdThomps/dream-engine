@@ -24,6 +24,7 @@ namespace Audio     {
 		PLAYING,
 		PAUSED,
 		STOPPED,
+		UNKNOWN
 	};
 	
 	class AudioAssetInstance : public AssetInstance {

@@ -45,7 +45,7 @@ namespace Assimp     {
 		// Variables
 		std::vector<Mesh>    mMeshes;
 		std::string          mDirectory;
-		std::vector<Texture> mTexturesLoaded;
+		static std::vector<Texture> sTextureCache;
 		// Methods
 		void processNode(aiNode*, const aiScene*);
 		Mesh processMesh(aiMesh*, const aiScene*);

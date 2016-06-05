@@ -62,6 +62,7 @@ namespace OpenAL  {
 		void playAudioAsset(Asset::AssetInstance*);
 		void pauseAudioAsset(Asset::AssetInstance*);
 		void stopAudioAsset(Asset::AssetInstance*);
+		Asset::Instances::Audio::AudioAssetStatus getAudioAssetState(Asset::AssetInstance*);
 		
 	protected:
 		ALuint generateBuffers(size_t);

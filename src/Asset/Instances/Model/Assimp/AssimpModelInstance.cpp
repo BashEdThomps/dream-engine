@@ -22,6 +22,8 @@ namespace Asset      {
 namespace Instances  {
 namespace Model      {
 namespace Assimp     {
+	
+	std::vector<Texture> AssimpModelInstance::sTextureCache = std::vector<Texture>();
 
 	GLint TextureFromFile(const char* path, std::string directory) {
 		//Generate texture ID and load texture data
@@ -147,9 +149,9 @@ namespace Assimp     {
 			aiString str;
 			mat->GetTexture(type, i, &str);
 			GLboolean skip = false;
-			for(GLuint j = 0; j < mTexturesLoaded.size(); j++) {
-				if(mTexturesLoaded[j].path == str) {
-					textures.push_back(mTexturesLoaded[j]);
+			for(GLuint j = 0; j < sTextureCache.size(); j++) {
+				if(sTextureCache[j].path == str) {
+					textures.push_back(sTextureCache[j]);
 					skip = true;
 					break;
 				}
@@ -161,7 +163,7 @@ namespace Assimp     {
 				texture.type = typeName;
 				texture.path = str;
 				textures.push_back(texture);
-				mTexturesLoaded.push_back(texture);  // Add to loaded textures
+				sTextureCache.push_back(texture);  // Add to loaded textures
 			}
 		}
 		return textures;

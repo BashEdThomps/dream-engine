@@ -2,6 +2,8 @@
 #include "ArgumentParser.h"
 #include <iostream>
 
+#define VERBOSE
+
 #define MINIMUM_ARGUMENTS 3
 
 void showUsage(const char** argv) {

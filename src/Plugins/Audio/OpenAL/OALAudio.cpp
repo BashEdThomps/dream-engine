@@ -198,6 +198,34 @@ namespace OpenAL  {
 		pushToStopQueue(asset);
 	}
 	
+	Asset::Instances::Audio::AudioAssetStatus
+	OALAudio::getAudioAssetState(Asset::AssetInstance* asset) {
+		Asset::Instances::Audio::AudioAssetStatus retval = Asset::Instances::Audio::UNKNOWN;
+		try {
+  		Asset::Instances::Audio::AudioAssetInstance* audioAsset;
+  		audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+			ALenum alStatus = getSourceState(audioAsset->getSource());
+			switch (alStatus) {
+				case AL_STOPPED:
+					retval = Asset::Instances::Audio::STOPPED;
+					break;
+				case AL_PLAYING:
+					retval = Asset::Instances::Audio::PLAYING;
+					break;
+				case AL_PAUSED:
+					retval = Asset::Instances::Audio::PAUSED;
+					break;
+				default:
+					retval = Asset::Instances::Audio::UNKNOWN;
+					break;
+			}
+		} catch (const std::exception &ex) {
+			std::cerr << "OALAudio: Unable to get state of asset " << asset->getNameAndUUIDString()
+			          << std::endl << ex.what() << std::endl;
+		}
+		return retval;
+	}
+	
 } // End of OpenAL
 } // End of Audio
 } // End of Plugins

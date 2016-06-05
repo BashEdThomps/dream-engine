@@ -1,5 +1,5 @@
 /*
-* UUID
+* Dream::Util::UUID
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,16 @@
 #include <iostream>
 
 namespace Dream {
-	namespace Util {
-		class UUID {
-		public:
-			UUID(void);
-			~UUID(void);
-			static std::string generateUUID();
-		}; // End of UUID
-	}    // End of Util
-}      // End of Dream
+namespace Util  {
+	
+	class UUID {
+	public:
+		UUID(void);
+		~UUID(void);
+		static std::string generateUUID();
+	}; // End of UUID
+	
+}  // End of Util
+}  // End of Dream
 
 #endif // End of UUID_H

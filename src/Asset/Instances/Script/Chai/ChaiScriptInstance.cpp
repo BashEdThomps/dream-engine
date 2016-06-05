@@ -47,10 +47,16 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initAssetInstanceAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init AssetInstance API" << std::endl;
+		#endif
 		mScript->add(chaiscript::user_type<AssetInstance>(),"AssetInstance");
 	}
 	
 	void ChaiScriptInstance::initProjectAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init Project API" << std::endl;
+		#endif
 		mScript->add(chaiscript::user_type<Project::Project>(),"Project");
 		mScript->add_global(chaiscript::var(Dream::getProject()),"gProject");
 		mScript->add(chaiscript::fun(&Project::Project::getPluginManager),"getPluginManager");
@@ -58,11 +64,17 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initAssetManagerAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init AssetManager API" << std::endl;
+		#endif
 		mScript->add(chaiscript::user_type<AssetManager>(),"AssetManager");
 		mScript->add(chaiscript::fun(&AssetManager::getAssetInstanceByUUID),"getAssetInstanceByUUID");
 	}
 
 	void ChaiScriptInstance::initAudioPluginAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init AudioPlugin API" << std::endl;
+		#endif
 		mScript->add(chaiscript::user_type<Plugins::Audio::AudioPluginInterface>(),"AudioPluginInterface");
 		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::playAudioAsset),"playAudioAsset");
 		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::pauseAudioAsset),"pauseAudioAsset");
@@ -70,11 +82,17 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initPluginManagerAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init PluginManager API" << std::endl;
+		#endif
 		mScript->add(chaiscript::user_type<Plugins::PluginManager>(),"PluginManager");
 		mScript->add(chaiscript::fun(&Plugins::PluginManager::getAudioPlugin),"getAudioPlugin");
 	}
 	
 	void ChaiScriptInstance::initGlfwTimeAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init GLFWTime API" << std::endl;
+		#endif
 		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::GLFWTime>(),"GLFWTime");
 		mScript->add_global(chaiscript::var(Project::Project::getTime()),"gTime");
 		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::update),"update");
@@ -84,6 +102,9 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initCameraAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init Camera API" << std::endl;
+		#endif
 		// Class Definition
 		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::Camera>(),"Camera");
 		// Methods
@@ -101,6 +122,9 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initInputEventAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init Input Event API" << std::endl;
+		#endif
 		// Class Definition
 		mScript->add(chaiscript::user_type<Plugins::Input::InputEvent>(),"InputEvent");
 		// Methods
@@ -143,6 +167,9 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initSceneObjectAPI() {
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init SceneObject API" << std::endl;
+		#endif
 		mScript->add(chaiscript::user_type<Scene::SceneObject>(),"SceneObject");
 		mScript->add_global(chaiscript::var(mParent),"gSceneObject");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getAnimationAssetInstance),"getAnimationAsset");
@@ -160,6 +187,9 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::processInputs(std::vector<Plugins::Input::InputEvent> inputEventVector) {
+    #ifdef VERBOSE
+    	std::cout << "ChaiScriptInstance: Processing Input Events" << std::endl;
+    #endif
 		for(std::vector<Plugins::Input::InputEvent>::iterator it = inputEventVector.begin(); it != inputEventVector.end(); it++) {
 			auto processFunction = mScript->eval<std::function<void(Plugins::Input::InputEvent)>>("onInputEvent");
 			processFunction(*it);

@@ -355,38 +355,38 @@
 		1FED6038F9A74FB0BF4FC58E /* Asset */ = {
 			isa = PBXGroup;
 			children = (
+				9DA9CABDA0AD4D3B951AAFD2 /* AnimationInstance.cpp */,
+				C6BED8B07A014170B148BCF1 /* AnimationInstance.h */,
 				325CA04676BE4382A9A20C87 /* AssetDefinition.cpp */,
 				B9A33282DE7B437A80238FF6 /* AssetDefinition.h */,
 				C10DB35738804AACBA6E1477 /* AssetInstance.cpp */,
 				0A6DB237BA3D4BD783A3BF57 /* AssetInstance.h */,
 				53D77E9A284347B6AA7ABEEF /* AssetManager.cpp */,
 				6B6C59E178C046858CCE0FBA /* AssetManager.h */,
-				9DA9CABDA0AD4D3B951AAFD2 /* AnimationInstance.cpp */,
-				C6BED8B07A014170B148BCF1 /* AnimationInstance.h */,
+				EF9FC66819D84D1AAA50D359 /* AssimpModelInstance.cpp */,
+				4F81C832E84E4D44B577AD58 /* AssimpModelInstance.h */,
+				AB8046581D044DE800A04934 /* AudioAssetInstance.cpp */,
+				AB8046591D044DE800A04934 /* AudioAssetInstance.h */,
+				514A4514174D457298B5B95B /* ChaiScriptInstance.cpp */,
+				B003E0E1502241EBBB4ED670 /* ChaiScriptInstance.h */,
 				A03AAE77D2744F0BA62078CA /* Frame.cpp */,
 				05491C20486C4CA3B0AF254C /* Frame.h */,
 				7C39CBD471654589B59CA61F /* FrameDelta.cpp */,
 				9FF79FBA139D46618A0A644E /* FrameDelta.h */,
 				6D137F460AFC435CA47458C5 /* KeyFrame.cpp */,
 				0F923C2687D7435DAD62288A /* KeyFrame.h */,
-				84802BA5B17A404FB93F28BB /* OggAudioInstance.cpp */,
-				E4F61D54EFE143A4B30C4126 /* OggAudioInstance.h */,
-				97382DBB3BCB4091AC866F26 /* WavAudioInstance.cpp */,
-				B6F649625EF64D9A9D222724 /* WavAudioInstance.h */,
 				612799E8473B4870901E46BC /* LightInstance.cpp */,
 				EA765CE3514240328AA098E7 /* LightInstance.h */,
-				EF9FC66819D84D1AAA50D359 /* AssimpModelInstance.cpp */,
-				4F81C832E84E4D44B577AD58 /* AssimpModelInstance.h */,
 				476C80301D4743DAAB4E8442 /* Mesh.cpp */,
 				BD2ECB2098ED44E9A3D8F2B3 /* Mesh.h */,
+				84802BA5B17A404FB93F28BB /* OggAudioInstance.cpp */,
+				E4F61D54EFE143A4B30C4126 /* OggAudioInstance.h */,
 				4E68818FD5FC4A9194829018 /* PhysicsObjectInstance.cpp */,
 				F0ABE6B86DE445D6A8BA860E /* PhysicsObjectInstance.h */,
-				514A4514174D457298B5B95B /* ChaiScriptInstance.cpp */,
-				B003E0E1502241EBBB4ED670 /* ChaiScriptInstance.h */,
 				6F185AE6199B403C8D386834 /* ShaderInstance.cpp */,
 				A7D277CFAFC04AC7B41B5946 /* ShaderInstance.h */,
-				AB8046581D044DE800A04934 /* AudioAssetInstance.cpp */,
-				AB8046591D044DE800A04934 /* AudioAssetInstance.h */,
+				97382DBB3BCB4091AC866F26 /* WavAudioInstance.cpp */,
+				B6F649625EF64D9A9D222724 /* WavAudioInstance.h */,
 			);
 			name = Asset;
 			sourceTree = "<group>";
@@ -450,13 +450,13 @@
 			isa = PBXGroup;
 			children = (
 				1FED6038F9A74FB0BF4FC58E /* Asset */,
+				FCC099FA80584F4DB9041141 /* CMakeLists.txt */,
 				D941227C881F4FDB9D61B1BE /* Main */,
 				042D6F83F71D4C679A51FBEA /* Plugins */,
 				B02FE74B2EC54BB49C4633B5 /* Project */,
 				4A2DE4B806C7494E904A54B6 /* Scene */,
 				48F6D23294D44D2DBB5EAC31 /* Unit */,
 				D4A034810A8643C88D029373 /* Util */,
-				FCC099FA80584F4DB9041141 /* CMakeLists.txt */,
 			);
 			name = DreamBase;
 			sourceTree = "<group>";

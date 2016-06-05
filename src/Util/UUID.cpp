@@ -1,5 +1,5 @@
 /*
-* UUID
+* Dream::Util::UUID
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,26 +20,26 @@
 #include <cstdlib>
 
 namespace Dream {
-	namespace Util {
+namespace Util  {
 
-		UUID::UUID(void) {
-		}
+	UUID::UUID()  {}
+	UUID::~UUID() {}
 
-		UUID::~UUID(void) {
-		}
-
-		std::string UUID::generateUUID() {
-			size_t bufSize = sizeof(char)*20;
-			char* buffer = (char*)malloc(bufSize);
-			snprintf(
-				buffer, bufSize,
-				"%2x%2x-%2x%2x-%2x%2x-%2x%2x",
-				rand()%255, rand()%255,
-				rand()%255,rand()%255,
-				rand()%255,rand()%255,
-				rand()%255,rand()%255
-			);
-			return std::string(buffer);
-		}
-	} // End of Util
+	std::string UUID::generateUUID() {
+		size_t bufSize = sizeof(char)*20;
+		char* buffer = (char*)malloc(bufSize);
+		snprintf(
+			buffer, bufSize,
+			"%2x%2x-%2x%2x-%2x%2x-%2x%2x",
+			rand()%255, rand()%255,
+			rand()%255,rand()%255,
+			rand()%255,rand()%255,
+			rand()%255,rand()%255
+		);
+		std::string retval = std::string(buffer);
+		free(buffer);
+		return retval;
+	}
+	
+} // End of Util
 } // End of Dream
