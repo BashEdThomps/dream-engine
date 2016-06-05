@@ -30,6 +30,7 @@
 #endif
 
 #include "../AudioPluginInterface.h"
+#include "../../../Asset/Instances/Audio/AudioAssetInstance.h"
 
 namespace Dream   {
 namespace Plugins {
@@ -38,9 +39,9 @@ namespace OpenAL  {
 	
 	class OALAudio : public AudioPluginInterface {
 	private:
-		std::vector<ALuint> mPlayQueue;
-		std::vector<ALuint> mPauseQueue;
-		std::vector<ALuint> mStopQueue;
+		std::vector<Asset::Instances::Audio::AudioAssetInstance*> mPlayQueue;
+		std::vector<Asset::Instances::Audio::AudioAssetInstance*> mPauseQueue;
+		std::vector<Asset::Instances::Audio::AudioAssetInstance*> mStopQueue;
 		std::vector<ALuint> mSources;
 		std::vector<ALuint> mBuffers;
 		ALCdevice*  mDevice;
@@ -54,9 +55,13 @@ namespace OpenAL  {
 		void   setSourcePosision(ALuint, float, float, float);
 		void   setListenerPosition(float, float, float);
 		
-		void   pushToPlayQueue(ALuint);
-		void   pushToPauseQueue(ALuint);
-		void   pushToStopQueue(ALuint);
+		void pushToPlayQueue(Asset::AssetInstance*);
+		void pushToPauseQueue(Asset::AssetInstance*);
+		void pushToStopQueue(Asset::AssetInstance*);
+		
+		void playAudioAsset(Asset::AssetInstance*);
+		void pauseAudioAsset(Asset::AssetInstance*);
+		void stopAudioAsset(Asset::AssetInstance*);
 		
 	protected:
 		ALuint generateBuffers(size_t);

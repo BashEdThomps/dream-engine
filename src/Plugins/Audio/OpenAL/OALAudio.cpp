@@ -36,6 +36,7 @@ namespace OpenAL  {
 		mContext = alcCreateContext(mDevice,NULL);
 		alcMakeContextCurrent(mContext);
 		std::cout << "done." << std::endl;
+		setListenerPosition(0.0f, 0.0f, 0.0f);
 		return true;
 	}
 
@@ -77,7 +78,6 @@ namespace OpenAL  {
 		}
 	}
 	
-	
 	void OALAudio::setSourcePosision(ALuint sourceId, float x, float y, float z) {
 		alSource3f(sourceId, AL_POSITION, x,y,z);
 	}
@@ -112,21 +112,46 @@ namespace OpenAL  {
 		return state;
 	}
 	
-	void OALAudio::pushToPlayQueue(ALuint source) {
-		if (std::find(mPlayQueue.begin(),mPlayQueue.end(),source) == mPlayQueue.end()){
-			mPlayQueue.push_back(source);
+	void OALAudio::pushToPlayQueue(Asset::AssetInstance* asset) {
+		try {
+  		if (std::find(mPlayQueue.begin(),mPlayQueue.end(), asset) == mPlayQueue.end()){
+  			Asset::Instances::Audio::AudioAssetInstance* audioAsset;
+  			audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+  			audioAsset->setBuffer(generateBuffers(1));
+  			audioAsset->setSource(generateSources(1));
+  			float *position = audioAsset->getParentSceneObject()->getTranslation();
+  			std::vector<char> bufferData = audioAsset->getAudioDataBuffer();
+  			alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
+  									static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
+  			alSourcei(audioAsset->getSource(), AL_BUFFER, audioAsset->getBuffer());
+  			setSourcePosision(audioAsset->getSource(), position[0], position[1], position[2]);
+  			mPlayQueue.push_back(audioAsset);
+  		}
+		} catch (const std::exception &ex) {
+			std::cerr << "OALAudio: Unable to push asset to play queue" << asset->getNameAndUUIDString() << std::endl
+			          << ex.what() << std::endl;
 		}
 	}
 	
-	void OALAudio::pushToPauseQueue(ALuint source) {
-		if (std::find(mPauseQueue.begin(),mPauseQueue.end(),source) == mPauseQueue.end()) {
-			mPauseQueue.push_back(source);
+	void OALAudio::pushToPauseQueue(Asset::AssetInstance* asset) {
+		try {
+  		if (std::find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end()) {
+  			mPauseQueue.push_back(dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset));
+  		}
+		}  catch (const std::exception &ex) {
+			std::cerr << "OALAudio: Unable to push asset to pause queue" << asset->getNameAndUUIDString() << std::endl
+			          << ex.what() << std::endl;
 		}
 	}
 	
-	void OALAudio::pushToStopQueue(ALuint source) {
-		if (std::find(mStopQueue.begin(),mStopQueue.end(),source) == mStopQueue.end()) {
-			mStopQueue.push_back(source);
+	void OALAudio::pushToStopQueue(Asset::AssetInstance* asset) {
+		try {
+  		if (std::find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end()) {
+  			mStopQueue.push_back(dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset));
+  		}
+		} catch (const std::exception &ex) {
+			std::cerr << "OALAudio: Unable to push asset to stop queue" << asset->getNameAndUUIDString() << std::endl
+			          << ex.what() << std::endl;
 		}
 	}
 
@@ -137,27 +162,40 @@ namespace OpenAL  {
 	}
 	
 	void OALAudio::updatePlayQueue() {
-		std::vector<ALuint>::iterator iterator;
+		std::vector<Asset::Instances::Audio::AudioAssetInstance*>::iterator iterator;
 		for (iterator = mPlayQueue.begin(); iterator != mPlayQueue.end(); iterator++) {
-			playSource((*iterator));
+			playSource((*iterator)->getSource());
 		}
 		mPlayQueue.clear();
 	}
 	
 	void OALAudio::updatePauseQueue() {
-		std::vector<ALuint>::iterator iterator;
+		std::vector<Asset::Instances::Audio::AudioAssetInstance*>::iterator iterator;
 		for (iterator = mPauseQueue.begin(); iterator != mPauseQueue.end(); iterator++) {
-			pauseSource((*iterator));
+			pauseSource((*iterator)->getSource());
 		}
 		mPauseQueue.clear();
 	}
 	
 	void OALAudio::updateStopQueue() {
-		std::vector<ALuint>::iterator iterator;
+		std::vector<Asset::Instances::Audio::AudioAssetInstance*>::iterator iterator;
 		for (iterator = mStopQueue.begin(); iterator != mStopQueue.end(); iterator++) {
-			stopSource((*iterator));
+			stopSource((*iterator)->getSource());
 		}
 		mStopQueue.clear();
+	}
+	
+	
+	void OALAudio::playAudioAsset(Asset::AssetInstance *asset) {
+		pushToPlayQueue(asset);
+	}
+	
+	void OALAudio::pauseAudioAsset(Asset::AssetInstance *asset) {
+		pushToPauseQueue(asset);
+	}
+	
+	void OALAudio::stopAudioAsset(Asset::AssetInstance *asset) {
+		pushToStopQueue(asset);
 	}
 	
 } // End of OpenAL

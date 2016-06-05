@@ -52,6 +52,7 @@ namespace Plugins {
 		void update();
 		bool isDone();
 		void populatePhysicsWorld(std::vector<Scene::SceneObject*>);
+		Plugins::Audio::AudioPluginInterface* getAudioPlugin();
 	}; // End of PluginManager
 	
 } // End of Plugins

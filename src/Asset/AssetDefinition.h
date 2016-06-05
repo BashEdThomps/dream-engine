@@ -80,6 +80,8 @@ namespace Asset {
 		void        setFormat(std::string);
 		std::string getFormat();
 		
+		std::string getNameAndUUIDString();
+		
 		void         addAttribute(std::string,std::string);
 		
 		std::string  getAttribute         (std::string);

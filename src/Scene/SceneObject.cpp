@@ -118,6 +118,10 @@ namespace Scene {
 		mRotation[NODE_Z] = z;
 		return;
 	}
+	
+	void SceneObject::setAssetInstanceParentToThis(Asset::AssetInstance* asset) {
+		asset->setParentSceneObject(this);
+	}
 
 	float* SceneObject::getRotation() {
 		return mRotation;
@@ -234,6 +238,7 @@ namespace Scene {
 	
 	void SceneObject::setAnimationAssetInstance(Asset::AssetInstance* animationAsset) {
 		mAnimationAssetInstance = animationAsset;
+		setAssetInstanceParentToThis(animationAsset);
 	}
 	
 	Asset::AssetInstance* SceneObject::getAnimationAssetInstance() {
@@ -242,6 +247,7 @@ namespace Scene {
 	
 	void SceneObject::setAudioAssetInstance(Asset::AssetInstance* audioAsset) {
 		mAudioAssetInstance = audioAsset;
+		setAssetInstanceParentToThis(audioAsset);
 	}
 	
 	Asset::AssetInstance* SceneObject::getAudioAssetInstance() {
@@ -250,6 +256,7 @@ namespace Scene {
 	
 	void SceneObject::setModelAssetInstance(Asset::AssetInstance* modelAsset) {
 		mModelAssetInstance = modelAsset;
+		setAssetInstanceParentToThis(modelAsset);
 	}
 	
 	Asset::AssetInstance* SceneObject::getModelAssetInstance() {
@@ -258,6 +265,7 @@ namespace Scene {
 	
 	void SceneObject::setScriptAssetInstance(Asset::AssetInstance* scriptAsset) {
 		mScriptAssetInstance = scriptAsset;
+		setAssetInstanceParentToThis(scriptAsset);
 	}
 	
 	Asset::AssetInstance* SceneObject::getScriptAssetInstance() {
@@ -266,19 +274,22 @@ namespace Scene {
 	
 	void SceneObject::setShaderAssetInstance(Asset::AssetInstance* shaderAsset) {
 		mShaderAssetInstance = shaderAsset;
-	}
-	
-	void SceneObject::setLightAssetInstance(Asset::AssetInstance* lightAsset) {
-		mLightAssetInstance = lightAsset;
-	}
-	Asset::AssetInstance* SceneObject::getLightAssetInstance() {
-		return mLightAssetInstance;
+		setAssetInstanceParentToThis(shaderAsset);
 	}
 	
 	Asset::AssetInstance* SceneObject::getShaderAssetInstance() {
 		return mShaderAssetInstance;
 	}
 	
+	void SceneObject::setLightAssetInstance(Asset::AssetInstance* lightAsset) {
+		mLightAssetInstance = lightAsset;
+		setAssetInstanceParentToThis(lightAsset);
+	}
+	
+	Asset::AssetInstance* SceneObject::getLightAssetInstance() {
+		return mLightAssetInstance;
+	}
+
 	bool SceneObject::hasModelAssetInstance() {
 		return mModelAssetInstance != NULL;
 	}

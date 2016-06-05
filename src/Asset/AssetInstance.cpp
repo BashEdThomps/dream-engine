@@ -33,7 +33,15 @@ namespace Asset {
 	}
 	
 	std::string AssetInstance::getNameAndUUIDString() {
-		return getName() + " (" + getUUID() + ")";
+		return mDefinition->getNameAndUUIDString();
+	}
+	
+	Scene::SceneObject* AssetInstance::getParentSceneObject() {
+		return mParent;
+	}
+	
+	void AssetInstance::setParentSceneObject(Scene::SceneObject *parent) {
+		mParent = parent;
 	}
 
 } // End of Asset

@@ -79,12 +79,11 @@ namespace Ogg       {
 			
 			if (bytes < 0) {
 				ov_clear(&oggFile);
-				std::cerr << "OggAudioInstance: Error decoding " << fileName
-				          << "..." << std::endl;
+				std::cerr << "OggAudioInstance: Error decoding " << fileName << std::endl;
 				return false;
 			}
 			// Append to end of buffer
-			mOggDataBuffer.insert(mOggDataBuffer.end(), array, array + bytes);
+			mAudioDataBuffer.insert(mAudioDataBuffer.end(), array, array + bytes);
 		} while (bytes > 0);
 		
 		// Clean up!

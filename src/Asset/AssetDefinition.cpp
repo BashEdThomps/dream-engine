@@ -211,6 +211,10 @@ namespace Asset {
 		}
 	}
 	
+	std::string AssetDefinition::getNameAndUUIDString() {
+		return getName() + " (" + getUUID() + ")";
+	}
+	
 	std::string AssetDefinition::getAssetPath() {
 		std::stringstream pathStream;
 		pathStream << DIR_PATH_SEP

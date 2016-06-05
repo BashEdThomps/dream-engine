@@ -30,6 +30,11 @@
 #define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
 
 namespace Dream {
+	
+namespace Asset {
+	class AssetInstance;
+}
+	
 namespace Scene {
 	
 	class SceneObject {
@@ -50,8 +55,8 @@ namespace Scene {
 		float mScale[3];
 		
 		// Asset Instances
-		Asset::AssetInstance* mAnimationAssetInstance;
 		Asset::AssetInstance* mAudioAssetInstance;
+		Asset::AssetInstance* mAnimationAssetInstance;
 		Asset::AssetInstance* mModelAssetInstance;
 		Asset::AssetInstance* mScriptAssetInstance;
 		Asset::AssetInstance* mShaderAssetInstance;
@@ -115,10 +120,13 @@ namespace Scene {
 		void setLightAssetInstance(Asset::AssetInstance*);
 		Asset::AssetInstance* getLightAssetInstance();
 		
+		void setAssetInstanceParentToThis(Asset::AssetInstance*);
+		
 		std::vector<std::string> getAssetInstanceUUIDsToLoad();
 		bool hasModelAssetInstance();
 		bool hasShaderAssetInstance();
 		bool hasScriptAssetInstance();
+		
 	}; // End of SceneObject
 	
 } // End of Scene

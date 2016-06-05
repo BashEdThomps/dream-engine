@@ -18,19 +18,27 @@
 #ifndef ASSETINSTANCE_H
 #define ASSETINSTANCE_H
 
+#include <iostream>
+
 #include "../Util/FileReader.h"
 #include "AssetDefinition.h"
-#include <iostream>
+#include "../Scene/SceneObject.h"
 
 #define ASSET_UUID "uuid"
 #define ASSET_NAME "name"
 
 namespace Dream {
+	
+namespace Scene {
+	class SceneObject;
+}
+	
 namespace Asset {
 	
 	class AssetInstance {
 	protected:
-		AssetDefinition* mDefinition;
+		AssetDefinition    *mDefinition;
+		Scene::SceneObject *mParent;
 	public:
 		AssetInstance(AssetDefinition*);
 		virtual ~AssetInstance(void) {};
@@ -41,7 +49,8 @@ namespace Asset {
 		std::string getNameAndUUIDString();
 		
 		virtual bool load(std::string) = 0;
-		
+		void setParentSceneObject(Scene::SceneObject*);
+		Scene::SceneObject* getParentSceneObject();
 	}; // End of AssetInstance
 	
 } // End of Asset

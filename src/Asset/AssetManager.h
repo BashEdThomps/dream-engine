@@ -55,6 +55,7 @@ namespace Asset {
 		bool createAllAssetInstances();
 		void destroyAllAssetInstances();
 		void addAssetInstance(AssetInstance*);
+		AssetInstance* getAssetInstanceByUUID(std::string);
 		
 		AssetInstance* createAssetInstanceFromDefinitionUUID(Scene::SceneObject*, std::string);
 		AssetInstance* createAssetInstance              (Scene::SceneObject*, AssetDefinition*);

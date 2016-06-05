@@ -211,5 +211,17 @@ namespace Asset {
 		return retval;
 	}
 	
+	AssetInstance* AssetManager::getAssetInstanceByUUID(std::string uuid) {
+		std::vector<AssetInstance*>::iterator assetIt;
+		AssetInstance* retval = NULL;
+		for (assetIt = mAssetInstances.begin(); assetIt != mAssetInstances.end(); assetIt++) {
+			if ((*assetIt)->getUUID().compare(uuid) == 0) {
+				retval = (*assetIt);
+				break;
+			}
+		}
+		return retval;
+	}
+	
 } // End of Instance
 } // End of Dream

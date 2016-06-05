@@ -191,5 +191,9 @@ namespace Plugins {
 		}
 	}
 	
+	Plugins::Audio::AudioPluginInterface* PluginManager::getAudioPlugin() {
+		return mAudioPlugin;
+	}
+	
 } // End of Plugins
 } // End of Dream

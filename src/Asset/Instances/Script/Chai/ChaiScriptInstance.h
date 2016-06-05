@@ -42,7 +42,9 @@ namespace Chai      {
 			
 			// API Exposure
 			void initAPIs();
+			void initAssetInstanceAPI();
 			void initAssetManagerAPI();
+			void initAudioPluginAPI();
 			void initCameraAPI();
 			void initGlfwTimeAPI();
 			void initInputEventAPI();

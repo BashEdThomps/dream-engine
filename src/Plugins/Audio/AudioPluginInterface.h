@@ -19,15 +19,20 @@
 #define AUDIOINTERFACE_H
 
 #include "../PluginInterface.h"
+#include "../../Asset/AssetInstance.h"
 
 namespace Dream   {
 namespace Plugins {
 namespace Audio   {
 	
-	class AudioPluginInterface : public Dream::Plugins::PluginInterface {
+	class AudioPluginInterface : public Plugins::PluginInterface {
 	public:
 		AudioPluginInterface(void);
 		virtual ~AudioPluginInterface(void) {};
+		virtual void playAudioAsset(Asset::AssetInstance*)  = 0;
+		virtual void pauseAudioAsset(Asset::AssetInstance*) = 0;
+		virtual void stopAudioAsset(Asset::AssetInstance*)  = 0;
+		
 	}; // End of AudioPluginInterface
 	
 } // End of Plugins
