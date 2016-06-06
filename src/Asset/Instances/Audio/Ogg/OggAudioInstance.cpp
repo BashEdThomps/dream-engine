@@ -24,66 +24,62 @@ namespace Audio     {
 namespace Ogg       {
 	
 	OggAudioInstance::OggAudioInstance(AssetDefinition* definition)
-		: AudioAssetInstance(definition) {
-			
-	}
+		: AudioAssetInstance(definition) {}
 	
-  OggAudioInstance::~OggAudioInstance() {
-		
-	}
+  OggAudioInstance::~OggAudioInstance() {}
 	
 	bool OggAudioInstance::load(std::string projectPath) {
 		std::string absPath = projectPath+mDefinition->getAssetPath();
 		std::cout << "OggAudioInstance: Loading Instance: " << absPath << std::endl;
-		return loadOGG(absPath);
-	}
-	
-	bool OggAudioInstance::loadOGG(std::string fileName) {
+		
 		// 0 for Little-Endian, 1 for Big-Endian
 		int endian = 0;
 		int bitStream;
 		long bytes;
+		
 		// Local fixed size array
-		char array[BUFFER_SIZE];
-		FILE *f;
-		// Open for binary reading
-		f = fopen(fileName.c_str(), "rb");
-		if (f == NULL) {
-			std::cerr << "OggAudioInstance:: Cannot open " << fileName
+		char buffer[BUFFER_SIZE];
+		FILE *file = fopen(absPath.c_str(), "rb");
+		if (file == NULL) {
+			std::cerr << "OggAudioInstance:: Cannot open " << absPath
 			          << " for reading..." << std::endl;
 			return false;
 		}
-		vorbis_info *pInfo;
-		OggVorbis_File oggFile;
+		
 		// Try opening the given file
-		if (ov_open(f, &oggFile, NULL, 0) != 0) {
-			std::cerr << "OggAudioInstance: Error opening " << fileName
+		OggVorbis_File oggFile;
+		if (ov_open(file, &oggFile, NULL, 0) != 0) {
+			std::cerr << "OggAudioInstance: Error opening " << absPath
 			          << " for decoding..." << std::endl;
 			return false;
 		}
+		
 		// Get some information about the OGG file
-		pInfo = ov_info(&oggFile, -1);
+		vorbis_info *oggInfo;
+		oggInfo = ov_info(&oggFile, -1);
 		
 		// Check the number of channels... always use 16-bit samples
-		if (pInfo->channels == 1) {
+		if (oggInfo->channels == 1) {
 			mFormat = AL_FORMAT_MONO16;
 		} else {
 			mFormat = AL_FORMAT_STEREO16;
 		}
+		
 		// The frequency of the sampling rate
-		mFrequency = pInfo->rate;
+		mFrequency = oggInfo->rate;
+		
 		// Keep reading until all is read
 		do {
 			// Read up to a buffer's worth of decoded sound data
-			bytes = ov_read(&oggFile, array, BUFFER_SIZE, endian, 2, 1, &bitStream);
+			bytes = ov_read(&oggFile, buffer, BUFFER_SIZE, endian, 2, 1, &bitStream);
 			
 			if (bytes < 0) {
 				ov_clear(&oggFile);
-				std::cerr << "OggAudioInstance: Error decoding " << fileName << std::endl;
+				std::cerr << "OggAudioInstance: Error decoding " << absPath << std::endl;
 				return false;
 			}
 			// Append to end of buffer
-			mAudioDataBuffer.insert(mAudioDataBuffer.end(), array, array + bytes);
+			mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytes);
 		} while (bytes > 0);
 		
 		// Clean up!

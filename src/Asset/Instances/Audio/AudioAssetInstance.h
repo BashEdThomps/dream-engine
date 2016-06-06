@@ -29,13 +29,13 @@ namespace Audio     {
 	
 	class AudioAssetInstance : public AssetInstance {
 	protected:
-		AudioAssetStatus mStatus;
-		bool             mLooping;
-		ALenum mFormat;
-		ALsizei mFrequency;
+		AudioAssetStatus  mStatus;
+		bool              mLooping;
+		ALenum            mFormat;
+		ALsizei           mFrequency;
 		std::vector<char> mAudioDataBuffer;
-		ALuint mSource;
-		ALuint mBuffer;
+		ALuint            mSource;
+		ALuint            mBuffer;
 	public:
 		AudioAssetInstance(AssetDefinition*);
 		

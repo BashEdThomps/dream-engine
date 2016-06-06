@@ -34,7 +34,6 @@ namespace Ogg       {
 	public:
 		OggAudioInstance(AssetDefinition*);
 		~OggAudioInstance();
-		bool loadOGG(std::string);
 		bool load(std::string);
 	}; // End of OggAudio
 	

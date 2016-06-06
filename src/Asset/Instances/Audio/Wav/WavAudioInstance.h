@@ -1,5 +1,5 @@
 /*
-* WavAudio
+* Dream::Asset::Instances::Audio::WavAudioInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,13 @@
 #ifndef WAVAUDIO_H
 #define WAVAUDIO_H
 
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <cstdint>
+
 #include "../AudioAssetInstance.h"
+#include "WavHeader.h"
 
 #define ASSET_FORMAT_WAV  "wav"
 
@@ -29,11 +35,14 @@ namespace Audio     {
 namespace Wav       {
 	
 	class WavAudioInstance : public AudioAssetInstance {
+	private:
+		WavHeader mWavHeader;
 	public:
 		WavAudioInstance(AssetDefinition*);
 		~WavAudioInstance();
 		bool load(std::string);
-	};
+		int  getFileSize(FILE* inFile);
+	}; // End WavAudioInstance
 	
 } // End of Wav
 } // End of Audio

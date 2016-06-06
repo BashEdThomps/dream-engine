@@ -23,7 +23,9 @@ namespace Plugins {
 namespace Physics {
 namespace Bullet {
 	
-	BulletPhysics::BulletPhysics(void) : PhysicsPluginInterface() {}
+	BulletPhysics::BulletPhysics(void) : PhysicsPluginInterface() {
+		//mDebugDrawer = new BulletGLDebugDrawer();
+	}
 
 	BulletPhysics::~BulletPhysics(void) {
 		delete mSolver;

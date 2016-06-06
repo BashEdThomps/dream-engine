@@ -18,6 +18,7 @@
 #ifndef PHYSICSWORLD_H
 #define PHYSICSWORLD_H
 
+#include "BulletGLDebugDrawer.h"
 #include "../PhysicsPluginInterface.h"
 #include "../../../Asset/Instances/Physics/Bullet/PhysicsObjectInstance.h"
 #include <btBulletDynamicsCommon.h>
@@ -31,6 +32,7 @@ namespace Bullet  {
 	
 	class BulletPhysics : public PhysicsPluginInterface {
 	private:
+		BulletGLDebugDrawer                 *mDebugDrawer;
 		btDynamicsWorld                     *mDynamicsWorld;
 		btBroadphaseInterface               *mBroadphase;
 		btDefaultCollisionConfiguration     *mCollisionConfiguration;
