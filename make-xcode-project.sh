@@ -1,6 +1,7 @@
 #!/bin/bash
 
-mkdir Xcode
-cd Xcode
+cd ..
+mkdir DreamXcode
+cd DreamXcode
 cmake .. -G Xcode
 open Dream.xcodeproj
