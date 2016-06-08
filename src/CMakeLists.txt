@@ -13,8 +13,8 @@ add_library (DreamBase SHARED ${DREAM_SRC})
 file(GLOB_RECURSE _ASSET_SRC "Asset/*.h" "Asset/*.cpp")
 source_group(Asset FILES ${_ASSET_SRC})
 
-file(GLOB_RECURSE _JSON_SRC "JSON/*.hpp")
-source_group(Json FILES ${_JSON_SRC})
+file(GLOB_RECURSE _EXT_LIB_SRC "ExternalLibs/*")
+source_group(ExternalLibs FILES ${_EXT_LIB_SRC})
 
 file(GLOB_RECURSE _MAIN_SRC "Main/*.h" "Main/*.cpp")
 list(REMOVE_ITEM  _MAIN_SRC "Main/Main.cpp")

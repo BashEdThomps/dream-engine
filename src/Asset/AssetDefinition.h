@@ -23,7 +23,7 @@
 #include <map>
 #include <string>
 
-#include "../JSON/json.hpp"
+#include "../ExternalLibs/JSON/json.hpp"
 
 #define ASSET_UUID   "uuid"
 #define ASSET_NAME   "name"

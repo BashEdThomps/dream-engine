@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include "../JSON/json.hpp"
+#include "../ExternalLibs/JSON/json.hpp"
 #include "../Asset/AssetInstance.h"
 
 #define NODE_X 0

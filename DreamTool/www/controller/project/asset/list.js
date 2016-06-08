@@ -170,6 +170,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
   };
 
   $scope.onAssetModelAssimpUploadButtonClicked = function() {
+    UIService.addAlert("Uploading Asset File...","info");
     var assimpFile = document.getElementById('wf-assimp-file');
     UtilService.readFileAsBinaryFromElement(assimpFile, function(data) {
       var path = ProjectService.getProjectUUID()+"/asset/model/"+$scope.currentAsset.uuid+"/assimp";
@@ -197,9 +198,26 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     });
   };
 
-  $scope.onAssetAudioUploadButtonClicked = function() {
+  $scope.onAssetAudioOggUploadButtonClicked = function() {
+    UIService.addAlert("Uploading Asset File...","info");
     var oggFile = document.getElementById('ogg-file');
     UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
+      var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/"+$scope.currentAsset.format;
+      ApiService.uploadAsset(path,data, function(success){
+        if (success) {
+          UIService.addAlert("Asset uploaded successfuly.","success");
+        }
+        else {
+          UIService.addAlert("Error uploading asset.","danger");
+        }
+      });
+    });
+  };
+
+  $scope.onAssetAudioWavUploadButtonClicked = function() {
+    UIService.addAlert("Uploading Asset File...","info");
+    var wavFile = document.getElementById('wav-file');
+    UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
       var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/"+$scope.currentAsset.format;
       ApiService.uploadAsset(path,data, function(success){
         if (success) {

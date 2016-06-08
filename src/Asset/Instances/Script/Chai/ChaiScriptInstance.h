@@ -33,15 +33,19 @@ namespace Chai      {
     class ChaiScriptInstance : public AssetInstance {
 		private:
 			chaiscript::ChaiScript *mScript;
+			std::string mProjectPath;
     public:
 			ChaiScriptInstance(AssetDefinition*);
 			~ChaiScriptInstance(void);
 			bool load(std::string);
 			void update();
 			void processInputs(std::vector<Plugins::Input::InputEvent>);
+			bool importScriptAssetByUUID(std::string);
+			std::string getProjectPath();
 			
 			// API Exposure
 			void initAPIs();
+			void initChaiScriptAPI();
 			void initAssetInstanceAPI();
 			void initAssetManagerAPI();
 			void initAudioPluginAPI();

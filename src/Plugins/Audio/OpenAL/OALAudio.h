@@ -75,11 +75,10 @@ namespace OpenAL  {
 		void   stopSource(ALuint);
 		void   pauseSource(ALuint);
 		
-		ALenum getSourceState(ALuint);
-	
 		void   updatePlayQueue();
 		void   updatePauseQueue();
 		void   updateStopQueue();
+		void   cleanUpBuffersAndSources();
 		
 		void deleteAllSources();
 		void deleteAllBuffers();

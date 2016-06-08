@@ -61,9 +61,7 @@ namespace Test {
 
 		assertTrue("Project Got OpenAL Enabled from JSON",   dream.getProject()->isOpenALEnabled()  );
 		assertTrue("Project Got Bullet2 Enabled from JSON",  dream.getProject()->isBullet2Enabled() );
-		assertFalse("Project Got Bullet3 Enabled from JSON", dream.getProject()->isBullet3Enabled() );
 		assertTrue("Project Got OpenGL Enabled from JSON",   dream.getProject()->isOpenGLEnabled()  );
-		assertFalse("Project Got Vulkan Enabled from JSON",  dream.getProject()->isVulkanEnabled()  );
 
 		std::string sceneName = "First Scene";
 		Scene::Scene* firstScene = dream.getProject()->getSceneByName(sceneName);

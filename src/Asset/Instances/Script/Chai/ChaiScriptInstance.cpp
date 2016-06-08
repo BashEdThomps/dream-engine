@@ -28,7 +28,9 @@ namespace Chai      {
 	ChaiScriptInstance::~ChaiScriptInstance(void) {}
 	
 	bool ChaiScriptInstance::load(std::string projectPath) {
+		mProjectPath = projectPath;
 		mScript = new chaiscript::ChaiScript(chaiscript::Std_Lib::library());
+		initChaiScriptAPI();
 		chaiscript::Boxed_Value result = mScript->eval_file(projectPath+mDefinition->getAssetPath());
 		initAPIs();
 		return !result.is_null();
@@ -44,6 +46,24 @@ namespace Chai      {
 		initPluginManagerAPI();
 		initProjectAPI();
 		initSceneObjectAPI();
+	}
+	
+	std::string ChaiScriptInstance::getProjectPath() {
+		return mProjectPath;
+	}
+	
+	void ChaiScriptInstance::initChaiScriptAPI() {
+		mScript->add(chaiscript::user_type<ChaiScriptInstance>(),"ChaiScriptInstance");
+		mScript->add_global(chaiscript::var(this),"Script");
+		mScript->add(chaiscript::fun(&ChaiScriptInstance::importScriptAssetByUUID),"import");
+	}
+	
+	bool ChaiScriptInstance::importScriptAssetByUUID(std::string uuid) {
+		AssetDefinition* scriptAsset;
+		scriptAsset = Dream::getProject()->getAssetDefinitionByUUID(uuid);
+		std::cout << "ChaiAssetInstance: Importing ChaiScript Library: " << scriptAsset->getNameAndUUIDString() << std::endl;
+		chaiscript::Boxed_Value result = mScript->eval_file(getProjectPath()+scriptAsset->getAssetPath());
+		return !result.is_null();
 	}
 	
 	void ChaiScriptInstance::initAssetInstanceAPI() {

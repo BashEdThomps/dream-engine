@@ -8,7 +8,7 @@ App.controller("OpenProjectModal",
             ApiService.readProjectList(function(list){
                 list.forEach(function(proj) {
                     $scope.projectTreeData.push({
-                        label: proj.name + " ("+proj.uuid.toUpperCase()+")",
+                        label: proj.name + " ("+proj.uuid+")",
                         uuid : proj.uuid,
                         onSelect: $scope.projectSelected
                     });

@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "SceneObject.h"
-#include "../JSON/json.hpp"
+#include "../ExternalLibs/JSON/json.hpp"
 #include "../Util/StringUtils.h"
 
 #define SCENE_JSON_UUID              "uuid"

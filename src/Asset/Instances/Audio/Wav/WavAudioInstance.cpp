@@ -49,6 +49,12 @@ namespace Wav       {
 			while ((bytesRead = fread(buffer, sizeof buffer[0], BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0) {
 				mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytesRead);
 			}
+			mFrequency = mWavHeader.SamplesPerSecond;
+			if (mWavHeader.NumOfChannels == 1) {
+				mFormat = AL_FORMAT_MONO16;
+			} else {
+				mFormat = AL_FORMAT_STEREO16;
+			}
 			std::cout << "WavAudioInstance: Read " << bytesRead << " bytes." << std::endl;
 			delete [] buffer;
 			buffer = NULL;

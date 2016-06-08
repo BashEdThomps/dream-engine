@@ -3,5 +3,5 @@
 cd ..
 mkdir DreamXcode
 cd DreamXcode
-cmake .. -G Xcode
+cmake ../Dream -G Xcode
 open Dream.xcodeproj

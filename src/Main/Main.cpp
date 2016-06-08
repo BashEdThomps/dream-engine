@@ -33,7 +33,7 @@ int main(int argc, const char** argv) {
 			std::cerr << "Dream: Exiting Before It's Time :(" << std::endl;
 			return 1;
 		} else {
-			std::cout << "Dream: Exiting Triumphantly >:D" << std::endl;
+			std::cout << "Dream: Exiting Cleanly :)" << std::endl;
 			return 0;
 		}
 	} else {

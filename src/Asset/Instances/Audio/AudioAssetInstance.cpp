@@ -7,17 +7,8 @@ namespace Audio     {
 	
 	AudioAssetInstance::AudioAssetInstance(AssetDefinition* definition) : AssetInstance(definition) {
 			setLooping(false);
-			setStatus(STOPPED);
 			setBuffer(0);
 			setSource(0);
-	}
-	
-	void AudioAssetInstance::setStatus(AudioAssetStatus status) {
-		mStatus = status;
-	}
-
-	AudioAssetStatus AudioAssetInstance::getStatus() {
-		return mStatus;
 	}
 	
 	void AudioAssetInstance::setLooping(bool looping) {

@@ -20,7 +20,7 @@
 
 #include <unistd.h>
 #include <vector>
-#include "../JSON/json.hpp"
+#include "../ExternalLibs/JSON/json.hpp"
 #include "../Scene/Scene.h"
 #include "../Asset/AssetDefinition.h"
 #include "../Util/StringUtils.h"

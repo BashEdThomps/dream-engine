@@ -29,7 +29,6 @@ namespace Audio     {
 	
 	class AudioAssetInstance : public AssetInstance {
 	protected:
-		AudioAssetStatus  mStatus;
 		bool              mLooping;
 		ALenum            mFormat;
 		ALsizei           mFrequency;
@@ -38,9 +37,6 @@ namespace Audio     {
 		ALuint            mBuffer;
 	public:
 		AudioAssetInstance(AssetDefinition*);
-		
-		void             setStatus(AudioAssetStatus);
-		AudioAssetStatus getStatus();
 		
 		void setLooping(bool);
 		bool isLooping();

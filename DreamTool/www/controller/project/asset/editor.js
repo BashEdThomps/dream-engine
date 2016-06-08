@@ -229,7 +229,7 @@ App.controller("ProjectAssetEditor",
       if ($scope.audio) {
           percent =  Math.round((100/$scope.audio.duration) * $scope.audio.currentTime);
       }
-      
+
       return {
         width : percent+'%'
       };
