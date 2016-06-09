@@ -64,6 +64,9 @@ namespace OpenAL  {
 		void stopAudioAsset(Asset::AssetInstance*);
 		Asset::Instances::Audio::AudioAssetStatus getAudioAssetState(Asset::AssetInstance*);
 		
+		ALfloat getSampleOffset(ALuint);
+		ALfloat getSampleOffset(Asset::AssetInstance*);
+		
 	protected:
 		ALuint generateBuffers(size_t);
 		ALuint generateSources(size_t);
@@ -82,6 +85,7 @@ namespace OpenAL  {
 		
 		void deleteAllSources();
 		void deleteAllBuffers();
+		
 		
 	}; // End of OALAudio
 	

@@ -211,6 +211,23 @@ namespace OpenAL  {
 		pushToStopQueue(asset);
 	}
 	
+	ALfloat OALAudio::getSampleOffset(ALuint source) {
+		ALfloat sampleOffset;
+		alGetSourcef(source, AL_SAMPLE_OFFSET, &sampleOffset );
+		return sampleOffset;
+	}
+	
+	float OALAudio::getSampleOffset(Asset::AssetInstance* asset) {
+		try {
+  		Asset::Instances::Audio::AudioAssetInstance* audioAsset;
+  		audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+  		return getSampleOffset(audioAsset->getSource());
+		} catch (const std::exception &ex) {
+			std::cout << "OALAudio: Could not get sample offset for asset" << asset->getNameAndUUIDString() << std::endl;
+		}
+		return 0.0f;
+	}
+	
 	Asset::Instances::Audio::AudioAssetStatus
 	OALAudio::getAudioAssetState(Asset::AssetInstance* asset) {
 		try {

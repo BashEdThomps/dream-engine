@@ -43,6 +43,7 @@ namespace Chai      {
 		initCameraAPI();
 		initGlfwTimeAPI();
 		initInputEventAPI();
+		initKissFftAPI();
 		initPluginManagerAPI();
 		initProjectAPI();
 		initSceneObjectAPI();
@@ -64,6 +65,31 @@ namespace Chai      {
 		std::cout << "ChaiAssetInstance: Importing ChaiScript Library: " << scriptAsset->getNameAndUUIDString() << std::endl;
 		chaiscript::Boxed_Value result = mScript->eval_file(getProjectPath()+scriptAsset->getAssetPath());
 		return !result.is_null();
+	}
+
+	void ChaiScriptInstance::initKissFftAPI() {
+		mKissFFT = new FFT(NUM_FFT,false);
+		//mScript->add(chaiscript::fun(&ChaiScriptInstance::transformFFT),"transformFFT");
+		//mScript->add(chaiscript::fun(&ChaiScriptInstance::insertIntoFFTInputBuffer),"insertIntoFFTInputBuffer");
+		//mScript->add(chaiscript::fun(&ChaiScriptInstance::getFFTOutputBuffer),"getFFTOutputBuffer");
+		//mScript->add(chaiscript::fun(&ChaiScriptInstance::clearFFTBuffers),"clearFFTBuffers");
+	}
+	
+	void ChaiScriptInstance::insertIntoFFTInputBuffer(cpx_type* data, int nSamples) {
+		//mFFTInputBuffer.insert(mFFTInputBuffer.end(), data, data+nSamples);
+	}
+	
+	std::vector<cpx_type> ChaiScriptInstance::getFFTOutputBuffer() {
+		//return mFFTOutputBuffer;
+	}
+	
+	void ChaiScriptInstance::clearFFTBuffers() {
+		//mFFTInputBuffer.clear();
+		//mFFTOutputBuffer.clear();
+	}
+	
+	void ChaiScriptInstance::transformFFT() {
+		//mKissFFT->transform(&mFFTInputBuffer[0], &mFFTOutputBuffer[0]);
 	}
 	
 	void ChaiScriptInstance::initAssetInstanceAPI() {
@@ -99,6 +125,15 @@ namespace Chai      {
 		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::playAudioAsset),"playAudioAsset");
 		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::pauseAudioAsset),"pauseAudioAsset");
 		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::stopAudioAsset),"stopAudioAsset");
+		mScript->add(
+			chaiscript::fun<
+				float,
+				Plugins::Audio::AudioPluginInterface,
+				Asset::AssetInstance*
+			>
+			(&Plugins::Audio::AudioPluginInterface::getSampleOffset),
+			"getSampleOffset"
+		);
 	}
 	
 	void ChaiScriptInstance::initPluginManagerAPI() {

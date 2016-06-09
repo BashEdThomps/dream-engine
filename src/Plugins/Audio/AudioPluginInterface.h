@@ -29,9 +29,10 @@ namespace Audio   {
 	public:
 		AudioPluginInterface(void);
 		virtual ~AudioPluginInterface(void) {};
-		virtual void playAudioAsset(Asset::AssetInstance*)  = 0;
-		virtual void pauseAudioAsset(Asset::AssetInstance*) = 0;
-		virtual void stopAudioAsset(Asset::AssetInstance*)  = 0;
+		virtual float getSampleOffset(Asset::AssetInstance*) = 0;
+		virtual void  playAudioAsset(Asset::AssetInstance*)  = 0;
+		virtual void  pauseAudioAsset(Asset::AssetInstance*) = 0;
+		virtual void  stopAudioAsset(Asset::AssetInstance*)  = 0;
 		
 	}; // End of AudioPluginInterface
 	
