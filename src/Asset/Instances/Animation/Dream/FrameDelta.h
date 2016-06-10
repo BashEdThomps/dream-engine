@@ -1,6 +1,8 @@
 #ifndef FRAMEDELTA_H
 #define FRAMEDELTA_H
 
+#include <vector>
+
 //! Delta Operations
 #define FRAME_DELTA_OP_LINEAR 0
 #define FRAME_DELTA_OP_BEZIER 1
@@ -15,25 +17,25 @@ namespace Dream     {
 	class FrameDelta {
 	private:
 		int   mDrawableID;
-		float mPositionDelta [3];
-		float mRotationDelta [3];
-		float mScaleDelta    [3];
+		std::vector<float> mPositionDelta;
+		std::vector<float> mRotationDelta;
+		std::vector<float> mScaleDelta;
 		float mOrbitRadius;
 		int   mOperation;
 	public:
 		FrameDelta  (int, int);
 		~FrameDelta ();
 		FrameDelta* computeFrameDelta(FrameDelta*, FrameDelta*, int, int);
-		void        computeDeltaVector(float*, float*, float*);
+		void        computeDeltaVector(std::vector<float>, std::vector<float>, std::vector<float>);
 		void        showStatus();
 		int         getDrawableID();
-		float*      getPositionDelta();
-		float*      getRotationDelta();
+		std::vector<float> getPositionDelta();
+		std::vector<float> getRotationDelta();
+		std::vector<float> getScaleDelta();
 		int         getOperation();
-		void        setPositionDelta(float*);
-		void        setRotationDelta(float*);
-		float*      getScaleDelta();
-		void        setScaleDelta(float*);
+		void        setPositionDelta(std::vector<float>);
+		void        setRotationDelta(std::vector<float>);
+		void        setScaleDelta(std::vector<float>);
 	};
 	
 } // End of Dream

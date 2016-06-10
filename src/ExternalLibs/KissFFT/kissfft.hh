@@ -264,7 +264,7 @@ class kissfft
             cpx_type * twiddles = &_twiddles[0];
             cpx_type t;
             int Norig = _nfft;
-            cpx_type scratchbuf[p];
+					  std::vector<cpx_type> scratchbuf(p);
 
             for ( u=0; u<m; ++u ) {
                 k=u;

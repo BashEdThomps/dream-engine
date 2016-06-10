@@ -11,6 +11,10 @@ namespace Scene {
 	SceneObject::SceneObject() {}
 
 	SceneObject::SceneObject(nlohmann::json soJson){
+		mTranslation = std::vector<float>(3);
+		mRotation = std::vector<float>(3);
+		mScale = std::vector<float>(3);
+		
 		if(!soJson[SCENE_OBJECT_UUID].is_null()){
 			mUUID = soJson[SCENE_OBJECT_UUID];
 		}
@@ -108,7 +112,7 @@ namespace Scene {
 		return;
 	}
 
-	float* SceneObject::getTranslation() {
+	std::vector<float> SceneObject::getTranslation() {
 		return mTranslation;
 	}
 
@@ -123,7 +127,7 @@ namespace Scene {
 		asset->setParentSceneObject(this);
 	}
 
-	float* SceneObject::getRotation() {
+	std::vector<float> SceneObject::getRotation() {
 		return mRotation;
 	}
 
@@ -302,8 +306,14 @@ namespace Scene {
 		return mScriptAssetInstance != NULL;
 	}
 	
-	float* SceneObject::getScale() {
+	std::vector<float> SceneObject::getScale() {
 		return mScale;
+	}
+	
+	void SceneObject::setScale(float x, float y, float z) {
+		mScale[0] = x;
+		mScale[1] = y;
+		mScale[2] = z;
 	}
 	
 	void SceneObject::setPhysicsObjectAssetInstance(Asset::AssetInstance* physicsObject) {

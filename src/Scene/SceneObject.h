@@ -50,9 +50,9 @@ namespace Scene {
 		std::string  mPositionType;
 		
 		// Position
-		float mTranslation[3];
-		float mRotation[3];
-		float mScale[3];
+		std::vector<float> mTranslation;
+		std::vector<float> mRotation;
+		std::vector<float> mScale;
 		
 		// Asset Instances
 		Asset::AssetInstance* mAudioAssetInstance;
@@ -78,12 +78,12 @@ namespace Scene {
 		std::string  getName();
 		std::string  getNameUUIDString();
 		void         showStatus();
+		std::vector<float> getTranslation();
+		std::vector<float> getRotation();
+		std::vector<float> getScale();
 		void         setTranslation(float, float, float);
-		float*       getTranslation();
 		void         setRotation(float, float, float);
-		float*       getRotation();
 		void         setScale(float, float, float);
-		float*       getScale();
 		void         resetTranslationRotation();
 		int          countAllChildren();
 		int          countChildren();

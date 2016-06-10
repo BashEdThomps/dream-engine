@@ -105,15 +105,16 @@ namespace Dream     {
 	}
 
 	void AnimationInstance::applyFrameDeltaToSceneObject(FrameDelta* delta) {
-		float* translationDelta = delta->getPositionDelta();
-		float* soTranslation = mSceneObject->getTranslation();
+		std::vector<float> translationDelta = delta->getPositionDelta();
+		std::vector<float> soTranslation = mSceneObject->getTranslation();
+		
 		float tX = soTranslation[0] += translationDelta[0];
 		float tY = soTranslation[1] += translationDelta[1];
 		float tZ = soTranslation[2] += translationDelta[2];
 		mSceneObject->setTranslation(tX, tY, tZ);
 		
-		float* rotationDelta = delta->getRotationDelta();
-		float* soRotation = mSceneObject->getRotation();
+		std::vector<float> rotationDelta = delta->getRotationDelta();
+		std::vector<float> soRotation = mSceneObject->getRotation();
 		float rX = soRotation[0] += rotationDelta[0];
 		float rY = soRotation[1] += rotationDelta[1];
 		float rZ = soRotation[2] += rotationDelta[2];

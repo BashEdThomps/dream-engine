@@ -1,5 +1,5 @@
 /*
-* AudioInterface
+* Dream::Plugins::Audio::AudioPluginInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@ namespace Audio   {
 		AudioPluginInterface(void);
 		virtual ~AudioPluginInterface(void) {};
 		virtual float getSampleOffset(Asset::AssetInstance*) = 0;
+		virtual std::vector<char> getAudioBuffer(Asset::AssetInstance*, int, int) = 0;
 		virtual void  playAudioAsset(Asset::AssetInstance*)  = 0;
 		virtual void  pauseAudioAsset(Asset::AssetInstance*) = 0;
 		virtual void  stopAudioAsset(Asset::AssetInstance*)  = 0;
-		
 	}; // End of AudioPluginInterface
 	
 } // End of Plugins

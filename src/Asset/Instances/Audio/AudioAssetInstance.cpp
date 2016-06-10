@@ -31,7 +31,6 @@ namespace Audio     {
 		return mFormat;
 	}
 	
-	
 	void AudioAssetInstance::setBuffer(ALuint buffer) {
 		mBuffer = buffer;
 	}

@@ -36,7 +36,8 @@ namespace OpenAL  {
 		mContext = alcCreateContext(mDevice,NULL);
 		alcMakeContextCurrent(mContext);
 		std::cout << "done." << std::endl;
-		setListenerPosition(0.0f, 0.0f, 0.0f);
+		std::vector<float> position = {0.0f,0.0f,0.0f};
+		setListenerPosition(position);
 		return true;
 	}
 
@@ -78,12 +79,12 @@ namespace OpenAL  {
 		}
 	}
 	
-	void OALAudio::setSourcePosision(ALuint sourceId, float x, float y, float z) {
-		alSource3f(sourceId, AL_POSITION, x,y,z);
+	void OALAudio::setSourcePosision(ALuint sourceId, std::vector<float> position) {
+		alSource3f(sourceId, AL_POSITION, position[0],position[1],position[2]);
 	}
 	
-	void OALAudio::setListenerPosition(float x, float y, float z) {
-		alListener3f(AL_POSITION, x,y,z);
+	void OALAudio::setListenerPosition(std::vector<float> position) {
+		alListener3f(AL_POSITION, position[0],position[1],position[2]);
 	}
 	
 	void OALAudio::deleteBuffers(int count, ALuint buffer) {
@@ -115,12 +116,12 @@ namespace OpenAL  {
 				if (audioAsset->getSource() == 0 && audioAsset->getBuffer() == 0) {
     			audioAsset->setBuffer(generateBuffers(1));
     			audioAsset->setSource(generateSources(1));
-    			float *position = audioAsset->getParentSceneObject()->getTranslation();
-    			std::vector<char> bufferData = audioAsset->getAudioDataBuffer();
+					std::vector<float> position = audioAsset->getParentSceneObject()->getTranslation();
+    			std::vector<char>  bufferData = audioAsset->getAudioDataBuffer();
     			alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
     									static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
     			alSourcei(audioAsset->getSource(), AL_BUFFER, audioAsset->getBuffer());
-    			setSourcePosision(audioAsset->getSource(), position[0], position[1], position[2]);
+    			setSourcePosision(audioAsset->getSource(), position);
 				}
   			mPlayQueue.push_back(audioAsset);
   		}
@@ -217,6 +218,21 @@ namespace OpenAL  {
 		return sampleOffset;
 	}
 	
+	std::vector<char> OALAudio::getAudioBuffer(Asset::AssetInstance* asset, int offset, int length) {
+		std::vector<char> retval = std::vector<char>(length);
+		try {
+			Asset::Instances::Audio::AudioAssetInstance* audioAsset;
+			audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+			std::vector<char> audioData = audioAsset->getAudioDataBuffer();
+			char* dataBegin = &audioData[0];
+			retval.insert(retval.begin(), dataBegin, dataBegin+length);
+		} catch (const std::exception &ex) {
+			std::cerr << "OALAudio: Unable to get buffer data for " << asset->getNameAndUUIDString()
+			          << ex.what() << std::endl;
+		}
+		return retval;
+	}
+	
 	float OALAudio::getSampleOffset(Asset::AssetInstance* asset) {
 		try {
   		Asset::Instances::Audio::AudioAssetInstance* audioAsset;
@@ -243,7 +259,9 @@ namespace OpenAL  {
 				case AL_PAUSED:
 					return Asset::Instances::Audio::PAUSED;
 				default:
-					std::cerr << "OALAudio: Unknown Audio State for " << asset->getNameAndUUIDString() << std::endl;
+					#ifdef VERBOSE
+						std::cerr << "OALAudio: Unknown Audio State for " << asset->getNameAndUUIDString() << std::endl;
+					#endif
 					return Asset::Instances::Audio::UNKNOWN;
 			}
 		} catch (const std::exception &ex) {

@@ -23,7 +23,7 @@ namespace Bullet  {
 		void reportErrorWarning(const char*);
 		void draw3dText(const btVector3&,const char*);
 		void setDebugMode(int);
-		int  getDebugMode();
+		virtual int  getDebugMode() const { return mDebugMode;}
 	}; // End of BulletGLDebugDrawer
 	
 } // End of Bullet

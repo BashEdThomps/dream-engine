@@ -23,26 +23,18 @@
 #include <chaiscript/chaiscript.hpp>
 #include "../../../AssetInstance.h"
 #include "../../../../Plugins/Scripting/Chai/ChaiScripting.h"
-#include "../../../../ExternalLibs/KissFFT/kissfft.hh"
-
-typedef kissfft<double> FFT;
-typedef std::complex<double> cpx_type;
-
-#define NUM_FFT 1024
+#include "../../../../ExternalLibs/KissFFT/KissFFTWrapper.h"
 
 namespace Dream     {
 namespace Asset     {
 namespace Instances {
 namespace Script    {
 namespace Chai      {
-
+	
     class ChaiScriptInstance : public AssetInstance {
 		private:
 			chaiscript::ChaiScript *mScript;
 			std::string             mProjectPath;
-			FFT                    *mKissFFT;
-			std::vector<cpx_type>   mFFTInputBuffer;
-			std::vector<cpx_type>   mFFTOutputBuffer;
     public:
 			ChaiScriptInstance(AssetDefinition*);
 			~ChaiScriptInstance(void);
@@ -65,13 +57,6 @@ namespace Chai      {
 			void initPluginManagerAPI();
 			void initProjectAPI();
 			void initSceneObjectAPI();
-			
-			// FFT
-			void transformFFT();
-			void insertIntoFFTInputBuffer(cpx_type*,int);
-			std::vector<cpx_type> getFFTOutputBuffer();
-			void clearFFTBuffers();
-			
     }; // End of ChaiScriptInstance
     
 } // End of ChaiScript

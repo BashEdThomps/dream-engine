@@ -52,8 +52,8 @@ namespace OpenAL  {
 		bool init();
 		void update(Scene::Scene*);
 	
-		void   setSourcePosision(ALuint, float, float, float);
-		void   setListenerPosition(float, float, float);
+		void   setSourcePosision(ALuint, std::vector<float>);
+		void   setListenerPosition(std::vector<float>);
 		
 		void pushToPlayQueue(Asset::AssetInstance*);
 		void pushToPauseQueue(Asset::AssetInstance*);
@@ -66,6 +66,7 @@ namespace OpenAL  {
 		
 		ALfloat getSampleOffset(ALuint);
 		ALfloat getSampleOffset(Asset::AssetInstance*);
+		std::vector<char> getAudioBuffer(Asset::AssetInstance*, int, int);
 		
 	protected:
 		ALuint generateBuffers(size_t);

@@ -68,30 +68,17 @@ namespace Chai      {
 	}
 
 	void ChaiScriptInstance::initKissFftAPI() {
-		mKissFFT = new FFT(NUM_FFT,false);
-		//mScript->add(chaiscript::fun(&ChaiScriptInstance::transformFFT),"transformFFT");
-		//mScript->add(chaiscript::fun(&ChaiScriptInstance::insertIntoFFTInputBuffer),"insertIntoFFTInputBuffer");
-		//mScript->add(chaiscript::fun(&ChaiScriptInstance::getFFTOutputBuffer),"getFFTOutputBuffer");
-		//mScript->add(chaiscript::fun(&ChaiScriptInstance::clearFFTBuffers),"clearFFTBuffers");
+		#ifdef VERBOSE
+			std::cout << "ChaiScriptInstance: Init KissFFT API" << std::endl;
+		#endif
+		mScript->add_global(chaiscript::var(Extra::KissFFT::KissFFTWrapper::getInstance()),   "gKissFFT");
+		mScript->add_global(chaiscript::const_var(NUM_FFT),"NUM_FFT");
+		mScript->add(chaiscript::fun(&Extra::KissFFT::KissFFTWrapper::transformFFT),          "transformFFT");
+		mScript->add(chaiscript::fun(&Extra::KissFFT::KissFFTWrapper::insertIntoInputBuffer), "insertIntoInputBuffer");
+		mScript->add(chaiscript::fun(&Extra::KissFFT::KissFFTWrapper::getOutputBuffer),       "getOutputBuffer");
+		mScript->add(chaiscript::fun(&Extra::KissFFT::KissFFTWrapper::clearBuffers),          "clearBuffers");
 	}
-	
-	void ChaiScriptInstance::insertIntoFFTInputBuffer(cpx_type* data, int nSamples) {
-		//mFFTInputBuffer.insert(mFFTInputBuffer.end(), data, data+nSamples);
-	}
-	
-	std::vector<cpx_type> ChaiScriptInstance::getFFTOutputBuffer() {
-		//return mFFTOutputBuffer;
-	}
-	
-	void ChaiScriptInstance::clearFFTBuffers() {
-		//mFFTInputBuffer.clear();
-		//mFFTOutputBuffer.clear();
-	}
-	
-	void ChaiScriptInstance::transformFFT() {
-		//mKissFFT->transform(&mFFTInputBuffer[0], &mFFTOutputBuffer[0]);
-	}
-	
+
 	void ChaiScriptInstance::initAssetInstanceAPI() {
 		#ifdef VERBOSE
 			std::cout << "ChaiScriptInstance: Init AssetInstance API" << std::endl;
@@ -126,14 +113,11 @@ namespace Chai      {
 		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::pauseAudioAsset),"pauseAudioAsset");
 		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::stopAudioAsset),"stopAudioAsset");
 		mScript->add(
-			chaiscript::fun<
-				float,
-				Plugins::Audio::AudioPluginInterface,
-				Asset::AssetInstance*
-			>
+			chaiscript::fun<float,Plugins::Audio::AudioPluginInterface,Asset::AssetInstance*>
 			(&Plugins::Audio::AudioPluginInterface::getSampleOffset),
 			"getSampleOffset"
 		);
+		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::getAudioBuffer),"getAudioBuffer");
 	}
 	
 	void ChaiScriptInstance::initPluginManagerAPI() {
@@ -234,6 +218,14 @@ namespace Chai      {
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getShaderAssetInstance),"getShaderAsset");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getScriptAssetInstance),"getScriptAsset");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getPhysicsObjectAssetInstance),"getPhysicsObjectAsset");
+		
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getTranslation),"getTranslation");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::setTranslation),"setTranslation");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getRotation),"getRotation");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::setRotation),"setRotation");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getScale),"getScale");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::setScale),"setScale");
+		mScript->add(chaiscript::bootstrap::standard_library::vector_type<std::vector<float>>("FloatVector"));
 	}
 	
 	void ChaiScriptInstance::update() {

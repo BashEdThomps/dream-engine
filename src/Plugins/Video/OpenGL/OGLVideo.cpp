@@ -180,10 +180,13 @@ namespace OpenGL  {
 		#endif
 		// Draw the loaded model
 		glm::mat4 modelMatrix;
-		float *translation = sceneObject->getTranslation();
-		float *rotation    = sceneObject->getRotation();
-		float *scale       = sceneObject->getScale();
-		
+		std::vector<float> translation = sceneObject->getTranslation();
+		std::vector<float> rotation    = sceneObject->getRotation();
+		std::vector<float> scale       = sceneObject->getScale();
+		std::cout << "OGLVideo: Drawing Scene Object" << std::endl;
+		std::cout	<< "\tT("<<translation[0]<<","<<translation[1]<<","<<translation[2]<<")"<<std::endl;
+		std::cout	<< "\tR("<<rotation[0]<<","<<rotation[1]<<","<<rotation[2]<<")"<<std::endl;
+		std::cout << "\tS("<<scale[0]<<","<<scale[1]<<","<<scale[2]<<")"<<std::endl;;
 		#ifdef VERBOSE
 			checkGLError(1203);
 		#endif

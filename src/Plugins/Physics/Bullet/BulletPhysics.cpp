@@ -24,7 +24,7 @@ namespace Physics {
 namespace Bullet {
 	
 	BulletPhysics::BulletPhysics(void) : PhysicsPluginInterface() {
-		//mDebugDrawer = new BulletGLDebugDrawer();
+		mDebugDrawer = new BulletGLDebugDrawer();
 	}
 
 	BulletPhysics::~BulletPhysics(void) {
@@ -33,6 +33,7 @@ namespace Bullet {
 		delete mCollisionConfiguration;
 		delete mBroadphase;
 		delete mDynamicsWorld;
+		delete mDebugDrawer;
 	}
 
 	void BulletPhysics::setGravity3f(float x, float y, float z) {
@@ -51,6 +52,7 @@ namespace Bullet {
 		mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
 		mSolver = new btSequentialImpulseConstraintSolver();
 		mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
+		mDynamicsWorld->setDebugDrawer(mDebugDrawer);
 		std::cout << "done." << std::endl;
 		return true;
 	}
@@ -61,13 +63,16 @@ namespace Bullet {
 			std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
 		#endif
 		mDynamicsWorld->stepSimulation(stepValue);
+		#ifdef VERBOSE
+			std::cout << "BulletPhysics: Drawing Debug World" << std::endl;
+		#endif
+		mDynamicsWorld->debugDrawWorld();
 	}
 	
 	void BulletPhysics::addRigidBody(btRigidBody *rigidBody) {
-    #ifdef VERBOSE
 			std::cout << "BulletPhysics: Adding Rigid Body to Dynamics World" << std::endl;
-    #endif
-		mDynamicsWorld->addRigidBody(rigidBody);
+			mDynamicsWorld->addRigidBody(rigidBody);
+			std::cout << "BulletPhysicsWorld has " << mDynamicsWorld->getNumCollisionObjects() << " rigid bodies." << std::endl;
 	}
 	
 	void BulletPhysics::removeRigidBody(btRigidBody *rigidBody) {
