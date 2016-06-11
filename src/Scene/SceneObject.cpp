@@ -31,35 +31,23 @@ namespace Scene {
 		
 		if (!soJson[SCENE_OBJECT_TRANSLATION].is_null()) {
 			nlohmann::json translation = soJson[SCENE_OBJECT_TRANSLATION];
-			mTranslation[NODE_X] = translation[SCENE_OBJECT_X];
-			mTranslation[NODE_Y] = translation[SCENE_OBJECT_Y];
-			mTranslation[NODE_Z] = translation[SCENE_OBJECT_Z];
+			setTranslation(translation[SCENE_OBJECT_X], translation[SCENE_OBJECT_Y], translation[SCENE_OBJECT_Z]);
 		} else {
-			mTranslation[NODE_X] = 0.0f;
-			mTranslation[NODE_Y] = 0.0f;
-			mTranslation[NODE_Z] = 0.0f;
+			resetTranslation();
 		}
 			
 		if (!soJson[SCENE_OBJECT_ROTATION].is_null()) {
 			nlohmann::json rotation = soJson[SCENE_OBJECT_ROTATION];
-			mRotation[NODE_X] = rotation[SCENE_OBJECT_X];
-			mRotation[NODE_Y] = rotation[SCENE_OBJECT_Y];
-			mRotation[NODE_Z] = rotation[SCENE_OBJECT_Z];
+			setRotation(rotation[SCENE_OBJECT_X], rotation[SCENE_OBJECT_Y], rotation[SCENE_OBJECT_Z]);
 		} else {
-			mRotation[NODE_X] = 0.0f;
-			mRotation[NODE_Y] = 0.0f;
-			mRotation[NODE_Z] = 0.0f;
+			resetRotation();
 		}
 		
 		if (!soJson[SCENE_OBJECT_SCALE].is_null()) {
 			nlohmann::json scale = soJson[SCENE_OBJECT_SCALE];
-			mScale[NODE_X] = scale[SCENE_OBJECT_X];
-			mScale[NODE_Y] = scale[SCENE_OBJECT_Y];
-			mScale[NODE_Z] = scale[SCENE_OBJECT_Z];
+			setScale(scale[SCENE_OBJECT_X], scale[SCENE_OBJECT_Y], scale[SCENE_OBJECT_Z]);
 		} else {
-			mScale[NODE_X] = 1.0f;
-			mScale[NODE_Y] = 1.0f;
-			mScale[NODE_Z] = 1.0f;
+			resetScale();
 		}
 		
 		if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null()) {
@@ -79,19 +67,25 @@ namespace Scene {
 		}
 	}
 	
-	void SceneObject::resetTranslationRotation() {
-		mTranslation [NODE_X] = 0.0f;
-		mTranslation [NODE_Y] = 0.0f;
-		mTranslation [NODE_Z] = 0.0f;
-		mRotation    [NODE_X] =  0.0f;
-		mRotation    [NODE_Y] =  0.0f;
-		mRotation    [NODE_Z] =  0.0f;
-		return;
+	void SceneObject::resetTranslationRotationScale() {
+		resetTranslation();
+		resetRotation();
+		resetScale();
+	}
+	
+	void SceneObject::resetTranslation() {
+		setTranslation(0.0f, 0.0f, 0.0f);
+	}
+	
+	void SceneObject::resetRotation() {
+		setRotation(0.0f, 0.0f, 0.0f);
+	}
+	
+	void SceneObject::resetScale() {
+		setScale(1.0f, 1.0f, 1.0f);
 	}
 
-	SceneObject::~SceneObject() {
-
-	}
+	SceneObject::~SceneObject() {}
 
 	bool SceneObject::hasName(std::string name) {
 		return mName == name;
@@ -106,31 +100,39 @@ namespace Scene {
 	}
 
 	void SceneObject::setTranslation(float x, float y, float z) {
-		mTranslation[NODE_X] = x;
-		mTranslation[NODE_Y] = y;
-		mTranslation[NODE_Z] = z;
-		return;
-	}
-
-	std::vector<float> SceneObject::getTranslation() {
-		return mTranslation;
+		mTranslation[SO_X] = x;
+		mTranslation[SO_Y] = y;
+		mTranslation[SO_Z] = z;
 	}
 
 	void SceneObject::setRotation(float x, float y, float z) {
-		mRotation[NODE_X] = x;
-		mRotation[NODE_Y] = y;
-		mRotation[NODE_Z] = z;
-		return;
+		mRotation[SO_X] = x;
+		mRotation[SO_Y] = y;
+		mRotation[SO_Z] = z;
 	}
 	
-	void SceneObject::setAssetInstanceParentToThis(Asset::AssetInstance* asset) {
-		asset->setParentSceneObject(this);
+	void SceneObject::setScale(float x, float y, float z) {
+		mScale[SO_X] = x;
+		mScale[SO_Y] = y;
+		mScale[SO_Z] = z;
 	}
 
 	std::vector<float> SceneObject::getRotation() {
 		return mRotation;
 	}
-
+	
+	std::vector<float> SceneObject::getScale() {
+		return mScale;
+	}
+	
+	std::vector<float> SceneObject::getTranslation() {
+		return mTranslation;
+	}
+	
+	void SceneObject::setAssetInstanceParentToThis(Asset::AssetInstance* asset) {
+		asset->setParentSceneObject(this);
+	}
+	
 	void SceneObject::setParent(SceneObject* parent) {
 		mParent = parent;
 	}
@@ -163,9 +165,7 @@ namespace Scene {
 		mChildren.push_back(child);
 	}
 
-	void SceneObject::removeChild(SceneObject* child) {
-
-	}
+	void SceneObject::removeChild(SceneObject* child) {}
 
 	bool SceneObject::isChildOfDeep(SceneObject* parent) {
 		return mParent == parent;
@@ -226,13 +226,13 @@ namespace Scene {
 		std::cout << "     Children: " << mChildren.size() << std::endl;
 		
 		std::cout << "Position Type: " << mPositionType << std::endl;
-		std::cout << "  Translation: (" << mTranslation[NODE_X] << ","
-		                                << mTranslation[NODE_Y] << ","
-		                                << mTranslation[NODE_Z] << ")"
+		std::cout << "  Translation: (" << mTranslation[SO_X] << ","
+		                                << mTranslation[SO_Y] << ","
+		                                << mTranslation[SO_Z] << ")"
 		                                << std::endl;
-		std::cout << "     Rotation: (" << mRotation[NODE_X] << ","
-		                                << mRotation[NODE_Y] << ","
-		                                << mRotation[NODE_Z] << ")"
+		std::cout << "     Rotation: (" << mRotation[SO_X] << ","
+		                                << mRotation[SO_Y] << ","
+		                                << mRotation[SO_Z] << ")"
 		                                << std::endl;
 	}
 	
@@ -305,17 +305,8 @@ namespace Scene {
 	bool SceneObject::hasScriptAssetInstance() {
 		return mScriptAssetInstance != NULL;
 	}
-	
-	std::vector<float> SceneObject::getScale() {
-		return mScale;
-	}
-	
-	void SceneObject::setScale(float x, float y, float z) {
-		mScale[0] = x;
-		mScale[1] = y;
-		mScale[2] = z;
-	}
-	
+
+
 	void SceneObject::setPhysicsObjectAssetInstance(Asset::AssetInstance* physicsObject) {
 		mPhysicsObjectAssetInstance = physicsObject;
 	}

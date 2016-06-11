@@ -43,8 +43,8 @@ namespace Wav       {
 		std::cout << "WavAudioInstance: Header Read " << bytesRead << " bytes." << std::endl;
 		if (bytesRead > 0) {
 			//Read the data
-			uint16_t bytesPerSample = mWavHeader.BitsPerSample / 8;      // Number of bytes per sample
-			uint64_t numSamples = mWavHeader.ChunkSize / bytesPerSample; //How many samples are in the wav file?
+			//uint16_t bytesPerSample = mWavHeader.BitsPerSample / 8;      // Number of bytes per sample
+			//uint64_t numSamples = mWavHeader.ChunkSize / bytesPerSample; //How many samples are in the wav file?
 			int8_t* buffer = new int8_t[BUFFER_SIZE];
 			while ((bytesRead = fread(buffer, sizeof buffer[0], BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0) {
 				mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytesRead);

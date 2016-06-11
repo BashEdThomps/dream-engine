@@ -99,7 +99,9 @@ namespace OpenGL  {
 		
 		// Setup some OpenGL options
 		glEnable(GL_DEPTH_TEST);
-		
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
 		#ifdef VERBOSE
 			checkGLError(51);
 		#endif
@@ -132,6 +134,7 @@ namespace OpenGL  {
 				checkGLError(542);
 			#endif
 			
+			//scene->generateScenegraphVector();
 			std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
 			for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
 				Dream::Scene::SceneObject *object = (*it);
@@ -170,7 +173,7 @@ namespace OpenGL  {
 		#endif
 		
 		// Transformation matrices
-		glm::mat4 projection = glm::perspective(sCamera.mZoom, (float)mScreenWidth/(float)mScreenHeight, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(sCamera.mZoom, (float)mScreenWidth/(float)mScreenHeight, mMinimumDraw,mMaximumDraw);
 		glm::mat4 view = sCamera.getViewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -183,11 +186,12 @@ namespace OpenGL  {
 		std::vector<float> translation = sceneObject->getTranslation();
 		std::vector<float> rotation    = sceneObject->getRotation();
 		std::vector<float> scale       = sceneObject->getScale();
-		std::cout << "OGLVideo: Drawing Scene Object" << std::endl;
-		std::cout	<< "\tT("<<translation[0]<<","<<translation[1]<<","<<translation[2]<<")"<<std::endl;
-		std::cout	<< "\tR("<<rotation[0]<<","<<rotation[1]<<","<<rotation[2]<<")"<<std::endl;
-		std::cout << "\tS("<<scale[0]<<","<<scale[1]<<","<<scale[2]<<")"<<std::endl;;
+		
 		#ifdef VERBOSE
+  		std::cout << "OGLVideo: Drawing Scene Object" << std::endl;
+  		std::cout	<< "\tT("<<translation[0]<<","<<translation[1]<<","<<translation[2]<<")"<<std::endl;
+  		std::cout	<< "\tR("<<rotation[0]<<","<<rotation[1]<<","<<rotation[2]<<")"<<std::endl;
+  		std::cout << "\tS("<<scale[0]<<","<<scale[1]<<","<<scale[2]<<")"<<std::endl;;
 			checkGLError(1203);
 		#endif
 		

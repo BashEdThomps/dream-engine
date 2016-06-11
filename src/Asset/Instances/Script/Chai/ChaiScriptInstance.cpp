@@ -219,13 +219,17 @@ namespace Chai      {
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getScriptAssetInstance),"getScriptAsset");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getPhysicsObjectAssetInstance),"getPhysicsObjectAsset");
 		
+		mScript->add(chaiscript::bootstrap::standard_library::vector_type<std::vector<float>>("FloatVector"));
+		
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getTranslation),"getTranslation");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::setTranslation),"setTranslation");
+		
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getRotation),"getRotation");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::setRotation),"setRotation");
+		
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getScale),"getScale");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::setScale),"setScale");
-		mScript->add(chaiscript::bootstrap::standard_library::vector_type<std::vector<float>>("FloatVector"));
+		
 	}
 	
 	void ChaiScriptInstance::update() {

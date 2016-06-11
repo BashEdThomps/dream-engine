@@ -95,7 +95,7 @@
             <tr id="wf-assimp-files" ng-show="isAssetTypeModel() && isModelAssetFormatAssimp()">
               <td>Model File</td>
               <td>
-                <button ng-show="hasModelAssimp" class="pull-right btn-sm btn btn-danger">
+                <button ng-show="hasModelAssimp" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                   <span class="glyphicon glyphicon-remove"></span>
                 </button>
                 <button id="wf-upload-button" ng-click="onAssetModelAssimpUploadButtonClicked()"

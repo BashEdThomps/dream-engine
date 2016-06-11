@@ -177,19 +177,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       ApiService.uploadAsset(path,data,function(success){
         if (success) {
           UIService.addAlert("Model Asset Uploaded Successfuly!","success");
-        }
-        else {
-          UIService.addAlert("Error uploading asset.","danger");
-        }
-      });
-    });
-
-    var mtlFile = document.getElementById('wf-mtl-file');
-    UtilService.readFileAsBinaryFromElement(mtlFile, function (data) {
-      var path = ProjectService.getProjectUUID()+"/asset/model/"+$scope.currentAsset.uuid+"/mtl";
-      ApiService.uploadAsset(path,data,function(success) {
-        if (success) {
-          UIService.addAlert("Asset uploaded successfuly.","success");
+          $scope.updateAssetUIVariables();
         }
         else {
           UIService.addAlert("Error uploading asset.","danger");
@@ -206,6 +194,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       ApiService.uploadAsset(path,data, function(success){
         if (success) {
           UIService.addAlert("Asset uploaded successfuly.","success");
+          $scope.updateAssetUIVariables();
         }
         else {
           UIService.addAlert("Error uploading asset.","danger");
@@ -222,6 +211,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       ApiService.uploadAsset(path,data, function(success){
         if (success) {
           UIService.addAlert("Asset uploaded successfuly.","success");
+          $scope.updateAssetUIVariables();
         }
         else {
           UIService.addAlert("Error uploading asset.","danger");
@@ -231,9 +221,11 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
   };
 
   $scope.onDeleteAssetDataButtonClicked = function() {
+    console.log("Deleting asset data for",$scope.currentAsset.name,"("+$scope.currentAsset.uuid+")");
     ProjectService.deleteAssetData($scope.currentAsset,function(success) {
       if (success){
         UIService.addAlert("Asset Data Deleted", "success");
+        $scope.updateAssetUIVariables();
       } else {
         UIService.addAlert("Unable to Remove Asset Data", "succes");
       }

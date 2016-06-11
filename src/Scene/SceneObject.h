@@ -6,9 +6,9 @@
 #include "../ExternalLibs/JSON/json.hpp"
 #include "../Asset/AssetInstance.h"
 
-#define NODE_X 0
-#define NODE_Y 1
-#define NODE_Z 2
+#define SO_X 0
+#define SO_Y 1
+#define SO_Z 2
 
 #define SCENE_OBJECT_UUID     "uuid"
 #define SCENE_OBJECT_NAME     "name"
@@ -84,7 +84,10 @@ namespace Scene {
 		void         setTranslation(float, float, float);
 		void         setRotation(float, float, float);
 		void         setScale(float, float, float);
-		void         resetTranslationRotation();
+		void         resetTranslation();
+		void         resetRotation();
+		void         resetScale();
+		void         resetTranslationRotationScale();
 		int          countAllChildren();
 		int          countChildren();
 		void         addChild(SceneObject*);

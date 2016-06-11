@@ -50,6 +50,8 @@ namespace OpenGL {
 		static Camera sCamera;
 	private:
 		GLFWwindow *mWindow;
+		float mMinimumDraw = 0.1f;
+		float mMaximumDraw = 1000.0f;
 	public:
 		OGLVideo(void);
 		~OGLVideo(void);

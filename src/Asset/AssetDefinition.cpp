@@ -87,9 +87,9 @@ namespace Asset {
 	std::string AssetDefinition::getAttribute(std::string attribute) {
 		try {
 			return mAttributes.at(attribute);
-		} catch (std::exception ex) {
+		} catch (const std::exception &ex) {
 			std::cerr << "AssetDefinition: Unable to get attribute: " << attribute << std::endl;
-			std::cerr << "Exception: " << ex.what() << std::endl;
+			std::cerr << "\tException: " << ex.what() << std::endl;
 			return "";
 		}
 	}

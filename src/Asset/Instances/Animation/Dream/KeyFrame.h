@@ -2,7 +2,7 @@
 #define KEYFRAME_H
 
 #include <vector>
-#include "FrameDelta.h"
+#include "Frame.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -12,21 +12,19 @@ namespace Dream     {
 	
 	class KeyFrame {
 	private:
-		int                      mIndex;
-		std::vector<FrameDelta*> mDeltas;
-		long                     mDuration;
-		int                      mWrap;
-		int                      mFramesPerSecond;
+		long                mDuration;
+		bool                mWrap;
+		std::vector<Frame*> mFrames;
+		std::vector<float>  mTranslation;
+		std::vector<float>  mRotation;
+		std::vector<float>  mScale;
 	public:
-		KeyFrame(int, int, long);
+		KeyFrame(long);
 		~KeyFrame();
-		void        addDelta(FrameDelta*);
-		int         getNumberOfFrameDeltas();
-		int         getIntermediateFrameCount();
-		int         compareIndicies(KeyFrame*);
-		FrameDelta* getDeltaByDrawableID(int);
-		int         getWrap();
-		int         getIndex();
+		void                generateFrames(KeyFrame*);
+		std::vector<Frame*> getFrames();
+		bool                getWrap();
+		long                getNumPlaybackFramesToGenerate();
 	};
 	
 } // End of Dream

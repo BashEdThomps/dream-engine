@@ -156,9 +156,10 @@ function($http) {
       url: "/asset/delete/"+project+"/"+type+"/"+uuid
     }
     ).then(function success(response) {
-
+      callback(true);
     },function error(response) {
-
+      console.error(response);
+      callback(false);
     });
   }
 

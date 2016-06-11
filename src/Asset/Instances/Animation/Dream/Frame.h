@@ -2,7 +2,7 @@
 #define DA_FRAME_H
 
 #include <vector>
-#include "FrameDelta.h"
+#include "../../../../Scene/SceneObject.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -12,16 +12,13 @@ namespace Dream     {
 	
 	class Frame {
 	private:
-		int                      mIndex;
-		std::vector<FrameDelta*> mFrameDeltas;
+		std::vector<float> mTranslation;
+		std::vector<float> mRotation;
+		std::vector<float> mScale;
 	public:
-		Frame(int);
+		Frame();
 		~Frame();
-		void addFrameDelta(FrameDelta*);
-		int  compareIndecies(Frame*);
-		int  getNumFrameDeltas();
-		int  getIndex();
-		std::vector<FrameDelta*> getFrameDeltas();
+		void applyToSceneObject(Scene::SceneObject*);
 	}; // End Frame
 	
 } // End of Dream

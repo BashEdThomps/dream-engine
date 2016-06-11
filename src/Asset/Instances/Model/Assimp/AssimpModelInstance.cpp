@@ -58,7 +58,7 @@ namespace Assimp     {
 	
 	bool AssimpModelInstance::load(std::string projectPath) {
 		std::string path = projectPath+mDefinition->getAssetPath();
-		std::cout << "AssimpModelInstance: Loading Model from " << path << std::endl;
+		std::cout << "\tLoading Model:   " << path << std::endl;
 		::Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 		if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
@@ -157,7 +157,7 @@ namespace Assimp     {
 				}
 			}
 			if(!skip) {   // If texture hasn't been loaded already, load it
-				std::cout << "AssimpModelInstance: Loading Texture: " << str.C_Str() << " From: " << mDirectory << std::endl;
+				std::cout << "\tLoading Texture: " << mDirectory << "/" << str.C_Str() <<  std::endl;
 				Texture texture;
 				texture.id = TextureFromFile(str.C_Str(), mDirectory);
 				texture.type = typeName;

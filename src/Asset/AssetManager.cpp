@@ -87,8 +87,7 @@ namespace Asset {
 	
 	AssetInstance* AssetManager::createAssetInstance(Scene::SceneObject* sceneObject,AssetDefinition* definition) {
 		AssetInstance* retval = NULL;
-		std::cout << "AssetManager: Creating Asset Intance from definition: " << definition->getName() << " (" << definition->getType() << ")" << std::endl;
-		
+		std::cout << "AssetManager: Creating Asset Intance of: (" << definition->getType() << ") " << definition->getName() << ", for SceneObject: " << sceneObject->getNameUUIDString() << std::endl;
 		if(definition->isTypeAnimation()) {
 			retval = createAnimationAssetInstance(sceneObject, definition);
 		} else if (definition->isTypeAudio()) {

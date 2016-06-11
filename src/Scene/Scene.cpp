@@ -68,10 +68,6 @@ namespace  Scene {
 
 	bool Scene::init() {
 		std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
-		if (isScenegraphVectorEmpty()) {
-			std::cout << "Scene: Creating Scenegraph vector." << std::endl;
-			generateScenegraphVector();
-		}
 		return true;
 	}
 	
@@ -155,9 +151,6 @@ namespace  Scene {
 	}
 
 	SceneObject* Scene::getSceneObjectByUUID(std::string uuid) {
-		if (mScenegraphVector.empty()) {
-			generateScenegraphVector();
-		}
 		for (std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
 		  if ((*it)->hasUUID(uuid)){
 				return (*it);
@@ -167,9 +160,6 @@ namespace  Scene {
 	}
 
 	int Scene::getNumberOfSceneObjects() {
-		if (mScenegraphVector.empty()) {
-			generateScenegraphVector();
-		}
 		return mScenegraphVector.size();
 	}
 
@@ -207,14 +197,12 @@ namespace  Scene {
 	}
 
 	void Scene::generateScenegraphVector() {
+		std::cout << "Scene: Regenerating Scene Graph Vector" << std::endl;
 		mScenegraphVector.clear();
 		mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
 	}
 
 	void Scene::generateSceneObjectPaths() {
-		if (mScenegraphVector.empty()) {
-			generateScenegraphVector();
-		}
 		for(std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
 			 (*it)->generatePath();
 		}
