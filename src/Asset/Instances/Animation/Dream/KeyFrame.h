@@ -12,7 +12,7 @@ namespace Dream     {
 	
 	class KeyFrame {
 	private:
-		long                mDuration;
+		long                mStartTtmeMS;
 		bool                mWrap;
 		std::vector<Frame*> mFrames;
 		std::vector<float>  mTranslation;
@@ -24,7 +24,7 @@ namespace Dream     {
 		void                generateFrames(KeyFrame*);
 		std::vector<Frame*> getFrames();
 		bool                getWrap();
-		long                getNumPlaybackFramesToGenerate();
+		long                getStartTimeMS();
 	};
 	
 } // End of Dream

@@ -72,13 +72,39 @@
               </td>
             </tr>
             <tr>
-              <td>Scene Script</td>
-              <td>
-                <select ng-model="currentScene.sceneScript" ng-change="modified()" class="form-control input-sm">
-                  <option ng-repeat="script in scriptAssetsList" value="{{script.uuid}}">{{script.name}}</option>
-                </select>
-              </td>
+              <td colspan=2>Camera Position</td>
             </tr>
+            <td>Translation</td>
+            <td>
+              <div class="row">
+                <div class="col-md-4">
+                  <input ng-change="modified()" ng-model="currentScene.camera.translation.x" class="form-control input-sm" type="number"/>
+                </div>
+                <div class="col-md-4">
+                  <input ng-change="modified()" ng-model="currentScene.camera.translation.y" class="form-control input-sm" type="number"/>
+                </div>
+                <div class="col-md-4">
+                  <input ng-change="modified()" ng-model="currentScene.camera.translation.z" class="form-control input-sm" type="number"/>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Rotation</td>
+            <td>
+              <div class="row">
+                <div class="col-md-4">
+                  <input ng-change="modified()" ng-model="currentScene.camera.rotation.x" class="form-control input-sm" type="number"/>
+                </div>
+                <div class="col-md-4">
+                  <input ng-change="modified()" ng-model="currentScene.camera.rotation.y" class="form-control input-sm" type="number"/>
+                </div>
+                <div class="col-md-4">
+                  <input ng-change="modified()" ng-model="currentScene.camera.rotation.z" class="form-control input-sm" type="number"/>
+                </div>
+              </div>
+            </td>
+          </tr>
             <tr>
               <td>Animation</td>
               <td>

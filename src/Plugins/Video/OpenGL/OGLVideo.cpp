@@ -266,6 +266,15 @@ namespace OpenGL  {
 		return mWindow;
 	}
 	
+	void OGLVideo::setDefaultCameraTranslation(std::vector<float> translation) {
+		sCamera.setTranslation(translation);
+	}
+	
+	void OGLVideo::setDefaultCameraRotation(std::vector<float> rotation) {
+		sCamera.setRotation(rotation);
+	}
+		
+	
 } // End of OpenGL
 } // End of Video
 } // End of Plugins

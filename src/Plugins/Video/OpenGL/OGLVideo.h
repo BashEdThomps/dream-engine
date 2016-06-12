@@ -63,6 +63,9 @@ namespace OpenGL {
 		bool isWindowShouldCloseFlagSet();
 		GLFWwindow* getWindow();
 		
+		void setDefaultCameraTranslation(std::vector<float>);
+		void setDefaultCameraRotation(std::vector<float>);
+		
 	}; // End of OGLVideo
 	
 } // End of OpenGL

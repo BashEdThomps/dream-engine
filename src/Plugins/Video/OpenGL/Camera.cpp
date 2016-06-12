@@ -111,6 +111,12 @@ namespace OpenGL  {
 		mUp    = glm::normalize(glm::cross(mRight, mFront));
 	}
 	
+	void Camera::setRotation(std::vector<float> rotation) {}
+	
+	void Camera::setTranslation(std::vector<float> translation) {
+		mPosition = glm::vec3 (translation[0],translation[1],translation[2]);
+	}
+	
 } // End of OpenGL
 } // End of Video
 } // End of Plugins

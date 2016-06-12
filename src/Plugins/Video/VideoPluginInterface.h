@@ -46,6 +46,9 @@ namespace Video   {
 		void setupWindowEventHandlers();
 		bool isWindowShouldCloseFlagSet();
 		
+		virtual void setDefaultCameraTranslation(std::vector<float>) = 0;
+		virtual void setDefaultCameraRotation(std::vector<float>) = 0;
+		
 	}; // End of VideoInterface
 	
 } // End of Video

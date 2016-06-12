@@ -269,6 +269,10 @@ namespace Project {
 			if (!mActiveScene->init()) {
 				return false;
 			}
+			
+			Plugins::Video::VideoPluginInterface* videoPlugin = mPluginManager->getVideoPlugin();
+			videoPlugin->setDefaultCameraTranslation(mActiveScene->getDefaultCameraTranslation());
+			videoPlugin->setDefaultCameraRotation(mActiveScene->getDefaultCameraRotation());
 		}
 		
 		if (!mAssetManager->createAllAssetInstances()) {
@@ -326,7 +330,8 @@ namespace Project {
 			std::cerr << "Project: Unable to load startup scene." << std::endl;
 			return false;
 		}
-		std::cout << "Project: Starting Scene - " << getActiveScene()->getName()
+		std::cout << "Project: Starting Scene - "
+		          << getActiveScene()->getName()
 		          << " (" << getActiveScene()->getUUID() << ")" << std::endl;
 		// GameLoop
 		while(!mDone) {

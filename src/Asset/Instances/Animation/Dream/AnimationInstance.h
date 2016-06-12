@@ -23,7 +23,7 @@ namespace Dream     {
 namespace Asset     {
 namespace Instances {
 namespace Animation {
-namespace Dream {
+namespace Dream     {
 	
   class AnimationInstance : public AssetInstance {
 	private:

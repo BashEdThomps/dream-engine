@@ -33,6 +33,13 @@
 #define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
 #define SCENE_JSON_SCRIPTING_ENABLED "scriptingEnabled"
 #define SCENE_JSON_SCENE_OBJECTS     "objects"
+#define SCENE_JSON_CAMERA            "camera"
+#define SCENE_JSON_TRANSLATION       "translation"
+#define SCENE_JSON_ROTATION          "rotation"
+
+#define SCENE_JSON_X "x"
+#define SCENE_JSON_Y "y"
+#define SCENE_JSON_Z "z"
 
 namespace Dream {
 namespace Scene {
@@ -48,6 +55,8 @@ namespace Scene {
 		bool                      mScriptingEnabled;
 		SceneObject              *mRootSceneObject;
 		std::vector<SceneObject*> mScenegraphVector;
+		std::vector<float>        mDefaultCameraTranslation;
+		std::vector<float>        mDefaultCameraRotation;
 	public:
 		Scene();
 		Scene(nlohmann::json);
@@ -61,7 +70,8 @@ namespace Scene {
 		bool         isAnimationEnabled();
 		bool         isInputEnabled();
 		bool         isPhysicsEnabled();
-		void         loadSceneObjectsFromJSONArray(nlohmann::json,SceneObject*);
+		void         loadSceneObjects(nlohmann::json,SceneObject*);
+		void         loadDefaultCameraTransform(nlohmann::json);
 		int          countChildrenOfSceneObject(SceneObject*);
 		void         setRootSceneObject(SceneObject*);
 		SceneObject* getRootSceneObject();
@@ -77,6 +87,13 @@ namespace Scene {
 		void         generateSceneObjectPaths();
 		bool         isScenegraphVectorEmpty();
 		std::vector<SceneObject*> getScenegraphVector();
+		
+		std::vector<float> getDefaultCameraTranslation();
+		std::vector<float> getDefaultCameraRotation();
+		
+		void setDefaultCameraTranslation(float,float,float);
+		void setDefaultCameraRotation(float,float,float);
+		
 	}; // End of Scene
 	
 } // End of Scene

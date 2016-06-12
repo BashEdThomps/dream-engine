@@ -79,6 +79,9 @@ namespace OpenGL  {
 		// Calculates the front vector from the Camera's (updated) Eular Angles
 		void updateCameraVectors();
 		
+		void setTranslation(std::vector<float>);
+		void setRotation(std::vector<float>);
+		
 	}; // End of Camera
 	
 } // End of OpenGL

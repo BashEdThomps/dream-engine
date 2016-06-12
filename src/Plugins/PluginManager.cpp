@@ -195,5 +195,9 @@ namespace Plugins {
 		return mAudioPlugin;
 	}
 	
+	Plugins::Video::VideoPluginInterface* PluginManager::getVideoPlugin() {
+		return mVideoPlugin;
+	}
+	
 } // End of Plugins
 } // End of Dream

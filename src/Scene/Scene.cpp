@@ -53,22 +53,67 @@ namespace  Scene {
             
 		mScriptingEnabled = (
 			jsonScene[SCENE_JSON_SCRIPTING_ENABLED].is_null() ?
-            false : (bool)jsonScene[SCENE_JSON_SCRIPTING_ENABLED]
-       );
+      false : (bool)jsonScene[SCENE_JSON_SCRIPTING_ENABLED]
+    );
+		
+		loadDefaultCameraTransform(jsonScene[SCENE_JSON_CAMERA]);
 		
 		nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
 
 		if (!sceneObjects.is_null() && sceneObjects.is_array()) {
-			loadSceneObjectsFromJSONArray(sceneObjects,NULL);
+			loadSceneObjects(sceneObjects,NULL);
 		}
 	}
-
-	Scene::~Scene() {
+	
+	void Scene::loadDefaultCameraTransform(nlohmann::json camera) {
+		mDefaultCameraTranslation = std::vector<float>(3);
+		mDefaultCameraRotation = std::vector<float>(3);
+		
+		if (!camera.is_null()) {
+			nlohmann::json translation   = camera[SCENE_JSON_TRANSLATION];
+			setDefaultCameraTranslation(
+			  translation[SCENE_JSON_X],
+				translation[SCENE_JSON_Y],
+				translation[SCENE_JSON_Z]
+			);
+			
+			nlohmann::json rotation   = camera[SCENE_JSON_ROTATION];
+			setDefaultCameraRotation(
+			  rotation[SCENE_JSON_X],
+			  rotation[SCENE_JSON_Y],
+			  rotation[SCENE_JSON_Z]
+			);
+		} else {
+			setDefaultCameraTranslation (0.0f, 0.0f, 0.0f);
+			setDefaultCameraRotation    (0.0f, 0.0f, 0.0f);
+		}
 	}
+	
+	void Scene::setDefaultCameraTranslation(float x, float y, float z) {
+		mDefaultCameraTranslation[0] = x;
+		mDefaultCameraTranslation[1] = y;
+		mDefaultCameraTranslation[2] = z;
+	}
+	
+	void Scene::setDefaultCameraRotation(float x, float y, float z) {
+		mDefaultCameraRotation[0] = x;
+		mDefaultCameraRotation[1] = y;
+		mDefaultCameraRotation[2] = z;
+	}
+
+	Scene::~Scene() {}
 
 	bool Scene::init() {
 		std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
 		return true;
+	}
+	
+	std::vector<float> Scene::getDefaultCameraTranslation() {
+		return mDefaultCameraTranslation;
+	}
+	
+	std::vector<float> Scene::getDefaultCameraRotation() {
+		return mDefaultCameraRotation;
 	}
 	
 	bool Scene::isScenegraphVectorEmpty() {
@@ -107,7 +152,7 @@ namespace  Scene {
 		return mInputEnabled;
 	}
 	
-	void Scene::loadSceneObjectsFromJSONArray(nlohmann::json jsonArray, SceneObject* parent) {
+	void Scene::loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
 		//std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
 		if (!jsonArray.is_null()) {
 			for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
@@ -120,7 +165,7 @@ namespace  Scene {
 					setRootSceneObject(nextSceneObject);
 				}
 				if (!((*it)[SCENE_OBJECT_CHILDREN]).is_null()){
-					loadSceneObjectsFromJSONArray((*it)[SCENE_OBJECT_CHILDREN],nextSceneObject);
+					loadSceneObjects((*it)[SCENE_OBJECT_CHILDREN],nextSceneObject);
 				}
 				
 				nextSceneObject->showStatus();
@@ -171,6 +216,18 @@ namespace  Scene {
 		std::cout << "Animation Enabled: " << Util::StringUtils::boolToYesNo(isAnimationEnabled()) << std::endl;
 		std::cout << "    Input Enabled: " << Util::StringUtils::boolToYesNo(isInputEnabled()) << std::endl;
 		std::cout << "  Physics Enabled: " << Util::StringUtils::boolToYesNo(isPhysicsEnabled()) << std::endl;
+		std::cout << " Camera Transform: " << std::endl;
+		
+		std::cout << "      Translation: " << "("
+		          << mDefaultCameraTranslation[0] << ","
+		          << mDefaultCameraTranslation[1] << ","
+		          << mDefaultCameraTranslation[2] << ")" << std::endl;
+		
+		std::cout << "         Rotation: "     << "("
+		          << mDefaultCameraRotation[0] << ","
+		          << mDefaultCameraRotation[1] << ","
+		          << mDefaultCameraRotation[2] << ")" << std::endl;
+		
 		std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
 		showScenegraph();
 	}
@@ -180,7 +237,6 @@ namespace  Scene {
 			std::cout << "Scenegraph is empty!" << std::endl;
 			return;
 		}
-
 		generateScenegraphVector();
 		generateSceneObjectPaths();
 		for(std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
