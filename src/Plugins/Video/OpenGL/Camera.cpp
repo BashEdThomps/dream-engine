@@ -117,6 +117,26 @@ namespace OpenGL  {
 		mPosition = glm::vec3 (translation[0],translation[1],translation[2]);
 	}
 	
+	void Camera::setMovementSpeed(float movementSpeed) {
+		mMovementSpeed = movementSpeed;
+	}
+	
+	float Camera::getMovementSpeed() {
+		return mMovementSpeed;
+	}
+	
+	void Camera::setMouseSensitivity(float mouseSensitivity) {
+		mMouseSensitivity = mouseSensitivity;
+	}
+	
+	float Camera::getMouseSensitivity() {
+		return mMouseSensitivity;
+	}
+	
+	float Camera::getZoom() {
+		return mZoom;
+	}
+	
 } // End of OpenGL
 } // End of Video
 } // End of Plugins

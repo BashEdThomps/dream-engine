@@ -48,7 +48,9 @@ namespace Video   {
 		
 		virtual void setDefaultCameraTranslation(std::vector<float>) = 0;
 		virtual void setDefaultCameraRotation(std::vector<float>) = 0;
-		
+		virtual void setCameraMovementSpeed(float) = 0;
+		virtual void closeWindow() = 0;
+		virtual void setCursorEnabled(bool) = 0;
 	}; // End of VideoInterface
 	
 } // End of Video

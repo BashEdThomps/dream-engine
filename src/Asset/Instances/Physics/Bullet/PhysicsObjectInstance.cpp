@@ -24,8 +24,13 @@ namespace Bullet    {
 			std::cerr << "PhysicsObjectInstance: Unable to create collision shape" << std::endl;
 			return false;
 		}
-		mMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
-		mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(0, mMotionState, mCollisionShape, btVector3(0, 0, 0));
+		float mass = mDefinition->getAttributeAsFloat(ASSET_ATTR_MASS);
+		// Transform and CentreOfMass
+		mMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -3, 0)));
+		// Mass, MotionState, Shape and LocalInertia
+		btVector3 fallInertia(0, 0, 0);
+		mCollisionShape->calculateLocalInertia(mass, fallInertia);
+		mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(btScalar(mass), mMotionState, mCollisionShape, fallInertia);
 		mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 		return mRigidBody != NULL;
 	}
@@ -56,7 +61,13 @@ namespace Bullet    {
 		} else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0) {
 			// ???
 		} else if (format.compare(COLLISION_SHAPE_STATIC_PLANE) == 0) {
-			//mCollisionShape = new btStaticPlaneShape();
+			float x = mDefinition->getAttributeAsFloat(ASSET_ATTR_NORMAL_X);
+			float y = mDefinition->getAttributeAsFloat(ASSET_ATTR_NORMAL_Y);
+			float z = mDefinition->getAttributeAsFloat(ASSET_ATTR_NORMAL_Z);
+			float constant = mDefinition->getAttributeAsFloat(ASSET_ATTR_CONSTANT);
+			btVector3 planeNormal(x,y,z);
+			btScalar planeConstant = btScalar(constant);
+			mCollisionShape = new btStaticPlaneShape(planeNormal,planeConstant);
 		} else if (format.compare(COLLISION_SHAPE_COMPOUND) == 0) {
 			//mCollisionShape = new btCompoundShape();
 		}

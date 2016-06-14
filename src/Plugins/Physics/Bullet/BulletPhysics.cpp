@@ -24,7 +24,7 @@ namespace Physics {
 namespace Bullet {
 	
 	BulletPhysics::BulletPhysics(void) : PhysicsPluginInterface() {
-		mDebugDrawer = new BulletGLDebugDrawer();
+		mDebugDrawer = new GLDebugDrawer();
 	}
 
 	BulletPhysics::~BulletPhysics(void) {
@@ -52,7 +52,9 @@ namespace Bullet {
 		mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
 		mSolver = new btSequentialImpulseConstraintSolver();
 		mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
+		mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
 		mDynamicsWorld->setDebugDrawer(mDebugDrawer);
+		mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
 		std::cout << "done." << std::endl;
 		return true;
 	}
@@ -62,7 +64,7 @@ namespace Bullet {
 		#ifdef VERBOSE
 			std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
 		#endif
-		mDynamicsWorld->stepSimulation(stepValue);
+		mDynamicsWorld->stepSimulation(1);
 		#ifdef VERBOSE
 			std::cout << "BulletPhysics: Drawing Debug World" << std::endl;
 		#endif

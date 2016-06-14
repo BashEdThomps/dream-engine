@@ -111,8 +111,16 @@ namespace OpenGL  {
 		return true;
 	}
 	
+	void OGLVideo::setCursorEnabled(bool cursorEnabled) {
+		glfwSetInputMode(mWindow, GLFW_CURSOR, cursorEnabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+	}
+	
+	void OGLVideo::closeWindow() {
+		mWindowShouldClose = true;
+		glfwSetWindowShouldClose(mWindow,GL_TRUE);
+	}
+	
 	void OGLVideo::setupWindowEventHandlers() {
-		glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwSetWindowSizeCallback(mWindow, onWindowSizeChangedEvent);
 		glfwSetWindowCloseCallback(mWindow, onWindowCloseEvent);
 		glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeEvent);
@@ -127,13 +135,10 @@ namespace OpenGL  {
 			#ifdef VERBOSE
 				checkGLError(541);
 			#endif
-			
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
 			#ifdef VERBOSE
 				checkGLError(542);
 			#endif
-			
 			//scene->generateScenegraphVector();
 			std::vector<Dream::Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
 			for (std::vector<Dream::Scene::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
@@ -141,17 +146,14 @@ namespace OpenGL  {
 				if (object->hasModelAssetInstance()) {
 					if (object->hasShaderAssetInstance()){
     				drawSceneObject(object);
-						
 						#ifdef VERBOSE
 							checkGLError(555);
 						#endif
-						
 					} else {
 						std::cerr << "OGLVideo: Object " << object->getUUID() << " has no ShaderInstance assigned." << std::endl;
 					}
 				}
 			}
-			
     	glfwSwapBuffers(mWindow);
 			#ifdef VERBOSE
 				checkGLError(99);
@@ -166,18 +168,15 @@ namespace OpenGL  {
 		model = dynamic_cast<Dream::Asset::Instances::Model::Assimp::AssimpModelInstance*>(sceneObject->getModelAssetInstance());
 		Dream::Asset::Instances::Shader::ShaderInstance* shader;
 		shader = dynamic_cast<Dream::Asset::Instances::Shader::ShaderInstance*>(sceneObject->getShaderAssetInstance());
-		
 		shader->use();
 		#ifdef VERBOSE
 			checkGLError(1201);
 		#endif
-		
 		// Transformation matrices
-		glm::mat4 projection = glm::perspective(sCamera.mZoom, (float)mScreenWidth/(float)mScreenHeight, mMinimumDraw,mMaximumDraw);
+		glm::mat4 projection = glm::perspective(sCamera.getZoom(), (float)mScreenWidth/(float)mScreenHeight, mMinimumDraw,mMaximumDraw);
 		glm::mat4 view = sCamera.getViewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(view));
-		
 		#ifdef VERBOSE
 			checkGLError(1202);
 		#endif
@@ -186,7 +185,6 @@ namespace OpenGL  {
 		std::vector<float> translation = sceneObject->getTranslation();
 		std::vector<float> rotation    = sceneObject->getRotation();
 		std::vector<float> scale       = sceneObject->getScale();
-		
 		#ifdef VERBOSE
   		std::cout << "OGLVideo: Drawing Scene Object" << std::endl;
   		std::cout	<< "\tT("<<translation[0]<<","<<translation[1]<<","<<translation[2]<<")"<<std::endl;
@@ -194,7 +192,6 @@ namespace OpenGL  {
   		std::cout << "\tS("<<scale[0]<<","<<scale[1]<<","<<scale[2]<<")"<<std::endl;;
 			checkGLError(1203);
 		#endif
-		
 		// Translate
 		modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
 	  // Rotate
@@ -203,25 +200,18 @@ namespace OpenGL  {
 		modelMatrix = glm::rotate(modelMatrix, rotation[2], glm::vec3(0,0,1));
 		// Scale
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
-		
 		#ifdef VERBOSE
 			checkGLError(1204);
 		#endif
-		
 		glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		
 		#ifdef VERBOSE
 			checkGLError(1205);
 		#endif
-		
 		model->draw(shader);
-		
 		#ifdef VERBOSE
 			checkGLError(1206);
 		#endif
-		
 		glUseProgram(0);
-		
 		#ifdef VERBOSE
 			checkGLError(1207);
 		#endif
@@ -272,6 +262,10 @@ namespace OpenGL  {
 	
 	void OGLVideo::setDefaultCameraRotation(std::vector<float> rotation) {
 		sCamera.setRotation(rotation);
+	}
+	
+	void OGLVideo::setCameraMovementSpeed (float speed) {
+		sCamera.setMovementSpeed(speed);
 	}
 		
 	

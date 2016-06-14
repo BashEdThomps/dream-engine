@@ -32,7 +32,7 @@ App.controller("ProjectAssetEditor",
           return;
         }
         editorElement.style.position = "relative";
-        editorElement.style.height   = "50%";
+        editorElement.style.height   = "80%";
         editorElement.style.bottom   = "0px";
         editorElement.style.left     = "0px";
         editorElement.style.right    = "0px";

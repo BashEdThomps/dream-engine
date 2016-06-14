@@ -273,6 +273,7 @@ namespace Project {
 			Plugins::Video::VideoPluginInterface* videoPlugin = mPluginManager->getVideoPlugin();
 			videoPlugin->setDefaultCameraTranslation(mActiveScene->getDefaultCameraTranslation());
 			videoPlugin->setDefaultCameraRotation(mActiveScene->getDefaultCameraRotation());
+			videoPlugin->setCameraMovementSpeed(mActiveScene->getCameraMovementSpeed());
 		}
 		
 		if (!mAssetManager->createAllAssetInstances()) {

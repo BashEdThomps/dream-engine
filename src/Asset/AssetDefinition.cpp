@@ -32,24 +32,25 @@ namespace Asset {
 	}
 	
 	void AssetDefinition::loadMetadata(nlohmann::json json) {
+		// UUID
 		if (json[ASSET_UUID].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL UUID." << std::endl;;
 		} else {
 			setUUID(json[ASSET_UUID]);
 		}
-		
+		// Name
 		if (json[ASSET_NAME].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Name." << std::endl;;
 		} else {
 			setName(json[ASSET_NAME]);
 		}
-		
+		// Type
 		if (json[ASSET_TYPE].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Type" << std::endl;;
 		} else {
 			setType(json[ASSET_TYPE]);
 		}
-		
+		// Format
 		if (json[ASSET_FORMAT].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Format" << std::endl;;
 		} else {
@@ -69,6 +70,17 @@ namespace Asset {
 		// Radius
 		if (!json[ASSET_ATTR_RADIUS].is_null() && json[ASSET_ATTR_RADIUS].is_number()) {
 			addAttribute(ASSET_ATTR_RADIUS, std::to_string((float)json[ASSET_ATTR_RADIUS]));
+		}
+		// Normal
+		if (!json[ASSET_ATTR_NORMAL].is_null()) {
+			nlohmann::json normal = json[ASSET_ATTR_NORMAL];
+			addAttribute(ASSET_ATTR_NORMAL_X, std::to_string((float)normal[ASSET_ATTR_X]));
+			addAttribute(ASSET_ATTR_NORMAL_Y, std::to_string((float)normal[ASSET_ATTR_Y]));
+			addAttribute(ASSET_ATTR_NORMAL_Z, std::to_string((float)normal[ASSET_ATTR_Z]));
+		}
+		// Constant
+		if (!json[ASSET_ATTR_CONSTANT].is_null() && json[ASSET_ATTR_CONSTANT].is_number()) {
+			addAttribute(ASSET_ATTR_CONSTANT, std::to_string((float)json[ASSET_ATTR_CONSTANT]));
 		}
 	}
 

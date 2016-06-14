@@ -36,6 +36,7 @@
 #define SCENE_JSON_CAMERA            "camera"
 #define SCENE_JSON_TRANSLATION       "translation"
 #define SCENE_JSON_ROTATION          "rotation"
+#define SCENE_JSON_MOVEMENT_SPEED    "movementSpeed"
 
 #define SCENE_JSON_X "x"
 #define SCENE_JSON_Y "y"
@@ -57,6 +58,7 @@ namespace Scene {
 		std::vector<SceneObject*> mScenegraphVector;
 		std::vector<float>        mDefaultCameraTranslation;
 		std::vector<float>        mDefaultCameraRotation;
+		float                     mCameraMovementSpeed;
 	public:
 		Scene();
 		Scene(nlohmann::json);
@@ -90,9 +92,11 @@ namespace Scene {
 		
 		std::vector<float> getDefaultCameraTranslation();
 		std::vector<float> getDefaultCameraRotation();
+		float              getCameraMovementSpeed();
 		
 		void setDefaultCameraTranslation(float,float,float);
 		void setDefaultCameraRotation(float,float,float);
+		void setCameraMovementSpeed(float);
 		
 	}; // End of Scene
 	

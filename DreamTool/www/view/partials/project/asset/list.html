@@ -77,10 +77,34 @@
                 <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number"/>
               </td>
             </tr>
+            <!-- Sphere -->
             <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatSphere()">
               <td>Radius</td>
               <td>
                 <input ng-change="modified()" ng-model="currentAsset.radius" class="form-control input-sm" type="number"/>
+              </td>
+            </tr>
+            <!-- Static Plane -->
+            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatStaticPlane()">
+              <td>Normal</td>
+              <td>
+                <div class="row">
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentAsset.normal.x" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentAsset.normal.y" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentAsset.normal.z" class="form-control input-sm" type="number"/>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatStaticPlane()">
+              <td>Constant</td>
+              <td>
+                <input ng-change="modified()" ng-model="currentAsset.constant" class="form-control input-sm" type="number"/>
               </td>
             </tr>
             <!-- Model -->

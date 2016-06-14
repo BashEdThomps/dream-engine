@@ -35,7 +35,7 @@ namespace OpenGL  {
 	
 	// An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
 	class Camera {
-	public:
+	private:
 		// Camera Attributes
 		glm::vec3 mPosition;
 		glm::vec3 mFront;
@@ -50,6 +50,7 @@ namespace OpenGL  {
 		GLfloat mMouseSensitivity;
 		GLfloat mZoom;
 		
+	public:
 		// Constructor with vectors
 		Camera(
 		  glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
@@ -81,6 +82,14 @@ namespace OpenGL  {
 		
 		void setTranslation(std::vector<float>);
 		void setRotation(std::vector<float>);
+		
+		void  setMovementSpeed(float);
+		float getMovementSpeed();
+		
+		void  setMouseSensitivity(float);
+		float getMouseSensitivity();
+		
+		float getZoom();
 		
 	}; // End of Camera
 	

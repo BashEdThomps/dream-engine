@@ -65,6 +65,9 @@ namespace OpenGL {
 		
 		void setDefaultCameraTranslation(std::vector<float>);
 		void setDefaultCameraRotation(std::vector<float>);
+		void setCameraMovementSpeed(float);
+		void closeWindow();
+		void setCursorEnabled(bool);
 		
 	}; // End of OGLVideo
 	

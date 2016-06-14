@@ -122,6 +122,7 @@ namespace OpenAL  {
     									static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
     			alSourcei(audioAsset->getSource(), AL_BUFFER, audioAsset->getBuffer());
     			setSourcePosision(audioAsset->getSource(), position);
+					//audioAsset->getAudioDataBuffer().clear();
 				}
   			mPlayQueue.push_back(audioAsset);
   		}

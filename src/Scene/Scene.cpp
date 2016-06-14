@@ -83,6 +83,11 @@ namespace  Scene {
 			  rotation[SCENE_JSON_Y],
 			  rotation[SCENE_JSON_Z]
 			);
+			
+			if (!camera[SCENE_JSON_MOVEMENT_SPEED].is_null()) {
+				mCameraMovementSpeed = camera[SCENE_JSON_MOVEMENT_SPEED];
+			}
+			
 		} else {
 			setDefaultCameraTranslation (0.0f, 0.0f, 0.0f);
 			setDefaultCameraRotation    (0.0f, 0.0f, 0.0f);
@@ -266,6 +271,14 @@ namespace  Scene {
 	
 	std::vector<SceneObject*> Scene::getScenegraphVector() {
 		return mScenegraphVector;
+	}
+	
+	float Scene::getCameraMovementSpeed() {
+		return mCameraMovementSpeed;
+	}
+	
+	void Scene::setCameraMovementSpeed(float speed) {
+		mCameraMovementSpeed = speed;
 	}
 	
 }// End of Scene

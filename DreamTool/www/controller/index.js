@@ -2,6 +2,17 @@ App.controller("index",
     ["$state","$scope","ApiService","ProjectService","UIService","$window","CookieService","cssInjector",
     function($state,$scope,ApiService,ProjectService,UIService,$window,CookieService,cssInjector) {
 
+    $scope.findUiElements = function() {
+      $scope.uiBody = document.getElementsByTagName('body')[0];
+      console.log("Found Body:",$scope.uiBody);
+
+      $scope.uiNavbar = document.getElementsByTagName("nav")[0];
+      console.log("Found Navbar:",$scope.uiNavbar);
+
+      $scope.uiContainer = document.getElementsByClassName("container-fluid")[0];
+      console.log("Found Container:",$scope.uiContainer);
+    };
+
     // Alerts ------------------------------------------------------------------
 
     $scope.closeAlert = function(index) {
@@ -194,15 +205,15 @@ App.controller("index",
     };
 
     $scope.reloadUI = function() {
-        UIService.setHostController($scope);
-        if(ProjectService.getProject())
-        {
-            UIService.setBreadcrumbs([ProjectService.project.name]);
-            UIService.generateTreeData();
-        } else {
-            UIService.setBreadcrumbs(["Home"]);
-        }
-        UIService.update();
+      $scope.findUiElements();
+      UIService.setHostController($scope);
+      if(ProjectService.getProject()) {
+        UIService.setBreadcrumbs([ProjectService.project.name]);
+        UIService.generateTreeData();
+      } else {
+        UIService.setBreadcrumbs(["Home"]);
+      }
+      UIService.update();
     };
 
     $scope.reloadUI();

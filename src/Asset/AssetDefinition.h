@@ -55,9 +55,18 @@
 
 // Collision Shape Attributes
 
-#define ASSET_ATTR_MASS   "mass"
-#define ASSET_ATTR_MARGIN "margin"
-#define ASSET_ATTR_RADIUS "radius"
+#define ASSET_ATTR_MASS     "mass"
+#define ASSET_ATTR_MARGIN   "margin"
+#define ASSET_ATTR_RADIUS   "radius"
+#define ASSET_ATTR_NORMAL   "normal"
+#define ASSET_ATTR_CONSTANT "constant"
+#define ASSET_ATTR_X        "x"
+#define ASSET_ATTR_Y        "y"
+#define ASSET_ATTR_Z        "z"
+#define ASSET_ATTR_NORMAL_X "normalX"
+#define ASSET_ATTR_NORMAL_Y "normalY"
+#define ASSET_ATTR_NORMAL_Z "normalZ"
+//#define ASSET_ATTR_ ""
 
 namespace Dream {
 namespace Asset {

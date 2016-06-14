@@ -81,7 +81,7 @@ namespace Assimp     {
 		// Process all the node's meshes (if any)
 		for(GLuint i = 0; i < node->mNumMeshes; i++) {
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			mMeshes.push_back(this->processMesh(mesh, scene));
+			mMeshes.push_back(processMesh(mesh, scene));
 		}
 		// Then do the same for each of its children
 		for(GLuint i = 0; i < node->mNumChildren; i++) {

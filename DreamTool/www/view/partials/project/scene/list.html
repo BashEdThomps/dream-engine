@@ -72,39 +72,47 @@
               </td>
             </tr>
             <tr>
-              <td colspan=2>Camera Position</td>
+              <td colspan=2>Camera</td>
             </tr>
-            <td>Translation</td>
-            <td>
-              <div class="row">
-                <div class="col-md-4">
-                  <input ng-change="modified()" ng-model="currentScene.camera.translation.x" class="form-control input-sm" type="number"/>
+            <tr>
+              <td>Translation</td>
+              <td>
+                <div class="row">
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentScene.camera.translation.x" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentScene.camera.translation.y" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentScene.camera.translation.z" class="form-control input-sm" type="number"/>
+                  </div>
                 </div>
-                <div class="col-md-4">
-                  <input ng-change="modified()" ng-model="currentScene.camera.translation.y" class="form-control input-sm" type="number"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Rotation</td>
+              <td>
+                <div class="row">
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentScene.camera.rotation.x" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentScene.camera.rotation.y" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentScene.camera.rotation.z" class="form-control input-sm" type="number"/>
+                  </div>
                 </div>
-                <div class="col-md-4">
-                  <input ng-change="modified()" ng-model="currentScene.camera.translation.z" class="form-control input-sm" type="number"/>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Rotation</td>
-            <td>
-              <div class="row">
-                <div class="col-md-4">
-                  <input ng-change="modified()" ng-model="currentScene.camera.rotation.x" class="form-control input-sm" type="number"/>
-                </div>
-                <div class="col-md-4">
-                  <input ng-change="modified()" ng-model="currentScene.camera.rotation.y" class="form-control input-sm" type="number"/>
-                </div>
-                <div class="col-md-4">
-                  <input ng-change="modified()" ng-model="currentScene.camera.rotation.z" class="form-control input-sm" type="number"/>
-                </div>
-              </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
+            <tr>
+              <td>Movement Speed</td>
+              <td>
+                <input ng-change="modified()" ng-model="currentScene.camera.movementSpeed" class="form-control input-sm" type="number"/>
+              </td>
+            </tr>
+            <tr><td colspan=2>Plugins</td></tr>
             <tr>
               <td>Animation</td>
               <td>

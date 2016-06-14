@@ -57,6 +57,8 @@ namespace Chai      {
 			void initPluginManagerAPI();
 			void initProjectAPI();
 			void initSceneObjectAPI();
+			void initVideoPluginAPI();
+			
     }; // End of ChaiScriptInstance
     
 } // End of ChaiScript
