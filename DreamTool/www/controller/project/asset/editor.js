@@ -235,6 +235,22 @@ App.controller("ProjectAssetEditor",
       };
     };
 
+    $scope.onAddKeyFrameButtonClicked = function() {
+      var newKeyFrame = ProjectService.createDreamAnimationKeyFrame();
+      if (!$scope.asset.keyframes) {
+          $scope.asset.keyframes = [];
+      }
+      $scope.asset.keyframes.push(newKeyFrame);
+      ProjectService.updateAsset($scope.asset);
+    };
+
+    $scope.onRemoveKeyFrameButtonClicked = function(keyFrameUUID) {
+      ProjectService.getKeyFrameFromAssetByUUID($scope.asset,keyFrameUUID,function(keyFrame) {
+        ProjectService.removeKeyFrameFromAsset($scope.asset,keyFrame);
+        ProjectService.updateAsset($scope.asset);
+      });
+    };
+
     // On Load
 
     if (ProjectService.isProjectOpen()) {

@@ -14,17 +14,29 @@ namespace Dream     {
 	private:
 		long                mStartTtmeMS;
 		bool                mWrap;
-		std::vector<Frame*> mFrames;
+		std::vector<Frame*> mPlaybackFrames;
 		std::vector<float>  mTranslation;
 		std::vector<float>  mRotation;
 		std::vector<float>  mScale;
 	public:
 		KeyFrame(long);
 		~KeyFrame();
+		
+		std::vector<Frame*> getPlaybackFrames();
 		void                generateFrames(KeyFrame*);
-		std::vector<Frame*> getFrames();
+		void                addPlaybackFrame(Frame*);
+		
 		bool                getWrap();
 		long                getStartTimeMS();
+		
+		std::vector<float> getTranslation();
+		void               setTranslation(std::vector<float>);
+		
+		std::vector<float> getRotation();
+		void               setRotation(std::vector<float>);
+		
+		std::vector<float> getScale();
+		void               setScale(std::vector<float>);
 	};
 	
 } // End of Dream

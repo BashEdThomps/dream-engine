@@ -32,7 +32,9 @@ namespace Bullet  {
 	
 	class BulletPhysics : public PhysicsPluginInterface {
 	private:
-		GLDebugDrawer                       *mDebugDrawer;
+		#ifdef VERBOSE
+			GLDebugDrawer                     *mDebugDrawer;
+		#endif
 		btDynamicsWorld                     *mDynamicsWorld;
 		btBroadphaseInterface               *mBroadphase;
 		btDefaultCollisionConfiguration     *mCollisionConfiguration;

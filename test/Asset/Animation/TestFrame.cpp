@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::Animation::Test::TestFrame
+* Dream::Asset::Instances::Animation::Dream::Test::TestFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,84 +18,20 @@
 #include "TestFrame.h"
 
 #include "../../../src/Asset/Instances/Animation/Dream/Frame.h"
-#include "../../../src/Asset/Instances/Animation/Dream/FrameDelta.h"
 
-namespace Dream {
-	namespace Asset {
-		namespace Animation {
-			namespace Test {
-				TestFrame::TestFrame() :
-				Dream::Unit::Unit("Dream::Asset::Animation:Frame") {
+namespace Dream     {
+namespace Asset     {
+namespace Animation {
+namespace Test      {
+	
+	TestFrame::TestFrame() : Dream::Unit::Unit("Dream::Asset::Animation:Frame") {}
+	TestFrame::~TestFrame() {}
 
-				}
-
-				TestFrame::~TestFrame() {
-
-				}
-
-				void TestFrame::run() {
-					header();
-					testFrameCreate();
-					testFrameAddFrameDelta();
-					testFrameCompareIndicies();
-					testFrameGetNumFrameDeltas ();
-				}
-
-				void TestFrame::testFrameCreate(void) {
-					comment("Create Frame");
-					Dream::Asset::Instances::Animation::Dream::Frame *frame =
-					new Dream::Asset::Instances::Animation::Dream::Frame(0);
-					assertNotNull("Frame Constructor", frame);
-					return;
-				}
-
-				void TestFrame::testFrameAddFrameDelta(void) {
-					Dream::Asset::Instances::Animation::Dream::Frame *frame =
-					new Dream::Asset::Instances::Animation::Dream::Frame(0);
-					
-					Dream::Asset::Instances::Animation::Dream::FrameDelta *delta1 =
-                    
-					new Dream::Asset::Instances::Animation::Dream::FrameDelta(0,FRAME_DELTA_OP_LINEAR);
-                    
-					Dream::Asset::Instances::Animation::Dream::FrameDelta *delta2 =
-					new Dream::Asset::Instances::Animation::Dream::FrameDelta(0,FRAME_DELTA_OP_LINEAR);
-                    
-					frame->addFrameDelta(delta1);
-					frame->addFrameDelta(delta2);
-					assertEqual("Number of deltas in frame is 2", frame->getNumFrameDeltas(),2);
-					return;
-				}
-
-				void TestFrame::testFrameCompareIndicies(void) {
-					Dream::Asset::Instances::Animation::Dream::Frame *frame1;
-					Dream::Asset::Instances::Animation::Dream::Frame *frame2;
-
-					frame1 = new Dream::Asset::Instances::Animation::Dream::Frame(100);
-					frame2 = new Dream::Asset::Instances::Animation::Dream::Frame(200);
-
-					int result1 = frame1->compareIndecies(frame2);
-					int result2 = frame2->compareIndecies(frame1);
-
-					assertEqual("Frame Index Comparison",result1,100);
-					assertEqual("Frame Index Comparison",result2,-100);
-					return;
-				}
-
-				void TestFrame::testFrameGetNumFrameDeltas(void) {
-					Dream::Asset::Instances::Animation::Dream::Frame* frame =
-                        new Dream::Asset::Instances::Animation::Dream::Frame(0);
-
-					Dream::Asset::Instances::Animation::Dream::FrameDelta *delta1, *delta2;
-					delta1 = new Dream::Asset::Instances::Animation::Dream::FrameDelta(0,0);
-					frame->addFrameDelta(delta1);
-					assertEqual("Get Num Frame Deltas == 1",frame->getNumFrameDeltas(),1);
-
-					delta2 = new Dream::Asset::Instances::Animation::Dream::FrameDelta(0,0);
-					frame->addFrameDelta(delta2);
-					assertEqual("Get Num Frame Deltas == 2",frame->getNumFrameDeltas(),2);
-					return;
-				}
-			}
-		}
+	void TestFrame::run() {
+		header();
 	}
+	
+}
+}
+}
 }

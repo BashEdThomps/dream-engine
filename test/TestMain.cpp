@@ -28,7 +28,6 @@
 
 #include "Asset/TestAsset.h"
 #include "Asset/Animation/TestFrame.h"
-#include "Asset/Animation/TestFrameDelta.h"
 #include "Asset/Animation/TestKeyFrame.h"
 #include "Asset/Animation/TestAnimation.h"
 
@@ -58,10 +57,6 @@ int testAssetAnimation() {
 	Dream::Asset::Animation::Test::TestFrame testFrame;
 	testFrame.run();
 	result += testFrame.getResult();
-
-	Dream::Asset::Animation::Test::TestFrameDelta testFrameDelta;
-	testFrameDelta.run();
-	result += testFrameDelta.getResult();
 
 	Dream::Asset::Animation::Test::TestKeyFrame testKeyFrame;
 	testKeyFrame.run();

@@ -51,7 +51,7 @@
 </head>
 <body ng-controller="index" ngsf-fullscreen class="fullscreen">
   <!-- Navigation Bar -->
-  <nav class="navbar navbar-default navbar-static-top">
+  <nav id="index-nav" class="navbar navbar-default navbar-static-top">
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#home">
@@ -88,7 +88,6 @@
             <a ng-click="onDeleteButtonClicked()"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a>
           </li>
         </ul>
-
         <ul class="nav navbar-nav navbar-right">
           <li uib-dropdown is-open="status.isopen">
             <a uib-dropdown-toggle ng-disabled="disabled">
@@ -112,7 +111,7 @@
     <!-- Toast Alerts -->
     <toast></toast>
     <!-- Page Container -->
-    <div class="container-fluid">
+    <div id="index-content" class="container-fluid">
       <!-- Page Content -->
       <div class="row">
         <div class="col-md-3">

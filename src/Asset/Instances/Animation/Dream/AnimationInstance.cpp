@@ -36,6 +36,7 @@ namespace Dream     {
 		for (int keyFrame = 0; keyFrame < mKeyFrames.size(); keyFrame++) {
 			KeyFrame* currentKeyFrame = mKeyFrames[keyFrame];
 			KeyFrame* nextKeyFrame = NULL;
+			// Get the next KeyFrame
 			if (keyFrame == mKeyFrames.size()-1) {
 				if (currentKeyFrame->getWrap()) {
 					nextKeyFrame = mKeyFrames[0];
@@ -44,7 +45,7 @@ namespace Dream     {
 				}
 			}
 			currentKeyFrame->generateFrames(nextKeyFrame);
-			std::vector<Frame*> frames = currentKeyFrame->getFrames();
+			std::vector<Frame*> frames = currentKeyFrame->getPlaybackFrames();
 			mPlaybackFrames.insert(mPlaybackFrames.end(),frames.begin(),frames.end());
 		}
 	}

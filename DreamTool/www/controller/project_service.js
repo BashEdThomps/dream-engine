@@ -788,5 +788,25 @@ App.service('ProjectService',
       ApiService.deleteAssetData(this.project.uuid,asset.type,asset.uuid,callback);
     };
 
+    this.createDreamAnimationKeyFrame = function () {
+        return {
+          uuid     : UtilService.generateUUID(),
+          name     : "New Keyframe",
+          duration : 1000,
+        };
+    };
+
+    this.removeKeyFrameFromAssetByUUID = function(assetObject, keyFremeUUID) {
+
+    };
+
+    this.getKeyFrameFromAssetByUUID = function(uuid,callback) {
+
+    };
+
+    this.removeKeyFrameFromAsset = function(keyFrameObject,assetObject) {
+
+    };
+
     return this;
 }]);

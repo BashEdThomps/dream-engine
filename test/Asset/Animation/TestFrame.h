@@ -1,5 +1,5 @@
 /*
-* Dream::Animation::Test::TestFrame
+* Dream::Asset::Instances::Animation::Dream::Test::TestFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,27 +21,20 @@
 #include "../../../src/Unit/Unit.h"
 
 namespace Dream {
-	namespace Asset {
-		namespace Animation {
-			namespace Test {
-				class TestFrame : public Dream::Unit::Unit {
-				public:
-					TestFrame();
-					~TestFrame();
-					//! Run Method
-					void run(void);
-					//! Test creating a daFrame.
-					void testFrameCreate        (void);
-					//! Tests adding a daFrameDelta to a daFrame.
-					void testFrameAddFrameDelta (void);
-					//! Tests comparing indicies of two daFrames.
-					void testFrameCompareIndicies   (void);
-					//! Tests counting the number of daFrameDeltas held by the frame.
-					void testFrameGetNumFrameDeltas (void);
-				};
-			}
-		}
-	}
+namespace Asset {
+namespace Animation {
+namespace Test {
+	class TestFrame : public Dream::Unit::Unit {
+	public:
+		TestFrame();
+		~TestFrame();
+		
+		void run(void);
+	};
+	
+}
+}
+}
 }
 
 #endif  // TEST_FRAME_H

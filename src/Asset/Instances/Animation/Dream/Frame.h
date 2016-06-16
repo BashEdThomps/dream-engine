@@ -19,6 +19,16 @@ namespace Dream     {
 		Frame();
 		~Frame();
 		void applyToSceneObject(Scene::SceneObject*);
+		
+		std::vector<float> getTranslation();
+		void               setTranslation(std::vector<float>);
+		
+		std::vector<float> getRotation();
+		void               setRotation(std::vector<float>);
+		
+		std::vector<float> getScale();
+		void               setScale(std::vector<float>);
+		
 	}; // End Frame
 	
 } // End of Dream

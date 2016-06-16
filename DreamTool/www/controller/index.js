@@ -3,14 +3,30 @@ App.controller("index",
     function($state,$scope,ApiService,ProjectService,UIService,$window,CookieService,cssInjector) {
 
     $scope.findUiElements = function() {
-      $scope.uiBody = document.getElementsByTagName('body')[0];
-      console.log("Found Body:",$scope.uiBody);
+      setTimeout(function() {
+        $scope.uiBody = document.getElementsByTagName('body')[0];
+        console.log("Found Body:",$scope.uiBody);
 
-      $scope.uiNavbar = document.getElementsByTagName("nav")[0];
-      console.log("Found Navbar:",$scope.uiNavbar);
+        $scope.uiNavbar = document.getElementById("index-nav");
+        console.log("Found Navbar:",$scope.uiNavbar);
 
-      $scope.uiContainer = document.getElementsByClassName("container-fluid")[0];
-      console.log("Found Container:",$scope.uiContainer);
+        $scope.uiContainer = document.getElementById("index-content");
+        console.log("Found Container:",$scope.uiContainer);
+
+        var foundRequiredUIElements = $scope.uiBody && $scope.uiNavbar && $scope.uiContainer;
+
+        if (foundRequiredUIElements) {
+          var uiBodyHeight      = $scope.uiBody.style.height;
+          var uiNavbarHeight    = $scope.uiNavbar.clientHeight;
+          var uiContainerHeight = uiBodyHeight - uiNavbarHeight;
+
+          console.log("uiBodyHeight",uiBodyHeight);
+          console.log("uiNavbarHeight",uiNavbarHeight);
+          console.log("uiContainerHeight",uiContainerHeight);
+
+          $scope.uiContainer.style.height = uiContainerHeight;
+        }
+      },1000);
     };
 
     // Alerts ------------------------------------------------------------------

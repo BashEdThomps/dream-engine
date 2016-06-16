@@ -31,6 +31,31 @@ namespace Dream     {
 		soScale[1] = mScale[1];
 		soScale[2] = mScale[2];
 	}
+	
+	std::vector<float> Frame::getTranslation() {
+		return mTranslation;
+	}
+	
+	std::vector<float> Frame::getRotation() {
+		return mRotation;
+	}
+	
+	std::vector<float> Frame::getScale() {
+		return mScale;
+	}
+	
+	void Frame::setRotation(std::vector<float> rotation) {
+		mRotation = rotation;
+	}
+	
+	void Frame::setScale(std::vector<float> scale) {
+		mScale = scale;
+	}
+	
+	void Frame::setTranslation(std::vector<float> translation) {
+		mTranslation = translation;
+	}
+	
 
 } // End of Dream
 } // End of Animation
