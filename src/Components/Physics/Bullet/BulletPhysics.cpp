@@ -25,7 +25,7 @@ namespace Bullet {
 	
 	BulletPhysics::BulletPhysics(void) : PhysicsComponentInterface() {
   #ifdef VERBOSE
-  	mDebugDrawer = new GLDebugDrawer();
+  	//mDebugDrawer = new GLDebugDrawer();
   #endif
 	}
 
@@ -36,7 +36,7 @@ namespace Bullet {
 		delete mBroadphase;
 		delete mDynamicsWorld;
     #ifdef VERBOSE
-    	delete mDebugDrawer;
+    	//delete mDebugDrawer;
     #endif
 	}
 
@@ -58,8 +58,8 @@ namespace Bullet {
 		mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
 		mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
     #ifdef VERBOSE
-			mDynamicsWorld->setDebugDrawer(mDebugDrawer);
-    	mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+			//mDynamicsWorld->setDebugDrawer(mDebugDrawer);
+    	//mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
 		#endif
 		std::cout << "done." << std::endl;
 		return true;

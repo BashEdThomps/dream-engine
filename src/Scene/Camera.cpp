@@ -19,18 +19,18 @@ namespace Scene {
 	
 	// Constructor with scalar values
 	Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) {
-		mFront = {0.0f, 0.0f, -1.0f};
-		mMovementSpeed = SPEED;
+		mFront            = {0.0f, 0.0f, -1.0f};
+		mMovementSpeed    = SPEED;
 		mMouseSensitivity = SENSITIVTY;
-		mZoom = ZOOM;
-		mTranslation = { posX, posY, posZ };
-		mWorldUp  = { upX,  upY,  upZ  };
-		mYaw = yaw;
-		mPitch = pitch;
+		mZoom             = ZOOM;
+		mTranslation      = { posX, posY, posZ };
+		mWorldUp          = { upX,  upY,  upZ  };
+		mYaw              = yaw;
+		mPitch            = pitch;
 		updateCameraVectors();
 	}
-		
-	std::vector<std::vector<double>> Camera::getViewMatrix() {
+	
+	std::vector<std::vector<float>> Camera::getViewMatrix() {
 		std::vector<float> translationFrontSum = {
 				mTranslation[0] + mFront[0],
 				mTranslation[1] + mFront[1],
@@ -72,7 +72,11 @@ namespace Scene {
 	}
 	
 	std::vector<float> Camera::getRotation() {
-		return {mPitch,mYaw,0.0f};
+		std::vector<float> retval(3);
+		retval[0] = mPitch;
+		retval[1] = mYaw;
+		retval[2] = 0.0f;
+		return retval;
 	}
 	
 	void Camera::processMouseMovement(const float xoffset, const float yoffset, const bool constrainPitch = true) {
@@ -116,15 +120,10 @@ namespace Scene {
 	}
 		
 	void Camera::updateCameraVectors() {
-		// Calculate the new Front vector
-		std::vector<float> front(3);
-		front[0] = cos(radians(mYaw)) * cos(radians(mPitch));
-		front[1] = sin(radians(mPitch));
-		front[2] = sin(radians(mYaw)) * cos(radians(mPitch));
-		mFront = normalize(front);
-		// Also re-calculate the Right and Up vector
-		// Normalize the vectors, because their length gets closer to 0 the more you look up or
-		// down which results in slower movement.
+		mFront[0] = static_cast<float>(cos(radians(mYaw)) * cos(radians(mPitch)));
+		mFront[1] =	static_cast<float>(sin(radians(mPitch)));
+		mFront[2] =	static_cast<float>(sin(radians(mYaw)) * cos(radians(mPitch)));
+		mFront = normalize(mFront);
 		mRight = normalize(cross(mFront, mWorldUp));
 		mUp    = normalize(cross(mRight, mFront));
 	}
@@ -155,51 +154,65 @@ namespace Scene {
 		return mZoom;
 	}
 	
-	std::vector<float> Camera::cross(std::vector<float> x, std::vector<float> y) {
-		return {
-			x[1] * y[2] - y[1] * x[2],
-			x[2] * y[0] - y[2] * x[0],
-			x[0] * y[1] - y[0] * x[1]
-		};
-	}
 	
-	std::vector<float> Camera::normalize(std::vector<float> x) {
-		//return x < genType(0) ? genType(-1) : genType(1);
-		return {
-			x[0] < 0.0f ? -1.0f : 1.0f,
-			x[1] < 0.0f ? -1.0f : 1.0f,
-			x[2] < 0.0f ? -1.0f : 1.0f
-		};
+	std::vector<float> Camera::cross(std::vector<float> x, std::vector<float> y) {
+		std::vector<float> retval(3);
+		retval[0] = x[1] * y[2] - y[1] * x[2];
+		retval[1] = x[2] * y[0] - y[2] * x[0];
+		retval[2] = x[0] * y[1] - y[0] * x[1];
+		return retval;
 	}
 	
 	float Camera::radians(float degrees) {
 		return degrees * 0.01745329251994329576923690768489f;
 	}
 	
-	std::vector<std::vector<double>> Camera::lookAt (std::vector<float> eye, std::vector<float> center, std::vector<float> up) {
-		std::vector<float> f =
-			normalize({
-  			center[0] - eye[0],
-  			center[1] - eye[1],
-  			center[2] - eye[2]
-		});
+	std::vector<std::vector<float>> Camera::lookAt (std::vector<float> eye, std::vector<float> center, std::vector<float> up) {
+		std::vector<std::vector<float>> retval(4);
 		
-		std::vector<float> s = normalize(cross(f, up));
-		std::vector<float> u = cross(s, f);
+		glm::vec3 glmEye;
+		glmEye.x = eye[0];
+		glmEye.y = eye[1];
+		glmEye.z = eye[2];
 		
-		std::vector<std::vector<double>> Result = {
-			{s[0],u[0],-f[0]},
-			{s[1],u[1],-f[1]},
-			{s[2],u[2],-f[2]},
-			{
-				(-std::inner_product(begin(s), end(s), begin(eye), 0.0)), // -dot(s, eye);
-				(-std::inner_product(begin(u), end(u), begin(eye), 0.0)), // -dot(u, eye);
-				(std::inner_product(begin(f), end(f), begin(eye), 0.0)) //dot(f, eye);
-			}
-		};
-		return Result;
+		glm::vec3 glmCenter;
+		glmCenter.x = center[0];
+		glmCenter.y = center[1];
+		glmCenter.z = center[2];
+		
+		glm::vec3 glmUp;
+		glmUp.x = up[0];
+		glmUp.y = up[1];
+		glmUp.z = up[2];
+		
+		glm::mat4 lookAtMatrix = glm::lookAt(glmEye, glmCenter, glmUp);
+		retval[0] = {lookAtMatrix[0][0],lookAtMatrix[0][1],lookAtMatrix[0][2],lookAtMatrix[0][3]};
+		retval[1] = {lookAtMatrix[1][0],lookAtMatrix[1][1],lookAtMatrix[1][2],lookAtMatrix[1][3]};
+		retval[2] = {lookAtMatrix[2][0],lookAtMatrix[2][1],lookAtMatrix[2][2],lookAtMatrix[2][3]};
+		retval[3] = {lookAtMatrix[3][0],lookAtMatrix[3][1],lookAtMatrix[3][2],lookAtMatrix[3][3]};
+		
+		return retval;
 	}
 	
-	
+	float Camera::dot(std::vector<float> a, std::vector<float> b) {
+		return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
+	}
+
+	// Returns the length of the vector
+	float Camera::vectorLength(std::vector<float> vector){
+		return sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
+	}
+ 
+	// Normalizes the vector
+	std::vector<float> Camera::normalize(std::vector<float> vector){
+		std::vector<float> retval(3);
+		float length = vectorLength(vector);
+		if(length != 0){
+			retval[0] = vector[0]/length;
+			retval[1] = vector[1]/length;
+			retval[2] = vector[2]/length;
+		}
+		return retval;
+	}
 } // End of Scene
 } // End of Dream

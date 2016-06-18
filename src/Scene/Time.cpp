@@ -3,30 +3,31 @@
 namespace Dream {
 namespace Scene {
 	
-	Time::Time()  {
-		mCurrentTime = 0.0;
-		mLastTime    = 0.0;
-		mTimeDelta   = 0.0;
-	}
-	
+	Time::Time()  {}
 	Time::~Time() {}
 
 	void Time::update() {
 		mLastTime    = mCurrentTime;
-		mCurrentTime = glfwGetTime();
-		mTimeDelta   = mCurrentTime - mLastTime;
+		mCurrentTime = std::chrono::high_resolution_clock::now();
+		mTimeDelta   = mCurrentTime-mLastTime;
+		#ifdef VERBOSE
+		std::cout << "Time: " << std::endl
+		          << "\tCurrent Time: " << getCurrentTime() << std::endl
+		          << "\t   Last Time: " << getLastTime() << std::endl
+		          << "\t  Time Delta: " << getTimeDelta() << std::endl;
+		#endif
 	}
 	
 	double Time::getCurrentTime() {
-		return mCurrentTime;
+		return mCurrentTime.time_since_epoch().count();
 	}
 	
 	double Time::getLastTime() {
-		return mLastTime;
+		return mLastTime.time_since_epoch().count();
 	}
 	
 	double Time::getTimeDelta() {
-		return mTimeDelta;
+		return mTimeDelta.count();
  }
 	
 }

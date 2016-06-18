@@ -326,6 +326,7 @@ namespace Project {
 	}
 	
 	bool Project::run (){
+		//mComponentManager->setParallel(true);
 		// Create Components
 		if(!mComponentManager->createComponents()){
 			std::cerr << "Project: Unable to create components." << std::endl;
@@ -352,7 +353,7 @@ namespace Project {
 			mDone = mComponentManager->isDone();
 			sTime->update();
 			mComponentManager->update();
-			usleep(1000000/60);
+			std::this_thread::yield();
 		}
 		
 		if(mComponentManager->isParallel()) {

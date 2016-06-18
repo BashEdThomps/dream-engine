@@ -114,19 +114,14 @@
     <div id="index-content" class="container-fluid">
       <!-- Page Content -->
       <div class="row">
-        <div class="col-md-3">
-          <div class="well">
-            <abn-tree expand-level="5" tree-data="treeData">
-            </abn-tree>
-          </div>
+        <div class="col-md-2">
+          <abn-tree expand-level="5" tree-data="treeData"></abn-tree>
         </div>
-        <div class="col-md-9">
-          <div class="well">
-            <ol class="breadcrumb">
-              <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
-            </ol>
-            <div ui-view></div>
-          </div>
+        <div class="col-md-10">
+          <ol class="breadcrumb">
+            <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
+          </ol>
+          <div ui-view></div>
         </div>
       </div>
     </div>

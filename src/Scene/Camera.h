@@ -24,6 +24,8 @@
 #include <vector>
 #include <numeric>
 #include <cmath>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/vec3.hpp>
 
 namespace Dream {
 namespace Scene {
@@ -54,44 +56,27 @@ namespace Scene {
 		
 		// Constructor with scalar values
 		Camera(float, float, float, float, float, float, float, float);
-		
-		// Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-		std::vector<std::vector<double>> getViewMatrix();
-		
-		// Processes input received from any keyboard-like input system.
-		// Accepts input parameter in the form of camera defines (to abstract it from windowing systems)
+		std::vector<std::vector<float>> getViewMatrix();
 		void processKeyboard(const int, const float);
-		
-		// Processes input received from a mouse input system.
-		// Expects the offset value in both the x and y direction.
 		void processMouseMovement(const float, const float, const bool);
-		
-		// Processes input received from a mouse scroll-wheel event.
-		// Only requires input on the vertical wheel-axis
 		void processMouseScroll(const float);
-		
-		// Calculates the front vector from the Camera's (updated) Eular Angles
 		void updateCameraVectors();
-		
 		void setTranslation(std::vector<float>);
 		std::vector<float> getTranslation();
-		
 		void setRotation(std::vector<float>);
 		std::vector<float> getRotation();
-		
 		void  setMovementSpeed(float);
 		float getMovementSpeed();
-		
 		void  setMouseSensitivity(float);
 		float getMouseSensitivity();
-		
 		float getZoom();
 	private:
+		float radians(float);
 		std::vector<float> cross(std::vector<float>, std::vector<float>);
 		std::vector<float> normalize(std::vector<float>);
-		float radians(float);
-		std::vector<std::vector<double>> lookAt(std::vector<float>,std::vector<float>,std::vector<float>);
-		
+		std::vector<std::vector<float>> lookAt(std::vector<float>,std::vector<float>,std::vector<float>);
+		float dot(std::vector<float>,std::vector<float>);
+		float vectorLength(std::vector<float>);
 		
 	}; // End of Camera
 	

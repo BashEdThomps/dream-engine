@@ -609,6 +609,13 @@ App.service('ProjectService',
     this.updateAsset = function(asset) {
         this.setAssetName(asset);
         this.setAssetType(asset);
+        this.setAssetKeyFrames(asset);
+    };
+
+    this.setAssetKeyFrames = function(asset) {
+      this.getAssetByUUID(asset.uuid,function(assetInProject) {
+        assetInProject.keyframes = asset.keyframes;
+      })
     };
 
     this.setAssetName = function(asset) {
@@ -797,15 +804,25 @@ App.service('ProjectService',
     };
 
     this.removeKeyFrameFromAssetByUUID = function(assetObject, keyFremeUUID) {
-
+      var ps = this;
+        ps.getKeyFrameFromAssetByUUID(assetObject,keyFremeUUID,function(keyFrameObject) {
+          ps.removeKeyFrameFromAsset(keyFrameObject,assetObject);
+        });
     };
 
-    this.getKeyFrameFromAssetByUUID = function(uuid,callback) {
-
+    this.getKeyFrameFromAssetByUUID = function(assetObject,keyFrameUUID,callback) {
+      var retval = null;
+      assetObject.keyframes.forEach(function(keyFrame) {
+        if (keyFrame.uuid == keyFrameUUID) {
+          retval = keyFrame;
+        }
+      });
+      callback(retval);
     };
 
     this.removeKeyFrameFromAsset = function(keyFrameObject,assetObject) {
-
+      var keyFrameIndex = assetObject.keyframes.indexOf(keyFrameObject);
+      assetObject.keyframes.splice(keyFrameIndex,1);
     };
 
     return this;

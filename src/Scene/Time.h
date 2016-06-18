@@ -1,7 +1,11 @@
 #ifndef Time_hpp
 #define Time_hpp
 
-#include <GLFW/glfw3.h>
+#include <iostream>
+#include <chrono>
+#include <ctime>
+
+#define VERBOSE
 
 namespace Dream {
 namespace Scene {
@@ -9,9 +13,9 @@ namespace Scene {
 	// This class is a singleton
 	class Time {
 	private:
-  	double mCurrentTime;
-  	double mLastTime;
-  	double mTimeDelta;
+		std::chrono::time_point<std::chrono::high_resolution_clock> mCurrentTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> mLastTime;
+  	std::chrono::duration<double> mTimeDelta;
 	public:
 		Time();
 		~Time();

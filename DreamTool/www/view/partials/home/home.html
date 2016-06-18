@@ -8,60 +8,55 @@
 	<br />
 	<div class="row">
 		<div class="pull-left col-md-6 fill">
-			<div class="well fill">
-				<h2>
-					Getting Started
-				</h2>
-				<p>
-					This tool is used to create, modify and manage Dream projects.
-				</p>
-				<h2>
-					Project Structure
-				</h2>
-				<p>
-					Projects are composed of the objects described below.
-					Click any object to see more information about it's role within a project.
-				</p>
-				<br>
-				<abn-tree expand-level="5" tree-data="helpTreeData">
+			<h2>
+				Getting Started
+			</h2>
+			<p>
+				This tool is used to create, modify and manage Dream projects.
+			</p>
+			<h2>
+				Project Structure
+			</h2>
+			<p>
+				Projects are composed of the objects described below.
+				Click any object to see more information about it's role within a project.
+			</p>
+			<br>
+			<abn-tree expand-level="5" tree-data="helpTreeData">
 			</div>
-		</div>
-		<div class="col-md-6 fill">
-			<div class="well fill">
+			<div class="col-md-6 fill">
 				<div ng-show="showProject"
-				     ng-include="'view/partials/home/project/project.html'"></div>
+				ng-include="'view/partials/home/project/project.html'"></div>
 
 				<div ng-show="showProjectScene"
-				     ng-include="'view/partials/home/project/scene/scene.html'"></div>
+				ng-include="'view/partials/home/project/scene/scene.html'"></div>
 
 				<div ng-show="showProjectSceneSceneObject"
-				     ng-include="'view/partials/home/project/scene/sceneobject.html'"></div>
+				ng-include="'view/partials/home/project/scene/sceneobject.html'"></div>
 
 				<div ng-show="showProjectAssets"
-				     ng-include="'view/partials/home/project/assets/assets.html'"></div>
+				ng-include="'view/partials/home/project/assets/assets.html'"></div>
 
 				<div ng-show="showProjectAssetsAnimation"
-				     ng-include="'view/partials/home/project/assets/animation.html'"></div>
+				ng-include="'view/partials/home/project/assets/animation.html'"></div>
 
 				<div ng-show="showProjectAssetsAudio"
-				     ng-include="'view/partials/home/project/assets/audio.html'"></div>
+				ng-include="'view/partials/home/project/assets/audio.html'"></div>
 
 				<div ng-show="showProjectAssetsLight"
-				     ng-include="'view/partials/home/project/assets/light.html'"></div>
+				ng-include="'view/partials/home/project/assets/light.html'"></div>
 
 				<div ng-show="showProjectAssetsModel"
-				     ng-include="'view/partials/home/project/assets/model.html'"></div>
+				ng-include="'view/partials/home/project/assets/model.html'"></div>
 
 				<div ng-show="showProjectAssetsPhysicsObject"
-				     ng-include="'view/partials/home/project/assets/physics_object.html'"></div>
+				ng-include="'view/partials/home/project/assets/physics_object.html'"></div>
 
 				<div ng-show="showProjectAssetsScript"
-				     ng-include="'view/partials/home/project/assets/script.html'"></div>
+				ng-include="'view/partials/home/project/assets/script.html'"></div>
 
 				<div ng-show="showProjectAssetsShader"
-				     ng-include="'view/partials/home/project/assets/shader.html'"></div>
-
-			 </div>
+				ng-include="'view/partials/home/project/assets/shader.html'"></div>
+			</div>
 		</div>
 	</div>
-</div>

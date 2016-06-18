@@ -235,6 +235,13 @@ App.controller("ProjectAssetEditor",
       };
     };
 
+    $scope.onEditKeyFrameButtonClicked = function(uuid) {
+      console.log("Editing KeyFrame",uuid);
+      ProjectService.getKeyFrameFromAssetByUUID($scope.asset,uuid,function(keyFrame) {
+        $scope.selectedKeyFrame = keyFrame;
+      });
+    };
+
     $scope.onAddKeyFrameButtonClicked = function() {
       var newKeyFrame = ProjectService.createDreamAnimationKeyFrame();
       if (!$scope.asset.keyframes) {
@@ -245,10 +252,8 @@ App.controller("ProjectAssetEditor",
     };
 
     $scope.onRemoveKeyFrameButtonClicked = function(keyFrameUUID) {
-      ProjectService.getKeyFrameFromAssetByUUID($scope.asset,keyFrameUUID,function(keyFrame) {
-        ProjectService.removeKeyFrameFromAsset($scope.asset,keyFrame);
-        ProjectService.updateAsset($scope.asset);
-      });
+      ProjectService.removeKeyFrameFromAssetByUUID($scope.asset,keyFrameUUID);
+      ProjectService.updateAsset($scope.asset);
     };
 
     // On Load

@@ -33,7 +33,7 @@ namespace Bullet  {
 	class BulletPhysics : public PhysicsComponentInterface {
 	private:
 		#ifdef VERBOSE
-			GLDebugDrawer                     *mDebugDrawer;
+			//GLDebugDrawer                     *mDebugDrawer;
 		#endif
 		btDynamicsWorld                     *mDynamicsWorld;
 		btBroadphaseInterface               *mBroadphase;

@@ -177,6 +177,7 @@ namespace Components {
 		component->init();
 		while (!mDone) {
 			component->update(mActiveScene);
+			std::this_thread::yield();
 		}
 	}
 	
@@ -228,7 +229,7 @@ namespace Components {
 			bulletPhysicsComponent = dynamic_cast<Components::Physics::Bullet::BulletPhysics*>(mPhysicsComponent);
 			for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
 				#ifdef VERBOSE
-					std::cout << "ComponentManager: Adding SceneObject " << (*soIter)->getuid()
+					std::cout << "ComponentManager: Adding SceneObject " << (*soIter)->getUUID()
 				            << " to PhysicsComponent World" << std::endl;
 				#endif
 				Asset::Instances::Physics::Bullet::PhysicsObjectInstance* physicsObject;

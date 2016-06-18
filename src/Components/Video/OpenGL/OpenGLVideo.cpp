@@ -171,7 +171,7 @@ namespace OpenGL  {
 		#endif
 		// Transformation matrices
 		glm::mat4 projection = glm::perspective(Scene::Scene::sCamera.getZoom(), (float)mScreenWidth/(float)mScreenHeight, mMinimumDraw,mMaximumDraw);
-		std::vector<std::vector<double>> view = Scene::Scene::sCamera.getViewMatrix();
+		std::vector<std::vector<float>> view = Scene::Scene::sCamera.getViewMatrix();
 		
 		glm::mat4 viewMat4 = glm::mat4(
 		  view[0][0], view[0][1], view[0][2], view[0][3],
