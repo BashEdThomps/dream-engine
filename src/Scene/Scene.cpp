@@ -18,7 +18,11 @@
 #include "Scene.h"
 
 namespace Dream {
-namespace  Scene {
+namespace Scene {
+	
+	// Global Camera
+	Camera Scene::sCamera = Camera();
+	
 	Scene::Scene() {
 		mPhysicsEnabled   = false;
 		mAnimationEnabled = false;
@@ -66,59 +70,36 @@ namespace  Scene {
 	}
 	
 	void Scene::loadDefaultCameraTransform(nlohmann::json camera) {
-		mDefaultCameraTranslation = std::vector<float>(3);
-		mDefaultCameraRotation = std::vector<float>(3);
-		
 		if (!camera.is_null()) {
-			nlohmann::json translation   = camera[SCENE_JSON_TRANSLATION];
-			setDefaultCameraTranslation(
-			  translation[SCENE_JSON_X],
+			nlohmann::json translation = camera[SCENE_JSON_TRANSLATION];
+			setDefaultCameraTranslation({
+				translation[SCENE_JSON_X],
 				translation[SCENE_JSON_Y],
 				translation[SCENE_JSON_Z]
-			);
+			});
 			
-			nlohmann::json rotation   = camera[SCENE_JSON_ROTATION];
-			setDefaultCameraRotation(
+			nlohmann::json rotation = camera[SCENE_JSON_ROTATION];
+			setDefaultCameraRotation({
 			  rotation[SCENE_JSON_X],
 			  rotation[SCENE_JSON_Y],
-			  rotation[SCENE_JSON_Z]
-			);
+				rotation[SCENE_JSON_Z]
+			});
 			
 			if (!camera[SCENE_JSON_MOVEMENT_SPEED].is_null()) {
-				mCameraMovementSpeed = camera[SCENE_JSON_MOVEMENT_SPEED];
+				setCameraMovementSpeed(camera[SCENE_JSON_MOVEMENT_SPEED]);
 			}
 			
 		} else {
-			setDefaultCameraTranslation (0.0f, 0.0f, 0.0f);
-			setDefaultCameraRotation    (0.0f, 0.0f, 0.0f);
+			setDefaultCameraTranslation({0.0f, 0.0f, 0.0f});
+			setDefaultCameraRotation   ({0.0f, 0.0f, 0.0f});
 		}
 	}
 	
-	void Scene::setDefaultCameraTranslation(float x, float y, float z) {
-		mDefaultCameraTranslation[0] = x;
-		mDefaultCameraTranslation[1] = y;
-		mDefaultCameraTranslation[2] = z;
-	}
-	
-	void Scene::setDefaultCameraRotation(float x, float y, float z) {
-		mDefaultCameraRotation[0] = x;
-		mDefaultCameraRotation[1] = y;
-		mDefaultCameraRotation[2] = z;
-	}
-
 	Scene::~Scene() {}
 
 	bool Scene::init() {
 		std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
 		return true;
-	}
-	
-	std::vector<float> Scene::getDefaultCameraTranslation() {
-		return mDefaultCameraTranslation;
-	}
-	
-	std::vector<float> Scene::getDefaultCameraRotation() {
-		return mDefaultCameraRotation;
 	}
 	
 	bool Scene::isScenegraphVectorEmpty() {
@@ -223,15 +204,18 @@ namespace  Scene {
 		std::cout << "  Physics Enabled: " << Util::StringUtils::boolToYesNo(isPhysicsEnabled()) << std::endl;
 		std::cout << " Camera Transform: " << std::endl;
 		
+		std::vector<float> cameraTranslation = sCamera.getTranslation();
+		std::vector<float> cameraRotation    = sCamera.getRotation();
+		
 		std::cout << "      Translation: " << "("
-		          << mDefaultCameraTranslation[0] << ","
-		          << mDefaultCameraTranslation[1] << ","
-		          << mDefaultCameraTranslation[2] << ")" << std::endl;
+		          << cameraTranslation[0] << ","
+		          << cameraTranslation[1] << ","
+		          << cameraTranslation[2] << ")" << std::endl;
 		
 		std::cout << "         Rotation: "     << "("
-		          << mDefaultCameraRotation[0] << ","
-		          << mDefaultCameraRotation[1] << ","
-		          << mDefaultCameraRotation[2] << ")" << std::endl;
+		          << cameraRotation[0] << ","
+		          << cameraRotation[1] << ","
+		          << cameraRotation[2] << ")" << std::endl;
 		
 		std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
 		showScenegraph();
@@ -273,12 +257,16 @@ namespace  Scene {
 		return mScenegraphVector;
 	}
 	
-	float Scene::getCameraMovementSpeed() {
-		return mCameraMovementSpeed;
+	void Scene::setDefaultCameraTranslation(std::vector<float> translation) {
+		sCamera.setTranslation(translation);
 	}
 	
-	void Scene::setCameraMovementSpeed(float speed) {
-		mCameraMovementSpeed = speed;
+	void Scene::setDefaultCameraRotation(std::vector<float> rotation) {
+		sCamera.setRotation(rotation);
+	}
+	
+	void Scene::setCameraMovementSpeed (float speed) {
+		sCamera.setMovementSpeed(speed);
 	}
 	
 }// End of Scene

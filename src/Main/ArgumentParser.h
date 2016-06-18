@@ -25,6 +25,7 @@
 #define PROJECT_UUID_LENGTH   19
 #define PROJECT_EXTENSION     ".json"
 #define PROJECT_PATH_SEP      "/"
+#define DREAM_TOOL_DIR        ".dreamtool"
 
 namespace Dream {
 	class ArgumentParser {

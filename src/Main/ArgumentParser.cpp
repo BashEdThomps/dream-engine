@@ -16,6 +16,7 @@
 */
 
 #include "ArgumentParser.h"
+#include "../Util/Environment.h"
 
 namespace Dream {
 
@@ -25,9 +26,7 @@ namespace Dream {
 		parse();
 	}
 
-	ArgumentParser::~ArgumentParser(void) {
-
-	}
+	ArgumentParser::~ArgumentParser() {}
 
 	void ArgumentParser::parse() {
 		std::string *nextArg;
@@ -52,6 +51,11 @@ namespace Dream {
 			delete nextArg;
 			nextArg = NULL;
 		}
+		
+		if (mDreamPath.size() == 0) {
+			mDreamPath = Util::Environment::getHomeDirectory() + PROJECT_PATH_SEP + DREAM_TOOL_DIR;
+		}
+		
 		mProjectPath = mDreamPath + PROJECT_PATH_SEP + mProjectUUID;
 		std::cout << "ArgumentParser: Got Project Path " << mProjectPath << std::endl;
 		mProjectFilePath = mProjectPath + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;

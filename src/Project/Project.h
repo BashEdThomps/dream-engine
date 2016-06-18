@@ -25,8 +25,8 @@
 #include "../Asset/AssetDefinition.h"
 #include "../Util/StringUtils.h"
 #include "../Asset/AssetManager.h"
-#include "../Plugins/PluginManager.h"
-#include "../Plugins/Video/OpenGL/GLFWTime.h"
+#include "../Components/ComponentManager.h"
+#include "../Scene/Time.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"
@@ -36,18 +36,18 @@
 #define PROJECT_ASSET_ARRAY     "assets"
 #define PROJECT_STARTUP_SCENE   "startupScene"
 
-#define PROJECT_LUA_ENABLED     "lua"
 #define PROJECT_CHAI_ENABLED    "chai"
 #define PROJECT_OPENAL_ENABLED  "openAL"
 #define PROJECT_BULLET2_ENABLED "bullet2"
 #define PROJECT_OPENGL_ENABLED  "openGL"
+#define PROJECT_VULKAN_ENABLED  "vulkan"
 
 namespace Dream {
 namespace Project {
 	class Project {
 	// Static Variables
 	private:
-		static Plugins::Video::OpenGL::GLFWTime* sTime;
+		static Scene::Time* sTime;
 	// Instance Variables
 	private:
 		std::string mUUID;
@@ -57,11 +57,12 @@ namespace Project {
 		std::string mProjectPath;
 		std::string mStartupScene;
 		Asset::AssetManager    *mAssetManager;
-		Plugins::PluginManager *mPluginManager;
+		Components::ComponentManager *mComponentManager;
 		bool mChaiEnabled;
 		bool mOpenALEnabled;
 		bool mBullet2Enabled;
 		bool mOpenGLEnabled;
+		bool mVulkanEnabled;
     bool mDone;
 		std::vector<Dream::Scene::Scene*> mScenes;
 		std::vector<Dream::Asset::AssetDefinition*> mAssetDefinitions;
@@ -69,7 +70,7 @@ namespace Project {
 		
 		// Static Methods
 	public:
-		static Plugins::Video::OpenGL::GLFWTime* getTime();
+		static Scene::Time* getTime();
 	// Instance Methods
 	public:
 		Project(void);
@@ -77,7 +78,7 @@ namespace Project {
 		~Project(void);
 
 		void setMetadata(nlohmann::json);
-		void setPluginFlags(nlohmann::json);
+		void setComponentFlags(nlohmann::json);
 		void loadScenesFromJson(nlohmann::json);
 		void loadAssetsDefinitionsFromJson(nlohmann::json);
 
@@ -119,6 +120,7 @@ namespace Project {
 		bool isOpenALEnabled();
 		bool isBullet2Enabled();
 		bool isOpenGLEnabled();
+		bool isVulkanEnabled();
 		
 		void          setActiveScene(Scene::Scene*);
 		Scene::Scene *getActiveScene();
@@ -128,12 +130,11 @@ namespace Project {
 		bool createAssetManager();
 		Asset::AssetManager* getAssetManager();
 		
-		bool createPluginManager();
-		Plugins::PluginManager* getPluginManager();
+		bool createComponentManager();
+		Components::ComponentManager* getComponentManager();
 		
 		bool loadScene(Scene::Scene*);
 		bool run();
-		void update();
 		
 	}; // End of Project
 	

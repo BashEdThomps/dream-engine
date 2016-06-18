@@ -22,7 +22,7 @@
 #include <iostream>
 #include <chaiscript/chaiscript.hpp>
 #include "../../../AssetInstance.h"
-#include "../../../../Plugins/Scripting/Chai/ChaiScripting.h"
+#include "../../../../Components/Scripting/Chai/ChaiScripting.h"
 #include "../../../../ExternalLibs/KissFFT/KissFFTWrapper.h"
 
 namespace Dream     {
@@ -40,7 +40,7 @@ namespace Chai      {
 			~ChaiScriptInstance(void);
 			bool load(std::string);
 			void update();
-			void processInputs(std::vector<Plugins::Input::InputEvent>);
+			void processInputs(std::vector<Components::Input::InputEvent>);
 			bool importScriptAssetByUUID(std::string);
 			std::string getProjectPath();
 			
@@ -48,16 +48,16 @@ namespace Chai      {
 			void initAPIs();
 			void initAssetInstanceAPI();
 			void initAssetManagerAPI();
-			void initAudioPluginAPI();
+			void initAudioComponentAPI();
 			void initCameraAPI();
 			void initChaiScriptAPI();
 			void initGlfwTimeAPI();
 			void initInputEventAPI();
 			void initKissFftAPI();
-			void initPluginManagerAPI();
+			void initComponentManagerAPI();
 			void initProjectAPI();
 			void initSceneObjectAPI();
-			void initVideoPluginAPI();
+			void initVideoComponentAPI();
 			
     }; // End of ChaiScriptInstance
     

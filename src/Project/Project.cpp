@@ -20,28 +20,28 @@
 namespace Dream {
 namespace Project {
 	
-	Plugins::Video::OpenGL::GLFWTime *Project::sTime = new Plugins::Video::OpenGL::GLFWTime();
+	Scene::Time *Project::sTime = new Scene::Time();
 	
-	Plugins::Video::OpenGL::GLFWTime *Project::getTime() {
+	Scene::Time *Project::getTime() {
 		return sTime;
 	}
 	
 	Project::Project(void) {
 		mAssetManager = NULL;
-		mPluginManager = NULL;
+		mComponentManager = NULL;
 		mDone = false;
 	}
 
 	Project::Project(std::string projectPath, nlohmann::json jsonProject) {
-		mPluginManager = NULL;
+		mComponentManager = NULL;
 		mAssetManager  = NULL;
 		mDone          = false;
 		setProjectPath(projectPath);
 		setMetadata(jsonProject);
-		setPluginFlags(jsonProject);
+		setComponentFlags(jsonProject);
 		loadAssetsDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
 		loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
-		createPluginManager();
+		createComponentManager();
 		createAssetManager();
 		showStatus();
 	}
@@ -79,7 +79,7 @@ namespace Project {
 		
 	}
 
-	void Project::setPluginFlags(nlohmann::json jsonProject) {
+	void Project::setComponentFlags(nlohmann::json jsonProject) {
 		mChaiEnabled  = (
 			jsonProject [PROJECT_CHAI_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_CHAI_ENABLED]
@@ -99,6 +99,11 @@ namespace Project {
 			jsonProject [PROJECT_OPENGL_ENABLED].is_null() ?
 			false : (bool) jsonProject [PROJECT_OPENGL_ENABLED]
 		);
+		
+		mVulkanEnabled  = (
+			jsonProject [PROJECT_VULKAN_ENABLED].is_null() ?
+			false : (bool) jsonProject [PROJECT_VULKAN_ENABLED]
+		);
 	}
 
 	void Project::showStatus() {
@@ -112,6 +117,7 @@ namespace Project {
 		std::cout << "     OpenAL Enabled: " << Util::StringUtils::boolToYesNo(mOpenALEnabled) << std::endl;
 		std::cout << "    Bullet2 Enabled: " << Util::StringUtils::boolToYesNo(mBullet2Enabled) << std::endl;
 		std::cout << "     OpenGL Enabled: " << Util::StringUtils::boolToYesNo(mOpenGLEnabled) << std::endl;
+		std::cout << "     Vulkan Enabled: " << Util::StringUtils::boolToYesNo(mVulkanEnabled) << std::endl;
 		std::cout << " Assets Definitions: " << getNumberOfAssetDefinitions() << std::endl;
 	}
 
@@ -269,18 +275,13 @@ namespace Project {
 			if (!mActiveScene->init()) {
 				return false;
 			}
-			
-			Plugins::Video::VideoPluginInterface* videoPlugin = mPluginManager->getVideoPlugin();
-			videoPlugin->setDefaultCameraTranslation(mActiveScene->getDefaultCameraTranslation());
-			videoPlugin->setDefaultCameraRotation(mActiveScene->getDefaultCameraRotation());
-			videoPlugin->setCameraMovementSpeed(mActiveScene->getCameraMovementSpeed());
 		}
 		
 		if (!mAssetManager->createAllAssetInstances()) {
 			std::cerr << "Project: Unable to create asset instances." << std::endl;
 			return false;
 		}
-		mPluginManager->populatePhysicsWorld(mAssetManager->getSceneObjectsWithPhysicsObjects());
+		mComponentManager->populatePhysicsWorld(mAssetManager->getSceneObjectsWithPhysicsObjects());
 		return true;
 	}
 	
@@ -288,13 +289,17 @@ namespace Project {
 		return mChaiEnabled;
 	}
 	
-	bool Project::createPluginManager() {
-		if (mPluginManager != NULL) {
-			std::cout << "Project: Destroying existing PluginManager." << std::endl;
-			delete mPluginManager;
+	bool Project::isVulkanEnabled() {
+		return mVulkanEnabled;
+	}
+	
+	bool Project::createComponentManager() {
+		if (mComponentManager != NULL) {
+			std::cout << "Project: Destroying existing ComponentManager." << std::endl;
+			delete mComponentManager;
 		}
-		mPluginManager = new Dream::Plugins::PluginManager(this);
-		return mPluginManager != NULL;
+		mComponentManager = new Dream::Components::ComponentManager(this);
+		return mComponentManager != NULL;
 	}
 	
 	bool Project::createAssetManager() {
@@ -321,35 +326,43 @@ namespace Project {
 	}
 	
 	bool Project::run (){
-		// Create Plugins
-		if(!mPluginManager->createPlugins()){
-			std::cerr << "Project: Unable to create plugins." << std::endl;
+		// Create Components
+		if(!mComponentManager->createComponents()){
+			std::cerr << "Project: Unable to create components." << std::endl;
 			return false;
 		}
+		
 		// Init Scene with Asset Instances
 		if (!loadScene(getStartupScene())) {
 			std::cerr << "Project: Unable to load startup scene." << std::endl;
 			return false;
 		}
+		
+		mComponentManager->setActiveScene(mActiveScene);
 		std::cout << "Project: Starting Scene - "
 		          << getActiveScene()->getName()
 		          << " (" << getActiveScene()->getUUID() << ")" << std::endl;
+		
 		// GameLoop
+		if (mComponentManager->isParallel()) {
+			mComponentManager->startThreads();
+		}
+		
 		while(!mDone) {
-			update();
+			mDone = mComponentManager->isDone();
+			sTime->update();
+			mComponentManager->update();
 			usleep(1000000/60);
+		}
+		
+		if(mComponentManager->isParallel()) {
+			mComponentManager->joinThreads();
 		}
 		return mDone;
 	}
 	
-	void Project::update(void) {
-		sTime->update();
-		mDone = mPluginManager->isDone();
-		mPluginManager->update();
-	}
-	
-	Plugins::PluginManager* Project::getPluginManager() {
-		return mPluginManager;
+	Components::ComponentManager* Project::getComponentManager() {
+		return mComponentManager;
 	}
 	
 	Asset::AssetManager* Project::getAssetManager() {

@@ -20,8 +20,8 @@ file(GLOB_RECURSE _MAIN_SRC "Main/*.h" "Main/*.cpp")
 list(REMOVE_ITEM  _MAIN_SRC "Main/Main.cpp")
 source_group(Main FILES ${_MAIN_SRC})
 
-file(GLOB_RECURSE _PLUGINS_SRC "Plugins/*.h" "Plugins/*.cpp")
-source_group(Plugins FILES ${_PLUGINS_SRC})
+file(GLOB_RECURSE _COMPONENTS_SRC "Components/*.h" "Components/*.cpp")
+source_group(Components FILES ${_COMPONENTS_SRC})
 
 file(GLOB_RECURSE _PROJECT_SRC "Project/*.h" "Project/*.cpp")
 source_group(Project FILES ${_PROJECT_SRC})

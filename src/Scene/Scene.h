@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "SceneObject.h"
+#include "Camera.h"
 #include "../ExternalLibs/JSON/json.hpp"
 #include "../Util/StringUtils.h"
 
@@ -46,6 +47,8 @@ namespace Dream {
 namespace Scene {
 	
 	class Scene {
+	public:
+		static Camera sCamera;
 	private:
 		std::string               mUUID;
 		std::string               mName;
@@ -56,9 +59,6 @@ namespace Scene {
 		bool                      mScriptingEnabled;
 		SceneObject              *mRootSceneObject;
 		std::vector<SceneObject*> mScenegraphVector;
-		std::vector<float>        mDefaultCameraTranslation;
-		std::vector<float>        mDefaultCameraRotation;
-		float                     mCameraMovementSpeed;
 	public:
 		Scene();
 		Scene(nlohmann::json);
@@ -90,12 +90,8 @@ namespace Scene {
 		bool         isScenegraphVectorEmpty();
 		std::vector<SceneObject*> getScenegraphVector();
 		
-		std::vector<float> getDefaultCameraTranslation();
-		std::vector<float> getDefaultCameraRotation();
-		float              getCameraMovementSpeed();
-		
-		void setDefaultCameraTranslation(float,float,float);
-		void setDefaultCameraRotation(float,float,float);
+		void setDefaultCameraTranslation(std::vector<float>);
+		void setDefaultCameraRotation(std::vector<float>);
 		void setCameraMovementSpeed(float);
 		
 	}; // End of Scene

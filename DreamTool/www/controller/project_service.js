@@ -2,13 +2,13 @@ App.service('ProjectService',
     ["Blob","FileSaver","UtilService","ApiService",
      function(Blob, FileSaver, UtilService, ApiService) {
 
-    // Plugin Constants
-    this.PLUGIN_ANIMATION_DREAM  = "dreamAnim";
-    this.PLUGIN_AUDIO_OPENAL     = "openAL";
-    this.PLUGIN_INPUT_GLFW       = "glfwInput"
-    this.PLUGIN_SCRIPTING_CHAI   = "chai";
-    this.PLUGIN_PHYSICS_BULLET2  = "bullet2";
-    this.PLUGIN_VIDEO_OPENGL     = "openGL";
+    // Component Constants
+    this.COMPONENT_ANIMATION_DREAM  = "dreamAnim";
+    this.COMPONENT_AUDIO_OPENAL     = "openAL";
+    this.COMPONENT_INPUT_GLFW       = "glfwInput"
+    this.COMPONENT_SCRIPTING_CHAI   = "chai";
+    this.COMPONENT_PHYSICS_BULLET2  = "bullet2";
+    this.COMPONENT_VIDEO_OPENGL     = "openGL";
 
     // Asset Constants
     this.ASSET_TYPE_NAME_ANIMATION    = "Animation";
@@ -487,29 +487,29 @@ App.service('ProjectService',
         this.project.openGL = openGL;
     };
 
-    this.setSelectedPlugins = function(selectedPlugins) {
+    this.setSelectedComponents = function(selectedComponents) {
       this.project.isModified = true;
       // Animation
-      switch (selectedPlugins.animationPlugin) {
-        case this.PLUGIN_ANIMATION_DREAM:
+      switch (selectedComponents.animationComponent) {
+        case this.COMPONENT_ANIMATION_DREAM:
           this.project.dreamAnim = true;
           break;
       }
       // Audio
-      switch (selectedPlugins.audioPlugin) {
-        case this.PLUGIN_AUDIO_OPENAL:
+      switch (selectedComponents.audioComponent) {
+        case this.COMPONENT_AUDIO_OPENAL:
           this.project.openAL = true;
           break;
       }
       // Input
-      switch (selectedPlugins.inputPlugin) {
-        case this.PLUGIN_INPUT_GLFW:
+      switch (selectedComponents.inputComponent) {
+        case this.COMPONENT_INPUT_GLFW:
           this.project.glfwInput = true;
           break;
       }
       // Scripting
-      switch (selectedPlugins.scriptingPlugin) {
-        case this.PLUGIN_SCRIPTING_CHAI:
+      switch (selectedComponents.scriptingComponent) {
+        case this.COMPONENT_SCRIPTING_CHAI:
           this.project.chai = true;
           break;
         default:
@@ -517,8 +517,8 @@ App.service('ProjectService',
           break;
       }
       // Physics
-      switch (selectedPlugins.physicsPlugin) {
-        case this.PLUGIN_PHYSICS_BULLET2:
+      switch (selectedComponents.physicsComponent) {
+        case this.COMPONENT_PHYSICS_BULLET2:
           this.project.bullet2 = true;
           break;
         default:
@@ -526,41 +526,41 @@ App.service('ProjectService',
           break;
       }
       // Video
-      switch (selectedPlugins.videoPlugin) {
-          case this.PLUGIN_VIDEO_OPENGL:
+      switch (selectedComponents.videoComponent) {
+          case this.COMPONENT_VIDEO_OPENGL:
             this.project.openGL = true;
             break;
       }
     };
 
-    this.getSelectedPlugins = function(callback) {
+    this.getSelectedComponents = function(callback) {
         var retval = {};
 
         // Animation
         if (this.project.dreamAnim) {
-          retval.animationPlugin = this.PLUGIN_ANIMATION_DREAM;
+          retval.animationComponent = this.COMPONENT_ANIMATION_DREAM;
         }
         // Audio
         if (this.project.openAL) {
-          retval.audioPlugin = this.PLUGIN_AUDIO_OPENAL;
+          retval.audioComponent = this.COMPONENT_AUDIO_OPENAL;
         }
         // Input
         if (this.project.glfwInput) {
-          retval.inputPlugin = this.PLUGIN_INPUT_GLFW;
+          retval.inputComponent = this.COMPONENT_INPUT_GLFW;
         }
         // Physics
         if (this.project.bullet2) {
-            retval.physicsPlugin = this.PLUGIN_PHYSICS_BULLET2;
+            retval.physicsComponent = this.COMPONENT_PHYSICS_BULLET2;
         }
         // Scripting
         if (this.project.chai) {
-          retval.scriptingPlugin = this.PLUGIN_SCRIPTING_CHAI;
+          retval.scriptingComponent = this.COMPONENT_SCRIPTING_CHAI;
         }
         // Video
         if (this.project.openGL) {
-          retval.videoPlugin = this.PLUGIN_VIDEO_OPENGL;
+          retval.videoComponent = this.COMPONENT_VIDEO_OPENGL;
         } else if (this.project.vulkan) {
-          retval.videoPlugin = this.PLUGIN_VIDEO_VULKAN;
+          retval.videoComponent = this.COMPONENT_VIDEO_VULKAN;
         }
 
         callback(retval);

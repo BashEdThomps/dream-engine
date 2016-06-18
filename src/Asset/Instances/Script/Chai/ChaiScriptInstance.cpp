@@ -39,15 +39,15 @@ namespace Chai      {
 	void ChaiScriptInstance::initAPIs() {
 		initAssetInstanceAPI();
 		initAssetManagerAPI();
-		initAudioPluginAPI();
+		initAudioComponentAPI();
 		initCameraAPI();
 		initGlfwTimeAPI();
 		initInputEventAPI();
 		initKissFftAPI();
-		initPluginManagerAPI();
+		initComponentManagerAPI();
 		initProjectAPI();
 		initSceneObjectAPI();
-		initVideoPluginAPI();
+		initVideoComponentAPI();
 	}
 	
 	std::string ChaiScriptInstance::getProjectPath() {
@@ -93,7 +93,7 @@ namespace Chai      {
 		#endif
 		mScript->add(chaiscript::user_type<Project::Project>(),            "Project");
 		mScript->add_global(chaiscript::var(Dream::getProject()),          "gProject");
-		mScript->add(chaiscript::fun(&Project::Project::getPluginManager), "getPluginManager");
+		mScript->add(chaiscript::fun(&Project::Project::getComponentManager), "getComponentManager");
 		mScript->add(chaiscript::fun(&Project::Project::getAssetManager),  "getAssetManager");
 	}
 	
@@ -105,40 +105,40 @@ namespace Chai      {
 		mScript->add(chaiscript::fun(&AssetManager::getAssetInstanceByUUID), "getAssetInstanceByUUID");
 	}
 
-	void ChaiScriptInstance::initAudioPluginAPI() {
+	void ChaiScriptInstance::initAudioComponentAPI() {
 		#ifdef VERBOSE
-			std::cout << "ChaiScriptInstance: Init AudioPlugin API" << std::endl;
+			std::cout << "ChaiScriptInstance: Init AudioComponent API" << std::endl;
 		#endif
-		mScript->add(chaiscript::user_type<Plugins::Audio::AudioPluginInterface>(),           "AudioPluginInterface");
-		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::playAudioAsset),  "playAudioAsset");
-		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::pauseAudioAsset), "pauseAudioAsset");
-		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::stopAudioAsset),  "stopAudioAsset");
+		mScript->add(chaiscript::user_type<Components::Audio::AudioComponentInterface>(),           "AudioComponentInterface");
+		mScript->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::playAudioAsset),  "playAudioAsset");
+		mScript->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::pauseAudioAsset), "pauseAudioAsset");
+		mScript->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::stopAudioAsset),  "stopAudioAsset");
 		mScript->add(
-			chaiscript::fun<float,Plugins::Audio::AudioPluginInterface,Asset::AssetInstance*>
-			(&Plugins::Audio::AudioPluginInterface::getSampleOffset),
+			chaiscript::fun<float,Components::Audio::AudioComponentInterface,Asset::AssetInstance*>
+			(&Components::Audio::AudioComponentInterface::getSampleOffset),
 			"getSampleOffset"
 		);
-		mScript->add(chaiscript::fun(&Plugins::Audio::AudioPluginInterface::getAudioBuffer),"getAudioBuffer");
+		mScript->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::getAudioBuffer),"getAudioBuffer");
 	}
 	
-	void ChaiScriptInstance::initPluginManagerAPI() {
+	void ChaiScriptInstance::initComponentManagerAPI() {
 		#ifdef VERBOSE
-			std::cout << "ChaiScriptInstance: Init PluginManager API" << std::endl;
+			std::cout << "ChaiScriptInstance: Init ComponentManager API" << std::endl;
 		#endif
-		mScript->add(chaiscript::user_type<Plugins::PluginManager>(),          "PluginManager");
-		mScript->add(chaiscript::fun(&Plugins::PluginManager::getAudioPlugin), "getAudioPlugin");
+		mScript->add(chaiscript::user_type<Components::ComponentManager>(),          "ComponentManager");
+		mScript->add(chaiscript::fun(&Components::ComponentManager::getAudioComponent), "getAudioComponent");
 	}
 	
 	void ChaiScriptInstance::initGlfwTimeAPI() {
 		#ifdef VERBOSE
 			std::cout << "ChaiScriptInstance: Init GLFWTime API" << std::endl;
 		#endif
-		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::GLFWTime>(),          "GLFWTime");
-		mScript->add_global(chaiscript::var(Project::Project::getTime()),                "gTime");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::update),         "update");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getCurrentTime), "getCurrentTime");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getLastTime),    "getLastTime");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::GLFWTime::getTimeDelta),   "getTimeDelta");
+		mScript->add(chaiscript::user_type<Scene::Time>(),                "Time");
+		mScript->add_global(chaiscript::var(Project::Project::getTime()), "gTime");
+		mScript->add(chaiscript::fun(&Scene::Time::update),               "update");
+		mScript->add(chaiscript::fun(&Scene::Time::getCurrentTime),       "getCurrentTime");
+		mScript->add(chaiscript::fun(&Scene::Time::getLastTime),          "getLastTime");
+		mScript->add(chaiscript::fun(&Scene::Time::getTimeDelta),         "getTimeDelta");
 	}
 	
 	void ChaiScriptInstance::initCameraAPI() {
@@ -146,22 +146,22 @@ namespace Chai      {
 			std::cout << "ChaiScriptInstance: Init Camera API" << std::endl;
 		#endif
 		// Class Definition
-		mScript->add(chaiscript::user_type<Plugins::Video::OpenGL::Camera>(),"Camera");
+		mScript->add(chaiscript::user_type<Scene::Camera>(),"Camera");
 		// Methods
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processMouseScroll),   "processMouseScroll");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processKeyboard),      "processKeyboard");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::processMouseMovement), "processMouseMovement");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::getMouseSensitivity),  "getMouseSensitivity");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::setMouseSensitivity),  "setMouseSensitivity");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::getMovementSpeed),     "getMovementSpeed");
-		mScript->add(chaiscript::fun(&Plugins::Video::OpenGL::Camera::setMovementSpeed),     "setMovementSpeed");
+		mScript->add(chaiscript::fun(&Scene::Camera::processMouseScroll),   "processMouseScroll");
+		mScript->add(chaiscript::fun(&Scene::Camera::processKeyboard),      "processKeyboard");
+		mScript->add(chaiscript::fun(&Scene::Camera::processMouseMovement), "processMouseMovement");
+		mScript->add(chaiscript::fun(&Scene::Camera::getMouseSensitivity),  "getMouseSensitivity");
+		mScript->add(chaiscript::fun(&Scene::Camera::setMouseSensitivity),  "setMouseSensitivity");
+		mScript->add(chaiscript::fun(&Scene::Camera::getMovementSpeed),     "getMovementSpeed");
+		mScript->add(chaiscript::fun(&Scene::Camera::setMovementSpeed),     "setMovementSpeed");
 		// Global Variables
 		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_FORWARD),  "CAMERA_MOVEMENT_FORWARD");
 		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_BACKWARD), "CAMERA_MOVEMENT_BACKWARD");
 		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_LEFT),     "CAMERA_MOVEMENT_LEFT");
 		mScript->add_global(chaiscript::const_var(CAMERA_MOVEMENT_RIGHT),    "CAMERA_MOVEMENT_RIGHT");
 		// Camera Instance
-		mScript->add_global(chaiscript::var(&Plugins::Video::OpenGL::OGLVideo::sCamera),"GLCamera");
+		mScript->add_global(chaiscript::var(&Scene::Scene::sCamera),"gCamera");
 		
 	}
 	
@@ -170,24 +170,24 @@ namespace Chai      {
 			std::cout << "ChaiScriptInstance: Init Input Event API" << std::endl;
 		#endif
 		// Class Definition
-		mScript->add(chaiscript::user_type<Plugins::Input::InputEvent>(),"InputEvent");
+		mScript->add(chaiscript::user_type<Components::Input::InputEvent>(),"InputEvent");
 		// Methods
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getSource),"getSource");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getSource),"getSource");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXPosition),"getXPosition");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYPosition),"getYPosition");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getXPosition),"getXPosition");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getYPosition),"getYPosition");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXPositionOffset),"getXPositionOffset");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYPositionOffset),"getYPositionOffset");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getXPositionOffset),"getXPositionOffset");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getYPositionOffset),"getYPositionOffset");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getXScrollOffset),"getXScrollOffset");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getYScrollOffset),"getYScrollOffset");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getXScrollOffset),"getXScrollOffset");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getYScrollOffset),"getYScrollOffset");
 		
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getKey),      "getKey");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getMods),     "getMods");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getAction),   "getAction");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getButton),   "getButton");
-		mScript->add(chaiscript::fun(&Plugins::Input::InputEvent::getScancode), "getScancode");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getKey),      "getKey");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getMods),     "getMods");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getAction),   "getAction");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getButton),   "getButton");
+		mScript->add(chaiscript::fun(&Components::Input::InputEvent::getScancode), "getScancode");
 		// Constants
 		mScript->add_global(chaiscript::const_var(INPUT_TYPE_JOYSTICK),       "INPUT_TYPE_JOYSTICK");
 		mScript->add_global(chaiscript::const_var(INPUT_TYPE_KEYBOARD),       "INPUT_TYPE_KEYBOARD");
@@ -242,21 +242,21 @@ namespace Chai      {
 		updateFunction();
 	}
 	
-	void ChaiScriptInstance::processInputs(std::vector<Plugins::Input::InputEvent> inputEventVector) {
+	void ChaiScriptInstance::processInputs(std::vector<Components::Input::InputEvent> inputEventVector) {
     #ifdef VERBOSE
     	std::cout << "ChaiScriptInstance: Processing Input Events" << std::endl;
     #endif
-		for(std::vector<Plugins::Input::InputEvent>::iterator it = inputEventVector.begin(); it != inputEventVector.end(); it++) {
-			auto processFunction = mScript->eval<std::function<void(Plugins::Input::InputEvent)>>("onInputEvent");
+		for(std::vector<Components::Input::InputEvent>::iterator it = inputEventVector.begin(); it != inputEventVector.end(); it++) {
+			auto processFunction = mScript->eval<std::function<void(Components::Input::InputEvent)>>("onInputEvent");
 			processFunction(*it);
-			Plugins::Input::InputEvent::LastEvent = (*it);
+			Components::Input::InputEvent::LastEvent = (*it);
 		}
 	}
 	
-	void ChaiScriptInstance::initVideoPluginAPI() {
-		mScript->add(chaiscript::user_type<Plugins::Video::VideoPluginInterface>(),            "VideoPlugin");
-		mScript->add(chaiscript::fun(&Plugins::Video::VideoPluginInterface::closeWindow),      "closeWindow");
-		mScript->add(chaiscript::fun(&Plugins::Video::VideoPluginInterface::setCursorEnabled), "setCursorEnabled");
+	void ChaiScriptInstance::initVideoComponentAPI() {
+		mScript->add(chaiscript::user_type<Components::Video::VideoComponentInterface>(),            "VideoComponent");
+		mScript->add(chaiscript::fun(&Components::Video::VideoComponentInterface::closeWindow),      "closeWindow");
+		mScript->add(chaiscript::fun(&Components::Video::VideoComponentInterface::setCursorEnabled), "setCursorEnabled");
 	}
 	
 } // End of ChaiScript
