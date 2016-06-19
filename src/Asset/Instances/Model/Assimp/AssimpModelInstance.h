@@ -57,6 +57,8 @@ namespace Assimp     {
 		bool load(std::string);
 		void draw(Shader::ShaderInstance*);
 		bool checkGLError(int);
+		
+		void loadExtraAttributes(nlohmann::json);
 	}; // End of ObjModel
 	
 } // End of Assimp

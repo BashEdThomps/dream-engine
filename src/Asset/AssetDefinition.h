@@ -51,21 +51,14 @@
 #define ASSET_DEF_FORMAT_MODEL_ASSIMP    "assimp"
 #define ASSET_DEF_FORMAT_AUDIO_WAV       "wav"
 #define ASSET_DEF_FORMAT_AUDIO_OGG       "ogg"
-#define ASSET_DEF_FORMAT_ANIMATION_DREAM "dreamAnimation"
+#define ASSET_DEF_FORMAT_ANIMATION_DREAM "dream"
 
-// Collision Shape Attributes
-
-#define ASSET_ATTR_MASS     "mass"
-#define ASSET_ATTR_MARGIN   "margin"
-#define ASSET_ATTR_RADIUS   "radius"
-#define ASSET_ATTR_NORMAL   "normal"
-#define ASSET_ATTR_CONSTANT "constant"
 #define ASSET_ATTR_X        "x"
 #define ASSET_ATTR_Y        "y"
 #define ASSET_ATTR_Z        "z"
-#define ASSET_ATTR_NORMAL_X "normalX"
-#define ASSET_ATTR_NORMAL_Y "normalY"
-#define ASSET_ATTR_NORMAL_Z "normalZ"
+
+
+
 //#define ASSET_ATTR_ ""
 
 namespace Dream {
@@ -73,8 +66,8 @@ namespace Asset {
 	
 	class AssetDefinition {
 		std::map<std::string,std::string> mAttributes;
+		nlohmann::json mJson;
 	public:
-		AssetDefinition(void);
 		AssetDefinition(nlohmann::json);
 		~AssetDefinition(void);
 		
@@ -119,9 +112,8 @@ namespace Asset {
 		
 		std::string getAssetPath();
 		
-		void loadMetadata(nlohmann::json);
-		void loadPhysicsObjectAttributes(nlohmann::json);
-		
+		void loadMetadata();
+		nlohmann::json getJson();
 		void showStatus();
 	}; // End of AssetDefinition
 	

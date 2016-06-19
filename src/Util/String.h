@@ -15,28 +15,24 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "StringUtils.h"
+#ifndef STRINGUTILS_H
+#define STRINGUTILS_H
+
+#include <iostream>
+#include <vector>
+#include <sstream>
 
 namespace Dream {
-	namespace Util {
+namespace Util {
+	class String {
+	public:
+		String(void);
+		~String(void);
+		static std::string indent(int);
+		static std::string boolToYesNo(bool);
+		static std::string floatVectorToString(std::vector<float>);
+	}; // End of StringUtils
+}    // End Util
+}      // End of Dream
 
-		StringUtils::StringUtils(void) {
-		}
-
-		StringUtils::~StringUtils(void) {
-		}
-
-		std::string StringUtils::indent(int level) {
-			std::string retval = "";
-			for (int i=0;i<level;i++) {
-				retval += "  ";
-			}
-			retval += "* ";
-			return retval;
-		}
-		
-		std::string StringUtils::boolToYesNo(bool value) {
-			return (value ? "Yes" : "No");
-		}
-	} // End Util
-}   // End of Dream
+#endif // End of STRINGUTILS_H

@@ -114,6 +114,8 @@ namespace Shader     {
 		glUseProgram(mShaderProgram);
 	}
 	
+	void ShaderInstance::loadExtraAttributes(nlohmann::json json) {}
+	
 } // End of Shader
 } // End of Instance
 } // End of Asset

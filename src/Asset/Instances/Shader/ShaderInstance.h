@@ -44,7 +44,7 @@ namespace Shader     {
 			bool load(std::string);
 			void use();
 			GLuint getShaderProgram();
-		
+			void loadExtraAttributes(nlohmann::json);
     }; // End of ShaderInstance
     
 } // End of Shader

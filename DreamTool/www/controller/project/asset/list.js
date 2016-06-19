@@ -18,6 +18,10 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       $scope.assetTypesObject = assetTypesObj;
     });
 
+    ProjectService.getFontAssetFormats (function(fontFormats) {
+        $scope.assetFormats.font = fontFormats;
+    });
+
     ProjectService.getAudioAssetFormats (function(audioFormats) {
         $scope.assetFormats.audio = audioFormats;
     });
@@ -44,6 +48,12 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
   $scope.isAssetTypeAnimation = function() {
     if (!$scope.currentAsset) return false;
     return $scope.currentAsset.type == ProjectService.ASSET_TYPE_ANIMATION;
+  };
+
+
+  $scope.isAssetTypeFont = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_FONT;
   };
 
   $scope.isAssetTypeAudio = function() {

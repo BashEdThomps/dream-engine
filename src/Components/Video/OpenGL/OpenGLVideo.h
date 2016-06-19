@@ -1,5 +1,5 @@
 /*
-* OpenGLVideo
+* Dream::Components::Video::OpenGL::OpenGLVideo
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,6 @@ namespace OpenGL {
 		void setupWindowEventHandlers();
 		bool isWindowShouldCloseFlagSet();
 		GLFWwindow* getWindow();
-		
 		
 		void closeWindow();
 		void setCursorEnabled(bool);

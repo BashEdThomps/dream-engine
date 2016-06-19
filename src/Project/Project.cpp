@@ -113,11 +113,11 @@ namespace Project {
 		std::cout << "             Author: " << mAuthor << std::endl;
 		std::cout << "        Description: " << mDescription << std::endl;
 		std::cout << "      Startup Scene: " << getStartupSceneUUID() << std::endl;
-		std::cout << "       Chai Enabled: " << Util::StringUtils::boolToYesNo(mChaiEnabled) << std::endl;
-		std::cout << "     OpenAL Enabled: " << Util::StringUtils::boolToYesNo(mOpenALEnabled) << std::endl;
-		std::cout << "    Bullet2 Enabled: " << Util::StringUtils::boolToYesNo(mBullet2Enabled) << std::endl;
-		std::cout << "     OpenGL Enabled: " << Util::StringUtils::boolToYesNo(mOpenGLEnabled) << std::endl;
-		std::cout << "     Vulkan Enabled: " << Util::StringUtils::boolToYesNo(mVulkanEnabled) << std::endl;
+		std::cout << "       Chai Enabled: " << Util::String::boolToYesNo(mChaiEnabled) << std::endl;
+		std::cout << "     OpenAL Enabled: " << Util::String::boolToYesNo(mOpenALEnabled) << std::endl;
+		std::cout << "    Bullet2 Enabled: " << Util::String::boolToYesNo(mBullet2Enabled) << std::endl;
+		std::cout << "     OpenGL Enabled: " << Util::String::boolToYesNo(mOpenGLEnabled) << std::endl;
+		std::cout << "     Vulkan Enabled: " << Util::String::boolToYesNo(mVulkanEnabled) << std::endl;
 		std::cout << " Assets Definitions: " << getNumberOfAssetDefinitions() << std::endl;
 	}
 

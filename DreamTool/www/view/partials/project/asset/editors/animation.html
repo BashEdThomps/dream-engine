@@ -5,7 +5,6 @@
       <div class="panel-heading text-center">Key Frames</div>
       <table class="table table-condensed table-stripted table-hover">
         <thead>
-          <th></th>
           <th>Name</th>
           <th>Start</th>
           <th>End</th>
@@ -13,12 +12,7 @@
           <th>Remove</th>
         </thead>
         <tbody>
-          <tr ng-repeat="keyFrame in asset.keyframes">
-            <td>
-              <button ng-click="onEditKeyFrameButtonClicked(keyFrame.uuid)" class="btn btn-sm btn-default">
-                <span class="glyphicon glyphicon-edit"></span>
-              </button>
-            </td>
+          <tr ng-repeat="keyFrame in asset.keyframes" ng-click="onEditKeyFrameButtonClicked(keyFrame.uuid)"§>
             <td>{{keyFrame.name}}</td>
             <td>0:00.000</td>
             <td>0:00.000</td>
@@ -46,8 +40,8 @@
           <td><input class="form-control input-sm" type="text" ng-model="selectedKeyFrame.name"/></td>
         </tr>
         <tr>
-          <td>Duration</td>
-          <td><input type="number" class="form-control input-sm" ng-model="selectedKeyFrame.duration"/></td>
+          <td>Start Time (ms)</td>
+          <td><input type="number" class="form-control input-sm" ng-model="selectedKeyFrame.startTime"/></td>
         </tr>
         <tr>
           <td>Translation</td>
@@ -94,6 +88,15 @@
               <div class="col-md-4">
                 <input ng-change="modified()" ng-model="selectedKeyFrame.scale.z" class="form-control input-sm" type="number"/>
               </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Wrap to Beginning</td>
+          <td>
+            <div class="checkbox checkbox-info">
+              <input type="checkbox" id="warpAnimation" ng-change="modified()" ng-model="selectedKeyFrame.wrap" />
+              <label></label>
             </div>
           </td>
         </tr>

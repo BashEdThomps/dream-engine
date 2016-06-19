@@ -49,6 +49,8 @@ namespace Asset {
 		std::string getNameAndUUIDString();
 		
 		virtual bool load(std::string) = 0;
+		virtual void loadExtraAttributes(nlohmann::json) = 0;
+		
 		void setParentSceneObject(Scene::SceneObject*);
 		Scene::SceneObject* getParentSceneObject();
 	}; // End of AssetInstance

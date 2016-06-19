@@ -23,7 +23,7 @@
 #include "../ExternalLibs/JSON/json.hpp"
 #include "../Scene/Scene.h"
 #include "../Asset/AssetDefinition.h"
-#include "../Util/StringUtils.h"
+#include "../Util/String.h"
 #include "../Asset/AssetManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Scene/Time.h"

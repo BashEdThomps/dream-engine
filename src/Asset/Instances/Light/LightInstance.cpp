@@ -5,13 +5,8 @@ namespace Asset {
 namespace Instances {
 namespace Light {
 	
-	LightInstance::LightInstance(AssetDefinition* definition) : AssetInstance(definition) {
-		
-	}
-	
-	LightInstance::~LightInstance() {
-		
-	}
+	LightInstance::LightInstance(AssetDefinition* definition) : AssetInstance(definition) {}
+	LightInstance::~LightInstance() {}
 	
 	bool LightInstance::load(std::string projectDir) {
 		return false;

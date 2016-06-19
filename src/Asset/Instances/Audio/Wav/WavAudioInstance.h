@@ -42,6 +42,7 @@ namespace Wav       {
 		~WavAudioInstance();
 		bool load(std::string);
 		int  getFileSize(FILE* inFile);
+		void loadExtraAttributes(nlohmann::json);
 	}; // End WavAudioInstance
 	
 } // End of Wav

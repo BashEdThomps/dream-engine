@@ -43,6 +43,8 @@ namespace Asset {
 	void AssetInstance::setParentSceneObject(Scene::SceneObject *parent) {
 		mParent = parent;
 	}
+	
+	
 
 } // End of Asset
 } // End of Dream

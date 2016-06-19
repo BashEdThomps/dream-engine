@@ -3,6 +3,17 @@
 
 #include "../../../AssetInstance.h"
 #include <btBulletDynamicsCommon.h>
+// Collision Shape Attributes
+
+#define ASSET_ATTR_MASS     "mass"
+#define ASSET_ATTR_MARGIN   "margin"
+#define ASSET_ATTR_RADIUS   "radius"
+#define ASSET_ATTR_NORMAL   "normal"
+#define ASSET_ATTR_CONSTANT "constant"
+
+#define ASSET_ATTR_NORMAL_X "normalX"
+#define ASSET_ATTR_NORMAL_Y "normalY"
+#define ASSET_ATTR_NORMAL_Z "normalZ"
 
 #define COLLISION_SHAPE_SPHERE                   "btShpereShape"
 #define COLLISION_SHAPE_BOX                      "btBoxShape"
@@ -37,6 +48,8 @@ namespace Bullet    {
 		btCollisionShape* getCollisionShape();
 		btRigidBody*      getRigidBody();
 		void              getWorldTransform(btTransform&);
+	private:
+		void loadExtraAttributes(nlohmann::json);
 	}; // End of PhysicsObjectInstance
 	
 } // End of Bullet

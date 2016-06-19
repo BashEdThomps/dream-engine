@@ -20,69 +20,41 @@
 namespace Dream {
 namespace Asset {
 	
-	AssetDefinition::AssetDefinition(void) {}
-	AssetDefinition::~AssetDefinition(void) {}
-
 	AssetDefinition::AssetDefinition(nlohmann::json json) {
-		loadMetadata(json);
-		if (isTypePhysicsObject()) {
-			loadPhysicsObjectAttributes(json);
-		}
+		mJson = json;
+		loadMetadata();
 		showStatus();
 	}
 	
-	void AssetDefinition::loadMetadata(nlohmann::json json) {
+	AssetDefinition::~AssetDefinition(void) {}
+	
+	void AssetDefinition::loadMetadata() {
 		// UUID
-		if (json[ASSET_UUID].is_null()) {
+		if (mJson[ASSET_UUID].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL UUID." << std::endl;;
 		} else {
-			setUUID(json[ASSET_UUID]);
+			setUUID(mJson[ASSET_UUID]);
 		}
 		// Name
-		if (json[ASSET_NAME].is_null()) {
+		if (mJson[ASSET_NAME].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Name." << std::endl;;
 		} else {
-			setName(json[ASSET_NAME]);
+			setName(mJson[ASSET_NAME]);
 		}
 		// Type
-		if (json[ASSET_TYPE].is_null()) {
+		if (mJson[ASSET_TYPE].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Type" << std::endl;;
 		} else {
-			setType(json[ASSET_TYPE]);
+			setType(mJson[ASSET_TYPE]);
 		}
 		// Format
-		if (json[ASSET_FORMAT].is_null()) {
+		if (mJson[ASSET_FORMAT].is_null()) {
 			std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Format" << std::endl;;
 		} else {
-			setFormat(json[ASSET_FORMAT]);
+			setFormat(mJson[ASSET_FORMAT]);
 		}
 	}
-	
-	void AssetDefinition::loadPhysicsObjectAttributes(nlohmann::json json) {
-		// Margin
-		if (!json[ASSET_ATTR_MARGIN].is_null() && json[ASSET_ATTR_MARGIN].is_number()) {
-			addAttribute(ASSET_ATTR_MARGIN, std::to_string((float)json[ASSET_ATTR_MARGIN]));
-		}
-		// Mass
-		if (!json[ASSET_ATTR_MASS].is_null() && json[ASSET_ATTR_MASS].is_number()) {
-			addAttribute(ASSET_ATTR_MASS, std::to_string((float)json[ASSET_ATTR_MASS]));
-		}
-		// Radius
-		if (!json[ASSET_ATTR_RADIUS].is_null() && json[ASSET_ATTR_RADIUS].is_number()) {
-			addAttribute(ASSET_ATTR_RADIUS, std::to_string((float)json[ASSET_ATTR_RADIUS]));
-		}
-		// Normal
-		if (!json[ASSET_ATTR_NORMAL].is_null()) {
-			nlohmann::json normal = json[ASSET_ATTR_NORMAL];
-			addAttribute(ASSET_ATTR_NORMAL_X, std::to_string((float)normal[ASSET_ATTR_X]));
-			addAttribute(ASSET_ATTR_NORMAL_Y, std::to_string((float)normal[ASSET_ATTR_Y]));
-			addAttribute(ASSET_ATTR_NORMAL_Z, std::to_string((float)normal[ASSET_ATTR_Z]));
-		}
-		// Constant
-		if (!json[ASSET_ATTR_CONSTANT].is_null() && json[ASSET_ATTR_CONSTANT].is_number()) {
-			addAttribute(ASSET_ATTR_CONSTANT, std::to_string((float)json[ASSET_ATTR_CONSTANT]));
-		}
-	}
+
 
 	std::pair<std::string,std::string> AssetDefinition::mapPair(std::string key, std::string value) {
 		return std::pair<std::string,std::string>(key,value);
@@ -236,13 +208,17 @@ namespace Asset {
 		           << getFormat();
 		return pathStream.str();
 	}
-	
+
 	void AssetDefinition::showStatus() {
 		std::cout << "AssetDefinition:" << std::endl;
 		for (const auto& any : mAttributes) {
 			std::string value = any.second;
 			std::cout << "\t" << any.first << " : " << value << std::endl;
 		}
+	}
+	
+	nlohmann::json AssetDefinition::getJson() {
+		return mJson;
 	}
 	
 } // End of AssetDefinition

@@ -1,5 +1,6 @@
 #include "KeyFrame.h"
 #include "AnimationInstance.h"
+#include "../../../../Util/String.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -7,69 +8,68 @@ namespace Instances {
 namespace Animation {
 namespace Dream     {
 	
-	KeyFrame::KeyFrame(long startTimeMS) {
-	  mStartTtmeMS = startTimeMS;
-	}
-
+	KeyFrame::KeyFrame() {}
 	KeyFrame::~KeyFrame() {}
 
 	bool KeyFrame::getWrap() {
-	    return mWrap;
+		return mWrap;
 	}
 	
 	long KeyFrame::getStartTimeMS() {
-		return mStartTtmeMS;
+		return mStartTimeMS;
 	}
 	
 	std::vector<Frame*> KeyFrame::getPlaybackFrames() {
 		return mPlaybackFrames;
 	}
 	
-	void KeyFrame::generateFrames(KeyFrame* toKeyFrame) {
+	void KeyFrame::generatePlaybackFrames(KeyFrame* toKeyFrame) {
+		std::cout <<"KeyFrame: Generating Playback Frames from " << mName << " to " << toKeyFrame->getName() << std::endl;
 		long keyFrameDurationMS = toKeyFrame->getStartTimeMS() - getStartTimeMS();
 		long numFrames = (keyFrameDurationMS/1000.0f) * AnimationInstance::getFramesPerSecond();
 		
 		std::vector<float> toTranslation     = toKeyFrame->getTranslation();
 		std::vector<float> toTranslationStep = std::vector<float>(3);
-		toTranslationStep.push_back((mTranslation[0] - toTranslation[0]) / numFrames);
-		toTranslationStep.push_back((mTranslation[1] - toTranslation[1]) / numFrames);
-		toTranslationStep.push_back((mTranslation[2] - toTranslation[2]) / numFrames);
+		toTranslationStep[0] = ((mTranslation[0] - toTranslation[0]) / numFrames);
+		toTranslationStep[1] = ((mTranslation[1] - toTranslation[1]) / numFrames);
+		toTranslationStep[2] = ((mTranslation[2] - toTranslation[2]) / numFrames);
 		
 		std::vector<float> toScale     = toKeyFrame->getScale();
 		std::vector<float> toScaleStep = std::vector<float>(3);
-		toScaleStep.push_back((mScale[0] - toScale[0]) / numFrames);
-		toScaleStep.push_back((mScale[1] - toScale[1]) / numFrames);
-		toScaleStep.push_back((mScale[2] - toScale[2]) / numFrames);
+		toScaleStep[0] = ((mScale[0] - toScale[0]) / numFrames);
+		toScaleStep[1] = ((mScale[1] - toScale[1]) / numFrames);
+		toScaleStep[2] = ((mScale[2] - toScale[2]) / numFrames);
 		
 		std::vector<float> toRotation     = toKeyFrame->getRotation();
 		std::vector<float> toRotationStep = std::vector<float>(3);
-		toRotation.push_back((mRotation[0] - toRotation[0]) / numFrames);
-		toRotation.push_back((mRotation[1] - toRotation[1]) / numFrames);
-		toRotation.push_back((mRotation[2] - toRotation[2]) / numFrames);
+		toRotation[0] = ((mRotation[0] - toRotation[0]) / numFrames);
+		toRotation[1] = ((mRotation[1] - toRotation[1]) / numFrames);
+		toRotation[2] = ((mRotation[2] - toRotation[2]) / numFrames);
 		
 		
 		for (int frameIndex = 0; frameIndex < numFrames;frameIndex++) {
 			Frame *nextFrame = new Frame();
 			
 			std::vector<float> nextFrameTranslation = std::vector<float>(3);
-			nextFrameTranslation.push_back(toTranslationStep[0]*frameIndex);
-			nextFrameTranslation.push_back(toTranslationStep[1]*frameIndex);
-			nextFrameTranslation.push_back(toTranslationStep[2]*frameIndex);
+			nextFrameTranslation[0] = (toTranslationStep[0]*frameIndex);
+			nextFrameTranslation[1] = (toTranslationStep[1]*frameIndex);
+			nextFrameTranslation[2] = (toTranslationStep[2]*frameIndex);
 			nextFrame->setTranslation(nextFrameTranslation);
 			
 			std::vector<float> nextFrameRotation = std::vector<float>(3);
-			nextFrameRotation.push_back(toRotationStep[0]*frameIndex);
-			nextFrameRotation.push_back(toRotationStep[1]*frameIndex);
-			nextFrameRotation.push_back(toRotationStep[2]*frameIndex);
+			nextFrameRotation[0] = (toRotationStep[0]*frameIndex);
+			nextFrameRotation[1] = (toRotationStep[1]*frameIndex);
+			nextFrameRotation[2] = (toRotationStep[2]*frameIndex);
 			nextFrame->setRotation(nextFrameRotation);
 			
 			std::vector<float> nextFrameScale = std::vector<float>(3);
-			nextFrameScale.push_back(toScaleStep[0]*frameIndex);
-			nextFrameScale.push_back(toScaleStep[1]*frameIndex);
-			nextFrameScale.push_back(toScaleStep[2]*frameIndex);
+			nextFrameScale[0] = (toScaleStep[0]*frameIndex);
+			nextFrameScale[1] = (toScaleStep[1]*frameIndex);
+			nextFrameScale[2] = (toScaleStep[2]*frameIndex);
 			nextFrame->setScale(nextFrameScale);
 			
 			addPlaybackFrame(nextFrame);
+			//nextFrame->showStatus();
 		}
 	}
 	
@@ -99,6 +99,41 @@ namespace Dream     {
 	
 	void KeyFrame::setTranslation(std::vector<float> translation) {
 		mTranslation = translation;
+	}
+	
+	void KeyFrame::setWrap(bool wrap) {
+		mWrap = wrap;
+	}
+	
+	void KeyFrame::setStartTimeMS(long startTime) {
+		mStartTimeMS = startTime;
+	}
+	
+	std::string KeyFrame::getName() {
+		return mName;
+	}
+	
+	void KeyFrame::setName(std::string name) {
+		mName = name;
+	}
+	
+	std::string KeyFrame::getUUID(){
+		return mUUID;
+	}
+	
+	void KeyFrame::setUUID(std::string uuid) {
+		mUUID = uuid;
+	}
+	
+	void KeyFrame::showStatus() {
+		std::cout << "KeyFrame" << std::endl
+		          << "\t       UUID: " << mUUID << std::endl
+		          << "\t       Name: " << mName << std::endl
+		          << "\tTranslation: " << Util::String::floatVectorToString(mTranslation)<< std::endl
+		          << "\t   Rotation: " << Util::String::floatVectorToString(mRotation)<< std::endl
+		          << "\t      Scale: " << Util::String::floatVectorToString(mScale) << std::endl
+		          << "\t Start Time: " << mStartTimeMS << std::endl
+		          << "\t       Wrap: " << Util::String::boolToYesNo(mWrap) << std::endl;
 	}
 	
 } // End of Dream

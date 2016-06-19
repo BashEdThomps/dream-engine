@@ -87,6 +87,8 @@ namespace Ogg       {
 		return true;
 	}
 	
+	void OggAudioInstance::loadExtraAttributes(nlohmann::json json) {}
+	
 } // End of Ogg
 } // End of Audio
 } // End of Instance

@@ -10,18 +10,31 @@ Dream is a Modular 3D Multimedia Engine.
 Dream allows you to implement modules for your favorite tech. A module may be an interface to a graphics library, input device, scripting runtime or other fancy piece of I/O tech. Those listed below are included as part of Dream.
 
 * **Animation**
-    * DreamAnimation
+    * Dream (Linear Interpolated KeyFrame Animation)
 * **Audio**
     * OpenAL
 * **Graphics**
     * OpenGL (GLFW)
-    * Vulkan (In the Future)
+    * Vulkan (Future)
 * **Input**
     * From GLFW
 * **Physics**
     * Bullet2
 * **Scripting**
     * ChaiScript
+
+### Build Dependencies
+* ALUT
+* Assimp
+* Bullet2
+* ChaiScript
+* OggVorbis
+* OpenAL
+* OpenGL
+  * GLEW
+  * GLFW
+  * GLM
+* SOIL
 
 ### Project Files
 

@@ -116,7 +116,7 @@ namespace Asset {
 		std::cout << "AssetManager: Creating Physics Object Asset Instance." << std::endl;
 		AssetInstance* retval = new Instances::Physics::Bullet::PhysicsObjectInstance(definition);
 		
-		if (sceneObject) {
+		if (sceneObject && retval) {
 			sceneObject->setPhysicsObjectAssetInstance(retval);
 			mSceneObjectsWithPhysicsObjects.push_back(sceneObject);
 		}
@@ -131,7 +131,7 @@ namespace Asset {
 			retval = new Instances::Animation::Dream::AnimationInstance(definition);
 		}
 		
-		if (sceneObject) {
+		if (sceneObject && retval) {
 			sceneObject->setAnimationAssetInstance(retval);
 		}
 		return retval;
@@ -147,7 +147,7 @@ namespace Asset {
 			retval = new Instances::Audio::Wav::WavAudioInstance(definition);
 		}
 		
-		if (sceneObject) {
+		if (sceneObject && retval) {
 			sceneObject->setAudioAssetInstance(retval);
 		}
 		return retval;
@@ -161,7 +161,7 @@ namespace Asset {
 			retval = new Instances::Model::Assimp::AssimpModelInstance(definition);
 		}
 	
-		if (sceneObject) {
+		if (sceneObject && retval) {
 			sceneObject->setModelAssetInstance(retval);
 		}
 		
@@ -178,7 +178,7 @@ namespace Asset {
 			retval = newScript;
 		}
 	
-		if (sceneObject) {
+		if (sceneObject && retval) {
 			sceneObject->setScriptAssetInstance(retval);
 		}
 		
@@ -189,7 +189,7 @@ namespace Asset {
 		std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
 		AssetInstance* retval = NULL;
 		retval = new Instances::Shader::ShaderInstance(definition);
-		if (sceneObject) {
+		if (sceneObject && retval) {
 			sceneObject->setShaderAssetInstance(retval);
 		}
 		return retval;
@@ -204,7 +204,7 @@ namespace Asset {
 		AssetInstance* retval = NULL;
 		retval = new Instances::Light::LightInstance(definition);
 		
-		if (sceneObject) {
+		if (sceneObject && retval) {
 			sceneObject->setLightAssetInstance(retval);
 		}
 		return retval;

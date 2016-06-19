@@ -204,6 +204,8 @@ namespace Assimp     {
 		return wasError;
 	}
 	
+	void AssimpModelInstance::loadExtraAttributes(nlohmann::json json) {}
+	
 } // End of Assimp
 } // End of Model
 } // End of Instance

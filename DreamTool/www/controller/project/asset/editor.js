@@ -243,7 +243,7 @@ App.controller("ProjectAssetEditor",
     };
 
     $scope.onAddKeyFrameButtonClicked = function() {
-      var newKeyFrame = ProjectService.createDreamAnimationKeyFrame();
+      var newKeyFrame = ProjectService.createDreamAnimationKeyFrame($scope.asset.keyframes.length+1);
       if (!$scope.asset.keyframes) {
           $scope.asset.keyframes = [];
       }

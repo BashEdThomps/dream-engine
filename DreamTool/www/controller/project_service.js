@@ -2,19 +2,26 @@ App.service('ProjectService',
     ["Blob","FileSaver","UtilService","ApiService",
      function(Blob, FileSaver, UtilService, ApiService) {
 
-    // Component Constants
+    // Component Constants -----------------------------------------------------
+
     this.COMPONENT_ANIMATION_DREAM  = "dreamAnim";
     this.COMPONENT_AUDIO_OPENAL     = "openAL";
     this.COMPONENT_INPUT_GLFW       = "glfwInput"
     this.COMPONENT_SCRIPTING_CHAI   = "chai";
     this.COMPONENT_PHYSICS_BULLET2  = "bullet2";
     this.COMPONENT_VIDEO_OPENGL     = "openGL";
+    this.COMPONENT_VIDEO_VULKAN     = "vulkan";
 
-    // Asset Constants
+    // Asset Constants ---------------------------------------------------------
+
+    // Animation
+
     this.ASSET_TYPE_NAME_ANIMATION    = "Animation";
     this.ASSET_TYPE_ANIMATION         = "animation";
     this.ASSET_FORMAT_NAME_DREAM      = "Dream Animation";
     this.ASSET_FORMAT_ANIMATION_DREAM = "dream";
+
+    // Audio
 
     this.ASSET_TYPE_NAME_AUDIO  = "Audio";
     this.ASSET_TYPE_AUDIO       = "audio";
@@ -22,9 +29,19 @@ App.service('ProjectService',
     this.ASSET_FORMAT_AUDIO_OGG = "ogg";
     this.ASSET_FORMAT_NAME_WAV  = "Wave File";
     this.ASSET_FORMAT_AUDIO_WAV = "wav";
+    // Font
+    this.ASSET_TYPE_NAME_FONT       = "Font";
+    this.ASSET_TYPE_FONT            = "font";
+    this.ASSET_FORMAT_NAME_TRUETYPE = "TrueType";
+    this.ASSET_FORMAT_FONT_TRUETYPE = "ttf";
+    this.ASSET_FORMAT_NAME_WOFF     = "WOFF";
+    this.ASSET_FORMAT_FONT_WOFF     = "woff";
 
-    this.ASSET_TYPE_LIGHT = "light";
+    // Light
+    this.ASSET_TYPE_LIGHT      = "light";
     this.ASSET_TYPE_NAME_LIGHT = "Light";
+
+    // Physics
 
     this.ASSET_TYPE_NAME_PHYSICS_OBJECT = "Physics Object";
     this.ASSET_TYPE_PHYSICS_OBJECT      = "physicsObject";
@@ -54,15 +71,21 @@ App.service('ProjectService',
     this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_COMPOUND = "Compound";
     this.ASSET_FORMAT_PHYSICS_OBJECT_COMPOUND = "btCompoundShape";
 
+    // Model
+
     this.ASSET_TYPE_NAME_MODEL     = "Model";
     this.ASSET_TYPE_MODEL          = "model";
     this.ASSET_FORMAT_NAME_ASSIMP  = "Assimp";
     this.ASSET_FORMAT_MODEL_ASSIMP = "assimp";
 
+    // Script
+
     this.ASSET_TYPE_NAME_SCRIPT   = "Script";
     this.ASSET_TYPE_SCRIPT        = "script";
     this.ASSET_FORMAT_NAME_CHAI   = "ChaiScript";
     this.ASSET_FORMAT_SCRIPT_CHAI = "chai";
+
+    // Shader
 
     this.ASSET_TYPE_NAME_SHADER       = "Shader";
     this.ASSET_TYPE_SHADER            = "shader";
@@ -95,6 +118,18 @@ App.service('ProjectService',
             format: this.ASSET_FORMAT_AUDIO_WAV
           }
         ]
+      },
+      // Font
+      {
+        name: this.ASSET_TYPE_NAME_FONT,
+        type: this.ASSET_TYPE_FONT,
+        formats: [{
+          name: this.ASSET_FORMAT_NAME_TRUETYPE,
+          format: this.ASSET_FORMAT_FONT_TRUETYPE
+        },{
+          name: this.ASSET_FORMAT_NAME_WOFF,
+          format: this.ASSET_FORMAT_FONT_WOFF
+        }]
       },
       // Light
       {
@@ -210,6 +245,15 @@ App.service('ProjectService',
       var ps = this;
       this.ASSET_TYPES.forEach(function(assetType){
         if (assetType.type == ps.ASSET_TYPE_ANIMATION) {
+          callback(assetType.formats);
+        }
+      });
+    };
+
+    this.getFontAssetFormats = function(callback) {
+      var ps = this;
+      this.ASSET_TYPES.forEach(function(assetType){
+        if (assetType.type == ps.ASSET_TYPE_FONT) {
           callback(assetType.formats);
         }
       });
@@ -795,11 +839,14 @@ App.service('ProjectService',
       ApiService.deleteAssetData(this.project.uuid,asset.type,asset.uuid,callback);
     };
 
-    this.createDreamAnimationKeyFrame = function () {
+    this.createDreamAnimationKeyFrame = function (keyFrameIndex) {
         return {
-          uuid     : UtilService.generateUUID(),
-          name     : "New Keyframe",
-          duration : 1000,
+          uuid        : UtilService.generateUUID(),
+          name        : "KeyFrame " + keyFrameIndex,
+          startTime   : 0,
+          translation : {x:0.0, y:0.0, z:0.0},
+          rotation    : {x:0.0, y:0.0, z:0.0},
+          scale       : {x:1.0, y:1.0, z:1.0}
         };
     };
 

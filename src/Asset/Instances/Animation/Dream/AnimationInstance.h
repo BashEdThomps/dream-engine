@@ -11,8 +11,17 @@
 #include "KeyFrame.h"
 #include "Frame.h"
 
-#define ASSET_DIR_ANIMATION    "animation"
-#define ASSET_FORMAT_ANIMATION "animation"
+#define ASSET_FORMAT_DREAM_ANIMATION "dream"
+
+// Animation Attributes
+
+#define ASSET_ATTR_KEYFRAMES   "keyframes"
+#define ASSET_ATTR_WRAP        "wrap"
+#define ASSET_ATTR_TRANSLATION "translation"
+#define ASSET_ATTR_ROTATION    "rotation"
+#define ASSET_ATTR_SCALE       "scale"
+#define ASSET_ATTR_START_TIME  "startTime"
+#define ASSET_ATTR_WRAP        "wrap"
 
 #define DREAM_ANIMATION_STOPPED 0
 #define DREAM_ANIMATION_PLAYING 1
@@ -57,6 +66,7 @@ namespace Dream     {
 		void generatePlaybackFrames();
     void addKeyFrame(KeyFrame*);
     void addFrame(Frame*);
+		void loadExtraAttributes(nlohmann::json);
   }; // End of AnimationInstance
 	  
 } // End of Dream

@@ -12,31 +12,35 @@ namespace Dream     {
 	
 	class KeyFrame {
 	private:
-		long                mStartTtmeMS;
+		long                mStartTimeMS;
 		bool                mWrap;
 		std::vector<Frame*> mPlaybackFrames;
 		std::vector<float>  mTranslation;
 		std::vector<float>  mRotation;
 		std::vector<float>  mScale;
+		std::string         mName;
+		std::string         mUUID;
 	public:
-		KeyFrame(long);
+		KeyFrame();
 		~KeyFrame();
-		
+		void showStatus();
 		std::vector<Frame*> getPlaybackFrames();
-		void                generateFrames(KeyFrame*);
+		void                generatePlaybackFrames(KeyFrame*);
 		void                addPlaybackFrame(Frame*);
-		
 		bool                getWrap();
+		void                setWrap(bool);
 		long                getStartTimeMS();
-		
-		std::vector<float> getTranslation();
-		void               setTranslation(std::vector<float>);
-		
-		std::vector<float> getRotation();
-		void               setRotation(std::vector<float>);
-		
-		std::vector<float> getScale();
-		void               setScale(std::vector<float>);
+		void                setStartTimeMS(long);
+		std::vector<float>  getTranslation();
+		void                setTranslation(std::vector<float>);
+		std::vector<float>  getRotation();
+		void                setRotation(std::vector<float>);
+		std::vector<float>  getScale();
+		void                setScale(std::vector<float>);
+		std::string getName();
+		void setName(std::string);
+		std::string getUUID();
+		void setUUID(std::string);
 	};
 	
 } // End of Dream

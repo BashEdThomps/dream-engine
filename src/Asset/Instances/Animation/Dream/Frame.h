@@ -1,5 +1,5 @@
-#ifndef DA_FRAME_H
-#define DA_FRAME_H
+#ifndef FRAME_H
+#define FRAME_H
 
 #include <vector>
 #include "../../../../Scene/SceneObject.h"
@@ -29,6 +29,8 @@ namespace Dream     {
 		std::vector<float> getScale();
 		void               setScale(std::vector<float>);
 		
+		void showStatus();
+		
 	}; // End Frame
 	
 } // End of Dream
@@ -37,4 +39,4 @@ namespace Dream     {
 } // End of Asset
 } // End of Dream
 
-#endif // DA_FRAME
+#endif // FRAME_H

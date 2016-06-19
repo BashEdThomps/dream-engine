@@ -5,7 +5,7 @@
 #include <chrono>
 #include <ctime>
 
-#define VERBOSE
+//#define VERBOSE
 
 namespace Dream {
 namespace Scene {

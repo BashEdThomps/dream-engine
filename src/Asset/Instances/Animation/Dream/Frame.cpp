@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Frame.h"
+#include "../../../../Util/String.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -54,6 +55,13 @@ namespace Dream     {
 	
 	void Frame::setTranslation(std::vector<float> translation) {
 		mTranslation = translation;
+	}
+	
+	void Frame::showStatus() {
+		std::cout << "Frame:" << std::endl
+		<< "\tTranslation: "  << Util::String::floatVectorToString(mTranslation) << std::endl
+		<< "\t   Rotation: "  << Util::String::floatVectorToString(mRotation)    << std::endl
+		<< "\t      Scale: "  << Util::String::floatVectorToString(mScale)       << std::endl;
 	}
 	
 

@@ -195,28 +195,16 @@ namespace Scene {
 	}
 
 	void Scene::showStatus() {
-		std::cout << "Scene:" << std::endl;
+		std::cout << "Scene:"              << std::endl;
 		std::cout << "             UUID: " << mUUID << std::endl;
 		std::cout << "             Name: " << mName << std::endl;
-		std::cout << "    Audio Enabled: " << Util::StringUtils::boolToYesNo(isAudioEnabled()) << std::endl;
-		std::cout << "Animation Enabled: " << Util::StringUtils::boolToYesNo(isAnimationEnabled()) << std::endl;
-		std::cout << "    Input Enabled: " << Util::StringUtils::boolToYesNo(isInputEnabled()) << std::endl;
-		std::cout << "  Physics Enabled: " << Util::StringUtils::boolToYesNo(isPhysicsEnabled()) << std::endl;
+		std::cout << "    Audio Enabled: " << Util::String::boolToYesNo(isAudioEnabled())     << std::endl;
+		std::cout << "Animation Enabled: " << Util::String::boolToYesNo(isAnimationEnabled()) << std::endl;
+		std::cout << "    Input Enabled: " << Util::String::boolToYesNo(isInputEnabled())     << std::endl;
+		std::cout << "  Physics Enabled: " << Util::String::boolToYesNo(isPhysicsEnabled())   << std::endl;
 		std::cout << " Camera Transform: " << std::endl;
-		
-		std::vector<float> cameraTranslation = sCamera.getTranslation();
-		std::vector<float> cameraRotation    = sCamera.getRotation();
-		
-		std::cout << "      Translation: " << "("
-		          << cameraTranslation[0] << ","
-		          << cameraTranslation[1] << ","
-		          << cameraTranslation[2] << ")" << std::endl;
-		
-		std::cout << "         Rotation: "     << "("
-		          << cameraRotation[0] << ","
-		          << cameraRotation[1] << ","
-		          << cameraRotation[2] << ")" << std::endl;
-		
+		std::cout << "      Translation: " << Util::String::floatVectorToString(sCamera.getTranslation()) << std::endl;
+		std::cout << "         Rotation: " << Util::String::floatVectorToString(sCamera.getRotation())    << std::endl;
 		std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
 		showScenegraph();
 	}

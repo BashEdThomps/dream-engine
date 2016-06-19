@@ -35,6 +35,7 @@ namespace Ogg       {
 		OggAudioInstance(AssetDefinition*);
 		~OggAudioInstance();
 		bool load(std::string);
+		void loadExtraAttributes(nlohmann::json);
 	}; // End of OggAudio
 	
 } // End of Ogg

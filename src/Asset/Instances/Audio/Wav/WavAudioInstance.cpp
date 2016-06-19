@@ -96,6 +96,8 @@ namespace Wav       {
 		fseek(inFile, 0, SEEK_SET);
 		return fileSize;
 	}
+	
+	void WavAudioInstance::loadExtraAttributes(nlohmann::json json) {}
 
 
 } // End of Wav

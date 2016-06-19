@@ -24,7 +24,7 @@
 #include "SceneObject.h"
 #include "Camera.h"
 #include "../ExternalLibs/JSON/json.hpp"
-#include "../Util/StringUtils.h"
+#include "../Util/String.h"
 
 #define SCENE_JSON_UUID              "uuid"
 #define SCENE_JSON_NAME              "name"

@@ -14,6 +14,7 @@ namespace Light     {
 		LightInstance(AssetDefinition*);
 		~LightInstance();
 		bool load(std::string);
+		void loadExtraAttributes(nlohmann::json) {}
 	}; // End of LightInstance
 	
 } // End of Light
