@@ -22,6 +22,7 @@ App.service('UIService',
         this.treeDataRoot.label    = ProjectService.project.name;
         this.treeDataRoot.children = [];
         this.treeDataRoot.onSelect = hostController.onTreeProjectSelected;
+        this.treeDataRoot.expanded = true;
 
         this.generateTreeProjectScenes();
         this.generateTreeProjectAssets();
@@ -34,7 +35,8 @@ App.service('UIService',
         this.treeProjectScenes = {
             label    : "Scenes",
             children : [],
-            onSelect : hostController.onTreeProjectSceneSelected
+            onSelect : hostController.onTreeProjectSceneSelected,
+            expanded : true,
         };
         var ui = this;
         ProjectService.project.scenes.forEach(function(scene) {
@@ -50,7 +52,8 @@ App.service('UIService',
             label    : scene.name,
             uuid     : scene.uuid,
             onSelect : hostController.onTreeProjectSceneInstanceSelected,
-            children : []
+            children : [],
+            expanded : true,
         };
         /*
         scene.objects.forEach(function(sceneObject){
@@ -64,7 +67,8 @@ App.service('UIService',
         return {
             label : sceneObject.name,
             uuit  : sceneObject.uuid,
-            onSelect : null
+            onSelect : null,
+            expanded : true
         };
     };
 
@@ -107,6 +111,7 @@ App.service('UIService',
             label    : asset.name,
             uuid     : asset.uuid,
             onSelect : hostController.onTreeProjectAssetInstanceSelected,
+            expanded : true
         };
     };
 
@@ -114,7 +119,8 @@ App.service('UIService',
         this.treeProjectAssets = {
             label: "Assets",
             children: [],
-            onSelect: hostController.onTreeProjectAssetSelected
+            onSelect: hostController.onTreeProjectAssetSelected,
+            expanded : true
         };
         var ui = this;
         ProjectService.getProject().assets.forEach(function(asset){

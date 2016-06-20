@@ -38,6 +38,8 @@ namespace Chai      {
 	
 	void ChaiScriptInstance::initAPIs() {
 		initAssetInstanceAPI();
+		initAnimationInstanceAPI();
+		initAnimationComponentAPI();
 		initAssetManagerAPI();
 		initAudioComponentAPI();
 		initCameraAPI();
@@ -125,8 +127,12 @@ namespace Chai      {
 		#ifdef VERBOSE
 			std::cout << "ChaiScriptInstance: Init ComponentManager API" << std::endl;
 		#endif
-		mScript->add(chaiscript::user_type<Components::ComponentManager>(),          "ComponentManager");
-		mScript->add(chaiscript::fun(&Components::ComponentManager::getAudioComponent), "getAudioComponent");
+		mScript->add(chaiscript::user_type<Components::ComponentManager>(),                 "ComponentManager"     );
+		mScript->add(chaiscript::fun(&Components::ComponentManager::getAnimationComponent), "getAnimationComponent");
+		mScript->add(chaiscript::fun(&Components::ComponentManager::getAudioComponent),     "getAudioComponent"    );
+		mScript->add(chaiscript::fun(&Components::ComponentManager::getInputComponent),     "getInputComponent"    );
+		mScript->add(chaiscript::fun(&Components::ComponentManager::getPhysicsComponent),   "getPhysicsComponent"  );
+		mScript->add(chaiscript::fun(&Components::ComponentManager::getVideoComponent),     "getVideoComponent"    );
 	}
 	
 	void ChaiScriptInstance::initGlfwTimeAPI() {
@@ -204,25 +210,48 @@ namespace Chai      {
 		mScript->add_global(chaiscript::const_var(GLFW_KEY_DOWN),  "KEY_DOWN");
 		mScript->add_global(chaiscript::const_var(GLFW_KEY_LEFT),  "KEY_LEFT");
 		mScript->add_global(chaiscript::const_var(GLFW_KEY_RIGHT), "KEY_RIGHT");
-		mScript->add_global(chaiscript::const_var(GLFW_KEY_W),     "KEY_W");
-		mScript->add_global(chaiscript::const_var(GLFW_KEY_A),     "KEY_A");
-		mScript->add_global(chaiscript::const_var(GLFW_KEY_S),     "KEY_S");
-		mScript->add_global(chaiscript::const_var(GLFW_KEY_D),     "KEY_D");
+		
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_A),"KEY_A");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_B),"KEY_B");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_C),"KEY_C");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_D),"KEY_D");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_E),"KEY_E");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_F),"KEY_F");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_G),"KEY_G");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_H),"KEY_H");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_I),"KEY_I");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_J),"KEY_J");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_K),"KEY_K");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_L),"KEY_L");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_M),"KEY_M");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_N),"KEY_N");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_O),"KEY_O");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_P),"KEY_P");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_Q),"KEY_Q");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_R),"KEY_R");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_S),"KEY_S");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_T),"KEY_T");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_U),"KEY_U");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_V),"KEY_V");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_W),"KEY_W");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_X),"KEY_X");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_Y),"KEY_Y");
+		mScript->add_global(chaiscript::const_var(GLFW_KEY_Z),"KEY_Z");
 	}
 	
 	void ChaiScriptInstance::initSceneObjectAPI() {
 		#ifdef VERBOSE
 			std::cout << "ChaiScriptInstance: Init SceneObject API" << std::endl;
 		#endif
-		mScript->add(chaiscript::user_type<Scene::SceneObject>(),"SceneObject");
-		mScript->add_global(chaiscript::var(mParent),"gSceneObject");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::getAnimationAssetInstance),"getAnimationAsset");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::getAudioAssetInstance),"getAudioAsset");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::getLightAssetInstance),"getLightAsset");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::getModelAssetInstance),"getModelAsset");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::getShaderAssetInstance),"getShaderAsset");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::getScriptAssetInstance),"getScriptAsset");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::getPhysicsObjectAssetInstance),"getPhysicsObjectAsset");
+		mScript->add(chaiscript::user_type<Scene::SceneObject>(), "SceneObject");
+		mScript->add_global(chaiscript::var(mParent),             "gSceneObject");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getAnimationAssetInstance),     "getAnimationAsset");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getAudioAssetInstance),         "getAudioAsset");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getLightAssetInstance),         "getLightAsset");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getModelAssetInstance),         "getModelAsset");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getShaderAssetInstance),        "getShaderAsset");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getScriptAssetInstance),        "getScriptAsset");
+		mScript->add(chaiscript::fun(&Scene::SceneObject::getPhysicsObjectAssetInstance), "getPhysicsObjectAsset");
 		
 		mScript->add(chaiscript::bootstrap::standard_library::vector_type<std::vector<float>>("FloatVector"));
 		
@@ -257,6 +286,19 @@ namespace Chai      {
 		mScript->add(chaiscript::user_type<Components::Video::VideoComponentInterface>(),            "VideoComponent");
 		mScript->add(chaiscript::fun(&Components::Video::VideoComponentInterface::closeWindow),      "closeWindow");
 		mScript->add(chaiscript::fun(&Components::Video::VideoComponentInterface::setCursorEnabled), "setCursorEnabled");
+	}
+	
+	void ChaiScriptInstance::initAnimationInstanceAPI() {
+		mScript->add(chaiscript::user_type<Asset::Instances::Animation::Dream::AnimationInstance>(),     "AnimationInstance");
+		mScript->add(chaiscript::fun(&Asset::Instances::Animation::Dream::AnimationInstance::isLooping), "isLooping");
+		mScript->add(chaiscript::fun(&Asset::Instances::Animation::Dream::AnimationInstance::setLooping),"setLooping");
+	}
+	
+	void ChaiScriptInstance::initAnimationComponentAPI() {
+		mScript->add(chaiscript::user_type<Components::Animation::AnimationComponentInterface*>(), "AnimationComponent");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::play),  "play");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::pause), "pause");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::stop),  "stop");
 	}
 	
 } // End of ChaiScript

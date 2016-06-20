@@ -4,6 +4,11 @@
 #include <vector>
 #include "Frame.h"
 
+
+#define DREAM_ANIMATION_INTERPOLATION_NONE   "none"
+#define DREAM_ANIMATION_INTERPOLATION_LINEAR "linear"
+#define DREAM_ANIMATION_INTERPOLATION_BEZIER "bezier"
+
 namespace Dream     {
 namespace Asset     {
 namespace Instances {
@@ -20,6 +25,7 @@ namespace Dream     {
 		std::vector<float>  mScale;
 		std::string         mName;
 		std::string         mUUID;
+		std::string         mInterpolationType;
 	public:
 		KeyFrame();
 		~KeyFrame();
@@ -41,6 +47,17 @@ namespace Dream     {
 		void setName(std::string);
 		std::string getUUID();
 		void setUUID(std::string);
+		void setInterpolationType(std::string);
+		std::string  getInterpolationType();
+		
+		bool isInterpolationTypeNone();
+		void generateNoneInterpolationFrames(KeyFrame*,long);
+	
+		bool isInterpolationTypeLinear();
+		void generateLinearInterpolationFrames(KeyFrame*,long);
+		
+		bool isInterpolationTypeBezier();
+		void generateBezierInterpolationFrames(KeyFrame*,long);
 	};
 	
 } // End of Dream

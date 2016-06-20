@@ -20,6 +20,7 @@
 #define AnimationInterface_hpp
 
 #include "../ComponentInterface.h"
+#include "../../Asset/AssetInstance.h"
 
 namespace Dream {
 namespace Components {
@@ -27,8 +28,13 @@ namespace Animation {
 	
 	class AnimationComponentInterface : public Dream::Components::ComponentInterface {
 	public:
-    	AnimationComponentInterface();
-    	~AnimationComponentInterface();
+    AnimationComponentInterface();
+    ~AnimationComponentInterface();
+		
+		virtual void play (Asset::AssetInstance*) = 0;
+		virtual void pause(Asset::AssetInstance*) = 0;
+		virtual void stop (Asset::AssetInstance*) = 0;
+		
 	}; // End of AnimationComponentInterface
 	
 } // End of Animation

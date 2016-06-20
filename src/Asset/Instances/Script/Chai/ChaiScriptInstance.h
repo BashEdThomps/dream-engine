@@ -46,6 +46,8 @@ namespace Chai      {
 			
 			// API Exposure
 			void initAPIs();
+			void initAnimationInstanceAPI();
+			void initAnimationComponentAPI();
 			void initAssetInstanceAPI();
 			void initAssetManagerAPI();
 			void initAudioComponentAPI();

@@ -62,8 +62,13 @@ namespace Components {
 		void joinThreads();
 		bool isDone();
 		void populatePhysicsWorld(std::vector<Scene::SceneObject*>);
+		
+		Components::Animation::AnimationComponentInterface* getAnimationComponent();
 		Components::Audio::AudioComponentInterface* getAudioComponent();
+		Components::Input::InputComponentInterface* getInputComponent();
+		Components::Physics::PhysicsComponentInterface* getPhysicsComponent();
 		Components::Video::VideoComponentInterface* getVideoComponent();
+		
 		void componentThread(Components::ComponentInterface*);
 		void update();
 		void setActiveScene(Scene::Scene*);

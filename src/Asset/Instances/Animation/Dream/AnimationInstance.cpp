@@ -1,5 +1,7 @@
 
 #include "AnimationInstance.h"
+#include <algorithm>
+#include "../../../../Util/String.h"
 
 namespace Dream     {
 namespace Asset     {
@@ -20,11 +22,18 @@ namespace Dream     {
 	AnimationInstance::AnimationInstance(AssetDefinition* definition) : AssetInstance(definition) {
 	  mCurrentPlaybackFrame = 0;
 		mLoop                 = false;
+		mPlaying              = false;
 	}
 
 	AnimationInstance::~AnimationInstance() {}
 	
+	void AnimationInstance::showStatus() {
+		std::cout << "AnimationInstance:" << std::endl;
+		std::cout << "\tLoop: " << Util::String::boolToYesNo(mLoop) << std::endl;
+	}
+	
 	bool AnimationInstance::load(std::string projectPath) {
+		mLoop = mDefinition->getJson()[ASSET_ATTR_LOOP];
 		loadExtraAttributes(mDefinition->getJson());
 		return false;
 	}
@@ -38,7 +47,6 @@ namespace Dream     {
 		std::vector<KeyFrame*>::iterator keyFrameIter;
 		for (keyFrameIter = mKeyFrames.begin(); keyFrameIter != mKeyFrames.end(); keyFrameIter++) {
 			KeyFrame* currentKeyFrame = (*keyFrameIter);
-			
 			// Get the next KeyFrame
 			KeyFrame* nextKeyFrame = NULL;
 			// End of Vector?
@@ -63,6 +71,7 @@ namespace Dream     {
 	}
 	
 	void AnimationInstance::loadExtraAttributes(nlohmann::json json) {
+		showStatus();
 		if (!json[ASSET_ATTR_KEYFRAMES].is_null() && json[ASSET_ATTR_KEYFRAMES].is_array()){
 			nlohmann::json jsonKeyFrames = json[ASSET_ATTR_KEYFRAMES];
 			std::cout << "AnimationInstance: Loading KeyFrames" << std::endl;
@@ -84,10 +93,12 @@ namespace Dream     {
 				
 				long startTime   = (*it)[ASSET_ATTR_START_TIME];
 				bool wrap        = (*it)[ASSET_ATTR_WRAP];
+				std::string interpolation = (*it)[ASSET_ATTR_INTERPOLATION];
 				std::string name = (*it)[ASSET_NAME];
 				std::string uuid = (*it)[ASSET_UUID];
 				
 				nextKeyFrame->setName(name);
+				nextKeyFrame->setInterpolationType(interpolation);
 				nextKeyFrame->setUUID(uuid);
 				nextKeyFrame->setStartTimeMS(startTime);
 				nextKeyFrame->setTranslation(translation);
@@ -103,16 +114,45 @@ namespace Dream     {
 		}
 	}
 	
+	void AnimationInstance::step(double deltaTime) {
+		if (mPlaying) {
+			int advanceBy = ceil(deltaTime / (1000/getFramesPerSecond()));
+			if (advanceBy > MAX_FRAME_ADVANCE) return;
+			mCurrentPlaybackFrame += advanceBy;
+			std::cout << "AnimationInstance: Delta time: " << deltaTime << ", Advance By: " << advanceBy <<  " frames to frame: " << mCurrentPlaybackFrame << std::endl;
+			if (mCurrentPlaybackFrame > mPlaybackFrames.size()) {
+				if (!mLoop) {
+					std::cout << "AnimationInstance: Playback Finished" << std::endl;
+					mPlaying = false;
+				}
+				std::cout << "AnimationInstance: Returning to Frame 0" << std::endl;
+				mCurrentPlaybackFrame = 0;
+			}
+		}
+	}
+	
 	void AnimationInstance::play() {
-		
+		std::cout << "AnimationInstance: Playing Animation" << getName() << std::endl;
+		mPlaying = true;
 	}
 	
 	void AnimationInstance::pause() {
-		
+		std::cout << "AnimationInstance: Pausing Animation" << getName() << std::endl;
+		mPlaying = false;
 	}
 	
 	void AnimationInstance::stop() {
-		
+		std::cout << "AnimationInstance: Stopping Animation" << getName() << std::endl;
+		mPlaying = false;
+		mCurrentPlaybackFrame = 0;
+	}
+	
+	bool AnimationInstance::isLooping() {
+		return mLoop;
+	}
+
+	void AnimationInstance::setLooping(bool looping) {
+		mLoop = looping;
 	}
 	
 } // End of Dream

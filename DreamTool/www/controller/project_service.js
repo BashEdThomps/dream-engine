@@ -21,6 +21,26 @@ App.service('ProjectService',
     this.ASSET_FORMAT_NAME_DREAM      = "Dream Animation";
     this.ASSET_FORMAT_ANIMATION_DREAM = "dream";
 
+    this.DREAM_ANIMATION_INTERPOLATION_NONE_NAME = "None";
+    this.DREAM_ANIMATION_INTERPOLATION_NONE_TYPE = "none";
+    this.DREAM_ANIMATION_INTERPOLATION_LINEAR_NAME = "Linear";
+    this.DREAM_ANIMATION_INTERPOLATION_LINEAR_TYPE = "linear";
+    this.DREAM_ANIMATION_INTERPOLATION_BEZIER_NAME = "Bezier";
+    this.DREAM_ANIMATION_INTERPOLATION_BEZIER_TYPE = "bezier";
+
+    this.DREAM_ANIMATION_INTERPOLATION_TYPES = [
+      {
+        name: this.DREAM_ANIMATION_INTERPOLATION_NONE_NAME,
+        type: this.DREAM_ANIMATION_INTERPOLATION_NONE_TYPE,
+      },{
+        name: this.DREAM_ANIMATION_INTERPOLATION_LINEAR_NAME,
+        type: this.DREAM_ANIMATION_INTERPOLATION_LINEAR_TYPE,
+      },{
+        name: this.DREAM_ANIMATION_INTERPOLATION_BEZIER_NAME,
+        type: this.DREAM_ANIMATION_INTERPOLATION_BEZIER_TYPE,
+      }
+    ];
+
     // Audio
 
     this.ASSET_TYPE_NAME_AUDIO  = "Audio";
@@ -870,6 +890,10 @@ App.service('ProjectService',
     this.removeKeyFrameFromAsset = function(keyFrameObject,assetObject) {
       var keyFrameIndex = assetObject.keyframes.indexOf(keyFrameObject);
       assetObject.keyframes.splice(keyFrameIndex,1);
+    };
+
+    this.getDreamAnimationInterpolationTypes = function() {
+      return this.DREAM_ANIMATION_INTERPOLATION_TYPES;
     };
 
     return this;

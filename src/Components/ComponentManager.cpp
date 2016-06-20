@@ -123,7 +123,7 @@ namespace Components {
 	}
 
 	bool ComponentManager::createAnimationComponent() {
-		mAnimationComponent = new Components::Animation::DreamAnimation();
+		mAnimationComponent = new Components::Animation::Dream::DreamAnimation();
 		if (mAnimationComponent->init()) {
 			return true;
 		} else {
@@ -242,8 +242,20 @@ namespace Components {
 		}
 	}
 	
+	Components::Animation::AnimationComponentInterface* ComponentManager::getAnimationComponent() {
+		return mAnimationComponent;
+	}
+	
 	Components::Audio::AudioComponentInterface* ComponentManager::getAudioComponent() {
 		return mAudioComponent;
+	}
+	
+	Components::Input::InputComponentInterface* ComponentManager::getInputComponent() {
+		return mInputComponent;
+	}
+	
+	Components::Physics::PhysicsComponentInterface* ComponentManager::getPhysicsComponent() {
+		return mPhysicsComponent;
 	}
 	
 	Components::Video::VideoComponentInterface* ComponentManager::getVideoComponent() {

@@ -1,7 +1,8 @@
 #!/bin/bash
 
 HOST=`uname -a`
-BUILD=out
+BUILD=../DreamMakefile
+DREAM_SRC_DIR=../Dream
 MAKE_ARGS=-j1
 
 echo HOST is $HOST
@@ -22,6 +23,6 @@ fi
 rm -rf $BUILD
 mkdir -p $BUILD
 cd $BUILD
-cmake ..
+cmake $DREAM_SRC_DIR 
 VEROBSE=1 make ${MAKE_ARGS}
 VERBOSE=1 CTEST_OUTPUT_ON_FAILURE=TRUE make ${MAKE_ARGS} test

@@ -15,18 +15,21 @@
 
 // Animation Attributes
 
-#define ASSET_ATTR_KEYFRAMES   "keyframes"
-#define ASSET_ATTR_WRAP        "wrap"
-#define ASSET_ATTR_TRANSLATION "translation"
-#define ASSET_ATTR_ROTATION    "rotation"
-#define ASSET_ATTR_SCALE       "scale"
-#define ASSET_ATTR_START_TIME  "startTime"
-#define ASSET_ATTR_WRAP        "wrap"
+#define ASSET_ATTR_KEYFRAMES     "keyframes"
+#define ASSET_ATTR_WRAP          "wrap"
+#define ASSET_ATTR_TRANSLATION   "translation"
+#define ASSET_ATTR_ROTATION      "rotation"
+#define ASSET_ATTR_SCALE         "scale"
+#define ASSET_ATTR_START_TIME    "startTime"
+#define ASSET_ATTR_WRAP          "wrap"
+#define ASSET_ATTR_LOOP          "loop"
+#define ASSET_ATTR_INTERPOLATION "interpolation"
 
 #define DREAM_ANIMATION_STOPPED 0
 #define DREAM_ANIMATION_PLAYING 1
 #define DREAM_ANIMATION_PAUSED  2
 
+#define MAX_FRAME_ADVANCE  10
 
 namespace Dream     {
 namespace Asset     {
@@ -41,13 +44,12 @@ namespace Dream     {
   	static void setFramesPerSecond(int);
     static int  getFramesPerSecond();
   private:
-    std::string            mAnimationPath;
     std::vector<KeyFrame*> mKeyFrames;
     std::vector<Frame*>    mPlaybackFrames;
 		Scene::SceneObject*    mSceneObject;
 		int                    mCurrentPlaybackFrame;
 		bool                   mLoop;
-		bool                   mFinished;
+		bool                   mPlaying;
 	public:
 		AnimationInstance(AssetDefinition*);
     ~AnimationInstance();
@@ -57,10 +59,13 @@ namespace Dream     {
 		Scene::SceneObject* getSceneObject();
 		
 		bool isLooping();
+		void setLooping(bool);
 		int  getState();
 		void play();
 		void stop();
 		void pause();
+		void step(double);
+		void showStatus();
 		
 	private:
 		void generatePlaybackFrames();

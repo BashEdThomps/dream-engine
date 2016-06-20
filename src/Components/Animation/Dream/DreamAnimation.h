@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Interface
+* Dream::Components::Animation::DreamAnimation
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,25 @@
 #define DreamAnimation_hpp
 
 #include "../AnimationComponentInterface.h"
+#include "../../../Asset/Instances/Animation/Dream/AnimationInstance.h"
 
-namespace Dream {
+namespace Dream      {
 namespace Components {
-namespace Animation {
+namespace Animation  {
+namespace Dream      {
 	
 	class DreamAnimation : public AnimationComponentInterface {
 	public :
 		DreamAnimation();
 		~DreamAnimation();
 		bool init();
-		void update(Dream::Scene::Scene*);
+		void update(::Dream::Scene::Scene*);
+		void play (Asset::AssetInstance*);
+		void pause(Asset::AssetInstance*);
+		void stop (Asset::AssetInstance*);
 	};
 	
+} // End of Dream
 } // End of Animation
 } // End of Components
 } // End of Dream

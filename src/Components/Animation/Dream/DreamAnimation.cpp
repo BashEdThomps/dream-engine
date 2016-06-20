@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Interface
+* Dream::Components::Animation::DreamAnimation
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,27 +17,71 @@
 
 
 #include "DreamAnimation.h"
+#include "../../../Project/Project.h"
 
-namespace Dream {
+namespace Dream      {
 namespace Components {
-namespace Animation {
+namespace Animation  {
+namespace Dream      {
 	
-	DreamAnimation::DreamAnimation() : AnimationComponentInterface() {
-		
-	}
-	
-	DreamAnimation::~DreamAnimation() {
-		
-	}
+	DreamAnimation::DreamAnimation() : AnimationComponentInterface() {}
+	DreamAnimation::~DreamAnimation() {}
 	
 	bool DreamAnimation::init() {
 		std::cout << "DreamAnimation: Provisional init returning true" << std::endl;
 		return true;
 	}
 	
-	void DreamAnimation::update(Dream::Scene::Scene *scene) {
+	void DreamAnimation::update(Scene::Scene *scene) {
+		std::vector<Scene::SceneObject*> scenegraph = scene->getScenegraphVector();
+		std::vector<Scene::SceneObject*>::iterator sgIter;
+		for (sgIter = scenegraph.begin(); sgIter != scenegraph.end(); sgIter++) {
+			Scene::SceneObject* currentSceneObject = *sgIter;
+			Asset::AssetInstance* animAsset = currentSceneObject->getAnimationAssetInstance();
+			if (animAsset != NULL) {
+				try {
+					Asset::Instances::Animation::Dream::AnimationInstance* dreamAnimInstance;
+					dreamAnimInstance = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(animAsset);
+					dreamAnimInstance->step(Project::Project::getTime()->getTimeDelta());
+				} catch (const std::exception &ex) {
+					std::cerr << "DreamAnimation: Unable to cast animation asset to Dream Animation" << std::endl;
+					std::cerr << ex.what() << std::endl;
+				}
+			}
+		}
 	}
 	
+	void DreamAnimation::play(Asset::AssetInstance *asset) {
+		try {
+			Asset::Instances::Animation::Dream::AnimationInstance* animAsset;
+			animAsset = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(asset);
+			animAsset->play();
+		} catch (std::exception & ex) {
+			std::cerr << "DreamAnimation: Exception playing animation." << ex.what() << std::endl;
+		}
+	}
+	
+	void DreamAnimation::pause(Asset::AssetInstance *asset) {
+		try {
+			Asset::Instances::Animation::Dream::AnimationInstance* animAsset;
+			animAsset = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(asset);
+			animAsset->pause();
+		} catch (std::exception & ex) {
+			std::cerr << "DreamAnimation: Exception pausing animation." << ex.what() << std::endl;
+		}
+	}
+	
+	void DreamAnimation::stop(Asset::AssetInstance *asset) {
+		try {
+			Asset::Instances::Animation::Dream::AnimationInstance* animAsset;
+			animAsset = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(asset);
+			animAsset->stop();
+		} catch (std::exception & ex) {
+			std::cerr << "DreamAnimation: Exception stopping animation." << ex.what() << std::endl;
+		}
+	}
+	
+} // End of Dream
 } // End of Animation
 } // End of Components
 } // End of Dream

@@ -8,7 +8,10 @@ namespace Instances {
 namespace Animation {
 namespace Dream     {
 	
-	KeyFrame::KeyFrame() {}
+	KeyFrame::KeyFrame() {
+		mInterpolationType = DREAM_ANIMATION_INTERPOLATION_NONE;
+	}
+	
 	KeyFrame::~KeyFrame() {}
 
 	bool KeyFrame::getWrap() {
@@ -24,10 +27,37 @@ namespace Dream     {
 	}
 	
 	void KeyFrame::generatePlaybackFrames(KeyFrame* toKeyFrame) {
-		std::cout <<"KeyFrame: Generating Playback Frames from " << mName << " to " << toKeyFrame->getName() << std::endl;
+		std::cout << "KeyFrame: Generating " << mInterpolationType << " playback frames from "
+		          << mName << " to " << toKeyFrame->getName() << std::endl;
 		long keyFrameDurationMS = toKeyFrame->getStartTimeMS() - getStartTimeMS();
 		long numFrames = (keyFrameDurationMS/1000.0f) * AnimationInstance::getFramesPerSecond();
 		
+		if (isInterpolationTypeNone()) {
+				generateNoneInterpolationFrames(toKeyFrame,numFrames);
+		} else if (isInterpolationTypeLinear()) {
+				generateLinearInterpolationFrames(toKeyFrame,numFrames);
+		} else if (isInterpolationTypeBezier()) {
+				generateBezierInterpolationFrames(toKeyFrame,numFrames);
+		}
+	}
+	
+	bool KeyFrame::isInterpolationTypeNone() {
+		return mInterpolationType.compare(DREAM_ANIMATION_INTERPOLATION_NONE) == 0;
+	}
+						 
+	bool KeyFrame::isInterpolationTypeLinear() {
+		return mInterpolationType.compare(DREAM_ANIMATION_INTERPOLATION_LINEAR) == 0;
+	}
+	
+	bool KeyFrame::isInterpolationTypeBezier() {
+		return mInterpolationType.compare(DREAM_ANIMATION_INTERPOLATION_BEZIER) == 0;
+	}
+	
+	void KeyFrame::generateNoneInterpolationFrames(KeyFrame* toKeyFrame, long numFrames) {
+		std::cerr << "KeyFrame: generateNoneInterpolationFrames is not implemented!" << std::endl;
+	}
+	
+	void KeyFrame::generateLinearInterpolationFrames(KeyFrame* toKeyFrame, long numFrames) {
 		std::vector<float> toTranslation     = toKeyFrame->getTranslation();
 		std::vector<float> toTranslationStep = std::vector<float>(3);
 		toTranslationStep[0] = ((mTranslation[0] - toTranslation[0]) / numFrames);
@@ -45,7 +75,6 @@ namespace Dream     {
 		toRotation[0] = ((mRotation[0] - toRotation[0]) / numFrames);
 		toRotation[1] = ((mRotation[1] - toRotation[1]) / numFrames);
 		toRotation[2] = ((mRotation[2] - toRotation[2]) / numFrames);
-		
 		
 		for (int frameIndex = 0; frameIndex < numFrames;frameIndex++) {
 			Frame *nextFrame = new Frame();
@@ -69,8 +98,11 @@ namespace Dream     {
 			nextFrame->setScale(nextFrameScale);
 			
 			addPlaybackFrame(nextFrame);
-			//nextFrame->showStatus();
 		}
+	}
+	
+	void KeyFrame::generateBezierInterpolationFrames(KeyFrame* toKeyFrame, long numFrames) {
+		std::cerr << "KeyFrame: generateBezierInterpolationFrames is not implemented!" << std::endl;
 	}
 	
 	void KeyFrame::addPlaybackFrame(Frame* frame) {
@@ -126,14 +158,24 @@ namespace Dream     {
 	}
 	
 	void KeyFrame::showStatus() {
-		std::cout << "KeyFrame" << std::endl
-		          << "\t       UUID: " << mUUID << std::endl
-		          << "\t       Name: " << mName << std::endl
-		          << "\tTranslation: " << Util::String::floatVectorToString(mTranslation)<< std::endl
-		          << "\t   Rotation: " << Util::String::floatVectorToString(mRotation)<< std::endl
-		          << "\t      Scale: " << Util::String::floatVectorToString(mScale) << std::endl
-		          << "\t Start Time: " << mStartTimeMS << std::endl
-		          << "\t       Wrap: " << Util::String::boolToYesNo(mWrap) << std::endl;
+		std::cout << "KeyFrame:" << std::endl
+		          << "\t         UUID: " << mUUID << std::endl
+		          << "\t         Name: " << mName << std::endl
+		          << "\t  Translation: " << Util::String::floatVectorToString(mTranslation)<< std::endl
+		          << "\t     Rotation: " << Util::String::floatVectorToString(mRotation)<< std::endl
+		          << "\t        Scale: " << Util::String::floatVectorToString(mScale) << std::endl
+		          << "\t   Start Time: " << mStartTimeMS << std::endl
+		          << "\t         Wrap: " << Util::String::boolToYesNo(mWrap) << std::endl
+							<< "\tInterpolation: " << getInterpolationType()
+		          << std::endl;
+	}
+	
+	void KeyFrame::setInterpolationType(std::string interpolationType) {
+		mInterpolationType = interpolationType;
+	}
+	
+	std::string KeyFrame::getInterpolationType() {
+		return mInterpolationType;
 	}
 	
 } // End of Dream

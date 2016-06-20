@@ -171,6 +171,10 @@ App.controller("ProjectAssetEditor",
       return $window.ace.edit(FRAGMENT_SHADER_EDITOR);
     };
 
+    $scope.getDreamAnimationInterpolationTypes = function() {
+      return ProjectService.getDreamAnimationInterpolationTypes();
+    };
+
     $scope.onScriptSaveClicked = function() {
       var ace = $scope.getScriptEditor();
       var script = ace.getValue();
