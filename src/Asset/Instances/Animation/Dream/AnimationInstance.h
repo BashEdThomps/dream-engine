@@ -54,10 +54,8 @@ namespace Dream     {
 		AnimationInstance(AssetDefinition*);
     ~AnimationInstance();
 		bool load(std::string);
-	
 		void setSceneObject(Scene::SceneObject*);
 		Scene::SceneObject* getSceneObject();
-		
 		bool isLooping();
 		void setLooping(bool);
 		int  getState();
@@ -66,7 +64,7 @@ namespace Dream     {
 		void pause();
 		void step(double);
 		void showStatus();
-		
+		void applyTransform(Scene::SceneObject*);
 	private:
 		void generatePlaybackFrames();
     void addKeyFrame(KeyFrame*);

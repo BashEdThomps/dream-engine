@@ -252,17 +252,16 @@ namespace Chai      {
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getShaderAssetInstance),        "getShaderAsset");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getScriptAssetInstance),        "getScriptAsset");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getPhysicsObjectAssetInstance), "getPhysicsObjectAsset");
-		
 		mScript->add(chaiscript::bootstrap::standard_library::vector_type<std::vector<float>>("FloatVector"));
-		
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getTranslation),"getTranslation");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::setTranslation),"setTranslation");
-		
+		mScript->add(chaiscript::fun<void,Scene::SceneObject,float,float,float>(&Scene::SceneObject::setTranslation),"setTranslation");
+		mScript->add(chaiscript::fun<void,Scene::SceneObject,std::vector<float>>(&Scene::SceneObject::setTranslation),"setTranslation");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getRotation),"getRotation");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::setRotation),"setRotation");
-		
+		mScript->add(chaiscript::fun<void, Scene::SceneObject, float, float, float>(&Scene::SceneObject::setRotation),"setRotation");
+		mScript->add(chaiscript::fun<void,Scene::SceneObject,std::vector<float>>(&Scene::SceneObject::setRotation),"setRotation");
 		mScript->add(chaiscript::fun(&Scene::SceneObject::getScale),"getScale");
-		mScript->add(chaiscript::fun(&Scene::SceneObject::setScale),"setScale");
+		mScript->add(chaiscript::fun<void,Scene::SceneObject,float,float,float>(&Scene::SceneObject::setScale),"setScale");
+		mScript->add(chaiscript::fun<void,Scene::SceneObject,std::vector<float>>(&Scene::SceneObject::setScale),"setScale");
 		
 	}
 	
@@ -295,10 +294,17 @@ namespace Chai      {
 	}
 	
 	void ChaiScriptInstance::initAnimationComponentAPI() {
-		mScript->add(chaiscript::user_type<Components::Animation::AnimationComponentInterface*>(), "AnimationComponent");
-		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::play),  "play");
-		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::pause), "pause");
-		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::stop),  "stop");
+		mScript->add(chaiscript::user_type<Components::Animation::AnimationComponentInterface>(),     "AnimationComponent");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::play),       "play");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::pause),      "pause");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::stop),       "stop");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::isLooping), "isLooping");
+		mScript->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::setLooping), "setLooping");
+	}
+	
+	void ChaiScriptInstance::initSceneAPI() {
+		mScript->add(chaiscript::user_type<Scene::Scene>(),"Scene");
+		mScript->add(chaiscript::fun(&Scene::Scene::getSceneObjectByUUID),"getSceneObjectByUUID");
 	}
 	
 } // End of ChaiScript

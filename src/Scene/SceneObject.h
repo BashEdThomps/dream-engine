@@ -82,8 +82,11 @@ namespace Scene {
 		std::vector<float> getRotation();
 		std::vector<float> getScale();
 		void         setTranslation(float, float, float);
+		void         setTranslation(std::vector<float>);
 		void         setRotation(float, float, float);
+		void         setRotation(std::vector<float>);
 		void         setScale(float, float, float);
+		void         setScale(std::vector<float>);
 		void         resetTranslation();
 		void         resetRotation();
 		void         resetScale();

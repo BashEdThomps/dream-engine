@@ -43,6 +43,7 @@ namespace Dream      {
 					Asset::Instances::Animation::Dream::AnimationInstance* dreamAnimInstance;
 					dreamAnimInstance = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(animAsset);
 					dreamAnimInstance->step(Project::Project::getTime()->getTimeDelta());
+					dreamAnimInstance->applyTransform(currentSceneObject);
 				} catch (const std::exception &ex) {
 					std::cerr << "DreamAnimation: Unable to cast animation asset to Dream Animation" << std::endl;
 					std::cerr << ex.what() << std::endl;
@@ -78,6 +79,31 @@ namespace Dream      {
 			animAsset->stop();
 		} catch (std::exception & ex) {
 			std::cerr << "DreamAnimation: Exception stopping animation." << ex.what() << std::endl;
+		}
+	}
+	
+	bool DreamAnimation::isLooping(Asset::AssetInstance* asset) {
+		try {
+			Asset::Instances::Animation::Dream::AnimationInstance* animationAsset;
+			animationAsset = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(asset);
+			return animationAsset->isLooping();
+		} catch (std::exception &ex) {
+			std::cerr << "DreamAnimation: Exception in isLooping... " << std::endl;
+			std::cerr << ex.what() << std::endl;
+		}
+		return false;
+	}
+	
+	void DreamAnimation::setLooping(Asset::AssetInstance* asset, bool looping) {
+		try {
+			Asset::Instances::Animation::Dream::AnimationInstance* animationAsset;
+			animationAsset = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(asset);
+			animationAsset->setLooping(looping);
+			std::cout << "DreamAnimation: Setting " << animationAsset->getNameAndUUIDString()
+			          << " looping: " << Util::String::boolToYesNo(looping) << std::endl;
+		} catch (std::exception &ex) {
+			std::cerr << "DreamAnimation: Exception in setLooping... " << std::endl;
+			std::cerr << ex.what() << std::endl;
 		}
 	}
 	

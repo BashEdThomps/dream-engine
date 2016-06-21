@@ -155,6 +155,15 @@ namespace Dream     {
 		mLoop = looping;
 	}
 	
+	void AnimationInstance::applyTransform(Scene::SceneObject *sceneObject) {
+		if (mCurrentPlaybackFrame < mPlaybackFrames.size()) {
+  		Frame *currentFrame = mPlaybackFrames[mCurrentPlaybackFrame];
+  		sceneObject->setTranslation(currentFrame->getTranslation());
+  		sceneObject->setRotation(currentFrame->getRotation());
+  		sceneObject->setScale(currentFrame->getScale());
+		}
+	}
+	
 } // End of Dream
 } // End of Animation
 } // End of Instances

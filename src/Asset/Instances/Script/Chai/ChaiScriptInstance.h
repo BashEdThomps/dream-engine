@@ -59,6 +59,7 @@ namespace Chai      {
 			void initComponentManagerAPI();
 			void initProjectAPI();
 			void initSceneObjectAPI();
+			void initSceneAPI();
 			void initVideoComponentAPI();
 			void loadExtraAttributes(nlohmann::json) {}
     }; // End of ChaiScriptInstance

@@ -36,6 +36,8 @@ namespace Dream      {
 		void play (Asset::AssetInstance*);
 		void pause(Asset::AssetInstance*);
 		void stop (Asset::AssetInstance*);
+		bool isLooping(Asset::AssetInstance*);
+		void setLooping(Asset::AssetInstance*,bool);
 	};
 	
 } // End of Dream

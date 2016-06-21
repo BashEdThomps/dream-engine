@@ -99,6 +99,18 @@ namespace Scene {
 		return mName;
 	}
 
+	void SceneObject::setTranslation(std::vector<float> translation) {
+		mTranslation = translation;
+	}
+	
+	void SceneObject::setScale(std::vector<float> scale) {
+		mScale = scale;
+	}
+	
+	void SceneObject::setRotation(std::vector<float> rotation) {
+		mRotation = rotation;
+	}
+	
 	void SceneObject::setTranslation(float x, float y, float z) {
 		mTranslation[SO_X] = x;
 		mTranslation[SO_Y] = y;
