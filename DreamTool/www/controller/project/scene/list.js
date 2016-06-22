@@ -33,7 +33,6 @@ App.controller("ProjectSceneList",
             });
         };
 
-
         $scope.onSceneSelected = function(uuid) {
             console.log("Selected Scene",uuid);
             ProjectService.getSceneByUUID(uuid,function(scene) {

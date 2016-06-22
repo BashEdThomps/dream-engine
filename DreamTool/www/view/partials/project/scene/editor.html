@@ -73,6 +73,15 @@
                     </div>
                   </td>
                 </tr>
+                <tr>
+                  <td>Transform Type</td>
+                  <td>
+                    <select ng-model="selectedSceneObject.transformType" ng-change="modified()" class="form-control input-sm">
+                      <option value="" disabled selected hidden>Select Transform Type</option>
+                      <option ng-repeat="type in getSceneObjectTransformTypes()" value="{{type.type}}">{{type.name}}</option>
+                    </select>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -112,6 +121,7 @@
                   <button ng-disabled="selectedNewAssetInstance === ''" ng-click="onAddAssetInstanceButtonClicked()" class="btn btn-sm btn-success">Add Instance</button>
                 </div>
                 <select class="form-control input-sm" ng-model="selectedNewAssetInstance">
+                  <option value="" disabled selected hidden>Select Asset</option>
                   <option ng-repeat="asset in assetList" value="{{asset.uuid}}">{{ asset.name }}</option>
                 </select>
               </div>

@@ -158,9 +158,7 @@ namespace Dream     {
 	void AnimationInstance::applyTransform(Scene::SceneObject *sceneObject) {
 		if (mPlaying && mCurrentPlaybackFrame < mPlaybackFrames.size()) {
   		Frame *currentFrame = mPlaybackFrames[mCurrentPlaybackFrame];
-  		sceneObject->setTranslation(currentFrame->getTranslation());
-  		sceneObject->setRotation(currentFrame->getRotation());
-  		//sceneObject->setScale(currentFrame->getScale());
+			currentFrame->applyToSceneObject(sceneObject);
 		}
 	}
 	

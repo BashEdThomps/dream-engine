@@ -200,9 +200,9 @@ namespace OpenGL  {
 		// Translate
 		modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
 	  // Rotate
-		modelMatrix = glm::rotate(modelMatrix, rotation[0], glm::vec3(1,0,0));
-		modelMatrix = glm::rotate(modelMatrix, rotation[1], glm::vec3(0,1,0));
-		modelMatrix = glm::rotate(modelMatrix, rotation[2], glm::vec3(0,0,1));
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
 		// Scale
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
 		#ifdef VERBOSE

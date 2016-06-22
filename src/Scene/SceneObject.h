@@ -23,9 +23,9 @@
 #define SCENE_OBJECT_Y "y"
 #define SCENE_OBJECT_Z "z"
 
-#define SCENE_OBJECT_POSITION_TYPE          "position_type"
-#define SCENE_OBJECT_POSITION_TYPE_OFFSET   "offset"
-#define SCENE_OBJECT_POSITION_TYPE_ABSOLUTE "absolute"
+#define SCENE_OBJECT_TRANSFORM_TYPE          "transformType"
+#define SCENE_OBJECT_TRANSFORM_TYPE_OFFSET   "offset"
+#define SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE "absolute"
 
 #define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
 
@@ -47,7 +47,7 @@ namespace Scene {
 		std::string  mUUID;
 		std::string  mName;
 		std::string  mPath;
-		std::string  mPositionType;
+		std::string  mTransformType;
 		
 		// Position
 		std::vector<float> mTranslation;
@@ -64,33 +64,43 @@ namespace Scene {
 		Asset::AssetInstance* mLightAssetInstance;
 		
 	public:
-		SceneObject  ();
 		SceneObject  (nlohmann::json);
+		SceneObject  ();
 		~SceneObject ();
+		
 		bool         init();
 		void         loadAssetInstances(nlohmann::json);
 		bool         initAssetInstances();
+		
 		bool         hasUUID(std::string);
 		void         setUUID(std::string);
 		std::string  getUUID();
+		
 		bool         hasName(std::string);
 		void         setName(std::string);
 		std::string  getName();
+		
 		std::string  getNameUUIDString();
+		
 		void         showStatus();
+		
 		std::vector<float> getTranslation();
-		std::vector<float> getRotation();
-		std::vector<float> getScale();
 		void         setTranslation(float, float, float);
 		void         setTranslation(std::vector<float>);
+		void         resetTranslation();
+		
+		std::vector<float> getRotation();
 		void         setRotation(float, float, float);
 		void         setRotation(std::vector<float>);
+		void         resetRotation();
+		
+		std::vector<float> getScale();
 		void         setScale(float, float, float);
 		void         setScale(std::vector<float>);
-		void         resetTranslation();
-		void         resetRotation();
 		void         resetScale();
-		void         resetTranslationRotationScale();
+		
+		void         resetTransform();
+		
 		int          countAllChildren();
 		int          countChildren();
 		void         addChild(SceneObject*);
@@ -102,7 +112,9 @@ namespace Scene {
 		bool         isParentOfDeep(SceneObject*);
 		void         setParent(SceneObject*);
 		SceneObject* getParent();
+		
 		void         generatePath();
+		
 		std::string  getPath();
 		
 		void setAnimationAssetInstance(Asset::AssetInstance*);
@@ -113,12 +125,15 @@ namespace Scene {
 		
 		void setModelAssetInstance(Asset::AssetInstance*);
 		Asset::AssetInstance* getModelAssetInstance();
+		bool hasModelAssetInstance();
 		
 		void setScriptAssetInstance(Asset::AssetInstance*);
 		Asset::AssetInstance* getScriptAssetInstance();
+		bool hasScriptAssetInstance();
 		
 		void setShaderAssetInstance(Asset::AssetInstance*);
 		Asset::AssetInstance* getShaderAssetInstance();
+		bool hasShaderAssetInstance();
 		
 		void setPhysicsObjectAssetInstance(Asset::AssetInstance*);
 		Asset::AssetInstance* getPhysicsObjectAssetInstance();
@@ -129,9 +144,9 @@ namespace Scene {
 		void setAssetInstanceParentToThis(Asset::AssetInstance*);
 		
 		std::vector<std::string> getAssetInstanceUUIDsToLoad();
-		bool hasModelAssetInstance();
-		bool hasShaderAssetInstance();
-		bool hasScriptAssetInstance();
+		
+		std::string getTransformType();
+		void setTransformType(std::string);
 		
 	}; // End of SceneObject
 	

@@ -64,37 +64,37 @@ namespace Dream     {
 		toTranslationStep[1] = ((toTranslation[1] - mTranslation[1]) / numFrames);
 		toTranslationStep[2] = ((toTranslation[2] - mTranslation[2]) / numFrames);
 		
+		std::vector<float> toRotation     = toKeyFrame->getRotation();
+		std::vector<float> toRotationStep = std::vector<float>(3);
+		toRotationStep[0] = ((toRotation[0] - mRotation[0]) / numFrames);
+		toRotationStep[1] = ((toRotation[1] - mRotation[1]) / numFrames);
+		toRotationStep[2] = ((toRotation[2] - mRotation[2]) / numFrames);
+			
 		std::vector<float> toScale     = toKeyFrame->getScale();
 		std::vector<float> toScaleStep = std::vector<float>(3);
 		toScaleStep[0] = ((toScale[0] - mScale[0]) / numFrames);
 		toScaleStep[1] = ((toScale[1] - mScale[1]) / numFrames);
 		toScaleStep[2] = ((toScale[2] - mScale[2]) / numFrames);
-		
-		std::vector<float> toRotation     = toKeyFrame->getRotation();
-		std::vector<float> toRotationStep = std::vector<float>(3);
-		toRotation[0] = ((toRotation[0] - mRotation[0]) / numFrames);
-		toRotation[1] = ((toRotation[1] - mRotation[1]) / numFrames);
-		toRotation[2] = ((toRotation[2] - mRotation[2]) / numFrames);
-		
-		for (int frameIndex = 0; frameIndex < numFrames;frameIndex++) {
+	
+		for (int frameIndex = 0; frameIndex < numFrames; frameIndex++) {
 			Frame *nextFrame = new Frame();
 			
 			std::vector<float> nextFrameTranslation = std::vector<float>(3);
-			nextFrameTranslation[0] = (toTranslationStep[0]*frameIndex);
-			nextFrameTranslation[1] = (toTranslationStep[1]*frameIndex);
-			nextFrameTranslation[2] = (toTranslationStep[2]*frameIndex);
+			nextFrameTranslation[0] = mTranslation[0] + (toTranslationStep[0]*frameIndex);
+			nextFrameTranslation[1] = mTranslation[1] + (toTranslationStep[1]*frameIndex);
+			nextFrameTranslation[2] = mTranslation[2] + (toTranslationStep[2]*frameIndex);
 			nextFrame->setTranslation(nextFrameTranslation);
 			
 			std::vector<float> nextFrameRotation = std::vector<float>(3);
-			nextFrameRotation[0] = (toRotationStep[0]*frameIndex);
-			nextFrameRotation[1] = (toRotationStep[1]*frameIndex);
-			nextFrameRotation[2] = (toRotationStep[2]*frameIndex);
+			nextFrameRotation[0] = mRotation[0] + (toRotationStep[0]*frameIndex);
+			nextFrameRotation[1] = mRotation[1] + (toRotationStep[1]*frameIndex);
+			nextFrameRotation[2] = mRotation[2] + (toRotationStep[2]*frameIndex);
 			nextFrame->setRotation(nextFrameRotation);
 			
 			std::vector<float> nextFrameScale = std::vector<float>(3);
-			nextFrameScale[0] = (toScaleStep[0]*frameIndex);
-			nextFrameScale[1] = (toScaleStep[1]*frameIndex);
-			nextFrameScale[2] = (toScaleStep[2]*frameIndex);
+			nextFrameScale[0] = mScale[0] + (toScaleStep[0]*frameIndex);
+			nextFrameScale[1] = mScale[1] + (toScaleStep[1]*frameIndex);
+			nextFrameScale[2] = mScale[2] + (toScaleStep[2]*frameIndex);
 			nextFrame->setScale(nextFrameScale);
 			nextFrame->showStatus();
 			addPlaybackFrame(nextFrame);

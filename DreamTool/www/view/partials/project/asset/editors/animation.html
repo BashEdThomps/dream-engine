@@ -99,6 +99,7 @@
           <td>Interpolation</td>
           <td>
             <select class="form-control input-sm" ng-model="selectedKeyFrame.interpolation">
+              <option value="" disabled hidden selected>Select Interpolation</option>
               <option ng-repeat="interpolation in getDreamAnimationInterpolationTypes()" value="{{interpolation.type}}">{{interpolation.name}}</option>
             </select>
           </td>

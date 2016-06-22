@@ -54,6 +54,7 @@
               <td>Type</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
+                  <option value="" disabled selected hidden>Select Asset Type</option>
                   <option ng-repeat="type in assetTypesObject" value="{{type.type}}">{{type.name}}</option>
                 </select>
               </td>
@@ -63,6 +64,7 @@
               <td>Collision Shape</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="physicsObjectFormat">
+                  <option value="" disabled hidden selected>Select Format</option>
                   <option ng-repeat="fmt in assetFormats.physicsObject" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
@@ -114,6 +116,7 @@
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="modelFormat">
+                  <option value="" disabled hidden selected>Select Format</option>
                   <option ng-repeat="fmt in assetFormats.model" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
@@ -136,6 +139,7 @@
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                  <option value="" disabled hidden selected>Select Format</option>
                   <option ng-repeat="fmt in assetFormats.script" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
@@ -145,6 +149,7 @@
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                  <option value="" disabled hidden selected>Select Format</option>
                   <option ng-repeat="fmt in assetFormats.animation" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
@@ -154,6 +159,7 @@
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                  <option value="" disabled hidden selected>Select Format</option>
                   <option ng-repeat="fmt in assetFormats.audio" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
@@ -198,6 +204,7 @@
               <td>Format</td>
               <td>
                 <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                  <option value="" disabled hidden selected>Select Format</option>
                   <option ng-repeat="fmt in assetFormats.font" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>

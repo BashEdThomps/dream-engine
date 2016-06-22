@@ -24,10 +24,10 @@ namespace Scene {
 			mName = soJson[SCENE_OBJECT_NAME];
 		}
 		
-		if (!soJson[SCENE_OBJECT_POSITION_TYPE].is_null()) {
-			mPositionType = soJson[SCENE_OBJECT_POSITION_TYPE];
+		if (!soJson[SCENE_OBJECT_TRANSFORM_TYPE].is_null()) {
+			mTransformType = soJson[SCENE_OBJECT_TRANSFORM_TYPE];
 		} else {
-			mPositionType = SCENE_OBJECT_POSITION_TYPE_OFFSET;
+			mTransformType = SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
 		}
 		
 		if (!soJson[SCENE_OBJECT_TRANSLATION].is_null()) {
@@ -68,7 +68,7 @@ namespace Scene {
 		}
 	}
 	
-	void SceneObject::resetTranslationRotationScale() {
+	void SceneObject::resetTransform() {
 		resetTranslation();
 		resetRotation();
 		resetScale();
@@ -102,35 +102,50 @@ namespace Scene {
 
 	void SceneObject::setTranslation(std::vector<float> translation) {
 		mTranslation = translation;
+#ifdef VERBOSE
 		std::cout << "SceneObject: " << getNameUUIDString() << " translation " << Util::String::floatVectorToString(mTranslation) << std::endl;
-	}
-	
-	void SceneObject::setScale(std::vector<float> scale) {
-		mScale = scale;
-		std::cout << "SceneObject: " << getNameUUIDString() << " scale " << Util::String::floatVectorToString(mScale) << std::endl;
+#endif
 	}
 	
 	void SceneObject::setRotation(std::vector<float> rotation) {
 		mRotation = rotation;
+#ifdef VERBOSE
 		std::cout << "SceneObject: " << getNameUUIDString() << " rotation " << Util::String::floatVectorToString(mRotation) << std::endl;
+#endif
 	}
 	
+	void SceneObject::setScale(std::vector<float> scale) {
+		mScale = scale;
+#ifdef VERBOSE
+		std::cout << "SceneObject: " << getNameUUIDString() << " scale " << Util::String::floatVectorToString(mScale) << std::endl;
+#endif
+	}
+
 	void SceneObject::setTranslation(float x, float y, float z) {
 		mTranslation[SO_X] = x;
 		mTranslation[SO_Y] = y;
 		mTranslation[SO_Z] = z;
+#ifdef VERBOSE
+		std::cout << "SceneObject: " << getNameUUIDString() << " translation " << Util::String::floatVectorToString(mTranslation) << std::endl;
+#endif
 	}
 
 	void SceneObject::setRotation(float x, float y, float z) {
 		mRotation[SO_X] = x;
 		mRotation[SO_Y] = y;
 		mRotation[SO_Z] = z;
+#ifdef VERBOSE
+		std::cout << "SceneObject: " << getNameUUIDString() << " rotation " << Util::String::floatVectorToString(mRotation) << std::endl;
+#endif
 	}
 	
 	void SceneObject::setScale(float x, float y, float z) {
 		mScale[SO_X] = x;
 		mScale[SO_Y] = y;
 		mScale[SO_Z] = z;
+#ifdef VERBOSE
+		std::cout << "SceneObject: " << getNameUUIDString() << " scale " << Util::String::floatVectorToString(mScale) << std::endl;
+#endif
 	}
 
 	std::vector<float> SceneObject::getRotation() {
@@ -239,17 +254,11 @@ namespace Scene {
 			std::cout << "None";
 		}
 		std::cout << std::endl;
-		std::cout << "     Children: " << mChildren.size() << std::endl;
-		
-		std::cout << "Position Type: " << mPositionType << std::endl;
-		std::cout << "  Translation: (" << mTranslation[SO_X] << ","
-		                                << mTranslation[SO_Y] << ","
-		                                << mTranslation[SO_Z] << ")"
-		                                << std::endl;
-		std::cout << "     Rotation: (" << mRotation[SO_X] << ","
-		                                << mRotation[SO_Y] << ","
-		                                << mRotation[SO_Z] << ")"
-		                                << std::endl;
+		std::cout << "      Children: " << mChildren.size() << std::endl;
+		std::cout << "Trnasform Type: " << mTransformType << std::endl;
+		std::cout << "   Translation: " << Util::String::floatVectorToString(mTranslation) << std::endl;
+		std::cout << "      Rotation: " << Util::String::floatVectorToString(mRotation)<< std::endl;
+		std::cout << "         Scale: " << Util::String::floatVectorToString(mRotation)<< std::endl;
 	}
 	
 	std::vector<std::string> SceneObject::getAssetInstanceUUIDsToLoad() {
@@ -329,6 +338,14 @@ namespace Scene {
 	
 	Asset::AssetInstance* SceneObject::getPhysicsObjectAssetInstance() {
 		return mPhysicsObjectAssetInstance;
+	}
+	
+	std::string SceneObject::getTransformType() {
+		return mTransformType;
+	}
+	
+	void SceneObject::setTransformType(std::string transformType) {
+		mTransformType = transformType;
 	}
 	
 } // End of Scene

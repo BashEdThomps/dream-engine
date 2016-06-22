@@ -21,6 +21,10 @@ App.controller("ProjectSceneEditor",
       });
     };
 
+    $scope.getSceneObjectTransformTypes = function() {
+      return ProjectService.getSceneObjectTransformTypes();
+    };
+
     $scope.generateSceneObjectTreeNode = function(sceneObject) {
       var retval = {
         label: sceneObject.name,

@@ -231,6 +231,28 @@ App.service('ProjectService',
       }
     ];
 
+    // SceneObject -------------------------------------------------------------
+
+    this.SCENE_OBJECT_TRANSFORM_ABSOLUTE_NAME = "Absolute";
+    this.SCENE_OBJECT_TRANSFORM_ABSOLUTE_TYPE = "absolute";
+
+    this.SCENE_OBJECT_TRANSFORM_OFFSET_NAME = "Offset";
+    this.SCENE_OBJECT_TRANSFORM_OFFSET_TYPE = "offset";
+
+    this.SCENE_OBJECT_TRANSFORM_TYPES = [{
+      type: this.SCENE_OBJECT_TRANSFORM_OFFSET_TYPE,
+      name: this.SCENE_OBJECT_TRANSFORM_OFFSET_NAME
+    },{
+      type: this.SCENE_OBJECT_TRANSFORM_ABSOLUTE_TYPE,
+      name: this.SCENE_OBJECT_TRANSFORM_ABSOLUTE_NAME
+    }];
+
+    // Methods -----------------------------------------------------------------
+
+    this.getSceneObjectTransformTypes = function() {
+      return this.SCENE_OBJECT_TRANSFORM_TYPES;
+    };
+
     this.getFormatsByAssetType = function(assetType,callback) {
       var retval = [];
       this.ASSET_TYPES.forEach(function(type) {
