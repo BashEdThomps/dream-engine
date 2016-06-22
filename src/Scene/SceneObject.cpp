@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include "SceneObject.h"
+#include "../Util/String.h"
 
 namespace Dream {
 namespace Scene {
@@ -101,14 +102,17 @@ namespace Scene {
 
 	void SceneObject::setTranslation(std::vector<float> translation) {
 		mTranslation = translation;
+		std::cout << "SceneObject: " << getNameUUIDString() << " translation " << Util::String::floatVectorToString(mTranslation) << std::endl;
 	}
 	
 	void SceneObject::setScale(std::vector<float> scale) {
 		mScale = scale;
+		std::cout << "SceneObject: " << getNameUUIDString() << " scale " << Util::String::floatVectorToString(mScale) << std::endl;
 	}
 	
 	void SceneObject::setRotation(std::vector<float> rotation) {
 		mRotation = rotation;
+		std::cout << "SceneObject: " << getNameUUIDString() << " rotation " << Util::String::floatVectorToString(mRotation) << std::endl;
 	}
 	
 	void SceneObject::setTranslation(float x, float y, float z) {

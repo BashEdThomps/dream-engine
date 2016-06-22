@@ -119,7 +119,7 @@ namespace Dream     {
 			int advanceBy = ceil(deltaTime / (1000/getFramesPerSecond()));
 			if (advanceBy > MAX_FRAME_ADVANCE) return;
 			mCurrentPlaybackFrame += advanceBy;
-			std::cout << "AnimationInstance: Delta time: " << deltaTime << ", Advance By: " << advanceBy <<  " frames to frame: " << mCurrentPlaybackFrame << std::endl;
+			//std::cout << "AnimationInstance: Delta time: " << deltaTime << ", Advance By: " << advanceBy <<  " frames to frame: " << mCurrentPlaybackFrame << std::endl;
 			if (mCurrentPlaybackFrame > mPlaybackFrames.size()) {
 				if (!mLoop) {
 					std::cout << "AnimationInstance: Playback Finished" << std::endl;
@@ -156,11 +156,11 @@ namespace Dream     {
 	}
 	
 	void AnimationInstance::applyTransform(Scene::SceneObject *sceneObject) {
-		if (mCurrentPlaybackFrame < mPlaybackFrames.size()) {
+		if (mPlaying && mCurrentPlaybackFrame < mPlaybackFrames.size()) {
   		Frame *currentFrame = mPlaybackFrames[mCurrentPlaybackFrame];
   		sceneObject->setTranslation(currentFrame->getTranslation());
   		sceneObject->setRotation(currentFrame->getRotation());
-  		sceneObject->setScale(currentFrame->getScale());
+  		//sceneObject->setScale(currentFrame->getScale());
 		}
 	}
 	

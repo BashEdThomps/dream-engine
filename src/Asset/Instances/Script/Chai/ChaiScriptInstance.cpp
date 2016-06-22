@@ -49,6 +49,7 @@ namespace Chai      {
 		initComponentManagerAPI();
 		initProjectAPI();
 		initSceneObjectAPI();
+		initSceneAPI();
 		initVideoComponentAPI();
 	}
 	
@@ -304,6 +305,7 @@ namespace Chai      {
 	
 	void ChaiScriptInstance::initSceneAPI() {
 		mScript->add(chaiscript::user_type<Scene::Scene>(),"Scene");
+		mScript->add_global(chaiscript::var(Dream::getProject()->getActiveScene()),"gScene");
 		mScript->add(chaiscript::fun(&Scene::Scene::getSceneObjectByUUID),"getSceneObjectByUUID");
 	}
 	

@@ -60,21 +60,21 @@ namespace Dream     {
 	void KeyFrame::generateLinearInterpolationFrames(KeyFrame* toKeyFrame, long numFrames) {
 		std::vector<float> toTranslation     = toKeyFrame->getTranslation();
 		std::vector<float> toTranslationStep = std::vector<float>(3);
-		toTranslationStep[0] = ((mTranslation[0] - toTranslation[0]) / numFrames);
-		toTranslationStep[1] = ((mTranslation[1] - toTranslation[1]) / numFrames);
-		toTranslationStep[2] = ((mTranslation[2] - toTranslation[2]) / numFrames);
+		toTranslationStep[0] = ((toTranslation[0] - mTranslation[0]) / numFrames);
+		toTranslationStep[1] = ((toTranslation[1] - mTranslation[1]) / numFrames);
+		toTranslationStep[2] = ((toTranslation[2] - mTranslation[2]) / numFrames);
 		
 		std::vector<float> toScale     = toKeyFrame->getScale();
 		std::vector<float> toScaleStep = std::vector<float>(3);
-		toScaleStep[0] = ((mScale[0] - toScale[0]) / numFrames);
-		toScaleStep[1] = ((mScale[1] - toScale[1]) / numFrames);
-		toScaleStep[2] = ((mScale[2] - toScale[2]) / numFrames);
+		toScaleStep[0] = ((toScale[0] - mScale[0]) / numFrames);
+		toScaleStep[1] = ((toScale[1] - mScale[1]) / numFrames);
+		toScaleStep[2] = ((toScale[2] - mScale[2]) / numFrames);
 		
 		std::vector<float> toRotation     = toKeyFrame->getRotation();
 		std::vector<float> toRotationStep = std::vector<float>(3);
-		toRotation[0] = ((mRotation[0] - toRotation[0]) / numFrames);
-		toRotation[1] = ((mRotation[1] - toRotation[1]) / numFrames);
-		toRotation[2] = ((mRotation[2] - toRotation[2]) / numFrames);
+		toRotation[0] = ((toRotation[0] - mRotation[0]) / numFrames);
+		toRotation[1] = ((toRotation[1] - mRotation[1]) / numFrames);
+		toRotation[2] = ((toRotation[2] - mRotation[2]) / numFrames);
 		
 		for (int frameIndex = 0; frameIndex < numFrames;frameIndex++) {
 			Frame *nextFrame = new Frame();
@@ -96,7 +96,7 @@ namespace Dream     {
 			nextFrameScale[1] = (toScaleStep[1]*frameIndex);
 			nextFrameScale[2] = (toScaleStep[2]*frameIndex);
 			nextFrame->setScale(nextFrameScale);
-			
+			nextFrame->showStatus();
 			addPlaybackFrame(nextFrame);
 		}
 	}

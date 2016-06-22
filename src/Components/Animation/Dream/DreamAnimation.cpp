@@ -83,9 +83,18 @@ namespace Dream      {
 	}
 	
 	bool DreamAnimation::isLooping(Asset::AssetInstance* asset) {
+		if (!asset) {
+			std::cerr << "DreamAnimation: asset is null in isLooping... " << std::endl;
+			return false;
+		}
+		
 		try {
 			Asset::Instances::Animation::Dream::AnimationInstance* animationAsset;
 			animationAsset = dynamic_cast<Asset::Instances::Animation::Dream::AnimationInstance*>(asset);
+			if (!animationAsset) {
+				std::cerr << "DreamAnimation: animationAsset is null in isLooping... " << std::endl;
+				return false;
+			}
 			return animationAsset->isLooping();
 		} catch (std::exception &ex) {
 			std::cerr << "DreamAnimation: Exception in isLooping... " << std::endl;
