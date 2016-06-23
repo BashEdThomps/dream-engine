@@ -92,7 +92,12 @@ namespace Dream     {
 				scale[2] = (*it)[ASSET_ATTR_SCALE][ASSET_ATTR_Z];
 				
 				long startTime   = (*it)[ASSET_ATTR_START_TIME];
-				bool wrap        = (*it)[ASSET_ATTR_WRAP];
+				
+				bool wrap = false;
+				if (!(*it)[ASSET_ATTR_WRAP].is_null()){
+					wrap = (*it)[ASSET_ATTR_WRAP];
+				}
+				
 				std::string interpolation = (*it)[ASSET_ATTR_INTERPOLATION];
 				std::string name = (*it)[ASSET_NAME];
 				std::string uuid = (*it)[ASSET_UUID];

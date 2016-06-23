@@ -111,6 +111,11 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_STATIC_PLANE;
   };
 
+  $scope.isPhysicsObjectAssetFormatBox = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_BOX;
+  }
+
   $scope.goToAssetEditor = function(uuid) {
     $state.go("ProjectAssetEditor",{asset: uuid});
     return;

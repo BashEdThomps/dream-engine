@@ -54,7 +54,14 @@ namespace Dream     {
 	}
 	
 	void KeyFrame::generateNoneInterpolationFrames(KeyFrame* toKeyFrame, long numFrames) {
-		std::cerr << "KeyFrame: generateNoneInterpolationFrames is not implemented!" << std::endl;
+		for (int frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+			Frame *nextFrame = new Frame();
+			nextFrame->setTranslation(mTranslation);
+			nextFrame->setRotation(mRotation);
+			nextFrame->setScale(mScale);
+			nextFrame->showStatus();
+			addPlaybackFrame(nextFrame);
+		}
 	}
 	
 	void KeyFrame::generateLinearInterpolationFrames(KeyFrame* toKeyFrame, long numFrames) {

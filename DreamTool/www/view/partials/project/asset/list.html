@@ -111,6 +111,23 @@
                 <input ng-change="modified()" ng-model="currentAsset.constant" class="form-control input-sm" type="number"/>
               </td>
             </tr>
+            <!-- Box -->
+            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatBox()">
+              <td>Half Extents</td>
+              <td>
+                <div class="row">
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentAsset.size.x" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentAsset.size.y" class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-md-4">
+                    <input ng-change="modified()" ng-model="currentAsset.size.z" class="form-control input-sm" type="number"/>
+                  </div>
+                </div>
+              </td>
+            </tr>
             <!-- Model -->
             <tr ng-show="isAssetTypeModel()">
               <td>Format</td>

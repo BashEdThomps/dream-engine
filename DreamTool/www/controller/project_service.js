@@ -883,12 +883,14 @@ App.service('ProjectService',
 
     this.createDreamAnimationKeyFrame = function (keyFrameIndex) {
         return {
-          uuid        : UtilService.generateUUID(),
-          name        : "KeyFrame " + keyFrameIndex,
-          startTime   : 0,
-          translation : {x:0.0, y:0.0, z:0.0},
-          rotation    : {x:0.0, y:0.0, z:0.0},
-          scale       : {x:1.0, y:1.0, z:1.0}
+          uuid          : UtilService.generateUUID(),
+          name          : "KeyFrame " + keyFrameIndex,
+          startTime     : 0,
+          translation   : {x:0.0, y:0.0, z:0.0},
+          rotation      : {x:0.0, y:0.0, z:0.0},
+          scale         : {x:1.0, y:1.0, z:1.0},
+          wrap          : false,
+          interpolation : "none"
         };
     };
 

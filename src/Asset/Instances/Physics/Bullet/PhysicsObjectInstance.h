@@ -15,6 +15,12 @@
 #define ASSET_ATTR_NORMAL_Y "normalY"
 #define ASSET_ATTR_NORMAL_Z "normalZ"
 
+#define ASSET_ATTR_SIZE "size"
+
+#define ASSET_ATTR_SIZE_X "sizeX"
+#define ASSET_ATTR_SIZE_Y "sizeY"
+#define ASSET_ATTR_SIZE_Z "sizeZ"
+
 #define COLLISION_SHAPE_SPHERE                   "btShpereShape"
 #define COLLISION_SHAPE_BOX                      "btBoxShape"
 #define COLLISION_SHAPE_CYLINDER                 "btCylinderShape"

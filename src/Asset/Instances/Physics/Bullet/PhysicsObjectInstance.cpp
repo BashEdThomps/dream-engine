@@ -44,9 +44,18 @@ namespace Bullet    {
 		if (!json[ASSET_ATTR_CONSTANT].is_null() && json[ASSET_ATTR_CONSTANT].is_number()) {
 			mDefinition->addAttribute(ASSET_ATTR_CONSTANT, std::to_string((float)json[ASSET_ATTR_CONSTANT]));
 		}
+		
+		// Size
+		if (!json[ASSET_ATTR_SIZE].is_null()) {
+			nlohmann::json size = json[ASSET_ATTR_SIZE];
+			mDefinition->addAttribute(ASSET_ATTR_SIZE_X, std::to_string((float)size[ASSET_ATTR_X]));
+			mDefinition->addAttribute(ASSET_ATTR_SIZE_Y, std::to_string((float)size[ASSET_ATTR_Y]));
+			mDefinition->addAttribute(ASSET_ATTR_SIZE_Z, std::to_string((float)size[ASSET_ATTR_Z]));
+		}
 	}
 		
 	bool PhysicsObjectInstance::load(std::string projectPath) {
+		loadExtraAttributes(mDefinition->getJson());
 		if (!createCollisionShape()){
 			std::cerr << "PhysicsObjectInstance: Unable to create collision shape" << std::endl;
 			return false;
@@ -70,7 +79,11 @@ namespace Bullet    {
 			btScalar radius = mDefinition->getAttributeAsFloat(ASSET_ATTR_RADIUS);
 			mCollisionShape = new btSphereShape(radius);
 		} else if (format.compare(COLLISION_SHAPE_BOX) == 0) {
-			//mCollisionShape = new btBoxShape();
+			btScalar boxX, boxY, boxZ;
+			boxX  = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_X);
+			boxY = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_Y);
+			boxZ  = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_Z);
+			mCollisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
 		} else if (format.compare(COLLISION_SHAPE_CYLINDER) == 0) {
 			//mCollisionShape = new btCylinderShape();
 		} else if (format.compare(COLLISION_SHAPE_CAPSULE) == 0) {
