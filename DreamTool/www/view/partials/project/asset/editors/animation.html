@@ -48,6 +48,28 @@
           <td><input type="number" class="form-control input-sm" ng-model="selectedKeyFrame.startTime"/></td>
         </tr>
         <tr>
+          <td>Wrap to Beginning</td>
+          <td>
+            <div class="checkbox checkbox-info">
+              <input type="checkbox" id="warpAnimation" ng-change="modified()" ng-model="selectedKeyFrame.wrap" />
+              <label></label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Interpolation</td>
+          <td>
+            <select class="form-control input-sm" ng-model="selectedKeyFrame.interpolation">
+              <option value="" disabled hidden selected>Select Interpolation</option>
+              <option ng-repeat="interpolation in getDreamAnimationInterpolationTypes()" value="{{interpolation.type}}">{{interpolation.name}}</option>
+            </select>
+          </td>
+        </tr>
+        <!-- Linear interpolation -->
+        <tr ng-show="keyFrameHasLinearInterpolation()">
+          <td class="text-center" colspan=2>Linear Transform</td>
+        </tr>
+        <tr ng-show="keyFrameHasLinearInterpolation()">
           <td>Translation</td>
           <td>
             <div class="row">
@@ -63,7 +85,7 @@
             </div>
           </td>
         </tr>
-        <tr>
+        <tr ng-show="keyFrameHasLinearInterpolation()">
           <td>Rotation</td>
           <td>
             <div class="row">
@@ -79,7 +101,7 @@
             </div>
           </td>
         </tr>
-        <tr>
+        <tr ng-show="keyFrameHasLinearInterpolation()">
           <td>Scale</td>
           <td>
             <div class="row">
@@ -95,21 +117,106 @@
             </div>
           </td>
         </tr>
-        <tr>
-          <td>Interpolation</td>
+        <!-- Bezier Interpolation-->
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td class="text-center" colspan=2>Initial Transform</td>
+        </tr>
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td>Translation</td>
           <td>
-            <select class="form-control input-sm" ng-model="selectedKeyFrame.interpolation">
-              <option value="" disabled hidden selected>Select Interpolation</option>
-              <option ng-repeat="interpolation in getDreamAnimationInterpolationTypes()" value="{{interpolation.type}}">{{interpolation.name}}</option>
-            </select>
+            <div class="row">
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.translation.x" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.translation.y" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.translation.z" class="form-control input-sm" type="number"/>
+              </div>
+            </div>
           </td>
         </tr>
-        <tr>
-          <td>Wrap to Beginning</td>
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td>Rotation</td>
           <td>
-            <div class="checkbox checkbox-info">
-              <input type="checkbox" id="warpAnimation" ng-change="modified()" ng-model="selectedKeyFrame.wrap" />
-              <label></label>
+            <div class="row">
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.rotation.x" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.rotation.y" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.rotation.z" class="form-control input-sm" type="number"/>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td>Scale</td>
+          <td>
+            <div class="row">
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.scale.x" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.scale.y" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.scale.z" class="form-control input-sm" type="number"/>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td class="text-center" colspan=2>Second Pointkk</td>
+        </tr>
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td>Translation</td>
+          <td>
+            <div class="row">
+              <div class="col-md-4">    nn                       nnm,c     nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+                <input ng-change="modified()" ng-model="selectedKeyFrame.translation.x" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.translation.y" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.translation.z" class="form-control input-sm" type="number"/>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td>Rotation</td>
+          <td>
+            <div class="row">
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.rotation.x" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.rotation.y" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.rotation.z" class="form-control input-sm" type="number"/>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr ng-show="keyFrameHasBezierInterpolation()">
+          <td>Scale</td>
+          <td>
+            <div class="row">
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.scale.x" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.scale.y" class="form-control input-sm" type="number"/>
+              </div>
+              <div class="col-md-4">
+                <input ng-change="modified()" ng-model="selectedKeyFrame.scale.z" class="form-control input-sm" type="number"/>
+              </div>
             </div>
           </td>
         </tr>

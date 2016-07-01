@@ -108,8 +108,39 @@ namespace Dream     {
 		}
 	}
 	
+	float KeyFrame::getBezierPoint(float n1, float n2, float perc) {
+		float diff = n2 - n1;
+		return n1 + ( diff * perc );
+	}
+	
 	void KeyFrame::generateBezierInterpolationFrames(KeyFrame* toKeyFrame, long numFrames) {
-		std::cerr << "KeyFrame: generateBezierInterpolationFrames is not implemented!" << std::endl;
+		int x1 = 0, y1 = 0, z1 = 0;
+		int x2 = 0, y2 = 0, z2 = 0;
+		int x3 = 0, y3 = 0, z3 = 0;
+		
+		float i = 0;
+		for (int frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+			Frame *nextFrame = new Frame();
+			i = (1.0f/numFrames)*frameIndex;
+			
+			// Per-Axis Deltas
+			float xa = getBezierPoint(x1, x2, i);
+			float ya = getBezierPoint(y1, y2, i);
+			float za = getBezierPoint(z1, z2, i);
+			
+			float xb = getBezierPoint(x2, x3, i);
+			float yb = getBezierPoint(y2, y3, i);
+			float zb = getBezierPoint(z2, z3, i);
+			
+			// Translation
+			float x = getBezierPoint(xa, xb, i);
+			float y = getBezierPoint(ya, yb, i);
+			float z = getBezierPoint(za, zb, i);
+			
+			nextFrame->setTranslation({x,y,z});
+			
+			addPlaybackFrame(nextFrame);
+		}
 	}
 	
 	void KeyFrame::addPlaybackFrame(Frame* frame) {

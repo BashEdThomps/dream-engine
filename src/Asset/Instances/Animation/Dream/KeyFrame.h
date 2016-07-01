@@ -48,7 +48,8 @@ namespace Dream     {
 		std::string getUUID();
 		void setUUID(std::string);
 		void setInterpolationType(std::string);
-		std::string  getInterpolationType();
+		std::string getInterpolationType();
+		float getBezierPoint(float,float,float);
 		
 		bool isInterpolationTypeNone();
 		void generateNoneInterpolationFrames(KeyFrame*,long);

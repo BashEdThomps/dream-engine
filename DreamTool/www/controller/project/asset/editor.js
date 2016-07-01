@@ -239,6 +239,21 @@ App.controller("ProjectAssetEditor",
       };
     };
 
+    $scope.keyFrameHasNoneInterpolation = function() {
+      if (!$scope.selectedKeyFrame) return false;
+      return $scope.selectedKeyFrame.interpolation == ProjectService.DREAM_ANIMATION_INTERPOLATION_NONE_TYPE;
+    };
+
+    $scope.keyFrameHasBezierInterpolation = function() {
+      if (!$scope.selectedKeyFrame) return false;
+      return $scope.selectedKeyFrame.interpolation == ProjectService.DREAM_ANIMATION_INTERPOLATION_BEZIER_TYPE;
+    };
+
+    $scope.keyFrameHasLinearInterpolation = function() {
+      if (!$scope.selectedKeyFrame) return false;
+      return $scope.selectedKeyFrame.interpolation == ProjectService.DREAM_ANIMATION_INTERPOLATION_LINEAR_TYPE;
+    };
+
     $scope.onEditKeyFrameButtonClicked = function(uuid) {
       console.log("Editing KeyFrame",uuid);
       ProjectService.getKeyFrameFromAssetByUUID($scope.asset,uuid,function(keyFrame) {
