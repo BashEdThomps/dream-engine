@@ -25,7 +25,7 @@ set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory (src)
 
 # Dream Unit Tests
-add_subdirectory (test)
+#add_subdirectory (test)
 
 # Enable Unit Testing
 enable_testing()
