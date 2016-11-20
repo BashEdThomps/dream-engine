@@ -20,27 +20,27 @@
 #define AnimationInterface_hpp
 
 #include "../ComponentInterface.h"
-#include "../../Asset/AssetInstance.h"
+#include "../../AssetInstance.h"
 
 namespace Dream {
-namespace Components {
-namespace Animation {
-	
-	class AnimationComponentInterface : public Dream::Components::ComponentInterface {
-	public:
-    AnimationComponentInterface();
-    ~AnimationComponentInterface();
-		
-		virtual void play (Asset::AssetInstance*) = 0;
-		virtual void pause(Asset::AssetInstance*) = 0;
-		virtual void stop (Asset::AssetInstance*) = 0;
-		virtual void setLooping(Asset::AssetInstance*,bool) = 0;
-		virtual bool isLooping(Asset::AssetInstance*) = 0;
-		
-	}; // End of AnimationComponentInterface
-	
-} // End of Animation
-} // End of Components
+  namespace Components {
+    namespace Animation {
+
+      class AnimationComponentInterface : public Dream::Components::ComponentInterface {
+      public:
+        AnimationComponentInterface();
+        ~AnimationComponentInterface();
+
+        virtual void play (AssetInstance*) = 0;
+        virtual void pause(AssetInstance*) = 0;
+        virtual void stop (AssetInstance*) = 0;
+        virtual void setLooping(AssetInstance*,bool) = 0;
+        virtual bool isLooping(AssetInstance*) = 0;
+
+      }; // End of AnimationComponentInterface
+
+    } // End of Animation
+  } // End of Components
 } // End of Dream
 
 #endif /* AnimationInterface_hpp */

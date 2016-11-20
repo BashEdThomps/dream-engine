@@ -10,32 +10,6 @@ add_library (DreamBase SHARED ${DREAM_SRC})
 
 # Source Groups
 
-file(GLOB_RECURSE _ASSET_SRC "Asset/*.h" "Asset/*.cpp")
-source_group(Asset FILES ${_ASSET_SRC})
-
-file(GLOB_RECURSE _EXT_LIB_SRC "ExternalLibs/*")
-source_group(ExternalLibs FILES ${_EXT_LIB_SRC})
-
-file(GLOB_RECURSE _MAIN_SRC "Main/*.h" "Main/*.cpp")
-list(REMOVE_ITEM  _MAIN_SRC "Main/Main.cpp")
-source_group(Main FILES ${_MAIN_SRC})
-
-file(GLOB_RECURSE _COMPONENTS_SRC "Components/*.h" "Components/*.cpp")
-source_group(Components FILES ${_COMPONENTS_SRC})
-
-file(GLOB_RECURSE _PROJECT_SRC "Project/*.h" "Project/*.cpp")
-source_group(Project FILES ${_PROJECT_SRC})
-
-file(GLOB_RECURSE _SCENE_SRC "Scene/*.h" "Scene/*.cpp")
-source_group(Scene FILES ${_SCENE_SRC})
-
-file(GLOB_RECURSE _UNIT_SRC "Unit/*.h" "Unit/*.cpp")
-source_group(Unit FILES ${_UNIT_SRC})
-
-file(GLOB_RECURSE _UTIL_SRC "Util/*.h" "Util/*.cpp")
-source_group(Util FILES ${_UTIL_SRC})
-
-
 # Find Required Packages
 find_package(OPENAL REQUIRED)
 find_package(BULLET REQUIRED)
@@ -52,36 +26,36 @@ find_package(ALUT REQUIRED)
 # Libraries
 
 target_link_libraries(
-	DreamBase
-	-lpthread
-	-ldl
-	${OPENAL_LIBRARY}
-	${OPENGL_LIBRARIES}
-	${assimp_LIBRARIES}
-	${SOIL_LIBRARIES}
-	${GLFW_LIBRARIES}
-	${GLEW_LIBRARIES}
-	${BULLET_LIBRARY}
-	${OGGVORBIS_LIBRARIES}
-	${ALUT_LIBRARY}
+  DreamBase
+  -lpthread
+  -ldl
+  ${OPENAL_LIBRARY}
+  ${OPENGL_LIBRARIES}
+  ${assimp_LIBRARIES}
+  ${SOIL_LIBRARIES}
+  ${GLFW_LIBRARIES}
+  ${GLEW_LIBRARIES}
+  ${BULLET_LIBRARY}
+  ${OGGVORBIS_LIBRARIES}
+  ${ALUT_LIBRARY}
 )
 
 include_directories(
-	${CHAISCRIPT_INCLUDE_DIR}
-	${OPENAL_INCLUDE_DIR}
-	${OPENGL_INCLUDE_DIR}
-	${GLFW_INCLUDE_DIR}
-	${GLEW_INCLUDE_DIRS}
-	${assimp_INCLUDE_DIRS}
-	${SOIL_INCLUDE_DIR}
-	${GLM_INCLUDE_DIR}
-	${BULLET_INCLUDE_DIR}
-	${VORBIS_INCLUDE_DIR}
-	${ALUT_INCLUDE_DIR}
+  ${CHAISCRIPT_INCLUDE_DIR}
+  ${OPENAL_INCLUDE_DIR}
+  ${OPENGL_INCLUDE_DIR}
+  ${GLFW_INCLUDE_DIR}
+  ${GLEW_INCLUDE_DIRS}
+  ${assimp_INCLUDE_DIRS}
+  ${SOIL_INCLUDE_DIR}
+  ${GLM_INCLUDE_DIR}
+  ${BULLET_INCLUDE_DIR}
+  ${VORBIS_INCLUDE_DIR}
+  ${ALUT_INCLUDE_DIR}
 )
 
-add_executable (Dream "Main/Main.cpp")
-source_group(Main FILES "Main/Main.cpp")
+add_executable (Dream "Main.cpp")
+source_group(Main FILES "Main.cpp")
 
 target_link_libraries(
   Dream
@@ -91,9 +65,9 @@ target_link_libraries(
   ${OPENAL_LIBRARY}
   ${GLFW_LIBRARIES}
   ${GLEW_LIBRARIES}
-	${assimp_LIBRARIES}
-	${SOIL_LIBRARIES}
+  ${assimp_LIBRARIES}
+  ${SOIL_LIBRARIES}
   ${BULLET_LIBRARY}
   ${OGGVORBIS_LIBRARIES}
-	${ALUT_LIBRARY}
+  ${ALUT_LIBRARY}
 )

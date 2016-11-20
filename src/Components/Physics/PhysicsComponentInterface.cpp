@@ -18,9 +18,9 @@
 #include "PhysicsComponentInterface.h"
 
 namespace Dream {
-namespace Components {
-namespace Physics {
-	PhysicsComponentInterface::PhysicsComponentInterface(void) : Dream::Components::ComponentInterface() {}
-} // End of Physics
-} // End of Components
+  namespace Components {
+    namespace Physics {
+      PhysicsComponentInterface::PhysicsComponentInterface(void) : Dream::Components::ComponentInterface() {}
+    } // End of Physics
+  } // End of Components
 } // End of Dream

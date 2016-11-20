@@ -9,62 +9,62 @@
 
 #include <iostream>
 
-namespace Dream   {
-namespace Components {
-namespace Input   {
-	class InputEvent {
-	public:
-		static InputEvent LastEvent;
-	private:
-		int mKey;
-		int mScancode;
-		int mAction;
-		int mMods;
-		int mXScrollOffset;
-		int mYScrollOffset;
-		int mXPosition;
-		int mYPosition;
-		int mButton;
-		int mSource;
-	public:
-		InputEvent(int source);
-		~InputEvent();
-		
-		int  getMods();
-		void setMods(int);
-		
-		int  getKey();
-		void setKey(int);
-		
-		int  getAction();
-		void setAction(int);
-		
-		int  getScancode();
-		void setScancode(int);
-		
-		int  getXScrollOffset();
-		void setXScrollOffset(int);
-		
-		int  getYScrollOffset();
-		void setYScrollOffset(int);
-		
-		void setXPosition(int);
-		int  getXPosition();
-		
-		void setYPosition(int);
-		int  getYPosition();
-		
-		int getXPositionOffset();
-		int getYPositionOffset();
-		
-		int  getButton();
-		void setButton(int);
-		
-		int getSource();
-	};
-			
-}
-}
+namespace Dream {
+  namespace Components {
+    namespace Input {
+      class InputEvent {
+      public:
+        static InputEvent LastEvent;
+      private:
+        int mKey;
+        int mScancode;
+        int mAction;
+        int mMods;
+        int mXScrollOffset;
+        int mYScrollOffset;
+        int mXPosition;
+        int mYPosition;
+        int mButton;
+        int mSource;
+      public:
+        InputEvent(int source);
+        ~InputEvent();
+
+        int  getMods();
+        void setMods(int);
+
+        int  getKey();
+        void setKey(int);
+
+        int  getAction();
+        void setAction(int);
+
+        int  getScancode();
+        void setScancode(int);
+
+        int  getXScrollOffset();
+        void setXScrollOffset(int);
+
+        int  getYScrollOffset();
+        void setYScrollOffset(int);
+
+        void setXPosition(int);
+        int  getXPosition();
+
+        void setYPosition(int);
+        int  getYPosition();
+
+        int getXPositionOffset();
+        int getYPositionOffset();
+
+        int  getButton();
+        void setButton(int);
+
+        int getSource();
+      };
+
+    }
+  }
 }
 
 #endif /* InputEvent_hpp */

@@ -17,27 +17,26 @@
 
 #include "InputComponentInterface.h"
 
-namespace Dream   {
-namespace Components {
-namespace Input   {
-	
-	std::vector<InputEvent> InputComponentInterface::sInputEventsVector = std::vector<InputEvent>();
-	
-	InputComponentInterface::InputComponentInterface() : Dream::Components::ComponentInterface() {}
-	
-	void InputComponentInterface::pushEvent(InputEvent event) {
-		sInputEventsVector.push_back(event);
-	}
+namespace Dream {
+  namespace Components {
+    namespace Input {
 
-	void InputComponentInterface::clearInputEvents() {
-		sInputEventsVector.clear();
-	}
-	
-	std::vector<InputEvent> InputComponentInterface::getInputEventVector() {
-		return sInputEventsVector;
-	}
-	
-	
-} // End of Input
-} // End of Components
+      std::vector<InputEvent> InputComponentInterface::sInputEventsVector = std::vector<InputEvent>();
+
+      InputComponentInterface::InputComponentInterface() : Dream::Components::ComponentInterface() {}
+
+      void InputComponentInterface::pushEvent(InputEvent event) {
+        sInputEventsVector.push_back(event);
+      }
+
+      void InputComponentInterface::clearInputEvents() {
+        sInputEventsVector.clear();
+      }
+
+      std::vector<InputEvent> InputComponentInterface::getInputEventVector() {
+        return sInputEventsVector;
+      }
+
+    } // End of Input
+  } // End of Components
 } // End of Dream

@@ -25,33 +25,32 @@
 #define VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
 
 namespace Dream   {
-namespace Components {
-namespace Video   {
-	
-	class VideoComponentInterface : public Dream::Components::ComponentInterface {
-	protected:
-		int mScreenWidth;
-		int mScreenHeight;
-		std::string mScreenName;
-		bool mWindowShouldClose;
-	public:
-		VideoComponentInterface(void);
-		virtual ~VideoComponentInterface(void) {};
-    void setScreenWidth(int);
-    int  getScreenWidth();
-    void setScreenHeight(int);
-    int  getScreenHeight();
-    void setScreenName(std::string);
-    std::string getScreenName();
-		void setupWindowEventHandlers();
-		bool isWindowShouldCloseFlagSet();
-		
-		virtual void closeWindow() = 0;
-		virtual void setCursorEnabled(bool) = 0;
-	}; // End of VideoInterface
-	
-} // End of Video
-} // End of Components
+  namespace Components {
+    namespace Video   {
+      class VideoComponentInterface : public Dream::Components::ComponentInterface {
+      protected:
+        int mScreenWidth;
+        int mScreenHeight;
+        std::string mScreenName;
+        bool mWindowShouldClose;
+      public:
+        VideoComponentInterface(void);
+        virtual ~VideoComponentInterface(void) {};
+        void setScreenWidth(int);
+        int  getScreenWidth();
+        void setScreenHeight(int);
+        int  getScreenHeight();
+        void setScreenName(std::string);
+        std::string getScreenName();
+        void setupWindowEventHandlers();
+        bool isWindowShouldCloseFlagSet();
+
+        virtual void closeWindow() = 0;
+        virtual void setCursorEnabled(bool) = 0;
+      }; // End of VideoInterface
+
+    } // End of Video
+  } // End of Components
 } // End of Dream
 
 #endif // End of VIDEOINTERFACE_H

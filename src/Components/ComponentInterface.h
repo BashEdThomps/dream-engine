@@ -18,20 +18,18 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include "../Scene/Scene.h"
+#include "../Scene.h"
 
 namespace Dream {
-namespace Components {
-	
-	class ComponentInterface {
-	public:
-		ComponentInterface(void);
-		virtual ~ComponentInterface(void) {}
-		virtual bool init() = 0;
-		virtual void update(Dream::Scene::Scene*) = 0;
-	}; // End of Interface
-	
-} // End of Components
+  namespace Components {
+    class ComponentInterface {
+    public:
+      ComponentInterface(void);
+      virtual ~ComponentInterface(void) {}
+      virtual bool init() = 0;
+      virtual void update(Dream::Scene*) = 0;
+    }; // End of Interface
+  } // End of Components
 } // End of Dream
 
 #endif // End of INTERFACE_H

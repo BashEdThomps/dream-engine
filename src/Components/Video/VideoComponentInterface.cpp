@@ -17,44 +17,44 @@
 
 #include "VideoComponentInterface.h"
 
-namespace Dream   {
-namespace Components {
-namespace Video   {
-	
-	VideoComponentInterface::VideoComponentInterface(void) : Dream::Components::ComponentInterface() {
-		setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
-    setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
-		mWindowShouldClose = false;
-  }
-            
-  void VideoComponentInterface::setScreenWidth(int width) {
-		mScreenWidth = width;
-  }
-            
-  int  VideoComponentInterface::getScreenWidth() {
-		return mScreenWidth;
-  }
-                
-  void VideoComponentInterface::setScreenHeight(int height) {
-      mScreenHeight = height;
-  }
-  
-  int  VideoComponentInterface::getScreenHeight() {
-      return mScreenHeight;
-  }
-      
-  void VideoComponentInterface::setScreenName(std::string name) {
-      mScreenName = name;
-  }
-  
-  std::string VideoComponentInterface::getScreenName() {
-      return mScreenName;
-  }
-		
-	bool VideoComponentInterface::isWindowShouldCloseFlagSet() {
-		return mWindowShouldClose;
- 	}
+namespace Dream {
+  namespace Components {
+    namespace Video {
 
-} // End of Video
-} // End of Components
+      VideoComponentInterface::VideoComponentInterface(void) : Dream::Components::ComponentInterface() {
+        setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
+        setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
+        mWindowShouldClose = false;
+      }
+
+      void VideoComponentInterface::setScreenWidth(int width) {
+        mScreenWidth = width;
+      }
+
+      int  VideoComponentInterface::getScreenWidth() {
+        return mScreenWidth;
+      }
+
+      void VideoComponentInterface::setScreenHeight(int height) {
+        mScreenHeight = height;
+      }
+
+      int  VideoComponentInterface::getScreenHeight() {
+        return mScreenHeight;
+      }
+
+      void VideoComponentInterface::setScreenName(std::string name) {
+        mScreenName = name;
+      }
+
+      std::string VideoComponentInterface::getScreenName() {
+        return mScreenName;
+      }
+
+      bool VideoComponentInterface::isWindowShouldCloseFlagSet() {
+        return mWindowShouldClose;
+      }
+
+    } // End of Video
+  } // End of Components
 } // End of Dream

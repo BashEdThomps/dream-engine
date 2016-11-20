@@ -19,25 +19,25 @@
 #define AUDIOINTERFACE_H
 
 #include "../ComponentInterface.h"
-#include "../../Asset/AssetInstance.h"
+#include "../../AssetInstance.h"
 
-namespace Dream   {
-namespace Components {
-namespace Audio   {
-	
-	class AudioComponentInterface : public Components::ComponentInterface {
-	public:
-		AudioComponentInterface(void);
-		virtual ~AudioComponentInterface(void) {};
-		virtual float getSampleOffset(Asset::AssetInstance*) = 0;
-		virtual std::vector<char> getAudioBuffer(Asset::AssetInstance*, int, int) = 0;
-		virtual void  playAudioAsset(Asset::AssetInstance*)  = 0;
-		virtual void  pauseAudioAsset(Asset::AssetInstance*) = 0;
-		virtual void  stopAudioAsset(Asset::AssetInstance*)  = 0;
-	}; // End of AudioComponentInterface
-	
-} // End of Components
-} // End of Audio
+namespace Dream {
+  namespace Components {
+    namespace Audio {
+
+      class AudioComponentInterface : public Components::ComponentInterface {
+      public:
+        AudioComponentInterface(void);
+        virtual ~AudioComponentInterface(void) {};
+        virtual float getSampleOffset(Asset::AssetInstance*) = 0;
+        virtual std::vector<char> getAudioBuffer(Asset::AssetInstance*, int, int) = 0;
+        virtual void  playAudioAsset(Asset::AssetInstance*)  = 0;
+        virtual void  pauseAudioAsset(Asset::AssetInstance*) = 0;
+        virtual void  stopAudioAsset(Asset::AssetInstance*)  = 0;
+      }; // End of AudioComponentInterface
+
+    } // End of Components
+  } // End of Audio
 } // End of Dream
 
 #endif // End of AUDIOINTERFACE_H

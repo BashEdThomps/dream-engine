@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Interface
+* Dream::Components::Animation::AnimationComponentInterface
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,11 @@
 
 #include "AnimationComponentInterface.h"
 
-namespace Dream     {
-namespace Components   {
-namespace Animation {
-	
-	AnimationComponentInterface::AnimationComponentInterface() : Dream::Components::ComponentInterface() {}
-	AnimationComponentInterface::~AnimationComponentInterface() {}
-	
-} // End of Animation
-} // End of Components
+namespace Dream {
+  namespace Components {
+    namespace Animation {
+      AnimationComponentInterface::AnimationComponentInterface() : Dream::Components::ComponentInterface() {}
+      AnimationComponentInterface::~AnimationComponentInterface() {}
+    } // End of Animation
+  } // End of Components
 } // End of Dream

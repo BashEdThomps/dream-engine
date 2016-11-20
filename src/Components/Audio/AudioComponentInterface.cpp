@@ -18,12 +18,10 @@
 
 #include "AudioComponentInterface.h"
 
-namespace Dream   {
-namespace Components {
-namespace Audio   {
-	
-	AudioComponentInterface::AudioComponentInterface(void) : Dream::Components::ComponentInterface() {}
-	
-} // End of Audio
-} // End of Components
+namespace Dream {
+  namespace Components {
+    namespace Audio {
+      AudioComponentInterface::AudioComponentInterface(void) : Dream::Components::ComponentInterface() {}
+    } // End of Audio
+  } // End of Components
 } // End of Dream
