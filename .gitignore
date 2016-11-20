@@ -237,3 +237,4 @@ npm-debug.log
 *Debug/
 *Release/
 Xcode
+CmakeLists.txt.user
