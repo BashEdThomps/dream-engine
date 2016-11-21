@@ -4,7 +4,7 @@
 #include "../../String.h"
 
 namespace Dream     {
-  namespace Conponents     {
+  namespace Components     {
     namespace Animation {
 
       int AnimationInstance::FramesPerSecond = 60;
@@ -27,7 +27,7 @@ namespace Dream     {
 
       void AnimationInstance::showStatus() {
         std::cout << "AnimationInstance:" << std::endl;
-        std::cout << "\tLoop: " << Util::String::boolToYesNo(mLoop) << std::endl;
+        std::cout << "\tLoop: " << String::boolToYesNo(mLoop) << std::endl;
       }
 
       bool AnimationInstance::load(std::string projectPath) {

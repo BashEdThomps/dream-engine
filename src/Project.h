@@ -1,5 +1,5 @@
 /*
-* Dream::Project::Project
+* Project
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,8 @@
 #include "Scene.h"
 #include "AssetDefinition.h"
 #include "String.h"
-#include "AssetManager.h"
 #include "Components/ComponentManager.h"
-#include "Time.h"
+#include "AssetManager.h"
 
 #define PROJECT_UUID            "uuid"
 #define PROJECT_NAME            "name"
@@ -43,75 +42,56 @@
 #define PROJECT_VULKAN_ENABLED  "vulkan"
 
 namespace Dream {
+
   class Project {
-  // Static Variables
-  private:
-    static Time* sTime;
   // Instance Variables
   private:
+    AssetManager *mAssetManager;
     std::string mUUID;
     std::string mName;
     std::string mDescription;
     std::string mAuthor;
     std::string mProjectPath;
     std::string mStartupScene;
-    Asset::AssetManager    *mAssetManager;
-    Components::ComponentManager *mComponentManager;
-    bool mChaiEnabled;
-    bool mOpenALEnabled;
-    bool mBullet2Enabled;
-    bool mOpenGLEnabled;
-    bool mVulkanEnabled;
-    bool mDone;
-    std::vector<Dream::Scene*> mScenes;
-    std::vector<Dream::Asset::AssetDefinition*> mAssetDefinitions;
+    std::vector<Scene*> mScenes;
     Scene *mActiveScene;
 
-    // Static Methods
-  public:
-    static Time* getTime();
   // Instance Methods
   public:
-    Project(void);
-    Project(std::string, nlohmann::json);
-    ~Project(void);
+    Project(AssetManager*);
+    Project(AssetManager*, std::string, nlohmann::json);
+    ~Project();
 
     void setMetadata(nlohmann::json);
-    void setComponentFlags(nlohmann::json);
     void loadScenesFromJson(nlohmann::json);
-    void loadAssetsDefinitionsFromJson(nlohmann::json);
 
-    void        setUUID(std::string);
+    void setAssetManager(AssetManager*);
+
+    void setUUID(std::string);
     std::string getUUID();
 
-    void        setName(std::string);
+    void setName(std::string);
     std::string getName();
 
-    void        setDescription(std::string);
+    void setDescription(std::string);
     std::string getDescription(void);
 
-    void        setAuthor(std::string);
+    void setAuthor(std::string);
     std::string getAuthor();
 
-    void        setStartupSceneUUID(std::string);
+    void setStartupSceneUUID(std::string);
     std::string getStartupSceneUUID();
-    Dream::Scene* getStartupScene();
+    Scene* getStartupScene();
 
-    void addScene(Dream::Scene*);
-    void removeScene(Dream::Scene*);
-    int  getNumberOfScenes();
+    void addScene(Scene*);
+    void removeScene(Scene*);
+    size_t getNumberOfScenes();
 
-    Dream::Scene* getSceneByName(std::string);
-    Dream::Scene* getSceneByUUID(std::string);
-
-
-    void addAssetDefinition(Dream::Asset::AssetDefinition*);
-    void removeAssetDefinition(Dream::Asset::AssetDefinition*);
-    int  getNumberOfAssetDefinitions();
-    Dream::Asset::AssetDefinition* getAssetDefinitionByUUID(std::string);
+    Scene* getSceneByName(std::string);
+    Scene* getSceneByUUID(std::string);
 
     std::string getProjectPath();
-    void        setProjectPath(std::string);
+    void setProjectPath(std::string);
 
     void showStatus();
 
@@ -119,24 +99,12 @@ namespace Dream {
     bool isOpenALEnabled();
     bool isBullet2Enabled();
     bool isOpenGLEnabled();
-    bool isVulkanEnabled();
 
-    void          setActiveScene(Scene*);
+    void setActiveScene(Scene*);
     Scene *getActiveScene();
-    bool          hasActiveScene();
-    bool          initActiveScene();
-
-    bool createAssetManager();
-    Asset::AssetManager* getAssetManager();
-
-    bool createComponentManager();
-    Components::ComponentManager* getComponentManager();
-
-    bool loadScene(Scene*);
-    bool run();
+    bool hasActiveScene();
 
   }; // End of Project
-
 } // End of Dream
 
 #endif // End of PROJECT_H

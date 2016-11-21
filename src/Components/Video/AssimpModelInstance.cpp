@@ -68,7 +68,7 @@ namespace Dream {
         return true;
       }
 
-      void AssimpModelInstance::draw(Shader::ShaderInstance* shader) {
+      void AssimpModelInstance::draw(ShaderInstance* shader) {
         GLuint nMeshes = mMeshes.size();
         for(GLuint i = 0; i < nMeshes; i++ ) {
           mMeshes[i].draw(shader);
@@ -87,7 +87,7 @@ namespace Dream {
         }
       }
 
-      Mesh AssimpModelInstance::processMesh(aiMesh* mesh, const aiScene* scene) {
+      AssimpMesh AssimpModelInstance::processMesh(aiMesh* mesh, const aiScene* scene) {
         std::vector<Vertex>  vertices;
         std::vector<GLuint>  indices;
         std::vector<Texture> textures;
@@ -136,7 +136,7 @@ namespace Dream {
         std::vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-        return Mesh(vertices, indices, textures);
+        return AssimpMesh(vertices, indices, textures);
       }
 
       std::vector<Texture> AssimpModelInstance::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {

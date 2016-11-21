@@ -107,11 +107,11 @@ namespace Dream {
       }
 
 
-      void OpenALAudio::pushToPlayQueue(Asset::AssetInstance* asset) {
+      void OpenALAudio::pushToPlayQueue(AssetInstance* asset) {
         try {
           if (std::find(mPlayQueue.begin(),mPlayQueue.end(), asset) == mPlayQueue.end()){
-            Asset::Instances::Audio::AudioAssetInstance* audioAsset;
-            audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+           AudioAssetInstance* audioAsset;
+            audioAsset = dynamic_cast<AudioAssetInstance*>(asset);
             if (audioAsset->getSource() == 0 && audioAsset->getBuffer() == 0) {
               audioAsset->setBuffer(generateBuffers(1));
               audioAsset->setSource(generateSources(1));
@@ -131,10 +131,10 @@ namespace Dream {
         }
       }
 
-      void OpenALAudio::pushToPauseQueue(Asset::AssetInstance* asset) {
+      void OpenALAudio::pushToPauseQueue(AssetInstance* asset) {
         try {
           if (std::find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end()) {
-            mPauseQueue.push_back(dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset));
+            mPauseQueue.push_back(dynamic_cast<AudioAssetInstance*>(asset));
           }
         }  catch (const std::exception &ex) {
           std::cerr << "OpenALAudio: Unable to push asset to pause queue" << asset->getNameAndUUIDString() << std::endl
@@ -142,10 +142,10 @@ namespace Dream {
         }
       }
 
-      void OpenALAudio::pushToStopQueue(Asset::AssetInstance* asset) {
+      void OpenALAudio::pushToStopQueue(AssetInstance* asset) {
         try {
           if (std::find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end()) {
-            mStopQueue.push_back(dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset));
+            mStopQueue.push_back(dynamic_cast<AudioAssetInstance*>(asset));
           }
         } catch (const std::exception &ex) {
           std::cerr << "OpenALAudio: Unable to push asset to stop queue" << asset->getNameAndUUIDString() << std::endl
@@ -168,10 +168,10 @@ namespace Dream {
       }
 
       void OpenALAudio::updatePlayQueue() {
-        std::vector<Asset::Instances::Audio::AudioAssetInstance*>::iterator iterator;
+        std::vector<AudioAssetInstance*>::iterator iterator;
         for (iterator = mPlayQueue.begin(); iterator != mPlayQueue.end(); iterator++) {
-          Asset::Instances::Audio::AudioAssetInstance *audioAsset = (*iterator);
-          if (getAudioAssetState(audioAsset) != Asset::Instances::Audio::PLAYING){
+          AudioAssetInstance *audioAsset = (*iterator);
+          if (getAudioAssetState(audioAsset) != PLAYING){
             playSource(audioAsset->getSource());
           }
         }
@@ -179,10 +179,10 @@ namespace Dream {
       }
 
       void OpenALAudio::updatePauseQueue() {
-        std::vector<Asset::Instances::Audio::AudioAssetInstance*>::iterator iterator;
+        std::vector<AudioAssetInstance*>::iterator iterator;
         for (iterator = mPauseQueue.begin(); iterator != mPauseQueue.end(); iterator++) {
-          Asset::Instances::Audio::AudioAssetInstance *audioAsset = (*iterator);
-          if (getAudioAssetState(audioAsset) != Asset::Instances::Audio::PAUSED) {
+          AudioAssetInstance *audioAsset = (*iterator);
+          if (getAudioAssetState(audioAsset) != PAUSED) {
             pauseSource(audioAsset->getSource());
           }
         }
@@ -190,25 +190,25 @@ namespace Dream {
       }
 
       void OpenALAudio::updateStopQueue() {
-        std::vector<Asset::Instances::Audio::AudioAssetInstance*>::iterator iterator;
+        std::vector<AudioAssetInstance*>::iterator iterator;
         for (iterator = mStopQueue.begin(); iterator != mStopQueue.end(); iterator++) {
-          Asset::Instances::Audio::AudioAssetInstance *audioAsset = (*iterator);
-          if (getAudioAssetState(audioAsset) != Asset::Instances::Audio::STOPPED) {
+          AudioAssetInstance *audioAsset = (*iterator);
+          if (getAudioAssetState(audioAsset) != STOPPED) {
             stopSource(audioAsset->getSource());
           }
         }
         mStopQueue.clear();
       }
 
-      void OpenALAudio::playAudioAsset(Asset::AssetInstance *asset) {
+      void OpenALAudio::playAudioAsset(AssetInstance *asset) {
         pushToPlayQueue(asset);
       }
 
-      void OpenALAudio::pauseAudioAsset(Asset::AssetInstance *asset) {
+      void OpenALAudio::pauseAudioAsset(AssetInstance *asset) {
         pushToPauseQueue(asset);
       }
 
-      void OpenALAudio::stopAudioAsset(Asset::AssetInstance *asset) {
+      void OpenALAudio::stopAudioAsset(AssetInstance *asset) {
         pushToStopQueue(asset);
       }
 
@@ -218,11 +218,11 @@ namespace Dream {
         return sampleOffset;
       }
 
-      std::vector<char> OpenALAudio::getAudioBuffer(Asset::AssetInstance* asset, int offset, int length) {
+      std::vector<char> OpenALAudio::getAudioBuffer(AssetInstance* asset, int offset, int length) {
         std::vector<char> retval = std::vector<char>(length);
         try {
-          Asset::Instances::Audio::AudioAssetInstance* audioAsset;
-          audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+          AudioAssetInstance* audioAsset;
+          audioAsset = dynamic_cast<AudioAssetInstance*>(asset);
           std::vector<char> audioData = audioAsset->getAudioDataBuffer();
           char* dataBegin = &audioData[0];
           retval.insert(retval.begin(), dataBegin, dataBegin+length);
@@ -233,42 +233,41 @@ namespace Dream {
         return retval;
       }
 
-      float OpenALAudio::getSampleOffset(Asset::AssetInstance* asset) {
+      float OpenALAudio::getSampleOffset(AssetInstance* asset) {
         try {
-          Asset::Instances::Audio::AudioAssetInstance* audioAsset;
-          audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+          AudioAssetInstance* audioAsset;
+          audioAsset = dynamic_cast<AudioAssetInstance*>(asset);
           return getSampleOffset(audioAsset->getSource());
         } catch (const std::exception &ex) {
-          std::cout << "OpenALAudio: Could not get sample offset for asset" << asset->getNameAndUUIDString() << std::endl;
+          std::cerr << "OpenALAudio: Could not get sample offset for asset" << asset->getNameAndUUIDString() << std::endl;
+          std::cerr << ex.what() << std::endl;
         }
         return 0.0f;
       }
 
-      Asset::Instances::Audio::AudioAssetStatus
-      OpenALAudio::getAudioAssetState(Asset::AssetInstance* asset) {
+      AudioAssetStatus
+      OpenALAudio::getAudioAssetState(AssetInstance* asset) {
         try {
-          Asset::Instances::Audio::AudioAssetInstance* audioAsset;
-          audioAsset = dynamic_cast<Asset::Instances::Audio::AudioAssetInstance*>(asset);
+          AudioAssetInstance* audioAsset;
+          audioAsset = dynamic_cast<AudioAssetInstance*>(asset);
           ALint state;
           alGetSourcei(audioAsset->getSource(), AL_SOURCE_STATE, &state);
           switch (state) {
             case AL_STOPPED:
-              return Asset::Instances::Audio::STOPPED;
+              return STOPPED;
             case AL_PLAYING:
-              return Asset::Instances::Audio::PLAYING;
+              return PLAYING;
             case AL_PAUSED:
-              return Asset::Instances::Audio::PAUSED;
+              return PAUSED;
             default:
-#ifdef VERBOSE
               std::cerr << "OpenALAudio: Unknown Audio State for " << asset->getNameAndUUIDString() << std::endl;
-#endif
-              return Asset::Instances::Audio::UNKNOWN;
+              return UNKNOWN;
           }
         } catch (const std::exception &ex) {
           std::cerr << "OpenALAudio: Unable to get state of asset " << asset->getNameAndUUIDString()
                     << std::endl << ex.what() << std::endl;
         }
-        return Asset::Instances::Audio::UNKNOWN;
+        return UNKNOWN;
       }
 
     } // End of Audio

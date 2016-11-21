@@ -37,8 +37,8 @@ namespace Dream {
           Dream::SceneObject *currentSceneObject = (*sgIter);
           if (currentSceneObject->hasScriptAssetInstance()) {
             try {
-              Asset::Instances::Script::Chai::ChaiScriptInstance* script;
-              script = dynamic_cast<Asset::Instances::Script::Chai::ChaiScriptInstance*>(currentSceneObject->getScriptAssetInstance());
+              ChaiScriptInstance* script;
+              script = dynamic_cast<ChaiScriptInstance*>(currentSceneObject->getScriptAssetInstance());
               script->update();
             } catch (const std::exception &ex) {
               std::cerr << "ChaiScripting: Exception Running Update on "
@@ -51,8 +51,8 @@ namespace Dream {
       void ChaiScripting::handleInputs(Dream::SceneObject* root) {
         if (root->hasScriptAssetInstance()) {
           try {
-            Asset::Instances::Script::Chai::ChaiScriptInstance* script;
-            script = dynamic_cast<Asset::Instances::Script::Chai::ChaiScriptInstance*>(
+            ChaiScriptInstance* script;
+            script = dynamic_cast<ChaiScriptInstance*>(
                   root->getScriptAssetInstance()
                   );
             script->processInputs(Input::InputComponentInterface::sInputEventsVector);

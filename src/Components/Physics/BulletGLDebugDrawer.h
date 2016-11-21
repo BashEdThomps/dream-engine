@@ -13,6 +13,7 @@
 namespace Dream   {
   namespace Components {
     namespace Physics {
+
       class GLDebugDrawer : public btIDebugDraw {
         int m_debugMode;
       public:
@@ -28,6 +29,7 @@ namespace Dream   {
         virtual void setDebugMode(int debugMode);
         virtual int  getDebugMode() const { return m_debugMode;}
       };
+
     } // End of Physics
   } // End of Components
 } // End of Dream

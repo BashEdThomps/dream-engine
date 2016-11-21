@@ -29,11 +29,11 @@ namespace Dream {
       public:
         AudioComponentInterface(void);
         virtual ~AudioComponentInterface(void) {};
-        virtual float getSampleOffset(Asset::AssetInstance*) = 0;
-        virtual std::vector<char> getAudioBuffer(Asset::AssetInstance*, int, int) = 0;
-        virtual void  playAudioAsset(Asset::AssetInstance*)  = 0;
-        virtual void  pauseAudioAsset(Asset::AssetInstance*) = 0;
-        virtual void  stopAudioAsset(Asset::AssetInstance*)  = 0;
+        virtual float getSampleOffset(AssetInstance*) = 0;
+        virtual std::vector<char> getAudioBuffer(AssetInstance*, int, int) = 0;
+        virtual void  playAudioAsset(AssetInstance*)  = 0;
+        virtual void  pauseAudioAsset(AssetInstance*) = 0;
+        virtual void  stopAudioAsset(AssetInstance*)  = 0;
       }; // End of AudioComponentInterface
 
     } // End of Components

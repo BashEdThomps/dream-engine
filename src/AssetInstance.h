@@ -29,6 +29,8 @@
 
 namespace Dream {
 
+  class SceneObject;
+
   class AssetInstance {
   protected:
     AssetDefinition    *mDefinition;

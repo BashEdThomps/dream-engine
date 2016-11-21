@@ -13,8 +13,6 @@ namespace Dream {
   namespace Components {
     namespace Input {
       class InputEvent {
-      public:
-        static InputEvent LastEvent;
       private:
         int mKey;
         int mScancode;

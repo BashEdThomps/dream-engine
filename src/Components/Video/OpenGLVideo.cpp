@@ -36,7 +36,9 @@ namespace Dream {
         glViewport(0, 0, width, height);
       }
 
-      OpenGLVideo::OpenGLVideo(void) : VideoComponentInterface() {}
+      OpenGLVideo::OpenGLVideo(Camera* camera) : VideoComponentInterface() {
+        mCamera = camera;
+      }
 
       OpenGLVideo::~OpenGLVideo(void) {
         if (mWindow) {
@@ -151,26 +153,22 @@ namespace Dream {
             }
           }
           glfwSwapBuffers(mWindow);
-#ifdef VERBOSE
-          checkGLError(99);
-#endif
+          //checkGLError(99);
         } else {
           mWindowShouldClose = true;
         }
       }
 
       void OpenGLVideo::drawSceneObject(Dream::SceneObject* sceneObject) {
-        Dream::Asset::Instances::Model::Assimp::AssimpModelInstance* model;
-        model = dynamic_cast<Dream::Asset::Instances::Model::Assimp::AssimpModelInstance*>(sceneObject->getModelAssetInstance());
-        Dream::Asset::Instances::Shader::ShaderInstance* shader;
-        shader = dynamic_cast<Dream::Asset::Instances::Shader::ShaderInstance*>(sceneObject->getShaderAssetInstance());
+        AssimpModelInstance* model;
+        model = dynamic_cast<AssimpModelInstance*>(sceneObject->getModelAssetInstance());
+        ShaderInstance* shader;
+        shader = dynamic_cast<ShaderInstance*>(sceneObject->getShaderAssetInstance());
         shader->use();
-#ifdef VERBOSE
-        checkGLError(1201);
-#endif
+        //checkGLError(1201);
         // Transformation matrices
-        glm::mat4 projection = glm::perspective(sCamera.getZoom(), (float)mScreenWidth/(float)mScreenHeight, mMinimumDraw,mMaximumDraw);
-        std::vector<std::vector<float>> view = sCamera.getViewMatrix();
+        glm::mat4 projection = glm::perspective(mCamera->getZoom(), (float)mScreenWidth/(float)mScreenHeight, mMinimumDraw,mMaximumDraw);
+        std::vector<std::vector<float>> view = mCamera->getViewMatrix();
 
         glm::mat4 viewMat4 = glm::mat4(
               view[0][0], view[0][1], view[0][2], view[0][3],
@@ -181,21 +179,19 @@ namespace Dream {
 
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(viewMat4));
-#ifdef VERBOSE
-        checkGLError(1202);
-#endif
+        //checkGLError(1202);
         // Draw the loaded model
         glm::mat4 modelMatrix;
         std::vector<float> translation = sceneObject->getTranslation();
         std::vector<float> rotation    = sceneObject->getRotation();
         std::vector<float> scale       = sceneObject->getScale();
-#ifdef VERBOSE
+        /*
         std::cout << "OpenGLVideo: Drawing Scene Object" << std::endl;
         std::cout	<< "\tT("<<translation[0]<<","<<translation[1]<<","<<translation[2]<<")"<<std::endl;
         std::cout	<< "\tR("<<rotation[0]<<","<<rotation[1]<<","<<rotation[2]<<")"<<std::endl;
         std::cout << "\tS("<<scale[0]<<","<<scale[1]<<","<<scale[2]<<")"<<std::endl;;
         checkGLError(1203);
-#endif
+        */
         // Translate
         modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
         // Rotate
@@ -204,21 +200,13 @@ namespace Dream {
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
         // Scale
         modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
-#ifdef VERBOSE
-        checkGLError(1204);
-#endif
+        //checkGLError(1204);
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-#ifdef VERBOSE
-        checkGLError(1205);
-#endif
+        //checkGLError(1205);
         model->draw(shader);
-#ifdef VERBOSE
-        checkGLError(1206);
-#endif
+        //checkGLError(1206);
         glUseProgram(0);
-#ifdef VERBOSE
-        checkGLError(1207);
-#endif
+        //checkGLError(1207);
       }
 
       bool OpenGLVideo::checkGLError(int errorIndex) {

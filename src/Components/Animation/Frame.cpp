@@ -46,9 +46,9 @@ namespace Dream     {
 
       void Frame::showStatus() {
         std::cout << "Frame:" << std::endl
-                  << "\tTranslation: "  << Util::String::floatVectorToString(mTranslation) << std::endl
-                  << "\t   Rotation: "  << Util::String::floatVectorToString(mRotation)    << std::endl
-                  << "\t      Scale: "  << Util::String::floatVectorToString(mScale)       << std::endl;
+                  << "\tTranslation: "  << String::floatVectorToString(mTranslation) << std::endl
+                  << "\t   Rotation: "  << String::floatVectorToString(mRotation)    << std::endl
+                  << "\t      Scale: "  << String::floatVectorToString(mScale)       << std::endl;
       }
 
 

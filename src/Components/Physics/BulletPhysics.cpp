@@ -21,10 +21,9 @@
 namespace Dream {
   namespace Components {
     namespace Physics {
+
       BulletPhysics::BulletPhysics(void) : PhysicsComponentInterface() {
-        #ifdef VERBOSE
         //mDebugDrawer = new GLDebugDrawer();
-        #endif
       }
 
       BulletPhysics::~BulletPhysics(void) {
@@ -33,9 +32,7 @@ namespace Dream {
         delete mCollisionConfiguration;
         delete mBroadphase;
         delete mDynamicsWorld;
-        #ifdef VERBOSE
         //delete mDebugDrawer;
-        #endif
       }
 
       void BulletPhysics::setGravity3f(float x, float y, float z) {
@@ -55,24 +52,18 @@ namespace Dream {
         mSolver = new btSequentialImpulseConstraintSolver();
         mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
         mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
-        #ifdef VERBOSE
         //mDynamicsWorld->setDebugDrawer(mDebugDrawer);
         //mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
-        #endif
         std::cout << "done." << std::endl;
         return true;
       }
 
       void BulletPhysics::update(Dream::Scene* scene) {
-        btScalar stepValue = Project::Project::getTime()->getTimeDelta();
-        #ifdef VERBOSE
-        std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
-        #endif
+        btScalar stepValue = mTime->getTimeDelta();
+        //std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
         mDynamicsWorld->stepSimulation(stepValue);
-        #ifdef VERBOSE
-        std::cout << "BulletPhysics: Drawing Debug World" << std::endl;
-        mDynamicsWorld->debugDrawWorld();
-        #endif
+        //std::cout << "BulletPhysics: Drawing Debug World" << std::endl;
+        //mDynamicsWorld->debugDrawWorld();
       }
 
       void BulletPhysics::addRigidBody(btRigidBody *rigidBody) {
@@ -82,13 +73,11 @@ namespace Dream {
       }
 
       void BulletPhysics::removeRigidBody(btRigidBody *rigidBody) {
-        #ifdef VERBOSE
         std::cout << "BulletPhysics: Removing Rigid Body from Dynamics World" << std::endl;
-        #endif
         mDynamicsWorld->removeRigidBody(rigidBody);
       }
 
-      void BulletPhysics::addPhysicsObjectInstance(Asset::Instances::Physics::Bullet::PhysicsObjectInstance *physicsObjejct){
+      void BulletPhysics::addPhysicsObjectInstance(PhysicsObjectInstance *physicsObjejct){
         addRigidBody(physicsObjejct->getRigidBody());
       }
 

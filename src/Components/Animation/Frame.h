@@ -5,7 +5,7 @@
 #include "../../SceneObject.h"
 
 namespace Dream {
-  namespace Component {
+  namespace Components {
     namespace Animation {
       class Frame {
       private:

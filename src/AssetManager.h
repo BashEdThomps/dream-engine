@@ -24,43 +24,52 @@
 
 #include "AssetInstance.h"
 #include "AssetDefinition.h"
-
-#include "Instances/Script/Chai/ChaiScriptInstance.h"
-#include "Instances/Audio/Ogg/OggAudioInstance.h"
-#include "Instances/Audio/Wav/WavAudioInstance.h"
-#include "Instances/Animation/Dream/AnimationInstance.h"
-#include "Instances/Shader/ShaderInstance.h"
-#include "Instances/Model/Assimp/AssimpModelInstance.h"
-#include "Instances/Physics/Bullet/PhysicsObjectInstance.h"
-#include "Instances/Light/LightInstance.h"
+#include "Components/Scripting/ChaiScriptInstance.h"
+#include "Components/Audio/OggAudioInstance.h"
+#include "Components/Audio/WavAudioInstance.h"
+#include "Components/Animation/AnimationInstance.h"
+#include "Components/Video/ShaderInstance.h"
+#include "Components/Video/AssimpModelInstance.h"
+#include "Components/Video/LightInstance.h"
+#include "Components/Physics/PhysicsObjectInstance.h"
 
 namespace Dream {
+
   class AssetManager {
   private:
-    Project::Project                 *mProject;
-    std::vector<AssetInstance*>      mAssetInstances;
+    std::vector<AssetInstance*> mAssetInstances;
     std::vector<SceneObject*> mSceneObjectsWithPhysicsObjects;
+    std::vector<AssetDefinition*> mAssetDefinitions;
+    std::string mProjectPath;
   public:
-    AssetManager(Project::Project* project);
+    AssetManager();
     ~AssetManager();
 
-    bool createAllAssetInstances();
+    bool createAllAssetInstances(Scene*);
     void destroyAllAssetInstances();
     void addAssetInstance(AssetInstance*);
-    AssetInstance* getAssetInstanceByUUID(std::string);
 
+    AssetInstance* getAssetInstanceByUUID(std::string);
     AssetInstance* createAssetInstanceFromDefinitionUUID(SceneObject*, std::string);
-    AssetInstance* createAssetInstance              (SceneObject*, AssetDefinition*);
-    AssetInstance* createAnimationAssetInstance     (SceneObject*, AssetDefinition*);
-    AssetInstance* createAudioAssetInstance         (SceneObject*, AssetDefinition*);
-    AssetInstance* createModelAssetInstance         (SceneObject*, AssetDefinition*);
-    AssetInstance* createScriptAssetInstance        (SceneObject*, AssetDefinition*);
-    AssetInstance* createShaderAssetInstance        (SceneObject*, AssetDefinition*);
-    AssetInstance* createPhysicsObjectAssetInstance (SceneObject*, AssetDefinition*);
-    AssetInstance* createLightAssetInstance         (SceneObject*, AssetDefinition*);
-    void           showStatus                       ();
+    AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createAnimationAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createAudioAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createModelAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createScriptAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createShaderAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createPhysicsObjectAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createLightAssetInstance(SceneObject*, AssetDefinition*);
+    void showStatus();
     std::vector<SceneObject*> getSceneObjectsWithPhysicsObjects();
-  };
+
+    void loadAssetDefinitionsFromJson(nlohmann::json);
+    void addAssetDefinition(AssetDefinition*);
+    void removeAssetDefinition(AssetDefinition*);
+    size_t getNumberOfAssetDefinitions();
+    AssetDefinition* getAssetDefinitionByUUID(std::string);
+
+    void setProjectPath(std::string);
+  }; // End of AssetManager
 } // End of Dream
 
 #endif /* AssetManager_h */

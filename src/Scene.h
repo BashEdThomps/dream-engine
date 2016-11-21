@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "SceneObject.h"
-#include "Camera.h"
+#include "Components/Video/Camera.h"
 #include "json.hpp"
 #include "String.h"
 
@@ -46,17 +46,18 @@
 namespace Dream {
   class Scene {
   public:
-    static Camera sCamera;
-  private:
-    std::string               mUUID;
-    std::string               mName;
-    bool                      mAnimationEnabled;
-    bool                      mAudioEnabled;
-    bool                      mInputEnabled;
-    bool                      mPhysicsEnabled;
-    bool                      mScriptingEnabled;
-    SceneObject              *mRootSceneObject;
+    std::string mUUID;
+    std::string mName;
+    bool mAnimationEnabled;
+    bool mAudioEnabled;
+    bool mInputEnabled;
+    bool mPhysicsEnabled;
+    bool mScriptingEnabled;
+    SceneObject *mRootSceneObject;
     std::vector<SceneObject*> mScenegraphVector;
+    std::vector<float> mCameraTranslation;
+    std::vector<float> mCameraRotation;
+    float mCameraMovementSpeed;
   public:
     Scene();
     Scene(nlohmann::json);

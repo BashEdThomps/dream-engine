@@ -6,7 +6,7 @@
 
 #include "../../AssetInstance.h"
 #include "../../AssetDefinition.h"
-#include "SceneObject.h"
+#include "../../SceneObject.h"
 
 #include "KeyFrame.h"
 #include "Frame.h"

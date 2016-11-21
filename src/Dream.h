@@ -6,27 +6,50 @@
 #include "ArgumentParser.h"
 
 #include "json.hpp"
+#include "Time.h"
 #include "FileReader.h"
 #include "Scene.h"
 #include "Project.h"
 #include "AssetInstance.h"
+#include "AssetManager.h"
+#include "Components/ComponentManager.h"
+#include "Components/Video/Camera.h"
 
 
 namespace Dream {
   class Dream {
   private:
-    static Project::Project *mProject;
-    bool   mRunning;
+    Time *mTime;
+    Project *mProject;
+    AssetManager *mAssetManager;
+    Components::ComponentManager *mComponentManager;
+    bool mDone;
+    Components::Video::Camera *mCamera;
+    Scene* mActiveScene;
   public:
     Dream(void);
     ~Dream(void);
     bool loadFromArgumentParser(ArgumentParser*);
-    bool loadProjectFromFileReader(std::string projectPath, Util::FileReader*);
+    bool loadProjectFromFileReader(std::string projectPath, FileReader*);
     bool loadScene(Scene*);
-    static Project::Project* getProject();
-    void setProject(Project::Project*);
-    bool runProject();
+    Project* getProject();
+    void setProject(Project*);
     bool isProjectLoaded();
+
+    bool createAssetManager();
+    AssetManager* getAssetManager();
+
+    bool createComponentManager();
+    Components::ComponentManager* getComponentManager();
+    bool run();
+    void setTime(Time*);
+    void setDone(bool);
+
+    void   setActiveScene(Scene*);
+    Scene *getActiveScene();
+    bool   hasActiveScene();
+    bool   initActiveScene();
+
   }; // End of Dream
 } // End of Dream
 

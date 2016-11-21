@@ -3,7 +3,6 @@
 namespace Dream   {
 namespace Components {
 namespace Physics {
-namespace Bullet  {
 
   GLDebugDrawer::GLDebugDrawer() : m_debugMode(0) {}
   GLDebugDrawer::~GLDebugDrawer() {}
@@ -103,7 +102,6 @@ namespace Bullet  {
     }
   }
 
-} // End of Bullet
 } // End of Physics
 } // End of Components
 } // End of Dream

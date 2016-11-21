@@ -22,7 +22,7 @@
 #include "VideoComponentInterface.h"
 #include "AssimpModelInstance.h"
 #include "ShaderInstance.h"
-#include "../../Camera.h"
+#include "Camera.h"
 
 // STD LIB
 #include <iostream>
@@ -46,10 +46,11 @@ namespace Dream {
       class OpenGLVideo : public VideoComponentInterface {
       private:
         GLFWwindow *mWindow;
+        Camera *mCamera;
         float mMinimumDraw = 0.1f;
         float mMaximumDraw = 1000.0f;
       public:
-        OpenGLVideo(void);
+        OpenGLVideo(Camera*);
         ~OpenGLVideo(void);
         bool init(void);
         void update(Dream::Scene*);

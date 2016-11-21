@@ -2,6 +2,7 @@
 #define ComponentManager_hpp
 
 #include <iostream>
+#include <thread>
 
 #include "ComponentInterface.h"
 #include "Animation/AnimationComponentInterface.h"
@@ -14,34 +15,35 @@
 #include "Physics/BulletPhysics.h"
 #include "Scripting/ChaiScripting.h"
 #include "Video/OpenGLVideo.h"
-#include "Video/VulkanVideo.h"
 #include "Animation/DreamAnimation.h"
 #include "Input/GLFWInput.h"
+#include "Video/Camera.h"
+#include "../Time.h"
 
-#include <thread>
 
 namespace Dream {
   namespace Components {
     class ComponentManager {
     private:
-      Project::Project *mProject;
-      Scene     *mActiveScene;
-      bool              mDone;
-      bool              mParallel;
+      Scene *mActiveScene;
+      bool   mDone;
+      bool   mParallel;
+      Time  *mTime;
+      Video::Camera *mCamera;
 
-      Components::Audio::AudioComponentInterface *mAudioComponent;
-      Components::Video::VideoComponentInterface *mVideoComponent;
-      Components::Physics::PhysicsComponentInterface *mPhysicsComponent;
-      Components::Scripting::ScriptingComponentInterface *mScriptingComponent;
-      Components::Input::InputComponentInterface *mInputComponent;
-      Components::Animation::AnimationComponentInterface *mAnimationComponent;
+      Audio::AudioComponentInterface *mAudioComponent;
+      Video::VideoComponentInterface *mVideoComponent;
+      Physics::PhysicsComponentInterface *mPhysicsComponent;
+      Scripting::ScriptingComponentInterface *mScriptingComponent;
+      Input::InputComponentInterface *mInputComponent;
+      Animation::AnimationComponentInterface *mAnimationComponent;
 
       std::thread *mAudioComponentThread;
       std::thread *mPhysicsComponentThread;
       std::thread *mAnimationComponentThread;
 
     public:
-      ComponentManager(Project::Project*);
+      ComponentManager(Time*, Video::Camera*);
       ~ComponentManager();
       bool createComponents();
       void destroyComponents();
@@ -56,15 +58,15 @@ namespace Dream {
       bool isDone();
       void populatePhysicsWorld(std::vector<SceneObject*>);
 
-      Components::Animation::AnimationComponentInterface* getAnimationComponent();
-      Components::Audio::AudioComponentInterface* getAudioComponent();
-      Components::Input::InputComponentInterface* getInputComponent();
-      Components::Physics::PhysicsComponentInterface* getPhysicsComponent();
-      Components::Video::VideoComponentInterface* getVideoComponent();
+      Animation::AnimationComponentInterface* getAnimationComponent();
+      Audio::AudioComponentInterface* getAudioComponent();
+      Input::InputComponentInterface* getInputComponent();
+      Physics::PhysicsComponentInterface* getPhysicsComponent();
+      Video::VideoComponentInterface* getVideoComponent();
 
-      void componentThread(Components::ComponentInterface*);
+      void componentThread(ComponentInterface*);
       void update();
-      void setActiveScene(Scene*);
+      void setActiveScene(Dream::Scene*);
       void setParallel(bool);
       bool isParallel();
     }; // End of ComponentManager

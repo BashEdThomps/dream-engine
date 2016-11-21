@@ -19,6 +19,7 @@
 #define INTERFACE_H
 
 #include "../Scene.h"
+#include "../Time.h"
 
 namespace Dream {
   namespace Components {
@@ -28,6 +29,9 @@ namespace Dream {
       virtual ~ComponentInterface(void) {}
       virtual bool init() = 0;
       virtual void update(Dream::Scene*) = 0;
+      void setTime(Time*);
+    protected:
+      Time* mTime;
     }; // End of Interface
   } // End of Components
 } // End of Dream

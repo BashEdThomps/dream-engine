@@ -197,11 +197,11 @@ namespace Dream {
         std::cout << "KeyFrame:" << std::endl
                   << "\t         UUID: " << mUUID << std::endl
                   << "\t         Name: " << mName << std::endl
-                  << "\t  Translation: " << Util::String::floatVectorToString(mTranslation)<< std::endl
-                  << "\t     Rotation: " << Util::String::floatVectorToString(mRotation)<< std::endl
-                  << "\t        Scale: " << Util::String::floatVectorToString(mScale) << std::endl
+                  << "\t  Translation: " << String::floatVectorToString(mTranslation)<< std::endl
+                  << "\t     Rotation: " << String::floatVectorToString(mRotation)<< std::endl
+                  << "\t        Scale: " << String::floatVectorToString(mScale) << std::endl
                   << "\t   Start Time: " << mStartTimeMS << std::endl
-                  << "\t         Wrap: " << Util::String::boolToYesNo(mWrap) << std::endl
+                  << "\t         Wrap: " << String::boolToYesNo(mWrap) << std::endl
                   << "\tInterpolation: " << getInterpolationType()
                   << std::endl;
       }

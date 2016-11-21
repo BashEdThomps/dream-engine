@@ -18,7 +18,7 @@
 #include "WavAudioInstance.h"
 
 namespace Dream {
-  namespace Component {
+  namespace Components {
     namespace Audio {
 
       WavAudioInstance::WavAudioInstance(AssetDefinition* definition)

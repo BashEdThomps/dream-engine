@@ -1,10 +1,10 @@
-#include "../Project.h"
 #include "ComponentManager.h"
 
 namespace Dream {
   namespace Components {
-    ComponentManager::ComponentManager(Project::Project* project) {
-      mProject            = project;
+    ComponentManager::ComponentManager(Time* time, Video::Camera* camera) {
+      mTime = time;
+      mCamera = camera;
       mParallel           = false;
       mAnimationComponent = NULL;
       mAudioComponent     = NULL;
@@ -13,7 +13,6 @@ namespace Dream {
       mPhysicsComponent   = NULL;
       mVideoComponent     = NULL;
       mDone               = false;
-
     }
 
     ComponentManager::~ComponentManager() {
@@ -45,84 +44,46 @@ namespace Dream {
     }
 
     bool ComponentManager::createScriptingComponent() {
-      // ChaiScript
-      if (mProject->isChaiEnabled()){
-        if (mScriptingComponent == NULL) {
-          mScriptingComponent = new Components::Scripting::Chai::ChaiScripting();
-          if (!mScriptingComponent->init()) {
-            std::cerr << "ComponentManager: Unable to initialise ChaiScripting." << std::endl;
-            return false;
-          }
-        } else {
-          std::cerr << "ComponentManager: Unable to create ChaiScripting. Scripting Component allready exists." << std::endl;
-          return false;
-        }
+      mScriptingComponent = new Scripting::ChaiScripting();
+      if (!mScriptingComponent->init()) {
+        std::cerr << "ComponentManager: Unable to initialise ChaiScripting." << std::endl;
+        return false;
       }
       return mScriptingComponent != NULL;
     }
 
     bool ComponentManager::createAudioComponent() {
-      // OpenAL
-      if (mProject->isOpenALEnabled()) {
-        if (mAudioComponent == NULL) {
-          mAudioComponent = new Components::Audio::OpenAL::OpenALAudio();
-          if (!mAudioComponent->init()) {
-            std::cerr << "ComponentManager: Unable to initialise OpenALAudio." << std::endl;
-            return false;
-          }
-        } else {
-          std::cerr << "ComponentManager: Unable to create OpenALAudio. Audio Component allready exists." << std::endl;
-          return false;
-        }
+      mAudioComponent = new Audio::OpenALAudio();
+      if (!mAudioComponent->init()) {
+        std::cerr << "ComponentManager: Unable to initialise OpenALAudio." << std::endl;
+        return false;
       }
       return mAudioComponent != NULL;
     }
 
     bool ComponentManager::createPhysicsComponent() {
-      // Bullet 2
-      if (mProject->isBullet2Enabled()) {
-        if (mPhysicsComponent == NULL) {
-          mPhysicsComponent = new Components::Physics::Bullet::BulletPhysics();
-          if (!mPhysicsComponent->init()){
-            std::cerr << "ComponentManager: Unable to initialise BulletPhysics." << std::endl;
-            return false;
-          }
-        } else {
-          std::cerr << "ComponentManager: Unable to create BulletPhysics. Physics Component allready exists." << std::endl;
-          return false;
-        }
+      mPhysicsComponent = new Physics::BulletPhysics();
+      if (!mPhysicsComponent->init()){
+        std::cerr << "ComponentManager: Unable to initialise BulletPhysics." << std::endl;
+        return false;
       }
       return mPhysicsComponent != NULL;
     }
 
     bool ComponentManager::createVideoComponent() {
-      // OpenGL
-      if (mProject->isOpenGLEnabled()) {
-        if (mVideoComponent == NULL) {
-          mVideoComponent = new Components::Video::OpenGL::OpenGLVideo();
-          mVideoComponent->setScreenName(mProject->getName() + " :: " + mProject->getDescription());
-          if (mVideoComponent->init()) {
-            return true;
-          } else {
-            std::cerr << "ComponentManager: Unable to initialise OpenGLVideo." << std::endl;
-            return false;
-          }
-        } else {
-          std::cerr << "ComponentManager: Unable to create OpenGLVideo. Video Component allready exists." << std::endl;
-          return false;
-        }
-      } else if (mProject->isVulkanEnabled()) {
-        //mVideoComponent = new Components::Video::Vulkan::VulkanVideo();
-        if (!mVideoComponent->init()) {
-          std::cerr << "ComponentManager: Unable to initialise VulkanVideo" << std::endl;
-          return false;
-        }
+      mVideoComponent = new Video::OpenGLVideo(mCamera);
+      mVideoComponent->setScreenName("Dream::OpenGL");
+      if (mVideoComponent->init()) {
+        return true;
+      } else {
+        std::cerr << "ComponentManager: Unable to initialise OpenGLVideo." << std::endl;
+        return false;
       }
       return false;
     }
 
     bool ComponentManager::createAnimationComponent() {
-      mAnimationComponent = new Components::Animation::Dream::DreamAnimation();
+      mAnimationComponent = new Animation::DreamAnimation(mTime);
       if (mAnimationComponent->init()) {
         return true;
       } else {
@@ -133,28 +94,21 @@ namespace Dream {
     }
 
     bool ComponentManager::createInputComponent() {
-      if (mProject->isOpenGLEnabled()) {
-        if (mInputComponent == NULL) {
-          mInputComponent = new Components::Input::GLFW::GLFWInput();
-          try {
-            Dream::Components::Video::OpenGL::OpenGLVideo* ogl   = dynamic_cast<Dream::Components::Video::OpenGL::OpenGLVideo*>(mVideoComponent);
-            Dream::Components::Input::GLFW::GLFWInput*  input = dynamic_cast<Dream::Components::Input::GLFW::GLFWInput*>(mInputComponent);
-            input->setWindow(ogl->getWindow());
-          } catch (std::exception ex) {
-            std::cerr << "ComponentManager: " << ex.what() << std::endl;
-          }
-          if (!mInputComponent->init()) {
-            std::cerr << "ComponentManager: Unable to initialise GLFWInputComponent." << std::endl;
-            return false;
-          }
-          return true;
-        } else {
-          std::cerr << "ComponentManager: Cannot create GLFWInput. Input Component all ready exists." << std::endl;
-          return false;
-        }
-        return mInputComponent != NULL;
+      mInputComponent = new Input::GLFWInput();
+      try {
+        Video::OpenGLVideo* ogl   = dynamic_cast<Video::OpenGLVideo*>(mVideoComponent);
+        Input::GLFWInput*   input = dynamic_cast<Input::GLFWInput*>(mInputComponent);
+        input->setWindow(ogl->getWindow());
+      } catch (std::exception ex) {
+        std::cerr << "ComponentManager: " << ex.what() << std::endl;
+        return false;
       }
-      return false;
+
+      if (!mInputComponent->init()) {
+        std::cerr << "ComponentManager: Unable to initialise GLFWInputComponent." << std::endl;
+        return false;
+      }
+      return mInputComponent != NULL;
     }
 
     void ComponentManager::startThreads() {
@@ -172,7 +126,7 @@ namespace Dream {
       }
     }
 
-    void ComponentManager::componentThread(Components::ComponentInterface* component) {
+    void ComponentManager::componentThread(ComponentInterface* component) {
       component->init();
       while (!mDone) {
         component->update(mActiveScene);
@@ -224,15 +178,17 @@ namespace Dream {
       std::cout << "ComponentManager: Populating Physics World" << std::endl;
       try {
         std::vector<SceneObject*>::iterator soIter;
-        Components::Physics::Bullet::BulletPhysics* bulletPhysicsComponent;
-        bulletPhysicsComponent = dynamic_cast<Components::Physics::Bullet::BulletPhysics*>(mPhysicsComponent);
+        Physics::BulletPhysics* bulletPhysicsComponent;
+        bulletPhysicsComponent = dynamic_cast<Physics::BulletPhysics*>(mPhysicsComponent);
         for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
-#ifdef VERBOSE
+          #ifdef VERBOSE
           std::cout << "ComponentManager: Adding SceneObject " << (*soIter)->getUUID()
                     << " to PhysicsComponent World" << std::endl;
-#endif
-          Asset::Instances::Physics::Bullet::PhysicsObjectInstance* physicsObject;
-          physicsObject = dynamic_cast<Asset::Instances::Physics::Bullet::PhysicsObjectInstance*>((*soIter)->getPhysicsObjectAssetInstance());
+          #endif
+          Physics::PhysicsObjectInstance* physicsObject;
+          physicsObject = dynamic_cast<Physics::PhysicsObjectInstance*>(
+            (*soIter)->getPhysicsObjectAssetInstance()
+          );
           bulletPhysicsComponent->addPhysicsObjectInstance(physicsObject);
         }
       } catch (const std::exception &ex) {
@@ -241,23 +197,23 @@ namespace Dream {
       }
     }
 
-    Components::Animation::AnimationComponentInterface* ComponentManager::getAnimationComponent() {
+    Animation::AnimationComponentInterface* ComponentManager::getAnimationComponent() {
       return mAnimationComponent;
     }
 
-    Components::Audio::AudioComponentInterface* ComponentManager::getAudioComponent() {
+    Audio::AudioComponentInterface* ComponentManager::getAudioComponent() {
       return mAudioComponent;
     }
 
-    Components::Input::InputComponentInterface* ComponentManager::getInputComponent() {
+    Input::InputComponentInterface* ComponentManager::getInputComponent() {
       return mInputComponent;
     }
 
-    Components::Physics::PhysicsComponentInterface* ComponentManager::getPhysicsComponent() {
+    Physics::PhysicsComponentInterface* ComponentManager::getPhysicsComponent() {
       return mPhysicsComponent;
     }
 
-    Components::Video::VideoComponentInterface* ComponentManager::getVideoComponent() {
+    Video::VideoComponentInterface* ComponentManager::getVideoComponent() {
       return mVideoComponent;
     }
 
@@ -268,5 +224,6 @@ namespace Dream {
     void ComponentManager::setParallel(bool parallel) {
       mParallel = parallel;
     }
+
   } // End of Components
 } // End of Dream

@@ -31,6 +31,8 @@
 
 namespace Dream {
 
+  class AssetInstance;
+
   class SceneObject {
   protected:
     SceneObject* mParent;

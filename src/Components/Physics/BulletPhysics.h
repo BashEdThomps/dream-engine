@@ -46,7 +46,7 @@ namespace Dream {
         void setGravityBtVector3(btVector3);
         bool init(void);
         void update(Scene*);
-        void addPhysicsObjectInstance(Asset::Instances::Physics::Bullet::PhysicsObjectInstance*);
+        void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
       }; // End of BulletPhysics

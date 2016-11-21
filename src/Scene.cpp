@@ -19,18 +19,9 @@
 
 namespace Dream {
 
-  // Global Camera
-  Camera sCamera = Camera();
+  Scene::Scene() {}
 
-  Scene() {
-    mPhysicsEnabled   = false;
-    mAnimationEnabled = false;
-    mInputEnabled     = false;
-    mAudioEnabled     = false;
-    mScriptingEnabled = false;
-  }
-
-  Scene(nlohmann::json jsonScene) {
+  Scene::Scene(nlohmann::json jsonScene) {
     mUUID = jsonScene[SCENE_JSON_UUID];
     mName = jsonScene[SCENE_JSON_NAME];
 
@@ -68,7 +59,7 @@ namespace Dream {
     }
   }
 
-  void loadDefaultCameraTransform(nlohmann::json camera) {
+  void Scene::loadDefaultCameraTransform(nlohmann::json camera) {
     if (!camera.is_null()) {
       nlohmann::json translation = camera[SCENE_JSON_TRANSLATION];
       setDefaultCameraTranslation({
@@ -94,50 +85,50 @@ namespace Dream {
     }
   }
 
-  ~Scene() {}
+  Scene::~Scene() {}
 
-  bool init() {
+  bool Scene::init() {
     std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
     return true;
   }
 
-  bool isScenegraphVectorEmpty() {
+  bool Scene::isScenegraphVectorEmpty() {
     return mScenegraphVector.empty();
   }
 
-  std::string getName() {
+  std::string Scene::getName() {
     return mName;
   }
 
-  std::string getUUID() {
+  std::string Scene::getUUID() {
     return mUUID;
   }
 
-  void setUUID(std::string uuid) {
+  void Scene::setUUID(std::string uuid) {
     mUUID = uuid;
   }
 
-  void setName(std::string name) {
+  void Scene::setName(std::string name) {
     mName = name;
   }
 
-  bool isAudioEnabled() {
+  bool Scene::isAudioEnabled() {
     return mAudioEnabled;
   }
 
-  bool isAnimationEnabled() {
+  bool Scene::isAnimationEnabled() {
     return mAnimationEnabled;
   }
 
-  bool isPhysicsEnabled() {
+  bool Scene::isPhysicsEnabled() {
     return mPhysicsEnabled;
   }
 
-  bool isInputEnabled() {
+  bool Scene::isInputEnabled() {
     return mInputEnabled;
   }
 
-  void loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
+  void Scene::loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
     //std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
     if (!jsonArray.is_null()) {
       for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
@@ -158,11 +149,11 @@ namespace Dream {
     }
   }
 
-  bool hasSceneObect(SceneObject *obj) {
+  bool Scene::hasSceneObect(SceneObject *obj) {
     return mRootSceneObject == obj || mRootSceneObject->isParentOfDeep(obj);
   }
 
-  std::string generateSceneObjectPath(SceneObject* so) {
+  std::string Scene::generateSceneObjectPath(SceneObject* so) {
     std::stringstream stream;
     std::vector<std::string> pathVector;
 
@@ -180,7 +171,7 @@ namespace Dream {
     return retval;
   }
 
-  SceneObject* getSceneObjectByUUID(std::string uuid) {
+  SceneObject* Scene::getSceneObjectByUUID(std::string uuid) {
     for (std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
       if ((*it)->hasUUID(uuid)){
         return (*it);
@@ -189,26 +180,26 @@ namespace Dream {
     return NULL;
   }
 
-  int getNumberOfSceneObjects() {
+  int Scene::getNumberOfSceneObjects() {
     return mScenegraphVector.size();
   }
 
-  void showStatus() {
+  void Scene::showStatus() {
     std::cout << "Scene:"              << std::endl;
     std::cout << "             UUID: " << mUUID << std::endl;
     std::cout << "             Name: " << mName << std::endl;
-    std::cout << "    Audio Enabled: " << Util::String::boolToYesNo(isAudioEnabled())     << std::endl;
-    std::cout << "Animation Enabled: " << Util::String::boolToYesNo(isAnimationEnabled()) << std::endl;
-    std::cout << "    Input Enabled: " << Util::String::boolToYesNo(isInputEnabled())     << std::endl;
-    std::cout << "  Physics Enabled: " << Util::String::boolToYesNo(isPhysicsEnabled())   << std::endl;
+    std::cout << "    Audio Enabled: " << String::boolToYesNo(isAudioEnabled())     << std::endl;
+    std::cout << "Animation Enabled: " << String::boolToYesNo(isAnimationEnabled()) << std::endl;
+    std::cout << "    Input Enabled: " << String::boolToYesNo(isInputEnabled())     << std::endl;
+    std::cout << "  Physics Enabled: " << String::boolToYesNo(isPhysicsEnabled())   << std::endl;
     std::cout << " Camera Transform: " << std::endl;
-    std::cout << "      Translation: " << Util::String::floatVectorToString(sCamera.getTranslation()) << std::endl;
-    std::cout << "         Rotation: " << Util::String::floatVectorToString(sCamera.getRotation())    << std::endl;
+    std::cout << "      Translation: " << String::floatVectorToString(mCameraTranslation) << std::endl;
+    std::cout << "         Rotation: " << String::floatVectorToString(mCameraRotation)    << std::endl;
     std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
     showScenegraph();
   }
 
-  void showScenegraph() {
+  void Scene::showScenegraph() {
     if (mRootSceneObject == NULL) {
       std::cout << "Scenegraph is empty!" << std::endl;
       return;
@@ -220,40 +211,40 @@ namespace Dream {
     }
   }
 
-  void setRootSceneObject(SceneObject* root) {
+  void Scene::setRootSceneObject(SceneObject* root) {
     mRootSceneObject = root;
   }
 
-  SceneObject* getRootSceneObject() {
+  SceneObject* Scene::getRootSceneObject() {
     return mRootSceneObject;
   }
 
-  void generateScenegraphVector() {
+  void Scene::generateScenegraphVector() {
     std::cout << "Scene: Regenerating Scene Graph Vector" << std::endl;
     mScenegraphVector.clear();
     mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
   }
 
-  void generateSceneObjectPaths() {
+  void Scene::generateSceneObjectPaths() {
     for(std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
        (*it)->generatePath();
     }
   }
 
-  std::vector<SceneObject*> getScenegraphVector() {
+  std::vector<SceneObject*> Scene::getScenegraphVector() {
     return mScenegraphVector;
   }
 
-  void setDefaultCameraTranslation(std::vector<float> translation) {
-    sCamera.setTranslation(translation);
+  void Scene::setDefaultCameraTranslation(std::vector<float> translation) {
+    mCameraTranslation = translation;
   }
 
-  void setDefaultCameraRotation(std::vector<float> rotation) {
-    sCamera.setRotation(rotation);
+  void Scene::setDefaultCameraRotation(std::vector<float> rotation) {
+    mCameraRotation = rotation;
   }
 
-  void setCameraMovementSpeed (float speed) {
-    sCamera.setMovementSpeed(speed);
+  void Scene::setCameraMovementSpeed (float speed) {
+    mCameraMovementSpeed = speed;
   }
 
 } // End of Dream

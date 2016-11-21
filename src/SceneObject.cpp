@@ -255,9 +255,9 @@ namespace Dream {
     std::cout << std::endl;
     std::cout << "      Children: " << mChildren.size() << std::endl;
     std::cout << "Trnasform Type: " << mTransformType << std::endl;
-    std::cout << "   Translation: " << Util::String::floatVectorToString(mTranslation) << std::endl;
-    std::cout << "      Rotation: " << Util::String::floatVectorToString(mRotation)<< std::endl;
-    std::cout << "         Scale: " << Util::String::floatVectorToString(mRotation)<< std::endl;
+    std::cout << "   Translation: " << String::floatVectorToString(mTranslation) << std::endl;
+    std::cout << "      Rotation: " << String::floatVectorToString(mRotation)<< std::endl;
+    std::cout << "         Scale: " << String::floatVectorToString(mRotation)<< std::endl;
   }
 
   std::vector<std::string> SceneObject::getAssetInstanceUUIDsToLoad() {

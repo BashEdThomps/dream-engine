@@ -19,6 +19,7 @@
 #ifndef DreamAnimation_hpp
 #define DreamAnimation_hpp
 
+#include "../../Time.h"
 #include "AnimationComponentInterface.h"
 #include "AnimationInstance.h"
 
@@ -26,11 +27,13 @@ namespace Dream      {
   namespace Components {
     namespace Animation  {
       class DreamAnimation : public AnimationComponentInterface {
+      private:
+        Time* mTime;
       public :
-        DreamAnimation();
+        DreamAnimation(Time*);
         ~DreamAnimation();
         bool init();
-        void update(::Dream::Scene*);
+        void update(Scene*);
         void play (AssetInstance*);
         void pause(AssetInstance*);
         void stop (AssetInstance*);

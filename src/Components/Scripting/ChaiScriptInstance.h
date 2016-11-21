@@ -21,12 +21,12 @@
 #include <vector>
 #include <iostream>
 #include <chaiscript/chaiscript.hpp>
-#include "../AssetInstance.h"
+#include "../../AssetInstance.h"
 #include "ChaiScripting.h"
 
 namespace Dream {
   namespace Components {
-    namespace Script {
+    namespace Scripting {
       class ChaiScriptInstance : public AssetInstance {
       private:
         chaiscript::ChaiScript *mScript;
@@ -39,6 +39,7 @@ namespace Dream {
         void processInputs(std::vector<Components::Input::InputEvent>);
         bool importScriptAssetByUUID(std::string);
         std::string getProjectPath();
+
         // API Exposure
         void initAPIs();
         void initAnimationInstanceAPI();

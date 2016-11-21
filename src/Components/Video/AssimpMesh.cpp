@@ -13,7 +13,7 @@ namespace Dream {
 
       AssimpMesh::~AssimpMesh() { }
 
-      void AssimpMesh::draw(Dream::Asset::Instances::Shader::ShaderInstance* shader) {
+      void AssimpMesh::draw(ShaderInstance* shader) {
         GLuint diffuseNr = 1;
         GLuint specularNr = 1;
         for(GLuint i = 0; i < mTextures.size(); i++) {
@@ -41,82 +41,52 @@ namespace Dream {
 
       void AssimpMesh::init() {
         glGenVertexArrays(1, &mVAO);
-#ifdef VERBOSE
-        checkGLError(1);
-#endif
+        //checkGLError(1);
 
         glGenBuffers(1, &mVBO);
-#ifdef VERBOSE
-        checkGLError(2);
-#endif
+        //checkGLError(2);
 
         glGenBuffers(1, &mEBO);
-#ifdef VERBOSE
-        checkGLError(3);
-#endif
+        //checkGLError(3);
 
         glBindVertexArray(mVAO);
-#ifdef VERBOSE
-        checkGLError(4);
-#endif
+        //checkGLError(4);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-#ifdef VERBOSE
-        checkGLError(5);
-#endif
+        //checkGLError(5);
 
         glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), &mVertices[0], GL_STATIC_DRAW);
-#ifdef VERBOSE
-        checkGLError(6);
-#endif
+        //checkGLError(6);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-#ifdef VERBOSE
-        checkGLError(7);
-#endif
+        //checkGLError(7);
 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(GLuint),&mIndices[0], GL_STATIC_DRAW);
-#ifdef VERBOSE
-        checkGLError(8);
-#endif
+        //checkGLError(8);
 
         // Vertex Positions
         glEnableVertexAttribArray(0);
-#ifdef VERBOSE
-        checkGLError(9);
-#endif
+        //checkGLError(9);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-#ifdef VERBOSE
-        checkGLError(10);
-#endif
+        //checkGLError(10);
 
         // Vertex Normals
         glEnableVertexAttribArray(1);
-#ifdef VERBOSE
-        checkGLError(11);
-#endif
+        //checkGLError(11);
 
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
-#ifdef VERBOSE
-        checkGLError(12);
-#endif
+        //checkGLError(12);
 
         // Vertex Texture Coords
         glEnableVertexAttribArray(2);
-#ifdef VERBOSE
-        checkGLError(13);
-#endif
+        //checkGLError(13);
 
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
-#ifdef VERBOSE
-        checkGLError(14);
-#endif
+        //checkGLError(14);
 
         glBindVertexArray(0);
-#ifdef VERBOSE
-        checkGLError(15);
-#endif
+        //checkGLError(15);
       }
 
       bool AssimpMesh::checkGLError(int errorIndex) {
@@ -153,6 +123,6 @@ namespace Dream {
         } while(errorCode != 0);
         return wasError;
       }
-    }
-  }
-}
+    } // End of Video
+  } // End of Components
+} // End of Dream

@@ -18,7 +18,7 @@
 #include "OggAudioInstance.h"
 
 namespace Dream {
-  namespace Component {
+  namespace Components {
     namespace Audio     {
 
       OggAudioInstance::OggAudioInstance(AssetDefinition* definition)

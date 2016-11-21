@@ -17,8 +17,8 @@
 
 #include "ShaderInstance.h"
 
-namespace Dream      {
-  namespace Components      {
+namespace Dream {
+  namespace Components {
     namespace Video {
 
       ShaderInstance::ShaderInstance(AssetDefinition* definition) : AssetInstance(definition) {
@@ -38,17 +38,17 @@ namespace Dream      {
       bool ShaderInstance::load(std::string projectPath) {
 
         // 1. Open Shader Files into Memory
-        Dream::Util::FileReader *vertexReader, *fragmentReader;
+        FileReader *vertexReader, *fragmentReader;
         std::string absVertexPath, absFragmentPath;
         absVertexPath   = projectPath+mDefinition->getAssetPath() + SHADER_VERTEX;
         absFragmentPath = projectPath+mDefinition->getAssetPath() + SHADER_FRAGMENT;
 
-        vertexReader = new Dream::Util::FileReader(absVertexPath);
+        vertexReader = new FileReader(absVertexPath);
         vertexReader->readIntoStringStream();
         mVertexShaderSource = vertexReader->getContentsAsString();
         delete vertexReader;
 
-        fragmentReader = new Dream::Util::FileReader(absFragmentPath);
+        fragmentReader = new FileReader(absFragmentPath);
         fragmentReader->readIntoStringStream();
         mFragmentShaderSource = fragmentReader->getContentsAsString();
         delete fragmentReader;

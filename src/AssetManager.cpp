@@ -16,13 +16,10 @@
 */
 
 
-#include "Project.h"
 #include "AssetManager.h"
 
 namespace Dream {
-  AssetManager::AssetManager(Project::Project* project) {
-    mProject = project;
-  }
+  AssetManager::AssetManager() {}
 
   AssetManager::~AssetManager() {
     destroyAllAssetInstances();
@@ -35,8 +32,7 @@ namespace Dream {
     }
   }
 
-  bool AssetManager::createAllAssetInstances() {
-    Scene *activeScene = mProject->getActiveScene();
+  bool AssetManager::createAllAssetInstances(Scene* activeScene) {
 
     if (!activeScene){
       std::cerr << "AssetManager: Cannot create assets, no active scene." << std::endl;
@@ -60,7 +56,7 @@ namespace Dream {
         std::string assetDefinitionUUID = *assetInstanceUUIDIterator;
         AssetInstance* newAsset = createAssetInstanceFromDefinitionUUID(currentSceneObject, assetDefinitionUUID);
         if (newAsset == NULL) {
-          AssetDefinition* definition = mProject->getAssetDefinitionByUUID(assetDefinitionUUID);
+          AssetDefinition* definition = getAssetDefinitionByUUID(assetDefinitionUUID);
           std::cerr << "AssetManager: Unable to instanciate asset instance for "
                     << definition->getName() << " (" << definition->getUUID() << ")" << std::endl;
           return false;
@@ -77,7 +73,7 @@ namespace Dream {
   }
 
   AssetInstance* AssetManager::createAssetInstanceFromDefinitionUUID(SceneObject* sceneObject, std::string uuid) {
-    AssetDefinition* assetDefinition = mProject->getAssetDefinitionByUUID(uuid);
+    AssetDefinition* assetDefinition = getAssetDefinitionByUUID(uuid);
     return createAssetInstance(sceneObject, assetDefinition);
   }
 
@@ -104,15 +100,19 @@ namespace Dream {
 
     if (retval != NULL) {
       std::cout << "AssetManager: Loading Asset Data for " << definition->getName() << std::endl;
-      retval->load(mProject->getProjectPath());
+      retval->load(mProjectPath);
     }
 
     return retval;
   }
 
+  void AssetManager::setProjectPath(std::string projectPath) {
+    mProjectPath = projectPath;
+  }
+
   AssetInstance* AssetManager::createPhysicsObjectAssetInstance(SceneObject *sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Physics Object Asset Instance." << std::endl;
-    AssetInstance* retval = new Instances::Physics::Bullet::PhysicsObjectInstance(definition);
+    AssetInstance* retval = new Components::Physics::PhysicsObjectInstance(definition);
 
     if (sceneObject && retval) {
       sceneObject->setPhysicsObjectAssetInstance(retval);
@@ -126,7 +126,7 @@ namespace Dream {
     AssetInstance* retval = NULL;
 
     if (definition->isAnimationFormatDream()) {
-      retval = new Instances::Animation::Dream::AnimationInstance(definition);
+      retval = new Components::Animation::AnimationInstance(definition);
     }
 
     if (sceneObject && retval) {
@@ -140,9 +140,9 @@ namespace Dream {
     AssetInstance* retval = NULL;
 
     if (definition->isAudioFormatOgg()) {
-      retval = new Instances::Audio::Ogg::OggAudioInstance(definition);
+      retval = new Components::Audio::OggAudioInstance(definition);
     } else if (definition->isAudioFormatWav()) {
-      retval = new Instances::Audio::Wav::WavAudioInstance(definition);
+      retval = new Components::Audio::WavAudioInstance(definition);
     }
 
     if (sceneObject && retval) {
@@ -156,7 +156,7 @@ namespace Dream {
     AssetInstance* retval = NULL;
 
     if (definition->isModelFormatAssimp()) {
-      retval = new Instances::Model::Assimp::AssimpModelInstance(definition);
+      retval = new Components::Video::AssimpModelInstance(definition);
     }
 
     if (sceneObject && retval) {
@@ -172,7 +172,7 @@ namespace Dream {
 
     if (definition->isScriptFormatChai()) {
       std::cout << "AssetManager: Creating Chai Script asset instance." << std::endl;
-      Instances::Script::Chai::ChaiScriptInstance* newScript = new Instances::Script::Chai::ChaiScriptInstance(definition);
+      Components::Scripting::ChaiScriptInstance* newScript = new Components::Scripting::ChaiScriptInstance(definition);
       retval = newScript;
     }
 
@@ -186,7 +186,7 @@ namespace Dream {
   AssetInstance* AssetManager::createShaderAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
     AssetInstance* retval = NULL;
-    retval = new Instances::Shader::ShaderInstance(definition);
+    retval = new Components::Video::ShaderInstance(definition);
     if (sceneObject && retval) {
       sceneObject->setShaderAssetInstance(retval);
     }
@@ -200,7 +200,7 @@ namespace Dream {
   AssetInstance* AssetManager::createLightAssetInstance(SceneObject *sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Light Asset instance." << std::endl;
     AssetInstance* retval = NULL;
-    retval = new Instances::Light::LightInstance(definition);
+    retval = new Components::Video::LightInstance(definition);
 
     if (sceneObject && retval) {
       sceneObject->setLightAssetInstance(retval);
@@ -219,4 +219,37 @@ namespace Dream {
     }
     return retval;
   }
+
+  void AssetManager::addAssetDefinition(AssetDefinition* assetDefinition) {
+    mAssetDefinitions.push_back(assetDefinition);
+  }
+
+  void AssetManager::removeAssetDefinition(AssetDefinition*) {
+    std::cout << "AssetManager: Remove Asset is not yet Implemented" << std::endl;
+  }
+
+  size_t AssetManager::getNumberOfAssetDefinitions() {
+    return mAssetDefinitions.size();
+  }
+
+  void AssetManager::loadAssetDefinitionsFromJson(nlohmann::json jsonAssetArray) {
+    std::cout << "AssetManager: Loading Assets from JSON Array" << std::endl;
+    for (nlohmann::json::iterator it = jsonAssetArray.begin(); it != jsonAssetArray.end(); ++it) {
+      addAssetDefinition(new AssetDefinition((*it)));
+    }
+  }
+
+  AssetDefinition* AssetManager::getAssetDefinitionByUUID(std::string uuid) {
+    AssetDefinition* retval = NULL;
+    for (std::vector<AssetDefinition*>::iterator it = mAssetDefinitions.begin(); it != mAssetDefinitions.end(); it++) {
+      if ((*it)->getUUID().compare(uuid) == 0) {
+        retval = (*it);
+        break;
+      }
+    }
+    return retval;
+  }
+
+
+
 } // End of Dream

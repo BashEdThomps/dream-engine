@@ -1,10 +1,8 @@
 #include "InputEvent.h"
 
-namespace Dream   {
+namespace Dream {
   namespace Components {
-    namespace Input   {
-
-      InputEvent InputEvent::LastEvent = InputEvent::InputEvent(INPUT_TYPE_NO_EVENT);
+    namespace Input {
 
       InputEvent::InputEvent(int src) {
         mSource        = src;
@@ -100,19 +98,19 @@ namespace Dream   {
       }
 
       int InputEvent::getXPositionOffset() {
-        if (LastEvent.getSource() == INPUT_TYPE_MOUSE_POSITION) {
-          return getXPosition() - LastEvent.getXPosition();
-        } else {
+        //if (LastEvent.getSource() == INPUT_TYPE_MOUSE_POSITION) {
+        //  return getXPosition() - LastEvent.getXPosition();
+        //} else {
           return 0;
-        }
+        //}
       }
 
       int InputEvent::getYPositionOffset() {
-        if (LastEvent.getSource() == INPUT_TYPE_MOUSE_POSITION) {
-          return getYPosition() - LastEvent.getYPosition();
-        } else {
+        //if (LastEvent.getSource() == INPUT_TYPE_MOUSE_POSITION) {
+        //  return getYPosition() - LastEvent.getYPosition();
+        //} else {
           return 0;
-        }
+        //}
       }
 
     } // End of Input
