@@ -25,7 +25,8 @@ namespace Dream {
       ChaiScripting::~ChaiScripting(void) {}
 
       bool ChaiScripting::init() {
-        std::cout << "ChaiScripting: Initialising..." << std::endl;
+        std::cout << "ChaiScripting: Initialising...";
+        std::cout << "done!" << std::endl;
         return true;
       }
 

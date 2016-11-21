@@ -14,10 +14,12 @@ void showUsage(const char** argv) {
             << std::endl;
 }
 
-int main(int argc, const char** argv) {
+int main(int argc, const char** argv)
+{
   std::cout << "Dream: Starting..." << std::endl;
 
-  if (argc < MINIMUM_ARGUMENTS) {
+  if (argc < MINIMUM_ARGUMENTS)
+  {
     std::cerr << "Dream: FATAL - Minimum Number of Arguments Were Not Found." << std::endl;
     showUsage(argv);
     return 1;

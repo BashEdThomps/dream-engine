@@ -4,12 +4,14 @@
 namespace Dream {
 
   Dream::Dream() {
+    setAssetManager(NULL);
+    setComponentManager(NULL);
     setDone(false);
     setTime(new Time());
     setActiveScene(NULL);
     createAssetManager();
     createComponentManager();
-    mProject = NULL;
+    setProject(NULL);
   }
 
   Dream::~Dream() {}
@@ -34,20 +36,28 @@ namespace Dream {
     return mProject != NULL;
   }
 
-  bool Dream::loadProjectFromFileReader(std::string projectPath, FileReader* reader) {
+  bool Dream::loadProjectFromFileReader(std::string projectPath, FileReader* reader)
+  {
     std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
     std::string projectJsonStr = reader->getContentsAsString();
     std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
-    if (projectJsonStr.empty()) {
+
+    if (projectJsonStr.empty())
+    {
       std::cerr << "Dream: Loading Failed. Project Content is Empty" << std::endl;
       return false;
     }
+
     nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
+
     setProject(new Project(mAssetManager, projectPath, projectJson));
+    mAssetManager->setProjectPath(projectPath);
+
     return isProjectLoaded();
   }
 
-  bool Dream::loadFromArgumentParser(ArgumentParser *parser) {
+  bool Dream::loadFromArgumentParser(ArgumentParser *parser)
+  {
     std::cout << "Dream: Loading from ArgumentParser" << std::endl;
     FileReader *projectFileReader = new FileReader(parser->getProjectFilePath());
     projectFileReader->readIntoStringStream();
@@ -57,9 +67,10 @@ namespace Dream {
     return loadSuccess;
   }
 
-  bool Dream::loadScene(Scene* scene) {
+  bool Dream::loadScene(Scene* scene)
+  {
     std::cout << "Dream: Loading Scene " << scene->getName() << std::endl;
-    mProject->setActiveScene(scene);
+    setActiveScene(scene);
 
     if (!hasActiveScene()) {
       std::cerr << "Dream: Unable to find active scene. Cannot Continue." << std::endl;
@@ -72,11 +83,13 @@ namespace Dream {
     return true;
   }
 
-  void Dream::setActiveScene(Scene* scene) {
+  void Dream::setActiveScene(Scene* scene)
+  {
     mActiveScene = scene;
   }
 
-  Scene* Dream::getActiveScene() {
+  Scene* Dream::getActiveScene()
+  {
     return mActiveScene;
   }
 
@@ -84,14 +97,18 @@ namespace Dream {
     return getActiveScene() != NULL;
   }
 
-  bool Dream::initActiveScene() {
-    if (mActiveScene != NULL) {
-      if (!mActiveScene->init()) {
+  bool Dream::initActiveScene()
+  {
+    if (mActiveScene != NULL)
+    {
+      if (!mActiveScene->init())
+      {
         return false;
       }
     }
 
-    if (!mAssetManager->createAllAssetInstances(mActiveScene)) {
+    if (!mAssetManager->createAllAssetInstances(mActiveScene))
+    {
       std::cerr << "Project: Unable to create asset instances." << std::endl;
       return false;
     }
@@ -139,7 +156,7 @@ namespace Dream {
       return false;
     }
 
-    // Init Scene with Asset Instances
+    // Init Scene Asset Instances
     if (!loadScene(mProject->getStartupScene())) {
       std::cerr << "Dream: Unable to load startup scene." << std::endl;
       return false;
@@ -167,6 +184,14 @@ namespace Dream {
     }
 
     return mDone;
+  }
+
+  void Dream::setAssetManager(AssetManager* assetManager) {
+    mAssetManager = assetManager;
+  }
+
+  void Dream::setComponentManager(Components::ComponentManager* componentManager) {
+    mComponentManager = componentManager;
   }
 
 } // End of Dream

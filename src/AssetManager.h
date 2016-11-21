@@ -69,6 +69,7 @@ namespace Dream {
     AssetDefinition* getAssetDefinitionByUUID(std::string);
 
     void setProjectPath(std::string);
+
   }; // End of AssetManager
 } // End of Dream
 

@@ -27,6 +27,14 @@ namespace Dream {
 
   AssetDefinition::~AssetDefinition(void) {}
 
+  void AssetDefinition::setProjectPath(std::string path) {
+    mProjectPath = path;
+  }
+
+  std::string AssetDefinition::getProjectPath() {
+    return mProjectPath;
+  }
+
   void AssetDefinition::loadMetadata() {
     // UUID
     if (mJson[ASSET_UUID].is_null()) {

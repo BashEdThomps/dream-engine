@@ -63,6 +63,7 @@ namespace Dream {
   class AssetDefinition {
     std::map<std::string,std::string> mAttributes;
     nlohmann::json mJson;
+    std::string mProjectPath;
   public:
     AssetDefinition(nlohmann::json);
     ~AssetDefinition(void);
@@ -107,6 +108,9 @@ namespace Dream {
     bool isAnimationFormatDream();
 
     std::string getAssetPath();
+
+    void setProjectPath(std::string);
+    std::string getProjectPath();
 
     void loadMetadata();
     nlohmann::json getJson();

@@ -81,7 +81,12 @@ namespace Dream {
 
   AssetInstance* AssetManager::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
     AssetInstance* retval = NULL;
-    std::cout << "AssetManager: Creating Asset Intance of: (" << definition->getType() << ") " << definition->getName() << ", for SceneObject: " << sceneObject->getNameUUIDString() << std::endl;
+
+    std::cout << "AssetManager: Creating Asset Intance of: ("
+              << definition->getType() << ") " << definition->getName()
+              << ", for SceneObject: " << sceneObject->getNameUUIDString()
+              << std::endl;
+
     if(definition->isTypeAnimation()) {
       retval = createAnimationAssetInstance(sceneObject, definition);
     } else if (definition->isTypeAudio()) {
@@ -169,12 +174,8 @@ namespace Dream {
   AssetInstance* AssetManager::createScriptAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating script asset instance." << std::endl;
     AssetInstance* retval = NULL;
-
-    if (definition->isScriptFormatChai()) {
-      std::cout << "AssetManager: Creating Chai Script asset instance." << std::endl;
-      Components::Scripting::ChaiScriptInstance* newScript = new Components::Scripting::ChaiScriptInstance(definition);
-      retval = newScript;
-    }
+    Components::Scripting::ChaiScriptInstance* newScript = new Components::Scripting::ChaiScriptInstance(definition);
+    retval = newScript;
 
     if (sceneObject && retval) {
       sceneObject->setScriptAssetInstance(retval);

@@ -50,6 +50,9 @@ namespace Dream {
     bool   hasActiveScene();
     bool   initActiveScene();
 
+    void setAssetManager(AssetManager*);
+    void setComponentManager(Components::ComponentManager*);
+
   }; // End of Dream
 } // End of Dream
 

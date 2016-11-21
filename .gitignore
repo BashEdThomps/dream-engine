@@ -239,3 +239,4 @@ npm-debug.log
 Xcode
 CmakeLists.txt.user
 docs
+*.autosave
