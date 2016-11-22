@@ -76,7 +76,7 @@ namespace Dream {
     int          countChildrenOfSceneObject(SceneObject*);
     void         setRootSceneObject(SceneObject*);
     SceneObject* getRootSceneObject();
-    int          getNumberOfSceneObjects();
+    size_t          getNumberOfSceneObjects();
     bool         hasSceneObect(SceneObject*);
     SceneObject* getSceneObjectByName(std::string);
     SceneObject* getSceneObjectByUUID(std::string);
@@ -90,8 +90,13 @@ namespace Dream {
     std::vector<SceneObject*> getScenegraphVector();
 
     void setDefaultCameraTranslation(std::vector<float>);
+    std::vector<float> getDefaultCameraTranslation();
+
     void setDefaultCameraRotation(std::vector<float>);
+    std::vector<float> getDefaultCameraRotation();
+
     void setCameraMovementSpeed(float);
+    float getCameraMovementSpeed();
 
   }; // End of Scene
 

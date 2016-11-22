@@ -13,7 +13,6 @@
 #include "Video/VideoComponentInterface.h"
 #include "Audio/OpenALAudio.h"
 #include "Physics/BulletPhysics.h"
-#include "Scripting/ChaiScripting.h"
 #include "Video/OpenGLVideo.h"
 #include "Animation/DreamAnimation.h"
 #include "Input/GLFWInput.h"
@@ -34,7 +33,6 @@ namespace Dream {
       Audio::AudioComponentInterface *mAudioComponent;
       Video::VideoComponentInterface *mVideoComponent;
       Physics::PhysicsComponentInterface *mPhysicsComponent;
-      Scripting::ScriptingComponentInterface *mScriptingComponent;
       Input::InputComponentInterface *mInputComponent;
       Animation::AnimationComponentInterface *mAnimationComponent;
 
@@ -51,7 +49,6 @@ namespace Dream {
       bool createAudioComponent();
       bool createInputComponent();
       bool createPhysicsComponent();
-      bool createScriptingComponent();
       bool createVideoComponent();
       void startThreads();
       void joinThreads();
@@ -69,6 +66,8 @@ namespace Dream {
       void setActiveScene(Dream::Scene*);
       void setParallel(bool);
       bool isParallel();
+
+      Video::Camera* getCamera();
     }; // End of ComponentManager
   } // End of Components
 } // End Dream

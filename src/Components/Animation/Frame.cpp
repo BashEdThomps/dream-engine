@@ -45,13 +45,12 @@ namespace Dream     {
       }
 
       void Frame::showStatus() {
-        std::cout << "Frame:" << std::endl
-                  << "\tTranslation: "  << String::floatVectorToString(mTranslation) << std::endl
-                  << "\t   Rotation: "  << String::floatVectorToString(mRotation)    << std::endl
-                  << "\t      Scale: "  << String::floatVectorToString(mScale)       << std::endl;
+        std::cout << "Frame"
+          << " | T " << String::floatVectorToString(mTranslation)
+          << " | R " << String::floatVectorToString(mRotation)
+          << " | S " << String::floatVectorToString(mScale)
+          << std::endl;
       }
-
-
     } // End of Animation
   } // End of Component
 } // End of Dream

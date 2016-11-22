@@ -5,8 +5,6 @@
 #include <chrono>
 #include <ctime>
 
-//#define VERBOSE
-
 namespace Dream {
 
   // This class is a singleton
@@ -21,7 +19,8 @@ namespace Dream {
     double getCurrentTime();
     double getLastTime();
     double getTimeDelta();
-    void   update();
+    void  update();
+    void show();
   };
 
 }

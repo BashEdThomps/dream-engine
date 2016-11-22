@@ -20,49 +20,24 @@
 
 #include <vector>
 #include <iostream>
-#include <chaiscript/chaiscript.hpp>
-
-#include "ChaiScripting.h"
+#include "../../AssetInstance.h"
+#include "../Input/InputEvent.h"
 
 namespace Dream {
-
-  class Project;
-  class AssetManager;
-  class AssetInstance;
 
   namespace Components {
     namespace Scripting {
       class ChaiScriptInstance : public AssetInstance {
       private:
-        chaiscript::ChaiScript *mScript;
         std::string mProjectPath;
-        AssetManager *mAssetManager;
+        std::string mAbsolutePath;
       public:
         ChaiScriptInstance(AssetDefinition*);
         ~ChaiScriptInstance(void);
         bool load(std::string);
         void update();
-        void processInputs(std::vector<Components::Input::InputEvent>);
-        bool importScriptAssetByUUID(std::string);
         std::string getProjectPath();
-        void setAssetManager(AssetManager*);
-
-        // API Exposure
-        void initAPIs();
-        void initAnimationInstanceAPI();
-        void initAnimationComponentAPI();
-        void initAssetInstanceAPI();
-        void initAssetManagerAPI();
-        void initAudioComponentAPI();
-        void initCameraAPI();
-        void initChaiScriptAPI();
-        void initGlfwTimeAPI();
-        void initInputEventAPI();
-        void initComponentManagerAPI();
-        void initProjectAPI();
-        void initSceneObjectAPI();
-        void initSceneAPI();
-        void initVideoComponentAPI();
+        std::string getAbsolutePath();
         void loadExtraAttributes(nlohmann::json) {}
       }; // End of ChaiScriptInstance
 

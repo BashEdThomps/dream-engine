@@ -32,6 +32,7 @@
 #include "Components/Video/AssimpModelInstance.h"
 #include "Components/Video/LightInstance.h"
 #include "Components/Physics/PhysicsObjectInstance.h"
+#include "Scene.h"
 
 namespace Dream {
 

@@ -129,10 +129,10 @@ namespace Dream {
   }
 
   void Scene::loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
-    //std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
+    std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
     if (!jsonArray.is_null()) {
       for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
-        //std::cout << "Scene: Creating SceneObject " << std::endl;
+        std::cout << "Scene: Creating SceneObject " << std::endl;
         SceneObject *nextSceneObject = new SceneObject(*it);
         if (parent != NULL) {
           nextSceneObject->setParent(parent);
@@ -180,7 +180,7 @@ namespace Dream {
     return NULL;
   }
 
-  int Scene::getNumberOfSceneObjects() {
+  size_t Scene::getNumberOfSceneObjects() {
     return mScenegraphVector.size();
   }
 
@@ -239,12 +239,24 @@ namespace Dream {
     mCameraTranslation = translation;
   }
 
+  std::vector<float> Scene::getDefaultCameraTranslation() {
+    return mCameraTranslation;
+  }
+
   void Scene::setDefaultCameraRotation(std::vector<float> rotation) {
     mCameraRotation = rotation;
   }
 
+  std::vector<float> Scene::getDefaultCameraRotation() {
+    return mCameraRotation;
+  }
+
   void Scene::setCameraMovementSpeed (float speed) {
     mCameraMovementSpeed = speed;
+  }
+
+  float Scene::getCameraMovementSpeed() {
+    return mCameraMovementSpeed;
   }
 
 } // End of Dream

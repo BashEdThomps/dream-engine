@@ -1,5 +1,5 @@
 /*
-* Dream::Scripting::ChaiScripting
+* ChaiScriptAPI
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,24 +19,46 @@
 #define CHAISCRIPTING_H
 
 #include <iostream>
-#include "ScriptingComponentInterface.h"
-#include "../Input/InputComponentInterface.h"
-#include "ChaiScriptInstance.h"
-
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
+
+#include "../../Dream.h"
 
 namespace Dream {
   namespace Components {
     namespace Scripting {
-      class ChaiScripting : public ScriptingComponentInterface {
+
+      class ChaiScriptAPI {
+      private:
+        chaiscript::ChaiScript *mEngine;
+        Dream* mDream;
       public:
-        ChaiScripting(void);
-        ~ChaiScripting(void);
+        ChaiScriptAPI(Dream*);
+        ~ChaiScriptAPI(void);
+
         bool init();
-        void update(Dream::Scene*);
-        void handleInputs(Dream::SceneObject*);
-      }; // End of ChaiScripting
+        void update(Scene*);
+        void handleInputs(SceneObject*);
+        bool loadScript(Components::Scripting::ChaiScriptInstance*);
+        bool importScriptAssetByUUID(std::string);
+
+        // API Exposure
+        void initAPIs();
+        void initAnimationInstanceAPI();
+        void initAnimationComponentAPI();
+        void initAssetInstanceAPI();
+        void initAssetManagerAPI();
+        void initAudioComponentAPI();
+        void initCameraAPI();
+        void initGlfwTimeAPI();
+        void initInputEventAPI();
+        void initComponentManagerAPI();
+        void initProjectAPI();
+        void initSceneObjectAPI();
+        void initSceneAPI();
+        void initVideoComponentAPI();
+
+      }; // End of ChaiScripAPI
     } // End Scripting
   } // End of Components
 } // End of Dream

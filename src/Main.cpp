@@ -1,4 +1,5 @@
 #include "Dream.h"
+#include "Components/Scripting/ChaiScriptAPI.h"
 #include "ArgumentParser.h"
 #include <iostream>
 
@@ -16,11 +17,11 @@ void showUsage(const char** argv) {
 
 int main(int argc, const char** argv)
 {
-  std::cout << "Dream: Starting..." << std::endl;
+  std::cout << "Main: Starting..." << std::endl;
 
   if (argc < MINIMUM_ARGUMENTS)
   {
-    std::cerr << "Dream: FATAL - Minimum Number of Arguments Were Not Found." << std::endl;
+    std::cerr << "Main: FATAL - Minimum Number of Arguments Were Not Found." << std::endl;
     showUsage(argv);
     return 1;
   }
@@ -30,16 +31,22 @@ int main(int argc, const char** argv)
   bool loaded = dream.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 
   if (loaded) {
+    Dream::Components::Scripting::ChaiScriptAPI chaiAPI(&dream);
+    if (!chaiAPI.init()) {
+      std::cerr << "Main: Unable to initialise ChaiScriptAPI :(" << std::endl;
+      return 1;
+    }
+
     if(!dream.run())
     {
-      std::cerr << "Dream: Exiting Before It's Time :(" << std::endl;
+      std::cerr << "Main: Exiting Before It's Time :(" << std::endl;
       return 1;
     } else {
-      std::cout << "Dream: Exiting Cleanly :)" << std::endl;
+      std::cout << "Main: Exiting Cleanly :)" << std::endl;
       return 0;
     }
   } else {
-    std::cerr << "Dream: FATAL - Failed to Load Project." << std::endl;
+    std::cerr << "Main: FATAL - Failed to Load Project." << std::endl;
     return 1;
   }
 }

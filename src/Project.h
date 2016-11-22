@@ -95,11 +95,6 @@ namespace Dream {
 
     void showStatus();
 
-    bool isChaiEnabled();
-    bool isOpenALEnabled();
-    bool isBullet2Enabled();
-    bool isOpenGLEnabled();
-
     void setActiveScene(Scene*);
     Scene *getActiveScene();
     bool hasActiveScene();

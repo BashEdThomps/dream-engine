@@ -7,6 +7,7 @@ namespace Dream {
     setAssetManager(NULL);
     setComponentManager(NULL);
     setDone(false);
+    setCamera(new Components::Video::Camera());
     setTime(new Time());
     setActiveScene(NULL);
     createAssetManager();
@@ -18,6 +19,10 @@ namespace Dream {
 
   Project* Dream::getProject() {
     return mProject;
+  }
+
+  void Dream::setCamera(Components::Video::Camera* camera) {
+    mCamera = camera;
   }
 
   void Dream::setDone(bool done) {
@@ -40,7 +45,8 @@ namespace Dream {
   {
     std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
     std::string projectJsonStr = reader->getContentsAsString();
-    std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
+
+    //std::cout << "Dream: Read Project:" << std::endl << projectJsonStr << std::endl;
 
     if (projectJsonStr.empty())
     {
@@ -76,8 +82,9 @@ namespace Dream {
       std::cerr << "Dream: Unable to find active scene. Cannot Continue." << std::endl;
       return false;
     }
+
     if (!initActiveScene()) {
-      std::cerr << "Project: Unable to initialise Current Scene." << std::endl;
+      std::cerr << "Dream: Unable to initialise Current Scene." << std::endl;
       return false;
     }
     return true;
@@ -109,13 +116,17 @@ namespace Dream {
 
     if (!mAssetManager->createAllAssetInstances(mActiveScene))
     {
-      std::cerr << "Project: Unable to create asset instances." << std::endl;
+      std::cerr << "Dream: Unable to create asset instances." << std::endl;
       return false;
     }
 
     mComponentManager->populatePhysicsWorld(
         mAssetManager->getSceneObjectsWithPhysicsObjects()
     );
+
+    mCamera->setTranslation(mActiveScene->getDefaultCameraTranslation());
+    mCamera->setRotation(mActiveScene->getDefaultCameraRotation());
+    mCamera->setMovementSpeed(mActiveScene->getCameraMovementSpeed());
 
     return true;
   }
@@ -192,6 +203,10 @@ namespace Dream {
 
   void Dream::setComponentManager(Components::ComponentManager* componentManager) {
     mComponentManager = componentManager;
+  }
+
+  Time* Dream::getTime() {
+    return mTime;
   }
 
 } // End of Dream

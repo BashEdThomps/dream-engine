@@ -43,6 +43,7 @@ namespace Dream {
     Components::ComponentManager* getComponentManager();
     bool run();
     void setTime(Time*);
+    Time* getTime();
     void setDone(bool);
 
     void   setActiveScene(Scene*);
@@ -52,6 +53,8 @@ namespace Dream {
 
     void setAssetManager(AssetManager*);
     void setComponentManager(Components::ComponentManager*);
+
+    void setCamera(Components::Video::Camera*);
 
   }; // End of Dream
 } // End of Dream

@@ -9,7 +9,6 @@ namespace Dream {
       mAnimationComponent = NULL;
       mAudioComponent     = NULL;
       mInputComponent     = NULL;
-      mScriptingComponent = NULL;
       mPhysicsComponent   = NULL;
       mVideoComponent     = NULL;
       mDone               = false;
@@ -26,14 +25,12 @@ namespace Dream {
       delete mAnimationComponent;
       delete mAudioComponent;
       delete mInputComponent;
-      delete mScriptingComponent;
       delete mPhysicsComponent;
       delete mVideoComponent;
     }
 
     bool ComponentManager::createComponents() {
       std::cout << "ComponentManager: Creating Components..." << std::endl;
-      if(!createScriptingComponent()) return false;
       if(!createAudioComponent())     return false;
       if(!createPhysicsComponent())   return false;
       if(!createVideoComponent())     return false;
@@ -41,15 +38,6 @@ namespace Dream {
       if(!createAnimationComponent()) return false;
       std::cout << "ComponentManager: Successfuly created Components." << std::endl;
       return true;
-    }
-
-    bool ComponentManager::createScriptingComponent() {
-      mScriptingComponent = new Scripting::ChaiScripting();
-      if (!mScriptingComponent->init()) {
-        std::cerr << "ComponentManager: Unable to initialise ChaiScripting." << std::endl;
-        return false;
-      }
-      return mScriptingComponent != NULL;
     }
 
     bool ComponentManager::createAudioComponent() {
@@ -63,6 +51,7 @@ namespace Dream {
 
     bool ComponentManager::createPhysicsComponent() {
       mPhysicsComponent = new Physics::BulletPhysics();
+      mPhysicsComponent->setTime(mTime);
       if (!mPhysicsComponent->init()){
         std::cerr << "ComponentManager: Unable to initialise BulletPhysics." << std::endl;
         return false;
@@ -73,28 +62,29 @@ namespace Dream {
     bool ComponentManager::createVideoComponent() {
       mVideoComponent = new Video::OpenGLVideo(mCamera);
       mVideoComponent->setScreenName("Dream::OpenGL");
+      mVideoComponent->setTime(mTime);
       if (mVideoComponent->init()) {
         return true;
       } else {
         std::cerr << "ComponentManager: Unable to initialise OpenGLVideo." << std::endl;
         return false;
       }
-      return false;
     }
 
     bool ComponentManager::createAnimationComponent() {
       mAnimationComponent = new Animation::DreamAnimation(mTime);
+      mAnimationComponent->setTime(mTime);
       if (mAnimationComponent->init()) {
         return true;
       } else {
         std::cerr << "ComponentManager: Unable to initialise DreamAnimation." << std::endl;
         return false;
       }
-      return true;
     }
 
     bool ComponentManager::createInputComponent() {
       mInputComponent = new Input::GLFWInput();
+      mInputComponent->setTime(mTime);
       try {
         Video::OpenGLVideo* ogl   = dynamic_cast<Video::OpenGLVideo*>(mVideoComponent);
         Input::GLFWInput*   input = dynamic_cast<Input::GLFWInput*>(mInputComponent);
@@ -166,7 +156,6 @@ namespace Dream {
         mAnimationComponent->update(mActiveScene);
       }
       mInputComponent->update(mActiveScene);
-      mScriptingComponent->update(mActiveScene);
       mVideoComponent->update(mActiveScene);
     }
 
@@ -181,10 +170,8 @@ namespace Dream {
         Physics::BulletPhysics* bulletPhysicsComponent;
         bulletPhysicsComponent = dynamic_cast<Physics::BulletPhysics*>(mPhysicsComponent);
         for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
-          #ifdef VERBOSE
           std::cout << "ComponentManager: Adding SceneObject " << (*soIter)->getUUID()
                     << " to PhysicsComponent World" << std::endl;
-          #endif
           Physics::PhysicsObjectInstance* physicsObject;
           physicsObject = dynamic_cast<Physics::PhysicsObjectInstance*>(
             (*soIter)->getPhysicsObjectAssetInstance()
@@ -223,6 +210,10 @@ namespace Dream {
 
     void ComponentManager::setParallel(bool parallel) {
       mParallel = parallel;
+    }
+
+    Video::Camera* ComponentManager::getCamera() {
+      return mCamera;
     }
 
   } // End of Components
