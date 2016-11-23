@@ -46,12 +46,15 @@ namespace Dream {
         return textureID;
       }
 
-      AssimpModelInstance::AssimpModelInstance(AssetDefinition* definition) : AssetInstance(definition) {
-
+      AssimpModelInstance::AssimpModelInstance(
+          AssetDefinition* definition,
+          Transform3D* transform
+      ) : AssetInstance(definition,transform) {
+        return;
       }
 
       AssimpModelInstance::~AssimpModelInstance() {
-
+        return;
       }
 
       bool AssimpModelInstance::load(std::string projectPath) {

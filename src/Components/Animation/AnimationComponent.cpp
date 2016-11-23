@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Animation::DreamAnimation
+* AnimationComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,24 +16,26 @@
 */
 
 
-#include "DreamAnimation.h"
+#include "AnimationComponent.h"
 
-namespace Dream      {
+namespace Dream {
   namespace Components {
-    namespace Animation  {
+    namespace Animation {
 
-      DreamAnimation::DreamAnimation(Time* time) : AnimationComponentInterface() {
+      AnimationComponent::AnimationComponent(Time* time) : Dream::Components::ComponentInterface() {
         mTime = time;
       }
 
-      DreamAnimation::~DreamAnimation() {}
+      AnimationComponent::~AnimationComponent() {
 
-      bool DreamAnimation::init() {
-        std::cout << "DreamAnimation: Provisional init returning true" << std::endl;
+      }
+
+      bool AnimationComponent::init() {
+        std::cout << "AnimationComponent: Provisional init returning true" << std::endl;
         return true;
       }
 
-      void DreamAnimation::update(Scene *scene) {
+      void AnimationComponent::update(Scene *scene) {
         std::vector<SceneObject*> scenegraph = scene->getScenegraphVector();
         std::vector<SceneObject*>::iterator sgIter;
         for (sgIter = scenegraph.begin(); sgIter != scenegraph.end(); sgIter++) {
@@ -41,51 +43,51 @@ namespace Dream      {
           AssetInstance* animAsset = currentSceneObject->getAnimationAssetInstance();
           if (animAsset != NULL) {
             try {
-              Components::Animation::AnimationInstance* dreamAnimInstance;
-              dreamAnimInstance = dynamic_cast<Components::Animation::AnimationInstance*>(animAsset);
+              AnimationInstance* dreamAnimInstance;
+              dreamAnimInstance = dynamic_cast<AnimationInstance*>(animAsset);
               dreamAnimInstance->step(mTime->getTimeDelta());
               dreamAnimInstance->applyTransform(currentSceneObject);
             } catch (const std::exception &ex) {
-              std::cerr << "DreamAnimation: Unable to cast animation asset to Dream Animation" << std::endl;
+              std::cerr << "AnimationComponent: Unable to cast animation asset to Dream Animation" << std::endl;
               std::cerr << ex.what() << std::endl;
             }
           }
         }
       }
 
-      void DreamAnimation::play(AssetInstance *asset) {
+      void AnimationComponent::play(AssetInstance *asset) {
         try {
           Components::Animation::AnimationInstance* animAsset;
           animAsset = dynamic_cast<Components::Animation::AnimationInstance*>(asset);
           animAsset->play();
         } catch (std::exception & ex) {
-          std::cerr << "DreamAnimation: Exception playing animation." << ex.what() << std::endl;
+          std::cerr << "AnimationComponent: Exception playing animation." << ex.what() << std::endl;
         }
       }
 
-      void DreamAnimation::pause(AssetInstance *asset) {
+      void AnimationComponent::pause(AssetInstance *asset) {
         try {
           Components::Animation::AnimationInstance* animAsset;
           animAsset = dynamic_cast<Components::Animation::AnimationInstance*>(asset);
           animAsset->pause();
         } catch (std::exception & ex) {
-          std::cerr << "DreamAnimation: Exception pausing animation." << ex.what() << std::endl;
+          std::cerr << "AnimationComponent: Exception pausing animation." << ex.what() << std::endl;
         }
       }
 
-      void DreamAnimation::stop(AssetInstance *asset) {
+      void AnimationComponent::stop(AssetInstance *asset) {
         try {
           Components::Animation::AnimationInstance* animAsset;
           animAsset = dynamic_cast<Components::Animation::AnimationInstance*>(asset);
           animAsset->stop();
         } catch (std::exception & ex) {
-          std::cerr << "DreamAnimation: Exception stopping animation." << ex.what() << std::endl;
+          std::cerr << "AnimationComponent: Exception stopping animation." << ex.what() << std::endl;
         }
       }
 
-      bool DreamAnimation::isLooping(AssetInstance* asset) {
+      bool AnimationComponent::isLooping(AssetInstance* asset) {
         if (!asset) {
-          std::cerr << "DreamAnimation: asset is null in isLooping... " << std::endl;
+          std::cerr << "AnimationComponent: asset is null in isLooping... " << std::endl;
           return false;
         }
 
@@ -93,26 +95,26 @@ namespace Dream      {
           Components::Animation::AnimationInstance* animationAsset;
           animationAsset = dynamic_cast<Components::Animation::AnimationInstance*>(asset);
           if (!animationAsset) {
-            std::cerr << "DreamAnimation: animationAsset is null in isLooping... " << std::endl;
+            std::cerr << "AnimationComponent: animationAsset is null in isLooping... " << std::endl;
             return false;
           }
           return animationAsset->isLooping();
         } catch (std::exception &ex) {
-          std::cerr << "DreamAnimation: Exception in isLooping... " << std::endl;
+          std::cerr << "AnimationComponent: Exception in isLooping... " << std::endl;
           std::cerr << ex.what() << std::endl;
         }
         return false;
       }
 
-      void DreamAnimation::setLooping(AssetInstance* asset, bool looping) {
+      void AnimationComponent::setLooping(AssetInstance* asset, bool looping) {
         try {
           Components::Animation::AnimationInstance* animationAsset;
           animationAsset = dynamic_cast<Components::Animation::AnimationInstance*>(asset);
           animationAsset->setLooping(looping);
-          std::cout << "DreamAnimation: Setting " << animationAsset->getNameAndUUIDString()
+          std::cout << "AnimationComponent: Setting " << animationAsset->getNameAndUUIDString()
                     << " looping: " << String::boolToYesNo(looping) << std::endl;
         } catch (std::exception &ex) {
-          std::cerr << "DreamAnimation: Exception in setLooping... " << std::endl;
+          std::cerr << "AnimationComponent: Exception in setLooping... " << std::endl;
           std::cerr << ex.what() << std::endl;
         }
       }
@@ -120,4 +122,3 @@ namespace Dream      {
     } // End of Animation
   } // End of Components
 } // End of Dream
-

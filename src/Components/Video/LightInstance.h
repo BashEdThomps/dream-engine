@@ -9,7 +9,7 @@ namespace Dream {
     namespace Video {
       class LightInstance : public AssetInstance {
       public:
-        LightInstance(AssetDefinition*);
+        LightInstance(AssetDefinition*,Transform3D*);
         ~LightInstance();
         bool load(std::string);
         void loadExtraAttributes(nlohmann::json) {}

@@ -28,20 +28,20 @@
 #define ASSET_FORMAT_WAV  "wav"
 
 namespace Dream {
-  namespace Components {
-    namespace Audio {
-      class WavAudioInstance : public AudioAssetInstance {
-      private:
-        WavHeader mWavHeader;
-      public:
-        WavAudioInstance(AssetDefinition*);
-        ~WavAudioInstance();
-        bool load(std::string);
-        int  getFileSize(FILE* inFile);
-        void loadExtraAttributes(nlohmann::json);
-      }; // End WavAudioInstance
-    } // End of Audio
-  } // End of Components
+    namespace Components {
+        namespace Audio {
+            class WavAudioInstance : public AudioAssetInstance {
+            private:
+                WavHeader mWavHeader;
+            public:
+                WavAudioInstance(AssetDefinition*,Transform3D*);
+                ~WavAudioInstance();
+                bool load(std::string);
+                size_t  getFileSize(FILE* inFile);
+                void loadExtraAttributes(nlohmann::json);
+            }; // End WavAudioInstance
+        } // End of Audio
+    } // End of Components
 } // End of Dream
 
 #endif // End of WAVAUDIO_H

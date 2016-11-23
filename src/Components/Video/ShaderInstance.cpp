@@ -21,7 +21,10 @@ namespace Dream {
   namespace Components {
     namespace Video {
 
-      ShaderInstance::ShaderInstance(AssetDefinition* definition) : AssetInstance(definition) {
+      ShaderInstance::ShaderInstance(
+          AssetDefinition* definition,
+          Transform3D* transform
+      ) : AssetInstance(definition,transform) {
         mShaderProgram             = 0;
         mVertexShader              = 0;
         mFragmentShader            = 0;

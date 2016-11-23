@@ -49,7 +49,7 @@ namespace Dream {
         bool                   mLoop;
         bool                   mPlaying;
       public:
-        AnimationInstance(AssetDefinition*);
+        AnimationInstance(AssetDefinition*,Transform3D*);
         ~AnimationInstance();
         bool load(std::string);
         void setSceneObject(SceneObject*);

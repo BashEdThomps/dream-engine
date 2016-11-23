@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::AssetInstance
+* AssetInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 #include "FileReader.h"
 #include "AssetDefinition.h"
-#include "SceneObject.h"
+#include "Transform3D.h"
 
 #define ASSET_UUID "uuid"
 #define ASSET_NAME "name"
@@ -33,11 +33,11 @@ namespace Dream {
 
   class AssetInstance {
   protected:
-    AssetDefinition    *mDefinition;
-    SceneObject *mParent;
+    AssetDefinition *mDefinition;
+    Transform3D     *mTransform;
   public:
-    AssetInstance(AssetDefinition*);
-    virtual ~AssetInstance(void) {};
+    AssetInstance(AssetDefinition*, Transform3D*);
+    virtual ~AssetInstance(void) {}
 
     std::string getUUID();
     std::string getName();
@@ -47,9 +47,9 @@ namespace Dream {
     virtual bool load(std::string) = 0;
     virtual void loadExtraAttributes(nlohmann::json) = 0;
 
-    void setParentSceneObject(SceneObject*);
-    SceneObject* getParentSceneObject();
+    Transform3D* getTransform();
 
   }; // End of AssetInstance
 } // End of Dream
+
 #endif // End of ASSETINSTANCE_H

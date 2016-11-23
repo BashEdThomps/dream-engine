@@ -76,7 +76,7 @@ namespace Dream {
                       << ex.what()
                       << std::endl;
           }
-          mDream->getComponentManager()->getInputComponent()->clearInputEvents();
+          mDream->getInputComponent()->clearInputEvents();
         }
       }
 
@@ -113,7 +113,6 @@ namespace Dream {
         std::cout << "ChaiScriptInstance: Init Project API" << std::endl;
         mEngine->add(chaiscript::user_type<Project>(),"Project");
         mEngine->add(chaiscript::fun(&Dream::getProject),"getProject");
-        mEngine->add(chaiscript::fun(&Dream::getComponentManager),"getComponentManager");
         mEngine->add(chaiscript::fun(&Dream::getAssetManager),"getAssetManager");
       }
 
@@ -125,27 +124,25 @@ namespace Dream {
 
       void ChaiScriptAPI::initAudioComponentAPI() {
         std::cout << "ChaiScriptInstance: Init AudioComponent API" << std::endl;
-        mEngine->add(chaiscript::user_type<Components::Audio::AudioComponentInterface>(),"AudioComponentInterface");
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::playAudioAsset),"playAudioAsset");
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::pauseAudioAsset),"pauseAudioAsset");
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::stopAudioAsset), "stopAudioAsset");
+        mEngine->add(chaiscript::user_type<Components::Audio::AudioComponent>(),"AudioComponent");
+        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::playAudioAsset),"playAudioAsset");
+        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::pauseAudioAsset),"pauseAudioAsset");
+        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::stopAudioAsset), "stopAudioAsset");
         mEngine->add(
-              chaiscript::fun<float,Components::Audio::AudioComponentInterface,AssetInstance*>
-              (&Components::Audio::AudioComponentInterface::getSampleOffset),
+              chaiscript::fun<float,Components::Audio::AudioComponent,AssetInstance*>
+              (&Components::Audio::AudioComponent::getSampleOffset),
               "getSampleOffset"
               );
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponentInterface::getAudioBuffer),"getAudioBuffer");
+        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::getAudioBuffer),"getAudioBuffer");
       }
 
       void ChaiScriptAPI::initComponentManagerAPI() {
-        std::cout << "ChaiScriptInstance: Init ComponentManager API" << std::endl;
-        mEngine->add(chaiscript::user_type<Components::ComponentManager>(), "ComponentManager");
-        mEngine->add(chaiscript::fun(&Components::ComponentManager::getCamera), "getCamera");
-        mEngine->add(chaiscript::fun(&Components::ComponentManager::getAnimationComponent), "getAnimationComponent");
-        mEngine->add(chaiscript::fun(&Components::ComponentManager::getAudioComponent), "getAudioComponent");
-        mEngine->add(chaiscript::fun(&Components::ComponentManager::getInputComponent), "getInputComponent");
-        mEngine->add(chaiscript::fun(&Components::ComponentManager::getPhysicsComponent), "getPhysicsComponent");
-        mEngine->add(chaiscript::fun(&Components::ComponentManager::getVideoComponent), "getVideoComponent");
+        mEngine->add(chaiscript::fun(&Dream::getCamera), "getCamera");
+        mEngine->add(chaiscript::fun(&Dream::getAnimationComponent), "getAnimationComponent");
+        mEngine->add(chaiscript::fun(&Dream::getAudioComponent), "getAudioComponent");
+        mEngine->add(chaiscript::fun(&Dream::getInputComponent), "getInputComponent");
+        mEngine->add(chaiscript::fun(&Dream::getPhysicsComponent), "getPhysicsComponent");
+        mEngine->add(chaiscript::fun(&Dream::getVideoComponent), "getVideoComponent");
       }
 
       void ChaiScriptAPI::initGlfwTimeAPI() {
@@ -266,9 +263,9 @@ namespace Dream {
       }
 
       void ChaiScriptAPI::initVideoComponentAPI() {
-        mEngine->add(chaiscript::user_type<Components::Video::VideoComponentInterface>(),"VideoComponent");
-        mEngine->add(chaiscript::fun(&Components::Video::VideoComponentInterface::closeWindow),"closeWindow");
-        mEngine->add(chaiscript::fun(&Components::Video::VideoComponentInterface::setCursorEnabled),"setCursorEnabled");
+        mEngine->add(chaiscript::user_type<Components::Video::VideoComponent>(),"VideoComponent");
+        mEngine->add(chaiscript::fun(&Components::Video::VideoComponent::closeWindow),"closeWindow");
+        mEngine->add(chaiscript::fun(&Components::Video::VideoComponent::setCursorEnabled),"setCursorEnabled");
       }
 
       void ChaiScriptAPI::initAnimationInstanceAPI() {
@@ -278,12 +275,12 @@ namespace Dream {
       }
 
       void ChaiScriptAPI::initAnimationComponentAPI() {
-        mEngine->add(chaiscript::user_type<Components::Animation::AnimationComponentInterface>(),"AnimationComponent");
-        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::play),"play");
-        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::pause),"pause");
-        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::stop),"stop");
-        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::isLooping),"isLooping");
-        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponentInterface::setLooping),"setLooping");
+        mEngine->add(chaiscript::user_type<Components::Animation::AnimationComponent>(),"AnimationComponent");
+        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponent::play),"play");
+        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponent::pause),"pause");
+        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponent::stop),"stop");
+        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponent::isLooping),"isLooping");
+        mEngine->add(chaiscript::fun(&Components::Animation::AnimationComponent::setLooping),"setLooping");
       }
 
       void ChaiScriptAPI::initSceneAPI() {

@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::AssetInstance
+* AssetInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,11 @@
 #include "AssetInstance.h"
 
 namespace Dream {
-  AssetInstance::AssetInstance(AssetDefinition* definition) {
+  AssetInstance::AssetInstance(
+      AssetDefinition* definition,
+      Transform3D* transform ) {
     mDefinition = definition;
+    mTransform = transform;
   }
 
   std::string AssetInstance::getName() {
@@ -34,11 +37,7 @@ namespace Dream {
     return mDefinition->getNameAndUUIDString();
   }
 
-  SceneObject* AssetInstance::getParentSceneObject() {
-    return mParent;
-  }
-
-  void AssetInstance::setParentSceneObject(SceneObject *parent) {
-    mParent = parent;
+  Transform3D* AssetInstance::getTransform() {
+    return mTransform;
   }
 } // End of Dream

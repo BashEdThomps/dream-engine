@@ -1,5 +1,5 @@
 /*
- * BulletPhysics
+ * PhysicsInterface
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,33 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHYSICSWORLD_H
-#define PHYSICSWORLD_H
+#ifndef PHYSICSCOMPONENT_H
+#define PHYSICSCOMPONENT_H
+
+#include <iostream>
 
 #include "BulletGLDebugDrawer.h"
-#include "PhysicsComponentInterface.h"
 #include "PhysicsObjectInstance.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
-#include <iostream>
+
+#include "../ComponentInterface.h"
 
 namespace Dream {
   namespace Components {
     namespace Physics {
-      class BulletPhysics :
-          public PhysicsComponentInterface {
+      class PhysicsComponent : public Dream::Components::ComponentInterface {
+      public:
+        PhysicsComponent(void);
+        ~PhysicsComponent(void);
       private:
-#ifdef VERBOSE
         //GLDebugDrawer                     *mDebugDrawer;
-#endif
         btDynamicsWorld                     *mDynamicsWorld;
         btBroadphaseInterface               *mBroadphase;
         btDefaultCollisionConfiguration     *mCollisionConfiguration;
         btCollisionDispatcher               *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
       public:
-        BulletPhysics(void);
-        ~BulletPhysics(void);
+        void populatePhysicsWorld(std::vector<SceneObject*>);
         void setGravity3f(float,float,float);
         void setGravityBtVector3(btVector3);
         bool init(void);
@@ -49,8 +50,10 @@ namespace Dream {
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
-      }; // End of BulletPhysics
+
+      };// End of PhysicsComponent
     } // End of Physics
   } // End of Components
 } // End of Dream
-#endif // End of PHYSICSWORLD_H
+
+#endif // End of PHYSICSCOMPONENT_H

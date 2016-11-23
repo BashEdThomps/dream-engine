@@ -36,8 +36,8 @@ namespace Dream {
       class AssimpModelInstance : public AssetInstance {
       private:
         // Variables
-        std::vector<AssimpMesh>    mMeshes;
-        std::string          mDirectory;
+        std::vector<AssimpMesh> mMeshes;
+        std::string mDirectory;
         static std::vector<Texture> sTextureCache;
         // Methods
         void processNode(aiNode*, const aiScene*);
@@ -45,7 +45,7 @@ namespace Dream {
         void loadModel(std::string);
         std::vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, std::string);
       public:
-        AssimpModelInstance(AssetDefinition*);
+        AssimpModelInstance(AssetDefinition*,Transform3D*);
         ~AssimpModelInstance();
         bool load(std::string);
         void draw(ShaderInstance*);

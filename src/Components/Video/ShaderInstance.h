@@ -19,8 +19,8 @@
 #define SHADERINSTANCE_H
 
 #include <iostream>
-#include "../../AssetInstance.h"
 #include <GL/glew.h>
+#include "../../AssetInstance.h"
 
 #define SHADER_VERTEX   "vertex"
 #define SHADER_FRAGMENT "fragment"
@@ -37,7 +37,7 @@ namespace Dream {
         GLuint      mFragmentShader;
         GLuint      mShaderProgram;
       public:
-        ShaderInstance(AssetDefinition*);
+        ShaderInstance(AssetDefinition*,Transform3D*);
         ~ShaderInstance(void);
 
         bool load(std::string);

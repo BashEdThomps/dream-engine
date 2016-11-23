@@ -4,7 +4,9 @@ namespace Dream     {
   namespace Components     {
     namespace Audio     {
 
-      AudioAssetInstance::AudioAssetInstance(AssetDefinition* definition) : AssetInstance(definition) {
+      AudioAssetInstance::AudioAssetInstance(
+          AssetDefinition* definition, Transform3D* transform
+      ) : AssetInstance(definition, transform) {
         setLooping(false);
         setBuffer(0);
         setSource(0);

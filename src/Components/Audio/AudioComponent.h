@@ -1,5 +1,5 @@
 /*
-* Dream::Plugnis::Audio::OpenAL::OpenALAudio
+* Dream::Plugnis::Audio::OpenAL::AudioComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -29,14 +29,14 @@
 #include <AL/alc.h>
 #endif
 
-#include "AudioComponentInterface.h"
+#include "../ComponentInterface.h"
 #include "AudioAssetInstance.h"
 
 namespace Dream   {
   namespace Components {
     namespace Audio   {
 
-      class OpenALAudio : public AudioComponentInterface {
+      class AudioComponent : public ComponentInterface {
       private:
         std::vector<AudioAssetInstance*> mPlayQueue;
         std::vector<AudioAssetInstance*> mPauseQueue;
@@ -46,8 +46,8 @@ namespace Dream   {
         ALCdevice*  mDevice;
         ALCcontext* mContext;
       public:
-        OpenALAudio();
-        ~OpenALAudio();
+        AudioComponent();
+        ~AudioComponent();
         bool init();
         void update(Scene*);
 
@@ -85,7 +85,7 @@ namespace Dream   {
 
         void deleteAllSources();
         void deleteAllBuffers();
-      }; // End of OpenALAudio
+      }; // End of AudioComponent
 
     } // End of Audio
   } // End of Components

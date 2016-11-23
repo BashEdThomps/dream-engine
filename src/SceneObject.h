@@ -5,6 +5,7 @@
 #include <vector>
 #include "json.hpp"
 #include "AssetInstance.h"
+#include "Transform3D.h"
 
 #define SO_X 0
 #define SO_Y 1
@@ -45,10 +46,7 @@ namespace Dream {
     std::string  mPath;
     std::string  mTransformType;
 
-    // Position
-    std::vector<float> mTranslation;
-    std::vector<float> mRotation;
-    std::vector<float> mScale;
+    Transform3D *mTransform;
 
     // Asset Instances
     AssetInstance* mAudioAssetInstance;
@@ -98,7 +96,7 @@ namespace Dream {
     void         resetTransform();
 
     int          countAllChildren();
-    int          countChildren();
+    size_t          countChildren();
     void         addChild(SceneObject*);
     void         removeChild(SceneObject*);
     bool         isChildOf(SceneObject*);
@@ -137,12 +135,13 @@ namespace Dream {
     void setLightAssetInstance(AssetInstance*);
     AssetInstance* getLightAssetInstance();
 
-    void setAssetInstanceParentToThis(AssetInstance*);
-
     std::vector<std::string> getAssetInstanceUUIDsToLoad();
 
     std::string getTransformType();
     void setTransformType(std::string);
+
+    Transform3D* getTransform();
+    void setTransform(Transform3D*);
 
   }; // End of SceneObject
 

@@ -2,30 +2,38 @@
 #define DREAM_H
 
 #include <iostream>
+#include <thread>
+#include "json.hpp"
 
 #include "ArgumentParser.h"
-
-#include "json.hpp"
 #include "Time.h"
 #include "FileReader.h"
 #include "Scene.h"
 #include "Project.h"
 #include "AssetInstance.h"
 #include "AssetManager.h"
-#include "Components/ComponentManager.h"
-#include "Components/Video/Camera.h"
 
+#include "Components/Video/Camera.h"
+#include "Components/Animation/AnimationComponent.h"
+#include "Components/Audio/AudioComponent.h"
+#include "Components/Input/InputComponent.h"
+#include "Components/Physics/PhysicsComponent.h"
+#include "Components/Video/VideoComponent.h"
 
 namespace Dream {
   class Dream {
   private:
     Time *mTime;
     Project *mProject;
-    AssetManager *mAssetManager;
-    Components::ComponentManager *mComponentManager;
-    bool mDone;
-    Components::Video::Camera *mCamera;
     Scene* mActiveScene;
+    AssetManager *mAssetManager;
+    Components::Video::Camera *mCamera;
+    Components::Audio::AudioComponent *mAudioComponent;
+    Components::Video::VideoComponent *mVideoComponent;
+    Components::Physics::PhysicsComponent *mPhysicsComponent;
+    Components::Input::InputComponent *mInputComponent;
+    Components::Animation::AnimationComponent *mAnimationComponent;
+    bool mDone;
   public:
     Dream(void);
     ~Dream(void);
@@ -39,12 +47,11 @@ namespace Dream {
     bool createAssetManager();
     AssetManager* getAssetManager();
 
-    bool createComponentManager();
-    Components::ComponentManager* getComponentManager();
     bool run();
     void setTime(Time*);
     Time* getTime();
     void setDone(bool);
+    bool isDone();
 
     void   setActiveScene(Scene*);
     Scene *getActiveScene();
@@ -52,9 +59,24 @@ namespace Dream {
     bool   initActiveScene();
 
     void setAssetManager(AssetManager*);
-    void setComponentManager(Components::ComponentManager*);
-
+    Components::Video::Camera* getCamera();
     void setCamera(Components::Video::Camera*);
+
+    void updateComponents();
+    bool createComponents();
+    void destroyComponents();
+    bool createAnimationComponent();
+    bool createAudioComponent();
+    bool createInputComponent();
+    bool createPhysicsComponent();
+    bool createVideoComponent();
+
+    Components::Animation::AnimationComponent* getAnimationComponent();
+    Components::Audio::AudioComponent* getAudioComponent();
+    Components::Input::InputComponent* getInputComponent();
+    Components::Physics::PhysicsComponent* getPhysicsComponent();
+    Components::Video::VideoComponent* getVideoComponent();
+
 
   }; // End of Dream
 } // End of Dream

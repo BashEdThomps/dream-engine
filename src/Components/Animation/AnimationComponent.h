@@ -1,5 +1,5 @@
 /*
-* PhysicsInterface
+* AnimationComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,33 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PhysicsComponentInterface.h"
+
+#ifndef AnimationComponent_h
+#define AnimationComponent_h
+
+#include "../ComponentInterface.h"
+#include "AnimationInstance.h"
 
 namespace Dream {
   namespace Components {
-    namespace Physics {
-      PhysicsComponentInterface::PhysicsComponentInterface(void) : Dream::Components::ComponentInterface() {}
-    } // End of Physics
+    namespace Animation {
+
+      class AnimationComponent : public Dream::Components::ComponentInterface {
+      private:
+        Time* mTime;
+      public:
+        AnimationComponent(Time*);
+        ~AnimationComponent();
+        bool init();
+        void update(Scene*);
+        void play (AssetInstance*);
+        void pause(AssetInstance*);
+        void stop (AssetInstance*);
+        bool isLooping(AssetInstance*);
+        void setLooping(AssetInstance*,bool);
+      }; // End of AnimationComponent
+    } // End of Animation
   } // End of Components
 } // End of Dream
+
+#endif // AnimationComponent_h

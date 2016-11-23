@@ -32,7 +32,7 @@ namespace Dream {
         std::string mProjectPath;
         std::string mAbsolutePath;
       public:
-        ChaiScriptInstance(AssetDefinition*);
+        ChaiScriptInstance(AssetDefinition*,Transform3D*);
         ~ChaiScriptInstance(void);
         bool load(std::string);
         void update();

@@ -19,9 +19,12 @@
 
 namespace Dream {
 
-  Scene::Scene() {}
+  Scene::Scene() {
+    mDefaultCameraTransform = new Transform3D();
+  }
 
   Scene::Scene(nlohmann::json jsonScene) {
+    mDefaultCameraTransform = new Transform3D();
     mUUID = jsonScene[SCENE_JSON_UUID];
     mName = jsonScene[SCENE_JSON_NAME];
 
@@ -62,14 +65,14 @@ namespace Dream {
   void Scene::loadDefaultCameraTransform(nlohmann::json camera) {
     if (!camera.is_null()) {
       nlohmann::json translation = camera[SCENE_JSON_TRANSLATION];
-      setDefaultCameraTranslation({
+      mDefaultCameraTransform->setTranslation({
         translation[SCENE_JSON_X],
         translation[SCENE_JSON_Y],
         translation[SCENE_JSON_Z]
       });
 
       nlohmann::json rotation = camera[SCENE_JSON_ROTATION];
-      setDefaultCameraRotation({
+      mDefaultCameraTransform->setRotation({
         rotation[SCENE_JSON_X],
         rotation[SCENE_JSON_Y],
         rotation[SCENE_JSON_Z]
@@ -80,12 +83,16 @@ namespace Dream {
       }
 
     } else {
-      setDefaultCameraTranslation({0.0f, 0.0f, 0.0f});
-      setDefaultCameraRotation   ({0.0f, 0.0f, 0.0f});
+      mDefaultCameraTransform->setTranslation({0.0f, 0.0f, 0.0f});
+      mDefaultCameraTransform->setRotation   ({0.0f, 0.0f, 0.0f});
     }
   }
 
-  Scene::~Scene() {}
+  Scene::~Scene() {
+    if (mDefaultCameraTransform != NULL) {
+        delete mDefaultCameraTransform;
+    }
+  }
 
   bool Scene::init() {
     std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
@@ -110,22 +117,6 @@ namespace Dream {
 
   void Scene::setName(std::string name) {
     mName = name;
-  }
-
-  bool Scene::isAudioEnabled() {
-    return mAudioEnabled;
-  }
-
-  bool Scene::isAnimationEnabled() {
-    return mAnimationEnabled;
-  }
-
-  bool Scene::isPhysicsEnabled() {
-    return mPhysicsEnabled;
-  }
-
-  bool Scene::isInputEnabled() {
-    return mInputEnabled;
   }
 
   void Scene::loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
@@ -185,16 +176,12 @@ namespace Dream {
   }
 
   void Scene::showStatus() {
-    std::cout << "Scene:"              << std::endl;
-    std::cout << "             UUID: " << mUUID << std::endl;
-    std::cout << "             Name: " << mName << std::endl;
-    std::cout << "    Audio Enabled: " << String::boolToYesNo(isAudioEnabled())     << std::endl;
-    std::cout << "Animation Enabled: " << String::boolToYesNo(isAnimationEnabled()) << std::endl;
-    std::cout << "    Input Enabled: " << String::boolToYesNo(isInputEnabled())     << std::endl;
-    std::cout << "  Physics Enabled: " << String::boolToYesNo(isPhysicsEnabled())   << std::endl;
-    std::cout << " Camera Transform: " << std::endl;
-    std::cout << "      Translation: " << String::floatVectorToString(mCameraTranslation) << std::endl;
-    std::cout << "         Rotation: " << String::floatVectorToString(mCameraRotation)    << std::endl;
+    std::cout << "Scene:" << std::endl;
+    std::cout << "    UUID: " << mUUID << std::endl;
+    std::cout << "    Name: " << mName << std::endl;
+    std::cout << "    Camera Transform: " << std::endl;
+    std::cout << "        Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << std::endl;
+    std::cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << std::endl;
     std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
     showScenegraph();
   }
@@ -235,20 +222,12 @@ namespace Dream {
     return mScenegraphVector;
   }
 
-  void Scene::setDefaultCameraTranslation(std::vector<float> translation) {
-    mCameraTranslation = translation;
-  }
-
   std::vector<float> Scene::getDefaultCameraTranslation() {
-    return mCameraTranslation;
-  }
-
-  void Scene::setDefaultCameraRotation(std::vector<float> rotation) {
-    mCameraRotation = rotation;
+    return mDefaultCameraTransform->getTranslation();
   }
 
   std::vector<float> Scene::getDefaultCameraRotation() {
-    return mCameraRotation;
+    return mDefaultCameraTransform->getRotation();
   }
 
   void Scene::setCameraMovementSpeed (float speed) {

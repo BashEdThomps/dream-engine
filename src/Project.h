@@ -24,7 +24,6 @@
 #include "Scene.h"
 #include "AssetDefinition.h"
 #include "String.h"
-#include "Components/ComponentManager.h"
 #include "AssetManager.h"
 
 #define PROJECT_UUID            "uuid"
@@ -55,7 +54,6 @@ namespace Dream {
     std::string mStartupScene;
     std::vector<Scene*> mScenes;
     Scene *mActiveScene;
-
   // Instance Methods
   public:
     Project(AssetManager*);

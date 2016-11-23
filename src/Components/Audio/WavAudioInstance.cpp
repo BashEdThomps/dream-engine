@@ -21,10 +21,15 @@ namespace Dream {
   namespace Components {
     namespace Audio {
 
-      WavAudioInstance::WavAudioInstance(AssetDefinition* definition)
-        : AudioAssetInstance(definition) {}
+      WavAudioInstance::WavAudioInstance(
+          AssetDefinition* definition, Transform3D* transform
+      ) : AudioAssetInstance(definition, transform) {
+        return;
+      }
 
-      WavAudioInstance::~WavAudioInstance() {}
+      WavAudioInstance::~WavAudioInstance() {
+        return;
+      }
 
       bool WavAudioInstance::load(std::string projectPath) {
         std::string absPath = projectPath+mDefinition->getAssetPath();
@@ -87,15 +92,17 @@ namespace Dream {
       }
 
       // find the file size
-      int WavAudioInstance::getFileSize(FILE* inFile) {
-        int fileSize = 0;
+      size_t WavAudioInstance::getFileSize(FILE* inFile) {
+        size_t fileSize = 0;
         fseek(inFile, 0, SEEK_END);
         fileSize = ftell(inFile);
         fseek(inFile, 0, SEEK_SET);
         return fileSize;
       }
 
-      void WavAudioInstance::loadExtraAttributes(nlohmann::json json) {}
+      void WavAudioInstance::loadExtraAttributes(nlohmann::json json) {
+        return;
+      }
 
     } // End of Audio
   } // End of Components

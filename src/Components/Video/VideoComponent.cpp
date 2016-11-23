@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Video::OpenGL::OpenGLVideo
+* Dream::Components::Video::OpenGL::VideoComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OpenGLVideo.h"
+#include "VideoComponent.h"
 
 namespace Dream {
   namespace Components {
@@ -23,24 +23,27 @@ namespace Dream {
 
       // Global Event Handlers
       void onWindowSizeChangedEvent(GLFWwindow *window, int width, int height) {
-        std::cout << "OpenGLVideo: Window Resized " << width << "," << height << std::endl;
+        std::cout << "VideoComponent: Window Resized " << width << "," << height << std::endl;
       }
 
       void onWindowCloseEvent(GLFWwindow *window) {
-        std::cout << "OpenGLVideo: Window Close Event." << std::endl;
+        std::cout << "VideoComponent: Window Close Event." << std::endl;
         glfwSetWindowShouldClose(window, GL_TRUE);
       }
 
       void onFramebufferSizeEvent(GLFWwindow *window, int width, int height ) {
-        std::cout << "OpenGLVideo: Framebuffer Resized " << width << "," << height << std::endl;
+        std::cout << "VideoComponent: Framebuffer Resized " << width << "," << height << std::endl;
         glViewport(0, 0, width, height);
       }
 
-      OpenGLVideo::OpenGLVideo(Camera* camera) : VideoComponentInterface() {
+      VideoComponent::VideoComponent(Camera* camera) : ComponentInterface () {
+        setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
+        setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
+        mWindowShouldClose = false;
         mCamera = camera;
       }
 
-      OpenGLVideo::~OpenGLVideo(void) {
+      VideoComponent::~VideoComponent(void) {
         if (mWindow) {
           glfwDestroyWindow(mWindow);
         }
@@ -48,11 +51,11 @@ namespace Dream {
         glfwTerminate();
       }
 
-      bool OpenGLVideo::init(void) {
-        std::cout << "OpenGLVideo: Initialising..." << std::endl;
+      bool VideoComponent::init(void) {
+        std::cout << "VideoComponent: Initialising..." << std::endl;
 
         if (!glfwInit()) {
-          std::cerr << "OpenGLVideo: GLFW failed to initialise." << std::endl;
+          std::cerr << "VideoComponent: GLFW failed to initialise." << std::endl;
           return false;
         }
 
@@ -63,7 +66,7 @@ namespace Dream {
 
         mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, mScreenName.c_str(), NULL, NULL);
         if (!mWindow) {
-          std::cerr << "OpenGLVideo: Fatal, Unable to create Window" << std::endl;
+          std::cerr << "VideoComponent: Fatal, Unable to create Window" << std::endl;
           glfwTerminate();
           return false;
         }
@@ -73,19 +76,19 @@ namespace Dream {
         glfwSwapInterval(1);
         //checkGLError(-10);
 
-        std::cout << "OpenGLVideo: Initialised GLFW" << std::endl;
+        std::cout << "VideoComponent: Initialised GLFW" << std::endl;
 
         // Initialize GLEW to setup the OpenGL Function pointers
         glewExperimental = GL_TRUE;
         GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK) {
-          std::cerr << "OpenGLVideo: GLEW failed to initialise." << std::endl;
+          std::cerr << "VideoComponent: GLEW failed to initialise." << std::endl;
           return false;
         }
 
         //checkGLError(-20);
 
-        std::cout << "OpenGLVideo: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+        std::cout << "VideoComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
         // Define the viewport dimensions
         glViewport(0, 0, mScreenWidth*2, mScreenHeight*2);
         //checkGLError(50);
@@ -97,28 +100,28 @@ namespace Dream {
         glCullFace(GL_BACK);
         //checkGLError(51);
 
-        std::cout << "OpenGLVideo: Initialised GLEW." << std::endl;
-        std::cout << "OpenGLVideo: Initialisation Done." << std::endl;
+        std::cout << "VideoComponent: Initialised GLEW." << std::endl;
+        std::cout << "VideoComponent: Initialisation Done." << std::endl;
         return true;
       }
 
-      void OpenGLVideo::setCursorEnabled(bool cursorEnabled) {
+      void VideoComponent::setCursorEnabled(bool cursorEnabled) {
         glfwSetInputMode(mWindow, GLFW_CURSOR, cursorEnabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
       }
 
-      void OpenGLVideo::closeWindow() {
+      void VideoComponent::closeWindow() {
         mWindowShouldClose = true;
         glfwSetWindowShouldClose(mWindow,GL_TRUE);
       }
 
-      void OpenGLVideo::setupWindowEventHandlers() {
+      void VideoComponent::setupWindowEventHandlers() {
         glfwSetWindowSizeCallback(mWindow, onWindowSizeChangedEvent);
         glfwSetWindowCloseCallback(mWindow, onWindowCloseEvent);
         glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeEvent);
       }
 
-      void OpenGLVideo::update(Dream::Scene* scene) {
-        //std::cout << "OpenGLVideo: Update" << std::endl;
+      void VideoComponent::update(Dream::Scene* scene) {
+        //std::cout << "VideoComponent: Update" << std::endl;
         std::vector<Dream::SceneObject*> scenegraph = scene->getScenegraphVector();
         if (!glfwWindowShouldClose(mWindow)) {
           // Clear the colorbuffer
@@ -135,7 +138,7 @@ namespace Dream {
                 drawSceneObject(object);
                 //checkGLError(555);
               } else {
-                std::cerr << "OpenGLVideo: Object " << object->getUUID() << " has no ShaderInstance assigned." << std::endl;
+                std::cerr << "VideoComponent: Object " << object->getUUID() << " has no ShaderInstance assigned." << std::endl;
               }
             }
           }
@@ -146,7 +149,7 @@ namespace Dream {
         }
       }
 
-      void OpenGLVideo::drawSceneObject(Dream::SceneObject* sceneObject) {
+      void VideoComponent::drawSceneObject(Dream::SceneObject* sceneObject) {
         AssimpModelInstance* model;
         model = dynamic_cast<AssimpModelInstance*>(sceneObject->getModelAssetInstance());
         ShaderInstance* shader;
@@ -179,7 +182,7 @@ namespace Dream {
         std::vector<float> translation = sceneObject->getTranslation();
         std::vector<float> rotation    = sceneObject->getRotation();
         std::vector<float> scale       = sceneObject->getScale();
-        //std::cout << "OpenGLVideo: Drawing Scene Object" << std::endl;
+        //std::cout << "VideoComponent: Drawing Scene Object" << std::endl;
         //std::cout	<< "\tT("<<translation[0]<<","<<translation[1]<<","<<translation[2]<<")"<<std::endl;
         //std::cout	<< "\tR("<<rotation[0]<<","<<rotation[1]<<","<<rotation[2]<<")"<<std::endl;
         //std::cout << "\tS("<<scale[0]<<","<<scale[1]<<","<<scale[2]<<")"<<std::endl;;
@@ -204,13 +207,13 @@ namespace Dream {
         //checkGLError(1207);
       }
 
-      bool OpenGLVideo::checkGLError(int errorIndex) {
+      bool VideoComponent::checkGLError(int errorIndex) {
         GLenum errorCode = 0;
         bool wasError = false;
         do {
           errorCode = glGetError();
           if (errorCode!=0) {
-            std::cerr << "OpenGLVideo: Error Check " << errorIndex << ": " << std::endl;
+            std::cerr << "VideoComponent: Error Check " << errorIndex << ": " << std::endl;
             switch (errorCode) {
               case GL_NO_ERROR:
                 std::cerr << "\tGL_NO_ERROR" << std::endl;
@@ -239,9 +242,39 @@ namespace Dream {
         return wasError;
       }
 
-      GLFWwindow* OpenGLVideo::getWindow() {
+      GLFWwindow* VideoComponent::getWindow() {
         return mWindow;
       }
+
+      void VideoComponent::setScreenWidth(int width) {
+        mScreenWidth = width;
+      }
+
+      int  VideoComponent::getScreenWidth() {
+        return mScreenWidth;
+      }
+
+      void VideoComponent::setScreenHeight(int height) {
+        mScreenHeight = height;
+      }
+
+      int  VideoComponent::getScreenHeight() {
+        return mScreenHeight;
+      }
+
+      void VideoComponent::setScreenName(std::string name) {
+        mScreenName = name;
+      }
+
+      std::string VideoComponent::getScreenName() {
+        return mScreenName;
+      }
+
+      bool VideoComponent::isWindowShouldCloseFlagSet() {
+        return mWindowShouldClose;
+      }
+
+
     } // End of Video
   } // End of Components
 } // End of Dream

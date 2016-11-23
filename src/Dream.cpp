@@ -5,17 +5,24 @@ namespace Dream {
 
   Dream::Dream() {
     setAssetManager(NULL);
-    setComponentManager(NULL);
+    mAnimationComponent = NULL;
+    mAudioComponent     = NULL;
+    mInputComponent     = NULL;
+    mPhysicsComponent   = NULL;
+    mVideoComponent     = NULL;
+
     setDone(false);
     setCamera(new Components::Video::Camera());
     setTime(new Time());
     setActiveScene(NULL);
+    createComponents();
     createAssetManager();
-    createComponentManager();
     setProject(NULL);
   }
 
-  Dream::~Dream() {}
+  Dream::~Dream() {
+      destroyComponents();
+  }
 
   Project* Dream::getProject() {
     return mProject;
@@ -120,7 +127,7 @@ namespace Dream {
       return false;
     }
 
-    mComponentManager->populatePhysicsWorld(
+    mPhysicsComponent->populatePhysicsWorld(
         mAssetManager->getSceneObjectsWithPhysicsObjects()
     );
 
@@ -131,22 +138,8 @@ namespace Dream {
     return true;
   }
 
-  Components::ComponentManager* Dream::getComponentManager() {
-    return mComponentManager;
-  }
-
   AssetManager* Dream::getAssetManager() {
     return mAssetManager;
-  }
-
-
-  bool Dream::createComponentManager() {
-    if (mComponentManager != NULL) {
-      std::cout << "Dream: Destroying existing ComponentManager." << std::endl;
-      delete mComponentManager;
-    }
-    mComponentManager = new Components::ComponentManager(mTime,mCamera);
-    return mComponentManager != NULL;
   }
 
   bool Dream::createAssetManager() {
@@ -160,9 +153,8 @@ namespace Dream {
 
 
   bool Dream::run() {
-    //mComponentManager->setParallel(true);
     // Create Components
-    if(!mComponentManager->createComponents()){
+    if(!createComponents()){
       std::cerr << "Dream: Unable to create components." << std::endl;
       return false;
     }
@@ -173,25 +165,16 @@ namespace Dream {
       return false;
     }
 
-    mComponentManager->setActiveScene(mActiveScene);
     std::cout << "Dream: Starting Scene - "
               << getActiveScene()->getName()
               << " (" << getActiveScene()->getUUID() << ")" << std::endl;
 
     // GameLoop
-    if (mComponentManager->isParallel()) {
-      mComponentManager->startThreads();
-    }
 
     while(!mDone) {
-      mDone = mComponentManager->isDone();
       mTime->update();
-      mComponentManager->update();
+      updateComponents();
       std::this_thread::yield();
-    }
-
-    if(mComponentManager->isParallel()) {
-      mComponentManager->joinThreads();
     }
 
     return mDone;
@@ -201,12 +184,123 @@ namespace Dream {
     mAssetManager = assetManager;
   }
 
-  void Dream::setComponentManager(Components::ComponentManager* componentManager) {
-    mComponentManager = componentManager;
-  }
-
   Time* Dream::getTime() {
     return mTime;
   }
+
+  void Dream::destroyComponents() {
+      delete mAnimationComponent;
+      delete mAudioComponent;
+      delete mInputComponent;
+      delete mPhysicsComponent;
+      delete mVideoComponent;
+    }
+
+    bool Dream::createComponents() {
+      std::cout << "Dream: Creating Components..." << std::endl;
+      if(!createAudioComponent())     return false;
+      if(!createPhysicsComponent())   return false;
+      if(!createVideoComponent())     return false;
+      if(!createInputComponent())     return false;
+      if(!createAnimationComponent()) return false;
+      std::cout << "Dream: Successfuly created Components." << std::endl;
+      return true;
+    }
+
+    bool Dream::createAudioComponent() {
+      mAudioComponent = new Components::Audio::AudioComponent();
+      if (!mAudioComponent->init()) {
+        std::cerr << "Dream: Unable to initialise OpenALAudio." << std::endl;
+        return false;
+      }
+      return mAudioComponent != NULL;
+    }
+
+    bool Dream::createPhysicsComponent() {
+      mPhysicsComponent = new Components::Physics::PhysicsComponent();
+      mPhysicsComponent->setTime(mTime);
+      if (!mPhysicsComponent->init()){
+        std::cerr << "ComponentManager: Unable to initialise BulletPhysics." << std::endl;
+        return false;
+      }
+      return mPhysicsComponent != NULL;
+    }
+
+    bool Dream::createVideoComponent() {
+      mVideoComponent = new Components::Video::VideoComponent(mCamera);
+      mVideoComponent->setScreenName("Dream::OpenGL");
+      mVideoComponent->setTime(mTime);
+      if (mVideoComponent->init()) {
+        return true;
+      } else {
+        std::cerr << "ComponentManager: Unable to initialise OpenGLVideo." << std::endl;
+        return false;
+      }
+    }
+
+    bool Dream::createAnimationComponent() {
+      mAnimationComponent = new Components::Animation::AnimationComponent(mTime);
+      mAnimationComponent->setTime(mTime);
+      if (mAnimationComponent->init()) {
+        return true;
+      } else {
+        std::cerr << "ComponentManager: Unable to initialise DreamAnimation." << std::endl;
+        return false;
+      }
+    }
+
+    bool Dream::createInputComponent() {
+      mInputComponent = new Components::Input::InputComponent();
+      mInputComponent->setTime(mTime);
+      try {
+        Components::Video::VideoComponent* ogl   = dynamic_cast<Components::Video::VideoComponent*>(mVideoComponent);
+        Components::Input::InputComponent* input = dynamic_cast<Components::Input::InputComponent*>(mInputComponent);
+        input->setWindow(ogl->getWindow());
+      } catch (std::exception ex) {
+        std::cerr << "ComponentManager: " << ex.what() << std::endl;
+        return false;
+      }
+
+      if (!mInputComponent->init()) {
+        std::cerr << "ComponentManager: Unable to initialise GLFWInputComponent." << std::endl;
+        return false;
+      }
+      return mInputComponent != NULL;
+    }
+
+    bool Dream::isDone() {
+      return mDone;
+    }
+
+    void Dream::updateComponents() {
+      mDone = mVideoComponent->isWindowShouldCloseFlagSet();
+      mInputComponent->update(mActiveScene);
+      mVideoComponent->update(mActiveScene);
+    }
+
+    Components::Animation::AnimationComponent* Dream::getAnimationComponent() {
+      return mAnimationComponent;
+    }
+
+    Components::Audio::AudioComponent* Dream::getAudioComponent() {
+      return mAudioComponent;
+    }
+
+    Components::Input::InputComponent* Dream::getInputComponent() {
+      return mInputComponent;
+    }
+
+    Components::Physics::PhysicsComponent* Dream::getPhysicsComponent() {
+      return mPhysicsComponent;
+    }
+
+    Components::Video::VideoComponent* Dream::getVideoComponent() {
+      return mVideoComponent;
+    }
+
+    Components::Video::Camera* Dream::getCamera() {
+      return mCamera;
+    }
+
 
 } // End of Dream

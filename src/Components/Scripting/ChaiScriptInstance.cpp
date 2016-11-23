@@ -21,9 +21,15 @@ namespace Dream {
   namespace Components {
     namespace Scripting {
 
-      ChaiScriptInstance::ChaiScriptInstance(AssetDefinition* definition) : AssetInstance(definition) {}
+      ChaiScriptInstance::ChaiScriptInstance(
+          AssetDefinition* definition, Transform3D* transform
+      ) : AssetInstance(definition,transform) {
+        return;
+      }
 
-      ChaiScriptInstance::~ChaiScriptInstance() {}
+      ChaiScriptInstance::~ChaiScriptInstance() {
+        return;
+      }
 
       bool ChaiScriptInstance::load(std::string projectPath) {
         mProjectPath = projectPath;

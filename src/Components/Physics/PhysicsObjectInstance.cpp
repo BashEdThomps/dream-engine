@@ -4,7 +4,12 @@ namespace Dream {
   namespace Components {
     namespace Physics {
 
-      PhysicsObjectInstance::PhysicsObjectInstance(AssetDefinition* definition) : AssetInstance(definition) {}
+      PhysicsObjectInstance::PhysicsObjectInstance(
+          AssetDefinition* definition,
+          Transform3D* transform
+      ) : AssetInstance(definition,transform) {
+        return;
+      }
 
       PhysicsObjectInstance::~PhysicsObjectInstance() {
         delete mRigidBody;

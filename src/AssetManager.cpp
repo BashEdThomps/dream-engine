@@ -117,7 +117,10 @@ namespace Dream {
 
   AssetInstance* AssetManager::createPhysicsObjectAssetInstance(SceneObject *sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Physics Object Asset Instance." << std::endl;
-    AssetInstance* retval = new Components::Physics::PhysicsObjectInstance(definition);
+
+    AssetInstance* retval = new Components::Physics::PhysicsObjectInstance(
+          definition,sceneObject->getTransform()
+    );
 
     if (sceneObject && retval) {
       sceneObject->setPhysicsObjectAssetInstance(retval);
@@ -131,7 +134,7 @@ namespace Dream {
     AssetInstance* retval = NULL;
 
     if (definition->isAnimationFormatDream()) {
-      retval = new Components::Animation::AnimationInstance(definition);
+      retval = new Components::Animation::AnimationInstance(definition,sceneObject->getTransform());
     }
 
     if (sceneObject && retval) {
@@ -145,9 +148,15 @@ namespace Dream {
     AssetInstance* retval = NULL;
 
     if (definition->isAudioFormatOgg()) {
-      retval = new Components::Audio::OggAudioInstance(definition);
+      retval = new Components::Audio::OggAudioInstance(
+        definition,
+        sceneObject->getTransform()
+      );
     } else if (definition->isAudioFormatWav()) {
-      retval = new Components::Audio::WavAudioInstance(definition);
+      retval = new Components::Audio::WavAudioInstance(
+        definition,
+        sceneObject->getTransform()
+      );
     }
 
     if (sceneObject && retval) {
@@ -161,7 +170,10 @@ namespace Dream {
     AssetInstance* retval = NULL;
 
     if (definition->isModelFormatAssimp()) {
-      retval = new Components::Video::AssimpModelInstance(definition);
+      retval = new Components::Video::AssimpModelInstance(
+        definition,
+        sceneObject->getTransform()
+      );
     }
 
     if (sceneObject && retval) {
@@ -174,7 +186,11 @@ namespace Dream {
   AssetInstance* AssetManager::createScriptAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating script asset instance." << std::endl;
     AssetInstance* retval = NULL;
-    Components::Scripting::ChaiScriptInstance* newScript = new Components::Scripting::ChaiScriptInstance(definition);
+    Components::Scripting::ChaiScriptInstance* newScript;
+    newScript = new Components::Scripting::ChaiScriptInstance(
+      definition,
+      sceneObject->getTransform()
+    );
     retval = newScript;
 
     if (sceneObject && retval) {
@@ -187,7 +203,7 @@ namespace Dream {
   AssetInstance* AssetManager::createShaderAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
     AssetInstance* retval = NULL;
-    retval = new Components::Video::ShaderInstance(definition);
+    retval = new Components::Video::ShaderInstance(definition,sceneObject->getTransform());
     if (sceneObject && retval) {
       sceneObject->setShaderAssetInstance(retval);
     }
@@ -201,7 +217,10 @@ namespace Dream {
   AssetInstance* AssetManager::createLightAssetInstance(SceneObject *sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Light Asset instance." << std::endl;
     AssetInstance* retval = NULL;
-    retval = new Components::Video::LightInstance(definition);
+    retval = new Components::Video::LightInstance(
+      definition,
+      sceneObject->getTransform()
+    );
 
     if (sceneObject && retval) {
       sceneObject->setLightAssetInstance(retval);

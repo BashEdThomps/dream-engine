@@ -55,8 +55,7 @@ namespace Dream {
     bool mScriptingEnabled;
     SceneObject *mRootSceneObject;
     std::vector<SceneObject*> mScenegraphVector;
-    std::vector<float> mCameraTranslation;
-    std::vector<float> mCameraRotation;
+    Transform3D* mDefaultCameraTransform;
     float mCameraMovementSpeed;
   public:
     Scene();
@@ -67,10 +66,6 @@ namespace Dream {
     void         setUUID(std::string);
     std::string  getName();
     void         setName(std::string);
-    bool         isAudioEnabled();
-    bool         isAnimationEnabled();
-    bool         isInputEnabled();
-    bool         isPhysicsEnabled();
     void         loadSceneObjects(nlohmann::json,SceneObject*);
     void         loadDefaultCameraTransform(nlohmann::json);
     int          countChildrenOfSceneObject(SceneObject*);
@@ -89,10 +84,7 @@ namespace Dream {
     bool         isScenegraphVectorEmpty();
     std::vector<SceneObject*> getScenegraphVector();
 
-    void setDefaultCameraTranslation(std::vector<float>);
     std::vector<float> getDefaultCameraTranslation();
-
-    void setDefaultCameraRotation(std::vector<float>);
     std::vector<float> getDefaultCameraRotation();
 
     void setCameraMovementSpeed(float);

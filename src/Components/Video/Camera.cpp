@@ -119,9 +119,7 @@ namespace Dream {
           mZoom = ZOOM_MAX;
         }
 
-#ifdef VERBOSE
-        std::cout << "Camera: Zoom is " << mZoom << std::endl;
-#endif
+        //std::cout << "Camera: Zoom is " << mZoom << std::endl;
       }
 
       void Camera::updateCameraVectors() {

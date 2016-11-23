@@ -44,7 +44,7 @@ namespace Dream {
         btRigidBody                              *mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
       public:
-        PhysicsObjectInstance(AssetDefinition*);
+        PhysicsObjectInstance(AssetDefinition*,Transform3D*);
         ~PhysicsObjectInstance();
         bool load(std::string);
         bool createCollisionShape();

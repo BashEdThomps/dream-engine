@@ -3,9 +3,16 @@
 namespace Dream {
   namespace Components {
     namespace Video {
-      LightInstance::LightInstance(AssetDefinition* definition) : AssetInstance(definition) {}
+      LightInstance::LightInstance(
+          AssetDefinition* definition,
+          Transform3D* transform
+      ) : AssetInstance(definition,transform) {
+        return;
+      }
 
-      LightInstance::~LightInstance() {}
+      LightInstance::~LightInstance() {
+        return;
+      }
 
       bool LightInstance::load(std::string projectDir) {
         return false;

@@ -21,8 +21,9 @@ namespace Dream {
   namespace Components {
     namespace Audio     {
 
-      OggAudioInstance::OggAudioInstance(AssetDefinition* definition)
-        : AudioAssetInstance(definition) {}
+      OggAudioInstance::OggAudioInstance(
+          AssetDefinition* definition,Transform3D* transform
+      ) : AudioAssetInstance(definition,transform) {}
 
       OggAudioInstance::~OggAudioInstance() {}
 
