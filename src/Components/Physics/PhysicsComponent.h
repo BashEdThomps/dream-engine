@@ -35,7 +35,7 @@ namespace Dream {
         PhysicsComponent(void);
         ~PhysicsComponent(void);
       private:
-        //GLDebugDrawer                     *mDebugDrawer;
+        GLDebugDrawer                     *mDebugDrawer;
         btDynamicsWorld                     *mDynamicsWorld;
         btBroadphaseInterface               *mBroadphase;
         btDefaultCollisionConfiguration     *mCollisionConfiguration;

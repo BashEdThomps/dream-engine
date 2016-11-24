@@ -20,17 +20,18 @@
 namespace Dream {
   namespace Components {
     namespace Physics {
+
       PhysicsComponent::PhysicsComponent(void) : ComponentInterface() {
-        //mDebugDrawer = new GLDebugDrawer();
+        mDebugDrawer = new GLDebugDrawer();
       }
 
       PhysicsComponent::~PhysicsComponent(void) {
-        delete mSolver;
-        delete mDispatcher;
-        delete mCollisionConfiguration;
-        delete mBroadphase;
-        delete mDynamicsWorld;
-        //delete mDebugDrawer;
+        if (mSolver) delete mSolver;
+        if (mDispatcher) delete mDispatcher;
+        if (mCollisionConfiguration) delete mCollisionConfiguration;
+        if (mBroadphase) delete mBroadphase;
+        if (mDynamicsWorld) delete mDynamicsWorld;
+        if (mDebugDrawer) delete mDebugDrawer;
       }
 
       void PhysicsComponent::setGravity3f(float x, float y, float z) {
@@ -50,8 +51,8 @@ namespace Dream {
         mSolver = new btSequentialImpulseConstraintSolver();
         mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
         mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
-        //mDynamicsWorld->setDebugDrawer(mDebugDrawer);
-        //mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+        mDynamicsWorld->setDebugDrawer(mDebugDrawer);
+        mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
         std::cout << "done." << std::endl;
         return true;
       }
@@ -61,7 +62,7 @@ namespace Dream {
         //std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
         mDynamicsWorld->stepSimulation(stepValue);
         //std::cout << "BulletPhysics: Drawing Debug World" << std::endl;
-        //mDynamicsWorld->debugDrawWorld();
+        mDynamicsWorld->debugDrawWorld();
       }
 
       void PhysicsComponent::addRigidBody(btRigidBody *rigidBody) {
