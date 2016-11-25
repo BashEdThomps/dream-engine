@@ -31,7 +31,7 @@ namespace Dream {
       }
 
       bool AnimationComponent::init() {
-        std::cout << "AnimationComponent: Provisional init returning true" << std::endl;
+        std::cout << "AnimationComponent: Initialisation Done." << std::endl;
         return true;
       }
 

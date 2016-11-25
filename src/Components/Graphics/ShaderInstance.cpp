@@ -19,7 +19,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
 
       ShaderInstance::ShaderInstance(
           AssetDefinition* definition,
@@ -118,6 +118,6 @@ namespace Dream {
 
       void ShaderInstance::loadExtraAttributes(nlohmann::json json) {}
 
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of Dream

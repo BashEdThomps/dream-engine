@@ -25,34 +25,34 @@ namespace Dream {
       void PhysicsObjectInstance::loadExtraAttributes(nlohmann::json json) {
         // Margin
         if (!json[ASSET_ATTR_MARGIN].is_null() && json[ASSET_ATTR_MARGIN].is_number()) {
-          mDefinition->addAttribute(ASSET_ATTR_MARGIN, std::to_string((float)json[ASSET_ATTR_MARGIN]));
+          mDefinition->addAttribute(ASSET_ATTR_MARGIN, std::to_string((static_cast<float>(json[ASSET_ATTR_MARGIN]))));
         }
         // Mass
         if (!json[ASSET_ATTR_MASS].is_null() && json[ASSET_ATTR_MASS].is_number()) {
-          mDefinition->addAttribute(ASSET_ATTR_MASS, std::to_string((float)json[ASSET_ATTR_MASS]));
+          mDefinition->addAttribute(ASSET_ATTR_MASS, std::to_string((static_cast<float>(json[ASSET_ATTR_MASS]))));
         }
         // Radius
         if (!json[ASSET_ATTR_RADIUS].is_null() && json[ASSET_ATTR_RADIUS].is_number()) {
-          mDefinition->addAttribute(ASSET_ATTR_RADIUS, std::to_string((float)json[ASSET_ATTR_RADIUS]));
+          mDefinition->addAttribute(ASSET_ATTR_RADIUS, std::to_string((static_cast<float>(json[ASSET_ATTR_RADIUS]))));
         }
         // Normal
         if (!json[ASSET_ATTR_NORMAL].is_null()) {
           nlohmann::json normal = json[ASSET_ATTR_NORMAL];
-          mDefinition->addAttribute(ASSET_ATTR_NORMAL_X, std::to_string((float)normal[ASSET_ATTR_X]));
-          mDefinition->addAttribute(ASSET_ATTR_NORMAL_Y, std::to_string((float)normal[ASSET_ATTR_Y]));
-          mDefinition->addAttribute(ASSET_ATTR_NORMAL_Z, std::to_string((float)normal[ASSET_ATTR_Z]));
+          mDefinition->addAttribute(ASSET_ATTR_NORMAL_X, std::to_string((static_cast<float>(normal[ASSET_ATTR_X]))));
+          mDefinition->addAttribute(ASSET_ATTR_NORMAL_Y, std::to_string((static_cast<float>(normal[ASSET_ATTR_Y]))));
+          mDefinition->addAttribute(ASSET_ATTR_NORMAL_Z, std::to_string((static_cast<float>(normal[ASSET_ATTR_Z]))));
         }
         // Constant
         if (!json[ASSET_ATTR_CONSTANT].is_null() && json[ASSET_ATTR_CONSTANT].is_number()) {
-          mDefinition->addAttribute(ASSET_ATTR_CONSTANT, std::to_string((float)json[ASSET_ATTR_CONSTANT]));
+          mDefinition->addAttribute(ASSET_ATTR_CONSTANT, std::to_string((static_cast<float>(json[ASSET_ATTR_CONSTANT]))));
         }
 
         // Size
         if (!json[ASSET_ATTR_SIZE].is_null()) {
           nlohmann::json size = json[ASSET_ATTR_SIZE];
-          mDefinition->addAttribute(ASSET_ATTR_SIZE_X, std::to_string((float)size[ASSET_ATTR_X]));
-          mDefinition->addAttribute(ASSET_ATTR_SIZE_Y, std::to_string((float)size[ASSET_ATTR_Y]));
-          mDefinition->addAttribute(ASSET_ATTR_SIZE_Z, std::to_string((float)size[ASSET_ATTR_Z]));
+          mDefinition->addAttribute(ASSET_ATTR_SIZE_X, std::to_string((static_cast<float>(size[ASSET_ATTR_X]))));
+          mDefinition->addAttribute(ASSET_ATTR_SIZE_Y, std::to_string((static_cast<float>(size[ASSET_ATTR_Y]))));
+          mDefinition->addAttribute(ASSET_ATTR_SIZE_Z, std::to_string((static_cast<float>(size[ASSET_ATTR_Z]))));
         }
       }
 

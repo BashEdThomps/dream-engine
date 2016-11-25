@@ -14,6 +14,7 @@ App.controller("ProjectSceneEditor",
         onSelect :  $scope.onScenegraphTreeSelection,
         children : [],
       });
+
       $scope.scene.objects.forEach(function(sceneObject){
         $scope.scenegraphTree[0].children.push(
           $scope.generateSceneObjectTreeNode(sceneObject)
@@ -32,11 +33,13 @@ App.controller("ProjectSceneEditor",
         onSelect: $scope.onScenegraphTreeSelection,
         children: [],
       };
+
       if (sceneObject.children !== undefined) {
         sceneObject.children.forEach(function(child){
           retval.children.push($scope.generateSceneObjectTreeNode(child));
         });
       }
+
       return retval;
     };
 
@@ -98,6 +101,7 @@ App.controller("ProjectSceneEditor",
           $scope.initScenegraphTree();
         }
       });
+
       ProjectService.getAssetList(function(list){
         $scope.assetList = list;
       });

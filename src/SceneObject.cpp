@@ -8,7 +8,9 @@
 
 namespace Dream {
 
-  SceneObject::SceneObject() {}
+  SceneObject::SceneObject() {
+    mParent = nullptr;
+  }
 
   SceneObject::SceneObject(nlohmann::json soJson){
     mTransform = new Transform3D();
@@ -55,10 +57,10 @@ namespace Dream {
 
   void SceneObject::loadAssetInstances(nlohmann::json assetInstancesJson) {
 
-    mAnimationAssetInstance = NULL;
-    mAudioAssetInstance     = NULL;
-    mModelAssetInstance     = NULL;
-    mScriptAssetInstance    = NULL;
+    mAnimationAssetInstance = nullptr;
+    mAudioAssetInstance     = nullptr;
+    mModelAssetInstance     = nullptr;
+    mScriptAssetInstance    = nullptr;
 
     for (nlohmann::json::iterator it = assetInstancesJson.begin(); it != assetInstancesJson.end(); it++) {
       mAssetInstanceUUIDsToLoad.push_back((*it));
@@ -99,44 +101,26 @@ namespace Dream {
 
   void SceneObject::setTranslation(std::vector<float> translation) {
     mTransform->setTranslation(translation);
-    //std::cout << "SceneObject: " << getNameUUIDString()
-    //          << " translation " << String::floatVectorToString(mTranslation)
-    //          << std::endl;
   }
 
   void SceneObject::setRotation(std::vector<float> rotation) {
     mTransform->setRotation(rotation);
-    //std::cout << "SceneObject: " << getNameUUIDString()
-    //          << " rotation " << String::floatVectorToString(mRotation)
-    //          << std::endl;
   }
 
   void SceneObject::setScale(std::vector<float> scale) {
     mTransform->setScale(scale);
-    //std::cout << "SceneObject: " << getNameUUIDString()
-    //          << " scale " << String::floatVectorToString(mScale)
-    //          << std::endl;
   }
 
   void SceneObject::setTranslation(float x, float y, float z) {
     mTransform->setTranslation(x,y,z);
-    //std::cout << "SceneObject: " << getNameUUIDString()
-    //          << " translation " << String::floatVectorToString(mTranslation)
-    //          << std::endl;
   }
 
   void SceneObject::setRotation(float x, float y, float z) {
     mTransform->setRotation(x,y,z);
-    //std::cout << "SceneObject: " << getNameUUIDString()
-    //          << " rotation " << String::floatVectorToString(mRotation)
-    //          << std::endl;
   }
 
   void SceneObject::setScale(float x, float y, float z) {
     mTransform->setScale(x,y,z);
-    //std::cout << "SceneObject: " << getNameUUIDString()
-    //          << " scale " << String::floatVectorToString(mScale)
-    //          << std::endl;
   }
 
   std::vector<float> SceneObject::getRotation() {
@@ -185,11 +169,11 @@ namespace Dream {
     return mParent == parent;
   }
 
-  bool SceneObject::isParentOf(SceneObject*) {
+  bool SceneObject::isParentOf(SceneObject* sceneObject) {
     return false;
   }
 
-  bool SceneObject::isParentOfDeep(SceneObject*) {
+  bool SceneObject::isParentOfDeep(SceneObject* sceneObject) {
     return false;
   }
 
@@ -207,10 +191,10 @@ namespace Dream {
   void SceneObject::generatePath() {
     mPath = "";
     SceneObject* current = this;
-    while (current != NULL) {
+    while (current != nullptr) {
       mPath = current->getUUID()+mPath;
       current = current->getParent();
-      if (current != NULL) {
+      if (current != nullptr) {
         mPath = PATH_DELIMETER+mPath;
       }
     }
@@ -222,17 +206,13 @@ namespace Dream {
 
   void SceneObject::showStatus() {
     std::cout << "SceneObject:" << std::endl;
-    std::cout << "         UUID: " << mUUID << std::endl;
-    std::cout << "         Name: " << mName << std::endl;
-    std::cout << "   ParentUUID: ";
+    std::cout << "          UUID: " << mUUID << std::endl;
+    std::cout << "          Name: " << mName << std::endl;
 
-    SceneObject* parent = getParent();
-    if (parent != NULL) {
-       std::cout << getParent()->getUUID();
-    } else {
-      std::cout << "None";
+    if (mParent != nullptr) {
+        std::cout << "    ParentUUID: " << mParent->getUUID() << std::endl;
     }
-    std::cout << std::endl;
+
     std::cout << "      Children: " << mChildren.size() << std::endl;
     std::cout << "Trnasform Type: " << mTransformType << std::endl;
     std::cout << "   Translation: " << String::floatVectorToString(getTranslation()) << std::endl;
@@ -293,15 +273,15 @@ namespace Dream {
   }
 
   bool SceneObject::hasModelAssetInstance() {
-    return mModelAssetInstance != NULL;
+    return mModelAssetInstance != nullptr;
   }
 
   bool SceneObject::hasShaderAssetInstance() {
-    return mShaderAssetInstance != NULL;
+    return mShaderAssetInstance != nullptr;
   }
 
   bool SceneObject::hasScriptAssetInstance() {
-    return mScriptAssetInstance != NULL;
+    return mScriptAssetInstance != nullptr;
   }
 
 

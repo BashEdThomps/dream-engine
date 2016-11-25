@@ -2,7 +2,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
       // Constructor with vectors
       Camera::Camera(std::vector<float> translation,
                      std::vector<float> up,
@@ -216,6 +216,6 @@ namespace Dream {
         }
         return retval;
       }
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of Dream

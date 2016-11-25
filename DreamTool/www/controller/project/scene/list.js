@@ -1,6 +1,7 @@
 App.controller("ProjectSceneList",
     ["$scope","$state","ProjectService","UIService",
     function($scope,$state,ProjectService,UIService) {
+
         if (ProjectService.isProjectOpen()) {
             UIService.setBreadcrumbs([ProjectService.getName(),"Scenes"]);
             $scope.project  = ProjectService.getProject();

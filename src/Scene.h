@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "SceneObject.h"
-#include "Components/Video/Camera.h"
+#include "Components/Graphics/Camera.h"
 #include "json.hpp"
 #include "String.h"
 

@@ -177,12 +177,12 @@ namespace Dream {
 
   void Scene::showStatus() {
     std::cout << "Scene:" << std::endl;
-    std::cout << "    UUID: " << mUUID << std::endl;
-    std::cout << "    Name: " << mName << std::endl;
-    std::cout << "    Camera Transform: " << std::endl;
-    std::cout << "        Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << std::endl;
+    std::cout << "            UUID: " << mUUID << std::endl;
+    std::cout << "            Name: " << mName << std::endl;
+    std::cout << "Camera Transform: " << std::endl;
+    std::cout << "     Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << std::endl;
     std::cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << std::endl;
-    std::cout << "    Scene Objects: " << getNumberOfSceneObjects() << std::endl;
+    std::cout << "   Scene Objects: " << getNumberOfSceneObjects() << std::endl;
     showScenegraph();
   }
 
@@ -209,7 +209,9 @@ namespace Dream {
   void Scene::generateScenegraphVector() {
     std::cout << "Scene: Regenerating Scene Graph Vector" << std::endl;
     mScenegraphVector.clear();
-    mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
+    if (mRootSceneObject != nullptr) {
+        mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
+    }
   }
 
   void Scene::generateSceneObjectPaths() {

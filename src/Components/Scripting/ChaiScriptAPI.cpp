@@ -62,22 +62,8 @@ namespace Dream {
       }
 
       void ChaiScriptAPI::handleInputs(SceneObject* root) {
-        if (root->hasScriptAssetInstance()) {
-          try {
-            ChaiScriptInstance* script;
-            script = dynamic_cast<ChaiScriptInstance*>(
-                root->getScriptAssetInstance()
-            );
-            std::cout << "ChaiScriptAPI: Handle Inputs has been disabled!"
-                      << std::endl;
-          } catch (const std::exception &ex) {
-            std::cerr << "ChaiScriptAPI: Exception Handling Inputs"
-                      << std::endl
-                      << ex.what()
-                      << std::endl;
-          }
-          mDream->getInputComponent()->clearInputEvents();
-        }
+        // TODO - This
+        // Pass...
       }
 
       void ChaiScriptAPI::initAPIs() {
@@ -87,13 +73,12 @@ namespace Dream {
         initAssetManagerAPI();
         initAudioComponentAPI();
         initCameraAPI();
-        initGlfwTimeAPI();
-        initInputEventAPI();
+        initTimeAPI();
         initComponentManagerAPI();
         initProjectAPI();
         initSceneObjectAPI();
         initSceneAPI();
-        initVideoComponentAPI();
+        initGraphicsComponentAPI();
       }
 
       bool ChaiScriptAPI::importScriptAssetByUUID(std::string uuid) {
@@ -125,28 +110,21 @@ namespace Dream {
       void ChaiScriptAPI::initAudioComponentAPI() {
         std::cout << "ChaiScriptInstance: Init AudioComponent API" << std::endl;
         mEngine->add(chaiscript::user_type<Components::Audio::AudioComponent>(),"AudioComponent");
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::playAudioAsset),"playAudioAsset");
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::pauseAudioAsset),"pauseAudioAsset");
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::stopAudioAsset), "stopAudioAsset");
-        mEngine->add(
-              chaiscript::fun<float,Components::Audio::AudioComponent,AssetInstance*>
-              (&Components::Audio::AudioComponent::getSampleOffset),
-              "getSampleOffset"
-              );
-        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::getAudioBuffer),"getAudioBuffer");
+        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::playAsset),"playAsset");
+        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::pauseAsset),"pauseAsset");
+        mEngine->add(chaiscript::fun(&Components::Audio::AudioComponent::stopAsset), "stopAsset");
       }
 
       void ChaiScriptAPI::initComponentManagerAPI() {
         mEngine->add(chaiscript::fun(&Dream::getCamera), "getCamera");
         mEngine->add(chaiscript::fun(&Dream::getAnimationComponent), "getAnimationComponent");
         mEngine->add(chaiscript::fun(&Dream::getAudioComponent), "getAudioComponent");
-        mEngine->add(chaiscript::fun(&Dream::getInputComponent), "getInputComponent");
         mEngine->add(chaiscript::fun(&Dream::getPhysicsComponent), "getPhysicsComponent");
-        mEngine->add(chaiscript::fun(&Dream::getVideoComponent), "getVideoComponent");
+        mEngine->add(chaiscript::fun(&Dream::getGraphicsComponent), "getGraphicsComponent");
       }
 
-      void ChaiScriptAPI::initGlfwTimeAPI() {
-        std::cout << "ChaiScriptInstance: Init GLFWTime API" << std::endl;
+      void ChaiScriptAPI::initTimeAPI() {
+        std::cout << "ChaiScriptInstance: Init Time API" << std::endl;
         mEngine->add(chaiscript::user_type<Time>(),"Time");
         mEngine->add(chaiscript::fun(&Dream::getTime),"getTime");
         mEngine->add(chaiscript::fun(&Time::update),"update");
@@ -158,91 +136,26 @@ namespace Dream {
       void ChaiScriptAPI::initCameraAPI() {
         std::cout << "ChaiScriptInstance: Init Camera API" << std::endl;
         // Class Definition
-        mEngine->add(chaiscript::user_type<Video::Camera>(),"Camera");
+        mEngine->add(chaiscript::user_type<Graphics::Camera>(),"Camera");
         // Methods
-        mEngine->add(chaiscript::fun(&Video::Camera::processMouseScroll),"processMouseScroll");
-        mEngine->add(chaiscript::fun(&Video::Camera::processKeyboard),"processKeyboard");
-        mEngine->add(chaiscript::fun(&Video::Camera::processMouseMovement),"processMouseMovement");
-        mEngine->add(chaiscript::fun(&Video::Camera::getMouseSensitivity),"getMouseSensitivity");
-        mEngine->add(chaiscript::fun(&Video::Camera::setMouseSensitivity),"setMouseSensitivity");
-        mEngine->add(chaiscript::fun(&Video::Camera::getMovementSpeed),"getMovementSpeed");
-        mEngine->add(chaiscript::fun(&Video::Camera::setMovementSpeed),"setMovementSpeed");
+        mEngine->add(chaiscript::fun(&Graphics::Camera::processMouseScroll),"processMouseScroll");
+        mEngine->add(chaiscript::fun(&Graphics::Camera::processKeyboard),"processKeyboard");
+        mEngine->add(chaiscript::fun(&Graphics::Camera::processMouseMovement),"processMouseMovement");
+        mEngine->add(chaiscript::fun(&Graphics::Camera::getMouseSensitivity),"getMouseSensitivity");
+        mEngine->add(chaiscript::fun(&Graphics::Camera::setMouseSensitivity),"setMouseSensitivity");
+        mEngine->add(chaiscript::fun(&Graphics::Camera::getMovementSpeed),"getMovementSpeed");
+        mEngine->add(chaiscript::fun(&Graphics::Camera::setMovementSpeed),"setMovementSpeed");
         // Global Variables
-        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_FORWARD),  "CAMERA_MOVEMENT_FORWARD");
-        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_BACKWARD), "CAMERA_MOVEMENT_BACKWARD");
-        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_LEFT),     "CAMERA_MOVEMENT_LEFT");
-        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_RIGHT),    "CAMERA_MOVEMENT_RIGHT");
-      }
-
-      void ChaiScriptAPI::initInputEventAPI() {
-        std::cout << "ChaiScriptInstance: Init Input Event API" << std::endl;
-        // Class Definition
-        mEngine->add(chaiscript::user_type<Components::Input::InputEvent>(),"InputEvent");
-        // Methods
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getSource),"getSource");
-
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getXPosition),"getXPosition");
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getYPosition),"getYPosition");
-
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getXPositionOffset),"getXPositionOffset");
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getYPositionOffset),"getYPositionOffset");
-
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getXScrollOffset),"getXScrollOffset");
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getYScrollOffset),"getYScrollOffset");
-
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getKey),"getKey");
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getMods),"getMods");
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getAction),"getAction");
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getButton),"getButton");
-        mEngine->add(chaiscript::fun(&Components::Input::InputEvent::getScancode),"getScancode");
-        // Constants
-        mEngine->add_global(chaiscript::const_var(INPUT_TYPE_JOYSTICK),"INPUT_TYPE_JOYSTICK");
-        mEngine->add_global(chaiscript::const_var(INPUT_TYPE_KEYBOARD),"INPUT_TYPE_KEYBOARD");
-        mEngine->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_BUTTON),"INPUT_TYPE_MOUSE_BUTTON");
-        mEngine->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_POSITION),"INPUT_TYPE_MOUSE_POSITION");
-        mEngine->add_global(chaiscript::const_var(INPUT_TYPE_MOUSE_SCROLL),"INPUT_TYPE_MOUSE_SCROLL");
-        // Input Actions
-        mEngine->add_global(chaiscript::const_var(GLFW_PRESS),"INPUT_PRESS");
-        mEngine->add_global(chaiscript::const_var(GLFW_RELEASE),"INPUT_RELEASE");
-        mEngine->add_global(chaiscript::const_var(GLFW_REPEAT),"INPUT_REPEAT");
-        // Keys
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_SPACE),"KEY_SPACE");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_UP),"KEY_UP");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_DOWN),"KEY_DOWN");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_LEFT),"KEY_LEFT");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_RIGHT),"KEY_RIGHT");
-        // Char Keys
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_A),"KEY_A");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_B),"KEY_B");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_C),"KEY_C");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_D),"KEY_D");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_E),"KEY_E");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_F),"KEY_F");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_G),"KEY_G");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_H),"KEY_H");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_I),"KEY_I");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_J),"KEY_J");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_K),"KEY_K");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_L),"KEY_L");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_M),"KEY_M");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_N),"KEY_N");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_O),"KEY_O");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_P),"KEY_P");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_Q),"KEY_Q");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_R),"KEY_R");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_S),"KEY_S");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_T),"KEY_T");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_U),"KEY_U");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_V),"KEY_V");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_W),"KEY_W");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_X),"KEY_X");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_Y),"KEY_Y");
-        mEngine->add_global(chaiscript::const_var(GLFW_KEY_Z),"KEY_Z");
+        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_FORWARD), "CAMERA_MOVEMENT_FORWARD");
+        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_BACKWARD),"CAMERA_MOVEMENT_BACKWARD");
+        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_LEFT), "CAMERA_MOVEMENT_LEFT");
+        mEngine->add_global(chaiscript::const_var(CAMERA_MOVEMENT_RIGHT), "CAMERA_MOVEMENT_RIGHT");
       }
 
       void ChaiScriptAPI::initSceneObjectAPI() {
         std::cout << "ChaiScriptInstance: Init SceneObject API" << std::endl;
         mEngine->add(chaiscript::user_type<SceneObject>(), "SceneObject");
+        mEngine->add(chaiscript::bootstrap::standard_library::vector_type<std::vector<float>>("FloatVector"));
         mEngine->add(chaiscript::fun(&SceneObject::getAnimationAssetInstance),"getAnimationAsset");
         mEngine->add(chaiscript::fun(&SceneObject::getAudioAssetInstance),"getAudioAsset");
         mEngine->add(chaiscript::fun(&SceneObject::getLightAssetInstance),"getLightAsset");
@@ -250,7 +163,6 @@ namespace Dream {
         mEngine->add(chaiscript::fun(&SceneObject::getShaderAssetInstance),"getShaderAsset");
         mEngine->add(chaiscript::fun(&SceneObject::getScriptAssetInstance),"getScriptAsset");
         mEngine->add(chaiscript::fun(&SceneObject::getPhysicsObjectAssetInstance),"getPhysicsObjectAsset");
-        mEngine->add(chaiscript::bootstrap::standard_library::vector_type<std::vector<float>>("FloatVector"));
         mEngine->add(chaiscript::fun(&SceneObject::getTranslation),"getTranslation");
         mEngine->add(chaiscript::fun<void,SceneObject,float,float,float>(&SceneObject::setTranslation),"setTranslation");
         mEngine->add(chaiscript::fun<void,SceneObject,std::vector<float>>(&SceneObject::setTranslation),"setTranslation");
@@ -262,10 +174,10 @@ namespace Dream {
         mEngine->add(chaiscript::fun<void,SceneObject,std::vector<float>>(&SceneObject::setScale),"setScale");
       }
 
-      void ChaiScriptAPI::initVideoComponentAPI() {
-        mEngine->add(chaiscript::user_type<Components::Video::VideoComponent>(),"VideoComponent");
-        mEngine->add(chaiscript::fun(&Components::Video::VideoComponent::closeWindow),"closeWindow");
-        mEngine->add(chaiscript::fun(&Components::Video::VideoComponent::setCursorEnabled),"setCursorEnabled");
+      void ChaiScriptAPI::initGraphicsComponentAPI() {
+        mEngine->add(chaiscript::user_type<Components::Graphics::GraphicsComponent>(),"GraphicsComponent");
+        mEngine->add(chaiscript::fun(&Components::Graphics::GraphicsComponent::closeWindow),"closeWindow");
+        mEngine->add(chaiscript::fun(&Components::Graphics::GraphicsComponent::setCursorEnabled),"setCursorEnabled");
       }
 
       void ChaiScriptAPI::initAnimationInstanceAPI() {

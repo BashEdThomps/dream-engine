@@ -28,7 +28,9 @@ namespace Dream {
         std::cout << "KeyFrame: Generating " << mInterpolationType << " playback frames from "
                   << mName << " to " << toKeyFrame->getName() << std::endl;
         long keyFrameDurationMS = toKeyFrame->getStartTimeMS() - getStartTimeMS();
-        long numFrames = (keyFrameDurationMS/1000.0f) * AnimationInstance::getFramesPerSecond();
+        long numFrames = static_cast<long>(
+          (keyFrameDurationMS/1000.0f) * AnimationInstance::getFramesPerSecond()
+        );
 
         if (isInterpolationTypeNone()) {
           generateNoneInterpolationFrames(toKeyFrame,numFrames);
@@ -57,7 +59,7 @@ namespace Dream {
           nextFrame->setTranslation(mTranslation);
           nextFrame->setRotation(mRotation);
           nextFrame->setScale(mScale);
-          nextFrame->showStatus();
+          //nextFrame->showStatus();
           addPlaybackFrame(nextFrame);
         }
       }
@@ -101,7 +103,7 @@ namespace Dream {
           nextFrameScale[1] = mScale[1] + (toScaleStep[1]*frameIndex);
           nextFrameScale[2] = mScale[2] + (toScaleStep[2]*frameIndex);
           nextFrame->setScale(nextFrameScale);
-          nextFrame->showStatus();
+          //nextFrame->showStatus();
           addPlaybackFrame(nextFrame);
         }
       }

@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <thread>
+
+#include <SDL2/SDL.h>
+
 #include "json.hpp"
 
 #include "ArgumentParser.h"
@@ -13,12 +16,11 @@
 #include "AssetInstance.h"
 #include "AssetManager.h"
 
-#include "Components/Video/Camera.h"
+#include "Components/Graphics/Camera.h"
 #include "Components/Animation/AnimationComponent.h"
 #include "Components/Audio/AudioComponent.h"
-#include "Components/Input/InputComponent.h"
 #include "Components/Physics/PhysicsComponent.h"
-#include "Components/Video/VideoComponent.h"
+#include "Components/Graphics/GraphicsComponent.h"
 
 namespace Dream {
   class Dream {
@@ -27,16 +29,16 @@ namespace Dream {
     Project *mProject;
     Scene* mActiveScene;
     AssetManager *mAssetManager;
-    Components::Video::Camera *mCamera;
+    Components::Graphics::Camera *mCamera;
     Components::Audio::AudioComponent *mAudioComponent;
-    Components::Video::VideoComponent *mVideoComponent;
+    Components::Graphics::GraphicsComponent *mGraphicsComponent;
     Components::Physics::PhysicsComponent *mPhysicsComponent;
-    Components::Input::InputComponent *mInputComponent;
     Components::Animation::AnimationComponent *mAnimationComponent;
     bool mDone;
   public:
     Dream(void);
     ~Dream(void);
+    bool initSDL();
     bool loadFromArgumentParser(ArgumentParser*);
     bool loadProjectFromFileReader(std::string projectPath, FileReader*);
     bool loadScene(Scene*);
@@ -59,23 +61,21 @@ namespace Dream {
     bool   initActiveScene();
 
     void setAssetManager(AssetManager*);
-    Components::Video::Camera* getCamera();
-    void setCamera(Components::Video::Camera*);
+    Components::Graphics::Camera* getCamera();
+    void setCamera(Components::Graphics::Camera*);
 
     void updateComponents();
     bool createComponents();
     void destroyComponents();
     bool createAnimationComponent();
     bool createAudioComponent();
-    bool createInputComponent();
     bool createPhysicsComponent();
-    bool createVideoComponent();
+    bool createGraphicsComponent();
 
     Components::Animation::AnimationComponent* getAnimationComponent();
     Components::Audio::AudioComponent* getAudioComponent();
-    Components::Input::InputComponent* getInputComponent();
     Components::Physics::PhysicsComponent* getPhysicsComponent();
-    Components::Video::VideoComponent* getVideoComponent();
+    Components::Graphics::GraphicsComponent* getGraphicsComponent();
 
 
   }; // End of Dream

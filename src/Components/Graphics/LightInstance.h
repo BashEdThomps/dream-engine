@@ -6,7 +6,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
       class LightInstance : public AssetInstance {
       public:
         LightInstance(AssetDefinition*,Transform3D*);
@@ -14,7 +14,7 @@ namespace Dream {
         bool load(std::string);
         void loadExtraAttributes(nlohmann::json) {}
       }; // End of LightInstance
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of Dream
 

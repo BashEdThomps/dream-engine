@@ -66,7 +66,7 @@ namespace Dream {
   }
 
   void Project::showStatus() {
-    std::cout << "Project: New Project"  << std::endl;
+    std::cout << "Project: "  << std::endl;
     std::cout << "         UUID: " << mUUID << std::endl;
     std::cout << "         Name: " << mName << std::endl;
     std::cout << "       Author: " << mAuthor << std::endl;

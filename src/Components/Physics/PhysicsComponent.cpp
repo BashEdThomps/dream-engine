@@ -49,7 +49,9 @@ namespace Dream {
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
         mSolver = new btSequentialImpulseConstraintSolver();
-        mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
+        mDynamicsWorld = new btDiscreteDynamicsWorld(
+          mDispatcher,mBroadphase,mSolver,mCollisionConfiguration
+        );
         mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
         mDynamicsWorld->setDebugDrawer(mDebugDrawer);
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
@@ -59,9 +61,11 @@ namespace Dream {
 
       void PhysicsComponent::update(Dream::Scene* scene) {
         btScalar stepValue = mTime->getTimeDelta();
-        //std::cout << "BulletPhysics: Step Simulation by " << stepValue << std::endl;
+        //std::cout << "BulletPhysics: Step Simulation by "
+        //          << stepValue << std::endl;
         mDynamicsWorld->stepSimulation(stepValue);
-        //std::cout << "BulletPhysics: Drawing Debug World" << std::endl;
+        //std::cout << "BulletPhysics: Drawing Debug World"
+        //          << std::endl;
         mDynamicsWorld->debugDrawWorld();
       }
 

@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Video::OpenGL::VideoComponent
+* Dream::Components::Graphics::OpenGL::GraphicsComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,151 +15,156 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "VideoComponent.h"
+#include "GraphicsComponent.h"
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
 
       // Global Event Handlers
-      void onWindowSizeChangedEvent(GLFWwindow *window, int width, int height) {
-        std::cout << "VideoComponent: Window Resized " << width << "," << height << std::endl;
-      }
 
-      void onWindowCloseEvent(GLFWwindow *window) {
-        std::cout << "VideoComponent: Window Close Event." << std::endl;
-        glfwSetWindowShouldClose(window, GL_TRUE);
-      }
-
-      void onFramebufferSizeEvent(GLFWwindow *window, int width, int height ) {
-        std::cout << "VideoComponent: Framebuffer Resized " << width << "," << height << std::endl;
-        glViewport(0, 0, width, height);
-      }
-
-      VideoComponent::VideoComponent(Camera* camera) : ComponentInterface () {
-        setScreenWidth(VIDEO_INTERFACE_DEFAULT_SCREEN_WIDTH);
-        setScreenHeight(VIDEO_INTERFACE_DEFAULT_SCREEN_HEIGHT);
+      GraphicsComponent::GraphicsComponent(Camera* camera) : ComponentInterface () {
+        setScreenWidth(Graphics_INTERFACE_DEFAULT_SCREEN_WIDTH);
+        setScreenHeight(Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT);
         mWindowShouldClose = false;
         mCamera = camera;
       }
 
-      VideoComponent::~VideoComponent(void) {
-        if (mWindow) {
-          glfwDestroyWindow(mWindow);
-        }
+      bool GraphicsComponent::createSDLWindow() {
+        mWindow = SDL_CreateWindow(
+          mScreenName.c_str(),
+          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+          mScreenWidth, mScreenHeight,
+          SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
+        );
 
-        glfwTerminate();
+        if (mWindow == NULL){
+          std::cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << std::endl;
+          SDL_Quit();
+          return false;
+        }
+        return true;
       }
 
-      bool VideoComponent::init(void) {
-        std::cout << "VideoComponent: Initialising..." << std::endl;
+      bool GraphicsComponent::createSDLRenderer() {
+        mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        if (mRenderer == nullptr){
+            SDL_DestroyWindow(mWindow);
+            std::cout << "GraphicsComponent: SDL_CreateRenderer Error = " << SDL_GetError() << std::endl;
+            SDL_Quit();
+            return false;
+        }
+        return true;
+      }
 
-        if (!glfwInit()) {
-          std::cerr << "VideoComponent: GLFW failed to initialise." << std::endl;
+      GraphicsComponent::~GraphicsComponent(void) {
+
+        if (mRenderer) {
+          SDL_DestroyRenderer(mRenderer);
+        }
+
+        if (mWindow) {
+          SDL_DestroyWindow(mWindow);
+        }
+
+        SDL_Quit();
+      }
+
+      bool GraphicsComponent::init(void) {
+        std::cout << "GraphicsComponent: Initialising..." << std::endl;
+
+        if (!createSDLWindow()) {
+          std::cerr << "GraphicsComponent: Unable to create SDL Window" << std::endl;
           return false;
         }
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //Use OpenGL 3.1 core
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 
-        mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, mScreenName.c_str(), NULL, NULL);
-        if (!mWindow) {
-          std::cerr << "VideoComponent: Fatal, Unable to create Window" << std::endl;
-          glfwTerminate();
-          return false;
+        //Create context
+        mContext = SDL_GL_CreateContext(mWindow);
+        if(mContext == NULL) {
+            std::cerr << "GraphicsComponent: OpenGL context could not be created! - "
+                      << SDL_GetError()
+                      << std::endl;
+            return false;
         }
 
-        setupWindowEventHandlers();
-        glfwMakeContextCurrent(mWindow);
-        glfwSwapInterval(1);
-        //checkGLError(-10);
-
-        std::cout << "VideoComponent: Initialised GLFW" << std::endl;
+        std::cout << "GraphicsComponent: Initialised SDL" << std::endl;
 
         // Initialize GLEW to setup the OpenGL Function pointers
         glewExperimental = GL_TRUE;
         GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK) {
-          std::cerr << "VideoComponent: GLEW failed to initialise." << std::endl;
+          std::cerr << "GraphicsComponent: GLEW failed to initialise." << std::endl;
           return false;
         }
 
-        //checkGLError(-20);
-
-        std::cout << "VideoComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+        std::cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
         // Define the viewport dimensions
-        glViewport(0, 0, mScreenWidth*2, mScreenHeight*2);
-        //checkGLError(50);
+        glViewport(0, 0, mScreenWidth, mScreenHeight);
 
         // Setup some OpenGL options
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        //checkGLError(51);
-
-        std::cout << "VideoComponent: Initialised GLEW." << std::endl;
-        std::cout << "VideoComponent: Initialisation Done." << std::endl;
+        std::cout << "GraphicsComponent: Initialised GLEW." << std::endl;
+        std::cout << "GraphicsComponent: Initialisation Done." << std::endl;
         return true;
       }
 
-      void VideoComponent::setCursorEnabled(bool cursorEnabled) {
-        glfwSetInputMode(mWindow, GLFW_CURSOR, cursorEnabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-      }
+      void GraphicsComponent::setCursorEnabled(bool cursorEnabled) {}
 
-      void VideoComponent::closeWindow() {
+      void GraphicsComponent::closeWindow() {
         mWindowShouldClose = true;
-        glfwSetWindowShouldClose(mWindow,GL_TRUE);
       }
 
-      void VideoComponent::setupWindowEventHandlers() {
-        glfwSetWindowSizeCallback(mWindow, onWindowSizeChangedEvent);
-        glfwSetWindowCloseCallback(mWindow, onWindowCloseEvent);
-        glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeEvent);
-      }
+      void GraphicsComponent::setupWindowEventHandlers() {}
 
-      void VideoComponent::update(Dream::Scene* scene) {
-        //std::cout << "VideoComponent: Update" << std::endl;
+      void GraphicsComponent::update(Dream::Scene* scene) {
+        SDL_PollEvent(&mEvent);
+
+        switch(mEvent.type) {
+          case SDL_QUIT:
+            mWindowShouldClose = true;
+            break;
+        }
+
         std::vector<Dream::SceneObject*> scenegraph = scene->getScenegraphVector();
-        if (!glfwWindowShouldClose(mWindow)) {
+        if (!mWindowShouldClose) {
           // Clear the colorbuffer
           glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-          //checkGLError(541);
           glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-          //checkGLError(542);
-          //scene->generateScenegraphVector();
           std::vector<Dream::SceneObject*> scenegraph = scene->getScenegraphVector();
           for (std::vector<Dream::SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
             Dream::SceneObject *object = (*it);
             if (object->hasModelAssetInstance()) {
               if (object->hasShaderAssetInstance()){
                 drawSceneObject(object);
-                //checkGLError(555);
               } else {
-                std::cerr << "VideoComponent: Object " << object->getUUID() << " has no ShaderInstance assigned." << std::endl;
+                std::cerr << "GraphicsComponent: Object " << object->getUUID()
+                          << " has no ShaderInstance assigned." << std::endl;
               }
             }
           }
-          glfwSwapBuffers(mWindow);
-          //checkGLError(99);
-        } else {
-          mWindowShouldClose = true;
+          SDL_GL_SwapWindow(mWindow);
         }
       }
 
-      void VideoComponent::drawSceneObject(Dream::SceneObject* sceneObject) {
+      void GraphicsComponent::drawSceneObject(Dream::SceneObject* sceneObject) {
         AssimpModelInstance* model;
         model = dynamic_cast<AssimpModelInstance*>(sceneObject->getModelAssetInstance());
         ShaderInstance* shader;
         shader = dynamic_cast<ShaderInstance*>(sceneObject->getShaderAssetInstance());
         shader->use();
-        //checkGLError(1201);
+
         // Transformation matrices
         glm::mat4 projection = glm::perspective(
             mCamera->getZoom(),
-            (float)mScreenWidth / (float)mScreenHeight,
+            static_cast<float>(mScreenWidth) / static_cast<float>(mScreenHeight),
             mMinimumDraw,
             mMaximumDraw
         );
@@ -175,18 +180,12 @@ namespace Dream {
 
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(viewMat4));
-        //checkGLError(1202);
 
         // Draw the loaded model
         glm::mat4 modelMatrix;
         std::vector<float> translation = sceneObject->getTranslation();
         std::vector<float> rotation    = sceneObject->getRotation();
         std::vector<float> scale       = sceneObject->getScale();
-        //std::cout << "VideoComponent: Drawing Scene Object" << std::endl;
-        //std::cout	<< "\tT("<<translation[0]<<","<<translation[1]<<","<<translation[2]<<")"<<std::endl;
-        //std::cout	<< "\tR("<<rotation[0]<<","<<rotation[1]<<","<<rotation[2]<<")"<<std::endl;
-        //std::cout << "\tS("<<scale[0]<<","<<scale[1]<<","<<scale[2]<<")"<<std::endl;;
-        //checkGLError(1203);
 
         // Translate
         modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
@@ -198,22 +197,18 @@ namespace Dream {
 
         // Scale
         modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
-        //checkGLError(1204);
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-        //checkGLError(1205);
         model->draw(shader);
-        //checkGLError(1206);
         glUseProgram(0);
-        //checkGLError(1207);
       }
 
-      bool VideoComponent::checkGLError(int errorIndex) {
+      bool GraphicsComponent::checkGLError(int errorIndex) {
         GLenum errorCode = 0;
         bool wasError = false;
         do {
           errorCode = glGetError();
           if (errorCode!=0) {
-            std::cerr << "VideoComponent: Error Check " << errorIndex << ": " << std::endl;
+            std::cerr << "GraphicsComponent: Error Check " << errorIndex << ": " << std::endl;
             switch (errorCode) {
               case GL_NO_ERROR:
                 std::cerr << "\tGL_NO_ERROR" << std::endl;
@@ -242,39 +237,38 @@ namespace Dream {
         return wasError;
       }
 
-      GLFWwindow* VideoComponent::getWindow() {
+      SDL_Window* GraphicsComponent::getWindow() {
         return mWindow;
       }
 
-      void VideoComponent::setScreenWidth(int width) {
+      void GraphicsComponent::setScreenWidth(int width) {
         mScreenWidth = width;
       }
 
-      int  VideoComponent::getScreenWidth() {
+      int  GraphicsComponent::getScreenWidth() {
         return mScreenWidth;
       }
 
-      void VideoComponent::setScreenHeight(int height) {
+      void GraphicsComponent::setScreenHeight(int height) {
         mScreenHeight = height;
       }
 
-      int  VideoComponent::getScreenHeight() {
+      int  GraphicsComponent::getScreenHeight() {
         return mScreenHeight;
       }
 
-      void VideoComponent::setScreenName(std::string name) {
+      void GraphicsComponent::setScreenName(std::string name) {
         mScreenName = name;
       }
 
-      std::string VideoComponent::getScreenName() {
+      std::string GraphicsComponent::getScreenName() {
         return mScreenName;
       }
 
-      bool VideoComponent::isWindowShouldCloseFlagSet() {
+      bool GraphicsComponent::isWindowShouldCloseFlagSet() {
         return mWindowShouldClose;
       }
 
-
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of Dream

@@ -2,7 +2,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
       LightInstance::LightInstance(
           AssetDefinition* definition,
           Transform3D* transform
@@ -17,6 +17,6 @@ namespace Dream {
       bool LightInstance::load(std::string projectDir) {
         return false;
       }
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of Dream

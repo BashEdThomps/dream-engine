@@ -7,7 +7,6 @@
 
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <assimp/types.h>
 
@@ -15,7 +14,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video  {
+    namespace Graphics  {
 
       struct Vertex {
         glm::vec3 Position;

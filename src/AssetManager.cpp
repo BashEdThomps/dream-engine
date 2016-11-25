@@ -145,19 +145,10 @@ namespace Dream {
 
   AssetInstance* AssetManager::createAudioAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating audio asset instance." << std::endl;
-    AssetInstance* retval = NULL;
-
-    if (definition->isAudioFormatOgg()) {
-      retval = new Components::Audio::OggAudioInstance(
-        definition,
-        sceneObject->getTransform()
-      );
-    } else if (definition->isAudioFormatWav()) {
-      retval = new Components::Audio::WavAudioInstance(
-        definition,
-        sceneObject->getTransform()
-      );
-    }
+    AssetInstance* retval = new Components::Audio::AudioInstance(
+      definition,
+      sceneObject->getTransform()
+    );
 
     if (sceneObject && retval) {
       sceneObject->setAudioAssetInstance(retval);
@@ -170,7 +161,7 @@ namespace Dream {
     AssetInstance* retval = NULL;
 
     if (definition->isModelFormatAssimp()) {
-      retval = new Components::Video::AssimpModelInstance(
+      retval = new Components::Graphics::AssimpModelInstance(
         definition,
         sceneObject->getTransform()
       );
@@ -203,7 +194,7 @@ namespace Dream {
   AssetInstance* AssetManager::createShaderAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
     AssetInstance* retval = NULL;
-    retval = new Components::Video::ShaderInstance(definition,sceneObject->getTransform());
+    retval = new Components::Graphics::ShaderInstance(definition,sceneObject->getTransform());
     if (sceneObject && retval) {
       sceneObject->setShaderAssetInstance(retval);
     }
@@ -217,7 +208,7 @@ namespace Dream {
   AssetInstance* AssetManager::createLightAssetInstance(SceneObject *sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Light Asset instance." << std::endl;
     AssetInstance* retval = NULL;
-    retval = new Components::Video::LightInstance(
+    retval = new Components::Graphics::LightInstance(
       definition,
       sceneObject->getTransform()
     );

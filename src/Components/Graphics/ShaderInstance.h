@@ -27,7 +27,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
 
       class ShaderInstance : public AssetInstance {
       private:
@@ -46,7 +46,7 @@ namespace Dream {
         void loadExtraAttributes(nlohmann::json);
       }; // End of ShaderInstance
 
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of Dream
 

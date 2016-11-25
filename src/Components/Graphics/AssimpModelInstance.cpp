@@ -19,7 +19,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
 
       std::vector<Texture> AssimpModelInstance::sTextureCache = std::vector<Texture>();
 
@@ -205,6 +205,6 @@ namespace Dream {
 
       void AssimpModelInstance::loadExtraAttributes(nlohmann::json json) {}
 
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of DreamFileFormats

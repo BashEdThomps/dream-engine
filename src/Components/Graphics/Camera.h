@@ -29,7 +29,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
       class Camera {
       private:
         // Camera Attributes
@@ -79,7 +79,7 @@ namespace Dream {
         float vectorLength(std::vector<float>);
 
       }; // End of Camera
-    } // End of Video
+    } // End of Graphics
   } // End of Components
 } // End of Dream
 

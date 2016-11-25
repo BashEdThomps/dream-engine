@@ -1,5 +1,5 @@
 /*
-* Dream::Plugnis::Audio::OpenAL::AudioComponent
+* AudioComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,80 +15,52 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AUDIOPLAYBACK_H
-#define AUDIOPLAYBACK_H
+#ifndef AUDIOCOMPONENT_H
+#define AUDIOCOMPONENT_H
 
 #include <iostream>
 #include <vector>
-
-#ifdef __APPLE__
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-#else
-#include <AL/al.h>
-#include <AL/alc.h>
-#endif
-
+#include <SDL2/SDL_mixer.h>
+#include "AudioStatus.h"
+#include "AudioInstance.h"
 #include "../ComponentInterface.h"
-#include "AudioAssetInstance.h"
 
-namespace Dream   {
+namespace Dream {
   namespace Components {
-    namespace Audio   {
+    namespace Audio {
 
       class AudioComponent : public ComponentInterface {
       private:
-        std::vector<AudioAssetInstance*> mPlayQueue;
-        std::vector<AudioAssetInstance*> mPauseQueue;
-        std::vector<AudioAssetInstance*> mStopQueue;
-        std::vector<ALuint> mSources;
-        std::vector<ALuint> mBuffers;
-        ALCdevice*  mDevice;
-        ALCcontext* mContext;
+        std::vector<AudioInstance*> mPlayQueue;
+        std::vector<AudioInstance*> mPauseQueue;
+        std::vector<AudioInstance*> mStopQueue;
       public:
         AudioComponent();
         ~AudioComponent();
         bool init();
         void update(Scene*);
 
-        void   setSourcePosision(ALuint, std::vector<float>);
-        void   setListenerPosition(std::vector<float>);
-
         void pushToPlayQueue(AssetInstance*);
         void pushToPauseQueue(AssetInstance*);
         void pushToStopQueue(AssetInstance*);
 
-        void playAudioAsset(AssetInstance*);
-        void pauseAudioAsset(AssetInstance*);
-        void stopAudioAsset(AssetInstance*);
-        AudioAssetStatus getAudioAssetState(AssetInstance*);
-
-        ALfloat getSampleOffset(ALuint);
-        ALfloat getSampleOffset(AssetInstance*);
-        std::vector<char> getAudioBuffer(AssetInstance*, int, int);
+        void playAsset(AssetInstance*);
+        void pauseAsset(AssetInstance*);
+        void stopAsset(AssetInstance*);
 
       protected:
-        ALuint generateBuffers(size_t);
-        ALuint generateSources(size_t);
-
-        void   deleteBuffers(int, ALuint);
-        void   deleteSources(int, ALuint);
-
-        void   playSource(ALuint);
-        void   stopSource(ALuint);
-        void   pauseSource(ALuint);
+        void   play(AudioInstance*);
+        void   stop(AudioInstance*);
+        void   pause(AudioInstance*);
 
         void   updatePlayQueue();
         void   updatePauseQueue();
         void   updateStopQueue();
-        void   cleanUpBuffersAndSources();
 
-        void deleteAllSources();
-        void deleteAllBuffers();
       }; // End of AudioComponent
 
     } // End of Audio
   } // End of Components
 } // End of Dream
 
-#endif // End of AUDIOPLAYBACK_H
+#endif // End of AUDIOCOMPONENT_H

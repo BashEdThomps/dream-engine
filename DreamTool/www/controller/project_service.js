@@ -2,20 +2,9 @@ App.service('ProjectService',
     ["Blob","FileSaver","UtilService","ApiService",
      function(Blob, FileSaver, UtilService, ApiService) {
 
-    // Component Constants -----------------------------------------------------
-
-    this.COMPONENT_ANIMATION_DREAM  = "dreamAnim";
-    this.COMPONENT_AUDIO_OPENAL     = "openAL";
-    this.COMPONENT_INPUT_GLFW       = "glfwInput"
-    this.COMPONENT_SCRIPTING_CHAI   = "chai";
-    this.COMPONENT_PHYSICS_BULLET2  = "bullet2";
-    this.COMPONENT_VIDEO_OPENGL     = "openGL";
-    this.COMPONENT_VIDEO_VULKAN     = "vulkan";
-
     // Asset Constants ---------------------------------------------------------
 
     // Animation
-
     this.ASSET_TYPE_NAME_ANIMATION    = "Animation";
     this.ASSET_TYPE_ANIMATION         = "animation";
     this.ASSET_FORMAT_NAME_DREAM      = "Dream Animation";
@@ -42,13 +31,13 @@ App.service('ProjectService',
     ];
 
     // Audio
-
     this.ASSET_TYPE_NAME_AUDIO  = "Audio";
     this.ASSET_TYPE_AUDIO       = "audio";
     this.ASSET_FORMAT_NAME_OGG  = "Ogg Vorbis";
     this.ASSET_FORMAT_AUDIO_OGG = "ogg";
     this.ASSET_FORMAT_NAME_WAV  = "Wave File";
     this.ASSET_FORMAT_AUDIO_WAV = "wav";
+
     // Font
     this.ASSET_TYPE_NAME_FONT       = "Font";
     this.ASSET_TYPE_FONT            = "font";
@@ -62,7 +51,6 @@ App.service('ProjectService',
     this.ASSET_TYPE_NAME_LIGHT = "Light";
 
     // Physics
-
     this.ASSET_TYPE_NAME_PHYSICS_OBJECT = "Physics Object";
     this.ASSET_TYPE_PHYSICS_OBJECT      = "physicsObject";
 
@@ -92,21 +80,18 @@ App.service('ProjectService',
     this.ASSET_FORMAT_PHYSICS_OBJECT_COMPOUND = "btCompoundShape";
 
     // Model
-
     this.ASSET_TYPE_NAME_MODEL     = "Model";
     this.ASSET_TYPE_MODEL          = "model";
     this.ASSET_FORMAT_NAME_ASSIMP  = "Assimp";
     this.ASSET_FORMAT_MODEL_ASSIMP = "assimp";
 
     // Script
-
     this.ASSET_TYPE_NAME_SCRIPT   = "Script";
     this.ASSET_TYPE_SCRIPT        = "script";
     this.ASSET_FORMAT_NAME_CHAI   = "ChaiScript";
     this.ASSET_FORMAT_SCRIPT_CHAI = "chai";
 
     // Shader
-
     this.ASSET_TYPE_NAME_SHADER       = "Shader";
     this.ASSET_TYPE_SHADER            = "shader";
     this.ASSET_FORMAT_SHADER_VERTEX   = "vertex";
@@ -382,12 +367,6 @@ App.service('ProjectService',
         this.setName        (project.name);
         this.setAuthor      (project.author);
         this.setDescription (project.description);
-
-        this.setOpenAL  (project.openAL);
-        this.setChai     (project.chai);
-        this.setBullet2 (project.bullet2);
-        this.setOpenGL  (project.openGL);
-
         this.setStartupScene(project.startupScene);
     };
 
@@ -509,11 +488,6 @@ App.service('ProjectService',
             objects:[
                 this.createSceneObject()
             ],
-            scriptingEnabled : false,
-            animationEnabled : false,
-            physicsEnabled   : false,
-            audioEnabled     : false,
-            inputEnabled     : false,
         };
     };
 
@@ -549,109 +523,7 @@ App.service('ProjectService',
         };
     };
 
-    this.setDreamAnimation = function(dreamAnim) {
-      this.project.dreamAnimation = dreamAnim;
-    };
-
-    this.setGLFWInput = function(glfw) {
-      this.project.glfwInput = glfw;
-    };
-
-    this.setChai = function(chai) {
-        this.project.chai = chai;
-    };
-
-    this.setOpenAL = function(openAL) {
-        this.project.openAL = openAL;
-    };
-
-    this.setBullet2 = function(b2) {
-        this.project.bullet2 = b2;
-    };
-
-    this.setOpenGL = function(openGL) {
-        this.project.openGL = openGL;
-    };
-
-    this.setSelectedComponents = function(selectedComponents) {
-      this.project.isModified = true;
-      // Animation
-      switch (selectedComponents.animationComponent) {
-        case this.COMPONENT_ANIMATION_DREAM:
-          this.project.dreamAnim = true;
-          break;
-      }
-      // Audio
-      switch (selectedComponents.audioComponent) {
-        case this.COMPONENT_AUDIO_OPENAL:
-          this.project.openAL = true;
-          break;
-      }
-      // Input
-      switch (selectedComponents.inputComponent) {
-        case this.COMPONENT_INPUT_GLFW:
-          this.project.glfwInput = true;
-          break;
-      }
-      // Scripting
-      switch (selectedComponents.scriptingComponent) {
-        case this.COMPONENT_SCRIPTING_CHAI:
-          this.project.chai = true;
-          break;
-        default:
-          this.project.chai = false;
-          break;
-      }
-      // Physics
-      switch (selectedComponents.physicsComponent) {
-        case this.COMPONENT_PHYSICS_BULLET2:
-          this.project.bullet2 = true;
-          break;
-        default:
-          this.project.bullet2 = false;
-          break;
-      }
-      // Video
-      switch (selectedComponents.videoComponent) {
-          case this.COMPONENT_VIDEO_OPENGL:
-            this.project.openGL = true;
-            break;
-      }
-    };
-
-    this.getSelectedComponents = function(callback) {
-        var retval = {};
-
-        // Animation
-        if (this.project.dreamAnim) {
-          retval.animationComponent = this.COMPONENT_ANIMATION_DREAM;
-        }
-        // Audio
-        if (this.project.openAL) {
-          retval.audioComponent = this.COMPONENT_AUDIO_OPENAL;
-        }
-        // Input
-        if (this.project.glfwInput) {
-          retval.inputComponent = this.COMPONENT_INPUT_GLFW;
-        }
-        // Physics
-        if (this.project.bullet2) {
-            retval.physicsComponent = this.COMPONENT_PHYSICS_BULLET2;
-        }
-        // Scripting
-        if (this.project.chai) {
-          retval.scriptingComponent = this.COMPONENT_SCRIPTING_CHAI;
-        }
-        // Video
-        if (this.project.openGL) {
-          retval.videoComponent = this.COMPONENT_VIDEO_OPENGL;
-        } else if (this.project.vulkan) {
-          retval.videoComponent = this.COMPONENT_VIDEO_VULKAN;
-        }
-
-        callback(retval);
-    };
-
+      
     this.initialise = function() {
         this.project = {
             uuid:        UtilService.generateUUID(),
@@ -717,41 +589,7 @@ App.service('ProjectService',
     };
 
     this.updateScene = function(scene) {
-      this.setSceneScriptingEnabled (scene);
-      this.setSceneAnimationEnabled (scene);
-      this.setSceneInputEnabled     (scene);
-      this.setSceneAudioEnabled     (scene);
       this.setSceneName             (scene);
-    };
-
-    this.setSceneScriptingEnabled = function(scene) {
-      this.getSceneByUUID(scene.uuid,function(projScene) {
-          projScene.scriptingEnabled = scene.scriptingEnabled;
-      });
-    };
-
-    this.setSceneAnimationEnabled = function(scene) {
-        this.getSceneByUUID(scene.uuid,function(projScene){
-            projScene.animationEnabled = scene.animationEnabled;
-        });
-    };
-
-    this.setSceneInputEnabled = function(scene) {
-        this.getSceneByUUID(scene.uuid,function(projScene){
-            projScene.inputEnabled = scene.inputEnabled;
-        });
-    };
-
-    this.setSceneAudioEnabled = function(scene){
-        this.getSceneByUUID(scene.uuid,function(projScene){
-            projScene.audioEnabled = scene.audioEnabled;
-        });
-    };
-
-    this.setScenePhysicsEnabled = function(scene) {
-        this.getSceneByUUID(scene.uuid,function(projScene){
-            projScene.physicsEnabled = scene.physicsEnabled;
-        });
     };
 
     this.setSceneName = function(scene) {

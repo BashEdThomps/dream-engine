@@ -31,7 +31,7 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
       GLint TextureFromFile(const char* path, std::string directory);
       class AssimpModelInstance : public AssetInstance {
       private:

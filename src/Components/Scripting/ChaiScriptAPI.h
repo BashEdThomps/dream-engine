@@ -50,13 +50,12 @@ namespace Dream {
         void initAssetManagerAPI();
         void initAudioComponentAPI();
         void initCameraAPI();
-        void initGlfwTimeAPI();
-        void initInputEventAPI();
+        void initTimeAPI();
         void initComponentManagerAPI();
         void initProjectAPI();
         void initSceneObjectAPI();
         void initSceneAPI();
-        void initVideoComponentAPI();
+        void initGraphicsComponentAPI();
 
       }; // End of ChaiScripAPI
     } // End Scripting

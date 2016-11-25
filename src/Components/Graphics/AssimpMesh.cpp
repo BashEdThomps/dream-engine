@@ -2,9 +2,12 @@
 
 namespace Dream {
   namespace Components {
-    namespace Video {
+    namespace Graphics {
 
-      AssimpMesh::AssimpMesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures) {
+      AssimpMesh::AssimpMesh(
+          std::vector<Vertex> vertices,
+          std::vector<GLuint> indices,
+          std::vector<Texture> textures) {
         mVertices = vertices;
         mIndices  = indices;
         mTextures = textures;
@@ -41,52 +44,23 @@ namespace Dream {
 
       void AssimpMesh::init() {
         glGenVertexArrays(1, &mVAO);
-        //checkGLError(1);
-
         glGenBuffers(1, &mVBO);
-        //checkGLError(2);
-
         glGenBuffers(1, &mEBO);
-        //checkGLError(3);
-
         glBindVertexArray(mVAO);
-        //checkGLError(4);
-
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        //checkGLError(5);
-
         glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), &mVertices[0], GL_STATIC_DRAW);
-        //checkGLError(6);
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-        //checkGLError(7);
-
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(GLuint),&mIndices[0], GL_STATIC_DRAW);
-        //checkGLError(8);
-
         // Vertex Positions
         glEnableVertexAttribArray(0);
-        //checkGLError(9);
-
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-        //checkGLError(10);
-
         // Vertex Normals
         glEnableVertexAttribArray(1);
-        //checkGLError(11);
-
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
-        //checkGLError(12);
-
         // Vertex Texture Coords
         glEnableVertexAttribArray(2);
-        //checkGLError(13);
-
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
-        //checkGLError(14);
-
         glBindVertexArray(0);
-        //checkGLError(15);
       }
 
       bool AssimpMesh::checkGLError(int errorIndex) {
@@ -123,6 +97,7 @@ namespace Dream {
         } while(errorCode != 0);
         return wasError;
       }
-    } // End of Video
+
+    } // End of Graphics
   } // End of Components
 } // End of Dream
