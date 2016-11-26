@@ -11,137 +11,135 @@
 #define SO_Y 1
 #define SO_Z 2
 
-#define SCENE_OBJECT_UUID     "uuid"
-#define SCENE_OBJECT_NAME     "name"
+#define SCENE_OBJECT_UUID "uuid"
+#define SCENE_OBJECT_NAME "name"
 #define SCENE_OBJECT_CHILDREN "children"
-#define PATH_DELIMETER        "::"
+#define PATH_DELIMETER "::"
 
 #define SCENE_OBJECT_TRANSLATION "translation"
-#define SCENE_OBJECT_ROTATION    "rotation"
-#define SCENE_OBJECT_SCALE       "scale"
+#define SCENE_OBJECT_ROTATION "rotation"
+#define SCENE_OBJECT_SCALE "scale"
 
 #define SCENE_OBJECT_X "x"
 #define SCENE_OBJECT_Y "y"
 #define SCENE_OBJECT_Z "z"
 
-#define SCENE_OBJECT_TRANSFORM_TYPE          "transformType"
-#define SCENE_OBJECT_TRANSFORM_TYPE_OFFSET   "offset"
+#define SCENE_OBJECT_TRANSFORM_TYPE "transformType"
+#define SCENE_OBJECT_TRANSFORM_TYPE_OFFSET "offset"
 #define SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE "absolute"
 
 #define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
 
 namespace Dream {
-
-  class AssetInstance;
-
   class SceneObject {
   protected:
-    SceneObject* mParent;
-    std::vector<SceneObject*> mChildren;
-    std::vector<std::string>  mAssetInstanceUUIDsToLoad;
-
-    // Metadata
-    std::string  mUUID;
-    std::string  mName;
-    std::string  mPath;
-    std::string  mTransformType;
-
-    Transform3D *mTransform;
-
-    // Asset Instances
-    AssetInstance* mAudioAssetInstance;
-    AssetInstance* mAnimationAssetInstance;
-    AssetInstance* mModelAssetInstance;
-    AssetInstance* mScriptAssetInstance;
-    AssetInstance* mShaderAssetInstance;
-    AssetInstance* mPhysicsObjectAssetInstance;
-    AssetInstance* mLightAssetInstance;
-
+      SceneObject* mParent;
+      std::vector<SceneObject*> mChildren;
+      std::vector<std::string> mAssetInstanceUUIDsToLoad;
+      // Metadata
+      std::string mUUID;
+      std::string mName;
+      std::string mPath;
+      std::string mTransformType;
+      Transform3D *mTransform;
+      // Asset Instances
+      AssetInstance* mAudioAssetInstance;
+      AssetInstance* mAnimationAssetInstance;
+      AssetInstance* mModelAssetInstance;
+      AssetInstance* mScriptAssetInstance;
+      AssetInstance* mShaderAssetInstance;
+      AssetInstance* mPhysicsObjectAssetInstance;
+      AssetInstance* mLightAssetInstance;
+      AssetInstance* mSpriteAssetInstance;
   public:
-    SceneObject  (nlohmann::json);
-    SceneObject  ();
-    ~SceneObject ();
+      SceneObject  (nlohmann::json);
+      SceneObject  ();
+      ~SceneObject ();
 
-    bool         init();
-    void         loadAssetInstances(nlohmann::json);
-    bool         initAssetInstances();
+      bool init();
+      void loadAssetInstances(nlohmann::json);
+      bool initAssetInstances();
 
-    bool         hasUUID(std::string);
-    void         setUUID(std::string);
-    std::string  getUUID();
+      bool hasUUID(std::string);
+      void setUUID(std::string);
+      std::string getUUID();
 
-    bool         hasName(std::string);
-    void         setName(std::string);
-    std::string  getName();
+      bool hasName(std::string);
+      void setName(std::string);
+      std::string getName();
 
-    std::string  getNameUUIDString();
+      std::string getNameUUIDString();
 
-    void         showStatus();
+      void showStatus();
 
-    std::vector<float> getTranslation();
-    void         setTranslation(float, float, float);
-    void         setTranslation(std::vector<float>);
-    void         resetTranslation();
+      std::vector<float> getTranslation();
+      void setTranslation(float, float, float);
+      void setTranslation(std::vector<float>);
+      void resetTranslation();
 
-    std::vector<float> getRotation();
-    void         setRotation(float, float, float);
-    void         setRotation(std::vector<float>);
-    void         resetRotation();
+      std::vector<float> getRotation();
+      void setRotation(float, float, float);
+      void setRotation(std::vector<float>);
+      void resetRotation();
 
-    std::vector<float> getScale();
-    void         setScale(float, float, float);
-    void         setScale(std::vector<float>);
-    void         resetScale();
+      std::vector<float> getScale();
+      void setScale(float, float, float);
+      void setScale(std::vector<float>);
+      void resetScale();
 
-    void         resetTransform();
+      void resetTransform();
 
-    int          countAllChildren();
-    size_t          countChildren();
-    void         addChild(SceneObject*);
-    void         removeChild(SceneObject*);
-    bool         isChildOf(SceneObject*);
-    bool         isChildOfDeep(SceneObject*);
-    void         getChildrenVectorDeep(std::vector<SceneObject*>*);
-    bool         isParentOf(SceneObject*);
-    bool         isParentOfDeep(SceneObject*);
-    void         setParent(SceneObject*);
-    SceneObject* getParent();
+      int countAllChildren();
+      size_t countChildren();
+      void addChild(SceneObject*);
+      void removeChild(SceneObject*);
+      bool isChildOf(SceneObject*);
+      bool isChildOfDeep(SceneObject*);
+      void getChildrenVectorDeep(std::vector<SceneObject*>*);
+      bool isParentOf(SceneObject*);
+      bool isParentOfDeep(SceneObject*);
+      void setParent(SceneObject*);
+      SceneObject* getParent();
 
-    void         generatePath();
+      void         generatePath();
 
-    std::string  getPath();
+      std::string  getPath();
 
-    void setAnimationAssetInstance(AssetInstance*);
-    AssetInstance* getAnimationAssetInstance();
+      void setAnimationAssetInstance(AssetInstance*);
+      AssetInstance* getAnimationAssetInstance();
 
-    void setAudioAssetInstance(AssetInstance*);
-    AssetInstance* getAudioAssetInstance();
+      void setAudioAssetInstance(AssetInstance*);
+      AssetInstance* getAudioAssetInstance();
 
-    void setModelAssetInstance(AssetInstance*);
-    AssetInstance* getModelAssetInstance();
-    bool hasModelAssetInstance();
+      void setModelAssetInstance(AssetInstance*);
+      AssetInstance* getModelAssetInstance();
+      bool hasModelAssetInstance();
 
-    void setScriptAssetInstance(AssetInstance*);
-    AssetInstance* getScriptAssetInstance();
-    bool hasScriptAssetInstance();
+      void setScriptAssetInstance(AssetInstance*);
+      AssetInstance* getScriptAssetInstance();
+      bool hasScriptAssetInstance();
 
-    void setShaderAssetInstance(AssetInstance*);
-    AssetInstance* getShaderAssetInstance();
-    bool hasShaderAssetInstance();
+      void setShaderAssetInstance(AssetInstance*);
+      AssetInstance* getShaderAssetInstance();
+      bool hasShaderAssetInstance();
 
-    void setPhysicsObjectAssetInstance(AssetInstance*);
-    AssetInstance* getPhysicsObjectAssetInstance();
+      void setPhysicsObjectAssetInstance(AssetInstance*);
+      AssetInstance* getPhysicsObjectAssetInstance();
 
-    void setLightAssetInstance(AssetInstance*);
-    AssetInstance* getLightAssetInstance();
+      void setLightAssetInstance(AssetInstance*);
+      AssetInstance* getLightAssetInstance();
 
-    std::vector<std::string> getAssetInstanceUUIDsToLoad();
+      void setSpriteAssetInstance(AssetInstance*);
+      AssetInstance* getSpriteAssetInstance();
+      bool hasSpriteAssetInstance();
 
-    std::string getTransformType();
-    void setTransformType(std::string);
+      std::vector<std::string> getAssetInstanceUUIDsToLoad();
 
-    Transform3D* getTransform();
-    void setTransform(Transform3D*);
+      std::string getTransformType();
+      void setTransformType(std::string);
+
+      Transform3D* getTransform();
+      void setTransform(Transform3D*);
 
   }; // End of SceneObject
 

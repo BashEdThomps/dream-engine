@@ -42,6 +42,11 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
         $scope.assetFormats.script = scriptFormats;
     });
 
+    ProjectService.getSpriteAssetFormats(function(spriteFormats){
+        $scope.assetFormats.sprite = spriteFormats;
+    });
+
+
     console.log("Asset Formats:",$scope.assetFormats)
   };
 
@@ -79,6 +84,11 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
   $scope.isAssetTypeShader = function() {
     if (!$scope.currentAsset) return false;
     return $scope.currentAsset.type == ProjectService.ASSET_TYPE_SHADER;
+  };
+
+  $scope.isAssetTypeSprite = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.type == ProjectService.ASSET_TYPE_SPRITE;
   };
 
   $scope.isAudioAssetFormatOgg = function() {
@@ -180,6 +190,12 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
         console.log("FragmentShader exists",result);
         $scope.hasFragmentShader = result;
       })
+    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_SPRITE) {
+    console.log("Checking for existsing sprite asset");
+      ProjectService.assetHasSprite($scope.currentAsset.uuid,function(result){
+        console.log("Sprite asset exists",result);
+        $scope.hasSprite = result;
+      });
     }
   };
 
@@ -228,6 +244,23 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     var wavFile = document.getElementById('wav-file');
     UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
       var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/"+$scope.currentAsset.format;
+      ApiService.uploadAsset(path,data, function(success){
+        if (success) {
+          UIService.addAlert("Asset uploaded successfuly.","success");
+          $scope.updateAssetUIVariables();
+        }
+        else {
+          UIService.addAlert("Error uploading asset.","danger");
+        }
+      });
+    });
+  };
+
+  $scope.onAssetSpriteUploadButtonClicked = function() {
+    UIService.addAlert("Uploading Asset File...","info");
+    var spriteFile = document.getElementById('sprite-file');
+    UtilService.readFileAsBinaryFromElement(spriteFile, function(data) {
+      var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/sprite";
       ApiService.uploadAsset(path,data, function(success){
         if (success) {
           UIService.addAlert("Asset uploaded successfuly.","success");

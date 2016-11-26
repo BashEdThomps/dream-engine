@@ -4,12 +4,13 @@ var targz = require('tar.gz');
 var rimraf = require('rimraf');
 
 var DREAM_TOOL_HOME_DIR = ".dreamtool";
-var ASSET_DIR           = "assets";
-var MODELS_DIR          = "model";
-var AUDIO_DIR           = "audio";
-var ANIMATION_DIR       = "animation";
-var SCRIPT_DIR          = "script";
-var SHADER_DIR          = "shader";
+var ASSET_DIR = "assets";
+var MODELS_DIR = "model";
+var AUDIO_DIR = "audio";
+var ANIMATION_DIR = "animation";
+var SCRIPT_DIR = "script";
+var SHADER_DIR = "shader";
+var SPRITE_DIR = "sprite";
 
 var AUDIO_WAV_FMT = "wav";
 var AUDIO_OGG_FMT = "ogg";
@@ -69,6 +70,11 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     var shader = assetPrefix + path.sep + SHADER_DIR;
     fs.mkdirSync(shader);
     console.log("mkdir",shader,"ok");
+
+    var sprite = assetPrefix + path.sep + SPRITE_DIR;
+    fs.mkdirSync(sprite);
+    console.log("mkdir",sprite,"ok");
+
     yield next;
 };
 

@@ -24,8 +24,8 @@ namespace Dream {
       // Global Event Handlers
 
       GraphicsComponent::GraphicsComponent(Camera* camera) : ComponentInterface () {
-        setScreenWidth(Graphics_INTERFACE_DEFAULT_SCREEN_WIDTH);
-        setScreenHeight(Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT);
+        setWindowWidth(Graphics_INTERFACE_DEFAULT_SCREEN_WIDTH);
+        setWindowHeight(Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT);
         mWindowShouldClose = false;
         mCamera = camera;
       }
@@ -34,7 +34,7 @@ namespace Dream {
         mWindow = SDL_CreateWindow(
           mScreenName.c_str(),
           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-          mScreenWidth, mScreenHeight,
+          mWindowWidth, mWindowHeight,
           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
         );
 
@@ -104,7 +104,7 @@ namespace Dream {
 
         std::cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
         // Define the viewport dimensions
-        glViewport(0, 0, mScreenWidth, mScreenHeight);
+        glViewport(0, 0, mWindowWidth, mWindowHeight);
 
         // Setup some OpenGL options
         glEnable(GL_DEPTH_TEST);
@@ -164,7 +164,7 @@ namespace Dream {
         // Transformation matrices
         glm::mat4 projection = glm::perspective(
             mCamera->getZoom(),
-            static_cast<float>(mScreenWidth) / static_cast<float>(mScreenHeight),
+            static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
             mMinimumDraw,
             mMaximumDraw
         );
@@ -241,20 +241,20 @@ namespace Dream {
         return mWindow;
       }
 
-      void GraphicsComponent::setScreenWidth(int width) {
-        mScreenWidth = width;
+      void GraphicsComponent::setWindowWidth(int width) {
+        mWindowWidth = width;
       }
 
-      int  GraphicsComponent::getScreenWidth() {
-        return mScreenWidth;
+      int  GraphicsComponent::getWindowWidth() {
+        return mWindowWidth;
       }
 
-      void GraphicsComponent::setScreenHeight(int height) {
-        mScreenHeight = height;
+      void GraphicsComponent::setWindowHeight(int height) {
+        mWindowHeight = height;
       }
 
-      int  GraphicsComponent::getScreenHeight() {
-        return mScreenHeight;
+      int  GraphicsComponent::getWindowHeight() {
+        return mWindowHeight;
       }
 
       void GraphicsComponent::setScreenName(std::string name) {

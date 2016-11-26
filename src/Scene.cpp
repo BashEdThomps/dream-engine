@@ -20,38 +20,15 @@
 namespace Dream {
 
   Scene::Scene() {
+    mRootSceneObject = nullptr;
     mDefaultCameraTransform = new Transform3D();
   }
 
   Scene::Scene(nlohmann::json jsonScene) {
+    mRootSceneObject = nullptr;
     mDefaultCameraTransform = new Transform3D();
     mUUID = jsonScene[SCENE_JSON_UUID];
     mName = jsonScene[SCENE_JSON_NAME];
-
-    mPhysicsEnabled = (
-      jsonScene[SCENE_JSON_PHYSICS_ENABLED].is_null() ?
-      false : (bool)jsonScene[SCENE_JSON_PHYSICS_ENABLED]
-    );
-
-    mAnimationEnabled = (
-      jsonScene[SCENE_JSON_ANIMATION_ENABLED].is_null() ?
-      false : (bool)jsonScene[SCENE_JSON_ANIMATION_ENABLED]
-    );
-
-    mInputEnabled = (
-      jsonScene[SCENE_JSON_INPUT_ENABLED].is_null() ?
-      false :(bool)jsonScene[SCENE_JSON_INPUT_ENABLED]
-    );
-
-    mAudioEnabled = (
-      jsonScene[SCENE_JSON_AUDIO_ENABLED].is_null() ?
-      false : (bool)jsonScene[SCENE_JSON_AUDIO_ENABLED]
-    );
-
-    mScriptingEnabled = (
-      jsonScene[SCENE_JSON_SCRIPTING_ENABLED].is_null() ?
-      false : (bool)jsonScene[SCENE_JSON_SCRIPTING_ENABLED]
-    );
 
     loadDefaultCameraTransform(jsonScene[SCENE_JSON_CAMERA]);
 

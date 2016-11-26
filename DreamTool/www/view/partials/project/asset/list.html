@@ -192,18 +192,6 @@
                         ng-click="onAssetAudioWavUploadButtonClicked()">
                   <span class="glyphicon glyphicon-open"></span>
                 </button>
-                <input ng-show="!hasAudioWav" type="file" id="wav-file" accept=".wav" name="wav-file"/>
-              </td>
-            </tr>
-            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatOgg()">
-              <td>Ogg File</td>
-              <td>
-                <button ng-show="hasAudioOgg" class="pull-right btn btn-sm btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-                <button ng-show="!hasAudioOgg" class="pull-right btn btn-sm btn-success" ng-click="onAssetAudioOggUploadButtonClicked()">
-                  <span class="glyphicon glyphicon-open"></span>
-                </button>
                 <input ng-show="!hasAudioOgg" type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>
               </td>
             </tr>
@@ -225,6 +213,34 @@
                   <option ng-repeat="fmt in assetFormats.font" value="{{fmt.format}}">{{fmt.name}}</option>
                 </select>
               </td>
+            </tr>
+            <!-- Sprite -->
+            <tr ng-show="isAssetTypeSprite()">
+                <td>Tile Size</td>
+                <td>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input ng-change="modified()" ng-model="currentAsset.tileSize.width" class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-md-6">
+                            <input ng-change="modified()" ng-model="currentAsset.tileSize.height" class="form-control input-sm" type="number"/>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr ng-show="isAssetTypeSprite()">
+                <td>Sprite File</td>
+                <td>
+                    <button ng-show="hasSprite"  class="pull-right btn-sm btn btn-danger"
+                            ng-click="onDeleteAssetDataButtonClicked()">
+                      <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                    <button ng-show="!hasSprite" class="pull-right btn btn-sm btn btn-success"
+                            ng-click="onAssetSpriteUploadButtonClicked()">
+                      <span class="glyphicon glyphicon-open"></span>
+                    </button>
+                    <input ng-show="!hasSprite" type="file" id="sprite-file" accept=".png" name="sprite-file"/>
+                </td>
             </tr>
           </tbody>
         </table>

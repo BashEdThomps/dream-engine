@@ -97,6 +97,11 @@ App.service('ProjectService',
     this.ASSET_FORMAT_SHADER_VERTEX   = "vertex";
     this.ASSET_FORMAT_SHADER_FRAGMENT = "fragment";
 
+    // Sprite
+    this.ASSET_TYPE_NAME_SPRITE = "Sprite";        
+    this.ASSET_TYPE_SPRITE = "sprite";        
+     
+
     this.ASSET_TYPES = [
       // Animation
       {
@@ -213,6 +218,10 @@ App.service('ProjectService',
             format: this.ASSET_FORMAT_SCRIPT_CHAI,
           }
         ]
+      }, {
+          name: this.ASSET_TYPE_NAME_SPRITE,
+          type: this.ASSET_TYPE_SPRITE,
+          formats: []
       }
     ];
 
@@ -317,6 +326,15 @@ App.service('ProjectService',
       var ps = this;
       this.ASSET_TYPES.forEach(function(assetType){
         if (assetType.type == ps.ASSET_TYPE_SCRIPT) {
+          callback(assetType.formats);
+        }
+      });
+    };
+
+    this.getSpriteAssetFormats = function(callback) {
+      var ps = this;
+      this.ASSET_TYPES.forEach(function(assetType){
+        if (assetType.type == ps.ASSET_TYPE_SPRITE) {
           callback(assetType.formats);
         }
       });
@@ -589,7 +607,7 @@ App.service('ProjectService',
     };
 
     this.updateScene = function(scene) {
-      this.setSceneName             (scene);
+      this.setSceneName(scene);
     };
 
     this.setSceneName = function(scene) {
@@ -673,6 +691,16 @@ App.service('ProjectService',
         this.ASSET_TYPE_AUDIO,
         uuid,
         this.ASSET_FORMAT_AUDIO_OGG,
+        callback
+      );
+    };
+
+    this.assetHasSprite = function(uuid,callback) {
+      ApiService.assetExists(
+        this.project.uuid,
+        this.ASSET_TYPE_SPRITE,
+        uuid,
+        this.ASSET_TYPE_SPRITE,
         callback
       );
     };

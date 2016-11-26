@@ -26,6 +26,19 @@
               </td>
             </tr>
             <tr>
+                <td>Window Size</td>
+                <td>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input ng-change="modified()" ng-model="project.windowSize.width" class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-md-6">
+                            <input ng-change="modified()" ng-model="project.windowSize.height" class="form-control input-sm" type="number"/>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
               <td>Startup Scene</td>
               <td>
                 <select ng-model="project.startupScene" ng-change="modified()" class="form-control input-sm">

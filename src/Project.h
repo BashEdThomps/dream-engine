@@ -34,11 +34,9 @@
 #define PROJECT_ASSET_ARRAY     "assets"
 #define PROJECT_STARTUP_SCENE   "startupScene"
 
-#define PROJECT_CHAI_ENABLED    "chai"
-#define PROJECT_OPENAL_ENABLED  "openAL"
-#define PROJECT_BULLET2_ENABLED "bullet2"
-#define PROJECT_OPENGL_ENABLED  "openGL"
-#define PROJECT_VULKAN_ENABLED  "vulkan"
+#define PROJECT_WINDOW_SIZE  "windowSize"
+#define PROJECT_WIDTH "width"
+#define PROJECT_HEIGHT "height"
 
 namespace Dream {
 
@@ -54,6 +52,8 @@ namespace Dream {
     std::string mStartupScene;
     std::vector<Scene*> mScenes;
     Scene *mActiveScene;
+    int mWindowWidth;
+    int mWindowHeight;
   // Instance Methods
   public:
     Project(AssetManager*);
@@ -96,6 +96,12 @@ namespace Dream {
     void setActiveScene(Scene*);
     Scene *getActiveScene();
     bool hasActiveScene();
+
+    int getWindowWidth();
+    void setWindowWidth(int);
+
+    int getWindowHeight();
+    void setWindowHeight(int);
 
   }; // End of Project
 } // End of Dream

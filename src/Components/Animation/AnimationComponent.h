@@ -30,7 +30,7 @@ namespace Dream {
       private:
         Time* mTime;
       public:
-        AnimationComponent(Time*);
+        AnimationComponent();
         ~AnimationComponent();
         bool init();
         void update(Scene*);

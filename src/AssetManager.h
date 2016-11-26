@@ -53,13 +53,14 @@ namespace Dream {
     AssetInstance* getAssetInstanceByUUID(std::string);
     AssetInstance* createAssetInstanceFromDefinitionUUID(SceneObject*, std::string);
     AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createAnimationAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createAudioAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createModelAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createScriptAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createShaderAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createPhysicsObjectAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createLightAssetInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createAudioInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createModelInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createScriptInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createShaderInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createPhysicsObjectInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createLightInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
     void showStatus();
     std::vector<SceneObject*> getSceneObjectsWithPhysicsObjects();
 

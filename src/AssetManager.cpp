@@ -88,19 +88,21 @@ namespace Dream {
               << std::endl;
 
     if(definition->isTypeAnimation()) {
-      retval = createAnimationAssetInstance(sceneObject, definition);
+      retval = createAnimationInstance(sceneObject, definition);
     } else if (definition->isTypeAudio()) {
-      retval = createAudioAssetInstance(sceneObject, definition);
+      retval = createAudioInstance(sceneObject, definition);
     } else if (definition->isTypeModel()) {
-      retval = createModelAssetInstance(sceneObject, definition);
+      retval = createModelInstance(sceneObject, definition);
     } else if (definition->isTypeScript()){
-      retval = createScriptAssetInstance(sceneObject, definition);
+      retval = createScriptInstance(sceneObject, definition);
     } else if (definition->isTypeShader()) {
-      retval = createShaderAssetInstance(sceneObject, definition);
+      retval = createShaderInstance(sceneObject, definition);
     } else if (definition->isTypePhysicsObject()) {
-      retval = createPhysicsObjectAssetInstance(sceneObject,definition);
+      retval = createPhysicsObjectInstance(sceneObject,definition);
     } else if (definition->isTypeLight()) {
-      retval = createLightAssetInstance(sceneObject, definition);
+      retval = createLightInstance(sceneObject, definition);
+    } else if (definition->isTypeSprite()) {
+      retval = createSpriteInstance(sceneObject, definition);
     }
 
     if (retval != NULL) {
@@ -115,7 +117,7 @@ namespace Dream {
     mProjectPath = projectPath;
   }
 
-  AssetInstance* AssetManager::createPhysicsObjectAssetInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+  AssetInstance* AssetManager::createPhysicsObjectInstance(SceneObject *sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Physics Object Asset Instance." << std::endl;
 
     AssetInstance* retval = new Components::Physics::PhysicsObjectInstance(
@@ -129,7 +131,7 @@ namespace Dream {
     return retval;
   }
 
-  AssetInstance* AssetManager::createAnimationAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+  AssetInstance* AssetManager::createAnimationInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating animation asset instance." << std::endl;
     AssetInstance* retval = NULL;
 
@@ -143,7 +145,7 @@ namespace Dream {
     return retval;
   }
 
-  AssetInstance* AssetManager::createAudioAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+  AssetInstance* AssetManager::createAudioInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating audio asset instance." << std::endl;
     AssetInstance* retval = new Components::Audio::AudioInstance(
       definition,
@@ -156,7 +158,7 @@ namespace Dream {
     return retval;
   }
 
-  AssetInstance* AssetManager::createModelAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+  AssetInstance* AssetManager::createModelInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating model asset instance." << std::endl;
     AssetInstance* retval = NULL;
 
@@ -174,7 +176,7 @@ namespace Dream {
     return retval;
   }
 
-  AssetInstance* AssetManager::createScriptAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+  AssetInstance* AssetManager::createScriptInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating script asset instance." << std::endl;
     AssetInstance* retval = NULL;
     Components::Scripting::ChaiScriptInstance* newScript;
@@ -191,7 +193,7 @@ namespace Dream {
     return retval;
   }
 
-  AssetInstance* AssetManager::createShaderAssetInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+  AssetInstance* AssetManager::createShaderInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
     AssetInstance* retval = NULL;
     retval = new Components::Graphics::ShaderInstance(definition,sceneObject->getTransform());
@@ -205,7 +207,7 @@ namespace Dream {
     return mSceneObjectsWithPhysicsObjects;
   }
 
-  AssetInstance* AssetManager::createLightAssetInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+  AssetInstance* AssetManager::createLightInstance(SceneObject *sceneObject, AssetDefinition* definition) {
     std::cout << "AssetManager: Creating Light Asset instance." << std::endl;
     AssetInstance* retval = NULL;
     retval = new Components::Graphics::LightInstance(
@@ -216,6 +218,20 @@ namespace Dream {
     if (sceneObject && retval) {
       sceneObject->setLightAssetInstance(retval);
     }
+    return retval;
+  }
+
+  AssetInstance* AssetManager::createSpriteInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+    std::cout << "AssetManager: Creating Sprite Asset instance." << std::endl;
+    AssetInstance* retval = new Components::Graphics::SpriteInstance(
+      definition,
+      sceneObject->getTransform()
+    );
+
+    if (sceneObject && retval) {
+      sceneObject->setSpriteAssetInstance(retval);
+    }
+
     return retval;
   }
 

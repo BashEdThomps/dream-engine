@@ -16,22 +16,48 @@
  * this file belongs to.
  */
 #include "SpriteInstance.h"
+#include "SDL2/SDL_image.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
+    namespace Components {
+        namespace Graphics {
 
-      SpriteInstance::SpriteInstance(
-          AssetDefinition* definition,
-          Transform3D* transform) : AssetInstance(definition,transform)
-      {
+            SpriteInstance::SpriteInstance(
+                    AssetDefinition* definition,
+                    Transform3D* transform) : AssetInstance(definition,transform) {
+                loadExtraAttributes(mDefinition->getJson());
+            }
 
-      }
+            SpriteInstance::~SpriteInstance() {
+            }
 
-      SpriteInstance::~SpriteInstance()
-      {
+            bool SpriteInstance::load(std::string projectPath) {
 
-      }
-    }
-  }
-}
+                if (mRenderer == nullptr) {
+                    std::cerr << "SpriteInstance: Renderer has not been set!" << std::endl;
+                    return false;
+                }
+
+                std::string path = projectPath+mDefinition->getAssetPath();
+                mTexture = IMG_LoadTexture(mRenderer, path.c_str());
+
+                if (mTexture == nullptr){
+                    std::cerr << "SpriteInstance: Unable to load image" << std::endl;
+                    return false;
+                }
+
+                return mTexture != nullptr;
+            }
+
+            void SpriteInstance::loadExtraAttributes(nlohmann::json json) {
+                mTileHeight = static_cast<size_t>(json[SPRITE_TILE_SIZE][SPRITE_TILE_WIDTH]);
+                mTileWidth = static_cast<size_t>(json[SPRITE_TILE_SIZE][SPRITE_TILE_HEIGHT]);
+            }
+
+            void SpriteInstance::setRenderer(SDL_Renderer* renderer) {
+                mRenderer = renderer;
+            }
+
+        } // End Graphics
+    } // End Component
+} // End Dream

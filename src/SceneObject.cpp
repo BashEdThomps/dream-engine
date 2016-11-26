@@ -13,6 +13,7 @@ namespace Dream {
   }
 
   SceneObject::SceneObject(nlohmann::json soJson){
+    mParent = nullptr;
     mTransform = new Transform3D();
 
     if(!soJson[SCENE_OBJECT_UUID].is_null()){
@@ -56,11 +57,12 @@ namespace Dream {
   }
 
   void SceneObject::loadAssetInstances(nlohmann::json assetInstancesJson) {
-
     mAnimationAssetInstance = nullptr;
-    mAudioAssetInstance     = nullptr;
-    mModelAssetInstance     = nullptr;
-    mScriptAssetInstance    = nullptr;
+    mAudioAssetInstance = nullptr;
+    mModelAssetInstance = nullptr;
+    mScriptAssetInstance = nullptr;
+    mLightAssetInstance = nullptr;
+    mSpriteAssetInstance = nullptr;
 
     for (nlohmann::json::iterator it = assetInstancesJson.begin(); it != assetInstancesJson.end(); it++) {
       mAssetInstanceUUIDsToLoad.push_back((*it));
@@ -159,7 +161,9 @@ namespace Dream {
     mChildren.push_back(child);
   }
 
-  void SceneObject::removeChild(SceneObject* child) {}
+  void SceneObject::removeChild(SceneObject* child) {
+
+  }
 
   bool SceneObject::isChildOfDeep(SceneObject* parent) {
     return mParent == parent;
@@ -284,6 +288,9 @@ namespace Dream {
     return mScriptAssetInstance != nullptr;
   }
 
+  bool SceneObject::hasSpriteAssetInstance() {
+    return mSpriteAssetInstance != nullptr;
+  }
 
   void SceneObject::setPhysicsObjectAssetInstance(AssetInstance* physicsObject) {
     mPhysicsObjectAssetInstance = physicsObject;
@@ -301,7 +308,6 @@ namespace Dream {
     mTransformType = transformType;
   }
 
-
   Transform3D* SceneObject::getTransform() {
     return mTransform;
   }
@@ -318,5 +324,12 @@ namespace Dream {
     return mParent;
   }
 
+  void SceneObject::setSpriteAssetInstance(AssetInstance* spriteAsset) {
+    mSpriteAssetInstance = spriteAsset;
+  }
+
+  AssetInstance* SceneObject::getSpriteAssetInstance() {
+    return mSpriteAssetInstance;
+  }
 
 } // End of Dream

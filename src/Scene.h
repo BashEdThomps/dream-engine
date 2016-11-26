@@ -48,11 +48,6 @@ namespace Dream {
   public:
     std::string mUUID;
     std::string mName;
-    bool mAnimationEnabled;
-    bool mAudioEnabled;
-    bool mInputEnabled;
-    bool mPhysicsEnabled;
-    bool mScriptingEnabled;
     SceneObject *mRootSceneObject;
     std::vector<SceneObject*> mScenegraphVector;
     Transform3D* mDefaultCameraTransform;

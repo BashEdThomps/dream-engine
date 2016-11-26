@@ -22,13 +22,9 @@ namespace Dream {
   namespace Components {
     namespace Animation {
 
-      AnimationComponent::AnimationComponent(Time* time) : Dream::Components::ComponentInterface() {
-        mTime = time;
-      }
+      AnimationComponent::AnimationComponent() : Dream::Components::ComponentInterface() {}
 
-      AnimationComponent::~AnimationComponent() {
-
-      }
+      AnimationComponent::~AnimationComponent() {}
 
       bool AnimationComponent::init() {
         std::cout << "AnimationComponent: Initialisation Done." << std::endl;

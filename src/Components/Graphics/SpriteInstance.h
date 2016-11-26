@@ -18,22 +18,35 @@
 #ifndef SPRITEINSTANCE_H
 #define SPRITEINSTANCE_H
 
+#define SPRITE_TILE_SIZE "tileSize"
+#define SPRITE_TILE_WIDTH "width"
+#define SPRITE_TILE_HEIGHT "height"
+
+#include <SDL2/SDL.h>
 #include "../../AssetInstance.h"
 
-
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
+    namespace Components {
+        namespace Graphics {
 
-     class SpriteInstance : public AssetInstance
-     {
-     public:
-         SpriteInstance(AssetDefinition*,Transform3D*);
-         ~SpriteInstance();
-     };
+            class SpriteInstance : public AssetInstance
+            {
+            private:
+                size_t mTileWidth;
+                size_t mTileHeight;
+                SDL_Texture *mTexture;
+                SDL_Renderer *mRenderer;
+            public:
+                SpriteInstance(AssetDefinition*,Transform3D*);
+                ~SpriteInstance();
+                bool load(std::string);
+                void loadExtraAttributes(nlohmann::json);
+                void setRenderer(SDL_Renderer*);
 
-    } // End of Sprite
-  } // End of Components
+            };
+
+        } // End of Sprite
+    } // End of Components
 } // End of Dream
 
 #endif // SPRITEINSTANCE_H

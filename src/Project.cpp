@@ -63,15 +63,23 @@ namespace Dream {
       setStartupSceneUUID(jsonProject[PROJECT_STARTUP_SCENE]);
     }
 
+    if (!jsonProject[PROJECT_WINDOW_SIZE].is_null()) {
+      nlohmann::json windowSizeJson = jsonProject[PROJECT_WINDOW_SIZE];
+      setWindowWidth(windowSizeJson[PROJECT_WIDTH]);
+      setWindowHeight(windowSizeJson[PROJECT_HEIGHT]);
+    }
+
   }
 
   void Project::showStatus() {
     std::cout << "Project: "  << std::endl;
-    std::cout << "         UUID: " << mUUID << std::endl;
-    std::cout << "         Name: " << mName << std::endl;
-    std::cout << "       Author: " << mAuthor << std::endl;
-    std::cout << "  Description: " << mDescription << std::endl;
+    std::cout << "         UUID: " << getUUID() << std::endl;
+    std::cout << "         Name: " << getName() << std::endl;
+    std::cout << "       Author: " << getAuthor() << std::endl;
+    std::cout << "  Description: " << getDescription() << std::endl;
     std::cout << "Startup Scene: " << getStartupSceneUUID() << std::endl;
+    std::cout << " Window Width: " << getWindowWidth() << std::endl;
+    std::cout << "Window Height: " << getWindowHeight() << std::endl;
   }
 
   Project::~Project(void) {}
@@ -182,6 +190,22 @@ namespace Dream {
 
   void Project::setAssetManager(AssetManager* assetManager) {
     mAssetManager = assetManager;
+  }
+
+  int Project::getWindowWidth() {
+    return mWindowWidth;
+  }
+
+  void Project::setWindowWidth(int width) {
+    mWindowWidth = width;
+  }
+
+  int Project::getWindowHeight() {
+    return mWindowHeight;
+  }
+
+  void Project::setWindowHeight(int height) {
+    mWindowHeight = height;
   }
 
 } // End of Dream

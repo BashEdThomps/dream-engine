@@ -53,8 +53,8 @@ App.config(function($stateProvider, $urlRouterProvider) {
 App.config(['ngToastProvider',function(ngToast) {
     ngToast.configure({
         verticalPosition   : 'bottom',
-        horizontalPosition : 'center',
-        maxNumber          : 3,
+        horizontalPosition : 'right',
+        maxNumber          :  3,
         animation          : 'slide'
     });
 }]);

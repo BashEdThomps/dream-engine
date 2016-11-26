@@ -38,6 +38,7 @@
 #define ASSET_DIR_MODEL     "model"
 #define ASSET_DIR_SCRIPT    "script"
 #define ASSET_DIR_SHADER    "shader"
+#define ASSET_DIR_SPRITE    "sprite"
 
 #define ASSET_TYPE_ANIMATION       "animation"
 #define ASSET_TYPE_AUDIO           "audio"
@@ -46,6 +47,7 @@
 #define ASSET_TYPE_PHYSICS_OBJECT  "physicsObject"
 #define ASSET_TYPE_SCRIPT          "script"
 #define ASSET_TYPE_SHADER          "shader"
+#define ASSET_TYPE_SPRITE          "sprite"
 
 #define ASSET_DEF_FORMAT_SCRIPT_CHAI     "chai"
 #define ASSET_DEF_FORMAT_MODEL_ASSIMP    "assimp"
@@ -100,6 +102,7 @@ namespace Dream {
     bool isTypeShader();
     bool isTypePhysicsObject();
     bool isTypeLight();
+    bool isTypeSprite();
 
     bool isScriptFormatChai();
     bool isModelFormatAssimp();

@@ -48,8 +48,8 @@ namespace Dream {
         namespace Graphics {
             class GraphicsComponent : public ComponentInterface {
             private:
-                int mScreenWidth;
-                int mScreenHeight;
+                int mWindowWidth;
+                int mWindowHeight;
                 std::string mScreenName;
                 bool mWindowShouldClose;
                 SDL_Window *mWindow;
@@ -60,10 +60,10 @@ namespace Dream {
                 SDL_GLContext mContext;
                 SDL_Event mEvent;
             public:
-                void setScreenWidth(int);
-                int  getScreenWidth();
-                void setScreenHeight(int);
-                int  getScreenHeight();
+                void setWindowWidth(int);
+                int  getWindowWidth();
+                void setWindowHeight(int);
+                int  getWindowHeight();
                 void setScreenName(std::string);
                 std::string getScreenName();
 

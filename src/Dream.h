@@ -73,10 +73,16 @@ namespace Dream {
     bool createGraphicsComponent();
 
     Components::Animation::AnimationComponent* getAnimationComponent();
-    Components::Audio::AudioComponent* getAudioComponent();
-    Components::Physics::PhysicsComponent* getPhysicsComponent();
-    Components::Graphics::GraphicsComponent* getGraphicsComponent();
+    void setAnimationComponent(Components::Animation::AnimationComponent*);
 
+    Components::Audio::AudioComponent* getAudioComponent();
+    void setAudioComponent(Components::Audio::AudioComponent*);
+
+    Components::Physics::PhysicsComponent* getPhysicsComponent();
+    void setPhysicsComponent(Components::Physics::PhysicsComponent*);
+
+    Components::Graphics::GraphicsComponent* getGraphicsComponent();
+    void setGraphicsComponent(Components::Graphics::GraphicsComponent*);
 
   }; // End of Dream
 } // End of Dream

@@ -78,8 +78,7 @@ namespace Dream {
     try {
       return mAttributes.at(attribute);
     } catch (const std::exception &ex) {
-      std::cerr << "AssetDefinition: Unable to get attribute: " << attribute << std::endl;
-      std::cerr << "\tException: " << ex.what() << std::endl;
+      std::cerr << "AssetDefinition: No Attribute - " << attribute << std::endl;
       return "";
     }
   }
@@ -164,6 +163,10 @@ namespace Dream {
     return getType().compare(ASSET_TYPE_SHADER) == 0;
   }
 
+  bool AssetDefinition::isTypeSprite() {
+    return getType().compare(ASSET_TYPE_SPRITE) == 0;
+  }
+
   bool AssetDefinition::isScriptFormatChai() {
     return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_CHAI) == 0;
   }
@@ -186,16 +189,18 @@ namespace Dream {
 
   std::string AssetDefinition::getAssetTypeDirectory() {
     std::string type = getType();
-    if (type.compare(ASSET_TYPE_ANIMATION)==0) {
+    if (isTypeAnimation()) {
       return ASSET_DIR_ANIMATION;
-    } else if (type.compare(ASSET_TYPE_AUDIO)==0) {
+    } else if (isTypeAudio()) {
       return ASSET_DIR_AUDIO;
-    } else if (type.compare(ASSET_TYPE_MODEL)==0) {
+    } else if (isTypeModel()) {
       return ASSET_DIR_MODEL;
-    } else if (type.compare(ASSET_TYPE_SCRIPT)==0) {
+    } else if (isTypeScript()) {
       return ASSET_DIR_SCRIPT;
-    } else if (type.compare(ASSET_TYPE_SHADER) == 0) {
+    } else if (isTypeShader()) {
       return ASSET_DIR_SHADER;
+    } else if (isTypeSprite()) {
+      return ASSET_DIR_SPRITE;
     } else {
       return "Type Not Found";
     }
