@@ -22,11 +22,12 @@
 
 namespace Dream {
 
+  using namespace std;
   class UUID {
   public:
     UUID(void);
     ~UUID(void);
-    static std::string generateUUID();
+    static string generateUUID();
   }; // End of UUID
 
 }  // End of Dream

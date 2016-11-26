@@ -28,22 +28,25 @@
 #define DREAM_TOOL_DIR        ".dreamtool"
 
 namespace Dream {
+
+  using namespace std;
+
   class ArgumentParser {
   private:
     int           mArgc;
     const char**  mArgv;
-    std::string   mDreamPath;
-    std::string   mProjectPath;
-    std::string   mProjectUUID;
-    std::string   mProjectFilePath;
+    string   mDreamPath;
+    string   mProjectPath;
+    string   mProjectUUID;
+    string   mProjectFilePath;
   public:
     ArgumentParser(int,const char**);
     ~ArgumentParser(void);
     void parse();
-    std::string getDreamPath();
-    std::string getProjectPath();
-    std::string getProjectUUID();
-    std::string getProjectFilePath();
+    string getDreamPath();
+    string getProjectPath();
+    string getProjectUUID();
+    string getProjectFilePath();
   }; // End of ArgumentParser
 } // End of Dream
 

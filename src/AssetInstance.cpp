@@ -25,15 +25,15 @@ namespace Dream {
     mTransform = transform;
   }
 
-  std::string AssetInstance::getName() {
+  string AssetInstance::getName() {
     return mDefinition->getName();
   }
 
-  std::string AssetInstance::getUUID() {
+  string AssetInstance::getUUID() {
     return mDefinition->getUUID();
   }
 
-  std::string AssetInstance::getNameAndUUIDString() {
+  string AssetInstance::getNameAndUUIDString() {
     return mDefinition->getNameAndUUIDString();
   }
 

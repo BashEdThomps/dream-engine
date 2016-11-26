@@ -2,30 +2,27 @@
 #define FRAME_H
 
 #include <vector>
-#include "../../SceneObject.h"
+#include "../../Transform3D.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Animation {
+  using namespace std;
       class Frame {
       private:
-        std::vector<float> mTranslation;
-        std::vector<float> mRotation;
-        std::vector<float> mScale;
+        vector<float> mTranslation;
+        vector<float> mRotation;
+        vector<float> mScale;
       public:
         Frame();
         ~Frame();
-        void applyToSceneObject(SceneObject*);
-        std::vector<float> getTranslation();
-        void               setTranslation(std::vector<float>);
-        std::vector<float> getRotation();
-        void               setRotation(std::vector<float>);
-        std::vector<float> getScale();
-        void               setScale(std::vector<float>);
+        void applyToTransform(Transform3D*);
+        vector<float> getTranslation();
+        void setTranslation(vector<float>);
+        vector<float> getRotation();
+        void setRotation(vector<float>);
+        vector<float> getScale();
+        void setScale(vector<float>);
         void showStatus();
       }; // End Frame
-    } // End of Animation
-  } // End of Components
 } // End of Dream
 
 #endif // FRAME_H

@@ -30,29 +30,27 @@
 #include "AssimpMesh.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
-      GLint TextureFromFile(const char* path, std::string directory);
+      GLint TextureFromFile(const char* path, string directory);
       class AssimpModelInstance : public AssetInstance {
       private:
         // Variables
-        std::vector<AssimpMesh> mMeshes;
-        std::string mDirectory;
-        static std::vector<Texture> sTextureCache;
+        vector<AssimpMesh> mMeshes;
+        string mDirectory;
+        static vector<Texture> sTextureCache;
         // Methods
         void processNode(aiNode*, const aiScene*);
         AssimpMesh processMesh(aiMesh*, const aiScene*);
-        void loadModel(std::string);
-        std::vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, std::string);
+        void loadModel(string);
+        vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
       public:
         AssimpModelInstance(AssetDefinition*,Transform3D*);
         ~AssimpModelInstance();
-        bool load(std::string);
+        bool load(string);
         void draw(ShaderInstance*);
         bool checkGLError(int);
         void loadExtraAttributes(nlohmann::json);
       }; // End of AssimpModelInstance
-    } // End of Graphics
-  } // End of Components
+
 } // End of Dream
+
 #endif // End of ASSIMPMODELINSTANCE_H

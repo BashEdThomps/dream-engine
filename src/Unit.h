@@ -14,77 +14,81 @@
 #define UNIT_BOLD    "\x1B[1m"
 
 namespace Dream {
-        class Unit {
-        private:
-            static const std::string UNIT_PASS;
-            static const std::string UNIT_INCONCLUSIVE;
-            static const std::string UNIT_FAIL;
-            int         mResult;
-            std::string mName;
-        public:
-            //! Default Constructor
-            Unit(std::string);
 
-            //! Default Destructor
-            virtual ~Unit(void) = 0;
+  using namespace std;
 
-            //! Run Method
-            virtual void run(void) = 0;
+  class Unit {
+  private:
+    static const string UNIT_PASS;
+    static const string UNIT_INCONCLUSIVE;
+    static const string UNIT_FAIL;
+    int         mResult;
+    string mName;
+  public:
+    //! Default Constructor
+    Unit(string);
 
-            //! Assert Test Passed
-            void assertPass(std::string);
+    //! Default Destructor
+    virtual ~Unit(void) = 0;
 
-            //! Assert Test Failed
-            void assertFail(std::string);
+    //! Run Method
+    virtual void run(void) = 0;
 
-            //! Assert Test Failed
-            void assertInconclusive(std::string);
+    //! Assert Test Passed
+    void assertPass(string);
 
-            //! Assert Value is not equal to zero
-            void assertNotZero(std::string, int);
+    //! Assert Test Failed
+    void assertFail(string);
 
-            //! Assert Value is equal to zero.
-            void assertZero(std::string, int);
+    //! Assert Test Failed
+    void assertInconclusive(string);
 
-            //! Assert Value is equal to true.
-            void assertTrue(std::string, bool);
+    //! Assert Value is not equal to zero
+    void assertNotZero(string, int);
 
-            //! Assert Value is equal to false.
-            void assertFalse(std::string, bool);
+    //! Assert Value is equal to zero.
+    void assertZero(string, int);
 
-            //! Assert two objects are equal.
-            void assertEqual(std::string, int, int);
+    //! Assert Value is equal to true.
+    void assertTrue(string, bool);
 
-            //! Assert two floats are not equal.
-            void assertNotEqual(std::string, int, int);
+    //! Assert Value is equal to false.
+    void assertFalse(string, bool);
 
-            //! Assert pointer is not null;
-            void assertNotNull(std::string, void*);
+    //! Assert two objects are equal.
+    void assertEqual(string, int, int);
 
-            //! Assert pointer is null.
-            void assertNull(std::string, void*);
+    //! Assert two floats are not equal.
+    void assertNotEqual(string, int, int);
 
-            //! Print the heading for a module
-            void header();
+    //! Assert pointer is not null;
+    void assertNotNull(string, void*);
 
-            //! Print a comment
-            void comment(std::string);
+    //! Assert pointer is null.
+    void assertNull(string, void*);
 
-            //! Get testing result
-            int getResult(void);
-        private:
-            //! Colour a string green (ANSI)
-            std::string green(std::string);
+    //! Print the heading for a module
+    void header();
 
-            //! Colour a string red (ANSI)
-            std::string red(std::string);
+    //! Print a comment
+    void comment(string);
 
-            //! Colour a string red (ANSI)
-            std::string yellow(std::string);
+    //! Get testing result
+    int getResult(void);
+  private:
+    //! Colour a string green (ANSI)
+    string green(string);
 
-            //! Turn a string bold (ANSI)
-            std::string bold(std::string);
-        };
-}
+    //! Colour a string red (ANSI)
+    string red(string);
+
+    //! Colour a string red (ANSI)
+    string yellow(string);
+
+    //! Turn a string bold (ANSI)
+    string bold(string);
+  };
+
+} // End of Dream
 
 #endif // UNIT_H_

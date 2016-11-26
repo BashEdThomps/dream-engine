@@ -1,6 +1,7 @@
 #ifndef KEYFRAME_H
 #define KEYFRAME_H
 
+#include <iostream>
 #include <vector>
 #include "Frame.h"
 
@@ -10,57 +11,55 @@
 #define DREAM_ANIMATION_INTERPOLATION_BEZIER "bezier"
 
 namespace Dream {
-  namespace Components {
-    namespace Animation {
 
-      class KeyFrame {
-      private:
-        long                mStartTimeMS;
-        bool                mWrap;
-        std::vector<Frame*> mPlaybackFrames;
-        std::vector<float>  mTranslation;
-        std::vector<float>  mRotation;
-        std::vector<float>  mScale;
-        std::string         mName;
-        std::string         mUUID;
-        std::string         mInterpolationType;
-      public:
-        KeyFrame();
-        ~KeyFrame();
-        void showStatus();
-        std::vector<Frame*> getPlaybackFrames();
-        void                generatePlaybackFrames(KeyFrame*);
-        void                addPlaybackFrame(Frame*);
-        bool                getWrap();
-        void                setWrap(bool);
-        long                getStartTimeMS();
-        void                setStartTimeMS(long);
-        std::vector<float>  getTranslation();
-        void                setTranslation(std::vector<float>);
-        std::vector<float>  getRotation();
-        void                setRotation(std::vector<float>);
-        std::vector<float>  getScale();
-        void                setScale(std::vector<float>);
-        std::string getName();
-        void setName(std::string);
-        std::string getUUID();
-        void setUUID(std::string);
-        void setInterpolationType(std::string);
-        std::string getInterpolationType();
-        float getBezierPoint(float,float,float);
+  using namespace std;
 
-        bool isInterpolationTypeNone();
-        void generateNoneInterpolationFrames(KeyFrame*,long);
+  class KeyFrame {
+  private:
+    long                mStartTimeMS;
+    bool                mWrap;
+    vector<Frame*> mPlaybackFrames;
+    vector<float>  mTranslation;
+    vector<float>  mRotation;
+    vector<float>  mScale;
+    string         mName;
+    string         mUUID;
+    string         mInterpolationType;
+  public:
+    KeyFrame();
+    ~KeyFrame();
+    void showStatus();
+    vector<Frame*> getPlaybackFrames();
+    void                generatePlaybackFrames(KeyFrame*);
+    void                addPlaybackFrame(Frame*);
+    bool                getWrap();
+    void                setWrap(bool);
+    long                getStartTimeMS();
+    void                setStartTimeMS(long);
+    vector<float>  getTranslation();
+    void                setTranslation( vector<float>);
+    vector<float>  getRotation();
+    void                setRotation( vector<float>);
+    vector<float>  getScale();
+    void                setScale( vector<float>);
+    string getName();
+    void setName( string);
+    string getUUID();
+    void setUUID( string);
+    void setInterpolationType( string);
+    string getInterpolationType();
+    float getBezierPoint(float,float,float);
 
-        bool isInterpolationTypeLinear();
-        void generateLinearInterpolationFrames(KeyFrame*,long);
+    bool isInterpolationTypeNone();
+    void generateNoneInterpolationFrames(KeyFrame*,long);
 
-        bool isInterpolationTypeBezier();
-        void generateBezierInterpolationFrames(KeyFrame*,long);
-      };
+    bool isInterpolationTypeLinear();
+    void generateLinearInterpolationFrames(KeyFrame*,long);
 
-    } // End of Animation
-  } // End of Components
+    bool isInterpolationTypeBezier();
+    void generateBezierInterpolationFrames(KeyFrame*,long);
+  };
+
 } // End of Dream
 
 #endif // KEYFRAME_H

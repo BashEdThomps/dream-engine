@@ -25,22 +25,25 @@
 #include <vector>
 
 namespace Dream {
+
+  using namespace std;
+
   class FileReader {
   private:
-    std::stringstream *mStringStream;
-    std::vector<char> *mBinaryVector;
-    std::ifstream     mInputStream;
-    std::string       mPath;
+    stringstream *mStringStream;
+    vector<char> *mBinaryVector;
+    ifstream     mInputStream;
+    string       mPath;
   public:
-    FileReader(std::string);
+    FileReader(string);
     ~FileReader(void);
 
-    std::string        getPath();
-    bool               readIntoStringStream();
-    std::string        getContentsAsString();
-    bool               readIntoBinaryVector();
-    std::vector<char>* getContentsAsBinaryVector();
-    int                getFileSize();
+    string getPath();
+    bool readIntoStringStream();
+    string getContentsAsString();
+    bool readIntoBinaryVector();
+    vector<char>* getContentsAsBinaryVector();
+    int getFileSize();
 
   }; // End of FileReader
 } // End of Dream

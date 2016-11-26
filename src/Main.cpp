@@ -7,21 +7,23 @@
 
 #define MINIMUM_ARGUMENTS 3
 
+using namespace std;
+
 void showUsage(const char** argv) {
-  std::cout << "Usage:" << std::endl
-            << argv[0] << std::endl
+  cout << "Usage:" << endl
+            << argv[0] << endl
             << "\t" << PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool> "
             << "\t" << PROJECT_UUID_ARG      << "<project_uuid>"
-            << std::endl;
+            << endl;
 }
 
 int main(int argc, const char** argv)
 {
-  std::cout << "Main: Starting..." << std::endl;
+  cout << "Main: Starting..." << endl;
 
   if (argc < MINIMUM_ARGUMENTS)
   {
-    std::cerr << "Main: FATAL - Minimum Number of Arguments Were Not Found." << std::endl;
+    cerr << "Main: FATAL - Minimum Number of Arguments Were Not Found." << endl;
     showUsage(argv);
     return 1;
   }
@@ -31,22 +33,22 @@ int main(int argc, const char** argv)
   bool loaded = dream.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 
   if (loaded) {
-    Dream::Components::Scripting::ChaiScriptAPI chaiAPI(&dream);
+    Dream::ChaiScriptAPI chaiAPI(&dream);
     if (!chaiAPI.init()) {
-      std::cerr << "Main: Unable to initialise ChaiScriptAPI :(" << std::endl;
+      cerr << "Main: Unable to initialise ChaiScriptAPI :(" << endl;
       return 1;
     }
 
     if(!dream.run())
     {
-      std::cerr << "Main: Exiting Before It's Time :(" << std::endl;
+      cerr << "Main: Exiting Before It's Time :(" << endl;
       return 1;
     } else {
-      std::cout << "Main: Exiting Cleanly :)" << std::endl;
+      cout << "Main: Exiting Cleanly :)" << endl;
       return 0;
     }
   } else {
-    std::cerr << "Main: FATAL - Failed to Load Project." << std::endl;
+    cerr << "Main: FATAL - Failed to Load Project." << endl;
     return 1;
   }
 }

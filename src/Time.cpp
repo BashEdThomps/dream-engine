@@ -3,25 +3,25 @@
 namespace Dream {
 
   Time::Time()  {
-    mCurrentTime = std::chrono::high_resolution_clock::now();
-    mLastTime = std::chrono::high_resolution_clock::now();
+    mCurrentTime = chrono::high_resolution_clock::now();
+    mLastTime = chrono::high_resolution_clock::now();
   }
 
   Time::~Time() {}
 
   void Time::update() {
     mLastTime    = mCurrentTime;
-    mCurrentTime = std::chrono::high_resolution_clock::now();
+    mCurrentTime = chrono::high_resolution_clock::now();
     mTimeDelta   = mCurrentTime-mLastTime;
     //show();
     return;
   }
 
   void Time::show() {
-    std::cout << "Time: " << std::endl
-              << "\tCurrent Time: " << getCurrentTime() << std::endl
-              << "\t   Last Time: " << getLastTime() << std::endl
-              << "\t  Time Delta: " << getTimeDelta() << std::endl;
+    cout << "Time: " << endl
+              << "\tCurrent Time: " << getCurrentTime() << endl
+              << "\t   Last Time: " << getLastTime() << endl
+              << "\t  Time Delta: " << getTimeDelta() << endl;
   }
 
   double Time::getCurrentTime() {
@@ -36,4 +36,4 @@ namespace Dream {
     return mTimeDelta.count();
  }
 
-}
+} // End of Dream

@@ -39,12 +39,12 @@ namespace Dream {
     AssetInstance(AssetDefinition*, Transform3D*);
     virtual ~AssetInstance(void) {}
 
-    std::string getUUID();
-    std::string getName();
+    string getUUID();
+    string getName();
 
-    std::string getNameAndUUIDString();
+    string getNameAndUUIDString();
 
-    virtual bool load(std::string) = 0;
+    virtual bool load(string) = 0;
     virtual void loadExtraAttributes(nlohmann::json) = 0;
 
     Transform3D* getTransform();

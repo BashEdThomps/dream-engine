@@ -19,119 +19,119 @@
 #include "AssetDefinition.h"
 
 namespace Dream {
-  AssetDefinition::AssetDefinition(nlohmann::json json) {
-    mJson = json;
+  AssetDefinition::AssetDefinition(nlohmann::json jsonDef) {
+    mJson = jsonDef;
     loadMetadata();
     showStatus();
   }
 
   AssetDefinition::~AssetDefinition(void) {}
 
-  void AssetDefinition::setProjectPath(std::string path) {
+  void AssetDefinition::setProjectPath(string path) {
     mProjectPath = path;
   }
 
-  std::string AssetDefinition::getProjectPath() {
+  string AssetDefinition::getProjectPath() {
     return mProjectPath;
   }
 
   void AssetDefinition::loadMetadata() {
     // UUID
     if (mJson[ASSET_UUID].is_null()) {
-      std::cerr << "AssetDefinition: Construction Asset from JSON with NULL UUID." << std::endl;;
+      cerr << "AssetDefinition: Construction Asset from JSON with NULL UUID." << endl;
     } else {
       setUUID(mJson[ASSET_UUID]);
     }
     // Name
     if (mJson[ASSET_NAME].is_null()) {
-      std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Name." << std::endl;;
+      cerr << "AssetDefinition: Construction Asset from JSON with NULL Name." << endl;
     } else {
       setName(mJson[ASSET_NAME]);
     }
     // Type
     if (mJson[ASSET_TYPE].is_null()) {
-      std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Type" << std::endl;;
+      cerr << "AssetDefinition: Construction Asset from JSON with NULL Type" << endl;
     } else {
       setType(mJson[ASSET_TYPE]);
     }
     // Format
     if (mJson[ASSET_FORMAT].is_null()) {
-      std::cerr << "AssetDefinition: Construction Asset from JSON with NULL Format" << std::endl;;
+      cerr << "AssetDefinition: Construction Asset from JSON with NULL Format" << endl;
     } else {
       setFormat(mJson[ASSET_FORMAT]);
     }
   }
 
-  std::pair<std::string,std::string> AssetDefinition::mapPair(std::string key, std::string value) {
-    return std::pair<std::string,std::string>(key,value);
+  pair<string,string> AssetDefinition::mapPair(string key, string value) {
+    return pair<string,string>(key,value);
   }
 
-  void AssetDefinition::setUUID(std::string uuid) {
+  void AssetDefinition::setUUID(string uuid) {
     addAttribute(ASSET_UUID, uuid);
   }
 
-  void AssetDefinition::addAttribute(std::string key, std::string value) {
+  void AssetDefinition::addAttribute(string key, string value) {
     mAttributes.insert(mapPair(key,value));
   }
 
-  std::string AssetDefinition::getAttribute(std::string attribute) {
+  string AssetDefinition::getAttribute(string attribute) {
     try {
       return mAttributes.at(attribute);
-    } catch (const std::exception &ex) {
-      std::cerr << "AssetDefinition: No Attribute - " << attribute << std::endl;
+    } catch (const exception &ex) {
+      cerr << "AssetDefinition: No Attribute - " << attribute << endl;
       return "";
     }
   }
 
-  int AssetDefinition::getAttributeAsInt(std::string attr) {
-    return std::stoi(getAttribute(attr));
+  int AssetDefinition::getAttributeAsInt(string attr) {
+    return stoi(getAttribute(attr));
   }
 
-  float AssetDefinition::getAttributeAsFloat(std::string attr) {
-    return std::stof(getAttribute(attr));
+  float AssetDefinition::getAttributeAsFloat(string attr) {
+    return stof(getAttribute(attr));
   }
 
-  double AssetDefinition::getAttributeAsDouble(std::string attr) {
-    return std::stod(getAttribute(attr));
+  double AssetDefinition::getAttributeAsDouble(string attr) {
+    return stod(getAttribute(attr));
   }
 
-  bool AssetDefinition::getAttributeAsBool(std::string attr) {
+  bool AssetDefinition::getAttributeAsBool(string attr) {
     return strcasecmp("true",getAttribute(attr).c_str()) == 0;
   }
 
-  long AssetDefinition::getAttributeAsLong(std::string attr) {
-    return std::stol(getAttribute(attr));
+  long AssetDefinition::getAttributeAsLong(string attr) {
+    return stol(getAttribute(attr));
   }
 
-  char AssetDefinition::getAttributeAsChar(std::string attr) {
+  char AssetDefinition::getAttributeAsChar(string attr) {
     return getAttribute(attr).c_str()[0];
   }
 
-  std::string AssetDefinition::getUUID() {
+  string AssetDefinition::getUUID() {
     return getAttribute(ASSET_UUID);
   }
 
-  void AssetDefinition::setName(std::string name) {
+  void AssetDefinition::setName(string name) {
     addAttribute(ASSET_NAME,name);
   }
 
-  std::string AssetDefinition::getName() {
+  string AssetDefinition::getName() {
     return getAttribute(ASSET_NAME);
   }
 
-  void AssetDefinition::setType(std::string type) {
+  void AssetDefinition::setType(string type) {
     addAttribute(ASSET_TYPE,type);
   }
 
-  std::string AssetDefinition::getType() {
+  string AssetDefinition::getType() {
     return getAttribute(ASSET_TYPE);
   }
 
-  void AssetDefinition::setFormat(std::string format) {
+  void AssetDefinition::setFormat(string format) {
     addAttribute(ASSET_FORMAT,format);
   }
 
-  std::string AssetDefinition::getFormat() {
+  string AssetDefinition::getFormat() {
     return getAttribute(ASSET_FORMAT);
   }
 
@@ -187,8 +187,8 @@ namespace Dream {
     return getFormat().compare(ASSET_DEF_FORMAT_ANIMATION_DREAM) == 0;
   }
 
-  std::string AssetDefinition::getAssetTypeDirectory() {
-    std::string type = getType();
+  string AssetDefinition::getAssetTypeDirectory() {
+    string type = getType();
     if (isTypeAnimation()) {
       return ASSET_DIR_ANIMATION;
     } else if (isTypeAudio()) {
@@ -206,12 +206,12 @@ namespace Dream {
     }
   }
 
-  std::string AssetDefinition::getNameAndUUIDString() {
+  string AssetDefinition::getNameAndUUIDString() {
     return getName() + " (" + getUUID() + ")";
   }
 
-  std::string AssetDefinition::getAssetPath() {
-    std::stringstream pathStream;
+  string AssetDefinition::getAssetPath() {
+    stringstream pathStream;
     pathStream << DIR_PATH_SEP
                << ASSET_DIR << DIR_PATH_SEP
                << getAssetTypeDirectory() << DIR_PATH_SEP
@@ -221,10 +221,10 @@ namespace Dream {
   }
 
   void AssetDefinition::showStatus() {
-    std::cout << "AssetDefinition:" << std::endl;
+    cout << "AssetDefinition:" << endl;
     for (const auto& any : mAttributes) {
-      std::string value = any.second;
-      std::cout << "\t" << any.first << " : " << value << std::endl;
+      string value = any.second;
+      cout << "\t" << any.first << " : " << value << endl;
     }
   }
 

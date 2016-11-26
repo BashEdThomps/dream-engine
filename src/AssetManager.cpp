@@ -19,263 +19,254 @@
 #include "AssetManager.h"
 
 namespace Dream {
-  AssetManager::AssetManager() {}
 
-  AssetManager::~AssetManager() {
-    destroyAllAssetInstances();
-  }
+    AssetManager::AssetManager() {}
 
-  void AssetManager::destroyAllAssetInstances() {
-    for (std::vector<AssetInstance*>::iterator instanceIt = mAssetInstances.begin();
-       instanceIt != mAssetInstances.end(); instanceIt++) {
-      delete (*instanceIt);
-    }
-  }
-
-  bool AssetManager::createAllAssetInstances(Scene* activeScene) {
-
-    if (!activeScene){
-      std::cerr << "AssetManager: Cannot create assets, no active scene." << std::endl;
-      return false;
+    AssetManager::~AssetManager() {
+        destroyAllAssetInstances();
     }
 
-    // Other Assets
-    std::vector<SceneObject*> scenegraph = activeScene->getScenegraphVector();
-    std::vector<SceneObject*>::iterator scenegraphIterator;
-
-    std::vector<std::string> assetInstanceUUIDsToLoad;
-    std::vector<std::string>::iterator assetInstanceUUIDIterator;
-
-    for (scenegraphIterator = scenegraph.begin(); scenegraphIterator != scenegraph.end(); scenegraphIterator++) {
-      SceneObject* currentSceneObject = (*scenegraphIterator);
-      assetInstanceUUIDsToLoad = currentSceneObject->getAssetInstanceUUIDsToLoad();
-
-      for (assetInstanceUUIDIterator = assetInstanceUUIDsToLoad.begin();
-         assetInstanceUUIDIterator != assetInstanceUUIDsToLoad.end(); assetInstanceUUIDIterator++) {
-
-        std::string assetDefinitionUUID = *assetInstanceUUIDIterator;
-        AssetInstance* newAsset = createAssetInstanceFromDefinitionUUID(currentSceneObject, assetDefinitionUUID);
-        if (newAsset == NULL) {
-          AssetDefinition* definition = getAssetDefinitionByUUID(assetDefinitionUUID);
-          std::cerr << "AssetManager: Unable to instanciate asset instance for "
-                    << definition->getName() << " (" << definition->getUUID() << ")" << std::endl;
-          return false;
-        } else {
-          addAssetInstance(newAsset);
+    void AssetManager::destroyAllAssetInstances() {
+        for (vector<AssetInstance*>::iterator instanceIt = mAssetInstances.begin();
+             instanceIt != mAssetInstances.end(); instanceIt++) {
+            delete (*instanceIt);
         }
-      }
-    }
-    return true;
-  }
-
-  void AssetManager::addAssetInstance(AssetInstance* instance) {
-    mAssetInstances.push_back(instance);
-  }
-
-  AssetInstance* AssetManager::createAssetInstanceFromDefinitionUUID(SceneObject* sceneObject, std::string uuid) {
-    AssetDefinition* assetDefinition = getAssetDefinitionByUUID(uuid);
-    return createAssetInstance(sceneObject, assetDefinition);
-  }
-
-  void AssetManager::showStatus() {}
-
-  AssetInstance* AssetManager::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
-    AssetInstance* retval = NULL;
-
-    std::cout << "AssetManager: Creating Asset Intance of: ("
-              << definition->getType() << ") " << definition->getName()
-              << ", for SceneObject: " << sceneObject->getNameUUIDString()
-              << std::endl;
-
-    if(definition->isTypeAnimation()) {
-      retval = createAnimationInstance(sceneObject, definition);
-    } else if (definition->isTypeAudio()) {
-      retval = createAudioInstance(sceneObject, definition);
-    } else if (definition->isTypeModel()) {
-      retval = createModelInstance(sceneObject, definition);
-    } else if (definition->isTypeScript()){
-      retval = createScriptInstance(sceneObject, definition);
-    } else if (definition->isTypeShader()) {
-      retval = createShaderInstance(sceneObject, definition);
-    } else if (definition->isTypePhysicsObject()) {
-      retval = createPhysicsObjectInstance(sceneObject,definition);
-    } else if (definition->isTypeLight()) {
-      retval = createLightInstance(sceneObject, definition);
-    } else if (definition->isTypeSprite()) {
-      retval = createSpriteInstance(sceneObject, definition);
     }
 
-    if (retval != NULL) {
-      std::cout << "AssetManager: Loading Asset Data for " << definition->getName() << std::endl;
-      retval->load(mProjectPath);
+    bool AssetManager::createAllAssetInstances(Scene* activeScene) {
+
+        if (!activeScene){
+            cerr << "AssetManager: Cannot create assets, no active scene." << endl;
+            return false;
+        }
+
+        // Other Assets
+        vector<SceneObject*> scenegraph = activeScene->getScenegraphVector();
+        vector<SceneObject*>::iterator scenegraphIterator;
+
+        vector<string> assetInstanceUUIDsToLoad;
+        vector<string>::iterator assetInstanceUUIDIterator;
+
+        for (scenegraphIterator = scenegraph.begin(); scenegraphIterator != scenegraph.end(); scenegraphIterator++) {
+            SceneObject* currentSceneObject = (*scenegraphIterator);
+            assetInstanceUUIDsToLoad = currentSceneObject->getAssetInstanceUUIDsToLoad();
+
+            for (assetInstanceUUIDIterator = assetInstanceUUIDsToLoad.begin();
+                 assetInstanceUUIDIterator != assetInstanceUUIDsToLoad.end(); assetInstanceUUIDIterator++) {
+
+                string assetDefinitionUUID = *assetInstanceUUIDIterator;
+                AssetInstance* newAsset = createAssetInstanceFromDefinitionUUID(currentSceneObject, assetDefinitionUUID);
+                if (newAsset == NULL) {
+                    AssetDefinition* definition = getAssetDefinitionByUUID(assetDefinitionUUID);
+                    cerr << "AssetManager: Unable to instanciate asset instance for "
+                         << definition->getName() << " (" << definition->getUUID() << ")" << endl;
+                    return false;
+                } else {
+                    addAssetInstance(newAsset);
+                }
+            }
+        }
+        return true;
     }
 
-    return retval;
-  }
-
-  void AssetManager::setProjectPath(std::string projectPath) {
-    mProjectPath = projectPath;
-  }
-
-  AssetInstance* AssetManager::createPhysicsObjectInstance(SceneObject *sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating Physics Object Asset Instance." << std::endl;
-
-    AssetInstance* retval = new Components::Physics::PhysicsObjectInstance(
-          definition,sceneObject->getTransform()
-    );
-
-    if (sceneObject && retval) {
-      sceneObject->setPhysicsObjectAssetInstance(retval);
-      mSceneObjectsWithPhysicsObjects.push_back(sceneObject);
-    }
-    return retval;
-  }
-
-  AssetInstance* AssetManager::createAnimationInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating animation asset instance." << std::endl;
-    AssetInstance* retval = NULL;
-
-    if (definition->isAnimationFormatDream()) {
-      retval = new Components::Animation::AnimationInstance(definition,sceneObject->getTransform());
+    void AssetManager::addAssetInstance(AssetInstance* instance) {
+        mAssetInstances.push_back(instance);
     }
 
-    if (sceneObject && retval) {
-      sceneObject->setAnimationAssetInstance(retval);
-    }
-    return retval;
-  }
-
-  AssetInstance* AssetManager::createAudioInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating audio asset instance." << std::endl;
-    AssetInstance* retval = new Components::Audio::AudioInstance(
-      definition,
-      sceneObject->getTransform()
-    );
-
-    if (sceneObject && retval) {
-      sceneObject->setAudioAssetInstance(retval);
-    }
-    return retval;
-  }
-
-  AssetInstance* AssetManager::createModelInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating model asset instance." << std::endl;
-    AssetInstance* retval = NULL;
-
-    if (definition->isModelFormatAssimp()) {
-      retval = new Components::Graphics::AssimpModelInstance(
-        definition,
-        sceneObject->getTransform()
-      );
+    AssetInstance* AssetManager::createAssetInstanceFromDefinitionUUID(SceneObject* sceneObject, string uuid) {
+        AssetDefinition* assetDefinition = getAssetDefinitionByUUID(uuid);
+        return createAssetInstance(sceneObject, assetDefinition);
     }
 
-    if (sceneObject && retval) {
-      sceneObject->setModelAssetInstance(retval);
+    void AssetManager::showStatus() {}
+
+    AssetInstance* AssetManager::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
+        AssetInstance* retval = NULL;
+
+        cout << "AssetManager: Creating Asset Intance of: ("
+             << definition->getType() << ") " << definition->getName()
+             << ", for SceneObject: " << sceneObject->getNameUUIDString()
+             << endl;
+
+        if(definition->isTypeAnimation()) {
+            retval = createAnimationInstance(sceneObject, definition);
+        } else if (definition->isTypeAudio()) {
+            retval = createAudioInstance(sceneObject, definition);
+        } else if (definition->isTypeModel()) {
+            retval = createModelInstance(sceneObject, definition);
+        } else if (definition->isTypeScript()){
+            retval = createScriptInstance(sceneObject, definition);
+        } else if (definition->isTypeShader()) {
+            retval = createShaderInstance(sceneObject, definition);
+        } else if (definition->isTypePhysicsObject()) {
+            retval = createPhysicsObjectInstance(sceneObject,definition);
+        } else if (definition->isTypeLight()) {
+            retval = createLightInstance(sceneObject, definition);
+        } else if (definition->isTypeSprite()) {
+            retval = createSpriteInstance(sceneObject, definition);
+        }
+
+        if (retval != NULL) {
+            cout << "AssetManager: Loading Asset Data for " << definition->getName() << endl;
+            retval->load(mProjectPath);
+        }
+
+        return retval;
     }
 
-    return retval;
-  }
-
-  AssetInstance* AssetManager::createScriptInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating script asset instance." << std::endl;
-    AssetInstance* retval = NULL;
-    Components::Scripting::ChaiScriptInstance* newScript;
-    newScript = new Components::Scripting::ChaiScriptInstance(
-      definition,
-      sceneObject->getTransform()
-    );
-    retval = newScript;
-
-    if (sceneObject && retval) {
-      sceneObject->setScriptAssetInstance(retval);
+    void AssetManager::setProjectPath(string projectPath) {
+        mProjectPath = projectPath;
     }
 
-    return retval;
-  }
+    AssetInstance* AssetManager::createPhysicsObjectInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating Physics Object Asset Instance." << endl;
 
-  AssetInstance* AssetManager::createShaderInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating Shader asset instance." << std::endl;
-    AssetInstance* retval = NULL;
-    retval = new Components::Graphics::ShaderInstance(definition,sceneObject->getTransform());
-    if (sceneObject && retval) {
-      sceneObject->setShaderAssetInstance(retval);
-    }
-    return retval;
-  }
+        PhysicsObjectInstance* retval = new PhysicsObjectInstance(definition,sceneObject->getTransform());
 
-  std::vector<SceneObject*> AssetManager::getSceneObjectsWithPhysicsObjects() {
-    return mSceneObjectsWithPhysicsObjects;
-  }
-
-  AssetInstance* AssetManager::createLightInstance(SceneObject *sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating Light Asset instance." << std::endl;
-    AssetInstance* retval = NULL;
-    retval = new Components::Graphics::LightInstance(
-      definition,
-      sceneObject->getTransform()
-    );
-
-    if (sceneObject && retval) {
-      sceneObject->setLightAssetInstance(retval);
-    }
-    return retval;
-  }
-
-  AssetInstance* AssetManager::createSpriteInstance(SceneObject *sceneObject, AssetDefinition* definition) {
-    std::cout << "AssetManager: Creating Sprite Asset instance." << std::endl;
-    AssetInstance* retval = new Components::Graphics::SpriteInstance(
-      definition,
-      sceneObject->getTransform()
-    );
-
-    if (sceneObject && retval) {
-      sceneObject->setSpriteAssetInstance(retval);
+        if (sceneObject && retval) {
+            sceneObject->setPhysicsObjectInstance(retval);
+            mSceneObjectsWithPhysicsObjects.push_back(sceneObject);
+        }
+        return retval;
     }
 
-    return retval;
-  }
+    AssetInstance* AssetManager::createAnimationInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating animation asset instance." << endl;
+        AnimationInstance* retval = new AnimationInstance(definition,sceneObject->getTransform());
 
-  AssetInstance* AssetManager::getAssetInstanceByUUID(std::string uuid) {
-    std::vector<AssetInstance*>::iterator assetIt;
-    AssetInstance* retval = NULL;
-    for (assetIt = mAssetInstances.begin(); assetIt != mAssetInstances.end(); assetIt++) {
-      if ((*assetIt)->getUUID().compare(uuid) == 0) {
-        retval = (*assetIt);
-        break;
-      }
+        if (sceneObject && retval) {
+            sceneObject->setAnimationInstance(retval);
+        }
+        return retval;
     }
-    return retval;
-  }
 
-  void AssetManager::addAssetDefinition(AssetDefinition* assetDefinition) {
-    mAssetDefinitions.push_back(assetDefinition);
-  }
+    AssetInstance* AssetManager::createAudioInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating audio asset instance." << endl;
+        AudioInstance* retval = new AudioInstance(
+                    definition,
+                    sceneObject->getTransform()
+                    );
 
-  void AssetManager::removeAssetDefinition(AssetDefinition*) {
-    std::cout << "AssetManager: Remove Asset is not yet Implemented" << std::endl;
-  }
-
-  size_t AssetManager::getNumberOfAssetDefinitions() {
-    return mAssetDefinitions.size();
-  }
-
-  void AssetManager::loadAssetDefinitionsFromJson(nlohmann::json jsonAssetArray) {
-    std::cout << "AssetManager: Loading Assets from JSON Array" << std::endl;
-    for (nlohmann::json::iterator it = jsonAssetArray.begin(); it != jsonAssetArray.end(); ++it) {
-      addAssetDefinition(new AssetDefinition((*it)));
+        if (sceneObject && retval) {
+            sceneObject->setAudioInstance(retval);
+        }
+        return retval;
     }
-  }
 
-  AssetDefinition* AssetManager::getAssetDefinitionByUUID(std::string uuid) {
-    AssetDefinition* retval = NULL;
-    for (std::vector<AssetDefinition*>::iterator it = mAssetDefinitions.begin(); it != mAssetDefinitions.end(); it++) {
-      if ((*it)->getUUID().compare(uuid) == 0) {
-        retval = (*it);
-        break;
-      }
+    AssetInstance* AssetManager::createModelInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating model asset instance." << endl;
+        AssimpModelInstance* retval = NULL;
+
+        if (definition->isModelFormatAssimp()) {
+            retval = new AssimpModelInstance(
+                        definition,
+                        sceneObject->getTransform()
+                        );
+        }
+
+        if (sceneObject && retval) {
+            sceneObject->setModelInstance(retval);
+        }
+
+        return retval;
     }
-    return retval;
-  }
+
+    AssetInstance* AssetManager::createScriptInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating script asset instance." << endl;
+        ChaiScriptInstance* retval = new ChaiScriptInstance(
+            definition,
+            sceneObject->getTransform()
+        );
+
+        if (sceneObject && retval) {
+            sceneObject->setScriptInstance(retval);
+        }
+
+        return retval;
+    }
+
+    AssetInstance* AssetManager::createShaderInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating Shader asset instance." << endl;
+        ShaderInstance* retval = NULL;
+        retval = new ShaderInstance(definition,sceneObject->getTransform());
+        if (sceneObject && retval) {
+            sceneObject->setShaderInstance(retval);
+        }
+        return retval;
+    }
+
+    vector<SceneObject*> AssetManager::getSceneObjectsWithPhysicsObjects() {
+        return mSceneObjectsWithPhysicsObjects;
+    }
+
+    AssetInstance* AssetManager::createLightInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating Light Asset instance." << endl;
+        LightInstance* retval = new LightInstance(
+                    definition,
+                    sceneObject->getTransform()
+                    );
+
+        if (sceneObject && retval) {
+            sceneObject->setLightInstance(retval);
+        }
+        return retval;
+    }
+
+    AssetInstance* AssetManager::createSpriteInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+        cout << "AssetManager: Creating Sprite Asset instance." << endl;
+        SpriteInstance* retval = new SpriteInstance(
+                    definition,
+                    sceneObject->getTransform()
+                    );
+
+        if (sceneObject && retval) {
+            sceneObject->setSpriteInstance(retval);
+        }
+
+        return retval;
+    }
+
+    AssetInstance* AssetManager::getAssetInstanceByUUID(string uuid) {
+        vector<AssetInstance*>::iterator assetIt;
+        AssetInstance* retval = NULL;
+        for (assetIt = mAssetInstances.begin(); assetIt != mAssetInstances.end(); assetIt++) {
+            if ((*assetIt)->getUUID().compare(uuid) == 0) {
+                retval = (*assetIt);
+                break;
+            }
+        }
+        return retval;
+    }
+
+    void AssetManager::addAssetDefinition(AssetDefinition* assetDefinition) {
+        mAssetDefinitions.push_back(assetDefinition);
+    }
+
+    void AssetManager::removeAssetDefinition(AssetDefinition*) {
+        cout << "AssetManager: Remove Asset is not yet Implemented" << endl;
+    }
+
+    size_t AssetManager::getNumberOfAssetDefinitions() {
+        return mAssetDefinitions.size();
+    }
+
+    void AssetManager::loadAssetDefinitionsFromJson(nlohmann::json jsonAssetArray) {
+        cout << "AssetManager: Loading Assets from JSON Array" << endl;
+        for (nlohmann::json::iterator it = jsonAssetArray.begin(); it != jsonAssetArray.end(); ++it) {
+            addAssetDefinition(new AssetDefinition((*it)));
+        }
+    }
+
+    AssetDefinition* AssetManager::getAssetDefinitionByUUID(string uuid) {
+        AssetDefinition* retval = NULL;
+        for (vector<AssetDefinition*>::iterator it = mAssetDefinitions.begin(); it != mAssetDefinitions.end(); it++) {
+            if ((*it)->getUUID().compare(uuid) == 0) {
+                retval = (*it);
+                break;
+            }
+        }
+        return retval;
+    }
 
 
 

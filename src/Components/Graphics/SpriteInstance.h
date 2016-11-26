@@ -15,6 +15,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #ifndef SPRITEINSTANCE_H
 #define SPRITEINSTANCE_H
 
@@ -26,27 +27,28 @@
 #include "../../AssetInstance.h"
 
 namespace Dream {
-    namespace Components {
-        namespace Graphics {
 
             class SpriteInstance : public AssetInstance
             {
             private:
-                size_t mTileWidth;
-                size_t mTileHeight;
+                int mTileWidth;
+                int mTileHeight;
+                int mSpriteWidth;
+                int mSpriteHeight;
                 SDL_Texture *mTexture;
                 SDL_Renderer *mRenderer;
+                SDL_Rect *mDestination;
             public:
                 SpriteInstance(AssetDefinition*,Transform3D*);
                 ~SpriteInstance();
-                bool load(std::string);
+                bool load(string);
                 void loadExtraAttributes(nlohmann::json);
                 void setRenderer(SDL_Renderer*);
+                SDL_Rect* getDestination();
+                SDL_Texture* getTexture();
 
             };
 
-        } // End of Sprite
-    } // End of Components
 } // End of Dream
 
 #endif // SPRITEINSTANCE_H

@@ -1,8 +1,6 @@
 #include "AudioInstance.h"
 
 namespace Dream {
-    namespace Components {
-        namespace Audio {
 
             AudioInstance::AudioInstance(
                     AssetDefinition* definition, Transform3D* transform
@@ -15,11 +13,11 @@ namespace Dream {
 
             }
 
-            void AudioInstance::loadExtraAttributes(nlohmann::json json) {
+            void AudioInstance::loadExtraAttributes(nlohmann::json jsonData) {
                 return;
             }
 
-            bool AudioInstance::load(std::string path) {
+            bool AudioInstance::load(string path) {
                 return false;
             }
 
@@ -39,6 +37,4 @@ namespace Dream {
                 return mStatus;
             }
 
-        } // End of Audio
-    } // End of Asset
 } // End of Dream

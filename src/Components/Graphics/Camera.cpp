@@ -1,11 +1,9 @@
 #include "Camera.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
       // Constructor with vectors
-      Camera::Camera(std::vector<float> translation,
-                     std::vector<float> up,
+      Camera::Camera(vector<float> translation,
+                     vector<float> up,
                      float yaw,
                      float pitch) {
         mFront = { 0.0f, 0.0f, -1.0f };
@@ -34,8 +32,8 @@ namespace Dream {
         updateCameraVectors();
       }
 
-      std::vector<std::vector<float>> Camera::getViewMatrix() {
-        std::vector<float> translationFrontSum = {
+      vector<vector<float>> Camera::getViewMatrix() {
+        vector<float> translationFrontSum = {
           mTranslation[0] + mFront[0],
           mTranslation[1] + mFront[1],
           mTranslation[2] + mFront[2]
@@ -71,12 +69,12 @@ namespace Dream {
         }
       }
 
-      std::vector<float> Camera::getTranslation() {
+      vector<float> Camera::getTranslation() {
         return mTranslation;
       }
 
-      std::vector<float> Camera::getRotation() {
-        std::vector<float> retval(3);
+      vector<float> Camera::getRotation() {
+        vector<float> retval(3);
         retval[0] = mPitch;
         retval[1] = mYaw;
         retval[2] = 0.0f;
@@ -119,7 +117,7 @@ namespace Dream {
           mZoom = ZOOM_MAX;
         }
 
-        //std::cout << "Camera: Zoom is " << mZoom << std::endl;
+        //cout << "Camera: Zoom is " << mZoom << endl;
       }
 
       void Camera::updateCameraVectors() {
@@ -131,9 +129,9 @@ namespace Dream {
         mUp    = normalize(cross(mRight, mFront));
       }
 
-      void Camera::setRotation(std::vector<float> rotation) {}
+      void Camera::setRotation(vector<float> rotation) {}
 
-      void Camera::setTranslation(std::vector<float> translation) {
+      void Camera::setTranslation(vector<float> translation) {
         mTranslation = translation;
       }
 
@@ -157,8 +155,8 @@ namespace Dream {
         return mZoom;
       }
 
-      std::vector<float> Camera::cross(std::vector<float> x, std::vector<float> y) {
-        std::vector<float> retval(3);
+      vector<float> Camera::cross(vector<float> x, vector<float> y) {
+        vector<float> retval(3);
         retval[0] = x[1] * y[2] - y[1] * x[2];
         retval[1] = x[2] * y[0] - y[2] * x[0];
         retval[2] = x[0] * y[1] - y[0] * x[1];
@@ -169,8 +167,8 @@ namespace Dream {
         return degrees * 0.01745329251994329576923690768489f;
       }
 
-      std::vector<std::vector<float>> Camera::lookAt (std::vector<float> eye, std::vector<float> center, std::vector<float> up) {
-        std::vector<std::vector<float>> retval(4);
+      vector<vector<float>> Camera::lookAt (vector<float> eye, vector<float> center, vector<float> up) {
+        vector<vector<float>> retval(4);
 
         glm::vec3 glmEye;
         glmEye.x = eye[0];
@@ -196,26 +194,24 @@ namespace Dream {
         return retval;
       }
 
-      float Camera::dot(std::vector<float> a, std::vector<float> b) {
+      float Camera::dot(vector<float> a, vector<float> b) {
         return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
       }
 
       // Returns the length of the vector
-      float Camera::vectorLength(std::vector<float> vector){
+      float Camera::vectorLength(vector<float> vector){
         return sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
       }
 
       // Normalizes the vector
-      std::vector<float> Camera::normalize(std::vector<float> vector){
-        std::vector<float> retval(3);
-        float length = vectorLength(vector);
+      vector<float> Camera::normalize(vector<float> vectorToNormalize){
+        vector<float> retval(3);
+        float length = vectorLength(vectorToNormalize);
         if(length != 0){
-          retval[0] = vector[0]/length;
-          retval[1] = vector[1]/length;
-          retval[2] = vector[2]/length;
+          retval[0] = vectorToNormalize[0]/length;
+          retval[1] = vectorToNormalize[1]/length;
+          retval[2] = vectorToNormalize[2]/length;
         }
         return retval;
       }
-    } // End of Graphics
-  } // End of Components
 } // End of Dream

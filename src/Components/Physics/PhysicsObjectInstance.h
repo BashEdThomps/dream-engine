@@ -35,8 +35,6 @@
 #define COLLISION_SHAPE_COMPOUND                 "btCompoundShape"
 
 namespace Dream {
-  namespace Components {
-    namespace Physics {
       class PhysicsObjectInstance : public AssetInstance {
       private:
         btCollisionShape                         *mCollisionShape;
@@ -46,7 +44,7 @@ namespace Dream {
       public:
         PhysicsObjectInstance(AssetDefinition*,Transform3D*);
         ~PhysicsObjectInstance();
-        bool load(std::string);
+        bool load(string);
         bool createCollisionShape();
         btCollisionShape* getCollisionShape();
         btRigidBody*      getRigidBody();
@@ -55,8 +53,6 @@ namespace Dream {
         void loadExtraAttributes(nlohmann::json);
       }; // End of PhysicsObjectInstance
 
-    } // End of Physics
-  } // End of Components
 } // End of Dream
 
 #endif /* PhysicsObjectInstance_h */

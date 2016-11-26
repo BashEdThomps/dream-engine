@@ -26,29 +26,27 @@
 #include <vector>
 
 namespace Dream {
-    class Transform3D {
 
-    private:
-      std::vector<float> mTranslation;
-      std::vector<float> mRotation;
-      std::vector<float> mScale;
+  using namespace std;
 
-    public:
-      Transform3D();
+  class Transform3D {
+  private:
+    vector<float> mTranslation;
+    vector<float> mRotation;
+    vector<float> mScale;
+  public:
+    Transform3D();
+    vector<float> getTranslation();
+    void setTranslation(vector<float>);
+    void setTranslation(float, float, float);
+    vector<float> getRotation();
+    void setRotation(vector<float>);
+    void setRotation(float, float, float);
+    vector<float> getScale();
+    void setScale(vector<float>);
+    void setScale(float, float, float);
+  };
 
-      std::vector<float> getTranslation();
-      void setTranslation(std::vector<float>);
-      void setTranslation(float, float, float);
-
-      std::vector<float> getRotation();
-      void setRotation(std::vector<float>);
-      void setRotation(float, float, float);
-
-      std::vector<float> getScale();
-      void setScale(std::vector<float>);
-      void setScale(float, float, float);
-
-    };
 } // End of Dream
 
 #endif // TRANSFORM3D_H

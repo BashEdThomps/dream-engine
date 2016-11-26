@@ -25,23 +25,23 @@ namespace Dream {
       return mProject;
   }
 
-  void Dream::setCamera(Components::Graphics::Camera* camera) {
+  void Dream::setCamera(Camera* camera) {
       mCamera = camera;
   }
 
-  void Dream::setAudioComponent(Components::Audio::AudioComponent* audioComp) {
+  void Dream::setAudioComponent(AudioComponent* audioComp) {
       mAudioComponent = audioComp;
   }
 
-  void Dream::setAnimationComponent(Components::Animation::AnimationComponent* animComp) {
+  void Dream::setAnimationComponent(AnimationComponent* animComp) {
       mAnimationComponent = animComp;
   }
 
-  void Dream::setPhysicsComponent(Components::Physics::PhysicsComponent* physicsComp) {
+  void Dream::setPhysicsComponent(PhysicsComponent* physicsComp) {
       mPhysicsComponent = physicsComp;
   }
 
-  void Dream::setGraphicsComponent(Components::Graphics::GraphicsComponent* graphicsComp) {
+  void Dream::setGraphicsComponent(GraphicsComponent* graphicsComp) {
       mGraphicsComponent = graphicsComp;
   }
 
@@ -61,21 +61,21 @@ namespace Dream {
       return mProject != NULL;
   }
 
-  bool Dream::loadProjectFromFileReader(std::string projectPath, FileReader* reader)
+  bool Dream::loadProjectFromFileReader(string projectPath, FileReader* reader)
   {
-      std::cout << "Dream: Loading project from FileReader " << reader->getPath() << std::endl;
+      cout << "Dream: Loading project from FileReader " << reader->getPath() << endl;
 
       setAssetManager(new AssetManager());
 
-      std::string projectJsonStr = reader->getContentsAsString();
+      string projectJsonStr = reader->getContentsAsString();
 
       if (projectJsonStr.empty())
       {
-          std::cerr << "Dream: Loading Failed. Project Content is Empty" << std::endl;
+          cerr << "Dream: Loading Failed. Project Content is Empty" << endl;
           return false;
       }
 
-      nlohmann::json projectJson = nlohmann::json::parse(projectJsonStr);
+      json projectJson = json::parse(projectJsonStr);
 
       setProject(new Project(mAssetManager, projectPath, projectJson));
       mAssetManager->setProjectPath(projectPath);
@@ -85,7 +85,7 @@ namespace Dream {
 
   bool Dream::loadFromArgumentParser(ArgumentParser *parser)
   {
-      std::cout << "Dream: Loading from ArgumentParser" << std::endl;
+      cout << "Dream: Loading from ArgumentParser" << endl;
 
       FileReader *projectFileReader = new FileReader(parser->getProjectFilePath());
       projectFileReader->readIntoStringStream();
@@ -100,20 +100,20 @@ namespace Dream {
   bool Dream::loadScene(Scene* scene)
   {
       if (scene == nullptr) {
-          std::cerr << "Dream: Cannot load scene, null!" << std::endl;
+          cerr << "Dream: Cannot load scene, null!" << endl;
           return false;
       }
 
-      std::cout << "Dream: Loading Scene " << scene->getName() << std::endl;
+      cout << "Dream: Loading Scene " << scene->getName() << endl;
       setActiveScene(scene);
 
       if (!hasActiveScene()) {
-          std::cerr << "Dream: Unable to find active scene. Cannot Continue." << std::endl;
+          cerr << "Dream: Unable to find active scene. Cannot Continue." << endl;
           return false;
       }
 
       if (!initActiveScene()) {
-          std::cerr << "Dream: Unable to initialise Current Scene." << std::endl;
+          cerr << "Dream: Unable to initialise Current Scene." << endl;
           return false;
       }
       return true;
@@ -145,7 +145,7 @@ namespace Dream {
 
       if (!mAssetManager->createAllAssetInstances(mActiveScene))
       {
-          std::cerr << "Dream: Unable to create asset instances." << std::endl;
+          cerr << "Dream: Unable to create asset instances." << endl;
           return false;
       }
 
@@ -166,7 +166,7 @@ namespace Dream {
 
   bool Dream::createAssetManager() {
       if (mAssetManager != NULL) {
-          std::cout << "Dream: Destroying existing Asset Manager." << std::endl;
+          cout << "Dream: Destroying existing Asset Manager." << endl;
           delete mAssetManager;
       }
       mAssetManager = new AssetManager();
@@ -175,7 +175,7 @@ namespace Dream {
 
   bool Dream::initSDL() {
       if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0){
-          std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
+          cout << "SDL_Init Error: " << SDL_GetError() << endl;
           return false;
       }
       return true;
@@ -185,32 +185,32 @@ namespace Dream {
   bool Dream::run() {
 
       if (!initSDL()) {
-          std::cerr << "Dream: Unable to initialise SDL" << std::endl;
+          cerr << "Dream: Unable to initialise SDL" << endl;
           return false;
       }
 
       // Create Components
       if(!createComponents()){
-          std::cerr << "Dream: Unable to create components." << std::endl;
+          cerr << "Dream: Unable to create components." << endl;
           return false;
       }
 
       // Init Scene Asset Instances
       if (!loadScene(mProject->getStartupScene())) {
-          std::cerr << "Dream: Unable to load startup scene." << std::endl;
+          cerr << "Dream: Unable to load startup scene." << endl;
           return false;
       }
 
-      std::cout << "Dream: Starting Scene - "
+      cout << "Dream: Starting Scene - "
                 << getActiveScene()->getName()
-                << " (" << getActiveScene()->getUUID() << ")" << std::endl;
+                << " (" << getActiveScene()->getUUID() << ")" << endl;
 
       // GameLoop
 
       while(!mDone) {
           mTime->update();
           updateComponents();
-          std::this_thread::yield();
+          this_thread::yield();
       }
 
       return mDone;
@@ -232,38 +232,38 @@ namespace Dream {
   }
 
   bool Dream::createComponents() {
-      std::cout << "Dream: Creating Components..." << std::endl;
+      cout << "Dream: Creating Components..." << endl;
       setTime(new Time());
       if(!createAudioComponent()) return false;
       if(!createPhysicsComponent()) return false;
       if(!createGraphicsComponent()) return false;
       if(!createAnimationComponent()) return false;
-      std::cout << "Dream: Successfuly created Components." << std::endl;
+      cout << "Dream: Successfuly created Components." << endl;
       return true;
   }
 
   bool Dream::createAudioComponent() {
-      mAudioComponent = new Components::Audio::AudioComponent();
+      mAudioComponent = new AudioComponent();
       if (!mAudioComponent->init()) {
-          std::cerr << "Dream: Unable to initialise OpenALAudio." << std::endl;
+          cerr << "Dream: Unable to initialise OpenALAudio." << endl;
           return false;
       }
       return mAudioComponent != NULL;
   }
 
   bool Dream::createPhysicsComponent() {
-      mPhysicsComponent = new Components::Physics::PhysicsComponent();
+      mPhysicsComponent = new PhysicsComponent();
       mPhysicsComponent->setTime(mTime);
       if (!mPhysicsComponent->init()){
-          std::cerr << "ComponentManager: Unable to initialise BulletPhysics." << std::endl;
+          cerr << "ComponentManager: Unable to initialise BulletPhysics." << endl;
           return false;
       }
       return mPhysicsComponent != NULL;
   }
 
   bool Dream::createGraphicsComponent() {
-      setCamera(new Components::Graphics::Camera());
-      mGraphicsComponent = new Components::Graphics::GraphicsComponent(mCamera);
+      setCamera(new Camera());
+      mGraphicsComponent = new GraphicsComponent(mCamera);
       mGraphicsComponent->setWindowWidth(mProject->getWindowWidth());
       mGraphicsComponent->setWindowHeight(mProject->getWindowHeight());
       mGraphicsComponent->setScreenName(mProject->getName());
@@ -271,18 +271,18 @@ namespace Dream {
       if (mGraphicsComponent->init()) {
           return true;
       } else {
-          std::cerr << "ComponentManager: Unable to initialise OpenGLGraphics." << std::endl;
+          cerr << "ComponentManager: Unable to initialise OpenGLGraphics." << endl;
           return false;
       }
   }
 
   bool Dream::createAnimationComponent() {
-      mAnimationComponent = new Components::Animation::AnimationComponent();
+      mAnimationComponent = new AnimationComponent();
       mAnimationComponent->setTime(mTime);
       if (mAnimationComponent->init()) {
           return true;
       } else {
-          std::cerr << "ComponentManager: Unable to initialise DreamAnimation." << std::endl;
+          cerr << "ComponentManager: Unable to initialise DreamAnimation." << endl;
           return false;
       }
   }
@@ -296,23 +296,23 @@ namespace Dream {
       mGraphicsComponent->update(mActiveScene);
   }
 
-  Components::Animation::AnimationComponent* Dream::getAnimationComponent() {
+  AnimationComponent* Dream::getAnimationComponent() {
       return mAnimationComponent;
   }
 
-  Components::Audio::AudioComponent* Dream::getAudioComponent() {
+  AudioComponent* Dream::getAudioComponent() {
       return mAudioComponent;
   }
 
-  Components::Physics::PhysicsComponent* Dream::getPhysicsComponent() {
+  PhysicsComponent* Dream::getPhysicsComponent() {
       return mPhysicsComponent;
   }
 
-  Components::Graphics::GraphicsComponent* Dream::getGraphicsComponent() {
+  GraphicsComponent* Dream::getGraphicsComponent() {
       return mGraphicsComponent;
   }
 
-  Components::Graphics::Camera* Dream::getCamera() {
+  Camera* Dream::getCamera() {
       return mCamera;
   }
 

@@ -6,7 +6,6 @@
 
 #include <SDL2/SDL.h>
 
-#include "json.hpp"
 
 #include "ArgumentParser.h"
 #include "Time.h"
@@ -29,18 +28,18 @@ namespace Dream {
     Project *mProject;
     Scene* mActiveScene;
     AssetManager *mAssetManager;
-    Components::Graphics::Camera *mCamera;
-    Components::Audio::AudioComponent *mAudioComponent;
-    Components::Graphics::GraphicsComponent *mGraphicsComponent;
-    Components::Physics::PhysicsComponent *mPhysicsComponent;
-    Components::Animation::AnimationComponent *mAnimationComponent;
+    Camera *mCamera;
+    AudioComponent *mAudioComponent;
+    GraphicsComponent *mGraphicsComponent;
+    PhysicsComponent *mPhysicsComponent;
+    AnimationComponent *mAnimationComponent;
     bool mDone;
   public:
     Dream(void);
     ~Dream(void);
     bool initSDL();
     bool loadFromArgumentParser(ArgumentParser*);
-    bool loadProjectFromFileReader(std::string projectPath, FileReader*);
+    bool loadProjectFromFileReader(string projectPath, FileReader*);
     bool loadScene(Scene*);
     Project* getProject();
     void setProject(Project*);
@@ -61,8 +60,8 @@ namespace Dream {
     bool   initActiveScene();
 
     void setAssetManager(AssetManager*);
-    Components::Graphics::Camera* getCamera();
-    void setCamera(Components::Graphics::Camera*);
+    Camera* getCamera();
+    void setCamera(Camera*);
 
     void updateComponents();
     bool createComponents();
@@ -72,17 +71,17 @@ namespace Dream {
     bool createPhysicsComponent();
     bool createGraphicsComponent();
 
-    Components::Animation::AnimationComponent* getAnimationComponent();
-    void setAnimationComponent(Components::Animation::AnimationComponent*);
+    AnimationComponent* getAnimationComponent();
+    void setAnimationComponent(AnimationComponent*);
 
-    Components::Audio::AudioComponent* getAudioComponent();
-    void setAudioComponent(Components::Audio::AudioComponent*);
+    AudioComponent* getAudioComponent();
+    void setAudioComponent(AudioComponent*);
 
-    Components::Physics::PhysicsComponent* getPhysicsComponent();
-    void setPhysicsComponent(Components::Physics::PhysicsComponent*);
+    PhysicsComponent* getPhysicsComponent();
+    void setPhysicsComponent(PhysicsComponent*);
 
-    Components::Graphics::GraphicsComponent* getGraphicsComponent();
-    void setGraphicsComponent(Components::Graphics::GraphicsComponent*);
+    GraphicsComponent* getGraphicsComponent();
+    void setGraphicsComponent(GraphicsComponent*);
 
   }; // End of Dream
 } // End of Dream

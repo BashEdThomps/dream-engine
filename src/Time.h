@@ -7,12 +7,14 @@
 
 namespace Dream {
 
+  using namespace std;
+
   // This class is a singleton
   class Time {
   private:
-    std::chrono::time_point<std::chrono::high_resolution_clock> mCurrentTime;
-    std::chrono::time_point<std::chrono::high_resolution_clock> mLastTime;
-    std::chrono::duration<double> mTimeDelta;
+    chrono::time_point<chrono::high_resolution_clock> mCurrentTime;
+    chrono::time_point<chrono::high_resolution_clock> mLastTime;
+    chrono::duration<double> mTimeDelta;
   public:
     Time();
     ~Time();
@@ -23,6 +25,6 @@ namespace Dream {
     void show();
   };
 
-}
+} // End of Dream
 
 #endif /* Time_h */

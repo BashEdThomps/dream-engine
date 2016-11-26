@@ -5,13 +5,16 @@
 #include <pwd.h>
 
 namespace Dream {
-  std::string Environment::getHomeDirectory() {
+
+  using namespace std;
+  string Environment::getHomeDirectory() {
     char *homedir;
 
     if ((homedir = getenv("HOME")) == NULL) {
       homedir = getpwuid(getuid())->pw_dir;
     }
 
-    return std::string(homedir);
+    return string(homedir);
   }
-}
+
+} // End of Dream

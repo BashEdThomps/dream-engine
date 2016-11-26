@@ -44,13 +44,11 @@
 #define Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
 
 namespace Dream {
-    namespace Components {
-        namespace Graphics {
             class GraphicsComponent : public ComponentInterface {
             private:
                 int mWindowWidth;
                 int mWindowHeight;
-                std::string mScreenName;
+                string mScreenName;
                 bool mWindowShouldClose;
                 SDL_Window *mWindow;
                 SDL_Renderer *mRenderer;
@@ -64,8 +62,8 @@ namespace Dream {
                 int  getWindowWidth();
                 void setWindowHeight(int);
                 int  getWindowHeight();
-                void setScreenName(std::string);
-                std::string getScreenName();
+                void setScreenName(string);
+                string getScreenName();
 
                 void closeWindow();
                 void setCursorEnabled(bool);
@@ -75,8 +73,9 @@ namespace Dream {
                 bool createSDLWindow();
 
                 bool init(void);
-                void update(Dream::Scene*);
-                void drawSceneObject(Dream::SceneObject*);
+                void update(Scene*);
+                void drawSprite(SceneObject*);
+                void drawModel(SceneObject*);
                 bool checkGLError(int);
                 void setupWindowEventHandlers();
                 bool isWindowShouldCloseFlagSet();
@@ -85,8 +84,6 @@ namespace Dream {
                 bool createSDLRenderer();
             }; // End of GraphicsComponent
 
-        } // End of Graphics
-    } // End of Components
 } // End of Dream
 
 #endif // End of OpenGLGraphics_H

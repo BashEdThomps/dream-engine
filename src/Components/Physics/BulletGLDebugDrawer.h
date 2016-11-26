@@ -10,8 +10,6 @@
 #include <LinearMath/btIDebugDraw.h>
 
 namespace Dream   {
-  namespace Components {
-    namespace Physics {
 
       class GLDebugDrawer : public btIDebugDraw {
         int m_debugMode;
@@ -29,8 +27,6 @@ namespace Dream   {
         virtual int  getDebugMode() const { return m_debugMode;}
       };
 
-    } // End of Physics
-  } // End of Components
 } // End of Dream
 
 #endif /* BulletGLDebugDrawer_h */

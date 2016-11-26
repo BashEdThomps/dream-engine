@@ -3,9 +3,7 @@
 #include <algorithm>
 #include "../../String.h"
 
-namespace Dream     {
-  namespace Components     {
-    namespace Animation {
+namespace Dream {
 
       int AnimationInstance::FramesPerSecond = 60;
 
@@ -28,11 +26,11 @@ namespace Dream     {
       AnimationInstance::~AnimationInstance() {}
 
       void AnimationInstance::showStatus() {
-        std::cout << "AnimationInstance:" << std::endl;
-        std::cout << "\tLoop: " << String::boolToYesNo(mLoop) << std::endl;
+        cout << "AnimationInstance:" << endl;
+        cout << "\tLoop: " << String::boolToYesNo(mLoop) << endl;
       }
 
-      bool AnimationInstance::load(std::string projectPath) {
+      bool AnimationInstance::load(string projectPath) {
         mLoop = mDefinition->getJson()[ASSET_ATTR_LOOP];
         loadExtraAttributes(mDefinition->getJson());
         return false;
@@ -43,20 +41,20 @@ namespace Dream     {
       }
 
       void AnimationInstance::generatePlaybackFrames() {
-        std::cout<<"AnimationInstance: Generating Playback Frames" << std::endl;
-        std::vector<KeyFrame*>::iterator keyFrameIter;
+        cout<<"AnimationInstance: Generating Playback Frames" << endl;
+        vector<KeyFrame*>::iterator keyFrameIter;
         for (keyFrameIter = mKeyFrames.begin(); keyFrameIter != mKeyFrames.end(); keyFrameIter++) {
           KeyFrame* currentKeyFrame = (*keyFrameIter);
           // Get the next KeyFrame
           KeyFrame* nextKeyFrame = NULL;
           // End of Vector?
           if (currentKeyFrame == mKeyFrames.back()) {
-            std::cout << "AnimationInstance: Last KeyFrame, checking for wrap..." << std::endl;
+            cout << "AnimationInstance: Last KeyFrame, checking for wrap..." << endl;
             if (currentKeyFrame->getWrap()) {
-              std::cout << "AnimationInstance: KeyFrame wraps to beginning." << std::endl;
+              cout << "AnimationInstance: KeyFrame wraps to beginning." << endl;
               nextKeyFrame = (*mKeyFrames.begin());
             } else {
-              std::cout << "AnimationInstance: Last KeyFrame does not wrap." << std::endl;
+              cout << "AnimationInstance: Last KeyFrame does not wrap." << endl;
               break;
             }
           } else {
@@ -64,20 +62,20 @@ namespace Dream     {
           }
 
           currentKeyFrame->generatePlaybackFrames(nextKeyFrame);
-          std::vector<Frame*> frames = currentKeyFrame->getPlaybackFrames();
+          vector<Frame*> frames = currentKeyFrame->getPlaybackFrames();
           mPlaybackFrames.insert(mPlaybackFrames.end(),frames.begin(),frames.end());
         }
-        std::cout<<"AnimationInstance: Finished Generating Playback Frames" << std::endl;
+        cout<<"AnimationInstance: Finished Generating Playback Frames" << endl;
       }
 
-      void AnimationInstance::loadExtraAttributes(nlohmann::json json) {
+      void AnimationInstance::loadExtraAttributes(nlohmann::json jsonObj) {
         showStatus();
-        if (!json[ASSET_ATTR_KEYFRAMES].is_null() && json[ASSET_ATTR_KEYFRAMES].is_array()){
-          nlohmann::json jsonKeyFrames = json[ASSET_ATTR_KEYFRAMES];
-          std::cout << "AnimationInstance: Loading KeyFrames" << std::endl;
+        if (!jsonObj[ASSET_ATTR_KEYFRAMES].is_null() && jsonObj[ASSET_ATTR_KEYFRAMES].is_array()){
+          nlohmann::json jsonKeyFrames = jsonObj[ASSET_ATTR_KEYFRAMES];
+          cout << "AnimationInstance: Loading KeyFrames" << endl;
           for (nlohmann::json::iterator it = jsonKeyFrames.begin(); it != jsonKeyFrames.end(); ++it) {
             KeyFrame *nextKeyFrame = new KeyFrame();
-            std::vector<float> translation(3), rotation(3), scale(3);
+            vector<float> translation(3), rotation(3), scale(3);
 
             translation[0] = (*it)[ASSET_ATTR_TRANSLATION][ASSET_ATTR_X];
             translation[1] = (*it)[ASSET_ATTR_TRANSLATION][ASSET_ATTR_Y];
@@ -98,9 +96,9 @@ namespace Dream     {
               wrap = (*it)[ASSET_ATTR_WRAP];
             }
 
-            std::string interpolation = (*it)[ASSET_ATTR_INTERPOLATION];
-            std::string name = (*it)[ASSET_NAME];
-            std::string uuid = (*it)[ASSET_UUID];
+            string interpolation = (*it)[ASSET_ATTR_INTERPOLATION];
+            string name = (*it)[ASSET_NAME];
+            string uuid = (*it)[ASSET_UUID];
 
             nextKeyFrame->setName(name);
             nextKeyFrame->setInterpolationType(interpolation);
@@ -124,30 +122,30 @@ namespace Dream     {
           int advanceBy = ceil(deltaTime / (1000/getFramesPerSecond()));
           if (advanceBy > MAX_FRAME_ADVANCE) return;
           mCurrentPlaybackFrame += advanceBy;
-          //std::cout << "AnimationInstance: Delta time: " << deltaTime << ", Advance By: " << advanceBy <<  " frames to frame: " << mCurrentPlaybackFrame << std::endl;
+          //cout << "AnimationInstance: Delta time: " << deltaTime << ", Advance By: " << advanceBy <<  " frames to frame: " << mCurrentPlaybackFrame << endl;
           if (mCurrentPlaybackFrame > mPlaybackFrames.size()) {
             if (!mLoop) {
-              std::cout << "AnimationInstance: Playback Finished" << std::endl;
+              cout << "AnimationInstance: Playback Finished" << endl;
               mPlaying = false;
             }
-            std::cout << "AnimationInstance: Returning to Frame 0" << std::endl;
+            cout << "AnimationInstance: Returning to Frame 0" << endl;
             mCurrentPlaybackFrame = 0;
           }
         }
       }
 
       void AnimationInstance::play() {
-        std::cout << "AnimationInstance: Playing Animation" << getName() << std::endl;
+        cout << "AnimationInstance: Playing Animation" << getName() << endl;
         mPlaying = true;
       }
 
       void AnimationInstance::pause() {
-        std::cout << "AnimationInstance: Pausing Animation" << getName() << std::endl;
+        cout << "AnimationInstance: Pausing Animation" << getName() << endl;
         mPlaying = false;
       }
 
       void AnimationInstance::stop() {
-        std::cout << "AnimationInstance: Stopping Animation" << getName() << std::endl;
+        cout << "AnimationInstance: Stopping Animation" << getName() << endl;
         mPlaying = false;
         mCurrentPlaybackFrame = 0;
       }
@@ -160,13 +158,11 @@ namespace Dream     {
         mLoop = looping;
       }
 
-      void AnimationInstance::applyTransform(SceneObject *sceneObject) {
+      void AnimationInstance::applyTransform(Transform3D* transform) {
         if (mPlaying && mCurrentPlaybackFrame < mPlaybackFrames.size()) {
           Frame *currentFrame = mPlaybackFrames[mCurrentPlaybackFrame];
-          currentFrame->applyToSceneObject(sceneObject);
+          currentFrame->applyToTransform(transform);
         }
       }
 
-    } // End of Animation
-  } // End of Components
 } // End of Dream

@@ -38,10 +38,10 @@ namespace Dream {
 
   class AssetManager {
   private:
-    std::vector<AssetInstance*> mAssetInstances;
-    std::vector<SceneObject*> mSceneObjectsWithPhysicsObjects;
-    std::vector<AssetDefinition*> mAssetDefinitions;
-    std::string mProjectPath;
+    vector<AssetInstance*> mAssetInstances;
+    vector<SceneObject*> mSceneObjectsWithPhysicsObjects;
+    vector<AssetDefinition*> mAssetDefinitions;
+    string mProjectPath;
   public:
     AssetManager();
     ~AssetManager();
@@ -50,8 +50,8 @@ namespace Dream {
     void destroyAllAssetInstances();
     void addAssetInstance(AssetInstance*);
 
-    AssetInstance* getAssetInstanceByUUID(std::string);
-    AssetInstance* createAssetInstanceFromDefinitionUUID(SceneObject*, std::string);
+    AssetInstance* getAssetInstanceByUUID(string);
+    AssetInstance* createAssetInstanceFromDefinitionUUID(SceneObject*, string);
     AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
     AssetInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
     AssetInstance* createAudioInstance(SceneObject*, AssetDefinition*);
@@ -62,15 +62,15 @@ namespace Dream {
     AssetInstance* createLightInstance(SceneObject*, AssetDefinition*);
     AssetInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
     void showStatus();
-    std::vector<SceneObject*> getSceneObjectsWithPhysicsObjects();
+    vector<SceneObject*> getSceneObjectsWithPhysicsObjects();
 
     void loadAssetDefinitionsFromJson(nlohmann::json);
     void addAssetDefinition(AssetDefinition*);
     void removeAssetDefinition(AssetDefinition*);
     size_t getNumberOfAssetDefinitions();
-    AssetDefinition* getAssetDefinitionByUUID(std::string);
+    AssetDefinition* getAssetDefinitionByUUID(string);
 
-    void setProjectPath(std::string);
+    void setProjectPath(string);
 
   }; // End of AssetManager
 } // End of Dream

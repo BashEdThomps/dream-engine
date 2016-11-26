@@ -18,8 +18,6 @@
 #include "ShaderInstance.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
 
       ShaderInstance::ShaderInstance(
           AssetDefinition* definition,
@@ -38,11 +36,11 @@ namespace Dream {
         return mShaderProgram;
       }
 
-      bool ShaderInstance::load(std::string projectPath) {
+      bool ShaderInstance::load(string projectPath) {
 
         // 1. Open Shader Files into Memory
         FileReader *vertexReader, *fragmentReader;
-        std::string absVertexPath, absFragmentPath;
+        string absVertexPath, absFragmentPath;
         absVertexPath   = projectPath+mDefinition->getAssetPath() + SHADER_VERTEX;
         absFragmentPath = projectPath+mDefinition->getAssetPath() + SHADER_FRAGMENT;
 
@@ -56,11 +54,11 @@ namespace Dream {
         mFragmentShaderSource = fragmentReader->getContentsAsString();
         delete fragmentReader;
 
-        std::cout << "ShaderInstance: Loading Shader..." << std::endl
-                  << "\t  Vertex: " << absVertexPath     << std::endl
-                     //<< std::endl << mVertexShaderSource    << std::endl
-                  << "\tFragment: " << absFragmentPath   << std::endl;
-        //<< std::endl << mFragmentShaderSource  << std::endl;
+        cout << "ShaderInstance: Loading Shader..." << endl
+                  << "\t  Vertex: " << absVertexPath     << endl
+                     //<< endl << mVertexShaderSource    << endl
+                  << "\tFragment: " << absFragmentPath   << endl;
+        //<< endl << mFragmentShaderSource  << endl;
 
         // 2. Compile shaders
         GLint success;
@@ -76,7 +74,7 @@ namespace Dream {
         glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
         if (!success) {
           glGetShaderInfoLog(mVertexShader, 512, NULL, infoLog);
-          std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+          cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << endl;
         }
 
         // Fragment Shader
@@ -89,7 +87,7 @@ namespace Dream {
         glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
         if (!success) {
           glGetShaderInfoLog(mFragmentShader, 512, NULL, infoLog);
-          std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+          cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << endl;
         }
 
         // Shader Program
@@ -102,7 +100,7 @@ namespace Dream {
         glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
         if (!success) {
           glGetProgramInfoLog(mShaderProgram, 512, NULL, infoLog);
-          std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+          cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << endl;
         }
 
         // Delete the shaders as they're linked into our program now and no longer necessery
@@ -116,8 +114,6 @@ namespace Dream {
         glUseProgram(mShaderProgram);
       }
 
-      void ShaderInstance::loadExtraAttributes(nlohmann::json json) {}
+      void ShaderInstance::loadExtraAttributes(nlohmann::json jsonData) {}
 
-    } // End of Graphics
-  } // End of Components
 } // End of Dream

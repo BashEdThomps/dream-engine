@@ -23,24 +23,19 @@
 #include "../../AssetInstance.h"
 
 namespace Dream {
-
-  namespace Components {
-    namespace Scripting {
       class ChaiScriptInstance : public AssetInstance {
       private:
-        std::string mProjectPath;
-        std::string mAbsolutePath;
+        string mProjectPath;
+        string mAbsolutePath;
       public:
         ChaiScriptInstance(AssetDefinition*,Transform3D*);
         ~ChaiScriptInstance(void);
-        bool load(std::string);
+        bool load(string);
         void update();
-        std::string getProjectPath();
-        std::string getAbsolutePath();
+        string getProjectPath();
+        string getAbsolutePath();
         void loadExtraAttributes(nlohmann::json) {}
       }; // End of ChaiScriptInstance
 
-    } // End of Scripting
-  } // End of Components
 } // End of Dream
 #endif // End of CHAISCRIPT_H

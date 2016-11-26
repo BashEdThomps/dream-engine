@@ -18,8 +18,6 @@
 #include "PhysicsComponent.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Physics {
 
       PhysicsComponent::PhysicsComponent(void) : ComponentInterface() {
         mDebugDrawer = new GLDebugDrawer();
@@ -44,7 +42,7 @@ namespace Dream {
       }
 
       bool PhysicsComponent::init(void) {
-        std::cout << "PhysicsComponent: Initialising...";
+        cout << "PhysicsComponent: Initialising...";
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -55,31 +53,31 @@ namespace Dream {
         mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
         mDynamicsWorld->setDebugDrawer(mDebugDrawer);
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
-        std::cout << "done." << std::endl;
+        cout << "done." << endl;
         return true;
       }
 
       void PhysicsComponent::update(Dream::Scene* scene) {
         btScalar stepValue = mTime->getTimeDelta();
-        //std::cout << "BulletPhysics: Step Simulation by "
-        //          << stepValue << std::endl;
+        //cout << "BulletPhysics: Step Simulation by "
+        //          << stepValue << endl;
         mDynamicsWorld->stepSimulation(stepValue);
-        //std::cout << "BulletPhysics: Drawing Debug World"
-        //          << std::endl;
+        //cout << "BulletPhysics: Drawing Debug World"
+        //          << endl;
         mDynamicsWorld->debugDrawWorld();
       }
 
       void PhysicsComponent::addRigidBody(btRigidBody *rigidBody) {
-        std::cout << "BulletPhysics: Adding Rigid Body to Dynamics World" << std::endl;
+        cout << "BulletPhysics: Adding Rigid Body to Dynamics World" << endl;
         mDynamicsWorld->addRigidBody(rigidBody);
-        std::cout << "BulletPhysicsWorld has "
+        cout << "BulletPhysicsWorld has "
                   << mDynamicsWorld->getNumCollisionObjects()
                   << " rigid bodies."
-                  << std::endl;
+                  << endl;
       }
 
       void PhysicsComponent::removeRigidBody(btRigidBody *rigidBody) {
-        std::cout << "BulletPhysics: Removing Rigid Body from Dynamics World" << std::endl;
+        cout << "BulletPhysics: Removing Rigid Body from Dynamics World" << endl;
         mDynamicsWorld->removeRigidBody(rigidBody);
       }
 
@@ -87,23 +85,21 @@ namespace Dream {
         addRigidBody(physicsObjejct->getRigidBody());
       }
 
-      void PhysicsComponent::populatePhysicsWorld(std::vector<SceneObject*> soWithPhysicsObjects) {
-        std::cout << "PhysicsComponent: Populating Physics World" << std::endl;
-        std::vector<SceneObject*>::iterator soIter;
+      void PhysicsComponent::populatePhysicsWorld(vector<SceneObject*> soWithPhysicsObjects) {
+        cout << "PhysicsComponent: Populating Physics World" << endl;
+        vector<SceneObject*>::iterator soIter;
 
         for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
-          std::cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUUID()
+          cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUUID()
                     << " to PhysicsComponent World"
-                    << std::endl;
+                    << endl;
 
-          Physics::PhysicsObjectInstance* physicsObject;
-          physicsObject = dynamic_cast<Physics::PhysicsObjectInstance*>(
-            (*soIter)->getPhysicsObjectAssetInstance()
+          PhysicsObjectInstance* physicsObject;
+          physicsObject = dynamic_cast<PhysicsObjectInstance*>(
+            (*soIter)->getPhysicsObjectInstance()
           );
           addPhysicsObjectInstance(physicsObject);
         }
       }
 
-    } // End of Physics
-  } // End of Components
 } // End of Dream

@@ -18,8 +18,6 @@
 #include "ChaiScriptInstance.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Scripting {
 
       ChaiScriptInstance::ChaiScriptInstance(
           AssetDefinition* definition, Transform3D* transform
@@ -31,23 +29,21 @@ namespace Dream {
         return;
       }
 
-      bool ChaiScriptInstance::load(std::string projectPath) {
+      bool ChaiScriptInstance::load(string projectPath) {
         mProjectPath = projectPath;
         mAbsolutePath = projectPath+mDefinition->getAssetPath();
-        std::cout << "ChaiScriptInstance: Script at " << mAbsolutePath << std::endl;
+        cout << "ChaiScriptInstance: Script at " << mAbsolutePath << endl;
         return mAbsolutePath.size() != 0;
       }
 
-      std::string ChaiScriptInstance::getProjectPath() {
+      string ChaiScriptInstance::getProjectPath() {
         return mProjectPath;
       }
 
       void ChaiScriptInstance::update() {}
 
-      std::string ChaiScriptInstance::getAbsolutePath() {
+      string ChaiScriptInstance::getAbsolutePath() {
         return mAbsolutePath;
       }
 
-    } // End of Script
-  } // End of Components
 } // End of Dream

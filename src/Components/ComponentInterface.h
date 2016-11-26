@@ -22,7 +22,6 @@
 #include "../Time.h"
 
 namespace Dream {
-  namespace Components {
     class ComponentInterface {
     public:
       ComponentInterface(void);
@@ -33,7 +32,6 @@ namespace Dream {
     protected:
       Time* mTime;
     }; // End of Interface
-  } // End of Components
 } // End of Dream
 
 #endif // End of INTERFACE_H

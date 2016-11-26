@@ -3,9 +3,17 @@
 
 #include <iostream>
 #include <vector>
-#include "json.hpp"
-#include "AssetInstance.h"
+
 #include "Transform3D.h"
+
+#include "Components/Animation/AnimationInstance.h"
+#include "Components/Audio/AudioInstance.h"
+#include "Components/Graphics/AssimpModelInstance.h"
+#include "Components/Graphics/LightInstance.h"
+#include "Components/Graphics/ShaderInstance.h"
+#include "Components/Graphics/SpriteInstance.h"
+#include "Components/Physics/PhysicsObjectInstance.h"
+#include "Components/Scripting/ChaiScriptInstance.h"
 
 #define SO_X 0
 #define SO_Y 1
@@ -30,61 +38,65 @@
 
 #define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
 
+
 namespace Dream {
+
+  using namespace std;
+
   class SceneObject {
   protected:
       SceneObject* mParent;
-      std::vector<SceneObject*> mChildren;
-      std::vector<std::string> mAssetInstanceUUIDsToLoad;
+      vector<SceneObject*> mChildren;
+      vector<string> mAssetInstanceUUIDsToLoad;
       // Metadata
-      std::string mUUID;
-      std::string mName;
-      std::string mPath;
-      std::string mTransformType;
+      string mUUID;
+      string mName;
+      string mPath;
+      string mTransformType;
       Transform3D *mTransform;
       // Asset Instances
-      AssetInstance* mAudioAssetInstance;
-      AssetInstance* mAnimationAssetInstance;
-      AssetInstance* mModelAssetInstance;
-      AssetInstance* mScriptAssetInstance;
-      AssetInstance* mShaderAssetInstance;
-      AssetInstance* mPhysicsObjectAssetInstance;
-      AssetInstance* mLightAssetInstance;
-      AssetInstance* mSpriteAssetInstance;
+      AudioInstance *mAudioInstance;
+      AnimationInstance *mAnimationInstance;
+      AssimpModelInstance *mModelInstance;
+      ShaderInstance *mShaderInstance;
+      LightInstance *mLightInstance;
+      SpriteInstance *mSpriteInstance;
+      ChaiScriptInstance *mScriptInstance;
+      PhysicsObjectInstance *mPhysicsObjectInstance;
   public:
-      SceneObject  (nlohmann::json);
-      SceneObject  ();
-      ~SceneObject ();
+      SceneObject(nlohmann::json);
+      SceneObject();
+      ~SceneObject();
 
       bool init();
       void loadAssetInstances(nlohmann::json);
       bool initAssetInstances();
 
-      bool hasUUID(std::string);
-      void setUUID(std::string);
-      std::string getUUID();
+      bool hasUUID(string);
+      void setUUID(string);
+      string getUUID();
 
-      bool hasName(std::string);
-      void setName(std::string);
-      std::string getName();
+      bool hasName(string);
+      void setName(string);
+      string getName();
 
-      std::string getNameUUIDString();
+      string getNameUUIDString();
 
       void showStatus();
 
-      std::vector<float> getTranslation();
+      vector<float> getTranslation();
       void setTranslation(float, float, float);
-      void setTranslation(std::vector<float>);
+      void setTranslation(vector<float>);
       void resetTranslation();
 
-      std::vector<float> getRotation();
+      vector<float> getRotation();
       void setRotation(float, float, float);
-      void setRotation(std::vector<float>);
+      void setRotation(vector<float>);
       void resetRotation();
 
-      std::vector<float> getScale();
+      vector<float> getScale();
       void setScale(float, float, float);
-      void setScale(std::vector<float>);
+      void setScale(vector<float>);
       void resetScale();
 
       void resetTransform();
@@ -95,48 +107,47 @@ namespace Dream {
       void removeChild(SceneObject*);
       bool isChildOf(SceneObject*);
       bool isChildOfDeep(SceneObject*);
-      void getChildrenVectorDeep(std::vector<SceneObject*>*);
+      void getChildrenVectorDeep(vector<SceneObject*>*);
       bool isParentOf(SceneObject*);
       bool isParentOfDeep(SceneObject*);
       void setParent(SceneObject*);
       SceneObject* getParent();
 
-      void         generatePath();
+      void generatePath();
+      string  getPath();
 
-      std::string  getPath();
+      void setAnimationInstance(AnimationInstance*);
+      AnimationInstance* getAnimationInstance();
 
-      void setAnimationAssetInstance(AssetInstance*);
-      AssetInstance* getAnimationAssetInstance();
+      void setAudioInstance(AudioInstance*);
+      AudioInstance* getAudioInstance();
 
-      void setAudioAssetInstance(AssetInstance*);
-      AssetInstance* getAudioAssetInstance();
+      void setModelInstance(AssimpModelInstance*);
+      AssimpModelInstance* getModelInstance();
+      bool hasModelInstance();
 
-      void setModelAssetInstance(AssetInstance*);
-      AssetInstance* getModelAssetInstance();
-      bool hasModelAssetInstance();
+      void setScriptInstance(ChaiScriptInstance*);
+      ChaiScriptInstance* getScriptInstance();
+      bool hasScriptInstance();
 
-      void setScriptAssetInstance(AssetInstance*);
-      AssetInstance* getScriptAssetInstance();
-      bool hasScriptAssetInstance();
+      void setShaderInstance(ShaderInstance*);
+      ShaderInstance* getShaderInstance();
+      bool hasShaderInstance();
 
-      void setShaderAssetInstance(AssetInstance*);
-      AssetInstance* getShaderAssetInstance();
-      bool hasShaderAssetInstance();
+      void setPhysicsObjectInstance(PhysicsObjectInstance*);
+      PhysicsObjectInstance* getPhysicsObjectInstance();
 
-      void setPhysicsObjectAssetInstance(AssetInstance*);
-      AssetInstance* getPhysicsObjectAssetInstance();
+      void setLightInstance(LightInstance*);
+      LightInstance* getLightInstance();
 
-      void setLightAssetInstance(AssetInstance*);
-      AssetInstance* getLightAssetInstance();
+      void setSpriteInstance(SpriteInstance*);
+      SpriteInstance* getSpriteInstance();
+      bool hasSpriteInstance();
 
-      void setSpriteAssetInstance(AssetInstance*);
-      AssetInstance* getSpriteAssetInstance();
-      bool hasSpriteAssetInstance();
+      vector<string> getAssetInstanceUUIDsToLoad();
 
-      std::vector<std::string> getAssetInstanceUUIDsToLoad();
-
-      std::string getTransformType();
-      void setTransformType(std::string);
+      string getTransformType();
+      void setTransformType(string);
 
       Transform3D* getTransform();
       void setTransform(Transform3D*);

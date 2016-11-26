@@ -6,8 +6,6 @@
 #include "AudioStatus.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Audio {
 
       class AudioInstance : public AssetInstance {
       protected:
@@ -16,7 +14,7 @@ namespace Dream {
       public:
         AudioInstance(AssetDefinition*,Transform3D*);
         ~AudioInstance();
-        bool load(std::string);
+        bool load(string);
         void loadExtraAttributes(nlohmann::json);
         void setLooping(bool);
         bool isLooping();
@@ -24,8 +22,6 @@ namespace Dream {
         AudioStatus getStatus();
       };
 
-    } // End of Audio
-  } // End of Components
 } // End of Dream
 
 #endif /* AudioAssetInstance_h */

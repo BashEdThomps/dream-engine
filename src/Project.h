@@ -20,7 +20,6 @@
 
 #include <unistd.h>
 #include <vector>
-#include "json.hpp"
 #include "Scene.h"
 #include "AssetDefinition.h"
 #include "String.h"
@@ -40,24 +39,27 @@
 
 namespace Dream {
 
+  using namespace std;
+  using namespace nlohmann;
+
+ //Instance Variables
   class Project {
-  // Instance Variables
   private:
     AssetManager *mAssetManager;
-    std::string mUUID;
-    std::string mName;
-    std::string mDescription;
-    std::string mAuthor;
-    std::string mProjectPath;
-    std::string mStartupScene;
-    std::vector<Scene*> mScenes;
+    string mUUID;
+    string mName;
+    string mDescription;
+    string mAuthor;
+    string mProjectPath;
+    string mStartupScene;
+    vector<Scene*> mScenes;
     Scene *mActiveScene;
     int mWindowWidth;
     int mWindowHeight;
   // Instance Methods
   public:
     Project(AssetManager*);
-    Project(AssetManager*, std::string, nlohmann::json);
+    Project(AssetManager*, string, nlohmann::json);
     ~Project();
 
     void setMetadata(nlohmann::json);
@@ -65,31 +67,31 @@ namespace Dream {
 
     void setAssetManager(AssetManager*);
 
-    void setUUID(std::string);
-    std::string getUUID();
+    void setUUID(string);
+    string getUUID();
 
-    void setName(std::string);
-    std::string getName();
+    void setName(string);
+    string getName();
 
-    void setDescription(std::string);
-    std::string getDescription(void);
+    void setDescription(string);
+    string getDescription(void);
 
-    void setAuthor(std::string);
-    std::string getAuthor();
+    void setAuthor(string);
+    string getAuthor();
 
-    void setStartupSceneUUID(std::string);
-    std::string getStartupSceneUUID();
+    void setStartupSceneUUID(string);
+    string getStartupSceneUUID();
     Scene* getStartupScene();
 
     void addScene(Scene*);
     void removeScene(Scene*);
     size_t getNumberOfScenes();
 
-    Scene* getSceneByName(std::string);
-    Scene* getSceneByUUID(std::string);
+    Scene* getSceneByName(string);
+    Scene* getSceneByUUID(string);
 
-    std::string getProjectPath();
-    void setProjectPath(std::string);
+    string getProjectPath();
+    void setProjectPath(string);
 
     void showStatus();
 

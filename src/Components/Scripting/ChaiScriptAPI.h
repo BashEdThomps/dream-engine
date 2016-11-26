@@ -25,8 +25,6 @@
 #include "../../Dream.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Scripting {
 
       class ChaiScriptAPI {
       private:
@@ -39,8 +37,8 @@ namespace Dream {
         bool init();
         void update(Scene*);
         void handleInputs(SceneObject*);
-        bool loadScript(Components::Scripting::ChaiScriptInstance*);
-        bool importScriptAssetByUUID(std::string);
+        bool loadScript(ChaiScriptInstance*);
+        bool importScriptAssetByUUID(string);
 
         // API Exposure
         void initAPIs();
@@ -58,8 +56,6 @@ namespace Dream {
         void initGraphicsComponentAPI();
 
       }; // End of ChaiScripAPI
-    } // End Scripting
-  } // End of Components
 } // End of Dream
 
 #endif // End of CHAISCRIPTING_H

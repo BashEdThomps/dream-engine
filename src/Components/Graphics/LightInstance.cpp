@@ -1,8 +1,6 @@
 #include "LightInstance.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
       LightInstance::LightInstance(
           AssetDefinition* definition,
           Transform3D* transform
@@ -14,9 +12,7 @@ namespace Dream {
         return;
       }
 
-      bool LightInstance::load(std::string projectDir) {
+      bool LightInstance::load(string projectDir) {
         return false;
       }
-    } // End of Graphics
-  } // End of Components
 } // End of Dream

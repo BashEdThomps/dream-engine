@@ -28,59 +28,59 @@
 #include <glm/vec3.hpp>
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
-      class Camera {
-      private:
-        // Camera Attributes
-        std::vector<float> mTranslation;
-        std::vector<float> mFront;
-        std::vector<float> mUp;
-        std::vector<float> mRight;
-        std::vector<float> mWorldUp;
-        // Eular Angles
-        float mYaw;
-        float mPitch;
-        // Camera options
-        float mMovementSpeed;
-        float mMouseSensitivity;
-        float mZoom;
-      public:
-        // Constructor with vectors
-        Camera(
-            std::vector<float> position = { 0.0f, 0.0f, 0.0f},
-            std::vector<float> up       = { 0.0f, 1.0f, 0.0f},
-            float   yaw      = YAW,
-            float   pitch    = PITCH
-            );
 
-        // Constructor with scalar values
-        Camera(float, float, float, float, float, float, float, float);
-        std::vector<std::vector<float>> getViewMatrix();
-        void processKeyboard(const int, const float);
-        void processMouseMovement(const float, const float, const bool);
-        void processMouseScroll(const float);
-        void updateCameraVectors();
-        void setTranslation(std::vector<float>);
-        std::vector<float> getTranslation();
-        void setRotation(std::vector<float>);
-        std::vector<float> getRotation();
-        void  setMovementSpeed(float);
-        float getMovementSpeed();
-        void  setMouseSensitivity(float);
-        float getMouseSensitivity();
-        float getZoom();
-      private:
-        float radians(float);
-        std::vector<float> cross(std::vector<float>, std::vector<float>);
-        std::vector<float> normalize(std::vector<float>);
-        std::vector<std::vector<float>> lookAt(std::vector<float>,std::vector<float>,std::vector<float>);
-        float dot(std::vector<float>,std::vector<float>);
-        float vectorLength(std::vector<float>);
+  using namespace std;
 
-      }; // End of Camera
-    } // End of Graphics
-  } // End of Components
+  class Camera {
+  private:
+    // Camera Attributes
+    vector<float> mTranslation;
+    vector<float> mFront;
+    vector<float> mUp;
+    vector<float> mRight;
+    vector<float> mWorldUp;
+    // Eular Angles
+    float mYaw;
+    float mPitch;
+    // Camera options
+    float mMovementSpeed;
+    float mMouseSensitivity;
+    float mZoom;
+  public:
+    // Constructor with vectors
+    Camera(
+        vector<float> position = { 0.0f, 0.0f, 0.0f},
+        vector<float> up       = { 0.0f, 1.0f, 0.0f},
+        float   yaw      = YAW,
+        float   pitch    = PITCH
+        );
+
+    // Constructor with scalar values
+    Camera(float, float, float, float, float, float, float, float);
+    vector<vector<float>> getViewMatrix();
+    void processKeyboard(const int, const float);
+    void processMouseMovement(const float, const float, const bool);
+    void processMouseScroll(const float);
+    void updateCameraVectors();
+    void setTranslation(vector<float>);
+    vector<float> getTranslation();
+    void setRotation(vector<float>);
+    vector<float> getRotation();
+    void  setMovementSpeed(float);
+    float getMovementSpeed();
+    void  setMouseSensitivity(float);
+    float getMouseSensitivity();
+    float getZoom();
+  private:
+    float radians(float);
+    vector<float> cross(vector<float>, vector<float>);
+    vector<float> normalize(vector<float>);
+    vector<vector<float>> lookAt(vector<float>,vector<float>,vector<float>);
+    float dot(vector<float>,vector<float>);
+    float vectorLength(vector<float>);
+
+  }; // End of Camera
+
 } // End of Dream
 
 #endif  // CAMERA_H

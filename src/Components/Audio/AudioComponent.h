@@ -26,14 +26,12 @@
 #include "../ComponentInterface.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Audio {
 
       class AudioComponent : public ComponentInterface {
       private:
-        std::vector<AudioInstance*> mPlayQueue;
-        std::vector<AudioInstance*> mPauseQueue;
-        std::vector<AudioInstance*> mStopQueue;
+        vector<AudioInstance*> mPlayQueue;
+        vector<AudioInstance*> mPauseQueue;
+        vector<AudioInstance*> mStopQueue;
       public:
         AudioComponent();
         ~AudioComponent();
@@ -59,8 +57,6 @@ namespace Dream {
 
       }; // End of AudioComponent
 
-    } // End of Audio
-  } // End of Components
 } // End of Dream
 
 #endif // End of AUDIOCOMPONENT_H

@@ -18,12 +18,10 @@
 #include "ComponentInterface.h"
 
 namespace Dream {
-  namespace Components {
     ComponentInterface::ComponentInterface(void) {}
 
     void ComponentInterface::setTime(Time* time) {
       mTime = time;
     }
 
-  } // End of Components
 } // End of Dream

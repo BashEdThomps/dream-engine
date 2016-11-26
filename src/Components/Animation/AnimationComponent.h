@@ -23,10 +23,8 @@
 #include "AnimationInstance.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Animation {
 
-      class AnimationComponent : public Dream::Components::ComponentInterface {
+      class AnimationComponent : public ComponentInterface {
       private:
         Time* mTime;
       public:
@@ -40,8 +38,6 @@ namespace Dream {
         bool isLooping(AssetInstance*);
         void setLooping(AssetInstance*,bool);
       }; // End of AnimationComponent
-    } // End of Animation
-  } // End of Components
 } // End of Dream
 
 #endif // AnimationComponent_h

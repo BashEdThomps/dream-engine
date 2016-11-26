@@ -20,16 +20,16 @@
 namespace Dream {
 
     Transform3D::Transform3D() {
-      mTranslation = std::vector<float>(3);
-      mRotation = std::vector<float>(3);
-      mScale = std::vector<float>(3);
+      mTranslation = vector<float>(3);
+      mRotation = vector<float>(3);
+      mScale = vector<float>(3);
     }
 
-    std::vector<float> Transform3D::getTranslation() {
+    vector<float> Transform3D::getTranslation() {
       return mTranslation;
     }
 
-    void Transform3D::setTranslation(std::vector<float> translation) {
+    void Transform3D::setTranslation(vector<float> translation) {
       mTranslation = translation;
     }
 
@@ -39,11 +39,11 @@ namespace Dream {
       mTranslation[TRANSFORM_Z] = z;
     }
 
-    std::vector<float> Transform3D::getRotation() {
+    vector<float> Transform3D::getRotation() {
       return mRotation;
     }
 
-    void Transform3D::setRotation(std::vector<float> rotation) {
+    void Transform3D::setRotation(vector<float> rotation) {
       mRotation = rotation;
     }
 
@@ -53,11 +53,11 @@ namespace Dream {
       mRotation[TRANSFORM_Z] = z;
     }
 
-    std::vector<float> Transform3D::getScale() {
+    vector<float> Transform3D::getScale() {
       return mScale;
     }
 
-    void Transform3D::setScale(std::vector<float> scale) {
+    void Transform3D::setScale(vector<float> scale) {
         mScale = scale;
     }
 
@@ -66,4 +66,5 @@ namespace Dream {
         mScale[TRANSFORM_Y] = y;
         mScale[TRANSFORM_Z] = z;
     }
-}
+
+} // End of Dream

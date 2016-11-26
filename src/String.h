@@ -23,14 +23,18 @@
 #include <sstream>
 
 namespace Dream {
+
+  using namespace std;
+
   class String {
   public:
     String(void);
     ~String(void);
-    static std::string indent(int);
-    static std::string boolToYesNo(bool);
-    static std::string floatVectorToString(std::vector<float>);
-  }; // End of StringUtils
-}      // End of Dream
+    static string indent(int);
+    static string boolToYesNo(bool);
+    static string floatVectorToString(vector<float>);
+  }; // End of String
+
+} // End of Dream
 
 #endif // End of STRINGUTILS_H

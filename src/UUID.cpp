@@ -24,9 +24,9 @@ namespace Dream {
   UUID::UUID()  {}
   UUID::~UUID() {}
 
-  std::string UUID::generateUUID() {
+  string UUID::generateUUID() {
     size_t bufSize = sizeof(char)*20;
-    char* buffer = (char*)malloc(bufSize);
+    char* buffer = static_cast<char*>(malloc(bufSize));
     snprintf(
       buffer, bufSize,
       "%2x%2x-%2x%2x-%2x%2x-%2x%2x",
@@ -35,7 +35,7 @@ namespace Dream {
       rand()%255,rand()%255,
       rand()%255,rand()%255
     );
-    std::string retval = std::string(buffer);
+    string retval = string(buffer);
     free(buffer);
     return retval;
   }

@@ -2,8 +2,6 @@
 #define AUDIOSTATUS_H
 
 namespace Dream {
-  namespace Components {
-    namespace Audio {
 
       enum AudioStatus {
         PLAYING,
@@ -12,6 +10,4 @@ namespace Dream {
         UNKNOWN
       };
     }
-  }
-}
 #endif // AUDIOSTATUS_H

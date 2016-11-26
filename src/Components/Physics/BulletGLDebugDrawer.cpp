@@ -1,8 +1,6 @@
 #include "BulletGLDebugDrawer.h"
 
 namespace Dream   {
-namespace Components {
-namespace Physics {
 
   GLDebugDrawer::GLDebugDrawer() : m_debugMode(0) {}
   GLDebugDrawer::~GLDebugDrawer() {}
@@ -102,6 +100,4 @@ namespace Physics {
     }
   }
 
-} // End of Physics
-} // End of Components
 } // End of Dream

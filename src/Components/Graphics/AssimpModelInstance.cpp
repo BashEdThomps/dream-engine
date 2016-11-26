@@ -18,14 +18,12 @@
 #include "AssimpModelInstance.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
 
-      std::vector<Texture> AssimpModelInstance::sTextureCache = std::vector<Texture>();
+      vector<Texture> AssimpModelInstance::sTextureCache = vector<Texture>();
 
-      GLint TextureFromFile(const char* path, std::string directory) {
+      GLint TextureFromFile(const char* path, string directory) {
         //Generate texture ID and load texture data
-        std::string filename = std::string(path);
+        string filename = string(path);
         filename = directory + '/' + filename;
         GLuint textureID;
         glGenTextures(1, &textureID);
@@ -57,13 +55,13 @@ namespace Dream {
         return;
       }
 
-      bool AssimpModelInstance::load(std::string projectPath) {
-        std::string path = projectPath+mDefinition->getAssetPath();
-        std::cout << "\tLoading Model:   " << path << std::endl;
+      bool AssimpModelInstance::load(string projectPath) {
+        string path = projectPath+mDefinition->getAssetPath();
+        cout << "\tLoading Model:   " << path << endl;
         ::Assimp::Importer import;
         const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
-          std::cout << "AssimpModelInstance: Error " << import.GetErrorString() << std::endl;
+          cout << "AssimpModelInstance: Error " << import.GetErrorString() << endl;
           return false;
         }
         mDirectory = path.substr(0, path.find_last_of('/'));
@@ -91,9 +89,9 @@ namespace Dream {
       }
 
       AssimpMesh AssimpModelInstance::processMesh(aiMesh* mesh, const aiScene* scene) {
-        std::vector<Vertex>  vertices;
-        std::vector<GLuint>  indices;
-        std::vector<Texture> textures;
+        vector<Vertex>  vertices;
+        vector<GLuint>  indices;
+        vector<Texture> textures;
 
         for(GLuint i = 0; i < mesh->mNumVertices; i++) {
           Vertex vertex;
@@ -134,16 +132,16 @@ namespace Dream {
 
         // Process material
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = loadMaterialTextures(material,aiTextureType_DIFFUSE, "texture_diffuse");
+        vector<Texture> diffuseMaps = loadMaterialTextures(material,aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        std::vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
+        vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
         return AssimpMesh(vertices, indices, textures);
       }
 
-      std::vector<Texture> AssimpModelInstance::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
-        std::vector<Texture> textures;
+      vector<Texture> AssimpModelInstance::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName) {
+        vector<Texture> textures;
         for(GLuint i = 0; i < mat->GetTextureCount(type); i++) {
           aiString str;
           mat->GetTexture(type, i, &str);
@@ -156,7 +154,7 @@ namespace Dream {
             }
           }
           if(!skip) {   // If texture hasn't been loaded already, load it
-            std::cout << "\tLoading Texture: " << mDirectory << "/" << str.C_Str() <<  std::endl;
+            cout << "\tLoading Texture: " << mDirectory << "/" << str.C_Str() <<  endl;
             Texture texture;
             texture.id = TextureFromFile(str.C_Str(), mDirectory);
             texture.type = typeName;
@@ -174,37 +172,35 @@ namespace Dream {
         do {
           errorCode = glGetError();
           if (errorCode!=0) {
-            std::cerr << "AssimpModelInstance: Error Check " << errorIndex << ": " << std::endl;
+            cerr << "AssimpModelInstance: Error Check " << errorIndex << ": " << endl;
             switch (errorCode) {
               case GL_NO_ERROR:
-                std::cerr << "\tGL_NO_ERROR" << std::endl;
+                cerr << "\tGL_NO_ERROR" << endl;
                 break;
               case GL_INVALID_ENUM:
-                std::cerr << "\tGL_INVALID_ENUM" << std::endl;
+                cerr << "\tGL_INVALID_ENUM" << endl;
                 break;
               case GL_INVALID_VALUE:
-                std::cerr << "\tGL_INVALID_VALUE" << std::endl;
+                cerr << "\tGL_INVALID_VALUE" << endl;
                 break;
               case GL_INVALID_OPERATION:
-                std::cerr << "\tGL_INVALID_OPERATION" << std::endl;
+                cerr << "\tGL_INVALID_OPERATION" << endl;
                 break;
               case GL_INVALID_FRAMEBUFFER_OPERATION:
-                std::cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << std::endl;
+                cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
                 break;
               case GL_OUT_OF_MEMORY:
-                std::cerr << "\tGL_OUT_OF_MEMORY" << std::endl;
+                cerr << "\tGL_OUT_OF_MEMORY" << endl;
                 break;
             }
-            std::cerr << "\tName: " << glewGetErrorString(errorCode) << std::endl;
-            std::cerr << "\tCode: " << errorCode << std::endl;
+            cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
+            cerr << "\tCode: " << errorCode << endl;
             wasError = true;
           }
         } while(errorCode != 0);
         return wasError;
       }
 
-      void AssimpModelInstance::loadExtraAttributes(nlohmann::json json) {}
+      void AssimpModelInstance::loadExtraAttributes(nlohmann::json jsonData) {}
 
-    } // End of Graphics
-  } // End of Components
-} // End of DreamFileFormats
+} // End of Dream

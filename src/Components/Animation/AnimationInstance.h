@@ -6,7 +6,6 @@
 
 #include "../../AssetInstance.h"
 #include "../../AssetDefinition.h"
-#include "../../SceneObject.h"
 
 #include "KeyFrame.h"
 #include "Frame.h"
@@ -32,28 +31,25 @@
 #define MAX_FRAME_ADVANCE  10
 
 namespace Dream {
-  namespace Components {
-    namespace Animation {
 
-      class AnimationInstance : public AssetInstance {
+    using namespace std;
+
+   class AnimationInstance : public AssetInstance {
       private:
         static int FramesPerSecond;
       public:
         static void setFramesPerSecond(int);
         static int  getFramesPerSecond();
       private:
-        std::vector<KeyFrame*> mKeyFrames;
-        std::vector<Frame*>    mPlaybackFrames;
-        SceneObject*    mSceneObject;
-        int                    mCurrentPlaybackFrame;
-        bool                   mLoop;
-        bool                   mPlaying;
+        vector<KeyFrame*> mKeyFrames;
+        vector<Frame*> mPlaybackFrames;
+        int mCurrentPlaybackFrame;
+        bool mLoop;
+        bool mPlaying;
       public:
         AnimationInstance(AssetDefinition*,Transform3D*);
         ~AnimationInstance();
-        bool load(std::string);
-        void setSceneObject(SceneObject*);
-        SceneObject* getSceneObject();
+        bool load(string);
         bool isLooping();
         void setLooping(bool);
         int  getState();
@@ -62,7 +58,7 @@ namespace Dream {
         void pause();
         void step(double);
         void showStatus();
-        void applyTransform(SceneObject*);
+        void applyTransform(Transform3D*);
       private:
         void generatePlaybackFrames();
         void addKeyFrame(KeyFrame*);
@@ -70,8 +66,6 @@ namespace Dream {
         void loadExtraAttributes(nlohmann::json);
       }; // End of AnimationInstance
 
-    } // End of Animation
-  } // End of Components
 } // End of Dream
 
 #endif // ANIMAITON_H

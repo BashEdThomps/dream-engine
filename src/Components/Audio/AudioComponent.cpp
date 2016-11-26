@@ -19,8 +19,6 @@
 
 #include <iostream>
 namespace Dream {
-  namespace Components {
-    namespace Audio {
 
       AudioComponent::AudioComponent() : ComponentInterface() {}
 
@@ -28,13 +26,13 @@ namespace Dream {
       }
 
       bool AudioComponent::init() {
-        std::cout << "AudioComponent: Initialising...";
+        cout << "AudioComponent: Initialising...";
         //Initialize SDL_mixer
         if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ) {
-            std::cout << "AudioComponent: Error SDL_OpenAudio Failed" << std::endl;
+            cout << "AudioComponent: Error SDL_OpenAudio Failed" << endl;
             return false;
         }
-        std::cout << "done." << std::endl;
+        cout << "done." << endl;
         return true;
       }
 
@@ -53,36 +51,36 @@ namespace Dream {
 
       void AudioComponent::pushToPlayQueue(AssetInstance* asset) {
         try {
-          if (std::find(mPlayQueue.begin(),mPlayQueue.end(), asset) == mPlayQueue.end()){
+          if (find(mPlayQueue.begin(),mPlayQueue.end(), asset) == mPlayQueue.end()){
            AudioInstance* audioAsset;
             audioAsset = dynamic_cast<AudioInstance*>(asset);
             mPlayQueue.push_back(audioAsset);
           }
-        } catch (const std::exception &ex) {
-          std::cerr << "AudioComponent: Unable to push asset to play queue" << asset->getNameAndUUIDString() << std::endl
-                    << ex.what() << std::endl;
+        } catch (const exception &ex) {
+          cerr << "AudioComponent: Unable to push asset to play queue" << asset->getNameAndUUIDString() << endl
+                    << ex.what() << endl;
         }
       }
 
       void AudioComponent::pushToPauseQueue(AssetInstance* asset) {
         try {
-          if (std::find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end()) {
+          if (find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end()) {
             mPauseQueue.push_back(dynamic_cast<AudioInstance*>(asset));
           }
-        }  catch (const std::exception &ex) {
-          std::cerr << "AudioComponent: Unable to push asset to pause queue" << asset->getNameAndUUIDString() << std::endl
-                    << ex.what() << std::endl;
+        }  catch (const exception &ex) {
+          cerr << "AudioComponent: Unable to push asset to pause queue" << asset->getNameAndUUIDString() << endl
+                    << ex.what() << endl;
         }
       }
 
       void AudioComponent::pushToStopQueue(AssetInstance* asset) {
         try {
-          if (std::find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end()) {
+          if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end()) {
             mStopQueue.push_back(dynamic_cast<AudioInstance*>(asset));
           }
-        } catch (const std::exception &ex) {
-          std::cerr << "AudioComponent: Unable to push asset to stop queue" << asset->getNameAndUUIDString() << std::endl
-                    << ex.what() << std::endl;
+        } catch (const exception &ex) {
+          cerr << "AudioComponent: Unable to push asset to stop queue" << asset->getNameAndUUIDString() << endl
+                    << ex.what() << endl;
         }
       }
 
@@ -93,7 +91,7 @@ namespace Dream {
       }
 
       void AudioComponent::updatePlayQueue() {
-        std::vector<AudioInstance*>::iterator iterator;
+        vector<AudioInstance*>::iterator iterator;
         for (iterator = mPlayQueue.begin(); iterator != mPlayQueue.end(); iterator++) {
           AudioInstance *audioAsset = (*iterator);
           if (audioAsset->getStatus() != PLAYING){
@@ -104,7 +102,7 @@ namespace Dream {
       }
 
       void AudioComponent::updatePauseQueue() {
-        std::vector<AudioInstance*>::iterator iterator;
+        vector<AudioInstance*>::iterator iterator;
         for (iterator = mPauseQueue.begin(); iterator != mPauseQueue.end(); iterator++) {
           AudioInstance *audioAsset = (*iterator);
           if (audioAsset->getStatus() != PAUSED) {
@@ -115,7 +113,7 @@ namespace Dream {
       }
 
       void AudioComponent::updateStopQueue() {
-        std::vector<AudioInstance*>::iterator iterator;
+        vector<AudioInstance*>::iterator iterator;
         for (iterator = mStopQueue.begin(); iterator != mStopQueue.end(); iterator++) {
           AudioInstance *audioAsset = (*iterator);
           if (audioAsset->getStatus() != STOPPED) {
@@ -137,6 +135,4 @@ namespace Dream {
         pushToStopQueue(asset);
       }
 
-    } // End of Audio
-  } // End of Components
 } // End of Dream

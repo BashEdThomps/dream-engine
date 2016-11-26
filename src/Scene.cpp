@@ -72,7 +72,7 @@ namespace Dream {
   }
 
   bool Scene::init() {
-    std::cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << std::endl;
+    cout << "Scene: Initialising Scene " << getName() << "(" << getUUID() << ")" << endl;
     return true;
   }
 
@@ -80,27 +80,27 @@ namespace Dream {
     return mScenegraphVector.empty();
   }
 
-  std::string Scene::getName() {
+  string Scene::getName() {
     return mName;
   }
 
-  std::string Scene::getUUID() {
+  string Scene::getUUID() {
     return mUUID;
   }
 
-  void Scene::setUUID(std::string uuid) {
+  void Scene::setUUID(string uuid) {
     mUUID = uuid;
   }
 
-  void Scene::setName(std::string name) {
+  void Scene::setName(string name) {
     mName = name;
   }
 
   void Scene::loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
-    std::cout << "Loading scene objects from array: "<< jsonArray.dump() << std::endl;
+    cout << "Loading scene objects from array: "<< jsonArray.dump() << endl;
     if (!jsonArray.is_null()) {
       for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
-        std::cout << "Scene: Creating SceneObject " << std::endl;
+        cout << "Scene: Creating SceneObject " << endl;
         SceneObject *nextSceneObject = new SceneObject(*it);
         if (parent != NULL) {
           nextSceneObject->setParent(parent);
@@ -121,9 +121,9 @@ namespace Dream {
     return mRootSceneObject == obj || mRootSceneObject->isParentOfDeep(obj);
   }
 
-  std::string Scene::generateSceneObjectPath(SceneObject* so) {
-    std::stringstream stream;
-    std::vector<std::string> pathVector;
+  string Scene::generateSceneObjectPath(SceneObject* so) {
+    stringstream stream;
+    vector<string> pathVector;
 
     SceneObject* next = so;
     while (next != NULL) {
@@ -131,16 +131,16 @@ namespace Dream {
       next = next->getParent();
     }
 
-    std::reverse(pathVector.begin(),pathVector.end());
-    for (std::vector<std::string>::iterator it = pathVector.begin(); it != pathVector.end(); ++it) {
+    reverse(pathVector.begin(),pathVector.end());
+    for (vector<string>::iterator it = pathVector.begin(); it != pathVector.end(); ++it) {
       stream << PATH_DELIMETER << *it;
     }
-    std::string retval = stream.str();
+    string retval = stream.str();
     return retval;
   }
 
-  SceneObject* Scene::getSceneObjectByUUID(std::string uuid) {
-    for (std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
+  SceneObject* Scene::getSceneObjectByUUID(string uuid) {
+    for (vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
       if ((*it)->hasUUID(uuid)){
         return (*it);
       }
@@ -153,25 +153,25 @@ namespace Dream {
   }
 
   void Scene::showStatus() {
-    std::cout << "Scene:" << std::endl;
-    std::cout << "            UUID: " << mUUID << std::endl;
-    std::cout << "            Name: " << mName << std::endl;
-    std::cout << "Camera Transform: " << std::endl;
-    std::cout << "     Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << std::endl;
-    std::cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << std::endl;
-    std::cout << "   Scene Objects: " << getNumberOfSceneObjects() << std::endl;
+    cout << "Scene:" << endl;
+    cout << "            UUID: " << mUUID << endl;
+    cout << "            Name: " << mName << endl;
+    cout << "Camera Transform: " << endl;
+    cout << "     Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << endl;
+    cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << endl;
+    cout << "   Scene Objects: " << getNumberOfSceneObjects() << endl;
     showScenegraph();
   }
 
   void Scene::showScenegraph() {
     if (mRootSceneObject == NULL) {
-      std::cout << "Scenegraph is empty!" << std::endl;
+      cout << "Scenegraph is empty!" << endl;
       return;
     }
     generateScenegraphVector();
     generateSceneObjectPaths();
-    for(std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
-      std::cout << (*it)->getNameUUIDString() << " @ " << (*it)->getPath() << std::endl;
+    for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
+      cout << (*it)->getNameUUIDString() << " @ " << (*it)->getPath() << endl;
     }
   }
 
@@ -184,7 +184,7 @@ namespace Dream {
   }
 
   void Scene::generateScenegraphVector() {
-    std::cout << "Scene: Regenerating Scene Graph Vector" << std::endl;
+    cout << "Scene: Regenerating Scene Graph Vector" << endl;
     mScenegraphVector.clear();
     if (mRootSceneObject != nullptr) {
         mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
@@ -192,20 +192,20 @@ namespace Dream {
   }
 
   void Scene::generateSceneObjectPaths() {
-    for(std::vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
+    for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
        (*it)->generatePath();
     }
   }
 
-  std::vector<SceneObject*> Scene::getScenegraphVector() {
+  vector<SceneObject*> Scene::getScenegraphVector() {
     return mScenegraphVector;
   }
 
-  std::vector<float> Scene::getDefaultCameraTranslation() {
+  vector<float> Scene::getDefaultCameraTranslation() {
     return mDefaultCameraTransform->getTranslation();
   }
 
-  std::vector<float> Scene::getDefaultCameraRotation() {
+  vector<float> Scene::getDefaultCameraRotation() {
     return mDefaultCameraTransform->getRotation();
   }
 

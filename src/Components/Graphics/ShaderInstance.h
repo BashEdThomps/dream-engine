@@ -26,28 +26,24 @@
 #define SHADER_FRAGMENT "fragment"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
 
       class ShaderInstance : public AssetInstance {
       private:
-        std::string mVertexShaderSource;
+        string mVertexShaderSource;
         GLuint      mVertexShader;
-        std::string mFragmentShaderSource;
+        string mFragmentShaderSource;
         GLuint      mFragmentShader;
         GLuint      mShaderProgram;
       public:
         ShaderInstance(AssetDefinition*,Transform3D*);
         ~ShaderInstance(void);
 
-        bool load(std::string);
+        bool load(string);
         void use();
         GLuint getShaderProgram();
         void loadExtraAttributes(nlohmann::json);
       }; // End of ShaderInstance
 
-    } // End of Graphics
-  } // End of Components
 } // End of Dream
 
 #endif // End of SHADERINSTANCE_H

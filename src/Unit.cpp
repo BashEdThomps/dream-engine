@@ -4,11 +4,14 @@
 #include "Unit.h"
 
 namespace Dream {
-    const std::string Unit::UNIT_PASS = "PASS";
-    const std::string Unit::UNIT_INCONCLUSIVE = "INCONCLUSIVE";
-    const std::string Unit::UNIT_FAIL = "FAILED";
 
-    Unit::Unit(std::string name) {
+  using namespace std;
+
+    const string Unit::UNIT_PASS = "PASS";
+    const string Unit::UNIT_INCONCLUSIVE = "INCONCLUSIVE";
+    const string Unit::UNIT_FAIL = "FAILED";
+
+    Unit::Unit(string name) {
       mName = name;
       mResult = 0;
     }
@@ -17,62 +20,62 @@ namespace Dream {
     }
 
     void Unit::header() {
-      std::stringstream stream;
+      stringstream stream;
       stream << "========== [ Testing: " << mName << " ] ==========";
-      std::string formatted = bold(stream.str());
-      std::cout << formatted << std::endl;
+      string formatted = bold(stream.str());
+      cout << formatted << endl;
       return;
     }
 
-    std::string Unit::green(std::string src) {
-        std::stringstream dest;
+    string Unit::green(string src) {
+        stringstream dest;
         dest << UNIT_BOLD << UNIT_GREEN << src << UNIT_NORMAL;
         return dest.str();
     }
 
-    std::string Unit::yellow(std::string src) {
-        std::stringstream dest;
+    string Unit::yellow(string src) {
+        stringstream dest;
         dest << UNIT_BOLD << UNIT_YELLOW << src << UNIT_NORMAL;
         return dest.str();
     }
 
-    std::string Unit::red(std::string src) {
-        std::stringstream dest;
+    string Unit::red(string src) {
+        stringstream dest;
         dest << UNIT_BOLD << UNIT_RED << src << UNIT_NORMAL;
         return dest.str();
     }
 
 
-    std::string Unit::bold(std::string src) {
-        std::stringstream dest;
+    string Unit::bold(string src) {
+        stringstream dest;
         dest << UNIT_BOLD << src << UNIT_NORMAL;
         return dest.str();
     }
 
-    void Unit::assertFail(std::string name) {
-        std::string formattedText = red(UNIT_FAIL);
-        std::cout << name << ": " << formattedText << std::endl;
+    void Unit::assertFail(string name) {
+        string formattedText = red(UNIT_FAIL);
+        cout << name << ": " << formattedText << endl;
       mResult += 1;
       return;
     }
 
-    void Unit::assertInconclusive(std::string name) {
-      std::string formattedText = yellow(UNIT_INCONCLUSIVE);
-      std::cout << name << ": " << formattedText << std::endl;
+    void Unit::assertInconclusive(string name) {
+      string formattedText = yellow(UNIT_INCONCLUSIVE);
+      cout << name << ": " << formattedText << endl;
       mResult += 1;
       return;
     }
 
-    void Unit::assertPass(std::string name) {
-        std::string formattedText = green(UNIT_PASS);
-        std::cout << name << ": " << formattedText << std::endl;
+    void Unit::assertPass(string name) {
+        string formattedText = green(UNIT_PASS);
+        cout << name << ": " << formattedText << endl;
       mResult += 0;
       return;
     }
 
-    void Unit::assertNotZero(std::string name, int value) {
+    void Unit::assertNotZero(string name, int value) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (value != 0) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -80,14 +83,14 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 1;
         }
-        std::cout << name << ": " << formattedText << std::endl;
+        cout << name << ": " << formattedText << endl;
       mResult += retval;
       return;
     }
 
-    void Unit::assertTrue(std::string name, bool value) {
+    void Unit::assertTrue(string name, bool value) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (value) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -95,14 +98,14 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 1;
         }
-        std::cout << name << ": " << formattedText << std::endl;
+        cout << name << ": " << formattedText << endl;
       mResult += retval;
       return;
     }
 
-    void Unit::assertFalse(std::string name, bool value) {
+    void Unit::assertFalse(string name, bool value) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (!value) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -110,13 +113,13 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 1;
         }
-        std::cout << name << ": " << formattedText << std::endl;
+        cout << name << ": " << formattedText << endl;
       mResult += retval;
       return;
     }
-    void Unit::assertZero(std::string name, int value) {
+    void Unit::assertZero(string name, int value) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (value == 0) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -124,14 +127,14 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 1;
         }
-        std::cout << name << ": " << formattedText << std::endl;
+        cout << name << ": " << formattedText << endl;
       mResult += retval;
       return;
     }
 
-    void Unit::assertEqual(std::string name, int val1, int val2) {
+    void Unit::assertEqual(string name, int val1, int val2) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (val1 == val2) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -139,14 +142,14 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 0;
         }
-        std::cout << name << ": " << formattedText << std::endl;
+        cout << name << ": " << formattedText << endl;
       mResult += retval;
       return;
     }
 
-      void Unit::assertNotEqual(std::string name, int val1, int val2) {
+      void Unit::assertNotEqual(string name, int val1, int val2) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (val1 != val2) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -154,14 +157,14 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 1;
         }
-        std::cout << name << ": '"<< val1 << "' and '"<< val2 << "' are not equal: " << formattedText << std::endl;
+        cout << name << ": '"<< val1 << "' and '"<< val2 << "' are not equal: " << formattedText << endl;
       mResult += retval;
       return;
     }
 
-    void Unit::assertNotNull(std::string name, void* val) {
+    void Unit::assertNotNull(string name, void* val) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (val != NULL) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -169,14 +172,14 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 1;
         }
-        std::cout << name << ": " << formattedText << std::endl;
+        cout << name << ": " << formattedText << endl;
       mResult += retval;
       return;
     }
 
-    void Unit::assertNull(std::string name, void* val) {
+    void Unit::assertNull(string name, void* val) {
       int retval;
-        std::string formattedText;
+        string formattedText;
         if (val == NULL) {
             formattedText = green(UNIT_PASS);
         retval = 0;
@@ -184,20 +187,21 @@ namespace Dream {
             formattedText = red(UNIT_FAIL);
         retval = 1;
         }
-        std::cout << name << ": " << formattedText << std::endl;
+        cout << name << ": " << formattedText << endl;
       mResult += retval;
       return;
     }
 
-    void Unit::comment(std::string comment) {
-      std::stringstream buf;
+    void Unit::comment(string comment) {
+      stringstream buf;
       buf << "---> " << comment;
-      std::string formatted = bold(buf.str());
-      std::cout << formatted << std::endl;
+      string formatted = bold(buf.str());
+      cout << formatted << endl;
       return;
     }
 
     int Unit::getResult(void) {
       return mResult;
     }
-}
+
+} // End of Dream

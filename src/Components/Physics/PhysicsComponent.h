@@ -28,9 +28,7 @@
 #include "../ComponentInterface.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Physics {
-      class PhysicsComponent : public Dream::Components::ComponentInterface {
+      class PhysicsComponent : public ComponentInterface {
       public:
         PhysicsComponent(void);
         ~PhysicsComponent(void);
@@ -42,7 +40,7 @@ namespace Dream {
         btCollisionDispatcher               *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
       public:
-        void populatePhysicsWorld(std::vector<SceneObject*>);
+        void populatePhysicsWorld(vector<SceneObject*>);
         void setGravity3f(float,float,float);
         void setGravityBtVector3(btVector3);
         bool init(void);
@@ -52,8 +50,6 @@ namespace Dream {
         void removeRigidBody(btRigidBody*);
 
       };// End of PhysicsComponent
-    } // End of Physics
-  } // End of Components
 } // End of Dream
 
 #endif // End of PHYSICSCOMPONENT_H

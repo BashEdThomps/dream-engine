@@ -19,45 +19,66 @@
 #include "SDL2/SDL_image.h"
 
 namespace Dream {
-    namespace Components {
-        namespace Graphics {
 
-            SpriteInstance::SpriteInstance(
-                    AssetDefinition* definition,
-                    Transform3D* transform) : AssetInstance(definition,transform) {
-                loadExtraAttributes(mDefinition->getJson());
-            }
+  SpriteInstance::SpriteInstance(
+      AssetDefinition* definition,
+      Transform3D* transform) : AssetInstance(definition,transform) {
+    loadExtraAttributes(mDefinition->getJson());
+  }
 
-            SpriteInstance::~SpriteInstance() {
-            }
+  SpriteInstance::~SpriteInstance() {}
 
-            bool SpriteInstance::load(std::string projectPath) {
+  bool SpriteInstance::load(string projectPath) {
 
-                if (mRenderer == nullptr) {
-                    std::cerr << "SpriteInstance: Renderer has not been set!" << std::endl;
-                    return false;
-                }
+    if (mRenderer == nullptr) {
+      cerr << "SpriteInstance: Renderer has not been set!" << endl;
+      return false;
+    }
 
-                std::string path = projectPath+mDefinition->getAssetPath();
-                mTexture = IMG_LoadTexture(mRenderer, path.c_str());
+    string path = projectPath+mDefinition->getAssetPath();
+    mTexture = IMG_LoadTexture(mRenderer, path.c_str());
 
-                if (mTexture == nullptr){
-                    std::cerr << "SpriteInstance: Unable to load image" << std::endl;
-                    return false;
-                }
+    if (mTexture == nullptr){
+      cerr << "SpriteInstance: Unable to load image" << endl;
+      return false;
+    }
 
-                return mTexture != nullptr;
-            }
+    mDestination = new SDL_Rect();
 
-            void SpriteInstance::loadExtraAttributes(nlohmann::json json) {
-                mTileHeight = static_cast<size_t>(json[SPRITE_TILE_SIZE][SPRITE_TILE_WIDTH]);
-                mTileWidth = static_cast<size_t>(json[SPRITE_TILE_SIZE][SPRITE_TILE_HEIGHT]);
-            }
+    mDestination->x = static_cast<int>(
+          mTransform->getTranslation()[TRANSFORM_X]
+          );
 
-            void SpriteInstance::setRenderer(SDL_Renderer* renderer) {
-                mRenderer = renderer;
-            }
+    mDestination->y = static_cast<int>(
+          mTransform->getTranslation()[TRANSFORM_Y]
+          );
 
-        } // End Graphics
-    } // End Component
+    SDL_QueryTexture(mTexture, NULL, NULL, &mSpriteWidth, &mSpriteHeight);
+
+    // Default to full sprite tile size if not specified
+    if (mTileWidth == 0 && mTileHeight == 0) {
+      mTileWidth = mSpriteWidth;
+      mTileHeight = mSpriteHeight;
+    }
+
+    return mTexture != nullptr;
+  }
+
+  void SpriteInstance::loadExtraAttributes(nlohmann::json jsonData) {
+    mTileWidth = static_cast<int>(
+      jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_WIDTH]
+    );
+    mTileHeight = static_cast<int>(
+      jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_HEIGHT]
+    );
+  }
+
+  SDL_Rect* SpriteInstance::getDestination() {
+    return mDestination;
+  }
+
+  SDL_Texture *SpriteInstance::getTexture() {
+    return mTexture;
+  }
+
 } // End Dream

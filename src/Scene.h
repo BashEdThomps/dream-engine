@@ -20,10 +20,10 @@
 
 #include <iostream>
 #include <vector>
+#include <json.hpp>
 
 #include "SceneObject.h"
 #include "Components/Graphics/Camera.h"
-#include "json.hpp"
 #include "String.h"
 
 #define SCENE_JSON_UUID              "uuid"
@@ -44,47 +44,47 @@
 #define SCENE_JSON_Z "z"
 
 namespace Dream {
+
+  using namespace std;
+
   class Scene {
   public:
-    std::string mUUID;
-    std::string mName;
+    string mUUID;
+    string mName;
     SceneObject *mRootSceneObject;
-    std::vector<SceneObject*> mScenegraphVector;
+    vector<SceneObject*> mScenegraphVector;
     Transform3D* mDefaultCameraTransform;
     float mCameraMovementSpeed;
   public:
     Scene();
     Scene(nlohmann::json);
     ~Scene();
-    bool         init();
-    std::string  getUUID();
-    void         setUUID(std::string);
-    std::string  getName();
-    void         setName(std::string);
-    void         loadSceneObjects(nlohmann::json,SceneObject*);
-    void         loadDefaultCameraTransform(nlohmann::json);
-    int          countChildrenOfSceneObject(SceneObject*);
-    void         setRootSceneObject(SceneObject*);
+    bool init();
+    string getUUID();
+    void setUUID(string);
+    string getName();
+    void setName(string);
+    void loadSceneObjects(nlohmann::json,SceneObject*);
+    void loadDefaultCameraTransform(nlohmann::json);
+    int countChildrenOfSceneObject(SceneObject*);
+    void setRootSceneObject(SceneObject*);
     SceneObject* getRootSceneObject();
-    size_t          getNumberOfSceneObjects();
-    bool         hasSceneObect(SceneObject*);
-    SceneObject* getSceneObjectByName(std::string);
-    SceneObject* getSceneObjectByUUID(std::string);
-    std::string  generateSceneObjectPath(SceneObject*);
-    void         showStatus();
-    void         showScenegraph();
-    std::string  indent(int);
-    void         generateScenegraphVector();
-    void         generateSceneObjectPaths();
-    bool         isScenegraphVectorEmpty();
-    std::vector<SceneObject*> getScenegraphVector();
-
-    std::vector<float> getDefaultCameraTranslation();
-    std::vector<float> getDefaultCameraRotation();
-
+    size_t getNumberOfSceneObjects();
+    bool hasSceneObect(SceneObject*);
+    SceneObject* getSceneObjectByName(string);
+    SceneObject* getSceneObjectByUUID(string);
+    string generateSceneObjectPath(SceneObject*);
+    void showStatus();
+    void showScenegraph();
+    string indent(int);
+    void generateScenegraphVector();
+    void generateSceneObjectPaths();
+    bool isScenegraphVectorEmpty();
+    vector<SceneObject*> getScenegraphVector();
+    vector<float> getDefaultCameraTranslation();
+    vector<float> getDefaultCameraRotation();
     void setCameraMovementSpeed(float);
     float getCameraMovementSpeed();
-
   }; // End of Scene
 
 } // End of Dream

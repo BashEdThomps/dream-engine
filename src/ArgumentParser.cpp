@@ -28,21 +28,21 @@ namespace Dream {
   ArgumentParser::~ArgumentParser() {}
 
   void ArgumentParser::parse() {
-    std::string *nextArg;
+    string *nextArg;
     for (int i=0;i<mArgc;i++) {
-      nextArg = new std::string(mArgv[i]);
+      nextArg = new string(mArgv[i]);
       if (nextArg->compare(PROJECT_DIRECTORY_ARG) == 0) {
         if (mArgc > i) {
-          mDreamPath = std::string(mArgv[i+1]);
-          std::cout << "ArgumentParser: Got Dream Path " << mDreamPath << std::endl;
+          mDreamPath = string(mArgv[i+1]);
+          cout << "ArgumentParser: Got Dream Path " << mDreamPath << endl;
         } else {
           return;
         }
       }
       else if (nextArg->compare(PROJECT_UUID_ARG) == 0) {
         if (mArgc > i) {
-          mProjectUUID = std::string(mArgv[i+1]);
-          std::cout << "ArgumentParser: Got Project UUID " << mProjectUUID << std::endl;
+          mProjectUUID = string(mArgv[i+1]);
+          cout << "ArgumentParser: Got Project UUID " << mProjectUUID << endl;
         } else {
           return;
         }
@@ -56,24 +56,24 @@ namespace Dream {
     }
 
     mProjectPath = mDreamPath + PROJECT_PATH_SEP + mProjectUUID;
-    std::cout << "ArgumentParser: Got Project Path " << mProjectPath << std::endl;
+    cout << "ArgumentParser: Got Project Path " << mProjectPath << endl;
     mProjectFilePath = mProjectPath + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;
-    std::cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << std::endl;
+    cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << endl;
   }
 
-  std::string ArgumentParser::getProjectPath() {
+  string ArgumentParser::getProjectPath() {
     return mProjectPath;
   }
 
-  std::string ArgumentParser::getProjectUUID() {
+  string ArgumentParser::getProjectUUID() {
     return mProjectUUID;
   }
 
-  std::string ArgumentParser::getDreamPath(){
+  string ArgumentParser::getDreamPath(){
     return mDreamPath;
   }
 
-  std::string ArgumentParser::getProjectFilePath() {
+  string ArgumentParser::getProjectFilePath() {
     return mProjectFilePath;
   }
 } // End of Dream

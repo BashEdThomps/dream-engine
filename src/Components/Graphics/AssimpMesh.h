@@ -13,8 +13,6 @@
 #include "ShaderInstance.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics  {
 
       struct Vertex {
         glm::vec3 Position;
@@ -24,7 +22,7 @@ namespace Dream {
 
       struct Texture {
         GLuint id;
-        std::string type;
+        string type;
         aiString path;
       };
 
@@ -33,18 +31,16 @@ namespace Dream {
         GLuint mVAO;
         GLuint mVBO;
         GLuint mEBO;
-        std::vector<Vertex>  mVertices;
-        std::vector<GLuint>  mIndices;
-        std::vector<Texture> mTextures;
+        vector<Vertex>  mVertices;
+        vector<GLuint>  mIndices;
+        vector<Texture> mTextures;
       public:
-        AssimpMesh(std::vector<Vertex>, std::vector<GLuint>, std::vector<Texture>);
+        AssimpMesh(vector<Vertex>, vector<GLuint>, vector<Texture>);
         ~AssimpMesh();
         void draw(ShaderInstance*);
         void init();
         bool checkGLError(int);
       };
     }
-  }
-}
 
 #endif /* AssimpMesh_h */

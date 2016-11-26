@@ -22,8 +22,8 @@ namespace Dream {
   String::String(void) {}
   String::~String(void) {}
 
-  std::string String::indent(int level) {
-    std::string retval = "";
+  string String::indent(int level) {
+    string retval = "";
     for (int i=0;i<level;i++) {
       retval += "  ";
     }
@@ -31,15 +31,15 @@ namespace Dream {
     return retval;
   }
 
-  std::string String::boolToYesNo(bool value) {
+  string String::boolToYesNo(bool value) {
     return (value ? "Yes" : "No");
   }
 
-  std::string String::floatVectorToString(std::vector<float> vector) {
-    std::stringstream outputStream;
+  string String::floatVectorToString(vector<float> vector) {
+    stringstream outputStream;
     outputStream << "(";
     size_t vectorSize = vector.size();
-    for (int i=0; i<vectorSize; i++) {
+    for (size_t i=0; i<vectorSize; i++) {
       outputStream << vector[i];
       if (i<vectorSize-1) {
         outputStream << ",";
@@ -48,4 +48,5 @@ namespace Dream {
     outputStream << ")";
     return outputStream.str();
   }
+
 }   // End of Dream

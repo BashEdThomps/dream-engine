@@ -1,13 +1,11 @@
 #include "AssimpMesh.h"
 
 namespace Dream {
-  namespace Components {
-    namespace Graphics {
 
       AssimpMesh::AssimpMesh(
-          std::vector<Vertex> vertices,
-          std::vector<GLuint> indices,
-          std::vector<Texture> textures) {
+          vector<Vertex> vertices,
+          vector<GLuint> indices,
+          vector<Texture> textures) {
         mVertices = vertices;
         mIndices  = indices;
         mTextures = textures;
@@ -22,9 +20,9 @@ namespace Dream {
         for(GLuint i = 0; i < mTextures.size(); i++) {
           glActiveTexture(GL_TEXTURE0 + i); // Activate proper texture unit before binding
           // Retrieve texture number (the N in diffuse_textureN)
-          std::stringstream ss;
-          std::string number;
-          std::string name = mTextures[i].type;
+          stringstream ss;
+          string number;
+          string name = mTextures[i].type;
           if(name == "texture_diffuse") {
             ss << diffuseNr++; // Transfer GLuint to stream
           } else if(name == "texture_specular") {
@@ -69,35 +67,33 @@ namespace Dream {
         do {
           errorCode = glGetError();
           if (errorCode!=0) {
-            std::cerr << "Mesh: Error Check " << errorIndex << ": " << std::endl;
+            cerr << "Mesh: Error Check " << errorIndex << ": " << endl;
             switch (errorCode) {
               case GL_NO_ERROR:
-                std::cerr << "\tGL_NO_ERROR" << std::endl;
+                cerr << "\tGL_NO_ERROR" << endl;
                 break;
               case GL_INVALID_ENUM:
-                std::cerr << "\tGL_INVALID_ENUM" << std::endl;
+                cerr << "\tGL_INVALID_ENUM" << endl;
                 break;
               case GL_INVALID_VALUE:
-                std::cerr << "\tGL_INVALID_VALUE" << std::endl;
+                cerr << "\tGL_INVALID_VALUE" << endl;
                 break;
               case GL_INVALID_OPERATION:
-                std::cerr << "\tGL_INVALID_OPERATION" << std::endl;
+                cerr << "\tGL_INVALID_OPERATION" << endl;
                 break;
               case GL_INVALID_FRAMEBUFFER_OPERATION:
-                std::cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << std::endl;
+                cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
                 break;
               case GL_OUT_OF_MEMORY:
-                std::cerr << "\tGL_OUT_OF_MEMORY" << std::endl;
+                cerr << "\tGL_OUT_OF_MEMORY" << endl;
                 break;
             }
-            std::cerr << "\tName: " << glewGetErrorString(errorCode) << std::endl;
-            std::cerr << "\tCode: " << errorCode << std::endl;
+            cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
+            cerr << "\tCode: " << errorCode << endl;
             wasError = true;
           }
         } while(errorCode != 0);
         return wasError;
       }
 
-    } // End of Graphics
-  } // End of Components
 } // End of Dream

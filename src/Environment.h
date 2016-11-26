@@ -4,11 +4,15 @@
 #include <iostream>
 
 namespace Dream {
+
+  using namespace std;
+
   class Environment {
   public:
-    static std::string getHomeDirectory();
+    static string getHomeDirectory();
   };
-}
+
+} // End of Dream
 
 
 #endif /* Environment_h */

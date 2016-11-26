@@ -3,54 +3,51 @@
 #include "../../String.h"
 
 namespace Dream     {
-  namespace Components {
-    namespace Animation {
 
       Frame::Frame()  {
-        mTranslation = std::vector<float>(3);
-        mRotation    = std::vector<float>(3);
-        mScale       = std::vector<float>(3);
+        mTranslation = vector<float>(3);
+        mRotation    = vector<float>(3);
+        mScale       = vector<float>(3);
       }
 
       Frame::~Frame() {}
 
-      void Frame::applyToSceneObject(SceneObject* sceneObject) {
-        sceneObject->setTranslation(mTranslation);
-        sceneObject->setRotation(mRotation);
-        sceneObject->setScale(mScale);
+      void Frame::applyToTransform(Transform3D* transform) {
+        transform->setTranslation(mTranslation);
+        transform->setRotation(mRotation);
+        transform->setScale(mScale);
       }
 
-      std::vector<float> Frame::getTranslation() {
+      vector<float> Frame::getTranslation() {
         return mTranslation;
       }
 
-      std::vector<float> Frame::getRotation() {
+      vector<float> Frame::getRotation() {
         return mRotation;
       }
 
-      std::vector<float> Frame::getScale() {
+      vector<float> Frame::getScale() {
         return mScale;
       }
 
-      void Frame::setRotation(std::vector<float> rotation) {
+      void Frame::setRotation(vector<float> rotation) {
         mRotation = rotation;
       }
 
-      void Frame::setScale(std::vector<float> scale) {
+      void Frame::setScale(vector<float> scale) {
         mScale = scale;
       }
 
-      void Frame::setTranslation(std::vector<float> translation) {
+      void Frame::setTranslation(vector<float> translation) {
         mTranslation = translation;
       }
 
       void Frame::showStatus() {
-        std::cout << "Frame"
+        cout << "Frame"
           << " | T " << String::floatVectorToString(mTranslation)
           << " | R " << String::floatVectorToString(mRotation)
           << " | S " << String::floatVectorToString(mScale)
-          << std::endl;
+          << endl;
       }
-    } // End of Animation
-  } // End of Component
+
 } // End of Dream

@@ -18,7 +18,8 @@
 #include "FileReader.h"
 
 namespace Dream {
-  FileReader::FileReader(std::string path) {
+
+  FileReader::FileReader(string path) {
     mPath = path;
     mStringStream = NULL;
     mBinaryVector = NULL;
@@ -38,15 +39,15 @@ namespace Dream {
     }
   }
 
-  std::string FileReader::getPath() {
+  string FileReader::getPath() {
     return mPath;
   }
 
   bool FileReader::readIntoStringStream() {
-    mInputStream.open(mPath.c_str(), std::ifstream::in);
+    mInputStream.open(mPath.c_str(), ifstream::in);
     if (mInputStream.is_open()) {
-      mStringStream = new std::stringstream();
-      std::string line;
+      mStringStream = new stringstream();
+      string line;
       while ( getline (mInputStream,line) ) {
           *mStringStream << line << '\n';
         }
@@ -57,7 +58,7 @@ namespace Dream {
     }
   }
 
-  std::string FileReader::getContentsAsString() {
+  string FileReader::getContentsAsString() {
     if (mStringStream != NULL) {
       return mStringStream->str();
     } else {
@@ -66,13 +67,13 @@ namespace Dream {
   }
 
   bool FileReader::readIntoBinaryVector() {
-    mInputStream.open(mPath.c_str(), std::ios::binary );
-    mBinaryVector = new std::vector<char>((std::istreambuf_iterator<char>(mInputStream)), (std::istreambuf_iterator<char>()));
+    mInputStream.open(mPath.c_str(), ios::binary );
+    mBinaryVector = new vector<char>((istreambuf_iterator<char>(mInputStream)), (istreambuf_iterator<char>()));
     mInputStream.close();
     return mBinaryVector->size() > 0;
   }
 
-  std::vector<char>* FileReader::getContentsAsBinaryVector() {
+  vector<char>* FileReader::getContentsAsBinaryVector() {
     return mBinaryVector;
   }
 
@@ -87,4 +88,5 @@ namespace Dream {
       return -1;
     }
   }
+
 } // End of Dream

@@ -22,78 +22,77 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <json.hpp>
 
-#include "json.hpp"
-
-#define ASSET_UUID   "uuid"
-#define ASSET_NAME   "name"
-#define ASSET_TYPE   "type"
+#define ASSET_UUID "uuid"
+#define ASSET_NAME "name"
+#define ASSET_TYPE "type"
 #define ASSET_FORMAT "format"
 
-#define DIR_PATH_SEP        "/"
-#define ASSET_DIR           "assets"
+#define DIR_PATH_SEP "/"
+#define ASSET_DIR "assets"
 
 #define ASSET_DIR_ANIMATION "animation"
-#define ASSET_DIR_AUDIO     "audio"
-#define ASSET_DIR_MODEL     "model"
-#define ASSET_DIR_SCRIPT    "script"
-#define ASSET_DIR_SHADER    "shader"
-#define ASSET_DIR_SPRITE    "sprite"
+#define ASSET_DIR_AUDIO "audio"
+#define ASSET_DIR_MODEL "model"
+#define ASSET_DIR_SCRIPT "script"
+#define ASSET_DIR_SHADER "shader"
+#define ASSET_DIR_SPRITE "sprite"
 
-#define ASSET_TYPE_ANIMATION       "animation"
-#define ASSET_TYPE_AUDIO           "audio"
-#define ASSET_TYPE_LIGHT           "light"
-#define ASSET_TYPE_MODEL           "model"
-#define ASSET_TYPE_PHYSICS_OBJECT  "physicsObject"
-#define ASSET_TYPE_SCRIPT          "script"
-#define ASSET_TYPE_SHADER          "shader"
-#define ASSET_TYPE_SPRITE          "sprite"
+#define ASSET_TYPE_ANIMATION "animation"
+#define ASSET_TYPE_AUDIO "audio"
+#define ASSET_TYPE_LIGHT "light"
+#define ASSET_TYPE_MODEL "model"
+#define ASSET_TYPE_PHYSICS_OBJECT "physicsObject"
+#define ASSET_TYPE_SCRIPT "script"
+#define ASSET_TYPE_SHADER "shader"
+#define ASSET_TYPE_SPRITE "sprite"
 
-#define ASSET_DEF_FORMAT_SCRIPT_CHAI     "chai"
-#define ASSET_DEF_FORMAT_MODEL_ASSIMP    "assimp"
-#define ASSET_DEF_FORMAT_AUDIO_WAV       "wav"
-#define ASSET_DEF_FORMAT_AUDIO_OGG       "ogg"
+#define ASSET_DEF_FORMAT_SCRIPT_CHAI "chai"
+#define ASSET_DEF_FORMAT_MODEL_ASSIMP "assimp"
+#define ASSET_DEF_FORMAT_AUDIO_WAV "wav"
+#define ASSET_DEF_FORMAT_AUDIO_OGG "ogg"
 #define ASSET_DEF_FORMAT_ANIMATION_DREAM "dream"
 
-#define ASSET_ATTR_X        "x"
-#define ASSET_ATTR_Y        "y"
-#define ASSET_ATTR_Z        "z"
-
-//#define ASSET_ATTR_ ""
+#define ASSET_ATTR_X "x"
+#define ASSET_ATTR_Y "y"
+#define ASSET_ATTR_Z "z"
 
 namespace Dream {
-  class AssetDefinition {
-    std::map<std::string,std::string> mAttributes;
+
+  using namespace std;
+class AssetDefinition {
+    map<string,string> mAttributes;
     nlohmann::json mJson;
-    std::string mProjectPath;
+    string mProjectPath;
   public:
     AssetDefinition(nlohmann::json);
     ~AssetDefinition(void);
 
-    std::pair<std::string,std::string> mapPair(std::string,std::string);
+    pair<string,string> mapPair(string,string);
 
-    void        setUUID(std::string);
-    std::string getUUID();
-    void        setName(std::string);
-    std::string getName();
-    void        setType(std::string);
-    std::string getType();
-    void        setFormat(std::string);
-    std::string getFormat();
+    void setUUID(string);
+    string getUUID();
+    void setName(string);
+    string getName();
+    void setType(string);
+    string getType();
+    void setFormat(string);
+    string getFormat();
 
-    std::string getNameAndUUIDString();
+    string getNameAndUUIDString();
 
-    void         addAttribute(std::string,std::string);
+    void addAttribute(string,string);
 
-    std::string  getAttribute         (std::string);
-    int          getAttributeAsInt    (std::string);
-    float        getAttributeAsFloat  (std::string);
-    double       getAttributeAsDouble (std::string);
-    bool         getAttributeAsBool   (std::string);
-    long         getAttributeAsLong   (std::string);
-    char         getAttributeAsChar   (std::string);
+    string  getAttribute         (string);
+    int getAttributeAsInt    (string);
+    float getAttributeAsFloat  (string);
+    double getAttributeAsDouble (string);
+    bool getAttributeAsBool   (string);
+    long getAttributeAsLong   (string);
+    char getAttributeAsChar   (string);
 
-    std::string getAssetTypeDirectory();
+    string getAssetTypeDirectory();
 
     bool isTypeAnimation();
     bool isTypeAudio();
@@ -110,15 +109,16 @@ namespace Dream {
     bool isAudioFormatOgg();
     bool isAnimationFormatDream();
 
-    std::string getAssetPath();
+    string getAssetPath();
 
-    void setProjectPath(std::string);
-    std::string getProjectPath();
+    void setProjectPath(string);
+    string getProjectPath();
 
     void loadMetadata();
     nlohmann::json getJson();
     void showStatus();
   }; // End of AssetDefinition
+
 } // End of Dream
 
 #endif // End of ASSETDEFINITION_H
