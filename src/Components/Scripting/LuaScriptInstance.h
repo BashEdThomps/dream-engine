@@ -1,5 +1,5 @@
 /*
-* ChaiScriptInstance
+* LuaScriptInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,27 +15,25 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHAISCRIPTINSTANCE_H
-#define CHAISCRIPTINSTANCE_H
+#ifndef LUASCRIPTINSTANCE_H
+#define LUASCRIPTINSTANCE_H
 
 #include <vector>
 #include <iostream>
 #include "../../AssetInstance.h"
 
 namespace Dream {
-      class ChaiScriptInstance : public AssetInstance {
+      class LuaScriptInstance : public AssetInstance {
       private:
-        string mProjectPath;
         string mAbsolutePath;
       public:
-        ChaiScriptInstance(AssetDefinition*,Transform3D*);
-        ~ChaiScriptInstance(void);
+        LuaScriptInstance(AssetDefinition*,Transform3D*);
+        ~LuaScriptInstance(void);
         bool load(string);
         void update();
-        string getProjectPath();
         string getAbsolutePath();
         void loadExtraAttributes(nlohmann::json) {}
-      }; // End of ChaiScriptInstance
+      }; // End of LuaScriptInstance
 
 } // End of Dream
-#endif // End of CHAISCRIPT_H
+#endif // End of LUASCRIPT_H

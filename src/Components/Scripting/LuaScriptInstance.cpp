@@ -1,5 +1,5 @@
 /*
- * ChaiScriptInstance
+ * LuaScriptInstance
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ChaiScriptInstance.h"
+#include "LuaScriptInstance.h"
 
 namespace Dream {
 
-      ChaiScriptInstance::ChaiScriptInstance(
+      LuaScriptInstance::LuaScriptInstance(
           AssetDefinition* definition, Transform3D* transform
       ) : AssetInstance(definition,transform) {
         return;
       }
 
-      ChaiScriptInstance::~ChaiScriptInstance() {
+      LuaScriptInstance::~LuaScriptInstance() {
         return;
       }
 
-      bool ChaiScriptInstance::load(string projectPath) {
-        mProjectPath = projectPath;
+      bool LuaScriptInstance::load(string projectPath) {
         mAbsolutePath = projectPath+mDefinition->getAssetPath();
-        cout << "ChaiScriptInstance: Script at " << mAbsolutePath << endl;
+        cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
         return mAbsolutePath.size() != 0;
       }
 
-      string ChaiScriptInstance::getProjectPath() {
-        return mProjectPath;
-      }
 
-      void ChaiScriptInstance::update() {}
+      void LuaScriptInstance::update() {}
 
-      string ChaiScriptInstance::getAbsolutePath() {
+      string LuaScriptInstance::getAbsolutePath() {
         return mAbsolutePath;
       }
 

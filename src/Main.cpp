@@ -1,5 +1,5 @@
-#include "Dream.h"
-#include "Components/Scripting/ChaiScriptAPI.h"
+#include "DreamEngine.h"
+#include "Components/Scripting/LuaComponent.h"
 #include "ArgumentParser.h"
 #include <iostream>
 
@@ -8,6 +8,9 @@
 #define MINIMUM_ARGUMENTS 3
 
 using namespace std;
+
+Dream::DreamEngine DreamEngineInstance;
+Dream::LuaComponent LuaComponentInstance;
 
 void showUsage(const char** argv) {
   cout << "Usage:" << endl
@@ -28,18 +31,19 @@ int main(int argc, const char** argv)
     return 1;
   }
 
-  Dream::Dream dream;
-
-  bool loaded = dream.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
+  bool loaded = DreamEngineInstance.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 
   if (loaded) {
-    Dream::ChaiScriptAPI chaiAPI(&dream);
-    if (!chaiAPI.init()) {
-      cerr << "Main: Unable to initialise ChaiScriptAPI :(" << endl;
+
+    if(!DreamEngineInstance.bootstrap()) {
+      cerr << "Main: Bootstrapping Dream Failed" << std::endl;
       return 1;
     }
 
-    if(!dream.run())
+    LuaComponentInstance.setLuaScriptMap(DreamEngineInstance.getLuaScriptMap());
+    LuaComponentInstance.init();
+
+    if(!DreamEngineInstance.run())
     {
       cerr << "Main: Exiting Before It's Time :(" << endl;
       return 1;

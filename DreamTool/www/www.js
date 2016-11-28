@@ -10,6 +10,7 @@ var dreamExecutor  = require('./model/DreamExecutor');
 
 // Directory Constants
 
+var DEFAULTS                   = "defaults";
 var WWW                        = "www";
 var NODE_MODULES               = __dirname    + "/../node_modules/";
 var ANGULAR                    = NODE_MODULES + "angular";

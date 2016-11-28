@@ -1,5 +1,5 @@
-#ifndef DREAM_H
-#define DREAM_H
+#ifndef DREAMENGINE_H
+#define DREAMENGINE_H
 
 #include <iostream>
 #include <thread>
@@ -22,7 +22,7 @@
 #include "Components/Graphics/GraphicsComponent.h"
 
 namespace Dream {
-  class Dream {
+  class DreamEngine {
   private:
     Time *mTime;
     Project *mProject;
@@ -35,8 +35,8 @@ namespace Dream {
     AnimationComponent *mAnimationComponent;
     bool mDone;
   public:
-    Dream(void);
-    ~Dream(void);
+    DreamEngine(void);
+    ~DreamEngine(void);
     bool initSDL();
     bool loadFromArgumentParser(ArgumentParser*);
     bool loadProjectFromFileReader(string projectPath, FileReader*);
@@ -48,6 +48,7 @@ namespace Dream {
     bool createAssetManager();
     AssetManager* getAssetManager();
 
+    bool bootstrap();
     bool run();
     void setTime(Time*);
     Time* getTime();
@@ -83,7 +84,9 @@ namespace Dream {
     GraphicsComponent* getGraphicsComponent();
     void setGraphicsComponent(GraphicsComponent*);
 
+    map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
+
   }; // End of Dream
 } // End of Dream
 
-#endif // DREAM_H
+#endif // DREAMENGINE_H

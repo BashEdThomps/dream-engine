@@ -56,7 +56,7 @@ namespace Dream {
 
                 string assetDefinitionUUID = *assetInstanceUUIDIterator;
                 AssetInstance* newAsset = createAssetInstanceFromDefinitionUUID(currentSceneObject, assetDefinitionUUID);
-                if (newAsset == NULL) {
+                if (newAsset == nullptr) {
                     AssetDefinition* definition = getAssetDefinitionByUUID(assetDefinitionUUID);
                     cerr << "AssetManager: Unable to instanciate asset instance for "
                          << definition->getName() << " (" << definition->getUUID() << ")" << endl;
@@ -81,7 +81,7 @@ namespace Dream {
     void AssetManager::showStatus() {}
 
     AssetInstance* AssetManager::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
-        AssetInstance* retval = NULL;
+        AssetInstance* retval = nullptr;
 
         cout << "AssetManager: Creating Asset Intance of: ("
              << definition->getType() << ") " << definition->getName()
@@ -106,7 +106,7 @@ namespace Dream {
             retval = createSpriteInstance(sceneObject, definition);
         }
 
-        if (retval != NULL) {
+        if (retval != nullptr) {
             cout << "AssetManager: Loading Asset Data for " << definition->getName() << endl;
             retval->load(mProjectPath);
         }
@@ -155,7 +155,7 @@ namespace Dream {
 
     AssetInstance* AssetManager::createModelInstance(SceneObject* sceneObject, AssetDefinition* definition) {
         cout << "AssetManager: Creating model asset instance." << endl;
-        AssimpModelInstance* retval = NULL;
+        AssimpModelInstance* retval = nullptr;
 
         if (definition->isModelFormatAssimp()) {
             retval = new AssimpModelInstance(
@@ -173,13 +173,14 @@ namespace Dream {
 
     AssetInstance* AssetManager::createScriptInstance(SceneObject* sceneObject, AssetDefinition* definition) {
         cout << "AssetManager: Creating script asset instance." << endl;
-        ChaiScriptInstance* retval = new ChaiScriptInstance(
+        LuaScriptInstance* retval = new LuaScriptInstance(
             definition,
             sceneObject->getTransform()
         );
 
         if (sceneObject && retval) {
             sceneObject->setScriptInstance(retval);
+            insertIntoLuaScriptMap(sceneObject,retval);
         }
 
         return retval;
@@ -187,7 +188,7 @@ namespace Dream {
 
     AssetInstance* AssetManager::createShaderInstance(SceneObject* sceneObject, AssetDefinition* definition) {
         cout << "AssetManager: Creating Shader asset instance." << endl;
-        ShaderInstance* retval = NULL;
+        ShaderInstance* retval = nullptr;
         retval = new ShaderInstance(definition,sceneObject->getTransform());
         if (sceneObject && retval) {
             sceneObject->setShaderInstance(retval);
@@ -202,9 +203,9 @@ namespace Dream {
     AssetInstance* AssetManager::createLightInstance(SceneObject *sceneObject, AssetDefinition* definition) {
         cout << "AssetManager: Creating Light Asset instance." << endl;
         LightInstance* retval = new LightInstance(
-                    definition,
-                    sceneObject->getTransform()
-                    );
+            definition,
+            sceneObject->getTransform()
+        );
 
         if (sceneObject && retval) {
             sceneObject->setLightInstance(retval);
@@ -215,11 +216,13 @@ namespace Dream {
     AssetInstance* AssetManager::createSpriteInstance(SceneObject *sceneObject, AssetDefinition* definition) {
         cout << "AssetManager: Creating Sprite Asset instance." << endl;
         SpriteInstance* retval = new SpriteInstance(
-                    definition,
-                    sceneObject->getTransform()
-                    );
+          definition,
+          sceneObject->getTransform()
+        );
+
 
         if (sceneObject && retval) {
+            retval->setRenderer(mRenderer);
             sceneObject->setSpriteInstance(retval);
         }
 
@@ -228,7 +231,7 @@ namespace Dream {
 
     AssetInstance* AssetManager::getAssetInstanceByUUID(string uuid) {
         vector<AssetInstance*>::iterator assetIt;
-        AssetInstance* retval = NULL;
+        AssetInstance* retval = nullptr;
         for (assetIt = mAssetInstances.begin(); assetIt != mAssetInstances.end(); assetIt++) {
             if ((*assetIt)->getUUID().compare(uuid) == 0) {
                 retval = (*assetIt);
@@ -258,7 +261,7 @@ namespace Dream {
     }
 
     AssetDefinition* AssetManager::getAssetDefinitionByUUID(string uuid) {
-        AssetDefinition* retval = NULL;
+        AssetDefinition* retval = nullptr;
         for (vector<AssetDefinition*>::iterator it = mAssetDefinitions.begin(); it != mAssetDefinitions.end(); it++) {
             if ((*it)->getUUID().compare(uuid) == 0) {
                 retval = (*it);
@@ -268,6 +271,15 @@ namespace Dream {
         return retval;
     }
 
+    void AssetManager::setRenderer(SDL_Renderer* renderer) {
+      mRenderer = renderer;
+    }
 
+    map<SceneObject*,LuaScriptInstance*>* AssetManager::getLuaScriptMap() {
+      return &mLuaScriptMap;
+    }
 
+    void AssetManager::insertIntoLuaScriptMap(SceneObject* sceneObject,LuaScriptInstance* script) {
+      mLuaScriptMap.insert(pair<SceneObject*,LuaScriptInstance*>(sceneObject,script));
+    }
 } // End of Dream

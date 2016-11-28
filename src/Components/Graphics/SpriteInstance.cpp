@@ -36,6 +36,8 @@ namespace Dream {
     }
 
     string path = projectPath+mDefinition->getAssetPath();
+    cout << "SpriteInstance: Loading sprite from " << path << endl;
+
     mTexture = IMG_LoadTexture(mRenderer, path.c_str());
 
     if (mTexture == nullptr){
@@ -46,20 +48,23 @@ namespace Dream {
     mDestination = new SDL_Rect();
 
     mDestination->x = static_cast<int>(
-          mTransform->getTranslation()[TRANSFORM_X]
-          );
+      mTransform->getTranslation()[TRANSFORM_X]
+    );
 
     mDestination->y = static_cast<int>(
-          mTransform->getTranslation()[TRANSFORM_Y]
-          );
+      mTransform->getTranslation()[TRANSFORM_Y]
+    );
 
-    SDL_QueryTexture(mTexture, NULL, NULL, &mSpriteWidth, &mSpriteHeight);
+    SDL_QueryTexture(mTexture, nullptr, nullptr, &mSpriteWidth, &mSpriteHeight);
 
     // Default to full sprite tile size if not specified
     if (mTileWidth == 0 && mTileHeight == 0) {
       mTileWidth = mSpriteWidth;
       mTileHeight = mSpriteHeight;
     }
+
+    mDestination->w = mTileWidth;
+    mDestination->h = mTileHeight;
 
     return mTexture != nullptr;
   }
@@ -74,11 +79,15 @@ namespace Dream {
   }
 
   SDL_Rect* SpriteInstance::getDestination() {
-    return mDestination;
+      return mDestination;
   }
 
   SDL_Texture *SpriteInstance::getTexture() {
-    return mTexture;
+      return mTexture;
+  }
+
+  void SpriteInstance::setRenderer(SDL_Renderer* renderer) {
+      mRenderer = renderer;
   }
 
 } // End Dream

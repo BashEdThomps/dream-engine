@@ -68,7 +68,7 @@ namespace Dream {
         mCollisionShape->calculateLocalInertia(mass, fallInertia);
         mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(btScalar(mass), mMotionState, mCollisionShape, fallInertia);
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
-        return mRigidBody != NULL;
+        return mRigidBody != nullptr;
       }
 
       bool PhysicsObjectInstance::createCollisionShape() {
@@ -116,7 +116,7 @@ namespace Dream {
           btScalar margin = mDefinition->getAttributeAsFloat(ASSET_ATTR_MARGIN);
           mCollisionShape->setMargin(margin);
         }
-        return mCollisionShape != NULL;
+        return mCollisionShape != nullptr;
       }
 
       btRigidBody* PhysicsObjectInstance::getRigidBody() {

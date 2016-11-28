@@ -21,8 +21,8 @@ namespace Dream {
 
   FileReader::FileReader(string path) {
     mPath = path;
-    mStringStream = NULL;
-    mBinaryVector = NULL;
+    mStringStream = nullptr;
+    mBinaryVector = nullptr;
   }
 
   FileReader::~FileReader(void) {
@@ -30,11 +30,11 @@ namespace Dream {
       mInputStream.close();
     }
 
-    if (mBinaryVector != NULL) {
+    if (mBinaryVector != nullptr) {
       delete mBinaryVector;
     }
 
-    if (mStringStream != NULL) {
+    if (mStringStream != nullptr) {
       delete mStringStream;
     }
   }
@@ -59,7 +59,7 @@ namespace Dream {
   }
 
   string FileReader::getContentsAsString() {
-    if (mStringStream != NULL) {
+    if (mStringStream != nullptr) {
       return mStringStream->str();
     } else {
       return "";
@@ -78,10 +78,10 @@ namespace Dream {
   }
 
   int FileReader::getFileSize() {
-    if (mStringStream != NULL) {
+    if (mStringStream != nullptr) {
       return getContentsAsString().size();
     }
-    else if (mBinaryVector != NULL) {
+    else if (mBinaryVector != nullptr) {
         return getContentsAsBinaryVector()->size();
       }
     else {

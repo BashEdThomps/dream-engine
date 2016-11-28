@@ -28,26 +28,25 @@
 
 namespace Dream {
 
-            class SpriteInstance : public AssetInstance
-            {
-            private:
-                int mTileWidth;
-                int mTileHeight;
-                int mSpriteWidth;
-                int mSpriteHeight;
-                SDL_Texture *mTexture;
-                SDL_Renderer *mRenderer;
-                SDL_Rect *mDestination;
-            public:
-                SpriteInstance(AssetDefinition*,Transform3D*);
-                ~SpriteInstance();
-                bool load(string);
-                void loadExtraAttributes(nlohmann::json);
-                void setRenderer(SDL_Renderer*);
-                SDL_Rect* getDestination();
-                SDL_Texture* getTexture();
-
-            };
+  class SpriteInstance : public AssetInstance
+  {
+  private:
+    int mTileWidth;
+    int mTileHeight;
+    int mSpriteWidth;
+    int mSpriteHeight;
+    SDL_Texture *mTexture;
+    SDL_Renderer *mRenderer;
+    SDL_Rect *mDestination;
+  public:
+    SpriteInstance(AssetDefinition*,Transform3D*);
+    ~SpriteInstance();
+    bool load(string);
+    void loadExtraAttributes(nlohmann::json);
+    void setRenderer(SDL_Renderer*);
+    SDL_Rect* getDestination();
+    SDL_Texture* getTexture();
+  };
 
 } // End of Dream
 

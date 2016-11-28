@@ -46,7 +46,7 @@ namespace Dream {
         for (keyFrameIter = mKeyFrames.begin(); keyFrameIter != mKeyFrames.end(); keyFrameIter++) {
           KeyFrame* currentKeyFrame = (*keyFrameIter);
           // Get the next KeyFrame
-          KeyFrame* nextKeyFrame = NULL;
+          KeyFrame* nextKeyFrame = nullptr;
           // End of Vector?
           if (currentKeyFrame == mKeyFrames.back()) {
             cout << "AnimationInstance: Last KeyFrame, checking for wrap..." << endl;

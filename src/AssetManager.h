@@ -21,10 +21,11 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "AssetInstance.h"
 #include "AssetDefinition.h"
-#include "Components/Scripting/ChaiScriptInstance.h"
+#include "Components/Scripting/LuaScriptInstance.h"
 #include "Components/Audio/AudioInstance.h"
 #include "Components/Animation/AnimationInstance.h"
 #include "Components/Graphics/SpriteInstance.h"
@@ -38,10 +39,12 @@ namespace Dream {
 
   class AssetManager {
   private:
+    map<SceneObject*,LuaScriptInstance*> mLuaScriptMap;
     vector<AssetInstance*> mAssetInstances;
     vector<SceneObject*> mSceneObjectsWithPhysicsObjects;
     vector<AssetDefinition*> mAssetDefinitions;
     string mProjectPath;
+    SDL_Renderer* mRenderer;
   public:
     AssetManager();
     ~AssetManager();
@@ -71,6 +74,10 @@ namespace Dream {
     AssetDefinition* getAssetDefinitionByUUID(string);
 
     void setProjectPath(string);
+    void setRenderer(SDL_Renderer*);
+
+    map<SceneObject*,LuaScriptInstance*> *getLuaScriptMap();
+    void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
 
   }; // End of AssetManager
 } // End of Dream

@@ -34,31 +34,31 @@ namespace Dream {
 
   void Project::setMetadata(nlohmann::json jsonProject) {
     if (jsonProject [PROJECT_UUID].is_null()) {
-      cerr << "Project: UUID is NULL." << endl;
+      cerr << "Project: UUID is nullptr." << endl;
     } else {
       setUUID(jsonProject[PROJECT_UUID]);
     }
 
     if (jsonProject[PROJECT_NAME].is_null()) {
-      cerr << "Project: Name is NULL." << endl;
+      cerr << "Project: Name is nullptr." << endl;
     } else {
       setName(jsonProject[PROJECT_NAME]);
     }
 
     if (jsonProject[PROJECT_AUTHOR].is_null()) {
-      cerr << "Project: Author is NULL." << endl;
+      cerr << "Project: Author is nullptr." << endl;
     } else {
       setAuthor(jsonProject[PROJECT_AUTHOR]);
     }
 
     if (jsonProject[PROJECT_DESCRIPTION].is_null()) {
-      cerr << "Project: Descriptiont is NULL." << endl;
+      cerr << "Project: Descriptiont is nullptr." << endl;
     } else {
       setDescription(jsonProject[PROJECT_DESCRIPTION]);
     }
 
     if (jsonProject[PROJECT_STARTUP_SCENE].is_null()) {
-      cerr << "Project: Startup Scene is NULL." << endl;
+      cerr << "Project: Startup Scene is nullptr." << endl;
     } else {
       setStartupSceneUUID(jsonProject[PROJECT_STARTUP_SCENE]);
     }
@@ -147,7 +147,7 @@ namespace Dream {
   }
 
   Scene* Project::getSceneByUUID(string uuid) {
-    Scene* retval = NULL;
+    Scene* retval = nullptr;
     for(vector<Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it) {
       if ((*it)->getUUID().compare(uuid) == 0) {
         retval = (*it);
@@ -158,7 +158,7 @@ namespace Dream {
   }
 
   Scene* Project::getSceneByName(string name) {
-    Scene* retval = NULL;
+    Scene* retval = nullptr;
     for(vector<Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it) {
       if ((*it)->getName().compare(name) == 0) {
         retval = (*it);
@@ -185,7 +185,7 @@ namespace Dream {
   }
 
   bool Project::hasActiveScene() {
-    return getActiveScene() != NULL;
+    return getActiveScene() != nullptr;
   }
 
   void Project::setAssetManager(AssetManager* assetManager) {

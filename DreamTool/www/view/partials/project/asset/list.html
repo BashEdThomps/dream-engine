@@ -229,6 +229,16 @@
                 </td>
             </tr>
             <tr ng-show="isAssetTypeSprite()">
+              <td>Format</td>
+              <td>
+                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                  <option value="" disabled hidden selected>Select Format</option>
+                  <option ng-repeat="fmt in assetFormats.sprite" value="{{fmt.format}}">{{fmt.name}}</option>
+                </select>
+              </td>
+            </tr>
+
+            <tr ng-show="isAssetTypeSprite()">
                 <td>Sprite File</td>
                 <td>
                     <button ng-show="hasSprite"  class="pull-right btn-sm btn btn-danger"

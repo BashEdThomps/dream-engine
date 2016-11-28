@@ -9,10 +9,13 @@
 namespace Dream {
 
   SceneObject::SceneObject() {
+    mHasFocus = false;
     mParent = nullptr;
+    mTransform = new Transform3D();
   }
 
   SceneObject::SceneObject(nlohmann::json soJson){
+    mHasFocus = false;
     mParent = nullptr;
     mTransform = new Transform3D();
 
@@ -25,9 +28,11 @@ namespace Dream {
     }
 
     if (!soJson[SCENE_OBJECT_TRANSFORM_TYPE].is_null()) {
-      mTransformType = soJson[SCENE_OBJECT_TRANSFORM_TYPE];
+      string transformType = soJson[SCENE_OBJECT_TRANSFORM_TYPE];
+      mTransform->setTransformType(transformType);
     } else {
-      mTransformType = SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
+      string transformType = SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
+      mTransform->setTransformType(transformType);
     }
 
     if (!soJson[SCENE_OBJECT_TRANSLATION].is_null()) {
@@ -220,7 +225,7 @@ namespace Dream {
     }
 
     cout << "      Children: " << mChildren.size() << endl;
-    cout << "Trnasform Type: " << mTransformType << endl;
+    cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
     cout << "   Translation: " << String::floatVectorToString(getTranslation()) << endl;
     cout << "      Rotation: " << String::floatVectorToString(getRotation())<< endl;
     cout << "         Scale: " << String::floatVectorToString(getScale())<< endl;
@@ -254,11 +259,11 @@ namespace Dream {
     return mModelInstance;
   }
 
-  void SceneObject::setScriptInstance(ChaiScriptInstance* scriptAsset) {
+  void SceneObject::setScriptInstance(LuaScriptInstance* scriptAsset) {
     mScriptInstance = scriptAsset;
   }
 
-  ChaiScriptInstance* SceneObject::getScriptInstance() {
+  LuaScriptInstance* SceneObject::getScriptInstance() {
     return mScriptInstance;
   }
 
@@ -303,11 +308,11 @@ namespace Dream {
   }
 
   string SceneObject::getTransformType() {
-    return mTransformType;
+    return mTransform->getTransformType();
   }
 
   void SceneObject::setTransformType(string transformType) {
-    mTransformType = transformType;
+    mTransform->setTransformType(transformType);
   }
 
   Transform3D* SceneObject::getTransform() {

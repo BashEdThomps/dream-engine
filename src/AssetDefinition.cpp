@@ -38,25 +38,25 @@ namespace Dream {
   void AssetDefinition::loadMetadata() {
     // UUID
     if (mJson[ASSET_UUID].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with NULL UUID." << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with nullptr UUID." << endl;
     } else {
       setUUID(mJson[ASSET_UUID]);
     }
     // Name
     if (mJson[ASSET_NAME].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with NULL Name." << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with nullptr Name." << endl;
     } else {
       setName(mJson[ASSET_NAME]);
     }
     // Type
     if (mJson[ASSET_TYPE].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with NULL Type" << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with nullptr Type" << endl;
     } else {
       setType(mJson[ASSET_TYPE]);
     }
     // Format
     if (mJson[ASSET_FORMAT].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with NULL Format" << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with nullptr Format" << endl;
     } else {
       setFormat(mJson[ASSET_FORMAT]);
     }

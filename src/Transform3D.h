@@ -22,8 +22,11 @@
 #define TRANSFORM_X 0
 #define TRANSFORM_Y 1
 #define TRANSFORM_Z 2
+#define TRANSFORM_TYPE_ABSOLUTE "absolute"
+#define TRANSFORM_TYPE_OFFSET "offset"
 
 #include <vector>
+#include <iostream>
 
 namespace Dream {
 
@@ -34,6 +37,7 @@ namespace Dream {
     vector<float> mTranslation;
     vector<float> mRotation;
     vector<float> mScale;
+    string mTransformType;
   public:
     Transform3D();
     vector<float> getTranslation();
@@ -45,6 +49,8 @@ namespace Dream {
     vector<float> getScale();
     void setScale(vector<float>);
     void setScale(float, float, float);
+    string getTransformType();
+    void setTransformType(string);
   };
 
 } // End of Dream

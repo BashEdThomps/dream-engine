@@ -1,9 +1,9 @@
 
-#include "Dream.h"
+#include "DreamEngine.h"
 
 namespace Dream {
 
-  Dream::Dream() {
+  DreamEngine::DreamEngine() {
       setAssetManager(nullptr);
       setAnimationComponent(nullptr);
       setAudioComponent(nullptr);
@@ -13,55 +13,54 @@ namespace Dream {
       setTime(nullptr);
       setDone(false);
       setActiveScene(nullptr);
-      setAssetManager(nullptr);
       setProject(nullptr);
   }
 
-  Dream::~Dream() {
+  DreamEngine::~DreamEngine() {
       destroyComponents();
   }
 
-  Project* Dream::getProject() {
+  Project* DreamEngine::getProject() {
       return mProject;
   }
 
-  void Dream::setCamera(Camera* camera) {
+  void DreamEngine::setCamera(Camera* camera) {
       mCamera = camera;
   }
 
-  void Dream::setAudioComponent(AudioComponent* audioComp) {
+  void DreamEngine::setAudioComponent(AudioComponent* audioComp) {
       mAudioComponent = audioComp;
   }
 
-  void Dream::setAnimationComponent(AnimationComponent* animComp) {
+  void DreamEngine::setAnimationComponent(AnimationComponent* animComp) {
       mAnimationComponent = animComp;
   }
 
-  void Dream::setPhysicsComponent(PhysicsComponent* physicsComp) {
+  void DreamEngine::setPhysicsComponent(PhysicsComponent* physicsComp) {
       mPhysicsComponent = physicsComp;
   }
 
-  void Dream::setGraphicsComponent(GraphicsComponent* graphicsComp) {
+  void DreamEngine::setGraphicsComponent(GraphicsComponent* graphicsComp) {
       mGraphicsComponent = graphicsComp;
   }
 
-  void Dream::setDone(bool done) {
+  void DreamEngine::setDone(bool done) {
       mDone = done;
   }
 
-  void Dream::setTime(Time* time) {
+  void DreamEngine::setTime(Time* time) {
       mTime = time;
   }
 
-  void Dream::setProject(Project* project) {
+  void DreamEngine::setProject(Project* project) {
       mProject = project;
   }
 
-  bool Dream::isProjectLoaded() {
-      return mProject != NULL;
+  bool DreamEngine::isProjectLoaded() {
+      return mProject != nullptr;
   }
 
-  bool Dream::loadProjectFromFileReader(string projectPath, FileReader* reader)
+  bool DreamEngine::loadProjectFromFileReader(string projectPath, FileReader* reader)
   {
       cout << "Dream: Loading project from FileReader " << reader->getPath() << endl;
 
@@ -83,7 +82,7 @@ namespace Dream {
       return isProjectLoaded();
   }
 
-  bool Dream::loadFromArgumentParser(ArgumentParser *parser)
+  bool DreamEngine::loadFromArgumentParser(ArgumentParser *parser)
   {
       cout << "Dream: Loading from ArgumentParser" << endl;
 
@@ -97,7 +96,7 @@ namespace Dream {
       return loadSuccess;
   }
 
-  bool Dream::loadScene(Scene* scene)
+  bool DreamEngine::loadScene(Scene* scene)
   {
       if (scene == nullptr) {
           cerr << "Dream: Cannot load scene, null!" << endl;
@@ -119,23 +118,23 @@ namespace Dream {
       return true;
   }
 
-  void Dream::setActiveScene(Scene* scene)
+  void DreamEngine::setActiveScene(Scene* scene)
   {
       mActiveScene = scene;
   }
 
-  Scene* Dream::getActiveScene()
+  Scene* DreamEngine::getActiveScene()
   {
       return mActiveScene;
   }
 
-  bool Dream::hasActiveScene() {
-      return getActiveScene() != NULL;
+  bool DreamEngine::hasActiveScene() {
+      return getActiveScene() != nullptr;
   }
 
-  bool Dream::initActiveScene()
+  bool DreamEngine::initActiveScene()
   {
-      if (mActiveScene != NULL)
+      if (mActiveScene != nullptr)
       {
           if (!mActiveScene->init())
           {
@@ -149,9 +148,7 @@ namespace Dream {
           return false;
       }
 
-      mPhysicsComponent->populatePhysicsWorld(
-                  mAssetManager->getSceneObjectsWithPhysicsObjects()
-                  );
+      mPhysicsComponent->populatePhysicsWorld(mAssetManager->getSceneObjectsWithPhysicsObjects());
 
       mCamera->setTranslation(mActiveScene->getDefaultCameraTranslation());
       mCamera->setRotation(mActiveScene->getDefaultCameraRotation());
@@ -160,20 +157,20 @@ namespace Dream {
       return true;
   }
 
-  AssetManager* Dream::getAssetManager() {
+  AssetManager* DreamEngine::getAssetManager() {
       return mAssetManager;
   }
 
-  bool Dream::createAssetManager() {
-      if (mAssetManager != NULL) {
+  bool DreamEngine::createAssetManager() {
+      if (mAssetManager != nullptr) {
           cout << "Dream: Destroying existing Asset Manager." << endl;
           delete mAssetManager;
       }
       mAssetManager = new AssetManager();
-      return mAssetManager != NULL;
+      return mAssetManager != nullptr;
   }
 
-  bool Dream::initSDL() {
+  bool DreamEngine::initSDL() {
       if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0){
           cout << "SDL_Init Error: " << SDL_GetError() << endl;
           return false;
@@ -182,7 +179,8 @@ namespace Dream {
   }
 
 
-  bool Dream::run() {
+
+  bool DreamEngine::bootstrap() {
 
       if (!initSDL()) {
           cerr << "Dream: Unable to initialise SDL" << endl;
@@ -195,6 +193,8 @@ namespace Dream {
           return false;
       }
 
+      mAssetManager->setRenderer(mGraphicsComponent->getRenderer());
+
       // Init Scene Asset Instances
       if (!loadScene(mProject->getStartupScene())) {
           cerr << "Dream: Unable to load startup scene." << endl;
@@ -204,7 +204,10 @@ namespace Dream {
       cout << "Dream: Starting Scene - "
                 << getActiveScene()->getName()
                 << " (" << getActiveScene()->getUUID() << ")" << endl;
+      return true;
+  }
 
+  bool DreamEngine::run() {
       // GameLoop
 
       while(!mDone) {
@@ -216,22 +219,22 @@ namespace Dream {
       return mDone;
   }
 
-  void Dream::setAssetManager(AssetManager* assetManager) {
+  void DreamEngine::setAssetManager(AssetManager* assetManager) {
       mAssetManager = assetManager;
   }
 
-  Time* Dream::getTime() {
+  Time* DreamEngine::getTime() {
       return mTime;
   }
 
-  void Dream::destroyComponents() {
+  void DreamEngine::destroyComponents() {
       delete mAnimationComponent;
       delete mAudioComponent;
       delete mPhysicsComponent;
       delete mGraphicsComponent;
   }
 
-  bool Dream::createComponents() {
+  bool DreamEngine::createComponents() {
       cout << "Dream: Creating Components..." << endl;
       setTime(new Time());
       if(!createAudioComponent()) return false;
@@ -242,32 +245,33 @@ namespace Dream {
       return true;
   }
 
-  bool Dream::createAudioComponent() {
+  bool DreamEngine::createAudioComponent() {
       mAudioComponent = new AudioComponent();
       if (!mAudioComponent->init()) {
           cerr << "Dream: Unable to initialise OpenALAudio." << endl;
           return false;
       }
-      return mAudioComponent != NULL;
+      return mAudioComponent != nullptr;
   }
 
-  bool Dream::createPhysicsComponent() {
+  bool DreamEngine::createPhysicsComponent() {
       mPhysicsComponent = new PhysicsComponent();
       mPhysicsComponent->setTime(mTime);
       if (!mPhysicsComponent->init()){
           cerr << "ComponentManager: Unable to initialise BulletPhysics." << endl;
           return false;
       }
-      return mPhysicsComponent != NULL;
+      return mPhysicsComponent != nullptr;
   }
 
-  bool Dream::createGraphicsComponent() {
+  bool DreamEngine::createGraphicsComponent() {
       setCamera(new Camera());
       mGraphicsComponent = new GraphicsComponent(mCamera);
       mGraphicsComponent->setWindowWidth(mProject->getWindowWidth());
       mGraphicsComponent->setWindowHeight(mProject->getWindowHeight());
       mGraphicsComponent->setScreenName(mProject->getName());
       mGraphicsComponent->setTime(mTime);
+
       if (mGraphicsComponent->init()) {
           return true;
       } else {
@@ -276,7 +280,7 @@ namespace Dream {
       }
   }
 
-  bool Dream::createAnimationComponent() {
+  bool DreamEngine::createAnimationComponent() {
       mAnimationComponent = new AnimationComponent();
       mAnimationComponent->setTime(mTime);
       if (mAnimationComponent->init()) {
@@ -287,33 +291,37 @@ namespace Dream {
       }
   }
 
-  bool Dream::isDone() {
+  bool DreamEngine::isDone() {
       return mDone;
   }
 
-  void Dream::updateComponents() {
+  void DreamEngine::updateComponents() {
       mDone = mGraphicsComponent->isWindowShouldCloseFlagSet();
       mGraphicsComponent->update(mActiveScene);
   }
 
-  AnimationComponent* Dream::getAnimationComponent() {
+  AnimationComponent* DreamEngine::getAnimationComponent() {
       return mAnimationComponent;
   }
 
-  AudioComponent* Dream::getAudioComponent() {
+  AudioComponent* DreamEngine::getAudioComponent() {
       return mAudioComponent;
   }
 
-  PhysicsComponent* Dream::getPhysicsComponent() {
+  PhysicsComponent* DreamEngine::getPhysicsComponent() {
       return mPhysicsComponent;
   }
 
-  GraphicsComponent* Dream::getGraphicsComponent() {
+  GraphicsComponent* DreamEngine::getGraphicsComponent() {
       return mGraphicsComponent;
   }
 
-  Camera* Dream::getCamera() {
+  Camera* DreamEngine::getCamera() {
       return mCamera;
+  }
+
+  map<SceneObject*,LuaScriptInstance*>* DreamEngine::getLuaScriptMap() {
+    return mAssetManager->getLuaScriptMap();
   }
 
 

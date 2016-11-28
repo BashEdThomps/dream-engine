@@ -35,7 +35,7 @@ namespace Dream {
         for (sgIter = scenegraph.begin(); sgIter != scenegraph.end(); sgIter++) {
           SceneObject* currentSceneObject = *sgIter;
           AssetInstance* animAsset = currentSceneObject->getAnimationInstance();
-          if (animAsset != NULL) {
+          if (animAsset != nullptr) {
             try {
               AnimationInstance* dreamAnimInstance;
               dreamAnimInstance = dynamic_cast<AnimationInstance*>(animAsset);

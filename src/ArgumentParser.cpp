@@ -48,7 +48,7 @@ namespace Dream {
         }
       }
       delete nextArg;
-      nextArg = NULL;
+      nextArg = nullptr;
     }
 
     if (mDreamPath.size() == 0) {

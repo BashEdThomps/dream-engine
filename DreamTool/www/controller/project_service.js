@@ -90,6 +90,8 @@ App.service('ProjectService',
     this.ASSET_TYPE_SCRIPT        = "script";
     this.ASSET_FORMAT_NAME_CHAI   = "ChaiScript";
     this.ASSET_FORMAT_SCRIPT_CHAI = "chai";
+    this.ASSET_FORMAT_NAME_LUA    = "Lua";
+    this.ASSET_FORMAT_SCRIPT_LUA  = "lua";
 
     // Shader
     this.ASSET_TYPE_NAME_SHADER       = "Shader";
@@ -100,7 +102,9 @@ App.service('ProjectService',
     // Sprite
     this.ASSET_TYPE_NAME_SPRITE = "Sprite";        
     this.ASSET_TYPE_SPRITE = "sprite";        
-     
+    this.ASSET_FORMAT_NAME_SPRITE = "Sprite";
+     this.ASSET_FORMAT_SPRITE = "sprite";
+
 
     this.ASSET_TYPES = [
       // Animation
@@ -216,12 +220,22 @@ App.service('ProjectService',
           {
             name:   this.ASSET_FORMAT_NAME_CHAI,
             format: this.ASSET_FORMAT_SCRIPT_CHAI,
+          }, {
+              name: this.ASSET_FORMAT_NAME_LUA,
+              format: this.ASSET_FORMAT_SCRIPT_LUA
           }
         ]
-      }, {
+      },
+      // Sprite  
+      {
           name: this.ASSET_TYPE_NAME_SPRITE,
           type: this.ASSET_TYPE_SPRITE,
-          formats: []
+          formats: [
+            {
+              name: this.ASSET_FORMAT_NAME_SPRITE,
+              format: this.ASSET_FORMAT_SPRITE
+            }
+          ]
       }
     ];
 

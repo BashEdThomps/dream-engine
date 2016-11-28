@@ -67,26 +67,26 @@ namespace Dream {
         // Vertex Shader
         mVertexShader = glCreateShader(GL_VERTEX_SHADER);
         const char *vSource = mVertexShaderSource.c_str();
-        glShaderSource(mVertexShader, 1, &vSource, NULL);
+        glShaderSource(mVertexShader, 1, &vSource, nullptr);
         glCompileShader(mVertexShader);
 
         // Print compile errors if any
         glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
         if (!success) {
-          glGetShaderInfoLog(mVertexShader, 512, NULL, infoLog);
+          glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
           cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << endl;
         }
 
         // Fragment Shader
         mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         const char *fSource = mFragmentShaderSource.c_str();
-        glShaderSource(mFragmentShader, 1, &fSource, NULL);
+        glShaderSource(mFragmentShader, 1, &fSource, nullptr);
         glCompileShader(mFragmentShader);
 
         // Print compile errors if any
         glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
         if (!success) {
-          glGetShaderInfoLog(mFragmentShader, 512, NULL, infoLog);
+          glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
           cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << endl;
         }
 
@@ -99,7 +99,7 @@ namespace Dream {
         // Print linking errors if any
         glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
         if (!success) {
-          glGetProgramInfoLog(mShaderProgram, 512, NULL, infoLog);
+          glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
           cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << endl;
         }
 

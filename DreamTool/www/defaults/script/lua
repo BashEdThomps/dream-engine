@@ -1,0 +1,11 @@
+--[[
+    Default Lua Script
+--]]
+
+function update()
+    print("Update Here")
+end
+
+function onInput()
+    print("Handle Input Here")
+end

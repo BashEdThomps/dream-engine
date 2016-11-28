@@ -13,7 +13,7 @@
 #include "Components/Graphics/ShaderInstance.h"
 #include "Components/Graphics/SpriteInstance.h"
 #include "Components/Physics/PhysicsObjectInstance.h"
-#include "Components/Scripting/ChaiScriptInstance.h"
+#include "Components/Scripting/LuaScriptInstance.h"
 
 #define SO_X 0
 #define SO_Y 1
@@ -48,11 +48,11 @@ namespace Dream {
       SceneObject* mParent;
       vector<SceneObject*> mChildren;
       vector<string> mAssetInstanceUUIDsToLoad;
+      bool mHasFocus;
       // Metadata
       string mUUID;
       string mName;
       string mPath;
-      string mTransformType;
       Transform3D *mTransform;
       // Asset Instances
       AudioInstance *mAudioInstance;
@@ -61,7 +61,7 @@ namespace Dream {
       ShaderInstance *mShaderInstance;
       LightInstance *mLightInstance;
       SpriteInstance *mSpriteInstance;
-      ChaiScriptInstance *mScriptInstance;
+      LuaScriptInstance *mScriptInstance;
       PhysicsObjectInstance *mPhysicsObjectInstance;
   public:
       SceneObject(nlohmann::json);
@@ -126,8 +126,8 @@ namespace Dream {
       AssimpModelInstance* getModelInstance();
       bool hasModelInstance();
 
-      void setScriptInstance(ChaiScriptInstance*);
-      ChaiScriptInstance* getScriptInstance();
+      void setScriptInstance(LuaScriptInstance*);
+      LuaScriptInstance* getScriptInstance();
       bool hasScriptInstance();
 
       void setShaderInstance(ShaderInstance*);
@@ -151,6 +151,9 @@ namespace Dream {
 
       Transform3D* getTransform();
       void setTransform(Transform3D*);
+
+      bool hasFocus();
+      void setHasFocus(bool);
 
   }; // End of SceneObject
 

@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Graphics::OpenGL::GraphicsComponent
+* GraphicsComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace Dream {
           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
         );
 
-        if (mWindow == NULL){
+        if (mWindow == nullptr){
           cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
           SDL_Quit();
           return false;
@@ -76,6 +76,11 @@ namespace Dream {
           return false;
         }
 
+        if (!createSDLRenderer()) {
+          cerr << "GraphicsComponent: Unable to create SDL Renderer" << endl;
+          return false;
+        }
+
         //Use OpenGL 3.1 core
         SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
         SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
@@ -83,7 +88,7 @@ namespace Dream {
 
         //Create context
         mContext = SDL_GL_CreateContext(mWindow);
-        if(mContext == NULL) {
+        if(mContext == nullptr) {
             cerr << "GraphicsComponent: OpenGL context could not be created! - "
                       << SDL_GetError()
                       << endl;
@@ -133,11 +138,15 @@ namespace Dream {
 
         vector<SceneObject*> scenegraph = scene->getScenegraphVector();
         if (!mWindowShouldClose) {
+
           // Clear the colorbuffer
+          SDL_RenderClear(mRenderer);
           glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
           glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
           vector<SceneObject*> scenegraph = scene->getScenegraphVector();
-          for (vector<SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++) {
+          for (vector<SceneObject*>::iterator it = scenegraph.begin();
+               it!=scenegraph.end();
+               it++ ) {
             SceneObject *object = (*it);
             // Models
             if (object->hasModelInstance()) {
@@ -153,13 +162,14 @@ namespace Dream {
               drawSprite(object);
             }
           }
+          //SDL_RenderPresent(mRenderer);
           SDL_GL_SwapWindow(mWindow);
         }
       }
 
       void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
         SpriteInstance *sprite = sceneObject->getSpriteInstance();
-        SDL_RenderCopy(mRenderer, sprite->getTexture(), NULL, sprite->getDestination());
+        SDL_RenderCopy(mRenderer, sprite->getTexture(), nullptr, sprite->getDestination());
       }
 
       void GraphicsComponent::drawModel(SceneObject* sceneObject) {
@@ -275,6 +285,10 @@ namespace Dream {
 
       bool GraphicsComponent::isWindowShouldCloseFlagSet() {
         return mWindowShouldClose;
+      }
+
+      SDL_Renderer* GraphicsComponent::getRenderer() {
+        return mRenderer;
       }
 
 } // End of Dream

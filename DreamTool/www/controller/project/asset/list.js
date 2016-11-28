@@ -111,6 +111,11 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_SCRIPT_CHAI;
   };
 
+    $scope.isScriptAssetFormatLua = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_SCRIPT_LUA;
+  };
+
   $scope.isPhysicsObjectAssetFormatSphere = function() {
       if (!$scope.currentAsset) return false;
       return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_SPHERE;

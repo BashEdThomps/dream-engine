@@ -48,13 +48,27 @@ function($http) {
   };
 
   this.readAsset = function(project,type,uuid,format,callback) {
+    var api=this;
     $http({
       url    : this.generateAssetURL(project,type,uuid,format),
       method : "get",
     }).then(function success(resp){
       callback(resp.data);
     },function failure(){
-      callback(false);
+        api.getAssetDefault(type,format,function(defaultData) {
+            callback(defaultData);
+        });
+    });
+  };
+
+  this.getAssetDefault = function(type,format,callback) {
+    $http({
+        url: "/defaults/"+type+"/"+format,
+        method: "get"
+    }).then(function success(resp) {
+        callback(resp.data);
+    },function error() {
+        callback("");
     });
   };
 

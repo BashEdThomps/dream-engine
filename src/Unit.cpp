@@ -165,7 +165,7 @@ namespace Dream {
     void Unit::assertNotNull(string name, void* val) {
       int retval;
         string formattedText;
-        if (val != NULL) {
+        if (val != nullptr) {
             formattedText = green(UNIT_PASS);
         retval = 0;
         } else {
@@ -180,7 +180,7 @@ namespace Dream {
     void Unit::assertNull(string name, void* val) {
       int retval;
         string formattedText;
-        if (val == NULL) {
+        if (val == nullptr) {
             formattedText = green(UNIT_PASS);
         retval = 0;
         } else {

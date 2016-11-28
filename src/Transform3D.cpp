@@ -20,6 +20,7 @@
 namespace Dream {
 
     Transform3D::Transform3D() {
+      mTransformType = TRANSFORM_TYPE_ABSOLUTE;
       mTranslation = vector<float>(3);
       mRotation = vector<float>(3);
       mScale = vector<float>(3);
@@ -65,6 +66,14 @@ namespace Dream {
         mScale[TRANSFORM_X] = x;
         mScale[TRANSFORM_Y] = y;
         mScale[TRANSFORM_Z] = z;
+    }
+
+    void Transform3D::setTransformType(string type) {
+      mTransformType = type;
+    }
+
+    string Transform3D::getTransformType() {
+      return mTransformType;
     }
 
 } // End of Dream

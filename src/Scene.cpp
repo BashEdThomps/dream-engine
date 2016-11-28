@@ -35,7 +35,7 @@ namespace Dream {
     nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
 
     if (!sceneObjects.is_null() && sceneObjects.is_array()) {
-      loadSceneObjects(sceneObjects,NULL);
+      loadSceneObjects(sceneObjects,nullptr);
     }
   }
 
@@ -66,7 +66,7 @@ namespace Dream {
   }
 
   Scene::~Scene() {
-    if (mDefaultCameraTransform != NULL) {
+    if (mDefaultCameraTransform != nullptr) {
         delete mDefaultCameraTransform;
     }
   }
@@ -102,7 +102,7 @@ namespace Dream {
       for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
         cout << "Scene: Creating SceneObject " << endl;
         SceneObject *nextSceneObject = new SceneObject(*it);
-        if (parent != NULL) {
+        if (parent != nullptr) {
           nextSceneObject->setParent(parent);
           parent->addChild(nextSceneObject);
         } else {
@@ -126,7 +126,7 @@ namespace Dream {
     vector<string> pathVector;
 
     SceneObject* next = so;
-    while (next != NULL) {
+    while (next != nullptr) {
       pathVector.push_back(next->getUUID());
       next = next->getParent();
     }
@@ -145,7 +145,7 @@ namespace Dream {
         return (*it);
       }
     }
-    return NULL;
+    return nullptr;
   }
 
   size_t Scene::getNumberOfSceneObjects() {
@@ -164,7 +164,7 @@ namespace Dream {
   }
 
   void Scene::showScenegraph() {
-    if (mRootSceneObject == NULL) {
+    if (mRootSceneObject == nullptr) {
       cout << "Scenegraph is empty!" << endl;
       return;
     }
