@@ -1,11 +1,11 @@
 --[[
-    Default Lua Script
+    Main Script for this thing.
 --]]
 
-function update()
-    print("Update Here")
+function update() 
+    print("Update Function.")
 end
 
-function onInput()
-    print("Handle Input Here")
+function handleInput()
+    print("Input Handler Function.")
 end

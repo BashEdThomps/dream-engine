@@ -339,4 +339,12 @@ namespace Dream {
     return mSpriteInstance;
   }
 
+  void SceneObject::setHasFocus(bool focus) {
+    mHasFocus = focus;
+  }
+
+  bool SceneObject::hasFocus() {
+    return mHasFocus;
+  }
+
 } // End of Dream

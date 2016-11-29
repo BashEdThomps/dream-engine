@@ -178,8 +178,6 @@ namespace Dream {
       return true;
   }
 
-
-
   bool DreamEngine::bootstrap() {
 
       if (!initSDL()) {
@@ -207,17 +205,13 @@ namespace Dream {
       return true;
   }
 
-  bool DreamEngine::run() {
-      // GameLoop
-
-      while(!mDone) {
-          mTime->update();
-          updateComponents();
-          this_thread::yield();
-      }
-
-      return mDone;
+  bool DreamEngine::update() {
+      mTime->update();
+      updateComponents();
+      this_thread::yield();
+      return !mDone;
   }
+
 
   void DreamEngine::setAssetManager(AssetManager* assetManager) {
       mAssetManager = assetManager;

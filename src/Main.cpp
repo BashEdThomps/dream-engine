@@ -43,14 +43,22 @@ int main(int argc, const char** argv)
     LuaComponentInstance.setLuaScriptMap(DreamEngineInstance.getLuaScriptMap());
     LuaComponentInstance.init();
 
-    if(!DreamEngineInstance.run())
-    {
-      cerr << "Main: Exiting Before It's Time :(" << endl;
-      return 1;
-    } else {
-      cout << "Main: Exiting Cleanly :)" << endl;
-      return 0;
+    int result = 0;
+    while (result == 0) {
+        if (!LuaComponentInstance.update()) {
+            cerr << "Main: LuaComponentInstance update error!" << endl;
+            result = 1;
+            break;
+        }
+
+        if(!DreamEngineInstance.update())
+        {
+            cerr << "Main: Dream update error!" << endl;
+            result = 1;
+            break;
+        }
     }
+    return 0;
   } else {
     cerr << "Main: FATAL - Failed to Load Project." << endl;
     return 1;

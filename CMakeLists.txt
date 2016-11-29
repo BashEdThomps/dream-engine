@@ -7,7 +7,7 @@ message("Using modules path: " ${CMAKE_MODULE_PATH})
 
 if(UNIX)
   message("CMAKE: Building for Unix")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
 endif()
 
 if (APPLE)

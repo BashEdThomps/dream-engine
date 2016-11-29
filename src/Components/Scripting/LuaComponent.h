@@ -21,11 +21,14 @@
 #include <map>
 #include <iostream>
 
+#include <luabind/luabind.hpp>
+
 extern "C" {
-#include "lua.h"
+  //#include "lua.h"
+  #include "lualib.h"
+  //#include "lauxlib.h"
 }
 
-#include <luabind/luabind.hpp>
 #include "../../DreamEngine.h"
 
 namespace Dream {
@@ -49,8 +52,11 @@ namespace Dream {
         bool init();
 
         bool loadScriptsFromMap();
-        bool loadScript(string);
-        void stackDump(lua_State*);
+        bool loadScript(LuaScriptInstance*);
+        void stackDump();
+        bool update();
+        bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);
+        bool executeScriptKeyHandler(SceneObject*, LuaScriptInstance*);
 
     }; // End of LuaComponent
 

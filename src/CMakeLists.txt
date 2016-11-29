@@ -43,6 +43,9 @@ target_link_libraries(
   ${SDL2_IMAGE_LIBRARY}
 )
 
+message("Using lua L: " ${LUA_LIBRARIES} " H: " ${LUA_INCLUDE_DIR})
+message("Using LuaBind L: " ${LUABIND_LIBRARIES} " H: " ${LUABIND_INCLUDE_DIR})
+
 include_directories(
   ${CHAISCRIPT_INCLUDE_DIR}
   ${OPENGL_INCLUDE_DIR}

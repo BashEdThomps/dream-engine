@@ -49,7 +49,7 @@ namespace Dream {
     AssetManager* getAssetManager();
 
     bool bootstrap();
-    bool run();
+    bool update();
     void setTime(Time*);
     Time* getTime();
     void setDone(bool);
