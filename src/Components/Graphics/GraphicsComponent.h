@@ -44,45 +44,46 @@
 #define Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
 
 namespace Dream {
-            class GraphicsComponent : public ComponentInterface {
-            private:
-                int mWindowWidth;
-                int mWindowHeight;
-                string mScreenName;
-                bool mWindowShouldClose;
-                SDL_Window *mWindow;
-                SDL_Renderer *mRenderer;
-                Camera *mCamera;
-                float mMinimumDraw = 0.1f;
-                float mMaximumDraw = 1000.0f;
-                SDL_GLContext mContext;
-                SDL_Event mEvent;
-            public:
-                void setWindowWidth(int);
-                int  getWindowWidth();
-                void setWindowHeight(int);
-                int  getWindowHeight();
-                void setScreenName(string);
-                string getScreenName();
+  class GraphicsComponent : public ComponentInterface {
+  private:
+      int mWindowWidth;
+      int mWindowHeight;
+      string mScreenName;
+      bool mWindowShouldClose;
+      SDL_Window *mWindow;
+      SDL_Renderer *mRenderer;
+      Camera *mCamera;
+      float mMinimumDraw = 0.1f;
+      float mMaximumDraw = 1000.0f;
+      SDL_GLContext mContext;
+      SDL_Event mEvent;
+  public:
+      void setWindowWidth(int);
+      int  getWindowWidth();
+      void setWindowHeight(int);
+      int  getWindowHeight();
+      void setScreenName(string);
+      string getScreenName();
 
-                void closeWindow();
-                void setCursorEnabled(bool);
+      void closeWindow();
+      void setCursorEnabled(bool);
 
-                GraphicsComponent(Camera*);
-                ~GraphicsComponent(void);
-                bool createSDLWindow();
+      GraphicsComponent(Camera*);
+      ~GraphicsComponent(void);
+      bool createSDLWindow();
 
-                bool init(void);
-                void update(Scene*);
-                void drawSprite(SceneObject*);
-                void drawModel(SceneObject*);
-                bool checkGLError(int);
-                void setupWindowEventHandlers();
-                bool isWindowShouldCloseFlagSet();
-                SDL_Window* getWindow();
-                SDL_Renderer* getRenderer();
-                bool createSDLRenderer();
-            }; // End of GraphicsComponent
+      bool init(void);
+      void update(Scene*);
+      void drawSprite(SceneObject*);
+      void drawModel(SceneObject*);
+      bool checkGLError(int);
+      void setupWindowEventHandlers();
+      bool isWindowShouldCloseFlagSet();
+      SDL_Window* getWindow();
+      SDL_Renderer* getRenderer();
+      bool createSDLRenderer();
+      SDL_Event getEvent();
+  }; // End of GraphicsComponent
 
 } // End of Dream
 

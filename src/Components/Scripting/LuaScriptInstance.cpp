@@ -22,6 +22,7 @@ namespace Dream {
       LuaScriptInstance::LuaScriptInstance(
           AssetDefinition* definition, Transform3D* transform
       ) : AssetInstance(definition,transform) {
+        mLuaTable = nullptr;
         return;
       }
 
@@ -40,6 +41,14 @@ namespace Dream {
 
       string LuaScriptInstance::getAbsolutePath() {
         return mAbsolutePath;
+      }
+
+      void LuaScriptInstance::setLuaTable(void* table) {
+        mLuaTable = table;
+      }
+
+      void* LuaScriptInstance::getLuaTable() {
+        return mLuaTable;
       }
 
 } // End of Dream

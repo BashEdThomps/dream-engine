@@ -36,6 +36,13 @@ namespace Dream {
 
     class LuaComponent {
     private:
+      string mScriptLoaderCode = "function scriptloader (scriptTable, scriptname)\n"
+                                     "local mt = {__index=_G}\n"
+                                     "setmetatable(scriptTable, mt)\n"
+                                     "local chunk = loadfile(scriptname)\n"
+                                     "setfenv(chunk, scriptTable)\n"
+                                     "chunk()\n"
+                                 "end";
         lua_State *mState;
         map<SceneObject*, LuaScriptInstance*> *mScriptMap;
     public:
@@ -44,10 +51,18 @@ namespace Dream {
 
         void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
 
-        void bindAssetManagerClass();
-        void bindComponentsClass();
-        void bindProjectClass();
-        void bindSceneClass();
+        void bindAssetManager();
+        void bindComponents();
+        void bindProject();
+        void bindSceneObject();
+        void bindScene();
+        void bindTransform3D();
+        void bindAnimationComponent();
+        void bindAudioComponent();
+        void bindGraphicsComponent();
+        void bindPhysicsComponent();
+        void bindSDL();
+        void bindSDL_Event();
 
         bool init();
 

@@ -59,6 +59,12 @@ namespace Dream {
     if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null()) {
       loadAssetInstances(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
     }
+
+    if(!soJson[SCENE_OBJECT_HAS_FOCUS].is_null()) {
+      bool focus = soJson[SCENE_OBJECT_HAS_FOCUS];
+      setHasFocus(focus);
+    }
+
   }
 
   void SceneObject::loadAssetInstances(nlohmann::json assetInstancesJson) {

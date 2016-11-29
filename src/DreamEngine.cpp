@@ -208,6 +208,7 @@ namespace Dream {
   bool DreamEngine::update() {
       mTime->update();
       updateComponents();
+      mDone = mDone || mGraphicsComponent->isWindowShouldCloseFlagSet();
       this_thread::yield();
       return !mDone;
   }

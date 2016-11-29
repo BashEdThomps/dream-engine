@@ -32,10 +32,12 @@ namespace Dream {
         mState = luaL_newstate();
         luabind::open(mState);
         luaopen_base(mState);
-        bindAssetManagerClass();
-        bindComponentsClass();
-        bindProjectClass();
-        bindSceneClass();
+        bindAssetManager();
+        bindComponents();
+        bindProject();
+        bindSceneObject();
+        bindScene();
+        bindSDL();
         return loadScriptsFromMap();
     }
 
@@ -55,59 +57,91 @@ namespace Dream {
     }
 
     bool LuaComponent::loadScript(LuaScriptInstance* scriptInstance) {
-        // Reset the stack
-        lua_settop(mState,0);
-        // File and Environment names
-        string filename = scriptInstance->getAbsolutePath();
-        string envName = scriptInstance->getUUID();
-        // Load Script
-        if (luaL_loadfile(mState, filename.c_str())) {
-            cerr << "LuaComponent: lua_loadfile failed for " << filename << endl
-                 << "LuaComponent: Lua says: " << lua_tostring(mState, -1) << endl;
-            lua_pop(mState,1);
-            return false;
-        }
-        // Create new ENV table
-        lua_createtable(mState,0,1);
-        // Push the print function to the env
-        lua_getglobal(mState,"print");
-        lua_setfield(mState,-2,"print");
-        lua_pushvalue(mState,-1);
-        // Add to registry
-        lua_setfield(mState, LUA_REGISTRYINDEX, envName.c_str());
-        // Set the function environment
-        lua_setfenv(mState, -2);
-        // Execute Script
-        if  (lua_pcall(mState, 0, 0, 0)) {
-            cerr << "LuaComponent: lua_pcall failed for " << filename << endl
-                 << "LuaComponent: Lua says: " << lua_tostring(mState, -1) << endl;
-            lua_pop(mState,1);
-            return false;
-
-        }
-        return true;
+      string id = scriptInstance->getUUID();
+      luaL_dostring(mState, mScriptLoaderCode.c_str());
+      luabind::object newtable = luabind::newtable(mState);
+      try {
+        luabind::call_function<void>(
+            mState, "scriptloader", newtable,
+            scriptInstance->getAbsolutePath().c_str()
+        );
+        luabind::object reg = luabind::registry(mState);
+        reg[id] = newtable;
+      } catch (luabind::error e){
+        cerr << "LuaComponent: loadScript exception:" << endl
+             << "\t" << e.what() << endl;
+        return false;
+      }
+      return true;
     }
 
-    void LuaComponent::bindAssetManagerClass() {
+    void LuaComponent::bindAssetManager() {
         luabind::module(mState) [
-                luabind::class_<AssetManager>("AssetManager")
-                .def(luabind::constructor<>())
-                ];
+            luabind::class_<AssetManager>("AssetManager")
+            .def(luabind::constructor<>())
+        ];
     }
 
-    void LuaComponent::bindComponentsClass() {
-
+    void LuaComponent::bindComponents() {
+        bindAnimationComponent();
+        bindAudioComponent();
+        bindGraphicsComponent();
+        bindPhysicsComponent();
     }
 
-    void LuaComponent::bindProjectClass() {
+    void LuaComponent::bindAnimationComponent() {
+        // TODO
+    }
+
+    void LuaComponent::bindAudioComponent() {
+        // TODO
+    }
+
+    void LuaComponent::bindGraphicsComponent() {
+        // TODO
+    }
+
+    void LuaComponent::bindPhysicsComponent() {
+        // TODO
+    }
+
+    void LuaComponent::bindProject() {
         luabind::module(mState) [
-                luabind::class_<Project>("Project")
-                .def(luabind::constructor<AssetManager*>())
-                ];
+            luabind::class_<Project>("Project")
+            .def(luabind::constructor<AssetManager*>())
+        ];
     }
 
-    void LuaComponent::bindSceneClass() {
+    void LuaComponent::bindScene() {
+        luabind::module(mState) [
+            luabind::class_<Scene>("Scene")
+            .def(luabind::constructor<>())
+        ];
+    }
 
+    void LuaComponent::bindSceneObject() {
+        luabind::module(mState) [
+            luabind::class_<SceneObject>("SceneObject")
+            .def(luabind::constructor<>())
+            .def("get_uuid",&SceneObject::getUUID)
+        ];
+    }
+
+    void LuaComponent::bindTransform3D() {
+      luabind::module(mState) [
+          luabind::class_<Transform3D>("Transform3D")
+          .def(luabind::constructor<>())
+      ];
+    }
+
+    void LuaComponent::bindSDL() {
+      bindSDL_Event();
+    }
+
+    void LuaComponent::bindSDL_Event() {
+      luabind::module(mState) [
+          luabind::class_<SDL_Event>("SDL_Event")
+      ];
     }
 
     void LuaComponent::setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>* scriptMap) {
@@ -164,28 +198,32 @@ namespace Dream {
     }
 
     bool LuaComponent::executeScriptUpdate(SceneObject* sceneObject, LuaScriptInstance* script) {
-        string id = script->getUUID();
-        // Reset the stack
-        lua_settop(mState,0);
-        // retrieve the environment from the resgistry
-        lua_getfield(mState, LUA_REGISTRYINDEX, id.c_str());
-        // get the desired function from the environment
-        lua_getfield(mState, -1, "update");
-        // Call the function
-        lua_call(mState, 0, 0);
-        return true;
+      string id = script->getUUID();
+      luabind::object reg = luabind::registry(mState);
+      luabind::object table = reg[id];
+      try {
+        luabind::object funq = table["update"];
+        luabind::call_function<void>(funq,sceneObject);
+      } catch (exception e) {
+        cerr << "LuaComponent: update exception:" << endl
+             << "\t" << e.what() << endl;
+        return false;
+      }
+      return true;
     }
 
     bool LuaComponent::executeScriptKeyHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
-        // Reset the stack
-        string id = script->getUUID();
-        // retrieve the environment from the resgistry
-        lua_settop(mState,0);
-        lua_getfield(mState, LUA_REGISTRYINDEX, id.c_str());
-        // get the desired function from the environment
-        lua_getfield(mState, -1, "handleInput");
-        // Call the function
-        lua_call(mState, 0, 0);
-        return true;
+      string id = script->getUUID();
+      luabind::object reg = luabind::registry(mState);
+      luabind::object table = reg[id];
+      try {
+        luabind::object funq = table["handleInput"];
+        luabind::call_function<void>(funq,sceneObject);
+      } catch (exception e) {
+        cerr << "LuaComponent: handleInput exception:" << endl
+             << "\t" << e.what() << endl;
+        return false;
+      }
+      return true;
     }
 } // End of Dream

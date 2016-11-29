@@ -292,4 +292,8 @@ namespace Dream {
     return mRenderer;
   }
 
+  SDL_Event GraphicsComponent::getEvent() {
+    return mEvent;
+  }
+
 } // End of Dream

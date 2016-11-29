@@ -22,6 +22,7 @@
 #define SCENE_OBJECT_UUID "uuid"
 #define SCENE_OBJECT_NAME "name"
 #define SCENE_OBJECT_CHILDREN "children"
+#define SCENE_OBJECT_HAS_FOCUS "hasFocus"
 #define PATH_DELIMETER "::"
 
 #define SCENE_OBJECT_TRANSLATION "translation"
