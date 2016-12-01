@@ -181,20 +181,37 @@
                 </select>
               </td>
             </tr>
-            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatWav()">
-              <td>Wav File</td>
+
+            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatSfx()">
+              <td>Sound Effect File</td>
               <td>
-                <button ng-show="hasAudioWav"  class="pull-right btn-sm btn btn-danger"
+                <button ng-show="hasAudioSfx" class="pull-right btn-sm btn btn-danger"
                         ng-click="onDeleteAssetDataButtonClicked()">
                   <span class="glyphicon glyphicon-remove"></span>
                 </button>
-                <button ng-show="!hasAudioWav" class="pull-right btn btn-sm btn btn-success"
-                        ng-click="onAssetAudioWavUploadButtonClicked()">
+                <button ng-show="!hasAudioSfx" class="pull-right btn btn-sm btn btn-success"
+                        ng-click="onAssetAudioSfxUploadButtonClicked()">
                   <span class="glyphicon glyphicon-open"></span>
                 </button>
-                <input ng-show="!hasAudioOgg" type="file" id="ogg-file" accept=".ogg" name="ogg-file"/>
+                <input ng-show="!hasAudiosSfx" type="file" id="sfx-file" name="sfx-file"/>
               </td>
             </tr>
+
+            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatMusic()">
+              <td>Sound Music File</td>
+              <td>
+                <button ng-show="hasAudioMusic" class="pull-right btn-sm btn btn-danger"
+                        ng-click="onDeleteAssetDataButtonClicked()">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <button ng-show="!hasAudioMusic" class="pull-right btn btn-sm btn btn-success"
+                        ng-click="onAssetAudioMusicUploadButtonClicked()">
+                  <span class="glyphicon glyphicon-open"></span>
+                </button>
+                <input ng-show="!hasAudiosMusic" type="file" id="music-file" name="music-file"/>
+              </td>
+            </tr>
+
             <tr ng-show="isAssetTypeAudio()">
               <td>Loop</td>
               <td>
@@ -203,6 +220,7 @@
                   <label></label>
                 </div>
               </td>
+
             </tr>
             <!-- Font -->
             <tr ng-show="isAssetTypeFont()">

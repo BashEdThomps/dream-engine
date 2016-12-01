@@ -18,15 +18,9 @@
 #ifndef TRANSFORM3D_H
 #define TRANSFORM3D_H
 
-
-#define TRANSFORM_X 0
-#define TRANSFORM_Y 1
-#define TRANSFORM_Z 2
-#define TRANSFORM_TYPE_ABSOLUTE "absolute"
-#define TRANSFORM_TYPE_OFFSET "offset"
-
 #include <vector>
 #include <iostream>
+#include "Constants.h"
 
 namespace Dream {
 
@@ -43,12 +37,34 @@ namespace Dream {
     vector<float> getTranslation();
     void setTranslation(vector<float>);
     void setTranslation(float, float, float);
+    float getTranslationX();
+    float getTranslationY();
+    float getTranslationZ();
+    void setTranslationX(float);
+    void setTranslationY(float);
+    void setTranslationZ(float);
+
     vector<float> getRotation();
     void setRotation(vector<float>);
     void setRotation(float, float, float);
+    float getRotationX();
+    float getRotationY();
+    float getRotationZ();
+    void setRotationX(float);
+    void setRotationY(float);
+    void setRotationZ(float);
+
     vector<float> getScale();
     void setScale(vector<float>);
     void setScale(float, float, float);
+    float getScaleX();
+    float getScaleY();
+    float getScaleZ();
+    void setScaleX(float);
+    void setScaleY(float);
+    void setScaleZ(float);
+
+
     string getTransformType();
     void setTransformType(string);
   };

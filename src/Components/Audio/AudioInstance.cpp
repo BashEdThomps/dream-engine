@@ -2,39 +2,84 @@
 
 namespace Dream {
 
-            AudioInstance::AudioInstance(
-                    AssetDefinition* definition, Transform3D* transform
-                    ) : AssetInstance(definition, transform) {
-                setLooping(false);
-                setStatus(AudioStatus::STOPPED);
-            }
+    AudioInstance::AudioInstance(AssetDefinition* definition, Transform3D* transform)
+        : AssetInstance(definition, transform) {
+        mChunk = nullptr;
+        mMusic = nullptr;
+        setLooping(false);
+        setStatus(AudioStatus::STOPPED);
+    }
 
-            AudioInstance::~AudioInstance() {
+    AudioInstance::~AudioInstance() {
+        if (mChunk != nullptr) {
+            Mix_FreeChunk(mChunk);
+        }
+        if (mMusic != nullptr) {
+            Mix_FreeMusic(mMusic);
+        }
+    }
 
-            }
+    void AudioInstance::loadExtraAttributes(nlohmann::json jsonData) {
+        return;
+    }
 
-            void AudioInstance::loadExtraAttributes(nlohmann::json jsonData) {
-                return;
-            }
+    bool AudioInstance::load(string path) {
+        mAbsolutePath = path+mDefinition->getAssetPath();
 
-            bool AudioInstance::load(string path) {
+        if (mDefinition->isAudioFormatSoundEffect()) {
+            mChunk = Mix_LoadWAV(mAbsolutePath.c_str());
+            if (mChunk == nullptr) {
                 return false;
             }
-
-            void AudioInstance::setLooping(bool looping) {
-                mLooping = looping;
+            cout << "AudioInstance: Successfuly loaded Sound Effect" << endl;
+        } else if (mDefinition->isAudioFormatMusic()) {
+            mMusic = Mix_LoadMUS(mAbsolutePath.c_str());
+            if (mMusic == nullptr) {
+                return false;
             }
+            cout << "AudioInstance: Successfuly loaded Music" << endl;
+        }
 
-            bool AudioInstance::isLooping() {
-                return mLooping;
-            }
+        return mMusic || mChunk;
+    }
 
-            void AudioInstance::setStatus(AudioStatus status) {
-                mStatus = status;
-            }
+    void AudioInstance::setLooping(bool looping) {
+        mLooping = looping;
+    }
 
-            AudioStatus AudioInstance::getStatus() {
-                return mStatus;
+    bool AudioInstance::isLooping() {
+        return mLooping;
+    }
+
+    void AudioInstance::setStatus(AudioStatus status) {
+        mStatus = status;
+    }
+
+    AudioStatus AudioInstance::getStatus() {
+        return mStatus;
+    }
+
+    bool AudioInstance::play() {
+        if (mChunk != nullptr) {
+            if (Mix_PlayChannel(-1, mChunk, 0) == -1) {
+                return false;
             }
+            return true;
+        } else if (mMusic != nullptr) {
+            if (Mix_PlayMusic(mMusic, -1) == -1) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    bool AudioInstance::pause() {
+        return false;
+    }
+
+    bool AudioInstance::stop() {
+        return false;
+    }
 
 } // End of Dream

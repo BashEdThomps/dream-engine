@@ -28,33 +28,11 @@
 namespace Dream {
 
       class AudioComponent : public ComponentInterface {
-      private:
-        vector<AudioInstance*> mPlayQueue;
-        vector<AudioInstance*> mPauseQueue;
-        vector<AudioInstance*> mStopQueue;
       public:
         AudioComponent();
         ~AudioComponent();
         bool init();
         void update(Scene*);
-
-        void pushToPlayQueue(AssetInstance*);
-        void pushToPauseQueue(AssetInstance*);
-        void pushToStopQueue(AssetInstance*);
-
-        void playAsset(AssetInstance*);
-        void pauseAsset(AssetInstance*);
-        void stopAsset(AssetInstance*);
-
-      protected:
-        void   play(AudioInstance*);
-        void   stop(AudioInstance*);
-        void   pause(AudioInstance*);
-
-        void   updatePlayQueue();
-        void   updatePauseQueue();
-        void   updateStopQueue();
-
       }; // End of AudioComponent
 
 } // End of Dream

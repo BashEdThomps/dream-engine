@@ -24,57 +24,68 @@
 #include <luabind/luabind.hpp>
 
 extern "C" {
-  //#include "lua.h"
-  #include "lualib.h"
-  //#include "lauxlib.h"
+//#include "lua.h"
+#include "lualib.h"
+//#include "lauxlib.h"
 }
 
 #include "../../DreamEngine.h"
 
 namespace Dream {
-    using namespace std;
+  using namespace std;
 
-    class LuaComponent {
-    private:
-      string mScriptLoaderCode = "function scriptloader (scriptTable, scriptname)\n"
-                                     "local mt = {__index=_G}\n"
-                                     "setmetatable(scriptTable, mt)\n"
-                                     "local chunk = loadfile(scriptname)\n"
-                                     "setfenv(chunk, scriptTable)\n"
-                                     "chunk()\n"
-                                 "end";
-        lua_State *mState;
-        map<SceneObject*, LuaScriptInstance*> *mScriptMap;
-    public:
-        LuaComponent();
-        ~LuaComponent();
+  class LuaComponent {
+  private:
+    string mScriptLoaderCode = "function scriptloader (scriptTable, scriptname)\n"
+                               "local mt = {__index=_G}\n"
+                               "setmetatable(scriptTable, mt)\n"
+                               "local chunk = loadfile(scriptname)\n"
+                               "setfenv(chunk, scriptTable)\n"
+                               "chunk()\n"
+                               "end";
+    lua_State *mState;
+    map<SceneObject*, LuaScriptInstance*> *mScriptMap;
+    SDL_Event mEvent;
+  public:
+    LuaComponent();
+    ~LuaComponent();
 
-        void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
+    void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
 
-        void bindAssetManager();
-        void bindComponents();
-        void bindProject();
-        void bindSceneObject();
-        void bindScene();
-        void bindTransform3D();
-        void bindAnimationComponent();
-        void bindAudioComponent();
-        void bindGraphicsComponent();
-        void bindPhysicsComponent();
-        void bindSDL();
-        void bindSDL_Event();
+    void bindAssetManager();
+    void bindComponents();
+    void bindProject();
+    void bindSceneObject();
+    void bindScene();
+    void bindTransform3D();
+    void bindAnimationComponent();
+    void bindAudioComponent();
+    void bindGraphicsComponent();
+    void bindPhysicsComponent();
+    void bindSDL();
+    void bindSDL_Event();
 
-        bool init();
+    bool init();
 
-        bool loadScriptsFromMap();
-        bool loadScript(LuaScriptInstance*);
-        void stackDump();
-        bool update();
-        bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);
-        bool executeScriptKeyHandler(SceneObject*, LuaScriptInstance*);
+    bool loadScriptsFromMap();
+    bool loadScript(LuaScriptInstance*);
+    void stackDump();
+    bool update();
+    bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);
+    bool executeScriptKeyHandler(SceneObject*, LuaScriptInstance*);
+    void setSDL_Event(SDL_Event);
+    void bindAssetClasses();
+    void bindAudioInstance();
+    /*
+    void bindAnimationInstance();
+    void bindAssimpModelInstance();
+    void bindLightInstance();
+    void bindShaderInstance();
+    void bindSpriteInstance();
+    void bindPhysicsObjectInstane();
+    */
 
-    }; // End of LuaComponent
-
+  }; // End of LuaComponent
 } // End of Dream
 
 #endif // LUACOMPONENT_H

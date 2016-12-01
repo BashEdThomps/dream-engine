@@ -34,7 +34,7 @@ namespace Dream {
           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
           mWindowWidth, mWindowHeight,
           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-          );
+    );
 
     if (mWindow == nullptr){
       cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
@@ -44,22 +44,7 @@ namespace Dream {
     return true;
   }
 
-  bool GraphicsComponent::createSDLRenderer() {
-    mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (mRenderer == nullptr){
-      SDL_DestroyWindow(mWindow);
-      cout << "GraphicsComponent: SDL_CreateRenderer Error = " << SDL_GetError() << endl;
-      SDL_Quit();
-      return false;
-    }
-    return true;
-  }
-
   GraphicsComponent::~GraphicsComponent(void) {
-
-    if (mRenderer) {
-      SDL_DestroyRenderer(mRenderer);
-    }
 
     if (mWindow) {
       SDL_DestroyWindow(mWindow);
@@ -73,11 +58,6 @@ namespace Dream {
 
     if (!createSDLWindow()) {
       cerr << "GraphicsComponent: Unable to create SDL Window" << endl;
-      return false;
-    }
-
-    if (!createSDLRenderer()) {
-      cerr << "GraphicsComponent: Unable to create SDL Renderer" << endl;
       return false;
     }
 
@@ -140,14 +120,16 @@ namespace Dream {
     if (!mWindowShouldClose) {
 
       // Clear the colorbuffer
-      //SDL_RenderClear(mRenderer);
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
       vector<SceneObject*> scenegraph = scene->getScenegraphVector();
+
       for (vector<SceneObject*>::iterator it = scenegraph.begin();
-           it!=scenegraph.end();
-           it++ ) {
+           it!=scenegraph.end(); it++ ) {
+
         SceneObject *object = (*it);
+
         // Models
         if (object->hasModelInstance()) {
           if (object->hasShaderInstance()){
@@ -157,21 +139,24 @@ namespace Dream {
                  << " has model, but no shader assigned." << endl;
           }
         }
+
         // Sprites
         if (object->hasSpriteInstance()) {
-          drawSprite(object);
+          if (object->hasShaderInstance()){
+            drawSprite(object);
+          } else {
+            cerr << "GraphicsComponent: Object " << object->getUUID()
+                 << " has sprite, but no shader assigned." << endl;
+          }
         }
       }
-      //SDL_RenderPresent(mRenderer);
+
       SDL_GL_SwapWindow(mWindow);
-      SDL_Delay(100);
+      SDL_Delay(10);
     }
   }
 
-  void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
-    SpriteInstance *sprite = sceneObject->getSpriteInstance();
-    SDL_RenderCopy(mRenderer, sprite->getTexture(), nullptr, sprite->getDestination());
-  }
+  void GraphicsComponent::drawSprite(SceneObject* sceneObject) {}
 
   void GraphicsComponent::drawModel(SceneObject* sceneObject) {
     AssimpModelInstance* model;
@@ -288,11 +273,7 @@ namespace Dream {
     return mWindowShouldClose;
   }
 
-  SDL_Renderer* GraphicsComponent::getRenderer() {
-    return mRenderer;
-  }
-
-  SDL_Event GraphicsComponent::getEvent() {
+  SDL_Event GraphicsComponent::getSDL_Event() {
     return mEvent;
   }
 

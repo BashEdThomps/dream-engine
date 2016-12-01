@@ -31,28 +31,28 @@ App.service('ProjectService',
     ];
 
     // Audio
-    this.ASSET_TYPE_NAME_AUDIO  = "Audio";
-    this.ASSET_TYPE_AUDIO       = "audio";
-    this.ASSET_FORMAT_NAME_OGG  = "Ogg Vorbis";
-    this.ASSET_FORMAT_AUDIO_OGG = "ogg";
-    this.ASSET_FORMAT_NAME_WAV  = "Wave File";
-    this.ASSET_FORMAT_AUDIO_WAV = "wav";
+    this.ASSET_TYPE_NAME_AUDIO = "Audio";
+    this.ASSET_TYPE_AUDIO = "audio";
+    this.ASSET_FORMAT_NAME_MUSIC  = "Music";
+    this.ASSET_FORMAT_AUDIO_MUSIC = "music";
+    this.ASSET_FORMAT_NAME_SFX  = "Sound Effect";
+    this.ASSET_FORMAT_AUDIO_SFX = "sfx";
 
     // Font
-    this.ASSET_TYPE_NAME_FONT       = "Font";
-    this.ASSET_TYPE_FONT            = "font";
+    this.ASSET_TYPE_NAME_FONT = "Font";
+    this.ASSET_TYPE_FONT = "font";
     this.ASSET_FORMAT_NAME_TRUETYPE = "TrueType";
     this.ASSET_FORMAT_FONT_TRUETYPE = "ttf";
-    this.ASSET_FORMAT_NAME_WOFF     = "WOFF";
-    this.ASSET_FORMAT_FONT_WOFF     = "woff";
+    this.ASSET_FORMAT_NAME_WOFF = "WOFF";
+    this.ASSET_FORMAT_FONT_WOFF = "woff";
 
     // Light
-    this.ASSET_TYPE_LIGHT      = "light";
+    this.ASSET_TYPE_LIGHT = "light";
     this.ASSET_TYPE_NAME_LIGHT = "Light";
 
     // Physics
     this.ASSET_TYPE_NAME_PHYSICS_OBJECT = "Physics Object";
-    this.ASSET_TYPE_PHYSICS_OBJECT      = "physicsObject";
+    this.ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
 
     this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_SPHERE = "Shpere";
     this.ASSET_FORMAT_PHYSICS_OBJECT_SPHERE = "btShpereShape";
@@ -124,12 +124,12 @@ App.service('ProjectService',
         type: this.ASSET_TYPE_AUDIO,
         formats: [
           {
-            name:   this.ASSET_FORMAT_NAME_OGG,
-            format: this.ASSET_FORMAT_AUDIO_OGG
+            name:   this.ASSET_FORMAT_NAME_MUSIC,
+            format: this.ASSET_FORMAT_AUDIO_MUSIC
           },
           {
-            name:   this.ASSET_FORMAT_NAME_WAV,
-            format: this.ASSET_FORMAT_AUDIO_WAV
+            name:   this.ASSET_FORMAT_NAME_SFX,
+            format: this.ASSET_FORMAT_AUDIO_SFX
           }
         ]
       },
@@ -689,22 +689,22 @@ App.service('ProjectService',
       );
     };
 
-    this.assetHasAudioWav = function(uuid,callback) {
+    this.assetHasAudioSfx = function(uuid,callback) {
       ApiService.assetExists(
         this.project.uuid,
         this.ASSET_TYPE_AUDIO,
         uuid,
-        this.ASSET_FORMAT_AUDIO_WAV,
+        this.ASSET_FORMAT_AUDIO_SFX,
         callback
       );
     };
 
-    this.assetHasAudioOgg = function(uuid,callback) {
+    this.assetHasAudioMusic = function(uuid,callback) {
       ApiService.assetExists(
         this.project.uuid,
         this.ASSET_TYPE_AUDIO,
         uuid,
-        this.ASSET_FORMAT_AUDIO_OGG,
+        this.ASSET_FORMAT_AUDIO_MUSIC,
         callback
       );
     };

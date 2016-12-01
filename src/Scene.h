@@ -25,23 +25,7 @@
 #include "SceneObject.h"
 #include "Components/Graphics/Camera.h"
 #include "String.h"
-
-#define SCENE_JSON_UUID              "uuid"
-#define SCENE_JSON_NAME              "name"
-#define SCENE_JSON_ANIMATION_ENABLED "animationEnabled"
-#define SCENE_JSON_AUDIO_ENABLED     "audioEnabled"
-#define SCENE_JSON_PHYSICS_ENABLED   "physicsEnabled"
-#define SCENE_JSON_INPUT_ENABLED     "inputEnabled"
-#define SCENE_JSON_SCRIPTING_ENABLED "scriptingEnabled"
-#define SCENE_JSON_SCENE_OBJECTS     "objects"
-#define SCENE_JSON_CAMERA            "camera"
-#define SCENE_JSON_TRANSLATION       "translation"
-#define SCENE_JSON_ROTATION          "rotation"
-#define SCENE_JSON_MOVEMENT_SPEED    "movementSpeed"
-
-#define SCENE_JSON_X "x"
-#define SCENE_JSON_Y "y"
-#define SCENE_JSON_Z "z"
+#include "Constants.h"
 
 namespace Dream {
 

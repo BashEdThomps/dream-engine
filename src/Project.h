@@ -24,25 +24,13 @@
 #include "AssetDefinition.h"
 #include "String.h"
 #include "AssetManager.h"
-
-#define PROJECT_UUID            "uuid"
-#define PROJECT_NAME            "name"
-#define PROJECT_AUTHOR          "author"
-#define PROJECT_DESCRIPTION     "description"
-#define PROJECT_SCENE_ARRAY     "scenes"
-#define PROJECT_ASSET_ARRAY     "assets"
-#define PROJECT_STARTUP_SCENE   "startupScene"
-
-#define PROJECT_WINDOW_SIZE  "windowSize"
-#define PROJECT_WIDTH "width"
-#define PROJECT_HEIGHT "height"
+#include "Constants.h"
 
 namespace Dream {
 
   using namespace std;
   using namespace nlohmann;
 
- //Instance Variables
   class Project {
   private:
     AssetManager *mAssetManager;
@@ -56,7 +44,6 @@ namespace Dream {
     Scene *mActiveScene;
     int mWindowWidth;
     int mWindowHeight;
-  // Instance Methods
   public:
     Project(AssetManager*);
     Project(AssetManager*, string, nlohmann::json);

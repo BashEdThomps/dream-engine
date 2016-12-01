@@ -33,11 +33,12 @@ namespace Dream {
 
   class AssetInstance {
   protected:
+    string mAbsolutePath;
     AssetDefinition *mDefinition;
     Transform3D     *mTransform;
   public:
     AssetInstance(AssetDefinition*, Transform3D*);
-    virtual ~AssetInstance(void) {}
+    virtual ~AssetInstance();
 
     string getUUID();
     string getName();
@@ -49,6 +50,8 @@ namespace Dream {
 
     Transform3D* getTransform();
 
+    string getAbsolutePath();
+    void setAbsolutePath(string);
   }; // End of AssetInstance
 } // End of Dream
 

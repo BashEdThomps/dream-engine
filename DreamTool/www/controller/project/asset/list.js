@@ -91,14 +91,14 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.type == ProjectService.ASSET_TYPE_SPRITE;
   };
 
-  $scope.isAudioAssetFormatOgg = function() {
+  $scope.isAudioAssetFormatMusic = function() {
     if (!$scope.currentAsset) return false;
-    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_OGG;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_MUSIC;
   };
 
-  $scope.isAudioAssetFormatWav = function() {
+  $scope.isAudioAssetFormatSfx = function() {
     if (!$scope.currentAsset) return false;
-    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_WAV;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_SFX;
   };
 
   $scope.isModelAssetFormatAssimp = function() {
@@ -166,15 +166,15 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     console.log("Updating Asset Variables for",$scope.currentAsset);
     if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_AUDIO) {
       console.log("Checking for existing audio asset");
-      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_WAV) {
-        ProjectService.assetHasAudioWav($scope.currentAsset.uuid,function(result){
-          console.log("AudioWav Asset Exists",result);
-          $scope.hasAudioWav = result;
+      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_SFX) {
+        ProjectService.assetHasAudioSfx($scope.currentAsset.uuid,function(result){
+          console.log("Audio Sfx Asset Exists",result);
+          $scope.hasAudioSfx = result;
         });
-      } else if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_OGG) {
-        ProjectService.assetHasAudioOgg($scope.currentAsset.uuid,function(result){
-          console.log("AudioOgg Asset Exists",result);
-          $scope.hasAudioOgg = result;
+      } else if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_MUSIC) {
+        ProjectService.assetHasAudioMusic($scope.currentAsset.uuid,function(result){
+          console.log("Audio Music Asset Exists",result);
+          $scope.hasAudioMusic = result;
         });
       }
     } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_MODEL) {
@@ -227,35 +227,35 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     });
   };
 
-  $scope.onAssetAudioOggUploadButtonClicked = function() {
+  $scope.onAssetAudioMusicUploadButtonClicked = function() {
     UIService.addAlert("Uploading Asset File...","info");
-    var oggFile = document.getElementById('ogg-file');
-    UtilService.readFileAsBinaryFromElement(oggFile, function(data) {
+    var musicFile = document.getElementById('music-file');
+    UtilService.readFileAsBinaryFromElement(musicFile, function(data) {
       var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/"+$scope.currentAsset.format;
       ApiService.uploadAsset(path,data, function(success){
         if (success) {
-          UIService.addAlert("Asset uploaded successfuly.","success");
+          UIService.addAlert("Music Asset uploaded successfuly.","success");
           $scope.updateAssetUIVariables();
         }
         else {
-          UIService.addAlert("Error uploading asset.","danger");
+          UIService.addAlert("Error uploading music asset.","danger");
         }
       });
     });
   };
 
-  $scope.onAssetAudioWavUploadButtonClicked = function() {
+  $scope.onAssetAudioSfxUploadButtonClicked = function() {
     UIService.addAlert("Uploading Asset File...","info");
-    var wavFile = document.getElementById('wav-file');
-    UtilService.readFileAsBinaryFromElement(wavFile, function(data) {
+    var sfxFile = document.getElementById('sfx-file');
+    UtilService.readFileAsBinaryFromElement(sfxFile, function(data) {
       var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/"+$scope.currentAsset.format;
       ApiService.uploadAsset(path,data, function(success){
         if (success) {
-          UIService.addAlert("Asset uploaded successfuly.","success");
+          UIService.addAlert("Sfx asset uploaded successfuly.","success");
           $scope.updateAssetUIVariables();
         }
         else {
-          UIService.addAlert("Error uploading asset.","danger");
+          UIService.addAlert("Error uploading sfx asset.","danger");
         }
       });
     });

@@ -57,6 +57,8 @@ int main(int argc, const char** argv)
             result = 1;
             break;
         }
+
+        LuaComponentInstance.setSDL_Event(DreamEngineInstance.getSDL_Event());
     }
     return 0;
   } else {

@@ -19,13 +19,7 @@
 #define ARGUMENTPARSER_H
 
 #include <iostream>
-
-#define PROJECT_DIRECTORY_ARG "--project-dir"
-#define PROJECT_UUID_ARG      "--uuid"
-#define PROJECT_UUID_LENGTH   19
-#define PROJECT_EXTENSION     ".json"
-#define PROJECT_PATH_SEP      "/"
-#define DREAM_TOOL_DIR        ".dreamtool"
+#include "Constants.h"
 
 namespace Dream {
 

@@ -39,10 +39,6 @@ namespace Dream {
 
       void LuaScriptInstance::update() {}
 
-      string LuaScriptInstance::getAbsolutePath() {
-        return mAbsolutePath;
-      }
-
       void LuaScriptInstance::setLuaTable(void* table) {
         mLuaTable = table;
       }

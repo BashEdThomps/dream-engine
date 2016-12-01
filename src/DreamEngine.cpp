@@ -191,8 +191,6 @@ namespace Dream {
           return false;
       }
 
-      mAssetManager->setRenderer(mGraphicsComponent->getRenderer());
-
       // Init Scene Asset Instances
       if (!loadScene(mProject->getStartupScene())) {
           cerr << "Dream: Unable to load startup scene." << endl;
@@ -293,6 +291,7 @@ namespace Dream {
   void DreamEngine::updateComponents() {
       mDone = mGraphicsComponent->isWindowShouldCloseFlagSet();
       mGraphicsComponent->update(mActiveScene);
+      mEvent = mGraphicsComponent->getSDL_Event();
   }
 
   AnimationComponent* DreamEngine::getAnimationComponent() {
@@ -317,6 +316,10 @@ namespace Dream {
 
   map<SceneObject*,LuaScriptInstance*>* DreamEngine::getLuaScriptMap() {
     return mAssetManager->getLuaScriptMap();
+  }
+
+  SDL_Event DreamEngine::getSDL_Event() {
+    return mEvent;
   }
 
 

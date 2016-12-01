@@ -25,14 +25,12 @@
 namespace Dream {
       class LuaScriptInstance : public AssetInstance {
       private:
-        string mAbsolutePath;
         void* mLuaTable;
       public:
         LuaScriptInstance(AssetDefinition*,Transform3D*);
         ~LuaScriptInstance(void);
         bool load(string);
         void update();
-        string getAbsolutePath();
         void loadExtraAttributes(nlohmann::json) {}
         void setLuaTable(void*);
         void* getLuaTable();

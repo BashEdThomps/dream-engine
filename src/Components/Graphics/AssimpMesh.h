@@ -11,21 +11,10 @@
 #include <assimp/types.h>
 
 #include "ShaderInstance.h"
+#include "Texture.h"
+#include "Vertex.h"
 
 namespace Dream {
-
-      struct Vertex {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec2 TexCoords;
-      };
-
-      struct Texture {
-        GLuint id;
-        string type;
-        aiString path;
-      };
-
       class AssimpMesh {
       private:
         GLuint mVAO;

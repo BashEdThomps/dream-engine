@@ -15,31 +15,6 @@
 #include "Components/Physics/PhysicsObjectInstance.h"
 #include "Components/Scripting/LuaScriptInstance.h"
 
-#define SO_X 0
-#define SO_Y 1
-#define SO_Z 2
-
-#define SCENE_OBJECT_UUID "uuid"
-#define SCENE_OBJECT_NAME "name"
-#define SCENE_OBJECT_CHILDREN "children"
-#define SCENE_OBJECT_HAS_FOCUS "hasFocus"
-#define PATH_DELIMETER "::"
-
-#define SCENE_OBJECT_TRANSLATION "translation"
-#define SCENE_OBJECT_ROTATION "rotation"
-#define SCENE_OBJECT_SCALE "scale"
-
-#define SCENE_OBJECT_X "x"
-#define SCENE_OBJECT_Y "y"
-#define SCENE_OBJECT_Z "z"
-
-#define SCENE_OBJECT_TRANSFORM_TYPE "transformType"
-#define SCENE_OBJECT_TRANSFORM_TYPE_OFFSET "offset"
-#define SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE "absolute"
-
-#define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
-
-
 namespace Dream {
 
   using namespace std;

@@ -16,37 +16,12 @@
 */
 
 #include "AssimpModelInstance.h"
+#include "TextureManager.h"
 
 namespace Dream {
 
-      vector<Texture> AssimpModelInstance::sTextureCache = vector<Texture>();
-
-      GLint TextureFromFile(const char* path, string directory) {
-        //Generate texture ID and load texture data
-        string filename = string(path);
-        filename = directory + '/' + filename;
-        GLuint textureID;
-        glGenTextures(1, &textureID);
-        int width,height;
-        unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-        // Assign texture to ID
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        // Parameters
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        SOIL_free_image_data(image);
-        return textureID;
-      }
-
       AssimpModelInstance::AssimpModelInstance(
-          AssetDefinition* definition,
-          Transform3D* transform
+          AssetDefinition* definition, Transform3D* transform
       ) : AssetInstance(definition,transform) {
         return;
       }
@@ -70,8 +45,8 @@ namespace Dream {
       }
 
       void AssimpModelInstance::draw(ShaderInstance* shader) {
-        GLuint nMeshes = mMeshes.size();
-        for(GLuint i = 0; i < nMeshes; i++ ) {
+        size_t nMeshes = mMeshes.size();
+        for(size_t i = 0; i < nMeshes; i++ ) {
           mMeshes[i].draw(shader);
         }
       }
@@ -146,9 +121,9 @@ namespace Dream {
           aiString str;
           mat->GetTexture(type, i, &str);
           GLboolean skip = false;
-          for(GLuint j = 0; j < sTextureCache.size(); j++) {
-            if(sTextureCache[j].path == str) {
-              textures.push_back(sTextureCache[j]);
+          for(GLuint j = 0; j < TextureManager::getTextureCache().size(); j++) {
+            if(TextureManager::getTextureCache()[j].path == str) {
+              textures.push_back(TextureManager::getTextureCache()[j]);
               skip = true;
               break;
             }
@@ -156,11 +131,11 @@ namespace Dream {
           if(!skip) {   // If texture hasn't been loaded already, load it
             cout << "\tLoading Texture: " << mDirectory << "/" << str.C_Str() <<  endl;
             Texture texture;
-            texture.id = TextureFromFile(str.C_Str(), mDirectory);
+            texture.id = TextureManager::loadTextureFromFile(str.C_Str(), mDirectory.c_str());
             texture.type = typeName;
             texture.path = str;
             textures.push_back(texture);
-            sTextureCache.push_back(texture);  // Add to loaded textures
+            TextureManager::getTextureCache().push_back(texture);  // Add to loaded textures
           }
         }
         return textures;

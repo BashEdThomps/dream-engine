@@ -26,6 +26,8 @@ namespace Dream {
       mScale = vector<float>(3);
     }
 
+// Translation ===================================================================
+
     vector<float> Transform3D::getTranslation() {
       return mTranslation;
     }
@@ -39,6 +41,32 @@ namespace Dream {
       mTranslation[TRANSFORM_Y] = y;
       mTranslation[TRANSFORM_Z] = z;
     }
+
+    void Transform3D::setTranslationX(float x) {
+      mTranslation[TRANSFORM_X] = x;
+    }
+
+    void Transform3D::setTranslationY(float y) {
+      mTranslation[TRANSFORM_Y] = y;
+    }
+
+    void Transform3D::setTranslationZ(float z) {
+      mTranslation[TRANSFORM_Z] = z;
+    }
+
+    float Transform3D::getTranslationX() {
+      return mTranslation[TRANSFORM_X];
+    }
+
+    float Transform3D::getTranslationY() {
+      return mTranslation[TRANSFORM_Y];
+    }
+
+    float Transform3D::getTranslationZ() {
+      return mTranslation[TRANSFORM_Z];
+    }
+
+// Rotation ======================================================================
 
     vector<float> Transform3D::getRotation() {
       return mRotation;
@@ -54,6 +82,32 @@ namespace Dream {
       mRotation[TRANSFORM_Z] = z;
     }
 
+    float Transform3D::getRotationX() {
+      return mRotation[TRANSFORM_X];
+    }
+
+    float Transform3D::getRotationY() {
+      return mRotation[TRANSFORM_Y];
+    }
+
+    float Transform3D::getRotationZ() {
+      return mRotation[TRANSFORM_Z];
+    }
+
+    void Transform3D::setRotationX(float x) {
+      mRotation[TRANSFORM_X] = x;
+    }
+
+    void Transform3D::setRotationY(float y) {
+      mRotation[TRANSFORM_Y] = y;
+    }
+
+    void Transform3D::setRotationZ(float z) {
+      mRotation[TRANSFORM_Z] = z;
+    }
+
+// Scale =========================================================================
+
     vector<float> Transform3D::getScale() {
       return mScale;
     }
@@ -68,6 +122,32 @@ namespace Dream {
         mScale[TRANSFORM_Z] = z;
     }
 
+    float Transform3D::getScaleX() {
+      return mScale[TRANSFORM_X];
+    }
+
+    float Transform3D::getScaleY() {
+      return mScale[TRANSFORM_Y];
+    }
+
+    float Transform3D::getScaleZ() {
+      return mScale[TRANSFORM_Z];
+    }
+
+    void Transform3D::setScaleX(float x) {
+      mScale[TRANSFORM_X] = x;
+    }
+
+    void Transform3D::setScaleY(float y) {
+      mScale[TRANSFORM_Y] = y;
+    }
+
+    void Transform3D::setScaleZ(float z) {
+      mScale[TRANSFORM_Z] = z;
+    }
+
+// Transform Type ================================================================
+
     void Transform3D::setTransformType(string type) {
       mTransformType = type;
     }
@@ -75,5 +155,4 @@ namespace Dream {
     string Transform3D::getTransformType() {
       return mTransformType;
     }
-
 } // End of Dream

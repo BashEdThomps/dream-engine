@@ -167,24 +167,20 @@ namespace Dream {
     return getType().compare(ASSET_TYPE_SPRITE) == 0;
   }
 
-  bool AssetDefinition::isScriptFormatChai() {
-    return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_CHAI) == 0;
+  bool AssetDefinition::isScriptFormatLua() {
+    return getFormat().compare(ASSET_DEF_FORMAT_SCRIPT_LUA) == 0;
   }
 
   bool AssetDefinition::isModelFormatAssimp() {
     return getFormat().compare(ASSET_DEF_FORMAT_MODEL_ASSIMP) == 0;
   }
 
-  bool AssetDefinition::isAudioFormatWav() {
-    return getFormat().compare(ASSET_DEF_FORMAT_AUDIO_WAV) == 0;
+  bool AssetDefinition::isAudioFormatMusic() {
+    return getFormat().compare(ASSET_DEF_FORMAT_AUDIO_MUSIC) == 0;
   }
 
-  bool AssetDefinition::isAudioFormatOgg() {
-    return getFormat().compare(ASSET_DEF_FORMAT_AUDIO_OGG) == 0;
-  }
-
-  bool AssetDefinition::isAnimationFormatDream() {
-    return getFormat().compare(ASSET_DEF_FORMAT_ANIMATION_DREAM) == 0;
+  bool AssetDefinition::isAudioFormatSoundEffect() {
+    return getFormat().compare(ASSET_DEF_FORMAT_AUDIO_SFX) == 0;
   }
 
   string AssetDefinition::getAssetTypeDirectory() {

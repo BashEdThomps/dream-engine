@@ -6,7 +6,6 @@
 
 #include <SDL2/SDL.h>
 
-
 #include "ArgumentParser.h"
 #include "Time.h"
 #include "FileReader.h"
@@ -34,6 +33,7 @@ namespace Dream {
     PhysicsComponent *mPhysicsComponent;
     AnimationComponent *mAnimationComponent;
     bool mDone;
+    SDL_Event mEvent;
   public:
     DreamEngine(void);
     ~DreamEngine(void);
@@ -85,6 +85,7 @@ namespace Dream {
     void setGraphicsComponent(GraphicsComponent*);
 
     map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
+    SDL_Event getSDL_Event();
 
   }; // End of Dream
 } // End of Dream

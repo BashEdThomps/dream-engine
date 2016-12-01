@@ -1,7 +1,7 @@
 /*
- * SpriteInstance.h
+ * TextureManager.h
  *
- * Created: 25/11/2016 2016 by Ashley
+ * Created: 30/11/2016 2016 by Ashley
  *
  * Copyright 2016 Octronic. All rights reserved.
  *
@@ -15,35 +15,26 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#ifndef TEXTUREMANAGER_H
+#define TEXTUREMANAGER_H
 
-#ifndef SPRITEINSTANCE_H
-#define SPRITEINSTANCE_H
-
-#define SPRITE_TILE_SIZE "tileSize"
-#define SPRITE_TILE_WIDTH "width"
-#define SPRITE_TILE_HEIGHT "height"
-
+#include <iostream>
+#include <vector>
+#include <SOIL/SOIL.h>
+#include "Texture.h"
 #include <GL/glew.h>
-#include "../../AssetInstance.h"
+
 
 namespace Dream {
+  using namespace std;
 
-  class SpriteInstance : public AssetInstance {
-  private:
-    int mTileWidth;
-    int mTileHeight;
-    int mSpriteWidth;
-    int mSpriteHeight;
-    GLuint mTexture;
-    bool mGLBlend;
+  class TextureManager {
+    static vector<Texture> sTextureCache;
   public:
-    SpriteInstance(AssetDefinition*,Transform3D*);
-    ~SpriteInstance();
-    bool load(string);
-    void loadExtraAttributes(nlohmann::json);
-    void drawGL();
+    TextureManager();
+    static GLuint loadTextureFromFile(const char*, const char*);
+    static vector<Texture> getTextureCache();
   };
+} // End Dream
 
-} // End of Dream
-
-#endif // SPRITEINSTANCE_H
+#endif // TEXTUREMANAGER_H

@@ -28,15 +28,14 @@
 #include <iostream>
 #include <vector>
 #include "AssimpMesh.h"
+#include "Texture.h"
 
 namespace Dream {
-      GLint TextureFromFile(const char* path, string directory);
       class AssimpModelInstance : public AssetInstance {
       private:
         // Variables
         vector<AssimpMesh> mMeshes;
         string mDirectory;
-        static vector<Texture> sTextureCache;
         // Methods
         void processNode(aiNode*, const aiScene*);
         AssimpMesh processMesh(aiMesh*, const aiScene*);

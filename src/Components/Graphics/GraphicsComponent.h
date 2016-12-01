@@ -51,7 +51,6 @@ namespace Dream {
       string mScreenName;
       bool mWindowShouldClose;
       SDL_Window *mWindow;
-      SDL_Renderer *mRenderer;
       Camera *mCamera;
       float mMinimumDraw = 0.1f;
       float mMaximumDraw = 1000.0f;
@@ -80,9 +79,7 @@ namespace Dream {
       void setupWindowEventHandlers();
       bool isWindowShouldCloseFlagSet();
       SDL_Window* getWindow();
-      SDL_Renderer* getRenderer();
-      bool createSDLRenderer();
-      SDL_Event getEvent();
+      SDL_Event getSDL_Event();
   }; // End of GraphicsComponent
 
 } // End of Dream

@@ -44,7 +44,6 @@ namespace Dream {
     vector<SceneObject*> mSceneObjectsWithPhysicsObjects;
     vector<AssetDefinition*> mAssetDefinitions;
     string mProjectPath;
-    SDL_Renderer* mRenderer;
   public:
     AssetManager();
     ~AssetManager();
@@ -74,7 +73,6 @@ namespace Dream {
     AssetDefinition* getAssetDefinitionByUUID(string);
 
     void setProjectPath(string);
-    void setRenderer(SDL_Renderer*);
 
     map<SceneObject*,LuaScriptInstance*> *getLuaScriptMap();
     void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);

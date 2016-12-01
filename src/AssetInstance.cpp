@@ -25,6 +25,10 @@ namespace Dream {
     mTransform = transform;
   }
 
+  AssetInstance::~AssetInstance() {
+
+  }
+
   string AssetInstance::getName() {
     return mDefinition->getName();
   }
@@ -40,4 +44,13 @@ namespace Dream {
   Transform3D* AssetInstance::getTransform() {
     return mTransform;
   }
+
+  string AssetInstance::getAbsolutePath() {
+    return mAbsolutePath;
+  }
+
+  void AssetInstance::setAbsolutePath(string path) {
+    mAbsolutePath = path;
+  }
+
 } // End of Dream

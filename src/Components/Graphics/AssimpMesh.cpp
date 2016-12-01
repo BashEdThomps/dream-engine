@@ -2,10 +2,7 @@
 
 namespace Dream {
 
-      AssimpMesh::AssimpMesh(
-          vector<Vertex> vertices,
-          vector<GLuint> indices,
-          vector<Texture> textures) {
+      AssimpMesh::AssimpMesh(vector<Vertex> vertices,vector<GLuint> indices,vector<Texture> textures) {
         mVertices = vertices;
         mIndices  = indices;
         mTextures = textures;

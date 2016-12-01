@@ -222,7 +222,6 @@ namespace Dream {
 
 
         if (sceneObject && retval) {
-            retval->setRenderer(mRenderer);
             sceneObject->setSpriteInstance(retval);
         }
 
@@ -269,10 +268,6 @@ namespace Dream {
             }
         }
         return retval;
-    }
-
-    void AssetManager::setRenderer(SDL_Renderer* renderer) {
-      mRenderer = renderer;
     }
 
     map<SceneObject*,LuaScriptInstance*>* AssetManager::getLuaScriptMap() {

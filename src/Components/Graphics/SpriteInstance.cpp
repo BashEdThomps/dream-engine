@@ -16,7 +16,7 @@
  * this file belongs to.
  */
 #include "SpriteInstance.h"
-#include "SDL2/SDL_image.h"
+#include "TextureManager.h"
 
 namespace Dream {
 
@@ -24,70 +24,32 @@ namespace Dream {
       AssetDefinition* definition,
       Transform3D* transform) : AssetInstance(definition,transform) {
     loadExtraAttributes(mDefinition->getJson());
+    mGLBlend = false;
   }
 
   SpriteInstance::~SpriteInstance() {}
 
   bool SpriteInstance::load(string projectPath) {
-
-    if (mRenderer == nullptr) {
-      cerr << "SpriteInstance: Renderer has not been set!" << endl;
-      return false;
-    }
-
     string path = projectPath+mDefinition->getAssetPath();
+    string directory = path.substr(0, path.find_last_of('/'));
     cout << "SpriteInstance: Loading sprite from " << path << endl;
-
-    mTexture = IMG_LoadTexture(mRenderer, path.c_str());
-
-    if (mTexture == nullptr){
-      cerr << "SpriteInstance: Unable to load image" << endl;
-      return false;
-    }
-
-    mDestination = new SDL_Rect();
-
-    mDestination->x = static_cast<int>(
-      mTransform->getTranslation()[TRANSFORM_X]
-    );
-
-    mDestination->y = static_cast<int>(
-      mTransform->getTranslation()[TRANSFORM_Y]
-    );
-
-    SDL_QueryTexture(mTexture, nullptr, nullptr, &mSpriteWidth, &mSpriteHeight);
-
-    // Default to full sprite tile size if not specified
-    if (mTileWidth == 0 && mTileHeight == 0) {
-      mTileWidth = mSpriteWidth;
-      mTileHeight = mSpriteHeight;
-    }
-
-    mDestination->w = mTileWidth;
-    mDestination->h = mTileHeight;
-
-    return mTexture != nullptr;
+    mTexture = TextureManager::loadTextureFromFile("sprite",directory.c_str());
+    return mTexture > 0;
   }
 
   void SpriteInstance::loadExtraAttributes(nlohmann::json jsonData) {
     mTileWidth = static_cast<int>(
       jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_WIDTH]
     );
+    mSpriteWidth = mTileWidth;
+
     mTileHeight = static_cast<int>(
       jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_HEIGHT]
     );
+    mSpriteHeight = mTileHeight;
   }
 
-  SDL_Rect* SpriteInstance::getDestination() {
-      return mDestination;
-  }
-
-  SDL_Texture *SpriteInstance::getTexture() {
-      return mTexture;
-  }
-
-  void SpriteInstance::setRenderer(SDL_Renderer* renderer) {
-      mRenderer = renderer;
+  void SpriteInstance::drawGL() {
   }
 
 } // End Dream
