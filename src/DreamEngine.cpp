@@ -221,10 +221,21 @@ namespace Dream {
   }
 
   void DreamEngine::destroyComponents() {
-      delete mAnimationComponent;
-      delete mAudioComponent;
-      delete mPhysicsComponent;
-      delete mGraphicsComponent;
+      if (mAnimationComponent != nullptr) {
+        delete mAnimationComponent;
+      }
+
+      if (mAudioComponent != nullptr) {
+        delete mAudioComponent;
+      }
+      
+      if (mPhysicsComponent != nullptr) {
+        delete mPhysicsComponent;
+      }
+
+      if (mGraphicsComponent != nullptr) {
+        delete mGraphicsComponent;
+      } 
   }
 
   bool DreamEngine::createComponents() {

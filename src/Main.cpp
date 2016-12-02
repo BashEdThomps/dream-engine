@@ -15,17 +15,14 @@ Dream::LuaComponent LuaComponentInstance;
 void showUsage(const char** argv) {
   cout << "Usage:" << endl
             << argv[0] << endl
-            << "\t" << PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool> "
-            << "\t" << PROJECT_UUID_ARG      << "<project_uuid>"
-            << endl;
+            << "\t" << PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool>" << endl
+            << "\t" << PROJECT_UUID_ARG      << " <project_uuid>" << endl;
 }
 
-int main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
   cout << "Main: Starting..." << endl;
 
-  if (argc < MINIMUM_ARGUMENTS)
-  {
+  if (argc < MINIMUM_ARGUMENTS) {
     cerr << "Main: FATAL - Minimum Number of Arguments Were Not Found." << endl;
     showUsage(argv);
     return 1;
