@@ -42,6 +42,9 @@ int main(int argc, const char** argv) {
 
     int result = 0;
     while (result == 0) {
+
+        LuaComponentInstance.setSDL_Event(DreamEngineInstance.getSDL_Event());
+
         if (!LuaComponentInstance.update()) {
             cerr << "Main: LuaComponentInstance update error!" << endl;
             result = 1;
@@ -55,7 +58,6 @@ int main(int argc, const char** argv) {
             break;
         }
 
-        LuaComponentInstance.setSDL_Event(DreamEngineInstance.getSDL_Event());
     }
     return 0;
   } else {

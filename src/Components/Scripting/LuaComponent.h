@@ -85,7 +85,10 @@ namespace Dream {
     void bindPhysicsObjectInstane();
     */
 
+
   }; // End of LuaComponent
 } // End of Dream
+
+int errorHandler(lua_State *L);
 
 #endif // LUACOMPONENT_H

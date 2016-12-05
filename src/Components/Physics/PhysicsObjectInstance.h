@@ -2,7 +2,7 @@
 #define PhysicsObjectInstance_h
 
 #include "../../AssetInstance.h"
-#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 // Collision Shape Attributes
 

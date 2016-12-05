@@ -14,7 +14,9 @@
  * this file belongs to.
  */
 
+#include <sstream>
 #include "LuaComponent.h"
+#include "SDL2/SDL_Keycode.h"
 
 namespace Dream {
 
@@ -32,6 +34,7 @@ namespace Dream {
     mState = luaL_newstate();
     luabind::open(mState);
     luaopen_base(mState);
+    luabind::set_pcall_callback(&errorHandler);
     bindAssetManager();
     bindComponents();
     bindAssetClasses();
@@ -165,7 +168,27 @@ namespace Dream {
 
   void LuaComponent::bindSDL_Event() {
     luabind::module(mState) [
-        luabind::class_<SDL_Event>("SDL_Event")
+        // SDL_Event
+        luabind::class_<SDL_Event>("Event")
+        .def_readwrite("type", &SDL_Event::type)
+        .def_readwrite("key", &SDL_Event::key)
+        .enum_("EventType") [
+            luabind::value("KEYUP",SDL_EventType::SDL_KEYUP),
+            luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN)
+        ]
+        .enum_("Key") [
+            luabind::value("KEY_SPACE",SDLK_SPACE),
+            luabind::value("KEY_LEFT",SDLK_LEFT),
+            luabind::value("KEY_RIGHT",SDLK_RIGHT)
+        ],
+        // SDL_KeyboardEvent
+        luabind::class_<SDL_KeyboardEvent>("KeyboardEvent")
+            .def_readwrite("keysym",&SDL_KeyboardEvent::keysym),
+        // SDL_Keysym
+        luabind::class_<SDL_Keysym>("Keysym")
+            .def_readwrite("sym",&SDL_Keysym::sym),
+        // SDL_Keycode
+        luabind::class_<SDL_Keycode>("Keycode")
     ];
   }
 
@@ -263,7 +286,7 @@ namespace Dream {
     try {
       luabind::object funq = table["handleInput"];
       luabind::call_function<void>(funq,sceneObject,mEvent);
-    } catch (exception e) {
+    } catch (luabind::error &e) {
       cerr << "LuaComponent: handleInput exception:" << endl
            << "\t" << e.what() << endl;
       return false;
@@ -276,3 +299,19 @@ namespace Dream {
   }
 
 } // End of Dream
+
+using namespace std;
+
+int errorHandler(lua_State *L) {
+  // log the error message
+  luabind::object msg(luabind::from_stack( L, -1 ));
+  std::ostringstream str;
+  str << "lua> run-time error: " << msg;
+  cout << str.str() << endl;
+  // log the callstack
+  std::string traceback = luabind::call_function<std::string>( luabind::globals(L)["debug"]["traceback"] );
+  traceback = std::string( "lua> " ) + traceback;
+  cout << traceback.c_str() << endl;
+  // return unmodified error object
+  return 1;
+}

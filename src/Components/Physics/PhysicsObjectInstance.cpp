@@ -10,10 +10,21 @@ namespace Dream {
       }
 
       PhysicsObjectInstance::~PhysicsObjectInstance() {
-        delete mRigidBody;
-        delete mRigidBodyConstructionInfo;
-        delete mMotionState;
-        delete mCollisionShape;
+        if (mRigidBody != nullptr) {
+          delete mRigidBody;
+        }
+
+        if (mRigidBodyConstructionInfo != nullptr) {
+          delete mRigidBodyConstructionInfo;
+        }
+
+        if (mMotionState != nullptr) {
+          delete mMotionState;
+        }
+
+        if (mCollisionShape != nullptr) {
+            delete mCollisionShape;
+        }
       }
 
       btCollisionShape* PhysicsObjectInstance::getCollisionShape() {
