@@ -1,0 +1,13 @@
+--[[
+    Default Lua Script.
+--]]
+
+-- This function will run every engine cycle
+function update(sceneObject) 
+    print("Update Function.")
+end
+
+-- This funciton is triggered only if sceneObject.hasFocus
+function handleInput(sceneObject, event)
+    print("Input Handler Function.")
+end

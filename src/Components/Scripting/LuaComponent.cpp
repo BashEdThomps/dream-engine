@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include "LuaComponent.h"
-#include "SDL2/SDL_Keycode.h"
+#include "SDL2/SDL_keycode.h"
 
 namespace Dream {
 

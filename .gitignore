@@ -225,7 +225,8 @@ xcuserdata/
 .ycm*
 Doxyfile.bak
 out/
-DreamTool/node_modules
+dream_tool/node_modules
+*node_modules
 .tags*
 tags
 npm-debug.log
