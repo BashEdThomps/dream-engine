@@ -41,7 +41,7 @@ namespace Dream {
     ~SpriteInstance();
     bool load(string);
     void loadExtraAttributes(nlohmann::json);
-    void drawGL();
+    void draw();
   };
 
 } // End of Dream

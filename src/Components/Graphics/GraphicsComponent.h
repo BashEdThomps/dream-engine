@@ -44,6 +44,11 @@
 #define Graphics_INTERFACE_DEFAULT_SCREEN_WIDTH 1280
 #define Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
 
+#define CLEAR_RED   0
+#define CLEAR_GREEN 1
+#define CLEAR_BLUE  2
+#define CLEAR_ALPHA 3
+
 namespace Dream {
     using namespace std;
     class GraphicsComponent : public ComponentInterface {
@@ -60,6 +65,7 @@ namespace Dream {
         SDL_Event mEvent;
         vector<SceneObject*> m2DQueue;
         vector<SceneObject*> m3DQueue;
+        vector<float> mClearColour;
     public:
         void setWindowWidth(int);
         int  getWindowWidth();
@@ -88,10 +94,14 @@ namespace Dream {
         void drawSprite(SceneObject*);
         void drawModel(SceneObject*);
         bool checkGLError(int);
-        void setupWindowEventHandlers();
         bool isWindowShouldCloseFlagSet();
         SDL_Window* getWindow();
         SDL_Event getSDL_Event();
+
+        void setClearColour(float,float,float,float);
+        vector<float> getClearColour();
+        void glDisable2D();
+        void glEnable2D();
     }; // End of GraphicsComponent
 
 } // End of Dream

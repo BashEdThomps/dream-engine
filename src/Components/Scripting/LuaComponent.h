@@ -20,16 +20,16 @@
 
 #include <map>
 #include <iostream>
-
 #include <luabind/luabind.hpp>
 
 extern "C" {
-//#include "lua.h"
-#include "lualib.h"
-//#include "lauxlib.h"
+    #include "lualib.h"
 }
 
 #include "../../DreamEngine.h"
+
+#define LUA_SCRIPT_UPDATE_FUNCTION "update"
+#define LUA_SCRIPT_HANDLE_INPUT_FUNCTION "handleInput"
 
 namespace Dream {
   using namespace std;
@@ -37,11 +37,11 @@ namespace Dream {
   class LuaComponent {
   private:
     string mScriptLoaderCode = "function scriptloader (scriptTable, scriptname)\n"
-                               "local mt = {__index=_G}\n"
-                               "setmetatable(scriptTable, mt)\n"
-                               "local chunk = loadfile(scriptname)\n"
-                               "setfenv(chunk, scriptTable)\n"
-                               "chunk()\n"
+                               "    local mt = {__index = _G}\n"
+                               "    setmetatable(scriptTable, mt)\n"
+                               "    local chunk = loadfile(scriptname)\n"
+                               "    setfenv(chunk, scriptTable)\n"
+                               "    chunk()\n"
                                "end";
     lua_State *mState;
     map<SceneObject*, LuaScriptInstance*> *mScriptMap;

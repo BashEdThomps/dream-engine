@@ -49,7 +49,7 @@ namespace Dream {
     mSpriteHeight = mTileHeight;
   }
 
-  void SpriteInstance::drawGL() {
+  void SpriteInstance::draw() {
   }
 
 } // End Dream

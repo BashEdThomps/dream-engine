@@ -35,6 +35,7 @@ namespace Dream {
     luabind::open(mState);
     luaopen_base(mState);
     luabind::set_pcall_callback(&errorHandler);
+    luaL_dostring(mState, mScriptLoaderCode.c_str());
     bindAssetManager();
     bindComponents();
     bindAssetClasses();
@@ -63,7 +64,6 @@ namespace Dream {
 
   bool LuaComponent::loadScript(LuaScriptInstance* scriptInstance) {
     string id = scriptInstance->getUUID();
-    luaL_dostring(mState, mScriptLoaderCode.c_str());
     luabind::object newtable = luabind::newtable(mState);
     try {
       luabind::call_function<void>(
@@ -289,7 +289,7 @@ namespace Dream {
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {
-      luabind::object funq = table["update"];
+      luabind::object funq = table[LUA_SCRIPT_UPDATE_FUNCTION];
       luabind::call_function<void>(funq,sceneObject);
     } catch (luabind::error e) {
       cerr << "LuaComponent: update exception:" << endl
@@ -304,7 +304,7 @@ namespace Dream {
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {
-      luabind::object funq = table["handleInput"];
+      luabind::object funq = table[LUA_SCRIPT_HANDLE_INPUT_FUNCTION];
       luabind::call_function<void>(funq,sceneObject,mEvent);
     } catch (luabind::error &e) {
       cerr << "LuaComponent: handleInput exception:" << endl
@@ -326,11 +326,11 @@ int errorHandler(lua_State *L) {
   // log the error message
   luabind::object msg(luabind::from_stack( L, -1 ));
   std::ostringstream str;
-  str << "lua> run-time error: " << msg;
+  str << "Lua - RuntimeError: " << msg;
   cout << str.str() << endl;
   // log the callstack
   std::string traceback = luabind::call_function<std::string>( luabind::globals(L)["debug"]["traceback"] );
-  traceback = std::string( "lua> " ) + traceback;
+  traceback = std::string( "Lua - Traceback: " ) + traceback;
   cout << traceback.c_str() << endl;
   // return unmodified error object
   return 1;

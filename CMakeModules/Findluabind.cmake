@@ -48,6 +48,7 @@ mark_as_advanced(LUABIND_INCLUDE_DIR)
 find_library(LUABIND_LIBRARY
 	NAMES
 	luabind
+        luabind09
 	HINTS
 	"${LUABIND_ROOT_DIR}"
 	PATH_SUFFIXES
