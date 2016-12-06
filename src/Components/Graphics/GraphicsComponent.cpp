@@ -34,7 +34,7 @@ namespace Dream {
           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
           mWindowWidth, mWindowHeight,
           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-    );
+          );
 
     if (mWindow == nullptr){
       cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
@@ -118,91 +118,117 @@ namespace Dream {
 
     vector<SceneObject*> scenegraph = scene->getScenegraphVector();
     if (!mWindowShouldClose) {
-
+      clear2DQueue();
+      clear3DQueue();
       // Clear the colorbuffer
       glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+      // Build draw queues
       vector<SceneObject*> scenegraph = scene->getScenegraphVector();
-
-      for (vector<SceneObject*>::iterator it = scenegraph.begin();
-           it!=scenegraph.end(); it++ ) {
-
+      for (vector<SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ ) {
         SceneObject *object = (*it);
-
         // Models
         if (object->hasModelInstance()) {
           if (object->hasShaderInstance()){
-            drawModel(object);
+            addTo3DQueue(object);
           } else {
             cerr << "GraphicsComponent: Object " << object->getUUID()
                  << " has model, but no shader assigned." << endl;
           }
         }
-
         // Sprites
         if (object->hasSpriteInstance()) {
           if (object->hasShaderInstance()){
-            drawSprite(object);
+            addTo2DQueue(object);
           } else {
             cerr << "GraphicsComponent: Object " << object->getUUID()
                  << " has sprite, but no shader assigned." << endl;
           }
         }
       }
-
+      // Draw
+      draw3DQueue();
+      draw2DQueue();
+      // Flip Buffers
       SDL_GL_SwapWindow(mWindow);
+      // Chill
       SDL_Delay(10);
+    }
+  }
+
+  void GraphicsComponent::clear2DQueue() {
+    m2DQueue.clear();
+  }
+
+  void GraphicsComponent::addTo2DQueue(SceneObject* object) {
+    m2DQueue.push_back(object);
+  }
+
+  void GraphicsComponent::draw2DQueue() {
+    for (vector<SceneObject*>::iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ ) {
+      drawSprite(*it);
+    }
+  }
+
+  void GraphicsComponent::clear3DQueue() {
+    m3DQueue.clear();
+  }
+
+  void GraphicsComponent::addTo3DQueue(SceneObject* object) {
+    m3DQueue.push_back(object);
+  }
+
+  void GraphicsComponent::draw3DQueue() {
+    for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ ) {
+      drawModel(*it);
     }
   }
 
   void GraphicsComponent::drawSprite(SceneObject* sceneObject) {}
 
   void GraphicsComponent::drawModel(SceneObject* sceneObject) {
+    // Get Assets
     AssimpModelInstance* model;
     model = dynamic_cast<AssimpModelInstance*>(sceneObject->getModelInstance());
     ShaderInstance* shader;
     shader = dynamic_cast<ShaderInstance*>(sceneObject->getShaderInstance());
     shader->use();
-
     // Transformation matrices
     glm::mat4 projection = glm::perspective(
-          mCamera->getZoom(),
-          static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
-          mMinimumDraw,
-          mMaximumDraw
+      mCamera->getZoom(),
+      static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
+      mMinimumDraw,
+      mMaximumDraw
     );
-
+    // View transform
     vector<vector<float>> view = mCamera->getViewMatrix();
-
     glm::mat4 viewMat4 = glm::mat4(
-        view[0][0], view[0][1], view[0][2], view[0][3],
-        view[1][0], view[1][1], view[1][2], view[1][3],
-        view[2][0], view[2][1], view[2][2], view[2][3],
-        view[3][0], view[3][1], view[3][2], view[3][3]
+      view[0][0], view[0][1], view[0][2], view[0][3],
+      view[1][0], view[1][1], view[1][2], view[1][3],
+      view[2][0], view[2][1], view[2][2], view[2][3],
+      view[3][0], view[3][1], view[3][2], view[3][3]
     );
-
+    // Pass view/projection transform to shader
     glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(viewMat4));
-
     // Draw the loaded model
     glm::mat4 modelMatrix;
     vector<float> translation = sceneObject->getTranslation();
     vector<float> rotation    = sceneObject->getRotation();
     vector<float> scale       = sceneObject->getScale();
-
     // Translate
     modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
-
     // Rotate
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
-
     // Scale
     modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
+    // Pass model matrix to shader
     glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    // Draw using shader
     model->draw(shader);
+    // Unbind shader
     glUseProgram(0);
   }
 

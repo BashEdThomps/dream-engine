@@ -27,6 +27,7 @@
 // STD LIB
 #include <iostream>
 #include <map>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
@@ -44,43 +45,54 @@
 #define Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
 
 namespace Dream {
-  class GraphicsComponent : public ComponentInterface {
-  private:
-      int mWindowWidth;
-      int mWindowHeight;
-      string mScreenName;
-      bool mWindowShouldClose;
-      SDL_Window *mWindow;
-      Camera *mCamera;
-      float mMinimumDraw = 0.1f;
-      float mMaximumDraw = 1000.0f;
-      SDL_GLContext mContext;
-      SDL_Event mEvent;
-  public:
-      void setWindowWidth(int);
-      int  getWindowWidth();
-      void setWindowHeight(int);
-      int  getWindowHeight();
-      void setScreenName(string);
-      string getScreenName();
+    using namespace std;
+    class GraphicsComponent : public ComponentInterface {
+    private:
+        int mWindowWidth;
+        int mWindowHeight;
+        string mScreenName;
+        bool mWindowShouldClose;
+        SDL_Window *mWindow;
+        Camera *mCamera;
+        float mMinimumDraw = 0.1f;
+        float mMaximumDraw = 1000.0f;
+        SDL_GLContext mContext;
+        SDL_Event mEvent;
+        vector<SceneObject*> m2DQueue;
+        vector<SceneObject*> m3DQueue;
+    public:
+        void setWindowWidth(int);
+        int  getWindowWidth();
+        void setWindowHeight(int);
+        int  getWindowHeight();
+        void setScreenName(string);
+        string getScreenName();
 
-      void closeWindow();
-      void setCursorEnabled(bool);
+        void closeWindow();
+        void setCursorEnabled(bool);
 
-      GraphicsComponent(Camera*);
-      ~GraphicsComponent(void);
-      bool createSDLWindow();
+        void clear2DQueue();
+        void addTo2DQueue(SceneObject*);
+        void draw2DQueue();
 
-      bool init(void);
-      void update(Scene*);
-      void drawSprite(SceneObject*);
-      void drawModel(SceneObject*);
-      bool checkGLError(int);
-      void setupWindowEventHandlers();
-      bool isWindowShouldCloseFlagSet();
-      SDL_Window* getWindow();
-      SDL_Event getSDL_Event();
-  }; // End of GraphicsComponent
+        void clear3DQueue();
+        void addTo3DQueue(SceneObject*);
+        void draw3DQueue();
+
+        GraphicsComponent(Camera*);
+        ~GraphicsComponent(void);
+        bool createSDLWindow();
+
+        bool init(void);
+        void update(Scene*);
+        void drawSprite(SceneObject*);
+        void drawModel(SceneObject*);
+        bool checkGLError(int);
+        void setupWindowEventHandlers();
+        bool isWindowShouldCloseFlagSet();
+        SDL_Window* getWindow();
+        SDL_Event getSDL_Event();
+    }; // End of GraphicsComponent
 
 } // End of Dream
 

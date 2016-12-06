@@ -62,23 +62,30 @@ namespace Dream {
     bool AudioInstance::play() {
         if (mChunk != nullptr) {
             if (Mix_PlayChannel(-1, mChunk, 0) == -1) {
-                return false;
+              mStatus = STOPPED;
+              return false;
             }
+            mStatus = PLAYING;
             return true;
         } else if (mMusic != nullptr) {
             if (Mix_PlayMusic(mMusic, -1) == -1) {
+                mStatus = STOPPED;
                 return false;
             }
+            mStatus = PLAYING;
             return true;
         }
+        mStatus = STOPPED;
         return false;
     }
 
     bool AudioInstance::pause() {
+      mStatus = PAUSED;
         return false;
     }
 
     bool AudioInstance::stop() {
+      mStatus = STOPPED;
         return false;
     }
 

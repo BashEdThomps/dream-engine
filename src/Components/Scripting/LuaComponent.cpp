@@ -130,6 +130,13 @@ namespace Dream {
         .def(luabind::constructor<>())
         .def("getUuid",&SceneObject::getUUID)
         .def("getTransform",&SceneObject::getTransform)
+        // Asset Getters/Setters ================================================
+        .def("getAnimationInstance",&SceneObject::getAnimationInstance)
+        .def("getAudioInstance",&SceneObject::getAudioInstance)
+        .def("getSpriteInstance",&SceneObject::getSpriteInstance)
+        .def("getModelInstance",&SceneObject::getModelInstance)
+        .def("getLightInstance",&SceneObject::getLightInstance)
+        .def("getPhysicsObjectInstance",&SceneObject::getPhysicsObjectInstance)
     ];
   }
 
@@ -137,22 +144,22 @@ namespace Dream {
     luabind::module(mState) [
         luabind::class_<Transform3D>("Transform3D")
         .def(luabind::constructor<>())
+        // Translation ===========================================================
         .def("getTransformType",&Transform3D::getTransformType)
-
         .def("getTranslationX",&Transform3D::getTranslationX)
         .def("getTranslationY",&Transform3D::getTranslationY)
         .def("getTranslationZ",&Transform3D::getTranslationZ)
         .def("setTranslationX",&Transform3D::setTranslationX)
         .def("setTranslationY",&Transform3D::setTranslationY)
         .def("setTranslationZ",&Transform3D::setTranslationZ)
-
+        // Rotation =============================================================
         .def("getRotationX",&Transform3D::getRotationX)
         .def("getRotationY",&Transform3D::getRotationY)
         .def("getRotationZ",&Transform3D::getRotationZ)
         .def("setRotationX",&Transform3D::setRotationX)
         .def("setRotationY",&Transform3D::setRotationY)
         .def("setRotationZ",&Transform3D::setRotationZ)
-
+        // Scale ================================================================
         .def("getScaleX",&Transform3D::getScaleX)
         .def("getScaleY",&Transform3D::getScaleY)
         .def("getScaleZ",&Transform3D::getScaleZ)
@@ -179,7 +186,10 @@ namespace Dream {
         .enum_("Key") [
             luabind::value("KEY_SPACE",SDLK_SPACE),
             luabind::value("KEY_LEFT",SDLK_LEFT),
-            luabind::value("KEY_RIGHT",SDLK_RIGHT)
+            luabind::value("KEY_RIGHT",SDLK_RIGHT),
+            luabind::value("KEY_UP",SDLK_UP),
+            luabind::value("KEY_DOWN",SDLK_DOWN)
+
         ],
         // SDL_KeyboardEvent
         luabind::class_<SDL_KeyboardEvent>("KeyboardEvent")
@@ -204,10 +214,20 @@ namespace Dream {
 
   void LuaComponent::bindAudioInstance() {
     luabind::module(mState) [
+
         luabind::class_<AudioInstance>("AudioInstance")
-        .def("play",&AudioInstance::play)
-        .def("pause",&AudioInstance::pause)
-        .def("stop",&AudioInstance::stop)
+          .def("play",&AudioInstance::play)
+          .def("pause",&AudioInstance::pause)
+          .def("stop",&AudioInstance::stop)
+          .def("getStatus",&AudioInstance::getStatus)
+          .def("setStatus",&AudioInstance::setStatus),
+
+        luabind::class_<AudioStatus>("AudioStatus")
+          .enum_("AudioStatus") [
+            luabind::value("PLAYING", AudioStatus::PLAYING),
+            luabind::value("PAUSED",  AudioStatus::PAUSED),
+            luabind::value("STOPPED", AudioStatus::STOPPED)
+        ]
     ];
   }
 

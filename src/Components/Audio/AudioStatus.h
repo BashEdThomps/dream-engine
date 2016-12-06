@@ -2,12 +2,11 @@
 #define AUDIOSTATUS_H
 
 namespace Dream {
-
-      enum AudioStatus {
-        PLAYING,
-        PAUSED,
-        STOPPED,
-        UNKNOWN
-      };
-    }
+  enum AudioStatus {
+    PLAYING,
+    PAUSED,
+    STOPPED,
+    UNKNOWN
+  };
+}
 #endif // AUDIOSTATUS_H

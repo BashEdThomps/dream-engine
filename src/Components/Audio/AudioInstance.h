@@ -21,6 +21,7 @@ namespace Dream {
       void loadExtraAttributes(nlohmann::json);
       void setLooping(bool);
       bool isLooping();
+
       void setStatus(AudioStatus);
       AudioStatus getStatus();
 
