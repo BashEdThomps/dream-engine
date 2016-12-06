@@ -104,12 +104,10 @@ namespace Dream {
     }
 
     void GraphicsComponent::enable3D() {
-        // Setup some OpenGL options
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-
     }
 
     void GraphicsComponent::disable3D() {
@@ -118,12 +116,13 @@ namespace Dream {
     }
 
     void GraphicsComponent::enable2D() {
-        // Adapt this http://www.gaanza.com/blog/display-2d-sprite/
+      glEnable(GL_TEXTURE_2D);
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      glOrtho(0, mWindowWidth, mWindowHeight, 0, -1, 1);
     }
 
-    void GraphicsComponent::disable2D() {
-        // Adapt this http://www.gaanza.com/blog/display-2d-sprite/
-    }
+    void GraphicsComponent::disable2D() {}
 
     void GraphicsComponent::closeWindow() {
         mWindowShouldClose = true;
@@ -165,7 +164,7 @@ namespace Dream {
                     }
                 }
                 // Sprites
-                else if (object->hasSpriteInstance()) {
+                if (object->hasSpriteInstance()) {
                     if (object->hasShaderInstance()){
                         addTo2DQueue(object);
                     } else {
@@ -220,55 +219,81 @@ namespace Dream {
         https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
     */
     void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
-        /*
-        glm::mat4 projection = glm::ortho(0.0f, mWindowWidth, mWindowHeight, 0.0f, -1.0f, 1.0f);
-        glm::vec2 size = glm::vec2(10, 10);
-        GLfloat rotate = 0.0f;
-        glm::vec3 color = glm::vec3(1.0f);
-        GLuint quadVAO;
-        // Configure VAO/VBO
-        GLuint VBO;
-        GLfloat vertices[] = {
-            // Pos      // Tex
-            0.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f,
 
-            0.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 0.0f
-        };
+      SpriteInstance* sprite = sceneObject->getSpriteInstance();
+      ShaderInstance* shader = sceneObject->getShaderInstance();
 
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &VBO);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glm::vec3 color = glm::vec3(1.0f);
 
-        glBindVertexArray(quadVAO);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+      GLuint quadVAO;
+      GLuint VBO;
 
-        // Prepare transformations
-        shader->use();
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3(position, 0.0f));
-        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = glm::scale(model, glm::vec3(size, 1.0f));
+      GLfloat vertices[] = {
+          // Pos      // Tex
+          0.0f, 1.0f, 0.0f, 1.0f,
+          1.0f, 0.0f, 1.0f, 0.0f,
+          0.0f, 0.0f, 0.0f, 0.0f,
 
-        this->shader.SetMatrix4("model", model);
-        this->shader.SetVector3f("spriteColor", color);
+          0.0f, 1.0f, 0.0f, 1.0f,
+          1.0f, 1.0f, 1.0f, 1.0f,
+          1.0f, 0.0f, 1.0f, 0.0f
+      };
 
-        glActiveTexture(GL_TEXTURE0);
-        texture.Bind();
-        glBindVertexArray(quadVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
-        */
+      glGenVertexArrays(1, &quadVAO);
+      glGenBuffers(1, &VBO);
+      glBindBuffer(GL_ARRAY_BUFFER, VBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glBindVertexArray(quadVAO);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindVertexArray(0);
+      // Prepare transformations
+      shader->use();
+      // Transformation matrices
+      glm::mat4 projection = glm::perspective(
+          mCamera->getZoom(),
+          static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
+          mMinimumDraw,
+          mMaximumDraw
+      );
+      // View transform
+      vector<vector<float>> view = mCamera->getViewMatrix();
+      glm::mat4 viewMat4 = glm::mat4(
+          view[0][0], view[0][1], view[0][2], view[0][3],
+          view[1][0], view[1][1], view[1][2], view[1][3],
+          view[2][0], view[2][1], view[2][2], view[2][3],
+          view[3][0], view[3][1], view[3][2], view[3][3]
+      );
+      // Pass view/projection transform to shader
+      glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+      glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(viewMat4));
+      // Draw the loaded model
+      glm::mat4 modelMatrix;
+      vector<float> translation = sceneObject->getTranslation();
+      vector<float> rotation = sceneObject->getRotation();
+      vector<float> scale = sceneObject->getScale();
+      // Translate
+      modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
+      // Rotate
+      modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
+      modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));
+      modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
+      // Scale
+      modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
+      // Pass model matrix to shader
+      glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+      glUniform3fv(glGetUniformLocation(shader->getShaderProgram(), "spriteColor"), 1, glm::value_ptr(color));
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D,sprite->getTexture());
+      glBindVertexArray(quadVAO);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+      glBindVertexArray(0);
+      // Unbind shader
+      glUseProgram(0);
     }
 
     void GraphicsComponent::drawModel(SceneObject* sceneObject) {
@@ -280,11 +305,11 @@ namespace Dream {
         shader->use();
         // Transformation matrices
         glm::mat4 projection = glm::perspective(
-                    mCamera->getZoom(),
-                    static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
-                    mMinimumDraw,
-                    mMaximumDraw
-                    );
+            mCamera->getZoom(),
+            static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
+            mMinimumDraw,
+            mMaximumDraw
+        );
         // View transform
         vector<vector<float>> view = mCamera->getViewMatrix();
         glm::mat4 viewMat4 = glm::mat4(
@@ -299,8 +324,8 @@ namespace Dream {
         // Draw the loaded model
         glm::mat4 modelMatrix;
         vector<float> translation = sceneObject->getTranslation();
-        vector<float> rotation    = sceneObject->getRotation();
-        vector<float> scale       = sceneObject->getScale();
+        vector<float> rotation = sceneObject->getRotation();
+        vector<float> scale = sceneObject->getScale();
         // Translate
         modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
         // Rotate
@@ -317,13 +342,13 @@ namespace Dream {
         glUseProgram(0);
     }
 
-    bool GraphicsComponent::checkGLError(int errorIndex) {
+    bool GraphicsComponent::checkGLError(string marker) {
         GLenum errorCode = 0;
         bool wasError = false;
         do {
             errorCode = glGetError();
             if (errorCode!=0) {
-                cerr << "GraphicsComponent: Error Check " << errorIndex << ": " << endl;
+                cerr << "GraphicsComponent: Error Check " << marker << ": " << endl;
                 switch (errorCode) {
                 case GL_NO_ERROR:
                     cerr << "\tGL_NO_ERROR" << endl;

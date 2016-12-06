@@ -1,5 +1,5 @@
 /*
- * SpriteInstance.cpp
+ * SpriteInstance
  *
  * Created: 25/11/2016 2016 by Ashley
  *
@@ -17,6 +17,7 @@
  */
 #include "SpriteInstance.h"
 #include "TextureManager.h"
+#include <glm/glm.hpp>
 
 namespace Dream {
 
@@ -26,14 +27,13 @@ namespace Dream {
     loadExtraAttributes(mDefinition->getJson());
   }
 
-  SpriteInstance::~SpriteInstance() {
-    // TODO
-  }
+  SpriteInstance::~SpriteInstance() {}
 
   bool SpriteInstance::load(string projectPath) {
     string path = projectPath+mDefinition->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
     cout << "SpriteInstance: Loading sprite from " << path << endl;
+
     mTexture = TextureManager::loadTextureFromFile("sprite",directory.c_str());
     return mTexture > 0;
   }
@@ -51,7 +51,7 @@ namespace Dream {
   }
 
   void SpriteInstance::draw() {
-  }
+      }
 
   GLuint SpriteInstance::getTexture() {
       return mTexture;

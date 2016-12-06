@@ -35,6 +35,7 @@ namespace Dream {
     int mSpriteWidth;
     int mSpriteHeight;
     GLuint mTexture;
+    GLenum mTextureFormat;
   public:
     SpriteInstance(AssetDefinition*,Transform3D*);
     ~SpriteInstance();

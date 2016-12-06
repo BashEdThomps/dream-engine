@@ -92,7 +92,7 @@ namespace Dream {
         void update(Scene*);
         void drawSprite(SceneObject*);
         void drawModel(SceneObject*);
-        bool checkGLError(int);
+        bool checkGLError(string);
         bool isWindowShouldCloseFlagSet();
         SDL_Window* getWindow();
         SDL_Event getSDL_Event();
