@@ -75,7 +75,6 @@ namespace Dream {
         string getScreenName();
 
         void closeWindow();
-        void setCursorEnabled(bool);
 
         void clear2DQueue();
         void addTo2DQueue(SceneObject*);
@@ -100,8 +99,12 @@ namespace Dream {
 
         void setClearColour(float,float,float,float);
         vector<float> getClearColour();
-        void glDisable2D();
-        void glEnable2D();
+
+        void enable2D();
+        void disable2D();
+
+        void enable3D();
+        void disable3D();
     }; // End of GraphicsComponent
 
 } // End of Dream

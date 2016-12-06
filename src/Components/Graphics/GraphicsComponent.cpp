@@ -99,6 +99,7 @@ namespace Dream {
       cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
       // Define the viewport dimensions
       glViewport(0, 0, mWindowWidth, mWindowHeight);
+      cout << "GraphicsComponent: Initialisation Done." << endl;
       return true;
     }
 
@@ -108,7 +109,7 @@ namespace Dream {
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        cout << "GraphicsComponent: Initialisation Done." << endl;
+
     }
 
     void GraphicsComponent::disable3D() {
@@ -117,17 +118,11 @@ namespace Dream {
     }
 
     void GraphicsComponent::enable2D() {
-
+        // Adapt this http://www.gaanza.com/blog/display-2d-sprite/
     }
 
     void GraphicsComponent::disable2D() {
-
-    }
-
-
-
-    void GraphicsComponent::setCursorEnabled(bool cursorEnabled) {
-        // TODO
+        // Adapt this http://www.gaanza.com/blog/display-2d-sprite/
     }
 
     void GraphicsComponent::closeWindow() {
@@ -150,11 +145,11 @@ namespace Dream {
             clear3DQueue();
             // Clear the colorbuffer
             glClearColor(
-                        mClearColour[CLEAR_RED],
-                        mClearColour[CLEAR_GREEN],
-                        mClearColour[CLEAR_BLUE],
-                        mClearColour[CLEAR_ALPHA]
-                        );
+                mClearColour[CLEAR_RED],
+                mClearColour[CLEAR_GREEN],
+                mClearColour[CLEAR_BLUE],
+                mClearColour[CLEAR_ALPHA]
+            );
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // Build draw queues
             vector<SceneObject*> scenegraph = scene->getScenegraphVector();
@@ -170,7 +165,7 @@ namespace Dream {
                     }
                 }
                 // Sprites
-                if (object->hasSpriteInstance()) {
+                else if (object->hasSpriteInstance()) {
                     if (object->hasShaderInstance()){
                         addTo2DQueue(object);
                     } else {
@@ -198,11 +193,11 @@ namespace Dream {
     }
 
     void GraphicsComponent::draw2DQueue() {
-        glEnable2D();
+        enable2D();
         for (vector<SceneObject*>::iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ ) {
             drawSprite(*it);
         }
-        glDisable2D();
+        disable2D();
     }
 
     void GraphicsComponent::clear3DQueue() {
@@ -225,6 +220,7 @@ namespace Dream {
         https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
     */
     void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
+        /*
         glm::mat4 projection = glm::ortho(0.0f, mWindowWidth, mWindowHeight, 0.0f, -1.0f, 1.0f);
         glm::vec2 size = glm::vec2(10, 10);
         GLfloat rotate = 0.0f;
@@ -272,6 +268,7 @@ namespace Dream {
         glBindVertexArray(quadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
+        */
     }
 
     void GraphicsComponent::drawModel(SceneObject* sceneObject) {

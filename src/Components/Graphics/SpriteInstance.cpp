@@ -24,10 +24,11 @@ namespace Dream {
       AssetDefinition* definition,
       Transform3D* transform) : AssetInstance(definition,transform) {
     loadExtraAttributes(mDefinition->getJson());
-    mGLBlend = false;
   }
 
-  SpriteInstance::~SpriteInstance() {}
+  SpriteInstance::~SpriteInstance() {
+    // TODO
+  }
 
   bool SpriteInstance::load(string projectPath) {
     string path = projectPath+mDefinition->getAssetPath();
@@ -50,6 +51,10 @@ namespace Dream {
   }
 
   void SpriteInstance::draw() {
+  }
+
+  GLuint SpriteInstance::getTexture() {
+      return mTexture;
   }
 
 } // End Dream

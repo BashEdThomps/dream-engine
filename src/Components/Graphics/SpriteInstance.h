@@ -35,13 +35,13 @@ namespace Dream {
     int mSpriteWidth;
     int mSpriteHeight;
     GLuint mTexture;
-    bool mGLBlend;
   public:
     SpriteInstance(AssetDefinition*,Transform3D*);
     ~SpriteInstance();
     bool load(string);
     void loadExtraAttributes(nlohmann::json);
     void draw();
+    GLuint getTexture();
   };
 
 } // End of Dream
