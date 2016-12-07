@@ -20,6 +20,11 @@
 
 #include <iostream>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/matrix.hpp>
 #include "../../AssetInstance.h"
 
 #define SHADER_VERTEX   "vertex"
@@ -42,6 +47,11 @@ namespace Dream {
         void use();
         GLuint getShaderProgram();
         void loadExtraAttributes(nlohmann::json);
+
+        void setUniformInt(string,int);
+        void setUniformVector2(string,glm::vec2);
+        void setUniformVector3(string,glm::vec3);
+        void setUniformMatrix4(string,glm::mat4);
       }; // End of ShaderInstance
 
 } // End of Dream

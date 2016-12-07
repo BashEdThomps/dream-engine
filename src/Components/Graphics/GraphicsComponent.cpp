@@ -99,30 +99,21 @@ namespace Dream {
       cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
       // Define the viewport dimensions
       glViewport(0, 0, mWindowWidth, mWindowHeight);
+      // Ortho projection for 2D
+      mOrthoProjection = glm::ortho(
+        0.0f,
+        static_cast<float>(mWindowWidth),
+        static_cast<float>(mWindowHeight),
+        0.0f,
+        -1.0f, 1.0f
+      );
+      glEnable(GL_DEPTH_TEST);
+      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+      glEnable(GL_CULL_FACE);
+      glCullFace(GL_BACK);
       cout << "GraphicsComponent: Initialisation Done." << endl;
       return true;
     }
-
-    void GraphicsComponent::enable3D() {
-        glEnable(GL_DEPTH_TEST);
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-    }
-
-    void GraphicsComponent::disable3D() {
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-    }
-
-    void GraphicsComponent::enable2D() {
-      glEnable(GL_TEXTURE_2D);
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-      glOrtho(0, mWindowWidth, mWindowHeight, 0, -1, 1);
-    }
-
-    void GraphicsComponent::disable2D() {}
 
     void GraphicsComponent::closeWindow() {
         mWindowShouldClose = true;
@@ -192,11 +183,9 @@ namespace Dream {
     }
 
     void GraphicsComponent::draw2DQueue() {
-        enable2D();
         for (vector<SceneObject*>::iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ ) {
             drawSprite(*it);
         }
-        disable2D();
     }
 
     void GraphicsComponent::clear3DQueue() {
@@ -208,40 +197,37 @@ namespace Dream {
     }
 
     void GraphicsComponent::draw3DQueue() {
-        enable3D();
         for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ ) {
             drawModel(*it);
         }
-        disable3D();
     }
 
     /*
-        https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
-    */
+     * Using
+     *    https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
+     */
     void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
-
+      // Get Assets
       SpriteInstance* sprite = sceneObject->getSpriteInstance();
       ShaderInstance* shader = sceneObject->getShaderInstance();
-
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-
+      // Get arguments
+      glm::vec2 size = glm::vec2(sprite->getWidth(),sprite->getHeight());
+      GLfloat rotate = sceneObject->getTransform()->getRotationZ();
+      GLfloat scale = sceneObject->getTransform()->getScaleZ();
       glm::vec3 color = glm::vec3(1.0f);
-
-      GLuint quadVAO;
+      // Configure VAO/VBO
       GLuint VBO;
-
+      GLuint quadVAO;
       GLfloat vertices[] = {
           // Pos      // Tex
           0.0f, 1.0f, 0.0f, 1.0f,
           1.0f, 0.0f, 1.0f, 0.0f,
           0.0f, 0.0f, 0.0f, 0.0f,
-
           0.0f, 1.0f, 0.0f, 1.0f,
           1.0f, 1.0f, 1.0f, 1.0f,
           1.0f, 0.0f, 1.0f, 0.0f
       };
-
+      // Setup GL
       glGenVertexArrays(1, &quadVAO);
       glGenBuffers(1, &VBO);
       glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -251,48 +237,41 @@ namespace Dream {
       glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
-      // Prepare transformations
+      // Setup Shader
       shader->use();
-      // Transformation matrices
-      glm::mat4 projection = glm::perspective(
-          mCamera->getZoom(),
-          static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
-          mMinimumDraw,
-          mMaximumDraw
+      float tX = sprite->getTransform()->getTranslationX();
+      float tY = sprite->getTransform()->getTranslationY();
+      glm::vec2 position = glm::vec2(tX,tY);
+      // Offset origin to middle of sprite
+      glm::mat4 model;
+      model = glm::translate(model, glm::vec3(position, 0.0f));
+      model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+      model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+      model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+      // Pass uniform arguments to shader
+      glUniformMatrix4fv(glGetUniformLocation(
+        shader->getShaderProgram(), "model"),
+        1, GL_FALSE, glm::value_ptr(model)
       );
-      // View transform
-      vector<vector<float>> view = mCamera->getViewMatrix();
-      glm::mat4 viewMat4 = glm::mat4(
-          view[0][0], view[0][1], view[0][2], view[0][3],
-          view[1][0], view[1][1], view[1][2], view[1][3],
-          view[2][0], view[2][1], view[2][2], view[2][3],
-          view[3][0], view[3][1], view[3][2], view[3][3]
+      glUniform3fv(glGetUniformLocation(
+        shader->getShaderProgram(), "spriteColor"),
+        1, glm::value_ptr(color)
       );
-      // Pass view/projection transform to shader
-      glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-      glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(viewMat4));
-      // Draw the loaded model
-      glm::mat4 modelMatrix;
-      vector<float> translation = sceneObject->getTranslation();
-      vector<float> rotation = sceneObject->getRotation();
-      vector<float> scale = sceneObject->getScale();
-      // Translate
-      modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
-      // Rotate
-      modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
-      modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));
-      modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
-      // Scale
-      modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
-      // Pass model matrix to shader
-      glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-      glUniform3fv(glGetUniformLocation(shader->getShaderProgram(), "spriteColor"), 1, glm::value_ptr(color));
+      glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
+      glUniformMatrix4fv(glGetUniformLocation(
+        shader->getShaderProgram(), "projection"),
+        1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+      );
+      // Bind texture
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D,sprite->getTexture());
+      // Bind VAO
       glBindVertexArray(quadVAO);
+      // Draw
       glDrawArrays(GL_TRIANGLES, 0, 6);
+      // Cleanup
       glBindVertexArray(0);
-      // Unbind shader
       glUseProgram(0);
     }
 

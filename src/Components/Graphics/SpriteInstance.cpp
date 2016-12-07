@@ -39,22 +39,25 @@ namespace Dream {
   }
 
   void SpriteInstance::loadExtraAttributes(nlohmann::json jsonData) {
-    mTileWidth = static_cast<int>(
+    mWidth = static_cast<int>(
       jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_WIDTH]
     );
-    mSpriteWidth = mTileWidth;
 
-    mTileHeight = static_cast<int>(
+    mHeight = static_cast<int>(
       jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_HEIGHT]
     );
-    mSpriteHeight = mTileHeight;
   }
-
-  void SpriteInstance::draw() {
-      }
 
   GLuint SpriteInstance::getTexture() {
       return mTexture;
+  }
+
+  int SpriteInstance::getWidth() {
+    return mWidth;
+  }
+
+  int SpriteInstance::getHeight() {
+    return mHeight;
   }
 
 } // End Dream

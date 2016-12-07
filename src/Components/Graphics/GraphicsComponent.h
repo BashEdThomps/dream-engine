@@ -66,6 +66,7 @@ namespace Dream {
         vector<SceneObject*> m2DQueue;
         vector<SceneObject*> m3DQueue;
         vector<float> mClearColour;
+        glm::mat4 mOrthoProjection;
     public:
         void setWindowWidth(int);
         int  getWindowWidth();
@@ -100,11 +101,6 @@ namespace Dream {
         void setClearColour(float,float,float,float);
         vector<float> getClearColour();
 
-        void enable2D();
-        void disable2D();
-
-        void enable3D();
-        void disable3D();
     }; // End of GraphicsComponent
 
 } // End of Dream

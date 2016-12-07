@@ -30,10 +30,8 @@ namespace Dream {
 
   class SpriteInstance : public AssetInstance {
   private:
-    int mTileWidth;
-    int mTileHeight;
-    int mSpriteWidth;
-    int mSpriteHeight;
+    int mWidth;
+    int mHeight;
     GLuint mTexture;
     GLenum mTextureFormat;
   public:
@@ -43,6 +41,8 @@ namespace Dream {
     void loadExtraAttributes(nlohmann::json);
     void draw();
     GLuint getTexture();
+    int getWidth();
+    int getHeight();
   };
 
 } // End of Dream
