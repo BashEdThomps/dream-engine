@@ -5,6 +5,7 @@ App.controller("ProjectAssetEditor",
             var SCRIPT_EDITOR = "script-editor";
             var VERTEX_SHADER_EDITOR = "vertex-shader-editor";
             var FRAGMENT_SHADER_EDITOR = "fragment-shader-editor";
+            var SPRITE_IMG = "sprite_img";
 
             $scope.assetUUID = $stateParams.asset;
             $scope.hasScriptEditor = false;
@@ -57,7 +58,6 @@ App.controller("ProjectAssetEditor",
                         console.error("Could Not Find Vertex Shader Editor");
                         return;
                     }
-                    //editor.setTheme("ace/theme/vibrant_ink");
                     editor.setShowPrintMargin(false);
                     editor.setKeyboardHandler('ace/keyboard/vim');
                     editor.getSession().setMode("ace/mode/glsl");
@@ -90,7 +90,6 @@ App.controller("ProjectAssetEditor",
                         return;
                     }
 
-                    //editor.setTheme("ace/theme/vibrant_ink");
                     editor.setShowPrintMargin(false);
                     editor.setKeyboardHandler('ace/keyboard/vim');
                     editor.getSession().setMode("ace/mode/glsl");
@@ -154,6 +153,31 @@ App.controller("ProjectAssetEditor",
                         }
                     }
                 );
+            };
+
+            $scope.getSpriteContent = function() {
+                ApiService.readAssetAsBlob(
+                    ProjectService.getProjectUUID(),
+                    $scope.asset.type.toLowerCase(),
+                    $scope.asset.uuid,
+                    ProjectService.ASSET_FORMAT_SPRITE,
+                    function(spriteBlob) {
+                        if (spriteBlob) {
+                            console.log("Got sprite blob", spriteBlob);
+                            var image = $window.document.getElementById(SPRITE_IMG);
+                            var reader = new FileReader();
+                            reader.onload = function(e) {
+                                image.src = e.target.result;
+                            };
+                            reader.readAsDataURL(spriteBlob);
+                        } 
+                    }
+                );
+            };
+             
+            $scope.loadSpriteAssetPreview = function() {
+                console.log("Loading Sprite Preview");
+                $scope.getSpriteContent();
             };
 
             $scope.getScriptEditorElement = function() {
@@ -308,6 +332,9 @@ App.controller("ProjectAssetEditor",
                                     break;
                                 case ProjectService.ASSET_TYPE_AUDIO:
                                     $scope.loadAudioResource();
+                                    break;
+                                case ProjectService.ASSET_TYPE_SPRITE:
+                                    $scope.loadSpriteAssetPreview();
                                     break;
                             }
                         },50);

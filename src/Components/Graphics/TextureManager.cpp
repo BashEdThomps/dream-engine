@@ -18,37 +18,41 @@
 #include "TextureManager.h"
 
 namespace Dream {
+
     vector<Texture> TextureManager::sTextureCache = vector<Texture>();
 
     TextureManager::TextureManager() {}
 
     vector<Texture> TextureManager::getTextureCache() {
-      return sTextureCache;
+        return sTextureCache;
     }
 
     GLuint TextureManager::loadTextureFromFile(const char* file_c, const char* directory_c) {
-      cout << "TextureManager: Loading from dir " << directory_c << endl;
-      cout << "TextureManager:             file " << file_c << endl;
-      //Generate texture ID and load texture data
-      string filename = string(file_c);
-      string directory = string(directory_c);
-      filename = directory + '/' + filename;
-      GLuint textureID;
-      glGenTextures(1, &textureID);
-      int width,height;
-      unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
-      // Assign texture to ID
-      glBindTexture(GL_TEXTURE_2D, textureID);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-      glGenerateMipmap(GL_TEXTURE_2D);
+        cout << "TextureManager: Loading from dir " << directory_c << endl;
+        cout << "TextureManager:             file " << file_c << endl;
+        //Generate texture ID and load texture data
+        string filename = string(file_c);
+        string directory = string(directory_c);
+        filename = directory + '/' + filename;
+        GLuint textureID;
+        glGenTextures(1, &textureID);
 
-      // Parameters
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glBindTexture(GL_TEXTURE_2D, 0);
-      SOIL_free_image_data(image);
-      return textureID;
+        int width = 0;
+        int height = 0;
+
+        unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
+        // Assign texture to ID
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        // Parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        SOIL_free_image_data(image);
+        return textureID;
     }
 } // End of Dream

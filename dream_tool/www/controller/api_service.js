@@ -61,6 +61,24 @@ function($http) {
     });
   };
 
+  this.readAssetAsBlob = function(project,type,uuid,format,callback) {
+    var api=this;
+    $http({
+      url    : this.generateAssetURL(project,type,uuid,format),
+      method : "get",
+      responseType: "blob"
+    })
+    .then(function success(resp){
+      callback(resp.data);
+    },
+    function failure(){
+      api.getAssetDefault(type,format,function(defaultData) {
+          callback(defaultData);
+      });
+    });
+  };
+
+
   this.getAssetDefault = function(type,format,callback) {
     $http({
         url: "/defaults/"+type+"/"+format,
