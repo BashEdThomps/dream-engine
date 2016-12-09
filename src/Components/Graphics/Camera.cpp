@@ -32,6 +32,10 @@ namespace Dream {
         updateCameraVectors();
       }
 
+      Camera::~Camera() {
+          return;
+      }
+
       vector<vector<float>> Camera::getViewMatrix() {
         vector<float> translationFrontSum = {
           mTranslation[0] + mFront[0],

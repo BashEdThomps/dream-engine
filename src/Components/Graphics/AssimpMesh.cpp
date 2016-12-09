@@ -9,7 +9,9 @@ namespace Dream {
         init();
       }
 
-      AssimpMesh::~AssimpMesh() { }
+      AssimpMesh::~AssimpMesh() {
+          return;
+      }
 
       void AssimpMesh::draw(ShaderInstance* shader) {
         GLuint diffuseNr = 1;

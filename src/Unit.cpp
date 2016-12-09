@@ -17,6 +17,7 @@ namespace Dream {
     }
 
     Unit::~Unit() {
+        return;
     }
 
     void Unit::header() {

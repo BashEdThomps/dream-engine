@@ -57,7 +57,7 @@ namespace Dream {
     }
 
     GraphicsComponent::~GraphicsComponent(void) {
-        if (mWindow) {
+        if (mWindow != nullptr) {
           SDL_DestroyWindow(mWindow);
         }
         SDL_Quit();

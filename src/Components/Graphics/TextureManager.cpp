@@ -27,6 +27,10 @@ namespace Dream {
         return sTextureCache;
     }
 
+    TextureManager::~TextureManager() {
+        return;
+    }
+
     GLuint TextureManager::loadTextureFromFile(const char* file_c, const char* directory_c) {
         cout << "TextureManager: Loading from dir " << directory_c << endl;
         cout << "TextureManager:             file " << file_c << endl;

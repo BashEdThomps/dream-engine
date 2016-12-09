@@ -24,12 +24,25 @@ namespace Dream {
       }
 
       PhysicsComponent::~PhysicsComponent(void) {
-        if (mSolver) delete mSolver;
-        if (mDispatcher) delete mDispatcher;
-        if (mCollisionConfiguration) delete mCollisionConfiguration;
-        if (mBroadphase) delete mBroadphase;
-        if (mDynamicsWorld) delete mDynamicsWorld;
-        if (mDebugDrawer) delete mDebugDrawer;
+
+        if (mSolver != nullptr)
+            delete mSolver;
+
+        if (mDispatcher != nullptr)
+            delete mDispatcher;
+
+        if (mCollisionConfiguration != nullptr)
+            delete mCollisionConfiguration;
+
+        if (mBroadphase != nullptr)
+            delete mBroadphase;
+
+        if (mDynamicsWorld != nullptr)
+            delete mDynamicsWorld;
+
+        if (mDebugDrawer != nullptr)
+            delete mDebugDrawer;
+
       }
 
       void PhysicsComponent::setGravity3f(float x, float y, float z) {

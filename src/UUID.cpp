@@ -21,8 +21,13 @@
 
 namespace Dream {
 
-  UUID::UUID()  {}
-  UUID::~UUID() {}
+  UUID::UUID()  {
+    return;
+  }
+
+  UUID::~UUID() {
+     return;
+  }
 
   string UUID::generateUUID() {
     size_t bufSize = sizeof(char)*20;

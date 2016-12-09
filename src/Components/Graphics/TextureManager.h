@@ -32,6 +32,7 @@ namespace Dream {
     static vector<Texture> sTextureCache;
   public:
     TextureManager();
+    ~TextureManager();
     static GLuint loadTextureFromFile(const char*, const char*);
     static vector<Texture> getTextureCache();
   };

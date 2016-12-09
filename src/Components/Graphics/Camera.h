@@ -57,6 +57,7 @@ namespace Dream {
 
     // Constructor with scalar values
     Camera(float, float, float, float, float, float, float, float);
+    ~Camera();
     vector<vector<float>> getViewMatrix();
     void processKeyboard(const int, const float);
     void processMouseMovement(const float, const float, const bool);
