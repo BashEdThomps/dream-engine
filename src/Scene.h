@@ -29,47 +29,50 @@
 
 namespace Dream {
 
-  using namespace std;
+    using namespace std;
 
-  class Scene {
-  public:
-    string mUUID;
-    string mName;
-    SceneObject *mRootSceneObject;
-    vector<SceneObject*> mScenegraphVector;
-    Transform3D* mDefaultCameraTransform;
-    float mCameraMovementSpeed;
-  public:
-    Scene();
-    Scene(nlohmann::json);
-    ~Scene();
-    bool init();
-    string getUUID();
-    void setUUID(string);
-    string getName();
-    void setName(string);
-    void loadSceneObjects(nlohmann::json,SceneObject*);
-    void loadDefaultCameraTransform(nlohmann::json);
-    int countChildrenOfSceneObject(SceneObject*);
-    void setRootSceneObject(SceneObject*);
-    SceneObject* getRootSceneObject();
-    size_t getNumberOfSceneObjects();
-    bool hasSceneObect(SceneObject*);
-    SceneObject* getSceneObjectByName(string);
-    SceneObject* getSceneObjectByUUID(string);
-    string generateSceneObjectPath(SceneObject*);
-    void showStatus();
-    void showScenegraph();
-    string indent(int);
-    void generateScenegraphVector();
-    void generateSceneObjectPaths();
-    bool isScenegraphVectorEmpty();
-    vector<SceneObject*> getScenegraphVector();
-    vector<float> getDefaultCameraTranslation();
-    vector<float> getDefaultCameraRotation();
-    void setCameraMovementSpeed(float);
-    float getCameraMovementSpeed();
-  }; // End of Scene
+    class Scene {
+    public:
+        string mUUID;
+        string mName;
+        SceneObject *mRootSceneObject;
+        vector<SceneObject*> mScenegraphVector;
+        Transform3D* mDefaultCameraTransform;
+        float mCameraMovementSpeed;
+        vector<float> mClearColour;
+    public:
+        Scene();
+        Scene(nlohmann::json);
+        ~Scene();
+        bool init();
+        string getUUID();
+        void setUUID(string);
+        string getName();
+        void setName(string);
+        void loadSceneObjects(nlohmann::json,SceneObject*);
+        void loadDefaultCameraTransform(nlohmann::json);
+        int countChildrenOfSceneObject(SceneObject*);
+        void setRootSceneObject(SceneObject*);
+        SceneObject* getRootSceneObject();
+        size_t getNumberOfSceneObjects();
+        bool hasSceneObect(SceneObject*);
+        SceneObject* getSceneObjectByName(string);
+        SceneObject* getSceneObjectByUUID(string);
+        string generateSceneObjectPath(SceneObject*);
+        void showStatus();
+        void showScenegraph();
+        string indent(int);
+        void generateScenegraphVector();
+        void generateSceneObjectPaths();
+        bool isScenegraphVectorEmpty();
+        vector<SceneObject*> getScenegraphVector();
+        vector<float> getDefaultCameraTranslation();
+        vector<float> getDefaultCameraRotation();
+        void setCameraMovementSpeed(float);
+        float getCameraMovementSpeed();
+        void loadClearColour(nlohmann::json);
+        vector<float> getClearColour();
+    }; // End of Scene
 
 } // End of Dream
 

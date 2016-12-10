@@ -26,6 +26,13 @@ namespace Dream {
       mScale = vector<float>(3);
     }
 
+    Transform3D::Transform3D(Transform3D* obj) {
+      mTransformType = obj->getTransformType();
+      mTranslation = vector<float>(obj->getTranslation());
+      mRotation = vector<float>(obj->getRotation());
+      mScale = vector<float>(obj->getScale());
+    }
+
 // Translation ===================================================================
 
     vector<float> Transform3D::getTranslation() {

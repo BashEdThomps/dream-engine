@@ -142,6 +142,8 @@ namespace Dream {
           }
       }
 
+      mGraphicsComponent->setClearColour(mActiveScene->getClearColour());
+
       if (!mAssetManager->createAllAssetInstances(mActiveScene))
       {
           cerr << "Dream: Unable to create asset instances." << endl;
@@ -228,14 +230,14 @@ namespace Dream {
       if (mAudioComponent != nullptr) {
         delete mAudioComponent;
       }
-      
+
       if (mPhysicsComponent != nullptr) {
         delete mPhysicsComponent;
       }
 
       if (mGraphicsComponent != nullptr) {
         delete mGraphicsComponent;
-      } 
+      }
   }
 
   bool DreamEngine::createComponents() {

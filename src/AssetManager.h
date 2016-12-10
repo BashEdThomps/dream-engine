@@ -78,7 +78,7 @@ namespace Dream {
 
     map<SceneObject*,LuaScriptInstance*> *getLuaScriptMap();
     void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
-
+    bool createAssetInstancesForSceneObject(SceneObject*);
   }; // End of AssetManager
 } // End of Dream
 

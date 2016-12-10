@@ -79,6 +79,11 @@
     #define SCENE_JSON_X "x"
     #define SCENE_JSON_Y "y"
     #define SCENE_JSON_Z "z"
+    #define SCENE_JSON_CLEAR_COLOUR "clearColour"
+    #define SCENE_JSON_RED "r"
+    #define SCENE_JSON_GREEN "g"
+    #define SCENE_JSON_BLUE "b"
+    #define SCENE_JSON_ALPHA "a"
 // SceneObject ===================================================================
     #define SO_X 0
     #define SO_Y 1

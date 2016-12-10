@@ -128,16 +128,41 @@ namespace Dream {
     luabind::module(mState) [
         luabind::class_<SceneObject>("SceneObject")
         .def(luabind::constructor<>())
+
         .def("getUuid",&SceneObject::getUUID)
+        .def("setUuid",&SceneObject::setUUID)
+
         .def("getTransform",&SceneObject::getTransform)
-        // Asset Getters/Setters ================================================
+        .def("setTransform",&SceneObject::setTransform)
+
+        .def("getParent",&SceneObject::getParent)
+        .def("setParent",&SceneObject::setParent)
+        .def("addChild",&SceneObject::addChild)
+
+        .def("copyTransform",&SceneObject::copyTransform)
+
+        .def("addAssetDefUuidToLoad",&SceneObject::addAssetDefUuidToLoad)
+
         .def("getAnimationInstance",&SceneObject::getAnimationInstance)
+        .def("setAnimationInstance",&SceneObject::setAnimationInstance)
+
         .def("getAudioInstance",&SceneObject::getAudioInstance)
+        .def("setAudioInstance",&SceneObject::setAudioInstance)
+
         .def("getSpriteInstance",&SceneObject::getSpriteInstance)
+        .def("setSpriteInstance",&SceneObject::setSpriteInstance)
+
         .def("getModelInstance",&SceneObject::getModelInstance)
+        .def("setModelInstance",&SceneObject::setModelInstance)
+
         .def("getLightInstance",&SceneObject::getLightInstance)
+        .def("setLightInstance",&SceneObject::setLightInstance)
+
         .def("getFontInstance",&SceneObject::getFontInstance)
+        .def("setFontInstance",&SceneObject::setFontInstance)
+
         .def("getPhysicsObjectInstance",&SceneObject::getPhysicsObjectInstance)
+        .def("setPhysicsObjectInstance",&SceneObject::setPhysicsObjectInstance)
     ];
   }
 

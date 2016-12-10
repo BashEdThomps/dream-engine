@@ -65,8 +65,8 @@ namespace Dream {
         SDL_Event mEvent;
         vector<SceneObject*> m2DQueue;
         vector<SceneObject*> m3DQueue;
-        vector<float> mClearColour;
         glm::mat4 mOrthoProjection;
+        vector<float> mClearColour;
     public:
         void setWindowWidth(int);
         int  getWindowWidth();
@@ -99,8 +99,7 @@ namespace Dream {
         SDL_Window* getWindow();
         SDL_Event getSDL_Event();
 
-        void setClearColour(float,float,float,float);
-        vector<float> getClearColour();
+        void setClearColour(vector<float>);
 
     }; // End of GraphicsComponent
 

@@ -44,25 +44,28 @@ namespace Dream {
     // Other Assets
     vector<SceneObject*> scenegraph = activeScene->getScenegraphVector();
     vector<SceneObject*>::iterator sgIt;
+    for (sgIt = scenegraph.begin(); sgIt != scenegraph.end(); sgIt++) {
+      if (!createAssetInstancesForSceneObject(*sgIt)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
+  bool AssetManager::createAssetInstancesForSceneObject(SceneObject* currentSO) {
     vector<string> aiUUIDsToLoad;
     vector<string>::iterator aiUUIDIt;
-
-    for (sgIt = scenegraph.begin(); sgIt != scenegraph.end(); sgIt++) {
-      SceneObject* currentSO = (*sgIt);
-      aiUUIDsToLoad = currentSO->getAssetInstanceUUIDsToLoad();
-
-      for (aiUUIDIt = aiUUIDsToLoad.begin(); aiUUIDIt != aiUUIDsToLoad.end(); aiUUIDIt++) {
-        string aDefUUID = *aiUUIDIt;
-        AssetInstance* newAsset = createAssetInstanceFromDefinitionUUID(currentSO, aDefUUID);
-        if (newAsset == nullptr) {
-          AssetDefinition* definition = getAssetDefinitionByUUID(aDefUUID);
-          cerr << "AssetManager: Unable to instanciate asset instance for "
-               << definition->getName() << " (" << definition->getUUID() << ")" << endl;
-          return false;
-        } else {
-          addAssetInstance(newAsset);
-        }
+    aiUUIDsToLoad = currentSO->getAssetDefUuidsToLoad();
+    for (aiUUIDIt = aiUUIDsToLoad.begin(); aiUUIDIt != aiUUIDsToLoad.end(); aiUUIDIt++) {
+      string aDefUUID = *aiUUIDIt;
+      AssetInstance* newAsset = createAssetInstanceFromDefinitionUUID(currentSO, aDefUUID);
+      if (newAsset == nullptr) {
+        AssetDefinition* definition = getAssetDefinitionByUUID(aDefUUID);
+        cerr << "AssetManager: Unable to instanciate asset instance for "
+             << definition->getName() << " (" << definition->getUUID() << ")" << endl;
+        return false;
+      } else {
+        addAssetInstance(newAsset);
       }
     }
     return true;

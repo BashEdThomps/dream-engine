@@ -1,321 +1,321 @@
-<div class="container-fluid">
-  <div class="row">
+<h2>Manage Assets</h2>
+<br>
+<div class="row">
     <!-- Asset List -->
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading text-center">Assets</div>
-        <table class="table  table-condensed table-hover table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>UUID</th>
-              <th>Remove</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="asset in project.assets" ng-click="onAssetSelected(asset.uuid)">
-              <td>
-                <button ng-click="goToAssetEditor(asset.uuid)" class="btn btn-sm btn-default">
-                  <span class="glyphicon glyphicon-edit"></span>
-                </button>
-              </td>
-              <td>{{asset.name}}</td>
-              <td>{{asset.type}}</td>
-              <td>{{asset.uuid}}</td>
-              <td>
-                <button ng-click="onRemoveAssetButtonClicked(asset.uuid)" class="btn btn-sm btn btn-danger btn btn-sm-sm">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="panel-footer">
-          <button ng-click="onNewAssetButtonClicked()" class="btn btn-sm btn btn-success">New Asset</button>
+        <div class="panel panel-default">
+            <div class="panel-heading text-center">Assets</div>
+            <table class="table  table-condensed table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>UUID</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="asset in project.assets" ng-click="onAssetSelected(asset.uuid)">
+                        <td>
+                            <button ng-click="goToAssetEditor(asset.uuid)" class="btn btn-sm btn-default">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </button>
+                        </td>
+                        <td>{{asset.name}}</td>
+                        <td>{{asset.type}}</td>
+                        <td>{{asset.uuid}}</td>
+                        <td>
+                            <button ng-click="onRemoveAssetButtonClicked(asset.uuid)" class="btn btn-sm btn btn-danger btn btn-sm-sm">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="panel-footer">
+                <button ng-click="onNewAssetButtonClicked()" class="btn btn-sm btn btn-success">New Asset</button>
+            </div>
         </div>
-      </div>
     </div>
     <!-- Asset Detail -->
     <div class="col-md-6">
-      <div ng-show="currentAsset !== undefined && currentAsset !== null" class="panel panel-default">
-        <div class="panel-heading text-center">Configure Asset</div>
-        <table class="table table-condensed table-striped table-bordered">
-          <tbody>
-            <!-- Metadata -->
-            <tr>
-              <td>Name</td>
-              <td>
-                <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name"/>
-              </td>
-            </tr>
-            <tr>
-              <td>Type</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
-                  <option value="" disabled selected hidden>Select Asset Type</option>
-                  <option ng-repeat="type in assetTypesObject" value="{{type.type}}">{{type.name}}</option>
-                </select>
-              </td>
-            </tr>
-            <!-- Physics Object-->
-            <tr ng-show="isAssetTypePhysicsObject()">
-              <td>Collision Shape</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="physicsObjectFormat">
-                  <option value="" disabled hidden selected>Select Format</option>
-                  <option ng-repeat="fmt in assetFormats.physicsObject" value="{{fmt.format}}">{{fmt.name}}</option>
-                </select>
-              </td>
-            </tr>
-            <tr ng-show="isAssetTypePhysicsObject()">
-              <td>Mass</td>
-              <td>
-                <input ng-change="modified()" ng-model="currentAsset.mass" class="form-control input-sm" type="number"/>
-              </td>
-            </tr>
-            <tr ng-show="isAssetTypePhysicsObject()">
-              <td>Margin</td>
-              <td>
-                <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number"/>
-              </td>
-            </tr>
-            <!-- Sphere -->
-            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatSphere()">
-              <td>Radius</td>
-              <td>
-                <input ng-change="modified()" ng-model="currentAsset.radius" class="form-control input-sm" type="number"/>
-              </td>
-            </tr>
-            <!-- Static Plane -->
-            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatStaticPlane()">
-              <td>Normal</td>
-              <td>
-                <div class="row">
-                  <div class="col-md-4">
-                    <input ng-change="modified()" ng-model="currentAsset.normal.x" class="form-control input-sm" type="number"/>
-                  </div>
-                  <div class="col-md-4">
-                    <input ng-change="modified()" ng-model="currentAsset.normal.y" class="form-control input-sm" type="number"/>
-                  </div>
-                  <div class="col-md-4">
-                    <input ng-change="modified()" ng-model="currentAsset.normal.z" class="form-control input-sm" type="number"/>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatStaticPlane()">
-              <td>Constant</td>
-              <td>
-                <input ng-change="modified()" ng-model="currentAsset.constant" class="form-control input-sm" type="number"/>
-              </td>
-            </tr>
-            <!-- Box -->
-            <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatBox()">
-              <td>Half Extents</td>
-              <td>
-                <div class="row">
-                  <div class="col-md-4">
-                    <input ng-change="modified()" ng-model="currentAsset.size.x" class="form-control input-sm" type="number"/>
-                  </div>
-                  <div class="col-md-4">
-                    <input ng-change="modified()" ng-model="currentAsset.size.y" class="form-control input-sm" type="number"/>
-                  </div>
-                  <div class="col-md-4">
-                    <input ng-change="modified()" ng-model="currentAsset.size.z" class="form-control input-sm" type="number"/>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <!-- Model -->
-            <tr ng-show="isAssetTypeModel()">
-              <td>Format</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="modelFormat">
-                  <option value="" disabled hidden selected>Select Format</option>
-                  <option ng-repeat="fmt in assetFormats.model" value="{{fmt.format}}">{{fmt.name}}</option>
-                </select>
-              </td>
-            </tr>
-            <tr id="wf-assimp-files" ng-show="isAssetTypeModel() && isModelAssetFormatAssimp()">
-              <td>Model File</td>
-              <td>
-                <button ng-show="hasModelAssimp" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-                <button id="wf-upload-button" ng-click="onAssetModelAssimpUploadButtonClicked()"
-                        ng-show="!hasModelAssimp" class="pull-right btn-sm btn btn-success">
-                        <span class="glyphicon glyphicon-open"></span>
-                </button>
-                <input ng-show="!hasModelAssimp" type="file" id="wf-assimp-file"  name="model-file" />
-              </td>
-            </tr>
-            <!-- Script -->
-            <tr ng-show="isAssetTypeScript()">
-              <td>Format</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
-                  <option value="" disabled hidden selected>Select Format</option>
-                  <option ng-repeat="fmt in assetFormats.script" value="{{fmt.format}}">{{fmt.name}}</option>
-                </select>
-              </td>
-            </tr>
-            <!-- Animation -->
-            <tr ng-show="isAssetTypeAnimation()">
-              <td>Format</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
-                  <option value="" disabled hidden selected>Select Format</option>
-                  <option ng-repeat="fmt in assetFormats.animation" value="{{fmt.format}}">{{fmt.name}}</option>
-                </select>
-              </td>
-            </tr>
-            <!-- Audio -->
-            <tr ng-show="isAssetTypeAudio()">
-              <td>Format</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
-                  <option value="" disabled hidden selected>Select Format</option>
-                  <option ng-repeat="fmt in assetFormats.audio" value="{{fmt.format}}">{{fmt.name}}</option>
-                </select>
-              </td>
-            </tr>
+        <div ng-show="currentAsset !== undefined && currentAsset !== null" class="panel panel-default">
+            <div class="panel-heading text-center">Configure Asset</div>
+            <table class="table table-condensed table-striped table-bordered">
+                <tbody>
+                    <!-- Metadata -->
+                    <tr>
+                        <td>Name</td>
+                        <td>
+                            <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Type</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.type" class="form-control input-sm" id="type">
+                                <option value="" disabled selected hidden>Select Asset Type</option>
+                                <option ng-repeat="type in assetTypesObject" value="{{type.type}}">{{type.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <!-- Physics Object-->
+                    <tr ng-show="isAssetTypePhysicsObject()">
+                        <td>Collision Shape</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="physicsObjectFormat">
+                                <option value="" disabled hidden selected>Select Format</option>
+                                <option ng-repeat="fmt in assetFormats.physicsObject" value="{{fmt.format}}">{{fmt.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr ng-show="isAssetTypePhysicsObject()">
+                        <td>Mass</td>
+                        <td>
+                            <input ng-change="modified()" ng-model="currentAsset.mass" class="form-control input-sm" type="number"/>
+                        </td>
+                    </tr>
+                    <tr ng-show="isAssetTypePhysicsObject()">
+                        <td>Margin</td>
+                        <td>
+                            <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number"/>
+                        </td>
+                    </tr>
+                    <!-- Sphere -->
+                    <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatSphere()">
+                        <td>Radius</td>
+                        <td>
+                            <input ng-change="modified()" ng-model="currentAsset.radius" class="form-control input-sm" type="number"/>
+                        </td>
+                    </tr>
+                    <!-- Static Plane -->
+                    <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatStaticPlane()">
+                        <td>Normal</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.normal.x" class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.normal.y" class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.normal.z" class="form-control input-sm" type="number"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatStaticPlane()">
+                        <td>Constant</td>
+                        <td>
+                            <input ng-change="modified()" ng-model="currentAsset.constant" class="form-control input-sm" type="number"/>
+                        </td>
+                    </tr>
+                    <!-- Box -->
+                    <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatBox()">
+                        <td>Half Extents</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.size.x" class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.size.y" class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.size.z" class="form-control input-sm" type="number"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Model -->
+                    <tr ng-show="isAssetTypeModel()">
+                        <td>Format</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="modelFormat">
+                                <option value="" disabled hidden selected>Select Format</option>
+                                <option ng-repeat="fmt in assetFormats.model" value="{{fmt.format}}">{{fmt.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr id="wf-assimp-files" ng-show="isAssetTypeModel() && isModelAssetFormatAssimp()">
+                        <td>Model File</td>
+                        <td>
+                            <button ng-show="hasModelAssimp" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button id="wf-upload-button" ng-click="onAssetModelAssimpUploadButtonClicked()"
+                                                          ng-show="!hasModelAssimp" class="pull-right btn-sm btn btn-success">
+                                <span class="glyphicon glyphicon-open"></span>
+                            </button>
+                            <input ng-show="!hasModelAssimp" type="file" id="wf-assimp-file"  name="model-file" />
+                        </td>
+                    </tr>
+                    <!-- Script -->
+                    <tr ng-show="isAssetTypeScript()">
+                        <td>Format</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                                <option value="" disabled hidden selected>Select Format</option>
+                                <option ng-repeat="fmt in assetFormats.script" value="{{fmt.format}}">{{fmt.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <!-- Animation -->
+                    <tr ng-show="isAssetTypeAnimation()">
+                        <td>Format</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                                <option value="" disabled hidden selected>Select Format</option>
+                                <option ng-repeat="fmt in assetFormats.animation" value="{{fmt.format}}">{{fmt.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <!-- Audio -->
+                    <tr ng-show="isAssetTypeAudio()">
+                        <td>Format</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                                <option value="" disabled hidden selected>Select Format</option>
+                                <option ng-repeat="fmt in assetFormats.audio" value="{{fmt.format}}">{{fmt.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
 
-            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatSfx()">
-              <td>Sound Effect File</td>
-              <td>
-                <button ng-show="hasAudioSfx" class="pull-right btn-sm btn btn-danger"
-                        ng-click="onDeleteAssetDataButtonClicked()">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-                <button ng-show="!hasAudioSfx" class="pull-right btn btn-sm btn btn-success"
-                        ng-click="onAssetAudioSfxUploadButtonClicked()">
-                  <span class="glyphicon glyphicon-open"></span>
-                </button>
-                <input ng-show="!hasAudiosSfx" type="file" id="sfx-file" name="sfx-file"/>
-              </td>
-            </tr>
+                    <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatSfx()">
+                        <td>Sound Effect File</td>
+                        <td>
+                            <button ng-show="hasAudioSfx" class="pull-right btn-sm btn btn-danger"
+                                                          ng-click="onDeleteAssetDataButtonClicked()">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button ng-show="!hasAudioSfx" class="pull-right btn btn-sm btn btn-success"
+                                                           ng-click="onAssetAudioSfxUploadButtonClicked()">
+                                <span class="glyphicon glyphicon-open"></span>
+                            </button>
+                            <input ng-show="!hasAudiosSfx" type="file" id="sfx-file" name="sfx-file"/>
+                        </td>
+                    </tr>
 
-            <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatMusic()">
-              <td>Sound Music File</td>
-              <td>
-                <button ng-show="hasAudioMusic" class="pull-right btn-sm btn btn-danger"
-                        ng-click="onDeleteAssetDataButtonClicked()">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-                <button ng-show="!hasAudioMusic" class="pull-right btn btn-sm btn btn-success"
-                        ng-click="onAssetAudioMusicUploadButtonClicked()">
-                  <span class="glyphicon glyphicon-open"></span>
-                </button>
-                <input ng-show="!hasAudiosMusic" type="file" id="music-file" name="music-file"/>
-              </td>
-            </tr>
+                    <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatMusic()">
+                        <td>Sound Music File</td>
+                        <td>
+                            <button ng-show="hasAudioMusic" class="pull-right btn-sm btn btn-danger"
+                                                            ng-click="onDeleteAssetDataButtonClicked()">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button ng-show="!hasAudioMusic" class="pull-right btn btn-sm btn btn-success"
+                                                             ng-click="onAssetAudioMusicUploadButtonClicked()">
+                                <span class="glyphicon glyphicon-open"></span>
+                            </button>
+                            <input ng-show="!hasAudiosMusic" type="file" id="music-file" name="music-file"/>
+                        </td>
+                    </tr>
 
-            <tr ng-show="isAssetTypeAudio()">
-              <td>Loop</td>
-              <td>
-                <div class="checkbox checkbox-info">
-                  <input type="checkbox" id="audioLoop" />
-                  <label></label>
-                </div>
-              </td>
+                    <tr ng-show="isAssetTypeAudio()">
+                        <td>Loop</td>
+                        <td>
+                            <div class="checkbox checkbox-info">
+                                <input type="checkbox" id="audioLoop" />
+                                <label></label>
+                            </div>
+                        </td>
 
-            </tr>
-            <!-- Font -->
-            <tr ng-show="isAssetTypeFont()">
-              <td>Format</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
-                  <option value="" disabled hidden selected>Select Format</option>
-                  <option ng-repeat="fmt in assetFormats.font" value="{{fmt.format}}">{{fmt.name}}</option>
-                </select>
-              </td>
-            </tr>
+                    </tr>
+                    <!-- Font -->
+                    <tr ng-show="isAssetTypeFont()">
+                        <td>Format</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                                <option value="" disabled hidden selected>Select Format</option>
+                                <option ng-repeat="fmt in assetFormats.font" value="{{fmt.format}}">{{fmt.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
 
-            <tr ng-show="isAssetTypeFont()">
-                <td>Font File</td>
-                <td>
-                    <button ng-show="hasFont"  class="pull-right btn-sm btn btn-danger"
-                            ng-click="onDeleteAssetDataButtonClicked()">
-                      <span class="glyphicon glyphicon-remove"></span>
-                    </button>
-                    <button ng-show="!hasFont" class="pull-right btn btn-sm btn btn-success"
-                            ng-click="onAssetFontUploadButtonClicked()">
-                      <span class="glyphicon glyphicon-open"></span>
-                    </button>
-                    <input ng-show="!hasFont" type="file" id="font-file" accept=".ttf" name="font-file"/>
-                </td>
-            </tr>
+                    <tr ng-show="isAssetTypeFont()">
+                        <td>Font File</td>
+                        <td>
+                            <button ng-show="hasFont"  class="pull-right btn-sm btn btn-danger"
+                                                       ng-click="onDeleteAssetDataButtonClicked()">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button ng-show="!hasFont" class="pull-right btn btn-sm btn btn-success"
+                                                       ng-click="onAssetFontUploadButtonClicked()">
+                                <span class="glyphicon glyphicon-open"></span>
+                            </button>
+                            <input ng-show="!hasFont" type="file" id="font-file" accept=".ttf" name="font-file"/>
+                        </td>
+                    </tr>
 
-            <tr ng-show="isAssetTypeFont()">
-                <td>Size</td>
-                <td>
-                  <input ng-change="modified()" ng-model="currentAsset.size"
-                   class="form-control input-sm" type="number"/>
-                </td>
-            </tr>
-            <tr ng-show="isAssetTypeFont()">
-                <td>Colour</td>
-                <td>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <input ng-change="modified()" ng-model="currentAsset.colour.r"
-                             class="form-control input-sm" type="number"/>
-                        </div>
-                        <div class="col-sm-4">
-                            <input ng-change="modified()" ng-model="currentAsset.colour.g"
-                             class="form-control input-sm" type="number"/>
-                        </div>
-                        <div class="col-sm-4">
-                            <input ng-change="modified()" ng-model="currentAsset.colour.b"
-                             class="form-control input-sm" type="number"/>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+                    <tr ng-show="isAssetTypeFont()">
+                        <td>Size</td>
+                        <td>
+                            <input ng-change="modified()" ng-model="currentAsset.size"
+                                                          class="form-control input-sm" type="number"/>
+                        </td>
+                    </tr>
+                    <tr ng-show="isAssetTypeFont()">
+                        <td>Colour</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.r"
+                                                                  class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.g"
+                                                                  class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.b"
+                                                                  class="form-control input-sm" type="number"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
 
-            <!-- Sprite -->
-            <tr ng-show="isAssetTypeSprite()">
-                <td>Tile Size</td>
-                <td>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <input ng-change="modified()" ng-model="currentAsset.tileSize.width" class="form-control input-sm" type="number"/>
-                        </div>
-                        <div class="col-md-6">
-                            <input ng-change="modified()" ng-model="currentAsset.tileSize.height" class="form-control input-sm" type="number"/>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <tr ng-show="isAssetTypeSprite()">
-              <td>Format</td>
-              <td>
-                <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
-                  <option value="" disabled hidden selected>Select Format</option>
-                  <option ng-repeat="fmt in assetFormats.sprite" value="{{fmt.format}}">{{fmt.name}}</option>
-                </select>
-              </td>
-            </tr>
+                    <!-- Sprite -->
+                    <tr ng-show="isAssetTypeSprite()">
+                        <td>Tile Size</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input ng-change="modified()" ng-model="currentAsset.tileSize.width" class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <input ng-change="modified()" ng-model="currentAsset.tileSize.height" class="form-control input-sm" type="number"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr ng-show="isAssetTypeSprite()">
+                        <td>Format</td>
+                        <td>
+                            <select ng-change="modified()" ng-model="currentAsset.format" class="form-control input-sm" id="type">
+                                <option value="" disabled hidden selected>Select Format</option>
+                                <option ng-repeat="fmt in assetFormats.sprite" value="{{fmt.format}}">{{fmt.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
 
-            <tr ng-show="isAssetTypeSprite()">
-                <td>Sprite File</td>
-                <td>
-                    <button ng-show="hasSprite"  class="pull-right btn-sm btn btn-danger"
-                            ng-click="onDeleteAssetDataButtonClicked()">
-                      <span class="glyphicon glyphicon-remove"></span>
-                    </button>
-                    <button ng-show="!hasSprite" class="pull-right btn btn-sm btn btn-success"
-                            ng-click="onAssetSpriteUploadButtonClicked()">
-                      <span class="glyphicon glyphicon-open"></span>
-                    </button>
-                    <input ng-show="!hasSprite" type="file" id="sprite-file" accept=".png" name="sprite-file"/>
-                </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                    <tr ng-show="isAssetTypeSprite()">
+                        <td>Sprite File</td>
+                        <td>
+                            <button ng-show="hasSprite"  class="pull-right btn-sm btn btn-danger"
+                                                         ng-click="onDeleteAssetDataButtonClicked()">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button ng-show="!hasSprite" class="pull-right btn btn-sm btn btn-success"
+                                                         ng-click="onAssetSpriteUploadButtonClicked()">
+                                <span class="glyphicon glyphicon-open"></span>
+                            </button>
+                            <input ng-show="!hasSprite" type="file" id="sprite-file" accept=".png" name="sprite-file"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
 </div>

@@ -8,16 +8,34 @@
 
 namespace Dream {
 
-  SceneObject::SceneObject() {
+  void SceneObject::constructorInit() {
+    // Metadata
     mHasFocus = false;
     mParent = nullptr;
     mTransform = new Transform3D();
+    mChildren.clear();
+    mAssetDefUuidsToLoad.clear();
+    mUUID = "";
+    mName = "";
+    mPath = "";
+    // Asset Instances
+    mAudioInstance = nullptr;
+    mAnimationInstance = nullptr;
+    mModelInstance  = nullptr;
+    mShaderInstance = nullptr;
+    mLightInstance = nullptr;
+    mSpriteInstance = nullptr;
+    mScriptInstance = nullptr;
+    mPhysicsObjectInstance = nullptr;
+    mFontInstance = nullptr;
+  }
+
+  SceneObject::SceneObject() {
+    constructorInit();
   }
 
   SceneObject::SceneObject(nlohmann::json soJson){
-    mHasFocus = false;
-    mParent = nullptr;
-    mTransform = new Transform3D();
+    constructorInit();
 
     if(!soJson[SCENE_OBJECT_UUID].is_null()){
       mUUID = soJson[SCENE_OBJECT_UUID];
@@ -77,7 +95,7 @@ namespace Dream {
     mFontInstance = nullptr;
 
     for (nlohmann::json::iterator it = assetInstancesJson.begin(); it != assetInstancesJson.end(); it++) {
-      mAssetInstanceUUIDsToLoad.push_back((*it));
+      mAssetDefUuidsToLoad.push_back((*it));
     }
   }
 
@@ -172,6 +190,7 @@ namespace Dream {
   }
 
   void SceneObject::addChild(SceneObject* child) {
+    child->setParent(this);
     mChildren.push_back(child);
   }
 
@@ -238,8 +257,8 @@ namespace Dream {
     cout << "         Scale: " << String::floatVectorToString(getScale())<< endl;
   }
 
-  vector<string> SceneObject::getAssetInstanceUUIDsToLoad() {
-    return mAssetInstanceUUIDsToLoad;
+  vector<string> SceneObject::getAssetDefUuidsToLoad() {
+    return mAssetDefUuidsToLoad;
   }
 
   void SceneObject::setAnimationInstance(AnimationInstance* animationAsset) {
@@ -366,4 +385,15 @@ namespace Dream {
     return mHasFocus;
   }
 
+  void SceneObject::addAssetDefUuidToLoad(string uuid) {
+    mAssetDefUuidsToLoad.push_back(uuid);
+  }
+
+  void SceneObject::copyTransform(Transform3D* transform) {
+    if (mTransform != nullptr) {
+      delete mTransform;
+    }
+
+    mTransform = new Transform3D(transform);
+  }
 } // End of Dream

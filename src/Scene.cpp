@@ -1,5 +1,5 @@
 /*
-* Dream::Scene
+* Scene
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,16 +21,19 @@ namespace Dream {
 
   Scene::Scene() {
     mRootSceneObject = nullptr;
+    mClearColour = {0.0f,0.0f,0.0f,0.0f};
     mDefaultCameraTransform = new Transform3D();
   }
 
   Scene::Scene(nlohmann::json jsonScene) {
     mRootSceneObject = nullptr;
+    mClearColour = {0.0f,0.0f,0.0f,0.0f};
     mDefaultCameraTransform = new Transform3D();
     mUUID = jsonScene[SCENE_JSON_UUID];
     mName = jsonScene[SCENE_JSON_NAME];
 
     loadDefaultCameraTransform(jsonScene[SCENE_JSON_CAMERA]);
+    loadClearColour(jsonScene[SCENE_JSON_CLEAR_COLOUR]);
 
     nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
 
@@ -215,6 +218,19 @@ namespace Dream {
 
   float Scene::getCameraMovementSpeed() {
     return mCameraMovementSpeed;
+  }
+
+  void Scene::loadClearColour(nlohmann::json jsonClearColour) {
+    if (!jsonClearColour.is_null()) {
+        mClearColour[0] = jsonClearColour[SCENE_JSON_RED];
+        mClearColour[1] = jsonClearColour[SCENE_JSON_GREEN];
+        mClearColour[2] = jsonClearColour[SCENE_JSON_BLUE];
+        mClearColour[3] = jsonClearColour[SCENE_JSON_ALPHA];
+    }
+  }
+
+  vector<float> Scene::getClearColour() {
+    return mClearColour;
   }
 
 } // End of Dream

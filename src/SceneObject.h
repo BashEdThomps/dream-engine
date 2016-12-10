@@ -24,7 +24,7 @@ namespace Dream {
   protected:
       SceneObject* mParent;
       vector<SceneObject*> mChildren;
-      vector<string> mAssetInstanceUUIDsToLoad;
+      vector<string> mAssetDefUuidsToLoad;
       bool mHasFocus;
       // Metadata
       string mUUID;
@@ -45,6 +45,8 @@ namespace Dream {
       SceneObject(nlohmann::json);
       SceneObject();
       ~SceneObject();
+
+      void constructorInit();
 
       bool init();
       void loadAssetInstances(nlohmann::json);
@@ -126,7 +128,8 @@ namespace Dream {
       FontInstance* getFontInstance();
       bool hasFontInstance();
 
-      vector<string> getAssetInstanceUUIDsToLoad();
+      void addAssetDefUuidToLoad(string);
+      vector<string> getAssetDefUuidsToLoad();
 
       string getTransformType();
       void setTransformType(string);
@@ -136,6 +139,8 @@ namespace Dream {
 
       bool hasFocus();
       void setHasFocus(bool);
+
+      void copyTransform(Transform3D*);
 
   }; // End of SceneObject
 

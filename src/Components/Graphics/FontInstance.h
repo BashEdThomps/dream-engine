@@ -41,7 +41,7 @@ namespace Dream {
     TTF_Font* getFont();
     void setText(string);
     string getText();
-    void setColour(int,int,int);
+    void setColour(Uint8,Uint8,Uint8);
     void setSize(int);
     void renderToTexture();
     GLuint getTexture();

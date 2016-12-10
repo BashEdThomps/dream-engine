@@ -100,7 +100,7 @@ App.service('UIService',
         this.treeProjectScenes.children.splice(index,1);
     };
 
-    // Asset ----------------------------------------------------------------
+    // Assets ---------------------------------------------------------------
 
     this.addTreeProjectAsset = function(asset) {
         this.treeProjectAssets.children.push(asset);
@@ -122,9 +122,102 @@ App.service('UIService',
             onSelect: hostController.onTreeProjectAssetSelected,
             expanded : true
         };
+
+        var animationNode = {
+            label: "Animation",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(animationNode);
+
+        var audioNode = {
+            label: "Audio",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(audioNode);
+
+        var fontNode = {
+            label: "Font",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(fontNode);
+
+        var lightNode = {
+            label: "Light",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(lightNode);
+
+        var modelNode = {
+            label: "Model",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(modelNode);
+
+        var physicsNode = {
+            label: "Physics",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(physicsNode);
+
+        var shaderNode = {
+            label: "Shader",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(shaderNode);
+
+        var scriptNode = {
+            label: "Script",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(scriptNode);
+
+        var spriteNode = {
+            label: "Sprite",
+            children: [],
+            expanded : true
+        };
+        this.treeProjectAssets.children.push(spriteNode);
+
         var ui = this;
         ProjectService.getProject().assets.forEach(function(asset){
-            ui.treeProjectAssets.children.push(ui.createTreeProjectAsset(asset));
+            var node = ui.createTreeProjectAsset(asset);
+            switch (asset.type) {
+                case ProjectService.ASSET_TYPE_ANIMATION:
+                    animationNode.children.push(node)
+                    break;
+                case ProjectService.ASSET_TYPE_AUDIO:
+                    audioNode.children.push(node);
+                    break;
+                case ProjectService.ASSET_TYPE_FONT:
+                    fontNode.children.push(node);
+                    break;
+                case ProjectService.ASSET_TYPE_LIGHT:
+                    lightNode.children.push(node);
+                    break;
+                case ProjectService.ASSET_TYPE_MODEL:
+                    modelNode.children.push(node);
+                    break;
+                case ProjectService.ASSET_TYPE_PHYSICS:
+                    physicsNode.children.push(node);
+                    break;
+                case ProjectService.ASSET_TYPE_SHADER:
+                    shaderNode.children.push(node);
+                    break;
+                case ProjectService.ASSET_TYPE_SCRIPT:
+                    scriptNode.children.push(node);
+                    break;
+                case ProjectService.ASSET_TYPE_SPRITE:
+                    spriteNode.children.push(node);
+                    break;
+            };
         });
         ui.treeDataRoot.children.push(this.treeProjectAssets);
     };

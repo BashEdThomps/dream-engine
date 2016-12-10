@@ -25,19 +25,14 @@ namespace Dream {
         setWindowHeight(Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT);
         mWindowShouldClose = false;
         mCamera = camera;
-        mClearColour = vector<float>(4);
-        setClearColour(1.0f,1.0f,1.0f,1.0f);
+        mClearColour = {1.0f,1.0f,1.0f,1.0f};
     }
 
-    void GraphicsComponent::setClearColour(float r, float g, float b, float a) {
-        mClearColour[CLEAR_RED] = r;
-        mClearColour[CLEAR_GREEN] = g;
-        mClearColour[CLEAR_BLUE] = b;
-        mClearColour[CLEAR_ALPHA] = a;
-    }
-
-    vector<float> GraphicsComponent::getClearColour() {
-        return mClearColour;
+    void GraphicsComponent::setClearColour(vector<float> clearColour) {
+        mClearColour[CLEAR_RED] = clearColour[CLEAR_RED];
+        mClearColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
+        mClearColour[CLEAR_BLUE] = clearColour[CLEAR_BLUE];
+        mClearColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
     }
 
     bool GraphicsComponent::createSDLWindow() {

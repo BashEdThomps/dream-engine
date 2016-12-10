@@ -1,4 +1,5 @@
-<div class="container-fluid">
+<h2>Scene List</h2>
+<br>
   <div class="row">
     <div class="col-md-6">
       <div class="panel panel-default">
@@ -112,9 +113,34 @@
                 <input ng-change="modified()" ng-model="currentScene.camera.movementSpeed" class="form-control input-sm" type="number"/>
               </td>
             </tr>
+            <tr>
+                <td colspan=2>Misc</td>
+            </tr>
+            <tr>
+                <td>Clear Colour</td>
+                <td>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <input ng-change="modified()" ng-model="currentScene.clearColour.r" 
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-sm-3">
+                            <input ng-change="modified()" ng-model="currentScene.clearColour.g"
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-sm-3">
+                            <input ng-change="modified()" ng-model="currentScene.clearColour.b"
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-sm-3">
+                            <input ng-change="modified()" ng-model="currentScene.clearColour.a"
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                    </div>
+                </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
-</div>

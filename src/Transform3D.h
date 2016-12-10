@@ -34,6 +34,7 @@ namespace Dream {
     string mTransformType;
   public:
     Transform3D();
+    Transform3D(Transform3D*);
     vector<float> getTranslation();
     void setTranslation(vector<float>);
     void setTranslation(float, float, float);
