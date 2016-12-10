@@ -32,6 +32,7 @@
 #include "Components/Graphics/ShaderInstance.h"
 #include "Components/Graphics/AssimpModelInstance.h"
 #include "Components/Graphics/LightInstance.h"
+#include "Components/Graphics/FontInstance.h"
 #include "Components/Physics/PhysicsObjectInstance.h"
 #include "Scene.h"
 
@@ -62,6 +63,7 @@ namespace Dream {
     AssetInstance* createShaderInstance(SceneObject*, AssetDefinition*);
     AssetInstance* createPhysicsObjectInstance(SceneObject*, AssetDefinition*);
     AssetInstance* createLightInstance(SceneObject*, AssetDefinition*);
+    AssetInstance* createFontInstance(SceneObject*, AssetDefinition*);
     AssetInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
     void showStatus();
     vector<SceneObject*> getSceneObjectsWithPhysicsObjects();

@@ -201,6 +201,14 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
         console.log("Sprite asset exists",result);
         $scope.hasSprite = result;
       });
+    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_FONT) {
+    console.log("Checking for existsing font asset");
+      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_FONT_TRUETYPE) {
+        ProjectService.assetHasFontTtf($scope.currentAsset.uuid,function(result){
+          console.log("Font asset exists",result);
+          $scope.hasFont = result;
+        });
+      }
     }
   };
 
@@ -266,6 +274,23 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     var spriteFile = document.getElementById('sprite-file');
     UtilService.readFileAsBinaryFromElement(spriteFile, function(data) {
       var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/sprite";
+      ApiService.uploadAsset(path,data, function(success){
+        if (success) {
+          UIService.addAlert("Asset uploaded successfuly.","success");
+          $scope.updateAssetUIVariables();
+        }
+        else {
+          UIService.addAlert("Error uploading asset.","danger");
+        }
+      });
+    });
+  };
+
+  $scope.onAssetFontUploadButtonClicked = function() {
+    UIService.addAlert("Uploading Asset File...","info");
+    var spriteFile = document.getElementById('font-file');
+    UtilService.readFileAsBinaryFromElement(spriteFile, function(data) {
+      var path = ProjectService.getProjectUUID()+"/asset/"+$scope.currentAsset.type+"/"+$scope.currentAsset.uuid+"/"+$scope.currentAsset.format;
       ApiService.uploadAsset(path,data, function(success){
         if (success) {
           UIService.addAlert("Asset uploaded successfuly.","success");

@@ -97,7 +97,7 @@ namespace Dream {
   }
 
   void Scene::loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
-    cout << "Loading scene objects from array: "<< jsonArray.dump() << endl;
+    //cout << "Loading scene objects from array: "<< jsonArray.dump() << endl;
     if (!jsonArray.is_null()) {
       for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
         cout << "Scene: Creating SceneObject " << endl;

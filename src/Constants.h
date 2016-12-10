@@ -24,10 +24,10 @@
     #define PATH_DELIMETER "::"
 // Project =======================================================================
     #define PROJECT_DIRECTORY_ARG "--project-dir"
-    #define PROJECT_UUID_ARG      "--uuid"
-    #define PROJECT_UUID_LENGTH   19
-    #define PROJECT_EXTENSION     ".json"
-    #define PROJECT_PATH_SEP      "/"
+    #define PROJECT_UUID_ARG "--uuid"
+    #define PROJECT_UUID_LENGTH 19
+    #define PROJECT_EXTENSION ".json"
+    #define PROJECT_PATH_SEP "/"
     #define PROJECT_UUID "uuid"
     #define PROJECT_NAME "name"
     #define PROJECT_AUTHOR "author"
@@ -50,9 +50,11 @@
     #define ASSET_DIR_SCRIPT "script"
     #define ASSET_DIR_SHADER "shader"
     #define ASSET_DIR_SPRITE "sprite"
+    #define ASSET_DIR_FONT "font"
     #define ASSET_TYPE_ANIMATION "animation"
     #define ASSET_TYPE_AUDIO "audio"
     #define ASSET_TYPE_LIGHT "light"
+    #define ASSET_TYPE_FONT "font"
     #define ASSET_TYPE_MODEL "model"
     #define ASSET_TYPE_PHYSICS_OBJECT "physicsObject"
     #define ASSET_TYPE_SCRIPT "script"
@@ -101,5 +103,11 @@
     #define TRANSFORM_Z 2
     #define TRANSFORM_TYPE_ABSOLUTE "absolute"
     #define TRANSFORM_TYPE_OFFSET "offset"
+// Font ==========================================================================
+    #define FONT_SIZE "size"
+    #define FONT_COLOUR "colour"
+    #define FONT_RED    "r"
+    #define FONT_GREEN  "g"
+    #define FONT_BLUE   "b"
 
 #endif // ASSETCONSTANTS_H

@@ -15,6 +15,7 @@ find_package(BULLET REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 find_package(OPENGL REQUIRED)
 find_package(GLM    REQUIRED)
 find_package(GLEW   REQUIRED)
@@ -41,6 +42,7 @@ target_link_libraries(
   ${SDL2_LIBRARY}
   ${SDLMIXER_LIBRARY}
   ${SDL2_IMAGE_LIBRARY}
+  ${SDL2_TTF_LIBRARY}
 )
 
 message("Using lua L: " ${LUA_LIBRARIES} " H: " ${LUA_INCLUDE_DIR})
@@ -61,6 +63,7 @@ include_directories(
   ${SDL2_INCLUDE_DIR}
   ${SDLMIXER_INCLUDE_DIR}
   ${SDL2_IMAGE_INCLUDE_DIR}
+  ${SDL2_TTF_INCLUDE_DIR}
 )
 
 add_executable (Dream "Main.cpp")
@@ -83,4 +86,5 @@ target_link_libraries(
   ${SDL2_LIBRARY}
   ${SDLMIXER_LIBRARY}
   ${SDL2_IMAGE_LIBRARY}
+  ${SDL2_TTF_LIBRARY}
 )

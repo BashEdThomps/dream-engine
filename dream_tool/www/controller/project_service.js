@@ -43,8 +43,6 @@ App.service('ProjectService',
     this.ASSET_TYPE_FONT = "font";
     this.ASSET_FORMAT_NAME_TRUETYPE = "TrueType";
     this.ASSET_FORMAT_FONT_TRUETYPE = "ttf";
-    this.ASSET_FORMAT_NAME_WOFF = "WOFF";
-    this.ASSET_FORMAT_FONT_WOFF = "woff";
 
     // Light
     this.ASSET_TYPE_LIGHT = "light";
@@ -140,9 +138,6 @@ App.service('ProjectService',
         formats: [{
           name: this.ASSET_FORMAT_NAME_TRUETYPE,
           format: this.ASSET_FORMAT_FONT_TRUETYPE
-        },{
-          name: this.ASSET_FORMAT_NAME_WOFF,
-          format: this.ASSET_FORMAT_FONT_WOFF
         }]
       },
       // Light
@@ -715,6 +710,16 @@ App.service('ProjectService',
         this.ASSET_TYPE_SPRITE,
         uuid,
         this.ASSET_TYPE_SPRITE,
+        callback
+      );
+    };
+
+    this.assetHasFontTtf = function(uuid,callback) {
+      ApiService.assetExists(
+        this.project.uuid,
+        this.ASSET_TYPE_FONT,
+        uuid,
+        this.ASSET_FORMAT_FONT_TRUETYPE,
         callback
       );
     };

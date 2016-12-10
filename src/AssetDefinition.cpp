@@ -38,25 +38,25 @@ namespace Dream {
   void AssetDefinition::loadMetadata() {
     // UUID
     if (mJson[ASSET_UUID].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with nullptr UUID." << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
     } else {
       setUUID(mJson[ASSET_UUID]);
     }
     // Name
     if (mJson[ASSET_NAME].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with nullptr Name." << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with null Name." << endl;
     } else {
       setName(mJson[ASSET_NAME]);
     }
     // Type
     if (mJson[ASSET_TYPE].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with nullptr Type" << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with null Type" << endl;
     } else {
       setType(mJson[ASSET_TYPE]);
     }
     // Format
     if (mJson[ASSET_FORMAT].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with nullptr Format" << endl;
+      cerr << "AssetDefinition: Construction Asset from JSON with null Format" << endl;
     } else {
       setFormat(mJson[ASSET_FORMAT]);
     }
@@ -139,6 +139,10 @@ namespace Dream {
     return getType().compare(ASSET_TYPE_LIGHT) == 0;
   }
 
+  bool AssetDefinition::isTypeFont() {
+    return getType().compare(ASSET_TYPE_FONT) == 0;
+  }
+
   bool AssetDefinition::isTypePhysicsObject() {
     return getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0;
   }
@@ -197,6 +201,8 @@ namespace Dream {
       return ASSET_DIR_SHADER;
     } else if (isTypeSprite()) {
       return ASSET_DIR_SPRITE;
+    } else if (isTypeFont()) {
+      return ASSET_DIR_FONT;
     } else {
       return "Type Not Found";
     }

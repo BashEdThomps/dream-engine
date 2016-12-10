@@ -69,6 +69,7 @@ namespace Dream {
         bool isTypePhysicsObject();
         bool isTypeLight();
         bool isTypeSprite();
+        bool isTypeFont();
 
         bool isScriptFormatLua();
         bool isModelFormatAssimp();

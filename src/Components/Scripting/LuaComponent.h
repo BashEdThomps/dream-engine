@@ -84,6 +84,7 @@ namespace Dream {
     void bindSpriteInstance();
     void bindPhysicsObjectInstane();
     */
+    void bindFontInstance();
 
 
   }; // End of LuaComponent

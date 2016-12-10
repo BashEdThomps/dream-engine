@@ -136,6 +136,7 @@ namespace Dream {
         .def("getSpriteInstance",&SceneObject::getSpriteInstance)
         .def("getModelInstance",&SceneObject::getModelInstance)
         .def("getLightInstance",&SceneObject::getLightInstance)
+        .def("getFontInstance",&SceneObject::getFontInstance)
         .def("getPhysicsObjectInstance",&SceneObject::getPhysicsObjectInstance)
     ];
   }
@@ -204,6 +205,7 @@ namespace Dream {
 
   void LuaComponent::bindAssetClasses() {
     bindAudioInstance();
+    bindFontInstance();
     //bindAnimationInstance();
     //bindAssimpModelInstance();
     //bindLightInstance();
@@ -212,9 +214,17 @@ namespace Dream {
     //bindPhysicsObjectInstane();
   }
 
+  void LuaComponent::bindFontInstance() {
+    luabind::module(mState) [
+        luabind::class_<FontInstance>("FontInstance")
+          .def("setText",&FontInstance::setText)
+          .def("getText",&FontInstance::getText)
+    ];
+
+  }
+
   void LuaComponent::bindAudioInstance() {
     luabind::module(mState) [
-
         luabind::class_<AudioInstance>("AudioInstance")
           .def("play",&AudioInstance::play)
           .def("pause",&AudioInstance::pause)

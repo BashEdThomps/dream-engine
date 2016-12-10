@@ -92,6 +92,7 @@ namespace Dream {
         bool init(void);
         void update(Scene*);
         void drawSprite(SceneObject*);
+        void drawFont(SceneObject*);
         void drawModel(SceneObject*);
         bool checkGLError(string);
         bool isWindowShouldCloseFlagSet();

@@ -74,6 +74,7 @@ namespace Dream {
     mScriptInstance = nullptr;
     mLightInstance = nullptr;
     mSpriteInstance = nullptr;
+    mFontInstance = nullptr;
 
     for (nlohmann::json::iterator it = assetInstancesJson.begin(); it != assetInstancesJson.end(); it++) {
       mAssetInstanceUUIDsToLoad.push_back((*it));
@@ -303,6 +304,18 @@ namespace Dream {
 
   bool SceneObject::hasSpriteInstance() {
     return mSpriteInstance != nullptr;
+  }
+
+  bool SceneObject::hasFontInstance() {
+    return mFontInstance != nullptr;
+  }
+
+  void SceneObject::setFontInstance(FontInstance* font) {
+    mFontInstance = font;
+  }
+
+  FontInstance* SceneObject::getFontInstance() {
+    return mFontInstance;
   }
 
   void SceneObject::setPhysicsObjectInstance(PhysicsObjectInstance* physicsObject) {

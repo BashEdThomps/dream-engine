@@ -15,6 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <SDL2/SDL_ttf.h>
 #include "GraphicsComponent.h"
 
 namespace Dream {
@@ -57,10 +58,11 @@ namespace Dream {
     }
 
     GraphicsComponent::~GraphicsComponent(void) {
-        if (mWindow != nullptr) {
-          SDL_DestroyWindow(mWindow);
-        }
-        SDL_Quit();
+      TTF_Quit();
+      if (mWindow != nullptr) {
+        SDL_DestroyWindow(mWindow);
+      }
+      SDL_Quit();
     }
 
     bool GraphicsComponent::init(void) {
@@ -68,6 +70,12 @@ namespace Dream {
 
       if (!createSDLWindow()) {
         cerr << "GraphicsComponent: Unable to create SDL Window" << endl;
+        return false;
+      }
+
+      //Initialize SDL_ttf
+      if(TTF_Init() == -1) {
+        cerr << "GraphicsComponent: Unable to init SDL TTF" << endl;
         return false;
       }
 
@@ -165,6 +173,16 @@ namespace Dream {
                              << " has sprite, but no shader assigned." << endl;
                     }
                 }
+                // Fonts
+                if (object->hasFontInstance()) {
+                    if (object->hasShaderInstance()){
+                        addTo2DQueue(object);
+                    } else {
+                        cerr << "GraphicsComponent: Object " << object->getUUID()
+                             << " has font, but no shader assigned." << endl;
+                    }
+                }
+
             }
             // Draw
             draw3DQueue();
@@ -186,7 +204,12 @@ namespace Dream {
 
     void GraphicsComponent::draw2DQueue() {
         for (vector<SceneObject*>::iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ ) {
-            drawSprite(*it);
+          SceneObject* sceneObj = *it;
+          if (sceneObj->hasSpriteInstance()) {
+            drawSprite(sceneObj);
+          } else if (sceneObj->hasFontInstance()) {
+            drawFont(sceneObj);
+          }
         }
     }
 
@@ -199,9 +222,9 @@ namespace Dream {
     }
 
     void GraphicsComponent::draw3DQueue() {
-        for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ ) {
-            drawModel(*it);
-        }
+      for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ ) {
+        drawModel(*it);
+      }
     }
 
     /*
@@ -268,6 +291,78 @@ namespace Dream {
       // Bind texture
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D,sprite->getTexture());
+      // Bind VAO
+      glBindVertexArray(quadVAO);
+      // Draw
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+      // Cleanup
+      glBindVertexArray(0);
+      glUseProgram(0);
+    }
+
+    void GraphicsComponent::drawFont(SceneObject* sceneObject) {
+      // Get Assets
+      FontInstance* font = sceneObject->getFontInstance();
+      if (font->hasChanged()) {
+        font->renderToTexture();
+      }
+      ShaderInstance* shader = sceneObject->getShaderInstance();
+      // Get arguments
+      glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
+      GLfloat rotate = sceneObject->getTransform()->getRotationZ();
+      GLfloat scale = sceneObject->getTransform()->getScaleZ();
+      glm::vec3 color = glm::vec3(1.0f);
+      // Configure VAO/VBO
+      GLuint VBO;
+      GLuint quadVAO;
+      GLfloat vertices[] = {
+          // Pos      // Tex
+          0.0f, 1.0f, 0.0f, 1.0f,
+          1.0f, 0.0f, 1.0f, 0.0f,
+          0.0f, 0.0f, 0.0f, 0.0f,
+          0.0f, 1.0f, 0.0f, 1.0f,
+          1.0f, 1.0f, 1.0f, 1.0f,
+          1.0f, 0.0f, 1.0f, 0.0f
+      };
+      // Setup GL
+      glGenVertexArrays(1, &quadVAO);
+      glGenBuffers(1, &VBO);
+      glBindBuffer(GL_ARRAY_BUFFER, VBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glBindVertexArray(quadVAO);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindVertexArray(0);
+      // Setup Shader
+      shader->use();
+      float tX = font->getTransform()->getTranslationX();
+      float tY = font->getTransform()->getTranslationY();
+      glm::vec2 position = glm::vec2(tX,tY);
+      // Offset origin to middle of sprite
+      glm::mat4 model;
+      model = glm::translate(model, glm::vec3(position, 0.0f));
+      model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+      model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+      model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+      // Pass uniform arguments to shader
+      glUniformMatrix4fv(glGetUniformLocation(
+        shader->getShaderProgram(), "model"),
+        1, GL_FALSE, glm::value_ptr(model)
+      );
+      glUniform3fv(glGetUniformLocation(
+        shader->getShaderProgram(), "spriteColor"),
+        1, glm::value_ptr(color)
+      );
+      glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
+      glUniformMatrix4fv(glGetUniformLocation(
+        shader->getShaderProgram(), "projection"),
+        1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+      );
+      // Bind texture
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D,font->getTexture());
       // Bind VAO
       glBindVertexArray(quadVAO);
       // Draw

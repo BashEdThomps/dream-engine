@@ -11,12 +11,15 @@ var ANIMATION_DIR = "animation";
 var SCRIPT_DIR = "script";
 var SHADER_DIR = "shader";
 var SPRITE_DIR = "sprite";
+var FONT_DIR = "font";
 
 var AUDIO_WAV_FMT = "wav";
 var AUDIO_OGG_FMT = "ogg";
 
 var MODEL_OBJ_FMT = "obj";
 var MODEL_MTL_FMT = "mtl";
+
+var FONT_TTF_FMT = "ttf";
 
 var SHADER_VERT_FMT = "vertex";
 var SHADER_FRAG_FMT = "fragment";
@@ -75,6 +78,11 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     fs.mkdirSync(sprite);
     console.log("mkdir",sprite,"ok");
 
+    var font = assetPrefix + path.sep + FONT_DIR;
+    fs.mkdirSync(font);
+    console.log("mkdir",font,"ok");
+
+
     yield next;
 };
 
@@ -122,6 +130,8 @@ var getAssetDirectoryByFormat = function(format) {
         case MODEL_OBJ_FMT:
         case MODEL_MTL_FMT:
             return MODEL_DIR;
+        case FONT_TTF_FMT:
+            return FONT_DIR;
         default:
             return UNKNOWN_FMT;
     }
@@ -141,7 +151,7 @@ module.exports.writeProjectFile = function(proj,data) {
 module.exports.writeAsset = function(proj, dir, rsc, format, data, next) {
     console.log("  Project is:", proj);
     console.log("Directory is:", dir);
-    console.log(" Asset is:", rsc);
+    console.log("    Asset is:", rsc);
     console.log("   Format is:", format);
 
     var projPath     = dreamDirectory  + path.sep + proj;

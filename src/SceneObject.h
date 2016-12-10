@@ -12,6 +12,7 @@
 #include "Components/Graphics/LightInstance.h"
 #include "Components/Graphics/ShaderInstance.h"
 #include "Components/Graphics/SpriteInstance.h"
+#include "Components/Graphics/FontInstance.h"
 #include "Components/Physics/PhysicsObjectInstance.h"
 #include "Components/Scripting/LuaScriptInstance.h"
 
@@ -39,6 +40,7 @@ namespace Dream {
       SpriteInstance *mSpriteInstance;
       LuaScriptInstance *mScriptInstance;
       PhysicsObjectInstance *mPhysicsObjectInstance;
+      FontInstance *mFontInstance;
   public:
       SceneObject(nlohmann::json);
       SceneObject();
@@ -119,6 +121,10 @@ namespace Dream {
       void setSpriteInstance(SpriteInstance*);
       SpriteInstance* getSpriteInstance();
       bool hasSpriteInstance();
+
+      void setFontInstance(FontInstance*);
+      FontInstance* getFontInstance();
+      bool hasFontInstance();
 
       vector<string> getAssetInstanceUUIDsToLoad();
 

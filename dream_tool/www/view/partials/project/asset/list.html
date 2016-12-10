@@ -232,6 +232,49 @@
                 </select>
               </td>
             </tr>
+
+            <tr ng-show="isAssetTypeFont()">
+                <td>Font File</td>
+                <td>
+                    <button ng-show="hasFont"  class="pull-right btn-sm btn btn-danger"
+                            ng-click="onDeleteAssetDataButtonClicked()">
+                      <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                    <button ng-show="!hasFont" class="pull-right btn btn-sm btn btn-success"
+                            ng-click="onAssetFontUploadButtonClicked()">
+                      <span class="glyphicon glyphicon-open"></span>
+                    </button>
+                    <input ng-show="!hasFont" type="file" id="font-file" accept=".ttf" name="font-file"/>
+                </td>
+            </tr>
+
+            <tr ng-show="isAssetTypeFont()">
+                <td>Size</td>
+                <td>
+                  <input ng-change="modified()" ng-model="currentAsset.size"
+                   class="form-control input-sm" type="number"/>
+                </td>
+            </tr>
+            <tr ng-show="isAssetTypeFont()">
+                <td>Colour</td>
+                <td>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input ng-change="modified()" ng-model="currentAsset.colour.r"
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-sm-4">
+                            <input ng-change="modified()" ng-model="currentAsset.colour.g"
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-sm-4">
+                            <input ng-change="modified()" ng-model="currentAsset.colour.b"
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
             <!-- Sprite -->
             <tr ng-show="isAssetTypeSprite()">
                 <td>Tile Size</td>
