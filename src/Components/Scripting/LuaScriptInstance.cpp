@@ -19,32 +19,31 @@
 
 namespace Dream {
 
-      LuaScriptInstance::LuaScriptInstance(
-          AssetDefinition* definition, Transform3D* transform
-      ) : AssetInstance(definition,transform) {
-        mLuaTable = nullptr;
-        return;
-      }
+  LuaScriptInstance::LuaScriptInstance(
+      AssetDefinition* definition, Transform3D* transform
+  ) : AssetInstance(definition,transform) {
+    mLoaded = false;
+    return;
+  }
 
-      LuaScriptInstance::~LuaScriptInstance() {
-        return;
-      }
+  LuaScriptInstance::~LuaScriptInstance() {
+    return;
+  }
 
-      bool LuaScriptInstance::load(string projectPath) {
-        mAbsolutePath = projectPath+mDefinition->getAssetPath();
-        cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
-        return mAbsolutePath.size() != 0;
-      }
+  bool LuaScriptInstance::load(string projectPath) {
+    mAbsolutePath = projectPath+mDefinition->getAssetPath();
+    cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
+    return mAbsolutePath.size() != 0;
+  }
 
+  void LuaScriptInstance::update() {}
 
-      void LuaScriptInstance::update() {}
+  void LuaScriptInstance::setLoaded(bool loaded) {
+    mLoaded = loaded;
+  }
 
-      void LuaScriptInstance::setLuaTable(void* table) {
-        mLuaTable = table;
-      }
-
-      void* LuaScriptInstance::getLuaTable() {
-        return mLuaTable;
-      }
+  bool LuaScriptInstance::isLoaded() {
+    return mLoaded;
+  }
 
 } // End of Dream

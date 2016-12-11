@@ -29,7 +29,6 @@ namespace Dream {
       // Metadata
       string mUUID;
       string mName;
-      string mPath;
       Transform3D *mTransform;
       // Asset Instances
       AudioInstance *mAudioInstance;
@@ -92,9 +91,6 @@ namespace Dream {
       bool isParentOfDeep(SceneObject*);
       void setParent(SceneObject*);
       SceneObject* getParent();
-
-      void generatePath();
-      string  getPath();
 
       void setAnimationInstance(AnimationInstance*);
       AnimationInstance* getAnimationInstance();

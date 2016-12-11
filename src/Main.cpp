@@ -9,18 +9,19 @@
 
 using namespace std;
 
-Dream::DreamEngine DreamEngineInstance;
-Dream::LuaComponent LuaComponentInstance;
-
 void showUsage(const char** argv) {
   cout << "Usage:" << endl
-            << argv[0] << endl
-            << "\t" << PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool>" << endl
-            << "\t" << PROJECT_UUID_ARG      << " <project_uuid>" << endl;
+       << argv[0] << endl
+       << "\t" << PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool>" << endl
+       << "\t" << PROJECT_UUID_ARG      << " <project_uuid>" << endl;
 }
 
 int main(int argc, const char** argv) {
   cout << "Main: Starting..." << endl;
+
+  Dream::DreamEngine *engine = Dream::DreamEngine::getInstance();
+  Dream::LuaComponent lua;
+
 
   if (argc < MINIMUM_ARGUMENTS) {
     cerr << "Main: FATAL - Minimum Number of Arguments Were Not Found." << endl;
@@ -28,35 +29,40 @@ int main(int argc, const char** argv) {
     return 1;
   }
 
-  bool loaded = DreamEngineInstance.loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
+  bool loaded = engine->loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 
   if (loaded) {
 
-    if(!DreamEngineInstance.bootstrap()) {
+    if(!engine->bootstrap()) {
       cerr << "Main: Bootstrapping Dream Failed" << std::endl;
       return 1;
     }
 
-    LuaComponentInstance.setLuaScriptMap(DreamEngineInstance.getLuaScriptMap());
-    LuaComponentInstance.init();
+    lua.setLuaScriptMap(engine->getLuaScriptMap());
+    lua.init();
 
     int result = 0;
     while (result == 0) {
 
-        LuaComponentInstance.setSDL_Event(DreamEngineInstance.getSDL_Event());
+      if (!lua.loadScriptsFromMap()) {
+        cerr << "Main: Error while loading lua scripts" << endl;
+        break;
+      }
 
-        if (!LuaComponentInstance.update()) {
-            cerr << "Main: LuaComponentInstance update error!" << endl;
-            result = 1;
-            break;
-        }
+      lua.setSDL_Event(engine->getSDL_Event());
 
-        if(!DreamEngineInstance.update())
-        {
-            cerr << "Main: Dream update error!" << endl;
-            result = 1;
-            break;
-        }
+      if (!lua.update()) {
+        cerr << "Main: LuaComponentInstance update error!" << endl;
+        result = 1;
+        break;
+      }
+
+      if(!engine->update())
+      {
+        cerr << "Main: Dream update error!" << endl;
+        result = 1;
+        break;
+      }
 
     }
     return 0;

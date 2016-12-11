@@ -17,6 +17,7 @@
 #include <sstream>
 #include "LuaComponent.h"
 #include "SDL2/SDL_keycode.h"
+#include <luabind/adopt_policy.hpp>
 
 namespace Dream {
 
@@ -36,6 +37,7 @@ namespace Dream {
     luaopen_base(mState);
     luabind::set_pcall_callback(&errorHandler);
     luaL_dostring(mState, mScriptLoaderCode.c_str());
+    bindDreamEngine();
     bindAssetManager();
     bindComponents();
     bindAssetClasses();
@@ -44,35 +46,36 @@ namespace Dream {
     bindScene();
     bindTransform3D();
     bindSDL();
-    return loadScriptsFromMap();
+    return mState != nullptr;
   }
 
   bool LuaComponent::loadScriptsFromMap() {
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
-      LuaScriptInstance *value = scriptIt->second;
-      cout << "LuaComponent: Loading Lua script from " << value->getAbsolutePath()
-           << endl;
-      if (!loadScript(value)) {
-        return false;
+      LuaScriptInstance *luaScript = scriptIt->second;
+      if (!luaScript->isLoaded()) {
+        cout << "LuaComponent: Loading Lua script from " << luaScript->getAbsolutePath()
+             << endl;
+        if (!loadScript(luaScript)) {
+          return false;
+        }
+        cout << "LuaComponent: Loaded " << luaScript->getUUID() << " Successfully" << endl;
+        luaScript->setLoaded(true);
       }
-      cout << "LuaComponent: Loaded " << value->getUUID()
-           << " Successfully" << endl;
     }
     return true;
   }
 
   bool LuaComponent::loadScript(LuaScriptInstance* scriptInstance) {
     string id = scriptInstance->getUUID();
+    cout << "LuaComponent: loadScript called for " << id << endl;
     luabind::object newtable = luabind::newtable(mState);
     try {
-      luabind::call_function<void>(
-            mState, "scriptloader", newtable,
-            scriptInstance->getAbsolutePath().c_str()
-            );
+      string path = scriptInstance->getAbsolutePath();
+      luabind::call_function<void>(mState, "scriptloader", newtable, path.c_str());
       luabind::object reg = luabind::registry(mState);
       reg[id] = newtable;
-    } catch (luabind::error e){
+    } catch (luabind::error e) {
       cerr << "LuaComponent: loadScript exception:" << endl
            << "\t" << e.what() << endl;
       return false;
@@ -80,10 +83,24 @@ namespace Dream {
     return true;
   }
 
+  void LuaComponent::bindDreamEngine() {
+    luabind::module(mState) [
+        luabind::class_<DreamEngine>("DreamEngine")
+            .def("getAssetManager",&DreamEngine::getAssetManager)
+            .scope [
+               luabind::def("getInstance",&DreamEngine::getInstance)
+            ]
+    ];
+  }
+
   void LuaComponent::bindAssetManager() {
     luabind::module(mState) [
         luabind::class_<AssetManager>("AssetManager")
         .def(luabind::constructor<>())
+        .def(
+          "createAssetInstancesForSceneObject",
+          &AssetManager::createAssetInstancesForSceneObject
+        )
     ];
   }
 
@@ -132,12 +149,17 @@ namespace Dream {
         .def("getUuid",&SceneObject::getUUID)
         .def("setUuid",&SceneObject::setUUID)
 
+        .def("getName",&SceneObject::getName)
+        .def("setName",&SceneObject::setName)
+
+        .def("showStatus",&SceneObject::showStatus)
+
         .def("getTransform",&SceneObject::getTransform)
         .def("setTransform",&SceneObject::setTransform)
 
         .def("getParent",&SceneObject::getParent)
         .def("setParent",&SceneObject::setParent)
-        .def("addChild",&SceneObject::addChild)
+        .def("addChild",&SceneObject::addChild,luabind::adopt(_2))
 
         .def("copyTransform",&SceneObject::copyTransform)
 
@@ -178,6 +200,9 @@ namespace Dream {
         .def("setTranslationX",&Transform3D::setTranslationX)
         .def("setTranslationY",&Transform3D::setTranslationY)
         .def("setTranslationZ",&Transform3D::setTranslationZ)
+        .def("translateByX",&Transform3D::translateByX)
+        .def("translateByY",&Transform3D::translateByY)
+        .def("translateByZ",&Transform3D::translateByZ)
         // Rotation =============================================================
         .def("getRotationX",&Transform3D::getRotationX)
         .def("getRotationY",&Transform3D::getRotationY)
@@ -185,6 +210,9 @@ namespace Dream {
         .def("setRotationX",&Transform3D::setRotationX)
         .def("setRotationY",&Transform3D::setRotationY)
         .def("setRotationZ",&Transform3D::setRotationZ)
+        .def("rotateByX",&Transform3D::rotateByX)
+        .def("rotateByY",&Transform3D::rotateByY)
+        .def("rotateByZ",&Transform3D::rotateByZ)
         // Scale ================================================================
         .def("getScaleX",&Transform3D::getScaleX)
         .def("getScaleY",&Transform3D::getScaleY)
@@ -192,6 +220,10 @@ namespace Dream {
         .def("setScaleX",&Transform3D::setScaleX)
         .def("setScaleY",&Transform3D::setScaleY)
         .def("setScaleZ",&Transform3D::setScaleZ)
+        .def("scaleByX",&Transform3D::scaleByX)
+        .def("scaleByY",&Transform3D::scaleByY)
+        .def("scaleByZ",&Transform3D::scaleByZ)
+
     ];
   }
 

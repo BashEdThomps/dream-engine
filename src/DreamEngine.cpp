@@ -3,6 +3,15 @@
 
 namespace Dream {
 
+  DreamEngine* DreamEngine::_Instance = nullptr;
+
+  DreamEngine* DreamEngine::getInstance() {
+    if (_Instance == nullptr) {
+        _Instance = new DreamEngine();
+    }
+    return _Instance;
+  }
+
   DreamEngine::DreamEngine() {
       setAssetManager(nullptr);
       setAnimationComponent(nullptr);
@@ -334,6 +343,4 @@ namespace Dream {
   SDL_Event DreamEngine::getSDL_Event() {
     return mEvent;
   }
-
-
 } // End of Dream

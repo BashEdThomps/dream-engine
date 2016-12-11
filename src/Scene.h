@@ -58,12 +58,10 @@ namespace Dream {
         bool hasSceneObect(SceneObject*);
         SceneObject* getSceneObjectByName(string);
         SceneObject* getSceneObjectByUUID(string);
-        string generateSceneObjectPath(SceneObject*);
         void showStatus();
         void showScenegraph();
         string indent(int);
         void generateScenegraphVector();
-        void generateSceneObjectPaths();
         bool isScenegraphVectorEmpty();
         vector<SceneObject*> getScenegraphVector();
         vector<float> getDefaultCameraTranslation();

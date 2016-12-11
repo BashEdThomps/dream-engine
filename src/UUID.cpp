@@ -36,9 +36,9 @@ namespace Dream {
       buffer, bufSize,
       "%2x%2x-%2x%2x-%2x%2x-%2x%2x",
       rand()%255, rand()%255,
-      rand()%255,rand()%255,
-      rand()%255,rand()%255,
-      rand()%255,rand()%255
+      rand()%255, rand()%255,
+      rand()%255, rand()%255,
+      rand()%255, rand()%255
     );
     string retval = string(buffer);
     free(buffer);

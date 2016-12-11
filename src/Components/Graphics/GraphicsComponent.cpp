@@ -128,12 +128,11 @@ namespace Dream {
         SDL_PollEvent(&mEvent);
 
         switch(mEvent.type) {
-        case SDL_QUIT:
+          case SDL_QUIT:
             mWindowShouldClose = true;
             break;
         }
 
-        vector<SceneObject*> scenegraph = scene->getScenegraphVector();
         if (!mWindowShouldClose) {
             // Clear existing Queues
             clear2DQueue();
@@ -147,6 +146,7 @@ namespace Dream {
             );
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // Build draw queues
+            scene->generateScenegraphVector();
             vector<SceneObject*> scenegraph = scene->getScenegraphVector();
             for (vector<SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ ) {
                 SceneObject *object = (*it);
@@ -227,6 +227,10 @@ namespace Dream {
      *    https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
      */
     void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
+      /*
+      cout << "GraphicsComponent: Drawing Sprite - " << sceneObject->getName()
+           << "(" << sceneObject->getUUID() << ")" << endl;
+      */
       // Get Assets
       SpriteInstance* sprite = sceneObject->getSpriteInstance();
       ShaderInstance* shader = sceneObject->getShaderInstance();

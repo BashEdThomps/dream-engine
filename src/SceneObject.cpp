@@ -5,10 +5,12 @@
 #include <algorithm>
 #include "SceneObject.h"
 #include "String.h"
+#include "UUID.h"
 
 namespace Dream {
 
   void SceneObject::constructorInit() {
+    cout << "SceneObject: Constructor Init" << endl;
     // Metadata
     mHasFocus = false;
     mParent = nullptr;
@@ -17,7 +19,6 @@ namespace Dream {
     mAssetDefUuidsToLoad.clear();
     mUUID = "";
     mName = "";
-    mPath = "";
     // Asset Instances
     mAudioInstance = nullptr;
     mAnimationInstance = nullptr;
@@ -32,6 +33,7 @@ namespace Dream {
 
   SceneObject::SceneObject() {
     constructorInit();
+    mUUID = UUID::generateUUID();
   }
 
   SceneObject::SceneObject(nlohmann::json soJson){
@@ -220,25 +222,15 @@ namespace Dream {
 
   void SceneObject::getChildrenVectorDeep(vector<SceneObject*>* soVector) {
     soVector->push_back(this);
-    for (vector<SceneObject*>::iterator it = mChildren.begin(); it != mChildren.end(); it++) {
-      (*it)->getChildrenVectorDeep(soVector);
-    }
-  }
-
-  void SceneObject::generatePath() {
-    mPath = "";
-    SceneObject* current = this;
-    while (current != nullptr) {
-      mPath = current->getUUID()+mPath;
-      current = current->getParent();
-      if (current != nullptr) {
-        mPath = PATH_DELIMETER+mPath;
+    if (mChildren.size() > 0) {
+      vector<SceneObject*>::iterator it;
+      for (it = mChildren.begin(); it != mChildren.end(); ++it) {
+        SceneObject* next = (*it);
+        if (next != nullptr) {
+          next->getChildrenVectorDeep(soVector);
+        }
       }
     }
-  }
-
-  string SceneObject::getPath() {
-    return mPath;
   }
 
   void SceneObject::showStatus() {

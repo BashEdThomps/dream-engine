@@ -65,9 +65,20 @@ namespace Dream {
     void setScaleY(float);
     void setScaleZ(float);
 
-
     string getTransformType();
     void setTransformType(string);
+
+    void translateByX(float);
+    void translateByY(float);
+    void translateByZ(float);
+
+    void rotateByX(float);
+    void rotateByY(float);
+    void rotateByZ(float);
+
+    void scaleByX(float);
+    void scaleByY(float);
+    void scaleByZ(float);
   };
 
 } // End of Dream

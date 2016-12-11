@@ -153,6 +153,42 @@ namespace Dream {
       mScale[TRANSFORM_Z] = z;
     }
 
+    void Transform3D::translateByX(float delta) {
+      mTranslation[TRANSFORM_X] += delta;
+    }
+
+    void Transform3D::translateByY(float delta) {
+      mTranslation[TRANSFORM_Y] += delta;
+    }
+
+    void Transform3D::translateByZ(float delta) {
+      mTranslation[TRANSFORM_Z] += delta;
+    }
+
+    void Transform3D::rotateByX(float delta) {
+      mRotation[TRANSFORM_X] += delta;
+    }
+
+    void Transform3D::rotateByY(float delta) {
+      mRotation[TRANSFORM_Y] += delta;
+    }
+
+    void Transform3D::rotateByZ(float delta) {
+      mRotation[TRANSFORM_Z] += delta;
+    }
+
+    void Transform3D::scaleByX(float delta) {
+      mScale[TRANSFORM_X] += delta;
+    }
+
+    void Transform3D::scaleByY(float delta) {
+      mScale[TRANSFORM_Y] += delta;
+    }
+
+    void Transform3D::scaleByZ(float delta) {
+      mScale[TRANSFORM_Z] += delta;
+    }
+
 // Transform Type ================================================================
 
     void Transform3D::setTransformType(string type) {

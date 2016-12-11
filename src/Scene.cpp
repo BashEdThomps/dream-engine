@@ -100,13 +100,11 @@ namespace Dream {
   }
 
   void Scene::loadSceneObjects(nlohmann::json jsonArray, SceneObject* parent) {
-    //cout << "Loading scene objects from array: "<< jsonArray.dump() << endl;
     if (!jsonArray.is_null()) {
       for (nlohmann::json::iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
         cout << "Scene: Creating SceneObject " << endl;
         SceneObject *nextSceneObject = new SceneObject(*it);
         if (parent != nullptr) {
-          nextSceneObject->setParent(parent);
           parent->addChild(nextSceneObject);
         } else {
           setRootSceneObject(nextSceneObject);
@@ -114,7 +112,6 @@ namespace Dream {
         if (!((*it)[SCENE_OBJECT_CHILDREN]).is_null()){
           loadSceneObjects((*it)[SCENE_OBJECT_CHILDREN],nextSceneObject);
         }
-
         nextSceneObject->showStatus();
       }
     }
@@ -122,24 +119,6 @@ namespace Dream {
 
   bool Scene::hasSceneObect(SceneObject *obj) {
     return mRootSceneObject == obj || mRootSceneObject->isParentOfDeep(obj);
-  }
-
-  string Scene::generateSceneObjectPath(SceneObject* so) {
-    stringstream stream;
-    vector<string> pathVector;
-
-    SceneObject* next = so;
-    while (next != nullptr) {
-      pathVector.push_back(next->getUUID());
-      next = next->getParent();
-    }
-
-    reverse(pathVector.begin(),pathVector.end());
-    for (vector<string>::iterator it = pathVector.begin(); it != pathVector.end(); ++it) {
-      stream << PATH_DELIMETER << *it;
-    }
-    string retval = stream.str();
-    return retval;
   }
 
   SceneObject* Scene::getSceneObjectByUUID(string uuid) {
@@ -172,9 +151,8 @@ namespace Dream {
       return;
     }
     generateScenegraphVector();
-    generateSceneObjectPaths();
     for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
-      cout << (*it)->getNameUUIDString() << " @ " << (*it)->getPath() << endl;
+      cout << (*it)->getNameUUIDString() << endl;
     }
   }
 
@@ -187,16 +165,10 @@ namespace Dream {
   }
 
   void Scene::generateScenegraphVector() {
-    cout << "Scene: Regenerating Scene Graph Vector" << endl;
+    //cout << "Scene: Regenerating Scene Graph Vector" << endl;
     mScenegraphVector.clear();
     if (mRootSceneObject != nullptr) {
         mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
-    }
-  }
-
-  void Scene::generateSceneObjectPaths() {
-    for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
-       (*it)->generatePath();
     }
   }
 

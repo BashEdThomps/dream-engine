@@ -23,6 +23,7 @@
 namespace Dream {
   class DreamEngine {
   private:
+    static DreamEngine* _Instance;
     Time *mTime;
     Project *mProject;
     Scene* mActiveScene;
@@ -34,8 +35,9 @@ namespace Dream {
     AnimationComponent *mAnimationComponent;
     bool mDone;
     SDL_Event mEvent;
-  public:
     DreamEngine(void);
+  public:
+    static DreamEngine* getInstance();
     ~DreamEngine(void);
     bool initSDL();
     bool loadFromArgumentParser(ArgumentParser*);
