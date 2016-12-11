@@ -26,7 +26,7 @@ namespace Dream {
     static DreamEngine* _Instance;
     Time *mTime;
     Project *mProject;
-    Scene* mActiveScene;
+    Scene *mActiveScene;
     AssetManager *mAssetManager;
     Camera *mCamera;
     AudioComponent *mAudioComponent;

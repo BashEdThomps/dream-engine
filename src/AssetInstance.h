@@ -29,13 +29,11 @@
 
 namespace Dream {
 
-  class SceneObject;
-
   class AssetInstance {
   protected:
     string mAbsolutePath;
     AssetDefinition *mDefinition;
-    Transform3D     *mTransform;
+    Transform3D *mTransform;
   public:
     AssetInstance(AssetDefinition*, Transform3D*);
     virtual ~AssetInstance();
@@ -52,6 +50,7 @@ namespace Dream {
 
     string getAbsolutePath();
     void setAbsolutePath(string);
+
   }; // End of AssetInstance
 } // End of Dream
 

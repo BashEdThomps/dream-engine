@@ -87,6 +87,7 @@ namespace Dream {
     luabind::module(mState) [
         luabind::class_<DreamEngine>("DreamEngine")
             .def("getAssetManager",&DreamEngine::getAssetManager)
+            .def("getTime",&DreamEngine::getTime)
             .scope [
                luabind::def("getInstance",&DreamEngine::getInstance)
             ]
@@ -224,6 +225,15 @@ namespace Dream {
         .def("scaleByY",&Transform3D::scaleByY)
         .def("scaleByZ",&Transform3D::scaleByZ)
 
+    ];
+  }
+
+  void LuaComponent::bindTime() {
+    luabind::module(mState) [
+        luabind::class_<Time>("Time")
+         .def("getCurrentTime",&Time::getCurrentTime)
+         .def("getLastTime",&Time::getLastTime)
+         .def("getTimeDelta",&Time::getTimeDelta)
     ];
   }
 

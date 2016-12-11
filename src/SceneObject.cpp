@@ -9,28 +9,6 @@
 
 namespace Dream {
 
-  void SceneObject::constructorInit() {
-    cout << "SceneObject: Constructor Init" << endl;
-    // Metadata
-    mHasFocus = false;
-    mParent = nullptr;
-    mTransform = new Transform3D();
-    mChildren.clear();
-    mAssetDefUuidsToLoad.clear();
-    mUUID = "";
-    mName = "";
-    // Asset Instances
-    mAudioInstance = nullptr;
-    mAnimationInstance = nullptr;
-    mModelInstance  = nullptr;
-    mShaderInstance = nullptr;
-    mLightInstance = nullptr;
-    mSpriteInstance = nullptr;
-    mScriptInstance = nullptr;
-    mPhysicsObjectInstance = nullptr;
-    mFontInstance = nullptr;
-  }
-
   SceneObject::SceneObject() {
     constructorInit();
     mUUID = UUID::generateUUID();
@@ -87,6 +65,29 @@ namespace Dream {
 
   }
 
+  void SceneObject::constructorInit() {
+    cout << "SceneObject: Constructor Init" << endl;
+    // Metadata
+    mDeleteFlag = false;
+    mHasFocus = false;
+    mParent = nullptr;
+    mTransform = new Transform3D();
+    mChildren.clear();
+    mAssetDefUuidsToLoad.clear();
+    mUUID = "";
+    mName = "";
+    // Asset Instances
+    mAudioInstance = nullptr;
+    mAnimationInstance = nullptr;
+    mModelInstance  = nullptr;
+    mShaderInstance = nullptr;
+    mLightInstance = nullptr;
+    mSpriteInstance = nullptr;
+    mScriptInstance = nullptr;
+    mPhysicsObjectInstance = nullptr;
+    mFontInstance = nullptr;
+  }
+
   void SceneObject::loadAssetInstances(nlohmann::json assetInstancesJson) {
     mAnimationInstance = nullptr;
     mAudioInstance = nullptr;
@@ -120,7 +121,49 @@ namespace Dream {
   }
 
   SceneObject::~SceneObject() {
-    // Pass
+    deleteChildren();
+    deleteAssetInstances();
+  }
+
+  void SceneObject::deleteChildren() {
+    vector<SceneObject*>::iterator it;
+    for (it=mChildren.begin(); it!=mChildren.end(); it++) {
+      SceneObject* child;
+      delete child;
+    }
+  }
+
+  void SceneObject::deleteAssetInstances() {
+    if (mTransform != nullptr) {
+      delete mTransform;
+    }
+    if (mAudioInstance != nullptr) {
+      delete mAudioInstance;
+    }
+    if (mAnimationInstance != nullptr) {
+      delete mAnimationInstance;
+    }
+    if (mModelInstance != nullptr) {
+        delete mModelInstance;
+    }
+    if (mShaderInstance != nullptr) {
+        delete mShaderInstance;
+    }
+    if (mLightInstance != nullptr) {
+        delete mLightInstance;
+    }
+    if (mSpriteInstance != nullptr) {
+        delete mSpriteInstance;
+    }
+    if (mScriptInstance != nullptr) {
+        delete mScriptInstance;
+    }
+    if (mPhysicsObjectInstance != nullptr) {
+        delete mPhysicsObjectInstance;
+    }
+    if (mFontInstance != nullptr) {
+        delete mFontInstance;
+    }
   }
 
   bool SceneObject::hasName(string name) {
@@ -388,4 +431,13 @@ namespace Dream {
 
     mTransform = new Transform3D(transform);
   }
+
+  void SceneObject::setDeleteFlag(bool del) {
+    mDeleteFlag = del;
+  }
+
+  bool SceneObject::getDeleteFlag() {
+    return mDeleteFlag;
+  }
+
 } // End of Dream

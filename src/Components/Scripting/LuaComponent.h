@@ -58,6 +58,7 @@ namespace Dream {
     void bindProject();
     void bindSceneObject();
     void bindScene();
+    void bindTime();
     void bindTransform3D();
     void bindAnimationComponent();
     void bindAudioComponent();

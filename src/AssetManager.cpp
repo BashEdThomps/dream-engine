@@ -25,14 +25,6 @@ namespace Dream {
   }
 
   AssetManager::~AssetManager() {
-    destroyAllAssetInstances();
-  }
-
-  void AssetManager::destroyAllAssetInstances() {
-    for (vector<AssetInstance*>::iterator instanceIt = mAssetInstances.begin();
-         instanceIt != mAssetInstances.end(); instanceIt++) {
-      delete (*instanceIt);
-    }
   }
 
   bool AssetManager::createAllAssetInstances(Scene* activeScene) {
@@ -248,4 +240,5 @@ namespace Dream {
   void AssetManager::insertIntoLuaScriptMap(SceneObject* sceneObject,LuaScriptInstance* script) {
     mLuaScriptMap.insert(pair<SceneObject*,LuaScriptInstance*>(sceneObject,script));
   }
+
 } // End of Dream

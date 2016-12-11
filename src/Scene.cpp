@@ -205,4 +205,21 @@ namespace Dream {
     return mClearColour;
   }
 
+  void Scene::addToObjectDeleteQueue(SceneObject* object) {
+    mObjectDeleteQueue.push_back(object);
+  }
+
+  void Scene::clearObjectDeleteQueue() {
+    mObjectDeleteQueue.clear();
+  }
+
+  void Scene::destroyObjectDeleteQueue() {
+    vector<SceneObject*>::iterator it;
+    for(it=mObjectDeleteQueue.begin();
+        it!=mObjectDeleteQueue.end();
+        it++) {
+      delete (*it);
+    }
+    clearObjectDeleteQueue();
+  }
 } // End of Dream

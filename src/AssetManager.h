@@ -50,7 +50,6 @@ namespace Dream {
     ~AssetManager();
 
     bool createAllAssetInstances(Scene*);
-    void destroyAllAssetInstances();
     void addAssetInstance(AssetInstance*);
 
     AssetInstance* getAssetInstanceByUUID(string);

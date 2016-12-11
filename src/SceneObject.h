@@ -22,121 +22,127 @@ namespace Dream {
 
   class SceneObject {
   protected:
-      SceneObject* mParent;
-      vector<SceneObject*> mChildren;
-      vector<string> mAssetDefUuidsToLoad;
-      bool mHasFocus;
-      // Metadata
-      string mUUID;
-      string mName;
-      Transform3D *mTransform;
-      // Asset Instances
-      AudioInstance *mAudioInstance;
-      AnimationInstance *mAnimationInstance;
-      AssimpModelInstance *mModelInstance;
-      ShaderInstance *mShaderInstance;
-      LightInstance *mLightInstance;
-      SpriteInstance *mSpriteInstance;
-      LuaScriptInstance *mScriptInstance;
-      PhysicsObjectInstance *mPhysicsObjectInstance;
-      FontInstance *mFontInstance;
+    SceneObject* mParent;
+    vector<SceneObject*> mChildren;
+    vector<string> mAssetDefUuidsToLoad;
+    bool mHasFocus;
+    // Metadata
+    string mUUID;
+    string mName;
+    Transform3D *mTransform;
+    bool mDeleteFlag;
+    // Asset Instances
+    AudioInstance *mAudioInstance;
+    AnimationInstance *mAnimationInstance;
+    AssimpModelInstance *mModelInstance;
+    ShaderInstance *mShaderInstance;
+    LightInstance *mLightInstance;
+    SpriteInstance *mSpriteInstance;
+    LuaScriptInstance *mScriptInstance;
+    PhysicsObjectInstance *mPhysicsObjectInstance;
+    FontInstance *mFontInstance;
   public:
-      SceneObject(nlohmann::json);
-      SceneObject();
-      ~SceneObject();
+    SceneObject(nlohmann::json);
+    SceneObject();
+    ~SceneObject();
+    void deleteChildren();
+    void deleteAssetInstances();
 
-      void constructorInit();
+    void constructorInit();
 
-      bool init();
-      void loadAssetInstances(nlohmann::json);
-      bool initAssetInstances();
+    bool init();
+    void loadAssetInstances(nlohmann::json);
+    bool initAssetInstances();
 
-      bool hasUUID(string);
-      void setUUID(string);
-      string getUUID();
+    bool hasUUID(string);
+    void setUUID(string);
+    string getUUID();
 
-      bool hasName(string);
-      void setName(string);
-      string getName();
+    bool hasName(string);
+    void setName(string);
+    string getName();
 
-      string getNameUUIDString();
+    string getNameUUIDString();
 
-      void showStatus();
+    void showStatus();
 
-      vector<float> getTranslation();
-      void setTranslation(float, float, float);
-      void setTranslation(vector<float>);
-      void resetTranslation();
+    vector<float> getTranslation();
+    void setTranslation(float, float, float);
+    void setTranslation(vector<float>);
+    void resetTranslation();
 
-      vector<float> getRotation();
-      void setRotation(float, float, float);
-      void setRotation(vector<float>);
-      void resetRotation();
+    vector<float> getRotation();
+    void setRotation(float, float, float);
+    void setRotation(vector<float>);
+    void resetRotation();
 
-      vector<float> getScale();
-      void setScale(float, float, float);
-      void setScale(vector<float>);
-      void resetScale();
+    vector<float> getScale();
+    void setScale(float, float, float);
+    void setScale(vector<float>);
+    void resetScale();
 
-      void resetTransform();
+    void resetTransform();
 
-      int countAllChildren();
-      size_t countChildren();
-      void addChild(SceneObject*);
-      void removeChild(SceneObject*);
-      bool isChildOf(SceneObject*);
-      bool isChildOfDeep(SceneObject*);
-      void getChildrenVectorDeep(vector<SceneObject*>*);
-      bool isParentOf(SceneObject*);
-      bool isParentOfDeep(SceneObject*);
-      void setParent(SceneObject*);
-      SceneObject* getParent();
+    int countAllChildren();
+    size_t countChildren();
+    void addChild(SceneObject*);
+    void removeChild(SceneObject*);
+    bool isChildOf(SceneObject*);
+    bool isChildOfDeep(SceneObject*);
+    void getChildrenVectorDeep(vector<SceneObject*>*);
+    bool isParentOf(SceneObject*);
+    bool isParentOfDeep(SceneObject*);
+    void setParent(SceneObject*);
+    SceneObject* getParent();
 
-      void setAnimationInstance(AnimationInstance*);
-      AnimationInstance* getAnimationInstance();
+    void setAnimationInstance(AnimationInstance*);
+    AnimationInstance* getAnimationInstance();
 
-      void setAudioInstance(AudioInstance*);
-      AudioInstance* getAudioInstance();
+    void setAudioInstance(AudioInstance*);
+    AudioInstance* getAudioInstance();
 
-      void setModelInstance(AssimpModelInstance*);
-      AssimpModelInstance* getModelInstance();
-      bool hasModelInstance();
+    void setModelInstance(AssimpModelInstance*);
+    AssimpModelInstance* getModelInstance();
+    bool hasModelInstance();
 
-      void setScriptInstance(LuaScriptInstance*);
-      LuaScriptInstance* getScriptInstance();
-      bool hasScriptInstance();
+    void setScriptInstance(LuaScriptInstance*);
+    LuaScriptInstance* getScriptInstance();
+    bool hasScriptInstance();
 
-      void setShaderInstance(ShaderInstance*);
-      ShaderInstance* getShaderInstance();
-      bool hasShaderInstance();
+    void setShaderInstance(ShaderInstance*);
+    ShaderInstance* getShaderInstance();
+    bool hasShaderInstance();
 
-      void setPhysicsObjectInstance(PhysicsObjectInstance*);
-      PhysicsObjectInstance* getPhysicsObjectInstance();
+    void setPhysicsObjectInstance(PhysicsObjectInstance*);
+    PhysicsObjectInstance* getPhysicsObjectInstance();
 
-      void setLightInstance(LightInstance*);
-      LightInstance* getLightInstance();
+    void setLightInstance(LightInstance*);
+    LightInstance* getLightInstance();
 
-      void setSpriteInstance(SpriteInstance*);
-      SpriteInstance* getSpriteInstance();
-      bool hasSpriteInstance();
+    void setSpriteInstance(SpriteInstance*);
+    SpriteInstance* getSpriteInstance();
+    bool hasSpriteInstance();
 
-      void setFontInstance(FontInstance*);
-      FontInstance* getFontInstance();
-      bool hasFontInstance();
+    void setFontInstance(FontInstance*);
+    FontInstance* getFontInstance();
+    bool hasFontInstance();
 
-      void addAssetDefUuidToLoad(string);
-      vector<string> getAssetDefUuidsToLoad();
+    void addAssetDefUuidToLoad(string);
+    vector<string> getAssetDefUuidsToLoad();
 
-      string getTransformType();
-      void setTransformType(string);
+    string getTransformType();
+    void setTransformType(string);
 
-      Transform3D* getTransform();
-      void setTransform(Transform3D*);
+    Transform3D* getTransform();
+    void setTransform(Transform3D*);
 
-      bool hasFocus();
-      void setHasFocus(bool);
+    bool hasFocus();
+    void setHasFocus(bool);
 
-      void copyTransform(Transform3D*);
+    void copyTransform(Transform3D*);
+
+    void setDeleteFlag(bool);
+    bool getDeleteFlag();
 
   }; // End of SceneObject
 
