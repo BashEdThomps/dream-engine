@@ -41,7 +41,7 @@ namespace Dream {
         GLuint      mShaderProgram;
       public:
         ShaderInstance(AssetDefinition*,Transform3D*);
-        ~ShaderInstance(void);
+        ~ShaderInstance();
 
         bool load(string);
         void use();

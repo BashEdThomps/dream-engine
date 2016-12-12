@@ -64,6 +64,8 @@ namespace Dream {
     void addKeyFrame(KeyFrame*);
     void addFrame(Frame*);
     void loadExtraAttributes(nlohmann::json);
+    void deleteKeyFrames();
+    void deletePlaybackFrames();
   }; // End of AnimationInstance
 
 } // End of Dream

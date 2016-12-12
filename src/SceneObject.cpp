@@ -131,6 +131,7 @@ namespace Dream {
       SceneObject* child;
       delete child;
     }
+    mChildren.clear();
   }
 
   void SceneObject::deleteAssetInstances() {

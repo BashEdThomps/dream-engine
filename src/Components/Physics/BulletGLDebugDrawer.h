@@ -12,7 +12,7 @@
 namespace Dream   {
 
       class GLDebugDrawer : public btIDebugDraw {
-        int m_debugMode;
+        int mDebugMode;
       public:
         GLDebugDrawer();
         virtual ~GLDebugDrawer();
@@ -24,7 +24,7 @@ namespace Dream   {
         virtual void reportErrorWarning(const char* warningString);
         virtual void draw3dText(const btVector3& location,const char* textString);
         virtual void setDebugMode(int debugMode);
-        virtual int  getDebugMode() const { return m_debugMode;}
+        virtual int  getDebugMode() const { return mDebugMode;}
       };
 
 } // End of Dream

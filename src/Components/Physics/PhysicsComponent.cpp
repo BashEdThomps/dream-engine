@@ -24,25 +24,30 @@ namespace Dream {
       }
 
       PhysicsComponent::~PhysicsComponent(void) {
-
-        if (mSolver != nullptr)
+        if (mSolver != nullptr) {
             delete mSolver;
-
-        if (mDispatcher != nullptr)
+            mSolver = nullptr;
+        }
+        if (mDispatcher != nullptr) {
             delete mDispatcher;
-
-        if (mCollisionConfiguration != nullptr)
+            mDispatcher = nullptr;
+        }
+        if (mCollisionConfiguration != nullptr) {
             delete mCollisionConfiguration;
-
-        if (mBroadphase != nullptr)
+            mCollisionConfiguration = nullptr;
+        }
+        if (mBroadphase != nullptr) {
             delete mBroadphase;
-
-        if (mDynamicsWorld != nullptr)
+            mBroadphase = nullptr;
+        }
+        if (mDynamicsWorld != nullptr) {
             delete mDynamicsWorld;
-
-        if (mDebugDrawer != nullptr)
+            mDynamicsWorld = nullptr;
+        }
+        if (mDebugDrawer != nullptr) {
             delete mDebugDrawer;
-
+            mDebugDrawer = nullptr;
+        }
       }
 
       void PhysicsComponent::setGravity3f(float x, float y, float z) {
@@ -72,11 +77,7 @@ namespace Dream {
 
       void PhysicsComponent::update(Dream::Scene* scene) {
         btScalar stepValue = mTime->getTimeDelta();
-        //cout << "BulletPhysics: Step Simulation by "
-        //          << stepValue << endl;
         mDynamicsWorld->stepSimulation(stepValue);
-        //cout << "BulletPhysics: Drawing Debug World"
-        //          << endl;
         mDynamicsWorld->debugDrawWorld();
       }
 
@@ -101,16 +102,11 @@ namespace Dream {
       void PhysicsComponent::populatePhysicsWorld(vector<SceneObject*> soWithPhysicsObjects) {
         cout << "PhysicsComponent: Populating Physics World" << endl;
         vector<SceneObject*>::iterator soIter;
-
         for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
           cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUUID()
-                    << " to PhysicsComponent World"
-                    << endl;
-
-          PhysicsObjectInstance* physicsObject;
-          physicsObject = dynamic_cast<PhysicsObjectInstance*>(
-            (*soIter)->getPhysicsObjectInstance()
-          );
+               << " to PhysicsComponent World"
+               << endl;
+          PhysicsObjectInstance* physicsObject = (*soIter)->getPhysicsObjectInstance();
           addPhysicsObjectInstance(physicsObject);
         }
       }

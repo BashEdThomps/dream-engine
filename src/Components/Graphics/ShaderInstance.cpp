@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Shader::ShaderInstance
+* ShaderInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,16 @@
 
 namespace Dream {
 
-  ShaderInstance::ShaderInstance(
-      AssetDefinition* definition,
-      Transform3D* transform
-      ) : AssetInstance(definition,transform) {
-    mShaderProgram             = 0;
-    mVertexShader              = 0;
-    mFragmentShader            = 0;
+  ShaderInstance::ShaderInstance(AssetDefinition* definition,Transform3D* transform) : AssetInstance(definition,transform) {
+    mShaderProgram = 0;
+    mVertexShader = 0;
+    mFragmentShader = 0;
   }
 
-  ShaderInstance::~ShaderInstance(void) {
-
+  ShaderInstance::~ShaderInstance() {
+    if (mShaderProgram > 0) {
+      glDeleteShader(mShaderProgram);
+    }
   }
 
   GLuint ShaderInstance::getShaderProgram() {
@@ -37,7 +36,6 @@ namespace Dream {
   }
 
   bool ShaderInstance::load(string projectPath) {
-
     // 1. Open Shader Files into Memory
     FileReader *vertexReader, *fragmentReader;
     string absVertexPath, absFragmentPath;
@@ -56,53 +54,46 @@ namespace Dream {
 
     cout << "ShaderInstance: Loading Shader..." << endl
          << "\t  Vertex: " << absVertexPath     << endl
-            //<< endl << mVertexShaderSource    << endl
+    //   << endl << mVertexShaderSource    << endl
          << "\tFragment: " << absFragmentPath   << endl;
-    //<< endl << mFragmentShaderSource  << endl;
+    //   << endl << mFragmentShaderSource  << endl;
 
     // 2. Compile shaders
     GLint success;
     GLchar infoLog[512];
-
     // Vertex Shader
     mVertexShader = glCreateShader(GL_VERTEX_SHADER);
     const char *vSource = mVertexShaderSource.c_str();
     glShaderSource(mVertexShader, 1, &vSource, nullptr);
     glCompileShader(mVertexShader);
-
     // Print compile errors if any
     glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
-      cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << endl;
+      cerr << "ShaderInstance: SHADER:VERTEX:COMPILATION_FAILED\n" << infoLog << endl;
     }
-
     // Fragment Shader
     mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     const char *fSource = mFragmentShaderSource.c_str();
     glShaderSource(mFragmentShader, 1, &fSource, nullptr);
     glCompileShader(mFragmentShader);
-
     // Print compile errors if any
     glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
-      cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << endl;
+      cerr << "ShaderInstance: SHADER:FRAGMENT:COMPILATION_FAILED\n" << infoLog << endl;
     }
-
     // Shader Program
     mShaderProgram = glCreateProgram();
     glAttachShader(mShaderProgram, mVertexShader);
     glAttachShader(mShaderProgram, mFragmentShader);
     glLinkProgram(mShaderProgram);
-
     // Print linking errors if any
     glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-      cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << endl;
+      cerr << "ShaderInstance: SHADER:PROGRAM:LINKING_FAILED\n" << infoLog << endl;
     }
-
     // Delete the shaders as they're linked into our program now and no longer necessery
     glDeleteShader(mVertexShader);
     glDeleteShader(mFragmentShader);
@@ -123,21 +114,14 @@ namespace Dream {
   }
 
   void ShaderInstance::setUniformVector2(string name, glm::vec2 value) {
-    glUniform2fv(glGetUniformLocation(
-                   getShaderProgram(), name.c_str()), 1, glm::value_ptr(value)
-                 );
+    glUniform2fv(glGetUniformLocation(getShaderProgram(), name.c_str()), 1, glm::value_ptr(value));
   }
 
   void ShaderInstance::setUniformVector3(string name, glm::vec3 value) {
-    glUniform3fv(glGetUniformLocation(
-                   getShaderProgram(), name.c_str()), 1, glm::value_ptr(value)
-                 );
+    glUniform3fv(glGetUniformLocation(getShaderProgram(), name.c_str()), 1, glm::value_ptr(value));
   }
 
   void ShaderInstance::setUniformMatrix4(string name, glm::mat4 value) {
-    glUniformMatrix4fv(
-          glGetUniformLocation(getShaderProgram(), name.c_str()),
-          1, GL_FALSE, glm::value_ptr(value)
-          );
+    glUniformMatrix4fv(glGetUniformLocation(getShaderProgram(), name.c_str()),1, GL_FALSE, glm::value_ptr(value));
   }
 } // End of Dream

@@ -2,28 +2,30 @@
 
 namespace Dream {
 
-      PhysicsObjectInstance::PhysicsObjectInstance(
-          AssetDefinition* definition,
-          Transform3D* transform
-      ) : AssetInstance(definition,transform) {
+      PhysicsObjectInstance::PhysicsObjectInstance(AssetDefinition* definition,Transform3D* transform)
+      : AssetInstance(definition,transform) {
         return;
       }
 
       PhysicsObjectInstance::~PhysicsObjectInstance() {
         if (mRigidBody != nullptr) {
           delete mRigidBody;
+          mRigidBody = nullptr;
         }
 
         if (mRigidBodyConstructionInfo != nullptr) {
           delete mRigidBodyConstructionInfo;
+          mRigidBodyConstructionInfo = nullptr;
         }
 
         if (mMotionState != nullptr) {
           delete mMotionState;
+          mMotionState = nullptr;
         }
 
         if (mCollisionShape != nullptr) {
-            delete mCollisionShape;
+          delete mCollisionShape;
+          mCollisionShape = nullptr;
         }
       }
 
@@ -91,9 +93,9 @@ namespace Dream {
           mCollisionShape = new btSphereShape(radius);
         } else if (format.compare(COLLISION_SHAPE_BOX) == 0) {
           btScalar boxX, boxY, boxZ;
-          boxX  = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_X);
+          boxX = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_X);
           boxY = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_Y);
-          boxZ  = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_Z);
+          boxZ = mDefinition->getAttributeAsFloat(ASSET_ATTR_SIZE_Z);
           mCollisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
         } else if (format.compare(COLLISION_SHAPE_CYLINDER) == 0) {
           //mCollisionShape = new btCylinderShape();

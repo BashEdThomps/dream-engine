@@ -1,9 +1,14 @@
 #include "BulletGLDebugDrawer.h"
 
-namespace Dream   {
+namespace Dream {
 
-  GLDebugDrawer::GLDebugDrawer() : m_debugMode(0) {}
-  GLDebugDrawer::~GLDebugDrawer() {}
+  GLDebugDrawer::GLDebugDrawer() {
+      mDebugMode = 0;
+  }
+
+  GLDebugDrawer::~GLDebugDrawer() {
+
+  }
 
   void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor) {
     glBegin(GL_LINES);
@@ -54,9 +59,8 @@ namespace Dream   {
   }
 
   void	GLDebugDrawer::drawTriangle(const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha) {
-    //	if (m_debugMode > 0)
-    {
-      const btVector3	n=btCross(b-a,c-a).normalized();
+    if (mDebugMode > 0) {
+      const btVector3 n=btCross(b-a,c-a).normalized();
       glBegin(GL_TRIANGLES);
       glColor4f(color.getX(), color.getY(), color.getZ(),alpha);
       glNormal3d(n.getX(),n.getY(),n.getZ());
@@ -68,11 +72,11 @@ namespace Dream   {
   }
 
   void	GLDebugDrawer::setDebugMode(int debugMode) {
-    m_debugMode = debugMode;
+    mDebugMode = debugMode;
   }
 
   void	GLDebugDrawer::draw3dText(const btVector3& location,const char* textString) {
-    glRasterPos3f(location.x(),  location.y(),  location.z());
+    //glRasterPos3f(location.x(),  location.y(),  location.z());
     //BMF_DrawString(BMF_GetFont(BMF_kHelvetica10),textString);
   }
 
@@ -80,7 +84,7 @@ namespace Dream   {
     printf("%s\n",warningString);
   }
 
-  void	GLDebugDrawer::drawContactPoint(const btVector3& pointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color) {
+  void GLDebugDrawer::drawContactPoint(const btVector3& pointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color) {
     {
       btVector3 to=pointOnB+normalOnB*1;//distance;
       const btVector3&from = pointOnB;
@@ -96,7 +100,6 @@ namespace Dream   {
       //		char buf[12];
       //		sprintf(buf," %d",lifeTime);
       //BMF_DrawString(BMF_GetFont(BMF_kHelvetica10),buf);
-
     }
   }
 
