@@ -116,8 +116,22 @@ namespace Dream {
       glCullFace(GL_BACK);
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      create2DVertexObjects();
       cout << "GraphicsComponent: Initialisation Done." << endl;
       return true;
+    }
+
+    void GraphicsComponent::create2DVertexObjects() {
+      glGenVertexArrays(1, &mSpriteQuadVAO);
+      glGenBuffers(1, &mSpriteVBO);
+      glBindBuffer(GL_ARRAY_BUFFER, mSpriteVBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(mSpriteVertices), mSpriteVertices, GL_STATIC_DRAW);
+      glBindVertexArray(mSpriteQuadVAO);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindVertexArray(0);
+
     }
 
     void GraphicsComponent::closeWindow() {
@@ -145,8 +159,6 @@ namespace Dream {
                 mClearColour[CLEAR_ALPHA]
             );
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            // Build draw queues
-            scene->generateScenegraphVector();
             vector<SceneObject*> scenegraph = scene->getScenegraphVector();
             for (vector<SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ ) {
                 SceneObject *object = (*it);
@@ -227,10 +239,6 @@ namespace Dream {
      *    https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
      */
     void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
-      /*
-      cout << "GraphicsComponent: Drawing Sprite - " << sceneObject->getName()
-           << "(" << sceneObject->getUUID() << ")" << endl;
-      */
       // Get Assets
       SpriteInstance* sprite = sceneObject->getSpriteInstance();
       ShaderInstance* shader = sceneObject->getShaderInstance();
@@ -239,28 +247,6 @@ namespace Dream {
       GLfloat rotate = sceneObject->getTransform()->getRotationZ();
       GLfloat scale = sceneObject->getTransform()->getScaleZ();
       glm::vec3 color = glm::vec3(1.0f);
-      // Configure VAO/VBO
-      GLuint VBO;
-      GLuint quadVAO;
-      GLfloat vertices[] = {
-          // Pos      // Tex
-          0.0f, 1.0f, 0.0f, 1.0f,
-          1.0f, 0.0f, 1.0f, 0.0f,
-          0.0f, 0.0f, 0.0f, 0.0f,
-          0.0f, 1.0f, 0.0f, 1.0f,
-          1.0f, 1.0f, 1.0f, 1.0f,
-          1.0f, 0.0f, 1.0f, 0.0f
-      };
-      // Setup GL
-      glGenVertexArrays(1, &quadVAO);
-      glGenBuffers(1, &VBO);
-      glBindBuffer(GL_ARRAY_BUFFER, VBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-      glBindVertexArray(quadVAO);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindVertexArray(0);
       // Setup Shader
       shader->use();
       float tX = sprite->getTransform()->getTranslationX();
@@ -291,7 +277,7 @@ namespace Dream {
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D,sprite->getTexture());
       // Bind VAO
-      glBindVertexArray(quadVAO);
+      glBindVertexArray(mSpriteQuadVAO);
       // Draw
       glDrawArrays(GL_TRIANGLES, 0, 6);
       // Cleanup
@@ -312,27 +298,8 @@ namespace Dream {
       GLfloat scale = sceneObject->getTransform()->getScaleZ();
       glm::vec3 color = glm::vec3(1.0f);
       // Configure VAO/VBO
-      GLuint VBO;
-      GLuint quadVAO;
-      GLfloat vertices[] = {
-          // Pos      // Tex
-          0.0f, 1.0f, 0.0f, 1.0f,
-          1.0f, 0.0f, 1.0f, 0.0f,
-          0.0f, 0.0f, 0.0f, 0.0f,
-          0.0f, 1.0f, 0.0f, 1.0f,
-          1.0f, 1.0f, 1.0f, 1.0f,
-          1.0f, 0.0f, 1.0f, 0.0f
-      };
       // Setup GL
-      glGenVertexArrays(1, &quadVAO);
-      glGenBuffers(1, &VBO);
-      glBindBuffer(GL_ARRAY_BUFFER, VBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-      glBindVertexArray(quadVAO);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindVertexArray(0);
+      //createSpriteVertexObjects();
       // Setup Shader
       shader->use();
       float tX = font->getTransform()->getTranslationX();
@@ -363,7 +330,7 @@ namespace Dream {
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D,font->getTexture());
       // Bind VAO
-      glBindVertexArray(quadVAO);
+      glBindVertexArray(mSpriteQuadVAO);
       // Draw
       glDrawArrays(GL_TRIANGLES, 0, 6);
       // Cleanup
@@ -373,10 +340,8 @@ namespace Dream {
 
     void GraphicsComponent::drawModel(SceneObject* sceneObject) {
         // Get Assets
-        AssimpModelInstance* model;
-        model = dynamic_cast<AssimpModelInstance*>(sceneObject->getModelInstance());
-        ShaderInstance* shader;
-        shader = dynamic_cast<ShaderInstance*>(sceneObject->getShaderInstance());
+        AssimpModelInstance* model = sceneObject->getModelInstance();
+        ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
         // Transformation matrices
         glm::mat4 projection = glm::perspective(
@@ -402,7 +367,7 @@ namespace Dream {
         vector<float> rotation = sceneObject->getRotation();
         vector<float> scale = sceneObject->getScale();
         // Translate
-        modelMatrix = glm::translate(modelMatrix, glm::vec3( translation[0], translation[1], translation[2] ));
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(translation[0], translation[1], translation[2]));
         // Rotate
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));

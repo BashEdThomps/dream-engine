@@ -78,6 +78,8 @@ namespace Dream {
       return false;
     }
     json projectJson = json::parse(projectJsonStr);
+    cout << "DreamEngine: Read Project..." << endl
+         << projectJson.dump(2) << endl;
     setProject(new Project(mAssetManager, projectPath, projectJson));
     mAssetManager->setProjectPath(projectPath);
     return isProjectLoaded();
@@ -197,8 +199,8 @@ namespace Dream {
 
   bool DreamEngine::update() {
     mTime->update();
+    mActiveScene->update();
     updateComponents();
-    mActiveScene->destroyObjectDeleteQueue();
     mDone = mDone || mGraphicsComponent->isWindowShouldCloseFlagSet();
     this_thread::yield();
     return !mDone;

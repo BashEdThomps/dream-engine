@@ -53,6 +53,17 @@ namespace Dream {
     using namespace std;
     class GraphicsComponent : public ComponentInterface {
     private:
+        GLfloat mSpriteVertices[24] = {
+            // Pos      // Tex
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f
+        };
+        GLuint mSpriteVBO;
+        GLuint mSpriteQuadVAO;
         int mWindowWidth;
         int mWindowHeight;
         string mScreenName;
@@ -100,9 +111,9 @@ namespace Dream {
         SDL_Event getSDL_Event();
 
         void setClearColour(vector<float>);
+        void create2DVertexObjects();
 
     }; // End of GraphicsComponent
 
 } // End of Dream
-
 #endif // End of OpenGLGraphics_H

@@ -87,6 +87,7 @@ namespace Dream {
     luabind::module(mState) [
         luabind::class_<DreamEngine>("DreamEngine")
             .def("getAssetManager",&DreamEngine::getAssetManager)
+            .def("getActiveScene",&DreamEngine::getActiveScene)
             .def("getTime",&DreamEngine::getTime)
             .scope [
                luabind::def("getInstance",&DreamEngine::getInstance)
@@ -138,7 +139,14 @@ namespace Dream {
   void LuaComponent::bindScene() {
     luabind::module(mState) [
         luabind::class_<Scene>("Scene")
+
         .def(luabind::constructor<>())
+
+        .def("getCameraMovementSpeed",&Scene::getCameraMovementSpeed)
+        .def("setCameraMovementSpeed",&Scene::setCameraMovementSpeed)
+
+        .def("getSceneObjectByUuid",&Scene::getSceneObjectByUuid)
+        .def("getSceneObjectByName",&Scene::getSceneObjectByName)
     ];
   }
 
@@ -186,6 +194,9 @@ namespace Dream {
 
         .def("getPhysicsObjectInstance",&SceneObject::getPhysicsObjectInstance)
         .def("setPhysicsObjectInstance",&SceneObject::setPhysicsObjectInstance)
+
+        .def("getDeleteFlag",&SceneObject::getDeleteFlag)
+        .def("setDeleteFlag",&SceneObject::setDeleteFlag)
     ];
   }
 

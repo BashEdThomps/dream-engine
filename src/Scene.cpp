@@ -121,9 +121,18 @@ namespace Dream {
     return mRootSceneObject == obj || mRootSceneObject->isParentOfDeep(obj);
   }
 
-  SceneObject* Scene::getSceneObjectByUUID(string uuid) {
+  SceneObject* Scene::getSceneObjectByUuid(string uuid) {
     for (vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
       if ((*it)->hasUUID(uuid)){
+        return (*it);
+      }
+    }
+    return nullptr;
+  }
+
+  SceneObject* Scene::getSceneObjectByName(string name) {
+    for (vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
+      if ((*it)->hasName(name)){
         return (*it);
       }
     }
@@ -150,7 +159,9 @@ namespace Dream {
       cout << "Scenegraph is empty!" << endl;
       return;
     }
-    generateScenegraphVector();
+    if (mScenegraphVector.empty()) {
+        generateScenegraphVector();
+    }
     for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
       cout << (*it)->getNameUUIDString() << endl;
     }
@@ -168,7 +179,7 @@ namespace Dream {
     //cout << "Scene: Regenerating Scene Graph Vector" << endl;
     mScenegraphVector.clear();
     if (mRootSceneObject != nullptr) {
-        mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
+      mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
     }
   }
 
@@ -214,12 +225,29 @@ namespace Dream {
   }
 
   void Scene::destroyObjectDeleteQueue() {
-    vector<SceneObject*>::iterator it;
-    for(it=mObjectDeleteQueue.begin();
-        it!=mObjectDeleteQueue.end();
-        it++) {
-      delete (*it);
-    }
-    clearObjectDeleteQueue();
+      if (!mObjectDeleteQueue.empty()) {
+        vector<SceneObject*>::iterator it;
+        for(it=mObjectDeleteQueue.begin(); it!=mObjectDeleteQueue.end(); it++) {
+          SceneObject* obj = (*it);
+          SceneObject* parent = obj->getParent();
+          if (parent != nullptr) {
+              parent->removeChild(obj);
+          }
+          delete obj;
+        }
+        clearObjectDeleteQueue();
+        generateScenegraphVector();
+      }
   }
+
+  void Scene::update() {
+    vector<SceneObject*>::iterator it;
+    for(it=mScenegraphVector.begin(); it!=mScenegraphVector.end(); it++) {
+      if ((*it)->getDeleteFlag()){
+        addToObjectDeleteQueue(*it);
+      }
+    }
+    destroyObjectDeleteQueue();
+  }
+
 } // End of Dream

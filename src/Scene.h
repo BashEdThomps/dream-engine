@@ -56,7 +56,7 @@ namespace Dream {
     size_t getNumberOfSceneObjects();
     bool hasSceneObect(SceneObject*);
     SceneObject* getSceneObjectByName(string);
-    SceneObject* getSceneObjectByUUID(string);
+    SceneObject* getSceneObjectByUuid(string);
     void showStatus();
     void showScenegraph();
     string indent(int);
@@ -69,6 +69,7 @@ namespace Dream {
     float getCameraMovementSpeed();
     void loadClearColour(nlohmann::json);
     vector<float> getClearColour();
+    void update();
 
     void addToObjectDeleteQueue(SceneObject*);
     void clearObjectDeleteQueue();

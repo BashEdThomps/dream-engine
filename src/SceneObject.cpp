@@ -227,6 +227,7 @@ namespace Dream {
   }
 
   int  SceneObject::countAllChildren() {
+    cout << "SceneObject: Count All Children, Not Implemented" << endl;
     return -1;
   }
 
@@ -240,7 +241,7 @@ namespace Dream {
   }
 
   void SceneObject::removeChild(SceneObject* child) {
-
+    mChildren.erase(remove(mChildren.begin(), mChildren.end(), child), mChildren.end());
   }
 
   bool SceneObject::isChildOfDeep(SceneObject* parent) {
@@ -265,12 +266,11 @@ namespace Dream {
 
   void SceneObject::getChildrenVectorDeep(vector<SceneObject*>* soVector) {
     soVector->push_back(this);
-    if (mChildren.size() > 0) {
+    if (!mChildren.empty()) {
       vector<SceneObject*>::iterator it;
-      for (it = mChildren.begin(); it != mChildren.end(); ++it) {
-        SceneObject* next = (*it);
-        if (next != nullptr) {
-          next->getChildrenVectorDeep(soVector);
+      for (it = mChildren.begin(); it != mChildren.end(); it++) {
+        if ((*it) != nullptr) {
+          (*it)->getChildrenVectorDeep(soVector);
         }
       }
     }
