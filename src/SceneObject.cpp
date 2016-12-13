@@ -5,20 +5,20 @@
 #include <algorithm>
 #include "SceneObject.h"
 #include "String.h"
-#include "UUID.h"
+#include "Uuid.h"
 
 namespace Dream {
 
   SceneObject::SceneObject() {
     constructorInit();
-    mUUID = UUID::generateUUID();
+    mUuid = Uuid::generateUuid();
   }
 
   SceneObject::SceneObject(nlohmann::json soJson){
     constructorInit();
 
     if(!soJson[SCENE_OBJECT_UUID].is_null()){
-      mUUID = soJson[SCENE_OBJECT_UUID];
+      mUuid = soJson[SCENE_OBJECT_UUID];
     }
 
     if (!soJson[SCENE_OBJECT_NAME].is_null()) {
@@ -65,7 +65,6 @@ namespace Dream {
   }
 
   void SceneObject::constructorInit() {
-    cout << "SceneObject: Constructor Init" << endl;
     // Metadata
     mLoaded = false;
     mDelete = false;
@@ -74,7 +73,7 @@ namespace Dream {
     mTransform = new Transform3D();
     mChildren.clear();
     mAssetDefUuidsToLoad.clear();
-    mUUID = "";
+    mUuid = "";
     mName = "";
     // Asset Instances
     mAudioInstance = nullptr;
@@ -217,16 +216,16 @@ namespace Dream {
     return mTransform->getTranslation();
   }
 
-  bool SceneObject::hasUUID(string uuid) {
-    return (mUUID.compare(uuid) == 0);
+  bool SceneObject::hasUuid(string uuid) {
+    return (mUuid.compare(uuid) == 0);
   }
 
-  void SceneObject::setUUID(string uuid) {
-    mUUID = uuid;
+  void SceneObject::setUuid(string uuid) {
+    mUuid = uuid;
   }
 
-  string SceneObject::getUUID() {
-    return mUUID;
+  string SceneObject::getUuid() {
+    return mUuid;
   }
 
   int  SceneObject::countAllChildren() {
@@ -263,8 +262,8 @@ namespace Dream {
     return false;
   }
 
-  string SceneObject::getNameUUIDString() {
-    return getName()+" ("+getUUID()+")";
+  string SceneObject::getNameUuidString() {
+    return getName()+" ("+getUuid()+")";
   }
 
   void SceneObject::getChildrenVectorDeep(vector<SceneObject*>* soVector) {
@@ -281,11 +280,11 @@ namespace Dream {
 
   void SceneObject::showStatus() {
     cout << "SceneObject:" << endl;
-    cout << "          UUID: " << mUUID << endl;
+    cout << "          Uuid: " << mUuid << endl;
     cout << "          Name: " << mName << endl;
 
     if (mParent != nullptr) {
-        cout << "    ParentUUID: " << mParent->getUUID() << endl;
+        cout << "    ParentUuid: " << mParent->getUuid() << endl;
     }
 
     cout << "      Children: " << mChildren.size() << endl;
@@ -443,11 +442,11 @@ namespace Dream {
     return mDelete;
   }
 
-  bool SceneObject::isLoaded() {
+  bool SceneObject::getLoadedFlag() {
     return mLoaded;
   }
 
-  void SceneObject::setLoaded(bool loaded) {
+  void SceneObject::setLoadedFlag(bool loaded) {
     mLoaded = loaded;
   }
 

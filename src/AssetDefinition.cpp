@@ -40,7 +40,7 @@ namespace Dream {
     if (mJson[ASSET_UUID].is_null()) {
       cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
     } else {
-      setUUID(mJson[ASSET_UUID]);
+      setUuid(mJson[ASSET_UUID]);
     }
     // Name
     if (mJson[ASSET_NAME].is_null()) {
@@ -66,7 +66,7 @@ namespace Dream {
     return pair<string,string>(key,value);
   }
 
-  void AssetDefinition::setUUID(string uuid) {
+  void AssetDefinition::setUuid(string uuid) {
     addAttribute(ASSET_UUID, uuid);
   }
 
@@ -107,7 +107,7 @@ namespace Dream {
     return getAttribute(attr).c_str()[0];
   }
 
-  string AssetDefinition::getUUID() {
+  string AssetDefinition::getUuid() {
     return getAttribute(ASSET_UUID);
   }
 
@@ -208,8 +208,8 @@ namespace Dream {
     }
   }
 
-  string AssetDefinition::getNameAndUUIDString() {
-    return getName() + " (" + getUUID() + ")";
+  string AssetDefinition::getNameAndUuidString() {
+    return getName() + " (" + getUuid() + ")";
   }
 
   string AssetDefinition::getAssetPath() {
@@ -217,7 +217,7 @@ namespace Dream {
     pathStream << DIR_PATH_SEP
                << ASSET_DIR << DIR_PATH_SEP
                << getAssetTypeDirectory() << DIR_PATH_SEP
-               << getUUID() << DIR_PATH_SEP
+               << getUuid() << DIR_PATH_SEP
                << getFormat();
     return pathStream.str();
   }

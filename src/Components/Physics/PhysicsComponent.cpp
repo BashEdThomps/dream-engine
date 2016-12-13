@@ -19,11 +19,11 @@
 
 namespace Dream {
 
-      PhysicsComponent::PhysicsComponent(void) : ComponentInterface() {
+      PhysicsComponent::PhysicsComponent() : ComponentInterface() {
         mDebugDrawer = new GLDebugDrawer();
       }
 
-      PhysicsComponent::~PhysicsComponent(void) {
+      PhysicsComponent::~PhysicsComponent() {
         if (mSolver != nullptr) {
             delete mSolver;
             mSolver = nullptr;
@@ -59,7 +59,7 @@ namespace Dream {
         mDynamicsWorld->setGravity(gravity);
       }
 
-      bool PhysicsComponent::init(void) {
+      bool PhysicsComponent::init() {
         cout << "PhysicsComponent: Initialising...";
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
@@ -103,7 +103,7 @@ namespace Dream {
         cout << "PhysicsComponent: Populating Physics World" << endl;
         vector<SceneObject*>::iterator soIter;
         for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
-          cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUUID()
+          cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUuid()
                << " to PhysicsComponent World"
                << endl;
           PhysicsObjectInstance* physicsObject = (*soIter)->getPhysicsObjectInstance();

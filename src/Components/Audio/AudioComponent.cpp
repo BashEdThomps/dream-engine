@@ -27,12 +27,12 @@ namespace Dream {
   }
 
   bool AudioComponent::init() {
-    cout << "AudioComponent: Initialising..." << endl;
+    cout << "AudioComponent: Initialising...";
     if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ) {
-      cout << "AudioComponent: Error SDL_OpenAudio Failed" << endl;
+      cout << endl << "AudioComponent: Error SDL_OpenAudio Failed" << endl;
       return false;
     }
-    cout << "AudioComponent: Init Complete." << endl;
+    cout << "Done!" << endl;
     return true;
   }
 

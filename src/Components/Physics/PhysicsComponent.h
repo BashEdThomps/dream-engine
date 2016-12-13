@@ -29,21 +29,20 @@
 
 namespace Dream {
       class PhysicsComponent : public ComponentInterface {
-      public:
-        PhysicsComponent(void);
-        ~PhysicsComponent(void);
-      private:
-        GLDebugDrawer                     *mDebugDrawer;
-        btDynamicsWorld                     *mDynamicsWorld;
-        btBroadphaseInterface               *mBroadphase;
-        btDefaultCollisionConfiguration     *mCollisionConfiguration;
-        btCollisionDispatcher               *mDispatcher;
+      protected:
+        GLDebugDrawer *mDebugDrawer;
+        btDynamicsWorld *mDynamicsWorld;
+        btBroadphaseInterface *mBroadphase;
+        btDefaultCollisionConfiguration *mCollisionConfiguration;
+        btCollisionDispatcher *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
       public:
+        PhysicsComponent();
+        ~PhysicsComponent();
         void populatePhysicsWorld(vector<SceneObject*>);
         void setGravity3f(float,float,float);
         void setGravityBtVector3(btVector3);
-        bool init(void);
+        bool init();
         void update(Scene*);
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);

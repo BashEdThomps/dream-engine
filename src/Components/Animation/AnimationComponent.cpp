@@ -105,7 +105,7 @@ namespace Dream {
           AnimationInstance* animationAsset;
           animationAsset = dynamic_cast<AnimationInstance*>(asset);
           animationAsset->setLooping(looping);
-          cout << "AnimationComponent: Setting " << animationAsset->getNameAndUUIDString()
+          cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
                     << " looping: " << String::boolToYesNo(looping) << endl;
         } catch (exception &ex) {
           cerr << "AnimationComponent: Exception in setLooping... " << endl;

@@ -36,7 +36,7 @@ namespace Dream {
     if (jsonProject [PROJECT_UUID].is_null()) {
       cerr << "Project: UUID is nullptr." << endl;
     } else {
-      setUUID(jsonProject[PROJECT_UUID]);
+      setUuid(jsonProject[PROJECT_UUID]);
     }
 
     if (jsonProject[PROJECT_NAME].is_null()) {
@@ -60,7 +60,7 @@ namespace Dream {
     if (jsonProject[PROJECT_STARTUP_SCENE].is_null()) {
       cerr << "Project: Startup Scene is nullptr." << endl;
     } else {
-      setStartupSceneUUID(jsonProject[PROJECT_STARTUP_SCENE]);
+      setStartupSceneUuid(jsonProject[PROJECT_STARTUP_SCENE]);
     }
 
     if (!jsonProject[PROJECT_WINDOW_SIZE].is_null()) {
@@ -73,11 +73,11 @@ namespace Dream {
 
   void Project::showStatus() {
     cout << "Project: "  << endl;
-    cout << "         UUID: " << getUUID() << endl;
+    cout << "         UUID: " << getUuid() << endl;
     cout << "         Name: " << getName() << endl;
     cout << "       Author: " << getAuthor() << endl;
     cout << "  Description: " << getDescription() << endl;
-    cout << "Startup Scene: " << getStartupSceneUUID() << endl;
+    cout << "Startup Scene: " << getStartupSceneUuid() << endl;
     cout << " Window Width: " << getWindowWidth() << endl;
     cout << "Window Height: " << getWindowHeight() << endl;
   }
@@ -88,12 +88,12 @@ namespace Dream {
     mName = name;
   }
 
-  void Project::setUUID(string uuid) {
-    mUUID = uuid;
+  void Project::setUuid(string uuid) {
+    mUuid = uuid;
   }
 
-  string Project::getUUID() {
-    return mUUID;
+  string Project::getUuid() {
+    return mUuid;
   }
 
   void Project::loadScenesFromJson(nlohmann::json jsonSceneArray) {
@@ -106,16 +106,16 @@ namespace Dream {
     }
   }
 
-  void Project::setStartupSceneUUID(string sceneUUID) {
-    mStartupScene = sceneUUID;
+  void Project::setStartupSceneUuid(string sceneUuid) {
+    mStartupScene = sceneUuid;
   }
 
-  string Project::getStartupSceneUUID() {
+  string Project::getStartupSceneUuid() {
     return mStartupScene;
   }
 
   Scene* Project::getStartupScene() {
-    return getSceneByUUID(getStartupSceneUUID());
+    return getSceneByUuid(getStartupSceneUuid());
   }
 
   string Project::getName() {
@@ -146,10 +146,10 @@ namespace Dream {
     return mScenes.size();
   }
 
-  Scene* Project::getSceneByUUID(string uuid) {
+  Scene* Project::getSceneByUuid(string uuid) {
     Scene* retval = nullptr;
     for(vector<Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it) {
-      if ((*it)->getUUID().compare(uuid) == 0) {
+      if ((*it)->getUuid().compare(uuid) == 0) {
         retval = (*it);
         break;
       }

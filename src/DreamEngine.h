@@ -39,40 +39,40 @@ namespace Dream {
   public:
     static DreamEngine* getInstance();
     ~DreamEngine(void);
-    bool initSDL();
     bool loadFromArgumentParser(ArgumentParser*);
+    bool initEngine();
+    bool initSDL();
+    bool initAssetManager();
+    bool initComponents();
+
     bool loadProjectFromFileReader(string projectPath, FileReader*);
     bool loadScene(Scene*);
     Project* getProject();
     void setProject(Project*);
     bool isProjectLoaded();
 
-    bool createAssetManager();
     AssetManager* getAssetManager();
 
-    bool bootstrap();
     bool update();
     void setTime(Time*);
     Time* getTime();
     void setDone(bool);
     bool isDone();
 
-    void   setActiveScene(Scene*);
     Scene *getActiveScene();
-    bool   hasActiveScene();
-    bool   initActiveScene();
 
     void setAssetManager(AssetManager*);
     Camera* getCamera();
     void setCamera(Camera*);
 
     void updateComponents();
-    bool createComponents();
     void destroyComponents();
-    bool createAnimationComponent();
-    bool createAudioComponent();
-    bool createPhysicsComponent();
-    bool createGraphicsComponent();
+    bool initAnimationComponent();
+    bool initAudioComponent();
+    bool initPhysicsComponent();
+    bool initGraphicsComponent();
+
+    void destroyScene(Scene*);
 
     AnimationComponent* getAnimationComponent();
     void setAnimationComponent(AnimationComponent*);

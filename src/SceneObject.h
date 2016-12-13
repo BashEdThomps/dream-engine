@@ -28,7 +28,7 @@ namespace Dream {
     vector<string> mAssetDefUuidsToLoad;
     bool mHasFocus;
     // Metadata
-    string mUUID;
+    string mUuid;
     string mName;
     Transform3D *mTransform;
     bool mDelete;
@@ -55,15 +55,15 @@ namespace Dream {
     void loadJsonAssetInstances(nlohmann::json);
     bool initAssetInstances();
 
-    bool hasUUID(string);
-    void setUUID(string);
-    string getUUID();
+    bool hasUuid(string);
+    void setUuid(string);
+    string getUuid();
 
     bool hasName(string);
     void setName(string);
     string getName();
 
-    string getNameUUIDString();
+    string getNameUuidString();
 
     void showStatus();
 
@@ -145,8 +145,8 @@ namespace Dream {
     void setDeleteFlag(bool);
     bool getDeleteFlag();
 
-    bool isLoaded();
-    void setLoaded(bool);
+    bool getLoadedFlag();
+    void setLoadedFlag(bool);
 
   }; // End of SceneObject
 

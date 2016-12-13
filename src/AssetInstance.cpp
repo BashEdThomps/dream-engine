@@ -15,6 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Uuid.h"
 #include "AssetInstance.h"
 
 namespace Dream {
@@ -24,6 +25,8 @@ namespace Dream {
     mDefinition = definition;
     mTransform = transform;
     mLoaded = false;
+    mName = mDefinition->getName();
+    mUuid = Uuid::generateUuid();
   }
 
   AssetInstance::~AssetInstance() {
@@ -34,12 +37,12 @@ namespace Dream {
     return mDefinition->getName();
   }
 
-  string AssetInstance::getUUID() {
-    return mDefinition->getUUID();
+  string AssetInstance::getUuid() {
+    return mUuid;
   }
 
-  string AssetInstance::getNameAndUUIDString() {
-    return mDefinition->getNameAndUUIDString();
+  string AssetInstance::getNameAndUuidString() {
+    return getName() + " (" + getUuid() + ")";
   }
 
   Transform3D* AssetInstance::getTransform() {
@@ -54,11 +57,11 @@ namespace Dream {
     mAbsolutePath = path;
   }
 
-  bool AssetInstance::isLoaded() {
+  bool AssetInstance::getLoadedFlag() {
     return mLoaded;
   }
 
-  void AssetInstance::setLoaded(bool loaded) {
+  void AssetInstance::setLoadedFlag(bool loaded) {
     mLoaded = loaded;
   }
 

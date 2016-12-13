@@ -41,7 +41,8 @@ namespace Dream {
         }
         mDirectory = path.substr(0, path.find_last_of('/'));
         processNode(scene->mRootNode, scene);
-        return true;
+        mLoaded = true;
+        return mLoaded;
       }
 
       void AssimpModelInstance::draw(ShaderInstance* shader) {

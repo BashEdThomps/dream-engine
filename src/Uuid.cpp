@@ -15,21 +15,26 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UUID_H
-#define UUID_H
-
-#include <iostream>
+#include "Uuid.h"
+#include <cstdio>
+#include <cstdlib>
 
 namespace Dream {
 
-  using namespace std;
-  class UUID {
-  public:
-    UUID(void);
-    ~UUID(void);
-    static string generateUUID();
-  }; // End of UUID
+  string Uuid::generateUuid() {
+    size_t bufSize = sizeof(char)*20;
+    char* buffer = static_cast<char*>(malloc(bufSize));
+    snprintf(
+      buffer, bufSize,
+      "%02x%02x-%02x%02x-%02x%02x-%02x%02x",
+      rand()%255, rand()%255,
+      rand()%255, rand()%255,
+      rand()%255, rand()%255,
+      rand()%255, rand()%255
+    );
+    string retval = string(buffer);
+    free(buffer);
+    return retval;
+  }
 
-}  // End of Dream
-
-#endif // End of UUID_H
+} // End of Dream

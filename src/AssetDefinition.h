@@ -38,8 +38,8 @@ namespace Dream {
 
         pair<string,string> mapPair(string,string);
 
-        void setUUID(string);
-        string getUUID();
+        void setUuid(string);
+        string getUuid();
         void setName(string);
         string getName();
         void setType(string);
@@ -47,7 +47,7 @@ namespace Dream {
         void setFormat(string);
         string getFormat();
 
-        string getNameAndUUIDString();
+        string getNameAndUuidString();
 
         void addAttribute(string,string);
 

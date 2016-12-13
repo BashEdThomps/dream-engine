@@ -32,6 +32,7 @@ namespace Dream {
   }
 
   bool LuaComponent::init() {
+    cout << "LuaComponent: Initialising LuaComponent" << endl;
     mState = luaL_newstate();
     luabind::open(mState);
     luaopen_base(mState);
@@ -50,6 +51,7 @@ namespace Dream {
   }
 
   bool LuaComponent::loadScriptsFromMap() {
+    //cout << "LuaComponent: Loading Scripts from Map..." << endl;
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
 
@@ -60,32 +62,41 @@ namespace Dream {
         cerr << "LuaComponent: Load Failed, LuaScriptInstance is NULL" << endl;
         continue;
       }
+
       if (sceneObject == nullptr) {
         cerr << "LuaComponent: Load Failed, SceneObject is NULL" << endl;
         continue;
       }
 
-      if (!luaScript->isLoaded()) {
-        if (sceneObject->getDeleteFlag()) {
-          cout << "LuaComponent: SceneObject marked for deletion, not loading script."
-               << endl;
-          continue;
-        }
-        cout << "LuaComponent: Loading Lua script from " << luaScript->getAbsolutePath()
-             << endl;
-        if (!loadScript(sceneObject, luaScript)) {
-          return false;
-        }
-        cout << "LuaComponent: Loaded " << sceneObject->getUUID() << " Successfully" << endl;
-        luaScript->setLoaded(true);
+      if (luaScript->getLoadedFlag()) {
+        //cerr << "LuaComponent: Load Failed, script is all ready loaded." << endl;
+        continue;
       }
+
+      if (sceneObject->getDeleteFlag()) {
+        cout << "LuaComponent: SceneObject marked for deletion, not loading script." << endl;
+        continue;
+      }
+
+      cout << "LuaComponent: loading script '" << luaScript->getName() << "' for '" << sceneObject->getName() << "'" << endl;
+      cout << "LuaComponent: Loading Lua script from " << luaScript->getAbsolutePath()
+           << endl << flush;
+
+      if (!loadScript(sceneObject, luaScript)) {
+        return false;
+      }
+
+      cout << "LuaComponent: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
+      luaScript->setLoadedFlag(true);
+
     }
+
     return true;
   }
 
   bool LuaComponent::loadScript(SceneObject* sceneObject, LuaScriptInstance* scriptInstance) {
-    //string id = scriptInstance->getUUID();
-    string id = sceneObject->getUUID();
+    //string id = scriptInstance->getUuid();
+    string id = sceneObject->getUuid();
     cout << "LuaComponent: loadScript called for " << id << endl;
     luabind::object newtable = luabind::newtable(mState);
     try {
@@ -173,8 +184,8 @@ namespace Dream {
         luabind::class_<SceneObject>("SceneObject")
         .def(luabind::constructor<>())
 
-        .def("getUuid",&SceneObject::getUUID)
-        .def("setUuid",&SceneObject::setUUID)
+        .def("getUuid",&SceneObject::getUuid)
+        .def("setUuid",&SceneObject::setUuid)
 
         .def("getName",&SceneObject::getName)
         .def("setName",&SceneObject::setName)
@@ -281,6 +292,7 @@ namespace Dream {
             luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN)
         ]
         .enum_("Key") [
+            luabind::value("KEY_RETURN",SDLK_RETURN),
             luabind::value("KEY_SPACE",SDLK_SPACE),
             luabind::value("KEY_LEFT",SDLK_LEFT),
             luabind::value("KEY_RIGHT",SDLK_RIGHT),
@@ -394,8 +406,8 @@ namespace Dream {
   }
 
   bool LuaComponent::executeScriptUpdate(SceneObject* sceneObject, LuaScriptInstance* script) {
-    //string id = script->getUUID();
-    string id = sceneObject->getUUID();
+    //string id = script->getUuid();
+    string id = sceneObject->getUuid();
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {
@@ -410,8 +422,8 @@ namespace Dream {
   }
 
   bool LuaComponent::executeScriptKeyHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
-    //string id = script->getUUID();
-    string id = sceneObject->getUUID();
+    //string id = script->getUuid();
+    string id = sceneObject->getUuid();
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {

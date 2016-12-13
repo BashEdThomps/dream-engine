@@ -41,37 +41,31 @@ namespace Dream {
   class AssetManager {
   private:
     map<SceneObject*,LuaScriptInstance*> mLuaScriptMap;
-    vector<AssetInstance*> mAssetInstances;
-    vector<SceneObject*> mSceneObjectsWithPhysicsObjects;
     vector<AssetDefinition*> mAssetDefinitions;
     string mProjectPath;
+
   public:
     AssetManager();
     ~AssetManager();
 
     bool createAllAssetInstances(Scene*);
-    void addAssetInstance(AssetInstance*);
-
-    AssetInstance* getAssetInstanceByUUID(string);
-    AssetInstance* createAssetInstanceFromDefinitionUUID(SceneObject*, string);
+    AssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
     AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createAudioInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createModelInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createScriptInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createShaderInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createPhysicsObjectInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createLightInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createFontInstance(SceneObject*, AssetDefinition*);
-    AssetInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
-    void showStatus();
-    vector<SceneObject*> getSceneObjectsWithPhysicsObjects();
+    AnimationInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
+    AudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
+    AssimpModelInstance* createModelInstance(SceneObject*, AssetDefinition*);
+    LuaScriptInstance* createScriptInstance(SceneObject*, AssetDefinition*);
+    ShaderInstance* createShaderInstance(SceneObject*, AssetDefinition*);
+    PhysicsObjectInstance* createPhysicsObjectInstance(SceneObject*, AssetDefinition*);
+    LightInstance* createLightInstance(SceneObject*, AssetDefinition*);
+    FontInstance* createFontInstance(SceneObject*, AssetDefinition*);
+    SpriteInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
 
     void loadAssetDefinitionsFromJson(nlohmann::json);
     void addAssetDefinition(AssetDefinition*);
     void removeAssetDefinition(AssetDefinition*);
     size_t getNumberOfAssetDefinitions();
-    AssetDefinition* getAssetDefinitionByUUID(string);
+    AssetDefinition* getAssetDefinitionByUuid(string);
 
     void setProjectPath(string);
 
@@ -79,6 +73,7 @@ namespace Dream {
     void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
     bool createAssetInstancesForSceneObject(SceneObject*);
     void removeFromLuaScriptMap(vector<SceneObject*>);
+
   }; // End of AssetManager
 } // End of Dream
 

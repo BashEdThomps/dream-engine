@@ -34,7 +34,7 @@ namespace Dream {
   class Project {
   private:
     AssetManager *mAssetManager;
-    string mUUID;
+    string mUuid;
     string mName;
     string mDescription;
     string mAuthor;
@@ -54,8 +54,8 @@ namespace Dream {
 
     void setAssetManager(AssetManager*);
 
-    void setUUID(string);
-    string getUUID();
+    void setUuid(string);
+    string getUuid();
 
     void setName(string);
     string getName();
@@ -66,8 +66,8 @@ namespace Dream {
     void setAuthor(string);
     string getAuthor();
 
-    void setStartupSceneUUID(string);
-    string getStartupSceneUUID();
+    void setStartupSceneUuid(string);
+    string getStartupSceneUuid();
     Scene* getStartupScene();
 
     void addScene(Scene*);
@@ -75,7 +75,7 @@ namespace Dream {
     size_t getNumberOfScenes();
 
     Scene* getSceneByName(string);
-    Scene* getSceneByUUID(string);
+    Scene* getSceneByUuid(string);
 
     string getProjectPath();
     void setProjectPath(string);

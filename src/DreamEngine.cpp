@@ -21,7 +21,7 @@ namespace Dream {
     setCamera(nullptr);
     setTime(nullptr);
     setDone(false);
-    setActiveScene(nullptr);
+    mActiveScene = nullptr;
     setProject(nullptr);
   }
 
@@ -95,67 +95,39 @@ namespace Dream {
     return loadSuccess;
   }
 
-  bool DreamEngine::loadScene(Scene* scene) {
-    if (scene == nullptr) {
-      cerr << "Dream: Cannot load scene, null!" << endl;
-      return false;
-    }
-
-    cout << "Dream: Loading Scene " << scene->getName() << endl;
-    setActiveScene(scene);
-
-    if (!hasActiveScene()) {
-      cerr << "Dream: Unable to find active scene. Cannot Continue." << endl;
-      return false;
-    }
-
-    if (!initActiveScene()) {
-      cerr << "Dream: Unable to initialise Current Scene." << endl;
-      return false;
-    }
-    return true;
+  void DreamEngine::destroyScene(Scene* scene) {
+    // TODO
   }
 
-  void DreamEngine::setActiveScene(Scene* scene) {
+  bool DreamEngine::loadScene(Scene* scene) {
+    // Check valid
+    if (scene == nullptr) {
+        cerr << "Dream: Cannot load scene, null!" << endl;
+        return false;
+    }
+    // Clean up old scene
+    if (mActiveScene != nullptr) {
+        destroyScene(mActiveScene);
+    }
+    // Load the new scene
+    cout << "Dream: Loading Scene " << scene->getName() << endl;
     mActiveScene = scene;
+    mGraphicsComponent->setClearColour(mActiveScene->getClearColour());
+    mCamera->setTranslation(mActiveScene->getDefaultCameraTranslation());
+    mCamera->setRotation(mActiveScene->getDefaultCameraRotation());
+    mCamera->setMovementSpeed(mActiveScene->getCameraMovementSpeed());
+    return true;
   }
 
   Scene* DreamEngine::getActiveScene() {
     return mActiveScene;
   }
 
-  bool DreamEngine::hasActiveScene() {
-    return getActiveScene() != nullptr;
-  }
-
-  bool DreamEngine::initActiveScene() {
-    if (mActiveScene != nullptr) {
-      if (!mActiveScene->init()) {
-        return false;
-      }
-    }
-
-    mGraphicsComponent->setClearColour(mActiveScene->getClearColour());
-
-    if (!mAssetManager->createAllAssetInstances(mActiveScene)) {
-      cerr << "Dream: Unable to create asset instances." << endl;
-      return false;
-    }
-
-    mPhysicsComponent->populatePhysicsWorld(mAssetManager->getSceneObjectsWithPhysicsObjects());
-
-    mCamera->setTranslation(mActiveScene->getDefaultCameraTranslation());
-    mCamera->setRotation(mActiveScene->getDefaultCameraRotation());
-    mCamera->setMovementSpeed(mActiveScene->getCameraMovementSpeed());
-
-    return true;
-  }
-
   AssetManager* DreamEngine::getAssetManager() {
     return mAssetManager;
   }
 
-  bool DreamEngine::createAssetManager() {
+  bool DreamEngine::initAssetManager() {
     if (mAssetManager != nullptr) {
       cout << "Dream: Destroying existing Asset Manager." << endl;
       delete mAssetManager;
@@ -172,33 +144,32 @@ namespace Dream {
     return true;
   }
 
-  bool DreamEngine::bootstrap() {
-
+  bool DreamEngine::initEngine() {
+    // Init SDL
     if (!initSDL()) {
-      cerr << "Dream: Unable to initialise SDL" << endl;
+      cerr << "Dream:Error:Unable to initialise SDL" << endl;
       return false;
     }
 
-    // Create Components
-    if(!createComponents()){
-      cerr << "Dream: Unable to create components." << endl;
+    // Init Components
+    if(!initComponents()){
+      cerr << "Dream:Error:Unable to create components." << endl;
       return false;
     }
 
-    // Init Scene Asset Instances
+    // Init Startup Scene
     if (!loadScene(mProject->getStartupScene())) {
-      cerr << "Dream: Unable to load startup scene." << endl;
+      cerr << "Dream:Error:Unable to load startup scene." << endl;
       return false;
     }
 
-    cout << "Dream: Starting Scene - "
-         << getActiveScene()->getName()
-         << " (" << getActiveScene()->getUUID() << ")" << endl;
+    cout << "Dream:Info:Starting Startup Scene " << getActiveScene()->getNameAndUuidString() << endl;
     return true;
   }
 
   bool DreamEngine::update() {
     mTime->update();
+    mAssetManager->createAllAssetInstances(mActiveScene);
     mActiveScene->update();
     mAssetManager->removeFromLuaScriptMap(mActiveScene->getDeleteQueue());
     mActiveScene->destroyDeleteQueue();
@@ -234,18 +205,18 @@ namespace Dream {
     }
   }
 
-  bool DreamEngine::createComponents() {
+  bool DreamEngine::initComponents() {
     cout << "Dream: Creating Components..." << endl;
     setTime(new Time());
-    if(!createAudioComponent()) return false;
-    if(!createPhysicsComponent()) return false;
-    if(!createGraphicsComponent()) return false;
-    if(!createAnimationComponent()) return false;
+    if(!initAudioComponent()) return false;
+    if(!initPhysicsComponent()) return false;
+    if(!initGraphicsComponent()) return false;
+    if(!initAnimationComponent()) return false;
     cout << "Dream: Successfuly created Components." << endl;
     return true;
   }
 
-  bool DreamEngine::createAudioComponent() {
+  bool DreamEngine::initAudioComponent() {
     mAudioComponent = new AudioComponent();
     if (!mAudioComponent->init()) {
       cerr << "Dream: Unable to initialise OpenALAudio." << endl;
@@ -254,7 +225,7 @@ namespace Dream {
     return mAudioComponent != nullptr;
   }
 
-  bool DreamEngine::createPhysicsComponent() {
+  bool DreamEngine::initPhysicsComponent() {
     mPhysicsComponent = new PhysicsComponent();
     mPhysicsComponent->setTime(mTime);
     if (!mPhysicsComponent->init()){
@@ -264,7 +235,7 @@ namespace Dream {
     return mPhysicsComponent != nullptr;
   }
 
-  bool DreamEngine::createGraphicsComponent() {
+  bool DreamEngine::initGraphicsComponent() {
     setCamera(new Camera());
     mGraphicsComponent = new GraphicsComponent(mCamera);
     mGraphicsComponent->setWindowWidth(mProject->getWindowWidth());
@@ -275,18 +246,18 @@ namespace Dream {
     if (mGraphicsComponent->init()) {
       return true;
     } else {
-      cerr << "ComponentManager: Unable to initialise OpenGLGraphics." << endl;
+      cerr << "DreamEngine:Error:Unable to initialise Graphics Component." << endl;
       return false;
     }
   }
 
-  bool DreamEngine::createAnimationComponent() {
+  bool DreamEngine::initAnimationComponent() {
     mAnimationComponent = new AnimationComponent();
     mAnimationComponent->setTime(mTime);
     if (mAnimationComponent->init()) {
       return true;
     } else {
-      cerr << "ComponentManager: Unable to initialise DreamAnimation." << endl;
+      cerr << "DreamEngine:Error:Unable to initialise Animation Component." << endl;
       return false;
     }
   }

@@ -35,14 +35,16 @@ namespace Dream {
     string mAbsolutePath;
     AssetDefinition *mDefinition;
     Transform3D *mTransform;
+    string mUuid;
+    string mName;
   public:
     AssetInstance(AssetDefinition*, Transform3D*);
     virtual ~AssetInstance();
 
-    string getUUID();
+    string getUuid();
     string getName();
 
-    string getNameAndUUIDString();
+    string getNameAndUuidString();
 
     virtual bool load(string) = 0;
     virtual void loadExtraAttributes(nlohmann::json) = 0;
@@ -52,8 +54,8 @@ namespace Dream {
     string getAbsolutePath();
     void setAbsolutePath(string);
 
-    bool isLoaded();
-    void setLoaded(bool);
+    bool getLoadedFlag();
+    void setLoadedFlag(bool);
 
   }; // End of AssetInstance
 } // End of Dream

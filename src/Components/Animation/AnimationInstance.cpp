@@ -36,7 +36,8 @@ namespace Dream {
     bool AnimationInstance::load(string projectPath) {
         mLoop = mDefinition->getJson()[ASSET_ATTR_LOOP];
         loadExtraAttributes(mDefinition->getJson());
-        return false;
+        mLoaded = false;
+        return mLoaded;
     }
 
     void AnimationInstance::addKeyFrame(KeyFrame *kf) {

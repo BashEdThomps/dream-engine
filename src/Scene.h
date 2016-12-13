@@ -31,7 +31,7 @@ namespace Dream {
   using namespace std;
   class Scene {
   public:
-    string mUUID;
+    string mUuid;
     string mName;
     SceneObject *mRootSceneObject;
     vector<SceneObject*> mScenegraphVector;
@@ -43,9 +43,9 @@ namespace Dream {
     Scene();
     Scene(nlohmann::json);
     ~Scene();
-    bool init();
-    string getUUID();
-    void setUUID(string);
+    string getUuid();
+    void setUuid(string);
+    string getNameAndUuidString();
     string getName();
     void setName(string);
     void loadSceneObjects(nlohmann::json,SceneObject*);
@@ -75,6 +75,7 @@ namespace Dream {
     vector<SceneObject*> getDeleteQueue();
     void clearDeleteQueue();
     void destroyDeleteQueue();
+    void cleanupDeletedSceneObjects();
 
   }; // End of Scene
 } // End of Dream

@@ -33,7 +33,8 @@ namespace Dream {
     cout << "SpriteInstance: Loading sprite from " << path << endl;
 
     mTexture = TextureManager::loadTextureFromFile("sprite",directory.c_str());
-    return mTexture > 0;
+    mLoaded = (mTexture > 0);
+    return mLoaded;
   }
 
   void SpriteInstance::loadExtraAttributes(nlohmann::json jsonData) {

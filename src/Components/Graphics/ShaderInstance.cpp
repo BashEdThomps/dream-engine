@@ -98,7 +98,8 @@ namespace Dream {
     glDeleteShader(mVertexShader);
     glDeleteShader(mFragmentShader);
 
-    return mVertexShader != 0 && mFragmentShader != 0;
+    mLoaded = (mVertexShader != 0 && mFragmentShader != 0);
+    return mLoaded;
   }
 
   void ShaderInstance::use() {

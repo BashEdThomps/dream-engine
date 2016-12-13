@@ -40,7 +40,8 @@ namespace Dream {
             cout << "AudioInstance: Successfuly loaded Music" << endl;
         }
 
-        return mMusic || mChunk;
+        mLoaded = (mMusic != nullptr || mChunk != nullptr);
+        return mLoaded;
     }
 
     void AudioInstance::setLooping(bool looping) {

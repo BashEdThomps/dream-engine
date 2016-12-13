@@ -17,57 +17,55 @@ void showUsage(const char** argv) {
 }
 
 int main(int argc, const char** argv) {
-  cout << "Main: Starting..." << endl;
-
   Dream::DreamEngine *engine = Dream::DreamEngine::getInstance();
   Dream::LuaComponent lua;
 
+  cout << "Main:INFO:Starting..." << endl;
 
   if (argc < MINIMUM_ARGUMENTS) {
-    cerr << "Main: FATAL - Minimum Number of Arguments Were Not Found." << endl;
+    cerr << "Main:Error:Minimum Number of Arguments Were Not Found." << endl;
     showUsage(argv);
     return 1;
   }
 
   bool loaded = engine->loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 
-  if (loaded) {
-
-    if(!engine->bootstrap()) {
-      cerr << "Main: Bootstrapping Dream Failed" << std::endl;
-      return 1;
-    }
-
-    lua.setLuaScriptMap(engine->getLuaScriptMap());
-    lua.init();
-
-    int result = 0;
-    while (result == 0) {
-
-      if (!lua.loadScriptsFromMap()) {
-        cerr << "Main: Error while loading lua scripts" << endl;
-        break;
-      }
-
-      lua.setSDL_Event(engine->getSDL_Event());
-
-      if (!lua.update()) {
-        cerr << "Main: LuaComponentInstance update error!" << endl;
-        result = 1;
-        break;
-      }
-
-      if(!engine->update())
-      {
-        cerr << "Main: Dream update error!" << endl;
-        result = 1;
-        break;
-      }
-
-    }
-    return 0;
-  } else {
-    cerr << "Main: FATAL - Failed to Load Project." << endl;
+  if (!loaded) {
+     cerr << "Main:Error:Failed to Load Project." << endl;
     return 1;
   }
+
+
+  if(!engine->initEngine()) {
+    cout << "Main::Error:Bootstrapping Dream Failed" << endl;
+    return 1;
+  }
+
+  lua.setLuaScriptMap(engine->getLuaScriptMap());
+  lua.init();
+
+  int result = 0;
+  while (result == 0) {
+
+    if (!lua.loadScriptsFromMap()) {
+      cerr << "Main:Error:While loading lua scripts" << endl;
+      break;
+    }
+
+    lua.setSDL_Event(engine->getSDL_Event());
+
+    if (!lua.update()) {
+      cerr << "Main:Error:LuaComponentInstance update error!" << endl;
+      result = 1;
+      break;
+    }
+
+    if(!engine->update())
+    {
+      cerr << "Main:Error:Dream update error!" << endl;
+      result = 1;
+      break;
+    }
+  }
+  return result;
 }

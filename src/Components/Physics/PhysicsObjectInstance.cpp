@@ -81,7 +81,8 @@ namespace Dream {
         mCollisionShape->calculateLocalInertia(mass, fallInertia);
         mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(btScalar(mass), mMotionState, mCollisionShape, fallInertia);
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
-        return mRigidBody != nullptr;
+        mLoaded = (mRigidBody != nullptr);
+        return mLoaded;
       }
 
       bool PhysicsObjectInstance::createCollisionShape() {

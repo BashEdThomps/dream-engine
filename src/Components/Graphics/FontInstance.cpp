@@ -41,7 +41,8 @@ namespace Dream {
         string directory = path.substr(0, path.find_last_of('/'));
         cout << "FontInstance: Loading font from " << path << endl;
         mFont = TTF_OpenFont(path.c_str(),mSize);
-        return mFont != nullptr;
+        mLoaded = mFont != nullptr;
+        return mLoaded;
     }
 
     void FontInstance::loadExtraAttributes(nlohmann::json jsonData) {

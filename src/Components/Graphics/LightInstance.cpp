@@ -13,6 +13,7 @@ namespace Dream {
       }
 
       bool LightInstance::load(string projectDir) {
-        return false;
+        mLoaded = false;
+        return mLoaded;
       }
 } // End of Dream

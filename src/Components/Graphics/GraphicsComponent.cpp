@@ -167,7 +167,7 @@ namespace Dream {
                     if (object->hasShaderInstance()){
                         addTo3DQueue(object);
                     } else {
-                        cerr << "GraphicsComponent: Object " << object->getUUID()
+                        cerr << "GraphicsComponent: Object " << object->getUuid()
                              << " has model, but no shader assigned." << endl;
                     }
                 }
@@ -176,7 +176,7 @@ namespace Dream {
                     if (object->hasShaderInstance()){
                         addTo2DQueue(object);
                     } else {
-                        cerr << "GraphicsComponent: Object " << object->getUUID()
+                        cerr << "GraphicsComponent: Object " << object->getUuid()
                              << " has sprite, but no shader assigned." << endl;
                     }
                 }
@@ -185,7 +185,7 @@ namespace Dream {
                     if (object->hasShaderInstance()){
                         addTo2DQueue(object);
                     } else {
-                        cerr << "GraphicsComponent: Object " << object->getUUID()
+                        cerr << "GraphicsComponent: Object " << object->getUuid()
                              << " has font, but no shader assigned." << endl;
                     }
                 }

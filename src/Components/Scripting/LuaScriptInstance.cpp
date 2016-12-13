@@ -21,7 +21,6 @@ namespace Dream {
 
   LuaScriptInstance::LuaScriptInstance(AssetDefinition* definition, Transform3D* transform)
   : AssetInstance(definition,transform) {
-    mLoaded = false;
     return;
   }
 
@@ -36,13 +35,5 @@ namespace Dream {
   }
 
   void LuaScriptInstance::update() {}
-
-  void LuaScriptInstance::setLoaded(bool loaded) {
-    mLoaded = loaded;
-  }
-
-  bool LuaScriptInstance::isLoaded() {
-    return mLoaded;
-  }
 
 } // End of Dream
