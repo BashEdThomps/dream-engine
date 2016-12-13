@@ -216,18 +216,18 @@ namespace Dream {
     return mClearColour;
   }
 
-  void Scene::addToObjectDeleteQueue(SceneObject* object) {
-    mObjectDeleteQueue.push_back(object);
+  void Scene::addToDeleteQueue(SceneObject* object) {
+    mDeleteQueue.push_back(object);
   }
 
-  void Scene::clearObjectDeleteQueue() {
-    mObjectDeleteQueue.clear();
+  void Scene::clearDeleteQueue() {
+    mDeleteQueue.clear();
   }
 
-  void Scene::destroyObjectDeleteQueue() {
-      if (!mObjectDeleteQueue.empty()) {
+  void Scene::destroyDeleteQueue() {
+      if (!mDeleteQueue.empty()) {
         vector<SceneObject*>::iterator it;
-        for(it=mObjectDeleteQueue.begin(); it!=mObjectDeleteQueue.end(); it++) {
+        for(it=mDeleteQueue.begin(); it!=mDeleteQueue.end(); it++) {
           SceneObject* obj = (*it);
           SceneObject* parent = obj->getParent();
           if (parent != nullptr) {
@@ -235,19 +235,23 @@ namespace Dream {
           }
           delete obj;
         }
-        clearObjectDeleteQueue();
+        clearDeleteQueue();
         generateScenegraphVector();
       }
   }
 
   void Scene::update() {
+    generateScenegraphVector();
     vector<SceneObject*>::iterator it;
     for(it=mScenegraphVector.begin(); it!=mScenegraphVector.end(); it++) {
       if ((*it)->getDeleteFlag()){
-        addToObjectDeleteQueue(*it);
+        addToDeleteQueue(*it);
       }
     }
-    destroyObjectDeleteQueue();
+  }
+
+  vector<SceneObject*> Scene::getDeleteQueue() {
+    return mDeleteQueue;
   }
 
 } // End of Dream

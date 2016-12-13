@@ -55,20 +55,20 @@ namespace Dream {
     }
 
     if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null()) {
-      loadAssetInstances(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
+      loadJsonAssetInstances(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
     }
 
     if(!soJson[SCENE_OBJECT_HAS_FOCUS].is_null()) {
       bool focus = soJson[SCENE_OBJECT_HAS_FOCUS];
       setHasFocus(focus);
     }
-
   }
 
   void SceneObject::constructorInit() {
     cout << "SceneObject: Constructor Init" << endl;
     // Metadata
-    mDeleteFlag = false;
+    mLoaded = false;
+    mDelete = false;
     mHasFocus = false;
     mParent = nullptr;
     mTransform = new Transform3D();
@@ -88,15 +88,7 @@ namespace Dream {
     mFontInstance = nullptr;
   }
 
-  void SceneObject::loadAssetInstances(nlohmann::json assetInstancesJson) {
-    mAnimationInstance = nullptr;
-    mAudioInstance = nullptr;
-    mModelInstance = nullptr;
-    mScriptInstance = nullptr;
-    mLightInstance = nullptr;
-    mSpriteInstance = nullptr;
-    mFontInstance = nullptr;
-
+  void SceneObject::loadJsonAssetInstances(nlohmann::json assetInstancesJson) {
     for (nlohmann::json::iterator it = assetInstancesJson.begin(); it != assetInstancesJson.end(); it++) {
       mAssetDefUuidsToLoad.push_back((*it));
     }
@@ -128,7 +120,7 @@ namespace Dream {
   void SceneObject::deleteChildren() {
     vector<SceneObject*>::iterator it;
     for (it=mChildren.begin(); it!=mChildren.end(); it++) {
-      SceneObject* child;
+      SceneObject* child = (*it);
       delete child;
     }
     mChildren.clear();
@@ -137,33 +129,43 @@ namespace Dream {
   void SceneObject::deleteAssetInstances() {
     if (mTransform != nullptr) {
       delete mTransform;
+      mTransform = nullptr;
     }
     if (mAudioInstance != nullptr) {
       delete mAudioInstance;
+      mAudioInstance = nullptr;
     }
     if (mAnimationInstance != nullptr) {
       delete mAnimationInstance;
+      mAnimationInstance = nullptr;
     }
     if (mModelInstance != nullptr) {
-        delete mModelInstance;
+      delete mModelInstance;
+      mModelInstance = nullptr;
     }
     if (mShaderInstance != nullptr) {
-        delete mShaderInstance;
+      delete mShaderInstance;
+      mShaderInstance = nullptr;
     }
     if (mLightInstance != nullptr) {
-        delete mLightInstance;
+      delete mLightInstance;
+      mLightInstance = nullptr;
     }
     if (mSpriteInstance != nullptr) {
-        delete mSpriteInstance;
+      delete mSpriteInstance;
+      mSpriteInstance = nullptr;
     }
     if (mScriptInstance != nullptr) {
-        delete mScriptInstance;
+      delete mScriptInstance;
+      mScriptInstance = nullptr;
     }
     if (mPhysicsObjectInstance != nullptr) {
-        delete mPhysicsObjectInstance;
+      delete mPhysicsObjectInstance;
+      mPhysicsObjectInstance = nullptr;
     }
     if (mFontInstance != nullptr) {
-        delete mFontInstance;
+      delete mFontInstance;
+      mFontInstance = nullptr;
     }
   }
 
@@ -254,7 +256,7 @@ namespace Dream {
   }
 
   bool SceneObject::isParentOf(SceneObject* sceneObject) {
-    return false;
+    return sceneObject->getParent() == this;
   }
 
   bool SceneObject::isParentOfDeep(SceneObject* sceneObject) {
@@ -434,11 +436,19 @@ namespace Dream {
   }
 
   void SceneObject::setDeleteFlag(bool del) {
-    mDeleteFlag = del;
+    mDelete = del;
   }
 
   bool SceneObject::getDeleteFlag() {
-    return mDeleteFlag;
+    return mDelete;
+  }
+
+  bool SceneObject::isLoaded() {
+    return mLoaded;
+  }
+
+  void SceneObject::setLoaded(bool loaded) {
+    mLoaded = loaded;
   }
 
 } // End of Dream

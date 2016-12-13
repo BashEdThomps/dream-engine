@@ -23,6 +23,7 @@ namespace Dream {
       Transform3D* transform ) {
     mDefinition = definition;
     mTransform = transform;
+    mLoaded = false;
   }
 
   AssetInstance::~AssetInstance() {
@@ -51,6 +52,14 @@ namespace Dream {
 
   void AssetInstance::setAbsolutePath(string path) {
     mAbsolutePath = path;
+  }
+
+  bool AssetInstance::isLoaded() {
+    return mLoaded;
+  }
+
+  void AssetInstance::setLoaded(bool loaded) {
+    mLoaded = loaded;
   }
 
 } // End of Dream

@@ -34,7 +34,7 @@ namespace Dream {
     char* buffer = static_cast<char*>(malloc(bufSize));
     snprintf(
       buffer, bufSize,
-      "%2x%2x-%2x%2x-%2x%2x-%2x%2x",
+      "%02x%02x-%02x%02x-%02x%02x-%02x%02x",
       rand()%255, rand()%255,
       rand()%255, rand()%255,
       rand()%255, rand()%255,

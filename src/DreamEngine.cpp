@@ -200,6 +200,8 @@ namespace Dream {
   bool DreamEngine::update() {
     mTime->update();
     mActiveScene->update();
+    mAssetManager->removeFromLuaScriptMap(mActiveScene->getDeleteQueue());
+    mActiveScene->destroyDeleteQueue();
     updateComponents();
     mDone = mDone || mGraphicsComponent->isWindowShouldCloseFlagSet();
     this_thread::yield();

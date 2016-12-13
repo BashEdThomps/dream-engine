@@ -31,6 +31,7 @@ namespace Dream {
 
   class AssetInstance {
   protected:
+    bool mLoaded;
     string mAbsolutePath;
     AssetDefinition *mDefinition;
     Transform3D *mTransform;
@@ -50,6 +51,9 @@ namespace Dream {
 
     string getAbsolutePath();
     void setAbsolutePath(string);
+
+    bool isLoaded();
+    void setLoaded(bool);
 
   }; // End of AssetInstance
 } // End of Dream

@@ -52,22 +52,40 @@ namespace Dream {
   bool LuaComponent::loadScriptsFromMap() {
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
+
+      SceneObject *sceneObject = scriptIt->first;
       LuaScriptInstance *luaScript = scriptIt->second;
+
+      if (luaScript == nullptr) {
+        cerr << "LuaComponent: Load Failed, LuaScriptInstance is NULL" << endl;
+        continue;
+      }
+      if (sceneObject == nullptr) {
+        cerr << "LuaComponent: Load Failed, SceneObject is NULL" << endl;
+        continue;
+      }
+
       if (!luaScript->isLoaded()) {
+        if (sceneObject->getDeleteFlag()) {
+          cout << "LuaComponent: SceneObject marked for deletion, not loading script."
+               << endl;
+          continue;
+        }
         cout << "LuaComponent: Loading Lua script from " << luaScript->getAbsolutePath()
              << endl;
-        if (!loadScript(luaScript)) {
+        if (!loadScript(sceneObject, luaScript)) {
           return false;
         }
-        cout << "LuaComponent: Loaded " << luaScript->getUUID() << " Successfully" << endl;
+        cout << "LuaComponent: Loaded " << sceneObject->getUUID() << " Successfully" << endl;
         luaScript->setLoaded(true);
       }
     }
     return true;
   }
 
-  bool LuaComponent::loadScript(LuaScriptInstance* scriptInstance) {
-    string id = scriptInstance->getUUID();
+  bool LuaComponent::loadScript(SceneObject* sceneObject, LuaScriptInstance* scriptInstance) {
+    //string id = scriptInstance->getUUID();
+    string id = sceneObject->getUUID();
     cout << "LuaComponent: loadScript called for " << id << endl;
     luabind::object newtable = luabind::newtable(mState);
     try {
@@ -359,6 +377,9 @@ namespace Dream {
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
       SceneObject* key = scriptIt->first;
+      if (key->getDeleteFlag()) {
+        continue;
+      }
       LuaScriptInstance *value = scriptIt->second;
       if (!executeScriptUpdate(key,value)) {
         return false;
@@ -373,7 +394,8 @@ namespace Dream {
   }
 
   bool LuaComponent::executeScriptUpdate(SceneObject* sceneObject, LuaScriptInstance* script) {
-    string id = script->getUUID();
+    //string id = script->getUUID();
+    string id = sceneObject->getUUID();
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {
@@ -388,7 +410,8 @@ namespace Dream {
   }
 
   bool LuaComponent::executeScriptKeyHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
-    string id = script->getUUID();
+    //string id = script->getUUID();
+    string id = sceneObject->getUUID();
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {

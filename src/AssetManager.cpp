@@ -158,8 +158,7 @@ namespace Dream {
 
   AssetInstance* AssetManager::createShaderInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     cout << "AssetManager: Creating Shader asset instance." << endl;
-    ShaderInstance* retval = nullptr;
-    retval = new ShaderInstance(definition,sceneObject->getTransform());
+    ShaderInstance* retval = new ShaderInstance(definition,sceneObject->getTransform());
     sceneObject->setShaderInstance(retval);
     return retval;
   }
@@ -239,6 +238,13 @@ namespace Dream {
 
   void AssetManager::insertIntoLuaScriptMap(SceneObject* sceneObject,LuaScriptInstance* script) {
     mLuaScriptMap.insert(pair<SceneObject*,LuaScriptInstance*>(sceneObject,script));
+  }
+
+  void AssetManager::removeFromLuaScriptMap(vector<SceneObject*> objects) {
+   vector<SceneObject*>::iterator it;
+   for (it=objects.begin();it!=objects.end();it++) {
+     mLuaScriptMap.erase(mLuaScriptMap.find(*it));
+   }
   }
 
 } // End of Dream

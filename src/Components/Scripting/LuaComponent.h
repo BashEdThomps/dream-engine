@@ -70,7 +70,7 @@ namespace Dream {
     bool init();
 
     bool loadScriptsFromMap();
-    bool loadScript(LuaScriptInstance*);
+    bool loadScript(SceneObject*, LuaScriptInstance*);
     void stackDump();
     bool update();
     bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);

@@ -24,19 +24,12 @@
 
 namespace Dream {
       class LuaScriptInstance : public AssetInstance {
-      private:
-        bool mLoaded;
       public:
         LuaScriptInstance(AssetDefinition*,Transform3D*);
         ~LuaScriptInstance(void);
         bool load(string);
         void update();
         void loadExtraAttributes(nlohmann::json) {}
-        void setLuaTable(void*);
-        void* getLuaTable();
-        bool isLoaded();
-        void setLoaded(bool);
       }; // End of LuaScriptInstance
-
 } // End of Dream
 #endif // End of LUASCRIPT_H

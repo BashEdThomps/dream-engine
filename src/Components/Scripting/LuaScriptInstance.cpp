@@ -19,9 +19,8 @@
 
 namespace Dream {
 
-  LuaScriptInstance::LuaScriptInstance(
-      AssetDefinition* definition, Transform3D* transform
-  ) : AssetInstance(definition,transform) {
+  LuaScriptInstance::LuaScriptInstance(AssetDefinition* definition, Transform3D* transform)
+  : AssetInstance(definition,transform) {
     mLoaded = false;
     return;
   }

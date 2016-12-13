@@ -22,6 +22,7 @@ namespace Dream {
 
   class SceneObject {
   protected:
+    bool mLoaded;
     SceneObject* mParent;
     vector<SceneObject*> mChildren;
     vector<string> mAssetDefUuidsToLoad;
@@ -30,7 +31,7 @@ namespace Dream {
     string mUUID;
     string mName;
     Transform3D *mTransform;
-    bool mDeleteFlag;
+    bool mDelete;
     // Asset Instances
     AudioInstance *mAudioInstance;
     AnimationInstance *mAnimationInstance;
@@ -51,7 +52,7 @@ namespace Dream {
     void constructorInit();
 
     bool init();
-    void loadAssetInstances(nlohmann::json);
+    void loadJsonAssetInstances(nlohmann::json);
     bool initAssetInstances();
 
     bool hasUUID(string);
@@ -143,6 +144,9 @@ namespace Dream {
 
     void setDeleteFlag(bool);
     bool getDeleteFlag();
+
+    bool isLoaded();
+    void setLoaded(bool);
 
   }; // End of SceneObject
 

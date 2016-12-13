@@ -35,7 +35,7 @@ namespace Dream {
     string mName;
     SceneObject *mRootSceneObject;
     vector<SceneObject*> mScenegraphVector;
-    vector<SceneObject*> mObjectDeleteQueue;
+    vector<SceneObject*> mDeleteQueue;
     Transform3D* mDefaultCameraTransform;
     float mCameraMovementSpeed;
     vector<float> mClearColour;
@@ -71,9 +71,11 @@ namespace Dream {
     vector<float> getClearColour();
     void update();
 
-    void addToObjectDeleteQueue(SceneObject*);
-    void clearObjectDeleteQueue();
-    void destroyObjectDeleteQueue();
+    void addToDeleteQueue(SceneObject*);
+    vector<SceneObject*> getDeleteQueue();
+    void clearDeleteQueue();
+    void destroyDeleteQueue();
+
   }; // End of Scene
 } // End of Dream
 
