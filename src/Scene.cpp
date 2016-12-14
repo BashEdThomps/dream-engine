@@ -140,6 +140,8 @@ namespace Dream {
     }
 
     void Scene::showStatus() {
+
+    if (DEBUG) {
         cout << "Scene:" << endl;
         cout << "            UUID: " << mUuid << endl;
         cout << "            Name: " << mName << endl;
@@ -148,11 +150,14 @@ namespace Dream {
         cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << endl;
         cout << "   Scene Objects: " << getNumberOfSceneObjects() << endl;
         showScenegraph();
+        }
     }
 
     void Scene::showScenegraph() {
         if (mRootSceneObject == nullptr) {
+            if (DEBUG) {
             cout << "Scenegraph is empty!" << endl;
+            }
             return;
         }
         if (mScenegraphVector.empty()) {

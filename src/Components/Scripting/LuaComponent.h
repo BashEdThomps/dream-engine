@@ -21,6 +21,7 @@
 #include <map>
 #include <iostream>
 #include <luabind/luabind.hpp>
+#include "../../Constants.h"
 
 extern "C" {
     #include "lualib.h"

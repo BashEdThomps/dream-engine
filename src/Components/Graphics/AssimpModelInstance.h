@@ -18,6 +18,7 @@
 #ifndef ASSIMPMODELINSTANCE_H
 #define ASSIMPMODELINSTANCE_H
 
+#include "../../Constants.h"
 #include "glm/glm.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

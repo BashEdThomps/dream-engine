@@ -79,10 +79,10 @@ namespace Dream {
 
   int FileReader::getFileSize() {
     if (mStringStream != nullptr) {
-      return getContentsAsString().size();
+      return static_cast<int>(getContentsAsString().size());
     }
     else if (mBinaryVector != nullptr) {
-        return getContentsAsBinaryVector()->size();
+        return static_cast<int>(getContentsAsBinaryVector()->size());
       }
     else {
       return -1;

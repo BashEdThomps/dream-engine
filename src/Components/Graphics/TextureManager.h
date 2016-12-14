@@ -18,6 +18,7 @@
 #ifndef TEXTUREMANAGER_H
 #define TEXTUREMANAGER_H
 
+#include "../../Constants.h"
 #include <iostream>
 #include <vector>
 #include <SOIL/SOIL.h>

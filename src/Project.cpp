@@ -34,31 +34,41 @@ namespace Dream {
 
   void Project::setMetadata(nlohmann::json jsonProject) {
     if (jsonProject [PROJECT_UUID].is_null()) {
-      cerr << "Project: UUID is nullptr." << endl;
+      if (DEBUG) {
+        cerr << "Project: UUID is nullptr." << endl;
+      }
     } else {
       setUuid(jsonProject[PROJECT_UUID]);
     }
 
     if (jsonProject[PROJECT_NAME].is_null()) {
-      cerr << "Project: Name is nullptr." << endl;
+      if (DEBUG) {
+        cerr << "Project: Name is nullptr." << endl;
+      }
     } else {
       setName(jsonProject[PROJECT_NAME]);
     }
 
     if (jsonProject[PROJECT_AUTHOR].is_null()) {
-      cerr << "Project: Author is nullptr." << endl;
+      if (DEBUG) {
+        cerr << "Project: Author is nullptr." << endl;
+      }
     } else {
       setAuthor(jsonProject[PROJECT_AUTHOR]);
     }
 
     if (jsonProject[PROJECT_DESCRIPTION].is_null()) {
-      cerr << "Project: Descriptiont is nullptr." << endl;
+      if (DEBUG) {
+        cerr << "Project: Descriptiont is nullptr." << endl;
+      }
     } else {
       setDescription(jsonProject[PROJECT_DESCRIPTION]);
     }
 
     if (jsonProject[PROJECT_STARTUP_SCENE].is_null()) {
-      cerr << "Project: Startup Scene is nullptr." << endl;
+      if (DEBUG) {
+        cerr << "Project: Startup Scene is nullptr." << endl;
+      }
     } else {
       setStartupSceneUuid(jsonProject[PROJECT_STARTUP_SCENE]);
     }
@@ -72,17 +82,19 @@ namespace Dream {
   }
 
   void Project::showStatus() {
-    cout << "Project: "  << endl;
-    cout << "         UUID: " << getUuid() << endl;
-    cout << "         Name: " << getName() << endl;
-    cout << "       Author: " << getAuthor() << endl;
-    cout << "  Description: " << getDescription() << endl;
-    cout << "Startup Scene: " << getStartupSceneUuid() << endl;
-    cout << " Window Width: " << getWindowWidth() << endl;
-    cout << "Window Height: " << getWindowHeight() << endl;
+    if (DEBUG) {
+      cout << "Project: "  << endl;
+      cout << "         UUID: " << getUuid() << endl;
+      cout << "         Name: " << getName() << endl;
+      cout << "       Author: " << getAuthor() << endl;
+      cout << "  Description: " << getDescription() << endl;
+      cout << "Startup Scene: " << getStartupSceneUuid() << endl;
+      cout << " Window Width: " << getWindowWidth() << endl;
+      cout << "Window Height: " << getWindowHeight() << endl;
+    }
   }
 
-  Project::~Project(void) {}
+  Project::~Project() {}
 
   void Project::setName(string name) {
     mName = name;
@@ -97,9 +109,15 @@ namespace Dream {
   }
 
   void Project::loadScenesFromJson(nlohmann::json jsonSceneArray) {
-    cout << "Project: Loading Scenes from JSON Array" << endl;
+
+    if (DEBUG) {
+      cout << "Project: Loading Scenes from JSON Array" << endl;
+    }
     for (nlohmann::json::iterator it = jsonSceneArray.begin(); it != jsonSceneArray.end(); ++it) {
-      cout << "Project: Creating Scene" << endl;
+
+      if (DEBUG) {
+        cout << "Project: Creating Scene" << endl;
+      }
       Scene *nextScene = new Scene((*it));
       nextScene->showStatus();
       addScene(nextScene);

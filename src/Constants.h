@@ -1,5 +1,5 @@
 /*
- * AssetConstants
+ * Constants
  *
  * Created: 01/12/2016 2016 by Ashley
  *
@@ -15,9 +15,11 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ASSETCONSTANTS_H
-#define ASSETCONSTANTS_H
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
+// Enable Output =================================================================
+    #define DEBUG false
 // Misc ==========================================================================
     #define DIR_PATH_SEP "/"
     #define DREAM_TOOL_DIR ".dreamtool"
@@ -115,4 +117,4 @@
     #define FONT_GREEN  "g"
     #define FONT_BLUE   "b"
 
-#endif // ASSETCONSTANTS_H
+#endif // CONSTANTS_H

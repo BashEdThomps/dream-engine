@@ -19,6 +19,7 @@
 #ifndef AssetManager_h
 #define AssetManager_h
 
+#include "Constants.h"
 #include <iostream>
 #include <vector>
 #include <map>

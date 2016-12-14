@@ -38,25 +38,37 @@ namespace Dream {
   void AssetDefinition::loadMetadata() {
     // UUID
     if (mJson[ASSET_UUID].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
+
+      if (DEBUG) {
+        cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
+      }
     } else {
       setUuid(mJson[ASSET_UUID]);
     }
     // Name
     if (mJson[ASSET_NAME].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with null Name." << endl;
+
+      if (DEBUG) {
+        cerr << "AssetDefinition: Construction Asset from JSON with null Name." << endl;
+      }
     } else {
       setName(mJson[ASSET_NAME]);
     }
     // Type
     if (mJson[ASSET_TYPE].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with null Type" << endl;
+
+      if (DEBUG) {
+        cerr << "AssetDefinition: Construction Asset from JSON with null Type" << endl;
+      }
     } else {
       setType(mJson[ASSET_TYPE]);
     }
     // Format
     if (mJson[ASSET_FORMAT].is_null()) {
-      cerr << "AssetDefinition: Construction Asset from JSON with null Format" << endl;
+
+      if (DEBUG) {
+        cerr << "AssetDefinition: Construction Asset from JSON with null Format" << endl;
+      }
     } else {
       setFormat(mJson[ASSET_FORMAT]);
     }
@@ -78,7 +90,10 @@ namespace Dream {
     try {
       return mAttributes.at(attribute);
     } catch (const exception &ex) {
-      cerr << "AssetDefinition: No Attribute - " << attribute << endl;
+
+      if (DEBUG) {
+        cerr << "AssetDefinition: No Attribute - " << attribute << endl;
+      }
       return "";
     }
   }
@@ -223,10 +238,16 @@ namespace Dream {
   }
 
   void AssetDefinition::showStatus() {
-    cout << "AssetDefinition:" << endl;
+
+    if (DEBUG) {
+      cout << "AssetDefinition:" << endl;
+    }
     for (const auto& any : mAttributes) {
       string value = any.second;
-      cout << "\t" << any.first << " : " << value << endl;
+
+      if (DEBUG) {
+        cout << "\t" << any.first << " : " << value << endl;
+      }
     }
   }
 

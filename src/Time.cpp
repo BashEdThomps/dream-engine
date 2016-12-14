@@ -18,10 +18,12 @@ namespace Dream {
   }
 
   void Time::show() {
-    cout << "Time: " << endl
-              << "\tCurrent Time: " << getCurrentTime() << endl
-              << "\t   Last Time: " << getLastTime() << endl
-              << "\t  Time Delta: " << getTimeDelta() << endl;
+    if (DEBUG) {
+      cout << "Time: " << endl
+           << "\tCurrent Time: " << getCurrentTime() << endl
+           << "\t   Last Time: " << getLastTime() << endl
+           << "\t  Time Delta: " << getTimeDelta() << endl;
+    }
   }
 
   double Time::getCurrentTime() {
@@ -34,6 +36,6 @@ namespace Dream {
 
   double Time::getTimeDelta() {
     return mTimeDelta.count();
- }
+  }
 
 } // End of Dream

@@ -229,7 +229,9 @@ namespace Dream {
   }
 
   int  SceneObject::countAllChildren() {
-    cout << "SceneObject: Count All Children, Not Implemented" << endl;
+    if (DEBUG) {
+      cout << "SceneObject: Count All Children, Not Implemented" << endl;
+    }
     return -1;
   }
 
@@ -279,19 +281,22 @@ namespace Dream {
   }
 
   void SceneObject::showStatus() {
-    cout << "SceneObject:" << endl;
-    cout << "          Uuid: " << mUuid << endl;
-    cout << "          Name: " << mName << endl;
 
-    if (mParent != nullptr) {
+    if (DEBUG) {
+      cout << "SceneObject:" << endl;
+      cout << "          Uuid: " << mUuid << endl;
+      cout << "          Name: " << mName << endl;
+
+      if (mParent != nullptr) {
         cout << "    ParentUuid: " << mParent->getUuid() << endl;
-    }
+      }
 
-    cout << "      Children: " << mChildren.size() << endl;
-    cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
-    cout << "   Translation: " << String::floatVectorToString(getTranslation()) << endl;
-    cout << "      Rotation: " << String::floatVectorToString(getRotation())<< endl;
-    cout << "         Scale: " << String::floatVectorToString(getScale())<< endl;
+      cout << "      Children: " << mChildren.size() << endl;
+      cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
+      cout << "   Translation: " << String::floatVectorToString(getTranslation()) << endl;
+      cout << "      Rotation: " << String::floatVectorToString(getRotation())<< endl;
+      cout << "         Scale: " << String::floatVectorToString(getScale())<< endl;
+    }
   }
 
   vector<string> SceneObject::getAssetDefUuidsToLoad() {

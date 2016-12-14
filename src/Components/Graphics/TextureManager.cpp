@@ -32,8 +32,10 @@ namespace Dream {
     }
 
     Texture TextureManager::loadTextureFromFile(const char* file_c, const char* directory_c, const char* type) {
+      if (DEBUG) {
         cout << "TextureManager: Loading from dir: " << directory_c << endl;
         cout << "TextureManager:             file: " << file_c << endl;
+      }
         //Generate texture ID and load texture data
         string filename = string(file_c);
         string directory = string(directory_c);
@@ -43,7 +45,9 @@ namespace Dream {
         for (it=sTextureCache.begin(); it!=sTextureCache.end(); it++) {
             Texture nextTexture = (*it);
             if (nextTexture.path == filename) {
+              if (DEBUG) {
               cout << "TextureManager: Found cached texture." << endl;
+              }
               return nextTexture;
             }
         }

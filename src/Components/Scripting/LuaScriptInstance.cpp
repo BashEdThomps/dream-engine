@@ -30,7 +30,9 @@ namespace Dream {
 
   bool LuaScriptInstance::load(string projectPath) {
     mAbsolutePath = projectPath+mDefinition->getAssetPath();
-    cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
+    if (DEBUG) {
+        cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
+    }
     return mAbsolutePath.size() != 0;
   }
 

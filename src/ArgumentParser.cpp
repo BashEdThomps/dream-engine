@@ -34,7 +34,9 @@ namespace Dream {
       if (nextArg->compare(PROJECT_DIRECTORY_ARG) == 0) {
         if (mArgc > i) {
           mDreamPath = string(mArgv[i+1]);
-          cout << "ArgumentParser: Got Dream Path " << mDreamPath << endl;
+          if (DEBUG) {
+            cout << "ArgumentParser: Got Dream Path " << mDreamPath << endl;
+          }
         } else {
           return;
         }
@@ -42,7 +44,9 @@ namespace Dream {
       else if (nextArg->compare(PROJECT_UUID_ARG) == 0) {
         if (mArgc > i) {
           mProjectUUID = string(mArgv[i+1]);
-          cout << "ArgumentParser: Got Project UUID " << mProjectUUID << endl;
+          if (DEBUG) {
+            cout << "ArgumentParser: Got Project UUID " << mProjectUUID << endl;
+          }
         } else {
           return;
         }
@@ -56,9 +60,15 @@ namespace Dream {
     }
 
     mProjectPath = mDreamPath + PROJECT_PATH_SEP + mProjectUUID;
+
+          if (DEBUG) {
     cout << "ArgumentParser: Got Project Path " << mProjectPath << endl;
+          }
     mProjectFilePath = mProjectPath + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;
+
+          if (DEBUG) {
     cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << endl;
+   }
   }
 
   string ArgumentParser::getProjectPath() {

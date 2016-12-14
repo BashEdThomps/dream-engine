@@ -18,6 +18,7 @@
 #ifndef OpenGLGraphics_H
 #define OpenGLGraphics_H
 
+#include "../../Constants.h"
 // Dream
 #include "../ComponentInterface.h"
 #include "AssimpModelInstance.h"

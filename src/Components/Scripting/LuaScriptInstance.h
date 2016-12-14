@@ -21,6 +21,7 @@
 #include <vector>
 #include <iostream>
 #include "../../AssetInstance.h"
+#include "../../Constants.h"
 
 namespace Dream {
       class LuaScriptInstance : public AssetInstance {

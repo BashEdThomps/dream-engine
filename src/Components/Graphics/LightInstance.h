@@ -1,6 +1,7 @@
 #ifndef LightInstance_h
 #define LightInstance_h
 
+#include "../../Constants.h"
 #include "../../AssetDefinition.h"
 #include "../../AssetInstance.h"
 

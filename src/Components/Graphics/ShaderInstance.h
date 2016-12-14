@@ -18,6 +18,7 @@
 #ifndef SHADERINSTANCE_H
 #define SHADERINSTANCE_H
 
+#include "../../Constants.h"
 #include <iostream>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
