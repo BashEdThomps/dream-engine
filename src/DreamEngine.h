@@ -47,6 +47,7 @@ namespace Dream {
 
     bool loadProjectFromFileReader(string projectPath, FileReader*);
     bool loadScene(Scene*);
+    bool loadSceneByUuid(string);
     Project* getProject();
     void setProject(Project*);
     bool isProjectLoaded();
@@ -88,6 +89,7 @@ namespace Dream {
 
     map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
     SDL_Event getSDL_Event();
+
 
   }; // End of Dream
 } // End of Dream

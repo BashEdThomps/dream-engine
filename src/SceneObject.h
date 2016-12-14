@@ -84,6 +84,7 @@ namespace Dream {
 
     void resetTransform();
 
+    SceneObject* getChildByUuid(string);
     int countAllChildren();
     size_t countChildren();
     void addChild(SceneObject*);

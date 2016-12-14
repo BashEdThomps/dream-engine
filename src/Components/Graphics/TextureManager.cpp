@@ -31,13 +31,23 @@ namespace Dream {
         return;
     }
 
-    GLuint TextureManager::loadTextureFromFile(const char* file_c, const char* directory_c) {
-        cout << "TextureManager: Loading from dir " << directory_c << endl;
-        cout << "TextureManager:             file " << file_c << endl;
+    Texture TextureManager::loadTextureFromFile(const char* file_c, const char* directory_c, const char* type) {
+        cout << "TextureManager: Loading from dir: " << directory_c << endl;
+        cout << "TextureManager:             file: " << file_c << endl;
         //Generate texture ID and load texture data
         string filename = string(file_c);
         string directory = string(directory_c);
         filename = directory + '/' + filename;
+
+        vector<Texture>::iterator it;
+        for (it=sTextureCache.begin(); it!=sTextureCache.end(); it++) {
+            Texture nextTexture = (*it);
+            if (nextTexture.path == filename) {
+              cout << "TextureManager: Found cached texture." << endl;
+              return nextTexture;
+            }
+        }
+
         GLuint textureID;
         glGenTextures(1, &textureID);
 
@@ -57,6 +67,15 @@ namespace Dream {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
         SOIL_free_image_data(image);
-        return textureID;
+
+        Texture texture;
+        texture.path = filename;
+        texture.id = textureID;
+        texture.type = type;
+        texture.width = width;
+        texture.height = height;
+        sTextureCache.push_back(texture);
+
+        return texture;
     }
 } // End of Dream

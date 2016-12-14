@@ -450,4 +450,13 @@ namespace Dream {
     mLoaded = loaded;
   }
 
+  SceneObject* SceneObject::getChildByUuid(string childUuid) {
+    vector<SceneObject*>::iterator it;
+    for (it=mChildren.begin(); it!=mChildren.end(); it++) {
+      if ((*it)->getUuid().compare(childUuid) == 0) {
+        return (*it);
+      }
+    }
+    return nullptr;
+  }
 } // End of Dream

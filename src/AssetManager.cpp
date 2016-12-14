@@ -240,4 +240,10 @@ namespace Dream {
     }
   }
 
+  void AssetManager::cleanupScene(Scene* scene) {
+    // TODO
+    // Remove AssetDefinitions
+    // Remove LuaScriptMap Entries for scene objects in scene.
+  }
+
 } // End of Dream

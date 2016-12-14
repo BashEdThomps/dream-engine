@@ -27,7 +27,9 @@ namespace Dream {
   struct Texture {
     GLuint id;
     string type;
-    aiString path;
+    string path;
+    int width;
+    int height;
   };
 } // end of Dream
 

@@ -121,23 +121,8 @@ namespace Dream {
         for(GLuint i = 0; i < mat->GetTextureCount(type); i++) {
           aiString str;
           mat->GetTexture(type, i, &str);
-          GLboolean skip = false;
-          for(GLuint j = 0; j < TextureManager::getTextureCache().size(); j++) {
-            if(TextureManager::getTextureCache()[j].path == str) {
-              textures.push_back(TextureManager::getTextureCache()[j]);
-              skip = true;
-              break;
-            }
-          }
-          if(!skip) {   // If texture hasn't been loaded already, load it
-            cout << "\tLoading Texture: " << mDirectory << "/" << str.C_Str() <<  endl;
-            Texture texture;
-            texture.id = TextureManager::loadTextureFromFile(str.C_Str(), mDirectory.c_str());
-            texture.type = typeName;
-            texture.path = str;
-            textures.push_back(texture);
-            TextureManager::getTextureCache().push_back(texture);  // Add to loaded textures
-          }
+          Texture tex = TextureManager::loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+          textures.push_back(tex);
         }
         return textures;
       }

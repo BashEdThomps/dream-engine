@@ -96,7 +96,14 @@ namespace Dream {
   }
 
   void DreamEngine::destroyScene(Scene* scene) {
-    // TODO
+    mAssetManager->cleanupScene(scene);
+    delete mActiveScene;
+    mActiveScene = nullptr;
+  }
+
+  bool DreamEngine::loadSceneByUuid(string uuid) {
+    Scene* scene = mProject->getSceneByUuid(uuid);
+    return loadScene(scene);
   }
 
   bool DreamEngine::loadScene(Scene* scene) {

@@ -32,20 +32,15 @@ namespace Dream {
     string directory = path.substr(0, path.find_last_of('/'));
     cout << "SpriteInstance: Loading sprite from " << path << endl;
 
-    mTexture = TextureManager::loadTextureFromFile("sprite",directory.c_str());
+    Texture tex = TextureManager::loadTextureFromFile("sprite",directory.c_str(),"sprite");
+    mTexture = tex.id;
+    mWidth = tex.width;
+    mHeight = tex.height;
     mLoaded = (mTexture > 0);
     return mLoaded;
   }
 
-  void SpriteInstance::loadExtraAttributes(nlohmann::json jsonData) {
-    mWidth = static_cast<int>(
-      jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_WIDTH]
-    );
-
-    mHeight = static_cast<int>(
-      jsonData[SPRITE_TILE_SIZE][SPRITE_TILE_HEIGHT]
-    );
-  }
+  void SpriteInstance::loadExtraAttributes(nlohmann::json jsonData) {}
 
   GLuint SpriteInstance::getTexture() {
       return mTexture;

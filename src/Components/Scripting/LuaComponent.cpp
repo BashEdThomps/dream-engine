@@ -192,6 +192,8 @@ namespace Dream {
 
         .def("showStatus",&SceneObject::showStatus)
 
+        .def("getChildByUuid",&SceneObject::getChildByUuid)
+
         .def("getTransform",&SceneObject::getTransform)
         .def("setTransform",&SceneObject::setTransform)
 
@@ -285,8 +287,8 @@ namespace Dream {
     luabind::module(mState) [
         // SDL_Event
         luabind::class_<SDL_Event>("Event")
-        .def_readwrite("type", &SDL_Event::type)
-        .def_readwrite("key", &SDL_Event::key)
+        .def_readonly("type", &SDL_Event::type)
+        .def_readonly("key", &SDL_Event::key)
         .enum_("EventType") [
             luabind::value("KEYUP",SDL_EventType::SDL_KEYUP),
             luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN)
@@ -302,12 +304,33 @@ namespace Dream {
         ],
         // SDL_KeyboardEvent
         luabind::class_<SDL_KeyboardEvent>("KeyboardEvent")
-            .def_readwrite("keysym",&SDL_KeyboardEvent::keysym),
+            .def_readonly("keysym",&SDL_KeyboardEvent::keysym),
         // SDL_Keysym
         luabind::class_<SDL_Keysym>("Keysym")
-            .def_readwrite("sym",&SDL_Keysym::sym),
+            .def_readonly("sym",&SDL_Keysym::sym),
         // SDL_Keycode
-        luabind::class_<SDL_Keycode>("Keycode")
+        luabind::class_<SDL_Keycode>("Keycode"),
+        // SDL_JoyButtonEvent
+        luabind::class_<SDL_JoyButtonEvent>("JoyButtonEvent")
+            .def_readonly("type",&SDL_JoyButtonEvent::type)
+            .def_readonly("timestamp",&SDL_JoyButtonEvent::timestamp)
+            .def_readonly("which",&SDL_JoyButtonEvent::which)
+            .def_readonly("button",&SDL_JoyButtonEvent::button)
+            .def_readonly("state",&SDL_JoyButtonEvent::state),
+        // SDL_JoyHatEvent
+        luabind::class_<SDL_JoyHatEvent>("JoyHatEvent")
+            .def_readonly("type",&SDL_JoyHatEvent::type)
+            .def_readonly("timestamp",&SDL_JoyHatEvent::timestamp)
+            .def_readonly("which",&SDL_JoyHatEvent::which)
+            .def_readonly("hat",&SDL_JoyHatEvent::hat)
+            .def_readonly("value",&SDL_JoyHatEvent::value),
+        // SDL_JoyHatEvent
+        luabind::class_<SDL_JoyAxisEvent>("JoyAxisEvent")
+            .def_readonly("type",&SDL_JoyAxisEvent::type)
+            .def_readonly("timestamp",&SDL_JoyAxisEvent::timestamp)
+            .def_readonly("which",&SDL_JoyAxisEvent::which)
+            .def_readonly("axis",&SDL_JoyAxisEvent::axis)
+            .def_readonly("value",&SDL_JoyAxisEvent::value)
     ];
   }
 

@@ -47,7 +47,7 @@ namespace Dream {
   public:
     AssetManager();
     ~AssetManager();
-
+    void cleanupScene(Scene*);
     bool createAllAssetInstances(Scene*);
     AssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
     AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
