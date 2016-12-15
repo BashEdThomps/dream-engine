@@ -26,6 +26,7 @@
 #include <LinearMath/btVector3.h>
 
 #include "../ComponentInterface.h"
+#include "../../Constants.h"
 
 namespace Dream {
       class PhysicsComponent : public ComponentInterface {

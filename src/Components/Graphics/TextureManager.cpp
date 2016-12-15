@@ -46,7 +46,7 @@ namespace Dream {
             Texture nextTexture = (*it);
             if (nextTexture.path == filename) {
               if (DEBUG) {
-              cout << "TextureManager: Found cached texture." << endl;
+                cout << "TextureManager: Found cached texture." << endl;
               }
               return nextTexture;
             }

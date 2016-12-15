@@ -61,14 +61,14 @@ namespace Dream {
 
     mProjectPath = mDreamPath + PROJECT_PATH_SEP + mProjectUUID;
 
-          if (DEBUG) {
-    cout << "ArgumentParser: Got Project Path " << mProjectPath << endl;
-          }
+    if (DEBUG) {
+      cout << "ArgumentParser: Got Project Path " << mProjectPath << endl;
+    }
     mProjectFilePath = mProjectPath + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;
 
-          if (DEBUG) {
-    cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << endl;
-   }
+    if (DEBUG) {
+      cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << endl;
+    }
   }
 
   string ArgumentParser::getProjectPath() {

@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <thread>
-
 #include <SDL2/SDL.h>
 
+#include "Constants.h"
 #include "ArgumentParser.h"
 #include "Time.h"
 #include "FileReader.h"
@@ -13,7 +13,6 @@
 #include "Project.h"
 #include "AssetInstance.h"
 #include "AssetManager.h"
-
 #include "Components/Graphics/Camera.h"
 #include "Components/Animation/AnimationComponent.h"
 #include "Components/Audio/AudioComponent.h"

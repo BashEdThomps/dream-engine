@@ -70,7 +70,9 @@ namespace Dream {
   }
 
   bool DreamEngine::loadProjectFromFileReader(string projectPath, FileReader* reader) {
-    cout << "Dream: Loading project from FileReader " << reader->getPath() << endl;
+    if (DEBUG) {
+      cout << "Dream: Loading project from FileReader " << reader->getPath() << endl;
+    }
     setAssetManager(new AssetManager());
     string projectJsonStr = reader->getContentsAsString();
     if (projectJsonStr.empty()) {
@@ -78,15 +80,19 @@ namespace Dream {
       return false;
     }
     json projectJson = json::parse(projectJsonStr);
-    cout << "DreamEngine: Read Project..." << endl
-         << projectJson.dump(2) << endl;
+    if (DEBUG) {
+      cout << "DreamEngine: Read Project..." << endl
+           << projectJson.dump(2) << endl;
+    }
     setProject(new Project(mAssetManager, projectPath, projectJson));
     mAssetManager->setProjectPath(projectPath);
     return isProjectLoaded();
   }
 
   bool DreamEngine::loadFromArgumentParser(ArgumentParser *parser) {
-    cout << "Dream: Loading from ArgumentParser" << endl;
+    if (DEBUG) {
+      cout << "Dream: Loading from ArgumentParser" << endl;
+    }
     FileReader *projectFileReader = new FileReader(parser->getProjectFilePath());
     projectFileReader->readIntoStringStream();
     bool loadSuccess = loadProjectFromFileReader(parser->getProjectPath(), projectFileReader);
@@ -109,15 +115,18 @@ namespace Dream {
   bool DreamEngine::loadScene(Scene* scene) {
     // Check valid
     if (scene == nullptr) {
-        cerr << "Dream: Cannot load scene, null!" << endl;
-        return false;
+      cerr << "Dream: Cannot load scene, null!" << endl;
+      return false;
     }
     // Clean up old scene
     if (mActiveScene != nullptr) {
-        destroyScene(mActiveScene);
+      destroyScene(mActiveScene);
     }
     // Load the new scene
-    cout << "Dream: Loading Scene " << scene->getName() << endl;
+
+    if (DEBUG) {
+      cout << "Dream: Loading Scene " << scene->getName() << endl;
+    }
     mActiveScene = scene;
     mGraphicsComponent->setClearColour(mActiveScene->getClearColour());
     mCamera->setTranslation(mActiveScene->getDefaultCameraTranslation());
@@ -136,7 +145,10 @@ namespace Dream {
 
   bool DreamEngine::initAssetManager() {
     if (mAssetManager != nullptr) {
-      cout << "Dream: Destroying existing Asset Manager." << endl;
+
+      if (DEBUG) {
+        cout << "Dream: Destroying existing Asset Manager." << endl;
+      }
       delete mAssetManager;
     }
     mAssetManager = new AssetManager();
@@ -145,7 +157,7 @@ namespace Dream {
 
   bool DreamEngine::initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0){
-      cout << "SDL_Init Error: " << SDL_GetError() << endl;
+      cerr << "SDL_Init Error: " << SDL_GetError() << endl;
       return false;
     }
     return true;
@@ -170,7 +182,9 @@ namespace Dream {
       return false;
     }
 
-    cout << "Dream:Info:Starting Startup Scene " << getActiveScene()->getNameAndUuidString() << endl;
+    if (DEBUG) {
+      cout << "Dream:Info:Starting Startup Scene " << getActiveScene()->getNameAndUuidString() << endl;
+    }
     return true;
   }
 
@@ -213,13 +227,17 @@ namespace Dream {
   }
 
   bool DreamEngine::initComponents() {
-    cout << "Dream: Creating Components..." << endl;
+    if (DEBUG) {
+      cout << "Dream: Creating Components..." << endl;
+    }
     setTime(new Time());
     if(!initAudioComponent()) return false;
     if(!initPhysicsComponent()) return false;
     if(!initGraphicsComponent()) return false;
     if(!initAnimationComponent()) return false;
-    cout << "Dream: Successfuly created Components." << endl;
+    if (DEBUG) {
+      cout << "Dream: Successfuly created Components." << endl;
+    }
     return true;
   }
 

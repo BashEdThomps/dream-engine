@@ -51,12 +51,13 @@ namespace Dream {
     fragmentReader->readIntoStringStream();
     mFragmentShaderSource = fragmentReader->getContentsAsString();
     delete fragmentReader;
-
+    if (DEBUG) {
     cout << "ShaderInstance: Loading Shader..." << endl
          << "\t  Vertex: " << absVertexPath     << endl
-    //   << endl << mVertexShaderSource    << endl
-         << "\tFragment: " << absFragmentPath   << endl;
-    //   << endl << mFragmentShaderSource  << endl;
+         << endl << mVertexShaderSource    << endl
+         << "\tFragment: " << absFragmentPath   << endl
+         << endl << mFragmentShaderSource  << endl;
+    }
 
     // 2. Compile shaders
     GLint success;

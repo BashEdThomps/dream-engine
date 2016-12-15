@@ -43,11 +43,13 @@ namespace Dream     {
       }
 
       void Frame::showStatus() {
+        if (DEBUG) {
         cout << "Frame"
           << " | T " << String::floatVectorToString(mTranslation)
           << " | R " << String::floatVectorToString(mRotation)
           << " | S " << String::floatVectorToString(mScale)
           << endl;
+        }
       }
 
 } // End of Dream

@@ -2,15 +2,16 @@
 #define Environment_h
 
 #include <iostream>
+#include "Constants.h"
 
 namespace Dream {
 
-  using namespace std;
+    using namespace std;
 
-  class Environment {
-  public:
-    static string getHomeDirectory();
-  };
+    class Environment {
+    public:
+        static string getHomeDirectory();
+    };
 
 } // End of Dream
 

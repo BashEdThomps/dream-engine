@@ -5,6 +5,7 @@
 #include <SDL2/SDL_mixer.h>
 #include "AudioStatus.h"
 #include "../../AssetInstance.h"
+#include "../../Constants.h"
 
 namespace Dream {
 

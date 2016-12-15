@@ -39,7 +39,9 @@ namespace Dream {
     bool FontInstance::load(string projectPath) {
         string path = projectPath+mDefinition->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
-        cout << "FontInstance: Loading font from " << path << endl;
+        if (DEBUG) {
+            cout << "FontInstance: Loading font from " << path << endl;
+        }
         mFont = TTF_OpenFont(path.c_str(),mSize);
         mLoaded = mFont != nullptr;
         return mLoaded;
@@ -50,11 +52,13 @@ namespace Dream {
         int red = jsonData[FONT_COLOUR][FONT_RED];
         int green = jsonData[FONT_COLOUR][FONT_GREEN];
         int blue = jsonData[FONT_COLOUR][FONT_BLUE];
-        cout << "FontInstance: Setting Colour"
-             << " r:" << red
-             << " g:" << green
-             << " b:" << blue
-             << endl;
+        if (DEBUG) {
+            cout << "FontInstance: Setting Colour"
+                 << " r:" << red
+                 << " g:" << green
+                 << " b:" << blue
+                 << endl;
+        }
         setColour(red,green,blue);
         return;
     }

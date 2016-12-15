@@ -30,7 +30,9 @@ namespace Dream {
   bool SpriteInstance::load(string projectPath) {
     string path = projectPath+mDefinition->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
+    if (DEBUG) {
     cout << "SpriteInstance: Loading sprite from " << path << endl;
+    }
 
     Texture tex = TextureManager::loadTextureFromFile("sprite",directory.c_str(),"sprite");
     mTexture = tex.id;

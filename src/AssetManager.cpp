@@ -29,9 +29,7 @@ namespace Dream {
 
   bool AssetManager::createAllAssetInstances(Scene* activeScene) {
     if (activeScene == nullptr){
-      if (DEBUG) {
-        cerr << "AssetManager: Cannot create assets, no active scene." << endl;
-      }
+      cerr << "AssetManager: Cannot create assets, no active scene." << endl;
       return false;
     }
     vector<SceneObject*> scenegraph = activeScene->getScenegraphVector();
@@ -56,10 +54,8 @@ namespace Dream {
       AssetInstance* newAsset = createAssetInstanceFromDefinitionUuid(currentSO, aDefUuid);
       if (newAsset == nullptr) {
         AssetDefinition* definition = getAssetDefinitionByUuid(aDefUuid);
-        if (DEBUG) {
-          cerr << "AssetManager: Unable to instanciate asset instance for "
-               << definition->getName() << " (" << definition->getUuid() << ")" << endl;
-        }
+        cerr << "AssetManager: Unable to instanciate asset instance for "
+             << definition->getName() << " (" << definition->getUuid() << ")" << endl;
         return false;
       }
     }
@@ -116,10 +112,7 @@ namespace Dream {
         cout << "AssetManager:Info:Loading Asset Data for " << definition->getName() << endl;
       }
       if (!retval->load(mProjectPath)) {
-
-        if (DEBUG) {
-          cerr << "AssetManager:Error:Failed to create instance of " << definition->getName() << endl;
-        }
+        cerr << "AssetManager:Error:Failed to create instance of " << definition->getName() << endl;
         return nullptr;
       }
     }

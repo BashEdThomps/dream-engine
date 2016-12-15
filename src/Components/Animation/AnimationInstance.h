@@ -3,32 +3,11 @@
 
 #include <iostream>
 #include <vector>
-
+#include "../../Constants.h"
 #include "../../AssetInstance.h"
 #include "../../AssetDefinition.h"
-
 #include "KeyFrame.h"
 #include "Frame.h"
-
-#define ASSET_FORMAT_DREAM_ANIMATION "dream"
-
-// Animation Attributes
-
-#define ASSET_ATTR_KEYFRAMES     "keyframes"
-#define ASSET_ATTR_WRAP          "wrap"
-#define ASSET_ATTR_TRANSLATION   "translation"
-#define ASSET_ATTR_ROTATION      "rotation"
-#define ASSET_ATTR_SCALE         "scale"
-#define ASSET_ATTR_START_TIME    "startTime"
-#define ASSET_ATTR_WRAP          "wrap"
-#define ASSET_ATTR_LOOP          "loop"
-#define ASSET_ATTR_INTERPOLATION "interpolation"
-
-#define DREAM_ANIMATION_STOPPED 0
-#define DREAM_ANIMATION_PLAYING 1
-#define DREAM_ANIMATION_PAUSED  2
-
-#define MAX_FRAME_ADVANCE  10
 
 namespace Dream {
 

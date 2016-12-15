@@ -20,6 +20,7 @@
 
 #include <iostream>
 
+#include "Constants.h"
 #include "FileReader.h"
 #include "AssetDefinition.h"
 #include "Transform3D.h"

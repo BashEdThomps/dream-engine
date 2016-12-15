@@ -28,10 +28,7 @@ int main(int argc, const char** argv) {
   }
 
   if (argc < MINIMUM_ARGUMENTS) {
-
-    if (DEBUG) {
-      cerr << "Main:Error:Minimum Number of Arguments Were Not Found." << endl;
-    }
+    cerr << "Main:Error:Minimum Number of Arguments Were Not Found." << endl;
     showUsage(argv);
     return 1;
   }
@@ -66,19 +63,13 @@ int main(int argc, const char** argv) {
     lua.setSDL_Event(engine->getSDL_Event());
 
     if (!lua.update()) {
-
-      if (DEBUG) {
-        cerr << "Main:Error:LuaComponentInstance update error!" << endl;
-      }
+      cerr << "Main:Error:LuaComponentInstance update error!" << endl;
       result = 1;
       break;
     }
 
     if(!engine->update()) {
-
-      if (DEBUG) {
-        cerr << "Main:Error:Dream update error!" << endl;
-      }
+      cerr << "Main:Error:Dream update error!" << endl;
       result = 1;
       break;
     }

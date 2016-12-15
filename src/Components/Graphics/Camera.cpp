@@ -120,8 +120,9 @@ namespace Dream {
         if (mZoom >= ZOOM_MAX) {
           mZoom = ZOOM_MAX;
         }
-
-        //cout << "Camera: Zoom is " << mZoom << endl;
+        if (DEBUG) {
+            cout << "Camera: Zoom is " << mZoom << endl;
+        }
       }
 
       void Camera::updateCameraVectors() {

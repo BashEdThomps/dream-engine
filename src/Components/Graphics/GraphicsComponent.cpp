@@ -44,7 +44,9 @@ namespace Dream {
         );
 
         if (mWindow == nullptr){
-          cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
+          if (DEBUG) {
+            cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
+          }
           SDL_Quit();
           return false;
         }
@@ -61,7 +63,9 @@ namespace Dream {
     }
 
     bool GraphicsComponent::init(void) {
-      cout << "GraphicsComponent: Initialising..." << endl;
+      if (DEBUG) {
+        cout << "GraphicsComponent: Initialising..." << endl;
+      }
 
       if (!createSDLWindow()) {
         cerr << "GraphicsComponent: Unable to create SDL Window" << endl;
@@ -88,8 +92,9 @@ namespace Dream {
              << endl;
         return false;
       }
-
-      cout << "GraphicsComponent: Initialised SDL" << endl;
+      if (DEBUG) {
+        cout << "GraphicsComponent: Initialised SDL" << endl;
+      }
 
       // Initialize GLEW to setup the OpenGL Function pointers
       glewExperimental = GL_TRUE;
@@ -98,8 +103,9 @@ namespace Dream {
           cerr << "GraphicsComponent: GLEW failed to initialise." << endl;
           return false;
       }
-
-      cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+      if (DEBUG) {
+        cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+      }
       // Define the viewport dimensions
       glViewport(0, 0, mWindowWidth, mWindowHeight);
       // Ortho projection for 2D
@@ -117,7 +123,9 @@ namespace Dream {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       create2DVertexObjects();
-      cout << "GraphicsComponent: Initialisation Done." << endl;
+      if (DEBUG) {
+        cout << "GraphicsComponent: Initialisation Done." << endl;
+      }
       return true;
     }
 

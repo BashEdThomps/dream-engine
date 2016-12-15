@@ -116,5 +116,30 @@
     #define FONT_RED    "r"
     #define FONT_GREEN  "g"
     #define FONT_BLUE   "b"
+// Animation =====================================================================
+    #define ASSET_FORMAT_DREAM_ANIMATION "dream"
+    #define ASSET_ATTR_KEYFRAMES     "keyframes"
+    #define ASSET_ATTR_WRAP          "wrap"
+    #define ASSET_ATTR_TRANSLATION   "translation"
+    #define ASSET_ATTR_ROTATION      "rotation"
+    #define ASSET_ATTR_SCALE         "scale"
+    #define ASSET_ATTR_START_TIME    "startTime"
+    #define ASSET_ATTR_WRAP          "wrap"
+    #define ASSET_ATTR_LOOP          "loop"
+    #define ASSET_ATTR_INTERPOLATION "interpolation"
+    #define DREAM_ANIMATION_STOPPED 0
+    #define DREAM_ANIMATION_PLAYING 1
+    #define DREAM_ANIMATION_PAUSED  2
+    #define MAX_FRAME_ADVANCE  10
+    #define DREAM_ANIMATION_INTERPOLATION_NONE   "none"
+    #define DREAM_ANIMATION_INTERPOLATION_LINEAR "linear"
+    #define DREAM_ANIMATION_INTERPOLATION_BEZIER "bezier"
+// Sprite ========================================================================
+    #define SPRITE_TILE_SIZE "tileSize"
+    #define SPRITE_TILE_WIDTH "width"
+    #define SPRITE_TILE_HEIGHT "height"
+
+
+
 
 #endif // CONSTANTS_H

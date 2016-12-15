@@ -23,8 +23,10 @@ namespace Dream {
   }
 
   void KeyFrame::generatePlaybackFrames(KeyFrame* toKeyFrame) {
+    if (DEBUG) {
     cout << "KeyFrame: Generating " << mInterpolationType << " playback frames from "
          << mName << " to " << toKeyFrame->getName() <<  endl;
+    }
     long keyFrameDurationMS = toKeyFrame->getStartTimeMS() - getStartTimeMS();
     long numFrames = static_cast<long>(
           (keyFrameDurationMS/1000.0f) * AnimationInstance::getFramesPerSecond()
@@ -194,6 +196,7 @@ namespace Dream {
   }
 
   void KeyFrame::showStatus() {
+    if (DEBUG) {
     cout << "KeyFrame:" <<  endl
          << "\t         UUID: " << mUUID <<  endl
          << "\t         Name: " << mName <<  endl
@@ -204,6 +207,7 @@ namespace Dream {
          << "\t         Wrap: " << String::boolToYesNo(mWrap) <<  endl
          << "\tInterpolation: " << getInterpolationType()
          <<  endl;
+    }
   }
 
   void KeyFrame::setInterpolationType( string interpolationType) {

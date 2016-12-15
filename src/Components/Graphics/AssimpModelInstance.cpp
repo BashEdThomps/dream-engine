@@ -32,11 +32,15 @@ namespace Dream {
 
       bool AssimpModelInstance::load(string projectPath) {
         string path = projectPath+mDefinition->getAssetPath();
-        cout << "\tLoading Model:   " << path << endl;
+        if (DEBUG) {
+            cout << "\tLoading Model:   " << path << endl;
+        }
         ::Assimp::Importer import;
         const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
-          cout << "AssimpModelInstance: Error " << import.GetErrorString() << endl;
+          if (DEBUG) {
+            cout << "AssimpModelInstance: Error " << import.GetErrorString() << endl;
+          }
           return false;
         }
         mDirectory = path.substr(0, path.find_last_of('/'));

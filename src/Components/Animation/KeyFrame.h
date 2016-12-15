@@ -3,12 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include "../../Constants.h"
 #include "Frame.h"
-
-
-#define DREAM_ANIMATION_INTERPOLATION_NONE   "none"
-#define DREAM_ANIMATION_INTERPOLATION_LINEAR "linear"
-#define DREAM_ANIMATION_INTERPOLATION_BEZIER "bezier"
 
 namespace Dream {
 

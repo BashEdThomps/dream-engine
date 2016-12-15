@@ -6,15 +6,15 @@
 
 namespace Dream {
 
-  using namespace std;
-  string Environment::getHomeDirectory() {
-    char *homedir;
+    using namespace std;
+    string Environment::getHomeDirectory() {
+        char *homedir;
 
-    if ((homedir = getenv("HOME")) == nullptr) {
-      homedir = getpwuid(getuid())->pw_dir;
+        if ((homedir = getenv("HOME")) == nullptr) {
+            homedir = getpwuid(getuid())->pw_dir;
+        }
+
+        return string(homedir);
     }
-
-    return string(homedir);
-  }
 
 } // End of Dream

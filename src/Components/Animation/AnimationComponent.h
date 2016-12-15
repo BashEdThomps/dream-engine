@@ -19,6 +19,7 @@
 #ifndef AnimationComponent_h
 #define AnimationComponent_h
 
+#include "../../Constants.h"
 #include "../ComponentInterface.h"
 #include "AnimationInstance.h"
 

@@ -20,10 +20,6 @@
 #define SPRITEINSTANCE_H
 
 #include "../../Constants.h"
-#define SPRITE_TILE_SIZE "tileSize"
-#define SPRITE_TILE_WIDTH "width"
-#define SPRITE_TILE_HEIGHT "height"
-
 #include <GL/glew.h>
 #include "../../AssetInstance.h"
 

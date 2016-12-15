@@ -25,7 +25,9 @@ namespace Dream {
       AnimationComponent::~AnimationComponent() {}
 
       bool AnimationComponent::init() {
-        cout << "AnimationComponent: Initialisation Done." << endl;
+        if (DEBUG) {
+            cout << "AnimationComponent: Initialisation Done." << endl;
+        }
         return true;
       }
 
@@ -105,8 +107,10 @@ namespace Dream {
           AnimationInstance* animationAsset;
           animationAsset = dynamic_cast<AnimationInstance*>(asset);
           animationAsset->setLooping(looping);
-          cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
-                    << " looping: " << String::boolToYesNo(looping) << endl;
+          if (DEBUG) {
+            cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
+                 << " looping: " << String::boolToYesNo(looping) << endl;
+          }
         } catch (exception &ex) {
           cerr << "AnimationComponent: Exception in setLooping... " << endl;
           cerr << ex.what() << endl;

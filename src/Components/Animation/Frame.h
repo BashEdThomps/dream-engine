@@ -2,6 +2,7 @@
 #define FRAME_H
 
 #include <vector>
+#include "../../Constants.h"
 #include "../../Transform3D.h"
 
 namespace Dream {

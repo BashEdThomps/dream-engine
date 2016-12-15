@@ -24,6 +24,7 @@
 #include "AudioStatus.h"
 #include "AudioInstance.h"
 #include "../ComponentInterface.h"
+#include "../../Constants.h"
 
 namespace Dream {
 

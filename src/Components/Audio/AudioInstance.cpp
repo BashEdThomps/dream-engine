@@ -31,13 +31,18 @@ namespace Dream {
             if (mChunk == nullptr) {
                 return false;
             }
-            cout << "AudioInstance: Successfuly loaded Sound Effect" << endl;
+            if (DEBUG) {
+                cout << "AudioInstance: Successfuly loaded Sound Effect" << endl;
+            }
         } else if (mDefinition->isAudioFormatMusic()) {
             mMusic = Mix_LoadMUS(mAbsolutePath.c_str());
             if (mMusic == nullptr) {
                 return false;
             }
-            cout << "AudioInstance: Successfuly loaded Music" << endl;
+
+            if (DEBUG) {
+                cout << "AudioInstance: Successfuly loaded Music" << endl;
+            }
         }
 
         mLoaded = (mMusic != nullptr || mChunk != nullptr);
