@@ -308,6 +308,23 @@ App.controller("ProjectAssetEditor",
                 ProjectService.updateAsset($scope.asset);
             };
 
+            $scope.$on('$stateChangeStart',
+                function(event, toState, toParams, fromState, fromParams) { 
+                    console.log("Navigating away from page...");
+                    if ($scope.asset != undefined) {
+                        if ($scope.asset.type == ProjectService.ASSET_TYPE_SHADER) {
+                            console.log("Navigating away from a shader");
+                            $scope.onVertexShaderSaveClicked();
+                            $scope.onFragmentShaderSaveClicked();
+                        }
+                        else if ($scope.asset.type == ProjectService.ASSET_TYPE_SCRIPT) {
+                            console.log("Navigating away from a script");
+                            $scope.onScriptSaveClicked();
+                        }
+                    }
+                }
+            );
+
             // On Load
 
             if (ProjectService.isProjectOpen()) {
@@ -345,4 +362,6 @@ App.controller("ProjectAssetEditor",
                 $state.go("Home");
             }
         }
-    ]);
+
+    
+]);

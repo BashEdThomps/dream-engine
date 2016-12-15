@@ -53,9 +53,9 @@ namespace Dream {
     delete fragmentReader;
     if (DEBUG) {
     cout << "ShaderInstance: Loading Shader..." << endl
-         << "\t  Vertex: " << absVertexPath     << endl
+         << "ShaderInstance: Vertex: " << absVertexPath     << endl
          << endl << mVertexShaderSource    << endl
-         << "\tFragment: " << absFragmentPath   << endl
+         << "ShaderInstance: Fragment: " << absFragmentPath   << endl
          << endl << mFragmentShaderSource  << endl;
     }
 

@@ -53,9 +53,6 @@ namespace Dream {
   }
 
   bool LuaComponent::loadScriptsFromMap() {
-    if (DEBUG) {
-      cout << "LuaComponent: Loading Scripts from Map..." << endl;
-    }
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
 
@@ -78,10 +75,6 @@ namespace Dream {
       }
 
       if (luaScript->getLoadedFlag()) {
-
-        if (DEBUG) {
-          cerr << "LuaComponent: Load Failed, script is all ready loaded." << endl;
-        }
         continue;
       }
 
