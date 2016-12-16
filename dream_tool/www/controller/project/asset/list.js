@@ -139,7 +139,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
   $scope.onNewAssetButtonClicked = function() {
     $scope.currentAsset = ProjectService.createAsset();
     ProjectService.pushAsset($scope.currentAsset);
-    UIService.addTreeProjectAsset(UIService.createTreeProjectAsset($scope.currentAsset));
+    UIService.addTreeProjectAsset($scope.currentAsset);
     UIService.update();
   };
 

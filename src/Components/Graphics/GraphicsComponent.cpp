@@ -87,9 +87,8 @@ namespace Dream {
       //Create context
       mContext = SDL_GL_CreateContext(mWindow);
       if(mContext == nullptr) {
-        cerr << "GraphicsComponent: OpenGL context could not be created! - "
-             << SDL_GetError()
-             << endl;
+        cerr << "GraphicsComponent: OpenGL context could not be created! "
+             << "SDL Says: " << SDL_GetError() << endl;
         return false;
       }
       if (DEBUG) {

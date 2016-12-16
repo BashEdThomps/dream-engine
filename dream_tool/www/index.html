@@ -19,12 +19,12 @@
   <script src="/src-min-noconflict/keybinding-vim.js"></script>
   <script src="app/angular.audio.js"></script>
   <!-- CSS -->
-  <link rel="stylesheet" href="css/dream_tool.css">
   <link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="abn_tree.css">
   <link rel="stylesheet" href="ngToast.min.css">
   <link rel="stylesheet" href="ngToast-animations.min.css">
+  <link rel="stylesheet" href="css/dream_tool.css">
   <!-- Controllers -->
   <script src="controller/app.js"></script>
   <script src="controller/cookie_service.js"></script>
@@ -87,6 +87,14 @@
           <li>
             <a ng-click="onDeleteButtonClicked()"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a>
           </li>
+          <li>
+            <a ng-click="onRefreshButtonClicked()"><span aria-hidden="true" class="glyphicon glyphicon-refresh"></span></a>
+          </li>
+          <li>
+            <ol class="breadcrumb">
+              <li ng-repeat="bc in breadcrumbs">{{bc}}</li>
+            </ol>
+          </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li uib-dropdown is-open="status.isopen">
@@ -118,9 +126,7 @@
           <abn-tree expand-level="5" tree-data="treeData"></abn-tree>
         </div>
         <div class="col-md-10">
-          <ol class="breadcrumb">
-            <li ng-repeat="bc in breadcrumbs">{{ bc }}</li>
-          </ol>
+
           <div ui-view></div>
         </div>
       </div>

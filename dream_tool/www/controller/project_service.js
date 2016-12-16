@@ -2,6 +2,9 @@ App.service('ProjectService',
     ["Blob","FileSaver","UtilService","ApiService",
      function(Blob, FileSaver, UtilService, ApiService) {
 
+    this.DEFAULT_WINDOW_WIDTH = 1024;
+    this.DEFAULT_WINDOW_HEIGHT = 768;
+
     // Asset Constants ---------------------------------------------------------
 
     // Animation
@@ -98,8 +101,8 @@ App.service('ProjectService',
     this.ASSET_FORMAT_SHADER_FRAGMENT = "fragment";
 
     // Sprite
-    this.ASSET_TYPE_NAME_SPRITE = "Sprite";        
-    this.ASSET_TYPE_SPRITE = "sprite";        
+    this.ASSET_TYPE_NAME_SPRITE = "Sprite";
+    this.ASSET_TYPE_SPRITE = "sprite";
     this.ASSET_FORMAT_NAME_SPRITE = "Sprite";
      this.ASSET_FORMAT_SPRITE = "sprite";
 
@@ -221,7 +224,7 @@ App.service('ProjectService',
           }
         ]
       },
-      // Sprite  
+      // Sprite
       {
           name: this.ASSET_TYPE_NAME_SPRITE,
           type: this.ASSET_TYPE_SPRITE,
@@ -509,57 +512,58 @@ App.service('ProjectService',
     };
 
     this.createScene = function() {
+        var rootObject = this.createSceneObject();
+        rootObject.name = "Root";
         return {
             uuid: UtilService.generateUUID(),
-            name:"New Scene",
-            objects:[
-                this.createSceneObject()
-            ],
+            name:"Untitled Scene",
+            notes: "",
+            objects:[rootObject],
+            transformType: this.SCENE_OBJECT_TRANSFORM_ABSOLUTE_TYPE,
+            camera: {
+                movementSpeed: 0,
+                translation: { x: 0, y: 0, z: 0 },
+                rotation: { x: 0, y: 0, z: 0 }
+            },
+            clearColour: { r:0, g:0, b:0, a:0 }
         };
     };
 
     this.createSceneObject = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name: "New Scene Object",
+            name: "Untitled Scene Object",
             assetInstances: [],
             children: [],
-            translation: {
-              x: 0,
-              y: 0,
-              z: 0
-            },
-            rotation: {
-              x: 0,
-              y: 0,
-              z: 0
-            },
-            scale: {
-              x: 1,
-              y: 1,
-              z: 1
-            }
+            translation: { x: 0, y: 0, z: 0 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1, y: 1, z: 1 }
         };
     };
 
     this.createAsset = function() {
         return {
             uuid: UtilService.generateUUID(),
-            name: "New Asset",
-            type: "",
+            name: "Untitled Asset",
+            type: this.ASSET_TYPE_ANIMATION,
         };
     };
 
-      
+
     this.initialise = function() {
         this.project = {
             uuid:        UtilService.generateUUID(),
-            name:        "New Dream Project",
+            name:        "Untitled Project",
             author:      "",
             description: "",
-            scenes:      [],
+            scenes:      [this.createScene()],
             assets:      [],
-            isModified:  false
+            isModified:  false,
+            windowSize: {
+                width: this.DEFAULT_WINDOW_WIDTH,
+                height: this.DEFAULT_WINDOW_HEIGHT
+            }
+
         };
     };
 

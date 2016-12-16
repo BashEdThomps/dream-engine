@@ -103,7 +103,36 @@ App.service('UIService',
     // Assets ---------------------------------------------------------------
 
     this.addTreeProjectAsset = function(asset) {
-        this.treeProjectAssets.children.push(asset);
+      var node = this.createTreeProjectAsset(asset);
+        switch (asset.type) {
+          case ProjectService.ASSET_TYPE_ANIMATION:
+            this.treeAnimationAssetsNode.children.push(node)
+            break;
+          case ProjectService.ASSET_TYPE_AUDIO:
+            this.treeAudioAssetsNode.children.push(node);
+            break;
+          case ProjectService.ASSET_TYPE_FONT:
+            this.treeFontAssetsNode.children.push(node);
+            break;
+          case ProjectService.ASSET_TYPE_LIGHT:
+            this.treeLightAssetsNode.children.push(node);
+            break;
+          case ProjectService.ASSET_TYPE_MODEL:
+            this.treeModelAssetsNode.children.push(node);
+            break;
+          case ProjectService.ASSET_TYPE_PHYSICS:
+            this.treePhysicsAssetsNode.children.push(node);
+            break;
+          case ProjectService.ASSET_TYPE_SHADER:
+            this.treeShaderAssetsNode.children.push(node);
+            break;
+          case ProjectService.ASSET_TYPE_SCRIPT:
+            this.treeScriptAssetsNode.children.push(node);
+            break;
+          case ProjectService.ASSET_TYPE_SPRITE:
+            this.treeSpriteAssetsNode.children.push(node);
+            break;
+        };
     };
 
     this.createTreeProjectAsset = function(asset) {
@@ -116,109 +145,82 @@ App.service('UIService',
     };
 
     this.generateTreeProjectAssets = function() {
+
         this.treeProjectAssets = {
-            label: "Assets",
+            label: "Asset Definitions",
             children: [],
             onSelect: hostController.onTreeProjectAssetSelected,
             expanded : true
         };
 
-        var animationNode = {
+        this.treeAnimationAssetsNode = {
             label: "Animation",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(animationNode);
+        this.treeProjectAssets.children.push(this.treeAnimationAssetsNode);
 
-        var audioNode = {
+        this.treeAudioAssetsNode = {
             label: "Audio",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(audioNode);
+        this.treeProjectAssets.children.push(this.treeAudioAssetsNode);
 
-        var fontNode = {
+        this.treeFontAssetsNode = {
             label: "Font",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(fontNode);
+        this.treeProjectAssets.children.push(this.treeFontAssetsNode);
 
-        var lightNode = {
+        this.treeLightAssetsNode = {
             label: "Light",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(lightNode);
+        this.treeProjectAssets.children.push(this.treeLightAssetsNode);
 
-        var modelNode = {
+        this.treeModelAssetsNode = {
             label: "Model",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(modelNode);
+        this.treeProjectAssets.children.push(this.treeModelAssetsNode);
 
-        var physicsNode = {
+        this.treePhysicsAssetsNode = {
             label: "Physics",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(physicsNode);
+        this.treeProjectAssets.children.push(this.treePhysicsAssetsNode);
 
-        var shaderNode = {
+        this.treeShaderAssetsNode = {
             label: "Shader",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(shaderNode);
+        this.treeProjectAssets.children.push(this.treeShaderAssetsNode);
 
-        var scriptNode = {
+        this.treeScriptAssetsNode = {
             label: "Script",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(scriptNode);
+        this.treeProjectAssets.children.push(this.treeScriptAssetsNode);
 
-        var spriteNode = {
+        this.treeSpriteAssetsNode = {
             label: "Sprite",
             children: [],
             expanded : true
         };
-        this.treeProjectAssets.children.push(spriteNode);
+        this.treeProjectAssets.children.push(this.treeSpriteAssetsNode);
 
         var ui = this;
         ProjectService.getProject().assets.forEach(function(asset){
-            var node = ui.createTreeProjectAsset(asset);
-            switch (asset.type) {
-                case ProjectService.ASSET_TYPE_ANIMATION:
-                    animationNode.children.push(node)
-                    break;
-                case ProjectService.ASSET_TYPE_AUDIO:
-                    audioNode.children.push(node);
-                    break;
-                case ProjectService.ASSET_TYPE_FONT:
-                    fontNode.children.push(node);
-                    break;
-                case ProjectService.ASSET_TYPE_LIGHT:
-                    lightNode.children.push(node);
-                    break;
-                case ProjectService.ASSET_TYPE_MODEL:
-                    modelNode.children.push(node);
-                    break;
-                case ProjectService.ASSET_TYPE_PHYSICS:
-                    physicsNode.children.push(node);
-                    break;
-                case ProjectService.ASSET_TYPE_SHADER:
-                    shaderNode.children.push(node);
-                    break;
-                case ProjectService.ASSET_TYPE_SCRIPT:
-                    scriptNode.children.push(node);
-                    break;
-                case ProjectService.ASSET_TYPE_SPRITE:
-                    spriteNode.children.push(node);
-                    break;
-            };
+           ui.addTreeProjectAsset(asset);
         });
+
         ui.treeDataRoot.children.push(this.treeProjectAssets);
     };
 
