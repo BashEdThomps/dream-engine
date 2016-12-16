@@ -12,7 +12,7 @@
  * this file belongs to.
  */
 #include "SpriteInstance.h"
-#include "TextureManager.h"
+#include "TextureCache.h"
 #include <glm/glm.hpp>
 
 namespace Dream {
@@ -34,7 +34,7 @@ namespace Dream {
     cout << "SpriteInstance: Loading sprite from " << path << endl;
     }
 
-    Texture tex = TextureManager::loadTextureFromFile("sprite",directory.c_str(),"sprite");
+    Texture tex = TextureCache::loadTextureFromFile("sprite",directory.c_str(),"sprite");
     mTexture = tex.id;
     mWidth = tex.width;
     mHeight = tex.height;

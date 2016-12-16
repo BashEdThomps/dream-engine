@@ -16,7 +16,7 @@
 */
 
 #include "AssimpModelInstance.h"
-#include "TextureManager.h"
+#include "TextureCache.h"
 
 namespace Dream {
 
@@ -125,7 +125,7 @@ namespace Dream {
         for(GLuint i = 0; i < mat->GetTextureCount(type); i++) {
           aiString str;
           mat->GetTexture(type, i, &str);
-          Texture tex = TextureManager::loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+          Texture tex = TextureCache::loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
           textures.push_back(tex);
         }
         return textures;

@@ -15,23 +15,23 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "TextureManager.h"
+#include "TextureCache.h"
 
 namespace Dream {
 
-    vector<Texture> TextureManager::sTextureCache = vector<Texture>();
+    vector<Texture> TextureCache::sTextureCache = vector<Texture>();
 
-    TextureManager::TextureManager() {}
+    TextureCache::TextureCache() {}
 
-    vector<Texture> TextureManager::getTextureCache() {
+    vector<Texture> TextureCache::getTextureCache() {
         return sTextureCache;
     }
 
-    TextureManager::~TextureManager() {
+    TextureCache::~TextureCache() {
         return;
     }
 
-    Texture TextureManager::loadTextureFromFile(const char* file_c, const char* directory_c, const char* type) {
+    Texture TextureCache::loadTextureFromFile(const char* file_c, const char* directory_c, const char* type) {
       if (DEBUG) {
         cout << "TextureManager: Loading from dir: " << directory_c << endl;
         cout << "TextureManager:             file: " << file_c << endl;

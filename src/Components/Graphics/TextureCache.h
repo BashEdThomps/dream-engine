@@ -27,16 +27,18 @@
 
 
 namespace Dream {
+
   using namespace std;
 
-  class TextureManager {
+  class TextureCache {
     static vector<Texture> sTextureCache;
   public:
-    TextureManager();
-    ~TextureManager();
+    TextureCache();
+    ~TextureCache();
     static Texture loadTextureFromFile(const char*, const char*, const char*);
     static vector<Texture> getTextureCache();
   };
+
 } // End Dream
 
 #endif // TEXTUREMANAGER_H

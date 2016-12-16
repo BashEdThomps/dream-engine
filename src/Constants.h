@@ -19,7 +19,7 @@
 #define CONSTANTS_H
 
 // Enable Output =================================================================
-    #define DEBUG true
+    #define DEBUG false
 // Misc ==========================================================================
     #define DIR_PATH_SEP "/"
     #define DREAM_TOOL_DIR ".dreamtool"

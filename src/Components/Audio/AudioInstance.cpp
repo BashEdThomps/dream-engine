@@ -1,4 +1,5 @@
 #include "AudioInstance.h"
+#include "AudioCache.h"
 
 namespace Dream {
 
@@ -11,23 +12,16 @@ namespace Dream {
     }
 
     AudioInstance::~AudioInstance() {
-        if (mChunk != nullptr) {
-            Mix_FreeChunk(mChunk);
-        }
-        if (mMusic != nullptr) {
-            Mix_FreeMusic(mMusic);
-        }
     }
 
     void AudioInstance::loadExtraAttributes(nlohmann::json jsonData) {
-        return;
+      return;
     }
 
     bool AudioInstance::load(string path) {
         mAbsolutePath = path+mDefinition->getAssetPath();
-
         if (mDefinition->isAudioFormatSoundEffect()) {
-            mChunk = Mix_LoadWAV(mAbsolutePath.c_str());
+            mChunk = AudioCache::getChunk(mAbsolutePath.c_str());
             if (mChunk == nullptr) {
                 return false;
             }
@@ -35,13 +29,12 @@ namespace Dream {
                 cout << "AudioInstance: Successfuly loaded Sound Effect" << endl;
             }
         } else if (mDefinition->isAudioFormatMusic()) {
-            mMusic = Mix_LoadMUS(mAbsolutePath.c_str());
+            mMusic = AudioCache::getMusic(mAbsolutePath.c_str());
             if (mMusic == nullptr) {
-                return false;
+              return false;
             }
-
             if (DEBUG) {
-                cout << "AudioInstance: Successfuly loaded Music" << endl;
+              cout << "AudioInstance: Successfuly loaded Music" << endl;
             }
         }
 
