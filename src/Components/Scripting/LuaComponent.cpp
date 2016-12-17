@@ -41,7 +41,6 @@ namespace Dream {
     luabind::set_pcall_callback(&errorHandler);
     luaL_dostring(mState, mScriptLoaderCode.c_str());
     bindDreamEngine();
-    bindAssetManager();
     bindComponents();
     bindAssetClasses();
     bindProject();
@@ -107,7 +106,6 @@ namespace Dream {
   }
 
   bool LuaComponent::loadScript(SceneObject* sceneObject, LuaScriptInstance* scriptInstance) {
-    //string id = scriptInstance->getUuid();
     string id = sceneObject->getUuid();
 
     if (DEBUG) {
@@ -133,23 +131,12 @@ namespace Dream {
   void LuaComponent::bindDreamEngine() {
     luabind::module(mState) [
         luabind::class_<DreamEngine>("DreamEngine")
-        .def("getAssetManager",&DreamEngine::getAssetManager)
         .def("getActiveScene",&DreamEngine::getActiveScene)
         .def("getTime",&DreamEngine::getTime)
+        .def("loadSceneByUuid",&DreamEngine::loadSceneByUuid)
         .scope [
         luabind::def("getInstance",&DreamEngine::getInstance)
         ]
-        ];
-  }
-
-  void LuaComponent::bindAssetManager() {
-    luabind::module(mState) [
-        luabind::class_<AssetManager>("AssetManager")
-        .def(luabind::constructor<>())
-        .def(
-          "createAssetInstancesForSceneObject",
-          &AssetManager::createAssetInstancesForSceneObject
-          )
         ];
   }
 
@@ -179,15 +166,12 @@ namespace Dream {
   void LuaComponent::bindProject() {
     luabind::module(mState) [
         luabind::class_<Project>("Project")
-        .def(luabind::constructor<AssetManager*>())
-        ];
+    ];
   }
 
   void LuaComponent::bindScene() {
     luabind::module(mState) [
         luabind::class_<Scene>("Scene")
-
-        .def(luabind::constructor<>())
 
         .def("getCameraMovementSpeed",&Scene::getCameraMovementSpeed)
         .def("setCameraMovementSpeed",&Scene::setCameraMovementSpeed)

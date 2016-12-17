@@ -19,15 +19,10 @@
 
 namespace Dream {
 
-    Project::Project(AssetManager* assetManager) {
-        setAssetManager(assetManager);
-    }
-
-    Project::Project(AssetManager* assetManager, string projectPath, nlohmann::json jsonProject) {
-        setAssetManager(assetManager);
+    Project::Project(string projectPath, nlohmann::json jsonProject) {
         setProjectPath(projectPath);
         setMetadata(jsonProject);
-        mAssetManager->loadAssetDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
+        loadAssetDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
         loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
         showStatus();
     }
@@ -108,7 +103,7 @@ namespace Dream {
             if (DEBUG) {
                 cout << "Project: Creating Scene" << endl;
             }
-            Scene *nextScene = new Scene((*it));
+            Scene *nextScene = new Scene((*it), mProjectPath, &mAssetDefinitions);
             nextScene->showStatus();
             addScene(nextScene);
         }
@@ -196,10 +191,6 @@ namespace Dream {
         return getActiveScene() != nullptr;
     }
 
-    void Project::setAssetManager(AssetManager* assetManager) {
-        mAssetManager = assetManager;
-    }
-
     int Project::getWindowWidth() {
         return mWindowWidth;
     }
@@ -215,5 +206,49 @@ namespace Dream {
     void Project::setWindowHeight(int height) {
         mWindowHeight = height;
     }
+
+  void Project::addAssetDefinition(AssetDefinition* assetDefinition) {
+    mAssetDefinitions.push_back(assetDefinition);
+  }
+
+  void Project::removeAssetDefinition(AssetDefinition* assetDef) {
+    for (vector<AssetDefinition*>::iterator it=mAssetDefinitions.begin(); it!=mAssetDefinitions.end(); it++) {
+      if ((*it) == assetDef) {
+
+        if (DEBUG) {
+          cout << "Scene: Removing AssetDefinition " << (*it)->getUuid() << endl;
+        }
+        mAssetDefinitions.erase(it);
+        break;
+      }
+    }
+  }
+
+  size_t Project::getNumberOfAssetDefinitions() {
+    return mAssetDefinitions.size();
+  }
+
+  void Project::loadAssetDefinitionsFromJson(nlohmann::json jsonAssetArray) {
+
+    if (DEBUG) {
+      cout << "Scene: Loading Assets from JSON Array" << endl;
+    }
+    for (nlohmann::json::iterator it = jsonAssetArray.begin(); it != jsonAssetArray.end(); ++it) {
+      addAssetDefinition(new AssetDefinition((*it)));
+    }
+  }
+
+  AssetDefinition* Project::getAssetDefinitionByUuid(string uuid) {
+    AssetDefinition* retval = nullptr;
+    vector<AssetDefinition*>::iterator it;
+    for (it = mAssetDefinitions.begin(); it != mAssetDefinitions.end(); it++) {
+      if ((*it)->getUuid().compare(uuid) == 0) {
+        retval = (*it);
+        break;
+      }
+    }
+    return retval;
+  }
+
 
 } // End of Dream

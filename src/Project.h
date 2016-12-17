@@ -23,7 +23,6 @@
 #include "Scene.h"
 #include "AssetDefinition.h"
 #include "String.h"
-#include "AssetManager.h"
 #include "Constants.h"
 
 namespace Dream {
@@ -33,7 +32,6 @@ namespace Dream {
 
   class Project {
   private:
-    AssetManager *mAssetManager;
     string mUuid;
     string mName;
     string mDescription;
@@ -41,18 +39,18 @@ namespace Dream {
     string mProjectPath;
     string mStartupScene;
     vector<Scene*> mScenes;
+    vector<AssetDefinition*> mAssetDefinitions;
     Scene *mActiveScene;
     int mWindowWidth;
     int mWindowHeight;
+
   public:
-    Project(AssetManager*);
-    Project(AssetManager*, string, nlohmann::json);
+    Project(string, nlohmann::json);
     ~Project();
 
     void setMetadata(nlohmann::json);
     void loadScenesFromJson(nlohmann::json);
 
-    void setAssetManager(AssetManager*);
 
     void setUuid(string);
     string getUuid();
@@ -91,6 +89,12 @@ namespace Dream {
 
     int getWindowHeight();
     void setWindowHeight(int);
+
+    void loadAssetDefinitionsFromJson(nlohmann::json);
+    void addAssetDefinition(AssetDefinition*);
+    void removeAssetDefinition(AssetDefinition*);
+    size_t getNumberOfAssetDefinitions();
+    AssetDefinition* getAssetDefinitionByUuid(string);
 
   }; // End of Project
 } // End of Dream

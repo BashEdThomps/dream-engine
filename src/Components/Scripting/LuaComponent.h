@@ -54,7 +54,6 @@ namespace Dream {
     void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
 
     void bindDreamEngine();
-    void bindAssetManager();
     void bindComponents();
     void bindProject();
     void bindSceneObject();

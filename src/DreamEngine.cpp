@@ -13,7 +13,6 @@ namespace Dream {
   }
 
   DreamEngine::DreamEngine() {
-    setAssetManager(nullptr);
     setAnimationComponent(nullptr);
     setAudioComponent(nullptr);
     setPhysicsComponent(nullptr);
@@ -73,7 +72,6 @@ namespace Dream {
     if (DEBUG) {
       cout << "Dream: Loading project from FileReader " << reader->getPath() << endl;
     }
-    setAssetManager(new AssetManager());
     string projectJsonStr = reader->getContentsAsString();
     if (projectJsonStr.empty()) {
       cerr << "Dream: Loading Failed. Project Content is Empty" << endl;
@@ -84,8 +82,7 @@ namespace Dream {
       cout << "DreamEngine: Read Project..." << endl
            << projectJson.dump(2) << endl;
     }
-    setProject(new Project(mAssetManager, projectPath, projectJson));
-    mAssetManager->setProjectPath(projectPath);
+    setProject(new Project(projectPath, projectJson));
     return isProjectLoaded();
   }
 
@@ -101,12 +98,6 @@ namespace Dream {
     return loadSuccess;
   }
 
-  void DreamEngine::destroyScene(Scene* scene) {
-    mAssetManager->cleanupScene(scene);
-    delete mActiveScene;
-    mActiveScene = nullptr;
-  }
-
   bool DreamEngine::loadSceneByUuid(string uuid) {
     Scene* scene = mProject->getSceneByUuid(uuid);
     return loadScene(scene);
@@ -118,12 +109,8 @@ namespace Dream {
       cerr << "Dream: Cannot load scene, null!" << endl;
       return false;
     }
-    // Clean up old scene
-    if (mActiveScene != nullptr) {
-      destroyScene(mActiveScene);
-    }
-    // Load the new scene
 
+    // Load the new scene
     if (DEBUG) {
       cout << "Dream: Loading Scene " << scene->getName() << endl;
     }
@@ -137,22 +124,6 @@ namespace Dream {
 
   Scene* DreamEngine::getActiveScene() {
     return mActiveScene;
-  }
-
-  AssetManager* DreamEngine::getAssetManager() {
-    return mAssetManager;
-  }
-
-  bool DreamEngine::initAssetManager() {
-    if (mAssetManager != nullptr) {
-
-      if (DEBUG) {
-        cout << "Dream: Destroying existing Asset Manager." << endl;
-      }
-      delete mAssetManager;
-    }
-    mAssetManager = new AssetManager();
-    return mAssetManager != nullptr;
   }
 
   bool DreamEngine::initSDL() {
@@ -190,9 +161,8 @@ namespace Dream {
 
   bool DreamEngine::update() {
     mTime->update();
-    mAssetManager->createAllAssetInstances(mActiveScene);
+    mActiveScene->createAllAssetInstances();
     mActiveScene->update();
-    mAssetManager->removeFromLuaScriptMap(mActiveScene->getDeleteQueue());
     mActiveScene->destroyDeleteQueue();
     updateComponents();
     mDone = mDone || mGraphicsComponent->isWindowShouldCloseFlagSet();
@@ -200,9 +170,6 @@ namespace Dream {
     return !mDone;
   }
 
-  void DreamEngine::setAssetManager(AssetManager* assetManager) {
-    mAssetManager = assetManager;
-  }
 
   Time* DreamEngine::getTime() {
     return mTime;
@@ -318,7 +285,7 @@ namespace Dream {
   }
 
   map<SceneObject*,LuaScriptInstance*>* DreamEngine::getLuaScriptMap() {
-    return mAssetManager->getLuaScriptMap();
+    return mActiveScene->getLuaScriptMap();
   }
 
   SDL_Event DreamEngine::getSDL_Event() {

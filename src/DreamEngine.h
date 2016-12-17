@@ -12,7 +12,6 @@
 #include "Scene.h"
 #include "Project.h"
 #include "AssetInstance.h"
-#include "AssetManager.h"
 #include "Components/Graphics/Camera.h"
 #include "Components/Animation/AnimationComponent.h"
 #include "Components/Audio/AudioComponent.h"
@@ -26,7 +25,6 @@ namespace Dream {
     Time *mTime;
     Project *mProject;
     Scene *mActiveScene;
-    AssetManager *mAssetManager;
     Camera *mCamera;
     AudioComponent *mAudioComponent;
     GraphicsComponent *mGraphicsComponent;
@@ -51,8 +49,6 @@ namespace Dream {
     void setProject(Project*);
     bool isProjectLoaded();
 
-    AssetManager* getAssetManager();
-
     bool update();
     void setTime(Time*);
     Time* getTime();
@@ -61,7 +57,6 @@ namespace Dream {
 
     Scene *getActiveScene();
 
-    void setAssetManager(AssetManager*);
     Camera* getCamera();
     void setCamera(Camera*);
 

@@ -19,13 +19,9 @@
 
 namespace Dream {
 
-  Scene::Scene() {
-      mRootSceneObject = nullptr;
-      mClearColour = {0.0f,0.0f,0.0f,0.0f};
-      mDefaultCameraTransform = new Transform3D();
-  }
-
-  Scene::Scene(nlohmann::json jsonScene) {
+  Scene::Scene(nlohmann::json jsonScene, string projectPath, vector<AssetDefinition*>* assetDefs) {
+      setProjectPath(projectPath);
+      mAssetDefinitions = assetDefs;
       mRootSceneObject = nullptr;
       mClearColour = {0.0f,0.0f,0.0f,0.0f};
       mDefaultCameraTransform = new Transform3D();
@@ -245,6 +241,7 @@ namespace Dream {
   void Scene::update() {
       generateScenegraphVector();
       cleanupDeletedSceneObjects();
+      cleanupDeletedScripts();
   }
 
   void Scene::cleanupDeletedSceneObjects() {
@@ -259,5 +256,225 @@ namespace Dream {
   vector<SceneObject*> Scene::getDeleteQueue() {
       return mDeleteQueue;
   }
+
+  bool Scene::createAllAssetInstances() {
+    vector<SceneObject*> scenegraph = getScenegraphVector();
+    vector<SceneObject*>::iterator sgIt;
+    for (sgIt = scenegraph.begin(); sgIt != scenegraph.end(); sgIt++) {
+      SceneObject* sceneObj = (*sgIt);
+      if (!sceneObj->getLoadedFlag()) {
+        if (!createAssetInstancesForSceneObject(sceneObj)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  bool Scene::createAssetInstancesForSceneObject(SceneObject* currentSO) {
+    vector<string> aiUuidsToLoad;
+    vector<string>::iterator aiUuidIt;
+    aiUuidsToLoad = currentSO->getAssetDefUuidsToLoad();
+    for (aiUuidIt = aiUuidsToLoad.begin(); aiUuidIt != aiUuidsToLoad.end(); aiUuidIt++) {
+      string aDefUuid = *aiUuidIt;
+      AssetInstance* newAsset = createAssetInstanceFromDefinitionUuid(currentSO, aDefUuid);
+      if (newAsset == nullptr) {
+        AssetDefinition* definition = getAssetDefinitionByUuid(aDefUuid);
+        cerr << "Scene: Unable to instanciate asset instance for "
+             << definition->getName() << " (" << definition->getUuid() << ")" << endl;
+        return false;
+      }
+    }
+    currentSO->setLoadedFlag(true);
+    return currentSO->getLoadedFlag();
+  }
+
+  AssetInstance* Scene::createAssetInstanceFromDefinitionUuid(SceneObject* sceneObject, string uuid) {
+    AssetDefinition* assetDefinition = getAssetDefinitionByUuid(uuid);
+    return createAssetInstance(sceneObject, assetDefinition);
+  }
+
+  AssetInstance* Scene::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
+    AssetInstance* retval = nullptr;
+
+    if (DEBUG) {
+      cout << "Scene: Creating Asset Intance of: ("
+           << definition->getType() << ") " << definition->getName()
+           << ", for SceneObject: " << sceneObject->getNameUuidString()
+           << endl;
+    }
+
+    if(definition->isTypeAnimation()) {
+      retval = createAnimationInstance(sceneObject, definition);
+    }
+    else if (definition->isTypeAudio()) {
+      retval = createAudioInstance(sceneObject, definition);
+    }
+    else if (definition->isTypeModel()) {
+      retval = createModelInstance(sceneObject, definition);
+    }
+    else if (definition->isTypeScript()){
+      retval = createScriptInstance(sceneObject, definition);
+    }
+    else if (definition->isTypeShader()) {
+      retval = createShaderInstance(sceneObject, definition);
+    }
+    else if (definition->isTypePhysicsObject()) {
+      retval = createPhysicsObjectInstance(sceneObject,definition);
+    }
+    else if (definition->isTypeLight()) {
+      retval = createLightInstance(sceneObject, definition);
+    }
+    else if (definition->isTypeSprite()) {
+      retval = createSpriteInstance(sceneObject, definition);
+    }
+    else if (definition->isTypeFont()) {
+      retval = createFontInstance(sceneObject,definition);
+    }
+
+    if (retval != nullptr) {
+
+      if (DEBUG) {
+        cout << "Scene:Info:Loading Asset Data for " << definition->getName() << endl;
+      }
+      if (!retval->load(mProjectPath)) {
+        cerr << "Scene:Error:Failed to create instance of " << definition->getName() << endl;
+        return nullptr;
+      }
+    }
+    return retval;
+  }
+
+  void Scene::setProjectPath(string projectPath) {
+    mProjectPath = projectPath;
+  }
+
+  PhysicsObjectInstance* Scene::createPhysicsObjectInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Physics Object Asset Instance." << endl;
+    }
+    PhysicsObjectInstance* retval = new PhysicsObjectInstance(definition,sceneObject->getTransform());
+    sceneObject->setPhysicsObjectInstance(retval);
+    return retval;
+  }
+
+  AnimationInstance* Scene::createAnimationInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Animation asset instance." << endl;
+    }
+    AnimationInstance* retval = new AnimationInstance(definition,sceneObject->getTransform());
+    sceneObject->setAnimationInstance(retval);
+    return retval;
+  }
+
+  AudioInstance* Scene::createAudioInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Audio asset instance." << endl;
+    }
+    AudioInstance* retval = new AudioInstance(definition,sceneObject->getTransform());
+    sceneObject->setAudioInstance(retval);
+    return retval;
+  }
+
+  AssimpModelInstance* Scene::createModelInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Model asset instance." << endl;
+    }
+    AssimpModelInstance* retval = nullptr;
+    retval = new AssimpModelInstance(definition,sceneObject->getTransform());
+    sceneObject->setModelInstance(retval);
+    return retval;
+  }
+
+  LuaScriptInstance* Scene::createScriptInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Script asset instance." << endl;
+    }
+    LuaScriptInstance* retval = new LuaScriptInstance(definition, sceneObject->getTransform());
+    sceneObject->setScriptInstance(retval);
+    insertIntoLuaScriptMap(sceneObject,retval);
+    return retval;
+  }
+
+  ShaderInstance* Scene::createShaderInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Shader asset instance." << endl;
+    }
+    ShaderInstance* retval = new ShaderInstance(definition,sceneObject->getTransform());
+    sceneObject->setShaderInstance(retval);
+    return retval;
+  }
+
+  LightInstance* Scene::createLightInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Light Asset instance." << endl;
+    }
+    LightInstance* retval = new LightInstance(definition,sceneObject->getTransform());
+    sceneObject->setLightInstance(retval);
+    return retval;
+  }
+
+  SpriteInstance* Scene::createSpriteInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Sprite Asset instance." << endl;
+    }
+    SpriteInstance* retval = new SpriteInstance(definition,sceneObject->getTransform());
+    sceneObject->setSpriteInstance(retval);
+    return retval;
+  }
+
+  FontInstance* Scene::createFontInstance(SceneObject *sceneObject, AssetDefinition* definition) {
+
+    if (DEBUG) {
+      cout << "Scene: Creating Font Asset instance." << endl;
+    }
+    FontInstance* retval = new FontInstance(definition,sceneObject->getTransform());
+    sceneObject->setFontInstance(retval);
+    return retval;
+  }
+
+  map<SceneObject*,LuaScriptInstance*>* Scene::getLuaScriptMap() {
+    return &mLuaScriptMap;
+  }
+
+  void Scene::insertIntoLuaScriptMap(SceneObject* sceneObject,LuaScriptInstance* script) {
+    mLuaScriptMap.insert(pair<SceneObject*,LuaScriptInstance*>(sceneObject,script));
+  }
+
+  void Scene::cleanupDeletedScripts() {
+    vector<SceneObject*> objects = getDeleteQueue();
+    for (vector<SceneObject*>::iterator it=objects.begin(); it!=objects.end(); it++) {
+      for (map<SceneObject*, LuaScriptInstance*>::iterator mapIt=mLuaScriptMap.begin(); mapIt!=mLuaScriptMap.end(); mapIt++) {
+        if (mapIt->first == (*it)) {
+          if (DEBUG) {
+            cout << "Scene: Removing From Lua Script Map " << (*it)->getUuid() << endl;
+          }
+          mLuaScriptMap.erase(mapIt);
+          break;
+        }
+      }
+    }
+  }
+
+  AssetDefinition* Scene::getAssetDefinitionByUuid(string uuid) {
+    AssetDefinition* retval = nullptr;
+    vector<AssetDefinition*>::iterator it;
+    for (it = mAssetDefinitions->begin(); it != mAssetDefinitions->end(); it++) {
+      if ((*it)->getUuid().compare(uuid) == 0) {
+        retval = (*it);
+        break;
+      }
+    }
+    return retval;
+  }
+
 
 } // End of Dream

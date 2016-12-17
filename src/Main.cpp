@@ -49,11 +49,12 @@ int main(int argc, const char** argv) {
     return 1;
   }
 
-  lua.setLuaScriptMap(engine->getLuaScriptMap());
   lua.init();
 
   int result = 0;
   while (result == 0) {
+
+    lua.setLuaScriptMap(engine->getLuaScriptMap());
 
     if (!lua.loadScriptsFromMap()) {
       cerr << "Main:Error:While loading lua scripts" << endl;

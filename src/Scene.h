@@ -20,12 +20,23 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <json.hpp>
-
-#include "SceneObject.h"
-#include "Components/Graphics/Camera.h"
 #include "String.h"
+#include "SceneObject.h"
 #include "Constants.h"
+#include "AssetInstance.h"
+#include "AssetDefinition.h"
+#include "Components/Graphics/Camera.h"
+#include "Components/Scripting/LuaScriptInstance.h"
+#include "Components/Audio/AudioInstance.h"
+#include "Components/Animation/AnimationInstance.h"
+#include "Components/Graphics/SpriteInstance.h"
+#include "Components/Graphics/ShaderInstance.h"
+#include "Components/Graphics/AssimpModelInstance.h"
+#include "Components/Graphics/LightInstance.h"
+#include "Components/Graphics/FontInstance.h"
+#include "Components/Physics/PhysicsObjectInstance.h"
 
 namespace Dream {
   using namespace std;
@@ -39,9 +50,11 @@ namespace Dream {
     Transform3D* mDefaultCameraTransform;
     float mCameraMovementSpeed;
     vector<float> mClearColour;
+    map<SceneObject*,LuaScriptInstance*> mLuaScriptMap;
+    string mProjectPath;
+    vector<AssetDefinition*>* mAssetDefinitions;
   public:
-    Scene();
-    Scene(nlohmann::json);
+    Scene(nlohmann::json, string, vector<AssetDefinition*>*);
     ~Scene();
     string getUuid();
     void setUuid(string);
@@ -76,6 +89,29 @@ namespace Dream {
     void clearDeleteQueue();
     void destroyDeleteQueue();
     void cleanupDeletedSceneObjects();
+
+    void cleanupScene();
+    bool createAllAssetInstances();
+    AssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
+    AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
+    AnimationInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
+    AudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
+    AssimpModelInstance* createModelInstance(SceneObject*, AssetDefinition*);
+    LuaScriptInstance* createScriptInstance(SceneObject*, AssetDefinition*);
+    ShaderInstance* createShaderInstance(SceneObject*, AssetDefinition*);
+    PhysicsObjectInstance* createPhysicsObjectInstance(SceneObject*, AssetDefinition*);
+    LightInstance* createLightInstance(SceneObject*, AssetDefinition*);
+    FontInstance* createFontInstance(SceneObject*, AssetDefinition*);
+    SpriteInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
+
+    void setProjectPath(string);
+
+    map<SceneObject*,LuaScriptInstance*> *getLuaScriptMap();
+    void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
+    bool createAssetInstancesForSceneObject(SceneObject*);
+    void cleanupDeletedScripts();
+
+    AssetDefinition* getAssetDefinitionByUuid(string);
 
   }; // End of Scene
 } // End of Dream

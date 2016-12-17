@@ -35,11 +35,7 @@ namespace Dream {
 
       class ShaderInstance : public AssetInstance {
       private:
-        string mVertexShaderSource;
-        GLuint      mVertexShader;
-        string mFragmentShaderSource;
-        GLuint      mFragmentShader;
-        GLuint      mShaderProgram;
+        GLuint mShaderProgram;
       public:
         ShaderInstance(AssetDefinition*,Transform3D*);
         ~ShaderInstance();

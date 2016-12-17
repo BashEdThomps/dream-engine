@@ -204,7 +204,7 @@ namespace Dream {
             // Flip Buffers
             SDL_GL_SwapWindow(mWindow);
             // Chill
-            SDL_Delay(10);
+            SDL_Delay(3);
         }
     }
 
