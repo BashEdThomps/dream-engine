@@ -15,8 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OpenGLGraphics_H
-#define OpenGLGraphics_H
+#ifndef GRAPHICSCOMPONENT_H
+#define GRAPHICSCOMPONENT_H
 
 #include "../../Constants.h"
 // Dream
@@ -29,7 +29,6 @@
 #include <iostream>
 #include <map>
 #include <vector>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
@@ -81,9 +80,11 @@ namespace Dream {
         vector<float> mClearColour;
     public:
         void setWindowWidth(int);
-        int  getWindowWidth();
         void setWindowHeight(int);
-        int  getWindowHeight();
+        int getWindowWidth();
+        int getWindowHeight();
+
+
         void setScreenName(string);
         string getScreenName();
 
@@ -113,8 +114,10 @@ namespace Dream {
 
         void setClearColour(vector<float>);
         void create2DVertexObjects();
+    private:
+        void updateWindowDimensions();
 
     }; // End of GraphicsComponent
 
 } // End of Dream
-#endif // End of OpenGLGraphics_H
+#endif // End of GRAPHICSCOMPONENT_H

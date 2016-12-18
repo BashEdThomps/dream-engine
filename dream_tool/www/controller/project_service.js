@@ -519,7 +519,6 @@ App.service('ProjectService',
             name:"Untitled Scene",
             notes: "",
             objects:[rootObject],
-            transformType: this.SCENE_OBJECT_TRANSFORM_ABSOLUTE_TYPE,
             camera: {
                 movementSpeed: 0,
                 translation: { x: 0, y: 0, z: 0 },
@@ -538,6 +537,7 @@ App.service('ProjectService',
             translation: { x: 0, y: 0, z: 0 },
             rotation: { x: 0, y: 0, z: 0 },
             scale: { x: 1, y: 1, z: 1 }
+            translationType: this.SCENE_OBJECT_TRANSFORM_ABSOLUTE_TYPE
         };
     };
 

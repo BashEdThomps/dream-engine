@@ -464,4 +464,25 @@ namespace Dream {
     }
     return nullptr;
   }
+
+  bool SceneObject::hasEvents() {
+    return mEventQueue.size() != 0;
+  }
+
+  void SceneObject::sendEvent(Event* event) {
+    mEventQueue.push_back(event);
+  }
+
+  vector<Event*>* SceneObject::getEventQueue() {
+    return &mEventQueue;
+  }
+
+  void SceneObject::cleanupEvents() {
+    vector<Event*>::iterator it;
+    for (it=mEventQueue.begin();it!=mEventQueue.end();it++) {
+      delete (*it);
+    }
+    mEventQueue.clear();
+  }
+
 } // End of Dream

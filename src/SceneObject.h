@@ -5,6 +5,7 @@
 #include <vector>
 #include "Transform3D.h"
 #include "Constants.h"
+#include "Event.h"
 #include "Components/Animation/AnimationInstance.h"
 #include "Components/Audio/AudioInstance.h"
 #include "Components/Graphics/AssimpModelInstance.h"
@@ -21,6 +22,7 @@ namespace Dream {
 
   class SceneObject {
   protected:
+    vector<Event*> mEventQueue;
     bool mLoaded;
     SceneObject* mParent;
     vector<SceneObject*> mChildren;
@@ -147,6 +149,11 @@ namespace Dream {
 
     bool getLoadedFlag();
     void setLoadedFlag(bool);
+
+    bool hasEvents();
+    void sendEvent(Event*);
+    vector<Event*>* getEventQueue();
+    void cleanupEvents();
 
   }; // End of SceneObject
 

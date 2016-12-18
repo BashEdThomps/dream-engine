@@ -15,9 +15,10 @@
  */
 
 #include <sstream>
-#include "LuaComponent.h"
-#include "SDL2/SDL_keycode.h"
+#include <SDL2/SDL_keycode.h>
 #include <luabind/adopt_policy.hpp>
+#include "LuaComponent.h"
+#include "../../Event.h"
 
 namespace Dream {
 
@@ -156,7 +157,11 @@ namespace Dream {
   }
 
   void LuaComponent::bindGraphicsComponent() {
-    // TODO
+    luabind::module(mState) [
+        luabind::class_<GraphicsComponent>("GraphicsComponent")
+            .def("getWindowWidth",&GraphicsComponent::getWindowWidth)
+            .def("getWindowHeight",&GraphicsComponent::getWindowHeight)
+    ];
   }
 
   void LuaComponent::bindPhysicsComponent() {
@@ -171,14 +176,12 @@ namespace Dream {
 
   void LuaComponent::bindScene() {
     luabind::module(mState) [
-        luabind::class_<Scene>("Scene")
-
+      luabind::class_<Scene>("Scene")
         .def("getCameraMovementSpeed",&Scene::getCameraMovementSpeed)
         .def("setCameraMovementSpeed",&Scene::setCameraMovementSpeed)
-
         .def("getSceneObjectByUuid",&Scene::getSceneObjectByUuid)
         .def("getSceneObjectByName",&Scene::getSceneObjectByName)
-        ];
+    ];
   }
 
   void LuaComponent::bindSceneObject() {
@@ -274,11 +277,11 @@ namespace Dream {
 
   void LuaComponent::bindTime() {
     luabind::module(mState) [
-        luabind::class_<Time>("Time")
+      luabind::class_<Time>("Time")
         .def("getCurrentTime",&Time::getCurrentTime)
         .def("getLastTime",&Time::getLastTime)
         .def("getTimeDelta",&Time::getTimeDelta)
-        ];
+    ];
   }
 
   void LuaComponent::bindSDL() {
@@ -287,7 +290,7 @@ namespace Dream {
 
   void LuaComponent::bindSDL_Event() {
     luabind::module(mState) [
-        // SDL_Event
+        // SDL_Event ===========================================================
         luabind::class_<SDL_Event>("Event")
             .def_readonly("type", &SDL_Event::type)
             // Keyboard
@@ -299,7 +302,7 @@ namespace Dream {
             .def_readonly("jbutton", &SDL_Event::jbutton)
             .def_readonly("jhat", &SDL_Event::jhat)
             .def_readonly("jaxis", &SDL_Event::jaxis)
-       // SDL_EventType
+       // SDL_EventType ========================================================
         .enum_("EventType") [
             luabind::value("KEYUP",SDL_EventType::SDL_KEYUP),
             luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN),
@@ -312,7 +315,7 @@ namespace Dream {
             luabind::value("CONTROLLER_BUTTONDOWN",SDL_CONTROLLERBUTTONDOWN),
             luabind::value("CONTROLLER_BUTTONUP",SDL_CONTROLLERBUTTONUP)
         ]
-        // SDLK_* Definitions
+        // SDLK_* Definitions ==================================================
         .enum_("Key") [
             luabind::value("KEY_RETURN",SDLK_RETURN),
             luabind::value("KEY_SPACE",SDLK_SPACE),
@@ -321,36 +324,36 @@ namespace Dream {
             luabind::value("KEY_UP",SDLK_UP),
             luabind::value("KEY_DOWN",SDLK_DOWN)
         ],
-        // SDL_ControllerButtonEvent
+        // SDL_ControllerButtonEvent ===========================================
         luabind::class_<SDL_ControllerButtonEvent>("ControllerButtonEvent")
             .def_readonly("type",&SDL_ControllerButtonEvent::type)
             .def_readonly("timestamp",&SDL_ControllerButtonEvent::timestamp)
             .def_readonly("which",&SDL_ControllerButtonEvent::which)
             .def_readonly("button",&SDL_ControllerButtonEvent::button)
             .def_readonly("state",&SDL_ControllerButtonEvent::state),
-        // SDL_KeyboardEvent
+        // SDL_KeyboardEvent ===================================================
         luabind::class_<SDL_KeyboardEvent>("KeyboardEvent")
             .def_readonly("keysym",&SDL_KeyboardEvent::keysym),
-        // SDL_Keysym
+        // SDL_Keysym ==========================================================
         luabind::class_<SDL_Keysym>("Keysym")
             .def_readonly("sym",&SDL_Keysym::sym),
-        // SDL_Keycode
+        // SDL_Keycode =========================================================
         luabind::class_<SDL_Keycode>("Keycode"),
-        // SDL_JoyButtonEvent
+        // SDL_JoyButtonEvent ==================================================
         luabind::class_<SDL_JoyButtonEvent>("JoyButtonEvent")
             .def_readonly("type",&SDL_JoyButtonEvent::type)
             .def_readonly("timestamp",&SDL_JoyButtonEvent::timestamp)
             .def_readonly("which",&SDL_JoyButtonEvent::which)
             .def_readonly("button",&SDL_JoyButtonEvent::button)
             .def_readonly("state",&SDL_JoyButtonEvent::state),
-        // SDL_JoyHatEvent
+        // SDL_JoyHatEvent =====================================================
         luabind::class_<SDL_JoyHatEvent>("JoyHatEvent")
             .def_readonly("type",&SDL_JoyHatEvent::type)
             .def_readonly("timestamp",&SDL_JoyHatEvent::timestamp)
             .def_readonly("which",&SDL_JoyHatEvent::which)
             .def_readonly("hat",&SDL_JoyHatEvent::hat)
             .def_readonly("value",&SDL_JoyHatEvent::value),
-        // SDL_JoyAxisEvent
+        // SDL_JoyAxisEvent ====================================================
         luabind::class_<SDL_JoyAxisEvent>("JoyAxisEvent")
             .def_readonly("type",&SDL_JoyAxisEvent::type)
             .def_readonly("timestamp",&SDL_JoyAxisEvent::timestamp)
@@ -377,12 +380,11 @@ namespace Dream {
         .def("setText",&FontInstance::setText)
         .def("getText",&FontInstance::getText)
         ];
-
   }
 
   void LuaComponent::bindAudioInstance() {
     luabind::module(mState) [
-        luabind::class_<AudioInstance>("AudioInstance")
+      luabind::class_<AudioInstance>("AudioInstance")
         .def("play",&AudioInstance::play)
         .def("pause",&AudioInstance::pause)
         .def("stop",&AudioInstance::stop)
@@ -390,11 +392,11 @@ namespace Dream {
 
         luabind::class_<AudioStatus>("AudioStatus")
         .enum_("AudioStatus") [
-        luabind::value("PLAYING", AudioStatus::PLAYING),
-        luabind::value("PAUSED",  AudioStatus::PAUSED),
-        luabind::value("STOPPED", AudioStatus::STOPPED)
+            luabind::value("PLAYING", AudioStatus::PLAYING),
+            luabind::value("PAUSED",  AudioStatus::PAUSED),
+            luabind::value("STOPPED", AudioStatus::STOPPED)
         ]
-        ];
+    ];
   }
 
   void LuaComponent::setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>* scriptMap) {
@@ -427,7 +429,7 @@ namespace Dream {
           break;
       }
       // put a separator
-      cout << "  ";
+      cout << " ";
     }
     // end the listing
     cout << endl;
@@ -449,6 +451,11 @@ namespace Dream {
           return false;
         }
       }
+      if (key->hasEvents()) {
+        if (!executeScriptEventHandler(key,value)) {
+          return false;
+        }
+      }
     }
     return true;
   }
@@ -459,13 +466,13 @@ namespace Dream {
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {
-      luabind::object funq = table[LUA_SCRIPT_UPDATE_FUNCTION];
+      luabind::object funq = table[LUA_SCRIPT_ON_UPDATE_FUNCTION];
       luabind::call_function<void>(funq,sceneObject);
     } catch (luabind::error e) {
 
       if (DEBUG) {
-        cerr << "LuaComponent: update exception:" << endl
-             << "\t" << e.what() << endl;
+        cerr << "LuaComponent: onUpdate exception:" << endl
+             << e.what() << endl;
       }
       return false;
     }
@@ -478,13 +485,36 @@ namespace Dream {
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
     try {
-      luabind::object funq = table[LUA_SCRIPT_HANDLE_INPUT_FUNCTION];
+      luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
       luabind::call_function<void>(funq,sceneObject,mEvent);
     } catch (luabind::error &e) {
 
       if (DEBUG) {
-        cerr << "LuaComponent: handleInput exception:" << endl
-             << "\t" << e.what() << endl;
+        cerr << "LuaComponent: onInput exception:" << endl
+             << e.what() << endl;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  bool LuaComponent::executeScriptEventHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
+    string id = sceneObject->getUuid();
+    luabind::object reg = luabind::registry(mState);
+    luabind::object table = reg[id];
+    try {
+      luabind::object funq = table[LUA_SCRIPT_ON_EVENT_FUNCTION];
+      vector<Event*>* events = sceneObject->getEventQueue();
+      vector<Event*>::iterator eventIt;
+      for (eventIt=events->begin();eventIt!=events->end(); eventIt++) {
+        luabind::call_function<void>(funq,sceneObject,(*eventIt));
+      }
+      sceneObject->cleanupEvents();
+    } catch (luabind::error &e) {
+
+      if (DEBUG) {
+        cerr << "LuaComponent: onEvent exception:" << endl
+             << e.what() << endl;
       }
       return false;
     }

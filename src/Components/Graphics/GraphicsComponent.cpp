@@ -432,16 +432,8 @@ namespace Dream {
         mWindowWidth = width;
     }
 
-    int  GraphicsComponent::getWindowWidth() {
-        return mWindowWidth;
-    }
-
     void GraphicsComponent::setWindowHeight(int height) {
         mWindowHeight = height;
-    }
-
-    int  GraphicsComponent::getWindowHeight() {
-        return mWindowHeight;
     }
 
     void GraphicsComponent::setScreenName(string name) {
@@ -458,5 +450,21 @@ namespace Dream {
 
     SDL_Event GraphicsComponent::getSDL_Event() {
         return mEvent;
+    }
+
+    int GraphicsComponent::getWindowWidth() {
+      updateWindowDimensions();
+      return mWindowWidth;
+    }
+
+    int GraphicsComponent::getWindowHeight() {
+      updateWindowDimensions();
+      return mWindowHeight;
+    }
+
+    void GraphicsComponent::updateWindowDimensions() {
+      if (mWindow != nullptr) {
+        SDL_GetWindowSize(mWindow, &mWindowWidth, &mWindowHeight);
+      }
     }
 } // End of Dream

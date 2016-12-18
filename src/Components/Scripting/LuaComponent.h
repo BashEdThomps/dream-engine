@@ -29,8 +29,9 @@ extern "C" {
 
 #include "../../DreamEngine.h"
 
-#define LUA_SCRIPT_UPDATE_FUNCTION "update"
-#define LUA_SCRIPT_HANDLE_INPUT_FUNCTION "handleInput"
+#define LUA_SCRIPT_ON_UPDATE_FUNCTION "onUpdate"
+#define LUA_SCRIPT_ON_INPUT_FUNCTION "onInput"
+#define LUA_SCRIPT_ON_EVENT_FUNCTION "onEvent"
 
 namespace Dream {
   using namespace std;
@@ -67,27 +68,26 @@ namespace Dream {
     void bindSDL();
     void bindSDL_Event();
 
-    bool init();
-
-    bool loadScriptsFromMap();
-    bool loadScript(SceneObject*, LuaScriptInstance*);
-    void stackDump();
-    bool update();
-    bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);
-    bool executeScriptKeyHandler(SceneObject*, LuaScriptInstance*);
-    void setSDL_Event(SDL_Event);
     void bindAssetClasses();
     void bindAudioInstance();
-    /*
+    void bindFontInstance();
     void bindAnimationInstance();
     void bindAssimpModelInstance();
     void bindLightInstance();
     void bindShaderInstance();
     void bindSpriteInstance();
     void bindPhysicsObjectInstane();
-    */
-    void bindFontInstance();
 
+    bool init();
+    bool loadScriptsFromMap();
+    bool loadScript(SceneObject*, LuaScriptInstance*);
+    bool update();
+    void setSDL_Event(SDL_Event);
+    void stackDump();
+
+    bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);
+    bool executeScriptKeyHandler(SceneObject*, LuaScriptInstance*);
+    bool executeScriptEventHandler(SceneObject*, LuaScriptInstance*);
 
   }; // End of LuaComponent
 } // End of Dream

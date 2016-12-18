@@ -1,13 +1,14 @@
---[[
-    Default Lua Script.
---]]
+-- Template Lua Script
 
--- This function will run every engine cycle
-function update(sceneObject) 
-    print("Update Function.")
+function onUpdate(sceneObject)
+  -- Update Here
 end
 
--- This funciton is triggered only if sceneObject.hasFocus
-function handleInput(sceneObject, event)
-    print("Input Handler Function.")
+function onInput(sceneObject, event)
+  -- Handle Input Events Here
+  -- This function is triggered only if sceneObject.hasFocus
+end
+
+function onEvent(sceneObject, event)
+  -- Handle Dream Events Here
 end
