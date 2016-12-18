@@ -1,5 +1,6 @@
 
 #include "DreamEngine.h"
+#include "JoystickManager.h"
 
 namespace Dream {
 
@@ -26,6 +27,7 @@ namespace Dream {
 
   DreamEngine::~DreamEngine() {
     destroyComponents();
+    JoystickManager::destroy();
   }
 
   Project* DreamEngine::getProject() {
@@ -109,7 +111,6 @@ namespace Dream {
       cerr << "Dream: Cannot load scene, null!" << endl;
       return false;
     }
-
     // Load the new scene
     if (DEBUG) {
       cout << "Dream: Loading Scene " << scene->getName() << endl;
@@ -127,10 +128,11 @@ namespace Dream {
   }
 
   bool DreamEngine::initSDL() {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0){
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER ) != 0){
       cerr << "SDL_Init Error: " << SDL_GetError() << endl;
       return false;
     }
+    JoystickManager::init();
     return true;
   }
 

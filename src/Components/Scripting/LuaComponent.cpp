@@ -289,50 +289,74 @@ namespace Dream {
     luabind::module(mState) [
         // SDL_Event
         luabind::class_<SDL_Event>("Event")
-        .def_readonly("type", &SDL_Event::type)
-        .def_readonly("key", &SDL_Event::key)
+            .def_readonly("type", &SDL_Event::type)
+            // Keyboard
+            .def_readonly("key", &SDL_Event::key)
+            // Controller
+            .def_readonly("cbutton", &SDL_Event::cbutton)
+            .def_readonly("caxis", &SDL_Event::caxis)
+            // Joystick
+            .def_readonly("jbutton", &SDL_Event::jbutton)
+            .def_readonly("jhat", &SDL_Event::jhat)
+            .def_readonly("jaxis", &SDL_Event::jaxis)
+       // SDL_EventType
         .enum_("EventType") [
-        luabind::value("KEYUP",SDL_EventType::SDL_KEYUP),
-        luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN)
-        ]
-        .enum_("Key") [
-        luabind::value("KEY_RETURN",SDLK_RETURN),
-        luabind::value("KEY_SPACE",SDLK_SPACE),
-        luabind::value("KEY_LEFT",SDLK_LEFT),
-        luabind::value("KEY_RIGHT",SDLK_RIGHT),
-        luabind::value("KEY_UP",SDLK_UP),
-        luabind::value("KEY_DOWN",SDLK_DOWN)
+            luabind::value("KEYUP",SDL_EventType::SDL_KEYUP),
+            luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN),
 
+            luabind::value("JOY_BUTTONDOWN",SDL_JOYBUTTONDOWN),
+            luabind::value("JOY_BUTTONUP",SDL_JOYBUTTONUP),
+            luabind::value("JOY_HATMOTION",SDL_JOYHATMOTION),
+            luabind::value("JOY_AXISMOTION",SDL_JOYAXISMOTION),
+
+            luabind::value("CONTROLLER_BUTTONDOWN",SDL_CONTROLLERBUTTONDOWN),
+            luabind::value("CONTROLLER_BUTTONUP",SDL_CONTROLLERBUTTONUP)
+        ]
+        // SDLK_* Definitions
+        .enum_("Key") [
+            luabind::value("KEY_RETURN",SDLK_RETURN),
+            luabind::value("KEY_SPACE",SDLK_SPACE),
+            luabind::value("KEY_LEFT",SDLK_LEFT),
+            luabind::value("KEY_RIGHT",SDLK_RIGHT),
+            luabind::value("KEY_UP",SDLK_UP),
+            luabind::value("KEY_DOWN",SDLK_DOWN)
         ],
+        // SDL_ControllerButtonEvent
+        luabind::class_<SDL_ControllerButtonEvent>("ControllerButtonEvent")
+            .def_readonly("type",&SDL_ControllerButtonEvent::type)
+            .def_readonly("timestamp",&SDL_ControllerButtonEvent::timestamp)
+            .def_readonly("which",&SDL_ControllerButtonEvent::which)
+            .def_readonly("button",&SDL_ControllerButtonEvent::button)
+            .def_readonly("state",&SDL_ControllerButtonEvent::state),
         // SDL_KeyboardEvent
         luabind::class_<SDL_KeyboardEvent>("KeyboardEvent")
-        .def_readonly("keysym",&SDL_KeyboardEvent::keysym),
+            .def_readonly("keysym",&SDL_KeyboardEvent::keysym),
         // SDL_Keysym
         luabind::class_<SDL_Keysym>("Keysym")
-        .def_readonly("sym",&SDL_Keysym::sym),
+            .def_readonly("sym",&SDL_Keysym::sym),
         // SDL_Keycode
         luabind::class_<SDL_Keycode>("Keycode"),
         // SDL_JoyButtonEvent
         luabind::class_<SDL_JoyButtonEvent>("JoyButtonEvent")
-        .def_readonly("type",&SDL_JoyButtonEvent::type)
-        .def_readonly("timestamp",&SDL_JoyButtonEvent::timestamp)
-        .def_readonly("which",&SDL_JoyButtonEvent::which)
-        .def_readonly("button",&SDL_JoyButtonEvent::button)
-        .def_readonly("state",&SDL_JoyButtonEvent::state),
+            .def_readonly("type",&SDL_JoyButtonEvent::type)
+            .def_readonly("timestamp",&SDL_JoyButtonEvent::timestamp)
+            .def_readonly("which",&SDL_JoyButtonEvent::which)
+            .def_readonly("button",&SDL_JoyButtonEvent::button)
+            .def_readonly("state",&SDL_JoyButtonEvent::state),
         // SDL_JoyHatEvent
         luabind::class_<SDL_JoyHatEvent>("JoyHatEvent")
-        .def_readonly("type",&SDL_JoyHatEvent::type)
-        .def_readonly("timestamp",&SDL_JoyHatEvent::timestamp)
-        .def_readonly("which",&SDL_JoyHatEvent::which)
-        .def_readonly("hat",&SDL_JoyHatEvent::hat)
-        .def_readonly("value",&SDL_JoyHatEvent::value),
-        // SDL_JoyHatEvent
+            .def_readonly("type",&SDL_JoyHatEvent::type)
+            .def_readonly("timestamp",&SDL_JoyHatEvent::timestamp)
+            .def_readonly("which",&SDL_JoyHatEvent::which)
+            .def_readonly("hat",&SDL_JoyHatEvent::hat)
+            .def_readonly("value",&SDL_JoyHatEvent::value),
+        // SDL_JoyAxisEvent
         luabind::class_<SDL_JoyAxisEvent>("JoyAxisEvent")
-        .def_readonly("type",&SDL_JoyAxisEvent::type)
-        .def_readonly("timestamp",&SDL_JoyAxisEvent::timestamp)
-        .def_readonly("which",&SDL_JoyAxisEvent::which)
-        .def_readonly("axis",&SDL_JoyAxisEvent::axis)
-        .def_readonly("value",&SDL_JoyAxisEvent::value)
+            .def_readonly("type",&SDL_JoyAxisEvent::type)
+            .def_readonly("timestamp",&SDL_JoyAxisEvent::timestamp)
+            .def_readonly("which",&SDL_JoyAxisEvent::which)
+            .def_readonly("axis",&SDL_JoyAxisEvent::axis)
+            .def_readonly("value",&SDL_JoyAxisEvent::value)
         ];
   }
 
@@ -362,8 +386,7 @@ namespace Dream {
         .def("play",&AudioInstance::play)
         .def("pause",&AudioInstance::pause)
         .def("stop",&AudioInstance::stop)
-        .def("getStatus",&AudioInstance::getStatus)
-        .def("setStatus",&AudioInstance::setStatus),
+        .def("getStatus",&AudioInstance::getStatus),
 
         luabind::class_<AudioStatus>("AudioStatus")
         .enum_("AudioStatus") [

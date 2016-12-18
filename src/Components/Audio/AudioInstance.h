@@ -12,9 +12,9 @@ namespace Dream {
     class AudioInstance : public AssetInstance {
     protected:
       bool mLooping;
-      AudioStatus mStatus;
       Mix_Chunk *mChunk;
       Mix_Music *mMusic;
+      int mChannel;
     public:
       AudioInstance(AssetDefinition*,Transform3D*);
       ~AudioInstance();
@@ -23,7 +23,6 @@ namespace Dream {
       void setLooping(bool);
       bool isLooping();
 
-      void setStatus(AudioStatus);
       AudioStatus getStatus();
 
       bool play();

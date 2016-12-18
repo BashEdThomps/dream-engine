@@ -74,6 +74,7 @@ int main(int argc, const char** argv) {
       result = 1;
       break;
     }
+    cout << flush;
   }
   return result;
 }
