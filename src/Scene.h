@@ -110,6 +110,7 @@ namespace Dream {
     void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
     bool createAssetInstancesForSceneObject(SceneObject*);
     void cleanupDeletedScripts();
+    void removeFromLuaScriptMap(SceneObject*);
 
     AssetDefinition* getAssetDefinitionByUuid(string);
 

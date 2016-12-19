@@ -80,30 +80,33 @@ namespace Dream {
   }
 
   void PhysicsComponent::update(Dream::Scene* scene) {
-      btScalar stepValue = mTime->getTimeDelta();
-      mDynamicsWorld->stepSimulation(stepValue);
-      mDynamicsWorld->debugDrawWorld();
+    populatePhysicsWorld(scene->getScenegraphVector());
+    btScalar stepValue = mTime->getTimeDelta();
+    mDynamicsWorld->stepSimulation(stepValue);
+    mDynamicsWorld->debugDrawWorld();
   }
 
   void PhysicsComponent::addRigidBody(btRigidBody *rigidBody) {
       if (DEBUG) {
-          cout << "BulletPhysics: Adding Rigid Body to Dynamics World" << endl;
+          cout << "PhysicsComponent: Adding Rigid Body to Dynamics World" << endl;
       }
-
       mDynamicsWorld->addRigidBody(rigidBody);
       if (DEBUG) {
-
-          cout << "BulletPhysicsWorld has "
-               << mDynamicsWorld->getNumCollisionObjects()
-               << " rigid bodies."
-               << endl;
-
+        cout << "PhysicsComponent: World has " << mDynamicsWorld->getNumCollisionObjects()
+             << " rigid bodies." << endl;
       }
+  }
+
+  void PhysicsComponent::removePhysicsObjectInstance(PhysicsObjectInstance* obj) {
+    if (obj->getInPhysicsWorld()) {
+      removeRigidBody(obj->getRigidBody());
+      obj->setInPhysicsWorld(false);
+    }
   }
 
   void PhysicsComponent::removeRigidBody(btRigidBody *rigidBody) {
       if (DEBUG) {
-          cout << "BulletPhysics: Removing Rigid Body from Dynamics World" << endl;
+          cout << "PhysicsComponent: Removing Rigid Body from Dynamics World" << endl;
       }
       mDynamicsWorld->removeRigidBody(rigidBody);
   }
@@ -112,19 +115,20 @@ namespace Dream {
       addRigidBody(physicsObjejct->getRigidBody());
   }
 
-  void PhysicsComponent::populatePhysicsWorld(vector<SceneObject*> soWithPhysicsObjects) {
-      if (DEBUG) {
-          cout << "PhysicsComponent: Populating Physics World" << endl;
-      }
+  void PhysicsComponent::populatePhysicsWorld(vector<SceneObject*> soVec) {
       vector<SceneObject*>::iterator soIter;
-      for (soIter = soWithPhysicsObjects.begin(); soIter != soWithPhysicsObjects.end(); soIter++) {
-          if (DEBUG) {
-              cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUuid()
-                   << " to PhysicsComponent World"
-                   << endl;
+      for (soIter = soVec.begin(); soIter != soVec.end(); soIter++) {
+          if ((*soIter)->hasPhysicsObjectInstance()) {
+              PhysicsObjectInstance* physicsObject = (*soIter)->getPhysicsObjectInstance();
+              if (!physicsObject->getInPhysicsWorld()) {
+                if (DEBUG) {
+                  cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUuid()
+                       << " to Physics World" << endl;
+                }
+                addPhysicsObjectInstance(physicsObject);
+                physicsObject->setInPhysicsWorld(true);
+              }
           }
-          PhysicsObjectInstance* physicsObject = (*soIter)->getPhysicsObjectInstance();
-          addPhysicsObjectInstance(physicsObject);
       }
   }
 

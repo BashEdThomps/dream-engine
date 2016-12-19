@@ -485,4 +485,7 @@ namespace Dream {
     mEventQueue.clear();
   }
 
+  bool SceneObject::hasPhysicsObjectInstance() {
+    return mPhysicsObjectInstance != nullptr;
+  }
 } // End of Dream

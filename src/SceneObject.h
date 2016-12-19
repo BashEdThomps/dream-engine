@@ -118,6 +118,7 @@ namespace Dream {
 
     void setPhysicsObjectInstance(PhysicsObjectInstance*);
     PhysicsObjectInstance* getPhysicsObjectInstance();
+    bool hasPhysicsObjectInstance();
 
     void setLightInstance(LightInstance*);
     LightInstance* getLightInstance();

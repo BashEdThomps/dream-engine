@@ -1,5 +1,5 @@
 /*
- * PhysicsInterface
+ * PhysicsComponent
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "../../Constants.h"
 
 namespace Dream {
+
       class PhysicsComponent : public ComponentInterface {
       protected:
         GLDebugDrawer *mDebugDrawer;
@@ -48,8 +49,9 @@ namespace Dream {
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
-
+        void removePhysicsObjectInstance(PhysicsObjectInstance*);
       };// End of PhysicsComponent
+
 } // End of Dream
 
 #endif // End of PHYSICSCOMPONENT_H

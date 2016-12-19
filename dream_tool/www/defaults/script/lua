@@ -1,5 +1,9 @@
 -- Template Lua Script
 
+function onInit(sceneObject)
+  -- Init Here
+end
+
 function onUpdate(sceneObject)
   -- Update Here
 end

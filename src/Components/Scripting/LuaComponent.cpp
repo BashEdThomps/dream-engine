@@ -100,7 +100,7 @@ namespace Dream {
         cout << "LuaComponent: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
       }
       luaScript->setLoadedFlag(true);
-
+      executeScriptInit(sceneObject,luaScript);
     }
 
     return true;
@@ -108,7 +108,6 @@ namespace Dream {
 
   bool LuaComponent::loadScript(SceneObject* sceneObject, LuaScriptInstance* scriptInstance) {
     string id = sceneObject->getUuid();
-
     if (DEBUG) {
       cout << "LuaComponent: loadScript called for " << id << endl;
     }
@@ -135,10 +134,11 @@ namespace Dream {
         .def("getActiveScene",&DreamEngine::getActiveScene)
         .def("getTime",&DreamEngine::getTime)
         .def("loadSceneByUuid",&DreamEngine::loadSceneByUuid)
+        .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
         .scope [
-        luabind::def("getInstance",&DreamEngine::getInstance)
+            luabind::def("getInstance",&DreamEngine::getInstance)
         ]
-        ];
+    ];
   }
 
   void LuaComponent::bindComponents() {
@@ -251,6 +251,7 @@ namespace Dream {
         .def("translateByX",&Transform3D::translateByX)
         .def("translateByY",&Transform3D::translateByY)
         .def("translateByZ",&Transform3D::translateByZ)
+        .def("setTranslation",(void(Transform3D::*)(float,float,float)) &Transform3D::setTranslation)
         // Rotation =============================================================
         .def("getRotationX",&Transform3D::getRotationX)
         .def("getRotationY",&Transform3D::getRotationY)
@@ -261,6 +262,7 @@ namespace Dream {
         .def("rotateByX",&Transform3D::rotateByX)
         .def("rotateByY",&Transform3D::rotateByY)
         .def("rotateByZ",&Transform3D::rotateByZ)
+        .def("setRotation",(void(Transform3D::*)(float,float,float)) &Transform3D::setRotation)
         // Scale ================================================================
         .def("getScaleX",&Transform3D::getScaleX)
         .def("getScaleY",&Transform3D::getScaleY)
@@ -271,8 +273,8 @@ namespace Dream {
         .def("scaleByX",&Transform3D::scaleByX)
         .def("scaleByY",&Transform3D::scaleByY)
         .def("scaleByZ",&Transform3D::scaleByZ)
-
-        ];
+        .def("setScale",(void(Transform3D::*)(float,float,float)) &Transform3D::setScale)
+    ];
   }
 
   void LuaComponent::bindTime() {
@@ -469,10 +471,24 @@ namespace Dream {
       luabind::object funq = table[LUA_SCRIPT_ON_UPDATE_FUNCTION];
       luabind::call_function<void>(funq,sceneObject);
     } catch (luabind::error e) {
-
       if (DEBUG) {
-        cerr << "LuaComponent: onUpdate exception:" << endl
-             << e.what() << endl;
+        cerr << "LuaComponent: onUpdate exception:" << endl << e.what() << endl;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  bool LuaComponent::executeScriptInit(SceneObject* sceneObject, LuaScriptInstance* script) {
+    string id = sceneObject->getUuid();
+    luabind::object reg = luabind::registry(mState);
+    luabind::object table = reg[id];
+    try {
+      luabind::object funq = table[LUA_SCRIPT_ON_INIT_FUNCTION];
+      luabind::call_function<void>(funq,sceneObject);
+    } catch (luabind::error &e) {
+      if (DEBUG) {
+        cerr << "LuaComponent: onInit exception:" << endl << e.what() << endl;
       }
       return false;
     }
@@ -488,10 +504,8 @@ namespace Dream {
       luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
       luabind::call_function<void>(funq,sceneObject,mEvent);
     } catch (luabind::error &e) {
-
       if (DEBUG) {
-        cerr << "LuaComponent: onInput exception:" << endl
-             << e.what() << endl;
+        cerr << "LuaComponent: onInput exception:" << endl << e.what() << endl;
       }
       return false;
     }
@@ -511,10 +525,8 @@ namespace Dream {
       }
       sceneObject->cleanupEvents();
     } catch (luabind::error &e) {
-
       if (DEBUG) {
-        cerr << "LuaComponent: onEvent exception:" << endl
-             << e.what() << endl;
+        cerr << "LuaComponent: onEvent exception:" << endl << e.what() << endl;
       }
       return false;
     }

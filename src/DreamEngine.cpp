@@ -213,7 +213,7 @@ namespace Dream {
   bool DreamEngine::initAudioComponent() {
     mAudioComponent = new AudioComponent();
     if (!mAudioComponent->init()) {
-      cerr << "Dream: Unable to initialise OpenALAudio." << endl;
+      cerr << "Dream: Unable to initialise AudioComponent." << endl;
       return false;
     }
     return mAudioComponent != nullptr;
@@ -223,7 +223,7 @@ namespace Dream {
     mPhysicsComponent = new PhysicsComponent();
     mPhysicsComponent->setTime(mTime);
     if (!mPhysicsComponent->init()){
-      cerr << "ComponentManager: Unable to initialise BulletPhysics." << endl;
+      cerr << "ComponentManager: Unable to initialise PhysicsComponent." << endl;
       return false;
     }
     return mPhysicsComponent != nullptr;
@@ -262,6 +262,7 @@ namespace Dream {
 
   void DreamEngine::updateComponents() {
     mDone = mGraphicsComponent->isWindowShouldCloseFlagSet();
+    mPhysicsComponent->update(mActiveScene);
     mGraphicsComponent->update(mActiveScene);
     mEvent = mGraphicsComponent->getSDL_Event();
   }
@@ -293,4 +294,5 @@ namespace Dream {
   SDL_Event DreamEngine::getSDL_Event() {
     return mEvent;
   }
+
 } // End of Dream

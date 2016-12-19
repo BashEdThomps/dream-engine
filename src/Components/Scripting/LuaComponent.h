@@ -29,6 +29,7 @@ extern "C" {
 
 #include "../../DreamEngine.h"
 
+#define LUA_SCRIPT_ON_INIT_FUNCTION "onInit"
 #define LUA_SCRIPT_ON_UPDATE_FUNCTION "onUpdate"
 #define LUA_SCRIPT_ON_INPUT_FUNCTION "onInput"
 #define LUA_SCRIPT_ON_EVENT_FUNCTION "onEvent"
@@ -85,6 +86,7 @@ namespace Dream {
     void setSDL_Event(SDL_Event);
     void stackDump();
 
+    bool executeScriptInit(SceneObject*, LuaScriptInstance*);
     bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);
     bool executeScriptKeyHandler(SceneObject*, LuaScriptInstance*);
     bool executeScriptEventHandler(SceneObject*, LuaScriptInstance*);

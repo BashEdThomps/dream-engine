@@ -13,9 +13,9 @@ namespace Dream {
   void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor) {
     glBegin(GL_LINES);
     glColor3f(fromColor.getX(), fromColor.getY(), fromColor.getZ());
-    glVertex3d(from.getX(), from.getY(), from.getZ());
+    glVertex3f(from.getX(), from.getY(), from.getZ());
     glColor3f(toColor.getX(), toColor.getY(), toColor.getZ());
-    glVertex3d(to.getX(), to.getY(), to.getZ());
+    glVertex3f(to.getX(), to.getY(), to.getZ());
     glEnd();
   }
 

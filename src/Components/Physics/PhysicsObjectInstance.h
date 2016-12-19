@@ -35,23 +35,26 @@
 #define COLLISION_SHAPE_COMPOUND "btCompoundShape"
 
 namespace Dream {
-    class PhysicsObjectInstance : public AssetInstance {
-    private:
-        btCollisionShape *mCollisionShape;
-        btDefaultMotionState *mMotionState;
-        btRigidBody *mRigidBody;
-        btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
-    public:
-        PhysicsObjectInstance(AssetDefinition*,Transform3D*);
-        ~PhysicsObjectInstance();
-        bool load(string);
-        bool createCollisionShape();
-        btCollisionShape* getCollisionShape();
-        btRigidBody* getRigidBody();
-        void getWorldTransform(btTransform&);
-    protected:
-        void loadExtraAttributes(nlohmann::json);
-    }; // End of PhysicsObjectInstance
+  class PhysicsObjectInstance : public AssetInstance {
+  private:
+      btCollisionShape *mCollisionShape;
+      btDefaultMotionState *mMotionState;
+      btRigidBody *mRigidBody;
+      btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
+      bool mInPhysicsWorld;
+  public:
+      PhysicsObjectInstance(AssetDefinition*,Transform3D*);
+      ~PhysicsObjectInstance();
+      bool load(string);
+      bool createCollisionShape();
+      btCollisionShape* getCollisionShape();
+      btRigidBody* getRigidBody();
+      void getWorldTransform(btTransform&);
+      void setInPhysicsWorld(bool);
+      bool getInPhysicsWorld();
+  protected:
+      void loadExtraAttributes(nlohmann::json);
+  }; // End of PhysicsObjectInstance
 } // End of Dream
 
 #endif /* PhysicsObjectInstance_h */

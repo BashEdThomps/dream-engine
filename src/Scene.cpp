@@ -132,110 +132,109 @@ namespace Dream {
   }
 
   size_t Scene::getNumberOfSceneObjects() {
-      return mScenegraphVector.size();
+    return mScenegraphVector.size();
   }
 
   void Scene::showStatus() {
-
-      if (DEBUG) {
-          cout << "Scene:" << endl;
-          cout << "            UUID: " << mUuid << endl;
-          cout << "            Name: " << mName << endl;
-          cout << "Camera Transform: " << endl;
-          cout << "     Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << endl;
-          cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << endl;
-          cout << "   Scene Objects: " << getNumberOfSceneObjects() << endl;
-          showScenegraph();
-      }
+    if (DEBUG) {
+      cout << "Scene:" << endl;
+      cout << "            UUID: " << mUuid << endl;
+      cout << "            Name: " << mName << endl;
+      cout << "Camera Transform: " << endl;
+      cout << "     Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << endl;
+      cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << endl;
+      cout << "   Scene Objects: " << getNumberOfSceneObjects() << endl;
+      showScenegraph();
+    }
   }
 
   void Scene::showScenegraph() {
-      if (mRootSceneObject == nullptr) {
-          if (DEBUG) {
-              cout << "Scenegraph is empty!" << endl;
-          }
-          return;
+    if (mRootSceneObject == nullptr) {
+      if (DEBUG) {
+        cout << "Scenegraph is empty!" << endl;
       }
-      if (mScenegraphVector.empty()) {
-          generateScenegraphVector();
+      return;
+    }
+    if (mScenegraphVector.empty()) {
+      generateScenegraphVector();
+    }
+    for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
+      if (DEBUG) {
+        cout << (*it)->getNameUuidString() << endl;
       }
-      for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++) {
-          if (DEBUG) {
-              cout << (*it)->getNameUuidString() << endl;
-          }
-      }
+    }
   }
 
   void Scene::setRootSceneObject(SceneObject* root) {
-      mRootSceneObject = root;
+    mRootSceneObject = root;
   }
 
   SceneObject* Scene::getRootSceneObject() {
-      return mRootSceneObject;
+    return mRootSceneObject;
   }
 
   void Scene::generateScenegraphVector() {
-      mScenegraphVector.clear();
-      if (mRootSceneObject != nullptr) {
-          mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
-      }
+    mScenegraphVector.clear();
+    if (mRootSceneObject != nullptr) {
+      mRootSceneObject->getChildrenVectorDeep(&mScenegraphVector);
+    }
   }
 
   vector<SceneObject*> Scene::getScenegraphVector() {
-      return mScenegraphVector;
+    return mScenegraphVector;
   }
 
   vector<float> Scene::getDefaultCameraTranslation() {
-      return mDefaultCameraTransform->getTranslation();
+    return mDefaultCameraTransform->getTranslation();
   }
 
   vector<float> Scene::getDefaultCameraRotation() {
-      return mDefaultCameraTransform->getRotation();
+    return mDefaultCameraTransform->getRotation();
   }
 
   void Scene::setCameraMovementSpeed (float speed) {
-      mCameraMovementSpeed = speed;
+    mCameraMovementSpeed = speed;
   }
 
   float Scene::getCameraMovementSpeed() {
-      return mCameraMovementSpeed;
+    return mCameraMovementSpeed;
   }
 
   void Scene::loadClearColour(nlohmann::json jsonClearColour) {
-      if (!jsonClearColour.is_null()) {
-          mClearColour[0] = jsonClearColour[SCENE_JSON_RED];
-          mClearColour[1] = jsonClearColour[SCENE_JSON_GREEN];
-          mClearColour[2] = jsonClearColour[SCENE_JSON_BLUE];
-          mClearColour[3] = jsonClearColour[SCENE_JSON_ALPHA];
-      }
+    if (!jsonClearColour.is_null()) {
+      mClearColour[0] = jsonClearColour[SCENE_JSON_RED];
+      mClearColour[1] = jsonClearColour[SCENE_JSON_GREEN];
+      mClearColour[2] = jsonClearColour[SCENE_JSON_BLUE];
+      mClearColour[3] = jsonClearColour[SCENE_JSON_ALPHA];
+    }
   }
 
   vector<float> Scene::getClearColour() {
-      return mClearColour;
+    return mClearColour;
   }
 
   void Scene::addToDeleteQueue(SceneObject* object) {
-      mDeleteQueue.push_back(object);
+    mDeleteQueue.push_back(object);
   }
 
   void Scene::clearDeleteQueue() {
-      mDeleteQueue.clear();
+    mDeleteQueue.clear();
   }
 
   void Scene::destroyDeleteQueue() {
-      if (!mDeleteQueue.empty()) {
-          vector<SceneObject*>::iterator it;
-          for(it=mDeleteQueue.begin(); it!=mDeleteQueue.end(); it++) {
-              SceneObject* obj = (*it);
-              SceneObject* parent = obj->getParent();
-              if (parent != nullptr) {
-                  parent->removeChild(obj);
-              }
-              delete obj;
-          }
-          clearDeleteQueue();
-          generateScenegraphVector();
+    if (!mDeleteQueue.empty()) {
+      vector<SceneObject*>::iterator it;
+      for(it=mDeleteQueue.begin(); it!=mDeleteQueue.end(); it++) {
+        SceneObject* obj = (*it);
+        SceneObject* parent = obj->getParent();
+        if (parent != nullptr) {
+          parent->removeChild(obj);
+        }
+        delete obj;
       }
+      clearDeleteQueue();
+      generateScenegraphVector();
+    }
   }
 
   void Scene::update() {
@@ -296,7 +295,6 @@ namespace Dream {
 
   AssetInstance* Scene::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
     AssetInstance* retval = nullptr;
-
     if (DEBUG) {
       cout << "Scene: Creating Asset Intance of: ("
            << definition->getType() << ") " << definition->getName()
@@ -333,7 +331,6 @@ namespace Dream {
     }
 
     if (retval != nullptr) {
-
       if (DEBUG) {
         cout << "Scene:Info:Loading Asset Data for " << definition->getName() << endl;
       }
@@ -350,7 +347,6 @@ namespace Dream {
   }
 
   PhysicsObjectInstance* Scene::createPhysicsObjectInstance(SceneObject *sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Physics Object Asset Instance." << endl;
     }
@@ -360,7 +356,6 @@ namespace Dream {
   }
 
   AnimationInstance* Scene::createAnimationInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Animation asset instance." << endl;
     }
@@ -370,7 +365,6 @@ namespace Dream {
   }
 
   AudioInstance* Scene::createAudioInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Audio asset instance." << endl;
     }
@@ -380,7 +374,6 @@ namespace Dream {
   }
 
   AssimpModelInstance* Scene::createModelInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Model asset instance." << endl;
     }
@@ -391,7 +384,6 @@ namespace Dream {
   }
 
   LuaScriptInstance* Scene::createScriptInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Script asset instance." << endl;
     }
@@ -402,7 +394,6 @@ namespace Dream {
   }
 
   ShaderInstance* Scene::createShaderInstance(SceneObject* sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Shader asset instance." << endl;
     }
@@ -412,7 +403,6 @@ namespace Dream {
   }
 
   LightInstance* Scene::createLightInstance(SceneObject *sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Light Asset instance." << endl;
     }
@@ -422,7 +412,6 @@ namespace Dream {
   }
 
   SpriteInstance* Scene::createSpriteInstance(SceneObject *sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Sprite Asset instance." << endl;
     }
@@ -432,7 +421,6 @@ namespace Dream {
   }
 
   FontInstance* Scene::createFontInstance(SceneObject *sceneObject, AssetDefinition* definition) {
-
     if (DEBUG) {
       cout << "Scene: Creating Font Asset instance." << endl;
     }
@@ -452,14 +440,21 @@ namespace Dream {
   void Scene::cleanupDeletedScripts() {
     vector<SceneObject*> objects = getDeleteQueue();
     for (vector<SceneObject*>::iterator it=objects.begin(); it!=objects.end(); it++) {
-      for (map<SceneObject*, LuaScriptInstance*>::iterator mapIt=mLuaScriptMap.begin(); mapIt!=mLuaScriptMap.end(); mapIt++) {
-        if (mapIt->first == (*it)) {
-          if (DEBUG) {
-            cout << "Scene: Removing From Lua Script Map " << (*it)->getUuid() << endl;
-          }
-          mLuaScriptMap.erase(mapIt);
-          break;
+      if ((*it)->hasScriptInstance()) {
+        removeFromLuaScriptMap(*it);
+      }
+    }
+  }
+
+  void Scene::removeFromLuaScriptMap(SceneObject* it) {
+    map<SceneObject*, LuaScriptInstance*>::iterator mapIt;
+    for (mapIt=mLuaScriptMap.begin(); mapIt!=mLuaScriptMap.end(); mapIt++) {
+      if (mapIt->first == it) {
+        if (DEBUG) {
+          cout << "Scene: Removing From Lua Script Map " << it->getUuid() << endl;
         }
+        mLuaScriptMap.erase(mapIt);
+        break;
       }
     }
   }
