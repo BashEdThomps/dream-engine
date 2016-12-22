@@ -26,7 +26,7 @@ namespace Dream {
         for (it=sShaderCache.begin();it!=sShaderCache.end();it++) {
           if ((*it).first.compare(uuid) == 0) {
             if (DEBUG) {
-              cout << "ShaderCache: Found Shader" << uuid << endl;
+              cout << "ShaderCache: Found Shader " << uuid << endl;
             }
             return (*it).second;
           }

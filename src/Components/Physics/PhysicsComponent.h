@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include "BulletGLDebugDrawer.h"
+#include "PhysicsDebugDrawer.h"
 #include "PhysicsObjectInstance.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
@@ -32,7 +32,7 @@ namespace Dream {
 
       class PhysicsComponent : public ComponentInterface {
       protected:
-        GLDebugDrawer *mDebugDrawer;
+        PhysicsDebugDrawer *mDebugDrawer;
         btDynamicsWorld *mDynamicsWorld;
         btBroadphaseInterface *mBroadphase;
         btDefaultCollisionConfiguration *mCollisionConfiguration;
