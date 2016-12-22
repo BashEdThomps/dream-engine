@@ -20,7 +20,7 @@
 namespace Dream {
 
   PhysicsComponent::PhysicsComponent() : ComponentInterface() {
-      mDebugDrawer = new GLDebugDrawer();
+      mDebugDrawer = new PhysicsDebugDrawer();
   }
 
   PhysicsComponent::~PhysicsComponent() {
@@ -68,9 +68,9 @@ namespace Dream {
       mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
       mSolver = new btSequentialImpulseConstraintSolver();
       mDynamicsWorld = new btDiscreteDynamicsWorld(
-                  mDispatcher,mBroadphase,mSolver,mCollisionConfiguration
-                  );
-      mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
+          mDispatcher,mBroadphase,mSolver,mCollisionConfiguration
+      );
+      mDynamicsWorld->setGravity(btVector3(0.0f,0.0f,0.0f));
       mDynamicsWorld->setDebugDrawer(mDebugDrawer);
       mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
       if (DEBUG) {
