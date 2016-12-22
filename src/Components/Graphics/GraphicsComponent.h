@@ -50,74 +50,74 @@
 #define CLEAR_ALPHA 3
 
 namespace Dream {
-    using namespace std;
-    class GraphicsComponent : public ComponentInterface {
-    private:
-        GLfloat mSpriteVertices[24] = {
-            // Pos      // Tex
-            0.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 0.0f
-        };
-        GLuint mSpriteVBO;
-        GLuint mSpriteQuadVAO;
-        int mWindowWidth;
-        int mWindowHeight;
-        string mScreenName;
-        bool mWindowShouldClose;
-        SDL_Window *mWindow;
-        Camera *mCamera;
-        float mMinimumDraw = 0.1f;
-        float mMaximumDraw = 1000.0f;
-        SDL_GLContext mContext;
-        SDL_Event mEvent;
-        vector<SceneObject*> m2DQueue;
-        vector<SceneObject*> m3DQueue;
-        glm::mat4 mOrthoProjection;
-        vector<float> mClearColour;
-    public:
-        void setWindowWidth(int);
-        void setWindowHeight(int);
-        int getWindowWidth();
-        int getWindowHeight();
+  using namespace std;
+  class GraphicsComponent : public ComponentInterface {
+  private:
+      GLfloat mSpriteVertices[24] = {
+          // Pos      // Tex
+          0.0f, 1.0f, 0.0f, 1.0f,
+          1.0f, 0.0f, 1.0f, 0.0f,
+          0.0f, 0.0f, 0.0f, 0.0f,
+          0.0f, 1.0f, 0.0f, 1.0f,
+          1.0f, 1.0f, 1.0f, 1.0f,
+          1.0f, 0.0f, 1.0f, 0.0f
+      };
+      GLuint mSpriteVBO;
+      GLuint mSpriteQuadVAO;
+      int mWindowWidth;
+      int mWindowHeight;
+      string mScreenName;
+      bool mWindowShouldClose;
+      SDL_Window *mWindow;
+      Camera *mCamera;
+      float mMinimumDraw = 0.1f;
+      float mMaximumDraw = 1000.0f;
+      SDL_GLContext mContext;
+      SDL_Event mEvent;
+      vector<SceneObject*> m2DQueue;
+      vector<SceneObject*> m3DQueue;
+      glm::mat4 mOrthoProjection;
+      vector<float> mClearColour;
+  public:
+      void setWindowWidth(int);
+      void setWindowHeight(int);
+      int getWindowWidth();
+      int getWindowHeight();
 
+      void setScreenName(string);
+      string getScreenName();
 
-        void setScreenName(string);
-        string getScreenName();
+      void closeWindow();
 
-        void closeWindow();
+      void clear2DQueue();
+      void addTo2DQueue(SceneObject*);
+      void draw2DQueue();
 
-        void clear2DQueue();
-        void addTo2DQueue(SceneObject*);
-        void draw2DQueue();
+      void clear3DQueue();
+      void addTo3DQueue(SceneObject*);
+      void draw3DQueue();
 
-        void clear3DQueue();
-        void addTo3DQueue(SceneObject*);
-        void draw3DQueue();
+      GraphicsComponent(Camera*);
+      ~GraphicsComponent(void);
+      bool createSDLWindow();
 
-        GraphicsComponent(Camera*);
-        ~GraphicsComponent(void);
-        bool createSDLWindow();
+      bool init(void);
+      void update(Scene*);
+      void drawSprite(SceneObject*);
+      void drawFont(SceneObject*);
+      void drawModel(SceneObject*);
+      bool checkGLError(string);
+      bool isWindowShouldCloseFlagSet();
+      SDL_Window* getWindow();
+      SDL_Event getSDL_Event();
 
-        bool init(void);
-        void update(Scene*);
-        void drawSprite(SceneObject*);
-        void drawFont(SceneObject*);
-        void drawModel(SceneObject*);
-        bool checkGLError(string);
-        bool isWindowShouldCloseFlagSet();
-        SDL_Window* getWindow();
-        SDL_Event getSDL_Event();
+      void setClearColour(vector<float>);
+      void create2DVertexObjects();
+      void setWindowShouldClose(bool);
+  private:
+      void updateWindowDimensions();
 
-        void setClearColour(vector<float>);
-        void create2DVertexObjects();
-    private:
-        void updateWindowDimensions();
-
-    }; // End of GraphicsComponent
+  }; // End of GraphicsComponent
 
 } // End of Dream
 #endif // End of GRAPHICSCOMPONENT_H

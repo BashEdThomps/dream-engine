@@ -43,14 +43,13 @@ namespace Dream {
           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
         );
 
-        if (mWindow == nullptr){
+        if (mWindow == nullptr) {
           if (DEBUG) {
             cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
           }
           SDL_Quit();
           return false;
         }
-
         return true;
     }
 
@@ -135,7 +134,7 @@ namespace Dream {
       glBufferData(GL_ARRAY_BUFFER, sizeof(mSpriteVertices), mSpriteVertices, GL_STATIC_DRAW);
       glBindVertexArray(mSpriteQuadVAO);
       glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), static_cast<GLvoid*>(0));
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
 
@@ -196,7 +195,6 @@ namespace Dream {
                              << " has font, but no shader assigned." << endl;
                     }
                 }
-
             }
             // Draw
             draw3DQueue();
@@ -466,5 +464,9 @@ namespace Dream {
       if (mWindow != nullptr) {
         SDL_GetWindowSize(mWindow, &mWindowWidth, &mWindowHeight);
       }
+    }
+
+    void GraphicsComponent::setWindowShouldClose(bool close) {
+      mWindowShouldClose = close;
     }
 } // End of Dream

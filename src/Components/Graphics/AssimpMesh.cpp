@@ -16,19 +16,21 @@ namespace Dream {
   void AssimpMesh::draw(ShaderInstance* shader) {
     GLuint diffuseNr = 1;
     GLuint specularNr = 1;
-    for(GLuint i = 0; i < mTextures.size(); i++) {
+    size_t numTextures = mTextures.size();
+    for(GLuint i = 0; i < numTextures; i++) {
       glActiveTexture(GL_TEXTURE0 + i); // Activate proper texture unit before binding
       // Retrieve texture number (the N in diffuse_textureN)
       stringstream ss;
       string number;
       string name = mTextures[i].type;
+      ss << "material." << name;
       if(name == "texture_diffuse") {
         ss << diffuseNr++; // Transfer GLuint to stream
       } else if(name == "texture_specular") {
         ss << specularNr++; // Transfer GLuint to stream
       }
-      number = ss.str();
-      glUniform1f(glGetUniformLocation(shader->getShaderProgram(), ("material." + name + number).c_str()), i);
+      ss << number;
+      glUniform1f(glGetUniformLocation(shader->getShaderProgram(), ss.str().c_str()), i);
       glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
     }
     glActiveTexture(GL_TEXTURE0);

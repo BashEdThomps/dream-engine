@@ -99,6 +99,7 @@ namespace Dream {
       if (DEBUG) {
         cout << "LuaComponent: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
       }
+
       luaScript->setLoadedFlag(true);
       executeScriptInit(sceneObject,luaScript);
     }
@@ -161,6 +162,7 @@ namespace Dream {
         luabind::class_<GraphicsComponent>("GraphicsComponent")
             .def("getWindowWidth",&GraphicsComponent::getWindowWidth)
             .def("getWindowHeight",&GraphicsComponent::getWindowHeight)
+            .def("setWindowShouldClose",&GraphicsComponent::setWindowShouldClose)
     ];
   }
 
@@ -251,7 +253,9 @@ namespace Dream {
         .def("translateByX",&Transform3D::translateByX)
         .def("translateByY",&Transform3D::translateByY)
         .def("translateByZ",&Transform3D::translateByZ)
-        .def("setTranslation",(void(Transform3D::*)(float,float,float)) &Transform3D::setTranslation)
+        .def("setTranslation",
+          static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation)
+        )
         // Rotation =============================================================
         .def("getRotationX",&Transform3D::getRotationX)
         .def("getRotationY",&Transform3D::getRotationY)
@@ -262,7 +266,9 @@ namespace Dream {
         .def("rotateByX",&Transform3D::rotateByX)
         .def("rotateByY",&Transform3D::rotateByY)
         .def("rotateByZ",&Transform3D::rotateByZ)
-        .def("setRotation",(void(Transform3D::*)(float,float,float)) &Transform3D::setRotation)
+        .def("setRotation",
+          static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation)
+        )
         // Scale ================================================================
         .def("getScaleX",&Transform3D::getScaleX)
         .def("getScaleY",&Transform3D::getScaleY)
@@ -273,7 +279,9 @@ namespace Dream {
         .def("scaleByX",&Transform3D::scaleByX)
         .def("scaleByY",&Transform3D::scaleByY)
         .def("scaleByZ",&Transform3D::scaleByZ)
-        .def("setScale",(void(Transform3D::*)(float,float,float)) &Transform3D::setScale)
+        .def("setScale",
+          static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale)
+        )
     ];
   }
 
@@ -463,7 +471,6 @@ namespace Dream {
   }
 
   bool LuaComponent::executeScriptUpdate(SceneObject* sceneObject, LuaScriptInstance* script) {
-    //string id = script->getUuid();
     string id = sceneObject->getUuid();
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
@@ -496,7 +503,6 @@ namespace Dream {
   }
 
   bool LuaComponent::executeScriptKeyHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
-    //string id = script->getUuid();
     string id = sceneObject->getUuid();
     luabind::object reg = luabind::registry(mState);
     luabind::object table = reg[id];
