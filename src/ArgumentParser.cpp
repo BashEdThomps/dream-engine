@@ -22,6 +22,7 @@ namespace Dream {
   ArgumentParser::ArgumentParser(int argc, const char** argv) {
     mArgc = argc;
     mArgv = argv;
+    mUsingHttp = false;
     parse();
   }
 
@@ -50,6 +51,17 @@ namespace Dream {
         } else {
           return;
         }
+      }
+      else if (nextArg->compare(HTTP_ARG) == 0) {
+          mUsingHttp = true;
+          if (mArgc > i) {
+            mHttpUrl = string(mArgv[i+1]);
+            if (DEBUG) {
+                cout << "ArgumentParser: Loading project over HTTP from " << mHttpUrl << endl;
+            }
+          } else {
+              cerr << "ArgumentParser: --http passed without URL argument." << endl;
+          }
       }
       delete nextArg;
       nextArg = nullptr;
@@ -86,4 +98,13 @@ namespace Dream {
   string ArgumentParser::getProjectFilePath() {
     return mProjectFilePath;
   }
+
+  bool ArgumentParser::getUsingHttp() {
+      return mUsingHttp;
+  }
+
+  string ArgumentParser::getProjectHttpUrl() {
+      return mHttpUrl;
+  }
+
 } // End of Dream

@@ -23,7 +23,7 @@ find_package(assimp REQUIRED)
 find_package(SOIL   REQUIRED)
 find_package(Lua REQUIRED)
 find_package(luabind REQUIRED)
-
+find_package(CURL REQUIRED)
 # Libraries
 
 target_link_libraries(
@@ -35,6 +35,7 @@ target_link_libraries(
   ${SOIL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${BULLET_LIBRARY}
+  ${CURL_LIBRARIES}
 
   ${LUA_LIBRARIES}
   ${LUABIND_LIBRARIES}
@@ -56,6 +57,7 @@ include_directories(
   ${SOIL_INCLUDE_DIR}
   ${GLM_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}
+  ${CURL_INCLUDE_DIR}
 
   ${LUA_INCLUDE_DIR}
   ${LUABIND_INCLUDE_DIR}
@@ -79,6 +81,7 @@ target_link_libraries(
   ${assimp_LIBRARIES}
   ${SOIL_LIBRARIES}
   ${BULLET_LIBRARY}
+  ${CURL_LIBRARIES}
 
   ${LUA_LIBRARIES}
   ${LUABIND_LIBRARIES}

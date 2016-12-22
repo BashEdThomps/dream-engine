@@ -12,6 +12,8 @@
 #include "Scene.h"
 #include "Project.h"
 #include "AssetInstance.h"
+#include "HTTPClient.h"
+
 #include "Components/Graphics/Camera.h"
 #include "Components/Animation/AnimationComponent.h"
 #include "Components/Audio/AudioComponent.h"
@@ -32,6 +34,7 @@ namespace Dream {
     AnimationComponent *mAnimationComponent;
     bool mDone;
     SDL_Event mEvent;
+    HTTPClient* mHTTPClient;
     DreamEngine(void);
   public:
     static DreamEngine* getInstance();

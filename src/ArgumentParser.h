@@ -27,12 +27,14 @@ namespace Dream {
 
   class ArgumentParser {
   private:
-    int           mArgc;
-    const char**  mArgv;
-    string   mDreamPath;
-    string   mProjectPath;
-    string   mProjectUUID;
-    string   mProjectFilePath;
+    int mArgc;
+    const char** mArgv;
+    string mDreamPath;
+    string mProjectPath;
+    string mProjectUUID;
+    string mProjectFilePath;
+    bool mUsingHttp;
+    string mHttpUrl;
   public:
     ArgumentParser(int,const char**);
     ~ArgumentParser(void);
@@ -41,6 +43,8 @@ namespace Dream {
     string getProjectPath();
     string getProjectUUID();
     string getProjectFilePath();
+    string getProjectHttpUrl();
+    bool getUsingHttp();
   }; // End of ArgumentParser
 } // End of Dream
 

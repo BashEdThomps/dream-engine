@@ -19,12 +19,12 @@
 #define CONSTANTS_H
 
 // Enable Output =================================================================
-    //#define DEBUG false
     #define DEBUG true
 // Misc ==========================================================================
     #define DIR_PATH_SEP "/"
     #define DREAM_TOOL_DIR ".dreamtool"
     #define PATH_DELIMETER "::"
+    #define HTTP_ARG "--http"
 // Project =======================================================================
     #define PROJECT_DIRECTORY_ARG "--project-dir"
     #define PROJECT_UUID_ARG "--uuid"
