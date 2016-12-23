@@ -87,7 +87,6 @@ namespace Dream {
     map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
     SDL_Event getSDL_Event();
 
-
   }; // End of Dream
 } // End of Dream
 

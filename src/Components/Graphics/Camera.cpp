@@ -134,7 +134,12 @@ namespace Dream {
         mUp    = normalize(cross(mRight, mFront));
       }
 
-      void Camera::setRotation(vector<float> rotation) {}
+      void Camera::setRotation(vector<float> rotation) {
+        mPitch = rotation[0];
+        mYaw = rotation[1];
+        //mRoll = rotation[2];
+        updateCameraVectors();
+      }
 
       void Camera::setTranslation(vector<float> translation) {
         mTranslation = translation;
