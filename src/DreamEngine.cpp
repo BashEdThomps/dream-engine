@@ -162,12 +162,30 @@ namespace Dream {
   }
 
   bool DreamEngine::update() {
+    if (DEBUG) {
+      cout << "==== DreamEngine: Update Called ====" << endl;
+    }
+    // Update Time
     mTime->update();
+    // Create new Assets
     mActiveScene->createAllAssetInstances();
-    mActiveScene->update();
+    // Update Components
+    mGraphicsComponent->update(mActiveScene);
+    mPhysicsComponent->setViewProjectionMatrix(
+      mGraphicsComponent->getViewMatrix(),
+      mGraphicsComponent->getProjectionMatrix()
+    );
+    mPhysicsComponent->update(mActiveScene);
+    // Update state
+    mEvent = mGraphicsComponent->getSDL_Event();
+    mDone = mGraphicsComponent->isWindowShouldCloseFlagSet();
+    // Cleanup Old
+    mActiveScene->findDeletedSceneObjects();
+    mActiveScene->findDeletedScripts();
     mActiveScene->destroyDeleteQueue();
-    updateComponents();
-    mDone = mDone || mGraphicsComponent->isWindowShouldCloseFlagSet();
+    mActiveScene->clearDeleteQueue();
+    mActiveScene->generateScenegraphVector();
+    // Chill
     this_thread::yield();
     return !mDone;
   }
@@ -200,9 +218,9 @@ namespace Dream {
       cout << "Dream: Creating Components..." << endl;
     }
     setTime(new Time());
-    if(!initAudioComponent()) return false;
-    if(!initPhysicsComponent()) return false;
     if(!initGraphicsComponent()) return false;
+    if(!initPhysicsComponent()) return false;
+    if(!initAudioComponent()) return false;
     if(!initAnimationComponent()) return false;
     if (DEBUG) {
       cout << "Dream: Successfuly created Components." << endl;
@@ -240,7 +258,7 @@ namespace Dream {
     if (mGraphicsComponent->init()) {
       return true;
     } else {
-      cerr << "DreamEngine:Error:Unable to initialise Graphics Component." << endl;
+      cerr << "DreamEngine: Unable to initialise Graphics Component." << endl;
       return false;
     }
   }
@@ -251,20 +269,13 @@ namespace Dream {
     if (mAnimationComponent->init()) {
       return true;
     } else {
-      cerr << "DreamEngine:Error:Unable to initialise Animation Component." << endl;
+      cerr << "DreamEngine: Unable to initialise Animation Component." << endl;
       return false;
     }
   }
 
   bool DreamEngine::isDone() {
     return mDone;
-  }
-
-  void DreamEngine::updateComponents() {
-    mDone = mGraphicsComponent->isWindowShouldCloseFlagSet();
-    mPhysicsComponent->update(mActiveScene);
-    mGraphicsComponent->update(mActiveScene);
-    mEvent = mGraphicsComponent->getSDL_Event();
   }
 
   AnimationComponent* DreamEngine::getAnimationComponent() {

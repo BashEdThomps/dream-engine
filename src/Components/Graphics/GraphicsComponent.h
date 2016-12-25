@@ -53,6 +53,8 @@ namespace Dream {
   using namespace std;
   class GraphicsComponent : public ComponentInterface {
   private:
+      glm::mat4 mProjectionMatrix;
+      glm::mat4 mViewMatrix;
       GLfloat mSpriteVertices[24] = {
           // Pos      // Tex
           0.0f, 1.0f, 0.0f, 1.0f,
@@ -114,6 +116,8 @@ namespace Dream {
       void setClearColour(vector<float>);
       void create2DVertexObjects();
       void setWindowShouldClose(bool);
+      glm::mat4 getViewMatrix();
+      glm::mat4 getProjectionMatrix();
   private:
       void updateWindowDimensions();
 

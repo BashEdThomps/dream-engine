@@ -82,15 +82,13 @@ namespace Dream {
     float getCameraMovementSpeed();
     void loadClearColour(nlohmann::json);
     vector<float> getClearColour();
-    void update();
 
     void addToDeleteQueue(SceneObject*);
     vector<SceneObject*> getDeleteQueue();
     void clearDeleteQueue();
     void destroyDeleteQueue();
-    void cleanupDeletedSceneObjects();
+    void findDeletedSceneObjects();
 
-    void cleanupScene();
     bool createAllAssetInstances();
     AssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
     AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
@@ -109,7 +107,7 @@ namespace Dream {
     map<SceneObject*,LuaScriptInstance*> *getLuaScriptMap();
     void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
     bool createAssetInstancesForSceneObject(SceneObject*);
-    void cleanupDeletedScripts();
+    void findDeletedScripts();
     void removeFromLuaScriptMap(SceneObject*);
 
     AssetDefinition* getAssetDefinitionByUuid(string);

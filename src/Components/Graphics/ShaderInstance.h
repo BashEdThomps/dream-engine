@@ -38,6 +38,7 @@ namespace Dream {
       private:
         GLuint mShaderProgram;
       public:
+        ShaderInstance();
         ShaderInstance(AssetDefinition*,Transform3D*);
         ~ShaderInstance();
         bool load(string);
@@ -46,38 +47,38 @@ namespace Dream {
         void loadExtraAttributes(nlohmann::json);
 
         // 1f
-        void setUniform1f(string, float);
+        void setUniform1f(string, GLfloat);
         // 1fv
-        void setUniform1fv(string, float);
+        void setUniform1fv(string, GLfloat);
         // 1i
-        void setUniform1i(string, int);
+        void setUniform1i(string, GLint);
         // 1iv
-        void setUniform1iv(string, int);
+        void setUniform1iv(string, GLint);
 
         // 2f
-        void setUniform2f(string, float, float);
+        void setUniform2f(string, GLfloat, GLfloat);
         // 2fv
         void setUniform2fv(string, glm::vec2);
         // 2i
-        void setUniform2i(string, int, int);
+        void setUniform2i(string, GLint, GLint);
         // 2iv
         void setUniform2iv(string, glm::vec2);
 
         // 3f
-        void setUniform3f(string, float, float, float);
+        void setUniform3f(string, GLfloat, GLfloat, GLfloat);
         // 3fv
         void setUniform3fv(string, glm::vec3);
         // 3i
-        void setUniform3i(string, int, int, int);
+        void setUniform3i(string, GLint, GLint, GLint);
         // 3iv
         void setUniform3iv(string, glm::vec3);
 
         // 4f
-        void setUniform4f(string, float, float, float, float);
+        void setUniform4f(string, GLfloat, GLfloat, GLfloat, GLfloat);
         // 4fv
         void setUniform4fv(string, glm::vec4);
         // 4i
-        void setUniform4i(string, int, int, int, int);
+        void setUniform4i(string, GLint, GLint, GLint, GLint);
         // 4iv
         void setUniform4iv(string, glm::vec4);
 

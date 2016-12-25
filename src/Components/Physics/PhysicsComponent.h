@@ -38,6 +38,7 @@ namespace Dream {
         btDefaultCollisionConfiguration *mCollisionConfiguration;
         btCollisionDispatcher *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
+        glm::mat4 mProjectionMatrix;
       public:
         PhysicsComponent();
         ~PhysicsComponent();
@@ -50,6 +51,7 @@ namespace Dream {
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectInstance(PhysicsObjectInstance*);
+        void setViewProjectionMatrix(glm::mat4, glm::mat4);
       };// End of PhysicsComponent
 
 } // End of Dream

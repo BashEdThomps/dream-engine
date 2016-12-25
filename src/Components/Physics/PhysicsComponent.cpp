@@ -20,7 +20,6 @@
 namespace Dream {
 
   PhysicsComponent::PhysicsComponent() : ComponentInterface() {
-      mDebugDrawer = new PhysicsDebugDrawer();
   }
 
   PhysicsComponent::~PhysicsComponent() {
@@ -71,6 +70,9 @@ namespace Dream {
           mDispatcher,mBroadphase,mSolver,mCollisionConfiguration
       );
       mDynamicsWorld->setGravity(btVector3(0.0f,0.0f,0.0f));
+      // Setup Debug
+      mDebugDrawer = new PhysicsDebugDrawer();
+      mDebugDrawer->initShader();
       mDynamicsWorld->setDebugDrawer(mDebugDrawer);
       mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
       if (DEBUG) {
@@ -80,6 +82,9 @@ namespace Dream {
   }
 
   void PhysicsComponent::update(Dream::Scene* scene) {
+    if (DEBUG) {
+      cout << "PhysicsComponent: Update Called" << endl;
+    }
     populatePhysicsWorld(scene->getScenegraphVector());
     btScalar stepValue = mTime->getTimeDelta();
     mDynamicsWorld->stepSimulation(stepValue);
@@ -116,20 +121,37 @@ namespace Dream {
   }
 
   void PhysicsComponent::populatePhysicsWorld(vector<SceneObject*> soVec) {
-      vector<SceneObject*>::iterator soIter;
-      for (soIter = soVec.begin(); soIter != soVec.end(); soIter++) {
-          if ((*soIter)->hasPhysicsObjectInstance()) {
-              PhysicsObjectInstance* physicsObject = (*soIter)->getPhysicsObjectInstance();
-              if (!physicsObject->getInPhysicsWorld()) {
-                if (DEBUG) {
-                  cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUuid()
-                       << " to Physics World" << endl;
-                }
-                addPhysicsObjectInstance(physicsObject);
-                physicsObject->setInPhysicsWorld(true);
-              }
+    vector<SceneObject*>::iterator soIter;
+    for (soIter = soVec.begin(); soIter != soVec.end(); soIter++) {
+      // Has physics
+      if ((*soIter)->hasPhysicsObjectInstance()) {
+        PhysicsObjectInstance* physicsObject = (*soIter)->getPhysicsObjectInstance();
+        // Marked for deletion and in physics world, remove
+        if ((*soIter)->getDeleteFlag() && physicsObject->getInPhysicsWorld()) {
+          if (DEBUG) {
+            cout << "PhysicsComponent: Removing SceneObject " << (*soIter)->getUuid()
+                 << " from Physics World" << endl;
           }
+          removePhysicsObjectInstance(physicsObject);
+        }
+        // Not marked for deletion and not in world, add
+        if (!(*soIter)->getDeleteFlag() && !physicsObject->getInPhysicsWorld()) {
+          if (DEBUG) {
+            cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUuid()
+                 << " to Physics World" << endl;
+          }
+          addPhysicsObjectInstance(physicsObject);
+          physicsObject->setInPhysicsWorld(true);
+        }
       }
+    }
+  }
+
+  void PhysicsComponent::setViewProjectionMatrix(glm::mat4 view, glm::mat4 proj) {
+    if (mDebugDrawer != nullptr) {
+        mDebugDrawer->setViewMatrix(view);
+        mDebugDrawer->setProjectionMatrix(proj);
+    }
   }
 
 } // End of Dream

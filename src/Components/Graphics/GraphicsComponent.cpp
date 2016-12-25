@@ -145,6 +145,9 @@ namespace Dream {
     }
 
     void GraphicsComponent::update(Scene* scene) {
+      if (DEBUG) {
+        cout << "GraphicsComponrnt: Update Called" << endl;
+      }
         SDL_PollEvent(&mEvent);
 
         switch(mEvent.type) {
@@ -234,9 +237,32 @@ namespace Dream {
     }
 
     void GraphicsComponent::draw3DQueue() {
+      // Transformation matrices
+      mProjectionMatrix = glm::perspective(
+        mCamera->getZoom(),
+        static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
+        mMinimumDraw,
+        mMaximumDraw
+      );
+      // View transform
+      vector<vector<float>> view = mCamera->getViewMatrix();
+      mViewMatrix = glm::mat4(
+        view[0][0], view[0][1], view[0][2], view[0][3],
+        view[1][0], view[1][1], view[1][2], view[1][3],
+        view[2][0], view[2][1], view[2][2], view[2][3],
+        view[3][0], view[3][1], view[3][2], view[3][3]
+      );
       for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ ) {
         drawModel(*it);
       }
+    }
+
+    glm::mat4 GraphicsComponent::getViewMatrix() {
+      return mViewMatrix;
+    }
+
+    glm::mat4 GraphicsComponent::getProjectionMatrix() {
+      return mProjectionMatrix;
     }
 
     /*
@@ -348,24 +374,10 @@ namespace Dream {
         AssimpModelInstance* model = sceneObject->getModelInstance();
         ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
-        // Transformation matrices
-        glm::mat4 projection = glm::perspective(
-            mCamera->getZoom(),
-            static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
-            mMinimumDraw,
-            mMaximumDraw
-        );
-        // View transform
-        vector<vector<float>> view = mCamera->getViewMatrix();
-        glm::mat4 viewMat4 = glm::mat4(
-            view[0][0], view[0][1], view[0][2], view[0][3],
-            view[1][0], view[1][1], view[1][2], view[1][3],
-            view[2][0], view[2][1], view[2][2], view[2][3],
-            view[3][0], view[3][1], view[3][2], view[3][3]
-        );
+
         // Pass view/projection transform to shader
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(viewMat4));
+        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(mViewMatrix));
         // Draw the loaded model
         glm::mat4 modelMatrix;
         vector<float> translation = sceneObject->getTranslation();

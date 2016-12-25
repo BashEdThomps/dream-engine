@@ -63,7 +63,6 @@ namespace Dream {
     Camera* getCamera();
     void setCamera(Camera*);
 
-    void updateComponents();
     void destroyComponents();
     bool initAnimationComponent();
     bool initAudioComponent();

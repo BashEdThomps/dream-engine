@@ -2,107 +2,155 @@
 
 namespace Dream {
 
-  PhysicsDebugDrawer::PhysicsDebugDrawer() {
-      mDebugMode = 0;
-  }
-
-  PhysicsDebugDrawer::~PhysicsDebugDrawer() { }
-
-  void	PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor) {
-    glBegin(GL_LINES);
-    glColor3f(fromColor.getX(), fromColor.getY(), fromColor.getZ());
-    glVertex3f(from.getX(), from.getY(), from.getZ());
-    glColor3f(toColor.getX(), toColor.getY(), toColor.getZ());
-    glVertex3f(to.getX(), to.getY(), to.getZ());
-    glEnd();
-  }
-
-  void PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color) {
-    if (false) { //DEBUG) {
-    cout <<"PhysicsDebugDrawer: Drawing line from"
-         << btVecToString(from)
-         << " to " << btVecToString(to)
-         << " with colour " << btVecToString(color)
-         << endl;
+    PhysicsDebugDrawer::PhysicsDebugDrawer() {
+        mDebugMode = 0;
+        mShaderProgram = 0;
     }
-    drawLine(from,to,color,color);
-  }
 
-  string PhysicsDebugDrawer::btVecToString(const btVector3& vec) {
-    stringstream str;
+    PhysicsDebugDrawer::~PhysicsDebugDrawer() {}
 
-    str << "(" << vec.getX() << "," << vec.getY() << "," << vec.getZ() << ")";
-    return str.str();
-  }
+    void PhysicsDebugDrawer::initShader() {
+        string mVertexShaderSource;
+        string mFragmentShaderSource;
+        GLuint mVertexShader = 0;
+        GLuint mFragmentShader = 0;
 
-  void PhysicsDebugDrawer::drawSphere (const btVector3& p, btScalar radius, const btVector3& color) {
-    glColor3f(color.getX(), color.getY(), color.getZ());
-    glPushMatrix();
-    glTranslatef(p.getX(), p.getY(), p.getZ());
+        mVertexShaderSource = "#version 330 core\n"
+                              "layout (location = 0) in vec4 position;\n"
+                              "uniform mat4 view;\n"
+                              "uniform mat4 projection;\n"
+                              "void main () {\n"
+                                "gl_Position = projection * view * position;\n"
+                              "}\n";
 
-    int lats = 5;
-    int longs = 5;
-
-    int i, j;
-    for(i = 0; i <= lats; i++) {
-      btScalar lat0 = SIMD_PI * (-btScalar(0.5) + (btScalar) (i - 1) / lats);
-      btScalar z0  = radius*sin(lat0);
-      btScalar zr0 =  radius*cos(lat0);
-      btScalar lat1 = SIMD_PI * (-btScalar(0.5) + (btScalar) i / lats);
-      btScalar z1 = radius*sin(lat1);
-      btScalar zr1 = radius*cos(lat1);
-      glBegin(GL_QUAD_STRIP);
-
-      for(j = 0; j <= longs; j++) {
-        btScalar lng = 2 * SIMD_PI * (btScalar) (j - 1) / longs;
-        btScalar x = cos(lng);
-        btScalar y = sin(lng);
-        glNormal3f(x * zr0, y * zr0, z0);
-        glVertex3f(x * zr0, y * zr0, z0);
-        glNormal3f(x * zr1, y * zr1, z1);
-        glVertex3f(x * zr1, y * zr1, z1);
-      }
-      glEnd();
+        mFragmentShaderSource = "#version 330 core\n"
+                                "out vec4 fragColor;\n"
+                                "uniform highp vec3 color;\n"
+                                "void main () {\n"
+                                  "fragColor = vec4(color.r, color.g, color.b, 0.0);\n"
+                                "}";
+        // Compile shaders
+        GLint success;
+        GLchar infoLog[512];
+        // Vertex Shader
+        mVertexShader = glCreateShader(GL_VERTEX_SHADER);
+        const char *vSource = mVertexShaderSource.c_str();
+        glShaderSource(mVertexShader, 1, &vSource, nullptr);
+        glCompileShader(mVertexShader);
+        // Print compile errors if any
+        glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
+            cerr << "PhysicsDebugDrawer: SHADER:VERTEX:COMPILATION_FAILED\n" << infoLog << endl;
+        }
+        // Fragment Shader
+        mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        const char *fSource = mFragmentShaderSource.c_str();
+        glShaderSource(mFragmentShader, 1, &fSource, nullptr);
+        glCompileShader(mFragmentShader);
+        // Print compile errors if any
+        glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
+            cerr << "PhysicsDebugDrawer: SHADER:FRAGMENT:COMPILATION_FAILED\n" << infoLog << endl;
+        }
+        // Shader Program
+        mShaderProgram = glCreateProgram();
+        glAttachShader(mShaderProgram, mVertexShader);
+        glAttachShader(mShaderProgram, mFragmentShader);
+        glLinkProgram(mShaderProgram);
+        // Print linking errors if any
+        glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
+            cerr << "PhysicsDebugDrawer: SHADER:PROGRAM:LINKING_FAILED\n" << infoLog << endl;
+        }
+        // Delete the shaders as they're linked into our program now and no longer necessery
+        glDeleteShader(mVertexShader);
+        glDeleteShader(mFragmentShader);
     }
-    glPopMatrix();
-  }
 
-  void PhysicsDebugDrawer::drawTriangle(const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha) {
-    if (mDebugMode > 0) {
-      const btVector3 n=btCross(b-a,c-a).normalized();
-      glBegin(GL_TRIANGLES);
-      glColor4f(color.getX(), color.getY(), color.getZ(),alpha);
-      glNormal3d(n.getX(),n.getY(),n.getZ());
-      glVertex3d(a.getX(),a.getY(),a.getZ());
-      glVertex3d(b.getX(),b.getY(),b.getZ());
-      glVertex3d(c.getX(),c.getY(),c.getZ());
-      glEnd();
+    void PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color, const btVector3& color2) {
+        glUseProgram(mShaderProgram);
+        // Set the projection matrix
+        GLint pu = glGetUniformLocation(mShaderProgram, "projection");
+        GLint vu = glGetUniformLocation(mShaderProgram, "view");
+        glUniformMatrix4fv(pu, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+        glUniformMatrix4fv(vu, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+        // Set the colour of the line
+        GLint puc = glGetUniformLocation(mShaderProgram, "color");
+        glm::vec3 colourVec = glm::vec3(color.getX(), color.getY(), color.getZ());
+        glUniform3fv(puc, 1, glm::value_ptr(colourVec));
+        // Set the line vertices
+        float tmp[6] = {
+          from.getX(), from.getY(), from.getZ(),
+          to.getX(), to.getY(), to.getZ()
+        };
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, &tmp[0]);
+        glEnableVertexAttribArray(0);
+        glDrawArrays(GL_LINES, 0, 2 );
+        glUseProgram(0);
     }
-  }
 
-  void PhysicsDebugDrawer::setDebugMode(int debugMode) {
-    mDebugMode = debugMode;
-  }
+    void PhysicsDebugDrawer::setProjectionMatrix(glm::mat4 projMat) {
+      mProjectionMatrix = projMat;
+    }
 
-  void	PhysicsDebugDrawer::draw3dText(const btVector3& location,const char* textString) {
-    //glRasterPos3f(location.x(),  location.y(),  location.z());
-    //BMF_DrawString(BMF_GetFont(BMF_kHelvetica10),textString);
-  }
+    void PhysicsDebugDrawer::setViewMatrix(glm::mat4 viewMat) {
+      mViewMatrix = viewMat;
+    }
 
-  void	PhysicsDebugDrawer::reportErrorWarning(const char* warningString) {
-    printf("%s\n",warningString);
-  }
+    void PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color) {
+        if (DEBUG) {
+            cout <<"PhysicsDebugDrawer: Drawing line from"
+                << btVecToString(from)
+                << " to " << btVecToString(to)
+                << " with colour " << btVecToString(color)
+                << endl;
+        }
+        drawLine(from,to,color,color);
+    }
 
-  void PhysicsDebugDrawer::drawContactPoint(
-      const btVector3& pointOnB, const btVector3& normalOnB,
-      btScalar distance, int lifeTime, const btVector3& color) {
-      btVector3 to=pointOnB+normalOnB*1;
-      const btVector3&from = pointOnB;
-      glColor3f(color.getX(), color.getY(), color.getZ());
-      glBegin(GL_LINES);
-      glVertex3d(from.getX(), from.getY(), from.getZ());
-      glVertex3d(to.getX(), to.getY(), to.getZ());
-      glEnd();
-  }
+    string PhysicsDebugDrawer::btVecToString(const btVector3& vec) {
+        stringstream str;
+        str << "(" << vec.getX() << "," << vec.getY() << "," << vec.getZ() << ")";
+        return str.str();
+    }
+
+    void PhysicsDebugDrawer::drawSphere (const btVector3& p, btScalar radius, const btVector3& color) {
+        if (DEBUG) {
+            cout << "PhysicsDebugDrawer: Draw Sphere is not implemented" << endl;
+        }
+    }
+
+    void PhysicsDebugDrawer::drawTriangle(const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha) {
+        if (DEBUG) {
+            cout << "PhysicsDebugDrawer: Draw Triangle is not implemented" << endl;
+        }
+    }
+
+    void PhysicsDebugDrawer::setDebugMode(int debugMode) {
+        mDebugMode = debugMode;
+    }
+
+    void PhysicsDebugDrawer::draw3dText(const btVector3& location,const char* textString) {
+        if (DEBUG) {
+            cout << "PhysicsDebugDrawer: Draw 3DText is not implemented" << endl;
+        }
+    }
+
+    void PhysicsDebugDrawer::reportErrorWarning(const char* warningString) {
+        if (DEBUG) {
+            cout << "PhysicsDebugDrawer: " << warningString << endl;
+        }
+    }
+
+    void PhysicsDebugDrawer::drawContactPoint(
+            const btVector3& pointOnB, const btVector3& normalOnB,
+            btScalar distance, int lifeTime, const btVector3& color) {
+        if (DEBUG) {
+            cout << "PhysicsDebugDrawer: Draw Contact Point is not implemented" << endl;
+        }
+    }
 
 } // End of Dream

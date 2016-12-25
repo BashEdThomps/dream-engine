@@ -24,11 +24,11 @@ int main(int argc, const char** argv) {
   Dream::LuaComponent lua;
 
   if (DEBUG) {
-    cout << "Main:INFO:Starting..." << endl;
+    cout << "Main: Starting..." << endl;
   }
 
   if (argc < MINIMUM_ARGUMENTS) {
-    cerr << "Main:Error:Minimum Number of Arguments Were Not Found." << endl;
+    cerr << "Main: Minimum Number of Arguments Were Not Found." << endl;
     showUsage(argv);
     return 1;
   }
@@ -36,7 +36,7 @@ int main(int argc, const char** argv) {
   bool loaded = engine->loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 
   if (!loaded) {
-    cerr << "Main:Error:Failed to Load Project." << endl;
+    cerr << "Main: Failed to Load Project." << endl;
     return 1;
   }
 
@@ -44,7 +44,7 @@ int main(int argc, const char** argv) {
   if(!engine->initEngine()) {
 
     if (DEBUG) {
-      cout << "Main::Error:Bootstrapping Dream Failed" << endl;
+      cout << "Main: Bootstrapping Dream Failed" << endl;
     }
     return 1;
   }
@@ -56,25 +56,26 @@ int main(int argc, const char** argv) {
 
     lua.setLuaScriptMap(engine->getLuaScriptMap());
 
-    if (!lua.loadScriptsFromMap()) {
-      cerr << "Main:Error:While loading lua scripts" << endl;
+    if (!lua.createAllScripts()) {
+      cerr << "Main: While loading lua scripts" << endl;
       break;
     }
 
     lua.setSDL_Event(engine->getSDL_Event());
 
     if (!lua.update()) {
-      cerr << "Main:Error:LuaComponentInstance update error!" << endl;
+      cerr << "Main: LuaComponentInstance update error!" << endl;
       result = 1;
       break;
     }
 
     if(!engine->update()) {
-      cerr << "Main:Error:Dream update error!" << endl;
+      if (DEBUG) {
+        cout << "Main: Dream Exited Cleanly" << endl;
+      }
       result = 1;
       break;
     }
-    cout << flush;
   }
   return result;
 }

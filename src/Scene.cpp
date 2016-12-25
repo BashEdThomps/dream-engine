@@ -232,36 +232,36 @@ namespace Dream {
         }
         delete obj;
       }
-      clearDeleteQueue();
-      generateScenegraphVector();
     }
   }
 
-  void Scene::update() {
-      generateScenegraphVector();
-      cleanupDeletedSceneObjects();
-      cleanupDeletedScripts();
-  }
-
-  void Scene::cleanupDeletedSceneObjects() {
-      vector<SceneObject*>::iterator it;
-      for(it=mScenegraphVector.begin(); it!=mScenegraphVector.end(); it++) {
-          if ((*it)->getDeleteFlag()){
-              addToDeleteQueue(*it);
-          }
+  void Scene::findDeletedSceneObjects() {
+    if (DEBUG) {
+      cout << "Scene: Cleanup Deleted SceneObjects Called" << endl;
+    }
+    vector<SceneObject*>::iterator it;
+    for(it=mScenegraphVector.begin(); it!=mScenegraphVector.end(); it++) {
+      if ((*it)->getDeleteFlag()){
+        addToDeleteQueue(*it);
       }
+    }
   }
 
   vector<SceneObject*> Scene::getDeleteQueue() {
-      return mDeleteQueue;
+    return mDeleteQueue;
   }
 
   bool Scene::createAllAssetInstances() {
+    if (DEBUG) {
+      cout << "Secne: Create All Asset Instances Called" << endl;
+    }
+    generateScenegraphVector();
     vector<SceneObject*> scenegraph = getScenegraphVector();
     vector<SceneObject*>::iterator sgIt;
     for (sgIt = scenegraph.begin(); sgIt != scenegraph.end(); sgIt++) {
       SceneObject* sceneObj = (*sgIt);
-      if (!sceneObj->getLoadedFlag()) {
+      // Not loaded && not marked to delete
+      if (!sceneObj->getLoadedFlag() && !sceneObj->getDeleteFlag()) {
         if (!createAssetInstancesForSceneObject(sceneObj)) {
           return false;
         }
@@ -332,10 +332,10 @@ namespace Dream {
 
     if (retval != nullptr) {
       if (DEBUG) {
-        cout << "Scene:Info:Loading Asset Data for " << definition->getName() << endl;
+        cout << "Scene: Loading Asset Data for " << definition->getName() << endl;
       }
       if (!retval->load(mProjectPath)) {
-        cerr << "Scene:Error:Failed to create instance of " << definition->getName() << endl;
+        cerr << "Scene: Failed to create instance of " << definition->getName() << endl;
         return nullptr;
       }
     }
@@ -437,12 +437,13 @@ namespace Dream {
     mLuaScriptMap.insert(pair<SceneObject*,LuaScriptInstance*>(sceneObject,script));
   }
 
-  void Scene::cleanupDeletedScripts() {
+  void Scene::findDeletedScripts() {
+    if (DEBUG) {
+      cout << "Scene: Cleanup Deleted Scripts Called" << endl;
+    }
     vector<SceneObject*> objects = getDeleteQueue();
     for (vector<SceneObject*>::iterator it=objects.begin(); it!=objects.end(); it++) {
-      if ((*it)->hasScriptInstance()) {
-        removeFromLuaScriptMap(*it);
-      }
+      removeFromLuaScriptMap(*it);
     }
   }
 

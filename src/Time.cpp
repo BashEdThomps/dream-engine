@@ -10,6 +10,9 @@ namespace Dream {
   Time::~Time() {}
 
   void Time::update() {
+    if (DEBUG) {
+      cout << "Time: Update Called" << endl;
+    }
     mLastTime    = mCurrentTime;
     mCurrentTime = chrono::high_resolution_clock::now();
     mTimeDelta   = mCurrentTime-mLastTime;

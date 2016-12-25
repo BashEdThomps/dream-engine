@@ -116,29 +116,29 @@ namespace Dream {
   }
 
   // 1f
-  void ShaderInstance::setUniform1f(string, float) {
-    // TODO
+  void ShaderInstance::setUniform1f(string name, GLfloat val1) {
+    glUniform1f(glGetUniformLocation(getShaderProgram(),name.c_str()),val1);
   }
 
   // 1fv
-  void ShaderInstance::setUniform1fv(string, float) {
+  void ShaderInstance::setUniform1fv(string name, GLfloat val1) {
     // TODO
   }
 
   // 1i
-  void ShaderInstance::setUniform1i(string name, int value) {
-    glUniform1i(glGetUniformLocation(getShaderProgram(),name.c_str()),value);
+  void ShaderInstance::setUniform1i(string name, GLint val1) {
+    glUniform1i(glGetUniformLocation(getShaderProgram(),name.c_str()),val1);
   }
 
   // 1iv
-  void ShaderInstance::setUniform1iv(string, int) {
+  void ShaderInstance::setUniform1iv(string name, GLint val1) {
     // TODO
   }
 
 
   // 2f
-  void ShaderInstance::setUniform2f(string, float, float) {
-    // TODO
+  void ShaderInstance::setUniform2f(string name, GLfloat val1, GLfloat val2) {
+    glUniform2f(glGetUniformLocation(getShaderProgram(),name.c_str()),val1,val2);
   }
 
   // 2fv
@@ -150,19 +150,19 @@ namespace Dream {
   }
 
   // 2i
-  void ShaderInstance::setUniform2i(string, int, int) {
-    // TODO
+  void ShaderInstance::setUniform2i(string name, GLint val1, GLint val2) {
+    glUniform2i(glGetUniformLocation(getShaderProgram(),name.c_str()),val1,val2);
   }
 
   // 2iv
-  void ShaderInstance::setUniform2iv(string, glm::vec2) {
+  void ShaderInstance::setUniform2iv(string name, glm::vec2) {
     // TODO
   }
 
 
   // 3f
-  void ShaderInstance::setUniform3f(string, float, float, float) {
-    // TODO
+  void ShaderInstance::setUniform3f(string name, GLfloat val1, GLfloat val2, GLfloat val3) {
+    glUniform3f(glGetUniformLocation(getShaderProgram(),name.c_str()),val1,val2,val3);
   }
 
   // 3fv
@@ -174,44 +174,44 @@ namespace Dream {
   }
 
   // 3i
-  void ShaderInstance::setUniform3i(string, int, int, int) {
-    // TODO
+  void ShaderInstance::setUniform3i(string name, GLint val1, GLint val2, GLint val3) {
+    glUniform3i(glGetUniformLocation(getShaderProgram(),name.c_str()),val1,val2,val3);
   }
 
   // 3iv
-  void ShaderInstance::setUniform3iv(string, glm::vec3) {
+  void ShaderInstance::setUniform3iv(string name, glm::vec3) {
     // TODO
   }
 
 
   // 4f
-  void ShaderInstance::setUniform4f(string, float, float, float, float) {
-    // TODO
+  void ShaderInstance::setUniform4f(string name, GLfloat val1, GLfloat val2, GLfloat val3, GLfloat val4) {
+    glUniform4f(glGetUniformLocation(getShaderProgram(),name.c_str()),val1,val2,val3,val4);
   }
 
   // 4fv
-  void ShaderInstance::setUniform4fv(string, glm::vec4) {
+  void ShaderInstance::setUniform4fv(string name, glm::vec4) {
     // TODO
   }
 
   // 4i
-  void ShaderInstance::setUniform4i(string, int, int, int, int) {
-    // TODO
+  void ShaderInstance::setUniform4i(string name, GLint val1, GLint val2, GLint val3, GLint val4) {
+    glUniform4i(glGetUniformLocation(getShaderProgram(),name.c_str()),val1,val2,val3,val4);
   }
 
   // 4iv
-  void ShaderInstance::setUniform4iv(string, glm::vec4) {
+  void ShaderInstance::setUniform4iv(string name, glm::vec4) {
     // TODO
   }
 
 
   // Matrix2fv
-  void ShaderInstance::setUniformMatrix2fv(string, glm::mat2) {
+  void ShaderInstance::setUniformMatrix2fv(string name, glm::mat2) {
     // TODO
   }
 
   // Matrix3fv
-  void ShaderInstance::setUniformMatrix3fv(string, glm::mat3) {
+  void ShaderInstance::setUniformMatrix3fv(string name, glm::mat3) {
     // TODO
   }
 

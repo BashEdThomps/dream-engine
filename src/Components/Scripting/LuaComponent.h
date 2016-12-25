@@ -80,7 +80,7 @@ namespace Dream {
     void bindPhysicsObjectInstane();
 
     bool init();
-    bool loadScriptsFromMap();
+    bool createAllScripts();
     bool loadScript(SceneObject*, LuaScriptInstance*);
     bool update();
     void setSDL_Event(SDL_Event);

@@ -52,7 +52,10 @@ namespace Dream {
     return mState != nullptr;
   }
 
-  bool LuaComponent::loadScriptsFromMap() {
+  bool LuaComponent::createAllScripts() {
+    if (DEBUG) {
+      cout << "LuaComponent: CreateAllScripts Called" << endl;
+    }
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
 
@@ -446,10 +449,16 @@ namespace Dream {
   }
 
   bool LuaComponent::update() {
+    if (DEBUG) {
+      cout << "LuaComponent: Update Called" << endl;
+    }
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
       SceneObject* key = scriptIt->first;
       if (key->getDeleteFlag()) {
+        if (DEBUG) {
+            cout << "LuaComponent: Skipping update on " << key->getUuid() << endl;
+        }
         continue;
       }
       LuaScriptInstance *value = scriptIt->second;
@@ -472,9 +481,12 @@ namespace Dream {
 
   bool LuaComponent::executeScriptUpdate(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-    luabind::object reg = luabind::registry(mState);
-    luabind::object table = reg[id];
+    if (DEBUG) {
+      cout << "LuaComponent: Calling onUpdate for " << sceneObject->getNameUuidString() << endl;
+    }
     try {
+      luabind::object reg = luabind::registry(mState);
+      luabind::object table = reg[id];
       luabind::object funq = table[LUA_SCRIPT_ON_UPDATE_FUNCTION];
       luabind::call_function<void>(funq,sceneObject);
     } catch (luabind::error e) {
@@ -488,9 +500,12 @@ namespace Dream {
 
   bool LuaComponent::executeScriptInit(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-    luabind::object reg = luabind::registry(mState);
-    luabind::object table = reg[id];
+    if (DEBUG) {
+      cout << "LuaComponent: Calling onInit for " << sceneObject->getNameUuidString() << endl << flush;
+    }
     try {
+      luabind::object reg = luabind::registry(mState);
+      luabind::object table = reg[id];
       luabind::object funq = table[LUA_SCRIPT_ON_INIT_FUNCTION];
       luabind::call_function<void>(funq,sceneObject);
     } catch (luabind::error &e) {
@@ -504,9 +519,12 @@ namespace Dream {
 
   bool LuaComponent::executeScriptKeyHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-    luabind::object reg = luabind::registry(mState);
-    luabind::object table = reg[id];
+    if (DEBUG) {
+      cout << "LuaComponent: Calling onInput for " << sceneObject->getNameUuidString() << endl << flush;
+    }
     try {
+      luabind::object reg = luabind::registry(mState);
+      luabind::object table = reg[id];
       luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
       luabind::call_function<void>(funq,sceneObject,mEvent);
     } catch (luabind::error &e) {
@@ -520,9 +538,12 @@ namespace Dream {
 
   bool LuaComponent::executeScriptEventHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-    luabind::object reg = luabind::registry(mState);
-    luabind::object table = reg[id];
+     if (DEBUG) {
+      cout << "LuaComponent: Calling onEvent for " << sceneObject->getNameUuidString() << endl << flush;
+    }
     try {
+      luabind::object reg = luabind::registry(mState);
+      luabind::object table = reg[id];
       luabind::object funq = table[LUA_SCRIPT_ON_EVENT_FUNCTION];
       vector<Event*>* events = sceneObject->getEventQueue();
       vector<Event*>::iterator eventIt;
