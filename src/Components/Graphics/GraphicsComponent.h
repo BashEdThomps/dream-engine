@@ -118,6 +118,7 @@ namespace Dream {
       void setWindowShouldClose(bool);
       glm::mat4 getViewMatrix();
       glm::mat4 getProjectionMatrix();
+      void swapBuffers();
   private:
       void updateWindowDimensions();
 

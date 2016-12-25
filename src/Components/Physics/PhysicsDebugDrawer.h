@@ -37,6 +37,8 @@ namespace Dream   {
         void setDebugMode(int debugMode);
         int  getDebugMode() const { return mDebugMode;}
         string btVecToString(const btVector3&);
+        bool checkGLError(string);
+
     };
 } // End of Dream
 

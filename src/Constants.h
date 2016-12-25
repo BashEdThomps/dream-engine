@@ -18,9 +18,13 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-// Enable Output =================================================================
-  //#define DEBUG false
-  #define DEBUG true
+// Enable Debug Output ===========================================================
+    static bool DEBUG = false;
+
+    static void dreamSetDebug(bool debug) {
+      DEBUG = debug;
+    }
+
 // Misc ==========================================================================
     #define DIR_PATH_SEP "/"
     #define DREAM_TOOL_DIR ".dreamtool"

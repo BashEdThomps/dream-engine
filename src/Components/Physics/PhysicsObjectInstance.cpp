@@ -76,7 +76,7 @@ namespace Dream {
         }
         float mass = mDefinition->getAttributeAsFloat(ASSET_ATTR_MASS);
         // Transform and CentreOfMass
-        mMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -3, 0)));
+        mMotionState = new PhysicsMotionState(mTransform);
         // Mass, MotionState, Shape and LocalInertia
         btVector3 fallInertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, fallInertia);

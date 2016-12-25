@@ -16,18 +16,22 @@ namespace Dream {
         GLuint mFragmentShader = 0;
 
         mVertexShaderSource = "#version 330 core\n"
-                              "layout (location = 0) in vec4 position;\n"
+                              "\n"
+                              "layout (location = 0) in vec3 position;\n"
                               "uniform mat4 view;\n"
                               "uniform mat4 projection;\n"
+                              "\n"
                               "void main () {\n"
-                                "gl_Position = projection * view * position;\n"
-                              "}\n";
+                              "    gl_Position = projection * view * vec4(position.x,position.y,position.z,0.0);\n"
+                              "}";
 
         mFragmentShaderSource = "#version 330 core\n"
+                                "\n"
                                 "out vec4 fragColor;\n"
-                                "uniform highp vec3 color;\n"
-                                "void main () {\n"
-                                  "fragColor = vec4(color.r, color.g, color.b, 0.0);\n"
+                                "uniform vec3 color;\n"
+                                "\n"
+                                "void main() { \n"
+                                "    fragColor = vec4(color.r, color.g, color.b, 1.0);\n"
                                 "}";
         // Compile shaders
         GLint success;
@@ -72,42 +76,84 @@ namespace Dream {
 
     void PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color, const btVector3& color2) {
         glUseProgram(mShaderProgram);
-        // Set the projection matrix
-        GLint pu = glGetUniformLocation(mShaderProgram, "projection");
-        GLint vu = glGetUniformLocation(mShaderProgram, "view");
-        glUniformMatrix4fv(pu, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-        glUniformMatrix4fv(vu, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+        // Set the view/projection matrix
+        GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
+        if (projUniform == -1) {
+          cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for projection" << endl;
+        }
+        glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+        checkGLError("set projection");
+
+        GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
+        if (viewUniform == -1) {
+          cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for view" << endl;
+        }
+        glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+        checkGLError("set view");
+
         // Set the colour of the line
-        GLint puc = glGetUniformLocation(mShaderProgram, "color");
+        GLint colorUniform = glGetUniformLocation(mShaderProgram, "color");
+        if (colorUniform == -1) {
+          cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for color" << endl;
+        }
         glm::vec3 colourVec = glm::vec3(color.getX(), color.getY(), color.getZ());
-        glUniform3fv(puc, 1, glm::value_ptr(colourVec));
+        glUniform3fv(colorUniform, 1, glm::value_ptr(colourVec));
+        checkGLError("set color");
         // Set the line vertices
-        float tmp[6] = {
-          from.getX(), from.getY(), from.getZ(),
-          to.getX(), to.getY(), to.getZ()
+        GLuint vao = 0;
+        GLuint vbo = 0;
+
+        GLfloat lineVerts[6] = {
+            from.getX(), from.getY(), from.getZ(),
+            to.getX(), to.getY(), to.getZ()
         };
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, &tmp[0]);
+
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        checkGLError("generate buffers");
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(lineVerts), lineVerts, GL_STATIC_DRAW);
+        checkGLError("bind data/buffers");
+
+        glBindVertexArray(vao);
+        checkGLError("bind vao");
         glEnableVertexAttribArray(0);
+        checkGLError("enable vao");
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), static_cast<GLvoid*>(0));
+        checkGLError("attrib pointer");
+
+        // Draw the line
+        // glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, &lineVerts[0]);
+        // checkGLError("set va pointer");
+        // glEnableVertexAttribArray(0);
+        // checkGLError("enable va");
+
         glDrawArrays(GL_LINES, 0, 2 );
+        checkGLError("draw array");
+
+        // Disable the buffers & shader
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
         glUseProgram(0);
     }
 
     void PhysicsDebugDrawer::setProjectionMatrix(glm::mat4 projMat) {
-      mProjectionMatrix = projMat;
+        mProjectionMatrix = projMat;
     }
 
     void PhysicsDebugDrawer::setViewMatrix(glm::mat4 viewMat) {
-      mViewMatrix = viewMat;
+        mViewMatrix = viewMat;
     }
 
     void PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color) {
+        dreamSetDebug(true);
         if (DEBUG) {
-            cout <<"PhysicsDebugDrawer: Drawing line from"
-                << btVecToString(from)
-                << " to " << btVecToString(to)
-                << " with colour " << btVecToString(color)
-                << endl;
+            cout << "PhysicsDebugDrawer: Drawing line from " << btVecToString(from)
+                 << " to " << btVecToString(to)
+                 << " with colour " << btVecToString(color) << endl;
         }
+        dreamSetDebug(false);
         drawLine(from,to,color,color);
     }
 
@@ -145,12 +191,45 @@ namespace Dream {
         }
     }
 
-    void PhysicsDebugDrawer::drawContactPoint(
-            const btVector3& pointOnB, const btVector3& normalOnB,
-            btScalar distance, int lifeTime, const btVector3& color) {
+    void PhysicsDebugDrawer::drawContactPoint(const btVector3& pointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) {
         if (DEBUG) {
             cout << "PhysicsDebugDrawer: Draw Contact Point is not implemented" << endl;
         }
+    }
+
+    bool PhysicsDebugDrawer::checkGLError(string marker) {
+        GLenum errorCode = 0;
+        bool wasError = false;
+        do {
+            errorCode = glGetError();
+            if (errorCode!=0) {
+                cerr << "GraphicsComponent: Error Check " << marker << ": " << endl;
+                switch (errorCode) {
+                case GL_NO_ERROR:
+                    cerr << "\tGL_NO_ERROR" << endl;
+                    break;
+                case GL_INVALID_ENUM:
+                    cerr << "\tGL_INVALID_ENUM" << endl;
+                    break;
+                case GL_INVALID_VALUE:
+                    cerr << "\tGL_INVALID_VALUE" << endl;
+                    break;
+                case GL_INVALID_OPERATION:
+                    cerr << "\tGL_INVALID_OPERATION" << endl;
+                    break;
+                case GL_INVALID_FRAMEBUFFER_OPERATION:
+                    cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
+                    break;
+                case GL_OUT_OF_MEMORY:
+                    cerr << "\tGL_OUT_OF_MEMORY" << endl;
+                    break;
+                }
+                cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
+                cerr << "\tCode: " << errorCode << endl;
+                wasError = true;
+            }
+        } while(errorCode != 0);
+        return wasError;
     }
 
 } // End of Dream

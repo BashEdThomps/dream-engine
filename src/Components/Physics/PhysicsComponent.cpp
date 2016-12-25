@@ -69,7 +69,7 @@ namespace Dream {
       mDynamicsWorld = new btDiscreteDynamicsWorld(
           mDispatcher,mBroadphase,mSolver,mCollisionConfiguration
       );
-      mDynamicsWorld->setGravity(btVector3(0.0f,0.0f,0.0f));
+      mDynamicsWorld->setGravity(btVector3(0.0f,-1.0f,0.0f));
       // Setup Debug
       mDebugDrawer = new PhysicsDebugDrawer();
       mDebugDrawer->initShader();

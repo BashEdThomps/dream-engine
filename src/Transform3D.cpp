@@ -198,4 +198,12 @@ namespace Dream {
     string Transform3D::getTransformType() {
       return mTransformType;
     }
+
+    btVector3 Transform3D::getTranslationAsBtVector3() {
+      return btVector3(getTranslationX(),getTranslationY(),getTranslationZ());
+    }
+
+    btVector3 Transform3D::getRotationAsBtVector3() {
+      return btVector3(getRotationX(),getRotationY(),getRotationZ());
+    }
 } // End of Dream

@@ -2,6 +2,7 @@
 #define PhysicsObjectInstance_h
 
 #include "../../AssetInstance.h"
+#include "PhysicsMotionState.h"
 #include <btBulletDynamicsCommon.h>
 
 // Collision Shape Attributes
@@ -38,7 +39,7 @@ namespace Dream {
   class PhysicsObjectInstance : public AssetInstance {
   private:
       btCollisionShape *mCollisionShape;
-      btDefaultMotionState *mMotionState;
+      btMotionState *mMotionState;
       btRigidBody *mRigidBody;
       btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
       bool mInPhysicsWorld;

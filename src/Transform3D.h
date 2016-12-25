@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <iostream>
+#include <LinearMath/btVector3.h>
 #include "Constants.h"
 
 namespace Dream {
@@ -44,6 +45,7 @@ namespace Dream {
     void setTranslationX(float);
     void setTranslationY(float);
     void setTranslationZ(float);
+    btVector3 getTranslationAsBtVector3();
 
     vector<float> getRotation();
     void setRotation(vector<float>);
@@ -54,6 +56,7 @@ namespace Dream {
     void setRotationX(float);
     void setRotationY(float);
     void setRotationZ(float);
+    btVector3 getRotationAsBtVector3();
 
     vector<float> getScale();
     void setScale(vector<float>);

@@ -115,7 +115,7 @@ namespace Dream {
         -1.0f, 1.0f
       );
       glEnable(GL_DEPTH_TEST);
-      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+      //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
       glEnable(GL_CULL_FACE);
       glCullFace(GL_BACK);
       glEnable(GL_BLEND);
@@ -137,7 +137,6 @@ namespace Dream {
       glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), static_cast<GLvoid*>(0));
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
-
     }
 
     void GraphicsComponent::closeWindow() {
@@ -199,14 +198,11 @@ namespace Dream {
                     }
                 }
             }
-            // Draw
-            draw3DQueue();
-            draw2DQueue();
-            // Flip Buffers
-            SDL_GL_SwapWindow(mWindow);
-            // Chill
-            SDL_Delay(3);
         }
+    }
+
+    void GraphicsComponent::swapBuffers() {
+        SDL_GL_SwapWindow(mWindow);
     }
 
     void GraphicsComponent::clear2DQueue() {

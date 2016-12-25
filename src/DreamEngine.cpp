@@ -175,7 +175,10 @@ namespace Dream {
       mGraphicsComponent->getViewMatrix(),
       mGraphicsComponent->getProjectionMatrix()
     );
+    mGraphicsComponent->draw3DQueue();
     mPhysicsComponent->update(mActiveScene);
+    mGraphicsComponent->draw2DQueue();
+    mGraphicsComponent->swapBuffers();
     // Update state
     mEvent = mGraphicsComponent->getSDL_Event();
     mDone = mGraphicsComponent->isWindowShouldCloseFlagSet();
