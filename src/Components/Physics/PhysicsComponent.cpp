@@ -87,7 +87,7 @@ namespace Dream {
         // Setup Debug
         if (mDebug && mDebugDrawer == nullptr) {
             mDebugDrawer = new PhysicsDebugDrawer();
-            mDebugDrawer->initShader();
+            mDebugDrawer->init();
             mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
             mDynamicsWorld->setDebugDrawer(mDebugDrawer);
         }

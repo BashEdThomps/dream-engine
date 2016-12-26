@@ -9,6 +9,16 @@ namespace Dream {
 
   PhysicsDebugDrawer::~PhysicsDebugDrawer() {}
 
+  void PhysicsDebugDrawer::init() {
+   initShader();
+   initVaoVbo();
+  }
+
+  void PhysicsDebugDrawer::initVaoVbo() {
+      glGenVertexArrays(1, &mVAO);
+      glGenBuffers(1, &mVBO);
+  }
+
   void PhysicsDebugDrawer::initShader() {
       string mVertexShaderSource;
       string mFragmentShaderSource;
@@ -77,66 +87,40 @@ namespace Dream {
   void PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color, const btVector3& color2) {
       // Enable shader program
       glUseProgram(mShaderProgram);
-
       // Set the view/projection matrix in shader
       GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
       if (projUniform == -1) {
         cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for projection" << endl;
+        checkGLError("set proj");
       }
       glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-      checkGLError("set projection");
-
       GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
       if (viewUniform == -1) {
         cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for view" << endl;
+        checkGLError("set view");
       }
       glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-      checkGLError("set view");
 
       // Set the colour of the line
       GLint colorUniform = glGetUniformLocation(mShaderProgram, "color");
       if (colorUniform == -1) {
         cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for color" << endl;
+        checkGLError("set color");
       }
       glm::vec3 colourVec = glm::vec3(color.getX(), color.getY(), color.getZ());
       glUniform3fv(colorUniform, 1, glm::value_ptr(colourVec));
-      checkGLError("set color");
-
       // Set the line vertices
-      GLuint vao = 0;
-      GLuint vbo = 0;
-
       GLfloat lineVerts[6] = {
           from.getX(), from.getY(), from.getZ(),
           to.getX(), to.getY(), to.getZ()
       };
 
-      glGenVertexArrays(1, &vao);
-      checkGLError("generate vao");
-
-      glGenBuffers(1, &vbo);
-      checkGLError("generate vbo");
-
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      checkGLError("bind vbo");
-
+      glBindBuffer(GL_ARRAY_BUFFER, mVBO);
       glBufferData(GL_ARRAY_BUFFER, sizeof(lineVerts), lineVerts, GL_STATIC_DRAW);
-      checkGLError("fill vbo");
-
-      glBindVertexArray(vao);
-      checkGLError("bind vao");
-
+      glBindVertexArray(mVAO);
       glEnableVertexAttribArray(0);
-      checkGLError("enable vao");
-
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), static_cast<GLvoid*>(0));
-      checkGLError("attrib pointer");
-
-      glBindVertexArray(vao);
-
       glDrawArrays(GL_LINES, 0, 2);
-      checkGLError("draw array");
-
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
       glUseProgram(0);

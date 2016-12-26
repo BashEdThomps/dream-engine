@@ -20,11 +20,14 @@ namespace Dream   {
         glm::mat4 mProjectionMatrix;
         glm::mat4 mViewMatrix;
         GLuint mShaderProgram;
+        GLuint mVAO, mVBO;
         int mDebugMode;
     public:
         PhysicsDebugDrawer();
         ~PhysicsDebugDrawer();
+        void init();
         void initShader();
+        void initVaoVbo();
         void setProjectionMatrix(glm::mat4);
         void setViewMatrix(glm::mat4);
         void drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor);
