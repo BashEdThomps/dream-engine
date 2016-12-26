@@ -131,6 +131,7 @@ namespace Dream {
         .def("getTime",&DreamEngine::getTime)
         .def("loadSceneByUuid",&DreamEngine::loadSceneByUuid)
         .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
+        .def("getPhysicsComponent",&DreamEngine::getPhysicsComponent)
         .scope [
             luabind::def("getInstance",&DreamEngine::getInstance)
         ]
@@ -162,7 +163,10 @@ namespace Dream {
   }
 
   void LuaComponent::bindPhysicsComponent() {
-    // TODO
+    luabind::module(mState) [
+        luabind::class_<PhysicsComponent>("PhysicsComponent")
+            .def("setDebug",&PhysicsComponent::setDebug)
+    ];
   }
 
   void LuaComponent::bindProject() {
@@ -327,7 +331,34 @@ namespace Dream {
             luabind::value("KEY_LEFT",SDLK_LEFT),
             luabind::value("KEY_RIGHT",SDLK_RIGHT),
             luabind::value("KEY_UP",SDLK_UP),
-            luabind::value("KEY_DOWN",SDLK_DOWN)
+            luabind::value("KEY_DOWN",SDLK_DOWN),
+        // Alpha
+            luabind::value("KEY_a",SDLK_a),
+            luabind::value("KEY_b",SDLK_a),
+            luabind::value("KEY_c",SDLK_c),
+            luabind::value("KEY_d",SDLK_d),
+            luabind::value("KEY_e",SDLK_e),
+            luabind::value("KEY_f",SDLK_f),
+            luabind::value("KEY_g",SDLK_g),
+            luabind::value("KEY_h",SDLK_h),
+            luabind::value("KEY_i",SDLK_i),
+            luabind::value("KEY_j",SDLK_j),
+            luabind::value("KEY_k",SDLK_k),
+            luabind::value("KEY_l",SDLK_l),
+            luabind::value("KEY_m",SDLK_m),
+            luabind::value("KEY_n",SDLK_n),
+            luabind::value("KEY_o",SDLK_o),
+            luabind::value("KEY_p",SDLK_p),
+            luabind::value("KEY_q",SDLK_q),
+            luabind::value("KEY_r",SDLK_r),
+            luabind::value("KEY_s",SDLK_s),
+            luabind::value("KEY_t",SDLK_t),
+            luabind::value("KEY_u",SDLK_u),
+            luabind::value("KEY_v",SDLK_v),
+            luabind::value("KEY_w",SDLK_w),
+            luabind::value("KEY_x",SDLK_x),
+            luabind::value("KEY_y",SDLK_y),
+            luabind::value("KEY_z",SDLK_z)
         ],
         // SDL_ControllerButtonEvent ===========================================
         luabind::class_<SDL_ControllerButtonEvent>("ControllerButtonEvent")
