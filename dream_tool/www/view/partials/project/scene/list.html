@@ -73,7 +73,7 @@
               </td>
             </tr>
             <tr>
-              <td colspan=2>Camera</td>
+              <td colspan=2 class="text-center">Camera</td>
             </tr>
             <tr>
               <td>Translation</td>
@@ -108,20 +108,20 @@
               </td>
             </tr>
             <tr>
-              <td>Movement Speed</td>
+              <td>Speed</td>
               <td>
                 <input ng-change="modified()" ng-model="currentScene.camera.movementSpeed" class="form-control input-sm" type="number"/>
               </td>
             </tr>
             <tr>
-                <td colspan=2>Misc</td>
+                <td colspan=2 class="text-center">Misc</td>
             </tr>
             <tr>
                 <td>Clear Colour</td>
                 <td>
                     <div class="row">
                         <div class="col-sm-3">
-                            <input ng-change="modified()" ng-model="currentScene.clearColour.r" 
+                            <input ng-change="modified()" ng-model="currentScene.clearColour.r"
                              class="form-control input-sm" type="number"/>
                         </div>
                         <div class="col-sm-3">
@@ -136,6 +136,38 @@
                             <input ng-change="modified()" ng-model="currentScene.clearColour.a"
                              class="form-control input-sm" type="number"/>
                         </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+              <td colspan=2 class="text-center">Physics</td>
+            </tr>
+            <tr>
+              <td>Gravity</td>
+              <td>
+                <div class="row">
+                  <div class="col-sm-4">
+                    <input ng-change="modified()" ng-model="currentScene.gravity.x"
+                           class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-sm-4">
+                      <input ng-change="modified()" ng-model="currentScene.gravity.y"
+                       class="form-control input-sm" type="number"/>
+                  </div>
+                  <div class="col-sm-4">
+                      <input ng-change="modified()" ng-model="currentScene.gravity.z"
+                       class="form-control input-sm" type="number"/>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+                <td>Debug</td>
+                <td>
+                    <div class="checkbox checkbox-info">
+                        <input ng-change="modified()" ng-model="currentScene.physicsDebug"
+                               type="checkbox" id="physicsDebug" />
+                        <label></label>
                     </div>
                 </td>
             </tr>

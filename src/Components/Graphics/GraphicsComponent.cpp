@@ -144,7 +144,7 @@ namespace Dream {
     }
 
     void GraphicsComponent::update(Scene* scene) {
-      if (DEBUG) {
+      if (VERBOSE) {
         cout << "GraphicsComponrnt: Update Called" << endl;
       }
         SDL_PollEvent(&mEvent);

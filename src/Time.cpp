@@ -10,7 +10,7 @@ namespace Dream {
   Time::~Time() {}
 
   void Time::update() {
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "Time: Update Called" << endl;
     }
     mLastTime    = mCurrentTime;

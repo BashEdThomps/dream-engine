@@ -26,6 +26,7 @@
 #include <LinearMath/btVector3.h>
 
 #include "../ComponentInterface.h"
+#include "../../String.h"
 #include "../../Constants.h"
 
 namespace Dream {
@@ -39,12 +40,14 @@ namespace Dream {
         btCollisionDispatcher *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
         glm::mat4 mProjectionMatrix;
+        btVector3 mGravity;
+        bool mDebug;
       public:
         PhysicsComponent();
         ~PhysicsComponent();
         void populatePhysicsWorld(vector<SceneObject*>);
-        void setGravity3f(float,float,float);
-        void setGravityBtVector3(btVector3);
+        void setGravity(vector<float>);
+        void setDebug(bool);
         bool init();
         void update(Scene*);
         void addPhysicsObjectInstance(PhysicsObjectInstance*);

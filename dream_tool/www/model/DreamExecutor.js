@@ -1,17 +1,20 @@
-var sys       = require('sys');
-var exec      = require('child_process').exec;
+var spawn = require('child_process').spawn;
 
 module.exports.execDream = function(bin,projDir,uuid) {
-	var fullExec = bin +" --project-dir "+projDir+" --uuid "+uuid;
-	console.log("Executing:",fullExec);
-	var child = exec(fullExec, function (error, stdout, stderr) {
-  	sys.print('stdout: ' + stdout);
-  	sys.print('stderr: ' + stderr);
-  	if (error !== null) {
-    	console.log('exec error: ' + error);
-  	}
+	var argv = ["--project-dir",projDir,"--uuid",uuid];
+  var dreamProcess = spawn(bin,argv);
+
+  dreamProcess.stdout.on('data', (data) => {
+    console.log('Dream(stdout):',data.toString());
   });
-	console.log("exec'd child:");
+
+  dreamProcess.stderr.on('data', (data) => {
+    console.log('Dream(stderr):',data.toString());
+  });
+
+  dreamProcess.on('close', (code) => {
+    console.log('Dream: exited with code',code.toString());
+  });
 };
 
 module.exports = this;

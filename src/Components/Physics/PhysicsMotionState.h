@@ -20,6 +20,7 @@
 
 #include "../../Transform3D.h"
 #include <LinearMath/btMotionState.h>
+#include <LinearMath/btMatrix3x3.h>
 #include <LinearMath/btQuaternion.h>
 
 namespace Dream {

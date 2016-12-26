@@ -19,17 +19,26 @@
 #define CONSTANTS_H
 
 // Enable Debug Output ===========================================================
-    static bool DEBUG = false;
+static bool DEBUG = true;
+static bool VERBOSE = false;
 
-    static void dreamSetDebug(bool debug) {
-      DEBUG = debug;
-    }
+static void dreamSetDebug(bool debug) {
+  DEBUG = debug;
+}
+
+static void dreamSetVerbose(bool verbose) {
+  VERBOSE = verbose;
+  if (VERBOSE) {
+    dreamSetDebug(true);
+  }
+}
 
 // Misc ==========================================================================
     #define DIR_PATH_SEP "/"
     #define DREAM_TOOL_DIR ".dreamtool"
     #define PATH_DELIMETER "::"
     #define HTTP_ARG "--http"
+
 // Project =======================================================================
     #define PROJECT_DIRECTORY_ARG "--project-dir"
     #define PROJECT_UUID_ARG "--uuid"
@@ -46,6 +55,7 @@
     #define PROJECT_WINDOW_SIZE  "windowSize"
     #define PROJECT_WIDTH "width"
     #define PROJECT_HEIGHT "height"
+
 // Asset =========================================================================
     #define ASSET_UUID "uuid"
     #define ASSET_NAME "name"
@@ -76,6 +86,7 @@
     #define ASSET_ATTR_X "x"
     #define ASSET_ATTR_Y "y"
     #define ASSET_ATTR_Z "z"
+
 // Scene =========================================================================
     #define SCENE_JSON_UUID "uuid"
     #define SCENE_JSON_NAME "name"
@@ -92,6 +103,9 @@
     #define SCENE_JSON_GREEN "g"
     #define SCENE_JSON_BLUE "b"
     #define SCENE_JSON_ALPHA "a"
+    #define SCENE_JSON_GRAVITY "gravity"
+    #define SCENE_JSON_PHYSICS_DEBUG "physicsDebug"
+
 // SceneObject ===================================================================
     #define SO_X 0
     #define SO_Y 1
@@ -110,18 +124,21 @@
     #define SCENE_OBJECT_TRANSFORM_TYPE_OFFSET "offset"
     #define SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE "absolute"
     #define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
+
 // Transform =====================================================================
     #define TRANSFORM_X 0
     #define TRANSFORM_Y 1
     #define TRANSFORM_Z 2
     #define TRANSFORM_TYPE_ABSOLUTE "absolute"
     #define TRANSFORM_TYPE_OFFSET "offset"
+
 // Font ==========================================================================
     #define FONT_SIZE "size"
     #define FONT_COLOUR "colour"
     #define FONT_RED    "r"
     #define FONT_GREEN  "g"
     #define FONT_BLUE   "b"
+
 // Animation =====================================================================
     #define ASSET_FORMAT_DREAM_ANIMATION "dream"
     #define ASSET_ATTR_KEYFRAMES     "keyframes"
@@ -140,12 +157,36 @@
     #define DREAM_ANIMATION_INTERPOLATION_NONE   "none"
     #define DREAM_ANIMATION_INTERPOLATION_LINEAR "linear"
     #define DREAM_ANIMATION_INTERPOLATION_BEZIER "bezier"
+
 // Sprite ========================================================================
     #define SPRITE_TILE_SIZE "tileSize"
     #define SPRITE_TILE_WIDTH "width"
     #define SPRITE_TILE_HEIGHT "height"
 
-
-
+// Physics =======================================================================
+    #define ASSET_ATTR_MASS "mass"
+    #define ASSET_ATTR_MARGIN "margin"
+    #define ASSET_ATTR_RADIUS "radius"
+    #define ASSET_ATTR_NORMAL "normal"
+    #define ASSET_ATTR_CONSTANT "constant"
+    #define ASSET_ATTR_NORMAL_X "normalX"
+    #define ASSET_ATTR_NORMAL_Y "normalY"
+    #define ASSET_ATTR_NORMAL_Z "normalZ"
+    #define ASSET_ATTR_SIZE "size"
+    #define ASSET_ATTR_SIZE_X "sizeX"
+    #define ASSET_ATTR_SIZE_Y "sizeY"
+    #define ASSET_ATTR_SIZE_Z "sizeZ"
+    #define COLLISION_SHAPE_SPHERE "btShpereShape"
+    #define COLLISION_SHAPE_BOX "btBoxShape"
+    #define COLLISION_SHAPE_CYLINDER "btCylinderShape"
+    #define COLLISION_SHAPE_CAPSULE "btCapsuleShape"
+    #define COLLISION_SHAPE_CONE "btConeShape"
+    #define COLLISION_SHAPE_MULTI_SPHERE "btMultiSphereShape"
+    #define COLLISION_SHAPE_CONVEX_HULL "btConvexHullShape"
+    #define COLLISION_SHAPE_CONVEX_TRIANGLE_MESH "btConvexTriangleMeshShape"
+    #define COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH "btBvhTriangleMeshShape"
+    #define COLLISION_SHAPE_HEIGHTFIELD_TERRAIN "btHeightfieldTerrainShape"
+    #define COLLISION_SHAPE_STATIC_PLANE "btStaticPlaneShape"
+    #define COLLISION_SHAPE_COMPOUND "btCompoundShape"
 
 #endif // CONSTANTS_H

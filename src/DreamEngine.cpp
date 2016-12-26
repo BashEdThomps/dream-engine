@@ -80,7 +80,7 @@ namespace Dream {
       return false;
     }
     json projectJson = json::parse(projectJsonStr);
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "DreamEngine: Read Project..." << endl
            << projectJson.dump(2) << endl;
     }
@@ -89,7 +89,7 @@ namespace Dream {
   }
 
   bool DreamEngine::loadFromArgumentParser(ArgumentParser *parser) {
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "Dream: Loading from ArgumentParser" << endl;
     }
     FileReader *projectFileReader = new FileReader(parser->getProjectFilePath());
@@ -117,6 +117,8 @@ namespace Dream {
     }
     mActiveScene = scene;
     mGraphicsComponent->setClearColour(mActiveScene->getClearColour());
+    mPhysicsComponent->setGravity(mActiveScene->getGravity());
+    mPhysicsComponent->setDebug(mActiveScene->getPhysicsDebug());
     mCamera->setTranslation(mActiveScene->getDefaultCameraTranslation());
     mCamera->setRotation(mActiveScene->getDefaultCameraRotation());
     mCamera->setMovementSpeed(mActiveScene->getCameraMovementSpeed());
@@ -162,7 +164,7 @@ namespace Dream {
   }
 
   bool DreamEngine::update() {
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "==== DreamEngine: Update Called ====" << endl;
     }
     // Update Time

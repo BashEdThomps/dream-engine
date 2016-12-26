@@ -53,6 +53,8 @@ namespace Dream {
     map<SceneObject*,LuaScriptInstance*> mLuaScriptMap;
     string mProjectPath;
     vector<AssetDefinition*>* mAssetDefinitions;
+    vector<float> mGravity;
+    bool mPhysicsDebug;
   public:
     Scene(nlohmann::json, string, vector<AssetDefinition*>*);
     ~Scene();
@@ -111,6 +113,10 @@ namespace Dream {
     void removeFromLuaScriptMap(SceneObject*);
 
     AssetDefinition* getAssetDefinitionByUuid(string);
+
+    void loadPhysics(nlohmann::json);
+    vector<float> getGravity();
+    bool getPhysicsDebug();
 
   }; // End of Scene
 } // End of Dream

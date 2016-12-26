@@ -524,7 +524,9 @@ App.service('ProjectService',
                 translation: { x: 0, y: 0, z: 0 },
                 rotation: { x: 0, y: 0, z: 0 }
             },
-            clearColour: { r:0, g:0, b:0, a:0 }
+            clearColour: { r:0, g:0, b:0, a:0 },
+            gravity: { x:0, y:0, z:0 },
+            physicsDebug: false
         };
     };
 

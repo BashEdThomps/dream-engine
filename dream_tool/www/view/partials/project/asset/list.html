@@ -82,6 +82,16 @@
                             <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number"/>
                         </td>
                     </tr>
+                    <tr ng-show="isAssetTypePhysicsObject()">
+                        <td>Kinematic</td>
+                        <td>
+                            <div class="checkbox checkbox-info">
+                                <input ng-change="modified()" ng-model="currentAsset.kinematic"
+                                       type="checkbox" id="physicsKinematic" />
+                                <label></label>
+                            </div>
+                        </td>
+                    </tr>
                     <!-- Sphere -->
                     <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatSphere()">
                         <td>Radius</td>
@@ -217,7 +227,7 @@
                         <td>Loop</td>
                         <td>
                             <div class="checkbox checkbox-info">
-                                <input type="checkbox" id="audioLoop" />
+                                <input ng-change="modified()" ng-model="currentAsset.loop" type="checkbox" id="audioLoop" />
                                 <label></label>
                             </div>
                         </td>

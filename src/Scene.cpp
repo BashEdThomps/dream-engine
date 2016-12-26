@@ -22,12 +22,13 @@ namespace Dream {
   Scene::Scene(nlohmann::json jsonScene, string projectPath, vector<AssetDefinition*>* assetDefs) {
       setProjectPath(projectPath);
       mAssetDefinitions = assetDefs;
+      mGravity = vector<float>(3);
       mRootSceneObject = nullptr;
       mClearColour = {0.0f,0.0f,0.0f,0.0f};
       mDefaultCameraTransform = new Transform3D();
       mUuid = jsonScene[SCENE_JSON_UUID];
       mName = jsonScene[SCENE_JSON_NAME];
-
+      loadPhysics(jsonScene);
       loadDefaultCameraTransform(jsonScene[SCENE_JSON_CAMERA]);
       loadClearColour(jsonScene[SCENE_JSON_CLEAR_COLOUR]);
 
@@ -36,6 +37,31 @@ namespace Dream {
       if (!sceneObjects.is_null() && sceneObjects.is_array()) {
           loadSceneObjects(sceneObjects,nullptr);
       }
+  }
+
+  void Scene::loadPhysics(nlohmann::json jsonScene) {
+    nlohmann::json gravity = jsonScene[SCENE_JSON_GRAVITY];
+    nlohmann::json physDebug = jsonScene[SCENE_JSON_PHYSICS_DEBUG];
+
+    if (!gravity.is_null()) {
+      mGravity[0] = gravity[SCENE_JSON_X];
+      mGravity[1] = gravity[SCENE_JSON_Y];
+      mGravity[2] = gravity[SCENE_JSON_Z];
+    } else {
+      mGravity[0] = 0.0f;
+      mGravity[1] = 0.0f;
+      mGravity[2] = 0.0f;
+    }
+
+    if (!physDebug.is_null() && physDebug.is_boolean()) {
+      mPhysicsDebug = physDebug;
+    }  else {
+      mPhysicsDebug = false;
+    }
+  }
+
+  vector<float> Scene::getGravity() {
+    return mGravity;
   }
 
   void Scene::loadDefaultCameraTransform(nlohmann::json camera) {
@@ -236,7 +262,7 @@ namespace Dream {
   }
 
   void Scene::findDeletedSceneObjects() {
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "Scene: Cleanup Deleted SceneObjects Called" << endl;
     }
     vector<SceneObject*>::iterator it;
@@ -252,7 +278,7 @@ namespace Dream {
   }
 
   bool Scene::createAllAssetInstances() {
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "Secne: Create All Asset Instances Called" << endl;
     }
     generateScenegraphVector();
@@ -438,7 +464,7 @@ namespace Dream {
   }
 
   void Scene::findDeletedScripts() {
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "Scene: Cleanup Deleted Scripts Called" << endl;
     }
     vector<SceneObject*> objects = getDeleteQueue();
@@ -472,5 +498,8 @@ namespace Dream {
     return retval;
   }
 
+  bool Scene::getPhysicsDebug() {
+    return mPhysicsDebug;
+  }
 
 } // End of Dream

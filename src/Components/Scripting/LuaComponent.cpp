@@ -54,7 +54,7 @@ namespace Dream {
 
   bool LuaComponent::createAllScripts() {
     if (DEBUG) {
-      cout << "LuaComponent: CreateAllScripts Called" << endl;
+      //cout << "LuaComponent: CreateAllScripts Called" << endl;
     }
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
     for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
@@ -63,17 +63,12 @@ namespace Dream {
       LuaScriptInstance *luaScript = scriptIt->second;
 
       if (luaScript == nullptr) {
-        if (DEBUG) {
-          cerr << "LuaComponent: Load Failed, LuaScriptInstance is NULL" << endl;
-        }
+        cerr << "LuaComponent: Load Failed, LuaScriptInstance is NULL" << endl;
         continue;
       }
 
       if (sceneObject == nullptr) {
-
-        if (DEBUG) {
-          cerr << "LuaComponent: Load Failed, SceneObject is NULL" << endl;
-        }
+        cerr << "LuaComponent: Load Failed, SceneObject is NULL" << endl;
         continue;
       }
 
@@ -122,11 +117,8 @@ namespace Dream {
       luabind::object reg = luabind::registry(mState);
       reg[id] = newtable;
     } catch (luabind::error e) {
-
-      if (DEBUG) {
-        cerr << "LuaComponent: loadScript exception:" << endl
-             << "\t" << e.what() << endl;
-      }
+      cerr << "LuaComponent: loadScript exception:" << endl
+           << "\t" << e.what() << endl;
       return false;
     }
     return true;
@@ -449,7 +441,7 @@ namespace Dream {
   }
 
   bool LuaComponent::update() {
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "LuaComponent: Update Called" << endl;
     }
     map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
@@ -481,7 +473,7 @@ namespace Dream {
 
   bool LuaComponent::executeScriptUpdate(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "LuaComponent: Calling onUpdate for " << sceneObject->getNameUuidString() << endl;
     }
     try {
@@ -490,9 +482,7 @@ namespace Dream {
       luabind::object funq = table[LUA_SCRIPT_ON_UPDATE_FUNCTION];
       luabind::call_function<void>(funq,sceneObject);
     } catch (luabind::error e) {
-      if (DEBUG) {
-        cerr << "LuaComponent: onUpdate exception:" << endl << e.what() << endl;
-      }
+      cerr << "LuaComponent: onUpdate exception:" << endl << e.what() << endl;
       return false;
     }
     return true;
@@ -500,7 +490,7 @@ namespace Dream {
 
   bool LuaComponent::executeScriptInit(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "LuaComponent: Calling onInit for " << sceneObject->getNameUuidString() << endl << flush;
     }
     try {
@@ -509,9 +499,7 @@ namespace Dream {
       luabind::object funq = table[LUA_SCRIPT_ON_INIT_FUNCTION];
       luabind::call_function<void>(funq,sceneObject);
     } catch (luabind::error &e) {
-      if (DEBUG) {
-        cerr << "LuaComponent: onInit exception:" << endl << e.what() << endl;
-      }
+      cerr << "LuaComponent: onInit exception:" << endl << e.what() << endl;
       return false;
     }
     return true;
@@ -519,7 +507,7 @@ namespace Dream {
 
   bool LuaComponent::executeScriptKeyHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-    if (DEBUG) {
+    if (VERBOSE) {
       cout << "LuaComponent: Calling onInput for " << sceneObject->getNameUuidString() << endl << flush;
     }
     try {
@@ -528,9 +516,7 @@ namespace Dream {
       luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
       luabind::call_function<void>(funq,sceneObject,mEvent);
     } catch (luabind::error &e) {
-      if (DEBUG) {
-        cerr << "LuaComponent: onInput exception:" << endl << e.what() << endl;
-      }
+      cerr << "LuaComponent: onInput exception:" << endl << e.what() << endl;
       return false;
     }
     return true;
@@ -538,7 +524,7 @@ namespace Dream {
 
   bool LuaComponent::executeScriptEventHandler(SceneObject* sceneObject, LuaScriptInstance* script) {
     string id = sceneObject->getUuid();
-     if (DEBUG) {
+     if (VERBOSE) {
       cout << "LuaComponent: Calling onEvent for " << sceneObject->getNameUuidString() << endl << flush;
     }
     try {
@@ -552,9 +538,7 @@ namespace Dream {
       }
       sceneObject->cleanupEvents();
     } catch (luabind::error &e) {
-      if (DEBUG) {
-        cerr << "LuaComponent: onEvent exception:" << endl << e.what() << endl;
-      }
+      cerr << "LuaComponent: onEvent exception:" << endl << e.what() << endl;
       return false;
     }
     return true;
@@ -573,17 +557,11 @@ int errorHandler(lua_State *L) {
   luabind::object msg(luabind::from_stack( L, -1 ));
   std::ostringstream str;
   str << "Lua - RuntimeError: " << msg;
-
-  if (DEBUG) {
-    cout << str.str() << endl;
-  }
+  cerr << str.str() << endl;
   // log the callstack
   std::string traceback = luabind::call_function<std::string>( luabind::globals(L)["debug"]["traceback"] );
   traceback = std::string( "Lua - Traceback: " ) + traceback;
-
-  if (DEBUG) {
-    cout << traceback.c_str() << endl;
-  }
+  cerr << traceback.c_str() << endl;
   // return unmodified error object
   return 1;
 }

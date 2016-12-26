@@ -258,7 +258,9 @@ App.service('UIService',
 
     this.updateTreeAssetName = function(assetObject) {
         this.getTreeProjectAssetByUUID(assetObject.uuid,function(branch){
+          if (branch !== null) {
             branch.label = assetObject.name;
+          }
         });
     };
 

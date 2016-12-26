@@ -19,34 +19,38 @@
 
 namespace Dream {
     PhysicsMotionState::PhysicsMotionState(Transform3D* dreamTransform) : btMotionState() {
-      mDreamTransform = dreamTransform;
+        mDreamTransform = dreamTransform;
     }
 
     PhysicsMotionState::~PhysicsMotionState() {}
 
     void PhysicsMotionState::setTransform(Transform3D* transform) {
-      mDreamTransform = transform;
+        mDreamTransform = transform;
     }
 
     void PhysicsMotionState::getWorldTransform(btTransform &worldTrans) const {
-      worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
-      btQuaternion rot = worldTrans.getRotation();
-      rot.setEulerZYX(
-        mDreamTransform->getRotationX(),
-        mDreamTransform->getRotationY(),
-        mDreamTransform->getRotationZ()
-      );
-      worldTrans.setRotation(rot);
+        worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
+        btQuaternion rot = worldTrans.getRotation();
+        rot.setEulerZYX(
+          mDreamTransform->getRotationZ(),
+          mDreamTransform->getRotationY(),
+          mDreamTransform->getRotationX()
+        );
+        worldTrans.setRotation(rot);
     }
 
     void PhysicsMotionState::setWorldTransform(const btTransform &worldTrans) {
-      if(mDreamTransform == nullptr) {
-        return; // die quietly before we set a node
-      }
-      btQuaternion rot = worldTrans.getRotation();
-      mDreamTransform->setRotation(rot.getX(),rot.getY(),rot.getZ());
-      btVector3 pos = worldTrans.getOrigin();
-      mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+        if(mDreamTransform == nullptr) {
+            return; // die quietly before we set transform
+        }
+        btVector3 pos = worldTrans.getOrigin();
+        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+        btQuaternion rot = worldTrans.getRotation();
+        btMatrix3x3 tmp;
+        tmp.setRotation(rot);
+        btScalar tmpX,tmpY,tmpZ;
+        tmp.getEulerZYX(tmpZ,tmpY,tmpX);
+        mDreamTransform->setRotation(tmpX,tmpY,tmpZ);
     }
 
 } // End of Dream
