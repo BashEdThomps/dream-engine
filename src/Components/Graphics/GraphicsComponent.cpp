@@ -17,6 +17,7 @@
 
 #include <SDL2/SDL_ttf.h>
 #include "GraphicsComponent.h"
+#include <glm/gtc/quaternion.hpp>
 
 namespace Dream {
 
@@ -377,14 +378,18 @@ namespace Dream {
         // Draw the loaded model
         glm::mat4 modelMatrix;
         vector<float> translation = sceneObject->getTranslation();
-        vector<float> rotation = sceneObject->getRotation();
+        //vector<float> rotation = sceneObject->getRotation();
+        glm::quat rot = sceneObject->getTransform()->getOrientation();
         vector<float> scale = sceneObject->getScale();
         // Translate
         modelMatrix = glm::translate(modelMatrix, glm::vec3(translation[0], translation[1], translation[2]));
         // Rotate
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
+        //modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
+        //modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));
+        //modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
+
+        glm::mat4 rotMat = glm::mat4_cast(rot);
+        modelMatrix = modelMatrix * rotMat;
         // Scale
         modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
         // Pass model matrix to shader

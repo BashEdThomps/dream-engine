@@ -22,14 +22,14 @@ namespace Dream {
     Transform3D::Transform3D() {
       mTransformType = TRANSFORM_TYPE_ABSOLUTE;
       mTranslation = vector<float>(3);
-      mRotation = vector<float>(3);
+      //mRotation = vector<float>(3);
       mScale = vector<float>(3);
     }
 
     Transform3D::Transform3D(Transform3D* obj) {
       mTransformType = obj->getTransformType();
       mTranslation = vector<float>(obj->getTranslation());
-      mRotation = vector<float>(obj->getRotation());
+      mOrientation = obj->getOrientation();
       mScale = vector<float>(obj->getScale());
     }
 
@@ -76,41 +76,47 @@ namespace Dream {
 // Rotation ======================================================================
 
     vector<float> Transform3D::getRotation() {
-      return mRotation;
+      vector<float> rotation(3);
+      glm::vec3 euler = glm::eulerAngles(mOrientation);
+      rotation[0] = euler.x;
+      rotation[1] = euler.y;
+      rotation[2] = euler.z;
+      return rotation;
     }
 
     void Transform3D::setRotation(vector<float> rotation) {
-      mRotation = rotation;
+      setRotation(rotation[0],rotation[1],rotation[2]);
     }
 
     void Transform3D::setRotation(float x, float y, float z) {
-      mRotation[TRANSFORM_X] = x;
-      mRotation[TRANSFORM_Y] = y;
-      mRotation[TRANSFORM_Z] = z;
+        mOrientation = glm::quat(glm::vec3(x,y,z));
     }
 
     float Transform3D::getRotationX() {
-      return mRotation[TRANSFORM_X];
+      return glm::eulerAngles(mOrientation).x;
     }
 
     float Transform3D::getRotationY() {
-      return mRotation[TRANSFORM_Y];
+      return glm::eulerAngles(mOrientation).y;
     }
 
     float Transform3D::getRotationZ() {
-      return mRotation[TRANSFORM_Z];
+      return glm::eulerAngles(mOrientation).z;
     }
 
     void Transform3D::setRotationX(float x) {
-      mRotation[TRANSFORM_X] = x;
+      glm::vec3 euler = glm::eulerAngles(mOrientation);
+      mOrientation = glm::quat(glm::vec3(x,euler.y,euler.z));
     }
 
     void Transform3D::setRotationY(float y) {
-      mRotation[TRANSFORM_Y] = y;
+      glm::vec3 euler = glm::eulerAngles(mOrientation);
+      mOrientation = glm::quat(glm::vec3(euler.x,y,euler.z));
     }
 
     void Transform3D::setRotationZ(float z) {
-      mRotation[TRANSFORM_Z] = z;
+      glm::vec3 euler = glm::eulerAngles(mOrientation);
+      mOrientation = glm::quat(glm::vec3(euler.x,euler.y,z));
     }
 
 // Scale =========================================================================
@@ -166,15 +172,18 @@ namespace Dream {
     }
 
     void Transform3D::rotateByX(float delta) {
-      mRotation[TRANSFORM_X] += delta;
+      glm::vec3 euler = glm::eulerAngles(mOrientation);
+      mOrientation = glm::quat(glm::vec3(euler.x+delta,euler.y,euler.z));
     }
 
     void Transform3D::rotateByY(float delta) {
-      mRotation[TRANSFORM_Y] += delta;
+      glm::vec3 euler = glm::eulerAngles(mOrientation);
+      mOrientation = glm::quat(glm::vec3(euler.x,euler.y+delta,euler.z));
     }
 
     void Transform3D::rotateByZ(float delta) {
-      mRotation[TRANSFORM_Z] += delta;
+      glm::vec3 euler = glm::eulerAngles(mOrientation);
+      mOrientation = glm::quat(glm::vec3(euler.x,euler.y,euler.z+delta));
     }
 
     void Transform3D::scaleByX(float delta) {
@@ -205,5 +214,13 @@ namespace Dream {
 
     btVector3 Transform3D::getRotationAsBtVector3() {
       return btVector3(getRotationX(),getRotationY(),getRotationZ());
+    }
+
+    glm::quat Transform3D::getOrientation() {
+      return mOrientation;
+    }
+
+    void Transform3D::setOrientation(glm::quat rot) {
+      mOrientation = rot;
     }
 } // End of Dream

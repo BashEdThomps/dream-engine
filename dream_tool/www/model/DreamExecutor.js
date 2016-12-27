@@ -13,7 +13,11 @@ module.exports.execDream = function(bin,projDir,uuid) {
   });
 
   dreamProcess.on('close', (code) => {
-    console.log('Dream: exited with code',code.toString());
+    if (code !== null) {
+      console.log('Dream: exited with code',code.toString());
+    } else {
+      console.log('Dream: exited with no error code');
+    }
   });
 };
 

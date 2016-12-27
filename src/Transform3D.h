@@ -21,6 +21,7 @@
 #include <vector>
 #include <iostream>
 #include <LinearMath/btVector3.h>
+#include <glm/gtc/quaternion.hpp>
 #include "Constants.h"
 
 namespace Dream {
@@ -30,7 +31,8 @@ namespace Dream {
   class Transform3D {
   private:
     vector<float> mTranslation;
-    vector<float> mRotation;
+    //vector<float> mRotation;
+    glm::quat mOrientation;
     vector<float> mScale;
     string mTransformType;
   public:
@@ -46,6 +48,9 @@ namespace Dream {
     void setTranslationY(float);
     void setTranslationZ(float);
     btVector3 getTranslationAsBtVector3();
+
+    glm::quat getOrientation();
+    void setOrientation(glm::quat);
 
     vector<float> getRotation();
     void setRotation(vector<float>);

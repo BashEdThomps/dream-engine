@@ -16,6 +16,8 @@
  * this file belongs to.
  */
 #include "PhysicsMotionState.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace Dream {
     PhysicsMotionState::PhysicsMotionState(Transform3D* dreamTransform) : btMotionState() {
@@ -29,28 +31,25 @@ namespace Dream {
     }
 
     void PhysicsMotionState::getWorldTransform(btTransform &worldTrans) const {
+        // Translation
         worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
-        btQuaternion rot = worldTrans.getRotation();
-        rot.setEulerZYX(
-          mDreamTransform->getRotationZ(),
-          mDreamTransform->getRotationY(),
-          mDreamTransform->getRotationX()
-        );
-        worldTrans.setRotation(rot);
+        // Rotation
+        glm::quat glmRot = mDreamTransform->getOrientation();
+        btQuaternion btRot = btQuaternion(glmRot.x,glmRot.y,glmRot.z,glmRot.w);
+        worldTrans.setRotation(btRot);
     }
 
     void PhysicsMotionState::setWorldTransform(const btTransform &worldTrans) {
         if(mDreamTransform == nullptr) {
             return; // die quietly before we set transform
         }
+        // Translation
         btVector3 pos = worldTrans.getOrigin();
         mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+        // Rotation
         btQuaternion rot = worldTrans.getRotation();
-        btMatrix3x3 tmp;
-        tmp.setRotation(rot);
-        btScalar tmpX,tmpY,tmpZ;
-        tmp.getEulerZYX(tmpZ,tmpY,tmpX);
-        mDreamTransform->setRotation(tmpX,tmpY,tmpZ);
+        glm::quat glmRot(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
+        mDreamTransform->setOrientation(glmRot);
     }
 
 } // End of Dream

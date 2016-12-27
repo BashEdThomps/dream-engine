@@ -133,7 +133,9 @@ namespace Dream {
         .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
         .def("getPhysicsComponent",&DreamEngine::getPhysicsComponent)
         .scope [
-            luabind::def("getInstance",&DreamEngine::getInstance)
+            luabind::def("getInstance",&DreamEngine::getInstance),
+            luabind::def("setDebug",&dreamSetDebug),
+            luabind::def("setVerbose",&dreamSetVerbose)
         ]
     ];
   }
