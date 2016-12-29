@@ -179,7 +179,7 @@ namespace Dream {
           SceneObject* sObjA = getSceneObject(objA);
           SceneObject* sObjB = getSceneObject(objB);
 
-          Event* e = new Event(sObjA->getUuid(),EVENT_TYPE_COLLISION);
+          Event* e = new Event(sObjB->getUuid(),EVENT_TYPE_COLLISION);
           sObjA->sendEvent(e);
 
           /*
