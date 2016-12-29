@@ -14,6 +14,7 @@ namespace Dream {
       btRigidBody *mRigidBody;
       btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
       bool mInPhysicsWorld;
+      bool mKinematic;
   public:
       PhysicsObjectInstance(AssetDefinition*,Transform3D*);
       ~PhysicsObjectInstance();
@@ -24,6 +25,7 @@ namespace Dream {
       void getWorldTransform(btTransform&);
       void setInPhysicsWorld(bool);
       bool getInPhysicsWorld();
+      btCollisionObject* getCollisionObject();
   protected:
       void loadExtraAttributes(nlohmann::json);
   }; // End of PhysicsObjectInstance

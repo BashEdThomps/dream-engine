@@ -121,6 +121,7 @@ namespace Dream {
     for (it=mChildren.begin(); it!=mChildren.end(); it++) {
       SceneObject* child = (*it);
       delete child;
+      child = nullptr;
     }
     mChildren.clear();
   }

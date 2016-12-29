@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <map>
+#include "Constants.h"
 
 namespace Dream {
 
@@ -28,13 +29,13 @@ namespace Dream {
 
     class Event {
     private:
-      string mSender;
-      string mType;
       map<string,string> mAttributes;
     public:
       Event(string,string);
       ~Event();
-      void addAttribute(string,string);
+      string getSender();
+      string getType();
+      void setAttribute(string,string);
       string getAttribute(string);
     };
 

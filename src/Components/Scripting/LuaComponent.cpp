@@ -48,6 +48,7 @@ namespace Dream {
     bindSceneObject();
     bindScene();
     bindTransform3D();
+    bindDreamEvent();
     bindSDL();
     return mState != nullptr;
   }
@@ -547,7 +548,7 @@ namespace Dream {
       luabind::object reg = luabind::registry(mState);
       luabind::object table = reg[id];
       luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
-      luabind::call_function<void>(funq,sceneObject,mEvent);
+      luabind::call_function<void>(funq,sceneObject,mSDLEvent);
     } catch (luabind::error &e) {
       cerr << "LuaComponent: onInput exception:" << endl << e.what() << endl;
       return false;
@@ -578,7 +579,17 @@ namespace Dream {
   }
 
   void LuaComponent::setSDL_Event(SDL_Event event) {
-    mEvent = event;
+    mSDLEvent = event;
+  }
+
+  void LuaComponent::bindDreamEvent() {
+    luabind::module(mState) [
+        luabind::class_<Event>("DreamEvent")
+            .def("getSender",&Event::getSender)
+            .def("getType",&Event::getType)
+            .def("getAttribute",&Event::getAttribute)
+            .def("setAttribute",&Event::setAttribute)
+    ];
   }
 
 } // End of Dream

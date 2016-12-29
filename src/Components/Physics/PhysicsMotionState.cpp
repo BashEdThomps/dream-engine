@@ -49,7 +49,14 @@ namespace Dream {
         // Rotation
         btQuaternion rot = worldTrans.getRotation();
         glm::quat glmRot(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
+
         mDreamTransform->setOrientation(glmRot);
     }
+
+    void PhysicsMotionState::setKinematicPos(btTransform &trans) {
+      btVector3 pos = trans.getOrigin();
+      mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+    }
+
 
 } // End of Dream

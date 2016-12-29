@@ -34,6 +34,7 @@ namespace Dream {
         void setTransform(Transform3D*);
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);
+        void setKinematicPos(btTransform&);
     };// End of PhysicsMotionState
 
 } // End of Dream

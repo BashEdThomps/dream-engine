@@ -5,6 +5,7 @@ namespace Dream {
     PhysicsObjectInstance::PhysicsObjectInstance(AssetDefinition* definition,Transform3D* transform)
         : AssetInstance(definition,transform) {
         mInPhysicsWorld = false;
+        mKinematic = false;
         return;
     }
 
@@ -66,6 +67,12 @@ namespace Dream {
             mDefinition->addAttribute(ASSET_ATTR_SIZE_Y, to_string((static_cast<float>(size[ASSET_ATTR_Y]))));
             mDefinition->addAttribute(ASSET_ATTR_SIZE_Z, to_string((static_cast<float>(size[ASSET_ATTR_Z]))));
         }
+        // Kinematic
+        if (!jsonData[ASSET_ATTR_KINEMATIC].is_null()) {
+            mKinematic = static_cast<bool>(jsonData[ASSET_ATTR_KINEMATIC]);
+        } else {
+          mKinematic = false;
+        }
     }
 
     bool PhysicsObjectInstance::load(string projectPath) {
@@ -82,6 +89,10 @@ namespace Dream {
         mCollisionShape->calculateLocalInertia(mass, fallInertia);
         mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(btScalar(mass), mMotionState, mCollisionShape, fallInertia);
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
+        if (mKinematic) {
+          mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
+          mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+        }
         mLoaded = (mRigidBody != nullptr);
         return mLoaded;
     }
@@ -148,4 +159,7 @@ namespace Dream {
       return mInPhysicsWorld;
     }
 
+    btCollisionObject* PhysicsObjectInstance::getCollisionObject() {
+        return mRigidBody;
+    }
 } // End of Dream

@@ -30,10 +30,15 @@
 #include <vector>
 #include "AssimpMesh.h"
 #include "Texture.h"
+#include <map>
 
 namespace Dream {
-      class AssimpModelInstance : public AssetInstance {
+        class AssimpModelInstance : public AssetInstance {
       private:
+        // Static
+        static map<string,const aiScene*> AssimpModelCache;
+        static const aiScene* getModelFromCache(string);
+        static ::Assimp::Importer mImporter;
         // Variables
         vector<AssimpMesh> mMeshes;
         string mDirectory;

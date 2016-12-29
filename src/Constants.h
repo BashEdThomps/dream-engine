@@ -188,5 +188,11 @@ static void dreamSetVerbose(bool verbose) {
     #define COLLISION_SHAPE_HEIGHTFIELD_TERRAIN "btHeightfieldTerrainShape"
     #define COLLISION_SHAPE_STATIC_PLANE "btStaticPlaneShape"
     #define COLLISION_SHAPE_COMPOUND "btCompoundShape"
+    #define ASSET_ATTR_KINEMATIC "kinematic"
+
+// Event =========================================================================
+    #define EVENT_SENDER "sender"
+    #define EVENT_TYPE "type"
+    #define EVENT_TYPE_COLLISION "collision"
 
 #endif // CONSTANTS_H

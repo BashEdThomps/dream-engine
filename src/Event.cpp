@@ -21,15 +21,23 @@
 namespace Dream {
 
     Event::Event(string sender, string type) {
-        mSender = sender;
-        mType = type;
+      setAttribute(EVENT_SENDER,sender);
+      setAttribute(EVENT_TYPE,type);
     }
 
     Event::~Event() {
       mAttributes.clear();
     }
 
-    void Event::addAttribute(string key, string value) {
+    string Event::getSender() {
+      return getAttribute(EVENT_SENDER);
+    }
+
+    string Event::getType() {
+      return getAttribute(EVENT_TYPE);
+    }
+
+    void Event::setAttribute(string key, string value) {
       mAttributes.insert(pair<string,string>(key,value));
     }
 
@@ -40,7 +48,7 @@ namespace Dream {
             return it->second;
           }
         }
-        return nullptr;
+        return "";
     }
 
 } // End of Dream

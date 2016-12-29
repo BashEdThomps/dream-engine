@@ -28,6 +28,7 @@
 #include "../ComponentInterface.h"
 #include "../../String.h"
 #include "../../Constants.h"
+#include "../../Event.h"
 
 namespace Dream {
 
@@ -42,10 +43,11 @@ namespace Dream {
         glm::mat4 mProjectionMatrix;
         btVector3 mGravity;
         bool mDebug;
+        vector<SceneObject*>* mScenegraph;
       public:
         PhysicsComponent();
         ~PhysicsComponent();
-        void populatePhysicsWorld(vector<SceneObject*>);
+        void populatePhysicsWorld(vector<SceneObject*>*);
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init();
@@ -55,6 +57,8 @@ namespace Dream {
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectInstance(PhysicsObjectInstance*);
         void setViewProjectionMatrix(glm::mat4, glm::mat4);
+        void checkContactManifolds();
+        SceneObject* getSceneObject(const btCollisionObject*);
       };// End of PhysicsComponent
 
 } // End of Dream

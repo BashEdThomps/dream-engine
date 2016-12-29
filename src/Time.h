@@ -22,7 +22,7 @@ namespace Dream {
     double getCurrentTime();
     double getLastTime();
     double getTimeDelta();
-    void  update();
+    void update();
     void show();
   };
 
