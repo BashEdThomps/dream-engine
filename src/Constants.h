@@ -19,7 +19,7 @@
 #define CONSTANTS_H
 
 // Enable Debug Output ===========================================================
-static bool DEBUG = true;
+static bool DEBUG = false;
 static bool VERBOSE = false;
 
 static void dreamSetDebug(bool debug) {
