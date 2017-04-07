@@ -7,11 +7,11 @@ var bodyParser     = require('koa-bodyparser');
 var app            = koa();
 var dreamDirectory = require('./model/DreamDirectory');
 var dreamExecutor  = require('./model/DreamExecutor');
+var templatesDirectory = require('./model/TemplatesDirectory')
 
 // Directory Constants
-
-var DEFAULTS                   = "defaults";
 var WWW                        = "www";
+
 var NODE_MODULES               = __dirname    + "/../node_modules/";
 var ANGULAR                    = NODE_MODULES + "angular";
 var ANGULAR_AUDIO              = NODE_MODULES + "angular-audio";
@@ -63,7 +63,7 @@ app.use(koaStatic(THREE_JS));
 
 // Api -------------------------------------------------------------------------
 
-// Log requet
+// Log request
 app.use(function *(next){
   console.log(
     "API Request"+
@@ -164,6 +164,23 @@ koaRouter.get("/asset/:project/:type/:uuid/:format",function* (next) {
     this.params.type,
     this.params.format
   );
+  yield next;
+});
+
+// GET /asset_exists/:uuid/type/format
+koaRouter.get("/templates/:type/:name/:file",function* (next) {
+  this.status = 200;
+  this.body = templatesDirectory.readTemplate (
+    this.params.type,
+    this.params.name,
+    this.params.file
+  );
+  yield next;
+});
+
+koaRouter.get("/templates",function* (next) {
+  this.status = 200;
+  this.body = templatesDirectory.listTemplates();
   yield next;
 });
 

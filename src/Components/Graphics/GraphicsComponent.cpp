@@ -116,7 +116,7 @@ namespace Dream {
         -1.0f, 1.0f
       );
       glEnable(GL_DEPTH_TEST);
-      //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
       glEnable(GL_CULL_FACE);
       glCullFace(GL_BACK);
       glEnable(GL_BLEND);

@@ -20,6 +20,7 @@
 
 #include <iostream>
 
+
 #include "PhysicsDebugDrawer.h"
 #include "PhysicsObjectInstance.h"
 #include <btBulletDynamicsCommon.h>
@@ -27,8 +28,8 @@
 
 #include "../ComponentInterface.h"
 #include "../../String.h"
-#include "../../Constants.h"
 #include "../../Event.h"
+#include "../../Constants.h"
 
 namespace Dream {
 

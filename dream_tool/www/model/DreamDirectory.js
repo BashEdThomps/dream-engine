@@ -12,6 +12,7 @@ var SCRIPT_DIR = "script";
 var SHADER_DIR = "shader";
 var SPRITE_DIR = "sprite";
 var FONT_DIR = "font";
+var PHYSICS_OBJECT_DIR = "physicsObject";
 
 var AUDIO_WAV_FMT = "wav";
 var AUDIO_OGG_FMT = "ogg";
@@ -82,6 +83,9 @@ module.exports.createProjectDirectory = function *(projectUUID, next) {
     fs.mkdirSync(font);
     console.log("mkdir",font,"ok");
 
+    var physicsObj = assetPrefix + path.sep + PHYSICS_OBJECT_DIR;
+    fs.mkdirSync(physicsObj);
+    console.log("mkdir",physicsObj,"ok");
 
     yield next;
 };

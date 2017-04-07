@@ -139,6 +139,23 @@
                             </div>
                         </td>
                     </tr>
+                    <!-- BvhTriangleMesh -->
+                    <tr id="po-btm-files" ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatBvhTriangleMesh()">
+                        <td>Model File</td>
+                        <td>
+                            <button ng-show="hasPhysicsObjectBvhTriangleMesh" class="pull-right btn-sm btn btn-danger"
+                                ng-click="onDeleteAssetDataButtonClicked()">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button id="po-upload-button" ng-click="onAssetPhysicsObjectBvhTriangleMeshUploadButtonClicked()"
+                                                          ng-show="!hasPhysicsObjectBvhTriangleMesh"
+                                                          class="pull-right btn-sm btn btn-success">
+                                <span class="glyphicon glyphicon-open"></span>
+                            </button>
+                            <input ng-show="!hasPhysicsObjectBvhTriangleMesh" type="file" id="po-btm-file"
+                                    name="po-model-file" />
+                        </td>
+                    </tr>
                     <!-- Model -->
                     <tr ng-show="isAssetTypeModel()">
                         <td>Format</td>
@@ -170,6 +187,24 @@
                                 <option value="" disabled hidden selected>Select Format</option>
                                 <option ng-repeat="fmt in assetFormats.script" value="{{fmt.format}}">{{fmt.name}}</option>
                             </select>
+                        </td>
+                    </tr>
+                    <tr ng-show="isAssetTypeScript()">
+                        <td>Template</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <select ng-model="selectedScriptTemplate" class="form-control input-sm" id="scriptTemplate">
+                                        <option value="" disabled hidden selected>Select Template</option>
+                                        <option ng-repeat="name in scriptTemplates" value="{{name}}">{{name}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-success btn-sm" ng-click="onScriptTemplateSelected()">
+                                        <span class="glyphicon glyphicon-save"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <!-- Animation -->
@@ -285,7 +320,25 @@
                             </div>
                         </td>
                     </tr>
-
+                    <!-- Shader -->
+                    <tr ng-show="isAssetTypeShader()">
+                        <td>Template</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <select ng-model="selectedShaderTemplate" class="form-control input-sm" id="shaderTemplate">
+                                        <option value="" disabled hidden selected>Select Template</option>
+                                        <option ng-repeat="name in shaderTemplates" value="{{name}}">{{name}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-success btn-sm" ng-click="onShaderTemplateSelected()">
+                                        <span class="glyphicon glyphicon-save"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                     <!-- Sprite -->
                     <tr ng-show="isAssetTypeSprite()">
                         <td>Tile Size</td>

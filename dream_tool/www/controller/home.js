@@ -1,9 +1,13 @@
-App.controller("home",["$scope","ProjectService","UIService",
-function($scope,ProjectService,UIService) {
+App.controller("home",["$scope","ProjectService","UIService","$window",
+function($scope,ProjectService,UIService,$window) {
   UIService.setBreadcrumbs(["Home"]);
   // Help Pages --------------------------------------------------------------
 
   $scope.showProject = true;
+
+  $scope.onApiClicked = function() {
+    $window.open('api_docs/html/index.html', '_blank');
+  };
 
   $scope.onProjectClicked = function() {
     $scope.hideAllHelp();
@@ -90,7 +94,12 @@ function($scope,ProjectService,UIService) {
 
   // Tree Data
 
-  $scope.helpTreeData = [{
+  $scope.helpTreeData = [
+      {
+          label: "View API/Source Documentation", 
+          onSelect: $scope.onApiClicked
+      },
+      {
       label: "Project", onSelect: $scope.onProjectClicked,
       children:
       [

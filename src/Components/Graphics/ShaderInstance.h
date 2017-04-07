@@ -22,6 +22,7 @@
 #include "../../AssetInstance.h"
 
 #include <vector>
+#include <map>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -34,62 +35,30 @@
 
 namespace Dream {
     using namespace std;
-      class ShaderInstance : public AssetInstance {
-      private:
+
+    class ShaderInstance : public AssetInstance {
+    private:
         GLuint mShaderProgram;
-      public:
+        map<string, GLfloat>  mUniform1fMap;
+
+    public:
         ShaderInstance();
         ShaderInstance(AssetDefinition*,Transform3D*);
         ~ShaderInstance();
         bool load(string);
         void use();
+        void syncUniforms();
         GLuint getShaderProgram();
         void loadExtraAttributes(nlohmann::json);
 
+    public:
         // 1f
         void setUniform1f(string, GLfloat);
-        // 1fv
-        void setUniform1fv(string, GLfloat);
-        // 1i
-        void setUniform1i(string, GLint);
-        // 1iv
-        void setUniform1iv(string, GLint);
 
-        // 2f
-        void setUniform2f(string, GLfloat, GLfloat);
-        // 2fv
-        void setUniform2fv(string, glm::vec2);
-        // 2i
-        void setUniform2i(string, GLint, GLint);
-        // 2iv
-        void setUniform2iv(string, glm::vec2);
-
-        // 3f
-        void setUniform3f(string, GLfloat, GLfloat, GLfloat);
-        // 3fv
-        void setUniform3fv(string, glm::vec3);
-        // 3i
-        void setUniform3i(string, GLint, GLint, GLint);
-        // 3iv
-        void setUniform3iv(string, glm::vec3);
-
-        // 4f
-        void setUniform4f(string, GLfloat, GLfloat, GLfloat, GLfloat);
-        // 4fv
-        void setUniform4fv(string, glm::vec4);
-        // 4i
-        void setUniform4i(string, GLint, GLint, GLint, GLint);
-        // 4iv
-        void setUniform4iv(string, glm::vec4);
-
-        // Matrix2fv
-        void setUniformMatrix2fv(string, glm::mat2);
-        // Matrix3fv
-        void setUniformMatrix3fv(string, glm::mat3);
-        //Matrix4fv
-        void setUniformMatrix4fv(string, glm::mat4);
-
-      }; // End of ShaderInstance
+    private:
+        // 1f
+        void syncUniform1f();
+    }; // End of ShaderInstance
 
 } // End of Dream
 

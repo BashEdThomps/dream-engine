@@ -24,7 +24,11 @@ namespace Dream {
         mDreamTransform = dreamTransform;
     }
 
-    PhysicsMotionState::~PhysicsMotionState() {}
+    PhysicsMotionState::~PhysicsMotionState() {
+        if (DEBUG) {
+            cout << "PhysicsMotionState: Destroying Object" << endl;
+      }
+    }
 
     void PhysicsMotionState::setTransform(Transform3D* transform) {
         mDreamTransform = transform;

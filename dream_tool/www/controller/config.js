@@ -5,7 +5,7 @@ App.config(['$compileProvider',
 
 App.config(function($stateProvider, $urlRouterProvider) {
     // Home Page -----------------------------------------------------------------
-    //$urlRouterProvider.otherwise("/home");
+    $urlRouterProvider.otherwise("/home");
     $stateProvider.state('Home', {
         url: "/home",
         templateUrl: "view/partials/home/home.html",

@@ -242,3 +242,4 @@ CmakeLists.txt.user
 docs
 *.autosave
 CMakeLists.txt.user
+dream_tool/www/api_docs

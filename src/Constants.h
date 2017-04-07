@@ -18,20 +18,11 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-// Enable Debug Output ===========================================================
-static bool DEBUG = false;
-static bool VERBOSE = false;
+extern bool DEBUG;
+extern bool VERBOSE;
 
-static void dreamSetDebug(bool debug) {
-  DEBUG = debug;
-}
-
-static void dreamSetVerbose(bool verbose) {
-  VERBOSE = verbose;
-  if (VERBOSE) {
-    dreamSetDebug(true);
-  }
-}
+void dreamSetDebug(bool debug);
+void dreamSetVerbose(bool verbose);
 
 // Misc ==========================================================================
     #define DIR_PATH_SEP "/"
@@ -69,6 +60,7 @@ static void dreamSetVerbose(bool verbose) {
     #define ASSET_DIR_SHADER "shader"
     #define ASSET_DIR_SPRITE "sprite"
     #define ASSET_DIR_FONT "font"
+    #define ASSET_DIR_PHYSICS_OBJECT "physicsObject"
     #define ASSET_TYPE_ANIMATION "animation"
     #define ASSET_TYPE_AUDIO "audio"
     #define ASSET_TYPE_LIGHT "light"
@@ -184,7 +176,7 @@ static void dreamSetVerbose(bool verbose) {
     #define COLLISION_SHAPE_MULTI_SPHERE "btMultiSphereShape"
     #define COLLISION_SHAPE_CONVEX_HULL "btConvexHullShape"
     #define COLLISION_SHAPE_CONVEX_TRIANGLE_MESH "btConvexTriangleMeshShape"
-    #define COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH "btBvhTriangleMeshShape"
+    #define COLLISION_SHAPE_BVH_TRIANGLE_MESH "btBvhTriangleMeshShape"
     #define COLLISION_SHAPE_HEIGHTFIELD_TERRAIN "btHeightfieldTerrainShape"
     #define COLLISION_SHAPE_STATIC_PLANE "btStaticPlaneShape"
     #define COLLISION_SHAPE_COMPOUND "btCompoundShape"

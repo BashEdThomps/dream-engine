@@ -7,7 +7,11 @@ namespace Dream {
       mShaderProgram = 0;
   }
 
-  PhysicsDebugDrawer::~PhysicsDebugDrawer() {}
+  PhysicsDebugDrawer::~PhysicsDebugDrawer() {
+      if (DEBUG) {
+            cout << "PhysicsDebugDrawer: Destroying Object" << endl;
+      }
+  }
 
   void PhysicsDebugDrawer::init() {
    initShader();

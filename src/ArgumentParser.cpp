@@ -26,7 +26,11 @@ namespace Dream {
     parse();
   }
 
-  ArgumentParser::~ArgumentParser() {}
+  ArgumentParser::~ArgumentParser() {
+         if (DEBUG) {
+            cout << "ArgumentParser: Destroying Object" << endl;
+      }
+  }
 
   void ArgumentParser::parse() {
     string *nextArg;

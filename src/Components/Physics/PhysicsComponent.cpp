@@ -25,6 +25,9 @@ namespace Dream {
   }
 
   PhysicsComponent::~PhysicsComponent() {
+      if (DEBUG) {
+            cout << "PhysicsComponent: Destroying Object" << endl;
+      }
       if (mSolver != nullptr) {
           delete mSolver;
           mSolver = nullptr;
@@ -93,7 +96,7 @@ namespace Dream {
       }
       vector<SceneObject*> tmpSG = scene->getScenegraphVector();
       populatePhysicsWorld(&tmpSG);
-      btScalar stepValue = mTime->getTimeDelta();
+      btScalar stepValue = static_cast<btScalar>(mTime->getTimeDelta());
       mDynamicsWorld->stepSimulation(stepValue);
       checkContactManifolds();
       if (mDebug) {

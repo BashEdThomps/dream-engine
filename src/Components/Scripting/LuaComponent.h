@@ -21,31 +21,40 @@
 #include <map>
 #include <iostream>
 #include <luabind/luabind.hpp>
-#include "../../Constants.h"
 
 extern "C" {
     #include "lualib.h"
 }
 
 #include "../../DreamEngine.h"
+#include "../../Constants.h"
 
-#define LUA_SCRIPT_ON_INIT_FUNCTION "onInit"
+#define LUA_SCRIPT_ON_INIT_FUNCTION   "onInit"
 #define LUA_SCRIPT_ON_UPDATE_FUNCTION "onUpdate"
-#define LUA_SCRIPT_ON_INPUT_FUNCTION "onInput"
-#define LUA_SCRIPT_ON_EVENT_FUNCTION "onEvent"
+#define LUA_SCRIPT_ON_INPUT_FUNCTION  "onInput"
+#define LUA_SCRIPT_ON_EVENT_FUNCTION  "onEvent"
 
 namespace Dream {
   using namespace std;
 
   class LuaComponent {
   private:
-    string mScriptLoaderCode = "function scriptloader (scriptTable, scriptname)\n"
-                               "    local mt = {__index = _G}\n"
-                               "    setmetatable(scriptTable, mt)\n"
-                               "    local chunk = loadfile(scriptname)\n"
-                               "    setfenv(chunk, scriptTable)\n"
-                               "    chunk()\n"
-                               "end";
+    string mScriptLoadFromFile =
+        "function scriptLoadFromFile (scriptTable, script_path)\n"
+        "    local mt = {__index = _G}\n"
+        "    setmetatable(scriptTable, mt)\n"
+        "    local chunk = loadfile(script_path)\n"
+        "    setfenv(chunk, scriptTable)\n"
+        "    chunk()\n"
+        "end";
+    string mScriptLoadFromString =
+        "function scriptLoadFromString (scriptTable, script_string)\n"
+        "    local mt = {__index = _G}\n"
+        "    setmetatable(scriptTable, mt)\n"
+        "    local chunk = loadstring(script_string)\n"
+        "    setfenv(chunk, scriptTable)\n"
+        "    chunk()\n"
+        "end";
     lua_State *mState;
     map<SceneObject*, LuaScriptInstance*> *mScriptMap;
     SDL_Event mSDLEvent;
@@ -56,6 +65,7 @@ namespace Dream {
     void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
 
     void bindDreamEngine();
+    void bindMath();
     void bindComponents();
     void bindProject();
     void bindSceneObject();
@@ -77,7 +87,7 @@ namespace Dream {
     void bindLightInstance();
     void bindShaderInstance();
     void bindSpriteInstance();
-    void bindPhysicsObjectInstane();
+    void bindPhysicsObjectInstance();
     void bindDreamEvent();
 
     bool init();
@@ -87,10 +97,10 @@ namespace Dream {
     void setSDL_Event(SDL_Event);
     void stackDump();
 
-    bool executeScriptInit(SceneObject*, LuaScriptInstance*);
-    bool executeScriptUpdate(SceneObject*, LuaScriptInstance*);
-    bool executeScriptKeyHandler(SceneObject*, LuaScriptInstance*);
-    bool executeScriptEventHandler(SceneObject*, LuaScriptInstance*);
+    bool executeScriptInit(SceneObject*);
+    bool executeScriptUpdate(SceneObject*);
+    bool executeScriptKeyHandler(SceneObject*);
+    bool executeScriptEventHandler(SceneObject*);
 
   }; // End of LuaComponent
 } // End of Dream

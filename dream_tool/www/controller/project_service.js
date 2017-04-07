@@ -71,8 +71,8 @@ App.service('ProjectService',
     this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_HULL = "btConvexHullShape";
     this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH = "Convex Triangle Mesh";
     this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH = "btConvexTriangleMeshShape";
-    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH = "Bvh Triangle Mesh";
-    this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH = "btBvhTriangleMeshShape";
+    this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_BVH_TRIANGLE_MESH = "Bvh Triangle Mesh";
+    this.ASSET_FORMAT_PHYSICS_OBJECT_BVH_TRIANGLE_MESH = "btBvhTriangleMeshShape";
     this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN = "Heightfield Terrain";
     this.ASSET_FORMAT_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN = "btHeightfieldTerrainShape";
     this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_STATIC_PLANE = "Static Plane";
@@ -179,8 +179,8 @@ App.service('ProjectService',
             name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH,
             format: this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_TRIANGLE_MESH
           },{
-            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH,
-            format: this.ASSET_FORMAT_PHYSICS_OBJECT_CONVEX_BVH_TRIANGLE_MESH
+            name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_BVH_TRIANGLE_MESH,
+            format: this.ASSET_FORMAT_PHYSICS_OBJECT_BVH_TRIANGLE_MESH
           },{
             name: this.ASSET_FORMAT_NAME_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN,
             format: this.ASSET_FORMAT_PHYSICS_OBJECT_HEIGHTFIELD_TERRAIN
@@ -656,6 +656,16 @@ App.service('ProjectService',
             this.ASSET_TYPE_MODEL,
             uuid,
             this.ASSET_FORMAT_MODEL_ASSIMP,
+            callback
+        );
+    };
+
+    this.assetHasPhysicsObjectBvhTriangleMesh = function(uuid,callback){
+        ApiService.assetExists(
+            this.project.uuid,
+            this.ASSET_TYPE_PHYSICS_OBJECT,
+            uuid,
+            this.ASSET_FORMAT_PHYSICS_OBJECT_BVH_TRIANGLE_MESH,
             callback
         );
     };

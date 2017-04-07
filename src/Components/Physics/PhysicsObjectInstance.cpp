@@ -2,6 +2,31 @@
 
 namespace Dream {
 
+    map<string,const aiScene*> PhysicsObjectInstance::AssimpModelCache = map<string,const aiScene*>();
+    ::Assimp::Importer PhysicsObjectInstance::mImporter;
+
+    const aiScene* PhysicsObjectInstance::getModelFromCache(string path) {
+        map<string,const aiScene*>::iterator it;
+        for (it=AssimpModelCache.begin();it!=AssimpModelCache.end();it++) {
+            if ((*it).first.compare(path) == 0) {
+                if (DEBUG) {
+                    cout << "PhysicsObjectInstance: Found cached scene for " << path << endl;
+                }
+                return (*it).second;
+            }
+        }
+        if (DEBUG) {
+          cout << "PhysicsObjectInstance: Loading " << path << " from disk" << endl;
+        }
+        const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
+            cerr << "PhysicsObjectInstance: Error importing model " << mImporter.GetErrorString() << endl;
+            return nullptr;
+        }
+        AssimpModelCache.insert(pair<string,const aiScene*>(path,scene));
+        return scene;
+    }
+
     PhysicsObjectInstance::PhysicsObjectInstance(AssetDefinition* definition,Transform3D* transform)
         : AssetInstance(definition,transform) {
         mInPhysicsWorld = false;
@@ -10,6 +35,11 @@ namespace Dream {
     }
 
     PhysicsObjectInstance::~PhysicsObjectInstance() {
+
+        if (DEBUG) {
+            cout << "PhysicsObjectInstance: Destroying Object" << endl;
+        }
+
         if (mRigidBody != nullptr) {
             delete mRigidBody;
             mRigidBody = nullptr;
@@ -77,7 +107,7 @@ namespace Dream {
 
     bool PhysicsObjectInstance::load(string projectPath) {
         loadExtraAttributes(mDefinition->getJson());
-        if (!createCollisionShape()){
+        if (!createCollisionShape(projectPath)){
             cerr << "PhysicsObjectInstance: Unable to create collision shape" << endl;
             return false;
         }
@@ -97,7 +127,7 @@ namespace Dream {
         return mLoaded;
     }
 
-    bool PhysicsObjectInstance::createCollisionShape() {
+    bool PhysicsObjectInstance::createCollisionShape(string projectPath) {
         string format = mDefinition->getFormat();
         if (format.compare(COLLISION_SHAPE_SPHERE) == 0) {
             btScalar radius = mDefinition->getAttributeAsFloat(ASSET_ATTR_RADIUS);
@@ -120,8 +150,17 @@ namespace Dream {
             //mCollisionShape = new btConvexHullShape();
         } else if (format.compare(COLLISION_SHAPE_CONVEX_TRIANGLE_MESH) == 0) {
             //mCollisionShape = new btConvexTriangleMeshShape();
-        } else if (format.compare(COLLISION_SHAPE_CONVEX_BVH_TRIANGLE_MESH) == 0) {
-            //mCollisionShape = new btBvhTriangleMeshShape();
+        } else if (format.compare(COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0) {
+            // Load Collision Data
+            string path = projectPath+mDefinition->getAssetPath();
+            if (DEBUG) {
+                cout << "PhysicsObjectInstance: Loading collision geometry from "
+                     << path << endl;
+            }
+            const aiScene* scene = getModelFromCache(path);
+            btTriangleMesh *triMesh = new btTriangleMesh();
+            processAssimpNode(scene->mRootNode, scene, triMesh);
+            mCollisionShape = new btBvhTriangleMeshShape(triMesh,true,true);
         } else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0) {
             // ???
         } else if (format.compare(COLLISION_SHAPE_STATIC_PLANE) == 0) {
@@ -143,6 +182,38 @@ namespace Dream {
         return mCollisionShape != nullptr;
     }
 
+    void PhysicsObjectInstance::processAssimpNode(aiNode* node, const aiScene* scene, btTriangleMesh* triMesh) {
+        // Process all the node's meshes (if any)
+        for(unsigned int i = 0; i < node->mNumMeshes; i++) {
+            aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+            processAssimpMesh(mesh, triMesh);
+        }
+        // Then do the same for each of its children
+        for(unsigned int i = 0; i < node->mNumChildren; i++) {
+            processAssimpNode(node->mChildren[i],scene,triMesh);
+        }
+    }
+
+    void PhysicsObjectInstance::processAssimpMesh(aiMesh* mesh, btTriangleMesh* triMesh) {
+        for(unsigned int i = 0; i < mesh->mNumVertices; i+=3) {
+            btVector3 v1, v2, v3;
+            // v1
+            v1.setX(mesh->mVertices[i].x);
+            v1.setY(mesh->mVertices[i].y);
+            v1.setZ(mesh->mVertices[i].z);
+            // v2
+            v2.setX(mesh->mVertices[i+1].x);
+            v2.setY(mesh->mVertices[i+1].y);
+            v2.setZ(mesh->mVertices[i+1].z);
+            // v3
+            v3.setX(mesh->mVertices[i+2].x);
+            v3.setY(mesh->mVertices[i+2].y);
+            v3.setZ(mesh->mVertices[i+2].z);
+            // Add triangle
+            triMesh->addTriangle(v1,v2,v3);
+        }
+    }
+
     btRigidBody* PhysicsObjectInstance::getRigidBody() {
         return mRigidBody;
     }
@@ -161,5 +232,9 @@ namespace Dream {
 
     btCollisionObject* PhysicsObjectInstance::getCollisionObject() {
         return mRigidBody;
+    }
+
+    void PhysicsObjectInstance::setLinearVelocity(float x, float y, float z) {
+        mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
 } // End of Dream

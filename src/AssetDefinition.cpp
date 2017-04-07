@@ -206,19 +206,29 @@ namespace Dream {
     string type = getType();
     if (isTypeAnimation()) {
       return ASSET_DIR_ANIMATION;
-    } else if (isTypeAudio()) {
+    }
+    else if (isTypeAudio()) {
       return ASSET_DIR_AUDIO;
-    } else if (isTypeModel()) {
+    }
+    else if (isTypeModel()) {
       return ASSET_DIR_MODEL;
-    } else if (isTypeScript()) {
+    }
+    else if (isTypeScript()) {
       return ASSET_DIR_SCRIPT;
-    } else if (isTypeShader()) {
+    }
+    else if (isTypeShader()) {
       return ASSET_DIR_SHADER;
-    } else if (isTypeSprite()) {
+    }
+    else if (isTypeSprite()) {
       return ASSET_DIR_SPRITE;
-    } else if (isTypeFont()) {
+    }
+    else if (isTypeFont()) {
       return ASSET_DIR_FONT;
-    } else {
+    }
+    else if (isTypePhysicsObject()) {
+       return ASSET_DIR_PHYSICS_OBJECT;
+    }
+    else {
       return "Type Not Found";
     }
   }

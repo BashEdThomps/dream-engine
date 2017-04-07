@@ -14,6 +14,24 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       $state.go("Home");
     }
 
+    ApiService.getTemplateList(function (templateList) {
+        if (templateList) {
+            console.log("Got template list",templateList);
+            templateList.forEach(function(typeList) {
+                if (typeList.type == ProjectService.ASSET_TYPE_SHADER) {
+                    $scope.shaderTemplates = typeList.names;
+                }
+                else if (typeList.type == ProjectService.ASSET_TYPE_SCRIPT) {
+                    $scope.scriptTemplates = typeList.names;
+                } else {
+                    console.error ("Unknown template list for type",templateList.type);
+                }
+            });
+        } else {
+            console.error("Unable to get template list");
+        }
+    });
+
     ProjectService.getAssetTypesObject(function(assetTypesObj) {
       $scope.assetTypesObject = assetTypesObj;
     });
@@ -131,6 +149,11 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_BOX;
   }
 
+  $scope.isPhysicsObjectAssetFormatBvhTriangleMesh = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_BVH_TRIANGLE_MESH;
+  }
+
   $scope.goToAssetEditor = function(uuid) {
     $state.go("ProjectAssetEditor",{asset: uuid});
     return;
@@ -164,6 +187,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
 
   $scope.updateAssetUIVariables = function() {
     console.log("Updating Asset Variables for",$scope.currentAsset);
+
     if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_AUDIO) {
       console.log("Checking for existing audio asset");
       if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_AUDIO_SFX) {
@@ -177,7 +201,22 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
           $scope.hasAudioMusic = result;
         });
       }
-    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_MODEL) {
+    }
+
+    else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_PHYSICS_OBJECT)
+    {
+      console.log("Checking for existing physics object asset");
+      if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_BVH_TRIANGLE_MESH)
+      {
+        ProjectService.assetHasPhysicsObjectBvhTriangleMesh($scope.currentAsset.uuid,function(result)
+        {
+          console.log("PhysicsObject BvhTriangleMesh Asset Exists",result);
+          $scope.hasPhysicsObjectBvhTriangleMesh = result;
+        });
+      }
+    }
+
+    else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_MODEL) {
       console.log("Checking for existing model asset");
       if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_MODEL_ASSIMP) {
         ProjectService.assetHasModelAssimp($scope.currentAsset.uuid,function(result) {
@@ -185,7 +224,9 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
           $scope.hasModelAssimp = result;
         });
       }
-    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_SHADER) {
+    }
+
+    else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_SHADER) {
       console.log("Checking for existsing shader asset");
       ProjectService.assetHasVertexShader($scope.currentAsset.uuid,function(result){
         console.log("VertexShader asset exists",result);
@@ -195,13 +236,17 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
         console.log("FragmentShader exists",result);
         $scope.hasFragmentShader = result;
       })
-    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_SPRITE) {
+    }
+
+    else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_SPRITE) {
     console.log("Checking for existsing sprite asset");
       ProjectService.assetHasSprite($scope.currentAsset.uuid,function(result){
         console.log("Sprite asset exists",result);
         $scope.hasSprite = result;
       });
-    } else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_FONT) {
+    }
+
+    else if ($scope.currentAsset.type == ProjectService.ASSET_TYPE_FONT) {
     console.log("Checking for existsing font asset");
       if ($scope.currentAsset.format == ProjectService.ASSET_FORMAT_FONT_TRUETYPE) {
         ProjectService.assetHasFontTtf($scope.currentAsset.uuid,function(result){
@@ -230,6 +275,28 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
         }
         else {
           UIService.addAlert("Error uploading asset.","danger");
+        }
+      });
+    });
+  };
+
+  $scope.onAssetPhysicsObjectBvhTriangleMeshUploadButtonClicked = function() {
+    UIService.addAlert("Uploading Asset File...","info");
+    var btmFile = document.getElementById('po-btm-file');
+    UtilService.readFileAsBinaryFromElement(btmFile, function(data) {
+
+      var path = ProjectService.getProjectUUID() + 
+            "/asset/physicsObject/" + 
+            $scope.currentAsset.uuid +"/" +
+            ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_BVH_TRIANGLE_MESH;
+
+      ApiService.uploadAsset(path,data,function(success){
+        if (success) {
+          UIService.addAlert("Collision Model Asset Uploaded Successfuly!","success");
+          $scope.updateAssetUIVariables();
+        }
+        else {
+          UIService.addAlert("Error uploading collision model asset.","danger");
         }
       });
     });
@@ -314,6 +381,55 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
       }
     });
   }
+
+  $scope.onScriptTemplateSelected = function() {
+        console.log("Writing Script Template",$scope.selectedScriptTemplate);
+        UIService.addAlert("Writing Script Template","info");
+
+        ApiService.getTemplateData(ProjectService.ASSET_TYPE_SCRIPT,$scope.selectedScriptTemplate,"lua", function(luaData) {
+            var luaPath = ProjectService.getProjectUUID()+"/asset/script/"+$scope.currentAsset.uuid+"/lua";
+            ApiService.uploadAsset(luaPath,luaData,function(success){
+                if (success) {
+                    UIService.addAlert("Script written successfuly!","success");
+                    $scope.updateAssetUIVariables();
+                }
+                else {
+                    UIService.addAlert("Error writing script.","danger");
+                }
+            });
+        });
+  };
+
+  $scope.onShaderTemplateSelected = function() {
+        console.log("Writing template",$scope.selectedShaderTemplate);
+        UIService.addAlert("Writing Shader Template","info");
+
+        ApiService.getTemplateData(ProjectService.ASSET_TYPE_SHADER,$scope.selectedShaderTemplate,"vertex", function(vertexData) {
+            var vertexPath = ProjectService.getProjectUUID()+"/asset/shader/"+$scope.currentAsset.uuid+"/vertex";
+            ApiService.uploadAsset(vertexPath,vertexData,function(success){
+                if (success) {
+                    UIService.addAlert("Vertex shader written successfuly!","success");
+                    $scope.updateAssetUIVariables();
+                }
+                else {
+                    UIService.addAlert("Error writing vertex shader.","danger");
+                }
+            });
+        });
+
+        ApiService.getTemplateData(ProjectService.ASSET_TYPE_SHADER,$scope.selectedShaderTemplate,"fragment", function(fragData) {
+            var fragPath = ProjectService.getProjectUUID()+"/asset/shader/"+$scope.currentAsset.uuid+"/fragment";
+            ApiService.uploadAsset(fragPath,fragData,function(success){
+                if (success) {
+                    UIService.addAlert("Fragment shader written successfuly!","success");
+                    $scope.updateAssetUIVariables();
+                }
+                else {
+                    UIService.addAlert("Error writing fragment shader.","danger");
+                }
+            });
+        });
+  };
 
   $scope.doOnLoad();
 }]);

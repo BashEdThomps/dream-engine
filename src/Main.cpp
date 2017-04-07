@@ -4,8 +4,6 @@
 #include <iostream>
 #include "Constants.h"
 
-#define VERBOSE
-
 #define MINIMUM_ARGUMENTS 3
 
 using namespace std;
