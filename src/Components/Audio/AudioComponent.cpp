@@ -23,6 +23,11 @@ namespace Dream {
   AudioComponent::AudioComponent() : ComponentInterface() {}
 
   AudioComponent::~AudioComponent() {
+
+        if (DEBUG) {
+            cout << "AudioComponent: Destroying Object" << endl;
+        }
+
     Mix_CloseAudio();
   }
 

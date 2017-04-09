@@ -68,19 +68,19 @@ namespace Dream {
 
     void showStatus();
 
-    vector<float> getTranslation();
+    glm::vec3 getTranslation();
     void setTranslation(float, float, float);
-    void setTranslation(vector<float>);
+    void setTranslation(glm::vec3);
     void resetTranslation();
 
-    vector<float> getRotation();
+    glm::vec3 getRotation();
     void setRotation(float, float, float);
-    void setRotation(vector<float>);
+    void setRotation(glm::vec3);
     void resetRotation();
 
-    vector<float> getScale();
+    glm::vec3 getScale();
     void setScale(float, float, float);
-    void setScale(vector<float>);
+    void setScale(glm::vec3);
     void resetScale();
 
     void resetTransform();
@@ -122,6 +122,7 @@ namespace Dream {
 
     void setLightInstance(LightInstance*);
     LightInstance* getLightInstance();
+    bool hasLightInstance();
 
     void setSpriteInstance(SpriteInstance*);
     SpriteInstance* getSpriteInstance();

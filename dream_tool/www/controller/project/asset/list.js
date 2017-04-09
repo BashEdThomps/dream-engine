@@ -73,6 +73,10 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.type == ProjectService.ASSET_TYPE_ANIMATION;
   };
 
+    $scope.isAssetTypeLight = function() {
+        if (!$scope.currentAsset) return false;
+        return $scope.currentAsset.type == ProjectService.ASSET_TYPE_LIGHT;
+    }
 
   $scope.isAssetTypeFont = function() {
     if (!$scope.currentAsset) return false;

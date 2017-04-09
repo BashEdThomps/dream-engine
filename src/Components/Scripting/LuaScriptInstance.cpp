@@ -25,6 +25,11 @@ namespace Dream {
   }
 
   LuaScriptInstance::~LuaScriptInstance() {
+
+        if (DEBUG) {
+            cout << "LuaScriptInstance: Destroying Object" << endl;
+        }
+
     return;
   }
 

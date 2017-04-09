@@ -10,12 +10,18 @@ namespace Dream     {
         mScale       = vector<float>(3);
       }
 
-      Frame::~Frame() {}
+      Frame::~Frame() {
+
+        if (DEBUG) {
+            cout << "Frame: Destroying Object" << endl;
+        }
+
+      }
 
       void Frame::applyToTransform(Transform3D* transform) {
-        transform->setTranslation(mTranslation);
-        transform->setRotation(mRotation);
-        transform->setScale(mScale);
+        //transform->setTranslation(mTranslation);
+        //transform->setRotation(mRotation);
+        //transform->setScale(mScale);
       }
 
       vector<float> Frame::getTranslation() {

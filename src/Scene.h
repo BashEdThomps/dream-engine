@@ -50,6 +50,7 @@ namespace Dream {
     Transform3D* mDefaultCameraTransform;
     float mCameraMovementSpeed;
     vector<float> mClearColour;
+    vector<float> mAmbientLightColour;
     map<SceneObject*,LuaScriptInstance*> mLuaScriptMap;
     string mProjectPath;
     vector<AssetDefinition*>* mAssetDefinitions;
@@ -78,12 +79,15 @@ namespace Dream {
     void generateScenegraphVector();
     bool isScenegraphVectorEmpty();
     vector<SceneObject*> getScenegraphVector();
-    vector<float> getDefaultCameraTranslation();
-    vector<float> getDefaultCameraRotation();
+    glm::vec3 getDefaultCameraTranslation();
+    glm::vec3 getDefaultCameraRotation();
     void setCameraMovementSpeed(float);
     float getCameraMovementSpeed();
     void loadClearColour(nlohmann::json);
     vector<float> getClearColour();
+
+    void loadAmbientLightColour(nlohmann::json);
+    vector<float> getAmbientLightColour();
 
     void addToDeleteQueue(SceneObject*);
     vector<SceneObject*> getDeleteQueue();

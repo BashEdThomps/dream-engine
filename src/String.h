@@ -21,6 +21,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <glm/glm.hpp>
 
 namespace Dream {
 
@@ -33,6 +34,7 @@ namespace Dream {
     static string indent(int);
     static string boolToYesNo(bool);
     static string floatVectorToString(vector<float>);
+    static string vec3ToString(glm::vec3);
   }; // End of String
 
 } // End of Dream

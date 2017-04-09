@@ -21,8 +21,8 @@
 namespace Dream {
 
     map<string,const aiScene*> AssimpModelInstance::AssimpModelCache = map<string,const aiScene*>();
-
     ::Assimp::Importer AssimpModelInstance::mImporter;
+
     const aiScene* AssimpModelInstance::getModelFromCache(string path) {
         map<string,const aiScene*>::iterator it;
         for (it=AssimpModelCache.begin();it!=AssimpModelCache.end();it++) {
@@ -45,23 +45,31 @@ namespace Dream {
         return scene;
     }
 
-    AssimpModelInstance::AssimpModelInstance(
-            AssetDefinition* definition, Transform3D* transform
-            ) : AssetInstance(definition,transform) {
+    AssimpModelInstance::AssimpModelInstance(AssetDefinition* definition, Transform3D* transform)
+    : AssetInstance(definition,transform)
+    {
         return;
     }
 
-    AssimpModelInstance::~AssimpModelInstance() {
+    AssimpModelInstance::~AssimpModelInstance()
+    {
+        if (DEBUG)
+        {
+            cout << "AssimpModelInstance: Destroying Object" << endl;
+        }
         return;
     }
 
-    bool AssimpModelInstance::load(string projectPath) {
+    bool AssimpModelInstance::load(string projectPath)
+    {
         string path = projectPath+mDefinition->getAssetPath();
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;
         }
         const aiScene* scene = getModelFromCache(path);
-        if(scene == nullptr){
+        if(scene == nullptr)
+        {
             return false;
         }
         mDirectory = path.substr(0, path.find_last_of('/'));
@@ -70,31 +78,38 @@ namespace Dream {
         return mLoaded;
     }
 
-    void AssimpModelInstance::draw(ShaderInstance* shader) {
+    void AssimpModelInstance::draw(ShaderInstance* shader)
+    {
         size_t nMeshes = mMeshes.size();
-        for(size_t i = 0; i < nMeshes; i++ ) {
+        for(size_t i = 0; i < nMeshes; i++ )
+        {
             mMeshes[i].draw(shader);
         }
     }
 
-    void AssimpModelInstance::processNode(aiNode* node, const aiScene* scene) {
+    void AssimpModelInstance::processNode(aiNode* node, const aiScene* scene)
+    {
         // Process all the node's meshes (if any)
-        for(GLuint i = 0; i < node->mNumMeshes; i++) {
+        for(GLuint i = 0; i < node->mNumMeshes; i++)
+        {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
             mMeshes.push_back(processMesh(mesh, scene));
         }
         // Then do the same for each of its children
-        for(GLuint i = 0; i < node->mNumChildren; i++) {
+        for(GLuint i = 0; i < node->mNumChildren; i++)
+        {
             processNode(node->mChildren[i], scene);
         }
     }
 
-    AssimpMesh AssimpModelInstance::processMesh(aiMesh* mesh, const aiScene* scene) {
+    AssimpMesh AssimpModelInstance::processMesh(aiMesh* mesh, const aiScene* scene)
+    {
         vector<Vertex>  vertices;
         vector<GLuint>  indices;
         vector<Texture> textures;
 
-        for(GLuint i = 0; i < mesh->mNumVertices; i++) {
+        for(GLuint i = 0; i < mesh->mNumVertices; i++)
+        {
             Vertex vertex;
             // Process vertex positions, normals and texture coordinates
             glm::vec3 vector;
@@ -104,20 +119,24 @@ namespace Dream {
             vector.z = mesh->mVertices[i].z;
             vertex.Position = vector;
 
-            if (mesh->mNormals) {
+            if (mesh->mNormals)
+            {
                 vector.x = mesh->mNormals[i].x;
                 vector.y = mesh->mNormals[i].y;
                 vector.z = mesh->mNormals[i].z;
                 vertex.Normal = vector;
             }
 
-            if(mesh->mTextureCoords[0]) {
+            if(mesh->mTextureCoords[0])
+            {
                 glm::vec2 vec;
                 vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
                 vertex.TexCoords = vec;
 
-            } else {
+            }
+            else
+            {
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
             }
 
@@ -125,10 +144,12 @@ namespace Dream {
         }
 
         // Process indices
-        for(GLuint i = 0; i < mesh->mNumFaces; i++) {
+        for(GLuint i = 0; i < mesh->mNumFaces; i++)
+        {
             aiFace face = mesh->mFaces[i];
-            for(GLuint j = 0; j < face.mNumIndices; j++)
+            for(GLuint j = 0; j < face.mNumIndices; j++) {
                 indices.push_back(face.mIndices[j]);
+            }
         }
 
         // Process material
@@ -141,7 +162,8 @@ namespace Dream {
         return AssimpMesh(vertices, indices, textures);
     }
 
-    vector<Texture> AssimpModelInstance::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName) {
+    vector<Texture> AssimpModelInstance::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
+    {
         vector<Texture> textures;
         for(GLuint i = 0; i < mat->GetTextureCount(type); i++) {
             aiString str;

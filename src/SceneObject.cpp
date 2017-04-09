@@ -112,6 +112,10 @@ namespace Dream {
   }
 
   SceneObject::~SceneObject() {
+      if (DEBUG) {
+         cout << "SceneObject: Destroying Object" << endl;
+     }
+
     deleteChildren();
     deleteAssetInstances();
   }
@@ -181,15 +185,15 @@ namespace Dream {
     return mName;
   }
 
-  void SceneObject::setTranslation(vector<float> translation) {
+  void SceneObject::setTranslation(glm::vec3 translation) {
     mTransform->setTranslation(translation);
   }
 
-  void SceneObject::setRotation(vector<float> rotation) {
+  void SceneObject::setRotation(glm::vec3 rotation) {
     mTransform->setRotation(rotation);
   }
 
-  void SceneObject::setScale(vector<float> scale) {
+  void SceneObject::setScale(glm::vec3 scale) {
     mTransform->setScale(scale);
   }
 
@@ -205,15 +209,15 @@ namespace Dream {
     mTransform->setScale(x,y,z);
   }
 
-  vector<float> SceneObject::getRotation() {
+  glm::vec3 SceneObject::getRotation() {
     return mTransform->getRotation();
   }
 
-  vector<float> SceneObject::getScale() {
+  glm::vec3 SceneObject::getScale() {
     return mTransform->getScale();
   }
 
-  vector<float> SceneObject::getTranslation() {
+  glm::vec3 SceneObject::getTranslation() {
     return mTransform->getTranslation();
   }
 
@@ -294,9 +298,9 @@ namespace Dream {
 
       cout << "      Children: " << mChildren.size() << endl;
       cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
-      cout << "   Translation: " << String::floatVectorToString(getTranslation()) << endl;
-      cout << "      Rotation: " << String::floatVectorToString(getRotation())<< endl;
-      cout << "         Scale: " << String::floatVectorToString(getScale())<< endl;
+      cout << "   Translation: " << String::vec3ToString(getTranslation()) << endl;
+      cout << "      Rotation: " << String::vec3ToString(getRotation())<< endl;
+      cout << "         Scale: " << String::vec3ToString(getScale())<< endl;
     }
   }
 
@@ -350,6 +354,10 @@ namespace Dream {
 
   LightInstance* SceneObject::getLightInstance() {
     return mLightInstance;
+  }
+
+  bool SceneObject::hasLightInstance() {
+      return mLightInstance != nullptr;
   }
 
   bool SceneObject::hasModelInstance() {

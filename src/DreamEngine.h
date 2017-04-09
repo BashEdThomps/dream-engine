@@ -33,7 +33,7 @@ namespace Dream {
     PhysicsComponent *mPhysicsComponent;
     AnimationComponent *mAnimationComponent;
     bool mDone;
-    SDL_Event mEvent;
+    vector<SDL_Event> mEvents;
     HTTPClient* mHTTPClient;
     DreamEngine(void);
   public:
@@ -84,7 +84,7 @@ namespace Dream {
     void setGraphicsComponent(GraphicsComponent*);
 
     map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
-    SDL_Event getSDL_Event();
+    vector<SDL_Event> getSDL_Events();
 
   }; // End of Dream
 } // End of Dream

@@ -26,6 +26,10 @@ namespace Dream {
     }
 
     FileReader::~FileReader(void) {
+        if (DEBUG) {
+         cout << "FileReader: Destroying Object" << endl;
+     }
+
         if (mInputStream.is_open()) {
             mInputStream.close();
         }

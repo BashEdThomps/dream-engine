@@ -377,6 +377,30 @@
                             <input ng-show="!hasSprite" type="file" id="sprite-file" accept=".png" name="sprite-file"/>
                         </td>
                     </tr>
+                    <!-- Light -->
+                    <tr ng-show="isAssetTypeLight()">
+                        <td>Colour</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.r"
+                                     class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.g"
+                                     class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.b"
+                                     class="form-control input-sm" type="number"/>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.a"
+                                     class="form-control input-sm" type="number"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

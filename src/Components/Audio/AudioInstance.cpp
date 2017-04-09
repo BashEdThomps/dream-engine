@@ -12,6 +12,11 @@ namespace Dream {
   }
 
   AudioInstance::~AudioInstance() {
+
+        if (DEBUG) {
+            cout << "AudioInstance: Destroying Object" << endl;
+        }
+
   }
 
   void AudioInstance::loadExtraAttributes(nlohmann::json jsonData) {

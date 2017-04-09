@@ -143,16 +143,20 @@
                 <td>Ambient Light</td>
                 <td>
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             <input ng-change="modified()" ng-model="currentScene.ambientLight.r"
                              class="form-control input-sm" type="number"/>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             <input ng-change="modified()" ng-model="currentScene.ambientLight.g"
                              class="form-control input-sm" type="number"/>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             <input ng-change="modified()" ng-model="currentScene.ambientLight.b"
+                             class="form-control input-sm" type="number"/>
+                        </div>
+                        <div class="col-sm-3">
+                            <input ng-change="modified()" ng-model="currentScene.ambientLight.a"
                              class="form-control input-sm" type="number"/>
                         </div>
                     </div>

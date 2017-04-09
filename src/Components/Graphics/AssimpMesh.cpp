@@ -10,6 +10,11 @@ namespace Dream {
   }
 
   AssimpMesh::~AssimpMesh() {
+
+        if (DEBUG) {
+            cout << "AssimpMesh: Destroying Object" << endl;
+        }
+
     return;
   }
 
@@ -20,24 +25,28 @@ namespace Dream {
     for(GLuint i = 0; i < numTextures; i++) {
       glActiveTexture(GL_TEXTURE0 + i); // Activate proper texture unit before binding
       // Retrieve texture number (the N in diffuse_textureN)
-      stringstream ss;
+      stringstream materialStr;
       string number;
       string name = mTextures[i].type;
-      ss << "material." << name;
-      if(name == "texture_diffuse") {
-        ss << diffuseNr++; // Transfer GLuint to stream
-      } else if(name == "texture_specular") {
-        ss << specularNr++; // Transfer GLuint to stream
+      materialStr << "material." << name;
+
+      if(name == "texture_diffuse")
+      {
+        materialStr << diffuseNr++; // Transfer GLuint to stream
       }
-      ss << number;
-      glUniform1f(glGetUniformLocation(shader->getShaderProgram(), ss.str().c_str()), i);
+      else if(name == "texture_specular")
+      {
+        materialStr << specularNr++; // Transfer GLuint to stream
+      }
+      materialStr << number;
+      glUniform1f(glGetUniformLocation(shader->getShaderProgram(), materialStr.str().c_str()), i);
       glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
     }
     glActiveTexture(GL_TEXTURE0);
 
     // Draw mesh
     glBindVertexArray(mVAO);
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
   }
 
@@ -47,18 +56,30 @@ namespace Dream {
     glGenBuffers(1, &mEBO);
     glBindVertexArray(mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), &mVertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertices.size() * sizeof(Vertex)), &mVertices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(GLuint),&mIndices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(mIndices.size() * sizeof(GLuint)),&mIndices[0], GL_STATIC_DRAW);
     // Vertex Positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+    glVertexAttribPointer(
+        0, 3, GL_FLOAT, GL_FALSE,
+        static_cast<GLint>(sizeof(Vertex)),
+        static_cast<GLvoid*>(0)
+    );
     // Vertex Normals
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
+    glVertexAttribPointer(
+        1, 3, GL_FLOAT, GL_FALSE,
+        static_cast<GLint>(sizeof(Vertex)),
+        (GLvoid*)offsetof(Vertex, Normal)
+    );
     // Vertex Texture Coords
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
+    glVertexAttribPointer(
+        2, 2, GL_FLOAT, GL_FALSE,
+        static_cast<GLint>(sizeof(Vertex)),
+        (GLvoid*)offsetof(Vertex, TexCoords)
+    );
     glBindVertexArray(0);
   }
 

@@ -49,4 +49,15 @@ namespace Dream {
     return outputStream.str();
   }
 
+  string String::vec3ToString(glm::vec3 vector) {
+    stringstream outputStream;
+    outputStream << "(";
+    outputStream << vector.x;
+    outputStream << ",";
+    outputStream << vector.y;
+    outputStream << ",";
+    outputStream << vector.z;
+    outputStream << ")";
+    return outputStream.str();
+  }
 }   // End of Dream

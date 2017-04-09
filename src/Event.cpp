@@ -26,6 +26,9 @@ namespace Dream {
     }
 
     Event::~Event() {
+        /*if (DEBUG) {
+         cout << "Event: Destroying Object" << endl;
+        }*/
       mAttributes.clear();
     }
 

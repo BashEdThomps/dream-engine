@@ -27,6 +27,7 @@ namespace Dream {
         mWindowShouldClose = false;
         mCamera = camera;
         mClearColour = {1.0f,1.0f,1.0f,1.0f};
+        mAmbientLightColour = {1.0f,1.0f,1.0f,1.0f};
     }
 
     void GraphicsComponent::setClearColour(vector<float> clearColour) {
@@ -36,108 +37,122 @@ namespace Dream {
         mClearColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
     }
 
+    void GraphicsComponent::setAmbientLightColour(vector<float> clearColour) {
+        mAmbientLightColour[CLEAR_RED]   = clearColour[CLEAR_RED];
+        mAmbientLightColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
+        mAmbientLightColour[CLEAR_BLUE]  = clearColour[CLEAR_BLUE];
+        mAmbientLightColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
+    }
+
     bool GraphicsComponent::createSDLWindow() {
         mWindow = SDL_CreateWindow(
-          mScreenName.c_str(),
-          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-          mWindowWidth, mWindowHeight,
-          SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-        );
+                      mScreenName.c_str(),
+                      SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                      mWindowWidth, mWindowHeight,
+                      SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
+                      );
 
         if (mWindow == nullptr) {
-          if (DEBUG) {
-            cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
-          }
-          SDL_Quit();
-          return false;
+            if (DEBUG) {
+                cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
+            }
+            SDL_Quit();
+            return false;
         }
+        SDL_SetRelativeMouseMode(SDL_TRUE);
         return true;
     }
 
     GraphicsComponent::~GraphicsComponent(void) {
-      TTF_Quit();
-      if (mWindow != nullptr) {
-        SDL_DestroyWindow(mWindow);
-      }
-      SDL_Quit();
+
+        if (DEBUG) {
+            cout << "GraphicsComponent: Destroying Object" << endl;
+        }
+
+        TTF_Quit();
+        if (mWindow != nullptr) {
+            SDL_DestroyWindow(mWindow);
+        }
+        SDL_Quit();
     }
 
     bool GraphicsComponent::init(void) {
-      if (DEBUG) {
-        cout << "GraphicsComponent: Initialising..." << endl;
-      }
+        if (DEBUG) {
+            cout << "GraphicsComponent: Initialising..." << endl;
+        }
 
-      if (!createSDLWindow()) {
-        cerr << "GraphicsComponent: Unable to create SDL Window" << endl;
-        return false;
-      }
+        if (!createSDLWindow()) {
+            cerr << "GraphicsComponent: Unable to create SDL Window" << endl;
+            return false;
+        }
 
-      //Initialize SDL_ttf
-      if(TTF_Init() == -1) {
-        cerr << "GraphicsComponent: Unable to init SDL TTF" << endl;
-        return false;
-      }
 
-      //Use OpenGL 3.2 core
-      SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-      SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        //Initialize SDL_ttf
+        if(TTF_Init() == -1) {
+            cerr << "GraphicsComponent: Unable to init SDL TTF" << endl;
+            return false;
+        }
 
-      //Create context
-      mContext = SDL_GL_CreateContext(mWindow);
-      if(mContext == nullptr) {
-        cerr << "GraphicsComponent: OpenGL context could not be created! "
-             << "SDL Says: " << SDL_GetError() << endl;
-        return false;
-      }
-      if (DEBUG) {
-        cout << "GraphicsComponent: Initialised SDL" << endl;
-      }
+        //Use OpenGL 3.2 core
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
-      // Initialize GLEW to setup the OpenGL Function pointers
-      glewExperimental = GL_TRUE;
-      GLenum glewInitResult = glewInit();
-      if (glewInitResult != GLEW_OK) {
-          cerr << "GraphicsComponent: GLEW failed to initialise." << endl;
-          return false;
-      }
-      if (DEBUG) {
-        cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
-      }
-      // Define the viewport dimensions
-      glViewport(0, 0, mWindowWidth, mWindowHeight);
-      // Ortho projection for 2D
-      mOrthoProjection = glm::ortho(
-        0.0f,
-        static_cast<float>(mWindowWidth),
-        static_cast<float>(mWindowHeight),
-        0.0f,
-        -1.0f, 1.0f
-      );
-      glEnable(GL_DEPTH_TEST);
-      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-      glEnable(GL_CULL_FACE);
-      glCullFace(GL_BACK);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      create2DVertexObjects();
-      if (DEBUG) {
-        cout << "GraphicsComponent: Initialisation Done." << endl;
-      }
-      return true;
+        //Create context
+        mContext = SDL_GL_CreateContext(mWindow);
+        if(mContext == nullptr) {
+            cerr << "GraphicsComponent: OpenGL context could not be created! "
+                 << "SDL Says: " << SDL_GetError() << endl;
+            return false;
+        }
+        if (DEBUG) {
+            cout << "GraphicsComponent: Initialised SDL" << endl;
+        }
+
+        // Initialize GLEW to setup the OpenGL Function pointers
+        glewExperimental = GL_TRUE;
+        GLenum glewInitResult = glewInit();
+        if (glewInitResult != GLEW_OK) {
+            cerr << "GraphicsComponent: GLEW failed to initialise." << endl;
+            return false;
+        }
+        if (DEBUG) {
+            cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+        }
+        // Define the viewport dimensions
+        glViewport(0, 0, mWindowWidth, mWindowHeight);
+        // Ortho projection for 2D
+        mOrthoProjection = glm::ortho(
+                               0.0f,
+                               static_cast<float>(mWindowWidth),
+                               static_cast<float>(mWindowHeight),
+                               0.0f,
+                               -1.0f, 1.0f
+                               );
+        glEnable(GL_DEPTH_TEST);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        create2DVertexObjects();
+        if (DEBUG) {
+            cout << "GraphicsComponent: Initialisation Done." << endl;
+        }
+        return true;
     }
 
     void GraphicsComponent::create2DVertexObjects() {
-      glGenVertexArrays(1, &mSpriteQuadVAO);
-      glGenBuffers(1, &mSpriteVBO);
-      glBindBuffer(GL_ARRAY_BUFFER, mSpriteVBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(mSpriteVertices), mSpriteVertices, GL_STATIC_DRAW);
-      glBindVertexArray(mSpriteQuadVAO);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), static_cast<GLvoid*>(0));
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindVertexArray(0);
+        glGenVertexArrays(1, &mSpriteQuadVAO);
+        glGenBuffers(1, &mSpriteVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, mSpriteVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(mSpriteVertices), mSpriteVertices, GL_STATIC_DRAW);
+        glBindVertexArray(mSpriteQuadVAO);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), static_cast<GLvoid*>(0));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
     }
 
     void GraphicsComponent::closeWindow() {
@@ -145,28 +160,37 @@ namespace Dream {
     }
 
     void GraphicsComponent::update(Scene* scene) {
-      if (VERBOSE) {
-        cout << "GraphicsComponrnt: Update Called" << endl;
-      }
-        SDL_PollEvent(&mEvent);
+        if (VERBOSE) {
+            cout << "GraphicsComponrnt: Update Called" << endl;
+        }
 
-        switch(mEvent.type) {
-          case SDL_QUIT:
-            mWindowShouldClose = true;
-            break;
+        mEvents.clear();
+        SDL_Event event;
+
+        while(SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                mWindowShouldClose = true;
+            }
+            SDL_Event e;
+            memcpy(&e,&event,sizeof(SDL_Event));
+            mEvents.push_back(e);
+        }
+        if (VERBOSE) {
+            cout << "GraphicsComponent " << mEvents.size() << " Events" << endl;
         }
 
         if (!mWindowShouldClose) {
             // Clear existing Queues
             clear2DQueue();
             clear3DQueue();
+            clearLightQueue();
             // Clear the colorbuffer
             glClearColor(
-                mClearColour[CLEAR_RED],
-                mClearColour[CLEAR_GREEN],
-                mClearColour[CLEAR_BLUE],
-                mClearColour[CLEAR_ALPHA]
-            );
+                        mClearColour[CLEAR_RED],
+                        mClearColour[CLEAR_GREEN],
+                        mClearColour[CLEAR_BLUE],
+                        mClearColour[CLEAR_ALPHA]
+                        );
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             vector<SceneObject*> scenegraph = scene->getScenegraphVector();
             for (vector<SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ ) {
@@ -198,6 +222,10 @@ namespace Dream {
                              << " has font, but no shader assigned." << endl;
                     }
                 }
+                // Lights
+                if (object->hasLightInstance()) {
+                   addToLightQueue(object->getLightInstance());
+                }
             }
         }
     }
@@ -216,12 +244,12 @@ namespace Dream {
 
     void GraphicsComponent::draw2DQueue() {
         for (vector<SceneObject*>::iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ ) {
-          SceneObject* sceneObj = *it;
-          if (sceneObj->hasSpriteInstance()) {
-            drawSprite(sceneObj);
-          } else if (sceneObj->hasFontInstance()) {
-            drawFont(sceneObj);
-          }
+            SceneObject* sceneObj = *it;
+            if (sceneObj->hasSpriteInstance()) {
+                drawSprite(sceneObj);
+            } else if (sceneObj->hasFontInstance()) {
+                drawFont(sceneObj);
+            }
         }
     }
 
@@ -234,32 +262,27 @@ namespace Dream {
     }
 
     void GraphicsComponent::draw3DQueue() {
-      // Transformation matrices
-      mProjectionMatrix = glm::perspective(
-        mCamera->getZoom(),
-        static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
-        mMinimumDraw,
-        mMaximumDraw
-      );
-      // View transform
-      vector<vector<float>> view = mCamera->getViewMatrix();
-      mViewMatrix = glm::mat4(
-        view[0][0], view[0][1], view[0][2], view[0][3],
-        view[1][0], view[1][1], view[1][2], view[1][3],
-        view[2][0], view[2][1], view[2][2], view[2][3],
-        view[3][0], view[3][1], view[3][2], view[3][3]
-      );
-      for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ ) {
-        drawModel(*it);
-      }
+        // Transformation matrices
+        mProjectionMatrix = glm::perspective(
+                                mCamera->getZoom(),
+                                static_cast<float>(mWindowWidth) / static_cast<float>(mWindowHeight),
+                                mMinimumDraw,
+                                mMaximumDraw
+                                );
+        // View transform
+        mViewMatrix = mCamera->getViewMatrix();
+
+        for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ ) {
+            drawModel(*it);
+        }
     }
 
     glm::mat4 GraphicsComponent::getViewMatrix() {
-      return mViewMatrix;
+        return mViewMatrix;
     }
 
     glm::mat4 GraphicsComponent::getProjectionMatrix() {
-      return mProjectionMatrix;
+        return mProjectionMatrix;
     }
 
     /*
@@ -267,103 +290,103 @@ namespace Dream {
      *    https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
      */
     void GraphicsComponent::drawSprite(SceneObject* sceneObject) {
-      // Get Assets
-      SpriteInstance* sprite = sceneObject->getSpriteInstance();
-      ShaderInstance* shader = sceneObject->getShaderInstance();
-      // Get arguments
-      glm::vec2 size = glm::vec2(sprite->getWidth(),sprite->getHeight());
-      GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-      GLfloat scale = sceneObject->getTransform()->getScaleZ();
-      glm::vec3 color = glm::vec3(1.0f);
-      // Setup Shader
-      shader->use();
-      float tX = sprite->getTransform()->getTranslationX();
-      float tY = sprite->getTransform()->getTranslationY();
-      glm::vec2 position = glm::vec2(tX,tY);
-      // Offset origin to middle of sprite
-      glm::mat4 model;
-      model = glm::translate(model, glm::vec3(position, 0.0f));
-      model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-      model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
-      model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-      model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
-      // Pass uniform arguments to shader
-      glUniformMatrix4fv(glGetUniformLocation(
-        shader->getShaderProgram(), "model"),
-        1, GL_FALSE, glm::value_ptr(model)
-      );
-      glUniform3fv(glGetUniformLocation(
-        shader->getShaderProgram(), "spriteColor"),
-        1, glm::value_ptr(color)
-      );
-      glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
-      glUniformMatrix4fv(glGetUniformLocation(
-        shader->getShaderProgram(), "projection"),
-        1, GL_FALSE, glm::value_ptr(mOrthoProjection)
-      );
-      // Bind texture
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D,sprite->getTexture());
-      // Bind VAO
-      glBindVertexArray(mSpriteQuadVAO);
-      // Draw
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-      // Cleanup
-      glBindVertexArray(0);
-      glUseProgram(0);
+        // Get Assets
+        SpriteInstance* sprite = sceneObject->getSpriteInstance();
+        ShaderInstance* shader = sceneObject->getShaderInstance();
+        // Get arguments
+        glm::vec2 size = glm::vec2(sprite->getWidth(),sprite->getHeight());
+        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
+        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+        glm::vec3 color = glm::vec3(1.0f);
+        // Setup Shader
+        shader->use();
+        float tX = sprite->getTransform()->getTranslationX();
+        float tY = sprite->getTransform()->getTranslationY();
+        glm::vec2 position = glm::vec2(tX,tY);
+        // Offset origin to middle of sprite
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3(position, 0.0f));
+        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+        // Pass uniform arguments to shader
+        glUniformMatrix4fv(glGetUniformLocation(
+                               shader->getShaderProgram(), "model"),
+                           1, GL_FALSE, glm::value_ptr(model)
+                           );
+        glUniform3fv(glGetUniformLocation(
+                         shader->getShaderProgram(), "spriteColor"),
+                     1, glm::value_ptr(color)
+                     );
+        glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
+        glUniformMatrix4fv(glGetUniformLocation(
+                               shader->getShaderProgram(), "projection"),
+                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+                           );
+        // Bind texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,sprite->getTexture());
+        // Bind VAO
+        glBindVertexArray(mSpriteQuadVAO);
+        // Draw
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // Cleanup
+        glBindVertexArray(0);
+        glUseProgram(0);
     }
 
     void GraphicsComponent::drawFont(SceneObject* sceneObject) {
-      // Get Assets
-      FontInstance* font = sceneObject->getFontInstance();
-      if (font->hasChanged()) {
-        font->renderToTexture();
-      }
-      ShaderInstance* shader = sceneObject->getShaderInstance();
-      // Get arguments
-      glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
-      GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-      GLfloat scale = sceneObject->getTransform()->getScaleZ();
-      glm::vec3 color = glm::vec3(1.0f);
-      // Configure VAO/VBO
-      // Setup GL
-      //createSpriteVertexObjects();
-      // Setup Shader
-      shader->use();
-      float tX = font->getTransform()->getTranslationX();
-      float tY = font->getTransform()->getTranslationY();
-      glm::vec2 position = glm::vec2(tX,tY);
-      // Offset origin to middle of sprite
-      glm::mat4 model;
-      model = glm::translate(model, glm::vec3(position, 0.0f));
-      model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-      model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
-      model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-      model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
-      // Pass uniform arguments to shader
-      glUniformMatrix4fv(glGetUniformLocation(
-        shader->getShaderProgram(), "model"),
-        1, GL_FALSE, glm::value_ptr(model)
-      );
-      glUniform3fv(glGetUniformLocation(
-        shader->getShaderProgram(), "spriteColor"),
-        1, glm::value_ptr(color)
-      );
-      glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
-      glUniformMatrix4fv(glGetUniformLocation(
-        shader->getShaderProgram(), "projection"),
-        1, GL_FALSE, glm::value_ptr(mOrthoProjection)
-      );
-      // Bind texture
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D,font->getTexture());
-      // Bind VAO
-      glBindVertexArray(mSpriteQuadVAO);
-      // Draw
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-      // Cleanup
-      glBindVertexArray(0);
-      glUseProgram(0);
+        // Get Assets
+        FontInstance* font = sceneObject->getFontInstance();
+        if (font->hasChanged()) {
+            font->renderToTexture();
+        }
+        ShaderInstance* shader = sceneObject->getShaderInstance();
+        // Get arguments
+        glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
+        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
+        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+        glm::vec3 color = glm::vec3(1.0f);
+        // Configure VAO/VBO
+        // Setup GL
+        //createSpriteVertexObjects();
+        // Setup Shader
+        shader->use();
+        float tX = font->getTransform()->getTranslationX();
+        float tY = font->getTransform()->getTranslationY();
+        glm::vec2 position = glm::vec2(tX,tY);
+        // Offset origin to middle of sprite
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3(position, 0.0f));
+        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+        // Pass uniform arguments to shader
+        glUniformMatrix4fv(glGetUniformLocation(
+                               shader->getShaderProgram(), "model"),
+                           1, GL_FALSE, glm::value_ptr(model)
+                           );
+        glUniform3fv(glGetUniformLocation(
+                         shader->getShaderProgram(), "spriteColor"),
+                     1, glm::value_ptr(color)
+                     );
+        glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
+        glUniformMatrix4fv(glGetUniformLocation(
+                               shader->getShaderProgram(), "projection"),
+                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+                           );
+        // Bind texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,font->getTexture());
+        // Bind VAO
+        glBindVertexArray(mSpriteQuadVAO);
+        // Draw
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // Cleanup
+        glBindVertexArray(0);
+        glUseProgram(0);
     }
 
     void GraphicsComponent::drawModel(SceneObject* sceneObject) {
@@ -371,31 +394,69 @@ namespace Dream {
         AssimpModelInstance* model = sceneObject->getModelInstance();
         ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
+        // Set Ambient Light Values
+        GLint uAmbientStrength = glGetUniformLocation(shader->getShaderProgram(),"ambientStrength");
+        GLint uAmbientColor    = glGetUniformLocation(shader->getShaderProgram(),"ambientColor");
+        if (uAmbientColor > 0 && uAmbientStrength > 0) {
+            glm::vec3 ambientColor = glm::vec3(mAmbientLightColour[0],mAmbientLightColour[1],mAmbientLightColour[2]);
+            glUniform1f(uAmbientStrength,mAmbientLightColour[3]);
+            glUniform3fv(uAmbientColor,1,glm::value_ptr(ambientColor));
+        }
+        // Set Diffuse Light Values
+        vector<LightInstance*>::iterator lights;
+        int i;
+        for (i=1, lights = mLightQueue.begin(); lights != mLightQueue.end(); lights++, i++) {
+            stringstream uPosStr;
+            uPosStr << "diffusePos_" << i;
+            stringstream uColorStr;
+            uColorStr << "diffuseColor_" << i;
+
+            GLint uLightPos   = glGetUniformLocation(shader->getShaderProgram(),uPosStr.str().c_str());
+            GLint uLightColor = glGetUniformLocation(shader->getShaderProgram(),uColorStr.str().c_str());
+
+            if (uLightPos > 0 && uLightColor > 0) {
+                glm::vec3 lightPos = (*lights)->getTransform()->getTranslation();
+                glm::vec3 lightColor = (*lights)->getColor();
+                glUniform3fv(uLightPos  ,1, glm::value_ptr(lightPos));
+                glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
+            } else {
+                cerr << "GraphicsComponent: cannot find uniform for " << uPosStr.str() << endl;
+                cerr << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;
+            }
+        }
 
         // Pass view/projection transform to shader
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-        // Draw the loaded model
-        glm::mat4 modelMatrix;
-        vector<float> translation = sceneObject->getTranslation();
-        //vector<float> rotation = sceneObject->getRotation();
-        glm::quat rot = sceneObject->getTransform()->getOrientation();
-        vector<float> scale = sceneObject->getScale();
-        // Translate
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(translation[0], translation[1], translation[2]));
-        // Rotate
-        //modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[0]), glm::vec3(1,0,0));
-        //modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[1]), glm::vec3(0,1,0));
-        //modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation[2]), glm::vec3(0,0,1));
 
+        // calculate the model matrix
+        glm::mat4 modelMatrix;
+
+        // Get raw data
+        glm::vec3 translation = sceneObject->getTranslation();
+        glm::quat rot = sceneObject->getTransform()->getOrientation();
+        glm::vec3 scale = sceneObject->getScale();
+
+        // Translate
+        modelMatrix = glm::translate(modelMatrix,translation);
+
+        // Rotate
         glm::mat4 rotMat = glm::mat4_cast(rot);
         modelMatrix = modelMatrix * rotMat;
+
+
         // Scale
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(scale[0], scale[1], scale[2]));
+        modelMatrix = glm::scale(modelMatrix, scale);
+
         // Pass model matrix to shader
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        glUniformMatrix4fv(
+            glGetUniformLocation(shader->getShaderProgram(), "model"),
+            1, GL_FALSE, glm::value_ptr(modelMatrix)
+        );
+
         // Draw using shader
         model->draw(shader);
+
         // Unbind shader
         glUseProgram(0);
     }
@@ -408,24 +469,24 @@ namespace Dream {
             if (errorCode!=0) {
                 cerr << "GraphicsComponent: Error Check " << marker << ": " << endl;
                 switch (errorCode) {
-                case GL_NO_ERROR:
-                    cerr << "\tGL_NO_ERROR" << endl;
-                    break;
-                case GL_INVALID_ENUM:
-                    cerr << "\tGL_INVALID_ENUM" << endl;
-                    break;
-                case GL_INVALID_VALUE:
-                    cerr << "\tGL_INVALID_VALUE" << endl;
-                    break;
-                case GL_INVALID_OPERATION:
-                    cerr << "\tGL_INVALID_OPERATION" << endl;
-                    break;
-                case GL_INVALID_FRAMEBUFFER_OPERATION:
-                    cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
-                    break;
-                case GL_OUT_OF_MEMORY:
-                    cerr << "\tGL_OUT_OF_MEMORY" << endl;
-                    break;
+                    case GL_NO_ERROR:
+                        cerr << "\tGL_NO_ERROR" << endl;
+                        break;
+                    case GL_INVALID_ENUM:
+                        cerr << "\tGL_INVALID_ENUM" << endl;
+                        break;
+                    case GL_INVALID_VALUE:
+                        cerr << "\tGL_INVALID_VALUE" << endl;
+                        break;
+                    case GL_INVALID_OPERATION:
+                        cerr << "\tGL_INVALID_OPERATION" << endl;
+                        break;
+                    case GL_INVALID_FRAMEBUFFER_OPERATION:
+                        cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
+                        break;
+                    case GL_OUT_OF_MEMORY:
+                        cerr << "\tGL_OUT_OF_MEMORY" << endl;
+                        break;
                 }
                 cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
                 cerr << "\tCode: " << errorCode << endl;
@@ -459,27 +520,36 @@ namespace Dream {
         return mWindowShouldClose;
     }
 
-    SDL_Event GraphicsComponent::getSDL_Event() {
-        return mEvent;
+    vector<SDL_Event> GraphicsComponent::getSDL_Events() {
+        return mEvents;
     }
 
     int GraphicsComponent::getWindowWidth() {
-      updateWindowDimensions();
-      return mWindowWidth;
+        updateWindowDimensions();
+        return mWindowWidth;
     }
 
     int GraphicsComponent::getWindowHeight() {
-      updateWindowDimensions();
-      return mWindowHeight;
+        updateWindowDimensions();
+        return mWindowHeight;
     }
 
     void GraphicsComponent::updateWindowDimensions() {
-      if (mWindow != nullptr) {
-        SDL_GetWindowSize(mWindow, &mWindowWidth, &mWindowHeight);
-      }
+        if (mWindow != nullptr) {
+            SDL_GetWindowSize(mWindow, &mWindowWidth, &mWindowHeight);
+        }
     }
 
     void GraphicsComponent::setWindowShouldClose(bool close) {
-      mWindowShouldClose = close;
+        mWindowShouldClose = close;
     }
+
+    void GraphicsComponent::addToLightQueue(LightInstance* lightInstance) {
+       mLightQueue.push_back(lightInstance);
+    }
+
+    void GraphicsComponent::clearLightQueue() {
+       mLightQueue.clear();
+    }
+
 } // End of Dream

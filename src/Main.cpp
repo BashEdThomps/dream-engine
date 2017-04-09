@@ -59,7 +59,7 @@ int main(int argc, const char** argv) {
       break;
     }
 
-    lua.setSDL_Event(engine->getSDL_Event());
+    lua.setSDL_Events(engine->getSDL_Events());
 
     if (!lua.update()) {
       cerr << "Main: LuaComponentInstance update error!" << endl;

@@ -25,6 +25,11 @@ namespace Dream {
     }
 
     ShaderInstance::~ShaderInstance() {
+
+        if (DEBUG) {
+            cout << "ShaderInstance: Destroying Object" << endl;
+        }
+
         /*if (mShaderProgram > 0) {
       glDeleteShader(mShaderProgram);
     }

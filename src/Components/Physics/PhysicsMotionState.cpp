@@ -16,11 +16,10 @@
  * this file belongs to.
  */
 #include "PhysicsMotionState.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-
 namespace Dream {
     PhysicsMotionState::PhysicsMotionState(Transform3D* dreamTransform) : btMotionState() {
+        if (VERBOSE)
+            cout << "PhysicsMotionState: Constructor called" << endl;
         mDreamTransform = dreamTransform;
     }
 
@@ -31,10 +30,14 @@ namespace Dream {
     }
 
     void PhysicsMotionState::setTransform(Transform3D* transform) {
+        if (VERBOSE)
+            cout << "PhysicsMotionState: setTransform called" << endl;
         mDreamTransform = transform;
     }
 
     void PhysicsMotionState::getWorldTransform(btTransform &worldTrans) const {
+        if (VERBOSE)
+            cout << "PhysicsMotionState: getWorldTransform called" << endl;
         // Translation
         worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
         // Rotation
@@ -44,7 +47,10 @@ namespace Dream {
     }
 
     void PhysicsMotionState::setWorldTransform(const btTransform &worldTrans) {
+        if (VERBOSE)
+            cout << "PhysicsMotionState: setWorldTransform called" << endl;
         if(mDreamTransform == nullptr) {
+            cerr << "PhysicsMotionState: Error in SetWorldTransform!!" << endl;
             return; // die quietly before we set transform
         }
         // Translation
@@ -52,12 +58,12 @@ namespace Dream {
         mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
         // Rotation
         btQuaternion rot = worldTrans.getRotation();
-        glm::quat glmRot(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
-
-        mDreamTransform->setOrientation(glmRot);
+        mDreamTransform->setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
     }
 
     void PhysicsMotionState::setKinematicPos(btTransform &trans) {
+      if (VERBOSE)
+        cout << "PhysicsMotionState: setKinematicPos called" << endl;
       btVector3 pos = trans.getOrigin();
       mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
     }

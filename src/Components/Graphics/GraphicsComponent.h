@@ -75,11 +75,13 @@ namespace Dream {
       float mMinimumDraw = 0.1f;
       float mMaximumDraw = 1000.0f;
       SDL_GLContext mContext;
-      SDL_Event mEvent;
+      vector<SDL_Event> mEvents;
       vector<SceneObject*> m2DQueue;
       vector<SceneObject*> m3DQueue;
+      vector<LightInstance*> mLightQueue;
       glm::mat4 mOrthoProjection;
       vector<float> mClearColour;
+      vector<float> mAmbientLightColour;
   public:
       void setWindowWidth(int);
       void setWindowHeight(int);
@@ -94,6 +96,9 @@ namespace Dream {
       void clear2DQueue();
       void addTo2DQueue(SceneObject*);
       void draw2DQueue();
+
+      void addToLightQueue(LightInstance*);
+      void clearLightQueue();
 
       void clear3DQueue();
       void addTo3DQueue(SceneObject*);
@@ -111,9 +116,11 @@ namespace Dream {
       bool checkGLError(string);
       bool isWindowShouldCloseFlagSet();
       SDL_Window* getWindow();
-      SDL_Event getSDL_Event();
+      vector<SDL_Event> getSDL_Events();
 
       void setClearColour(vector<float>);
+      void setAmbientLightColour(vector<float>);
+
       void create2DVertexObjects();
       void setWindowShouldClose(bool);
       glm::mat4 getViewMatrix();

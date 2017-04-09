@@ -57,7 +57,7 @@ namespace Dream {
         "end";
     lua_State *mState;
     map<SceneObject*, LuaScriptInstance*> *mScriptMap;
-    SDL_Event mSDLEvent;
+    vector<SDL_Event> mSDLEvents;
   public:
     LuaComponent();
     ~LuaComponent();
@@ -78,6 +78,7 @@ namespace Dream {
     void bindPhysicsComponent();
     void bindSDL();
     void bindSDL_Event();
+    void bindCamera();
 
     void bindAssetClasses();
     void bindAudioInstance();
@@ -94,7 +95,7 @@ namespace Dream {
     bool createAllScripts();
     bool loadScript(SceneObject*, LuaScriptInstance*);
     bool update();
-    void setSDL_Event(SDL_Event);
+    void setSDL_Events(vector<SDL_Event>);
     void stackDump();
 
     bool executeScriptInit(SceneObject*);

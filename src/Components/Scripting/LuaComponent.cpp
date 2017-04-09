@@ -29,6 +29,10 @@ namespace Dream {
     }
 
     LuaComponent::~LuaComponent() {
+        if (DEBUG) {
+            cout << "LuaComponent: Destroying Object" << endl;
+        }
+
         if (mState != nullptr) {
             lua_close(mState);
         }
@@ -55,6 +59,7 @@ namespace Dream {
         bindTransform3D();
         bindDreamEvent();
         bindSDL();
+        bindCamera();
         return mState != nullptr;
     }
 
@@ -145,6 +150,7 @@ namespace Dream {
                 .def("loadSceneByUuid",&DreamEngine::loadSceneByUuid)
                 .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
                 .def("getPhysicsComponent",&DreamEngine::getPhysicsComponent)
+                .def("getCamera",&DreamEngine::getCamera)
                 .scope [
                     luabind::def("getInstance",&DreamEngine::getInstance),
                     luabind::def("setDebug",&dreamSetDebug),
@@ -210,7 +216,7 @@ namespace Dream {
                 .def("setCameraMovementSpeed",&Scene::setCameraMovementSpeed)
                 .def("getSceneObjectByUuid",&Scene::getSceneObjectByUuid)
                 .def("getSceneObjectByName",&Scene::getSceneObjectByName)
-                ];
+        ];
     }
 
     void LuaComponent::bindSceneObject() {
@@ -337,23 +343,32 @@ namespace Dream {
                 .def_readonly("key", &SDL_Event::key)
                 // Controller
                 .def_readonly("cbutton", &SDL_Event::cbutton)
-                .def_readonly("caxis", &SDL_Event::caxis)
+                .def_readonly("caxis",   &SDL_Event::caxis)
                 // Joystick
                 .def_readonly("jbutton", &SDL_Event::jbutton)
-                .def_readonly("jhat", &SDL_Event::jhat)
-                .def_readonly("jaxis", &SDL_Event::jaxis)
+                .def_readonly("jhat",    &SDL_Event::jhat)
+                .def_readonly("jaxis",   &SDL_Event::jaxis)
+                // Mouse
+                .def_readonly("motion", &SDL_Event::motion)
+                .def_readonly("button", &SDL_Event::button)
+                .def_readonly("wheel",  &SDL_Event::wheel)
                 // SDL_EventType ========================================================
                 .enum_("EventType") [
+                // Keys
                 luabind::value("KEYUP",SDL_EventType::SDL_KEYUP),
                 luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN),
-
+                // Joystick
                 luabind::value("JOY_BUTTONDOWN",SDL_JOYBUTTONDOWN),
                 luabind::value("JOY_BUTTONUP",SDL_JOYBUTTONUP),
                 luabind::value("JOY_HATMOTION",SDL_JOYHATMOTION),
                 luabind::value("JOY_AXISMOTION",SDL_JOYAXISMOTION),
-
+                // Controller
                 luabind::value("CONTROLLER_BUTTONDOWN",SDL_CONTROLLERBUTTONDOWN),
-                luabind::value("CONTROLLER_BUTTONUP",SDL_CONTROLLERBUTTONUP)
+                luabind::value("CONTROLLER_BUTTONUP",SDL_CONTROLLERBUTTONUP),
+                // Mouse
+                luabind::value("MOUSE_MOTION",SDL_MOUSEMOTION),
+                luabind::value("MOUSE_BUTTONUP",SDL_MOUSEBUTTONUP),
+                luabind::value("MOUSE_BUTTONDOWN",SDL_MOUSEBUTTONDOWN)
                 ]
                 // SDLK_* Definitions ==================================================
                 .enum_("Key") [
@@ -389,7 +404,18 @@ namespace Dream {
                 luabind::value("KEY_w",SDLK_w),
                 luabind::value("KEY_x",SDLK_x),
                 luabind::value("KEY_y",SDLK_y),
-                luabind::value("KEY_z",SDLK_z)
+                luabind::value("KEY_z",SDLK_z),
+                // Numero
+                luabind::value("KEY_0",SDLK_0),
+                luabind::value("KEY_1",SDLK_1),
+                luabind::value("KEY_2",SDLK_2),
+                luabind::value("KEY_3",SDLK_3),
+                luabind::value("KEY_4",SDLK_4),
+                luabind::value("KEY_5",SDLK_5),
+                luabind::value("KEY_6",SDLK_6),
+                luabind::value("KEY_7",SDLK_7),
+                luabind::value("KEY_8",SDLK_8),
+                luabind::value("KEY_9",SDLK_9)
                 ],
                 // SDL_ControllerButtonEvent ===========================================
                 luabind::class_<SDL_ControllerButtonEvent>("ControllerButtonEvent")
@@ -426,8 +452,19 @@ namespace Dream {
                 .def_readonly("timestamp",&SDL_JoyAxisEvent::timestamp)
                 .def_readonly("which",&SDL_JoyAxisEvent::which)
                 .def_readonly("axis",&SDL_JoyAxisEvent::axis)
-                .def_readonly("value",&SDL_JoyAxisEvent::value)
-                ];
+                .def_readonly("value",&SDL_JoyAxisEvent::value),
+                // SDL_MouseMotionEvent ================================================
+                luabind::class_<SDL_MouseMotionEvent>("MouseMotionEvent")
+                .def_readonly("type",&SDL_MouseMotionEvent::type)
+                .def_readonly("timestamp",&SDL_MouseMotionEvent::timestamp)
+                .def_readonly("windowID",&SDL_MouseMotionEvent::windowID)
+                .def_readonly("which",&SDL_MouseMotionEvent::which)
+                .def_readonly("state",&SDL_MouseMotionEvent::state)
+                .def_readonly("x",&SDL_MouseMotionEvent::x)
+                .def_readonly("y",&SDL_MouseMotionEvent::y)
+                .def_readonly("xrel",&SDL_MouseMotionEvent::xrel)
+                .def_readonly("yrel",&SDL_MouseMotionEvent::yrel)
+            ];
     }
 
     void LuaComponent::bindAssetClasses() {
@@ -482,7 +519,6 @@ namespace Dream {
                 .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
         ];
     }
-
 
     void LuaComponent::setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>* scriptMap) {
         mScriptMap = scriptMap;
@@ -597,7 +633,11 @@ namespace Dream {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
-            luabind::call_function<void>(funq,sceneObject,mSDLEvent);
+            vector<SDL_Event>::iterator it;
+            for (it=mSDLEvents.begin();it!=mSDLEvents.end();it++) {
+                SDL_Event next = (*it);
+                luabind::call_function<void>(funq,sceneObject,next);
+            }
         } catch (luabind::error &e) {
             cerr << "LuaComponent: onInput exception:" << endl << e.what() << endl;
             return false;
@@ -627,8 +667,8 @@ namespace Dream {
         return true;
     }
 
-    void LuaComponent::setSDL_Event(SDL_Event event) {
-        mSDLEvent = event;
+    void LuaComponent::setSDL_Events(vector<SDL_Event> events) {
+        mSDLEvents = events;
     }
 
     void LuaComponent::bindDreamEvent() {
@@ -641,6 +681,19 @@ namespace Dream {
                 ];
     }
 
+    void LuaComponent::bindCamera() {
+        luabind::module(mState) [
+            luabind::class_<Camera>("Camera")
+            .def("processKeyboard",&Camera::processKeyboard)
+            .def("processMouseMovement",&Camera::processMouseMovement)
+            .enum_("CameraMovement") [
+                luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
+                luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
+                luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
+                luabind::value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
+            ]
+        ];
+    }
 } // End of Dream
 
 using namespace std;

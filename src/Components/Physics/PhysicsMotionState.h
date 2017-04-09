@@ -19,6 +19,8 @@
 #define PHYSICSMOTIONSTATE_H
 
 #include "../../Transform3D.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <LinearMath/btMotionState.h>
 #include <LinearMath/btMatrix3x3.h>
 #include <LinearMath/btQuaternion.h>

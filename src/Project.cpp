@@ -79,7 +79,12 @@ namespace Dream {
         }
     }
 
-    Project::~Project() {}
+    Project::~Project() {
+        if (DEBUG) {
+         cout << "Project: Destroying Object" << endl;
+     }
+
+    }
 
     void Project::setName(string name) {
         mName = name;

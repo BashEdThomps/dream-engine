@@ -27,6 +27,11 @@ namespace Dream {
     }
 
     FontInstance::~FontInstance() {
+
+        if (DEBUG) {
+            cout << "FontInstance: Destroying Object" << endl;
+        }
+
         if (mSurface != nullptr) {
             SDL_FreeSurface(mSurface);
         }

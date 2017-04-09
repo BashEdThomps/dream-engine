@@ -8,7 +8,13 @@ namespace Dream {
     mInterpolationType = DREAM_ANIMATION_INTERPOLATION_NONE;
   }
 
-  KeyFrame::~KeyFrame() {}
+  KeyFrame::~KeyFrame() {
+
+        if (DEBUG) {
+            cout << "KeyFrame: Destroying Object" << endl;
+        }
+
+  }
 
   bool KeyFrame::getWrap() {
     return mWrap;

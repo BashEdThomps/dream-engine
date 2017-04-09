@@ -25,12 +25,14 @@ namespace Dream {
       mGravity = vector<float>(3);
       mRootSceneObject = nullptr;
       mClearColour = {0.0f,0.0f,0.0f,0.0f};
+      mAmbientLightColour = {0.0f,0.0f,0.0f,0.0f};
       mDefaultCameraTransform = new Transform3D();
       mUuid = jsonScene[SCENE_JSON_UUID];
       mName = jsonScene[SCENE_JSON_NAME];
       loadPhysics(jsonScene);
       loadDefaultCameraTransform(jsonScene[SCENE_JSON_CAMERA]);
       loadClearColour(jsonScene[SCENE_JSON_CLEAR_COLOUR]);
+      loadAmbientLightColour(jsonScene[SCENE_JSON_AMBIENT_LIGHT_COLOUR]);
 
       nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
 
@@ -67,32 +69,36 @@ namespace Dream {
   void Scene::loadDefaultCameraTransform(nlohmann::json camera) {
       if (!camera.is_null()) {
           nlohmann::json translation = camera[SCENE_JSON_TRANSLATION];
-          mDefaultCameraTransform->setTranslation({
+          mDefaultCameraTransform->setTranslation(
                                                       translation[SCENE_JSON_X],
                                                       translation[SCENE_JSON_Y],
                                                       translation[SCENE_JSON_Z]
-                                                  });
+                                                  );
 
           nlohmann::json rotation = camera[SCENE_JSON_ROTATION];
-          mDefaultCameraTransform->setRotation({
+          mDefaultCameraTransform->setRotation(
                                                    rotation[SCENE_JSON_X],
                                                    rotation[SCENE_JSON_Y],
                                                    rotation[SCENE_JSON_Z]
-                                               });
+                                               );
 
           if (!camera[SCENE_JSON_MOVEMENT_SPEED].is_null()) {
               setCameraMovementSpeed(camera[SCENE_JSON_MOVEMENT_SPEED]);
           }
 
       } else {
-          mDefaultCameraTransform->setTranslation({0.0f, 0.0f, 0.0f});
-          mDefaultCameraTransform->setRotation({0.0f, 0.0f, 0.0f});
+          mDefaultCameraTransform->setTranslation(0.0f, 0.0f, 0.0f);
+          mDefaultCameraTransform->setRotation(0.0f, 0.0f, 0.0f);
       }
   }
   string Scene::getNameAndUuidString() {
       return getName() + " (" + getUuid() + ")";
   }
   Scene::~Scene() {
+      if (DEBUG) {
+         cout << "Scene: Destroying Object" << endl;
+     }
+
       if (mDefaultCameraTransform != nullptr) {
           delete mDefaultCameraTransform;
       }
@@ -167,8 +173,8 @@ namespace Dream {
       cout << "            UUID: " << mUuid << endl;
       cout << "            Name: " << mName << endl;
       cout << "Camera Transform: " << endl;
-      cout << "     Translation: " << String::floatVectorToString(mDefaultCameraTransform->getTranslation()) << endl;
-      cout << "        Rotation: " << String::floatVectorToString(mDefaultCameraTransform->getRotation())    << endl;
+      cout << "     Translation: " << String::vec3ToString(mDefaultCameraTransform->getTranslation()) << endl;
+      cout << "        Rotation: " << String::vec3ToString(mDefaultCameraTransform->getRotation())    << endl;
       cout << "   Scene Objects: " << getNumberOfSceneObjects() << endl;
       showScenegraph();
     }
@@ -210,11 +216,11 @@ namespace Dream {
     return mScenegraphVector;
   }
 
-  vector<float> Scene::getDefaultCameraTranslation() {
+  glm::vec3 Scene::getDefaultCameraTranslation() {
     return mDefaultCameraTransform->getTranslation();
   }
 
-  vector<float> Scene::getDefaultCameraRotation() {
+  glm::vec3 Scene::getDefaultCameraRotation() {
     return mDefaultCameraTransform->getRotation();
   }
 
@@ -233,6 +239,19 @@ namespace Dream {
       mClearColour[2] = jsonClearColour[SCENE_JSON_BLUE];
       mClearColour[3] = jsonClearColour[SCENE_JSON_ALPHA];
     }
+  }
+
+  void Scene::loadAmbientLightColour(nlohmann::json jsonAmbientLight) {
+    if (!jsonAmbientLight.is_null()) {
+      mAmbientLightColour[0] = jsonAmbientLight[SCENE_JSON_RED];
+      mAmbientLightColour[1] = jsonAmbientLight[SCENE_JSON_GREEN];
+      mAmbientLightColour[2] = jsonAmbientLight[SCENE_JSON_BLUE];
+      mAmbientLightColour[3] = jsonAmbientLight[SCENE_JSON_ALPHA];
+    }
+  }
+
+  vector<float> Scene::getAmbientLightColour() {
+    return mAmbientLightColour;
   }
 
   vector<float> Scene::getClearColour() {

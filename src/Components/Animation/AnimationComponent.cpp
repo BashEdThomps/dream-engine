@@ -22,7 +22,13 @@ namespace Dream {
 
       AnimationComponent::AnimationComponent() : ComponentInterface() {}
 
-      AnimationComponent::~AnimationComponent() {}
+      AnimationComponent::~AnimationComponent() {
+
+        if (DEBUG) {
+            cout << "AnimationComponent: Destroying Object" << endl;
+        }
+
+      }
 
       bool AnimationComponent::init() {
         if (DEBUG) {

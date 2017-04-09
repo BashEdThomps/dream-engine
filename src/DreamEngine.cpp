@@ -26,6 +26,9 @@ namespace Dream {
   }
 
   DreamEngine::~DreamEngine() {
+     if (DEBUG) {
+         cout << "DreamEngine: Destroying Object" << endl;
+     }
     destroyComponents();
     JoystickManager::destroy();
   }
@@ -117,6 +120,7 @@ namespace Dream {
     }
     mActiveScene = scene;
     mGraphicsComponent->setClearColour(mActiveScene->getClearColour());
+    mGraphicsComponent->setAmbientLightColour(mActiveScene->getAmbientLightColour());
     mPhysicsComponent->setGravity(mActiveScene->getGravity());
     mPhysicsComponent->setDebug(mActiveScene->getPhysicsDebug());
     mCamera->setTranslation(mActiveScene->getDefaultCameraTranslation());
@@ -182,7 +186,7 @@ namespace Dream {
     mGraphicsComponent->draw2DQueue();
     mGraphicsComponent->swapBuffers();
     // Update state
-    mEvent = mGraphicsComponent->getSDL_Event();
+    mEvents = mGraphicsComponent->getSDL_Events();
     mDone = mGraphicsComponent->isWindowShouldCloseFlagSet();
     // Cleanup Old
     mActiveScene->findDeletedSceneObjects();
@@ -307,8 +311,8 @@ namespace Dream {
     return mActiveScene->getLuaScriptMap();
   }
 
-  SDL_Event DreamEngine::getSDL_Event() {
-    return mEvent;
+  vector<SDL_Event> DreamEngine::getSDL_Events() {
+    return mEvents;
   }
 
 } // End of Dream

@@ -25,6 +25,11 @@ namespace Dream {
   }
 
   SpriteInstance::~SpriteInstance() {
+
+        if (DEBUG) {
+            cout << "SpriteInstance: Destroying Object" << endl;
+        }
+
       return;
   }
 

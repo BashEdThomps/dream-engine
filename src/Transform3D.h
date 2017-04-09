@@ -18,7 +18,6 @@
 #ifndef TRANSFORM3D_H
 #define TRANSFORM3D_H
 
-#include <vector>
 #include <iostream>
 #include <LinearMath/btVector3.h>
 #include <glm/gtc/quaternion.hpp>
@@ -30,16 +29,15 @@ namespace Dream {
 
   class Transform3D {
   private:
-    vector<float> mTranslation;
-    //vector<float> mRotation;
+    glm::vec3 mTranslation;
     glm::quat mOrientation;
-    vector<float> mScale;
+    glm::vec3 mScale;
     string mTransformType;
   public:
     Transform3D();
     Transform3D(Transform3D*);
-    vector<float> getTranslation();
-    void setTranslation(vector<float>);
+    glm::vec3 getTranslation();
+    void setTranslation(glm::vec3);
     void setTranslation(float, float, float);
     float getTranslationX();
     float getTranslationY();
@@ -50,11 +48,11 @@ namespace Dream {
     btVector3 getTranslationAsBtVector3();
 
     glm::quat getOrientation();
-    void setOrientation(glm::quat);
+    void setOrientation(float,float,float,float);
 
-    vector<float> getRotation();
-    void setRotation(vector<float>);
+    glm::vec3 getRotation();
     void setRotation(float, float, float);
+    void setRotation(glm::vec3 rot);
     float getRotationX();
     float getRotationY();
     float getRotationZ();
@@ -63,8 +61,8 @@ namespace Dream {
     void setRotationZ(float);
     btVector3 getRotationAsBtVector3();
 
-    vector<float> getScale();
-    void setScale(vector<float>);
+    glm::vec3 getScale();
+    void setScale(glm::vec3);
     void setScale(float, float, float);
     float getScaleX();
     float getScaleY();

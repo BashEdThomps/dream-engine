@@ -24,13 +24,13 @@ extern bool VERBOSE;
 void dreamSetDebug(bool debug);
 void dreamSetVerbose(bool verbose);
 
-// Misc ==========================================================================
+// Misc ========================================================================
     #define DIR_PATH_SEP "/"
     #define DREAM_TOOL_DIR ".dreamtool"
     #define PATH_DELIMETER "::"
     #define HTTP_ARG "--http"
 
-// Project =======================================================================
+// Project =====================================================================
     #define PROJECT_DIRECTORY_ARG "--project-dir"
     #define PROJECT_UUID_ARG "--uuid"
     #define PROJECT_UUID_LENGTH 19
@@ -47,7 +47,7 @@ void dreamSetVerbose(bool verbose);
     #define PROJECT_WIDTH "width"
     #define PROJECT_HEIGHT "height"
 
-// Asset =========================================================================
+// Asset =======================================================================
     #define ASSET_UUID "uuid"
     #define ASSET_NAME "name"
     #define ASSET_TYPE "type"
@@ -79,7 +79,7 @@ void dreamSetVerbose(bool verbose);
     #define ASSET_ATTR_Y "y"
     #define ASSET_ATTR_Z "z"
 
-// Scene =========================================================================
+// Scene =======================================================================
     #define SCENE_JSON_UUID "uuid"
     #define SCENE_JSON_NAME "name"
     #define SCENE_JSON_SCENE_OBJECTS "objects"
@@ -91,6 +91,7 @@ void dreamSetVerbose(bool verbose);
     #define SCENE_JSON_Y "y"
     #define SCENE_JSON_Z "z"
     #define SCENE_JSON_CLEAR_COLOUR "clearColour"
+    #define SCENE_JSON_AMBIENT_LIGHT_COLOUR "ambientLight"
     #define SCENE_JSON_RED "r"
     #define SCENE_JSON_GREEN "g"
     #define SCENE_JSON_BLUE "b"
@@ -98,7 +99,7 @@ void dreamSetVerbose(bool verbose);
     #define SCENE_JSON_GRAVITY "gravity"
     #define SCENE_JSON_PHYSICS_DEBUG "physicsDebug"
 
-// SceneObject ===================================================================
+// SceneObject =================================================================
     #define SO_X 0
     #define SO_Y 1
     #define SO_Z 2
@@ -117,21 +118,21 @@ void dreamSetVerbose(bool verbose);
     #define SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE "absolute"
     #define SCENE_OBJECT_ASSET_INSTANCES "assetInstances"
 
-// Transform =====================================================================
+// Transform ===================================================================
     #define TRANSFORM_X 0
     #define TRANSFORM_Y 1
     #define TRANSFORM_Z 2
     #define TRANSFORM_TYPE_ABSOLUTE "absolute"
     #define TRANSFORM_TYPE_OFFSET "offset"
 
-// Font ==========================================================================
+// Font ========================================================================
     #define FONT_SIZE "size"
     #define FONT_COLOUR "colour"
     #define FONT_RED    "r"
     #define FONT_GREEN  "g"
     #define FONT_BLUE   "b"
 
-// Animation =====================================================================
+// Animation ===================================================================
     #define ASSET_FORMAT_DREAM_ANIMATION "dream"
     #define ASSET_ATTR_KEYFRAMES     "keyframes"
     #define ASSET_ATTR_WRAP          "wrap"
@@ -150,12 +151,12 @@ void dreamSetVerbose(bool verbose);
     #define DREAM_ANIMATION_INTERPOLATION_LINEAR "linear"
     #define DREAM_ANIMATION_INTERPOLATION_BEZIER "bezier"
 
-// Sprite ========================================================================
+// Sprite ======================================================================
     #define SPRITE_TILE_SIZE "tileSize"
     #define SPRITE_TILE_WIDTH "width"
     #define SPRITE_TILE_HEIGHT "height"
 
-// Physics =======================================================================
+// Physics =====================================================================
     #define ASSET_ATTR_MASS "mass"
     #define ASSET_ATTR_MARGIN "margin"
     #define ASSET_ATTR_RADIUS "radius"
@@ -182,9 +183,15 @@ void dreamSetVerbose(bool verbose);
     #define COLLISION_SHAPE_COMPOUND "btCompoundShape"
     #define ASSET_ATTR_KINEMATIC "kinematic"
 
-// Event =========================================================================
+// Event =======================================================================
     #define EVENT_SENDER "sender"
     #define EVENT_TYPE "type"
     #define EVENT_TYPE_COLLISION "collision"
+// Light =======================================================================
+    #define ASSET_ATTR_LIGHT_COLOR   "colour"
+    #define ASSET_ATTR_LIGHT_COLOR_R "r"
+    #define ASSET_ATTR_LIGHT_COLOR_G "g"
+    #define ASSET_ATTR_LIGHT_COLOR_B "b"
+    #define ASSET_ATTR_LIGHT_COLOR_A "a"
 
 #endif // CONSTANTS_H

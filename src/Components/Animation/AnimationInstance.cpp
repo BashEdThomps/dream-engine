@@ -24,6 +24,11 @@ namespace Dream {
   }
 
   AnimationInstance::~AnimationInstance() {
+
+        if (DEBUG) {
+            cout << "AnimationInstance: Destroying Object" << endl;
+        }
+
     deleteKeyFrames();
     deletePlaybackFrames();
   }

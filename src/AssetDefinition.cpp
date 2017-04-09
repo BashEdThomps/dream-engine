@@ -25,7 +25,13 @@ namespace Dream {
     showStatus();
   }
 
-  AssetDefinition::~AssetDefinition(void) {}
+  AssetDefinition::~AssetDefinition(void) {
+
+        if (DEBUG) {
+            cout << "AssetDefinition: Destroying Object" << endl;
+        }
+
+  }
 
   void AssetDefinition::setProjectPath(string path) {
     mProjectPath = path;
