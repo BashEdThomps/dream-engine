@@ -420,8 +420,10 @@ namespace Dream {
                 glUniform3fv(uLightPos  ,1, glm::value_ptr(lightPos));
                 glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
             } else {
-                cerr << "GraphicsComponent: cannot find uniform for " << uPosStr.str() << endl;
-                cerr << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;
+                if (VERBOSE) {
+                    cout << "GraphicsComponent: cannot find uniform for " << uPosStr.str() << endl;
+                    cout << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;
+                }
             }
         }
 

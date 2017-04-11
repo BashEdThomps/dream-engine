@@ -48,7 +48,7 @@
                     <tr>
                         <td>Name</td>
                         <td>
-                            <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name"/>
+                            <input type="text" ng-change="modified()" class="form-control input-sm" ng-model="currentAsset.name" />
                         </td>
                     </tr>
                     <tr>
@@ -73,21 +73,20 @@
                     <tr ng-show="isAssetTypePhysicsObject()">
                         <td>Mass</td>
                         <td>
-                            <input ng-change="modified()" ng-model="currentAsset.mass" class="form-control input-sm" type="number"/>
+                            <input ng-change="modified()" ng-model="currentAsset.mass" class="form-control input-sm" type="number" />
                         </td>
                     </tr>
                     <tr ng-show="isAssetTypePhysicsObject()">
                         <td>Margin</td>
                         <td>
-                            <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number"/>
+                            <input ng-change="modified()" ng-model="currentAsset.margin" class="form-control input-sm" type="number" />
                         </td>
                     </tr>
                     <tr ng-show="isAssetTypePhysicsObject()">
                         <td>Kinematic</td>
                         <td>
                             <div class="checkbox checkbox-info">
-                                <input ng-change="modified()" ng-model="currentAsset.kinematic"
-                                       type="checkbox" id="physicsKinematic" />
+                                <input ng-change="modified()" ng-model="currentAsset.kinematic" type="checkbox" id="physicsKinematic" />
                                 <label></label>
                             </div>
                         </td>
@@ -96,7 +95,7 @@
                     <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatSphere()">
                         <td>Radius</td>
                         <td>
-                            <input ng-change="modified()" ng-model="currentAsset.radius" class="form-control input-sm" type="number"/>
+                            <input ng-change="modified()" ng-model="currentAsset.radius" class="form-control input-sm" type="number" />
                         </td>
                     </tr>
                     <!-- Static Plane -->
@@ -105,13 +104,13 @@
                         <td>
                             <div class="row">
                                 <div class="col-md-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.normal.x" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.normal.x" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-md-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.normal.y" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.normal.y" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-md-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.normal.z" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.normal.z" class="form-control input-sm" type="number" />
                                 </div>
                             </div>
                         </td>
@@ -119,7 +118,7 @@
                     <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatStaticPlane()">
                         <td>Constant</td>
                         <td>
-                            <input ng-change="modified()" ng-model="currentAsset.constant" class="form-control input-sm" type="number"/>
+                            <input ng-change="modified()" ng-model="currentAsset.constant" class="form-control input-sm" type="number" />
                         </td>
                     </tr>
                     <!-- Box -->
@@ -128,13 +127,13 @@
                         <td>
                             <div class="row">
                                 <div class="col-md-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.size.x" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.size.x" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-md-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.size.y" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.size.y" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-md-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.size.z" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.size.z" class="form-control input-sm" type="number" />
                                 </div>
                             </div>
                         </td>
@@ -143,17 +142,13 @@
                     <tr id="po-btm-files" ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatBvhTriangleMesh()">
                         <td>Model File</td>
                         <td>
-                            <button ng-show="hasPhysicsObjectBvhTriangleMesh" class="pull-right btn-sm btn btn-danger"
-                                ng-click="onDeleteAssetDataButtonClicked()">
+                            <button ng-show="hasPhysicsObjectBvhTriangleMesh" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
-                            <button id="po-upload-button" ng-click="onAssetPhysicsObjectBvhTriangleMeshUploadButtonClicked()"
-                                                          ng-show="!hasPhysicsObjectBvhTriangleMesh"
-                                                          class="pull-right btn-sm btn btn-success">
+                            <button id="po-upload-button" ng-click="onAssetPhysicsObjectBvhTriangleMeshUploadButtonClicked()" ng-show="!hasPhysicsObjectBvhTriangleMesh" class="pull-right btn-sm btn btn-success">
                                 <span class="glyphicon glyphicon-open"></span>
                             </button>
-                            <input ng-show="!hasPhysicsObjectBvhTriangleMesh" type="file" id="po-btm-file"
-                                    name="po-model-file" />
+                            <input ng-show="!hasPhysicsObjectBvhTriangleMesh" type="file" id="po-btm-file" name="po-model-file" />
                         </td>
                     </tr>
                     <!-- Model -->
@@ -172,11 +167,19 @@
                             <button ng-show="hasModelAssimp" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
-                            <button id="wf-upload-button" ng-click="onAssetModelAssimpUploadButtonClicked()"
-                                                          ng-show="!hasModelAssimp" class="pull-right btn-sm btn btn-success">
+                            <button id="wf-upload-button" ng-click="onAssetModelAssimpUploadButtonClicked()" ng-show="!hasModelAssimp" class="pull-right btn-sm btn btn-success">
                                 <span class="glyphicon glyphicon-open"></span>
                             </button>
-                            <input ng-show="!hasModelAssimp" type="file" id="wf-assimp-file"  name="model-file" />
+                            <input ng-show="!hasModelAssimp" type="file" id="wf-assimp-file" name="model-file" />
+                        </td>
+                    </tr>
+                    <tr id="model-other-files" ng-show="isAssetTypeModel()">
+                        <td>Other File(s)</td>
+                        <td>
+                            <button id="model-other-upload-button" ng-click="onAssetModelOtherUploadButtonClicked()" class="pull-right btn-sm btn btn-success">
+                                <span class="glyphicon glyphicon-open"></span>
+                            </button>
+                            <input type="file" id="model-other-file" name="model-other-file" />
                         </td>
                     </tr>
                     <!-- Script -->
@@ -231,30 +234,26 @@
                     <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatSfx()">
                         <td>Sound Effect File</td>
                         <td>
-                            <button ng-show="hasAudioSfx" class="pull-right btn-sm btn btn-danger"
-                                                          ng-click="onDeleteAssetDataButtonClicked()">
+                            <button ng-show="hasAudioSfx" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
-                            <button ng-show="!hasAudioSfx" class="pull-right btn btn-sm btn btn-success"
-                                                           ng-click="onAssetAudioSfxUploadButtonClicked()">
+                            <button ng-show="!hasAudioSfx" class="pull-right btn btn-sm btn btn-success" ng-click="onAssetAudioSfxUploadButtonClicked()">
                                 <span class="glyphicon glyphicon-open"></span>
                             </button>
-                            <input ng-show="!hasAudiosSfx" type="file" id="sfx-file" name="sfx-file"/>
+                            <input ng-show="!hasAudiosSfx" type="file" id="sfx-file" name="sfx-file" />
                         </td>
                     </tr>
 
                     <tr ng-show="isAssetTypeAudio() && isAudioAssetFormatMusic()">
                         <td>Sound Music File</td>
                         <td>
-                            <button ng-show="hasAudioMusic" class="pull-right btn-sm btn btn-danger"
-                                                            ng-click="onDeleteAssetDataButtonClicked()">
+                            <button ng-show="hasAudioMusic" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
-                            <button ng-show="!hasAudioMusic" class="pull-right btn btn-sm btn btn-success"
-                                                             ng-click="onAssetAudioMusicUploadButtonClicked()">
+                            <button ng-show="!hasAudioMusic" class="pull-right btn btn-sm btn btn-success" ng-click="onAssetAudioMusicUploadButtonClicked()">
                                 <span class="glyphicon glyphicon-open"></span>
                             </button>
-                            <input ng-show="!hasAudiosMusic" type="file" id="music-file" name="music-file"/>
+                            <input ng-show="!hasAudiosMusic" type="file" id="music-file" name="music-file" />
                         </td>
                     </tr>
 
@@ -282,23 +281,20 @@
                     <tr ng-show="isAssetTypeFont()">
                         <td>Font File</td>
                         <td>
-                            <button ng-show="hasFont"  class="pull-right btn-sm btn btn-danger"
-                                                       ng-click="onDeleteAssetDataButtonClicked()">
+                            <button ng-show="hasFont" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
-                            <button ng-show="!hasFont" class="pull-right btn btn-sm btn btn-success"
-                                                       ng-click="onAssetFontUploadButtonClicked()">
+                            <button ng-show="!hasFont" class="pull-right btn btn-sm btn btn-success" ng-click="onAssetFontUploadButtonClicked()">
                                 <span class="glyphicon glyphicon-open"></span>
                             </button>
-                            <input ng-show="!hasFont" type="file" id="font-file" accept=".ttf" name="font-file"/>
+                            <input ng-show="!hasFont" type="file" id="font-file" accept=".ttf" name="font-file" />
                         </td>
                     </tr>
 
                     <tr ng-show="isAssetTypeFont()">
                         <td>Size</td>
                         <td>
-                            <input ng-change="modified()" ng-model="currentAsset.size"
-                                                          class="form-control input-sm" type="number"/>
+                            <input ng-change="modified()" ng-model="currentAsset.size" class="form-control input-sm" type="number" />
                         </td>
                     </tr>
                     <tr ng-show="isAssetTypeFont()">
@@ -306,16 +302,13 @@
                         <td>
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.colour.r"
-                                                                  class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.r" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-sm-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.colour.g"
-                                                                  class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.g" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-sm-4">
-                                    <input ng-change="modified()" ng-model="currentAsset.colour.b"
-                                                                  class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.b" class="form-control input-sm" type="number" />
                                 </div>
                             </div>
                         </td>
@@ -345,10 +338,10 @@
                         <td>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <input ng-change="modified()" ng-model="currentAsset.tileSize.width" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.tileSize.width" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-md-6">
-                                    <input ng-change="modified()" ng-model="currentAsset.tileSize.height" class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.tileSize.height" class="form-control input-sm" type="number" />
                                 </div>
                             </div>
                         </td>
@@ -366,15 +359,13 @@
                     <tr ng-show="isAssetTypeSprite()">
                         <td>Sprite File</td>
                         <td>
-                            <button ng-show="hasSprite"  class="pull-right btn-sm btn btn-danger"
-                                                         ng-click="onDeleteAssetDataButtonClicked()">
+                            <button ng-show="hasSprite" class="pull-right btn-sm btn btn-danger" ng-click="onDeleteAssetDataButtonClicked()">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
-                            <button ng-show="!hasSprite" class="pull-right btn btn-sm btn btn-success"
-                                                         ng-click="onAssetSpriteUploadButtonClicked()">
+                            <button ng-show="!hasSprite" class="pull-right btn btn-sm btn btn-success" ng-click="onAssetSpriteUploadButtonClicked()">
                                 <span class="glyphicon glyphicon-open"></span>
                             </button>
-                            <input ng-show="!hasSprite" type="file" id="sprite-file" accept=".png" name="sprite-file"/>
+                            <input ng-show="!hasSprite" type="file" id="sprite-file" accept=".png" name="sprite-file" />
                         </td>
                     </tr>
                     <!-- Light -->
@@ -383,20 +374,16 @@
                         <td>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <input ng-change="modified()" ng-model="currentAsset.colour.r"
-                                     class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.r" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-sm-3">
-                                    <input ng-change="modified()" ng-model="currentAsset.colour.g"
-                                     class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.g" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-sm-3">
-                                    <input ng-change="modified()" ng-model="currentAsset.colour.b"
-                                     class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.b" class="form-control input-sm" type="number" />
                                 </div>
                                 <div class="col-sm-3">
-                                    <input ng-change="modified()" ng-model="currentAsset.colour.a"
-                                     class="form-control input-sm" type="number"/>
+                                    <input ng-change="modified()" ng-model="currentAsset.colour.a" class="form-control input-sm" type="number" />
                                 </div>
                             </div>
                         </td>

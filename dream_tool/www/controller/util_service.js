@@ -38,5 +38,15 @@ App.service('UtilService',
             r.readAsDataURL(f);
         };
 
+        this.readFileNameFromElement = function(element,callback) {
+            var f = element.files[0];
+
+            if (f === null) {
+                callback(null);
+            }
+            console.log("Getting name from file",f);
+            callback(f.name);
+        };
+
         return this;
 }]);

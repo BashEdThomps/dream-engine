@@ -284,6 +284,25 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     });
   };
 
+  $scope.onAssetModelOtherUploadButtonClicked = function() {
+      var assimpFile = document.getElementById('model-other-file');
+      UtilService.readFileNameFromElement(assimpFile,function (fileName) {
+        UIService.addAlert("Uploading "+fileName+"...","info");
+        UtilService.readFileAsBinaryFromElement(assimpFile, function(data) {
+            var path = ProjectService.getProjectUUID()+"/asset/model/"+$scope.currentAsset.uuid+"/"+fileName;
+            ApiService.uploadAsset(path,data,function(success){
+                if (success) {
+                  UIService.addAlert(fileName+" uploaded successfuly!","success");
+                  $scope.updateAssetUIVariables();
+                }
+                else {
+                  UIService.addAlert("Error uploading asset.","danger");
+                }
+            });
+        });
+    });
+  };
+
   $scope.onAssetPhysicsObjectBvhTriangleMeshUploadButtonClicked = function() {
     UIService.addAlert("Uploading Asset File...","info");
     var btmFile = document.getElementById('po-btm-file');
