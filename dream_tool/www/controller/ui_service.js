@@ -226,16 +226,20 @@ App.service('UIService',
 
     this.removeTreeProjectAsset = function(asset) {
         var index = this.treeProjectAssets.children.indexOf(asset);
-        this.treeProjectAssets.children.splice(index,1);
+        if (this.treeProjectAssets) {
+          this.treeProjectAssets.children.splice(index,1);
+        }
     };
 
     this.getTreeProjectAssetByUUID = function(uuid,callback){
         var retval = null;
-        this.treeProjectAssets.children.forEach(function(res) {
-            if (res.uuid === uuid) {
-                retval  = res;
-            }
-        });
+        if (this.treeProjectAssets) {
+          this.treeProjectAssets.children.forEach(function(res) {
+              if (res.uuid === uuid) {
+                  retval  = res;
+              }
+          });
+        }
         callback(retval);
     };
 

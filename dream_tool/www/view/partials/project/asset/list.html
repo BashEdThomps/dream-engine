@@ -1,10 +1,15 @@
-<h2>Manage Assets</h2>
+<h2>Assets Definitions</h2>
 <br>
 <div class="row">
     <!-- Asset List -->
     <div class="col-md-6">
         <div class="panel panel-default">
-            <div class="panel-heading text-center">Assets</div>
+            <div class="panel-heading text-center">
+              Assets
+              <button ng-click="onNewAssetButtonClicked()" class="pull-right btn btn-sm btn btn-success">
+                <span class="glyphicon glyphicon-plus"></span>
+              </button>
+            </div>
             <table class="table  table-condensed table-hover table-striped">
                 <thead>
                     <tr>
@@ -33,9 +38,6 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="panel-footer">
-                <button ng-click="onNewAssetButtonClicked()" class="btn btn-sm btn btn-success">New Asset</button>
-            </div>
         </div>
     </div>
     <!-- Asset Detail -->
@@ -137,6 +139,59 @@
                                 </div>
                             </div>
                         </td>
+                    </tr>
+                    <!-- Compound Shape -->
+                    <tr ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatCompound()">
+                      <td>Children</td>
+                      <td>
+                        <div class="row">
+                          <div class="col-sm-10">
+                            <select ng-model="compoundChildSelectedUuid" class="form-control input-sm">
+                              <option value="" disabled hidden selected>Select Child</option>
+                              <option ng-repeat="shape in physicsObjectAssets" value="{{shape.uuid}}">{{shape.name}}</option>
+                            </select>
+                          </div>
+                          <div class="col-sm-2">
+                            <button ng-click="onAssetPhysicsObjectCompoundAddChildButtonClicked()"class="btn btn-sm btn-success">
+                              <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr  ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatCompound()">
+                      <td colspan=2>
+                        <table class="table table-bordered table-condensed table-hover table-striped"  style="margin-bottom:0px">
+                          <thead>
+                            <tr>
+                              <td>Name</td>
+                              <td>Translation</td>
+                              <td>Rotation</td>
+                              <td>Remove</td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="shape in currentAsset.compoundChildren">
+                              <td>{{shape.name}}</td>
+                              <td>
+                                <input ng-model="shape.translation.x" class="form-control input-sm" type="number" />
+                                <input ng-model="shape.translation.y" class="form-control input-sm" type="number" />
+                                <input ng-model="shape.translation.z" class="form-control input-sm" type="number" />
+                            </td>
+                            <td>
+                                <input ng-model="shape.rotation.x" class="form-control input-sm" type="number" />
+                                <input ng-model="shape.rotation.y" class="form-control input-sm" type="number" />
+                                <input ng-model="shape.rotation.z" class="form-control input-sm" type="number" />
+                            </td>
+                              <td>
+                                <button ng-click="onAssetPhysicsObjectCompoundRemoveChildButtonClicked(shape.uuid)" class="btn btn-sm btn-danger">
+                                  <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
                     </tr>
                     <!-- BvhTriangleMesh -->
                     <tr id="po-btm-files" ng-show="isAssetTypePhysicsObject() && isPhysicsObjectAssetFormatBvhTriangleMesh()">

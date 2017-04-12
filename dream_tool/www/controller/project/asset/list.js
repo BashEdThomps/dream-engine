@@ -3,6 +3,7 @@ App.controller("ProjectAssetList",
 function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
 
   $scope.assetFormats = {};
+  $scope.physicsObjectAssets = [];
 
   $scope.doOnLoad = function() {
     if (ProjectService.isProjectOpen()) {
@@ -128,12 +129,7 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_MODEL_ASSIMP;
   };
 
-  $scope.isScriptAssetFormatChai = function() {
-    if (!$scope.currentAsset) return false;
-    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_SCRIPT_CHAI;
-  };
-
-    $scope.isScriptAssetFormatLua = function() {
+  $scope.isScriptAssetFormatLua = function() {
     if (!$scope.currentAsset) return false;
     return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_SCRIPT_LUA;
   };
@@ -151,7 +147,12 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
   $scope.isPhysicsObjectAssetFormatBox = function() {
     if (!$scope.currentAsset) return false;
     return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_BOX;
-  }
+  };
+
+  $scope.isPhysicsObjectAssetFormatCompound = function() {
+    if (!$scope.currentAsset) return false;
+    return $scope.currentAsset.format == ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_COMPOUND;
+  };
 
   $scope.isPhysicsObjectAssetFormatBvhTriangleMesh = function() {
     if (!$scope.currentAsset) return false;
@@ -263,6 +264,10 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
 
   $scope.modified = function() {
     console.log("Asset List Item Modified");
+    if ($scope.isPhysicsObjectAssetFormatCompound()) {
+      console.log("Getting physics object assets");
+      $scope.physicsObjectAssets = ProjectService.getAllPhysicsObjectAssets($scope.currentAsset);
+    }
     ProjectService.updateAsset($scope.currentAsset);
     UIService.updateAsset($scope.currentAsset);
   };
@@ -308,8 +313,8 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
     var btmFile = document.getElementById('po-btm-file');
     UtilService.readFileAsBinaryFromElement(btmFile, function(data) {
 
-      var path = ProjectService.getProjectUUID() + 
-            "/asset/physicsObject/" + 
+      var path = ProjectService.getProjectUUID() +
+            "/asset/physicsObject/" +
             $scope.currentAsset.uuid +"/" +
             ProjectService.ASSET_FORMAT_PHYSICS_OBJECT_BVH_TRIANGLE_MESH;
 
@@ -452,6 +457,37 @@ function($scope,$state,ProjectService,UIService,UtilService,ApiService) {
                 }
             });
         });
+  };
+
+  $scope.onAssetPhysicsObjectCompoundAddChildButtonClicked = function() {
+    if (!$scope.currentAsset.compoundChildren) {
+      console.log("Creating compound child array for",$scope.currentAsset.name,$scope.currentAsset.uuid);
+      $scope.currentAsset.compoundChildren = [];
+    }
+    var uuid = $scope.compoundChildSelectedUuid;
+    var asset = ProjectService.getAssetByUUID(uuid,function(asset) {
+      if (asset) {
+        console.log("Adding compound child",asset);
+        $scope.currentAsset.compoundChildren.push(
+          {
+            name: asset.name,
+            uuid: asset.uuid,
+            translation: { x:0, y:0, z:0 },
+            rotation:    { x:0, y:0, z:0 }
+          }
+        );
+      }
+    });
+  };
+
+  $scope.onAssetPhysicsObjectCompoundRemoveChildButtonClicked = function(shape) {
+    var index = $scope.currentAsset.compoundChildren.indexOf(shape);
+    console.log("Removing compound child",shape,"at index",index);
+    if (index > -1) {
+      $scope.currentAsset.compoundChildren.splice(index,1);
+    } else {
+      console.error(shape,"not found in compoundChildren");
+    }
   };
 
   $scope.doOnLoad();

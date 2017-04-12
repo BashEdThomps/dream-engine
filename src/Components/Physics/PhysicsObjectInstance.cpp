@@ -115,9 +115,9 @@ namespace Dream {
         // Transform and CentreOfMass
         mMotionState = new PhysicsMotionState(mTransform);
         // Mass, MotionState, Shape and LocalInertia
-        btVector3 fallInertia(0, 0, 0);
-        mCollisionShape->calculateLocalInertia(mass, fallInertia);
-        mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(btScalar(mass), mMotionState, mCollisionShape, fallInertia);
+        btVector3 inertia(0, 0, 0);
+        mCollisionShape->calculateLocalInertia(mass, inertia);
+        mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(btScalar(mass), mMotionState, mCollisionShape, inertia);
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
         if (mKinematic) {
           mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);

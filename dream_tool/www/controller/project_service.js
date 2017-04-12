@@ -547,7 +547,6 @@ App.service('ProjectService',
         return {
             uuid: UtilService.generateUUID(),
             name: "Untitled Asset",
-            type: this.ASSET_TYPE_ANIMATION,
         };
     };
 
@@ -605,19 +604,25 @@ App.service('ProjectService',
 
     this.setAssetKeyFrames = function(asset) {
       this.getAssetByUUID(asset.uuid,function(assetInProject) {
-        assetInProject.keyframes = asset.keyframes;
+        if (assetInProject) {
+          assetInProject.keyframes = asset.keyframes;
+        }
       })
     };
 
     this.setAssetName = function(asset) {
         this.getAssetByUUID(asset.uuid,function(rsc){
+          if (rsc) {
             rsc.name = asset.name;
+          }
         });
     };
 
     this.setAssetType = function(asset) {
         this.getAssetByUUID(asset.uuid,function(rsc){
+          if (rsc) {
             rsc.type = asset.type;
+          }
         });
     };
 
@@ -819,6 +824,17 @@ App.service('ProjectService',
 
     this.getDreamAnimationInterpolationTypes = function() {
       return this.DREAM_ANIMATION_INTERPOLATION_TYPES;
+    };
+
+    this.getAllPhysicsObjectAssets = function(self) {
+        var ps = this;
+        return this.project.assets.filter(function(asset) {
+          var retval = asset.type ==  ps.ASSET_TYPE_PHYSICS_OBJECT && asset.uuid != self.uuid;
+          if (retval) {
+            console.log("Found physics asset",asset.name,asset.uuid);
+          }
+          return retval;
+        });
     };
 
     return this;
