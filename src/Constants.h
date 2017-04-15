@@ -169,6 +169,7 @@ void dreamSetVerbose(bool verbose);
     #define ASSET_ATTR_SIZE_X "sizeX"
     #define ASSET_ATTR_SIZE_Y "sizeY"
     #define ASSET_ATTR_SIZE_Z "sizeZ"
+    #define ASSET_ATTR_COMPOUND_CHILDREN "compoundChildren"
     #define COLLISION_SHAPE_SPHERE "btShpereShape"
     #define COLLISION_SHAPE_BOX "btBoxShape"
     #define COLLISION_SHAPE_CYLINDER "btCylinderShape"

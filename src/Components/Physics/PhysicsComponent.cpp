@@ -215,4 +215,10 @@ namespace Dream {
       return nullptr;
   }
 
+  void PhysicsComponent::drawDebug() {
+      if (mDebug) {
+        mDebugDrawer->drawAll();
+      }
+  }
+
 } // End of Dream

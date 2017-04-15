@@ -11,23 +11,31 @@
 #include <assimp/postprocess.h>
 
 namespace Dream {
+
+   class CompoundChild {
+   public:
+        btTransform transform;
+        string      uuid;
+    };
+
   class PhysicsObjectInstance : public AssetInstance {
   private:
       static map<string,const aiScene*> AssimpModelCache;
       static ::Assimp::Importer mImporter;
       static const aiScene* getModelFromCache(string);
-
       btCollisionShape *mCollisionShape;
       btMotionState *mMotionState;
       btRigidBody *mRigidBody;
       btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
       bool mInPhysicsWorld;
       bool mKinematic;
+      vector<CompoundChild>    mCompoundChildren;
+      vector<AssetDefinition*>* mAssetDefinitions;
   public:
-      PhysicsObjectInstance(AssetDefinition*,Transform3D*);
+      PhysicsObjectInstance(AssetDefinition*,Transform3D*,vector<AssetDefinition*>*);
       ~PhysicsObjectInstance();
       bool load(string);
-      bool createCollisionShape(string projectPath);
+      btCollisionShape* createCollisionShape(AssetDefinition*, string projectPath);
       btCollisionShape* getCollisionShape();
       btRigidBody* getRigidBody();
       void getWorldTransform(btTransform&);
@@ -37,9 +45,10 @@ namespace Dream {
       void setLinearVelocity(float, float, float);
   protected:
       void loadExtraAttributes(nlohmann::json);
-
+      void loadExtraAttributes(nlohmann::json,AssetDefinition*,bool);
       void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
       void processAssimpMesh(aiMesh*, btTriangleMesh*);
+      AssetDefinition* getAssetDefinitionByUuid(string);
   }; // End of PhysicsObjectInstance
 } // End of Dream
 

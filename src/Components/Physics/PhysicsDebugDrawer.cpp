@@ -32,20 +32,26 @@ namespace Dream {
       mVertexShaderSource = "#version 330 core\n"
                             "\n"
                             "layout (location = 0) in vec3 position;\n"
+                            "layout (location = 1) in vec3 color;\n"
+                            "\n"
+                            "out vec3 Color;\n"
+                            "\n"
                             "uniform mat4 view;\n"
                             "uniform mat4 projection;\n"
                             "\n"
                             "void main () {\n"
-                            "    gl_Position = projection * view * vec4(position,1.0f);\n"
+                            "    gl_Position = projection * view * vec4(position,1.0);\n"
+                            "    Color = color;\n"
                             "}";
 
       mFragmentShaderSource = "#version 330 core\n"
                               "\n"
+                              "in vec3  Color;\n"
+                              "\n"
                               "out vec4 fragColor;\n"
-                              "uniform vec3 color;\n"
                               "\n"
                               "void main() { \n"
-                              "    fragColor = vec4(color.r, color.g, color.b, 1.0);\n"
+                              "    fragColor = vec4(Color,1.0);\n"
                               "}";
       // Compile shaders
       GLint success;
@@ -89,45 +95,23 @@ namespace Dream {
   }
 
   void PhysicsDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color, const btVector3& color2) {
-      // Enable shader program
-      glUseProgram(mShaderProgram);
-      // Set the view/projection matrix in shader
-      GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
-      if (projUniform == -1) {
-        cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for projection" << endl;
-        checkGLError("set proj");
-      }
-      glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-      GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
-      if (viewUniform == -1) {
-        cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for view" << endl;
-        checkGLError("set view");
-      }
-      glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+      PhysicsDebugVertex a, b;
 
-      // Set the colour of the line
-      GLint colorUniform = glGetUniformLocation(mShaderProgram, "color");
-      if (colorUniform == -1) {
-        cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for color" << endl;
-        checkGLError("set color");
-      }
-      glm::vec3 colourVec = glm::vec3(color.getX(), color.getY(), color.getZ());
-      glUniform3fv(colorUniform, 1, glm::value_ptr(colourVec));
-      // Set the line vertices
-      GLfloat lineVerts[6] = {
-          from.getX(), from.getY(), from.getZ(),
-          to.getX(), to.getY(), to.getZ()
-      };
+      a.Position.x = from.getX();
+      a.Position.y = from.getY();
+      a.Position.z = from.getZ();
+      a.Color.r = color.getX();
+      a.Color.g = color.getY();
+      a.Color.b = color.getZ();
+      mVertexBuffer.push_back(a);
 
-      glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(lineVerts), lineVerts, GL_STATIC_DRAW);
-      glBindVertexArray(mVAO);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), static_cast<GLvoid*>(0));
-      glDrawArrays(GL_LINES, 0, 2);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindVertexArray(0);
-      glUseProgram(0);
+      b.Position.x = to.getX();
+      b.Position.y = to.getY();
+      b.Position.z = to.getZ();
+      b.Color.r = color2.getX();
+      b.Color.g = color2.getY();
+      b.Color.b = color2.getZ();
+      mVertexBuffer.push_back(b);
   }
 
   void PhysicsDebugDrawer::setProjectionMatrix(glm::mat4 projMat) {
@@ -220,6 +204,62 @@ namespace Dream {
           }
       } while(errorCode != 0);
       return wasError;
+  }
+
+  void PhysicsDebugDrawer::drawAll() {
+    if (VERBOSE) {
+      cout << "PhysicsDebugDrawer: Drawing all - " << mVertexBuffer.size()/2 << " lines." << endl;
+    }
+    // Enable shader program
+    glUseProgram(mShaderProgram);
+
+    // Set the projection matrix
+    GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
+    if (projUniform == -1) {
+      cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for projection" << endl;
+      checkGLError("set proj");
+      return;
+    } else {
+        glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+    }
+
+    // Set the view matrix
+    GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
+    if (viewUniform == -1) {
+      cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for view" << endl;
+      checkGLError("set view");
+      return;
+    } else {
+        glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(PhysicsDebugVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
+
+    // Vertex Array
+    glBindVertexArray(mVAO);
+    // Vertex Positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0, 3, GL_FLOAT, GL_FALSE,
+        static_cast<GLint>(sizeof(PhysicsDebugVertex)),
+        static_cast<GLvoid*>(0)
+    );
+    // Vertex Colors
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(
+        1, 3, GL_FLOAT, GL_FALSE,
+        static_cast<GLint>(sizeof(PhysicsDebugVertex)),
+        (GLvoid*)offsetof(PhysicsDebugVertex, Color)
+    );
+    // Draw
+    glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
+    // Unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glUseProgram(0);
+    // Clear old buffer
+    mVertexBuffer.clear();
   }
 
 } // End of Dream

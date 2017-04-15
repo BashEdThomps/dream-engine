@@ -91,9 +91,11 @@ namespace Dream {
           mDefaultCameraTransform->setRotation(0.0f, 0.0f, 0.0f);
       }
   }
+
   string Scene::getNameAndUuidString() {
       return getName() + " (" + getUuid() + ")";
   }
+
   Scene::~Scene() {
       if (DEBUG) {
          cout << "Scene: Destroying Object" << endl;
@@ -395,7 +397,7 @@ namespace Dream {
     if (DEBUG) {
       cout << "Scene: Creating Physics Object Asset Instance." << endl;
     }
-    PhysicsObjectInstance* retval = new PhysicsObjectInstance(definition,sceneObject->getTransform());
+    PhysicsObjectInstance* retval = new PhysicsObjectInstance(definition,sceneObject->getTransform(),mAssetDefinitions);
     sceneObject->setPhysicsObjectInstance(retval);
     return retval;
   }

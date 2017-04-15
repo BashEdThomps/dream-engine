@@ -43,7 +43,7 @@
               <td>Startup Scene</td>
               <td>
                 <select ng-model="project.startupScene" ng-change="modified()" class="form-control input-sm">
-                  <option value="" disabled selected hidden>Select Startup Scene</option>
+                  <option value="" disabled hidden>Select Startup Scene</option>
                   <option ng-repeat="scene in sceneList" value="{{scene.uuid}}">{{scene.name}}</option>
                 </select>
               </td>

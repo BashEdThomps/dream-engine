@@ -177,12 +177,15 @@ namespace Dream {
     mActiveScene->createAllAssetInstances();
     // Update Components
     mGraphicsComponent->update(mActiveScene);
+    // Draw 3D
+    mGraphicsComponent->draw3DQueue();
     mPhysicsComponent->setViewProjectionMatrix(
       mGraphicsComponent->getViewMatrix(),
       mGraphicsComponent->getProjectionMatrix()
     );
-    mGraphicsComponent->draw3DQueue();
     mPhysicsComponent->update(mActiveScene);
+    mPhysicsComponent->drawDebug();
+    // Draw 2D
     mGraphicsComponent->draw2DQueue();
     mGraphicsComponent->swapBuffers();
     // Update state

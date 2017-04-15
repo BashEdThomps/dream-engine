@@ -60,6 +60,7 @@ namespace Dream {
         void setViewProjectionMatrix(glm::mat4, glm::mat4);
         void checkContactManifolds();
         SceneObject* getSceneObject(const btCollisionObject*);
+        void drawDebug();
       };// End of PhysicsComponent
 
 } // End of Dream

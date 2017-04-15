@@ -13,6 +13,10 @@
 #include "../../Constants.h"
 
 namespace Dream   {
+  struct PhysicsDebugVertex {
+    glm::vec3 Position;
+    glm::vec3 Color;
+  };
 
     using namespace std;
 
@@ -21,6 +25,7 @@ namespace Dream   {
         glm::mat4 mViewMatrix;
         GLuint mShaderProgram;
         GLuint mVAO, mVBO;
+        vector<PhysicsDebugVertex> mVertexBuffer;
         int mDebugMode;
     public:
         PhysicsDebugDrawer();
@@ -41,6 +46,7 @@ namespace Dream   {
         int  getDebugMode() const { return mDebugMode;}
         string btVecToString(const btVector3&);
         bool checkGLError(string);
+        void drawAll();
 
     };
 } // End of Dream

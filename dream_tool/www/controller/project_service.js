@@ -373,25 +373,32 @@ App.service('ProjectService',
     };
 
     this.setName = function(name) {
+      if (this.project) {
         this.project.isModified = true;
         this.project.name = name;
+      }
     };
 
     this.setAuthor = function(author) {
+      if (this.project) {
         this.project.isModified = true;
         this.project.author = author;
+      }
     };
 
     this.setDescription = function(description) {
+      if (this.project) {
         this.project.isModified = true;
         this.project.description = description;
-
+      }
     };
 
     this.setStartupScene = function(startupScene) {
-      this.project.isModified = true;
-      this.project.startupScene = startupScene;
-    }
+      if (this.project) {
+        this.project.isModified = true;
+        this.project.startupScene = startupScene;
+      }
+    };
 
     this.updateProject = function(project) {
         this.setName        (project.name);
