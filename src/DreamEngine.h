@@ -35,6 +35,7 @@ namespace Dream {
     bool mDone;
     vector<SDL_Event> mEvents;
     HTTPClient* mHTTPClient;
+    GameController *mGameController;
     DreamEngine(void);
   public:
     static DreamEngine* getInstance();
@@ -85,6 +86,7 @@ namespace Dream {
 
     map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
     vector<SDL_Event> getSDL_Events();
+    GameController* getGameController();
 
   }; // End of Dream
 } // End of Dream

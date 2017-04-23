@@ -19,6 +19,7 @@
 #define GRAPHICSCOMPONENT_H
 
 #include "../../Constants.h"
+#include "../../GameController.h"
 // Dream
 #include "../ComponentInterface.h"
 #include "AssimpModelInstance.h"
@@ -82,6 +83,7 @@ namespace Dream {
       glm::mat4 mOrthoProjection;
       vector<float> mClearColour;
       vector<float> mAmbientLightColour;
+      GameController *mGameController;
   public:
       void setWindowWidth(int);
       void setWindowHeight(int);
@@ -126,6 +128,8 @@ namespace Dream {
       glm::mat4 getViewMatrix();
       glm::mat4 getProjectionMatrix();
       void swapBuffers();
+      void setGameController(GameController* gameController);
+      GameController *getGameController();
   private:
       void updateWindowDimensions();
 

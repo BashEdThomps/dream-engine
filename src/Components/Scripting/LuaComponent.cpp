@@ -59,6 +59,7 @@ namespace Dream {
         bindTransform3D();
         bindDreamEvent();
         bindSDL();
+        bindGameController();
         bindCamera();
         return mState != nullptr;
     }
@@ -151,19 +152,20 @@ namespace Dream {
                 .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
                 .def("getPhysicsComponent",&DreamEngine::getPhysicsComponent)
                 .def("getCamera",&DreamEngine::getCamera)
+                .def("getGameController",&DreamEngine::getGameController)
                 .scope [
-                    luabind::def("getInstance",&DreamEngine::getInstance),
-                    luabind::def("setDebug",&dreamSetDebug),
-                    luabind::def("setVerbose",&dreamSetVerbose)
+                luabind::def("getInstance",&DreamEngine::getInstance),
+                luabind::def("setDebug",&dreamSetDebug),
+                luabind::def("setVerbose",&dreamSetVerbose)
                 ]
-         ];
+                ];
     }
 
     void LuaComponent::bindMath() {
-         luabind::module(mState) [
-             luabind::def("degreesToRadians",&Math::degreesToRadians),
-             luabind::def("radiansToDegrees",&Math::radiansToDegrees)
-         ];
+        luabind::module(mState) [
+                luabind::def("degreesToRadians",&Math::degreesToRadians),
+                luabind::def("radiansToDegrees",&Math::radiansToDegrees)
+                ];
     }
 
     void LuaComponent::bindComponents() {
@@ -216,7 +218,7 @@ namespace Dream {
                 .def("setCameraMovementSpeed",&Scene::setCameraMovementSpeed)
                 .def("getSceneObjectByUuid",&Scene::getSceneObjectByUuid)
                 .def("getSceneObjectByName",&Scene::getSceneObjectByName)
-        ];
+                ];
     }
 
     void LuaComponent::bindSceneObject() {
@@ -336,26 +338,26 @@ namespace Dream {
 
     void LuaComponent::bindSDL_Event() {
         luabind::module(mState)
-        [
-            // SDL_Event =======================================================
-            luabind::class_<SDL_Event>("Event")
-            .def_readonly("type", &SDL_Event::type)
-            // Keyboard
-            .def_readonly("key", &SDL_Event::key)
-            // Controller
-            .def_readonly("cbutton", &SDL_Event::cbutton)
-            .def_readonly("caxis",   &SDL_Event::caxis)
-            // Joystick
-            .def_readonly("jbutton", &SDL_Event::jbutton)
-            .def_readonly("jhat",    &SDL_Event::jhat)
-            .def_readonly("jaxis",   &SDL_Event::jaxis)
-            // Mouse
-            .def_readonly("motion", &SDL_Event::motion)
-            .def_readonly("button", &SDL_Event::button)
-            .def_readonly("wheel",  &SDL_Event::wheel)
-            // SDL_EventType ===============================================
-            .enum_("EventType")
-            [
+                [
+                // SDL_Event =======================================================
+                luabind::class_<SDL_Event>("Event")
+                .def_readonly("type", &SDL_Event::type)
+                // Keyboard
+                .def_readonly("key", &SDL_Event::key)
+                // Controller
+                .def_readonly("cbutton", &SDL_Event::cbutton)
+                .def_readonly("caxis",   &SDL_Event::caxis)
+                // Joystick
+                .def_readonly("jbutton", &SDL_Event::jbutton)
+                .def_readonly("jhat",    &SDL_Event::jhat)
+                .def_readonly("jaxis",   &SDL_Event::jaxis)
+                // Mouse
+                .def_readonly("motion", &SDL_Event::motion)
+                .def_readonly("button", &SDL_Event::button)
+                .def_readonly("wheel",  &SDL_Event::wheel)
+                // SDL_EventType ===============================================
+                .enum_("EventType")
+                [
                 // Keys
                 luabind::value("KEYUP",SDL_EventType::SDL_KEYUP),
                 luabind::value("KEYDOWN",SDL_EventType::SDL_KEYDOWN),
@@ -372,10 +374,10 @@ namespace Dream {
                 luabind::value("MOUSE_MOTION",SDL_MOUSEMOTION),
                 luabind::value("MOUSE_BUTTONUP",SDL_MOUSEBUTTONUP),
                 luabind::value("MOUSE_BUTTONDOWN",SDL_MOUSEBUTTONDOWN)
-            ]
-            // SDLK_* Definitions ==========================================
-            .enum_("Key")
-            [
+                ]
+                // SDLK_* Definitions ==========================================
+                .enum_("Key")
+                [
                 luabind::value("KEY_RETURN",SDLK_RETURN),
                 luabind::value("KEY_SPACE",SDLK_SPACE),
                 luabind::value("KEY_LEFT",SDLK_LEFT),
@@ -420,17 +422,17 @@ namespace Dream {
                 luabind::value("KEY_7",SDLK_7),
                 luabind::value("KEY_8",SDLK_8),
                 luabind::value("KEY_9",SDLK_9)
-            ],
+                ],
 
-            // SDL_ControllerButtonEvent =======================================
-            luabind::class_<SDL_ControllerButtonEvent>("ControllerButtonEvent")
-            .def_readonly("type",&SDL_ControllerButtonEvent::type)
-            .def_readonly("timestamp",&SDL_ControllerButtonEvent::timestamp)
-            .def_readonly("which",&SDL_ControllerButtonEvent::which)
-            .def_readonly("button",&SDL_ControllerButtonEvent::button)
-            .def_readonly("state",&SDL_ControllerButtonEvent::state)
-            .enum_("GameControllerButton")
-            [
+                // SDL_ControllerButtonEvent =======================================
+                luabind::class_<SDL_ControllerButtonEvent>("ControllerButtonEvent")
+                .def_readonly("type",&SDL_ControllerButtonEvent::type)
+                .def_readonly("timestamp",&SDL_ControllerButtonEvent::timestamp)
+                .def_readonly("which",&SDL_ControllerButtonEvent::which)
+                .def_readonly("button",&SDL_ControllerButtonEvent::button)
+                .def_readonly("state",&SDL_ControllerButtonEvent::state)
+                .enum_("GameControllerButton")
+                [
                 luabind::value("CBTN_INVALID",SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_INVALID),
                 // Face
                 luabind::value("C_BTN_A", SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A),
@@ -452,16 +454,16 @@ namespace Dream {
                 luabind::value("C_BTN_DPAD_DOWN",  SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN),
                 luabind::value("C_BTN_DPAD_LEFT",  SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT),
                 luabind::value("C_BTN_DPAD_RIGHT", SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
-            ],
+                ],
 
-            // SDL_ControllerAxisEvent =========================================
-            luabind::class_<SDL_ControllerAxisEvent>("ControllerAxisEvent")
-            .def_readonly("type",&SDL_ControllerAxisEvent::type)
-            .def_readonly("timestamp",&SDL_ControllerAxisEvent::timestamp)
-            .def_readonly("axis",&SDL_ControllerAxisEvent::axis)
-            .def_readonly("value",&SDL_ControllerAxisEvent::value)
-            .enum_("GameControllerAxis")
-            [
+                // SDL_ControllerAxisEvent =========================================
+                luabind::class_<SDL_ControllerAxisEvent>("ControllerAxisEvent")
+                .def_readonly("type",&SDL_ControllerAxisEvent::type)
+                .def_readonly("timestamp",&SDL_ControllerAxisEvent::timestamp)
+                .def_readonly("axis",&SDL_ControllerAxisEvent::axis)
+                .def_readonly("value",&SDL_ControllerAxisEvent::value)
+                .enum_("GameControllerAxis")
+                [
                 luabind::value("C_AXIS_INVALID",SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_INVALID),
                 // Left
                 luabind::value("C_AXIS_LEFT_X",SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX),
@@ -474,56 +476,56 @@ namespace Dream {
                 luabind::value("C_AXIS_TRIGGER_RIGHT",SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERRIGHT),
                 // Max
                 luabind::value("C_AXIS_MAX",SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_MAX)
-            ],
+                ],
 
-            // SDL_KeyboardEvent ===============================================
-            luabind::class_<SDL_KeyboardEvent>("KeyboardEvent")
-            .def_readonly("keysym",&SDL_KeyboardEvent::keysym),
+                // SDL_KeyboardEvent ===============================================
+                luabind::class_<SDL_KeyboardEvent>("KeyboardEvent")
+                .def_readonly("keysym",&SDL_KeyboardEvent::keysym),
 
-            // SDL_Keysym ======================================================
-            luabind::class_<SDL_Keysym>("Keysym")
-            .def_readonly("sym",&SDL_Keysym::sym),
+                // SDL_Keysym ======================================================
+                luabind::class_<SDL_Keysym>("Keysym")
+                .def_readonly("sym",&SDL_Keysym::sym),
 
-            // SDL_Keycode =====================================================
-            luabind::class_<SDL_Keycode>("Keycode"),
+                // SDL_Keycode =====================================================
+                luabind::class_<SDL_Keycode>("Keycode"),
 
-            // SDL_JoyButtonEvent ==============================================
-            luabind::class_<SDL_JoyButtonEvent>("JoyButtonEvent")
-            .def_readonly("type",&SDL_JoyButtonEvent::type)
-            .def_readonly("timestamp",&SDL_JoyButtonEvent::timestamp)
-            .def_readonly("which",&SDL_JoyButtonEvent::which)
-            .def_readonly("button",&SDL_JoyButtonEvent::button)
-            .def_readonly("state",&SDL_JoyButtonEvent::state),
+                // SDL_JoyButtonEvent ==============================================
+                luabind::class_<SDL_JoyButtonEvent>("JoyButtonEvent")
+                .def_readonly("type",&SDL_JoyButtonEvent::type)
+                .def_readonly("timestamp",&SDL_JoyButtonEvent::timestamp)
+                .def_readonly("which",&SDL_JoyButtonEvent::which)
+                .def_readonly("button",&SDL_JoyButtonEvent::button)
+                .def_readonly("state",&SDL_JoyButtonEvent::state),
 
-            // SDL_JoyHatEvent =================================================
-            luabind::class_<SDL_JoyHatEvent>("JoyHatEvent")
-            .def_readonly("type",&SDL_JoyHatEvent::type)
-            .def_readonly("timestamp",&SDL_JoyHatEvent::timestamp)
-            .def_readonly("which",&SDL_JoyHatEvent::which)
-            .def_readonly("hat",&SDL_JoyHatEvent::hat)
-            .def_readonly("value",&SDL_JoyHatEvent::value),
+                // SDL_JoyHatEvent =================================================
+                luabind::class_<SDL_JoyHatEvent>("JoyHatEvent")
+                .def_readonly("type",&SDL_JoyHatEvent::type)
+                .def_readonly("timestamp",&SDL_JoyHatEvent::timestamp)
+                .def_readonly("which",&SDL_JoyHatEvent::which)
+                .def_readonly("hat",&SDL_JoyHatEvent::hat)
+                .def_readonly("value",&SDL_JoyHatEvent::value),
 
-            // SDL_JoyAxisEvent ================================================
-            luabind::class_<SDL_JoyAxisEvent>("JoyAxisEvent")
-            .def_readonly("type",&SDL_JoyAxisEvent::type)
-            .def_readonly("timestamp",&SDL_JoyAxisEvent::timestamp)
-            .def_readonly("which",&SDL_JoyAxisEvent::which)
-            .def_readonly("axis",&SDL_JoyAxisEvent::axis)
-            .def_readonly("value",&SDL_JoyAxisEvent::value),
+                // SDL_JoyAxisEvent ================================================
+                luabind::class_<SDL_JoyAxisEvent>("JoyAxisEvent")
+                .def_readonly("type",&SDL_JoyAxisEvent::type)
+                .def_readonly("timestamp",&SDL_JoyAxisEvent::timestamp)
+                .def_readonly("which",&SDL_JoyAxisEvent::which)
+                .def_readonly("axis",&SDL_JoyAxisEvent::axis)
+                .def_readonly("value",&SDL_JoyAxisEvent::value),
 
-            // SDL_MouseMotionEvent ============================================
-            luabind::class_<SDL_MouseMotionEvent>("MouseMotionEvent")
-            .def_readonly("type",&SDL_MouseMotionEvent::type)
-            .def_readonly("timestamp",&SDL_MouseMotionEvent::timestamp)
-            .def_readonly("windowID",&SDL_MouseMotionEvent::windowID)
-            .def_readonly("which",&SDL_MouseMotionEvent::which)
-            .def_readonly("state",&SDL_MouseMotionEvent::state)
-            .def_readonly("x",&SDL_MouseMotionEvent::x)
-            .def_readonly("y",&SDL_MouseMotionEvent::y)
-            .def_readonly("xrel",&SDL_MouseMotionEvent::xrel)
-            .def_readonly("yrel",&SDL_MouseMotionEvent::yrel)
+                // SDL_MouseMotionEvent ============================================
+                luabind::class_<SDL_MouseMotionEvent>("MouseMotionEvent")
+                .def_readonly("type",&SDL_MouseMotionEvent::type)
+                .def_readonly("timestamp",&SDL_MouseMotionEvent::timestamp)
+                .def_readonly("windowID",&SDL_MouseMotionEvent::windowID)
+                .def_readonly("which",&SDL_MouseMotionEvent::which)
+                .def_readonly("state",&SDL_MouseMotionEvent::state)
+                .def_readonly("x",&SDL_MouseMotionEvent::x)
+                .def_readonly("y",&SDL_MouseMotionEvent::y)
+                .def_readonly("xrel",&SDL_MouseMotionEvent::xrel)
+                .def_readonly("yrel",&SDL_MouseMotionEvent::yrel)
 
-        ]; // end luabind::module
+                ]; // end luabind::module
     }
 
     void LuaComponent::bindAssetClasses() {
@@ -564,19 +566,19 @@ namespace Dream {
 
     void LuaComponent::bindShaderInstance() {
         luabind::module(mState) [
-            luabind::class_<ShaderInstance>("ShaderInstance")
+                luabind::class_<ShaderInstance>("ShaderInstance")
                 .def("getUuid", &ShaderInstance::getUuid     )
 
                 .def("setUniform1f", &ShaderInstance::setUniform1f )
-        ];
+                ];
     }
 
     void LuaComponent::bindPhysicsObjectInstance() {
         luabind::module(mState) [
-            luabind::class_<PhysicsObjectInstance>("PhysicsObjectInstance")
+                luabind::class_<PhysicsObjectInstance>("PhysicsObjectInstance")
                 .def("getUuid", &PhysicsObjectInstance::getUuid     )
                 .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
-        ];
+                ];
     }
 
     void LuaComponent::setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>* scriptMap) {
@@ -741,11 +743,13 @@ namespace Dream {
     }
 
     void LuaComponent::bindCamera() {
-        luabind::module(mState) [
+        luabind::module(mState)
+        [
             luabind::class_<Camera>("Camera")
             .def("processKeyboard",&Camera::processKeyboard)
             .def("processMouseMovement",&Camera::processMouseMovement)
-            .enum_("CameraMovement") [
+            .enum_("CameraMovement")
+            [
                 luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
                 luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
                 luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
@@ -753,6 +757,47 @@ namespace Dream {
             ]
         ];
     }
+
+    void LuaComponent::bindGameController() {
+        luabind::module(mState)
+        [
+            luabind::class_<GameController>("GameController")
+            .def("getButtonValue",&GameController::getButtonValue)
+            .def("getAxisValue",&GameController::getAxisValue)
+            .enum_("ControllerButton")
+            [
+                // Face Buttons
+                luabind::value("A_BTN",ControllerButton::A),
+                luabind::value("B_BTN",ControllerButton::B),
+                luabind::value("X_BTN",ControllerButton::X),
+                luabind::value("Y_BTN",ControllerButton::Y),
+                // Shoulders
+                luabind::value("LEFT_SHOULDER",ControllerButton::LEFT_SHOULDER),
+                luabind::value("RIGHT_SHOULDER",ControllerButton::RIGHT_SHOULDER),
+                // Analog
+                luabind::value("LEFT_ANALOG_BUTTON",ControllerButton::LEFT_ANALOG),
+                luabind::value("RIGHT_ANALOG_BUTTON",ControllerButton::RIGHT_ANALOG),
+                // D-Pad
+                luabind::value("DPAD_UP",ControllerButton::DPAD_UP),
+                luabind::value("DPAD_DOWN",ControllerButton::DPAD_DOWN),
+                luabind::value("DPAD_LEFT",ControllerButton::DPAD_LEFT),
+                luabind::value("DPAD_RIGHT",ControllerButton::DPAD_RIGHT)
+            ]
+            .enum_("ControllerAxis")
+            [
+                // Left Analog
+                luabind::value("LEFT_ANALOG_X",ControllerAxis::LEFT_ANALOG_X),
+                luabind::value("LEFT_ANALOG_Y",ControllerAxis::LEFT_ANALOG_Y),
+                // Right Analog
+                luabind::value("RIGHT_ANALOG_X",ControllerAxis::RIGHT_ANALOG_X),
+                luabind::value("RIGHT_ANALOG_Y",ControllerAxis::RIGHT_ANALOG_Y),
+                // Triggers
+                luabind::value("LEFT_TRIGGER",ControllerAxis::LEFT_TRIGGER),
+                luabind::value("RIGHT_TRIGGER",ControllerAxis::RIGHT_TRIGGER)
+            ]
+        ];
+    }
+
 } // End of Dream
 
 using namespace std;

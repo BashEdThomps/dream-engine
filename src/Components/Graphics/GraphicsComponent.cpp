@@ -167,15 +167,31 @@ namespace Dream {
         mEvents.clear();
         SDL_Event event;
 
-        while(SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
+        while(SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
                 mWindowShouldClose = true;
             }
-            SDL_Event e;
-            memcpy(&e,&event,sizeof(SDL_Event));
-            mEvents.push_back(e);
+            else if (
+                     mGameController &&
+                     (
+                        event.type == SDL_CONTROLLERAXISMOTION ||
+                        event.type == SDL_CONTROLLERBUTTONDOWN ||
+                        event.type == SDL_CONTROLLERBUTTONUP
+                     )
+            ){
+                mGameController->updateControllerState(event);
+            }
+            else
+            {
+                SDL_Event e;
+                memcpy(&e,&event,sizeof(SDL_Event));
+                mEvents.push_back(e);
+            }
         }
-        if (VERBOSE) {
+        if (VERBOSE)
+        {
             cout << "GraphicsComponent " << mEvents.size() << " Events" << endl;
         }
 
@@ -553,5 +569,14 @@ namespace Dream {
     void GraphicsComponent::clearLightQueue() {
        mLightQueue.clear();
     }
+
+    void GraphicsComponent::setGameController(GameController* gameController) {
+        mGameController = gameController;
+    }
+
+    GameController* GraphicsComponent::getGameController() {
+        return mGameController;
+    }
+
 
 } // End of Dream

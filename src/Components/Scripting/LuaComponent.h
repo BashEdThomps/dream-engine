@@ -79,6 +79,7 @@ namespace Dream {
     void bindSDL();
     void bindSDL_Event();
     void bindCamera();
+    void bindGameController();
 
     void bindAssetClasses();
     void bindAudioInstance();

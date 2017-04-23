@@ -1,6 +1,7 @@
 
 #include "DreamEngine.h"
 #include "JoystickManager.h"
+#include "GameController.h"
 
 namespace Dream {
 
@@ -23,6 +24,7 @@ namespace Dream {
     setDone(false);
     mActiveScene = nullptr;
     setProject(nullptr);
+    mGameController = new GameController();
   }
 
   DreamEngine::~DreamEngine() {
@@ -31,6 +33,9 @@ namespace Dream {
      }
     destroyComponents();
     JoystickManager::destroy();
+    if (mGameController) {
+        delete mGameController;
+    }
   }
 
   Project* DreamEngine::getProject() {
@@ -268,6 +273,7 @@ namespace Dream {
     mGraphicsComponent->setTime(mTime);
 
     if (mGraphicsComponent->init()) {
+        mGraphicsComponent->setGameController(mGameController);
       return true;
     } else {
       cerr << "DreamEngine: Unable to initialise Graphics Component." << endl;
@@ -316,6 +322,10 @@ namespace Dream {
 
   vector<SDL_Event> DreamEngine::getSDL_Events() {
     return mEvents;
+  }
+
+  GameController* DreamEngine::getGameController() {
+      return mGameController;
   }
 
 } // End of Dream
