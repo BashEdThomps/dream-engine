@@ -16,6 +16,7 @@ namespace Dream {
   void PhysicsDebugDrawer::init() {
    initShader();
    initVaoVbo();
+   glEnable(GL_LINE_SMOOTH);
   }
 
   void PhysicsDebugDrawer::initVaoVbo() {
@@ -212,6 +213,7 @@ namespace Dream {
     }
     // Enable shader program
     glUseProgram(mShaderProgram);
+
 
     // Set the projection matrix
     GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
