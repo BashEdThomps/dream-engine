@@ -15,9 +15,9 @@ namespace Dream {
     return FramesPerSecond;
   }
 
-  AnimationInstance::AnimationInstance(
-      AssetDefinition* definition,
-      Transform3D* transform) : AssetInstance(definition,transform) {
+  AnimationInstance::AnimationInstance(AssetDefinition* definition, Transform3D* transform)
+      : IAssetInstance(definition,transform)
+  {
     mCurrentPlaybackFrame = 0;
     mLoop = false;
     mPlaying = false;

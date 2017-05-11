@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Interface
+* Dream::IComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,23 +15,25 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef INTERFACE_H
-#define INTERFACE_H
+#ifndef ICOMPONENT_H
+#define ICOMPONENT_H
 
 #include "../Scene.h"
 #include "../Time.h"
 
-namespace Dream {
-    class ComponentInterface {
+namespace Dream
+{
+    class IComponent
+    {
     public:
-      ComponentInterface(void);
-      virtual ~ComponentInterface(void) {}
+      IComponent();
+      virtual ~IComponent();
       virtual bool init() = 0;
-      virtual void update(Dream::Scene*) = 0;
+      virtual void update(Scene*) = 0;
       void setTime(Time*);
     protected:
       Time* mTime;
-    }; // End of Interface
+    }; // End of IComponent
 } // End of Dream
 
-#endif // End of INTERFACE_H
+#endif // End of ICOMPONENT_H

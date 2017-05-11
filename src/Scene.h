@@ -25,11 +25,11 @@
 #include "String.h"
 #include "SceneObject.h"
 #include "Constants.h"
-#include "AssetInstance.h"
+#include "IAssetInstance.h"
 #include "AssetDefinition.h"
 #include "Components/Graphics/Camera.h"
 #include "Components/Scripting/LuaScriptInstance.h"
-#include "Components/Audio/AudioInstance.h"
+#include "Components/Audio/IAudioInstance.h"
 #include "Components/Animation/AnimationInstance.h"
 #include "Components/Graphics/SpriteInstance.h"
 #include "Components/Graphics/ShaderInstance.h"
@@ -96,10 +96,10 @@ namespace Dream {
     void findDeletedSceneObjects();
 
     bool createAllAssetInstances();
-    AssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
-    AssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
+    IAssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
+    IAssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
     AnimationInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
-    AudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
+    IAudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
     AssimpModelInstance* createModelInstance(SceneObject*, AssetDefinition*);
     LuaScriptInstance* createScriptInstance(SceneObject*, AssetDefinition*);
     ShaderInstance* createShaderInstance(SceneObject*, AssetDefinition*);

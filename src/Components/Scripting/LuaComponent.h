@@ -73,7 +73,8 @@ namespace Dream {
     void bindTime();
     void bindTransform3D();
     void bindAnimationComponent();
-    void bindAudioComponent();
+    void bindSDLAudioComponent();
+    void bindIWindowComponent();
     void bindGraphicsComponent();
     void bindPhysicsComponent();
     void bindSDL();
@@ -82,7 +83,7 @@ namespace Dream {
     void bindGameController();
 
     void bindAssetClasses();
-    void bindAudioInstance();
+    void bindSDLAudioInstance();
     void bindFontInstance();
     void bindAnimationInstance();
     void bindAssimpModelInstance();

@@ -20,11 +20,11 @@
 
 #include <vector>
 #include <iostream>
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 #include "../../Constants.h"
 
 namespace Dream {
-      class LuaScriptInstance : public AssetInstance {
+      class LuaScriptInstance : public IAssetInstance {
       public:
         LuaScriptInstance(AssetDefinition*,Transform3D*);
         ~LuaScriptInstance(void);

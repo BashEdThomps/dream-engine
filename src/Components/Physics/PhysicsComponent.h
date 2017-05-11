@@ -26,14 +26,14 @@
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
 
-#include "../ComponentInterface.h"
+#include "../IComponent.h"
 #include "../../String.h"
 #include "../../Event.h"
 #include "../../Constants.h"
 
 namespace Dream {
 
-      class PhysicsComponent : public ComponentInterface {
+      class PhysicsComponent : public IComponent {
       protected:
         PhysicsDebugDrawer *mDebugDrawer;
         btDynamicsWorld *mDynamicsWorld;

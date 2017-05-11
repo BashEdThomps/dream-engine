@@ -24,7 +24,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <SOIL/SOIL.h>
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 #include "ShaderInstance.h"
 #include <iostream>
 #include <vector>
@@ -32,9 +32,11 @@
 #include "Texture.h"
 #include <map>
 
-namespace Dream {
-        class AssimpModelInstance : public AssetInstance {
-      private:
+namespace Dream
+{
+    class AssimpModelInstance : public IAssetInstance
+    {
+    private:
         // Static
         static map<string,const aiScene*> AssimpModelCache;
         static const aiScene* getModelFromCache(string);
@@ -47,15 +49,14 @@ namespace Dream {
         AssimpMesh processMesh(aiMesh*, const aiScene*);
         void loadModel(string);
         vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
-      public:
+    public:
         AssimpModelInstance(AssetDefinition*,Transform3D*);
         ~AssimpModelInstance();
         bool load(string);
         void draw(ShaderInstance*);
         bool checkGLError(int);
         void loadExtraAttributes(nlohmann::json);
-      }; // End of AssimpModelInstance
-
+    }; // End of AssimpModelInstance
 } // End of Dream
 
 #endif // End of ASSIMPMODELINSTANCE_H

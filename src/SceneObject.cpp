@@ -316,11 +316,11 @@ namespace Dream {
     return mAnimationInstance;
   }
 
-  void SceneObject::setAudioInstance(AudioInstance* audioAsset) {
+  void SceneObject::setAudioInstance(IAudioInstance* audioAsset) {
     mAudioInstance = audioAsset;
   }
 
-  AudioInstance* SceneObject::getAudioInstance() {
+  IAudioInstance* SceneObject::getAudioInstance() {
     return mAudioInstance;
   }
 

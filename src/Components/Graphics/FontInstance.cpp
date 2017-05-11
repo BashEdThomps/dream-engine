@@ -17,34 +17,40 @@
 
 namespace Dream {
 
-    FontInstance::FontInstance(
-            AssetDefinition* definition,
-            Transform3D* transform) : AssetInstance(definition,transform) {
+    FontInstance::FontInstance(AssetDefinition* definition, Transform3D* transform)
+        : IAssetInstance(definition,transform)
+    {
         mChanged = false;
         mSurface = nullptr;
         setText("NO TEXT SET");
         loadExtraAttributes(mDefinition->getJson());
     }
 
-    FontInstance::~FontInstance() {
-
-        if (DEBUG) {
+    FontInstance::~FontInstance()
+    {
+        if (DEBUG)
+        {
             cout << "FontInstance: Destroying Object" << endl;
         }
 
-        if (mSurface != nullptr) {
+        if (mSurface != nullptr)
+        {
             SDL_FreeSurface(mSurface);
         }
-        if (mFont != nullptr) {
+
+        if (mFont != nullptr)
+        {
             TTF_CloseFont(mFont);
         }
         return;
     }
 
-    bool FontInstance::load(string projectPath) {
+    bool FontInstance::load(string projectPath)
+    {
         string path = projectPath+mDefinition->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "FontInstance: Loading font from " << path << endl;
         }
         mFont = TTF_OpenFont(path.c_str(),mSize);
@@ -52,12 +58,14 @@ namespace Dream {
         return mLoaded;
     }
 
-    void FontInstance::loadExtraAttributes(nlohmann::json jsonData) {
+    void FontInstance::loadExtraAttributes(nlohmann::json jsonData)
+    {
         mSize = jsonData[FONT_SIZE];
         int red = jsonData[FONT_COLOUR][FONT_RED];
         int green = jsonData[FONT_COLOUR][FONT_GREEN];
         int blue = jsonData[FONT_COLOUR][FONT_BLUE];
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "FontInstance: Setting Colour"
                  << " r:" << red
                  << " g:" << green
@@ -68,65 +76,75 @@ namespace Dream {
         return;
     }
 
-    TTF_Font* FontInstance::getFont() {
+    TTF_Font* FontInstance::getFont()
+    {
         return mFont;
     }
 
-    void FontInstance::setText(string text) {
+    void FontInstance::setText(string text)
+    {
         mChanged = true;
         mText = text;
     }
 
-    string FontInstance::getText() {
+    string FontInstance::getText()
+    {
         return mText;
     }
 
-    void FontInstance::renderToTexture() {
+    void FontInstance::renderToTexture()
+    {
 
-        if (mSurface != nullptr) {
-          SDL_FreeSurface(mSurface);
+        if (mSurface != nullptr)
+        {
+            SDL_FreeSurface(mSurface);
         }
 
         mSurface = SDL_ConvertSurfaceFormat(
-            TTF_RenderUTF8_Solid(mFont, mText.c_str(), mColour),
-            SDL_PIXELFORMAT_RGBA8888, 0
-        );
+                       TTF_RenderUTF8_Solid(mFont, mText.c_str(), mColour),
+                       SDL_PIXELFORMAT_RGBA8888, 0
+                       );
 
         // Create Texture
         glGenTextures(1, &mTexture);
         glBindTexture(GL_TEXTURE_2D, mTexture);
 
         glTexImage2D(
-          GL_TEXTURE_2D, 0, GL_RGBA8, mSurface->w, mSurface->h, 0,
-          GL_RGBA, GL_UNSIGNED_BYTE, mSurface->pixels
-        );
+                    GL_TEXTURE_2D, 0, GL_RGBA8, mSurface->w, mSurface->h, 0,
+                    GL_RGBA, GL_UNSIGNED_BYTE, mSurface->pixels
+                    );
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         mChanged = false;
     }
 
-    GLuint FontInstance::getTexture() {
+    GLuint FontInstance::getTexture()
+    {
         return mTexture;
     }
 
-    int FontInstance::getWidth() {
+    int FontInstance::getWidth()
+    {
         return mSurface->w;
     }
 
-    int FontInstance::getHeight() {
+    int FontInstance::getHeight()
+    {
         return mSurface->h;
     }
 
-    bool FontInstance::hasChanged() {
+    bool FontInstance::hasChanged()
+    {
         return mChanged;
     }
 
-   void FontInstance::setColour(Uint8 red, Uint8 green, Uint8 blue) {
-    mColour.r = red;
-    mColour.g = green;
-    mColour.b = blue;
-    mChanged = true;
-   }
+    void FontInstance::setColour(Uint8 red, Uint8 green, Uint8 blue)
+    {
+        mColour.r = red;
+        mColour.g = green;
+        mColour.b = blue;
+        mChanged = true;
+    }
 
 } // End Dream

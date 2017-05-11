@@ -16,12 +16,12 @@
 */
 
 #include "Uuid.h"
-#include "AssetInstance.h"
+#include "IAssetInstance.h"
 
-namespace Dream {
-  AssetInstance::AssetInstance(
-      AssetDefinition* definition,
-      Transform3D* transform ) {
+namespace Dream
+{
+  IAssetInstance::IAssetInstance(AssetDefinition* definition, Transform3D* transform)
+  {
     mDefinition = definition;
     mTransform = transform;
     mLoaded = false;
@@ -29,40 +29,47 @@ namespace Dream {
     mUuid = Uuid::generateUuid();
   }
 
-  AssetInstance::~AssetInstance() {
-
+  IAssetInstance::~IAssetInstance()
+  {
   }
 
-  string AssetInstance::getName() {
+  string IAssetInstance::getName()
+  {
     return mDefinition->getName();
   }
 
-  string AssetInstance::getUuid() {
+  string IAssetInstance::getUuid()
+  {
     return mUuid;
   }
 
-  string AssetInstance::getNameAndUuidString() {
+  string IAssetInstance::getNameAndUuidString()
+  {
     return getName() + " (" + getUuid() + ")";
   }
 
-  Transform3D* AssetInstance::getTransform() {
+  Transform3D* IAssetInstance::getTransform()
+  {
     return mTransform;
   }
 
-  string AssetInstance::getAbsolutePath() {
+  string IAssetInstance::getAbsolutePath()
+  {
     return mAbsolutePath;
   }
 
-  void AssetInstance::setAbsolutePath(string path) {
+  void IAssetInstance::setAbsolutePath(string path)
+  {
     mAbsolutePath = path;
   }
 
-  bool AssetInstance::getLoadedFlag() {
+  bool IAssetInstance::getLoadedFlag()
+  {
     return mLoaded;
   }
 
-  void AssetInstance::setLoadedFlag(bool loaded) {
+  void IAssetInstance::setLoadedFlag(bool loaded)
+  {
     mLoaded = loaded;
   }
-
 } // End of Dream

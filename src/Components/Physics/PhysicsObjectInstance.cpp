@@ -27,10 +27,8 @@ namespace Dream {
         return scene;
     }
 
-    PhysicsObjectInstance::PhysicsObjectInstance(
-            AssetDefinition* definition,
-            Transform3D* transform,
-            vector<AssetDefinition*>* assetDefinitions) : AssetInstance(definition,transform) {
+    PhysicsObjectInstance::PhysicsObjectInstance(AssetDefinition* definition,Transform3D* transform, vector<AssetDefinition*>* assetDefinitions)
+        : IAssetInstance(definition,transform) {
         mInPhysicsWorld   = false;
         mKinematic        = false;
         mAssetDefinitions = assetDefinitions;

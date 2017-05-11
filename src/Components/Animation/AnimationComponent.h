@@ -1,5 +1,5 @@
 /*
-* AnimationComponent
+* Dream::AnimationComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,25 +20,26 @@
 #define AnimationComponent_h
 
 #include "../../Constants.h"
-#include "../ComponentInterface.h"
+#include "../IComponent.h"
 #include "AnimationInstance.h"
 
-namespace Dream {
-
-      class AnimationComponent : public ComponentInterface {
-      private:
+namespace Dream
+{
+    class AnimationComponent : public IComponent
+    {
+    private:
         Time* mTime;
-      public:
+    public:
         AnimationComponent();
         ~AnimationComponent();
         bool init();
         void update(Scene*);
-        void play (AssetInstance*);
-        void pause(AssetInstance*);
-        void stop (AssetInstance*);
-        bool isLooping(AssetInstance*);
-        void setLooping(AssetInstance*,bool);
-      }; // End of AnimationComponent
+        void play (AnimationInstance*);
+        void pause(AnimationInstance*);
+        void stop (AnimationInstance*);
+        bool isLooping(AnimationInstance*);
+        void setLooping(AnimationInstance*,bool);
+    }; // End of AnimationComponent
 } // End of Dream
 
 #endif // AnimationComponent_h

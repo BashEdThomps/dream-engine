@@ -16,16 +16,17 @@
 */
 
 #include "Scene.h"
+#include "Components/Audio/SDL/SDLAudioInstance.h"
 
 namespace Dream {
 
   Scene::Scene(nlohmann::json jsonScene, string projectPath, vector<AssetDefinition*>* assetDefs) {
       setProjectPath(projectPath);
       mAssetDefinitions = assetDefs;
-      mGravity = vector<float>(3);
-      mRootSceneObject = nullptr;
+      mGravity = {0.0f,0.0f,0.0f};
       mClearColour = {0.0f,0.0f,0.0f,0.0f};
       mAmbientLightColour = {0.0f,0.0f,0.0f,0.0f};
+      mRootSceneObject = nullptr;
       mDefaultCameraTransform = new Transform3D();
       mUuid = jsonScene[SCENE_JSON_UUID];
       mName = jsonScene[SCENE_JSON_NAME];
@@ -323,7 +324,7 @@ namespace Dream {
     aiUuidsToLoad = currentSO->getAssetDefUuidsToLoad();
     for (aiUuidIt = aiUuidsToLoad.begin(); aiUuidIt != aiUuidsToLoad.end(); aiUuidIt++) {
       string aDefUuid = *aiUuidIt;
-      AssetInstance* newAsset = createAssetInstanceFromDefinitionUuid(currentSO, aDefUuid);
+      IAssetInstance* newAsset = createAssetInstanceFromDefinitionUuid(currentSO, aDefUuid);
       if (newAsset == nullptr) {
         AssetDefinition* definition = getAssetDefinitionByUuid(aDefUuid);
         cerr << "Scene: Unable to instanciate asset instance for "
@@ -335,13 +336,13 @@ namespace Dream {
     return currentSO->getLoadedFlag();
   }
 
-  AssetInstance* Scene::createAssetInstanceFromDefinitionUuid(SceneObject* sceneObject, string uuid) {
+  IAssetInstance* Scene::createAssetInstanceFromDefinitionUuid(SceneObject* sceneObject, string uuid) {
     AssetDefinition* assetDefinition = getAssetDefinitionByUuid(uuid);
     return createAssetInstance(sceneObject, assetDefinition);
   }
 
-  AssetInstance* Scene::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
-    AssetInstance* retval = nullptr;
+  IAssetInstance* Scene::createAssetInstance(SceneObject* sceneObject,AssetDefinition* definition) {
+    IAssetInstance* retval = nullptr;
     if (DEBUG) {
       cout << "Scene: Creating Asset Intance of: ("
            << definition->getType() << ") " << definition->getName()
@@ -411,11 +412,11 @@ namespace Dream {
     return retval;
   }
 
-  AudioInstance* Scene::createAudioInstance(SceneObject* sceneObject, AssetDefinition* definition) {
+  IAudioInstance* Scene::createAudioInstance(SceneObject* sceneObject, AssetDefinition* definition) {
     if (DEBUG) {
       cout << "Scene: Creating Audio asset instance." << endl;
     }
-    AudioInstance* retval = new AudioInstance(definition,sceneObject->getTransform());
+    IAudioInstance* retval = new SDLAudioInstance(definition,sceneObject->getTransform());
     sceneObject->setAudioInstance(retval);
     return retval;
   }

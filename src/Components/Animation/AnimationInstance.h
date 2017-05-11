@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "../../Constants.h"
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 #include "../../AssetDefinition.h"
 #include "KeyFrame.h"
 #include "Frame.h"
@@ -13,7 +13,7 @@ namespace Dream {
 
   using namespace std;
 
-  class AnimationInstance : public AssetInstance {
+  class AnimationInstance : public IAssetInstance {
   private:
     static int FramesPerSecond;
   public:
@@ -46,7 +46,6 @@ namespace Dream {
     void deleteKeyFrames();
     void deletePlaybackFrames();
   }; // End of AnimationInstance
-
 } // End of Dream
 
 #endif // ANIMAITON_H

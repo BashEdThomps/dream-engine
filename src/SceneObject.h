@@ -7,7 +7,7 @@
 #include "Constants.h"
 #include "Event.h"
 #include "Components/Animation/AnimationInstance.h"
-#include "Components/Audio/AudioInstance.h"
+#include "Components/Audio/IAudioInstance.h"
 #include "Components/Graphics/AssimpModelInstance.h"
 #include "Components/Graphics/LightInstance.h"
 #include "Components/Graphics/ShaderInstance.h"
@@ -34,7 +34,7 @@ namespace Dream {
     Transform3D *mTransform;
     bool mDelete;
     // Asset Instances
-    AudioInstance *mAudioInstance;
+    IAudioInstance *mAudioInstance;
     AnimationInstance *mAnimationInstance;
     AssimpModelInstance *mModelInstance;
     ShaderInstance *mShaderInstance;
@@ -101,8 +101,8 @@ namespace Dream {
     void setAnimationInstance(AnimationInstance*);
     AnimationInstance* getAnimationInstance();
 
-    void setAudioInstance(AudioInstance*);
-    AudioInstance* getAudioInstance();
+    void setAudioInstance(IAudioInstance*);
+    IAudioInstance* getAudioInstance();
 
     void setModelInstance(AssimpModelInstance*);
     AssimpModelInstance* getModelInstance();

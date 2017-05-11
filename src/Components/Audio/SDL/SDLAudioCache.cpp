@@ -16,17 +16,20 @@
  * this file belongs to.
  */
 
-#include "AudioCache.h"
+#include "SDLAudioCache.h"
 
-namespace Dream {
-
+namespace Dream
+{
     map<string, Mix_Chunk*> AudioCache::ChunkCache = map<string,Mix_Chunk*>();
     map<string, Mix_Music*> AudioCache::MusicCache = map<string,Mix_Music*>();
 
-    Mix_Chunk* AudioCache::getChunk(string path) {
+    Mix_Chunk* AudioCache::getChunk(string path)
+    {
         map<string,Mix_Chunk*>::iterator it;
-        for (it=ChunkCache.begin(); it!=ChunkCache.end(); it++) {
-            if (it->first.compare(path) == 0) {
+        for (it=ChunkCache.begin(); it!=ChunkCache.end(); it++)
+        {
+            if (it->first.compare(path) == 0)
+            {
               return it->second;
             }
         }
@@ -35,10 +38,13 @@ namespace Dream {
         return chunk;
     }
 
-    Mix_Music* AudioCache::getMusic(string path) {
+    Mix_Music* AudioCache::getMusic(string path)
+    {
         map<string,Mix_Music*>::iterator it;
-        for (it=MusicCache.begin(); it!=MusicCache.end(); it++) {
-            if (it->first.compare(path) == 0) {
+        for (it=MusicCache.begin(); it!=MusicCache.end(); it++)
+        {
+            if (it->first.compare(path) == 0)
+            {
               return it->second;
             }
         }

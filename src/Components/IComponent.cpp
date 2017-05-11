@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ComponentInterface.h"
+#include "IComponent.h"
 
 namespace Dream {
-    ComponentInterface::ComponentInterface(void) {}
+    IComponent::IComponent() {}
+    IComponent::~IComponent() {}
 
-    void ComponentInterface::setTime(Time* time) {
+    void IComponent::setTime(Time* time) {
       mTime = time;
     }
 

@@ -18,109 +18,110 @@
 
 #include "AnimationComponent.h"
 
-namespace Dream {
+namespace Dream
+{
 
-      AnimationComponent::AnimationComponent() : ComponentInterface() {}
+    AnimationComponent::AnimationComponent() : IComponent()
+    {}
 
-      AnimationComponent::~AnimationComponent() {
-
-        if (DEBUG) {
+    AnimationComponent::~AnimationComponent()
+    {
+        if (DEBUG)
+        {
             cout << "AnimationComponent: Destroying Object" << endl;
         }
 
-      }
+    }
 
-      bool AnimationComponent::init() {
-        if (DEBUG) {
+    bool AnimationComponent::init()
+    {
+        if (DEBUG)
+        {
             cout << "AnimationComponent: Initialisation Done." << endl;
         }
         return true;
-      }
+    }
 
-      void AnimationComponent::update(Scene *scene) {
+    void AnimationComponent::update(Scene *scene)
+    {
         vector<SceneObject*> scenegraph = scene->getScenegraphVector();
         vector<SceneObject*>::iterator sgIter;
-        for (sgIter = scenegraph.begin(); sgIter != scenegraph.end(); sgIter++) {
-          SceneObject* currentSceneObject = *sgIter;
-          AssetInstance* animAsset = currentSceneObject->getAnimationInstance();
-          if (animAsset != nullptr) {
-            try {
-              AnimationInstance* dreamAnimInstance;
-              dreamAnimInstance = dynamic_cast<AnimationInstance*>(animAsset);
-              dreamAnimInstance->step(mTime->getTimeDelta());
-              dreamAnimInstance->applyTransform(currentSceneObject->getTransform());
-            } catch (const exception &ex) {
-              cerr << "AnimationComponent: Unable to cast animation asset to Dream Animation" << endl;
-              cerr << ex.what() << endl;
+        for (sgIter = scenegraph.begin(); sgIter != scenegraph.end(); sgIter++)
+        {
+            SceneObject* currentSceneObject = *sgIter;
+            AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
+            if (animInstance != nullptr)
+            {
+                animInstance->step(mTime->getTimeDelta());
+                animInstance->applyTransform(currentSceneObject->getTransform());
             }
-          }
         }
-      }
+    }
 
-      void AnimationComponent::play(AssetInstance *asset) {
+    void AnimationComponent::play(AnimationInstance *asset) {
         try {
-          AnimationInstance* animAsset;
-          animAsset = dynamic_cast<AnimationInstance*>(asset);
-          animAsset->play();
+            AnimationInstance* animAsset;
+            animAsset = dynamic_cast<AnimationInstance*>(asset);
+            animAsset->play();
         } catch (exception & ex) {
-          cerr << "AnimationComponent: Exception playing animation." << ex.what() << endl;
+            cerr << "AnimationComponent: Exception playing animation." << ex.what() << endl;
         }
-      }
+    }
 
-      void AnimationComponent::pause(AssetInstance *asset) {
+    void AnimationComponent::pause(AnimationInstance *asset) {
         try {
-          AnimationInstance* animAsset;
-          animAsset = dynamic_cast<AnimationInstance*>(asset);
-          animAsset->pause();
+            AnimationInstance* animAsset;
+            animAsset = dynamic_cast<AnimationInstance*>(asset);
+            animAsset->pause();
         } catch (exception & ex) {
-          cerr << "AnimationComponent: Exception pausing animation." << ex.what() << endl;
+            cerr << "AnimationComponent: Exception pausing animation." << ex.what() << endl;
         }
-      }
+    }
 
-      void AnimationComponent::stop(AssetInstance *asset) {
+    void AnimationComponent::stop(AnimationInstance *asset) {
         try {
-          AnimationInstance* animAsset;
-          animAsset = dynamic_cast<AnimationInstance*>(asset);
-          animAsset->stop();
+            AnimationInstance* animAsset;
+            animAsset = dynamic_cast<AnimationInstance*>(asset);
+            animAsset->stop();
         } catch (exception & ex) {
-          cerr << "AnimationComponent: Exception stopping animation." << ex.what() << endl;
+            cerr << "AnimationComponent: Exception stopping animation." << ex.what() << endl;
         }
-      }
+    }
 
-      bool AnimationComponent::isLooping(AssetInstance* asset) {
+    bool AnimationComponent::isLooping(AnimationInstance* asset) {
         if (!asset) {
-          cerr << "AnimationComponent: asset is null in isLooping... " << endl;
-          return false;
+            cerr << "AnimationComponent: asset is null in isLooping... " << endl;
+            return false;
         }
 
         try {
-          AnimationInstance* animationAsset;
-          animationAsset = dynamic_cast<AnimationInstance*>(asset);
-          if (!animationAsset) {
-            cerr << "AnimationComponent: animationAsset is null in isLooping... " << endl;
-            return false;
-          }
-          return animationAsset->isLooping();
+            AnimationInstance* animationAsset;
+            animationAsset = dynamic_cast<AnimationInstance*>(asset);
+            if (!animationAsset) {
+                cerr << "AnimationComponent: animationAsset is null in isLooping... " << endl;
+                return false;
+            }
+            return animationAsset->isLooping();
         } catch (exception &ex) {
-          cerr << "AnimationComponent: Exception in isLooping... " << endl;
-          cerr << ex.what() << endl;
+            cerr << "AnimationComponent: Exception in isLooping... " << endl;
+            cerr << ex.what() << endl;
         }
         return false;
-      }
+    }
 
-      void AnimationComponent::setLooping(AssetInstance* asset, bool looping) {
+    void AnimationComponent::setLooping(AnimationInstance* asset, bool looping) {
         try {
-          AnimationInstance* animationAsset;
-          animationAsset = dynamic_cast<AnimationInstance*>(asset);
-          animationAsset->setLooping(looping);
-          if (DEBUG) {
-            cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
-                 << " looping: " << String::boolToYesNo(looping) << endl;
-          }
+            AnimationInstance* animationAsset;
+            animationAsset = dynamic_cast<AnimationInstance*>(asset);
+            animationAsset->setLooping(looping);
+            if (DEBUG) {
+                cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
+                     << " looping: " << String::boolToYesNo(looping) << endl;
+            }
         } catch (exception &ex) {
-          cerr << "AnimationComponent: Exception in setLooping... " << endl;
-          cerr << ex.what() << endl;
+            cerr << "AnimationComponent: Exception in setLooping... " << endl;
+            cerr << ex.what() << endl;
         }
-      }
+    }
 
 } // End of Dream

@@ -18,21 +18,18 @@
 #ifndef GRAPHICSCOMPONENT_H
 #define GRAPHICSCOMPONENT_H
 
-#include "../../Constants.h"
-#include "../../GameController.h"
-// Dream
-#include "../ComponentInterface.h"
-#include "AssimpModelInstance.h"
-#include "ShaderInstance.h"
-#include "Camera.h"
-
 // STD LIB
 #include <iostream>
 #include <map>
 #include <vector>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
-
+// Dream
+#include "../../Constants.h"
+#include "../../GameController.h"
+#include "../Window/IWindowComponent.h"
+#include "../IComponent.h"
+#include "AssimpModelInstance.h"
+#include "ShaderInstance.h"
+#include "Camera.h"
 // GLM
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -41,22 +38,23 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/matrix.hpp>
-
-#define Graphics_INTERFACE_DEFAULT_SCREEN_WIDTH 1280
-#define Graphics_INTERFACE_DEFAULT_SCREEN_HEIGHT 720
-
+// Constants
 #define CLEAR_RED   0
 #define CLEAR_GREEN 1
 #define CLEAR_BLUE  2
 #define CLEAR_ALPHA 3
 
-namespace Dream {
-  using namespace std;
-  class GraphicsComponent : public ComponentInterface {
+using namespace std;
+
+namespace Dream
+{
+  class GraphicsComponent : public IComponent
+  {
   private:
       glm::mat4 mProjectionMatrix;
       glm::mat4 mViewMatrix;
-      GLfloat mSpriteVertices[24] = {
+      GLfloat mSpriteVertices[24] =
+      {
           // Pos      // Tex
           0.0f, 1.0f, 0.0f, 1.0f,
           1.0f, 0.0f, 1.0f, 0.0f,
@@ -67,15 +65,9 @@ namespace Dream {
       };
       GLuint mSpriteVBO;
       GLuint mSpriteQuadVAO;
-      int mWindowWidth;
-      int mWindowHeight;
-      string mScreenName;
-      bool mWindowShouldClose;
-      SDL_Window *mWindow;
       Camera *mCamera;
       float mMinimumDraw = 0.1f;
       float mMaximumDraw = 1000.0f;
-      SDL_GLContext mContext;
       vector<SDL_Event> mEvents;
       vector<SceneObject*> m2DQueue;
       vector<SceneObject*> m3DQueue;
@@ -84,56 +76,32 @@ namespace Dream {
       vector<float> mClearColour;
       vector<float> mAmbientLightColour;
       GameController *mGameController;
+      IWindowComponent *mWindowComponent;
   public:
-      void setWindowWidth(int);
-      void setWindowHeight(int);
-      int getWindowWidth();
-      int getWindowHeight();
-
-      void setScreenName(string);
-      string getScreenName();
-
-      void closeWindow();
-
+      GraphicsComponent(Camera*,IWindowComponent*);
+      ~GraphicsComponent(void);
       void clear2DQueue();
       void addTo2DQueue(SceneObject*);
       void draw2DQueue();
-
       void addToLightQueue(LightInstance*);
       void clearLightQueue();
-
       void clear3DQueue();
       void addTo3DQueue(SceneObject*);
       void draw3DQueue();
-
-      GraphicsComponent(Camera*);
-      ~GraphicsComponent(void);
-      bool createSDLWindow();
-
       bool init(void);
       void update(Scene*);
       void drawSprite(SceneObject*);
       void drawFont(SceneObject*);
       void drawModel(SceneObject*);
       bool checkGLError(string);
-      bool isWindowShouldCloseFlagSet();
-      SDL_Window* getWindow();
-      vector<SDL_Event> getSDL_Events();
-
       void setClearColour(vector<float>);
       void setAmbientLightColour(vector<float>);
-
       void create2DVertexObjects();
       void setWindowShouldClose(bool);
       glm::mat4 getViewMatrix();
       glm::mat4 getProjectionMatrix();
-      void swapBuffers();
       void setGameController(GameController* gameController);
       GameController *getGameController();
-  private:
-      void updateWindowDimensions();
-
   }; // End of GraphicsComponent
-
 } // End of Dream
 #endif // End of GRAPHICSCOMPONENT_H

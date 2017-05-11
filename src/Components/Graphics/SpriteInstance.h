@@ -21,11 +21,11 @@
 
 #include "../../Constants.h"
 #include <GL/glew.h>
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 
 namespace Dream {
 
-  class SpriteInstance : public AssetInstance {
+  class SpriteInstance : public IAssetInstance {
   private:
     int mWidth;
     int mHeight;

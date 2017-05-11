@@ -11,27 +11,36 @@
 #include "FileReader.h"
 #include "Scene.h"
 #include "Project.h"
-#include "AssetInstance.h"
+#include "IAssetInstance.h"
 #include "HTTPClient.h"
 
+#include "JoystickManager.h"
+#include "GameController.h"
+
+#include "Components/Window/SDLWindowComponent.h"
+#include "Components/Audio/SDL/SDLAudioComponent.h"
 #include "Components/Graphics/Camera.h"
 #include "Components/Animation/AnimationComponent.h"
-#include "Components/Audio/AudioComponent.h"
+#include "Components/Audio/IAudioComponent.h"
 #include "Components/Physics/PhysicsComponent.h"
 #include "Components/Graphics/GraphicsComponent.h"
+#include "Components/Window/IWindowComponent.h"
 
-namespace Dream {
-  class DreamEngine {
+namespace Dream
+{
+  class DreamEngine
+  {
   private:
     static DreamEngine* _Instance;
     Time *mTime;
     Project *mProject;
     Scene *mActiveScene;
     Camera *mCamera;
-    AudioComponent *mAudioComponent;
+    IAudioComponent *mAudioComponent;
     GraphicsComponent *mGraphicsComponent;
     PhysicsComponent *mPhysicsComponent;
     AnimationComponent *mAnimationComponent;
+    IWindowComponent *mWindowComponent;
     bool mDone;
     vector<SDL_Event> mEvents;
     HTTPClient* mHTTPClient;
@@ -75,8 +84,8 @@ namespace Dream {
     AnimationComponent* getAnimationComponent();
     void setAnimationComponent(AnimationComponent*);
 
-    AudioComponent* getAudioComponent();
-    void setAudioComponent(AudioComponent*);
+    IAudioComponent* getAudioComponent();
+    void setAudioComponent(IAudioComponent*);
 
     PhysicsComponent* getPhysicsComponent();
     void setPhysicsComponent(PhysicsComponent*);
@@ -87,6 +96,9 @@ namespace Dream {
     map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
     vector<SDL_Event> getSDL_Events();
     GameController* getGameController();
+
+    void setGameController(GameController*);
+    void setActiveScene(Scene*);
 
   }; // End of Dream
 } // End of Dream

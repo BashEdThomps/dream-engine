@@ -19,7 +19,7 @@
 
 namespace Dream {
 
-  PhysicsComponent::PhysicsComponent() : ComponentInterface() {
+  PhysicsComponent::PhysicsComponent() : IComponent() {
       mDebugDrawer = nullptr;
       mDebug = false;
   }

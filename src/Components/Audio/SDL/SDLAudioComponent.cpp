@@ -15,38 +15,43 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "AudioComponent.h"
+#include "SDLAudioComponent.h"
 
 #include <iostream>
-namespace Dream {
 
-  AudioComponent::AudioComponent() : ComponentInterface() {}
+namespace Dream
+{
+    SDLAudioComponent::SDLAudioComponent() : IAudioComponent()
+    {
+        // Pass
+    }
 
-  AudioComponent::~AudioComponent() {
-
-        if (DEBUG) {
+    SDLAudioComponent::~SDLAudioComponent()
+    {
+        if (DEBUG)
+        {
             cout << "AudioComponent: Destroying Object" << endl;
         }
-
-    Mix_CloseAudio();
-  }
-
-  bool AudioComponent::init() {
-    if (DEBUG) {
-        cout << "AudioComponent: Initialising...";
+        Mix_CloseAudio();
     }
-    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ) {
-      if (DEBUG) {
-        cout << endl << "AudioComponent: Error SDL_OpenAudio Failed" << endl;
-      }
-      return false;
-    }
-    if (DEBUG) {
-        cout << "Done!" << endl;
-    }
-    return true;
-  }
 
-  void AudioComponent::update(Scene*) {}
+    bool SDLAudioComponent::init()
+    {
+        if (DEBUG) {
+            cout << "AudioComponent: Initialising...";
+        }
+        if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ) {
+            if (DEBUG) {
+                cout << endl << "AudioComponent: Error SDL_OpenAudio Failed" << endl;
+            }
+            return false;
+        }
+        if (DEBUG) {
+            cout << "Done!" << endl;
+        }
+        return true;
+    }
+
+    void SDLAudioComponent::update(Scene*) {}
 
 } // End of Dream

@@ -170,7 +170,8 @@ namespace Dream {
 
     void LuaComponent::bindComponents() {
         bindAnimationComponent();
-        bindAudioComponent();
+        bindSDLAudioComponent();
+        bindIWindowComponent();
         bindGraphicsComponent();
         bindPhysicsComponent();
     }
@@ -182,20 +183,25 @@ namespace Dream {
                 ];
     }
 
-    void LuaComponent::bindAudioComponent() {
+    void LuaComponent::bindSDLAudioComponent() {
         luabind::module(mState) [
-                luabind::class_<AudioComponent>("AudioComponent")
-                // TODO
+            luabind::class_<SDLAudioComponent>("SDLAudioComponent")
+            // TODO
+        ];
+    }
+
+    void LuaComponent::bindIWindowComponent() {
+        luabind::module(mState) [
+                luabind::class_<IWindowComponent>("IWindowComponent")
+                .def("getWidth",&IWindowComponent::getWidth)
+                .def("getHeight",&IWindowComponent::getHeight)
+                .def("setShouldClose",&IWindowComponent::setShouldClose)
                 ];
     }
 
-    void LuaComponent::bindGraphicsComponent() {
-        luabind::module(mState) [
-                luabind::class_<GraphicsComponent>("GraphicsComponent")
-                .def("getWindowWidth",&GraphicsComponent::getWindowWidth)
-                .def("getWindowHeight",&GraphicsComponent::getWindowHeight)
-                .def("setWindowShouldClose",&GraphicsComponent::setWindowShouldClose)
-                ];
+    void LuaComponent::bindGraphicsComponent()
+    {
+
     }
 
     void LuaComponent::bindPhysicsComponent() {
@@ -529,7 +535,7 @@ namespace Dream {
     }
 
     void LuaComponent::bindAssetClasses() {
-        bindAudioInstance();
+        bindSDLAudioInstance();
         bindFontInstance();
         //bindAnimationInstance();
         //bindAssimpModelInstance();
@@ -547,13 +553,13 @@ namespace Dream {
                 ];
     }
 
-    void LuaComponent::bindAudioInstance() {
+    void LuaComponent::bindSDLAudioInstance() {
         luabind::module(mState) [
-                luabind::class_<AudioInstance>("AudioInstance")
-                .def("play",&AudioInstance::play)
-                .def("pause",&AudioInstance::pause)
-                .def("stop",&AudioInstance::stop)
-                .def("getStatus",&AudioInstance::getStatus),
+                luabind::class_<SDLAudioInstance>("SDLAudioInstance")
+                .def("play",&SDLAudioInstance::play)
+                .def("pause",&SDLAudioInstance::pause)
+                .def("stop",&SDLAudioInstance::stop)
+                .def("getStatus",&SDLAudioInstance::getStatus),
 
                 luabind::class_<AudioStatus>("AudioStatus")
                 .enum_("AudioStatus") [
@@ -744,28 +750,28 @@ namespace Dream {
 
     void LuaComponent::bindCamera() {
         luabind::module(mState)
-        [
-            luabind::class_<Camera>("Camera")
-            .def("processKeyboard",&Camera::processKeyboard)
-            .def("processMouseMovement",&Camera::processMouseMovement)
-            .enum_("CameraMovement")
-            [
+                [
+                luabind::class_<Camera>("Camera")
+                .def("processKeyboard",&Camera::processKeyboard)
+                .def("processMouseMovement",&Camera::processMouseMovement)
+                .enum_("CameraMovement")
+                [
                 luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
                 luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
                 luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
                 luabind::value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
-            ]
-        ];
+                ]
+                ];
     }
 
     void LuaComponent::bindGameController() {
         luabind::module(mState)
-        [
-            luabind::class_<GameController>("GameController")
-            .def("getButtonValue",&GameController::getButtonValue)
-            .def("getAxisValue",&GameController::getAxisValue)
-            .enum_("ControllerButton")
-            [
+                [
+                luabind::class_<GameController>("GameController")
+                .def("getButtonValue",&GameController::getButtonValue)
+                .def("getAxisValue",&GameController::getAxisValue)
+                .enum_("ControllerButton")
+                [
                 // Face Buttons
                 luabind::value("A_BTN",ControllerButton::A),
                 luabind::value("B_BTN",ControllerButton::B),
@@ -782,9 +788,9 @@ namespace Dream {
                 luabind::value("DPAD_DOWN",ControllerButton::DPAD_DOWN),
                 luabind::value("DPAD_LEFT",ControllerButton::DPAD_LEFT),
                 luabind::value("DPAD_RIGHT",ControllerButton::DPAD_RIGHT)
-            ]
-            .enum_("ControllerAxis")
-            [
+                ]
+                .enum_("ControllerAxis")
+                [
                 // Left Analog
                 luabind::value("LEFT_ANALOG_X",ControllerAxis::LEFT_ANALOG_X),
                 luabind::value("LEFT_ANALOG_Y",ControllerAxis::LEFT_ANALOG_Y),
@@ -794,8 +800,8 @@ namespace Dream {
                 // Triggers
                 luabind::value("LEFT_TRIGGER",ControllerAxis::LEFT_TRIGGER),
                 luabind::value("RIGHT_TRIGGER",ControllerAxis::RIGHT_TRIGGER)
-            ]
-        ];
+                ]
+                ];
     }
 
 } // End of Dream

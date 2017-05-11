@@ -18,15 +18,20 @@
 #include "ShaderInstance.h"
 #include "ShaderCache.h"
 
-namespace Dream {
+namespace Dream
+{
 
-    ShaderInstance::ShaderInstance(AssetDefinition* definition,Transform3D* transform) : AssetInstance(definition,transform) {
+    ShaderInstance::ShaderInstance(AssetDefinition* definition,Transform3D* transform)
+        : IAssetInstance(definition,transform)
+    {
         mShaderProgram = 0;
     }
 
-    ShaderInstance::~ShaderInstance() {
+    ShaderInstance::~ShaderInstance()
+    {
 
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "ShaderInstance: Destroying Object" << endl;
         }
 
@@ -36,13 +41,16 @@ namespace Dream {
     */
     }
 
-    GLuint ShaderInstance::getShaderProgram() {
+    GLuint ShaderInstance::getShaderProgram()
+    {
         return mShaderProgram;
     }
 
-    bool ShaderInstance::load(string projectPath) {
+    bool ShaderInstance::load(string projectPath)
+    {
         mShaderProgram = ShaderCache::getShader(mDefinition->getUuid());
-        if (mShaderProgram == 0) {
+        if (mShaderProgram == 0)
+        {
             string mVertexShaderSource;
             string mFragmentShaderSource;
             GLuint mVertexShader = 0;
@@ -60,7 +68,8 @@ namespace Dream {
             fragmentReader->readIntoStringStream();
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
-            if (DEBUG) {
+            if (DEBUG)
+            {
                 cout << "ShaderInstance: Loading Shader..." << endl
                      << "ShaderInstance: Vertex: " << absVertexPath     << endl
                      << endl << mVertexShaderSource    << endl
@@ -77,7 +86,8 @@ namespace Dream {
             glCompileShader(mVertexShader);
             // Print compile errors if any
             glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
-            if (!success) {
+            if (!success)
+            {
                 glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
                 cerr << "ShaderInstance: SHADER:VERTEX:COMPILATION_FAILED\n" << infoLog << endl;
             }
@@ -88,7 +98,8 @@ namespace Dream {
             glCompileShader(mFragmentShader);
             // Print compile errors if any
             glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
-            if (!success) {
+            if (!success)
+            {
                 glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
                 cerr << "ShaderInstance: SHADER:FRAGMENT:COMPILATION_FAILED\n" << infoLog << endl;
             }
@@ -99,7 +110,8 @@ namespace Dream {
             glLinkProgram(mShaderProgram);
             // Print linking errors if any
             glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
-            if (!success) {
+            if (!success)
+            {
                 glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
                 cerr << "ShaderInstance: SHADER:PROGRAM:LINKING_FAILED\n" << infoLog << endl;
             }
@@ -112,26 +124,32 @@ namespace Dream {
         return mLoaded;
     }
 
-    void ShaderInstance::use() {
+    void ShaderInstance::use()
+    {
         glUseProgram(mShaderProgram);
         syncUniforms();
     }
 
-    void ShaderInstance::loadExtraAttributes(nlohmann::json jsonData) {
+    void ShaderInstance::loadExtraAttributes(nlohmann::json jsonData)
+    {
         // pass
         return;
     }
 
     // API Setters =============================================================
 
-    void ShaderInstance::syncUniforms() {
+    void ShaderInstance::syncUniforms()
+    {
        syncUniform1f();
     }
 
-    void ShaderInstance::setUniform1f(string location, GLfloat value) {
+    void ShaderInstance::setUniform1f(string location, GLfloat value)
+    {
         map<string,GLfloat>::iterator it;
-        for (it = mUniform1fMap.begin(); it != mUniform1fMap.end(); it++) {
-           if (it->first == location) {
+        for (it = mUniform1fMap.begin(); it != mUniform1fMap.end(); it++)
+        {
+           if (it->first == location)
+           {
                it->second = value;
                return;
            }
@@ -142,15 +160,18 @@ namespace Dream {
     // GL Syncros ==============================================================
 
     // 1f
-    void ShaderInstance::syncUniform1f() {
+    void ShaderInstance::syncUniform1f()
+    {
         GLint prog = getShaderProgram();
         map<string,GLfloat>::iterator it;
 
-        for (it = mUniform1fMap.begin(); it != mUniform1fMap.end(); it++) {
+        for (it = mUniform1fMap.begin(); it != mUniform1fMap.end(); it++)
+        {
             string name = it->first;
             GLfloat val = it->second;
             GLint location = glGetUniformLocation(prog,name.c_str());
-            if (VERBOSE) {
+            if (VERBOSE)
+            {
                 cout << "ShaderInstance: "
                      << getUuid()
                      << " Sync Uinform1f -> "

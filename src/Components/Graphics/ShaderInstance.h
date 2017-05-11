@@ -19,7 +19,7 @@
 #define SHADERINSTANCE_H
 
 #include "../../Constants.h"
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 
 #include <vector>
 #include <map>
@@ -33,14 +33,15 @@
 #define SHADER_VERTEX   "vertex"
 #define SHADER_FRAGMENT "fragment"
 
-namespace Dream {
-    using namespace std;
+using namespace std;
 
-    class ShaderInstance : public AssetInstance {
+namespace Dream
+{
+    class ShaderInstance : public IAssetInstance
+    {
     private:
         GLuint mShaderProgram;
         map<string, GLfloat>  mUniform1fMap;
-
     public:
         ShaderInstance();
         ShaderInstance(AssetDefinition*,Transform3D*);
@@ -50,16 +51,13 @@ namespace Dream {
         void syncUniforms();
         GLuint getShaderProgram();
         void loadExtraAttributes(nlohmann::json);
-
     public:
         // 1f
         void setUniform1f(string, GLfloat);
-
     private:
         // 1f
         void syncUniform1f();
     }; // End of ShaderInstance
-
 } // End of Dream
 
 #endif // End of SHADERINSTANCE_H

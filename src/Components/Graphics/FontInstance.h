@@ -20,11 +20,11 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 #include "../../Constants.h"
 
 namespace Dream {
-  class FontInstance : public AssetInstance {
+  class FontInstance : public IAssetInstance {
   private:
     SDL_Surface* mSurface;
     int mSize;

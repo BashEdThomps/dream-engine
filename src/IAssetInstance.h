@@ -1,5 +1,5 @@
 /*
-* AssetInstance
+* Dream::IAssetInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ASSETINSTANCE_H
-#define ASSETINSTANCE_H
+#ifndef IASSETINSTANCE_H
+#define IASSETINSTANCE_H
 
 #include <iostream>
 
@@ -28,9 +28,10 @@
 #define ASSET_UUID "uuid"
 #define ASSET_NAME "name"
 
-namespace Dream {
-
-  class AssetInstance {
+namespace Dream
+{
+  class IAssetInstance
+  {
   protected:
     bool mLoaded;
     string mAbsolutePath;
@@ -39,8 +40,8 @@ namespace Dream {
     string mUuid;
     string mName;
   public:
-    AssetInstance(AssetDefinition*, Transform3D*);
-    virtual ~AssetInstance();
+    IAssetInstance(AssetDefinition*, Transform3D*);
+    virtual ~IAssetInstance();
 
     string getUuid();
     string getName();
@@ -58,7 +59,7 @@ namespace Dream {
     bool getLoadedFlag();
     void setLoadedFlag(bool);
 
-  }; // End of AssetInstance
+  }; // End of IAssetInstance
 } // End of Dream
 
-#endif // End of ASSETINSTANCE_H
+#endif // End of IASSETINSTANCE_H

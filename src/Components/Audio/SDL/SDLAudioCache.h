@@ -23,11 +23,12 @@
 #include <map>
 #include <SDL2/SDL_mixer.h>
 
-namespace Dream {
+using namespace std;
 
-  using namespace std;
-
-    class AudioCache {
+namespace Dream
+{
+    class AudioCache
+    {
     public:
       static AudioCache* instance;
       static map<string,Mix_Chunk*> ChunkCache;
@@ -35,7 +36,6 @@ namespace Dream {
       static Mix_Music* getMusic(string);
       static Mix_Chunk* getChunk(string);
     }; // End of AudioCache
-
 } // End of Dream
 
 #endif // AUDIOCACHE_H

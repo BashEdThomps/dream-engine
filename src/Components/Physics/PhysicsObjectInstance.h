@@ -2,7 +2,7 @@
 #define PhysicsObjectInstance_h
 
 #include "../../Constants.h"
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 #include "PhysicsMotionState.h"
 #include <btBulletDynamicsCommon.h>
 
@@ -12,13 +12,13 @@
 
 namespace Dream {
 
-   class CompoundChild {
-   public:
+   struct CompoundChild
+   {
         btTransform transform;
         string      uuid;
-    };
+   };
 
-  class PhysicsObjectInstance : public AssetInstance {
+  class PhysicsObjectInstance : public IAssetInstance {
   private:
       static map<string,const aiScene*> AssimpModelCache;
       static ::Assimp::Importer mImporter;

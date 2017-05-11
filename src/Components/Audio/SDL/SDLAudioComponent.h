@@ -21,21 +21,21 @@
 #include <iostream>
 #include <vector>
 #include <SDL2/SDL_mixer.h>
-#include "AudioStatus.h"
-#include "AudioInstance.h"
-#include "../ComponentInterface.h"
-#include "../../Constants.h"
+#include "../AudioStatus.h"
+#include "SDLAudioInstance.h"
+#include "../IAudioComponent.h"
+#include "../../../Constants.h"
 
-namespace Dream {
-
-      class AudioComponent : public ComponentInterface {
-      public:
-        AudioComponent();
-        ~AudioComponent();
+namespace Dream
+{
+    class SDLAudioComponent : public IAudioComponent
+    {
+    public:
+        SDLAudioComponent();
+        ~SDLAudioComponent();
         bool init();
         void update(Scene*);
-      }; // End of AudioComponent
-
+    }; // End of SDLAudioComponent
 } // End of Dream
 
 #endif // End of AUDIOCOMPONENT_H

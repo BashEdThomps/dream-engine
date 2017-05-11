@@ -3,10 +3,10 @@
 
 #include "../../Constants.h"
 #include "../../AssetDefinition.h"
-#include "../../AssetInstance.h"
+#include "../../IAssetInstance.h"
 
 namespace Dream {
-      class LightInstance : public AssetInstance {
+      class LightInstance : public IAssetInstance {
           glm::vec3 mColor;
           float mIntensity;
       public:

@@ -46,7 +46,7 @@ namespace Dream {
     }
 
     AssimpModelInstance::AssimpModelInstance(AssetDefinition* definition, Transform3D* transform)
-    : AssetInstance(definition,transform)
+    : IAssetInstance(definition,transform)
     {
         return;
     }
