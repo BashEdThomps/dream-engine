@@ -18,7 +18,7 @@
 #ifndef SDLWINDOWCOMPONENT_H
 #define SDLWINDOWCOMPONENT_H
 
-#include "IWindowComponent.h"
+#include "../../Components/Window/IWindowComponent.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 

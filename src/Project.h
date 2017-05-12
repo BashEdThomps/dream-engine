@@ -20,17 +20,20 @@
 
 #include <unistd.h>
 #include <vector>
+#include "Lua/ILuaExposable.h"
+
 #include "Scene.h"
 #include "AssetDefinition.h"
 #include "String.h"
 #include "Constants.h"
 
-namespace Dream {
+using namespace std;
+using namespace nlohmann;
 
-  using namespace std;
-  using namespace nlohmann;
-
-  class Project {
+namespace Dream
+{
+  class Project : public ILuaExposable
+  {
   private:
     string mUuid;
     string mName;
@@ -50,7 +53,6 @@ namespace Dream {
 
     void setMetadata(nlohmann::json);
     void loadScenesFromJson(nlohmann::json);
-
 
     void setUuid(string);
     string getUuid();
@@ -96,7 +98,10 @@ namespace Dream {
     size_t getNumberOfAssetDefinitions();
     AssetDefinition* getAssetDefinitionByUuid(string);
 
+    void exposeLuaApi(lua_State*);
+
   }; // End of Project
+
 } // End of Dream
 
 #endif // End of PROJECT_H

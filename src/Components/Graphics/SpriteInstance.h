@@ -23,9 +23,10 @@
 #include <GL/glew.h>
 #include "../../IAssetInstance.h"
 
-namespace Dream {
-
-  class SpriteInstance : public IAssetInstance {
+namespace Dream
+{
+  class SpriteInstance : public IAssetInstance
+  {
   private:
     int mWidth;
     int mHeight;
@@ -40,8 +41,8 @@ namespace Dream {
     GLuint getTexture();
     int getWidth();
     int getHeight();
+      void exposeLuaApi(lua_State*);
   };
-
 } // End of Dream
 
 #endif // SPRITEINSTANCE_H

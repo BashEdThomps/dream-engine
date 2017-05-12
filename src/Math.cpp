@@ -19,16 +19,31 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include "Lua/ILuaExposable.h"
 
-namespace Dream {
-    namespace Math {
+namespace Dream
+{
+    Math::Math() : ILuaExposable() {}
+    Math::~Math() {}
 
-        float degreesToRadians(float degrees) {
-            return static_cast<float>(degrees*(M_PI/180));
-        }
-
-        float radiansToDegrees(float radians) {
-            return static_cast<float>(radians*(180/M_PI));
-        }
+    float Math::degreesToRadians(float degrees)
+    {
+        return static_cast<float>(degrees*(M_PI/180));
     }
-}
+
+    float Math::radiansToDegrees(float radians)
+    {
+        return static_cast<float>(radians*(180/M_PI));
+    }
+
+    void Math::exposeLuaApi(lua_State* state)
+    {
+        luabind::module(state)
+        [
+            luabind::class_<Math>("Math")
+            .def("degreesToRadians",&Math::degreesToRadians)
+            .def("radiansToDegrees",&Math::radiansToDegrees)
+        ];
+    }
+
+} // End of Dream

@@ -124,4 +124,13 @@ namespace Dream
         }
     }
 
+    void AnimationComponent::exposeLuaApi(lua_State* state)
+    {
+        luabind::module(state)
+        [
+            luabind::class_<AnimationComponent>("AnimationComponent")
+            // TODO
+        ];
+    }
+
 } // End of Dream

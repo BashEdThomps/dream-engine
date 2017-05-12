@@ -17,30 +17,41 @@
 
 #include "LuaScriptInstance.h"
 
-namespace Dream {
+namespace Dream
+{
 
-  LuaScriptInstance::LuaScriptInstance(AssetDefinition* definition, Transform3D* transform)
-  : IAssetInstance(definition,transform) {
-    return;
-  }
+    LuaScriptInstance::LuaScriptInstance(AssetDefinition* definition, Transform3D* transform)
+        : IAssetInstance(definition,transform)
+    {
+        return;
+    }
 
-  LuaScriptInstance::~LuaScriptInstance() {
-
-        if (DEBUG) {
+    LuaScriptInstance::~LuaScriptInstance()
+    {
+        if (DEBUG)
+        {
             cout << "LuaScriptInstance: Destroying Object" << endl;
         }
-
-    return;
-  }
-
-  bool LuaScriptInstance::load(string projectPath) {
-    mAbsolutePath = projectPath+mDefinition->getAssetPath();
-    if (DEBUG) {
-        cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
     }
-    return mAbsolutePath.size() != 0;
-  }
 
-  void LuaScriptInstance::update() {}
+    bool LuaScriptInstance::load(string projectPath)
+    {
+        mAbsolutePath = projectPath+mDefinition->getAssetPath();
+        if (DEBUG)
+        {
+            cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
+        }
+        return mAbsolutePath.size() != 0;
+    }
+
+    void LuaScriptInstance::update()
+    {
+
+    }
+
+    void LuaScriptInstance::exposeLuaApi(lua_State* state)
+    {
+
+    }
 
 } // End of Dream

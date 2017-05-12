@@ -17,18 +17,23 @@
 #include "JoystickManager.h"
 #include "GameController.h"
 
-#include "Components/Window/SDLWindowComponent.h"
-#include "Components/Audio/SDL/SDLAudioComponent.h"
-#include "Components/Graphics/Camera.h"
+
 #include "Components/Animation/AnimationComponent.h"
 #include "Components/Audio/IAudioComponent.h"
-#include "Components/Physics/PhysicsComponent.h"
+#include "Components/Graphics/Camera.h"
 #include "Components/Graphics/GraphicsComponent.h"
+#include "Components/Physics/PhysicsComponent.h"
 #include "Components/Window/IWindowComponent.h"
+
+#include "Lua/ILuaExposable.h"
+
+#include "SDL/Audio/SDLAudioComponent.h"
+#include "SDL/Window/SDLWindowComponent.h"
+
 
 namespace Dream
 {
-  class DreamEngine
+  class DreamEngine : public ILuaExposable
   {
   private:
     static DreamEngine* _Instance;
@@ -100,7 +105,9 @@ namespace Dream
     void setGameController(GameController*);
     void setActiveScene(Scene*);
 
-  }; // End of Dream
+    void exposeLuaApi(lua_State*);
+
+  }; // End of DreamEngine
 } // End of Dream
 
 #endif // DREAMENGINE_H

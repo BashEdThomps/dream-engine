@@ -21,10 +21,12 @@
 #include <iostream>
 #include <vector>
 #include <SDL2/SDL_mixer.h>
-#include "../AudioStatus.h"
 #include "SDLAudioInstance.h"
-#include "../IAudioComponent.h"
-#include "../../../Constants.h"
+
+#include "../../Components/Audio/IAudioComponent.h"
+#include "../../Components/Audio/AudioStatus.h"
+
+#include "../../Constants.h"
 
 namespace Dream
 {
@@ -35,6 +37,7 @@ namespace Dream
         ~SDLAudioComponent();
         bool init();
         void update(Scene*);
+        void exposeLuaApi(lua_State*);
     }; // End of SDLAudioComponent
 } // End of Dream
 

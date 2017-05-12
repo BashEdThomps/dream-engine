@@ -20,6 +20,7 @@
 
 #include <iostream>
 
+#include "Lua/ILuaExposable.h"
 #include "Constants.h"
 #include "FileReader.h"
 #include "AssetDefinition.h"
@@ -30,36 +31,36 @@
 
 namespace Dream
 {
-  class IAssetInstance
-  {
-  protected:
-    bool mLoaded;
-    string mAbsolutePath;
-    AssetDefinition *mDefinition;
-    Transform3D *mTransform;
-    string mUuid;
-    string mName;
-  public:
-    IAssetInstance(AssetDefinition*, Transform3D*);
-    virtual ~IAssetInstance();
+    class IAssetInstance : public ILuaExposable
+    {
+    protected:
+        bool mLoaded;
+        string mAbsolutePath;
+        AssetDefinition *mDefinition;
+        Transform3D *mTransform;
+        string mUuid;
+        string mName;
+    public:
+        IAssetInstance(AssetDefinition*, Transform3D*);
+        virtual ~IAssetInstance();
 
-    string getUuid();
-    string getName();
+        string getUuid();
+        string getName();
 
-    string getNameAndUuidString();
+        string getNameAndUuidString();
 
-    virtual bool load(string) = 0;
-    virtual void loadExtraAttributes(nlohmann::json) = 0;
+        virtual bool load(string) = 0;
+        virtual void loadExtraAttributes(nlohmann::json) = 0;
 
-    Transform3D* getTransform();
+        Transform3D* getTransform();
 
-    string getAbsolutePath();
-    void setAbsolutePath(string);
+        string getAbsolutePath();
+        void setAbsolutePath(string);
 
-    bool getLoadedFlag();
-    void setLoadedFlag(bool);
+        bool getLoadedFlag();
+        void setLoadedFlag(bool);
 
-  }; // End of IAssetInstance
+    }; // End of IAssetInstance
 } // End of Dream
 
 #endif // End of IASSETINSTANCE_H

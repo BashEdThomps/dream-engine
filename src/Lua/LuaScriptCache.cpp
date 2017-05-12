@@ -17,15 +17,20 @@
  */
 
 #include "LuaScriptCache.h"
-#include "../../FileReader.h"
+#include "../FileReader.h"
 
-namespace Dream {
+namespace Dream
+{
     map<string,string> LuaScriptCache::sScriptCache = map<string,string>();
-    string LuaScriptCache::getScript(string path) {
+    string LuaScriptCache::getScript(string path)
+    {
       map<string,string>::iterator it;
-      for (it=sScriptCache.begin();it!=sScriptCache.end();it++) {
-         if (it->first == path) {
-             if (DEBUG) {
+      for (it=sScriptCache.begin();it!=sScriptCache.end();it++)
+      {
+         if (it->first == path)
+         {
+             if (DEBUG)
+             {
                  cout << "LuaScriptCache: Found script in cache " << path << endl;
              }
              return it->second;
@@ -34,13 +39,16 @@ namespace Dream {
       return readIntoCache(path);
     }
 
-    string LuaScriptCache::readIntoCache(string path) {
+    string LuaScriptCache::readIntoCache(string path)
+    {
         FileReader reader(path);
-        if(!reader.readIntoStringStream()) {
+        if(!reader.readIntoStringStream())
+        {
             cerr << "LuaScriptCache: Error reading Lua script into cache" << path << endl;
            return "";
         }
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "LuaScriptCache: Inserting script " << path << endl;
         }
         string content = reader.getContentsAsString();

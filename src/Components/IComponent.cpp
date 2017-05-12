@@ -17,12 +17,22 @@
 
 #include "IComponent.h"
 
-namespace Dream {
-    IComponent::IComponent() {}
-    IComponent::~IComponent() {}
+namespace Dream
+{
+    IComponent::IComponent()
+        : ILuaExposable()
+    {
 
-    void IComponent::setTime(Time* time) {
-      mTime = time;
+    }
+
+    IComponent::~IComponent()
+    {
+
+    }
+
+    void IComponent::setTime(Time* time)
+    {
+        mTime = time;
     }
 
 } // End of Dream

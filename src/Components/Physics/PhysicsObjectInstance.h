@@ -43,6 +43,7 @@ namespace Dream {
       bool getInPhysicsWorld();
       btCollisionObject* getCollisionObject();
       void setLinearVelocity(float, float, float);
+      void exposeLuaApi(lua_State*);
   protected:
       void loadExtraAttributes(nlohmann::json);
       void loadExtraAttributes(nlohmann::json,AssetDefinition*,bool);

@@ -20,56 +20,58 @@
 
 namespace Dream
 {
-  IAssetInstance::IAssetInstance(AssetDefinition* definition, Transform3D* transform)
-  {
-    mDefinition = definition;
-    mTransform = transform;
-    mLoaded = false;
-    mName = mDefinition->getName();
-    mUuid = Uuid::generateUuid();
-  }
+    IAssetInstance::IAssetInstance(AssetDefinition* definition, Transform3D* transform)
+        : ILuaExposable()
+    {
+        mDefinition = definition;
+        mTransform = transform;
+        mLoaded = false;
+        mName = mDefinition->getName();
+        mUuid = Uuid::generateUuid();
+    }
 
-  IAssetInstance::~IAssetInstance()
-  {
-  }
+    IAssetInstance::~IAssetInstance()
+    {
+    }
 
-  string IAssetInstance::getName()
-  {
-    return mDefinition->getName();
-  }
+    string IAssetInstance::getName()
+    {
+        return mDefinition->getName();
+    }
 
-  string IAssetInstance::getUuid()
-  {
-    return mUuid;
-  }
+    string IAssetInstance::getUuid()
+    {
+        return mUuid;
+    }
 
-  string IAssetInstance::getNameAndUuidString()
-  {
-    return getName() + " (" + getUuid() + ")";
-  }
+    string IAssetInstance::getNameAndUuidString()
+    {
+        return getName() + " (" + getUuid() + ")";
+    }
 
-  Transform3D* IAssetInstance::getTransform()
-  {
-    return mTransform;
-  }
+    Transform3D* IAssetInstance::getTransform()
+    {
+        return mTransform;
+    }
 
-  string IAssetInstance::getAbsolutePath()
-  {
-    return mAbsolutePath;
-  }
+    string IAssetInstance::getAbsolutePath()
+    {
+        return mAbsolutePath;
+    }
 
-  void IAssetInstance::setAbsolutePath(string path)
-  {
-    mAbsolutePath = path;
-  }
+    void IAssetInstance::setAbsolutePath(string path)
+    {
+        mAbsolutePath = path;
+    }
 
-  bool IAssetInstance::getLoadedFlag()
-  {
-    return mLoaded;
-  }
+    bool IAssetInstance::getLoadedFlag()
+    {
+        return mLoaded;
+    }
 
-  void IAssetInstance::setLoadedFlag(bool loaded)
-  {
-    mLoaded = loaded;
-  }
+    void IAssetInstance::setLoadedFlag(bool loaded)
+    {
+        mLoaded = loaded;
+    }
+
 } // End of Dream

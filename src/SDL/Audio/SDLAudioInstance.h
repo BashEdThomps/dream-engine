@@ -3,13 +3,14 @@
 
 #include <vector>
 #include <SDL2/SDL_mixer.h>
-#include "../AudioStatus.h"
-#include "../IAudioInstance.h"
-#include "../../../Constants.h"
+#include "../../Components/Audio/AudioStatus.h"
+#include "../../Components/Audio/IAudioInstance.h"
+#include "../../Constants.h"
 
-namespace Dream {
-
-    class SDLAudioInstance : public IAudioInstance {
+namespace Dream
+{
+    class SDLAudioInstance : public IAudioInstance
+    {
     protected:
       Mix_Chunk *mChunk;
       Mix_Music *mMusic;
@@ -24,6 +25,7 @@ namespace Dream {
       bool play();
       bool pause();
       bool stop();
+      void exposeLuaApi(lua_State*);
     }; // End of SDLAudioInstance
 } // End of Dream
 

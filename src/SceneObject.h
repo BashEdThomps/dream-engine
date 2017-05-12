@@ -14,7 +14,7 @@
 #include "Components/Graphics/SpriteInstance.h"
 #include "Components/Graphics/FontInstance.h"
 #include "Components/Physics/PhysicsObjectInstance.h"
-#include "Components/Scripting/LuaScriptInstance.h"
+#include "Lua/LuaScriptInstance.h"
 
 namespace Dream {
 

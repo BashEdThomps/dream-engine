@@ -17,6 +17,7 @@ namespace Dream {
 
         glm::vec3 getColor();
         float getIntensity();
+      void exposeLuaApi(lua_State*);
       }; // End of LightInstance
 } // End of Dream
 

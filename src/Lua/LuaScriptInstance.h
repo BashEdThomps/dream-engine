@@ -20,17 +20,20 @@
 
 #include <vector>
 #include <iostream>
-#include "../../IAssetInstance.h"
-#include "../../Constants.h"
+#include "../IAssetInstance.h"
+#include "../Constants.h"
 
-namespace Dream {
-      class LuaScriptInstance : public IAssetInstance {
+namespace Dream
+{
+      class LuaScriptInstance : public IAssetInstance
+      {
       public:
         LuaScriptInstance(AssetDefinition*,Transform3D*);
         ~LuaScriptInstance(void);
         bool load(string);
         void update();
         void loadExtraAttributes(nlohmann::json) {}
+        void exposeLuaApi(lua_State*);
       }; // End of LuaScriptInstance
 } // End of Dream
 #endif // End of LUASCRIPT_H

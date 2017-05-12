@@ -497,4 +497,60 @@ namespace Dream {
   bool SceneObject::hasPhysicsObjectInstance() {
     return mPhysicsObjectInstance != nullptr;
   }
+
+    void LuaComponent::bindSceneObject() {
+        luabind::module(mState) [
+                luabind::class_<SceneObject>("SceneObject")
+                .def(luabind::constructor<>())
+
+                .def("getUuid",&SceneObject::getUuid)
+                .def("setUuid",&SceneObject::setUuid)
+
+                .def("getName",&SceneObject::getName)
+                .def("setName",&SceneObject::setName)
+
+                .def("showStatus",&SceneObject::showStatus)
+
+                .def("getChildByUuid",&SceneObject::getChildByUuid)
+
+                .def("getTransform",&SceneObject::getTransform)
+                .def("setTransform",&SceneObject::setTransform)
+
+                .def("getParent",&SceneObject::getParent)
+                .def("setParent",&SceneObject::setParent)
+                .def("addChild",&SceneObject::addChild,luabind::adopt(_2))
+
+                .def("copyTransform",&SceneObject::copyTransform)
+
+                .def("addAssetDefUuidToLoad",&SceneObject::addAssetDefUuidToLoad)
+
+                .def("getAnimationInstance",&SceneObject::getAnimationInstance)
+                .def("setAnimationInstance",&SceneObject::setAnimationInstance)
+
+                .def("getAudioInstance",&SceneObject::getAudioInstance)
+                .def("setAudioInstance",&SceneObject::setAudioInstance)
+
+                .def("getSpriteInstance",&SceneObject::getSpriteInstance)
+                .def("setSpriteInstance",&SceneObject::setSpriteInstance)
+
+                .def("getModelInstance",&SceneObject::getModelInstance)
+                .def("setModelInstance",&SceneObject::setModelInstance)
+
+                .def("getShaderInstance",&SceneObject::getShaderInstance)
+                .def("setShaderInstance",&SceneObject::setShaderInstance)
+
+                .def("getLightInstance",&SceneObject::getLightInstance)
+                .def("setLightInstance",&SceneObject::setLightInstance)
+
+                .def("getFontInstance",&SceneObject::getFontInstance)
+                .def("setFontInstance",&SceneObject::setFontInstance)
+
+                .def("getPhysicsObjectInstance",&SceneObject::getPhysicsObjectInstance)
+                .def("setPhysicsObjectInstance",&SceneObject::setPhysicsObjectInstance)
+
+                .def("getDeleteFlag",&SceneObject::getDeleteFlag)
+                .def("setDeleteFlag",&SceneObject::setDeleteFlag)
+                ];
+    }
+
 } // End of Dream

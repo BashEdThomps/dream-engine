@@ -102,6 +102,7 @@ namespace Dream
       glm::mat4 getProjectionMatrix();
       void setGameController(GameController* gameController);
       GameController *getGameController();
+      void exposeLuaApi(lua_State*);
   }; // End of GraphicsComponent
 } // End of Dream
 #endif // End of GRAPHICSCOMPONENT_H

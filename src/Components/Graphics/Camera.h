@@ -21,6 +21,7 @@
 #define ZOOM       45.0f
 
 #include "../../Constants.h"
+#include "../../Lua/ILuaExposable.h"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -28,55 +29,57 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 
-namespace Dream {
+using namespace std;
 
-  using namespace std;
+namespace Dream
+{
+    class Camera : public ILuaExposable
+    {
+    private:
+        // Camera Attributes
+        glm::vec3 mTranslation;
+        glm::vec3 mFront;
+        glm::vec3 mUp;
+        glm::vec3 mRight;
+        glm::vec3 mWorldUp;
+        // Eular Angles
+        float mYaw;
+        float mPitch;
+        // Camera options
+        float mMovementSpeed;
+        float mMouseSensitivity;
+        float mZoom;
+    public:
+        // Constructor with vectors
+        Camera(
+                glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+                glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+                float   yaw      = YAW,
+                float   pitch    = PITCH
+                );
 
-  class Camera {
-  private:
-    // Camera Attributes
-    glm::vec3 mTranslation;
-    glm::vec3 mFront;
-    glm::vec3 mUp;
-    glm::vec3 mRight;
-    glm::vec3 mWorldUp;
-    // Eular Angles
-    float mYaw;
-    float mPitch;
-    // Camera options
-    float mMovementSpeed;
-    float mMouseSensitivity;
-    float mZoom;
-  public:
-    // Constructor with vectors
-    Camera(
-        glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-        float   yaw      = YAW,
-        float   pitch    = PITCH
-    );
+        // Constructor with scalar values
+        Camera(float, float, float, float, float, float, float, float);
+        ~Camera();
+        glm::mat4 getViewMatrix();
+        void processKeyboard(int, float);
+        void processMouseMovement(float, float, bool);
+        void processMouseScroll(float);
+        void updateCameraVectors();
+        void setTranslation(glm::vec3);
+        glm::vec3 getTranslation();
+        void setRotation(glm::vec3);
+        glm::vec3 getRotation();
+        void  setMovementSpeed(float);
+        float getMovementSpeed();
+        void  setMouseSensitivity(float);
+        float getMouseSensitivity();
+        float getZoom();
+        void exposeLuaApi(lua_State*);
+    private:
+        float radians(float);
 
-    // Constructor with scalar values
-    Camera(float, float, float, float, float, float, float, float);
-    ~Camera();
-    glm::mat4 getViewMatrix();
-    void processKeyboard(int, float);
-    void processMouseMovement(float, float, bool);
-    void processMouseScroll(float);
-    void updateCameraVectors();
-    void setTranslation(glm::vec3);
-    glm::vec3 getTranslation();
-    void setRotation(glm::vec3);
-    glm::vec3 getRotation();
-    void  setMovementSpeed(float);
-    float getMovementSpeed();
-    void  setMouseSensitivity(float);
-    float getMouseSensitivity();
-    float getZoom();
-  private:
-    float radians(float);
-
-  }; // End of Camera
+    }; // End of Camera
 
 } // End of Dream
 

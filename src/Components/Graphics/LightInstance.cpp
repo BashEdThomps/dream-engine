@@ -50,4 +50,9 @@ namespace Dream {
     {
         return mIntensity;
     }
+
+    void LightInstance::exposeLuaApi(lua_State* state)
+    {
+
+    }
 } // End of Dream

@@ -321,4 +321,13 @@ namespace Dream {
     return retval;
   }
 
+    void PhysicsObjectInstance::exposeLuaApi(lua_State* state)
+    {
+        luabind::module(state) [
+                luabind::class_<PhysicsObjectInstance>("PhysicsObjectInstance")
+                .def("getUuid", &PhysicsObjectInstance::getUuid     )
+                .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
+                ];
+    }
+
 } // End of Dream

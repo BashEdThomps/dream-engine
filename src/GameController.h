@@ -21,26 +21,25 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "Constants.h"
+#include "Lua/ILuaExposable.h"
 
 using namespace std;
 
-namespace Dream {
+namespace Dream
+{
 
-    enum ControllerAxis {
-
+    enum ControllerAxis
+    {
         LEFT_ANALOG_X,
         LEFT_ANALOG_Y,
-
         RIGHT_ANALOG_Y,
         RIGHT_ANALOG_X,
-
         LEFT_TRIGGER,
         RIGHT_TRIGGER
-
     };
 
-    enum ControllerButton {
-
+    enum ControllerButton
+    {
         A,
         B,
         X,
@@ -48,23 +47,18 @@ namespace Dream {
         START,
         BACK,
         GUIDE,
-
         LEFT_ANALOG,
         RIGHT_ANALOG,
-
         LEFT_SHOULDER,
         RIGHT_SHOULDER,
-
         DPAD_UP,
         DPAD_DOWN,
         DPAD_LEFT,
         DPAD_RIGHT
-
     };
 
-    class GameController
+    class GameController : public ILuaExposable
     {
-
     private:
         // Left Analog
         int mLeftAnalogX;
@@ -93,7 +87,6 @@ namespace Dream {
         int mDPadRightButton;
         int mDPadUpButton;
         int mDPadDownButton;
-
     public:
       GameController();
       ~GameController();
@@ -105,7 +98,7 @@ namespace Dream {
       void updateControllerState(SDL_Event &e);
       int  getButtonValue(ControllerButton btn);
       int  getAxisValue(ControllerAxis axis);
-
+      void exposeLuaApi(lua_State*);
     };
 }
 

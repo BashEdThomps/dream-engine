@@ -1,9 +1,9 @@
 /*
- * Event
+ * ILuaExposable.h
  *
- * Created: 18/12/2016 2016 by Ashley
+ * Created: 12 2017 by Ashley
  *
- * Copyright 2016 Octronic. All rights reserved.
+ * Copyright 2017 Octronic. All rights reserved.
  *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
@@ -15,32 +15,25 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#ifndef ILUAEXPOSABLE_H
+#define ILUAEXPOSABLE_H
 
-#ifndef EVENT_H
-#define EVENT_H
+#include <lua.h>
+extern "C" {
+#include "lualib.h"
+}
 
-#include <iostream>
-#include <map>
-#include "Constants.h"
-#include "Lua/ILuaExposable.h"
-
-using namespace std;
+#include <luabind/luabind.hpp>
+#include <luabind/adopt_policy.hpp>
 namespace Dream
 {
-    class Event : public ILuaExposable
+    class ILuaExposable
     {
-    private:
-      map<string,string> mAttributes;
     public:
-      Event(string,string);
-      ~Event();
-      string getSender();
-      string getType();
-      void setAttribute(string,string);
-      string getAttribute(string);
-      void exposeLuaApi(lua_State*);
+        ILuaExposable();
+        virtual ~ILuaExposable();
+        virtual void exposeLuaApi(lua_State*) = 0;
     };
+}
 
-} // End of Dream
-
-#endif // EVENT_H
+#endif // ILUAEXPOSABLE_H

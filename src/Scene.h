@@ -22,13 +22,17 @@
 #include <vector>
 #include <map>
 #include <json.hpp>
+
 #include "String.h"
 #include "SceneObject.h"
 #include "Constants.h"
 #include "IAssetInstance.h"
 #include "AssetDefinition.h"
+
+#include "Lua/ILuaExposable.h"
+#include "Lua/LuaScriptInstance.h"
+
 #include "Components/Graphics/Camera.h"
-#include "Components/Scripting/LuaScriptInstance.h"
 #include "Components/Audio/IAudioInstance.h"
 #include "Components/Animation/AnimationInstance.h"
 #include "Components/Graphics/SpriteInstance.h"
@@ -38,9 +42,11 @@
 #include "Components/Graphics/FontInstance.h"
 #include "Components/Physics/PhysicsObjectInstance.h"
 
-namespace Dream {
+namespace Dream
+{
   using namespace std;
-  class Scene {
+  class Scene : public ILuaExposable
+  {
   public:
     string mUuid;
     string mName;
@@ -121,6 +127,8 @@ namespace Dream {
     void loadPhysics(nlohmann::json);
     vector<float> getGravity();
     bool getPhysicsDebug();
+
+    void exposeLuaApi(lua_State*);
 
   }; // End of Scene
 } // End of Dream

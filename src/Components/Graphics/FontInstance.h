@@ -48,6 +48,8 @@ namespace Dream {
     int getWidth();
     int getHeight();
     bool hasChanged();
+    void exposeLuaApi(lua_State*);
+
   }; // End of FontInstance
 } // End of Dream
 

@@ -497,4 +497,8 @@ namespace Dream
         return mGameController;
     }
 
+    void GraphicsComponent::exposeLuaApi(lua_State* state)
+    {
+
+    }
 } // End of Dream

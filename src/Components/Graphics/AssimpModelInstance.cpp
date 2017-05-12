@@ -18,26 +18,32 @@
 #include "AssimpModelInstance.h"
 #include "TextureCache.h"
 
-namespace Dream {
-
+namespace Dream
+{
     map<string,const aiScene*> AssimpModelInstance::AssimpModelCache = map<string,const aiScene*>();
     ::Assimp::Importer AssimpModelInstance::mImporter;
 
-    const aiScene* AssimpModelInstance::getModelFromCache(string path) {
+    const aiScene* AssimpModelInstance::getModelFromCache(string path)
+    {
         map<string,const aiScene*>::iterator it;
-        for (it=AssimpModelCache.begin();it!=AssimpModelCache.end();it++) {
-            if ((*it).first.compare(path) == 0) {
-                if (DEBUG) {
+        for (it=AssimpModelCache.begin();it!=AssimpModelCache.end();it++)
+        {
+            if ((*it).first.compare(path) == 0)
+            {
+                if (DEBUG)
+                {
                     cout << "AssimpModelInstance: Found cached scene for " << path << endl;
                 }
                 return (*it).second;
             }
         }
-        if (DEBUG) {
+        if (DEBUG)
+        {
           cout << "AssimpModelInstance: Loading " << path << " from disk" << endl;
         }
         const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
+        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+        {
             cerr << "AssimpModelInstance: Error " << mImporter.GetErrorString() << endl;
             return nullptr;
         }
@@ -147,7 +153,8 @@ namespace Dream {
         for(GLuint i = 0; i < mesh->mNumFaces; i++)
         {
             aiFace face = mesh->mFaces[i];
-            for(GLuint j = 0; j < face.mNumIndices; j++) {
+            for(GLuint j = 0; j < face.mNumIndices; j++)
+            {
                 indices.push_back(face.mIndices[j]);
             }
         }
@@ -165,7 +172,8 @@ namespace Dream {
     vector<Texture> AssimpModelInstance::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
     {
         vector<Texture> textures;
-        for(GLuint i = 0; i < mat->GetTextureCount(type); i++) {
+        for(GLuint i = 0; i < mat->GetTextureCount(type); i++)
+        {
             aiString str;
             mat->GetTexture(type, i, &str);
             Texture tex = TextureCache::loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
@@ -174,14 +182,16 @@ namespace Dream {
         return textures;
     }
 
-    bool AssimpModelInstance::checkGLError(int errorIndex) {
+    bool AssimpModelInstance::checkGLError(int errorIndex)
+    {
         GLenum errorCode = 0;
         bool wasError = false;
         do {
             errorCode = glGetError();
             if (errorCode!=0) {
                 cerr << "AssimpModelInstance: Error Check " << errorIndex << ": " << endl;
-                switch (errorCode) {
+                switch (errorCode)
+                {
                     case GL_NO_ERROR:
                         cerr << "\tGL_NO_ERROR" << endl;
                         break;
@@ -211,4 +221,5 @@ namespace Dream {
 
     void AssimpModelInstance::loadExtraAttributes(nlohmann::json jsonData) {}
 
+    void AssimpModelInstance::exposeLuaApi(lua_State* state) {}
 } // End of Dream

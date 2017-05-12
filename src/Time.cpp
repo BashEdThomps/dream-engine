@@ -41,4 +41,13 @@ namespace Dream {
     return mTimeDelta.count();
   }
 
+    void LuaComponent::bindTime() {
+        luabind::module(mState) [
+                luabind::class_<Time>("Time")
+                .def("getCurrentTime",&Time::getCurrentTime)
+                .def("getLastTime",&Time::getLastTime)
+                .def("getTimeDelta",&Time::getTimeDelta)
+                ];
+    }
+
 } // End of Dream

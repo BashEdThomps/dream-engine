@@ -51,6 +51,7 @@ namespace Dream
         void syncUniforms();
         GLuint getShaderProgram();
         void loadExtraAttributes(nlohmann::json);
+        void exposeLuaApi(lua_State* state);
     public:
         // 1f
         void setUniform1f(string, GLfloat);

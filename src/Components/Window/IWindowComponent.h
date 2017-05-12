@@ -47,6 +47,7 @@ namespace Dream
       void close();
       bool shouldClose();
       void setShouldClose(bool);
+      void exposeLuaApi(lua_State* state);
     protected:
       int mWidth;
       int mHeight;

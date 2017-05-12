@@ -147,4 +147,13 @@ namespace Dream {
         mChanged = true;
     }
 
+    void FontInstance::exposeLuaApi(lua_State* state)
+    {
+        luabind::module(state)
+        [
+            luabind::class_<FontInstance>("FontInstance")
+            .def("setText",&FontInstance::setText)
+            .def("getText",&FontInstance::getText)
+        ];
+    }
 } // End Dream

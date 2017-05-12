@@ -1,7 +1,7 @@
 /*
- * Math.h
+ * ILuaExposable.cpp
  *
- * Created: 05/04/2017 2017 by Ashley
+ * Created: 12 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,21 +15,18 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef MATH_H
-#define MATH_H
 
-#include "Lua/ILuaExposable.h"
+#include "ILuaExposable.h"
 
 namespace Dream
 {
-    class Math : public ILuaExposable
+    ILuaExposable::ILuaExposable()
     {
-        Math();
-        ~Math();
-        float degreesToRadians(float degrees);
-        float radiansToDegrees(float radians);
-        void exposeLuaApi(lua_State*);
-    }; // End of Math
-} // End of Dream
 
-#endif // MATH_H
+    }
+
+    ILuaExposable::~ILuaExposable()
+    {
+
+    }
+}

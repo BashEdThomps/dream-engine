@@ -221,4 +221,52 @@ namespace Dream {
     void Transform3D::setOrientation(float w, float x, float y, float z) {
       mOrientation = glm::quat(w,x,y,z);
     }
+
+    void LuaComponent::bindTransform3D() {
+        luabind::module(mState) [
+                luabind::class_<Transform3D>("Transform3D")
+                .def(luabind::constructor<>())
+                // Translation ===========================================================
+                .def("getTransformType",&Transform3D::getTransformType)
+                .def("getTranslationX",&Transform3D::getTranslationX)
+                .def("getTranslationY",&Transform3D::getTranslationY)
+                .def("getTranslationZ",&Transform3D::getTranslationZ)
+                .def("setTranslationX",&Transform3D::setTranslationX)
+                .def("setTranslationY",&Transform3D::setTranslationY)
+                .def("setTranslationZ",&Transform3D::setTranslationZ)
+                .def("translateByX",&Transform3D::translateByX)
+                .def("translateByY",&Transform3D::translateByY)
+                .def("translateByZ",&Transform3D::translateByZ)
+                .def("setTranslation",
+                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation)
+                     )
+                // Rotation =============================================================
+                .def("getRotationX",&Transform3D::getRotationX)
+                .def("getRotationY",&Transform3D::getRotationY)
+                .def("getRotationZ",&Transform3D::getRotationZ)
+                .def("setRotationX",&Transform3D::setRotationX)
+                .def("setRotationY",&Transform3D::setRotationY)
+                .def("setRotationZ",&Transform3D::setRotationZ)
+                .def("rotateByX",&Transform3D::rotateByX)
+                .def("rotateByY",&Transform3D::rotateByY)
+                .def("rotateByZ",&Transform3D::rotateByZ)
+                .def("setRotation",
+                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation)
+                     )
+                // Scale ================================================================
+                .def("getScaleX",&Transform3D::getScaleX)
+                .def("getScaleY",&Transform3D::getScaleY)
+                .def("getScaleZ",&Transform3D::getScaleZ)
+                .def("setScaleX",&Transform3D::setScaleX)
+                .def("setScaleY",&Transform3D::setScaleY)
+                .def("setScaleZ",&Transform3D::setScaleZ)
+                .def("scaleByX",&Transform3D::scaleByX)
+                .def("scaleByY",&Transform3D::scaleByY)
+                .def("scaleByZ",&Transform3D::scaleByZ)
+                .def("setScale",
+                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale)
+                     )
+                ];
+    }
+
 } // End of Dream

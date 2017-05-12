@@ -61,6 +61,7 @@ namespace Dream {
         void checkContactManifolds();
         SceneObject* getSceneObject(const btCollisionObject*);
         void drawDebug();
+        void exposeLuaApi(lua_State* state);
       };// End of PhysicsComponent
 
 } // End of Dream

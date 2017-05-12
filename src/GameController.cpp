@@ -17,8 +17,10 @@
  */
 #include "GameController.h"
 
-namespace Dream {
+namespace Dream
+{
     GameController::GameController()
+        : ILuaExposable()
     {
         zeroAll();
     }
@@ -43,10 +45,8 @@ namespace Dream {
         mBackButton = 0;
         mGuideButton = 0;
         mStartButton = 0;
-
         mLeftShoulderButton = 0;
         mRightShoulderButton = 0;
-
         mLeftAnalogButton = 0;
         mRightAnalogButton = 0;
     }
@@ -55,10 +55,8 @@ namespace Dream {
     {
         mLeftAnalogX = 0;
         mLeftAnalogY = 0;
-
         mLeftAnalogX = 0;
         mLeftAnalogY = 0;
-
         mLeftTrigger = 0;
         mRightTrigger = 0;
     }
@@ -69,6 +67,7 @@ namespace Dream {
        {
            cout << "GameController: State Update" << endl;
        }
+
        switch(e.type)
        {
             case SDL_CONTROLLERBUTTONDOWN:
@@ -89,7 +88,9 @@ namespace Dream {
                  << " state: " << (int)e.cbutton.state
                  << endl;
         }
+
         int state = e.cbutton.state;
+
         switch (e.cbutton.button)
         {
             // Face Buttons
@@ -197,19 +198,16 @@ namespace Dream {
                 return mGuideButton;
             case START:
                 return mStartButton;
-
                 // Stick Buttons
             case LEFT_ANALOG:
                 return mLeftAnalogButton;
             case RIGHT_ANALOG:
                 return mRightAnalogButton;
-
                 // Shoulder Buttons
             case LEFT_SHOULDER:
                 return mLeftShoulderButton;
             case RIGHT_SHOULDER:
                 return mRightShoulderButton;
-
                 // D Pad
             case DPAD_UP:
                 return  mDPadUpButton;
@@ -226,7 +224,8 @@ namespace Dream {
 
     int GameController::getAxisValue(ControllerAxis axis)
     {
-        switch (axis) {
+        switch (axis)
+        {
             case LEFT_TRIGGER:
                 return mLeftTrigger;
             case RIGHT_TRIGGER:
@@ -240,5 +239,45 @@ namespace Dream {
             case RIGHT_ANALOG_Y:
                 return mRightAnalogY;
         }
+    }
+
+    void GameController::exposeLuaApi(lua_State* state) {
+        luabind::module(state)
+        [
+            luabind::class_<GameController>("GameController")
+                .def("getButtonValue",&GameController::getButtonValue)
+                .def("getAxisValue",&GameController::getAxisValue)
+                .enum_("ControllerButton")
+                [
+                // Face Buttons
+                luabind::value("A_BTN",ControllerButton::A),
+                luabind::value("B_BTN",ControllerButton::B),
+                luabind::value("X_BTN",ControllerButton::X),
+                luabind::value("Y_BTN",ControllerButton::Y),
+                // Shoulders
+                luabind::value("LEFT_SHOULDER",ControllerButton::LEFT_SHOULDER),
+                luabind::value("RIGHT_SHOULDER",ControllerButton::RIGHT_SHOULDER),
+                // Analog
+                luabind::value("LEFT_ANALOG_BUTTON",ControllerButton::LEFT_ANALOG),
+                luabind::value("RIGHT_ANALOG_BUTTON",ControllerButton::RIGHT_ANALOG),
+                // D-Pad
+                luabind::value("DPAD_UP",ControllerButton::DPAD_UP),
+                luabind::value("DPAD_DOWN",ControllerButton::DPAD_DOWN),
+                luabind::value("DPAD_LEFT",ControllerButton::DPAD_LEFT),
+                luabind::value("DPAD_RIGHT",ControllerButton::DPAD_RIGHT)
+                ]
+                .enum_("ControllerAxis")
+                [
+                // Left Analog
+                luabind::value("LEFT_ANALOG_X",ControllerAxis::LEFT_ANALOG_X),
+                luabind::value("LEFT_ANALOG_Y",ControllerAxis::LEFT_ANALOG_Y),
+                // Right Analog
+                luabind::value("RIGHT_ANALOG_X",ControllerAxis::RIGHT_ANALOG_X),
+                luabind::value("RIGHT_ANALOG_Y",ControllerAxis::RIGHT_ANALOG_Y),
+                // Triggers
+                luabind::value("LEFT_TRIGGER",ControllerAxis::LEFT_TRIGGER),
+                luabind::value("RIGHT_TRIGGER",ControllerAxis::RIGHT_TRIGGER)
+            ]
+        ];
     }
 }

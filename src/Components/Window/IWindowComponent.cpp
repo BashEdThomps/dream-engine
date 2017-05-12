@@ -78,4 +78,14 @@ namespace Dream
     {
         mShouldClose = close;
     }
+
+    void IWindowComponent::exposeLuaApi(lua_State* state) {
+        luabind::module(state) [
+                luabind::class_<IWindowComponent>("IWindowComponent")
+                .def("getWidth",&IWindowComponent::getWidth)
+                .def("getHeight",&IWindowComponent::getHeight)
+                .def("setShouldClose",&IWindowComponent::setShouldClose)
+                ];
+    }
+
 } // End of Dream

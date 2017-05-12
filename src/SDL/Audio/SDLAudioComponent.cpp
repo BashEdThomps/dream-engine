@@ -37,21 +37,38 @@ namespace Dream
 
     bool SDLAudioComponent::init()
     {
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "AudioComponent: Initialising...";
         }
-        if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ) {
-            if (DEBUG) {
+
+        if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 )
+        {
+            if (DEBUG)
+            {
                 cout << endl << "AudioComponent: Error SDL_OpenAudio Failed" << endl;
             }
             return false;
         }
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "Done!" << endl;
         }
         return true;
     }
 
-    void SDLAudioComponent::update(Scene*) {}
+    void SDLAudioComponent::update(Scene*)
+    {
+
+    }
+
+    void SDLAudioComponent::exposeLuaApi(lua_State* state)
+    {
+        luabind::module(state)
+        [
+            luabind::class_<SDLAudioComponent>("SDLAudioComponent")
+            // TODO
+        ];
+    }
 
 } // End of Dream

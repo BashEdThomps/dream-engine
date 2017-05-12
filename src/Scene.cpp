@@ -16,11 +16,13 @@
 */
 
 #include "Scene.h"
-#include "Components/Audio/SDL/SDLAudioInstance.h"
+#include "SDL/Audio/SDLAudioInstance.h"
 
-namespace Dream {
+namespace Dream
+{
 
-  Scene::Scene(nlohmann::json jsonScene, string projectPath, vector<AssetDefinition*>* assetDefs) {
+  Scene::Scene(nlohmann::json jsonScene, string projectPath, vector<AssetDefinition*>* assetDefs)
+  {
       setProjectPath(projectPath);
       mAssetDefinitions = assetDefs;
       mGravity = {0.0f,0.0f,0.0f};
@@ -523,5 +525,15 @@ namespace Dream {
   bool Scene::getPhysicsDebug() {
     return mPhysicsDebug;
   }
+
+    void Scene::exposeLuaApi(lua_State* state) {
+        luabind::module(state) [
+                luabind::class_<Scene>("Scene")
+                .def("getCameraMovementSpeed",&Scene::getCameraMovementSpeed)
+                .def("setCameraMovementSpeed",&Scene::setCameraMovementSpeed)
+                .def("getSceneObjectByUuid",&Scene::getSceneObjectByUuid)
+                .def("getSceneObjectByName",&Scene::getSceneObjectByName)
+                ];
+    }
 
 } // End of Dream

@@ -18,40 +18,62 @@
 
 #include "Event.h"
 
-namespace Dream {
-
-    Event::Event(string sender, string type) {
-      setAttribute(EVENT_SENDER,sender);
-      setAttribute(EVENT_TYPE,type);
+namespace Dream
+{
+    Event::Event(string sender, string type)
+        : ILuaExposable()
+    {
+        setAttribute(EVENT_SENDER,sender);
+        setAttribute(EVENT_TYPE,type);
     }
 
-    Event::~Event() {
-        /*if (DEBUG) {
-         cout << "Event: Destroying Object" << endl;
-        }*/
-      mAttributes.clear();
+    Event::~Event()
+    {
+        if (VERBOSE)
+        {
+            cout << "Event: Destroying Object" << endl;
+        }
+        mAttributes.clear();
     }
 
-    string Event::getSender() {
-      return getAttribute(EVENT_SENDER);
+    string Event::getSender()
+    {
+        return getAttribute(EVENT_SENDER);
     }
 
-    string Event::getType() {
-      return getAttribute(EVENT_TYPE);
+    string Event::getType()
+    {
+        return getAttribute(EVENT_TYPE);
     }
 
-    void Event::setAttribute(string key, string value) {
-      mAttributes.insert(pair<string,string>(key,value));
+    void Event::setAttribute(string key, string value)
+    {
+        mAttributes.insert(pair<string,string>(key,value));
     }
 
-    string Event::getAttribute(string key) {
+    string Event::getAttribute(string key)
+    {
         map<string,string>::iterator it;
-        for (it=mAttributes.begin();it!=mAttributes.end();it++) {
-          if (it->first.compare(key)==0) {
-            return it->second;
-          }
+        for (it=mAttributes.begin(); it!=mAttributes.end(); it++)
+        {
+            if (it->first.compare(key)==0)
+            {
+                return it->second;
+            }
         }
         return "";
+    }
+
+    void Event::exposeLuaApi(lua_State* state)
+    {
+        luabind::module(state)
+        [
+            luabind::class_<Event>("Event")
+            .def("getSender",&Event::getSender)
+            .def("getType",&Event::getType)
+            .def("getAttribute",&Event::getAttribute)
+            .def("setAttribute",&Event::setAttribute)
+        ];
     }
 
 } // End of Dream
