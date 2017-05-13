@@ -15,14 +15,15 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <SDL2/SDL_ttf.h>
 #include "GraphicsComponent.h"
 #include <glm/gtc/quaternion.hpp>
 
 namespace Dream
 {
 
-    GraphicsComponent::GraphicsComponent(Camera* camera, IWindowComponent* windowComponent) : IComponent ()
+    GraphicsComponent::
+    GraphicsComponent(Camera* camera, IWindowComponent* windowComponent)
+        : IComponent()
     {
         mWindowComponent = windowComponent;
         mCamera = camera;
@@ -30,7 +31,9 @@ namespace Dream
         mAmbientLightColour = {1.0f,1.0f,1.0f,1.0f};
     }
 
-    void GraphicsComponent::setClearColour(vector<float> clearColour)
+
+    void GraphicsComponent::
+    setClearColour(vector<float> clearColour)
     {
         mClearColour[CLEAR_RED] = clearColour[CLEAR_RED];
         mClearColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
@@ -38,7 +41,9 @@ namespace Dream
         mClearColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
     }
 
-    void GraphicsComponent::setAmbientLightColour(vector<float> clearColour)
+
+    void GraphicsComponent::
+    setAmbientLightColour(vector<float> clearColour)
     {
         mAmbientLightColour[CLEAR_RED]   = clearColour[CLEAR_RED];
         mAmbientLightColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
@@ -46,7 +51,9 @@ namespace Dream
         mAmbientLightColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
     }
 
-    GraphicsComponent::~GraphicsComponent(void)
+
+    GraphicsComponent::
+    ~GraphicsComponent(void)
     {
         if (DEBUG)
         {
@@ -54,17 +61,13 @@ namespace Dream
         }
     }
 
-    bool GraphicsComponent::init(void)
+
+    bool GraphicsComponent::
+    init(void)
     {
         if (DEBUG)
         {
             cout << "GraphicsComponent: Initialising..." << endl;
-        }
-
-        if (!mWindowComponent || !mWindowComponent->init())
-        {
-            cerr << "GraphicsComponent: Unable to create window component" << endl;
-            return false;
         }
 
         // Initialize GLEW to setup the OpenGL Function pointers
@@ -84,14 +87,15 @@ namespace Dream
         int windowHeight = mWindowComponent->getHeight();
         glViewport(0, 0, windowWidth, windowHeight);
         // Ortho projection for 2D
-        mOrthoProjection = glm::ortho
-        (
-            0.0f,
-            static_cast<float>(windowWidth),
-            static_cast<float>(windowHeight),
-            0.0f,
-            -1.0f, 1.0f
-        );
+        mOrthoProjection = glm::
+                ortho
+                (
+                    0.0f,
+                    static_cast<float>(windowWidth),
+                    static_cast<float>(windowHeight),
+                    0.0f,
+                    -1.0f, 1.0f
+                    );
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         glEnable(GL_CULL_FACE);
@@ -106,7 +110,9 @@ namespace Dream
         return true;
     }
 
-    void GraphicsComponent::create2DVertexObjects()
+
+    void GraphicsComponent::
+    create2DVertexObjects()
     {
         glGenVertexArrays(1, &mSpriteQuadVAO);
         glGenBuffers(1, &mSpriteVBO);
@@ -119,7 +125,9 @@ namespace Dream
         glBindVertexArray(0);
     }
 
-    void GraphicsComponent::update(Scene* scene)
+
+    void GraphicsComponent::
+    update(Scene* scene)
     {
         if (VERBOSE)
         {
@@ -134,15 +142,16 @@ namespace Dream
             clearLightQueue();
             // Clear the colorbuffer
             glClearColor
-            (
-                mClearColour[CLEAR_RED],
-                mClearColour[CLEAR_GREEN],
-                mClearColour[CLEAR_BLUE],
-                mClearColour[CLEAR_ALPHA]
-            );
+                    (
+                        mClearColour[CLEAR_RED],
+                        mClearColour[CLEAR_GREEN],
+                        mClearColour[CLEAR_BLUE],
+                        mClearColour[CLEAR_ALPHA]
+                        );
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             vector<SceneObject*> scenegraph = scene->getScenegraphVector();
-            for (vector<SceneObject*>::iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ )
+            for (vector<SceneObject*>::
+                 iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ )
             {
                 SceneObject *object = (*it);
                 // Models
@@ -187,25 +196,32 @@ namespace Dream
                 // Lights
                 if (object->hasLightInstance())
                 {
-                   addToLightQueue(object->getLightInstance());
+                    addToLightQueue(object->getLightInstance());
                 }
             }
         }
     }
 
-    void GraphicsComponent::clear2DQueue()
+
+    void GraphicsComponent::
+    clear2DQueue()
     {
         m2DQueue.clear();
     }
 
-    void GraphicsComponent::addTo2DQueue(SceneObject* object)
+
+    void GraphicsComponent::
+    addTo2DQueue(SceneObject* object)
     {
         m2DQueue.push_back(object);
     }
 
-    void GraphicsComponent::draw2DQueue()
+
+    void GraphicsComponent::
+    draw2DQueue()
     {
-        for (vector<SceneObject*>::iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
+        for (vector<SceneObject*>::
+             iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
         {
             SceneObject* sceneObj = *it;
             if (sceneObj->hasSpriteInstance())
@@ -219,41 +235,53 @@ namespace Dream
         }
     }
 
-    void GraphicsComponent::clear3DQueue()
+
+    void GraphicsComponent::
+    clear3DQueue()
     {
         m3DQueue.clear();
     }
 
-    void GraphicsComponent::addTo3DQueue(SceneObject* object)
+
+    void GraphicsComponent::
+    addTo3DQueue(SceneObject* object)
     {
         m3DQueue.push_back(object);
     }
 
-    void GraphicsComponent::draw3DQueue()
+
+    void GraphicsComponent::
+    draw3DQueue()
     {
         // Transformation matrices
-        mProjectionMatrix = glm::perspective(
-                            mCamera->getZoom(),
-                            static_cast<float>(mWindowComponent->getWidth()) /
-                            static_cast<float>(mWindowComponent->getHeight()),
-                            mMinimumDraw,
-                            mMaximumDraw
-                                );
+        mProjectionMatrix = glm::
+                perspective(
+                    mCamera->getZoom(),
+                    static_cast<float>(mWindowComponent->getWidth()) /
+                    static_cast<float>(mWindowComponent->getHeight()),
+                    mMinimumDraw,
+                    mMaximumDraw
+                    );
         // View transform
         mViewMatrix = mCamera->getViewMatrix();
 
-        for (vector<SceneObject*>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ )
+        for (vector<SceneObject*>::
+             iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ )
         {
             drawModel(*it);
         }
     }
 
-    glm::mat4 GraphicsComponent::getViewMatrix()
+
+    glm::mat4 GraphicsComponent::
+    getViewMatrix()
     {
         return mViewMatrix;
     }
 
-    glm::mat4 GraphicsComponent::getProjectionMatrix()
+
+    glm::mat4 GraphicsComponent::
+    getProjectionMatrix()
     {
         return mProjectionMatrix;
     }
@@ -262,7 +290,9 @@ namespace Dream
      * Using
      *    https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
      */
-    void GraphicsComponent::drawSprite(SceneObject* sceneObject)
+
+    void GraphicsComponent::
+    drawSprite(SceneObject* sceneObject)
     {
         // Get Assets
         SpriteInstance* sprite = sceneObject->getSpriteInstance();
@@ -278,25 +308,39 @@ namespace Dream
         float tY = sprite->getTransform()->getTranslationY();
         glm::vec2 position = glm::vec2(tX,tY);
         // Offset origin to middle of sprite
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3(position, 0.0f));
-        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+        glm::
+                mat4 model;
+        model = glm::
+                translate(model, glm::
+                          vec3(position, 0.0f));
+        model = glm::
+                translate(model, glm::
+                          vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = glm::
+                rotate(model, rotate, glm::
+                       vec3(0.0f, 0.0f, 1.0f));
+        model = glm::
+                translate(model, glm::
+                          vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = glm::
+                scale(model, glm::
+                      vec3(size.x*scale,size.y*scale, 1.0f));
         // Pass uniform arguments to shader
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, glm::value_ptr(model)
+                           1, GL_FALSE, glm::
+                           value_ptr(model)
                            );
         glUniform3fv(glGetUniformLocation(
                          shader->getShaderProgram(), "spriteColor"),
-                     1, glm::value_ptr(color)
+                     1, glm::
+                     value_ptr(color)
                      );
         glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+                           1, GL_FALSE, glm::
+                           value_ptr(mOrthoProjection)
                            );
         // Bind texture
         glActiveTexture(GL_TEXTURE0);
@@ -310,7 +354,9 @@ namespace Dream
         glUseProgram(0);
     }
 
-    void GraphicsComponent::drawFont(SceneObject* sceneObject)
+
+    void GraphicsComponent::
+    drawFont(SceneObject* sceneObject)
     {
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
@@ -320,10 +366,14 @@ namespace Dream
         }
         ShaderInstance* shader = sceneObject->getShaderInstance();
         // Get arguments
-        glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
+        glm::
+                vec2 size = glm::
+                vec2(font->getWidth(),font->getHeight());
         GLfloat rotate = sceneObject->getTransform()->getRotationZ();
         GLfloat scale = sceneObject->getTransform()->getScaleZ();
-        glm::vec3 color = glm::vec3(1.0f);
+        glm::
+                vec3 color = glm::
+                vec3(1.0f);
         // Configure VAO/VBO
         // Setup GL
         //createSpriteVertexObjects();
@@ -331,27 +381,43 @@ namespace Dream
         shader->use();
         float tX = font->getTransform()->getTranslationX();
         float tY = font->getTransform()->getTranslationY();
-        glm::vec2 position = glm::vec2(tX,tY);
+        glm::
+                vec2 position = glm::
+                vec2(tX,tY);
         // Offset origin to middle of sprite
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3(position, 0.0f));
-        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+        glm::
+                mat4 model;
+        model = glm::
+                translate(model, glm::
+                          vec3(position, 0.0f));
+        model = glm::
+                translate(model, glm::
+                          vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = glm::
+                rotate(model, rotate, glm::
+                       vec3(0.0f, 0.0f, 1.0f));
+        model = glm::
+                translate(model, glm::
+                          vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = glm::
+                scale(model, glm::
+                      vec3(size.x*scale,size.y*scale, 1.0f));
         // Pass uniform arguments to shader
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, glm::value_ptr(model)
+                           1, GL_FALSE, glm::
+                           value_ptr(model)
                            );
         glUniform3fv(glGetUniformLocation(
                          shader->getShaderProgram(), "spriteColor"),
-                     1, glm::value_ptr(color)
+                     1, glm::
+                     value_ptr(color)
                      );
         glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+                           1, GL_FALSE, glm::
+                           value_ptr(mOrthoProjection)
                            );
         // Bind texture
         glActiveTexture(GL_TEXTURE0);
@@ -365,7 +431,9 @@ namespace Dream
         glUseProgram(0);
     }
 
-    void GraphicsComponent::drawModel(SceneObject* sceneObject)
+
+    void GraphicsComponent::
+    drawModel(SceneObject* sceneObject)
     {
         // Get Assets
         AssimpModelInstance* model = sceneObject->getModelInstance();
@@ -376,12 +444,16 @@ namespace Dream
         GLint uAmbientColor    = glGetUniformLocation(shader->getShaderProgram(),"ambientColor");
         if (uAmbientColor > 0 && uAmbientStrength > 0)
         {
-            glm::vec3 ambientColor = glm::vec3(mAmbientLightColour[0],mAmbientLightColour[1],mAmbientLightColour[2]);
+            glm::
+                    vec3 ambientColor = glm::
+                    vec3(mAmbientLightColour[0],mAmbientLightColour[1],mAmbientLightColour[2]);
             glUniform1f(uAmbientStrength,mAmbientLightColour[3]);
-            glUniform3fv(uAmbientColor,1,glm::value_ptr(ambientColor));
+            glUniform3fv(uAmbientColor,1,glm::
+                         value_ptr(ambientColor));
         }
         // Set Diffuse Light Values
-        vector<LightInstance*>::iterator lights;
+        vector<LightInstance*>::
+                iterator lights;
         int i;
         for (i=1, lights = mLightQueue.begin(); lights != mLightQueue.end(); lights++, i++)
         {
@@ -395,10 +467,14 @@ namespace Dream
 
             if (uLightPos > 0 && uLightColor > 0)
             {
-                glm::vec3 lightPos = (*lights)->getTransform()->getTranslation();
-                glm::vec3 lightColor = (*lights)->getColor();
-                glUniform3fv(uLightPos  ,1, glm::value_ptr(lightPos));
-                glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
+                glm::
+                        vec3 lightPos = (*lights)->getTransform()->getTranslation();
+                glm::
+                        vec3 lightColor = (*lights)->getColor();
+                glUniform3fv(uLightPos  ,1, glm::
+                             value_ptr(lightPos));
+                glUniform3fv(uLightColor,1, glm::
+                             value_ptr(lightColor));
             }
             else
             {
@@ -411,33 +487,46 @@ namespace Dream
         }
 
         // Pass view/projection transform to shader
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::
+                           value_ptr(mProjectionMatrix));
+        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::
+                           value_ptr(mViewMatrix));
         // calculate the model matrix
-        glm::mat4 modelMatrix;
+        glm::
+                mat4 modelMatrix;
         // Get raw data
-        glm::vec3 translation = sceneObject->getTranslation();
-        glm::quat rot = sceneObject->getTransform()->getOrientation();
-        glm::vec3 scale = sceneObject->getScale();
+        glm::
+                vec3 translation = sceneObject->getTranslation();
+        glm::
+                quat rot = sceneObject->getTransform()->getOrientation();
+        glm::
+                vec3 scale = sceneObject->getScale();
         // Translate
-        modelMatrix = glm::translate(modelMatrix,translation);
+        modelMatrix = glm::
+                translate(modelMatrix,translation);
         // Rotate
-        glm::mat4 rotMat = glm::mat4_cast(rot);
+        glm::
+                mat4 rotMat = glm::
+                mat4_cast(rot);
         modelMatrix = modelMatrix * rotMat;
         // Scale
-        modelMatrix = glm::scale(modelMatrix, scale);
+        modelMatrix = glm::
+                scale(modelMatrix, scale);
         // Pass model matrix to shader
         glUniformMatrix4fv(
-            glGetUniformLocation(shader->getShaderProgram(), "model"),
-            1, GL_FALSE, glm::value_ptr(modelMatrix)
-        );
+                    glGetUniformLocation(shader->getShaderProgram(), "model"),
+                    1, GL_FALSE, glm::
+                    value_ptr(modelMatrix)
+                    );
         // Draw using shader
         model->draw(shader);
         // Unbind shader
         glUseProgram(0);
     }
 
-    bool GraphicsComponent::checkGLError(string marker)
+
+    bool GraphicsComponent::
+    checkGLError(string marker)
     {
         GLenum errorCode = 0;
         bool wasError = false;
@@ -477,27 +566,37 @@ namespace Dream
         return wasError;
     }
 
-    void GraphicsComponent::addToLightQueue(LightInstance* lightInstance)
+
+    void GraphicsComponent::
+    addToLightQueue(LightInstance* lightInstance)
     {
-       mLightQueue.push_back(lightInstance);
+        mLightQueue.push_back(lightInstance);
     }
 
-    void GraphicsComponent::clearLightQueue()
+
+    void GraphicsComponent::
+    clearLightQueue()
     {
-       mLightQueue.clear();
+        mLightQueue.clear();
     }
 
-    void GraphicsComponent::setGameController(GameController* gameController)
+
+    void GraphicsComponent::
+    setGameController(GameController* gameController)
     {
         mGameController = gameController;
     }
 
-    GameController* GraphicsComponent::getGameController()
+
+    GameController* GraphicsComponent::
+    getGameController()
     {
         return mGameController;
     }
 
-    void GraphicsComponent::exposeLuaApi(lua_State* state)
+
+    void GraphicsComponent::
+    exposeLuaApi(lua_State* state)
     {
 
     }

@@ -20,9 +20,10 @@
 namespace Dream
 {
 
-    Project::Project(string projectPath, nlohmann::json jsonProject)
+    Project::Project(string projectPath, nlohmann::json jsonProject, IAudioComponent *audioComponent)
       : ILuaExposable()
     {
+        mAudioComponent = audioComponent;
         setProjectPath(projectPath);
         setMetadata(jsonProject);
         loadAssetDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
@@ -135,7 +136,7 @@ namespace Dream
             {
                 cout << "Project: Creating Scene" << endl;
             }
-            Scene *nextScene = new Scene((*it), mProjectPath, &mAssetDefinitions);
+            Scene *nextScene = new Scene((*it), mProjectPath, &mAssetDefinitions,mAudioComponent);
             nextScene->showStatus();
             addScene(nextScene);
         }

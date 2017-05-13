@@ -11,7 +11,6 @@ using namespace std;
 
 namespace Dream
 {
-  // This class is a singleton
   class Time : public ILuaExposable
   {
   private:

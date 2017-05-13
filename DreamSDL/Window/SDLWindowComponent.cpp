@@ -18,7 +18,7 @@
 
 #include "SDLWindowComponent.h"
 
-namespace Dream
+namespace DreamSDL
 {
     SDLWindowComponent::SDLWindowComponent() : IWindowComponent()
     {
@@ -65,13 +65,19 @@ namespace Dream
 
         if (mWindow == nullptr)
         {
-            if (DEBUG) {
-                cout << "GraphicsComopnent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
+            if (DEBUG)
+            {
+                cout << "SDLWindowComponent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
             }
             SDL_Quit();
             return false;
         }
-        SDL_SetRelativeMouseMode(SDL_TRUE);
+        //SDL_SetRelativeMouseMode(SDL_TRUE);
+        if (DEBUG)
+        {
+            cout << "SDLWindowComponent: Initialised SDL" << endl;
+        }
+
         return true;
     }
 
@@ -86,13 +92,14 @@ namespace Dream
         mContext = SDL_GL_CreateContext(mWindow);
         if(mContext == nullptr)
         {
-            cerr << "GraphicsComponent: OpenGL context could not be created! "
+            cerr << "SDLWindowComponent: OpenGL context could not be created! "
                  << "SDL Says: " << SDL_GetError() << endl;
             return false;
         }
+
         if (DEBUG)
         {
-            cout << "GraphicsComponent: Initialised SDL" << endl;
+            cout << "SDLWindowComponent: Initialised SDL::OpenGL" << endl;
         }
         return true;
     }
@@ -110,11 +117,11 @@ namespace Dream
 
         while(SDL_PollEvent(&event))
         {
-            /*if (event.type == SDL_QUIT)
+            if (event.type == SDL_QUIT)
             {
                 setShouldClose(true);
             }
-            else if (
+            /*else if (
                      mGameController &&
                      (
                         event.type == SDL_CONTROLLERAXISMOTION ||
@@ -123,19 +130,18 @@ namespace Dream
                      )
             ){
                 mGameController->updateControllerState(event);
-            }
+            }*/
             else
             {
                 SDL_Event e;
                 memcpy(&e,&event,sizeof(SDL_Event));
                 mEvents.push_back(e);
             }
-            */
-            cout << "SDLWindowComponent::update Implementation Disabled!" << endl;
+            cout << "SDLWindowComponent::update GameController Implementation Disabled!" << endl;
         }
         if (VERBOSE)
         {
-            cout << "GraphicsComponent " << mEvents.size() << " Events" << endl;
+            cout << "SDLWindowComponent " << mEvents.size() << " Events" << endl;
         }
 
     }

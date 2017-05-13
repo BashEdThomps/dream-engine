@@ -18,7 +18,7 @@
 
 #include "SDLAudioCache.h"
 
-namespace Dream
+namespace DreamSDL
 {
     map<string, Mix_Chunk*> AudioCache::ChunkCache = map<string,Mix_Chunk*>();
     map<string, Mix_Music*> AudioCache::MusicCache = map<string,Mix_Music*>();

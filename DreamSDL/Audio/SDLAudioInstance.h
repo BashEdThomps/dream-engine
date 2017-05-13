@@ -5,7 +5,8 @@
 #include <SDL2/SDL_mixer.h>
 #include <DreamCore.h>
 
-namespace Dream
+using namespace Dream;
+namespace DreamSDL
 {
     class SDLAudioInstance : public IAudioInstance
     {

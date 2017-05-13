@@ -20,13 +20,18 @@
 namespace Dream
 {
 
-    PhysicsComponent::PhysicsComponent() : IComponent()
+
+    PhysicsComponent::
+    PhysicsComponent()
+        : IComponent()
     {
         mDebugDrawer = nullptr;
         mDebug = false;
     }
 
-    PhysicsComponent::~PhysicsComponent()
+
+    PhysicsComponent::
+    ~PhysicsComponent()
     {
         if (DEBUG)
         {
@@ -64,7 +69,9 @@ namespace Dream
         }
     }
 
-    void PhysicsComponent::setGravity(vector<float> gravity)
+
+    void PhysicsComponent::
+    setGravity(vector<float> gravity)
     {
         if (DEBUG)
         {
@@ -77,7 +84,9 @@ namespace Dream
         }
     }
 
-    bool PhysicsComponent::init()
+
+    bool PhysicsComponent::
+    init()
     {
         if (DEBUG)
         {
@@ -102,7 +111,9 @@ namespace Dream
         return true;
     }
 
-    void PhysicsComponent::update(Dream::Scene* scene)
+
+    void PhysicsComponent::
+    update(Scene* scene)
     {
         if (VERBOSE)
         {
@@ -127,7 +138,9 @@ namespace Dream
         }
     }
 
-    void PhysicsComponent::addRigidBody(btRigidBody *rigidBody)
+
+    void PhysicsComponent::
+    addRigidBody(btRigidBody *rigidBody)
     {
         if (DEBUG)
         {
@@ -141,7 +154,9 @@ namespace Dream
         }
     }
 
-    void PhysicsComponent::removePhysicsObjectInstance(PhysicsObjectInstance* obj)
+
+    void PhysicsComponent::
+    removePhysicsObjectInstance(PhysicsObjectInstance* obj)
     {
         if (obj->getInPhysicsWorld())
         {
@@ -150,7 +165,9 @@ namespace Dream
         }
     }
 
-    void PhysicsComponent::removeRigidBody(btRigidBody *rigidBody)
+
+    void PhysicsComponent::
+    removeRigidBody(btRigidBody *rigidBody)
     {
         if (DEBUG)
         {
@@ -159,12 +176,16 @@ namespace Dream
         mDynamicsWorld->removeRigidBody(rigidBody);
     }
 
-    void PhysicsComponent::addPhysicsObjectInstance(PhysicsObjectInstance *physicsObjejct)
+
+    void PhysicsComponent::
+    addPhysicsObjectInstance(PhysicsObjectInstance *physicsObjejct)
     {
         addRigidBody(physicsObjejct->getRigidBody());
     }
 
-    void PhysicsComponent::populatePhysicsWorld(vector<SceneObject*>* soVec)
+
+    void PhysicsComponent::
+    populatePhysicsWorld(vector<SceneObject*>* soVec)
     {
         mScenegraph = soVec;
         vector<SceneObject*>::iterator soIter;
@@ -199,7 +220,9 @@ namespace Dream
         }
     }
 
-    void PhysicsComponent::setViewProjectionMatrix(glm::mat4 view, glm::mat4 proj)
+
+    void PhysicsComponent::
+    setViewProjectionMatrix(glm::mat4 view, glm::mat4 proj)
     {
         if (mDebugDrawer != nullptr)
         {
@@ -208,12 +231,16 @@ namespace Dream
         }
     }
 
-    void PhysicsComponent::setDebug(bool debug)
+
+    void PhysicsComponent::
+    setDebug(bool debug)
     {
         mDebug = debug;
     }
 
-    void PhysicsComponent::checkContactManifolds()
+
+    void PhysicsComponent::
+    checkContactManifolds()
     {
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
         for (int i=0;i<numManifolds;i++)
@@ -244,7 +271,9 @@ namespace Dream
         }
     }
 
-    SceneObject* PhysicsComponent::getSceneObject(const btCollisionObject* collObj)
+
+    SceneObject* PhysicsComponent::
+    getSceneObject(const btCollisionObject* collObj)
     {
         vector<SceneObject*>::iterator it;
         for (it=mScenegraph->begin(); it!=mScenegraph->end(); it++)
@@ -262,7 +291,9 @@ namespace Dream
         return nullptr;
     }
 
-    void PhysicsComponent::drawDebug()
+
+    void PhysicsComponent::
+    drawDebug()
     {
         if (mDebug)
         {
@@ -270,7 +301,9 @@ namespace Dream
         }
     }
 
-    void PhysicsComponent::exposeLuaApi(lua_State* state)
+
+    void PhysicsComponent::
+    exposeLuaApi(lua_State* state)
     {
         luabind::module(state)
                 [

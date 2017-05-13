@@ -14,6 +14,9 @@ find_package(SOIL       REQUIRED)
 find_package(Lua        REQUIRED)
 find_package(luabind    REQUIRED)
 
+message("Using Lua     @ L:" ${LUA_LIBRARIES} " I:" ${LUA_INCLUDE_DIR})
+message("Using LuaBind @ L:" ${LUABIND_LIBRARIES} " I:" ${LUABIND_INCLUDE_DIR})
+
 include_directories(
     ${OPENGL_INCLUDE_DIR}
     ${GLEW_INCLUDE_DIRS}

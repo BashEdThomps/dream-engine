@@ -48,61 +48,62 @@ using namespace std;
 
 namespace Dream
 {
-  class GraphicsComponent : public IComponent
-  {
-  private:
-      glm::mat4 mProjectionMatrix;
-      glm::mat4 mViewMatrix;
-      GLfloat mSpriteVertices[24] =
-      {
-          // Pos      // Tex
-          0.0f, 1.0f, 0.0f, 1.0f,
-          1.0f, 0.0f, 1.0f, 0.0f,
-          0.0f, 0.0f, 0.0f, 0.0f,
-          0.0f, 1.0f, 0.0f, 1.0f,
-          1.0f, 1.0f, 1.0f, 1.0f,
-          1.0f, 0.0f, 1.0f, 0.0f
-      };
-      GLuint mSpriteVBO;
-      GLuint mSpriteQuadVAO;
-      Camera *mCamera;
-      float mMinimumDraw = 0.1f;
-      float mMaximumDraw = 1000.0f;
-      vector<SDL_Event> mEvents;
-      vector<SceneObject*> m2DQueue;
-      vector<SceneObject*> m3DQueue;
-      vector<LightInstance*> mLightQueue;
-      glm::mat4 mOrthoProjection;
-      vector<float> mClearColour;
-      vector<float> mAmbientLightColour;
-      GameController *mGameController;
-      IWindowComponent *mWindowComponent;
-  public:
-      GraphicsComponent(Camera*,IWindowComponent*);
-      ~GraphicsComponent(void);
-      void clear2DQueue();
-      void addTo2DQueue(SceneObject*);
-      void draw2DQueue();
-      void addToLightQueue(LightInstance*);
-      void clearLightQueue();
-      void clear3DQueue();
-      void addTo3DQueue(SceneObject*);
-      void draw3DQueue();
-      bool init(void);
-      void update(Scene*);
-      void drawSprite(SceneObject*);
-      void drawFont(SceneObject*);
-      void drawModel(SceneObject*);
-      bool checkGLError(string);
-      void setClearColour(vector<float>);
-      void setAmbientLightColour(vector<float>);
-      void create2DVertexObjects();
-      void setWindowShouldClose(bool);
-      glm::mat4 getViewMatrix();
-      glm::mat4 getProjectionMatrix();
-      void setGameController(GameController* gameController);
-      GameController *getGameController();
-      void exposeLuaApi(lua_State*);
-  }; // End of GraphicsComponent
+
+    class GraphicsComponent : public IComponent
+    {
+    private:
+        glm::mat4 mProjectionMatrix;
+        glm::mat4 mViewMatrix;
+        GLfloat mSpriteVertices[24] =
+        {
+            // Pos      // Tex
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f
+        };
+        GLuint mSpriteVBO;
+        GLuint mSpriteQuadVAO;
+        Camera *mCamera;
+        float mMinimumDraw = 0.1f;
+        float mMaximumDraw = 1000.0f;
+        vector<SDL_Event> mEvents;
+        vector<SceneObject*> m2DQueue;
+        vector<SceneObject*> m3DQueue;
+        vector<LightInstance*> mLightQueue;
+        glm::mat4 mOrthoProjection;
+        vector<float> mClearColour;
+        vector<float> mAmbientLightColour;
+        GameController *mGameController;
+        IWindowComponent *mWindowComponent;
+    public:
+        GraphicsComponent(Camera*,IWindowComponent*);
+        ~GraphicsComponent(void);
+        void clear2DQueue();
+        void addTo2DQueue(SceneObject*);
+        void draw2DQueue();
+        void addToLightQueue(LightInstance*);
+        void clearLightQueue();
+        void clear3DQueue();
+        void addTo3DQueue(SceneObject*);
+        void draw3DQueue();
+        bool init(void);
+        void update(Scene*);
+        void drawSprite(SceneObject*);
+        void drawFont(SceneObject*);
+        void drawModel(SceneObject*);
+        bool checkGLError(string);
+        void setClearColour(vector<float>);
+        void setAmbientLightColour(vector<float>);
+        void create2DVertexObjects();
+        void setWindowShouldClose(bool);
+        glm::mat4 getViewMatrix();
+        glm::mat4 getProjectionMatrix();
+        void setGameController(GameController* gameController);
+        GameController *getGameController();
+        void exposeLuaApi(lua_State*);
+    }; // End of GraphicsComponent
 } // End of Dream
 #endif // End of GRAPHICSCOMPONENT_H

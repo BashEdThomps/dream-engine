@@ -17,7 +17,7 @@
  */
 #include "SDLJoystickManager.h"
 
-namespace Dream
+namespace DreamSDL
 {
 
     bool SDLJoystickManager::IsInitialised = false;

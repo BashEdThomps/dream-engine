@@ -27,6 +27,7 @@ extern "C"
 
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
+
 namespace Dream
 {
     class ILuaExposable

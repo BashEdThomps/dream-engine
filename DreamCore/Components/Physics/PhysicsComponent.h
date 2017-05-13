@@ -31,10 +31,13 @@
 #include "../../Event.h"
 #include "../../Constants.h"
 
-namespace Dream {
+namespace Dream
+{
 
-      class PhysicsComponent : public IComponent {
-      protected:
+    class PhysicsComponent
+            : public IComponent
+    {
+    protected:
         PhysicsDebugDrawer *mDebugDrawer;
         btDynamicsWorld *mDynamicsWorld;
         btBroadphaseInterface *mBroadphase;
@@ -45,7 +48,7 @@ namespace Dream {
         btVector3 mGravity;
         bool mDebug;
         vector<SceneObject*>* mScenegraph;
-      public:
+    public:
         PhysicsComponent();
         ~PhysicsComponent();
         void populatePhysicsWorld(vector<SceneObject*>*);
@@ -62,7 +65,7 @@ namespace Dream {
         SceneObject* getSceneObject(const btCollisionObject*);
         void drawDebug();
         void exposeLuaApi(lua_State* state);
-      };// End of PhysicsComponent
+    };// End of PhysicsComponent
 
 } // End of Dream
 

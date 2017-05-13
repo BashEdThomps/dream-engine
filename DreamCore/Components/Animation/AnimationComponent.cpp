@@ -21,8 +21,10 @@
 namespace Dream
 {
 
+
     AnimationComponent::AnimationComponent() : IComponent()
     {}
+
 
     AnimationComponent::~AnimationComponent()
     {
@@ -33,6 +35,7 @@ namespace Dream
 
     }
 
+
     bool AnimationComponent::init()
     {
         if (DEBUG)
@@ -41,6 +44,7 @@ namespace Dream
         }
         return true;
     }
+
 
     void AnimationComponent::update(Scene *scene)
     {
@@ -58,6 +62,7 @@ namespace Dream
         }
     }
 
+
     void AnimationComponent::play(AnimationInstance *asset) {
         try {
             AnimationInstance* animAsset;
@@ -67,6 +72,7 @@ namespace Dream
             cerr << "AnimationComponent: Exception playing animation." << ex.what() << endl;
         }
     }
+
 
     void AnimationComponent::pause(AnimationInstance *asset) {
         try {
@@ -78,6 +84,7 @@ namespace Dream
         }
     }
 
+
     void AnimationComponent::stop(AnimationInstance *asset) {
         try {
             AnimationInstance* animAsset;
@@ -87,6 +94,7 @@ namespace Dream
             cerr << "AnimationComponent: Exception stopping animation." << ex.what() << endl;
         }
     }
+
 
     bool AnimationComponent::isLooping(AnimationInstance* asset) {
         if (!asset) {
@@ -109,6 +117,7 @@ namespace Dream
         return false;
     }
 
+
     void AnimationComponent::setLooping(AnimationInstance* asset, bool looping) {
         try {
             AnimationInstance* animationAsset;
@@ -123,6 +132,7 @@ namespace Dream
             cerr << ex.what() << endl;
         }
     }
+
 
     void AnimationComponent::exposeLuaApi(lua_State* state)
     {

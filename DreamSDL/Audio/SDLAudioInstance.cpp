@@ -1,7 +1,7 @@
 #include "SDLAudioInstance.h"
 #include "SDLAudioCache.h"
 
-namespace Dream
+namespace DreamSDL
 {
 
     SDLAudioInstance::SDLAudioInstance(AssetDefinition* definition, Transform3D* transform)

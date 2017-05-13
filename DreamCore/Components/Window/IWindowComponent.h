@@ -25,6 +25,7 @@
 
 namespace Dream
 {
+
     class IWindowComponent : public IComponent
     {
     public:

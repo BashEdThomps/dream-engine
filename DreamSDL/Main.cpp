@@ -1,9 +1,12 @@
 #include <iostream>
 #include <DreamCore.h>
+#include "include/DreamSDL.h"
 
 #define MINIMUM_ARGUMENTS 3
 
 using namespace std;
+using namespace Dream;
+using namespace DreamSDL;
 
 void showUsage(const char** argv)
 {
@@ -18,8 +21,12 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    Dream::DreamEngine *engine = Dream::DreamEngine::getInstance();
-    Dream::LuaEngine    lua;
+    DreamEngine<SDLAudioComponent,SDLWindowComponent> *engine;
+    engine = new Dream::DreamEngine<
+            SDLAudioComponent,
+            SDLWindowComponent
+    >();
+    LuaEngine lua;
 
     if (DEBUG)
     {

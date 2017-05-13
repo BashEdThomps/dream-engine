@@ -22,7 +22,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
-namespace Dream
+using namespace Dream;
+namespace DreamSDL
 {
     class SDLWindowComponent : public IWindowComponent
     {

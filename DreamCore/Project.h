@@ -26,6 +26,7 @@
 #include "AssetDefinition.h"
 #include "String.h"
 #include "Constants.h"
+#include "Components/Audio/IAudioComponent.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -46,9 +47,10 @@ namespace Dream
     Scene *mActiveScene;
     int mWindowWidth;
     int mWindowHeight;
+    IAudioComponent* mAudioComponent;
 
   public:
-    Project(string, nlohmann::json);
+    Project(string, nlohmann::json,IAudioComponent*);
     ~Project();
 
     void setMetadata(nlohmann::json);

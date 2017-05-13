@@ -24,7 +24,8 @@
 #include "SDLAudioInstance.h"
 #include <DreamCore.h>
 
-namespace Dream
+using namespace Dream;
+namespace DreamSDL
 {
     class SDLAudioComponent : public IAudioComponent
     {
@@ -34,6 +35,7 @@ namespace Dream
         bool init();
         void update(Scene*);
         void exposeLuaApi(lua_State*);
+        Dream::IAudioInstance* newAudioInstance(Dream::AssetDefinition*,Dream::Transform3D*);
     }; // End of SDLAudioComponent
 } // End of Dream
 

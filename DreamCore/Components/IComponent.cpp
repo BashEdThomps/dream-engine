@@ -19,18 +19,24 @@
 
 namespace Dream
 {
-    IComponent::IComponent()
+
+    IComponent::
+    IComponent()
         : ILuaExposable()
     {
 
     }
 
-    IComponent::~IComponent()
+
+    IComponent::
+    ~IComponent()
     {
 
     }
 
-    void IComponent::setTime(Time* time)
+
+    void IComponent::
+    setTime(Time* time)
     {
         mTime = time;
     }

@@ -27,6 +27,7 @@ namespace Dream
     public:
       IAudioComponent();
       virtual ~IAudioComponent();
+      virtual IAudioInstance* newAudioInstance(AssetDefinition*,Transform3D*) = 0;
     }; // End of IAudioComponent
 } // End of Dream
 

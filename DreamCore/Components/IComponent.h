@@ -26,13 +26,13 @@ namespace Dream
 {
     class IComponent : public ILuaExposable
     {
-        public:
+    public:
         IComponent();
         virtual ~IComponent();
         virtual bool init() = 0;
         virtual void update(Scene*) = 0;
         void setTime(Time*);
-        protected:
+    protected:
         Time* mTime;
     }; // End of IComponent
 } // End of Dream

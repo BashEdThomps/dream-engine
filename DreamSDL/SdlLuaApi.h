@@ -20,7 +20,8 @@
 
 #include <DreamCore.h>
 
-namespace Dream
+using namespace Dream;
+namespace DreamSDL
 {
     class SdlLuaApi : public ILuaExposable
     {

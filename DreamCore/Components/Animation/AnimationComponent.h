@@ -25,6 +25,7 @@
 
 namespace Dream
 {
+
     class AnimationComponent : public IComponent
     {
     private:

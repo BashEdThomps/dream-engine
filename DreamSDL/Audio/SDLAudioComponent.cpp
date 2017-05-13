@@ -19,9 +19,9 @@
 
 #include <iostream>
 
-namespace Dream
+namespace DreamSDL
 {
-    SDLAudioComponent::SDLAudioComponent() : IAudioComponent()
+    SDLAudioComponent::SDLAudioComponent() : Dream::IAudioComponent()
     {
         // Pass
     }
@@ -71,4 +71,9 @@ namespace Dream
         ];
     }
 
+    Dream::IAudioInstance* SDLAudioComponent::
+    newAudioInstance(Dream::AssetDefinition* definition, Dream::Transform3D* transform)
+    {
+        return new SDLAudioInstance(definition,transform);
+    }
 } // End of Dream

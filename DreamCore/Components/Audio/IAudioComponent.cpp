@@ -19,11 +19,16 @@
 
 namespace Dream
 {
-    IAudioComponent::IAudioComponent()
+
+    IAudioComponent
+    ::IAudioComponent()
     {
 
     }
-    IAudioComponent::~IAudioComponent()
+
+
+    IAudioComponent
+    ::~IAudioComponent()
     {
 
     }

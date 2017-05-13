@@ -25,7 +25,7 @@
 
 using namespace std;
 
-namespace Dream
+namespace DreamSDL
 {
     class AudioCache
     {

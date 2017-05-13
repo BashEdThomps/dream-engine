@@ -18,7 +18,7 @@
 #include "SdlLuaApi.h"
 #include <SDL2/SDL.h>
 
-namespace Dream
+namespace DreamSDL
 {
     SdlLuaApi::SdlLuaApi() : ILuaExposable()
     {

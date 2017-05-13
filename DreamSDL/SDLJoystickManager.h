@@ -23,7 +23,8 @@
 #include <SDL2/SDL.h>
 #include <DreamCore.h>
 
-namespace Dream
+using namespace Dream;
+namespace DreamSDL
 {
     using namespace std;
     class SDLJoystickManager
