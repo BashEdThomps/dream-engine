@@ -78,6 +78,7 @@ namespace Dream
 
     Scene* getSceneByName(string);
     Scene* getSceneByUuid(string);
+    vector<Scene*> getSceneList();
 
     string getProjectPath();
     void setProjectPath(string);

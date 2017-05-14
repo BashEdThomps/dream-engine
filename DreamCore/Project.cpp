@@ -162,6 +162,11 @@ namespace Dream
         return mName;
     }
 
+    vector<Scene*> Project::getSceneList()
+    {
+        return mScenes;
+    }
+
     void Project::setDescription(string description)
     {
         mDescription = description;

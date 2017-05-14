@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <thread>
+#include <dirent.h>
 
 #include "Constants.h"
 #include "ArgumentParser.h"
@@ -44,6 +45,7 @@ namespace Dream
         DreamEngine(void);
         ~DreamEngine(void);
         bool loadFromArgumentParser(ArgumentParser*);
+        bool loadFromDirectory(string);
         bool initEngine();
         bool initSDL();
         bool initAssetManager();
@@ -102,8 +104,11 @@ namespace Dream
     DreamEngine<AudioComponent,WindowComponent>::
     DreamEngine() : ILuaExposable()
     {
-        dreamSetDebug(true);
         dreamSetVerbose(true);
+        if (DEBUG)
+        {
+            cout << "DreamEngine: Creating new Instance" << endl;
+        }
         setAnimationComponent(nullptr);
         setAudioComponent(nullptr);
         setPhysicsComponent(nullptr);
@@ -222,6 +227,70 @@ namespace Dream
         }
         setProject(new Project(projectPath, projectJson, mAudioComponent));
         return isProjectLoaded();
+    }
+
+    template <class AudioComponent, class WindowComponent>
+    bool DreamEngine<AudioComponent,WindowComponent>::
+    loadFromDirectory(string directory)
+    {
+        DIR *dir;
+        struct dirent *ent;
+        vector<string> directoryContents;
+        if ((dir = opendir(directory.c_str())) != NULL)
+        {
+          while ((ent = readdir (dir)) != NULL)
+          {
+            directoryContents.push_back(string(ent->d_name));
+          }
+          closedir (dir);
+        }
+        else {
+            cerr << "Unable to open directory " << directory << endl;
+            return false;
+        }
+
+        string uuid;
+        bool hasAssetDirectory = false;
+
+        for (string filename : directoryContents)
+        {
+            size_t dotJsonIndex = filename.find(PROJECT_EXTENSION);
+            if (dotJsonIndex != string::npos)
+            {
+                uuid = filename.substr(0,dotJsonIndex);
+                if (DEBUG)
+                {
+                    cout << "DreamEngine: loadFromDirectory - Found uuid " << uuid << endl;
+                }
+            }
+            else if (filename.compare(ASSET_DIR) == 0)
+            {
+                if (DEBUG)
+                {
+                    cout << "DreamEngine: loadFromDirectory - Found asset directory " << endl;
+                }
+                hasAssetDirectory = true;
+            }
+        }
+
+        if (uuid.size() != PROJECT_UUID_LENGTH  || !hasAssetDirectory)
+        {
+            cerr << "DreamEngine: Error " << directory << " is not a valid project directory!" << endl;
+            return false;
+        }
+
+        if (VERBOSE)
+        {
+            cout << "DreamEngine: Loading " << uuid << PROJECT_EXTENSION << " from Directory" << directory << endl;
+        }
+
+        string projectFilePath = directory + PROJECT_PATH_SEP + uuid + PROJECT_EXTENSION;
+
+        FileReader *projectFileReader = new FileReader(projectFilePath);
+        projectFileReader->readIntoStringStream();
+        bool loadSuccess = loadProjectFromFileReader(projectFilePath, projectFileReader);
+        delete projectFileReader;
+        return loadSuccess;
     }
 
     template <class AudioComponent, class WindowComponent >

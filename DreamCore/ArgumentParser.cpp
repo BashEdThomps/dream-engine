@@ -87,27 +87,33 @@ namespace Dream {
     }
   }
 
-  string ArgumentParser::getProjectPath() {
+  string ArgumentParser::getProjectPath()
+  {
     return mProjectPath;
   }
 
-  string ArgumentParser::getProjectUUID() {
+  string ArgumentParser::getProjectUUID()
+  {
     return mProjectUUID;
   }
 
-  string ArgumentParser::getDreamPath(){
+  string ArgumentParser::getDreamPath()
+  {
     return mDreamPath;
   }
 
-  string ArgumentParser::getProjectFilePath() {
+  string ArgumentParser::getProjectFilePath()
+  {
     return mProjectFilePath;
   }
 
-  bool ArgumentParser::getUsingHttp() {
+  bool ArgumentParser::getUsingHttp()
+  {
       return mUsingHttp;
   }
 
-  string ArgumentParser::getProjectHttpUrl() {
+  string ArgumentParser::getProjectHttpUrl()
+  {
       return mHttpUrl;
   }
 

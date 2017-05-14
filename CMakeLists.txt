@@ -37,4 +37,4 @@ endif()
 add_subdirectory (DreamCore)
 
 # DreamSDL Executable
-add_subdirectory (DreamSDL)
+# add_subdirectory (DreamSDL)

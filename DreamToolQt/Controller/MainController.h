@@ -1,0 +1,60 @@
+/*
+ * MainController.h
+ *
+ * Created: 14 2017 by Ashley
+ *
+ * Copyright 2017 Octronic. All rights reserved.
+ *
+ * This file may be distributed under the terms of GNU Public License version
+ * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
+ * license should have been included with this file, or the project in which
+ * this file belongs to. You may also find the details of GPL v3 at:
+ * http://www.gnu.org/licenses/gpl-3.0.txt
+ *
+ * If you have any questions regarding the use of this file, feel free to
+ * contact the author of this file, or the owner of the project in which
+ * this file belongs to.
+ */
+#ifndef MAINCONTROLLER_H
+#define MAINCONTROLLER_H
+
+#include <QObject>
+#include <QErrorMessage>
+#include <QStringList>
+#include <QStringListModel>
+#include "../View/MainWindow.h"
+#include "../Model/DreamModel.h"
+
+class MainController : public QObject
+{
+    Q_OBJECT
+public:
+    MainController(MainWindow* parent);
+    ~MainController();
+signals:
+    void notifyProjectDirectoryChanged(QString projectDir);
+    void notifyInvalidProjectDirectory(QString projectDir);
+    void notifyProjectNameChanged(QString name);
+    void notifyProjectAuthorChanged(QString author);
+    void notifyProjectDescriptionChanged(QString description);
+    void notifyProjectWindowWidthChanged(int width);
+    void notifyProjectWindowHeightChanged(int height);
+    void notifyProjectStartupSceneChanged(QString startupScene);
+    void notifyProjectSceneListChanged(QStringListModel *model);
+public slots:
+    void onNewProjectButtonClicked(bool checked);
+    void onOpenProjectButtonClicked(bool checked);
+    void onSaveProjectButtonClicked(bool checked);
+    void onRefreshProjectButtonClicked(bool checked);
+private: // Variables
+    MainWindow *mMainWindow;
+    DreamModel *mDreamModel;
+    QString mProjectDirectory;
+    QErrorMessage *mInvalidProjectDirectoryError;
+private: // Methods
+    void createConnections();
+    void updateWindowTitle(QString msg);
+    QStringListModel* getSceneNamesListModel(vector<Dream::Scene*> sceneList);
+};
+
+#endif // MAINCONTROLLER_H
