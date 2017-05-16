@@ -251,4 +251,5 @@ ui_*.cpp
 ui_*.h
 qrc_*.cpp
 qrc_*.h
-
+DreamToolJS/www/api_docs
+DreamToolQt/Makefile
