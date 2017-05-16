@@ -94,6 +94,7 @@ namespace Dream
     bool isChildOf(SceneObject*);
     bool isChildOfDeep(SceneObject*);
     void getChildrenVectorDeep(vector<SceneObject*>*);
+    vector<SceneObject*> getChildren();
     bool isParentOf(SceneObject*);
     bool isParentOfDeep(SceneObject*);
     void setParent(SceneObject*);

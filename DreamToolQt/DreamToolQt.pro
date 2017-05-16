@@ -28,13 +28,17 @@ SOURCES += main.cpp\
     Controller/MainController.cpp \
     Model/DreamModel.cpp \
     Model/QTDreamAudioComponent.cpp \
-    Model/QTDreamWindowComponent.cpp
+    Model/QTDreamWindowComponent.cpp \
+    Model/ProjectTreeItem.cpp \
+    Model/ProjectTreeModel.cpp
 
 HEADERS  += View/MainWindow.h \
     Controller/MainController.h \
     Model/DreamModel.h \
     Model/QTDreamAudioComponent.h \
-    Model/QTDreamWindowComponent.h
+    Model/QTDreamWindowComponent.h \
+    Model/ProjectTreeItem.h \
+    Model/ProjectTreeModel.h
 
 FORMS    += View/MainWindow.ui
 

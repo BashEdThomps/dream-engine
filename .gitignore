@@ -243,3 +243,12 @@ docs
 *.autosave
 CMakeLists.txt.user
 dream_tool/www/api_docs
+build*
+*.app
+*.user
+moc_*
+ui_*.cpp
+ui_*.h
+qrc_*.cpp
+qrc_*.h
+

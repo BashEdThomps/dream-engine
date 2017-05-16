@@ -24,6 +24,7 @@
 #include <QStringListModel>
 #include "../View/MainWindow.h"
 #include "../Model/DreamModel.h"
+#include "../Model/ProjectTreeModel.h"
 
 class MainController : public QObject
 {
@@ -41,20 +42,32 @@ signals:
     void notifyProjectWindowHeightChanged(int height);
     void notifyProjectStartupSceneChanged(QString startupScene);
     void notifyProjectSceneListChanged(QStringListModel *model);
+    void notifyProjectWidgetsEnabledChanged(bool enabled);
+    void notifyStatusBarProjectLoaded(QString);
 public slots:
     void onNewProjectButtonClicked(bool checked);
     void onOpenProjectButtonClicked(bool checked);
     void onSaveProjectButtonClicked(bool checked);
     void onRefreshProjectButtonClicked(bool checked);
+    void onTabChanged(int);
+    void onProjectNameChanged(QString name);
+    void onProjectAuthorChanged(QString author);
+    void onProjectDescriptionChanged(QString desc);
+    void onProjectWindowWidthChanged(QString width);
+    void onProjectWindowHeightChanged(QString height);
+    void onProjectStartupSceneChanged(QString startupScene);
 private: // Variables
     MainWindow *mMainWindow;
     DreamModel *mDreamModel;
     QString mProjectDirectory;
     QErrorMessage *mInvalidProjectDirectoryError;
+    QStringListModel *mSceneListModel;
+    ProjectTreeModel *mProjectTreeModel;
 private: // Methods
     void createConnections();
     void updateWindowTitle(QString msg);
     QStringListModel* getSceneNamesListModel(vector<Dream::Scene*> sceneList);
+    string getSceneNameFromModelIndex(int index);
 };
 
 #endif // MAINCONTROLLER_H

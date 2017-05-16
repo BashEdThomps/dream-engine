@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1157</width>
-    <height>659</height>
+    <width>864</width>
+    <height>679</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -29,31 +29,21 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QSplitter" name="splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
+     <widget class="QSplitter" name="splitter_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="treeView">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
+       <widget class="QTreeView" name="treeView"/>
+       <widget class="QListView" name="listView"/>
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>2</horstretch>
+         <horstretch>1</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
@@ -70,187 +60,188 @@
         <attribute name="title">
          <string>Project</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <layout class="QVBoxLayout" name="nameLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QLabel" name="nameLabel">
-             <property name="text">
-              <string>Name</string>
-             </property>
-             <property name="buddy">
-              <cstring>nameEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="nameEdit"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="authorLayout">
-           <item>
-            <widget class="QLabel" name="authorLabel">
-             <property name="text">
-              <string>Author</string>
-             </property>
-             <property name="buddy">
-              <cstring>authorEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="authorEdit"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="descriptionLayout">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Description</string>
-             </property>
-             <property name="buddy">
-              <cstring>descriptionEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPlainTextEdit" name="descriptionEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>1677215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="windowSizeLayout">
-           <item>
-            <widget class="QLabel" name="windowSizeLabel">
-             <property name="text">
-              <string>Window Size</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="widthHeightLayout">
+            <layout class="QVBoxLayout" name="nameLayout">
              <item>
-              <layout class="QHBoxLayout" name="widthLayout">
-               <item>
-                <widget class="QLabel" name="windowWidthLabel">
-                 <property name="text">
-                  <string>Width</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>windowWidthSpinBox</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="windowWidthSpinBox">
-                 <property name="maximum">
-                  <number>9999</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QLabel" name="nameLabel">
+               <property name="text">
+                <string>Name</string>
+               </property>
+               <property name="buddy">
+                <cstring>nameEdit</cstring>
+               </property>
+              </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="heightLayout">
+              <widget class="QLineEdit" name="nameEdit"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="authorLayout">
+             <item>
+              <widget class="QLabel" name="authorLabel">
+               <property name="text">
+                <string>Author</string>
+               </property>
+               <property name="buddy">
+                <cstring>authorEdit</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="authorEdit"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="descriptionLayout">
+             <item>
+              <widget class="QLabel" name="descriptionLabel">
+               <property name="text">
+                <string>Description</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="descriptionEdit"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="windowSizeLayout">
+             <item>
+              <widget class="QLabel" name="windowSizeLabel">
+               <property name="text">
+                <string>Window Size</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="widthHeightLayout">
                <item>
-                <widget class="QLabel" name="mwindowHeightLabel">
-                 <property name="text">
-                  <string>Height</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>windowHeightSpinBox</cstring>
-                 </property>
-                </widget>
+                <layout class="QHBoxLayout" name="widthLayout">
+                 <item>
+                  <widget class="QLabel" name="windowWidthLabel">
+                   <property name="text">
+                    <string>Width</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>windowWidthSpinBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="windowWidthSpinBox">
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
                <item>
-                <widget class="QSpinBox" name="windowHeightSpinBox">
-                 <property name="maximum">
-                  <number>9999</number>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="windowSizeHorizSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
+                <layout class="QHBoxLayout" name="heightLayout">
+                 <item>
+                  <widget class="QLabel" name="mwindowHeightLabel">
+                   <property name="text">
+                    <string>Height</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>windowHeightSpinBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="windowHeightSpinBox">
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="windowSizeHorizSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
             </layout>
            </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QLabel" name="startupSceneLabel">
+               <property name="text">
+                <string>Startup Scene</string>
+               </property>
+               <property name="buddy">
+                <cstring>startupSceneComboBox</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="startupSceneComboBox"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Expanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>64</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QLabel" name="startupSceneLabel">
-             <property name="text">
-              <string>Startup Scene</string>
-             </property>
-             <property name="buddy">
-              <cstring>startupSceneComboBox</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="startupSceneComboBox"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="verticalSpacer">
+          <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>20</width>
-             <height>64</height>
+             <width>380</width>
+             <height>20</height>
             </size>
            </property>
           </spacer>
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="mAssetDefinitionsTab">
+       <widget class="QWidget" name="assetDefinitionsTab">
         <attribute name="title">
          <string>Asset Definitions</string>
         </attribute>
        </widget>
-       <widget class="QWidget" name="mScenesTab">
+       <widget class="QWidget" name="scenesTab">
         <attribute name="title">
          <string>Scenes</string>
         </attribute>
        </widget>
-       <widget class="QWidget" name="tab">
+       <widget class="QWidget" name="dreamTab">
         <attribute name="title">
          <string>Dream</string>
         </attribute>
@@ -290,7 +281,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1157</width>
+     <width>864</width>
      <height>22</height>
     </rect>
    </property>

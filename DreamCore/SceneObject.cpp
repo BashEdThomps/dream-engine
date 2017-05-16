@@ -553,4 +553,8 @@ namespace Dream {
                 ];
     }
 
+    vector<SceneObject*> SceneObject::getChildren()
+    {
+        return mChildren;
+    }
 } // End of Dream

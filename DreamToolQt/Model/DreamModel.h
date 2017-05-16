@@ -34,7 +34,13 @@ public:
     Dream::Project* getProject();
     vector<Dream::Scene*>* getScenes();
     vector<Dream::AssetDefinition*>* getAssetDefinitions();
-
+    void setProjectName(string name);
+    void setProjectAuthor(string author);
+    void setProjectDescription(string desc);
+    void setProjectStartupSceneByUuid(string scene);
+    void setProjectStartupSceneByName(string scene);
+    void setProjectWindowWidth(int width);
+    void setProjectWindowHeight(int height);
 signals:
 
 public slots:

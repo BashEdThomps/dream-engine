@@ -37,6 +37,7 @@ public:
 public slots:
     void onInvalidProjectDirectory(QString directory);
     void onStartupSceneModelChanged(QStringListModel *model);
+    void onProjectWidgetsEnabledChanged(bool active);
 };
 
 #endif // MAINWINDOW_H

@@ -69,6 +69,7 @@ namespace Dream
     string getAuthor();
 
     void setStartupSceneUuid(string);
+    void setStartupSceneName(string);
     string getStartupSceneUuid();
     Scene* getStartupScene();
 
@@ -100,6 +101,7 @@ namespace Dream
     void removeAssetDefinition(AssetDefinition*);
     size_t getNumberOfAssetDefinitions();
     AssetDefinition* getAssetDefinitionByUuid(string);
+    vector<AssetDefinition*> getAssetDefinitions();
 
     void exposeLuaApi(lua_State*);
 

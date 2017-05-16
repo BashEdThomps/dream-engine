@@ -147,6 +147,12 @@ namespace Dream
         mStartupScene = sceneUuid;
     }
 
+    void Project::setStartupSceneName(string sceneName)
+    {
+        mStartupScene = getSceneByName(sceneName)->getUuid();
+    }
+
+
     string Project::getStartupSceneUuid()
     {
         return mStartupScene;
@@ -331,4 +337,8 @@ namespace Dream
         ];
     }
 
+    vector<AssetDefinition*> Project::getAssetDefinitions()
+    {
+        return mAssetDefinitions;
+    }
 } // End of Dream

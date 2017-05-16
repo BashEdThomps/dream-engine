@@ -59,3 +59,38 @@ bool DreamModel::loadProject(QString path)
 {
     return mDreamEngine->loadFromDirectory(path.toStdString());
 }
+
+void DreamModel::setProjectName(string name)
+{
+    mDreamEngine->getProject()->setName(name);
+}
+
+void DreamModel::setProjectAuthor(string author)
+{
+    mDreamEngine->getProject()->setAuthor(author);
+}
+
+void DreamModel::setProjectDescription(string desc)
+{
+    mDreamEngine->getProject()->setDescription(desc);
+}
+
+void DreamModel::setProjectStartupSceneByUuid(string scene)
+{
+    mDreamEngine->getProject()->setStartupSceneUuid(scene);
+}
+
+void DreamModel::setProjectStartupSceneByName(string scene)
+{
+    mDreamEngine->getProject()->setStartupSceneName(scene);
+}
+
+void DreamModel::setProjectWindowWidth(int width)
+{
+    mDreamEngine->getProject()->setWindowWidth(width);
+}
+
+void DreamModel::setProjectWindowHeight(int height)
+{
+    mDreamEngine->getProject()->setWindowHeight(height);
+}

@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    onProjectWidgetsEnabledChanged(false);
 }
 
 MainWindow::~MainWindow()
@@ -42,4 +43,14 @@ void MainWindow::onInvalidProjectDirectory(QString directory)
 void MainWindow::onStartupSceneModelChanged(QStringListModel *model)
 {
     ui->startupSceneComboBox->setModel(model);
+}
+
+void MainWindow::onProjectWidgetsEnabledChanged(bool active)
+{
+    ui->nameEdit->setEnabled(active);
+    ui->authorEdit->setEnabled(active);
+    ui->descriptionEdit->setEnabled(active);
+    ui->windowWidthSpinBox->setEnabled(active);
+    ui->windowHeightSpinBox->setEnabled(active);
+    ui->startupSceneComboBox->setEnabled(active);
 }
