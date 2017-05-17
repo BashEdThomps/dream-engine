@@ -23,231 +23,16 @@
    <iconset resource="../Resources/Resources.qrc">
     <normaloff>:/icons/DreamTool.icns</normaloff>:/icons/DreamTool.icns</iconset>
   </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonTextUnderIcon</enum>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QSplitter" name="splitter_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QSplitter" name="splitter">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <widget class="QTreeView" name="treeView"/>
-       <widget class="QListView" name="listView"/>
-      </widget>
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="tabPosition">
-        <enum>QTabWidget::North</enum>
-       </property>
-       <property name="tabShape">
-        <enum>QTabWidget::Rounded</enum>
-       </property>
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <widget class="QWidget" name="projectTab">
-        <attribute name="title">
-         <string>Project</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <layout class="QVBoxLayout" name="nameLayout">
-             <item>
-              <widget class="QLabel" name="nameLabel">
-               <property name="text">
-                <string>Name</string>
-               </property>
-               <property name="buddy">
-                <cstring>nameEdit</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="nameEdit"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="authorLayout">
-             <item>
-              <widget class="QLabel" name="authorLabel">
-               <property name="text">
-                <string>Author</string>
-               </property>
-               <property name="buddy">
-                <cstring>authorEdit</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="authorEdit"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="descriptionLayout">
-             <item>
-              <widget class="QLabel" name="descriptionLabel">
-               <property name="text">
-                <string>Description</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="descriptionEdit"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="windowSizeLayout">
-             <item>
-              <widget class="QLabel" name="windowSizeLabel">
-               <property name="text">
-                <string>Window Size</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="widthHeightLayout">
-               <item>
-                <layout class="QHBoxLayout" name="widthLayout">
-                 <item>
-                  <widget class="QLabel" name="windowWidthLabel">
-                   <property name="text">
-                    <string>Width</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>windowWidthSpinBox</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="windowWidthSpinBox">
-                   <property name="maximum">
-                    <number>9999</number>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="heightLayout">
-                 <item>
-                  <widget class="QLabel" name="mwindowHeightLabel">
-                   <property name="text">
-                    <string>Height</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>windowHeightSpinBox</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="windowHeightSpinBox">
-                   <property name="maximum">
-                    <number>9999</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="windowSizeHorizSpacer">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <item>
-              <widget class="QLabel" name="startupSceneLabel">
-               <property name="text">
-                <string>Startup Scene</string>
-               </property>
-               <property name="buddy">
-                <cstring>startupSceneComboBox</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="startupSceneComboBox"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>64</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>380</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="assetDefinitionsTab">
-        <attribute name="title">
-         <string>Asset Definitions</string>
-        </attribute>
-       </widget>
-       <widget class="QWidget" name="scenesTab">
-        <attribute name="title">
-         <string>Scenes</string>
-        </attribute>
-       </widget>
-       <widget class="QWidget" name="dreamTab">
-        <attribute name="title">
-         <string>Dream</string>
-        </attribute>
-       </widget>
-      </widget>
-     </widget>
+     <widget class="QOpenGLWidget" name="openGLWidget"/>
     </item>
    </layout>
   </widget>
@@ -255,11 +40,20 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="movable">
     <bool>false</bool>
    </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonIconOnly</enum>
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>
@@ -273,7 +67,7 @@
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
-   <addaction name="actionRun"/>
+   <addaction name="actionSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -285,6 +79,36 @@
      <height>22</height>
     </rect>
    </property>
+  </widget>
+  <widget class="QDockWidget" name="projectDockWidget">
+   <property name="windowTitle">
+    <string>Project Tree</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="projectDockContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QTreeView" name="projectTreeView"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="propertiesDockWidget">
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="propertiesDockContents">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QTreeView" name="propertiesTreeView"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionNew">
    <property name="icon">
@@ -332,6 +156,15 @@
    </property>
    <property name="toolTip">
     <string>Run Project</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="../Resources/Resources.qrc">
+     <normaloff>:/images/system-run.png</normaloff>:/images/system-run.png</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>

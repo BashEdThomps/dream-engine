@@ -6,5 +6,6 @@
         <file>images/document-save.png</file>
         <file>images/view-refresh.png</file>
         <file>icons/DreamTool.icns</file>
+        <file>images/system-run.png</file>
     </qresource>
 </RCC>

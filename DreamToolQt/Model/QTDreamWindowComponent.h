@@ -18,18 +18,23 @@
 #ifndef QTDREAMWINDOWCOMPONENT_H
 #define QTDREAMWINDOWCOMPONENT_H
 
+#include <GL/glew.h>
 #include <QObject>
+#include <QOpenGLWidget>
 #include <DreamCore.h>
 
 class QTDreamWindowComponent : public Dream::IWindowComponent
 {
 public:
-    QTDreamWindowComponent();
+    QTDreamWindowComponent(QOpenGLWidget* glWidget);
     ~QTDreamWindowComponent();
     bool init();
     void update(Dream::Scene*);
     void getCurrentDimensions();
     void swapBuffers();
+    void exposeLuaApi(lua_State*);
+private:
+    QOpenGLWidget *mOpenGLWidget;
 };
 
 #endif // QTDREAMWINDOWCOMPONENT_H

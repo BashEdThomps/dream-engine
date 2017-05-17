@@ -1,7 +1,7 @@
 /*
- * QTDreamWindowComponent.cpp
+ * SceneObjectPropertiesListModel.cpp
  *
- * Created: 14 2017 by Ashley
+ * Created: 17 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,41 +15,9 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "QTDreamWindowComponent.h"
+#include "SceneObjectPropertiesListModel.h"
 
-QTDreamWindowComponent::QTDreamWindowComponent(QOpenGLWidget *glWidget)
-    : IWindowComponent()
-{
-    mOpenGLWidget = glWidget;
-
-}
-
-QTDreamWindowComponent::~QTDreamWindowComponent()
-{
-
-}
-
-bool QTDreamWindowComponent::init()
-{
-    return false;
-}
-
-void QTDreamWindowComponent::update(Dream::Scene*)
-{
-
-}
-
-void QTDreamWindowComponent::getCurrentDimensions()
-{
-
-}
-
-void QTDreamWindowComponent::swapBuffers()
-{
-
-}
-
-void QTDreamWindowComponent::exposeLuaApi(lua_State* state)
+SceneObjectPropertiesListModel::SceneObjectPropertiesListModel()
 {
 
 }

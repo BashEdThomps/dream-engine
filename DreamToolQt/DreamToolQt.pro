@@ -30,7 +30,12 @@ SOURCES += main.cpp\
     Model/QTDreamAudioComponent.cpp \
     Model/QTDreamWindowComponent.cpp \
     Model/ProjectTreeItem.cpp \
-    Model/ProjectTreeModel.cpp
+    Model/ProjectTreeModel.cpp \
+    Model/PropertiesListModel.cpp \
+    Model/ProjectPropertiesListModel.cpp \
+    Model/AssetDefinitionPropertiesListModel.cpp \
+    Model/ScenePropertiesListModel.cpp \
+    Model/SceneObjectPropertiesListModel.cpp
 
 HEADERS  += View/MainWindow.h \
     Controller/MainController.h \
@@ -38,7 +43,12 @@ HEADERS  += View/MainWindow.h \
     Model/QTDreamAudioComponent.h \
     Model/QTDreamWindowComponent.h \
     Model/ProjectTreeItem.h \
-    Model/ProjectTreeModel.h
+    Model/ProjectTreeModel.h \
+    Model/PropertiesListModel.h \
+    Model/ProjectPropertiesListModel.h \
+    Model/AssetDefinitionPropertiesListModel.h \
+    Model/ScenePropertiesListModel.h \
+    Model/SceneObjectPropertiesListModel.h
 
 FORMS    += View/MainWindow.ui
 

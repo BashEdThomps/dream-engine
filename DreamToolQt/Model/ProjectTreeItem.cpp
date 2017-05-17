@@ -67,3 +67,8 @@ int ProjectTreeItem::row() const
 
     return 0;
 }
+
+ProjectItemType ProjectTreeItem::getItemType()
+{
+   return mType;
+}

@@ -17,14 +17,17 @@
  */
 #include "DreamModel.h"
 
-DreamModel::DreamModel(QObject *parent) : QObject(parent)
+DreamModel::DreamModel(
+        QObject *parent,
+        Dream::IAudioComponent *audioComponent,
+        Dream::IWindowComponent *windowComponent)
+    : QObject(parent)
 {
-    mDreamEngine = new Dream::DreamEngine<QTDreamAudioComponent,QTDreamWindowComponent>();
+    mDreamEngine = new Dream::DreamEngine(audioComponent,windowComponent);
 }
 
 DreamModel::~DreamModel()
 {
-
 }
 
 Dream::Project* DreamModel::getProject()

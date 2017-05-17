@@ -1,7 +1,7 @@
 /*
- * QTDreamWindowComponent.cpp
+ * ProjectPropertiesListModel.h
  *
- * Created: 14 2017 by Ashley
+ * Created: 17 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,41 +15,15 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "QTDreamWindowComponent.h"
+#ifndef PROJECTPROPERTIESLISTMODEL_H
+#define PROJECTPROPERTIESLISTMODEL_H
 
-QTDreamWindowComponent::QTDreamWindowComponent(QOpenGLWidget *glWidget)
-    : IWindowComponent()
+#include "PropertiesListModel.h"
+
+class ProjectPropertiesListModel : public PropertiesListModel
 {
-    mOpenGLWidget = glWidget;
+public:
+    ProjectPropertiesListModel();
+};
 
-}
-
-QTDreamWindowComponent::~QTDreamWindowComponent()
-{
-
-}
-
-bool QTDreamWindowComponent::init()
-{
-    return false;
-}
-
-void QTDreamWindowComponent::update(Dream::Scene*)
-{
-
-}
-
-void QTDreamWindowComponent::getCurrentDimensions()
-{
-
-}
-
-void QTDreamWindowComponent::swapBuffers()
-{
-
-}
-
-void QTDreamWindowComponent::exposeLuaApi(lua_State* state)
-{
-
-}
+#endif // PROJECTPROPERTIESLISTMODEL_H

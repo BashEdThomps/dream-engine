@@ -27,3 +27,21 @@ QTDreamAudioComponent::~QTDreamAudioComponent()
 {
 
 }
+
+void QTDreamAudioComponent::exposeLuaApi(lua_State*)
+{
+
+}
+bool QTDreamAudioComponent::init()
+{
+    return false;
+}
+void QTDreamAudioComponent::update(Dream::Scene*)
+{
+
+}
+
+Dream::IAudioInstance* QTDreamAudioComponent::newAudioInstance(Dream::AssetDefinition* definition, Dream::Transform3D* transform)
+{
+    return nullptr;
+}

@@ -43,6 +43,7 @@ public:
     QVariant data(int column) const;
     int row() const;
     ProjectTreeItem *parentItem();
+    ProjectItemType getItemType();
 private:
     QList<ProjectTreeItem*> mChildItems;
     QList<QVariant> mItemData;

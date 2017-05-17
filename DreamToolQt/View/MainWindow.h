@@ -18,9 +18,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <GL/glew.h>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QStringListModel>
+#include <QTreeView>
+#include <QAction>
+#include <QOpenGLWidget>
 
 namespace Ui {
     class MainWindow;
@@ -32,12 +36,21 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    QTreeView* getProjectTreeView();
     Ui::MainWindow *ui;
+
+    QAction* getActionNew();
+    QAction* getActionSave();
+    QAction* getActionOpen();
+    QOpenGLWidget* getOpenGLWidget();
+signals:
+    void notifyActionNew(QString);
+    void notifyActionOpen(QString);
+    void notifyActionSave(QString);
 
 public slots:
     void onInvalidProjectDirectory(QString directory);
-    void onStartupSceneModelChanged(QStringListModel *model);
-    void onProjectWidgetsEnabledChanged(bool active);
+    void showStatusBarMessage(QString msg);
 };
 
 #endif // MAINWINDOW_H

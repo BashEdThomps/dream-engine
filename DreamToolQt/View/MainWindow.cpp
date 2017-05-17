@@ -23,12 +23,26 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    onProjectWidgetsEnabledChanged(false);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+QAction* MainWindow::getActionNew()
+{
+   return ui->actionNew;
+}
+
+QAction* MainWindow::getActionOpen()
+{
+   return ui->actionOpen;
+}
+
+QAction* MainWindow::getActionSave()
+{
+   return ui->actionSave;
 }
 
 void MainWindow::onInvalidProjectDirectory(QString directory)
@@ -40,17 +54,18 @@ void MainWindow::onInvalidProjectDirectory(QString directory)
     );
 }
 
-void MainWindow::onStartupSceneModelChanged(QStringListModel *model)
+QTreeView* MainWindow::getProjectTreeView()
 {
-    ui->startupSceneComboBox->setModel(model);
+   return ui->treeView;
 }
 
-void MainWindow::onProjectWidgetsEnabledChanged(bool active)
+void MainWindow::showStatusBarMessage(QString msg)
 {
-    ui->nameEdit->setEnabled(active);
-    ui->authorEdit->setEnabled(active);
-    ui->descriptionEdit->setEnabled(active);
-    ui->windowWidthSpinBox->setEnabled(active);
-    ui->windowHeightSpinBox->setEnabled(active);
-    ui->startupSceneComboBox->setEnabled(active);
+   ui->statusBar->showMessage(msg);
+}
+
+
+QOpenGLWidget* MainWindow::getOpenGLWidget()
+{
+   return ui->openGLWidget;
 }

@@ -26,6 +26,10 @@ class QTDreamAudioComponent : public Dream::IAudioComponent
 public:
     QTDreamAudioComponent();
     ~QTDreamAudioComponent();
+    void exposeLuaApi(lua_State*);
+    bool init();
+    void update(Dream::Scene*);
+    Dream::IAudioInstance* newAudioInstance(Dream::AssetDefinition*,Dream::Transform3D*);
 };
 
 #endif // QTDREAMAUDIOCOMPONENT_H

@@ -28,7 +28,9 @@ class DreamModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit DreamModel(QObject *parent = 0);
+    explicit DreamModel(QObject *parent = 0,
+                        Dream::IAudioComponent *audioComponent = 0,
+                        Dream::IWindowComponent *windowComponent = 0);
     ~DreamModel();
     bool loadProject(QString path);
     Dream::Project* getProject();
@@ -46,7 +48,7 @@ signals:
 public slots:
 
 private:
-    Dream::DreamEngine<QTDreamAudioComponent,QTDreamWindowComponent>* mDreamEngine;
+    Dream::DreamEngine* mDreamEngine;
 };
 
 #endif // DREAMMODEL_H

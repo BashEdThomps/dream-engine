@@ -22,6 +22,7 @@
 #include <QErrorMessage>
 #include <QStringList>
 #include <QStringListModel>
+#include <QItemSelection>
 #include "../View/MainWindow.h"
 #include "../Model/DreamModel.h"
 #include "../Model/ProjectTreeModel.h"
@@ -45,19 +46,20 @@ signals:
     void notifyProjectWidgetsEnabledChanged(bool enabled);
     void notifyStatusBarProjectLoaded(QString);
 public slots:
-    void onNewProjectButtonClicked(bool checked);
-    void onOpenProjectButtonClicked(bool checked);
-    void onSaveProjectButtonClicked(bool checked);
-    void onRefreshProjectButtonClicked(bool checked);
-    void onTabChanged(int);
+    void onNewProjectButtonClicked();
+    void onOpenProjectButtonClicked();
+    void onSaveProjectButtonClicked();
     void onProjectNameChanged(QString name);
     void onProjectAuthorChanged(QString author);
     void onProjectDescriptionChanged(QString desc);
     void onProjectWindowWidthChanged(QString width);
     void onProjectWindowHeightChanged(QString height);
     void onProjectStartupSceneChanged(QString startupScene);
+    void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
 private: // Variables
     MainWindow *mMainWindow;
+    QTDreamWindowComponent *mWindowComponent;
+    QTDreamAudioComponent  *mAudioComponent;
     DreamModel *mDreamModel;
     QString mProjectDirectory;
     QErrorMessage *mInvalidProjectDirectoryError;
@@ -66,6 +68,7 @@ private: // Variables
 private: // Methods
     void createConnections();
     void updateWindowTitle(QString msg);
+    void connectTreeViewModel();
     QStringListModel* getSceneNamesListModel(vector<Dream::Scene*> sceneList);
     string getSceneNameFromModelIndex(int index);
 };

@@ -1,7 +1,7 @@
 /*
- * QTDreamWindowComponent.cpp
+ * AssetDefinitionPropertiesListModel.h
  *
- * Created: 14 2017 by Ashley
+ * Created: 17 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,41 +15,15 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "QTDreamWindowComponent.h"
+#ifndef ASSETDEFINITIONPROPERTIESLISTMODEL_H
+#define ASSETDEFINITIONPROPERTIESLISTMODEL_H
 
-QTDreamWindowComponent::QTDreamWindowComponent(QOpenGLWidget *glWidget)
-    : IWindowComponent()
+#include "PropertiesListModel.h"
+
+class AssetDefinitionPropertiesListModel : public PropertiesListModel
 {
-    mOpenGLWidget = glWidget;
+public:
+    AssetDefinitionPropertiesListModel();
+};
 
-}
-
-QTDreamWindowComponent::~QTDreamWindowComponent()
-{
-
-}
-
-bool QTDreamWindowComponent::init()
-{
-    return false;
-}
-
-void QTDreamWindowComponent::update(Dream::Scene*)
-{
-
-}
-
-void QTDreamWindowComponent::getCurrentDimensions()
-{
-
-}
-
-void QTDreamWindowComponent::swapBuffers()
-{
-
-}
-
-void QTDreamWindowComponent::exposeLuaApi(lua_State* state)
-{
-
-}
+#endif // ASSETDEFINITIONPROPERTIESLISTMODEL_H

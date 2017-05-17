@@ -16,16 +16,19 @@
  * this file belongs to.
  */
 #include "MainController.h"
-#include "../ui_MainWindow.h"
 
 #include <QDebug>
 #include <QFileDialog>
 #include <QErrorMessage>
+#include <QModelIndexList>
 
-MainController::MainController(MainWindow* parent) : QObject(parent)
+MainController::MainController(MainWindow* parent)
+    : QObject(parent)
 {
     mMainWindow = parent;
-    mDreamModel = new DreamModel(this);
+    mAudioComponent = new QTDreamAudioComponent();
+    mWindowComponent = new QTDreamWindowComponent(parent->getOpenGLWidget());
+    mDreamModel = new DreamModel(this,mAudioComponent,mWindowComponent);
     createConnections();
 }
 
@@ -36,19 +39,15 @@ MainController::~MainController()
 
 void MainController::createConnections()
 {
-    // Project Tab Widgets Enabled State
-    connect(
-                this,SIGNAL(notifyProjectWidgetsEnabledChanged(bool)),
-                mMainWindow,SLOT(onProjectWidgetsEnabledChanged(bool)));
     // actionNew
     connect(
-                mMainWindow->ui->actionNew, SIGNAL(triggered(bool)),
-                this, SLOT(onNewProjectButtonClicked(bool))
+                mMainWindow->getActionNew(), SIGNAL(triggered()),
+                this, SLOT(onNewProjectButtonClicked())
                 );
     // actionOpen
     connect(
-                mMainWindow->ui->actionOpen, SIGNAL(triggered(bool)),
-                this, SLOT(onOpenProjectButtonClicked(bool))
+                mMainWindow->getActionOpen(), SIGNAL(triggered()),
+                this, SLOT(onOpenProjectButtonClicked())
                 );
     // Invalid Project Directory
     connect(
@@ -60,72 +59,14 @@ void MainController::createConnections()
                 this, SIGNAL(notifyProjectDirectoryChanged(QString)),
                 mMainWindow, SLOT(setWindowTitle(QString))
                 );
-    // Project Name Line Edit
-    connect(
-                this, SIGNAL(notifyProjectNameChanged(QString)),
-                mMainWindow->ui->nameEdit,SLOT(setText(QString))
-                );
-    connect(
-                mMainWindow->ui->nameEdit,SIGNAL(textEdited(QString)),
-                this,SLOT(onProjectNameChanged(QString))
-                );
-    // Project Author Line Edit
-    connect(
-                this, SIGNAL(notifyProjectAuthorChanged(QString)),
-                mMainWindow->ui->authorEdit, SLOT(setText(QString))
-                );
-    connect(
-                mMainWindow->ui->authorEdit, SIGNAL(textEdited(QString)),
-                this,SLOT(onProjectAuthorChanged(QString))
-                );
-    // Project Description
-    connect(
-                this, SIGNAL(notifyProjectDescriptionChanged(QString)),
-                mMainWindow->ui->descriptionEdit, SLOT(setText(QString))
-                );
-    connect(
-                mMainWindow->ui->descriptionEdit,SIGNAL(textEdited(QString)),
-                this,SLOT(onProjectDescriptionChanged(QString))
-                );
-    // Window Dimensions
-    connect(
-                this, SIGNAL(notifyProjectWindowWidthChanged(int)),
-                mMainWindow->ui->windowWidthSpinBox, SLOT(setValue(int))
-                );
-    connect(
-                this, SIGNAL(notifyProjectWindowHeightChanged(int)),
-                mMainWindow->ui->windowHeightSpinBox, SLOT(setValue(int))
-                );
-    connect(
-                mMainWindow->ui->windowWidthSpinBox,SIGNAL(valueChanged(QString)),
-                this,SLOT(onProjectWindowWidthChanged(QString))
-                );
-    connect(
-                mMainWindow->ui->windowHeightSpinBox,SIGNAL(valueChanged(QString)),
-                this,SLOT(onProjectWindowHeightChanged(QString))
-                );
-    // Startup Scene
-    connect(
-                this, SIGNAL(notifyProjectSceneListChanged(QStringListModel*)),
-                mMainWindow, SLOT(onStartupSceneModelChanged(QStringListModel*))
-                );
-    connect(
-                mMainWindow->ui->startupSceneComboBox,SIGNAL(currentIndexChanged(QString)),
-                this,SLOT(onProjectWindowHeightChanged(QString))
-                );
-    // Tab Changed
-    connect(
-                mMainWindow->ui->tabWidget, SIGNAL(currentChanged(int)),
-                this, SLOT(onTabChanged(int))
-    );
     // Status Bar
     connect(
                 this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-                mMainWindow->ui->statusBar, SLOT(showMessage(QString))
-    );
+                mMainWindow, SLOT(showStatusBarMessage(QString))
+                );
 }
 
-void MainController::onNewProjectButtonClicked(bool checked)
+void MainController::onNewProjectButtonClicked()
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
@@ -142,7 +83,7 @@ void MainController::updateWindowTitle(QString msg)
     emit notifyProjectDirectoryChanged("Dream Tool :: " + msg);
 }
 
-void MainController::onOpenProjectButtonClicked(bool checked)
+void MainController::onOpenProjectButtonClicked()
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
@@ -150,6 +91,11 @@ void MainController::onOpenProjectButtonClicked(bool checked)
     if(openDialog.exec())
     {
         mProjectDirectory = openDialog.selectedFiles().first();
+    }
+
+    if (mProjectDirectory.size() == 0)
+    {
+        return;
     }
 
     bool loadResult = mDreamModel->loadProject(mProjectDirectory);
@@ -172,18 +118,30 @@ void MainController::onOpenProjectButtonClicked(bool checked)
     emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupScene()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
     Dream::Project *project = mDreamModel->getProject();
-    mProjectTreeModel = new ProjectTreeModel(project,mMainWindow->ui->treeView);
-    mMainWindow->ui->treeView->setModel(mProjectTreeModel);
+    mProjectTreeModel = new ProjectTreeModel(project,mMainWindow->getProjectTreeView());
+    mMainWindow->getProjectTreeView()->setModel(mProjectTreeModel);
     emit notifyStatusBarProjectLoaded(
-        QString::fromStdString(
-            "Successfuly Loaded Project: " +
-            project->getName() + " (" +
-            project->getUuid() + ")"
-        )
-    );
+                QString::fromStdString(
+                    "Successfuly Loaded Project: " +
+                    project->getName() + " (" +
+                    project->getUuid() + ")"
+                    )
+                );
+    connectTreeViewModel();
 }
 
-void MainController::onSaveProjectButtonClicked(bool checked)
+void MainController::connectTreeViewModel()
+{
+    // Tree View
+    connect(
+                mMainWindow->getProjectTreeView()->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+                this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
+                );
+
+}
+
+void MainController::onSaveProjectButtonClicked()
 {
 
 }
@@ -202,55 +160,72 @@ QStringListModel* MainController::getSceneNamesListModel(vector<Dream::Scene*> s
     return mSceneListModel;
 }
 
-
-void MainController::onRefreshProjectButtonClicked(bool checked)
-{
-
-}
-
-void MainController::onTabChanged(int tabIndex)
-{
-    qDebug() << "Selected tab: " << tabIndex;
-}
-
 void MainController::onProjectNameChanged(QString name)
 {
     qDebug() << "Name set to " << name;
-   mDreamModel->setProjectName(name.toStdString());
+    mDreamModel->setProjectName(name.toStdString());
 }
 
 void MainController::onProjectAuthorChanged(QString author)
 {
     qDebug() << "Author set to " << author;
-   mDreamModel->setProjectAuthor(author.toStdString());
+    mDreamModel->setProjectAuthor(author.toStdString());
 }
 
 void MainController::onProjectDescriptionChanged(QString desc)
 {
-   qDebug() << "Description set to " << desc;
-   mDreamModel->setProjectDescription(desc.toStdString());
+    qDebug() << "Description set to " << desc;
+    mDreamModel->setProjectDescription(desc.toStdString());
 }
 
 void MainController::onProjectWindowWidthChanged(QString width)
 {
     qDebug() << "Window Width set to " << width;
-   mDreamModel->setProjectWindowWidth(width.toInt());
+    mDreamModel->setProjectWindowWidth(width.toInt());
 }
 
 void MainController::onProjectWindowHeightChanged(QString height)
 {
     qDebug() << "Window Height set to " << height;
-   mDreamModel->setProjectWindowHeight(height.toInt());
+    mDreamModel->setProjectWindowHeight(height.toInt());
 }
 
 void MainController::onProjectStartupSceneChanged(QString startupSceneIndex)
 {
-   string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
-   qDebug() << "startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
-   mDreamModel->setProjectStartupSceneByName(sceneName);
+    string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
+    qDebug() << "startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
+    mDreamModel->setProjectStartupSceneByName(sceneName);
 }
 
 string MainController::getSceneNameFromModelIndex(int index)
 {
-   return mSceneListModel->stringList().at(index).toStdString();
+    return mSceneListModel->stringList().at(index).toStdString();
+}
+
+void MainController::onTreeViewSelectionChanged(const QItemSelection& selected,const QItemSelection& deselected)
+{
+    qDebug() << "Selected tree item changed!";
+    QModelIndexList indexes = selected.indexes();
+    for (QModelIndex index : indexes)
+    {
+        ProjectTreeItem *selected = static_cast<ProjectTreeItem*>(index.internalPointer());
+        switch(selected->getItemType())
+        {
+            case ProjectItemType::PROJECT:
+                qDebug() << "Selected a project";
+                break;
+            case ProjectItemType::ASSET_DEFINITION:
+                qDebug() << "Selected an asset definition";
+                break;
+            case ProjectItemType::SCENE:
+                qDebug() << "Selected a scene";
+                break;
+            case ProjectItemType::SCENE_OBJECT:
+                qDebug() << "Selected a scene object";
+                break;
+            case ProjectItemType::TREE_NODE:
+                qDebug() << "Selected a tree node";
+                break;
+        }
+    }
 }

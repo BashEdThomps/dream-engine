@@ -21,11 +21,8 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    DreamEngine<SDLAudioComponent,SDLWindowComponent> *engine;
-    engine = new Dream::DreamEngine<
-            SDLAudioComponent,
-            SDLWindowComponent
-    >();
+    DreamEngine *engine;
+    engine = new Dream::DreamEngine(new SDLAudioComponent(), new SDLWindowComponent());
     LuaEngine lua;
 
     if (DEBUG)
