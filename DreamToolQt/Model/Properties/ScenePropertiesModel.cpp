@@ -1,5 +1,5 @@
 /*
- * ScenePropertiesListModel.h
+ * ScenePropertiesListModel.cpp
  *
  * Created: 17 2017 by Ashley
  *
@@ -15,15 +15,34 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SCENEPROPERTIESLISTMODEL_H
-#define SCENEPROPERTIESLISTMODEL_H
+#include "ScenePropertiesModel.h"
 
-#include "PropertiesListModel.h"
-
-class ScenePropertiesListModel : public PropertiesListModel
+ScenePropertiesModel::
+ScenePropertiesModel(Dream::Scene *scene, QObject* parent)
+    : PropertiesModel(parent)
 {
-public:
-    ScenePropertiesListModel();
-};
+    mScene = scene;
+    createRoot();
+    createProperties();
+}
 
-#endif // SCENEPROPERTIESLISTMODEL_H
+void ScenePropertiesModel
+::createRoot()
+{
+    QList<QVariant> rootData;
+    rootData << QString::fromStdString(mScene->getName())
+             << QString::fromStdString(mScene->getUuid());
+    mRootItem = new PropertiesItem(rootData,mScene);
+}
+
+void ScenePropertiesModel
+::createProperties()
+{
+
+}
+
+ScenePropertiesModel::
+~ScenePropertiesModel()
+{
+    delete mRootItem;
+}

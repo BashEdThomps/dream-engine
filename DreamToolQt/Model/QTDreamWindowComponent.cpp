@@ -16,11 +16,11 @@
  * this file belongs to.
  */
 #include "QTDreamWindowComponent.h"
+#include <QDebug>
 
-QTDreamWindowComponent::QTDreamWindowComponent(QOpenGLWidget *glWidget)
-    : IWindowComponent()
+QTDreamWindowComponent::QTDreamWindowComponent(QWidget* parent)
+    : IWindowComponent(), QOpenGLWidget(parent)
 {
-    mOpenGLWidget = glWidget;
 
 }
 
@@ -31,7 +31,7 @@ QTDreamWindowComponent::~QTDreamWindowComponent()
 
 bool QTDreamWindowComponent::init()
 {
-    return false;
+    return true;
 }
 
 void QTDreamWindowComponent::update(Dream::Scene*)
@@ -52,4 +52,21 @@ void QTDreamWindowComponent::swapBuffers()
 void QTDreamWindowComponent::exposeLuaApi(lua_State* state)
 {
 
+}
+
+void QTDreamWindowComponent::initializeGL()
+{
+    qDebug() << "QTDreamWindowComponent: initialiseGL() Called";
+}
+
+void QTDreamWindowComponent::resizeGL(int w, int h)
+{
+    qDebug() << "QTDreamWindowComponent: resizeGL() Called";
+    setWidth(w);
+    setHeight(h);
+}
+
+void QTDreamWindowComponent::paintGL()
+{
+    qDebug() << "QTDreamWindowComponent: paintGL() Called";
 }

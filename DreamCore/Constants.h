@@ -18,6 +18,13 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <iostream>
+#include <map>
+#include <vector>
+
+
+using namespace std;
+
 extern bool DEBUG;
 extern bool VERBOSE;
 
@@ -50,17 +57,9 @@ void dreamSetVerbose(bool verbose);
 // Asset =======================================================================
     #define ASSET_UUID "uuid"
     #define ASSET_NAME "name"
+
     #define ASSET_TYPE "type"
-    #define ASSET_FORMAT "format"
     #define ASSET_DIR "assets"
-    #define ASSET_DIR_ANIMATION "animation"
-    #define ASSET_DIR_AUDIO "audio"
-    #define ASSET_DIR_MODEL "model"
-    #define ASSET_DIR_SCRIPT "script"
-    #define ASSET_DIR_SHADER "shader"
-    #define ASSET_DIR_SPRITE "sprite"
-    #define ASSET_DIR_FONT "font"
-    #define ASSET_DIR_PHYSICS_OBJECT "physicsObject"
     #define ASSET_TYPE_ANIMATION "animation"
     #define ASSET_TYPE_AUDIO "audio"
     #define ASSET_TYPE_LIGHT "light"
@@ -70,14 +69,36 @@ void dreamSetVerbose(bool verbose);
     #define ASSET_TYPE_SCRIPT "script"
     #define ASSET_TYPE_SHADER "shader"
     #define ASSET_TYPE_SPRITE "sprite"
-    #define ASSET_DEF_FORMAT_SCRIPT_LUA "lua"
-    #define ASSET_DEF_FORMAT_MODEL_ASSIMP "assimp"
-    #define ASSET_DEF_FORMAT_AUDIO_MUSIC "music"
-    #define ASSET_DEF_FORMAT_AUDIO_SFX "sfx"
-    #define ASSET_DEF_FORMAT_ANIMATION_DREAM "dream"
+
+    #define ASSET_FORMAT "format"
+    #define ASSET_FORMAT_SCRIPT_LUA "lua"
+    #define ASSET_FORMAT_MODEL_ASSIMP "assimp"
+    #define ASSET_FORMAT_AUDIO_MUSIC "music"
+    #define ASSET_FORMAT_AUDIO_SFX "sfx"
+    #define ASSET_FORMAT_ANIMATION_DREAM "dream"
+    #define ASSET_FORMAT_FONT_TTF "ttf"
+    #define ASSET_FORMAT_SHADER_GLSL "glsl"
+    #define ASSET_FORMAT_LIGHT_POINT "point"
+    #define ASSET_FORMAT_SPRITE_IMAGE "image"
+
     #define ASSET_ATTR_X "x"
     #define ASSET_ATTR_Y "y"
     #define ASSET_ATTR_Z "z"
+
+enum AssetType {
+    ANIMATION,
+    AUDIO,
+    FONT,
+    LIGHT,
+    MODEL,
+    PHYSICS_OBJECT,
+    SCRIPT,
+    SHADER,
+    SPRITE
+};
+
+extern map<AssetType,string> DREAM_ASSET_TYPES_MAP;
+extern map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
 
 // Scene =======================================================================
     #define SCENE_JSON_UUID "uuid"
@@ -133,7 +154,6 @@ void dreamSetVerbose(bool verbose);
     #define FONT_BLUE   "b"
 
 // Animation ===================================================================
-    #define ASSET_FORMAT_DREAM_ANIMATION "dream"
     #define ASSET_ATTR_KEYFRAMES     "keyframes"
     #define ASSET_ATTR_WRAP          "wrap"
     #define ASSET_ATTR_TRANSLATION   "translation"

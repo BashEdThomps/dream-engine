@@ -1,5 +1,5 @@
 /*
- * PropertiesListModel.cpp
+ * ScenePropertiesModel.h
  *
  * Created: 17 2017 by Ashley
  *
@@ -15,9 +15,22 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "PropertiesListModel.h"
 
-PropertiesListModel::PropertiesListModel()
+#ifndef SCENEPROPERTIESMODEL_H
+#define SCENEPROPERTIESMODEL_H
+
+#include "PropertiesModel.h"
+#include <DreamCore.h>
+
+class ScenePropertiesModel : public PropertiesModel
 {
+public:
+    ScenePropertiesModel(Dream::Scene *scene, QObject* parent = 0);
+    ~ScenePropertiesModel();
+    void createRoot();
+    void createProperties();
+private:
+    Dream::Scene *mScene;
+};
 
-}
+#endif // SCENEPROPERTIESMODEL_H

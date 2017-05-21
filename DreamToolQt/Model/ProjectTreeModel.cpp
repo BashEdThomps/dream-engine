@@ -24,9 +24,8 @@ ProjectTreeModel::ProjectTreeModel(Dream::Project *project, QObject *parent)
 {
     mProject = project;
     QList<QVariant> rootData;
-    rootData << QString::fromStdString(project->getName())
-             ;//<< QString::fromStdString(project->getUuid());
-    mRootItem = new ProjectTreeItem(rootData,ProjectItemType::PROJECT);
+    rootData << QString::fromStdString(project->getName());
+    mRootItem = new ProjectTreeItem(rootData,ProjectItemType::PROJECT,nullptr);
     setupModelData(mRootItem);
 }
 
@@ -38,18 +37,26 @@ ProjectTreeModel::~ProjectTreeModel()
 int ProjectTreeModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
+    {
         return static_cast<ProjectTreeItem*>(parent.internalPointer())->columnCount();
+    }
     else
+    {
         return mRootItem->columnCount();
+    }
 }
 
 QVariant ProjectTreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
+    {
         return QVariant();
+    }
 
     if (role != Qt::DisplayRole)
+    {
         return QVariant();
+    }
 
     ProjectTreeItem *item = static_cast<ProjectTreeItem*>(index.internalPointer());
 
@@ -59,8 +66,9 @@ QVariant ProjectTreeModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags ProjectTreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
+    {
         return 0;
-
+    }
     return QAbstractItemModel::flags(index);
 }
 
@@ -68,41 +76,56 @@ QVariant ProjectTreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    {
         return mRootItem->data(section);
-
+    }
     return QVariant();
 }
 
-QModelIndex ProjectTreeModel::index(int row, int column, const QModelIndex &parent)
-            const
+QModelIndex ProjectTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
+    {
         return QModelIndex();
+    }
 
     ProjectTreeItem *parentItem;
 
     if (!parent.isValid())
+    {
         parentItem = mRootItem;
+    }
     else
+    {
         parentItem = static_cast<ProjectTreeItem*>(parent.internalPointer());
+    }
 
     ProjectTreeItem *childItem = parentItem->child(row);
+
     if (childItem)
+    {
         return createIndex(row, column, childItem);
+    }
     else
+    {
         return QModelIndex();
+    }
 }
 
 QModelIndex ProjectTreeModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
+    {
         return QModelIndex();
+    }
 
     ProjectTreeItem *childItem = static_cast<ProjectTreeItem*>(index.internalPointer());
     ProjectTreeItem *parentItem = childItem->parentItem();
 
     if (parentItem == mRootItem)
+    {
         return QModelIndex();
+    }
 
     return createIndex(parentItem->row(), 0, parentItem);
 }
@@ -110,60 +133,73 @@ QModelIndex ProjectTreeModel::parent(const QModelIndex &index) const
 int ProjectTreeModel::rowCount(const QModelIndex &parent) const
 {
     ProjectTreeItem *parentItem;
+
     if (parent.column() > 0)
+    {
         return 0;
+    }
 
     if (!parent.isValid())
+    {
         parentItem = mRootItem;
+    }
     else
+    {
         parentItem = static_cast<ProjectTreeItem*>(parent.internalPointer());
-
+    }
     return parentItem->childCount();
 }
 
 void ProjectTreeModel::setupModelData(ProjectTreeItem *parent)
 {
     QList<QVariant> sceneNodeData;
-    sceneNodeData << QString("Scenes")
-                  ;//<< QString::number(mProject->getNumberOfScenes());
+    sceneNodeData << QString("Scenes");
 
-    ProjectTreeItem *scenesNode = new ProjectTreeItem(sceneNodeData,ProjectItemType::TREE_NODE,parent);
+    ProjectTreeItem *scenesNode = new ProjectTreeItem(sceneNodeData,ProjectItemType::TREE_NODE,nullptr,parent);
     parent->appendChild(scenesNode);
 
     for (Dream::Scene *scene : mProject->getSceneList())
     {
         QList<QVariant> nextSceneData;
-        nextSceneData << QString::fromStdString(scene->getName())
-                      ;//<< QString::fromStdString(scene->getUuid());
+        nextSceneData << QString::fromStdString(scene->getName());
 
-        ProjectTreeItem *nextScene = new ProjectTreeItem(nextSceneData,ProjectItemType::SCENE,scenesNode);
+        ProjectTreeItem *nextScene = new ProjectTreeItem(nextSceneData,ProjectItemType::SCENE,scene,scenesNode);
         scenesNode->appendChild(nextScene);
 
         // Setup SceneObjects
         Dream::SceneObject *rootSceneObject = scene->getRootSceneObject();
         QList<QVariant> rootSceneObjectData;
-        rootSceneObjectData << QString::fromStdString(rootSceneObject->getName())
-                            ;//<< QString::fromStdString(rootSceneObject->getUuid());
-        ProjectTreeItem *rootSceneObjectItem = new ProjectTreeItem(rootSceneObjectData,ProjectItemType::SCENE_OBJECT,nextScene);
+        rootSceneObjectData << QString::fromStdString(rootSceneObject->getName());
+        ProjectTreeItem *rootSceneObjectItem;
+        rootSceneObjectItem = new ProjectTreeItem(
+            rootSceneObjectData,
+            ProjectItemType::SCENE_OBJECT,
+            rootSceneObject,
+            nextScene
+        );
         nextScene->appendChild(rootSceneObjectItem);
-
         appendSceneObjects(rootSceneObject,rootSceneObjectItem);
     }
 
     QList<QVariant> assetDefinitionsNodeData;
-    assetDefinitionsNodeData << QString("Asset Definitions")
-                             ;//<< QString::number(mProject->getNumberOfAssetDefinitions());
-    ProjectTreeItem *assetDefinitionsTreeItem = new ProjectTreeItem(assetDefinitionsNodeData,ProjectItemType::TREE_NODE,parent);
+    assetDefinitionsNodeData << QString("Asset Definitions");
+    ProjectTreeItem *assetDefinitionsTreeItem = new ProjectTreeItem(
+        assetDefinitionsNodeData,
+        ProjectItemType::TREE_NODE,
+        nullptr,
+        parent
+    );
+
     parent->appendChild(assetDefinitionsTreeItem);
 
     for (Dream::AssetDefinition *definition : mProject->getAssetDefinitions())
     {
         QList<QVariant> nextDefinitionData;
-        nextDefinitionData << QString::fromStdString(definition->getName())
-                           ;//<< QString::fromStdString(definition->getType());
+        nextDefinitionData << QString::fromStdString(definition->getName());
         ProjectTreeItem *nextDefinitionTreeItem = new ProjectTreeItem(
             nextDefinitionData,
             ProjectItemType::ASSET_DEFINITION,
+            definition,
             assetDefinitionsTreeItem
         );
         assetDefinitionsTreeItem->appendChild(nextDefinitionTreeItem);
@@ -176,9 +212,13 @@ void ProjectTreeModel::appendSceneObjects(Dream::SceneObject *parentSceneObject,
     {
         // Setup Child
         QList<QVariant> sceneObjectData;
-        sceneObjectData << QString::fromStdString(sceneObject->getName())
-                        ;//<< QString::fromStdString(sceneObject->getUuid());
-        ProjectTreeItem *sceneObjectItem = new ProjectTreeItem(sceneObjectData,ProjectItemType::SCENE_OBJECT,parentTreeNode);
+        sceneObjectData << QString::fromStdString(sceneObject->getName());
+        ProjectTreeItem *sceneObjectItem = new ProjectTreeItem(
+            sceneObjectData,
+            ProjectItemType::SCENE_OBJECT,
+            sceneObject,
+            parentTreeNode
+        );
         appendSceneObjects(sceneObject,sceneObjectItem);
         parentTreeNode->appendChild(sceneObjectItem);
     }

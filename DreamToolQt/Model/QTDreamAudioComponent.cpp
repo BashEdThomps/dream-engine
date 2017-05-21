@@ -34,7 +34,7 @@ void QTDreamAudioComponent::exposeLuaApi(lua_State*)
 }
 bool QTDreamAudioComponent::init()
 {
-    return false;
+    return true;
 }
 void QTDreamAudioComponent::update(Dream::Scene*)
 {

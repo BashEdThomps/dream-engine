@@ -21,9 +21,10 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    DreamEngine *engine;
-    engine = new Dream::DreamEngine(new SDLAudioComponent(), new SDLWindowComponent());
-    LuaEngine lua;
+    DreamEngine *engine = new Dream::DreamEngine(
+                new SDLAudioComponent(),
+                new SDLWindowComponent()
+                );
 
     if (DEBUG)
     {
@@ -55,37 +56,11 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    lua.init();
-
     int result = 0;
-    while (result == 0)
-    {
-        lua.setLuaScriptMap(engine->getLuaScriptMap());
 
-        if (!lua.createAllScripts())
-        {
-            cerr << "Main: While loading lua scripts" << endl;
-            break;
-        }
+    // Run the engine
+    while((result = engine->heartbeat()) == 0);
 
-        //lua.setSDL_Events(engine->getSDL_Events());
-
-        if (!lua.update())
-        {
-            cerr << "Main: LuaComponentInstance update error!" << endl;
-            result = 1;
-            break;
-        }
-
-        if(!engine->update())
-        {
-            if (DEBUG)
-            {
-                cout << "Main: Dream Exited Cleanly" << endl;
-            }
-            result = 1;
-            break;
-        }
-    }
+    // Return the result
     return result;
 }

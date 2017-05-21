@@ -19,8 +19,9 @@
 #include "DreamEngine.h"
 
 namespace Dream {
-    DreamEngine::
-    DreamEngine(IAudioComponent* audioComponent, IWindowComponent* windowComponent)
+
+    DreamEngine::DreamEngine
+    (IAudioComponent* audioComponent, IWindowComponent* windowComponent)
         : ILuaExposable()
     {
         dreamSetVerbose(true);
@@ -42,8 +43,9 @@ namespace Dream {
     }
 
 
-    DreamEngine::
-    ~DreamEngine()
+
+    DreamEngine::~DreamEngine
+    ()
     {
         if (DEBUG)
         {
@@ -56,89 +58,102 @@ namespace Dream {
         }
     }
 
-    void DreamEngine::
-    setWindowComponent(IWindowComponent* wc)
+    void
+    DreamEngine::setWindowComponent
+    (IWindowComponent* wc)
     {
         mWindowComponent = wc;
     }
 
-    IWindowComponent* DreamEngine::
-    getWindowComponent()
+    IWindowComponent*
+    DreamEngine::getWindowComponent
+    ()
     {
         return mWindowComponent;
     }
 
 
-    Project* DreamEngine::
+    Project*
+    DreamEngine::
     getProject()
     {
         return mProject;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setCamera(Camera* camera)
     {
         mCamera = camera;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setAudioComponent(IAudioComponent* audioComp)
     {
         mAudioComponent = audioComp;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setAnimationComponent(AnimationComponent* animComp)
     {
         mAnimationComponent = animComp;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setPhysicsComponent(PhysicsComponent* physicsComp)
     {
         mPhysicsComponent = physicsComp;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setGraphicsComponent(GraphicsComponent* graphicsComp)
     {
         mGraphicsComponent = graphicsComp;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setDone(bool done)
     {
         mDone = done;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setTime(Time* time)
     {
         mTime = time;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setProject(Project* project)
     {
         mProject = project;
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     isProjectLoaded()
     {
         return mProject != nullptr;
     }
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     loadProjectFromFileReader(string projectPath, FileReader* reader)
     {
         if (DEBUG)
@@ -161,7 +176,8 @@ namespace Dream {
         return isProjectLoaded();
     }
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     loadFromDirectory(string directory)
     {
         DIR *dir;
@@ -225,7 +241,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     loadFromArgumentParser(ArgumentParser *parser)
     {
         if (VERBOSE)
@@ -241,7 +258,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     loadSceneByUuid(string uuid)
     {
         Scene* scene = mProject->getSceneByUuid(uuid);
@@ -249,7 +267,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     loadScene(Scene* scene)
     {
         // Check valid
@@ -274,14 +293,18 @@ namespace Dream {
         return true;
     }
 
-    Scene* DreamEngine::
+    Scene*
+
+    DreamEngine::
     getActiveScene()
     {
         return mActiveScene;
     }
 
 
-    bool DreamEngine::
+    bool
+
+    DreamEngine::
     initEngine()
     {
         // Init Components
@@ -298,15 +321,23 @@ namespace Dream {
             return false;
         }
 
+        if (!initLuaEngine())
+        {
+            cerr << "DreamEngine: Error initialising lua engine" << endl;
+            return false;
+        }
+
         if (DEBUG)
         {
             cout << "Dream:Info:Starting Startup Scene " << getActiveScene()->getNameAndUuidString() << endl;
         }
+
         return true;
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     update()
     {
         if (VERBOSE)
@@ -347,14 +378,16 @@ namespace Dream {
 
 
 
-    Time* DreamEngine::
+    Time*
+    DreamEngine::
     getTime()
     {
         return mTime;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     destroyComponents()
     {
         if (mAnimationComponent != nullptr)
@@ -388,12 +421,13 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     initComponents()
     {
         if (DEBUG)
         {
-            cout << "Dream: Creating Components..." << endl;
+            cout << "DreamEngine: Creating Components..." << endl;
         }
 
         setTime(new Time());
@@ -432,7 +466,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     initWindowComponent()
     {
         mWindowComponent->setWidth(mProject->getWindowWidth());
@@ -449,7 +484,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     initAudioComponent()
     {
         if (!mAudioComponent->init())
@@ -461,7 +497,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     initPhysicsComponent()
     {
         mPhysicsComponent = new PhysicsComponent();
@@ -475,7 +512,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     initGraphicsComponent()
     {
         setCamera(new Camera());
@@ -496,7 +534,8 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     initAnimationComponent()
     {
         mAnimationComponent = new AnimationComponent();
@@ -513,77 +552,79 @@ namespace Dream {
     }
 
 
-    bool DreamEngine::
+    bool
+    DreamEngine::
     isDone()
     {
         return mDone;
     }
 
-
-    AnimationComponent* DreamEngine::
+    AnimationComponent*
+    DreamEngine::
     getAnimationComponent()
     {
         return mAnimationComponent;
     }
 
 
-    IAudioComponent* DreamEngine::
+    IAudioComponent*
+    DreamEngine::
     getAudioComponent()
     {
         return mAudioComponent;
     }
 
 
-    PhysicsComponent* DreamEngine::
+    PhysicsComponent*
+    DreamEngine::
     getPhysicsComponent()
     {
         return mPhysicsComponent;
     }
 
 
-    GraphicsComponent* DreamEngine::
+    GraphicsComponent*
+    DreamEngine::
     getGraphicsComponent()
     {
         return mGraphicsComponent;
     }
 
 
-    Camera* DreamEngine::
+    Camera*
+    DreamEngine::
     getCamera()
     {
         return mCamera;
     }
 
 
-    map<SceneObject*,LuaScriptInstance*>* DreamEngine::
-    getLuaScriptMap()
-    {
-        return mActiveScene->getLuaScriptMap();
-    }
-
-
-    GameController* DreamEngine::
+    GameController*
+    DreamEngine::
     getGameController()
     {
         return mGameController;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setGameController(GameController *gc)
     {
         mGameController = gc;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     setActiveScene(Scene *scene)
     {
         mActiveScene = scene;
     }
 
 
-    void DreamEngine::
+    void
+    DreamEngine::
     exposeLuaApi(lua_State* state)
     {
         luabind::module(state) [
@@ -603,4 +644,39 @@ namespace Dream {
                 ];
     }
 
+
+    int DreamEngine::heartbeat()
+    {
+        // Sync the script map from the current scene
+        mLuaEngine->setLuaScriptMap(mActiveScene->getLuaScriptMap());
+        // Create all script instances
+        if (!mLuaEngine->createAllScripts())
+        {
+            cerr << "DreamEngine: While loading lua scripts" << endl;
+            return 1;
+        }
+        // Call onUpdate on all lua scripts
+        if (!mLuaEngine->update())
+        {
+            cerr << "DreamEngine: LuaComponentInstance update error!" << endl;
+            return 1;
+        }
+
+        // Update the state of the engine
+        if(!update())
+        {
+            if (DEBUG)
+            {
+                cout << "DreamEngine: DreamEngine heartbeat() exited Cleanly" << endl;
+            }
+            return 0;
+        }
+        return 0;
+    }
+
+    bool DreamEngine::initLuaEngine()
+    {
+        mLuaEngine = new LuaEngine();
+        return mLuaEngine->init();
+    }
 }

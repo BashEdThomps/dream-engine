@@ -18,11 +18,12 @@
 #include "ProjectTreeItem.h"
 #include <QStringList>
 
-ProjectTreeItem::ProjectTreeItem(const QList<QVariant> &data, ProjectItemType type, ProjectTreeItem *parent)
+ProjectTreeItem::ProjectTreeItem(const QList<QVariant> &data, ProjectItemType type, void* item, ProjectTreeItem *parent)
 {
     mType = type;
     mParentItem = parent;
     mItemData = data;
+    mItem = item;
 }
 
 ProjectTreeItem::~ProjectTreeItem()
@@ -71,4 +72,9 @@ int ProjectTreeItem::row() const
 ProjectItemType ProjectTreeItem::getItemType()
 {
    return mType;
+}
+
+void* ProjectTreeItem::getItem()
+{
+    return mItem;
 }

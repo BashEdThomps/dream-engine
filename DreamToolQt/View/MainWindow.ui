@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>679</height>
+    <width>1287</width>
+    <height>836</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +35,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QOpenGLWidget" name="openGLWidget"/>
+     <widget class="QTDreamWindowComponent" name="openGLWidget"/>
     </item>
    </layout>
   </widget>
@@ -45,6 +48,9 @@
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
    </property>
    <property name="movable">
     <bool>false</bool>
@@ -68,6 +74,7 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionSettings"/>
+   <addaction name="actionReload"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -75,7 +82,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>864</width>
+     <width>1287</width>
      <height>22</height>
     </rect>
    </property>
@@ -146,13 +153,13 @@
     <string>Save Project</string>
    </property>
   </action>
-  <action name="actionRun">
+  <action name="actionReload">
    <property name="icon">
     <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/images/view-refresh.png</normaloff>:/images/view-refresh.png</iconset>
    </property>
    <property name="text">
-    <string>Run</string>
+    <string>Reload</string>
    </property>
    <property name="toolTip">
     <string>Run Project</string>
@@ -169,6 +176,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QTDreamWindowComponent</class>
+   <extends>QOpenGLWidget</extends>
+   <header>Model/QTDreamWindowComponent.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../Resources/Resources.qrc"/>
  </resources>

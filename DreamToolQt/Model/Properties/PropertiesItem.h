@@ -1,7 +1,7 @@
 /*
- * ProjectTreeItem.h
+ * PropertiesItem.h
  *
- * Created: 15 2017 by Ashley
+ * Created: 18 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,44 +15,36 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROJECTTREEITEM_H
-#define PROJECTTREEITEM_H
+
+#ifndef PROPERTIESITEM_H
+#define PROPERTIESITEM_H
 
 #include <QList>
 #include <QVariant>
 
-enum ProjectItemType
-{
-    PROJECT,
-    ASSET_DEFINITION,
-    SCENE,
-    SCENE_OBJECT,
-    TREE_NODE
-};
-
-
-class ProjectTreeItem
+class PropertiesItem
 {
 public:
-    explicit ProjectTreeItem(const QList<QVariant> &data, ProjectItemType type, void* item, ProjectTreeItem *parentItem = 0);
-    ~ProjectTreeItem();
-
-    void appendChild(ProjectTreeItem *child);
-    ProjectTreeItem *child(int row);
+    PropertiesItem(const QList<QVariant> &data, void* item, PropertiesItem *parent =0);
+    ~PropertiesItem();
+    void appendChild(PropertiesItem *child);
+    PropertiesItem *child(int row);
     int childCount() const;
     int columnCount() const;
     QVariant data(int column) const;
     int row() const;
-    ProjectTreeItem *parentItem();
-    ProjectItemType getItemType();
-    void* getItem();
+    PropertiesItem *parentItem();
+    bool insertChildren(int position, int count, int columns);
+    bool insertColumns(int position, int columns);
+    bool removeChildren(int position, int count);
+    bool removeColumns(int position, int columns);
+    int childNumber() const;
+    bool setData(int column, const QVariant &value);
 private:
-    QList<ProjectTreeItem*> mChildItems;
+    QList<PropertiesItem*> mChildItems;
     QList<QVariant> mItemData;
-    ProjectTreeItem *mParentItem;
-    ProjectItemType mType;
-    std::string mUuid;
-    void* mItem;
+    PropertiesItem *mParentItem;
+    void           *mItem;
 };
 
-#endif // PROJECTTREEITEM_H
+#endif // PROPERTIESITEM_H

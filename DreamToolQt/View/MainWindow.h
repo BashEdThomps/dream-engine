@@ -24,7 +24,7 @@
 #include <QStringListModel>
 #include <QTreeView>
 #include <QAction>
-#include <QOpenGLWidget>
+#include "../Model/QTDreamWindowComponent.h"
 
 namespace Ui {
     class MainWindow;
@@ -36,13 +36,18 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QTreeView* getProjectTreeView();
     Ui::MainWindow *ui;
+
+    QTreeView* getProjectTreeView();
+    QTreeView* getPropertiesTreeView();
 
     QAction* getActionNew();
     QAction* getActionSave();
     QAction* getActionOpen();
-    QOpenGLWidget* getOpenGLWidget();
+    QAction* getActionReload();
+
+    QTDreamWindowComponent* getOpenGLWidget();
+
 signals:
     void notifyActionNew(QString);
     void notifyActionOpen(QString);
@@ -50,6 +55,7 @@ signals:
 
 public slots:
     void onInvalidProjectDirectory(QString directory);
+    void onNoSceneSelected();
     void showStatusBarMessage(QString msg);
 };
 

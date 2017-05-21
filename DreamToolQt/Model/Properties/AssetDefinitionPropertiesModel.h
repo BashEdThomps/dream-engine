@@ -1,5 +1,5 @@
 /*
- * ProjectPropertiesListModel.h
+ * AssetDefinitionPropertiesModel.h
  *
  * Created: 17 2017 by Ashley
  *
@@ -15,15 +15,21 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROJECTPROPERTIESLISTMODEL_H
-#define PROJECTPROPERTIESLISTMODEL_H
+#ifndef ASSETDEFINITIONPROPERTIESMODEL_H
+#define ASSETDEFINITIONPROPERTIESMODEL_H
 
-#include "PropertiesListModel.h"
+#include "PropertiesModel.h"
+#include <DreamCore.h>
 
-class ProjectPropertiesListModel : public PropertiesListModel
+class AssetDefinitionPropertiesModel : public PropertiesModel
 {
 public:
-    ProjectPropertiesListModel();
+    AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QObject *parent = 0);
+    ~AssetDefinitionPropertiesModel();
+    void createRoot();
+    void createProperties();
+private:
+    Dream::AssetDefinition* mAssetDefinition;
 };
 
-#endif // PROJECTPROPERTIESLISTMODEL_H
+#endif // ASSETDEFINITIONPROPERTIESMODEL_H

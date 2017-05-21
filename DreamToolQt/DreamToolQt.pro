@@ -24,18 +24,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        View/MainWindow.cpp \
+    View/MainWindow.cpp \
     Controller/MainController.cpp \
     Model/DreamModel.cpp \
     Model/QTDreamAudioComponent.cpp \
     Model/QTDreamWindowComponent.cpp \
     Model/ProjectTreeItem.cpp \
     Model/ProjectTreeModel.cpp \
-    Model/PropertiesListModel.cpp \
-    Model/ProjectPropertiesListModel.cpp \
-    Model/AssetDefinitionPropertiesListModel.cpp \
-    Model/ScenePropertiesListModel.cpp \
-    Model/SceneObjectPropertiesListModel.cpp
+    Model/Properties/PropertiesModel.cpp \
+    Model/Properties/ScenePropertiesModel.cpp \
+    Model/Properties/SceneObjectPropertiesModel.cpp \
+    Model/Properties/ProjectPropertiesModel.cpp \
+    Model/Properties/AssetDefinitionPropertiesModel.cpp \
+    Model/Properties/PropertiesItem.cpp \
+    Model/Properties/AssetDefinitionTypeComboDelegate.cpp
 
 HEADERS  += View/MainWindow.h \
     Controller/MainController.h \
@@ -44,11 +46,13 @@ HEADERS  += View/MainWindow.h \
     Model/QTDreamWindowComponent.h \
     Model/ProjectTreeItem.h \
     Model/ProjectTreeModel.h \
-    Model/PropertiesListModel.h \
-    Model/ProjectPropertiesListModel.h \
-    Model/AssetDefinitionPropertiesListModel.h \
-    Model/ScenePropertiesListModel.h \
-    Model/SceneObjectPropertiesListModel.h
+    Model/Properties/PropertiesModel.h \
+    Model/Properties/AssetDefinitionPropertiesModel.h \
+    Model/Properties/ProjectPropertiesModel.h \
+    Model/Properties/SceneObjectPropertiesModel.h \
+    Model/Properties/ScenePropertiesModel.h \
+    Model/Properties/PropertiesItem.h \
+    Model/Properties/AssetDefinitionTypeComboDelegate.h
 
 FORMS    += View/MainWindow.ui
 

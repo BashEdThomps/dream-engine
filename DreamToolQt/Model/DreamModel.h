@@ -43,12 +43,22 @@ public:
     void setProjectStartupSceneByName(string scene);
     void setProjectWindowWidth(int width);
     void setProjectWindowHeight(int height);
+    bool reloadProject(Dream::Scene* scene);
+    Dream::AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
+    Dream::Scene *getSceneByUuid(std::string uuid);
+    Dream::SceneObject* getSceneObjectByUuid(std::string uuid);
+
+    Dream::Scene *getSelectedScene();
+    void setSelectedScene(Dream::Scene* selectedScene);
+
+    int heartbeatDream();
 signals:
 
 public slots:
 
 private:
     Dream::DreamEngine* mDreamEngine;
+    Dream::Scene* mSelectedScene;
 };
 
 #endif // DREAMMODEL_H

@@ -54,9 +54,23 @@ void MainWindow::onInvalidProjectDirectory(QString directory)
     );
 }
 
+void MainWindow::onNoSceneSelected()
+{
+    QMessageBox::critical(
+        this,
+        tr("No Scene Selected"),
+        tr("Please select a Scene to run from the Project Browser.")
+    );
+}
+
 QTreeView* MainWindow::getProjectTreeView()
 {
-   return ui->treeView;
+   return ui->projectTreeView;
+}
+
+QTreeView* MainWindow::getPropertiesTreeView()
+{
+    return ui->propertiesTreeView;
 }
 
 void MainWindow::showStatusBarMessage(QString msg)
@@ -64,8 +78,12 @@ void MainWindow::showStatusBarMessage(QString msg)
    ui->statusBar->showMessage(msg);
 }
 
+QAction* MainWindow::getActionReload()
+{
+    return ui->actionReload;
+}
 
-QOpenGLWidget* MainWindow::getOpenGLWidget()
+QTDreamWindowComponent* MainWindow::getOpenGLWidget()
 {
    return ui->openGLWidget;
 }

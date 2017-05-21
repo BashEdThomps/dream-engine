@@ -1,7 +1,7 @@
 /*
- * Log.cpp
+ * ProjectPropertiesModel.h
  *
- * Created: 05/04/2017 2017 by Ashley
+ * Created: 17 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,24 +15,21 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#ifndef PROJECTPROPERTIESMODEL_H
+#define PROJECTPROPERTIESMODEL_H
 
-#include "Constants.h"
-#include <iostream>
+#include "PropertiesModel.h"
+#include <DreamCore.h>
 
-using namespace std;
+class ProjectPropertiesModel : public PropertiesModel
+{
+public:
+    ProjectPropertiesModel(Dream::Project *project, QObject* parent = 0);
+    ~ProjectPropertiesModel();
+    void createRoot();
+    void createProperties();
+private:
+    Dream::Project *mProject;
+};
 
-bool DEBUG(true);
-bool VERBOSE(false);
-
-void dreamSetDebug(bool debug) {
-  cout << "===== DEBUG: " << (debug? "Enabled" : "Disabled") << " =====" << endl;
-  DEBUG = debug;
-}
-
-void dreamSetVerbose(bool verbose) {
-  cout << "===== VERBOSE: " << (verbose? "Enabled" : "Disabled") << " =====" << endl;
-  VERBOSE = verbose;
-  if (VERBOSE) {
-      dreamSetDebug(true);
-  }
-}
+#endif // PROJECTPROPERTIESMODEL_H

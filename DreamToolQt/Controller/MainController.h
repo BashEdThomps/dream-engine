@@ -45,17 +45,22 @@ signals:
     void notifyProjectSceneListChanged(QStringListModel *model);
     void notifyProjectWidgetsEnabledChanged(bool enabled);
     void notifyStatusBarProjectLoaded(QString);
+    void notifyNoSceneSelected();
+
 public slots:
-    void onNewProjectButtonClicked();
-    void onOpenProjectButtonClicked();
-    void onSaveProjectButtonClicked();
+    void onProjectNewButtonClicked();
+    void onProjectOpenButtonClicked();
+    void onProjectSaveButtonClicked();
+    void onProjectReloadButtonClicke();
+
     void onProjectNameChanged(QString name);
     void onProjectAuthorChanged(QString author);
     void onProjectDescriptionChanged(QString desc);
     void onProjectWindowWidthChanged(QString width);
     void onProjectWindowHeightChanged(QString height);
     void onProjectStartupSceneChanged(QString startupScene);
-    void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
+    void onProjectTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
+
 private: // Variables
     MainWindow *mMainWindow;
     QTDreamWindowComponent *mWindowComponent;
@@ -66,6 +71,7 @@ private: // Variables
     QStringListModel *mSceneListModel;
     ProjectTreeModel *mProjectTreeModel;
 private: // Methods
+    void setupPropertiesTreeViewModel(ProjectTreeItem *item);
     void createConnections();
     void updateWindowTitle(QString msg);
     void connectTreeViewModel();

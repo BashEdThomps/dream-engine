@@ -1,5 +1,5 @@
 /*
- * AssetDefinitionPropertiesListModel.h
+ * SceneObjectPropertiesModel.h
  *
  * Created: 17 2017 by Ashley
  *
@@ -15,15 +15,23 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ASSETDEFINITIONPROPERTIESLISTMODEL_H
-#define ASSETDEFINITIONPROPERTIESLISTMODEL_H
+#ifndef SCENEOBJECTPROPERTIESMODEL_H
+#define SCENEOBJECTPROPERTIESMODEL_H
 
-#include "PropertiesListModel.h"
+#include "PropertiesModel.h"
+#include <DreamCore.h>
 
-class AssetDefinitionPropertiesListModel : public PropertiesListModel
+class SceneObjectPropertiesModel : public PropertiesModel
 {
 public:
-    AssetDefinitionPropertiesListModel();
+    SceneObjectPropertiesModel(Dream::SceneObject *sceneObject,QObject* parent = 0);
+    ~SceneObjectPropertiesModel();
+
+    void createRoot();
+    void createProperties();
+
+private:
+    Dream::SceneObject *mSceneObject;
 };
 
-#endif // ASSETDEFINITIONPROPERTIESLISTMODEL_H
+#endif // SCENEOBJECTPROPERTIESMODEL_H

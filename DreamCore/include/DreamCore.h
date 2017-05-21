@@ -4,6 +4,7 @@
 #include "../ArgumentParser.h"
 #include "../Constants.h"
 #include "../DreamEngine.h"
+#include "../AssetDefinition.h"
 // Components
 #include "../Components/Audio/AudioStatus.h"
 #include "../Components/Audio/IAudioComponent.h"

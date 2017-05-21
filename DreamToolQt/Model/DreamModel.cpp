@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "DreamModel.h"
+#include <QDebug>
 
 DreamModel::DreamModel(
         QObject *parent,
@@ -24,6 +25,7 @@ DreamModel::DreamModel(
     : QObject(parent)
 {
     mDreamEngine = new Dream::DreamEngine(audioComponent,windowComponent);
+    mSelectedScene = nullptr;
 }
 
 DreamModel::~DreamModel()
@@ -96,4 +98,52 @@ void DreamModel::setProjectWindowWidth(int width)
 void DreamModel::setProjectWindowHeight(int height)
 {
     mDreamEngine->getProject()->setWindowHeight(height);
+}
+
+Dream::AssetDefinition* DreamModel::getAssetDefinitionByUuid(std::string uuid)
+{
+    return mDreamEngine->getProject()->getAssetDefinitionByUuid(uuid);
+}
+
+Dream::Scene* DreamModel::getSceneByUuid(std::string uuid)
+{
+    return mDreamEngine->getProject()->getSceneByUuid(uuid);
+}
+
+Dream::SceneObject* DreamModel::getSceneObjectByUuid(std::string uuid)
+{
+    // TODO - Thinking...
+    return nullptr;
+}
+
+bool DreamModel::reloadProject(Dream::Scene* scene)
+{
+    bool initResult = mDreamEngine->initComponents();
+    if (!initResult)
+    {
+        qDebug() << "DreamModel: Error initialising dream components";
+        return false;
+    }
+    bool loadResult = mDreamEngine->loadScene(scene);
+    if (!loadResult)
+    {
+        qDebug() << "DreamModel: Error initialising dream Project";
+        return false;
+    }
+    return true;
+}
+
+int DreamModel::heartbeatDream()
+{
+    return mDreamEngine->heartbeat();
+}
+
+Dream::Scene *DreamModel::getSelectedScene()
+{
+   return mSelectedScene;
+}
+
+void DreamModel::setSelectedScene(Dream::Scene* selectedScene)
+{
+   mSelectedScene = selectedScene;
 }

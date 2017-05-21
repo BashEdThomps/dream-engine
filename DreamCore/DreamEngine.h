@@ -23,12 +23,14 @@
 #include "Components/Window/IWindowComponent.h"
 
 #include "Lua/ILuaExposable.h"
+#include "Lua/LuaEngine.h"
 
 namespace Dream
 {
     class DreamEngine : public ILuaExposable
     {
     private:
+        bool mDone;
         Time *mTime;
         Project *mProject;
         Scene *mActiveScene;
@@ -38,17 +40,21 @@ namespace Dream
         PhysicsComponent *mPhysicsComponent;
         AnimationComponent *mAnimationComponent;
         IWindowComponent *mWindowComponent;
-        bool mDone;
         GameController *mGameController;
+        LuaEngine *mLuaEngine;
     public:
         DreamEngine(IAudioComponent* audioComponent, IWindowComponent* windowComponent);
         ~DreamEngine();
+
+        int heartbeat();
+
         bool loadFromArgumentParser(ArgumentParser*);
         bool loadFromDirectory(string);
         bool initEngine();
         bool initSDL();
         bool initAssetManager();
         bool initComponents();
+        bool initLuaEngine();
 
         bool loadProjectFromFileReader(string projectPath, FileReader*);
         bool loadScene(Scene*);
@@ -92,7 +98,6 @@ namespace Dream
         IWindowComponent* getWindowComponent();
         void setWindowComponent(IWindowComponent*);
 
-        map<SceneObject*,LuaScriptInstance*>* getLuaScriptMap();
         GameController* getGameController();
 
         void setGameController(GameController*);
