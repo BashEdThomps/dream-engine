@@ -21,13 +21,15 @@
 namespace Dream
 {
 
-    ShaderInstance::ShaderInstance(AssetDefinition* definition,Transform3D* transform)
+    ShaderInstance::ShaderInstance
+    (AssetDefinition* definition,Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
         mShaderProgram = 0;
     }
 
-    ShaderInstance::~ShaderInstance()
+    ShaderInstance::~ShaderInstance
+    ()
     {
 
         if (DEBUG)
@@ -41,12 +43,16 @@ namespace Dream
     */
     }
 
-    GLuint ShaderInstance::getShaderProgram()
+    GLuint
+    ShaderInstance::getShaderProgram
+    ()
     {
         return mShaderProgram;
     }
 
-    bool ShaderInstance::load(string projectPath)
+    bool
+    ShaderInstance::load
+    (string projectPath)
     {
         mShaderProgram = ShaderCache::getShader(mDefinition->getUuid());
         if (mShaderProgram == 0)
@@ -124,13 +130,17 @@ namespace Dream
         return mLoaded;
     }
 
-    void ShaderInstance::use()
+    void
+    ShaderInstance::use
+    ()
     {
         glUseProgram(mShaderProgram);
         syncUniforms();
     }
 
-    void ShaderInstance::loadExtraAttributes(nlohmann::json jsonData)
+    void
+    ShaderInstance::loadExtraAttributes
+    (nlohmann::json jsonData)
     {
         // pass
         return;
@@ -138,12 +148,16 @@ namespace Dream
 
     // API Setters =============================================================
 
-    void ShaderInstance::syncUniforms()
+    void
+    ShaderInstance::syncUniforms
+    ()
     {
        syncUniform1f();
     }
 
-    void ShaderInstance::setUniform1f(string location, GLfloat value)
+    void
+    ShaderInstance::setUniform1f
+    (string location, GLfloat value)
     {
         map<string,GLfloat>::iterator it;
         for (it = mUniform1fMap.begin(); it != mUniform1fMap.end(); it++)
@@ -160,7 +174,9 @@ namespace Dream
     // GL Syncros ==============================================================
 
     // 1f
-    void ShaderInstance::syncUniform1f()
+    void
+    ShaderInstance::syncUniform1f
+    ()
     {
         GLint prog = getShaderProgram();
         map<string,GLfloat>::iterator it;
@@ -184,16 +200,5 @@ namespace Dream
             glUniform1f(location,val);
         }
     }
-
-    void ShaderInstance::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state) [
-                luabind::class_<ShaderInstance>("ShaderInstance")
-                .def("getUuid", &ShaderInstance::getUuid     )
-
-                .def("setUniform1f", &ShaderInstance::setUniform1f )
-                ];
-    }
-
 
 } // End of Dream

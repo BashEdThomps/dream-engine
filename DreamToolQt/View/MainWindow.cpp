@@ -59,7 +59,7 @@ void MainWindow::onNoSceneSelected()
     QMessageBox::critical(
         this,
         tr("No Scene Selected"),
-        tr("Please select a Scene to run from the Project Browser.")
+        tr("Please select a Scene to run from the Project Tree.")
     );
 }
 

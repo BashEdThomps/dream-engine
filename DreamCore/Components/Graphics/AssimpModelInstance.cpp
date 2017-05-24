@@ -23,7 +23,9 @@ namespace Dream
     map<string,const aiScene*> AssimpModelInstance::AssimpModelCache = map<string,const aiScene*>();
     ::Assimp::Importer AssimpModelInstance::mImporter;
 
-    const aiScene* AssimpModelInstance::getModelFromCache(string path)
+    const aiScene*
+    AssimpModelInstance::getModelFromCache
+    (string path)
     {
         map<string,const aiScene*>::iterator it;
         for (it=AssimpModelCache.begin();it!=AssimpModelCache.end();it++)
@@ -51,13 +53,15 @@ namespace Dream
         return scene;
     }
 
-    AssimpModelInstance::AssimpModelInstance(AssetDefinition* definition, Transform3D* transform)
+    AssimpModelInstance::AssimpModelInstance
+    (AssetDefinition* definition, Transform3D* transform)
     : IAssetInstance(definition,transform)
     {
         return;
     }
 
-    AssimpModelInstance::~AssimpModelInstance()
+    AssimpModelInstance::~AssimpModelInstance
+    ()
     {
         if (DEBUG)
         {
@@ -66,7 +70,9 @@ namespace Dream
         return;
     }
 
-    bool AssimpModelInstance::load(string projectPath)
+    bool
+    AssimpModelInstance::load
+    (string projectPath)
     {
         string path = projectPath+mDefinition->getAssetPath();
         if (DEBUG)
@@ -84,7 +90,9 @@ namespace Dream
         return mLoaded;
     }
 
-    void AssimpModelInstance::draw(ShaderInstance* shader)
+    void
+    AssimpModelInstance::draw
+    (ShaderInstance* shader)
     {
         size_t nMeshes = mMeshes.size();
         for(size_t i = 0; i < nMeshes; i++ )
@@ -93,7 +101,9 @@ namespace Dream
         }
     }
 
-    void AssimpModelInstance::processNode(aiNode* node, const aiScene* scene)
+    void
+    AssimpModelInstance::processNode
+    (aiNode* node, const aiScene* scene)
     {
         // Process all the node's meshes (if any)
         for(GLuint i = 0; i < node->mNumMeshes; i++)
@@ -108,7 +118,9 @@ namespace Dream
         }
     }
 
-    AssimpMesh AssimpModelInstance::processMesh(aiMesh* mesh, const aiScene* scene)
+    AssimpMesh
+    AssimpModelInstance::processMesh
+    (aiMesh* mesh, const aiScene* scene)
     {
         vector<Vertex>  vertices;
         vector<GLuint>  indices;
@@ -169,7 +181,9 @@ namespace Dream
         return AssimpMesh(vertices, indices, textures);
     }
 
-    vector<Texture> AssimpModelInstance::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
+    vector<Texture>
+    AssimpModelInstance::loadMaterialTextures
+    (aiMaterial* mat, aiTextureType type, string typeName)
     {
         vector<Texture> textures;
         for(GLuint i = 0; i < mat->GetTextureCount(type); i++)
@@ -182,13 +196,17 @@ namespace Dream
         return textures;
     }
 
-    bool AssimpModelInstance::checkGLError(int errorIndex)
+    bool
+    AssimpModelInstance::checkGLError
+    (int errorIndex)
     {
         GLenum errorCode = 0;
         bool wasError = false;
-        do {
+        do
+        {
             errorCode = glGetError();
-            if (errorCode!=0) {
+            if (errorCode!=0)
+            {
                 cerr << "AssimpModelInstance: Error Check " << errorIndex << ": " << endl;
                 switch (errorCode)
                 {
@@ -215,17 +233,17 @@ namespace Dream
                 cerr << "\tCode: " << errorCode << endl;
                 wasError = true;
             }
-        } while(errorCode != 0);
+        }
+        while(errorCode != 0);
         return wasError;
     }
 
-    void AssimpModelInstance::loadExtraAttributes(nlohmann::json jsonData) {}
+    void
+    AssimpModelInstance::loadExtraAttributes
+    (nlohmann::json jsonData)
+    {
 
-    void AssimpModelInstance::exposeLuaApi(lua_State* state) {
-        luabind::module(state)
-        [
-            luabind::class_<AssimpModelInstance>("AssimpModelInstance")
-            // TODO
-        ];
     }
+
+
 } // End of Dream

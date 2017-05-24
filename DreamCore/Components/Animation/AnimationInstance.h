@@ -38,7 +38,6 @@ namespace Dream {
     void step(double);
     void showStatus();
     void applyTransform(Transform3D*);
-    void exposeLuaApi(lua_State*);
   private:
     void generatePlaybackFrames();
     void addKeyFrame(KeyFrame*);

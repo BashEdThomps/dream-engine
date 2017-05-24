@@ -29,7 +29,6 @@
 #include "IAssetInstance.h"
 #include "AssetDefinition.h"
 
-#include "Lua/ILuaExposable.h"
 #include "Lua/LuaScriptInstance.h"
 
 #include "Components/Graphics/Camera.h"
@@ -47,7 +46,7 @@ namespace Dream
 {
     class IAudioComponent;
 
-    class Scene : public ILuaExposable
+    class Scene
     {
     public:
         string mUuid;
@@ -68,34 +67,41 @@ namespace Dream
     public:
         Scene(nlohmann::json, string, vector<AssetDefinition*>*, IAudioComponent* audioComponent);
         ~Scene();
+
         string getUuid();
         void setUuid(string);
-        string getNameAndUuidString();
+
         string getName();
         void setName(string);
-        void loadSceneObjects(nlohmann::json,SceneObject*);
-        void loadDefaultCameraTransform(nlohmann::json);
+
+        string getNameAndUuidString();
+
         int countChildrenOfSceneObject(SceneObject*);
+
         void setRootSceneObject(SceneObject*);
         SceneObject* getRootSceneObject();
         size_t getNumberOfSceneObjects();
+
         bool hasSceneObect(SceneObject*);
         SceneObject* getSceneObjectByName(string);
         SceneObject* getSceneObjectByUuid(string);
+
         void showStatus();
         void showScenegraph();
+
         string indent(int);
+
         void generateScenegraphVector();
         bool isScenegraphVectorEmpty();
         vector<SceneObject*> getScenegraphVector();
+
         glm::vec3 getDefaultCameraTranslation();
         glm::vec3 getDefaultCameraRotation();
+
         void setCameraMovementSpeed(float);
         float getCameraMovementSpeed();
-        void loadClearColour(nlohmann::json);
-        vector<float> getClearColour();
 
-        void loadAmbientLightColour(nlohmann::json);
+        vector<float> getClearColour();
         vector<float> getAmbientLightColour();
 
         void addToDeleteQueue(SceneObject*);
@@ -127,11 +133,15 @@ namespace Dream
 
         AssetDefinition* getAssetDefinitionByUuid(string);
 
-        void loadPhysics(nlohmann::json);
         vector<float> getGravity();
         bool getPhysicsDebug();
 
-        void exposeLuaApi(lua_State*);
+        void loadPhysicsMetadata(nlohmann::json);
+        void loadGraphicsMetadata(nlohmann::json);
+        void loadSceneObjectMetadata(nlohmann::json, SceneObject*);
+        void loadDefaultCameraTransform(nlohmann::json);
+        void loadClearColour(nlohmann::json);
+        void loadAmbientLightColour(nlohmann::json);
 
     }; // End of Scene
 

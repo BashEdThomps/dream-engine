@@ -32,10 +32,9 @@ namespace DreamSDL
     public:
         SDLAudioComponent();
         ~SDLAudioComponent();
-        bool init();
-        void update(Scene*);
-        void exposeLuaApi(lua_State*);
-        Dream::IAudioInstance* newAudioInstance(Dream::AssetDefinition*,Dream::Transform3D*);
+        bool init () override;
+        void updateComponent(Scene*) override;
+        Dream::IAudioInstance* newAudioInstance(Dream::AssetDefinition*,Dream::Transform3D*) override;
     }; // End of SDLAudioComponent
 } // End of Dream
 

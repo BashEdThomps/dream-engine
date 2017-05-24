@@ -32,10 +32,10 @@ namespace DreamSDL
         ~SDLWindowComponent();
         SDL_Window* getWindow();
         vector<SDL_Event> getSDL_Events();
-        void update(Scene*);
-        void getCurrentDimensions();
-        void swapBuffers();
-        bool init();
+        void updateComponent(Scene*) override;
+        void getCurrentDimensions() override;
+        void swapBuffers() override;
+        bool init() override;
     private:
         bool initSDL();
         bool initGL();

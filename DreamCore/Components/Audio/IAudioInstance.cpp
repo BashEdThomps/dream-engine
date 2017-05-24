@@ -19,25 +19,36 @@
 
 namespace Dream
 {
-    IAudioInstance::IAudioInstance(AssetDefinition *def, Transform3D *transform)
+    IAudioInstance::IAudioInstance
+    (AssetDefinition *def, Transform3D *transform)
         : IAssetInstance(def,transform)
     {
 
     }
 
-    IAudioInstance::~IAudioInstance() {}
+    IAudioInstance::~IAudioInstance
+    ()
+    {
 
-    void IAudioInstance::setLooping(bool looping)
+    }
+
+    void
+    IAudioInstance::setLooping
+    (bool looping)
     {
         mLooping = looping;
     }
 
-    bool IAudioInstance::isLooping()
+    bool
+    IAudioInstance::isLooping
+    ()
     {
         return mLooping;
     }
 
-    AudioStatus IAudioInstance::getStatus()
+    AudioStatus
+    IAudioInstance::getStatus
+    ()
     {
         return AudioStatus::UNKNOWN;
     }

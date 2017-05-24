@@ -18,19 +18,18 @@
 #ifndef ICOMPONENT_H
 #define ICOMPONENT_H
 
-#include "../Lua/ILuaExposable.h"
 #include "../Scene.h"
 #include "../Time.h"
 
 namespace Dream
 {
-    class IComponent : public ILuaExposable
+    class IComponent
     {
     public:
         IComponent();
         virtual ~IComponent();
         virtual bool init() = 0;
-        virtual void update(Scene*) = 0;
+        virtual void updateComponent(Scene*) = 0;
         void setTime(Time*);
     protected:
         Time* mTime;

@@ -5,14 +5,16 @@
 #include "../../Constants.h"
 #include "../../Transform3D.h"
 
-namespace Dream {
-  using namespace std;
-      class Frame {
-      private:
+namespace Dream
+{
+    using namespace std;
+    class Frame
+    {
+    private:
         vector<float> mTranslation;
         vector<float> mRotation;
         vector<float> mScale;
-      public:
+    public:
         Frame();
         ~Frame();
         void applyToTransform(Transform3D*);
@@ -23,7 +25,7 @@ namespace Dream {
         vector<float> getScale();
         void setScale(vector<float>);
         void showStatus();
-      }; // End Frame
+    }; // End Frame
 } // End of Dream
 
 #endif // FRAME_H

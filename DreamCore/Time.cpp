@@ -2,7 +2,7 @@
 
 namespace Dream
 {
-  Time::Time() : ILuaExposable()
+  Time::Time()
   {
     mCurrentTime = chrono::high_resolution_clock::now();
     mLastTime = chrono::high_resolution_clock::now();
@@ -51,15 +51,5 @@ namespace Dream
   {
     return mTimeDelta.count();
   }
-
-    void Time::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state) [
-                luabind::class_<Time>("Time")
-                .def("getCurrentTime",&Time::getCurrentTime)
-                .def("getLastTime",&Time::getLastTime)
-                .def("getTimeDelta",&Time::getTimeDelta)
-                ];
-    }
 
 } // End of Dream

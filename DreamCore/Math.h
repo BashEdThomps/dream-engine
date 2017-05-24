@@ -18,17 +18,15 @@
 #ifndef MATH_H
 #define MATH_H
 
-#include "Lua/ILuaExposable.h"
-
 namespace Dream
 {
-    class Math : public ILuaExposable
+    class Math
     {
+    public:
         Math();
         ~Math();
         float degreesToRadians(float degrees);
         float radiansToDegrees(float radians);
-        void exposeLuaApi(lua_State*);
     }; // End of Math
 } // End of Dream
 

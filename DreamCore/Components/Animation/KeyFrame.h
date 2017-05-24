@@ -6,11 +6,13 @@
 #include "../../Constants.h"
 #include "Frame.h"
 
-namespace Dream {
+namespace Dream
+{
 
   using namespace std;
 
-  class KeyFrame {
+  class KeyFrame
+  {
   private:
     long                mStartTimeMS;
     bool                mWrap;

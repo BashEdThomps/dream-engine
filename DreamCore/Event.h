@@ -22,12 +22,11 @@
 #include <iostream>
 #include <map>
 #include "Constants.h"
-#include "Lua/ILuaExposable.h"
 
 using namespace std;
 namespace Dream
 {
-    class Event : public ILuaExposable
+    class Event
     {
     private:
       map<string,string> mAttributes;
@@ -38,7 +37,6 @@ namespace Dream
       string getType();
       void setAttribute(string,string);
       string getAttribute(string);
-      void exposeLuaApi(lua_State*);
     };
 
 } // End of Dream

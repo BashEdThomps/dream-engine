@@ -19,7 +19,8 @@
 
 namespace Dream
 {
-    FontInstance::FontInstance(AssetDefinition* definition, Transform3D* transform)
+    FontInstance::FontInstance
+    (AssetDefinition* definition, Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
         mChanged = false;
@@ -29,7 +30,8 @@ namespace Dream
         loadExtraAttributes(mDefinition->getJson());
     }
 
-    FontInstance::~FontInstance()
+    FontInstance::~FontInstance
+    ()
     {
         if (DEBUG)
         {
@@ -49,7 +51,9 @@ namespace Dream
         return;
     }
 
-    bool FontInstance::load(string projectPath)
+    bool
+    FontInstance::load
+    (string projectPath)
     {
         string path = projectPath+mDefinition->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
@@ -58,11 +62,17 @@ namespace Dream
             cout << "FontInstance: Loading font from " << path << endl;
         }
         //mFont = TTF_OpenFont(path.c_str(),mSize);
-        mLoaded = false; //mFont != nullptr;
+        if (VERBOSE)
+        {
+            cout << "FontInstance: NEEDS TO BE REPLACED WITH FREETYPE" << endl;
+        }
+        mLoaded = true; //mFont != nullptr;
         return mLoaded;
     }
 
-    void FontInstance::loadExtraAttributes(nlohmann::json jsonData)
+    void
+    FontInstance::loadExtraAttributes
+    (nlohmann::json jsonData)
     {
         mSize = jsonData[FONT_SIZE];
         float red = jsonData[FONT_COLOUR][FONT_RED];
@@ -80,23 +90,32 @@ namespace Dream
         return;
     }
 
-    /* TTF_Font* */ void* FontInstance::getFont()
+    /* TTF_Font* */
+    void*
+    FontInstance::getFont
+    ()
     {
         return nullptr;//mFont;
     }
 
-    void FontInstance::setText(string text)
+    void
+    FontInstance::setText
+    (string text)
     {
         mChanged = true;
         mText = text;
     }
 
-    string FontInstance::getText()
+    string
+    FontInstance::getText
+    ()
     {
         return mText;
     }
 
-    void FontInstance::renderToTexture()
+    void
+    FontInstance::renderToTexture
+    ()
     {
         /*
 
@@ -125,41 +144,41 @@ namespace Dream
         mChanged = false;
     }
 
-    GLuint FontInstance::getTexture()
+    GLuint
+    FontInstance::getTexture
+    ()
     {
         return mTexture;
     }
 
-    int FontInstance::getWidth()
+    int
+    FontInstance::getWidth
+    ()
     {
         return 0;//mSurface->w;
     }
 
-    int FontInstance::getHeight()
+    int
+    FontInstance::getHeight
+    ()
     {
         return 0;//mSurface->h;
     }
 
-    bool FontInstance::hasChanged()
+    bool
+    FontInstance::hasChanged
+    ()
     {
         return mChanged;
     }
 
-    void FontInstance::setColour(float red, float green, float blue)
+    void
+    FontInstance::setColour
+    (float red, float green, float blue)
     {
         mColour[0] = red;
         mColour[1] = green;
         mColour[2] = blue;
         mChanged = true;
-    }
-
-    void FontInstance::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state)
-        [
-            luabind::class_<FontInstance>("FontInstance")
-            .def("setText",&FontInstance::setText)
-            .def("getText",&FontInstance::getText)
-        ];
     }
 } // End Dream

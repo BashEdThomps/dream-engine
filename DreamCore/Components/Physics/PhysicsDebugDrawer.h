@@ -12,15 +12,19 @@
 #include "../Graphics/ShaderInstance.h"
 #include "../../Constants.h"
 
-namespace Dream   {
-  struct PhysicsDebugVertex {
-    glm::vec3 Position;
-    glm::vec3 Color;
-  };
+using namespace std;
 
-    using namespace std;
+namespace Dream
+{
 
-    class PhysicsDebugDrawer : public btIDebugDraw {
+    struct PhysicsDebugVertex
+    {
+        glm::vec3 Position;
+        glm::vec3 Color;
+    };
+
+    class PhysicsDebugDrawer : public btIDebugDraw
+    {
         glm::mat4 mProjectionMatrix;
         glm::mat4 mViewMatrix;
         GLuint mShaderProgram;

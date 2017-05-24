@@ -24,7 +24,6 @@ namespace DreamSDL
       bool play();
       bool pause();
       bool stop();
-      void exposeLuaApi(lua_State*);
     }; // End of SDLAudioInstance
 } // End of Dream
 

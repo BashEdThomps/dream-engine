@@ -56,7 +56,6 @@ namespace Dream
         void draw(ShaderInstance*);
         bool checkGLError(int);
         void loadExtraAttributes(nlohmann::json);
-        void exposeLuaApi(lua_State*);
     }; // End of AssimpModelInstance
 } // End of Dream
 

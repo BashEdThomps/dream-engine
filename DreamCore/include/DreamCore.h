@@ -10,7 +10,6 @@
 #include "../Components/Audio/IAudioComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 // Lua
-#include "../Lua/ILuaExposable.h"
 #include "../Lua/LuaEngine.h"
 // Symmetry
 #endif // DREAMCORE_H

@@ -1,7 +1,7 @@
 /*
- * SdlLuaApi.h
+ * QTDreamAudioInstance.h
  *
- * Created: 12 2017 by Ashley
+ * Created: 22 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,21 +15,23 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SDLLUAAPI_H
-#define SDLLUAAPI_H
+#ifndef QTDREAMAUDIOINSTANCE_H
+#define QTDREAMAUDIOINSTANCE_H
 
 #include <DreamCore.h>
 
-using namespace Dream;
-namespace DreamSDL
+class QTDreamAudioInstance : public Dream::IAudioInstance
 {
-    class SdlLuaApi : public ILuaExposable
-    {
-    public:
-        SdlLuaApi();
-        ~SdlLuaApi();
-        void exposeLuaApi(lua_State*);
-    };
-}
+public:
+    QTDreamAudioInstance(Dream::AssetDefinition* definition, Dream::Transform3D* transform);
+    ~QTDreamAudioInstance();
+    bool play();
+    bool pause();
+    bool stop();
 
-#endif // SDLLUAAPI_H
+    bool load(string);
+    void loadExtraAttributes(nlohmann::json);
+
+};
+
+#endif // QTDREAMAUDIOINSTANCE_H

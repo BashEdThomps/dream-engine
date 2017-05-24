@@ -34,8 +34,7 @@
 namespace Dream
 {
 
-    class PhysicsComponent
-            : public IComponent
+    class PhysicsComponent : public IComponent
     {
     protected:
         PhysicsDebugDrawer *mDebugDrawer;
@@ -55,7 +54,7 @@ namespace Dream
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init();
-        void update(Scene*);
+        void updateComponent(Scene*);
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
@@ -64,7 +63,6 @@ namespace Dream
         void checkContactManifolds();
         SceneObject* getSceneObject(const btCollisionObject*);
         void drawDebug();
-        void exposeLuaApi(lua_State* state);
     };// End of PhysicsComponent
 
 } // End of Dream

@@ -17,22 +17,36 @@
  */
 #include "TextureCache.h"
 
-namespace Dream {
+namespace Dream
+{
 
     vector<Texture> TextureCache::sTextureCache = vector<Texture>();
 
-    TextureCache::TextureCache() {}
+    TextureCache::TextureCache
+    ()
+    {
 
-    vector<Texture> TextureCache::getTextureCache() {
+    }
+
+    vector<Texture>
+    TextureCache::getTextureCache
+    ()
+    {
         return sTextureCache;
     }
 
-    TextureCache::~TextureCache() {
+    TextureCache::~TextureCache
+    ()
+    {
         return;
     }
 
-    Texture TextureCache::loadTextureFromFile(const char* file_c, const char* directory_c, const char* type) {
-      if (DEBUG) {
+    Texture
+    TextureCache::loadTextureFromFile
+    (const char* file_c, const char* directory_c, const char* type)
+    {
+      if (DEBUG)
+      {
         cout << "TextureManager: Loading from dir: " << directory_c << endl;
         cout << "TextureManager:             file: " << file_c << endl;
       }
@@ -42,10 +56,13 @@ namespace Dream {
         filename = directory + '/' + filename;
 
         vector<Texture>::iterator it;
-        for (it=sTextureCache.begin(); it!=sTextureCache.end(); it++) {
+        for (it=sTextureCache.begin(); it!=sTextureCache.end(); it++)
+        {
             Texture nextTexture = (*it);
-            if (nextTexture.path == filename) {
-              if (DEBUG) {
+            if (nextTexture.path == filename)
+            {
+              if (DEBUG)
+              {
                 cout << "TextureManager: Found cached texture." << endl;
               }
               return nextTexture;

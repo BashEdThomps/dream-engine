@@ -16,15 +16,18 @@
 #include "TextureCache.h"
 #include <glm/glm.hpp>
 
-namespace Dream {
+namespace Dream
+{
 
-  SpriteInstance::SpriteInstance(AssetDefinition* definition, Transform3D* transform)
+  SpriteInstance::SpriteInstance
+  (AssetDefinition* definition, Transform3D* transform)
       : IAssetInstance(definition,transform)
   {
     loadExtraAttributes(mDefinition->getJson());
   }
 
-  SpriteInstance::~SpriteInstance()
+  SpriteInstance::~SpriteInstance
+  ()
   {
         if (DEBUG)
         {
@@ -33,7 +36,9 @@ namespace Dream {
       return;
   }
 
-  bool SpriteInstance::load(string projectPath)
+  bool
+  SpriteInstance::load
+  (string projectPath)
   {
     string path = projectPath+mDefinition->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
@@ -50,26 +55,31 @@ namespace Dream {
     return mLoaded;
   }
 
-  void SpriteInstance::loadExtraAttributes(nlohmann::json jsonData) {}
+  void
+  SpriteInstance::loadExtraAttributes
+  (nlohmann::json jsonData)
+  {
 
-  GLuint SpriteInstance::getTexture()
+  }
+
+  GLuint
+  SpriteInstance::getTexture
+  ()
   {
       return mTexture;
   }
 
-  int SpriteInstance::getWidth()
+  int
+  SpriteInstance::getWidth
+  ()
   {
     return mWidth;
   }
 
-  int SpriteInstance::getHeight()
+  int
+  SpriteInstance::getHeight
+  ()
   {
     return mHeight;
   }
-
-  void SpriteInstance::exposeLuaApi(lua_State* state)
-  {
-
-  }
-
 } // End Dream

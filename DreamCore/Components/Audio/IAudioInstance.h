@@ -26,16 +26,16 @@ namespace Dream
     class IAudioInstance : public IAssetInstance
     {
     public:
-      IAudioInstance(AssetDefinition*, Transform3D*);
-      virtual ~IAudioInstance();
-      virtual bool play() = 0;
-      virtual bool pause() = 0;
-      virtual bool stop() = 0;
-      AudioStatus getStatus();
-      void setLooping(bool);
-      bool isLooping();
+        IAudioInstance(AssetDefinition*, Transform3D*);
+        virtual ~IAudioInstance();
+        virtual bool play() = 0;
+        virtual bool pause() = 0;
+        virtual bool stop() = 0;
+        AudioStatus getStatus();
+        void setLooping(bool);
+        bool isLooping();
     protected:
-      bool mLooping;
+        bool mLooping;
     };
 }
 

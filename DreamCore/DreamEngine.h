@@ -22,12 +22,11 @@
 #include "Components/Physics/PhysicsComponent.h"
 #include "Components/Window/IWindowComponent.h"
 
-#include "Lua/ILuaExposable.h"
 #include "Lua/LuaEngine.h"
 
 namespace Dream
 {
-    class DreamEngine : public ILuaExposable
+    class DreamEngine
     {
     private:
         bool mDone;
@@ -63,7 +62,10 @@ namespace Dream
         void setProject(Project*);
         bool isProjectLoaded();
 
-        bool update();
+        bool updateLogic();
+        bool updateGraphics();
+        bool updateCleanup();
+
         void setTime(Time*);
         Time* getTime();
         void setDone(bool);

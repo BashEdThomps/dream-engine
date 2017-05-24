@@ -90,7 +90,7 @@ namespace Dream
         void addTo3DQueue(SceneObject*);
         void draw3DQueue();
         bool init(void);
-        void update(Scene*);
+        void updateComponent(Scene*);
         void drawSprite(SceneObject*);
         void drawFont(SceneObject*);
         void drawModel(SceneObject*);
@@ -103,7 +103,6 @@ namespace Dream
         glm::mat4 getProjectionMatrix();
         void setGameController(GameController* gameController);
         GameController *getGameController();
-        void exposeLuaApi(lua_State*);
     }; // End of GraphicsComponent
 } // End of Dream
 #endif // End of GRAPHICSCOMPONENT_H

@@ -20,13 +20,15 @@
 namespace Dream
 {
 
-    LuaScriptInstance::LuaScriptInstance(AssetDefinition* definition, Transform3D* transform)
+    LuaScriptInstance::LuaScriptInstance
+    (AssetDefinition* definition, Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
         return;
     }
 
-    LuaScriptInstance::~LuaScriptInstance()
+    LuaScriptInstance::~LuaScriptInstance
+    ()
     {
         if (DEBUG)
         {
@@ -34,7 +36,9 @@ namespace Dream
         }
     }
 
-    bool LuaScriptInstance::load(string projectPath)
+    bool
+    LuaScriptInstance::load
+    (string projectPath)
     {
         mAbsolutePath = projectPath+mDefinition->getAssetPath();
         if (DEBUG)
@@ -44,14 +48,12 @@ namespace Dream
         return mAbsolutePath.size() != 0;
     }
 
-    void LuaScriptInstance::update()
+    void
+    LuaScriptInstance::update
+    ()
     {
 
     }
 
-    void LuaScriptInstance::exposeLuaApi(lua_State* state)
-    {
-
-    }
 
 } // End of Dream

@@ -1,17 +1,21 @@
 #include "LightInstance.h"
 
-namespace Dream {
-    LightInstance::LightInstance(
-            AssetDefinition* definition,
-            Transform3D* transform
-            ) : IAssetInstance(definition,transform)
+namespace Dream
+{
+    LightInstance::LightInstance
+    (
+        AssetDefinition* definition,
+        Transform3D* transform
+    )
+        : IAssetInstance(definition,transform)
     {
         mColor     = glm::vec3(0.0f,0.0f,0.0f);
         mIntensity = 0.0f;
         loadExtraAttributes(definition->getJson());
     }
 
-    LightInstance::~LightInstance()
+    LightInstance::~LightInstance
+    ()
     {
         if (DEBUG)
         {
@@ -20,16 +24,21 @@ namespace Dream {
         return;
     }
 
-    bool LightInstance::load(string projectDir)
+    bool
+    LightInstance::load
+    (string projectDir)
     {
         mLoaded = true;
         return mLoaded;
     }
 
-    void LightInstance::loadExtraAttributes(nlohmann::json json)
+    void
+    LightInstance::loadExtraAttributes
+    (nlohmann::json json)
     {
         nlohmann::json jsonColor = json[ASSET_ATTR_LIGHT_COLOR];
-        if (!jsonColor.is_null()) {
+        if (!jsonColor.is_null())
+        {
             mColor.r   = static_cast<float>(jsonColor[ASSET_ATTR_LIGHT_COLOR_R]);
             mColor.g   = static_cast<float>(jsonColor[ASSET_ATTR_LIGHT_COLOR_G]);
             mColor.b   = static_cast<float>(jsonColor[ASSET_ATTR_LIGHT_COLOR_B]);
@@ -41,18 +50,18 @@ namespace Dream {
         }
     }
 
-    glm::vec3 LightInstance::getColor()
+    glm::vec3
+    LightInstance::getColor
+    ()
     {
         return mColor;
     }
 
-    float LightInstance::getIntensity()
+    float
+    LightInstance::getIntensity
+    ()
     {
         return mIntensity;
     }
 
-    void LightInstance::exposeLuaApi(lua_State* state)
-    {
-
-    }
 } // End of Dream

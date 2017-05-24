@@ -21,7 +21,6 @@
 namespace Dream
 {
     Event::Event(string sender, string type)
-        : ILuaExposable()
     {
         setAttribute(EVENT_SENDER,sender);
         setAttribute(EVENT_TYPE,type);
@@ -62,18 +61,6 @@ namespace Dream
             }
         }
         return "";
-    }
-
-    void Event::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state)
-        [
-            luabind::class_<Event>("Event")
-            .def("getSender",&Event::getSender)
-            .def("getType",&Event::getType)
-            .def("getAttribute",&Event::getAttribute)
-            .def("setAttribute",&Event::setAttribute)
-        ];
     }
 
 } // End of Dream

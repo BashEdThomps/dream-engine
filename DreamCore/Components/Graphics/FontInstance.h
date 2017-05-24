@@ -23,34 +23,33 @@
 
 namespace Dream
 {
-  class FontInstance : public IAssetInstance
-  {
-  private:
-    //SDL_Surface* mSurface;
-    int mSize;
-    //TTF_Font *mFont;
-    /*SDL_Color*/ vector<float> mColour;
-    string mText;
-    GLuint mTexture;
-    bool mChanged;
-  public:
-    FontInstance(AssetDefinition*,Transform3D*);
-    ~FontInstance();
-    bool load(string);
-    void loadExtraAttributes(nlohmann::json);
-    /* TTF_Font* */ void* getFont();
-    void setText(string);
-    string getText();
-    void setColour(float,float,float);
-    void setSize(int);
-    void renderToTexture();
-    GLuint getTexture();
-    int getWidth();
-    int getHeight();
-    bool hasChanged();
-    void exposeLuaApi(lua_State*);
+    class FontInstance : public IAssetInstance
+    {
+    private:
+        //SDL_Surface* mSurface;
+        int mSize;
+        //TTF_Font *mFont;
+        /*SDL_Color*/ vector<float> mColour;
+        string mText;
+        GLuint mTexture;
+        bool mChanged;
+    public:
+        FontInstance(AssetDefinition*,Transform3D*);
+        ~FontInstance();
+        bool load(string);
+        void loadExtraAttributes(nlohmann::json);
+        /* TTF_Font* */ void* getFont();
+        void setText(string);
+        string getText();
+        void setColour(float,float,float);
+        void setSize(int);
+        void renderToTexture();
+        GLuint getTexture();
+        int getWidth();
+        int getHeight();
+        bool hasChanged();
 
-  }; // End of FontInstance
+    }; // End of FontInstance
 } // End of Dream
 
 #endif // FONTINSTANCE_H

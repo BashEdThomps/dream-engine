@@ -1,6 +1,7 @@
 #include <iostream>
 #include <DreamCore.h>
 #include "include/DreamSDL.h"
+#include <thread>
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -59,7 +60,11 @@ int main(int argc, const char** argv)
     int result = 0;
 
     // Run the engine
-    while((result = engine->heartbeat()) == 0);
+    while(!result)
+    {
+        result = engine->heartbeat();
+        std::this_thread::yield();
+    }
 
     // Return the result
     return result;

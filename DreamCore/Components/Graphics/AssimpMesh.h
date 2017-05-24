@@ -12,8 +12,10 @@
 #include "Texture.h"
 #include "Vertex.h"
 
-namespace Dream {
-      class AssimpMesh {
+namespace Dream
+{
+      class AssimpMesh
+      {
       private:
         GLuint mVAO;
         GLuint mVBO;

@@ -25,24 +25,23 @@
 
 namespace Dream
 {
-  class SpriteInstance : public IAssetInstance
-  {
-  private:
-    int mWidth;
-    int mHeight;
-    GLuint mTexture;
-    GLenum mTextureFormat;
-  public:
-    SpriteInstance(AssetDefinition*,Transform3D*);
-    ~SpriteInstance();
-    bool load(string);
-    void loadExtraAttributes(nlohmann::json);
-    void draw();
-    GLuint getTexture();
-    int getWidth();
-    int getHeight();
-      void exposeLuaApi(lua_State*);
-  };
+    class SpriteInstance : public IAssetInstance
+    {
+    private:
+        int mWidth;
+        int mHeight;
+        GLuint mTexture;
+        GLenum mTextureFormat;
+    public:
+        SpriteInstance(AssetDefinition*,Transform3D*);
+        ~SpriteInstance();
+        bool load(string);
+        void loadExtraAttributes(nlohmann::json);
+        void draw();
+        GLuint getTexture();
+        int getWidth();
+        int getHeight();
+    };
 } // End of Dream
 
 #endif // SPRITEINSTANCE_H

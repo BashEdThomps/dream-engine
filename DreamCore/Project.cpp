@@ -1,5 +1,5 @@
 /*
-* Project
+* Dream::Project
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,33 @@
 namespace Dream
 {
 
-    Project::Project(string projectPath, nlohmann::json jsonProject, IAudioComponent *audioComponent)
-      : ILuaExposable()
+    Project::Project
+    (string projectPath, nlohmann::json jsonProject, IAudioComponent *audioComponent)
     {
         mAudioComponent = audioComponent;
         setProjectPath(projectPath);
         setMetadata(jsonProject);
         loadAssetDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
         loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
-        showStatus();
+        if (DEBUG)
+        {
+            showStatus();
+        }
     }
 
-    void Project::setMetadata(nlohmann::json jsonProject)
+    Project::~Project()
+    {
+        if (DEBUG)
+        {
+            cout << "Project: Destroying Object" << endl;
+        }
+        destroyAllScenes();
+        destroyAllAssetDefinitions();
+    }
+
+    void
+    Project::setMetadata
+    (nlohmann::json jsonProject)
     {
         if (jsonProject [PROJECT_UUID].is_null())
         {
@@ -86,124 +101,153 @@ namespace Dream
         }
     }
 
-    void Project::showStatus()
+    void
+    Project::showStatus
+    ()
     {
-        if (DEBUG)
-        {
-            cout << "Project: "  << endl;
-            cout << "         UUID: " << getUuid() << endl;
-            cout << "         Name: " << getName() << endl;
-            cout << "       Author: " << getAuthor() << endl;
-            cout << "  Description: " << getDescription() << endl;
-            cout << "Startup Scene: " << getStartupSceneUuid() << endl;
-            cout << " Window Width: " << getWindowWidth() << endl;
-            cout << "Window Height: " << getWindowHeight() << endl;
-        }
+        cout << "Project"  << endl;
+        cout << "{" << endl;
+        cout << "\tUUID: " << getUuid() << endl;
+        cout << "\tName: " << getName() << endl;
+        cout << "\tAuthor: " << getAuthor() << endl;
+        cout << "\tDescription: " << getDescription() << endl;
+        cout << "\tStartup Scene: " << getStartupSceneUuid() << endl;
+        cout << "\tWindow Width: " << getWindowWidth() << endl;
+        cout << "\tWindow Height: " << getWindowHeight() << endl;
+        cout << "}" << endl;
     }
 
-    Project::~Project()
-    {
-        if (DEBUG)
-        {
-            cout << "Project: Destroying Object" << endl;
-        }
-    }
-
-    void Project::setName(string name)
+    void
+    Project::setName
+    (string name)
     {
         mName = name;
     }
 
-    void Project::setUuid(string uuid)
+    void
+    Project::setUuid
+    (string uuid)
     {
         mUuid = uuid;
     }
 
-    string Project::getUuid()
+    string
+    Project::getUuid
+    ()
     {
         return mUuid;
     }
 
-    void Project::loadScenesFromJson(nlohmann::json jsonSceneArray)
+    void
+    Project::loadScenesFromJson
+    (nlohmann::json jsonSceneArray)
     {
         if (DEBUG)
         {
             cout << "Project: Loading Scenes from JSON Array" << endl;
         }
-        for (nlohmann::json::iterator it = jsonSceneArray.begin(); it != jsonSceneArray.end(); ++it)
+        for (nlohmann::json::iterator it = jsonSceneArray.begin();
+             it != jsonSceneArray.end(); ++it)
         {
             if (DEBUG)
             {
                 cout << "Project: Creating Scene" << endl;
             }
-            Scene *nextScene = new Scene((*it), mProjectPath, &mAssetDefinitions,mAudioComponent);
+            Scene *nextScene = new Scene(
+                (*it), mProjectPath, &mAssetDefinitions,mAudioComponent
+            );
             nextScene->showStatus();
             addScene(nextScene);
         }
     }
 
-    void Project::setStartupSceneUuid(string sceneUuid)
+    void
+    Project::setStartupSceneUuid
+    (string sceneUuid)
     {
         mStartupScene = sceneUuid;
     }
 
-    void Project::setStartupSceneName(string sceneName)
+    void
+    Project::setStartupSceneName
+    (string sceneName)
     {
         mStartupScene = getSceneByName(sceneName)->getUuid();
     }
 
-
-    string Project::getStartupSceneUuid()
+    string
+    Project::getStartupSceneUuid
+    ()
     {
         return mStartupScene;
     }
 
-    Scene* Project::getStartupScene()
+    Scene*
+    Project::getStartupScene
+    ()
     {
         return getSceneByUuid(getStartupSceneUuid());
     }
 
-    string Project::getName()
+    string
+    Project::getName
+    ()
     {
         return mName;
     }
 
-    vector<Scene*> Project::getSceneList()
+    vector<Scene*>
+    Project::getSceneList
+    ()
     {
         return mScenes;
     }
 
-    void Project::setDescription(string description)
+    void
+    Project::setDescription
+    (string description)
     {
         mDescription = description;
     }
 
-    string Project::getDescription(void)
+    string
+    Project::getDescription
+    (void)
     {
         return mDescription;
     }
 
-    void Project::setAuthor(string author)
+    void
+    Project::setAuthor
+    (string author)
     {
         mAuthor = author;
     }
 
-    string Project::getAuthor()
+    string
+    Project::getAuthor
+    ()
     {
         return mAuthor;
     }
 
-    void Project::addScene(Scene *scene)
+    void
+    Project::addScene
+    (Scene *scene)
     {
         mScenes.push_back(scene);
     }
 
-    size_t Project::getNumberOfScenes()
+    size_t
+    Project::getNumberOfScenes
+    ()
     {
         return mScenes.size();
     }
 
-    Scene* Project::getSceneByUuid(string uuid)
+    Scene*
+    Project::getSceneByUuid
+    (string uuid)
     {
         Scene* retval = nullptr;
         for(vector<Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it)
@@ -217,7 +261,9 @@ namespace Dream
         return retval;
     }
 
-    Scene* Project::getSceneByName(string name)
+    Scene*
+    Project::getSceneByName
+    (string name)
     {
         Scene* retval = nullptr;
         for(vector<Scene*>::iterator it = mScenes.begin(); it != mScenes.end(); ++it)
@@ -231,57 +277,79 @@ namespace Dream
         return retval;
     }
 
-    string Project::getProjectPath()
+    string
+    Project::getProjectPath
+    ()
     {
         return mProjectPath;
     }
 
-    void Project::setProjectPath(string dir)
+    void
+    Project::setProjectPath
+    (string dir)
     {
         mProjectPath = dir;
     }
 
-    void Project::setActiveScene(Scene* scene)
+    void
+    Project::setActiveScene
+    (Scene* scene)
     {
         mActiveScene = scene;
     }
 
-    Scene* Project::getActiveScene()
+    Scene*
+    Project::getActiveScene
+    ()
     {
         return mActiveScene;
     }
 
-    bool Project::hasActiveScene()
+    bool
+    Project::hasActiveScene
+    ()
     {
         return getActiveScene() != nullptr;
     }
 
-    int Project::getWindowWidth()
+    int
+    Project::getWindowWidth
+    ()
     {
         return mWindowWidth;
     }
 
-    void Project::setWindowWidth(int width)
+    void
+    Project::setWindowWidth
+    (int width)
     {
         mWindowWidth = width;
     }
 
-    int Project::getWindowHeight()
+    int
+    Project::getWindowHeight
+    ()
     {
         return mWindowHeight;
     }
 
-    void Project::setWindowHeight(int height)
+    void
+    Project::setWindowHeight
+    (int height)
     {
         mWindowHeight = height;
     }
 
-    void Project::addAssetDefinition(AssetDefinition* assetDefinition)
+    void
+    Project::addAssetDefinition
+    (AssetDefinition* assetDefinition)
     {
         mAssetDefinitions.push_back(assetDefinition);
     }
 
-    void Project::removeAssetDefinition(AssetDefinition* assetDef)
+    void
+    Project::removeAssetDefinition
+    (AssetDefinition* assetDef)
     {
         for (vector<AssetDefinition*>::iterator it=mAssetDefinitions.begin(); it!=mAssetDefinitions.end(); it++)
         {
@@ -289,7 +357,7 @@ namespace Dream
             {
                 if (DEBUG)
                 {
-                    cout << "Scene: Removing AssetDefinition " << (*it)->getUuid() << endl;
+                    cout << "Project: Removing AssetDefinition " << (*it)->getUuid() << endl;
                 }
                 mAssetDefinitions.erase(it);
                 break;
@@ -297,16 +365,20 @@ namespace Dream
         }
     }
 
-    size_t Project::getNumberOfAssetDefinitions()
+    size_t
+    Project::getNumberOfAssetDefinitions
+    ()
     {
         return mAssetDefinitions.size();
     }
 
-    void Project::loadAssetDefinitionsFromJson(nlohmann::json jsonAssetArray)
+    void
+    Project::loadAssetDefinitionsFromJson
+    (nlohmann::json jsonAssetArray)
     {
         if (DEBUG)
         {
-            cout << "Scene: Loading Assets from JSON Array" << endl;
+            cout << "Project: Loading Assets from JSON Array" << endl;
         }
         for (nlohmann::json::iterator it = jsonAssetArray.begin(); it != jsonAssetArray.end(); ++it)
         {
@@ -314,7 +386,9 @@ namespace Dream
         }
     }
 
-    AssetDefinition* Project::getAssetDefinitionByUuid(string uuid)
+    AssetDefinition*
+    Project::getAssetDefinitionByUuid
+    (string uuid)
     {
         AssetDefinition* retval = nullptr;
         vector<AssetDefinition*>::iterator it;
@@ -329,16 +403,25 @@ namespace Dream
         return retval;
     }
 
-    void Project::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state)
-        [
-            luabind::class_<Project>("Project")
-        ];
-    }
-
-    vector<AssetDefinition*> Project::getAssetDefinitions()
+    vector<AssetDefinition*>
+    Project::getAssetDefinitions
+    ()
     {
         return mAssetDefinitions;
     }
+
+    void
+    Project::destroyAllScenes
+    ()
+    {
+
+    }
+
+    void
+    Project::destroyAllAssetDefinitions
+    ()
+    {
+
+    }
+
 } // End of Dream

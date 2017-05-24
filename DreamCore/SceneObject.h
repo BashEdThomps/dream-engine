@@ -15,12 +15,11 @@
 #include "Components/Graphics/FontInstance.h"
 #include "Components/Physics/PhysicsObjectInstance.h"
 #include "Lua/LuaScriptInstance.h"
-#include "Lua/ILuaExposable.h"
 
 using namespace std;
 namespace Dream
 {
-  class SceneObject : public ILuaExposable
+  class SceneObject
   {
   protected:
     vector<Event*> mEventQueue;
@@ -54,6 +53,7 @@ namespace Dream
     void constructorInit();
 
     bool init();
+    void loadMetadata(nlohmann::json);
     void loadJsonAssetInstances(nlohmann::json);
     bool initAssetInstances();
 
@@ -158,7 +158,6 @@ namespace Dream
     void sendEvent(Event*);
     vector<Event*>* getEventQueue();
     void cleanupEvents();
-    void exposeLuaApi(lua_State*);
 
   }; // End of SceneObject
 

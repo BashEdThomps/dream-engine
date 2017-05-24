@@ -7,17 +7,23 @@ namespace Dream {
 
     int AnimationInstance::FramesPerSecond = 60;
 
-    void AnimationInstance::setFramesPerSecond(int fps)
+    void
+    AnimationInstance::setFramesPerSecond
+    (int fps)
     {
         FramesPerSecond = fps;
     }
 
-    int AnimationInstance::getFramesPerSecond()
+    int
+    AnimationInstance::getFramesPerSecond
+    ()
     {
         return FramesPerSecond;
     }
 
-    AnimationInstance::AnimationInstance(AssetDefinition* definition, Transform3D* transform)
+
+    AnimationInstance::AnimationInstance
+    (AssetDefinition* definition, Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
         mCurrentPlaybackFrame = 0;
@@ -25,7 +31,9 @@ namespace Dream {
         mPlaying = false;
     }
 
-    AnimationInstance::~AnimationInstance()
+
+    AnimationInstance::~AnimationInstance
+    ()
     {
         if (DEBUG)
         {
@@ -35,7 +43,9 @@ namespace Dream {
         deletePlaybackFrames();
     }
 
-    void AnimationInstance::showStatus()
+    void
+    AnimationInstance::showStatus
+    ()
     {
         if (DEBUG)
         {
@@ -44,7 +54,9 @@ namespace Dream {
         }
     }
 
-    bool AnimationInstance::load(string projectPath)
+    bool
+    AnimationInstance::load
+    (string projectPath)
     {
         mLoop = mDefinition->getJson()[ASSET_ATTR_LOOP];
         loadExtraAttributes(mDefinition->getJson());
@@ -52,12 +64,16 @@ namespace Dream {
         return mLoaded;
     }
 
-    void AnimationInstance::addKeyFrame(KeyFrame *kf)
+    void
+    AnimationInstance::addKeyFrame
+    (KeyFrame *kf)
     {
         mKeyFrames.push_back(kf);
     }
 
-    void AnimationInstance::generatePlaybackFrames()
+    void
+    AnimationInstance::generatePlaybackFrames
+    ()
     {
         if (DEBUG)
         {
@@ -108,7 +124,9 @@ namespace Dream {
         }
     }
 
-    void AnimationInstance::loadExtraAttributes(nlohmann::json jsonObj)
+    void
+    AnimationInstance::loadExtraAttributes
+    (nlohmann::json jsonObj)
     {
         showStatus();
         if (!jsonObj[ASSET_ATTR_KEYFRAMES].is_null() && jsonObj[ASSET_ATTR_KEYFRAMES].is_array())
@@ -164,7 +182,9 @@ namespace Dream {
         }
     }
 
-    void AnimationInstance::step(double deltaTime)
+    void
+    AnimationInstance::step
+    (double deltaTime)
     {
         if (mPlaying)
         {
@@ -194,7 +214,9 @@ namespace Dream {
         }
     }
 
-    void AnimationInstance::play()
+    void
+    AnimationInstance::play
+    ()
     {
         if (DEBUG)
         {
@@ -203,7 +225,9 @@ namespace Dream {
         mPlaying = true;
     }
 
-    void AnimationInstance::pause()
+    void
+    AnimationInstance::pause
+    ()
     {
         if (DEBUG)
         {
@@ -212,7 +236,9 @@ namespace Dream {
         mPlaying = false;
     }
 
-    void AnimationInstance::stop()
+    void
+    AnimationInstance::stop
+    ()
     {
         if (DEBUG)
         {
@@ -222,17 +248,22 @@ namespace Dream {
         mCurrentPlaybackFrame = 0;
     }
 
-    bool AnimationInstance::isLooping()
+    bool
+    AnimationInstance::isLooping()
     {
         return mLoop;
     }
 
-    void AnimationInstance::setLooping(bool looping)
+    void
+    AnimationInstance::setLooping
+    (bool looping)
     {
         mLoop = looping;
     }
 
-    void AnimationInstance::applyTransform(Transform3D* transform)
+    void
+    AnimationInstance::applyTransform
+    (Transform3D* transform)
     {
         if (mPlaying && mCurrentPlaybackFrame < mPlaybackFrames.size())
         {
@@ -241,7 +272,9 @@ namespace Dream {
         }
     }
 
-    void AnimationInstance::deleteKeyFrames()
+    void
+    AnimationInstance::deleteKeyFrames
+    ()
     {
         vector<KeyFrame*>::iterator it;
         for (it=mKeyFrames.begin(); it != mKeyFrames.end(); it++)
@@ -251,7 +284,9 @@ namespace Dream {
         mKeyFrames.clear();
     }
 
-    void AnimationInstance::deletePlaybackFrames()
+    void
+    AnimationInstance::deletePlaybackFrames
+    ()
     {
         vector<Frame*>::iterator it;
         for (it=mPlaybackFrames.begin(); it != mPlaybackFrames.end(); it++)
@@ -261,12 +296,4 @@ namespace Dream {
         mPlaybackFrames.clear();
     }
 
-    void AnimationInstance::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state)
-        [
-            luabind::class_<AnimationInstance>("AnimationInstance")
-            // TODO
-        ];
-    }
-} // End of Dream
+     } // End of Dream

@@ -21,7 +21,6 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "Constants.h"
-#include "Lua/ILuaExposable.h"
 
 using namespace std;
 
@@ -57,7 +56,7 @@ namespace Dream
         DPAD_RIGHT
     };
 
-    class GameController : public ILuaExposable
+    class GameController
     {
     private:
         // Left Analog
@@ -98,7 +97,6 @@ namespace Dream
       void updateControllerState(SDL_Event &e);
       int  getButtonValue(ControllerButton btn);
       int  getAxisValue(ControllerAxis axis);
-      void exposeLuaApi(lua_State*);
     };
 }
 

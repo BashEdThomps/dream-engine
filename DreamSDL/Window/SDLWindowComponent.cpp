@@ -20,12 +20,14 @@
 
 namespace DreamSDL
 {
-    SDLWindowComponent::SDLWindowComponent() : IWindowComponent()
+    SDLWindowComponent::SDLWindowComponent
+    () : IWindowComponent()
     {
 
     }
 
-    SDLWindowComponent::~SDLWindowComponent()
+    SDLWindowComponent::~SDLWindowComponent
+    ()
     {
         if (mWindow != nullptr)
         {
@@ -34,7 +36,9 @@ namespace DreamSDL
         SDL_Quit();
     }
 
-    bool SDLWindowComponent::init()
+    bool
+    SDLWindowComponent::init
+    ()
     {
         if (!initSDL())
         {
@@ -49,9 +53,12 @@ namespace DreamSDL
         return true;
     }
 
-    bool SDLWindowComponent::initSDL()
+    bool
+    SDLWindowComponent::initSDL
+    ()
     {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER ) != 0){
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER ) != 0)
+        {
           cerr << "SDL_Init Error: " << SDL_GetError() << endl;
           return false;
         }
@@ -81,7 +88,9 @@ namespace DreamSDL
         return true;
     }
 
-    bool SDLWindowComponent::initGL()
+    bool
+    SDLWindowComponent::initGL
+    ()
     {
         //Use OpenGL 3.2 core
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -109,7 +118,9 @@ namespace DreamSDL
         return mWindow;
     }
 
-    void SDLWindowComponent::update(Scene* scene)
+    void
+    SDLWindowComponent::updateComponent
+    (Scene* scene)
     {
 
         mEvents.clear();

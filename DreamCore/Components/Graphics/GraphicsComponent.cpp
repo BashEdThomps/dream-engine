@@ -126,8 +126,9 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    update(Scene* scene)
+    void
+    GraphicsComponent::updateComponent
+    (Scene* scene)
     {
         if (VERBOSE)
         {
@@ -594,10 +595,4 @@ namespace Dream
         return mGameController;
     }
 
-
-    void GraphicsComponent::
-    exposeLuaApi(lua_State* state)
-    {
-
-    }
 } // End of Dream

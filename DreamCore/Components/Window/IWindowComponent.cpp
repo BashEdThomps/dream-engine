@@ -21,8 +21,9 @@
 namespace Dream
 {
 
-    IWindowComponent
-    ::IWindowComponent() : IComponent()
+    IWindowComponent::IWindowComponent
+    ()
+        : IComponent()
     {
         setWidth(IWC_DEFAULT_SCREEN_WIDTH);
         setHeight(IWC_DEFAULT_SCREEN_HEIGHT);
@@ -30,87 +31,85 @@ namespace Dream
     }
 
 
-    IWindowComponent
-    ::~IWindowComponent()
+    IWindowComponent::~IWindowComponent
+    ()
     {
 
     }
 
 
-    void IWindowComponent
-    ::setWidth(int width)
+    void
+    IWindowComponent::setWidth
+    (int width)
     {
         mWidth = width;
     }
 
 
-    void IWindowComponent
-    ::setHeight(int height)
+    void
+    IWindowComponent::setHeight
+    (int height)
     {
         mHeight = height;
     }
 
 
-    int IWindowComponent
-    ::getWidth()
+    int
+    IWindowComponent::getWidth
+    ()
     {
         getCurrentDimensions();
         return mWidth;
     }
 
 
-    int IWindowComponent
-    ::getHeight()
+    int
+    IWindowComponent::getHeight
+    ()
     {
         getCurrentDimensions();
         return mHeight;
     }
 
 
-    void IWindowComponent
-    ::setName(string name)
+    void
+    IWindowComponent::setName
+    (string name)
     {
         mName = name;
     }
 
 
-    string IWindowComponent
-    ::getName()
+    string
+    IWindowComponent::getName
+    ()
     {
         return mName;
     }
 
 
-    void IWindowComponent
-    ::close()
+    void
+    IWindowComponent::close
+    ()
     {
         mShouldClose = true;
     }
 
 
-    bool IWindowComponent
-    ::shouldClose()
+    bool
+    IWindowComponent::shouldClose
+    ()
     {
         return mShouldClose;
     }
 
 
-    void IWindowComponent
-    ::setShouldClose(bool close)
+    void
+    IWindowComponent::setShouldClose
+    (bool close)
     {
         mShouldClose = close;
     }
 
-
-    void IWindowComponent
-    ::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state) [
-                luabind::class_<IWindowComponent>("IWindowComponent")
-                .def("getWidth",&IWindowComponent::getWidth)
-                .def("getHeight",&IWindowComponent::getHeight)
-                .def("setShouldClose",&IWindowComponent::setShouldClose)
-                ];
-    }
 
 } // End of Dream

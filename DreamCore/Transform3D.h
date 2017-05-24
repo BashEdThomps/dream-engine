@@ -22,12 +22,11 @@
 #include <LinearMath/btVector3.h>
 #include <glm/gtc/quaternion.hpp>
 #include "Constants.h"
-#include "Lua/ILuaExposable.h"
 
 using namespace std;
 namespace Dream
 {
-  class Transform3D : ILuaExposable
+  class Transform3D
   {
   private:
     glm::vec3 mTranslation;
@@ -87,7 +86,6 @@ namespace Dream
     void scaleByY(float);
     void scaleByZ(float);
 
-    void exposeLuaApi(lua_State*);
   };
 
 } // End of Dream

@@ -15,6 +15,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "View/MainWindow.h"
 #include "Controller/MainController.h"
 #include <QApplication>
@@ -25,6 +26,5 @@ int main(int argc, char *argv[])
     MainWindow mainWindow;
     MainController mainController(&mainWindow);
     mainWindow.show();
-
     return a.exec();
 }

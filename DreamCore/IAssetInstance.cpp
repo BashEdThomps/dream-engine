@@ -21,7 +21,6 @@
 namespace Dream
 {
     IAssetInstance::IAssetInstance(AssetDefinition* definition, Transform3D* transform)
-        : ILuaExposable()
     {
         mDefinition = definition;
         mTransform = transform;
@@ -72,10 +71,5 @@ namespace Dream
     void IAssetInstance::setLoadedFlag(bool loaded)
     {
         mLoaded = loaded;
-    }
-
-    void IAssetInstance::exposeLuaApi(lua_State* state)
-    {
-
     }
 } // End of Dream

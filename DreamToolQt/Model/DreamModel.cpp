@@ -20,12 +20,15 @@
 
 DreamModel::DreamModel(
         QObject *parent,
-        Dream::IAudioComponent *audioComponent,
-        Dream::IWindowComponent *windowComponent)
+        QTDreamAudioComponent *audioComponent,
+        QTDreamWindowComponent *windowComponent)
     : QObject(parent)
 {
     mDreamEngine = new Dream::DreamEngine(audioComponent,windowComponent);
+    mAudioComponent = audioComponent;
+    mWindowComponent = windowComponent;
     mSelectedScene = nullptr;
+    mHeartbeatTimer = nullptr;
 }
 
 DreamModel::~DreamModel()
@@ -110,40 +113,43 @@ Dream::Scene* DreamModel::getSceneByUuid(std::string uuid)
     return mDreamEngine->getProject()->getSceneByUuid(uuid);
 }
 
-Dream::SceneObject* DreamModel::getSceneObjectByUuid(std::string uuid)
+bool DreamModel::startScene(Dream::Scene* scene)
 {
-    // TODO - Thinking...
-    return nullptr;
-}
-
-bool DreamModel::reloadProject(Dream::Scene* scene)
-{
+    qDebug() << "DreamModel: *** Start Scene ***";
     bool initResult = mDreamEngine->initComponents();
     if (!initResult)
     {
         qDebug() << "DreamModel: Error initialising dream components";
         return false;
     }
+
     bool loadResult = mDreamEngine->loadScene(scene);
     if (!loadResult)
     {
         qDebug() << "DreamModel: Error initialising dream Project";
         return false;
     }
-    return true;
-}
 
-int DreamModel::heartbeatDream()
-{
-    return mDreamEngine->heartbeat();
+    if (mHeartbeatTimer)
+    {
+        disconnect(mHeartbeatTimer, SIGNAL(timeout()), this, SLOT(onDreamHeartbeat()));
+        delete mHeartbeatTimer;
+    }
+
+    mWindowComponent->setDreamEngine(mDreamEngine);
+    mHeartbeatTimer = new QTimer(this);
+    connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
+    mHeartbeatTimer->start(1000);
+
+    return true;
 }
 
 Dream::Scene *DreamModel::getSelectedScene()
 {
-   return mSelectedScene;
+    return mSelectedScene;
 }
 
 void DreamModel::setSelectedScene(Dream::Scene* selectedScene)
 {
-   mSelectedScene = selectedScene;
+    mSelectedScene = selectedScene;
 }

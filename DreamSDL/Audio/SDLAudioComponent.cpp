@@ -21,12 +21,15 @@
 
 namespace DreamSDL
 {
-    SDLAudioComponent::SDLAudioComponent() : Dream::IAudioComponent()
+    SDLAudioComponent::SDLAudioComponent
+    ()
+        : Dream::IAudioComponent()
     {
         // Pass
     }
 
-    SDLAudioComponent::~SDLAudioComponent()
+    SDLAudioComponent::~SDLAudioComponent
+    ()
     {
         if (DEBUG)
         {
@@ -35,7 +38,9 @@ namespace DreamSDL
         Mix_CloseAudio();
     }
 
-    bool SDLAudioComponent::init()
+    bool
+    SDLAudioComponent::init
+    ()
     {
         if (DEBUG)
         {
@@ -57,22 +62,16 @@ namespace DreamSDL
         return true;
     }
 
-    void SDLAudioComponent::update(Scene*)
+    void
+    SDLAudioComponent::updateComponent
+    (Scene*)
     {
 
     }
 
-    void SDLAudioComponent::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state)
-        [
-            luabind::class_<SDLAudioComponent>("SDLAudioComponent")
-            // TODO
-        ];
-    }
-
-    Dream::IAudioInstance* SDLAudioComponent::
-    newAudioInstance(Dream::AssetDefinition* definition, Dream::Transform3D* transform)
+    Dream::IAudioInstance*
+    SDLAudioComponent::newAudioInstance
+    (Dream::AssetDefinition* definition, Dream::Transform3D* transform)
     {
         return new SDLAudioInstance(definition,transform);
     }

@@ -33,7 +33,7 @@ namespace Dream
       virtual ~IWindowComponent();
 
       bool init() = 0;
-      void update(Scene*) = 0;
+      void updateComponent(Scene*) = 0;
       virtual void getCurrentDimensions() = 0;
       virtual void swapBuffers() = 0;
 
@@ -48,7 +48,6 @@ namespace Dream
       void close();
       bool shouldClose();
       void setShouldClose(bool);
-      void exposeLuaApi(lua_State* state);
     protected:
       int mWidth;
       int mHeight;

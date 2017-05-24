@@ -23,9 +23,9 @@
 
 
 extern "C" {
-    #include "lua.h"
-    #include "lualib.h"
-    #include "lauxlib.h"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 };
 
 #include "../Constants.h"
@@ -43,13 +43,13 @@ int errorHandler(lua_State*);
 
 namespace Dream
 {
+    class DreamEngine;
     class LuaEngine
     {
-    public:
-        LuaEngine();
-        ~LuaEngine();
+    public: // Methods
+        LuaEngine(DreamEngine* engine);
+        virtual ~LuaEngine();
         void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
-        //void setSDL_Events(vector<SDL_Event>);
         bool init();
         bool createAllScripts();
         bool loadScript(SceneObject*, LuaScriptInstance*);
@@ -59,7 +59,10 @@ namespace Dream
         bool executeScriptUpdate(SceneObject*);
         bool executeScriptKeyHandler(SceneObject*);
         bool executeScriptEventHandler(SceneObject*);
-    private:
+
+    private:// Variables
+        DreamEngine* mDreamEngine;
+
         string mScriptLoadFromFile =
                 "function scriptLoadFromFile (scriptTable, script_path)\n"
                 "    local mt = {__index = _G}\n"
@@ -78,7 +81,33 @@ namespace Dream
                 "end";
         lua_State *mState;
         map<SceneObject*, LuaScriptInstance*> *mScriptMap;
-        //vector<SDL_Event> mSDLEvents;
+
+    private: // Methods
+        // API Exposure Methods ======================================================
+        void exposeAPI();
+        void exposeAnimationComponent();
+        void exposeAnimationInstance();
+        void exposeAssimpModelInstance();
+        void exposeCamera();
+        void exposeDreamEngine();
+        void exposeEvent();
+        void exposeFontInstance();
+        void exposeGameController();
+        void exposeGraphicsComponent();
+        void exposeIAudioInstance();
+        void exposeIAssetInstance();
+        void exposeIWindowComponent();
+        void exposeLightInstance();
+        void exposeLuaScriptInstance();
+        void exposeMath();
+        void exposePhysicsComponent();
+        void exposePhysicsObjectInstance();
+        void exposeShaderInstance();
+        void exposeSpriteInstance();
+        void exposeScene();
+        void exposeSceneObject();
+        void exposeTime();
+        void exposeTransform3D();
     }; // End of LuaComponent
 } // End of Dream
 

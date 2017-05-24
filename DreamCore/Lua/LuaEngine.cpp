@@ -14,6 +14,8 @@
  * this file belongs to.
  */
 
+// TODO - Move Lua API Exposure Functions back into this class. Remove ILuaExposable rhetoric.
+
 #include "LuaEngine.h"
 
 #include <sstream>
@@ -21,11 +23,34 @@
 #include <luabind/adopt_policy.hpp>
 
 #include "LuaScriptCache.h"
+
 #include "../Math.h"
+
+#include "../Components/Animation/AnimationComponent.h"
+#include "../Components/Animation/AnimationInstance.h"
+
+#include "../Components/Audio/IAudioComponent.h"
+#include "../Components/Audio/IAudioInstance.h"
+
+#include "../Components/Graphics/AssimpModelInstance.h"
+#include "../Components/Graphics/Camera.h"
+#include "../Components/Graphics/FontInstance.h"
+#include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/LightInstance.h"
+#include "../Components/Graphics/ShaderInstance.h"
+#include "../Components/Graphics/SpriteInstance.h"
+
+#include "../Components/Physics/PhysicsComponent.h"
+#include "../Components/Physics/PhysicsObjectInstance.h"
+
+#include "../Components/Window/IWindowComponent.h"
+#include "../DreamEngine.h"
 
 using namespace std;
 
-int errorHandler(lua_State *L)
+int
+errorHandler
+(lua_State *L)
 {
     // log the error message
     luabind::object msg(luabind::from_stack( L, -1 ));
@@ -42,12 +67,15 @@ int errorHandler(lua_State *L)
 
 namespace Dream
 {
-    LuaEngine::LuaEngine()
+    LuaEngine::LuaEngine
+    (DreamEngine* engine)
     {
+        mDreamEngine = engine;
         mState = nullptr;
     }
 
-    LuaEngine::~LuaEngine()
+    LuaEngine::~LuaEngine
+    ()
     {
         if (DEBUG)
         {
@@ -60,7 +88,9 @@ namespace Dream
         }
     }
 
-    bool LuaEngine::init()
+    bool
+    LuaEngine::init
+    ()
     {
         if (DEBUG)
         {
@@ -74,6 +104,7 @@ namespace Dream
             luabind::set_pcall_callback(&errorHandler);
             luaL_dostring(mState, mScriptLoadFromFile.c_str());
             luaL_dostring(mState, mScriptLoadFromString.c_str());
+            exposeAPI();
             return true;
         }
         else
@@ -84,12 +115,15 @@ namespace Dream
         return false;
     }
 
-    bool LuaEngine::createAllScripts()
+    bool
+    LuaEngine::createAllScripts
+    ()
     {
         if (VERBOSE)
         {
             cout << "LuaEngine: CreateAllScripts Called" << endl;
         }
+
         map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
         for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++)
         {
@@ -147,16 +181,18 @@ namespace Dream
         return true;
     }
 
-    bool LuaEngine::loadScript(SceneObject* sceneObject, LuaScriptInstance* scriptInstance)
+    bool
+    LuaEngine::loadScript
+    (SceneObject* sceneObject, LuaScriptInstance* scriptInstance)
     {
         string id = sceneObject->getUuid();
         if (DEBUG)
         {
             cout << "LuaEngine: loadScript called for " << id << endl;
         }
-        luabind::object newtable = luabind::newtable(mState);
         try
         {
+            luabind::object newtable = luabind::newtable(mState);
             string path = scriptInstance->getAbsolutePath();
             string script = LuaScriptCache::getScript(path);
 
@@ -169,7 +205,7 @@ namespace Dream
             luabind::object reg = luabind::registry(mState);
             reg[id] = newtable;
         }
-        catch (luabind::error e)
+        catch (luabind::error &e)
         {
             cerr << "LuaEngine: loadScript exception:" << endl
                  << "\t" << e.what() << endl;
@@ -178,19 +214,26 @@ namespace Dream
         return true;
     }
 
-
-    void LuaEngine::setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>* scriptMap) {
+    void
+    LuaEngine::setLuaScriptMap
+    (map<SceneObject*,LuaScriptInstance*>* scriptMap)
+    {
         mScriptMap = scriptMap;
     }
 
-    void LuaEngine::stackDump() {
+    void
+    LuaEngine::stackDump
+    ()
+    {
         cerr << "LuaEngine: Stack Dump!" << endl;
         int i;
         int top = lua_gettop(mState);
         // repeat for each level
-        for (i = 1; i <= top; i++) {
+        for (i = 1; i <= top; i++)
+        {
             int t = lua_type(mState, i);
-            switch (t) {
+            switch (t)
+            {
                 // strings
                 case LUA_TSTRING:
                     cerr << lua_tostring(mState, i);
@@ -215,30 +258,47 @@ namespace Dream
         cerr << endl;
     }
 
-    bool LuaEngine::update() {
-        if (VERBOSE) {
+    bool
+    LuaEngine::update
+    ()
+    {
+        if (VERBOSE)
+        {
             cout << "LuaEngine: Update Called" << endl;
         }
+
         map<SceneObject*,LuaScriptInstance*>::iterator scriptIt;
-        for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++) {
+        for (scriptIt=mScriptMap->begin(); scriptIt != mScriptMap->end(); scriptIt++)
+        {
             SceneObject* key = scriptIt->first;
-            if (key->getDeleteFlag()) {
-                if (DEBUG) {
+            if (key->getDeleteFlag())
+            {
+                if (DEBUG)
+                {
                     cout << "LuaEngine: Skipping update on " << key->getUuid() << endl;
                 }
                 continue;
             }
+
             LuaScriptInstance *value = scriptIt->second;
-            if (!executeScriptUpdate(key)) {
+
+            if (!executeScriptUpdate(key))
+            {
                 return false;
             }
-            if (key->hasFocus()) {
-                if (!executeScriptKeyHandler(key)) {
+
+            if (key->hasFocus())
+            {
+                if (!executeScriptKeyHandler(key))
+                {
                     return false;
                 }
             }
-            if (key->hasEvents()) {
-                if (!executeScriptEventHandler(key)) {
+
+            if (key->hasEvents())
+            {
+                if (!executeScriptEventHandler(key))
+                {
                     return false;
                 }
             }
@@ -246,17 +306,24 @@ namespace Dream
         return true;
     }
 
-    bool LuaEngine::executeScriptUpdate(SceneObject* sceneObject) {
+    bool
+    LuaEngine::executeScriptUpdate
+    (SceneObject* sceneObject)
+    {
         string id = sceneObject->getUuid();
-        if (VERBOSE) {
+        if (VERBOSE)
+        {
             cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameUuidString() << endl;
         }
-        try {
+        try
+        {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[LUA_SCRIPT_ON_UPDATE_FUNCTION];
             luabind::call_function<void>(funq,sceneObject);
-        } catch (luabind::error &e) {
+        }
+        catch (luabind::error &e)
+        {
             string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onUpdate exception:" << endl << e.what() << endl;
             cerr << error << endl;
@@ -266,29 +333,41 @@ namespace Dream
         return true;
     }
 
-    bool LuaEngine::executeScriptInit(SceneObject* sceneObject) {
+    bool
+    LuaEngine::executeScriptInit
+    (SceneObject* sceneObject)
+    {
         string id = sceneObject->getUuid();
-        if (VERBOSE) {
+        if (VERBOSE)
+        {
             cout << "LuaEngine: Calling onInit for " << sceneObject->getNameUuidString() << endl << flush;
         }
-        try {
+        try
+        {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[LUA_SCRIPT_ON_INIT_FUNCTION];
             luabind::call_function<void>(funq,sceneObject);
-        } catch (luabind::error &e) {
+        }
+        catch (luabind::error &e)
+        {
             cerr << "LuaEngine: onInit exception:" << endl << e.what() << endl;
             return false;
         }
         return true;
     }
 
-    bool LuaEngine::executeScriptKeyHandler(SceneObject* sceneObject) {
+    bool
+    LuaEngine::executeScriptKeyHandler
+    (SceneObject* sceneObject)
+    {
         string id = sceneObject->getUuid();
-        if (VERBOSE) {
+        if (VERBOSE)
+        {
             cout << "LuaEngine: Calling onInput for " << sceneObject->getNameUuidString() << endl << flush;
         }
-        try {
+        try
+        {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
@@ -298,41 +377,455 @@ namespace Dream
                 luabind::call_function<void>(funq,sceneObject,next);
             }
             */
-        } catch (luabind::error &e) {
+        }
+        catch (luabind::error &e)
+        {
             cerr << "LuaEngine: onInput exception:" << endl << e.what() << endl;
             return false;
         }
         return true;
     }
 
-    bool LuaEngine::executeScriptEventHandler(SceneObject* sceneObject) {
+    bool
+    LuaEngine::executeScriptEventHandler
+    (SceneObject* sceneObject)
+    {
         string id = sceneObject->getUuid();
-        if (VERBOSE) {
+        if (VERBOSE)
+        {
             cout << "LuaEngine: Calling onEvent for " << sceneObject->getNameUuidString() << endl << flush;
         }
-        try {
+        try
+        {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[LUA_SCRIPT_ON_EVENT_FUNCTION];
             vector<Event*>* events = sceneObject->getEventQueue();
             vector<Event*>::iterator eventIt;
-            for (eventIt=events->begin();eventIt!=events->end(); eventIt++) {
+            for (eventIt=events->begin();eventIt!=events->end(); eventIt++)
+            {
                 luabind::call_function<void>(funq,sceneObject,(*eventIt));
             }
             sceneObject->cleanupEvents();
-        } catch (luabind::error &e) {
+        }
+        catch (luabind::error &e)
+        {
             cerr << "LuaEngine: onEvent exception:" << endl << e.what() << endl;
             return false;
         }
         return true;
     }
 
-    /*
-    void LuaEngine::setSDL_Events(vector<SDL_Event> events)
+    // API Exposure Methods ======================================================
+
+    void
+    LuaEngine::exposeDreamEngine
+    ()
     {
-        mSDLEvents = events;
+        luabind::module(mState)
+        [
+            luabind::class_<DreamEngine>("DreamEngine")
+                .def("getActiveScene",&DreamEngine::getActiveScene)
+                .def("getAudioComponent",&DreamEngine::getActiveScene)
+                .def("getGraphicsComponent",&DreamEngine::getActiveScene)
+                .def("getPhysicsComponent",&DreamEngine::getActiveScene)
+        ];
+        luabind::globals(mState)["DreamEngine"] = mDreamEngine;
     }
-    */
+
+    void
+    LuaEngine::exposeCamera
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<Camera>("Camera")
+                .def("processKeyboard",&Camera::processKeyboard)
+                .def("processMouseMovement",&Camera::processMouseMovement)
+                .enum_("CameraMovement")
+                [
+                luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
+                luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
+                luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
+                luabind::value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
+                ]
+                ];
+    }
+
+    void
+    LuaEngine::exposeAnimationComponent
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<AnimationComponent>("AnimationComponent")
+                // TODO
+                ];
+    }
+
+    void
+    LuaEngine::exposeAnimationInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<AnimationInstance>("AnimationInstance")
+                // TODO
+                ];
+    }
+
+    void
+    LuaEngine::exposeFontInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<FontInstance>("FontInstance")
+                .def("setText",&FontInstance::setText)
+                .def("getText",&FontInstance::getText)
+                ];
+    }
+
+    void
+    LuaEngine::exposeGraphicsComponent
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<FontInstance>("GrphicsComponent")
+                ];
+    }
+
+    void
+    LuaEngine::exposeLightInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<LightInstance>("LightInstance")
+                ];
+    }
+
+    void
+    LuaEngine::exposeShaderInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<ShaderInstance>("ShaderInstance")
+                .def("getUuid", &ShaderInstance::getUuid)
+                .def("setUniform1f", &ShaderInstance::setUniform1f)
+                ];
+    }
+
+    void
+    LuaEngine::exposeSpriteInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<SpriteInstance>("SpriteInstance")
+                ];
+    }
+
+    void
+    LuaEngine::exposePhysicsComponent
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<PhysicsComponent>("PhysicsComponent")
+                .def("setDebug",&PhysicsComponent::setDebug)
+                ];
+    }
+
+    void
+    LuaEngine::exposePhysicsObjectInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<PhysicsObjectInstance>("PhysicsObjectInstance")
+                .def("getUuid", &PhysicsObjectInstance::getUuid)
+                .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
+                ];
+    }
+
+    void
+    LuaEngine::exposeIWindowComponent
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<IWindowComponent>("IWindowComponent")
+                .def("getWidth",&IWindowComponent::getWidth)
+                .def("getHeight",&IWindowComponent::getHeight)
+                .def("setShouldClose",&IWindowComponent::setShouldClose)
+                ];
+    }
+
+    void
+    LuaEngine::exposeGameController
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<GameController>("GameController")
+                .def("getButtonValue",&GameController::getButtonValue)
+                .def("getAxisValue",&GameController::getAxisValue)
+                .enum_("ControllerButton")
+                [
+                // Face Buttons
+                luabind::value("A_BTN",ControllerButton::A),
+                luabind::value("B_BTN",ControllerButton::B),
+                luabind::value("X_BTN",ControllerButton::X),
+                luabind::value("Y_BTN",ControllerButton::Y),
+                // Shoulders
+                luabind::value("LEFT_SHOULDER",ControllerButton::LEFT_SHOULDER),
+                luabind::value("RIGHT_SHOULDER",ControllerButton::RIGHT_SHOULDER),
+                // Analog
+                luabind::value("LEFT_ANALOG_BUTTON",ControllerButton::LEFT_ANALOG),
+                luabind::value("RIGHT_ANALOG_BUTTON",ControllerButton::RIGHT_ANALOG),
+                // D-Pad
+                luabind::value("DPAD_UP",ControllerButton::DPAD_UP),
+                luabind::value("DPAD_DOWN",ControllerButton::DPAD_DOWN),
+                luabind::value("DPAD_LEFT",ControllerButton::DPAD_LEFT),
+                luabind::value("DPAD_RIGHT",ControllerButton::DPAD_RIGHT)
+                ]
+                .enum_("ControllerAxis")
+                [
+                // Left Analog
+                luabind::value("LEFT_ANALOG_X",ControllerAxis::LEFT_ANALOG_X),
+                luabind::value("LEFT_ANALOG_Y",ControllerAxis::LEFT_ANALOG_Y),
+                // Right Analog
+                luabind::value("RIGHT_ANALOG_X",ControllerAxis::RIGHT_ANALOG_X),
+                luabind::value("RIGHT_ANALOG_Y",ControllerAxis::RIGHT_ANALOG_Y),
+                // Triggers
+                luabind::value("LEFT_TRIGGER",ControllerAxis::LEFT_TRIGGER),
+                luabind::value("RIGHT_TRIGGER",ControllerAxis::RIGHT_TRIGGER)
+                ]
+                ];
+    }
+
+    void
+    LuaEngine::exposeMath
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<Math>("Math")
+                .def("degreesToRadians",&Math::degreesToRadians)
+                .def("radiansToDegrees",&Math::radiansToDegrees)
+                ];
+    }
+
+    void
+    LuaEngine::exposeScene
+    ()
+    {
+        luabind::module(mState) [
+                luabind::class_<Scene>("Scene")
+                .def("getCameraMovementSpeed",&Scene::getCameraMovementSpeed)
+                .def("setCameraMovementSpeed",&Scene::setCameraMovementSpeed)
+                .def("getSceneObjectByUuid",&Scene::getSceneObjectByUuid)
+                .def("getSceneObjectByName",&Scene::getSceneObjectByName)
+                ];
+    }
+
+    void
+    LuaEngine::exposeSceneObject
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<SceneObject>("SceneObject")
+                .def(luabind::constructor<>())
+                .def("getUuid",&SceneObject::getUuid)
+                .def("setUuid",&SceneObject::setUuid)
+                .def("getName",&SceneObject::getName)
+                .def("setName",&SceneObject::setName)
+                .def("showStatus",&SceneObject::showStatus)
+                .def("getChildByUuid",&SceneObject::getChildByUuid)
+                .def("getTransform",&SceneObject::getTransform)
+                .def("setTransform",&SceneObject::setTransform)
+                .def("getParent",&SceneObject::getParent)
+                .def("setParent",&SceneObject::setParent)
+                .def("addChild",&SceneObject::addChild,luabind::adopt(_2))
+                .def("copyTransform",&SceneObject::copyTransform)
+                .def("addAssetDefUuidToLoad",&SceneObject::addAssetDefUuidToLoad)
+                .def("getAnimationInstance",&SceneObject::getAnimationInstance)
+                .def("setAnimationInstance",&SceneObject::setAnimationInstance)
+                .def("getAudioInstance",&SceneObject::getAudioInstance)
+                .def("setAudioInstance",&SceneObject::setAudioInstance)
+                .def("getSpriteInstance",&SceneObject::getSpriteInstance)
+                .def("setSpriteInstance",&SceneObject::setSpriteInstance)
+                .def("getModelInstance",&SceneObject::getModelInstance)
+                .def("setModelInstance",&SceneObject::setModelInstance)
+                .def("getShaderInstance",&SceneObject::getShaderInstance)
+                .def("setShaderInstance",&SceneObject::setShaderInstance)
+                .def("getLightInstance",&SceneObject::getLightInstance)
+                .def("setLightInstance",&SceneObject::setLightInstance)
+                .def("getFontInstance",&SceneObject::getFontInstance)
+                .def("setFontInstance",&SceneObject::setFontInstance)
+                .def("getPhysicsObjectInstance",&SceneObject::getPhysicsObjectInstance)
+                .def("setPhysicsObjectInstance",&SceneObject::setPhysicsObjectInstance)
+                .def("getDeleteFlag",&SceneObject::getDeleteFlag)
+                .def("setDeleteFlag",&SceneObject::setDeleteFlag)
+                ];
+    }
+
+    void
+    LuaEngine::exposeTransform3D
+    ()
+    {
+        luabind::module(mState) [
+                luabind::class_<Transform3D>("Transform3D")
+                .def(luabind::constructor<>())
+                // Translation ===========================================================
+                .def("getTransformType",&Transform3D::getTransformType)
+                .def("getTranslationX",&Transform3D::getTranslationX)
+                .def("getTranslationY",&Transform3D::getTranslationY)
+                .def("getTranslationZ",&Transform3D::getTranslationZ)
+                .def("setTranslationX",&Transform3D::setTranslationX)
+                .def("setTranslationY",&Transform3D::setTranslationY)
+                .def("setTranslationZ",&Transform3D::setTranslationZ)
+                .def("translateByX",&Transform3D::translateByX)
+                .def("translateByY",&Transform3D::translateByY)
+                .def("translateByZ",&Transform3D::translateByZ)
+                .def("setTranslation",
+                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation)
+                     )
+                // Rotation =============================================================
+                .def("getRotationX",&Transform3D::getRotationX)
+                .def("getRotationY",&Transform3D::getRotationY)
+                .def("getRotationZ",&Transform3D::getRotationZ)
+                .def("setRotationX",&Transform3D::setRotationX)
+                .def("setRotationY",&Transform3D::setRotationY)
+                .def("setRotationZ",&Transform3D::setRotationZ)
+                .def("rotateByX",&Transform3D::rotateByX)
+                .def("rotateByY",&Transform3D::rotateByY)
+                .def("rotateByZ",&Transform3D::rotateByZ)
+                .def("setRotation",
+                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation)
+                     )
+                // Scale ================================================================
+                .def("getScaleX",&Transform3D::getScaleX)
+                .def("getScaleY",&Transform3D::getScaleY)
+                .def("getScaleZ",&Transform3D::getScaleZ)
+                .def("setScaleX",&Transform3D::setScaleX)
+                .def("setScaleY",&Transform3D::setScaleY)
+                .def("setScaleZ",&Transform3D::setScaleZ)
+                .def("scaleByX",&Transform3D::scaleByX)
+                .def("scaleByY",&Transform3D::scaleByY)
+                .def("scaleByZ",&Transform3D::scaleByZ)
+                .def("setScale",
+                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale)
+                     )
+                ];
+    }
+
+    void
+    LuaEngine::exposeTime
+    ()
+    {
+        luabind::module(mState) [
+                luabind::class_<Time>("Time")
+                .def("getCurrentTime",&Time::getCurrentTime)
+                .def("getLastTime",&Time::getLastTime)
+                .def("getTimeDelta",&Time::getTimeDelta)
+                ];
+    }
+
+    void
+    LuaEngine::exposeAssimpModelInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<AssimpModelInstance>("AssimpModelInstance")
+                // TODO
+                ];
+    }
+
+    void
+    LuaEngine::exposeEvent
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<Event>("Event")
+                .def("getSender",&Event::getSender)
+                .def("getType",&Event::getType)
+                .def("getAttribute",&Event::getAttribute)
+                .def("setAttribute",&Event::setAttribute)
+                ];
+    }
+
+    void
+    LuaEngine::exposeIAssetInstance
+    ()
+    {
+        luabind::module(mState)
+                [
+                luabind::class_<IAssetInstance>("IAssetInstance")
+                ];
+    }
+
+    void
+    LuaEngine::exposeLuaScriptInstance
+    ()
+    {
+
+    }
+
+    void
+    LuaEngine::exposeIAudioInstance
+    ()
+    {
+        luabind::module(mState) [
+                luabind::class_<IAudioInstance>("IAudioInstance")
+                .def("play",&IAudioInstance::play)
+                .def("pause",&IAudioInstance::pause)
+                .def("stop",&IAudioInstance::stop)
+                .def("getStatus",&IAudioInstance::getStatus),
+
+                luabind::class_<AudioStatus>("AudioStatus")
+                .enum_("AudioStatus") [
+                luabind::value("PLAYING", AudioStatus::PLAYING),
+                luabind::value("PAUSED",  AudioStatus::PAUSED),
+                luabind::value("STOPPED", AudioStatus::STOPPED)
+                ]
+                ];
+    }
+
+    void
+    LuaEngine::exposeAPI
+    ()
+    {
+        exposeAnimationComponent();
+        exposeAnimationInstance();
+        exposeAssimpModelInstance();
+        exposeCamera();
+        exposeDreamEngine();
+        exposeEvent();
+        exposeFontInstance();
+        exposeGameController();
+        exposeGraphicsComponent();
+        exposeIAssetInstance();
+        exposeIAudioInstance();
+        exposeIWindowComponent();
+        exposeLightInstance();
+        exposeLuaScriptInstance();
+        exposeMath();
+        exposePhysicsComponent();
+        exposePhysicsObjectInstance();
+        exposeScene();
+        exposeSceneObject();
+        exposeShaderInstance();
+        exposeSpriteInstance();
+        exposeTime();
+        exposeTransform3D();
+    }
 
 } // End of Dream
 

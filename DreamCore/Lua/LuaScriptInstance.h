@@ -33,7 +33,6 @@ namespace Dream
         bool load(string);
         void update();
         void loadExtraAttributes(nlohmann::json) {}
-        void exposeLuaApi(lua_State*);
       }; // End of LuaScriptInstance
 } // End of Dream
 #endif // End of LUASCRIPT_H

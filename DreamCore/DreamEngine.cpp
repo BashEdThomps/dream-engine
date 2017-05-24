@@ -22,7 +22,6 @@ namespace Dream {
 
     DreamEngine::DreamEngine
     (IAudioComponent* audioComponent, IWindowComponent* windowComponent)
-        : ILuaExposable()
     {
         dreamSetVerbose(true);
         if (DEBUG)
@@ -167,11 +166,13 @@ namespace Dream {
             return false;
         }
         json projectJson = json::parse(projectJsonStr);
+        /*
         if (VERBOSE)
         {
             cout << "DreamEngine: Read Project..." << endl
                  << projectJson.dump(2) << endl;
         }
+        */
         setProject(new Project(projectPath, projectJson, mAudioComponent));
         return isProjectLoaded();
     }
@@ -235,7 +236,7 @@ namespace Dream {
 
         FileReader *projectFileReader = new FileReader(projectFilePath);
         projectFileReader->readIntoStringStream();
-        bool loadSuccess = loadProjectFromFileReader(projectFilePath, projectFileReader);
+        bool loadSuccess = loadProjectFromFileReader(directory, projectFileReader);
         delete projectFileReader;
         return loadSuccess;
     }
@@ -336,35 +337,70 @@ namespace Dream {
     }
 
 
-    bool
-    DreamEngine::
-    update()
+    bool DreamEngine::updateLogic()
     {
         if (VERBOSE)
         {
-            cout << "==== DreamEngine: Update Called ====" << endl;
+            cout << "==== DreamEngine: UpdateLogic Called ====" << endl;
         }
+
         // Update Time
         mTime->update();
+
+        // Sync the script map from the current scene
+        mLuaEngine->setLuaScriptMap(mActiveScene->getLuaScriptMap());
+
+        // Create all script instances
+        if (!mLuaEngine->createAllScripts())
+        {
+            cerr << "DreamEngine: While loading lua scripts" << endl;
+            return 1;
+        }
+
+        // Call onUpdate on all lua scripts
+        if (!mLuaEngine->update())
+        {
+            cerr << "DreamEngine: LuaComponentInstance update error!" << endl;
+            return 1;
+        }
+
         // Update Window
-        mWindowComponent->update(mActiveScene);
+        mWindowComponent->updateComponent(mActiveScene);
         // Create new Assets
         mActiveScene->createAllAssetInstances();
-        // Update Components
-        mGraphicsComponent->update(mActiveScene);
-        // Draw 3D
-        mGraphicsComponent->draw3DQueue();
+        return !mDone;
+    }
+
+    bool DreamEngine::updateGraphics()
+    {
+        if (VERBOSE)
+        {
+            cout << "==== DreamEngine: UpdateGraphics Called ====" << endl;
+        }
+        // Update Graphics/Physics Components
+        mGraphicsComponent->updateComponent(mActiveScene);
         mPhysicsComponent->setViewProjectionMatrix(
                     mGraphicsComponent->getViewMatrix(),
                     mGraphicsComponent->getProjectionMatrix()
                     );
-        mPhysicsComponent->update(mActiveScene);
+        // Draw 3D/PhysicsDebug/2D
+        mGraphicsComponent->draw3DQueue();
+        mPhysicsComponent->updateComponent(mActiveScene);
         mPhysicsComponent->drawDebug();
-        // Draw 2D
         mGraphicsComponent->draw2DQueue();
+
         mWindowComponent->swapBuffers();
         // Update state
         mDone = mWindowComponent->shouldClose();
+        return !mDone;
+    }
+
+    bool DreamEngine::updateCleanup()
+    {
+        if (VERBOSE)
+        {
+            cout << "==== DreamEngine: UpdateCleanup Called ====" << endl;
+        }
         // Cleanup Old
         mActiveScene->findDeletedSceneObjects();
         mActiveScene->findDeletedScripts();
@@ -372,11 +408,8 @@ namespace Dream {
         mActiveScene->clearDeleteQueue();
         mActiveScene->generateScenegraphVector();
         // Chill
-        this_thread::yield();
         return !mDone;
     }
-
-
 
     Time*
     DreamEngine::
@@ -623,60 +656,18 @@ namespace Dream {
     }
 
 
-    void
-    DreamEngine::
-    exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state) [
-                luabind::class_<DreamEngine>("DreamEngine")
-                .def("getActiveScene",&DreamEngine::getActiveScene)
-                .def("getTime",&DreamEngine::getTime)
-                .def("loadSceneByUuid",&DreamEngine::loadSceneByUuid)
-                .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
-                .def("getPhysicsComponent",&DreamEngine::getPhysicsComponent)
-                .def("getCamera",&DreamEngine::getCamera)
-                .def("getGameController",&DreamEngine::getGameController)
-                .scope
-                [
-                luabind::def("setDebug",&dreamSetDebug),
-                luabind::def("setVerbose",&dreamSetVerbose)
-                ]
-                ];
-    }
-
-
     int DreamEngine::heartbeat()
     {
-        // Sync the script map from the current scene
-        mLuaEngine->setLuaScriptMap(mActiveScene->getLuaScriptMap());
-        // Create all script instances
-        if (!mLuaEngine->createAllScripts())
-        {
-            cerr << "DreamEngine: While loading lua scripts" << endl;
-            return 1;
-        }
-        // Call onUpdate on all lua scripts
-        if (!mLuaEngine->update())
-        {
-            cerr << "DreamEngine: LuaComponentInstance update error!" << endl;
-            return 1;
-        }
-
-        // Update the state of the engine
-        if(!update())
-        {
-            if (DEBUG)
-            {
-                cout << "DreamEngine: DreamEngine heartbeat() exited Cleanly" << endl;
-            }
-            return 0;
-        }
+        updateLogic();
+        updateGraphics();
+        updateCleanup();
         return 0;
     }
 
     bool DreamEngine::initLuaEngine()
     {
-        mLuaEngine = new LuaEngine();
+        mLuaEngine = new LuaEngine(this);
         return mLuaEngine->init();
     }
+
 }

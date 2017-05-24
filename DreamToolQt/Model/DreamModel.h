@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <DreamCore.h>
+#include <QTimer>
 
 #include "QTDreamAudioComponent.h"
 #include "QTDreamWindowComponent.h"
@@ -29,8 +30,8 @@ class DreamModel : public QObject
     Q_OBJECT
 public:
     explicit DreamModel(QObject *parent = 0,
-                        Dream::IAudioComponent *audioComponent = 0,
-                        Dream::IWindowComponent *windowComponent = 0);
+                        QTDreamAudioComponent *audioComponent = 0,
+                        QTDreamWindowComponent *windowComponent = 0);
     ~DreamModel();
     bool loadProject(QString path);
     Dream::Project* getProject();
@@ -43,22 +44,23 @@ public:
     void setProjectStartupSceneByName(string scene);
     void setProjectWindowWidth(int width);
     void setProjectWindowHeight(int height);
-    bool reloadProject(Dream::Scene* scene);
+
+    bool startScene(Dream::Scene* scene);
+
     Dream::AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
     Dream::Scene *getSceneByUuid(std::string uuid);
-    Dream::SceneObject* getSceneObjectByUuid(std::string uuid);
 
     Dream::Scene *getSelectedScene();
     void setSelectedScene(Dream::Scene* selectedScene);
 
-    int heartbeatDream();
-signals:
-
-public slots:
-
 private:
     Dream::DreamEngine* mDreamEngine;
     Dream::Scene* mSelectedScene;
+
+    QTDreamAudioComponent *mAudioComponent;
+    QTDreamWindowComponent *mWindowComponent;
+
+    QTimer* mHeartbeatTimer;
 };
 
 #endif // DREAMMODEL_H

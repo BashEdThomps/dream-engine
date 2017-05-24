@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     Model/Properties/ProjectPropertiesModel.cpp \
     Model/Properties/AssetDefinitionPropertiesModel.cpp \
     Model/Properties/PropertiesItem.cpp \
-    Model/Properties/AssetDefinitionTypeComboDelegate.cpp
+    Model/Properties/AssetDefinitionTypeComboDelegate.cpp \
+    Model/QTDreamAudioInstance.cpp
 
 HEADERS  += View/MainWindow.h \
     Controller/MainController.h \
@@ -52,7 +53,8 @@ HEADERS  += View/MainWindow.h \
     Model/Properties/SceneObjectPropertiesModel.h \
     Model/Properties/ScenePropertiesModel.h \
     Model/Properties/PropertiesItem.h \
-    Model/Properties/AssetDefinitionTypeComboDelegate.h
+    Model/Properties/AssetDefinitionTypeComboDelegate.h \
+    Model/QTDreamAudioInstance.h
 
 FORMS    += View/MainWindow.ui
 
@@ -62,7 +64,7 @@ RESOURCES += \
 ICON = Resources/icons/DreamTool.icns
 
 macx: LIBS += \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Release/DreamCore/ \
+    -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/DreamCore/ \
     -L/usr/local/lib \
     -L/opt/local/lib \
     -lDreamCore \

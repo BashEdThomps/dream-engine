@@ -25,9 +25,10 @@
 #include <LinearMath/btMatrix3x3.h>
 #include <LinearMath/btQuaternion.h>
 
-namespace Dream {
-
-    class PhysicsMotionState : public btMotionState {
+namespace Dream
+{
+    class PhysicsMotionState : public btMotionState
+    {
     protected:
         Transform3D* mDreamTransform;
     public:
@@ -37,8 +38,7 @@ namespace Dream {
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);
         void setKinematicPos(btTransform&);
-    };// End of PhysicsMotionState
-
+    }; // End of PhysicsMotionState
 } // End of Dream
 
 #endif // PHYSICSMOTIONSTATE_H

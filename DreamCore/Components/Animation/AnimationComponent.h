@@ -34,13 +34,12 @@ namespace Dream
         AnimationComponent();
         ~AnimationComponent();
         bool init();
-        void update(Scene*);
+        void updateComponent(Scene*);
         void play (AnimationInstance*);
         void pause(AnimationInstance*);
         void stop (AnimationInstance*);
         bool isLooping(AnimationInstance*);
         void setLooping(AnimationInstance*,bool);
-        void exposeLuaApi(lua_State*);
     }; // End of AnimationComponent
 } // End of Dream
 

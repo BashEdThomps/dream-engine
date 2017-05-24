@@ -21,7 +21,6 @@
 #define ZOOM       45.0f
 
 #include "../../Constants.h"
-#include "../../Lua/ILuaExposable.h"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -33,7 +32,7 @@ using namespace std;
 
 namespace Dream
 {
-    class Camera : public ILuaExposable
+    class Camera
     {
     private:
         // Camera Attributes
@@ -75,7 +74,6 @@ namespace Dream
         void  setMouseSensitivity(float);
         float getMouseSensitivity();
         float getZoom();
-        void exposeLuaApi(lua_State*);
     private:
         float radians(float);
 

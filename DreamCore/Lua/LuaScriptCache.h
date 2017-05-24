@@ -23,7 +23,8 @@
 
 using namespace std;
 
-namespace Dream {
+namespace Dream
+{
     class LuaScriptCache
     {
     public:

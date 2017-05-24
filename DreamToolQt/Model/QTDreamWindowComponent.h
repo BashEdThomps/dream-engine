@@ -20,22 +20,26 @@
 
 #include <GL/glew.h>
 #include <QOpenGLWidget>
+#include <QSurfaceFormat>
 #include <DreamCore.h>
 
-class QTDreamWindowComponent : public Dream::IWindowComponent, public QOpenGLWidget
+class QTDreamWindowComponent :  public QOpenGLWidget , public Dream::IWindowComponent
 {
+    Q_OBJECT
 public:
     QTDreamWindowComponent(QWidget* parent = 0);
     ~QTDreamWindowComponent();
-    bool init();
-    void update(Dream::Scene*);
-    void getCurrentDimensions();
-    void swapBuffers();
-    void exposeLuaApi(lua_State*);
+    bool init() override;
+    void updateComponent(Dream::Scene*) override;
+    void getCurrentDimensions() override;
+    void swapBuffers() override;
+    void setDreamEngine(Dream::DreamEngine* engine);
 protected:
-    void initializeGL();
-    void resizeGL(int w, int h);
-    void paintGL();
+    void initializeGL() override;
+    void resizeGL(int w, int h) override;
+    void paintGL() override;
+private: // Variables
+    Dream::DreamEngine* mDreamEngine;
 };
 
 #endif // QTDREAMWINDOWCOMPONENT_H

@@ -5,13 +5,12 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
-#include "Lua/ILuaExposable.h"
 
 using namespace std;
 
 namespace Dream
 {
-  class Time : public ILuaExposable
+  class Time
   {
   private:
     chrono::time_point<chrono::high_resolution_clock> mCurrentTime;
@@ -25,7 +24,6 @@ namespace Dream
     double getTimeDelta();
     void update();
     void show();
-    void exposeLuaApi(lua_State*);
   };
 
 } // End of Dream

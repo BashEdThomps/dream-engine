@@ -1,7 +1,7 @@
 /*
- * QTDreamAudioComponent.cpp
+ * QTDreamAudioInstance.cpp
  *
- * Created: 14 2017 by Ashley
+ * Created: 22 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,32 +15,40 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-
-#include "QTDreamAudioComponent.h"
 #include "QTDreamAudioInstance.h"
 
-QTDreamAudioComponent::QTDreamAudioComponent()
-    : IAudioComponent()
+QTDreamAudioInstance::QTDreamAudioInstance(Dream::AssetDefinition* definition, Dream::Transform3D* transform)
+    : IAudioInstance(definition,transform)
 {
 
 }
 
-QTDreamAudioComponent::~QTDreamAudioComponent()
+QTDreamAudioInstance::~QTDreamAudioInstance()
 {
 
 }
 
-bool QTDreamAudioComponent::init()
+bool QTDreamAudioInstance::play()
 {
     return true;
 }
 
-void QTDreamAudioComponent::updateComponent(Dream::Scene*)
+bool QTDreamAudioInstance::pause()
 {
-
+    return true;
 }
 
-Dream::IAudioInstance* QTDreamAudioComponent::newAudioInstance(Dream::AssetDefinition* definition, Dream::Transform3D* transform)
+bool QTDreamAudioInstance::stop()
 {
-    return new QTDreamAudioInstance(definition,transform);
+    return true;
+}
+
+bool QTDreamAudioInstance::load(string path)
+{
+    return true;
+}
+
+void QTDreamAudioInstance::loadExtraAttributes(nlohmann::json json)
+{
+
 }

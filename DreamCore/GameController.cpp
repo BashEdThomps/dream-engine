@@ -20,7 +20,6 @@
 namespace Dream
 {
     GameController::GameController()
-        : ILuaExposable()
     {
         zeroAll();
     }
@@ -216,7 +215,7 @@ namespace Dream
             case DPAD_LEFT:
                 return mDPadLeftButton;
             case DPAD_RIGHT:
-                return mDPadRightButton;
+               return mDPadRightButton;
         }
         // Error ?
         return 0;
@@ -239,45 +238,5 @@ namespace Dream
             case RIGHT_ANALOG_Y:
                 return mRightAnalogY;
         }
-    }
-
-    void GameController::exposeLuaApi(lua_State* state) {
-        luabind::module(state)
-        [
-            luabind::class_<GameController>("GameController")
-                .def("getButtonValue",&GameController::getButtonValue)
-                .def("getAxisValue",&GameController::getAxisValue)
-                .enum_("ControllerButton")
-                [
-                // Face Buttons
-                luabind::value("A_BTN",ControllerButton::A),
-                luabind::value("B_BTN",ControllerButton::B),
-                luabind::value("X_BTN",ControllerButton::X),
-                luabind::value("Y_BTN",ControllerButton::Y),
-                // Shoulders
-                luabind::value("LEFT_SHOULDER",ControllerButton::LEFT_SHOULDER),
-                luabind::value("RIGHT_SHOULDER",ControllerButton::RIGHT_SHOULDER),
-                // Analog
-                luabind::value("LEFT_ANALOG_BUTTON",ControllerButton::LEFT_ANALOG),
-                luabind::value("RIGHT_ANALOG_BUTTON",ControllerButton::RIGHT_ANALOG),
-                // D-Pad
-                luabind::value("DPAD_UP",ControllerButton::DPAD_UP),
-                luabind::value("DPAD_DOWN",ControllerButton::DPAD_DOWN),
-                luabind::value("DPAD_LEFT",ControllerButton::DPAD_LEFT),
-                luabind::value("DPAD_RIGHT",ControllerButton::DPAD_RIGHT)
-                ]
-                .enum_("ControllerAxis")
-                [
-                // Left Analog
-                luabind::value("LEFT_ANALOG_X",ControllerAxis::LEFT_ANALOG_X),
-                luabind::value("LEFT_ANALOG_Y",ControllerAxis::LEFT_ANALOG_Y),
-                // Right Analog
-                luabind::value("RIGHT_ANALOG_X",ControllerAxis::RIGHT_ANALOG_X),
-                luabind::value("RIGHT_ANALOG_Y",ControllerAxis::RIGHT_ANALOG_Y),
-                // Triggers
-                luabind::value("LEFT_TRIGGER",ControllerAxis::LEFT_TRIGGER),
-                luabind::value("RIGHT_TRIGGER",ControllerAxis::RIGHT_TRIGGER)
-            ]
-        ];
     }
 }

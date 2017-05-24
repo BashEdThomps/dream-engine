@@ -1,5 +1,5 @@
 /*
-* Project
+* Dream::Project
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 #include <unistd.h>
 #include <vector>
-#include "Lua/ILuaExposable.h"
 
 #include "Scene.h"
 #include "AssetDefinition.h"
@@ -33,8 +32,9 @@ using namespace nlohmann;
 
 namespace Dream
 {
-  class Project : public ILuaExposable
+  class Project
   {
+      // Variables
   private:
     string mUuid;
     string mName;
@@ -49,64 +49,53 @@ namespace Dream
     int mWindowHeight;
     IAudioComponent* mAudioComponent;
 
+    // Public Methods
   public:
     Project(string, nlohmann::json,IAudioComponent*);
     ~Project();
-
     void setMetadata(nlohmann::json);
     void loadScenesFromJson(nlohmann::json);
-
     void setUuid(string);
     string getUuid();
-
     void setName(string);
     string getName();
-
     void setDescription(string);
     string getDescription(void);
-
     void setAuthor(string);
     string getAuthor();
-
     void setStartupSceneUuid(string);
     void setStartupSceneName(string);
     string getStartupSceneUuid();
     Scene* getStartupScene();
-
     void addScene(Scene*);
     void removeScene(Scene*);
     size_t getNumberOfScenes();
-
     Scene* getSceneByName(string);
     Scene* getSceneByUuid(string);
     vector<Scene*> getSceneList();
-
     string getProjectPath();
     void setProjectPath(string);
-
     void showStatus();
-
     void setActiveScene(Scene*);
     Scene *getActiveScene();
     bool hasActiveScene();
-
     int getWindowWidth();
     void setWindowWidth(int);
-
     int getWindowHeight();
     void setWindowHeight(int);
-
-    void loadAssetDefinitionsFromJson(nlohmann::json);
     void addAssetDefinition(AssetDefinition*);
     void removeAssetDefinition(AssetDefinition*);
     size_t getNumberOfAssetDefinitions();
     AssetDefinition* getAssetDefinitionByUuid(string);
     vector<AssetDefinition*> getAssetDefinitions();
 
-    void exposeLuaApi(lua_State*);
+    // Private Methods
+  private:
+    void loadAssetDefinitionsFromJson(nlohmann::json);
+    void destroyAllScenes();
+    void destroyAllAssetDefinitions();
 
   }; // End of Project
-
 } // End of Dream
 
 #endif // End of PROJECT_H

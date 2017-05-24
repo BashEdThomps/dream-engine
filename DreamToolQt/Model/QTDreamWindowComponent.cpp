@@ -17,16 +17,24 @@
  */
 #include "QTDreamWindowComponent.h"
 #include <QDebug>
+#include <QPainter>
 
 QTDreamWindowComponent::QTDreamWindowComponent(QWidget* parent)
-    : IWindowComponent(), QOpenGLWidget(parent)
+    :  QOpenGLWidget(parent), IWindowComponent()
 {
-
+    mDreamEngine = nullptr;
+    return;
 }
 
 QTDreamWindowComponent::~QTDreamWindowComponent()
 {
+    return;
+}
 
+void QTDreamWindowComponent::setDreamEngine(Dream::DreamEngine* engine)
+{
+    mDreamEngine = engine;
+    return;
 }
 
 bool QTDreamWindowComponent::init()
@@ -34,39 +42,45 @@ bool QTDreamWindowComponent::init()
     return true;
 }
 
-void QTDreamWindowComponent::update(Dream::Scene*)
+void QTDreamWindowComponent::updateComponent(Dream::Scene*)
 {
-
+    return;
 }
 
 void QTDreamWindowComponent::getCurrentDimensions()
 {
-
+    return;
 }
 
 void QTDreamWindowComponent::swapBuffers()
 {
-
-}
-
-void QTDreamWindowComponent::exposeLuaApi(lua_State* state)
-{
-
+    return;
 }
 
 void QTDreamWindowComponent::initializeGL()
 {
-    qDebug() << "QTDreamWindowComponent: initialiseGL() Called";
+    return;
 }
 
 void QTDreamWindowComponent::resizeGL(int w, int h)
 {
-    qDebug() << "QTDreamWindowComponent: resizeGL() Called";
     setWidth(w);
     setHeight(h);
+    return;
 }
 
 void QTDreamWindowComponent::paintGL()
 {
     qDebug() << "QTDreamWindowComponent: paintGL() Called";
+    if (mDreamEngine)
+    {
+        mDreamEngine->updateLogic();
+        mDreamEngine->updateGraphics();
+        mDreamEngine->updateCleanup();
+    }
+    else
+    {
+       qDebug() << "QTDreamWindowComponent: mDreamEngine == nullptr" ;
+    }
+    return;
 }

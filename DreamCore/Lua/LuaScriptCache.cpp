@@ -22,7 +22,23 @@
 namespace Dream
 {
     map<string,string> LuaScriptCache::sScriptCache = map<string,string>();
-    string LuaScriptCache::getScript(string path)
+
+    LuaScriptCache::LuaScriptCache
+    ()
+    {
+
+    }
+
+    LuaScriptCache::~LuaScriptCache(
+            )
+    {
+
+    }
+
+
+    string
+    LuaScriptCache::getScript
+    (string path)
     {
       map<string,string>::iterator it;
       for (it=sScriptCache.begin();it!=sScriptCache.end();it++)
@@ -39,7 +55,9 @@ namespace Dream
       return readIntoCache(path);
     }
 
-    string LuaScriptCache::readIntoCache(string path)
+    string
+    LuaScriptCache::readIntoCache
+    (string path)
     {
         FileReader reader(path);
         if(!reader.readIntoStringStream())
@@ -56,6 +74,4 @@ namespace Dream
         return content;
     }
 
-    LuaScriptCache::LuaScriptCache() {}
-    LuaScriptCache::~LuaScriptCache() {}
 }

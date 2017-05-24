@@ -1,9 +1,10 @@
 #include "Camera.h"
 
-namespace Dream {
+namespace Dream
+{
     // Constructor with vectors
-    Camera::Camera(glm::vec3 translation, glm::vec3 up, float yaw, float pitch)
-        : ILuaExposable()
+    Camera::Camera
+    (glm::vec3 translation, glm::vec3 up, float yaw, float pitch)
     {
         mFront = glm::vec3(0.0f, 0.0f, -1.0f);
         mMovementSpeed = SPEED;
@@ -17,10 +18,12 @@ namespace Dream {
     }
 
     // Constructor with scalar values
-    Camera::Camera(float posX, float posY, float posZ,
-                   float upX, float upY, float upZ,
-                   float yaw, float pitch)
-        : ILuaExposable()
+    Camera::Camera
+    (
+            float posX, float posY, float posZ,
+            float upX, float upY, float upZ,
+            float yaw, float pitch
+    )
     {
         mFront            = {0.0f, 0.0f, -1.0f};
         mMovementSpeed    = SPEED;
@@ -33,7 +36,8 @@ namespace Dream {
         updateCameraVectors();
     }
 
-    Camera::~Camera()
+    Camera::~Camera
+    ()
     {
         if (DEBUG)
         {
@@ -42,12 +46,16 @@ namespace Dream {
         return;
     }
 
-    glm::mat4 Camera::getViewMatrix()
+    glm::mat4
+    Camera::getViewMatrix
+    ()
     {
         return glm::lookAt(mTranslation,mTranslation+mFront,mUp);
     }
 
-    void Camera::processKeyboard(int direction, float deltaTime)
+    void
+    Camera::processKeyboard
+    (int direction, float deltaTime)
     {
         float velocity = mMovementSpeed * deltaTime;
 
@@ -80,17 +88,23 @@ namespace Dream {
         }
     }
 
-    glm::vec3 Camera::getTranslation()
+    glm::vec3
+    Camera::getTranslation
+    ()
     {
         return mTranslation;
     }
 
-    glm::vec3 Camera::getRotation()
+    glm::vec3
+    Camera::getRotation
+    ()
     {
         return glm::vec3 (mPitch,mYaw,0.0f);
     }
 
-    void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch)
+    void
+    Camera::processMouseMovement
+    (float xoffset, float yoffset, bool constrainPitch)
     {
         mYaw   += xoffset * mMouseSensitivity;
         mPitch -= yoffset * mMouseSensitivity;
@@ -113,7 +127,9 @@ namespace Dream {
         updateCameraVectors();
     }
 
-    void Camera::processMouseScroll(float yoffset)
+    void
+    Camera::processMouseScroll
+    (float yoffset)
     {
         if (yoffset == 0.0f)
         {
@@ -141,7 +157,9 @@ namespace Dream {
         }
     }
 
-    void Camera::updateCameraVectors()
+    void
+    Camera::updateCameraVectors
+    ()
     {
         mFront.x = static_cast<float>(cos(radians(mYaw)) * cos(radians(mPitch)));
         mFront.y = static_cast<float>(sin(radians(mPitch)));
@@ -151,63 +169,62 @@ namespace Dream {
         mUp    = glm::normalize(glm::cross(mRight, mFront));
     }
 
-    void Camera::setRotation(glm::vec3 rotation)
+    void
+    Camera::setRotation
+    (glm::vec3 rotation)
     {
         mPitch = rotation.x;
         mYaw = rotation.y;
         updateCameraVectors();
     }
 
-    void Camera::setTranslation(glm::vec3 translation)
+    void
+    Camera::setTranslation
+    (glm::vec3 translation)
     {
         mTranslation = translation;
     }
 
-    void Camera::setMovementSpeed(float movementSpeed)
+    void
+    Camera::setMovementSpeed
+    (float movementSpeed)
     {
         mMovementSpeed = movementSpeed;
     }
 
-    float Camera::getMovementSpeed()
+    float
+    Camera::getMovementSpeed
+    ()
     {
         return mMovementSpeed;
     }
 
-    void Camera::setMouseSensitivity(float mouseSensitivity)
+    void
+    Camera::setMouseSensitivity
+    (float mouseSensitivity)
     {
         mMouseSensitivity = mouseSensitivity;
     }
 
-    float Camera::getMouseSensitivity()
+    float
+    Camera::getMouseSensitivity
+    ()
     {
         return mMouseSensitivity;
     }
 
-    float Camera::getZoom()
+    float
+    Camera::getZoom
+    ()
     {
         return mZoom;
     }
 
-    float Camera::radians(float degrees)
+    float
+    Camera::radians
+    (float degrees)
     {
         return degrees * 0.01745329251994329576923690768489f;
-    }
-
-    void Camera::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state)
-        [
-            luabind::class_<Camera>("Camera")
-            .def("processKeyboard",&Camera::processKeyboard)
-            .def("processMouseMovement",&Camera::processMouseMovement)
-            .enum_("CameraMovement")
-            [
-                luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
-                luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
-                luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
-                luabind::value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
-            ]
-        ];
     }
 
 } // End of Dream

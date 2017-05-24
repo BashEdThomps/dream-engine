@@ -22,11 +22,16 @@ namespace Dream
 {
 
 
-    AnimationComponent::AnimationComponent() : IComponent()
-    {}
+    AnimationComponent::AnimationComponent
+    ()
+        : IComponent()
+    {
+
+    }
 
 
-    AnimationComponent::~AnimationComponent()
+    AnimationComponent::~AnimationComponent
+    ()
     {
         if (DEBUG)
         {
@@ -36,7 +41,9 @@ namespace Dream
     }
 
 
-    bool AnimationComponent::init()
+    bool
+    AnimationComponent::init
+    ()
     {
         if (DEBUG)
         {
@@ -46,7 +53,9 @@ namespace Dream
     }
 
 
-    void AnimationComponent::update(Scene *scene)
+    void
+    AnimationComponent::updateComponent
+    (Scene *scene)
     {
         vector<SceneObject*> scenegraph = scene->getScenegraphVector();
         vector<SceneObject*>::iterator sgIter;
@@ -63,8 +72,12 @@ namespace Dream
     }
 
 
-    void AnimationComponent::play(AnimationInstance *asset) {
-        try {
+    void
+    AnimationComponent::play
+    (AnimationInstance *asset)
+    {
+        try
+        {
             AnimationInstance* animAsset;
             animAsset = dynamic_cast<AnimationInstance*>(asset);
             animAsset->play();
@@ -74,43 +87,63 @@ namespace Dream
     }
 
 
-    void AnimationComponent::pause(AnimationInstance *asset) {
-        try {
+    void
+    AnimationComponent::pause
+    (AnimationInstance *asset)
+    {
+        try
+        {
             AnimationInstance* animAsset;
             animAsset = dynamic_cast<AnimationInstance*>(asset);
             animAsset->pause();
-        } catch (exception & ex) {
+        }
+        catch (exception & ex)
+        {
             cerr << "AnimationComponent: Exception pausing animation." << ex.what() << endl;
         }
     }
 
 
-    void AnimationComponent::stop(AnimationInstance *asset) {
-        try {
+    void
+    AnimationComponent::stop
+    (AnimationInstance *asset)
+    {
+        try
+        {
             AnimationInstance* animAsset;
             animAsset = dynamic_cast<AnimationInstance*>(asset);
             animAsset->stop();
-        } catch (exception & ex) {
+        }
+        catch (exception & ex)
+        {
             cerr << "AnimationComponent: Exception stopping animation." << ex.what() << endl;
         }
     }
 
 
-    bool AnimationComponent::isLooping(AnimationInstance* asset) {
-        if (!asset) {
+    bool
+    AnimationComponent::isLooping
+    (AnimationInstance* asset)
+    {
+        if (!asset)
+        {
             cerr << "AnimationComponent: asset is null in isLooping... " << endl;
             return false;
         }
 
-        try {
+        try
+        {
             AnimationInstance* animationAsset;
             animationAsset = dynamic_cast<AnimationInstance*>(asset);
-            if (!animationAsset) {
+            if (!animationAsset)
+            {
                 cerr << "AnimationComponent: animationAsset is null in isLooping... " << endl;
                 return false;
             }
             return animationAsset->isLooping();
-        } catch (exception &ex) {
+        }
+        catch (exception &ex)
+        {
             cerr << "AnimationComponent: Exception in isLooping... " << endl;
             cerr << ex.what() << endl;
         }
@@ -118,29 +151,26 @@ namespace Dream
     }
 
 
-    void AnimationComponent::setLooping(AnimationInstance* asset, bool looping) {
-        try {
+    void
+    AnimationComponent::setLooping
+    (AnimationInstance* asset, bool looping)
+    {
+        try
+        {
             AnimationInstance* animationAsset;
             animationAsset = dynamic_cast<AnimationInstance*>(asset);
             animationAsset->setLooping(looping);
-            if (DEBUG) {
+            if (DEBUG)
+            {
                 cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
                      << " looping: " << String::boolToYesNo(looping) << endl;
             }
-        } catch (exception &ex) {
+        }
+        catch (exception &ex)
+        {
             cerr << "AnimationComponent: Exception in setLooping... " << endl;
             cerr << ex.what() << endl;
         }
-    }
-
-
-    void AnimationComponent::exposeLuaApi(lua_State* state)
-    {
-        luabind::module(state)
-        [
-            luabind::class_<AnimationComponent>("AnimationComponent")
-            // TODO
-        ];
     }
 
 } // End of Dream

@@ -51,7 +51,7 @@ public slots:
     void onProjectNewButtonClicked();
     void onProjectOpenButtonClicked();
     void onProjectSaveButtonClicked();
-    void onProjectReloadButtonClicke();
+    void onProjectReloadButtonClicked();
 
     void onProjectNameChanged(QString name);
     void onProjectAuthorChanged(QString author);

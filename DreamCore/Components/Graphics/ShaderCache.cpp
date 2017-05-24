@@ -17,24 +17,34 @@
  */
 #include "ShaderCache.h"
 
-namespace Dream {
+namespace Dream
+{
 
     map<string,GLuint> ShaderCache::sShaderCache = map<string,GLuint>();
 
-    GLuint ShaderCache::getShader(string uuid) {
+    GLuint
+    ShaderCache::getShader
+    (string uuid)
+    {
         map<string,GLuint>::iterator it;
-        for (it=sShaderCache.begin();it!=sShaderCache.end();it++) {
-          if ((*it).first.compare(uuid) == 0) {
-            if (DEBUG) {
-              cout << "ShaderCache: Found Shader " << uuid << endl;
+        for (it=sShaderCache.begin();it!=sShaderCache.end();it++)
+        {
+            if ((*it).first.compare(uuid) == 0)
+            {
+                if (DEBUG)
+                {
+                    cout << "ShaderCache: Found Shader " << uuid << endl;
+                }
+                return (*it).second;
             }
-            return (*it).second;
-          }
         }
         return 0;
     }
 
-    void ShaderCache::putShader(string uuid, GLuint shaderProgram) {
+    void
+    ShaderCache::putShader
+    (string uuid, GLuint shaderProgram)
+    {
         sShaderCache.insert(pair<string,GLuint>(uuid,shaderProgram));
     }
 

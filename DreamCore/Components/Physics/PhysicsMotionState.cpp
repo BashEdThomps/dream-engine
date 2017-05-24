@@ -16,28 +16,47 @@
  * this file belongs to.
  */
 #include "PhysicsMotionState.h"
-namespace Dream {
-    PhysicsMotionState::PhysicsMotionState(Transform3D* dreamTransform) : btMotionState() {
+namespace Dream
+{
+    PhysicsMotionState::PhysicsMotionState
+    (Transform3D* dreamTransform)
+        : btMotionState()
+    {
         if (VERBOSE)
+        {
             cout << "PhysicsMotionState: Constructor called" << endl;
+        }
         mDreamTransform = dreamTransform;
     }
 
-    PhysicsMotionState::~PhysicsMotionState() {
-        if (DEBUG) {
+    PhysicsMotionState::~PhysicsMotionState
+    ()
+    {
+        if (DEBUG)
+        {
             cout << "PhysicsMotionState: Destroying Object" << endl;
-      }
+        }
     }
 
-    void PhysicsMotionState::setTransform(Transform3D* transform) {
+    void
+    PhysicsMotionState::setTransform
+    (Transform3D* transform)
+    {
         if (VERBOSE)
+        {
             cout << "PhysicsMotionState: setTransform called" << endl;
+        }
         mDreamTransform = transform;
     }
 
-    void PhysicsMotionState::getWorldTransform(btTransform &worldTrans) const {
+    void
+    PhysicsMotionState::getWorldTransform
+    (btTransform &worldTrans) const
+    {
         if (VERBOSE)
+        {
             cout << "PhysicsMotionState: getWorldTransform called" << endl;
+        }
         // Translation
         worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
         // Rotation
@@ -46,10 +65,16 @@ namespace Dream {
         worldTrans.setRotation(btRot);
     }
 
-    void PhysicsMotionState::setWorldTransform(const btTransform &worldTrans) {
+    void
+    PhysicsMotionState::setWorldTransform
+    (const btTransform &worldTrans)
+    {
         if (VERBOSE)
+        {
             cout << "PhysicsMotionState: setWorldTransform called" << endl;
-        if(mDreamTransform == nullptr) {
+        }
+        if(mDreamTransform == nullptr)
+        {
             cerr << "PhysicsMotionState: Error in SetWorldTransform!!" << endl;
             return; // die quietly before we set transform
         }
@@ -61,11 +86,16 @@ namespace Dream {
         mDreamTransform->setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
     }
 
-    void PhysicsMotionState::setKinematicPos(btTransform &trans) {
-      if (VERBOSE)
-        cout << "PhysicsMotionState: setKinematicPos called" << endl;
-      btVector3 pos = trans.getOrigin();
-      mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+    void
+    PhysicsMotionState::setKinematicPos
+    (btTransform &trans)
+    {
+        if (VERBOSE)
+        {
+            cout << "PhysicsMotionState: setKinematicPos called" << endl;
+        }
+        btVector3 pos = trans.getOrigin();
+        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
     }
 
 

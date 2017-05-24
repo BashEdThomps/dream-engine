@@ -69,7 +69,7 @@ void MainController::createConnections()
                 );
     // No Scene Selected
     connect(
-                this,SIGNAL(notifyNoSceneSclected()),
+                this,SIGNAL(notifyNoSceneSelected()),
                 mMainWindow, SLOT(onNoSceneSelected())
                 );
     // Project Directory Changed
@@ -146,7 +146,6 @@ void MainController::onProjectOpenButtonClicked()
                     )
                 );
     connectTreeViewModel();
-    mDreamModel->reloadProject(project->getStartupScene());
 }
 
 void MainController::connectTreeViewModel()
@@ -216,13 +215,13 @@ void MainController::onProjectStartupSceneChanged(QString startupSceneIndex)
     mDreamModel->setProjectStartupSceneByName(sceneName);
 }
 
-void MainController::onProjectReloadButtonClicke()
+void MainController::onProjectReloadButtonClicked()
 {
+    qDebug() << "onReloadProject Clicked";
     Dream::Scene *scene = mDreamModel->getSelectedScene();
     if (scene)
     {
-        mDreamModel->reloadProject(mDreamModel->getSelectedScene());
-        mDreamModel->heartbeatDream();
+        mDreamModel->startScene(mDreamModel->getSelectedScene());
     }
     else
     {

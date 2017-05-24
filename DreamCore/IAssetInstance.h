@@ -20,7 +20,6 @@
 
 #include <iostream>
 
-#include "Lua/ILuaExposable.h"
 #include "Constants.h"
 #include "FileReader.h"
 #include "AssetDefinition.h"
@@ -31,7 +30,7 @@
 
 namespace Dream
 {
-    class IAssetInstance : public ILuaExposable
+    class IAssetInstance
     {
     protected:
         bool mLoaded;
@@ -59,9 +58,6 @@ namespace Dream
 
         bool getLoadedFlag();
         void setLoadedFlag(bool);
-
-        void exposeLuaApi(lua_State*);
-
     }; // End of IAssetInstance
 } // End of Dream
 

@@ -173,21 +173,4 @@ namespace DreamSDL
     }
 
 
-    void SDLAudioInstance::exposeLuaApi(lua_State* state) {
-        luabind::module(state) [
-                luabind::class_<SDLAudioInstance>("SDLAudioInstance")
-                .def("play",&SDLAudioInstance::play)
-                .def("pause",&SDLAudioInstance::pause)
-                .def("stop",&SDLAudioInstance::stop)
-                .def("getStatus",&SDLAudioInstance::getStatus),
-
-                luabind::class_<AudioStatus>("AudioStatus")
-                .enum_("AudioStatus") [
-                luabind::value("PLAYING", AudioStatus::PLAYING),
-                luabind::value("PAUSED",  AudioStatus::PAUSED),
-                luabind::value("STOPPED", AudioStatus::STOPPED)
-                ]
-                ];
-    }
-
 } // End of Dream
