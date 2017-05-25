@@ -67,15 +67,23 @@ macx: LIBS += \
     -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/DreamCore/ \
     -L/usr/local/lib \
     -L/opt/local/lib \
+    -L/usr/lib \
     -lDreamCore \
     -llua.5.1.5 \
     -lluabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lSOIL
 
+LIBS += \
+    -L$$PWD/../../build-dream-Desktop_Qt_5_7_1_GCC_64bit-Release/DreamCore \
+    -lBulletCollision -lLinearMath -lBulletDynamics \
+    -lDreamCore
+
 INCLUDEPATH += \
     $$PWD/../DreamCore/include \
     /usr/local/include \
+    /usr/include/bullet \
+    /usr/include/lua5.1 \
     /usr/local/include/lua5.1 \
     /usr/local/include/bullet \
     /opt/local/include
