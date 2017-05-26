@@ -2,7 +2,11 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream)
 
-set(CMAKE_MODULE_PATH "${Dream_SOURCE_DIR}/CMakeModules")
+set(
+  CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH}
+  "${Dream_SOURCE_DIR}/CMakeModules"
+)
 message("Using modules path: " ${CMAKE_MODULE_PATH})
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)

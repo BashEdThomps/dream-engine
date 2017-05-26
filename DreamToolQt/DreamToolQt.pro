@@ -88,6 +88,7 @@ INCLUDEPATH += \
     /usr/include/lua5.1 \
     /usr/local/include/lua5.1 \
     /usr/local/include/bullet \
+    /usr/include/freetype2 \
     /usr/local/include/freetype2 \
     /opt/local/include
 

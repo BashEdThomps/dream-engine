@@ -192,17 +192,169 @@ void ProjectTreeModel::setupModelData(ProjectTreeItem *parent)
 
     parent->appendChild(assetDefinitionsTreeItem);
 
+    // Create Asset Type Nodes
+    QList<QVariant> animationNode;
+    animationNode << QString("Animation");
+    ProjectTreeItem* animationTreeItem =
+            new ProjectTreeItem(animationNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(animationTreeItem);
+
+    QList<QVariant> audioNode;
+    audioNode << QString("Audio");
+    ProjectTreeItem* audioTreeItem =
+            new ProjectTreeItem(audioNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(audioTreeItem);
+
+    QList<QVariant> fontNode;
+    fontNode << QString("Font");
+    ProjectTreeItem* fontTreeItem =
+            new ProjectTreeItem(fontNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(fontTreeItem);
+
+    QList<QVariant> lightNode;
+    lightNode << QString("Light");
+    ProjectTreeItem* lightTreeItem =
+            new ProjectTreeItem(lightNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(lightTreeItem);
+
+    QList<QVariant> modelNode;
+    modelNode << QString("Model");
+    ProjectTreeItem* modelTreeItem =
+            new ProjectTreeItem(modelNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);;
+    assetDefinitionsTreeItem->appendChild(modelTreeItem);
+
+    QList<QVariant> physicsObjectNode;
+    physicsObjectNode << QString("Physics Object");
+    ProjectTreeItem* physicsObjectTreeItem =
+            new ProjectTreeItem(physicsObjectNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(physicsObjectTreeItem);
+
+    QList<QVariant> scriptNode;
+    scriptNode << QString("Script");
+    ProjectTreeItem* scriptTreeItem =
+            new ProjectTreeItem(scriptNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(scriptTreeItem);
+
+    QList<QVariant> shaderNode;
+    shaderNode << QString("Shader");
+    ProjectTreeItem* shaderTreeItem =
+            new ProjectTreeItem(shaderNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(shaderTreeItem);
+
+    QList<QVariant> spriteNode;
+    spriteNode << QString("Sprite");
+    ProjectTreeItem* spriteTreeItem =
+            new ProjectTreeItem(spriteNode,ProjectItemType::TREE_NODE,nullptr,assetDefinitionsTreeItem);
+    assetDefinitionsTreeItem->appendChild(spriteTreeItem);
+
     for (Dream::AssetDefinition *definition : mProject->getAssetDefinitions())
     {
         QList<QVariant> nextDefinitionData;
         nextDefinitionData << QString::fromStdString(definition->getName());
-        ProjectTreeItem *nextDefinitionTreeItem = new ProjectTreeItem(
-            nextDefinitionData,
-            ProjectItemType::ASSET_DEFINITION,
-            definition,
-            assetDefinitionsTreeItem
-        );
-        assetDefinitionsTreeItem->appendChild(nextDefinitionTreeItem);
+
+        if (definition->getType().compare(ASSET_TYPE_ANIMATION) == 0)
+        {
+            animationTreeItem->appendChild(
+                new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    animationTreeItem
+                 )
+            );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_AUDIO) == 0)
+        {
+            audioTreeItem->appendChild(
+                new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    audioTreeItem
+                 )
+            );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_FONT) == 0)
+        {
+           fontTreeItem->appendChild(
+               new ProjectTreeItem(
+               nextDefinitionData,
+               ProjectItemType::ASSET_DEFINITION,
+               definition,
+               fontTreeItem
+               )
+           );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_LIGHT) == 0)
+        {
+            lightTreeItem->appendChild(
+                new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    lightTreeItem
+                 )
+             );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_MODEL) == 0)
+        {
+            modelTreeItem->appendChild(
+                        new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    modelTreeItem
+                 )
+                        );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
+        {
+                physicsObjectTreeItem->appendChild(
+                         new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    physicsObjectTreeItem
+                 )
+                            );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_SCRIPT) == 0)
+        {
+                scriptTreeItem->appendChild(
+                            new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    scriptTreeItem
+                 )
+                            );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_SHADER) == 0)
+        {
+                shaderTreeItem->appendChild(
+                            new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    shaderTreeItem
+                 )
+                            );
+        }
+        else if (definition->getType().compare(ASSET_TYPE_SPRITE) == 0)
+        {
+                spriteTreeItem->appendChild(
+                            new ProjectTreeItem(
+                    nextDefinitionData,
+                    ProjectItemType::ASSET_DEFINITION,
+                    definition,
+                    spriteTreeItem
+                            ));
+        }
+        else {
+            cerr << "ProjectTreeModel: Unable to add asset definition to tree with type "
+                 << definition->getType() << endl;
+        }
+
     }
 }
 

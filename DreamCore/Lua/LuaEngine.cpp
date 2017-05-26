@@ -185,6 +185,13 @@ namespace Dream
     LuaEngine::loadScript
     (SceneObject* sceneObject, LuaScriptInstance* scriptInstance)
     {
+
+        if (!mState)
+        {
+            cerr << "LuaEngine: Cannot load script, mState == nullptr!" << endl;
+            return false;
+        }
+
         string id = sceneObject->getUuid();
         if (DEBUG)
         {
@@ -192,6 +199,10 @@ namespace Dream
         }
         try
         {
+            if (DEBUG)
+            {
+                cout << "LuaEngine: Creating new table for " << id << endl;
+            }
             luabind::object newtable = luabind::newtable(mState);
             string path = scriptInstance->getAbsolutePath();
             string script = LuaScriptCache::getScript(path);
@@ -200,6 +211,10 @@ namespace Dream
             //luabind::call_function<void>(mState, "scriptLoadFromFile", newtable, path.c_str());
 
             // With Cache...
+            if (DEBUG)
+            {
+                cout << "LuaEngine: calling scriptLoadFromString in lua for " << id << endl;
+            }
             luabind::call_function<void>(mState, "scriptLoadFromString", newtable, script.c_str());
 
             luabind::object reg = luabind::registry(mState);
@@ -452,10 +467,18 @@ namespace Dream
                 ];
     }
 
+    void LuaEngine::debugRegisteringClass(string className)
+    {
+        if (VERBOSE)
+            cout << "LuaEngine: Registering Class " << className << endl;
+        return;
+    }
+
     void
     LuaEngine::exposeAnimationComponent
     ()
     {
+        debugRegisteringClass("AnimationComponent");
         luabind::module(mState)
                 [
                 luabind::class_<AnimationComponent>("AnimationComponent")
@@ -467,6 +490,7 @@ namespace Dream
     LuaEngine::exposeAnimationInstance
     ()
     {
+        debugRegisteringClass("AnimationInstance");
         luabind::module(mState)
                 [
                 luabind::class_<AnimationInstance>("AnimationInstance")
@@ -478,6 +502,7 @@ namespace Dream
     LuaEngine::exposeFontInstance
     ()
     {
+        debugRegisteringClass("FontInstance");
         luabind::module(mState)
                 [
                 luabind::class_<FontInstance>("FontInstance")
@@ -490,9 +515,10 @@ namespace Dream
     LuaEngine::exposeGraphicsComponent
     ()
     {
+        debugRegisteringClass("GraphicsComponent");
         luabind::module(mState)
                 [
-                luabind::class_<FontInstance>("GrphicsComponent")
+                luabind::class_<GraphicsComponent>("GraphicsComponent")
                 ];
     }
 
@@ -500,6 +526,7 @@ namespace Dream
     LuaEngine::exposeLightInstance
     ()
     {
+        debugRegisteringClass("LightInstance");
         luabind::module(mState)
                 [
                 luabind::class_<LightInstance>("LightInstance")
@@ -510,6 +537,7 @@ namespace Dream
     LuaEngine::exposeShaderInstance
     ()
     {
+        debugRegisteringClass("ShaderInstance");
         luabind::module(mState)
                 [
                 luabind::class_<ShaderInstance>("ShaderInstance")
@@ -522,6 +550,7 @@ namespace Dream
     LuaEngine::exposeSpriteInstance
     ()
     {
+        debugRegisteringClass("SpriteInstance");
         luabind::module(mState)
                 [
                 luabind::class_<SpriteInstance>("SpriteInstance")
@@ -532,6 +561,7 @@ namespace Dream
     LuaEngine::exposePhysicsComponent
     ()
     {
+        debugRegisteringClass("PhysicsComponent");
         luabind::module(mState)
                 [
                 luabind::class_<PhysicsComponent>("PhysicsComponent")
@@ -543,6 +573,7 @@ namespace Dream
     LuaEngine::exposePhysicsObjectInstance
     ()
     {
+        debugRegisteringClass("PhysicsObjectInstance");
         luabind::module(mState)
                 [
                 luabind::class_<PhysicsObjectInstance>("PhysicsObjectInstance")
@@ -555,6 +586,7 @@ namespace Dream
     LuaEngine::exposeIWindowComponent
     ()
     {
+        debugRegisteringClass("IWindiwComponent");
         luabind::module(mState)
                 [
                 luabind::class_<IWindowComponent>("IWindowComponent")
@@ -568,6 +600,7 @@ namespace Dream
     LuaEngine::exposeGameController
     ()
     {
+        debugRegisteringClass("GameController");
         luabind::module(mState)
                 [
                 luabind::class_<GameController>("GameController")
@@ -611,6 +644,7 @@ namespace Dream
     LuaEngine::exposeMath
     ()
     {
+        debugRegisteringClass("Math");
         luabind::module(mState)
                 [
                 luabind::class_<Math>("Math")
@@ -623,6 +657,7 @@ namespace Dream
     LuaEngine::exposeScene
     ()
     {
+        debugRegisteringClass("Scene");
         luabind::module(mState) [
                 luabind::class_<Scene>("Scene")
                 .def("getCameraMovementSpeed",&Scene::getCameraMovementSpeed)
@@ -636,6 +671,7 @@ namespace Dream
     LuaEngine::exposeSceneObject
     ()
     {
+        debugRegisteringClass("SceneObject");
         luabind::module(mState)
                 [
                 luabind::class_<SceneObject>("SceneObject")
@@ -678,6 +714,7 @@ namespace Dream
     LuaEngine::exposeTransform3D
     ()
     {
+        debugRegisteringClass("Transform3D");
         luabind::module(mState) [
                 luabind::class_<Transform3D>("Transform3D")
                 .def(luabind::constructor<>())
@@ -728,6 +765,7 @@ namespace Dream
     LuaEngine::exposeTime
     ()
     {
+        debugRegisteringClass("Time");
         luabind::module(mState) [
                 luabind::class_<Time>("Time")
                 .def("getCurrentTime",&Time::getCurrentTime)
@@ -740,6 +778,7 @@ namespace Dream
     LuaEngine::exposeAssimpModelInstance
     ()
     {
+        debugRegisteringClass("AssimpModelInstance");
         luabind::module(mState)
                 [
                 luabind::class_<AssimpModelInstance>("AssimpModelInstance")
@@ -751,6 +790,7 @@ namespace Dream
     LuaEngine::exposeEvent
     ()
     {
+        debugRegisteringClass("Event");
         luabind::module(mState)
                 [
                 luabind::class_<Event>("Event")
@@ -765,6 +805,7 @@ namespace Dream
     LuaEngine::exposeIAssetInstance
     ()
     {
+        debugRegisteringClass("IAssetInstance");
         luabind::module(mState)
                 [
                 luabind::class_<IAssetInstance>("IAssetInstance")
@@ -782,6 +823,7 @@ namespace Dream
     LuaEngine::exposeIAudioInstance
     ()
     {
+        debugRegisteringClass("IAudioInstance");
         luabind::module(mState) [
                 luabind::class_<IAudioInstance>("IAudioInstance")
                 .def("play",&IAudioInstance::play)

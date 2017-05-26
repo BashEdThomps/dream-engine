@@ -322,12 +322,6 @@ namespace Dream {
             return false;
         }
 
-        if (!initLuaEngine())
-        {
-            cerr << "DreamEngine: Error initialising lua engine" << endl;
-            return false;
-        }
-
         if (DEBUG)
         {
             cout << "Dream:Info:Starting Startup Scene " << getActiveScene()->getNameAndUuidString() << endl;
@@ -488,6 +482,11 @@ namespace Dream {
         }
 
         if(!initAnimationComponent())
+        {
+            return false;
+        }
+
+        if (!initLuaEngine())
         {
             return false;
         }

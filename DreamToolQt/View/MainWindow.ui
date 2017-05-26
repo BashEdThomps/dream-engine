@@ -47,7 +47,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -56,7 +56,10 @@
     <enum>Qt::LeftToRight</enum>
    </property>
    <property name="movable">
-    <bool>false</bool>
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -86,7 +89,7 @@
      <x>0</x>
      <y>0</y>
      <width>1287</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

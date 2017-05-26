@@ -84,6 +84,8 @@ namespace Dream
 
     private: // Methods
         // API Exposure Methods ======================================================
+
+        void debugRegisteringClass(string className);
         void exposeAPI();
         void exposeAnimationComponent();
         void exposeAnimationInstance();
