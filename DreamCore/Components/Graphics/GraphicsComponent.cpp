@@ -101,8 +101,8 @@ namespace Dream
                     );
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         create2DVertexObjects();
@@ -479,6 +479,11 @@ namespace Dream
     void GraphicsComponent::
     drawModel(SceneObject* sceneObject)
     {
+        if (VERBOSE)
+        {
+           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameUuidString() << endl;
+        }
+
         // Get Assets
         AssimpModelInstance* model = sceneObject->getModelInstance();
         ShaderInstance* shader = sceneObject->getShaderInstance();
@@ -567,6 +572,7 @@ namespace Dream
         // Unbind shader
         glBindVertexArray(0);
         glUseProgram(0);
+        checkGLError("After 3D Draw");
     }
 
 

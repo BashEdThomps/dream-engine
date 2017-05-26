@@ -27,6 +27,8 @@ int main(int argc, const char** argv)
                 new SDLWindowComponent()
                 );
 
+    dreamSetVerbose(true);
+
     if (DEBUG)
     {
         cout << "Main: Starting..." << endl;
