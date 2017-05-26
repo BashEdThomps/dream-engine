@@ -32,7 +32,11 @@ namespace Dream
         ~LuaScriptInstance(void);
         bool load(string);
         void update();
-        void loadExtraAttributes(nlohmann::json) {}
+        void loadExtraAttributes(nlohmann::json);
+        bool getError();
+        void setError(bool);
+      private:
+        bool mError;
       }; // End of LuaScriptInstance
 } // End of Dream
 #endif // End of LUASCRIPT_H

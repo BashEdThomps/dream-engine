@@ -84,6 +84,7 @@ namespace Dream
         }
         if (DEBUG)
         {
+            cout << "GraphicsComponent: GL Version " << glGetString(GL_VERSION) << endl;
             cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
         }
         // Define the viewport dimensions
@@ -101,8 +102,8 @@ namespace Dream
                     );
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         create2DVertexObjects();
@@ -227,22 +228,25 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    clear2DQueue()
+    void
+    GraphicsComponent::clear2DQueue
+    ()
     {
         m2DQueue.clear();
     }
 
 
-    void GraphicsComponent::
-    addTo2DQueue(SceneObject* object)
+    void
+    GraphicsComponent::addTo2DQueue
+    (SceneObject* object)
     {
         m2DQueue.push_back(object);
     }
 
 
-    void GraphicsComponent::
-    draw2DQueue()
+    void
+    GraphicsComponent::draw2DQueue
+    ()
     {
         for (vector<SceneObject*>::
              iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
@@ -260,22 +264,25 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    clear3DQueue()
+    void
+    GraphicsComponent::clear3DQueue
+    ()
     {
         m3DQueue.clear();
     }
 
 
-    void GraphicsComponent::
-    addTo3DQueue(SceneObject* object)
+    void
+    GraphicsComponent::addTo3DQueue
+    (SceneObject* object)
     {
         m3DQueue.push_back(object);
     }
 
 
-    void GraphicsComponent::
-    draw3DQueue()
+    void
+    GraphicsComponent::draw3DQueue
+    ()
     {
         // Transformation matrices
         if (VERBOSE)
@@ -304,26 +311,24 @@ namespace Dream
     }
 
 
-    glm::mat4 GraphicsComponent::
-    getViewMatrix()
+    glm::mat4
+    GraphicsComponent::getViewMatrix
+    ()
     {
         return mViewMatrix;
     }
 
 
-    glm::mat4 GraphicsComponent::
-    getProjectionMatrix()
+    glm::mat4
+    GraphicsComponent::getProjectionMatrix
+    ()
     {
         return mProjectionMatrix;
     }
 
-    /*
-     * Using
-     *    https://learnopengl.com/#!In-Practice/2D-Game/Rendering-Sprites
-     */
-
-    void GraphicsComponent::
-    drawSprite(SceneObject* sceneObject)
+    void
+    GraphicsComponent::drawSprite
+    (SceneObject* sceneObject)
     {
         // Get Assets
         SpriteInstance* sprite = sceneObject->getSpriteInstance();
@@ -446,13 +451,13 @@ namespace Dream
             GLfloat h = ch.Size.y * scale;
             // Update VBO for each character
             GLfloat vertices[6][4] = {
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos,     ypos,       0.0, 1.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
+                { xpos,     ypos + h,   0.0, 1.0 },
+                { xpos,     ypos,       0.0, 0.0 },
+                { xpos + w, ypos,       1.0, 0.0 },
 
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
-                { xpos + w, ypos + h,   1.0, 0.0 }
+                { xpos,     ypos + h,   0.0, 1.0 },
+                { xpos + w, ypos,       1.0, 0.0 },
+                { xpos + w, ypos + h,   1.0, 1.0 }
             };
             // Render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
@@ -467,17 +472,12 @@ namespace Dream
         }
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
-
-
-
-
-
-
     }
 
 
-    void GraphicsComponent::
-    drawModel(SceneObject* sceneObject)
+    void
+    GraphicsComponent::drawModel
+    (SceneObject* sceneObject)
     {
         if (VERBOSE)
         {
@@ -576,8 +576,9 @@ namespace Dream
     }
 
 
-    bool GraphicsComponent::
-    checkGLError(string marker)
+    bool
+    GraphicsComponent::checkGLError
+    (string marker)
     {
         GLenum errorCode = 0;
         bool wasError = false;
@@ -618,31 +619,42 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    addToLightQueue(LightInstance* lightInstance)
+    void
+    GraphicsComponent::addToLightQueue
+    (LightInstance* lightInstance)
     {
         mLightQueue.push_back(lightInstance);
     }
 
 
-    void GraphicsComponent::
-    clearLightQueue()
+    void
+    GraphicsComponent::clearLightQueue
+    ()
     {
         mLightQueue.clear();
     }
 
 
-    void GraphicsComponent::
-    setGameController(GameController* gameController)
+    void
+    GraphicsComponent::setGameController
+    (GameController* gameController)
     {
         mGameController = gameController;
     }
 
 
-    GameController* GraphicsComponent::
-    getGameController()
+    GameController*
+    GraphicsComponent::getGameController
+    ()
     {
         return mGameController;
+    }
+
+    Camera*
+    GraphicsComponent::getCamera
+    ()
+    {
+        return mCamera;
     }
 
 } // End of Dream

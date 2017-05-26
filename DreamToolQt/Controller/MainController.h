@@ -23,6 +23,7 @@
 #include <QStringList>
 #include <QStringListModel>
 #include <QItemSelection>
+#include <QSurfaceFormat>
 #include "../View/MainWindow.h"
 #include "../Model/DreamModel.h"
 #include "../Model/ProjectTreeModel.h"
@@ -31,7 +32,7 @@ class MainController : public QObject
 {
     Q_OBJECT
 public:
-    MainController(MainWindow* parent);
+    MainController(MainWindow* parent,QSurfaceFormat format);
     ~MainController();
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);

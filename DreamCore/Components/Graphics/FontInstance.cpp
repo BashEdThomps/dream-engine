@@ -134,6 +134,7 @@ namespace Dream
                 static_cast<FT_UInt>(mSize)
             );
         }
+
         if (DEBUG)
         {
             cout << "FontInstance" << endl
@@ -215,7 +216,9 @@ namespace Dream
             // Load character glyph
             if (FT_Load_Char(*mFontFace, c, FT_LOAD_RENDER))
             {
-                cerr << "FontInstance: FreeType: Failed to load Glyph for char " << c << endl;
+                cerr << "FontInstance: FreeType: Failed to load Glyph for char "
+                     << c
+                     << endl;
                 continue;
             }
             // Generate texture

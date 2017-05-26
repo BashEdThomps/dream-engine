@@ -30,12 +30,13 @@
 #include "../Model/Properties/ScenePropertiesModel.h"
 #include "../Model/Properties/AssetDefinitionTypeComboDelegate.h"
 
-MainController::MainController(MainWindow* parent)
+MainController::MainController(MainWindow* parent, QSurfaceFormat format)
     : QObject(parent)
 {
     mMainWindow = parent;
     mAudioComponent = new QTDreamAudioComponent();
     mWindowComponent = parent->getOpenGLWidget();
+    //mWindowComponent->setFormat(format);
     mDreamModel = new DreamModel(this,mAudioComponent,mWindowComponent);
     createConnections();
 }

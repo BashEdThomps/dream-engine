@@ -192,6 +192,11 @@ namespace Dream
             return false;
         }
 
+        if (scriptInstance->getError())
+        {
+           return false;
+        }
+
         string id = sceneObject->getUuid();
         if (DEBUG)
         {
@@ -224,6 +229,7 @@ namespace Dream
         {
             cerr << "LuaEngine: loadScript exception:" << endl
                  << "\t" << e.what() << endl;
+            scriptInstance->setError(true);
             return false;
         }
         return true;
@@ -326,10 +332,19 @@ namespace Dream
     (SceneObject* sceneObject)
     {
         string id = sceneObject->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+
+        if (scriptInstance->getError())
+        {
+            return false;
+        }
+
         if (VERBOSE)
         {
             cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameUuidString() << endl;
         }
+
+
         try
         {
             luabind::object reg = luabind::registry(mState);
@@ -342,7 +357,7 @@ namespace Dream
             string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onUpdate exception:" << endl << e.what() << endl;
             cerr << error << endl;
-
+            scriptInstance->setError(true);
             return false;
         }
         return true;
@@ -353,6 +368,13 @@ namespace Dream
     (SceneObject* sceneObject)
     {
         string id = sceneObject->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+
+        if (scriptInstance->getError())
+        {
+            return false;
+        }
+
         if (VERBOSE)
         {
             cout << "LuaEngine: Calling onInit for " << sceneObject->getNameUuidString() << endl << flush;
@@ -366,7 +388,10 @@ namespace Dream
         }
         catch (luabind::error &e)
         {
+            string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onInit exception:" << endl << e.what() << endl;
+            cerr << error << endl;
+            scriptInstance->setError(true);
             return false;
         }
         return true;
@@ -377,6 +402,14 @@ namespace Dream
     (SceneObject* sceneObject)
     {
         string id = sceneObject->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+
+        if (scriptInstance->getError())
+        {
+            return false;
+        }
+
+
         if (VERBOSE)
         {
             cout << "LuaEngine: Calling onInput for " << sceneObject->getNameUuidString() << endl << flush;
@@ -395,7 +428,10 @@ namespace Dream
         }
         catch (luabind::error &e)
         {
+            string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onInput exception:" << endl << e.what() << endl;
+            cerr << error << endl;
+            scriptInstance->setError(true);
             return false;
         }
         return true;
@@ -406,10 +442,19 @@ namespace Dream
     (SceneObject* sceneObject)
     {
         string id = sceneObject->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+
+        if (scriptInstance->getError())
+        {
+            return false;
+        }
+
+
         if (VERBOSE)
         {
             cout << "LuaEngine: Calling onEvent for " << sceneObject->getNameUuidString() << endl << flush;
         }
+
         try
         {
             luabind::object reg = luabind::registry(mState);
@@ -425,7 +470,10 @@ namespace Dream
         }
         catch (luabind::error &e)
         {
+            string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onEvent exception:" << endl << e.what() << endl;
+            cerr << error << endl;
+            scriptInstance->setError(true);
             return false;
         }
         return true;
@@ -441,9 +489,11 @@ namespace Dream
         [
             luabind::class_<DreamEngine>("DreamEngine")
                 .def("getActiveScene",&DreamEngine::getActiveScene)
-                .def("getAudioComponent",&DreamEngine::getActiveScene)
-                .def("getGraphicsComponent",&DreamEngine::getActiveScene)
-                .def("getPhysicsComponent",&DreamEngine::getActiveScene)
+                .def("getAudioComponent",&DreamEngine::getAudioComponent)
+                .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
+                .def("getPhysicsComponent",&DreamEngine::getPhysicsComponent)
+                .def("getWindowComponent",&DreamEngine::getWindowComponent)
+                .def("getTime",&DreamEngine::getTime)
         ];
         luabind::globals(mState)["DreamEngine"] = mDreamEngine;
     }
@@ -519,6 +569,7 @@ namespace Dream
         luabind::module(mState)
                 [
                 luabind::class_<GraphicsComponent>("GraphicsComponent")
+                    .def("getCamera",&GraphicsComponent::getCamera)
                 ];
     }
 
@@ -813,6 +864,14 @@ namespace Dream
     }
 
     void
+    LuaEngine::exposeIAudioComponent
+    ()
+    {
+
+    }
+
+
+    void
     LuaEngine::exposeLuaScriptInstance
     ()
     {
@@ -855,6 +914,7 @@ namespace Dream
         exposeGraphicsComponent();
         exposeIAssetInstance();
         exposeIAudioInstance();
+        exposeIAudioComponent();
         exposeIWindowComponent();
         exposeLightInstance();
         exposeLuaScriptInstance();

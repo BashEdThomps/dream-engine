@@ -104,6 +104,7 @@ namespace Dream
         void create2DVertexObjects();
         void createFontVertexObjects();
         void setWindowShouldClose(bool);
+        Camera* getCamera();
         glm::mat4 getViewMatrix();
         glm::mat4 getProjectionMatrix();
         void setGameController(GameController* gameController);

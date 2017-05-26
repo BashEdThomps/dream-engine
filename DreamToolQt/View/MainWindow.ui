@@ -56,7 +56,7 @@
     <enum>Qt::LeftToRight</enum>
    </property>
    <property name="movable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="allowedAreas">
     <set>Qt::AllToolBarAreas</set>
@@ -79,8 +79,12 @@
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
-   <addaction name="actionSettings"/>
+   <addaction name="separator"/>
+   <addaction name="actionPlay"/>
+   <addaction name="actionStop"/>
    <addaction name="actionReload"/>
+   <addaction name="separator"/>
+   <addaction name="actionSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -89,7 +93,7 @@
      <x>0</x>
      <y>0</y>
      <width>1287</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -162,7 +166,7 @@
   <action name="actionReload">
    <property name="icon">
     <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/view-refresh.png</normaloff>:/images/view-refresh.png</iconset>
+     <normaloff>:/images/media-playlist-repeat.png</normaloff>:/images/media-playlist-repeat.png</iconset>
    </property>
    <property name="text">
     <string>Reload</string>
@@ -178,6 +182,27 @@
    </property>
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionPlay">
+   <property name="icon">
+    <iconset resource="../Resources/Resources.qrc">
+     <normaloff>:/images/media-playback-start.png</normaloff>:/images/media-playback-start.png</iconset>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="icon">
+    <iconset resource="../Resources/Resources.qrc">
+     <normaloff>:/images/media-playback-stop.png</normaloff>:/images/media-playback-stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
    </property>
   </action>
  </widget>

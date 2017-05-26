@@ -295,7 +295,6 @@ namespace Dream {
     }
 
     Scene*
-
     DreamEngine::
     getActiveScene()
     {
@@ -304,7 +303,6 @@ namespace Dream {
 
 
     bool
-
     DreamEngine::
     initEngine()
     {
@@ -335,7 +333,7 @@ namespace Dream {
     {
         if (VERBOSE)
         {
-            cout << "==== DreamEngine: UpdateLogic Called ====" << endl;
+            cout << "==== DreamEngine: UpdateLogic Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
 
         // Update Time
@@ -372,7 +370,7 @@ namespace Dream {
     {
         if (VERBOSE)
         {
-            cout << "==== DreamEngine: UpdateGraphics Called ====" << endl;
+            cout << "==== DreamEngine: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
         // Update Graphics/Physics Components
         mGraphicsComponent->updateComponent(mActiveScene);
@@ -395,7 +393,7 @@ namespace Dream {
     {
         if (VERBOSE)
         {
-            cout << "==== DreamEngine: UpdateCleanup Called ====" << endl;
+            cout << "==== DreamEngine: UpdateCleanup Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
         // Cleanup Old
         mActiveScene->findDeletedSceneObjects();

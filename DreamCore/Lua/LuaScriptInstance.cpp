@@ -24,6 +24,7 @@ namespace Dream
     (AssetDefinition* definition, Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
+        mError = false;
         return;
     }
 
@@ -55,5 +56,24 @@ namespace Dream
 
     }
 
+    bool
+    LuaScriptInstance::getError
+    ()
+    {
+        return mError;
+    }
+
+    void
+    LuaScriptInstance::setError
+    (bool err)
+    {
+        mError = err;
+    }
+
+
+    void LuaScriptInstance::loadExtraAttributes(nlohmann::json)
+    {
+
+    }
 
 } // End of Dream

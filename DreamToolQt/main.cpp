@@ -23,8 +23,14 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QSurfaceFormat glFormat;
+    glFormat.setDepthBufferSize(32);
+    glFormat.setMajorVersion(3);
+    glFormat.setMinorVersion(2);
+    glFormat.setProfile(QSurfaceFormat::CoreProfile);
     MainWindow mainWindow;
-    MainController mainController(&mainWindow);
+    QSurfaceFormat::setDefaultFormat(glFormat);
+    MainController mainController(&mainWindow,glFormat);
     mainWindow.show();
     return a.exec();
 }

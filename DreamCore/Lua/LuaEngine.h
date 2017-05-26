@@ -96,6 +96,7 @@ namespace Dream
         void exposeFontInstance();
         void exposeGameController();
         void exposeGraphicsComponent();
+        void exposeIAudioComponent();
         void exposeIAudioInstance();
         void exposeIAssetInstance();
         void exposeIWindowComponent();
