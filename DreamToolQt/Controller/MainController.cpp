@@ -50,37 +50,43 @@ void MainController::createConnections()
     // actionNew
     connect(
                 mMainWindow->getActionNew(), SIGNAL(triggered()),
-                this, SLOT(onProjectNewButtonClicked())
-                );
+                this, SLOT(onProjectNewButtonClicked()),
+                Qt::DirectConnection);
     // actionOpen
     connect(
                 mMainWindow->getActionOpen(), SIGNAL(triggered()),
-                this, SLOT(onProjectOpenButtonClicked())
+                this, SLOT(onProjectOpenButtonClicked()),
+                Qt::DirectConnection
                 );
     // actionReload
     connect(
                 mMainWindow->getActionReload(), SIGNAL(triggered()),
-                this, SLOT(onProjectReloadButtonClicked())
+                this, SLOT(onProjectReloadButtonClicked()),
+                Qt::DirectConnection
                 );
     // Invalid Project Directory
     connect(
                 this, SIGNAL(notifyInvalidProjectDirectory(QString)),
-                mMainWindow, SLOT(onInvalidProjectDirectory(QString))
+                mMainWindow, SLOT(onInvalidProjectDirectory(QString)),
+                Qt::DirectConnection
                 );
     // No Scene Selected
     connect(
                 this,SIGNAL(notifyNoSceneSelected()),
-                mMainWindow, SLOT(onNoSceneSelected())
+                mMainWindow, SLOT(onNoSceneSelected()),
+                Qt::DirectConnection
                 );
     // Project Directory Changed
     connect(
                 this, SIGNAL(notifyProjectDirectoryChanged(QString)),
-                mMainWindow, SLOT(setWindowTitle(QString))
+                mMainWindow, SLOT(setWindowTitle(QString)),
+                Qt::DirectConnection
                 );
     // Status Bar
     connect(
                 this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-                mMainWindow, SLOT(showStatusBarMessage(QString))
+                mMainWindow, SLOT(showStatusBarMessage(QString)),
+                Qt::DirectConnection
                 );
 }
 
@@ -154,7 +160,8 @@ void MainController::connectTreeViewModel()
     connect(
                 mMainWindow->getProjectTreeView()->selectionModel(),
                 SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-                this, SLOT(onProjectTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
+                this, SLOT(onProjectTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&)),
+                Qt::DirectConnection
                 );
 
 }

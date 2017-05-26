@@ -138,8 +138,8 @@ bool DreamModel::startScene(Dream::Scene* scene)
 
     mWindowComponent->setDreamEngine(mDreamEngine);
     mHeartbeatTimer = new QTimer(this);
-    connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
-    mHeartbeatTimer->start(1000);
+    connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
+    mHeartbeatTimer->start(16);
 
     return true;
 }

@@ -368,6 +368,9 @@ namespace Dream {
         mWindowComponent->updateComponent(mActiveScene);
         // Create new Assets
         mActiveScene->createAllAssetInstances();
+
+        mPhysicsComponent->updateComponent(mActiveScene);
+
         return !mDone;
     }
 
@@ -385,7 +388,6 @@ namespace Dream {
                     );
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->draw3DQueue();
-        mPhysicsComponent->updateComponent(mActiveScene);
         mPhysicsComponent->drawDebug();
         mGraphicsComponent->draw2DQueue();
 

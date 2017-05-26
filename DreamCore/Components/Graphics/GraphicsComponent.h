@@ -54,6 +54,7 @@ namespace Dream
     private:
         glm::mat4 mProjectionMatrix;
         glm::mat4 mViewMatrix;
+
         GLfloat mSpriteVertices[24] =
         {
             // Pos      // Tex
@@ -64,11 +65,14 @@ namespace Dream
             1.0f, 1.0f, 1.0f, 1.0f,
             1.0f, 0.0f, 1.0f, 0.0f
         };
+
         GLuint mSpriteVBO;
         GLuint mSpriteQuadVAO;
+        GLuint mFontVBO;
+        GLuint mFontVAO;
         Camera *mCamera;
         float mMinimumDraw = 0.1f;
-        float mMaximumDraw = 1000.0f;
+        float mMaximumDraw = 100.0f;
         vector<SDL_Event> mEvents;
         vector<SceneObject*> m2DQueue;
         vector<SceneObject*> m3DQueue;
@@ -98,6 +102,7 @@ namespace Dream
         void setClearColour(vector<float>);
         void setAmbientLightColour(vector<float>);
         void create2DVertexObjects();
+        void createFontVertexObjects();
         void setWindowShouldClose(bool);
         glm::mat4 getViewMatrix();
         glm::mat4 getProjectionMatrix();

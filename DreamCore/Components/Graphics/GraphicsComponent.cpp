@@ -17,12 +17,13 @@
 
 #include "GraphicsComponent.h"
 #include <glm/gtc/quaternion.hpp>
+#include <glm/matrix.hpp>
 
 namespace Dream
 {
 
-    GraphicsComponent::
-    GraphicsComponent(Camera* camera, IWindowComponent* windowComponent)
+    GraphicsComponent::GraphicsComponent
+    (Camera* camera, IWindowComponent* windowComponent)
         : IComponent()
     {
         mWindowComponent = windowComponent;
@@ -32,8 +33,9 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    setClearColour(vector<float> clearColour)
+    void
+    GraphicsComponent::setClearColour
+    (vector<float> clearColour)
     {
         mClearColour[CLEAR_RED] = clearColour[CLEAR_RED];
         mClearColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
@@ -42,8 +44,9 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    setAmbientLightColour(vector<float> clearColour)
+    void
+    GraphicsComponent::setAmbientLightColour
+    (vector<float> clearColour)
     {
         mAmbientLightColour[CLEAR_RED]   = clearColour[CLEAR_RED];
         mAmbientLightColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
@@ -52,8 +55,8 @@ namespace Dream
     }
 
 
-    GraphicsComponent::
-    ~GraphicsComponent(void)
+    GraphicsComponent::~GraphicsComponent
+    (void)
     {
         if (DEBUG)
         {
@@ -62,8 +65,9 @@ namespace Dream
     }
 
 
-    bool GraphicsComponent::
-    init(void)
+    bool
+    GraphicsComponent::init
+    (void)
     {
         if (DEBUG)
         {
@@ -87,8 +91,7 @@ namespace Dream
         int windowHeight = mWindowComponent->getHeight();
         glViewport(0, 0, windowWidth, windowHeight);
         // Ortho projection for 2D
-        mOrthoProjection = glm::
-                ortho
+        mOrthoProjection = glm::ortho
                 (
                     0.0f,
                     static_cast<float>(windowWidth),
@@ -98,11 +101,12 @@ namespace Dream
                     );
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         create2DVertexObjects();
+        createFontVertexObjects();
         if (DEBUG)
         {
             cout << "GraphicsComponent: Initialisation Done." << endl;
@@ -111,8 +115,8 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    create2DVertexObjects()
+    void GraphicsComponent::create2DVertexObjects
+    ()
     {
         glGenVertexArrays(1, &mSpriteQuadVAO);
         glGenBuffers(1, &mSpriteVBO);
@@ -127,12 +131,27 @@ namespace Dream
 
 
     void
+    GraphicsComponent::createFontVertexObjects
+    ()
+    {
+        glGenVertexArrays(1, &mFontVAO);
+        glGenBuffers(1, &mFontVBO);
+        glBindVertexArray(mFontVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, mFontVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    void
     GraphicsComponent::updateComponent
     (Scene* scene)
     {
         if (VERBOSE)
         {
-            cout << "GraphicsComponrnt: Update Called" << endl;
+            cout << "GraphicsComponrnt: updateComponent(Scene*) Called" << endl;
         }
 
         if (!mWindowComponent->shouldClose())
@@ -155,6 +174,7 @@ namespace Dream
                  iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ )
             {
                 SceneObject *object = (*it);
+
                 // Models
                 if (object->hasModelInstance())
                 {
@@ -168,6 +188,7 @@ namespace Dream
                              << " has model, but no shader assigned." << endl;
                     }
                 }
+
                 // Sprites
                 if (object->hasSpriteInstance())
                 {
@@ -181,6 +202,7 @@ namespace Dream
                              << " has sprite, but no shader assigned." << endl;
                     }
                 }
+
                 // Fonts
                 if (object->hasFontInstance())
                 {
@@ -194,6 +216,7 @@ namespace Dream
                              << " has font, but no shader assigned." << endl;
                     }
                 }
+
                 // Lights
                 if (object->hasLightInstance())
                 {
@@ -255,14 +278,21 @@ namespace Dream
     draw3DQueue()
     {
         // Transformation matrices
-        mProjectionMatrix = glm::
-                perspective(
-                    mCamera->getZoom(),
-                    static_cast<float>(mWindowComponent->getWidth()) /
-                    static_cast<float>(mWindowComponent->getHeight()),
-                    mMinimumDraw,
-                    mMaximumDraw
-                    );
+        if (VERBOSE)
+        {
+            cout << "GraphicsComponent: Drawing 3D Queue" << endl
+                 << "\tWindowWidth:" << mWindowComponent->getWidth() << endl
+                 << "\tWindowHeight:" << mWindowComponent->getHeight() << endl
+                 << "\tMinDraw: " << mMinimumDraw << endl
+                 << "\tMaxDraw: " << mMaximumDraw << endl;
+        }
+        mProjectionMatrix = glm::perspective(
+            mCamera->getZoom(),
+            static_cast<float>(mWindowComponent->getWidth()) /
+            static_cast<float>(mWindowComponent->getHeight()),
+            mMinimumDraw,
+            mMaximumDraw
+        );
         // View transform
         mViewMatrix = mCamera->getViewMatrix();
 
@@ -356,80 +386,93 @@ namespace Dream
     }
 
 
-    void GraphicsComponent::
-    drawFont(SceneObject* sceneObject)
+    void
+    GraphicsComponent::drawFont
+    (SceneObject* sceneObject)
     {
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
-        if (font->hasChanged())
-        {
-            font->renderToTexture();
-        }
-        ShaderInstance* shader = sceneObject->getShaderInstance();
-        // Get arguments
-        glm::
-                vec2 size = glm::
-                vec2(font->getWidth(),font->getHeight());
-        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-        GLfloat scale = sceneObject->getTransform()->getScaleZ();
-        glm::
-                vec3 color = glm::
-                vec3(1.0f);
-        // Configure VAO/VBO
-        // Setup GL
-        //createSpriteVertexObjects();
-        // Setup Shader
-        shader->use();
         float tX = font->getTransform()->getTranslationX();
         float tY = font->getTransform()->getTranslationY();
-        glm::
-                vec2 position = glm::
-                vec2(tX,tY);
+
+        // Setup Shader
+        ShaderInstance* shader = sceneObject->getShaderInstance();
+        glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
+        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
+        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+
+        shader->use();
+
+        glm::vec2 position = glm::vec2(tX,tY);
         // Offset origin to middle of sprite
-        glm::
-                mat4 model;
-        model = glm::
-                translate(model, glm::
-                          vec3(position, 0.0f));
-        model = glm::
-                translate(model, glm::
-                          vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::
-                rotate(model, rotate, glm::
-                       vec3(0.0f, 0.0f, 1.0f));
-        model = glm::
-                translate(model, glm::
-                          vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = glm::
-                scale(model, glm::
-                      vec3(size.x*scale,size.y*scale, 1.0f));
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3(position, 0.0f));
+        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+
+        // Activate corresponding render state
+        glUniform3f(
+                    glGetUniformLocation(shader->getShaderProgram(), "textColor"),
+                    font->getColour()[0], font->getColour()[1], font->getColour()[2]
+        );
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(mFontVAO);
+
         // Pass uniform arguments to shader
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, glm::
-                           value_ptr(model)
+                           1, GL_FALSE, glm::value_ptr(model)
                            );
-        glUniform3fv(glGetUniformLocation(
-                         shader->getShaderProgram(), "spriteColor"),
-                     1, glm::
-                     value_ptr(color)
-                     );
-        glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
+
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, glm::
-                           value_ptr(mOrthoProjection)
+                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
                            );
-        // Bind texture
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,font->getTexture());
-        // Bind VAO
-        glBindVertexArray(mSpriteQuadVAO);
-        // Draw
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        // Cleanup
+
+        // Iterate through all characters
+        string text = font->getText();
+        map<GLchar,Character> charMap = font->getCharacterMap();
+        for (string::const_iterator c = text.begin(); c != text.end(); c++)
+        {
+            Character ch = charMap[*c];
+
+            GLfloat xpos = tX + ch.Bearing.x * scale;
+            GLfloat ypos = tY - (ch.Size.y - ch.Bearing.y) * scale;
+
+            GLfloat w = ch.Size.x * scale;
+            GLfloat h = ch.Size.y * scale;
+            // Update VBO for each character
+            GLfloat vertices[6][4] = {
+                { xpos,     ypos + h,   0.0, 0.0 },
+                { xpos,     ypos,       0.0, 1.0 },
+                { xpos + w, ypos,       1.0, 1.0 },
+
+                { xpos,     ypos + h,   0.0, 0.0 },
+                { xpos + w, ypos,       1.0, 1.0 },
+                { xpos + w, ypos + h,   1.0, 0.0 }
+            };
+            // Render glyph texture over quad
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            // Update content of VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, mFontVBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            // Render quad
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            tX += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+        }
         glBindVertexArray(0);
-        glUseProgram(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+
+
+
     }
 
 
@@ -522,6 +565,7 @@ namespace Dream
         // Draw using shader
         model->draw(shader);
         // Unbind shader
+        glBindVertexArray(0);
         glUseProgram(0);
     }
 

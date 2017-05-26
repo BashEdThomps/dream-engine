@@ -20,34 +20,51 @@
 #include <GL/glew.h>
 #include "../../IAssetInstance.h"
 #include "../../Constants.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 namespace Dream
 {
+    struct Character
+    {
+        GLuint     TextureID;  // ID handle of the glyph texture
+        glm::ivec2 Size;       // Size of glyph
+        glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
+        GLuint     Advance;    // Offset to advance to next glyph
+    };
+
     class FontInstance : public IAssetInstance
     {
     private:
-        //SDL_Surface* mSurface;
+        map<GLchar, Character> mCharacterMap;
+        static FT_Library* sFreeTypeLib;
         int mSize;
-        //TTF_Font *mFont;
-        /*SDL_Color*/ vector<float> mColour;
+        FT_Face* mFontFace;
+        vector<float> mColour;
         string mText;
-        GLuint mTexture;
-        bool mChanged;
+    private: // Methods
+        void ftInit();
+        void ftDestroy();
+        void generateCharacterMap();
     public:
         FontInstance(AssetDefinition*,Transform3D*);
         ~FontInstance();
+
         bool load(string);
         void loadExtraAttributes(nlohmann::json);
-        /* TTF_Font* */ void* getFont();
+
+        FT_Face* getFontFace();
+
         void setText(string);
         string getText();
+
         void setColour(float,float,float);
+        vector<float> getColour();
+
         void setSize(int);
-        void renderToTexture();
-        GLuint getTexture();
         int getWidth();
         int getHeight();
-        bool hasChanged();
+        map<GLchar, Character> getCharacterMap();
 
     }; // End of FontInstance
 } // End of Dream

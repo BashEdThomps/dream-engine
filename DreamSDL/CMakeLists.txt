@@ -14,6 +14,7 @@ find_package(assimp     REQUIRED)
 find_package(SOIL       REQUIRED)
 find_package(Lua        REQUIRED)
 find_package(luabind    REQUIRED)
+find_package(FREETYPE REQUIRED)
 
 include_directories(
     ${DreamCore_INCLUDE_DIRS}
@@ -28,6 +29,7 @@ include_directories(
   ${SDL2_INCLUDE_DIR}
   ${SDLMIXER_INCLUDE_DIR}
   ${SDL2_IMAGE_INCLUDE_DIR}
+    ${FREETYPE_INCLUDE_DIR_ft2build}
 )
 
 add_executable (
@@ -49,4 +51,5 @@ target_link_libraries(
   ${SDL2_IMAGE_LIBRARY}
   ${LUA_LIBRARIES}
   ${LUABIND_LIBRARIES}
+    ${FREETYPE_LIBRARIES}
 )

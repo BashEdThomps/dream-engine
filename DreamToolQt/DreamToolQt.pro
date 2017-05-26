@@ -72,12 +72,14 @@ macx: LIBS += \
     -llua.5.1.5 \
     -lluabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
-    -lSOIL
+    -lSOIL \
+    -lFreeType
 
 LIBS += \
     -L$$PWD/../../build-dream-Desktop_Qt_5_7_1_GCC_64bit-Release/DreamCore \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore
+    -lFreeType
 
 INCLUDEPATH += \
     $$PWD/../DreamCore/include \
@@ -86,6 +88,7 @@ INCLUDEPATH += \
     /usr/include/lua5.1 \
     /usr/local/include/lua5.1 \
     /usr/local/include/bullet \
+    /usr/local/include/freetype2 \
     /opt/local/include
 
 DEPENDPATH += \

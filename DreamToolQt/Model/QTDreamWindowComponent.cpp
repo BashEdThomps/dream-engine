@@ -17,12 +17,17 @@
  */
 #include "QTDreamWindowComponent.h"
 #include <QDebug>
-#include <QPainter>
+#include <QSurfaceFormat>
+#include <QSurfaceFormat>
 
 QTDreamWindowComponent::QTDreamWindowComponent(QWidget* parent)
     :  QOpenGLWidget(parent), IWindowComponent()
 {
     mDreamEngine = nullptr;
+    QSurfaceFormat glFormat;
+    glFormat.setVersion(3,3);
+    glFormat.setProfile(QSurfaceFormat::CoreProfile);
+    setFormat(glFormat);
     return;
 }
 

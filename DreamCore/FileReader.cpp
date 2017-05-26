@@ -27,7 +27,7 @@ namespace Dream {
 
     FileReader::~FileReader(void) {
         if (DEBUG) {
-         cout << "FileReader: Destroying Object" << endl;
+         cout << "FileReader: Destroying reader for " << mPath << endl;
      }
 
         if (mInputStream.is_open()) {
