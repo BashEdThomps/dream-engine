@@ -42,6 +42,7 @@ namespace Dream
     string mAuthor;
     string mProjectPath;
     string mStartupScene;
+    nlohmann::json mJson;
     vector<Scene*> mScenes;
     vector<AssetDefinition*> mAssetDefinitions;
     Scene *mActiveScene;
@@ -88,6 +89,7 @@ namespace Dream
     size_t getNumberOfAssetDefinitions();
     AssetDefinition* getAssetDefinitionByUuid(string);
     vector<AssetDefinition*> getAssetDefinitions();
+    nlohmann::json toJson();
 
     // Private Methods
   private:

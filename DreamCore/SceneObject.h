@@ -22,6 +22,7 @@ namespace Dream
   class SceneObject
   {
   protected:
+      nlohmann::json mJson;
     vector<Event*> mEventQueue;
     bool mLoaded;
     SceneObject* mParent;

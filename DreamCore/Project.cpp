@@ -23,6 +23,7 @@ namespace Dream
     Project::Project
     (string projectPath, nlohmann::json jsonProject, IAudioComponent *audioComponent)
     {
+        mJson = jsonProject;
         mAudioComponent = audioComponent;
         setProjectPath(projectPath);
         setMetadata(jsonProject);
@@ -424,4 +425,8 @@ namespace Dream
 
     }
 
+    nlohmann::json Project::toJson()
+    {
+        return mJson;
+    }
 } // End of Dream

@@ -18,13 +18,12 @@
 #include "QTDreamWindowComponent.h"
 #include <QDebug>
 #include <QSurfaceFormat>
-#include <QSurfaceFormat>
+#include <QOpenGLContext>
 
 QTDreamWindowComponent::QTDreamWindowComponent(QWidget* parent)
     :  QOpenGLWidget(parent), IWindowComponent()
 {
     mDreamEngine = nullptr;
-
     return;
 }
 
@@ -61,6 +60,15 @@ void QTDreamWindowComponent::swapBuffers()
 
 void QTDreamWindowComponent::initializeGL()
 {
+    makeCurrent();
+    QSurfaceFormat glFormat;
+    glFormat.setDepthBufferSize(32);
+    glFormat.setMajorVersion(4);
+    glFormat.setMinorVersion(1);
+    glFormat.setSamples(4);
+    glFormat.setProfile(QSurfaceFormat::CoreProfile);
+    context()->setFormat(glFormat);
+    doneCurrent();
     return;
 }
 
@@ -82,7 +90,7 @@ void QTDreamWindowComponent::paintGL()
     }
     else
     {
-       qDebug() << "QTDreamWindowComponent: mDreamEngine == nullptr" ;
+        qDebug() << "QTDreamWindowComponent: mDreamEngine == nullptr" ;
     }
     return;
 }

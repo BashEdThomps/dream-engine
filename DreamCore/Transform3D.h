@@ -19,6 +19,7 @@
 #define TRANSFORM3D_H
 
 #include <iostream>
+#include <json.hpp>
 #include <LinearMath/btVector3.h>
 #include <glm/gtc/quaternion.hpp>
 #include "Constants.h"
@@ -33,6 +34,7 @@ namespace Dream
     glm::quat mOrientation;
     glm::vec3 mScale;
     string mTransformType;
+    nlohmann::json mJson;
   public:
     Transform3D();
     Transform3D(Transform3D*);
@@ -85,6 +87,8 @@ namespace Dream
     void scaleByX(float);
     void scaleByY(float);
     void scaleByZ(float);
+
+    nlohmann::json toJson();
 
   };
 

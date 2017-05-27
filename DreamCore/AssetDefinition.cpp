@@ -332,7 +332,7 @@ namespace Dream
     }
   }
 
-  nlohmann::json AssetDefinition::getJson()
+  nlohmann::json AssetDefinition::toJson()
   {
     return mJson;
   }

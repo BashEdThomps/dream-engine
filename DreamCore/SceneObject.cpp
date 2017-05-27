@@ -20,6 +20,7 @@ namespace Dream
     SceneObject::SceneObject
     (nlohmann::json soJson)
     {
+        mJson = soJson;
         constructorInit();
         loadMetadata(soJson);
     }
@@ -691,5 +692,12 @@ namespace Dream
     vector<SceneObject*> SceneObject::getChildren()
     {
         return mChildren;
+    }
+
+    nlohmann::json
+    toJson
+    ()
+    {
+        return mJson;
     }
 } // End of Dream

@@ -59,7 +59,8 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    int result = 0;
+    bool result = false;
+
 
     // Run the engine
     while(!result)

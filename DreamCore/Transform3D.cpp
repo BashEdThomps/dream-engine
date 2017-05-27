@@ -222,4 +222,11 @@ namespace Dream {
       mOrientation = glm::quat(w,x,y,z);
     }
 
+    nlohmann::json
+    toJson
+    ()
+    {
+        return mJson;
+    }
+
  } // End of Dream

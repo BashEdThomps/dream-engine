@@ -200,6 +200,7 @@ namespace Dream
         mColour[2] = blue;
     }
 
+    // TODO - Optimise to store one charset per font definition rather than per instance
     void
     FontInstance::generateCharacterMap
     ()
@@ -212,7 +213,7 @@ namespace Dream
 
         for (GLubyte c = 0; c < 128; c++)
         {
-            cout << "FontInstance: FreeType: load Glyph for char " << c << endl;
+            //cout << "FontInstance: FreeType: load Glyph for char " << c << endl;
             // Load character glyph
             if (FT_Load_Char(*mFontFace, c, FT_LOAD_RENDER))
             {
@@ -237,7 +238,7 @@ namespace Dream
                         (*mFontFace)->glyph->bitmap.buffer
             );
 
-            cout << "FontInstance: Char Texture Buffered" << endl;
+            //cout << "FontInstance: Char Texture Buffered" << endl;
 
             // Set texture options
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -245,7 +246,7 @@ namespace Dream
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            cout << "FontInstance: Texture options set" << endl;
+            //cout << "FontInstance: Texture options set" << endl;
             // Now store character for later use
             Character character =
             {
@@ -256,7 +257,7 @@ namespace Dream
             };
             mCharacterMap.insert(std::pair<GLchar, Character>(c, character));
 
-            cout << "FontInstance: Texture inserted into map" << endl;
+            //cout << "FontInstance: Texture inserted into map" << endl;
         }
         FT_Done_Face(*mFontFace);
         if (DEBUG)

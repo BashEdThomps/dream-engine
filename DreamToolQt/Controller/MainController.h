@@ -32,7 +32,7 @@ class MainController : public QObject
 {
     Q_OBJECT
 public:
-    MainController(MainWindow* parent,QSurfaceFormat format);
+    MainController(MainWindow* parent);
     ~MainController();
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);

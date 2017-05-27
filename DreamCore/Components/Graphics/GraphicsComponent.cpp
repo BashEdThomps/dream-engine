@@ -344,39 +344,25 @@ namespace Dream
         float tY = sprite->getTransform()->getTranslationY();
         glm::vec2 position = glm::vec2(tX,tY);
         // Offset origin to middle of sprite
-        glm::
-                mat4 model;
-        model = glm::
-                translate(model, glm::
-                          vec3(position, 0.0f));
-        model = glm::
-                translate(model, glm::
-                          vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::
-                rotate(model, rotate, glm::
-                       vec3(0.0f, 0.0f, 1.0f));
-        model = glm::
-                translate(model, glm::
-                          vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = glm::
-                scale(model, glm::
-                      vec3(size.x*scale,size.y*scale, 1.0f));
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3(position, 0.0f));
+        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
         // Pass uniform arguments to shader
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, glm::
-                           value_ptr(model)
+                           1, GL_FALSE, glm::value_ptr(model)
                            );
         glUniform3fv(glGetUniformLocation(
                          shader->getShaderProgram(), "spriteColor"),
-                     1, glm::
-                     value_ptr(color)
+                     1, glm::value_ptr(color)
                      );
         glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, glm::
-                           value_ptr(mOrthoProjection)
+                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
                            );
         // Bind texture
         glActiveTexture(GL_TEXTURE0);
@@ -444,11 +430,12 @@ namespace Dream
         {
             Character ch = charMap[*c];
 
-            GLfloat xpos = tX + ch.Bearing.x * scale;
-            GLfloat ypos = tY - (ch.Size.y - ch.Bearing.y) * scale;
+            GLfloat xpos = tX + ch.Bearing.x;// * scale;
+            //GLfloat ypos = tY - (ch.Size.y - ch.Bearing.y) * scale;
+            GLfloat ypos = tY - (ch.Bearing.y);// * scale);
 
-            GLfloat w = ch.Size.x * scale;
-            GLfloat h = ch.Size.y * scale;
+            GLfloat w = ch.Size.x;// * scale;
+            GLfloat h = ch.Size.y;// * scale;
             // Update VBO for each character
             GLfloat vertices[6][4] = {
                 { xpos,     ypos + h,   0.0, 1.0 },
@@ -468,7 +455,7 @@ namespace Dream
             // Render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
             // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            tX += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+            tX += (ch.Advance >> 6);// * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
         }
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);

@@ -45,12 +45,11 @@ namespace Dream
         DreamEngine(IAudioComponent* audioComponent, IWindowComponent* windowComponent);
         ~DreamEngine();
 
-        int heartbeat();
+        bool heartbeat();
 
         bool loadFromArgumentParser(ArgumentParser*);
         bool loadFromDirectory(string);
         bool initEngine();
-        bool initSDL();
         bool initAssetManager();
         bool initComponents();
         bool initLuaEngine();

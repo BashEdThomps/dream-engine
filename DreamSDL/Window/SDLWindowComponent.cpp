@@ -95,8 +95,8 @@ namespace DreamSDL
         //Use OpenGL 3.2 core
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         //Create context
         mContext = SDL_GL_CreateContext(mWindow);
         if(mContext == nullptr)
@@ -131,6 +131,7 @@ namespace DreamSDL
             if (event.type == SDL_QUIT)
             {
                 setShouldClose(true);
+                break;
             }
             /*else if (
                      mGameController &&

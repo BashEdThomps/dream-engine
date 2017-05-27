@@ -48,7 +48,8 @@ namespace Dream
 
     class Scene
     {
-    public:
+    private:
+        nlohmann::json mJson;
         string mUuid;
         string mName;
         SceneObject *mRootSceneObject;
@@ -64,6 +65,7 @@ namespace Dream
         vector<float> mGravity;
         bool mPhysicsDebug;
         IAudioComponent* mAudioComponent;
+
     public:
         Scene(nlohmann::json, string, vector<AssetDefinition*>*, IAudioComponent* audioComponent);
         ~Scene();
@@ -142,6 +144,7 @@ namespace Dream
         void loadDefaultCameraTransform(nlohmann::json);
         void loadClearColour(nlohmann::json);
         void loadAmbientLightColour(nlohmann::json);
+        nlohmann::json toJson();
 
     }; // End of Scene
 

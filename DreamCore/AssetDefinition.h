@@ -82,8 +82,10 @@ namespace Dream {
         string getProjectPath();
 
         void loadMetadata();
-        nlohmann::json getJson();
         void showStatus();
+
+        nlohmann::json toJson();
+
     }; // End of AssetDefinition
 
 } // End of Dream

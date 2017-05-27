@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     Model/Properties/AssetDefinitionPropertiesModel.cpp \
     Model/Properties/PropertiesItem.cpp \
     Model/Properties/AssetDefinitionTypeComboDelegate.cpp \
-    Model/QTDreamAudioInstance.cpp
+    Model/QTDreamAudioInstance.cpp \
+    Model/ProjectDirModel.cpp
 
 HEADERS  += View/MainWindow.h \
     Controller/MainController.h \
@@ -54,7 +55,8 @@ HEADERS  += View/MainWindow.h \
     Model/Properties/ScenePropertiesModel.h \
     Model/Properties/PropertiesItem.h \
     Model/Properties/AssetDefinitionTypeComboDelegate.h \
-    Model/QTDreamAudioInstance.h
+    Model/QTDreamAudioInstance.h \
+    Model/ProjectDirModel.h
 
 FORMS    += View/MainWindow.ui
 

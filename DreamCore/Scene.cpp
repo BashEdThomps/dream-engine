@@ -29,6 +29,7 @@ namespace Dream
             IAudioComponent* audioComp
     )
     {
+        mJson = jsonScene;
         mAudioComponent = audioComp;
         setProjectPath(projectPath);
         mAssetDefinitions = assetDefs;
@@ -764,6 +765,13 @@ namespace Dream
     ()
     {
         return mPhysicsDebug;
+    }
+
+    nlohmann::json
+    Scene::toJson
+    ()
+    {
+        return mJson;
     }
 
 } // End of Dream

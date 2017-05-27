@@ -41,8 +41,6 @@ namespace Dream {
         setGameController(new GameController());
     }
 
-
-
     DreamEngine::~DreamEngine
     ()
     {
@@ -655,12 +653,12 @@ namespace Dream {
     }
 
 
-    int DreamEngine::heartbeat()
+    bool DreamEngine::heartbeat()
     {
         updateLogic();
         updateGraphics();
         updateCleanup();
-        return 0;
+        return mDone;
     }
 
     bool DreamEngine::initLuaEngine()
