@@ -63,10 +63,10 @@ void QTDreamWindowComponent::initializeGL()
     makeCurrent();
     QSurfaceFormat glFormat;
     glFormat.setDepthBufferSize(32);
-    glFormat.setMajorVersion(4);
-    glFormat.setMinorVersion(1);
+    glFormat.setMajorVersion(3);
+    glFormat.setMinorVersion(0);
     glFormat.setSamples(4);
-    glFormat.setProfile(QSurfaceFormat::CoreProfile);
+    //glFormat.setProfile(QSurfaceFormat::CoreProfile);
     context()->setFormat(glFormat);
     doneCurrent();
     return;
