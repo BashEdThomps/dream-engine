@@ -109,7 +109,7 @@ namespace Dream
         }
 
 
-        loadExtraAttributes(mDefinition->getJson());
+        loadExtraAttributes(mDefinition->toJson());
 
         mLoaded = true; //mFont != nullptr;
         return mLoaded;

@@ -162,7 +162,7 @@ ProjectDirModel::createAudioDir
             mAudioDir = nullptr;
         }
 
-        result = mAsetsDir->mkdir(ASSET_TYPE_AUDIO);
+        result = mAssetsDir->mkdir(ASSET_TYPE_AUDIO);
 
         if (result)
         {
@@ -178,7 +178,24 @@ bool
 ProjectDirModel::createFontDir
 ()
 {
-    return false;
+    bool result = false;
+    if (mAssetsDir)
+    {
+        if (mAnimationDir)
+        {
+            delete mAudioDir;
+            mAudioDir = nullptr;
+        }
+
+        result = mAssetsDir->mkdir(ASSET_TYPE_AUDIO);
+
+        if (result)
+        {
+            mAnimationDir = new QDir(getAnimationDirAbsPath());
+        }
+
+    }
+    return result;
 }
 
 

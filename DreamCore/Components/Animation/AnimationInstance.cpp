@@ -58,8 +58,8 @@ namespace Dream {
     AnimationInstance::load
     (string projectPath)
     {
-        mLoop = mDefinition->getJson()[ASSET_ATTR_LOOP];
-        loadExtraAttributes(mDefinition->getJson());
+        mLoop = mDefinition->toJson()[ASSET_ATTR_LOOP];
+        loadExtraAttributes(mDefinition->toJson());
         mLoaded = false;
         return mLoaded;
     }

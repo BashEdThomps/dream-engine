@@ -5,22 +5,25 @@ project(DreamCore)
 file(GLOB_RECURSE SRC_DIR "*.cpp")
 file(GLOB_RECURSE INC_DIR "*.h")
 
-find_package(BULLET   REQUIRED)
-find_package(OPENGL   REQUIRED)
-find_package(GLM      REQUIRED)
-find_package(GLEW     REQUIRED)
-find_package(assimp   REQUIRED)
-find_package(SOIL     REQUIRED)
-find_package(Lua      REQUIRED)
-find_package(luabind  REQUIRED)
-find_package(FREETYPE REQUIRED)
+find_package(BULLET REQUIRED)
+find_package(OPENGL REQUIRED)
+find_package(GLM REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(assimp REQUIRED)
+find_package(SOIL REQUIRED)
 
-message("Using Lua     @ L:" ${LUA_LIBRARIES} " I:" ${LUA_INCLUDE_DIR})
-message("Using LuaBind @ L:" ${LUABIND_LIBRARIES} " I:" ${LUABIND_INCLUDE_DIR})
+find_package(Lua          REQUIRED   )
+message("Using Lua: "                )
+message("\t L @ " ${LUA_LIBRARIES}   )
+message("\t I @ " ${LUA_INCLUDE_DIR} )
 
-message("Using Freetype " ${FREETYPE_VERSION_STRING})
-message("\t @ " ${FREETYPE_INCLUDE_DIR_ft2build})
-message("\t @ " ${FREETYPE_LIBRARIES})
+message("Using LuaBind "                 )
+message("\t I @ " ${Luabind_INCLUDE_DIRS} )
+
+find_package(FREETYPE                       REQUIRED )
+message("Using Freetype " ${FREETYPE_VERSION_STRING} )
+message("\t L @ " ${FREETYPE_LIBRARIES}              )
+message("\t I @ " ${FREETYPE_INCLUDE_DIR_ft2build}   )
 
 include_directories(
     ${OPENGL_INCLUDE_DIR}
@@ -30,7 +33,7 @@ include_directories(
     ${GLM_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
-    ${LUABIND_INCLUDE_DIR}
+    ${Luabind_INCLUDE_DIRS}
     ${FREETYPE_INCLUDE_DIR_ft2build}
 )
 
@@ -40,8 +43,8 @@ target_link_libraries(
     DreamCore
     -lpthread
     -ldl
+    Luabind
     ${LUA_LIBRARIES}
-    ${LUABIND_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${assimp_LIBRARIES}
     ${SOIL_LIBRARIES}

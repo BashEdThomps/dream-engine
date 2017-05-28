@@ -737,7 +737,7 @@ namespace Dream
                 .def("setTransform",&SceneObject::setTransform)
                 .def("getParent",&SceneObject::getParent)
                 .def("setParent",&SceneObject::setParent)
-                .def("addChild",&SceneObject::addChild,luabind::adopt(_2))
+                .def("addChild",&SceneObject::addChild,luabind::adopt(boost::placeholders::_2))
                 .def("copyTransform",&SceneObject::copyTransform)
                 .def("addAssetDefUuidToLoad",&SceneObject::addAssetDefUuidToLoad)
                 .def("getAnimationInstance",&SceneObject::getAnimationInstance)

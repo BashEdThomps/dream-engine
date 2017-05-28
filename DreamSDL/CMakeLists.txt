@@ -13,11 +13,13 @@ find_package(GLEW       REQUIRED)
 find_package(assimp     REQUIRED)
 find_package(SOIL       REQUIRED)
 find_package(Lua        REQUIRED)
-find_package(luabind    REQUIRED)
+#find_package(luabind    REQUIRED)
 find_package(FREETYPE REQUIRED)
 
 include_directories(
-    ${DreamCore_INCLUDE_DIRS}
+  ${Luabind_INCLUDE_DIRS}
+  ${DreamCore_INCLUDE_DIRS}
+
   ${OPENGL_INCLUDE_DIR}
   ${GLEW_INCLUDE_DIRS}
   ${assimp_INCLUDE_DIRS}
@@ -25,11 +27,10 @@ include_directories(
   ${GLM_INCLUDE_DIR}
   ${BULLET_INCLUDE_DIR}
   ${LUA_INCLUDE_DIR}
-  ${LUABIND_INCLUDE_DIR}
   ${SDL2_INCLUDE_DIR}
   ${SDLMIXER_INCLUDE_DIR}
   ${SDL2_IMAGE_INCLUDE_DIR}
-    ${FREETYPE_INCLUDE_DIR_ft2build}
+  ${FREETYPE_INCLUDE_DIR_ft2build}
 )
 
 add_executable (
@@ -39,6 +40,7 @@ add_executable (
 
 target_link_libraries(
   ${PROJECT_NAME}
+  Luabind
   DreamCore
   -lpthread
   -ldl
@@ -51,5 +53,5 @@ target_link_libraries(
   ${SDL2_IMAGE_LIBRARY}
   ${LUA_LIBRARIES}
   ${LUABIND_LIBRARIES}
-    ${FREETYPE_LIBRARIES}
+  ${FREETYPE_LIBRARIES}
 )

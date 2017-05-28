@@ -223,7 +223,7 @@ namespace Dream {
     }
 
     nlohmann::json
-    toJson
+    Transform3D::toJson
     ()
     {
         return mJson;

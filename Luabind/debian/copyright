@@ -1,0 +1,47 @@
+This package was debianized by Arthur Loiret <arthur.loiret@gmail.com> on
+Sat, 10 Mar 2007 22:36:17 +0100.
+
+It was downloaded from http://www.rasterbar.com/products/luabind.html
+
+Upstream Author: Daniel Wallin <dalwan01@student.umu.se>
+		 Arvid Norberg <c99ang@cs.umu.se>
+
+Copyright (C) 2002 David Abrahams
+Copyright (C) 2003 Daniel Wallin and Arvid Norberg
+Copyright (C) 2004 Daniel Wallin
+Copyright (C) 2004 Daniel Wallin and Arvid Norberg
+Copyright (C) 2005 Daniel Wallin
+Copyright (C) 2005 Daniel Wallin and Arvid Norberg
+Copyright (C) 1994-2003 Tecgraf, PUC-Rio
+Copyright (C) 1998-2000 Alexandre Nakonechny <nako@openlink.com.br>
+Copyright (C) 1998-2000 Lua team <lua@tecgraf.puc-rio.br>
+Copyright (C) 2009 Daniel Wallin
+
+License:
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to
+   deal in the Software without restriction, including without limitation the
+   rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+   sell copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+   
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+   
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+   IN THE SOFTWARE.
+
+The Debian package maintainers: Arthur Loiret <arthur.loiret@gmail.com>
+				Roberto C. Sanchez <roberto@connexer.com>
+
+Copyright (C) 2007-2008 Arthur Loiret
+Copyright (C) 2008-2009 Roberto C. Sanchez
+
+The Debian packaging is licensed under the GPL, see
+`/usr/share/common-licenses/GPL'.

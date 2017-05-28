@@ -695,7 +695,7 @@ namespace Dream
     }
 
     nlohmann::json
-    toJson
+    SceneObject::toJson
     ()
     {
         return mJson;

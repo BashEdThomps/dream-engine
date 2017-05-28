@@ -22,7 +22,7 @@ namespace Dream
   class SceneObject
   {
   protected:
-      nlohmann::json mJson;
+    nlohmann::json mJson;
     vector<Event*> mEventQueue;
     bool mLoaded;
     SceneObject* mParent;
@@ -159,6 +159,7 @@ namespace Dream
     void sendEvent(Event*);
     vector<Event*>* getEventQueue();
     void cleanupEvents();
+    nlohmann::json toJson();
 
   }; // End of SceneObject
 

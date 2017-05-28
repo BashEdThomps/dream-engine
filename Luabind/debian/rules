@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --buildsystem=cmake
+
+override_dh_strip:
+	dh_strip -plibluabind0 --dbg-package=libluabind0-dbg
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DWITH_STATIC=ON

@@ -23,7 +23,7 @@ namespace Dream
   (AssetDefinition* definition, Transform3D* transform)
       : IAssetInstance(definition,transform)
   {
-    loadExtraAttributes(mDefinition->getJson());
+    loadExtraAttributes(mDefinition->toJson());
   }
 
   SpriteInstance::~SpriteInstance

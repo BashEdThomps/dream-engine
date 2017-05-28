@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Luabind
+Description: c++ binding for lua
+URL: http://www.rasterbar.com/products/luabind.html
+Version: @LUABIND_VERSION@
+Libs: -L${libdir} -lluabind
+Libs.private: -llua5.1
+Cflags: -I${includedir} -I/usr/include/lua5.1

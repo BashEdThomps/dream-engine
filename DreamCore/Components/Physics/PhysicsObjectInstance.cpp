@@ -197,7 +197,7 @@ namespace Dream
     PhysicsObjectInstance::load
     (string projectPath)
     {
-        loadExtraAttributes(mDefinition->getJson(),mDefinition,false);
+        loadExtraAttributes(mDefinition->toJson(),mDefinition,false);
         mCollisionShape = createCollisionShape(mDefinition,projectPath);
         if (!mCollisionShape)
         {
@@ -302,7 +302,7 @@ namespace Dream
             {
                 CompoundChild    child = (*it);
                 AssetDefinition  *def = getAssetDefinitionByUuid(child.uuid);
-                loadExtraAttributes(def->getJson(),def,true);
+                loadExtraAttributes(def->toJson(),def,true);
                 btCollisionShape *shape = createCollisionShape(def,projectPath);
                 compound->addChildShape(child.transform,shape);
             }

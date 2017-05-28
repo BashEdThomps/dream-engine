@@ -11,7 +11,7 @@ namespace Dream
     {
         mColor     = glm::vec3(0.0f,0.0f,0.0f);
         mIntensity = 0.0f;
-        loadExtraAttributes(definition->getJson());
+        loadExtraAttributes(definition->toJson());
     }
 
     LightInstance::~LightInstance

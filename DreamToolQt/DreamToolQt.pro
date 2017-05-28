@@ -67,18 +67,20 @@ ICON = Resources/icons/DreamTool.icns
 
 macx: LIBS += \
     -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/DreamCore/ \
+    -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/Luabind/ \
     -L/usr/local/lib \
     -L/opt/local/lib \
     -L/usr/lib \
     -lDreamCore \
-    -llua.5.1.5 \
-    -lluabind \
+    -llua.5.3 \
+    -lLuabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lSOIL \
     -lFreeType
 
 LIBS += \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_7_1_GCC_64bit-Release/DreamCore \
+    -L$$PWD/../../build-dream-Desktop_Qt_5_7_1_GCC_64bit-Debug/DreamCore \
+    -L$$PWD/../../build-dream-Desktop_Qt_5_7_1_GCC_64bit-Debug/Luabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore
     -lFreeType
@@ -87,8 +89,8 @@ INCLUDEPATH += \
     $$PWD/../DreamCore/include \
     /usr/local/include \
     /usr/include/bullet \
-    /usr/include/lua5.1 \
-    /usr/local/include/lua5.1 \
+    /usr/include/lua5.3 \
+    /usr/local/include/lua5.3 \
     /usr/local/include/bullet \
     /usr/include/freetype2 \
     /usr/local/include/freetype2 \

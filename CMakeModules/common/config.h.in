@@ -1,0 +1,14 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#cmakedefine TARGET "${TARGET}"
+#cmakedefine TARGET_ICON "${TARGET_ICON}"
+#cmakedefine PRODUCT "${PRODUCT}"
+#cmakedefine DESCRIPTION "${DESCRIPTION}"
+#cmakedefine VERSION "${VERSION}"
+#cmakedefine VERSION_RC ${VERSION_RC}
+#cmakedefine AUTHOR "${AUTHOR}"
+#cmakedefine YEAR "${YEAR}"
+#cmakedefine WEBSITE "${WEBSITE}"
+
+#endif

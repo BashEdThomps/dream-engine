@@ -7,6 +7,7 @@ set(
   ${CMAKE_MODULE_PATH}
   "${Dream_SOURCE_DIR}/CMakeModules"
 )
+
 message("Using modules path: " ${CMAKE_MODULE_PATH})
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
@@ -36,6 +37,9 @@ if (APPLE)
     set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
     set(CMAKE_MACOSX_RPATH 1)
 endif()
+
+# Luabind Library
+add_subdirectory(Luabind)
 
 # DreamCore Library
 add_subdirectory (DreamCore)
