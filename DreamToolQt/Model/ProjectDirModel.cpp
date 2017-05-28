@@ -277,54 +277,61 @@ QString
 ProjectDirModel::getAnimationDirAbsPath
 ()
 {
-
+    return QString();
 }
 
 QString
 ProjectDirModel::getAudioDirAbsPath
 ()
 {
-
+    return QString();
 }
 
 QString
 ProjectDirModel::getFontDirAbsPath
 ()
 {
-
+    return QString();
 }
 
 QString
 ProjectDirModel::getModelDirAbsPath
 ()
 {
-
+    return QString();
 }
 
 QString
 ProjectDirModel::getPhysicsObjectDirAbsPath
 ()
 {
-
+    return QString();
 }
 
 QString
 ProjectDirModel::getScriptDirAbsPath
 ()
 {
-
+    return QString();
 }
 
 QString
 ProjectDirModel::getShaderDirAbsPath
 ()
 {
-
+    return QString();
 }
 
 QString
 ProjectDirModel::getSpriteDirAbsPath
 ()
 {
+    return QString();
+}
 
+bool
+ProjectDirModel::assetsDirExists
+()
+{
+    return false;
 }

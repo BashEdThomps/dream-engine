@@ -102,7 +102,6 @@ namespace Dream
             luabind::open(mState);
             luaopen_base(mState);
             luabind::set_pcall_callback(&errorHandler);
-            luaL_dostring(mState, mScriptLoadFromFile.c_str());
             luaL_dostring(mState, mScriptLoadFromString.c_str());
             exposeAPI();
             return true;
@@ -164,7 +163,7 @@ namespace Dream
                      << endl << flush;
             }
 
-            if (!loadScript(sceneObject, luaScript))
+            if (!loadScript(sceneObject))
             {
                 return false;
             }
@@ -183,8 +182,10 @@ namespace Dream
 
     bool
     LuaEngine::loadScript
-    (SceneObject* sceneObject, LuaScriptInstance* scriptInstance)
+    (SceneObject* sceneObject)
     {
+        string id = sceneObject->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
 
         if (!mState)
         {
@@ -194,32 +195,31 @@ namespace Dream
 
         if (scriptInstance->getError())
         {
+            cerr << "LuaEngine: Cannot load script " << id << " while in error state" << endl;
            return false;
         }
 
-        string id = sceneObject->getUuid();
         if (DEBUG)
         {
             cout << "LuaEngine: loadScript called for " << id << endl;
         }
+
         try
         {
             if (DEBUG)
             {
                 cout << "LuaEngine: Creating new table for " << id << endl;
             }
+
             luabind::object newtable = luabind::newtable(mState);
             string path = scriptInstance->getAbsolutePath();
             string script = LuaScriptCache::getScript(path);
 
-            // Old way
-            //luabind::call_function<void>(mState, "scriptLoadFromFile", newtable, path.c_str());
-
-            // With Cache...
             if (DEBUG)
             {
                 cout << "LuaEngine: calling scriptLoadFromString in lua for " << id << endl;
             }
+
             luabind::call_function<void>(mState, "scriptLoadFromString", newtable, script.c_str());
 
             luabind::object reg = luabind::registry(mState);
@@ -300,8 +300,6 @@ namespace Dream
                 }
                 continue;
             }
-
-            LuaScriptInstance *value = scriptIt->second;
 
             if (!executeScriptUpdate(key))
             {

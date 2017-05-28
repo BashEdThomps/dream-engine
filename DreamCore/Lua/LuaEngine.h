@@ -52,7 +52,7 @@ namespace Dream
         void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
         bool init();
         bool createAllScripts();
-        bool loadScript(SceneObject*, LuaScriptInstance*);
+        bool loadScript(SceneObject*);
         bool update();
         void stackDump();
         bool executeScriptInit(SceneObject*);
@@ -62,21 +62,23 @@ namespace Dream
 
     private:// Variables
         DreamEngine* mDreamEngine;
-
-        string mScriptLoadFromFile =
-                "function scriptLoadFromFile (scriptTable, script_path)\n"
+        /*
+        string mScriptLoadFromStringOld =
+                "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
                 "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = loadfile(script_path)\n"
+                "    local chunk = load(script_string)\n"
                 "    setfenv(chunk, scriptTable)\n"
                 "    chunk()\n"
                 "end";
+                */
+
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
                 "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = loadstring(script_string)\n"
-                "    setfenv(chunk, scriptTable)\n"
+                "    local chunk = load(script_string,nil,nil,scriptTable)\n"
+                "    --setfenv(chunk, scriptTable)\n"
                 "    chunk()\n"
                 "end";
         lua_State *mState;
