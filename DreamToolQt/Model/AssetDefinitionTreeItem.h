@@ -1,5 +1,5 @@
 /*
- * ProjectTreeItem.h
+ * AssetDefinitionTreeItem.h
  *
  * Created: 15 2017 by Ashley
  *
@@ -15,20 +15,22 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROJECTTREEITEM_H
-#define PROJECTTREEITEM_H
+#ifndef ASSET_DEFINITION_TREEITEM_H
+#define ASSET_DEFINITION_TREEITEM_H
 
+#include <DreamCore.h>
 #include "GenericTreeItem.h"
 #include <QList>
 #include <QVariant>
 
-class ProjectTreeItem : public GenericTreeItem
+class AssetDefinitionTreeItem : public GenericTreeItem
 {
 public:
-    explicit ProjectTreeItem(const QList<QVariant> &data, GenericTreeItemType type, void* item, ProjectTreeItem *parentItem = 0);
-    void* getItem();
+    explicit AssetDefinitionTreeItem(const QList<QVariant> &data, Dream::AssetDefinition* definiion, AssetDefinitionTreeItem *parentItem = 0);
+    Dream::AssetDefinition *getAssetDefinition();
+
 private:
-    void* mItem;
+    Dream::AssetDefinition *mDefinition;
 };
 
-#endif // PROJECTTREEITEM_H
+#endif // ASSET_DEFINITION_TREEITEM_H

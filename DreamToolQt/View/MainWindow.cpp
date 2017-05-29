@@ -66,6 +66,16 @@ QAction* MainWindow::getActionSave()
     return ui->actionSave;
 }
 
+QAction* MainWindow::getActionPlay()
+{
+   return ui->actionPlay;
+}
+
+QAction* MainWindow::getActionStop()
+{
+    return ui->actionStop;
+}
+
 void MainWindow::onInvalidProjectDirectory(QString directory)
 {
     QMessageBox::critical(
@@ -92,6 +102,11 @@ QTreeView* MainWindow::getProjectTreeView()
 QTreeView* MainWindow::getPropertiesTreeView()
 {
     return ui->propertiesTreeView;
+}
+
+QTreeView* MainWindow::getAssetDefinitionTreeView()
+{
+    return ui->assetDefinitionTreeView;
 }
 
 void MainWindow::showStatusBarMessage(QString msg)

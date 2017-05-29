@@ -87,8 +87,11 @@ namespace Dream
             cout << "GraphicsComponent: GL Version " << glGetString(GL_VERSION) << endl;
             cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
         }
+
         onWindowDimensionsChanged();
 
+        glEnable(GL_DEPTH_TEST);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
         create2DVertexObjects();
         createFontVertexObjects();
@@ -106,7 +109,15 @@ namespace Dream
         // Define the viewport dimensions
         int windowWidth  = mWindowComponent->getWidth();
         int windowHeight = mWindowComponent->getHeight();
+
+        if (DEBUG)
+        {
+            cout << "GraphicsComponwnt: Window Dimensions Changed! "
+                 << windowWidth << "," << windowHeight << endl;
+        }
+
         glViewport(0, 0, windowWidth, windowHeight);
+
         // Ortho projection for 2D
         mOrthoProjection = glm::ortho
         (
@@ -116,14 +127,19 @@ namespace Dream
             0.0f,
             -1.0f, 1.0f
         );
+        // Perspective Projection Matrix
+        mProjectionMatrix = glm::perspective(
+            mCamera->getZoom(),
+            static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
+            mMinimumDraw,
+            mMaximumDraw
+        );
     }
 
     void
     GraphicsComponent::preRender
     ()
     {
-        glEnable(GL_DEPTH_TEST);
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glEnable(GL_BLEND);
@@ -151,6 +167,10 @@ namespace Dream
     GraphicsComponent::create2DVertexObjects
     ()
     {
+        if (DEBUG)
+        {
+            cout << "GraphicsComponent: Creating 2D VAO/VBO" << endl;
+        }
         glGenVertexArrays(1, &mSpriteQuadVAO);
         glGenBuffers(1, &mSpriteVBO);
         glBindBuffer(GL_ARRAY_BUFFER, mSpriteVBO);
@@ -167,6 +187,10 @@ namespace Dream
     GraphicsComponent::createFontVertexObjects
     ()
     {
+        if (DEBUG)
+        {
+            cout << "GraphicsComponent: Creating Font VAO/VBO" << endl;
+        }
         glGenVertexArrays(1, &mFontVAO);
         glGenBuffers(1, &mFontVBO);
         glBindVertexArray(mFontVAO);
@@ -317,13 +341,7 @@ namespace Dream
                  << "\tMinDraw: " << mMinimumDraw << endl
                  << "\tMaxDraw: " << mMaximumDraw << endl;
         }
-        mProjectionMatrix = glm::perspective(
-            mCamera->getZoom(),
-            static_cast<float>(mWindowComponent->getWidth()) /
-            static_cast<float>(mWindowComponent->getHeight()),
-            mMinimumDraw,
-            mMaximumDraw
-        );
+
         // View transform
         mViewMatrix = mCamera->getViewMatrix();
 

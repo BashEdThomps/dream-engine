@@ -27,9 +27,9 @@ namespace Dream
         : IAssetInstance(definition,transform)
     {
         ftInit();
-        mColour = {0,0,0};
+        mColour = {1,1,1};
         mFontFace = nullptr;
-        setText("");
+        setText("NO TEXT SET");
     }
 
     void
@@ -180,14 +180,14 @@ namespace Dream
     FontInstance::getWidth
     ()
     {
-        return 0;//mSurface->w;
+        return 1;//mSurface->w;
     }
 
     int
     FontInstance::getHeight
     ()
     {
-        return 0;//mSurface->h;
+        return 1;//mSurface->h;
     }
 
 
@@ -209,6 +209,7 @@ namespace Dream
         {
             cout << "FontInstance: Generating Character Map..." << endl;
         }
+
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
 
         for (GLubyte c = 0; c < 128; c++)
@@ -259,6 +260,7 @@ namespace Dream
 
             //cout << "FontInstance: Texture inserted into map" << endl;
         }
+
         FT_Done_Face(*mFontFace);
         if (DEBUG)
         {

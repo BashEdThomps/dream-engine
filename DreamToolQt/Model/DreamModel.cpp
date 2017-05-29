@@ -132,14 +132,14 @@ bool DreamModel::startScene(Dream::Scene* scene)
 
     if (mHeartbeatTimer)
     {
-        disconnect(mHeartbeatTimer, SIGNAL(timeout()), this, SLOT(onDreamHeartbeat()));
+        disconnect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
         delete mHeartbeatTimer;
     }
 
     mWindowComponent->setDreamEngine(mDreamEngine);
     mHeartbeatTimer = new QTimer(this);
     connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
-    mHeartbeatTimer->start(5000);
+    mHeartbeatTimer->start(33);
 
     return true;
 }

@@ -40,11 +40,14 @@ public:
 
     QTreeView* getProjectTreeView();
     QTreeView* getPropertiesTreeView();
+    QTreeView* getAssetDefinitionTreeView();
 
     QAction* getActionNew();
     QAction* getActionSave();
     QAction* getActionOpen();
     QAction* getActionReload();
+    QAction* getActionStop();
+    QAction* getActionPlay();
 
     QOpenGLWindowComponent* getWindowComponent();
 

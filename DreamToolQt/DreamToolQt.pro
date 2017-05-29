@@ -28,9 +28,7 @@ SOURCES += main.cpp\
     Controller/MainController.cpp \
     Model/DreamModel.cpp \
     Model/QTDreamAudioComponent.cpp \
-    Model/QTDreamWindowComponent.cpp \
     Model/QOpenGLWindowComponent.cpp \
-    Model/QGLWindowComponent.cpp \
     Model/ProjectTreeItem.cpp \
     Model/ProjectTreeModel.cpp \
     Model/Properties/PropertiesModel.cpp \
@@ -41,15 +39,16 @@ SOURCES += main.cpp\
     Model/Properties/PropertiesItem.cpp \
     Model/Properties/AssetDefinitionTypeComboDelegate.cpp \
     Model/QTDreamAudioInstance.cpp \
-    Model/ProjectDirModel.cpp
+    Model/ProjectDirModel.cpp \
+    Model/AssetDefinitionTreeItem.cpp \
+    Model/AssetDefinitionTreeModel.cpp \
+    Model/GenericTreeItem.cpp
 
 HEADERS  += View/MainWindow.h \
     Controller/MainController.h \
     Model/DreamModel.h \
     Model/QTDreamAudioComponent.h \
-    Model/QTDreamWindowComponent.h \
     Model/QOpenGLWindowComponent.h \
-    Model/QGLWindowComponent.h \
     Model/ProjectTreeItem.h \
     Model/ProjectTreeModel.h \
     Model/Properties/PropertiesModel.h \
@@ -60,7 +59,10 @@ HEADERS  += View/MainWindow.h \
     Model/Properties/PropertiesItem.h \
     Model/Properties/AssetDefinitionTypeComboDelegate.h \
     Model/QTDreamAudioInstance.h \
-    Model/ProjectDirModel.h
+    Model/ProjectDirModel.h \
+    Model/AssetDefinitionTreeItem.h \
+    Model/AssetDefinitionTreeModel.h \
+    Model/GenericTreeItem.h
 
 FORMS    += View/MainWindow.ui
 

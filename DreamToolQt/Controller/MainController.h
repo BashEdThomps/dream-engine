@@ -27,6 +27,7 @@
 #include "../View/MainWindow.h"
 #include "../Model/DreamModel.h"
 #include "../Model/ProjectTreeModel.h"
+#include "../Model/AssetDefinitionTreeModel.h"
 
 class MainController : public QObject
 {
@@ -53,6 +54,8 @@ public slots:
     void onProjectOpenButtonClicked();
     void onProjectSaveButtonClicked();
     void onProjectReloadButtonClicked();
+    void onProjectPlayButtonClicked();
+    void onProjectStopButtonClicked();
 
     void onProjectNameChanged(QString name);
     void onProjectAuthorChanged(QString author);
@@ -60,7 +63,7 @@ public slots:
     void onProjectWindowWidthChanged(QString width);
     void onProjectWindowHeightChanged(QString height);
     void onProjectStartupSceneChanged(QString startupScene);
-    void onProjectTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
+    void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
 
 private: // Variables
     MainWindow *mMainWindow;
@@ -71,8 +74,9 @@ private: // Variables
     QErrorMessage *mInvalidProjectDirectoryError;
     QStringListModel *mSceneListModel;
     ProjectTreeModel *mProjectTreeModel;
+    AssetDefinitionTreeModel *mAssetDefinitionTreeModel;
 private: // Methods
-    void setupPropertiesTreeViewModel(ProjectTreeItem *item);
+    void setupPropertiesTreeViewModel(GenericTreeItem *item);
     void createConnections();
     void updateWindowTitle(QString msg);
     void connectTreeViewModel();

@@ -18,63 +18,16 @@
 #include "ProjectTreeItem.h"
 #include <QStringList>
 
-ProjectTreeItem::ProjectTreeItem(const QList<QVariant> &data, ProjectItemType type, void* item, ProjectTreeItem *parent)
+ProjectTreeItem::ProjectTreeItem
+(const QList<QVariant> &data, GenericTreeItemType type, void* item, ProjectTreeItem *parent)
+    : GenericTreeItem(data, type, parent)
 {
-    mType = type;
-    mParentItem = parent;
-    mItemData = data;
     mItem = item;
 }
 
-ProjectTreeItem::~ProjectTreeItem()
-{
-    qDeleteAll(mChildItems);
-}
-
-void ProjectTreeItem::appendChild(ProjectTreeItem *item)
-{
-    mChildItems.append(item);
-}
-
-ProjectTreeItem *ProjectTreeItem::child(int row)
-{
-    return mChildItems.value(row);
-}
-
-int ProjectTreeItem::childCount() const
-{
-    return mChildItems.count();
-}
-
-int ProjectTreeItem::columnCount() const
-{
-    return mItemData.count();
-}
-
-QVariant ProjectTreeItem::data(int column) const
-{
-    return mItemData.value(column);
-}
-
-ProjectTreeItem *ProjectTreeItem::parentItem()
-{
-    return mParentItem;
-}
-
-int ProjectTreeItem::row() const
-{
-    if (mParentItem)
-        return mParentItem->mChildItems.indexOf(const_cast<ProjectTreeItem*>(this));
-
-    return 0;
-}
-
-ProjectItemType ProjectTreeItem::getItemType()
-{
-   return mType;
-}
-
-void* ProjectTreeItem::getItem()
+void*
+ProjectTreeItem::getItem
+()
 {
     return mItem;
 }

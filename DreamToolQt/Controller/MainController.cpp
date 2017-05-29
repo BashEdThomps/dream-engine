@@ -31,7 +31,8 @@
 #include "../Model/Properties/ScenePropertiesModel.h"
 #include "../Model/Properties/AssetDefinitionTypeComboDelegate.h"
 
-MainController::MainController(MainWindow* parent)
+MainController::MainController
+(MainWindow* parent)
     : QObject(parent)
 {
     mMainWindow = parent;
@@ -41,7 +42,8 @@ MainController::MainController(MainWindow* parent)
     createConnections();
 }
 
-MainController::~MainController()
+MainController::~MainController
+()
 {
     if (mAudioComponent)
     {
@@ -56,7 +58,9 @@ MainController::~MainController()
     }
 }
 
-void MainController::createConnections()
+void
+MainController::createConnections
+()
 {
     // actionNew
     connect
@@ -85,6 +89,20 @@ void MainController::createConnections()
         mMainWindow->getActionReload(), SIGNAL(triggered()),
         this, SLOT(onProjectReloadButtonClicked()),
         Qt::DirectConnection
+    );
+    // actionPlay
+    connect
+    (
+                mMainWindow->getActionPlay(), SIGNAL(triggered()),
+                this, SLOT(onProjectPlayButtonClicked()),
+                Qt::DirectConnection
+    );
+    // actionStop
+    connect
+    (
+                mMainWindow->getActionStop(), SIGNAL(triggered()),
+                this, SLOT(onProjectStopButtonClicked()),
+                Qt::DirectConnection
     );
     // Invalid Project Directory
     connect
@@ -116,7 +134,9 @@ void MainController::createConnections()
      );
 }
 
-void MainController::onProjectNewButtonClicked()
+void
+MainController::onProjectNewButtonClicked
+()
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
@@ -128,12 +148,16 @@ void MainController::onProjectNewButtonClicked()
     }
 }
 
-void MainController::updateWindowTitle(QString msg)
+void
+MainController::updateWindowTitle
+(QString msg)
 {
     emit notifyProjectDirectoryChanged("Dream Tool :: " + msg);
 }
 
-void MainController::onProjectOpenButtonClicked()
+void
+MainController::onProjectOpenButtonClicked
+()
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
@@ -168,8 +192,13 @@ void MainController::onProjectOpenButtonClicked()
     emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupScene()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
     Dream::Project *project = mDreamModel->getProject();
+
     mProjectTreeModel = new ProjectTreeModel(project,mMainWindow->getProjectTreeView());
     mMainWindow->getProjectTreeView()->setModel(mProjectTreeModel);
+
+    mAssetDefinitionTreeModel = new AssetDefinitionTreeModel(project,mMainWindow->getAssetDefinitionTreeView());
+    mMainWindow->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel);
+
     emit notifyStatusBarProjectLoaded(
                 QString::fromStdString(
                     "Successfuly Loaded Project: " +
@@ -180,25 +209,38 @@ void MainController::onProjectOpenButtonClicked()
     connectTreeViewModel();
 }
 
-void MainController::connectTreeViewModel()
+void
+MainController::connectTreeViewModel
+()
 {
-    // Tree View
+    // projectTreeView
     connect
     (
         mMainWindow->getProjectTreeView()->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-        this, SLOT(onProjectTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&)),
+        this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&)),
         Qt::DirectConnection
     );
-
+    // assetDefinitionTreeView
+    connect
+    (
+        mMainWindow->getAssetDefinitionTreeView()->selectionModel(),
+        SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+        this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&)),
+        Qt::DirectConnection
+    );
 }
 
-void MainController::onProjectSaveButtonClicked()
+void
+MainController::onProjectSaveButtonClicked
+()
 {
 
 }
 
-QStringListModel* MainController::getSceneNamesListModel(vector<Dream::Scene*> sceneList)
+QStringListModel*
+MainController::getSceneNamesListModel
+(vector<Dream::Scene*> sceneList)
 {
     QStringList sceneNameList;
     mSceneListModel = new QStringListModel(mMainWindow);
@@ -212,44 +254,58 @@ QStringListModel* MainController::getSceneNamesListModel(vector<Dream::Scene*> s
     return mSceneListModel;
 }
 
-void MainController::onProjectNameChanged(QString name)
+void
+MainController::onProjectNameChanged
+(QString name)
 {
     qDebug() << "Name set to " << name;
     mDreamModel->setProjectName(name.toStdString());
 }
 
-void MainController::onProjectAuthorChanged(QString author)
+void
+MainController::onProjectAuthorChanged
+(QString author)
 {
     qDebug() << "Author set to " << author;
     mDreamModel->setProjectAuthor(author.toStdString());
 }
 
-void MainController::onProjectDescriptionChanged(QString desc)
+void
+MainController::onProjectDescriptionChanged
+(QString desc)
 {
     qDebug() << "Description set to " << desc;
     mDreamModel->setProjectDescription(desc.toStdString());
 }
 
-void MainController::onProjectWindowWidthChanged(QString width)
+void
+MainController::onProjectWindowWidthChanged
+(QString width)
 {
     qDebug() << "Window Width set to " << width;
     mDreamModel->setProjectWindowWidth(width.toInt());
 }
 
-void MainController::onProjectWindowHeightChanged(QString height)
+void
+MainController::onProjectWindowHeightChanged
+(QString height)
 {
     qDebug() << "Window Height set to " << height;
     mDreamModel->setProjectWindowHeight(height.toInt());
 }
 
-void MainController::onProjectStartupSceneChanged(QString startupSceneIndex)
+void
+MainController::onProjectStartupSceneChanged
+(QString startupSceneIndex)
 {
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
     qDebug() << "startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
     mDreamModel->setProjectStartupSceneByName(sceneName);
 }
 
-void MainController::onProjectReloadButtonClicked()
+void
+MainController::onProjectPlayButtonClicked
+()
 {
     qDebug() << "onReloadProject Clicked";
     Dream::Scene *scene = mDreamModel->getSelectedScene();
@@ -263,22 +319,43 @@ void MainController::onProjectReloadButtonClicked()
     }
 }
 
-string MainController::getSceneNameFromModelIndex(int index)
+void
+MainController::onProjectReloadButtonClicked
+()
+{
+   onProjectStopButtonClicked();
+   onProjectPlayButtonClicked();
+}
+
+void
+MainController::onProjectStopButtonClicked
+()
+{
+
+}
+
+string
+MainController::getSceneNameFromModelIndex
+(int index)
 {
     return mSceneListModel->stringList().at(index).toStdString();
 }
 
-void MainController::onProjectTreeViewSelectionChanged(const QItemSelection& selected,const QItemSelection& deselected)
+void
+MainController::onTreeViewSelectionChanged
+(const QItemSelection& selected,const QItemSelection& deselected)
 {
     QModelIndexList indexes = selected.indexes();
     if (indexes.size() > 0)
     {
-        ProjectTreeItem *selected = static_cast<ProjectTreeItem*>(indexes.at(0).internalPointer());
+        GenericTreeItem *selected = static_cast<GenericTreeItem*>(indexes.at(0).internalPointer());
         setupPropertiesTreeViewModel(selected);
     }
 }
 
-void MainController::setupPropertiesTreeViewModel(ProjectTreeItem *item)
+void
+MainController::setupPropertiesTreeViewModel
+(GenericTreeItem *item)
 {
     QTreeView *propertiesTreeView = mMainWindow->getPropertiesTreeView();
     PropertiesModel *model = nullptr;
@@ -289,20 +366,20 @@ void MainController::setupPropertiesTreeViewModel(ProjectTreeItem *item)
 
     switch(item->getItemType())
     {
-        case ProjectItemType::PROJECT:
+        case GenericTreeItemType::PROJECT:
             qDebug() << "Selected a project";
             project = mDreamModel->getProject();
             model = new ProjectPropertiesModel(project,propertiesTreeView);
             break;
-        case ProjectItemType::ASSET_DEFINITION:
+        case GenericTreeItemType::ASSET_DEFINITION:
             qDebug() << "Selected an asset definition";
-            asset = static_cast<Dream::AssetDefinition*>(item->getItem());
+            asset = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
             model = new AssetDefinitionPropertiesModel(asset,propertiesTreeView);
             // Set Type Delegate
             propertiesTreeView->setItemDelegateForRow(1,new AssetDefinitionTypeComboDelegate());
             break;
-        case ProjectItemType::SCENE:
-            scene = static_cast<Dream::Scene*>(item->getItem());
+        case GenericTreeItemType::SCENE:
+            scene = static_cast<Dream::Scene*>(static_cast<ProjectTreeItem*>(item)->getItem());
             mDreamModel->setSelectedScene(scene);
             if (scene)
             {
@@ -310,12 +387,12 @@ void MainController::setupPropertiesTreeViewModel(ProjectTreeItem *item)
                 qDebug() << "Selected a scene";
             }
             break;
-        case ProjectItemType::SCENE_OBJECT:
+        case GenericTreeItemType::SCENE_OBJECT:
             qDebug() << "Selected a scene object";
-            sceneObject = static_cast<Dream::SceneObject*>(item->getItem());
+            sceneObject = static_cast<Dream::SceneObject*>(static_cast<ProjectTreeItem*>(item)->getItem());
             model = new SceneObjectPropertiesModel(sceneObject,propertiesTreeView);
             break;
-        case ProjectItemType::TREE_NODE:
+        case GenericTreeItemType::TREE_NODE:
             qDebug() << "Selected a tree node";
             break;
     }
