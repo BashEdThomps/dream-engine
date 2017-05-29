@@ -87,25 +87,9 @@ namespace Dream
             cout << "GraphicsComponent: GL Version " << glGetString(GL_VERSION) << endl;
             cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
         }
-        // Define the viewport dimensions
-        int windowWidth  = mWindowComponent->getWidth();
-        int windowHeight = mWindowComponent->getHeight();
-        glViewport(0, 0, windowWidth, windowHeight);
-        // Ortho projection for 2D
-        mOrthoProjection = glm::ortho
-                (
-                    0.0f,
-                    static_cast<float>(windowWidth),
-                    static_cast<float>(windowHeight),
-                    0.0f,
-                    -1.0f, 1.0f
-                    );
-        glEnable(GL_DEPTH_TEST);
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        onWindowDimensionsChanged();
+
+
         create2DVertexObjects();
         createFontVertexObjects();
         if (DEBUG)
@@ -115,8 +99,56 @@ namespace Dream
         return true;
     }
 
+    void
+    GraphicsComponent::onWindowDimensionsChanged
+    ()
+    {
+        // Define the viewport dimensions
+        int windowWidth  = mWindowComponent->getWidth();
+        int windowHeight = mWindowComponent->getHeight();
+        glViewport(0, 0, windowWidth, windowHeight);
+        // Ortho projection for 2D
+        mOrthoProjection = glm::ortho
+        (
+            0.0f,
+            static_cast<float>(windowWidth),
+            static_cast<float>(windowHeight),
+            0.0f,
+            -1.0f, 1.0f
+        );
+    }
 
-    void GraphicsComponent::create2DVertexObjects
+    void
+    GraphicsComponent::preRender
+    ()
+    {
+        glEnable(GL_DEPTH_TEST);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // Clear the colorbuffer
+        glClearColor(
+            mClearColour[CLEAR_RED],
+            mClearColour[CLEAR_GREEN],
+            mClearColour[CLEAR_BLUE],
+            mClearColour[CLEAR_ALPHA]
+        );
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void
+    GraphicsComponent::postRender
+    ()
+    {
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glDisable (GL_BLEND);
+    }
+
+    void
+    GraphicsComponent::create2DVertexObjects
     ()
     {
         glGenVertexArrays(1, &mSpriteQuadVAO);
@@ -161,15 +193,7 @@ namespace Dream
             clear2DQueue();
             clear3DQueue();
             clearLightQueue();
-            // Clear the colorbuffer
-            glClearColor
-                    (
-                        mClearColour[CLEAR_RED],
-                        mClearColour[CLEAR_GREEN],
-                        mClearColour[CLEAR_BLUE],
-                        mClearColour[CLEAR_ALPHA]
-                        );
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             vector<SceneObject*> scenegraph = scene->getScenegraphVector();
             for (vector<SceneObject*>::
                  iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ )

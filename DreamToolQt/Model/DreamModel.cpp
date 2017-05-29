@@ -21,7 +21,7 @@
 DreamModel::DreamModel(
         QObject *parent,
         QTDreamAudioComponent *audioComponent,
-        QTDreamWindowComponent *windowComponent)
+        QOpenGLWindowComponent *windowComponent)
     : QObject(parent)
 {
     mDreamEngine = new Dream::DreamEngine(audioComponent,windowComponent);
@@ -139,7 +139,7 @@ bool DreamModel::startScene(Dream::Scene* scene)
     mWindowComponent->setDreamEngine(mDreamEngine);
     mHeartbeatTimer = new QTimer(this);
     connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
-    mHeartbeatTimer->start(1000);
+    mHeartbeatTimer->start(5000);
 
     return true;
 }

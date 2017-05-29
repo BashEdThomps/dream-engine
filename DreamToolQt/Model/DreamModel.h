@@ -18,12 +18,12 @@
 #ifndef DREAMMODEL_H
 #define DREAMMODEL_H
 
-#include <QObject>
 #include <DreamCore.h>
+#include <QObject>
 #include <QTimer>
 
 #include "QTDreamAudioComponent.h"
-#include "QTDreamWindowComponent.h"
+#include "QOpenGLWindowComponent.h"
 
 class DreamModel : public QObject
 {
@@ -31,7 +31,7 @@ class DreamModel : public QObject
 public:
     explicit DreamModel(QObject *parent = 0,
                         QTDreamAudioComponent *audioComponent = 0,
-                        QTDreamWindowComponent *windowComponent = 0);
+                        QOpenGLWindowComponent *windowComponent = 0);
     ~DreamModel();
     bool loadProject(QString path);
     Dream::Project* getProject();
@@ -58,7 +58,7 @@ private:
     Dream::Scene* mSelectedScene;
 
     QTDreamAudioComponent *mAudioComponent;
-    QTDreamWindowComponent *mWindowComponent;
+    QOpenGLWindowComponent *mWindowComponent;
 
     QTimer* mHeartbeatTimer;
 };

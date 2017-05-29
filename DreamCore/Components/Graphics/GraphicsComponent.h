@@ -108,6 +108,9 @@ namespace Dream
         glm::mat4 getViewMatrix();
         glm::mat4 getProjectionMatrix();
         void setGameController(GameController* gameController);
+        void onWindowDimensionsChanged();
+        void preRender();
+        void postRender();
         GameController *getGameController();
     }; // End of GraphicsComponent
 } // End of Dream

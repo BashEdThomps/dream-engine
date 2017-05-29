@@ -19,12 +19,22 @@
 #include "View/MainWindow.h"
 #include "Controller/MainController.h"
 #include <QApplication>
+#include <QSurfaceFormat>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QSurfaceFormat glFormat;
+    glFormat.setVersion( 3, 2 );
+    glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
+    glFormat.setSamples(4);
+    QSurfaceFormat::setDefaultFormat(glFormat);
+
     MainWindow mainWindow;
     MainController mainController(&mainWindow);
+
     mainWindow.show();
+
     return a.exec();
 }

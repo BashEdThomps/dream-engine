@@ -371,6 +371,7 @@ namespace Dream {
             cout << "==== DreamEngine: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
         // Update Graphics/Physics Components
+        mGraphicsComponent->preRender();
         mGraphicsComponent->updateComponent(mActiveScene);
         mPhysicsComponent->setViewProjectionMatrix(
                     mGraphicsComponent->getViewMatrix(),
@@ -380,8 +381,8 @@ namespace Dream {
         mGraphicsComponent->draw3DQueue();
         mPhysicsComponent->drawDebug();
         mGraphicsComponent->draw2DQueue();
-
         mWindowComponent->swapBuffers();
+        mGraphicsComponent->postRender();
         // Update state
         mDone = mWindowComponent->shouldClose();
         return !mDone;

@@ -64,7 +64,7 @@ public slots:
 
 private: // Variables
     MainWindow *mMainWindow;
-    QTDreamWindowComponent *mWindowComponent;
+    QOpenGLWindowComponent *mWindowComponent;
     QTDreamAudioComponent  *mAudioComponent;
     DreamModel *mDreamModel;
     QString mProjectDirectory;

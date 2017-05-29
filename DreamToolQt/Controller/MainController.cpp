@@ -36,7 +36,7 @@ MainController::MainController(MainWindow* parent)
 {
     mMainWindow = parent;
     mAudioComponent = new QTDreamAudioComponent();
-    mWindowComponent = parent->getOpenGLWidget();
+    mWindowComponent = parent->getWindowComponent();
     mDreamModel = new DreamModel(this,mAudioComponent,mWindowComponent);
     createConnections();
 }

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,6 +29,8 @@ SOURCES += main.cpp\
     Model/DreamModel.cpp \
     Model/QTDreamAudioComponent.cpp \
     Model/QTDreamWindowComponent.cpp \
+    Model/QOpenGLWindowComponent.cpp \
+    Model/QGLWindowComponent.cpp \
     Model/ProjectTreeItem.cpp \
     Model/ProjectTreeModel.cpp \
     Model/Properties/PropertiesModel.cpp \
@@ -46,6 +48,8 @@ HEADERS  += View/MainWindow.h \
     Model/DreamModel.h \
     Model/QTDreamAudioComponent.h \
     Model/QTDreamWindowComponent.h \
+    Model/QOpenGLWindowComponent.h \
+    Model/QGLWindowComponent.h \
     Model/ProjectTreeItem.h \
     Model/ProjectTreeModel.h \
     Model/Properties/PropertiesModel.h \
@@ -66,6 +70,7 @@ RESOURCES += \
 ICON = Resources/icons/DreamTool.icns
 
 macx: LIBS += \
+    -framework OpenGL \
     -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/DreamCore/ \
     -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/Luabind/ \
     -L/usr/local/lib \

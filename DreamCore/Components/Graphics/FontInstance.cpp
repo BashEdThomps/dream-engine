@@ -29,7 +29,7 @@ namespace Dream
         ftInit();
         mColour = {0,0,0};
         mFontFace = nullptr;
-        setText("NO TEXT SET");
+        setText("");
     }
 
     void

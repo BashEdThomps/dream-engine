@@ -17,6 +17,7 @@
  */
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "Model/QOpenGLWindowComponent.h"
 #include <QWindow>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -24,49 +25,68 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setupGL(parent);
+}
+
+void MainWindow::setupGL(QWidget *parent)
+{
+    QVBoxLayout *glVerticalLayout = new QVBoxLayout(ui->centralWidget);
+    glVerticalLayout->setSpacing(6);
+    glVerticalLayout->setContentsMargins(11, 11, 11, 11);
+    glVerticalLayout->setObjectName(QStringLiteral("glVerticalLayout"));
+
+    QSurfaceFormat glFormat;
+    glFormat.setVersion( 3, 2 );
+    glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
+    glFormat.setSamples(4);
+    mWindowComponent = new QOpenGLWindowComponent(glFormat,parent);
+
+    glVerticalLayout->addWidget(mWindowComponent);
+    ui->centralWidget->setLayout(glVerticalLayout);
 }
 
 MainWindow::~MainWindow()
 {
+    delete mWindowComponent;
     delete ui;
 }
 
 QAction* MainWindow::getActionNew()
 {
-   return ui->actionNew;
+    return ui->actionNew;
 }
 
 QAction* MainWindow::getActionOpen()
 {
-   return ui->actionOpen;
+    return ui->actionOpen;
 }
 
 QAction* MainWindow::getActionSave()
 {
-   return ui->actionSave;
+    return ui->actionSave;
 }
 
 void MainWindow::onInvalidProjectDirectory(QString directory)
 {
     QMessageBox::critical(
-        this,
-        tr("Invalid Project Directory"),
-        tr("\"%1\"\n\nDoes not contain a vaild Dream project.").arg(directory)
-    );
+                this,
+                tr("Invalid Project Directory"),
+                tr("\"%1\"\n\nDoes not contain a vaild Dream project.").arg(directory)
+                );
 }
 
 void MainWindow::onNoSceneSelected()
 {
     QMessageBox::critical(
-        this,
-        tr("No Scene Selected"),
-        tr("Please select a Scene to run from the Project Tree.")
-    );
+                this,
+                tr("No Scene Selected"),
+                tr("Please select a Scene to run from the Project Tree.")
+                );
 }
 
 QTreeView* MainWindow::getProjectTreeView()
 {
-   return ui->projectTreeView;
+    return ui->projectTreeView;
 }
 
 QTreeView* MainWindow::getPropertiesTreeView()
@@ -76,7 +96,7 @@ QTreeView* MainWindow::getPropertiesTreeView()
 
 void MainWindow::showStatusBarMessage(QString msg)
 {
-   ui->statusBar->showMessage(msg);
+    ui->statusBar->showMessage(msg);
 }
 
 QAction* MainWindow::getActionReload()
@@ -84,7 +104,7 @@ QAction* MainWindow::getActionReload()
     return ui->actionReload;
 }
 
-QTDreamWindowComponent* MainWindow::getOpenGLWidget()
+QOpenGLWindowComponent* MainWindow::getWindowComponent()
 {
-   return ui->openGLWidget;
+    return mWindowComponent;
 }
