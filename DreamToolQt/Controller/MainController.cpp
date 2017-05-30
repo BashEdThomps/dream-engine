@@ -376,7 +376,6 @@ MainController::setupPropertiesTreeViewModel
             asset = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
             model = new AssetDefinitionPropertiesModel(asset,propertiesTreeView);
             // Set Type Delegate
-            propertiesTreeView->setItemDelegateForRow(1,new AssetDefinitionTypeComboDelegate());
             break;
         case GenericTreeItemType::SCENE:
             scene = static_cast<Dream::Scene*>(static_cast<ProjectTreeItem*>(item)->getItem());

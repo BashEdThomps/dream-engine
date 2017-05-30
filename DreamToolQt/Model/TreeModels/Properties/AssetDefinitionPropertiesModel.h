@@ -24,7 +24,7 @@
 class AssetDefinitionPropertiesModel : public PropertiesModel
 {
 public:
-    AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QObject *parent = 0);
+    AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QTreeView *parent = 0);
     ~AssetDefinitionPropertiesModel();
     void createRoot() override;
     void createProperties() override;

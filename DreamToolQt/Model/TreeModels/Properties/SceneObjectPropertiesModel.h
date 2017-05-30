@@ -24,7 +24,7 @@
 class SceneObjectPropertiesModel : public PropertiesModel
 {
 public:
-    SceneObjectPropertiesModel(Dream::SceneObject *sceneObject,QObject* parent = 0);
+    SceneObjectPropertiesModel(Dream::SceneObject *sceneObject,QTreeView* parent = 0);
     ~SceneObjectPropertiesModel();
 
     void createRoot() override;

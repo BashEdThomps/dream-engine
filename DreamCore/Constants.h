@@ -85,20 +85,7 @@ void dreamSetVerbose(bool verbose);
     #define ASSET_ATTR_Y "y"
     #define ASSET_ATTR_Z "z"
 
-enum AssetType {
-    ANIMATION,
-    AUDIO,
-    FONT,
-    LIGHT,
-    MODEL,
-    PHYSICS_OBJECT,
-    SCRIPT,
-    SHADER,
-    SPRITE
-};
 
-extern map<AssetType,string> DREAM_ASSET_TYPES_MAP;
-extern map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
 
 // Scene =======================================================================
     #define SCENE_JSON_UUID "uuid"
@@ -215,5 +202,27 @@ extern map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
     #define ASSET_ATTR_LIGHT_COLOR_G "g"
     #define ASSET_ATTR_LIGHT_COLOR_B "b"
     #define ASSET_ATTR_LIGHT_COLOR_A "a"
+
+namespace Dream
+{
+    enum AssetType
+    {
+        ANIMATION,
+        AUDIO,
+        FONT,
+        LIGHT,
+        MODEL,
+        PHYSICS_OBJECT,
+        SCRIPT,
+        SHADER,
+        SPRITE,
+        NONE
+    };
+
+    extern map<AssetType,string> DREAM_ASSET_TYPES_MAP;
+    extern map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
+    string assetTypeToString(AssetType type);
+    AssetType assetTypeFromString(string type);
+}
 
 #endif // CONSTANTS_H

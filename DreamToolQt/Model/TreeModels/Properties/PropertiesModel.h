@@ -19,12 +19,13 @@
 #define PROPERTIESMODEL_H
 
 #include <QAbstractItemModel>
+#include <QTreeView>
 #include "PropertiesItem.h"
 
 class PropertiesModel : public QAbstractItemModel
 {
 public:
-    PropertiesModel(QObject* parent = 0);
+    PropertiesModel(QTreeView* parent = 0);
     virtual ~PropertiesModel();
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -46,6 +47,7 @@ public:
     virtual void createDelegates() = 0;
 protected:
     PropertiesItem *mRootItem;
+    QTreeView *mTreeView;
 };
 
 #endif // PROPERTIESMODEL_H

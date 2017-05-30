@@ -18,7 +18,7 @@
 #include "SceneObjectPropertiesModel.h"
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
-(Dream::SceneObject *sceneObject, QObject *parent)
+(Dream::SceneObject *sceneObject, QTreeView *parent)
     : PropertiesModel(parent)
 {
     mSceneObject = sceneObject;

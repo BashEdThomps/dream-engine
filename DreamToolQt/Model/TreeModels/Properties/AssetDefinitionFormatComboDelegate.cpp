@@ -1,7 +1,7 @@
 /*
- * AssetDefinitionTypeComboDelegate.cpp
+ * AssetDefinitionFormatComboDelegate.cpp
  *
- * Created: 20 2017 by Ashley
+ * Created: 30 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,34 +15,40 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "AssetDefinitionTypeComboDelegate.h"
-#include <DreamCore.h>
+#include "AssetDefinitionFormatComboDelegate.h"
 #include <QComboBox>
+#include <QDebug>
 
-AssetDefinitionTypeComboDelegate::AssetDefinitionTypeComboDelegate
-(QObject* parent)
-    : QItemDelegate (parent)
+AssetDefinitionFormatComboDelegate::AssetDefinitionFormatComboDelegate(std::string type, QObject* parent)
+    : QItemDelegate(parent)
 {
+    mAssetType = Dream::assetTypeFromString(type);
+}
 
+AssetDefinitionFormatComboDelegate::~AssetDefinitionFormatComboDelegate
+()
+{
+    qDebug() << "AssetDefinitionFormatComboDelegate: Destroying Object";
 }
 
 QWidget*
-AssetDefinitionTypeComboDelegate::createEditor
+AssetDefinitionFormatComboDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem & option , const QModelIndex & index )
 const
 {
     QComboBox *editor = new QComboBox(parent);
-    QStringList list ;
-    for (std::pair<Dream::AssetType,std::string> type : Dream::DREAM_ASSET_TYPES_MAP)
+    vector<std::string> formats = Dream::DREAM_ASSET_FORMATS_MAP[mAssetType];
+    QStringList list;
+    for (std::string format : formats)
     {
-        list << QString::fromStdString(type.second);
+        list.push_back(QString::fromStdString(format));
     }
     editor->addItems(list);
     return editor;
 }
 
 void
-AssetDefinitionTypeComboDelegate::setEditorData
+AssetDefinitionFormatComboDelegate::setEditorData
 (QWidget *editor, const QModelIndex &index)
 const
 {
@@ -52,7 +58,7 @@ const
 }
 
 void
-AssetDefinitionTypeComboDelegate::setModelData
+AssetDefinitionFormatComboDelegate::setModelData
 (QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
 const
 {
@@ -62,7 +68,7 @@ const
 }
 
 void
-AssetDefinitionTypeComboDelegate::updateEditorGeometry
+AssetDefinitionFormatComboDelegate::updateEditorGeometry
 (QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex & index )
 const
 {

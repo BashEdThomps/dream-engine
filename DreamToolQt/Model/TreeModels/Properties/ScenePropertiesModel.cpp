@@ -19,7 +19,7 @@
 #include <QDebug>
 
 ScenePropertiesModel::ScenePropertiesModel
-(Dream::Scene *scene, QObject* parent)
+(Dream::Scene *scene, QTreeView* parent)
     : PropertiesModel(parent)
 {
     qDebug() << "Creating Scene Properties Model";

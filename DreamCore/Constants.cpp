@@ -23,116 +23,191 @@ using namespace std;
 bool DEBUG(true);
 bool VERBOSE(false);
 
-void dreamSetDebug(bool debug) {
-  cout << "===== DEBUG: " << (debug? "Enabled" : "Disabled") << " =====" << endl;
-  DEBUG = debug;
-}
-
-void dreamSetVerbose(bool verbose) {
-  cout << "===== VERBOSE: " << (verbose? "Enabled" : "Disabled") << " =====" << endl;
-  VERBOSE = verbose;
-  if (VERBOSE) {
-      dreamSetDebug(true);
-  }
-}
-
-map<AssetType,string> DREAM_ASSET_TYPES_MAP =
+void dreamSetDebug(bool debug)
 {
+    cout << "===== DEBUG: " << (debug? "Enabled" : "Disabled") << " =====" << endl;
+    DEBUG = debug;
+}
+
+void dreamSetVerbose(bool verbose)
+{
+    cout << "===== VERBOSE: " << (verbose? "Enabled" : "Disabled") << " =====" << endl;
+    VERBOSE = verbose;
+    if (VERBOSE)
     {
-        AssetType::ANIMATION, ASSET_TYPE_ANIMATION
-    },
-    {
-        AssetType::AUDIO, ASSET_TYPE_AUDIO
-    },
-    {
-        AssetType::FONT, ASSET_TYPE_FONT
-    },
-    {
-        AssetType::LIGHT, ASSET_TYPE_LIGHT
-    },
-    {
-        AssetType::MODEL, ASSET_TYPE_MODEL
-    },
-    {
-        AssetType::PHYSICS_OBJECT, ASSET_TYPE_PHYSICS_OBJECT
-    },
-    {
-        AssetType::SCRIPT, ASSET_TYPE_SCRIPT
-    },
-    {
-        AssetType::SHADER, ASSET_TYPE_SHADER
-    },
-    {
-        AssetType::SPRITE, ASSET_TYPE_SPRITE
+        dreamSetDebug(true);
     }
-};
+}
 
-map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP =
+namespace Dream
 {
+    map<AssetType,string> DREAM_ASSET_TYPES_MAP =
     {
-        AssetType::ANIMATION,
         {
-            ASSET_FORMAT_ANIMATION_DREAM
+            AssetType::ANIMATION, ASSET_TYPE_ANIMATION
+        },
+        {
+            AssetType::AUDIO, ASSET_TYPE_AUDIO
+        },
+        {
+            AssetType::FONT, ASSET_TYPE_FONT
+        },
+        {
+            AssetType::LIGHT, ASSET_TYPE_LIGHT
+        },
+        {
+            AssetType::MODEL, ASSET_TYPE_MODEL
+        },
+        {
+            AssetType::PHYSICS_OBJECT, ASSET_TYPE_PHYSICS_OBJECT
+        },
+        {
+            AssetType::SCRIPT, ASSET_TYPE_SCRIPT
+        },
+        {
+            AssetType::SHADER, ASSET_TYPE_SHADER
+        },
+        {
+            AssetType::SPRITE, ASSET_TYPE_SPRITE
         }
-    },
+    };
+
+    map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP =
     {
-        AssetType::AUDIO,
         {
-            ASSET_FORMAT_AUDIO_MUSIC,
-            ASSET_FORMAT_AUDIO_SFX
+            AssetType::ANIMATION,
+            {
+                ASSET_FORMAT_ANIMATION_DREAM
+            }
+        },
+        {
+            AssetType::AUDIO,
+            {
+                ASSET_FORMAT_AUDIO_MUSIC,
+                ASSET_FORMAT_AUDIO_SFX
+            }
+        },
+        {
+            AssetType::FONT,
+            {
+                ASSET_FORMAT_FONT_TTF
+            }
+        },
+        {
+            AssetType::LIGHT,
+            {
+                ASSET_FORMAT_LIGHT_POINT
+            }
+        },
+        {
+            AssetType::MODEL,
+            {
+                ASSET_FORMAT_MODEL_ASSIMP
+            }
+        },
+        {
+            AssetType::PHYSICS_OBJECT,
+            {
+                COLLISION_SHAPE_SPHERE,
+                COLLISION_SHAPE_BOX,
+                COLLISION_SHAPE_CYLINDER,
+                COLLISION_SHAPE_CAPSULE,
+                COLLISION_SHAPE_CONE,
+                COLLISION_SHAPE_MULTI_SPHERE,
+                COLLISION_SHAPE_CONVEX_HULL,
+                COLLISION_SHAPE_CONVEX_TRIANGLE_MESH,
+                COLLISION_SHAPE_BVH_TRIANGLE_MESH,
+                COLLISION_SHAPE_HEIGHTFIELD_TERRAIN,
+                COLLISION_SHAPE_STATIC_PLANE,
+                COLLISION_SHAPE_COMPOUND
+            }
+        },
+        {
+            AssetType::SCRIPT,
+            {
+                ASSET_FORMAT_SCRIPT_LUA
+            }
+        },
+        {
+            AssetType::SHADER,
+            {
+                ASSET_FORMAT_SHADER_GLSL
+            }
+        },
+        {
+            AssetType::SPRITE,
+            {
+                ASSET_FORMAT_SPRITE_IMAGE
+            }
         }
-    },
+    };
+
+    string assetTypeToString(AssetType type)
     {
-        AssetType::FONT,
+        switch (type)
         {
-            ASSET_FORMAT_FONT_TTF
+            case ANIMATION:
+                return ASSET_TYPE_ANIMATION;
+            case AUDIO:
+                return ASSET_TYPE_AUDIO;
+            case FONT:
+                return ASSET_TYPE_FONT;
+            case LIGHT:
+                return ASSET_TYPE_LIGHT;
+            case MODEL:
+                return ASSET_TYPE_MODEL;
+            case PHYSICS_OBJECT:
+                return ASSET_TYPE_PHYSICS_OBJECT;
+            case SCRIPT:
+                return ASSET_TYPE_SCRIPT;
+            case SHADER:
+                return ASSET_TYPE_SHADER;
+            case SPRITE:
+                return ASSET_TYPE_SPRITE;
+            case NONE:
+                return "";
         }
-    },
+        return "";
+    }
+
+    AssetType assetTypeFromString(string type)
     {
-        AssetType::LIGHT,
+        if (type.compare(ASSET_TYPE_ANIMATION) == 0)
         {
-            ASSET_FORMAT_LIGHT_POINT
+            return ANIMATION;
         }
-    },
-    {
-        AssetType::MODEL,
+        else if (type.compare(ASSET_TYPE_AUDIO) == 0)
         {
-            ASSET_FORMAT_MODEL_ASSIMP
+            return AUDIO;
         }
-    },
-    {
-        AssetType::PHYSICS_OBJECT,
+        else if (type.compare(ASSET_TYPE_FONT) == 0)
         {
-            COLLISION_SHAPE_SPHERE,
-            COLLISION_SHAPE_BOX,
-            COLLISION_SHAPE_CYLINDER,
-            COLLISION_SHAPE_CAPSULE,
-            COLLISION_SHAPE_CONE,
-            COLLISION_SHAPE_MULTI_SPHERE,
-            COLLISION_SHAPE_CONVEX_HULL,
-            COLLISION_SHAPE_CONVEX_TRIANGLE_MESH,
-            COLLISION_SHAPE_BVH_TRIANGLE_MESH,
-            COLLISION_SHAPE_HEIGHTFIELD_TERRAIN,
-            COLLISION_SHAPE_STATIC_PLANE,
-            COLLISION_SHAPE_COMPOUND
+            return FONT;
         }
-    },
-    {
-        AssetType::SCRIPT,
+        else if (type.compare(ASSET_TYPE_LIGHT) == 0)
         {
-            ASSET_FORMAT_SCRIPT_LUA
+            return LIGHT;
         }
-    },
-    {
-        AssetType::SHADER,
+        else if (type.compare(ASSET_TYPE_MODEL) == 0)
         {
-            ASSET_FORMAT_SHADER_GLSL
+            return MODEL;
         }
-    },
-    {
-        AssetType::SPRITE,
+        else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
         {
-            ASSET_FORMAT_SPRITE_IMAGE
+            return PHYSICS_OBJECT;
         }
+        else if (type.compare(ASSET_TYPE_SCRIPT) == 0)
+        {
+            return SCRIPT;
+        }
+        else if (type.compare(ASSET_TYPE_SHADER) == 0)
+        {
+            return SHADER;
+        }
+        else if (type.compare(ASSET_TYPE_SPRITE) == 0)
+        {
+            return SPRITE;
+        }
+        return NONE;
     }
 };

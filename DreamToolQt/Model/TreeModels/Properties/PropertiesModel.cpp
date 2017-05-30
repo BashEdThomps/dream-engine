@@ -18,9 +18,10 @@
 #include "PropertiesModel.h"
 #include <QDebug>
 
-PropertiesModel::PropertiesModel(QObject* parent)
+PropertiesModel::PropertiesModel(QTreeView* parent)
     : QAbstractItemModel (parent)
 {
+    mTreeView = parent;
 }
 
 PropertiesModel::~PropertiesModel()

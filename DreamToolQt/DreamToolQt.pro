@@ -47,7 +47,8 @@ SOURCES += \
     Model/TreeModels/Properties/ProjectPropertiesModel.cpp \
     Model/TreeModels/Properties/AssetDefinitionPropertiesModel.cpp \
     Model/TreeModels/Properties/PropertiesItem.cpp \
-    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.cpp
+    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.cpp \
+    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.cpp
 
 
 HEADERS  += \
@@ -73,7 +74,8 @@ HEADERS  += \
     Model/TreeModels/Properties/SceneObjectPropertiesModel.h \
     Model/TreeModels/Properties/ScenePropertiesModel.h \
     Model/TreeModels/Properties/PropertiesItem.h \
-    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h
+    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h \
+    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.h
 
 
 FORMS    += View/MainWindow.ui

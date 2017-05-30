@@ -18,7 +18,7 @@
 #include "ProjectPropertiesModel.h"
 
 ProjectPropertiesModel::ProjectPropertiesModel
-(Dream::Project *project,QObject* parent)
+(Dream::Project *project,QTreeView* parent)
     : PropertiesModel(parent)
 {
     mProject = project;

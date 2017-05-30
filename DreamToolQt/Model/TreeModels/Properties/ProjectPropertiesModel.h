@@ -24,7 +24,7 @@
 class ProjectPropertiesModel : public PropertiesModel
 {
 public:
-    ProjectPropertiesModel(Dream::Project *project, QObject* parent = 0);
+    ProjectPropertiesModel(Dream::Project *project, QTreeView* parent = 0);
     ~ProjectPropertiesModel();
     void createRoot() override;
     void createProperties() override;

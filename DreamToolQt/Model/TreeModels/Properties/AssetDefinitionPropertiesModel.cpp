@@ -17,10 +17,12 @@
  */
 
 #include "AssetDefinitionPropertiesModel.h"
+#include "AssetDefinitionTypeComboDelegate.h"
+#include "AssetDefinitionFormatComboDelegate.h"
 #include <QDebug>
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
-(Dream::AssetDefinition *definition, QObject* parent)
+(Dream::AssetDefinition *definition, QTreeView* parent)
     : PropertiesModel(parent)
 {
     mAssetDefinition = definition;
@@ -39,7 +41,12 @@ void
 AssetDefinitionPropertiesModel::createDelegates
 ()
 {
-
+    mTreeView->setItemDelegateForRow(
+        1 ,new AssetDefinitionTypeComboDelegate()
+    );
+    mTreeView->setItemDelegateForRow(
+        2, new AssetDefinitionFormatComboDelegate(mAssetDefinition->getType())
+    );
 }
 
 void
