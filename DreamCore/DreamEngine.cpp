@@ -370,7 +370,6 @@ namespace Dream {
         {
             cout << "==== DreamEngine: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
-        mGraphicsComponent->preRender();
         // Update Graphics/Physics Components
         mGraphicsComponent->updateComponent(mActiveScene);
         mPhysicsComponent->setViewProjectionMatrix(
@@ -378,13 +377,17 @@ namespace Dream {
                     mGraphicsComponent->getProjectionMatrix()
                     );
         // Draw 3D/PhysicsDebug/2D
+
+        mGraphicsComponent->preRender();
+
         mGraphicsComponent->draw3DQueue();
         mPhysicsComponent->drawDebug();
         mGraphicsComponent->draw2DQueue();
         mWindowComponent->swapBuffers();
+
+        mGraphicsComponent->postRender();
         // Update state
         mDone = mWindowComponent->shouldClose();
-        mGraphicsComponent->postRender();
         return !mDone;
     }
 

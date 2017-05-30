@@ -296,6 +296,8 @@ namespace Dream
     GraphicsComponent::draw2DQueue
     ()
     {
+        glDisable(GL_CULL_FACE);
+
         for (vector<SceneObject*>::
              iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
         {

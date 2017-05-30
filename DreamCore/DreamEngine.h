@@ -42,7 +42,7 @@ namespace Dream
         GameController *mGameController;
         LuaEngine *mLuaEngine;
     public:
-        DreamEngine(IAudioComponent* audioComponent, IWindowComponent* windowComponent);
+        DreamEngine(IAudioComponent* audioComponent = 0, IWindowComponent* windowComponenti = 0);
         ~DreamEngine();
 
         bool heartbeat();

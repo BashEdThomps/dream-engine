@@ -45,6 +45,7 @@ add_subdirectory(Luabind)
 
 # DreamCore Library
 add_subdirectory (DreamCore)
+add_subdirectory (DreamCoreTests)
 
 # DreamSDL Executable
 add_subdirectory (DreamSDL)
