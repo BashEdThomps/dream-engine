@@ -40,6 +40,7 @@ public:
     bool removeColumns(int position, int columns);
     int childNumber() const;
     bool setData(int column, const QVariant &value);
+    void setParent(PropertiesItem* parent);
 private:
     QList<PropertiesItem*> mChildItems;
     QList<QVariant> mItemData;

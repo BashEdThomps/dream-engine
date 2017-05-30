@@ -83,7 +83,20 @@
    <widget class="QWidget" name="projectDockContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QTreeView" name="projectTreeView"/>
+      <widget class="QTreeView" name="projectTreeView">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="autoExpandDelay">
+        <number>0</number>
+       </property>
+       <property name="indentation">
+        <number>15</number>
+       </property>
+       <property name="expandsOnDoubleClick">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -98,7 +111,23 @@
    <widget class="QWidget" name="propertiesDockContents">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QTreeView" name="propertiesTreeView"/>
+      <widget class="QTreeView" name="propertiesTreeView">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="autoExpandDelay">
+        <number>0</number>
+       </property>
+       <property name="indentation">
+        <number>10</number>
+       </property>
+       <property name="expandsOnDoubleClick">
+        <bool>false</bool>
+       </property>
+       <attribute name="headerDefaultSectionSize">
+        <number>150</number>
+       </attribute>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -151,7 +180,20 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QTreeView" name="assetDefinitionTreeView"/>
+      <widget class="QTreeView" name="assetDefinitionTreeView">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="autoExpandDelay">
+        <number>0</number>
+       </property>
+       <property name="indentation">
+        <number>15</number>
+       </property>
+       <property name="expandsOnDoubleClick">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

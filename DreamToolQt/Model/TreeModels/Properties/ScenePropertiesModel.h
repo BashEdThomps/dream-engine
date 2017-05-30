@@ -1,5 +1,5 @@
 /*
- * SceneObjectPropertiesModel.h
+ * ScenePropertiesModel.h
  *
  * Created: 17 2017 by Ashley
  *
@@ -15,23 +15,31 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SCENEOBJECTPROPERTIESMODEL_H
-#define SCENEOBJECTPROPERTIESMODEL_H
+
+#ifndef SCENEPROPERTIESMODEL_H
+#define SCENEPROPERTIESMODEL_H
 
 #include "PropertiesModel.h"
 #include <DreamCore.h>
 
-class SceneObjectPropertiesModel : public PropertiesModel
+class ScenePropertiesModel : public PropertiesModel
 {
 public:
-    SceneObjectPropertiesModel(Dream::SceneObject *sceneObject,QObject* parent = 0);
-    ~SceneObjectPropertiesModel();
+    ScenePropertiesModel(Dream::Scene *scene, QObject* parent = 0);
+    ~ScenePropertiesModel();
 
-    void createRoot();
-    void createProperties();
+    void createRoot() override;
+    void createProperties() override;
+    void createDelegates() override;
+
+    void createNameProperties();
+    void createNotesProperties();
+    void createCameraProperties();
+    void createRenderingProperties();
+    void createPhysicsProperties();
 
 private:
-    Dream::SceneObject *mSceneObject;
+    Dream::Scene *mScene;
 };
 
-#endif // SCENEOBJECTPROPERTIESMODEL_H
+#endif // SCENEPROPERTIESMODEL_H

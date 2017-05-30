@@ -17,7 +17,8 @@
  */
 #include "ProjectPropertiesModel.h"
 
-ProjectPropertiesModel::ProjectPropertiesModel(Dream::Project *project,QObject* parent)
+ProjectPropertiesModel::ProjectPropertiesModel
+(Dream::Project *project,QObject* parent)
     : PropertiesModel(parent)
 {
     mProject = project;
@@ -25,8 +26,9 @@ ProjectPropertiesModel::ProjectPropertiesModel(Dream::Project *project,QObject* 
     createProperties();
 }
 
-void ProjectPropertiesModel
-::createRoot()
+void
+ProjectPropertiesModel::createRoot
+()
 {
     QList<QVariant> rootData;
     rootData << QString::fromStdString(mProject->getName())
@@ -34,12 +36,20 @@ void ProjectPropertiesModel
     mRootItem = new PropertiesItem(rootData,mProject);
 }
 
-void ProjectPropertiesModel
-::createProperties()
+void
+ProjectPropertiesModel::createProperties
+()
+{}
+
+void
+ProjectPropertiesModel::createDelegates
+()
 {
+
 }
 
-ProjectPropertiesModel::~ProjectPropertiesModel()
+ProjectPropertiesModel::~ProjectPropertiesModel
+()
 {
     delete mRootItem;
 }

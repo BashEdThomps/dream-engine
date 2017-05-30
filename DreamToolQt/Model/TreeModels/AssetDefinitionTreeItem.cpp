@@ -1,7 +1,7 @@
 /*
- * ProjectPropertiesModel.h
+ * AssetDefinitionAssetDefinitionTreeItem.cpp
  *
- * Created: 17 2017 by Ashley
+ * Created: 15 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,21 +15,22 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROJECTPROPERTIESMODEL_H
-#define PROJECTPROPERTIESMODEL_H
+#include "AssetDefinitionTreeItem.h"
+#include <QStringList>
 
-#include "PropertiesModel.h"
-#include <DreamCore.h>
-
-class ProjectPropertiesModel : public PropertiesModel
+AssetDefinitionTreeItem::AssetDefinitionTreeItem
+(
+        const QList<QVariant> &data,
+        GenericTreeItemType type,
+        Dream::AssetDefinition* definition,
+        AssetDefinitionTreeItem *parent
+)
+    : GenericTreeItem(data, type, parent)
 {
-public:
-    ProjectPropertiesModel(Dream::Project *project, QObject* parent = 0);
-    ~ProjectPropertiesModel();
-    void createRoot();
-    void createProperties();
-private:
-    Dream::Project *mProject;
-};
+    mDefinition = definition;
+}
 
-#endif // PROJECTPROPERTIESMODEL_H
+Dream::AssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()
+{
+   return mDefinition;
+}

@@ -23,46 +23,58 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
+SOURCES += \
+    main.cpp \
+    \
     View/MainWindow.cpp \
     Controller/MainController.cpp \
+    \
     Model/DreamModel.cpp \
     Model/QTDreamAudioComponent.cpp \
     Model/QOpenGLWindowComponent.cpp \
-    Model/ProjectTreeItem.cpp \
-    Model/ProjectTreeModel.cpp \
-    Model/Properties/PropertiesModel.cpp \
-    Model/Properties/ScenePropertiesModel.cpp \
-    Model/Properties/SceneObjectPropertiesModel.cpp \
-    Model/Properties/ProjectPropertiesModel.cpp \
-    Model/Properties/AssetDefinitionPropertiesModel.cpp \
-    Model/Properties/PropertiesItem.cpp \
-    Model/Properties/AssetDefinitionTypeComboDelegate.cpp \
     Model/QTDreamAudioInstance.cpp \
     Model/ProjectDirModel.cpp \
-    Model/AssetDefinitionTreeItem.cpp \
-    Model/AssetDefinitionTreeModel.cpp \
-    Model/GenericTreeItem.cpp
+    \
+    Model/TreeModels/AssetDefinitionTreeItem.cpp \
+    Model/TreeModels/AssetDefinitionTreeModel.cpp \
+    Model/TreeModels/GenericTreeItem.cpp \
+    Model/TreeModels/ProjectTreeItem.cpp \
+    Model/TreeModels/ProjectTreeModel.cpp \
+    \
+    Model/TreeModels/Properties/PropertiesModel.cpp \
+    Model/TreeModels/Properties/ScenePropertiesModel.cpp \
+    Model/TreeModels/Properties/SceneObjectPropertiesModel.cpp \
+    Model/TreeModels/Properties/ProjectPropertiesModel.cpp \
+    Model/TreeModels/Properties/AssetDefinitionPropertiesModel.cpp \
+    Model/TreeModels/Properties/PropertiesItem.cpp \
+    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.cpp
 
-HEADERS  += View/MainWindow.h \
+
+HEADERS  += \
+    View/MainWindow.h \
+    \
     Controller/MainController.h \
+    \
     Model/DreamModel.h \
     Model/QTDreamAudioComponent.h \
     Model/QOpenGLWindowComponent.h \
-    Model/ProjectTreeItem.h \
-    Model/ProjectTreeModel.h \
-    Model/Properties/PropertiesModel.h \
-    Model/Properties/AssetDefinitionPropertiesModel.h \
-    Model/Properties/ProjectPropertiesModel.h \
-    Model/Properties/SceneObjectPropertiesModel.h \
-    Model/Properties/ScenePropertiesModel.h \
-    Model/Properties/PropertiesItem.h \
-    Model/Properties/AssetDefinitionTypeComboDelegate.h \
     Model/QTDreamAudioInstance.h \
     Model/ProjectDirModel.h \
-    Model/AssetDefinitionTreeItem.h \
-    Model/AssetDefinitionTreeModel.h \
-    Model/GenericTreeItem.h
+    \
+    Model/TreeModels/AssetDefinitionTreeItem.h \
+    Model/TreeModels/AssetDefinitionTreeModel.h \
+    Model/TreeModels/GenericTreeItem.h \
+    Model/TreeModels/ProjectTreeItem.h \
+    \
+    Model/TreeModels/ProjectTreeModel.h \
+    Model/TreeModels/Properties/PropertiesModel.h \
+    Model/TreeModels/Properties/AssetDefinitionPropertiesModel.h \
+    Model/TreeModels/Properties/ProjectPropertiesModel.h \
+    Model/TreeModels/Properties/SceneObjectPropertiesModel.h \
+    Model/TreeModels/Properties/ScenePropertiesModel.h \
+    Model/TreeModels/Properties/PropertiesItem.h \
+    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h
+
 
 FORMS    += View/MainWindow.ui
 

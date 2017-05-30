@@ -26,8 +26,8 @@
 #include <QSurfaceFormat>
 #include "../View/MainWindow.h"
 #include "../Model/DreamModel.h"
-#include "../Model/ProjectTreeModel.h"
-#include "../Model/AssetDefinitionTreeModel.h"
+#include "../Model/TreeModels/ProjectTreeModel.h"
+#include "../Model/TreeModels/AssetDefinitionTreeModel.h"
 
 class MainController : public QObject
 {

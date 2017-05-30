@@ -18,58 +18,55 @@
 
 #include "PropertiesItem.h"
 
-PropertiesItem::
-PropertiesItem(const QList<QVariant> &data, void* item, PropertiesItem *parent)
+PropertiesItem::PropertiesItem(const QList<QVariant> &data, void* item, PropertiesItem *parent)
 {
     mItemData = data;
     mParentItem = parent;
     mItem = item;
 }
 
-PropertiesItem::
-~PropertiesItem()
+PropertiesItem::~PropertiesItem()
 {
     qDeleteAll(mChildItems);
 }
 
-void PropertiesItem
-::appendChild(PropertiesItem *item)
+void PropertiesItem::setParent(PropertiesItem* parent)
 {
+    mParentItem = parent;
+}
+
+void PropertiesItem::appendChild(PropertiesItem *item)
+{
+    item->setParent(this);
     mChildItems.append(item);
 }
 
-PropertiesItem *PropertiesItem
-::child(int row)
+PropertiesItem *PropertiesItem::child(int row)
 {
     return mChildItems.value(row);
 }
 
-int PropertiesItem
-::childCount() const
+int PropertiesItem::childCount() const
 {
     return mChildItems.count();
 }
 
-int PropertiesItem
-::columnCount() const
+int PropertiesItem::columnCount() const
 {
     return mItemData.count();
 }
 
-QVariant PropertiesItem
-::data(int column) const
+QVariant PropertiesItem::data(int column) const
 {
     return mItemData.value(column);
 }
 
-PropertiesItem *PropertiesItem
-::parentItem()
+PropertiesItem *PropertiesItem::parentItem()
 {
     return mParentItem;
 }
 
-int PropertiesItem
-::row() const
+int PropertiesItem::row() const
 {
     if (mParentItem)
     {
@@ -78,8 +75,7 @@ int PropertiesItem
     return 0;
 }
 
-int PropertiesItem
-::childNumber() const
+int PropertiesItem::childNumber() const
 {
     if (mParentItem)
     {
@@ -88,8 +84,7 @@ int PropertiesItem
     return 0;
 }
 
-bool PropertiesItem
-::insertChildren(int position, int count, int columns)
+bool PropertiesItem::insertChildren(int position, int count, int columns)
 {
     if (position < 0 || position > mChildItems.size())
     {
@@ -105,8 +100,7 @@ bool PropertiesItem
     return true;
 }
 
-bool PropertiesItem
-::insertColumns(int position, int columns)
+bool PropertiesItem::insertColumns(int position, int columns)
 {
     if (position < 0 || position > mItemData.size())
     {
@@ -126,8 +120,7 @@ bool PropertiesItem
     return true;
 }
 
-bool PropertiesItem
-::removeChildren(int position, int count)
+bool PropertiesItem::removeChildren(int position, int count)
 {
     if (position < 0 || position + count > mChildItems.size())
     {
@@ -142,8 +135,7 @@ bool PropertiesItem
     return true;
 }
 
-bool PropertiesItem
-::removeColumns(int position, int columns)
+bool PropertiesItem::removeColumns(int position, int columns)
 {
     if (position < 0 || position + columns > mItemData.size())
     {
@@ -163,8 +155,7 @@ bool PropertiesItem
     return true;
 }
 
-bool PropertiesItem
-::setData(int column, const QVariant &value)
+bool PropertiesItem::setData(int column, const QVariant &value)
 {
     if (column < 0 || column >= mItemData.size())
     {

@@ -24,12 +24,12 @@
 #include <DreamCore.h>
 #include <QOpenGLContext>
 
-#include "../Model/Properties/AssetDefinitionPropertiesModel.h"
-#include "../Model/Properties/PropertiesModel.h"
-#include "../Model/Properties/ProjectPropertiesModel.h"
-#include "../Model/Properties/SceneObjectPropertiesModel.h"
-#include "../Model/Properties/ScenePropertiesModel.h"
-#include "../Model/Properties/AssetDefinitionTypeComboDelegate.h"
+#include "../Model/TreeModels/Properties/AssetDefinitionPropertiesModel.h"
+#include "../Model/TreeModels/Properties/PropertiesModel.h"
+#include "../Model/TreeModels/Properties/ProjectPropertiesModel.h"
+#include "../Model/TreeModels/Properties/SceneObjectPropertiesModel.h"
+#include "../Model/TreeModels/Properties/ScenePropertiesModel.h"
+#include "../Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h"
 
 MainController::MainController
 (MainWindow* parent)

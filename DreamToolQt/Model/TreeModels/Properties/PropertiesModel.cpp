@@ -16,18 +16,19 @@
  * this file belongs to.
  */
 #include "PropertiesModel.h"
+#include <QDebug>
 
 PropertiesModel::PropertiesModel(QObject* parent)
     : QAbstractItemModel (parent)
-{}
+{
+}
 
 PropertiesModel::~PropertiesModel()
 {
 
 }
 
-PropertiesItem *PropertiesModel
-::getItem(const QModelIndex &index) const
+PropertiesItem *PropertiesModel::getItem(const QModelIndex &index) const
 {
     if (index.isValid())
     {
@@ -40,8 +41,7 @@ PropertiesItem *PropertiesModel
     return mRootItem;
 }
 
-bool PropertiesModel
-::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+bool PropertiesModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
     {
@@ -58,8 +58,7 @@ bool PropertiesModel
     return result;
 }
 
-bool PropertiesModel
-::insertColumns(int position, int columns,const QModelIndex &parent)
+bool PropertiesModel::insertColumns(int position, int columns,const QModelIndex &parent)
 {
     bool success;
 
@@ -70,8 +69,7 @@ bool PropertiesModel
     return success;
 }
 
-bool PropertiesModel
-::removeColumns(int position, int columns, const QModelIndex &parent)
+bool PropertiesModel::removeColumns(int position, int columns, const QModelIndex &parent)
 {
     bool success;
 
@@ -87,8 +85,7 @@ bool PropertiesModel
     return success;
 }
 
-bool PropertiesModel
-::insertRows(int position, int rows, const QModelIndex &parent)
+bool PropertiesModel::insertRows(int position, int rows, const QModelIndex &parent)
 {
     PropertiesItem *parentItem = getItem(parent);
     bool success;
@@ -100,8 +97,7 @@ bool PropertiesModel
     return success;
 }
 
-bool PropertiesModel
-::removeRows(int position, int rows,  const QModelIndex &parent)
+bool PropertiesModel::removeRows(int position, int rows,  const QModelIndex &parent)
 {
     PropertiesItem *parentItem = getItem(parent);
     bool success = true;
@@ -113,8 +109,7 @@ bool PropertiesModel
     return success;
 }
 
-bool PropertiesModel
-::setData(const QModelIndex &index, const QVariant &value, int role)
+bool PropertiesModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role != Qt::EditRole)
     {
@@ -132,11 +127,11 @@ bool PropertiesModel
     return result;
 }
 
-QModelIndex PropertiesModel
-::parent(const QModelIndex &index) const
+QModelIndex PropertiesModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
+        qDebug() << QString("PropertiesModel: Invalid Index @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
@@ -145,19 +140,20 @@ QModelIndex PropertiesModel
 
     if (parentItem == nullptr)
     {
+        qDebug() << QString("PropertiesModel: Parent is nullptr @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
     if (parentItem == mRootItem)
     {
+        qDebug() << QString("PropertiesModel: Parent is root item @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int PropertiesModel
-::columnCount(const QModelIndex &parent) const
+int PropertiesModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -170,8 +166,7 @@ int PropertiesModel
 }
 
 
-QVariant PropertiesModel
-::data(const QModelIndex &index, int role) const
+QVariant PropertiesModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {
@@ -189,8 +184,7 @@ QVariant PropertiesModel
 }
 
 
-Qt::ItemFlags PropertiesModel
-::flags(const QModelIndex &index) const
+Qt::ItemFlags PropertiesModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -205,8 +199,7 @@ Qt::ItemFlags PropertiesModel
     return QAbstractItemModel::flags(index);
 }
 
-QVariant PropertiesModel
-::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant PropertiesModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
@@ -217,11 +210,11 @@ QVariant PropertiesModel
 }
 
 
-QModelIndex PropertiesModel
-::index(int row, int column, const QModelIndex &parent) const
+QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
     {
+        qDebug() << QString("PropertiesModel: No index for row %1 col %2").arg(row).arg(column);
         return QModelIndex();
     }
 
@@ -229,6 +222,7 @@ QModelIndex PropertiesModel
 
     if (!parent.isValid())
     {
+        qDebug() << QString("PropertiesModel: Parent is invalid for row %1 col %2").arg(row).arg(column);
         parentItem = mRootItem;
     }
     else
@@ -243,12 +237,12 @@ QModelIndex PropertiesModel
     }
     else
     {
+        qDebug() << QString("PropertiesModel: childItem is null for row %1 col %2").arg(row).arg(column);
         return QModelIndex();
     }
 }
 
-int PropertiesModel
-::rowCount(const QModelIndex &parent) const
+int PropertiesModel::rowCount(const QModelIndex &parent) const
 {
     PropertiesItem *parentItem;
     if (parent.column() > 0)

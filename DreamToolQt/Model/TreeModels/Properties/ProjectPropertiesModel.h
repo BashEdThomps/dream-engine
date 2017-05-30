@@ -1,5 +1,5 @@
 /*
- * ScenePropertiesListModel.cpp
+ * ProjectPropertiesModel.h
  *
  * Created: 17 2017 by Ashley
  *
@@ -15,34 +15,22 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "ScenePropertiesModel.h"
+#ifndef PROJECTPROPERTIESMODEL_H
+#define PROJECTPROPERTIESMODEL_H
 
-ScenePropertiesModel::
-ScenePropertiesModel(Dream::Scene *scene, QObject* parent)
-    : PropertiesModel(parent)
+#include "PropertiesModel.h"
+#include <DreamCore.h>
+
+class ProjectPropertiesModel : public PropertiesModel
 {
-    mScene = scene;
-    createRoot();
-    createProperties();
-}
+public:
+    ProjectPropertiesModel(Dream::Project *project, QObject* parent = 0);
+    ~ProjectPropertiesModel();
+    void createRoot() override;
+    void createProperties() override;
+    void createDelegates() override;
+private:
+    Dream::Project *mProject;
+};
 
-void ScenePropertiesModel
-::createRoot()
-{
-    QList<QVariant> rootData;
-    rootData << QString::fromStdString(mScene->getName())
-             << QString::fromStdString(mScene->getUuid());
-    mRootItem = new PropertiesItem(rootData,mScene);
-}
-
-void ScenePropertiesModel
-::createProperties()
-{
-
-}
-
-ScenePropertiesModel::
-~ScenePropertiesModel()
-{
-    delete mRootItem;
-}
+#endif // PROJECTPROPERTIESMODEL_H

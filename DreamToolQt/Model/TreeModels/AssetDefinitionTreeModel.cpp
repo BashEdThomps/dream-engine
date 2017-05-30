@@ -25,7 +25,12 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel(Dream::Project *project, QObj
     mProject = project;
     QList<QVariant> rootData;
     rootData << QString::fromStdString(project->getName());
-    mRootItem = new AssetDefinitionTreeItem(rootData,nullptr,nullptr);
+    mRootItem = new AssetDefinitionTreeItem(
+        rootData,
+        GenericTreeItemType::TREE_NODE,
+        nullptr,
+        nullptr
+    );
     setupModelData();
 }
 
@@ -156,6 +161,7 @@ void AssetDefinitionTreeModel::setupModelData()
     assetDefinitionsNodeData << QString("Asset Definitions");
     AssetDefinitionTreeItem *assetDefinitionsTreeItem = new AssetDefinitionTreeItem(
         assetDefinitionsNodeData,
+        GenericTreeItemType::TREE_NODE,
         nullptr,
         mRootItem
     );
@@ -166,55 +172,100 @@ void AssetDefinitionTreeModel::setupModelData()
     QList<QVariant> animationNode;
     animationNode << QString("Animation");
     AssetDefinitionTreeItem* animationTreeItem =
-            new AssetDefinitionTreeItem(animationNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                animationNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(animationTreeItem);
 
     QList<QVariant> audioNode;
     audioNode << QString("Audio");
     AssetDefinitionTreeItem* audioTreeItem =
-            new AssetDefinitionTreeItem(audioNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                audioNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(audioTreeItem);
 
     QList<QVariant> fontNode;
     fontNode << QString("Font");
     AssetDefinitionTreeItem* fontTreeItem =
-            new AssetDefinitionTreeItem(fontNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                fontNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(fontTreeItem);
 
     QList<QVariant> lightNode;
     lightNode << QString("Light");
     AssetDefinitionTreeItem* lightTreeItem =
-            new AssetDefinitionTreeItem(lightNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                lightNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(lightTreeItem);
 
     QList<QVariant> modelNode;
     modelNode << QString("Model");
     AssetDefinitionTreeItem* modelTreeItem =
-            new AssetDefinitionTreeItem(modelNode,nullptr,assetDefinitionsTreeItem);;
+            new AssetDefinitionTreeItem(
+                modelNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(modelTreeItem);
 
     QList<QVariant> physicsObjectNode;
     physicsObjectNode << QString("Physics Object");
     AssetDefinitionTreeItem* physicsObjectTreeItem =
-            new AssetDefinitionTreeItem(physicsObjectNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                physicsObjectNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(physicsObjectTreeItem);
 
     QList<QVariant> scriptNode;
     scriptNode << QString("Script");
     AssetDefinitionTreeItem* scriptTreeItem =
-            new AssetDefinitionTreeItem(scriptNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                scriptNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(scriptTreeItem);
 
     QList<QVariant> shaderNode;
     shaderNode << QString("Shader");
     AssetDefinitionTreeItem* shaderTreeItem =
-            new AssetDefinitionTreeItem(shaderNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                shaderNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(shaderTreeItem);
 
     QList<QVariant> spriteNode;
     spriteNode << QString("Sprite");
     AssetDefinitionTreeItem* spriteTreeItem =
-            new AssetDefinitionTreeItem(spriteNode,nullptr,assetDefinitionsTreeItem);
+            new AssetDefinitionTreeItem(
+                spriteNode,
+                GenericTreeItemType::TREE_NODE,
+                nullptr,
+                assetDefinitionsTreeItem
+            );
     assetDefinitionsTreeItem->appendChild(spriteTreeItem);
 
     for (Dream::AssetDefinition *definition : mProject->getAssetDefinitions())
@@ -227,6 +278,7 @@ void AssetDefinitionTreeModel::setupModelData()
             animationTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     animationTreeItem
                  )
@@ -237,6 +289,7 @@ void AssetDefinitionTreeModel::setupModelData()
             audioTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     audioTreeItem
                  )
@@ -247,6 +300,7 @@ void AssetDefinitionTreeModel::setupModelData()
            fontTreeItem->appendChild(
                new AssetDefinitionTreeItem(
                nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                definition,
                fontTreeItem
                )
@@ -257,6 +311,7 @@ void AssetDefinitionTreeModel::setupModelData()
             lightTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     lightTreeItem
                  )
@@ -265,53 +320,60 @@ void AssetDefinitionTreeModel::setupModelData()
         else if (definition->getType().compare(ASSET_TYPE_MODEL) == 0)
         {
             modelTreeItem->appendChild(
-                        new AssetDefinitionTreeItem(
+                new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     modelTreeItem
-                 )
-                        );
+                )
+            );
         }
         else if (definition->getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
         {
-                physicsObjectTreeItem->appendChild(
-                         new AssetDefinitionTreeItem(
+            physicsObjectTreeItem->appendChild(
+                new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     physicsObjectTreeItem
-                 )
-                            );
+                )
+            );
         }
         else if (definition->getType().compare(ASSET_TYPE_SCRIPT) == 0)
         {
-                scriptTreeItem->appendChild(
-                            new AssetDefinitionTreeItem(
+            scriptTreeItem->appendChild(
+                new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     scriptTreeItem
-                 )
-                            );
+                )
+            );
         }
         else if (definition->getType().compare(ASSET_TYPE_SHADER) == 0)
         {
-                shaderTreeItem->appendChild(
-                            new AssetDefinitionTreeItem(
+            shaderTreeItem->appendChild(
+                new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     shaderTreeItem
-                 )
-                            );
+                )
+            );
         }
         else if (definition->getType().compare(ASSET_TYPE_SPRITE) == 0)
         {
-                spriteTreeItem->appendChild(
-                            new AssetDefinitionTreeItem(
+            spriteTreeItem->appendChild(
+                new AssetDefinitionTreeItem(
                     nextDefinitionData,
+                    GenericTreeItemType::ASSET_DEFINITION,
                     definition,
                     spriteTreeItem
-                            ));
+                )
+            );
         }
-        else {
+        else
+        {
             cerr << "AssetDefinitionTreeModel: Unable to add asset definition to tree with type "
                  << definition->getType() << endl;
         }

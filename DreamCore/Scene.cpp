@@ -38,8 +38,18 @@ namespace Dream
         mAmbientLightColour = {0.0f,0.0f,0.0f,0.0f};
         mRootSceneObject = nullptr;
         mDefaultCameraTransform = new Transform3D();
-        mUuid = jsonScene[SCENE_JSON_UUID];
-        mName = jsonScene[SCENE_JSON_NAME];
+        if (!jsonScene[SCENE_JSON_UUID].is_null())
+        {
+            mUuid = jsonScene[SCENE_JSON_UUID];
+        }
+        if (!jsonScene[SCENE_JSON_NAME].is_null())
+        {
+            mName = jsonScene[SCENE_JSON_NAME];
+        }
+        if (!jsonScene[SCENE_JSON_NOTES].is_null())
+        {
+            mNotes = jsonScene[SCENE_JSON_NOTES];
+        }
         loadPhysicsMetadata(jsonScene);
         loadGraphicsMetadata(jsonScene);
 
@@ -772,6 +782,20 @@ namespace Dream
     ()
     {
         return mJson;
+    }
+
+    string
+    Scene::getNotes
+    ()
+    {
+        return mNotes;
+    }
+
+    void
+    Scene::setNotes
+    (string notes)
+    {
+        mNotes = notes;
     }
 
 } // End of Dream

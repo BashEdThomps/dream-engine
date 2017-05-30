@@ -52,6 +52,7 @@ namespace Dream
         nlohmann::json mJson;
         string mUuid;
         string mName;
+        string mNotes;
         SceneObject *mRootSceneObject;
         vector<SceneObject*> mScenegraphVector;
         vector<SceneObject*> mDeleteQueue;
@@ -132,6 +133,9 @@ namespace Dream
         bool createAssetInstancesForSceneObject(SceneObject*);
         void findDeletedScripts();
         void removeFromLuaScriptMap(SceneObject*);
+
+        string getNotes();
+        void setNotes(string notes);
 
         AssetDefinition* getAssetDefinitionByUuid(string);
 

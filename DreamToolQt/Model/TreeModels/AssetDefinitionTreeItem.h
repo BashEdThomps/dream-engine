@@ -1,7 +1,7 @@
 /*
- * AssetDefinitionPropertiesModel.h
+ * AssetDefinitionTreeItem.h
  *
- * Created: 17 2017 by Ashley
+ * Created: 15 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,21 +15,29 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ASSETDEFINITIONPROPERTIESMODEL_H
-#define ASSETDEFINITIONPROPERTIESMODEL_H
+#ifndef ASSET_DEFINITION_TREEITEM_H
+#define ASSET_DEFINITION_TREEITEM_H
 
-#include "PropertiesModel.h"
 #include <DreamCore.h>
+#include "GenericTreeItem.h"
+#include <QList>
+#include <QVariant>
 
-class AssetDefinitionPropertiesModel : public PropertiesModel
+class AssetDefinitionTreeItem : public GenericTreeItem
 {
 public:
-    AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QObject *parent = 0);
-    ~AssetDefinitionPropertiesModel();
-    void createRoot();
-    void createProperties();
+
+    explicit AssetDefinitionTreeItem(
+        const QList<QVariant> &data,
+        GenericTreeItemType type,
+        Dream::AssetDefinition* definiion,
+        AssetDefinitionTreeItem *parentItem = 0
+    );
+
+    Dream::AssetDefinition *getAssetDefinition();
+
 private:
-    Dream::AssetDefinition* mAssetDefinition;
+    Dream::AssetDefinition *mDefinition;
 };
 
-#endif // ASSETDEFINITIONPROPERTIESMODEL_H
+#endif // ASSET_DEFINITION_TREEITEM_H

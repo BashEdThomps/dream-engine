@@ -103,6 +103,7 @@ extern map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
 // Scene =======================================================================
     #define SCENE_JSON_UUID "uuid"
     #define SCENE_JSON_NAME "name"
+    #define SCENE_JSON_NOTES "notes"
     #define SCENE_JSON_SCENE_OBJECTS "objects"
     #define SCENE_JSON_CAMERA "camera"
     #define SCENE_JSON_TRANSLATION "translation"
