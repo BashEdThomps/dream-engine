@@ -18,26 +18,30 @@
 
 #include "DreamEngine.h"
 
-namespace Dream {
-
+namespace Dream
+{
     DreamEngine::DreamEngine
-    (IAudioComponent* audioComponent, IWindowComponent* windowComponent)
+    (IWindowComponent* windowComponent)
     {
         dreamSetVerbose(true);
         if (DEBUG)
         {
             cout << "DreamEngine: Creating new Instance" << endl;
         }
+
+        setWindowComponent(windowComponent);
         setAnimationComponent(nullptr);
-        setAudioComponent(audioComponent);
+        setAudioComponent(nullptr);
         setPhysicsComponent(nullptr);
         setGraphicsComponent(nullptr);
-        setWindowComponent(windowComponent);
+
         setCamera(nullptr);
         setTime(nullptr);
-        setDone(false);
         setActiveScene(nullptr);
         setProject(nullptr);
+
+        setDone(false);
+
         setGameController(new GameController());
     }
 
@@ -88,7 +92,7 @@ namespace Dream {
 
     void
     DreamEngine::
-    setAudioComponent(IAudioComponent* audioComp)
+    setAudioComponent(AudioComponent* audioComp)
     {
         mAudioComponent = audioComp;
     }
@@ -292,6 +296,59 @@ namespace Dream {
         return true;
     }
 
+    void
+    DreamEngine::stopActiveScene
+    ()
+    {
+       mActiveScene = nullptr;
+       cleanupComponents();
+    }
+
+    void
+    DreamEngine::cleanupComponents
+    ()
+    {
+        if (DEBUG)
+        {
+            cout << "DreamEngine: Cleaning up Components..." << endl;
+        }
+
+        if (mWindowComponent)
+        {
+            mWindowComponent->cleanUp();
+        }
+
+        if(mGraphicsComponent)
+        {
+            mGraphicsComponent->cleanUp();
+        }
+
+        if(mPhysicsComponent)
+        {
+            mPhysicsComponent->cleanUp();
+        }
+
+        if(mAudioComponent)
+        {
+            mAudioComponent->cleanUp();
+        }
+
+        if(mAnimationComponent)
+        {
+            mAnimationComponent->cleanUp();
+        }
+
+        if (mLuaEngine)
+        {
+            mLuaEngine->cleanUp();
+        }
+
+        if (DEBUG)
+        {
+            cout << "Dream: Finished Cleaning Up Components." << endl;
+        }
+    }
+
     Scene*
     DreamEngine::
     getActiveScene()
@@ -354,11 +411,14 @@ namespace Dream {
             return 1;
         }
 
-        // Update Window
-        mWindowComponent->updateComponent(mActiveScene);
+
         // Create new Assets
         mActiveScene->createAllAssetInstances();
-
+        // Update Audio
+        mAudioComponent->updateComponent(mActiveScene);
+        // Update Window
+        mWindowComponent->updateComponent(mActiveScene);
+        // Update Physics
         mPhysicsComponent->updateComponent(mActiveScene);
 
         return !mDone;
@@ -419,30 +479,35 @@ namespace Dream {
     DreamEngine::
     destroyComponents()
     {
-        if (mAnimationComponent != nullptr)
+        if (mTime)
+        {
+            delete mTime;
+            mTime = nullptr;
+        }
+        if (mAnimationComponent)
         {
             delete mAnimationComponent;
             mAnimationComponent = nullptr;
         }
 
-        if (mAudioComponent != nullptr)
+        if (mAudioComponent)
         {
             delete mAudioComponent;
             mAudioComponent = nullptr;
         }
 
-        if (mPhysicsComponent != nullptr)
+        if (mPhysicsComponent)
         {
             delete mPhysicsComponent;
             mPhysicsComponent = nullptr;
         }
 
-        if (mGraphicsComponent != nullptr)
+        if (mGraphicsComponent)
         {
             delete mGraphicsComponent;
             mGraphicsComponent = nullptr;
         }
-        if (mWindowComponent != nullptr)
+        if (mWindowComponent)
         {
             delete mWindowComponent;
             mWindowComponent = nullptr;
@@ -522,6 +587,7 @@ namespace Dream {
     DreamEngine::
     initAudioComponent()
     {
+        mAudioComponent = new AudioComponent();
         if (!mAudioComponent->init())
         {
             cerr << "Dream: Unable to initialise AudioComponent." << endl;
@@ -601,7 +667,7 @@ namespace Dream {
     }
 
 
-    IAudioComponent*
+    AudioComponent*
     DreamEngine::
     getAudioComponent()
     {

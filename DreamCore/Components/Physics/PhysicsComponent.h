@@ -53,8 +53,8 @@ namespace Dream
         void populatePhysicsWorld(vector<SceneObject*>*);
         void setGravity(vector<float>);
         void setDebug(bool);
-        bool init();
-        void updateComponent(Scene*);
+        bool init() override;
+        void updateComponent(Scene*) override;
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
@@ -63,6 +63,7 @@ namespace Dream
         void checkContactManifolds();
         SceneObject* getSceneObject(const btCollisionObject*);
         void drawDebug();
+        void cleanUp() override;
     };// End of PhysicsComponent
 
 } // End of Dream

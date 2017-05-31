@@ -36,6 +36,7 @@ namespace DreamSDL
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
+        void cleanUp() override;
     private:
         bool initSDL();
         bool initGL();

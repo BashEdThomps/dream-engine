@@ -22,7 +22,6 @@
 #include <QObject>
 #include <QTimer>
 
-#include "QTDreamAudioComponent.h"
 #include "QOpenGLWindowComponent.h"
 
 class DreamModel : public QObject
@@ -30,7 +29,6 @@ class DreamModel : public QObject
     Q_OBJECT
 public:
     explicit DreamModel(QObject *parent = 0,
-                        QTDreamAudioComponent *audioComponent = 0,
                         QOpenGLWindowComponent *windowComponent = 0);
     ~DreamModel();
     bool loadProject(QString path);
@@ -46,18 +44,21 @@ public:
     void setProjectWindowHeight(int height);
 
     bool startScene(Dream::Scene* scene);
+    Dream::Scene* stopActiveScene();
 
     Dream::AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
     Dream::Scene *getSceneByUuid(std::string uuid);
 
     Dream::Scene *getSelectedScene();
     void setSelectedScene(Dream::Scene* selectedScene);
+signals:
+    void notifySelectedSceneChanged(Dream::Scene* scene);
+
 
 private:
     Dream::DreamEngine* mDreamEngine;
     Dream::Scene* mSelectedScene;
 
-    QTDreamAudioComponent *mAudioComponent;
     QOpenGLWindowComponent *mWindowComponent;
 
     QTimer* mHeartbeatTimer;

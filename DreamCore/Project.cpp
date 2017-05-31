@@ -21,7 +21,7 @@ namespace Dream
 {
 
     Project::Project
-    (string projectPath, nlohmann::json jsonProject, IAudioComponent *audioComponent)
+    (string projectPath, nlohmann::json jsonProject, AudioComponent *audioComponent)
     {
         mJson = jsonProject;
         mAudioComponent = audioComponent;

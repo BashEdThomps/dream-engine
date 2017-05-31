@@ -48,6 +48,8 @@ signals:
     void notifyProjectWidgetsEnabledChanged(bool enabled);
     void notifyStatusBarProjectLoaded(QString);
     void notifyNoSceneSelected();
+    void notifyPlayingScene(Dream::Scene* scene);
+    void notifyStoppedScene(Dream::Scene* scene);
 
 public slots:
     void onProjectNewButtonClicked();
@@ -65,10 +67,11 @@ public slots:
     void onProjectStartupSceneChanged(QString startupScene);
     void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
 
+    void onSelectedSceneChanged(Dream::Scene *scene);
+
 private: // Variables
     MainWindow *mMainWindow;
     QOpenGLWindowComponent *mWindowComponent;
-    QTDreamAudioComponent  *mAudioComponent;
     DreamModel *mDreamModel;
     QString mProjectDirectory;
     QErrorMessage *mInvalidProjectDirectoryError;

@@ -30,9 +30,7 @@ SOURCES += \
     Controller/MainController.cpp \
     \
     Model/DreamModel.cpp \
-    Model/QTDreamAudioComponent.cpp \
     Model/QOpenGLWindowComponent.cpp \
-    Model/QTDreamAudioInstance.cpp \
     Model/ProjectDirModel.cpp \
     \
     Model/TreeModels/AssetDefinitionTreeItem.cpp \
@@ -57,9 +55,7 @@ HEADERS  += \
     Controller/MainController.h \
     \
     Model/DreamModel.h \
-    Model/QTDreamAudioComponent.h \
     Model/QOpenGLWindowComponent.h \
-    Model/QTDreamAudioInstance.h \
     Model/ProjectDirModel.h \
     \
     Model/TreeModels/AssetDefinitionTreeItem.h \

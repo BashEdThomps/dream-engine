@@ -95,6 +95,7 @@ namespace Dream
 
         create2DVertexObjects();
         createFontVertexObjects();
+
         if (DEBUG)
         {
             cout << "GraphicsComponent: Initialisation Done." << endl;
@@ -106,6 +107,7 @@ namespace Dream
     GraphicsComponent::onWindowDimensionsChanged
     ()
     {
+
         // Define the viewport dimensions
         int windowWidth  = mWindowComponent->getWidth();
         int windowHeight = mWindowComponent->getHeight();
@@ -134,6 +136,15 @@ namespace Dream
             mMinimumDraw,
             mMaximumDraw
         );
+
+        if (VERBOSE)
+        {
+            cout << "GraphicsComponent: Window dimensions changed" << endl
+                 << "\tWindowWidth:" << mWindowComponent->getWidth() << endl
+                 << "\tWindowHeight:" << mWindowComponent->getHeight() << endl
+                 << "\tMinDraw: " << mMinimumDraw << endl
+                 << "\tMaxDraw: " << mMaximumDraw << endl;
+        }
     }
 
     void
@@ -219,11 +230,8 @@ namespace Dream
             clearLightQueue();
 
             vector<SceneObject*> scenegraph = scene->getScenegraphVector();
-            for (vector<SceneObject*>::
-                 iterator it = scenegraph.begin(); it!=scenegraph.end(); it++ )
+            for ( SceneObject* object : scenegraph )
             {
-                SceneObject *object = (*it);
-
                 // Models
                 if (object->hasModelInstance())
                 {
@@ -275,7 +283,6 @@ namespace Dream
         }
     }
 
-
     void
     GraphicsComponent::clear2DQueue
     ()
@@ -283,14 +290,12 @@ namespace Dream
         m2DQueue.clear();
     }
 
-
     void
     GraphicsComponent::addTo2DQueue
     (SceneObject* object)
     {
         m2DQueue.push_back(object);
     }
-
 
     void
     GraphicsComponent::draw2DQueue
@@ -313,14 +318,12 @@ namespace Dream
         }
     }
 
-
     void
     GraphicsComponent::clear3DQueue
     ()
     {
         m3DQueue.clear();
     }
-
 
     void
     GraphicsComponent::addTo3DQueue
@@ -329,21 +332,10 @@ namespace Dream
         m3DQueue.push_back(object);
     }
 
-
     void
     GraphicsComponent::draw3DQueue
     ()
     {
-        // Transformation matrices
-        if (VERBOSE)
-        {
-            cout << "GraphicsComponent: Drawing 3D Queue" << endl
-                 << "\tWindowWidth:" << mWindowComponent->getWidth() << endl
-                 << "\tWindowHeight:" << mWindowComponent->getHeight() << endl
-                 << "\tMinDraw: " << mMinimumDraw << endl
-                 << "\tMaxDraw: " << mMaximumDraw << endl;
-        }
-
         // View transform
         mViewMatrix = mCamera->getViewMatrix();
 
@@ -354,14 +346,12 @@ namespace Dream
         }
     }
 
-
     glm::mat4
     GraphicsComponent::getViewMatrix
     ()
     {
         return mViewMatrix;
     }
-
 
     glm::mat4
     GraphicsComponent::getProjectionMatrix
@@ -419,7 +409,6 @@ namespace Dream
         glBindVertexArray(0);
         glUseProgram(0);
     }
-
 
     void
     GraphicsComponent::drawFont
@@ -505,7 +494,6 @@ namespace Dream
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-
     void
     GraphicsComponent::drawModel
     (SceneObject* sceneObject)
@@ -572,31 +560,22 @@ namespace Dream
         glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::
                            value_ptr(mViewMatrix));
         // calculate the model matrix
-        glm::
-                mat4 modelMatrix;
+        glm::mat4 modelMatrix;
         // Get raw data
-        glm::
-                vec3 translation = sceneObject->getTranslation();
-        glm::
-                quat rot = sceneObject->getTransform()->getOrientation();
-        glm::
-                vec3 scale = sceneObject->getScale();
+        glm::vec3 translation = sceneObject->getTranslation();
+        glm::quat rot = sceneObject->getTransform()->getOrientation();
+        glm::vec3 scale = sceneObject->getScale();
         // Translate
-        modelMatrix = glm::
-                translate(modelMatrix,translation);
+        modelMatrix = glm::translate(modelMatrix,translation);
         // Rotate
-        glm::
-                mat4 rotMat = glm::
-                mat4_cast(rot);
+        glm::mat4 rotMat = glm::mat4_cast(rot);
         modelMatrix = modelMatrix * rotMat;
         // Scale
-        modelMatrix = glm::
-                scale(modelMatrix, scale);
+        modelMatrix = glm::scale(modelMatrix, scale);
         // Pass model matrix to shader
         glUniformMatrix4fv(
                     glGetUniformLocation(shader->getShaderProgram(), "model"),
-                    1, GL_FALSE, glm::
-                    value_ptr(modelMatrix)
+                    1, GL_FALSE, glm::value_ptr(modelMatrix)
                     );
         // Draw using shader
         model->draw(shader);
@@ -686,6 +665,17 @@ namespace Dream
     ()
     {
         return mCamera;
+    }
+
+    void
+    GraphicsComponent::cleanUp
+    ()
+    {
+        clear2DQueue();
+        clear3DQueue();
+        clearLightQueue();
+        mClearColour = {0.0f,0.0f,0.0f,1.0f};
+        mAmbientLightColour = {0.0f,0.0f,0.0f,0.0f};
     }
 
 } // End of Dream

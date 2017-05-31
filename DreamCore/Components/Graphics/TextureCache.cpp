@@ -1,5 +1,5 @@
 /*
- * TextureManager.cpp
+ * TextureCache.cpp
  *
  * Created: 30/11/2016 2016 by Ashley
  *
@@ -47,8 +47,8 @@ namespace Dream
     {
       if (DEBUG)
       {
-        cout << "TextureManager: Loading from dir: " << directory_c << endl;
-        cout << "TextureManager:             file: " << file_c << endl;
+        cout << "TextureCache: Loading from dir: " << directory_c << endl;
+        cout << "TextureCache: -> File: " << file_c << endl;
       }
         //Generate texture ID and load texture data
         string filename = string(file_c);
@@ -63,7 +63,7 @@ namespace Dream
             {
               if (DEBUG)
               {
-                cout << "TextureManager: Found cached texture." << endl;
+                cout << "TextureCache: Found cached texture." << endl;
               }
               return nextTexture;
             }

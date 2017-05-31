@@ -60,6 +60,8 @@ public slots:
     void onInvalidProjectDirectory(QString directory);
     void onNoSceneSelected();
     void showStatusBarMessage(QString msg);
+    void onSceneStopped(Dream::Scene* scene);
+
 private:
     void setupGL(QWidget *parent);
     QOpenGLWindowComponent* mWindowComponent;

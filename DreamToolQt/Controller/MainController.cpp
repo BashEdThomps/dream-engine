@@ -36,21 +36,14 @@ MainController::MainController
     : QObject(parent)
 {
     mMainWindow = parent;
-    mAudioComponent = new QTDreamAudioComponent();
     mWindowComponent = parent->getWindowComponent();
-    mDreamModel = new DreamModel(this,mAudioComponent,mWindowComponent);
+    mDreamModel = new DreamModel(this,mWindowComponent);
     createConnections();
 }
 
 MainController::~MainController
 ()
 {
-    if (mAudioComponent)
-    {
-        delete mAudioComponent;
-        mAudioComponent = nullptr;
-    }
-
     if (mDreamModel)
     {
         delete mDreamModel;
@@ -66,71 +59,72 @@ MainController::createConnections
     connect
     (
         mMainWindow->getActionNew(), SIGNAL(triggered()),
-        this, SLOT(onProjectNewButtonClicked()),
-        Qt::DirectConnection
+        this, SLOT(onProjectNewButtonClicked())
     );
     // actionOpen
     connect
     (
         mMainWindow->getActionOpen(), SIGNAL(triggered()),
-        this, SLOT(onProjectOpenButtonClicked()),
-        Qt::DirectConnection
+        this, SLOT(onProjectOpenButtonClicked())
     );
     // actionSave
     connect
     (
         mMainWindow->getActionSave(), SIGNAL(triggered()),
-        this, SLOT(onProjectSaveButtonClicked()),
-        Qt::DirectConnection
+        this, SLOT(onProjectSaveButtonClicked())
     );
     // actionReload
     connect
     (
         mMainWindow->getActionReload(), SIGNAL(triggered()),
-        this, SLOT(onProjectReloadButtonClicked()),
-        Qt::DirectConnection
+        this, SLOT(onProjectReloadButtonClicked())
     );
     // actionPlay
     connect
     (
                 mMainWindow->getActionPlay(), SIGNAL(triggered()),
-                this, SLOT(onProjectPlayButtonClicked()),
-                Qt::DirectConnection
+                this, SLOT(onProjectPlayButtonClicked())
     );
     // actionStop
     connect
     (
                 mMainWindow->getActionStop(), SIGNAL(triggered()),
-                this, SLOT(onProjectStopButtonClicked()),
-                Qt::DirectConnection
+                this, SLOT(onProjectStopButtonClicked())
+    );
+    connect
+    (
+                this,SIGNAL(notifyStoppedScene(Dream::Scene*)),
+                mMainWindow,SLOT(onSceneStopped(Dream::Scene*))
     );
     // Invalid Project Directory
     connect
     (
         this, SIGNAL(notifyInvalidProjectDirectory(QString)),
-        mMainWindow, SLOT(onInvalidProjectDirectory(QString)),
-        Qt::DirectConnection
+        mMainWindow, SLOT(onInvalidProjectDirectory(QString))
     );
     // No Scene Selected
     connect
     (
         this,SIGNAL(notifyNoSceneSelected()),
-        mMainWindow, SLOT(onNoSceneSelected()),
-        Qt::DirectConnection
-     );
+        mMainWindow, SLOT(onNoSceneSelected())
+    );
+    // Valid Scene Selected
+    connect
+    (
+                mDreamModel, SIGNAL(notifySelectedSceneChanged(Dream::Scene*)),
+                this, SLOT(onSelectedSceneChanged(Dream::Scene*))
+    );
     // Project Directory Changed
     connect
     (
         this, SIGNAL(notifyProjectDirectoryChanged(QString)),
-        mMainWindow, SLOT(setWindowTitle(QString)),
-        Qt::DirectConnection
+        mMainWindow, SLOT(setWindowTitle(QString))
      );
     // Status Bar
     connect
     (
         this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-        mMainWindow, SLOT(showStatusBarMessage(QString)),
-        Qt::DirectConnection
+        mMainWindow, SLOT(showStatusBarMessage(QString))
      );
 }
 
@@ -143,8 +137,6 @@ MainController::onProjectNewButtonClicked
 
     if(openDialog.exec())
     {
-        mProjectDirectory = openDialog.selectedFiles().first();
-        updateWindowTitle(mProjectDirectory);
     }
 }
 
@@ -218,24 +210,29 @@ MainController::connectTreeViewModel
     (
         mMainWindow->getProjectTreeView()->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-        this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&)),
-        Qt::DirectConnection
+        this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
     // assetDefinitionTreeView
     connect
     (
         mMainWindow->getAssetDefinitionTreeView()->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-        this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&)),
-        Qt::DirectConnection
+        this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
+    mMainWindow->getProjectTreeView()->expandAll();
+    mMainWindow->getAssetDefinitionTreeView()->expandAll();
 }
 
 void
 MainController::onProjectSaveButtonClicked
 ()
 {
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::Directory);
 
+    if(openDialog.exec())
+    {
+    }
 }
 
 QStringListModel*
@@ -312,6 +309,7 @@ MainController::onProjectPlayButtonClicked
     if (scene)
     {
         mDreamModel->startScene(mDreamModel->getSelectedScene());
+        emit notifyPlayingScene(scene);
     }
     else
     {
@@ -331,7 +329,8 @@ void
 MainController::onProjectStopButtonClicked
 ()
 {
-
+    Dream::Scene* scene = mDreamModel->stopActiveScene();
+    emit notifyStoppedScene(scene);
 }
 
 string
@@ -350,6 +349,7 @@ MainController::onTreeViewSelectionChanged
     {
         GenericTreeItem *selected = static_cast<GenericTreeItem*>(indexes.at(0).internalPointer());
         setupPropertiesTreeViewModel(selected);
+        mMainWindow->getPropertiesTreeView()->expandAll();
     }
 }
 
@@ -400,4 +400,13 @@ MainController::setupPropertiesTreeViewModel
     {
         propertiesTreeView->setModel(model);
     }
+}
+
+void MainController::onSelectedSceneChanged(Dream::Scene *scene)
+{
+    mMainWindow->showStatusBarMessage(
+        QString("Selected Scene: %1").
+            arg(QString::fromStdString(scene->getName())
+        )
+    );
 }

@@ -485,12 +485,13 @@ namespace Dream
 
     void
     SceneObject::setAudioInstance
-    (IAudioInstance* audioAsset)
+    (AudioInstance* audioAsset)
     {
         mAudioInstance = audioAsset;
     }
 
-    IAudioInstance* SceneObject::getAudioInstance() {
+    AudioInstance* SceneObject::getAudioInstance()
+    {
         return mAudioInstance;
     }
 

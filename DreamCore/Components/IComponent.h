@@ -30,6 +30,7 @@ namespace Dream
         virtual ~IComponent();
         virtual bool init() = 0;
         virtual void updateComponent(Scene*) = 0;
+        virtual void cleanUp() = 0;
         void setTime(Time*);
     protected:
         Time* mTime;

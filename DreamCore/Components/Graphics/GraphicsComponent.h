@@ -93,8 +93,8 @@ namespace Dream
         void clear3DQueue();
         void addTo3DQueue(SceneObject*);
         void draw3DQueue();
-        bool init(void);
-        void updateComponent(Scene*);
+        bool init(void) override;
+        void updateComponent(Scene*) override;
         void drawSprite(SceneObject*);
         void drawFont(SceneObject*);
         void drawModel(SceneObject*);
@@ -112,6 +112,7 @@ namespace Dream
         void preRender();
         void postRender();
         GameController *getGameController();
+        void cleanUp() override;
     }; // End of GraphicsComponent
 } // End of Dream
 #endif // End of GRAPHICSCOMPONENT_H

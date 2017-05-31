@@ -175,4 +175,12 @@ namespace DreamSDL
     {
         SDL_GL_SwapWindow(mWindow);
     }
+
+    void
+    SDLWindowComponent::cleanUp
+    ()
+    {
+
+    }
+
 } // End of Dream

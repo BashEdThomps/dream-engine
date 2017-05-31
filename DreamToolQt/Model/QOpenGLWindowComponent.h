@@ -18,6 +18,8 @@ public:
     void updateComponent(Dream::Scene*) override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
+    void cleanUp() override;
+
     void setDreamEngine(Dream::DreamEngine* engine);
 
 protected:

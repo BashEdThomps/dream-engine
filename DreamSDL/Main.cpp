@@ -22,10 +22,7 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    DreamEngine *engine = new Dream::DreamEngine(
-                new SDLAudioComponent(),
-                new SDLWindowComponent()
-                );
+    DreamEngine *engine = new Dream::DreamEngine(new SDLWindowComponent());
 
     dreamSetVerbose(true);
 

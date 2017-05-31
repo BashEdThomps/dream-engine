@@ -314,5 +314,11 @@ namespace Dream
         }
     }
 
+    void
+    PhysicsComponent::cleanUp
+    ()
+    {
+
+    }
 
 } // End of Dream

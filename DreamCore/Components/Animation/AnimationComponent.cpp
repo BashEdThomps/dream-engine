@@ -173,4 +173,11 @@ namespace Dream
         }
     }
 
+    void
+    AnimationComponent::cleanUp
+    ()
+    {
+
+    }
+
 } // End of Dream

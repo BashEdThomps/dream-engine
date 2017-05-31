@@ -14,8 +14,6 @@
  * this file belongs to.
  */
 
-// TODO - Move Lua API Exposure Functions back into this class. Remove ILuaExposable rhetoric.
-
 #include "LuaEngine.h"
 
 #include <sstream>
@@ -29,8 +27,8 @@
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Animation/AnimationInstance.h"
 
-#include "../Components/Audio/IAudioComponent.h"
-#include "../Components/Audio/IAudioInstance.h"
+#include "../Components/Audio/AudioComponent.h"
+#include "../Components/Audio/AudioInstance.h"
 
 #include "../Components/Graphics/AssimpModelInstance.h"
 #include "../Components/Graphics/Camera.h"
@@ -579,6 +577,7 @@ namespace Dream
         luabind::module(mState)
                 [
                 luabind::class_<LightInstance>("LightInstance")
+                // TODO
                 ];
     }
 
@@ -603,6 +602,7 @@ namespace Dream
         luabind::module(mState)
                 [
                 luabind::class_<SpriteInstance>("SpriteInstance")
+                // TODO
                 ];
     }
 
@@ -862,10 +862,16 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeIAudioComponent
+    LuaEngine::exposeAudioComponent
     ()
     {
-
+        luabind::module(mState)
+        [
+                luabind::class_<AudioComponent>("AudioComponent")
+                    .def("playAudioAsset",&AudioComponent::playAudioAsset)
+                    .def("pauseAudioAsset",&AudioComponent::pauseAudioAsset)
+                    .def("stopAudioAsset",&AudioComponent::stopAudioAsset)
+        ];
     }
 
 
@@ -873,28 +879,30 @@ namespace Dream
     LuaEngine::exposeLuaScriptInstance
     ()
     {
-
+        // TODO
     }
 
     void
-    LuaEngine::exposeIAudioInstance
+    LuaEngine::exposeAudioInstance
     ()
     {
-        debugRegisteringClass("IAudioInstance");
-        luabind::module(mState) [
-                luabind::class_<IAudioInstance>("IAudioInstance")
-                .def("play",&IAudioInstance::play)
-                .def("pause",&IAudioInstance::pause)
-                .def("stop",&IAudioInstance::stop)
-                .def("getStatus",&IAudioInstance::getStatus),
+        debugRegisteringClass("AudioInstance");
+        luabind::module(mState)
+        [
+            luabind::class_<AudioInstance>("AudioInstance")
+                .def("play",&AudioInstance::play)
+                .def("pause",&AudioInstance::pause)
+                .def("stop",&AudioInstance::stop)
+                .def("getStatus",&AudioInstance::getStatus),
 
-                luabind::class_<AudioStatus>("AudioStatus")
-                .enum_("AudioStatus") [
-                luabind::value("PLAYING", AudioStatus::PLAYING),
-                luabind::value("PAUSED",  AudioStatus::PAUSED),
-                luabind::value("STOPPED", AudioStatus::STOPPED)
+            luabind::class_<AudioStatus>("AudioStatus")
+                .enum_("AudioStatus")
+                [
+                    luabind::value("PLAYING", AudioStatus::PLAYING),
+                    luabind::value("PAUSED",  AudioStatus::PAUSED),
+                    luabind::value("STOPPED", AudioStatus::STOPPED)
                 ]
-                ];
+        ];
     }
 
     void
@@ -911,8 +919,8 @@ namespace Dream
         exposeGameController();
         exposeGraphicsComponent();
         exposeIAssetInstance();
-        exposeIAudioInstance();
-        exposeIAudioComponent();
+        exposeAudioInstance();
+        exposeAudioComponent();
         exposeIWindowComponent();
         exposeLightInstance();
         exposeLuaScriptInstance();
@@ -925,6 +933,29 @@ namespace Dream
         exposeSpriteInstance();
         exposeTime();
         exposeTransform3D();
+    }
+
+    void
+    LuaEngine::cleanUp
+    ()
+    {
+        if (DEBUG)
+        {
+            cout << "LuaEngine: Cleaning up" << endl;
+        }
+        luabind::object reg = luabind::registry(mState);
+        for(pair<SceneObject*,LuaScriptInstance*> scriptPair : *mScriptMap)
+        {
+            string id = scriptPair.first->getUuid();
+            string soName = scriptPair.first->getName();
+
+            reg[id] = luabind::nil;
+
+            if (DEBUG)
+            {
+                cout << "LuaEngine: Removed script " << id << " for " << soName << " from registry" << endl;
+            }
+        }
     }
 
 } // End of Dream

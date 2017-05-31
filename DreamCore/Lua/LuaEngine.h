@@ -55,6 +55,7 @@ namespace Dream
         bool loadScript(SceneObject*);
         bool update();
         void stackDump();
+        void cleanUp();
         bool executeScriptInit(SceneObject*);
         bool executeScriptUpdate(SceneObject*);
         bool executeScriptKeyHandler(SceneObject*);
@@ -98,8 +99,8 @@ namespace Dream
         void exposeFontInstance();
         void exposeGameController();
         void exposeGraphicsComponent();
-        void exposeIAudioComponent();
-        void exposeIAudioInstance();
+        void exposeAudioComponent();
+        void exposeAudioInstance();
         void exposeIAssetInstance();
         void exposeIWindowComponent();
         void exposeLightInstance();

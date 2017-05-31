@@ -32,7 +32,7 @@
 #include "Lua/LuaScriptInstance.h"
 
 #include "Components/Graphics/Camera.h"
-#include "Components/Audio/IAudioInstance.h"
+#include "Components/Audio/AudioInstance.h"
 #include "Components/Animation/AnimationInstance.h"
 #include "Components/Graphics/SpriteInstance.h"
 #include "Components/Graphics/ShaderInstance.h"
@@ -44,7 +44,7 @@
 using namespace std;
 namespace Dream
 {
-    class IAudioComponent;
+    class AudioComponent;
 
     class Scene
     {
@@ -65,10 +65,10 @@ namespace Dream
         vector<AssetDefinition*>* mAssetDefinitions;
         vector<float> mGravity;
         bool mPhysicsDebug;
-        IAudioComponent* mAudioComponent;
+        AudioComponent* mAudioComponent;
 
     public:
-        Scene(nlohmann::json, string, vector<AssetDefinition*>*, IAudioComponent* audioComponent);
+        Scene(nlohmann::json, string, vector<AssetDefinition*>*, AudioComponent* audioComponent);
         ~Scene();
 
         string getUuid();
@@ -117,7 +117,7 @@ namespace Dream
         IAssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
         IAssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
         AnimationInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
-        IAudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
+        AudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
         AssimpModelInstance* createModelInstance(SceneObject*, AssetDefinition*);
         LuaScriptInstance* createScriptInstance(SceneObject*, AssetDefinition*);
         ShaderInstance* createShaderInstance(SceneObject*, AssetDefinition*);

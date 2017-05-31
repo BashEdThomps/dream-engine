@@ -17,7 +17,7 @@
  */
 
 #include "Scene.h"
-#include "Components/Audio/IAudioComponent.h"
+#include "Components/Audio/AudioComponent.h"
 
 namespace Dream
 {
@@ -26,7 +26,7 @@ namespace Dream
             nlohmann::json jsonScene,
             string projectPath,
             vector<AssetDefinition*>* assetDefs,
-            IAudioComponent* audioComp
+            AudioComponent* audioComp
     )
     {
         mJson = jsonScene;
@@ -616,7 +616,7 @@ namespace Dream
         return retval;
     }
 
-    IAudioInstance*
+    AudioInstance*
     Scene::createAudioInstance
     (SceneObject* sceneObject, AssetDefinition* definition)
     {
@@ -624,7 +624,7 @@ namespace Dream
         {
             cout << "Scene: Creating Audio asset instance." << endl;
         }
-        IAudioInstance* retval = mAudioComponent->newAudioInstance(definition,sceneObject->getTransform());
+        AudioInstance* retval = mAudioComponent->newAudioInstance(definition,sceneObject->getTransform());
         sceneObject->setAudioInstance(retval);
         return retval;
     }

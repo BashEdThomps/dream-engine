@@ -87,11 +87,7 @@ void MainWindow::onInvalidProjectDirectory(QString directory)
 
 void MainWindow::onNoSceneSelected()
 {
-    QMessageBox::critical(
-                this,
-                tr("No Scene Selected"),
-                tr("Please select a Scene to run from the Project Tree.")
-                );
+    showStatusBarMessage(QString("No Scene Selected to Run!"));
 }
 
 QTreeView* MainWindow::getProjectTreeView()
@@ -122,4 +118,20 @@ QAction* MainWindow::getActionReload()
 QOpenGLWindowComponent* MainWindow::getWindowComponent()
 {
     return mWindowComponent;
+}
+
+void MainWindow::onSceneStopped(Dream::Scene* scene)
+{
+    if (scene)
+    {
+        showStatusBarMessage(
+            QString("Stopped Scene: %1")
+                .arg(QString::fromStdString(scene->getNameAndUuidString())
+            )
+        );
+    }
+    else
+    {
+        showStatusBarMessage(QString("No Scene Running"));
+    }
 }

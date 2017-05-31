@@ -15,8 +15,6 @@
 #include "FontInstance.h"
 #include <glm/glm.hpp>
 
-// TODO Replace SDL with FreeType
-
 namespace Dream
 {
 

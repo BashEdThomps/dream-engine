@@ -33,8 +33,11 @@ namespace Dream
     public:
         AnimationComponent();
         ~AnimationComponent();
-        bool init();
-        void updateComponent(Scene*);
+
+        bool init() override;
+        void updateComponent(Scene*) override;
+        void cleanUp() override;
+
         void play (AnimationInstance*);
         void pause(AnimationInstance*);
         void stop (AnimationInstance*);

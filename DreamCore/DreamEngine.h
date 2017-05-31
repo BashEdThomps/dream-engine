@@ -16,7 +16,7 @@
 #include "GameController.h"
 
 #include "Components/Animation/AnimationComponent.h"
-#include "Components/Audio/IAudioComponent.h"
+#include "Components/Audio/AudioComponent.h"
 #include "Components/Graphics/Camera.h"
 #include "Components/Graphics/GraphicsComponent.h"
 #include "Components/Physics/PhysicsComponent.h"
@@ -34,7 +34,7 @@ namespace Dream
         Project *mProject;
         Scene *mActiveScene;
         Camera *mCamera;
-        IAudioComponent *mAudioComponent;
+        AudioComponent *mAudioComponent;
         GraphicsComponent *mGraphicsComponent;
         PhysicsComponent *mPhysicsComponent;
         AnimationComponent *mAnimationComponent;
@@ -42,7 +42,7 @@ namespace Dream
         GameController *mGameController;
         LuaEngine *mLuaEngine;
     public:
-        DreamEngine(IAudioComponent* audioComponent = 0, IWindowComponent* windowComponenti = 0);
+        DreamEngine(IWindowComponent* windowComponent = 0);
         ~DreamEngine();
 
         bool heartbeat();
@@ -50,7 +50,6 @@ namespace Dream
         bool loadFromArgumentParser(ArgumentParser*);
         bool loadFromDirectory(string);
         bool initEngine();
-        bool initAssetManager();
         bool initComponents();
         bool initLuaEngine();
 
@@ -82,13 +81,14 @@ namespace Dream
         bool initGraphicsComponent();
         bool initWindowComponent();
 
-        void destroyScene(Scene*);
+        void stopActiveScene();
+        void cleanupComponents();
 
         AnimationComponent* getAnimationComponent();
         void setAnimationComponent(AnimationComponent*);
 
-        IAudioComponent* getAudioComponent();
-        void setAudioComponent(IAudioComponent*);
+        AudioComponent* getAudioComponent();
+        void setAudioComponent(AudioComponent*);
 
         PhysicsComponent* getPhysicsComponent();
         void setPhysicsComponent(PhysicsComponent*);

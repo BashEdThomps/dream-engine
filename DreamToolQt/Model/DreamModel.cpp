@@ -20,12 +20,10 @@
 
 DreamModel::DreamModel(
         QObject *parent,
-        QTDreamAudioComponent *audioComponent,
         QOpenGLWindowComponent *windowComponent)
     : QObject(parent)
 {
-    mDreamEngine = new Dream::DreamEngine(audioComponent,windowComponent);
-    mAudioComponent = audioComponent;
+    mDreamEngine = new Dream::DreamEngine(windowComponent);
     mWindowComponent = windowComponent;
     mSelectedScene = nullptr;
     mHeartbeatTimer = nullptr;
@@ -152,4 +150,22 @@ Dream::Scene *DreamModel::getSelectedScene()
 void DreamModel::setSelectedScene(Dream::Scene* selectedScene)
 {
     mSelectedScene = selectedScene;
+    emit notifySelectedSceneChanged(selectedScene);
+}
+
+Dream::Scene*
+DreamModel::stopActiveScene()
+{
+    Dream::Scene* activeScene = mDreamEngine->getActiveScene();
+    if (activeScene)
+    {
+        if (mHeartbeatTimer)
+        {
+            disconnect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
+            delete mHeartbeatTimer;
+        }
+        mWindowComponent->setDreamEngine(nullptr);
+        mDreamEngine->stopActiveScene();
+    }
+    return activeScene;
 }
