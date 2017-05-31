@@ -86,8 +86,7 @@ namespace Dream
     }
 
 
-    bool PhysicsComponent::
-    init
+    bool PhysicsComponent::init
     ()
     {
         if (DEBUG)
@@ -130,11 +129,13 @@ namespace Dream
             mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
             mDynamicsWorld->setDebugDrawer(mDebugDrawer);
         }
-        vector<SceneObject*> tmpSG = scene->getScenegraphVector();
-        populatePhysicsWorld(&tmpSG);
+        mScenegraph = scene->getScenegraphVector();
+        populatePhysicsWorld();
+
         btScalar stepValue = static_cast<btScalar>(mTime->getTimeDelta());
         mDynamicsWorld->stepSimulation(stepValue);
         checkContactManifolds();
+
         if (mDebug)
         {
             mDynamicsWorld->debugDrawWorld();
@@ -193,32 +194,30 @@ namespace Dream
 
     void
     PhysicsComponent::populatePhysicsWorld
-    (vector<SceneObject*>* soVec)
+    ()
     {
-        mScenegraph = soVec;
-        vector<SceneObject*>::iterator soIter;
-        for (soIter = soVec->begin(); soIter != soVec->end(); soIter++)
+        for (SceneObject* so : mScenegraph)
         {
             // Has physics
-            if ((*soIter)->hasPhysicsObjectInstance())
+            if (so->hasPhysicsObjectInstance())
             {
-                PhysicsObjectInstance* physicsObject = (*soIter)->getPhysicsObjectInstance();
+                PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
                 // Marked for deletion and in physics world, remove
-                if ((*soIter)->getDeleteFlag() && physicsObject->getInPhysicsWorld())
+                if (so->getDeleteFlag() && physicsObject->getInPhysicsWorld())
                 {
                     if (DEBUG)
                     {
-                        cout << "PhysicsComponent: Removing SceneObject " << (*soIter)->getUuid()
+                        cout << "PhysicsComponent: Removing SceneObject " << so->getUuid()
                              << " from Physics World" << endl;
                     }
                     removePhysicsObjectInstance(physicsObject);
                 }
                 // Not marked for deletion and not in world, add
-                if (!(*soIter)->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
+                if (!so->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
                 {
                     if (DEBUG)
                     {
-                        cout << "PhysicsComponent: Adding SceneObject " << (*soIter)->getUuid()
+                        cout << "PhysicsComponent: Adding SceneObject " << so->getUuid()
                              << " to Physics World" << endl;
                     }
                     addPhysicsObjectInstance(physicsObject);
@@ -227,7 +226,6 @@ namespace Dream
             }
         }
     }
-
 
     void
     PhysicsComponent::setViewProjectionMatrix
@@ -240,14 +238,12 @@ namespace Dream
         }
     }
 
-
     void
     PhysicsComponent::setDebug
     (bool debug)
     {
         mDebug = debug;
     }
-
 
     void
     PhysicsComponent::checkContactManifolds
@@ -287,16 +283,14 @@ namespace Dream
     PhysicsComponent::getSceneObject
     (const btCollisionObject* collObj)
     {
-        vector<SceneObject*>::iterator it;
-        for (it=mScenegraph->begin(); it!=mScenegraph->end(); it++)
+        for (SceneObject* next : mScenegraph)
         {
-            SceneObject* next = (*it);
             if (next->hasPhysicsObjectInstance())
             {
                 PhysicsObjectInstance* nextPO = next->getPhysicsObjectInstance();
                 if (nextPO->getCollisionObject() == collObj)
                 {
-                    return (*it);
+                    return next;
                 }
             }
         }
@@ -318,7 +312,25 @@ namespace Dream
     PhysicsComponent::cleanUp
     ()
     {
-
+        if (DEBUG)
+        {
+            cout << "PhysicsComponent: Cleaning up... " << endl;
+            cout << "PhysicsComponent: Scenegraph has " << mScenegraph.size() << " object." << endl;
+        }
+        for (SceneObject* so : mScenegraph)
+        {
+            // Has physics
+            if (so->getLoadedFlag() && so->hasPhysicsObjectInstance())
+            {
+                PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
+                if (DEBUG)
+                {
+                    cout << "PhysicsComponent: Removing SceneObject " << so->getNameUuidString()
+                         << " from Physics World" << endl;
+                }
+                removePhysicsObjectInstance(physicsObject);
+            }
+        }
     }
 
 } // End of Dream

@@ -114,11 +114,14 @@ Dream::Scene* DreamModel::getSceneByUuid(std::string uuid)
 bool DreamModel::startScene(Dream::Scene* scene)
 {
     qDebug() << "DreamModel: *** Start Scene ***";
-    bool initResult = mDreamEngine->initComponents();
-    if (!initResult)
+    if (!mDreamEngine->getComponentsInitialised())
     {
-        qDebug() << "DreamModel: Error initialising dream components";
-        return false;
+        bool initResult = mDreamEngine->initComponents();
+        if (!initResult)
+        {
+            qDebug() << "DreamModel: Error initialising dream components";
+            return false;
+        }
     }
 
     bool loadResult = mDreamEngine->loadScene(scene);
@@ -128,17 +131,14 @@ bool DreamModel::startScene(Dream::Scene* scene)
         return false;
     }
 
-    if (mHeartbeatTimer)
+    if (!mHeartbeatTimer)
     {
-        disconnect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
-        delete mHeartbeatTimer;
+        mHeartbeatTimer = new QTimer(this);
+        connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
+        mHeartbeatTimer->start(33);
     }
 
     mWindowComponent->setDreamEngine(mDreamEngine);
-    mHeartbeatTimer = new QTimer(this);
-    connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
-    mHeartbeatTimer->start(33);
-
     return true;
 }
 

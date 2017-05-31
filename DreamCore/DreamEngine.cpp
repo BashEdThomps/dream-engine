@@ -28,7 +28,7 @@ namespace Dream
         {
             cout << "DreamEngine: Creating new Instance" << endl;
         }
-
+        setComponentsInitialised(false);
         setWindowComponent(windowComponent);
         setAnimationComponent(nullptr);
         setAudioComponent(nullptr);
@@ -300,6 +300,7 @@ namespace Dream
     DreamEngine::stopActiveScene
     ()
     {
+       //mActiveScene->setLoaded(false);
        mActiveScene = nullptr;
        cleanupComponents();
     }
@@ -561,6 +562,7 @@ namespace Dream
             cout << "Dream: Successfuly created Components." << endl;
         }
 
+        setComponentsInitialised(true);
         return true;
     }
 
@@ -735,6 +737,16 @@ namespace Dream
     {
         mLuaEngine = new LuaEngine(this);
         return mLuaEngine->init();
+    }
+
+    bool DreamEngine::getComponentsInitialised()
+    {
+        return mComponentsInitialised;
+    }
+
+    void DreamEngine::setComponentsInitialised(bool initd)
+    {
+        mComponentsInitialised = initd;
     }
 
 }

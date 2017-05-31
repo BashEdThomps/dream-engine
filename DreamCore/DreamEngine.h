@@ -34,6 +34,7 @@ namespace Dream
         Project *mProject;
         Scene *mActiveScene;
         Camera *mCamera;
+
         AudioComponent *mAudioComponent;
         GraphicsComponent *mGraphicsComponent;
         PhysicsComponent *mPhysicsComponent;
@@ -41,6 +42,7 @@ namespace Dream
         IWindowComponent *mWindowComponent;
         GameController *mGameController;
         LuaEngine *mLuaEngine;
+        bool mComponentsInitialised;
     public:
         DreamEngine(IWindowComponent* windowComponent = 0);
         ~DreamEngine();
@@ -80,6 +82,9 @@ namespace Dream
         bool initPhysicsComponent();
         bool initGraphicsComponent();
         bool initWindowComponent();
+
+        void setComponentsInitialised(bool initd);
+        bool getComponentsInitialised();
 
         void stopActiveScene();
         void cleanupComponents();

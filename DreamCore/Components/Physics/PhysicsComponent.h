@@ -46,11 +46,11 @@ namespace Dream
         glm::mat4 mProjectionMatrix;
         btVector3 mGravity;
         bool mDebug;
-        vector<SceneObject*>* mScenegraph;
+        vector<SceneObject*> mScenegraph;
     public:
         PhysicsComponent();
         ~PhysicsComponent();
-        void populatePhysicsWorld(vector<SceneObject*>*);
+        void populatePhysicsWorld();
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init() override;
