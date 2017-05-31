@@ -19,7 +19,8 @@
 #include "AssetDefinitionTreeModel.h"
 #include <QStringList>
 
-AssetDefinitionTreeModel::AssetDefinitionTreeModel(Dream::Project *project, QObject *parent)
+AssetDefinitionTreeModel::AssetDefinitionTreeModel
+(Dream::Project *project, QObject *parent)
     : QAbstractItemModel(parent)
 {
     mProject = project;
@@ -34,12 +35,15 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel(Dream::Project *project, QObj
     setupModelData();
 }
 
-AssetDefinitionTreeModel::~AssetDefinitionTreeModel()
+AssetDefinitionTreeModel::~AssetDefinitionTreeModel
+()
 {
     delete mRootItem;
 }
 
-int AssetDefinitionTreeModel::columnCount(const QModelIndex &parent) const
+int
+AssetDefinitionTreeModel::columnCount
+(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -51,7 +55,9 @@ int AssetDefinitionTreeModel::columnCount(const QModelIndex &parent) const
     }
 }
 
-QVariant AssetDefinitionTreeModel::data(const QModelIndex &index, int role) const
+QVariant
+AssetDefinitionTreeModel::data
+(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {
@@ -68,7 +74,9 @@ QVariant AssetDefinitionTreeModel::data(const QModelIndex &index, int role) cons
     return item->data(index.column());
 }
 
-Qt::ItemFlags AssetDefinitionTreeModel::flags(const QModelIndex &index) const
+Qt::ItemFlags
+AssetDefinitionTreeModel::flags
+(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -77,8 +85,9 @@ Qt::ItemFlags AssetDefinitionTreeModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index);
 }
 
-QVariant AssetDefinitionTreeModel::headerData(int section, Qt::Orientation orientation,
-                               int role) const
+QVariant
+AssetDefinitionTreeModel::headerData
+(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
@@ -87,7 +96,9 @@ QVariant AssetDefinitionTreeModel::headerData(int section, Qt::Orientation orien
     return QVariant();
 }
 
-QModelIndex AssetDefinitionTreeModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex
+AssetDefinitionTreeModel::index
+(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
     {
@@ -117,7 +128,9 @@ QModelIndex AssetDefinitionTreeModel::index(int row, int column, const QModelInd
     }
 }
 
-QModelIndex AssetDefinitionTreeModel::parent(const QModelIndex &index) const
+QModelIndex
+AssetDefinitionTreeModel::parent
+(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -135,7 +148,9 @@ QModelIndex AssetDefinitionTreeModel::parent(const QModelIndex &index) const
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int AssetDefinitionTreeModel::rowCount(const QModelIndex &parent) const
+int
+AssetDefinitionTreeModel::rowCount
+(const QModelIndex &parent) const
 {
     AssetDefinitionTreeItem *parentItem;
 
@@ -155,7 +170,9 @@ int AssetDefinitionTreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void AssetDefinitionTreeModel::setupModelData()
+void
+AssetDefinitionTreeModel::setupModelData
+()
 {
     QList<QVariant> assetDefinitionsNodeData;
     assetDefinitionsNodeData << QString("Asset Definitions");

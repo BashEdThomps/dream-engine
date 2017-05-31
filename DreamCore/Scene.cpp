@@ -798,4 +798,13 @@ namespace Dream
         mNotes = notes;
     }
 
+    void Scene::cleanUpAssetInstances()
+    {
+        for (SceneObject* so : mScenegraphVector)
+        {
+           so->setDeleteFlag(true);
+           so->setLoadedFlag(false);
+        }
+    }
+
 } // End of Dream

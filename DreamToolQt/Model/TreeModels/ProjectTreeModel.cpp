@@ -19,7 +19,8 @@
 #include "ProjectTreeModel.h"
 #include <QStringList>
 
-ProjectTreeModel::ProjectTreeModel(Dream::Project *project, QObject *parent)
+ProjectTreeModel::ProjectTreeModel
+(Dream::Project *project, QObject *parent)
     : QAbstractItemModel(parent)
 {
     mProject = project;
@@ -29,12 +30,15 @@ ProjectTreeModel::ProjectTreeModel(Dream::Project *project, QObject *parent)
     setupModelData(mRootItem);
 }
 
-ProjectTreeModel::~ProjectTreeModel()
+ProjectTreeModel::~ProjectTreeModel
+()
 {
     delete mRootItem;
 }
 
-int ProjectTreeModel::columnCount(const QModelIndex &parent) const
+int
+ProjectTreeModel::columnCount
+(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -46,7 +50,9 @@ int ProjectTreeModel::columnCount(const QModelIndex &parent) const
     }
 }
 
-QVariant ProjectTreeModel::data(const QModelIndex &index, int role) const
+QVariant
+ProjectTreeModel::data
+(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {
@@ -63,7 +69,9 @@ QVariant ProjectTreeModel::data(const QModelIndex &index, int role) const
     return item->data(index.column());
 }
 
-Qt::ItemFlags ProjectTreeModel::flags(const QModelIndex &index) const
+Qt::ItemFlags
+ProjectTreeModel::flags
+(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -72,7 +80,9 @@ Qt::ItemFlags ProjectTreeModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index);
 }
 
-QVariant ProjectTreeModel::headerData(int section, Qt::Orientation orientation,
+QVariant
+ProjectTreeModel::headerData
+(int section, Qt::Orientation orientation,
                                int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -82,7 +92,9 @@ QVariant ProjectTreeModel::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
-QModelIndex ProjectTreeModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex
+ProjectTreeModel::index
+(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
     {
@@ -112,7 +124,9 @@ QModelIndex ProjectTreeModel::index(int row, int column, const QModelIndex &pare
     }
 }
 
-QModelIndex ProjectTreeModel::parent(const QModelIndex &index) const
+QModelIndex
+ProjectTreeModel::parent
+(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -130,7 +144,9 @@ QModelIndex ProjectTreeModel::parent(const QModelIndex &index) const
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int ProjectTreeModel::rowCount(const QModelIndex &parent) const
+int
+ProjectTreeModel::rowCount
+(const QModelIndex &parent) const
 {
     ProjectTreeItem *parentItem;
 
@@ -150,7 +166,9 @@ int ProjectTreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void ProjectTreeModel::setupModelData(ProjectTreeItem *parent)
+void
+ProjectTreeModel::setupModelData
+(ProjectTreeItem *parent)
 {
     QList<QVariant> sceneNodeData;
     sceneNodeData << QString("Scenes");
@@ -182,7 +200,9 @@ void ProjectTreeModel::setupModelData(ProjectTreeItem *parent)
     }
 }
 
-void ProjectTreeModel::appendSceneObjects(Dream::SceneObject *parentSceneObject, ProjectTreeItem* parentTreeNode)
+void
+ProjectTreeModel::appendSceneObjects
+(Dream::SceneObject *parentSceneObject, ProjectTreeItem* parentTreeNode)
 {
     for (Dream::SceneObject *sceneObject : parentSceneObject->getChildren())
     {

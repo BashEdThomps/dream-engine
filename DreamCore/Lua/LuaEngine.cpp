@@ -956,6 +956,7 @@ namespace Dream
                 cout << "LuaEngine: Removed script " << id << " for " << soName << " from registry" << endl;
             }
         }
+        mScriptMap->clear();
     }
 
 } // End of Dream

@@ -22,7 +22,7 @@ ScenePropertiesModel::ScenePropertiesModel
 (Dream::Scene *scene, QTreeView* parent)
     : PropertiesModel(parent)
 {
-    qDebug() << "Creating Scene Properties Model";
+    qDebug() << "ScenePropertiesModel: Constructor called";
     mScene = scene;
     createRoot();
     createProperties();

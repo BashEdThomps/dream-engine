@@ -149,6 +149,7 @@ namespace Dream
         void loadClearColour(nlohmann::json);
         void loadAmbientLightColour(nlohmann::json);
         nlohmann::json toJson();
+        void cleanUpAssetInstances();
 
     }; // End of Scene
 

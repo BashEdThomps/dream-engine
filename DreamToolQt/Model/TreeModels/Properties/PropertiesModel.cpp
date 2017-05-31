@@ -132,7 +132,7 @@ QModelIndex PropertiesModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
-        qDebug() << QString("PropertiesModel: Invalid Index @ col: %1, row: %2").arg(index.column()).arg(index.row());
+        //qDebug() << QString("PropertiesModel: Invalid Index @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
@@ -141,13 +141,13 @@ QModelIndex PropertiesModel::parent(const QModelIndex &index) const
 
     if (parentItem == nullptr)
     {
-        qDebug() << QString("PropertiesModel: Parent is nullptr @ col: %1, row: %2").arg(index.column()).arg(index.row());
+        //qDebug() << QString("PropertiesModel: Parent is nullptr @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
     if (parentItem == mRootItem)
     {
-        qDebug() << QString("PropertiesModel: Parent is root item @ col: %1, row: %2").arg(index.column()).arg(index.row());
+        //qDebug() << QString("PropertiesModel: Parent is root item @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
@@ -215,7 +215,7 @@ QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &paren
 {
     if (!hasIndex(row, column, parent))
     {
-        qDebug() << QString("PropertiesModel: No index for row %1 col %2").arg(row).arg(column);
+        //qDebug() << QString("PropertiesModel: No index for row %1 col %2").arg(row).arg(column);
         return QModelIndex();
     }
 
@@ -223,7 +223,7 @@ QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &paren
 
     if (!parent.isValid())
     {
-        qDebug() << QString("PropertiesModel: Parent is invalid for row %1 col %2").arg(row).arg(column);
+        //qDebug() << QString("PropertiesModel: Parent is invalid for row %1 col %2").arg(row).arg(column);
         parentItem = mRootItem;
     }
     else
@@ -238,7 +238,7 @@ QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &paren
     }
     else
     {
-        qDebug() << QString("PropertiesModel: childItem is null for row %1 col %2").arg(row).arg(column);
+        //qDebug() << QString("PropertiesModel: childItem is null for row %1 col %2").arg(row).arg(column);
         return QModelIndex();
     }
 }

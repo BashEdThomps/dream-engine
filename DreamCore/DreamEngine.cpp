@@ -73,14 +73,12 @@ namespace Dream
         return mWindowComponent;
     }
 
-
     Project*
     DreamEngine::
     getProject()
     {
         return mProject;
     }
-
 
     void
     DreamEngine::
@@ -89,14 +87,12 @@ namespace Dream
         mCamera = camera;
     }
 
-
     void
     DreamEngine::
     setAudioComponent(AudioComponent* audioComp)
     {
         mAudioComponent = audioComp;
     }
-
 
     void
     DreamEngine::
@@ -105,14 +101,12 @@ namespace Dream
         mAnimationComponent = animComp;
     }
 
-
     void
     DreamEngine::
     setPhysicsComponent(PhysicsComponent* physicsComp)
     {
         mPhysicsComponent = physicsComp;
     }
-
 
     void
     DreamEngine::
@@ -121,14 +115,12 @@ namespace Dream
         mGraphicsComponent = graphicsComp;
     }
 
-
     void
     DreamEngine::
     setDone(bool done)
     {
         mDone = done;
     }
-
 
     void
     DreamEngine::
@@ -137,14 +129,12 @@ namespace Dream
         mTime = time;
     }
 
-
     void
     DreamEngine::
     setProject(Project* project)
     {
         mProject = project;
     }
-
 
     bool
     DreamEngine::
@@ -243,7 +233,6 @@ namespace Dream
         return loadSuccess;
     }
 
-
     bool
     DreamEngine::
     loadFromArgumentParser(ArgumentParser *parser)
@@ -260,7 +249,6 @@ namespace Dream
         return loadSuccess;
     }
 
-
     bool
     DreamEngine::
     loadSceneByUuid(string uuid)
@@ -268,7 +256,6 @@ namespace Dream
         Scene* scene = mProject->getSceneByUuid(uuid);
         return loadScene(scene);
     }
-
 
     bool
     DreamEngine::
@@ -300,9 +287,9 @@ namespace Dream
     DreamEngine::stopActiveScene
     ()
     {
-       //mActiveScene->setLoaded(false);
-       mActiveScene = nullptr;
+       mActiveScene->cleanUpAssetInstances();
        cleanupComponents();
+       mActiveScene = nullptr;
     }
 
     void

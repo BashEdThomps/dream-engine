@@ -18,9 +18,8 @@
 #include "DreamModel.h"
 #include <QDebug>
 
-DreamModel::DreamModel(
-        QObject *parent,
-        QOpenGLWindowComponent *windowComponent)
+DreamModel::DreamModel
+(QObject *parent,QOpenGLWindowComponent *windowComponent)
     : QObject(parent)
 {
     mDreamEngine = new Dream::DreamEngine(windowComponent);
@@ -29,11 +28,14 @@ DreamModel::DreamModel(
     mHeartbeatTimer = nullptr;
 }
 
-DreamModel::~DreamModel()
+DreamModel::~DreamModel
+()
 {
 }
 
-Dream::Project* DreamModel::getProject()
+Dream::Project*
+DreamModel::getProject
+()
 {
     if (mDreamEngine)
     {
@@ -42,7 +44,9 @@ Dream::Project* DreamModel::getProject()
     return nullptr;
 }
 
-vector<Dream::Scene*>* DreamModel::getScenes()
+vector<Dream::Scene*>*
+DreamModel::getScenes
+()
 {
     if (mDreamEngine)
     {
@@ -51,7 +55,9 @@ vector<Dream::Scene*>* DreamModel::getScenes()
     return nullptr;
 }
 
-vector<Dream::AssetDefinition*>* DreamModel::getAssetDefinitions()
+vector<Dream::AssetDefinition*>*
+DreamModel::getAssetDefinitions
+()
 {
     if (mDreamEngine)
     {
@@ -60,58 +66,79 @@ vector<Dream::AssetDefinition*>* DreamModel::getAssetDefinitions()
     return nullptr;
 }
 
-
-bool DreamModel::loadProject(QString path)
+bool
+DreamModel::loadProject
+(QString path)
 {
     return mDreamEngine->loadFromDirectory(path.toStdString());
 }
 
-void DreamModel::setProjectName(string name)
+void
+DreamModel::setProjectName
+(string name)
 {
     mDreamEngine->getProject()->setName(name);
 }
 
-void DreamModel::setProjectAuthor(string author)
+void
+DreamModel::setProjectAuthor
+(string author)
 {
     mDreamEngine->getProject()->setAuthor(author);
 }
 
-void DreamModel::setProjectDescription(string desc)
+void
+DreamModel::setProjectDescription
+(string desc)
 {
     mDreamEngine->getProject()->setDescription(desc);
 }
 
-void DreamModel::setProjectStartupSceneByUuid(string scene)
+void
+DreamModel::setProjectStartupSceneByUuid
+(string scene)
 {
     mDreamEngine->getProject()->setStartupSceneUuid(scene);
 }
 
-void DreamModel::setProjectStartupSceneByName(string scene)
+void
+DreamModel::setProjectStartupSceneByName
+(string scene)
 {
     mDreamEngine->getProject()->setStartupSceneName(scene);
 }
 
-void DreamModel::setProjectWindowWidth(int width)
+void
+DreamModel::setProjectWindowWidth
+(int width)
 {
     mDreamEngine->getProject()->setWindowWidth(width);
 }
 
-void DreamModel::setProjectWindowHeight(int height)
+void
+DreamModel::setProjectWindowHeight
+(int height)
 {
     mDreamEngine->getProject()->setWindowHeight(height);
 }
 
-Dream::AssetDefinition* DreamModel::getAssetDefinitionByUuid(std::string uuid)
+Dream::AssetDefinition*
+DreamModel::getAssetDefinitionByUuid
+(std::string uuid)
 {
     return mDreamEngine->getProject()->getAssetDefinitionByUuid(uuid);
 }
 
-Dream::Scene* DreamModel::getSceneByUuid(std::string uuid)
+Dream::Scene*
+DreamModel::getSceneByUuid
+(std::string uuid)
 {
     return mDreamEngine->getProject()->getSceneByUuid(uuid);
 }
 
-bool DreamModel::startScene(Dream::Scene* scene)
+bool
+DreamModel::startScene
+(Dream::Scene* scene)
 {
     qDebug() << "DreamModel: *** Start Scene ***";
     if (!mDreamEngine->getComponentsInitialised())
@@ -142,19 +169,24 @@ bool DreamModel::startScene(Dream::Scene* scene)
     return true;
 }
 
-Dream::Scene *DreamModel::getSelectedScene()
+Dream::Scene*
+DreamModel::getSelectedScene
+()
 {
     return mSelectedScene;
 }
 
-void DreamModel::setSelectedScene(Dream::Scene* selectedScene)
+void
+DreamModel::setSelectedScene
+(Dream::Scene* selectedScene)
 {
     mSelectedScene = selectedScene;
     emit notifySelectedSceneChanged(selectedScene);
 }
 
 Dream::Scene*
-DreamModel::stopActiveScene()
+DreamModel::stopActiveScene
+()
 {
     Dream::Scene* activeScene = mDreamEngine->getActiveScene();
     if (activeScene)

@@ -70,10 +70,14 @@ namespace Dream
     AudioComponent::deleteAllBuffers
     ()
     {
-        std::vector<ALuint>::iterator bufferIt;
-        for (bufferIt = mBuffers.begin(); bufferIt != mBuffers.end(); bufferIt++)
+        for (ALuint buffer : mBuffers)
         {
-            deleteBuffers(1, (*bufferIt));
+            if (DEBUG)
+            {
+                   cout << "AudioComponent: Deleting buffer " << buffer << endl;
+            }
+
+            deleteBuffers(1, buffer);
         }
     }
 
@@ -97,10 +101,13 @@ namespace Dream
     AudioComponent::deleteAllSources
     ()
     {
-        std::vector<ALuint>::iterator sourceIt;
-        for (sourceIt = mSources.begin(); sourceIt != mSources.end(); sourceIt++)
+        for (ALuint source : mSources)
         {
-            deleteSources(1, (*sourceIt));
+            if (DEBUG)
+            {
+                cout << "AudioComponent: Deleting buffer " << source << endl;
+            }
+            deleteSources(1, source);
         }
     }
 
@@ -238,7 +245,7 @@ namespace Dream
         {
             if (std::find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
             {
-                mStopQueue.push_back(dynamic_cast<AudioInstance*>(asset));
+                mStopQueue.push_back(asset);
                 if (DEBUG)
                 {
                     cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to stop queue." << endl;;
@@ -270,11 +277,7 @@ namespace Dream
     AudioComponent::cleanUpBuffersAndSources
     ()
     {
-        std::vector<ALuint>::iterator sourceIterator;
-        for (sourceIterator = mSources.begin(); sourceIterator != mSources.end(); sourceIterator++)
-        {
-            // Clean Up in the Source & Buffer Isle
-        }
+        // TODO
     }
 
     void AudioComponent::updatePlayQueue()
@@ -479,6 +482,19 @@ namespace Dream
     AudioComponent::cleanUp
     ()
     {
-
+        if (DEBUG)
+        {
+            cout << "AudioComponent: Cleanup Called" << endl;
+        }
+        for (ALuint source : mSources)
+        {
+            if (DEBUG)
+            {
+                   cout << "AudioComponent: Stopping source " << source << endl;
+            }
+            alSourceStop(source);
+        }
+        deleteAllBuffers();
+        deleteAllSources();
     }
 } // End of Dream

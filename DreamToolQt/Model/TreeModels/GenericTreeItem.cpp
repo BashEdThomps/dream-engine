@@ -18,49 +18,65 @@
 #include "GenericTreeItem.h"
 #include <QStringList>
 
-GenericTreeItem::GenericTreeItem(const QList<QVariant> &data, GenericTreeItemType type, GenericTreeItem *parent)
+GenericTreeItem::GenericTreeItem
+(const QList<QVariant> &data, GenericTreeItemType type, GenericTreeItem *parent)
 {
     mType = type;
     mParentItem = parent;
     mItemData = data;
 }
 
-GenericTreeItem::~GenericTreeItem()
+GenericTreeItem::~GenericTreeItem
+()
 {
     qDeleteAll(mChildItems);
 }
 
-void GenericTreeItem::appendChild(GenericTreeItem *item)
+void
+GenericTreeItem::appendChild
+(GenericTreeItem *item)
 {
     mChildItems.append(item);
 }
 
-GenericTreeItem *GenericTreeItem::child(int row)
+GenericTreeItem*
+GenericTreeItem::child
+(int row)
 {
     return mChildItems.value(row);
 }
 
-int GenericTreeItem::childCount() const
+int
+GenericTreeItem::childCount
+() const
 {
     return mChildItems.count();
 }
 
-int GenericTreeItem::columnCount() const
+int
+GenericTreeItem::columnCount
+() const
 {
     return mItemData.count();
 }
 
-QVariant GenericTreeItem::data(int column) const
+QVariant
+GenericTreeItem::data
+(int column) const
 {
     return mItemData.value(column);
 }
 
-GenericTreeItem *GenericTreeItem::parentItem()
+GenericTreeItem*
+GenericTreeItem::parentItem
+()
 {
     return mParentItem;
 }
 
-int GenericTreeItem::row() const
+int
+GenericTreeItem::row
+() const
 {
     if (mParentItem)
         return mParentItem->mChildItems.indexOf(const_cast<GenericTreeItem*>(this));
@@ -68,7 +84,9 @@ int GenericTreeItem::row() const
     return 0;
 }
 
-GenericTreeItemType GenericTreeItem::getItemType()
+GenericTreeItemType
+GenericTreeItem::getItemType
+()
 {
    return mType;
 }
