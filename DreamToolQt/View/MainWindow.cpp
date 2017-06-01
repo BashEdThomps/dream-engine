@@ -31,8 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::setupGL(QWidget *parent)
 {
     QVBoxLayout *glVerticalLayout = new QVBoxLayout(ui->centralWidget);
-    glVerticalLayout->setSpacing(6);
-    glVerticalLayout->setContentsMargins(11, 11, 11, 11);
+    glVerticalLayout->setSpacing(0);
+    glVerticalLayout->setContentsMargins(0,0,0,0);
     glVerticalLayout->setObjectName(QStringLiteral("glVerticalLayout"));
 
     QSurfaceFormat glFormat;
@@ -42,7 +42,7 @@ void MainWindow::setupGL(QWidget *parent)
     mWindowComponent = new QOpenGLWindowComponent(glFormat,parent);
 
     glVerticalLayout->addWidget(mWindowComponent);
-    ui->centralWidget->setLayout(glVerticalLayout);
+    ui->previewTab->setLayout(glVerticalLayout);
 }
 
 MainWindow::~MainWindow()
@@ -113,6 +113,11 @@ void MainWindow::showStatusBarMessage(QString msg)
 QAction* MainWindow::getActionReload()
 {
     return ui->actionReload;
+}
+
+QAction* MainWindow::getActionOpenTestProject()
+{
+    return ui->actionOpen_Test_Project;
 }
 
 QOpenGLWindowComponent* MainWindow::getWindowComponent()

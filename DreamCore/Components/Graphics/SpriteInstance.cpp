@@ -31,7 +31,7 @@ namespace Dream
   {
         if (DEBUG)
         {
-            cout << "SpriteInstance: Destroying Object" << endl;
+            cout << "SpriteInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
       return;
   }

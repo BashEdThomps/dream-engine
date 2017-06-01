@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "AssetDefinitionFormatComboDelegate.h"
+#include "../AssetDefinitionTreeItem.h"
 #include <QComboBox>
 #include <QDebug>
 
@@ -37,6 +38,9 @@ AssetDefinitionFormatComboDelegate::createEditor
 const
 {
     QComboBox *editor = new QComboBox(parent);
+    editor->setDuplicatesEnabled(false);
+    editor->setEditable(false);
+    editor->setMinimumHeight(25);
     vector<std::string> formats = Dream::DREAM_ASSET_FORMATS_MAP[mAssetType];
     QStringList list;
     for (std::string format : formats)
@@ -73,4 +77,12 @@ AssetDefinitionFormatComboDelegate::updateEditorGeometry
 const
 {
     editor->setGeometry(option.rect);
+}
+
+QSize
+AssetDefinitionFormatComboDelegate::sizeHint
+( const QStyleOptionViewItem & option, const QModelIndex & index )
+const
+{
+    return QSize(100,25);
 }

@@ -83,8 +83,8 @@ namespace Dream
         {
             AssetType::AUDIO,
             {
-                ASSET_FORMAT_AUDIO_MUSIC,
-                ASSET_FORMAT_AUDIO_SFX
+                ASSET_FORMAT_AUDIO_WAV,
+                ASSET_FORMAT_AUDIO_OGG
             }
         },
         {

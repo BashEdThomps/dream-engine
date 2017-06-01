@@ -287,7 +287,15 @@ namespace Dream
     DreamEngine::stopActiveScene
     ()
     {
-       mActiveScene->cleanUpAssetInstances();
+        if (DEBUG)
+        {
+            cout << "********************************************************************************" << endl
+                 << "Stopping Scene" << mActiveScene->getNameAndUuidString() << endl
+                 << "********************************************************************************" << endl;
+        }
+       mActiveScene->getRootSceneObject()->setDeleteFlag(true);
+       updateLogic();
+       updateCleanup();
        cleanupComponents();
        mActiveScene = nullptr;
     }

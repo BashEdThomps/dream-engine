@@ -298,7 +298,7 @@ namespace Dream
         }
         for(vector<SceneObject*>::iterator it = mScenegraphVector.begin(); it != mScenegraphVector.end(); it++)
         {
-            cout << (*it)->getNameUuidString() << endl;
+            cout << (*it)->getNameAndUuidString() << endl;
         }
     }
 
@@ -422,16 +422,12 @@ namespace Dream
     {
         if (!mDeleteQueue.empty())
         {
-            vector<SceneObject*>::iterator it;
-            for(it=mDeleteQueue.begin(); it!=mDeleteQueue.end(); it++)
+            for(SceneObject* obj : mDeleteQueue)
             {
-                SceneObject* obj = (*it);
-                SceneObject* parent = obj->getParent();
-                if (parent != nullptr)
+                if (obj)
                 {
-                    parent->removeChild(obj);
+                    delete obj;
                 }
-                delete obj;
             }
         }
     }
@@ -527,7 +523,7 @@ namespace Dream
         {
             cout << "Scene: Creating Asset Intance of: ("
                  << definition->getType() << ") " << definition->getName()
-                 << ", for SceneObject: " << sceneObject->getNameUuidString()
+                 << ", for SceneObject: " << sceneObject->getNameAndUuidString()
                  << endl;
         }
 
@@ -798,12 +794,19 @@ namespace Dream
         mNotes = notes;
     }
 
-    void Scene::cleanUpAssetInstances()
+    void Scene::setDeleteFlagOnAllSceneObjects(bool bDelete)
     {
         for (SceneObject* so : mScenegraphVector)
         {
-           so->setDeleteFlag(true);
-           so->setLoadedFlag(false);
+           so->setDeleteFlag(bDelete);
+        }
+    }
+
+    void Scene::setLoadedFlagOnAllSceneObjects(bool load)
+    {
+        for (SceneObject* so : mScenegraphVector)
+        {
+           so->setLoadedFlag(load);
         }
     }
 

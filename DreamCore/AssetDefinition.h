@@ -72,9 +72,11 @@ namespace Dream {
         bool isTypeFont();
 
         bool isScriptFormatLua();
+
         bool isModelFormatAssimp();
-        bool isAudioFormatSoundEffect();
-        bool isAudioFormatMusic();
+
+        bool isAudioFormatOgg();
+        bool isAudioFormatWav();
 
         string getAssetPath();
 

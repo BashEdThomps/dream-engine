@@ -464,11 +464,11 @@ namespace Dream
     AudioComponent::newAudioInstance
     (AssetDefinition* definition,Transform3D* transform)
     {
-        if (definition->getFormat().compare(ASSET_FORMAT_WAV) == 0)
+        if (definition->isAudioFormatWav())
         {
             return new WavAudioInstance(definition,transform);
         }
-        else if (definition->getFormat().compare(ASSET_FORMAT_OGG) == 0)
+        else if (definition->isAudioFormatOgg())
         {
             return new OggAudioInstance(definition,transform);
         }

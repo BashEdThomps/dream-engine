@@ -14,6 +14,7 @@
 
 namespace Dream
 {
+    class AssimpModelInstance;
       class AssimpMesh
       {
       private:
@@ -23,8 +24,9 @@ namespace Dream
         vector<Vertex>  mVertices;
         vector<GLuint>  mIndices;
         vector<Texture> mTextures;
+        AssimpModelInstance *mParent;
       public:
-        AssimpMesh(vector<Vertex>, vector<GLuint>, vector<Texture>);
+        AssimpMesh(AssimpModelInstance* parent, vector<Vertex>, vector<GLuint>, vector<Texture>);
         ~AssimpMesh();
         void draw(ShaderInstance*);
         void init();

@@ -37,7 +37,7 @@ namespace Dream {
     {
         if (DEBUG)
         {
-            cout << "AnimationInstance: Destroying Object" << endl;
+            cout << "AnimationInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
         deleteKeyFrames();
         deletePlaybackFrames();

@@ -150,6 +150,8 @@ namespace Dream
         void loadAmbientLightColour(nlohmann::json);
         nlohmann::json toJson();
         void cleanUpAssetInstances();
+        void setDeleteFlagOnAllSceneObjects(bool bDelete);
+        void setLoadedFlagOnAllSceneObjects(bool load);
 
     }; // End of Scene
 

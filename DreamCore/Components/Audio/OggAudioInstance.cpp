@@ -29,7 +29,10 @@ namespace Dream
     OggAudioInstance::~OggAudioInstance
     ()
     {
-
+        if (DEBUG)
+        {
+            cout << "OggAudioInstance: Destroying Object " << getNameAndUuidString() << endl;
+        }
     }
 
     bool

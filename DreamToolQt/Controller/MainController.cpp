@@ -59,42 +59,49 @@ MainController::createConnections
     connect
     (
         mMainWindow->getActionNew(), SIGNAL(triggered()),
-        this, SLOT(onProjectNewButtonClicked())
+        this, SLOT(onProjectNewAction())
     );
     // actionOpen
     connect
     (
         mMainWindow->getActionOpen(), SIGNAL(triggered()),
-        this, SLOT(onProjectOpenButtonClicked())
+        this, SLOT(onProjectOpenAction())
     );
     // actionSave
     connect
     (
         mMainWindow->getActionSave(), SIGNAL(triggered()),
-        this, SLOT(onProjectSaveButtonClicked())
+        this, SLOT(onProjectSaveAction())
     );
     // actionReload
     connect
     (
         mMainWindow->getActionReload(), SIGNAL(triggered()),
-        this, SLOT(onProjectReloadButtonClicked())
+        this, SLOT(onProjectReloadAction())
     );
     // actionPlay
     connect
     (
                 mMainWindow->getActionPlay(), SIGNAL(triggered()),
-                this, SLOT(onProjectPlayButtonClicked())
+                this, SLOT(onProjectPlayAction())
     );
     // actionStop
     connect
     (
                 mMainWindow->getActionStop(), SIGNAL(triggered()),
-                this, SLOT(onProjectStopButtonClicked())
+                this, SLOT(onProjectStopAction())
     );
+    // Scene Stopped
     connect
     (
                 this,SIGNAL(notifyStoppedScene(Dream::Scene*)),
                 mMainWindow,SLOT(onSceneStopped(Dream::Scene*))
+    );
+    // Open Default Project
+    connect
+    (
+                mMainWindow->getActionOpenTestProject(), SIGNAL(triggered()),
+                this, SLOT(onProjectOpenTestProjectAction())
     );
     // Invalid Project Directory
     connect
@@ -129,7 +136,7 @@ MainController::createConnections
 }
 
 void
-MainController::onProjectNewButtonClicked
+MainController::onProjectNewAction
 ()
 {
     QFileDialog openDialog;
@@ -148,7 +155,7 @@ MainController::updateWindowTitle
 }
 
 void
-MainController::onProjectOpenButtonClicked
+MainController::onProjectOpenAction
 ()
 {
     QFileDialog openDialog;
@@ -224,7 +231,7 @@ MainController::connectTreeViewModel
 }
 
 void
-MainController::onProjectSaveButtonClicked
+MainController::onProjectSaveAction
 ()
 {
     QFileDialog openDialog;
@@ -301,7 +308,7 @@ MainController::onProjectStartupSceneChanged
 }
 
 void
-MainController::onProjectPlayButtonClicked
+MainController::onProjectPlayAction
 ()
 {
     qDebug() << "onReloadProject Clicked";
@@ -318,19 +325,62 @@ MainController::onProjectPlayButtonClicked
 }
 
 void
-MainController::onProjectReloadButtonClicked
+MainController::onProjectReloadAction
 ()
 {
-   onProjectStopButtonClicked();
-   onProjectPlayButtonClicked();
+   onProjectStopAction();
+   onProjectPlayAction();
 }
 
 void
-MainController::onProjectStopButtonClicked
+MainController::onProjectStopAction
 ()
 {
     Dream::Scene* scene = mDreamModel->stopActiveScene();
     emit notifyStoppedScene(scene);
+}
+
+void
+MainController::onProjectOpenTestProjectAction
+()
+{
+    mProjectDirectory = "/Users/Ashley/.dreamtool/de60-75ff-5cb7-c4a9";
+
+    bool loadResult = mDreamModel->loadProject(mProjectDirectory);
+    cout << "LoadResult " << loadResult << endl;
+    if (!loadResult)
+    {
+        emit notifyInvalidProjectDirectory(mProjectDirectory);
+        emit notifyProjectWidgetsEnabledChanged(false);
+        return;
+    }
+    updateWindowTitle(mProjectDirectory);
+    Dream::Project *currentProject = mDreamModel->getProject();
+
+    emit notifyProjectNameChanged(QString::fromStdString(currentProject->getName()));
+    emit notifyProjectAuthorChanged(QString::fromStdString(currentProject->getAuthor()));
+    emit notifyProjectDescriptionChanged(QString::fromStdString(currentProject->getDescription()));
+    emit notifyProjectWindowWidthChanged(currentProject->getWindowWidth());
+    emit notifyProjectWindowHeightChanged(currentProject->getWindowHeight());
+    emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneList()));
+    emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupScene()->getName()));
+    emit notifyProjectWidgetsEnabledChanged(true);
+    Dream::Project *project = mDreamModel->getProject();
+
+    mProjectTreeModel = new ProjectTreeModel(project,mMainWindow->getProjectTreeView());
+    mMainWindow->getProjectTreeView()->setModel(mProjectTreeModel);
+
+    mAssetDefinitionTreeModel = new AssetDefinitionTreeModel(project,mMainWindow->getAssetDefinitionTreeView());
+    mMainWindow->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel);
+
+    emit notifyStatusBarProjectLoaded(
+                QString::fromStdString(
+                    "Successfuly Loaded Project: " +
+                    project->getName() + " (" +
+                    project->getUuid() + ")"
+                    )
+                );
+    connectTreeViewModel();
 }
 
 string

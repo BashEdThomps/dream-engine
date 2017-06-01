@@ -19,7 +19,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "LightInstance: Destroying Object" << endl;
+            cout << "LightInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
         return;
     }

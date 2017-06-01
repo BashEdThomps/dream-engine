@@ -249,14 +249,14 @@ namespace Dream
     return getFormat().compare(ASSET_FORMAT_MODEL_ASSIMP) == 0;
   }
 
-  bool AssetDefinition::isAudioFormatMusic()
+  bool AssetDefinition::isAudioFormatWav()
   {
-    return getFormat().compare(ASSET_FORMAT_AUDIO_MUSIC) == 0;
+    return getFormat().compare(ASSET_FORMAT_AUDIO_WAV) == 0;
   }
 
-  bool AssetDefinition::isAudioFormatSoundEffect()
+  bool AssetDefinition::isAudioFormatOgg()
   {
-    return getFormat().compare(ASSET_FORMAT_AUDIO_SFX) == 0;
+    return getFormat().compare(ASSET_FORMAT_AUDIO_OGG) == 0;
   }
 
   string AssetDefinition::getAssetTypeDirectory()

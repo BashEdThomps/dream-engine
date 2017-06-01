@@ -500,7 +500,7 @@ namespace Dream
     {
         if (VERBOSE)
         {
-           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameUuidString() << endl;
+           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
         }
 
         // Get Assets

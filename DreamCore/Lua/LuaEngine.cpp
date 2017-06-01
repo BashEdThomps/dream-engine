@@ -294,7 +294,7 @@ namespace Dream
             {
                 if (DEBUG)
                 {
-                    cout << "LuaEngine: Skipping update on " << key->getUuid() << endl;
+                    cout << "LuaEngine: Skipping update on " << key->getNameAndUuidString() << endl;
                 }
                 continue;
             }
@@ -337,7 +337,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameUuidString() << endl;
+            cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameAndUuidString() << endl;
         }
 
 
@@ -373,7 +373,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onInit for " << sceneObject->getNameUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onInit for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
         try
         {
@@ -408,7 +408,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onInput for " << sceneObject->getNameUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onInput for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
         try
         {
@@ -448,7 +448,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onEvent for " << sceneObject->getNameUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onEvent for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
 
         try
@@ -947,13 +947,13 @@ namespace Dream
         for(pair<SceneObject*,LuaScriptInstance*> scriptPair : *mScriptMap)
         {
             string id = scriptPair.first->getUuid();
-            string soName = scriptPair.first->getName();
+            string soName = scriptPair.first->getNameAndUuidString();
 
             reg[id] = luabind::nil;
 
             if (DEBUG)
             {
-                cout << "LuaEngine: Removed script " << id << " for " << soName << " from registry" << endl;
+                cout << "LuaEngine: Removed script " << soName << " from registry" << endl;
             }
         }
         mScriptMap->clear();

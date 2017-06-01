@@ -34,7 +34,7 @@ namespace Dream
 
         if (DEBUG)
         {
-            cout << "ShaderInstance: Destroying Object" << endl;
+            cout << "ShaderInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
 
         /*if (mShaderProgram > 0) {

@@ -73,7 +73,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "FontInstance: Destroying Object" << endl;
+            cout << "FontInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
 
         return;

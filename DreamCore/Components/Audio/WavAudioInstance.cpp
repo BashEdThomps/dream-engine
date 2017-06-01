@@ -30,6 +30,11 @@ namespace Dream
     WavAudioInstance::~WavAudioInstance
     ()
     {
+        if (DEBUG)
+        {
+            cout << "WavAudioInstance: Destroying Object " << getNameAndUuidString() << endl;
+        }
+
         return;
     }
 

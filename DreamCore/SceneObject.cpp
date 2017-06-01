@@ -162,7 +162,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "SceneObject: Destroying Object" << endl;
+            cout << "SceneObject: Destroying Object " << getNameAndUuidString() << endl;
         }
 
         deleteChildren();
@@ -418,7 +418,7 @@ namespace Dream
     }
 
     string
-    SceneObject::getNameUuidString
+    SceneObject::getNameAndUuidString
     ()
     {
         return getName()+" ("+getUuid()+")";
@@ -431,12 +431,11 @@ namespace Dream
         soVector->push_back(this);
         if (!mChildren.empty())
         {
-            vector<SceneObject*>::iterator it;
-            for (it = mChildren.begin(); it != mChildren.end(); it++)
+            for (SceneObject* so : mChildren)
             {
-                if ((*it) != nullptr)
+                if (so)
                 {
-                    (*it)->getChildrenVectorDeep(soVector);
+                    so->getChildrenVectorDeep(soVector);
                 }
             }
         }

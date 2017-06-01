@@ -10,5 +10,14 @@
         <file>images/media-playback-start.png</file>
         <file>images/media-playback-stop.png</file>
         <file>images/media-playlist-repeat.png</file>
+        <file>templates/shader/Basic2D/fragment</file>
+        <file>templates/shader/Basic2D/vertex</file>
+        <file>templates/script/Lua/lua</file>
+        <file>templates/shader/Basic3D/fragment</file>
+        <file>templates/shader/Basic3D/vertex</file>
+        <file>templates/shader/FontInstance/fragment</file>
+        <file>templates/shader/FontInstance/vertex</file>
+        <file>templates/shader/Lit3D/fragment</file>
+        <file>templates/shader/Lit3D/vertex</file>
     </qresource>
 </RCC>

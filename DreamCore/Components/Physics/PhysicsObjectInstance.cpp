@@ -49,7 +49,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "PhysicsObjectInstance: Destroying Object" << endl;
+            cout << "PhysicsObjectInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
 
         if (mRigidBody != nullptr)

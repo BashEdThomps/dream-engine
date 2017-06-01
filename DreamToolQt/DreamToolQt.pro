@@ -46,7 +46,9 @@ SOURCES += \
     Model/TreeModels/Properties/AssetDefinitionPropertiesModel.cpp \
     Model/TreeModels/Properties/PropertiesItem.cpp \
     Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.cpp \
-    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.cpp
+    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.cpp \
+    Model/TreeModels/Properties/Shader/ShaderTemplateComboDelegate.cpp \
+    Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.cpp
 
 
 HEADERS  += \
@@ -71,7 +73,9 @@ HEADERS  += \
     Model/TreeModels/Properties/ScenePropertiesModel.h \
     Model/TreeModels/Properties/PropertiesItem.h \
     Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h \
-    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.h
+    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.h \
+    Model/TreeModels/Properties/Shader/ShaderTemplateComboDelegate.h \
+    Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.h
 
 
 FORMS    += View/MainWindow.ui

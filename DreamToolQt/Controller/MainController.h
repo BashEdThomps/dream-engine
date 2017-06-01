@@ -52,12 +52,13 @@ signals:
     void notifyStoppedScene(Dream::Scene* scene);
 
 public slots:
-    void onProjectNewButtonClicked();
-    void onProjectOpenButtonClicked();
-    void onProjectSaveButtonClicked();
-    void onProjectReloadButtonClicked();
-    void onProjectPlayButtonClicked();
-    void onProjectStopButtonClicked();
+    void onProjectNewAction();
+    void onProjectOpenAction();
+    void onProjectSaveAction();
+    void onProjectReloadAction();
+    void onProjectPlayAction();
+    void onProjectStopAction();
+    void onProjectOpenTestProjectAction();
 
     void onProjectNameChanged(QString name);
     void onProjectAuthorChanged(QString author);

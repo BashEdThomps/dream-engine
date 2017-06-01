@@ -325,7 +325,7 @@ namespace Dream
                 PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
                 if (DEBUG)
                 {
-                    cout << "PhysicsComponent: Removing SceneObject " << so->getNameUuidString()
+                    cout << "PhysicsComponent: Removing SceneObject " << so->getNameAndUuidString()
                          << " from Physics World" << endl;
                 }
                 removePhysicsObjectInstance(physicsObject);

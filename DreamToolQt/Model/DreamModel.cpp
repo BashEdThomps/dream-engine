@@ -193,8 +193,9 @@ DreamModel::stopActiveScene
     {
         if (mHeartbeatTimer)
         {
-            disconnect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
+            //disconnect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
             delete mHeartbeatTimer;
+            mHeartbeatTimer = nullptr;
         }
         mWindowComponent->setDreamEngine(nullptr);
         mDreamEngine->stopActiveScene();

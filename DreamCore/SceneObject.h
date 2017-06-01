@@ -66,7 +66,7 @@ namespace Dream
     void setName(string);
     string getName();
 
-    string getNameUuidString();
+    string getNameAndUuidString();
 
     void showStatus();
 

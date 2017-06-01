@@ -19,6 +19,10 @@
 #include "AssetDefinitionPropertiesModel.h"
 #include "AssetDefinitionTypeComboDelegate.h"
 #include "AssetDefinitionFormatComboDelegate.h"
+
+#include "Shader/ShaderTemplateComboDelegate.h"
+#include "Script/ScriptTemplateComboDelegate.h"
+
 #include <QDebug>
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
@@ -81,46 +85,46 @@ AssetDefinitionPropertiesModel::createProperties
     PropertiesItem *formatProperty = new PropertiesItem(formatData,mAssetDefinition);
     mRootItem->appendChild(formatProperty);
 
-    if (mAssetDefinition->getType().compare(ASSET_TYPE_ANIMATION) == 0)
+    if (mAssetDefinition->isTypeAnimation())
     {
 
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_AUDIO) == 0)
+    else if (mAssetDefinition->isTypeAudio())
     {
         createAudioLoopProperty();
         createAudioFileProperty();
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_FONT) == 0)
+    else if (mAssetDefinition->isTypeFont())
     {
         createFontColorProperty();
         createFontSizeProperty();
         createFontFileProperty();
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_LIGHT) == 0)
+    else if (mAssetDefinition->isTypeLight())
     {
         createLightColorProperty();
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_MODEL) == 0)
+    else if (mAssetDefinition->isTypeModel())
     {
         createModelFileProperty();
         createModelOtherFilesProperty();
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
+    else if (mAssetDefinition->isTypePhysicsObject())
     {
         craetePhysicsCollisionShapeProperty();
         createPhysicsMassProperty();
         createPhysicsMarginProperty();
         createPhysicsKinematicProperty();
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_SCRIPT) == 0)
+    else if (mAssetDefinition->isTypeScript())
     {
         createScriptTemplateProperty();
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_SHADER) == 0)
+    else if (mAssetDefinition->isTypeShader())
     {
         createShaderTemplateProperty();
     }
-    else if (mAssetDefinition->getType().compare(ASSET_TYPE_SPRITE) == 0)
+    else if (mAssetDefinition->isTypeSprite())
     {
         createSpriteTileSizeProperty();
         createSpriteFileProperty();
@@ -215,14 +219,32 @@ void
 AssetDefinitionPropertiesModel::createScriptTemplateProperty
 ()
 {
+    qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
+    mTreeView->setItemDelegateForRow(
+        3 ,new ScriptTemplateComboDelegate()
+    );
 
+    // Template
+    QList<QVariant> templateData;
+    templateData << "Template" << "";
+    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinition);
+    mRootItem->appendChild(templateProperty);
 }
 
 void
 AssetDefinitionPropertiesModel::createShaderTemplateProperty
 ()
 {
+    qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
+    mTreeView->setItemDelegateForRow(
+        3 ,new ShaderTemplateComboDelegate()
+    );
 
+    // Template
+    QList<QVariant> templateData;
+    templateData << "Template" << "";
+    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinition);
+    mRootItem->appendChild(templateProperty);
 }
 
 void

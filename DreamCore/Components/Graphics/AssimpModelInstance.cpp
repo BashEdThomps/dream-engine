@@ -65,7 +65,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "AssimpModelInstance: Destroying Object" << endl;
+            cout << "AssimpModelInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
         return;
     }
@@ -178,7 +178,7 @@ namespace Dream
         vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-        return AssimpMesh(vertices, indices, textures);
+        return AssimpMesh(this, vertices, indices, textures);
     }
 
     vector<Texture>

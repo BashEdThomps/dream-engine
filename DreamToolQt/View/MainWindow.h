@@ -48,6 +48,7 @@ public:
     QAction* getActionReload();
     QAction* getActionStop();
     QAction* getActionPlay();
+    QAction* getActionOpenTestProject();
 
     QOpenGLWindowComponent* getWindowComponent();
 
