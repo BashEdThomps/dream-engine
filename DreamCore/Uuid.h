@@ -20,10 +20,11 @@
 
 #include <iostream>
 
-namespace Dream {
-
+namespace Dream
+{
   using namespace std;
-  class Uuid {
+  class Uuid
+  {
   public:
     static string generateUuid();
   }; // End of Uuid

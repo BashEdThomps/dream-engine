@@ -3,15 +3,12 @@
 namespace Dream
 {
     LightInstance::LightInstance
-    (
-        AssetDefinition* definition,
-        Transform3D* transform
-    )
-        : IAssetInstance(definition,transform)
+    (AssetDefinition& definition, Transform3D& transform)
+        : IAssetInstance(definition,transform),
+          mColor(glm::vec3(0.0f,0.0f,0.0f)),
+          mIntensity(0.0f)
     {
-        mColor     = glm::vec3(0.0f,0.0f,0.0f);
-        mIntensity = 0.0f;
-        loadExtraAttributes(definition->toJson());
+        loadExtraAttributes(definition.toJson());
     }
 
     LightInstance::~LightInstance

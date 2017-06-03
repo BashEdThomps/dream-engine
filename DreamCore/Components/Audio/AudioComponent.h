@@ -49,7 +49,7 @@ namespace Dream
         AudioComponent();
         ~AudioComponent();
         bool init() override;
-        void updateComponent(Scene*) override;
+        void updateComponent(Scene&) override;
         void cleanUp() override;
 
         void setSourcePosision(ALuint, std::vector<float>);
@@ -67,7 +67,7 @@ namespace Dream
         float getSampleOffset(ALuint);
         float getSampleOffset(AudioInstance*);
         std::vector<char> getAudioBuffer(AudioInstance*, ALint, ALint);
-        AudioInstance* newAudioInstance(AssetDefinition*,Transform3D*);
+        shared_ptr<AudioInstance> newAudioInstance(AssetDefinition&,Transform3D&);
 
     protected:
         ALuint generateBuffers(size_t);

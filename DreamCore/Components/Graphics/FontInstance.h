@@ -47,7 +47,7 @@ namespace Dream
         void ftDestroy();
         void generateCharacterMap();
     public:
-        FontInstance(AssetDefinition*,Transform3D*);
+        FontInstance(AssetDefinition&,Transform3D&);
         ~FontInstance();
 
         bool load(string);

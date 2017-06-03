@@ -15,17 +15,19 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #ifndef LUACOMPONENT_H
 #define LUACOMPONENT_H
 
 #include <map>
 #include <iostream>
+#include <memory>
 
-
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
+extern "C"
+{
+    #include "lua.h"
+    #include "lualib.h"
+    #include "lauxlib.h"
 };
 
 #include "../Constants.h"
@@ -44,35 +46,29 @@ int errorHandler(lua_State*);
 namespace Dream
 {
     class DreamEngine;
+
     class LuaEngine
     {
     public: // Methods
-        LuaEngine(DreamEngine* engine);
+        LuaEngine(shared_ptr<DreamEngine> engine);
         virtual ~LuaEngine();
-        void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
+        void insertIntoScriptMap(SceneObject,LuaScriptInstance);
+        void removeFromScriptMap(SceneObject);
         bool init();
         bool createAllScripts();
-        bool loadScript(SceneObject*);
+        bool loadScript(SceneObject);
         bool update();
         void stackDump();
         void cleanUp();
-        bool executeScriptInit(SceneObject*);
-        bool executeScriptUpdate(SceneObject*);
-        bool executeScriptKeyHandler(SceneObject*);
-        bool executeScriptEventHandler(SceneObject*);
+        bool executeScriptInit(SceneObject);
+        bool executeScriptUpdate(SceneObject);
+        bool executeScriptKeyHandler(SceneObject);
+        bool executeScriptEventHandler(SceneObject);
 
     private:// Variables
-        DreamEngine* mDreamEngine;
-        /*
-        string mScriptLoadFromStringOld =
-                "function scriptLoadFromString (scriptTable, script_string)\n"
-                "    local mt = {__index = _G}\n"
-                "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = load(script_string)\n"
-                "    setfenv(chunk, scriptTable)\n"
-                "    chunk()\n"
-                "end";
-                */
+        shared_ptr<DreamEngine> mDreamEngine;
+        lua_State *mState;
+        map<SceneObject, LuaScriptInstance> mScriptMap;
 
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"
@@ -82,8 +78,6 @@ namespace Dream
                 "    --setfenv(chunk, scriptTable)\n"
                 "    chunk()\n"
                 "end";
-        lua_State *mState;
-        map<SceneObject*, LuaScriptInstance*> *mScriptMap;
 
     private: // Methods
         // API Exposure Methods ======================================================

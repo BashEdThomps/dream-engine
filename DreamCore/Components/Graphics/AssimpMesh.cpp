@@ -5,12 +5,12 @@ namespace Dream
 {
 
     AssimpMesh::AssimpMesh
-    (AssimpModelInstance* parent, vector<Vertex> vertices,vector<GLuint> indices,vector<Texture> textures)
+    (shared_ptr<AssimpModelInstance> parent, vector<Vertex> vertices,vector<GLuint> indices,vector<Texture> textures)
+        :  mParent(parent),
+           mVertices(vertices),
+           mIndices(indices),
+           mTextures(textures)
     {
-        mParent = parent;
-        mVertices = vertices;
-        mIndices  = indices;
-        mTextures = textures;
         init();
     }
 
@@ -29,7 +29,7 @@ namespace Dream
 
     void
     AssimpMesh::draw
-    (ShaderInstance* shader)
+    (shared_ptr<ShaderInstance> shader)
     {
         GLuint diffuseNr = 1;
         GLuint specularNr = 1;

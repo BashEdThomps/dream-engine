@@ -22,25 +22,19 @@ namespace Dream
 {
 
     ShaderInstance::ShaderInstance
-    (AssetDefinition* definition,Transform3D* transform)
-        : IAssetInstance(definition,transform)
+    (AssetDefinition& definition,Transform3D& transform)
+        : IAssetInstance(definition,transform),
+          mShaderProgram(0)
     {
-        mShaderProgram = 0;
     }
 
     ShaderInstance::~ShaderInstance
     ()
     {
-
         if (DEBUG)
         {
             cout << "ShaderInstance: Destroying Object " << getNameAndUuidString() << endl;
         }
-
-        /*if (mShaderProgram > 0) {
-      glDeleteShader(mShaderProgram);
-    }
-    */
     }
 
     GLuint
@@ -54,7 +48,7 @@ namespace Dream
     ShaderInstance::load
     (string projectPath)
     {
-        mShaderProgram = ShaderCache::getShader(mDefinition->getUuid());
+        mShaderProgram = ShaderCache::getShader(mDefinition.getUuid());
         if (mShaderProgram == 0)
         {
             string mVertexShaderSource;
@@ -64,8 +58,8 @@ namespace Dream
             // 1. Open Shader Files into Memory
             FileReader *vertexReader, *fragmentReader;
             string absVertexPath, absFragmentPath;
-            absVertexPath   = projectPath+mDefinition->getAssetPath() + SHADER_VERTEX;
-            absFragmentPath = projectPath+mDefinition->getAssetPath() + SHADER_FRAGMENT;
+            absVertexPath   = projectPath+mDefinition.getAssetPath() + SHADER_VERTEX;
+            absFragmentPath = projectPath+mDefinition.getAssetPath() + SHADER_FRAGMENT;
             vertexReader = new FileReader(absVertexPath);
             vertexReader->readIntoStringStream();
             mVertexShaderSource = vertexReader->getContentsAsString();
@@ -124,7 +118,7 @@ namespace Dream
             // Delete the shaders as they're linked into our program now and no longer necessery
             glDeleteShader(mVertexShader);
             glDeleteShader(mFragmentShader);
-            ShaderCache::putShader(mDefinition->getUuid(),mShaderProgram);
+            ShaderCache::putShader(mDefinition.getUuid(),mShaderProgram);
         }
         mLoaded = (mShaderProgram != 0);
         return mLoaded;

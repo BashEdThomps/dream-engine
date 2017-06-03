@@ -37,7 +37,7 @@ namespace Dream
     nlohmann::json mJson;
   public:
     Transform3D();
-    Transform3D(Transform3D*);
+    Transform3D operator=(Transform3D&);
     glm::vec3 getTranslation();
     void setTranslation(glm::vec3);
     void setTranslation(float, float, float);
@@ -47,9 +47,10 @@ namespace Dream
     void setTranslationX(float);
     void setTranslationY(float);
     void setTranslationZ(float);
-    btVector3 getTranslationAsBtVector3();
 
-    glm::quat getOrientation();
+    btVector3 getTranslationAsBtVector3() const;
+    glm::quat getOrientation() const;
+
     void setOrientation(float,float,float,float);
 
     glm::vec3 getRotation();
@@ -87,6 +88,11 @@ namespace Dream
     void scaleByX(float);
     void scaleByY(float);
     void scaleByZ(float);
+
+    void resetTranslation();
+    void resetOrientation();
+    void resetScale();
+    void resetAll();
 
     nlohmann::json toJson();
 

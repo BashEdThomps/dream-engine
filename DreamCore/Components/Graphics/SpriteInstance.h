@@ -33,7 +33,7 @@ namespace Dream
         GLuint mTexture;
         GLenum mTextureFormat;
     public:
-        SpriteInstance(AssetDefinition*,Transform3D*);
+        SpriteInstance(AssetDefinition&,Transform3D&);
         ~SpriteInstance();
         bool load(string);
         void loadExtraAttributes(nlohmann::json);

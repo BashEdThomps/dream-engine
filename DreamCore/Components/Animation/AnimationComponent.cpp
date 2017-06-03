@@ -55,20 +55,23 @@ namespace Dream
 
     void
     AnimationComponent::updateComponent
-    (Scene *scene)
+    (Scene& scene)
     {
-        vector<SceneObject*> scenegraph = scene->getScenegraphVector();
-        vector<SceneObject*>::iterator sgIter;
-        for (sgIter = scenegraph.begin(); sgIter != scenegraph.end(); sgIter++)
-        {
-            SceneObject* currentSceneObject = *sgIter;
-            AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
-            if (animInstance != nullptr)
-            {
-                animInstance->step(mTime->getTimeDelta());
-                animInstance->applyTransform(currentSceneObject->getTransform());
-            }
-        }
+        scene.getRootSceneObject().applyToAll
+        (
+            std::function<void(SceneObject&)>
+            (
+                [&](SceneObject& currentSceneObject)
+                {
+                    shared_ptr<AnimationInstance> animInstance = currentSceneObject.getAnimationInstance();
+                    if (animInstance != nullptr)
+                    {
+                        animInstance->step(mTime->getTimeDelta());
+                        animInstance->applyTransform(currentSceneObject.getCurrentTransform());
+                    }
+                }
+            )
+        );
     }
 
 

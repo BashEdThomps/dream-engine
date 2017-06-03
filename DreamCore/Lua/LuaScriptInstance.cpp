@@ -21,11 +21,19 @@ namespace Dream
 {
 
     LuaScriptInstance::LuaScriptInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition& definition, Transform3D& transform)
         : IAssetInstance(definition,transform)
     {
         mError = false;
         return;
+    }
+
+    LuaScriptInstance
+    LuaScriptInstance::operator=
+    (LuaScriptInstance& other)
+    {
+        mError = other.mError;
+        return *this;
     }
 
     LuaScriptInstance::~LuaScriptInstance
@@ -41,7 +49,7 @@ namespace Dream
     LuaScriptInstance::load
     (string projectPath)
     {
-        mAbsolutePath = projectPath+mDefinition->getAssetPath();
+        mAbsolutePath = projectPath+mDefinition.getAssetPath();
         if (DEBUG)
         {
             cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;

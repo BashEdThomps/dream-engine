@@ -35,12 +35,14 @@ namespace Dream
     protected:
         bool mLoaded;
         string mAbsolutePath;
-        AssetDefinition *mDefinition;
-        Transform3D *mTransform;
+        AssetDefinition mDefinition;
+        Transform3D mTransform;
         string mUuid;
         string mName;
+    protected:
+        void clone(IAssetInstance& _to, IAssetInstance& _from);
     public:
-        IAssetInstance(AssetDefinition*, Transform3D*);
+        IAssetInstance(AssetDefinition&, Transform3D&);
         virtual ~IAssetInstance();
 
         string getUuid();
@@ -51,7 +53,7 @@ namespace Dream
         virtual bool load(string) = 0;
         virtual void loadExtraAttributes(nlohmann::json) = 0;
 
-        Transform3D* getTransform();
+        Transform3D getTransform();
 
         string getAbsolutePath();
         void setAbsolutePath(string);

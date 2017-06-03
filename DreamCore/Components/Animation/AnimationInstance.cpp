@@ -23,7 +23,7 @@ namespace Dream {
 
 
     AnimationInstance::AnimationInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition& definition, Transform3D& transform)
         : IAssetInstance(definition,transform)
     {
         mCurrentPlaybackFrame = 0;
@@ -58,8 +58,9 @@ namespace Dream {
     AnimationInstance::load
     (string projectPath)
     {
-        mLoop = mDefinition->toJson()[ASSET_ATTR_LOOP];
-        loadExtraAttributes(mDefinition->toJson());
+        nlohmann::json defJson =  mDefinition.toJson();
+        mLoop = defJson[ASSET_ATTR_LOOP];
+        loadExtraAttributes(defJson);
         mLoaded = false;
         return mLoaded;
     }
@@ -263,7 +264,7 @@ namespace Dream {
 
     void
     AnimationInstance::applyTransform
-    (Transform3D* transform)
+    (Transform3D const& transform)
     {
         if (mPlaying && mCurrentPlaybackFrame < mPlaybackFrames.size())
         {
@@ -296,4 +297,4 @@ namespace Dream {
         mPlaybackFrames.clear();
     }
 
-     } // End of Dream
+} // End of Dream

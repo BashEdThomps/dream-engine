@@ -17,13 +17,17 @@ namespace Dream
     public:
         Frame();
         ~Frame();
-        void applyToTransform(Transform3D*);
+        void applyToTransform(Transform3D const&);
         vector<float> getTranslation();
+
         void setTranslation(vector<float>);
         vector<float> getRotation();
+
         void setRotation(vector<float>);
         vector<float> getScale();
+
         void setScale(vector<float>);
+
         void showStatus();
     }; // End Frame
 } // End of Dream

@@ -29,7 +29,7 @@ namespace Dream
         ALuint            mBuffer;
         AudioStatus       mStatus;
       public:
-        AudioInstance(AssetDefinition*,Transform3D*);
+        AudioInstance(AssetDefinition&,Transform3D&);
 
         void setLooping(bool);
         bool isLooping();

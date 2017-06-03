@@ -25,25 +25,26 @@
 #include <vector>
 #include "Constants.h"
 
-namespace Dream {
-
+namespace Dream
+{
   using namespace std;
 
-  class FileReader {
+  class FileReader
+  {
   private:
-    stringstream *mStringStream;
-    vector<char> *mBinaryVector;
+    stringstream mStringStream;
+    vector<char> mBinaryVector;
     ifstream     mInputStream;
     string       mPath;
   public:
     FileReader(string);
-    ~FileReader(void);
+    ~FileReader();
 
     string getPath();
     bool readIntoStringStream();
     string getContentsAsString();
     bool readIntoBinaryVector();
-    vector<char>* getContentsAsBinaryVector();
+    vector<char> getContentsAsBinaryVector();
     int getFileSize();
 
   }; // End of FileReader

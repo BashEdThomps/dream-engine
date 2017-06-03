@@ -18,20 +18,20 @@
 #include "GraphicsComponent.h"
 #include <glm/gtc/quaternion.hpp>
 #include <glm/matrix.hpp>
+#include <functional>
 
 namespace Dream
 {
 
     GraphicsComponent::GraphicsComponent
-    (Camera* camera, IWindowComponent* windowComponent)
-        : IComponent()
+    (Camera& camera, shared_ptr<IWindowComponent> windowComponent)
+        : IComponent(),
+          mCamera(camera),
+          mWindowComponent(windowComponent),
+          mClearColour({1.0f,1.0f,1.0f,1.0f}),
+          mAmbientLightColour({1.0f,1.0f,1.0f,1.0f})
     {
-        mWindowComponent = windowComponent;
-        mCamera = camera;
-        mClearColour = {1.0f,1.0f,1.0f,1.0f};
-        mAmbientLightColour = {1.0f,1.0f,1.0f,1.0f};
     }
-
 
     void
     GraphicsComponent::setClearColour
@@ -131,7 +131,7 @@ namespace Dream
         );
         // Perspective Projection Matrix
         mProjectionMatrix = glm::perspective(
-            mCamera->getZoom(),
+            mCamera.getZoom(),
             static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
             mMinimumDraw,
             mMaximumDraw
@@ -215,7 +215,7 @@ namespace Dream
 
     void
     GraphicsComponent::updateComponent
-    (Scene* scene)
+    (Scene& scene)
     {
         if (VERBOSE)
         {
@@ -229,57 +229,62 @@ namespace Dream
             clear3DQueue();
             clearLightQueue();
 
-            vector<SceneObject*> scenegraph = scene->getScenegraphVector();
-            for ( SceneObject* object : scenegraph )
-            {
-                // Models
-                if (object->hasModelInstance())
-                {
-                    if (object->hasShaderInstance())
+            scene.getRootSceneObject().applyToAll(
+                function<void(SceneObject&)>
+                (
+                    [&](SceneObject& object)
                     {
-                        addTo3DQueue(object);
-                    }
-                    else
-                    {
-                        cerr << "GraphicsComponent: Object " << object->getUuid()
-                             << " has model, but no shader assigned." << endl;
-                    }
-                }
+                        // Models
+                        if (object.hasModelInstance())
+                        {
+                            if (object.hasShaderInstance())
+                            {
+                                addTo3DQueue(object);
+                            }
+                            else
+                            {
+                                cerr << "GraphicsComponent: Object " << object.getUuid()
+                                     << " has model, but no shader assigned." << endl;
+                            }
+                        }
 
-                // Sprites
-                if (object->hasSpriteInstance())
-                {
-                    if (object->hasShaderInstance())
-                    {
-                        addTo2DQueue(object);
-                    }
-                    else
-                    {
-                        cerr << "GraphicsComponent: Object " << object->getUuid()
-                             << " has sprite, but no shader assigned." << endl;
-                    }
-                }
+                        // Sprites
+                        if (object.hasSpriteInstance())
+                        {
+                            if (object.hasShaderInstance())
+                            {
+                                addTo2DQueue(object);
+                            }
+                            else
+                            {
+                                cerr << "GraphicsComponent: Object " << object.getUuid()
+                                     << " has sprite, but no shader assigned." << endl;
+                            }
+                        }
 
-                // Fonts
-                if (object->hasFontInstance())
-                {
-                    if (object->hasShaderInstance())
-                    {
-                        addTo2DQueue(object);
-                    }
-                    else
-                    {
-                        cerr << "GraphicsComponent: Object " << object->getUuid()
-                             << " has font, but no shader assigned." << endl;
-                    }
-                }
+                        // Fonts
+                        if (object.hasFontInstance())
+                        {
+                            if (object.hasShaderInstance())
+                            {
+                                addTo2DQueue(object);
+                            }
+                            else
+                            {
+                                cerr << "GraphicsComponent: Object " << object.getUuid()
+                                     << " has font, but no shader assigned." << endl;
+                            }
+                        }
 
-                // Lights
-                if (object->hasLightInstance())
-                {
-                    addToLightQueue(object->getLightInstance());
-                }
-            }
+                        // Lights
+                        if (object.hasLightInstance())
+                        {
+                            addToLightQueue(*(object.getLightInstance()));
+                        }
+
+                    }
+                )
+            );
         }
     }
 
@@ -292,7 +297,7 @@ namespace Dream
 
     void
     GraphicsComponent::addTo2DQueue
-    (SceneObject* object)
+    (SceneObject& object)
     {
         m2DQueue.push_back(object);
     }
@@ -303,15 +308,14 @@ namespace Dream
     {
         glDisable(GL_CULL_FACE);
 
-        for (vector<SceneObject*>::
-             iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
+        for (vector<SceneObject>::iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
         {
-            SceneObject* sceneObj = *it;
-            if (sceneObj->hasSpriteInstance())
+            SceneObject sceneObj = *it;
+            if (sceneObj.hasSpriteInstance())
             {
                 drawSprite(sceneObj);
             }
-            else if (sceneObj->hasFontInstance())
+            else if (sceneObj.hasFontInstance())
             {
                 drawFont(sceneObj);
             }
@@ -327,7 +331,7 @@ namespace Dream
 
     void
     GraphicsComponent::addTo3DQueue
-    (SceneObject* object)
+    (SceneObject& object)
     {
         m3DQueue.push_back(object);
     }
@@ -337,10 +341,9 @@ namespace Dream
     ()
     {
         // View transform
-        mViewMatrix = mCamera->getViewMatrix();
+        mViewMatrix = mCamera.getViewMatrix();
 
-        for (vector<SceneObject*>::
-             iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ )
+        for (vector<SceneObject>::iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ )
         {
             drawModel(*it);
         }
@@ -362,20 +365,21 @@ namespace Dream
 
     void
     GraphicsComponent::drawSprite
-    (SceneObject* sceneObject)
+    (SceneObject& sceneObject)
     {
         // Get Assets
-        SpriteInstance* sprite = sceneObject->getSpriteInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<SpriteInstance> sprite = sceneObject.getSpriteInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject.getShaderInstance();
         // Get arguments
+        Transform3D transform = sceneObject.getCurrentTransform();
         glm::vec2 size = glm::vec2(sprite->getWidth(),sprite->getHeight());
-        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+        GLfloat rotate = transform.getRotationZ();
+        GLfloat scale = transform.getScaleZ();
         glm::vec3 color = glm::vec3(1.0f);
         // Setup Shader
         shader->use();
-        float tX = sprite->getTransform()->getTranslationX();
-        float tY = sprite->getTransform()->getTranslationY();
+        float tX = transform.getTranslationX();
+        float tY = transform.getTranslationY();
         glm::vec2 position = glm::vec2(tX,tY);
         // Offset origin to middle of sprite
         glm::mat4 model;
@@ -386,9 +390,9 @@ namespace Dream
         model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
         // Pass uniform arguments to shader
         glUniformMatrix4fv(glGetUniformLocation(
-                               shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, glm::value_ptr(model)
-                           );
+            shader->getShaderProgram(), "model"),
+            1, GL_FALSE, glm::value_ptr(model)
+        );
         glUniform3fv(glGetUniformLocation(
                          shader->getShaderProgram(), "spriteColor"),
                      1, glm::value_ptr(color)
@@ -412,18 +416,19 @@ namespace Dream
 
     void
     GraphicsComponent::drawFont
-    (SceneObject* sceneObject)
+    (SceneObject& sceneObject)
     {
         // Get Assets
-        FontInstance* font = sceneObject->getFontInstance();
-        float tX = font->getTransform()->getTranslationX();
-        float tY = font->getTransform()->getTranslationY();
+        shared_ptr<FontInstance> font = sceneObject.getFontInstance();
+        Transform3D transform = sceneObject.getCurrentTransform();
+        float tX = transform.getTranslationX();
+        float tY = transform.getTranslationY();
 
         // Setup Shader
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject.getShaderInstance();
         glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
-        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+        GLfloat rotate = transform.getRotationZ();
+        GLfloat scale = transform.getScaleZ();
 
         shader->use();
 
@@ -496,16 +501,16 @@ namespace Dream
 
     void
     GraphicsComponent::drawModel
-    (SceneObject* sceneObject)
+    (SceneObject& sceneObject)
     {
         if (VERBOSE)
         {
-           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
+           cout << "GraphicsComponent: Drawing Model " << sceneObject.getNameAndUuidString() << endl;
         }
 
         // Get Assets
-        AssimpModelInstance* model = sceneObject->getModelInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<AssimpModelInstance> model = sceneObject.getModelInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject.getShaderInstance();
         shader->use();
         // Set Ambient Light Values
         GLint uAmbientStrength = glGetUniformLocation(shader->getShaderProgram(),"ambientStrength");
@@ -520,8 +525,7 @@ namespace Dream
                          value_ptr(ambientColor));
         }
         // Set Diffuse Light Values
-        vector<LightInstance*>::
-                iterator lights;
+        vector<LightInstance>::iterator lights;
         int i;
         for (i=1, lights = mLightQueue.begin(); lights != mLightQueue.end(); lights++, i++)
         {
@@ -535,14 +539,10 @@ namespace Dream
 
             if (uLightPos > 0 && uLightColor > 0)
             {
-                glm::
-                        vec3 lightPos = (*lights)->getTransform()->getTranslation();
-                glm::
-                        vec3 lightColor = (*lights)->getColor();
-                glUniform3fv(uLightPos  ,1, glm::
-                             value_ptr(lightPos));
-                glUniform3fv(uLightColor,1, glm::
-                             value_ptr(lightColor));
+                glm::vec3 lightPos = (*lights).getTransform().getTranslation();
+                glm::vec3 lightColor = (*lights).getColor();
+                glUniform3fv(uLightPos  ,1, glm::value_ptr(lightPos));
+                glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
             }
             else
             {
@@ -555,23 +555,34 @@ namespace Dream
         }
 
         // Pass view/projection transform to shader
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::
-                           value_ptr(mProjectionMatrix));
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::
-                           value_ptr(mViewMatrix));
+
+        glUniformMatrix4fv(
+            glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(mProjectionMatrix)
+        );
+
+        glUniformMatrix4fv(
+            glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(mViewMatrix)
+        );
+
         // calculate the model matrix
         glm::mat4 modelMatrix;
+
         // Get raw data
-        glm::vec3 translation = sceneObject->getTranslation();
-        glm::quat rot = sceneObject->getTransform()->getOrientation();
-        glm::vec3 scale = sceneObject->getScale();
+        Transform3D transform = sceneObject.getCurrentTransform();
+        glm::vec3 translation = transform.getTranslation();
+        glm::quat rot = transform.getOrientation();
+        glm::vec3 scale = transform.getScale();
+
         // Translate
         modelMatrix = glm::translate(modelMatrix,translation);
+
         // Rotate
         glm::mat4 rotMat = glm::mat4_cast(rot);
         modelMatrix = modelMatrix * rotMat;
+
         // Scale
         modelMatrix = glm::scale(modelMatrix, scale);
+
         // Pass model matrix to shader
         glUniformMatrix4fv(
                     glGetUniformLocation(shader->getShaderProgram(), "model"),
@@ -631,7 +642,7 @@ namespace Dream
 
     void
     GraphicsComponent::addToLightQueue
-    (LightInstance* lightInstance)
+    (LightInstance& lightInstance)
     {
         mLightQueue.push_back(lightInstance);
     }
@@ -647,20 +658,20 @@ namespace Dream
 
     void
     GraphicsComponent::setGameController
-    (GameController* gameController)
+    (GameController& gameController)
     {
         mGameController = gameController;
     }
 
 
-    GameController*
+    GameController
     GraphicsComponent::getGameController
     ()
     {
         return mGameController;
     }
 
-    Camera*
+    Camera
     GraphicsComponent::getCamera
     ()
     {

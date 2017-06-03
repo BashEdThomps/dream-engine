@@ -17,80 +17,88 @@
 
 #include "FileReader.h"
 
-namespace Dream {
+namespace Dream
+{
 
-    FileReader::FileReader(string path) {
+    FileReader::FileReader
+    (string path)
+    {
         mPath = path;
-        mStringStream = nullptr;
-        mBinaryVector = nullptr;
     }
 
-    FileReader::~FileReader(void) {
-        if (DEBUG) {
-         cout << "FileReader: Destroying reader for " << mPath << endl;
-     }
+    FileReader::~FileReader
+    ()
+    {
+        if (DEBUG)
+        {
+            cout << "FileReader: Destroying reader for " << mPath << endl;
+        }
 
-        if (mInputStream.is_open()) {
+        if (mInputStream.is_open())
+        {
             mInputStream.close();
         }
-
-        if (mBinaryVector != nullptr) {
-            delete mBinaryVector;
-        }
-
-        if (mStringStream != nullptr) {
-            delete mStringStream;
-        }
     }
 
-    string FileReader::getPath() {
+    string
+    FileReader::getPath
+    ()
+    {
         return mPath;
     }
 
-    bool FileReader::readIntoStringStream() {
+    bool
+    FileReader::readIntoStringStream
+    ()
+    {
         mInputStream.open(mPath.c_str(), ifstream::in);
-        if (mInputStream.is_open()) {
-            mStringStream = new stringstream();
+        if (mInputStream.is_open())
+        {
             string line;
-            while ( getline (mInputStream,line) ) {
-                *mStringStream << line << '\n';
+            while ( getline (mInputStream,line) )
+            {
+                mStringStream << line << '\n';
             }
             mInputStream.close();
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
-    string FileReader::getContentsAsString() {
-        if (mStringStream != nullptr) {
-            return mStringStream->str();
-        } else {
-            return "";
-        }
+    string
+    FileReader::getContentsAsString
+    ()
+    {
+        return mStringStream.str();
     }
 
-    bool FileReader::readIntoBinaryVector() {
+    bool
+    FileReader::readIntoBinaryVector
+    ()
+    {
         mInputStream.open(mPath.c_str(), ios::binary );
-        mBinaryVector = new vector<char>((istreambuf_iterator<char>(mInputStream)), (istreambuf_iterator<char>()));
+        mBinaryVector = vector<char>((istreambuf_iterator<char>(mInputStream)), (istreambuf_iterator<char>()));
         mInputStream.close();
-        return mBinaryVector->size() > 0;
+        return mBinaryVector.size() > 0;
     }
 
-    vector<char>* FileReader::getContentsAsBinaryVector() {
+    vector<char>
+    FileReader::getContentsAsBinaryVector
+    ()
+    {
         return mBinaryVector;
     }
 
-    int FileReader::getFileSize() {
-        if (mStringStream != nullptr) {
-            return static_cast<int>(getContentsAsString().size());
-        }
-        else if (mBinaryVector != nullptr) {
-            return static_cast<int>(getContentsAsBinaryVector()->size());
-        }
-        else {
-            return -1;
-        }
+    int
+    FileReader::getFileSize
+    ()
+    {
+        int stringSize = static_cast<int>(getContentsAsString().size());
+        int binSize = static_cast<int>(getContentsAsBinaryVector().size());
+        return (stringSize > binSize ? stringSize : binSize);
     }
 
 } // End of Dream

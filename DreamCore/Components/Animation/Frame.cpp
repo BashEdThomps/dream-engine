@@ -24,7 +24,7 @@ namespace Dream
 
     void
     Frame::applyToTransform
-    (Transform3D* transform)
+    (Transform3D const& transform)
     {
         //transform->setTranslation(mTranslation);
         //transform->setRotation(mRotation);

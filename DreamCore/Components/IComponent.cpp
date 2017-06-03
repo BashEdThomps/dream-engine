@@ -32,7 +32,7 @@ namespace Dream
     }
 
 
-    void IComponent::setTime(Time* time)
+    void IComponent::setTime(Time& time)
     {
         mTime = time;
     }

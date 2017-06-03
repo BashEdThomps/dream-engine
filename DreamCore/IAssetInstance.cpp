@@ -20,13 +20,26 @@
 
 namespace Dream
 {
-    IAssetInstance::IAssetInstance(AssetDefinition* definition, Transform3D* transform)
+    IAssetInstance::IAssetInstance
+    (AssetDefinition& definition, Transform3D& transform)
+        : mDefinition(definition),
+          mTransform(transform),
+          mLoaded(false),
+          mName(definition.getName()),
+          mUuid(Uuid::generateUuid())
     {
-        mDefinition = definition;
-        mTransform = transform;
-        mLoaded = false;
-        mName = mDefinition->getName();
-        mUuid = Uuid::generateUuid();
+    }
+
+    void
+    IAssetInstance::clone
+    (IAssetInstance& _to, IAssetInstance& _from)
+    {
+        _to.mLoaded       = _from.mLoaded;
+        _to.mAbsolutePath = _from.mAbsolutePath;
+        _to.mDefinition   = _from.mDefinition;
+        _to.mTransform    = _from.mTransform;
+        _to.mUuid         = _from.mUuid;
+        _to.mName         = _from.mName;
     }
 
     IAssetInstance::~IAssetInstance()
@@ -35,7 +48,7 @@ namespace Dream
 
     string IAssetInstance::getName()
     {
-        return mDefinition->getName();
+        return mDefinition.getName();
     }
 
     string IAssetInstance::getUuid()
@@ -48,7 +61,7 @@ namespace Dream
         return getName() + " (" + getUuid() + ")";
     }
 
-    Transform3D* IAssetInstance::getTransform()
+    Transform3D IAssetInstance::getTransform()
     {
         return mTransform;
     }

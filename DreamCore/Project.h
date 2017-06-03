@@ -32,10 +32,12 @@ using namespace nlohmann;
 
 namespace Dream
 {
+  class LuaEngine;
   class Project
   {
       // Variables
   private:
+      // Metadata
     string mUuid;
     string mName;
     string mDescription;
@@ -43,16 +45,20 @@ namespace Dream
     string mProjectPath;
     string mStartupScene;
     nlohmann::json mJson;
-    vector<Scene*> mScenes;
-    vector<AssetDefinition*> mAssetDefinitions;
-    Scene *mActiveScene;
+    vector<Scene> mScenes;
+    vector<AssetDefinition> mAssetDefinitions;
     int mWindowWidth;
     int mWindowHeight;
-    AudioComponent* mAudioComponent;
+    // Runtime
+    Scene mActiveScene;
+    shared_ptr<AudioComponent> mAudioComponent;
+    shared_ptr<LuaEngine> mLuaEngine;
+    bool mLoaded;
 
     // Public Methods
   public:
-    Project(string, nlohmann::json,AudioComponent*);
+    Project();
+    Project(string, nlohmann::json, shared_ptr<AudioComponent>, shared_ptr<LuaEngine>);
     ~Project();
     void setMetadata(nlohmann::json);
     void loadScenesFromJson(nlohmann::json);
@@ -67,35 +73,33 @@ namespace Dream
     void setStartupSceneUuid(string);
     void setStartupSceneName(string);
     string getStartupSceneUuid();
-    Scene* getStartupScene();
-    void addScene(Scene*);
-    void removeScene(Scene*);
+    Scene getStartupScene();
+    void addScene(Scene&);
+    void removeScene(Scene&);
     size_t getNumberOfScenes();
-    Scene* getSceneByName(string);
-    Scene* getSceneByUuid(string);
-    vector<Scene*> getSceneList();
+    Scene getSceneByName(string);
+    Scene getSceneByUuid(string);
+    vector<Scene> getSceneList();
     string getProjectPath();
     void setProjectPath(string);
     void showStatus();
-    void setActiveScene(Scene*);
-    Scene *getActiveScene();
+    void setActiveScene(Scene&);
+    Scene& getActiveScene();
     bool hasActiveScene();
     int getWindowWidth();
     void setWindowWidth(int);
     int getWindowHeight();
     void setWindowHeight(int);
-    void addAssetDefinition(AssetDefinition*);
-    void removeAssetDefinition(AssetDefinition*);
+    void addAssetDefinition(AssetDefinition);
+    void removeAssetDefinition(AssetDefinition);
     size_t getNumberOfAssetDefinitions();
-    AssetDefinition* getAssetDefinitionByUuid(string);
-    vector<AssetDefinition*> getAssetDefinitions();
+    AssetDefinition getAssetDefinitionByUuid(string);
+    vector<AssetDefinition> getAssetDefinitions();
     nlohmann::json toJson();
-
+    bool isLoaded();
     // Private Methods
   private:
     void loadAssetDefinitionsFromJson(nlohmann::json);
-    void destroyAllScenes();
-    void destroyAllAssetDefinitions();
 
   }; // End of Project
 } // End of Dream

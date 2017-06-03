@@ -12,7 +12,7 @@ namespace Dream
         glm::vec3 mColor;
         float mIntensity;
     public:
-        LightInstance(AssetDefinition*,Transform3D*);
+        LightInstance(AssetDefinition&,Transform3D&);
         ~LightInstance();
         bool load(string);
         void loadExtraAttributes(nlohmann::json);

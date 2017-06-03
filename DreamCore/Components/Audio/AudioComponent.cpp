@@ -190,9 +190,9 @@ namespace Dream
                     audioAsset->setBuffer(generateBuffers(1));
                     audioAsset->setSource(generateSources(1));
                     std::vector<float> position = {
-                        audioAsset->getTransform()->getTranslation().x,
-                        audioAsset->getTransform()->getTranslation().y,
-                        audioAsset->getTransform()->getTranslation().z,
+                        audioAsset->getTransform().getTranslation().x,
+                        audioAsset->getTransform().getTranslation().y,
+                        audioAsset->getTransform().getTranslation().z,
                     };
                     std::vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                     alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
@@ -261,7 +261,7 @@ namespace Dream
 
     void
     AudioComponent::updateComponent
-    (Scene*)
+    (Scene&)
     {
         if (DEBUG)
         {
@@ -460,20 +460,24 @@ namespace Dream
         return UNKNOWN;
     }
 
-    AudioInstance*
+    shared_ptr<AudioInstance>
     AudioComponent::newAudioInstance
-    (AssetDefinition* definition,Transform3D* transform)
+    (AssetDefinition& definition,Transform3D& transform)
     {
-        if (definition->isAudioFormatWav())
+        if (definition.isAudioFormatWav())
         {
-            return new WavAudioInstance(definition,transform);
+            shared_ptr<WavAudioInstance> wav;
+            wav.make_shared(definition,transform);
+            return wav;
         }
-        else if (definition->isAudioFormatOgg())
+        else if (definition.isAudioFormatOgg())
         {
-            return new OggAudioInstance(definition,transform);
+            shared_ptr<OggAudioInstance> ogg;
+            ogg.make_shared(definition,transform);
+            return ogg;
         }
         cerr << "AudioComponent: Error, unrecognised audio format "
-             << definition->getFormat() << endl;
+             << definition.getFormat() << endl;
         return nullptr;
 
     }

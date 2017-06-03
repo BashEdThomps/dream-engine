@@ -54,7 +54,7 @@ namespace Dream
     }
 
     AssimpModelInstance::AssimpModelInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition& definition, Transform3D& transform)
     : IAssetInstance(definition,transform)
     {
         return;
@@ -74,7 +74,7 @@ namespace Dream
     AssimpModelInstance::load
     (string projectPath)
     {
-        string path = projectPath+mDefinition->getAssetPath();
+        string path = projectPath+mDefinition.getAssetPath();
         if (DEBUG)
         {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;
@@ -92,7 +92,7 @@ namespace Dream
 
     void
     AssimpModelInstance::draw
-    (ShaderInstance* shader)
+    (shared_ptr<ShaderInstance> shader)
     {
         size_t nMeshes = mMeshes.size();
         for(size_t i = 0; i < nMeshes; i++ )
@@ -178,7 +178,7 @@ namespace Dream
         vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-        return AssimpMesh(this, vertices, indices, textures);
+        return AssimpMesh(shared_ptr<AssimpModelInstance>(this), vertices, indices, textures);
     }
 
     vector<Texture>

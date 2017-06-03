@@ -46,22 +46,22 @@ namespace Dream
         glm::mat4 mProjectionMatrix;
         btVector3 mGravity;
         bool mDebug;
-        vector<SceneObject*> mScenegraph;
+        Scene mActiveScene;
     public:
         PhysicsComponent();
         ~PhysicsComponent();
-        void populatePhysicsWorld();
+        void populatePhysicsWorld(Scene& scene);
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init() override;
-        void updateComponent(Scene*) override;
-        void addPhysicsObjectInstance(PhysicsObjectInstance*);
+        void updateComponent(Scene&) override;
+        void addPhysicsObjectInstance(shared_ptr<PhysicsObjectInstance>);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
-        void removePhysicsObjectInstance(PhysicsObjectInstance*);
+        void removePhysicsObjectInstance(shared_ptr<PhysicsObjectInstance>);
         void setViewProjectionMatrix(glm::mat4, glm::mat4);
-        void checkContactManifolds();
-        SceneObject* getSceneObject(const btCollisionObject*);
+        void checkContactManifolds(Scene& scene);
+        SceneObject getSceneObject(Scene& scene, const btCollisionObject*);
         void drawDebug();
         void cleanUp() override;
     };// End of PhysicsComponent

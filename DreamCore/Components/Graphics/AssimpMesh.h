@@ -15,23 +15,23 @@
 namespace Dream
 {
     class AssimpModelInstance;
-      class AssimpMesh
-      {
-      private:
+    class AssimpMesh
+    {
+    private:
         GLuint mVAO;
         GLuint mVBO;
         GLuint mEBO;
         vector<Vertex>  mVertices;
         vector<GLuint>  mIndices;
         vector<Texture> mTextures;
-        AssimpModelInstance *mParent;
-      public:
-        AssimpMesh(AssimpModelInstance* parent, vector<Vertex>, vector<GLuint>, vector<Texture>);
+        shared_ptr<AssimpModelInstance> mParent;
+    public:
+        AssimpMesh(shared_ptr<AssimpModelInstance> parent, vector<Vertex>, vector<GLuint>, vector<Texture>);
         ~AssimpMesh();
-        void draw(ShaderInstance*);
+        void draw(shared_ptr<ShaderInstance>);
         void init();
         bool checkGLError(int);
-      };
-    }
+    };
+}
 
 #endif /* AssimpMesh_h */
