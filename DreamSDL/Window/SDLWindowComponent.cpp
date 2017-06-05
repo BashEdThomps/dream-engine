@@ -23,7 +23,7 @@ namespace DreamSDL
     SDLWindowComponent::SDLWindowComponent
     () : IWindowComponent()
     {
-
+        mName = "Dream";
     }
 
     SDLWindowComponent::~SDLWindowComponent
@@ -59,16 +59,16 @@ namespace DreamSDL
     {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER ) != 0)
         {
-          cerr << "SDL_Init Error: " << SDL_GetError() << endl;
-          return false;
+            cerr << "SDL_Init Error: " << SDL_GetError() << endl;
+            return false;
         }
 
         mWindow = SDL_CreateWindow(
-                      mName.c_str(),
-                      SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                      mWidth, mHeight,
-                      SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-                      );
+                    mName.c_str(),
+                    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                    mWidth, mHeight,
+                    SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+                    );
 
         if (mWindow == nullptr)
         {
@@ -97,6 +97,7 @@ namespace DreamSDL
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
         //Create context
         mContext = SDL_GL_CreateContext(mWindow);
         if(mContext == nullptr)
@@ -143,6 +144,16 @@ namespace DreamSDL
             ){
                 mGameController->updateControllerState(event);
             }*/
+            else if (event.type == SDL_WINDOWEVENT)
+            {
+                switch(event.window.event)
+                {
+                    case SDL_WINDOWEVENT_RESIZED:
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        getCurrentDimensions();
+                        break;
+                }
+            }
             else
             {
                 SDL_Event e;
@@ -165,10 +176,18 @@ namespace DreamSDL
 
     void SDLWindowComponent::getCurrentDimensions()
     {
+
         if (mWindow != nullptr)
         {
             SDL_GetWindowSize(mWindow, &mWidth, &mHeight);
         }
+
+        if (DEBUG)
+        {
+            cout << "SDLWindowComponent: Window size changed to "
+                 << mWidth << "," << mHeight << endl;
+        }
+        mSizeHasChanged = true;
     }
 
     void SDLWindowComponent::swapBuffers()

@@ -34,7 +34,7 @@ namespace Dream
     }
 
     PhysicsObjectInstance::PhysicsObjectInstance
-    (AssetDefinition* definition,Transform3D* transform, vector<AssetDefinition*>* assetDefinitions)
+    (AssetDefinition* definition,Transform3D* transform, vector<AssetDefinition*> assetDefinitions)
         : IAssetInstance(definition,transform)
     {
         mInPhysicsWorld   = false;
@@ -402,7 +402,7 @@ namespace Dream
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
     {
-        for (AssetDefinition* ad : *mAssetDefinitions)
+        for (AssetDefinition* ad : mAssetDefinitions)
         {
             if (ad->hasUuid(uuid))
             {

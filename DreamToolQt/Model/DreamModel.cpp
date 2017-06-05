@@ -23,6 +23,7 @@ DreamModel::DreamModel
     : QObject(parent)
 {
     mDreamEngine = new Dream::DreamEngine(windowComponent);
+    mDreamEngine->initComponents();
     mWindowComponent = windowComponent;
     mSelectedScene = nullptr;
     mHeartbeatTimer = nullptr;
@@ -141,17 +142,9 @@ DreamModel::startScene
 (Dream::Scene* scene)
 {
     qDebug() << "DreamModel: *** Start Scene ***";
-    if (!mDreamEngine->getComponentsInitialised())
-    {
-        bool initResult = mDreamEngine->initComponents();
-        if (!initResult)
-        {
-            qDebug() << "DreamModel: Error initialising dream components";
-            return false;
-        }
-    }
 
     bool loadResult = mDreamEngine->loadScene(scene);
+
     if (!loadResult)
     {
         qDebug() << "DreamModel: Error initialising dream Project";
@@ -162,7 +155,7 @@ DreamModel::startScene
     {
         mHeartbeatTimer = new QTimer(this);
         connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(33);
+        mHeartbeatTimer->start(16);
     }
 
     mWindowComponent->setDreamEngine(mDreamEngine);

@@ -223,6 +223,11 @@ namespace Dream
             cout << "GraphicsComponrnt: updateComponent(Scene*) Called" << endl;
         }
 
+        if (mWindowComponent->sizeHasChanged())
+        {
+            onWindowDimensionsChanged();
+        }
+
         if (!mWindowComponent->shouldClose())
         {
             // Clear existing Queues
@@ -508,7 +513,7 @@ namespace Dream
     {
         if (VERBOSE)
         {
-           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameUuidString() << endl;
+           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
         }
 
         // Get Assets

@@ -18,86 +18,127 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
+#include <dirent.h>
+#include <iostream>
+#include <thread>
 #include <unistd.h>
 #include <vector>
 
-#include "Scene.h"
+#include "ProjectRuntime.h"
+#include "ArgumentParser.h"
 #include "AssetDefinition.h"
-#include "String.h"
 #include "Constants.h"
-#include "Components/Audio/AudioComponent.h"
+#include "FileReader.h"
+#include "IAssetInstance.h"
+#include "Project.h"
+#include "Scene.h"
+#include "String.h"
+
+#include "Components/Window/IWindowComponent.h"
 
 using namespace std;
 using namespace nlohmann;
 
 namespace Dream
 {
-  class Project
-  {
-      // Variables
-  private:
-    string mUuid;
-    string mName;
-    string mDescription;
-    string mAuthor;
-    string mProjectPath;
-    string mStartupScene;
-    nlohmann::json mJson;
-    vector<Scene*> mScenes;
-    vector<AssetDefinition*> mAssetDefinitions;
-    Scene *mActiveScene;
-    int mWindowWidth;
-    int mWindowHeight;
-    AudioComponent* mAudioComponent;
+    class Project
+    {
+        // Variables
+    private:
+        ProjectRuntime *mRuntime;
+        string mUuid;
+        string mName;
+        string mDescription;
+        string mAuthor;
+        string mProjectPath;
+        string mStartupScene;
+        nlohmann::json mJson;
+        vector<Scene*> mScenes;
+        vector<AssetDefinition*> mAssetDefinitions;
+        Scene *mActiveScene;
+        int mWindowWidth;
+        int mWindowHeight;
 
-    // Public Methods
-  public:
-    Project(string, nlohmann::json,AudioComponent*);
-    ~Project();
-    void setMetadata(nlohmann::json);
-    void loadScenesFromJson(nlohmann::json);
-    void setUuid(string);
-    string getUuid();
-    void setName(string);
-    string getName();
-    void setDescription(string);
-    string getDescription(void);
-    void setAuthor(string);
-    string getAuthor();
-    void setStartupSceneUuid(string);
-    void setStartupSceneName(string);
-    string getStartupSceneUuid();
-    Scene* getStartupScene();
-    void addScene(Scene*);
-    void removeScene(Scene*);
-    size_t getNumberOfScenes();
-    Scene* getSceneByName(string);
-    Scene* getSceneByUuid(string);
-    vector<Scene*> getSceneList();
-    string getProjectPath();
-    void setProjectPath(string);
-    void showStatus();
-    void setActiveScene(Scene*);
-    Scene *getActiveScene();
-    bool hasActiveScene();
-    int getWindowWidth();
-    void setWindowWidth(int);
-    int getWindowHeight();
-    void setWindowHeight(int);
-    void addAssetDefinition(AssetDefinition*);
-    void removeAssetDefinition(AssetDefinition*);
-    size_t getNumberOfAssetDefinitions();
-    AssetDefinition* getAssetDefinitionByUuid(string);
-    vector<AssetDefinition*> getAssetDefinitions();
-    nlohmann::json toJson();
+        // Public Methods
+    public:
+        Project(IWindowComponent* = 0);
+        ~Project();
 
-    // Private Methods
-  private:
-    void loadAssetDefinitionsFromJson(nlohmann::json);
-    void destroyAllScenes();
-    void destroyAllAssetDefinitions();
+        bool initRuntime();
+        ProjectRuntime* getRuntime();
 
-  }; // End of Project
+        void loadMetadataFromJson(nlohmann::json);
+        void loadScenesFromJson(nlohmann::json);
+        bool loadFromFileReader(string projectPath, FileReader*);
+        bool loadFromArgumentParser(ArgumentParser*);
+        bool loadFromDirectory(string);
+
+        bool updateAll();
+        bool updateLogic();
+        bool updateGraphics();
+        bool updateCleanup();
+
+        void setUuid(string);
+        string getUuid();
+
+        void setName(string);
+        string getName();
+
+        void setDescription(string);
+        string getDescription(void);
+
+        void setAuthor(string);
+        string getAuthor();
+
+        void setStartupSceneUuid(string);
+        void setStartupSceneName(string);
+
+        string getStartupSceneUuid();
+        Scene* getStartupScene();
+
+        void addScene(Scene*);
+        void removeScene(Scene*);
+        size_t getNumberOfScenes();
+        Scene* getSceneByName(string);
+        Scene* getSceneByUuid(string);
+        vector<Scene*> getSceneList();
+
+        string getProjectPath();
+        void setProjectPath(string);
+
+        void showStatus();
+
+        void stopActiveScene();
+        void startActiveScene();
+        void setActiveScene(Scene*);
+        Scene *getActiveScene();
+        bool hasActiveScene();
+
+        int getWindowWidth();
+        void setWindowWidth(int);
+        int getWindowHeight();
+        void setWindowHeight(int);
+
+        void addAssetDefinition(AssetDefinition*);
+        void removeAssetDefinition(AssetDefinition*);
+        size_t getNumberOfAssetDefinitions();
+        AssetDefinition* getAssetDefinitionByUuid(string);
+        vector<AssetDefinition*> getAssetDefinitions();
+
+        nlohmann::json toJson();
+
+        bool loadScene(Scene*);
+        bool loadSceneByUuid(string);
+        bool loadStartupScene();
+
+        void cleanUp(Scene*);
+        // Private Methods
+    private:
+        void loadAssetDefinitionsFromJson(nlohmann::json);
+        void destroyAllScenes();
+        void destroyAllAssetDefinitions();
+
+    }; // End of Project
 } // End of Dream
 
 #endif // End of PROJECT_H

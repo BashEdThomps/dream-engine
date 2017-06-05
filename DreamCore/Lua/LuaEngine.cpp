@@ -21,15 +21,13 @@
 #include <luabind/adopt_policy.hpp>
 
 #include "LuaScriptCache.h"
-
+#include "../Project.h"
+#include "../ProjectRuntime.h"
 #include "../Math.h"
-
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Animation/AnimationInstance.h"
-
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Audio/AudioInstance.h"
-
 #include "../Components/Graphics/AssimpModelInstance.h"
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Graphics/FontInstance.h"
@@ -37,12 +35,9 @@
 #include "../Components/Graphics/LightInstance.h"
 #include "../Components/Graphics/ShaderInstance.h"
 #include "../Components/Graphics/SpriteInstance.h"
-
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Physics/PhysicsObjectInstance.h"
-
 #include "../Components/Window/IWindowComponent.h"
-#include "../DreamEngine.h"
 
 using namespace std;
 
@@ -66,9 +61,9 @@ errorHandler
 namespace Dream
 {
     LuaEngine::LuaEngine
-    (DreamEngine* engine)
+    (Project* project)
     {
-        mDreamEngine = engine;
+        mProject = project;
         mState = nullptr;
     }
 
@@ -121,7 +116,7 @@ namespace Dream
             cout << "LuaEngine: CreateAllScripts Called" << endl;
         }
 
-        for (pair<SceneObject*,LuaScriptInstance*> entry : *mScriptMap)
+        for (pair<SceneObject*,LuaScriptInstance*> entry : mScriptMap)
         {
             SceneObject *sceneObject = entry.first;
             LuaScriptInstance *luaScript = entry.second;
@@ -233,13 +228,6 @@ namespace Dream
     }
 
     void
-    LuaEngine::setLuaScriptMap
-    (map<SceneObject*,LuaScriptInstance*>* scriptMap)
-    {
-        mScriptMap = scriptMap;
-    }
-
-    void
     LuaEngine::stackDump
     ()
     {
@@ -285,7 +273,7 @@ namespace Dream
             cout << "LuaEngine: Update Called" << endl;
         }
 
-        for (pair<SceneObject*,LuaScriptInstance*> entry : *mScriptMap)
+        for (pair<SceneObject*,LuaScriptInstance*> entry : mScriptMap)
         {
             SceneObject* key = entry.first;
             if (key->getDeleteFlag())
@@ -335,7 +323,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameUuidString() << endl;
+            cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameAndUuidString() << endl;
         }
 
         try
@@ -370,7 +358,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onInit for " << sceneObject->getNameUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onInit for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
         try
         {
@@ -405,7 +393,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onInput for " << sceneObject->getNameUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onInput for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
         try
         {
@@ -439,7 +427,7 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onEvent for " << sceneObject->getNameUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onEvent for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
 
         try
@@ -468,20 +456,31 @@ namespace Dream
     // API Exposure Methods ======================================================
 
     void
-    LuaEngine::exposeDreamEngine
+    LuaEngine::exposeProjectRuntime
     ()
     {
         luabind::module(mState)
         [
-            luabind::class_<DreamEngine>("DreamEngine")
-                .def("getActiveScene",&DreamEngine::getActiveScene)
-                .def("getAudioComponent",&DreamEngine::getAudioComponent)
-                .def("getGraphicsComponent",&DreamEngine::getGraphicsComponent)
-                .def("getPhysicsComponent",&DreamEngine::getPhysicsComponent)
-                .def("getWindowComponent",&DreamEngine::getWindowComponent)
-                .def("getTime",&DreamEngine::getTime)
+            luabind::class_<ProjectRuntime>("Runtime")
+                .def("getAudioComponent",&ProjectRuntime::getAudioComponent)
+                .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponent)
+                .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponent)
+                .def("getWindowComponent",&ProjectRuntime::getWindowComponent)
+                .def("getTime",&ProjectRuntime::getTime)
         ];
-        luabind::globals(mState)["DreamEngine"] = mDreamEngine;
+        luabind::globals(mState)["Runtime"] = mProject->getRuntime();
+    }
+
+    void
+    LuaEngine::exposeProject
+    ()
+    {
+        luabind::module(mState)
+        [
+            luabind::class_<Project>("Project")
+                .def("getActiveScene",&Project::getActiveScene)
+        ];
+        luabind::globals(mState)["Project"] = mProject;
     }
 
     void
@@ -903,7 +902,8 @@ namespace Dream
         exposeAnimationInstance();
         exposeAssimpModelInstance();
         exposeCamera();
-        exposeDreamEngine();
+        exposeProject();
+        exposeProjectRuntime();
         exposeEvent();
         exposeFontInstance();
         exposeGameController();
@@ -933,8 +933,10 @@ namespace Dream
         {
             cout << "LuaEngine: Cleaning up" << endl;
         }
+
         luabind::object reg = luabind::registry(mState);
-        for(pair<SceneObject*,LuaScriptInstance*> scriptPair : *mScriptMap)
+
+        for(pair<SceneObject*,LuaScriptInstance*> scriptPair : mScriptMap)
         {
             string id = scriptPair.first->getUuid();
             string soName = scriptPair.first->getName();
@@ -946,7 +948,26 @@ namespace Dream
                 cout << "LuaEngine: Removed script " << id << " for " << soName << " from registry" << endl;
             }
         }
-        mScriptMap->clear();
+        mScriptMap.clear();
+    }
+    void
+    LuaEngine::removeFromScriptMap
+    (SceneObject* sceneObject)
+    {
+        for(auto iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
+        {
+           if ((*iter).first == sceneObject)
+           {
+               mScriptMap.erase(iter);
+           }
+        }
+    }
+
+    void
+    LuaEngine::addToScriptMap
+    (SceneObject *sceneObject, LuaScriptInstance* script)
+    {
+        mScriptMap.insert(pair<SceneObject*,LuaScriptInstance*>(sceneObject,script));
     }
 
 } // End of Dream

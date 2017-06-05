@@ -28,6 +28,7 @@ namespace Dream
         setWidth(IWC_DEFAULT_SCREEN_WIDTH);
         setHeight(IWC_DEFAULT_SCREEN_HEIGHT);
         setShouldClose(false);
+        mSizeHasChanged = false;
     }
 
 
@@ -58,7 +59,6 @@ namespace Dream
     IWindowComponent::getWidth
     ()
     {
-        getCurrentDimensions();
         return mWidth;
     }
 
@@ -67,7 +67,6 @@ namespace Dream
     IWindowComponent::getHeight
     ()
     {
-        getCurrentDimensions();
         return mHeight;
     }
 
@@ -109,6 +108,15 @@ namespace Dream
     (bool close)
     {
         mShouldClose = close;
+    }
+
+    bool
+    IWindowComponent::sizeHasChanged
+    ()
+    {
+        bool temp = mSizeHasChanged;
+        mSizeHasChanged = false;
+        return temp;
     }
 
 

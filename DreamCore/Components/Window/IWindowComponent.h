@@ -48,11 +48,14 @@ namespace Dream
       void close();
       bool shouldClose();
       void setShouldClose(bool);
+      bool sizeHasChanged();
+
     protected:
       int mWidth;
       int mHeight;
       string mName;
       bool mShouldClose;
+      bool mSizeHasChanged;
     };
 }
 

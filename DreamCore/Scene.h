@@ -44,7 +44,7 @@
 using namespace std;
 namespace Dream
 {
-    class AudioComponent;
+    class ProjectRuntime;
 
     class Scene
     {
@@ -59,15 +59,20 @@ namespace Dream
         float mCameraMovementSpeed;
         vector<float> mClearColour;
         vector<float> mAmbientLightColour;
-        map<SceneObject*,LuaScriptInstance*> mLuaScriptMap;
         string mProjectPath;
-        vector<AssetDefinition*>* mAssetDefinitions;
+        vector<AssetDefinition*> mAssetDefinitions;
         vector<float> mGravity;
         bool mPhysicsDebug;
-        AudioComponent* mAudioComponent;
+        ProjectRuntime* mRuntime;
 
     public:
-        Scene(nlohmann::json, string, vector<AssetDefinition*>*, AudioComponent* audioComponent);
+        Scene(
+            nlohmann::json projJson,
+            string projPath,
+            vector<AssetDefinition*> definitions,
+            ProjectRuntime* runtime
+        );
+
         ~Scene();
 
         string getUuid();
@@ -122,11 +127,8 @@ namespace Dream
 
         void setProjectPath(string);
 
-        map<SceneObject*,LuaScriptInstance*> *getLuaScriptMap();
-        void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
         bool createAssetInstancesForSceneObject(SceneObject*);
         void findDeletedScripts();
-        void removeFromLuaScriptMap(SceneObject*);
 
         string getNotes();
         void setNotes(string notes);
@@ -143,7 +145,8 @@ namespace Dream
         void loadClearColour(nlohmann::json);
         void loadAmbientLightColour(nlohmann::json);
         nlohmann::json toJson();
-        void cleanUpAssetInstances();
+        void cleanUpSceneObjects();
+        void cleanUp();
 
         bool hasName(string);
         bool hasUuid(string);

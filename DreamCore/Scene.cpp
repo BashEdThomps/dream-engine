@@ -17,7 +17,7 @@
  */
 
 #include "Scene.h"
-#include "Components/Audio/AudioComponent.h"
+#include "ProjectRuntime.h"
 #include <functional>
 #include <algorithm>
 
@@ -27,12 +27,12 @@ namespace Dream
     (
             nlohmann::json jsonScene,
             string projectPath,
-            vector<AssetDefinition*>* assetDefs,
-            AudioComponent* audioComp
+            vector<AssetDefinition*> assetDefs,
+            ProjectRuntime* runtime
     )
     {
+        mRuntime = runtime;
         mJson = jsonScene;
-        mAudioComponent = audioComp;
         setProjectPath(projectPath);
         mAssetDefinitions = assetDefs;
         mGravity = {0.0f,0.0f,0.0f};
@@ -410,6 +410,11 @@ namespace Dream
     Scene::addToDeleteQueue
     (SceneObject* object)
     {
+        if (DEBUG)
+        {
+            cout << "Scene: Adding " << object->getNameAndUuidString()
+                 << " to delete queue" << endl;
+        }
         mDeleteQueue.push_back(object);
     }
 
@@ -417,6 +422,10 @@ namespace Dream
     Scene::clearDeleteQueue
     ()
     {
+        if (DEBUG)
+        {
+            cout << "Scene: Clearing delete queue" << endl;
+        }
         mDeleteQueue.clear();
     }
 
@@ -436,6 +445,7 @@ namespace Dream
                 delete obj;
             }
         }
+        clearDeleteQueue();
     }
 
     void
@@ -519,6 +529,7 @@ namespace Dream
                 return false;
             }
         }
+        currentSO->setDeleteFlag(false);
         currentSO->setLoadedFlag(true);
         return currentSO->getLoadedFlag();
     }
@@ -540,7 +551,7 @@ namespace Dream
         {
             cout << "Scene: Creating Asset Intance of: ("
                  << definition->getType() << ") " << definition->getName()
-                 << ", for SceneObject: " << sceneObject->getNameUuidString()
+                 << ", for SceneObject: " << sceneObject->getNameAndUuidString()
                  << endl;
         }
 
@@ -637,7 +648,7 @@ namespace Dream
         {
             cout << "Scene: Creating Audio asset instance." << endl;
         }
-        AudioInstance* retval = mAudioComponent->newAudioInstance(definition,sceneObject->getTransform());
+        AudioInstance* retval = mRuntime->getAudioComponent()->newAudioInstance(definition,sceneObject->getTransform());
         sceneObject->setAudioInstance(retval);
         return retval;
     }
@@ -664,7 +675,7 @@ namespace Dream
         }
         LuaScriptInstance* retval = new LuaScriptInstance(definition, sceneObject->getTransform());
         sceneObject->setScriptInstance(retval);
-        insertIntoLuaScriptMap(sceneObject,retval);
+        mRuntime->getLuaEngine()->addToScriptMap(sceneObject,retval);
         return retval;
     }
 
@@ -720,21 +731,6 @@ namespace Dream
         return retval;
     }
 
-    map<SceneObject*,LuaScriptInstance*>*
-    Scene::getLuaScriptMap
-    ()
-    {
-        return &mLuaScriptMap;
-    }
-
-    void
-    Scene::insertIntoLuaScriptMap
-    (SceneObject* sceneObject,LuaScriptInstance* script)
-    {
-        mLuaScriptMap.insert(pair<SceneObject*,LuaScriptInstance*>(sceneObject,script));
-    }
-
-
     void
     Scene::findDeletedScripts()
     {
@@ -746,25 +742,7 @@ namespace Dream
 
         for (SceneObject* it : objects)
         {
-            removeFromLuaScriptMap(it);
-        }
-    }
-
-    void
-    Scene::removeFromLuaScriptMap
-    (SceneObject* it)
-    {
-        for (pair<SceneObject*, LuaScriptInstance*> mapIt : mLuaScriptMap)
-        {
-            if (mapIt.first == it)
-            {
-                if (DEBUG)
-                {
-                    cout << "Scene: Removing From Lua Script Map " << it->getUuid() << endl;
-                }
-                mLuaScriptMap.erase(mLuaScriptMap.find(mapIt.first));
-                break;
-            }
+            mRuntime->getLuaEngine()->removeFromScriptMap(it);
         }
     }
 
@@ -772,7 +750,7 @@ namespace Dream
     Scene::getAssetDefinitionByUuid
     (string uuid)
     {
-        for (AssetDefinition* ad : *mAssetDefinitions)
+        for (AssetDefinition* ad : mAssetDefinitions)
         {
             if (ad->hasUuid(uuid))
             {
@@ -810,7 +788,7 @@ namespace Dream
         mNotes = notes;
     }
 
-    void Scene::cleanUpAssetInstances()
+    void Scene::cleanUpSceneObjects()
     {
         mRootSceneObject->applyToAll
         (
@@ -819,7 +797,6 @@ namespace Dream
                 [&](SceneObject* obj)
                 {
                     obj->setDeleteFlag(true);
-                    obj->setLoadedFlag(false);
                     return nullptr;
                 }
             )
@@ -838,6 +815,13 @@ namespace Dream
     (string name)
     {
         return mName.compare(name) == 0;
+    }
+
+    void
+    Scene::cleanUp
+    ()
+    {
+       cleanUpSceneObjects();
     }
 
 } // End of Dream

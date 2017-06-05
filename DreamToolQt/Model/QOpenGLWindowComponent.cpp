@@ -36,10 +36,7 @@ QOpenGLWindowComponent::resizeGL
 {
    setWidth(w);
    setHeight(h);
-   if (mDreamEngine)
-   {
-       mDreamEngine->getGraphicsComponent()->onWindowDimensionsChanged();
-   }
+   mSizeHasChanged = true;
 }
 
 void
@@ -93,7 +90,7 @@ QOpenGLWindowComponent::setDreamEngine
 
 void
 QOpenGLWindowComponent::cleanUp
-()
+(Dream::Scene* scene)
 {
 
 }

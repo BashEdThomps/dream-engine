@@ -31,10 +31,10 @@ namespace Dream
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
         bool mInPhysicsWorld;
         bool mKinematic;
-        vector<CompoundChild>    mCompoundChildren;
-        vector<AssetDefinition*>* mAssetDefinitions;
+        vector<CompoundChild> mCompoundChildren;
+        vector<AssetDefinition*> mAssetDefinitions;
     public:
-        PhysicsObjectInstance(AssetDefinition*,Transform3D*,vector<AssetDefinition*>*);
+        PhysicsObjectInstance(AssetDefinition*,Transform3D*,vector<AssetDefinition*>);
         ~PhysicsObjectInstance();
         bool load(string);
         btCollisionShape* createCollisionShape(AssetDefinition*, string projectPath);

@@ -44,13 +44,12 @@ int errorHandler(lua_State*);
 
 namespace Dream
 {
-    class DreamEngine;
+    class Project;
     class LuaEngine
     {
     public: // Methods
-        LuaEngine(DreamEngine* engine);
+        LuaEngine(Project* project);
         virtual ~LuaEngine();
-        void setLuaScriptMap(map<SceneObject*,LuaScriptInstance*>*);
         bool init();
         bool createAllScripts();
         bool loadScript(SceneObject*);
@@ -61,20 +60,11 @@ namespace Dream
         bool executeScriptUpdate(SceneObject*);
         bool executeScriptKeyHandler(SceneObject*);
         bool executeScriptEventHandler(SceneObject*);
+        void removeFromScriptMap(SceneObject*);
+        void addToScriptMap(SceneObject*,LuaScriptInstance*);
 
     private:// Variables
-        DreamEngine* mDreamEngine;
-        /*
-        string mScriptLoadFromStringOld =
-                "function scriptLoadFromString (scriptTable, script_string)\n"
-                "    local mt = {__index = _G}\n"
-                "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = load(script_string)\n"
-                "    setfenv(chunk, scriptTable)\n"
-                "    chunk()\n"
-                "end";
-                */
-
+        Project* mProject;
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
@@ -84,7 +74,7 @@ namespace Dream
                 "    chunk()\n"
                 "end";
         lua_State *mState;
-        map<SceneObject*, LuaScriptInstance*> *mScriptMap;
+        map<SceneObject*, LuaScriptInstance*> mScriptMap;
 
     private: // Methods
         // API Exposure Methods ======================================================
@@ -95,7 +85,8 @@ namespace Dream
         void exposeAnimationInstance();
         void exposeAssimpModelInstance();
         void exposeCamera();
-        void exposeDreamEngine();
+        void exposeProject();
+        void exposeProjectRuntime();
         void exposeEvent();
         void exposeFontInstance();
         void exposeGameController();

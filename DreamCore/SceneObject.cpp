@@ -401,7 +401,7 @@ namespace Dream
     }
 
     string
-    SceneObject::getNameUuidString
+    SceneObject::getNameAndUuidString
     ()
     {
         return getName()+" ("+getUuid()+")";

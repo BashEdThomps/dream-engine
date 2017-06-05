@@ -22,7 +22,7 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    DreamEngine *engine = new Dream::DreamEngine(new SDLWindowComponent());
+    Project *project = new Project(new SDLWindowComponent());
 
     dreamSetVerbose(true);
 
@@ -38,16 +38,7 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    bool loaded = engine->loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
-
-    if (!loaded)
-    {
-        cerr << "Main: Failed to Load Project." << endl;
-        return 1;
-    }
-
-
-    if(!engine->initEngine())
+    if(!project->initRuntime())
     {
         if (DEBUG)
         {
@@ -56,13 +47,29 @@ int main(int argc, const char** argv)
         return 1;
     }
 
+    bool loaded = project->loadFromArgumentParser(new ArgumentParser(argc,argv));
+
+    if (!loaded)
+    {
+        cerr << "Main: Failed to Load Project." << endl;
+        return 1;
+    }
+
+    loaded = project->loadStartupScene();
+
+    if (!loaded)
+    {
+        cerr << "Main: Error, unable to load startup scene" << endl;
+        return 1;
+    }
+
     bool result = false;
 
 
-    // Run the engine
+    // Run the project
     while(!result)
     {
-        result = engine->heartbeat();
+        result = project->updateAll();
         std::this_thread::yield();
     }
 
