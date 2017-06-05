@@ -20,10 +20,10 @@ namespace Dream
 {
 
   SpriteInstance::SpriteInstance
-  (AssetDefinition& definition, Transform3D& transform)
+  (AssetDefinition* definition, Transform3D* transform)
       : IAssetInstance(definition,transform)
   {
-    loadExtraAttributes(mDefinition.toJson());
+    loadExtraAttributes(mDefinition->toJson());
   }
 
   SpriteInstance::~SpriteInstance
@@ -31,7 +31,7 @@ namespace Dream
   {
         if (DEBUG)
         {
-            cout << "SpriteInstance: Destroying Object " << getNameAndUuidString() << endl;
+            cout << "SpriteInstance: Destroying Object" << endl;
         }
       return;
   }
@@ -40,7 +40,7 @@ namespace Dream
   SpriteInstance::load
   (string projectPath)
   {
-    string path = projectPath+mDefinition.getAssetPath();
+    string path = projectPath+mDefinition->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
     if (DEBUG)
     {

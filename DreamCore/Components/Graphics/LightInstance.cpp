@@ -3,12 +3,15 @@
 namespace Dream
 {
     LightInstance::LightInstance
-    (AssetDefinition& definition, Transform3D& transform)
-        : IAssetInstance(definition,transform),
-          mColor(glm::vec3(0.0f,0.0f,0.0f)),
-          mIntensity(0.0f)
+    (
+        AssetDefinition* definition,
+        Transform3D* transform
+    )
+        : IAssetInstance(definition,transform)
     {
-        loadExtraAttributes(definition.toJson());
+        mColor     = glm::vec3(0.0f,0.0f,0.0f);
+        mIntensity = 0.0f;
+        loadExtraAttributes(definition->toJson());
     }
 
     LightInstance::~LightInstance
@@ -16,7 +19,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "LightInstance: Destroying Object " << getNameAndUuidString() << endl;
+            cout << "LightInstance: Destroying Object" << endl;
         }
         return;
     }

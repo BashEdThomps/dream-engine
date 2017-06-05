@@ -2,7 +2,6 @@
 #include <DreamCore.h>
 #include "include/DreamSDL.h"
 #include <thread>
-#include <memory>
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -23,9 +22,7 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    shared_ptr<SDLWindowComponent> windowComp;
-    windowComp.make_shared();
-    DreamEngine engine(windowComp);
+    DreamEngine *engine = new Dream::DreamEngine(new SDLWindowComponent());
 
     dreamSetVerbose(true);
 
@@ -41,7 +38,7 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    bool loaded = engine.loadFromArgumentParser(Dream::ArgumentParser(argc,argv));
+    bool loaded = engine->loadFromArgumentParser(new Dream::ArgumentParser(argc,argv));
 
     if (!loaded)
     {
@@ -50,7 +47,7 @@ int main(int argc, const char** argv)
     }
 
 
-    if(!engine.initEngine())
+    if(!engine->initEngine())
     {
         if (DEBUG)
         {
@@ -65,7 +62,7 @@ int main(int argc, const char** argv)
     // Run the engine
     while(!result)
     {
-        result = engine.heartbeat();
+        result = engine->heartbeat();
         std::this_thread::yield();
     }
 

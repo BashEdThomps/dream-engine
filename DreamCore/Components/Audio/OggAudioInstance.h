@@ -30,7 +30,7 @@ namespace Dream
     class OggAudioInstance : public AudioInstance
     {
     public:
-        OggAudioInstance(AssetDefinition&, Transform3D&);
+        OggAudioInstance(AssetDefinition*, Transform3D*);
         ~OggAudioInstance();
         bool load(std::string) override;
         void loadExtraAttributes(nlohmann::json) override;

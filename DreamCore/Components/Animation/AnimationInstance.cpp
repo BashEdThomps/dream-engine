@@ -23,7 +23,7 @@ namespace Dream {
 
 
     AnimationInstance::AnimationInstance
-    (AssetDefinition& definition, Transform3D& transform)
+    (AssetDefinition* definition, Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
         mCurrentPlaybackFrame = 0;
@@ -37,7 +37,7 @@ namespace Dream {
     {
         if (DEBUG)
         {
-            cout << "AnimationInstance: Destroying Object " << getNameAndUuidString() << endl;
+            cout << "AnimationInstance: Destroying Object" << endl;
         }
         deleteKeyFrames();
         deletePlaybackFrames();
@@ -58,9 +58,8 @@ namespace Dream {
     AnimationInstance::load
     (string projectPath)
     {
-        nlohmann::json defJson =  mDefinition.toJson();
-        mLoop = defJson[ASSET_ATTR_LOOP];
-        loadExtraAttributes(defJson);
+        mLoop = mDefinition->toJson()[ASSET_ATTR_LOOP];
+        loadExtraAttributes(mDefinition->toJson());
         mLoaded = false;
         return mLoaded;
     }
@@ -80,10 +79,9 @@ namespace Dream {
         {
             cout<<"AnimationInstance: Generating Playback Frames" << endl;
         }
-        vector<KeyFrame*>::iterator keyFrameIter;
-        for (keyFrameIter = mKeyFrames.begin(); keyFrameIter != mKeyFrames.end(); keyFrameIter++)
+
+        for (KeyFrame* currentKeyFrame : mKeyFrames)
         {
-            KeyFrame* currentKeyFrame = (*keyFrameIter);
             // Get the next KeyFrame
             KeyFrame* nextKeyFrame = nullptr;
             // End of Vector?
@@ -112,7 +110,7 @@ namespace Dream {
             }
             else
             {
-                nextKeyFrame = *(keyFrameIter+1);
+                nextKeyFrame = currentKeyFrame;
             }
 
             currentKeyFrame->generatePlaybackFrames(nextKeyFrame);
@@ -137,34 +135,34 @@ namespace Dream {
             {
                 cout << "AnimationInstance: Loading KeyFrames" << endl;
             }
-            for (nlohmann::json::iterator it = jsonKeyFrames.begin(); it != jsonKeyFrames.end(); ++it)
+            for (nlohmann::json it : jsonKeyFrames)
             {
                 KeyFrame *nextKeyFrame = new KeyFrame();
                 vector<float> translation(3), rotation(3), scale(3);
 
-                translation[0] = (*it)[ASSET_ATTR_TRANSLATION][ASSET_ATTR_X];
-                translation[1] = (*it)[ASSET_ATTR_TRANSLATION][ASSET_ATTR_Y];
-                translation[2] = (*it)[ASSET_ATTR_TRANSLATION][ASSET_ATTR_Z];
+                translation[0] = it[ASSET_ATTR_TRANSLATION][ASSET_ATTR_X];
+                translation[1] = it[ASSET_ATTR_TRANSLATION][ASSET_ATTR_Y];
+                translation[2] = it[ASSET_ATTR_TRANSLATION][ASSET_ATTR_Z];
 
-                rotation[0] = (*it)[ASSET_ATTR_ROTATION][ASSET_ATTR_X];
-                rotation[1] = (*it)[ASSET_ATTR_ROTATION][ASSET_ATTR_Y];
-                rotation[2] = (*it)[ASSET_ATTR_ROTATION][ASSET_ATTR_Z];
+                rotation[0] = it[ASSET_ATTR_ROTATION][ASSET_ATTR_X];
+                rotation[1] = it[ASSET_ATTR_ROTATION][ASSET_ATTR_Y];
+                rotation[2] = it[ASSET_ATTR_ROTATION][ASSET_ATTR_Z];
 
-                scale[0] = (*it)[ASSET_ATTR_SCALE][ASSET_ATTR_X];
-                scale[1] = (*it)[ASSET_ATTR_SCALE][ASSET_ATTR_Y];
-                scale[2] = (*it)[ASSET_ATTR_SCALE][ASSET_ATTR_Z];
+                scale[0] = it[ASSET_ATTR_SCALE][ASSET_ATTR_X];
+                scale[1] = it[ASSET_ATTR_SCALE][ASSET_ATTR_Y];
+                scale[2] = it[ASSET_ATTR_SCALE][ASSET_ATTR_Z];
 
-                long startTime   = (*it)[ASSET_ATTR_START_TIME];
+                long startTime   = it[ASSET_ATTR_START_TIME];
 
                 bool wrap = false;
-                if (!(*it)[ASSET_ATTR_WRAP].is_null())
+                if (!it[ASSET_ATTR_WRAP].is_null())
                 {
-                    wrap = (*it)[ASSET_ATTR_WRAP];
+                    wrap = it[ASSET_ATTR_WRAP];
                 }
 
-                string interpolation = (*it)[ASSET_ATTR_INTERPOLATION];
-                string name = (*it)[ASSET_NAME];
-                string uuid = (*it)[ASSET_UUID];
+                string interpolation = it[ASSET_ATTR_INTERPOLATION];
+                string name = it[ASSET_NAME];
+                string uuid = it[ASSET_UUID];
 
                 nextKeyFrame->setName(name);
                 nextKeyFrame->setInterpolationType(interpolation);
@@ -264,7 +262,7 @@ namespace Dream {
 
     void
     AnimationInstance::applyTransform
-    (Transform3D const& transform)
+    (Transform3D* transform)
     {
         if (mPlaying && mCurrentPlaybackFrame < mPlaybackFrames.size())
         {
@@ -277,10 +275,9 @@ namespace Dream {
     AnimationInstance::deleteKeyFrames
     ()
     {
-        vector<KeyFrame*>::iterator it;
-        for (it=mKeyFrames.begin(); it != mKeyFrames.end(); it++)
+        for (KeyFrame* pKeyFrame : mKeyFrames)
         {
-            delete (*it);
+            delete pKeyFrame;
         }
         mKeyFrames.clear();
     }
@@ -289,12 +286,11 @@ namespace Dream {
     AnimationInstance::deletePlaybackFrames
     ()
     {
-        vector<Frame*>::iterator it;
-        for (it=mPlaybackFrames.begin(); it != mPlaybackFrames.end(); it++)
+        for (Frame* pFrame : mPlaybackFrames)
         {
-            delete (*it);
+            delete pFrame;
         }
         mPlaybackFrames.clear();
     }
 
-} // End of Dream
+     } // End of Dream

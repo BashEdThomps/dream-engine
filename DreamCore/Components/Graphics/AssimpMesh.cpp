@@ -1,16 +1,14 @@
 #include "AssimpMesh.h"
-#include "AssimpModelInstance.h"
 
 namespace Dream
 {
 
     AssimpMesh::AssimpMesh
-    (shared_ptr<AssimpModelInstance> parent, vector<Vertex> vertices,vector<GLuint> indices,vector<Texture> textures)
-        :  mParent(parent),
-           mVertices(vertices),
-           mIndices(indices),
-           mTextures(textures)
+    (vector<Vertex> vertices,vector<GLuint> indices,vector<Texture> textures)
     {
+        mVertices = vertices;
+        mIndices  = indices;
+        mTextures = textures;
         init();
     }
 
@@ -19,9 +17,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "AssimpMesh: Destroying Object owned by "
-                 << (mParent ? mParent->getNameAndUuidString() : "None")
-                 << endl;
+            cout << "AssimpMesh: Destroying Object" << endl;
         }
 
         return;
@@ -29,7 +25,7 @@ namespace Dream
 
     void
     AssimpMesh::draw
-    (shared_ptr<ShaderInstance> shader)
+    (ShaderInstance* shader)
     {
         GLuint diffuseNr = 1;
         GLuint specularNr = 1;

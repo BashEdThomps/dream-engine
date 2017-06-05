@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <functional>
-#include <memory>
 
 #include "Transform3D.h"
 #include "Constants.h"
@@ -22,53 +21,39 @@
 using namespace std;
 namespace Dream
 {
-  class SceneObject;
-
   class SceneObject
   {
   protected:
-    // Metadata
     nlohmann::json mJson;
-    string mUuid;
-    shared_ptr<SceneObject> mParent;
-    vector<SceneObject> mChildren;
+    vector<Event*> mEventQueue;
+    bool mLoaded;
+    SceneObject* mParent;
+    vector<SceneObject*> mChildren;
     vector<string> mAssetDefUuidsToLoad;
     bool mHasFocus;
+    // Metadata
+    string mUuid;
     string mName;
-    Transform3D mInitialTransform;
-
-    // Runtime Data
-    vector<Event> mEventQueue;
-    bool mLoaded;
+    Transform3D *mTransform;
     bool mDelete;
-    Transform3D mCurrentTransform;
-
-    // Asset Instance Pointers
-    shared_ptr<AudioInstance> mAudioInstance;
-    shared_ptr<AnimationInstance> mAnimationInstance;
-    shared_ptr<FontInstance> mFontInstance;
-    shared_ptr<LightInstance> mLightInstance;
-    shared_ptr<AssimpModelInstance> mModelInstance;
-    shared_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
-    shared_ptr<LuaScriptInstance> mScriptInstance;
-    shared_ptr<ShaderInstance> mShaderInstance;
-    shared_ptr<SpriteInstance> mSpriteInstance;
-
+    // Asset Instances
+    AudioInstance *mAudioInstance;
+    AnimationInstance *mAnimationInstance;
+    AssimpModelInstance *mModelInstance;
+    ShaderInstance *mShaderInstance;
+    LightInstance *mLightInstance;
+    SpriteInstance *mSpriteInstance;
+    LuaScriptInstance *mScriptInstance;
+    PhysicsObjectInstance *mPhysicsObjectInstance;
+    FontInstance *mFontInstance;
   public:
     SceneObject(nlohmann::json);
     SceneObject();
-
-    bool operator==(SceneObject);
-    SceneObject operator=(SceneObject);
-    inline bool operator< (const SceneObject& rhs) const { return this->mUuid < rhs.mUuid;    }
-    inline bool operator> (const SceneObject& rhs) const { return rhs.mUuid < this->mUuid;    }
-    inline bool operator<=(const SceneObject& rhs) const { return !(this->mUuid > rhs.mUuid); }
-    inline bool operator>=(const SceneObject& rhs) const { return !(this->mUuid < rhs.mUuid); }
+    ~SceneObject();
+    void deleteChildren();
+    void deleteAssetInstances();
 
     void constructorInit();
-
-    ~SceneObject();
-    void clearChildren();
 
     bool init();
     void loadMetadata(nlohmann::json);
@@ -83,68 +68,87 @@ namespace Dream
     void setName(string);
     string getName();
 
-    string getNameAndUuidString();
+    string getNameUuidString();
 
     void showStatus();
 
-    SceneObject getChildByUuid(string);
+    glm::vec3 getTranslation();
+    void setTranslation(float, float, float);
+    void setTranslation(glm::vec3);
+    void resetTranslation();
+
+    glm::vec3 getRotation();
+    void setRotation(float, float, float);
+    void setRotation(glm::vec3);
+    void resetRotation();
+
+    glm::vec3 getScale();
+    void setScale(float, float, float);
+    void setScale(glm::vec3);
+    void resetScale();
+
+    void resetTransform();
+
+    SceneObject* getChildByUuid(string);
     int countAllChildren();
     size_t countChildren();
-    void addChild(SceneObject&);
-    void removeChild(SceneObject);
-    bool isChildOf(SceneObject&);
+    void addChild(SceneObject*);
+    void removeChild(SceneObject*);
+    bool isChildOf(SceneObject*);
+    vector<SceneObject*> getChildren();
+    bool isParentOf(SceneObject*);
+    void setParent(SceneObject*);
+    SceneObject* getParent();
 
-    vector<SceneObject> getChildren();
-    bool isParentOf(SceneObject&);
+    void setAnimationInstance(AnimationInstance*);
+    AnimationInstance* getAnimationInstance();
+    bool hasAnimationInstance();
 
-    void setParent(shared_ptr<SceneObject>);
-    shared_ptr<SceneObject> getParent();
+    void setAudioInstance(AudioInstance*);
+    AudioInstance* getAudioInstance();
+    bool hasAudioInstance();
 
-    void setAnimationInstance(shared_ptr<AnimationInstance>);
-    shared_ptr<AnimationInstance> getAnimationInstance();
-
-    void setAudioInstance(shared_ptr<AudioInstance>);
-    shared_ptr<AudioInstance> getAudioInstance();
-
-    void setModelInstance(shared_ptr<AssimpModelInstance>);
-    shared_ptr<AssimpModelInstance> getModelInstance();
+    void setModelInstance(AssimpModelInstance*);
+    AssimpModelInstance* getModelInstance();
     bool hasModelInstance();
 
-    void setScriptInstance(shared_ptr<LuaScriptInstance>);
-    shared_ptr<LuaScriptInstance> getScriptInstance();
+    void setScriptInstance(LuaScriptInstance*);
+    LuaScriptInstance* getScriptInstance();
     bool hasScriptInstance();
 
-    void setShaderInstance(shared_ptr<ShaderInstance>);
-    shared_ptr<ShaderInstance> getShaderInstance();
+    void setShaderInstance(ShaderInstance*);
+    ShaderInstance* getShaderInstance();
     bool hasShaderInstance();
 
-    void setPhysicsObjectInstance(shared_ptr<PhysicsObjectInstance>);
-    shared_ptr<PhysicsObjectInstance> getPhysicsObjectInstance();
+    void setPhysicsObjectInstance(PhysicsObjectInstance*);
+    PhysicsObjectInstance* getPhysicsObjectInstance();
     bool hasPhysicsObjectInstance();
 
-    void setLightInstance(shared_ptr<LightInstance>);
-    shared_ptr<LightInstance> getLightInstance();
+    void setLightInstance(LightInstance*);
+    LightInstance* getLightInstance();
     bool hasLightInstance();
 
-    void setSpriteInstance(shared_ptr<SpriteInstance>);
-    shared_ptr<SpriteInstance> getSpriteInstance();
+    void setSpriteInstance(SpriteInstance*);
+    SpriteInstance* getSpriteInstance();
     bool hasSpriteInstance();
 
-    void setFontInstance(shared_ptr<FontInstance>);
-    shared_ptr<FontInstance> getFontInstance();
+    void setFontInstance(FontInstance*);
+    FontInstance* getFontInstance();
     bool hasFontInstance();
 
     void addAssetDefUuidToLoad(string);
     vector<string> getAssetDefUuidsToLoad();
 
-    Transform3D getCurrentTransform();
-    void setCurrentTransform(Transform3D);
+    string getTransformType();
+    void setTransformType(string);
 
-    Transform3D getInitialTransform();
-    void setInitialTransform(Transform3D);
+    Transform3D* getTransform();
+    void setTransform(Transform3D*);
 
     bool hasFocus();
     void setHasFocus(bool);
+
+    void copyTransform(Transform3D*);
 
     void setDeleteFlag(bool);
     bool getDeleteFlag();
@@ -153,15 +157,13 @@ namespace Dream
     void setLoadedFlag(bool);
 
     bool hasEvents();
-    void sendEvent(Event&);
-    vector<Event> getEventQueue();
+    void sendEvent(Event*);
+    vector<Event*>* getEventQueue();
     void cleanupEvents();
     nlohmann::json toJson();
 
-    void applyToAll(function<void(SceneObject&)> function);
-    SceneObject applyToAll(function<SceneObject(SceneObject&)> function);
-    bool applyToAll(function<bool(SceneObject&)> function);
-
+    void* applyToAll(function<void*(SceneObject*)>);
+    bool applyToAll(function<bool(SceneObject*)>);
   }; // End of SceneObject
 
 } // End of Dream

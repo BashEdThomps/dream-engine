@@ -25,26 +25,22 @@
 #include <json.hpp>
 #include "Constants.h"
 
-namespace Dream
-{
+namespace Dream {
 
     using namespace std;
-    class AssetDefinition
-    {
+    class AssetDefinition {
         map<string,string> mAttributes;
         nlohmann::json mJson;
         string mProjectPath;
     public:
-        AssetDefinition();
         AssetDefinition(nlohmann::json);
         ~AssetDefinition(void);
-        AssetDefinition& operator=(AssetDefinition);
-        bool operator==(AssetDefinition&);
 
         pair<string,string> mapPair(string,string);
 
         void setUuid(string);
         string getUuid();
+        bool hasUuid(string);
         void setName(string);
         string getName();
         void setType(string);
@@ -55,8 +51,6 @@ namespace Dream
         string getNameAndUuidString();
 
         void addAttribute(string,string);
-
-        nlohmann::json getJson();
 
         string  getAttribute(string);
         int getAttributeAsInt(string);
@@ -79,11 +73,9 @@ namespace Dream
         bool isTypeFont();
 
         bool isScriptFormatLua();
-
         bool isModelFormatAssimp();
-
-        bool isAudioFormatOgg();
-        bool isAudioFormatWav();
+        bool isAudioFormatSoundEffect();
+        bool isAudioFormatMusic();
 
         string getAssetPath();
 
@@ -94,7 +86,6 @@ namespace Dream
         void showStatus();
 
         nlohmann::json toJson();
-        bool hasUuid(string uuid);
 
     }; // End of AssetDefinition
 

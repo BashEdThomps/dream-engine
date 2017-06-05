@@ -27,16 +27,15 @@ namespace Dream
     AssimpModelInstance::getModelFromCache
     (string path)
     {
-        map<string,const aiScene*>::iterator it;
-        for (it=AssimpModelCache.begin();it!=AssimpModelCache.end();it++)
+        for (pair<string,const aiScene*> it : AssimpModelCache)
         {
-            if ((*it).first.compare(path) == 0)
+            if (it.first.compare(path) == 0)
             {
                 if (DEBUG)
                 {
                     cout << "AssimpModelInstance: Found cached scene for " << path << endl;
                 }
-                return (*it).second;
+                return it.second;
             }
         }
         if (DEBUG)
@@ -54,7 +53,7 @@ namespace Dream
     }
 
     AssimpModelInstance::AssimpModelInstance
-    (AssetDefinition& definition, Transform3D& transform)
+    (AssetDefinition* definition, Transform3D* transform)
     : IAssetInstance(definition,transform)
     {
         return;
@@ -65,7 +64,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "AssimpModelInstance: Destroying Object " << getNameAndUuidString() << endl;
+            cout << "AssimpModelInstance: Destroying Object" << endl;
         }
         return;
     }
@@ -74,7 +73,7 @@ namespace Dream
     AssimpModelInstance::load
     (string projectPath)
     {
-        string path = projectPath+mDefinition.getAssetPath();
+        string path = projectPath+mDefinition->getAssetPath();
         if (DEBUG)
         {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;
@@ -92,7 +91,7 @@ namespace Dream
 
     void
     AssimpModelInstance::draw
-    (shared_ptr<ShaderInstance> shader)
+    (ShaderInstance* shader)
     {
         size_t nMeshes = mMeshes.size();
         for(size_t i = 0; i < nMeshes; i++ )
@@ -178,7 +177,7 @@ namespace Dream
         vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-        return AssimpMesh(shared_ptr<AssimpModelInstance>(this), vertices, indices, textures);
+        return AssimpMesh(vertices, indices, textures);
     }
 
     vector<Texture>

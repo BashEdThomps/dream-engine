@@ -32,27 +32,25 @@ namespace Dream
         bool mInPhysicsWorld;
         bool mKinematic;
         vector<CompoundChild>    mCompoundChildren;
-        vector<AssetDefinition> mAssetDefinitions;
+        vector<AssetDefinition*>* mAssetDefinitions;
     public:
-        PhysicsObjectInstance(AssetDefinition&,Transform3D&,vector<AssetDefinition>&);
+        PhysicsObjectInstance(AssetDefinition*,Transform3D*,vector<AssetDefinition*>*);
         ~PhysicsObjectInstance();
         bool load(string);
-
-        btCollisionShape* createCollisionShape(AssetDefinition&, string projectPath);
+        btCollisionShape* createCollisionShape(AssetDefinition*, string projectPath);
         btCollisionShape* getCollisionShape();
         btRigidBody* getRigidBody();
-        btCollisionObject* getCollisionObject();
-
         void getWorldTransform(btTransform&);
         void setInPhysicsWorld(bool);
         bool getInPhysicsWorld();
+        btCollisionObject* getCollisionObject();
         void setLinearVelocity(float, float, float);
     protected:
         void loadExtraAttributes(nlohmann::json);
-        void loadExtraAttributes(nlohmann::json,AssetDefinition,bool);
+        void loadExtraAttributes(nlohmann::json,AssetDefinition*,bool);
         void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
         void processAssimpMesh(aiMesh*, btTriangleMesh*);
-        AssetDefinition getAssetDefinitionByUuid(string);
+        AssetDefinition* getAssetDefinitionByUuid(string);
     }; // End of PhysicsObjectInstance
 } // End of Dream
 

@@ -20,7 +20,7 @@
 namespace Dream
 {
     OggAudioInstance::OggAudioInstance
-    (AssetDefinition& definition,Transform3D& transform)
+    (AssetDefinition* definition,Transform3D* transform)
         : AudioInstance(definition,transform)
     {
 
@@ -29,17 +29,14 @@ namespace Dream
     OggAudioInstance::~OggAudioInstance
     ()
     {
-        if (DEBUG)
-        {
-            cout << "OggAudioInstance: Destroying Object " << getNameAndUuidString() << endl;
-        }
+
     }
 
     bool
     OggAudioInstance::load
     (std::string projectPath)
     {
-        std::string absPath = projectPath+mDefinition.getAssetPath();
+        std::string absPath = projectPath+mDefinition->getAssetPath();
         std::cout << "OggAudioInstance: Loading Instance: " << absPath << std::endl;
 
         // 0 for Little-Endian, 1 for Big-Endian

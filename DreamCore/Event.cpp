@@ -52,12 +52,11 @@ namespace Dream
 
     string Event::getAttribute(string key)
     {
-        map<string,string>::iterator it;
-        for (it=mAttributes.begin(); it!=mAttributes.end(); it++)
+        for (pair<string,string> it : mAttributes)
         {
-            if (it->first.compare(key)==0)
+            if (it.first.compare(key)==0)
             {
-                return it->second;
+                return it.second;
             }
         }
         return "";

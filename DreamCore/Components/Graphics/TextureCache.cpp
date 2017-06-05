@@ -55,10 +55,8 @@ namespace Dream
         string directory = string(directory_c);
         filename = directory + '/' + filename;
 
-        vector<Texture>::iterator it;
-        for (it=sTextureCache.begin(); it!=sTextureCache.end(); it++)
+        for (Texture nextTexture : sTextureCache)
         {
-            Texture nextTexture = (*it);
             if (nextTexture.path == filename)
             {
               if (DEBUG)

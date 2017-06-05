@@ -33,7 +33,6 @@
 
 namespace Dream
 {
-
     class PhysicsComponent : public IComponent
     {
     protected:
@@ -46,24 +45,23 @@ namespace Dream
         glm::mat4 mProjectionMatrix;
         btVector3 mGravity;
         bool mDebug;
-        Scene mActiveScene;
     public:
         PhysicsComponent();
         ~PhysicsComponent();
-        void populatePhysicsWorld(Scene& scene);
+        void populatePhysicsWorld(Scene* scene);
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init() override;
-        void updateComponent(Scene&) override;
-        void addPhysicsObjectInstance(shared_ptr<PhysicsObjectInstance>);
+        void updateComponent(Scene*) override;
+        void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
-        void removePhysicsObjectInstance(shared_ptr<PhysicsObjectInstance>);
+        void removePhysicsObjectInstance(PhysicsObjectInstance*);
         void setViewProjectionMatrix(glm::mat4, glm::mat4);
-        void checkContactManifolds(Scene& scene);
-        SceneObject getSceneObject(Scene& scene, const btCollisionObject*);
+        void checkContactManifolds(Scene* scene);
+        SceneObject* getSceneObject(Scene* scene, const btCollisionObject*);
         void drawDebug();
-        void cleanUp() override;
+        void cleanUp(Scene* scene) override;
     };// End of PhysicsComponent
 
 } // End of Dream

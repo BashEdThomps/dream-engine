@@ -41,10 +41,10 @@ namespace Dream
     {
     private:
         GLuint mShaderProgram;
-        map<string, GLfloat>  mUniform1fMap;
+        map<string, GLfloat> mUniform1fMap;
     public:
         ShaderInstance();
-        ShaderInstance(AssetDefinition&,Transform3D&);
+        ShaderInstance(AssetDefinition*,Transform3D*);
         ~ShaderInstance();
         bool load(string);
         void use();

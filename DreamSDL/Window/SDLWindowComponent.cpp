@@ -120,7 +120,7 @@ namespace DreamSDL
 
     void
     SDLWindowComponent::updateComponent
-    (Scene& scene)
+    (Scene* scene)
     {
 
         mEvents.clear();
@@ -178,7 +178,7 @@ namespace DreamSDL
 
     void
     SDLWindowComponent::cleanUp
-    ()
+    (Dream::Scene* scene)
     {
 
     }

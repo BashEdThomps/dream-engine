@@ -26,16 +26,15 @@ namespace Dream
     ShaderCache::getShader
     (string uuid)
     {
-        map<string,GLuint>::iterator it;
-        for (it=sShaderCache.begin();it!=sShaderCache.end();it++)
+        for(pair<string,GLuint> it : sShaderCache)
         {
-            if ((*it).first.compare(uuid) == 0)
+            if (it.first.compare(uuid) == 0)
             {
                 if (DEBUG)
                 {
                     cout << "ShaderCache: Found Shader " << uuid << endl;
                 }
-                return (*it).second;
+                return it.second;
             }
         }
         return 0;

@@ -28,8 +28,7 @@ namespace Dream
       class LuaScriptInstance : public IAssetInstance
       {
       public:
-        LuaScriptInstance(AssetDefinition&,Transform3D&);
-        LuaScriptInstance operator=(LuaScriptInstance&);
+        LuaScriptInstance(AssetDefinition*,Transform3D*);
         ~LuaScriptInstance(void);
         bool load(string);
         void update();

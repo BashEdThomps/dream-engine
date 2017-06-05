@@ -21,7 +21,7 @@ namespace Dream
 {
 
     WavAudioInstance::WavAudioInstance
-    (AssetDefinition& definition, Transform3D& transform)
+    (AssetDefinition* definition, Transform3D* transform)
         : AudioInstance(definition, transform)
     {
         return;
@@ -30,11 +30,6 @@ namespace Dream
     WavAudioInstance::~WavAudioInstance
     ()
     {
-        if (DEBUG)
-        {
-            cout << "WavAudioInstance: Destroying Object " << getNameAndUuidString() << endl;
-        }
-
         return;
     }
 
@@ -42,7 +37,7 @@ namespace Dream
     WavAudioInstance::load
     (std::string projectPath)
     {
-        std::string absPath = projectPath+mDefinition.getAssetPath();
+        std::string absPath = projectPath+mDefinition->getAssetPath();
         std::cout << "WavAudioInstance: Loading wav file from " << absPath << std::endl;
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");

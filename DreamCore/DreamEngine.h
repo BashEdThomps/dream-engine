@@ -4,7 +4,6 @@
 #include <iostream>
 #include <thread>
 #include <dirent.h>
-#include <memory>
 
 #include "Constants.h"
 #include "ArgumentParser.h"
@@ -25,62 +24,59 @@
 
 #include "Lua/LuaEngine.h"
 
-using namespace std;
-
 namespace Dream
 {
     class DreamEngine
     {
     private:
-        bool    mDone;
-        Time    mTime;
-        Project mProject;
-        Scene   mActiveScene;
-        Camera  mCamera;
-        GameController mGameController;
+        bool mDone;
+        Time *mTime;
+        Project *mProject;
+        Scene *mActiveScene;
+        Camera *mCamera;
 
-        // Components
+        AudioComponent *mAudioComponent;
+        GraphicsComponent *mGraphicsComponent;
+        PhysicsComponent *mPhysicsComponent;
+        AnimationComponent *mAnimationComponent;
+        IWindowComponent *mWindowComponent;
+        GameController *mGameController;
+        LuaEngine *mLuaEngine;
         bool mComponentsInitialised;
-        shared_ptr<AudioComponent>     mAudioComponent;
-        shared_ptr<GraphicsComponent>  mGraphicsComponent;
-        shared_ptr<PhysicsComponent>   mPhysicsComponent;
-        shared_ptr<AnimationComponent> mAnimationComponent;
-        shared_ptr<IWindowComponent>   mWindowComponent;
-        shared_ptr<LuaEngine>          mLuaEngine;
-
     public:
-        DreamEngine(shared_ptr<IWindowComponent> windowComponent);
+        DreamEngine(IWindowComponent* windowComponent = 0);
         ~DreamEngine();
 
         bool heartbeat();
 
-        bool loadFromArgumentParser(ArgumentParser);
+        bool loadFromArgumentParser(ArgumentParser*);
         bool loadFromDirectory(string);
         bool initEngine();
         bool initComponents();
         bool initLuaEngine();
 
-        bool loadProjectFromFileReader(string projectPath, FileReader&);
-        bool loadScene(Scene);
+        bool loadProjectFromFileReader(string projectPath, FileReader*);
+        bool loadScene(Scene*);
         bool loadSceneByUuid(string);
-        Project getProject();
-        void setProject(Project&);
+        Project* getProject();
+        void setProject(Project*);
         bool isProjectLoaded();
 
         bool updateLogic();
         bool updateGraphics();
         bool updateCleanup();
 
-        void setTime(Time&);
-        Time getTime();
+        void setTime(Time*);
+        Time* getTime();
         void setDone(bool);
         bool isDone();
 
-        Scene getActiveScene();
+        Scene *getActiveScene();
 
-        Camera getCamera();
-        void setCamera(Camera&);
+        Camera* getCamera();
+        void setCamera(Camera*);
 
+        void destroyComponents();
         bool initAnimationComponent();
         bool initAudioComponent();
         bool initPhysicsComponent();
@@ -93,25 +89,27 @@ namespace Dream
         void stopActiveScene();
         void cleanupComponents();
 
-        shared_ptr<AnimationComponent> getAnimationComponent();
-        void setAnimationComponent(shared_ptr<AnimationComponent>);
+        AnimationComponent* getAnimationComponent();
+        void setAnimationComponent(AnimationComponent*);
 
-        shared_ptr<AudioComponent> getAudioComponent();
-        void setAudioComponent(shared_ptr<AudioComponent>);
+        AudioComponent* getAudioComponent();
+        void setAudioComponent(AudioComponent*);
 
-        shared_ptr<PhysicsComponent> getPhysicsComponent();
-        void setPhysicsComponent(shared_ptr<PhysicsComponent>);
+        PhysicsComponent* getPhysicsComponent();
+        void setPhysicsComponent(PhysicsComponent*);
 
-        shared_ptr<GraphicsComponent> getGraphicsComponent();
-        void setGraphicsComponent(shared_ptr<GraphicsComponent>);
+        GraphicsComponent* getGraphicsComponent();
+        void setGraphicsComponent(GraphicsComponent*);
 
-        shared_ptr<IWindowComponent> getWindowComponent();
-        void setWindowComponent(shared_ptr<IWindowComponent>);
+        IWindowComponent* getWindowComponent();
+        void setWindowComponent(IWindowComponent*);
 
-        GameController getGameController();
+        GameController* getGameController();
 
-        void setGameController(GameController&);
-        void setActiveScene(Scene&);
+        void setGameController(GameController*);
+        void setActiveScene(Scene*);
+
+        void exposeLuaApi(lua_State*);
 
     }; // End of DreamEngine
 

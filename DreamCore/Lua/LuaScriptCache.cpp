@@ -40,16 +40,15 @@ namespace Dream
     LuaScriptCache::getScript
     (string path)
     {
-      map<string,string>::iterator it;
-      for (it=sScriptCache.begin();it!=sScriptCache.end();it++)
+      for (pair<string,string> it : sScriptCache)
       {
-         if (it->first == path)
+         if (it.first == path)
          {
              if (DEBUG)
              {
                  cout << "LuaScriptCache: Found script in cache " << path << endl;
              }
-             return it->second;
+             return it.second;
          }
       }
       return readIntoCache(path);

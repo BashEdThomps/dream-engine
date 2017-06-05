@@ -19,14 +19,14 @@
 namespace Dream
 {
     PhysicsMotionState::PhysicsMotionState
-    (Transform3D& dreamTransform)
-        : btMotionState(),
-        mDreamTransform(dreamTransform)
+    (Transform3D* dreamTransform)
+        : btMotionState()
     {
         if (VERBOSE)
         {
             cout << "PhysicsMotionState: Constructor called" << endl;
         }
+        mDreamTransform = dreamTransform;
     }
 
     PhysicsMotionState::~PhysicsMotionState
@@ -40,7 +40,7 @@ namespace Dream
 
     void
     PhysicsMotionState::setTransform
-    (Transform3D& transform)
+    (Transform3D* transform)
     {
         if (VERBOSE)
         {
@@ -58,10 +58,9 @@ namespace Dream
             cout << "PhysicsMotionState: getWorldTransform called" << endl;
         }
         // Translation
-        worldTrans.setOrigin(mDreamTransform.getTranslationAsBtVector3());
+        worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
         // Rotation
-
-        glm::quat glmRot = mDreamTransform.getOrientation();
+        glm::quat glmRot = mDreamTransform->getOrientation();
         btQuaternion btRot = btQuaternion(glmRot.x,glmRot.y,glmRot.z,glmRot.w);
         worldTrans.setRotation(btRot);
     }
@@ -74,12 +73,17 @@ namespace Dream
         {
             cout << "PhysicsMotionState: setWorldTransform called" << endl;
         }
+        if(mDreamTransform == nullptr)
+        {
+            cerr << "PhysicsMotionState: Error in SetWorldTransform!!" << endl;
+            return; // die quietly before we set transform
+        }
         // Translation
         btVector3 pos = worldTrans.getOrigin();
-        mDreamTransform.setTranslation(pos.x(), pos.y(), pos.z());
+        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
         // Rotation
         btQuaternion rot = worldTrans.getRotation();
-        mDreamTransform.setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
+        mDreamTransform->setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
     }
 
     void
@@ -91,7 +95,7 @@ namespace Dream
             cout << "PhysicsMotionState: setKinematicPos called" << endl;
         }
         btVector3 pos = trans.getOrigin();
-        mDreamTransform.setTranslation(pos.x(), pos.y(), pos.z());
+        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
     }
 
 

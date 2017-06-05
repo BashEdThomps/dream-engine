@@ -17,19 +17,16 @@
 
 #include "PhysicsComponent.h"
 
-#include <functional>
-
 namespace Dream
 {
 
 
     PhysicsComponent::PhysicsComponent
     ()
-        : IComponent(),
-          mDebugDrawer(nullptr),
-          mDebug(false)
+        : IComponent()
     {
-
+        mDebugDrawer = nullptr;
+        mDebug = false;
     }
 
 
@@ -118,9 +115,8 @@ namespace Dream
 
     void
     PhysicsComponent::updateComponent
-    (Scene& scene)
+    (Scene* scene)
     {
-        mActiveScene = scene;
         if (VERBOSE)
         {
             cout << "PhysicsComponent: Update Called" << endl;
@@ -135,7 +131,7 @@ namespace Dream
         }
         populatePhysicsWorld(scene);
 
-        btScalar stepValue = static_cast<btScalar>(mTime.getTimeDelta());
+        btScalar stepValue = static_cast<btScalar>(mTime->getTimeDelta());
         mDynamicsWorld->stepSimulation(stepValue);
         checkContactManifolds(scene);
 
@@ -165,7 +161,7 @@ namespace Dream
 
     void
     PhysicsComponent::removePhysicsObjectInstance
-    (shared_ptr<PhysicsObjectInstance> obj)
+    (PhysicsObjectInstance* obj)
     {
         if (obj->getInPhysicsWorld())
         {
@@ -189,7 +185,7 @@ namespace Dream
 
     void
     PhysicsComponent::addPhysicsObjectInstance
-    (shared_ptr<PhysicsObjectInstance> physicsObjejct)
+    (PhysicsObjectInstance *physicsObjejct)
     {
         addRigidBody(physicsObjejct->getRigidBody());
     }
@@ -197,40 +193,41 @@ namespace Dream
 
     void
     PhysicsComponent::populatePhysicsWorld
-    (Scene& scene)
+    (Scene* scene)
     {
-        scene.getRootSceneObject().applyToAll
+        scene->getRootSceneObject()->applyToAll
         (
-            function<void(SceneObject&)>
+            function<void*(SceneObject*)>
             (
-                [&](SceneObject& so)
+                [&](SceneObject* so)
                 {
                     // Has physics
-                    if (so.hasPhysicsObjectInstance())
+                    if (so->hasPhysicsObjectInstance())
                     {
-                        shared_ptr<PhysicsObjectInstance> physicsObject = so.getPhysicsObjectInstance();
+                        PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
                         // Marked for deletion and in physics world, remove
-                        if (so.getDeleteFlag() && physicsObject->getInPhysicsWorld())
+                        if (so->getDeleteFlag() && physicsObject->getInPhysicsWorld())
                         {
                             if (DEBUG)
                             {
-                                cout << "PhysicsComponent: Removing SceneObject " << so.getUuid()
+                                cout << "PhysicsComponent: Removing SceneObject " << so->getUuid()
                                      << " from Physics World" << endl;
                             }
                             removePhysicsObjectInstance(physicsObject);
                         }
                         // Not marked for deletion and not in world, add
-                        if (!so.getDeleteFlag() && !physicsObject->getInPhysicsWorld())
+                        if (!so->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
                         {
                             if (DEBUG)
                             {
-                                cout << "PhysicsComponent: Adding SceneObject " << so.getUuid()
+                                cout << "PhysicsComponent: Adding SceneObject " << so->getUuid()
                                      << " to Physics World" << endl;
                             }
                             addPhysicsObjectInstance(physicsObject);
                             physicsObject->setInPhysicsWorld(true);
                         }
                     }
+                    return nullptr;
                 }
             )
         );
@@ -256,7 +253,7 @@ namespace Dream
 
     void
     PhysicsComponent::checkContactManifolds
-    (Scene& scene)
+    (Scene* scene)
     {
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
         for (int i=0;i<numManifolds;i++)
@@ -265,11 +262,11 @@ namespace Dream
             contactManifold =  mDynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
             const btCollisionObject* objA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
             const btCollisionObject* objB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
-            SceneObject sObjA = getSceneObject(scene, objA);
-            SceneObject sObjB = getSceneObject(scene, objB);
+            SceneObject* sObjA = getSceneObject(scene, objA);
+            SceneObject* sObjB = getSceneObject(scene, objB);
 
-            Event e(sObjB.getUuid(),EVENT_TYPE_COLLISION);
-            sObjA.sendEvent(e);
+            Event* e = new Event(sObjB->getUuid(),EVENT_TYPE_COLLISION);
+            sObjA->sendEvent(e);
 
             /*
            * More detail about contact.
@@ -288,27 +285,29 @@ namespace Dream
     }
 
 
-    SceneObject
+    SceneObject*
     PhysicsComponent::getSceneObject
-    (Scene& scene, const btCollisionObject* collObj)
+    (Scene* scene, const btCollisionObject* collObj)
     {
-        return scene.getRootSceneObject().applyToAll
+        return static_cast<SceneObject*>
         (
-            function<SceneObject(SceneObject&)>
+            scene->getRootSceneObject()->applyToAll
             (
-                [&](SceneObject& next)
-                {
-                    SceneObject retval;
-                    if (next.hasPhysicsObjectInstance())
+                function<void*(SceneObject*)>
+                (
+                    [&](SceneObject* next)
                     {
-                        shared_ptr<PhysicsObjectInstance> nextPO = next.getPhysicsObjectInstance();
-                        if (nextPO->getCollisionObject() == collObj)
+                        if (next->hasPhysicsObjectInstance())
                         {
-                            retval = next;
+                            PhysicsObjectInstance* nextPO = next->getPhysicsObjectInstance();
+                            if (nextPO->getCollisionObject() == collObj)
+                            {
+                                return next;
+                            }
                         }
+                        return static_cast<SceneObject*>(nullptr);
                     }
-                    return retval;
-                }
+                )
             )
         );
     }
@@ -326,29 +325,31 @@ namespace Dream
 
     void
     PhysicsComponent::cleanUp
-    ()
+    (Scene* scene)
     {
         if (DEBUG)
         {
             cout << "PhysicsComponent: Cleaning up... " << endl;
         }
-        mActiveScene.getRootSceneObject().applyToAll
+
+        scene->getRootSceneObject()->applyToAll
         (
-            function<void(SceneObject&)>
+            function<void*(SceneObject*)>
             (
-                [&](SceneObject& so)
+                [&](SceneObject* so)
                 {
                     // Has physics
-                    if (so.getLoadedFlag() && so.hasPhysicsObjectInstance())
+                    if (so->getLoadedFlag() && so->hasPhysicsObjectInstance())
                     {
-                        shared_ptr<PhysicsObjectInstance> physicsObject = so.getPhysicsObjectInstance();
+                        PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
                         if (DEBUG)
                         {
-                            cout << "PhysicsComponent: Removing SceneObject " << so.getNameAndUuidString()
+                            cout << "PhysicsComponent: Removing SceneObject " << so->getNameUuidString()
                                  << " from Physics World" << endl;
                         }
                         removePhysicsObjectInstance(physicsObject);
                     }
+                    return nullptr;
                 }
             )
         );

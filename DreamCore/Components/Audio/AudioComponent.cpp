@@ -190,9 +190,9 @@ namespace Dream
                     audioAsset->setBuffer(generateBuffers(1));
                     audioAsset->setSource(generateSources(1));
                     std::vector<float> position = {
-                        audioAsset->getTransform().getTranslation().x,
-                        audioAsset->getTransform().getTranslation().y,
-                        audioAsset->getTransform().getTranslation().z,
+                        audioAsset->getTransform()->getTranslation().x,
+                        audioAsset->getTransform()->getTranslation().y,
+                        audioAsset->getTransform()->getTranslation().z,
                     };
                     std::vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                     alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
@@ -261,7 +261,7 @@ namespace Dream
 
     void
     AudioComponent::updateComponent
-    (Scene&)
+    (Scene*)
     {
         if (DEBUG)
         {
@@ -286,10 +286,9 @@ namespace Dream
         {
             cout << "AudioComponent: Updating Play Queue" << endl;
         }
-        std::vector<AudioInstance*>::iterator iterator;
-        for (iterator = mPlayQueue.begin(); iterator != mPlayQueue.end(); iterator++)
+
+        for (AudioInstance* audioAsset : mPlayQueue)
         {
-            AudioInstance *audioAsset = (*iterator);
             if (getAudioStatus(audioAsset) != PLAYING)
             {
                 playSource(audioAsset->getSource());
@@ -314,10 +313,8 @@ namespace Dream
         {
             cout << "AudioComponent: Updating Pause Queue" << endl;
         }
-        std::vector<AudioInstance*>::iterator iterator;
-        for (iterator = mPauseQueue.begin(); iterator != mPauseQueue.end(); iterator++)
+        for (AudioInstance* audioAsset : mPauseQueue)
         {
-            AudioInstance *audioAsset = (*iterator);
             if (getAudioStatus(audioAsset) != PAUSED)
             {
                 pauseSource(audioAsset->getSource());
@@ -342,10 +339,9 @@ namespace Dream
         {
             cout << "AudioComponent: Updating Stop Queue" << endl;
         }
-        std::vector<AudioInstance*>::iterator iterator;
-        for (iterator = mStopQueue.begin(); iterator != mStopQueue.end(); iterator++)
+
+        for (AudioInstance* audioAsset : mStopQueue)
         {
-            AudioInstance *audioAsset = (*iterator);
             if (getAudioStatus(audioAsset) != STOPPED)
             {
                 stopSource(audioAsset->getSource());
@@ -460,31 +456,27 @@ namespace Dream
         return UNKNOWN;
     }
 
-    shared_ptr<AudioInstance>
+    AudioInstance*
     AudioComponent::newAudioInstance
-    (AssetDefinition& definition,Transform3D& transform)
+    (AssetDefinition* definition,Transform3D* transform)
     {
-        if (definition.isAudioFormatWav())
+        if (definition->getFormat().compare(ASSET_FORMAT_WAV) == 0)
         {
-            shared_ptr<WavAudioInstance> wav;
-            wav.make_shared(definition,transform);
-            return wav;
+            return new WavAudioInstance(definition,transform);
         }
-        else if (definition.isAudioFormatOgg())
+        else if (definition->getFormat().compare(ASSET_FORMAT_OGG) == 0)
         {
-            shared_ptr<OggAudioInstance> ogg;
-            ogg.make_shared(definition,transform);
-            return ogg;
+            return new OggAudioInstance(definition,transform);
         }
         cerr << "AudioComponent: Error, unrecognised audio format "
-             << definition.getFormat() << endl;
+             << definition->getFormat() << endl;
         return nullptr;
 
     }
 
     void
     AudioComponent::cleanUp
-    ()
+    (Scene* scene)
     {
         if (DEBUG)
         {

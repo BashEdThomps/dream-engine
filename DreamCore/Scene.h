@@ -45,7 +45,6 @@ using namespace std;
 namespace Dream
 {
     class AudioComponent;
-    class LuaEngine;
 
     class Scene
     {
@@ -54,28 +53,21 @@ namespace Dream
         string mUuid;
         string mName;
         string mNotes;
-        bool mActive;
-        SceneObject mRootSceneObject;
-        vector<SceneObject> mDeleteQueue;
-        Transform3D mDefaultCameraTransform;
+        SceneObject *mRootSceneObject;
+        vector<SceneObject*> mDeleteQueue;
+        Transform3D* mDefaultCameraTransform;
         float mCameraMovementSpeed;
         vector<float> mClearColour;
         vector<float> mAmbientLightColour;
+        map<SceneObject*,LuaScriptInstance*> mLuaScriptMap;
         string mProjectPath;
-        vector<AssetDefinition> mAssetDefinitions;
+        vector<AssetDefinition*>* mAssetDefinitions;
         vector<float> mGravity;
         bool mPhysicsDebug;
-        shared_ptr<AudioComponent> mAudioComponent;
-        shared_ptr<LuaEngine> mLuaEngine;
+        AudioComponent* mAudioComponent;
 
     public:
-        Scene();
-        Scene(
-            nlohmann::json, string,
-            vector<AssetDefinition>,
-            shared_ptr<AudioComponent>,
-            shared_ptr<LuaEngine>
-        );
+        Scene(nlohmann::json, string, vector<AssetDefinition*>*, AudioComponent* audioComponent);
         ~Scene();
 
         string getUuid();
@@ -86,17 +78,14 @@ namespace Dream
 
         string getNameAndUuidString();
 
-        int countChildrenOfSceneObject(SceneObject&);
+        int countChildrenOfSceneObject(SceneObject*);
 
-        bool isActive();
-        void setActive(bool);
+        void setRootSceneObject(SceneObject*);
+        SceneObject* getRootSceneObject();
+        int getNumberOfSceneObjects();
 
-        void setRootSceneObject(SceneObject&);
-        SceneObject getRootSceneObject();
-        size_t getNumberOfSceneObjects();
-
-        SceneObject getSceneObjectByName(string);
-        SceneObject getSceneObjectByUuid(string);
+        SceneObject* getSceneObjectByName(string);
+        SceneObject* getSceneObjectByUuid(string);
 
         void showStatus();
         void showScenegraph();
@@ -112,35 +101,37 @@ namespace Dream
         vector<float> getClearColour();
         vector<float> getAmbientLightColour();
 
-        void addToDeleteQueue(SceneObject);
-        vector<SceneObject> getDeleteQueue();
+        void addToDeleteQueue(SceneObject*);
+        vector<SceneObject*> getDeleteQueue();
         void clearDeleteQueue();
+        void destroyDeleteQueue();
         void findDeletedSceneObjects();
 
         bool createAllAssetInstances();
-
-        shared_ptr<IAssetInstance>        createAssetInstanceFromDefinitionUuid(SceneObject&, string);
-        shared_ptr<IAssetInstance>        createAssetInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<AnimationInstance>     createAnimationInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<AudioInstance>         createAudioInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<AssimpModelInstance>   createModelInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<LuaScriptInstance>     createScriptInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<ShaderInstance>        createShaderInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<PhysicsObjectInstance> createPhysicsObjectInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<LightInstance>         createLightInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<FontInstance>          createFontInstance(SceneObject&, AssetDefinition&);
-        shared_ptr<SpriteInstance>        createSpriteInstance(SceneObject&, AssetDefinition&);
+        IAssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
+        IAssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
+        AnimationInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
+        AudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
+        AssimpModelInstance* createModelInstance(SceneObject*, AssetDefinition*);
+        LuaScriptInstance* createScriptInstance(SceneObject*, AssetDefinition*);
+        ShaderInstance* createShaderInstance(SceneObject*, AssetDefinition*);
+        PhysicsObjectInstance* createPhysicsObjectInstance(SceneObject*, AssetDefinition*);
+        LightInstance* createLightInstance(SceneObject*, AssetDefinition*);
+        FontInstance* createFontInstance(SceneObject*, AssetDefinition*);
+        SpriteInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
 
         void setProjectPath(string);
 
-        bool createAssetInstancesForSceneObject(SceneObject&);
+        map<SceneObject*,LuaScriptInstance*> *getLuaScriptMap();
+        void insertIntoLuaScriptMap(SceneObject*,LuaScriptInstance*);
+        bool createAssetInstancesForSceneObject(SceneObject*);
         void findDeletedScripts();
-        void removeFromLuaScriptMap(SceneObject&);
+        void removeFromLuaScriptMap(SceneObject*);
 
         string getNotes();
         void setNotes(string notes);
 
-        AssetDefinition getAssetDefinitionByUuid(string);
+        AssetDefinition* getAssetDefinitionByUuid(string);
 
         vector<float> getGravity();
         bool getPhysicsDebug();
@@ -153,8 +144,9 @@ namespace Dream
         void loadAmbientLightColour(nlohmann::json);
         nlohmann::json toJson();
         void cleanUpAssetInstances();
-        void setDeleteFlagOnAllSceneObjects(bool bDelete);
-        void setLoadedFlagOnAllSceneObjects(bool load);
+
+        bool hasName(string);
+        bool hasUuid(string);
 
     }; // End of Scene
 

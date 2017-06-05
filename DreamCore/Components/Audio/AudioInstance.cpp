@@ -4,14 +4,13 @@
 namespace Dream
 {
     AudioInstance::AudioInstance
-    (AssetDefinition& definition, Transform3D& transform)
-        : IAssetInstance(definition, transform),
-          mLooping(false),
-          mSource(0),
-          mStatus(UNKNOWN),
-          mBuffer(0)
+    (AssetDefinition* definition, Transform3D* transform)
+        : IAssetInstance(definition, transform)
     {
-
+        setStatus(UNKNOWN);
+        setLooping(false);
+        setBuffer(0);
+        setSource(0);
     }
 
     void

@@ -55,23 +55,25 @@ namespace Dream
 
     void
     AnimationComponent::updateComponent
-    (Scene& scene)
+    (Scene *scene)
     {
-        scene.getRootSceneObject().applyToAll
+        scene->getRootSceneObject()->applyToAll
         (
-            std::function<void(SceneObject&)>
+            function< void* (SceneObject*) >
             (
-                [&](SceneObject& currentSceneObject)
+                [&](SceneObject* currentSceneObject)
                 {
-                    shared_ptr<AnimationInstance> animInstance = currentSceneObject.getAnimationInstance();
-                    if (animInstance != nullptr)
+                    if (currentSceneObject->hasAnimationInstance())
                     {
+                        AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
                         animInstance->step(mTime->getTimeDelta());
-                        animInstance->applyTransform(currentSceneObject.getCurrentTransform());
+                        animInstance->applyTransform(currentSceneObject->getTransform());
                     }
+                    return nullptr;
                 }
             )
         );
+
     }
 
 
@@ -178,7 +180,7 @@ namespace Dream
 
     void
     AnimationComponent::cleanUp
-    ()
+    (Scene* scene)
     {
 
     }

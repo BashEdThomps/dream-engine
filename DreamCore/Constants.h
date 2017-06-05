@@ -73,8 +73,8 @@ void dreamSetVerbose(bool verbose);
     #define ASSET_FORMAT "format"
     #define ASSET_FORMAT_SCRIPT_LUA "lua"
     #define ASSET_FORMAT_MODEL_ASSIMP "assimp"
-    #define ASSET_FORMAT_AUDIO_WAV "wav"
-    #define ASSET_FORMAT_AUDIO_OGG "ogg"
+    #define ASSET_FORMAT_AUDIO_MUSIC "music"
+    #define ASSET_FORMAT_AUDIO_SFX "sfx"
     #define ASSET_FORMAT_ANIMATION_DREAM "dream"
     #define ASSET_FORMAT_FONT_TTF "ttf"
     #define ASSET_FORMAT_SHADER_GLSL "glsl"
@@ -202,11 +202,6 @@ void dreamSetVerbose(bool verbose);
     #define ASSET_ATTR_LIGHT_COLOR_G "g"
     #define ASSET_ATTR_LIGHT_COLOR_B "b"
     #define ASSET_ATTR_LIGHT_COLOR_A "a"
-
-// Shader ======================================================================
-    #define SHADER_VERTEX   "vertex"
-    #define SHADER_FRAGMENT "fragment"
-
 
 namespace Dream
 {

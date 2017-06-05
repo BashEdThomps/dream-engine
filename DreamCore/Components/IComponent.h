@@ -29,11 +29,11 @@ namespace Dream
         IComponent();
         virtual ~IComponent();
         virtual bool init() = 0;
-        virtual void updateComponent(Scene&) = 0;
-        virtual void cleanUp() = 0;
-        void setTime(Time&);
+        virtual void updateComponent(Scene*) = 0;
+        virtual void cleanUp(Scene*) = 0;
+        void setTime(Time*);
     protected:
-        Time mTime;
+        Time* mTime;
     }; // End of IComponent
 } // End of Dream
 

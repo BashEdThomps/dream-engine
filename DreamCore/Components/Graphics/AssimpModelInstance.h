@@ -31,7 +31,6 @@
 #include "AssimpMesh.h"
 #include "Texture.h"
 #include <map>
-#include <memory>
 
 namespace Dream
 {
@@ -51,10 +50,10 @@ namespace Dream
         void loadModel(string);
         vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
     public:
-        AssimpModelInstance(AssetDefinition&,Transform3D&);
+        AssimpModelInstance(AssetDefinition*,Transform3D*);
         ~AssimpModelInstance();
         bool load(string);
-        void draw(shared_ptr<ShaderInstance>);
+        void draw(ShaderInstance*);
         bool checkGLError(int);
         void loadExtraAttributes(nlohmann::json);
     }; // End of AssimpModelInstance

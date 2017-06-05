@@ -21,14 +21,13 @@ namespace Dream
     FT_Library* FontInstance::sFreeTypeLib = nullptr;
 
     FontInstance::FontInstance
-    (AssetDefinition& definition, Transform3D& transform)
-        : IAssetInstance(definition,transform),
-          mColour({1,1,1}),
-          mFontFace(nullptr),
-          mText("NO TEXT SET")
-
+    (AssetDefinition* definition, Transform3D* transform)
+        : IAssetInstance(definition,transform)
     {
         ftInit();
+        mColour = {1,1,1};
+        mFontFace = nullptr;
+        setText("NO TEXT SET");
     }
 
     void
@@ -74,7 +73,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "FontInstance: Destroying Object " << getNameAndUuidString() << endl;
+            cout << "FontInstance: Destroying Object" << endl;
         }
 
         return;
@@ -84,7 +83,7 @@ namespace Dream
     FontInstance::load
     (string projectPath)
     {
-        string path = projectPath+mDefinition.getAssetPath();
+        string path = projectPath+mDefinition->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
         if (DEBUG)
         {
@@ -108,7 +107,7 @@ namespace Dream
         }
 
 
-        loadExtraAttributes(mDefinition.toJson());
+        loadExtraAttributes(mDefinition->toJson());
 
         mLoaded = true; //mFont != nullptr;
         return mLoaded;

@@ -25,44 +25,6 @@ namespace Dream
         loadMetadata(soJson);
     }
 
-    bool
-    SceneObject::operator==
-    (SceneObject other)
-    {
-        return mUuid.compare(other.mUuid) == 0;
-    }
-
-    SceneObject
-    SceneObject::operator=
-    (SceneObject obj)
-    {
-        // Metadata
-        mJson                = obj.mJson;
-        mUuid                = obj.mUuid;
-        mParent              = obj.mParent;
-        mChildren            = obj.mChildren;
-        mAssetDefUuidsToLoad = obj.mAssetDefUuidsToLoad;
-        mHasFocus            = obj.mHasFocus;
-        mName                = obj.mName;
-        mInitialTransform    = obj.mInitialTransform;
-        // Runtime Data
-        mEventQueue          = obj.mEventQueue;
-        mLoaded              = obj.mLoaded;
-        mDelete              = obj.mDelete;
-        mCurrentTransform    = obj.mCurrentTransform;
-        // Asset Instance Pointers
-        mAudioInstance       = obj.mAudioInstance;
-        mAnimationInstance   = obj.mAnimationInstance;
-        mFontInstance        = obj.mFontInstance;
-        mLightInstance       = obj.mLightInstance;
-        mModelInstance       = obj.mModelInstance;
-        mPhysicsObjectInstance = obj.mPhysicsObjectInstance;
-        mScriptInstance      = obj.mScriptInstance;
-        mShaderInstance      = obj.mShaderInstance;
-        mSpriteInstance      = obj.mSpriteInstance;
-        return *this;
-    }
-
     void
     SceneObject::constructorInit
     ()
@@ -71,6 +33,20 @@ namespace Dream
         mDelete = false;
         mHasFocus = false;
         mParent = nullptr;
+        mTransform = new Transform3D();
+        mChildren.clear();
+        mAssetDefUuidsToLoad.clear();
+        mUuid = "";
+        mName = "";
+        mAudioInstance = nullptr;
+        mAnimationInstance = nullptr;
+        mModelInstance  = nullptr;
+        mShaderInstance = nullptr;
+        mLightInstance = nullptr;
+        mSpriteInstance = nullptr;
+        mScriptInstance = nullptr;
+        mPhysicsObjectInstance = nullptr;
+        mFontInstance = nullptr;
     }
 
     void
@@ -90,54 +66,42 @@ namespace Dream
         if (!soJson[SCENE_OBJECT_TRANSFORM_TYPE].is_null())
         {
             string transformType = soJson[SCENE_OBJECT_TRANSFORM_TYPE];
-            mInitialTransform.setTransformType(transformType);
+            mTransform->setTransformType(transformType);
         }
         else
         {
-            string transformType = SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE;
-            mInitialTransform.setTransformType(transformType);
+            string transformType = SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
+            mTransform->setTransformType(transformType);
         }
 
         if (!soJson[SCENE_OBJECT_TRANSLATION].is_null())
         {
             nlohmann::json translation = soJson[SCENE_OBJECT_TRANSLATION];
-            mInitialTransform.setTranslation(
-                translation[SCENE_OBJECT_X],
-                translation[SCENE_OBJECT_Y],
-                translation[SCENE_OBJECT_Z]
-            );
+            setTranslation(translation[SCENE_OBJECT_X], translation[SCENE_OBJECT_Y], translation[SCENE_OBJECT_Z]);
         }
         else
         {
-            mInitialTransform.resetTranslation();
+            resetTranslation();
         }
 
         if (!soJson[SCENE_OBJECT_ROTATION].is_null())
         {
             nlohmann::json rotation = soJson[SCENE_OBJECT_ROTATION];
-            mInitialTransform.setRotation(
-                rotation[SCENE_OBJECT_X],
-                rotation[SCENE_OBJECT_Y],
-                rotation[SCENE_OBJECT_Z]
-            );
+            setRotation(rotation[SCENE_OBJECT_X], rotation[SCENE_OBJECT_Y], rotation[SCENE_OBJECT_Z]);
         }
         else
         {
-            mInitialTransform.resetOrientation();
+            resetRotation();
         }
 
         if (!soJson[SCENE_OBJECT_SCALE].is_null())
         {
             nlohmann::json scale = soJson[SCENE_OBJECT_SCALE];
-            mInitialTransform.setScale(
-                scale[SCENE_OBJECT_X],
-                scale[SCENE_OBJECT_Y],
-                scale[SCENE_OBJECT_Z]
-            );
+            setScale(scale[SCENE_OBJECT_X], scale[SCENE_OBJECT_Y], scale[SCENE_OBJECT_Z]);
         }
         else
         {
-            mInitialTransform.resetScale();
+            resetScale();
         }
 
         if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null())
@@ -162,21 +126,124 @@ namespace Dream
         }
     }
 
+    void
+    SceneObject::resetTransform
+    ()
+    {
+        resetTranslation();
+        resetRotation();
+        resetScale();
+    }
+
+    void
+    SceneObject::resetTranslation
+    ()
+    {
+        setTranslation(0.0f, 0.0f, 0.0f);
+    }
+
+    void
+    SceneObject::resetRotation
+    ()
+    {
+        setRotation(0.0f, 0.0f, 0.0f);
+    }
+
+    void
+    SceneObject::resetScale
+    ()
+    {
+        setScale(1.0f, 1.0f, 1.0f);
+    }
+
+
     SceneObject::~SceneObject
     ()
     {
         if (DEBUG)
         {
-            cout << "SceneObject: Destroying Object "
-                 << getNameAndUuidString() << endl;
+            cout << "SceneObject: Destroying Object" << endl;
         }
+
+        deleteChildren();
+        deleteAssetInstances();
     }
 
     void
-    SceneObject::clearChildren
+    SceneObject::deleteChildren
     ()
     {
+        for (SceneObject* child : mChildren)
+        {
+            delete child;
+        }
         mChildren.clear();
+    }
+
+
+    void
+    SceneObject::deleteAssetInstances
+    ()
+    {
+        if (mTransform != nullptr)
+        {
+            delete mTransform;
+            mTransform = nullptr;
+        }
+
+        if (mAudioInstance != nullptr)
+        {
+            delete mAudioInstance;
+            mAudioInstance = nullptr;
+        }
+
+        if (mAnimationInstance != nullptr)
+        {
+            delete mAnimationInstance;
+            mAnimationInstance = nullptr;
+        }
+
+        if (mModelInstance != nullptr)
+        {
+            delete mModelInstance;
+            mModelInstance = nullptr;
+        }
+
+        if (mShaderInstance != nullptr)
+        {
+            delete mShaderInstance;
+            mShaderInstance = nullptr;
+        }
+
+        if (mLightInstance != nullptr)
+        {
+            delete mLightInstance;
+            mLightInstance = nullptr;
+        }
+
+        if (mSpriteInstance != nullptr)
+        {
+            delete mSpriteInstance;
+            mSpriteInstance = nullptr;
+        }
+
+        if (mScriptInstance != nullptr)
+        {
+            delete mScriptInstance;
+            mScriptInstance = nullptr;
+        }
+
+        if (mPhysicsObjectInstance != nullptr)
+        {
+            delete mPhysicsObjectInstance;
+            mPhysicsObjectInstance = nullptr;
+        }
+
+        if (mFontInstance != nullptr)
+        {
+            delete mFontInstance;
+            mFontInstance = nullptr;
+        }
     }
 
     bool
@@ -200,6 +267,70 @@ namespace Dream
         return mName;
     }
 
+    void
+    SceneObject::setTranslation
+    (glm::vec3 translation)
+    {
+        mTransform->setTranslation(translation);
+    }
+
+    void
+    SceneObject::setRotation
+    (glm::vec3 rotation)
+    {
+        mTransform->setRotation(rotation);
+    }
+
+    void
+    SceneObject::setScale
+    (glm::vec3 scale)
+    {
+        mTransform->setScale(scale);
+    }
+
+    void
+    SceneObject::setTranslation
+    (float x, float y, float z)
+    {
+        mTransform->setTranslation(x,y,z);
+    }
+
+    void
+    SceneObject::setRotation
+    (float x, float y, float z)
+    {
+        mTransform->setRotation(x,y,z);
+    }
+
+    void
+    SceneObject::setScale
+    (float x, float y, float z)
+    {
+        mTransform->setScale(x,y,z);
+    }
+
+    glm::vec3
+    SceneObject::getRotation
+    ()
+    {
+        return mTransform->getRotation();
+    }
+
+    glm::vec3
+    SceneObject::getScale
+    ()
+    {
+        return mTransform->getScale();
+    }
+
+    glm::vec3
+    SceneObject::getTranslation
+    ()
+    {
+        return mTransform->getTranslation();
+    }
+
+
     bool
     SceneObject::hasUuid
     (string uuid)
@@ -222,6 +353,17 @@ namespace Dream
         return mUuid;
     }
 
+    int
+    SceneObject::countAllChildren
+    ()
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Count All Children, Not Implemented" << endl;
+        }
+        return -1;
+    }
+
     size_t
     SceneObject::countChildren
     ()
@@ -231,124 +373,58 @@ namespace Dream
 
     void
     SceneObject::addChild
-    (SceneObject& child)
+    (SceneObject* child)
     {
-        child.setParent(shared_ptr<SceneObject>(this));
+        child->setParent(this);
         mChildren.push_back(child);
     }
 
     void
     SceneObject::removeChild
-    (SceneObject child)
+    (SceneObject* child)
     {
         mChildren.erase(remove(mChildren.begin(), mChildren.end(), child), mChildren.end());
     }
 
     bool
     SceneObject::isChildOf
-    (SceneObject& parent)
+    (SceneObject* parent)
     {
-        // TODO, check this
-        return mParent.get() == &parent;
+        return mParent == parent;
     }
 
     bool
     SceneObject::isParentOf
-    (SceneObject& sceneObject)
+    (SceneObject* sceneObject)
     {
-        // TODO, check this
-        return sceneObject.getParent().get() == this;
+        return sceneObject->getParent() == this;
     }
 
     string
-    SceneObject::getNameAndUuidString
+    SceneObject::getNameUuidString
     ()
     {
         return getName()+" ("+getUuid()+")";
     }
 
     void
-    SceneObject::applyToAll
-    (function<void(SceneObject&)> funk)
-    {
-        if (DEBUG)
-        {
-            cout << "SceneObejct: applyToAll void(SceneObject) called on " << getNameAndUuidString()
-                 << endl;
-        }
-
-        funk(*this);
-
-        for (SceneObject so : mChildren)
-        {
-            so.applyToAll(funk);
-        }
-    }
-
-    bool
-    SceneObject::applyToAll
-    (function<bool(SceneObject&)> funk)
-    {
-        bool retval;
-        if (DEBUG)
-        {
-            cout << "SceneObejct: applyToAll SceneObject(SceneObject) called on " << getNameAndUuidString()
-                 << endl;
-        }
-
-        retval = funk(*this);
-        if (!retval)
-        {
-            return retval;
-        }
-
-        for (SceneObject so : mChildren)
-        {
-            retval = so.applyToAll(funk);
-            if (!retval)
-            {
-                return retval;
-            }
-        }
-
-        return retval;
-    }
-
-    SceneObject
-    SceneObject::applyToAll
-    (function<SceneObject(SceneObject&)> funk)
-    {
-        SceneObject retval;
-        if (DEBUG)
-        {
-            cout << "SceneObejct: applyToAll SceneObject(SceneObject) called on " << getNameAndUuidString()
-                 << endl;
-        }
-
-        retval = funk(*this);
-
-        for (SceneObject so : mChildren)
-        {
-            retval = so.applyToAll(funk);
-        }
-
-        return retval;
-    }
-
-    void
     SceneObject::showStatus
     ()
     {
-        cout << "SceneObject: " << getNameAndUuidString() << endl;
+        cout << "SceneObject:" << endl;
+        cout << "          Uuid: " << mUuid << endl;
+        cout << "          Name: " << mName << endl;
+
         if (mParent != nullptr)
         {
             cout << "    ParentUuid: " << mParent->getUuid() << endl;
         }
+
         cout << "      Children: " << mChildren.size() << endl;
-        cout << "Trnasform Type: " << mInitialTransform.getTransformType() << endl;
-        cout << "   Translation: " << String::vec3ToString(mInitialTransform.getTranslation()) << endl;
-        cout << "      Rotation: " << String::vec3ToString(mInitialTransform.getRotation())<< endl;
-        cout << "         Scale: " << String::vec3ToString(mInitialTransform.getScale())<< endl;
+        cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
+        cout << "   Translation: " << String::vec3ToString(getTranslation()) << endl;
+        cout << "      Rotation: " << String::vec3ToString(getRotation())<< endl;
+        cout << "         Scale: " << String::vec3ToString(getScale())<< endl;
     }
 
     vector<string>
@@ -360,12 +436,12 @@ namespace Dream
 
     void
     SceneObject::setAnimationInstance
-    (shared_ptr<AnimationInstance> animationAsset)
+    (AnimationInstance* animationAsset)
     {
         mAnimationInstance = animationAsset;
     }
 
-    shared_ptr<AnimationInstance>
+    AnimationInstance*
     SceneObject::getAnimationInstance
     ()
     {
@@ -374,302 +450,211 @@ namespace Dream
 
     void
     SceneObject::setAudioInstance
-    (shared_ptr<AudioInstance> audioAsset)
+    (AudioInstance* audioAsset)
     {
         mAudioInstance = audioAsset;
     }
 
-    shared_ptr<AudioInstance>
-    SceneObject::getAudioInstance
-    ()
+    AudioInstance* SceneObject::getAudioInstance()
     {
         return mAudioInstance;
     }
 
-    void
-    SceneObject::setModelInstance
-    (shared_ptr<AssimpModelInstance> modelAsset)
-    {
+    void SceneObject::setModelInstance(AssimpModelInstance* modelAsset) {
         mModelInstance = modelAsset;
     }
 
-    shared_ptr<AssimpModelInstance>
-    SceneObject::getModelInstance
-    ()
-    {
+    AssimpModelInstance* SceneObject::getModelInstance() {
         return mModelInstance;
     }
 
-    void
-    SceneObject::setScriptInstance
-    (shared_ptr<LuaScriptInstance> scriptAsset)
-    {
+    void SceneObject::setScriptInstance(LuaScriptInstance* scriptAsset) {
         mScriptInstance = scriptAsset;
     }
 
-    shared_ptr<LuaScriptInstance>
-    SceneObject::getScriptInstance
-    ()
-    {
+    LuaScriptInstance* SceneObject::getScriptInstance() {
         return mScriptInstance;
     }
 
-    void
-    SceneObject::setShaderInstance
-    (shared_ptr<ShaderInstance> shaderAsset)
-    {
+    void SceneObject::setShaderInstance(ShaderInstance* shaderAsset) {
         mShaderInstance = shaderAsset;
     }
 
-    shared_ptr<ShaderInstance>
-    SceneObject::getShaderInstance
-    ()
-    {
+    ShaderInstance* SceneObject::getShaderInstance() {
         return mShaderInstance;
     }
 
-    void
-    SceneObject::setLightInstance
-    (shared_ptr<LightInstance> lightAsset)
-    {
+    void SceneObject::setLightInstance(LightInstance* lightAsset) {
         mLightInstance = lightAsset;
     }
 
-    shared_ptr<LightInstance>
-    SceneObject::getLightInstance
-    ()
-    {
+    LightInstance* SceneObject::getLightInstance() {
         return mLightInstance;
     }
 
-    bool
-    SceneObject::hasLightInstance
-    ()
-    {
+    bool SceneObject::hasLightInstance() {
         return mLightInstance != nullptr;
     }
 
-    bool
-    SceneObject::hasModelInstance
-    ()
-    {
+    bool SceneObject::hasModelInstance() {
         return mModelInstance != nullptr;
     }
 
-    bool
-    SceneObject::hasShaderInstance
-    ()
-    {
+    bool SceneObject::hasShaderInstance() {
         return mShaderInstance != nullptr;
     }
 
-    bool
-    SceneObject::hasScriptInstance
-    ()
-    {
+    bool SceneObject::hasScriptInstance() {
         return mScriptInstance != nullptr;
     }
 
-    bool
-    SceneObject::hasSpriteInstance
-    ()
-    {
+    bool SceneObject::hasSpriteInstance() {
         return mSpriteInstance != nullptr;
     }
 
-    bool
-    SceneObject::hasFontInstance
-    ()
-    {
+    bool SceneObject::hasFontInstance() {
         return mFontInstance != nullptr;
     }
 
-    void
-    SceneObject::setFontInstance
-    (shared_ptr<FontInstance> font)
-    {
+    void SceneObject::setFontInstance(FontInstance* font) {
         mFontInstance = font;
     }
 
-    shared_ptr<FontInstance>
-    SceneObject::getFontInstance
-    ()
-    {
+    FontInstance* SceneObject::getFontInstance() {
         return mFontInstance;
     }
 
-    void
-    SceneObject::setPhysicsObjectInstance
-    (shared_ptr<PhysicsObjectInstance> physicsObject)
-    {
+    void SceneObject::setPhysicsObjectInstance(PhysicsObjectInstance* physicsObject) {
         mPhysicsObjectInstance = physicsObject;
     }
 
-    shared_ptr<PhysicsObjectInstance>
-    SceneObject::getPhysicsObjectInstance
-    ()
-    {
+    PhysicsObjectInstance* SceneObject::getPhysicsObjectInstance() {
         return mPhysicsObjectInstance;
     }
 
-    Transform3D
-    SceneObject::getInitialTransform
-    ()
+    string SceneObject::getTransformType()
     {
-        return mInitialTransform;
+        return mTransform->getTransformType();
     }
 
-    Transform3D
-    SceneObject::getCurrentTransform
-    ()
-    {
-        return mCurrentTransform;
+    void SceneObject::setTransformType(string transformType) {
+        mTransform->setTransformType(transformType);
     }
 
-    void
-    SceneObject::setInitialTransform
-    (Transform3D transform)
-    {
-        mInitialTransform = transform;
+    Transform3D* SceneObject::getTransform() {
+        return mTransform;
     }
 
-    void
-    SceneObject::setCurrentTransform
-    (Transform3D transform)
+    void SceneObject::setTransform(Transform3D* transform)
     {
-        mCurrentTransform = transform;
+        mTransform = transform;
     }
 
-    void
-    SceneObject::setParent
-    (shared_ptr<SceneObject> parent)
-    {
+    void SceneObject::setParent(SceneObject* parent) {
         mParent = parent;
     }
 
-    shared_ptr<SceneObject>
-    SceneObject::getParent
-    ()
-    {
+    SceneObject* SceneObject::getParent() {
         return mParent;
     }
 
-    void
-    SceneObject::setSpriteInstance
-    (shared_ptr<SpriteInstance> spriteAsset)
+    void SceneObject::setSpriteInstance(SpriteInstance* spriteAsset)
     {
         mSpriteInstance = spriteAsset;
     }
 
-    shared_ptr<SpriteInstance>
-    SceneObject::getSpriteInstance
-    ()
+    SpriteInstance* SceneObject::getSpriteInstance()
     {
         return mSpriteInstance;
     }
 
-    void
-    SceneObject::setHasFocus
-    (bool focus)
+    void SceneObject::setHasFocus(bool focus)
     {
         mHasFocus = focus;
     }
 
-    bool
-    SceneObject::hasFocus
-    ()
+    bool SceneObject::hasFocus()
     {
         return mHasFocus;
     }
 
-    void
-    SceneObject::addAssetDefUuidToLoad
-    (string uuid)
+    void SceneObject::addAssetDefUuidToLoad(string uuid)
     {
         mAssetDefUuidsToLoad.push_back(uuid);
     }
 
-    void
-    SceneObject::setDeleteFlag(bool del)
+    void SceneObject::copyTransform(Transform3D* transform)
+    {
+        if (mTransform != nullptr)
+        {
+            delete mTransform;
+        }
+
+        mTransform = new Transform3D(transform);
+    }
+
+    void SceneObject::setDeleteFlag(bool del)
     {
         mDelete = del;
     }
 
-    bool
-    SceneObject::getDeleteFlag
-    ()
+    bool SceneObject::getDeleteFlag()
     {
         return mDelete;
     }
 
-    bool
-    SceneObject::getLoadedFlag
-    ()
+    bool SceneObject::getLoadedFlag()
     {
         return mLoaded;
     }
 
-    void
-    SceneObject::setLoadedFlag
-    (bool loaded)
+    void SceneObject::setLoadedFlag(bool loaded)
     {
         mLoaded = loaded;
     }
 
-    SceneObject
-    SceneObject::getChildByUuid
-    (string childUuid)
+    SceneObject* SceneObject::getChildByUuid(string childUuid)
     {
-        SceneObject retval;
-        for (SceneObject it : mChildren)
+        for (SceneObject* it : mChildren)
         {
-            if (it.getUuid().compare(childUuid) == 0)
+            if (it->hasUuid(childUuid))
             {
-                retval = it;
-                break;
+                return it;
             }
         }
-        return retval;
+        return nullptr;
     }
 
-    bool
-    SceneObject::hasEvents
-    ()
+    bool SceneObject::hasEvents()
     {
         return mEventQueue.size() != 0;
     }
 
-    void
-    SceneObject::sendEvent
-    (Event& event)
+    void SceneObject::sendEvent(Event* event)
     {
         mEventQueue.push_back(event);
     }
 
-    vector<Event>
-    SceneObject::getEventQueue
-    ()
+    vector<Event*>* SceneObject::getEventQueue()
     {
-        return mEventQueue;
+        return &mEventQueue;
     }
 
-    void
-    SceneObject::cleanupEvents
-    ()
+    void SceneObject::cleanupEvents()
     {
+        for (Event* it : mEventQueue)
+        {
+            delete it;
+        }
         mEventQueue.clear();
     }
 
-    bool
-    SceneObject::hasPhysicsObjectInstance
-    ()
+    bool SceneObject::hasPhysicsObjectInstance()
     {
         return mPhysicsObjectInstance != nullptr;
     }
 
-    vector<SceneObject>
-    SceneObject::getChildren
-    ()
+    vector<SceneObject*> SceneObject::getChildren()
     {
         return mChildren;
     }
@@ -680,4 +665,59 @@ namespace Dream
     {
         return mJson;
     }
+
+    bool
+    SceneObject::applyToAll
+    (function<bool(SceneObject*)> funk)
+    {
+        bool retval = funk(this);
+
+        for (SceneObject* it : mChildren)
+        {
+            if (it)
+            {
+                retval = retval || funk(it);
+            }
+        }
+        return retval;
+    }
+
+    void*
+    SceneObject::applyToAll
+    (function<void*(SceneObject*)> funk)
+    {
+        void* retval = funk(this);
+        if (retval)
+        {
+            return retval;
+        }
+
+        for (SceneObject* it : mChildren)
+        {
+            if (it)
+            {
+                retval = funk(it);
+                if (retval)
+                {
+                    return retval;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    bool
+    SceneObject::hasAnimationInstance
+    ()
+    {
+        return mAnimationInstance != nullptr;
+    }
+
+    bool
+    SceneObject::hasAudioInstance
+    ()
+    {
+        return mAudioInstance != nullptr;
+    }
+
 } // End of Dream

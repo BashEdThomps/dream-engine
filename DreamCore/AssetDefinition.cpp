@@ -20,356 +20,325 @@
 
 namespace Dream
 {
-    AssetDefinition::AssetDefinition
-    ()
-    {
+  AssetDefinition::AssetDefinition(nlohmann::json jsonDef)
+  {
+    mJson = jsonDef;
+    loadMetadata();
+    showStatus();
+  }
 
-    }
-
-    AssetDefinition::AssetDefinition(nlohmann::json jsonDef)
-    {
-        mJson = jsonDef;
-        loadMetadata();
-        showStatus();
-    }
-
-
-    bool
-    AssetDefinition::operator==
-    (AssetDefinition& other)
-    {
-        return getUuid().compare(other.getUuid()) == 0;
-    }
-
-    AssetDefinition&
-    AssetDefinition::operator=
-    (AssetDefinition otherDef)
-    {
-        mJson = otherDef.mJson;
-        mProjectPath = otherDef.mProjectPath;
-        mAttributes = otherDef.mAttributes;
-        return *this;
-    }
-
-    AssetDefinition::~AssetDefinition()
-    {
+  AssetDefinition::~AssetDefinition(void)
+  {
         if (DEBUG)
         {
             cout << "AssetDefinition: Destroying Object" << endl;
         }
-    }
+  }
 
-    nlohmann::json
-    AssetDefinition::getJson
-    ()
+  void AssetDefinition::setProjectPath(string path)
+  {
+    mProjectPath = path;
+  }
+
+  string AssetDefinition::getProjectPath()
+  {
+    return mProjectPath;
+  }
+
+  void AssetDefinition::loadMetadata()
+  {
+    // UUID
+    if (mJson[ASSET_UUID].is_null())
     {
-        return mJson;
-    }
 
-    void AssetDefinition::setProjectPath(string path)
+      if (DEBUG)
+      {
+        cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
+      }
+    }
+    else
     {
-        mProjectPath = path;
+      setUuid(mJson[ASSET_UUID]);
     }
-
-    string AssetDefinition::getProjectPath()
+    // Name
+    if (mJson[ASSET_NAME].is_null())
     {
-        return mProjectPath;
+      if (DEBUG)
+      {
+        cerr << "AssetDefinition: Construction Asset from JSON with null Name." << endl;
+      }
     }
-
-    void AssetDefinition::loadMetadata()
+    else
     {
-        // UUID
-        if (mJson[ASSET_UUID].is_null())
-        {
-
-            if (DEBUG)
-            {
-                cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
-            }
-        }
-        else
-        {
-            setUuid(mJson[ASSET_UUID]);
-        }
-        // Name
-        if (mJson[ASSET_NAME].is_null())
-        {
-            if (DEBUG)
-            {
-                cerr << "AssetDefinition: Construction Asset from JSON with null Name." << endl;
-            }
-        }
-        else
-        {
-            setName(mJson[ASSET_NAME]);
-        }
-        // Type
-        if (mJson[ASSET_TYPE].is_null())
-        {
-            if (DEBUG)
-            {
-                cerr << "AssetDefinition: Construction Asset from JSON with null Type" << endl;
-            }
-        }
-        else
-        {
-            setType(mJson[ASSET_TYPE]);
-        }
-        // Format
-        if (mJson[ASSET_FORMAT].is_null())
-        {
-            if (DEBUG)
-            {
-                cerr << "AssetDefinition: Construction Asset from JSON with null Format" << endl;
-            }
-        }
-        else
-        {
-            setFormat(mJson[ASSET_FORMAT]);
-        }
+      setName(mJson[ASSET_NAME]);
     }
-
-    pair<string,string> AssetDefinition::mapPair(string key, string value)
+    // Type
+    if (mJson[ASSET_TYPE].is_null())
     {
-        return pair<string,string>(key,value);
+      if (DEBUG)
+      {
+        cerr << "AssetDefinition: Construction Asset from JSON with null Type" << endl;
+      }
     }
-
-    void AssetDefinition::setUuid(string uuid)
+    else
     {
-        addAttribute(ASSET_UUID, uuid);
+      setType(mJson[ASSET_TYPE]);
     }
-
-    void AssetDefinition::addAttribute(string key, string value)
+    // Format
+    if (mJson[ASSET_FORMAT].is_null())
     {
-        mAttributes.insert(mapPair(key,value));
+      if (DEBUG)
+      {
+        cerr << "AssetDefinition: Construction Asset from JSON with null Format" << endl;
+      }
     }
-
-    string AssetDefinition::getAttribute(string attribute)
+    else
     {
-        try
-        {
-            return mAttributes.at(attribute);
-        }
-        catch (const exception &ex)
-        {
-            if (DEBUG)
-            {
-                cerr << "AssetDefinition: No Attribute - " << attribute << endl;
-            }
-            return "";
-        }
+      setFormat(mJson[ASSET_FORMAT]);
     }
+  }
 
-    int AssetDefinition::getAttributeAsInt(string attr)
-    {
-        return stoi(getAttribute(attr));
-    }
+  pair<string,string> AssetDefinition::mapPair(string key, string value)
+  {
+    return pair<string,string>(key,value);
+  }
 
-    float AssetDefinition::getAttributeAsFloat(string attr)
-    {
-        return stof(getAttribute(attr));
-    }
+  void AssetDefinition::setUuid(string uuid)
+  {
+    addAttribute(ASSET_UUID, uuid);
+  }
 
-    double AssetDefinition::getAttributeAsDouble(string attr)
-    {
-        return stod(getAttribute(attr));
-    }
+  bool AssetDefinition::hasUuid(string uuid)
+  {
+      return getUuid().compare(uuid) == 0;
+  }
 
-    bool AssetDefinition::getAttributeAsBool(string attr)
-    {
-        return strcasecmp("true",getAttribute(attr).c_str()) == 0;
-    }
+  void AssetDefinition::addAttribute(string key, string value)
+  {
+    mAttributes.insert(mapPair(key,value));
+  }
 
-    long AssetDefinition::getAttributeAsLong(string attr)
+  string AssetDefinition::getAttribute(string attribute)
+  {
+    try
     {
-        return stol(getAttribute(attr));
+      return mAttributes.at(attribute);
     }
+    catch (const exception &ex)
+    {
+      if (DEBUG)
+      {
+        cerr << "AssetDefinition: No Attribute - " << attribute << endl;
+      }
+      return "";
+    }
+  }
 
-    char AssetDefinition::getAttributeAsChar(string attr)
-    {
-        return getAttribute(attr).c_str()[0];
-    }
+  int AssetDefinition::getAttributeAsInt(string attr)
+  {
+    return stoi(getAttribute(attr));
+  }
 
-    string AssetDefinition::getUuid()
-    {
-        return getAttribute(ASSET_UUID);
-    }
+  float AssetDefinition::getAttributeAsFloat(string attr)
+  {
+    return stof(getAttribute(attr));
+  }
 
-    void AssetDefinition::setName(string name)
-    {
-        addAttribute(ASSET_NAME,name);
-    }
+  double AssetDefinition::getAttributeAsDouble(string attr)
+  {
+    return stod(getAttribute(attr));
+  }
 
-    string AssetDefinition::getName()
-    {
-        return getAttribute(ASSET_NAME);
-    }
+  bool AssetDefinition::getAttributeAsBool(string attr)
+  {
+    return strcasecmp("true",getAttribute(attr).c_str()) == 0;
+  }
 
-    void AssetDefinition::setType(string type)
-    {
-        addAttribute(ASSET_TYPE,type);
-    }
+  long AssetDefinition::getAttributeAsLong(string attr)
+  {
+    return stol(getAttribute(attr));
+  }
 
-    string AssetDefinition::getType()
-    {
-        return getAttribute(ASSET_TYPE);
-    }
+  char AssetDefinition::getAttributeAsChar(string attr)
+  {
+    return getAttribute(attr).c_str()[0];
+  }
 
-    void AssetDefinition::setFormat(string format)
-    {
-        addAttribute(ASSET_FORMAT,format);
-    }
+  string AssetDefinition::getUuid()
+  {
+    return getAttribute(ASSET_UUID);
+  }
 
-    string AssetDefinition::getFormat()
-    {
-        return getAttribute(ASSET_FORMAT);
-    }
+  void AssetDefinition::setName(string name)
+  {
+    addAttribute(ASSET_NAME,name);
+  }
 
-    bool AssetDefinition::isTypeLight()
-    {
-        return getType().compare(ASSET_TYPE_LIGHT) == 0;
-    }
+  string AssetDefinition::getName()
+  {
+    return getAttribute(ASSET_NAME);
+  }
 
-    bool AssetDefinition::isTypeFont()
-    {
-        return getType().compare(ASSET_TYPE_FONT) == 0;
-    }
+  void AssetDefinition::setType(string type)
+  {
+    addAttribute(ASSET_TYPE,type);
+  }
 
-    bool AssetDefinition::isTypePhysicsObject()
-    {
-        return getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0;
-    }
+  string AssetDefinition::getType()
+  {
+    return getAttribute(ASSET_TYPE);
+  }
 
-    bool AssetDefinition::isTypeAnimation()
-    {
-        return getType().compare(ASSET_TYPE_ANIMATION) == 0;
-    }
+  void AssetDefinition::setFormat(string format)
+  {
+    addAttribute(ASSET_FORMAT,format);
+  }
 
-    bool AssetDefinition::isTypeAudio()
-    {
-        return getType().compare(ASSET_TYPE_AUDIO) == 0;
-    }
+  string AssetDefinition::getFormat()
+  {
+    return getAttribute(ASSET_FORMAT);
+  }
 
-    bool AssetDefinition::isTypeModel()
-    {
-        return getType().compare(ASSET_TYPE_MODEL) == 0;
-    }
+  bool AssetDefinition::isTypeLight()
+  {
+    return getType().compare(ASSET_TYPE_LIGHT) == 0;
+  }
 
-    bool AssetDefinition::isTypeScript()
-    {
-        return getType().compare(ASSET_TYPE_SCRIPT) == 0;
-    }
+  bool AssetDefinition::isTypeFont()
+  {
+    return getType().compare(ASSET_TYPE_FONT) == 0;
+  }
 
-    bool AssetDefinition::isTypeShader()
-    {
-        return getType().compare(ASSET_TYPE_SHADER) == 0;
-    }
+  bool AssetDefinition::isTypePhysicsObject()
+  {
+    return getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0;
+  }
 
-    bool AssetDefinition::isTypeSprite()
-    {
-        return getType().compare(ASSET_TYPE_SPRITE) == 0;
-    }
+  bool AssetDefinition::isTypeAnimation()
+  {
+    return getType().compare(ASSET_TYPE_ANIMATION) == 0;
+  }
 
-    bool AssetDefinition::isScriptFormatLua()
-    {
-        return getFormat().compare(ASSET_FORMAT_SCRIPT_LUA) == 0;
-    }
+  bool AssetDefinition::isTypeAudio()
+  {
+    return getType().compare(ASSET_TYPE_AUDIO) == 0;
+  }
 
-    bool AssetDefinition::isModelFormatAssimp()
-    {
-        return getFormat().compare(ASSET_FORMAT_MODEL_ASSIMP) == 0;
-    }
+  bool AssetDefinition::isTypeModel()
+  {
+    return getType().compare(ASSET_TYPE_MODEL) == 0;
+  }
 
-    bool AssetDefinition::isAudioFormatWav()
-    {
-        return getFormat().compare(ASSET_FORMAT_AUDIO_WAV) == 0;
-    }
+  bool AssetDefinition::isTypeScript()
+  {
+    return getType().compare(ASSET_TYPE_SCRIPT) == 0;
+  }
 
-    bool AssetDefinition::isAudioFormatOgg()
-    {
-        return getFormat().compare(ASSET_FORMAT_AUDIO_OGG) == 0;
-    }
+  bool AssetDefinition::isTypeShader()
+  {
+    return getType().compare(ASSET_TYPE_SHADER) == 0;
+  }
 
-    string AssetDefinition::getAssetTypeDirectory()
-    {
-        string type = getType();
-        if (isTypeAnimation())
-        {
-            return ASSET_TYPE_ANIMATION;
-        }
-        else if (isTypeAudio())
-        {
-            return ASSET_TYPE_AUDIO;
-        }
-        else if (isTypeModel())
-        {
-            return ASSET_TYPE_MODEL;
-        }
-        else if (isTypeScript())
-        {
-            return ASSET_TYPE_SCRIPT;
-        }
-        else if (isTypeShader())
-        {
-            return ASSET_TYPE_SHADER;
-        }
-        else if (isTypeSprite())
-        {
-            return ASSET_TYPE_SPRITE;
-        }
-        else if (isTypeFont())
-        {
-            return ASSET_TYPE_FONT;
-        }
-        else if (isTypePhysicsObject())
-        {
-            return ASSET_TYPE_PHYSICS_OBJECT;
-        }
-        else
-        {
-            return "Type Not Found";
-        }
-    }
+  bool AssetDefinition::isTypeSprite()
+  {
+    return getType().compare(ASSET_TYPE_SPRITE) == 0;
+  }
 
-    string AssetDefinition::getNameAndUuidString()
-    {
-        return getName() + " (" + getUuid() + ")";
-    }
+  bool AssetDefinition::isScriptFormatLua()
+  {
+    return getFormat().compare(ASSET_FORMAT_SCRIPT_LUA) == 0;
+  }
 
-    string AssetDefinition::getAssetPath()
-    {
-        stringstream pathStream;
-        pathStream << DIR_PATH_SEP
-                   << ASSET_DIR << DIR_PATH_SEP
-                   << getAssetTypeDirectory() << DIR_PATH_SEP
-                   << getUuid() << DIR_PATH_SEP
-                   << getFormat();
-        return pathStream.str();
-    }
+  bool AssetDefinition::isModelFormatAssimp()
+  {
+    return getFormat().compare(ASSET_FORMAT_MODEL_ASSIMP) == 0;
+  }
 
-    void AssetDefinition::showStatus()
-    {
-        if (DEBUG)
-        {
-            cout << "AssetDefinition:" << endl;
-        }
-        for (const auto& any : mAttributes)
-        {
-            string value = any.second;
-            if (DEBUG)
-            {
-                cout << "\t" << any.first << " : " << value << endl;
-            }
-        }
-    }
+  bool AssetDefinition::isAudioFormatMusic()
+  {
+    return getFormat().compare(ASSET_FORMAT_AUDIO_MUSIC) == 0;
+  }
 
-    nlohmann::json AssetDefinition::toJson()
-    {
-        return mJson;
-    }
+  bool AssetDefinition::isAudioFormatSoundEffect()
+  {
+    return getFormat().compare(ASSET_FORMAT_AUDIO_SFX) == 0;
+  }
 
-    bool AssetDefinition::hasUuid(string uuid)
+  string AssetDefinition::getAssetTypeDirectory()
+  {
+    string type = getType();
+    if (isTypeAnimation())
     {
-        return (getUuid().compare(uuid) == 0);
+      return ASSET_TYPE_ANIMATION;
     }
+    else if (isTypeAudio())
+    {
+      return ASSET_TYPE_AUDIO;
+    }
+    else if (isTypeModel())
+    {
+      return ASSET_TYPE_MODEL;
+    }
+    else if (isTypeScript())
+    {
+      return ASSET_TYPE_SCRIPT;
+    }
+    else if (isTypeShader())
+    {
+      return ASSET_TYPE_SHADER;
+    }
+    else if (isTypeSprite())
+    {
+      return ASSET_TYPE_SPRITE;
+    }
+    else if (isTypeFont())
+    {
+      return ASSET_TYPE_FONT;
+    }
+    else if (isTypePhysicsObject())
+    {
+       return ASSET_TYPE_PHYSICS_OBJECT;
+    }
+    else
+    {
+      return "Type Not Found";
+    }
+  }
+
+  string AssetDefinition::getNameAndUuidString()
+  {
+    return getName() + " (" + getUuid() + ")";
+  }
+
+  string AssetDefinition::getAssetPath()
+  {
+    stringstream pathStream;
+    pathStream << DIR_PATH_SEP
+               << ASSET_DIR << DIR_PATH_SEP
+               << getAssetTypeDirectory() << DIR_PATH_SEP
+               << getUuid() << DIR_PATH_SEP
+               << getFormat();
+    return pathStream.str();
+  }
+
+  void AssetDefinition::showStatus()
+  {
+    if (DEBUG)
+    {
+      cout << "AssetDefinition:" << endl;
+    }
+    for (const auto& any : mAttributes)
+    {
+      string value = any.second;
+      if (DEBUG)
+      {
+        cout << "\t" << any.first << " : " << value << endl;
+      }
+    }
+  }
+
+  nlohmann::json AssetDefinition::toJson()
+  {
+    return mJson;
+  }
 } // End of Dream
