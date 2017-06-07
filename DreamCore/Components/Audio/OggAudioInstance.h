@@ -34,9 +34,6 @@ namespace Dream
         ~OggAudioInstance();
         bool load(std::string) override;
         void loadExtraAttributes(nlohmann::json) override;
-        bool play() override;
-        bool pause() override;
-        bool stop() override;
     }; // End of OggAudio
 
 } // End of Dream

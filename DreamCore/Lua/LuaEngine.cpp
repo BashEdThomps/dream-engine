@@ -442,7 +442,7 @@ namespace Dream
             {
                 luabind::call_function<void>(funq,sceneObject,event);
             }
-            sceneObject->cleanupEvents();
+            sceneObject->cleanUpEvents();
         }
         catch (luabind::error &e)
         {
@@ -880,9 +880,6 @@ namespace Dream
         luabind::module(mState)
         [
             luabind::class_<AudioInstance>("AudioInstance")
-                .def("play",&AudioInstance::play)
-                .def("pause",&AudioInstance::pause)
-                .def("stop",&AudioInstance::stop)
                 .def("getStatus",&AudioInstance::getStatus),
 
             luabind::class_<AudioStatus>("AudioStatus")

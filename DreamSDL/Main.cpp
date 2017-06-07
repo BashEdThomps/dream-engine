@@ -83,7 +83,7 @@ int main(int argc, const char** argv)
 
     dreamSetVerbose(true);
 
-    project->getActiveScene()->cleanUp();
+    project->cleanUpActiveScene();
 
     // Return the result
     return 0;

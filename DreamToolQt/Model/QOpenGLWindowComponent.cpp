@@ -47,7 +47,10 @@ QOpenGLWindowComponent::paintGL
     {
         if (mProject->hasActiveScene())
         {
-            mProject->updateAll();
+            if (mProject->getActiveScene()->getState() != DONE)
+            {
+                mProject->updateAll();
+            }
             return;
         }
     }

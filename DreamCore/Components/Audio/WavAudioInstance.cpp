@@ -122,25 +122,4 @@ namespace Dream
         return;
     }
 
-    bool
-    WavAudioInstance::play
-    ()
-    {
-        return false;
-    }
-
-    bool
-    WavAudioInstance::pause
-    ()
-    {
-        return false;
-    }
-
-    bool
-    WavAudioInstance::stop
-    ()
-    {
-        return false;
-    }
-
 } // End of Dream

@@ -162,7 +162,7 @@ namespace Dream
         bool hasEvents();
         void sendEvent(Event*);
         vector<Event*>* getEventQueue();
-        void cleanupEvents();
+
         nlohmann::json toJson();
 
         void* applyToAll(function<void*(SceneObject*)>);
@@ -181,6 +181,9 @@ namespace Dream
         void createFontInstance(AssetDefinition*);
         void createSpriteInstance(AssetDefinition*);
 
+
+        void cleanUp();
+        void cleanUpEvents();
 
     }; // End of SceneObject
 

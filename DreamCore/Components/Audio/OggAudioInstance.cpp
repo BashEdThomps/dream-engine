@@ -109,25 +109,4 @@ namespace Dream
 
     }
 
-    bool
-    OggAudioInstance:: play
-    ()
-    {
-        return false;
-    }
-
-    bool
-    OggAudioInstance::pause
-    ()
-    {
-        return false;
-    }
-
-    bool
-    OggAudioInstance::stop
-    ()
-    {
-        return false;
-    }
-
 } // End of Dream

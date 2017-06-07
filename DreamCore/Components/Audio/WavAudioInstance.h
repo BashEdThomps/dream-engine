@@ -41,9 +41,6 @@ namespace Dream
 
         bool load(std::string) override;
         void loadExtraAttributes(nlohmann::json) override;
-        bool play() override;
-        bool pause() override;
-        bool stop() override;
 
     }; // End WavAudioInstance
 } // End of Dream

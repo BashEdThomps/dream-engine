@@ -214,7 +214,7 @@ namespace Dream
     Scene::getNameAndUuidString
     ()
     {
-        return "<<"+getName() + " | " + getUuid() + ">>";
+        return getName() + " : " + getUuid();
     }
 
     string
@@ -442,6 +442,7 @@ namespace Dream
                 {
                     parent->removeChild(obj);
                 }
+                obj->cleanUp();
                 delete obj;
             }
         }
@@ -510,23 +511,12 @@ namespace Dream
     Scene::loadAllAssetInstances
     ()
     {
-        if (VERBOSE)
-        {
-            cout << "Secne: loadAllAssetInstances from "
-                 << mProject->getProjectPath() << endl;
-        }
-
         mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
             (
                 [&](SceneObject* sceneObj)
                 {
-                    if (DEBUG)
-                    {
-                        cout << "Scene: loadAsesetInstances for "
-                            << sceneObj->getNameAndUuidString() << endl;
-                    }
                     // Not loaded && not marked to delete
                     if (!sceneObj->getLoadedFlag())
                     {
@@ -534,23 +524,6 @@ namespace Dream
                         {
                             sceneObj->loadAssetInstances();
                         }
-                        else
-                        {
-                            if (DEBUG)
-                            {
-                                cout << "Scene: " << sceneObj->getName()
-                                     << " has delete flag set " << endl;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (DEBUG)
-                        {
-                            cout << "Scene: " << sceneObj->getName()
-                                 << " has loaded flag set" << endl;
-                        }
-
                     }
                     return nullptr;
                 }

@@ -37,9 +37,6 @@ namespace Dream
         std::vector<ALchar> getAudioDataBuffer();
         ALsizei getFrequency();
         ALenum  getFormat();
-        virtual bool play() = 0;
-        virtual bool pause() = 0;
-        virtual bool stop() = 0;
         AudioStatus getStatus();
         void setStatus(AudioStatus);
         void   setBuffer(ALuint buffer);

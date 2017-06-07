@@ -81,8 +81,8 @@ namespace Dream
 
         bool initComponents();
         void cleanupComponents(Scene*);
-    private:
 
+    private:
 
         bool initAnimationComponent();
         void setAnimationComponent(AnimationComponent*);

@@ -174,9 +174,6 @@ namespace Dream
             cout << "SceneObject: Destroying Object "
                  << getNameAndUuidString() << endl;
         }
-
-        //deleteChildren();
-        deleteAssetInstances();
     }
 
     void
@@ -201,6 +198,12 @@ namespace Dream
     SceneObject::deleteAssetInstances
     ()
     {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Deleting asset instances for "
+                 << getNameAndUuidString() << endl;
+        }
+
         if (mAudioInstance != nullptr)
         {
             mAudioInstance.reset();
@@ -405,7 +408,7 @@ namespace Dream
     SceneObject::getNameAndUuidString
     ()
     {
-        return "{ "+getUuid()+" : "+getName()+" }";
+        return getUuid()+" : "+getName();
     }
 
     void
@@ -727,9 +730,22 @@ namespace Dream
     }
 
     void
-    SceneObject::cleanupEvents
+    SceneObject::cleanUp
     ()
     {
+        cleanUpEvents();
+        deleteAssetInstances();
+    }
+
+    void
+    SceneObject::cleanUpEvents
+    ()
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Cleaning up events " << getNameAndUuidString()
+                 << endl;
+        }
         for (Event* it : mEventQueue)
         {
             delete it;

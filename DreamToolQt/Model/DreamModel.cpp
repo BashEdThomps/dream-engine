@@ -180,13 +180,14 @@ DreamModel::stopActiveScene
     Scene* activeScene = mProject->getActiveScene();
     if (activeScene)
     {
+        activeScene->setState(DONE);
         if (mHeartbeatTimer)
         {
             delete mHeartbeatTimer;
             mHeartbeatTimer = nullptr;
         }
-        activeScene->setState(DONE);
-        activeScene->cleanUp();
+        mProject->cleanUpActiveScene();
+        mProject->setActiveScene(nullptr);
 
     }
     return activeScene;
