@@ -47,6 +47,7 @@ public:
 
     bool startScene();
     Scene* stopActiveScene();
+    void setupHeartbeatTimer();
 
     AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
     Scene *getSceneByUuid(std::string uuid);

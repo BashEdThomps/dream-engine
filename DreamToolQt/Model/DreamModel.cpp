@@ -27,6 +27,19 @@ DreamModel::DreamModel
     mProject->initRuntime();
     mSelectedScene = nullptr;
     mHeartbeatTimer = nullptr;
+    setupHeartbeatTimer();
+}
+
+void
+DreamModel::setupHeartbeatTimer
+()
+{
+    if (!mHeartbeatTimer)
+    {
+        mHeartbeatTimer = new QTimer(this);
+        connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
+        mHeartbeatTimer->start(16);
+    }
 }
 
 DreamModel::~DreamModel
@@ -147,12 +160,7 @@ DreamModel::startScene
         return false;
     }
 
-    if (!mHeartbeatTimer)
-    {
-        mHeartbeatTimer = new QTimer(this);
-        connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(16);
-    }
+
 
     mWindowComponent->setProject(mProject);
     return true;
@@ -181,11 +189,6 @@ DreamModel::stopActiveScene
     if (activeScene)
     {
         activeScene->setState(DONE);
-        if (mHeartbeatTimer)
-        {
-            delete mHeartbeatTimer;
-            mHeartbeatTimer = nullptr;
-        }
         mProject->cleanUpActiveScene();
         mProject->setActiveScene(nullptr);
 
