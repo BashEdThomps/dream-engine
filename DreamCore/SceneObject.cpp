@@ -62,65 +62,65 @@ namespace Dream
     SceneObject::loadJsonData
     (nlohmann::json soJson)
     {
-        if(!soJson[SCENE_OBJECT_UUID].is_null())
+        if(!soJson[Constants::SCENE_OBJECT_UUID].is_null())
         {
-            mUuid = soJson[SCENE_OBJECT_UUID];
+            mUuid = soJson[Constants::SCENE_OBJECT_UUID];
         }
 
-        if (!soJson[SCENE_OBJECT_NAME].is_null())
+        if (!soJson[Constants::SCENE_OBJECT_NAME].is_null())
         {
-            mName = soJson[SCENE_OBJECT_NAME];
+            mName = soJson[Constants::SCENE_OBJECT_NAME];
         }
 
-        if (!soJson[SCENE_OBJECT_TRANSFORM_TYPE].is_null())
+        if (!soJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE].is_null())
         {
-            string transformType = soJson[SCENE_OBJECT_TRANSFORM_TYPE];
+            string transformType = soJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE];
             mTransform.setTransformType(transformType);
         }
         else
         {
-            string transformType = SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
+            string transformType = Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
             mTransform.setTransformType(transformType);
         }
 
-        if (!soJson[SCENE_OBJECT_TRANSLATION].is_null())
+        if (!soJson[Constants::SCENE_OBJECT_TRANSLATION].is_null())
         {
-            nlohmann::json translation = soJson[SCENE_OBJECT_TRANSLATION];
-            setTranslation(translation[SCENE_OBJECT_X], translation[SCENE_OBJECT_Y], translation[SCENE_OBJECT_Z]);
+            nlohmann::json translation = soJson[Constants::SCENE_OBJECT_TRANSLATION];
+            setTranslation(translation[Constants::SCENE_OBJECT_X], translation[Constants::SCENE_OBJECT_Y], translation[Constants::SCENE_OBJECT_Z]);
         }
         else
         {
             resetTranslation();
         }
 
-        if (!soJson[SCENE_OBJECT_ROTATION].is_null())
+        if (!soJson[Constants::SCENE_OBJECT_ROTATION].is_null())
         {
-            nlohmann::json rotation = soJson[SCENE_OBJECT_ROTATION];
-            setRotation(rotation[SCENE_OBJECT_X], rotation[SCENE_OBJECT_Y], rotation[SCENE_OBJECT_Z]);
+            nlohmann::json rotation = soJson[Constants::SCENE_OBJECT_ROTATION];
+            setRotation(rotation[Constants::SCENE_OBJECT_X], rotation[Constants::SCENE_OBJECT_Y], rotation[Constants::SCENE_OBJECT_Z]);
         }
         else
         {
             resetRotation();
         }
 
-        if (!soJson[SCENE_OBJECT_SCALE].is_null())
+        if (!soJson[Constants::SCENE_OBJECT_SCALE].is_null())
         {
-            nlohmann::json scale = soJson[SCENE_OBJECT_SCALE];
-            setScale(scale[SCENE_OBJECT_X], scale[SCENE_OBJECT_Y], scale[SCENE_OBJECT_Z]);
+            nlohmann::json scale = soJson[Constants::SCENE_OBJECT_SCALE];
+            setScale(scale[Constants::SCENE_OBJECT_X], scale[Constants::SCENE_OBJECT_Y], scale[Constants::SCENE_OBJECT_Z]);
         }
         else
         {
             resetScale();
         }
 
-        if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null())
+        if(!soJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null())
         {
-            loadAssetDefinitionsToLoadJsonData(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
+            loadAssetDefinitionsToLoadJsonData(soJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]);
         }
 
-        if(!soJson[SCENE_OBJECT_HAS_FOCUS].is_null())
+        if(!soJson[Constants::SCENE_OBJECT_HAS_FOCUS].is_null())
         {
-            bool focus = soJson[SCENE_OBJECT_HAS_FOCUS];
+            bool focus = soJson[Constants::SCENE_OBJECT_HAS_FOCUS];
             setHasFocus(focus);
         }
     }
@@ -169,7 +169,7 @@ namespace Dream
     SceneObject::~SceneObject
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Destroying Object "
                  << getNameAndUuidString() << endl;
@@ -180,7 +180,7 @@ namespace Dream
     SceneObject::deleteChildren
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Deleting " << mChildren.size()
                  << "children of "
@@ -198,7 +198,7 @@ namespace Dream
     SceneObject::deleteAssetInstances
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Deleting asset instances for "
                  << getNameAndUuidString() << endl;
@@ -361,7 +361,7 @@ namespace Dream
     SceneObject::countAllChildren
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Count All Children, Not Implemented" << endl;
         }
@@ -741,7 +741,7 @@ namespace Dream
     SceneObject::cleanUpEvents
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Cleaning up events " << getNameAndUuidString()
                  << endl;
@@ -854,7 +854,7 @@ namespace Dream
     SceneObject::createAssetInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Asset Intance of: ("
                  << definition->getType() << ") " << definition->getName()
@@ -906,7 +906,7 @@ namespace Dream
     {
         string projectPath = mScene->getProject()->getProjectPath();
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Loading Asset Data from "
                  << projectPath << endl;
@@ -964,7 +964,7 @@ namespace Dream
     SceneObject::createPhysicsObjectInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Physics Object Asset Instance." << endl;
         }
@@ -978,7 +978,7 @@ namespace Dream
     SceneObject::createAnimationInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Animation asset instance." << endl;
         }
@@ -989,7 +989,7 @@ namespace Dream
     SceneObject::createAudioInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Audio asset instance." << endl;
         }
@@ -1006,7 +1006,7 @@ namespace Dream
     SceneObject::createModelInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Model asset instance." << endl;
         }
@@ -1020,7 +1020,7 @@ namespace Dream
     SceneObject::createScriptInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Script asset instance." << endl;
         }
@@ -1036,7 +1036,7 @@ namespace Dream
     SceneObject::createShaderInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Shader asset instance." << endl;
         }
@@ -1047,7 +1047,7 @@ namespace Dream
     SceneObject::createLightInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Light Asset instance." << endl;
         }
@@ -1058,7 +1058,7 @@ namespace Dream
     SceneObject::createSpriteInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Sprite Asset instance." << endl;
         }
@@ -1069,7 +1069,7 @@ namespace Dream
     SceneObject::createFontInstance
     (AssetDefinition* definition)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SceneObject: Creating Font Asset instance." << endl;
         }

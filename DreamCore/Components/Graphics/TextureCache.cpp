@@ -45,7 +45,7 @@ namespace Dream
     TextureCache::loadTextureFromFile
     (const char* file_c, const char* directory_c, const char* type)
     {
-      if (DEBUG)
+      if (Constants::DEBUG)
       {
         cout << "TextureCache: Loading from dir: " << directory_c << endl;
         cout << "TextureCache: -> File: " << file_c << endl;
@@ -59,7 +59,7 @@ namespace Dream
         {
             if (nextTexture.path == filename)
             {
-              if (DEBUG)
+              if (Constants::DEBUG)
               {
                 cout << "TextureCache: Found cached texture." << endl;
               }

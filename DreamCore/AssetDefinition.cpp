@@ -29,7 +29,7 @@ namespace Dream
 
     AssetDefinition::~AssetDefinition(void)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AssetDefinition: Destroying Object" << endl;
         }
@@ -48,53 +48,53 @@ namespace Dream
     void AssetDefinition::loadMetadata()
     {
         // UUID
-        if (mJson[ASSET_UUID].is_null())
+        if (mJson[Constants::ASSET_UUID].is_null())
         {
 
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
             }
         }
         else
         {
-            setUuid(mJson[ASSET_UUID]);
+            setUuid(mJson[Constants::ASSET_UUID]);
         }
         // Name
-        if (mJson[ASSET_NAME].is_null())
+        if (mJson[Constants::ASSET_NAME].is_null())
         {
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cerr << "AssetDefinition: Construction Asset from JSON with null Name." << endl;
             }
         }
         else
         {
-            setName(mJson[ASSET_NAME]);
+            setName(mJson[Constants::ASSET_NAME]);
         }
         // Type
-        if (mJson[ASSET_TYPE].is_null())
+        if (mJson[Constants::ASSET_TYPE].is_null())
         {
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cerr << "AssetDefinition: Construction Asset from JSON with null Type" << endl;
             }
         }
         else
         {
-            setType(mJson[ASSET_TYPE]);
+            setType(mJson[Constants::ASSET_TYPE]);
         }
         // Format
-        if (mJson[ASSET_FORMAT].is_null())
+        if (mJson[Constants::ASSET_FORMAT].is_null())
         {
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cerr << "AssetDefinition: Construction Asset from JSON with null Format" << endl;
             }
         }
         else
         {
-            setFormat(mJson[ASSET_FORMAT]);
+            setFormat(mJson[Constants::ASSET_FORMAT]);
         }
     }
 
@@ -105,7 +105,7 @@ namespace Dream
 
     void AssetDefinition::setUuid(string uuid)
     {
-        addAttribute(ASSET_UUID, uuid);
+        addAttribute(Constants::ASSET_UUID, uuid);
     }
 
     bool AssetDefinition::hasUuid(string uuid)
@@ -126,7 +126,7 @@ namespace Dream
         }
         catch (const exception &ex)
         {
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cerr << "AssetDefinition: No Attribute - " << attribute << endl;
             }
@@ -166,102 +166,102 @@ namespace Dream
 
     string AssetDefinition::getUuid()
     {
-        return getAttribute(ASSET_UUID);
+        return getAttribute(Constants::ASSET_UUID);
     }
 
     void AssetDefinition::setName(string name)
     {
-        addAttribute(ASSET_NAME,name);
+        addAttribute(Constants::ASSET_NAME,name);
     }
 
     string AssetDefinition::getName()
     {
-        return getAttribute(ASSET_NAME);
+        return getAttribute(Constants::ASSET_NAME);
     }
 
     void AssetDefinition::setType(string type)
     {
-        addAttribute(ASSET_TYPE,type);
+        addAttribute(Constants::ASSET_TYPE,type);
     }
 
     string AssetDefinition::getType()
     {
-        return getAttribute(ASSET_TYPE);
+        return getAttribute(Constants::ASSET_TYPE);
     }
 
     void AssetDefinition::setFormat(string format)
     {
-        addAttribute(ASSET_FORMAT,format);
+        addAttribute(Constants::ASSET_FORMAT,format);
     }
 
     string AssetDefinition::getFormat()
     {
-        return getAttribute(ASSET_FORMAT);
+        return getAttribute(Constants::ASSET_FORMAT);
     }
 
     bool AssetDefinition::isTypeLight()
     {
-        return getType().compare(ASSET_TYPE_LIGHT) == 0;
+        return getType().compare(Constants::ASSET_TYPE_LIGHT) == 0;
     }
 
     bool AssetDefinition::isTypeFont()
     {
-        return getType().compare(ASSET_TYPE_FONT) == 0;
+        return getType().compare(Constants::ASSET_TYPE_FONT) == 0;
     }
 
     bool AssetDefinition::isTypePhysicsObject()
     {
-        return getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0;
+        return getType().compare(Constants::ASSET_TYPE_PHYSICS_OBJECT) == 0;
     }
 
     bool AssetDefinition::isTypeAnimation()
     {
-        return getType().compare(ASSET_TYPE_ANIMATION) == 0;
+        return getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0;
     }
 
     bool AssetDefinition::isTypeAudio()
     {
-        return getType().compare(ASSET_TYPE_AUDIO) == 0;
+        return getType().compare(Constants::ASSET_TYPE_AUDIO) == 0;
     }
 
     bool AssetDefinition::isTypeModel()
     {
-        return getType().compare(ASSET_TYPE_MODEL) == 0;
+        return getType().compare(Constants::ASSET_TYPE_MODEL) == 0;
     }
 
     bool AssetDefinition::isTypeScript()
     {
-        return getType().compare(ASSET_TYPE_SCRIPT) == 0;
+        return getType().compare(Constants::ASSET_TYPE_SCRIPT) == 0;
     }
 
     bool AssetDefinition::isTypeShader()
     {
-        return getType().compare(ASSET_TYPE_SHADER) == 0;
+        return getType().compare(Constants::ASSET_TYPE_SHADER) == 0;
     }
 
     bool AssetDefinition::isTypeSprite()
     {
-        return getType().compare(ASSET_TYPE_SPRITE) == 0;
+        return getType().compare(Constants::ASSET_TYPE_SPRITE) == 0;
     }
 
     bool AssetDefinition::isScriptFormatLua()
     {
-        return getFormat().compare(ASSET_FORMAT_SCRIPT_LUA) == 0;
+        return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_LUA) == 0;
     }
 
     bool AssetDefinition::isModelFormatAssimp()
     {
-        return getFormat().compare(ASSET_FORMAT_MODEL_ASSIMP) == 0;
+        return getFormat().compare(Constants::ASSET_FORMAT_MODEL_ASSIMP) == 0;
     }
 
     bool AssetDefinition::isAudioFormatMusic()
     {
-        return getFormat().compare(ASSET_FORMAT_AUDIO_MUSIC) == 0;
+        return getFormat().compare(Constants::ASSET_FORMAT_AUDIO_MUSIC) == 0;
     }
 
     bool AssetDefinition::isAudioFormatSoundEffect()
     {
-        return getFormat().compare(ASSET_FORMAT_AUDIO_SFX) == 0;
+        return getFormat().compare(Constants::ASSET_FORMAT_AUDIO_SFX) == 0;
     }
 
     string AssetDefinition::getAssetTypeDirectory()
@@ -269,35 +269,35 @@ namespace Dream
         string type = getType();
         if (isTypeAnimation())
         {
-            return ASSET_TYPE_ANIMATION;
+            return Constants::ASSET_TYPE_ANIMATION;
         }
         else if (isTypeAudio())
         {
-            return ASSET_TYPE_AUDIO;
+            return Constants::ASSET_TYPE_AUDIO;
         }
         else if (isTypeModel())
         {
-            return ASSET_TYPE_MODEL;
+            return Constants::ASSET_TYPE_MODEL;
         }
         else if (isTypeScript())
         {
-            return ASSET_TYPE_SCRIPT;
+            return Constants::ASSET_TYPE_SCRIPT;
         }
         else if (isTypeShader())
         {
-            return ASSET_TYPE_SHADER;
+            return Constants::ASSET_TYPE_SHADER;
         }
         else if (isTypeSprite())
         {
-            return ASSET_TYPE_SPRITE;
+            return Constants::ASSET_TYPE_SPRITE;
         }
         else if (isTypeFont())
         {
-            return ASSET_TYPE_FONT;
+            return Constants::ASSET_TYPE_FONT;
         }
         else if (isTypePhysicsObject())
         {
-            return ASSET_TYPE_PHYSICS_OBJECT;
+            return Constants::ASSET_TYPE_PHYSICS_OBJECT;
         }
         else
         {
@@ -313,24 +313,24 @@ namespace Dream
     string AssetDefinition::getAssetPath()
     {
         stringstream pathStream;
-        pathStream << DIR_PATH_SEP
-                   << ASSET_DIR << DIR_PATH_SEP
-                   << getAssetTypeDirectory() << DIR_PATH_SEP
-                   << getUuid() << DIR_PATH_SEP
+        pathStream << Constants::DIR_PATH_SEP
+                   << Constants::ASSET_DIR << Constants::DIR_PATH_SEP
+                   << getAssetTypeDirectory() << Constants::DIR_PATH_SEP
+                   << getUuid() << Constants::DIR_PATH_SEP
                    << getFormat();
         return pathStream.str();
     }
 
     void AssetDefinition::showStatus()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AssetDefinition:" << endl;
         }
         for (const auto& any : mAttributes)
         {
             string value = any.second;
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "\t" << any.first << " : " << value << endl;
             }

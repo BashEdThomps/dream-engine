@@ -8,13 +8,13 @@ namespace Dream
     KeyFrame::KeyFrame
     ()
     {
-        mInterpolationType = DREAM_ANIMATION_INTERPOLATION_NONE;
+        mInterpolationType = Constants::DREAM_ANIMATION_INTERPOLATION_NONE;
     }
 
     KeyFrame::~KeyFrame
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "KeyFrame: Destroying Object" << endl;
         }
@@ -45,7 +45,7 @@ namespace Dream
     KeyFrame::generatePlaybackFrames
     (KeyFrame* toKeyFrame)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "KeyFrame: Generating " << mInterpolationType << " playback frames from "
                  << mName << " to " << toKeyFrame->getName() <<  endl;
@@ -73,21 +73,21 @@ namespace Dream
     KeyFrame::isInterpolationTypeNone
     ()
     {
-        return mInterpolationType.compare(DREAM_ANIMATION_INTERPOLATION_NONE) == 0;
+        return mInterpolationType.compare(Constants::DREAM_ANIMATION_INTERPOLATION_NONE) == 0;
     }
 
     bool
     KeyFrame::isInterpolationTypeLinear
     ()
     {
-        return mInterpolationType.compare(DREAM_ANIMATION_INTERPOLATION_LINEAR) == 0;
+        return mInterpolationType.compare(Constants::DREAM_ANIMATION_INTERPOLATION_LINEAR) == 0;
     }
 
     bool
     KeyFrame::isInterpolationTypeBezier
     ()
     {
-        return mInterpolationType.compare(DREAM_ANIMATION_INTERPOLATION_BEZIER) == 0;
+        return mInterpolationType.compare(Constants::DREAM_ANIMATION_INTERPOLATION_BEZIER) == 0;
     }
 
     void
@@ -289,7 +289,7 @@ namespace Dream
     KeyFrame::showStatus
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "KeyFrame:" <<  endl
                  << "\t         UUID: " << mUUID <<  endl

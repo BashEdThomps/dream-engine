@@ -28,7 +28,7 @@ namespace Dream
 
     Project::~Project()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Project: Destroying Object" << endl;
         }
@@ -40,60 +40,60 @@ namespace Dream
     Project::loadMetadataFromJson
     (nlohmann::json jsonProject)
     {
-        if (jsonProject [PROJECT_UUID].is_null())
+        if (jsonProject [Constants::PROJECT_UUID].is_null())
         {
             cerr << "Project: UUID is nullptr." << endl;
         }
         else
         {
-            setUuid(jsonProject[PROJECT_UUID]);
+            setUuid(jsonProject[Constants::PROJECT_UUID]);
         }
 
-        if (jsonProject[PROJECT_NAME].is_null())
+        if (jsonProject[Constants::PROJECT_NAME].is_null())
         {
             cerr << "Project: Name is nullptr." << endl;
         }
         else
         {
-            setName(jsonProject[PROJECT_NAME]);
+            setName(jsonProject[Constants::PROJECT_NAME]);
         }
 
-        if (jsonProject[PROJECT_AUTHOR].is_null())
+        if (jsonProject[Constants::PROJECT_AUTHOR].is_null())
         {
             cerr << "Project: Author is nullptr." << endl;
         }
         else
         {
-            setAuthor(jsonProject[PROJECT_AUTHOR]);
+            setAuthor(jsonProject[Constants::PROJECT_AUTHOR]);
         }
 
-        if (jsonProject[PROJECT_DESCRIPTION].is_null())
+        if (jsonProject[Constants::PROJECT_DESCRIPTION].is_null())
         {
             cerr << "Project: Descriptiont is nullptr." << endl;
         }
         else
         {
-            setDescription(jsonProject[PROJECT_DESCRIPTION]);
+            setDescription(jsonProject[Constants::PROJECT_DESCRIPTION]);
         }
 
-        if (jsonProject[PROJECT_STARTUP_SCENE].is_null())
+        if (jsonProject[Constants::PROJECT_STARTUP_SCENE].is_null())
         {
             cerr << "Project: Startup Scene is nullptr." << endl;
         }
         else
         {
-            setStartupSceneUuid(jsonProject[PROJECT_STARTUP_SCENE]);
+            setStartupSceneUuid(jsonProject[Constants::PROJECT_STARTUP_SCENE]);
         }
 
-        if (!jsonProject[PROJECT_WINDOW_SIZE].is_null())
+        if (!jsonProject[Constants::PROJECT_WINDOW_SIZE].is_null())
         {
-            nlohmann::json windowSizeJson = jsonProject[PROJECT_WINDOW_SIZE];
-            setWindowWidth(windowSizeJson[PROJECT_WIDTH]);
-            setWindowHeight(windowSizeJson[PROJECT_HEIGHT]);
+            nlohmann::json windowSizeJson = jsonProject[Constants::PROJECT_WINDOW_SIZE];
+            setWindowWidth(windowSizeJson[Constants::PROJECT_WIDTH]);
+            setWindowHeight(windowSizeJson[Constants::PROJECT_HEIGHT]);
         }
 
-        loadAssetDefinitionsFromJson(jsonProject[PROJECT_ASSET_ARRAY]);
-        loadScenesFromJson(jsonProject[PROJECT_SCENE_ARRAY]);
+        loadAssetDefinitionsFromJson(jsonProject[Constants::PROJECT_ASSET_ARRAY]);
+        loadScenesFromJson(jsonProject[Constants::PROJECT_SCENE_ARRAY]);
     }
 
     void
@@ -137,13 +137,13 @@ namespace Dream
     Project::loadScenesFromJson
     (nlohmann::json jsonSceneArray)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Project: Loading Scenes from JSON Array" << endl;
         }
         for (nlohmann::json it : jsonSceneArray)
         {
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "Project: Creating Scene using project " << mProjectPath << endl;
             }
@@ -339,7 +339,7 @@ namespace Dream
     Project::removeAssetDefinition
     (AssetDefinition* assetDef)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Project: Removing AssetDefinition "
                  << assetDef->getNameAndUuidString() << endl;
@@ -364,7 +364,7 @@ namespace Dream
     Project::loadAssetDefinitionsFromJson
     (nlohmann::json jsonAssetArray)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Project: Loading Assets from JSON Array" << endl;
         }
@@ -426,7 +426,7 @@ namespace Dream
         }
 
         // Load the new scene
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Project: Loading Scene " << mActiveScene->getName() << endl;
         }
@@ -456,7 +456,7 @@ namespace Dream
     Project::loadFromFileReader
     (string projectPath, FileReader* reader)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Project: Loading project from FileReader " << reader->getPath() << endl;
         }
@@ -471,7 +471,7 @@ namespace Dream
 
         json projectJson = json::parse(projectJsonStr);
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Project: using project path " << projectPath << endl;
         }
@@ -507,18 +507,18 @@ namespace Dream
 
         for (string filename : directoryContents)
         {
-            size_t dotJsonIndex = filename.find(PROJECT_EXTENSION);
+            size_t dotJsonIndex = filename.find(Constants::PROJECT_EXTENSION);
             if (dotJsonIndex != string::npos)
             {
                 uuid = filename.substr(0,dotJsonIndex);
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "Project: loadFromDirectory - Found uuid " << uuid << endl;
                 }
             }
-            else if (filename.compare(ASSET_DIR) == 0)
+            else if (filename.compare(Constants::ASSET_DIR) == 0)
             {
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "Project: loadFromDirectory - Found asset directory " << endl;
                 }
@@ -526,18 +526,18 @@ namespace Dream
             }
         }
 
-        if (uuid.size() != PROJECT_UUID_LENGTH  || !hasAssetDirectory)
+        if (uuid.size() != Constants::PROJECT_UUID_LENGTH  || !hasAssetDirectory)
         {
             cerr << "Project: Error " << directory << " is not a valid project directory!" << endl;
             return false;
         }
 
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
-            cout << "Project: Loading " << uuid << PROJECT_EXTENSION << " from Directory" << directory << endl;
+            cout << "Project: Loading " << uuid << Constants::PROJECT_EXTENSION << " from Directory" << directory << endl;
         }
 
-        string projectFilePath = directory + PROJECT_PATH_SEP + uuid + PROJECT_EXTENSION;
+        string projectFilePath = directory + Constants::PROJECT_PATH_SEP + uuid + Constants::PROJECT_EXTENSION;
 
         FileReader *projectFileReader = new FileReader(projectFilePath);
         projectFileReader->readIntoStringStream();
@@ -550,7 +550,7 @@ namespace Dream
     Project::loadFromArgumentParser
     (ArgumentParser *parser)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "Project: Loading from ArgumentParser" << endl;
         }
@@ -573,7 +573,7 @@ namespace Dream
     Project::updateLogic
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "==== Project: UpdateLogic Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }
@@ -596,7 +596,7 @@ namespace Dream
     Project::updateGraphics
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "==== Project: UpdateGraphics Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }
@@ -626,7 +626,7 @@ namespace Dream
     Project::updateFlush
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "==== Project: updateFlush Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }

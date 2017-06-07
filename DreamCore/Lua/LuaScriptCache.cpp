@@ -44,7 +44,7 @@ namespace Dream
       {
          if (it.first == path)
          {
-             if (DEBUG)
+             if (Constants::DEBUG)
              {
                  cout << "LuaScriptCache: Found script in cache " << path << endl;
              }
@@ -64,7 +64,7 @@ namespace Dream
             cerr << "LuaScriptCache: Error reading Lua script into cache" << path << endl;
            return "";
         }
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LuaScriptCache: Inserting script " << path << endl;
         }

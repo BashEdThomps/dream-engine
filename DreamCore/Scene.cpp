@@ -40,7 +40,7 @@ namespace Dream
     Scene::~Scene
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Scene: Destroying Object" << endl;
         }
@@ -49,25 +49,25 @@ namespace Dream
     void Scene::loadAllJsonData(nlohmann::json jsonScene)
     {
 
-        if (!jsonScene[SCENE_JSON_UUID].is_null())
+        if (!jsonScene[Constants::Constants::SCENE_JSON_UUID].is_null())
         {
-            mUuid = jsonScene[SCENE_JSON_UUID];
+            mUuid = jsonScene[Constants::Constants::SCENE_JSON_UUID];
         }
 
-        if (!jsonScene[SCENE_JSON_NAME].is_null())
+        if (!jsonScene[Constants::Constants::SCENE_JSON_NAME].is_null())
         {
-            mName = jsonScene[SCENE_JSON_NAME];
+            mName = jsonScene[Constants::Constants::SCENE_JSON_NAME];
         }
 
-        if (!jsonScene[SCENE_JSON_NOTES].is_null())
+        if (!jsonScene[Constants::Constants::SCENE_JSON_NOTES].is_null())
         {
-            mNotes = jsonScene[SCENE_JSON_NOTES];
+            mNotes = jsonScene[Constants::Constants::SCENE_JSON_NOTES];
         }
 
         loadPhysicsJsonData(jsonScene);
         loadGraphicsJsonData(jsonScene);
 
-        nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
+        nlohmann::json sceneObjects = jsonScene[Constants::Constants::SCENE_JSON_SCENE_OBJECTS];
 
         if (!sceneObjects.is_null() && sceneObjects.is_array())
         {
@@ -79,9 +79,9 @@ namespace Dream
     Scene::loadGraphicsJsonData
     (nlohmann::json jsonScene)
     {
-        loadCameraJsonData(jsonScene[SCENE_JSON_CAMERA]);
-        loadClearColourJsonData(jsonScene[SCENE_JSON_CLEAR_COLOUR]);
-        loadAmbientLightColourJsonData(jsonScene[SCENE_JSON_AMBIENT_LIGHT_COLOUR]);
+        loadCameraJsonData(jsonScene[Constants::Constants::SCENE_JSON_CAMERA]);
+        loadClearColourJsonData(jsonScene[Constants::Constants::SCENE_JSON_CLEAR_COLOUR]);
+        loadAmbientLightColourJsonData(jsonScene[Constants::Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR]);
 
     }
 
@@ -89,14 +89,14 @@ namespace Dream
     Scene::loadPhysicsJsonData
     (nlohmann::json jsonScene)
     {
-        nlohmann::json gravity = jsonScene[SCENE_JSON_GRAVITY];
-        nlohmann::json physDebug = jsonScene[SCENE_JSON_PHYSICS_DEBUG];
+        nlohmann::json gravity = jsonScene[Constants::Constants::SCENE_JSON_GRAVITY];
+        nlohmann::json physDebug = jsonScene[Constants::Constants::SCENE_JSON_PHYSICS_DEBUG];
 
         if (!gravity.is_null())
         {
-            mGravity[0] = gravity[SCENE_JSON_X];
-            mGravity[1] = gravity[SCENE_JSON_Y];
-            mGravity[2] = gravity[SCENE_JSON_Z];
+            mGravity[0] = gravity[Constants::Constants::SCENE_JSON_X];
+            mGravity[1] = gravity[Constants::Constants::SCENE_JSON_Y];
+            mGravity[2] = gravity[Constants::Constants::SCENE_JSON_Z];
         }
         else
         {
@@ -121,23 +121,23 @@ namespace Dream
     {
         if (!camera.is_null())
         {
-            nlohmann::json translation = camera[SCENE_JSON_TRANSLATION];
+            nlohmann::json translation = camera[Constants::Constants::SCENE_JSON_TRANSLATION];
             mDefaultCameraTransform.setTranslation(
-                        translation[SCENE_JSON_X],
-                        translation[SCENE_JSON_Y],
-                        translation[SCENE_JSON_Z]
+                        translation[Constants::Constants::SCENE_JSON_X],
+                        translation[Constants::Constants::SCENE_JSON_Y],
+                        translation[Constants::Constants::SCENE_JSON_Z]
                         );
 
-            nlohmann::json rotation = camera[SCENE_JSON_ROTATION];
+            nlohmann::json rotation = camera[Constants::Constants::SCENE_JSON_ROTATION];
             mDefaultCameraTransform.setRotation(
-                        rotation[SCENE_JSON_X],
-                        rotation[SCENE_JSON_Y],
-                        rotation[SCENE_JSON_Z]
+                        rotation[Constants::Constants::SCENE_JSON_X],
+                        rotation[Constants::Constants::SCENE_JSON_Y],
+                        rotation[Constants::Constants::SCENE_JSON_Z]
                         );
 
-            if (!camera[SCENE_JSON_MOVEMENT_SPEED].is_null())
+            if (!camera[Constants::Constants::SCENE_JSON_MOVEMENT_SPEED].is_null())
             {
-                setCameraMovementSpeed(camera[SCENE_JSON_MOVEMENT_SPEED]);
+                setCameraMovementSpeed(camera[Constants::Constants::SCENE_JSON_MOVEMENT_SPEED]);
             }
 
         }
@@ -165,11 +165,11 @@ namespace Dream
                 {
                     setRootSceneObject(nextSceneObject);
                 }
-                if (!it[SCENE_OBJECT_CHILDREN].is_null())
+                if (!it[Constants::SCENE_OBJECT_CHILDREN].is_null())
                 {
-                    loadSceneObjectJsonData(it[SCENE_OBJECT_CHILDREN],nextSceneObject);
+                    loadSceneObjectJsonData(it[Constants::SCENE_OBJECT_CHILDREN],nextSceneObject);
                 }
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     nextSceneObject->showStatus();
                 }
@@ -183,10 +183,10 @@ namespace Dream
     {
         if (!jsonClearColour.is_null())
         {
-            mClearColour[0] = jsonClearColour[SCENE_JSON_RED];
-            mClearColour[1] = jsonClearColour[SCENE_JSON_GREEN];
-            mClearColour[2] = jsonClearColour[SCENE_JSON_BLUE];
-            mClearColour[3] = jsonClearColour[SCENE_JSON_ALPHA];
+            mClearColour[0] = jsonClearColour[Constants::Constants::SCENE_JSON_RED];
+            mClearColour[1] = jsonClearColour[Constants::Constants::SCENE_JSON_GREEN];
+            mClearColour[2] = jsonClearColour[Constants::Constants::SCENE_JSON_BLUE];
+            mClearColour[3] = jsonClearColour[Constants::Constants::SCENE_JSON_ALPHA];
         }
     }
 
@@ -196,10 +196,10 @@ namespace Dream
     {
         if (!jsonAmbientLight.is_null())
         {
-            mAmbientLightColour[0] = jsonAmbientLight[SCENE_JSON_RED];
-            mAmbientLightColour[1] = jsonAmbientLight[SCENE_JSON_GREEN];
-            mAmbientLightColour[2] = jsonAmbientLight[SCENE_JSON_BLUE];
-            mAmbientLightColour[3] = jsonAmbientLight[SCENE_JSON_ALPHA];
+            mAmbientLightColour[0] = jsonAmbientLight[Constants::Constants::SCENE_JSON_RED];
+            mAmbientLightColour[1] = jsonAmbientLight[Constants::Constants::SCENE_JSON_GREEN];
+            mAmbientLightColour[2] = jsonAmbientLight[Constants::Constants::SCENE_JSON_BLUE];
+            mAmbientLightColour[3] = jsonAmbientLight[Constants::Constants::SCENE_JSON_ALPHA];
         }
     }
 
@@ -409,7 +409,7 @@ namespace Dream
     Scene::addToDeleteQueue
     (SceneObject* object)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Scene: Adding "
                  << object->getNameAndUuidString()
@@ -422,7 +422,7 @@ namespace Dream
     Scene::clearDeleteQueue
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Scene: clearDeleteQueue" << endl;
         }
@@ -453,7 +453,7 @@ namespace Dream
     Scene::findDeleteFlaggedSceneObjects
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "Scene: findDeleteFlaggedSceneObjects Called" << endl;
         }
@@ -485,7 +485,7 @@ namespace Dream
     Scene::createAllAssetInstances
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "Secne: Create All Asset Instances Called" << endl;
         }
@@ -536,7 +536,7 @@ namespace Dream
     Scene::findDeleteFlaggedScripts
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "Scene: Cleanup Deleted Scripts Called" << endl;
         }
@@ -580,7 +580,7 @@ namespace Dream
     Scene::cleanUpSceneObjects
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Scene: cleanUpSceneObjects" << endl;
         }
@@ -601,7 +601,7 @@ namespace Dream
     Scene::flush
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Scene: flush" << endl;
         }
@@ -628,7 +628,7 @@ namespace Dream
     Scene::cleanUp
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Scene: cleanUp called on "
                  <<  getNameAndUuidString()

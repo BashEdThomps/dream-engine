@@ -31,7 +31,7 @@ namespace Dream
     LuaScriptInstance::~LuaScriptInstance
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LuaScriptInstance: Destroying Object" << endl;
         }
@@ -42,7 +42,7 @@ namespace Dream
     (string projectPath)
     {
         mAbsolutePath = projectPath+mDefinition->getAssetPath();
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
         }

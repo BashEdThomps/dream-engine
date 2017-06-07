@@ -32,7 +32,7 @@ namespace Dream
     ()
     {
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "ShaderInstance: Destroying Object" << endl;
         }
@@ -74,7 +74,7 @@ namespace Dream
             fragmentReader->readIntoStringStream();
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "ShaderInstance: Loading Shader..." << endl
                      << "ShaderInstance: Vertex: " << absVertexPath     << endl
@@ -184,7 +184,7 @@ namespace Dream
             string name = it.first;
             GLfloat val = it.second;
             GLint location = glGetUniformLocation(prog,name.c_str());
-            if (VERBOSE)
+            if (Constants::VERBOSE)
             {
                 cout << "ShaderInstance: "
                      << getUuid()

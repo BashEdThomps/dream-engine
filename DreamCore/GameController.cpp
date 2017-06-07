@@ -62,7 +62,7 @@ namespace Dream
 
     void GameController::updateControllerState(SDL_Event &e)
     {
-       if (VERBOSE)
+       if (Constants::VERBOSE)
        {
            cout << "GameController: State Update" << endl;
        }
@@ -80,7 +80,7 @@ namespace Dream
 
     void GameController::onButtonEvent(SDL_Event &e)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "GameController: ButtonEvent"
                  << " on button: " << (int)e.cbutton.button
@@ -146,7 +146,7 @@ namespace Dream
 
     void GameController::onAxisEvent(SDL_Event &e)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "GameController: AxisEvent on axis "
                  << (int)e.caxis.axis

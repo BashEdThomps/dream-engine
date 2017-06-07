@@ -22,7 +22,7 @@ namespace Dream
     (Transform3D* dreamTransform)
         : btMotionState()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsMotionState: Constructor called" << endl;
         }
@@ -32,7 +32,7 @@ namespace Dream
     PhysicsMotionState::~PhysicsMotionState
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsMotionState: Destroying Object" << endl;
         }
@@ -42,7 +42,7 @@ namespace Dream
     PhysicsMotionState::setTransform
     (Transform3D* transform)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsMotionState: setTransform called" << endl;
         }
@@ -53,7 +53,7 @@ namespace Dream
     PhysicsMotionState::getWorldTransform
     (btTransform &worldTrans) const
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsMotionState: getWorldTransform called" << endl;
         }
@@ -69,7 +69,7 @@ namespace Dream
     PhysicsMotionState::setWorldTransform
     (const btTransform &worldTrans)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsMotionState: setWorldTransform called" << endl;
         }
@@ -90,7 +90,7 @@ namespace Dream
     PhysicsMotionState::setKinematicPos
     (btTransform &trans)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsMotionState: setKinematicPos called" << endl;
         }

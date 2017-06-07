@@ -37,7 +37,7 @@ namespace Dream
 
         if (sFreeTypeLib == nullptr)
         {
-             if (DEBUG)
+             if (Constants::DEBUG)
             {
                 cout << "FontInstance: Initialising FreeType" << endl;
             }
@@ -58,7 +58,7 @@ namespace Dream
     {
         if (sFreeTypeLib)
         {
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "FontInstance: Destroying FreeType" << endl;
             }
@@ -71,7 +71,7 @@ namespace Dream
     FontInstance::~FontInstance
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "FontInstance: Destroying Object" << endl;
         }
@@ -85,7 +85,7 @@ namespace Dream
     {
         string path = projectPath+mDefinition->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "FontInstance: Loading font from " << path << endl;
         }
@@ -117,13 +117,13 @@ namespace Dream
     FontInstance::loadExtraAttributes
     (nlohmann::json jsonData)
     {
-        float red = jsonData[FONT_COLOUR][FONT_RED];
-        float green = jsonData[FONT_COLOUR][FONT_GREEN];
-        float blue = jsonData[FONT_COLOUR][FONT_BLUE];
+        float red = jsonData[Constants::FONT_COLOUR][Constants::FONT_RED];
+        float green = jsonData[Constants::FONT_COLOUR][Constants::FONT_GREEN];
+        float blue = jsonData[Constants::FONT_COLOUR][Constants::FONT_BLUE];
 
         setColour(red,green,blue);
 
-        mSize = jsonData[FONT_SIZE];
+        mSize = jsonData[Constants::FONT_SIZE];
 
         if (mFontFace)
         {
@@ -133,7 +133,7 @@ namespace Dream
             );
         }
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "FontInstance" << endl
                  << "\tr: "    << red   << endl
@@ -145,7 +145,7 @@ namespace Dream
 
         generateCharacterMap();
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "FontInstance: finished loading extra attributes" << endl;
         }
@@ -203,7 +203,7 @@ namespace Dream
     FontInstance::generateCharacterMap
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "FontInstance: Generating Character Map..." << endl;
         }
@@ -260,7 +260,7 @@ namespace Dream
         }
 
         FT_Done_Face(*mFontFace);
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "FontInstance: Finished Generating Character Map." << endl;
         }

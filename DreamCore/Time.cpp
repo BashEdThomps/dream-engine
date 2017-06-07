@@ -15,7 +15,7 @@ namespace Dream
 
   void Time::update()
   {
-    if (VERBOSE)
+    if (Constants::VERBOSE)
     {
       cout << "Time: Update Called" << endl;
     }
@@ -28,7 +28,7 @@ namespace Dream
 
   void Time::show()
   {
-    if (DEBUG)
+    if (Constants::DEBUG)
     {
       cout << "Time: " << endl
            << "\tCurrent Time: " << getCurrentTime() << endl

@@ -33,7 +33,7 @@ namespace Dream
     PhysicsComponent::~PhysicsComponent
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsComponent: Destroying Object" << endl;
         }
@@ -74,7 +74,7 @@ namespace Dream
     PhysicsComponent::setGravity
     (vector<float> gravity)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout <<"PhysicsComponent: Setting Gravity" << String::floatVectorToString(gravity) << endl;
         }
@@ -89,7 +89,7 @@ namespace Dream
     bool PhysicsComponent::init
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsComponent: Initialising...";
         }
@@ -105,7 +105,7 @@ namespace Dream
                     );
         mDynamicsWorld->setGravity(mGravity);
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "done." << endl;
         }
@@ -117,7 +117,7 @@ namespace Dream
     PhysicsComponent::updateComponent
     (Scene* scene)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsComponent: Update Called" << endl;
         }
@@ -146,12 +146,12 @@ namespace Dream
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsComponent: Adding Rigid Body to Dynamics World" << endl;
         }
         mDynamicsWorld->addRigidBody(rigidBody);
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsComponent: World has " << mDynamicsWorld->getNumCollisionObjects()
                  << " rigid bodies." << endl;
@@ -175,7 +175,7 @@ namespace Dream
     PhysicsComponent::removeRigidBody
     (btRigidBody *rigidBody)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsComponent: Removing Rigid Body from Dynamics World" << endl;
         }
@@ -208,7 +208,7 @@ namespace Dream
                         // Marked for deletion and in physics world, remove
                         if (so->getDeleteFlag() && physicsObject->getInPhysicsWorld())
                         {
-                            if (DEBUG)
+                            if (Constants::DEBUG)
                             {
                                 cout << "PhysicsComponent: Removing SceneObject " << so->getUuid()
                                      << " from Physics World" << endl;
@@ -218,7 +218,7 @@ namespace Dream
                         // Not marked for deletion and not in world, add
                         if (!so->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
                         {
-                            if (DEBUG)
+                            if (Constants::DEBUG)
                             {
                                 cout << "PhysicsComponent: Adding SceneObject " << so->getUuid()
                                      << " to Physics World" << endl;
@@ -265,7 +265,7 @@ namespace Dream
             SceneObject* sObjA = getSceneObject(scene, objA);
             SceneObject* sObjB = getSceneObject(scene, objB);
 
-            Event* e = new Event(sObjB->getUuid(),EVENT_TYPE_COLLISION);
+            Event* e = new Event(sObjB->getUuid(),Constants::EVENT_TYPE_COLLISION);
             sObjA->sendEvent(e);
 
             /*
@@ -327,7 +327,7 @@ namespace Dream
     PhysicsComponent::cleanUp
     (Scene* scene)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsComponent: Cleaning up... " << endl;
         }
@@ -342,7 +342,7 @@ namespace Dream
                     if (so->getLoadedFlag() && so->hasPhysicsObjectInstance())
                     {
                         PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
-                        if (DEBUG)
+                        if (Constants::DEBUG)
                         {
                             cout << "PhysicsComponent: Removing SceneObject " << so->getNameAndUuidString()
                                  << " from Physics World" << endl;

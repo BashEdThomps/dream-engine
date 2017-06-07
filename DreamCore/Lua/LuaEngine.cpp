@@ -70,7 +70,7 @@ namespace Dream
     LuaEngine::~LuaEngine
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LuaEngine: Destroying Object" << endl;
         }
@@ -85,7 +85,7 @@ namespace Dream
     LuaEngine::init
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LuaEngine: Initialising LuaEngine" << endl;
         }
@@ -111,7 +111,7 @@ namespace Dream
     LuaEngine::createAllScripts
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "LuaEngine: CreateAllScripts Called" << endl;
         }
@@ -141,14 +141,14 @@ namespace Dream
             if (sceneObject->getDeleteFlag())
             {
 
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "LuaEngine: SceneObject marked for deletion, not loading script." << endl;
                 }
                 continue;
             }
 
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "LuaEngine: loading script '" << luaScript->getName() << "' for '" << sceneObject->getName() << "'" << endl;
                 cout << "LuaEngine: Loading Lua script from " << luaScript->getAbsolutePath()
@@ -160,7 +160,7 @@ namespace Dream
                 return false;
             }
 
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "LuaEngine: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
             }
@@ -191,14 +191,14 @@ namespace Dream
            return false;
         }
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LuaEngine: loadScript called for " << id << endl;
         }
 
         try
         {
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "LuaEngine: Creating new table for " << id << endl;
             }
@@ -207,7 +207,7 @@ namespace Dream
             string path = scriptInstance->getAbsolutePath();
             string script = LuaScriptCache::getScript(path);
 
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "LuaEngine: calling scriptLoadFromString in lua for " << id << endl;
             }
@@ -268,7 +268,7 @@ namespace Dream
     LuaEngine::update
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "LuaEngine: Update Called" << endl;
         }
@@ -278,7 +278,7 @@ namespace Dream
             SceneObject* key = entry.first;
             if (key->getDeleteFlag())
             {
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "LuaEngine: Skipping update on " << key->getUuid() << endl;
                 }
@@ -321,7 +321,7 @@ namespace Dream
             return false;
         }
 
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameAndUuidString() << endl;
         }
@@ -356,7 +356,7 @@ namespace Dream
             return false;
         }
 
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "LuaEngine: Calling onInit in " << scriptInstance->getName()
                  <<" for " << sceneObject->getName()
@@ -393,7 +393,7 @@ namespace Dream
         }
 
 
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "LuaEngine: Calling onInput for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
@@ -427,7 +427,7 @@ namespace Dream
         }
 
 
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "LuaEngine: Calling onEvent for " << sceneObject->getNameAndUuidString() << endl << flush;
         }
@@ -506,7 +506,7 @@ namespace Dream
 
     void LuaEngine::debugRegisteringClass(string className)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
             cout << "LuaEngine: Registering Class " << className << endl;
         return;
     }
@@ -927,7 +927,7 @@ namespace Dream
     LuaEngine::cleanUp
     (Scene* scene)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LuaEngine: Cleaning up" << endl;
         }
@@ -941,7 +941,7 @@ namespace Dream
 
             reg[id] = luabind::nil;
 
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "LuaEngine: Removed script " << id << " for " << soName << " from registry" << endl;
             }

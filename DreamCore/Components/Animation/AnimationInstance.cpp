@@ -35,7 +35,7 @@ namespace Dream {
     AnimationInstance::~AnimationInstance
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AnimationInstance: Destroying Object" << endl;
         }
@@ -47,7 +47,7 @@ namespace Dream {
     AnimationInstance::showStatus
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AnimationInstance:" << endl;
             cout << "\tLoop: " << String::boolToYesNo(mLoop) << endl;
@@ -58,7 +58,7 @@ namespace Dream {
     AnimationInstance::load
     (string projectPath)
     {
-        mLoop = mDefinition->toJson()[ASSET_ATTR_LOOP];
+        mLoop = mDefinition->toJson()[Constants::ASSET_ATTR_LOOP];
         loadExtraAttributes(mDefinition->toJson());
         mLoaded = false;
         return mLoaded;
@@ -75,7 +75,7 @@ namespace Dream {
     AnimationInstance::generatePlaybackFrames
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout<<"AnimationInstance: Generating Playback Frames" << endl;
         }
@@ -87,13 +87,13 @@ namespace Dream {
             // End of Vector?
             if (currentKeyFrame == mKeyFrames.back())
             {
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "AnimationInstance: Last KeyFrame, checking for wrap..." << endl;
                 }
                 if (currentKeyFrame->getWrap())
                 {
-                    if (DEBUG)
+                    if (Constants::DEBUG)
                     {
                         cout << "AnimationInstance: KeyFrame wraps to beginning." << endl;
                     }
@@ -101,7 +101,7 @@ namespace Dream {
                 }
                 else
                 {
-                    if (DEBUG)
+                    if (Constants::DEBUG)
                     {
                         cout << "AnimationInstance: Last KeyFrame does not wrap." << endl;
                     }
@@ -117,7 +117,7 @@ namespace Dream {
             vector<Frame*> frames = currentKeyFrame->getPlaybackFrames();
             mPlaybackFrames.insert(mPlaybackFrames.end(),frames.begin(),frames.end());
         }
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout<<"AnimationInstance: Finished Generating Playback Frames" << endl;
         }
@@ -128,10 +128,10 @@ namespace Dream {
     (nlohmann::json jsonObj)
     {
         showStatus();
-        if (!jsonObj[ASSET_ATTR_KEYFRAMES].is_null() && jsonObj[ASSET_ATTR_KEYFRAMES].is_array())
+        if (!jsonObj[Constants::ASSET_ATTR_KEYFRAMES].is_null() && jsonObj[Constants::ASSET_ATTR_KEYFRAMES].is_array())
         {
-            nlohmann::json jsonKeyFrames = jsonObj[ASSET_ATTR_KEYFRAMES];
-            if (DEBUG)
+            nlohmann::json jsonKeyFrames = jsonObj[Constants::ASSET_ATTR_KEYFRAMES];
+            if (Constants::DEBUG)
             {
                 cout << "AnimationInstance: Loading KeyFrames" << endl;
             }
@@ -140,29 +140,29 @@ namespace Dream {
                 KeyFrame *nextKeyFrame = new KeyFrame();
                 vector<float> translation(3), rotation(3), scale(3);
 
-                translation[0] = it[ASSET_ATTR_TRANSLATION][ASSET_ATTR_X];
-                translation[1] = it[ASSET_ATTR_TRANSLATION][ASSET_ATTR_Y];
-                translation[2] = it[ASSET_ATTR_TRANSLATION][ASSET_ATTR_Z];
+                translation[0] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::ASSET_ATTR_X];
+                translation[1] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::ASSET_ATTR_Y];
+                translation[2] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::ASSET_ATTR_Z];
 
-                rotation[0] = it[ASSET_ATTR_ROTATION][ASSET_ATTR_X];
-                rotation[1] = it[ASSET_ATTR_ROTATION][ASSET_ATTR_Y];
-                rotation[2] = it[ASSET_ATTR_ROTATION][ASSET_ATTR_Z];
+                rotation[0] = it[Constants::ASSET_ATTR_ROTATION][Constants::ASSET_ATTR_X];
+                rotation[1] = it[Constants::ASSET_ATTR_ROTATION][Constants::ASSET_ATTR_Y];
+                rotation[2] = it[Constants::ASSET_ATTR_ROTATION][Constants::ASSET_ATTR_Z];
 
-                scale[0] = it[ASSET_ATTR_SCALE][ASSET_ATTR_X];
-                scale[1] = it[ASSET_ATTR_SCALE][ASSET_ATTR_Y];
-                scale[2] = it[ASSET_ATTR_SCALE][ASSET_ATTR_Z];
+                scale[0] = it[Constants::ASSET_ATTR_SCALE][Constants::ASSET_ATTR_X];
+                scale[1] = it[Constants::ASSET_ATTR_SCALE][Constants::ASSET_ATTR_Y];
+                scale[2] = it[Constants::ASSET_ATTR_SCALE][Constants::ASSET_ATTR_Z];
 
-                long startTime   = it[ASSET_ATTR_START_TIME];
+                long startTime   = it[Constants::ASSET_ATTR_START_TIME];
 
                 bool wrap = false;
-                if (!it[ASSET_ATTR_WRAP].is_null())
+                if (!it[Constants::ASSET_ATTR_WRAP].is_null())
                 {
-                    wrap = it[ASSET_ATTR_WRAP];
+                    wrap = it[Constants::ASSET_ATTR_WRAP];
                 }
 
-                string interpolation = it[ASSET_ATTR_INTERPOLATION];
-                string name = it[ASSET_NAME];
-                string uuid = it[ASSET_UUID];
+                string interpolation = it[Constants::ASSET_ATTR_INTERPOLATION];
+                string name = it[Constants::ASSET_NAME];
+                string uuid = it[Constants::ASSET_UUID];
 
                 nextKeyFrame->setName(name);
                 nextKeyFrame->setInterpolationType(interpolation);
@@ -188,9 +188,9 @@ namespace Dream {
         if (mPlaying)
         {
             int advanceBy = ceil(deltaTime / (1000/getFramesPerSecond()));
-            if (advanceBy > MAX_FRAME_ADVANCE) return;
+            if (advanceBy > Constants::MAX_FRAME_ADVANCE) return;
             mCurrentPlaybackFrame += advanceBy;
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "AnimationInstance: Delta time: " << deltaTime << ", Advance By: " << advanceBy <<  " frames to frame: " << mCurrentPlaybackFrame << endl;
             }
@@ -198,13 +198,13 @@ namespace Dream {
             {
                 if (!mLoop)
                 {
-                    if (DEBUG)
+                    if (Constants::DEBUG)
                     {
                         cout << "AnimationInstance: Playback Finished" << endl;
                     }
                     mPlaying = false;
                 }
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "AnimationInstance: Returning to Frame 0" << endl;
                 }
@@ -217,7 +217,7 @@ namespace Dream {
     AnimationInstance::play
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AnimationInstance: Playing Animation" << getName() << endl;
         }
@@ -228,7 +228,7 @@ namespace Dream {
     AnimationInstance::pause
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AnimationInstance: Pausing Animation" << getName() << endl;
         }
@@ -239,7 +239,7 @@ namespace Dream {
     AnimationInstance::stop
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AnimationInstance: Stopping Animation" << getName() << endl;
         }

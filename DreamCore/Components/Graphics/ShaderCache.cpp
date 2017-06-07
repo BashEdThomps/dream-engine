@@ -30,7 +30,7 @@ namespace Dream
         {
             if (it.first.compare(uuid) == 0)
             {
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "ShaderCache: Found Shader " << uuid << endl;
                 }

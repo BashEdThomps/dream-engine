@@ -29,7 +29,7 @@ namespace Dream
   SpriteInstance::~SpriteInstance
   ()
   {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "SpriteInstance: Destroying Object" << endl;
         }
@@ -42,7 +42,7 @@ namespace Dream
   {
     string path = projectPath+mDefinition->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
-    if (DEBUG)
+    if (Constants::DEBUG)
     {
         cout << "SpriteInstance: Loading sprite from " << path << endl;
     }

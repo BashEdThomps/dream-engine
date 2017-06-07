@@ -16,7 +16,7 @@ namespace Dream
     Frame::~Frame
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Frame: Destroying Object" << endl;
         }
@@ -77,7 +77,7 @@ namespace Dream
     Frame::showStatus
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Frame"
                  << "{" << endl

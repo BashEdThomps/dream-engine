@@ -20,7 +20,7 @@
 namespace Dream {
 
     Transform3D::Transform3D() {
-      mTransformType = TRANSFORM_TYPE_ABSOLUTE;
+      mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
       mTranslation   = glm::vec3(0.0f);
       mScale         = glm::vec3(0.0f);
       mOrientation   = glm::quat();

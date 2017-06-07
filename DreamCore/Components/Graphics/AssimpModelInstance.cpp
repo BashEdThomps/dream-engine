@@ -31,14 +31,14 @@ namespace Dream
         {
             if (it.first.compare(path) == 0)
             {
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cout << "AssimpModelInstance: Found cached scene for " << path << endl;
                 }
                 return it.second;
             }
         }
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
           cout << "AssimpModelInstance: Loading " << path << " from disk" << endl;
         }
@@ -62,7 +62,7 @@ namespace Dream
     AssimpModelInstance::~AssimpModelInstance
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AssimpModelInstance: Destroying Object" << endl;
         }
@@ -74,7 +74,7 @@ namespace Dream
     (string projectPath)
     {
         string path = projectPath+mDefinition->getAssetPath();
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;
         }

@@ -17,7 +17,7 @@ namespace Dream
     LightInstance::~LightInstance
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "LightInstance: Destroying Object" << endl;
         }
@@ -36,13 +36,13 @@ namespace Dream
     LightInstance::loadExtraAttributes
     (nlohmann::json json)
     {
-        nlohmann::json jsonColor = json[ASSET_ATTR_LIGHT_COLOR];
+        nlohmann::json jsonColor = json[Constants::ASSET_ATTR_LIGHT_COLOR];
         if (!jsonColor.is_null())
         {
-            mColor.r   = static_cast<float>(jsonColor[ASSET_ATTR_LIGHT_COLOR_R]);
-            mColor.g   = static_cast<float>(jsonColor[ASSET_ATTR_LIGHT_COLOR_G]);
-            mColor.b   = static_cast<float>(jsonColor[ASSET_ATTR_LIGHT_COLOR_B]);
-            mIntensity = static_cast<float>(jsonColor[ASSET_ATTR_LIGHT_COLOR_A]);
+            mColor.r   = static_cast<float>(jsonColor[Constants::ASSET_ATTR_LIGHT_COLOR_R]);
+            mColor.g   = static_cast<float>(jsonColor[Constants::ASSET_ATTR_LIGHT_COLOR_G]);
+            mColor.b   = static_cast<float>(jsonColor[Constants::ASSET_ATTR_LIGHT_COLOR_B]);
+            mIntensity = static_cast<float>(jsonColor[Constants::ASSET_ATTR_LIGHT_COLOR_A]);
         }
         else
         {

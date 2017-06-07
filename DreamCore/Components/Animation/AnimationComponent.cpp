@@ -33,7 +33,7 @@ namespace Dream
     AnimationComponent::~AnimationComponent
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AnimationComponent: Destroying Object" << endl;
         }
@@ -45,7 +45,7 @@ namespace Dream
     AnimationComponent::init
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AnimationComponent: Initialisation Done." << endl;
         }
@@ -165,7 +165,7 @@ namespace Dream
             AnimationInstance* animationAsset;
             animationAsset = dynamic_cast<AnimationInstance*>(asset);
             animationAsset->setLooping(looping);
-            if (DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
                      << " looping: " << String::boolToYesNo(looping) << endl;

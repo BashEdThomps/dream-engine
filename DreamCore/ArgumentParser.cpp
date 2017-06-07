@@ -18,52 +18,77 @@
 #include "ArgumentParser.h"
 #include "Environment.h"
 
-namespace Dream {
-  ArgumentParser::ArgumentParser(int argc, const char** argv) {
+namespace Dream
+{
+  ArgumentParser::ArgumentParser
+  (int argc, const char** argv)
+  {
     mArgc = argc;
     mArgv = argv;
     mUsingHttp = false;
     parse();
   }
 
-  ArgumentParser::~ArgumentParser() {
-         if (DEBUG) {
-            cout << "ArgumentParser: Destroying Object" << endl;
+  ArgumentParser::~ArgumentParser
+  ()
+  {
+      if (Constants::DEBUG)
+      {
+        cout << "ArgumentParser: Destroying Object" << endl;
       }
   }
 
-  void ArgumentParser::parse() {
+  void
+  ArgumentParser::parse
+  ()
+  {
     string *nextArg;
-    for (int i=0;i<mArgc;i++) {
+    for (int i=0;i<mArgc;i++)
+    {
       nextArg = new string(mArgv[i]);
-      if (nextArg->compare(PROJECT_DIRECTORY_ARG) == 0) {
-        if (mArgc > i) {
+      if (nextArg->compare(Constants::PROJECT_DIRECTORY_ARG) == 0)
+      {
+        if (mArgc > i)
+        {
           mDreamPath = string(mArgv[i+1]);
-          if (DEBUG) {
+          if (Constants::DEBUG)
+          {
             cout << "ArgumentParser: Got Dream Path " << mDreamPath << endl;
           }
-        } else {
+        }
+        else
+        {
           return;
         }
       }
-      else if (nextArg->compare(PROJECT_UUID_ARG) == 0) {
-        if (mArgc > i) {
+      else if (nextArg->compare(Constants::PROJECT_UUID_ARG) == 0)
+      {
+        if (mArgc > i)
+        {
           mProjectUUID = string(mArgv[i+1]);
-          if (DEBUG) {
+          if (Constants::DEBUG)
+          {
             cout << "ArgumentParser: Got Project UUID " << mProjectUUID << endl;
           }
-        } else {
+        }
+        else
+        {
           return;
         }
       }
-      else if (nextArg->compare(HTTP_ARG) == 0) {
+      else if (nextArg->compare(Constants::HTTP_ARG) == 0)
+      {
           mUsingHttp = true;
-          if (mArgc > i) {
+          if (mArgc > i)
+          {
             mHttpUrl = string(mArgv[i+1]);
-            if (DEBUG) {
+            if (Constants::DEBUG)
+            {
                 cout << "ArgumentParser: Loading project over HTTP from " << mHttpUrl << endl;
             }
-          } else {
+          }
+          else
+          {
               cerr << "ArgumentParser: --http passed without URL argument." << endl;
           }
       }
@@ -71,48 +96,63 @@ namespace Dream {
       nextArg = nullptr;
     }
 
-    if (mDreamPath.size() == 0) {
-      mDreamPath = Environment::getHomeDirectory() + PROJECT_PATH_SEP + DREAM_TOOL_DIR;
+    if (mDreamPath.size() == 0)
+    {
+      mDreamPath = Environment::getHomeDirectory() + Constants::PROJECT_PATH_SEP + Constants::DREAM_TOOL_DIR;
     }
 
-    mProjectPath = mDreamPath + PROJECT_PATH_SEP + mProjectUUID;
+    mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
-    if (DEBUG) {
+    if (Constants::DEBUG)
+    {
       cout << "ArgumentParser: Got Project Path " << mProjectPath << endl;
     }
-    mProjectFilePath = mProjectPath + PROJECT_PATH_SEP + mProjectUUID + PROJECT_EXTENSION;
+    mProjectFilePath = mProjectPath + Constants::PROJECT_PATH_SEP + mProjectUUID + Constants::PROJECT_EXTENSION;
 
-    if (DEBUG) {
+    if (Constants::DEBUG)
+    {
       cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << endl;
     }
   }
 
-  string ArgumentParser::getProjectPath()
+  string
+  ArgumentParser::getProjectPath
+  ()
   {
     return mProjectPath;
   }
 
-  string ArgumentParser::getProjectUUID()
+  string
+  ArgumentParser::getProjectUUID
+  ()
   {
     return mProjectUUID;
   }
 
-  string ArgumentParser::getDreamPath()
+  string
+  ArgumentParser::getDreamPath
+  ()
   {
     return mDreamPath;
   }
 
-  string ArgumentParser::getProjectFilePath()
+  string
+  ArgumentParser::getProjectFilePath
+  ()
   {
     return mProjectFilePath;
   }
 
-  bool ArgumentParser::getUsingHttp()
+  bool
+  ArgumentParser::getUsingHttp
+  ()
   {
       return mUsingHttp;
   }
 
-  string ArgumentParser::getProjectHttpUrl()
+  string
+  ArgumentParser::getProjectHttpUrl
+  ()
   {
       return mHttpUrl;
   }

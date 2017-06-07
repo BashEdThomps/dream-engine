@@ -59,7 +59,7 @@ namespace Dream
     GraphicsComponent::~GraphicsComponent
     (void)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Destroying Object" << endl;
         }
@@ -70,7 +70,7 @@ namespace Dream
     GraphicsComponent::init
     (void)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Initialising..." << endl;
         }
@@ -83,7 +83,7 @@ namespace Dream
             cerr << "GraphicsComponent: GLEW failed to initialise." << endl;
             return false;
         }
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: GL Version " << glGetString(GL_VERSION) << endl;
             cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
@@ -97,7 +97,7 @@ namespace Dream
         create2DVertexObjects();
         createFontVertexObjects();
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Initialisation Done." << endl;
         }
@@ -113,7 +113,7 @@ namespace Dream
         int windowWidth  = mWindowComponent->getWidth();
         int windowHeight = mWindowComponent->getHeight();
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "GraphicsComponwnt: Window Dimensions Changed! "
                  << windowWidth << "," << windowHeight << endl;
@@ -138,7 +138,7 @@ namespace Dream
             mMaximumDraw
         );
 
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "GraphicsComponent: Window dimensions changed" << endl
                  << "\tWindowWidth:" << mWindowComponent->getWidth() << endl
@@ -179,7 +179,7 @@ namespace Dream
     GraphicsComponent::create2DVertexObjects
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Creating 2D VAO/VBO" << endl;
         }
@@ -199,7 +199,7 @@ namespace Dream
     GraphicsComponent::createFontVertexObjects
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Creating Font VAO/VBO" << endl;
         }
@@ -218,7 +218,7 @@ namespace Dream
     GraphicsComponent::updateComponent
     (Scene* scene)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "GraphicsComponrnt: updateComponent(Scene*) Called" << endl;
         }
@@ -511,7 +511,7 @@ namespace Dream
     GraphicsComponent::drawModel
     (SceneObject* sceneObject)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
            cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
         }
@@ -559,7 +559,7 @@ namespace Dream
             }
             else
             {
-                if (VERBOSE)
+                if (Constants::VERBOSE)
                 {
                     cout << "GraphicsComponent: cannot find uniform for " << uPosStr.str() << endl;
                     cout << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;

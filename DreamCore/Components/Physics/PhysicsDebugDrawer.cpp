@@ -13,7 +13,7 @@ namespace Dream
     PhysicsDebugDrawer::~PhysicsDebugDrawer
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsDebugDrawer: Destroying Object" << endl;
         }
@@ -160,7 +160,7 @@ namespace Dream
     PhysicsDebugDrawer::drawLine
     (const btVector3& from,const btVector3& to,const btVector3& color)
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsDebugDrawer: Drawing line from " << btVecToString(from)
                  << " to " << btVecToString(to)
@@ -182,7 +182,7 @@ namespace Dream
     PhysicsDebugDrawer::drawSphere
     (const btVector3& p, btScalar radius, const btVector3& color)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsDebugDrawer: Draw Sphere is not implemented" << endl;
         }
@@ -192,7 +192,7 @@ namespace Dream
     PhysicsDebugDrawer::drawTriangle
     (const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsDebugDrawer: Draw Triangle is not implemented" << endl;
         }
@@ -209,7 +209,7 @@ namespace Dream
     PhysicsDebugDrawer::draw3dText
     (const btVector3& location,const char* textString)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsDebugDrawer: Draw 3DText is not implemented" << endl;
         }
@@ -219,7 +219,7 @@ namespace Dream
     PhysicsDebugDrawer::reportErrorWarning
     (const char* warningString)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsDebugDrawer: " << warningString << endl;
         }
@@ -229,7 +229,7 @@ namespace Dream
     PhysicsDebugDrawer::drawContactPoint
     (const btVector3& pointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "PhysicsDebugDrawer: Draw Contact Point is not implemented" << endl;
         }
@@ -281,7 +281,7 @@ namespace Dream
     PhysicsDebugDrawer::drawAll
     ()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "PhysicsDebugDrawer: Drawing all - " << mVertexBuffer.size()/2 << " lines." << endl;
         }

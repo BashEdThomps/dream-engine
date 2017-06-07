@@ -25,9 +25,6 @@
 #include "AssetDefinition.h"
 #include "Transform3D.h"
 
-#define ASSET_UUID "uuid"
-#define ASSET_NAME "name"
-
 namespace Dream
 {
     class IAssetInstance

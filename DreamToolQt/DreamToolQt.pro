@@ -103,8 +103,8 @@ macx: LIBS += \
     -lFreeType
 
 LIBS += \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_GCC_64bit-Debug/DreamCore \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_GCC_64bit-Debug/Luabind \
+    -L$$PWD/../../build-dream-Desktop_Qt_5_9_0_GCC_64bit-Debug/DreamCore \
+    -L$$PWD/../../build-dream-Desktop_Qt_5_9_0_GCC_64bit-Debug/Luabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore
     -lFreeType

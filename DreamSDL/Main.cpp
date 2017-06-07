@@ -11,12 +11,12 @@ using namespace DreamSDL;
 
 void showUsage(const char** argv)
 {
-    if (DEBUG)
+    if (Constants::DEBUG)
     {
         cout << "Usage:" << endl
              << argv[0] << endl
-             << "\t" << PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool>" << endl
-             << "\t" << PROJECT_UUID_ARG      << " <project_uuid>" << endl;
+             << "\t" << Constants::PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool>" << endl
+             << "\t" << Constants::PROJECT_UUID_ARG      << " <project_uuid>" << endl;
     }
 }
 
@@ -30,9 +30,9 @@ int main(int argc, const char** argv)
 {
     Project *project = new Project(new SDLWindowComponent());
 
-    dreamSetVerbose(true);
+    Constants::dreamSetVerbose(true);
 
-    if (DEBUG)
+    if (Constants::DEBUG)
     {
         cout << "Main: Starting..." << endl;
     }
@@ -46,7 +46,7 @@ int main(int argc, const char** argv)
 
     if(!project->initRuntime())
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Main: Bootstrapping Dream Failed" << endl;
         }
@@ -71,8 +71,8 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    dreamSetVerbose(false);
-    dreamSetDebug(false);
+    Constants::dreamSetVerbose(false);
+    Constants::dreamSetDebug(false);
 
     // Run the project
     while(project->getActiveScene()->getState() != SceneState::DONE)
@@ -81,7 +81,7 @@ int main(int argc, const char** argv)
         std::this_thread::yield();
     }
 
-    dreamSetVerbose(true);
+    Constants::dreamSetVerbose(true);
 
     project->cleanUpActiveScene();
 

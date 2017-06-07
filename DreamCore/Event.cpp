@@ -22,13 +22,13 @@ namespace Dream
 {
     Event::Event(string sender, string type)
     {
-        setAttribute(EVENT_SENDER,sender);
-        setAttribute(EVENT_TYPE,type);
+        setAttribute(Constants::EVENT_SENDER,sender);
+        setAttribute(Constants::EVENT_TYPE,type);
     }
 
     Event::~Event()
     {
-        if (VERBOSE)
+        if (Constants::VERBOSE)
         {
             cout << "Event: Destroying Object" << endl;
         }
@@ -37,12 +37,12 @@ namespace Dream
 
     string Event::getSender()
     {
-        return getAttribute(EVENT_SENDER);
+        return getAttribute(Constants::EVENT_SENDER);
     }
 
     string Event::getType()
     {
-        return getAttribute(EVENT_TYPE);
+        return getAttribute(Constants::EVENT_TYPE);
     }
 
     void Event::setAttribute(string key, string value)

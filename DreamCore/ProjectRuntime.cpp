@@ -23,8 +23,7 @@ namespace Dream
     ProjectRuntime::ProjectRuntime
     (Project* project, IWindowComponent* windowComponent)
     {
-        dreamSetVerbose(true);
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Creating new Instance" << endl;
         }
@@ -43,7 +42,7 @@ namespace Dream
     ProjectRuntime::~ProjectRuntime
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Destroying Object" << endl;
         }
@@ -128,7 +127,7 @@ namespace Dream
     ProjectRuntime::cleanupComponents
     (Scene* scene)
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Cleaning up Components..." << endl;
         }
@@ -163,7 +162,7 @@ namespace Dream
             mLuaEngine->cleanUp(scene);
         }
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Dream: Finished Cleaning Up Components." << endl;
         }
@@ -220,7 +219,7 @@ namespace Dream
     ProjectRuntime::initComponents
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Creating Components..." << endl;
         }
@@ -257,7 +256,7 @@ namespace Dream
             return false;
         }
 
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "Dream: Successfuly created Components." << endl;
         }

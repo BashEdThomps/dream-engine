@@ -12,7 +12,7 @@ namespace Dream
             vector<Texture> textures
     )
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AssimpMesh: Constructing Mesh for "
                  << parent->getName()
@@ -28,7 +28,7 @@ namespace Dream
     AssimpMesh::~AssimpMesh
     ()
     {
-        if (DEBUG)
+        if (Constants::DEBUG)
         {
             cout << "AssimpMesh: Destroying Mesh for "
                  << mParent->getName()
@@ -120,50 +120,50 @@ namespace Dream
             errorCode = glGetError();
             if (errorCode!=0)
             {
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cerr << "Mesh: Error Check " << errorIndex << ": " << endl;
                 }
                 switch (errorCode)
                 {
                     case GL_NO_ERROR:
-                        if (DEBUG)
+                        if (Constants::DEBUG)
                         {
                             cerr << "\tGL_NO_ERROR" << endl;
                         }
                         break;
                     case GL_INVALID_ENUM:
-                        if (DEBUG)
+                        if (Constants::DEBUG)
                         {
                             cerr << "\tGL_INVALID_ENUM" << endl;
                         }
                         break;
                     case GL_INVALID_VALUE:
-                        if (DEBUG)
+                        if (Constants::DEBUG)
                         {
                             cerr << "\tGL_INVALID_VALUE" << endl;
                         }
                         break;
                     case GL_INVALID_OPERATION:
-                        if (DEBUG)
+                        if (Constants::DEBUG)
                         {
                             cerr << "\tGL_INVALID_OPERATION" << endl;
                         }
                         break;
                     case GL_INVALID_FRAMEBUFFER_OPERATION:
-                        if (DEBUG)
+                        if (Constants::DEBUG)
                         {
                             cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
                         }
                         break;
                     case GL_OUT_OF_MEMORY:
-                        if (DEBUG)
+                        if (Constants::DEBUG)
                         {
                             cerr << "\tGL_OUT_OF_MEMORY" << endl;
                         }
                         break;
                 }
-                if (DEBUG)
+                if (Constants::DEBUG)
                 {
                     cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
                     cerr << "\tCode: " << errorCode << endl;
