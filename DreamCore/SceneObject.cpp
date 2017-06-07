@@ -15,14 +15,6 @@
 namespace Dream
 {
     SceneObject::SceneObject
-    ()
-        : mScene(nullptr),
-          mUuid(Uuid::generateUuid())
-    {
-        constructorInit();
-    }
-
-    SceneObject::SceneObject
     (Scene* scene)
         : mScene(scene),
           mUuid(Uuid::generateUuid())
@@ -735,6 +727,8 @@ namespace Dream
     {
         cleanUpEvents();
         deleteAssetInstances();
+        setLoadedFlag(false);
+        setDeleteFlag(false);
     }
 
     void

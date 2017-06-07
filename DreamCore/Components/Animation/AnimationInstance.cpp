@@ -275,6 +275,10 @@ namespace Dream {
     AnimationInstance::deleteKeyFrames
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "AnimationInstance: Deleting Key Frames" << endl;
+        }
         for (KeyFrame* pKeyFrame : mKeyFrames)
         {
             delete pKeyFrame;
@@ -286,6 +290,11 @@ namespace Dream {
     AnimationInstance::deletePlaybackFrames
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "AnimationInstance: Playback Frames" << endl;
+        }
+
         for (Frame* pFrame : mPlaybackFrames)
         {
             delete pFrame;

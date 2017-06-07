@@ -51,28 +51,31 @@ namespace Dream
             cout << "PhysicsObjectInstance: Destroying Object" << endl;
         }
 
+        /***** Deletes are handled by PhysicsComponent! *****/
+
         if (mRigidBody != nullptr)
         {
-            delete mRigidBody;
+            //delete mRigidBody;
             mRigidBody = nullptr;
+        }
+
+        if (mMotionState != nullptr)
+        {
+            //delete mMotionState;
+            mMotionState = nullptr;
+        }
+
+        if (mCollisionShape != nullptr)
+        {
+            //delete mCollisionShape;
+            mCollisionShape = nullptr;
+
         }
 
         if (mRigidBodyConstructionInfo != nullptr)
         {
             delete mRigidBodyConstructionInfo;
             mRigidBodyConstructionInfo = nullptr;
-        }
-
-        if (mMotionState != nullptr)
-        {
-            delete mMotionState;
-            mMotionState = nullptr;
-        }
-
-        if (mCollisionShape != nullptr)
-        {
-            delete mCollisionShape;
-            mCollisionShape = nullptr;
         }
     }
 

@@ -20,10 +20,12 @@
 
 using namespace std;
 
-bool DEBUG(true);
-bool VERBOSE(false);
+
 namespace Dream
 {
+    bool Constants::DEBUG(true);
+    bool Constants::VERBOSE(false);
+
     void Constants::dreamSetDebug(bool debug)
     {
         cout << "===== DEBUG: " << (debug? "Enabled" : "Disabled") << " =====" << endl;

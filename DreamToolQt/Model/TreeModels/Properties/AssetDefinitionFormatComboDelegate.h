@@ -21,6 +21,8 @@
 #include <DreamCore.h>
 #include <QItemDelegate>
 
+using namespace Dream;
+
 class AssetDefinitionFormatComboDelegate : public QItemDelegate
 {
 public:

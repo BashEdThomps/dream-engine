@@ -19,8 +19,6 @@
 
 namespace Dream
 {
-
-
     PhysicsComponent::PhysicsComponent
     ()
         : IComponent()
@@ -37,38 +35,43 @@ namespace Dream
         {
             cout << "PhysicsComponent: Destroying Object" << endl;
         }
-        if (mSolver != nullptr)
-        {
-            delete mSolver;
-            mSolver = nullptr;
-        }
-        if (mDispatcher != nullptr)
-        {
-            delete mDispatcher;
-            mDispatcher = nullptr;
-        }
-        if (mCollisionConfiguration != nullptr)
-        {
-            delete mCollisionConfiguration;
-            mCollisionConfiguration = nullptr;
-        }
-        if (mBroadphase != nullptr)
-        {
-            delete mBroadphase;
-            mBroadphase = nullptr;
-        }
+        // Dynamics World
         if (mDynamicsWorld != nullptr)
         {
             delete mDynamicsWorld;
             mDynamicsWorld = nullptr;
         }
+        // DebugDrawer
         if (mDebugDrawer != nullptr)
         {
             delete mDebugDrawer;
             mDebugDrawer = nullptr;
         }
+        // Solver
+        if (mSolver != nullptr)
+        {
+            delete mSolver;
+            mSolver = nullptr;
+        }
+        // Broadphase
+        if (mBroadphase != nullptr)
+        {
+            delete mBroadphase;
+            mBroadphase = nullptr;
+        }
+        // Dispatcher
+        if (mDispatcher != nullptr)
+        {
+            delete mDispatcher;
+            mDispatcher = nullptr;
+        }
+        // Collision Config
+        if (mCollisionConfiguration != nullptr)
+        {
+            delete mCollisionConfiguration;
+            mCollisionConfiguration = nullptr;
+        }
     }
-
 
     void
     PhysicsComponent::setGravity
@@ -84,7 +87,6 @@ namespace Dream
             mDynamicsWorld->setGravity(mGravity);
         }
     }
-
 
     bool PhysicsComponent::init
     ()
@@ -111,7 +113,6 @@ namespace Dream
         }
         return true;
     }
-
 
     void
     PhysicsComponent::updateComponent
@@ -141,7 +142,6 @@ namespace Dream
         }
     }
 
-
     void
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
@@ -158,7 +158,6 @@ namespace Dream
         }
     }
 
-
     void
     PhysicsComponent::removePhysicsObjectInstance
     (PhysicsObjectInstance* obj)
@@ -169,7 +168,6 @@ namespace Dream
             obj->setInPhysicsWorld(false);
         }
     }
-
 
     void
     PhysicsComponent::removeRigidBody
@@ -182,7 +180,6 @@ namespace Dream
         mDynamicsWorld->removeRigidBody(rigidBody);
     }
 
-
     void
     PhysicsComponent::addPhysicsObjectInstance
     (PhysicsObjectInstance *physicsObjejct)
@@ -190,47 +187,46 @@ namespace Dream
         addRigidBody(physicsObjejct->getRigidBody());
     }
 
-
     void
     PhysicsComponent::populatePhysicsWorld
     (Scene* scene)
     {
         scene->getRootSceneObject()->applyToAll
-        (
-            function<void*(SceneObject*)>
-            (
-                [&](SceneObject* so)
-                {
-                    // Has physics
-                    if (so->hasPhysicsObjectInstance())
-                    {
-                        PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
-                        // Marked for deletion and in physics world, remove
-                        if (so->getDeleteFlag() && physicsObject->getInPhysicsWorld())
+                (
+                    function<void*(SceneObject*)>
+                    (
+                        [&](SceneObject* so)
+        {
+                        // Has physics
+                        if (so->hasPhysicsObjectInstance())
                         {
-                            if (Constants::DEBUG)
+                            PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
+                            // Marked for deletion and in physics world, remove
+                            if (so->getDeleteFlag() && physicsObject->getInPhysicsWorld())
                             {
-                                cout << "PhysicsComponent: Removing SceneObject " << so->getUuid()
-                                     << " from Physics World" << endl;
+                                if (Constants::DEBUG)
+                                {
+                                    cout << "PhysicsComponent: Removing SceneObject " << so->getUuid()
+                                    << " from Physics World" << endl;
+                                }
+                                removePhysicsObjectInstance(physicsObject);
                             }
-                            removePhysicsObjectInstance(physicsObject);
-                        }
-                        // Not marked for deletion and not in world, add
-                        if (!so->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
-                        {
-                            if (Constants::DEBUG)
+                            // Not marked for deletion and not in world, add
+                            if (!so->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
                             {
-                                cout << "PhysicsComponent: Adding SceneObject " << so->getUuid()
-                                     << " to Physics World" << endl;
+                                if (Constants::DEBUG)
+                                {
+                                    cout << "PhysicsComponent: Adding SceneObject " << so->getUuid()
+                                    << " to Physics World" << endl;
+                                }
+                                addPhysicsObjectInstance(physicsObject);
+                                physicsObject->setInPhysicsWorld(true);
                             }
-                            addPhysicsObjectInstance(physicsObject);
-                            physicsObject->setInPhysicsWorld(true);
                         }
+                        return nullptr;
                     }
-                    return nullptr;
-                }
-            )
-        );
+                    )
+                );
     }
 
     void
@@ -284,34 +280,32 @@ namespace Dream
         }
     }
 
-
     SceneObject*
     PhysicsComponent::getSceneObject
     (Scene* scene, const btCollisionObject* collObj)
     {
         return static_cast<SceneObject*>
-        (
-            scene->getRootSceneObject()->applyToAll
-            (
-                function<void*(SceneObject*)>
                 (
-                    [&](SceneObject* next)
-                    {
-                        if (next->hasPhysicsObjectInstance())
-                        {
-                            PhysicsObjectInstance* nextPO = next->getPhysicsObjectInstance();
-                            if (nextPO->getCollisionObject() == collObj)
+                    scene->getRootSceneObject()->applyToAll
+                    (
+                        function<void*(SceneObject*)>
+                        (
+                            [&](SceneObject* next)
+        {
+                            if (next->hasPhysicsObjectInstance())
                             {
-                                return next;
+                                PhysicsObjectInstance* nextPO = next->getPhysicsObjectInstance();
+                                if (nextPO->getCollisionObject() == collObj)
+                                {
+                                    return next;
+                                }
                             }
+                            return static_cast<SceneObject*>(nullptr);
                         }
-                        return static_cast<SceneObject*>(nullptr);
-                    }
-                )
-            )
-        );
+                        )
+                    )
+                );
     }
-
 
     void
     PhysicsComponent::drawDebug
@@ -329,30 +323,47 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "PhysicsComponent: Cleaning up... " << endl;
+            cout << "PhysicsComponent: Cleaning up physics for "
+                 << scene->getNameAndUuidString()
+                 << endl;
         }
 
-        scene->getRootSceneObject()->applyToAll
-        (
-            function<void*(SceneObject*)>
-            (
-                [&](SceneObject* so)
+        vector<btCollisionShape*> shapes;
+
+        int i;
+        for (i=mDynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
+        {
+            btCollisionObject* obj = mDynamicsWorld->getCollisionObjectArray()[i];
+            btRigidBody* body = btRigidBody::upcast(obj);
+            btCollisionShape* shape = body->getCollisionShape();
+            if (shape)
+            {
+                shapes.push_back(shape);
+            }
+            if (body && body->getMotionState())
+            {
+                if (Constants::DEBUG)
                 {
-                    // Has physics
-                    if (so->getLoadedFlag() && so->hasPhysicsObjectInstance())
-                    {
-                        PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
-                        if (Constants::DEBUG)
-                        {
-                            cout << "PhysicsComponent: Removing SceneObject " << so->getNameAndUuidString()
-                                 << " from Physics World" << endl;
-                        }
-                        removePhysicsObjectInstance(physicsObject);
-                    }
-                    return nullptr;
+                    cout << "PhysicsComponent: Deleting a motion state" << endl;
                 }
-            )
-        );
+                delete body->getMotionState();
+            }
+            if (Constants::DEBUG)
+            {
+                cout << "PhysicsComponent: Deleting a collision object" << endl;
+            }
+            mDynamicsWorld->removeCollisionObject(obj);
+            delete obj;
+        }
+
+        for (btCollisionShape* shape : shapes)
+        {
+            if (Constants::DEBUG)
+            {
+                cout << "PhysicsComponent: Deleting Shape" << endl;
+            }
+            delete shape;
+        }
     }
 
 } // End of Dream

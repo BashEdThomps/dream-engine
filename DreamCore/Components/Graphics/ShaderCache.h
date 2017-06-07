@@ -23,13 +23,17 @@
 #include <GL/glew.h>
 #include "../../Constants.h"
 
-namespace Dream {
-  using namespace std;
-    class ShaderCache {
+using namespace std;
+
+namespace Dream
+{
+    class ShaderCache
+    {
     public:
       static map<string,GLuint> sShaderCache;
       static GLuint getShader(string);
       static void putShader(string,GLuint);
+      static void cleanUp();
     };
 }
 

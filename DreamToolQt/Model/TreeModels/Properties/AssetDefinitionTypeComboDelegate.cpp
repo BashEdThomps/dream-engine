@@ -19,6 +19,8 @@
 #include <DreamCore.h>
 #include <QComboBox>
 
+using namespace Dream;
+
 AssetDefinitionTypeComboDelegate::AssetDefinitionTypeComboDelegate
 (QObject* parent)
     : QItemDelegate (parent)
@@ -33,7 +35,7 @@ const
 {
     QComboBox *editor = new QComboBox(parent);
     QStringList list ;
-    for (std::pair<Dream::AssetType,std::string> type : Dream::DREAM_ASSET_TYPES_MAP)
+    for (std::pair<AssetType,std::string> type : Constants::DREAM_ASSET_TYPES_MAP)
     {
         list << QString::fromStdString(type.second);
     }

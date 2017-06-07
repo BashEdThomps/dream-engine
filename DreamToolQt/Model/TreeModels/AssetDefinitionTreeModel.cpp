@@ -290,7 +290,7 @@ AssetDefinitionTreeModel::setupModelData
         QList<QVariant> nextDefinitionData;
         nextDefinitionData << QString::fromStdString(definition->getName());
 
-        if (definition->getType().compare(ASSET_TYPE_ANIMATION) == 0)
+        if (definition->getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0)
         {
             animationTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
@@ -301,7 +301,7 @@ AssetDefinitionTreeModel::setupModelData
                  )
             );
         }
-        else if (definition->getType().compare(ASSET_TYPE_AUDIO) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_AUDIO) == 0)
         {
             audioTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
@@ -312,7 +312,7 @@ AssetDefinitionTreeModel::setupModelData
                  )
             );
         }
-        else if (definition->getType().compare(ASSET_TYPE_FONT) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_FONT) == 0)
         {
            fontTreeItem->appendChild(
                new AssetDefinitionTreeItem(
@@ -323,7 +323,7 @@ AssetDefinitionTreeModel::setupModelData
                )
            );
         }
-        else if (definition->getType().compare(ASSET_TYPE_LIGHT) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_LIGHT) == 0)
         {
             lightTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
@@ -334,7 +334,7 @@ AssetDefinitionTreeModel::setupModelData
                  )
              );
         }
-        else if (definition->getType().compare(ASSET_TYPE_MODEL) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_MODEL) == 0)
         {
             modelTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
@@ -345,7 +345,7 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
-        else if (definition->getType().compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_PHYSICS_OBJECT) == 0)
         {
             physicsObjectTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
@@ -356,7 +356,7 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
-        else if (definition->getType().compare(ASSET_TYPE_SCRIPT) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_SCRIPT) == 0)
         {
             scriptTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
@@ -367,7 +367,7 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
-        else if (definition->getType().compare(ASSET_TYPE_SHADER) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_SHADER) == 0)
         {
             shaderTreeItem->appendChild(
                 new AssetDefinitionTreeItem(
@@ -378,7 +378,7 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
-        else if (definition->getType().compare(ASSET_TYPE_SPRITE) == 0)
+        else if (definition->getType().compare(Constants::ASSET_TYPE_SPRITE) == 0)
         {
             spriteTreeItem->appendChild(
                 new AssetDefinitionTreeItem(

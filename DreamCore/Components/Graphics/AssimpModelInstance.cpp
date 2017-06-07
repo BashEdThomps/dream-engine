@@ -245,4 +245,20 @@ namespace Dream
     }
 
 
+    void
+    AssimpModelInstance::cleanUpCache
+    ()
+    {
+        /*
+        if (Constants::DEBUG)
+        {
+            cout << "AssimpModelInstance: Cleaning up model cache" << endl;
+        }
+        for (pair<string,const aiScene*> meshes : AssimpModelCache)
+        {
+            delete meshes.second;
+        }
+        */
+        AssimpModelCache.clear();
+    }
 } // End of Dream

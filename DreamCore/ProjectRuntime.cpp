@@ -22,6 +22,8 @@ namespace Dream
 {
     ProjectRuntime::ProjectRuntime
     (Project* project, IWindowComponent* windowComponent)
+        : mDone(false)
+
     {
         if (Constants::DEBUG)
         {
@@ -29,13 +31,6 @@ namespace Dream
         }
         setProject(project);
         setWindowComponent(windowComponent);
-        setAnimationComponent(nullptr);
-        setAudioComponent(nullptr);
-        setPhysicsComponent(nullptr);
-        setGraphicsComponent(nullptr);
-        setCamera(nullptr);
-        setTime(nullptr);
-        setDone(false);
         setGameController(new GameController());
     }
 
@@ -47,66 +42,63 @@ namespace Dream
             cout << "ProjectRuntime: Destroying Object" << endl;
         }
         destroyComponents();
-        if (mGameController)
-        {
-            delete mGameController;
-        }
+
     }
 
     void
     ProjectRuntime::setProject
     (Project* proj)
     {
-        mProject = proj;
+        mProject.reset(proj);
     }
 
     void
     ProjectRuntime::setWindowComponent
     (IWindowComponent* wc)
     {
-        mWindowComponent = wc;
+        mWindowComponent.reset(wc);
     }
 
     IWindowComponent*
     ProjectRuntime::getWindowComponent
     ()
     {
-        return mWindowComponent;
+        return mWindowComponent.get();
     }
 
     void
     ProjectRuntime::setCamera
     (Camera* camera)
     {
-        mCamera = camera;
+        mCamera.reset(camera);
     }
 
     void
     ProjectRuntime::setAudioComponent
     (AudioComponent* audioComp)
     {
-        mAudioComponent = audioComp;
+        mAudioComponent.reset(audioComp);
     }
 
     void
     ProjectRuntime::setAnimationComponent
     (AnimationComponent* animComp)
     {
-        mAnimationComponent = animComp;
+        mAnimationComponent.reset(animComp);
     }
 
     void
     ProjectRuntime::setPhysicsComponent
     (PhysicsComponent* physicsComp)
     {
-        mPhysicsComponent = physicsComp;
+        mPhysicsComponent.reset(physicsComp);
     }
 
     void
     ProjectRuntime::setGraphicsComponent
     (GraphicsComponent* graphicsComp)
     {
-        mGraphicsComponent = graphicsComp;
+        mGraphicsComponent.reset(graphicsComp);
     }
 
     void
@@ -120,7 +112,7 @@ namespace Dream
     ProjectRuntime::setTime
     (Time* time)
     {
-        mTime = time;
+        mTime.reset(time);
     }
 
     void
@@ -162,6 +154,7 @@ namespace Dream
             mLuaEngine->cleanUp(scene);
         }
 
+
         if (Constants::DEBUG)
         {
             cout << "Dream: Finished Cleaning Up Components." << endl;
@@ -172,45 +165,48 @@ namespace Dream
     ProjectRuntime::getTime
     ()
     {
-        return mTime;
+        return mTime.get();
     }
 
     void
     ProjectRuntime::destroyComponents
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "ProjetRuntime: Destroying Components" << endl;
+        }
+
         if (mTime)
         {
-            delete mTime;
-            mTime = nullptr;
+            mTime.reset();
         }
         if (mAnimationComponent)
         {
-            delete mAnimationComponent;
-            mAnimationComponent = nullptr;
+            mAnimationComponent.reset();
         }
 
         if (mAudioComponent)
         {
-            delete mAudioComponent;
-            mAudioComponent = nullptr;
+            mAudioComponent.reset();
         }
 
         if (mPhysicsComponent)
         {
-            delete mPhysicsComponent;
-            mPhysicsComponent = nullptr;
+            mPhysicsComponent.reset();
         }
 
         if (mGraphicsComponent)
         {
-            delete mGraphicsComponent;
-            mGraphicsComponent = nullptr;
+            mGraphicsComponent.reset();
         }
         if (mWindowComponent)
         {
-            delete mWindowComponent;
-            mWindowComponent = nullptr;
+            mWindowComponent.reset();
+        }
+        if (mGameController)
+        {
+            mGameController.reset();
         }
     }
 
@@ -287,7 +283,7 @@ namespace Dream
     ProjectRuntime::initAudioComponent
     ()
     {
-        mAudioComponent = new AudioComponent();
+        mAudioComponent.reset(new AudioComponent());
         if (!mAudioComponent->init())
         {
             cerr << "Dream: Unable to initialise AudioComponent." << endl;
@@ -301,8 +297,8 @@ namespace Dream
     ProjectRuntime::initPhysicsComponent
     ()
     {
-        mPhysicsComponent = new PhysicsComponent();
-        mPhysicsComponent->setTime(mTime);
+        mPhysicsComponent.reset(new PhysicsComponent());
+        mPhysicsComponent->setTime(mTime.get());
         if (!mPhysicsComponent->init())
         {
             cerr << "ComponentManager: Unable to initialise PhysicsComponent." << endl;
@@ -318,12 +314,12 @@ namespace Dream
     {
         setCamera(new Camera());
 
-        mGraphicsComponent = new GraphicsComponent(mCamera,mWindowComponent);
-        mGraphicsComponent->setTime(mTime);
+        mGraphicsComponent.reset(new GraphicsComponent(mCamera.get(),mWindowComponent.get()));
+        mGraphicsComponent->setTime(mTime.get());
 
         if (mGraphicsComponent->init())
         {
-            mGraphicsComponent->setGameController(mGameController);
+            mGraphicsComponent->setGameController(mGameController.get());
             return true;
         }
         else
@@ -338,8 +334,8 @@ namespace Dream
     ProjectRuntime::initAnimationComponent
     ()
     {
-        mAnimationComponent = new AnimationComponent();
-        mAnimationComponent->setTime(mTime);
+        mAnimationComponent.reset(new AnimationComponent());
+        mAnimationComponent->setTime(mTime.get());
         if (mAnimationComponent->init())
         {
             return true;
@@ -363,7 +359,7 @@ namespace Dream
     ProjectRuntime::getAnimationComponent
     ()
     {
-        return mAnimationComponent;
+        return mAnimationComponent.get();
     }
 
 
@@ -371,7 +367,7 @@ namespace Dream
     ProjectRuntime::getAudioComponent
     ()
     {
-        return mAudioComponent;
+        return mAudioComponent.get();
     }
 
 
@@ -379,7 +375,7 @@ namespace Dream
     ProjectRuntime::getPhysicsComponent
     ()
     {
-        return mPhysicsComponent;
+        return mPhysicsComponent.get();
     }
 
 
@@ -387,7 +383,7 @@ namespace Dream
     ProjectRuntime::
     getGraphicsComponent()
     {
-        return mGraphicsComponent;
+        return mGraphicsComponent.get();
     }
 
 
@@ -395,7 +391,7 @@ namespace Dream
     ProjectRuntime::getCamera
     ()
     {
-        return mCamera;
+        return mCamera.get();
     }
 
 
@@ -403,7 +399,7 @@ namespace Dream
     ProjectRuntime::getGameController
     ()
     {
-        return mGameController;
+        return mGameController.get();
     }
 
 
@@ -411,14 +407,14 @@ namespace Dream
     ProjectRuntime::setGameController
     (GameController *gc)
     {
-        mGameController = gc;
+        mGameController.reset(gc);
     }
 
     bool
     ProjectRuntime::initLuaEngine
     ()
     {
-        mLuaEngine = new LuaEngine(mProject);
+        mLuaEngine.reset(new LuaEngine(mProject.get()));
         return mLuaEngine->init();
     }
 
@@ -475,6 +471,6 @@ namespace Dream
     ProjectRuntime::getLuaEngine
     ()
     {
-        return mLuaEngine;
+        return mLuaEngine.get();
     }
 }

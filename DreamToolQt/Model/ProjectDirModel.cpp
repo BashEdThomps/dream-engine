@@ -19,6 +19,8 @@
 #include <QDebug>
 #include <DreamCore.h>
 
+using namespace Dream;
+
 ProjectDirModel::ProjectDirModel
 (QString absolutePath, QObject* parent)
     : QObject(parent)
@@ -113,7 +115,7 @@ ProjectDirModel::createAssetsDir
             mAssetsDir = nullptr;
         }
 
-        result = mProjectDir->mkdir(ASSET_DIR);
+        result = mProjectDir->mkdir(QString::fromStdString(Constants::ASSET_DIR));
 
         if (result)
         {
@@ -137,7 +139,7 @@ ProjectDirModel::createAnimationDir
             mAnimationDir = nullptr;
         }
 
-        result = mAssetsDir->mkdir(ASSET_TYPE_ANIMATION);
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
 
         if (result)
         {
@@ -162,7 +164,7 @@ ProjectDirModel::createAudioDir
             mAudioDir = nullptr;
         }
 
-        result = mAssetsDir->mkdir(ASSET_TYPE_AUDIO);
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
 
         if (result)
         {
@@ -187,7 +189,7 @@ ProjectDirModel::createFontDir
             mAudioDir = nullptr;
         }
 
-        result = mAssetsDir->mkdir(ASSET_TYPE_AUDIO);
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
 
         if (result)
         {
@@ -260,7 +262,7 @@ ProjectDirModel::getAssetsDirAbsPath
 {
     if (mProjectDir)
     {
-        return mProjectDir->filePath(ASSET_DIR);
+        return mProjectDir->filePath(QString::fromStdString(Constants::ASSET_DIR));
     }
 
     return QString();

@@ -23,7 +23,7 @@
 AssetDefinitionFormatComboDelegate::AssetDefinitionFormatComboDelegate(std::string type, QObject* parent)
     : QItemDelegate(parent)
 {
-    mAssetType = Dream::assetTypeFromString(type);
+    mAssetType = Constants::assetTypeFromString(type);
 }
 
 AssetDefinitionFormatComboDelegate::~AssetDefinitionFormatComboDelegate
@@ -41,7 +41,7 @@ const
     editor->setDuplicatesEnabled(false);
     editor->setEditable(false);
     editor->setMinimumHeight(25);
-    vector<std::string> formats = Dream::DREAM_ASSET_FORMATS_MAP[mAssetType];
+    vector<std::string> formats = Constants::DREAM_ASSET_FORMATS_MAP[mAssetType];
     QStringList list;
     for (std::string format : formats)
     {

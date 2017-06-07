@@ -26,17 +26,19 @@
 #include <GL/glew.h>
 
 
-namespace Dream {
+using namespace std;
 
-  using namespace std;
-
-  class TextureCache {
+namespace Dream
+{
+  class TextureCache
+  {
     static vector<Texture> sTextureCache;
   public:
     TextureCache();
     ~TextureCache();
     static Texture loadTextureFromFile(const char*, const char*, const char*);
     static vector<Texture> getTextureCache();
+    static void cleanUp();
   };
 
 } // End Dream

@@ -19,6 +19,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/matrix.hpp>
 #include <functional>
+#include "TextureCache.h"
+#include "ShaderCache.h"
 
 namespace Dream
 {
@@ -689,6 +691,10 @@ namespace Dream
         clearLightQueue();
         mClearColour = {0.0f,0.0f,0.0f,1.0f};
         mAmbientLightColour = {0.0f,0.0f,0.0f,0.0f};
+        // Clean up caches
+        TextureCache::cleanUp();
+        ShaderCache::cleanUp();
+        AssimpModelInstance::cleanUpCache();
     }
 
 } // End of Dream

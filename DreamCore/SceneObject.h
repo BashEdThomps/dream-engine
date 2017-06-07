@@ -51,8 +51,7 @@ namespace Dream
         unique_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
         unique_ptr<FontInstance> mFontInstance;
     public:
-        SceneObject();
-        SceneObject(Scene*);
+        SceneObject(Scene* scene = nullptr);
         SceneObject(Scene*, nlohmann::json);
         ~SceneObject();
         void deleteChildren();

@@ -20,6 +20,8 @@
 #include <QDebug>
 #include <DreamCore.h>
 
+using namespace Dream;
+
 ScriptTemplateComboDelegate::ScriptTemplateComboDelegate
 (QObject* parent)
     : QItemDelegate (parent)
@@ -43,7 +45,7 @@ const
     editor->setEditable(false);
     editor->setMinimumHeight(25);
     QStringList list;
-    list << QString(ASSET_FORMAT_SCRIPT_LUA);
+    list << QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA);
     editor->addItems(list);
     return editor;
 }

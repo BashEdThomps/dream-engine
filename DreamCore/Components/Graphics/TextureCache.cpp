@@ -97,4 +97,20 @@ namespace Dream
 
         return texture;
     }
+
+    void
+    TextureCache::cleanUp
+    ()
+    {
+       // TODO
+       if (Constants::DEBUG)
+       {
+           cout << "TextureCache: Cleaning Up" << endl;
+       }
+       for (Texture texture : sTextureCache)
+       {
+           glDeleteTextures(1,&texture.id);
+       }
+       sTextureCache.clear();
+    }
 } // End of Dream

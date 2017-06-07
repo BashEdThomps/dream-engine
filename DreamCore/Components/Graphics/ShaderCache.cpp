@@ -47,4 +47,21 @@ namespace Dream
         sShaderCache.insert(pair<string,GLuint>(uuid,shaderProgram));
     }
 
+    void
+    ShaderCache::cleanUp
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "ShaderCache: Cleaning up" << endl;
+        }
+
+        for (pair<string,GLuint> shaderPair : sShaderCache)
+        {
+            glDeleteProgram(shaderPair.second);
+        }
+
+        sShaderCache.clear();
+    }
+
 } // End of Dream

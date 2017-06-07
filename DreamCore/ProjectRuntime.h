@@ -36,20 +36,20 @@ namespace Dream
     private:
 
         bool mDone;
-        Time *mTime;
-        Camera *mCamera;
-        AudioComponent *mAudioComponent;
-        GraphicsComponent *mGraphicsComponent;
-        PhysicsComponent *mPhysicsComponent;
-        AnimationComponent *mAnimationComponent;
-        IWindowComponent *mWindowComponent;
-        GameController *mGameController;
-        LuaEngine *mLuaEngine;
-        Project* mProject;
+        unique_ptr<Time>               mTime;
+        unique_ptr<Camera>             mCamera;
+        unique_ptr<AudioComponent>     mAudioComponent;
+        unique_ptr<GraphicsComponent>  mGraphicsComponent;
+        unique_ptr<PhysicsComponent>   mPhysicsComponent;
+        unique_ptr<AnimationComponent> mAnimationComponent;
+        unique_ptr<GameController>     mGameController;
+        unique_ptr<LuaEngine>          mLuaEngine;
+        unique_ptr<IWindowComponent>   mWindowComponent;
+        unique_ptr<Project>            mProject;
 
     public:
 
-        ProjectRuntime(Project*, IWindowComponent*);
+        ProjectRuntime(Project* proj = nullptr, IWindowComponent* wc = nullptr);
         ~ProjectRuntime();
 
         void setProject(Project*);

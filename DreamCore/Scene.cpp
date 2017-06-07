@@ -437,13 +437,7 @@ namespace Dream
         {
             for(SceneObject* obj : mDeleteQueue)
             {
-                SceneObject* parent = obj->getParent();
-                if (parent != nullptr)
-                {
-                    parent->removeChild(obj);
-                }
                 obj->cleanUp();
-                delete obj;
             }
         }
         clearDeleteQueue();
