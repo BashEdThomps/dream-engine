@@ -29,6 +29,8 @@
 #include "../Model/TreeModels/ProjectTreeModel.h"
 #include "../Model/TreeModels/AssetDefinitionTreeModel.h"
 
+using namespace Dream;
+
 class MainController : public QObject
 {
     Q_OBJECT
@@ -48,8 +50,8 @@ signals:
     void notifyProjectWidgetsEnabledChanged(bool enabled);
     void notifyStatusBarProjectLoaded(QString);
     void notifyNoSceneSelected();
-    void notifyPlayingScene(Dream::Scene* scene);
-    void notifyStoppedScene(Dream::Scene* scene);
+    void notifyPlayingScene(Scene* scene);
+    void notifyStoppedScene(Scene* scene);
 
 public slots:
     void onProjectNewAction();
@@ -68,7 +70,8 @@ public slots:
     void onProjectStartupSceneChanged(QString startupScene);
     void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
 
-    void onSelectedSceneChanged(Dream::Scene *scene);
+    void onSelectedSceneChanged(Scene *scene);
+    void onSceneStopped(Scene* scene);
 
 private: // Variables
     MainWindow *mMainWindow;
@@ -84,7 +87,7 @@ private: // Methods
     void createConnections();
     void updateWindowTitle(QString msg);
     void connectTreeViewModel();
-    QStringListModel* getSceneNamesListModel(vector<Dream::Scene*> sceneList);
+    QStringListModel* getSceneNamesListModel(vector<Scene*> sceneList);
     string getSceneNameFromModelIndex(int index);
 };
 

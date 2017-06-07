@@ -20,7 +20,7 @@
 #include <QStringList>
 
 AssetDefinitionTreeModel::AssetDefinitionTreeModel
-(Dream::Project *project, QObject *parent)
+(Project* project, QObject *parent)
     : QAbstractItemModel(parent)
 {
     mProject = project;
@@ -285,7 +285,7 @@ AssetDefinitionTreeModel::setupModelData
             );
     assetDefinitionsTreeItem->appendChild(spriteTreeItem);
 
-    for (Dream::AssetDefinition *definition : mProject->getAssetDefinitions())
+    for (AssetDefinition *definition : mProject->getAssetDefinitions())
     {
         QList<QVariant> nextDefinitionData;
         nextDefinitionData << QString::fromStdString(definition->getName());

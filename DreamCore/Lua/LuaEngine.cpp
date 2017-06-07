@@ -358,7 +358,9 @@ namespace Dream
 
         if (VERBOSE)
         {
-            cout << "LuaEngine: Calling onInit for " << sceneObject->getNameAndUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onInit in " << scriptInstance->getName()
+                 <<" for " << sceneObject->getName()
+                << endl;
         }
         try
         {
@@ -725,7 +727,6 @@ namespace Dream
                 .def("getParent",&SceneObject::getParent)
                 .def("setParent",&SceneObject::setParent)
                 .def("addChild",&SceneObject::addChild,luabind::adopt(boost::placeholders::_2))
-                .def("copyTransform",&SceneObject::copyTransform)
                 .def("addAssetDefUuidToLoad",&SceneObject::addAssetDefUuidToLoad)
                 .def("getAnimationInstance",&SceneObject::getAnimationInstance)
                 .def("setAnimationInstance",&SceneObject::setAnimationInstance)
@@ -954,11 +955,13 @@ namespace Dream
     LuaEngine::removeFromScriptMap
     (SceneObject* sceneObject)
     {
-        for(auto iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
+        map<SceneObject*,LuaScriptInstance*>::iterator iter;
+        for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
         {
            if ((*iter).first == sceneObject)
            {
-               mScriptMap.erase(iter);
+               mScriptMap.erase(iter++);
+               break;
            }
         }
     }

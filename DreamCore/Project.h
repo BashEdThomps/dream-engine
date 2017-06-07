@@ -73,10 +73,10 @@ namespace Dream
         bool loadFromArgumentParser(ArgumentParser*);
         bool loadFromDirectory(string);
 
-        bool updateAll();
-        bool updateLogic();
-        bool updateGraphics();
-        bool updateCleanup();
+        void updateAll();
+        void updateLogic();
+        void updateGraphics();
+        void updateFlush();
 
         void setUuid(string);
         string getUuid();
@@ -108,8 +108,6 @@ namespace Dream
 
         void showStatus();
 
-        void stopActiveScene();
-        void startActiveScene();
         void setActiveScene(Scene*);
         Scene *getActiveScene();
         bool hasActiveScene();
@@ -127,11 +125,11 @@ namespace Dream
 
         nlohmann::json toJson();
 
-        bool loadScene(Scene*);
+        bool loadActiveScene();
         bool loadSceneByUuid(string);
-        bool loadStartupScene();
+        void setStartupSceneActive();
 
-        void cleanUp(Scene*);
+        void cleanUpActiveScene();
         // Private Methods
     private:
         void loadAssetDefinitionsFromJson(nlohmann::json);

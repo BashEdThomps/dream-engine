@@ -25,10 +25,16 @@
 #include <json.hpp>
 #include "Constants.h"
 
-namespace Dream {
+using namespace std;
 
-    using namespace std;
-    class AssetDefinition {
+namespace Dream
+{
+    class AssetDefinition
+    {
+    public:
+        static AssetDefinition* getAssetDefinitionByUuid(vector<AssetDefinition*>,string);
+
+    private:
         map<string,string> mAttributes;
         nlohmann::json mJson;
         string mProjectPath;

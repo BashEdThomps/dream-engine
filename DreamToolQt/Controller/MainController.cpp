@@ -94,8 +94,8 @@ MainController::createConnections
     // Scene Stopped
     connect
     (
-                this,SIGNAL(notifyStoppedScene(Dream::Scene*)),
-                mMainWindow,SLOT(onSceneStopped(Dream::Scene*))
+                this,SIGNAL(notifyStoppedScene(Scene*)),
+                mMainWindow,SLOT(onSceneStopped(Scene*))
     );
     // Open Default Project
     connect
@@ -118,8 +118,8 @@ MainController::createConnections
     // Valid Scene Selected
     connect
     (
-                mDreamModel, SIGNAL(notifySelectedSceneChanged(Dream::Scene*)),
-                this, SLOT(onSelectedSceneChanged(Dream::Scene*))
+                mDreamModel, SIGNAL(notifySelectedSceneChanged(Scene*)),
+                this, SLOT(onSelectedSceneChanged(Scene*))
     );
     // Project Directory Changed
     connect
@@ -172,7 +172,7 @@ MainController::onProjectOpenAction
     }
 
     bool loadResult = mDreamModel->loadProject(mProjectDirectory);
-    cout << "LoadResult " << loadResult << endl;
+    cout << "MainController: LoadResult " << loadResult << endl;
     if (!loadResult)
     {
         emit notifyInvalidProjectDirectory(mProjectDirectory);
@@ -180,17 +180,16 @@ MainController::onProjectOpenAction
         return;
     }
     updateWindowTitle(mProjectDirectory);
-    Dream::Project *currentProject = mDreamModel->getProject();
+    Project *project = mDreamModel->getProject();
 
-    emit notifyProjectNameChanged(QString::fromStdString(currentProject->getName()));
-    emit notifyProjectAuthorChanged(QString::fromStdString(currentProject->getAuthor()));
-    emit notifyProjectDescriptionChanged(QString::fromStdString(currentProject->getDescription()));
-    emit notifyProjectWindowWidthChanged(currentProject->getWindowWidth());
-    emit notifyProjectWindowHeightChanged(currentProject->getWindowHeight());
-    emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneList()));
-    emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupScene()->getName()));
+    emit notifyProjectNameChanged(QString::fromStdString(project->getName()));
+    emit notifyProjectAuthorChanged(QString::fromStdString(project->getAuthor()));
+    emit notifyProjectDescriptionChanged(QString::fromStdString(project->getDescription()));
+    emit notifyProjectWindowWidthChanged(project->getWindowWidth());
+    emit notifyProjectWindowHeightChanged(project->getWindowHeight());
+    emit notifyProjectSceneListChanged(getSceneNamesListModel(project->getSceneList()));
+    emit notifyProjectStartupSceneChanged(QString::fromStdString(project->getStartupScene()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
-    Dream::Project *project = mDreamModel->getProject();
 
     mProjectTreeModel = new ProjectTreeModel(project,mMainWindow->getProjectTreeView());
     mMainWindow->getProjectTreeView()->setModel(mProjectTreeModel);
@@ -200,7 +199,7 @@ MainController::onProjectOpenAction
 
     emit notifyStatusBarProjectLoaded(
                 QString::fromStdString(
-                    "Successfuly Loaded Project: " +
+                    "MainController: Successfuly Loaded Project: " +
                     project->getName() + " (" +
                     project->getUuid() + ")"
                     )
@@ -244,7 +243,7 @@ MainController::onProjectSaveAction
 
 QStringListModel*
 MainController::getSceneNamesListModel
-(vector<Dream::Scene*> sceneList)
+(vector<Scene*> sceneList)
 {
     QStringList sceneNameList;
     mSceneListModel = new QStringListModel(mMainWindow);
@@ -262,7 +261,7 @@ void
 MainController::onProjectNameChanged
 (QString name)
 {
-    qDebug() << "Name set to " << name;
+    qDebug() << "MainController: Name set to " << name;
     mDreamModel->setProjectName(name.toStdString());
 }
 
@@ -270,7 +269,7 @@ void
 MainController::onProjectAuthorChanged
 (QString author)
 {
-    qDebug() << "Author set to " << author;
+    qDebug() << "MainController: Author set to " << author;
     mDreamModel->setProjectAuthor(author.toStdString());
 }
 
@@ -278,7 +277,7 @@ void
 MainController::onProjectDescriptionChanged
 (QString desc)
 {
-    qDebug() << "Description set to " << desc;
+    qDebug() << "MainController: Description set to " << desc;
     mDreamModel->setProjectDescription(desc.toStdString());
 }
 
@@ -286,7 +285,7 @@ void
 MainController::onProjectWindowWidthChanged
 (QString width)
 {
-    qDebug() << "Window Width set to " << width;
+    qDebug() << "MainController: Window Width set to " << width;
     mDreamModel->setProjectWindowWidth(width.toInt());
 }
 
@@ -294,7 +293,7 @@ void
 MainController::onProjectWindowHeightChanged
 (QString height)
 {
-    qDebug() << "Window Height set to " << height;
+    qDebug() << "MainController: Window Height set to " << height;
     mDreamModel->setProjectWindowHeight(height.toInt());
 }
 
@@ -303,7 +302,7 @@ MainController::onProjectStartupSceneChanged
 (QString startupSceneIndex)
 {
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
-    qDebug() << "startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
+    qDebug() << "MainController: startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
     mDreamModel->setProjectStartupSceneByName(sceneName);
 }
 
@@ -311,11 +310,11 @@ void
 MainController::onProjectPlayAction
 ()
 {
-    qDebug() << "onReloadProject Clicked";
-    Dream::Scene *scene = mDreamModel->getSelectedScene();
+    qDebug() << "MainController: onReloadProject Clicked";
+    Scene *scene = mDreamModel->getSelectedScene();
     if (scene)
     {
-        mDreamModel->startScene(mDreamModel->getSelectedScene());
+        mDreamModel->startScene();
         emit notifyPlayingScene(scene);
     }
     else
@@ -336,7 +335,7 @@ void
 MainController::onProjectStopAction
 ()
 {
-    Dream::Scene* scene = mDreamModel->stopActiveScene();
+    Scene* scene = mDreamModel->stopActiveScene();
     emit notifyStoppedScene(scene);
 }
 
@@ -355,7 +354,7 @@ MainController::onProjectOpenTestProjectAction
         return;
     }
     updateWindowTitle(mProjectDirectory);
-    Dream::Project *currentProject = mDreamModel->getProject();
+    Project *currentProject = mDreamModel->getProject();
 
     emit notifyProjectNameChanged(QString::fromStdString(currentProject->getName()));
     emit notifyProjectAuthorChanged(QString::fromStdString(currentProject->getAuthor()));
@@ -365,19 +364,18 @@ MainController::onProjectOpenTestProjectAction
     emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneList()));
     emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupScene()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
-    Dream::Project *project = mDreamModel->getProject();
 
-    mProjectTreeModel = new ProjectTreeModel(project,mMainWindow->getProjectTreeView());
+    mProjectTreeModel = new ProjectTreeModel(currentProject,mMainWindow->getProjectTreeView());
     mMainWindow->getProjectTreeView()->setModel(mProjectTreeModel);
 
-    mAssetDefinitionTreeModel = new AssetDefinitionTreeModel(project,mMainWindow->getAssetDefinitionTreeView());
+    mAssetDefinitionTreeModel = new AssetDefinitionTreeModel(currentProject,mMainWindow->getAssetDefinitionTreeView());
     mMainWindow->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel);
 
     emit notifyStatusBarProjectLoaded(
                 QString::fromStdString(
                     "Successfuly Loaded Project: " +
-                    project->getName() + " (" +
-                    project->getUuid() + ")"
+                    currentProject->getName() + " (" +
+                    currentProject->getUuid() + ")"
                     )
                 );
     connectTreeViewModel();
@@ -409,10 +407,10 @@ MainController::setupPropertiesTreeViewModel
 {
     QTreeView *propertiesTreeView = mMainWindow->getPropertiesTreeView();
     PropertiesModel *model = nullptr;
-    Dream::Project *project = nullptr;
-    Dream::AssetDefinition *asset = nullptr;
-    Dream::Scene *scene = nullptr;
-    Dream::SceneObject *sceneObject = nullptr;
+    Project *project;
+    AssetDefinition *asset = nullptr;
+    Scene *scene = nullptr;
+    SceneObject *sceneObject = nullptr;
 
     switch(item->getItemType())
     {
@@ -428,7 +426,7 @@ MainController::setupPropertiesTreeViewModel
             // Set Type Delegate
             break;
         case GenericTreeItemType::SCENE:
-            scene = static_cast<Dream::Scene*>(static_cast<ProjectTreeItem*>(item)->getItem());
+            scene = static_cast<Scene*>(static_cast<ProjectTreeItem*>(item)->getItem());
             mDreamModel->setSelectedScene(scene);
             if (scene)
             {
@@ -438,7 +436,7 @@ MainController::setupPropertiesTreeViewModel
             break;
         case GenericTreeItemType::SCENE_OBJECT:
             qDebug() << "Selected a scene object";
-            sceneObject = static_cast<Dream::SceneObject*>(static_cast<ProjectTreeItem*>(item)->getItem());
+            sceneObject = static_cast<SceneObject*>(static_cast<ProjectTreeItem*>(item)->getItem());
             model = new SceneObjectPropertiesModel(sceneObject,propertiesTreeView);
             break;
         case GenericTreeItemType::TREE_NODE:
@@ -452,11 +450,22 @@ MainController::setupPropertiesTreeViewModel
     }
 }
 
-void MainController::onSelectedSceneChanged(Dream::Scene *scene)
+void
+MainController::onSelectedSceneChanged
+(Scene *scene)
 {
+    mDreamModel->setSelectedScene(scene);
     mMainWindow->showStatusBarMessage(
         QString("Selected Scene: %1").
             arg(QString::fromStdString(scene->getName())
         )
     );
 }
+
+void
+MainController::onSceneStopped
+(Scene* scene)
+{
+
+}
+

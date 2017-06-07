@@ -382,8 +382,8 @@ namespace Dream
         ShaderInstance* shader = sceneObject->getShaderInstance();
         // Get arguments
         glm::vec2 size = glm::vec2(sprite->getWidth(),sprite->getHeight());
-        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+        GLfloat rotate = sceneObject->getTransform().getRotationZ();
+        GLfloat scale = sceneObject->getTransform().getScaleZ();
         glm::vec3 color = glm::vec3(1.0f);
         // Setup Shader
         shader->use();
@@ -435,8 +435,8 @@ namespace Dream
         // Setup Shader
         ShaderInstance* shader = sceneObject->getShaderInstance();
         glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
-        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+        GLfloat rotate = sceneObject->getTransform().getRotationZ();
+        GLfloat scale = sceneObject->getTransform().getScaleZ();
 
         shader->use();
 
@@ -576,7 +576,7 @@ namespace Dream
         glm::mat4 modelMatrix;
         // Get raw data
         glm::vec3 translation = sceneObject->getTranslation();
-        glm::quat rot = sceneObject->getTransform()->getOrientation();
+        glm::quat rot = sceneObject->getTransform().getOrientation();
         glm::vec3 scale = sceneObject->getScale();
         // Translate
         modelMatrix = glm::translate(modelMatrix,translation);

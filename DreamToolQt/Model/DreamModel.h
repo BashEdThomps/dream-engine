@@ -24,6 +24,8 @@
 
 #include "QOpenGLWindowComponent.h"
 
+using namespace Dream;
+
 class DreamModel : public QObject
 {
     Q_OBJECT
@@ -32,9 +34,9 @@ public:
                         QOpenGLWindowComponent *windowComponent = 0);
     ~DreamModel();
     bool loadProject(QString path);
-    Dream::Project* getProject();
-    vector<Dream::Scene*>* getScenes();
-    vector<Dream::AssetDefinition*>* getAssetDefinitions();
+    Project* getProject();
+    vector<Scene*> getScenes();
+    vector<AssetDefinition*> getAssetDefinitions();
     void setProjectName(string name);
     void setProjectAuthor(string author);
     void setProjectDescription(string desc);
@@ -43,21 +45,21 @@ public:
     void setProjectWindowWidth(int width);
     void setProjectWindowHeight(int height);
 
-    bool startScene(Dream::Scene* scene);
-    Dream::Scene* stopActiveScene();
+    bool startScene();
+    Scene* stopActiveScene();
 
-    Dream::AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
-    Dream::Scene *getSceneByUuid(std::string uuid);
+    AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
+    Scene *getSceneByUuid(std::string uuid);
 
-    Dream::Scene *getSelectedScene();
-    void setSelectedScene(Dream::Scene* selectedScene);
+    Scene *getSelectedScene();
+    void setSelectedScene(Scene* selectedScene);
 signals:
-    void notifySelectedSceneChanged(Dream::Scene* scene);
+    void notifySelectedSceneChanged(Scene* scene);
 
 
 private:
-    Dream::DreamEngine* mDreamEngine;
-    Dream::Scene* mSelectedScene;
+    Project *mProject;
+    Scene* mSelectedScene;
 
     QOpenGLWindowComponent *mWindowComponent;
 

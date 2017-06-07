@@ -1,11 +1,24 @@
 #include "AssimpMesh.h"
+#include "AssimpModelInstance.h"
 
 namespace Dream
 {
 
     AssimpMesh::AssimpMesh
-    (vector<Vertex> vertices,vector<GLuint> indices,vector<Texture> textures)
+    (
+            AssimpModelInstance* parent,
+            vector<Vertex> vertices,
+            vector<GLuint> indices,
+            vector<Texture> textures
+    )
     {
+        if (DEBUG)
+        {
+            cout << "AssimpMesh: Constructing Mesh for "
+                 << parent->getName()
+                 << endl;
+        }
+        mParent = parent;
         mVertices = vertices;
         mIndices  = indices;
         mTextures = textures;
@@ -17,9 +30,10 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "AssimpMesh: Destroying Object" << endl;
+            cout << "AssimpMesh: Destroying Mesh for "
+                 << mParent->getName()
+                 << endl;
         }
-
         return;
     }
 

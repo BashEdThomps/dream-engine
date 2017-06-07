@@ -20,6 +20,12 @@ void showUsage(const char** argv)
     }
 }
 
+// Construct project with IWindowComponent
+// Initialise Runtime
+// loadFromSomePlace
+// setActiveScene
+// loadActiveScene
+
 int main(int argc, const char** argv)
 {
     Project *project = new Project(new SDLWindowComponent());
@@ -55,7 +61,9 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    loaded = project->loadStartupScene();
+    project->setStartupSceneActive();
+
+    loaded = project->loadActiveScene();
 
     if (!loaded)
     {
@@ -63,16 +71,20 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    bool result = false;
-
+    dreamSetVerbose(false);
+    dreamSetDebug(false);
 
     // Run the project
-    while(!result)
+    while(project->getActiveScene()->getState() != SceneState::DONE)
     {
-        result = project->updateAll();
+        project->updateAll();
         std::this_thread::yield();
     }
 
+    dreamSetVerbose(true);
+
+    project->getActiveScene()->cleanUp();
+
     // Return the result
-    return result;
+    return 0;
 }

@@ -23,11 +23,13 @@
 #include "AssetDefinitionTreeItem.h"
 #include <DreamCore.h>
 
+using namespace Dream;
+
 class AssetDefinitionTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit AssetDefinitionTreeModel(Dream::Project *project, QObject *parent = 0);
+    explicit AssetDefinitionTreeModel(Project *project, QObject *parent = 0);
     ~AssetDefinitionTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -48,7 +50,7 @@ public:
 
 private:
     void setupModelData();
-    Dream::Project *mProject;
+    Project *mProject;
     AssetDefinitionTreeItem *mRootItem;
 };
 

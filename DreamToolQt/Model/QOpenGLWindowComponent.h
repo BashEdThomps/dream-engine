@@ -6,8 +6,9 @@
 #include <QSurfaceFormat>
 #include <QOpenGLContext>
 
+using namespace Dream;
 
-class QOpenGLWindowComponent : public QOpenGLWidget, public Dream::IWindowComponent
+class QOpenGLWindowComponent : public QOpenGLWidget, public IWindowComponent
 {
     Q_OBJECT
 public:
@@ -15,19 +16,20 @@ public:
     ~QOpenGLWindowComponent();
 
     bool init() override;
-    void updateComponent(Dream::Scene*) override;
+    void updateComponent(Scene*) override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
-    void cleanUp(Dream::Scene*) override;
-
-    void setDreamEngine(Dream::DreamEngine* engine);
+    void cleanUp(Scene*) override;
+    void setProject(Project* engine);
 
 protected:
     void initializeGL() override;
     void resizeGL( int w, int h ) override;
     void paintGL() override;
+
 private:
-    Dream::DreamEngine *mDreamEngine;
+    Project *mProject;
+
 };
 
 #endif // GLWIDGET_H

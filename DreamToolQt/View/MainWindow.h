@@ -30,6 +30,8 @@ namespace Ui {
     class MainWindow;
 }
 
+using namespace Dream;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -61,7 +63,7 @@ public slots:
     void onInvalidProjectDirectory(QString directory);
     void onNoSceneSelected();
     void showStatusBarMessage(QString msg);
-    void onSceneStopped(Dream::Scene* scene);
+    void onSceneStopped(Scene* scene);
 
 private:
     void setupGL(QWidget *parent);

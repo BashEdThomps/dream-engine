@@ -4,9 +4,12 @@
 #
 #-------------------------------------------------
 
+QMAKE_CXXFLAGS_WARN_ON = -Wno-ignored-qualifiers -Wno-address-of-packed-member
+
 QT += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 
 TARGET = DreamToolQt
 TEMPLATE = app

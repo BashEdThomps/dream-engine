@@ -4,10 +4,10 @@
 
 QOpenGLWindowComponent::QOpenGLWindowComponent
 ( const QSurfaceFormat& format, QWidget* parent )
-    : QOpenGLWidget(parent ), Dream::IWindowComponent ()
+    : QOpenGLWidget(parent ), IWindowComponent ()
 {
     setFormat(format);
-    mDreamEngine = nullptr;
+    mProject = nullptr;
 }
 
 QOpenGLWindowComponent::~QOpenGLWindowComponent
@@ -43,13 +43,17 @@ void
 QOpenGLWindowComponent::paintGL
 ()
 {
-    if (mDreamEngine)
+    if (mProject)
     {
-        mDreamEngine->updateLogic();
-        mDreamEngine->updateGraphics();
-        mDreamEngine->updateCleanup();
+        if (mProject->hasActiveScene())
+        {
+            mProject->updateAll();
+            return;
+        }
     }
-    return;
+
+    glClearColor(0.0f,0.0f,0.0f,0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 bool
@@ -61,7 +65,7 @@ QOpenGLWindowComponent::init
 
 void
 QOpenGLWindowComponent::updateComponent
-(Dream::Scene*)
+(Scene*)
 {
 
 }
@@ -81,16 +85,12 @@ QOpenGLWindowComponent::swapBuffers
 }
 
 void
-QOpenGLWindowComponent::setDreamEngine
-(Dream::DreamEngine* engine)
+QOpenGLWindowComponent::setProject
+(Project* engine)
 {
-    mDreamEngine = engine;
-    return;
+    mProject = engine;
 }
 
 void
 QOpenGLWindowComponent::cleanUp
-(Dream::Scene* scene)
-{
-
-}
+(Scene* scene) {}

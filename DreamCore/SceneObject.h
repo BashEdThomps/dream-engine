@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <memory>
 
 #include "Transform3D.h"
 #include "Constants.h"
@@ -21,150 +22,167 @@
 using namespace std;
 namespace Dream
 {
-  class SceneObject
-  {
-  protected:
-    nlohmann::json mJson;
-    vector<Event*> mEventQueue;
-    bool mLoaded;
-    SceneObject* mParent;
-    vector<SceneObject*> mChildren;
-    vector<string> mAssetDefUuidsToLoad;
-    bool mHasFocus;
-    // Metadata
-    string mUuid;
-    string mName;
-    Transform3D *mTransform;
-    bool mDelete;
-    // Asset Instances
-    AudioInstance *mAudioInstance;
-    AnimationInstance *mAnimationInstance;
-    AssimpModelInstance *mModelInstance;
-    ShaderInstance *mShaderInstance;
-    LightInstance *mLightInstance;
-    SpriteInstance *mSpriteInstance;
-    LuaScriptInstance *mScriptInstance;
-    PhysicsObjectInstance *mPhysicsObjectInstance;
-    FontInstance *mFontInstance;
-  public:
-    SceneObject(nlohmann::json);
-    SceneObject();
-    ~SceneObject();
-    void deleteChildren();
-    void deleteAssetInstances();
+    class Scene;
 
-    void constructorInit();
+    class SceneObject
+    {
+    protected:
+        Scene* mScene;
+        nlohmann::json mJson;
+        vector<Event*> mEventQueue;
+        bool mLoaded;
+        SceneObject* mParent;
+        vector<SceneObject*> mChildren;
+        vector<string> mAssetDefUuidsToLoad;
+        bool mHasFocus;
+        // Metadata
+        string mUuid;
+        string mName;
+        Transform3D mTransform;
+        bool mDelete;
+        // Asset Instances
+        unique_ptr<AudioInstance> mAudioInstance;
+        unique_ptr<AnimationInstance> mAnimationInstance;
+        unique_ptr<AssimpModelInstance> mModelInstance;
+        unique_ptr<ShaderInstance> mShaderInstance;
+        unique_ptr<LightInstance> mLightInstance;
+        unique_ptr<SpriteInstance> mSpriteInstance;
+        unique_ptr<LuaScriptInstance> mScriptInstance;
+        unique_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
+        unique_ptr<FontInstance> mFontInstance;
+    public:
+        SceneObject();
+        SceneObject(Scene*);
+        SceneObject(Scene*, nlohmann::json);
+        ~SceneObject();
+        void deleteChildren();
+        void deleteAssetInstances();
 
-    bool init();
-    void loadMetadata(nlohmann::json);
-    void loadJsonAssetInstances(nlohmann::json);
-    bool initAssetInstances();
+        void constructorInit();
 
-    bool hasUuid(string);
-    void setUuid(string);
-    string getUuid();
+        bool init();
+        void loadJsonData(nlohmann::json);
+        void loadAssetDefinitionsToLoadJsonData(nlohmann::json);
+        void loadAssetInstances();
 
-    bool hasName(string);
-    void setName(string);
-    string getName();
+        bool hasUuid(string);
+        void setUuid(string);
+        string getUuid();
 
-    string getNameAndUuidString();
+        bool hasName(string);
+        void setName(string);
+        string getName();
 
-    void showStatus();
+        string getNameAndUuidString();
 
-    glm::vec3 getTranslation();
-    void setTranslation(float, float, float);
-    void setTranslation(glm::vec3);
-    void resetTranslation();
+        void showStatus();
 
-    glm::vec3 getRotation();
-    void setRotation(float, float, float);
-    void setRotation(glm::vec3);
-    void resetRotation();
+        glm::vec3 getTranslation();
+        void setTranslation(float, float, float);
+        void setTranslation(glm::vec3);
+        void resetTranslation();
 
-    glm::vec3 getScale();
-    void setScale(float, float, float);
-    void setScale(glm::vec3);
-    void resetScale();
+        glm::vec3 getRotation();
+        void setRotation(float, float, float);
+        void setRotation(glm::vec3);
+        void resetRotation();
 
-    void resetTransform();
+        glm::vec3 getScale();
+        void setScale(float, float, float);
+        void setScale(glm::vec3);
+        void resetScale();
 
-    SceneObject* getChildByUuid(string);
-    int countAllChildren();
-    size_t countChildren();
-    void addChild(SceneObject*);
-    void removeChild(SceneObject*);
-    bool isChildOf(SceneObject*);
-    vector<SceneObject*> getChildren();
-    bool isParentOf(SceneObject*);
-    void setParent(SceneObject*);
-    SceneObject* getParent();
+        void resetTransform();
 
-    void setAnimationInstance(AnimationInstance*);
-    AnimationInstance* getAnimationInstance();
-    bool hasAnimationInstance();
+        SceneObject* getChildByUuid(string);
+        int countAllChildren();
+        size_t countChildren();
+        void addChild(SceneObject*);
+        void removeChild(SceneObject*);
+        bool isChildOf(SceneObject*);
+        vector<SceneObject*> getChildren();
+        bool isParentOf(SceneObject*);
+        void setParent(SceneObject*);
+        SceneObject* getParent();
 
-    void setAudioInstance(AudioInstance*);
-    AudioInstance* getAudioInstance();
-    bool hasAudioInstance();
+        void setAnimationInstance(AnimationInstance*);
+        AnimationInstance* getAnimationInstance();
+        bool hasAnimationInstance();
 
-    void setModelInstance(AssimpModelInstance*);
-    AssimpModelInstance* getModelInstance();
-    bool hasModelInstance();
+        void setAudioInstance(AudioInstance*);
+        AudioInstance* getAudioInstance();
+        bool hasAudioInstance();
 
-    void setScriptInstance(LuaScriptInstance*);
-    LuaScriptInstance* getScriptInstance();
-    bool hasScriptInstance();
+        void setModelInstance(AssimpModelInstance*);
+        AssimpModelInstance* getModelInstance();
+        bool hasModelInstance();
 
-    void setShaderInstance(ShaderInstance*);
-    ShaderInstance* getShaderInstance();
-    bool hasShaderInstance();
+        void setScriptInstance(LuaScriptInstance*);
+        LuaScriptInstance* getScriptInstance();
+        bool hasScriptInstance();
 
-    void setPhysicsObjectInstance(PhysicsObjectInstance*);
-    PhysicsObjectInstance* getPhysicsObjectInstance();
-    bool hasPhysicsObjectInstance();
+        void setShaderInstance(ShaderInstance*);
+        ShaderInstance* getShaderInstance();
+        bool hasShaderInstance();
 
-    void setLightInstance(LightInstance*);
-    LightInstance* getLightInstance();
-    bool hasLightInstance();
+        void setPhysicsObjectInstance(PhysicsObjectInstance*);
+        PhysicsObjectInstance* getPhysicsObjectInstance();
+        bool hasPhysicsObjectInstance();
 
-    void setSpriteInstance(SpriteInstance*);
-    SpriteInstance* getSpriteInstance();
-    bool hasSpriteInstance();
+        void setLightInstance(LightInstance*);
+        LightInstance* getLightInstance();
+        bool hasLightInstance();
 
-    void setFontInstance(FontInstance*);
-    FontInstance* getFontInstance();
-    bool hasFontInstance();
+        void setSpriteInstance(SpriteInstance*);
+        SpriteInstance* getSpriteInstance();
+        bool hasSpriteInstance();
 
-    void addAssetDefUuidToLoad(string);
-    vector<string> getAssetDefUuidsToLoad();
+        void setFontInstance(FontInstance*);
+        FontInstance* getFontInstance();
+        bool hasFontInstance();
 
-    string getTransformType();
-    void setTransformType(string);
+        void addAssetDefUuidToLoad(string);
+        vector<string> getAssetDefUuidsToLoad();
 
-    Transform3D* getTransform();
-    void setTransform(Transform3D*);
+        string getTransformType();
+        void setTransformType(string);
 
-    bool hasFocus();
-    void setHasFocus(bool);
+        Transform3D getTransform();
+        void setTransform(Transform3D*);
 
-    void copyTransform(Transform3D*);
+        bool hasFocus();
+        void setHasFocus(bool);
 
-    void setDeleteFlag(bool);
-    bool getDeleteFlag();
+        void setDeleteFlag(bool);
+        bool getDeleteFlag();
 
-    bool getLoadedFlag();
-    void setLoadedFlag(bool);
+        bool getLoadedFlag();
+        void setLoadedFlag(bool);
 
-    bool hasEvents();
-    void sendEvent(Event*);
-    vector<Event*>* getEventQueue();
-    void cleanupEvents();
-    nlohmann::json toJson();
+        bool hasEvents();
+        void sendEvent(Event*);
+        vector<Event*>* getEventQueue();
+        void cleanupEvents();
+        nlohmann::json toJson();
 
-    void* applyToAll(function<void*(SceneObject*)>);
-    bool applyToAll(function<bool(SceneObject*)>);
-  }; // End of SceneObject
+        void* applyToAll(function<void*(SceneObject*)>);
+        bool applyToAll(function<bool(SceneObject*)>);
+
+        void createAssetInstances();
+        void createAssetInstanceFromAssetDefinitionByUuid(string);
+        void createAssetInstance(AssetDefinition*);
+        void createAnimationInstance(AssetDefinition*);
+        void createAudioInstance(AssetDefinition*);
+        void createModelInstance(AssetDefinition*);
+        void createScriptInstance(AssetDefinition*);
+        void createShaderInstance(AssetDefinition*);
+        void createPhysicsObjectInstance(AssetDefinition*);
+        void createLightInstance(AssetDefinition*);
+        void createFontInstance(AssetDefinition*);
+        void createSpriteInstance(AssetDefinition*);
+
+
+    }; // End of SceneObject
 
 } // End of Dream
 

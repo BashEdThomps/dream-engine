@@ -67,7 +67,7 @@ namespace Dream
                     {
                         AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
                         animInstance->step(mTime->getTimeDelta());
-                        animInstance->applyTransform(currentSceneObject->getTransform());
+                        //animInstance->applyTransform(&(currentSceneObject->getTransform()));
                     }
                     return nullptr;
                 }

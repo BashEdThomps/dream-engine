@@ -23,11 +23,13 @@
 #include "ProjectTreeItem.h"
 #include <DreamCore.h>
 
+using namespace Dream;
+
 class ProjectTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit ProjectTreeModel(Dream::Project *project, QObject *parent = 0);
+    explicit ProjectTreeModel(Project *project, QObject *parent = 0);
     ~ProjectTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -48,8 +50,8 @@ public:
 
 private:
     void setupModelData(ProjectTreeItem *parent);
-    void appendSceneObjects(Dream::SceneObject *parentSceneObject, ProjectTreeItem* parentTreeNode);
-    Dream::Project  *mProject;
+    void appendSceneObjects(SceneObject *parentSceneObject, ProjectTreeItem* parentTreeNode);
+    Project *mProject;
     ProjectTreeItem *mRootItem;
 };
 

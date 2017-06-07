@@ -131,10 +131,15 @@ namespace DreamSDL
         {
             if (event.type == SDL_QUIT)
             {
-                setShouldClose(true);
+                if (DEBUG)
+                {
+                    cout << ">>> SDLWindowComponent: SDL_QUIT Event" << endl;
+                }
+                scene->setState(DONE);
                 break;
             }
-            /*else if (
+            /*
+            else if (
                      mGameController &&
                      (
                         event.type == SDL_CONTROLLERAXISMOTION ||
@@ -160,7 +165,10 @@ namespace DreamSDL
                 memcpy(&e,&event,sizeof(SDL_Event));
                 mEvents.push_back(e);
             }
-            cout << "SDLWindowComponent::update GameController Implementation Disabled!" << endl;
+            if (DEBUG)
+            {
+                cout << "SDLWindowComponent::update GameController Implementation Disabled!" << endl;
+            }
         }
         if (VERBOSE)
         {

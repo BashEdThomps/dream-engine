@@ -20,60 +20,73 @@
 #include "ProjectRuntime.h"
 #include <functional>
 #include <algorithm>
+#include "Project.h"
 
 namespace Dream
 {
     Scene::Scene
-    (
-            nlohmann::json jsonScene,
-            string projectPath,
-            vector<AssetDefinition*> assetDefs,
-            ProjectRuntime* runtime
-    )
+    (Project* project, nlohmann::json jsonScene)
+        : mJson(jsonScene),
+          mRootSceneObject(nullptr),
+          mClearColour({0.0f,0.0f,0.0f,0.0f}),
+          mAmbientLightColour({0.0f,0.0f,0.0f,0.0f}),
+          mGravity({0.0f,0.0f,0.0f}),
+          mState(NOT_LOADED),
+          mProject(project)
     {
-        mRuntime = runtime;
-        mJson = jsonScene;
-        setProjectPath(projectPath);
-        mAssetDefinitions = assetDefs;
-        mGravity = {0.0f,0.0f,0.0f};
-        mClearColour = {0.0f,0.0f,0.0f,0.0f};
-        mAmbientLightColour = {0.0f,0.0f,0.0f,0.0f};
-        mRootSceneObject = nullptr;
-        mDefaultCameraTransform = new Transform3D();
+        loadAllJsonData(mJson);
+    }
+
+    Scene::~Scene
+    ()
+    {
+        if (DEBUG)
+        {
+            cout << "Scene: Destroying Object" << endl;
+        }
+    }
+
+    void Scene::loadAllJsonData(nlohmann::json jsonScene)
+    {
+
         if (!jsonScene[SCENE_JSON_UUID].is_null())
         {
             mUuid = jsonScene[SCENE_JSON_UUID];
         }
+
         if (!jsonScene[SCENE_JSON_NAME].is_null())
         {
             mName = jsonScene[SCENE_JSON_NAME];
         }
+
         if (!jsonScene[SCENE_JSON_NOTES].is_null())
         {
             mNotes = jsonScene[SCENE_JSON_NOTES];
         }
-        loadPhysicsMetadata(jsonScene);
-        loadGraphicsMetadata(jsonScene);
+
+        loadPhysicsJsonData(jsonScene);
+        loadGraphicsJsonData(jsonScene);
 
         nlohmann::json sceneObjects = jsonScene[SCENE_JSON_SCENE_OBJECTS];
+
         if (!sceneObjects.is_null() && sceneObjects.is_array())
         {
-            loadSceneObjectMetadata(sceneObjects,nullptr);
+            loadSceneObjectJsonData(sceneObjects,nullptr);
         }
     }
 
     void
-    Scene::loadGraphicsMetadata
+    Scene::loadGraphicsJsonData
     (nlohmann::json jsonScene)
     {
-        loadDefaultCameraTransform(jsonScene[SCENE_JSON_CAMERA]);
-        loadClearColour(jsonScene[SCENE_JSON_CLEAR_COLOUR]);
-        loadAmbientLightColour(jsonScene[SCENE_JSON_AMBIENT_LIGHT_COLOUR]);
+        loadCameraJsonData(jsonScene[SCENE_JSON_CAMERA]);
+        loadClearColourJsonData(jsonScene[SCENE_JSON_CLEAR_COLOUR]);
+        loadAmbientLightColourJsonData(jsonScene[SCENE_JSON_AMBIENT_LIGHT_COLOUR]);
 
     }
 
     void
-    Scene::loadPhysicsMetadata
+    Scene::loadPhysicsJsonData
     (nlohmann::json jsonScene)
     {
         nlohmann::json gravity = jsonScene[SCENE_JSON_GRAVITY];
@@ -102,28 +115,21 @@ namespace Dream
         }
     }
 
-    vector<float>
-    Scene::getGravity
-    ()
-    {
-        return mGravity;
-    }
-
     void
-    Scene::loadDefaultCameraTransform
+    Scene::loadCameraJsonData
     (nlohmann::json camera)
     {
         if (!camera.is_null())
         {
             nlohmann::json translation = camera[SCENE_JSON_TRANSLATION];
-            mDefaultCameraTransform->setTranslation(
+            mDefaultCameraTransform.setTranslation(
                         translation[SCENE_JSON_X],
                         translation[SCENE_JSON_Y],
                         translation[SCENE_JSON_Z]
                         );
 
             nlohmann::json rotation = camera[SCENE_JSON_ROTATION];
-            mDefaultCameraTransform->setRotation(
+            mDefaultCameraTransform.setRotation(
                         rotation[SCENE_JSON_X],
                         rotation[SCENE_JSON_Y],
                         rotation[SCENE_JSON_Z]
@@ -137,30 +143,78 @@ namespace Dream
         }
         else
         {
-            mDefaultCameraTransform->setTranslation(0.0f, 0.0f, 0.0f);
-            mDefaultCameraTransform->setRotation(0.0f, 0.0f, 0.0f);
+            mDefaultCameraTransform.setTranslation(0.0f, 0.0f, 0.0f);
+            mDefaultCameraTransform.setRotation(0.0f, 0.0f, 0.0f);
         }
+    }
+
+    void
+    Scene::loadSceneObjectJsonData
+    (nlohmann::json jsonArray, SceneObject* parent)
+    {
+        if (!jsonArray.is_null())
+        {
+            for (nlohmann::json it : jsonArray)
+            {
+                SceneObject *nextSceneObject = new SceneObject(this,it);
+                if (parent != nullptr)
+                {
+                    parent->addChild(nextSceneObject);
+                }
+                else
+                {
+                    setRootSceneObject(nextSceneObject);
+                }
+                if (!it[SCENE_OBJECT_CHILDREN].is_null())
+                {
+                    loadSceneObjectJsonData(it[SCENE_OBJECT_CHILDREN],nextSceneObject);
+                }
+                if (DEBUG)
+                {
+                    nextSceneObject->showStatus();
+                }
+            }
+        }
+    }
+
+    void
+    Scene::loadClearColourJsonData
+    (nlohmann::json jsonClearColour)
+    {
+        if (!jsonClearColour.is_null())
+        {
+            mClearColour[0] = jsonClearColour[SCENE_JSON_RED];
+            mClearColour[1] = jsonClearColour[SCENE_JSON_GREEN];
+            mClearColour[2] = jsonClearColour[SCENE_JSON_BLUE];
+            mClearColour[3] = jsonClearColour[SCENE_JSON_ALPHA];
+        }
+    }
+
+    void
+    Scene::loadAmbientLightColourJsonData
+    (nlohmann::json jsonAmbientLight)
+    {
+        if (!jsonAmbientLight.is_null())
+        {
+            mAmbientLightColour[0] = jsonAmbientLight[SCENE_JSON_RED];
+            mAmbientLightColour[1] = jsonAmbientLight[SCENE_JSON_GREEN];
+            mAmbientLightColour[2] = jsonAmbientLight[SCENE_JSON_BLUE];
+            mAmbientLightColour[3] = jsonAmbientLight[SCENE_JSON_ALPHA];
+        }
+    }
+
+    vector<float>
+    Scene::getGravity
+    ()
+    {
+        return mGravity;
     }
 
     string
     Scene::getNameAndUuidString
     ()
     {
-        return getName() + " (" + getUuid() + ")";
-    }
-
-    Scene::~Scene
-    ()
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Destroying Object" << endl;
-        }
-
-        if (mDefaultCameraTransform != nullptr)
-        {
-            delete mDefaultCameraTransform;
-        }
+        return "<<"+getName() + " | " + getUuid() + ">>";
     }
 
     string
@@ -189,35 +243,6 @@ namespace Dream
     (string name)
     {
         mName = name;
-    }
-
-    void
-    Scene::loadSceneObjectMetadata
-    (nlohmann::json jsonArray, SceneObject* parent)
-    {
-        if (!jsonArray.is_null())
-        {
-            for (nlohmann::json it : jsonArray)
-            {
-                SceneObject *nextSceneObject = new SceneObject(it);
-                if (parent != nullptr)
-                {
-                    parent->addChild(nextSceneObject);
-                }
-                else
-                {
-                    setRootSceneObject(nextSceneObject);
-                }
-                if (!it[SCENE_OBJECT_CHILDREN].is_null())
-                {
-                    loadSceneObjectMetadata(it[SCENE_OBJECT_CHILDREN],nextSceneObject);
-                }
-                if (DEBUG)
-                {
-                    nextSceneObject->showStatus();
-                }
-            }
-        }
     }
 
     SceneObject*
@@ -294,8 +319,8 @@ namespace Dream
         cout << "\tUUID: " << mUuid << endl;
         cout << "\tName: " << mName << endl;
         cout << "\tCamera Transform: " << endl;
-        cout << "\tTranslation: " << String::vec3ToString(mDefaultCameraTransform->getTranslation()) << endl;
-        cout << "\tRotation: " << String::vec3ToString(mDefaultCameraTransform->getRotation())    << endl;
+        cout << "\tTranslation: " << String::vec3ToString(mDefaultCameraTransform.getTranslation()) << endl;
+        cout << "\tRotation: " << String::vec3ToString(mDefaultCameraTransform.getRotation())    << endl;
         cout << "\tScene Objects: " << getNumberOfSceneObjects() << endl;
         cout << "}" << endl;
         showScenegraph();
@@ -342,14 +367,14 @@ namespace Dream
     Scene::getDefaultCameraTranslation
     ()
     {
-        return mDefaultCameraTransform->getTranslation();
+        return mDefaultCameraTransform.getTranslation();
     }
 
     glm::vec3
     Scene::getDefaultCameraRotation
     ()
     {
-        return mDefaultCameraTransform->getRotation();
+        return mDefaultCameraTransform.getRotation();
     }
 
     void
@@ -364,32 +389,6 @@ namespace Dream
     ()
     {
         return mCameraMovementSpeed;
-    }
-
-    void
-    Scene::loadClearColour
-    (nlohmann::json jsonClearColour)
-    {
-        if (!jsonClearColour.is_null())
-        {
-            mClearColour[0] = jsonClearColour[SCENE_JSON_RED];
-            mClearColour[1] = jsonClearColour[SCENE_JSON_GREEN];
-            mClearColour[2] = jsonClearColour[SCENE_JSON_BLUE];
-            mClearColour[3] = jsonClearColour[SCENE_JSON_ALPHA];
-        }
-    }
-
-    void
-    Scene::loadAmbientLightColour
-    (nlohmann::json jsonAmbientLight)
-    {
-        if (!jsonAmbientLight.is_null())
-        {
-            mAmbientLightColour[0] = jsonAmbientLight[SCENE_JSON_RED];
-            mAmbientLightColour[1] = jsonAmbientLight[SCENE_JSON_GREEN];
-            mAmbientLightColour[2] = jsonAmbientLight[SCENE_JSON_BLUE];
-            mAmbientLightColour[3] = jsonAmbientLight[SCENE_JSON_ALPHA];
-        }
     }
 
     vector<float>
@@ -412,7 +411,8 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "Scene: Adding " << object->getNameAndUuidString()
+            cout << "Scene: Adding "
+                 << object->getNameAndUuidString()
                  << " to delete queue" << endl;
         }
         mDeleteQueue.push_back(object);
@@ -424,7 +424,7 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "Scene: Clearing delete queue" << endl;
+            cout << "Scene: clearDeleteQueue" << endl;
         }
         mDeleteQueue.clear();
     }
@@ -449,12 +449,12 @@ namespace Dream
     }
 
     void
-    Scene::findDeletedSceneObjects
+    Scene::findDeleteFlaggedSceneObjects
     ()
     {
         if (VERBOSE)
         {
-            cout << "Scene: Cleanup Deleted SceneObjects Called" << endl;
+            cout << "Scene: findDeleteFlaggedSceneObjects Called" << endl;
         }
 
         mRootSceneObject->applyToAll
@@ -480,7 +480,7 @@ namespace Dream
         return mDeleteQueue;
     }
 
-    bool
+    void
     Scene::createAllAssetInstances
     ()
     {
@@ -488,8 +488,6 @@ namespace Dream
         {
             cout << "Secne: Create All Asset Instances Called" << endl;
         }
-
-        bool error = false;
 
         mRootSceneObject->applyToAll
         (
@@ -500,239 +498,70 @@ namespace Dream
                     // Not loaded && not marked to delete
                     if (!sceneObj->getLoadedFlag() && !sceneObj->getDeleteFlag())
                     {
-                        if (!createAssetInstancesForSceneObject(sceneObj))
-                        {
-                            error = true;
-                        }
+                        sceneObj->createAssetInstances();
                     }
                     return nullptr;
                 }
             )
         );
-        return !error;
-    }
-
-    bool
-    Scene::createAssetInstancesForSceneObject
-    (SceneObject* currentSO)
-    {
-        vector<string> aiUuidsToLoad;
-        aiUuidsToLoad = currentSO->getAssetDefUuidsToLoad();
-        for (string aDefUuid : aiUuidsToLoad)
-        {
-            IAssetInstance* newAsset = createAssetInstanceFromDefinitionUuid(currentSO, aDefUuid);
-            if (newAsset == nullptr)
-            {
-                AssetDefinition* definition = getAssetDefinitionByUuid(aDefUuid);
-                cerr << "Scene: Unable to instanciate asset instance for "
-                     << definition->getName() << " (" << definition->getUuid() << ")" << endl;
-                return false;
-            }
-        }
-        currentSO->setDeleteFlag(false);
-        currentSO->setLoadedFlag(true);
-        return currentSO->getLoadedFlag();
-    }
-
-    IAssetInstance*
-    Scene::createAssetInstanceFromDefinitionUuid
-    (SceneObject* sceneObject, string uuid)
-    {
-        AssetDefinition* assetDefinition = getAssetDefinitionByUuid(uuid);
-        return createAssetInstance(sceneObject, assetDefinition);
-    }
-
-    IAssetInstance*
-    Scene::createAssetInstance
-    (SceneObject* sceneObject,AssetDefinition* definition)
-    {
-        IAssetInstance* retval = nullptr;
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Asset Intance of: ("
-                 << definition->getType() << ") " << definition->getName()
-                 << ", for SceneObject: " << sceneObject->getNameAndUuidString()
-                 << endl;
-        }
-
-        if(definition->isTypeAnimation())
-        {
-            retval = createAnimationInstance(sceneObject, definition);
-        }
-        else if (definition->isTypeAudio())
-        {
-            retval = createAudioInstance(sceneObject, definition);
-        }
-        else if (definition->isTypeModel())
-        {
-            retval = createModelInstance(sceneObject, definition);
-        }
-        else if (definition->isTypeScript())
-        {
-            retval = createScriptInstance(sceneObject, definition);
-        }
-        else if (definition->isTypeShader())
-        {
-            retval = createShaderInstance(sceneObject, definition);
-        }
-        else if (definition->isTypePhysicsObject())
-        {
-            retval = createPhysicsObjectInstance(sceneObject,definition);
-        }
-        else if (definition->isTypeLight())
-        {
-            retval = createLightInstance(sceneObject, definition);
-        }
-        else if (definition->isTypeSprite())
-        {
-            retval = createSpriteInstance(sceneObject, definition);
-        }
-        else if (definition->isTypeFont())
-        {
-            retval = createFontInstance(sceneObject,definition);
-        }
-
-        if (retval != nullptr)
-        {
-            if (DEBUG)
-            {
-                cout << "Scene: Loading Asset Data for " << definition->getName() << endl;
-            }
-            if (!retval->load(mProjectPath))
-            {
-                cerr << "Scene: Failed to create instance of " << definition->getName() << endl;
-                return nullptr;
-            }
-        }
-        return retval;
     }
 
     void
-    Scene::setProjectPath
-    (string projectPath)
+    Scene::loadAllAssetInstances
+    ()
     {
-        mProjectPath = projectPath;
-    }
-
-    PhysicsObjectInstance*
-    Scene::createPhysicsObjectInstance
-    (SceneObject *sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
+        if (VERBOSE)
         {
-            cout << "Scene: Creating Physics Object Asset Instance." << endl;
+            cout << "Secne: loadAllAssetInstances from "
+                 << mProject->getProjectPath() << endl;
         }
-        PhysicsObjectInstance* retval = new PhysicsObjectInstance(definition,sceneObject->getTransform(),mAssetDefinitions);
-        sceneObject->setPhysicsObjectInstance(retval);
-        return retval;
-    }
 
-    AnimationInstance*
-    Scene::createAnimationInstance
-    (SceneObject* sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Animation asset instance." << endl;
-        }
-        AnimationInstance* retval = new AnimationInstance(definition,sceneObject->getTransform());
-        sceneObject->setAnimationInstance(retval);
-        return retval;
-    }
+        mRootSceneObject->applyToAll
+        (
+            function<void*(SceneObject*)>
+            (
+                [&](SceneObject* sceneObj)
+                {
+                    if (DEBUG)
+                    {
+                        cout << "Scene: loadAsesetInstances for "
+                            << sceneObj->getNameAndUuidString() << endl;
+                    }
+                    // Not loaded && not marked to delete
+                    if (!sceneObj->getLoadedFlag())
+                    {
+                        if(!sceneObj->getDeleteFlag())
+                        {
+                            sceneObj->loadAssetInstances();
+                        }
+                        else
+                        {
+                            if (DEBUG)
+                            {
+                                cout << "Scene: " << sceneObj->getName()
+                                     << " has delete flag set " << endl;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (DEBUG)
+                        {
+                            cout << "Scene: " << sceneObj->getName()
+                                 << " has loaded flag set" << endl;
+                        }
 
-    AudioInstance*
-    Scene::createAudioInstance
-    (SceneObject* sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Audio asset instance." << endl;
-        }
-        AudioInstance* retval = mRuntime->getAudioComponent()->newAudioInstance(definition,sceneObject->getTransform());
-        sceneObject->setAudioInstance(retval);
-        return retval;
-    }
+                    }
+                    return nullptr;
+                }
+            )
+        );
 
-    AssimpModelInstance* Scene::createModelInstance(SceneObject* sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Model asset instance." << endl;
-        }
-        AssimpModelInstance* retval = nullptr;
-        retval = new AssimpModelInstance(definition,sceneObject->getTransform());
-        sceneObject->setModelInstance(retval);
-        return retval;
+        setState(LOADED);
     }
-
-    LuaScriptInstance*
-    Scene::createScriptInstance
-    (SceneObject* sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Script asset instance." << endl;
-        }
-        LuaScriptInstance* retval = new LuaScriptInstance(definition, sceneObject->getTransform());
-        sceneObject->setScriptInstance(retval);
-        mRuntime->getLuaEngine()->addToScriptMap(sceneObject,retval);
-        return retval;
-    }
-
-    ShaderInstance*
-    Scene::createShaderInstance
-    (SceneObject* sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Shader asset instance." << endl;
-        }
-        ShaderInstance* retval = new ShaderInstance(definition,sceneObject->getTransform());
-        sceneObject->setShaderInstance(retval);
-        return retval;
-    }
-
-    LightInstance*
-    Scene::createLightInstance
-    (SceneObject *sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Light Asset instance." << endl;
-        }
-        LightInstance* retval = new LightInstance(definition,sceneObject->getTransform());
-        sceneObject->setLightInstance(retval);
-        return retval;
-    }
-
-    SpriteInstance*
-    Scene::createSpriteInstance
-    (SceneObject *sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Sprite Asset instance." << endl;
-        }
-        SpriteInstance* retval = new SpriteInstance(definition,sceneObject->getTransform());
-        sceneObject->setSpriteInstance(retval);
-        return retval;
-    }
-
-    FontInstance*
-    Scene::createFontInstance
-    (SceneObject *sceneObject, AssetDefinition* definition)
-    {
-        if (DEBUG)
-        {
-            cout << "Scene: Creating Font Asset instance." << endl;
-        }
-        FontInstance* retval = new FontInstance(definition,sceneObject->getTransform());
-        sceneObject->setFontInstance(retval);
-        return retval;
-    }
-
     void
-    Scene::findDeletedScripts()
+    Scene::findDeleteFlaggedScripts
+    ()
     {
         if (VERBOSE)
         {
@@ -742,22 +571,8 @@ namespace Dream
 
         for (SceneObject* it : objects)
         {
-            mRuntime->getLuaEngine()->removeFromScriptMap(it);
+            mProject->getRuntime()->getLuaEngine()->removeFromScriptMap(it);
         }
-    }
-
-    AssetDefinition*
-    Scene::getAssetDefinitionByUuid
-    (string uuid)
-    {
-        for (AssetDefinition* ad : mAssetDefinitions)
-        {
-            if (ad->hasUuid(uuid))
-            {
-                return ad;
-            }
-        }
-        return nullptr;
     }
 
     bool
@@ -788,8 +603,14 @@ namespace Dream
         mNotes = notes;
     }
 
-    void Scene::cleanUpSceneObjects()
+    void
+    Scene::cleanUpSceneObjects
+    ()
     {
+        if (DEBUG)
+        {
+            cout << "Scene: cleanUpSceneObjects" << endl;
+        }
         mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
@@ -801,6 +622,19 @@ namespace Dream
                 }
             )
         );
+    }
+
+    void
+    Scene::flush
+    ()
+    {
+        if (DEBUG)
+        {
+            cout << "Scene: flush" << endl;
+        }
+        findDeleteFlaggedSceneObjects();
+        findDeleteFlaggedScripts();
+        destroyDeleteQueue();
     }
 
     bool
@@ -821,7 +655,55 @@ namespace Dream
     Scene::cleanUp
     ()
     {
-       cleanUpSceneObjects();
+        if (DEBUG)
+        {
+            cout << "Scene: cleanUp called on "
+                 <<  getNameAndUuidString()
+                 << endl;
+        }
+
+        if(getState() == DONE)
+        {
+           cleanUpSceneObjects();
+           flush();
+           setState(CLEANED_UP);
+        }
+        else
+        {
+            cerr << "Scene: Cannot cleanUp Scene "
+                 << getNameAndUuidString()
+                 << " State != DONE"
+                 << endl;
+        }
     }
+
+    SceneState
+    Scene::getState
+    ()
+    {
+       return mState;
+    }
+
+    void
+    Scene::setState
+    (SceneState state)
+    {
+        mState = state;
+    }
+
+    Project*
+    Scene::getProject
+    ()
+    {
+        return mProject;
+    }
+
+    bool
+    Scene::isState
+    (SceneState state)
+    {
+        return mState == state;
+    }
+
 
 } // End of Dream

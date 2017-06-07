@@ -42,9 +42,19 @@
 #include "Components/Physics/PhysicsObjectInstance.h"
 
 using namespace std;
+
 namespace Dream
 {
-    class ProjectRuntime;
+    class Project;
+
+    enum SceneState
+    {
+        NOT_LOADED,
+        LOADED,
+        RUNNING,
+        DONE,
+        CLEANED_UP
+    };
 
     class Scene
     {
@@ -55,25 +65,21 @@ namespace Dream
         string mNotes;
         SceneObject *mRootSceneObject;
         vector<SceneObject*> mDeleteQueue;
-        Transform3D* mDefaultCameraTransform;
+        Transform3D mDefaultCameraTransform;
         float mCameraMovementSpeed;
         vector<float> mClearColour;
         vector<float> mAmbientLightColour;
         string mProjectPath;
-        vector<AssetDefinition*> mAssetDefinitions;
         vector<float> mGravity;
         bool mPhysicsDebug;
-        ProjectRuntime* mRuntime;
+        SceneState mState;
+        Project* mProject;
 
     public:
-        Scene(
-            nlohmann::json projJson,
-            string projPath,
-            vector<AssetDefinition*> definitions,
-            ProjectRuntime* runtime
-        );
-
+        Scene(Project* parent, nlohmann::json projJson);
         ~Scene();
+
+        void flush();
 
         string getUuid();
         void setUuid(string);
@@ -82,6 +88,8 @@ namespace Dream
         void setName(string);
 
         string getNameAndUuidString();
+
+        Project* getProject();
 
         int countChildrenOfSceneObject(SceneObject*);
 
@@ -110,25 +118,12 @@ namespace Dream
         vector<SceneObject*> getDeleteQueue();
         void clearDeleteQueue();
         void destroyDeleteQueue();
-        void findDeletedSceneObjects();
 
-        bool createAllAssetInstances();
-        IAssetInstance* createAssetInstanceFromDefinitionUuid(SceneObject*, string);
-        IAssetInstance* createAssetInstance(SceneObject*, AssetDefinition*);
-        AnimationInstance* createAnimationInstance(SceneObject*, AssetDefinition*);
-        AudioInstance* createAudioInstance(SceneObject*, AssetDefinition*);
-        AssimpModelInstance* createModelInstance(SceneObject*, AssetDefinition*);
-        LuaScriptInstance* createScriptInstance(SceneObject*, AssetDefinition*);
-        ShaderInstance* createShaderInstance(SceneObject*, AssetDefinition*);
-        PhysicsObjectInstance* createPhysicsObjectInstance(SceneObject*, AssetDefinition*);
-        LightInstance* createLightInstance(SceneObject*, AssetDefinition*);
-        FontInstance* createFontInstance(SceneObject*, AssetDefinition*);
-        SpriteInstance* createSpriteInstance(SceneObject*, AssetDefinition*);
+        void findDeleteFlaggedSceneObjects();
+        void findDeleteFlaggedScripts();
 
-        void setProjectPath(string);
-
-        bool createAssetInstancesForSceneObject(SceneObject*);
-        void findDeletedScripts();
+        void createAllAssetInstances();
+        void loadAllAssetInstances();
 
         string getNotes();
         void setNotes(string notes);
@@ -138,18 +133,25 @@ namespace Dream
         vector<float> getGravity();
         bool getPhysicsDebug();
 
-        void loadPhysicsMetadata(nlohmann::json);
-        void loadGraphicsMetadata(nlohmann::json);
-        void loadSceneObjectMetadata(nlohmann::json, SceneObject*);
-        void loadDefaultCameraTransform(nlohmann::json);
-        void loadClearColour(nlohmann::json);
-        void loadAmbientLightColour(nlohmann::json);
+        void loadAllJsonData(nlohmann::json);
+        void loadPhysicsJsonData(nlohmann::json);
+        void loadGraphicsJsonData(nlohmann::json);
+        void loadSceneObjectJsonData(nlohmann::json, SceneObject*);
+        void loadCameraJsonData(nlohmann::json);
+        void loadClearColourJsonData(nlohmann::json);
+        void loadAmbientLightColourJsonData(nlohmann::json);
+
         nlohmann::json toJson();
+
         void cleanUpSceneObjects();
         void cleanUp();
 
         bool hasName(string);
         bool hasUuid(string);
+
+        SceneState getState();
+        void setState(SceneState);
+        bool isState(SceneState);
 
     }; // End of Scene
 

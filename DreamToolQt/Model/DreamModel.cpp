@@ -22,9 +22,9 @@ DreamModel::DreamModel
 (QObject *parent,QOpenGLWindowComponent *windowComponent)
     : QObject(parent)
 {
-    mDreamEngine = new Dream::DreamEngine(windowComponent);
-    mDreamEngine->initComponents();
     mWindowComponent = windowComponent;
+    mProject = new Project(windowComponent);
+    mProject->initRuntime();
     mSelectedScene = nullptr;
     mHeartbeatTimer = nullptr;
 }
@@ -34,116 +34,112 @@ DreamModel::~DreamModel
 {
 }
 
-Dream::Project*
+Project*
 DreamModel::getProject
 ()
 {
-    if (mDreamEngine)
-    {
-        return mDreamEngine->getProject();
-    }
-    return nullptr;
+    return mProject;
 }
 
-vector<Dream::Scene*>*
+vector<Scene*>
 DreamModel::getScenes
 ()
 {
-    if (mDreamEngine)
-    {
-        return nullptr;
-    }
-    return nullptr;
+    return mProject->getSceneList();
 }
 
-vector<Dream::AssetDefinition*>*
+vector<AssetDefinition*>
 DreamModel::getAssetDefinitions
 ()
 {
-    if (mDreamEngine)
-    {
-        return nullptr;
-    }
-    return nullptr;
+    return mProject->getAssetDefinitions();
 }
 
 bool
 DreamModel::loadProject
 (QString path)
 {
-    return mDreamEngine->loadFromDirectory(path.toStdString());
+    return mProject->loadFromDirectory(path.toStdString());
 }
 
 void
 DreamModel::setProjectName
 (string name)
 {
-    mDreamEngine->getProject()->setName(name);
+    mProject->setName(name);
 }
 
 void
 DreamModel::setProjectAuthor
 (string author)
 {
-    mDreamEngine->getProject()->setAuthor(author);
+    mProject->setAuthor(author);
 }
 
 void
 DreamModel::setProjectDescription
 (string desc)
 {
-    mDreamEngine->getProject()->setDescription(desc);
+    mProject->setDescription(desc);
 }
 
 void
 DreamModel::setProjectStartupSceneByUuid
 (string scene)
 {
-    mDreamEngine->getProject()->setStartupSceneUuid(scene);
+    mProject->setStartupSceneUuid(scene);
 }
 
 void
 DreamModel::setProjectStartupSceneByName
 (string scene)
 {
-    mDreamEngine->getProject()->setStartupSceneName(scene);
+    mProject->setStartupSceneName(scene);
 }
 
 void
 DreamModel::setProjectWindowWidth
 (int width)
 {
-    mDreamEngine->getProject()->setWindowWidth(width);
+    mProject->setWindowWidth(width);
 }
 
 void
 DreamModel::setProjectWindowHeight
 (int height)
 {
-    mDreamEngine->getProject()->setWindowHeight(height);
+    mProject->setWindowHeight(height);
 }
 
-Dream::AssetDefinition*
+AssetDefinition*
 DreamModel::getAssetDefinitionByUuid
 (std::string uuid)
 {
-    return mDreamEngine->getProject()->getAssetDefinitionByUuid(uuid);
+    return mProject->getAssetDefinitionByUuid(uuid);
 }
 
-Dream::Scene*
+Scene*
 DreamModel::getSceneByUuid
 (std::string uuid)
 {
-    return mDreamEngine->getProject()->getSceneByUuid(uuid);
+    return getProject()->getSceneByUuid(uuid);
 }
 
 bool
 DreamModel::startScene
-(Dream::Scene* scene)
+()
 {
-    qDebug() << "DreamModel: *** Start Scene ***";
+    if (!mSelectedScene)
+    {
+        qDebug() << "DreamModel: No scene selected";
+        return false;
+    }
 
-    bool loadResult = mDreamEngine->loadScene(scene);
+    qDebug() << "DreamModel: *** Start Scene ***";
+    mProject->initRuntime();
+
+    mProject->setActiveScene(mSelectedScene);
+    bool loadResult = mProject->loadActiveScene();
 
     if (!loadResult)
     {
@@ -158,11 +154,11 @@ DreamModel::startScene
         mHeartbeatTimer->start(16);
     }
 
-    mWindowComponent->setDreamEngine(mDreamEngine);
+    mWindowComponent->setProject(mProject);
     return true;
 }
 
-Dream::Scene*
+Scene*
 DreamModel::getSelectedScene
 ()
 {
@@ -171,27 +167,27 @@ DreamModel::getSelectedScene
 
 void
 DreamModel::setSelectedScene
-(Dream::Scene* selectedScene)
+(Scene* selectedScene)
 {
     mSelectedScene = selectedScene;
-    emit notifySelectedSceneChanged(selectedScene);
+    //emit notifySelectedSceneChanged(selectedScene);
 }
 
-Dream::Scene*
+Scene*
 DreamModel::stopActiveScene
 ()
 {
-    Dream::Scene* activeScene = mDreamEngine->getActiveScene();
+    Scene* activeScene = mProject->getActiveScene();
     if (activeScene)
     {
         if (mHeartbeatTimer)
         {
-            //disconnect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()));
             delete mHeartbeatTimer;
             mHeartbeatTimer = nullptr;
         }
-        mWindowComponent->setDreamEngine(nullptr);
-        mDreamEngine->stopActiveScene();
+        activeScene->setState(DONE);
+        activeScene->cleanUp();
+
     }
     return activeScene;
 }

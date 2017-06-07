@@ -21,16 +21,18 @@
 #include "PropertiesModel.h"
 #include <DreamCore.h>
 
+using namespace Dream;
+
 class ProjectPropertiesModel : public PropertiesModel
 {
 public:
-    ProjectPropertiesModel(Dream::Project *project, QTreeView* parent = 0);
+    ProjectPropertiesModel(Project *project, QTreeView* parent = 0);
     ~ProjectPropertiesModel();
     void createRoot() override;
     void createProperties() override;
     void createDelegates() override;
 private:
-    Dream::Project *mProject;
+    Project *mProject;
 };
 
 #endif // PROJECTPROPERTIESMODEL_H

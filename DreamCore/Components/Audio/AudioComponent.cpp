@@ -40,11 +40,13 @@ namespace Dream
     AudioComponent::init
     ()
     {
-        std::cout << "AudioComponent: Initialising...";
+        if (DEBUG)
+        {
+            std::cout << "AudioComponent: Initialising..." << endl;
+        }
         mDevice = alcOpenDevice(NULL);
         mContext = alcCreateContext(mDevice,NULL);
         alcMakeContextCurrent(mContext);
-        std::cout << "done." << std::endl;
         std::vector<float> position = {0.0f,0.0f,0.0f};
         setListenerPosition(position);
         return true;

@@ -1,5 +1,5 @@
 /*
-* Dream::Project
+* Project::Project
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 */
 
 #include "Project.h"
+#include <algorithm>
 
 namespace Dream
 {
@@ -144,9 +145,9 @@ namespace Dream
         {
             if (DEBUG)
             {
-                cout << "Project: Creating Scene" << endl;
+                cout << "Project: Creating Scene using project " << mProjectPath << endl;
             }
-            Scene *nextScene = new Scene(it, mProjectPath, mAssetDefinitions, mRuntime);
+            Scene *nextScene = new Scene(this,it);
             nextScene->showStatus();
             addScene(nextScene);
         }
@@ -296,7 +297,7 @@ namespace Dream
     Project::hasActiveScene
     ()
     {
-        return getActiveScene() != nullptr;
+        return mActiveScene != nullptr;
     }
 
     int
@@ -338,18 +339,18 @@ namespace Dream
     Project::removeAssetDefinition
     (AssetDefinition* assetDef)
     {
-        for (vector<AssetDefinition*>::iterator it=mAssetDefinitions.begin(); it!=mAssetDefinitions.end(); it++)
+        if (DEBUG)
         {
-            if ((*it) == assetDef)
-            {
-                if (DEBUG)
-                {
-                    cout << "Project: Removing AssetDefinition " << (*it)->getUuid() << endl;
-                }
-                mAssetDefinitions.erase(it);
-                break;
-            }
+            cout << "Project: Removing AssetDefinition "
+                 << assetDef->getNameAndUuidString() << endl;
         }
+
+        remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
+            [&](AssetDefinition* thisDefinition)
+            {
+                return thisDefinition == assetDef;
+            }
+        );
     }
 
     size_t
@@ -414,18 +415,11 @@ namespace Dream
     }
 
     bool
-    Project::loadSceneByUuid
-    (string uuid)
-    {
-        return loadScene(getSceneByUuid(uuid));
-    }
-
-    bool
-    Project::loadScene
-    (Scene* scene)
+    Project::loadActiveScene
+    ()
     {
         // Check valid
-        if (scene == nullptr)
+        if (!hasActiveScene())
         {
             cerr << "Project: Cannot load scene, null!" << endl;
             return false;
@@ -434,9 +428,9 @@ namespace Dream
         // Load the new scene
         if (DEBUG)
         {
-            cout << "Project: Loading Scene " << scene->getName() << endl;
+            cout << "Project: Loading Scene " << mActiveScene->getName() << endl;
         }
-        mActiveScene = scene;
+
         mRuntime->setGraphicsClearColour(mActiveScene->getClearColour());
         mRuntime->setGraphicsAmbientLightColour(mActiveScene->getAmbientLightColour());
         mRuntime->setPhysicsGravity(mActiveScene->getGravity());
@@ -449,10 +443,12 @@ namespace Dream
     }
 
     void
-    Project::cleanUp
-    (Scene* scene)
+    Project::cleanUpActiveScene
+    ()
     {
-
+        mActiveScene->cleanUp();
+        mRuntime->cleanupComponents(mActiveScene);
+        mActiveScene = nullptr;
     }
 
 
@@ -462,25 +458,27 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "Dream: Loading project from FileReader " << reader->getPath() << endl;
+            cout << "Project: Loading project from FileReader " << reader->getPath() << endl;
         }
+
         string projectJsonStr = reader->getContentsAsString();
+
         if (projectJsonStr.empty())
         {
-            cerr << "Dream: Loading Failed. Project Content is Empty" << endl;
+            cerr << "Project: Loading Failed. Project Content is Empty" << endl;
             return false;
         }
+
         json projectJson = json::parse(projectJsonStr);
-        /*
-        if (VERBOSE)
+
+        if (DEBUG)
         {
-            cout << "Project: Read Project..." << endl
-                 << projectJson.dump(2) << endl;
+            cout << "Project: using project path " << projectPath << endl;
         }
-        */
         mProjectPath = projectPath;
         mJson = projectJson;
         loadMetadataFromJson(mJson);
+
         return true;
     }
 
@@ -554,7 +552,7 @@ namespace Dream
     {
         if (VERBOSE)
         {
-            cout << "Dream: Loading from ArgumentParser" << endl;
+            cout << "Project: Loading from ArgumentParser" << endl;
         }
         FileReader *projectFileReader = new FileReader(parser->getProjectFilePath());
         projectFileReader->readIntoStringStream();
@@ -564,31 +562,14 @@ namespace Dream
         return loadSuccess;
     }
 
-
+    void
+    Project::setStartupSceneActive
+    ()
+    {
+        setActiveScene(getStartupScene());
+    }
 
     void
-    Project::stopActiveScene
-    ()
-    {
-       mActiveScene->cleanUp();
-       mRuntime->cleanupComponents(mActiveScene);
-       mActiveScene = nullptr;
-    }
-
-    bool
-    Project::loadStartupScene
-    ()
-    {
-        // Init Startup Scene
-        if (!loadScene(getStartupScene()))
-        {
-            cerr << "Dream:Error:Unable to load startup scene." << endl;
-            return false;
-        }
-        return true;
-    }
-
-    bool
     Project::updateLogic
     ()
     {
@@ -597,36 +578,21 @@ namespace Dream
             cout << "==== Project: UpdateLogic Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }
 
-        // Update Time
+        mActiveScene->createAllAssetInstances();
+        mActiveScene->loadAllAssetInstances();
+
         mRuntime->getTime()->update();
 
-        // Create all script instances
-        if (!mRuntime->getLuaEngine()->createAllScripts())
-        {
-            cerr << "Project: While loading lua scripts" << endl;
-            return 1;
-        }
+        mRuntime->getLuaEngine()->createAllScripts();
+        mRuntime->getLuaEngine()->update();
 
-        // Call onUpdate on all lua scripts
-        if (!mRuntime->getLuaEngine()->update())
-        {
-            cerr << "Project: LuaComponentInstance update error!" << endl;
-            return 1;
-        }
-
-        // Create new Assets
-        mActiveScene->createAllAssetInstances();
-        // Update Audio
+        mRuntime->getAnimationComponent()->updateComponent(mActiveScene);
         mRuntime->getAudioComponent()->updateComponent(mActiveScene);
-        // Update Window
         mRuntime->getWindowComponent()->updateComponent(mActiveScene);
-        // Update Physics
         mRuntime->getPhysicsComponent()->updateComponent(mActiveScene);
-
-        return !mRuntime->isDone();
     }
 
-    bool
+    void
     Project::updateGraphics
     ()
     {
@@ -634,12 +600,15 @@ namespace Dream
         {
             cout << "==== Project: UpdateGraphics Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }
+
         // Update Graphics/Physics Components
+
         mRuntime->getGraphicsComponent()->updateComponent(mActiveScene);
         mRuntime->getPhysicsComponent()->setViewProjectionMatrix(
             mRuntime->getGraphicsComponent()->getViewMatrix(),
             mRuntime->getGraphicsComponent()->getProjectionMatrix()
         );
+
         // Draw 3D/PhysicsDebug/2D
 
         mRuntime->getGraphicsComponent()->preRender();
@@ -650,34 +619,33 @@ namespace Dream
         mRuntime->getWindowComponent()->swapBuffers();
 
         mRuntime->getGraphicsComponent()->postRender();
-        // Update state
-        return mRuntime->getWindowComponent()->shouldClose();
+
     }
 
-    bool
-    Project::updateCleanup
+    void
+    Project::updateFlush
     ()
     {
         if (VERBOSE)
         {
-            cout << "==== Project: UpdateCleanup Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
+            cout << "==== Project: updateFlush Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }
+
         // Cleanup Old
-        mActiveScene->findDeletedSceneObjects();
-        mActiveScene->findDeletedScripts();
-        mActiveScene->destroyDeleteQueue();
-        // Chill
-        return !mRuntime->isDone();
+        mActiveScene->flush();
+
     }
 
-    bool
+    void
     Project::updateAll
     ()
     {
-        updateLogic();
-        updateGraphics();
-        updateCleanup();
-        return mRuntime->isDone();
+        if (mActiveScene)
+        {
+            updateLogic();
+            updateGraphics();
+            updateFlush();
+        }
     }
 
     bool

@@ -79,10 +79,10 @@ QAction* MainWindow::getActionStop()
 void MainWindow::onInvalidProjectDirectory(QString directory)
 {
     QMessageBox::critical(
-                this,
-                tr("Invalid Project Directory"),
-                tr("\"%1\"\n\nDoes not contain a vaild Dream project.").arg(directory)
-                );
+        this,
+        tr("Invalid Project Directory"),
+        tr("\"%1\"\n\nDoes not contain a vaild Dream project.").arg(directory)
+    );
 }
 
 void MainWindow::onNoSceneSelected()
@@ -125,7 +125,7 @@ QOpenGLWindowComponent* MainWindow::getWindowComponent()
     return mWindowComponent;
 }
 
-void MainWindow::onSceneStopped(Dream::Scene* scene)
+void MainWindow::onSceneStopped(Scene* scene)
 {
     if (scene)
     {

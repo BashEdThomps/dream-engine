@@ -1,28 +1,42 @@
+
+#include "SceneObject.h"
+
 #include <iostream>
 #include <cmath>
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#include "SceneObject.h"
 #include "String.h"
 #include "Uuid.h"
+#include "Project.h"
+#include "Scene.h"
+
 
 namespace Dream
 {
-
     SceneObject::SceneObject
     ()
+        : mScene(nullptr),
+          mUuid(Uuid::generateUuid())
     {
         constructorInit();
-        mUuid = Uuid::generateUuid();
     }
 
     SceneObject::SceneObject
-    (nlohmann::json soJson)
+    (Scene* scene)
+        : mScene(scene),
+          mUuid(Uuid::generateUuid())
     {
-        mJson = soJson;
         constructorInit();
-        loadMetadata(soJson);
+    }
+
+    SceneObject::SceneObject
+    (Scene* scene, nlohmann::json soJson)
+        : mScene(scene),
+          mJson(soJson)
+    {
+        constructorInit();
+        loadJsonData(soJson);
     }
 
     void
@@ -33,11 +47,6 @@ namespace Dream
         mDelete = false;
         mHasFocus = false;
         mParent = nullptr;
-        mTransform = new Transform3D();
-        mChildren.clear();
-        mAssetDefUuidsToLoad.clear();
-        mUuid = "";
-        mName = "";
         mAudioInstance = nullptr;
         mAnimationInstance = nullptr;
         mModelInstance  = nullptr;
@@ -50,7 +59,7 @@ namespace Dream
     }
 
     void
-    SceneObject::loadMetadata
+    SceneObject::loadJsonData
     (nlohmann::json soJson)
     {
         if(!soJson[SCENE_OBJECT_UUID].is_null())
@@ -66,12 +75,12 @@ namespace Dream
         if (!soJson[SCENE_OBJECT_TRANSFORM_TYPE].is_null())
         {
             string transformType = soJson[SCENE_OBJECT_TRANSFORM_TYPE];
-            mTransform->setTransformType(transformType);
+            mTransform.setTransformType(transformType);
         }
         else
         {
             string transformType = SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
-            mTransform->setTransformType(transformType);
+            mTransform.setTransformType(transformType);
         }
 
         if (!soJson[SCENE_OBJECT_TRANSLATION].is_null())
@@ -106,7 +115,7 @@ namespace Dream
 
         if(!soJson[SCENE_OBJECT_ASSET_INSTANCES].is_null())
         {
-            loadJsonAssetInstances(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
+            loadAssetDefinitionsToLoadJsonData(soJson[SCENE_OBJECT_ASSET_INSTANCES]);
         }
 
         if(!soJson[SCENE_OBJECT_HAS_FOCUS].is_null())
@@ -117,7 +126,7 @@ namespace Dream
     }
 
     void
-    SceneObject::loadJsonAssetInstances
+    SceneObject::loadAssetDefinitionsToLoadJsonData
     (nlohmann::json assetInstancesJson)
     {
         for (nlohmann::json it : assetInstancesJson)
@@ -162,10 +171,11 @@ namespace Dream
     {
         if (DEBUG)
         {
-            cout << "SceneObject: Destroying Object" << endl;
+            cout << "SceneObject: Destroying Object "
+                 << getNameAndUuidString() << endl;
         }
 
-        deleteChildren();
+        //deleteChildren();
         deleteAssetInstances();
     }
 
@@ -173,6 +183,12 @@ namespace Dream
     SceneObject::deleteChildren
     ()
     {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Deleting " << mChildren.size()
+                 << "children of "
+                 << getNameAndUuidString() << endl;
+        }
         for (SceneObject* child : mChildren)
         {
             delete child;
@@ -185,64 +201,49 @@ namespace Dream
     SceneObject::deleteAssetInstances
     ()
     {
-        if (mTransform != nullptr)
-        {
-            delete mTransform;
-            mTransform = nullptr;
-        }
-
         if (mAudioInstance != nullptr)
         {
-            delete mAudioInstance;
-            mAudioInstance = nullptr;
+            mAudioInstance.reset();
         }
 
         if (mAnimationInstance != nullptr)
         {
-            delete mAnimationInstance;
-            mAnimationInstance = nullptr;
+            mAnimationInstance.reset();
         }
 
         if (mModelInstance != nullptr)
         {
-            delete mModelInstance;
-            mModelInstance = nullptr;
+            mModelInstance.reset();
         }
 
         if (mShaderInstance != nullptr)
         {
-            delete mShaderInstance;
-            mShaderInstance = nullptr;
+            mShaderInstance.reset();
         }
 
         if (mLightInstance != nullptr)
         {
-            delete mLightInstance;
-            mLightInstance = nullptr;
+            mLightInstance.reset();
         }
 
         if (mSpriteInstance != nullptr)
         {
-            delete mSpriteInstance;
-            mSpriteInstance = nullptr;
+            mSpriteInstance.reset();
         }
 
         if (mScriptInstance != nullptr)
         {
-            delete mScriptInstance;
-            mScriptInstance = nullptr;
+            mScriptInstance.reset();
         }
 
         if (mPhysicsObjectInstance != nullptr)
         {
-            delete mPhysicsObjectInstance;
-            mPhysicsObjectInstance = nullptr;
+            mPhysicsObjectInstance.reset();
         }
 
         if (mFontInstance != nullptr)
         {
-            delete mFontInstance;
-            mFontInstance = nullptr;
+            mFontInstance.reset();
         }
     }
 
@@ -271,63 +272,63 @@ namespace Dream
     SceneObject::setTranslation
     (glm::vec3 translation)
     {
-        mTransform->setTranslation(translation);
+        mTransform.setTranslation(translation);
     }
 
     void
     SceneObject::setRotation
     (glm::vec3 rotation)
     {
-        mTransform->setRotation(rotation);
+        mTransform.setRotation(rotation);
     }
 
     void
     SceneObject::setScale
     (glm::vec3 scale)
     {
-        mTransform->setScale(scale);
+        mTransform.setScale(scale);
     }
 
     void
     SceneObject::setTranslation
     (float x, float y, float z)
     {
-        mTransform->setTranslation(x,y,z);
+        mTransform.setTranslation(x,y,z);
     }
 
     void
     SceneObject::setRotation
     (float x, float y, float z)
     {
-        mTransform->setRotation(x,y,z);
+        mTransform.setRotation(x,y,z);
     }
 
     void
     SceneObject::setScale
     (float x, float y, float z)
     {
-        mTransform->setScale(x,y,z);
+        mTransform.setScale(x,y,z);
     }
 
     glm::vec3
     SceneObject::getRotation
     ()
     {
-        return mTransform->getRotation();
+        return mTransform.getRotation();
     }
 
     glm::vec3
     SceneObject::getScale
     ()
     {
-        return mTransform->getScale();
+        return mTransform.getScale();
     }
 
     glm::vec3
     SceneObject::getTranslation
     ()
     {
-        return mTransform->getTranslation();
+        return mTransform.getTranslation();
     }
 
 
@@ -404,7 +405,7 @@ namespace Dream
     SceneObject::getNameAndUuidString
     ()
     {
-        return getName()+" ("+getUuid()+")";
+        return "{ "+getUuid()+" : "+getName()+" }";
     }
 
     void
@@ -421,7 +422,7 @@ namespace Dream
         }
 
         cout << "      Children: " << mChildren.size() << endl;
-        cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
+        cout << "Trnasform Type: " << mTransform.getTransformType() << endl;
         cout << "   Translation: " << String::vec3ToString(getTranslation()) << endl;
         cout << "      Rotation: " << String::vec3ToString(getRotation())<< endl;
         cout << "         Scale: " << String::vec3ToString(getScale())<< endl;
@@ -438,182 +439,261 @@ namespace Dream
     SceneObject::setAnimationInstance
     (AnimationInstance* animationAsset)
     {
-        mAnimationInstance = animationAsset;
+        mAnimationInstance.reset(animationAsset);
     }
 
     AnimationInstance*
     SceneObject::getAnimationInstance
     ()
     {
-        return mAnimationInstance;
+        return mAnimationInstance.get();
     }
 
     void
     SceneObject::setAudioInstance
     (AudioInstance* audioAsset)
     {
-        mAudioInstance = audioAsset;
+        mAudioInstance.reset(audioAsset);
     }
 
-    AudioInstance* SceneObject::getAudioInstance()
+    AudioInstance*
+    SceneObject::getAudioInstance
+    ()
     {
-        return mAudioInstance;
+        return mAudioInstance.get();
     }
 
-    void SceneObject::setModelInstance(AssimpModelInstance* modelAsset) {
-        mModelInstance = modelAsset;
+    void
+    SceneObject::setModelInstance
+    (AssimpModelInstance* modelAsset)
+    {
+        mModelInstance.reset(modelAsset);
     }
 
-    AssimpModelInstance* SceneObject::getModelInstance() {
-        return mModelInstance;
+    AssimpModelInstance*
+    SceneObject::getModelInstance
+    ()
+    {
+        return mModelInstance.get();
     }
 
-    void SceneObject::setScriptInstance(LuaScriptInstance* scriptAsset) {
-        mScriptInstance = scriptAsset;
+    void
+    SceneObject::setScriptInstance
+    (LuaScriptInstance* scriptAsset)
+    {
+        mScriptInstance.reset(scriptAsset);
     }
 
-    LuaScriptInstance* SceneObject::getScriptInstance() {
-        return mScriptInstance;
+    LuaScriptInstance*
+    SceneObject::getScriptInstance
+    ()
+    {
+        return mScriptInstance.get();
     }
 
-    void SceneObject::setShaderInstance(ShaderInstance* shaderAsset) {
-        mShaderInstance = shaderAsset;
+    void
+    SceneObject::setShaderInstance
+    (ShaderInstance* shaderAsset)
+    {
+        mShaderInstance.reset(shaderAsset);
     }
 
-    ShaderInstance* SceneObject::getShaderInstance() {
-        return mShaderInstance;
+    ShaderInstance*
+    SceneObject::getShaderInstance
+    ()
+    {
+        return mShaderInstance.get();
     }
 
-    void SceneObject::setLightInstance(LightInstance* lightAsset) {
-        mLightInstance = lightAsset;
+    void
+    SceneObject::setLightInstance
+    (LightInstance* lightAsset)
+    {
+        mLightInstance.reset(lightAsset);
     }
 
-    LightInstance* SceneObject::getLightInstance() {
-        return mLightInstance;
+    LightInstance*
+    SceneObject::getLightInstance
+    ()
+    {
+        return mLightInstance.get();
     }
 
-    bool SceneObject::hasLightInstance() {
+    bool
+    SceneObject::hasLightInstance
+    ()
+    {
         return mLightInstance != nullptr;
     }
 
-    bool SceneObject::hasModelInstance() {
+    bool
+    SceneObject::hasModelInstance
+    ()
+    {
         return mModelInstance != nullptr;
     }
 
-    bool SceneObject::hasShaderInstance() {
+    bool
+    SceneObject::hasShaderInstance
+    ()
+    {
         return mShaderInstance != nullptr;
     }
 
-    bool SceneObject::hasScriptInstance() {
+    bool
+    SceneObject::hasScriptInstance
+    ()
+    {
         return mScriptInstance != nullptr;
     }
 
-    bool SceneObject::hasSpriteInstance() {
+    bool
+    SceneObject::hasSpriteInstance
+    ()
+    {
         return mSpriteInstance != nullptr;
     }
 
-    bool SceneObject::hasFontInstance() {
+    bool
+    SceneObject::hasFontInstance
+    ()
+    {
         return mFontInstance != nullptr;
     }
 
-    void SceneObject::setFontInstance(FontInstance* font) {
-        mFontInstance = font;
-    }
-
-    FontInstance* SceneObject::getFontInstance() {
-        return mFontInstance;
-    }
-
-    void SceneObject::setPhysicsObjectInstance(PhysicsObjectInstance* physicsObject) {
-        mPhysicsObjectInstance = physicsObject;
-    }
-
-    PhysicsObjectInstance* SceneObject::getPhysicsObjectInstance() {
-        return mPhysicsObjectInstance;
-    }
-
-    string SceneObject::getTransformType()
+    void
+    SceneObject::setFontInstance
+    (FontInstance* font)
     {
-        return mTransform->getTransformType();
+        mFontInstance.reset(font);
     }
 
-    void SceneObject::setTransformType(string transformType) {
-        mTransform->setTransformType(transformType);
+    FontInstance*
+    SceneObject::getFontInstance
+    ()
+    {
+        return mFontInstance.get();
     }
 
-    Transform3D* SceneObject::getTransform() {
+    void
+    SceneObject::setPhysicsObjectInstance
+    (PhysicsObjectInstance* poi)
+    {
+        return mPhysicsObjectInstance.reset(poi);
+    }
+
+    PhysicsObjectInstance*
+    SceneObject::getPhysicsObjectInstance
+    ()
+    {
+        return mPhysicsObjectInstance.get();
+    }
+
+    string
+    SceneObject::getTransformType
+    ()
+    {
+        return mTransform.getTransformType();
+    }
+
+    void
+    SceneObject::setTransformType
+    (string transformType)
+    {
+        mTransform.setTransformType(transformType);
+    }
+
+    Transform3D
+    SceneObject::getTransform
+    () {
         return mTransform;
     }
 
-    void SceneObject::setTransform(Transform3D* transform)
+    void
+    SceneObject::setTransform
+    (Transform3D* transform)
     {
         mTransform = transform;
     }
 
-    void SceneObject::setParent(SceneObject* parent) {
+    void
+    SceneObject::setParent
+    (SceneObject* parent)
+    {
         mParent = parent;
     }
 
-    SceneObject* SceneObject::getParent() {
+    SceneObject*
+    SceneObject::getParent
+    ()
+    {
         return mParent;
     }
 
     void SceneObject::setSpriteInstance(SpriteInstance* spriteAsset)
     {
-        mSpriteInstance = spriteAsset;
+        mSpriteInstance.reset(spriteAsset);
     }
 
-    SpriteInstance* SceneObject::getSpriteInstance()
+    SpriteInstance*
+    SceneObject::getSpriteInstance
+    ()
     {
-        return mSpriteInstance;
+        return mSpriteInstance.get();
     }
 
-    void SceneObject::setHasFocus(bool focus)
+    void
+    SceneObject::setHasFocus
+    (bool focus)
     {
         mHasFocus = focus;
     }
 
-    bool SceneObject::hasFocus()
+    bool
+    SceneObject::hasFocus
+    ()
     {
         return mHasFocus;
     }
 
-    void SceneObject::addAssetDefUuidToLoad(string uuid)
+    void
+    SceneObject::addAssetDefUuidToLoad
+    (string uuid)
     {
         mAssetDefUuidsToLoad.push_back(uuid);
     }
 
-    void SceneObject::copyTransform(Transform3D* transform)
-    {
-        if (mTransform != nullptr)
-        {
-            delete mTransform;
-        }
-
-        mTransform = new Transform3D(transform);
-    }
-
-    void SceneObject::setDeleteFlag(bool del)
+    void
+    SceneObject::setDeleteFlag
+    (bool del)
     {
         mDelete = del;
     }
 
-    bool SceneObject::getDeleteFlag()
+    bool
+    SceneObject::getDeleteFlag
+    ()
     {
         return mDelete;
     }
 
-    bool SceneObject::getLoadedFlag()
+    bool
+    SceneObject::getLoadedFlag
+    ()
     {
         return mLoaded;
     }
 
-    void SceneObject::setLoadedFlag(bool loaded)
+    void
+    SceneObject::setLoadedFlag
+    (bool loaded)
     {
         mLoaded = loaded;
     }
 
-    SceneObject* SceneObject::getChildByUuid(string childUuid)
+    SceneObject*
+    SceneObject::getChildByUuid
+    (string childUuid)
     {
         for (SceneObject* it : mChildren)
         {
@@ -625,22 +705,30 @@ namespace Dream
         return nullptr;
     }
 
-    bool SceneObject::hasEvents()
+    bool
+    SceneObject::hasEvents
+    ()
     {
         return mEventQueue.size() != 0;
     }
 
-    void SceneObject::sendEvent(Event* event)
+    void
+    SceneObject::sendEvent
+    (Event* event)
     {
         mEventQueue.push_back(event);
     }
 
-    vector<Event*>* SceneObject::getEventQueue()
+    vector<Event*>*
+    SceneObject::getEventQueue
+    ()
     {
         return &mEventQueue;
     }
 
-    void SceneObject::cleanupEvents()
+    void
+    SceneObject::cleanupEvents
+    ()
     {
         for (Event* it : mEventQueue)
         {
@@ -649,12 +737,16 @@ namespace Dream
         mEventQueue.clear();
     }
 
-    bool SceneObject::hasPhysicsObjectInstance()
+    bool
+    SceneObject::hasPhysicsObjectInstance
+    ()
     {
         return mPhysicsObjectInstance != nullptr;
     }
 
-    vector<SceneObject*> SceneObject::getChildren()
+    vector<SceneObject*>
+    SceneObject::getChildren
+    ()
     {
         return mChildren;
     }
@@ -719,5 +811,254 @@ namespace Dream
     {
         return mAudioInstance != nullptr;
     }
+
+    void
+    SceneObject::createAssetInstances
+    ()
+    {
+        for (string aDefUuid : mAssetDefUuidsToLoad)
+        {
+            createAssetInstanceFromAssetDefinitionByUuid(aDefUuid);
+        }
+    }
+
+    void
+    SceneObject::createAssetInstanceFromAssetDefinitionByUuid
+    (string uuid)
+    {
+        AssetDefinition* assetDefinition =
+            AssetDefinition::getAssetDefinitionByUuid(
+                mScene->getProject()->getAssetDefinitions(),uuid
+            );
+
+        createAssetInstance(assetDefinition);
+    }
+
+    void
+    SceneObject::createAssetInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Asset Intance of: ("
+                 << definition->getType() << ") " << definition->getName()
+                 << ", for  " << getNameAndUuidString()
+                 << endl;
+        }
+
+        if(definition->isTypeAnimation())
+        {
+            createAnimationInstance(definition);
+        }
+        else if (definition->isTypeAudio())
+        {
+            createAudioInstance(definition);
+        }
+        else if (definition->isTypeModel())
+        {
+            createModelInstance(definition);
+        }
+        else if (definition->isTypeScript())
+        {
+            createScriptInstance(definition);
+        }
+        else if (definition->isTypeShader())
+        {
+            createShaderInstance(definition);
+        }
+        else if (definition->isTypePhysicsObject())
+        {
+            createPhysicsObjectInstance(definition);
+        }
+        else if (definition->isTypeLight())
+        {
+            createLightInstance(definition);
+        }
+        else if (definition->isTypeSprite())
+        {
+            createSpriteInstance(definition);
+        }
+        else if (definition->isTypeFont())
+        {
+            createFontInstance(definition);
+        }
+    }
+
+    void
+    SceneObject::loadAssetInstances
+    ()
+    {
+        string projectPath = mScene->getProject()->getProjectPath();
+
+        if (DEBUG)
+        {
+            cout << "SceneObject: Loading Asset Data from "
+                 << projectPath << endl;
+        }
+
+        if(mAudioInstance)
+        {
+            mAudioInstance->load(projectPath);
+        }
+
+        if(mAnimationInstance)
+        {
+            mAnimationInstance->load(projectPath);
+        }
+
+        if(mModelInstance)
+        {
+           mModelInstance->load(projectPath);
+        }
+
+        if(mShaderInstance)
+        {
+            mShaderInstance->load(projectPath);
+        }
+
+        if(mLightInstance)
+        {
+           mLightInstance->load(projectPath);
+        }
+
+        if(mSpriteInstance)
+        {
+           mSpriteInstance->load(projectPath);
+        }
+
+        if(mScriptInstance)
+        {
+           mScriptInstance->load(projectPath);
+        }
+
+        if(mPhysicsObjectInstance)
+        {
+           mPhysicsObjectInstance->load(projectPath);
+        }
+
+        if(mFontInstance)
+        {
+           mFontInstance->load(projectPath);
+        }
+
+        setLoadedFlag(true);
+    }
+
+    void
+    SceneObject::createPhysicsObjectInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Physics Object Asset Instance." << endl;
+        }
+        mPhysicsObjectInstance.reset(
+            new PhysicsObjectInstance(definition, &mTransform,
+            mScene->getProject()->getAssetDefinitions())
+        );
+    }
+
+    void
+    SceneObject::createAnimationInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Animation asset instance." << endl;
+        }
+        mAnimationInstance.reset(new AnimationInstance(definition,&mTransform));
+    }
+
+    void
+    SceneObject::createAudioInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Audio asset instance." << endl;
+        }
+        // hottest trainwreck 2017!
+        mAudioInstance.reset(mScene
+                ->getProject()
+                ->getRuntime()
+                ->getAudioComponent()
+                ->newAudioInstance(definition,&mTransform)
+        );
+    }
+
+    void
+    SceneObject::createModelInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Model asset instance." << endl;
+        }
+        mModelInstance.reset
+        (
+            new AssimpModelInstance(definition,&mTransform)
+        );
+    }
+
+    void
+    SceneObject::createScriptInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Script asset instance." << endl;
+        }
+        // hottest trainwreck 2017!
+        mScriptInstance.reset(new LuaScriptInstance(definition, &mTransform));
+        mScene->getProject()
+              ->getRuntime()
+              ->getLuaEngine()
+              ->addToScriptMap(this,mScriptInstance.get());
+    }
+
+    void
+    SceneObject::createShaderInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Shader asset instance." << endl;
+        }
+        mShaderInstance.reset(new ShaderInstance(definition,&mTransform));
+    }
+
+    void
+    SceneObject::createLightInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Light Asset instance." << endl;
+        }
+        mLightInstance.reset(new LightInstance(definition,&mTransform));
+    }
+
+    void
+    SceneObject::createSpriteInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Sprite Asset instance." << endl;
+        }
+        mSpriteInstance.reset(new SpriteInstance(definition,&mTransform));
+    }
+
+    void
+    SceneObject::createFontInstance
+    (AssetDefinition* definition)
+    {
+        if (DEBUG)
+        {
+            cout << "SceneObject: Creating Font Asset instance." << endl;
+        }
+        mFontInstance.reset(new FontInstance(definition,&mTransform));
+    }
+
 
 } // End of Dream
