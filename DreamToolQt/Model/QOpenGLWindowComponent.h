@@ -5,6 +5,7 @@
 #include <QOpenGLWidget>
 #include <QSurfaceFormat>
 #include <QOpenGLContext>
+#include "../View/GLView/Grid.h"
 
 using namespace Dream;
 
@@ -21,6 +22,7 @@ public:
     void swapBuffers() override;
     void cleanUp(Scene*) override;
     void setProject(Project* engine);
+    void setGrid(Grid* grid);
 
 protected:
     void initializeGL() override;
@@ -29,7 +31,7 @@ protected:
 
 private:
     Project *mProject;
-
+    Grid* mGrid;
 };
 
 #endif // GLWIDGET_H

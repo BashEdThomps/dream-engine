@@ -18,6 +18,7 @@
 #ifndef MAINCONTROLLER_H
 #define MAINCONTROLLER_H
 
+#include <memory>
 #include <QObject>
 #include <QErrorMessage>
 #include <QStringList>
@@ -28,7 +29,9 @@
 #include "../Model/DreamModel.h"
 #include "../Model/TreeModels/ProjectTreeModel.h"
 #include "../Model/TreeModels/AssetDefinitionTreeModel.h"
+#include "../View/GLView/Grid.h"
 
+using namespace std;
 using namespace Dream;
 
 class MainController : public QObject
@@ -37,6 +40,9 @@ class MainController : public QObject
 public:
     MainController(MainWindow* parent);
     ~MainController();
+
+    Grid* getGrid();
+
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);
     void notifyInvalidProjectDirectory(QString projectDir);
@@ -76,7 +82,7 @@ public slots:
 private: // Variables
     MainWindow *mMainWindow;
     QOpenGLWindowComponent *mWindowComponent;
-    DreamModel *mDreamModel;
+    unique_ptr<DreamModel> mDreamModel;
     QString mProjectDirectory;
     QErrorMessage *mInvalidProjectDirectoryError;
     QStringListModel *mSceneListModel;
@@ -89,6 +95,7 @@ private: // Methods
     void connectTreeViewModel();
     QStringListModel* getSceneNamesListModel(vector<Scene*> sceneList);
     string getSceneNameFromModelIndex(int index);
+    unique_ptr<Grid> mGrid;
 };
 
 #endif // MAINCONTROLLER_H

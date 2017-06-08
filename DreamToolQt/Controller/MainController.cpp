@@ -37,18 +37,15 @@ MainController::MainController
 {
     mMainWindow = parent;
     mWindowComponent = parent->getWindowComponent();
-    mDreamModel = new DreamModel(this,mWindowComponent);
+    mDreamModel.reset(new DreamModel(this,mWindowComponent));
+    mGrid.reset();
     createConnections();
 }
 
 MainController::~MainController
 ()
 {
-    if (mDreamModel)
-    {
-        delete mDreamModel;
-        mDreamModel = nullptr;
-    }
+
 }
 
 void
@@ -82,26 +79,26 @@ MainController::createConnections
     // actionPlay
     connect
     (
-                mMainWindow->getActionPlay(), SIGNAL(triggered()),
-                this, SLOT(onProjectPlayAction())
+        mMainWindow->getActionPlay(), SIGNAL(triggered()),
+        this, SLOT(onProjectPlayAction())
     );
     // actionStop
     connect
     (
-                mMainWindow->getActionStop(), SIGNAL(triggered()),
-                this, SLOT(onProjectStopAction())
+        mMainWindow->getActionStop(), SIGNAL(triggered()),
+        this, SLOT(onProjectStopAction())
     );
     // Scene Stopped
     connect
     (
-                this,SIGNAL(notifyStoppedScene(Scene*)),
-                mMainWindow,SLOT(onSceneStopped(Scene*))
+        this,SIGNAL(notifyStoppedScene(Scene*)),
+        mMainWindow,SLOT(onSceneStopped(Scene*))
     );
     // Open Default Project
     connect
     (
-                mMainWindow->getActionOpenTestProject(), SIGNAL(triggered()),
-                this, SLOT(onProjectOpenTestProjectAction())
+        mMainWindow->getActionOpenTestProject(), SIGNAL(triggered()),
+        this, SLOT(onProjectOpenTestProjectAction())
     );
     // Invalid Project Directory
     connect
@@ -118,8 +115,8 @@ MainController::createConnections
     // Valid Scene Selected
     connect
     (
-                mDreamModel, SIGNAL(notifySelectedSceneChanged(Scene*)),
-                this, SLOT(onSelectedSceneChanged(Scene*))
+        mDreamModel.get(), SIGNAL(notifySelectedSceneChanged(Scene*)),
+        this, SLOT(onSelectedSceneChanged(Scene*))
     );
     // Project Directory Changed
     connect
@@ -132,7 +129,7 @@ MainController::createConnections
     (
         this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
         mMainWindow, SLOT(showStatusBarMessage(QString))
-     );
+    );
 }
 
 void
@@ -198,12 +195,12 @@ MainController::onProjectOpenAction
     mMainWindow->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel);
 
     emit notifyStatusBarProjectLoaded(
-                QString::fromStdString(
-                    "MainController: Successfuly Loaded Project: " +
-                    project->getName() + " (" +
-                    project->getUuid() + ")"
-                    )
-                );
+    QString::fromStdString(
+        "MainController: Successfuly Loaded Project: " +
+        project->getName() + " (" +
+        project->getUuid() + ")"
+        )
+    );
     connectTreeViewModel();
 }
 
@@ -225,6 +222,7 @@ MainController::connectTreeViewModel
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
         this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
+
     mMainWindow->getProjectTreeView()->expandAll();
     mMainWindow->getAssetDefinitionTreeView()->expandAll();
 }
@@ -469,3 +467,9 @@ MainController::onSceneStopped
 
 }
 
+Grid*
+MainController::getGrid
+()
+{
+    return mGrid.get();
+}

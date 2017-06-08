@@ -1,6 +1,4 @@
-#ifndef DREAMCORE_H
-#define DREAMCORE_H
+#pragma once
 
+#include "../Constants.h"
 #include "../Project.h"
-
-#endif // DREAMCORE_H

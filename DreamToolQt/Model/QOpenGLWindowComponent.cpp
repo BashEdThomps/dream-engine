@@ -1,4 +1,6 @@
+
 #include "QOpenGLWindowComponent.h"
+
 #include <QDebug>
 
 
@@ -21,13 +23,14 @@ QOpenGLWindowComponent::initializeGL
 ()
 {
     // get context opengl-version
-    qDebug() << "Widget OpenGl: " << format().majorVersion() << "." << format().minorVersion();
-    qDebug() << "Context valid: " << context()->isValid();
-    qDebug() << "Really used OpenGl: " << context()->format().majorVersion() << "." << context()->format().minorVersion();
-    qDebug() << "OpenGl information: VENDOR:       " << (char*)glGetString(GL_VENDOR);
-    qDebug() << "                    RENDERDER:    " << (char*)glGetString(GL_RENDERER);
-    qDebug() << "                    VERSION:      " << (char*)glGetString(GL_VERSION);
-    qDebug() << "                    GLSL VERSION: " << (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
+    qDebug() << "QOpenGLWindowComponent: Widget OpenGl: " << format().majorVersion() << "." << format().minorVersion();
+    qDebug() << "QOpenGLWindowComponent: Context valid: " << context()->isValid();
+    qDebug() << "QOpenGLWindowComponent: Really used OpenGl: " << context()->format().majorVersion() << "." << context()->format().minorVersion();
+    qDebug() << "QOpenGLWindowComponent: OpenGl information:";
+    qDebug() << "QOpenGLWindowComponent: 	VENDOR:       " << (char*)glGetString(GL_VENDOR);
+    qDebug() << "QOpenGLWindowComponent:    RENDERDER:    " << (char*)glGetString(GL_RENDERER);
+    qDebug() << "QOpenGLWindowComponent:    VERSION:      " << (char*)glGetString(GL_VERSION);
+    qDebug() << "QOpenGLWindowComponent:    GLSL VERSION: " << (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 }
 
 void
@@ -55,8 +58,19 @@ QOpenGLWindowComponent::paintGL
         }
     }
 
-    glClearColor(0.0f,0.0f,0.0f,0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (mGrid)
+    {
+        if (!mGrid->isInitialised())
+        {
+            mGrid->init();
+        }
+        mGrid->setViewMatrix(mProject->getRuntime()->getGraphicsComponent()->getViewMatrix());
+        mGrid->setProjectionMatrix(mProject->getRuntime()->getGraphicsComponent()->getProjectionMatrix());
+        mGrid->draw();
+    }
+
+    //glClearColor(0.0f,0.0f,0.0f,0.0f);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 bool
@@ -96,4 +110,14 @@ QOpenGLWindowComponent::setProject
 
 void
 QOpenGLWindowComponent::cleanUp
-(Scene* scene) {}
+(Scene* scene)
+{
+
+}
+
+void
+QOpenGLWindowComponent::setGrid
+(Grid* grid)
+{
+    mGrid = grid;
+}

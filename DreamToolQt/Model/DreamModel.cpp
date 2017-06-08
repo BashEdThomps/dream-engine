@@ -23,7 +23,7 @@ DreamModel::DreamModel
     : QObject(parent)
 {
     mWindowComponent = windowComponent;
-    mProject = new Project(windowComponent);
+    mProject.reset(new Project(windowComponent));
     mProject->initRuntime();
     mSelectedScene = nullptr;
     mHeartbeatTimer = nullptr;
@@ -51,7 +51,7 @@ Project*
 DreamModel::getProject
 ()
 {
-    return mProject;
+    return mProject.get();
 }
 
 vector<Scene*>
@@ -162,7 +162,7 @@ DreamModel::startScene
 
 
 
-    mWindowComponent->setProject(mProject);
+    mWindowComponent->setProject(mProject.get());
     return true;
 }
 

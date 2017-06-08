@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QMAKE_CXXFLAGS_WARN_ON = -Wno-ignored-qualifiers -Wno-address-of-packed-member
+QMAKE_CXXFLAGS_WARN_ON = -Wno-ignored-qualifiers # Not available in GCC? -Wno-address-of-packed-member
 
 QT += core gui opengl
 
@@ -109,7 +109,7 @@ LIBS += \
     -L/opt/octronic/builds/Dream/Luabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
-    -lFreeType \
+    -lfreetype \
     -lGLEW
 
 INCLUDEPATH += \

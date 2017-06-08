@@ -24,15 +24,15 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
+#include <QOpenGLShaderProgram>
+
 using namespace std;
 using namespace glm;
 
-enum Mode
+struct GridVertex
 {
-    SELECTION,
-    TRANSLATION,
-    ROTATION,
-    SCALE
+    vec3 Position;
+    vec3 Color;
 };
 
 class Grid : public QObject
@@ -49,16 +49,17 @@ public:
 
     ~Grid();
 
+    void init();
+    bool isInitialised();
     void draw();
     void setViewMatrix(mat4);
     void setProjectionMatrix(mat4);
 
 private: // Member Functions
     void initShader();
-    void generateGLData();
-    void generateGridData();
-    void generateMajorGridData();
-    void generateMinorGridData();
+    void initVaoVbo();
+    void initMajorGridData();
+    void initMinorGridData();
 
 private: // Variables
 
@@ -73,14 +74,14 @@ private: // Variables
     float mMinorSpacing;
     vec3 mMinorColour;
 
-    GLuint mVertexArray;
-    GLuint mVertexBuffer;
+    GLuint mVao;
+    GLuint mVbo;
+
+    vector<GridVertex> mVertexBuffer;
+
     GLuint mShaderProgram;
 
-    vector<vec3> mMajorGridVertecies;
-    vector<vec3> mMinorGridVertecies;
-    vector<GLfloat> mVertecies;
-    vector<GLfloat> mIndicies;
+    bool mInitialised;
 };
 
 #endif // GRID_H

@@ -25,7 +25,6 @@ namespace Dream
     {
         initShader();
         initVaoVbo();
-        glEnable(GL_LINE_SMOOTH);
     }
 
     void
@@ -281,6 +280,7 @@ namespace Dream
     PhysicsDebugDrawer::drawAll
     ()
     {
+        glEnable(GL_LINE_SMOOTH);
         if (Constants::VERBOSE)
         {
             cout << "PhysicsDebugDrawer: Drawing all - " << mVertexBuffer.size()/2 << " lines." << endl;
@@ -340,6 +340,7 @@ namespace Dream
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         glUseProgram(0);
+        glDisable(GL_LINE_SMOOTH);
         // Clear old buffer
         mVertexBuffer.clear();
     }

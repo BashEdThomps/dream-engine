@@ -21,9 +21,11 @@
 #include <DreamCore.h>
 #include <QObject>
 #include <QTimer>
+#include <memory>
 
 #include "QOpenGLWindowComponent.h"
 
+using namespace std;
 using namespace Dream;
 
 class DreamModel : public QObject
@@ -59,11 +61,9 @@ signals:
 
 
 private:
-    Project *mProject;
+    unique_ptr<Project>mProject;
     Scene* mSelectedScene;
-
     QOpenGLWindowComponent *mWindowComponent;
-
     QTimer* mHeartbeatTimer;
 };
 

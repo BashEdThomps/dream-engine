@@ -27,14 +27,14 @@ namespace Dream
 
     GraphicsComponent::GraphicsComponent
     (Camera* camera, IWindowComponent* windowComponent)
-        : IComponent()
+        : IComponent(),
+          mWindowComponent(windowComponent),
+          mCamera(camera),
+          mClearColour({1.0f,1.0f,1.0f,1.0f}),
+          mAmbientLightColour({1.0f,1.0f,1.0f,1.0f})
     {
-        mWindowComponent = windowComponent;
-        mCamera = camera;
-        mClearColour = {1.0f,1.0f,1.0f,1.0f};
-        mAmbientLightColour = {1.0f,1.0f,1.0f,1.0f};
-    }
 
+    }
 
     void
     GraphicsComponent::setClearColour
@@ -46,7 +46,6 @@ namespace Dream
         mClearColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
     }
 
-
     void
     GraphicsComponent::setAmbientLightColour
     (vector<float> clearColour)
@@ -57,7 +56,6 @@ namespace Dream
         mAmbientLightColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
     }
 
-
     GraphicsComponent::~GraphicsComponent
     (void)
     {
@@ -66,7 +64,6 @@ namespace Dream
             cout << "GraphicsComponent: Destroying Object" << endl;
         }
     }
-
 
     bool
     GraphicsComponent::init
