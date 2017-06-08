@@ -92,8 +92,8 @@ ICON = Resources/icons/DreamTool.icns
 
 macx: LIBS += \
     -framework OpenGL \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/DreamCore/ \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_8_0_clang_64bit2-Debug/Luabind/ \
+    -L/opt/octronic/builds/Dream/DreamCore \
+    -L/opt/octronic/builds/Dream/Luabind \
     -L/usr/local/lib \
     -L/opt/local/lib \
     -L/usr/lib \
@@ -105,11 +105,12 @@ macx: LIBS += \
     -lFreeType
 
 LIBS += \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_9_0_GCC_64bit-Debug/DreamCore \
-    -L$$PWD/../../build-dream-Desktop_Qt_5_9_0_GCC_64bit-Debug/Luabind \
+    -L/opt/octronic/builds/Dream/DreamCore \
+    -L/opt/octronic/builds/Dream/Luabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
-    -lDreamCore
-    -lFreeType
+    -lDreamCore \
+    -lFreeType \
+    -lGLEW
 
 INCLUDEPATH += \
     $$PWD/../DreamCore/include \

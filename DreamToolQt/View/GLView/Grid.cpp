@@ -18,12 +18,24 @@
 #include "Grid.h"
 
 Grid::Grid
-(QObject* parent, float majorSpacing,  float minorSpacing)
+(
+    QObject* parent,
+    float majorSpacing, float minorSpacing, float size,
+    vec3 majorColour, vec3 minorColour
+)
     : QObject(parent),
-      mMajorSpacing(majorSpacing),
-      mMinorSpacing(minorSpacing)
-{
 
+      mSize(size),
+
+      mMajorSpacing(majorSpacing),
+      mMajorColour(majorColour),
+
+      mMinorSpacing(minorSpacing),
+      mMinorColour(minorColour)
+
+{
+    generateGLData();
+    generateGridData();
 }
 
 Grid::~Grid
@@ -35,6 +47,22 @@ Grid::~Grid
 
 void
 Grid::draw
+()
+{
+    // Use Shader
+    // Fill Buffers
+    glBindBuffer(GL_ARRAY_BUFFER,mVertexBuffer);
+    // Pass Uniforms
+    // Pass View/Proj
+    // Draw Lines
+    // Detatch Buffers
+    glBindVertexArray(0);
+    // Detatch Shader
+    glUseProgram(0);
+}
+
+void
+Grid::initShader
 ()
 {
 
@@ -49,10 +77,68 @@ Grid::generateGLData
     // Create Data Buffer
     glGenBuffers(1,&mVertexBuffer);
 }
-
 void
 Grid::generateGridData
 ()
 {
+    generateMajorGridData();
+    generateMinorGridData();
 
+    //glBindVertexArray(mVertexArray);
+    //glBufferData(...);
+}
+
+void
+Grid::generateMajorGridData
+()
+{
+    float halfSize = (mSize/2.0f);
+
+    // Major Grid
+    for (float y = -halfSize; y <= halfSize; y += mMajorSpacing)
+    {
+        mMajorGridVertecies.push_back(vec3(-halfSize,y,0.0f));
+        mMajorGridVertecies.push_back(vec3(halfSize,y,0.0f));
+    }
+
+    for (float x = -halfSize; x <= halfSize; x += mMajorSpacing)
+    {
+        mMajorGridVertecies.push_back(vec3(x,-halfSize,0.0f));
+        mMajorGridVertecies.push_back(vec3(x,halfSize,0.0f));
+    }
+}
+
+void
+Grid::generateMinorGridData
+()
+{
+    float halfSize = (mSize/2.0f);
+
+    // Major Grid
+    for (float y = -halfSize; y <= halfSize; y += mMinorSpacing)
+    {
+        mMajorGridVertecies.push_back(vec3(-halfSize,y,0.0f));
+        mMajorGridVertecies.push_back(vec3(halfSize,y,0.0f));
+    }
+
+    for (float x = -halfSize; x <= halfSize; x += mMinorSpacing)
+    {
+        mMajorGridVertecies.push_back(vec3(x,-halfSize,0.0f));
+        mMajorGridVertecies.push_back(vec3(x,halfSize,0.0f));
+    }
+}
+
+void
+Grid::setViewMatrix
+(mat4 view)
+{
+    mViewMatrix = view;
+}
+
+
+void
+Grid::setProjectionMatrix
+(mat4 projection)
+{
+    mProjectionMatrix = projection;
 }

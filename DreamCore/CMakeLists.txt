@@ -42,7 +42,7 @@ include_directories(
     ${FREETYPE_INCLUDE_DIR_ft2build}
 )
 
-add_library(DreamCore ${SRC_DIR})
+add_library(DreamCore SHARED ${SRC_DIR})
 
 target_link_libraries(
     DreamCore

@@ -25,6 +25,7 @@
 #include <vector>
 
 using namespace std;
+using namespace glm;
 
 enum Mode
 {
@@ -36,25 +37,48 @@ enum Mode
 
 class Grid : public QObject
 {
+    Q_OBJECT
 public:
-    Grid(QObject* parent,  float majorSpacing = 10.0f, float minorSpacing = 1.0f);
+    Grid(
+        QObject* parent,
+        float majorSpacing = 5.0f, float minorSpacing = 1.0f,
+        float size = 25.0f,
+        vec3 majorColour = vec3(1.0f,0.0f,0.0f),
+        vec3 minorColour = vec3(0.0f,0.0f,1.0f)
+    );
+
     ~Grid();
+
+    void draw();
+    void setViewMatrix(mat4);
+    void setProjectionMatrix(mat4);
+
+private: // Member Functions
+    void initShader();
     void generateGLData();
     void generateGridData();
-    void draw();
-private: // Member Functions
-    void drawTranslationHandles();
-    void drawRotationHandles();
-    void drawScaleHandles();
-    void drawSelectionOutline();
+    void generateMajorGridData();
+    void generateMinorGridData();
+
 private: // Variables
+
+    float mSize;
+
+    mat4 mViewMatrix;
+    mat4 mProjectionMatrix;
+
     float mMajorSpacing;
+    vec3 mMajorColour;
+
     float mMinorSpacing;
-    glm::vec3 mXColour;
-    glm::vec3 mYColour;
-    glm::vec3 mZColour;
+    vec3 mMinorColour;
+
     GLuint mVertexArray;
     GLuint mVertexBuffer;
+    GLuint mShaderProgram;
+
+    vector<vec3> mMajorGridVertecies;
+    vector<vec3> mMinorGridVertecies;
     vector<GLfloat> mVertecies;
     vector<GLfloat> mIndicies;
 };
