@@ -30,6 +30,7 @@
 #include "../Model/TreeModels/ProjectTreeModel.h"
 #include "../Model/TreeModels/AssetDefinitionTreeModel.h"
 #include "../View/GLView/Grid.h"
+#include "../View/GLView/SelectionHighlighter.h"
 
 using namespace std;
 using namespace Dream;
@@ -42,6 +43,7 @@ public:
     ~MainController();
 
     Grid* getGrid();
+    SelectionHighlighter* getSelectionHighlighter();
 
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);
@@ -79,6 +81,9 @@ public slots:
     void onSelectedSceneChanged(Scene *scene);
     void onSceneStopped(Scene* scene);
 
+    void onGridToggleAction(bool enabled);
+    void onToggleDebugAction(bool enabled);
+
 private: // Variables
     MainWindow *mMainWindow;
     QOpenGLWindowComponent *mWindowComponent;
@@ -96,6 +101,7 @@ private: // Methods
     QStringListModel* getSceneNamesListModel(vector<Scene*> sceneList);
     string getSceneNameFromModelIndex(int index);
     unique_ptr<Grid> mGrid;
+    unique_ptr<SelectionHighlighter> mSelectionHighlighter;
 };
 
 #endif // MAINCONTROLLER_H

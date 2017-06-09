@@ -24,29 +24,33 @@
 #include <string>
 #include <vector>
 #include "Constants.h"
+#include <memory>
 
-namespace Dream {
+using namespace std;
 
-  using namespace std;
+namespace Dream
+{
 
-  class FileReader {
-  private:
-    stringstream *mStringStream;
-    vector<char> *mBinaryVector;
-    ifstream     mInputStream;
-    string       mPath;
-  public:
-    FileReader(string);
-    ~FileReader(void);
 
-    string getPath();
-    bool readIntoStringStream();
-    string getContentsAsString();
-    bool readIntoBinaryVector();
-    vector<char>* getContentsAsBinaryVector();
-    int getFileSize();
+    class FileReader
+    {
+    private:
+        unique_ptr<stringstream> mStringStream;
+        unique_ptr<vector<char>> mBinaryVector;
+        ifstream     mInputStream;
+        string       mPath;
+    public:
+        FileReader(string);
+        ~FileReader(void);
 
-  }; // End of FileReader
+        string getPath();
+        bool readIntoStringStream();
+        string getContentsAsString();
+        bool readIntoBinaryVector();
+        vector<char>* getContentsAsBinaryVector();
+        int getFileSize();
+
+    }; // End of FileReader
 } // End of Dream
 
 #endif // End of JSONFILEREADER_H

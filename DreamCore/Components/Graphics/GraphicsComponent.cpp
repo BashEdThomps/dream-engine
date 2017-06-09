@@ -28,8 +28,8 @@ namespace Dream
     GraphicsComponent::GraphicsComponent
     (Camera* camera, IWindowComponent* windowComponent)
         : IComponent(),
-          mWindowComponent(windowComponent),
           mCamera(camera),
+          mWindowComponentHandle(windowComponent),
           mClearColour({1.0f,1.0f,1.0f,1.0f}),
           mAmbientLightColour({1.0f,1.0f,1.0f,1.0f})
     {
@@ -109,8 +109,8 @@ namespace Dream
     {
 
         // Define the viewport dimensions
-        int windowWidth  = mWindowComponent->getWidth();
-        int windowHeight = mWindowComponent->getHeight();
+        int windowWidth  = mWindowComponentHandle->getWidth();
+        int windowHeight = mWindowComponentHandle->getHeight();
 
         if (Constants::DEBUG)
         {
@@ -140,8 +140,8 @@ namespace Dream
         if (Constants::VERBOSE)
         {
             cout << "GraphicsComponent: Window dimensions changed" << endl
-                 << "\tWindowWidth:" << mWindowComponent->getWidth() << endl
-                 << "\tWindowHeight:" << mWindowComponent->getHeight() << endl
+                 << "\tWindowWidth:" << mWindowComponentHandle->getWidth() << endl
+                 << "\tWindowHeight:" << mWindowComponentHandle->getHeight() << endl
                  << "\tMinDraw: " << mMinimumDraw << endl
                  << "\tMaxDraw: " << mMaximumDraw << endl;
         }
@@ -162,14 +162,14 @@ namespace Dream
             mClearColour[CLEAR_BLUE],
             mClearColour[CLEAR_ALPHA]
         );
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void
     GraphicsComponent::postRender
     ()
     {
-        glDisable(GL_DEPTH_TEST);
+        //glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glDisable (GL_BLEND);
     }
@@ -222,12 +222,15 @@ namespace Dream
             cout << "GraphicsComponrnt: updateComponent(Scene*) Called" << endl;
         }
 
-        if (mWindowComponent->sizeHasChanged())
+        if (mWindowComponentHandle->sizeHasChanged())
         {
             onWindowDimensionsChanged();
         }
 
-        if (!mWindowComponent->shouldClose())
+        // View transform
+        mViewMatrix = mCamera->getViewMatrix();
+
+        if (!mWindowComponentHandle->shouldClose())
         {
             // Clear existing Queues
             clear2DQueue();
@@ -313,8 +316,6 @@ namespace Dream
     GraphicsComponent::draw2DQueue
     ()
     {
-        glDisable(GL_CULL_FACE);
-
         for (vector<SceneObject*>::
              iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
         {
@@ -348,8 +349,7 @@ namespace Dream
     GraphicsComponent::draw3DQueue
     ()
     {
-        // View transform
-        mViewMatrix = mCamera->getViewMatrix();
+
 
         for (vector<SceneObject*>::
              iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ )
@@ -381,8 +381,8 @@ namespace Dream
         ShaderInstance* shader = sceneObject->getShaderInstance();
         // Get arguments
         glm::vec2 size = glm::vec2(sprite->getWidth(),sprite->getHeight());
-        GLfloat rotate = sceneObject->getTransform().getRotationZ();
-        GLfloat scale = sceneObject->getTransform().getScaleZ();
+        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
+        GLfloat scale = sceneObject->getTransform()->getScaleZ();
         glm::vec3 color = glm::vec3(1.0f);
         // Setup Shader
         shader->use();
@@ -434,8 +434,8 @@ namespace Dream
         // Setup Shader
         ShaderInstance* shader = sceneObject->getShaderInstance();
         glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
-        GLfloat rotate = sceneObject->getTransform().getRotationZ();
-        GLfloat scale = sceneObject->getTransform().getScaleZ();
+        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
+        GLfloat scale = sceneObject->getTransform()->getScaleZ();
 
         shader->use();
 
@@ -524,12 +524,9 @@ namespace Dream
         GLint uAmbientColor    = glGetUniformLocation(shader->getShaderProgram(),"ambientColor");
         if (uAmbientColor > 0 && uAmbientStrength > 0)
         {
-            glm::
-                    vec3 ambientColor = glm::
-                    vec3(mAmbientLightColour[0],mAmbientLightColour[1],mAmbientLightColour[2]);
+            glm::vec3 ambientColor = glm::vec3(mAmbientLightColour[0],mAmbientLightColour[1],mAmbientLightColour[2]);
             glUniform1f(uAmbientStrength,mAmbientLightColour[3]);
-            glUniform3fv(uAmbientColor,1,glm::
-                         value_ptr(ambientColor));
+            glUniform3fv(uAmbientColor,1,glm::value_ptr(ambientColor));
         }
         // Set Diffuse Light Values
         vector<LightInstance*>::
@@ -547,14 +544,10 @@ namespace Dream
 
             if (uLightPos > 0 && uLightColor > 0)
             {
-                glm::
-                        vec3 lightPos = (*lights)->getTransform()->getTranslation();
-                glm::
-                        vec3 lightColor = (*lights)->getColor();
-                glUniform3fv(uLightPos  ,1, glm::
-                             value_ptr(lightPos));
-                glUniform3fv(uLightColor,1, glm::
-                             value_ptr(lightColor));
+                glm::vec3 lightPos = (*lights)->getTransform()->getTranslation();
+                glm::vec3 lightColor = (*lights)->getColor();
+                glUniform3fv(uLightPos  ,1, glm::value_ptr(lightPos));
+                glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
             }
             else
             {
@@ -567,15 +560,22 @@ namespace Dream
         }
 
         // Pass view/projection transform to shader
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "projection"), 1, GL_FALSE, glm::
-                           value_ptr(mProjectionMatrix));
-        glUniformMatrix4fv(glGetUniformLocation(shader->getShaderProgram(), "view"), 1, GL_FALSE, glm::
-                           value_ptr(mViewMatrix));
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "projection"),
+            1, GL_FALSE, glm::value_ptr(mProjectionMatrix)
+        );
+
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "view"),
+            1, GL_FALSE, glm::value_ptr(mViewMatrix)
+        );
         // calculate the model matrix
         glm::mat4 modelMatrix;
         // Get raw data
         glm::vec3 translation = sceneObject->getTranslation();
-        glm::quat rot = sceneObject->getTransform().getOrientation();
+        glm::quat rot = sceneObject->getTransform()->getOrientation();
         glm::vec3 scale = sceneObject->getScale();
         // Translate
         modelMatrix = glm::translate(modelMatrix,translation);
@@ -584,6 +584,8 @@ namespace Dream
         modelMatrix = modelMatrix * rotMat;
         // Scale
         modelMatrix = glm::scale(modelMatrix, scale);
+        model->setModelMatrix(modelMatrix);
+
         // Pass model matrix to shader
         glUniformMatrix4fv(
                     glGetUniformLocation(shader->getShaderProgram(), "model"),
@@ -654,22 +656,6 @@ namespace Dream
     ()
     {
         mLightQueue.clear();
-    }
-
-
-    void
-    GraphicsComponent::setGameController
-    (GameController* gameController)
-    {
-        mGameController = gameController;
-    }
-
-
-    GameController*
-    GraphicsComponent::getGameController
-    ()
-    {
-        return mGameController;
     }
 
     Camera*

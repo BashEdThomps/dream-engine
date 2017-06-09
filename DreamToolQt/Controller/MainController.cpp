@@ -35,17 +35,24 @@ MainController::MainController
 (MainWindow* parent)
     : QObject(parent)
 {
+    qDebug() << "MainController: Constructing Object";
     mMainWindow = parent;
     mWindowComponent = parent->getWindowComponent();
     mDreamModel.reset(new DreamModel(this,mWindowComponent));
-    mGrid.reset();
+
+    mGrid.reset(new Grid(this));
+    mWindowComponent->setGrid(getGrid());
+
+    mSelectionHighlighter.reset(new SelectionHighlighter(this));
+    mWindowComponent->setSelectionHighlighter(getSelectionHighlighter());
+
     createConnections();
 }
 
 MainController::~MainController
 ()
 {
-
+    qDebug() << "MainController: Destroying Object";
 }
 
 void
@@ -87,6 +94,18 @@ MainController::createConnections
     (
         mMainWindow->getActionStop(), SIGNAL(triggered()),
         this, SLOT(onProjectStopAction())
+    );
+    // Action Toggle Grid
+    connect
+    (
+        mMainWindow->getActionToggleGrid(),SIGNAL(triggered(bool)),
+        this,SLOT(onGridToggleAction(bool))
+    );
+    // Action Toggle Debug
+    connect
+    (
+        mMainWindow->getActionToggleDebug(),SIGNAL(triggered(bool)),
+        this,SLOT(onToggleDebugAction(bool))
     );
     // Scene Stopped
     connect
@@ -130,6 +149,7 @@ MainController::createConnections
         this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
         mMainWindow, SLOT(showStatusBarMessage(QString))
     );
+
 }
 
 void
@@ -413,12 +433,12 @@ MainController::setupPropertiesTreeViewModel
     switch(item->getItemType())
     {
         case GenericTreeItemType::PROJECT:
-            qDebug() << "Selected a project";
+            qDebug() << "MainController: Selected a project";
             project = mDreamModel->getProject();
             model = new ProjectPropertiesModel(project,propertiesTreeView);
             break;
         case GenericTreeItemType::ASSET_DEFINITION:
-            qDebug() << "Selected an asset definition";
+            qDebug() << "MainController: Selected an asset definition";
             asset = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
             model = new AssetDefinitionPropertiesModel(asset,propertiesTreeView);
             // Set Type Delegate
@@ -429,16 +449,20 @@ MainController::setupPropertiesTreeViewModel
             if (scene)
             {
                 model = new ScenePropertiesModel(scene,propertiesTreeView);
-                qDebug() << "Selected a scene";
+                qDebug() << "MainController: Selected a scene";
             }
             break;
         case GenericTreeItemType::SCENE_OBJECT:
-            qDebug() << "Selected a scene object";
+            qDebug() << "MainController: Selected a scene object";
             sceneObject = static_cast<SceneObject*>(static_cast<ProjectTreeItem*>(item)->getItem());
             model = new SceneObjectPropertiesModel(sceneObject,propertiesTreeView);
+            if (mSelectionHighlighter)
+            {
+                mSelectionHighlighter->setSelectedObject(sceneObject);
+            }
             break;
         case GenericTreeItemType::TREE_NODE:
-            qDebug() << "Selected a tree node";
+            qDebug() << "MainController: Selected a tree node";
             break;
     }
 
@@ -472,4 +496,25 @@ MainController::getGrid
 ()
 {
     return mGrid.get();
+}
+
+SelectionHighlighter*
+MainController::getSelectionHighlighter
+()
+{
+    return mSelectionHighlighter.get();
+}
+
+void
+MainController::onGridToggleAction
+(bool enabled)
+{
+    mWindowComponent->setGridEnabled(enabled);
+}
+
+void
+MainController::onToggleDebugAction
+(bool enabled)
+{
+    mDreamModel->setDebug(enabled);
 }

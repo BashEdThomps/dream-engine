@@ -18,7 +18,7 @@
 namespace Dream
 {
 
-    FT_Library* FontInstance::sFreeTypeLib = nullptr;
+    unique_ptr<FT_Library> FontInstance::sFreeTypeLib;
 
     FontInstance::FontInstance
     (AssetDefinition* definition, Transform3D* transform)
@@ -42,12 +42,11 @@ namespace Dream
                 cout << "FontInstance: Initialising FreeType" << endl;
             }
 
-            sFreeTypeLib = new FT_Library();
-            if (FT_Init_FreeType(sFreeTypeLib))
+            sFreeTypeLib.reset(new FT_Library());
+            if (FT_Init_FreeType(sFreeTypeLib.get()))
             {
                 cerr << "FontInstance:: Fatal Error! Could not initialise FreeType library" << endl;
-                delete sFreeTypeLib;
-                sFreeTypeLib = nullptr;
+                sFreeTypeLib.reset();
             }
         }
     }
@@ -62,9 +61,8 @@ namespace Dream
             {
                 cout << "FontInstance: Destroying FreeType" << endl;
             }
-            FT_Done_FreeType(*sFreeTypeLib);
-            delete sFreeTypeLib;
-            sFreeTypeLib = nullptr;
+            FT_Done_FreeType(*sFreeTypeLib.get());
+            sFreeTypeLib.release();
         }
     }
 
@@ -93,8 +91,8 @@ namespace Dream
         if (sFreeTypeLib)
         {
 
-            mFontFace = new FT_Face();
-            if (FT_New_Face(*sFreeTypeLib,path.c_str(),0,mFontFace))
+            mFontFace.reset(new FT_Face());
+            if (FT_New_Face(*sFreeTypeLib.get(),path.c_str(),0,mFontFace.get()))
             {
                 cerr << "FontInstance: Unable to create font. Error calling FT_New_Face" << endl;
             }
@@ -156,7 +154,7 @@ namespace Dream
     FontInstance::getFontFace
     ()
     {
-        return mFontFace;
+        return mFontFace.get();
     }
 
     void

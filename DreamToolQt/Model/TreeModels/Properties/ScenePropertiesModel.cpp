@@ -17,6 +17,9 @@
  */
 #include "ScenePropertiesModel.h"
 #include <QDebug>
+#include <DreamCore.h>
+
+using namespace Dream;
 
 ScenePropertiesModel::ScenePropertiesModel
 (Dream::Scene *scene, QTreeView* parent)
@@ -31,6 +34,7 @@ ScenePropertiesModel::ScenePropertiesModel
 ScenePropertiesModel::~ScenePropertiesModel
 ()
 {
+    qDebug() << "ScenePropertiesModel: Desstructor called";
     delete mRootItem;
 }
 

@@ -1,5 +1,5 @@
 /*
-* Dream::Components::Audio::Open::AudioComponent
+* Dream::AudioComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ namespace Dream
             std::cout << "AudioComponent: Initialising..." << endl;
         }
         mDevice = alcOpenDevice(nullptr);
-        mContext = alcCreateContext(mDevice,nullptr);
+        mContext = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
         std::vector<float> position = {0.0f,0.0f,0.0f};
         setListenerPosition(position);

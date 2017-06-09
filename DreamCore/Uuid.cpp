@@ -19,22 +19,23 @@
 #include <cstdio>
 #include <cstdlib>
 
-namespace Dream {
-
-  string Uuid::generateUuid() {
-    size_t bufSize = sizeof(char)*20;
-    char* buffer = static_cast<char*>(malloc(bufSize));
-    snprintf(
-      buffer, bufSize,
-      "%02x%02x-%02x%02x-%02x%02x-%02x%02x",
-      rand()%255, rand()%255,
-      rand()%255, rand()%255,
-      rand()%255, rand()%255,
-      rand()%255, rand()%255
-    );
-    string retval = string(buffer);
-    free(buffer);
-    return retval;
-  }
+namespace Dream
+{
+    string Uuid::generateUuid()
+    {
+        size_t bufSize = sizeof(char)*20;
+        char* buffer = static_cast<char*>(malloc(bufSize));
+        snprintf(
+                    buffer, bufSize,
+                    "%02x%02x-%02x%02x-%02x%02x-%02x%02x",
+                    rand()%255, rand()%255,
+                    rand()%255, rand()%255,
+                    rand()%255, rand()%255,
+                    rand()%255, rand()%255
+                    );
+        string retval = string(buffer);
+        free(buffer);
+        return retval;
+    }
 
 } // End of Dream

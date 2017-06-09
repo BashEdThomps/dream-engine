@@ -18,7 +18,7 @@ namespace Dream
                  << parent->getName()
                  << endl;
         }
-        mParent = parent;
+        mParentHandle = parent;
         mVertices = vertices;
         mIndices  = indices;
         mTextures = textures;
@@ -31,7 +31,7 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "AssimpMesh: Destroying Mesh for "
-                 << mParent->getName()
+                 << mParentHandle->getName()
                  << endl;
         }
         return;

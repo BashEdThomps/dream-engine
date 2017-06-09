@@ -18,9 +18,6 @@
 #ifndef AUDIOCOMPONENT_H
 #define AUDIOCOMPONENT_H
 
-#include <iostream>
-#include <vector>
-
 #ifdef __APPLE__
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
@@ -31,6 +28,12 @@
 
 #include "../IComponent.h"
 #include "AudioInstance.h"
+
+#include <iostream>
+#include <vector>
+#include <memory>
+
+using namespace std;
 
 namespace Dream
 {

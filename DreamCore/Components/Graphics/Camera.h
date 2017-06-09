@@ -14,7 +14,8 @@
 #define ZOOM_MIN 1.0f
 #define ZOOM_MAX 45.0f
 
-#define YAW       0.0f
+#define YAW        00.0f
+#define YAW_OFFSET 90.0f
 #define PITCH      0.0f
 #define SPEED      10.0f
 #define SENSITIVTY 0.125f

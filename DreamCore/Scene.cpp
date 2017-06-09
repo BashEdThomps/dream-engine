@@ -27,12 +27,12 @@ namespace Dream
     Scene::Scene
     (Project* project, nlohmann::json jsonScene)
         : mJson(jsonScene),
-          mRootSceneObject(nullptr),
+          mRootSceneObjectHandle(nullptr),
           mClearColour({0.0f,0.0f,0.0f,0.0f}),
           mAmbientLightColour({0.0f,0.0f,0.0f,0.0f}),
           mGravity({0.0f,0.0f,0.0f}),
           mState(NOT_LOADED),
-          mProject(project)
+          mProjectHandle(project)
     {
         loadAllJsonData(mJson);
     }
@@ -251,7 +251,7 @@ namespace Dream
     {
         return static_cast<SceneObject*>
         (
-            mRootSceneObject->applyToAll
+            mRootSceneObjectHandle->applyToAll
             (
                 function<void*(SceneObject*)>
                 (
@@ -274,7 +274,7 @@ namespace Dream
     {
         return static_cast<SceneObject*>
         (
-            mRootSceneObject->applyToAll
+            mRootSceneObjectHandle->applyToAll
             (
                 function<void*(SceneObject*)>
                 (
@@ -296,7 +296,7 @@ namespace Dream
     ()
     {
         int count = 0;
-        mRootSceneObject->applyToAll
+        mRootSceneObjectHandle->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -314,29 +314,32 @@ namespace Dream
     Scene::showStatus
     ()
     {
-        cout << "Scene" << endl;
-        cout << "{" << endl;
-        cout << "\tUUID: " << mUuid << endl;
-        cout << "\tName: " << mName << endl;
-        cout << "\tCamera Transform: " << endl;
-        cout << "\tTranslation: " << String::vec3ToString(mDefaultCameraTransform.getTranslation()) << endl;
-        cout << "\tRotation: " << String::vec3ToString(mDefaultCameraTransform.getRotation())    << endl;
-        cout << "\tScene Objects: " << getNumberOfSceneObjects() << endl;
-        cout << "}" << endl;
-        showScenegraph();
+        if (Constants::DEBUG)
+        {
+            cout << "Scene" << endl;
+            cout << "{" << endl;
+            cout << "\tUUID: " << mUuid << endl;
+            cout << "\tName: " << mName << endl;
+            cout << "\tCamera Transform: " << endl;
+            cout << "\tTranslation: " << String::vec3ToString(mDefaultCameraTransform.getTranslation()) << endl;
+            cout << "\tRotation: " << String::vec3ToString(mDefaultCameraTransform.getRotation())    << endl;
+            cout << "\tScene Objects: " << getNumberOfSceneObjects() << endl;
+            cout << "}" << endl;
+            showScenegraph();
+        }
     }
 
     void
     Scene::showScenegraph
     ()
     {
-        if (mRootSceneObject == nullptr)
+        if (mRootSceneObjectHandle == nullptr)
         {
             cout << "Scene: Scenegraph is empty (no root SceneObject)" << endl;
             return;
         }
 
-        mRootSceneObject->applyToAll
+        mRootSceneObjectHandle->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -353,14 +356,14 @@ namespace Dream
     Scene::setRootSceneObject
     (SceneObject* root)
     {
-        mRootSceneObject = root;
+        mRootSceneObjectHandle = root;
     }
 
     SceneObject*
     Scene::getRootSceneObject
     ()
     {
-        return mRootSceneObject;
+        return mRootSceneObjectHandle;
     }
 
     glm::vec3
@@ -452,7 +455,7 @@ namespace Dream
             cout << "Scene: findDeleteFlaggedSceneObjects Called" << endl;
         }
 
-        mRootSceneObject->applyToAll
+        mRootSceneObjectHandle->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -484,7 +487,7 @@ namespace Dream
             cout << "Secne: Create All Asset Instances Called" << endl;
         }
 
-        mRootSceneObject->applyToAll
+        mRootSceneObjectHandle->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -505,7 +508,7 @@ namespace Dream
     Scene::loadAllAssetInstances
     ()
     {
-        mRootSceneObject->applyToAll
+        mRootSceneObjectHandle->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -538,7 +541,7 @@ namespace Dream
 
         for (SceneObject* it : objects)
         {
-            mProject->getRuntime()->getLuaEngine()->removeFromScriptMap(it);
+            mProjectHandle->getRuntime()->getLuaEngine()->removeFromScriptMap(it);
         }
     }
 
@@ -578,7 +581,7 @@ namespace Dream
         {
             cout << "Scene: cleanUpSceneObjects" << endl;
         }
-        mRootSceneObject->applyToAll
+        mRootSceneObjectHandle->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -662,7 +665,7 @@ namespace Dream
     Scene::getProject
     ()
     {
-        return mProject;
+        return mProjectHandle;
     }
 
     bool

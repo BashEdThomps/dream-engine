@@ -18,70 +18,35 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include <QObject>
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp>
-#include <vector>
+#include "GLDrawable.h"
 
-#include <QOpenGLShaderProgram>
-
-using namespace std;
 using namespace glm;
+using namespace std;
 
-struct GridVertex
+class Grid : public GLDrawable
 {
-    vec3 Position;
-    vec3 Color;
-};
-
-class Grid : public QObject
-{
-    Q_OBJECT
 public:
     Grid(
-        QObject* parent,
+        QObject* parent = nullptr,
         float majorSpacing = 5.0f, float minorSpacing = 1.0f,
         float size = 25.0f,
-        vec3 majorColour = vec3(1.0f,0.0f,0.0f),
-        vec3 minorColour = vec3(0.0f,0.0f,1.0f)
+        vec3 majorColour = vec3(1.0f),
+        vec3 minorColour = vec3(0.6f)
     );
 
     ~Grid();
-
     void init();
-    bool isInitialised();
-    void draw();
-    void setViewMatrix(mat4);
-    void setProjectionMatrix(mat4);
 
-private: // Member Functions
-    void initShader();
-    void initVaoVbo();
+protected: // Member functions
     void initMajorGridData();
     void initMinorGridData();
 
-private: // Variables
-
+protected: // Variables
     float mSize;
-
-    mat4 mViewMatrix;
-    mat4 mProjectionMatrix;
-
     float mMajorSpacing;
     vec3 mMajorColour;
-
     float mMinorSpacing;
     vec3 mMinorColour;
-
-    GLuint mVao;
-    GLuint mVbo;
-
-    vector<GridVertex> mVertexBuffer;
-
-    GLuint mShaderProgram;
-
-    bool mInitialised;
 };
 
 #endif // GRID_H

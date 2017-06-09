@@ -21,13 +21,13 @@ namespace Dream
       class AudioInstance : public IAssetInstance
       {
       protected:
-        bool              mLooping;
-        ALenum            mFormat;
-        ALsizei           mFrequency;
+        bool mLooping;
+        ALenum mFormat;
+        ALsizei mFrequency;
         std::vector<char> mAudioDataBuffer;
-        ALuint            mSource;
-        ALuint            mBuffer;
-        AudioStatus       mStatus;
+        ALuint mSource;
+        ALuint mBuffer;
+        AudioStatus mStatus;
       public:
         AudioInstance(AssetDefinition*,Transform3D*);
 

@@ -20,13 +20,15 @@
 
 #include <iostream>
 
-namespace Dream {
+using namespace std;
 
-  using namespace std;
-  class Uuid {
-  public:
-    static string generateUuid();
-  }; // End of Uuid
+namespace Dream
+{
+    class Uuid
+    {
+    public:
+        static string generateUuid();
+    }; // End of Uuid
 }  // End of Dream
 
 #endif // End of UUID_H

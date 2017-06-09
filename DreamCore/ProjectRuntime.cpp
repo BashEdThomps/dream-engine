@@ -31,7 +31,6 @@ namespace Dream
         }
         setProject(project);
         setWindowComponent(windowComponent);
-        setGameController(new GameController());
     }
 
     ProjectRuntime::~ProjectRuntime
@@ -42,7 +41,7 @@ namespace Dream
             cout << "ProjectRuntime: Destroying Object" << endl;
         }
         destroyComponents();
-
+        mProject = nullptr;
     }
 
     void
@@ -176,7 +175,7 @@ namespace Dream
         {
             cout << "ProjetRuntime: Destroying Components" << endl;
         }
-
+        /*
         if (mTime)
         {
             mTime.reset();
@@ -204,10 +203,7 @@ namespace Dream
         {
             mWindowComponent.reset();
         }
-        if (mGameController)
-        {
-            mGameController.reset();
-        }
+        */
     }
 
 
@@ -319,7 +315,6 @@ namespace Dream
 
         if (mGraphicsComponent->init())
         {
-            mGraphicsComponent->setGameController(mGameController.get());
             return true;
         }
         else
@@ -392,22 +387,6 @@ namespace Dream
     ()
     {
         return mCamera.get();
-    }
-
-
-    GameController*
-    ProjectRuntime::getGameController
-    ()
-    {
-        return mGameController.get();
-    }
-
-
-    void
-    ProjectRuntime::setGameController
-    (GameController *gc)
-    {
-        mGameController.reset(gc);
     }
 
     bool

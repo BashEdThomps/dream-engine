@@ -4,11 +4,12 @@
 #include <iostream>
 #include "Constants.h"
 
-namespace Dream {
+using namespace std;
 
-    using namespace std;
-
-    class Environment {
+namespace Dream
+{
+    class Environment
+    {
     public:
         static string getHomeDirectory();
     };

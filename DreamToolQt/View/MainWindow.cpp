@@ -40,6 +40,7 @@ void MainWindow::setupGL(QWidget *parent)
     glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     glFormat.setSamples(4);
     mWindowComponent = new QOpenGLWindowComponent(glFormat,parent);
+    mWindowComponent->setMouseTracking(true);
 
     glVerticalLayout->addWidget(mWindowComponent);
     ui->previewTab->setLayout(glVerticalLayout);
@@ -118,6 +119,16 @@ QAction* MainWindow::getActionReload()
 QAction* MainWindow::getActionOpenTestProject()
 {
     return ui->actionOpen_Test_Project;
+}
+
+QAction* MainWindow::getActionToggleGrid()
+{
+    return ui->actionToggleGrid;
+}
+
+QAction* MainWindow::getActionToggleDebug()
+{
+    return ui->actionToggleDebug;
 }
 
 QOpenGLWindowComponent* MainWindow::getWindowComponent()

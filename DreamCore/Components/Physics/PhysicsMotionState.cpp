@@ -26,7 +26,7 @@ namespace Dream
         {
             cout << "PhysicsMotionState: Constructor called" << endl;
         }
-        mDreamTransform = dreamTransform;
+        mDreamTransformHandle = dreamTransform;
     }
 
     PhysicsMotionState::~PhysicsMotionState
@@ -46,7 +46,7 @@ namespace Dream
         {
             cout << "PhysicsMotionState: setTransform called" << endl;
         }
-        mDreamTransform = transform;
+        mDreamTransformHandle = transform;
     }
 
     void
@@ -58,9 +58,9 @@ namespace Dream
             cout << "PhysicsMotionState: getWorldTransform called" << endl;
         }
         // Translation
-        worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
+        worldTrans.setOrigin(mDreamTransformHandle->getTranslationAsBtVector3());
         // Rotation
-        glm::quat glmRot = mDreamTransform->getOrientation();
+        glm::quat glmRot = mDreamTransformHandle->getOrientation();
         btQuaternion btRot = btQuaternion(glmRot.x,glmRot.y,glmRot.z,glmRot.w);
         worldTrans.setRotation(btRot);
     }
@@ -73,17 +73,17 @@ namespace Dream
         {
             cout << "PhysicsMotionState: setWorldTransform called" << endl;
         }
-        if(mDreamTransform == nullptr)
+        if(mDreamTransformHandle == nullptr)
         {
             cerr << "PhysicsMotionState: Error in SetWorldTransform!!" << endl;
             return; // die quietly before we set transform
         }
         // Translation
         btVector3 pos = worldTrans.getOrigin();
-        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+        mDreamTransformHandle->setTranslation(pos.x(), pos.y(), pos.z());
         // Rotation
         btQuaternion rot = worldTrans.getRotation();
-        mDreamTransform->setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
+        mDreamTransformHandle->setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
     }
 
     void
@@ -95,7 +95,7 @@ namespace Dream
             cout << "PhysicsMotionState: setKinematicPos called" << endl;
         }
         btVector3 pos = trans.getOrigin();
-        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+        mDreamTransformHandle->setTranslation(pos.x(), pos.y(), pos.z());
     }
 
 

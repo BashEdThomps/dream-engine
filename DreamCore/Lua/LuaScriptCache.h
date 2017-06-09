@@ -31,6 +31,7 @@ namespace Dream
         static map<string,string> sScriptCache;
         static string getScript(string);
         static string readIntoCache(string);
+        static void cleanUp();
     private:
         LuaScriptCache();
         ~LuaScriptCache();

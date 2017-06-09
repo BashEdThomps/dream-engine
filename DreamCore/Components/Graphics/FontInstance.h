@@ -17,11 +17,14 @@
 #ifndef FONTINSTANCE_H
 #define FONTINSTANCE_H
 
+#include <memory>
 #include <GL/glew.h>
 #include "../../IAssetInstance.h"
 #include "../../Constants.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+using namespace std;
 
 namespace Dream
 {
@@ -37,9 +40,9 @@ namespace Dream
     {
     private:
         map<GLchar, Character> mCharacterMap;
-        static FT_Library* sFreeTypeLib;
+        static unique_ptr<FT_Library> sFreeTypeLib;
         int mSize;
-        FT_Face* mFontFace;
+        unique_ptr<FT_Face> mFontFace;
         vector<float> mColour;
         string mText;
     private: // Methods

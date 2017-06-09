@@ -17,6 +17,7 @@
 
 #include "AssimpModelInstance.h"
 #include "TextureCache.h"
+#include <limits>
 
 namespace Dream
 {
@@ -56,7 +57,16 @@ namespace Dream
     (AssetDefinition* definition, Transform3D* transform)
     : IAssetInstance(definition,transform)
     {
+        initBoundingBox();
         return;
+    }
+
+    void
+    AssimpModelInstance::initBoundingBox
+    ()
+    {
+        mBoundingBox.maximum = glm::vec3(std::numeric_limits<float>::min());
+        mBoundingBox.minimum = glm::vec3(std::numeric_limits<float>::max());
     }
 
     AssimpModelInstance::~AssimpModelInstance
@@ -108,6 +118,7 @@ namespace Dream
         for(GLuint i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            updateBoundingBox(mesh);
             mMeshes.push_back(processMesh(mesh, scene));
         }
         // Then do the same for each of its children
@@ -261,4 +272,68 @@ namespace Dream
         */
         AssimpModelCache.clear();
     }
+
+    BoundingBox
+    AssimpModelInstance::getBoundingBox
+    ()
+    {
+        return mBoundingBox;
+    }
+
+    void
+    AssimpModelInstance::updateBoundingBox
+    (aiMesh* mesh)
+    {
+        for (unsigned int i=0; i < mesh->mNumVertices; i++)
+        {
+            aiVector3D vertex = mesh->mVertices[i];
+
+            // Maximum
+            if (mBoundingBox.maximum.x < vertex.x)
+            {
+                mBoundingBox.maximum.x = vertex.x;
+            }
+
+            if (mBoundingBox.maximum.y < vertex.y)
+            {
+                mBoundingBox.maximum.y = vertex.y;
+            }
+
+            if (mBoundingBox.maximum.z < vertex.z)
+            {
+                mBoundingBox.maximum.z = vertex.z;
+            }
+
+            // Maximum
+            if (mBoundingBox.minimum.x > vertex.x)
+            {
+                mBoundingBox.minimum.x = vertex.x;
+            }
+
+            if (mBoundingBox.minimum.y > vertex.y)
+            {
+                mBoundingBox.minimum.y = vertex.y;
+            }
+
+            if (mBoundingBox.minimum.z > vertex.z)
+            {
+                mBoundingBox.minimum.z = vertex.z;
+            }
+        }
+    }
+
+    void
+    AssimpModelInstance::setModelMatrix
+    (glm::mat4 modelMatrix)
+    {
+        mModelMatrix = modelMatrix;
+    }
+
+    glm::mat4
+    AssimpModelInstance::getModelMatrix
+    ()
+    {
+        return mModelMatrix;
+    }
+
 } // End of Dream

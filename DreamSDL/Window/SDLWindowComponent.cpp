@@ -138,17 +138,6 @@ namespace DreamSDL
                 scene->setState(DONE);
                 break;
             }
-            /*
-            else if (
-                     mGameController &&
-                     (
-                        event.type == SDL_CONTROLLERAXISMOTION ||
-                        event.type == SDL_CONTROLLERBUTTONDOWN ||
-                        event.type == SDL_CONTROLLERBUTTONUP
-                     )
-            ){
-                mGameController->updateControllerState(event);
-            }*/
             else if (event.type == SDL_WINDOWEVENT)
             {
                 switch(event.window.event)
@@ -205,7 +194,7 @@ namespace DreamSDL
 
     void
     SDLWindowComponent::cleanUp
-    (Dream::Scene* scene)
+    (Scene* scene)
     {
 
     }

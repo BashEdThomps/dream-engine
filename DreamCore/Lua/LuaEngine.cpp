@@ -63,8 +63,7 @@ namespace Dream
     LuaEngine::LuaEngine
     (Project* project)
     {
-        mProject = project;
-        mState = nullptr;
+        mProjectHandle = project;
     }
 
     LuaEngine::~LuaEngine
@@ -79,6 +78,8 @@ namespace Dream
         {
             lua_close(mState);
         }
+
+        LuaScriptCache::cleanUp();
     }
 
     bool
@@ -292,7 +293,7 @@ namespace Dream
 
             if (key->hasFocus())
             {
-                if (!executeScriptKeyHandler(key))
+                if (!executeScriptInputHandler(key))
                 {
                     return false;
                 }
@@ -381,7 +382,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::executeScriptKeyHandler
+    LuaEngine::executeScriptInputHandler
     (SceneObject* sceneObject)
     {
         string id = sceneObject->getUuid();
@@ -402,6 +403,13 @@ namespace Dream
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
+
+            for(InputEvent event : mInputEvents)
+            {
+               luabind::call_function<void>(funq,sceneObject,event);
+            }
+
+            clearInputEvents();
         }
         catch (luabind::error &e)
         {
@@ -455,6 +463,20 @@ namespace Dream
         return true;
     }
 
+    void
+    LuaEngine::addInputEvent
+    (InputEvent event)
+    {
+        mInputEvents.push_back(event);
+    }
+
+    void
+    LuaEngine::clearInputEvents
+    ()
+    {
+        mInputEvents.clear();
+    }
+
     // API Exposure Methods ======================================================
 
     void
@@ -469,8 +491,9 @@ namespace Dream
                 .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponent)
                 .def("getWindowComponent",&ProjectRuntime::getWindowComponent)
                 .def("getTime",&ProjectRuntime::getTime)
+                .def("getCamera",&ProjectRuntime::getCamera)
         ];
-        luabind::globals(mState)["Runtime"] = mProject->getRuntime();
+        luabind::globals(mState)["Runtime"] = mProjectHandle->getRuntime();
     }
 
     void
@@ -482,7 +505,7 @@ namespace Dream
             luabind::class_<Project>("Project")
                 .def("getActiveScene",&Project::getActiveScene)
         ];
-        luabind::globals(mState)["Project"] = mProject;
+        luabind::globals(mState)["Project"] = mProjectHandle;
     }
 
     void
@@ -496,10 +519,10 @@ namespace Dream
                 .def("processMouseMovement",&Camera::processMouseMovement)
                 .enum_("CameraMovement")
                 [
-                luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
-                luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
-                luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
-                luabind::value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
+                    luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
+                    luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
+                    luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
+                    luabind::value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
                 ]
                 ];
     }
@@ -556,7 +579,6 @@ namespace Dream
         luabind::module(mState)
                 [
                 luabind::class_<GraphicsComponent>("GraphicsComponent")
-                    .def("getCamera",&GraphicsComponent::getCamera)
                 ];
     }
 
@@ -633,50 +655,6 @@ namespace Dream
                 .def("getWidth",&IWindowComponent::getWidth)
                 .def("getHeight",&IWindowComponent::getHeight)
                 .def("setShouldClose",&IWindowComponent::setShouldClose)
-                ];
-    }
-
-    void
-    LuaEngine::exposeGameController
-    ()
-    {
-        debugRegisteringClass("GameController");
-        luabind::module(mState)
-                [
-                luabind::class_<GameController>("GameController")
-                .def("getButtonValue",&GameController::getButtonValue)
-                .def("getAxisValue",&GameController::getAxisValue)
-                .enum_("ControllerButton")
-                [
-                // Face Buttons
-                luabind::value("A_BTN",ControllerButton::A),
-                luabind::value("B_BTN",ControllerButton::B),
-                luabind::value("X_BTN",ControllerButton::X),
-                luabind::value("Y_BTN",ControllerButton::Y),
-                // Shoulders
-                luabind::value("LEFT_SHOULDER",ControllerButton::LEFT_SHOULDER),
-                luabind::value("RIGHT_SHOULDER",ControllerButton::RIGHT_SHOULDER),
-                // Analog
-                luabind::value("LEFT_ANALOG_BUTTON",ControllerButton::LEFT_ANALOG),
-                luabind::value("RIGHT_ANALOG_BUTTON",ControllerButton::RIGHT_ANALOG),
-                // D-Pad
-                luabind::value("DPAD_UP",ControllerButton::DPAD_UP),
-                luabind::value("DPAD_DOWN",ControllerButton::DPAD_DOWN),
-                luabind::value("DPAD_LEFT",ControllerButton::DPAD_LEFT),
-                luabind::value("DPAD_RIGHT",ControllerButton::DPAD_RIGHT)
-                ]
-                .enum_("ControllerAxis")
-                [
-                // Left Analog
-                luabind::value("LEFT_ANALOG_X",ControllerAxis::LEFT_ANALOG_X),
-                luabind::value("LEFT_ANALOG_Y",ControllerAxis::LEFT_ANALOG_Y),
-                // Right Analog
-                luabind::value("RIGHT_ANALOG_X",ControllerAxis::RIGHT_ANALOG_X),
-                luabind::value("RIGHT_ANALOG_Y",ControllerAxis::RIGHT_ANALOG_Y),
-                // Triggers
-                luabind::value("LEFT_TRIGGER",ControllerAxis::LEFT_TRIGGER),
-                luabind::value("RIGHT_TRIGGER",ControllerAxis::RIGHT_TRIGGER)
-                ]
                 ];
     }
 
@@ -893,6 +871,80 @@ namespace Dream
     }
 
     void
+    LuaEngine::exposeInputEvent
+    ()
+    {
+        debugRegisteringClass("InputEvent");
+        luabind::module(mState)
+        [
+            luabind::class_<InputEvent>("InputEvent")
+
+                .def("getSource",&InputEvent::getSource)
+                .def("setSource",&InputEvent::setSource)
+
+                .def("getMouseEventType",&InputEvent::getMouseEventType)
+                .def("setMouseEventType",&InputEvent::setMouseEventType)
+
+                .def("getKeyEventType",&InputEvent::getKeyEventType)
+                .def("setKeyEventType",&InputEvent::setKeyEventType)
+
+                .def("getGamepadEventType",&InputEvent::getGamepadEventType)
+                .def("setGamepadEventType",&InputEvent::setGamepadEventType)
+
+                .def("getX",&InputEvent::getX)
+                .def("setX",&InputEvent::setX)
+
+                .def("getY",&InputEvent::getY)
+                .def("setY",&InputEvent::setY)
+
+                .def("isPressed",&InputEvent::isPressed)
+                .def("setPressed",&InputEvent::setPressed)
+
+                .def("getKey",&InputEvent::getKey)
+                .def("setKey",&InputEvent::setKey)
+
+                .def("getButton",&InputEvent::getButton)
+                .def("setButton",&InputEvent::setButton),
+
+            luabind::class_<InputSource>("InputSource")
+                .enum_("InputSource")
+                [
+                    luabind::value("INPUT_SOURCE_KEYBOARD",InputSource::INPUT_SOURCE_KEYBOARD),
+                    luabind::value("INPUT_SOURCE_MOUSE",InputSource::INPUT_SOURCE_MOUSE),
+                    luabind::value("INPUT_SOURCE_GAMEPAD",InputSource::INPUT_SOURCE_GAMEPAD),
+                    luabind::value("INPUT_SOURCE_NONE",InputSource::INPUT_SOURCE_NONE)
+                ],
+
+            luabind::class_<KeyEventType>("KeyEventType")
+                .enum_("KeyEventType")
+                [
+                    luabind::value("KEY_PRESSED",KeyEventType::KEY_PRESSED),
+                    luabind::value("KEY_RELEASED",KeyEventType::KEY_RELEASED),
+                    luabind::value("KEY_NONE",KeyEventType::KEY_NONE)
+                ],
+
+            luabind::class_<MouseEventType>("MouseEventType")
+                .enum_("MouseEventType")
+                [
+                    luabind::value("MOUSE_BUTTON_PRESSED",MouseEventType::MOUSE_BUTTON_PRESSED),
+                    luabind::value("MOUSE_BUTTON_RELEASED",MouseEventType::MOUSE_BUTTON_RELEASED),
+                    luabind::value("MOUSE_SCROLL",MouseEventType::MOUSE_SCROLL),
+                    luabind::value("MOUSE_MOTION",MouseEventType::MOUSE_MOTION),
+                    luabind::value("MOUSE_NONE",MouseEventType::MOUSE_NONE)
+                ],
+
+            luabind::class_<GamepadEventType>("GamepadEventType")
+                .enum_("GamepadEventType")
+                [
+                    luabind::value("GAMEPAD_AXIS",GamepadEventType::GAMEPAD_AXIS),
+                    luabind::value("GAMEPAD_BUTTON_PRESSED",GamepadEventType::GAMEPAD_BUTTON_PRESSED),
+                    luabind::value("GAMEPAD_BUTTON_RELEASED",GamepadEventType::GAMEPAD_BUTTON_RELEASED),
+                    luabind::value("GAMEPAD_NONE",GamepadEventType::GAMEPAD_NONE)
+                ]
+        ];
+    }
+
+    void
     LuaEngine::exposeAPI
     ()
     {
@@ -904,7 +956,7 @@ namespace Dream
         exposeProjectRuntime();
         exposeEvent();
         exposeFontInstance();
-        exposeGameController();
+        exposeInputEvent();
         exposeGraphicsComponent();
         exposeIAssetInstance();
         exposeAudioInstance();

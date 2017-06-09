@@ -63,7 +63,7 @@ namespace Dream
         string mUuid;
         string mName;
         string mNotes;
-        SceneObject *mRootSceneObject;
+        SceneObject *mRootSceneObjectHandle;
         vector<SceneObject*> mDeleteQueue;
         Transform3D mDefaultCameraTransform;
         float mCameraMovementSpeed;
@@ -73,7 +73,7 @@ namespace Dream
         vector<float> mGravity;
         bool mPhysicsDebug;
         SceneState mState;
-        Project* mProject;
+        Project* mProjectHandle;
 
     public:
         Scene(Project* parent, nlohmann::json projJson);

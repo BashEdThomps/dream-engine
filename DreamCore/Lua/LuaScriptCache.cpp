@@ -73,4 +73,14 @@ namespace Dream
         return content;
     }
 
+    void
+    LuaScriptCache::cleanUp
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "LuaScriptCache: Cleaning Up" << endl;
+        }
+        sScriptCache.clear();
+    }
 }

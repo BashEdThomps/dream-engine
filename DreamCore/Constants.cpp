@@ -23,7 +23,7 @@ using namespace std;
 
 namespace Dream
 {
-    bool Constants::DEBUG(true);
+    bool Constants::DEBUG(false);
     bool Constants::VERBOSE(false);
 
     void Constants::dreamSetDebug(bool debug)

@@ -10,21 +10,21 @@ using namespace std;
 
 namespace Dream
 {
-  class Time
-  {
-  private:
-    chrono::time_point<chrono::high_resolution_clock> mCurrentTime;
-    chrono::time_point<chrono::high_resolution_clock> mLastTime;
-    chrono::duration<double> mTimeDelta;
-  public:
-    Time();
-    ~Time();
-    double getCurrentTime();
-    double getLastTime();
-    double getTimeDelta();
-    void update();
-    void show();
-  };
+    class Time
+    {
+    private:
+        chrono::time_point<chrono::high_resolution_clock> mCurrentTime;
+        chrono::time_point<chrono::high_resolution_clock> mLastTime;
+        chrono::duration<double> mTimeDelta;
+    public:
+        Time();
+        ~Time();
+        double getCurrentTime();
+        double getLastTime();
+        double getTimeDelta();
+        void update();
+        void show();
+    };
 
 } // End of Dream
 

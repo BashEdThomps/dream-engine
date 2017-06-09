@@ -116,8 +116,15 @@
     <addaction name="actionStop"/>
     <addaction name="actionReload"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionToggleGrid"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProject"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QDockWidget" name="projectDockWidget">
    <property name="windowTitle">
@@ -265,6 +272,8 @@
    <addaction name="actionStop"/>
    <addaction name="actionReload"/>
    <addaction name="separator"/>
+   <addaction name="actionToggleGrid"/>
+   <addaction name="actionToggleDebug"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
    <addaction name="actionOpen_Test_Project"/>
@@ -430,6 +439,48 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionToggleGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Resources/Resources.qrc">
+     <normaloff>:/images/view-list-icons-symbolic.png</normaloff>:/images/view-list-icons-symbolic.png</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle Grid</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle Grid</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionToggleDebug">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Resources/Resources.qrc">
+     <normaloff>:/images/view-list-details-symbolic.png</normaloff>:/images/view-list-details-symbolic.png</iconset>
+   </property>
+   <property name="text">
+    <string>Debug</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/Disable Debug Output</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>

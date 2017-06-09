@@ -51,6 +51,8 @@ public:
     QAction* getActionStop();
     QAction* getActionPlay();
     QAction* getActionOpenTestProject();
+    QAction* getActionToggleGrid();
+    QAction* getActionToggleDebug();
 
     QOpenGLWindowComponent* getWindowComponent();
 

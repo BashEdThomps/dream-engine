@@ -35,10 +35,11 @@ namespace Dream
     SceneObject::constructorInit
     ()
     {
+        mTransform.reset(new Transform3D());
         mLoaded = false;
         mDelete = false;
         mHasFocus = false;
-        mParent = nullptr;
+        mParentHandle = nullptr;
         mAudioInstance = nullptr;
         mAnimationInstance = nullptr;
         mModelInstance  = nullptr;
@@ -67,12 +68,12 @@ namespace Dream
         if (!soJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE].is_null())
         {
             string transformType = soJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE];
-            mTransform.setTransformType(transformType);
+            mTransform->setTransformType(transformType);
         }
         else
         {
             string transformType = Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
-            mTransform.setTransformType(transformType);
+            mTransform->setTransformType(transformType);
         }
 
         if (!soJson[Constants::SCENE_OBJECT_TRANSLATION].is_null())
@@ -267,63 +268,63 @@ namespace Dream
     SceneObject::setTranslation
     (glm::vec3 translation)
     {
-        mTransform.setTranslation(translation);
+        mTransform->setTranslation(translation);
     }
 
     void
     SceneObject::setRotation
     (glm::vec3 rotation)
     {
-        mTransform.setRotation(rotation);
+        mTransform->setRotation(rotation);
     }
 
     void
     SceneObject::setScale
     (glm::vec3 scale)
     {
-        mTransform.setScale(scale);
+        mTransform->setScale(scale);
     }
 
     void
     SceneObject::setTranslation
     (float x, float y, float z)
     {
-        mTransform.setTranslation(x,y,z);
+        mTransform->setTranslation(x,y,z);
     }
 
     void
     SceneObject::setRotation
     (float x, float y, float z)
     {
-        mTransform.setRotation(x,y,z);
+        mTransform->setRotation(x,y,z);
     }
 
     void
     SceneObject::setScale
     (float x, float y, float z)
     {
-        mTransform.setScale(x,y,z);
+        mTransform->setScale(x,y,z);
     }
 
     glm::vec3
     SceneObject::getRotation
     ()
     {
-        return mTransform.getRotation();
+        return mTransform->getRotation();
     }
 
     glm::vec3
     SceneObject::getScale
     ()
     {
-        return mTransform.getScale();
+        return mTransform->getScale();
     }
 
     glm::vec3
     SceneObject::getTranslation
     ()
     {
-        return mTransform.getTranslation();
+        return mTransform->getTranslation();
     }
 
 
@@ -386,7 +387,7 @@ namespace Dream
     SceneObject::isChildOf
     (SceneObject* parent)
     {
-        return mParent == parent;
+        return mParentHandle == parent;
     }
 
     bool
@@ -411,13 +412,13 @@ namespace Dream
         cout << "          Uuid: " << mUuid << endl;
         cout << "          Name: " << mName << endl;
 
-        if (mParent != nullptr)
+        if (mParentHandle != nullptr)
         {
-            cout << "    ParentUuid: " << mParent->getUuid() << endl;
+            cout << "    ParentUuid: " << mParentHandle->getUuid() << endl;
         }
 
         cout << "      Children: " << mChildren.size() << endl;
-        cout << "Trnasform Type: " << mTransform.getTransformType() << endl;
+        cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
         cout << "   Translation: " << String::vec3ToString(getTranslation()) << endl;
         cout << "      Rotation: " << String::vec3ToString(getRotation())<< endl;
         cout << "         Scale: " << String::vec3ToString(getScale())<< endl;
@@ -588,41 +589,41 @@ namespace Dream
     SceneObject::getTransformType
     ()
     {
-        return mTransform.getTransformType();
+        return mTransform->getTransformType();
     }
 
     void
     SceneObject::setTransformType
     (string transformType)
     {
-        mTransform.setTransformType(transformType);
+        mTransform->setTransformType(transformType);
     }
 
-    Transform3D
+    Transform3D*
     SceneObject::getTransform
     () {
-        return mTransform;
+        return mTransform.get();
     }
 
     void
     SceneObject::setTransform
     (Transform3D* transform)
     {
-        mTransform = transform;
+        mTransform.reset(transform);
     }
 
     void
     SceneObject::setParent
     (SceneObject* parent)
     {
-        mParent = parent;
+        mParentHandle = parent;
     }
 
     SceneObject*
     SceneObject::getParent
     ()
     {
-        return mParent;
+        return mParentHandle;
     }
 
     void SceneObject::setSpriteInstance(SpriteInstance* spriteAsset)
@@ -963,7 +964,7 @@ namespace Dream
             cout << "SceneObject: Creating Physics Object Asset Instance." << endl;
         }
         mPhysicsObjectInstance.reset(
-            new PhysicsObjectInstance(definition, &mTransform,
+            new PhysicsObjectInstance(definition, mTransform.get(),
             mScene->getProject()->getAssetDefinitions())
         );
     }
@@ -976,7 +977,7 @@ namespace Dream
         {
             cout << "SceneObject: Creating Animation asset instance." << endl;
         }
-        mAnimationInstance.reset(new AnimationInstance(definition,&mTransform));
+        mAnimationInstance.reset(new AnimationInstance(definition,mTransform.get()));
     }
 
     void
@@ -992,7 +993,7 @@ namespace Dream
                 ->getProject()
                 ->getRuntime()
                 ->getAudioComponent()
-                ->newAudioInstance(definition,&mTransform)
+                ->newAudioInstance(definition,mTransform.get())
         );
     }
 
@@ -1006,7 +1007,7 @@ namespace Dream
         }
         mModelInstance.reset
         (
-            new AssimpModelInstance(definition,&mTransform)
+            new AssimpModelInstance(definition,mTransform.get())
         );
     }
 
@@ -1019,7 +1020,7 @@ namespace Dream
             cout << "SceneObject: Creating Script asset instance." << endl;
         }
         // hottest trainwreck 2017!
-        mScriptInstance.reset(new LuaScriptInstance(definition, &mTransform));
+        mScriptInstance.reset(new LuaScriptInstance(definition, mTransform.get()));
         mScene->getProject()
               ->getRuntime()
               ->getLuaEngine()
@@ -1034,7 +1035,7 @@ namespace Dream
         {
             cout << "SceneObject: Creating Shader asset instance." << endl;
         }
-        mShaderInstance.reset(new ShaderInstance(definition,&mTransform));
+        mShaderInstance.reset(new ShaderInstance(definition,mTransform.get()));
     }
 
     void
@@ -1045,7 +1046,7 @@ namespace Dream
         {
             cout << "SceneObject: Creating Light Asset instance." << endl;
         }
-        mLightInstance.reset(new LightInstance(definition,&mTransform));
+        mLightInstance.reset(new LightInstance(definition,mTransform.get()));
     }
 
     void
@@ -1056,7 +1057,7 @@ namespace Dream
         {
             cout << "SceneObject: Creating Sprite Asset instance." << endl;
         }
-        mSpriteInstance.reset(new SpriteInstance(definition,&mTransform));
+        mSpriteInstance.reset(new SpriteInstance(definition,mTransform.get()));
     }
 
     void
@@ -1067,7 +1068,7 @@ namespace Dream
         {
             cout << "SceneObject: Creating Font Asset instance." << endl;
         }
-        mFontInstance.reset(new FontInstance(definition,&mTransform));
+        mFontInstance.reset(new FontInstance(definition,mTransform.get()));
     }
 
 

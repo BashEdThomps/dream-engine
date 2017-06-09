@@ -40,16 +40,6 @@ namespace Dream
         {
             mInputStream.close();
         }
-
-        if (mBinaryVector != nullptr)
-        {
-            delete mBinaryVector;
-        }
-
-        if (mStringStream != nullptr)
-        {
-            delete mStringStream;
-        }
     }
 
     string
@@ -66,7 +56,7 @@ namespace Dream
         mInputStream.open(mPath.c_str(), ifstream::in);
         if (mInputStream.is_open())
         {
-            mStringStream = new stringstream();
+            mStringStream.reset(new stringstream());
             string line;
             while ( getline (mInputStream,line) )
             {
@@ -100,7 +90,14 @@ namespace Dream
     ()
     {
         mInputStream.open(mPath.c_str(), ios::binary );
-        mBinaryVector = new vector<char>((istreambuf_iterator<char>(mInputStream)), (istreambuf_iterator<char>()));
+        mBinaryVector.reset
+        (
+            new vector<char>
+            (
+                (istreambuf_iterator<char>(mInputStream)),
+                (istreambuf_iterator<char>())
+            )
+        );
         mInputStream.close();
         return mBinaryVector->size() > 0;
     }
@@ -109,7 +106,7 @@ namespace Dream
     FileReader::getContentsAsBinaryVector
     ()
     {
-        return mBinaryVector;
+        return mBinaryVector.get();
     }
 
     int

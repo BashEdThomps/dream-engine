@@ -5,7 +5,9 @@
 #include <QOpenGLWidget>
 #include <QSurfaceFormat>
 #include <QOpenGLContext>
+
 #include "../View/GLView/Grid.h"
+#include "../View/GLView/SelectionHighlighter.h"
 
 using namespace Dream;
 
@@ -23,6 +25,9 @@ public:
     void cleanUp(Scene*) override;
     void setProject(Project* engine);
     void setGrid(Grid* grid);
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void setGridEnabled(bool enabled);
+    void setSelectionHighlighter(SelectionHighlighter* highlighter);
 
 protected:
     void initializeGL() override;
@@ -30,8 +35,10 @@ protected:
     void paintGL() override;
 
 private:
-    Project *mProject;
-    Grid* mGrid;
+    Project              *mProjectHandle;
+    Grid                 *mGridHandle;
+    SelectionHighlighter *mSelectionHighlighterHandle;
+    bool mGridEnabled;
 };
 
 #endif // GLWIDGET_H

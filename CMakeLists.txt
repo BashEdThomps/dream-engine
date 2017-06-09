@@ -2,6 +2,13 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream)
 
+set(DREAM_BUILD_LUABIND ON)
+set(DREAM_BUILD_CORE ON)
+set(DREAM_BUILD_SDL ON)
+
+set(DREAM_BUILD_LUABIND_TESTS OFF) # Broken, possible boost version issues :'(
+set(DREAM_BUILD_TESTS OFF)         # Needs updating, badly...
+
 set(
   CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
@@ -13,7 +20,7 @@ message("Using modules path: " ${CMAKE_MODULE_PATH})
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
 
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")
@@ -41,11 +48,27 @@ if (APPLE)
 endif()
 
 # Luabind Library
-add_subdirectory(Luabind)
+if (DREAM_BUILD_LUABIND)
+    add_subdirectory(Luabind)
+endif()
+
+# Luabind Library
+if (DREAM_BUILD_LUABIND_TESTS)
+    add_subdirectory(LuabindTests)
+endif()
+
 
 # DreamCore Library
-add_subdirectory (DreamCore)
-add_subdirectory (DreamCoreTests)
+if (DREAM_BUILD_CORE)
+    add_subdirectory (DreamCore)
+endif()
+
+# Core Tests
+if (DREAM_BUILD_TESTS)
+    add_subdirectory (DreamCoreTests)
+endif()
 
 # DreamSDL Executable
-add_subdirectory (DreamSDL)
+if (DREAM_BUILD_SDL)
+    add_subdirectory (DreamSDL)
+endif()

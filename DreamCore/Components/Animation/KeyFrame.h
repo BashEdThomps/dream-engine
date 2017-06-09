@@ -14,32 +14,32 @@ namespace Dream
   class KeyFrame
   {
   private:
-    long                mStartTimeMS;
-    bool                mWrap;
+    long mStartTimeMS;
+    bool mWrap;
     vector<Frame*> mPlaybackFrames;
-    vector<float>  mTranslation;
-    vector<float>  mRotation;
-    vector<float>  mScale;
-    string         mName;
-    string         mUUID;
-    string         mInterpolationType;
+    vector<float> mTranslation;
+    vector<float> mRotation;
+    vector<float> mScale;
+    string mName;
+    string mUUID;
+    string mInterpolationType;
   public:
     KeyFrame();
     ~KeyFrame();
     void showStatus();
     vector<Frame*> getPlaybackFrames();
-    void                generatePlaybackFrames(KeyFrame*);
-    void                addPlaybackFrame(Frame*);
-    bool                getWrap();
-    void                setWrap(bool);
-    long                getStartTimeMS();
-    void                setStartTimeMS(long);
-    vector<float>  getTranslation();
-    void                setTranslation( vector<float>);
-    vector<float>  getRotation();
-    void                setRotation( vector<float>);
-    vector<float>  getScale();
-    void                setScale( vector<float>);
+    void generatePlaybackFrames(KeyFrame*);
+    void addPlaybackFrame(Frame*);
+    bool getWrap();
+    void setWrap(bool);
+    long getStartTimeMS();
+    void setStartTimeMS(long);
+    vector<float> getTranslation();
+    void setTranslation( vector<float>);
+    vector<float> getRotation();
+    void setRotation( vector<float>);
+    vector<float> getScale();
+    void setScale( vector<float>);
     string getName();
     void setName( string);
     string getUUID();

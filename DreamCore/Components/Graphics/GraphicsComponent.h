@@ -24,7 +24,6 @@
 #include <vector>
 // Dream
 #include "../../Constants.h"
-#include "../../GameController.h"
 #include "../Window/IWindowComponent.h"
 #include "../IComponent.h"
 #include "AssimpModelInstance.h"
@@ -48,7 +47,6 @@ using namespace std;
 
 namespace Dream
 {
-
     class GraphicsComponent : public IComponent
     {
     private:
@@ -72,16 +70,14 @@ namespace Dream
         GLuint mFontVAO;
         Camera *mCamera;
         float mMinimumDraw = 0.1f;
-        float mMaximumDraw = 100.0f;
-        vector<SDL_Event> mEvents;
+        float mMaximumDraw = 1000.0f;
         vector<SceneObject*> m2DQueue;
         vector<SceneObject*> m3DQueue;
         vector<LightInstance*> mLightQueue;
         glm::mat4 mOrthoProjection;
         vector<float> mClearColour;
         vector<float> mAmbientLightColour;
-        GameController *mGameController;
-        IWindowComponent *mWindowComponent;
+        IWindowComponent *mWindowComponentHandle;
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
         ~GraphicsComponent(void);
@@ -107,11 +103,9 @@ namespace Dream
         Camera* getCamera();
         glm::mat4 getViewMatrix();
         glm::mat4 getProjectionMatrix();
-        void setGameController(GameController* gameController);
         void onWindowDimensionsChanged();
         void preRender();
         void postRender();
-        GameController *getGameController();
         void cleanUp(Scene* scene) override;
     }; // End of GraphicsComponent
 } // End of Dream

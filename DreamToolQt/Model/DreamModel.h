@@ -46,6 +46,7 @@ public:
     void setProjectStartupSceneByName(string scene);
     void setProjectWindowWidth(int width);
     void setProjectWindowHeight(int height);
+    void setDebug(bool enabled);
 
     bool startScene();
     Scene* stopActiveScene();

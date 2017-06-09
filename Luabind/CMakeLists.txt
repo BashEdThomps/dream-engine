@@ -7,6 +7,9 @@ SET(VERSION_PATCH 2)
 
 PROJECT("Luabind" CXX C)
 
+# Annoying, but should leave this on really
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
 find_package(Lua REQUIRED            )
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )

@@ -1,0 +1,36 @@
+{
+    "uuid": "577f-1113-370f-2c12",
+    "name": "Ash's Dream Project",
+    "author": "Ash Thompson",
+    "description": "A Test Dream Project",
+    "openAL": true,
+    "bullet2": true,
+    "bullet3": false,
+    "openGL": true,
+    "vulkan": false,
+    "scenes": [{
+        "uuid": "03bb-9210-2e76-26a8",
+        "name": "First Scene",
+        "objects": [{
+            "uuid": "83d4-3300-f140-6774",
+            "name": "Test Scene Object",
+            "assetInstances": ["8ff5-318b-9354-1b9e"],
+            "children": []
+        }],
+        "animationEnabled": true,
+        "physicsEnabled": false,
+        "audioEnabled": false,
+        "inputEnabled": false
+    }],
+    "assets": [{
+        "uuid"   : "8ff5-318b-9354-1b9e",
+        "name"   : "Tux",
+        "type"   : "Model",
+        "format" : "obj"
+    }, {
+        "uuid"   : "45cd-629a-1631-ec31",
+        "name"   : "Main Script",
+        "type"   : "Script",
+        "format" : "js"
+    }]
+}

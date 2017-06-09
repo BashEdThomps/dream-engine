@@ -19,7 +19,6 @@
 #define PROJECTRUNTIME_H
 
 #include "Time.h"
-#include "GameController.h"
 #include "Components/Animation/AnimationComponent.h"
 #include "Components/Audio/AudioComponent.h"
 #include "Components/Graphics/Camera.h"
@@ -42,7 +41,6 @@ namespace Dream
         unique_ptr<GraphicsComponent>  mGraphicsComponent;
         unique_ptr<PhysicsComponent>   mPhysicsComponent;
         unique_ptr<AnimationComponent> mAnimationComponent;
-        unique_ptr<GameController>     mGameController;
         unique_ptr<LuaEngine>          mLuaEngine;
         unique_ptr<IWindowComponent>   mWindowComponent;
         unique_ptr<Project>            mProject;
@@ -68,7 +66,6 @@ namespace Dream
         PhysicsComponent* getPhysicsComponent();
         GraphicsComponent* getGraphicsComponent();
         IWindowComponent* getWindowComponent();
-        GameController* getGameController();
         LuaEngine* getLuaEngine();
 
         void setGraphicsClearColour(vector<float>);
@@ -101,8 +98,6 @@ namespace Dream
 
         bool initLuaEngine();
         void setLuaEngine(LuaEngine*);
-
-        void setGameController(GameController*);
 
         void destroyComponents();
     };

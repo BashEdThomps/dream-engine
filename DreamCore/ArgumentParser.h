@@ -21,31 +21,34 @@
 #include <iostream>
 #include "Constants.h"
 
-namespace Dream {
+using namespace std;
 
-  using namespace std;
+namespace Dream
+{
 
-  class ArgumentParser {
-  private:
-    int mArgc;
-    const char** mArgv;
-    string mDreamPath;
-    string mProjectPath;
-    string mProjectUUID;
-    string mProjectFilePath;
-    bool mUsingHttp;
-    string mHttpUrl;
-  public:
-    ArgumentParser(int,const char**);
-    ~ArgumentParser(void);
-    void parse();
-    string getDreamPath();
-    string getProjectPath();
-    string getProjectUUID();
-    string getProjectFilePath();
-    string getProjectHttpUrl();
-    bool getUsingHttp();
-  }; // End of ArgumentParser
+
+    class ArgumentParser
+    {
+    private:
+        int mArgc;
+        const char** mArgv;
+        string mDreamPath;
+        string mProjectPath;
+        string mProjectUUID;
+        string mProjectFilePath;
+        bool mUsingHttp;
+        string mHttpUrl;
+    public:
+        ArgumentParser(int,const char**);
+        ~ArgumentParser(void);
+        void parse();
+        string getDreamPath();
+        string getProjectPath();
+        string getProjectUUID();
+        string getProjectFilePath();
+        string getProjectHttpUrl();
+        bool getUsingHttp();
+    }; // End of ArgumentParser
 } // End of Dream
 
 #endif // End of ARGUMENTPARSER_H

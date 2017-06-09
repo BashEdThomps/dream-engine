@@ -52,7 +52,9 @@ SOURCES += \
     Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.cpp \
     Model/TreeModels/Properties/Shader/ShaderTemplateComboDelegate.cpp \
     Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.cpp \
-    View/GLView/Grid.cpp
+    View/GLView/Grid.cpp \
+    View/GLView/SelectionHighlighter.cpp \
+    View/GLView/GLDrawable.cpp
 
 
 HEADERS  += \
@@ -80,7 +82,9 @@ HEADERS  += \
     Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.h \
     Model/TreeModels/Properties/Shader/ShaderTemplateComboDelegate.h \
     Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.h \
-    View/GLView/Grid.h
+    View/GLView/Grid.h \
+    View/GLView/SelectionHighlighter.h \
+    View/GLView/GLDrawable.h
 
 
 FORMS    += View/MainWindow.ui

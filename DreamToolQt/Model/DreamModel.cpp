@@ -38,7 +38,7 @@ DreamModel::setupHeartbeatTimer
     {
         mHeartbeatTimer = new QTimer(this);
         connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(16);
+        mHeartbeatTimer->start(33.3);
     }
 }
 
@@ -194,4 +194,12 @@ DreamModel::stopActiveScene
 
     }
     return activeScene;
+}
+
+void
+DreamModel::setDebug
+(bool enabled)
+{
+    Constants::dreamSetVerbose(enabled);
+    Constants::dreamSetDebug(enabled);
 }

@@ -23,6 +23,7 @@
 #include <thread>
 #include <unistd.h>
 #include <vector>
+#include <memory>
 
 #include "ProjectRuntime.h"
 #include "ArgumentParser.h"
@@ -45,7 +46,7 @@ namespace Dream
     {
         // Variables
     private:
-        ProjectRuntime *mRuntime;
+        unique_ptr<ProjectRuntime> mRuntime;
         string mUuid;
         string mName;
         string mDescription;
@@ -55,7 +56,7 @@ namespace Dream
         nlohmann::json mJson;
         vector<Scene*> mScenes;
         vector<AssetDefinition*> mAssetDefinitions;
-        Scene *mActiveScene;
+        Scene *mActiveSceneHandle;
         int mWindowWidth;
         int mWindowHeight;
 
@@ -66,6 +67,9 @@ namespace Dream
 
         bool initRuntime();
         ProjectRuntime* getRuntime();
+
+        void destroyAllScenes();
+        void destroyAllAssetDefinitions();
 
         void loadMetadataFromJson(nlohmann::json);
         void loadScenesFromJson(nlohmann::json);
@@ -133,8 +137,6 @@ namespace Dream
         // Private Methods
     private:
         void loadAssetDefinitionsFromJson(nlohmann::json);
-        void destroyAllScenes();
-        void destroyAllAssetDefinitions();
 
     }; // End of Project
 } // End of Dream

@@ -30,7 +30,7 @@ namespace Dream
     class PhysicsMotionState : public btMotionState
     {
     protected:
-        Transform3D* mDreamTransform;
+        Transform3D* mDreamTransformHandle;
     public:
         PhysicsMotionState(Transform3D*);
         ~PhysicsMotionState();

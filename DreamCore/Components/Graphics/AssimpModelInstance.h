@@ -34,6 +34,12 @@
 
 namespace Dream
 {
+    struct BoundingBox
+    {
+        glm::vec3 minimum;
+        glm::vec3 maximum;
+    };
+
     class AssimpModelInstance : public IAssetInstance
     {
     private:
@@ -44,11 +50,15 @@ namespace Dream
         // Variables
         vector<AssimpMesh> mMeshes;
         string mDirectory;
+        BoundingBox mBoundingBox;
+        glm::mat4 mModelMatrix;
         // Methods
         void processNode(aiNode*, const aiScene*);
         AssimpMesh processMesh(aiMesh*, const aiScene*);
         void loadModel(string);
         vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
+        void updateBoundingBox(aiMesh* mesh);
+        void initBoundingBox();
     public:
         AssimpModelInstance(AssetDefinition*,Transform3D*);
         ~AssimpModelInstance();
@@ -57,6 +67,9 @@ namespace Dream
         bool checkGLError(int);
         void loadExtraAttributes(nlohmann::json);
         static void cleanUpCache();
+        BoundingBox getBoundingBox();
+        void setModelMatrix(glm::mat4);
+        glm::mat4 getModelMatrix();
     }; // End of AssimpModelInstance
 } // End of Dream
 

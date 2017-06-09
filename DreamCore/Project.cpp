@@ -23,7 +23,7 @@ namespace Dream
     Project::Project
     (IWindowComponent* windowComponent)
     {
-        mRuntime = new ProjectRuntime(this, windowComponent);
+        mRuntime.reset(new ProjectRuntime(this, windowComponent));
     }
 
     Project::~Project()
@@ -283,21 +283,21 @@ namespace Dream
     Project::setActiveScene
     (Scene* scene)
     {
-        mActiveScene = scene;
+        mActiveSceneHandle = scene;
     }
 
     Scene*
     Project::getActiveScene
     ()
     {
-        return mActiveScene;
+        return mActiveSceneHandle;
     }
 
     bool
     Project::hasActiveScene
     ()
     {
-        return mActiveScene != nullptr;
+        return mActiveSceneHandle != nullptr;
     }
 
     int
@@ -399,14 +399,23 @@ namespace Dream
     Project::destroyAllScenes
     ()
     {
+        for (Scene* scene : mScenes)
+        {
+            delete scene;
+        }
 
+        mScenes.clear();
     }
 
     void
     Project::destroyAllAssetDefinitions
     ()
     {
-
+        for (AssetDefinition* assetDef : mAssetDefinitions)
+        {
+            delete assetDef;
+        }
+        mAssetDefinitions.clear();
     }
 
     nlohmann::json Project::toJson()
@@ -428,16 +437,16 @@ namespace Dream
         // Load the new scene
         if (Constants::DEBUG)
         {
-            cout << "Project: Loading Scene " << mActiveScene->getName() << endl;
+            cout << "Project: Loading Scene " << mActiveSceneHandle->getName() << endl;
         }
 
-        mRuntime->setGraphicsClearColour(mActiveScene->getClearColour());
-        mRuntime->setGraphicsAmbientLightColour(mActiveScene->getAmbientLightColour());
-        mRuntime->setPhysicsGravity(mActiveScene->getGravity());
-        mRuntime->setPhysicsDebug(mActiveScene->getPhysicsDebug());
-        mRuntime->setCameraTranslation(mActiveScene->getDefaultCameraTranslation());
-        mRuntime->setCameraRotation(mActiveScene->getDefaultCameraRotation());
-        mRuntime->setCameraMovementSpeed(mActiveScene->getCameraMovementSpeed());
+        mRuntime->setGraphicsClearColour(mActiveSceneHandle->getClearColour());
+        mRuntime->setGraphicsAmbientLightColour(mActiveSceneHandle->getAmbientLightColour());
+        mRuntime->setPhysicsGravity(mActiveSceneHandle->getGravity());
+        mRuntime->setPhysicsDebug(mActiveSceneHandle->getPhysicsDebug());
+        mRuntime->setCameraTranslation(mActiveSceneHandle->getDefaultCameraTranslation());
+        mRuntime->setCameraRotation(mActiveSceneHandle->getDefaultCameraRotation());
+        mRuntime->setCameraMovementSpeed(mActiveSceneHandle->getCameraMovementSpeed());
 
         return true;
     }
@@ -446,9 +455,9 @@ namespace Dream
     Project::cleanUpActiveScene
     ()
     {
-        mActiveScene->cleanUp();
-        mRuntime->cleanupComponents(mActiveScene);
-        mActiveScene = nullptr;
+        mActiveSceneHandle->cleanUp();
+        mRuntime->cleanupComponents(mActiveSceneHandle);
+        mActiveSceneHandle = nullptr;
     }
 
 
@@ -578,18 +587,26 @@ namespace Dream
             cout << "==== Project: UpdateLogic Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }
 
-        mActiveScene->createAllAssetInstances();
-        mActiveScene->loadAllAssetInstances();
+        mActiveSceneHandle->createAllAssetInstances();
+        mActiveSceneHandle->loadAllAssetInstances();
 
         mRuntime->getTime()->update();
 
         mRuntime->getLuaEngine()->createAllScripts();
         mRuntime->getLuaEngine()->update();
 
-        mRuntime->getAnimationComponent()->updateComponent(mActiveScene);
-        mRuntime->getAudioComponent()->updateComponent(mActiveScene);
-        mRuntime->getWindowComponent()->updateComponent(mActiveScene);
-        mRuntime->getPhysicsComponent()->updateComponent(mActiveScene);
+        mRuntime->getAnimationComponent()->updateComponent(mActiveSceneHandle);
+        mRuntime->getAudioComponent()->updateComponent(mActiveSceneHandle);
+        mRuntime->getWindowComponent()->updateComponent(mActiveSceneHandle);
+        mRuntime->getPhysicsComponent()->updateComponent(mActiveSceneHandle);
+
+        // Update Graphics/Physics Components
+
+        mRuntime->getGraphicsComponent()->updateComponent(mActiveSceneHandle);
+        mRuntime->getPhysicsComponent()->setViewProjectionMatrix(
+            mRuntime->getGraphicsComponent()->getViewMatrix(),
+            mRuntime->getGraphicsComponent()->getProjectionMatrix()
+        );
     }
 
     void
@@ -600,14 +617,6 @@ namespace Dream
         {
             cout << "==== Project: UpdateGraphics Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
         }
-
-        // Update Graphics/Physics Components
-
-        mRuntime->getGraphicsComponent()->updateComponent(mActiveScene);
-        mRuntime->getPhysicsComponent()->setViewProjectionMatrix(
-            mRuntime->getGraphicsComponent()->getViewMatrix(),
-            mRuntime->getGraphicsComponent()->getProjectionMatrix()
-        );
 
         // Draw 3D/PhysicsDebug/2D
 
@@ -632,7 +641,7 @@ namespace Dream
         }
 
         // Cleanup Old
-        mActiveScene->flush();
+        mActiveSceneHandle->flush();
 
     }
 
@@ -640,7 +649,7 @@ namespace Dream
     Project::updateAll
     ()
     {
-        if (mActiveScene)
+        if (mActiveSceneHandle)
         {
             updateLogic();
             updateGraphics();
@@ -659,6 +668,6 @@ namespace Dream
     Project::getRuntime
     ()
     {
-        return mRuntime;
+        return mRuntime.get();
     }
 } // End of Dream

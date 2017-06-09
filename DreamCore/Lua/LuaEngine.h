@@ -18,20 +18,21 @@
 #ifndef LUACOMPONENT_H
 #define LUACOMPONENT_H
 
+extern "C" {
+    #include "lua.h"
+    #include "lualib.h"
+    #include "lauxlib.h"
+};
+
 #include <map>
 #include <iostream>
 
-
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-};
 
 #include "../Constants.h"
 #include "../Event.h"
 #include "../SceneObject.h"
 #include "../Scene.h"
+#include "InputEvent.h"
 
 #define LUA_SCRIPT_ON_INIT_FUNCTION   "onInit"
 #define LUA_SCRIPT_ON_UPDATE_FUNCTION "onUpdate"
@@ -58,13 +59,15 @@ namespace Dream
         void cleanUp(Scene*);
         bool executeScriptInit(SceneObject*);
         bool executeScriptUpdate(SceneObject*);
-        bool executeScriptKeyHandler(SceneObject*);
+        bool executeScriptInputHandler(SceneObject*);
         bool executeScriptEventHandler(SceneObject*);
         void removeFromScriptMap(SceneObject*);
         void addToScriptMap(SceneObject*,LuaScriptInstance*);
+        void addInputEvent(InputEvent event);
+        void clearInputEvents();
 
     private:// Variables
-        Project* mProject;
+        Project* mProjectHandle;
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
@@ -75,6 +78,7 @@ namespace Dream
                 "end";
         lua_State *mState;
         map<SceneObject*, LuaScriptInstance*> mScriptMap;
+        vector<InputEvent> mInputEvents;
 
     private: // Methods
         // API Exposure Methods ======================================================
@@ -89,8 +93,8 @@ namespace Dream
         void exposeProjectRuntime();
         void exposeEvent();
         void exposeFontInstance();
-        void exposeGameController();
         void exposeGraphicsComponent();
+        void exposeInputEvent();
         void exposeAudioComponent();
         void exposeAudioInstance();
         void exposeIAssetInstance();

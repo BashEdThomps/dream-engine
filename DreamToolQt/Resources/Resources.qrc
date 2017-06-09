@@ -19,5 +19,7 @@
         <file>templates/shader/Lit3D/fragment</file>
         <file>templates/shader/Lit3D/vertex</file>
         <file>templates/script/Lua/lua</file>
+        <file>images/view-list-icons-symbolic.png</file>
+        <file>images/view-list-details-symbolic.png</file>
     </qresource>
 </RCC>

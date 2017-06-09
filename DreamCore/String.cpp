@@ -17,47 +17,55 @@
 
 #include "String.h"
 
-namespace Dream {
+namespace Dream
+{
 
-  String::String(void) {}
-  String::~String(void) {}
+    String::String(void) {}
+    String::~String(void) {}
 
-  string String::indent(int level) {
-    string retval = "";
-    for (int i=0;i<level;i++) {
-      retval += "  ";
+    string String::indent(int level)
+    {
+        string retval = "";
+        for (int i=0;i<level;i++)
+        {
+            retval += "  ";
+        }
+        retval += "* ";
+        return retval;
     }
-    retval += "* ";
-    return retval;
-  }
 
-  string String::boolToYesNo(bool value) {
-    return (value ? "Yes" : "No");
-  }
+    string String::boolToYesNo(bool value)
+    {
+        return (value ? "Yes" : "No");
+    }
 
-  string String::floatVectorToString(vector<float> vector) {
-    stringstream outputStream;
-    outputStream << "(";
-    size_t vectorSize = vector.size();
-    for (size_t i=0; i<vectorSize; i++) {
-      outputStream << vector[i];
-      if (i<vectorSize-1) {
+    string String::floatVectorToString(vector<float> vector)
+    {
+        stringstream outputStream;
+        outputStream << "(";
+        size_t vectorSize = vector.size();
+        for (size_t i=0; i<vectorSize; i++)
+        {
+            outputStream << vector[i];
+            if (i<vectorSize-1)
+            {
+                outputStream << ",";
+            }
+        }
+        outputStream << ")";
+        return outputStream.str();
+    }
+
+    string String::vec3ToString(glm::vec3 vector)
+    {
+        stringstream outputStream;
+        outputStream << "(";
+        outputStream << vector.x;
         outputStream << ",";
-      }
+        outputStream << vector.y;
+        outputStream << ",";
+        outputStream << vector.z;
+        outputStream << ")";
+        return outputStream.str();
     }
-    outputStream << ")";
-    return outputStream.str();
-  }
-
-  string String::vec3ToString(glm::vec3 vector) {
-    stringstream outputStream;
-    outputStream << "(";
-    outputStream << vector.x;
-    outputStream << ",";
-    outputStream << vector.y;
-    outputStream << ",";
-    outputStream << vector.z;
-    outputStream << ")";
-    return outputStream.str();
-  }
 }   // End of Dream

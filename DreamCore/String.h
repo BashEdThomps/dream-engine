@@ -23,19 +23,20 @@
 #include <sstream>
 #include <glm/glm.hpp>
 
-namespace Dream {
+using namespace std;
 
-  using namespace std;
-
-  class String {
-  public:
-    String(void);
-    ~String(void);
-    static string indent(int);
-    static string boolToYesNo(bool);
-    static string floatVectorToString(vector<float>);
-    static string vec3ToString(glm::vec3);
-  }; // End of String
+namespace Dream
+{
+    class String
+    {
+    public:
+        String(void);
+        ~String(void);
+        static string indent(int);
+        static string boolToYesNo(bool);
+        static string floatVectorToString(vector<float>);
+        static string vec3ToString(glm::vec3);
+    }; // End of String
 
 } // End of Dream
 

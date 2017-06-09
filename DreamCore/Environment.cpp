@@ -4,16 +4,17 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-namespace Dream {
+using namespace std;
 
-    using namespace std;
-    string Environment::getHomeDirectory() {
+namespace Dream
+{
+    string Environment::getHomeDirectory()
+    {
         char *homedir;
-
-        if ((homedir = getenv("HOME")) == nullptr) {
+        if ((homedir = getenv("HOME")) == nullptr)
+        {
             homedir = getpwuid(getuid())->pw_dir;
         }
-
         return string(homedir);
     }
 

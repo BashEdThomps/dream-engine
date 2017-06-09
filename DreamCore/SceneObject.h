@@ -31,14 +31,14 @@ namespace Dream
         nlohmann::json mJson;
         vector<Event*> mEventQueue;
         bool mLoaded;
-        SceneObject* mParent;
+        SceneObject* mParentHandle;
         vector<SceneObject*> mChildren;
         vector<string> mAssetDefUuidsToLoad;
         bool mHasFocus;
         // Metadata
         string mUuid;
         string mName;
-        Transform3D mTransform;
+        unique_ptr<Transform3D> mTransform;
         bool mDelete;
         // Asset Instances
         unique_ptr<AudioInstance> mAudioInstance;
@@ -146,7 +146,7 @@ namespace Dream
         string getTransformType();
         void setTransformType(string);
 
-        Transform3D getTransform();
+        Transform3D* getTransform();
         void setTransform(Transform3D*);
 
         bool hasFocus();
