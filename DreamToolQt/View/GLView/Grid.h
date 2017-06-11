@@ -36,6 +36,8 @@ public:
 
     ~Grid();
     void init();
+    float getMajorSpacing();
+    float getMinorSpacing();
 
 protected: // Member functions
     void initMajorGridData();

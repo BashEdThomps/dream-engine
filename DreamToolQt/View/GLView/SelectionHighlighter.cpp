@@ -22,7 +22,7 @@
 SelectionHighlighter::SelectionHighlighter
 (QObject *parent)
     : GLDrawable(parent),
-      mSelectedObject(nullptr),
+      mSelectedObjectHandle(nullptr),
       mColour(glm::vec3(0.0f,1.0f,0.0f)),
       mOffset(0.1f)
 {
@@ -49,7 +49,7 @@ SelectionHighlighter::setSelectedObject
 {
     qDebug() << "SelectionHighlighter: Selecting "
              << QString::fromStdString(selected->getNameAndUuidString());
-    mSelectedObject = selected;
+    mSelectedObjectHandle = selected;
     updateVertexBuffer();
 }
 
@@ -62,9 +62,9 @@ SelectionHighlighter::updateVertexBuffer
 
     BoundingBox bounds;
 
-    if (mSelectedObject->hasModelInstance())
+    if (mSelectedObjectHandle->hasModelInstance())
     {
-        bounds = mSelectedObject->getModelInstance()->getBoundingBox();
+        bounds = mSelectedObjectHandle->getModelInstance()->getBoundingBox();
     }
 
     qDebug() << "SelectionHighlighter: Minimum Bounds "
@@ -217,7 +217,7 @@ SelectionHighlighter::draw
         }
 
         // Set the model matrix
-        if (mSelectedObject)
+        if (mSelectedObjectHandle)
         {
             GLint modelUniform = glGetUniformLocation(mShaderProgram, "model");
             if (modelUniform == -1)
@@ -228,16 +228,16 @@ SelectionHighlighter::draw
             else
             {
                 glm::mat4 modelMatrix;
-                if (mSelectedObject->hasModelInstance())
+                if (mSelectedObjectHandle->hasModelInstance())
                 {
-                   modelMatrix = mSelectedObject->getModelInstance()->getModelMatrix();
+                   modelMatrix = mSelectedObjectHandle->getModelInstance()->getModelMatrix();
                 }
                 else
                 {
                     // Get raw data
-                    glm::vec3 translation = mSelectedObject->getTranslation();
-                    glm::quat rot = mSelectedObject->getTransform()->getOrientation();
-                    glm::vec3 scale = mSelectedObject->getScale();
+                    glm::vec3 translation = mSelectedObjectHandle->getTranslation();
+                    glm::quat rot = mSelectedObjectHandle->getTransform()->getOrientation();
+                    glm::vec3 scale = mSelectedObjectHandle->getScale();
                     // Translate
                     modelMatrix = glm::translate(modelMatrix,translation);
                     // Rotate
@@ -369,4 +369,11 @@ SelectionHighlighter::initShader
     // Delete the shaders as they're linked into our program now and no longer necessery
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+SceneObject*
+SelectionHighlighter::getSelectedObject
+()
+{
+    return mSelectedObjectHandle;
 }

@@ -30,7 +30,12 @@ const vector<int> MainWindow::mKeysPassedToWindow =
     Qt::Key_W,
     Qt::Key_A,
     Qt::Key_S,
-    Qt::Key_D
+    Qt::Key_D,
+    Qt::Key_Up,
+    Qt::Key_Down,
+    Qt::Key_Left,
+    Qt::Key_Right,
+    Qt::Key_Shift
 };
 
 MainWindow::MainWindow

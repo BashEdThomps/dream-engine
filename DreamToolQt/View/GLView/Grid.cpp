@@ -141,4 +141,16 @@ Grid::initMinorGridData
     }
 }
 
+float
+Grid::getMajorSpacing
+()
+{
+   return mMajorSpacing;
+}
 
+float
+Grid::getMinorSpacing
+()
+{
+    return mMinorSpacing;
+}

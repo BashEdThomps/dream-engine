@@ -30,12 +30,13 @@ public:
     ~SelectionHighlighter();
 
     void setSelectedObject(SceneObject* object);
+    SceneObject* getSelectedObject();
     void init() override;
     void draw() override;
     void initShader() override;
 
 private:
-    SceneObject* mSelectedObject;
+    SceneObject* mSelectedObjectHandle;
     void updateVertexBuffer();
     glm::vec3 mColour;
     float mOffset;

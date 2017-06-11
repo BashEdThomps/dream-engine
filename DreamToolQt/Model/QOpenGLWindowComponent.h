@@ -40,15 +40,16 @@ protected:
     void paintGL() override;
 
 private:
-    Project              *mProjectHandle;
-    Grid                 *mGridHandle;
+    Project *mProjectHandle;
+    Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
-    RelationshipTree     *mRelationshipTreeHandle;
+    RelationshipTree *mRelationshipTreeHandle;
     bool mGridEnabled;
     bool mRelationshipTreeEnabled;
 
     int mMouseLastX;
     int mMouseLastY;
+    bool mShiftPressed;
 };
 
 #endif // GLWIDGET_H
