@@ -89,7 +89,7 @@ namespace Dream
 
         string getNameAndUuidString();
 
-        Project* getProject();
+        Project* getProjectHandle();
 
         int countChildrenOfSceneObject(SceneObject*);
 

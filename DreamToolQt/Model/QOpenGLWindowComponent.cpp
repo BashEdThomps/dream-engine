@@ -12,8 +12,12 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       IWindowComponent(),
       mProjectHandle(nullptr),
       mGridHandle(nullptr),
+      mSelectionHighlighterHandle(nullptr),
+      mRelationshipTreeHandle(nullptr),
       mGridEnabled(true),
-      mSelectionHighlighterHandle(nullptr)
+      mRelationshipTreeEnabled(true),
+      mMouseLastX(0),
+      mMouseLastY(0)
 {
     setFormat(format);
 }
@@ -24,6 +28,7 @@ QOpenGLWindowComponent::~QOpenGLWindowComponent
     mProjectHandle = nullptr;
     mGridHandle = nullptr;
     mSelectionHighlighterHandle = nullptr;
+    mRelationshipTreeHandle = nullptr;
 }
 
 void
@@ -63,34 +68,98 @@ QOpenGLWindowComponent::paintGL
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                mProjectHandle->updateLogic();
+                mProjectHandle->updateAll();
 
-                if (mGridHandle && mGridEnabled)
+                if (mGridHandle)
                 {
-                    if (!mGridHandle->isInitialised())
+                    if(mGridEnabled)
                     {
-                        mGridHandle->init();
+                        if (!mGridHandle->isInitialised())
+                        {
+                            mGridHandle->init();
+
+                            Constants::checkGLError("QOGLWC: After Grid Init");
+                        }
+                        mGridHandle->setViewMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getViewMatrix());
+                        mGridHandle->setProjectionMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getProjectionMatrix());
+                        mGridHandle->draw();
                     }
-                    mGridHandle->setViewMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getViewMatrix());
-                    mGridHandle->setProjectionMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getProjectionMatrix());
-                    mGridHandle->draw();
+                    else
+                    {
+                        cout << "QOGLWC: Grid Disabled" << endl;
+                        Constants::checkGLError("QOGLWC: After Grid Draw");
+                    }
                 }
+                else
+                {
+                    cout << "QOGLWC: No Grid Handle" << endl;
+                }
+
 
                 if (mSelectionHighlighterHandle)
                 {
                     if (!mSelectionHighlighterHandle->isInitialised())
                     {
                         mSelectionHighlighterHandle->init();
+                Constants::checkGLError("QOGLWC: SelectionHighlighter after Init");
                     }
-                    mSelectionHighlighterHandle->setViewMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getViewMatrix());
-                    mSelectionHighlighterHandle->setProjectionMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getProjectionMatrix());
+                    mSelectionHighlighterHandle->setViewMatrix
+                            (
+                                mProjectHandle->getRuntime()
+                                ->getGraphicsComponent()
+                                ->getViewMatrix()
+                                );
+                    mSelectionHighlighterHandle->setProjectionMatrix
+                            (
+                                mProjectHandle->getRuntime()
+                                ->getGraphicsComponent()
+                                ->getProjectionMatrix()
+                                );
                     mSelectionHighlighterHandle->draw();
+                Constants::checkGLError("QOGLWC: SelectionHighlighter after draw");
+                }
+                else if (Constants::DEBUG)
+                {
+                    cout << "QOGLWC: No SelectionHighlighter Handle" << endl;
                 }
 
-                mProjectHandle->updateGraphics();
-                mProjectHandle->updateFlush();
+
+
+                if (mRelationshipTreeHandle && mRelationshipTreeEnabled)
+                {
+                    if (!mRelationshipTreeHandle->isInitialised())
+                    {
+                        mRelationshipTreeHandle->init();
+                        Constants::checkGLError("QOGLWC: RelTree after init");
+                    }
+                    mRelationshipTreeHandle->setViewMatrix
+                            (
+                                mProjectHandle->getRuntime()
+                                ->getGraphicsComponent()
+                                ->getViewMatrix()
+                                );
+                    mRelationshipTreeHandle->setProjectionMatrix
+                            (
+                                mProjectHandle->getRuntime()
+                                ->getGraphicsComponent()
+                                ->getProjectionMatrix()
+                                );
+                    mRelationshipTreeHandle->draw();
+
+                    Constants::checkGLError("QOGLWC: RelTree after draw");
+                }
+
+
+                /*
+                 * mProjectHandle->updateGraphics();
+                 * Constants::checkGLError("QOGLWC: after update gfx");
+                 * mProjectHandle->updateFlush();
+                 */
             }
-            return;
+        }
+        else
+        {
+            cout << "QOpenGLWindowComponent: Cannot draw, no active scene" << endl;
         }
     }
     // If no active scene, blank screen
@@ -161,20 +230,48 @@ void
 QOpenGLWindowComponent::mouseMoveEvent
 (QMouseEvent *event)
 {
-    QPointF pos = event->localPos();
-    //qDebug() << "QOGLWC: Mouse event, local pos "
-    //             << pos.x() << "," << pos.y();
-    InputEvent dreamEvent;
-
-    dreamEvent.setSource(INPUT_SOURCE_MOUSE);
-    dreamEvent.setMouseEventType(MOUSE_MOTION);
-
-    dreamEvent.setX(static_cast<int>(pos.x()-width()/2));
-    dreamEvent.setY(static_cast<int>(pos.y()-height()/2));
-
     if (mProjectHandle)
     {
-        mProjectHandle->getRuntime()->getLuaEngine()->addInputEvent(dreamEvent);
+        QPointF pos = event->localPos();
+
+        int x = static_cast<int>( pos.x() - ( getWidth()  / 2 ) );
+        int y = static_cast<int>( pos.y() - ( getHeight() / 2 ) );
+
+        int dX = x - mMouseLastX;
+        int dY = y - mMouseLastY;
+
+        mProjectHandle->getRuntime()
+                      ->getCamera()
+                      ->processMouseMovement(dX,dY,false);
+        mMouseLastX = x;
+        mMouseLastY = y;
+    }
+
+}
+
+void
+QOpenGLWindowComponent::keyPressEvent
+(QKeyEvent *event)
+{
+    qDebug() << "QOpenGLWindowComponent: Pressed Key" << event->key();
+
+    Camera* camHandle = mProjectHandle->getRuntime()->getCamera();
+    float deltaTime = mProjectHandle->getRuntime()->getTime()->getTimeDelta();
+
+    switch (event->key())
+    {
+        case Qt::Key_W:
+            camHandle->processKeyboard(CAMERA_MOVEMENT_FORWARD,deltaTime);
+            break;
+        case Qt::Key_A:
+            camHandle->processKeyboard(CAMERA_MOVEMENT_LEFT,deltaTime);
+            break;
+        case Qt::Key_S:
+            camHandle->processKeyboard(CAMERA_MOVEMENT_BACKWARD,deltaTime);
+            break;
+        case Qt::Key_D:
+            camHandle->processKeyboard(CAMERA_MOVEMENT_RIGHT,deltaTime);
+            break;
     }
 }
 
@@ -183,4 +280,18 @@ QOpenGLWindowComponent::setGridEnabled
 (bool enabled)
 {
     mGridEnabled = enabled;
+}
+
+void
+QOpenGLWindowComponent::setRelationshipTree
+(RelationshipTree* tree)
+{
+    mRelationshipTreeHandle = tree;
+}
+
+void
+QOpenGLWindowComponent::keyReleaseEvent
+(QKeyEvent* event)
+{
+    qDebug() << "QOpenGLWindowComponent: Released Key" << event->key();
 }

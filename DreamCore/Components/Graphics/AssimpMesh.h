@@ -36,7 +36,6 @@ namespace Dream
         ~AssimpMesh();
         void draw(ShaderInstance*);
         void init();
-        bool checkGLError(int);
     };
 }
 

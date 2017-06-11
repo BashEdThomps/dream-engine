@@ -21,8 +21,12 @@
 #include <QApplication>
 #include <QSurfaceFormat>
 
+#include <DreamCore.h>
+
 int main(int argc, char *argv[])
 {
+    Dream::Constants::dreamSetVerbose(true);
+
     QApplication a(argc, argv);
 
     QSurfaceFormat glFormat;

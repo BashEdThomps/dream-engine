@@ -25,22 +25,20 @@ namespace Dream
     (AssetDefinition* definition,Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "ShaderInstance: Constructing Object" << endl;
+        }
         mShaderProgram = 0;
     }
 
     ShaderInstance::~ShaderInstance
     ()
     {
-
         if (Constants::DEBUG)
         {
             cout << "ShaderInstance: Destroying Object" << endl;
         }
-
-        /*if (mShaderProgram > 0) {
-      glDeleteShader(mShaderProgram);
-    }
-    */
     }
 
     GLuint
@@ -76,11 +74,19 @@ namespace Dream
             delete fragmentReader;
             if (Constants::DEBUG)
             {
-                cout << "ShaderInstance: Loading Shader..." << endl
-                     << "ShaderInstance: Vertex: " << absVertexPath     << endl
-                     << endl << mVertexShaderSource    << endl
-                     << "ShaderInstance: Fragment: " << absFragmentPath   << endl
-                     << endl << mFragmentShaderSource  << endl;
+                cout << "ShaderInstance: Loading Shader "
+                     << mDefinition->getNameAndUuidString()
+                     << endl
+                     << "ShaderInstance: Vertex: "
+                     << absVertexPath
+                     << endl
+                     << mVertexShaderSource
+                     << endl
+                     << "ShaderInstance: Fragment: "
+                     << absFragmentPath
+                     << endl
+                     << mFragmentShaderSource
+                     << endl;
             }
             // 2. Compile shaders
             GLint success;
@@ -140,7 +146,7 @@ namespace Dream
 
     void
     ShaderInstance::loadExtraAttributes
-    (nlohmann::json jsonData)
+    (nlohmann::json)
     {
         // pass
         return;

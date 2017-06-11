@@ -8,6 +8,7 @@
 
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
+#include "../View/GLView/RelationshipTree.h"
 
 using namespace Dream;
 
@@ -25,9 +26,13 @@ public:
     void cleanUp(Scene*) override;
     void setProject(Project* engine);
     void setGrid(Grid* grid);
-    void mouseMoveEvent(QMouseEvent *event) override;
     void setGridEnabled(bool enabled);
     void setSelectionHighlighter(SelectionHighlighter* highlighter);
+    void setRelationshipTree(RelationshipTree* tree);
+
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
 protected:
     void initializeGL() override;
@@ -38,7 +43,12 @@ private:
     Project              *mProjectHandle;
     Grid                 *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
+    RelationshipTree     *mRelationshipTreeHandle;
     bool mGridEnabled;
+    bool mRelationshipTreeEnabled;
+
+    int mMouseLastX;
+    int mMouseLastY;
 };
 
 #endif // GLWIDGET_H

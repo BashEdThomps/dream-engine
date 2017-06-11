@@ -29,9 +29,9 @@ namespace Dream
     (Camera* camera, IWindowComponent* windowComponent)
         : IComponent(),
           mCamera(camera),
-          mWindowComponentHandle(windowComponent),
           mClearColour({1.0f,1.0f,1.0f,1.0f}),
-          mAmbientLightColour({1.0f,1.0f,1.0f,1.0f})
+          mAmbientLightColour({1.0f,1.0f,1.0f,1.0f}),
+          mWindowComponentHandle(windowComponent)
     {
 
     }
@@ -71,20 +71,22 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "GraphicsComponent: Initialising..." << endl;
+            cout << "GraphicsComponent: Initialising" << endl;
+            cout << "GraphicsComponent: Initialising GLEW" << endl;
         }
 
-        // Initialize GLEW to setup the OpenGL Function pointers
         glewExperimental = GL_TRUE;
         GLenum glewInitResult = glewInit();
+
         if (glewInitResult != GLEW_OK)
         {
             cerr << "GraphicsComponent: GLEW failed to initialise." << endl;
             return false;
         }
+
         if (Constants::DEBUG)
         {
-            cout << "GraphicsComponent: GL Version " << glGetString(GL_VERSION) << endl;
+            cout << "GraphicsComponent: OpenGL Version " << glGetString(GL_VERSION) << endl;
             cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
         }
 
@@ -542,18 +544,28 @@ namespace Dream
             GLint uLightPos   = glGetUniformLocation(shader->getShaderProgram(),uPosStr.str().c_str());
             GLint uLightColor = glGetUniformLocation(shader->getShaderProgram(),uColorStr.str().c_str());
 
-            if (uLightPos > 0 && uLightColor > 0)
+            if (uLightPos > 0)
             {
                 glm::vec3 lightPos = (*lights)->getTransform()->getTranslation();
-                glm::vec3 lightColor = (*lights)->getColor();
                 glUniform3fv(uLightPos  ,1, glm::value_ptr(lightPos));
-                glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
             }
             else
             {
                 if (Constants::VERBOSE)
                 {
                     cout << "GraphicsComponent: cannot find uniform for " << uPosStr.str() << endl;
+                }
+            }
+
+            if (uLightColor > 0)
+            {
+                glm::vec3 lightColor = (*lights)->getColor();
+                glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
+            }
+            else
+            {
+                if (Constants::VERBOSE)
+                {
                     cout << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;
                 }
             }
@@ -596,51 +608,9 @@ namespace Dream
         // Unbind shader
         glBindVertexArray(0);
         glUseProgram(0);
-        checkGLError("After 3D Draw");
+        Constants::checkGLError("After 3D Draw");
     }
 
-
-    bool
-    GraphicsComponent::checkGLError
-    (string marker)
-    {
-        GLenum errorCode = 0;
-        bool wasError = false;
-        do
-        {
-            errorCode = glGetError();
-            if (errorCode!=0)
-            {
-                cerr << "GraphicsComponent: Error Check " << marker << ": " << endl;
-                switch (errorCode)
-                {
-                    case GL_NO_ERROR:
-                        cerr << "\tGL_NO_ERROR" << endl;
-                        break;
-                    case GL_INVALID_ENUM:
-                        cerr << "\tGL_INVALID_ENUM" << endl;
-                        break;
-                    case GL_INVALID_VALUE:
-                        cerr << "\tGL_INVALID_VALUE" << endl;
-                        break;
-                    case GL_INVALID_OPERATION:
-                        cerr << "\tGL_INVALID_OPERATION" << endl;
-                        break;
-                    case GL_INVALID_FRAMEBUFFER_OPERATION:
-                        cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
-                        break;
-                    case GL_OUT_OF_MEMORY:
-                        cerr << "\tGL_OUT_OF_MEMORY" << endl;
-                        break;
-                }
-                cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
-                cerr << "\tCode: " << errorCode << endl;
-                wasError = true;
-            }
-        }
-        while(errorCode != 0);
-        return wasError;
-    }
 
 
     void

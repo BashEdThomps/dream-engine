@@ -662,7 +662,7 @@ namespace Dream
     }
 
     Project*
-    Scene::getProject
+    Scene::getProjectHandle
     ()
     {
         return mProjectHandle;

@@ -21,10 +21,12 @@
 #include "PropertiesModel.h"
 #include <DreamCore.h>
 
+using namespace Dream;
+
 class SceneObjectPropertiesModel : public PropertiesModel
 {
 public:
-    SceneObjectPropertiesModel(Dream::SceneObject *sceneObject,QTreeView* parent = 0);
+    SceneObjectPropertiesModel(SceneObject *sceneObject,QTreeView* parent = 0);
     ~SceneObjectPropertiesModel();
 
     void createRoot() override;
@@ -40,7 +42,7 @@ public:
     void createAssetInstancesProperty();
     void createChildrenProperty();
 private:
-    Dream::SceneObject *mSceneObject;
+    SceneObject *mSceneObject;
 };
 
 #endif // SCENEOBJECTPROPERTIESMODEL_H

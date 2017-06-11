@@ -22,7 +22,12 @@ namespace Dream
 {
     Project::Project
     (IWindowComponent* windowComponent)
+        : mActiveSceneHandle(nullptr)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "Project: Constructing Object" << endl;
+        }
         mRuntime.reset(new ProjectRuntime(this, windowComponent));
     }
 
@@ -597,7 +602,7 @@ namespace Dream
 
         mRuntime->getAnimationComponent()->updateComponent(mActiveSceneHandle);
         mRuntime->getAudioComponent()->updateComponent(mActiveSceneHandle);
-        mRuntime->getWindowComponent()->updateComponent(mActiveSceneHandle);
+        mRuntime->getWindowComponentHandle()->updateComponent(mActiveSceneHandle);
         mRuntime->getPhysicsComponent()->updateComponent(mActiveSceneHandle);
 
         // Update Graphics/Physics Components
@@ -625,7 +630,7 @@ namespace Dream
         mRuntime->getGraphicsComponent()->draw3DQueue();
         mRuntime->getPhysicsComponent()->drawDebug();
         mRuntime->getGraphicsComponent()->draw2DQueue();
-        mRuntime->getWindowComponent()->swapBuffers();
+        mRuntime->getWindowComponentHandle()->swapBuffers();
 
         mRuntime->getGraphicsComponent()->postRender();
 

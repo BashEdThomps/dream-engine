@@ -4,7 +4,7 @@ project (Dream)
 
 set(DREAM_BUILD_LUABIND ON)
 set(DREAM_BUILD_CORE ON)
-set(DREAM_BUILD_SDL ON)
+set(DREAM_BUILD_SDL OFF)
 
 set(DREAM_BUILD_LUABIND_TESTS OFF) # Broken, possible boost version issues :'(
 set(DREAM_BUILD_TESTS OFF)         # Needs updating, badly...

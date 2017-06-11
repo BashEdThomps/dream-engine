@@ -18,9 +18,11 @@
 #ifndef PROJECTDIRMODEL_H
 #define PROJECTDIRMODEL_H
 
+#include <memory>
 #include <QObject>
 #include <QDir>
 
+using namespace std;
 
 class ProjectDirModel : public QObject
 {
@@ -60,16 +62,16 @@ public:
 
 private:
     QString mAbsolutePath;
-    QDir *mProjectDir;
-    QDir *mAssetsDir;
-    QDir *mAnimationDir;
-    QDir *mAudioDir;
-    QDir *mFontDir;
-    QDir *mModelDir;
-    QDir *mPhysicsObjetDir;
-    QDir *mScriptDir;
-    QDir *mShaderDir;
-    QDir *mSpriteDir;
+    unique_ptr<QDir> mProjectDir;
+    unique_ptr<QDir> mAssetsDir;
+    unique_ptr<QDir> mAnimationDir;
+    unique_ptr<QDir> mAudioDir;
+    unique_ptr<QDir> mFontDir;
+    unique_ptr<QDir> mModelDir;
+    unique_ptr<QDir> mPhysicsObjetDir;
+    unique_ptr<QDir> mScriptDir;
+    unique_ptr<QDir> mShaderDir;
+    unique_ptr<QDir> mSpriteDir;
 };
 
 

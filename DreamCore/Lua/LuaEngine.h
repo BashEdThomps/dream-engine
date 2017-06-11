@@ -49,7 +49,7 @@ namespace Dream
     class LuaEngine
     {
     public: // Methods
-        LuaEngine(Project* project);
+        LuaEngine(Project* projectHandle);
         virtual ~LuaEngine();
         bool init();
         bool createAllScripts();

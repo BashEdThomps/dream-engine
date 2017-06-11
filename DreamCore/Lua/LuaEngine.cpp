@@ -61,9 +61,9 @@ errorHandler
 namespace Dream
 {
     LuaEngine::LuaEngine
-    (Project* project)
+    (Project* projectHandle)
+        :mProjectHandle(projectHandle)
     {
-        mProjectHandle = project;
     }
 
     LuaEngine::~LuaEngine
@@ -396,7 +396,7 @@ namespace Dream
 
         if (Constants::VERBOSE)
         {
-            cout << "LuaEngine: Calling onInput for " << sceneObject->getNameAndUuidString() << endl << flush;
+            cout << "LuaEngine: Calling onInput for " << sceneObject->getNameAndUuidString() << " (Has Focus)" << endl << flush;
         }
         try
         {
@@ -489,7 +489,7 @@ namespace Dream
                 .def("getAudioComponent",&ProjectRuntime::getAudioComponent)
                 .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponent)
                 .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponent)
-                .def("getWindowComponent",&ProjectRuntime::getWindowComponent)
+                .def("getWindowComponent",&ProjectRuntime::getWindowComponentHandle)
                 .def("getTime",&ProjectRuntime::getTime)
                 .def("getCamera",&ProjectRuntime::getCamera)
         ];

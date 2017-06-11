@@ -18,7 +18,7 @@
 #include "SceneObjectPropertiesModel.h"
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
-(Dream::SceneObject *sceneObject, QTreeView *parent)
+(SceneObject *sceneObject, QTreeView *parent)
     : PropertiesModel(parent)
 {
     mSceneObject = sceneObject;
@@ -151,7 +151,10 @@ void SceneObjectPropertiesModel::createAssetInstancesProperty()
     for (std::string adUuid : mSceneObject->getAssetDefUuidsToLoad())
     {
        QList<QVariant> assetInstanceData;
-       assetInstanceData << QString::fromStdString(adUuid) << "";
+       AssetDefinition* definition = mSceneObject->getSceneHandle()
+                                                 ->getProjectHandle()
+                                                 ->getAssetDefinitionByUuid(adUuid);
+       assetInstanceData << QString::fromStdString(definition->getName()) << QString::fromStdString(definition->getType());
        assetDefItem->appendChild(new PropertiesItem(assetInstanceData,mSceneObject));
     }
 }
@@ -163,7 +166,7 @@ void SceneObjectPropertiesModel::createChildrenProperty()
     PropertiesItem *childrenItem = new PropertiesItem(childrenData,mSceneObject);
     mRootItem->appendChild(childrenItem);
 
-    for (Dream::SceneObject* child : mSceneObject->getChildren())
+    for (SceneObject* child : mSceneObject->getChildren())
     {
        QList<QVariant> childData;
        childData << QString::fromStdString(child->getName()) << QString::fromStdString(child->getUuid());

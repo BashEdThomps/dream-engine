@@ -28,8 +28,8 @@ class Grid : public GLDrawable
 public:
     Grid(
         QObject* parent = nullptr,
-        float majorSpacing = 5.0f, float minorSpacing = 1.0f,
-        float size = 25.0f,
+        float majorSpacing = 10.0f, float minorSpacing = 1.0f,
+        float size = 100.0f,
         vec3 majorColour = vec3(1.0f),
         vec3 minorColour = vec3(0.6f)
     );

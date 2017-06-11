@@ -26,11 +26,12 @@
 #include <QItemSelection>
 #include <QSurfaceFormat>
 #include "../View/MainWindow.h"
-#include "../Model/DreamModel.h"
+#include "../Model/DreamProjectModel.h"
 #include "../Model/TreeModels/ProjectTreeModel.h"
 #include "../Model/TreeModels/AssetDefinitionTreeModel.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
+#include "../View/GLView/RelationshipTree.h"
 
 using namespace std;
 using namespace Dream;
@@ -42,8 +43,9 @@ public:
     MainController(MainWindow* parent);
     ~MainController();
 
-    Grid* getGrid();
-    SelectionHighlighter* getSelectionHighlighter();
+    Grid *getGrid();
+    SelectionHighlighter *getSelectionHighlighter();
+    RelationshipTree *getRelationshipTree();
 
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);
@@ -69,6 +71,7 @@ public slots:
     void onProjectPlayAction();
     void onProjectStopAction();
     void onProjectOpenTestProjectAction();
+    void onProjectClosedAction();
 
     void onProjectNameChanged(QString name);
     void onProjectAuthorChanged(QString author);
@@ -85,14 +88,20 @@ public slots:
     void onToggleDebugAction(bool enabled);
 
 private: // Variables
-    MainWindow *mMainWindow;
-    QOpenGLWindowComponent *mWindowComponent;
-    unique_ptr<DreamModel> mDreamModel;
+    MainWindow *mMainWindowHandle;
+    QOpenGLWindowComponent *mWindowComponentHandle;
+
     QString mProjectDirectory;
-    QErrorMessage *mInvalidProjectDirectoryError;
-    QStringListModel *mSceneListModel;
-    ProjectTreeModel *mProjectTreeModel;
-    AssetDefinitionTreeModel *mAssetDefinitionTreeModel;
+
+    unique_ptr<QErrorMessage> mInvalidProjectDirectoryError;
+    unique_ptr<QStringListModel> mSceneListModel;
+    unique_ptr<ProjectTreeModel> mProjectTreeModel;
+    unique_ptr<AssetDefinitionTreeModel> mAssetDefinitionTreeModel;
+    unique_ptr<DreamProjectModel> mDreamModel;
+    unique_ptr<Grid> mGrid;
+    unique_ptr<SelectionHighlighter> mSelectionHighlighter;
+    unique_ptr<RelationshipTree> mRelationshipTree;
+
 private: // Methods
     void setupPropertiesTreeViewModel(GenericTreeItem *item);
     void createConnections();
@@ -100,8 +109,7 @@ private: // Methods
     void connectTreeViewModel();
     QStringListModel* getSceneNamesListModel(vector<Scene*> sceneList);
     string getSceneNameFromModelIndex(int index);
-    unique_ptr<Grid> mGrid;
-    unique_ptr<SelectionHighlighter> mSelectionHighlighter;
+
 };
 
 #endif // MAINCONTROLLER_H

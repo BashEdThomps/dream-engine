@@ -23,26 +23,19 @@ using namespace Dream;
 
 ProjectDirModel::ProjectDirModel
 (QString absolutePath, QObject* parent)
-    : QObject(parent)
+    : QObject(parent),
+      mAbsolutePath(absolutePath)
 {
+    qDebug() << "ProjectDirModel: Constructing Object";
     mAbsolutePath = absolutePath;
-    mProjectDir = nullptr;
-    mAssetsDir = nullptr;
-    mAnimationDir = nullptr;
-    mAudioDir = nullptr;
-    mFontDir = nullptr;
-    mModelDir = nullptr;
-    mPhysicsObjetDir = nullptr;
-
-    mShaderDir = nullptr;
-    mSpriteDir = nullptr;
+    populateDir();
 }
 
 bool
 ProjectDirModel::populateDir
 ()
 {
-    mProjectDir = new QDir(mAbsolutePath);
+    mProjectDir.reset(new QDir(mAbsolutePath));
 
     if (!projectDirExists())
     {
@@ -65,7 +58,7 @@ ProjectDirModel::populateDir
         }
     }
 
-    mAssetsDir = new QDir(getAssetsDirAbsPath());
+    mAssetsDir.reset(new QDir(getAssetsDirAbsPath()));
 
     return true;
 }
@@ -73,24 +66,14 @@ ProjectDirModel::populateDir
 ProjectDirModel::~ProjectDirModel
 ()
 {
-    if (mAssetsDir)
-    {
-        delete mAssetsDir;
-        mAssetsDir = nullptr;
-    }
-
-    if (mProjectDir)
-    {
-        delete mProjectDir;
-        mProjectDir = nullptr;
-    }
+    qDebug() << "ProjectDirModel: Destructing Object";
 }
 
 bool
 ProjectDirModel::createProjectDir
 ()
 {
-    qDebug() << QString("Creating project directory {1})").arg(mAbsolutePath);
+    qDebug() << QString("ProjectDirModel: Creating project directory {1})").arg(mAbsolutePath);
     return QDir().mkpath(mAbsolutePath);
 }
 
@@ -98,7 +81,14 @@ bool
 ProjectDirModel::projectDirExists
 ()
 {
-    return mProjectDir->exists();
+    if (mProjectDir)
+    {
+        return mProjectDir->exists();
+    }
+    else
+    {
+        return false;
+    }
 }
 
 
@@ -107,19 +97,13 @@ ProjectDirModel::createAssetsDir
 ()
 {
     bool result = false;
-    if (mProjectDir)
+    if (projectDirExists())
     {
-        if (mAssetsDir)
-        {
-            delete mAssetsDir;
-            mAssetsDir = nullptr;
-        }
-
         result = mProjectDir->mkdir(QString::fromStdString(Constants::ASSET_DIR));
 
         if (result)
         {
-            mAssetsDir = new QDir(getAssetsDirAbsPath());
+            mAssetsDir.reset(new QDir(getAssetsDirAbsPath()));
         }
     }
     return result;
@@ -131,19 +115,13 @@ ProjectDirModel::createAnimationDir
 ()
 {
     bool result = false;
-    if (mAssetsDir)
+    if (assetsDirExists())
     {
-        if (mAnimationDir)
-        {
-            delete mAnimationDir;
-            mAnimationDir = nullptr;
-        }
-
         result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
 
         if (result)
         {
-            mAnimationDir = new QDir(getAnimationDirAbsPath());
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
         }
 
     }
@@ -158,17 +136,11 @@ ProjectDirModel::createAudioDir
     bool result = false;
     if (mAssetsDir)
     {
-        if (mAnimationDir)
-        {
-            delete mAudioDir;
-            mAudioDir = nullptr;
-        }
-
         result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
 
         if (result)
         {
-            mAnimationDir = new QDir(getAnimationDirAbsPath());
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
         }
 
     }
@@ -183,17 +155,11 @@ ProjectDirModel::createFontDir
     bool result = false;
     if (mAssetsDir)
     {
-        if (mAnimationDir)
-        {
-            delete mAudioDir;
-            mAudioDir = nullptr;
-        }
-
         result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
 
         if (result)
         {
-            mAnimationDir = new QDir(getAnimationDirAbsPath());
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
         }
 
     }
@@ -205,6 +171,18 @@ bool
 ProjectDirModel::createModelDir
 ()
 {
+    bool result = false;
+    if (mAssetsDir)
+    {
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
+
+        if (result)
+        {
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
+        }
+
+    }
+    return result;
     return false;
 }
 
@@ -213,6 +191,18 @@ bool
 ProjectDirModel::createPhysicsObjectDir
 ()
 {
+    bool result = false;
+    if (mAssetsDir)
+    {
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
+
+        if (result)
+        {
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
+        }
+
+    }
+    return result;
     return false;
 }
 
@@ -221,6 +211,18 @@ bool
 ProjectDirModel::createScriptDir
 ()
 {
+    bool result = false;
+    if (mAssetsDir)
+    {
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
+
+        if (result)
+        {
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
+        }
+
+    }
+    return result;
     return false;
 }
 
@@ -229,6 +231,18 @@ bool
 ProjectDirModel::createShaderDir
 ()
 {
+    bool result = false;
+    if (mAssetsDir)
+    {
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
+
+        if (result)
+        {
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
+        }
+
+    }
+    return result;
     return false;
 }
 
@@ -237,6 +251,18 @@ bool
 ProjectDirModel::createSpriteDir
 ()
 {
+    bool result = false;
+    if (mAssetsDir)
+    {
+        result = mAssetsDir->mkdir(QString::fromStdString(Constants::ASSET_TYPE_AUDIO));
+
+        if (result)
+        {
+            mAnimationDir.reset(new QDir(getAnimationDirAbsPath()));
+        }
+
+    }
+    return result;
     return false;
 }
 
@@ -279,13 +305,29 @@ QString
 ProjectDirModel::getAnimationDirAbsPath
 ()
 {
-    return QString();
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
+
 }
 
 QString
 ProjectDirModel::getAudioDirAbsPath
 ()
 {
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
     return QString();
 }
 
@@ -293,6 +335,14 @@ QString
 ProjectDirModel::getFontDirAbsPath
 ()
 {
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
     return QString();
 }
 
@@ -300,6 +350,14 @@ QString
 ProjectDirModel::getModelDirAbsPath
 ()
 {
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
     return QString();
 }
 
@@ -307,6 +365,14 @@ QString
 ProjectDirModel::getPhysicsObjectDirAbsPath
 ()
 {
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
     return QString();
 }
 
@@ -314,6 +380,14 @@ QString
 ProjectDirModel::getScriptDirAbsPath
 ()
 {
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
     return QString();
 }
 
@@ -321,6 +395,14 @@ QString
 ProjectDirModel::getShaderDirAbsPath
 ()
 {
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
     return QString();
 }
 
@@ -328,6 +410,14 @@ QString
 ProjectDirModel::getSpriteDirAbsPath
 ()
 {
+    if (mAssetsDir)
+    {
+        return mAssetsDir->filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+    }
+    else
+    {
+        return QString();
+    }
     return QString();
 }
 
@@ -335,5 +425,12 @@ bool
 ProjectDirModel::assetsDirExists
 ()
 {
-    return false;
+    if (mProjectDir)
+    {
+        mProjectDir->exists(QString::fromStdString(Constants::ASSET_DIR));
+    }
+    else
+    {
+        return false;
+    }
 }

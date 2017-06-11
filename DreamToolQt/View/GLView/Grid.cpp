@@ -17,6 +17,7 @@
  */
 #include "Grid.h"
 #include <DreamCore.h>
+#include <QDebug>
 
 using namespace glm;
 using namespace std;
@@ -63,6 +64,8 @@ void
 Grid::initMajorGridData
 ()
 {
+
+    qDebug() << "Grid: Init Major Data";
     float halfSize = (mSize/2.0f);
 
     // Major Grid
@@ -99,11 +102,15 @@ void
 Grid::initMinorGridData
 ()
 {
+    qDebug() << "Grid: Init Minor Data";
     float halfSize = (mSize/2.0f);
 
     // Minor Grid
     for (float z = -halfSize; z <= halfSize; z += mMinorSpacing)
     {
+
+        if (static_cast<int>(z) % static_cast<int>(mMajorSpacing) == 0) continue;
+
         LineVertex minorStart, minorEnd;
 
         minorStart.Position = vec3(-halfSize, 0.0f, z);
@@ -118,6 +125,9 @@ Grid::initMinorGridData
 
     for (float x = -halfSize; x <= halfSize; x += mMinorSpacing)
     {
+
+        if (static_cast<int>(x) % static_cast<int>(mMajorSpacing) == 0) continue;
+
         LineVertex minorStart, minorEnd;
 
         minorStart.Position = vec3(x, 0.0f, -halfSize);

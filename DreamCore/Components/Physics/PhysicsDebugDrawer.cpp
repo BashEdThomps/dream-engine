@@ -234,48 +234,6 @@ namespace Dream
         }
     }
 
-    bool
-    PhysicsDebugDrawer::checkGLError
-    (string marker)
-    {
-        GLenum errorCode = 0;
-        bool wasError = false;
-        do
-        {
-            errorCode = glGetError();
-            if (errorCode!=0)
-            {
-                cerr << "PhysicsDebugDrawer: Error Check " << marker << ": " << endl;
-                switch (errorCode)
-                {
-                    case GL_NO_ERROR:
-                        cerr << "\tGL_NO_ERROR" << endl;
-                        break;
-                    case GL_INVALID_ENUM:
-                        cerr << "\tGL_INVALID_ENUM" << endl;
-                        break;
-                    case GL_INVALID_VALUE:
-                        cerr << "\tGL_INVALID_VALUE" << endl;
-                        break;
-                    case GL_INVALID_OPERATION:
-                        cerr << "\tGL_INVALID_OPERATION" << endl;
-                        break;
-                    case GL_INVALID_FRAMEBUFFER_OPERATION:
-                        cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
-                        break;
-                    case GL_OUT_OF_MEMORY:
-                        cerr << "\tGL_OUT_OF_MEMORY" << endl;
-                        break;
-                }
-                cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
-                cerr << "\tCode: " << errorCode << endl;
-                wasError = true;
-            }
-        }
-        while(errorCode != 0);
-        return wasError;
-    }
-
     void
     PhysicsDebugDrawer::drawAll
     ()
@@ -294,7 +252,7 @@ namespace Dream
         if (projUniform == -1)
         {
             cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for projection" << endl;
-            checkGLError("set proj");
+            Constants::checkGLError("set projection matrix");
             return;
         }
         else
@@ -307,7 +265,7 @@ namespace Dream
         if (viewUniform == -1)
         {
             cerr << "PhysicsDebugDrawer: Unable to find Uniform Location for view" << endl;
-            checkGLError("set view");
+            Constants::checkGLError("set view matrix");
             return;
         }
         else

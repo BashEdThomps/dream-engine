@@ -28,13 +28,16 @@
 using namespace std;
 using namespace Dream;
 
-class DreamModel : public QObject
+class DreamProjectModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit DreamModel(QObject *parent = 0,
-                        QOpenGLWindowComponent *windowComponent = 0);
-    ~DreamModel();
+    DreamProjectModel
+    (
+        QObject *parent = nullptr,
+        QOpenGLWindowComponent *windowComponent = nullptr
+    );
+    ~DreamProjectModel();
     bool loadProject(QString path);
     Project* getProject();
     vector<Scene*> getScenes();
@@ -47,6 +50,7 @@ public:
     void setProjectWindowWidth(int width);
     void setProjectWindowHeight(int height);
     void setDebug(bool enabled);
+    void closeProject();
 
     bool startScene();
     Scene* stopActiveScene();
@@ -57,15 +61,17 @@ public:
 
     Scene *getSelectedScene();
     void setSelectedScene(Scene* selectedScene);
+
 signals:
     void notifySelectedSceneChanged(Scene* scene);
 
-
 private:
-    unique_ptr<Project>mProject;
-    Scene* mSelectedScene;
-    QOpenGLWindowComponent *mWindowComponent;
-    QTimer* mHeartbeatTimer;
+    // Owned Objects
+    unique_ptr<Project> mProject;
+    unique_ptr<QTimer>  mHeartbeatTimer;
+    // Handles
+    QOpenGLWindowComponent *mWindowComponentHandle;
+    Scene                  *mSelectedSceneHandle;
 };
 
 #endif // DREAMMODEL_H

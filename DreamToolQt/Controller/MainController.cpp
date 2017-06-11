@@ -36,15 +36,18 @@ MainController::MainController
     : QObject(parent)
 {
     qDebug() << "MainController: Constructing Object";
-    mMainWindow = parent;
-    mWindowComponent = parent->getWindowComponent();
-    mDreamModel.reset(new DreamModel(this,mWindowComponent));
+    mMainWindowHandle = parent;
+    mWindowComponentHandle = parent->getWindowComponent();
+    mDreamModel.reset(new DreamProjectModel(this,mWindowComponentHandle));
 
     mGrid.reset(new Grid(this));
-    mWindowComponent->setGrid(getGrid());
+    mWindowComponentHandle->setGrid(getGrid());
 
     mSelectionHighlighter.reset(new SelectionHighlighter(this));
-    mWindowComponent->setSelectionHighlighter(getSelectionHighlighter());
+    mWindowComponentHandle->setSelectionHighlighter(getSelectionHighlighter());
+
+    mRelationshipTree.reset(new RelationshipTree(this));
+    mWindowComponentHandle->setRelationshipTree(getRelationshipTree());
 
     createConnections();
 }
@@ -62,74 +65,80 @@ MainController::createConnections
     // actionNew
     connect
     (
-        mMainWindow->getActionNew(), SIGNAL(triggered()),
+        mMainWindowHandle->getActionNew(), SIGNAL(triggered()),
         this, SLOT(onProjectNewAction())
     );
     // actionOpen
     connect
     (
-        mMainWindow->getActionOpen(), SIGNAL(triggered()),
+        mMainWindowHandle->getActionOpen(), SIGNAL(triggered()),
         this, SLOT(onProjectOpenAction())
     );
     // actionSave
     connect
     (
-        mMainWindow->getActionSave(), SIGNAL(triggered()),
+        mMainWindowHandle->getActionSave(), SIGNAL(triggered()),
         this, SLOT(onProjectSaveAction())
     );
     // actionReload
     connect
     (
-        mMainWindow->getActionReload(), SIGNAL(triggered()),
+        mMainWindowHandle->getActionReload(), SIGNAL(triggered()),
         this, SLOT(onProjectReloadAction())
     );
     // actionPlay
     connect
     (
-        mMainWindow->getActionPlay(), SIGNAL(triggered()),
+        mMainWindowHandle->getActionPlay(), SIGNAL(triggered()),
         this, SLOT(onProjectPlayAction())
     );
     // actionStop
     connect
     (
-        mMainWindow->getActionStop(), SIGNAL(triggered()),
+        mMainWindowHandle->getActionStop(), SIGNAL(triggered()),
         this, SLOT(onProjectStopAction())
+    );
+    // actionCloseProject
+    connect
+    (
+        mMainWindowHandle->getActionCloseProject(), SIGNAL(triggered()),
+        this, SLOT(onProjectClosedAction())
     );
     // Action Toggle Grid
     connect
     (
-        mMainWindow->getActionToggleGrid(),SIGNAL(triggered(bool)),
+        mMainWindowHandle->getActionToggleGrid(),SIGNAL(triggered(bool)),
         this,SLOT(onGridToggleAction(bool))
     );
     // Action Toggle Debug
     connect
     (
-        mMainWindow->getActionToggleDebug(),SIGNAL(triggered(bool)),
+        mMainWindowHandle->getActionToggleDebug(),SIGNAL(triggered(bool)),
         this,SLOT(onToggleDebugAction(bool))
     );
     // Scene Stopped
     connect
     (
         this,SIGNAL(notifyStoppedScene(Scene*)),
-        mMainWindow,SLOT(onSceneStopped(Scene*))
+        mMainWindowHandle,SLOT(onSceneStopped(Scene*))
     );
     // Open Default Project
     connect
     (
-        mMainWindow->getActionOpenTestProject(), SIGNAL(triggered()),
+        mMainWindowHandle->getActionOpenTestProject(), SIGNAL(triggered()),
         this, SLOT(onProjectOpenTestProjectAction())
     );
     // Invalid Project Directory
     connect
     (
         this, SIGNAL(notifyInvalidProjectDirectory(QString)),
-        mMainWindow, SLOT(onInvalidProjectDirectory(QString))
+        mMainWindowHandle, SLOT(onInvalidProjectDirectory(QString))
     );
     // No Scene Selected
     connect
     (
         this,SIGNAL(notifyNoSceneSelected()),
-        mMainWindow, SLOT(onNoSceneSelected())
+        mMainWindowHandle, SLOT(onNoSceneSelected())
     );
     // Valid Scene Selected
     connect
@@ -141,13 +150,13 @@ MainController::createConnections
     connect
     (
         this, SIGNAL(notifyProjectDirectoryChanged(QString)),
-        mMainWindow, SLOT(setWindowTitle(QString))
+        mMainWindowHandle, SLOT(setWindowTitle(QString))
      );
     // Status Bar
     connect
     (
         this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-        mMainWindow, SLOT(showStatusBarMessage(QString))
+        mMainWindowHandle, SLOT(showStatusBarMessage(QString))
     );
 
 }
@@ -208,11 +217,11 @@ MainController::onProjectOpenAction
     emit notifyProjectStartupSceneChanged(QString::fromStdString(project->getStartupScene()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
 
-    mProjectTreeModel = new ProjectTreeModel(project,mMainWindow->getProjectTreeView());
-    mMainWindow->getProjectTreeView()->setModel(mProjectTreeModel);
+    mProjectTreeModel.reset(new ProjectTreeModel(project,mMainWindowHandle->getProjectTreeView()));
+    mMainWindowHandle->getProjectTreeView()->setModel(mProjectTreeModel.get());
 
-    mAssetDefinitionTreeModel = new AssetDefinitionTreeModel(project,mMainWindow->getAssetDefinitionTreeView());
-    mMainWindow->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel);
+    mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(project,mMainWindowHandle->getAssetDefinitionTreeView()));
+    mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
 
     emit notifyStatusBarProjectLoaded(
     QString::fromStdString(
@@ -231,20 +240,20 @@ MainController::connectTreeViewModel
     // projectTreeView
     connect
     (
-        mMainWindow->getProjectTreeView()->selectionModel(),
+        mMainWindowHandle->getProjectTreeView()->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
         this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
     // assetDefinitionTreeView
     connect
     (
-        mMainWindow->getAssetDefinitionTreeView()->selectionModel(),
+        mMainWindowHandle->getAssetDefinitionTreeView()->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
         this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
 
-    mMainWindow->getProjectTreeView()->expandAll();
-    mMainWindow->getAssetDefinitionTreeView()->expandAll();
+    mMainWindowHandle->getProjectTreeView()->expandAll();
+    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -264,7 +273,7 @@ MainController::getSceneNamesListModel
 (vector<Scene*> sceneList)
 {
     QStringList sceneNameList;
-    mSceneListModel = new QStringListModel(mMainWindow);
+    mSceneListModel.reset(new QStringListModel(mMainWindowHandle));
 
     for (auto scene : sceneList)
     {
@@ -272,7 +281,7 @@ MainController::getSceneNamesListModel
     }
 
     mSceneListModel->setStringList(sceneNameList);
-    return mSceneListModel;
+    return mSceneListModel.get();
 }
 
 void
@@ -364,7 +373,7 @@ MainController::onProjectOpenTestProjectAction
     mProjectDirectory = "/Users/Ashley/.dreamtool/de60-75ff-5cb7-c4a9";
 
     bool loadResult = mDreamModel->loadProject(mProjectDirectory);
-    cout << "LoadResult " << loadResult << endl;
+    cout << "MainController: Load Test Project Result " << loadResult << endl;
     if (!loadResult)
     {
         emit notifyInvalidProjectDirectory(mProjectDirectory);
@@ -383,19 +392,19 @@ MainController::onProjectOpenTestProjectAction
     emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupScene()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
 
-    mProjectTreeModel = new ProjectTreeModel(currentProject,mMainWindow->getProjectTreeView());
-    mMainWindow->getProjectTreeView()->setModel(mProjectTreeModel);
+    mProjectTreeModel.reset(new ProjectTreeModel(currentProject,mMainWindowHandle->getProjectTreeView()));
+    mMainWindowHandle->getProjectTreeView()->setModel(mProjectTreeModel.get());
 
-    mAssetDefinitionTreeModel = new AssetDefinitionTreeModel(currentProject,mMainWindow->getAssetDefinitionTreeView());
-    mMainWindow->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel);
+    mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(currentProject,mMainWindowHandle->getAssetDefinitionTreeView()));
+    mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
 
     emit notifyStatusBarProjectLoaded(
-                QString::fromStdString(
-                    "Successfuly Loaded Project: " +
-                    currentProject->getName() + " (" +
-                    currentProject->getUuid() + ")"
-                    )
-                );
+        QString::fromStdString(
+            "Successfuly Loaded Project: " +
+            currentProject->getName() + " (" +
+            currentProject->getUuid() + ")"
+        )
+    );
     connectTreeViewModel();
 }
 
@@ -415,7 +424,7 @@ MainController::onTreeViewSelectionChanged
     {
         GenericTreeItem *selected = static_cast<GenericTreeItem*>(indexes.at(0).internalPointer());
         setupPropertiesTreeViewModel(selected);
-        mMainWindow->getPropertiesTreeView()->expandAll();
+        mMainWindowHandle->getPropertiesTreeView()->expandAll();
     }
 }
 
@@ -423,7 +432,7 @@ void
 MainController::setupPropertiesTreeViewModel
 (GenericTreeItem *item)
 {
-    QTreeView *propertiesTreeView = mMainWindow->getPropertiesTreeView();
+    QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
     PropertiesModel *model = nullptr;
     Project *project;
     AssetDefinition *asset = nullptr;
@@ -477,7 +486,7 @@ MainController::onSelectedSceneChanged
 (Scene *scene)
 {
     mDreamModel->setSelectedScene(scene);
-    mMainWindow->showStatusBarMessage(
+    mMainWindowHandle->showStatusBarMessage(
         QString("Selected Scene: %1").
             arg(QString::fromStdString(scene->getName())
         )
@@ -509,7 +518,7 @@ void
 MainController::onGridToggleAction
 (bool enabled)
 {
-    mWindowComponent->setGridEnabled(enabled);
+    mWindowComponentHandle->setGridEnabled(enabled);
 }
 
 void
@@ -517,4 +526,18 @@ MainController::onToggleDebugAction
 (bool enabled)
 {
     mDreamModel->setDebug(enabled);
+}
+
+RelationshipTree*
+MainController::getRelationshipTree
+()
+{
+    return mRelationshipTree.get();
+}
+
+void
+MainController::onProjectClosedAction
+()
+{
+    mDreamModel->closeProject();
 }

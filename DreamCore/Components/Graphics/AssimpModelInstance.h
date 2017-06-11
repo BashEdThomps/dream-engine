@@ -31,15 +31,10 @@
 #include "AssimpMesh.h"
 #include "Texture.h"
 #include <map>
+#include "BoundingBox.h"
 
 namespace Dream
 {
-    struct BoundingBox
-    {
-        glm::vec3 minimum;
-        glm::vec3 maximum;
-    };
-
     class AssimpModelInstance : public IAssetInstance
     {
     private:
@@ -64,7 +59,6 @@ namespace Dream
         ~AssimpModelInstance();
         bool load(string);
         void draw(ShaderInstance*);
-        bool checkGLError(int);
         void loadExtraAttributes(nlohmann::json);
         static void cleanUpCache();
         BoundingBox getBoundingBox();

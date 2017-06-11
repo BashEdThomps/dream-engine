@@ -1,5 +1,5 @@
 /*
- * DreamModel.cpp
+ * DreamProjectModel.cpp
  *
  * Created: 14 2017 by Ashley
  *
@@ -15,143 +15,142 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "DreamModel.h"
+#include "DreamProjectModel.h"
 #include <QDebug>
 
-DreamModel::DreamModel
+DreamProjectModel::DreamProjectModel
 (QObject *parent,QOpenGLWindowComponent *windowComponent)
-    : QObject(parent)
+    : QObject(parent),
+      mWindowComponentHandle(windowComponent),
+      mSelectedSceneHandle(nullptr)
 {
-    mWindowComponent = windowComponent;
-    mProject.reset(new Project(windowComponent));
-    mProject->initRuntime();
-    mSelectedScene = nullptr;
-    mHeartbeatTimer = nullptr;
     setupHeartbeatTimer();
+    mProject.reset(new Project(mWindowComponentHandle));
+    mProject->initRuntime();
 }
 
 void
-DreamModel::setupHeartbeatTimer
+DreamProjectModel::setupHeartbeatTimer
 ()
 {
     if (!mHeartbeatTimer)
     {
-        mHeartbeatTimer = new QTimer(this);
-        connect(mHeartbeatTimer, SIGNAL(timeout()), mWindowComponent, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(33.3);
+        mHeartbeatTimer.reset(new QTimer(this));
+        connect(mHeartbeatTimer.get(), SIGNAL(timeout()), mWindowComponentHandle, SLOT(update()),Qt::DirectConnection);
+        mHeartbeatTimer->start(16);
     }
 }
 
-DreamModel::~DreamModel
+DreamProjectModel::~DreamProjectModel
 ()
 {
 }
 
 Project*
-DreamModel::getProject
+DreamProjectModel::getProject
 ()
 {
     return mProject.get();
 }
 
 vector<Scene*>
-DreamModel::getScenes
+DreamProjectModel::getScenes
 ()
 {
     return mProject->getSceneList();
 }
 
 vector<AssetDefinition*>
-DreamModel::getAssetDefinitions
+DreamProjectModel::getAssetDefinitions
 ()
 {
     return mProject->getAssetDefinitions();
 }
 
 bool
-DreamModel::loadProject
+DreamProjectModel::loadProject
 (QString path)
 {
+    mProject.reset(new Project(mWindowComponentHandle));
+    mProject->initRuntime();
     return mProject->loadFromDirectory(path.toStdString());
 }
 
 void
-DreamModel::setProjectName
+DreamProjectModel::setProjectName
 (string name)
 {
     mProject->setName(name);
 }
 
 void
-DreamModel::setProjectAuthor
+DreamProjectModel::setProjectAuthor
 (string author)
 {
     mProject->setAuthor(author);
 }
 
 void
-DreamModel::setProjectDescription
+DreamProjectModel::setProjectDescription
 (string desc)
 {
     mProject->setDescription(desc);
 }
 
 void
-DreamModel::setProjectStartupSceneByUuid
+DreamProjectModel::setProjectStartupSceneByUuid
 (string scene)
 {
     mProject->setStartupSceneUuid(scene);
 }
 
 void
-DreamModel::setProjectStartupSceneByName
+DreamProjectModel::setProjectStartupSceneByName
 (string scene)
 {
     mProject->setStartupSceneName(scene);
 }
 
 void
-DreamModel::setProjectWindowWidth
+DreamProjectModel::setProjectWindowWidth
 (int width)
 {
     mProject->setWindowWidth(width);
 }
 
 void
-DreamModel::setProjectWindowHeight
+DreamProjectModel::setProjectWindowHeight
 (int height)
 {
     mProject->setWindowHeight(height);
 }
 
 AssetDefinition*
-DreamModel::getAssetDefinitionByUuid
+DreamProjectModel::getAssetDefinitionByUuid
 (std::string uuid)
 {
     return mProject->getAssetDefinitionByUuid(uuid);
 }
 
 Scene*
-DreamModel::getSceneByUuid
+DreamProjectModel::getSceneByUuid
 (std::string uuid)
 {
     return getProject()->getSceneByUuid(uuid);
 }
 
 bool
-DreamModel::startScene
+DreamProjectModel::startScene
 ()
 {
-    if (!mSelectedScene)
+    if (!mSelectedSceneHandle)
     {
         qDebug() << "DreamModel: No scene selected";
         return false;
     }
 
     qDebug() << "DreamModel: *** Start Scene ***";
-    mProject->initRuntime();
-
-    mProject->setActiveScene(mSelectedScene);
+    mProject->setActiveScene(mSelectedSceneHandle);
     bool loadResult = mProject->loadActiveScene();
 
     if (!loadResult)
@@ -160,29 +159,26 @@ DreamModel::startScene
         return false;
     }
 
-
-
-    mWindowComponent->setProject(mProject.get());
+    mWindowComponentHandle->setProject(mProject.get());
     return true;
 }
 
 Scene*
-DreamModel::getSelectedScene
+DreamProjectModel::getSelectedScene
 ()
 {
-    return mSelectedScene;
+    return mSelectedSceneHandle;
 }
 
 void
-DreamModel::setSelectedScene
+DreamProjectModel::setSelectedScene
 (Scene* selectedScene)
 {
-    mSelectedScene = selectedScene;
-    //emit notifySelectedSceneChanged(selectedScene);
+    mSelectedSceneHandle = selectedScene;
 }
 
 Scene*
-DreamModel::stopActiveScene
+DreamProjectModel::stopActiveScene
 ()
 {
     Scene* activeScene = mProject->getActiveScene();
@@ -197,9 +193,18 @@ DreamModel::stopActiveScene
 }
 
 void
-DreamModel::setDebug
+DreamProjectModel::setDebug
 (bool enabled)
 {
     Constants::dreamSetVerbose(enabled);
     Constants::dreamSetDebug(enabled);
+}
+
+void
+DreamProjectModel::closeProject
+()
+{
+    stopActiveScene();
+    mProject.reset(nullptr);
+    mHeartbeatTimer.reset(nullptr);
 }

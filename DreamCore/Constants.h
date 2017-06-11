@@ -50,6 +50,7 @@ namespace Dream
 
         static void dreamSetDebug(bool debug);
         static void dreamSetVerbose(bool verbose);
+        static bool checkGLError(string);
 
         // Misc ========================================================================
         const static string DIR_PATH_SEP;
@@ -222,6 +223,7 @@ namespace Dream
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
         static string assetTypeToString(AssetType type);
         static AssetType assetTypeFromString(string type);
+
     };
 }
 

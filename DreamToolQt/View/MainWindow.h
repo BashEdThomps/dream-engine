@@ -24,13 +24,18 @@
 #include <QStringListModel>
 #include <QTreeView>
 #include <QAction>
+#include <memory>
 #include "../Model/QOpenGLWindowComponent.h"
+#include <QKeyEvent>
+#include <vector>
 
-namespace Ui {
+using namespace std;
+using namespace Dream;
+
+namespace Ui
+{
     class MainWindow;
 }
-
-using namespace Dream;
 
 class MainWindow : public QMainWindow
 {
@@ -53,8 +58,11 @@ public:
     QAction* getActionOpenTestProject();
     QAction* getActionToggleGrid();
     QAction* getActionToggleDebug();
+    QAction* getActionCloseProject();
 
     QOpenGLWindowComponent* getWindowComponent();
+private: // Methods
+    bool shouldPassKey(int key);
 
 signals:
     void notifyActionNew(QString);
@@ -67,9 +75,13 @@ public slots:
     void showStatusBarMessage(QString msg);
     void onSceneStopped(Scene* scene);
 
+    void keyPressEvent(QKeyEvent*) override;
+    void keyReleaseEvent(QKeyEvent*) override;
+
 private:
     void setupGL(QWidget *parent);
-    QOpenGLWindowComponent* mWindowComponent;
+    unique_ptr<QOpenGLWindowComponent> mWindowComponent;
+    const static vector<int> mKeysPassedToWindow;
 };
 
 #endif // MAINWINDOW_H

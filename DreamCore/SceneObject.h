@@ -27,7 +27,7 @@ namespace Dream
     class SceneObject
     {
     protected:
-        Scene* mScene;
+        Scene* mSceneHandle;
         nlohmann::json mJson;
         vector<Event*> mEventQueue;
         bool mLoaded;
@@ -54,8 +54,11 @@ namespace Dream
         SceneObject(Scene* scene = nullptr);
         SceneObject(Scene*, nlohmann::json);
         ~SceneObject();
+
         void deleteChildren();
         void deleteAssetInstances();
+
+        Scene* getSceneHandle();
 
         void constructorInit();
 

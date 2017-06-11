@@ -206,48 +206,6 @@ namespace Dream
         return textures;
     }
 
-    bool
-    AssimpModelInstance::checkGLError
-    (int errorIndex)
-    {
-        GLenum errorCode = 0;
-        bool wasError = false;
-        do
-        {
-            errorCode = glGetError();
-            if (errorCode!=0)
-            {
-                cerr << "AssimpModelInstance: Error Check " << errorIndex << ": " << endl;
-                switch (errorCode)
-                {
-                    case GL_NO_ERROR:
-                        cerr << "\tGL_NO_ERROR" << endl;
-                        break;
-                    case GL_INVALID_ENUM:
-                        cerr << "\tGL_INVALID_ENUM" << endl;
-                        break;
-                    case GL_INVALID_VALUE:
-                        cerr << "\tGL_INVALID_VALUE" << endl;
-                        break;
-                    case GL_INVALID_OPERATION:
-                        cerr << "\tGL_INVALID_OPERATION" << endl;
-                        break;
-                    case GL_INVALID_FRAMEBUFFER_OPERATION:
-                        cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
-                        break;
-                    case GL_OUT_OF_MEMORY:
-                        cerr << "\tGL_OUT_OF_MEMORY" << endl;
-                        break;
-                }
-                cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
-                cerr << "\tCode: " << errorCode << endl;
-                wasError = true;
-            }
-        }
-        while(errorCode != 0);
-        return wasError;
-    }
-
     void
     AssimpModelInstance::loadExtraAttributes
     (nlohmann::json jsonData)

@@ -18,17 +18,33 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "Model/QOpenGLWindowComponent.h"
-#include <QWindow>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+#include <QWindow>
+#include <QDebug>
+
+#include <vector>
+#include <algorithm>
+
+const vector<int> MainWindow::mKeysPassedToWindow =
+{
+    Qt::Key_W,
+    Qt::Key_A,
+    Qt::Key_S,
+    Qt::Key_D
+};
+
+MainWindow::MainWindow
+(QWidget *parent)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setupGL(parent);
 }
 
-void MainWindow::setupGL(QWidget *parent)
+void
+MainWindow::setupGL
+(QWidget *parent)
 {
     QVBoxLayout *glVerticalLayout = new QVBoxLayout(ui->centralWidget);
     glVerticalLayout->setSpacing(0);
@@ -39,115 +55,201 @@ void MainWindow::setupGL(QWidget *parent)
     glFormat.setVersion( 3, 2 );
     glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     glFormat.setSamples(4);
-    mWindowComponent = new QOpenGLWindowComponent(glFormat,parent);
-    mWindowComponent->setMouseTracking(true);
+    mWindowComponent.reset(new QOpenGLWindowComponent(glFormat,parent));
 
-    glVerticalLayout->addWidget(mWindowComponent);
+    glVerticalLayout->addWidget(mWindowComponent.get());
     ui->previewTab->setLayout(glVerticalLayout);
 }
 
-MainWindow::~MainWindow()
+MainWindow::~MainWindow
+()
 {
-    delete mWindowComponent;
     delete ui;
 }
 
-QAction* MainWindow::getActionNew()
+QAction*
+MainWindow::getActionNew
+()
 {
     return ui->actionNew;
 }
 
-QAction* MainWindow::getActionOpen()
+QAction*
+MainWindow::getActionOpen
+()
 {
     return ui->actionOpen;
 }
 
-QAction* MainWindow::getActionSave()
+QAction*
+MainWindow::getActionCloseProject
+()
+{
+    return ui->actionCloseProject;
+}
+
+
+QAction*
+MainWindow::getActionSave
+()
 {
     return ui->actionSave;
 }
 
-QAction* MainWindow::getActionPlay()
+QAction*
+MainWindow::getActionPlay
+()
 {
-   return ui->actionPlay;
+    return ui->actionPlay;
 }
 
-QAction* MainWindow::getActionStop()
+QAction*
+MainWindow::getActionStop
+()
 {
     return ui->actionStop;
 }
 
-void MainWindow::onInvalidProjectDirectory(QString directory)
+void
+MainWindow::onInvalidProjectDirectory
+(QString directory)
 {
     QMessageBox::critical(
-        this,
-        tr("Invalid Project Directory"),
-        tr("\"%1\"\n\nDoes not contain a vaild Dream project.").arg(directory)
-    );
+                this,
+                tr("Invalid Project Directory"),
+                tr("\"%1\"\n\nDoes not contain a vaild Dream project.").arg(directory)
+                );
 }
 
-void MainWindow::onNoSceneSelected()
+void
+MainWindow::onNoSceneSelected
+()
 {
     showStatusBarMessage(QString("No Scene Selected to Run!"));
 }
 
-QTreeView* MainWindow::getProjectTreeView()
+QTreeView*
+MainWindow::getProjectTreeView
+()
 {
     return ui->projectTreeView;
 }
 
-QTreeView* MainWindow::getPropertiesTreeView()
+QTreeView*
+MainWindow::getPropertiesTreeView
+()
 {
     return ui->propertiesTreeView;
 }
 
-QTreeView* MainWindow::getAssetDefinitionTreeView()
+QTreeView*
+MainWindow::getAssetDefinitionTreeView
+()
 {
     return ui->assetDefinitionTreeView;
 }
 
-void MainWindow::showStatusBarMessage(QString msg)
+void
+MainWindow::showStatusBarMessage
+(QString msg)
 {
     ui->statusBar->showMessage(msg);
 }
 
-QAction* MainWindow::getActionReload()
+QAction*
+MainWindow::getActionReload
+()
 {
     return ui->actionReload;
 }
 
-QAction* MainWindow::getActionOpenTestProject()
+QAction*
+MainWindow::getActionOpenTestProject
+()
 {
     return ui->actionOpen_Test_Project;
 }
 
-QAction* MainWindow::getActionToggleGrid()
+QAction*
+MainWindow::getActionToggleGrid
+()
 {
     return ui->actionToggleGrid;
 }
 
-QAction* MainWindow::getActionToggleDebug()
+QAction*
+MainWindow::getActionToggleDebug
+()
 {
     return ui->actionToggleDebug;
 }
 
-QOpenGLWindowComponent* MainWindow::getWindowComponent()
+QOpenGLWindowComponent*
+MainWindow::getWindowComponent
+()
 {
-    return mWindowComponent;
+    return mWindowComponent.get();
 }
 
-void MainWindow::onSceneStopped(Scene* scene)
+void
+MainWindow::onSceneStopped
+(Scene* scene)
 {
     if (scene)
     {
         showStatusBarMessage(
-            QString("Stopped Scene: %1")
-                .arg(QString::fromStdString(scene->getNameAndUuidString())
-            )
-        );
+                    QString("Stopped Scene: %1")
+                    .arg(QString::fromStdString(scene->getNameAndUuidString())
+                         )
+                    );
     }
     else
     {
         showStatusBarMessage(QString("No Scene Running"));
+    }
+}
+
+
+void
+MainWindow::keyPressEvent
+(QKeyEvent* ke)
+{
+    qDebug() << "MainWindow:" << ke->key() << "pressed";
+
+    if (shouldPassKey(ke->key()))
+    {
+       mWindowComponent->keyPressEvent(ke);
+    }
+    else
+    {
+        QMainWindow::keyPressEvent(ke);
+    }
+}
+
+bool
+MainWindow::shouldPassKey
+(int key)
+{
+    return std::find
+    (
+        std::begin(mKeysPassedToWindow),
+        std::end(mKeysPassedToWindow),
+        key
+    ) != std::end(mKeysPassedToWindow);
+}
+
+void
+MainWindow::keyReleaseEvent
+(QKeyEvent* ke)
+{
+    qDebug() << "MainWindow:" << ke->key() << " released";
+
+    if (shouldPassKey(ke->key()))
+    {
+       mWindowComponent->keyReleaseEvent(ke);
+    }
+    else
+    {
+        QMainWindow::keyReleaseEvent(ke);
     }
 }

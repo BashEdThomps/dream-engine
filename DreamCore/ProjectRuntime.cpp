@@ -21,16 +21,15 @@
 namespace Dream
 {
     ProjectRuntime::ProjectRuntime
-    (Project* project, IWindowComponent* windowComponent)
-        : mDone(false)
-
+    (Project* project, IWindowComponent* windowComponentHandle)
+        : mDone(false),
+          mWindowComponentHandle(windowComponentHandle),
+          mProjectHandle(project)
     {
         if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Creating new Instance" << endl;
         }
-        setProject(project);
-        setWindowComponent(windowComponent);
     }
 
     ProjectRuntime::~ProjectRuntime
@@ -41,28 +40,27 @@ namespace Dream
             cout << "ProjectRuntime: Destroying Object" << endl;
         }
         destroyComponents();
-        mProject = nullptr;
     }
 
     void
-    ProjectRuntime::setProject
+    ProjectRuntime::setProjectHandle
     (Project* proj)
     {
-        mProject.reset(proj);
+        mProjectHandle = proj;
     }
 
     void
-    ProjectRuntime::setWindowComponent
-    (IWindowComponent* wc)
+    ProjectRuntime::setWindowComponentHandle
+    (IWindowComponent* wcHandle)
     {
-        mWindowComponent.reset(wc);
+        mWindowComponentHandle = wcHandle;
     }
 
     IWindowComponent*
-    ProjectRuntime::getWindowComponent
+    ProjectRuntime::getWindowComponentHandle
     ()
     {
-        return mWindowComponent.get();
+        return mWindowComponentHandle;
     }
 
     void
@@ -123,9 +121,9 @@ namespace Dream
             cout << "ProjectRuntime: Cleaning up Components..." << endl;
         }
 
-        if (mWindowComponent)
+        if (mWindowComponentHandle)
         {
-            mWindowComponent->cleanUp(scene);
+            mWindowComponentHandle->cleanUp(scene);
         }
 
         if(mGraphicsComponent)
@@ -175,35 +173,6 @@ namespace Dream
         {
             cout << "ProjetRuntime: Destroying Components" << endl;
         }
-        /*
-        if (mTime)
-        {
-            mTime.reset();
-        }
-        if (mAnimationComponent)
-        {
-            mAnimationComponent.reset();
-        }
-
-        if (mAudioComponent)
-        {
-            mAudioComponent.reset();
-        }
-
-        if (mPhysicsComponent)
-        {
-            mPhysicsComponent.reset();
-        }
-
-        if (mGraphicsComponent)
-        {
-            mGraphicsComponent.reset();
-        }
-        if (mWindowComponent)
-        {
-            mWindowComponent.reset();
-        }
-        */
     }
 
 
@@ -261,17 +230,20 @@ namespace Dream
     ProjectRuntime::initWindowComponent
     ()
     {
-        //mWindowComponent->setWidth(mProject->getWindowWidth());
-        //mWindowComponent->setHeight(mProject->getWindowHeight());
-        //mWindowComponent->setName(mProject->getName());
+        /*if (mProjectHandle && mWindowComponentHandle)
+        {
+            mWindowComponentHandle->setWidth(mProjectHandle->getWindowWidth());
+            mWindowComponentHandle->setHeight(mProjectHandle->getWindowHeight());
+            mWindowComponentHandle->setName(mProjectHandle->getName());
+        }*/
 
-        if (!mWindowComponent->init())
+        if (!mWindowComponentHandle->init())
         {
             cerr << "ProjectRuntime: Unable to initialise WindowComponent" << endl;
             return false;
         }
 
-        return mWindowComponent != nullptr;
+        return true;
     }
 
 
@@ -310,7 +282,7 @@ namespace Dream
     {
         setCamera(new Camera());
 
-        mGraphicsComponent.reset(new GraphicsComponent(mCamera.get(),mWindowComponent.get()));
+        mGraphicsComponent.reset(new GraphicsComponent(mCamera.get(),mWindowComponentHandle));
         mGraphicsComponent->setTime(mTime.get());
 
         if (mGraphicsComponent->init())
@@ -393,7 +365,7 @@ namespace Dream
     ProjectRuntime::initLuaEngine
     ()
     {
-        mLuaEngine.reset(new LuaEngine(mProject.get()));
+        mLuaEngine.reset(new LuaEngine(mProjectHandle));
         return mLuaEngine->init();
     }
 

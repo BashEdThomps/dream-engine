@@ -94,7 +94,6 @@ namespace Dream
         void drawSprite(SceneObject*);
         void drawFont(SceneObject*);
         void drawModel(SceneObject*);
-        bool checkGLError(string);
         void setClearColour(vector<float>);
         void setAmbientLightColour(vector<float>);
         void create2DVertexObjects();

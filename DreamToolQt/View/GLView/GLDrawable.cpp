@@ -74,8 +74,8 @@ GLDrawable::draw
 {
     if (!mVertexBuffer.empty())
     {
+        qDebug() << "GLDrawer: Drawing all - " << mVertexBuffer.size()/2 << " lines.";
         glEnable(GL_LINE_SMOOTH);
-        qDebug() << "GLDrawable: Drawing all - " << mVertexBuffer.size()/2 << " lines.";
 
         // Enable shader program
         glUseProgram(mShaderProgram);
@@ -221,6 +221,7 @@ GLDrawable::initShader
     // Delete the shaders as they're linked into our program now and no longer necessery
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    glUseProgram(0);
 }
 
 void
@@ -229,6 +230,8 @@ GLDrawable::initVaoVbo
 {
     glGenVertexArrays(1,&mVao);
     glGenBuffers(1,&mVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void

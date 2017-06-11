@@ -32,7 +32,7 @@ SOURCES += \
     View/MainWindow.cpp \
     Controller/MainController.cpp \
     \
-    Model/DreamModel.cpp \
+    Model/DreamProjectModel.cpp \
     Model/QOpenGLWindowComponent.cpp \
     Model/ProjectDirModel.cpp \
     \
@@ -54,7 +54,9 @@ SOURCES += \
     Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.cpp \
     View/GLView/Grid.cpp \
     View/GLView/SelectionHighlighter.cpp \
-    View/GLView/GLDrawable.cpp
+    View/GLView/GLDrawable.cpp \
+    View/GLView/RelationshipTree.cpp \
+    Test/TestProjectDirModel.cpp
 
 
 HEADERS  += \
@@ -62,7 +64,7 @@ HEADERS  += \
     \
     Controller/MainController.h \
     \
-    Model/DreamModel.h \
+    Model/DreamProjectModel.h \
     Model/QOpenGLWindowComponent.h \
     Model/ProjectDirModel.h \
     \
@@ -84,7 +86,10 @@ HEADERS  += \
     Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.h \
     View/GLView/Grid.h \
     View/GLView/SelectionHighlighter.h \
-    View/GLView/GLDrawable.h
+    View/GLView/GLDrawable.h \
+    View/GLView/RelationshipTree.h \
+    Test/TestProjectDirModel.h \
+    Test/catch.hpp
 
 
 FORMS    += View/MainWindow.ui

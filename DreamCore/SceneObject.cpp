@@ -16,7 +16,7 @@ namespace Dream
 {
     SceneObject::SceneObject
     (Scene* scene)
-        : mScene(scene),
+        : mSceneHandle(scene),
           mUuid(Uuid::generateUuid())
     {
         constructorInit();
@@ -24,7 +24,7 @@ namespace Dream
 
     SceneObject::SceneObject
     (Scene* scene, nlohmann::json soJson)
-        : mScene(scene),
+        : mSceneHandle(scene),
           mJson(soJson)
     {
         constructorInit();
@@ -839,7 +839,7 @@ namespace Dream
     {
         AssetDefinition* assetDefinition =
             AssetDefinition::getAssetDefinitionByUuid(
-                mScene->getProject()->getAssetDefinitions(),uuid
+                mSceneHandle->getProjectHandle()->getAssetDefinitions(),uuid
             );
 
         createAssetInstance(assetDefinition);
@@ -899,7 +899,7 @@ namespace Dream
     SceneObject::loadAssetInstances
     ()
     {
-        string projectPath = mScene->getProject()->getProjectPath();
+        string projectPath = mSceneHandle->getProjectHandle()->getProjectPath();
 
         if (Constants::DEBUG)
         {
@@ -965,7 +965,7 @@ namespace Dream
         }
         mPhysicsObjectInstance.reset(
             new PhysicsObjectInstance(definition, mTransform.get(),
-            mScene->getProject()->getAssetDefinitions())
+            mSceneHandle->getProjectHandle()->getAssetDefinitions())
         );
     }
 
@@ -989,8 +989,8 @@ namespace Dream
             cout << "SceneObject: Creating Audio asset instance." << endl;
         }
         // hottest trainwreck 2017!
-        mAudioInstance.reset(mScene
-                ->getProject()
+        mAudioInstance.reset(mSceneHandle
+                ->getProjectHandle()
                 ->getRuntime()
                 ->getAudioComponent()
                 ->newAudioInstance(definition,mTransform.get())
@@ -1021,7 +1021,7 @@ namespace Dream
         }
         // hottest trainwreck 2017!
         mScriptInstance.reset(new LuaScriptInstance(definition, mTransform.get()));
-        mScene->getProject()
+        mSceneHandle->getProjectHandle()
               ->getRuntime()
               ->getLuaEngine()
               ->addToScriptMap(this,mScriptInstance.get());
@@ -1071,5 +1071,11 @@ namespace Dream
         mFontInstance.reset(new FontInstance(definition,mTransform.get()));
     }
 
+    Scene*
+    SceneObject::getSceneHandle
+    ()
+    {
+        return mSceneHandle;
+    }
 
 } // End of Dream

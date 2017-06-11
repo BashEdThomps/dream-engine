@@ -35,22 +35,22 @@ namespace Dream
     private:
 
         bool mDone;
-        unique_ptr<Time>               mTime;
-        unique_ptr<Camera>             mCamera;
-        unique_ptr<AudioComponent>     mAudioComponent;
-        unique_ptr<GraphicsComponent>  mGraphicsComponent;
-        unique_ptr<PhysicsComponent>   mPhysicsComponent;
+        unique_ptr<Time> mTime;
+        unique_ptr<Camera> mCamera;
+        unique_ptr<AudioComponent> mAudioComponent;
+        unique_ptr<GraphicsComponent> mGraphicsComponent;
+        unique_ptr<PhysicsComponent> mPhysicsComponent;
         unique_ptr<AnimationComponent> mAnimationComponent;
-        unique_ptr<LuaEngine>          mLuaEngine;
-        unique_ptr<IWindowComponent>   mWindowComponent;
-        unique_ptr<Project>            mProject;
+        unique_ptr<LuaEngine> mLuaEngine;
+        IWindowComponent *mWindowComponentHandle;
+        Project* mProjectHandle;
 
     public:
 
-        ProjectRuntime(Project* proj = nullptr, IWindowComponent* wc = nullptr);
+        ProjectRuntime(Project* proj = nullptr, IWindowComponent* wcHandle = nullptr);
         ~ProjectRuntime();
 
-        void setProject(Project*);
+        void setProjectHandle(Project*);
 
         void setDone(bool);
         bool isDone();
@@ -65,7 +65,7 @@ namespace Dream
         AudioComponent* getAudioComponent();
         PhysicsComponent* getPhysicsComponent();
         GraphicsComponent* getGraphicsComponent();
-        IWindowComponent* getWindowComponent();
+        IWindowComponent* getWindowComponentHandle();
         LuaEngine* getLuaEngine();
 
         void setGraphicsClearColour(vector<float>);
@@ -94,7 +94,7 @@ namespace Dream
         void setGraphicsComponent(GraphicsComponent*);
 
         bool initWindowComponent();
-        void setWindowComponent(IWindowComponent*);
+        void setWindowComponentHandle(IWindowComponent*);
 
         bool initLuaEngine();
         void setLuaEngine(LuaEngine*);
