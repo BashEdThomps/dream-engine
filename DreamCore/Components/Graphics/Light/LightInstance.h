@@ -1,9 +1,8 @@
-#ifndef LightInstance_h
-#define LightInstance_h
+#pragma once
 
-#include "../../Constants.h"
-#include "../../AssetDefinition.h"
-#include "../../IAssetInstance.h"
+#include "../../../Constants.h"
+#include "../../../AssetDefinition.h"
+#include "../../../IAssetInstance.h"
 
 namespace Dream
 {
@@ -19,7 +18,7 @@ namespace Dream
 
         glm::vec3 getColor();
         float getIntensity();
-    }; // End of LightInstance
-} // End of Dream
 
-#endif /* LightInstance_h */
+    }; // End of LightInstance
+
+} // End of Dream

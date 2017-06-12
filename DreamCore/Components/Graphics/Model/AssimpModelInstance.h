@@ -18,20 +18,21 @@
 #ifndef ASSIMPMODELINSTANCE_H
 #define ASSIMPMODELINSTANCE_H
 
-#include "../../Constants.h"
+#include "../../../IAssetInstance.h"
+#include "../../../Constants.h"
+
 #include "glm/glm.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <SOIL/SOIL.h>
-#include "../../IAssetInstance.h"
-#include "ShaderInstance.h"
+#include "../Shader/ShaderInstance.h"
 #include <iostream>
 #include <vector>
 #include "AssimpMesh.h"
 #include "Texture.h"
 #include <map>
-#include "BoundingBox.h"
+#include "../BoundingBox.h"
 
 namespace Dream
 {

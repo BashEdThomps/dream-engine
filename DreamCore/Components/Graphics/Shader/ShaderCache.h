@@ -1,7 +1,7 @@
 /*
- * TextureManager.h
+ * ShaderCache.h
  *
- * Created: 30/11/2016 2016 by Ashley
+ * Created: 16/12/2016 2016 by Ashley
  *
  * Copyright 2016 Octronic. All rights reserved.
  *
@@ -15,32 +15,26 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef TEXTUREMANAGER_H
-#define TEXTUREMANAGER_H
+#ifndef SHADERCACHE_H
+#define SHADERCACHE_H
 
-#include "../../Constants.h"
 #include <iostream>
-#include <vector>
-#include <SOIL/SOIL.h>
-#include "Texture.h"
+#include <map>
 #include <GL/glew.h>
-
+#include "../../../Constants.h"
 
 using namespace std;
 
 namespace Dream
 {
-  class TextureCache
-  {
-    static vector<Texture> sTextureCache;
-  public:
-    TextureCache();
-    ~TextureCache();
-    static Texture loadTextureFromFile(const char*, const char*, const char*);
-    static vector<Texture> getTextureCache();
-    static void cleanUp();
-  };
+    class ShaderCache
+    {
+    public:
+      static map<string,GLuint> sShaderCache;
+      static GLuint getShader(string);
+      static void putShader(string,GLuint);
+      static void cleanUp();
+    };
+}
 
-} // End Dream
-
-#endif // TEXTUREMANAGER_H
+#endif // SHADERCACHE_H

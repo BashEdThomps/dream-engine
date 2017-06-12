@@ -18,16 +18,18 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <memory>
+#include <vector>
+#include "../Model/QOpenGLWindowComponent.h"
+
 #include <GL/glew.h>
+
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QStringListModel>
 #include <QTreeView>
 #include <QAction>
-#include <memory>
-#include "../Model/QOpenGLWindowComponent.h"
 #include <QKeyEvent>
-#include <vector>
 
 using namespace std;
 using namespace Dream;
@@ -61,6 +63,8 @@ public:
     QAction* getActionCloseProject();
 
     QOpenGLWindowComponent* getWindowComponent();
+
+    void setupAddRemoveButtonMenus();
 private: // Methods
     bool shouldPassKey(int key);
 
@@ -82,6 +86,7 @@ private:
     void setupGL(QWidget *parent);
     unique_ptr<QOpenGLWindowComponent> mWindowComponent;
     const static vector<int> mKeysPassedToWindow;
+    unique_ptr<QMenu> mAddAssetDefinitionMenu;
 };
 
 #endif // MAINWINDOW_H

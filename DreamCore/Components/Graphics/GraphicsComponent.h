@@ -15,8 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GRAPHICSCOMPONENT_H
-#define GRAPHICSCOMPONENT_H
+#pragma once
 
 // STD LIB
 #include <iostream>
@@ -26,8 +25,8 @@
 #include "../../Constants.h"
 #include "../Window/IWindowComponent.h"
 #include "../IComponent.h"
-#include "AssimpModelInstance.h"
-#include "ShaderInstance.h"
+#include "Model/AssimpModelInstance.h"
+#include "Shader/ShaderInstance.h"
 #include "Camera.h"
 // GLM
 #include <glm/glm.hpp>
@@ -106,6 +105,7 @@ namespace Dream
         void preRender();
         void postRender();
         void cleanUp(Scene* scene) override;
+
     }; // End of GraphicsComponent
+
 } // End of Dream
-#endif // End of GRAPHICSCOMPONENT_H

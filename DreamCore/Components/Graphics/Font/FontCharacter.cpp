@@ -1,9 +1,9 @@
 /*
- * ShaderCache.h
+ * FontCharacter.cpp
  *
- * Created: 16/12/2016 2016 by Ashley
+ * Created: 12 2017 by Ashley
  *
- * Copyright 2016 Octronic. All rights reserved.
+ * Copyright 2017 Octronic. All rights reserved.
  *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
@@ -15,26 +15,9 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SHADERCACHE_H
-#define SHADERCACHE_H
-
-#include <iostream>
-#include <map>
-#include <GL/glew.h>
-#include "../../Constants.h"
-
-using namespace std;
+#include "FontCharacter.h"
 
 namespace Dream
 {
-    class ShaderCache
-    {
-    public:
-      static map<string,GLuint> sShaderCache;
-      static GLuint getShader(string);
-      static void putShader(string,GLuint);
-      static void cleanUp();
-    };
-}
 
-#endif // SHADERCACHE_H
+} // End Dream

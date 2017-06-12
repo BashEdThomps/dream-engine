@@ -12,9 +12,10 @@
  * this file belongs to.
  */
 
-#include "SpriteInstance.h"
-#include "TextureCache.h"
 #include <glm/glm.hpp>
+
+#include "SpriteInstance.h"
+#include "../Model/TextureCache.h"
 
 namespace Dream
 {

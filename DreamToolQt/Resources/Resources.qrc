@@ -21,5 +21,7 @@
         <file>templates/script/Lua/lua</file>
         <file>images/view-list-icons-symbolic.png</file>
         <file>images/view-list-details-symbolic.png</file>
+        <file>images/list-add.png</file>
+        <file>images/list-remove.png</file>
     </qresource>
 </RCC>

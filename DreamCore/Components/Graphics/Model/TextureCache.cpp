@@ -102,7 +102,6 @@ namespace Dream
     TextureCache::cleanUp
     ()
     {
-       // TODO
        if (Constants::DEBUG)
        {
            cout << "TextureCache: Cleaning Up" << endl;

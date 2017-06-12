@@ -1,16 +1,17 @@
-#ifndef AssimpMesh_h
-#define AssimpMesh_h
+#pragma once
 
-#include "../../Constants.h"
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <assimp/types.h>
-#include "ShaderInstance.h"
+
+#include "../../../Constants.h"
+#include "../Shader/ShaderInstance.h"
+#include "../Vertex.h"
+
 #include "Texture.h"
-#include "Vertex.h"
 
 namespace Dream
 {
@@ -38,5 +39,3 @@ namespace Dream
         void init();
     };
 }
-
-#endif /* AssimpMesh_h */

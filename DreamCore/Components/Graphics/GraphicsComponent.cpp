@@ -15,12 +15,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "GraphicsComponent.h"
-#include <glm/gtc/quaternion.hpp>
 #include <glm/matrix.hpp>
 #include <functional>
-#include "TextureCache.h"
-#include "ShaderCache.h"
+#include <glm/gtc/quaternion.hpp>
+
+#include "GraphicsComponent.h"
+#include "Model/TextureCache.h"
+#include "Shader/ShaderCache.h"
 
 namespace Dream
 {
@@ -318,10 +319,8 @@ namespace Dream
     GraphicsComponent::draw2DQueue
     ()
     {
-        for (vector<SceneObject*>::
-             iterator it = m2DQueue.begin(); it!=m2DQueue.end(); it++ )
+        for (SceneObject* sceneObj : m2DQueue)
         {
-            SceneObject* sceneObj = *it;
             if (sceneObj->hasSpriteInstance())
             {
                 drawSprite(sceneObj);
@@ -351,12 +350,9 @@ namespace Dream
     GraphicsComponent::draw3DQueue
     ()
     {
-
-
-        for (vector<SceneObject*>::
-             iterator it = m3DQueue.begin(); it!=m3DQueue.end(); it++ )
+        for (SceneObject* it : m3DQueue)
         {
-            drawModel(*it);
+            drawModel(it);
         }
     }
 
@@ -472,10 +468,10 @@ namespace Dream
 
         // Iterate through all characters
         string text = font->getText();
-        map<GLchar,Character> charMap = font->getCharacterMap();
+        map<GLchar,FontCharacter> charMap = font->getCharMap();
         for (string::const_iterator c = text.begin(); c != text.end(); c++)
         {
-            Character ch = charMap[*c];
+            FontCharacter ch = charMap[*c];
 
             GLfloat xpos = tX + ch.Bearing.x;// * scale;
             //GLfloat ypos = tY - (ch.Size.y - ch.Bearing.y) * scale;

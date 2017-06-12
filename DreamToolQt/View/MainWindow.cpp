@@ -45,6 +45,27 @@ MainWindow::MainWindow
 {
     ui->setupUi(this);
     setupGL(parent);
+    setupAddRemoveButtonMenus();
+}
+
+void
+MainWindow::setupAddRemoveButtonMenus
+()
+{
+    mAddAssetDefinitionMenu.reset(new QMenu());
+    mAddAssetDefinitionMenu->setWindowTitle("New Definition");
+
+    for (pair<AssetType,string> typePair : Constants::DREAM_ASSET_TYPES_MAP)
+    {
+        QMenu *typeMenu = mAddAssetDefinitionMenu->addMenu(QString::fromStdString(typePair.second));
+
+        for (string format : Constants::DREAM_ASSET_FORMATS_MAP[typePair.first])
+        {
+            QAction *action = new QAction(QString::fromStdString(format));
+            typeMenu->addAction(action);
+        }
+    }
+    ui->addAssetDefinitionButton->setMenu(mAddAssetDefinitionMenu.get());
 }
 
 void

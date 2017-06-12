@@ -18,8 +18,8 @@
 #ifndef SHADERINSTANCE_H
 #define SHADERINSTANCE_H
 
-#include "../../Constants.h"
-#include "../../IAssetInstance.h"
+#include "../../../Constants.h"
+#include "../../../IAssetInstance.h"
 
 #include <vector>
 #include <map>

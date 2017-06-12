@@ -9,7 +9,7 @@
 #include <glm/vec3.hpp>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btIDebugDraw.h>
-#include "../Graphics/ShaderInstance.h"
+#include "../Graphics/Shader/ShaderInstance.h"
 #include "../../Constants.h"
 
 using namespace std;

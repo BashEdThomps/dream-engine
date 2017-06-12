@@ -1,7 +1,5 @@
 /*
- * SpriteInstance.h
- *
- * Created: 25/11/2016 2016 by Ashley
+ * FontInstance
  *
  * Copyright 2016 Octronic. All rights reserved.
  *
@@ -16,32 +14,48 @@
  * this file belongs to.
  */
 
-#ifndef SPRITEINSTANCE_H
-#define SPRITEINSTANCE_H
+#pragma once
 
-#include "../../Constants.h"
+#include <memory>
 #include <GL/glew.h>
-#include "../../IAssetInstance.h"
+#include "../../../IAssetInstance.h"
+#include "../../../Constants.h"
+#include "FontCache.h"
+
+using namespace std;
 
 namespace Dream
 {
-    class SpriteInstance : public IAssetInstance
+    class FontInstance : public IAssetInstance
     {
     private:
-        int mWidth;
-        int mHeight;
-        GLuint mTexture;
-        GLenum mTextureFormat;
+        int mSize;
+        unique_ptr<FT_Face> mFontFace;
+        vector<float> mColour;
+        string mText;
+    private: // Methods
+        void generateCharacterMap();
     public:
-        SpriteInstance(AssetDefinition*,Transform3D*);
-        ~SpriteInstance();
+        FontInstance(AssetDefinition*,Transform3D*);
+        ~FontInstance();
+
         bool load(string);
         void loadExtraAttributes(nlohmann::json);
-        void draw();
-        GLuint getTexture();
+
+        FT_Face* getFontFace();
+
+        void setText(string);
+        string getText();
+
+        void setColour(float,float,float);
+        vector<float> getColour();
+
+        void setSize(int);
         int getWidth();
         int getHeight();
-    };
-} // End of Dream
 
-#endif // SPRITEINSTANCE_H
+        map<GLchar,FontCharacter> getCharMap();
+
+    }; // End of FontInstance
+
+} // End of Dream
