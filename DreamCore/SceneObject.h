@@ -27,20 +27,11 @@ namespace Dream
     class SceneObject
     {
     protected:
-        Scene* mSceneHandle;
-        nlohmann::json mJson;
-        vector<Event*> mEventQueue;
-        bool mLoaded;
-        SceneObject* mParentHandle;
-        vector<SceneObject*> mChildren;
-        vector<string> mAssetDefUuidsToLoad;
-        bool mHasFocus;
+
         // Metadata
-        string mUuid;
-        string mName;
-        unique_ptr<Transform3D> mTransform;
-        bool mDelete;
-        // Asset Instances
+        nlohmann::json mJson;
+
+        // Runtime Members
         unique_ptr<AudioInstance> mAudioInstance;
         unique_ptr<AnimationInstance> mAnimationInstance;
         unique_ptr<AssimpModelInstance> mModelInstance;
@@ -50,6 +41,14 @@ namespace Dream
         unique_ptr<LuaScriptInstance> mScriptInstance;
         unique_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
         unique_ptr<FontInstance> mFontInstance;
+        unique_ptr<Transform3D> mTransform;
+        vector<SceneObject*> mChildren;
+        vector<Event*> mEventQueue;
+        SceneObject* mParentHandle;
+        Scene* mSceneHandle;
+        bool mLoaded;
+        bool mHasFocus;
+        bool mDelete;
     public:
         SceneObject(Scene* scene = nullptr);
         SceneObject(Scene*, nlohmann::json);

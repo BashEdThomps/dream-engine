@@ -22,6 +22,10 @@ namespace Dream
 {
     AssetDefinition::AssetDefinition(nlohmann::json jsonDef)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "AssetDefinition: Constructing Object" << endl;
+        }
         mJson = jsonDef;
         loadMetadata();
         showStatus();
@@ -47,19 +51,7 @@ namespace Dream
 
     void AssetDefinition::loadMetadata()
     {
-        // UUID
-        if (mJson[Constants::ASSET_UUID].is_null())
-        {
 
-            if (Constants::DEBUG)
-            {
-                cerr << "AssetDefinition: Construction Asset from JSON with null UUID." << endl;
-            }
-        }
-        else
-        {
-            setUuid(mJson[Constants::ASSET_UUID]);
-        }
         // Name
         if (mJson[Constants::ASSET_NAME].is_null())
         {
@@ -98,14 +90,9 @@ namespace Dream
         }
     }
 
-    pair<string,string> AssetDefinition::mapPair(string key, string value)
-    {
-        return pair<string,string>(key,value);
-    }
-
     void AssetDefinition::setUuid(string uuid)
     {
-        addAttribute(Constants::ASSET_UUID, uuid);
+        mJson[Constants::ASSET_UUID] = uuid;
     }
 
     bool AssetDefinition::hasUuid(string uuid)
@@ -113,25 +100,13 @@ namespace Dream
         return getUuid().compare(uuid) == 0;
     }
 
-    void AssetDefinition::addAttribute(string key, string value)
-    {
-        mAttributes.insert(mapPair(key,value));
-    }
-
     string AssetDefinition::getAttribute(string attribute)
     {
-        try
+        if (mJson[attribute].is_null())
         {
-            return mAttributes.at(attribute);
-        }
-        catch (const exception &ex)
-        {
-            if (Constants::DEBUG)
-            {
-                cerr << "AssetDefinition: No Attribute - " << attribute << endl;
-            }
             return "";
         }
+       return mJson[attribute];
     }
 
     int AssetDefinition::getAttributeAsInt(string attr)
@@ -166,7 +141,7 @@ namespace Dream
 
     string AssetDefinition::getUuid()
     {
-        return getAttribute(Constants::ASSET_UUID);
+        return mJson[Constants::ASSET_UUID];
     }
 
     void AssetDefinition::setName(string name)
@@ -326,13 +301,11 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "AssetDefinition:" << endl;
-        }
-        for (const auto& any : mAttributes)
-        {
-            string value = any.second;
-            if (Constants::DEBUG)
+            for (const auto& any : mJson)
             {
-                cout << "\t" << any.first << " : " << value << endl;
+                {
+                    cout << any << endl;
+                }
             }
         }
     }
@@ -353,6 +326,7 @@ namespace Dream
                 return ad;
             }
         }
+
         return nullptr;
     }
 } // End of Dream

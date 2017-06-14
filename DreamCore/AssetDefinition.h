@@ -35,14 +35,11 @@ namespace Dream
         static AssetDefinition* getAssetDefinitionByUuid(vector<AssetDefinition*>,string);
 
     private:
-        map<string,string> mAttributes;
         nlohmann::json mJson;
         string mProjectPath;
     public:
         AssetDefinition(nlohmann::json);
         ~AssetDefinition(void);
-
-        pair<string,string> mapPair(string,string);
 
         void setUuid(string);
         string getUuid();

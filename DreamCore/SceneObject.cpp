@@ -16,9 +16,9 @@ namespace Dream
 {
     SceneObject::SceneObject
     (Scene* scene)
-        : mSceneHandle(scene),
-          mUuid(Uuid::generateUuid())
+        : mSceneHandle(scene)
     {
+        mJson[Constants::SCENE_OBJECT_UUID] = Uuid::generateUuid();
         constructorInit();
     }
 
@@ -55,24 +55,15 @@ namespace Dream
     SceneObject::loadJsonData
     (nlohmann::json soJson)
     {
-        if(!soJson[Constants::SCENE_OBJECT_UUID].is_null())
-        {
-            mUuid = soJson[Constants::SCENE_OBJECT_UUID];
-        }
-
-        if (!soJson[Constants::SCENE_OBJECT_NAME].is_null())
-        {
-            mName = soJson[Constants::SCENE_OBJECT_NAME];
-        }
-
+        string transformType;
         if (!soJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE].is_null())
         {
-            string transformType = soJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE];
+            transformType = soJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE];
             mTransform->setTransformType(transformType);
         }
         else
         {
-            string transformType = Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
+            transformType = Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
             mTransform->setTransformType(transformType);
         }
 
@@ -106,25 +97,10 @@ namespace Dream
             resetScale();
         }
 
-        if(!soJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null())
-        {
-            loadAssetDefinitionsToLoadJsonData(soJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]);
-        }
-
         if(!soJson[Constants::SCENE_OBJECT_HAS_FOCUS].is_null())
         {
             bool focus = soJson[Constants::SCENE_OBJECT_HAS_FOCUS];
             setHasFocus(focus);
-        }
-    }
-
-    void
-    SceneObject::loadAssetDefinitionsToLoadJsonData
-    (nlohmann::json assetInstancesJson)
-    {
-        for (nlohmann::json it : assetInstancesJson)
-        {
-            mAssetDefUuidsToLoad.push_back(it);
         }
     }
 
@@ -247,21 +223,21 @@ namespace Dream
     SceneObject::hasName
     (string name)
     {
-        return mName == name;
+        return getName().compare(name) == 0;;
     }
 
     void
     SceneObject::setName
     (string name)
     {
-        mName = name;
+        mJson[Constants::SCENE_OBJECT_NAME] = name;
     }
 
     string
     SceneObject::getName
     ()
     {
-        return mName;
+        return mJson[Constants::SCENE_OBJECT_NAME];
     }
 
     void
@@ -327,27 +303,25 @@ namespace Dream
         return mTransform->getTranslation();
     }
 
-
     bool
     SceneObject::hasUuid
     (string uuid)
     {
-        return (mUuid.compare(uuid) == 0);
+        return (getUuid().compare(uuid) == 0);
     }
-
 
     void
     SceneObject::setUuid
     (string uuid)
     {
-        mUuid = uuid;
+        mJson[Constants::SCENE_OBJECT_UUID] = uuid;
     }
 
     string
     SceneObject::getUuid
     ()
     {
-        return mUuid;
+        return mJson[Constants::SCENE_OBJECT_UUID];
     }
 
     int
@@ -409,8 +383,8 @@ namespace Dream
     ()
     {
         cout << "SceneObject:" << endl;
-        cout << "          Uuid: " << mUuid << endl;
-        cout << "          Name: " << mName << endl;
+        cout << "          Uuid: " << getUuid() << endl;
+        cout << "          Name: " << getName() << endl;
 
         if (mParentHandle != nullptr)
         {
@@ -428,7 +402,12 @@ namespace Dream
     SceneObject::getAssetDefUuidsToLoad
     ()
     {
-        return mAssetDefUuidsToLoad;
+        vector<string> toLoad;
+        for (nlohmann::json uuid : mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES])
+        {
+            toLoad.push_back(uuid);
+        }
+        return toLoad;
     }
 
     void
@@ -642,13 +621,14 @@ namespace Dream
     SceneObject::setHasFocus
     (bool focus)
     {
-        mHasFocus = focus;
+        mJson[Constants::SCENE_OBJECT_HAS_FOCUS] = focus;
     }
 
     bool
     SceneObject::hasFocus
     ()
     {
+        return mJson[Constants::SCENE_OBJECT_HAS_FOCUS];
         return mHasFocus;
     }
 
@@ -656,7 +636,7 @@ namespace Dream
     SceneObject::addAssetDefUuidToLoad
     (string uuid)
     {
-        mAssetDefUuidsToLoad.push_back(uuid);
+        mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].push_back(uuid);
     }
 
     void
@@ -827,7 +807,7 @@ namespace Dream
     SceneObject::createAssetInstances
     ()
     {
-        for (string aDefUuid : mAssetDefUuidsToLoad)
+        for (string aDefUuid : getAssetDefUuidsToLoad())
         {
             createAssetInstanceFromAssetDefinitionByUuid(aDefUuid);
         }
