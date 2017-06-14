@@ -105,13 +105,6 @@ DreamProjectModel::setProjectStartupSceneByUuid
 }
 
 void
-DreamProjectModel::setProjectStartupSceneByName
-(string scene)
-{
-    mProject->setStartupSceneName(scene);
-}
-
-void
 DreamProjectModel::setProjectWindowWidth
 (int width)
 {

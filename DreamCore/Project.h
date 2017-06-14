@@ -47,18 +47,11 @@ namespace Dream
         // Variables
     private:
         unique_ptr<ProjectRuntime> mRuntime;
-        string mUuid;
-        string mName;
-        string mDescription;
-        string mAuthor;
         string mProjectPath;
-        string mStartupScene;
         nlohmann::json mJson;
         vector<Scene*> mScenes;
         vector<AssetDefinition*> mAssetDefinitions;
         Scene *mActiveSceneHandle;
-        int mWindowWidth;
-        int mWindowHeight;
 
         // Public Methods
     public:
@@ -95,7 +88,6 @@ namespace Dream
         string getAuthor();
 
         void setStartupSceneUuid(string);
-        void setStartupSceneName(string);
 
         string getStartupSceneUuid();
         Scene* getStartupScene();

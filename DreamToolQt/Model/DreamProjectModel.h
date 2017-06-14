@@ -46,7 +46,6 @@ public:
     void setProjectAuthor(string author);
     void setProjectDescription(string desc);
     void setProjectStartupSceneByUuid(string scene);
-    void setProjectStartupSceneByName(string scene);
     void setProjectWindowWidth(int width);
     void setProjectWindowHeight(int height);
     void setDebug(bool enabled);

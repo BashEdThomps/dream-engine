@@ -25,16 +25,18 @@
 namespace Dream
 {
     Scene::Scene
-    (Project* project, nlohmann::json jsonScene)
-        : mJson(jsonScene),
+    (Project* project, nlohmann::json json)
+        : mProjectHandle(project),
+          mJson(json),
           mRootSceneObjectHandle(nullptr),
-          mClearColour({0.0f,0.0f,0.0f,0.0f}),
-          mAmbientLightColour({0.0f,0.0f,0.0f,0.0f}),
-          mGravity({0.0f,0.0f,0.0f}),
-          mState(NOT_LOADED),
-          mProjectHandle(project)
+          mState(NOT_LOADED)
     {
-        loadAllJsonData(mJson);
+        nlohmann::json sceneObjects = mJson[Constants::SCENE_JSON_SCENE_OBJECTS];
+
+        if (!sceneObjects.is_null() && sceneObjects.is_array())
+        {
+            loadSceneObjectJsonData(sceneObjects,nullptr);
+        }
     }
 
     Scene::~Scene
@@ -43,108 +45,6 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "Scene: Destroying Object" << endl;
-        }
-    }
-
-    void Scene::loadAllJsonData(nlohmann::json jsonScene)
-    {
-
-        if (!jsonScene[Constants::Constants::SCENE_JSON_UUID].is_null())
-        {
-            mUuid = jsonScene[Constants::Constants::SCENE_JSON_UUID];
-        }
-
-        if (!jsonScene[Constants::Constants::SCENE_JSON_NAME].is_null())
-        {
-            mName = jsonScene[Constants::Constants::SCENE_JSON_NAME];
-        }
-
-        if (!jsonScene[Constants::Constants::SCENE_JSON_NOTES].is_null())
-        {
-            mNotes = jsonScene[Constants::Constants::SCENE_JSON_NOTES];
-        }
-
-        loadPhysicsJsonData(jsonScene);
-        loadGraphicsJsonData(jsonScene);
-
-        nlohmann::json sceneObjects = jsonScene[Constants::Constants::SCENE_JSON_SCENE_OBJECTS];
-
-        if (!sceneObjects.is_null() && sceneObjects.is_array())
-        {
-            loadSceneObjectJsonData(sceneObjects,nullptr);
-        }
-    }
-
-    void
-    Scene::loadGraphicsJsonData
-    (nlohmann::json jsonScene)
-    {
-        loadCameraJsonData(jsonScene[Constants::Constants::SCENE_JSON_CAMERA]);
-        loadClearColourJsonData(jsonScene[Constants::Constants::SCENE_JSON_CLEAR_COLOUR]);
-        loadAmbientLightColourJsonData(jsonScene[Constants::Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR]);
-
-    }
-
-    void
-    Scene::loadPhysicsJsonData
-    (nlohmann::json jsonScene)
-    {
-        nlohmann::json gravity = jsonScene[Constants::Constants::SCENE_JSON_GRAVITY];
-        nlohmann::json physDebug = jsonScene[Constants::Constants::SCENE_JSON_PHYSICS_DEBUG];
-
-        if (!gravity.is_null())
-        {
-            mGravity[0] = gravity[Constants::Constants::SCENE_JSON_X];
-            mGravity[1] = gravity[Constants::Constants::SCENE_JSON_Y];
-            mGravity[2] = gravity[Constants::Constants::SCENE_JSON_Z];
-        }
-        else
-        {
-            mGravity[0] = 0.0f;
-            mGravity[1] = 0.0f;
-            mGravity[2] = 0.0f;
-        }
-
-        if (!physDebug.is_null() && physDebug.is_boolean())
-        {
-            mPhysicsDebug = physDebug;
-        }
-        else
-        {
-            mPhysicsDebug = false;
-        }
-    }
-
-    void
-    Scene::loadCameraJsonData
-    (nlohmann::json camera)
-    {
-        if (!camera.is_null())
-        {
-            nlohmann::json translation = camera[Constants::Constants::SCENE_JSON_TRANSLATION];
-            mDefaultCameraTransform.setTranslation(
-                        translation[Constants::Constants::SCENE_JSON_X],
-                        translation[Constants::Constants::SCENE_JSON_Y],
-                        translation[Constants::Constants::SCENE_JSON_Z]
-                        );
-
-            nlohmann::json rotation = camera[Constants::Constants::SCENE_JSON_ROTATION];
-            mDefaultCameraTransform.setRotation(
-                        rotation[Constants::Constants::SCENE_JSON_X],
-                        rotation[Constants::Constants::SCENE_JSON_Y],
-                        rotation[Constants::Constants::SCENE_JSON_Z]
-                        );
-
-            if (!camera[Constants::Constants::SCENE_JSON_MOVEMENT_SPEED].is_null())
-            {
-                setCameraMovementSpeed(camera[Constants::Constants::SCENE_JSON_MOVEMENT_SPEED]);
-            }
-
-        }
-        else
-        {
-            mDefaultCameraTransform.setTranslation(0.0f, 0.0f, 0.0f);
-            mDefaultCameraTransform.setRotation(0.0f, 0.0f, 0.0f);
         }
     }
 
@@ -177,37 +77,16 @@ namespace Dream
         }
     }
 
-    void
-    Scene::loadClearColourJsonData
-    (nlohmann::json jsonClearColour)
-    {
-        if (!jsonClearColour.is_null())
-        {
-            mClearColour[0] = jsonClearColour[Constants::Constants::SCENE_JSON_RED];
-            mClearColour[1] = jsonClearColour[Constants::Constants::SCENE_JSON_GREEN];
-            mClearColour[2] = jsonClearColour[Constants::Constants::SCENE_JSON_BLUE];
-            mClearColour[3] = jsonClearColour[Constants::Constants::SCENE_JSON_ALPHA];
-        }
-    }
-
-    void
-    Scene::loadAmbientLightColourJsonData
-    (nlohmann::json jsonAmbientLight)
-    {
-        if (!jsonAmbientLight.is_null())
-        {
-            mAmbientLightColour[0] = jsonAmbientLight[Constants::Constants::SCENE_JSON_RED];
-            mAmbientLightColour[1] = jsonAmbientLight[Constants::Constants::SCENE_JSON_GREEN];
-            mAmbientLightColour[2] = jsonAmbientLight[Constants::Constants::SCENE_JSON_BLUE];
-            mAmbientLightColour[3] = jsonAmbientLight[Constants::Constants::SCENE_JSON_ALPHA];
-        }
-    }
-
     vector<float>
     Scene::getGravity
     ()
     {
-        return mGravity;
+        vector<float> gravity;
+        gravity.reserve(3);
+        gravity[0] = mJson[Constants::SCENE_JSON_GRAVITY][Constants::SCENE_JSON_X];
+        gravity[1] = mJson[Constants::SCENE_JSON_GRAVITY][Constants::SCENE_JSON_Y];
+        gravity[2] = mJson[Constants::SCENE_JSON_GRAVITY][Constants::SCENE_JSON_Z];
+        return gravity;
     }
 
     string
@@ -221,28 +100,28 @@ namespace Dream
     Scene::getName
     ()
     {
-        return mName;
+        return mJson[Constants::SCENE_JSON_NAME];
     }
 
     string
     Scene::getUuid
     ()
     {
-        return mUuid;
+       return mJson[Constants::SCENE_JSON_UUID];
     }
 
     void
     Scene::setUuid
     (string uuid)
     {
-        mUuid = uuid;
+        mJson[Constants::SCENE_JSON_UUID] = uuid;
     }
 
     void
     Scene::setName
     (string name)
     {
-        mName = name;
+        mJson[Constants::SCENE_JSON_NAME] = name ;
     }
 
     SceneObject*
@@ -318,11 +197,11 @@ namespace Dream
         {
             cout << "Scene" << endl;
             cout << "{" << endl;
-            cout << "\tUUID: " << mUuid << endl;
-            cout << "\tName: " << mName << endl;
+            cout << "\tUUID: " << getUuid() << endl;
+            cout << "\tName: " << getName() << endl;
             cout << "\tCamera Transform: " << endl;
-            cout << "\tTranslation: " << String::vec3ToString(mDefaultCameraTransform.getTranslation()) << endl;
-            cout << "\tRotation: " << String::vec3ToString(mDefaultCameraTransform.getRotation())    << endl;
+            cout << "\tTranslation: " << String::vec3ToString(getDefaultCameraTransform().getTranslation()) << endl;
+            cout << "\tRotation: " << String::vec3ToString(getDefaultCameraTransform().getRotation())    << endl;
             cout << "\tScene Objects: " << getNumberOfSceneObjects() << endl;
             cout << "}" << endl;
             showScenegraph();
@@ -366,46 +245,44 @@ namespace Dream
         return mRootSceneObjectHandle;
     }
 
-    glm::vec3
-    Scene::getDefaultCameraTranslation
-    ()
-    {
-        return mDefaultCameraTransform.getTranslation();
-    }
-
-    glm::vec3
-    Scene::getDefaultCameraRotation
-    ()
-    {
-        return mDefaultCameraTransform.getRotation();
-    }
-
     void
     Scene::setCameraMovementSpeed
     (float speed)
     {
-        mCameraMovementSpeed = speed;
+        mJson[Constants::SCENE_JSON_CAMERA][Constants::SCENE_JSON_MOVEMENT_SPEED] = speed;
     }
 
     float
     Scene::getCameraMovementSpeed
     ()
     {
-        return mCameraMovementSpeed;
+        return mJson[Constants::SCENE_JSON_CAMERA][Constants::SCENE_JSON_MOVEMENT_SPEED];
     }
 
     vector<float>
     Scene::getAmbientLightColour
     ()
     {
-        return mAmbientLightColour;
+        vector<float> ambientColour;
+        ambientColour.reserve(4);
+        ambientColour[0] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_RED];
+        ambientColour[1] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_GREEN];
+        ambientColour[2] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_BLUE];
+        ambientColour[3] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_ALPHA];
+        return ambientColour;
     }
 
     vector<float>
     Scene::getClearColour
     ()
     {
-        return mClearColour;
+        vector<float> clearColour;
+        clearColour.reserve(4);
+        clearColour[0] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_RED];
+        clearColour[1] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_GREEN];
+        clearColour[2] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_BLUE];
+        clearColour[3] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_ALPHA];
+        return clearColour;
     }
 
     void
@@ -549,7 +426,7 @@ namespace Dream
     Scene::getPhysicsDebug
     ()
     {
-        return mPhysicsDebug;
+        return mJson[Constants::SCENE_JSON_PHYSICS_DEBUG];
     }
 
     nlohmann::json
@@ -563,14 +440,14 @@ namespace Dream
     Scene::getNotes
     ()
     {
-        return mNotes;
+        return mJson[Constants::SCENE_JSON_NOTES];
     }
 
     void
     Scene::setNotes
     (string notes)
     {
-        mNotes = notes;
+        mJson[Constants::SCENE_JSON_NOTES] = notes;
     }
 
     void
@@ -611,14 +488,14 @@ namespace Dream
     Scene::hasUuid
     (string uuid)
     {
-        return mUuid.compare(uuid) == 0;
+        return getUuid().compare(uuid) == 0;
     }
 
     bool
     Scene::hasName
     (string name)
     {
-        return mName.compare(name) == 0;
+        return getName().compare(name) == 0;
     }
 
     void
@@ -675,5 +552,30 @@ namespace Dream
         return mState == state;
     }
 
+    Transform3D
+    Scene::getDefaultCameraTransform
+    ()
+    {
+        Transform3D defaultCameraTransform;
+        nlohmann::json camera = mJson[Constants::SCENE_JSON_CAMERA];
+
+        if (!camera.is_null())
+        {
+            nlohmann::json translation = camera[Constants::SCENE_JSON_TRANSLATION];
+            defaultCameraTransform.setTranslation(
+                translation[Constants::SCENE_JSON_X],
+                translation[Constants::SCENE_JSON_Y],
+                translation[Constants::SCENE_JSON_Z]
+            );
+            nlohmann::json rotation = camera[Constants::SCENE_JSON_ROTATION];
+            defaultCameraTransform.setRotation(
+                rotation[Constants::SCENE_JSON_X],
+                rotation[Constants::SCENE_JSON_Y],
+                rotation[Constants::SCENE_JSON_Z]
+            );
+        }
+
+        return defaultCameraTransform;
+    }
 
 } // End of Dream

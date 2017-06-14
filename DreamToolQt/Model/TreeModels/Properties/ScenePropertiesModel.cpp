@@ -43,6 +43,7 @@ void
 ScenePropertiesModel::createRoot
 ()
 {
+    qDebug() << "ScenePropertiesModel: craeteRoot";
     QList<QVariant> rootData;
     rootData << QString::fromStdString(mScene->getName())
              << QString::fromStdString(mScene->getUuid());
@@ -54,12 +55,14 @@ ScenePropertiesModel::createDelegates
 ()
 {
 
+    qDebug() << "ScenePropertiesModel: createDelegates";
 }
 
 void
 ScenePropertiesModel::createProperties
 ()
 {
+    qDebug() << "ScenePropertiesModel: createProperties";
     createNameProperties();
     createNotesProperties();
     createCameraProperties();
@@ -71,6 +74,7 @@ void
 ScenePropertiesModel::createNameProperties
 ()
 {
+    qDebug() << "ScenePropertiesModel: createNameProperties";
      // Name
     QList<QVariant> nameData;
     nameData << "Name"
@@ -83,6 +87,7 @@ void
 ScenePropertiesModel::createNotesProperties
 ()
 {
+    qDebug() << "ScenePropertiesModel: createNotesProperties";
     // Notes
     QList<QVariant> notesData;
     notesData << "Notes"
@@ -95,6 +100,7 @@ void
 ScenePropertiesModel::createCameraProperties
 ()
 {
+    qDebug() << "ScenePropertiesModel: createCameraProperties";
     // Camera
     QList<QVariant> cameraData;
     cameraData << "Camera" << "";
@@ -107,16 +113,17 @@ ScenePropertiesModel::createCameraProperties
     PropertiesItem* cameraTranslationProperty = new PropertiesItem(cameraTranslationData, mScene);
     cameraProperty->appendChild(cameraTranslationProperty);
 
+    Transform3D defaultTransform = mScene->getDefaultCameraTransform();
     QList<QVariant> cameraTranslationX_Data;
-    cameraTranslationX_Data << "X" << QString::number(static_cast<double>(mScene->getDefaultCameraTranslation().x));
+    cameraTranslationX_Data << "X" << QString::number(static_cast<double>(defaultTransform.getTranslation().x));
     cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationX_Data,mScene));
 
     QList<QVariant> cameraTranslationY_Data;
-    cameraTranslationY_Data << "Y" << QString::number(static_cast<double>(mScene->getDefaultCameraTranslation().y));
+    cameraTranslationY_Data << "Y" << QString::number(static_cast<double>(defaultTransform.getTranslation().y));
     cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationY_Data,mScene));
 
     QList<QVariant> cameraTranslationZ_Data;
-    cameraTranslationZ_Data << "Z" << QString::number(static_cast<double>(mScene->getDefaultCameraTranslation().z));
+    cameraTranslationZ_Data << "Z" << QString::number(static_cast<double>(defaultTransform.getTranslation().z));
     cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationZ_Data,mScene));
 
     // Camera Rotation
@@ -126,15 +133,15 @@ ScenePropertiesModel::createCameraProperties
     cameraProperty->appendChild(cameraRotationProperty);
 
     QList<QVariant> cameraRotationX_Data;
-    cameraRotationX_Data << "X" << QString::number(static_cast<double>(mScene->getDefaultCameraRotation().x));
+    cameraRotationX_Data << "X" << QString::number(static_cast<double>(defaultTransform.getRotation().x));
     cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationX_Data,mScene));
 
     QList<QVariant> cameraRotationY_Data;
-    cameraRotationY_Data << "Y" << QString::number(static_cast<double>(mScene->getDefaultCameraRotation().y));
+    cameraRotationY_Data << "Y" << QString::number(static_cast<double>(defaultTransform.getRotation().y));
     cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationY_Data,mScene));
 
     QList<QVariant> cameraRotationZ_Data;
-    cameraRotationZ_Data << "Z" << QString::number(static_cast<double>(mScene->getDefaultCameraRotation().z));
+    cameraRotationZ_Data << "Z" << QString::number(static_cast<double>(defaultTransform.getRotation().z));
     cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationZ_Data,mScene));
 
     // Camera Speed
@@ -147,34 +154,39 @@ void
 ScenePropertiesModel::createRenderingProperties
 ()
 {
+    qDebug() << "ScenePropertiesModel: createRenderingProperties";
     // Rendering
     QList<QVariant> renderingData;
     renderingData << "Rendering" << "";
     PropertiesItem *renderingProperty = new PropertiesItem(renderingData,mScene);
     mRootItem->appendChild(renderingProperty);
 
+    qDebug() << "ScenePropertiesModel: createRenderingProperties (ClearColour)";
     // Clear Color
     QList<QVariant> clearColorData;
     clearColorData << "Clear Color" << "";
     PropertiesItem *clearColorProperty = new PropertiesItem(clearColorData, mScene);
     renderingProperty->appendChild(clearColorProperty);
 
+    vector<float> clear = mScene->getClearColour();
+
     QList<QVariant> clearColor_Red_Data;
-    clearColor_Red_Data << "Red" << mScene->getClearColour().at(0);
+    clearColor_Red_Data << "Red" << clear[0];
     clearColorProperty->appendChild(new PropertiesItem(clearColor_Red_Data,mScene));
 
     QList<QVariant> clearColor_Green_Data;
-    clearColor_Green_Data << "Green" << mScene->getClearColour().at(1);
+    clearColor_Green_Data << "Green" << clear[1];
     clearColorProperty->appendChild(new PropertiesItem(clearColor_Green_Data,mScene));
 
     QList<QVariant> clearColor_Blue_Data;
-    clearColor_Blue_Data << "Blue" << mScene->getClearColour().at(2);
+    clearColor_Blue_Data << "Blue" << clear[2];
     clearColorProperty->appendChild(new PropertiesItem(clearColor_Blue_Data,mScene));
 
     QList<QVariant> clearColor_Alpha_Data;
-    clearColor_Alpha_Data << "Alpha" << mScene->getClearColour().at(3);
+    clearColor_Alpha_Data << "Alpha" << clear[3];
     clearColorProperty->appendChild(new PropertiesItem(clearColor_Alpha_Data,mScene));
 
+    qDebug() << "ScenePropertiesModel: createRenderingProperties (AmbientLight)";
     // Ambient Light Color
     QList<QVariant> ambientLightData;
     ambientLightData << "Ambient Light" << "";
@@ -202,6 +214,7 @@ void
 ScenePropertiesModel::createPhysicsProperties
 ()
 {
+    qDebug() << "ScenePropertiesModel: createPhysicsProperties";
     // Physics
     QList<QVariant> physicsData;
     physicsData << "Physics"  << "";

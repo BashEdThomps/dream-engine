@@ -43,62 +43,10 @@ namespace Dream
 
     void
     Project::loadMetadataFromJson
-    (nlohmann::json jsonProject)
+    (nlohmann::json mJson)
     {
-        if (jsonProject [Constants::PROJECT_UUID].is_null())
-        {
-            cerr << "Project: UUID is nullptr." << endl;
-        }
-        else
-        {
-            setUuid(jsonProject[Constants::PROJECT_UUID]);
-        }
-
-        if (jsonProject[Constants::PROJECT_NAME].is_null())
-        {
-            cerr << "Project: Name is nullptr." << endl;
-        }
-        else
-        {
-            setName(jsonProject[Constants::PROJECT_NAME]);
-        }
-
-        if (jsonProject[Constants::PROJECT_AUTHOR].is_null())
-        {
-            cerr << "Project: Author is nullptr." << endl;
-        }
-        else
-        {
-            setAuthor(jsonProject[Constants::PROJECT_AUTHOR]);
-        }
-
-        if (jsonProject[Constants::PROJECT_DESCRIPTION].is_null())
-        {
-            cerr << "Project: Descriptiont is nullptr." << endl;
-        }
-        else
-        {
-            setDescription(jsonProject[Constants::PROJECT_DESCRIPTION]);
-        }
-
-        if (jsonProject[Constants::PROJECT_STARTUP_SCENE].is_null())
-        {
-            cerr << "Project: Startup Scene is nullptr." << endl;
-        }
-        else
-        {
-            setStartupSceneUuid(jsonProject[Constants::PROJECT_STARTUP_SCENE]);
-        }
-
-        if (!jsonProject[Constants::PROJECT_WINDOW_SIZE].is_null())
-        {
-            nlohmann::json windowSizeJson = jsonProject[Constants::PROJECT_WINDOW_SIZE];
-            setWindowWidth(windowSizeJson[Constants::PROJECT_WIDTH]);
-            setWindowHeight(windowSizeJson[Constants::PROJECT_HEIGHT]);
-        }
-
-        loadAssetDefinitionsFromJson(jsonProject[Constants::PROJECT_ASSET_ARRAY]);
-        loadScenesFromJson(jsonProject[Constants::PROJECT_SCENE_ARRAY]);
+        loadAssetDefinitionsFromJson(mJson[Constants::PROJECT_ASSET_ARRAY]);
+        loadScenesFromJson(mJson[Constants::PROJECT_SCENE_ARRAY]);
     }
 
     void
@@ -117,25 +65,32 @@ namespace Dream
         cout << "}" << endl;
     }
 
+    string
+    Project::getName
+    ()
+    {
+        return mJson[Constants::PROJECT_NAME];
+    }
+
     void
     Project::setName
     (string name)
     {
-        mName = name;
+        mJson[Constants::PROJECT_NAME] = name;
     }
 
     void
     Project::setUuid
     (string uuid)
     {
-        mUuid = uuid;
+        mJson[Constants::PROJECT_UUID] = uuid;
     }
 
     string
     Project::getUuid
     ()
     {
-        return mUuid;
+        return mJson[Constants::PROJECT_UUID];
     }
 
     void
@@ -162,21 +117,14 @@ namespace Dream
     Project::setStartupSceneUuid
     (string sceneUuid)
     {
-        mStartupScene = sceneUuid;
-    }
-
-    void
-    Project::setStartupSceneName
-    (string sceneName)
-    {
-        mStartupScene = getSceneByName(sceneName)->getUuid();
+        mJson[Constants::PROJECT_STARTUP_SCENE] = sceneUuid;
     }
 
     string
     Project::getStartupSceneUuid
     ()
     {
-        return mStartupScene;
+        return mJson[Constants::PROJECT_STARTUP_SCENE];
     }
 
     Scene*
@@ -184,13 +132,6 @@ namespace Dream
     ()
     {
         return getSceneByUuid(getStartupSceneUuid());
-    }
-
-    string
-    Project::getName
-    ()
-    {
-        return mName;
     }
 
     vector<Scene*>
@@ -204,28 +145,28 @@ namespace Dream
     Project::setDescription
     (string description)
     {
-        mDescription = description;
+        mJson[Constants::PROJECT_DESCRIPTION] = description;
     }
 
     string
     Project::getDescription
     (void)
     {
-        return mDescription;
+        return mJson[Constants::PROJECT_DESCRIPTION];
     }
 
     void
     Project::setAuthor
     (string author)
     {
-        mAuthor = author;
+        mJson[Constants::PROJECT_AUTHOR] = author;
     }
 
     string
     Project::getAuthor
     ()
     {
-        return mAuthor;
+        return mJson[Constants::PROJECT_AUTHOR];
     }
 
     void
@@ -309,28 +250,28 @@ namespace Dream
     Project::getWindowWidth
     ()
     {
-        return mWindowWidth;
+        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WIDTH];
     }
 
     void
     Project::setWindowWidth
     (int width)
     {
-        mWindowWidth = width;
+        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WIDTH] = width;
     }
 
     int
     Project::getWindowHeight
     ()
     {
-        return mWindowHeight;
+       return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT];
     }
 
     void
     Project::setWindowHeight
     (int height)
     {
-        mWindowHeight = height;
+        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT] = height;
     }
 
     void
@@ -449,8 +390,8 @@ namespace Dream
         mRuntime->setGraphicsAmbientLightColour(mActiveSceneHandle->getAmbientLightColour());
         mRuntime->setPhysicsGravity(mActiveSceneHandle->getGravity());
         mRuntime->setPhysicsDebug(mActiveSceneHandle->getPhysicsDebug());
-        mRuntime->setCameraTranslation(mActiveSceneHandle->getDefaultCameraTranslation());
-        mRuntime->setCameraRotation(mActiveSceneHandle->getDefaultCameraRotation());
+        mRuntime->setCameraTranslation(mActiveSceneHandle->getDefaultCameraTransform().getTranslation());
+        mRuntime->setCameraRotation(mActiveSceneHandle->getDefaultCameraTransform().getRotation());
         mRuntime->setCameraMovementSpeed(mActiveSceneHandle->getCameraMovementSpeed());
 
         return true;

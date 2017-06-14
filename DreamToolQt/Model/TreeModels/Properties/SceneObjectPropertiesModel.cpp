@@ -16,11 +16,13 @@
  * this file belongs to.
  */
 #include "SceneObjectPropertiesModel.h"
+#include <QDebug>
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
 (SceneObject *sceneObject, QTreeView *parent)
     : PropertiesModel(parent)
 {
+    qDebug() << "SceneObjectPropertiesModel: Constructor called";
     mSceneObject = sceneObject;
     createRoot();
     createProperties();
@@ -30,6 +32,7 @@ SceneObjectPropertiesModel::SceneObjectPropertiesModel
 SceneObjectPropertiesModel::~SceneObjectPropertiesModel
 ()
 {
+    qDebug() << "SceneObjectPropertiesModel: Destructor called";
     delete mRootItem;
 }
 
@@ -37,6 +40,7 @@ void
 SceneObjectPropertiesModel::createRoot
 ()
 {
+    qDebug() << "SceneObjectPropertiesModel: CreateRoot";
     QList<QVariant> rootData;
     rootData << QString::fromStdString(mSceneObject->getName())
              << QString::fromStdString(mSceneObject->getUuid());
@@ -47,6 +51,7 @@ void
 SceneObjectPropertiesModel::createProperties
 ()
 {
+    qDebug() << "SceneObjectPropertiesModel: CreateProperties";
     createNameProperty();
     createTranslationProperty();
     createRotationProperty();
@@ -60,6 +65,7 @@ SceneObjectPropertiesModel::createProperties
 
 void SceneObjectPropertiesModel::createNameProperty()
 {
+    qDebug() << "SceneObjectPropertiesModel: createName";
     QList<QVariant> nameData;
     nameData << "Name" << QString::fromStdString(mSceneObject->getName());
     mRootItem->appendChild(new PropertiesItem(nameData,mSceneObject));
@@ -67,6 +73,7 @@ void SceneObjectPropertiesModel::createNameProperty()
 
 void SceneObjectPropertiesModel::createTranslationProperty()
 {
+    qDebug() << "SceneObjectPropertiesModel: createTranslationProperty";
     QList<QVariant> translationData;
     translationData << "Translation" << "";
     PropertiesItem *translationItem = new PropertiesItem(translationData,mSceneObject);
@@ -87,6 +94,7 @@ void SceneObjectPropertiesModel::createTranslationProperty()
 
 void SceneObjectPropertiesModel::createRotationProperty()
 {
+    qDebug() << "SceneObjectPropertiesModel: createRotationProperty";
     QList<QVariant> rotationData;
     rotationData << "Rotation" << "";
     PropertiesItem *rotationItem = new PropertiesItem(rotationData,mSceneObject);
@@ -107,6 +115,8 @@ void SceneObjectPropertiesModel::createRotationProperty()
 
 void SceneObjectPropertiesModel::createScaleProperty()
 {
+
+    qDebug() << "SceneObjectPropertiesModel: createScaleProperty";
     QList<QVariant> scaleData;
     scaleData << "Scale" << "";
     PropertiesItem *scaleItem = new PropertiesItem(scaleData,mSceneObject);
@@ -127,6 +137,7 @@ void SceneObjectPropertiesModel::createScaleProperty()
 
 void SceneObjectPropertiesModel::createTransformTypeProperty()
 {
+    qDebug() << "SceneObjectPropertiesModel: createTransformTypeProperty";
     QList<QVariant> transformTypeData;
     transformTypeData << "Transform Type" << QString::fromStdString(mSceneObject->getTransformType());
     PropertiesItem *transformTypeItem = new PropertiesItem(transformTypeData,mSceneObject);
@@ -135,6 +146,7 @@ void SceneObjectPropertiesModel::createTransformTypeProperty()
 
 void SceneObjectPropertiesModel::createHasFocusProperty()
 {
+    qDebug() << "SceneObjectPropertiesModel: createHasFocusProperty";
     QList<QVariant> hasFocusData;
     hasFocusData << "Has Focus" << mSceneObject->hasFocus();
     PropertiesItem *hasFocusItem = new PropertiesItem(hasFocusData,mSceneObject);
@@ -143,6 +155,7 @@ void SceneObjectPropertiesModel::createHasFocusProperty()
 
 void SceneObjectPropertiesModel::createAssetInstancesProperty()
 {
+    qDebug() << "SceneObjectPropertiesModel: createAssetInstancesProperty";
     QList<QVariant> assetDefData;
     assetDefData << "Asset Definitions" << QString::number(mSceneObject->getAssetDefUuidsToLoad().size());
     PropertiesItem *assetDefItem = new PropertiesItem(assetDefData,mSceneObject);
@@ -161,6 +174,7 @@ void SceneObjectPropertiesModel::createAssetInstancesProperty()
 
 void SceneObjectPropertiesModel::createChildrenProperty()
 {
+    qDebug() << "SceneObjectPropertiesModel: createChildrenProperty";
     QList<QVariant> childrenData;
     childrenData << "Children" << QString::number(mSceneObject->getChildren().size());
     PropertiesItem *childrenItem = new PropertiesItem(childrenData,mSceneObject);

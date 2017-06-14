@@ -330,7 +330,8 @@ MainController::onProjectStartupSceneChanged
 {
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
     qDebug() << "MainController: startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
-    mDreamModel->setProjectStartupSceneByName(sceneName);
+    Scene* sceneHandle = mDreamModel->getProject()->getSceneByUuid(sceneName);
+    mDreamModel->setProjectStartupSceneByUuid(sceneHandle->getUuid());
 }
 
 void

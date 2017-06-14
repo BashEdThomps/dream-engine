@@ -59,21 +59,12 @@ namespace Dream
     class Scene
     {
     private:
+        Project* mProjectHandle;
         nlohmann::json mJson;
-        string mUuid;
-        string mName;
-        string mNotes;
         SceneObject *mRootSceneObjectHandle;
         vector<SceneObject*> mDeleteQueue;
-        Transform3D mDefaultCameraTransform;
-        float mCameraMovementSpeed;
-        vector<float> mClearColour;
-        vector<float> mAmbientLightColour;
         string mProjectPath;
-        vector<float> mGravity;
-        bool mPhysicsDebug;
         SceneState mState;
-        Project* mProjectHandle;
 
     public:
         Scene(Project* parent, nlohmann::json projJson);
@@ -104,9 +95,7 @@ namespace Dream
         void showScenegraph();
 
         string indent(int);
-
-        glm::vec3 getDefaultCameraTranslation();
-        glm::vec3 getDefaultCameraRotation();
+        Transform3D getDefaultCameraTransform();
 
         void setCameraMovementSpeed(float);
         float getCameraMovementSpeed();
@@ -133,13 +122,7 @@ namespace Dream
         vector<float> getGravity();
         bool getPhysicsDebug();
 
-        void loadAllJsonData(nlohmann::json);
-        void loadPhysicsJsonData(nlohmann::json);
-        void loadGraphicsJsonData(nlohmann::json);
         void loadSceneObjectJsonData(nlohmann::json, SceneObject*);
-        void loadCameraJsonData(nlohmann::json);
-        void loadClearColourJsonData(nlohmann::json);
-        void loadAmbientLightColourJsonData(nlohmann::json);
 
         nlohmann::json toJson();
 
