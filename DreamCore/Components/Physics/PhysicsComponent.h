@@ -15,21 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHYSICSCOMPONENT_H
-#define PHYSICSCOMPONENT_H
+#pragma once
 
 #include <iostream>
 
-
 #include "PhysicsDebugDrawer.h"
 #include "PhysicsObjectInstance.h"
+
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btVector3.h>
 
 #include "../IComponent.h"
-#include "../../String.h"
-#include "../../Event.h"
-#include "../../Constants.h"
+#include "../../Common/Event.h"
+#include "../../Common/Constants.h"
+#include "../../Utilities/String.h"
 
 namespace Dream
 {
@@ -65,5 +64,3 @@ namespace Dream
     };// End of PhysicsComponent
 
 } // End of Dream
-
-#endif // End of PHYSICSCOMPONENT_H

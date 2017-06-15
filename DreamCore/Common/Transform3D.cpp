@@ -354,7 +354,7 @@ namespace Dream
     }
 
     nlohmann::json
-    Transform3D::toJson
+    Transform3D::getJson
     ()
     {
         return mJson;

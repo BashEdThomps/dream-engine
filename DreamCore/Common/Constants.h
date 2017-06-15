@@ -16,8 +16,7 @@
  * this file belongs to.
  */
 
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -44,21 +43,18 @@ namespace Dream
     class Constants
     {
     public:
-        // Debug =======================================================================
+        // Debug ================================================================
         static bool DEBUG;
         static bool VERBOSE;
-
         static void dreamSetDebug(bool debug);
         static void dreamSetVerbose(bool verbose);
         static bool checkGLError(string);
-
-        // Misc ========================================================================
+        // Misc =================================================================
         const static string DIR_PATH_SEP;
         const static string DREAM_TOOL_DIR;
         const static string PATH_DELIMETER;
         const static string HTTP_ARG;
-
-        // Project =====================================================================
+        // Project ==============================================================
         const static string PROJECT_DIRECTORY_ARG;
         const static string PROJECT_UUID_ARG;
         const static int    PROJECT_UUID_LENGTH;
@@ -74,8 +70,7 @@ namespace Dream
         const static string PROJECT_WINDOW_SIZE;
         const static string PROJECT_WIDTH;
         const static string PROJECT_HEIGHT;
-
-        // Asset =======================================================================
+        // Asset ================================================================
         const static string ASSET_UUID;
         const static string ASSET_NAME;
         const static string ASSET_TYPE;
@@ -92,42 +87,27 @@ namespace Dream
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_SCRIPT_LUA;
         const static string ASSET_FORMAT_MODEL_ASSIMP;
-        const static string ASSET_FORMAT_AUDIO_MUSIC;
-        const static string ASSET_FORMAT_AUDIO_SFX;
+        const static string ASSET_FORMAT_AUDIO_OGG;
+        const static string ASSET_FORMAT_AUDIO_WAV;
         const static string ASSET_FORMAT_ANIMATION_DREAM;
         const static string ASSET_FORMAT_FONT_TTF;
         const static string ASSET_FORMAT_SHADER_GLSL;
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_SPRITE_IMAGE;
-        const static string ASSET_ATTR_X;
-        const static string ASSET_ATTR_Y;
-        const static string ASSET_ATTR_Z;
-
-        // Scene =======================================================================
-        const static string SCENE_JSON_UUID;
-        const static string SCENE_JSON_NAME;
-        const static string SCENE_JSON_NOTES;
-        const static string SCENE_JSON_SCENE_OBJECTS;
-        const static string SCENE_JSON_CAMERA;
-        const static string SCENE_JSON_TRANSLATION;
-        const static string SCENE_JSON_ROTATION;
-        const static string SCENE_JSON_MOVEMENT_SPEED;
-        const static string SCENE_JSON_X;
-        const static string SCENE_JSON_Y;
-        const static string SCENE_JSON_Z;
-        const static string SCENE_JSON_CLEAR_COLOUR;
-        const static string SCENE_JSON_AMBIENT_LIGHT_COLOUR;
-        const static string SCENE_JSON_RED;
-        const static string SCENE_JSON_GREEN;
-        const static string SCENE_JSON_BLUE;
-        const static string SCENE_JSON_ALPHA;
-        const static string SCENE_JSON_GRAVITY;
-        const static string SCENE_JSON_PHYSICS_DEBUG;
-
-        // SceneObject =================================================================
-        const static int SO_X;
-        const static int SO_Y;
-        const static int SO_Z;
+        // Scene ================================================================
+        const static string SCENE_UUID;
+        const static string SCENE_NAME;
+        const static string SCENE_NOTES;
+        const static string SCENE_SCENE_OBJECTS;
+        const static string SCENE_CAMERA;
+        const static string SCENE_TRANSLATION;
+        const static string SCENE_ROTATION;
+        const static string SCENE_MOVEMENT_SPEED;
+        const static string SCENE_CLEAR_COLOUR;
+        const static string SCENE_AMBIENT_LIGHT_COLOUR;
+        const static string SCENE_GRAVITY;
+        const static string SCENE_PHYSICS_DEBUG;
+        // SceneObject ==========================================================
         const static string SCENE_OBJECT_UUID;
         const static string SCENE_OBJECT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
@@ -135,29 +115,33 @@ namespace Dream
         const static string SCENE_OBJECT_TRANSLATION;
         const static string SCENE_OBJECT_ROTATION;
         const static string SCENE_OBJECT_SCALE;
-        const static string SCENE_OBJECT_X;
-        const static string SCENE_OBJECT_Y;
-        const static string SCENE_OBJECT_Z;
         const static string SCENE_OBJECT_TRANSFORM_TYPE;
         const static string SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
         const static string SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE;
         const static string SCENE_OBJECT_ASSET_INSTANCES;
-
-        // Transform ===================================================================
-        const static int TRANSFORM_X;
-        const static int TRANSFORM_Y;
-        const static int TRANSFORM_Z;
+        // Transform ============================================================
         const static string TRANSFORM_TYPE_ABSOLUTE;
         const static string TRANSFORM_TYPE_OFFSET;
-
-        // Font ========================================================================
+        // Font =================================================================
         const static string FONT_SIZE;
         const static string FONT_COLOUR;
-        const static string FONT_RED;
-        const static string FONT_GREEN;
-        const static string FONT_BLUE;
+        // Generic ==============================================================
+        const static string X;
+        const static string Y;
+        const static string Z;
+        const static unsigned int X_INDEX;
+        const static unsigned int Y_INDEX;
+        const static unsigned int Z_INDEX;
+        const static string RED;
+        const static string GREEN;
+        const static string BLUE;
+        const static string ALPHA;
+        const static unsigned int RED_INDEX;
+        const static unsigned int GREEN_INDEX;
+        const static unsigned int BLUE_INDEX;
+        const static unsigned int ALPHA_INDEX;
 
-        // Animation ===================================================================
+        // Animation =============================================================
         const static string ASSET_ATTR_KEYFRAMES;
         const static string ASSET_ATTR_TRANSLATION;
         const static string ASSET_ATTR_ROTATION;
@@ -173,25 +157,17 @@ namespace Dream
         const static string DREAM_ANIMATION_INTERPOLATION_NONE;
         const static string DREAM_ANIMATION_INTERPOLATION_LINEAR;
         const static string DREAM_ANIMATION_INTERPOLATION_BEZIER;
-
-        // Sprite ======================================================================
+        // Sprite ===============================================================
         const static string SPRITE_TILE_SIZE;
         const static string SPRITE_TILE_WIDTH;
         const static string SPRITE_TILE_HEIGHT;
-
-        // Physics =====================================================================
+        // Physics ==============================================================
         const static string ASSET_ATTR_MASS;
         const static string ASSET_ATTR_MARGIN;
         const static string ASSET_ATTR_RADIUS;
         const static string ASSET_ATTR_NORMAL;
         const static string ASSET_ATTR_CONSTANT;
-        const static string ASSET_ATTR_NORMAL_X;
-        const static string ASSET_ATTR_NORMAL_Y;
-        const static string ASSET_ATTR_NORMAL_Z;
         const static string ASSET_ATTR_SIZE;
-        const static string ASSET_ATTR_SIZE_X;
-        const static string ASSET_ATTR_SIZE_Y;
-        const static string ASSET_ATTR_SIZE_Z;
         const static string ASSET_ATTR_COMPOUND_CHILDREN;
         const static string ASSET_ATTR_KINEMATIC;
         const static string COLLISION_SHAPE_SPHERE;
@@ -206,25 +182,25 @@ namespace Dream
         const static string COLLISION_SHAPE_HEIGHTFIELD_TERRAIN;
         const static string COLLISION_SHAPE_STATIC_PLANE;
         const static string COLLISION_SHAPE_COMPOUND;
-
-        // Event =======================================================================
+        // Event ================================================================
         const static string EVENT_SENDER;
         const static string EVENT_TYPE;
         const static string EVENT_TYPE_COLLISION;
-
-        // Light =======================================================================
+        // Light ================================================================
         const static string ASSET_ATTR_LIGHT_COLOR;
-        const static string ASSET_ATTR_LIGHT_COLOR_R;
-        const static string ASSET_ATTR_LIGHT_COLOR_G;
-        const static string ASSET_ATTR_LIGHT_COLOR_B;
-        const static string ASSET_ATTR_LIGHT_COLOR_A;
-
+        // Shader ===============================================================
+        const static string SHADER_FRAGMENT;
+        const static string SHADER_VERTEX;
+        // Lua ==================================================================
+        const static string LUA_INIT_FUNCTION;
+        const static string LUA_UPDATE_FUNCTION;
+        const static string LUA_INPUT_FUNCTION;
+        const static string LUA_EVENT_FUNCTION;
+        // Data Maps ============================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
         static string assetTypeToString(AssetType type);
         static AssetType assetTypeFromString(string type);
-
     };
 }
 
-#endif // CONSTANTS_H

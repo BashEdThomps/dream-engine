@@ -15,10 +15,11 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef LUACOMPONENT_H
-#define LUACOMPONENT_H
 
-extern "C" {
+#pragma once
+
+extern "C"
+{
     #include "lua.h"
     #include "lualib.h"
     #include "lauxlib.h"
@@ -27,17 +28,11 @@ extern "C" {
 #include <map>
 #include <iostream>
 
-
-#include "../Constants.h"
-#include "../Event.h"
-#include "../SceneObject.h"
-#include "../Scene.h"
 #include "InputEvent.h"
-
-#define LUA_SCRIPT_ON_INIT_FUNCTION   "onInit"
-#define LUA_SCRIPT_ON_UPDATE_FUNCTION "onUpdate"
-#define LUA_SCRIPT_ON_INPUT_FUNCTION  "onInput"
-#define LUA_SCRIPT_ON_EVENT_FUNCTION  "onEvent"
+#include "../Common/Constants.h"
+#include "../Common/Event.h"
+#include "../Scene/SceneObject.h"
+#include "../Scene/Scene.h"
 
 using namespace std;
 
@@ -111,6 +106,5 @@ namespace Dream
         void exposeTime();
         void exposeTransform3D();
     }; // End of LuaComponent
-} // End of Dream
 
-#endif // LUACOMPONENT_H
+} // End of Dream

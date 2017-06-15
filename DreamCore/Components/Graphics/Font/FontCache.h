@@ -21,10 +21,12 @@
 #include <memory>
 #include <map>
 
-#include "../../../AssetDefinition.h"
-#include "FontCharacter.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+#include "FontCharacter.h"
+
+#include "../../../Common/AssetDefinition.h"
 
 using namespace std;
 

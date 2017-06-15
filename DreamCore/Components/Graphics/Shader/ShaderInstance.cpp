@@ -52,7 +52,7 @@ namespace Dream
     ShaderInstance::load
     (string projectPath)
     {
-        mShaderProgram = ShaderCache::getShader(mDefinition->getUuid());
+        mShaderProgram = ShaderCache::getShader(mDefinitionHandle->getUuid());
         if (mShaderProgram == 0)
         {
             string mVertexShaderSource;
@@ -62,8 +62,8 @@ namespace Dream
             // 1. Open Shader Files into Memory
             FileReader *vertexReader, *fragmentReader;
             string absVertexPath, absFragmentPath;
-            absVertexPath   = projectPath+mDefinition->getAssetPath() + SHADER_VERTEX;
-            absFragmentPath = projectPath+mDefinition->getAssetPath() + SHADER_FRAGMENT;
+            absVertexPath   = projectPath+mDefinitionHandle->getAssetPath() + Constants::SHADER_VERTEX;
+            absFragmentPath = projectPath+mDefinitionHandle->getAssetPath() + Constants::SHADER_FRAGMENT;
             vertexReader = new FileReader(absVertexPath);
             vertexReader->readIntoStringStream();
             mVertexShaderSource = vertexReader->getContentsAsString();
@@ -75,7 +75,7 @@ namespace Dream
             if (Constants::DEBUG)
             {
                 cout << "ShaderInstance: Loading Shader "
-                     << mDefinition->getNameAndUuidString()
+                     << mDefinitionHandle->getNameAndUuidString()
                      << endl
                      << "ShaderInstance: Vertex: "
                      << absVertexPath
@@ -130,7 +130,7 @@ namespace Dream
             // Delete the shaders as they're linked into our program now and no longer necessery
             glDeleteShader(mVertexShader);
             glDeleteShader(mFragmentShader);
-            ShaderCache::putShader(mDefinition->getUuid(),mShaderProgram);
+            ShaderCache::putShader(mDefinitionHandle->getUuid(),mShaderProgram);
         }
         mLoaded = (mShaderProgram != 0);
         return mLoaded;

@@ -23,22 +23,21 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "Constants.h"
 #include <memory>
+
+#include "../Common/Constants.h"
 
 using namespace std;
 
 namespace Dream
 {
-
-
     class FileReader
     {
     private:
         unique_ptr<stringstream> mStringStream;
         unique_ptr<vector<char>> mBinaryVector;
-        ifstream     mInputStream;
-        string       mPath;
+        ifstream mInputStream;
+        string mPath;
     public:
         FileReader(string);
         ~FileReader(void);

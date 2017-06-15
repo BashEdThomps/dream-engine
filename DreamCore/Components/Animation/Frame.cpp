@@ -1,6 +1,8 @@
 #include <iostream>
+
 #include "Frame.h"
-#include "../../String.h"
+
+#include "../../Utilities/String.h"
 
 namespace Dream
 {

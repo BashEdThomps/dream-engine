@@ -15,15 +15,14 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef IASSETINSTANCE_H
-#define IASSETINSTANCE_H
+#pragma once
 
 #include <iostream>
 
-#include "Constants.h"
-#include "FileReader.h"
 #include "AssetDefinition.h"
+#include "Constants.h"
 #include "Transform3D.h"
+#include "../Utilities/FileReader.h"
 
 namespace Dream
 {
@@ -32,10 +31,9 @@ namespace Dream
     protected:
         bool mLoaded;
         string mAbsolutePath;
-        AssetDefinition *mDefinition;
-        Transform3D *mTransform;
+        AssetDefinition *mDefinitionHandle;
+        Transform3D *mTransformHandle;
         string mUuid;
-        string mName;
     public:
         IAssetInstance(AssetDefinition*, Transform3D*);
         virtual ~IAssetInstance();
@@ -55,7 +53,7 @@ namespace Dream
 
         bool getLoadedFlag();
         void setLoadedFlag(bool);
-    }; // End of IAssetInstance
-} // End of Dream
 
-#endif // End of IASSETINSTANCE_H
+    }; // End of IAssetInstance
+
+} // End of Dream

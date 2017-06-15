@@ -1,9 +1,9 @@
 /*
- * TextureManager.h
+ * SceneState
  *
- * Created: 30/11/2016 2016 by Ashley
+ * Created: 15 2017 by Ashley
  *
- * Copyright 2016 Octronic. All rights reserved.
+ * Copyright 2017 Octronic. All rights reserved.
  *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
@@ -18,30 +18,14 @@
 
 #pragma once
 
-#include <iostream>
-#include <vector>
-
-#include <SOIL/SOIL.h>
-#include <GL/glew.h>
-
-#include "Texture.h"
-#include "../../../Common/Constants.h"
-
-
-using namespace std;
-
 namespace Dream
 {
-  class TextureCache
-  {
-    static vector<Texture> sTextureCache;
-  public:
-    TextureCache();
-    ~TextureCache();
-    static Texture loadTextureFromFile(const char*, const char*, const char*);
-    static vector<Texture> getTextureCache();
-    static void cleanUp();
-  };
-
-} // End Dream
-
+    enum SceneState
+    {
+        NOT_LOADED,
+        LOADED,
+        RUNNING,
+        DONE,
+        CLEANED_UP
+    };
+}

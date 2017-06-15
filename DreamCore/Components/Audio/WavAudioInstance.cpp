@@ -37,7 +37,7 @@ namespace Dream
     WavAudioInstance::load
     (std::string projectPath)
     {
-        std::string absPath = projectPath+mDefinition->getAssetPath();
+        std::string absPath = projectPath + mDefinitionHandle->getAssetPath();
         std::cout << "WavAudioInstance: Loading wav file from " << absPath << std::endl;
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");

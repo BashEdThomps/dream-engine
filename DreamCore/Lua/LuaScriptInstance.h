@@ -15,18 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LUASCRIPTINSTANCE_H
-#define LUASCRIPTINSTANCE_H
+#pragma once
 
 #include <vector>
 #include <iostream>
-#include "../IAssetInstance.h"
-#include "../Constants.h"
+
+#include "../Common/Constants.h"
+#include "../Common/IAssetInstance.h"
 
 namespace Dream
 {
       class LuaScriptInstance : public IAssetInstance
       {
+
       public:
         LuaScriptInstance(AssetDefinition*,Transform3D*);
         ~LuaScriptInstance(void);
@@ -35,8 +36,10 @@ namespace Dream
         void loadExtraAttributes(nlohmann::json);
         bool getError();
         void setError(bool);
+
       private:
         bool mError;
+
       }; // End of LuaScriptInstance
+
 } // End of Dream
-#endif // End of LUASCRIPT_H

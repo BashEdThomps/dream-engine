@@ -1,23 +1,22 @@
-#ifndef NODE_H
-#define NODE_H
+#pragma once
 
 #include <iostream>
 #include <vector>
 #include <functional>
 #include <memory>
 
-#include "Transform3D.h"
-#include "Constants.h"
-#include "Event.h"
-#include "Components/Animation/AnimationInstance.h"
-#include "Components/Audio/AudioInstance.h"
-#include "Components/Graphics/Model/AssimpModelInstance.h"
-#include "Components/Graphics/Light/LightInstance.h"
-#include "Components/Graphics/Shader/ShaderInstance.h"
-#include "Components/Graphics/Sprite/SpriteInstance.h"
-#include "Components/Graphics/Font/FontInstance.h"
-#include "Components/Physics/PhysicsObjectInstance.h"
-#include "Lua/LuaScriptInstance.h"
+#include "../Common/Transform3D.h"
+#include "../Common/Constants.h"
+#include "../Common/Event.h"
+#include "../Components/Animation/AnimationInstance.h"
+#include "../Components/Audio/AudioInstance.h"
+#include "../Components/Graphics/Model/AssimpModelInstance.h"
+#include "../Components/Graphics/Light/LightInstance.h"
+#include "../Components/Graphics/Shader/ShaderInstance.h"
+#include "../Components/Graphics/Sprite/SpriteInstance.h"
+#include "../Components/Graphics/Font/FontInstance.h"
+#include "../Components/Physics/PhysicsObjectInstance.h"
+#include "../Lua/LuaScriptInstance.h"
 
 using namespace std;
 namespace Dream
@@ -164,7 +163,7 @@ namespace Dream
         void sendEvent(Event*);
         vector<Event*>* getEventQueue();
 
-        nlohmann::json toJson();
+        nlohmann::json getJson();
 
         void* applyToAll(function<void*(SceneObject*)>);
         bool applyToAll(function<bool(SceneObject*)>);
@@ -190,4 +189,3 @@ namespace Dream
 
 } // End of Dream
 
-#endif // NODE_H

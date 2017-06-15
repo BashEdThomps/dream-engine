@@ -6,10 +6,12 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#include "String.h"
-#include "Uuid.h"
-#include "Project.h"
+
 #include "Scene.h"
+
+#include "../Project/Project.h"
+#include "../Utilities/String.h"
+#include "../Utilities/Uuid.h"
 
 
 namespace Dream
@@ -70,7 +72,11 @@ namespace Dream
         if (!soJson[Constants::SCENE_OBJECT_TRANSLATION].is_null())
         {
             nlohmann::json translation = soJson[Constants::SCENE_OBJECT_TRANSLATION];
-            setTranslation(translation[Constants::SCENE_OBJECT_X], translation[Constants::SCENE_OBJECT_Y], translation[Constants::SCENE_OBJECT_Z]);
+            setTranslation(
+                translation[Constants::X],
+                translation[Constants::Y],
+                translation[Constants::Z]
+            );
         }
         else
         {
@@ -80,7 +86,11 @@ namespace Dream
         if (!soJson[Constants::SCENE_OBJECT_ROTATION].is_null())
         {
             nlohmann::json rotation = soJson[Constants::SCENE_OBJECT_ROTATION];
-            setRotation(rotation[Constants::SCENE_OBJECT_X], rotation[Constants::SCENE_OBJECT_Y], rotation[Constants::SCENE_OBJECT_Z]);
+            setRotation(
+                rotation[Constants::X],
+                rotation[Constants::Y],
+                rotation[Constants::Z]
+            );
         }
         else
         {
@@ -90,7 +100,11 @@ namespace Dream
         if (!soJson[Constants::SCENE_OBJECT_SCALE].is_null())
         {
             nlohmann::json scale = soJson[Constants::SCENE_OBJECT_SCALE];
-            setScale(scale[Constants::SCENE_OBJECT_X], scale[Constants::SCENE_OBJECT_Y], scale[Constants::SCENE_OBJECT_Z]);
+            setScale(
+                scale[Constants::X],
+                scale[Constants::Y],
+                scale[Constants::Z]
+            );
         }
         else
         {
@@ -382,20 +396,11 @@ namespace Dream
     SceneObject::showStatus
     ()
     {
-        cout << "SceneObject:" << endl;
-        cout << "          Uuid: " << getUuid() << endl;
-        cout << "          Name: " << getName() << endl;
-
+        cout << "SceneObject: " << mJson.dump(1) << endl;
         if (mParentHandle != nullptr)
         {
-            cout << "    ParentUuid: " << mParentHandle->getUuid() << endl;
+            cout << "SceneObject: ParentUuid: " << mParentHandle->getUuid() << endl;
         }
-
-        cout << "      Children: " << mChildren.size() << endl;
-        cout << "Trnasform Type: " << mTransform->getTransformType() << endl;
-        cout << "   Translation: " << String::vec3ToString(getTranslation()) << endl;
-        cout << "      Rotation: " << String::vec3ToString(getRotation())<< endl;
-        cout << "         Scale: " << String::vec3ToString(getScale())<< endl;
     }
 
     vector<string>
@@ -743,7 +748,7 @@ namespace Dream
     }
 
     nlohmann::json
-    SceneObject::toJson
+    SceneObject::getJson
     ()
     {
         return mJson;

@@ -15,8 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UUID_H
-#define UUID_H
+#pragma once
 
 #include <iostream>
 
@@ -29,6 +28,6 @@ namespace Dream
     public:
         static string generateUuid();
     }; // End of Uuid
+
 }  // End of Dream
 
-#endif // End of UUID_H

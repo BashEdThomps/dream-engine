@@ -83,7 +83,7 @@ namespace Dream
     AssimpModelInstance::load
     (string projectPath)
     {
-        string path = projectPath+mDefinition->getAssetPath();
+        string path = projectPath + mDefinitionHandle->getAssetPath();
         if (Constants::DEBUG)
         {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;

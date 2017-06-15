@@ -24,7 +24,7 @@ namespace Dream
   (AssetDefinition* definition, Transform3D* transform)
       : IAssetInstance(definition,transform)
   {
-    loadExtraAttributes(mDefinition->toJson());
+    loadExtraAttributes(mDefinitionHandle->getJson());
   }
 
   SpriteInstance::~SpriteInstance
@@ -41,7 +41,7 @@ namespace Dream
   SpriteInstance::load
   (string projectPath)
   {
-    string path = projectPath+mDefinition->getAssetPath();
+    string path = projectPath + mDefinitionHandle->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
     if (Constants::DEBUG)
     {

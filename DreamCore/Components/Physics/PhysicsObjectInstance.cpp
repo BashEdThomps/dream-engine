@@ -90,51 +90,13 @@ namespace Dream
     PhysicsObjectInstance::loadExtraAttributes
     (nlohmann::json jsonData)
     {
-        loadExtraAttributes(jsonData,mDefinition,false);
+        loadExtraAttributes(jsonData,mDefinitionHandle,false);
     }
 
     void
     PhysicsObjectInstance::loadExtraAttributes
     (nlohmann::json jsonData, AssetDefinition* definition, bool isChild)
     {
-        // Margin
-        if (!jsonData[Constants::ASSET_ATTR_MARGIN].is_null() && jsonData[Constants::ASSET_ATTR_MARGIN].is_number())
-        {
-            definition->addAttribute(Constants::ASSET_ATTR_MARGIN, to_string((static_cast<float>(jsonData[Constants::ASSET_ATTR_MARGIN]))));
-        }
-        // Mass
-        if (!jsonData[Constants::ASSET_ATTR_MASS].is_null() && jsonData[Constants::ASSET_ATTR_MASS].is_number())
-        {
-            definition->addAttribute(Constants::ASSET_ATTR_MASS, to_string((static_cast<float>(jsonData[Constants::ASSET_ATTR_MASS]))));
-        }
-        // Radius
-        if (!jsonData[Constants::ASSET_ATTR_RADIUS].is_null() && jsonData[Constants::ASSET_ATTR_RADIUS].is_number())
-        {
-            definition->addAttribute(Constants::ASSET_ATTR_RADIUS, to_string((static_cast<float>(jsonData[Constants::ASSET_ATTR_RADIUS]))));
-        }
-        // Normal
-        if (!jsonData[Constants::ASSET_ATTR_NORMAL].is_null())
-        {
-            nlohmann::json normal = jsonData[Constants::ASSET_ATTR_NORMAL];
-            definition->addAttribute(Constants::ASSET_ATTR_NORMAL_X, to_string((static_cast<float>(normal[Constants::ASSET_ATTR_X]))));
-            definition->addAttribute(Constants::ASSET_ATTR_NORMAL_Y, to_string((static_cast<float>(normal[Constants::ASSET_ATTR_Y]))));
-            definition->addAttribute(Constants::ASSET_ATTR_NORMAL_Z, to_string((static_cast<float>(normal[Constants::ASSET_ATTR_Z]))));
-        }
-        // Constant
-        if (!jsonData[Constants::ASSET_ATTR_CONSTANT].is_null() && jsonData[Constants::ASSET_ATTR_CONSTANT].is_number())
-        {
-            definition->addAttribute(Constants::ASSET_ATTR_CONSTANT, to_string((static_cast<float>(jsonData[Constants::ASSET_ATTR_CONSTANT]))));
-        }
-
-        // Size
-        if (!jsonData[Constants::ASSET_ATTR_SIZE].is_null())
-        {
-            nlohmann::json size = jsonData[Constants::ASSET_ATTR_SIZE];
-            definition->addAttribute(Constants::ASSET_ATTR_SIZE_X, to_string((static_cast<float>(size[Constants::ASSET_ATTR_X]))));
-            definition->addAttribute(Constants::ASSET_ATTR_SIZE_Y, to_string((static_cast<float>(size[Constants::ASSET_ATTR_Y]))));
-            definition->addAttribute(Constants::ASSET_ATTR_SIZE_Z, to_string((static_cast<float>(size[Constants::ASSET_ATTR_Z]))));
-        }
-
         if (!isChild)
         {
             // Kinematic
@@ -161,10 +123,10 @@ namespace Dream
                         if (!translationJson.is_null())
                         {
                             child.transform.setOrigin(btVector3(
-                                                          translationJson[Constants::ASSET_ATTR_X],
-                                                          translationJson[Constants::ASSET_ATTR_Y],
-                                                          translationJson[Constants::ASSET_ATTR_Z]
-                                                          ));
+                                translationJson[Constants::X],
+                                translationJson[Constants::Y],
+                                translationJson[Constants::Z]
+                            ));
                         }
                         // Rotation
                         nlohmann::json rotationJson = childJson[Constants::ASSET_ATTR_ROTATION];
@@ -172,9 +134,9 @@ namespace Dream
                         {
                             btQuaternion quat;
                             quat.setEulerZYX(
-                                        rotationJson[Constants::ASSET_ATTR_Z],
-                                        rotationJson[Constants::ASSET_ATTR_Y],
-                                        rotationJson[Constants::ASSET_ATTR_X]
+                                        rotationJson[Constants::Z],
+                                        rotationJson[Constants::Y],
+                                        rotationJson[Constants::X]
                                         );
                             child.transform.setRotation(quat);
                         }
@@ -197,16 +159,16 @@ namespace Dream
     PhysicsObjectInstance::load
     (string projectPath)
     {
-        loadExtraAttributes(mDefinition->toJson(),mDefinition,false);
-        mCollisionShape = createCollisionShape(mDefinition,projectPath);
+        loadExtraAttributes(mDefinitionHandle->getJson(),mDefinitionHandle,false);
+        mCollisionShape = createCollisionShape(mDefinitionHandle,projectPath);
         if (!mCollisionShape)
         {
             cerr << "PhysicsObjectInstance: Unable to create collision shape" << endl;
             return false;
         }
-        float mass = mDefinition->getAttributeAsFloat(Constants::ASSET_ATTR_MASS);
+        float mass = mDefinitionHandle->getJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
-        mMotionState = new PhysicsMotionState(mTransform);
+        mMotionState = new PhysicsMotionState(mTransformHandle);
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);
@@ -230,15 +192,15 @@ namespace Dream
 
         if (format.compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
         {
-            btScalar radius = definition->getAttributeAsFloat(Constants::ASSET_ATTR_RADIUS);
+            btScalar radius = definition->getJson()[Constants::ASSET_ATTR_RADIUS];
             collisionShape = new btSphereShape(radius);
         }
         else if (format.compare(Constants::COLLISION_SHAPE_BOX) == 0)
         {
             btScalar boxX, boxY, boxZ;
-            boxX = definition->getAttributeAsFloat(Constants::ASSET_ATTR_SIZE_X);
-            boxY = definition->getAttributeAsFloat(Constants::ASSET_ATTR_SIZE_Y);
-            boxZ = definition->getAttributeAsFloat(Constants::ASSET_ATTR_SIZE_Z);
+            boxX = definition->getJson()[Constants::ASSET_ATTR_SIZE][Constants::X];
+            boxY = definition->getJson()[Constants::ASSET_ATTR_SIZE][Constants::Y];
+            boxZ = definition->getJson()[Constants::ASSET_ATTR_SIZE][Constants::Z];
             collisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CYLINDER) == 0)
@@ -285,10 +247,10 @@ namespace Dream
         }
         else if (format.compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
         {
-            float x = definition->getAttributeAsFloat(Constants::ASSET_ATTR_NORMAL_X);
-            float y = definition->getAttributeAsFloat(Constants::ASSET_ATTR_NORMAL_Y);
-            float z = definition->getAttributeAsFloat(Constants::ASSET_ATTR_NORMAL_Z);
-            float constant = definition->getAttributeAsFloat(Constants::ASSET_ATTR_CONSTANT);
+            float x = definition->getJson()[Constants::ASSET_ATTR_NORMAL][Constants::X];
+            float y = definition->getJson()[Constants::ASSET_ATTR_NORMAL][Constants::Y];
+            float z = definition->getJson()[Constants::ASSET_ATTR_NORMAL][Constants::Z];
+            float constant = definition->getJson()[Constants::ASSET_ATTR_CONSTANT];
             btVector3 planeNormal(x,y,z);
             btScalar planeConstant = btScalar(constant);
             collisionShape = new btStaticPlaneShape(planeNormal,planeConstant);
@@ -301,7 +263,7 @@ namespace Dream
             for (CompoundChild child : mCompoundChildren)
             {
                 AssetDefinition  *def = getAssetDefinitionByUuid(child.uuid);
-                loadExtraAttributes(def->toJson(),def,true);
+                loadExtraAttributes(def->getJson(),def,true);
                 btCollisionShape *shape = createCollisionShape(def,projectPath);
                 compound->addChildShape(child.transform,shape);
             }
@@ -309,7 +271,7 @@ namespace Dream
 
         if (collisionShape)
         {
-            btScalar margin = definition->getAttributeAsFloat(Constants::ASSET_ATTR_MARGIN);
+            btScalar margin = definition->getJson()[Constants::ASSET_ATTR_MARGIN];
             collisionShape->setMargin(margin);
         }
 

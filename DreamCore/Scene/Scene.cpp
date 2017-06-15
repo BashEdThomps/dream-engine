@@ -17,21 +17,26 @@
  */
 
 #include "Scene.h"
-#include "ProjectRuntime.h"
+
 #include <functional>
 #include <algorithm>
-#include "Project.h"
+
+#include "../Project/Project.h"
 
 namespace Dream
 {
+    SceneRuntime Scene::getRuntime() const
+    {
+        return mRuntime;
+    }
+
     Scene::Scene
     (Project* project, nlohmann::json json)
         : mProjectHandle(project),
-          mJson(json),
-          mRootSceneObjectHandle(nullptr),
-          mState(NOT_LOADED)
+          mJson(json)
     {
-        nlohmann::json sceneObjects = mJson[Constants::SCENE_JSON_SCENE_OBJECTS];
+        mRuntime.setState(NOT_LOADED);
+        nlohmann::json sceneObjects = mJson[Constants::SCENE_SCENE_OBJECTS];
 
         if (!sceneObjects.is_null() && sceneObjects.is_array())
         {
@@ -63,7 +68,7 @@ namespace Dream
                 }
                 else
                 {
-                    setRootSceneObject(nextSceneObject);
+                    mRootSceneObject.reset(nextSceneObject);
                 }
                 if (!it[Constants::SCENE_OBJECT_CHILDREN].is_null())
                 {
@@ -83,9 +88,9 @@ namespace Dream
     {
         vector<float> gravity;
         gravity.reserve(3);
-        gravity[0] = mJson[Constants::SCENE_JSON_GRAVITY][Constants::SCENE_JSON_X];
-        gravity[1] = mJson[Constants::SCENE_JSON_GRAVITY][Constants::SCENE_JSON_Y];
-        gravity[2] = mJson[Constants::SCENE_JSON_GRAVITY][Constants::SCENE_JSON_Z];
+        gravity[Constants::X_INDEX] = mJson[Constants::SCENE_GRAVITY][Constants::X];
+        gravity[Constants::Y_INDEX] = mJson[Constants::SCENE_GRAVITY][Constants::Y];
+        gravity[Constants::Z_INDEX] = mJson[Constants::SCENE_GRAVITY][Constants::Z];
         return gravity;
     }
 
@@ -100,28 +105,28 @@ namespace Dream
     Scene::getName
     ()
     {
-        return mJson[Constants::SCENE_JSON_NAME];
+        return mJson[Constants::SCENE_NAME];
     }
 
     string
     Scene::getUuid
     ()
     {
-       return mJson[Constants::SCENE_JSON_UUID];
+       return mJson[Constants::SCENE_UUID];
     }
 
     void
     Scene::setUuid
     (string uuid)
     {
-        mJson[Constants::SCENE_JSON_UUID] = uuid;
+        mJson[Constants::SCENE_UUID] = uuid;
     }
 
     void
     Scene::setName
     (string name)
     {
-        mJson[Constants::SCENE_JSON_NAME] = name ;
+        mJson[Constants::SCENE_NAME] = name ;
     }
 
     SceneObject*
@@ -130,7 +135,7 @@ namespace Dream
     {
         return static_cast<SceneObject*>
         (
-            mRootSceneObjectHandle->applyToAll
+            mRootSceneObject->applyToAll
             (
                 function<void*(SceneObject*)>
                 (
@@ -153,7 +158,7 @@ namespace Dream
     {
         return static_cast<SceneObject*>
         (
-            mRootSceneObjectHandle->applyToAll
+            mRootSceneObject->applyToAll
             (
                 function<void*(SceneObject*)>
                 (
@@ -175,7 +180,7 @@ namespace Dream
     ()
     {
         int count = 0;
-        mRootSceneObjectHandle->applyToAll
+        mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -212,13 +217,13 @@ namespace Dream
     Scene::showScenegraph
     ()
     {
-        if (mRootSceneObjectHandle == nullptr)
+        if (!mRootSceneObject)
         {
             cout << "Scene: Scenegraph is empty (no root SceneObject)" << endl;
             return;
         }
 
-        mRootSceneObjectHandle->applyToAll
+        mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -235,28 +240,28 @@ namespace Dream
     Scene::setRootSceneObject
     (SceneObject* root)
     {
-        mRootSceneObjectHandle = root;
+        mRootSceneObject.reset(root);
     }
 
     SceneObject*
     Scene::getRootSceneObject
     ()
     {
-        return mRootSceneObjectHandle;
+        return mRootSceneObject.get();
     }
 
     void
     Scene::setCameraMovementSpeed
     (float speed)
     {
-        mJson[Constants::SCENE_JSON_CAMERA][Constants::SCENE_JSON_MOVEMENT_SPEED] = speed;
+        mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED] = speed;
     }
 
     float
     Scene::getCameraMovementSpeed
     ()
     {
-        return mJson[Constants::SCENE_JSON_CAMERA][Constants::SCENE_JSON_MOVEMENT_SPEED];
+        return mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED];
     }
 
     vector<float>
@@ -265,10 +270,10 @@ namespace Dream
     {
         vector<float> ambientColour;
         ambientColour.reserve(4);
-        ambientColour[0] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_RED];
-        ambientColour[1] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_GREEN];
-        ambientColour[2] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_BLUE];
-        ambientColour[3] = mJson[Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR][Constants::SCENE_JSON_ALPHA];
+        ambientColour[Constants::RED_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED];
+        ambientColour[Constants::GREEN_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN];
+        ambientColour[Constants::BLUE_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE];
+        ambientColour[Constants::ALPHA_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA];
         return ambientColour;
     }
 
@@ -278,10 +283,10 @@ namespace Dream
     {
         vector<float> clearColour;
         clearColour.reserve(4);
-        clearColour[0] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_RED];
-        clearColour[1] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_GREEN];
-        clearColour[2] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_BLUE];
-        clearColour[3] = mJson[Constants::SCENE_JSON_CLEAR_COLOUR][Constants::SCENE_JSON_ALPHA];
+        clearColour[Constants::RED_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED];
+        clearColour[Constants::GREEN_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN];
+        clearColour[Constants::BLUE_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE];
+        clearColour[Constants::ALPHA_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::ALPHA];
         return clearColour;
     }
 
@@ -295,7 +300,7 @@ namespace Dream
                  << object->getNameAndUuidString()
                  << " to delete queue" << endl;
         }
-        mDeleteQueue.push_back(object);
+        mRuntime.getDeleteQueue().push_back(object);
     }
 
     void
@@ -306,16 +311,16 @@ namespace Dream
         {
             cout << "Scene: clearDeleteQueue" << endl;
         }
-        mDeleteQueue.clear();
+        mRuntime.getDeleteQueue().clear();
     }
 
     void
     Scene::destroyDeleteQueue
     ()
     {
-        if (!mDeleteQueue.empty())
+        if (!mRuntime.getDeleteQueue().empty())
         {
-            for(SceneObject* obj : mDeleteQueue)
+            for(SceneObject* obj : mRuntime.getDeleteQueue())
             {
                 obj->cleanUp();
             }
@@ -332,7 +337,7 @@ namespace Dream
             cout << "Scene: findDeleteFlaggedSceneObjects Called" << endl;
         }
 
-        mRootSceneObjectHandle->applyToAll
+        mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -352,7 +357,7 @@ namespace Dream
     Scene::getDeleteQueue
     ()
     {
-        return mDeleteQueue;
+        return mRuntime.getDeleteQueue();
     }
 
     void
@@ -364,7 +369,7 @@ namespace Dream
             cout << "Secne: Create All Asset Instances Called" << endl;
         }
 
-        mRootSceneObjectHandle->applyToAll
+        mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -385,7 +390,7 @@ namespace Dream
     Scene::loadAllAssetInstances
     ()
     {
-        mRootSceneObjectHandle->applyToAll
+        mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -404,7 +409,7 @@ namespace Dream
             )
         );
 
-        setState(LOADED);
+        mRuntime.setState(LOADED);
     }
     void
     Scene::findDeleteFlaggedScripts
@@ -414,7 +419,7 @@ namespace Dream
         {
             cout << "Scene: Cleanup Deleted Scripts Called" << endl;
         }
-        vector<SceneObject*> objects = getDeleteQueue();
+        vector<SceneObject*> objects = mRuntime.getDeleteQueue();
 
         for (SceneObject* it : objects)
         {
@@ -426,11 +431,11 @@ namespace Dream
     Scene::getPhysicsDebug
     ()
     {
-        return mJson[Constants::SCENE_JSON_PHYSICS_DEBUG];
+        return mJson[Constants::SCENE_PHYSICS_DEBUG];
     }
 
     nlohmann::json
-    Scene::toJson
+    Scene::getJson
     ()
     {
         return mJson;
@@ -440,14 +445,14 @@ namespace Dream
     Scene::getNotes
     ()
     {
-        return mJson[Constants::SCENE_JSON_NOTES];
+        return mJson[Constants::SCENE_NOTES];
     }
 
     void
     Scene::setNotes
     (string notes)
     {
-        mJson[Constants::SCENE_JSON_NOTES] = notes;
+        mJson[Constants::SCENE_NOTES] = notes;
     }
 
     void
@@ -458,7 +463,7 @@ namespace Dream
         {
             cout << "Scene: cleanUpSceneObjects" << endl;
         }
-        mRootSceneObjectHandle->applyToAll
+        mRootSceneObject->applyToAll
         (
             function<void*(SceneObject*)>
             (
@@ -509,11 +514,11 @@ namespace Dream
                  << endl;
         }
 
-        if(getState() == DONE)
+        if(mRuntime.getState() == DONE)
         {
            cleanUpSceneObjects();
            flush();
-           setState(CLEANED_UP);
+           mRuntime.setState(CLEANED_UP);
         }
         else
         {
@@ -524,20 +529,6 @@ namespace Dream
         }
     }
 
-    SceneState
-    Scene::getState
-    ()
-    {
-       return mState;
-    }
-
-    void
-    Scene::setState
-    (SceneState state)
-    {
-        mState = state;
-    }
-
     Project*
     Scene::getProjectHandle
     ()
@@ -545,33 +536,26 @@ namespace Dream
         return mProjectHandle;
     }
 
-    bool
-    Scene::isState
-    (SceneState state)
-    {
-        return mState == state;
-    }
-
     Transform3D
     Scene::getDefaultCameraTransform
     ()
     {
         Transform3D defaultCameraTransform;
-        nlohmann::json camera = mJson[Constants::SCENE_JSON_CAMERA];
+        nlohmann::json camera = mJson[Constants::SCENE_CAMERA];
 
         if (!camera.is_null())
         {
-            nlohmann::json translation = camera[Constants::SCENE_JSON_TRANSLATION];
+            nlohmann::json translation = camera[Constants::SCENE_TRANSLATION];
             defaultCameraTransform.setTranslation(
-                translation[Constants::SCENE_JSON_X],
-                translation[Constants::SCENE_JSON_Y],
-                translation[Constants::SCENE_JSON_Z]
+                translation[Constants::X],
+                translation[Constants::Y],
+                translation[Constants::Z]
             );
-            nlohmann::json rotation = camera[Constants::SCENE_JSON_ROTATION];
+            nlohmann::json rotation = camera[Constants::SCENE_ROTATION];
             defaultCameraTransform.setRotation(
-                rotation[Constants::SCENE_JSON_X],
-                rotation[Constants::SCENE_JSON_Y],
-                rotation[Constants::SCENE_JSON_Z]
+                rotation[Constants::X],
+                rotation[Constants::Y],
+                rotation[Constants::Z]
             );
         }
 

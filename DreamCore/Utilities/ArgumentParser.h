@@ -15,20 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ARGUMENTPARSER_H
-#define ARGUMENTPARSER_H
+#pragma once
 
 #include <iostream>
-#include "Constants.h"
+
+#include "../Common/Constants.h"
 
 using namespace std;
 
 namespace Dream
 {
-
-
     class ArgumentParser
     {
+
     private:
         int mArgc;
         const char** mArgv;
@@ -38,6 +37,7 @@ namespace Dream
         string mProjectFilePath;
         bool mUsingHttp;
         string mHttpUrl;
+
     public:
         ArgumentParser(int,const char**);
         ~ArgumentParser(void);
@@ -48,7 +48,7 @@ namespace Dream
         string getProjectFilePath();
         string getProjectHttpUrl();
         bool getUsingHttp();
-    }; // End of ArgumentParser
-} // End of Dream
 
-#endif // End of ARGUMENTPARSER_H
+    }; // End of ArgumentParser
+
+} // End of Dream

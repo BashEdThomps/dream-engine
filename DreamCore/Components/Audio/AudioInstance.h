@@ -1,9 +1,8 @@
-#ifndef AudioAssetInstance_h
-#define AudioAssetInstance_h
+#pragma once
 
 #include <vector>
 #include "AudioStatus.h"
-#include "../../IAssetInstance.h"
+#include "../../Common/IAssetInstance.h"
 
 #ifdef __APPLE__
 #include <OpenAL/al.h>
@@ -47,5 +46,3 @@ namespace Dream
       };
 
 } // End of Dream
-
-#endif /* AudioAssetInstance_h */

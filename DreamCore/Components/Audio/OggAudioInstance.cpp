@@ -36,7 +36,7 @@ namespace Dream
     OggAudioInstance::load
     (std::string projectPath)
     {
-        std::string absPath = projectPath+mDefinition->getAssetPath();
+        std::string absPath = projectPath+mDefinitionHandle->getAssetPath();
         std::cout << "OggAudioInstance: Loading Instance: " << absPath << std::endl;
 
         // 0 for Little-Endian, 1 for Big-Endian

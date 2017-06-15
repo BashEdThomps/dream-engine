@@ -7,11 +7,12 @@
 #include <glm/glm.hpp>
 #include <assimp/types.h>
 
-#include "../../../Constants.h"
+#include "Texture.h"
+
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
+#include "../../../Common/Constants.h"
 
-#include "Texture.h"
 
 namespace Dream
 {

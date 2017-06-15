@@ -47,22 +47,17 @@ namespace Dream
     {
         loadAssetDefinitionsFromJson(mJson[Constants::PROJECT_ASSET_ARRAY]);
         loadScenesFromJson(mJson[Constants::PROJECT_SCENE_ARRAY]);
+        showStatus();
     }
 
     void
     Project::showStatus
     ()
     {
-        cout << "Project"  << endl;
-        cout << "{" << endl;
-        cout << "\tUUID: " << getUuid() << endl;
-        cout << "\tName: " << getName() << endl;
-        cout << "\tAuthor: " << getAuthor() << endl;
-        cout << "\tDescription: " << getDescription() << endl;
-        cout << "\tStartup Scene: " << getStartupSceneUuid() << endl;
-        cout << "\tWindow Width: " << getWindowWidth() << endl;
-        cout << "\tWindow Height: " << getWindowHeight() << endl;
-        cout << "}" << endl;
+        if (Constants::DEBUG)
+        {
+            cout << "Project: " << mJson.dump(1) << endl;
+        }
     }
 
     string
@@ -364,7 +359,7 @@ namespace Dream
         mAssetDefinitions.clear();
     }
 
-    nlohmann::json Project::toJson()
+    nlohmann::json Project::getJson()
     {
         return mJson;
     }
@@ -386,13 +381,12 @@ namespace Dream
             cout << "Project: Loading Scene " << mActiveSceneHandle->getName() << endl;
         }
 
-        mRuntime->setGraphicsClearColour(mActiveSceneHandle->getClearColour());
-        mRuntime->setGraphicsAmbientLightColour(mActiveSceneHandle->getAmbientLightColour());
-        mRuntime->setPhysicsGravity(mActiveSceneHandle->getGravity());
-        mRuntime->setPhysicsDebug(mActiveSceneHandle->getPhysicsDebug());
-        mRuntime->setCameraTranslation(mActiveSceneHandle->getDefaultCameraTransform().getTranslation());
-        mRuntime->setCameraRotation(mActiveSceneHandle->getDefaultCameraTransform().getRotation());
-        mRuntime->setCameraMovementSpeed(mActiveSceneHandle->getCameraMovementSpeed());
+        mRuntime->getGraphicsComponent()->setActiveScene(mActiveSceneHandle);
+        mRuntime->getPhysicsComponent()->setGravity(mActiveSceneHandle->getGravity());
+        mRuntime->getPhysicsComponent()->setDebug(mActiveSceneHandle->getPhysicsDebug());
+        mRuntime->getCamera()->setTranslation(mActiveSceneHandle->getDefaultCameraTransform().getTranslation());
+        mRuntime->getCamera()->setRotation(mActiveSceneHandle->getDefaultCameraTransform().getRotation());
+        mRuntime->getCamera()->setMovementSpeed(mActiveSceneHandle->getCameraMovementSpeed());
 
         return true;
     }

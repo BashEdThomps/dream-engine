@@ -369,55 +369,6 @@ namespace Dream
         return mLuaEngine->init();
     }
 
-    void
-    ProjectRuntime::setGraphicsClearColour
-    (vector<float> colour)
-    {
-       mGraphicsComponent->setClearColour(colour);
-    }
-
-    void
-    ProjectRuntime::setGraphicsAmbientLightColour
-    (vector<float> colour)
-    {
-        mGraphicsComponent->setAmbientLightColour(colour);
-    }
-
-    void
-    ProjectRuntime::setPhysicsGravity
-    (vector<float> gravity)
-    {
-        mPhysicsComponent->setGravity(gravity);
-    }
-
-    void
-    ProjectRuntime::setPhysicsDebug
-    (bool debug)
-    {
-        mPhysicsComponent->setDebug(debug);
-    }
-
-    void
-    ProjectRuntime::setCameraTranslation
-    (glm::vec3 translation)
-    {
-        mCamera->setTranslation(translation);
-    }
-
-    void
-    ProjectRuntime::setCameraRotation
-    (glm::vec3 rotation)
-    {
-        mCamera->setRotation(rotation);
-    }
-
-    void
-    ProjectRuntime::setCameraMovementSpeed
-    (float moveSpeed)
-    {
-        mCamera->setMovementSpeed(moveSpeed);
-    }
-
     LuaEngine*
     ProjectRuntime::getLuaEngine
     ()

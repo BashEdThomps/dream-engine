@@ -1,8 +1,7 @@
-#ifndef Environment_h
-#define Environment_h
+#pragma once
 
 #include <iostream>
-#include "Constants.h"
+#include "../Common/Constants.h"
 
 using namespace std;
 
@@ -15,6 +14,3 @@ namespace Dream
     };
 
 } // End of Dream
-
-
-#endif /* Environment_h */

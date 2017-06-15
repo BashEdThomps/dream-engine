@@ -18,9 +18,11 @@
 
 #include <memory>
 #include <GL/glew.h>
-#include "../../../IAssetInstance.h"
-#include "../../../Constants.h"
+
 #include "FontCache.h"
+
+#include "../../../Common/IAssetInstance.h"
+#include "../../../Common/Constants.h"
 
 using namespace std;
 

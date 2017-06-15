@@ -1,14 +1,14 @@
-#ifndef PhysicsObjectInstance_h
-#define PhysicsObjectInstance_h
+#pragma once
 
-#include "../../Constants.h"
-#include "../../IAssetInstance.h"
-#include "PhysicsMotionState.h"
 #include <btBulletDynamicsCommon.h>
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#include "PhysicsMotionState.h"
+
+#include "../../Common/Constants.h"
+#include "../../Common/IAssetInstance.h"
 
 namespace Dream
 {
@@ -52,6 +52,5 @@ namespace Dream
         void processAssimpMesh(aiMesh*, btTriangleMesh*);
         AssetDefinition* getAssetDefinitionByUuid(string);
     }; // End of PhysicsObjectInstance
-} // End of Dream
 
-#endif /* PhysicsObjectInstance_h */
+} // End of Dream

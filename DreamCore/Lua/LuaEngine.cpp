@@ -21,9 +21,7 @@
 #include <luabind/adopt_policy.hpp>
 
 #include "LuaScriptCache.h"
-#include "../Project.h"
-#include "../ProjectRuntime.h"
-#include "../Math.h"
+
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Animation/AnimationInstance.h"
 #include "../Components/Audio/AudioComponent.h"
@@ -38,6 +36,10 @@
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Physics/PhysicsObjectInstance.h"
 #include "../Components/Window/IWindowComponent.h"
+
+#include "../Project/Project.h"
+#include "../Project/ProjectRuntime.h"
+#include "../Utilities/Math.h"
 
 using namespace std;
 
@@ -331,7 +333,7 @@ namespace Dream
         {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
-            luabind::object funq = table[LUA_SCRIPT_ON_UPDATE_FUNCTION];
+            luabind::object funq = table[Constants::LUA_UPDATE_FUNCTION];
             luabind::call_function<void>(funq,sceneObject);
         }
         catch (luabind::error &e)
@@ -367,7 +369,7 @@ namespace Dream
         {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
-            luabind::object funq = table[LUA_SCRIPT_ON_INIT_FUNCTION];
+            luabind::object funq = table[Constants::LUA_INIT_FUNCTION];
             luabind::call_function<void>(funq,sceneObject);
         }
         catch (luabind::error &e)
@@ -402,7 +404,7 @@ namespace Dream
         {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
-            luabind::object funq = table[LUA_SCRIPT_ON_INPUT_FUNCTION];
+            luabind::object funq = table[Constants::LUA_INPUT_FUNCTION];
 
             for(InputEvent event : mInputEvents)
             {
@@ -444,7 +446,7 @@ namespace Dream
         {
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
-            luabind::object funq = table[LUA_SCRIPT_ON_EVENT_FUNCTION];
+            luabind::object funq = table[Constants::LUA_EVENT_FUNCTION];
             vector<Event*>* events = sceneObject->getEventQueue();
             for (Event* event : *events)
             {

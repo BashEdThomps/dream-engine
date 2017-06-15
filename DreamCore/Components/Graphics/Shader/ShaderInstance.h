@@ -15,14 +15,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SHADERINSTANCE_H
-#define SHADERINSTANCE_H
 
-#include "../../../Constants.h"
-#include "../../../IAssetInstance.h"
+#pragma once
 
 #include <vector>
 #include <map>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -30,8 +28,8 @@
 #include <glm/vec3.hpp>
 #include <glm/matrix.hpp>
 
-#define SHADER_VERTEX   "vertex"
-#define SHADER_FRAGMENT "fragment"
+#include "../../../Common/Constants.h"
+#include "../../../Common/IAssetInstance.h"
 
 using namespace std;
 
@@ -58,6 +56,5 @@ namespace Dream
         // 1f
         void syncUniform1f();
     }; // End of ShaderInstance
-} // End of Dream
 
-#endif // End of SHADERINSTANCE_H
+} // End of Dream

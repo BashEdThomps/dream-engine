@@ -1,16 +1,19 @@
-#ifndef PhysicsDebugDrawer_h
-#define PhysicsDebugDrawer_h
+#pragma once
 
 #include <iostream>
 #include <sstream>
 #include <vector>
+
 #include <GL/glew.h>
+
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btIDebugDraw.h>
+
 #include "../Graphics/Shader/ShaderInstance.h"
-#include "../../Constants.h"
+#include "../../Common/Constants.h"
 
 using namespace std;
 
@@ -31,9 +34,11 @@ namespace Dream
         GLuint mVAO, mVBO;
         vector<PhysicsDebugVertex> mVertexBuffer;
         int mDebugMode;
+
     public:
         PhysicsDebugDrawer();
         ~PhysicsDebugDrawer();
+
         void init();
         void initShader();
         void initVaoVbo();
@@ -52,6 +57,5 @@ namespace Dream
         void drawAll();
 
     };
-} // End of Dream
 
-#endif /* PhysicsDebugDrawer_h */
+} // End of Dream

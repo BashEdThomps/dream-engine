@@ -20,8 +20,8 @@
 
 #include <GL/glew.h>
 
-#include "../../../Constants.h"
-#include "../../../IAssetInstance.h"
+#include "../../../Common/Constants.h"
+#include "../../../Common/IAssetInstance.h"
 
 namespace Dream
 {

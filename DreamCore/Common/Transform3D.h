@@ -88,7 +88,7 @@ namespace Dream
     void scaleByY(float);
     void scaleByZ(float);
 
-    nlohmann::json toJson();
+    nlohmann::json getJson();
 
   };
 

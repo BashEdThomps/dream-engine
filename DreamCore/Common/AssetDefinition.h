@@ -26,6 +26,7 @@
 #include "Constants.h"
 
 using namespace std;
+using namespace nlohmann;
 
 namespace Dream
 {
@@ -35,7 +36,7 @@ namespace Dream
         static AssetDefinition* getAssetDefinitionByUuid(vector<AssetDefinition*>,string);
 
     private:
-        nlohmann::json mJson;
+        json mJson;
         string mProjectPath;
     public:
         AssetDefinition(nlohmann::json);
@@ -53,17 +54,8 @@ namespace Dream
 
         string getNameAndUuidString();
 
-        void addAttribute(string,string);
-
-        string  getAttribute(string);
-        int getAttributeAsInt(string);
-        float getAttributeAsFloat(string);
-        double getAttributeAsDouble(string);
-        bool getAttributeAsBool(string);
-        long getAttributeAsLong(string);
-        char getAttributeAsChar(string);
-
         string getAssetTypeDirectory();
+
 
         bool isTypeAnimation();
         bool isTypeAudio();
@@ -77,18 +69,18 @@ namespace Dream
 
         bool isScriptFormatLua();
         bool isModelFormatAssimp();
-        bool isAudioFormatSoundEffect();
-        bool isAudioFormatMusic();
+
+        bool isAudioFormatWav();
+        bool isAudioFormatOgg();
 
         string getAssetPath();
 
         void setProjectPath(string);
         string getProjectPath();
 
-        void loadMetadata();
         void showStatus();
 
-        nlohmann::json toJson();
+        json& getJson();
 
     }; // End of AssetDefinition
 

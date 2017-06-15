@@ -30,31 +30,10 @@ namespace Dream
     (Camera* camera, IWindowComponent* windowComponent)
         : IComponent(),
           mCamera(camera),
-          mClearColour({1.0f,1.0f,1.0f,1.0f}),
-          mAmbientLightColour({1.0f,1.0f,1.0f,1.0f}),
-          mWindowComponentHandle(windowComponent)
+          mWindowComponentHandle(windowComponent),
+          mActiveSceneHandle(nullptr)
     {
 
-    }
-
-    void
-    GraphicsComponent::setClearColour
-    (vector<float> clearColour)
-    {
-        mClearColour[CLEAR_RED] = clearColour[CLEAR_RED];
-        mClearColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
-        mClearColour[CLEAR_BLUE] = clearColour[CLEAR_BLUE];
-        mClearColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
-    }
-
-    void
-    GraphicsComponent::setAmbientLightColour
-    (vector<float> clearColour)
-    {
-        mAmbientLightColour[CLEAR_RED]   = clearColour[CLEAR_RED];
-        mAmbientLightColour[CLEAR_GREEN] = clearColour[CLEAR_GREEN];
-        mAmbientLightColour[CLEAR_BLUE]  = clearColour[CLEAR_BLUE];
-        mAmbientLightColour[CLEAR_ALPHA] = clearColour[CLEAR_ALPHA];
     }
 
     GraphicsComponent::~GraphicsComponent
@@ -159,20 +138,25 @@ namespace Dream
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // Clear the colorbuffer
-        glClearColor(
-            mClearColour[CLEAR_RED],
-            mClearColour[CLEAR_GREEN],
-            mClearColour[CLEAR_BLUE],
-            mClearColour[CLEAR_ALPHA]
-        );
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if (mActiveSceneHandle)
+        {
+            glClearColor(
+                mActiveSceneHandle->getClearColour()[Constants::RED_INDEX],
+                mActiveSceneHandle->getClearColour()[Constants::GREEN_INDEX],
+                mActiveSceneHandle->getClearColour()[Constants::BLUE_INDEX],
+                mActiveSceneHandle->getClearColour()[Constants::ALPHA_INDEX]
+            );
+        }
+        else
+        {
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
+        }
     }
 
     void
     GraphicsComponent::postRender
     ()
     {
-        //glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glDisable (GL_BLEND);
     }
@@ -520,11 +504,26 @@ namespace Dream
         // Set Ambient Light Values
         GLint uAmbientStrength = glGetUniformLocation(shader->getShaderProgram(),"ambientStrength");
         GLint uAmbientColor    = glGetUniformLocation(shader->getShaderProgram(),"ambientColor");
+        GLfloat strength = 0;
         if (uAmbientColor > 0 && uAmbientStrength > 0)
         {
-            glm::vec3 ambientColor = glm::vec3(mAmbientLightColour[0],mAmbientLightColour[1],mAmbientLightColour[2]);
-            glUniform1f(uAmbientStrength,mAmbientLightColour[3]);
-            glUniform3fv(uAmbientColor,1,glm::value_ptr(ambientColor));
+            glm::vec3 ambientColour;
+            if (mActiveSceneHandle)
+            {
+                ambientColour = glm::vec3(
+                    mActiveSceneHandle->getJson()[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED],
+                    mActiveSceneHandle->getJson()[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN],
+                    mActiveSceneHandle->getJson()[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]
+                );
+                strength = mActiveSceneHandle->getJson()[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA];
+            }
+            else
+            {
+            }
+
+            glUniform1f(uAmbientStrength,strength);
+            glUniform3fv(uAmbientColor,1,glm::value_ptr(ambientColour));
+
         }
         // Set Diffuse Light Values
         vector<LightInstance*>::
@@ -638,12 +637,18 @@ namespace Dream
         clear2DQueue();
         clear3DQueue();
         clearLightQueue();
-        mClearColour = {0.0f,0.0f,0.0f,1.0f};
-        mAmbientLightColour = {0.0f,0.0f,0.0f,0.0f};
         // Clean up caches
         TextureCache::cleanUp();
         ShaderCache::cleanUp();
         AssimpModelInstance::cleanUpCache();
+        mActiveSceneHandle = nullptr;
+    }
+
+    void
+    GraphicsComponent::setActiveScene
+    (Scene* scene)
+    {
+        mActiveSceneHandle = scene;
     }
 
 } // End of Dream

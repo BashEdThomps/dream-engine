@@ -15,56 +15,43 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCENE_H
-#define SCENE_H
+#pragma once
 
 #include <iostream>
 #include <vector>
 #include <map>
 #include <json.hpp>
 
-#include "String.h"
 #include "SceneObject.h"
-#include "Constants.h"
-#include "IAssetInstance.h"
-#include "AssetDefinition.h"
+#include "SceneRuntime.h"
 
-#include "Lua/LuaScriptInstance.h"
-
-#include "Components/Graphics/Camera.h"
-#include "Components/Audio/AudioInstance.h"
-#include "Components/Animation/AnimationInstance.h"
-#include "Components/Graphics/Sprite/SpriteInstance.h"
-#include "Components/Graphics/Shader/ShaderInstance.h"
-#include "Components/Graphics/Model/AssimpModelInstance.h"
-#include "Components/Graphics/Light/LightInstance.h"
-#include "Components/Graphics/Font/FontInstance.h"
-#include "Components/Physics/PhysicsObjectInstance.h"
+#include "../Common/Constants.h"
+#include "../Common/IAssetInstance.h"
+#include "../Common/AssetDefinition.h"
+#include "../Components/Graphics/Camera.h"
+#include "../Components/Audio/AudioInstance.h"
+#include "../Components/Animation/AnimationInstance.h"
+#include "../Components/Graphics/Sprite/SpriteInstance.h"
+#include "../Components/Graphics/Shader/ShaderInstance.h"
+#include "../Components/Graphics/Model/AssimpModelInstance.h"
+#include "../Components/Graphics/Light/LightInstance.h"
+#include "../Components/Graphics/Font/FontInstance.h"
+#include "../Components/Physics/PhysicsObjectInstance.h"
+#include "../Lua/LuaScriptInstance.h"
+#include "../Utilities/String.h"
 
 using namespace std;
 
 namespace Dream
 {
     class Project;
-
-    enum SceneState
-    {
-        NOT_LOADED,
-        LOADED,
-        RUNNING,
-        DONE,
-        CLEANED_UP
-    };
-
     class Scene
     {
     private:
         Project* mProjectHandle;
         nlohmann::json mJson;
-        SceneObject *mRootSceneObjectHandle;
-        vector<SceneObject*> mDeleteQueue;
-        string mProjectPath;
-        SceneState mState;
+        unique_ptr<SceneObject> mRootSceneObject;
+        SceneRuntime mRuntime;
 
     public:
         Scene(Project* parent, nlohmann::json projJson);
@@ -124,7 +111,7 @@ namespace Dream
 
         void loadSceneObjectJsonData(nlohmann::json, SceneObject*);
 
-        nlohmann::json toJson();
+        nlohmann::json getJson();
 
         void cleanUpSceneObjects();
         void cleanUp();
@@ -132,12 +119,8 @@ namespace Dream
         bool hasName(string);
         bool hasUuid(string);
 
-        SceneState getState();
-        void setState(SceneState);
-        bool isState(SceneState);
+        SceneRuntime getRuntime() const;
 
     }; // End of Scene
 
 } // End of Dream
-
-#endif // End of SCENE_H

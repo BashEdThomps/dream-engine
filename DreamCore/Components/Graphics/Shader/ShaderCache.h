@@ -15,13 +15,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SHADERCACHE_H
-#define SHADERCACHE_H
+
+#pragma once
 
 #include <iostream>
 #include <map>
 #include <GL/glew.h>
-#include "../../../Constants.h"
+
+#include "../../../Common/Constants.h"
 
 using namespace std;
 
@@ -36,5 +37,3 @@ namespace Dream
       static void cleanUp();
     };
 }
-
-#endif // SHADERCACHE_H

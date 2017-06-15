@@ -15,60 +15,78 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Uuid.h"
 #include "IAssetInstance.h"
+
+#include "../Utilities/Uuid.h"
 
 namespace Dream
 {
-    IAssetInstance::IAssetInstance(AssetDefinition* definition, Transform3D* transform)
-    {
-        mDefinition = definition;
-        mTransform = transform;
-        mLoaded = false;
-        mName = mDefinition->getName();
-        mUuid = Uuid::generateUuid();
-    }
-
-    IAssetInstance::~IAssetInstance()
+    IAssetInstance::IAssetInstance
+    (AssetDefinition* definition, Transform3D* transform)
+        :mLoaded(false),
+          mDefinitionHandle(definition),
+          mTransformHandle(transform),
+          mUuid(Uuid::generateUuid())
     {
     }
 
-    string IAssetInstance::getName()
+    IAssetInstance::~IAssetInstance
+    ()
     {
-        return mDefinition->getName();
     }
 
-    string IAssetInstance::getUuid()
+    string
+    IAssetInstance::getName
+    ()
+    {
+        return mDefinitionHandle->getName();
+    }
+
+    string
+    IAssetInstance::getUuid
+    ()
     {
         return mUuid;
     }
 
-    string IAssetInstance::getNameAndUuidString()
+    string
+    IAssetInstance::getNameAndUuidString
+    ()
     {
         return getName() + " (" + getUuid() + ")";
     }
 
-    Transform3D* IAssetInstance::getTransform()
+    Transform3D*
+    IAssetInstance::getTransform
+    ()
     {
-        return mTransform;
+        return mTransformHandle;
     }
 
-    string IAssetInstance::getAbsolutePath()
+    string
+    IAssetInstance::getAbsolutePath
+    ()
     {
         return mAbsolutePath;
     }
 
-    void IAssetInstance::setAbsolutePath(string path)
+    void
+    IAssetInstance::setAbsolutePath
+    (string path)
     {
         mAbsolutePath = path;
     }
 
-    bool IAssetInstance::getLoadedFlag()
+    bool
+    IAssetInstance::getLoadedFlag
+    ()
     {
         return mLoaded;
     }
 
-    void IAssetInstance::setLoadedFlag(bool loaded)
+    void
+    IAssetInstance::setLoadedFlag
+    (bool loaded)
     {
         mLoaded = loaded;
     }

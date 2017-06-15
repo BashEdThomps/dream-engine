@@ -15,16 +15,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ICOMPONENT_H
-#define ICOMPONENT_H
+#pragma once
 
-#include "../Scene.h"
-#include "../Time.h"
+#include "../Common/Time.h"
+#include "../Scene/Scene.h"
 
 namespace Dream
 {
     class IComponent
     {
+
     public:
         IComponent();
         virtual ~IComponent();
@@ -32,9 +32,10 @@ namespace Dream
         virtual void updateComponent(Scene*) = 0;
         virtual void cleanUp(Scene*) = 0;
         void setTime(Time*);
+
     protected:
         Time* mTime;
-    }; // End of IComponent
-} // End of Dream
 
-#endif // End of ICOMPONENT_H
+    }; // End of IComponent
+
+} // End of Dream

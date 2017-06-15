@@ -16,12 +16,12 @@
 */
 
 
-#ifndef AnimationComponent_h
-#define AnimationComponent_h
+#pragma once
 
-#include "../../Constants.h"
-#include "../IComponent.h"
 #include "AnimationInstance.h"
+
+#include "../IComponent.h"
+#include "../../Common/Constants.h"
 
 namespace Dream
 {
@@ -44,6 +44,5 @@ namespace Dream
         bool isLooping(AnimationInstance*);
         void setLooping(AnimationInstance*,bool);
     }; // End of AnimationComponent
-} // End of Dream
 
-#endif // AnimationComponent_h
+} // End of Dream

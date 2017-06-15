@@ -15,8 +15,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PROJECT_H
-#define PROJECT_H
+#pragma once
+
+#include "Project.h"
 
 #include <dirent.h>
 #include <iostream>
@@ -26,16 +27,15 @@
 #include <memory>
 
 #include "ProjectRuntime.h"
-#include "ArgumentParser.h"
-#include "AssetDefinition.h"
-#include "Constants.h"
-#include "FileReader.h"
-#include "IAssetInstance.h"
-#include "Project.h"
-#include "Scene.h"
-#include "String.h"
 
-#include "Components/Window/IWindowComponent.h"
+#include "../Common/AssetDefinition.h"
+#include "../Common/Constants.h"
+#include "../Common/IAssetInstance.h"
+#include "../Components/Window/IWindowComponent.h"
+#include "../Scene/Scene.h"
+#include "../Utilities/ArgumentParser.h"
+#include "../Utilities/FileReader.h"
+#include "../Utilities/String.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -119,18 +119,18 @@ namespace Dream
         AssetDefinition* getAssetDefinitionByUuid(string);
         vector<AssetDefinition*> getAssetDefinitions();
 
-        nlohmann::json toJson();
+        nlohmann::json getJson();
 
         bool loadActiveScene();
         bool loadSceneByUuid(string);
         void setStartupSceneActive();
 
         void cleanUpActiveScene();
+
         // Private Methods
     private:
         void loadAssetDefinitionsFromJson(nlohmann::json);
 
     }; // End of Project
-} // End of Dream
 
-#endif // End of PROJECT_H
+} // End of Dream

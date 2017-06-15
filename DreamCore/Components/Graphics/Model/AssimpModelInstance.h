@@ -15,24 +15,26 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ASSIMPMODELINSTANCE_H
-#define ASSIMPMODELINSTANCE_H
+#pragma once
 
-#include "../../../IAssetInstance.h"
-#include "../../../Constants.h"
 
-#include "glm/glm.hpp"
+#include <vector>
+#include <iostream>
+#include <map>
+
+#include "AssimpMesh.h"
+#include "Texture.h"
+#include "../BoundingBox.h"
+#include "../Shader/ShaderInstance.h"
+#include "../../../Common/IAssetInstance.h"
+#include "../../../Common/Constants.h"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "glm/glm.hpp"
 #include <SOIL/SOIL.h>
-#include "../Shader/ShaderInstance.h"
-#include <iostream>
-#include <vector>
-#include "AssimpMesh.h"
-#include "Texture.h"
-#include <map>
-#include "../BoundingBox.h"
+
 
 namespace Dream
 {
@@ -66,6 +68,5 @@ namespace Dream
         void setModelMatrix(glm::mat4);
         glm::mat4 getModelMatrix();
     }; // End of AssimpModelInstance
-} // End of Dream
 
-#endif // End of ASSIMPMODELINSTANCE_H
+} // End of Dream

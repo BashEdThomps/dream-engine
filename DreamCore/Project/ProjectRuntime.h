@@ -15,17 +15,17 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROJECTRUNTIME_H
-#define PROJECTRUNTIME_H
 
-#include "Time.h"
-#include "Components/Animation/AnimationComponent.h"
-#include "Components/Audio/AudioComponent.h"
-#include "Components/Graphics/Camera.h"
-#include "Components/Graphics/GraphicsComponent.h"
-#include "Components/Physics/PhysicsComponent.h"
-#include "Components/Window/IWindowComponent.h"
-#include "Lua/LuaEngine.h"
+#pragma once
+
+#include "../Common/Time.h"
+#include "../Components/Animation/AnimationComponent.h"
+#include "../Components/Audio/AudioComponent.h"
+#include "../Components/Graphics/Camera.h"
+#include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Physics/PhysicsComponent.h"
+#include "../Components/Window/IWindowComponent.h"
+#include "../Lua/LuaEngine.h"
 
 namespace Dream
 {
@@ -68,14 +68,6 @@ namespace Dream
         IWindowComponent* getWindowComponentHandle();
         LuaEngine* getLuaEngine();
 
-        void setGraphicsClearColour(vector<float>);
-        void setGraphicsAmbientLightColour(vector<float>);
-        void setPhysicsGravity(vector<float>);
-        void setPhysicsDebug(bool);
-        void setCameraTranslation(glm::vec3);
-        void setCameraRotation(glm::vec3);
-        void setCameraMovementSpeed(float);
-
         bool initComponents();
         void cleanupComponents(Scene*);
 
@@ -103,5 +95,3 @@ namespace Dream
     };
 
 } // End Dream
-
-#endif // PROJECTRUNTIME_H

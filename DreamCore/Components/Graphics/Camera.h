@@ -21,13 +21,16 @@
 #define SENSITIVTY 0.125f
 #define ZOOM       45.0f
 
-#include "../../Constants.h"
+
 #include <iostream>
 #include <vector>
 #include <numeric>
 #include <cmath>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
+
+#include "../../Common/Constants.h"
 
 using namespace std;
 

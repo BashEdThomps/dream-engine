@@ -194,19 +194,51 @@ ScenePropertiesModel::createRenderingProperties
     renderingProperty->appendChild(ambientLightProperty);
 
     QList<QVariant> ambientLight_Red_Data;
-    ambientLight_Red_Data << "Red" << mScene->getClearColour().at(0);
+    ambientLight_Red_Data
+        << "Red"
+        << QString::number
+           (
+               static_cast<double>
+               (
+                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::RED]
+               )
+           );
     ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Red_Data,mScene));
 
     QList<QVariant> ambientLight_Green_Data;
-    ambientLight_Green_Data << "Green" << mScene->getClearColour().at(1);
+    ambientLight_Green_Data
+        << "Green"
+        << QString::number
+           (
+               static_cast<double>
+               (
+                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]
+               )
+           );
     ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Green_Data,mScene));
 
     QList<QVariant> ambientLight_Blue_Data;
-    ambientLight_Blue_Data << "Blue" << mScene->getClearColour().at(2);
+    ambientLight_Blue_Data
+        << "Blue"
+        << QString::number
+           (
+               static_cast<double>
+               (
+                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]
+               )
+           );
     ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Blue_Data,mScene));
 
     QList<QVariant> ambientLight_Alpha_Data;
-    ambientLight_Alpha_Data << "Alpha" << mScene->getClearColour().at(3);
+    ambientLight_Alpha_Data
+        << "Alpha"
+        << QString::number
+           (
+               static_cast<double>
+               (
+                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::ALPHA]
+               )
+           );
     ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Alpha_Data,mScene));
 }
 
@@ -227,7 +259,7 @@ ScenePropertiesModel::createPhysicsProperties
     physicsProperty->appendChild(gravityProperty);
 
     QList<QVariant> gravityDataX;
-    gravityDataX << "X" << mScene->getGravity().at(0);
+    gravityDataX << "X" << mScene->getRuntimeGravity().at(0);
     PropertiesItem *gravityPropertyX = new PropertiesItem(gravityDataX,mScene);
     gravityProperty->appendChild(gravityPropertyX);
 

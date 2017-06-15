@@ -49,7 +49,7 @@ namespace Dream
     FontInstance::load
     (string projectPath)
     {
-        string path = projectPath+mDefinition->getAssetPath();
+        string path = projectPath + mDefinitionHandle->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
 
         if (Constants::DEBUG)
@@ -74,7 +74,7 @@ namespace Dream
         }
 
 
-        loadExtraAttributes(mDefinition->toJson());
+        loadExtraAttributes(mDefinitionHandle->getJson());
 
         mLoaded = true; //mFont != nullptr;
         return mLoaded;
@@ -84,9 +84,9 @@ namespace Dream
     FontInstance::loadExtraAttributes
     (nlohmann::json jsonData)
     {
-        float red = jsonData[Constants::FONT_COLOUR][Constants::FONT_RED];
-        float green = jsonData[Constants::FONT_COLOUR][Constants::FONT_GREEN];
-        float blue = jsonData[Constants::FONT_COLOUR][Constants::FONT_BLUE];
+        float red = jsonData[Constants::FONT_COLOUR][Constants::RED];
+        float green = jsonData[Constants::FONT_COLOUR][Constants::GREEN];
+        float blue = jsonData[Constants::FONT_COLOUR][Constants::BLUE];
 
         setColour(red,green,blue);
 
@@ -110,7 +110,7 @@ namespace Dream
                  << endl;
         }
 
-        FontCache::getCharMap(mDefinition,mFontFace.get());
+        FontCache::getCharMap(mDefinitionHandle,mFontFace.get());
 
         if (Constants::DEBUG)
         {
@@ -176,6 +176,6 @@ namespace Dream
     FontInstance::getCharMap
     ()
     {
-        return FontCache::getCharMap(mDefinition,mFontFace.get());
+        return FontCache::getCharMap(mDefinitionHandle,mFontFace.get());
     }
 } // End Dream

@@ -44,7 +44,6 @@ namespace Dream
         }
     }
 
-
     bool
     Constants::checkGLError
     (string marker)
@@ -88,13 +87,12 @@ namespace Dream
     }
 
 
-    // Misc ========================================================================
+    // Misc =====================================================================
     const string Constants::DIR_PATH_SEP = "/";
     const string Constants::DREAM_TOOL_DIR = ".dreamtool";
     const string Constants::PATH_DELIMETER = "::";
     const string Constants::HTTP_ARG = "--http";
-
-    // Project =====================================================================
+    // Project ==================================================================
     const string Constants::PROJECT_DIRECTORY_ARG = "--project-dir";
     const string Constants::PROJECT_UUID_ARG = "--uuid";
     const int    Constants::PROJECT_UUID_LENGTH = 19;
@@ -110,8 +108,7 @@ namespace Dream
     const string Constants::PROJECT_WINDOW_SIZE  = "windowSize";
     const string Constants::PROJECT_WIDTH = "width";
     const string Constants::PROJECT_HEIGHT = "height";
-
-    // Asset =======================================================================
+    // Asset ====================================================================
     const string Constants::ASSET_UUID = "uuid";
     const string Constants::ASSET_NAME = "name";
     const string Constants::ASSET_TYPE = "type";
@@ -128,42 +125,27 @@ namespace Dream
     const string Constants::ASSET_FORMAT = "format";
     const string Constants::ASSET_FORMAT_SCRIPT_LUA = "lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
-    const string Constants::ASSET_FORMAT_AUDIO_MUSIC = "music";
-    const string Constants::ASSET_FORMAT_AUDIO_SFX = "sfx";
+    const string Constants::ASSET_FORMAT_AUDIO_WAV = "wav";
+    const string Constants::ASSET_FORMAT_AUDIO_OGG = "ogg";
     const string Constants::ASSET_FORMAT_ANIMATION_DREAM = "dream";
     const string Constants::ASSET_FORMAT_FONT_TTF = "ttf";
     const string Constants::ASSET_FORMAT_SHADER_GLSL = "glsl";
     const string Constants::ASSET_FORMAT_LIGHT_POINT = "point";
     const string Constants::ASSET_FORMAT_SPRITE_IMAGE = "image";
-    const string Constants::ASSET_ATTR_X = "x";
-    const string Constants::ASSET_ATTR_Y = "y";
-    const string Constants::ASSET_ATTR_Z = "z";
-
-    // Scene =======================================================================
-    const string Constants::SCENE_JSON_UUID = "uuid";
-    const string Constants::SCENE_JSON_NAME = "name";
-    const string Constants::SCENE_JSON_NOTES = "notes";
-    const string Constants::SCENE_JSON_SCENE_OBJECTS = "objects";
-    const string Constants::SCENE_JSON_CAMERA = "camera";
-    const string Constants::SCENE_JSON_TRANSLATION = "translation";
-    const string Constants::SCENE_JSON_ROTATION = "rotation";
-    const string Constants::SCENE_JSON_MOVEMENT_SPEED = "movementSpeed";
-    const string Constants::SCENE_JSON_X = "x";
-    const string Constants::SCENE_JSON_Y = "y";
-    const string Constants::SCENE_JSON_Z = "z";
-    const string Constants::SCENE_JSON_CLEAR_COLOUR = "clearColour";
-    const string Constants::SCENE_JSON_AMBIENT_LIGHT_COLOUR = "ambientLight";
-    const string Constants::SCENE_JSON_RED = "r";
-    const string Constants::SCENE_JSON_GREEN = "g";
-    const string Constants::SCENE_JSON_BLUE = "b";
-    const string Constants::SCENE_JSON_ALPHA = "a";
-    const string Constants::SCENE_JSON_GRAVITY = "gravity";
-    const string Constants::SCENE_JSON_PHYSICS_DEBUG = "physicsDebug";
-
-    // SceneObject =================================================================
-    const int Constants::SO_X = 0;
-    const int Constants::SO_Y = 1;
-    const int Constants::SO_Z = 2;
+    // Scene ====================================================================
+    const string Constants::SCENE_UUID = "uuid";
+    const string Constants::SCENE_NAME = "name";
+    const string Constants::SCENE_NOTES = "notes";
+    const string Constants::SCENE_SCENE_OBJECTS = "objects";
+    const string Constants::SCENE_CAMERA = "camera";
+    const string Constants::SCENE_TRANSLATION = "translation";
+    const string Constants::SCENE_ROTATION = "rotation";
+    const string Constants::SCENE_MOVEMENT_SPEED = "movementSpeed";
+    const string Constants::SCENE_CLEAR_COLOUR = "clearColour";
+    const string Constants::SCENE_AMBIENT_LIGHT_COLOUR = "ambientLight";
+    const string Constants::SCENE_GRAVITY = "gravity";
+    const string Constants::SCENE_PHYSICS_DEBUG = "physicsDebug";
+    // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT_UUID = "uuid";
     const string Constants::SCENE_OBJECT_NAME = "name";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
@@ -171,29 +153,32 @@ namespace Dream
     const string Constants::SCENE_OBJECT_TRANSLATION = "translation";
     const string Constants::SCENE_OBJECT_ROTATION = "rotation";
     const string Constants::SCENE_OBJECT_SCALE = "scale";
-    const string Constants::SCENE_OBJECT_X = "x";
-    const string Constants::SCENE_OBJECT_Y = "y";
-    const string Constants::SCENE_OBJECT_Z = "z";
     const string Constants::SCENE_OBJECT_TRANSFORM_TYPE = "transformType";
     const string Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET = "offset";
     const string Constants::SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE = "absolute";
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
-
-    // Transform ===================================================================
-    const int Constants::TRANSFORM_X = 0;
-    const int Constants::TRANSFORM_Y = 1;
-    const int Constants::TRANSFORM_Z = 2;
+    // Transform ================================================================
     const string Constants::TRANSFORM_TYPE_ABSOLUTE = "absolute";
     const string Constants::TRANSFORM_TYPE_OFFSET = "offset";
-
-    // Font ========================================================================
+    // Font =====================================================================
     const string Constants::FONT_SIZE = "size";
     const string Constants::FONT_COLOUR = "colour";
-    const string Constants::FONT_RED   = "r";
-    const string Constants::FONT_GREEN = "g";
-    const string Constants::FONT_BLUE  = "b";
-
-    // Animation ===================================================================
+    // Generic ==================================================================
+    const string Constants::X = "x";
+    const string Constants::Y = "y";
+    const string Constants::Z = "z";
+    const unsigned int Constants::X_INDEX = 0;
+    const unsigned int Constants::Y_INDEX = 1;
+    const unsigned int Constants::Z_INDEX = 2;
+    const string Constants::RED   = "r";
+    const string Constants::GREEN = "g";
+    const string Constants::BLUE  = "b";
+    const string Constants::ALPHA = "a";
+    const unsigned int Constants::RED_INDEX   = 0;
+    const unsigned int Constants::GREEN_INDEX = 1;
+    const unsigned int Constants::BLUE_INDEX  = 2;
+    const unsigned int Constants::ALPHA_INDEX = 3;
+    // Animation ================================================================
     const string Constants::ASSET_ATTR_KEYFRAMES     = "keyframes";
     const string Constants::ASSET_ATTR_TRANSLATION   = "translation";
     const string Constants::ASSET_ATTR_ROTATION      = "rotation";
@@ -209,25 +194,17 @@ namespace Dream
     const string Constants::DREAM_ANIMATION_INTERPOLATION_NONE   = "none";
     const string Constants::DREAM_ANIMATION_INTERPOLATION_LINEAR = "linear";
     const string Constants::DREAM_ANIMATION_INTERPOLATION_BEZIER = "bezier";
-
-    // Sprite ======================================================================
+    // Sprite ===================================================================
     const string Constants::SPRITE_TILE_SIZE   = "tileSize";
     const string Constants::SPRITE_TILE_WIDTH  = "width";
     const string Constants::SPRITE_TILE_HEIGHT = "height";
-
-    // Physics =====================================================================
+    // Physics ==================================================================
     const string Constants::ASSET_ATTR_MASS   = "mass";
     const string Constants::ASSET_ATTR_MARGIN = "margin";
     const string Constants::ASSET_ATTR_RADIUS = "radius";
     const string Constants::ASSET_ATTR_NORMAL = "normal";
     const string Constants::ASSET_ATTR_CONSTANT = "const ant";
-    const string Constants::ASSET_ATTR_NORMAL_X = "normalX";
-    const string Constants::ASSET_ATTR_NORMAL_Y = "normalY";
-    const string Constants::ASSET_ATTR_NORMAL_Z = "normalZ";
     const string Constants::ASSET_ATTR_SIZE = "size";
-    const string Constants::ASSET_ATTR_SIZE_X = "sizeX";
-    const string Constants::ASSET_ATTR_SIZE_Y = "sizeY";
-    const string Constants::ASSET_ATTR_SIZE_Z = "sizeZ";
     const string Constants::ASSET_ATTR_COMPOUND_CHILDREN = "compoundChildren";
     const string Constants::ASSET_ATTR_KINEMATIC = "kinematic";
     const string Constants::COLLISION_SHAPE_SPHERE = "btShpereShape";
@@ -242,18 +219,21 @@ namespace Dream
     const string Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN = "btHeightfieldTerrainShape";
     const string Constants::COLLISION_SHAPE_STATIC_PLANE = "btStaticPlaneShape";
     const string Constants::COLLISION_SHAPE_COMPOUND = "btCompoundShape";
-
-    // Event =======================================================================
+    // Event ====================================================================
     const string Constants::EVENT_SENDER = "sender";
     const string Constants::EVENT_TYPE = "type";
     const string Constants::EVENT_TYPE_COLLISION = "collision";
-
-    // Light =======================================================================
+    // Light ====================================================================
     const string Constants::ASSET_ATTR_LIGHT_COLOR   = "colour";
-    const string Constants::ASSET_ATTR_LIGHT_COLOR_R = "r";
-    const string Constants::ASSET_ATTR_LIGHT_COLOR_G = "g";
-    const string Constants::ASSET_ATTR_LIGHT_COLOR_B = "b";
-    const string Constants::ASSET_ATTR_LIGHT_COLOR_A = "a";
+    // Lua ======================================================================
+    const string Constants::LUA_INIT_FUNCTION   = "onInit";
+    const string Constants::LUA_UPDATE_FUNCTION = "onUpdate";
+    const string Constants::LUA_INPUT_FUNCTION  = "onInput";
+    const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
+    // Shader ===================================================================
+    const string Constants::SHADER_FRAGMENT = "fragment";
+    const string Constants::SHADER_VERTEX = "vertex";
+    // Data =====================================================================
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =
     {
@@ -297,8 +277,8 @@ namespace Dream
         {
             AssetType::AUDIO,
             {
-                ASSET_FORMAT_AUDIO_MUSIC,
-                ASSET_FORMAT_AUDIO_SFX
+                ASSET_FORMAT_AUDIO_WAV,
+                ASSET_FORMAT_AUDIO_OGG
             }
         },
         {

@@ -1,9 +1,9 @@
-#ifndef FRAME_H
-#define FRAME_H
+#pragma once
 
 #include <vector>
-#include "../../Constants.h"
-#include "../../Transform3D.h"
+
+#include "../../Common/Constants.h"
+#include "../../Common/Transform3D.h"
 
 namespace Dream
 {
@@ -26,6 +26,7 @@ namespace Dream
         void setScale(vector<float>);
         void showStatus();
     }; // End Frame
+
 } // End of Dream
 
-#endif // FRAME_H
+

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../../Constants.h"
-#include "../../../AssetDefinition.h"
-#include "../../../IAssetInstance.h"
+#include "../../../Common/Constants.h"
+#include "../../../Common/AssetDefinition.h"
+#include "../../../Common/IAssetInstance.h"
 
 namespace Dream
 {
@@ -10,8 +10,9 @@ namespace Dream
     {
         glm::vec3 mColor;
         float mIntensity;
+
     public:
-        LightInstance(AssetDefinition*,Transform3D*);
+        LightInstance(AssetDefinition*, Transform3D*);
         ~LightInstance();
         bool load(string);
         void loadExtraAttributes(nlohmann::json);

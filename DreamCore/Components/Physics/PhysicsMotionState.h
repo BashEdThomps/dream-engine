@@ -15,15 +15,16 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PHYSICSMOTIONSTATE_H
-#define PHYSICSMOTIONSTATE_H
+#pragma once
 
-#include "../../Transform3D.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <LinearMath/btMotionState.h>
 #include <LinearMath/btMatrix3x3.h>
 #include <LinearMath/btQuaternion.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+#include "../../Common/Transform3D.h"
 
 namespace Dream
 {
@@ -31,14 +32,17 @@ namespace Dream
     {
     protected:
         Transform3D* mDreamTransformHandle;
+
     public:
         PhysicsMotionState(Transform3D*);
         ~PhysicsMotionState();
+
         void setTransform(Transform3D*);
+
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);
+
         void setKinematicPos(btTransform&);
     }; // End of PhysicsMotionState
-} // End of Dream
 
-#endif // PHYSICSMOTIONSTATE_H
+} // End of Dream

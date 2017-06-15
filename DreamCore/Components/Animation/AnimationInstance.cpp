@@ -1,9 +1,12 @@
 
-#include "AnimationInstance.h"
 #include <algorithm>
-#include "../../String.h"
 
-namespace Dream {
+#include "AnimationInstance.h"
+
+#include "../../Utilities/String.h"
+
+namespace Dream
+{
 
     int AnimationInstance::FramesPerSecond = 60;
 
@@ -58,8 +61,8 @@ namespace Dream {
     AnimationInstance::load
     (string projectPath)
     {
-        mLoop = mDefinition->toJson()[Constants::ASSET_ATTR_LOOP];
-        loadExtraAttributes(mDefinition->toJson());
+        mLoop = mDefinitionHandle->getJson()[Constants::ASSET_ATTR_LOOP];
+        loadExtraAttributes(mDefinitionHandle->getJson());
         mLoaded = false;
         return mLoaded;
     }
@@ -140,17 +143,17 @@ namespace Dream {
                 KeyFrame *nextKeyFrame = new KeyFrame();
                 vector<float> translation(3), rotation(3), scale(3);
 
-                translation[0] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::ASSET_ATTR_X];
-                translation[1] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::ASSET_ATTR_Y];
-                translation[2] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::ASSET_ATTR_Z];
+                translation[Constants::X_INDEX] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::X];
+                translation[Constants::Y_INDEX] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::Y];
+                translation[Constants::Z_INDEX] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::Z];
 
-                rotation[0] = it[Constants::ASSET_ATTR_ROTATION][Constants::ASSET_ATTR_X];
-                rotation[1] = it[Constants::ASSET_ATTR_ROTATION][Constants::ASSET_ATTR_Y];
-                rotation[2] = it[Constants::ASSET_ATTR_ROTATION][Constants::ASSET_ATTR_Z];
+                rotation[Constants::X_INDEX] = it[Constants::ASSET_ATTR_ROTATION][Constants::X];
+                rotation[Constants::Y_INDEX] = it[Constants::ASSET_ATTR_ROTATION][Constants::Y];
+                rotation[Constants::Z_INDEX] = it[Constants::ASSET_ATTR_ROTATION][Constants::Z];
 
-                scale[0] = it[Constants::ASSET_ATTR_SCALE][Constants::ASSET_ATTR_X];
-                scale[1] = it[Constants::ASSET_ATTR_SCALE][Constants::ASSET_ATTR_Y];
-                scale[2] = it[Constants::ASSET_ATTR_SCALE][Constants::ASSET_ATTR_Z];
+                scale[Constants::X_INDEX] = it[Constants::ASSET_ATTR_SCALE][Constants::X];
+                scale[Constants::Y_INDEX] = it[Constants::ASSET_ATTR_SCALE][Constants::Y];
+                scale[Constants::Z_INDEX] = it[Constants::ASSET_ATTR_SCALE][Constants::Z];
 
                 long startTime   = it[Constants::ASSET_ATTR_START_TIME];
 
