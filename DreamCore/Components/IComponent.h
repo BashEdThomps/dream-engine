@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include "../Common/Time.h"
-#include "../Scene/Scene.h"
-
 namespace Dream
 {
+    class Time;
+    class Scene;
+
     class IComponent
     {
 

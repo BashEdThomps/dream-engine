@@ -15,31 +15,35 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef TRANSFORM3D_H
-#define TRANSFORM3D_H
 
-#include <iostream>
+#pragma once
+
+#include <string>
 #include <json.hpp>
-#include <LinearMath/btVector3.h>
+#include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "Constants.h"
+#include <LinearMath/btVector3.h>
 
-using namespace std;
+using std::string;
+using nlohmann::json;
+using glm::vec3;
+using glm::quat;
+
 namespace Dream
 {
   class Transform3D
   {
   private:
-    glm::vec3 mTranslation;
-    glm::quat mOrientation;
-    glm::vec3 mScale;
+    vec3 mTranslation;
+    quat mOrientation;
+    vec3 mScale;
     string mTransformType;
-    nlohmann::json mJson;
+    json mJson;
   public:
     Transform3D();
     Transform3D(Transform3D*);
-    glm::vec3 getTranslation();
-    void setTranslation(glm::vec3);
+    vec3 getTranslation();
+    void setTranslation(vec3);
     void setTranslation(float, float, float);
     float getTranslationX();
     float getTranslationY();
@@ -49,12 +53,12 @@ namespace Dream
     void setTranslationZ(float);
     btVector3 getTranslationAsBtVector3();
 
-    glm::quat getOrientation();
+    quat getOrientation();
     void setOrientation(float,float,float,float);
 
-    glm::vec3 getRotation();
+    vec3 getRotation();
     void setRotation(float, float, float);
-    void setRotation(glm::vec3 rot);
+    void setRotation(vec3 rot);
     float getRotationX();
     float getRotationY();
     float getRotationZ();
@@ -63,8 +67,8 @@ namespace Dream
     void setRotationZ(float);
     btVector3 getRotationAsBtVector3();
 
-    glm::vec3 getScale();
-    void setScale(glm::vec3);
+    vec3 getScale();
+    void setScale(vec3);
     void setScale(float, float, float);
     float getScaleX();
     float getScaleY();
@@ -88,10 +92,8 @@ namespace Dream
     void scaleByY(float);
     void scaleByZ(float);
 
-    nlohmann::json getJson();
+    json getJson();
 
   };
 
 } // End of Dream
-
-#endif // TRANSFORM3D_H

@@ -18,18 +18,18 @@
 
 #pragma once
 
-#include "../Common/Time.h"
-#include "../Components/Animation/AnimationComponent.h"
-#include "../Components/Audio/AudioComponent.h"
-#include "../Components/Graphics/Camera.h"
-#include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Physics/PhysicsComponent.h"
-#include "../Components/Window/IWindowComponent.h"
-#include "../Lua/LuaEngine.h"
-
 namespace Dream
 {
     class Project;
+    class Time;
+    class AnimationComponent;
+    class AudioComponent;
+    class Camera;
+    class GraphicsComponent;
+    class PhysicsComponent;
+    class IWindowComponent;
+    class LuaEngine;
+
     class ProjectRuntime
     {
     private:

@@ -19,13 +19,12 @@
 #pragma once
 
 #include "AnimationInstance.h"
-
 #include "../IComponent.h"
-#include "../../Common/Constants.h"
 
 namespace Dream
 {
-
+    class Time;
+    class Scene;
     class AnimationComponent : public IComponent
     {
     private:

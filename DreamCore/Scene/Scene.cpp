@@ -23,19 +23,19 @@
 
 #include "../Project/Project.h"
 
+#include "SceneObjectRuntime.h"
+#include "SceneObjectJsonData.h"
+
 namespace Dream
 {
-    SceneRuntime Scene::getRuntime() const
-    {
-        return mRuntime;
-    }
-
     Scene::Scene
     (Project* project, nlohmann::json json)
         : mProjectHandle(project),
           mJson(json)
     {
-        mRuntime.setState(NOT_LOADED);
+        mRuntime.reset(new SceneRuntime());
+        mRuntime->setState(NOT_LOADED);
+
         nlohmann::json sceneObjects = mJson[Constants::SCENE_SCENE_OBJECTS];
 
         if (!sceneObjects.is_null() && sceneObjects.is_array())
@@ -64,7 +64,7 @@ namespace Dream
                 SceneObject *nextSceneObject = new SceneObject(this,it);
                 if (parent != nullptr)
                 {
-                    parent->addChild(nextSceneObject);
+                    parent->getRuntime()->addChild(nextSceneObject);
                 }
                 else
                 {
@@ -80,18 +80,6 @@ namespace Dream
                 }
             }
         }
-    }
-
-    vector<float>
-    Scene::getGravity
-    ()
-    {
-        vector<float> gravity;
-        gravity.reserve(3);
-        gravity[Constants::X_INDEX] = mJson[Constants::SCENE_GRAVITY][Constants::X];
-        gravity[Constants::Y_INDEX] = mJson[Constants::SCENE_GRAVITY][Constants::Y];
-        gravity[Constants::Z_INDEX] = mJson[Constants::SCENE_GRAVITY][Constants::Z];
-        return gravity;
     }
 
     string
@@ -141,7 +129,7 @@ namespace Dream
                 (
                     [&](SceneObject* currentSo)
                     {
-                        if (currentSo->hasUuid(uuid))
+                        if (currentSo->getJsonData()->hasUuid(uuid))
                         {
                             return currentSo;
                         }
@@ -164,7 +152,7 @@ namespace Dream
                 (
                     [&](SceneObject* currentSo)
                     {
-                        if (currentSo->hasName(name))
+                        if (currentSo->getJsonData()->hasName(name))
                         {
                             return currentSo;
                         }
@@ -264,69 +252,7 @@ namespace Dream
         return mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED];
     }
 
-    vector<float>
-    Scene::getAmbientLightColour
-    ()
-    {
-        vector<float> ambientColour;
-        ambientColour.reserve(4);
-        ambientColour[Constants::RED_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED];
-        ambientColour[Constants::GREEN_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN];
-        ambientColour[Constants::BLUE_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE];
-        ambientColour[Constants::ALPHA_INDEX] = mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA];
-        return ambientColour;
-    }
 
-    vector<float>
-    Scene::getClearColour
-    ()
-    {
-        vector<float> clearColour;
-        clearColour.reserve(4);
-        clearColour[Constants::RED_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED];
-        clearColour[Constants::GREEN_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN];
-        clearColour[Constants::BLUE_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE];
-        clearColour[Constants::ALPHA_INDEX] = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::ALPHA];
-        return clearColour;
-    }
-
-    void
-    Scene::addToDeleteQueue
-    (SceneObject* object)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Scene: Adding "
-                 << object->getNameAndUuidString()
-                 << " to delete queue" << endl;
-        }
-        mRuntime.getDeleteQueue().push_back(object);
-    }
-
-    void
-    Scene::clearDeleteQueue
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Scene: clearDeleteQueue" << endl;
-        }
-        mRuntime.getDeleteQueue().clear();
-    }
-
-    void
-    Scene::destroyDeleteQueue
-    ()
-    {
-        if (!mRuntime.getDeleteQueue().empty())
-        {
-            for(SceneObject* obj : mRuntime.getDeleteQueue())
-            {
-                obj->cleanUp();
-            }
-        }
-        clearDeleteQueue();
-    }
 
     void
     Scene::findDeleteFlaggedSceneObjects
@@ -343,21 +269,14 @@ namespace Dream
             (
                 [&](SceneObject* obj)
                 {
-                    if (obj->getDeleteFlag())
+                    if (obj->getRuntime()->getDeleteFlag())
                     {
-                        addToDeleteQueue(obj);
+                        mRuntime->addToDeleteQueue(obj);
                     }
                     return nullptr;
                 }
             )
         );
-    }
-
-    vector<SceneObject*>
-    Scene::getDeleteQueue
-    ()
-    {
-        return mRuntime.getDeleteQueue();
     }
 
     void
@@ -376,9 +295,9 @@ namespace Dream
                 [&](SceneObject* sceneObj)
                 {
                     // Not loaded && not marked to delete
-                    if (!sceneObj->getLoadedFlag() && !sceneObj->getDeleteFlag())
+                    if (!sceneObj->getRuntime()->getLoadedFlag() && !sceneObj->getRuntime()->getDeleteFlag())
                     {
-                        sceneObj->createAssetInstances();
+                        sceneObj->getRuntime()->createAssetInstances();
                     }
                     return nullptr;
                 }
@@ -397,11 +316,11 @@ namespace Dream
                 [&](SceneObject* sceneObj)
                 {
                     // Not loaded && not marked to delete
-                    if (!sceneObj->getLoadedFlag())
+                    if (!sceneObj->getRuntime()->getLoadedFlag())
                     {
-                        if(!sceneObj->getDeleteFlag())
+                        if(!sceneObj->getRuntime()->getDeleteFlag())
                         {
-                            sceneObj->loadAssetInstances();
+                            sceneObj->getRuntime()->loadAssetInstances();
                         }
                     }
                     return nullptr;
@@ -409,7 +328,7 @@ namespace Dream
             )
         );
 
-        mRuntime.setState(LOADED);
+        mRuntime->setState(LOADED);
     }
     void
     Scene::findDeleteFlaggedScripts
@@ -419,7 +338,7 @@ namespace Dream
         {
             cout << "Scene: Cleanup Deleted Scripts Called" << endl;
         }
-        vector<SceneObject*> objects = mRuntime.getDeleteQueue();
+        vector<SceneObject*> objects = mRuntime->getDeleteQueue();
 
         for (SceneObject* it : objects)
         {
@@ -469,7 +388,7 @@ namespace Dream
             (
                 [&](SceneObject* obj)
                 {
-                    obj->setDeleteFlag(true);
+                    obj->getRuntime()->setDeleteFlag(true);
                     return nullptr;
                 }
             )
@@ -486,7 +405,7 @@ namespace Dream
         }
         findDeleteFlaggedSceneObjects();
         findDeleteFlaggedScripts();
-        destroyDeleteQueue();
+        mRuntime->destroyDeleteQueue();
     }
 
     bool
@@ -514,11 +433,11 @@ namespace Dream
                  << endl;
         }
 
-        if(mRuntime.getState() == DONE)
+        if(mRuntime->getState() == DONE)
         {
            cleanUpSceneObjects();
            flush();
-           mRuntime.setState(CLEANED_UP);
+           mRuntime->setState(CLEANED_UP);
         }
         else
         {
@@ -560,6 +479,11 @@ namespace Dream
         }
 
         return defaultCameraTransform;
+    }
+
+    SceneRuntime* Scene::getRuntime() const
+    {
+        return mRuntime.get();
     }
 
 } // End of Dream

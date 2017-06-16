@@ -2,7 +2,10 @@
 #include <algorithm>
 
 #include "AnimationInstance.h"
+#include "KeyFrame.h"
 
+#include "../../Common/Constants.h"
+#include "../../Project/AssetDefinition.h"
 #include "../../Utilities/String.h"
 
 namespace Dream

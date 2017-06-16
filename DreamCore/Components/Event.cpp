@@ -18,6 +18,8 @@
 
 #include "Event.h"
 
+#include "../Common/Constants.h"
+
 namespace Dream
 {
     Event::Event(string sender, string type)

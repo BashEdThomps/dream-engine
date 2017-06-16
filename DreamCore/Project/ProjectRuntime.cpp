@@ -16,7 +16,16 @@
  * this file belongs to.
  */
 #include "ProjectRuntime.h"
+
 #include "Project.h"
+#include "../Components/Time.h"
+#include "../Components/Animation/AnimationComponent.h"
+#include "../Components/Audio/AudioComponent.h"
+#include "../Components/Graphics/Camera.h"
+#include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Physics/PhysicsComponent.h"
+#include "../Components/Window/IWindowComponent.h"
+#include "../Lua/LuaEngine.h"
 
 namespace Dream
 {

@@ -73,6 +73,10 @@ namespace Dream
     AssetDefinition::getUuid
     ()
     {
+        if (mJson[Constants::ASSET_UUID].is_null())
+        {
+            mJson[Constants::ASSET_UUID] = "";
+        }
         return mJson[Constants::ASSET_UUID];
     }
 
@@ -87,6 +91,10 @@ namespace Dream
     AssetDefinition::getName
     ()
     {
+        if (mJson[Constants::ASSET_NAME].is_null())
+        {
+            mJson[Constants::ASSET_NAME] = "";
+        }
         return mJson[Constants::ASSET_NAME];
     }
 
@@ -101,6 +109,10 @@ namespace Dream
     AssetDefinition::getType
     ()
     {
+        if (mJson[Constants::ASSET_TYPE].is_null())
+        {
+            mJson[Constants::ASSET_TYPE] = "";
+        }
         return mJson[Constants::ASSET_TYPE];
     }
 
@@ -113,6 +125,11 @@ namespace Dream
     AssetDefinition::getFormat
     ()
     {
+        if (mJson[Constants::ASSET_FORMAT].is_null())
+        {
+           mJson[Constants::ASSET_FORMAT] = "";
+        }
+
         return mJson[Constants::ASSET_FORMAT];
     }
 

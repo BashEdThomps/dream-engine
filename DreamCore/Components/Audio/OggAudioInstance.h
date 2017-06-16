@@ -15,27 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OGGAUDIO_H
-#define OGGAUDIO_H
+#pragma once
 
+#include <string>
 #include "AudioInstance.h"
-#include <vorbis/vorbisfile.h>
 
-
-#define ASSET_FORMAT_OGG "ogg"
+using std::string;
 
 namespace Dream
 {
-
     class OggAudioInstance : public AudioInstance
     {
+
     public:
         OggAudioInstance(AssetDefinition*, Transform3D*);
         ~OggAudioInstance();
-        bool load(std::string) override;
+
+        bool load(string) override;
         void loadExtraAttributes(nlohmann::json) override;
+
     }; // End of OggAudio
 
 } // End of Dream
-
-#endif // End of OGGAUDIO_H

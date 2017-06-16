@@ -75,7 +75,7 @@ int main(int argc, const char** argv)
     Constants::dreamSetDebug(false);
 
     // Run the project
-    while(project->getActiveScene()->getState() != SceneState::DONE)
+    while(project->getActiveScene()->getRuntime()->getState() != SceneState::DONE)
     {
         project->updateAll();
         std::this_thread::yield();

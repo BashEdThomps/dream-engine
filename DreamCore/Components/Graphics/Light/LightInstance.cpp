@@ -1,5 +1,7 @@
 #include "LightInstance.h"
 
+#include "../../../Project/AssetDefinition.h"
+
 namespace Dream
 {
     LightInstance::LightInstance

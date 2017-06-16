@@ -17,6 +17,7 @@
  */
 #include "IWindowComponent.h"
 
+#include "../../Common/Constants.h"
 
 namespace Dream
 {
@@ -25,19 +26,17 @@ namespace Dream
     ()
         : IComponent()
     {
-        setWidth(IWC_DEFAULT_SCREEN_WIDTH);
-        setHeight(IWC_DEFAULT_SCREEN_HEIGHT);
+        setWidth(Constants::DEFAULT_SCREEN_WIDTH);
+        setHeight(Constants::DEFAULT_SCREEN_HEIGHT);
         setShouldClose(false);
         mSizeHasChanged = false;
     }
-
 
     IWindowComponent::~IWindowComponent
     ()
     {
 
     }
-
 
     void
     IWindowComponent::setWidth
@@ -46,14 +45,12 @@ namespace Dream
         mWidth = width;
     }
 
-
     void
     IWindowComponent::setHeight
     (int height)
     {
         mHeight = height;
     }
-
 
     int
     IWindowComponent::getWidth
@@ -62,14 +59,12 @@ namespace Dream
         return mWidth;
     }
 
-
     int
     IWindowComponent::getHeight
     ()
     {
         return mHeight;
     }
-
 
     void
     IWindowComponent::setName
@@ -78,14 +73,12 @@ namespace Dream
         mName = name;
     }
 
-
     string
     IWindowComponent::getName
     ()
     {
         return mName;
     }
-
 
     void
     IWindowComponent::close
@@ -94,14 +87,12 @@ namespace Dream
         mShouldClose = true;
     }
 
-
     bool
     IWindowComponent::shouldClose
     ()
     {
         return mShouldClose;
     }
-
 
     void
     IWindowComponent::setShouldClose
@@ -118,6 +109,5 @@ namespace Dream
         mSizeHasChanged = false;
         return temp;
     }
-
 
 } // End of Dream

@@ -16,18 +16,24 @@
 
 #pragma once
 
+#include <string>
 #include <memory>
+
 #include <GL/glew.h>
 
-#include "FontCache.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
-#include "../../../Common/IAssetInstance.h"
-#include "../../../Common/Constants.h"
+#include "../../IAssetInstance.h"
 
-using namespace std;
+using std::string;
+using nlohmann::json;
 
 namespace Dream
 {
+    class FontCache;
+    class FontCharacter;
+
     class FontInstance : public IAssetInstance
     {
     private:
@@ -42,7 +48,7 @@ namespace Dream
         ~FontInstance();
 
         bool load(string);
-        void loadExtraAttributes(nlohmann::json);
+        void loadExtraAttributes(json);
 
         FT_Face* getFontFace();
 

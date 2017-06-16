@@ -1,5 +1,12 @@
 #include "PhysicsObjectInstance.h"
 
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+#include "PhysicsMotionState.h"
+#include "../../Common/Constants.h"
+#include "../../Project/AssetDefinition.h"
+
 namespace Dream
 {
 

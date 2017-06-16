@@ -21,23 +21,27 @@
 #include <memory>
 #include <map>
 
+#include <GL/glew.h>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "FontCharacter.h"
-
-#include "../../../Common/AssetDefinition.h"
-
-using namespace std;
+using std::unique_ptr;
+using std::map;
 
 namespace Dream
 {
+    class AssetDefinition;
+    class FontCharacter;
+
     class FontCache
     {
+
     private:
         static unique_ptr<FT_Library> mFreeTypeLib;
-        static map<AssetDefinition*,map<GLchar, FontCharacter>> mCache;
+        static map<AssetDefinition*, map<GLchar, FontCharacter>> mCache;
         static map<GLchar, FontCharacter> generateCharMap(AssetDefinition*, FT_Face* face);
+
     public:
         static void initFreeTypeLib();
         static void destroyFreeTypeLib();
@@ -45,5 +49,6 @@ namespace Dream
 
         static void clearCache();
         static map<GLchar, FontCharacter> getCharMap(AssetDefinition*, FT_Face* face);
+
     };
 }

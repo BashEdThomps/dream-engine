@@ -16,7 +16,37 @@
 */
 
 #include "Project.h"
+
 #include <algorithm>
+#include <dirent.h>
+#include <thread>
+#include <unistd.h>
+
+#include "ProjectRuntime.h"
+#include "ProjectJsonData.h"
+
+#include "../Common/Constants.h"
+
+#include "../Components/Time.h"
+#include "../Components/Transform3D.h"
+#include "../Components/Audio/AudioComponent.h"
+#include "../Components/Graphics/Camera.h"
+#include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/IAssetInstance.h"
+#include "../Components/Physics/PhysicsComponent.h"
+#include "../Components/Physics/PhysicsObjectInstance.h"
+#include "../Components/Window/IWindowComponent.h"
+
+#include "../Lua/LuaEngine.h"
+
+#include "../Scene/Scene.h"
+#include "../Scene/SceneRuntime.h"
+
+#include "../Project/AssetDefinition.h"
+
+#include "../Utilities/ArgumentParser.h"
+#include "../Utilities/FileReader.h"
+#include "../Utilities/String.h"
 
 namespace Dream
 {
@@ -56,36 +86,8 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Project: " << mJson.dump(1) << endl;
+            cout << "Project: " << mJsonData->getJson().dump(1) << endl;
         }
-    }
-
-    string
-    Project::getName
-    ()
-    {
-        return mJson[Constants::PROJECT_NAME];
-    }
-
-    void
-    Project::setName
-    (string name)
-    {
-        mJson[Constants::PROJECT_NAME] = name;
-    }
-
-    void
-    Project::setUuid
-    (string uuid)
-    {
-        mJson[Constants::PROJECT_UUID] = uuid;
-    }
-
-    string
-    Project::getUuid
-    ()
-    {
-        return mJson[Constants::PROJECT_UUID];
     }
 
     void
@@ -108,20 +110,6 @@ namespace Dream
         }
     }
 
-    void
-    Project::setStartupSceneUuid
-    (string sceneUuid)
-    {
-        mJson[Constants::PROJECT_STARTUP_SCENE] = sceneUuid;
-    }
-
-    string
-    Project::getStartupSceneUuid
-    ()
-    {
-        return mJson[Constants::PROJECT_STARTUP_SCENE];
-    }
-
     Scene*
     Project::getStartupScene
     ()
@@ -136,33 +124,6 @@ namespace Dream
         return mScenes;
     }
 
-    void
-    Project::setDescription
-    (string description)
-    {
-        mJson[Constants::PROJECT_DESCRIPTION] = description;
-    }
-
-    string
-    Project::getDescription
-    (void)
-    {
-        return mJson[Constants::PROJECT_DESCRIPTION];
-    }
-
-    void
-    Project::setAuthor
-    (string author)
-    {
-        mJson[Constants::PROJECT_AUTHOR] = author;
-    }
-
-    string
-    Project::getAuthor
-    ()
-    {
-        return mJson[Constants::PROJECT_AUTHOR];
-    }
 
     void
     Project::addScene
@@ -239,34 +200,6 @@ namespace Dream
     ()
     {
         return mActiveSceneHandle != nullptr;
-    }
-
-    int
-    Project::getWindowWidth
-    ()
-    {
-        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WIDTH];
-    }
-
-    void
-    Project::setWindowWidth
-    (int width)
-    {
-        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WIDTH] = width;
-    }
-
-    int
-    Project::getWindowHeight
-    ()
-    {
-       return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT];
-    }
-
-    void
-    Project::setWindowHeight
-    (int height)
-    {
-        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT] = height;
     }
 
     void
@@ -359,11 +292,6 @@ namespace Dream
         mAssetDefinitions.clear();
     }
 
-    nlohmann::json Project::getJson()
-    {
-        return mJson;
-    }
-
     bool
     Project::loadActiveScene
     ()
@@ -382,7 +310,7 @@ namespace Dream
         }
 
         mRuntime->getGraphicsComponent()->setActiveScene(mActiveSceneHandle);
-        mRuntime->getPhysicsComponent()->setGravity(mActiveSceneHandle->getGravity());
+        mRuntime->getPhysicsComponent()->setGravity(mActiveSceneHandle->getRuntime()->getGravity());
         mRuntime->getPhysicsComponent()->setDebug(mActiveSceneHandle->getPhysicsDebug());
         mRuntime->getCamera()->setTranslation(mActiveSceneHandle->getDefaultCameraTransform().getTranslation());
         mRuntime->getCamera()->setRotation(mActiveSceneHandle->getDefaultCameraTransform().getRotation());
@@ -399,7 +327,6 @@ namespace Dream
         mRuntime->cleanupComponents(mActiveSceneHandle);
         mActiveSceneHandle = nullptr;
     }
-
 
     bool
     Project::loadFromFileReader
@@ -605,7 +532,7 @@ namespace Dream
     }
 
     ProjectRuntime*
-    Project::getRuntime
+    Project::getRuntimeHandle
     ()
     {
         return mRuntime.get();

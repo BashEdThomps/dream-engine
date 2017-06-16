@@ -17,21 +17,31 @@
 
 #pragma once
 
-#include <iostream>
-
-#include "PhysicsDebugDrawer.h"
-#include "PhysicsObjectInstance.h"
-
-#include <btBulletDynamicsCommon.h>
-#include <LinearMath/btVector3.h>
+#include <vector>
 
 #include "../IComponent.h"
-#include "../../Common/Event.h"
-#include "../../Common/Constants.h"
-#include "../../Utilities/String.h"
+#include <LinearMath/btVector3.h>
+#include <glm/matrix.hpp>
+
+using glm::mat4;
+using std::vector;
+
+class btDynamicsWorld;
+class btDefaultCollisionConfiguration;
+class btCollisionDispatcher;
+class btBroadphaseInterface;
+class btSequentialImpulseConstraintSolver;
+class btVector3;
+class btRigidBody;
+class btCollisionObject;
 
 namespace Dream
 {
+    class PhysicsDebugDrawer;
+    class PhysicsObjectInstance;
+    class Scene;
+    class SceneObject;
+
     class PhysicsComponent : public IComponent
     {
     protected:
@@ -41,7 +51,7 @@ namespace Dream
         btDefaultCollisionConfiguration *mCollisionConfiguration;
         btCollisionDispatcher *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
-        glm::mat4 mProjectionMatrix;
+        mat4 mProjectionMatrix;
         btVector3 mGravity;
         bool mDebug;
     public:
@@ -56,7 +66,7 @@ namespace Dream
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectInstance(PhysicsObjectInstance*);
-        void setViewProjectionMatrix(glm::mat4, glm::mat4);
+        void setViewProjectionMatrix(mat4, mat4);
         void checkContactManifolds(Scene* scene);
         SceneObject* getSceneObject(Scene* scene, const btCollisionObject*);
         void drawDebug();

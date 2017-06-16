@@ -30,10 +30,10 @@ SOURCES += \
     main.cpp \
     \
     View/MainWindow.cpp \
+    View/QOpenGLWindowComponent.cpp \
     Controller/MainController.cpp \
     \
     Model/DreamProjectModel.cpp \
-    Model/QOpenGLWindowComponent.cpp \
     Model/ProjectDirModel.cpp \
     \
     Model/TreeModels/AssetDefinitionTreeItem.cpp \
@@ -56,16 +56,17 @@ SOURCES += \
     View/GLView/SelectionHighlighter.cpp \
     View/GLView/GLDrawable.cpp \
     View/GLView/RelationshipTree.cpp \
-    Test/TestProjectDirModel.cpp
+    Test/TestProjectDirModel.cpp \
+    Model/PreferencesModel.cpp
 
 
 HEADERS  += \
     View/MainWindow.h \
+    View/QOpenGLWindowComponent.h \
     \
     Controller/MainController.h \
     \
     Model/DreamProjectModel.h \
-    Model/QOpenGLWindowComponent.h \
     Model/ProjectDirModel.h \
     \
     Model/TreeModels/AssetDefinitionTreeItem.h \
@@ -89,7 +90,8 @@ HEADERS  += \
     View/GLView/GLDrawable.h \
     View/GLView/RelationshipTree.h \
     Test/TestProjectDirModel.h \
-    Test/catch.hpp
+    Test/catch.hpp \
+    Model/PreferencesModel.h
 
 
 FORMS    += View/MainWindow.ui

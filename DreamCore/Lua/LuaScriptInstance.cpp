@@ -17,6 +17,8 @@
 
 #include "LuaScriptInstance.h"
 
+#include "../Project/AssetDefinition.h"
+
 namespace Dream
 {
 

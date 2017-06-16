@@ -20,6 +20,8 @@
 #include <QDebug>
 #include <DreamCore.h>
 
+using namespace Dream;
+
 ShaderTemplateComboDelegate::ShaderTemplateComboDelegate(QObject* parent)
     : QItemDelegate(parent)
 {
@@ -41,8 +43,8 @@ const
     editor->setEditable(false);
     editor->setMinimumHeight(25);
     QStringList list;
-    list << QString(SHADER_VERTEX)
-         << QString(SHADER_FRAGMENT);
+    list << QString::fromStdString(Constants::SHADER_VERTEX)
+         << QString::fromStdString(Constants::SHADER_FRAGMENT);
     editor->addItems(list);
     return editor;
 }

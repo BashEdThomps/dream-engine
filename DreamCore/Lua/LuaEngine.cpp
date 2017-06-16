@@ -21,7 +21,11 @@
 #include <luabind/adopt_policy.hpp>
 
 #include "LuaScriptCache.h"
+#include "LuaScriptInstance.h"
 
+#include "../Components/Event.h"
+#include "../Components/Transform3D.h"
+#include "../Components/Time.h"
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Animation/AnimationInstance.h"
 #include "../Components/Audio/AudioComponent.h"
@@ -39,6 +43,14 @@
 
 #include "../Project/Project.h"
 #include "../Project/ProjectRuntime.h"
+
+#include "../Scene/Scene.h"
+
+#include "../Scene/SceneObject/SceneObject.h"
+#include "../Scene/SceneObject/SceneObject.h"
+#include "../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../Scene/SceneObject/SceneObjectJsonData.h"
+
 #include "../Utilities/Math.h"
 
 using namespace std;
@@ -141,7 +153,7 @@ namespace Dream
                 continue;
             }
 
-            if (sceneObject->getDeleteFlag())
+            if (sceneObject->getRuntime()->getDeleteFlag())
             {
 
                 if (Constants::DEBUG)
@@ -153,7 +165,10 @@ namespace Dream
 
             if (Constants::DEBUG)
             {
-                cout << "LuaEngine: loading script '" << luaScript->getName() << "' for '" << sceneObject->getName() << "'" << endl;
+                cout << "LuaEngine: loading script '" << luaScript->getName()
+                     << "' for '"
+                     << sceneObject->getJsonData()->getName()
+                     << "'" << endl;
                 cout << "LuaEngine: Loading Lua script from " << luaScript->getAbsolutePath()
                      << endl << flush;
             }
@@ -165,7 +180,7 @@ namespace Dream
 
             if (Constants::DEBUG)
             {
-                cout << "LuaEngine: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
+                cout << "LuaEngine: Loaded " << sceneObject->getJsonData()->getUuid() << " Successfully" << endl;
             }
 
             luaScript->setLoadedFlag(true);
@@ -179,8 +194,8 @@ namespace Dream
     LuaEngine::loadScript
     (SceneObject* sceneObject)
     {
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        string id = sceneObject->getJsonData()->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getRuntime()->getScriptInstance();
 
         if (!mState)
         {
@@ -279,11 +294,11 @@ namespace Dream
         for (pair<SceneObject*,LuaScriptInstance*> entry : mScriptMap)
         {
             SceneObject* key = entry.first;
-            if (key->getDeleteFlag())
+            if (key->getRuntime()->getDeleteFlag())
             {
                 if (Constants::DEBUG)
                 {
-                    cout << "LuaEngine: Skipping update on " << key->getUuid() << endl;
+                    cout << "LuaEngine: Skipping update on " << key->getJsonData()->getUuid() << endl;
                 }
                 continue;
             }
@@ -293,7 +308,7 @@ namespace Dream
                 return false;
             }
 
-            if (key->hasFocus())
+            if (key->getRuntime()->hasFocus())
             {
                 if (!executeScriptInputHandler(key))
                 {
@@ -301,7 +316,7 @@ namespace Dream
                 }
             }
 
-            if (key->hasEvents())
+            if (key->getRuntime()->hasEvents())
             {
                 if (!executeScriptEventHandler(key))
                 {
@@ -316,8 +331,8 @@ namespace Dream
     LuaEngine::executeScriptUpdate
     (SceneObject* sceneObject)
     {
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        string id = sceneObject->getJsonData()->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getRuntime()->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -351,8 +366,8 @@ namespace Dream
     LuaEngine::executeScriptInit
     (SceneObject* sceneObject)
     {
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        string id = sceneObject->getJsonData()->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getRuntime()->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -362,7 +377,7 @@ namespace Dream
         if (Constants::VERBOSE)
         {
             cout << "LuaEngine: Calling onInit in " << scriptInstance->getName()
-                 <<" for " << sceneObject->getName()
+                 <<" for " << sceneObject->getJsonData()->getName()
                 << endl;
         }
         try
@@ -387,8 +402,8 @@ namespace Dream
     LuaEngine::executeScriptInputHandler
     (SceneObject* sceneObject)
     {
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        string id = sceneObject->getJsonData()->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getRuntime()->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -428,8 +443,8 @@ namespace Dream
     LuaEngine::executeScriptEventHandler
     (SceneObject* sceneObject)
     {
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        string id = sceneObject->getJsonData()->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getRuntime()->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -447,12 +462,12 @@ namespace Dream
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[Constants::LUA_EVENT_FUNCTION];
-            vector<Event*>* events = sceneObject->getEventQueue();
+            vector<Event*>* events = sceneObject->getRuntime()->getEventQueue();
             for (Event* event : *events)
             {
                 luabind::call_function<void>(funq,sceneObject,event);
             }
-            sceneObject->cleanUpEvents();
+            sceneObject->getRuntime()->cleanUpEvents();
         }
         catch (luabind::error &e)
         {
@@ -495,7 +510,7 @@ namespace Dream
                 .def("getTime",&ProjectRuntime::getTime)
                 .def("getCamera",&ProjectRuntime::getCamera)
         ];
-        luabind::globals(mState)["Runtime"] = mProjectHandle->getRuntime();
+        luabind::globals(mState)["Runtime"] = mProjectHandle->getRuntimeHandle();
     }
 
     void
@@ -695,37 +710,40 @@ namespace Dream
         luabind::module(mState)
                 [
                 luabind::class_<SceneObject>("SceneObject")
-                .def(luabind::constructor<>())
-                .def("getUuid",&SceneObject::getUuid)
-                .def("setUuid",&SceneObject::setUuid)
-                .def("getName",&SceneObject::getName)
-                .def("setName",&SceneObject::setName)
-                .def("showStatus",&SceneObject::showStatus)
-                .def("getChildByUuid",&SceneObject::getChildByUuid)
-                .def("getTransform",&SceneObject::getTransform)
-                .def("setTransform",&SceneObject::setTransform)
-                .def("getParent",&SceneObject::getParent)
-                .def("setParent",&SceneObject::setParent)
-                .def("addChild",&SceneObject::addChild,luabind::adopt(boost::placeholders::_2))
-                .def("addAssetDefUuidToLoad",&SceneObject::addAssetDefUuidToLoad)
-                .def("getAnimationInstance",&SceneObject::getAnimationInstance)
-                .def("setAnimationInstance",&SceneObject::setAnimationInstance)
-                .def("getAudioInstance",&SceneObject::getAudioInstance)
-                .def("setAudioInstance",&SceneObject::setAudioInstance)
-                .def("getSpriteInstance",&SceneObject::getSpriteInstance)
-                .def("setSpriteInstance",&SceneObject::setSpriteInstance)
-                .def("getModelInstance",&SceneObject::getModelInstance)
-                .def("setModelInstance",&SceneObject::setModelInstance)
-                .def("getShaderInstance",&SceneObject::getShaderInstance)
-                .def("setShaderInstance",&SceneObject::setShaderInstance)
-                .def("getLightInstance",&SceneObject::getLightInstance)
-                .def("setLightInstance",&SceneObject::setLightInstance)
-                .def("getFontInstance",&SceneObject::getFontInstance)
-                .def("setFontInstance",&SceneObject::setFontInstance)
-                .def("getPhysicsObjectInstance",&SceneObject::getPhysicsObjectInstance)
-                .def("setPhysicsObjectInstance",&SceneObject::setPhysicsObjectInstance)
-                .def("getDeleteFlag",&SceneObject::getDeleteFlag)
-                .def("setDeleteFlag",&SceneObject::setDeleteFlag)
+                    .def(luabind::constructor<>())
+                    //.def("getUuid",&SceneObject::getUuid)
+                    //.def("setUuid",&SceneObject::setUuid)
+                    //.def("getName",&SceneObject::getName)
+                    //.def("setName",&SceneObject::setName)
+                    .def("showStatus",&SceneObject::showStatus)
+                    .def("getRuntime",&SceneObject::getRuntime),
+
+                luabind::class_<SceneObjectRuntime>("SceneObjectRuntime")
+                    .def("getChildByUuid",&SceneObjectRuntime::getChildByUuid)
+                    .def("getTransform",&SceneObjectRuntime::getTransform)
+                    .def("setTransform",&SceneObjectRuntime::setTransform)
+                    .def("getParent",&SceneObjectRuntime::getParent)
+                    .def("setParent",&SceneObjectRuntime::setParent)
+                    .def("addChild",&SceneObjectRuntime::addChild,luabind::adopt(boost::placeholders::_2))
+                    .def("addAssetDefUuidToLoad",&SceneObjectRuntime::addAssetDefUuidToLoad)
+                    .def("getAnimationInstance",&SceneObjectRuntime::getAnimationInstance)
+                    .def("setAnimationInstance",&SceneObjectRuntime::setAnimationInstance)
+                    .def("getAudioInstance",&SceneObjectRuntime::getAudioInstance)
+                    .def("setAudioInstance",&SceneObjectRuntime::setAudioInstance)
+                    .def("getSpriteInstance",&SceneObjectRuntime::getSpriteInstance)
+                    .def("setSpriteInstance",&SceneObjectRuntime::setSpriteInstance)
+                    .def("getModelInstance",&SceneObjectRuntime::getModelInstance)
+                    .def("setModelInstance",&SceneObjectRuntime::setModelInstance)
+                    .def("getShaderInstance",&SceneObjectRuntime::getShaderInstance)
+                    .def("setShaderInstance",&SceneObjectRuntime::setShaderInstance)
+                    .def("getLightInstance",&SceneObjectRuntime::getLightInstance)
+                    .def("setLightInstance",&SceneObjectRuntime::setLightInstance)
+                    .def("getFontInstance",&SceneObjectRuntime::getFontInstance)
+                    .def("setFontInstance",&SceneObjectRuntime::setFontInstance)
+                    .def("getPhysicsObjectInstance",&SceneObjectRuntime::getPhysicsObjectInstance)
+                    .def("setPhysicsObjectInstance",&SceneObjectRuntime::setPhysicsObjectInstance)
+                    .def("getDeleteFlag",&SceneObjectRuntime::getDeleteFlag)
+                    .def("setDeleteFlag",&SceneObjectRuntime::setDeleteFlag)
                 ];
     }
 
@@ -990,8 +1008,8 @@ namespace Dream
 
         for(pair<SceneObject*,LuaScriptInstance*> scriptPair : mScriptMap)
         {
-            string id = scriptPair.first->getUuid();
-            string soName = scriptPair.first->getName();
+            string id = scriptPair.first->getJsonData()->getUuid();
+            string soName = scriptPair.first->getJsonData()->getName();
 
             reg[id] = luabind::nil;
 

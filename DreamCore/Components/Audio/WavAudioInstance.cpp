@@ -16,6 +16,7 @@
  */
 
 #include "WavAudioInstance.h"
+#include "../../Project/AssetDefinition.h"
 
 namespace Dream
 {
@@ -35,29 +36,29 @@ namespace Dream
 
     bool
     WavAudioInstance::load
-    (std::string projectPath)
+    (string projectPath)
     {
-        std::string absPath = projectPath + mDefinitionHandle->getAssetPath();
-        std::cout << "WavAudioInstance: Loading wav file from " << absPath << std::endl;
+        string absPath = projectPath + mDefinitionHandle->getAssetPath();
+        cout << "WavAudioInstance: Loading wav file from " << absPath << endl;
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
 
         if (wavFile == NULL)
         {
-            std::cerr << "WavAudioInstance:: Unable to open wave file: " << absPath << std::endl;
+            cerr << "WavAudioInstance:: Unable to open wave file: " << absPath << endl;
             return false;
         }
 
         //Read the header
         size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
-        std::cout << "WavAudioInstance: Header Read " << bytesRead << " bytes." << std::endl;
+        cout << "WavAudioInstance: Header Read " << bytesRead << " bytes." << endl;
         if (bytesRead > 0)
         {
             //Read the data
             //uint16_t bytesPerSample = mWavHeader.BitsPerSample / 8;      // Number of bytes per sample
             //uint64_t numSamples = mWavHeader.ChunkSize / bytesPerSample; //How many samples are in the wav file?
-            int8_t* buffer = new int8_t[BUFFER_SIZE];
-            while ((bytesRead = fread(buffer, sizeof buffer[0], BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0)
+            int8_t* buffer = new int8_t[Constants::AUDIO_BUFFER_SIZE];
+            while ((bytesRead = fread(buffer, sizeof buffer[0], Constants::AUDIO_BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0)
             {
                 mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytesRead);
             }
@@ -70,34 +71,34 @@ namespace Dream
             {
                 mFormat = AL_FORMAT_STEREO16;
             }
-            std::cout << "WavAudioInstance: Read " << mAudioDataBuffer.size() << " bytes." << std::endl;
+            cout << "WavAudioInstance: Read " << mAudioDataBuffer.size() << " bytes." << endl;
             delete [] buffer;
             buffer = NULL;
             filelength = getFileSize(wavFile);
-            std::cout << "WavAudioInstance: Status..."    << std::endl;
-            std::cout << "\tFile is          :" << filelength << " bytes." << std::endl;
-            std::cout << "\tRIFF header      :"
+            cout << "WavAudioInstance: Status..."    << endl;
+            cout << "\tFile is          :" << filelength << " bytes." << endl;
+            cout << "\tRIFF header      :"
                       << mWavHeader.RIFF[0] << mWavHeader.RIFF[1]
                       << mWavHeader.RIFF[2] << mWavHeader.RIFF[3]
-                      << std::endl;
-            std::cout << "\tWAVE header      :" << mWavHeader.WAVE[0]
+                      << endl;
+            cout << "\tWAVE header      :" << mWavHeader.WAVE[0]
                       << mWavHeader.WAVE[1]     << mWavHeader.WAVE[2]
-                      << mWavHeader.WAVE[3]     << std::endl;
-            std::cout << "\tFMT              :" << mWavHeader.fmt[0]
+                      << mWavHeader.WAVE[3]     << endl;
+            cout << "\tFMT              :" << mWavHeader.fmt[0]
                       << mWavHeader.fmt[1]      << mWavHeader.fmt[2]
-                      << mWavHeader.fmt[3]      << std::endl;
-            std::cout << "\tData size        :" << mWavHeader.ChunkSize        << std::endl;
-            std::cout << "\tSampling Rate    :" << mWavHeader.SamplesPerSecond << std::endl;
-            std::cout << "\tBits used        :" << mWavHeader.BitsPerSample    << std::endl;
-            std::cout << "\tChannels         :" << mWavHeader.NumOfChannels    << std::endl;
-            std::cout << "\tBytes per second :" << mWavHeader.BytesPerSecond   << std::endl;
-            std::cout << "\tData length      :" << mWavHeader.Subchunk2Size    << std::endl;
-            std::cout << "\tAudio Format     :" << mWavHeader.AudioFormat      << std::endl;
-            std::cout << "\tBlock align      :" << mWavHeader.BlockAlign       << std::endl;
-            std::cout << "\tData string      :"
+                      << mWavHeader.fmt[3]      << endl;
+            cout << "\tData size        :" << mWavHeader.ChunkSize        << endl;
+            cout << "\tSampling Rate    :" << mWavHeader.SamplesPerSecond << endl;
+            cout << "\tBits used        :" << mWavHeader.BitsPerSample    << endl;
+            cout << "\tChannels         :" << mWavHeader.NumOfChannels    << endl;
+            cout << "\tBytes per second :" << mWavHeader.BytesPerSecond   << endl;
+            cout << "\tData length      :" << mWavHeader.Subchunk2Size    << endl;
+            cout << "\tAudio Format     :" << mWavHeader.AudioFormat      << endl;
+            cout << "\tBlock align      :" << mWavHeader.BlockAlign       << endl;
+            cout << "\tData string      :"
                       << mWavHeader.Subchunk2ID[0] << mWavHeader.Subchunk2ID[1]
                       << mWavHeader.Subchunk2ID[2] << mWavHeader.Subchunk2ID[3]
-                      << std::endl;
+                      << endl;
         }
         fclose(wavFile);
         return true;
@@ -117,7 +118,7 @@ namespace Dream
 
     void
     WavAudioInstance::loadExtraAttributes
-    (nlohmann::json json)
+    (json json)
     {
         return;
     }

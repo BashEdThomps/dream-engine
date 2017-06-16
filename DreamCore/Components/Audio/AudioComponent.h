@@ -15,8 +15,11 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AUDIOCOMPONENT_H
-#define AUDIOCOMPONENT_H
+#pragma once
+
+#include <iostream>
+#include <vector>
+#include <memory>
 
 #ifdef __APPLE__
 #include <OpenAL/al.h>
@@ -26,28 +29,29 @@
 #include <AL/alc.h>
 #endif
 
+#include "AudioStatus.h"
 #include "../IComponent.h"
-#include "AudioInstance.h"
 
-#include <iostream>
-#include <vector>
-#include <memory>
-
-using namespace std;
+using std::vector;
 
 namespace Dream
 {
+    class AudioInstance;
+    class AssetDefinition;
+    class Transform3D;
 
     class AudioComponent : public IComponent
     {
+
     private:
-        std::vector<AudioInstance*> mPlayQueue;
-        std::vector<AudioInstance*> mPauseQueue;
-        std::vector<AudioInstance*> mStopQueue;
-        std::vector<ALuint> mSources;
-        std::vector<ALuint> mBuffers;
+        vector<AudioInstance*> mPlayQueue;
+        vector<AudioInstance*> mPauseQueue;
+        vector<AudioInstance*> mStopQueue;
+        vector<ALuint> mSources;
+        vector<ALuint> mBuffers;
         ALCdevice*  mDevice;
         ALCcontext* mContext;
+
     public:
         AudioComponent();
         ~AudioComponent();
@@ -55,8 +59,8 @@ namespace Dream
         void updateComponent(Scene*) override;
         void cleanUp(Scene*) override;
 
-        void setSourcePosision(ALuint, std::vector<float>);
-        void setListenerPosition(std::vector<float>);
+        void setSourcePosision(ALuint, vector<float>);
+        void setListenerPosition(vector<float>);
 
         void pushToPlayQueue(AudioInstance*);
         void pushToPauseQueue(AudioInstance*);
@@ -69,7 +73,7 @@ namespace Dream
 
         float getSampleOffset(ALuint);
         float getSampleOffset(AudioInstance*);
-        std::vector<char> getAudioBuffer(AudioInstance*, ALint, ALint);
+        vector<char> getAudioBuffer(AudioInstance*, ALint, ALint);
         AudioInstance* newAudioInstance(AssetDefinition*,Transform3D*);
 
     protected:
@@ -92,6 +96,5 @@ namespace Dream
         void deleteAllBuffers();
 
     }; // End of AudioComponent
-} // End of Dream
 
-#endif // End of AUDIOCOMPONENT_H
+} // End of Dream

@@ -14,19 +14,19 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#pragma once
 
-#ifndef ASSETDEFINITION_H
-#define ASSETDEFINITION_H
-
-
-#include <iostream>
+#include <string>
 #include <map>
 #include <string>
+#include <vector>
 #include <json.hpp>
-#include "Constants.h"
+#include "../Common/Constants.h"
 
-using namespace std;
-using namespace nlohmann;
+using std::string;
+using std::vector;
+using nlohmann::json;
+
 
 namespace Dream
 {
@@ -39,23 +39,25 @@ namespace Dream
         json mJson;
         string mProjectPath;
     public:
-        AssetDefinition(nlohmann::json);
-        ~AssetDefinition(void);
+        AssetDefinition(json);
+        ~AssetDefinition();
 
         void setUuid(string);
         string getUuid();
         bool hasUuid(string);
+
         void setName(string);
         string getName();
+
         void setType(string);
         string getType();
+
         void setFormat(string);
         string getFormat();
 
         string getNameAndUuidString();
 
         string getAssetTypeDirectory();
-
 
         bool isTypeAnimation();
         bool isTypeAudio();
@@ -85,5 +87,3 @@ namespace Dream
     }; // End of AssetDefinition
 
 } // End of Dream
-
-#endif // End of ASSETDEFINITION_H

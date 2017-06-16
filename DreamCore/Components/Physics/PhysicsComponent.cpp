@@ -17,6 +17,29 @@
 
 #include "PhysicsComponent.h"
 
+#include <iostream>
+
+#include "PhysicsDebugDrawer.h"
+#include "PhysicsObjectInstance.h"
+#include <btBulletDynamicsCommon.h>
+
+#include "../IComponent.h"
+
+#include "../Event.h"
+#include "../../Common/Constants.h"
+
+#include "../Time.h"
+
+#include "../../Scene/Scene.h"
+
+#include "../../Scene/SceneObject/SceneObject.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectJsonData.h"
+
+#include "../Transform3D.h"
+
+#include "../../Utilities/String.h"
+
 namespace Dream
 {
     PhysicsComponent::PhysicsComponent
@@ -26,7 +49,6 @@ namespace Dream
         mDebugDrawer = nullptr;
         mDebug = false;
     }
-
 
     PhysicsComponent::~PhysicsComponent
     ()
@@ -196,27 +218,27 @@ namespace Dream
                     function<void*(SceneObject*)>
                     (
                         [&](SceneObject* so)
-        {
-                        // Has physics
-                        if (so->hasPhysicsObjectInstance())
                         {
-                            PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
+                        // Has physics
+                        if (so->getRuntime()->hasPhysicsObjectInstance())
+                        {
+                            PhysicsObjectInstance* physicsObject = so->getRuntime()->getPhysicsObjectInstance();
                             // Marked for deletion and in physics world, remove
-                            if (so->getDeleteFlag() && physicsObject->getInPhysicsWorld())
+                            if (so->getRuntime()->getDeleteFlag() && physicsObject->getInPhysicsWorld())
                             {
                                 if (Constants::DEBUG)
                                 {
-                                    cout << "PhysicsComponent: Removing SceneObject " << so->getUuid()
+                                    cout << "PhysicsComponent: Removing SceneObject " << so->getJsonData()->getUuid()
                                     << " from Physics World" << endl;
                                 }
                                 removePhysicsObjectInstance(physicsObject);
                             }
                             // Not marked for deletion and not in world, add
-                            if (!so->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
+                            if (!so->getRuntime()->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
                             {
                                 if (Constants::DEBUG)
                                 {
-                                    cout << "PhysicsComponent: Adding SceneObject " << so->getUuid()
+                                    cout << "PhysicsComponent: Adding SceneObject " << so->getJsonData()->getUuid()
                                     << " to Physics World" << endl;
                                 }
                                 addPhysicsObjectInstance(physicsObject);
@@ -261,8 +283,8 @@ namespace Dream
             SceneObject* sObjA = getSceneObject(scene, objA);
             SceneObject* sObjB = getSceneObject(scene, objB);
 
-            Event* e = new Event(sObjB->getUuid(),Constants::EVENT_TYPE_COLLISION);
-            sObjA->sendEvent(e);
+            Event* e = new Event(sObjB->getJsonData()->getUuid(),Constants::EVENT_TYPE_COLLISION);
+            sObjA->getRuntime()->sendEvent(e);
 
             /*
            * More detail about contact.
@@ -292,9 +314,9 @@ namespace Dream
                         (
                             [&](SceneObject* next)
         {
-                            if (next->hasPhysicsObjectInstance())
+                            if (next->getRuntime()->hasPhysicsObjectInstance())
                             {
-                                PhysicsObjectInstance* nextPO = next->getPhysicsObjectInstance();
+                                PhysicsObjectInstance* nextPO = next->getRuntime()->getPhysicsObjectInstance();
                                 if (nextPO->getCollisionObject() == collObj)
                                 {
                                     return next;

@@ -17,15 +17,19 @@
 
 #pragma once
 
-#include <iostream>
+#include <string>
+#include <json.hpp>
 
-#include "AssetDefinition.h"
-#include "Constants.h"
-#include "Transform3D.h"
-#include "../Utilities/FileReader.h"
+#include "../Common/Constants.h"
+
+using std::string;
+using nlohmann::json;
 
 namespace Dream
 {
+    class Transform3D;
+    class AssetDefinition;
+
     class IAssetInstance
     {
     protected:
@@ -44,7 +48,7 @@ namespace Dream
         string getNameAndUuidString();
 
         virtual bool load(string) = 0;
-        virtual void loadExtraAttributes(nlohmann::json) = 0;
+        virtual void loadExtraAttributes(json) = 0;
 
         Transform3D* getTransform();
 

@@ -135,7 +135,7 @@ namespace DreamSDL
                 {
                     cout << ">>> SDLWindowComponent: SDL_QUIT Event" << endl;
                 }
-                scene->setState(DONE);
+                scene->getRuntime()->setState(DONE);
                 break;
             }
             else if (event.type == SDL_WINDOWEVENT)

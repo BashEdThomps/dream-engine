@@ -20,41 +20,35 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <memory>
 #include <json.hpp>
 
-#include "SceneObject.h"
-#include "SceneRuntime.h"
-
-#include "../Common/Constants.h"
-#include "../Common/IAssetInstance.h"
-#include "../Common/AssetDefinition.h"
-#include "../Components/Graphics/Camera.h"
-#include "../Components/Audio/AudioInstance.h"
-#include "../Components/Animation/AnimationInstance.h"
-#include "../Components/Graphics/Sprite/SpriteInstance.h"
-#include "../Components/Graphics/Shader/ShaderInstance.h"
-#include "../Components/Graphics/Model/AssimpModelInstance.h"
-#include "../Components/Graphics/Light/LightInstance.h"
-#include "../Components/Graphics/Font/FontInstance.h"
-#include "../Components/Physics/PhysicsObjectInstance.h"
-#include "../Lua/LuaScriptInstance.h"
-#include "../Utilities/String.h"
-
-using namespace std;
+using std::string;
+using std::vector;
+using std::map;
+using std::unique_ptr;
+using nlohmann::json;
 
 namespace Dream
 {
     class Project;
+    class SceneObject;
+    class SceneRuntime;
+    class SceneJsonData;
+    class IAssetInstance;
+    class Transform3D;
+    class AssetDefinition;
+
     class Scene
     {
     private:
         Project* mProjectHandle;
-        nlohmann::json mJson;
         unique_ptr<SceneObject> mRootSceneObject;
-        SceneRuntime mRuntime;
+        unique_ptr<SceneJsonData> mJsonData;
+        unique_ptr<SceneRuntime> mRuntime;
 
     public:
-        Scene(Project* parent, nlohmann::json projJson);
+        Scene(Project* parent, json sceneJson);
         ~Scene();
 
         void flush();
@@ -87,14 +81,6 @@ namespace Dream
         void setCameraMovementSpeed(float);
         float getCameraMovementSpeed();
 
-        vector<float> getClearColour();
-        vector<float> getAmbientLightColour();
-
-        void addToDeleteQueue(SceneObject*);
-        vector<SceneObject*> getDeleteQueue();
-        void clearDeleteQueue();
-        void destroyDeleteQueue();
-
         void findDeleteFlaggedSceneObjects();
         void findDeleteFlaggedScripts();
 
@@ -106,7 +92,6 @@ namespace Dream
 
         AssetDefinition* getAssetDefinitionByUuid(string);
 
-        vector<float> getGravity();
         bool getPhysicsDebug();
 
         void loadSceneObjectJsonData(nlohmann::json, SceneObject*);
@@ -119,7 +104,7 @@ namespace Dream
         bool hasName(string);
         bool hasUuid(string);
 
-        SceneRuntime getRuntime() const;
+        SceneRuntime* getRuntime() const;
 
     }; // End of Scene
 

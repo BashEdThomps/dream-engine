@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "AudioStatus.h"
-#include "../../Common/IAssetInstance.h"
+#include "../IAssetInstance.h"
 
 #ifdef __APPLE__
 #include <OpenAL/al.h>
@@ -12,28 +12,28 @@
 #include <AL/alc.h>
 #endif
 
-// 32 KB buffers
-#define BUFFER_SIZE 32768
+using std::vector;
 
 namespace Dream
 {
-      class AudioInstance : public IAssetInstance
-      {
-      protected:
+    class AudioInstance : public IAssetInstance
+    {
+    protected:
         bool mLooping;
         ALenum mFormat;
         ALsizei mFrequency;
-        std::vector<char> mAudioDataBuffer;
+        vector<char> mAudioDataBuffer;
         ALuint mSource;
         ALuint mBuffer;
         AudioStatus mStatus;
-      public:
+
+    public:
         AudioInstance(AssetDefinition*,Transform3D*);
 
         void setLooping(bool);
         bool isLooping();
 
-        std::vector<ALchar> getAudioDataBuffer();
+        vector<ALchar> getAudioDataBuffer();
         ALsizei getFrequency();
         ALenum  getFormat();
         AudioStatus getStatus();
@@ -43,6 +43,6 @@ namespace Dream
 
         void setSource(ALuint source);
         ALuint getSource();
-      };
+    };
 
 } // End of Dream

@@ -18,15 +18,29 @@
 
 #include "SceneRuntime.h"
 
+#include <iostream>
+
+#include "../Common/Constants.h"
+
+#include "SceneObject/SceneObject.h"
+#include "SceneObject/SceneObjectRuntime.h"
+
+using std::cout;
+using std::cerr;
+
 namespace Dream
 {
     SceneRuntime::SceneRuntime
     ()
+        : mGravity({0,0,0}),
+          mClearColour({0,0,0,0}),
+          mAmbientColour({0,0,0})
     {
         if (Constants::DEBUG)
         {
             cout << "SceneRuntime: Constructing Object" << endl;
         }
+
     }
 
     SceneRuntime::~SceneRuntime
@@ -37,7 +51,6 @@ namespace Dream
             cout << "SceneRuntime: Destroying Object" << endl;
         }
     }
-
 
     SceneState
     SceneRuntime::getState
@@ -117,6 +130,44 @@ namespace Dream
     () const
     {
         return mDeleteQueue;
+    }
+
+    void
+    SceneRuntime::addToDeleteQueue
+    (SceneObject* object)
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "Scene: Adding "
+                 << object->getNameAndUuidString()
+                 << " to delete queue" << endl;
+        }
+        getDeleteQueue().push_back(object);
+    }
+
+    void
+    SceneRuntime::clearDeleteQueue
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "Scene: clearDeleteQueue" << endl;
+        }
+        getDeleteQueue().clear();
+    }
+
+    void
+    SceneRuntime::destroyDeleteQueue
+    ()
+    {
+        if (!mDeleteQueue.empty())
+        {
+            for(SceneObject* obj : mDeleteQueue)
+            {
+                obj->getRuntime()->cleanUp();
+            }
+        }
+        clearDeleteQueue();
     }
 
 } // End of Dream

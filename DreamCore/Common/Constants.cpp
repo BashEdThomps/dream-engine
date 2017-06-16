@@ -233,6 +233,11 @@ namespace Dream
     // Shader ===================================================================
     const string Constants::SHADER_FRAGMENT = "fragment";
     const string Constants::SHADER_VERTEX = "vertex";
+    // Audio
+    const size_t AUDIO_BUFFER_SIZE = 32768;
+    // Window
+    const int DEFAULT_SCREEN_WIDTH  = 1280;
+    const int DEFAULT_SCREEN_HEIGHT =  720;
     // Data =====================================================================
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =

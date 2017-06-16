@@ -15,11 +15,13 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "FontCache.h"
 
 #include <iostream>
 #include <algorithm>
 
+#include "FontCharacter.h"
 #include "../../../Common/Constants.h"
 
 namespace Dream

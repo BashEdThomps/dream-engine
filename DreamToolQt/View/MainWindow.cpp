@@ -17,13 +17,12 @@
  */
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-#include "Model/QOpenGLWindowComponent.h"
-
 #include <QWindow>
 #include <QDebug>
-
 #include <vector>
 #include <algorithm>
+
+#include "View/QOpenGLWindowComponent.h"
 
 const vector<int> MainWindow::mKeysPassedToWindow =
 {

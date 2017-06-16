@@ -20,7 +20,6 @@
 
 #include <memory>
 #include <vector>
-#include "../Model/QOpenGLWindowComponent.h"
 
 #include <GL/glew.h>
 
@@ -30,6 +29,8 @@
 #include <QTreeView>
 #include <QAction>
 #include <QKeyEvent>
+
+#include "../View/QOpenGLWindowComponent.h"
 
 using namespace std;
 using namespace Dream;

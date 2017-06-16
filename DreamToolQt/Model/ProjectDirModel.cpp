@@ -427,7 +427,7 @@ ProjectDirModel::assetsDirExists
 {
     if (mProjectDir)
     {
-        mProjectDir->exists(QString::fromStdString(Constants::ASSET_DIR));
+        return mProjectDir->exists(QString::fromStdString(Constants::ASSET_DIR));
     }
     else
     {

@@ -15,7 +15,25 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "PhysicsMotionState.h"
+
+#include <iostream>
+
+#include <LinearMath/btMatrix3x3.h>
+#include <LinearMath/btQuaternion.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+#include "../Transform3D.h"
+
+#include "../../Common/Constants.h"
+
+using std::cout;
+using std::cerr;
+
+
 namespace Dream
 {
     PhysicsMotionState::PhysicsMotionState

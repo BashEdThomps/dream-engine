@@ -1,36 +1,52 @@
+/*
+ * SceneObjectRuntime.h
+ *
+ * Created: 16 2017 by Ashley
+ *
+ * Copyright 2017 Octronic. All rights reserved.
+ *
+ * This file may be distributed under the terms of GNU Public License version
+ * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
+ * license should have been included with this file, or the project in which
+ * this file belongs to. You may also find the details of GPL v3 at:
+ * http://www.gnu.org/licenses/gpl-3.0.txt
+ *
+ * If you have any questions regarding the use of this file, feel free to
+ * contact the author of this file, or the owner of the project in which
+ * this file belongs to.
+ */
+
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <functional>
 #include <memory>
-
-#include "../Common/Transform3D.h"
-#include "../Common/Constants.h"
-#include "../Common/Event.h"
-#include "../Components/Animation/AnimationInstance.h"
-#include "../Components/Audio/AudioInstance.h"
-#include "../Components/Graphics/Model/AssimpModelInstance.h"
-#include "../Components/Graphics/Light/LightInstance.h"
-#include "../Components/Graphics/Shader/ShaderInstance.h"
-#include "../Components/Graphics/Sprite/SpriteInstance.h"
-#include "../Components/Graphics/Font/FontInstance.h"
-#include "../Components/Physics/PhysicsObjectInstance.h"
-#include "../Lua/LuaScriptInstance.h"
+#include <vector>
+#include <glm/vec3.hpp>
 
 using namespace std;
+using namespace glm;
+
 namespace Dream
 {
+    class SceneObject;
     class Scene;
+    class Event;
+    class AudioInstance;
+    class AnimationInstance;
+    class AssimpModelInstance;
+    class LightInstance;
+    class ShaderInstance;
+    class SpriteInstance;
+    class FontInstance;
+    class PhysicsObjectInstance;
+    class LuaScriptInstance;
+    class Transform3D;
+    class AssetDefinition;
+    class SceneRuntime;
 
-    class SceneObject
+    class SceneObjectRuntime
     {
-    protected:
 
-        // Metadata
-        nlohmann::json mJson;
-
-        // Runtime Members
+    private:
         unique_ptr<AudioInstance> mAudioInstance;
         unique_ptr<AnimationInstance> mAnimationInstance;
         unique_ptr<AssimpModelInstance> mModelInstance;
@@ -41,45 +57,51 @@ namespace Dream
         unique_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
         unique_ptr<FontInstance> mFontInstance;
         unique_ptr<Transform3D> mTransform;
-        vector<SceneObject*> mChildren;
+
+        vector<SceneObjectRuntime*> mChildren;
         vector<Event*> mEventQueue;
-        SceneObject* mParentHandle;
-        Scene* mSceneHandle;
+
+        SceneObjectRuntime *mObjectRuntimeHandle;
+        SceneObjectRuntime *mParentObjectRuntimeHandle;
+        SceneRuntime *mSceneRuntimeHandle;
+
         bool mLoaded;
         bool mHasFocus;
         bool mDelete;
+
     public:
-        SceneObject(Scene* scene = nullptr);
-        SceneObject(Scene*, nlohmann::json);
-        ~SceneObject();
+        SceneObjectRuntime
+        (
+            SceneRuntime *parentSceneRuntimeHandle = nullptr,
+            SceneObjectRuntime *parentObjectRuntimeHandle = nullptr
+        );
 
-        void deleteChildren();
+        ~SceneObjectRuntime();
+        void deleteChildRuntimes();
         void deleteAssetInstances();
+        void cleanUp();
+        void cleanUpEvents();
+        void resetRuntime();
 
-        Scene* getSceneHandle();
+        SceneRuntime* getSceneRuntimeHandle();
+        SceneObjectRuntime* getParentObjectRuntimeHandle();
 
-        void constructorInit();
+        void createAssetInstances();
+        void createAssetInstanceFromAssetDefinitionByUuid(string);
+        void createAssetInstance(AssetDefinition*);
+        void createAnimationInstance(AssetDefinition*);
+        void createAudioInstance(AssetDefinition*);
+        void createModelInstance(AssetDefinition*);
+        void createScriptInstance(AssetDefinition*);
+        void createShaderInstance(AssetDefinition*);
+        void createPhysicsObjectInstance(AssetDefinition*);
+        void createLightInstance(AssetDefinition*);
+        void createFontInstance(AssetDefinition*);
+        void createSpriteInstance(AssetDefinition*);
 
-        bool init();
-        void loadJsonData(nlohmann::json);
-        void loadAssetDefinitionsToLoadJsonData(nlohmann::json);
-        void loadAssetInstances();
-
-        bool hasUuid(string);
-        void setUuid(string);
-        string getUuid();
-
-        bool hasName(string);
-        void setName(string);
-        string getName();
-
-        string getNameAndUuidString();
-
-        void showStatus();
-
-        glm::vec3 getTranslation();
+        vec3 getTranslation();
         void setTranslation(float, float, float);
-        void setTranslation(glm::vec3);
+        void setTranslation(vec3);
         void resetTranslation();
 
         glm::vec3 getRotation();
@@ -95,12 +117,14 @@ namespace Dream
         void resetTransform();
 
         SceneObject* getChildByUuid(string);
+
         int countAllChildren();
         size_t countChildren();
         void addChild(SceneObject*);
         void removeChild(SceneObject*);
         bool isChildOf(SceneObject*);
         vector<SceneObject*> getChildren();
+
         bool isParentOf(SceneObject*);
         void setParent(SceneObject*);
         SceneObject* getParent();
@@ -163,29 +187,9 @@ namespace Dream
         void sendEvent(Event*);
         vector<Event*>* getEventQueue();
 
-        nlohmann::json getJson();
 
-        void* applyToAll(function<void*(SceneObject*)>);
-        bool applyToAll(function<bool(SceneObject*)>);
+        void loadAssetInstances();
 
-        void createAssetInstances();
-        void createAssetInstanceFromAssetDefinitionByUuid(string);
-        void createAssetInstance(AssetDefinition*);
-        void createAnimationInstance(AssetDefinition*);
-        void createAudioInstance(AssetDefinition*);
-        void createModelInstance(AssetDefinition*);
-        void createScriptInstance(AssetDefinition*);
-        void createShaderInstance(AssetDefinition*);
-        void createPhysicsObjectInstance(AssetDefinition*);
-        void createLightInstance(AssetDefinition*);
-        void createFontInstance(AssetDefinition*);
-        void createSpriteInstance(AssetDefinition*);
-
-
-        void cleanUp();
-        void cleanUpEvents();
-
-    }; // End of SceneObject
-
-} // End of Dream
-
+        bool isParent(SceneObject*);
+    };
+}

@@ -1,17 +1,27 @@
 #pragma once
 
-#include <btBulletDynamicsCommon.h>
+#include "../IAssetInstance.h"
+
+#include <string>
+#include <map>
+#include <vector>
+#include <json.hpp>
+
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include <btBulletDynamicsCommon.h>
 
-#include "PhysicsMotionState.h"
+using std::string;
+using std::map;
+using std::vector;
 
-#include "../../Common/Constants.h"
-#include "../../Common/IAssetInstance.h"
+using nlohmann::json;
+
+struct aiMesh;
+struct aiNode;
 
 namespace Dream
 {
+    class PhysicsMotionState;
 
     struct CompoundChild
     {
@@ -21,6 +31,7 @@ namespace Dream
 
     class PhysicsObjectInstance : public IAssetInstance
     {
+
     private:
         static map<string,const aiScene*> AssimpModelCache;
         static ::Assimp::Importer mImporter;
@@ -33,6 +44,7 @@ namespace Dream
         bool mKinematic;
         vector<CompoundChild> mCompoundChildren;
         vector<AssetDefinition*> mAssetDefinitions;
+
     public:
         PhysicsObjectInstance(AssetDefinition*,Transform3D*,vector<AssetDefinition*>);
         ~PhysicsObjectInstance();
@@ -45,12 +57,14 @@ namespace Dream
         bool getInPhysicsWorld();
         btCollisionObject* getCollisionObject();
         void setLinearVelocity(float, float, float);
+
     protected:
-        void loadExtraAttributes(nlohmann::json);
-        void loadExtraAttributes(nlohmann::json,AssetDefinition*,bool);
+        void loadExtraAttributes(json);
+        void loadExtraAttributes(json,AssetDefinition*,bool);
         void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
         void processAssimpMesh(aiMesh*, btTriangleMesh*);
         AssetDefinition* getAssetDefinitionByUuid(string);
+
     }; // End of PhysicsObjectInstance
 
 } // End of Dream

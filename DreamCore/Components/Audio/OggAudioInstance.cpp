@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::Instance::Audio::Ogg::OggAudio
+* OggAudioInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,13 @@
 */
 
 #include "OggAudioInstance.h"
+
+#include <vorbis/vorbisfile.h>
+#include "../../Common/Constants.h"
+#include "../../Project/AssetDefinition.h"
+
+using std::cerr;
+using std::cout;
 
 namespace Dream
 {
@@ -34,10 +41,10 @@ namespace Dream
 
     bool
     OggAudioInstance::load
-    (std::string projectPath)
+    (string projectPath)
     {
-        std::string absPath = projectPath+mDefinitionHandle->getAssetPath();
-        std::cout << "OggAudioInstance: Loading Instance: " << absPath << std::endl;
+        string absPath = projectPath+mDefinitionHandle->getAssetPath();
+        cout << "OggAudioInstance: Loading Instance: " << absPath << endl;
 
         // 0 for Little-Endian, 1 for Big-Endian
         int endian = 0;
@@ -45,21 +52,21 @@ namespace Dream
         long bytes;
 
         // Local fixed size array
-        char buffer[BUFFER_SIZE];
+        char buffer[Constants::AUDIO_BUFFER_SIZE];
         FILE *file = fopen(absPath.c_str(), "rb");
-        if (file == NULL)
+        if (file == nullptr)
         {
-            std::cerr << "OggAudioInstance:: Cannot open " << absPath
-                      << " for reading..." << std::endl;
+            cerr << "OggAudioInstance:: Cannot open " << absPath
+                      << " for reading..." << endl;
             return false;
         }
 
         // Try opening the given file
         OggVorbis_File oggFile;
-        if (ov_open(file, &oggFile, NULL, 0) != 0)
+        if (ov_open(file, &oggFile, nullptr, 0) != 0)
         {
-            std::cerr << "OggAudioInstance: Error opening " << absPath
-                      << " for decoding..." << std::endl;
+            cerr << "OggAudioInstance: Error opening " << absPath
+                      << " for decoding..." << endl;
             return false;
         }
 
@@ -84,12 +91,12 @@ namespace Dream
         do
         {
             // Read up to a buffer's worth of decoded sound data
-            bytes = ov_read(&oggFile, buffer, BUFFER_SIZE, endian, 2, 1, &bitStream);
+            bytes = ov_read(&oggFile, buffer, Constants::AUDIO_BUFFER_SIZE, endian, 2, 1, &bitStream);
 
             if (bytes < 0)
             {
                 ov_clear(&oggFile);
-                std::cerr << "OggAudioInstance: Error decoding " << absPath << std::endl;
+                cerr << "OggAudioInstance: Error decoding " << absPath << endl;
                 return false;
             }
             // Append to end of buffer

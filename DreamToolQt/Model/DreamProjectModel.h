@@ -23,7 +23,7 @@
 #include <QTimer>
 #include <memory>
 
-#include "QOpenGLWindowComponent.h"
+#include "../View/QOpenGLWindowComponent.h"
 
 using namespace std;
 using namespace Dream;

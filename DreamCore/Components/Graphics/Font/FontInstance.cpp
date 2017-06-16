@@ -13,18 +13,24 @@
  */
 
 #include "FontInstance.h"
-#include "FontCache.h"
+
 #include <glm/glm.hpp>
+
+#include "FontCache.h"
+#include "FontInstance.h"
+#include "FontCharacter.h"
+
+#include "../../Transform3D.h"
+#include "../../../Project/AssetDefinition.h"
 
 namespace Dream
 {
-
 
     FontInstance::FontInstance
     (AssetDefinition* definition, Transform3D* transform)
         : IAssetInstance(definition,transform)
     {
-        if (*FontCache::getFreeTypeLib())
+        if (!FontCache::getFreeTypeLib())
         {
             FontCache::initFreeTypeLib();
         }
@@ -95,9 +101,9 @@ namespace Dream
         if (mFontFace)
         {
             FT_Set_Pixel_Sizes(
-                *mFontFace,0,
-                static_cast<FT_UInt>(mSize)
-            );
+                        *mFontFace,0,
+                        static_cast<FT_UInt>(mSize)
+                        );
         }
 
         if (Constants::DEBUG)
@@ -169,7 +175,7 @@ namespace Dream
     FontInstance::getColour
     ()
     {
-       return mColour;
+        return mColour;
     }
 
     map<GLchar,FontCharacter>

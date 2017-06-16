@@ -177,7 +177,7 @@ DreamProjectModel::stopActiveScene
     Scene* activeScene = mProject->getActiveScene();
     if (activeScene)
     {
-        activeScene->setState(DONE);
+        activeScene->getRuntime()->setState(DONE);
         mProject->cleanUpActiveScene();
         mProject->setActiveScene(nullptr);
 

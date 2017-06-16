@@ -15,34 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WAVAUDIO_H
-#define WAVAUDIO_H
+#pragma once
 
-#include <iostream>
 #include <string>
 #include <fstream>
-#include <cstdint>
+#include <json.hpp>
+
 #include "AudioInstance.h"
 #include "WavHeader.h"
 
-#define ASSET_FORMAT_WAV  "wav"
+using std::string;
+using nlohmann::json;
 
 namespace Dream
 {
     class WavAudioInstance : public AudioInstance
     {
+
     private:
         WavHeader mWavHeader;
+
     public:
         WavAudioInstance(AssetDefinition*,Transform3D*);
         ~WavAudioInstance();
 
         long getFileSize(FILE* inFile);
 
-        bool load(std::string) override;
-        void loadExtraAttributes(nlohmann::json) override;
+        bool load(string) override;
+        void loadExtraAttributes(json) override;
 
     }; // End WavAudioInstance
-} // End of Dream
 
-#endif // End of WAVAUDIO_H
+} // End of Dream

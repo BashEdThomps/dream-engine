@@ -196,6 +196,11 @@ namespace Dream
         const static string LUA_UPDATE_FUNCTION;
         const static string LUA_INPUT_FUNCTION;
         const static string LUA_EVENT_FUNCTION;
+        // Audio
+        const static size_t AUDIO_BUFFER_SIZE;
+        // Window
+        const static int DEFAULT_SCREEN_WIDTH;
+        const static int DEFAULT_SCREEN_HEIGHT;
         // Data Maps ============================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;

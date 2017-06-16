@@ -16,13 +16,28 @@
 */
 
 #include "AssimpModelInstance.h"
-#include "TextureCache.h"
+
 #include <limits>
+
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+#include "glm/glm.hpp"
+#include <SOIL/SOIL.h>
+
+#include "AssimpMesh.h"
+#include "Texture.h"
+#include "TextureCache.h"
+
+#include "../BoundingBox.h"
+#include "../Shader/ShaderInstance.h"
+#include "../../../Common/Constants.h"
+#include "../../../Project/AssetDefinition.h"
 
 namespace Dream
 {
     map<string,const aiScene*> AssimpModelInstance::AssimpModelCache = map<string,const aiScene*>();
-    ::Assimp::Importer AssimpModelInstance::mImporter;
+    Importer AssimpModelInstance::mImporter;
 
     const aiScene*
     AssimpModelInstance::getModelFromCache
@@ -39,16 +54,20 @@ namespace Dream
                 return it.second;
             }
         }
+
         if (Constants::DEBUG)
         {
           cout << "AssimpModelInstance: Loading " << path << " from disk" << endl;
         }
+
         const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             cerr << "AssimpModelInstance: Error " << mImporter.GetErrorString() << endl;
             return nullptr;
         }
+
         AssimpModelCache.insert(pair<string,const aiScene*>(path,scene));
         return scene;
     }
@@ -242,6 +261,11 @@ namespace Dream
     AssimpModelInstance::updateBoundingBox
     (aiMesh* mesh)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "AssimpModelInstance: Updating bounding box for "
+                 << getNameAndUuidString() << endl;
+        }
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {
             aiVector3D vertex = mesh->mVertices[i];

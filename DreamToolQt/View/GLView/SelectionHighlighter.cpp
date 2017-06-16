@@ -23,7 +23,10 @@ SelectionHighlighter::SelectionHighlighter
 (QObject *parent)
     : GLDrawable(parent),
       mSelectedObjectHandle(nullptr),
-      mColour(glm::vec3(0.0f,1.0f,0.0f)),
+      mSelectionColour(glm::vec3(1.0f, 1.0f, 0.0f)),
+      mXColour(glm::vec3(1.0f, 0.0f, 0.0f)),
+      mYColour(glm::vec3(0.0f, 1.0f, 0.0f)),
+      mZColour(glm::vec3(0.0f, 0.0f, 1.0f)),
       mOffset(0.1f)
 {
     qDebug() << "SelectionHighlighter: Constructing Object";
@@ -81,103 +84,129 @@ SelectionHighlighter::updateVertexBuffer
 
     LineVertex topFront1, topFront2;
     topFront1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-    topFront1.Color = mColour;
+    topFront1.Color = mSelectionColour;
     mVertexBuffer.push_back(topFront1);
     topFront2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-    topFront2.Color = mColour;
+    topFront2.Color = mSelectionColour;
     mVertexBuffer.push_back(topFront2);
 
     LineVertex topBack1, topBack2;
     topBack1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-    topBack1.Color = mColour;
+    topBack1.Color = mSelectionColour;
     mVertexBuffer.push_back(topBack1);
     topBack2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-    topBack2.Color = mColour;
+    topBack2.Color = mSelectionColour;
     mVertexBuffer.push_back(topBack2);
 
     LineVertex topLeft1, topLeft2;
     topLeft1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-    topLeft1.Color = mColour;
+    topLeft1.Color = mSelectionColour;
     mVertexBuffer.push_back(topLeft1);
     topLeft2.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-    topLeft2.Color = mColour;
+    topLeft2.Color = mSelectionColour;
     mVertexBuffer.push_back(topLeft2);
 
     LineVertex topRight1, topRight2;
     topRight1.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-    topRight1.Color = mColour;
+    topRight1.Color = mSelectionColour;
     mVertexBuffer.push_back(topRight1);
     topRight2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-    topRight2.Color = mColour;
+    topRight2.Color = mSelectionColour;
     mVertexBuffer.push_back(topRight2);
 
     // Bottom Quad
 
     LineVertex bottomFront1, bottomFront2;
     bottomFront1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
-    bottomFront1.Color = mColour;
+    bottomFront1.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomFront1);
     bottomFront2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
-    bottomFront2.Color = mColour;
+    bottomFront2.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomFront2);
 
     LineVertex bottomBack1, bottomBack2;
     bottomBack1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-    bottomBack1.Color = mColour;
+    bottomBack1.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomBack1);
     bottomBack2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-    bottomBack2.Color = mColour;
+    bottomBack2.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomBack2);
 
     LineVertex bottomLeft1, bottomLeft2;
     bottomLeft1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
-    bottomLeft1.Color = mColour;
+    bottomLeft1.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomLeft1);
     bottomLeft2.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-    bottomLeft2.Color = mColour;
+    bottomLeft2.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomLeft2);
 
     LineVertex bottomRight1, bottomRight2;
     bottomRight1.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
-    bottomRight1.Color = mColour;
+    bottomRight1.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomRight1);
     bottomRight2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-    bottomRight2.Color = mColour;
+    bottomRight2.Color = mSelectionColour;
     mVertexBuffer.push_back(bottomRight2);
 
     // Verticals
 
     LineVertex frontLeft1, frontLeft2;
     frontLeft1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
-    frontLeft1.Color = mColour;
+    frontLeft1.Color = mSelectionColour;
     mVertexBuffer.push_back(frontLeft1);
     frontLeft2.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-    frontLeft2.Color = mColour;
+    frontLeft2.Color = mSelectionColour;
     mVertexBuffer.push_back(frontLeft2);
 
     LineVertex frontRight1, frontRight2;
     frontRight1.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
-    frontRight1.Color = mColour;
+    frontRight1.Color = mSelectionColour;
     mVertexBuffer.push_back(frontRight1);
     frontRight2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-    frontRight2.Color = mColour;
+    frontRight2.Color = mSelectionColour;
     mVertexBuffer.push_back(frontRight2);
 
     LineVertex backLeft1, backLeft2;
     backLeft1.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-    backLeft1.Color = mColour;
+    backLeft1.Color = mSelectionColour;
     mVertexBuffer.push_back(backLeft1);
     backLeft2.Position = glm::vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-    backLeft2.Color = mColour;
+    backLeft2.Color = mSelectionColour;
     mVertexBuffer.push_back(backLeft2);
 
     LineVertex backRight1, backRight2;
     backRight1.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-    backRight1.Color = mColour;
+    backRight1.Color = mSelectionColour;
     mVertexBuffer.push_back(backRight1);
     backRight2.Position = glm::vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-    backRight2.Color = mColour;
+    backRight2.Color = mSelectionColour;
     mVertexBuffer.push_back(backRight2);
+
+    // Normal Lines
+
+    LineVertex x1, x2;
+    x1.Position = glm::vec3(0);
+    x1.Color = mXColour;
+    mVertexBuffer.push_back(x1);
+    x2.Position = glm::vec3(bounds.maximum.x*2,0,0);
+    x2.Color = mXColour;
+    mVertexBuffer.push_back(x2);
+
+    LineVertex y1, y2;
+    y1.Position = glm::vec3(0);
+    y1.Color = mYColour;
+    mVertexBuffer.push_back(y1);
+    y2.Position = glm::vec3(0,bounds.maximum.y*2,0);
+    y2.Color = mYColour;
+    mVertexBuffer.push_back(y2);
+
+    LineVertex z1, z2;
+    z1.Position = glm::vec3(0);
+    z1.Color = mZColour;
+    mVertexBuffer.push_back(z1);
+    z2.Position = glm::vec3(0,0,bounds.maximum.z*2);
+    z2.Color = mZColour;
+    mVertexBuffer.push_back(z2);
 }
 
 void

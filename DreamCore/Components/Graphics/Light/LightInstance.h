@@ -1,23 +1,26 @@
 #pragma once
 
-#include "../../../Common/Constants.h"
-#include "../../../Common/AssetDefinition.h"
-#include "../../../Common/IAssetInstance.h"
+#include <glm/glm.hpp>
+
+#include "../../IAssetInstance.h"
+
+using glm::vec3;
 
 namespace Dream
 {
     class LightInstance : public IAssetInstance
     {
-        glm::vec3 mColor;
+        vec3 mColor;
         float mIntensity;
 
     public:
         LightInstance(AssetDefinition*, Transform3D*);
         ~LightInstance();
-        bool load(string);
-        void loadExtraAttributes(nlohmann::json);
 
-        glm::vec3 getColor();
+        bool load(string);
+        void loadExtraAttributes(json);
+
+        vec3 getColor();
         float getIntensity();
 
     }; // End of LightInstance

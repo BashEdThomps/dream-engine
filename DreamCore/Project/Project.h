@@ -19,36 +19,33 @@
 
 #include "Project.h"
 
-#include <dirent.h>
-#include <iostream>
-#include <thread>
-#include <unistd.h>
-#include <vector>
+#include <string>
 #include <memory>
+#include <vector>
+#include <json.hpp>
 
-#include "ProjectRuntime.h"
-
-#include "../Common/AssetDefinition.h"
-#include "../Common/Constants.h"
-#include "../Common/IAssetInstance.h"
-#include "../Components/Window/IWindowComponent.h"
-#include "../Scene/Scene.h"
-#include "../Utilities/ArgumentParser.h"
-#include "../Utilities/FileReader.h"
-#include "../Utilities/String.h"
-
-using namespace std;
-using namespace nlohmann;
+using std::string;
+using std::unique_ptr;
+using std::vector;
+using nlohmann::json;
 
 namespace Dream
 {
+    class ArgumentParser;
+    class FileReader;
+    class ProjectRuntime;
+    class ProjectJsonData;
+    class Scene;
+    class AssetDefinition;
+    class IWindowComponent;
+
     class Project
     {
         // Variables
     private:
         unique_ptr<ProjectRuntime> mRuntime;
+        unique_ptr<ProjectJsonData> mJsonData;
         string mProjectPath;
-        nlohmann::json mJson;
         vector<Scene*> mScenes;
         vector<AssetDefinition*> mAssetDefinitions;
         Scene *mActiveSceneHandle;
@@ -59,7 +56,8 @@ namespace Dream
         ~Project();
 
         bool initRuntime();
-        ProjectRuntime* getRuntime();
+        ProjectRuntime *getRuntimeHandle();
+        ProjectJsonData *getJsonDataHandle();
 
         void destroyAllScenes();
         void destroyAllAssetDefinitions();

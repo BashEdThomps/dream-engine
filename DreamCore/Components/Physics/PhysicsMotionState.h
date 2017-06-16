@@ -18,16 +18,13 @@
 #pragma once
 
 #include <LinearMath/btMotionState.h>
-#include <LinearMath/btMatrix3x3.h>
-#include <LinearMath/btQuaternion.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-
-#include "../../Common/Transform3D.h"
+class btTransform;
 
 namespace Dream
 {
+    class Transform3D;
+
     class PhysicsMotionState : public btMotionState
     {
     protected:

@@ -17,36 +17,36 @@
 
 #pragma once
 
-// STD LIB
-#include <iostream>
+#include <string>
 #include <map>
 #include <vector>
-// Dream
-#include "Camera.h"
-#include "../../Common/Constants.h"
-#include "../Window/IWindowComponent.h"
-#include "../IComponent.h"
-#include "Model/AssimpModelInstance.h"
-#include "Shader/ShaderInstance.h"
-// GLM
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/matrix.hpp>
 
-using namespace std;
+#include <GL/glew.h>
+#include <glm/matrix.hpp>
+#include "../IComponent.h"
+
+using std::string;
+using std::map;
+using std::vector;
+using glm::mat4;
 
 namespace Dream
 {
+    class IWindowComponent;
+    class SceneObject;
+    class Camera;
+    class AssimpModelInstance;
+    class ShaderInstance;
+    class LightInstance;
+    class Scene;
+    class JsonData;
+
     class GraphicsComponent : public IComponent
     {
     private:
-        glm::mat4 mProjectionMatrix;
-        glm::mat4 mViewMatrix;
-        glm::mat4 mOrthoProjection;
+        mat4 mProjectionMatrix;
+        mat4 mViewMatrix;
+        mat4 mOrthoProjection;
 
         GLfloat mSpriteVertices[24] =
         {
@@ -96,8 +96,8 @@ namespace Dream
         void createFontVertexObjects();
         void setWindowShouldClose(bool);
         Camera* getCamera();
-        glm::mat4 getViewMatrix();
-        glm::mat4 getProjectionMatrix();
+        mat4 getViewMatrix();
+        mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();
         void preRender();
         void postRender();

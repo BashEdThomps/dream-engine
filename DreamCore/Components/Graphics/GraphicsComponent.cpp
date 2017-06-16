@@ -15,13 +15,52 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <glm/matrix.hpp>
+#include "GraphicsComponent.h"
+
 #include <functional>
+
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/matrix.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "GraphicsComponent.h"
+#include "Camera.h"
+
+#include "Font/FontInstance.h"
+#include "Font/FontCharacter.h"
+
+#include "Light/LightInstance.h"
+
+#include "Model/AssimpModelInstance.h"
 #include "Model/TextureCache.h"
+
+#include "Shader/ShaderInstance.h"
 #include "Shader/ShaderCache.h"
+
+#include "Sprite/SpriteInstance.h"
+
+#include "../Transform3D.h"
+
+#include "../Window/IWindowComponent.h"
+
+#include "../../Common/Constants.h"
+
+#include "../../Scene/Scene.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneJsonData.h"
+#include "../../Scene/SceneObject/SceneObject.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectJsonData.h"
+
+using glm::vec3;
+using glm::mat4;
+using glm::rotate;
+using glm::translate;
+using glm::scale;
 
 namespace Dream
 {
@@ -103,7 +142,7 @@ namespace Dream
         glViewport(0, 0, windowWidth, windowHeight);
 
         // Ortho projection for 2D
-        mOrthoProjection = glm::ortho
+        mOrthoProjection = ortho
         (
             0.0f,
             static_cast<float>(windowWidth),
@@ -112,7 +151,7 @@ namespace Dream
             -1.0f, 1.0f
         );
         // Perspective Projection Matrix
-        mProjectionMatrix = glm::perspective(
+        mProjectionMatrix = perspective(
             mCamera->getZoom(),
             static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
             mMinimumDraw,
@@ -141,10 +180,10 @@ namespace Dream
         if (mActiveSceneHandle)
         {
             glClearColor(
-                mActiveSceneHandle->getClearColour()[Constants::RED_INDEX],
-                mActiveSceneHandle->getClearColour()[Constants::GREEN_INDEX],
-                mActiveSceneHandle->getClearColour()[Constants::BLUE_INDEX],
-                mActiveSceneHandle->getClearColour()[Constants::ALPHA_INDEX]
+                mActiveSceneHandle->getRuntime()->getClearColour()[Constants::RED_INDEX],
+                mActiveSceneHandle->getRuntime()->getClearColour()[Constants::GREEN_INDEX],
+                mActiveSceneHandle->getRuntime()->getClearColour()[Constants::BLUE_INDEX],
+                mActiveSceneHandle->getRuntime()->getClearColour()[Constants::ALPHA_INDEX]
             );
         }
         else
@@ -231,51 +270,51 @@ namespace Dream
                     [&](SceneObject* object)
                     {
                         // Models
-                        if (object->hasModelInstance())
+                        if (object->getRuntime()->hasModelInstance())
                         {
-                            if (object->hasShaderInstance())
+                            if (object->getRuntime()->hasShaderInstance())
                             {
                                 addTo3DQueue(object);
                             }
                             else
                             {
-                                cerr << "GraphicsComponent: Object " << object->getUuid()
+                                cerr << "GraphicsComponent: Object " << object->getJsonData()->getUuid()
                                      << " has model, but no shader assigned." << endl;
                             }
                         }
 
                         // Sprites
-                        if (object->hasSpriteInstance())
+                        if (object->getRuntime()->hasSpriteInstance())
                         {
-                            if (object->hasShaderInstance())
+                            if (object->getRuntime()->hasShaderInstance())
                             {
                                 addTo2DQueue(object);
                             }
                             else
                             {
-                                cerr << "GraphicsComponent: Object " << object->getUuid()
+                                cerr << "GraphicsComponent: Object " << object->getJsonData()->getUuid()
                                      << " has sprite, but no shader assigned." << endl;
                             }
                         }
 
                         // Fonts
-                        if (object->hasFontInstance())
+                        if (object->getRuntime()->hasFontInstance())
                         {
-                            if (object->hasShaderInstance())
+                            if (object->getRuntime()->hasShaderInstance())
                             {
                                 addTo2DQueue(object);
                             }
                             else
                             {
-                                cerr << "GraphicsComponent: Object " << object->getUuid()
+                                cerr << "GraphicsComponent: Object " << object->getJsonData()->getUuid()
                                      << " has font, but no shader assigned." << endl;
                             }
                         }
 
                         // Lights
-                        if (object->hasLightInstance())
+                        if (object->getRuntime()->hasLightInstance())
                         {
-                            addToLightQueue(object->getLightInstance());
+                            addToLightQueue(object->getRuntime()->getLightInstance());
                         }
 
                         return nullptr;
@@ -305,11 +344,11 @@ namespace Dream
     {
         for (SceneObject* sceneObj : m2DQueue)
         {
-            if (sceneObj->hasSpriteInstance())
+            if (sceneObj->getRuntime()->hasSpriteInstance())
             {
                 drawSprite(sceneObj);
             }
-            else if (sceneObj->hasFontInstance())
+            else if (sceneObj->getRuntime()->hasFontInstance())
             {
                 drawFont(sceneObj);
             }
@@ -340,14 +379,14 @@ namespace Dream
         }
     }
 
-    glm::mat4
+    mat4
     GraphicsComponent::getViewMatrix
     ()
     {
         return mViewMatrix;
     }
 
-    glm::mat4
+    mat4
     GraphicsComponent::getProjectionMatrix
     ()
     {
@@ -359,38 +398,38 @@ namespace Dream
     (SceneObject* sceneObject)
     {
         // Get Assets
-        SpriteInstance* sprite = sceneObject->getSpriteInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        SpriteInstance* sprite = sceneObject->getRuntime()->getSpriteInstance();
+        ShaderInstance* shader = sceneObject->getRuntime()->getShaderInstance();
         // Get arguments
-        glm::vec2 size = glm::vec2(sprite->getWidth(),sprite->getHeight());
-        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-        GLfloat scale = sceneObject->getTransform()->getScaleZ();
-        glm::vec3 color = glm::vec3(1.0f);
+        vec2 size = vec2(sprite->getWidth(),sprite->getHeight());
+        GLfloat rotateValue = sceneObject->getRuntime()->getTransform()->getRotationZ();
+        GLfloat scaleValue = sceneObject->getRuntime()->getTransform()->getScaleZ();
+        vec3 color = vec3(1.0f);
         // Setup Shader
         shader->use();
         float tX = sprite->getTransform()->getTranslationX();
         float tY = sprite->getTransform()->getTranslationY();
-        glm::vec2 position = glm::vec2(tX,tY);
+        vec2 position = vec2(tX,tY);
         // Offset origin to middle of sprite
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3(position, 0.0f));
-        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+        mat4 model;
+        model = translate(model, vec3(position, 0.0f));
+        model = translate(model, vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = rotate(model, rotateValue, vec3(0.0f, 0.0f, 1.0f));
+        model = translate(model, vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = scale(model, vec3(size.x*scaleValue,size.y*scaleValue, 1.0f));
         // Pass uniform arguments to shader
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, glm::value_ptr(model)
+                           1, GL_FALSE, value_ptr(model)
                            );
         glUniform3fv(glGetUniformLocation(
                          shader->getShaderProgram(), "spriteColor"),
-                     1, glm::value_ptr(color)
+                     1, value_ptr(color)
                      );
         glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+                           1, GL_FALSE, value_ptr(mOrthoProjection)
                            );
         // Bind texture
         glActiveTexture(GL_TEXTURE0);
@@ -409,26 +448,26 @@ namespace Dream
     (SceneObject* sceneObject)
     {
         // Get Assets
-        FontInstance* font = sceneObject->getFontInstance();
+        FontInstance* font = sceneObject->getRuntime()->getFontInstance();
         float tX = font->getTransform()->getTranslationX();
         float tY = font->getTransform()->getTranslationY();
 
         // Setup Shader
-        ShaderInstance* shader = sceneObject->getShaderInstance();
-        glm::vec2 size = glm::vec2(font->getWidth(),font->getHeight());
-        GLfloat rotate = sceneObject->getTransform()->getRotationZ();
-        GLfloat scale = sceneObject->getTransform()->getScaleZ();
+        ShaderInstance* shader = sceneObject->getRuntime()->getShaderInstance();
+        vec2 size = vec2(font->getWidth(),font->getHeight());
+        GLfloat rotateValue = sceneObject->getRuntime()->getTransform()->getRotationZ();
+        GLfloat scaleValue = sceneObject->getRuntime()->getTransform()->getScaleZ();
 
         shader->use();
 
-        glm::vec2 position = glm::vec2(tX,tY);
+        vec2 position = vec2(tX,tY);
         // Offset origin to middle of sprite
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3(position, 0.0f));
-        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = glm::scale(model, glm::vec3(size.x*scale,size.y*scale, 1.0f));
+        mat4 model;
+        model = translate(model, vec3(position, 0.0f));
+        model = translate(model, vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+        model = rotate(model, rotateValue, vec3(0.0f, 0.0f, 1.0f));
+        model = translate(model, vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+        model = scale(model, vec3(size.x*scaleValue,size.y*scaleValue, 1.0f));
 
         // Activate corresponding render state
         glUniform3f(
@@ -442,12 +481,12 @@ namespace Dream
         // Pass uniform arguments to shader
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, glm::value_ptr(model)
+                           1, GL_FALSE, value_ptr(model)
                            );
 
         glUniformMatrix4fv(glGetUniformLocation(
                                shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, glm::value_ptr(mOrthoProjection)
+                           1, GL_FALSE, value_ptr(mOrthoProjection)
                            );
 
         // Iterate through all characters
@@ -498,8 +537,8 @@ namespace Dream
         }
 
         // Get Assets
-        AssimpModelInstance* model = sceneObject->getModelInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        AssimpModelInstance* model = sceneObject->getRuntime()->getModelInstance();
+        ShaderInstance* shader = sceneObject->getRuntime()->getShaderInstance();
         shader->use();
         // Set Ambient Light Values
         GLint uAmbientStrength = glGetUniformLocation(shader->getShaderProgram(),"ambientStrength");
@@ -507,10 +546,10 @@ namespace Dream
         GLfloat strength = 0;
         if (uAmbientColor > 0 && uAmbientStrength > 0)
         {
-            glm::vec3 ambientColour;
+            vec3 ambientColour;
             if (mActiveSceneHandle)
             {
-                ambientColour = glm::vec3(
+                ambientColour = vec3(
                     mActiveSceneHandle->getJson()[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED],
                     mActiveSceneHandle->getJson()[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN],
                     mActiveSceneHandle->getJson()[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]
@@ -522,7 +561,7 @@ namespace Dream
             }
 
             glUniform1f(uAmbientStrength,strength);
-            glUniform3fv(uAmbientColor,1,glm::value_ptr(ambientColour));
+            glUniform3fv(uAmbientColor,1,value_ptr(ambientColour));
 
         }
         // Set Diffuse Light Values
@@ -541,8 +580,8 @@ namespace Dream
 
             if (uLightPos > 0)
             {
-                glm::vec3 lightPos = (*lights)->getTransform()->getTranslation();
-                glUniform3fv(uLightPos  ,1, glm::value_ptr(lightPos));
+                vec3 lightPos = (*lights)->getTransform()->getTranslation();
+                glUniform3fv(uLightPos  ,1, value_ptr(lightPos));
             }
             else
             {
@@ -554,8 +593,8 @@ namespace Dream
 
             if (uLightColor > 0)
             {
-                glm::vec3 lightColor = (*lights)->getColor();
-                glUniform3fv(uLightColor,1, glm::value_ptr(lightColor));
+                vec3 lightColor = (*lights)->getColor();
+                glUniform3fv(uLightColor,1, value_ptr(lightColor));
             }
             else
             {
@@ -570,33 +609,33 @@ namespace Dream
         glUniformMatrix4fv
         (
             glGetUniformLocation(shader->getShaderProgram(), "projection"),
-            1, GL_FALSE, glm::value_ptr(mProjectionMatrix)
+            1, GL_FALSE, value_ptr(mProjectionMatrix)
         );
 
         glUniformMatrix4fv
         (
             glGetUniformLocation(shader->getShaderProgram(), "view"),
-            1, GL_FALSE, glm::value_ptr(mViewMatrix)
+            1, GL_FALSE, value_ptr(mViewMatrix)
         );
         // calculate the model matrix
-        glm::mat4 modelMatrix;
+        mat4 modelMatrix;
         // Get raw data
-        glm::vec3 translation = sceneObject->getTranslation();
-        glm::quat rot = sceneObject->getTransform()->getOrientation();
-        glm::vec3 scale = sceneObject->getScale();
+        vec3 translation = sceneObject->getRuntime()->getTranslation();
+        quat rot = sceneObject->getRuntime()->getTransform()->getOrientation();
+        vec3 scaleValue = sceneObject->getRuntime()->getScale();
         // Translate
-        modelMatrix = glm::translate(modelMatrix,translation);
+        modelMatrix = translate(modelMatrix,translation);
         // Rotate
-        glm::mat4 rotMat = glm::mat4_cast(rot);
+        mat4 rotMat = mat4_cast(rot);
         modelMatrix = modelMatrix * rotMat;
         // Scale
-        modelMatrix = glm::scale(modelMatrix, scale);
+        modelMatrix = scale(modelMatrix, scaleValue);
         model->setModelMatrix(modelMatrix);
 
         // Pass model matrix to shader
         glUniformMatrix4fv(
                     glGetUniformLocation(shader->getShaderProgram(), "model"),
-                    1, GL_FALSE, glm::value_ptr(modelMatrix)
+                    1, GL_FALSE, value_ptr(modelMatrix)
                     );
         // Draw using shader
         model->draw(shader);

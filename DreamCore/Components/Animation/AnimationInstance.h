@@ -1,22 +1,22 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
+#include <json.hpp>
+#include "../IAssetInstance.h"
 
-#include "Frame.h"
-#include "KeyFrame.h"
-
-#include "../../Common/Constants.h"
-#include "../../Common/IAssetInstance.h"
-#include "../../Common/AssetDefinition.h"
+using std::vector;
+using nlohmann::json;
 
 namespace Dream
 {
-
-    using namespace std;
+    class Frame;
+    class KeyFrame;
+    class AssetDefinition;
+    class Transform3D;
 
     class AnimationInstance : public IAssetInstance
     {
+
     private:
         static int FramesPerSecond;
     public:
@@ -45,9 +45,10 @@ namespace Dream
         void generatePlaybackFrames();
         void addKeyFrame(KeyFrame*);
         void addFrame(Frame*);
-        void loadExtraAttributes(nlohmann::json);
+        void loadExtraAttributes(json);
         void deleteKeyFrames();
         void deletePlaybackFrames();
+
     }; // End of AnimationInstance
 
 } // End of Dream

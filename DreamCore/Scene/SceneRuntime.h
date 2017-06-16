@@ -18,14 +18,18 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
-#include "SceneState.h"
-#include "SceneObject.h"
 
-using namespace std;
+#include "SceneState.h"
+
+using std::string;
+using std::vector;
 
 namespace Dream
 {
+    class SceneObject;
+
     class SceneRuntime
     {
     private:
@@ -55,7 +59,11 @@ namespace Dream
         string getProjectPath() const;
         void setProjectPath(const string &projectPath);
 
-        vector<SceneObject *> getDeleteQueue() const;
-        void setDeleteQueue(const vector<SceneObject *> &deleteQueue);
+        vector<SceneObject*> getDeleteQueue() const;
+        void setDeleteQueue(const vector<SceneObject*> &deleteQueue);
+
+        void addToDeleteQueue(SceneObject*);
+        void clearDeleteQueue();
+        void destroyDeleteQueue();
     };
 } // End of Dream

@@ -29,7 +29,7 @@
 #include <glm/matrix.hpp>
 
 #include "../../../Common/Constants.h"
-#include "../../../Common/IAssetInstance.h"
+#include "../../IAssetInstance.h"
 
 using namespace std;
 

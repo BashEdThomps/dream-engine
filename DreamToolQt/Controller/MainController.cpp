@@ -198,7 +198,8 @@ MainController::onProjectOpenAction
     }
 
     bool loadResult = mDreamModel->loadProject(mProjectDirectory);
-    cout << "MainController: LoadResult " << loadResult << endl;
+    qDebug() << "MainController: LoadResult " << loadResult;
+
     if (!loadResult)
     {
         emit notifyInvalidProjectDirectory(mProjectDirectory);
@@ -374,7 +375,7 @@ MainController::onProjectOpenTestProjectAction
     mProjectDirectory = "/Users/Ashley/.dreamtool/de60-75ff-5cb7-c4a9";
 
     bool loadResult = mDreamModel->loadProject(mProjectDirectory);
-    cout << "MainController: Load Test Project Result " << loadResult << endl;
+    qDebug() << "MainController: Load Test Project Result " << loadResult;
     if (!loadResult)
     {
         emit notifyInvalidProjectDirectory(mProjectDirectory);

@@ -1,5 +1,5 @@
 /*
-* Dream::AudioComponent
+* AudioComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "AudioComponent.h"
 #include <iostream>
+
+#include "AudioComponent.h"
 #include "WavAudioInstance.h"
 #include "OggAudioInstance.h"
+
+#include "../Transform3D.h"
+#include "../../Project/AssetDefinition.h"
+
+using std::cout;
+using std::endl;
 
 namespace Dream
 {
@@ -42,12 +49,12 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            std::cout << "AudioComponent: Initialising..." << endl;
+            cout << "AudioComponent: Initialising..." << endl;
         }
         mDevice = alcOpenDevice(nullptr);
         mContext = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
-        std::vector<float> position = {0.0f,0.0f,0.0f};
+        vector<float> position = {0.0f,0.0f,0.0f};
         setListenerPosition(position);
         return true;
     }
@@ -115,14 +122,14 @@ namespace Dream
 
     void
     AudioComponent::setSourcePosision
-    (ALuint sourceId, std::vector<float> position)
+    (ALuint sourceId, vector<float> position)
     {
         alSource3f(sourceId, AL_POSITION, position[0],position[1],position[2]);
     }
 
     void
     AudioComponent::setListenerPosition
-    (std::vector<float> position)
+    (vector<float> position)
     {
         alListener3f(AL_POSITION, position[0],position[1],position[2]);
     }
@@ -183,7 +190,7 @@ namespace Dream
     {
         try
         {
-            if (std::find(mPlayQueue.begin(),mPlayQueue.end(), asset) == mPlayQueue.end())
+            if (find(mPlayQueue.begin(),mPlayQueue.end(), asset) == mPlayQueue.end())
             {
                 AudioInstance* audioAsset;
                 audioAsset = dynamic_cast<AudioInstance*>(asset);
@@ -191,12 +198,12 @@ namespace Dream
                 {
                     audioAsset->setBuffer(generateBuffers(1));
                     audioAsset->setSource(generateSources(1));
-                    std::vector<float> position = {
+                    vector<float> position = {
                         audioAsset->getTransform()->getTranslation().x,
                         audioAsset->getTransform()->getTranslation().y,
                         audioAsset->getTransform()->getTranslation().z,
                     };
-                    std::vector<char>  bufferData = audioAsset->getAudioDataBuffer();
+                    vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                     alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
                             static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
                     alSourcei(audioAsset->getSource(), AL_BUFFER, audioAsset->getBuffer());
@@ -210,10 +217,10 @@ namespace Dream
                 }
             }
         }
-        catch (const std::exception &ex)
+        catch (const exception &ex)
         {
-            std::cerr << "AudioComponent: Unable to push asset to play queue" << asset->getNameAndUuidString() << std::endl
-                      << ex.what() << std::endl;
+            cerr << "AudioComponent: Unable to push asset to play queue" << asset->getNameAndUuidString() << endl
+                      << ex.what() << endl;
         }
     }
 
@@ -223,7 +230,7 @@ namespace Dream
     {
         try
         {
-            if (std::find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end())
+            if (find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end())
             {
                 mPauseQueue.push_back(dynamic_cast<AudioInstance*>(asset));
                 if (Constants::DEBUG)
@@ -232,10 +239,10 @@ namespace Dream
                 }
             }
         }
-        catch (const std::exception &ex)
+        catch (const exception &ex)
         {
-            std::cerr << "AudioComponent: Unable to push asset to pause queue" << asset->getNameAndUuidString() << std::endl
-                      << ex.what() << std::endl;
+            cerr << "AudioComponent: Unable to push asset to pause queue" << asset->getNameAndUuidString() << endl
+                      << ex.what() << endl;
         }
     }
 
@@ -245,7 +252,7 @@ namespace Dream
     {
         try
         {
-            if (std::find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
+            if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
             {
                 mStopQueue.push_back(asset);
                 if (Constants::DEBUG)
@@ -254,10 +261,10 @@ namespace Dream
                 }
             }
         }
-        catch (const std::exception &ex)
+        catch (const exception &ex)
         {
-            std::cerr << "AudioComponent: Unable to push asset to stop queue" << asset->getNameAndUuidString() << std::endl
-                      << ex.what() << std::endl;
+            cerr << "AudioComponent: Unable to push asset to stop queue" << asset->getNameAndUuidString() << endl
+                      << ex.what() << endl;
         }
     }
 
@@ -390,23 +397,23 @@ namespace Dream
         return sampleOffset;
     }
 
-    std::vector<char>
+    vector<char>
     AudioComponent::getAudioBuffer
     (AudioInstance* asset, int offset, int length)
     {
-        std::vector<char> retval = std::vector<char>(length);
+        vector<char> retval = vector<char>(length);
         try
         {
             AudioInstance* audioAsset;
             audioAsset = dynamic_cast<AudioInstance*>(asset);
-            std::vector<char> audioData = audioAsset->getAudioDataBuffer();
+            vector<char> audioData = audioAsset->getAudioDataBuffer();
             char* dataBegin = &audioData[0];
             retval.insert(retval.begin(), dataBegin, dataBegin+length);
         }
-        catch (const std::exception &ex)
+        catch (const exception &ex)
         {
-            std::cerr << "AudioComponent: Unable to get buffer data for " << asset->getNameAndUuidString()
-                      << ex.what() << std::endl;
+            cerr << "AudioComponent: Unable to get buffer data for " << asset->getNameAndUuidString()
+                      << ex.what() << endl;
         }
         return retval;
     }
@@ -421,10 +428,10 @@ namespace Dream
             audioAsset = dynamic_cast<AudioInstance*>(asset);
             return getSampleOffset(audioAsset->getSource());
         }
-        catch (const std::exception &ex)
+        catch (const exception &ex)
         {
-            std::cerr << "AudioComponent: Could not get sample offset for asset" << asset->getNameAndUuidString() << std::endl;
-            std::cerr << ex.what() << std::endl;
+            cerr << "AudioComponent: Could not get sample offset for asset" << asset->getNameAndUuidString() << endl;
+            cerr << ex.what() << endl;
         }
         return 0.0f;
     }
@@ -446,14 +453,14 @@ namespace Dream
                 case AL_PAUSED:
                     return PAUSED;
                 default:
-                    std::cerr << "AudioComponent: Unknown Audio State for " << audioAsset->getNameAndUuidString() << std::endl;
+                    cerr << "AudioComponent: Unknown Audio State for " << audioAsset->getNameAndUuidString() << endl;
                     return UNKNOWN;
             }
         }
-        catch (const std::exception &ex)
+        catch (const exception &ex)
         {
-            std::cerr << "AudioComponent: Unable to get state of asset " << audioAsset->getNameAndUuidString()
-                      << std::endl << ex.what() << std::endl;
+            cerr << "AudioComponent: Unable to get state of asset " << audioAsset->getNameAndUuidString()
+                      << endl << ex.what() << endl;
         }
         return UNKNOWN;
     }
@@ -462,11 +469,11 @@ namespace Dream
     AudioComponent::newAudioInstance
     (AssetDefinition* definition,Transform3D* transform)
     {
-        if (definition->getFormat().compare(ASSET_FORMAT_WAV) == 0)
+        if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
             return new WavAudioInstance(definition,transform);
         }
-        else if (definition->getFormat().compare(ASSET_FORMAT_OGG) == 0)
+        else if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
             return new OggAudioInstance(definition,transform);
         }

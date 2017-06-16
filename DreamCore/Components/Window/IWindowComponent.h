@@ -1,5 +1,5 @@
 /*
- * WindowIComponent.h
+ * IWindowComponent.h
  *
  * Created: 11 2017 by Ashley
  *
@@ -15,13 +15,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef WINDOWCOMPONENTINTERFACE_H
-#define WINDOWCOMPONENTINTERFACE_H
+
+#pragma once
 
 #include "../IComponent.h"
 
-#define IWC_DEFAULT_SCREEN_WIDTH  1280
-#define IWC_DEFAULT_SCREEN_HEIGHT 720
+#include <string>
+
+using std::string;
 
 namespace Dream
 {
@@ -58,5 +59,3 @@ namespace Dream
       bool mSizeHasChanged;
     };
 }
-
-#endif // WINDOWCOMPONENTINTERFACE_H

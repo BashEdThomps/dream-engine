@@ -1,9 +1,9 @@
 /*
- * Event
+ * PreferencesModel.h
  *
- * Created: 18/12/2016 2016 by Ashley
+ * Created: 16 2017 by Ashley
  *
- * Copyright 2016 Octronic. All rights reserved.
+ * Copyright 2017 Octronic. All rights reserved.
  *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
@@ -15,30 +15,20 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#ifndef PREFERENCESMODEL_H
+#define PREFERENCESMODEL_H
 
-#ifndef EVENT_H
-#define EVENT_H
+#include <QObject>
 
-#include <iostream>
-#include <map>
-#include "Constants.h"
-
-using namespace std;
-namespace Dream
+class PreferencesModel : public QObject
 {
-    class Event
-    {
-    private:
-      map<string,string> mAttributes;
-    public:
-      Event(string,string);
-      ~Event();
-      string getSender();
-      string getType();
-      void setAttribute(string,string);
-      string getAttribute(string);
-    };
+    Q_OBJECT
+public:
+    explicit PreferencesModel(QObject *parent = 0);
 
-} // End of Dream
+signals:
 
-#endif // EVENT_H
+public slots:
+};
+
+#endif // PREFERENCESMODEL_H

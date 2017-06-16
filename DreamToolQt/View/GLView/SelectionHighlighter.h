@@ -38,7 +38,10 @@ public:
 private:
     SceneObject* mSelectedObjectHandle;
     void updateVertexBuffer();
-    glm::vec3 mColour;
+    glm::vec3 mSelectionColour;
+    glm::vec3 mXColour;
+    glm::vec3 mYColour;
+    glm::vec3 mZColour;
     float mOffset;
 };
 

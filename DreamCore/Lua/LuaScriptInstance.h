@@ -18,10 +18,10 @@
 #pragma once
 
 #include <vector>
-#include <iostream>
+#include <string>
 
 #include "../Common/Constants.h"
-#include "../Common/IAssetInstance.h"
+#include "../Components/IAssetInstance.h"
 
 namespace Dream
 {
@@ -33,7 +33,7 @@ namespace Dream
         ~LuaScriptInstance(void);
         bool load(string);
         void update();
-        void loadExtraAttributes(nlohmann::json);
+        void loadExtraAttributes(json);
         bool getError();
         void setError(bool);
 

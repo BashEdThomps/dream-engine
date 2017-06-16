@@ -12,6 +12,27 @@
 
 using namespace Dream;
 
+class WindowInputState
+{
+public:
+    WindowInputState();
+
+    int  mouseLastX;
+    int  mouseLastY;
+
+    bool shiftPressed;
+
+    bool wPressed;
+    bool aPressed;
+    bool sPressed;
+    bool dPressed;
+
+    bool upPressed;
+    bool downPressed;
+    bool leftPressed;
+    bool rightPressed;
+};
+
 class QOpenGLWindowComponent : public QOpenGLWidget, public IWindowComponent
 {
     Q_OBJECT
@@ -38,6 +59,7 @@ protected:
     void initializeGL() override;
     void resizeGL( int w, int h ) override;
     void paintGL() override;
+    void updateInputState();
 
 private:
     Project *mProjectHandle;
@@ -46,10 +68,7 @@ private:
     RelationshipTree *mRelationshipTreeHandle;
     bool mGridEnabled;
     bool mRelationshipTreeEnabled;
-
-    int mMouseLastX;
-    int mMouseLastY;
-    bool mShiftPressed;
+    WindowInputState mInputState;
 };
 
 #endif // GLWIDGET_H

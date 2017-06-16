@@ -29,10 +29,8 @@ extern "C"
 #include <iostream>
 
 #include "InputEvent.h"
+
 #include "../Common/Constants.h"
-#include "../Common/Event.h"
-#include "../Scene/SceneObject.h"
-#include "../Scene/Scene.h"
 
 using namespace std;
 
@@ -41,6 +39,11 @@ int errorHandler(lua_State*);
 namespace Dream
 {
     class Project;
+    class Scene;
+    class SceneObject;
+    class LuaScriptInstance;
+    class Event;
+
     class LuaEngine
     {
     public: // Methods

@@ -1,4 +1,4 @@
 #pragma once
 
-#include "../Constants.h"
-#include "../Project.h"
+#include "../Common/Constants.h"
+#include "../Project/Project.h"

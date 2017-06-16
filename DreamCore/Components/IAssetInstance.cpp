@@ -17,6 +17,8 @@
 
 #include "IAssetInstance.h"
 
+#include "Transform3D.h"
+#include "../Project/AssetDefinition.h"
 #include "../Utilities/Uuid.h"
 
 namespace Dream

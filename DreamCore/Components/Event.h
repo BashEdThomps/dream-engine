@@ -1,7 +1,7 @@
 /*
- * SpriteInstance.h
+ * Event
  *
- * Created: 25/11/2016 2016 by Ashley
+ * Created: 18/12/2016 2016 by Ashley
  *
  * Copyright 2016 Octronic. All rights reserved.
  *
@@ -18,33 +18,30 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <string>
+#include <map>
 
-#include <json.hpp>
-
-#include "../../../Common/Constants.h"
-#include "../../../Components/IAssetInstance.h"
-
-using nlohmann::json;
+using std::string;
+using std::map;
 
 namespace Dream
 {
-    class SpriteInstance : public IAssetInstance
+    class Event
     {
+
     private:
-        int mWidth;
-        int mHeight;
-        GLuint mTexture;
-        GLenum mTextureFormat;
+      map<string,string> mAttributes;
+
     public:
-        SpriteInstance(AssetDefinition*,Transform3D*);
-        ~SpriteInstance();
-        bool load(string);
-        void loadExtraAttributes(json);
-        void draw();
-        GLuint getTexture();
-        int getWidth();
-        int getHeight();
-    };
+      Event(string,string);
+      ~Event();
+
+      string getSender();
+      string getType();
+
+      void setAttribute(string,string);
+      string getAttribute(string);
+
+    }; // End of Event
 
 } // End of Dream

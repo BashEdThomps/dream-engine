@@ -6,6 +6,27 @@
 #include <QPointF>
 
 
+WindowInputState::WindowInputState
+()
+    : // Init list
+     mouseLastX(0),
+     mouseLastY(0),
+
+     shiftPressed(false),
+
+     wPressed(false),
+     aPressed(false),
+     sPressed(false),
+     dPressed(false),
+
+     upPressed(false),
+     downPressed(false),
+     leftPressed(false),
+     rightPressed(false)
+{
+
+}
+
 QOpenGLWindowComponent::QOpenGLWindowComponent
 (const QSurfaceFormat& format, QWidget* parent)
     : QOpenGLWidget(parent),
@@ -15,10 +36,7 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mSelectionHighlighterHandle(nullptr),
       mRelationshipTreeHandle(nullptr),
       mGridEnabled(true),
-      mRelationshipTreeEnabled(true),
-      mMouseLastX(0),
-      mMouseLastY(0),
-      mShiftPressed(false)
+      mRelationshipTreeEnabled(true)
 {
     setFormat(format);
 }
@@ -60,11 +78,12 @@ void
 QOpenGLWindowComponent::paintGL
 ()
 {
+    updateInputState();
     if (mProjectHandle)
     {
         if (mProjectHandle->hasActiveScene())
         {
-            if (mProjectHandle->getActiveScene()->getState() != DONE)
+            if (mProjectHandle->getActiveScene()->getRuntime()->getState() != DONE)
             {
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -238,23 +257,26 @@ QOpenGLWindowComponent::mouseMoveEvent
         int x = static_cast<int>( pos.x() - ( getWidth()  / 2 ) );
         int y = static_cast<int>( pos.y() - ( getHeight() / 2 ) );
 
-        int dX = x - mMouseLastX;
-        int dY = y - mMouseLastY;
+        int dX = x - mInputState.mouseLastX;
+        int dY = y - mInputState.mouseLastY;
 
         mProjectHandle->getRuntime()
                       ->getCamera()
                       ->processMouseMovement(dX,dY,false);
-        mMouseLastX = x;
-        mMouseLastY = y;
+        mInputState.mouseLastX = x;
+        mInputState.mouseLastY = y;
     }
 
 }
 
 void
-QOpenGLWindowComponent::keyPressEvent
-(QKeyEvent *event)
+QOpenGLWindowComponent::updateInputState
+()
 {
-    qDebug() << "QOpenGLWindowComponent: Pressed Key" << event->key();
+    if (!mProjectHandle)
+    {
+        return;
+    }
 
     Camera *camHandle = mProjectHandle->getRuntime()->getCamera();
     SceneObject *selected = mSelectionHighlighterHandle->getSelectedObject();
@@ -267,94 +289,137 @@ QOpenGLWindowComponent::keyPressEvent
                       ->getTimeDelta()
     );
 
+    if (mInputState.wPressed)
+    {
+        camHandle->processKeyboard(CAMERA_MOVEMENT_FORWARD,deltaTime);
+    }
+
+    if(mInputState.aPressed)
+    {
+        camHandle->processKeyboard(CAMERA_MOVEMENT_LEFT,deltaTime);
+    }
+
+    if (mInputState.sPressed)
+    {
+        camHandle->processKeyboard(CAMERA_MOVEMENT_BACKWARD,deltaTime);
+    }
+
+    if(mInputState.dPressed)
+    {
+        camHandle->processKeyboard(CAMERA_MOVEMENT_RIGHT,deltaTime);
+    }
+
+    if(mInputState.upPressed)
+    {
+        if (selected)
+        {
+            transform = selected->getTransform();
+            if (transform)
+            {
+                transform->setTranslationZ(
+                    transform->getTranslationZ() +
+                    (
+                        mInputState.shiftPressed ?
+                        mGridHandle->getMajorSpacing() :
+                        mGridHandle->getMinorSpacing()
+                    )
+                );
+            }
+        }
+    }
+
+    if(mInputState.downPressed)
+    {
+        if (selected)
+        {
+            transform = selected->getTransform();
+            if (transform)
+            {
+                transform->setTranslationZ(
+                    transform->getTranslationZ() -
+                    (
+                        mInputState.shiftPressed ?
+                        mGridHandle->getMajorSpacing() :
+                        mGridHandle->getMinorSpacing()
+                    )
+                );
+            }
+        }
+    }
+
+    if(mInputState.leftPressed)
+    {
+        if (selected)
+        {
+            transform = selected->getTransform();
+            if (transform)
+            {
+                transform->setTranslationX(
+                    transform->getTranslationX() -
+                    (
+                        mInputState.shiftPressed ?
+                        mGridHandle->getMajorSpacing() :
+                        mGridHandle->getMinorSpacing()
+                    )
+                );
+            }
+        }
+    }
+
+    if(mInputState.rightPressed)
+    {
+        if (selected)
+        {
+            transform = selected->getTransform();
+            if (transform)
+            {
+                transform->setTranslationX(
+                    transform->getTranslationX() +
+                    (
+                        mInputState.shiftPressed ?
+                        mGridHandle->getMajorSpacing() :
+                        mGridHandle->getMinorSpacing()
+                    )
+                );
+            }
+        }
+    }
+}
+
+void
+QOpenGLWindowComponent::keyPressEvent
+(QKeyEvent *event)
+{
+    qDebug() << "QOpenGLWindowComponent: Pressed Key" << event->key();
+
     switch (event->key())
     {
         case Qt::Key_W:
-            camHandle->processKeyboard(CAMERA_MOVEMENT_FORWARD,deltaTime);
+            mInputState.wPressed = true;
             break;
         case Qt::Key_A:
-            camHandle->processKeyboard(CAMERA_MOVEMENT_LEFT,deltaTime);
+            mInputState.aPressed = true;
             break;
         case Qt::Key_S:
-            camHandle->processKeyboard(CAMERA_MOVEMENT_BACKWARD,deltaTime);
+            mInputState.sPressed = true;
             break;
         case Qt::Key_D:
-            camHandle->processKeyboard(CAMERA_MOVEMENT_RIGHT,deltaTime);
+            mInputState.dPressed = true;
             break;
         case Qt::Key_Shift:
-            mShiftPressed = true;
+            mInputState.shiftPressed = true;
             break;
         case Qt::Key_Up:
-            if (selected)
-            {
-                transform = selected->getTransform();
-                if (transform)
-                {
-                    transform->setTranslationZ(
-                        transform->getTranslationZ() +
-                        (
-                            mShiftPressed ?
-                            mGridHandle->getMajorSpacing() :
-                            mGridHandle->getMinorSpacing()
-                        )
-                    );
-
-                }
-            }
+            mInputState.upPressed = true;
             break;
         case Qt::Key_Down:
-            if (selected)
-            {
-                transform = selected->getTransform();
-                if (transform)
-                {
-                    transform->setTranslationZ(
-                        transform->getTranslationZ() -
-                        (
-                            mShiftPressed ?
-                            mGridHandle->getMajorSpacing() :
-                            mGridHandle->getMinorSpacing()
-                        )
-                    );
-
-                }
-            }
+            mInputState.downPressed = true;
             break;
         case Qt::Key_Left:
-            if (selected)
-            {
-                transform = selected->getTransform();
-                if (transform)
-                {
-                    transform->setTranslationX(
-                        transform->getTranslationX() -
-                        (
-                            mShiftPressed ?
-                            mGridHandle->getMajorSpacing() :
-                            mGridHandle->getMinorSpacing()
-                        )
-                    );
-
-                }
-            }
+            mInputState.leftPressed = true;
             break;
         case Qt::Key_Right:
-            if (selected)
-            {
-                transform = selected->getTransform();
-                if (transform)
-                {
-                    transform->setTranslationX(
-                        transform->getTranslationX() +
-                        (
-                            mShiftPressed ?
-                            mGridHandle->getMajorSpacing() :
-                            mGridHandle->getMinorSpacing()
-                        )
-                    );
-
-                }
-            }
+            mInputState.rightPressed = true;
             break;
     }
 }
@@ -378,10 +443,34 @@ QOpenGLWindowComponent::keyReleaseEvent
 (QKeyEvent* event)
 {
     qDebug() << "QOpenGLWindowComponent: Released Key" << event->key();
-    switch(event->key())
+    switch (event->key())
     {
+        case Qt::Key_W:
+            mInputState.wPressed = false;
+            break;
+        case Qt::Key_A:
+            mInputState.aPressed = false;
+            break;
+        case Qt::Key_S:
+            mInputState.sPressed = false;
+            break;
+        case Qt::Key_D:
+            mInputState.dPressed = false;
+            break;
         case Qt::Key_Shift:
-            mShiftPressed = false;
+            mInputState.shiftPressed = false;
+            break;
+        case Qt::Key_Up:
+            mInputState.upPressed = false;
+            break;
+        case Qt::Key_Down:
+            mInputState.downPressed = false;
+            break;
+        case Qt::Key_Left:
+            mInputState.leftPressed = false;
+            break;
+        case Qt::Key_Right:
+            mInputState.rightPressed = false;
             break;
     }
 }

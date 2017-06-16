@@ -17,39 +17,49 @@
 
 #pragma once
 
-
 #include <vector>
-#include <iostream>
+#include <string>
 #include <map>
-
-#include "AssimpMesh.h"
-#include "Texture.h"
-#include "../BoundingBox.h"
-#include "../Shader/ShaderInstance.h"
-#include "../../../Common/IAssetInstance.h"
-#include "../../../Common/Constants.h"
+#include <json.hpp>
 
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include "glm/glm.hpp"
-#include <SOIL/SOIL.h>
+#include <assimp/material.h>
 
+#include <glm/matrix.hpp>
+
+#include "../../IAssetInstance.h"
+#include "../BoundingBox.h"
+
+
+struct aiScene;
+struct aiMaterial;
+struct aiMesh;
+struct aiNode;
+
+using nlohmann::json;
+using glm::mat4;
+using Assimp::Importer;
 
 namespace Dream
 {
+    class Texture;
+    class ShaderInstance;
+    class AssimpMesh;
+
     class AssimpModelInstance : public IAssetInstance
     {
     private:
         // Static
         static map<string,const aiScene*> AssimpModelCache;
         static const aiScene* getModelFromCache(string);
-        static ::Assimp::Importer mImporter;
+        static Importer mImporter;
+
         // Variables
         vector<AssimpMesh> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
-        glm::mat4 mModelMatrix;
+        mat4 mModelMatrix;
+
         // Methods
         void processNode(aiNode*, const aiScene*);
         AssimpMesh processMesh(aiMesh*, const aiScene*);
@@ -62,11 +72,12 @@ namespace Dream
         ~AssimpModelInstance();
         bool load(string);
         void draw(ShaderInstance*);
-        void loadExtraAttributes(nlohmann::json);
+        void loadExtraAttributes(json);
         static void cleanUpCache();
         BoundingBox getBoundingBox();
-        void setModelMatrix(glm::mat4);
-        glm::mat4 getModelMatrix();
+        void setModelMatrix(mat4);
+        mat4 getModelMatrix();
+
     }; // End of AssimpModelInstance
 
 } // End of Dream
