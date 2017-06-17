@@ -25,8 +25,7 @@ namespace Dream
 {
     IAssetInstance::IAssetInstance
     (AssetDefinition* definition, Transform3D* transform)
-        :mLoaded(false),
-          mDefinitionHandle(definition),
+          : mDefinitionHandle(definition),
           mTransformHandle(transform),
           mUuid(Uuid::generateUuid())
     {
@@ -92,4 +91,5 @@ namespace Dream
     {
         mLoaded = loaded;
     }
+
 } // End of Dream

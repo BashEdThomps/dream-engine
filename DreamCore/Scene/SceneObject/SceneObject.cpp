@@ -7,26 +7,29 @@
 #include <vector>
 #include <algorithm>
 
-#include "Scene.h"
 #include "SceneObjectRuntime.h"
-#include "SceneObjectJsonData.h"
+#include "SceneObjectDefinition.h"
 
-#include "../Project/Project.h"
-#include "../Utilities/String.h"
-#include "../Utilities/Uuid.h"
+#include "../Scene.h"
 
-// Todo: Create SceneObject Runtime Object
+#include "../../Common/Constants.h"
+
+#include "../../Project/Project.h"
+
+#include "../../Utilities/String.h"
+#include "../../Utilities/Uuid.h"
 
 namespace Dream
 {
     SceneObject::SceneObject
-    (Scene* scene, nlohmann::json soJson)
+    (Scene* parentScene, json soJson)
+        : // Init List
+          mRuntime(new SceneObjectRuntime(this)),
+          mDefinition(new SceneObjectDefinition(soJson)),
+          mSceneHandle(parentScene),
+          mParentHandle(nullptr)
     {
-        mRuntime.reset(new SceneObjectRuntime(scene));
-        mJsonData.reset(new SceneObjectJsonData(soJson));
-
-        mJsonData->applyDataToRuntime(mRuntime.get());
-
+        mDefinition->applyDataToRuntime(mRuntime.get());
     }
 
 
@@ -36,23 +39,8 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "SceneObject: Destroying Object "
-                 << getNameAndUuidString() << endl;
-        }
-    }
-
-
-    void
-    SceneObject::showStatus
-    ()
-    {
-        if (mJsonData)
-        {
-            cout << "SceneObject: " << mJsonData->getJson().dump(1) << endl;
-            SceneObject* parentHandle = mRuntime->getParentHandle();
-            if (parentHandle != nullptr)
-            {
-                cout << "SceneObject: ParentUuid: " << parentHandle->getJsonData()->getUuid() << endl;
-            }
+                 << getDefinitionHandle()->getNameAndUuidString()
+                 << endl;
         }
     }
 
@@ -63,7 +51,7 @@ namespace Dream
     {
         bool retval = funk(this);
 
-        for (SceneObject* it : mRuntime->getChildren())
+        for (SceneObject* it : mChildren)
         {
             if (it)
             {
@@ -83,7 +71,7 @@ namespace Dream
             return retval;
         }
 
-        for (SceneObject* it : mRuntime->getChildren())
+        for (SceneObject* it : mChildren)
         {
             if (it)
             {
@@ -99,23 +87,73 @@ namespace Dream
 
 
     SceneObjectRuntime*
-    SceneObject::getRuntime
+    SceneObject::getRuntimeHandle
     ()
     {
         return mRuntime.get();
     }
 
-    string
-    SceneObject::getNameAndUuidString
+    SceneObjectDefinition*
+    SceneObject::getDefinitionHandle
     ()
     {
-        return mJsonData->getUuid()+" : "+mJsonData->getName();
+        return mDefinition.get();
+    }
+
+    SceneObject*
+    SceneObject::getChildByUuid
+    (string uuid)
+    {
+       for (SceneObject* so : mChildren)
+       {
+           if (so->getDefinitionHandle()->hasUuid(uuid))
+           {
+               return so;
+           }
+       }
+       return nullptr;
+    }
+
+    void
+    SceneObject::addChild
+    (SceneObject *child)
+    {
+        mChildren.push_back(child);
+    }
+
+    bool
+    SceneObject::isParentOf
+    (SceneObject *child)
+    {
+       for (SceneObject* so : mChildren)
+       {
+           if (so == child)
+           {
+               return true;
+           }
+       }
+       return false;
+    }
+
+    void
+    SceneObject::setParentHandle
+    (SceneObject *parent)
+    {
+       mParentHandle = parent;
+    }
+
+    SceneObject*
+    SceneObject::getParentHandle
+    ()
+    {
+       return mParentHandle;
     }
 
     Scene*
-    SceneObjectRuntime::getSceneRuntimeHandle
+    SceneObject::getSceneHandle
     ()
     {
-        return mSceneRuntimeHandle;
+        return mSceneHandle;
     }
+
 } // End of Dream

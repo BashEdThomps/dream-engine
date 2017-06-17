@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 #include "ProjectRuntime.h"
-#include "ProjectJsonData.h"
+#include "ProjectDefinition.h"
 
 #include "../Common/Constants.h"
 
@@ -40,7 +40,7 @@
 #include "../Lua/LuaEngine.h"
 
 #include "../Scene/Scene.h"
-#include "../Scene/SceneRuntime.h"
+#include "../Scene/SceneDefinition.h"
 
 #include "../Project/AssetDefinition.h"
 
@@ -48,11 +48,12 @@
 #include "../Utilities/FileReader.h"
 #include "../Utilities/String.h"
 
+using std::move;
+
 namespace Dream
 {
     Project::Project
     (IWindowComponent* windowComponent)
-        : mActiveSceneHandle(nullptr)
     {
         if (Constants::DEBUG)
         {
@@ -67,277 +68,18 @@ namespace Dream
         {
             cout << "Project: Destroying Object" << endl;
         }
-        destroyAllScenes();
-        destroyAllAssetDefinitions();
-    }
-
-    void
-    Project::loadMetadataFromJson
-    (nlohmann::json mJson)
-    {
-        loadAssetDefinitionsFromJson(mJson[Constants::PROJECT_ASSET_ARRAY]);
-        loadScenesFromJson(mJson[Constants::PROJECT_SCENE_ARRAY]);
-        showStatus();
-    }
-
-    void
-    Project::showStatus
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Project: " << mJsonData->getJson().dump(1) << endl;
-        }
-    }
-
-    void
-    Project::loadScenesFromJson
-    (nlohmann::json jsonSceneArray)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Project: Loading Scenes from JSON Array" << endl;
-        }
-        for (nlohmann::json it : jsonSceneArray)
-        {
-            if (Constants::DEBUG)
-            {
-                cout << "Project: Creating Scene using project " << mProjectPath << endl;
-            }
-            Scene *nextScene = new Scene(this,it);
-            nextScene->showStatus();
-            addScene(nextScene);
-        }
-    }
-
-    Scene*
-    Project::getStartupScene
-    ()
-    {
-        return getSceneByUuid(getStartupSceneUuid());
-    }
-
-    vector<Scene*>
-    Project::getSceneList
-    ()
-    {
-        return mScenes;
-    }
-
-
-    void
-    Project::addScene
-    (Scene *scene)
-    {
-        mScenes.push_back(scene);
-    }
-
-    size_t
-    Project::getNumberOfScenes
-    ()
-    {
-        return mScenes.size();
-    }
-
-    Scene*
-    Project::getSceneByUuid
-    (string uuid)
-    {
-        for(Scene* it : mScenes)
-        {
-            if (it->hasUuid(uuid))
-            {
-                return it;
-            }
-        }
-        return nullptr;
-    }
-
-    Scene*
-    Project::getSceneByName
-    (string name)
-    {
-        for(Scene* it : mScenes)
-        {
-            if (it->hasName(name))
-            {
-                return it;
-            }
-        }
-        return nullptr;
-    }
-
-    string
-    Project::getProjectPath
-    ()
-    {
-        return mProjectPath;
-    }
-
-    void
-    Project::setProjectPath
-    (string dir)
-    {
-        mProjectPath = dir;
-    }
-
-    void
-    Project::setActiveScene
-    (Scene* scene)
-    {
-        mActiveSceneHandle = scene;
-    }
-
-    Scene*
-    Project::getActiveScene
-    ()
-    {
-        return mActiveSceneHandle;
     }
 
     bool
-    Project::hasActiveScene
-    ()
-    {
-        return mActiveSceneHandle != nullptr;
-    }
-
-    void
-    Project::addAssetDefinition
-    (AssetDefinition* assetDefinition)
-    {
-        mAssetDefinitions.push_back(assetDefinition);
-    }
-
-    void
-    Project::removeAssetDefinition
-    (AssetDefinition* assetDef)
+    Project::openFromFileReader
+    (string projectPath, FileReader& reader)
     {
         if (Constants::DEBUG)
         {
-            cout << "Project: Removing AssetDefinition "
-                 << assetDef->getNameAndUuidString() << endl;
+            cout << "Project: Loading project from FileReader " << reader.getPath() << endl;
         }
 
-        remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
-            [&](AssetDefinition* thisDefinition)
-            {
-                return thisDefinition == assetDef;
-            }
-        );
-    }
-
-    size_t
-    Project::getNumberOfAssetDefinitions
-    ()
-    {
-        return mAssetDefinitions.size();
-    }
-
-    void
-    Project::loadAssetDefinitionsFromJson
-    (nlohmann::json jsonAssetArray)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Project: Loading Assets from JSON Array" << endl;
-        }
-        for (nlohmann::json it : jsonAssetArray)
-        {
-            addAssetDefinition(new AssetDefinition(it));
-        }
-    }
-
-    AssetDefinition*
-    Project::getAssetDefinitionByUuid
-    (string uuid)
-    {
-        for (AssetDefinition* it : mAssetDefinitions)
-        {
-            if (it->hasUuid(uuid))
-            {
-                return it;
-            }
-        }
-        return nullptr;
-    }
-
-    vector<AssetDefinition*>
-    Project::getAssetDefinitions
-    ()
-    {
-        return mAssetDefinitions;
-    }
-
-    void
-    Project::destroyAllScenes
-    ()
-    {
-        for (Scene* scene : mScenes)
-        {
-            delete scene;
-        }
-
-        mScenes.clear();
-    }
-
-    void
-    Project::destroyAllAssetDefinitions
-    ()
-    {
-        for (AssetDefinition* assetDef : mAssetDefinitions)
-        {
-            delete assetDef;
-        }
-        mAssetDefinitions.clear();
-    }
-
-    bool
-    Project::loadActiveScene
-    ()
-    {
-        // Check valid
-        if (!hasActiveScene())
-        {
-            cerr << "Project: Cannot load scene, null!" << endl;
-            return false;
-        }
-
-        // Load the new scene
-        if (Constants::DEBUG)
-        {
-            cout << "Project: Loading Scene " << mActiveSceneHandle->getName() << endl;
-        }
-
-        mRuntime->getGraphicsComponent()->setActiveScene(mActiveSceneHandle);
-        mRuntime->getPhysicsComponent()->setGravity(mActiveSceneHandle->getRuntime()->getGravity());
-        mRuntime->getPhysicsComponent()->setDebug(mActiveSceneHandle->getPhysicsDebug());
-        mRuntime->getCamera()->setTranslation(mActiveSceneHandle->getDefaultCameraTransform().getTranslation());
-        mRuntime->getCamera()->setRotation(mActiveSceneHandle->getDefaultCameraTransform().getRotation());
-        mRuntime->getCamera()->setMovementSpeed(mActiveSceneHandle->getCameraMovementSpeed());
-
-        return true;
-    }
-
-    void
-    Project::cleanUpActiveScene
-    ()
-    {
-        mActiveSceneHandle->cleanUp();
-        mRuntime->cleanupComponents(mActiveSceneHandle);
-        mActiveSceneHandle = nullptr;
-    }
-
-    bool
-    Project::loadFromFileReader
-    (string projectPath, FileReader* reader)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Project: Loading project from FileReader " << reader->getPath() << endl;
-        }
-
-        string projectJsonStr = reader->getContentsAsString();
+        string projectJsonStr = reader.getContentsAsString();
 
         if (projectJsonStr.empty())
         {
@@ -351,15 +93,15 @@ namespace Dream
         {
             cout << "Project: using project path " << projectPath << endl;
         }
-        mProjectPath = projectPath;
-        mJson = projectJson;
-        loadMetadataFromJson(mJson);
+        mRuntime->setProjectPath(projectPath);
+        mDefinition.reset(new ProjectDefinition(projectJson));
+        //mDefinition->applyToRuntime(mRuntime.get());
 
         return true;
     }
 
     bool
-    Project::loadFromDirectory
+    Project::openFromDirectory
     (string directory)
     {
         DIR *dir;
@@ -389,20 +131,20 @@ namespace Dream
                 uuid = filename.substr(0,dotJsonIndex);
                 if (Constants::DEBUG)
                 {
-                    cout << "Project: loadFromDirectory - Found uuid " << uuid << endl;
+                    cout << "Project: openFromDirectory - Found uuid " << uuid << endl;
                 }
             }
             else if (filename.compare(Constants::ASSET_DIR) == 0)
             {
                 if (Constants::DEBUG)
                 {
-                    cout << "Project: loadFromDirectory - Found asset directory " << endl;
+                    cout << "Project: openFromDirectory - Found asset directory " << endl;
                 }
                 hasAssetDirectory = true;
             }
         }
 
-        if (uuid.size() != Constants::PROJECT_UUID_LENGTH  || !hasAssetDirectory)
+        if (uuid.size() != static_cast<size_t>(Constants::PROJECT_UUID_LENGTH)  || !hasAssetDirectory)
         {
             cerr << "Project: Error " << directory << " is not a valid project directory!" << endl;
             return false;
@@ -415,120 +157,24 @@ namespace Dream
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + uuid + Constants::PROJECT_EXTENSION;
 
-        FileReader *projectFileReader = new FileReader(projectFilePath);
-        projectFileReader->readIntoStringStream();
-        bool loadSuccess = loadFromFileReader(directory, projectFileReader);
-        delete projectFileReader;
+        FileReader projectFileReader(projectFilePath);
+        projectFileReader.readIntoStringStream();
+        bool loadSuccess = openFromFileReader(directory, projectFileReader);
         return loadSuccess;
     }
 
     bool
-    Project::loadFromArgumentParser
-    (ArgumentParser *parser)
+    Project::openFromArgumentParser
+    (ArgumentParser& parser)
     {
         if (Constants::VERBOSE)
         {
             cout << "Project: Loading from ArgumentParser" << endl;
         }
-        FileReader *projectFileReader = new FileReader(parser->getProjectFilePath());
-        projectFileReader->readIntoStringStream();
-        bool loadSuccess = loadFromFileReader(parser->getProjectPath(), projectFileReader);
-        delete projectFileReader;
-        delete parser;
+        FileReader projectFileReader(parser.getProjectFilePath());
+        projectFileReader.readIntoStringStream();
+        bool loadSuccess = openFromFileReader(parser.getProjectPath(), projectFileReader);
         return loadSuccess;
-    }
-
-    void
-    Project::setStartupSceneActive
-    ()
-    {
-        setActiveScene(getStartupScene());
-    }
-
-    void
-    Project::updateLogic
-    ()
-    {
-        if (Constants::VERBOSE)
-        {
-            cout << "==== Project: UpdateLogic Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
-        }
-
-        mActiveSceneHandle->createAllAssetInstances();
-        mActiveSceneHandle->loadAllAssetInstances();
-
-        mRuntime->getTime()->update();
-
-        mRuntime->getLuaEngine()->createAllScripts();
-        mRuntime->getLuaEngine()->update();
-
-        mRuntime->getAnimationComponent()->updateComponent(mActiveSceneHandle);
-        mRuntime->getAudioComponent()->updateComponent(mActiveSceneHandle);
-        mRuntime->getWindowComponentHandle()->updateComponent(mActiveSceneHandle);
-        mRuntime->getPhysicsComponent()->updateComponent(mActiveSceneHandle);
-
-        // Update Graphics/Physics Components
-
-        mRuntime->getGraphicsComponent()->updateComponent(mActiveSceneHandle);
-        mRuntime->getPhysicsComponent()->setViewProjectionMatrix(
-            mRuntime->getGraphicsComponent()->getViewMatrix(),
-            mRuntime->getGraphicsComponent()->getProjectionMatrix()
-        );
-    }
-
-    void
-    Project::updateGraphics
-    ()
-    {
-        if (Constants::VERBOSE)
-        {
-            cout << "==== Project: UpdateGraphics Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
-        }
-
-        // Draw 3D/PhysicsDebug/2D
-
-        mRuntime->getGraphicsComponent()->preRender();
-
-        mRuntime->getGraphicsComponent()->draw3DQueue();
-        mRuntime->getPhysicsComponent()->drawDebug();
-        mRuntime->getGraphicsComponent()->draw2DQueue();
-        mRuntime->getWindowComponentHandle()->swapBuffers();
-
-        mRuntime->getGraphicsComponent()->postRender();
-
-    }
-
-    void
-    Project::updateFlush
-    ()
-    {
-        if (Constants::VERBOSE)
-        {
-            cout << "==== Project: updateFlush Called @ " << mRuntime->getTime()->getTimeDelta() << " ====" << endl;
-        }
-
-        // Cleanup Old
-        mActiveSceneHandle->flush();
-
-    }
-
-    void
-    Project::updateAll
-    ()
-    {
-        if (mActiveSceneHandle)
-        {
-            updateLogic();
-            updateGraphics();
-            updateFlush();
-        }
-    }
-
-    bool
-    Project::initRuntime
-    ()
-    {
-        return mRuntime->initComponents();
     }
 
     ProjectRuntime*
@@ -537,4 +183,127 @@ namespace Dream
     {
         return mRuntime.get();
     }
+
+    ProjectDefinition*
+    Project::getDefinitionHandle
+    ()
+    {
+        return mDefinition.get();
+    }
+
+    void
+    Project::addScene
+    (json scene)
+    {
+        mScenes.push_back
+        (
+            unique_ptr<Scene>
+            (
+                new Scene(this,scene)
+            )
+        );
+    }
+
+    size_t
+    Project::countScenes
+    ()
+    {
+        return mScenes.size();
+    }
+
+    Scene*
+    Project::getSceneHandleByUuid
+    (string uuid)
+    {
+        for(auto it = begin(mScenes); it != end(mScenes); it++)
+        {
+            if ((*it)->getDefinitionHandle()->hasUuid(uuid))
+            {
+                return (*it).get();
+            }
+        }
+        return nullptr;
+    }
+
+    void
+    Project::setStartupSceneAsActive
+    ()
+    {
+        setActiveSceneHandle(getSceneHandleByUuid(getDefinitionHandle()->getStartupSceneUuid()));
+    }
+
+
+    void
+    Project::setActiveSceneHandle
+    (Scene* scene)
+    {
+        mActiveSceneHandle = scene;
+    }
+
+    Scene*
+    Project::getActiveSceneHandle
+    ()
+    {
+        return mActiveSceneHandle;
+    }
+
+    bool
+    Project::hasActiveSceneHandle
+    ()
+    {
+        return mActiveSceneHandle != nullptr;
+    }
+
+    void
+    Project::addAssetDefinition
+    (json assetDefinition)
+    {
+        mAssetDefinitions.push_back
+        (
+            unique_ptr<AssetDefinition>
+            (
+                new AssetDefinition(this,assetDefinition)
+            )
+        );
+    }
+
+    void
+    Project::removeAssetDefinition
+    (const unique_ptr<AssetDefinition>& assetDef)
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "ProjectDefinition: Removing AssetDefinition "
+                 << assetDef->getNameAndUuidString() << endl;
+        }
+
+        remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
+            [&](const unique_ptr<AssetDefinition>& thisDefinition)
+            {
+                return thisDefinition == assetDef;
+            }
+        );
+    }
+
+    size_t
+    Project::countAssetDefinitions
+    ()
+    {
+        return mAssetDefinitions.size();
+    }
+
+    AssetDefinition*
+    Project::getAssetDefinitionHandleByUuid
+    (string uuid)
+    {
+        for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
+        {
+            if ((*it)->hasUuid(uuid))
+            {
+                return (*it).get();
+            }
+        }
+        return nullptr;
+    }
+
 } // End of Dream

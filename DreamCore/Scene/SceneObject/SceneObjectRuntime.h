@@ -22,8 +22,13 @@
 #include <vector>
 #include <glm/vec3.hpp>
 
-using namespace std;
-using namespace glm;
+#include "../../Common/IRuntime.h"
+
+#include "../../Components/Transform3D.h"
+
+using std::vector;
+using std::unique_ptr;
+using glm::vec3;
 
 namespace Dream
 {
@@ -39,11 +44,10 @@ namespace Dream
     class FontInstance;
     class PhysicsObjectInstance;
     class LuaScriptInstance;
-    class Transform3D;
     class AssetDefinition;
     class SceneRuntime;
 
-    class SceneObjectRuntime
+    class SceneObjectRuntime : public Runtime
     {
 
     private:
@@ -58,23 +62,16 @@ namespace Dream
         unique_ptr<FontInstance> mFontInstance;
         unique_ptr<Transform3D> mTransform;
 
-        vector<SceneObjectRuntime*> mChildren;
-        vector<Event*> mEventQueue;
+        vector<Event> mEventQueue;
 
-        SceneObjectRuntime *mObjectRuntimeHandle;
-        SceneObjectRuntime *mParentObjectRuntimeHandle;
-        SceneRuntime *mSceneRuntimeHandle;
+        SceneObject *mOwnerHandle;
 
         bool mLoaded;
         bool mHasFocus;
         bool mDelete;
 
     public:
-        SceneObjectRuntime
-        (
-            SceneRuntime *parentSceneRuntimeHandle = nullptr,
-            SceneObjectRuntime *parentObjectRuntimeHandle = nullptr
-        );
+        SceneObjectRuntime(SceneObject *ownerObjectHandle = nullptr);
 
         ~SceneObjectRuntime();
         void deleteChildRuntimes();
@@ -115,19 +112,6 @@ namespace Dream
         void resetScale();
 
         void resetTransform();
-
-        SceneObject* getChildByUuid(string);
-
-        int countAllChildren();
-        size_t countChildren();
-        void addChild(SceneObject*);
-        void removeChild(SceneObject*);
-        bool isChildOf(SceneObject*);
-        vector<SceneObject*> getChildren();
-
-        bool isParentOf(SceneObject*);
-        void setParent(SceneObject*);
-        SceneObject* getParent();
 
         void setAnimationInstance(AnimationInstance*);
         AnimationInstance* getAnimationInstance();
@@ -184,12 +168,11 @@ namespace Dream
         void setLoadedFlag(bool);
 
         bool hasEvents();
-        void sendEvent(Event*);
-        vector<Event*>* getEventQueue();
+        void sendEvent(Event);
+        vector<Event>& getEventQueue();
 
 
         void loadAssetInstances();
 
-        bool isParent(SceneObject*);
     };
 }

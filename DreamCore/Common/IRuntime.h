@@ -1,7 +1,7 @@
 /*
- * JsonData.cpp
+ * Runtime.h
  *
- * Created: 16 2017 by Ashley
+ * Created: 17 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,23 +15,27 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#pragma once
 
-#include "JsonData.h"
+#include <string>
+
+using std::string;
 
 namespace Dream
 {
-    JsonData::JsonData
-    (json data)
-        : // Init list
-          mJson(data)
+    class Runtime
     {
+    protected:
+        string mUuid;
+        string mName;
+    public:
+        Runtime(string uuid = "", string name = "");
+        virtual ~Runtime();
 
-    }
+        string getUuid() const;
+        void setUuid(const string &uuid);
 
-    json&
-    JsonData::getJson
-    ()
-    {
-        return mJson;
-    }
+        string getName() const;
+        void setName(const string &name);
+    };
 }

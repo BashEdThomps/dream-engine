@@ -15,19 +15,28 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <strings.h>
 #include "AssetDefinition.h"
+
+#include <strings.h>
+
+#include "../Common/Constants.h"
+
+#include "Project.h"
+
+using std::cout;
+using std::endl;
 
 namespace Dream
 {
     AssetDefinition::AssetDefinition
-    (json jsonDef)
+    (Project* parent, json jsonDef)
+        : IDefinition(jsonDef),
+          mProjectHandle(parent)
     {
         if (Constants::DEBUG)
         {
             cout << "AssetDefinition: Constructing Object" << endl;
         }
-        mJson = jsonDef;
         showStatus();
     }
 
@@ -52,50 +61,6 @@ namespace Dream
     ()
     {
         return mProjectPath;
-    }
-
-    void
-    AssetDefinition::setUuid
-    (string uuid)
-    {
-        mJson[Constants::ASSET_UUID] = uuid;
-    }
-
-    bool
-    AssetDefinition::hasUuid
-    (string uuid)
-    {
-        string s = mJson[Constants::ASSET_UUID];
-        return s.compare(uuid) == 0;
-    }
-
-    string
-    AssetDefinition::getUuid
-    ()
-    {
-        if (mJson[Constants::ASSET_UUID].is_null())
-        {
-            mJson[Constants::ASSET_UUID] = "";
-        }
-        return mJson[Constants::ASSET_UUID];
-    }
-
-    void
-    AssetDefinition::setName
-    (string name)
-    {
-        mJson[Constants::ASSET_NAME] = name;
-    }
-
-    string
-    AssetDefinition::getName
-    ()
-    {
-        if (mJson[Constants::ASSET_NAME].is_null())
-        {
-            mJson[Constants::ASSET_NAME] = "";
-        }
-        return mJson[Constants::ASSET_NAME];
     }
 
     void
@@ -267,13 +232,6 @@ namespace Dream
     }
 
     string
-    AssetDefinition::getNameAndUuidString
-    ()
-    {
-        return getName() + " (" + getUuid() + ")";
-    }
-
-    string
     AssetDefinition::getAssetPath
     ()
     {
@@ -296,25 +254,11 @@ namespace Dream
         }
     }
 
-    json&
-    AssetDefinition::getJson
+    Project*
+    AssetDefinition::getProjectHandle
     ()
     {
-        return mJson;
-    }
-
-    AssetDefinition*
-    AssetDefinition::getAssetDefinitionByUuid
-    (vector<AssetDefinition*> definitions, string uuid)
-    {
-        for (AssetDefinition* ad : definitions)
-        {
-            if (ad->hasUuid(uuid))
-            {
-                return ad;
-            }
-        }
-        return nullptr;
+        return mProjectHandle;
     }
 
 } // End of Dream

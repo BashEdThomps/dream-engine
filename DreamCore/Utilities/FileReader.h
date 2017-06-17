@@ -23,30 +23,32 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "../Common/Constants.h"
 
-using namespace std;
+using std::stringstream;
+using std::vector;
+using std::ifstream;
+using std::string;
 
 namespace Dream
 {
     class FileReader
     {
     private:
-        unique_ptr<stringstream> mStringStream;
-        unique_ptr<vector<char>> mBinaryVector;
+        stringstream mStringStream;
+        vector<char> mBinaryVector;
         ifstream mInputStream;
         string mPath;
     public:
         FileReader(string);
-        ~FileReader(void);
+        ~FileReader();
 
         string getPath();
         bool readIntoStringStream();
         string getContentsAsString();
         bool readIntoBinaryVector();
-        vector<char>* getContentsAsBinaryVector();
+        vector<char>& getContentsAsBinaryVector();
         int getFileSize();
 
     }; // End of FileReader

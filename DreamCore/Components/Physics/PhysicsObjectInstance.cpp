@@ -4,7 +4,10 @@
 #include <assimp/postprocess.h>
 
 #include "PhysicsMotionState.h"
+
 #include "../../Common/Constants.h"
+
+#include "../../Project/Project.h"
 #include "../../Project/AssetDefinition.h"
 
 namespace Dream
@@ -41,12 +44,11 @@ namespace Dream
     }
 
     PhysicsObjectInstance::PhysicsObjectInstance
-    (AssetDefinition* definition,Transform3D* transform, vector<AssetDefinition*> assetDefinitions)
-        : IAssetInstance(definition,transform)
+    (AssetDefinition* definition,Transform3D* transform)
+        : IAssetInstance(definition,transform),
+          mInPhysicsWorld(false),
+          mKinematic(false)
     {
-        mInPhysicsWorld   = false;
-        mKinematic        = false;
-        mAssetDefinitions = assetDefinitions;
         return;
     }
 
@@ -124,7 +126,7 @@ namespace Dream
                     for (nlohmann::json childJson : compoundChildArray)
                     {
                         CompoundChild child;
-                        child.uuid = childJson[Constants::ASSET_UUID];
+                        child.uuid = childJson[Constants::UUID];
                         // Translation
                         nlohmann::json translationJson = childJson[Constants::ASSET_ATTR_TRANSLATION];
                         if (!translationJson.is_null())
@@ -374,13 +376,6 @@ namespace Dream
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
     {
-        for (AssetDefinition* ad : mAssetDefinitions)
-        {
-            if (ad->hasUuid(uuid))
-            {
-                return ad;
-            }
-        }
-        return nullptr;
+        return mDefinitionHandle->getProjectHandle()->getAssetDefinitionHandleByUuid(uuid);
     }
 } // End of Dream

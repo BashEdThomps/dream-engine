@@ -1,5 +1,5 @@
 /*
- * SceneObjectJsonData.cpp
+ * SceneObjectDefinition.cpp
  *
  * Created: 16 2017 by Ashley
  *
@@ -15,73 +15,75 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "SceneObjectJsonData.h"
+#include "SceneObjectDefinition.h"
 
 #include "SceneObjectRuntime.h"
 
-#include "../Common/Constants.h"
-#include "../Common/Transform3D.h"
-#include "../Utilities/Uuid.h"
+#include "../../Common/Constants.h"
+
+#include "../../Components/Transform3D.h"
+
+#include "../../Utilities/Uuid.h"
 
 namespace Dream
 {
-    SceneObjectJsonData::SceneObjectJsonData(json jsonData, SceneObject* parentHandle)
-        : JsonData(jsonData),
+    SceneObjectDefinition::SceneObjectDefinition(json jsonData, SceneObject* parentHandle)
+        : IDefinition(jsonData),
           mParentHandle(parentHandle)
     {
 
     }
 
     bool
-    SceneObjectJsonData::hasName
+    SceneObjectDefinition::hasName
     (string name)
     {
         return getName().compare(name) == 0;
     }
 
     void
-    SceneObjectJsonData::setName
+    SceneObjectDefinition::setName
     (string name)
     {
-        mJson[Constants::SCENE_OBJECT_NAME] = name;
+        mJson[Constants::NAME] = name;
     }
 
     string
-    SceneObjectJsonData::getName
+    SceneObjectDefinition::getName
     ()
     {
-        return mJson[Constants::SCENE_OBJECT_NAME];
+        return mJson[Constants::NAME];
     }
 
 
     bool
-    SceneObjectJsonData::hasUuid
+    SceneObjectDefinition::hasUuid
     (string uuid)
     {
         return (getUuid().compare(uuid) == 0);
     }
 
     void
-    SceneObjectJsonData::setUuid
+    SceneObjectDefinition::setUuid
     (string uuid)
     {
-        mJson[Constants::SCENE_OBJECT_UUID] = uuid;
+        mJson[Constants::UUID] = uuid;
     }
 
     string
-    SceneObjectJsonData::getUuid
+    SceneObjectDefinition::getUuid
     ()
     {
-        return mJson[Constants::SCENE_OBJECT_UUID];
+        return mJson[Constants::UUID];
     }
 
     void
-    SceneObjectJsonData::applyDataToRuntime
+    SceneObjectDefinition::applyDataToRuntime
     (SceneObjectRuntime* runtime)
     {
         if (!mJson.is_object())
         {
-           mJson[Constants::SCENE_OBJECT_UUID] = Uuid::generateUuid();
+           mJson[Constants::UUID] = Uuid::generateUuid();
            return;
         }
 
@@ -147,14 +149,14 @@ namespace Dream
     }
 
     void
-    SceneObjectJsonData::setHasFocus
+    SceneObjectDefinition::setHasFocus
     (bool focus)
     {
         mJson[Constants::SCENE_OBJECT_HAS_FOCUS] = focus;
     }
 
     bool
-    SceneObjectJsonData::hasFocus
+    SceneObjectDefinition::hasFocus
     ()
     {
         if (mJson[Constants::SCENE_OBJECT_HAS_FOCUS].is_null())
@@ -166,14 +168,14 @@ namespace Dream
     }
 
     void
-    SceneObjectJsonData::addAssetDefUuidToLoad
+    SceneObjectDefinition::addAssetDefUuidToLoad
     (string uuid)
     {
         mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].push_back(uuid);
     }
 
     vector<string>
-    SceneObjectJsonData::getAssetDefUuidsToLoad
+    SceneObjectDefinition::getAssetDefUuidsToLoad
     ()
     {
         vector<string> toLoad;
@@ -183,4 +185,15 @@ namespace Dream
         }
         return toLoad;
     }
+
+    void
+    SceneObjectDefinition::showStatus
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "SceneObjectDefinition: " << mJson.dump(1) << endl;
+        }
+    }
+
 }

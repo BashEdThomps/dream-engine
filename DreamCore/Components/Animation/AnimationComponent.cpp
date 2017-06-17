@@ -63,15 +63,15 @@ namespace Dream
     AnimationComponent::updateComponent
     (Scene *scene)
     {
-        scene->getRootSceneObject()->applyToAll
+        scene->getRootSceneObjectHandle()->applyToAll
         (
             function< void* (SceneObject*) >
             (
                 [&](SceneObject* currentSceneObject)
                 {
-                    if (currentSceneObject->getRuntime()->hasAnimationInstance())
+                    if (currentSceneObject->getRuntimeHandle()->hasAnimationInstance())
                     {
-                        AnimationInstance* animInstance = currentSceneObject->getRuntime()->getAnimationInstance();
+                        AnimationInstance* animInstance = currentSceneObject->getRuntimeHandle()->getAnimationInstance();
                         animInstance->step(mTime->getTimeDelta());
                             // TODO: Fix dis
                         //animInstance->applyTransform(&(currentSceneObject->getTransform()));

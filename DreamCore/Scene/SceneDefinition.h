@@ -1,7 +1,7 @@
 /*
- * SceneRuntime.h
+ * SceneDefinition.h
  *
- * Created: 15 2017 by Ashley
+ * Created: 16 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -18,36 +18,40 @@
 
 #pragma once
 
-#include <string>
 #include <vector>
+#include <memory>
+#include "../Common/IDefinition.h"
 
-#include "SceneState.h"
-
-#include "../Common/IRuntime.h"
-
-using std::string;
 using std::vector;
+using std::unique_ptr;
 
 namespace Dream
 {
-    class SceneObject;
+    class Transform3D;
+    class SceneObjectDefinition;
 
-    class SceneRuntime : public Runtime
+    class SceneDefinition : public IDefinition
     {
+
     private:
-        SceneState mState;
-        vector<float> mGravity;
-        vector<float> mClearColour;
-        vector<float> mAmbientColour;
-        string mProjectPath;
-        vector<SceneObject*> mDeleteQueue;
-
+        vector<unique_ptr<SceneObjectDefinition>> mSceneObjectDefinitions;
     public:
-        SceneRuntime();
-        ~SceneRuntime();
+        SceneDefinition(json data);
+        ~SceneDefinition();
 
-        SceneState getState() const;
-        void setState(const SceneState &state);
+        void showStatus();
+
+        void loadSceneObjectDefinition(nlohmann::json jsonArray);
+
+        void setCameraMovementSpeed(float speed);
+        float getCameraMovementSpeed();
+
+        bool getPhysicsDebug();
+
+        string getNotes();
+        void setNotes(string notes);
+
+        Transform3D getDefaultCameraTransform();
 
         vector<float> getGravity() const;
         void setGravity(const vector<float> &gravity);
@@ -58,14 +62,7 @@ namespace Dream
         vector<float> getAmbientColour() const;
         void setAmbientColour(const vector<float> &ambientColour);
 
-        string getProjectPath() const;
-        void setProjectPath(const string &projectPath);
+        size_t countSceneObjectDefinitions();
 
-        vector<SceneObject*> getDeleteQueue() const;
-        void setDeleteQueue(const vector<SceneObject*> &deleteQueue);
-
-        void addToDeleteQueue(SceneObject*);
-        void clearDeleteQueue();
-        void destroyDeleteQueue();
     };
-} // End of Dream
+}

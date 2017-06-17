@@ -39,7 +39,7 @@ namespace Dream
     class ShaderInstance;
     class LightInstance;
     class Scene;
-    class JsonData;
+    class Definition;
 
     class GraphicsComponent : public IComponent
     {

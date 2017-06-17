@@ -23,6 +23,7 @@
 #include "../Common/Constants.h"
 
 #include "SceneObject/SceneObject.h"
+#include "SceneObject/SceneObjectDefinition.h"
 #include "SceneObject/SceneObjectRuntime.h"
 
 using std::cout;
@@ -32,7 +33,9 @@ namespace Dream
 {
     SceneRuntime::SceneRuntime
     ()
-        : mGravity({0,0,0}),
+        : // Init list
+          Runtime(),
+          mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0})
     {
@@ -139,7 +142,7 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "Scene: Adding "
-                 << object->getNameAndUuidString()
+                 << object->getDefinitionHandle()->getNameAndUuidString()
                  << " to delete queue" << endl;
         }
         getDeleteQueue().push_back(object);
@@ -164,7 +167,7 @@ namespace Dream
         {
             for(SceneObject* obj : mDeleteQueue)
             {
-                obj->getRuntime()->cleanUp();
+                obj->getRuntimeHandle()->cleanUp();
             }
         }
         clearDeleteQueue();

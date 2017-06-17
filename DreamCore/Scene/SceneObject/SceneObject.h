@@ -12,24 +12,37 @@ namespace Dream
 {
     class Scene;
     class SceneObjectRuntime;
-    class SceneObjectJsonData;
+    class SceneObjectDefinition;
 
     class SceneObject
     {
     private:
         unique_ptr<SceneObjectRuntime> mRuntime;
-        unique_ptr<SceneObjectJsonData> mJsonData;
+        unique_ptr<SceneObjectDefinition> mDefinition;
+        Scene* mSceneHandle;
+        vector<SceneObject*> mChildren;
+        SceneObject* mParentHandle;
 
     public:
         SceneObject(Scene* scene = nullptr, nlohmann::json soJson = nlohmann::json());
         ~SceneObject();
 
-        SceneObjectRuntime* getRuntime();
-        SceneObjectJsonData* getJsonData();
+        Scene* getSceneHandle();
+        SceneObjectRuntime* getRuntimeHandle();
+        SceneObjectDefinition* getDefinitionHandle();
 
-        string getNameAndUuidString();
+        SceneObject* getChildByUuid(string);
 
-        void showStatus();
+        int countAllChildren();
+        size_t countChildren();
+        void addChild(SceneObject*);
+        void removeChild(SceneObject*);
+        bool isChildOf(SceneObject*);
+        vector<SceneObject*> getChildren();
+
+        bool isParentOf(SceneObject* child);
+        void setParentHandle(SceneObject* parent);
+        SceneObject* getParentHandle();
 
         void* applyToAll(function<void*(SceneObject*)>);
         bool applyToAll(function<bool(SceneObject*)>);

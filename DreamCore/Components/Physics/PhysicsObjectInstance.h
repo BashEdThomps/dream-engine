@@ -43,10 +43,9 @@ namespace Dream
         bool mInPhysicsWorld;
         bool mKinematic;
         vector<CompoundChild> mCompoundChildren;
-        vector<AssetDefinition*> mAssetDefinitions;
 
     public:
-        PhysicsObjectInstance(AssetDefinition*,Transform3D*,vector<AssetDefinition*>);
+        PhysicsObjectInstance(AssetDefinition*,Transform3D*);
         ~PhysicsObjectInstance();
         bool load(string);
         btCollisionShape* createCollisionShape(AssetDefinition*, string projectPath);

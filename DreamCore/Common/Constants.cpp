@@ -109,8 +109,8 @@ namespace Dream
     const string Constants::PROJECT_WIDTH = "width";
     const string Constants::PROJECT_HEIGHT = "height";
     // Asset ====================================================================
-    const string Constants::ASSET_UUID = "uuid";
-    const string Constants::ASSET_NAME = "name";
+    const string Constants::UUID = "uuid";
+    const string Constants::NAME = "name";
     const string Constants::ASSET_TYPE = "type";
     const string Constants::ASSET_DIR = "assets";
     const string Constants::ASSET_TYPE_ANIMATION = "animation";
@@ -133,8 +133,6 @@ namespace Dream
     const string Constants::ASSET_FORMAT_LIGHT_POINT = "point";
     const string Constants::ASSET_FORMAT_SPRITE_IMAGE = "image";
     // Scene ====================================================================
-    const string Constants::SCENE_UUID = "uuid";
-    const string Constants::SCENE_NAME = "name";
     const string Constants::SCENE_NOTES = "notes";
     const string Constants::SCENE_SCENE_OBJECTS = "objects";
     const string Constants::SCENE_CAMERA = "camera";
@@ -146,8 +144,6 @@ namespace Dream
     const string Constants::SCENE_GRAVITY = "gravity";
     const string Constants::SCENE_PHYSICS_DEBUG = "physicsDebug";
     // SceneObject ==============================================================
-    const string Constants::SCENE_OBJECT_UUID = "uuid";
-    const string Constants::SCENE_OBJECT_NAME = "name";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
     const string Constants::SCENE_OBJECT_HAS_FOCUS = "hasFocus";
     const string Constants::SCENE_OBJECT_TRANSLATION = "translation";
@@ -178,6 +174,9 @@ namespace Dream
     const unsigned int Constants::GREEN_INDEX = 1;
     const unsigned int Constants::BLUE_INDEX  = 2;
     const unsigned int Constants::ALPHA_INDEX = 3;
+    const unsigned int Constants::XYZ_VECTOR_SIZE = 3;
+    const unsigned int Constants::RGB_VECTOR_SIZE = 3;
+    const unsigned int Constants::RGBA_VECTOR_SIZE = 4;
     // Animation ================================================================
     const string Constants::ASSET_ATTR_KEYFRAMES     = "keyframes";
     const string Constants::ASSET_ATTR_TRANSLATION   = "translation";
@@ -234,10 +233,10 @@ namespace Dream
     const string Constants::SHADER_FRAGMENT = "fragment";
     const string Constants::SHADER_VERTEX = "vertex";
     // Audio
-    const size_t AUDIO_BUFFER_SIZE = 32768;
+    const size_t Constants::AUDIO_BUFFER_SIZE = 32768;
     // Window
-    const int DEFAULT_SCREEN_WIDTH  = 1280;
-    const int DEFAULT_SCREEN_HEIGHT =  720;
+    const int Constants::DEFAULT_SCREEN_WIDTH  = 1280;
+    const int Constants::DEFAULT_SCREEN_HEIGHT =  720;
     // Data =====================================================================
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =

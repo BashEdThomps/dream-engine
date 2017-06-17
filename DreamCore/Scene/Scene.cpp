@@ -21,27 +21,34 @@
 #include <functional>
 #include <algorithm>
 
-#include "../Project/Project.h"
+#include "SceneDefinition.h"
+#include "SceneRuntime.h"
 
-#include "SceneObjectRuntime.h"
-#include "SceneObjectJsonData.h"
+#include "SceneObject/SceneObject.h"
+#include "SceneObject/SceneObjectRuntime.h"
+#include "SceneObject/SceneObjectDefinition.h"
+
+#include "../Common/Constants.h"
+
+#include "../Components/Transform3D.h"
+
+#include "../Lua/LuaEngine.h"
+
+#include "../Project/Project.h"
+#include "../Project/ProjectRuntime.h"
+
+#include "../Utilities/String.h"
 
 namespace Dream
 {
     Scene::Scene
-    (Project* project, nlohmann::json json)
+    (Project* project, json json)
         : mProjectHandle(project),
-          mJson(json)
+          mDefinition(new SceneDefinition(json)),
+          mRuntime(new SceneRuntime())
     {
-        mRuntime.reset(new SceneRuntime());
         mRuntime->setState(NOT_LOADED);
 
-        nlohmann::json sceneObjects = mJson[Constants::SCENE_SCENE_OBJECTS];
-
-        if (!sceneObjects.is_null() && sceneObjects.is_array())
-        {
-            loadSceneObjectJsonData(sceneObjects,nullptr);
-        }
     }
 
     Scene::~Scene
@@ -53,72 +60,8 @@ namespace Dream
         }
     }
 
-    void
-    Scene::loadSceneObjectJsonData
-    (nlohmann::json jsonArray, SceneObject* parent)
-    {
-        if (!jsonArray.is_null())
-        {
-            for (nlohmann::json it : jsonArray)
-            {
-                SceneObject *nextSceneObject = new SceneObject(this,it);
-                if (parent != nullptr)
-                {
-                    parent->getRuntime()->addChild(nextSceneObject);
-                }
-                else
-                {
-                    mRootSceneObject.reset(nextSceneObject);
-                }
-                if (!it[Constants::SCENE_OBJECT_CHILDREN].is_null())
-                {
-                    loadSceneObjectJsonData(it[Constants::SCENE_OBJECT_CHILDREN],nextSceneObject);
-                }
-                if (Constants::DEBUG)
-                {
-                    nextSceneObject->showStatus();
-                }
-            }
-        }
-    }
-
-    string
-    Scene::getNameAndUuidString
-    ()
-    {
-        return getName() + " : " + getUuid();
-    }
-
-    string
-    Scene::getName
-    ()
-    {
-        return mJson[Constants::SCENE_NAME];
-    }
-
-    string
-    Scene::getUuid
-    ()
-    {
-       return mJson[Constants::SCENE_UUID];
-    }
-
-    void
-    Scene::setUuid
-    (string uuid)
-    {
-        mJson[Constants::SCENE_UUID] = uuid;
-    }
-
-    void
-    Scene::setName
-    (string name)
-    {
-        mJson[Constants::SCENE_NAME] = name ;
-    }
-
     SceneObject*
-    Scene::getSceneObjectByUuid
+    Scene::getSceneObjectHandleByUuid
     (string uuid)
     {
         return static_cast<SceneObject*>
@@ -129,7 +72,7 @@ namespace Dream
                 (
                     [&](SceneObject* currentSo)
                     {
-                        if (currentSo->getJsonData()->hasUuid(uuid))
+                        if (currentSo->getDefinitionHandle()->hasUuid(uuid))
                         {
                             return currentSo;
                         }
@@ -141,7 +84,7 @@ namespace Dream
     }
 
     SceneObject*
-    Scene::getSceneObjectByName
+    Scene::getSceneObjectHandleByName
     (string name)
     {
         return static_cast<SceneObject*>
@@ -152,7 +95,7 @@ namespace Dream
                 (
                     [&](SceneObject* currentSo)
                     {
-                        if (currentSo->getJsonData()->hasName(name))
+                        if (currentSo->getDefinitionHandle()->hasName(name))
                         {
                             return currentSo;
                         }
@@ -164,7 +107,7 @@ namespace Dream
     }
 
     int
-    Scene::getNumberOfSceneObjects
+    Scene::countSceneObjects
     ()
     {
         int count = 0;
@@ -183,25 +126,6 @@ namespace Dream
     }
 
     void
-    Scene::showStatus
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Scene" << endl;
-            cout << "{" << endl;
-            cout << "\tUUID: " << getUuid() << endl;
-            cout << "\tName: " << getName() << endl;
-            cout << "\tCamera Transform: " << endl;
-            cout << "\tTranslation: " << String::vec3ToString(getDefaultCameraTransform().getTranslation()) << endl;
-            cout << "\tRotation: " << String::vec3ToString(getDefaultCameraTransform().getRotation())    << endl;
-            cout << "\tScene Objects: " << getNumberOfSceneObjects() << endl;
-            cout << "}" << endl;
-            showScenegraph();
-        }
-    }
-
-    void
     Scene::showScenegraph
     ()
     {
@@ -217,7 +141,7 @@ namespace Dream
             (
                 [&](SceneObject* obj)
                 {
-                    obj->showStatus();
+                    obj->getDefinitionHandle()->showStatus();
                     return nullptr;
                 }
             )
@@ -225,34 +149,18 @@ namespace Dream
     }
 
     void
-    Scene::setRootSceneObject
+    Scene::setRootSceneObjectHandle
     (SceneObject* root)
     {
         mRootSceneObject.reset(root);
     }
 
     SceneObject*
-    Scene::getRootSceneObject
+    Scene::getRootSceneObjectHandle
     ()
     {
         return mRootSceneObject.get();
     }
-
-    void
-    Scene::setCameraMovementSpeed
-    (float speed)
-    {
-        mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED] = speed;
-    }
-
-    float
-    Scene::getCameraMovementSpeed
-    ()
-    {
-        return mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED];
-    }
-
-
 
     void
     Scene::findDeleteFlaggedSceneObjects
@@ -269,7 +177,7 @@ namespace Dream
             (
                 [&](SceneObject* obj)
                 {
-                    if (obj->getRuntime()->getDeleteFlag())
+                    if (obj->getRuntimeHandle()->getDeleteFlag())
                     {
                         mRuntime->addToDeleteQueue(obj);
                     }
@@ -295,9 +203,9 @@ namespace Dream
                 [&](SceneObject* sceneObj)
                 {
                     // Not loaded && not marked to delete
-                    if (!sceneObj->getRuntime()->getLoadedFlag() && !sceneObj->getRuntime()->getDeleteFlag())
+                    if (!sceneObj->getRuntimeHandle()->getLoadedFlag() && !sceneObj->getRuntimeHandle()->getDeleteFlag())
                     {
-                        sceneObj->getRuntime()->createAssetInstances();
+                        sceneObj->getRuntimeHandle()->createAssetInstances();
                     }
                     return nullptr;
                 }
@@ -316,11 +224,11 @@ namespace Dream
                 [&](SceneObject* sceneObj)
                 {
                     // Not loaded && not marked to delete
-                    if (!sceneObj->getRuntime()->getLoadedFlag())
+                    if (!sceneObj->getRuntimeHandle()->getLoadedFlag())
                     {
-                        if(!sceneObj->getRuntime()->getDeleteFlag())
+                        if(!sceneObj->getRuntimeHandle()->getDeleteFlag())
                         {
-                            sceneObj->getRuntime()->loadAssetInstances();
+                            sceneObj->getRuntimeHandle()->loadAssetInstances();
                         }
                     }
                     return nullptr;
@@ -342,36 +250,8 @@ namespace Dream
 
         for (SceneObject* it : objects)
         {
-            mProjectHandle->getRuntime()->getLuaEngine()->removeFromScriptMap(it);
+            mProjectHandle->getRuntimeHandle()->getLuaEngineHandle()->removeFromScriptMap(it);
         }
-    }
-
-    bool
-    Scene::getPhysicsDebug
-    ()
-    {
-        return mJson[Constants::SCENE_PHYSICS_DEBUG];
-    }
-
-    nlohmann::json
-    Scene::getJson
-    ()
-    {
-        return mJson;
-    }
-
-    string
-    Scene::getNotes
-    ()
-    {
-        return mJson[Constants::SCENE_NOTES];
-    }
-
-    void
-    Scene::setNotes
-    (string notes)
-    {
-        mJson[Constants::SCENE_NOTES] = notes;
     }
 
     void
@@ -388,7 +268,7 @@ namespace Dream
             (
                 [&](SceneObject* obj)
                 {
-                    obj->getRuntime()->setDeleteFlag(true);
+                    obj->getRuntimeHandle()->setDeleteFlag(true);
                     return nullptr;
                 }
             )
@@ -408,28 +288,14 @@ namespace Dream
         mRuntime->destroyDeleteQueue();
     }
 
-    bool
-    Scene::hasUuid
-    (string uuid)
-    {
-        return getUuid().compare(uuid) == 0;
-    }
-
-    bool
-    Scene::hasName
-    (string name)
-    {
-        return getName().compare(name) == 0;
-    }
-
     void
-    Scene::cleanUp
+    Scene::cleanUpRuntime
     ()
     {
         if (Constants::DEBUG)
         {
             cout << "Scene: cleanUp called on "
-                 <<  getNameAndUuidString()
+                 <<  mDefinition->getNameAndUuidString()
                  << endl;
         }
 
@@ -442,7 +308,7 @@ namespace Dream
         else
         {
             cerr << "Scene: Cannot cleanUp Scene "
-                 << getNameAndUuidString()
+                 << mDefinition->getNameAndUuidString()
                  << " State != DONE"
                  << endl;
         }
@@ -455,35 +321,21 @@ namespace Dream
         return mProjectHandle;
     }
 
-    Transform3D
-    Scene::getDefaultCameraTransform
+
+    SceneRuntime*
+    Scene::getRuntimeHandle
     ()
-    {
-        Transform3D defaultCameraTransform;
-        nlohmann::json camera = mJson[Constants::SCENE_CAMERA];
-
-        if (!camera.is_null())
-        {
-            nlohmann::json translation = camera[Constants::SCENE_TRANSLATION];
-            defaultCameraTransform.setTranslation(
-                translation[Constants::X],
-                translation[Constants::Y],
-                translation[Constants::Z]
-            );
-            nlohmann::json rotation = camera[Constants::SCENE_ROTATION];
-            defaultCameraTransform.setRotation(
-                rotation[Constants::X],
-                rotation[Constants::Y],
-                rotation[Constants::Z]
-            );
-        }
-
-        return defaultCameraTransform;
-    }
-
-    SceneRuntime* Scene::getRuntime() const
+    const
     {
         return mRuntime.get();
+    }
+
+    SceneDefinition*
+    Scene::getDefinitionHandle
+    ()
+    const
+    {
+        return mDefinition.get();
     }
 
 } // End of Dream

@@ -31,10 +31,11 @@
 #include "../Time.h"
 
 #include "../../Scene/Scene.h"
+#include "../../Scene/SceneDefinition.h"
 
 #include "../../Scene/SceneObject/SceneObject.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectJsonData.h"
+#include "../../Scene/SceneObject/SceneObjectDefinition.h"
 
 #include "../Transform3D.h"
 
@@ -213,32 +214,32 @@ namespace Dream
     PhysicsComponent::populatePhysicsWorld
     (Scene* scene)
     {
-        scene->getRootSceneObject()->applyToAll
+        scene->getRootSceneObjectHandle()->applyToAll
                 (
                     function<void*(SceneObject*)>
                     (
                         [&](SceneObject* so)
                         {
                         // Has physics
-                        if (so->getRuntime()->hasPhysicsObjectInstance())
+                        if (so->getRuntimeHandle()->hasPhysicsObjectInstance())
                         {
-                            PhysicsObjectInstance* physicsObject = so->getRuntime()->getPhysicsObjectInstance();
+                            PhysicsObjectInstance* physicsObject = so->getRuntimeHandle()->getPhysicsObjectInstance();
                             // Marked for deletion and in physics world, remove
-                            if (so->getRuntime()->getDeleteFlag() && physicsObject->getInPhysicsWorld())
+                            if (so->getRuntimeHandle()->getDeleteFlag() && physicsObject->getInPhysicsWorld())
                             {
                                 if (Constants::DEBUG)
                                 {
-                                    cout << "PhysicsComponent: Removing SceneObject " << so->getJsonData()->getUuid()
+                                    cout << "PhysicsComponent: Removing SceneObject " << so->getDefinitionHandle()->getUuid()
                                     << " from Physics World" << endl;
                                 }
                                 removePhysicsObjectInstance(physicsObject);
                             }
                             // Not marked for deletion and not in world, add
-                            if (!so->getRuntime()->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
+                            if (!so->getRuntimeHandle()->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
                             {
                                 if (Constants::DEBUG)
                                 {
-                                    cout << "PhysicsComponent: Adding SceneObject " << so->getJsonData()->getUuid()
+                                    cout << "PhysicsComponent: Adding SceneObject " << so->getDefinitionHandle()->getUuid()
                                     << " to Physics World" << endl;
                                 }
                                 addPhysicsObjectInstance(physicsObject);
@@ -283,8 +284,8 @@ namespace Dream
             SceneObject* sObjA = getSceneObject(scene, objA);
             SceneObject* sObjB = getSceneObject(scene, objB);
 
-            Event* e = new Event(sObjB->getJsonData()->getUuid(),Constants::EVENT_TYPE_COLLISION);
-            sObjA->getRuntime()->sendEvent(e);
+            Event e(sObjB->getDefinitionHandle()->getUuid(),Constants::EVENT_TYPE_COLLISION);
+            sObjA->getRuntimeHandle()->sendEvent(e);
 
             /*
            * More detail about contact.
@@ -308,15 +309,15 @@ namespace Dream
     {
         return static_cast<SceneObject*>
                 (
-                    scene->getRootSceneObject()->applyToAll
+                    scene->getRootSceneObjectHandle()->applyToAll
                     (
                         function<void*(SceneObject*)>
                         (
                             [&](SceneObject* next)
         {
-                            if (next->getRuntime()->hasPhysicsObjectInstance())
+                            if (next->getRuntimeHandle()->hasPhysicsObjectInstance())
                             {
-                                PhysicsObjectInstance* nextPO = next->getRuntime()->getPhysicsObjectInstance();
+                                PhysicsObjectInstance* nextPO = next->getRuntimeHandle()->getPhysicsObjectInstance();
                                 if (nextPO->getCollisionObject() == collObj)
                                 {
                                     return next;
@@ -346,7 +347,7 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "PhysicsComponent: Cleaning up physics for "
-                 << scene->getNameAndUuidString()
+                 << scene->getDefinitionHandle()->getNameAndUuidString()
                  << endl;
         }
 

@@ -71,8 +71,8 @@ namespace Dream
         const static string PROJECT_WIDTH;
         const static string PROJECT_HEIGHT;
         // Asset ================================================================
-        const static string ASSET_UUID;
-        const static string ASSET_NAME;
+        const static string UUID;
+        const static string NAME;
         const static string ASSET_TYPE;
         const static string ASSET_DIR;
         const static string ASSET_TYPE_ANIMATION;
@@ -95,8 +95,6 @@ namespace Dream
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_SPRITE_IMAGE;
         // Scene ================================================================
-        const static string SCENE_UUID;
-        const static string SCENE_NAME;
         const static string SCENE_NOTES;
         const static string SCENE_SCENE_OBJECTS;
         const static string SCENE_CAMERA;
@@ -108,8 +106,6 @@ namespace Dream
         const static string SCENE_GRAVITY;
         const static string SCENE_PHYSICS_DEBUG;
         // SceneObject ==========================================================
-        const static string SCENE_OBJECT_UUID;
-        const static string SCENE_OBJECT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
         const static string SCENE_OBJECT_HAS_FOCUS;
         const static string SCENE_OBJECT_TRANSLATION;
@@ -140,6 +136,9 @@ namespace Dream
         const static unsigned int GREEN_INDEX;
         const static unsigned int BLUE_INDEX;
         const static unsigned int ALPHA_INDEX;
+        const static unsigned int XYZ_VECTOR_SIZE;
+        const static unsigned int RGB_VECTOR_SIZE;
+        const static unsigned int RGBA_VECTOR_SIZE;
 
         // Animation =============================================================
         const static string ASSET_ATTR_KEYFRAMES;

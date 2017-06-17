@@ -1,5 +1,5 @@
 /*
- * SceneJsonData.h
+ * Definition.h
  *
  * Created: 16 2017 by Ashley
  *
@@ -18,13 +18,31 @@
 
 #pragma once
 
-#include "../Common/JsonData.h"
+#include <json.hpp>
+#include <string>
+
+using std::string;
+
+using nlohmann::json;
 
 namespace Dream
 {
-    class SceneJsonData : public JsonData
+    class IDefinition
     {
+    protected:
+        json mJson;
     public:
-        SceneJsonData(json data);
+        IDefinition(json data);
+        virtual ~IDefinition();
+        json& getJson();
+        virtual void showStatus() = 0;
+
+        bool hasName(string name);
+        string getName();
+
+        bool hasUuid(string uuid);
+        string getUuid();
+
+        string getNameAndUuidString();
     };
 }

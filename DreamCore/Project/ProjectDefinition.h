@@ -1,5 +1,5 @@
 /*
- * ProjectJsonData.h
+ * ProjectDefinition.h
  *
  * Created: 16 2017 by Ashley
  *
@@ -18,19 +18,19 @@
 
 #pragma once
 
-#include "../Common/JsonData.h"
-
-#include <string>
+#include "../Common/IDefinition.h"
 
 using std::string;
 
 namespace Dream
 {
-    class ProjectJsonData : public JsonData
+    class Project;
+
+    class ProjectDefinition : public IDefinition
     {
     public:
-        ProjectJsonData(json data);
-        ~ProjectJsonData();
+        ProjectDefinition(json data);
+        ~ProjectDefinition();
 
         string getName();
         void setName(string name);
@@ -52,5 +52,12 @@ namespace Dream
 
         int getWindowHeight();
         void setWindowHeight(int height);
+
+        void pushToProject(Project *projectHandle);
+
+        void showStatus();
+    private:
+        void pushSceneDefinitionsToProject(Project *projectHandle);
+        void pushAssetDefinitionsToProject(Project *runtimeHandle);
     };
 }

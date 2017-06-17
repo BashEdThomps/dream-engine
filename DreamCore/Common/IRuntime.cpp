@@ -1,7 +1,7 @@
 /*
- * SceneJsonData.cpp
+ * Runtime.cpp
  *
- * Created: 16 2017 by Ashley
+ * Created: 17 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,13 +15,52 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "SceneJsonData.h"
+#include "IRuntime.h"
 
 namespace Dream
 {
-    SceneJsonData::SceneJsonData(json data)
-        : JsonData(data)
+    Runtime::Runtime
+    (string uuid, string name)
+        : // Init List
+          mUuid(uuid),
+          mName(name)
     {
 
+    }
+
+    Runtime::~Runtime
+    ()
+    {
+
+    }
+
+    string
+    Runtime::getUuid
+    ()
+    const
+    {
+        return mUuid;
+    }
+
+    void
+    Runtime::setUuid
+    (const string &uuid)
+    {
+        mUuid = uuid;
+    }
+
+    string
+    Runtime::getName
+    ()
+    const
+    {
+        return mName;
+    }
+
+    void
+    Runtime::setName
+    (const string &name)
+    {
+        mName = name;
     }
 }

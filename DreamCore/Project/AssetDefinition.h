@@ -21,33 +21,26 @@
 #include <string>
 #include <vector>
 #include <json.hpp>
-#include "../Common/Constants.h"
+
+#include "../Common/IDefinition.h"
 
 using std::string;
 using std::vector;
 using nlohmann::json;
 
-
 namespace Dream
 {
-    class AssetDefinition
+    class Project;
+
+    class AssetDefinition : public IDefinition
     {
-    public:
-        static AssetDefinition* getAssetDefinitionByUuid(vector<AssetDefinition*>,string);
-
     private:
-        json mJson;
         string mProjectPath;
+        Project *mProjectHandle;
+
     public:
-        AssetDefinition(json);
+        AssetDefinition(Project*, json);
         ~AssetDefinition();
-
-        void setUuid(string);
-        string getUuid();
-        bool hasUuid(string);
-
-        void setName(string);
-        string getName();
 
         void setType(string);
         string getType();
@@ -82,7 +75,7 @@ namespace Dream
 
         void showStatus();
 
-        json& getJson();
+        Project *getProjectHandle();
 
     }; // End of AssetDefinition
 

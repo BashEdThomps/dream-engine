@@ -18,22 +18,33 @@
 #include "ProjectRuntime.h"
 
 #include "Project.h"
+#include "ProjectDefinition.h"
+#include "AssetDefinition.h"
+
+#include "../Scene/Scene.h"
+#include "../Scene/SceneDefinition.h"
+#include "../Scene/SceneObject/SceneObject.h"
+
 #include "../Components/Time.h"
+#include "../Components/Transform3D.h"
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
+
 #include "../Lua/LuaEngine.h"
 
 namespace Dream
 {
     ProjectRuntime::ProjectRuntime
     (Project* project, IWindowComponent* windowComponentHandle)
-        : mDone(false),
+        : Runtime(),
+          mDone(false),
           mWindowComponentHandle(windowComponentHandle),
-          mProjectHandle(project)
+          mProjectHandle(project),
+          mActiveSceneHandle(nullptr)
     {
         if (Constants::DEBUG)
         {
@@ -48,7 +59,6 @@ namespace Dream
         {
             cout << "ProjectRuntime: Destroying Object" << endl;
         }
-        destroyComponents();
     }
 
     void
@@ -56,13 +66,6 @@ namespace Dream
     (Project* proj)
     {
         mProjectHandle = proj;
-    }
-
-    void
-    ProjectRuntime::setWindowComponentHandle
-    (IWindowComponent* wcHandle)
-    {
-        mWindowComponentHandle = wcHandle;
     }
 
     IWindowComponent*
@@ -73,41 +76,6 @@ namespace Dream
     }
 
     void
-    ProjectRuntime::setCamera
-    (Camera* camera)
-    {
-        mCamera.reset(camera);
-    }
-
-    void
-    ProjectRuntime::setAudioComponent
-    (AudioComponent* audioComp)
-    {
-        mAudioComponent.reset(audioComp);
-    }
-
-    void
-    ProjectRuntime::setAnimationComponent
-    (AnimationComponent* animComp)
-    {
-        mAnimationComponent.reset(animComp);
-    }
-
-    void
-    ProjectRuntime::setPhysicsComponent
-    (PhysicsComponent* physicsComp)
-    {
-        mPhysicsComponent.reset(physicsComp);
-    }
-
-    void
-    ProjectRuntime::setGraphicsComponent
-    (GraphicsComponent* graphicsComp)
-    {
-        mGraphicsComponent.reset(graphicsComp);
-    }
-
-    void
     ProjectRuntime::setDone
     (bool done)
     {
@@ -115,15 +83,8 @@ namespace Dream
     }
 
     void
-    ProjectRuntime::setTime
-    (Time* time)
-    {
-        mTime.reset(time);
-    }
-
-    void
     ProjectRuntime::cleanupComponents
-    (Scene* scene)
+    (Scene* sceneHandle)
     {
         if (Constants::DEBUG)
         {
@@ -132,58 +93,46 @@ namespace Dream
 
         if (mWindowComponentHandle)
         {
-            mWindowComponentHandle->cleanUp(scene);
+            mWindowComponentHandle->cleanUp(sceneHandle);
         }
 
         if(mGraphicsComponent)
         {
-            mGraphicsComponent->cleanUp(scene);
+            mGraphicsComponent->cleanUp(sceneHandle);
         }
 
         if(mPhysicsComponent)
         {
-            mPhysicsComponent->cleanUp(scene);
+            mPhysicsComponent->cleanUp(sceneHandle);
         }
 
         if(mAudioComponent)
         {
-            mAudioComponent->cleanUp(scene);
+            mAudioComponent->cleanUp(sceneHandle);
         }
 
         if(mAnimationComponent)
         {
-            mAnimationComponent->cleanUp(scene);
+            mAnimationComponent->cleanUp(sceneHandle);
         }
 
         if (mLuaEngine)
         {
-            mLuaEngine->cleanUp(scene);
+            mLuaEngine->cleanUp(sceneHandle);
         }
 
-
-        if (Constants::DEBUG)
+        if (Constants::VERBOSE)
         {
             cout << "Dream: Finished Cleaning Up Components." << endl;
         }
     }
 
     Time*
-    ProjectRuntime::getTime
+    ProjectRuntime::getTimeHandle
     ()
     {
         return mTime.get();
     }
-
-    void
-    ProjectRuntime::destroyComponents
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "ProjetRuntime: Destroying Components" << endl;
-        }
-    }
-
 
     bool
     ProjectRuntime::initComponents
@@ -191,10 +140,10 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectRuntime: Creating Components..." << endl;
+            cout << "ProjectRuntime: Initialising Components..." << endl;
         }
 
-        setTime(new Time());
+        mTime.reset(new Time());
 
         if (!initWindowComponent())
         {
@@ -226,7 +175,7 @@ namespace Dream
             return false;
         }
 
-        if (Constants::DEBUG)
+        if (Constants::VERBOSE)
         {
             cout << "Dream: Successfuly created Components." << endl;
         }
@@ -239,19 +188,11 @@ namespace Dream
     ProjectRuntime::initWindowComponent
     ()
     {
-        /*if (mProjectHandle && mWindowComponentHandle)
-        {
-            mWindowComponentHandle->setWidth(mProjectHandle->getWindowWidth());
-            mWindowComponentHandle->setHeight(mProjectHandle->getWindowHeight());
-            mWindowComponentHandle->setName(mProjectHandle->getName());
-        }*/
-
         if (!mWindowComponentHandle->init())
         {
             cerr << "ProjectRuntime: Unable to initialise WindowComponent" << endl;
             return false;
         }
-
         return true;
     }
 
@@ -266,7 +207,7 @@ namespace Dream
             cerr << "Dream: Unable to initialise AudioComponent." << endl;
             return false;
         }
-        return mAudioComponent != nullptr;
+        return true;
     }
 
 
@@ -281,7 +222,7 @@ namespace Dream
             cerr << "ComponentManager: Unable to initialise PhysicsComponent." << endl;
             return false;
         }
-        return mPhysicsComponent != nullptr;
+        return true;
     }
 
 
@@ -289,20 +230,16 @@ namespace Dream
     ProjectRuntime::initGraphicsComponent
     ()
     {
-        setCamera(new Camera());
-
+        mCamera.reset(new Camera());
         mGraphicsComponent.reset(new GraphicsComponent(mCamera.get(),mWindowComponentHandle));
         mGraphicsComponent->setTime(mTime.get());
 
-        if (mGraphicsComponent->init())
-        {
-            return true;
-        }
-        else
+        if (!mGraphicsComponent->init())
         {
             cerr << "ProjectRuntime: Unable to initialise Graphics Component." << endl;
             return false;
         }
+        return true;
     }
 
 
@@ -312,17 +249,26 @@ namespace Dream
     {
         mAnimationComponent.reset(new AnimationComponent());
         mAnimationComponent->setTime(mTime.get());
-        if (mAnimationComponent->init())
-        {
-            return true;
-        }
-        else
+        if (!mAnimationComponent->init())
         {
             cerr << "ProjectRuntime: Unable to initialise Animation Component." << endl;
             return false;
         }
+        return true;
     }
 
+    bool
+    ProjectRuntime::initLuaEngine
+    ()
+    {
+        mLuaEngine.reset(new LuaEngine(mProjectHandle));
+        if(!mLuaEngine->init())
+        {
+            cerr << "ProjectRuntime: Unable to initialise Lua Engine." << endl;
+            return false;
+        }
+        return true;
+    }
 
     bool
     ProjectRuntime::isDone
@@ -332,7 +278,7 @@ namespace Dream
     }
 
     AnimationComponent*
-    ProjectRuntime::getAnimationComponent
+    ProjectRuntime::getAnimationComponentHandle
     ()
     {
         return mAnimationComponent.get();
@@ -340,7 +286,7 @@ namespace Dream
 
 
     AudioComponent*
-    ProjectRuntime::getAudioComponent
+    ProjectRuntime::getAudioComponentHandle
     ()
     {
         return mAudioComponent.get();
@@ -348,7 +294,7 @@ namespace Dream
 
 
     PhysicsComponent*
-    ProjectRuntime::getPhysicsComponent
+    ProjectRuntime::getPhysicsComponentHandle
     ()
     {
         return mPhysicsComponent.get();
@@ -356,32 +302,164 @@ namespace Dream
 
 
     GraphicsComponent*
-    ProjectRuntime::
-    getGraphicsComponent()
+    ProjectRuntime::getGraphicsComponentHandle
+    ()
     {
         return mGraphicsComponent.get();
     }
 
 
     Camera*
-    ProjectRuntime::getCamera
+    ProjectRuntime::getCameraHandle
     ()
     {
         return mCamera.get();
     }
 
-    bool
-    ProjectRuntime::initLuaEngine
-    ()
-    {
-        mLuaEngine.reset(new LuaEngine(mProjectHandle));
-        return mLuaEngine->init();
-    }
-
     LuaEngine*
-    ProjectRuntime::getLuaEngine
+    ProjectRuntime::getLuaEngineHandle
     ()
     {
         return mLuaEngine.get();
     }
+
+    void
+    ProjectRuntime::updateLogic
+    ()
+    {
+        if (Constants::VERBOSE)
+        {
+            cout << "==== ProjectDefinition: UpdateLogic Called @ " << mTime->getTimeDelta() << " ====" << endl;
+        }
+
+        mActiveSceneHandle->createAllAssetInstances();
+        mActiveSceneHandle->loadAllAssetInstances();
+
+        mTime->update();
+
+        mLuaEngine->createAllScripts();
+        mLuaEngine->update();
+
+        mAnimationComponent->updateComponent(mActiveSceneHandle);
+        mAudioComponent->updateComponent(mActiveSceneHandle);
+        mWindowComponentHandle->updateComponent(mActiveSceneHandle);
+        mPhysicsComponent->updateComponent(mActiveSceneHandle);
+
+        // Update Graphics/Physics Components
+
+        mGraphicsComponent->updateComponent(mActiveSceneHandle);
+        mPhysicsComponent->setViewProjectionMatrix(
+            mGraphicsComponent->getViewMatrix(),
+            mGraphicsComponent->getProjectionMatrix()
+        );
+    }
+
+    void
+    ProjectRuntime::updateGraphics
+    ()
+    {
+        if (Constants::VERBOSE)
+        {
+            cout << "==== ProjectDefinition: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ====" << endl;
+        }
+
+        // Draw 3D/PhysicsDebug/2D
+        mGraphicsComponent->preRender();
+        mGraphicsComponent->draw3DQueue();
+        mPhysicsComponent->drawDebug();
+        mGraphicsComponent->draw2DQueue();
+        mWindowComponentHandle->swapBuffers();
+        mGraphicsComponent->postRender();
+
+    }
+
+    void
+    ProjectRuntime::updateFlush
+    ()
+    {
+        if (Constants::VERBOSE)
+        {
+            cout << "==== ProjectDefinition: updateFlush Called @ " << mTime->getTimeDelta() << " ====" << endl;
+        }
+        // Cleanup Old
+        mActiveSceneHandle->flush();
+    }
+
+    void
+    ProjectRuntime::setActiveSceneHandle
+    (Scene *sceneHandle)
+    {
+       mActiveSceneHandle = sceneHandle;
+    }
+
+    bool
+    ProjectRuntime::hasActiveSceneHandle
+    ()
+    {
+        return mActiveSceneHandle != nullptr;
+    }
+
+    void
+    ProjectRuntime::updateAll
+    ()
+    {
+        if (mActiveSceneHandle)
+        {
+            updateLogic();
+            updateGraphics();
+            updateFlush();
+        }
+    }
+
+    string
+    ProjectRuntime::getProjectPath
+    ()
+    {
+        return mProjectPath;
+    }
+
+    void
+    ProjectRuntime::setProjectPath
+    (string dir)
+    {
+        mProjectPath = dir;
+    }
+
+    bool
+    ProjectRuntime::loadActiveScene
+    ()
+    {
+        // Check valid
+        if (!hasActiveSceneHandle())
+        {
+            cerr << "ProjectDefinition: Cannot load scene, null!" << endl;
+            return false;
+        }
+
+        // Load the new scene
+        if (Constants::DEBUG)
+        {
+            cout << "ProjectDefinition: Loading Scene " << mActiveSceneHandle->getDefinitionHandle()->getNameAndUuidString() << endl;
+        }
+
+        SceneDefinition* sceneDefinitionHandle = mActiveSceneHandle->getDefinitionHandle();
+        mGraphicsComponent->setActiveScene(mActiveSceneHandle);
+        mPhysicsComponent->setGravity(sceneDefinitionHandle->getGravity());
+        mPhysicsComponent->setDebug(sceneDefinitionHandle->getPhysicsDebug());
+        mCamera->setTranslation(sceneDefinitionHandle->getDefaultCameraTransform().getTranslation());
+        mCamera->setRotation(sceneDefinitionHandle->getDefaultCameraTransform().getRotation());
+        mCamera->setMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
+
+        return true;
+    }
+
+    void
+    ProjectRuntime::cleanUpActiveScene
+    ()
+    {
+        mActiveSceneHandle->cleanUpRuntime();
+        cleanupComponents(mActiveSceneHandle);
+        mActiveSceneHandle = nullptr;
+    }
+
 }

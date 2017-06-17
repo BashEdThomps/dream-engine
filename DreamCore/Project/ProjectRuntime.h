@@ -18,23 +18,39 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "../Common/IRuntime.h"
+
+using std::string;
+using std::unique_ptr;
+using std::vector;
+
 namespace Dream
 {
-    class Project;
-    class Time;
+    // Forward Declarations
     class AnimationComponent;
+    class AssetDefinition;
     class AudioComponent;
     class Camera;
     class GraphicsComponent;
-    class PhysicsComponent;
     class IWindowComponent;
     class LuaEngine;
+    class PhysicsComponent;
+    class Project;
+    class Scene;
+    class Time;
 
-    class ProjectRuntime
+    // Class Declaration
+    class ProjectRuntime : public Runtime
     {
-    private:
 
+    private: // Member Variables
         bool mDone;
+        string mProjectPath;
+
         unique_ptr<Time> mTime;
         unique_ptr<Camera> mCamera;
         unique_ptr<AudioComponent> mAudioComponent;
@@ -42,12 +58,13 @@ namespace Dream
         unique_ptr<PhysicsComponent> mPhysicsComponent;
         unique_ptr<AnimationComponent> mAnimationComponent;
         unique_ptr<LuaEngine> mLuaEngine;
-        IWindowComponent *mWindowComponentHandle;
+
+        IWindowComponent* mWindowComponentHandle;
         Project* mProjectHandle;
+        Scene* mActiveSceneHandle;
 
-    public:
-
-        ProjectRuntime(Project* proj = nullptr, IWindowComponent* wcHandle = nullptr);
+    public: // Public Functions
+        ProjectRuntime(Project* projHandle = nullptr, IWindowComponent* wcHandle = nullptr);
         ~ProjectRuntime();
 
         void setProjectHandle(Project*);
@@ -55,43 +72,50 @@ namespace Dream
         void setDone(bool);
         bool isDone();
 
-        Camera* getCamera();
-        void setCamera(Camera*);
+        Camera* getCameraHandle();
+        Time* getTimeHandle();
 
-        void setTime(Time*);
-        Time* getTime();
-
-        AnimationComponent* getAnimationComponent();
-        AudioComponent* getAudioComponent();
-        PhysicsComponent* getPhysicsComponent();
-        GraphicsComponent* getGraphicsComponent();
+        AnimationComponent* getAnimationComponentHandle();
+        AudioComponent* getAudioComponentHandle();
+        PhysicsComponent* getPhysicsComponentHandle();
+        GraphicsComponent* getGraphicsComponentHandle();
         IWindowComponent* getWindowComponentHandle();
-        LuaEngine* getLuaEngine();
+        LuaEngine* getLuaEngineHandle();
 
         bool initComponents();
-        void cleanupComponents(Scene*);
 
-    private:
+        void cleanUpActiveScene();
+        void cleanupComponents(Scene* sceneHandle);
 
+        void updateAll();
+        void updateLogic();
+        void updateGraphics();
+        void updateFlush();
+
+        void setActiveSceneHandle(Scene* sceneHandle);
+
+        int getWindowWidth();
+        void setWindowWidth(int);
+
+        int getWindowHeight();
+        void setWindowHeight(int);
+
+        bool loadActiveScene();
+
+        bool loadSceneByUuid(string uuid);
+
+
+        string getProjectPath();
+        void setProjectPath(string path);
+
+        bool hasActiveSceneHandle();
+    private: // Member Functions
         bool initAnimationComponent();
-        void setAnimationComponent(AnimationComponent*);
-
         bool initAudioComponent();
-        void setAudioComponent(AudioComponent*);
-
         bool initPhysicsComponent();
-        void setPhysicsComponent(PhysicsComponent*);
-
         bool initGraphicsComponent();
-        void setGraphicsComponent(GraphicsComponent*);
-
         bool initWindowComponent();
-        void setWindowComponentHandle(IWindowComponent*);
-
         bool initLuaEngine();
-        void setLuaEngine(LuaEngine*);
-
-        void destroyComponents();
     };
 
 } // End Dream

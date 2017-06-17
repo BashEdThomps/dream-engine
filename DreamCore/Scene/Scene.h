@@ -34,17 +34,18 @@ namespace Dream
     class Project;
     class SceneObject;
     class SceneRuntime;
-    class SceneJsonData;
+    class SceneDefinition;
     class IAssetInstance;
     class Transform3D;
     class AssetDefinition;
+    class SceneObjectDefinition;
 
     class Scene
     {
     private:
         Project* mProjectHandle;
         unique_ptr<SceneObject> mRootSceneObject;
-        unique_ptr<SceneJsonData> mJsonData;
+        unique_ptr<SceneDefinition> mDefinition;
         unique_ptr<SceneRuntime> mRuntime;
 
     public:
@@ -53,33 +54,20 @@ namespace Dream
 
         void flush();
 
-        string getUuid();
-        void setUuid(string);
-
-        string getName();
-        void setName(string);
-
-        string getNameAndUuidString();
-
         Project* getProjectHandle();
 
         int countChildrenOfSceneObject(SceneObject*);
 
-        void setRootSceneObject(SceneObject*);
-        SceneObject* getRootSceneObject();
-        int getNumberOfSceneObjects();
+        void setRootSceneObjectHandle(SceneObject*);
+        SceneObject* getRootSceneObjectHandle();
+        int countSceneObjects();
 
-        SceneObject* getSceneObjectByName(string);
-        SceneObject* getSceneObjectByUuid(string);
+        SceneObject* getSceneObjectHandleByName(string);
+        SceneObject* getSceneObjectHandleByUuid(string);
 
-        void showStatus();
         void showScenegraph();
 
         string indent(int);
-        Transform3D getDefaultCameraTransform();
-
-        void setCameraMovementSpeed(float);
-        float getCameraMovementSpeed();
 
         void findDeleteFlaggedSceneObjects();
         void findDeleteFlaggedScripts();
@@ -87,24 +75,11 @@ namespace Dream
         void createAllAssetInstances();
         void loadAllAssetInstances();
 
-        string getNotes();
-        void setNotes(string notes);
-
-        AssetDefinition* getAssetDefinitionByUuid(string);
-
-        bool getPhysicsDebug();
-
-        void loadSceneObjectJsonData(nlohmann::json, SceneObject*);
-
-        nlohmann::json getJson();
-
         void cleanUpSceneObjects();
-        void cleanUp();
+        void cleanUpRuntime();
 
-        bool hasName(string);
-        bool hasUuid(string);
-
-        SceneRuntime* getRuntime() const;
+        SceneRuntime* getRuntimeHandle() const;
+        SceneDefinition* getDefinitionHandle() const;
 
     }; // End of Scene
 

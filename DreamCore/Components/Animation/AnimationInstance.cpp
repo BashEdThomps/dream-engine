@@ -167,8 +167,8 @@ namespace Dream
                 }
 
                 string interpolation = it[Constants::ASSET_ATTR_INTERPOLATION];
-                string name = it[Constants::ASSET_NAME];
-                string uuid = it[Constants::ASSET_UUID];
+                string name = it[Constants::NAME];
+                string uuid = it[Constants::UUID];
 
                 nextKeyFrame->setName(name);
                 nextKeyFrame->setInterpolationType(interpolation);

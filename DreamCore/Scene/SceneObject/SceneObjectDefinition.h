@@ -1,5 +1,5 @@
 /*
- * SceneObjectJsonData.h
+ * SceneObjectDefinition.h
  *
  * Created: 16 2017 by Ashley
  *
@@ -21,7 +21,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../../Common/JsonData.h"
+#include "../../Common/IDefinition.h"
 
 using std::string;
 using std::vector;
@@ -31,12 +31,12 @@ namespace Dream
     class SceneObject;
     class SceneObjectRuntime;
 
-    class SceneObjectJsonData : public JsonData
+    class SceneObjectDefinition : public IDefinition
     {
     private:
         SceneObject* mParentHandle;
     public:
-        SceneObjectJsonData(json data, SceneObject* parentHandle = nullptr);
+        SceneObjectDefinition(json data, SceneObject* parentHandle = nullptr);
 
         bool hasUuid(string);
         void setUuid(string);
@@ -50,5 +50,6 @@ namespace Dream
         bool hasFocus();
         void addAssetDefUuidToLoad(string uuid);
         vector<string> getAssetDefUuidsToLoad();
+        void showStatus();
     };
 }

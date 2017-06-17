@@ -24,8 +24,6 @@ namespace Dream
     (string path)
     {
         mPath = path;
-        mStringStream = nullptr;
-        mBinaryVector = nullptr;
     }
 
     FileReader::~FileReader
@@ -56,11 +54,10 @@ namespace Dream
         mInputStream.open(mPath.c_str(), ifstream::in);
         if (mInputStream.is_open())
         {
-            mStringStream.reset(new stringstream());
             string line;
             while ( getline (mInputStream,line) )
             {
-                *mStringStream << line << '\n';
+                mStringStream << line << '\n';
             }
             mInputStream.close();
             return true;
@@ -75,14 +72,7 @@ namespace Dream
     FileReader::getContentsAsString
     ()
     {
-        if (mStringStream != nullptr)
-        {
-            return mStringStream->str();
-        }
-        else
-        {
-            return "";
-        }
+        return mStringStream.str();
     }
 
     bool
@@ -90,36 +80,33 @@ namespace Dream
     ()
     {
         mInputStream.open(mPath.c_str(), ios::binary );
-        mBinaryVector.reset
+        mBinaryVector = vector<char>
         (
-            new vector<char>
-            (
-                (istreambuf_iterator<char>(mInputStream)),
-                (istreambuf_iterator<char>())
-            )
+            (istreambuf_iterator<char>(mInputStream)),
+            (istreambuf_iterator<char>())
         );
         mInputStream.close();
-        return mBinaryVector->size() > 0;
+        return mBinaryVector.size() > 0;
     }
 
-    vector<char>*
+    vector<char>&
     FileReader::getContentsAsBinaryVector
     ()
     {
-        return mBinaryVector.get();
+        return mBinaryVector;
     }
 
     int
     FileReader::getFileSize
     ()
     {
-        if (mStringStream != nullptr)
+        if (mStringStream.str().size() > 0)
         {
-            return static_cast<int>(getContentsAsString().size());
+            return static_cast<int>(mStringStream.str().size());
         }
-        else if (mBinaryVector != nullptr)
+        else if (!mBinaryVector.empty())
         {
-            return static_cast<int>(getContentsAsBinaryVector()->size());
+            return static_cast<int>(mBinaryVector.size());
         }
         else
         {
