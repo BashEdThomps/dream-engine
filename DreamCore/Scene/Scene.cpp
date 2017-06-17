@@ -47,7 +47,7 @@ namespace Dream
           mDefinition(new SceneDefinition(json)),
           mRuntime(new SceneRuntime())
     {
-        mRuntime->setState(NOT_LOADED);
+        mRuntime->setState(SCENE_STATE_NOT_LOADED);
 
     }
 
@@ -236,7 +236,7 @@ namespace Dream
             )
         );
 
-        mRuntime->setState(LOADED);
+        mRuntime->setState(SCENE_STATE_LOADED);
     }
     void
     Scene::findDeleteFlaggedScripts
@@ -299,11 +299,11 @@ namespace Dream
                  << endl;
         }
 
-        if(mRuntime->getState() == DONE)
+        if(mRuntime->getState() == SCENE_STATE_DONE)
         {
            cleanUpSceneObjects();
            flush();
-           mRuntime->setState(CLEANED_UP);
+           mRuntime->setState(SCENE_STATE_CLEANED_UP);
         }
         else
         {

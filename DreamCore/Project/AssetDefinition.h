@@ -48,8 +48,6 @@ namespace Dream
         void setFormat(string);
         string getFormat();
 
-        string getNameAndUuidString();
-
         string getAssetTypeDirectory();
 
         bool isTypeAnimation();

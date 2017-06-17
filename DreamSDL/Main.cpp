@@ -1,13 +1,18 @@
+
 #include <iostream>
-#include <DreamCore.h>
-#include "include/DreamSDL.h"
 #include <thread>
+#include "include/DreamSDL.h"
+
+#include <DreamCore.h>
 
 #define MINIMUM_ARGUMENTS 3
 
-using namespace std;
-using namespace Dream;
-using namespace DreamSDL;
+using std::cout;
+using Dream::Constants;
+using Dream::Project;
+using Dream::SceneState;
+using Dream::ArgumentParser;
+using DreamSDL::SDLWindowComponent;
 
 void showUsage(const char** argv)
 {
@@ -19,12 +24,6 @@ void showUsage(const char** argv)
              << "\t" << Constants::PROJECT_UUID_ARG      << " <project_uuid>" << endl;
     }
 }
-
-// Construct project with IWindowComponent
-// Initialise Runtime
-// loadFromSomePlace
-// setActiveScene
-// loadActiveScene
 
 int main(int argc, const char** argv)
 {
@@ -44,20 +43,21 @@ int main(int argc, const char** argv)
         return 1;
     }
 
+    bool loaded = project->openFromArgumentParser(ArgumentParser(argc,argv));
+
+    if (!loaded)
+    {
+        cerr << "Main: Failed to Load Project." << endl;
+        return 1;
+    }
+
+    /*
     if(!project->initRuntime())
     {
         if (Constants::DEBUG)
         {
             cout << "Main: Bootstrapping Dream Failed" << endl;
         }
-        return 1;
-    }
-
-    bool loaded = project->loadFromArgumentParser(new ArgumentParser(argc,argv));
-
-    if (!loaded)
-    {
-        cerr << "Main: Failed to Load Project." << endl;
         return 1;
     }
 
@@ -86,5 +86,6 @@ int main(int argc, const char** argv)
     project->cleanUpActiveScene();
 
     // Return the result
+    */
     return 0;
 }

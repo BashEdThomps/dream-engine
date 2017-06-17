@@ -17,6 +17,12 @@
 
 #include "FileReader.h"
 
+#include <fstream>
+#include <sstream>
+
+using std::stringstream;
+using std::ifstream;
+
 namespace Dream
 {
 
@@ -33,11 +39,6 @@ namespace Dream
         {
          cout << "FileReader: Destroying reader for " << mPath << endl;
         }
-
-        if (mInputStream.is_open())
-        {
-            mInputStream.close();
-        }
     }
 
     string
@@ -48,9 +49,12 @@ namespace Dream
     }
 
     bool
-    FileReader::readIntoStringStream
+    FileReader::readIntoString
     ()
     {
+        ifstream mInputStream;
+        stringstream mStringStream;
+
         mInputStream.open(mPath.c_str(), ifstream::in);
         if (mInputStream.is_open())
         {
@@ -59,6 +63,7 @@ namespace Dream
             {
                 mStringStream << line << '\n';
             }
+            mString = mStringStream.str();
             mInputStream.close();
             return true;
         }
@@ -72,13 +77,15 @@ namespace Dream
     FileReader::getContentsAsString
     ()
     {
-        return mStringStream.str();
+        return mString;
     }
 
     bool
     FileReader::readIntoBinaryVector
     ()
     {
+        ifstream mInputStream;
+
         mInputStream.open(mPath.c_str(), ios::binary );
         mBinaryVector = vector<char>
         (
@@ -89,7 +96,7 @@ namespace Dream
         return mBinaryVector.size() > 0;
     }
 
-    vector<char>&
+    vector<char>
     FileReader::getContentsAsBinaryVector
     ()
     {
@@ -100,9 +107,9 @@ namespace Dream
     FileReader::getFileSize
     ()
     {
-        if (mStringStream.str().size() > 0)
+        if (mString.size() > 0)
         {
-            return static_cast<int>(mStringStream.str().size());
+            return static_cast<int>(mString.size());
         }
         else if (!mBinaryVector.empty())
         {

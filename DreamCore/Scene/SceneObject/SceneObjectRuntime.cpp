@@ -337,6 +337,20 @@ namespace Dream
     }
 
     void
+    SceneObjectRuntime::addAssetDefinitionUuidToLoad
+    (string def)
+    {
+       mAssetDefinitionUuidsToLoad.push_back(def);
+    }
+
+    vector<string>
+    SceneObjectRuntime::getAssetDefinitionUuidsToLoad
+    ()
+    {
+       return mAssetDefinitionUuidsToLoad;
+    }
+
+    void
     SceneObjectRuntime::setFontInstance
     (FontInstance* font)
     {
@@ -389,6 +403,13 @@ namespace Dream
     (Transform3D* transform)
     {
         mTransform.reset(transform);
+    }
+
+    bool
+    SceneObjectRuntime::hasFocus
+    ()
+    {
+        return mHasFocus;
     }
 
     void
@@ -501,7 +522,7 @@ namespace Dream
     SceneObjectRuntime::createAssetInstances
     ()
     {
-        for (string aDefUuid : getAssetDefUuidsToLoad())
+        for (string aDefUuid : mAssetDefinitionUuidsToLoad)
         {
             createAssetInstanceFromAssetDefinitionByUuid(aDefUuid);
         }

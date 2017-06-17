@@ -58,30 +58,30 @@ namespace Dream
         ProjectRuntime* getRuntimeHandle();
         ProjectDefinition* getDefinitionHandle();
 
-        bool openFromFileReader(string directory, FileReader& fileReader);
-        bool openFromArgumentParser(ArgumentParser& parser);
+        bool openFromFileReader(string directory, FileReader fileReader);
+        bool openFromArgumentParser(ArgumentParser parser);
         bool openFromDirectory(string directory);
 
         size_t countScenes();
         Scene* getSceneHandleByName(string name);
         Scene* getSceneHandleByUuid(string uuid);
 
-        void   setStartupSceneUuid(string uuid);
+        void setStartupSceneUuid(string uuid);
         string getStartupSceneUuid();
         Scene* getStartupSceneHandle();
 
         void addScene(json scene);
         void removeScene(const unique_ptr<Scene>& sceneHandle);
 
-        void   setActiveSceneHandle(Scene* sceneHandle);
+        void setActiveSceneHandle(Scene* sceneHandle);
         Scene* getActiveSceneHandle();
-        bool   hasActiveSceneHandle();
+        bool hasActiveSceneHandle();
 
         void addAssetDefinition(json def);
         void removeAssetDefinition(const unique_ptr<AssetDefinition>& def);
 
-        size_t                   countAssetDefinitions();
-        AssetDefinition*         getAssetDefinitionHandleByUuid(string);
+        size_t countAssetDefinitions();
+        AssetDefinition* getAssetDefinitionHandleByUuid(string);
 
         void setStartupSceneAsActive();
 

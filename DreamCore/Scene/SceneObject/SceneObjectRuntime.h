@@ -63,6 +63,7 @@ namespace Dream
         unique_ptr<Transform3D> mTransform;
 
         vector<Event> mEventQueue;
+        vector<string> mAssetDefinitionUuidsToLoad;
 
         SceneObject *mOwnerHandle;
 
@@ -149,8 +150,8 @@ namespace Dream
         FontInstance* getFontInstance();
         bool hasFontInstance();
 
-        void addAssetDefUuidToLoad(string);
-        vector<string> getAssetDefUuidsToLoad();
+        void addAssetDefinitionUuidToLoad(string);
+        vector<string> getAssetDefinitionUuidsToLoad();
 
         string getTransformType();
         void setTransformType(string);

@@ -15,43 +15,37 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FILEREADER_H
-#define FILEREADER_H
+#pragma once
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 
 #include "../Common/Constants.h"
 
-using std::stringstream;
-using std::vector;
-using std::ifstream;
 using std::string;
+using std::vector;
 
 namespace Dream
 {
     class FileReader
     {
     private:
-        stringstream mStringStream;
+        string mString;
         vector<char> mBinaryVector;
-        ifstream mInputStream;
         string mPath;
     public:
         FileReader(string);
         ~FileReader();
 
         string getPath();
-        bool readIntoStringStream();
+        bool readIntoString();
         string getContentsAsString();
         bool readIntoBinaryVector();
-        vector<char>& getContentsAsBinaryVector();
+        vector<char> getContentsAsBinaryVector();
         int getFileSize();
 
     }; // End of FileReader
+
 } // End of Dream
 
-#endif // End of JSONFILEREADER_H

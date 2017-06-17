@@ -67,11 +67,11 @@ namespace Dream
             absVertexPath   = projectPath+mDefinitionHandle->getAssetPath() + Constants::SHADER_VERTEX;
             absFragmentPath = projectPath+mDefinitionHandle->getAssetPath() + Constants::SHADER_FRAGMENT;
             vertexReader = new FileReader(absVertexPath);
-            vertexReader->readIntoStringStream();
+            vertexReader->readIntoString();
             mVertexShaderSource = vertexReader->getContentsAsString();
             delete vertexReader;
             fragmentReader = new FileReader(absFragmentPath);
-            fragmentReader->readIntoStringStream();
+            fragmentReader->readIntoString();
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
             if (Constants::DEBUG)

@@ -170,7 +170,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectDefinition: Loading Assets from JSON Array" << endl;
+            cout << "ProjectDefinition: Loading AssetDefinitions from JSON Array" << endl;
         }
 
         for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])

@@ -726,7 +726,7 @@ namespace Dream
                 .def("getTransform",&SceneObjectRuntime::getTransform)
                 .def("setTransform",&SceneObjectRuntime::setTransform)
 
-                .def("addAssetDefUuidToLoad",&SceneObjectRuntime::addAssetDefUuidToLoad)
+                .def("addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad)
 
                 .def("getAnimationInstance",&SceneObjectRuntime::getAnimationInstance)
                 .def("setAnimationInstance",&SceneObjectRuntime::setAnimationInstance)

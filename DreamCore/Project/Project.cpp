@@ -72,7 +72,7 @@ namespace Dream
 
     bool
     Project::openFromFileReader
-    (string projectPath, FileReader& reader)
+    (string projectPath, FileReader reader)
     {
         if (Constants::DEBUG)
         {
@@ -95,7 +95,7 @@ namespace Dream
         }
         mRuntime->setProjectPath(projectPath);
         mDefinition.reset(new ProjectDefinition(projectJson));
-        //mDefinition->applyToRuntime(mRuntime.get());
+        mDefinition->pushToProject(this);
 
         return true;
     }
@@ -158,21 +158,21 @@ namespace Dream
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + uuid + Constants::PROJECT_EXTENSION;
 
         FileReader projectFileReader(projectFilePath);
-        projectFileReader.readIntoStringStream();
+        projectFileReader.readIntoString();
         bool loadSuccess = openFromFileReader(directory, projectFileReader);
         return loadSuccess;
     }
 
     bool
     Project::openFromArgumentParser
-    (ArgumentParser& parser)
+    (ArgumentParser parser)
     {
         if (Constants::VERBOSE)
         {
             cout << "Project: Loading from ArgumentParser" << endl;
         }
         FileReader projectFileReader(parser.getProjectFilePath());
-        projectFileReader.readIntoStringStream();
+        projectFileReader.readIntoString();
         bool loadSuccess = openFromFileReader(parser.getProjectPath(), projectFileReader);
         return loadSuccess;
     }

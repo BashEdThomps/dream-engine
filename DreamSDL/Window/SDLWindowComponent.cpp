@@ -18,6 +18,10 @@
 
 #include "SDLWindowComponent.h"
 
+using Dream::Constants;
+using Dream::SceneRuntime;
+using Dream::SceneState;
+
 namespace DreamSDL
 {
     SDLWindowComponent::SDLWindowComponent
@@ -135,7 +139,7 @@ namespace DreamSDL
                 {
                     cout << ">>> SDLWindowComponent: SDL_QUIT Event" << endl;
                 }
-                scene->getRuntime()->setState(DONE);
+                scene->getRuntimeHandle()->setState(Dream::SCENE_STATE_DONE);
                 break;
             }
             else if (event.type == SDL_WINDOWEVENT)

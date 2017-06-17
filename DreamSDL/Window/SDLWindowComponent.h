@@ -15,14 +15,16 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SDLWINDOWCOMPONENT_H
-#define SDLWINDOWCOMPONENT_H
+
+#pragma once
 
 #include <DreamCore.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
-using namespace Dream;
+using Dream::IWindowComponent;
+using Dream::Scene;
+
 namespace DreamSDL
 {
     class SDLWindowComponent : public IWindowComponent
@@ -30,20 +32,23 @@ namespace DreamSDL
     public:
         SDLWindowComponent();
         ~SDLWindowComponent();
+
         SDL_Window* getWindow();
         vector<SDL_Event> getSDL_Events();
+
         void updateComponent(Scene*) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
         void cleanUp(Scene*) override;
+
     private:
         bool initSDL();
         bool initGL();
         SDL_Window *mWindow;
         SDL_GLContext mContext;
         vector<SDL_Event> mEvents;
-    }; // End of SDLWindowComponent
-} // End of Dream
 
-#endif // SDLWINDOWCOMPONENT_H
+    }; // End of SDLWindowComponent
+
+} // End of Dream
