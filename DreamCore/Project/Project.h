@@ -22,8 +22,6 @@
 #include <vector>
 #include <json.hpp>
 
-#include "../Scene/Scene.h"
-
 using std::string;
 using std::unique_ptr;
 using std::vector;
@@ -42,48 +40,26 @@ namespace Dream
     {
         // Variables
     private:
-        unique_ptr<ProjectRuntime>    mRuntime;
+        unique_ptr<ProjectRuntime> mRuntime;
         unique_ptr<ProjectDefinition> mDefinition;
-
-        vector<unique_ptr<Scene>>           mScenes;
-        vector<unique_ptr<AssetDefinition>> mAssetDefinitions;
-
-        Scene* mActiveSceneHandle;
+        IWindowComponent* mWindowComponentHandle;
+        string mProjectPath;
 
         // Public Methods
     public:
-        Project  (IWindowComponent* wcHandle = 0);
-        ~Project ();
+        Project(IWindowComponent* wcHandle = 0);
+        ~Project();
 
-        ProjectRuntime* getRuntimeHandle();
-        ProjectDefinition* getDefinitionHandle();
+        ProjectRuntime* getProjectRuntimeHandle();
+        ProjectDefinition* getProjectDefinitionHandle();
 
-        bool openFromFileReader(string directory, FileReader fileReader);
-        bool openFromArgumentParser(ArgumentParser parser);
+        bool openFromFileReader(string directory, FileReader &fileReader);
+        bool openFromArgumentParser(ArgumentParser &parser);
         bool openFromDirectory(string directory);
 
-        size_t countScenes();
-        Scene* getSceneHandleByName(string name);
-        Scene* getSceneHandleByUuid(string uuid);
+        bool createProjectRuntime();
 
-        void setStartupSceneUuid(string uuid);
-        string getStartupSceneUuid();
-        Scene* getStartupSceneHandle();
-
-        void addScene(json scene);
-        void removeScene(const unique_ptr<Scene>& sceneHandle);
-
-        void setActiveSceneHandle(Scene* sceneHandle);
-        Scene* getActiveSceneHandle();
-        bool hasActiveSceneHandle();
-
-        void addAssetDefinition(json def);
-        void removeAssetDefinition(const unique_ptr<AssetDefinition>& def);
-
-        size_t countAssetDefinitions();
-        AssetDefinition* getAssetDefinitionHandleByUuid(string);
-
-        void setStartupSceneAsActive();
+        string getProjectPath();
 
     }; // End of Project
 

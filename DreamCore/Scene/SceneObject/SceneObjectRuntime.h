@@ -28,6 +28,9 @@
 
 using std::vector;
 using std::unique_ptr;
+using std::function;
+
+using nlohmann::json;
 using glm::vec3;
 
 namespace Dream
@@ -64,15 +67,17 @@ namespace Dream
 
         vector<Event> mEventQueue;
         vector<string> mAssetDefinitionUuidsToLoad;
+        vector<unique_ptr<SceneObjectRuntime>> mChildRuntimes;
 
-        SceneObject *mOwnerHandle;
+        SceneRuntime* mSceneRuntimeHandle;
+        SceneObjectRuntime* mParentRuntimeHandle;
 
         bool mLoaded;
         bool mHasFocus;
         bool mDelete;
 
     public:
-        SceneObjectRuntime(SceneObject *ownerObjectHandle = nullptr);
+        SceneObjectRuntime(SceneRuntime* sceneRuntimeHandle = nullptr);
 
         ~SceneObjectRuntime();
         void deleteChildRuntimes();
@@ -174,6 +179,23 @@ namespace Dream
 
 
         void loadAssetInstances();
+
+        SceneObjectRuntime* getChildRuntimeHandleByUuid(string);
+
+        int countAllChildren();
+        size_t countChildren();
+        void addChildRuntimeHandle(SceneObjectRuntime*);
+        void removeChildRuntimeHandle(SceneObjectRuntime*);
+        vector<SceneObjectRuntime*> getChildRuntimeHandles();
+        bool isChildOf(SceneObjectRuntime*);
+
+        bool isParentOf(SceneObjectRuntime* child);
+        void setParentRuntimeHandle(SceneObjectRuntime* parent);
+        SceneObjectRuntime* getParentRuntimeHandle();
+
+        void* applyToAll(function<void*(SceneObjectRuntime*)>);
+        bool applyToAll(function<bool(SceneObjectRuntime*)>);
+
 
     };
 }

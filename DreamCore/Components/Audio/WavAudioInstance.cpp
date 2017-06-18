@@ -16,7 +16,7 @@
  */
 
 #include "WavAudioInstance.h"
-#include "../../Project/AssetDefinition.h"
+#include "../AssetDefinition.h"
 
 namespace Dream
 {

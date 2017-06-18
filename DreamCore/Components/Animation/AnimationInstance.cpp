@@ -5,7 +5,7 @@
 #include "KeyFrame.h"
 
 #include "../../Common/Constants.h"
-#include "../../Project/AssetDefinition.h"
+#include "../AssetDefinition.h"
 #include "../../Utilities/String.h"
 
 namespace Dream

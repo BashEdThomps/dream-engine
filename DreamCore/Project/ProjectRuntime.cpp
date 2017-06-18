@@ -19,12 +19,11 @@
 
 #include "Project.h"
 #include "ProjectDefinition.h"
-#include "AssetDefinition.h"
 
-#include "../Scene/Scene.h"
-#include "../Scene/SceneDefinition.h"
-#include "../Scene/SceneObject/SceneObject.h"
+#include "../Scene/SceneRuntime.h"
+#include "../Scene/SceneObject/SceneObjectRuntime.h"
 
+#include "../Components/AssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
 #include "../Components/Animation/AnimationComponent.h"
@@ -36,19 +35,20 @@
 
 #include "../Lua/LuaEngine.h"
 
+using std::endl;
+
 namespace Dream
 {
     ProjectRuntime::ProjectRuntime
-    (Project* project, IWindowComponent* windowComponentHandle)
+    (Project* projectHandle,IWindowComponent* windowComponentHandle)
         : Runtime(),
           mDone(false),
           mWindowComponentHandle(windowComponentHandle),
-          mProjectHandle(project),
-          mActiveSceneHandle(nullptr)
+          mProjectHandle(projectHandle)
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectRuntime: Creating new Instance" << endl;
+            cout << "ProjectRuntime: Constructing" << endl;
         }
     }
 
@@ -57,15 +57,8 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectRuntime: Destroying Object" << endl;
+            cout << "ProjectRuntime: Destructing" << endl;
         }
-    }
-
-    void
-    ProjectRuntime::setProjectHandle
-    (Project* proj)
-    {
-        mProjectHandle = proj;
     }
 
     IWindowComponent*
@@ -84,7 +77,7 @@ namespace Dream
 
     void
     ProjectRuntime::cleanupComponents
-    (Scene* sceneHandle)
+    ()
     {
         if (Constants::DEBUG)
         {
@@ -93,32 +86,32 @@ namespace Dream
 
         if (mWindowComponentHandle)
         {
-            mWindowComponentHandle->cleanUp(sceneHandle);
+            mWindowComponentHandle->cleanUp(mActiveSceneRuntime.get());
         }
 
         if(mGraphicsComponent)
         {
-            mGraphicsComponent->cleanUp(sceneHandle);
+            mGraphicsComponent->cleanUp(mActiveSceneRuntime.get());
         }
 
         if(mPhysicsComponent)
         {
-            mPhysicsComponent->cleanUp(sceneHandle);
+            mPhysicsComponent->cleanUp(mActiveSceneRuntime.get());
         }
 
         if(mAudioComponent)
         {
-            mAudioComponent->cleanUp(sceneHandle);
+            mAudioComponent->cleanUp(mActiveSceneRuntime.get());
         }
 
         if(mAnimationComponent)
         {
-            mAnimationComponent->cleanUp(sceneHandle);
+            mAnimationComponent->cleanUp(mActiveSceneRuntime.get());
         }
 
         if (mLuaEngine)
         {
-            mLuaEngine->cleanUp(sceneHandle);
+            mLuaEngine->cleanUp(mActiveSceneRuntime.get());
         }
 
         if (Constants::VERBOSE)
@@ -261,7 +254,8 @@ namespace Dream
     ProjectRuntime::initLuaEngine
     ()
     {
-        mLuaEngine.reset(new LuaEngine(mProjectHandle));
+        mLuaEngine.reset(new LuaEngine(this));
+
         if(!mLuaEngine->init())
         {
             cerr << "ProjectRuntime: Unable to initialise Lua Engine." << endl;
@@ -332,22 +326,22 @@ namespace Dream
             cout << "==== ProjectDefinition: UpdateLogic Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
 
-        mActiveSceneHandle->createAllAssetInstances();
-        mActiveSceneHandle->loadAllAssetInstances();
+        mActiveSceneRuntime.get()->createAllAssetInstances();
+        mActiveSceneRuntime.get()->loadAllAssetInstances();
 
         mTime->update();
 
         mLuaEngine->createAllScripts();
         mLuaEngine->update();
 
-        mAnimationComponent->updateComponent(mActiveSceneHandle);
-        mAudioComponent->updateComponent(mActiveSceneHandle);
-        mWindowComponentHandle->updateComponent(mActiveSceneHandle);
-        mPhysicsComponent->updateComponent(mActiveSceneHandle);
+        mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
+        mAudioComponent->updateComponent(mActiveSceneRuntime.get());
+        mWindowComponentHandle->updateComponent(mActiveSceneRuntime.get());
+        mPhysicsComponent->updateComponent(mActiveSceneRuntime.get());
 
         // Update Graphics/Physics Components
 
-        mGraphicsComponent->updateComponent(mActiveSceneHandle);
+        mGraphicsComponent->updateComponent(mActiveSceneRuntime.get());
         mPhysicsComponent->setViewProjectionMatrix(
             mGraphicsComponent->getViewMatrix(),
             mGraphicsComponent->getProjectionMatrix()
@@ -382,28 +376,21 @@ namespace Dream
             cout << "==== ProjectDefinition: updateFlush Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
         // Cleanup Old
-        mActiveSceneHandle->flush();
-    }
-
-    void
-    ProjectRuntime::setActiveSceneHandle
-    (Scene *sceneHandle)
-    {
-       mActiveSceneHandle = sceneHandle;
+        mActiveSceneRuntime.get()->flush();
     }
 
     bool
-    ProjectRuntime::hasActiveSceneHandle
+    ProjectRuntime::hasActiveSceneRuntime
     ()
     {
-        return mActiveSceneHandle != nullptr;
+        return mActiveSceneRuntime.get() != nullptr;
     }
 
     void
     ProjectRuntime::updateAll
     ()
     {
-        if (mActiveSceneHandle)
+        if (mActiveSceneRuntime.get())
         {
             updateLogic();
             updateGraphics();
@@ -411,26 +398,12 @@ namespace Dream
         }
     }
 
-    string
-    ProjectRuntime::getProjectPath
-    ()
-    {
-        return mProjectPath;
-    }
-
-    void
-    ProjectRuntime::setProjectPath
-    (string dir)
-    {
-        mProjectPath = dir;
-    }
-
     bool
-    ProjectRuntime::loadActiveScene
+    ProjectRuntime::loadActiveSceneRuntime
     ()
     {
         // Check valid
-        if (!hasActiveSceneHandle())
+        if (!hasActiveSceneRuntime())
         {
             cerr << "ProjectDefinition: Cannot load scene, null!" << endl;
             return false;
@@ -439,27 +412,41 @@ namespace Dream
         // Load the new scene
         if (Constants::DEBUG)
         {
-            cout << "ProjectDefinition: Loading Scene " << mActiveSceneHandle->getDefinitionHandle()->getNameAndUuidString() << endl;
+            cout << "ProjectDefinition: Loading SceneRuntime "
+                 << mActiveSceneRuntime.get()->getNameAndUuidString()
+                 << endl;
         }
 
-        SceneDefinition* sceneDefinitionHandle = mActiveSceneHandle->getDefinitionHandle();
-        mGraphicsComponent->setActiveScene(mActiveSceneHandle);
+        // TODO Fix Me
+        /*
+        SceneDefinition* sceneDefinitionHandle = nullptr;getSceneDefinitionHandleByUuid(mActiveSceneRuntime->getUuid());
+
+        mGraphicsComponent->setActiveSceneHandle(mActiveSceneRuntime.get());
         mPhysicsComponent->setGravity(sceneDefinitionHandle->getGravity());
         mPhysicsComponent->setDebug(sceneDefinitionHandle->getPhysicsDebug());
         mCamera->setTranslation(sceneDefinitionHandle->getDefaultCameraTransform().getTranslation());
         mCamera->setRotation(sceneDefinitionHandle->getDefaultCameraTransform().getRotation());
         mCamera->setMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
+        */
 
         return true;
     }
 
     void
-    ProjectRuntime::cleanUpActiveScene
+    ProjectRuntime::cleanUpActiveSceneRuntime
     ()
     {
-        mActiveSceneHandle->cleanUpRuntime();
-        cleanupComponents(mActiveSceneHandle);
-        mActiveSceneHandle = nullptr;
+       /*
+        mActiveSceneRuntime.get()->cleanUpRuntime();
+        cleanupComponents(mActiveSceneRuntime.get());
+        mActiveSceneRuntime.get() = nullptr;
+        */
     }
 
+    Project*
+    ProjectRuntime::getProjectHandle
+    ()
+    {
+        return mProjectHandle;
+    }
 }

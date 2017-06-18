@@ -21,8 +21,7 @@
 #include "../../Common/Constants.h"
 #include "../../Components/Time.h"
 
-#include "../../Scene/Scene.h"
-#include "../../Scene/SceneObject/SceneObject.h"
+#include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../Utilities/String.h"
 
@@ -61,17 +60,17 @@ namespace Dream
 
     void
     AnimationComponent::updateComponent
-    (Scene *scene)
+    (SceneRuntime *scene)
     {
-        scene->getRootSceneObjectHandle()->applyToAll
+        scene->getRootSceneObjectRuntimeHandle()->applyToAll
         (
-            function< void* (SceneObject*) >
+            function< void* (SceneObjectRuntime*) >
             (
-                [&](SceneObject* currentSceneObject)
+                [&](SceneObjectRuntime* currentSceneObject)
                 {
-                    if (currentSceneObject->getRuntimeHandle()->hasAnimationInstance())
+                    if (currentSceneObject->hasAnimationInstance())
                     {
-                        AnimationInstance* animInstance = currentSceneObject->getRuntimeHandle()->getAnimationInstance();
+                        AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
                         animInstance->step(mTime->getTimeDelta());
                             // TODO: Fix dis
                         //animInstance->applyTransform(&(currentSceneObject->getTransform()));
@@ -187,7 +186,7 @@ namespace Dream
 
     void
     AnimationComponent::cleanUp
-    (Scene* scene)
+    (SceneRuntime* scene)
     {
 
     }

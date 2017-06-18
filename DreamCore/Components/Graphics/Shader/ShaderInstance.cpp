@@ -18,8 +18,9 @@
 #include "ShaderInstance.h"
 
 #include "ShaderCache.h"
-#include "../../../Project/AssetDefinition.h"
+#include "../../AssetDefinition.h"
 #include "../../../Utilities/FileReader.h"
+
 namespace Dream
 {
 

@@ -49,12 +49,8 @@
 
 #include "../../Common/Constants.h"
 
-#include "../../Scene/Scene.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneDefinition.h"
-#include "../../Scene/SceneObject/SceneObject.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectDefinition.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -70,7 +66,7 @@ namespace Dream
         : IComponent(),
           mCamera(camera),
           mWindowComponentHandle(windowComponent),
-          mActiveSceneHandle(nullptr)
+          mActiveSceneRuntimeHandle(nullptr)
     {
 
     }
@@ -177,13 +173,13 @@ namespace Dream
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // Clear the colorbuffer
-        if (mActiveSceneHandle)
+        if (mActiveSceneRuntimeHandle)
         {
             glClearColor(
-                mActiveSceneHandle->getRuntimeHandle()->getClearColour()[Constants::RED_INDEX],
-                mActiveSceneHandle->getRuntimeHandle()->getClearColour()[Constants::GREEN_INDEX],
-                mActiveSceneHandle->getRuntimeHandle()->getClearColour()[Constants::BLUE_INDEX],
-                mActiveSceneHandle->getRuntimeHandle()->getClearColour()[Constants::ALPHA_INDEX]
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
             );
         }
         else
@@ -241,7 +237,7 @@ namespace Dream
 
     void
     GraphicsComponent::updateComponent
-    (Scene* scene)
+    (SceneRuntime* scene)
     {
         if (Constants::VERBOSE)
         {
@@ -263,58 +259,58 @@ namespace Dream
             clear3DQueue();
             clearLightQueue();
 
-            scene->getRootSceneObjectHandle()->applyToAll
+            scene->getRootSceneObjectRuntimeHandle()->applyToAll
             (
-                function < void*(SceneObject*) >
+                function < void*(SceneObjectRuntime*) >
                 (
-                    [&](SceneObject* object)
+                    [&](SceneObjectRuntime* object)
                     {
                         // Models
-                        if (object->getRuntimeHandle()->hasModelInstance())
+                        if (object->hasModelInstance())
                         {
-                            if (object->getRuntimeHandle()->hasShaderInstance())
+                            if (object->hasShaderInstance())
                             {
                                 addTo3DQueue(object);
                             }
                             else
                             {
-                                cerr << "GraphicsComponent: Object " << object->getDefinitionHandle()->getUuid()
+                                cerr << "GraphicsComponent: Object " << object->getUuid()
                                      << " has model, but no shader assigned." << endl;
                             }
                         }
 
                         // Sprites
-                        if (object->getRuntimeHandle()->hasSpriteInstance())
+                        if (object->hasSpriteInstance())
                         {
-                            if (object->getRuntimeHandle()->hasShaderInstance())
+                            if (object->hasShaderInstance())
                             {
                                 addTo2DQueue(object);
                             }
                             else
                             {
-                                cerr << "GraphicsComponent: Object " << object->getDefinitionHandle()->getUuid()
+                                cerr << "GraphicsComponent: Object " << object->getUuid()
                                      << " has sprite, but no shader assigned." << endl;
                             }
                         }
 
                         // Fonts
-                        if (object->getRuntimeHandle()->hasFontInstance())
+                        if (object->hasFontInstance())
                         {
-                            if (object->getRuntimeHandle()->hasShaderInstance())
+                            if (object->hasShaderInstance())
                             {
                                 addTo2DQueue(object);
                             }
                             else
                             {
-                                cerr << "GraphicsComponent: Object " << object->getDefinitionHandle()->getUuid()
+                                cerr << "GraphicsComponent: Object " << object->getUuid()
                                      << " has font, but no shader assigned." << endl;
                             }
                         }
 
                         // Lights
-                        if (object->getRuntimeHandle()->hasLightInstance())
+                        if (object->hasLightInstance())
                         {
-                            addToLightQueue(object->getRuntimeHandle()->getLightInstance());
+                            addToLightQueue(object->getLightInstance());
                         }
 
                         return nullptr;
@@ -333,7 +329,7 @@ namespace Dream
 
     void
     GraphicsComponent::addTo2DQueue
-    (SceneObject* object)
+    (SceneObjectRuntime* object)
     {
         m2DQueue.push_back(object);
     }
@@ -342,13 +338,13 @@ namespace Dream
     GraphicsComponent::draw2DQueue
     ()
     {
-        for (SceneObject* sceneObj : m2DQueue)
+        for (SceneObjectRuntime* sceneObj : m2DQueue)
         {
-            if (sceneObj->getRuntimeHandle()->hasSpriteInstance())
+            if (sceneObj->hasSpriteInstance())
             {
                 drawSprite(sceneObj);
             }
-            else if (sceneObj->getRuntimeHandle()->hasFontInstance())
+            else if (sceneObj->hasFontInstance())
             {
                 drawFont(sceneObj);
             }
@@ -364,7 +360,7 @@ namespace Dream
 
     void
     GraphicsComponent::addTo3DQueue
-    (SceneObject* object)
+    (SceneObjectRuntime* object)
     {
         m3DQueue.push_back(object);
     }
@@ -373,7 +369,7 @@ namespace Dream
     GraphicsComponent::draw3DQueue
     ()
     {
-        for (SceneObject* it : m3DQueue)
+        for (SceneObjectRuntime* it : m3DQueue)
         {
             drawModel(it);
         }
@@ -395,15 +391,15 @@ namespace Dream
 
     void
     GraphicsComponent::drawSprite
-    (SceneObject* sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         // Get Assets
-        SpriteInstance* sprite = sceneObject->getRuntimeHandle()->getSpriteInstance();
-        ShaderInstance* shader = sceneObject->getRuntimeHandle()->getShaderInstance();
+        SpriteInstance* sprite = sceneObject->getSpriteInstance();
+        ShaderInstance* shader = sceneObject->getShaderInstance();
         // Get arguments
         vec2 size = vec2(sprite->getWidth(),sprite->getHeight());
-        GLfloat rotateValue = sceneObject->getRuntimeHandle()->getTransform()->getRotationZ();
-        GLfloat scaleValue = sceneObject->getRuntimeHandle()->getTransform()->getScaleZ();
+        GLfloat rotateValue = sceneObject->getTransform()->getRotationZ();
+        GLfloat scaleValue = sceneObject->getTransform()->getScaleZ();
         vec3 color = vec3(1.0f);
         // Setup Shader
         shader->use();
@@ -445,18 +441,18 @@ namespace Dream
 
     void
     GraphicsComponent::drawFont
-    (SceneObject* sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         // Get Assets
-        FontInstance* font = sceneObject->getRuntimeHandle()->getFontInstance();
+        FontInstance* font = sceneObject->getFontInstance();
         float tX = font->getTransform()->getTranslationX();
         float tY = font->getTransform()->getTranslationY();
 
         // Setup Shader
-        ShaderInstance* shader = sceneObject->getRuntimeHandle()->getShaderInstance();
+        ShaderInstance* shader = sceneObject->getShaderInstance();
         vec2 size = vec2(font->getWidth(),font->getHeight());
-        GLfloat rotateValue = sceneObject->getRuntimeHandle()->getTransform()->getRotationZ();
-        GLfloat scaleValue = sceneObject->getRuntimeHandle()->getTransform()->getScaleZ();
+        GLfloat rotateValue = sceneObject->getTransform()->getRotationZ();
+        GLfloat scaleValue = sceneObject->getTransform()->getScaleZ();
 
         shader->use();
 
@@ -529,16 +525,16 @@ namespace Dream
 
     void
     GraphicsComponent::drawModel
-    (SceneObject* sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         if (Constants::VERBOSE)
         {
-           cout << "GraphicsComponent: Drawing Model " << sceneObject->getDefinitionHandle()->getNameAndUuidString() << endl;
+           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
         }
 
         // Get Assets
-        AssimpModelInstance* model = sceneObject->getRuntimeHandle()->getModelInstance();
-        ShaderInstance* shader = sceneObject->getRuntimeHandle()->getShaderInstance();
+        AssimpModelInstance* model = sceneObject->getModelInstance();
+        ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
         // Set Ambient Light Values
         GLint uAmbientStrength = glGetUniformLocation(shader->getShaderProgram(),"ambientStrength");
@@ -547,10 +543,9 @@ namespace Dream
         if (uAmbientColor > 0 && uAmbientStrength > 0)
         {
             vec3 ambientColour;
-            if (mActiveSceneHandle)
+            if (mActiveSceneRuntimeHandle)
             {
-                vector<float> ambient = mActiveSceneHandle->getRuntimeHandle()
-                                                          ->getAmbientColour();
+                vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
                 ambientColour = vec3(
                     ambient[Constants::RED_INDEX],
                     ambient[Constants::GREEN_INDEX],
@@ -622,9 +617,9 @@ namespace Dream
         // calculate the model matrix
         mat4 modelMatrix;
         // Get raw data
-        vec3 translation = sceneObject->getRuntimeHandle()->getTranslation();
-        quat rot = sceneObject->getRuntimeHandle()->getTransform()->getOrientation();
-        vec3 scaleValue = sceneObject->getRuntimeHandle()->getScale();
+        vec3 translation = sceneObject->getTranslation();
+        quat rot = sceneObject->getTransform()->getOrientation();
+        vec3 scaleValue = sceneObject->getScale();
         // Translate
         modelMatrix = translate(modelMatrix,translation);
         // Rotate
@@ -673,7 +668,7 @@ namespace Dream
 
     void
     GraphicsComponent::cleanUp
-    (Scene* scene)
+    (SceneRuntime* scene)
     {
         clear2DQueue();
         clear3DQueue();
@@ -682,14 +677,14 @@ namespace Dream
         TextureCache::cleanUp();
         ShaderCache::cleanUp();
         AssimpModelInstance::cleanUpCache();
-        mActiveSceneHandle = nullptr;
+        mActiveSceneRuntimeHandle = nullptr;
     }
 
     void
-    GraphicsComponent::setActiveScene
-    (Scene* scene)
+    GraphicsComponent::setActiveSceneRuntimeHandle
+    (SceneRuntime* scene)
     {
-        mActiveSceneHandle = scene;
+        mActiveSceneRuntimeHandle = scene;
     }
 
 } // End of Dream

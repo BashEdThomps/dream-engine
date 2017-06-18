@@ -38,34 +38,34 @@ int errorHandler(lua_State*);
 
 namespace Dream
 {
-    class Project;
-    class Scene;
-    class SceneObject;
+    class ProjectRuntime;
+    class SceneRuntime;
+    class SceneObjectRuntime;
     class LuaScriptInstance;
     class Event;
 
     class LuaEngine
     {
     public: // Methods
-        LuaEngine(Project* projectHandle);
+        LuaEngine(ProjectRuntime* projectHandle);
         virtual ~LuaEngine();
         bool init();
         bool createAllScripts();
-        bool loadScript(SceneObject*);
+        bool loadScript(SceneObjectRuntime*);
         bool update();
         void stackDump();
-        void cleanUp(Scene*);
-        bool executeScriptInit(SceneObject*);
-        bool executeScriptUpdate(SceneObject*);
-        bool executeScriptInputHandler(SceneObject*);
-        bool executeScriptEventHandler(SceneObject*);
-        void removeFromScriptMap(SceneObject*);
-        void addToScriptMap(SceneObject*,LuaScriptInstance*);
+        void cleanUp(SceneRuntime*);
+        bool executeScriptInit(SceneObjectRuntime*);
+        bool executeScriptUpdate(SceneObjectRuntime*);
+        bool executeScriptInputHandler(SceneObjectRuntime*);
+        bool executeScriptEventHandler(SceneObjectRuntime*);
+        void removeFromScriptMap(SceneObjectRuntime*);
+        void addToScriptMap(SceneObjectRuntime*,LuaScriptInstance*);
         void addInputEvent(InputEvent event);
         void clearInputEvents();
 
     private:// Variables
-        Project* mProjectHandle;
+        ProjectRuntime* mProjectRuntimeHandle;
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
@@ -75,7 +75,7 @@ namespace Dream
                 "    chunk()\n"
                 "end";
         lua_State *mState;
-        map<SceneObject*, LuaScriptInstance*> mScriptMap;
+        map<SceneObjectRuntime*, LuaScriptInstance*> mScriptMap;
         vector<InputEvent> mInputEvents;
 
     private: // Methods
@@ -87,7 +87,6 @@ namespace Dream
         void exposeAnimationInstance();
         void exposeAssimpModelInstance();
         void exposeCamera();
-        void exposeProject();
         void exposeProjectRuntime();
         void exposeEvent();
         void exposeFontInstance();
@@ -104,8 +103,7 @@ namespace Dream
         void exposePhysicsObjectInstance();
         void exposeShaderInstance();
         void exposeSpriteInstance();
-        void exposeScene();
-        void exposeSceneObject();
+        void exposeSceneObjectRuntime();
         void exposeTime();
         void exposeTransform3D();
     }; // End of LuaComponent

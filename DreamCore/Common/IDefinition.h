@@ -22,7 +22,6 @@
 #include <string>
 
 using std::string;
-
 using nlohmann::json;
 
 namespace Dream
@@ -34,7 +33,8 @@ namespace Dream
     public:
         IDefinition(json data);
         virtual ~IDefinition();
-        json& getJson();
+
+        json getJson();
         virtual void showStatus() = 0;
 
         bool hasName(string name);

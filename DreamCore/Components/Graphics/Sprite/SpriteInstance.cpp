@@ -16,7 +16,7 @@
 
 #include "SpriteInstance.h"
 #include "../Model/TextureCache.h"
-#include "../../../Project/AssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {

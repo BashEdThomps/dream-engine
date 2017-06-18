@@ -34,8 +34,12 @@ namespace Dream
 
         string getUuid() const;
         void setUuid(const string &uuid);
+        bool hasUuid(const string &uuid);
 
         string getName() const;
         void setName(const string &name);
+        bool hasName(const string &name);
+
+        string getNameAndUuidString();
     };
 }

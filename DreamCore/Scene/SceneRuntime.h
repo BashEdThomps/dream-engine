@@ -27,10 +27,18 @@
 
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 namespace Dream
 {
+    class ProjectRuntime;
     class SceneObject;
+    class SceneDefinition;
+    class IAssetInstance;
+    class Transform3D;
+    class AssetDefinition;
+    class SceneObjectRuntime;
+
 
     class SceneRuntime : public Runtime
     {
@@ -39,11 +47,13 @@ namespace Dream
         vector<float> mGravity;
         vector<float> mClearColour;
         vector<float> mAmbientColour;
-        string mProjectPath;
-        vector<SceneObject*> mDeleteQueue;
+        ProjectRuntime* mProjectRuntimeHandle;
+
+        vector<SceneObjectRuntime*> mSceneObjectRuntimeDeleteQueue;
+        unique_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;
 
     public:
-        SceneRuntime();
+        SceneRuntime(ProjectRuntime* parent = nullptr);
         ~SceneRuntime();
 
         SceneState getState() const;
@@ -58,14 +68,35 @@ namespace Dream
         vector<float> getAmbientColour() const;
         void setAmbientColour(const vector<float> &ambientColour);
 
-        string getProjectPath() const;
-        void setProjectPath(const string &projectPath);
+        vector<SceneObjectRuntime*> getSceneObjectRuntimeDeleteQueue();
+        void addSceneObjectRuntimeToDeleteQueue(SceneObjectRuntime*);
+        void clearSceneObjectRuntimeDeleteQueue();
+        void destroySceneObjectRuntimeDeleteQueue();
 
-        vector<SceneObject*> getDeleteQueue() const;
-        void setDeleteQueue(const vector<SceneObject*> &deleteQueue);
+        void findDeleteFlaggedSceneObjectRuntimes();
+        void findDeleteFlaggedScripts();
 
-        void addToDeleteQueue(SceneObject*);
-        void clearDeleteQueue();
-        void destroyDeleteQueue();
+        void createAllAssetInstances();
+        void loadAllAssetInstances();
+
+        void cleanUpSceneObjectRuntimes();
+        void cleanUp();
+
+        bool hasRootSceneObjectRuntime();
+        void setRootSceneObjectRuntime(SceneObjectRuntime* sceneObjectHandle);
+        SceneObjectRuntime* getRootSceneObjectRuntimeHandle();
+
+        SceneObjectRuntime* getSceneObjectRuntimeHandleByName(string);
+        SceneObjectRuntime* getSceneObjectRuntimeHandleByUuid(string);
+
+        int countSceneObjectRuntimes();
+
+        ProjectRuntime* getProjectRuntimeHandle();
+
+        void showScenegraph();
+
+        int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
+
+        void flush();
     };
 } // End of Dream

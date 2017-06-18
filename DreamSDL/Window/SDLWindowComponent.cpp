@@ -125,7 +125,7 @@ namespace DreamSDL
 
     void
     SDLWindowComponent::updateComponent
-    (Scene* scene)
+    (SceneRuntime* scene)
     {
 
         mEvents.clear();
@@ -139,7 +139,7 @@ namespace DreamSDL
                 {
                     cout << ">>> SDLWindowComponent: SDL_QUIT Event" << endl;
                 }
-                scene->getRuntimeHandle()->setState(Dream::SCENE_STATE_DONE);
+                scene->setState(Dream::SCENE_STATE_DONE);
                 break;
             }
             else if (event.type == SDL_WINDOWEVENT)
@@ -198,7 +198,7 @@ namespace DreamSDL
 
     void
     SDLWindowComponent::cleanUp
-    (Scene* scene)
+    (SceneRuntime* scene)
     {
 
     }

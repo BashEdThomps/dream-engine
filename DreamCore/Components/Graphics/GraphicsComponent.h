@@ -33,13 +33,12 @@ using glm::mat4;
 namespace Dream
 {
     class IWindowComponent;
-    class SceneObject;
     class Camera;
     class AssimpModelInstance;
     class ShaderInstance;
     class LightInstance;
-    class Scene;
-    class Definition;
+    class SceneRuntime;
+    class SceneObjectRuntime;
 
     class GraphicsComponent : public IComponent
     {
@@ -70,28 +69,28 @@ namespace Dream
         float mMinimumDraw = 0.1f;
         float mMaximumDraw = 1000.0f;
 
-        vector<SceneObject*> m2DQueue;
-        vector<SceneObject*> m3DQueue;
+        vector<SceneObjectRuntime*> m2DQueue;
+        vector<SceneObjectRuntime*> m3DQueue;
         vector<LightInstance*> mLightQueue;
 
         IWindowComponent *mWindowComponentHandle;
-        Scene* mActiveSceneHandle;
+        SceneRuntime* mActiveSceneRuntimeHandle;
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
         ~GraphicsComponent(void);
         void clear2DQueue();
-        void addTo2DQueue(SceneObject*);
+        void addTo2DQueue(SceneObjectRuntime*);
         void draw2DQueue();
         void addToLightQueue(LightInstance*);
         void clearLightQueue();
         void clear3DQueue();
-        void addTo3DQueue(SceneObject*);
+        void addTo3DQueue(SceneObjectRuntime*);
         void draw3DQueue();
         bool init(void) override;
-        void updateComponent(Scene*) override;
-        void drawSprite(SceneObject*);
-        void drawFont(SceneObject*);
-        void drawModel(SceneObject*);
+        void updateComponent(SceneRuntime*) override;
+        void drawSprite(SceneObjectRuntime*);
+        void drawFont(SceneObjectRuntime*);
+        void drawModel(SceneObjectRuntime*);
         void create2DVertexObjects();
         void createFontVertexObjects();
         void setWindowShouldClose(bool);
@@ -101,8 +100,8 @@ namespace Dream
         void onWindowDimensionsChanged();
         void preRender();
         void postRender();
-        void cleanUp(Scene* scene) override;
-        void setActiveScene(Scene* scene);
+        void cleanUp(SceneRuntime*) override;
+        void setActiveSceneRuntimeHandle(SceneRuntime*);
 
     }; // End of GraphicsComponent
 

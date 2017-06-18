@@ -32,7 +32,7 @@
 #include "../BoundingBox.h"
 #include "../Shader/ShaderInstance.h"
 #include "../../../Common/Constants.h"
-#include "../../../Project/AssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {

@@ -22,11 +22,11 @@
 #include <memory>
 
 #ifdef __APPLE__
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
+    #include <OpenAL/al.h>
+    #include <OpenAL/alc.h>
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+    #include <AL/al.h>
+    #include <AL/alc.h>
 #endif
 
 #include "AudioStatus.h"
@@ -56,8 +56,8 @@ namespace Dream
         AudioComponent();
         ~AudioComponent();
         bool init() override;
-        void updateComponent(Scene*) override;
-        void cleanUp(Scene*) override;
+        void updateComponent(SceneRuntime*) override;
+        void cleanUp(SceneRuntime*) override;
 
         void setSourcePosision(ALuint, vector<float>);
         void setListenerPosition(vector<float>);

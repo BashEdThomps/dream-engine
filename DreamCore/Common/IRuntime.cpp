@@ -63,4 +63,25 @@ namespace Dream
     {
         mName = name;
     }
+
+    string
+    Runtime::getNameAndUuidString
+    ()
+    {
+        return "[" + getName() + " : " + getUuid() + "]";
+    }
+
+    bool
+    Runtime::hasName
+    (const string &name)
+    {
+        return getName().compare(name) == 0;
+    }
+
+    bool
+    Runtime::hasUuid
+    (const string &uuid)
+    {
+        return getUuid().compare(uuid) == 0;
+    }
 }

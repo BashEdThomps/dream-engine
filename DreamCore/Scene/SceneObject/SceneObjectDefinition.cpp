@@ -27,11 +27,29 @@
 
 namespace Dream
 {
-    SceneObjectDefinition::SceneObjectDefinition(json jsonData, SceneObject* parentHandle)
+    SceneObjectDefinition::SceneObjectDefinition
+    (SceneObjectDefinition* parentHandle, json jsonData)
         : IDefinition(jsonData),
-          mParentHandle(parentHandle)
+          mParentSceneObjectHandle(parentHandle)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "SceneObjectDefinition: Constructing "
+                 << getNameAndUuidString()
+                 << endl;
+        }
+        loadChildSceneObjectDefinitions(jsonData);
+    }
 
+    SceneObjectDefinition::~SceneObjectDefinition
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "SceneObjectDefinition: Destructing "
+                 << getNameAndUuidString()
+                 << endl;
+        }
     }
 
     bool
@@ -77,6 +95,7 @@ namespace Dream
         return mJson[Constants::UUID];
     }
 
+    /*
     void
     SceneObjectDefinition::applyDataToRuntime
     (SceneObjectRuntime* runtime)
@@ -147,6 +166,7 @@ namespace Dream
             runtime->setHasFocus(focus);
         }
     }
+    */
 
     void
     SceneObjectDefinition::setHasFocus
@@ -196,4 +216,21 @@ namespace Dream
         }
     }
 
+    void
+    SceneObjectDefinition::loadChildSceneObjectDefinitions
+    (json definition)
+    {
+        json childrenArray = definition[Constants::SCENE_OBJECT_CHILDREN];
+
+        if (!childrenArray.is_null() || childrenArray.is_array() )
+        {
+            for (json childDefinition : childrenArray)
+            {
+                mChildDefinitions.push_back
+                (
+                    unique_ptr<SceneObjectDefinition>(new SceneObjectDefinition(this, childDefinition))
+                );
+            }
+        }
+    }
 }

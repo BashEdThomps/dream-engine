@@ -22,9 +22,12 @@
 
 #include "../Common/Constants.h"
 
-#include "SceneObject/SceneObject.h"
+#include "../Project/ProjectRuntime.h"
+
 #include "SceneObject/SceneObjectDefinition.h"
 #include "SceneObject/SceneObjectRuntime.h"
+
+#include "../Lua/LuaEngine.h"
 
 using std::cout;
 using std::cerr;
@@ -32,16 +35,17 @@ using std::cerr;
 namespace Dream
 {
     SceneRuntime::SceneRuntime
-    ()
+    (ProjectRuntime* project)
         : // Init list
           Runtime(),
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
-          mAmbientColour({0,0,0})
+          mAmbientColour({0,0,0}),
+          mProjectRuntimeHandle(project)
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneRuntime: Constructing Object" << endl;
+            cout << "SceneRuntime: Constructing " << endl;
         }
 
     }
@@ -51,7 +55,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneRuntime: Destroying Object" << endl;
+            cout << "SceneRuntime: Destructing " << endl;
         }
     }
 
@@ -114,63 +118,320 @@ namespace Dream
         mAmbientColour = ambientColour;
     }
 
-    string
-    SceneRuntime::getProjectPath
-    () const
+    vector<SceneObjectRuntime*>
+    SceneRuntime::getSceneObjectRuntimeDeleteQueue
+    ()
     {
-        return mProjectPath;
+        return mSceneObjectRuntimeDeleteQueue;
     }
 
     void
-    SceneRuntime::setProjectPath
-    (const string &projectPath)
-    {
-        mProjectPath = projectPath;
-    }
-
-    vector<SceneObject*>
-    SceneRuntime::getDeleteQueue
-    () const
-    {
-        return mDeleteQueue;
-    }
-
-    void
-    SceneRuntime::addToDeleteQueue
-    (SceneObject* object)
+    SceneRuntime::addSceneObjectRuntimeToDeleteQueue
+    (SceneObjectRuntime* object)
     {
         if (Constants::DEBUG)
         {
             cout << "Scene: Adding "
-                 << object->getDefinitionHandle()->getNameAndUuidString()
-                 << " to delete queue" << endl;
+                 << object->getNameAndUuidString()
+                 << " to SceneObjectRuntime delete queue" << endl;
         }
-        getDeleteQueue().push_back(object);
+       mSceneObjectRuntimeDeleteQueue.push_back(object);
     }
 
     void
-    SceneRuntime::clearDeleteQueue
+    SceneRuntime::clearSceneObjectRuntimeDeleteQueue
     ()
     {
         if (Constants::DEBUG)
         {
-            cout << "Scene: clearDeleteQueue" << endl;
+            cout << "Scene: clearSceneObjectRuntimeDeleteQueue" << endl;
         }
-        getDeleteQueue().clear();
+        mSceneObjectRuntimeDeleteQueue.clear();
     }
 
     void
-    SceneRuntime::destroyDeleteQueue
+    SceneRuntime::destroySceneObjectRuntimeDeleteQueue
     ()
     {
-        if (!mDeleteQueue.empty())
+        if (!mSceneObjectRuntimeDeleteQueue.empty())
         {
-            for(SceneObject* obj : mDeleteQueue)
+            for(SceneObjectRuntime* obj : mSceneObjectRuntimeDeleteQueue)
             {
-                obj->getRuntimeHandle()->cleanUp();
+                obj->cleanUp();
             }
         }
-        clearDeleteQueue();
+        clearSceneObjectRuntimeDeleteQueue();
+    }
+
+    SceneObjectRuntime*
+    SceneRuntime::getSceneObjectRuntimeHandleByUuid
+    (string uuid)
+    {
+        return static_cast<SceneObjectRuntime*>
+        (
+            mRootSceneObjectRuntime->applyToAll
+            (
+                function<void*(SceneObjectRuntime*)>
+                (
+                    [&](SceneObjectRuntime* currentRuntime)
+                    {
+                        if (currentRuntime->hasUuid(uuid))
+                        {
+                            return currentRuntime;
+                        }
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+                )
+            )
+        );
+    }
+
+    SceneObjectRuntime*
+    SceneRuntime::getSceneObjectRuntimeHandleByName
+    (string name)
+    {
+        return static_cast<SceneObjectRuntime*>
+        (
+            mRootSceneObjectRuntime->applyToAll
+            (
+                function<void*(SceneObjectRuntime*)>
+                (
+                    [&](SceneObjectRuntime* currentRuntime)
+                    {
+                        if (currentRuntime->hasName(name))
+                        {
+                            return currentRuntime;
+                        }
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+                )
+            )
+        );
+    }
+
+    int
+    SceneRuntime::countSceneObjectRuntimes
+    ()
+    {
+        int count = 0;
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime*)
+                {
+                    count++;
+                    return nullptr;
+                }
+            )
+        );
+        return count;
+    }
+
+    void
+    SceneRuntime::showScenegraph
+    ()
+    {
+        if (!mRootSceneObjectRuntime)
+        {
+            cout << "Scene: Scenegraph is empty (no root SceneObjectRuntime)" << endl;
+            return;
+        }
+
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* obj)
+                {
+                        cout << "SceneObjectRuntime: showScenegraph not implemented" << endl;
+                    //obj->showStatus();
+                    return nullptr;
+                }
+            )
+        );
+    }
+
+    void
+    SceneRuntime::setRootSceneObjectRuntime
+    (SceneObjectRuntime* root)
+    {
+        mRootSceneObjectRuntime.reset(root);
+    }
+
+    SceneObjectRuntime*
+    SceneRuntime::getRootSceneObjectRuntimeHandle
+    ()
+    {
+        return mRootSceneObjectRuntime.get();
+    }
+
+    void
+    SceneRuntime::findDeleteFlaggedSceneObjectRuntimes
+    ()
+    {
+        if (Constants::VERBOSE)
+        {
+            cout << "Scene: findDeleteFlaggedSceneObjects Called" << endl;
+        }
+
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* obj)
+                {
+                    if (obj->getDeleteFlag())
+                    {
+                        addSceneObjectRuntimeToDeleteQueue(obj);
+                    }
+                    return nullptr;
+                }
+            )
+        );
+    }
+
+    void
+    SceneRuntime::createAllAssetInstances
+    ()
+    {
+        if (Constants::VERBOSE)
+        {
+            cout << "Secne: Create All Asset Instances Called" << endl;
+        }
+
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* sceneObjectRuntime)
+                {
+                    // Not loaded && not marked to delete
+                    if (!sceneObjectRuntime->getLoadedFlag() && !sceneObjectRuntime->getDeleteFlag())
+                    {
+                        sceneObjectRuntime->createAssetInstances();
+                    }
+                    return nullptr;
+                }
+            )
+        );
+    }
+
+    void
+    SceneRuntime::loadAllAssetInstances
+    ()
+    {
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* sceneObjectRuntime)
+                {
+                    // Not loaded && not marked to delete
+                    if (!sceneObjectRuntime->getLoadedFlag())
+                    {
+                        if(!sceneObjectRuntime->getDeleteFlag())
+                        {
+                            sceneObjectRuntime->loadAssetInstances();
+                        }
+                    }
+                    return nullptr;
+                }
+            )
+        );
+
+        setState(SCENE_STATE_LOADED);
+    }
+    void
+    SceneRuntime::findDeleteFlaggedScripts
+    ()
+    {
+        if (Constants::VERBOSE)
+        {
+            cout << "Scene: Cleanup Deleted Scripts Called" << endl;
+        }
+        vector<SceneObjectRuntime*> objects = getSceneObjectRuntimeDeleteQueue();
+
+        for (SceneObjectRuntime* runtime : objects)
+        {
+            mProjectRuntimeHandle->getLuaEngineHandle()->removeFromScriptMap(runtime);
+        }
+    }
+
+    void
+    SceneRuntime::cleanUpSceneObjectRuntimes
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "Scene: cleanUpSceneObjectRuntimes" << endl;
+        }
+
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* objectRuntime)
+                {
+                    objectRuntime->setDeleteFlag(true);
+                    return nullptr;
+                }
+            )
+        );
+    }
+
+    void
+    SceneRuntime::flush
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "Scene: flush" << endl;
+        }
+        findDeleteFlaggedSceneObjectRuntimes();
+        findDeleteFlaggedScripts();
+        destroySceneObjectRuntimeDeleteQueue();
+    }
+
+    void
+    SceneRuntime::cleanUp
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "Scene: cleanUp called on "
+                 <<  getNameAndUuidString()
+                 << endl;
+        }
+
+        if(getState() == SCENE_STATE_DONE)
+        {
+           cleanUpSceneObjectRuntimes();
+           flush();
+           setState(SCENE_STATE_CLEANED_UP);
+        }
+        else
+        {
+            cerr << "Scene: Cannot cleanUp Scene "
+                 << getNameAndUuidString()
+                 << " State != DONE"
+                 << endl;
+        }
+    }
+
+    ProjectRuntime*
+    SceneRuntime::getProjectRuntimeHandle
+    ()
+    {
+        return mProjectRuntimeHandle;
+    }
+
+
+    bool
+    SceneRuntime::hasRootSceneObjectRuntime
+    ()
+    {
+        return mRootSceneObjectRuntime != nullptr;
     }
 
 } // End of Dream

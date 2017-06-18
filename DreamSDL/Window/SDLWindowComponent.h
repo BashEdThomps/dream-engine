@@ -23,7 +23,7 @@
 #include <SDL2/SDL_opengl.h>
 
 using Dream::IWindowComponent;
-using Dream::Scene;
+using Dream::SceneRuntime;
 
 namespace DreamSDL
 {
@@ -36,11 +36,11 @@ namespace DreamSDL
         SDL_Window* getWindow();
         vector<SDL_Event> getSDL_Events();
 
-        void updateComponent(Scene*) override;
+        void updateComponent(SceneRuntime*) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
-        void cleanUp(Scene*) override;
+        void cleanUp(SceneRuntime*) override;
 
     private:
         bool initSDL();

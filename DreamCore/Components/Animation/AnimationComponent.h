@@ -23,8 +23,6 @@
 
 namespace Dream
 {
-    class Time;
-    class Scene;
     class AnimationComponent : public IComponent
     {
     private:
@@ -34,8 +32,8 @@ namespace Dream
         ~AnimationComponent();
 
         bool init() override;
-        void updateComponent(Scene*) override;
-        void cleanUp(Scene*) override;
+        void updateComponent(SceneRuntime*) override;
+        void cleanUp(SceneRuntime*) override;
 
         void play (AnimationInstance*);
         void pause(AnimationInstance*);

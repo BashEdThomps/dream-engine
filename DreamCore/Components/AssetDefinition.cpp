@@ -21,23 +21,22 @@
 
 #include "../Common/Constants.h"
 
-#include "Project.h"
-
 using std::cout;
 using std::endl;
 
 namespace Dream
 {
     AssetDefinition::AssetDefinition
-    (Project* parent, json jsonDef)
+    (ProjectDefinition* parent, json jsonDef)
         : IDefinition(jsonDef),
-          mProjectHandle(parent)
+          mProjectDefinitionHandle(parent)
     {
         if (Constants::DEBUG)
         {
-            cout << "AssetDefinition: Constructing Object" << endl;
+            cout << "AssetDefinition: Constructing "
+                 << getNameAndUuidString() << endl;
         }
-        showStatus();
+        //showStatus();
     }
 
     AssetDefinition::~AssetDefinition
@@ -45,22 +44,9 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "AssetDefinition: Destroying Object" << endl;
+            cout << "AssetDefinition: Destructing "
+                 << getNameAndUuidString() << endl;
         }
-    }
-
-    void
-    AssetDefinition::setProjectPath
-    (string path)
-    {
-        mProjectPath = path;
-    }
-
-    string
-    AssetDefinition::getProjectPath
-    ()
-    {
-        return mProjectPath;
     }
 
     void
@@ -254,11 +240,11 @@ namespace Dream
         }
     }
 
-    Project*
+    ProjectDefinition*
     AssetDefinition::getProjectHandle
     ()
     {
-        return mProjectHandle;
+        return mProjectDefinitionHandle;
     }
 
 } // End of Dream

@@ -7,8 +7,9 @@
 
 #include "../../Common/Constants.h"
 
-#include "../../Project/Project.h"
-#include "../../Project/AssetDefinition.h"
+#include "../../Project/ProjectDefinition.h"
+
+#include "../AssetDefinition.h"
 
 namespace Dream
 {

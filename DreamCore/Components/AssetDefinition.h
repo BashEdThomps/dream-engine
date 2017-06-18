@@ -30,16 +30,15 @@ using nlohmann::json;
 
 namespace Dream
 {
-    class Project;
+    class ProjectDefinition;
 
     class AssetDefinition : public IDefinition
     {
     private:
-        string mProjectPath;
-        Project *mProjectHandle;
+        ProjectDefinition *mProjectDefinitionHandle;
 
     public:
-        AssetDefinition(Project*, json);
+        AssetDefinition(ProjectDefinition*, json);
         ~AssetDefinition();
 
         void setType(string);
@@ -73,7 +72,7 @@ namespace Dream
 
         void showStatus();
 
-        Project *getProjectHandle();
+        ProjectDefinition *getProjectHandle();
 
     }; // End of AssetDefinition
 

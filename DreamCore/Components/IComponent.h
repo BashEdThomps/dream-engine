@@ -20,7 +20,7 @@
 namespace Dream
 {
     class Time;
-    class Scene;
+    class SceneRuntime;
 
     class IComponent
     {
@@ -29,8 +29,8 @@ namespace Dream
         IComponent();
         virtual ~IComponent();
         virtual bool init() = 0;
-        virtual void updateComponent(Scene*) = 0;
-        virtual void cleanUp(Scene*) = 0;
+        virtual void updateComponent(SceneRuntime*) = 0;
+        virtual void cleanUp(SceneRuntime*) = 0;
         void setTime(Time*);
 
     protected:

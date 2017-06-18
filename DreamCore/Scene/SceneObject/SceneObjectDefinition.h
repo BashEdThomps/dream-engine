@@ -20,23 +20,26 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "../../Common/IDefinition.h"
 
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 namespace Dream
 {
-    class SceneObject;
-    class SceneObjectRuntime;
 
     class SceneObjectDefinition : public IDefinition
     {
     private:
-        SceneObject* mParentHandle;
+        SceneObjectDefinition* mParentSceneObjectHandle;
+        vector<unique_ptr<SceneObjectDefinition>> mChildDefinitions;
+
     public:
-        SceneObjectDefinition(json data, SceneObject* parentHandle = nullptr);
+        SceneObjectDefinition(SceneObjectDefinition* parentHandle, json data);
+        ~SceneObjectDefinition();
 
         bool hasUuid(string);
         void setUuid(string);
@@ -45,11 +48,16 @@ namespace Dream
         bool hasName(string);
         void setName(string);
         string getName();
-        void applyDataToRuntime(SceneObjectRuntime*);
+
         void setHasFocus(bool focus);
         bool hasFocus();
+
         void addAssetDefUuidToLoad(string uuid);
         vector<string> getAssetDefUuidsToLoad();
+
         void showStatus();
+
+    private:
+        void loadChildSceneObjectDefinitions(json definition);
     };
 }

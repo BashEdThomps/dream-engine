@@ -1,19 +1,19 @@
 /*
-* Project::Project
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Project
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "Project.h"
 
@@ -27,6 +27,7 @@
 
 #include "../Common/Constants.h"
 
+#include "../Components/AssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
 #include "../Components/Audio/AudioComponent.h"
@@ -39,10 +40,9 @@
 
 #include "../Lua/LuaEngine.h"
 
-#include "../Scene/Scene.h"
+#include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
 
-#include "../Project/AssetDefinition.h"
 
 #include "../Utilities/ArgumentParser.h"
 #include "../Utilities/FileReader.h"
@@ -54,25 +54,27 @@ namespace Dream
 {
     Project::Project
     (IWindowComponent* windowComponent)
+        : mWindowComponentHandle(windowComponent)
     {
         if (Constants::DEBUG)
         {
-            cout << "Project: Constructing Object" << endl;
+            cout << "Project: Constructing " << endl;
         }
-        mRuntime.reset(new ProjectRuntime(this, windowComponent));
     }
 
     Project::~Project()
     {
         if (Constants::DEBUG)
         {
-            cout << "Project: Destroying Object" << endl;
+            cout << "Project: Destructing "
+                 << mDefinition->getNameAndUuidString()
+                 << endl;
         }
     }
 
     bool
     Project::openFromFileReader
-    (string projectPath, FileReader reader)
+    (string projectPath, FileReader &reader)
     {
         if (Constants::DEBUG)
         {
@@ -91,12 +93,10 @@ namespace Dream
 
         if (Constants::DEBUG)
         {
-            cout << "Project: using project path " << projectPath << endl;
+            cout << "Project: Project path " << projectPath << endl;
         }
-        mRuntime->setProjectPath(projectPath);
+        mProjectPath = projectPath;
         mDefinition.reset(new ProjectDefinition(projectJson));
-        mDefinition->pushToProject(this);
-
         return true;
     }
 
@@ -164,8 +164,16 @@ namespace Dream
     }
 
     bool
+    Project::createProjectRuntime
+    ()
+    {
+        mRuntime.reset(new ProjectRuntime(this, mWindowComponentHandle));
+        return true;
+    }
+
+    bool
     Project::openFromArgumentParser
-    (ArgumentParser parser)
+    (ArgumentParser &parser)
     {
         if (Constants::VERBOSE)
         {
@@ -178,132 +186,25 @@ namespace Dream
     }
 
     ProjectRuntime*
-    Project::getRuntimeHandle
+    Project::getProjectRuntimeHandle
     ()
     {
         return mRuntime.get();
     }
 
     ProjectDefinition*
-    Project::getDefinitionHandle
+    Project::getProjectDefinitionHandle
     ()
     {
         return mDefinition.get();
     }
 
-    void
-    Project::addScene
-    (json scene)
-    {
-        mScenes.push_back
-        (
-            unique_ptr<Scene>
-            (
-                new Scene(this,scene)
-            )
-        );
-    }
-
-    size_t
-    Project::countScenes
+    string
+    Project::getProjectPath
     ()
     {
-        return mScenes.size();
+        return mProjectPath;
     }
 
-    Scene*
-    Project::getSceneHandleByUuid
-    (string uuid)
-    {
-        for(auto it = begin(mScenes); it != end(mScenes); it++)
-        {
-            if ((*it)->getDefinitionHandle()->hasUuid(uuid))
-            {
-                return (*it).get();
-            }
-        }
-        return nullptr;
-    }
-
-    void
-    Project::setStartupSceneAsActive
-    ()
-    {
-        setActiveSceneHandle(getSceneHandleByUuid(getDefinitionHandle()->getStartupSceneUuid()));
-    }
-
-
-    void
-    Project::setActiveSceneHandle
-    (Scene* scene)
-    {
-        mActiveSceneHandle = scene;
-    }
-
-    Scene*
-    Project::getActiveSceneHandle
-    ()
-    {
-        return mActiveSceneHandle;
-    }
-
-    bool
-    Project::hasActiveSceneHandle
-    ()
-    {
-        return mActiveSceneHandle != nullptr;
-    }
-
-    void
-    Project::addAssetDefinition
-    (json assetDefinition)
-    {
-        mAssetDefinitions.push_back
-        (
-            unique_ptr<AssetDefinition>
-            (
-                new AssetDefinition(this,assetDefinition)
-            )
-        );
-    }
-
-    void
-    Project::removeAssetDefinition
-    (const unique_ptr<AssetDefinition>& assetDef)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "ProjectDefinition: Removing AssetDefinition "
-                 << assetDef->getNameAndUuidString() << endl;
-        }
-
-        remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
-            [&](const unique_ptr<AssetDefinition>& thisDefinition)
-            {
-                return thisDefinition == assetDef;
-            }
-        );
-    }
-
-    size_t
-    Project::countAssetDefinitions
-    ()
-    {
-        return mAssetDefinitions.size();
-    }
-
-    AssetDefinition*
-    Project::getAssetDefinitionHandleByUuid
-    (string uuid)
-    {
-        for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
-        {
-            if ((*it)->hasUuid(uuid))
-            {
-                return (*it).get();
-            }
-        }
-        return nullptr;
-    }
 
 } // End of Dream

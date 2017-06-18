@@ -21,22 +21,23 @@
 #include "../Common/IDefinition.h"
 
 using std::string;
+using std::vector;
+using std::unique_ptr;
 
 namespace Dream
 {
     class Project;
+    class SceneDefinition;
+    class AssetDefinition;
 
     class ProjectDefinition : public IDefinition
     {
+    private:
+        vector<unique_ptr<SceneDefinition>> mSceneDefinitions;
+        vector<unique_ptr<AssetDefinition>> mAssetDefinitions;
     public:
         ProjectDefinition(json data);
         ~ProjectDefinition();
-
-        string getName();
-        void setName(string name);
-
-        void setUuid(string uuid);
-        string getUuid();
 
         string getAuthor();
         void setAuthor(string author);
@@ -53,11 +54,19 @@ namespace Dream
         int getWindowHeight();
         void setWindowHeight(int height);
 
-        void pushToProject(Project *projectHandle);
+        void loadChildDefinitions();
 
         void showStatus();
+        size_t countAssetDefinitions();
+        AssetDefinition *getAssetDefinitionHandleByUuid(string uuid);
+        size_t countScenesDefinitions();
+        SceneDefinition *getSceneDefinitionHandleByUuid(string uuid);
+        void removeAssetDefinition(AssetDefinition* assetDef);
     private:
-        void pushSceneDefinitionsToProject(Project *projectHandle);
-        void pushAssetDefinitionsToProject(Project *runtimeHandle);
+        void loadSceneDefinitions();
+        void loadAssetDefinitions();
+
+        void addAssetDefinition(json assetDefinition);
+        void addSceneDefinition(json sceneDefinition);
     };
 }

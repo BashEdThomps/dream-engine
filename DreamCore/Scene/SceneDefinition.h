@@ -27,6 +27,8 @@ using std::unique_ptr;
 
 namespace Dream
 {
+    class ProjectDefinition;
+    class SceneObject;
     class Transform3D;
     class SceneObjectDefinition;
 
@@ -34,14 +36,16 @@ namespace Dream
     {
 
     private:
-        vector<unique_ptr<SceneObjectDefinition>> mSceneObjectDefinitions;
+        unique_ptr<SceneObjectDefinition> mRootSceneObjectDefinition;
+        ProjectDefinition* mProjectDefinitionHandle;
+
     public:
-        SceneDefinition(json data);
+        SceneDefinition(ProjectDefinition* projectHandle, json data);
         ~SceneDefinition();
 
         void showStatus();
 
-        void loadSceneObjectDefinition(nlohmann::json jsonArray);
+        void loadRootSceneObjectDefinition(json jsonArray);
 
         void setCameraMovementSpeed(float speed);
         float getCameraMovementSpeed();
@@ -62,7 +66,6 @@ namespace Dream
         vector<float> getAmbientColour() const;
         void setAmbientColour(const vector<float> &ambientColour);
 
-        size_t countSceneObjectDefinitions();
-
+        //size_t countSceneObjectDefinitions();
     };
 }

@@ -39,8 +39,8 @@ namespace Dream
 {
     class PhysicsDebugDrawer;
     class PhysicsObjectInstance;
-    class Scene;
-    class SceneObject;
+    class SceneRuntime;
+    class SceneObjectRuntime;
 
     class PhysicsComponent : public IComponent
     {
@@ -57,20 +57,20 @@ namespace Dream
     public:
         PhysicsComponent();
         ~PhysicsComponent();
-        void populatePhysicsWorld(Scene* scene);
+        void populatePhysicsWorld(SceneRuntime* scene);
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init() override;
-        void updateComponent(Scene*) override;
+        void updateComponent(SceneRuntime*) override;
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectInstance(PhysicsObjectInstance*);
         void setViewProjectionMatrix(mat4, mat4);
-        void checkContactManifolds(Scene* scene);
-        SceneObject* getSceneObject(Scene* scene, const btCollisionObject*);
+        void checkContactManifolds(SceneRuntime* scene);
+        SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
-        void cleanUp(Scene* scene) override;
+        void cleanUp(SceneRuntime* scene) override;
     };// End of PhysicsComponent
 
 } // End of Dream

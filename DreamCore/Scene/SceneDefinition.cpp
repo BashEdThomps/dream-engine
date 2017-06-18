@@ -20,6 +20,8 @@
 #include "../Common/Constants.h"
 #include "../Components/Transform3D.h"
 
+#include "../Project/ProjectDefinition.h"
+
 #include "SceneObject/SceneObjectDefinition.h"
 
 using std::cout;
@@ -27,19 +29,21 @@ using std::endl;
 
 namespace Dream
 {
-    SceneDefinition::SceneDefinition(json data)
-        : IDefinition(data)
+    SceneDefinition::SceneDefinition(ProjectDefinition* projectDefinitionHandle, json data)
+        : IDefinition(data),
+          mProjectDefinitionHandle(projectDefinitionHandle)
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneDefinition: Constructing Object" << endl;
+            cout << "SceneDefinition: Constructing "
+                 << getNameAndUuidString() << endl;
         }
 
-        nlohmann::json sceneObjects = mJson[Constants::SCENE_SCENE_OBJECTS];
+        json sceneObjects = mJson[Constants::SCENE_SCENE_OBJECTS];
 
         if (!sceneObjects.is_null() && sceneObjects.is_array())
         {
-            loadSceneObjectDefinition(sceneObjects);
+            loadRootSceneObjectDefinition(sceneObjects);
         }
     }
 
@@ -47,7 +51,8 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneDefinition: Destructing Object" << endl;
+            cout << "SceneDefinition: Destructing "
+                 << getNameAndUuidString() << endl;
         }
     }
 
@@ -62,23 +67,12 @@ namespace Dream
     }
 
     void
-    SceneDefinition::loadSceneObjectDefinition
-    (nlohmann::json jsonArray)
+    SceneDefinition::loadRootSceneObjectDefinition
+    (json jsonArray)
     {
         if (!jsonArray.is_null())
         {
-            for (nlohmann::json it : jsonArray)
-            {
-                mSceneObjectDefinitions.push_back
-                (
-                    unique_ptr<SceneObjectDefinition>(new SceneObjectDefinition(it))
-                );
-
-                if (!it[Constants::SCENE_OBJECT_CHILDREN].is_null())
-                {
-                    loadSceneObjectDefinition(it[Constants::SCENE_OBJECT_CHILDREN]);
-                }
-            }
+            mRootSceneObjectDefinition.reset(new SceneObjectDefinition(nullptr, jsonArray));
         }
     }
 
@@ -122,17 +116,17 @@ namespace Dream
     ()
     {
         Transform3D defaultCameraTransform;
-        nlohmann::json camera = mJson[Constants::SCENE_CAMERA];
+        json camera = mJson[Constants::SCENE_CAMERA];
 
         if (!camera.is_null())
         {
-            nlohmann::json translation = camera[Constants::SCENE_TRANSLATION];
+            json translation = camera[Constants::SCENE_TRANSLATION];
             defaultCameraTransform.setTranslation(
                 translation[Constants::X],
                 translation[Constants::Y],
                 translation[Constants::Z]
             );
-            nlohmann::json rotation = camera[Constants::SCENE_ROTATION];
+            json rotation = camera[Constants::SCENE_ROTATION];
             defaultCameraTransform.setRotation(
                 rotation[Constants::X],
                 rotation[Constants::Y],
@@ -247,12 +241,4 @@ namespace Dream
         mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]  = colour[Constants::BLUE_INDEX] ;
         mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = colour[Constants::ALPHA_INDEX];
     }
-
-    size_t
-    SceneDefinition::countSceneObjectDefinitions
-    ()
-    {
-        return mSceneObjectDefinitions.size();
-    }
-
 }

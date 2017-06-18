@@ -20,10 +20,9 @@
 
 #include <iostream>
 
-#include "SceneObject.h"
 #include "SceneObjectDefinition.h"
 
-#include "../Scene.h"
+#include "../SceneRuntime.h"
 
 #include "../../Common/Constants.h"
 
@@ -41,9 +40,11 @@
 #include "../../Lua/LuaScriptInstance.h"
 #include "../../Lua/LuaEngine.h"
 
-#include "../../Project/AssetDefinition.h"
+#include "../../Components/AssetDefinition.h"
+
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
+#include "../../Project/ProjectDefinition.h"
 
 
 using std::vector;
@@ -51,10 +52,10 @@ using glm::vec3;
 
 namespace Dream
 {
-    SceneObjectRuntime::SceneObjectRuntime(SceneObject* owner)
+    SceneObjectRuntime::SceneObjectRuntime(SceneRuntime* sceneRuntimeHandle)
         : // Init list
           Runtime(),
-          mOwnerHandle(owner),
+          mSceneRuntimeHandle(sceneRuntimeHandle),
           mLoaded(false),
           mHasFocus(false),
           mDelete(false)
@@ -108,20 +109,14 @@ namespace Dream
     SceneObjectRuntime::deleteChildRuntimes
     ()
     {
-        // TODO - Fix Me
-        /*
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Deleting " << mChildren.size()
-                 << "children of "
-                 << mObjectHandle->getNameAndUuidString() << endl;
+            cout << "SceneObjectRuntime: Deleting "
+                 << mChildRuntimes.size()
+                 << "child runtimes of "
+                 << getNameAndUuidString() << endl;
         }
-
-        for (SceneObject* child : mChildren)
-        {
-            child->resetRuntime();
-        }
-        */
+        mChildRuntimes.clear();
     }
 
     void
@@ -130,10 +125,8 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            /* TODO - Fix Me
-            cout << "SceneObject: Deleting asset instances for "
-                 << mSceneHandle->getNameAndUuidString() << endl;
-            */
+            cout << "SceneObjectRuntime: Deleting asset instances for "
+                 << getNameAndUuidString() << endl;
         }
 
         mAudioInstance.reset();
@@ -340,14 +333,14 @@ namespace Dream
     SceneObjectRuntime::addAssetDefinitionUuidToLoad
     (string def)
     {
-       mAssetDefinitionUuidsToLoad.push_back(def);
+        mAssetDefinitionUuidsToLoad.push_back(def);
     }
 
     vector<string>
     SceneObjectRuntime::getAssetDefinitionUuidsToLoad
     ()
     {
-       return mAssetDefinitionUuidsToLoad;
+        return mAssetDefinitionUuidsToLoad;
     }
 
     void
@@ -416,7 +409,7 @@ namespace Dream
     SceneObjectRuntime::setHasFocus
     (bool focus)
     {
-       mHasFocus = focus;
+        mHasFocus = focus;
     }
 
     void SceneObjectRuntime::setSpriteInstance(SpriteInstance* spriteAsset)
@@ -533,8 +526,9 @@ namespace Dream
     (string uuid)
     {
         AssetDefinition* assetDefinition;
-        assetDefinition = mOwnerHandle->getSceneHandle()->getProjectHandle()
-                                      ->getAssetDefinitionHandleByUuid(uuid);
+        assetDefinition = mSceneRuntimeHandle->getProjectRuntimeHandle()
+                ->getProjectHandle()->getProjectDefinitionHandle()
+                ->getAssetDefinitionHandleByUuid(uuid);
         createAssetInstance(assetDefinition);
     }
 
@@ -546,7 +540,7 @@ namespace Dream
         {
             cout << "SceneObject: Creating Asset Intance of: ("
                  << definition->getType() << ") " << definition->getName()
-                 << ", for  " << mOwnerHandle->getDefinitionHandle()->getNameAndUuidString()
+                 << ", for  " << mParentRuntimeHandle->getNameAndUuidString()
                  << endl;
         }
 
@@ -592,8 +586,7 @@ namespace Dream
     SceneObjectRuntime::loadAssetInstances
     ()
     {
-        string projectPath = mOwnerHandle->getSceneHandle()->getProjectHandle()
-                                         ->getRuntimeHandle()->getProjectPath();
+        string projectPath = mSceneRuntimeHandle->getProjectRuntimeHandle()->getProjectHandle()->getProjectPath();
 
         if (Constants::DEBUG)
         {
@@ -658,9 +651,9 @@ namespace Dream
             cout << "SceneObject: Creating Physics Object Asset Instance." << endl;
         }
         mPhysicsObjectInstance.reset
-        (
-            new PhysicsObjectInstance(definition, mTransform.get())
-        );
+                (
+                    new PhysicsObjectInstance(definition, mTransform.get())
+                    );
     }
 
     void
@@ -684,12 +677,11 @@ namespace Dream
         }
         // hottest trainwreck 2017!
         mAudioInstance.reset(
-            mOwnerHandle->getSceneHandle()
-                 ->getProjectHandle()
-                 ->getRuntimeHandle()
-                 ->getAudioComponentHandle()
-                 ->newAudioInstance(definition,mTransform.get())
-       );
+                    mParentRuntimeHandle->getSceneRuntimeHandle()
+                    ->getProjectRuntimeHandle()
+                    ->getAudioComponentHandle()
+                    ->newAudioInstance(definition,mTransform.get())
+                    );
     }
 
     void
@@ -715,8 +707,7 @@ namespace Dream
             cout << "SceneObject: Creating Script asset instance." << endl;
         }
         mScriptInstance.reset(new LuaScriptInstance(definition, mTransform.get()));
-        mOwnerHandle->getSceneHandle()->getProjectHandle()->getRuntimeHandle()
-                    ->getLuaEngineHandle()->addToScriptMap(mOwnerHandle,mScriptInstance.get());
+        mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()->addToScriptMap(mParentRuntimeHandle,mScriptInstance.get());
     }
 
     void
@@ -763,4 +754,105 @@ namespace Dream
         mFontInstance.reset(new FontInstance(definition,mTransform.get()));
     }
 
+    bool
+    SceneObjectRuntime::applyToAll
+    (function<bool(SceneObjectRuntime*)> funk)
+    {
+        bool retval = funk(this);
+
+        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+        {
+            if ((*it))
+            {
+                retval = retval || funk((*it).get());
+            }
+        }
+        return retval;
+    }
+
+    void*
+    SceneObjectRuntime::applyToAll
+    (function<void*(SceneObjectRuntime*)> funk)
+    {
+        void* retval = funk(this);
+        if (retval)
+        {
+            return retval;
+        }
+
+        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+        {
+            if ((*it))
+            {
+                retval = funk((*it).get());
+                if (retval)
+                {
+                    return retval;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    SceneObjectRuntime*
+    SceneObjectRuntime::getChildRuntimeHandleByUuid
+    (string uuid)
+    {
+        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+        {
+            if (*it)
+            {
+                if ((*it).get()->hasUuid(uuid))
+
+                {
+                    return (*it).get();
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    /*
+    void
+    SceneObjectRuntime::addChildRuntimeHandle
+    (SceneObjectRuntime *child)
+    {
+        mChildRuntimes.push_back(child);
+    }
+    */
+
+    bool
+    SceneObjectRuntime::isParentOf
+    (SceneObjectRuntime *child)
+    {
+        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+        {
+            if ((*it).get() == child)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void
+    SceneObjectRuntime::setParentRuntimeHandle
+    (SceneObjectRuntime *parent)
+    {
+        mParentRuntimeHandle = parent;
+    }
+
+    SceneObjectRuntime*
+    SceneObjectRuntime::getParentRuntimeHandle
+    ()
+    {
+        return mParentRuntimeHandle;
+    }
+
+    SceneRuntime*
+    SceneObjectRuntime::getSceneRuntimeHandle
+    ()
+    {
+        return mSceneRuntimeHandle;
+    }
 }

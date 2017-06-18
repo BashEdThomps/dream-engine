@@ -27,7 +27,7 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    Project *project = new Project(new SDLWindowComponent());
+    Project project(new SDLWindowComponent());
 
     Constants::dreamSetVerbose(true);
 
@@ -43,7 +43,9 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    bool loaded = project->openFromArgumentParser(ArgumentParser(argc,argv));
+    ArgumentParser parser(argc,argv);
+
+    bool loaded = project.openFromArgumentParser(parser);
 
     if (!loaded)
     {

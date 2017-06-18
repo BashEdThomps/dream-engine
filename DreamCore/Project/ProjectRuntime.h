@@ -31,16 +31,19 @@ using std::vector;
 namespace Dream
 {
     // Forward Declarations
+
+    class Project;
     class AnimationComponent;
-    class AssetDefinition;
     class AudioComponent;
-    class Camera;
     class GraphicsComponent;
     class IWindowComponent;
-    class LuaEngine;
     class PhysicsComponent;
-    class Project;
-    class Scene;
+    class LuaEngine;
+
+    class Camera;
+    class SceneRuntime;
+    class SceneDefinition;
+
     class Time;
 
     // Class Declaration
@@ -49,7 +52,6 @@ namespace Dream
 
     private: // Member Variables
         bool mDone;
-        string mProjectPath;
 
         unique_ptr<Time> mTime;
         unique_ptr<Camera> mCamera;
@@ -60,14 +62,12 @@ namespace Dream
         unique_ptr<LuaEngine> mLuaEngine;
 
         IWindowComponent* mWindowComponentHandle;
+        unique_ptr<SceneRuntime> mActiveSceneRuntime;
         Project* mProjectHandle;
-        Scene* mActiveSceneHandle;
 
     public: // Public Functions
-        ProjectRuntime(Project* projHandle = nullptr, IWindowComponent* wcHandle = nullptr);
+        ProjectRuntime(Project* parentProject, IWindowComponent* wcHandle = nullptr);
         ~ProjectRuntime();
-
-        void setProjectHandle(Project*);
 
         void setDone(bool);
         bool isDone();
@@ -81,18 +81,19 @@ namespace Dream
         GraphicsComponent* getGraphicsComponentHandle();
         IWindowComponent* getWindowComponentHandle();
         LuaEngine* getLuaEngineHandle();
+        Project* getProjectHandle();
 
         bool initComponents();
 
-        void cleanUpActiveScene();
-        void cleanupComponents(Scene* sceneHandle);
+        void cleanUpActiveSceneRuntime();
+        void cleanupComponents();
 
         void updateAll();
         void updateLogic();
         void updateGraphics();
         void updateFlush();
 
-        void setActiveSceneHandle(Scene* sceneHandle);
+        void createActiveSceneRuntime(SceneDefinition* sceneDefinition);
 
         int getWindowWidth();
         void setWindowWidth(int);
@@ -100,15 +101,12 @@ namespace Dream
         int getWindowHeight();
         void setWindowHeight(int);
 
-        bool loadActiveScene();
+        bool loadActiveSceneRuntime();
 
         bool loadSceneByUuid(string uuid);
 
+        bool hasActiveSceneRuntime();
 
-        string getProjectPath();
-        void setProjectPath(string path);
-
-        bool hasActiveSceneHandle();
     private: // Member Functions
         bool initAnimationComponent();
         bool initAudioComponent();

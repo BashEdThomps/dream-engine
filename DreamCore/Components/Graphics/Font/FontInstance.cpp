@@ -21,7 +21,7 @@
 #include "FontCharacter.h"
 
 #include "../../Transform3D.h"
-#include "../../../Project/AssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {

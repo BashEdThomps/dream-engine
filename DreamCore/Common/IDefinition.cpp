@@ -19,8 +19,6 @@
 #include "IDefinition.h"
 #include "Constants.h"
 
-using std::string;
-
 namespace Dream
 {
     IDefinition::IDefinition
@@ -36,7 +34,7 @@ namespace Dream
     {
     }
 
-    json&
+    json
     IDefinition::getJson
     ()
     {
@@ -82,12 +80,11 @@ namespace Dream
         return s.compare(uuid) == 0;
     }
 
-
     string
     IDefinition::getNameAndUuidString
     ()
     {
-        return getName() + " (" + getUuid() + ")";
+        return "[" + getName() + " : " + getUuid() + "]";
     }
 
 }

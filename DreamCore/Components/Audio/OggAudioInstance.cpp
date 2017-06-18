@@ -19,7 +19,7 @@
 
 #include <vorbis/vorbisfile.h>
 #include "../../Common/Constants.h"
-#include "../../Project/AssetDefinition.h"
+#include "../AssetDefinition.h"
 
 using std::cerr;
 using std::cout;

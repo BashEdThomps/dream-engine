@@ -22,7 +22,7 @@
 #include "OggAudioInstance.h"
 
 #include "../Transform3D.h"
-#include "../../Project/AssetDefinition.h"
+#include "../AssetDefinition.h"
 
 using std::cout;
 using std::endl;
@@ -270,7 +270,7 @@ namespace Dream
 
     void
     AudioComponent::updateComponent
-    (Scene*)
+    (SceneRuntime*)
     {
         if (Constants::DEBUG)
         {
@@ -485,7 +485,7 @@ namespace Dream
 
     void
     AudioComponent::cleanUp
-    (Scene* scene)
+    (SceneRuntime* scene)
     {
         if (Constants::DEBUG)
         {

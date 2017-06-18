@@ -19,7 +19,7 @@
 
 #include "Project.h"
 
-#include "AssetDefinition.h"
+#include "../Components/AssetDefinition.h"
 #include "../Scene/SceneDefinition.h"
 
 #include "../Common/Constants.h"
@@ -34,7 +34,8 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectDefinition: Constructing Object." << endl;
+            cout << "ProjectDefinition: Constructing "
+                 << getNameAndUuidString() << endl;
         }
     }
 
@@ -44,7 +45,8 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectDefinition: Destructing Object." << endl;
+            cout << "ProjectDefinition: Destructing "
+                 << getNameAndUuidString() << endl;
         }
     }
 
@@ -56,34 +58,6 @@ namespace Dream
         {
             cout << "ProjectDefinition: " << mJson.dump(1) << endl;
         }
-    }
-
-    string
-    ProjectDefinition::getName
-    ()
-    {
-        return mJson[Constants::PROJECT_NAME];
-    }
-
-    void
-    ProjectDefinition::setName
-    (string name)
-    {
-        mJson[Constants::PROJECT_NAME] = name;
-    }
-
-    void
-    ProjectDefinition::setUuid
-    (string uuid)
-    {
-        mJson[Constants::PROJECT_UUID] = uuid;
-    }
-
-    string
-    ProjectDefinition::getUuid
-    ()
-    {
-        return mJson[Constants::PROJECT_UUID];
     }
 
     void
@@ -157,50 +131,126 @@ namespace Dream
     }
 
     void
-    ProjectDefinition::pushToProject
-    (Project* projectHandle)
+    ProjectDefinition::loadChildDefinitions
+    ()
     {
-        pushAssetDefinitionsToProject(projectHandle);
-        pushSceneDefinitionsToProject(projectHandle);
+        loadAssetDefinitions();
+        loadSceneDefinitions();
     }
 
     void
-    ProjectDefinition::pushAssetDefinitionsToProject
-    (Project* projectHandle)
+    ProjectDefinition::loadAssetDefinitions
+    ()
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectDefinition: Loading AssetDefinitions from JSON Array" << endl;
+            cout << "ProjectDefinition: Loading AssetDefinitions from JSON" << endl;
         }
 
         for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
-            if (Constants::DEBUG)
-            {
-                cout << "ProjectDefinition: Creating AssetDefinition for project "
-                     << getNameAndUuidString() << endl;
-            }
-            projectHandle->addAssetDefinition(it);
+            addAssetDefinition(it);
         }
     }
 
     void
-    ProjectDefinition::pushSceneDefinitionsToProject
-    (Project* projectHandle)
+    ProjectDefinition::loadSceneDefinitions
+    ()
     {
         if (Constants::DEBUG)
         {
-            cout << "ProjectDefinition: Loading Scenes from JSON Array" << endl;
+            cout << "ProjectDefinition: Loading ScenesDefinitions from JSON" << endl;
         }
 
         for (nlohmann::json it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
-            if (Constants::DEBUG)
-            {
-                cout << "ProjectDefinition: Creating SceneDefinition for project "
-                     << getNameAndUuidString() << endl;
-            }
-            projectHandle->addScene(it);
+            addSceneDefinition(it);
         }
+    }
+
+    void
+    ProjectDefinition::addAssetDefinition
+    (json assetDefinition)
+    {
+        mAssetDefinitions.push_back
+        (
+            unique_ptr<AssetDefinition>
+            (
+                new AssetDefinition(this,assetDefinition)
+            )
+        );
+    }
+
+    void
+    ProjectDefinition::removeAssetDefinition
+    (AssetDefinition* assetDefinitionHandle)
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "ProjectDefinition: Removing AssetDefinition "
+                 << assetDefinitionHandle->getNameAndUuidString() << endl;
+        }
+
+        remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
+            [&](const unique_ptr<AssetDefinition>& thisDefinition)
+            {
+                return thisDefinition.get() == assetDefinitionHandle;
+            }
+        );
+    }
+
+    size_t
+    ProjectDefinition::countAssetDefinitions
+    ()
+    {
+        return mAssetDefinitions.size();
+    }
+
+    AssetDefinition*
+    ProjectDefinition::getAssetDefinitionHandleByUuid
+    (string uuid)
+    {
+        for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
+        {
+            if ((*it)->hasUuid(uuid))
+            {
+                return (*it).get();
+            }
+        }
+        return nullptr;
+    }
+
+    void
+    ProjectDefinition::addSceneDefinition
+    (json scene)
+    {
+        mSceneDefinitions.push_back
+        (
+            unique_ptr<SceneDefinition>
+            (
+                new SceneDefinition(this,scene)
+            )
+        );
+    }
+
+    size_t
+    ProjectDefinition::countScenesDefinitions
+    ()
+    {
+        return mSceneDefinitions.size();
+    }
+
+    SceneDefinition*
+    ProjectDefinition::getSceneDefinitionHandleByUuid
+    (string uuid)
+    {
+        for(auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
+        {
+            if ((*it)->hasUuid(uuid))
+            {
+                return (*it).get();
+            }
+        }
+        return nullptr;
     }
 }
