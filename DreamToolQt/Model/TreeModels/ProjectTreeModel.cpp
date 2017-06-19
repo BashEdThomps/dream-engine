@@ -20,7 +20,7 @@
 #include <QStringList>
 
 ProjectTreeModel::ProjectTreeModel
-(Project *project, QObject *parent)
+(ProjectDefinition *project, QObject *parent)
     : QAbstractItemModel(parent)
 {
     mProject = project;
@@ -176,7 +176,7 @@ ProjectTreeModel::setupModelData
     ProjectTreeItem *scenesNode = new ProjectTreeItem(sceneNodeData,GenericTreeItemType::TREE_NODE,nullptr,parent);
     parent->appendChild(scenesNode);
 
-    for (Scene *scene : mProject->getSceneList())
+    for (SceneDefinition *scene : mProject->getSceneDefinitionsHandleList())
     {
         QList<QVariant> nextSceneData;
         nextSceneData << QString::fromStdString(scene->getName());
@@ -185,7 +185,7 @@ ProjectTreeModel::setupModelData
         scenesNode->appendChild(nextScene);
 
         // Setup SceneObjects
-        SceneObject *rootSceneObject = scene->getRootSceneObject();
+        SceneObjectDefinition *rootSceneObject = scene->getRootSceneObjectDefinitionHandle();
         QList<QVariant> rootSceneObjectData;
         rootSceneObjectData << QString::fromStdString(rootSceneObject->getName());
         ProjectTreeItem *rootSceneObjectItem;
@@ -202,9 +202,9 @@ ProjectTreeModel::setupModelData
 
 void
 ProjectTreeModel::appendSceneObjects
-(SceneObject *parentSceneObject, ProjectTreeItem* parentTreeNode)
+(SceneObjectDefinition *parentSceneObject, ProjectTreeItem* parentTreeNode)
 {
-    for (SceneObject *sceneObject : parentSceneObject->getChildren())
+    for (SceneObjectDefinition *sceneObject : parentSceneObject->getChildDefinitionsHandleList())
     {
         // Setup Child
         QList<QVariant> sceneObjectData;

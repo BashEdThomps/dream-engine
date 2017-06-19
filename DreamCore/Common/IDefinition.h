@@ -39,9 +39,11 @@ namespace Dream
 
         bool hasName(string name);
         string getName();
+        void setName(string name);
 
         bool hasUuid(string uuid);
         string getUuid();
+        void setUuid(string uuid);
 
         string getNameAndUuidString();
     };

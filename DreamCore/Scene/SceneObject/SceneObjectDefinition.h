@@ -31,15 +31,17 @@ using std::unique_ptr;
 namespace Dream
 {
     class Transform3D;
+    class SceneDefinition;
 
     class SceneObjectDefinition : public IDefinition
     {
     private:
         SceneObjectDefinition* mParentSceneObjectHandle;
+        SceneDefinition* mSceneDefinitionHandle;
         vector<unique_ptr<SceneObjectDefinition>> mChildDefinitions;
 
     public:
-        SceneObjectDefinition(SceneObjectDefinition* parentHandle, json data);
+        SceneObjectDefinition(SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle,  json data);
         ~SceneObjectDefinition();
 
         bool hasUuid(string);
@@ -60,7 +62,9 @@ namespace Dream
 
         void showStatus();
 
-        vector<unique_ptr<SceneObjectDefinition>>& getChildDefinitions();
+        vector<SceneObjectDefinition*> getChildDefinitionsHandleList();
+
+        SceneDefinition *getSceneDefinitionHandle();
 
     private:
         void loadChildSceneObjectDefinitions(json definition);

@@ -87,4 +87,17 @@ namespace Dream
         return "[" + getName() + " : " + getUuid() + "]";
     }
 
+    void
+    IDefinition::setName(string name)
+    {
+        mJson[Constants::NAME] = name;
+    }
+
+    void
+    IDefinition::setUuid(string uuid)
+    {
+        mJson[Constants::UUID] = uuid;
+    }
 }
+
+

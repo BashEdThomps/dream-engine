@@ -16,8 +16,7 @@
  * this file belongs to.
  */
 
-#ifndef ASSET_DEFINITION_TREEMODEL_H
-#define ASSET_DEFINITION_TREEMODEL_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include "AssetDefinitionTreeItem.h"
@@ -29,7 +28,7 @@ class AssetDefinitionTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit AssetDefinitionTreeModel(Project *project, QObject *parent = 0);
+    explicit AssetDefinitionTreeModel(ProjectDefinition *project, QObject *parent = 0);
     ~AssetDefinitionTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -42,8 +41,6 @@ public:
 
 private:
     void setupModelData();
-    Project *mProject;
+    ProjectDefinition *mProject;
     AssetDefinitionTreeItem *mRootItem;
 };
-
-#endif // ASSET_DEFINITION_TREEMODEL_H

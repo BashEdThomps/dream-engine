@@ -48,8 +48,6 @@
 #include "../Utilities/FileReader.h"
 #include "../Utilities/String.h"
 
-using std::move;
-
 namespace Dream
 {
     Project::Project
@@ -66,9 +64,13 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Project: Destructing "
-                 << mDefinition->getNameAndUuidString()
-                 << endl;
+            cout << "Project: Destructing ";
+            if (mDefinition)
+            {
+                 cout << mDefinition->getNameAndUuidString();
+            }
+
+            cout << endl;
         }
     }
 

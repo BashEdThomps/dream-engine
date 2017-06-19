@@ -396,7 +396,7 @@ namespace Dream
     }
 
     SceneRuntime*
-    ProjectRuntime::getActiveSceneRuntime
+    ProjectRuntime::getActiveSceneRuntimeHandle
     ()
     {
         return mActiveSceneRuntime.get();

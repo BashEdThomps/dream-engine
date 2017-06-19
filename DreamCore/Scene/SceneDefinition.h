@@ -68,6 +68,6 @@ namespace Dream
 
         SceneObjectDefinition* getRootSceneObjectDefinitionHandle();
 
-        //size_t countSceneObjectDefinitions();
+        ProjectDefinition* getProjectDefinitionHandle();
     };
 }

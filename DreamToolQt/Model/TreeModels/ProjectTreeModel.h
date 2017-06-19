@@ -16,8 +16,7 @@
  * this file belongs to.
  */
 
-#ifndef PROJECTTREEMODEL_H
-#define PROJECTTREEMODEL_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include "ProjectTreeItem.h"
@@ -29,30 +28,21 @@ class ProjectTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit ProjectTreeModel(Project *project, QObject *parent = 0);
+    explicit ProjectTreeModel(ProjectDefinition *project, QObject *parent = 0);
     ~ProjectTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
-
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const override;
-
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const override;
-
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
-
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
 private:
+
     void setupModelData(ProjectTreeItem *parent);
-    void appendSceneObjects(SceneObject *parentSceneObject, ProjectTreeItem* parentTreeNode);
-    Project *mProject;
+    void appendSceneObjects(SceneObjectDefinition *parentSceneObject, ProjectTreeItem* parentTreeNode);
+    ProjectDefinition *mProject;
     ProjectTreeItem *mRootItem;
 };
-
-#endif // PROJECTTREEMODEL_H

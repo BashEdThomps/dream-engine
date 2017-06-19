@@ -60,9 +60,13 @@ namespace Dream
         void showStatus();
         size_t countAssetDefinitions();
         AssetDefinition *getAssetDefinitionHandleByUuid(string uuid);
+
         size_t countScenesDefinitions();
         SceneDefinition *getSceneDefinitionHandleByUuid(string uuid);
+        vector<SceneDefinition*> getSceneDefinitionsHandleList();
+
         void removeAssetDefinition(AssetDefinition* assetDef);
+        vector<AssetDefinition*> getAssetDefinitionsHandleList();
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();

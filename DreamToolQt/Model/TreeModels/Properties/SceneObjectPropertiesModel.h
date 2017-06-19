@@ -26,7 +26,7 @@ using namespace Dream;
 class SceneObjectPropertiesModel : public PropertiesModel
 {
 public:
-    SceneObjectPropertiesModel(SceneObject *sceneObject,QTreeView* parent = 0);
+    SceneObjectPropertiesModel(SceneObjectDefinition *sceneObject,QTreeView* parent = 0);
     ~SceneObjectPropertiesModel();
 
     void createRoot() override;
@@ -42,7 +42,7 @@ public:
     void createAssetInstancesProperty();
     void createChildrenProperty();
 private:
-    SceneObject *mSceneObject;
+    SceneObjectDefinition *mSceneObject;
 };
 
 #endif // SCENEOBJECTPROPERTIESMODEL_H

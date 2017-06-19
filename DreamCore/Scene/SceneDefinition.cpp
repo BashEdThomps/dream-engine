@@ -75,7 +75,7 @@ namespace Dream
     {
         if (!jsonArray.is_null())
         {
-            mRootSceneObjectDefinition.reset(new SceneObjectDefinition(nullptr, jsonArray));
+            mRootSceneObjectDefinition.reset(new SceneObjectDefinition(nullptr, this,jsonArray));
         }
     }
 
@@ -272,5 +272,12 @@ namespace Dream
     ()
     {
         return mRootSceneObjectDefinition.get();
+    }
+
+    ProjectDefinition*
+    SceneDefinition::getProjectDefinitionHandle
+    ()
+    {
+       return mProjectDefinitionHandle;
     }
 }

@@ -16,6 +16,8 @@
  * this file belongs to.
  */
 #include "DreamProjectModel.h"
+
+#include <QTimer>
 #include <QDebug>
 
 DreamProjectModel::DreamProjectModel
@@ -26,7 +28,6 @@ DreamProjectModel::DreamProjectModel
 {
     setupHeartbeatTimer();
     mProject.reset(new Project(mWindowComponentHandle));
-    mProject->initRuntime();
 }
 
 void
@@ -53,18 +54,18 @@ DreamProjectModel::getProject
     return mProject.get();
 }
 
-vector<Scene*>
+vector<SceneDefinition*>
 DreamProjectModel::getScenes
 ()
 {
-    return mProject->getSceneList();
+    return mProject->getProjectDefinitionHandle()->getSceneDefinitionsHandleList();
 }
 
 vector<AssetDefinition*>
 DreamProjectModel::getAssetDefinitions
 ()
 {
-    return mProject->getAssetDefinitions();
+    return mProject->getProjectDefinitionHandle()->getAssetDefinitionsHandleList();
 }
 
 bool
@@ -72,79 +73,82 @@ DreamProjectModel::loadProject
 (QString path)
 {
     mProject.reset(new Project(mWindowComponentHandle));
-    mProject->initRuntime();
-    return mProject->loadFromDirectory(path.toStdString());
+    return mProject->openFromDirectory(path.toStdString());
 }
 
 void
 DreamProjectModel::setProjectName
 (string name)
 {
-    mProject->setName(name);
+    mProject->getProjectDefinitionHandle()->setName(name);
 }
 
 void
 DreamProjectModel::setProjectAuthor
 (string author)
 {
-    mProject->setAuthor(author);
+    mProject->getProjectDefinitionHandle()->setAuthor(author);
 }
 
 void
 DreamProjectModel::setProjectDescription
 (string desc)
 {
-    mProject->setDescription(desc);
+    mProject->getProjectDefinitionHandle()->setDescription(desc);
 }
 
 void
 DreamProjectModel::setProjectStartupSceneByUuid
 (string scene)
 {
-    mProject->setStartupSceneUuid(scene);
+    mProject->getProjectDefinitionHandle()->setStartupSceneUuid(scene);
 }
 
 void
 DreamProjectModel::setProjectWindowWidth
 (int width)
 {
-    mProject->setWindowWidth(width);
+    mProject->getProjectDefinitionHandle()->setWindowWidth(width);
 }
 
 void
 DreamProjectModel::setProjectWindowHeight
 (int height)
 {
-    mProject->setWindowHeight(height);
+    mProject->getProjectDefinitionHandle()->setWindowHeight(height);
 }
 
 AssetDefinition*
-DreamProjectModel::getAssetDefinitionByUuid
+DreamProjectModel::getAssetDefinitionHandleByUuid
 (std::string uuid)
 {
-    return mProject->getAssetDefinitionByUuid(uuid);
+    return mProject->getProjectDefinitionHandle()->getAssetDefinitionHandleByUuid(uuid);
 }
 
-Scene*
-DreamProjectModel::getSceneByUuid
-(std::string uuid)
+SceneDefinition*
+DreamProjectModel::getSceneDefinitionHandleByUuid
+(string uuid)
 {
-    return getProject()->getSceneByUuid(uuid);
+    return getProject()->getProjectDefinitionHandle()->getSceneDefinitionHandleByUuid(uuid);
 }
 
 bool
-DreamProjectModel::startScene
-()
+DreamProjectModel::startSceneRuntimeFromDefinition
+(SceneDefinition* definitionHandle)
 {
-    if (!mSelectedSceneHandle)
+    if (!definitionHandle)
     {
-        qDebug() << "DreamModel: No scene selected";
+        qDebug() << "DreamModel: No SceneDefinition selected";
         return false;
     }
 
     qDebug() << "DreamModel: *** Start Scene ***";
-    mProject->setActiveScene(mSelectedSceneHandle);
-    bool loadResult = mProject->loadActiveScene();
+
+    ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
+    SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definitionHandle);
+
+    //TODO
+    bool loadResult = false;//mProject->loadActiveScene();
 
     if (!loadResult)
     {
@@ -153,36 +157,38 @@ DreamProjectModel::startScene
     }
 
     mWindowComponentHandle->setProject(mProject.get());
+
+    //emit notifyPlayingScene(sceneDefinitionHandle);
     return true;
 }
 
-Scene*
-DreamProjectModel::getSelectedScene
+SceneDefinition*
+DreamProjectModel::getSelectedSceneDefinitionHandle
 ()
 {
     return mSelectedSceneHandle;
 }
 
 void
-DreamProjectModel::setSelectedScene
-(Scene* selectedScene)
+DreamProjectModel::setSelectedSceneDefinitionHandle
+(SceneDefinition* selectedScene)
 {
     mSelectedSceneHandle = selectedScene;
 }
 
-Scene*
-DreamProjectModel::stopActiveScene
+SceneRuntime*
+DreamProjectModel::stopActiveSceneRuntime
 ()
 {
-    Scene* activeScene = mProject->getActiveScene();
-    if (activeScene)
-    {
-        activeScene->getRuntime()->setState(DONE);
-        mProject->cleanUpActiveScene();
-        mProject->setActiveScene(nullptr);
+    ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
+    SceneRuntime* srHandle = prHandle->getActiveSceneRuntimeHandle();
 
+    if (srHandle)
+    {
+        srHandle->setState(SCENE_STATE_DONE);
+        srHandle->cleanUp();
     }
-    return activeScene;
+    return srHandle;
 }
 
 void
@@ -197,7 +203,7 @@ void
 DreamProjectModel::closeProject
 ()
 {
-    stopActiveScene();
+    stopActiveSceneRuntime();
     mProject.reset(nullptr);
     mHeartbeatTimer.reset(nullptr);
 }

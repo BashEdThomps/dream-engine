@@ -898,14 +898,14 @@ namespace Dream
     {
         for
         (
-            auto it = begin(definitionHandle->getChildDefinitions());
-            it != end(definitionHandle->getChildDefinitions());
+            auto it = begin(definitionHandle->getChildDefinitionsHandleList());
+            it != end(definitionHandle->getChildDefinitionsHandleList());
             it++
         )
         {
             SceneObjectRuntime* child = new SceneObjectRuntime(mSceneRuntimeHandle);
             child->setParentRuntimeHandle(this);
-            child->useDefinition((*it).get());
+            child->useDefinition((*it));
             mChildRuntimes.push_back(unique_ptr<SceneObjectRuntime>(child));
         }
     }

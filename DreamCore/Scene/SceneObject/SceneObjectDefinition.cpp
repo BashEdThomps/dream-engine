@@ -28,8 +28,9 @@
 namespace Dream
 {
     SceneObjectDefinition::SceneObjectDefinition
-    (SceneObjectDefinition* parentHandle, json jsonData)
+    (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData)
         : IDefinition(jsonData),
+          mSceneDefinitionHandle(sceneDefinitionHandle),
           mParentSceneObjectHandle(parentHandle)
     {
         if (Constants::DEBUG)
@@ -206,16 +207,28 @@ namespace Dream
             {
                 mChildDefinitions.push_back
                 (
-                    unique_ptr<SceneObjectDefinition>(new SceneObjectDefinition(this, childDefinition))
+                    unique_ptr<SceneObjectDefinition>(new SceneObjectDefinition(this, mSceneDefinitionHandle, childDefinition))
                 );
             }
         }
     }
 
-    vector<unique_ptr<SceneObjectDefinition>>&
-    SceneObjectDefinition::getChildDefinitions
+    vector<SceneObjectDefinition*>
+    SceneObjectDefinition::getChildDefinitionsHandleList
     ()
     {
-        return mChildDefinitions;
+        vector<SceneObjectDefinition*> list;
+        for (auto it = begin(mChildDefinitions); it != end(mChildDefinitions); it++)
+        {
+           list.push_back((*it).get());
+        }
+        return list;
+    }
+
+    SceneDefinition*
+    SceneObjectDefinition::getSceneDefinitionHandle
+    ()
+    {
+        return mSceneDefinitionHandle;
     }
 }

@@ -83,7 +83,7 @@ QOpenGLWindowComponent::paintGL
         ProjectRuntime* pRuntime = mProjectHandle->getProjectRuntimeHandle();
         if (pRuntime->hasActiveSceneRuntime())
         {
-            SceneRuntime *sRuntime = pRuntime->getActiveSceneRuntime();
+            SceneRuntime *sRuntime = pRuntime->getActiveSceneRuntimeHandle();
             glm::mat4 viewMatrix = pRuntime->getGraphicsComponentHandle()->getViewMatrix();
             glm::mat4 projectionMatrix = pRuntime->getGraphicsComponentHandle()->getProjectionMatrix();
 

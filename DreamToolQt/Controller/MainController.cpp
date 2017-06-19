@@ -221,13 +221,19 @@ MainController::onProjectOpenAction
 
     emit notifyProjectWidgetsEnabledChanged(true);
 
-    mProjectTreeModel.reset(new ProjectTreeModel(project,mMainWindowHandle->getProjectTreeView()));
+    mProjectTreeModel.reset(new ProjectTreeModel(project->getProjectDefinitionHandle(),mMainWindowHandle->getProjectTreeView()));
     mMainWindowHandle->getProjectTreeView()->setModel(mProjectTreeModel.get());
 
-    mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(project,mMainWindowHandle->getAssetDefinitionTreeView()));
+    mAssetDefinitionTreeModel.reset
+    (
+        new AssetDefinitionTreeModel
+        (
+            project->getProjectDefinitionHandle(),mMainWindowHandle->getAssetDefinitionTreeView()
+        )
+    );
     mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
 
-    emit notifyStatusBarProjectLoaded(QString::fromStdString(project->getProjectRuntimeHandle()->getNameAndUuidString()));
+    emit notifyStatusBarProjectLoaded(QString::fromStdString(project->getProjectDefinitionHandle()->getNameAndUuidString()));
     connectTreeViewModel();
 }
 
@@ -328,7 +334,9 @@ MainController::onProjectStartupSceneChanged
 {
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
     qDebug() << "MainController: startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
-    Scene* sceneHandle = mDreamModel->getProject()->getSceneByUuid(sceneName);
+    SceneDefinition* sceneHandle = mDreamModel->getProject()
+        ->getProjectDefinitionHandle()
+        ->getSceneDefinitionHandleByUuid(sceneName);
     mDreamModel->setProjectStartupSceneByUuid(sceneHandle->getUuid());
 }
 
@@ -337,11 +345,10 @@ MainController::onProjectPlayAction
 ()
 {
     qDebug() << "MainController: onReloadProject Clicked";
-    Scene *scene = mDreamModel->getSelectedScene();
-    if (scene)
+    SceneDefinition *sceneDefinitionHandle = mDreamModel->getSelectedSceneDefinitionHandle();
+    if (sceneDefinitionHandle)
     {
-        mDreamModel->startScene();
-        emit notifyPlayingScene(scene);
+        mDreamModel->startSceneRuntimeFromDefinition(sceneDefinitionHandle);
     }
     else
     {
@@ -361,8 +368,8 @@ void
 MainController::onProjectStopAction
 ()
 {
-    Scene* scene = mDreamModel->stopActiveScene();
-    emit notifyStoppedScene(scene);
+    SceneRuntime* SceneRuntime = mDreamModel->stopActiveSceneRuntime();
+    emit notifyStoppedScene(SceneRuntime);
 }
 
 void
@@ -380,15 +387,15 @@ MainController::onProjectOpenTestProjectAction
         return;
     }
     updateWindowTitle(mProjectDirectory);
-    Project *currentProject = mDreamModel->getProject();
+    ProjectDefinition *currentProject = mDreamModel->getProject()->getProjectDefinitionHandle();
 
     emit notifyProjectNameChanged(QString::fromStdString(currentProject->getName()));
     emit notifyProjectAuthorChanged(QString::fromStdString(currentProject->getAuthor()));
     emit notifyProjectDescriptionChanged(QString::fromStdString(currentProject->getDescription()));
     emit notifyProjectWindowWidthChanged(currentProject->getWindowWidth());
     emit notifyProjectWindowHeightChanged(currentProject->getWindowHeight());
-    emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneList()));
-    emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupScene()->getName()));
+    emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneDefinitionsHandleList()));
+    emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupSceneDefinitionHandle()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
 
     mProjectTreeModel.reset(new ProjectTreeModel(currentProject,mMainWindowHandle->getProjectTreeView()));
@@ -433,41 +440,45 @@ MainController::setupPropertiesTreeViewModel
 {
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
     PropertiesModel *model = nullptr;
-    Project *project;
-    AssetDefinition *asset = nullptr;
-    Scene *scene = nullptr;
-    SceneObject *sceneObject = nullptr;
+    ProjectDefinition *projectDefinition;
+    AssetDefinition *assetDefinition = nullptr;
+    SceneDefinition *sceneDefinition = nullptr;
+    SceneObjectDefinition *sceneObjectDefinition = nullptr;
 
     switch(item->getItemType())
     {
         case GenericTreeItemType::PROJECT:
             qDebug() << "MainController: Selected a project";
-            project = mDreamModel->getProject();
-            model = new ProjectPropertiesModel(project,propertiesTreeView);
+            projectDefinition = mDreamModel->getProject()->getProjectDefinitionHandle();
+            model = new ProjectPropertiesModel(projectDefinition,propertiesTreeView);
             break;
         case GenericTreeItemType::ASSET_DEFINITION:
             qDebug() << "MainController: Selected an asset definition";
-            asset = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
-            model = new AssetDefinitionPropertiesModel(asset,propertiesTreeView);
+            assetDefinition = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
+            model = new AssetDefinitionPropertiesModel(assetDefinition,propertiesTreeView);
             // Set Type Delegate
             break;
         case GenericTreeItemType::SCENE:
-            scene = static_cast<Scene*>(static_cast<ProjectTreeItem*>(item)->getItem());
-            mDreamModel->setSelectedScene(scene);
-            if (scene)
+            sceneDefinition = static_cast<SceneDefinition*>(static_cast<ProjectTreeItem*>(item)->getItem());
+            mDreamModel->setSelectedSceneDefinitionHandle(sceneDefinition);
+            if (sceneDefinition)
             {
-                model = new ScenePropertiesModel(scene,propertiesTreeView);
+                model = new ScenePropertiesModel(sceneDefinition,propertiesTreeView);
                 qDebug() << "MainController: Selected a scene";
             }
             break;
         case GenericTreeItemType::SCENE_OBJECT:
             qDebug() << "MainController: Selected a scene object";
-            sceneObject = static_cast<SceneObject*>(static_cast<ProjectTreeItem*>(item)->getItem());
-            model = new SceneObjectPropertiesModel(sceneObject,propertiesTreeView);
+            sceneObjectDefinition = static_cast<SceneObjectDefinition*>(static_cast<ProjectTreeItem*>(item)->getItem());
+            model = new SceneObjectPropertiesModel(sceneObjectDefinition,propertiesTreeView);
+
             if (mSelectionHighlighter)
             {
-                mSelectionHighlighter->setSelectedObject(sceneObject);
+                // TODO
+                qDebug() << "MainController: Selection setter method disabled.";
+                //mSelectionHighlighter->setSelectedObject(sceneObject);
             }
+
             break;
         case GenericTreeItemType::TREE_NODE:
             qDebug() << "MainController: Selected a tree node";
@@ -482,9 +493,9 @@ MainController::setupPropertiesTreeViewModel
 
 void
 MainController::onSelectedSceneChanged
-(Scene *scene)
+(SceneDefinition *scene)
 {
-    mDreamModel->setSelectedScene(scene);
+    mDreamModel->setSelectedSceneDefinitionHandle(scene);
     mMainWindowHandle->showStatusBarMessage(
         QString("Selected Scene: %1").
             arg(QString::fromStdString(scene->getName())
@@ -494,7 +505,7 @@ MainController::onSelectedSceneChanged
 
 void
 MainController::onSceneStopped
-(Scene* scene)
+(SceneDefinition* scene)
 {
 
 }

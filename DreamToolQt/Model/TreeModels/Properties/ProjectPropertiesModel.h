@@ -26,13 +26,13 @@ using namespace Dream;
 class ProjectPropertiesModel : public PropertiesModel
 {
 public:
-    ProjectPropertiesModel(Project *project, QTreeView* parent = 0);
+    ProjectPropertiesModel(ProjectDefinition *project, QTreeView* parent = 0);
     ~ProjectPropertiesModel();
     void createRoot() override;
     void createProperties() override;
     void createDelegates() override;
 private:
-    Project *mProject;
+    ProjectDefinition *mProject;
 };
 
 #endif // PROJECTPROPERTIESMODEL_H

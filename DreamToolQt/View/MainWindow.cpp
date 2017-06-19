@@ -218,7 +218,7 @@ MainWindow::getWindowComponent
 
 void
 MainWindow::onSceneStopped
-(SceneRuntime* scene)
+(SceneDefinition* scene)
 {
     if (scene)
     {

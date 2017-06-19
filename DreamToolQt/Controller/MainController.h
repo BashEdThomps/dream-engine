@@ -19,22 +19,26 @@
 #define MAINCONTROLLER_H
 
 #include <memory>
+
 #include <QObject>
 #include <QErrorMessage>
 #include <QStringList>
 #include <QStringListModel>
 #include <QItemSelection>
 #include <QSurfaceFormat>
-#include "../View/MainWindow.h"
+
 #include "../Model/DreamProjectModel.h"
 #include "../Model/TreeModels/ProjectTreeModel.h"
 #include "../Model/TreeModels/AssetDefinitionTreeModel.h"
+
+#include "../View/MainWindow.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
 
-using namespace std;
-using namespace Dream;
+using std::string;
+using Dream::SceneDefinition;
+using Dream::SceneRuntime;
 
 class MainController : public QObject
 {
@@ -82,7 +86,7 @@ public slots:
     void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
 
     void onSelectedSceneChanged(SceneDefinition *scene);
-    void onSceneStopped(SceneRuntime* scene);
+    void onSceneStopped(SceneDefinition* scene);
 
     void onGridToggleAction(bool enabled);
     void onToggleDebugAction(bool enabled);

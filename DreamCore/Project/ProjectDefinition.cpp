@@ -255,6 +255,26 @@ namespace Dream
         return nullptr;
     }
 
+    vector<SceneDefinition *> ProjectDefinition::getSceneDefinitionsHandleList()
+    {
+       vector<SceneDefinition*> list;
+       for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
+       {
+           list.push_back((*it).get());
+       }
+       return list;
+    }
+
+    vector<AssetDefinition*> ProjectDefinition::getAssetDefinitionsHandleList()
+    {
+        vector<AssetDefinition*> definitionsList;
+        for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
+        {
+            definitionsList.push_back((*it).get());
+        }
+        return definitionsList;
+    }
+
     SceneDefinition*
     ProjectDefinition::getStartupSceneDefinitionHandle
     ()

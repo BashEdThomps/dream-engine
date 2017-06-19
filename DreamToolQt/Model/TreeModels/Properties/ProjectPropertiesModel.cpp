@@ -18,7 +18,7 @@
 #include "ProjectPropertiesModel.h"
 
 ProjectPropertiesModel::ProjectPropertiesModel
-(Project *project,QTreeView* parent)
+(ProjectDefinition *project,QTreeView* parent)
     : PropertiesModel(parent)
 {
     mProject = project;

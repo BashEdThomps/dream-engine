@@ -15,18 +15,28 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef DREAMMODEL_H
-#define DREAMMODEL_H
+
+#pragma once
+
+#include <memory>
 
 #include <DreamCore.h>
-#include <QObject>
-#include <QTimer>
-#include <memory>
 
 #include "../View/QOpenGLWindowComponent.h"
 
-using namespace std;
-using namespace Dream;
+#include <QObject>
+
+namespace Qt
+{
+    class QTimer;
+}
+
+using std::string;
+using std::vector;
+
+using Dream::AssetDefinition;
+using Dream::SceneDefinition;
+using Dream::Project;
 
 class DreamProjectModel : public QObject
 {
@@ -51,15 +61,15 @@ public:
     void setDebug(bool enabled);
     void closeProject();
 
-    bool startScene();
-    SceneRuntime* stopActiveScene();
+    bool startSceneRuntimeFromDefinition(SceneDefinition* definitionHandle);
+    SceneRuntime* stopActiveSceneRuntime();
     void setupHeartbeatTimer();
 
-    AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
-    SceneDefinition *getSceneDefByUuid(std::string uuid);
+    AssetDefinition* getAssetDefinitionHandleByUuid(string uuid);
+    SceneDefinition* getSceneDefinitionHandleByUuid(string uuid);
 
-    SceneDefinition *getSelectedScene();
-    void setSelectedScene(SceneDefinition* selectedScene);
+    SceneDefinition* getSelectedSceneDefinitionHandle();
+    void setSelectedSceneDefinitionHandle(SceneDefinition* selectedScene);
 
 signals:
     void notifySelectedSceneChanged(SceneDefinition* scene);
@@ -68,9 +78,8 @@ private:
     // Owned Objects
     unique_ptr<Project> mProject;
     unique_ptr<QTimer>  mHeartbeatTimer;
+
     // Handles
     QOpenGLWindowComponent *mWindowComponentHandle;
     SceneDefinition* mSelectedSceneHandle;
 };
-
-#endif // DREAMMODEL_H

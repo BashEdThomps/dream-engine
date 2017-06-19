@@ -22,6 +22,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <vector>
 
 using namespace std;

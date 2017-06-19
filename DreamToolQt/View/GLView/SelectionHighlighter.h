@@ -15,13 +15,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SELECTIONHIGHLIGHTER_H
-#define SELECTIONHIGHLIGHTER_H
+#pragma once
 
 #include "GLDrawable.h"
 #include <DreamCore.h>
 
-using namespace Dream;
+using glm::vec3;
+using Dream::SceneObjectRuntime;
+using Dream::BoundingBox;
 
 class SelectionHighlighter : public GLDrawable
 {
@@ -38,11 +39,9 @@ public:
 private:
     SceneObjectRuntime* mSelectedObjectHandle;
     void updateVertexBuffer();
-    glm::vec3 mSelectionColour;
-    glm::vec3 mXColour;
-    glm::vec3 mYColour;
-    glm::vec3 mZColour;
+    vec3 mSelectionColour;
+    vec3 mXColour;
+    vec3 mYColour;
+    vec3 mZColour;
     float mOffset;
 };
-
-#endif // SELECTIONHIGHLIGHTER_H
