@@ -55,16 +55,18 @@ namespace Dream
         string getNotes();
         void setNotes(string notes);
 
-        Transform3D getDefaultCameraTransform();
+        Transform3D getCameraTransform();
 
-        vector<float> getGravity() const;
-        void setGravity(const vector<float> &gravity);
+        vector<float> getGravity();
+        void setGravity(vector<float> gravity);
 
-        vector<float> getClearColour() const;
-        void setClearColour(const vector<float> &clearColour);
+        vector<float> getClearColour();
+        void setClearColour(vector<float> clearColour);
 
-        vector<float> getAmbientColour() const;
-        void setAmbientColour(const vector<float> &ambientColour);
+        vector<float> getAmbientColour();
+        void setAmbientColour(vector<float> ambientColour);
+
+        SceneObjectDefinition* getRootSceneObjectDefinitionHandle();
 
         //size_t countSceneObjectDefinitions();
     };

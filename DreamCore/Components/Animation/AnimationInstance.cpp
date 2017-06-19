@@ -29,8 +29,8 @@ namespace Dream
 
 
     AnimationInstance::AnimationInstance
-    (AssetDefinition* definition, Transform3D* transform)
-        : IAssetInstance(definition,transform)
+    (AssetDefinition* definition, SceneObjectRuntime* runtime)
+        : IAssetInstance(definition,runtime)
     {
         mCurrentPlaybackFrame = 0;
         mLoop = false;

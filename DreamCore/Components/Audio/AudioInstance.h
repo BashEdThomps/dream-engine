@@ -28,7 +28,7 @@ namespace Dream
         AudioStatus mStatus;
 
     public:
-        AudioInstance(AssetDefinition*,Transform3D*);
+        AudioInstance(AssetDefinition*,SceneObjectRuntime*);
 
         void setLooping(bool);
         bool isLooping();

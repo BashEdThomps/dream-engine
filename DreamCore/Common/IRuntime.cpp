@@ -37,14 +37,13 @@ namespace Dream
     string
     Runtime::getUuid
     ()
-    const
     {
         return mUuid;
     }
 
     void
     Runtime::setUuid
-    (const string &uuid)
+    (string uuid)
     {
         mUuid = uuid;
     }
@@ -52,14 +51,13 @@ namespace Dream
     string
     Runtime::getName
     ()
-    const
     {
         return mName;
     }
 
     void
     Runtime::setName
-    (const string &name)
+    (string name)
     {
         mName = name;
     }
@@ -73,14 +71,14 @@ namespace Dream
 
     bool
     Runtime::hasName
-    (const string &name)
+    (string name)
     {
         return getName().compare(name) == 0;
     }
 
     bool
     Runtime::hasUuid
-    (const string &uuid)
+    (string uuid)
     {
         return getUuid().compare(uuid) == 0;
     }

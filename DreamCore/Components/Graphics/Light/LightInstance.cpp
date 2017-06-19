@@ -1,13 +1,14 @@
 #include "LightInstance.h"
 
 #include "../../AssetDefinition.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
     LightInstance::LightInstance
     (
         AssetDefinition* definition,
-        Transform3D* transform
+        SceneObjectRuntime* transform
     )
         : IAssetInstance(definition,transform)
     {

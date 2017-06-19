@@ -44,7 +44,7 @@ namespace Dream
     private: // Methods
         void generateCharacterMap();
     public:
-        FontInstance(AssetDefinition*,Transform3D*);
+        FontInstance(AssetDefinition*,SceneObjectRuntime*);
         ~FontInstance();
 
         bool load(string);

@@ -14,7 +14,7 @@ namespace Dream
         float mIntensity;
 
     public:
-        LightInstance(AssetDefinition*, Transform3D*);
+        LightInstance(AssetDefinition*, SceneObjectRuntime*);
         ~LightInstance();
 
         bool load(string);

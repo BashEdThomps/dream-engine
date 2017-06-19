@@ -73,9 +73,14 @@ namespace Dream
     }
 
     AssimpModelInstance::AssimpModelInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition* definition, SceneObjectRuntime* transform)
     : IAssetInstance(definition,transform)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "AssimpModelInstance: Constructing "
+                 << definition->getNameAndUuidString() << endl;
+        }
         initBoundingBox();
         return;
     }

@@ -21,8 +21,8 @@
 #include "WavAudioInstance.h"
 #include "OggAudioInstance.h"
 
-#include "../Transform3D.h"
 #include "../AssetDefinition.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 using std::cout;
 using std::endl;
@@ -198,10 +198,13 @@ namespace Dream
                 {
                     audioAsset->setBuffer(generateBuffers(1));
                     audioAsset->setSource(generateSources(1));
+
+                    Transform3D transform = audioAsset->getSceneObjectRuntimeHandle()->getTransform();
+
                     vector<float> position = {
-                        audioAsset->getTransform()->getTranslation().x,
-                        audioAsset->getTransform()->getTranslation().y,
-                        audioAsset->getTransform()->getTranslation().z,
+                        transform.getTranslation().x,
+                        transform.getTranslation().y,
+                        transform.getTranslation().z,
                     };
                     vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                     alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
@@ -467,15 +470,15 @@ namespace Dream
 
     AudioInstance*
     AudioComponent::newAudioInstance
-    (AssetDefinition* definition,Transform3D* transform)
+    (AssetDefinition* definition,SceneObjectRuntime* rt)
     {
         if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
-            return new WavAudioInstance(definition,transform);
+            return new WavAudioInstance(definition,rt);
         }
         else if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
-            return new OggAudioInstance(definition,transform);
+            return new OggAudioInstance(definition,rt);
         }
         cerr << "AudioComponent: Error, unrecognised audio format "
              << definition->getFormat() << endl;

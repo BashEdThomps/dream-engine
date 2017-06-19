@@ -67,7 +67,8 @@ namespace Dream
         }
     }
 
-    SceneObjectRuntime::~SceneObjectRuntime()
+    SceneObjectRuntime::~SceneObjectRuntime
+    ()
     {
         if (Constants::DEBUG)
         {
@@ -144,63 +145,63 @@ namespace Dream
     SceneObjectRuntime::setTranslation
     (vec3 translation)
     {
-        mTransform->setTranslation(translation);
+        mTransform.setTranslation(translation);
     }
 
     void
     SceneObjectRuntime::setRotation
     (vec3 rotation)
     {
-        mTransform->setRotation(rotation);
+        mTransform.setRotation(rotation);
     }
 
     void
     SceneObjectRuntime::setScale
     (vec3 scale)
     {
-        mTransform->setScale(scale);
+        mTransform.setScale(scale);
     }
 
     void
     SceneObjectRuntime::setTranslation
     (float x, float y, float z)
     {
-        mTransform->setTranslation(x,y,z);
+        mTransform.setTranslation(x,y,z);
     }
 
     void
     SceneObjectRuntime::setRotation
     (float x, float y, float z)
     {
-        mTransform->setRotation(x,y,z);
+        mTransform.setRotation(x,y,z);
     }
 
     void
     SceneObjectRuntime::setScale
     (float x, float y, float z)
     {
-        mTransform->setScale(x,y,z);
+        mTransform.setScale(x,y,z);
     }
 
     vec3
     SceneObjectRuntime::getRotation
     ()
     {
-        return mTransform->getRotation();
+        return mTransform.getRotation();
     }
 
     vec3
     SceneObjectRuntime::getScale
     ()
     {
-        return mTransform->getScale();
+        return mTransform.getScale();
     }
 
     vec3
     SceneObjectRuntime::getTranslation
     ()
     {
-        return mTransform->getTranslation();
+        return mTransform.getTranslation();
     }
 
     void
@@ -333,14 +334,14 @@ namespace Dream
     SceneObjectRuntime::addAssetDefinitionUuidToLoad
     (string def)
     {
-        mAssetDefinitionUuidsToLoad.push_back(def);
+        mAssetDefinitionUuidLoadQueue.push_back(def);
     }
 
     vector<string>
     SceneObjectRuntime::getAssetDefinitionUuidsToLoad
     ()
     {
-        return mAssetDefinitionUuidsToLoad;
+        return mAssetDefinitionUuidLoadQueue;
     }
 
     void
@@ -375,27 +376,28 @@ namespace Dream
     SceneObjectRuntime::getTransformType
     ()
     {
-        return mTransform->getTransformType();
+        return mTransform.getTransformType();
     }
 
     void
     SceneObjectRuntime::setTransformType
     (string transformType)
     {
-        mTransform->setTransformType(transformType);
+        mTransform.setTransformType(transformType);
     }
 
-    Transform3D*
+    Transform3D&
     SceneObjectRuntime::getTransform
-    () {
-        return mTransform.get();
+    ()
+    {
+        return mTransform;
     }
 
     void
     SceneObjectRuntime::setTransform
-    (Transform3D* transform)
+    (Transform3D transform)
     {
-        mTransform.reset(transform);
+        mTransform = transform;
     }
 
     bool
@@ -515,10 +517,11 @@ namespace Dream
     SceneObjectRuntime::createAssetInstances
     ()
     {
-        for (string aDefUuid : mAssetDefinitionUuidsToLoad)
+        for (string aDefUuid : mAssetDefinitionUuidLoadQueue)
         {
             createAssetInstanceFromAssetDefinitionByUuid(aDefUuid);
         }
+        mAssetDefinitionUuidLoadQueue.clear();
     }
 
     void
@@ -538,7 +541,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Asset Intance of: ("
+            cout << "SceneObjectRuntime: Creating Asset Intance of: ("
                  << definition->getType() << ") " << definition->getName()
                  << ", for  " << mParentRuntimeHandle->getNameAndUuidString()
                  << endl;
@@ -580,6 +583,11 @@ namespace Dream
         {
             createFontInstance(definition);
         }
+        else
+        {
+            cerr << "SceneObjectRuntime: Invalid Asset Instance Type"
+                 << definition->getType() << endl;
+        }
     }
 
     void
@@ -590,9 +598,10 @@ namespace Dream
 
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Loading Asset Data from "
-                 << projectPath << endl;
+            cout << "SceneObjectRuntime: Loading Asset Instances Data for "
+                 << getNameAndUuidString() << endl;
         }
+
 
         if(mAudioInstance)
         {
@@ -648,11 +657,11 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Physics Object Asset Instance." << endl;
+            cout << "SceneObjectRuntime: Creating Physics Object Asset Instance." << endl;
         }
         mPhysicsObjectInstance.reset
                 (
-                    new PhysicsObjectInstance(definition, mTransform.get())
+                    new PhysicsObjectInstance(definition, this)
                     );
     }
 
@@ -662,9 +671,9 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Animation asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Animation asset instance." << endl;
         }
-        mAnimationInstance.reset(new AnimationInstance(definition,mTransform.get()));
+        mAnimationInstance.reset(new AnimationInstance(definition,this));
     }
 
     void
@@ -673,14 +682,14 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Audio asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Audio asset instance." << endl;
         }
         // hottest trainwreck 2017!
         mAudioInstance.reset(
                     mParentRuntimeHandle->getSceneRuntimeHandle()
                     ->getProjectRuntimeHandle()
                     ->getAudioComponentHandle()
-                    ->newAudioInstance(definition,mTransform.get())
+                    ->newAudioInstance(definition,this)
                     );
     }
 
@@ -690,11 +699,11 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Model asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Model asset instance." << endl;
         }
         mModelInstance.reset
                 (
-                    new AssimpModelInstance(definition,mTransform.get())
+                    new AssimpModelInstance(definition,this)
                     );
     }
 
@@ -704,10 +713,11 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Script asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Script asset instance." << endl;
         }
-        mScriptInstance.reset(new LuaScriptInstance(definition, mTransform.get()));
-        mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()->addToScriptMap(mParentRuntimeHandle,mScriptInstance.get());
+        mScriptInstance.reset(new LuaScriptInstance(definition,this));
+        mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()
+                ->addToScriptMap(this,mScriptInstance.get());
     }
 
     void
@@ -716,9 +726,9 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Shader asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Shader asset instance." << endl;
         }
-        mShaderInstance.reset(new ShaderInstance(definition,mTransform.get()));
+        mShaderInstance.reset(new ShaderInstance(definition, this));
     }
 
     void
@@ -727,9 +737,9 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Light Asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Light Asset instance." << endl;
         }
-        mLightInstance.reset(new LightInstance(definition,mTransform.get()));
+        mLightInstance.reset(new LightInstance(definition, this));
     }
 
     void
@@ -738,9 +748,9 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Sprite Asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Sprite Asset instance." << endl;
         }
-        mSpriteInstance.reset(new SpriteInstance(definition,mTransform.get()));
+        mSpriteInstance.reset(new SpriteInstance(definition, this));
     }
 
     void
@@ -749,9 +759,9 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneObject: Creating Font Asset instance." << endl;
+            cout << "SceneObjectRuntime: Creating Font Asset instance." << endl;
         }
-        mFontInstance.reset(new FontInstance(definition,mTransform.get()));
+        mFontInstance.reset(new FontInstance(definition, this));
     }
 
     bool
@@ -812,15 +822,6 @@ namespace Dream
         return nullptr;
     }
 
-    /*
-    void
-    SceneObjectRuntime::addChildRuntimeHandle
-    (SceneObjectRuntime *child)
-    {
-        mChildRuntimes.push_back(child);
-    }
-    */
-
     bool
     SceneObjectRuntime::isParentOf
     (SceneObjectRuntime *child)
@@ -854,5 +855,51 @@ namespace Dream
     ()
     {
         return mSceneRuntimeHandle;
+    }
+
+    void
+    SceneObjectRuntime::useDefinition
+    (IDefinition* iDefinitionHandle)
+    {
+       SceneObjectDefinition *defHandle = dynamic_cast<SceneObjectDefinition*>(iDefinitionHandle);
+
+       if (Constants::DEBUG)
+       {
+           cout << "SceneObjectRuntime: Using Definition "
+                << defHandle->getNameAndUuidString()
+                << endl;
+       }
+
+       setName(defHandle->getName());
+       setUuid(defHandle->getUuid());
+       setTransform(defHandle->getTransform());
+       setAssetDefinitionLoadQueue(defHandle->getAssetDefinitionLoadQueue());
+       loadChildrenFromDefinition(defHandle);
+
+    }
+
+    void
+    SceneObjectRuntime::setAssetDefinitionLoadQueue
+    (vector<string> loadQueue)
+    {
+        mAssetDefinitionUuidLoadQueue = loadQueue;
+    }
+
+    void
+    SceneObjectRuntime::loadChildrenFromDefinition
+    (SceneObjectDefinition* definitionHandle)
+    {
+        for
+        (
+            auto it = begin(definitionHandle->getChildDefinitions());
+            it != end(definitionHandle->getChildDefinitions());
+            it++
+        )
+        {
+            SceneObjectRuntime* child = new SceneObjectRuntime(mSceneRuntimeHandle);
+            child->setParentRuntimeHandle(this);
+            child->useDefinition((*it).get());
+            mChildRuntimes.push_back(unique_ptr<SceneObjectRuntime>(child));
+        }
     }
 }

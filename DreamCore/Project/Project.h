@@ -57,7 +57,7 @@ namespace Dream
         bool openFromArgumentParser(ArgumentParser &parser);
         bool openFromDirectory(string directory);
 
-        bool createProjectRuntime();
+        void createProjectRuntime();
 
         string getProjectPath();
 

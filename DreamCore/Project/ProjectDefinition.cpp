@@ -37,6 +37,7 @@ namespace Dream
             cout << "ProjectDefinition: Constructing "
                  << getNameAndUuidString() << endl;
         }
+        loadChildDefinitions();
     }
 
 
@@ -252,5 +253,12 @@ namespace Dream
             }
         }
         return nullptr;
+    }
+
+    SceneDefinition*
+    ProjectDefinition::getStartupSceneDefinitionHandle
+    ()
+    {
+        return getSceneDefinitionHandleByUuid(getStartupSceneUuid());
     }
 }

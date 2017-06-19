@@ -49,6 +49,7 @@ namespace Dream
     class LuaScriptInstance;
     class AssetDefinition;
     class SceneRuntime;
+    class SceneObjectDefinition;
 
     class SceneObjectRuntime : public Runtime
     {
@@ -63,10 +64,10 @@ namespace Dream
         unique_ptr<LuaScriptInstance> mScriptInstance;
         unique_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
         unique_ptr<FontInstance> mFontInstance;
-        unique_ptr<Transform3D> mTransform;
+        Transform3D mTransform;
 
         vector<Event> mEventQueue;
-        vector<string> mAssetDefinitionUuidsToLoad;
+        vector<string> mAssetDefinitionUuidLoadQueue;
         vector<unique_ptr<SceneObjectRuntime>> mChildRuntimes;
 
         SceneRuntime* mSceneRuntimeHandle;
@@ -76,6 +77,8 @@ namespace Dream
         bool mHasFocus;
         bool mDelete;
 
+        void setAssetDefinitionLoadQueue(vector<string> loadQueue);
+        void loadChildrenFromDefinition(SceneObjectDefinition *definitionHandle);
     public:
         SceneObjectRuntime(SceneRuntime* sceneRuntimeHandle = nullptr);
 
@@ -161,8 +164,8 @@ namespace Dream
         string getTransformType();
         void setTransformType(string);
 
-        Transform3D* getTransform();
-        void setTransform(Transform3D*);
+        Transform3D& getTransform();
+        void setTransform(Transform3D);
 
         bool hasFocus();
         void setHasFocus(bool);
@@ -176,7 +179,6 @@ namespace Dream
         bool hasEvents();
         void sendEvent(Event);
         vector<Event>& getEventQueue();
-
 
         void loadAssetInstances();
 
@@ -196,6 +198,7 @@ namespace Dream
         void* applyToAll(function<void*(SceneObjectRuntime*)>);
         bool applyToAll(function<bool(SceneObjectRuntime*)>);
 
+        void useDefinition(IDefinition* iDefinitionHandle) override;
 
     };
 }

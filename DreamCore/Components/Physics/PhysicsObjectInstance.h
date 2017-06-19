@@ -45,7 +45,7 @@ namespace Dream
         vector<CompoundChild> mCompoundChildren;
 
     public:
-        PhysicsObjectInstance(AssetDefinition*,Transform3D*);
+        PhysicsObjectInstance(AssetDefinition*,SceneObjectRuntime*);
         ~PhysicsObjectInstance();
         bool load(string);
         btCollisionShape* createCollisionShape(AssetDefinition*, string projectPath);

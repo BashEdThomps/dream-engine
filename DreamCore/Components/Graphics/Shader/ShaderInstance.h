@@ -42,7 +42,7 @@ namespace Dream
         map<string, GLfloat> mUniform1fMap;
     public:
         ShaderInstance();
-        ShaderInstance(AssetDefinition*,Transform3D*);
+        ShaderInstance(AssetDefinition*,SceneObjectRuntime*);
         ~ShaderInstance();
         bool load(string);
         void use();

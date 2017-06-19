@@ -22,7 +22,7 @@ namespace Dream
 {
 
     WavAudioInstance::WavAudioInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition* definition, SceneObjectRuntime* transform)
         : AudioInstance(definition, transform)
     {
         return;

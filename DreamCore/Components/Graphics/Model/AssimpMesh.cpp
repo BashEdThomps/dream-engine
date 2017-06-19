@@ -28,13 +28,14 @@ namespace Dream
     AssimpMesh::~AssimpMesh
     ()
     {
+        /*
         if (Constants::DEBUG)
         {
             cout << "AssimpMesh: Destroying Mesh for "
                  << mParentHandle->getName()
                  << endl;
         }
-        return;
+        */
     }
 
     void

@@ -30,6 +30,7 @@ using std::unique_ptr;
 
 namespace Dream
 {
+    class Transform3D;
 
     class SceneObjectDefinition : public IDefinition
     {
@@ -52,10 +53,14 @@ namespace Dream
         void setHasFocus(bool focus);
         bool hasFocus();
 
-        void addAssetDefUuidToLoad(string uuid);
-        vector<string> getAssetDefUuidsToLoad();
+        void addAssetDefinitionUuidToLoadQueue(string uuid);
+        vector<string> getAssetDefinitionLoadQueue();
+
+        Transform3D getTransform();
 
         void showStatus();
+
+        vector<unique_ptr<SceneObjectDefinition>>& getChildDefinitions();
 
     private:
         void loadChildSceneObjectDefinitions(json definition);

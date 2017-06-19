@@ -31,6 +31,7 @@
 #include <glm/vec3.hpp>
 
 #include "../../Common/Constants.h"
+#include "../Transform3D.h"
 
 using namespace std;
 
@@ -78,6 +79,8 @@ namespace Dream
         void  setMouseSensitivity(float);
         float getMouseSensitivity();
         float getZoom();
+
+        void setTransform(Transform3D);
     private:
         float radians(float);
 

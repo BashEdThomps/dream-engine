@@ -24,6 +24,8 @@
 
 #include "../Project/ProjectRuntime.h"
 
+#include "SceneDefinition.h"
+
 #include "SceneObject/SceneObjectDefinition.h"
 #include "SceneObject/SceneObjectRuntime.h"
 
@@ -62,14 +64,13 @@ namespace Dream
     SceneState
     SceneRuntime::getState
     ()
-    const
     {
         return mState;
     }
 
     void
     SceneRuntime::setState
-    (const SceneState &state)
+    (SceneState state)
     {
         mState = state;
     }
@@ -77,14 +78,13 @@ namespace Dream
     vector<float>
     SceneRuntime::getGravity
     ()
-    const
     {
         return mGravity;
     }
 
     void
     SceneRuntime::setGravity
-    (const vector<float> &gravity)
+    (vector<float> gravity)
     {
         mGravity = gravity;
     }
@@ -92,28 +92,27 @@ namespace Dream
     vector<float>
     SceneRuntime::getClearColour
     ()
-    const
     {
         return mClearColour;
     }
 
     void
     SceneRuntime::setClearColour
-    (const vector<float> &clearColour)
+    (vector<float> clearColour)
     {
         mClearColour = clearColour;
     }
 
     vector<float>
     SceneRuntime::getAmbientColour
-    () const
+    ()
     {
         return mAmbientColour;
     }
 
     void
     SceneRuntime::setAmbientColour
-    (const vector<float> &ambientColour)
+    (vector<float> ambientColour)
     {
         mAmbientColour = ambientColour;
     }
@@ -131,7 +130,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Scene: Adding "
+            cout << "SceneRuntime: Adding "
                  << object->getNameAndUuidString()
                  << " to SceneObjectRuntime delete queue" << endl;
         }
@@ -144,7 +143,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Scene: clearSceneObjectRuntimeDeleteQueue" << endl;
+            cout << "SceneRuntime: clearSceneObjectRuntimeDeleteQueue" << endl;
         }
         mSceneObjectRuntimeDeleteQueue.clear();
     }
@@ -234,7 +233,7 @@ namespace Dream
     {
         if (!mRootSceneObjectRuntime)
         {
-            cout << "Scene: Scenegraph is empty (no root SceneObjectRuntime)" << endl;
+            cout << "SceneRuntime: Scenegraph is empty (no root SceneObjectRuntime)" << endl;
             return;
         }
 
@@ -272,7 +271,7 @@ namespace Dream
     {
         if (Constants::VERBOSE)
         {
-            cout << "Scene: findDeleteFlaggedSceneObjects Called" << endl;
+            cout << "SceneRuntime: findDeleteFlaggedSceneObjects Called" << endl;
         }
 
         mRootSceneObjectRuntime->applyToAll
@@ -297,7 +296,7 @@ namespace Dream
     {
         if (Constants::VERBOSE)
         {
-            cout << "Secne: Create All Asset Instances Called" << endl;
+            cout << "SceneRuntime: Create All Asset Instances Called" << endl;
         }
 
         mRootSceneObjectRuntime->applyToAll
@@ -348,7 +347,7 @@ namespace Dream
     {
         if (Constants::VERBOSE)
         {
-            cout << "Scene: Cleanup Deleted Scripts Called" << endl;
+            cout << "SceneRuntime: Cleanup Deleted Scripts Called" << endl;
         }
         vector<SceneObjectRuntime*> objects = getSceneObjectRuntimeDeleteQueue();
 
@@ -364,7 +363,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Scene: cleanUpSceneObjectRuntimes" << endl;
+            cout << "SceneRuntime: cleanUpSceneObjectRuntimes" << endl;
         }
 
         mRootSceneObjectRuntime->applyToAll
@@ -386,7 +385,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Scene: flush" << endl;
+            cout << "SceneRuntime: flush" << endl;
         }
         findDeleteFlaggedSceneObjectRuntimes();
         findDeleteFlaggedScripts();
@@ -399,7 +398,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Scene: cleanUp called on "
+            cout << "SceneRuntime: cleanUp called on "
                  <<  getNameAndUuidString()
                  << endl;
         }
@@ -412,7 +411,7 @@ namespace Dream
         }
         else
         {
-            cerr << "Scene: Cannot cleanUp Scene "
+            cerr << "SceneRuntime: Cannot cleanUp Scene "
                  << getNameAndUuidString()
                  << " State != DONE"
                  << endl;
@@ -426,7 +425,6 @@ namespace Dream
         return mProjectRuntimeHandle;
     }
 
-
     bool
     SceneRuntime::hasRootSceneObjectRuntime
     ()
@@ -434,4 +432,73 @@ namespace Dream
         return mRootSceneObjectRuntime != nullptr;
     }
 
+    void
+    SceneRuntime::useDefinition
+    (IDefinition* iDefinitionHandle)
+    {
+        SceneDefinition *sceneDefinitionHandle = dynamic_cast<SceneDefinition*>(iDefinitionHandle);
+
+        if (Constants::DEBUG)
+        {
+            cout << "SceneRuntime: Using SceneDefinition "
+                 << sceneDefinitionHandle->getNameAndUuidString() << endl;
+        }
+
+        // Assign Runtime attributes from Definition
+        setName(sceneDefinitionHandle->getName());
+        setUuid(sceneDefinitionHandle->getUuid());
+        setAmbientColour(sceneDefinitionHandle->getAmbientColour());
+        setClearColour(sceneDefinitionHandle->getClearColour());
+        setGravity(sceneDefinitionHandle->getGravity());
+        setPhysicsDebug(sceneDefinitionHandle->getPhysicsDebug());
+        setCameraTransform(sceneDefinitionHandle->getCameraTransform());
+        setCameraMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
+
+        // Create Root SceneObjectRuntime
+        setRootSceneObjectRuntime(new SceneObjectRuntime(this));
+        mRootSceneObjectRuntime->useDefinition(sceneDefinitionHandle->getRootSceneObjectDefinitionHandle());
+
+    }
+
+    bool
+    SceneRuntime::getPhysicsDebug
+    ()
+    {
+        return mPhysicsDebug;
+    }
+
+    void
+    SceneRuntime::setPhysicsDebug
+    (bool physicsDebug)
+    {
+        mPhysicsDebug = physicsDebug;
+    }
+
+    float
+    SceneRuntime::getCameraMovementSpeed
+    ()
+    {
+        return mCameraMovementSpeed;
+    }
+
+    void
+    SceneRuntime::setCameraMovementSpeed
+    (float cameraMovementSpeed)
+    {
+        mCameraMovementSpeed = cameraMovementSpeed;
+    }
+
+    Transform3D
+    SceneRuntime::getCameraTransform
+    ()
+    {
+        return mCameraTransform;
+    }
+
+    void
+    SceneRuntime::setCameraTransform
+    (Transform3D cameraTransform)
+    {
+        mCameraTransform = cameraTransform;
+    }
 } // End of Dream

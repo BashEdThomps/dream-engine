@@ -20,14 +20,14 @@
 #include "FontInstance.h"
 #include "FontCharacter.h"
 
-#include "../../Transform3D.h"
 #include "../../AssetDefinition.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
 
     FontInstance::FontInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform)
     {
         if (!FontCache::getFreeTypeLib())

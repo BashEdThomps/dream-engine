@@ -27,8 +27,8 @@ using nlohmann::json;
 
 namespace Dream
 {
-    class Transform3D;
     class AssetDefinition;
+    class SceneObjectRuntime;
 
     class IAssetInstance
     {
@@ -36,10 +36,10 @@ namespace Dream
         bool mLoaded;
         string mAbsolutePath;
         AssetDefinition *mDefinitionHandle;
-        Transform3D *mTransformHandle;
+        SceneObjectRuntime* mSceneObjectRuntimeHandle;
         string mUuid;
     public:
-        IAssetInstance(AssetDefinition*, Transform3D*);
+        IAssetInstance(AssetDefinition*, SceneObjectRuntime* runtimeHandle);
         virtual ~IAssetInstance();
 
         string getUuid();
@@ -50,13 +50,13 @@ namespace Dream
         virtual bool load(string) = 0;
         virtual void loadExtraAttributes(json) = 0;
 
-        Transform3D* getTransform();
-
         string getAbsolutePath();
         void setAbsolutePath(string);
 
         bool getLoadedFlag();
         void setLoadedFlag(bool);
+
+        SceneObjectRuntime* getSceneObjectRuntimeHandle();
 
     }; // End of IAssetInstance
 

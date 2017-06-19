@@ -23,6 +23,7 @@ using std::string;
 
 namespace Dream
 {
+    class IDefinition;
     class Runtime
     {
     protected:
@@ -32,14 +33,15 @@ namespace Dream
         Runtime(string uuid = "", string name = "");
         virtual ~Runtime();
 
-        string getUuid() const;
-        void setUuid(const string &uuid);
-        bool hasUuid(const string &uuid);
+        string getUuid();
+        void setUuid(string uuid);
+        bool hasUuid(string uuid);
 
-        string getName() const;
-        void setName(const string &name);
-        bool hasName(const string &name);
+        string getName();
+        void setName(string name);
+        bool hasName(string name);
 
         string getNameAndUuidString();
+        virtual void useDefinition(IDefinition*) = 0;
     };
 }

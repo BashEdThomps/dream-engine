@@ -28,7 +28,7 @@ namespace Dream
     {
 
     public:
-        OggAudioInstance(AssetDefinition*, Transform3D*);
+        OggAudioInstance(AssetDefinition*, SceneObjectRuntime*);
         ~OggAudioInstance();
 
         bool load(string) override;

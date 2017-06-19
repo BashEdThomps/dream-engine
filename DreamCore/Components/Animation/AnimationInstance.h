@@ -29,7 +29,7 @@ namespace Dream
         bool mLoop;
         bool mPlaying;
     public:
-        AnimationInstance(AssetDefinition*,Transform3D*);
+        AnimationInstance(AssetDefinition*,SceneObjectRuntime*);
         ~AnimationInstance();
         bool load(string);
         bool isLooping();

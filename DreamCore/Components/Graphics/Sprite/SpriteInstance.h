@@ -37,7 +37,7 @@ namespace Dream
         GLuint mTexture;
         GLenum mTextureFormat;
     public:
-        SpriteInstance(AssetDefinition*,Transform3D*);
+        SpriteInstance(AssetDefinition*, SceneObjectRuntime*);
         ~SpriteInstance();
         bool load(string);
         void loadExtraAttributes(json);

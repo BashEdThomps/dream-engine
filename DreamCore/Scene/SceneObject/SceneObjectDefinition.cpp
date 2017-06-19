@@ -95,78 +95,56 @@ namespace Dream
         return mJson[Constants::UUID];
     }
 
-    /*
-    void
-    SceneObjectDefinition::applyDataToRuntime
-    (SceneObjectRuntime* runtime)
+    Transform3D
+    SceneObjectDefinition::getTransform
+    ()
     {
-        if (!mJson.is_object())
-        {
-           mJson[Constants::UUID] = Uuid::generateUuid();
-           return;
-        }
+        Transform3D transform;
 
         string transformType;
         if (!mJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE].is_null())
         {
             transformType = mJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE];
-            runtime->getTransform()->setTransformType(transformType);
+            transform.setTransformType(transformType);
         }
         else
         {
             transformType = Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
-            runtime->getTransform()->setTransformType(transformType);
+            transform.setTransformType(transformType);
         }
 
         if (!mJson[Constants::SCENE_OBJECT_TRANSLATION].is_null())
         {
             json translation = mJson[Constants::SCENE_OBJECT_TRANSLATION];
-            runtime->setTranslation(
+            transform.setTranslation(
                 translation[Constants::X],
                 translation[Constants::Y],
                 translation[Constants::Z]
             );
         }
-        else
-        {
-            runtime->resetTranslation();
-        }
 
         if (!mJson[Constants::SCENE_OBJECT_ROTATION].is_null())
         {
             json rotation = mJson[Constants::SCENE_OBJECT_ROTATION];
-            runtime->setRotation(
+            transform.setRotation(
                 rotation[Constants::X],
                 rotation[Constants::Y],
                 rotation[Constants::Z]
             );
         }
-        else
-        {
-            runtime->resetRotation();
-        }
 
         if (!mJson[Constants::SCENE_OBJECT_SCALE].is_null())
         {
             json scale = mJson[Constants::SCENE_OBJECT_SCALE];
-            runtime->setScale(
+            transform.setScale(
                 scale[Constants::X],
                 scale[Constants::Y],
                 scale[Constants::Z]
             );
         }
-        else
-        {
-            runtime->resetScale();
-        }
 
-        if(!mJson[Constants::SCENE_OBJECT_HAS_FOCUS].is_null())
-        {
-            bool focus = mJson[Constants::SCENE_OBJECT_HAS_FOCUS];
-            runtime->setHasFocus(focus);
-        }
+        return transform;
     }
-    */
 
     void
     SceneObjectDefinition::setHasFocus
@@ -188,14 +166,14 @@ namespace Dream
     }
 
     void
-    SceneObjectDefinition::addAssetDefUuidToLoad
+    SceneObjectDefinition::addAssetDefinitionUuidToLoadQueue
     (string uuid)
     {
         mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].push_back(uuid);
     }
 
     vector<string>
-    SceneObjectDefinition::getAssetDefUuidsToLoad
+    SceneObjectDefinition::getAssetDefinitionLoadQueue
     ()
     {
         vector<string> toLoad;
@@ -232,5 +210,12 @@ namespace Dream
                 );
             }
         }
+    }
+
+    vector<unique_ptr<SceneObjectDefinition>>&
+    SceneObjectDefinition::getChildDefinitions
+    ()
+    {
+        return mChildDefinitions;
     }
 }

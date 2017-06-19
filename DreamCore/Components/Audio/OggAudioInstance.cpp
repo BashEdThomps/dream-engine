@@ -18,8 +18,10 @@
 #include "OggAudioInstance.h"
 
 #include <vorbis/vorbisfile.h>
-#include "../../Common/Constants.h"
+
 #include "../AssetDefinition.h"
+#include "../../Common/Constants.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 using std::cerr;
 using std::cout;
@@ -27,7 +29,7 @@ using std::cout;
 namespace Dream
 {
     OggAudioInstance::OggAudioInstance
-    (AssetDefinition* definition,Transform3D* transform)
+    (AssetDefinition* definition,SceneObjectRuntime* transform)
         : AudioInstance(definition,transform)
     {
 

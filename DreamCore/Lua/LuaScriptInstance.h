@@ -29,7 +29,7 @@ namespace Dream
       {
 
       public:
-        LuaScriptInstance(AssetDefinition*,Transform3D*);
+        LuaScriptInstance(AssetDefinition*,SceneObjectRuntime*);
         ~LuaScriptInstance(void);
         bool load(string);
         void update();

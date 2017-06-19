@@ -221,6 +221,14 @@ namespace Dream
         return mZoom;
     }
 
+    void
+    Camera::setTransform
+    (Transform3D transform)
+    {
+       setTranslation(transform.getTranslation());
+       setRotation(transform.getRotation());
+    }
+
     float
     Camera::radians
     (float degrees)

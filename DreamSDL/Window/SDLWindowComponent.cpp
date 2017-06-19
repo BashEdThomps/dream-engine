@@ -27,12 +27,20 @@ namespace DreamSDL
     SDLWindowComponent::SDLWindowComponent
     () : IWindowComponent()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "SDLWindowComponent: Constructing" << endl;
+        }
         mName = "Dream";
     }
 
     SDLWindowComponent::~SDLWindowComponent
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "SDLWindowComponent: Destructing" << endl;
+        }
         if (mWindow != nullptr)
         {
             SDL_DestroyWindow(mWindow);

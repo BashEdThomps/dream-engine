@@ -36,7 +36,7 @@ namespace Dream
         WavHeader mWavHeader;
 
     public:
-        WavAudioInstance(AssetDefinition*,Transform3D*);
+        WavAudioInstance(AssetDefinition*,SceneObjectRuntime*);
         ~WavAudioInstance();
 
         long getFileSize(FILE* inFile);

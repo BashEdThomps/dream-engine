@@ -8,6 +8,7 @@
 #include "../../Common/Constants.h"
 
 #include "../../Project/ProjectDefinition.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 #include "../AssetDefinition.h"
 
@@ -45,7 +46,7 @@ namespace Dream
     }
 
     PhysicsObjectInstance::PhysicsObjectInstance
-    (AssetDefinition* definition,Transform3D* transform)
+    (AssetDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mInPhysicsWorld(false),
           mKinematic(false)
@@ -178,7 +179,7 @@ namespace Dream
         }
         float mass = mDefinitionHandle->getJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
-        mMotionState = new PhysicsMotionState(mTransformHandle);
+        mMotionState = new PhysicsMotionState(mSceneObjectRuntimeHandle->getTransform());
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);

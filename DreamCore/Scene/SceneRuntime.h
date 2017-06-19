@@ -24,6 +24,7 @@
 #include "SceneState.h"
 
 #include "../Common/IRuntime.h"
+#include "../Components/Transform3D.h"
 
 using std::string;
 using std::vector;
@@ -35,7 +36,6 @@ namespace Dream
     class SceneObject;
     class SceneDefinition;
     class IAssetInstance;
-    class Transform3D;
     class AssetDefinition;
     class SceneObjectRuntime;
 
@@ -52,21 +52,25 @@ namespace Dream
         vector<SceneObjectRuntime*> mSceneObjectRuntimeDeleteQueue;
         unique_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;
 
+        Transform3D mCameraTransform;
+        float mCameraMovementSpeed;
+        bool mPhysicsDebug;
+
     public:
         SceneRuntime(ProjectRuntime* parent = nullptr);
         ~SceneRuntime();
 
-        SceneState getState() const;
-        void setState(const SceneState &state);
+        SceneState getState();
+        void setState(SceneState state);
 
-        vector<float> getGravity() const;
-        void setGravity(const vector<float> &gravity);
+        vector<float> getGravity();
+        void setGravity(vector<float> gravity);
 
-        vector<float> getClearColour() const;
-        void setClearColour(const vector<float> &clearColour);
+        vector<float> getClearColour();
+        void setClearColour(vector<float> clearColour);
 
-        vector<float> getAmbientColour() const;
-        void setAmbientColour(const vector<float> &ambientColour);
+        vector<float> getAmbientColour();
+        void setAmbientColour(vector<float> ambientColour);
 
         vector<SceneObjectRuntime*> getSceneObjectRuntimeDeleteQueue();
         void addSceneObjectRuntimeToDeleteQueue(SceneObjectRuntime*);
@@ -78,6 +82,7 @@ namespace Dream
 
         void createAllAssetInstances();
         void loadAllAssetInstances();
+        void useDefinition(IDefinition* sceneDefinitionHandle);
 
         void cleanUpSceneObjectRuntimes();
         void cleanUp();
@@ -98,5 +103,17 @@ namespace Dream
         int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
 
         void flush();
+
+        void setAssetDefinitionUuidLoadQueue(vector<string> loadQueue);
+
+        bool getPhysicsDebug();
+        void setPhysicsDebug(bool physicsDebug);
+
+        float getCameraMovementSpeed();
+        void setCameraMovementSpeed(float cameraMovementSpeed);
+
+        Transform3D getCameraTransform();
+        void setCameraTransform(Transform3D cameraTransform);
+
     };
 } // End of Dream

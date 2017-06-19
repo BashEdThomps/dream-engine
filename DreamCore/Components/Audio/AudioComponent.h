@@ -38,7 +38,7 @@ namespace Dream
 {
     class AudioInstance;
     class AssetDefinition;
-    class Transform3D;
+    class SceneObjectRuntime;
 
     class AudioComponent : public IComponent
     {
@@ -74,7 +74,7 @@ namespace Dream
         float getSampleOffset(ALuint);
         float getSampleOffset(AudioInstance*);
         vector<char> getAudioBuffer(AudioInstance*, ALint, ALint);
-        AudioInstance* newAudioInstance(AssetDefinition*,Transform3D*);
+        AudioInstance* newAudioInstance(AssetDefinition*,SceneObjectRuntime*);
 
     protected:
         ALuint generateBuffers(size_t);

@@ -691,11 +691,8 @@ namespace Dream
                 .def(luabind::constructor<>())
                 .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeHandleByUuid)
                 .def("getParent",&SceneObjectRuntime::getParentRuntimeHandle)
-                .def("setParent",&SceneObjectRuntime::setParentRuntimeHandle),
-                //.def("addChild",&SceneObjectRuntime::addChildRuntimeHandle,luabind::adopt(boost::placeholders::_2)),
+                .def("setParent",&SceneObjectRuntime::setParentRuntimeHandle)
 
-
-            luabind::class_<SceneObjectRuntime>("SceneObjectRuntime")
                 .def("getTransform",&SceneObjectRuntime::getTransform)
                 .def("setTransform",&SceneObjectRuntime::setTransform)
 

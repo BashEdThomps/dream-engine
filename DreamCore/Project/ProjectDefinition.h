@@ -47,6 +47,7 @@ namespace Dream
 
         string getStartupSceneUuid();
         void setStartupSceneUuid(string sceneUuid);
+        SceneDefinition* getStartupSceneDefinitionHandle();
 
         int getWindowWidth();
         void setWindowWidth(int width);

@@ -2,16 +2,22 @@
 #include <iostream>
 #include <thread>
 #include "include/DreamSDL.h"
+#include <memory>
 
 #include <DreamCore.h>
 
 #define MINIMUM_ARGUMENTS 3
 
 using std::cout;
+using std::cerr;
+using std::unique_ptr;
 using Dream::Constants;
 using Dream::Project;
 using Dream::SceneState;
+using Dream::SceneDefinition;
 using Dream::ArgumentParser;
+using Dream::ProjectRuntime;
+using Dream::ProjectDefinition;
 using DreamSDL::SDLWindowComponent;
 
 void showUsage(const char** argv)
@@ -27,9 +33,13 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    Project project(new SDLWindowComponent());
 
     Constants::dreamSetVerbose(true);
+
+    unique_ptr<SDLWindowComponent> windowComponent(new SDLWindowComponent());
+
+    Project project(windowComponent.get());
+
 
     if (Constants::DEBUG)
     {
@@ -53,41 +63,34 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    /*
-    if(!project->initRuntime())
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "Main: Bootstrapping Dream Failed" << endl;
-        }
-        return 1;
-    }
+    cout << endl
+         << "          ==== Definition Loading Complete ====" << endl
+         << "          ====       Creating Runtime      ====" << endl
+         << endl;
 
-    project->setStartupSceneActive();
+    project.createProjectRuntime();
 
-    loaded = project->loadActiveScene();
+    ProjectRuntime* prHandle = project.getProjectRuntimeHandle();
+    ProjectDefinition* pdHandle = project.getProjectDefinitionHandle();
+    SceneDefinition* startupSceneDefinitionHandle = pdHandle->getStartupSceneDefinitionHandle();
 
-    if (!loaded)
-    {
-        cerr << "Main: Error, unable to load startup scene" << endl;
-        return 1;
-    }
+    prHandle->initComponents();
 
-    Constants::dreamSetVerbose(false);
-    Constants::dreamSetDebug(false);
+
+    SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(startupSceneDefinitionHandle);
+
 
     // Run the project
-    while(project->getActiveScene()->getRuntime()->getState() != SceneState::DONE)
+    while(srHandle->getState() != SceneState::SCENE_STATE_DONE)
     {
-        project->updateAll();
+        prHandle->updateAll();
         std::this_thread::yield();
     }
 
-    Constants::dreamSetVerbose(true);
+    cout << endl
+         << "          ====     Done. Stack-based cleanUp     ====" << endl
+         << endl;
 
-    project->cleanUpActiveScene();
 
-    // Return the result
-    */
     return 0;
 }

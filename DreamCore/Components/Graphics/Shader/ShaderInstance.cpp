@@ -25,7 +25,7 @@ namespace Dream
 {
 
     ShaderInstance::ShaderInstance
-    (AssetDefinition* definition,Transform3D* transform)
+    (AssetDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform)
     {
         if (Constants::DEBUG)

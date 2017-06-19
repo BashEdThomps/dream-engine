@@ -21,6 +21,7 @@
 #include "ProjectDefinition.h"
 
 #include "../Scene/SceneRuntime.h"
+#include "../Scene/SceneDefinition.h"
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
 
 #include "../Components/AssetDefinition.h"
@@ -39,6 +40,8 @@ using std::endl;
 
 namespace Dream
 {
+
+
     ProjectRuntime::ProjectRuntime
     (Project* projectHandle,IWindowComponent* windowComponentHandle)
         : Runtime(),
@@ -326,8 +329,8 @@ namespace Dream
             cout << "==== ProjectDefinition: UpdateLogic Called @ " << mTime->getTimeDelta() << " ====" << endl;
         }
 
-        mActiveSceneRuntime.get()->createAllAssetInstances();
-        mActiveSceneRuntime.get()->loadAllAssetInstances();
+        mActiveSceneRuntime->createAllAssetInstances();
+        mActiveSceneRuntime->loadAllAssetInstances();
 
         mTime->update();
 
@@ -390,7 +393,7 @@ namespace Dream
     ProjectRuntime::updateAll
     ()
     {
-        if (mActiveSceneRuntime.get())
+        if (mActiveSceneRuntime)
         {
             updateLogic();
             updateGraphics();
@@ -398,49 +401,55 @@ namespace Dream
         }
     }
 
-    bool
-    ProjectRuntime::loadActiveSceneRuntime
-    ()
+    SceneRuntime*
+    ProjectRuntime::constructActiveSceneRuntime
+    (SceneDefinition* sceneDefinitionHandle)
     {
-        // Check valid
-        if (!hasActiveSceneRuntime())
+        if (!sceneDefinitionHandle)
         {
-            cerr << "ProjectDefinition: Cannot load scene, null!" << endl;
-            return false;
+            cerr << "ProjectRuntime: Cannot load SceneRuntime. SceneDefinitoin is nullptr!" << endl;
+            return nullptr;
+        }
+
+        if (hasActiveSceneRuntime())
+        {
+            if(Constants::DEBUG)
+            {
+                cout << "ProjectRuntime: Destructing currently active SceneRuntime" << endl;
+            }
+            destructActiveSceneRuntime();
         }
 
         // Load the new scene
         if (Constants::DEBUG)
         {
-            cout << "ProjectDefinition: Loading SceneRuntime "
-                 << mActiveSceneRuntime.get()->getNameAndUuidString()
-                 << endl;
+            cout << "ProjectRuntime: Loading SceneRuntime" << endl;
         }
+        mActiveSceneRuntime.reset(new SceneRuntime(this));
+        mActiveSceneRuntime->useDefinition(sceneDefinitionHandle);
 
-        // TODO Fix Me
-        /*
-        SceneDefinition* sceneDefinitionHandle = nullptr;getSceneDefinitionHandleByUuid(mActiveSceneRuntime->getUuid());
+        mGraphicsComponent->setActiveSceneRuntimeHandle(mActiveSceneRuntime.get());
 
-        mGraphicsComponent->setActiveSceneHandle(mActiveSceneRuntime.get());
-        mPhysicsComponent->setGravity(sceneDefinitionHandle->getGravity());
-        mPhysicsComponent->setDebug(sceneDefinitionHandle->getPhysicsDebug());
-        mCamera->setTranslation(sceneDefinitionHandle->getDefaultCameraTransform().getTranslation());
-        mCamera->setRotation(sceneDefinitionHandle->getDefaultCameraTransform().getRotation());
-        mCamera->setMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
-        */
+        mPhysicsComponent->setGravity(mActiveSceneRuntime->getGravity());
+        mPhysicsComponent->setDebug(mActiveSceneRuntime->getPhysicsDebug());
 
-        return true;
+        mCamera->setTransform(mActiveSceneRuntime->getCameraTransform());
+        mCamera->setMovementSpeed(mActiveSceneRuntime->getCameraMovementSpeed());
+
+        mActiveSceneRuntime->createAllAssetInstances();
+        mActiveSceneRuntime->loadAllAssetInstances();
+
+        return mActiveSceneRuntime.get();
+
     }
 
     void
-    ProjectRuntime::cleanUpActiveSceneRuntime
+    ProjectRuntime::destructActiveSceneRuntime
     ()
     {
-       /*
-        mActiveSceneRuntime.get()->cleanUpRuntime();
-        cleanupComponents(mActiveSceneRuntime.get());
-        mActiveSceneRuntime.get() = nullptr;
-        */
+        mActiveSceneRuntime.get()->cleanUp();
+        cleanupComponents();
+        mActiveSceneRuntime.reset();
     }
 
     Project*
@@ -448,5 +457,12 @@ namespace Dream
     ()
     {
         return mProjectHandle;
+    }
+
+    void
+    ProjectRuntime::useDefinition
+    (IDefinition*)
+    {
+
     }
 }

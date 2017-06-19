@@ -1,9 +1,11 @@
 #include "AudioInstance.h"
 
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+
 namespace Dream
 {
     AudioInstance::AudioInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition, transform)
     {
         setStatus(UNKNOWN);

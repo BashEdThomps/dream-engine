@@ -17,18 +17,18 @@
 
 #include "IAssetInstance.h"
 
-#include "Transform3D.h"
 #include "AssetDefinition.h"
 #include "../Utilities/Uuid.h"
 
 namespace Dream
 {
     IAssetInstance::IAssetInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition* definition, SceneObjectRuntime* runtime)
           : mDefinitionHandle(definition),
-          mTransformHandle(transform),
+          mSceneObjectRuntimeHandle(runtime),
           mUuid(Uuid::generateUuid())
     {
+
     }
 
     IAssetInstance::~IAssetInstance
@@ -55,13 +55,6 @@ namespace Dream
     ()
     {
         return getName() + " (" + getUuid() + ")";
-    }
-
-    Transform3D*
-    IAssetInstance::getTransform
-    ()
-    {
-        return mTransformHandle;
     }
 
     string
@@ -92,4 +85,10 @@ namespace Dream
         mLoaded = loaded;
     }
 
+    SceneObjectRuntime*
+    IAssetInstance::getSceneObjectRuntimeHandle
+    ()
+    {
+        return mSceneObjectRuntimeHandle;
+    }
 } // End of Dream

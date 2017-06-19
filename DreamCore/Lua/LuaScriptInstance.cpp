@@ -23,7 +23,7 @@ namespace Dream
 {
 
     LuaScriptInstance::LuaScriptInstance
-    (AssetDefinition* definition, Transform3D* transform)
+    (AssetDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform)
     {
         mError = false;

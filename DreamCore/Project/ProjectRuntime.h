@@ -39,7 +39,7 @@ namespace Dream
     class IWindowComponent;
     class PhysicsComponent;
     class LuaEngine;
-
+    class Transform3D;
     class Camera;
     class SceneRuntime;
     class SceneDefinition;
@@ -65,6 +65,7 @@ namespace Dream
         unique_ptr<SceneRuntime> mActiveSceneRuntime;
         Project* mProjectHandle;
 
+
     public: // Public Functions
         ProjectRuntime(Project* parentProject, IWindowComponent* wcHandle = nullptr);
         ~ProjectRuntime();
@@ -84,8 +85,6 @@ namespace Dream
         Project* getProjectHandle();
 
         bool initComponents();
-
-        void cleanUpActiveSceneRuntime();
         void cleanupComponents();
 
         void updateAll();
@@ -93,19 +92,18 @@ namespace Dream
         void updateGraphics();
         void updateFlush();
 
-        void createActiveSceneRuntime(SceneDefinition* sceneDefinition);
-
         int getWindowWidth();
         void setWindowWidth(int);
 
         int getWindowHeight();
         void setWindowHeight(int);
 
-        bool loadActiveSceneRuntime();
-
-        bool loadSceneByUuid(string uuid);
+        SceneRuntime* constructActiveSceneRuntime(SceneDefinition* sceneDefinitionHandle);
+        void destructActiveSceneRuntime();
 
         bool hasActiveSceneRuntime();
+
+        void useDefinition(IDefinition*) override;
 
     private: // Member Functions
         bool initAnimationComponent();

@@ -398,13 +398,19 @@ namespace Dream
         ShaderInstance* shader = sceneObject->getShaderInstance();
         // Get arguments
         vec2 size = vec2(sprite->getWidth(),sprite->getHeight());
-        GLfloat rotateValue = sceneObject->getTransform()->getRotationZ();
-        GLfloat scaleValue = sceneObject->getTransform()->getScaleZ();
+
+        Transform3D transform = sceneObject->getTransform();
+
+        GLfloat rotateValue = transform.getRotationZ();
+        GLfloat scaleValue = transform.getScaleZ();
+
         vec3 color = vec3(1.0f);
         // Setup Shader
         shader->use();
-        float tX = sprite->getTransform()->getTranslationX();
-        float tY = sprite->getTransform()->getTranslationY();
+
+        float tX = transform.getTranslationX();
+        float tY = transform.getTranslationY();
+
         vec2 position = vec2(tX,tY);
         // Offset origin to middle of sprite
         mat4 model;
@@ -445,14 +451,14 @@ namespace Dream
     {
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
-        float tX = font->getTransform()->getTranslationX();
-        float tY = font->getTransform()->getTranslationY();
+        float tX = sceneObject->getTransform().getTranslationX();
+        float tY = sceneObject->getTransform().getTranslationY();
 
         // Setup Shader
         ShaderInstance* shader = sceneObject->getShaderInstance();
         vec2 size = vec2(font->getWidth(),font->getHeight());
-        GLfloat rotateValue = sceneObject->getTransform()->getRotationZ();
-        GLfloat scaleValue = sceneObject->getTransform()->getScaleZ();
+        GLfloat rotateValue = sceneObject->getTransform().getRotationZ();
+        GLfloat scaleValue = sceneObject->getTransform().getScaleZ();
 
         shader->use();
 
@@ -539,10 +545,11 @@ namespace Dream
         // Set Ambient Light Values
         GLint uAmbientStrength = glGetUniformLocation(shader->getShaderProgram(),"ambientStrength");
         GLint uAmbientColor    = glGetUniformLocation(shader->getShaderProgram(),"ambientColor");
-        GLfloat strength = 0;
+        GLfloat strength = 1.0f;
+
         if (uAmbientColor > 0 && uAmbientStrength > 0)
         {
-            vec3 ambientColour;
+            vec3 ambientColour(1.0f);
             if (mActiveSceneRuntimeHandle)
             {
                 vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
@@ -553,13 +560,18 @@ namespace Dream
                 );
                 strength = ambient[Constants::ALPHA_INDEX];
             }
-            else
-            {
-            }
 
             glUniform1f(uAmbientStrength,strength);
             glUniform3fv(uAmbientColor,1,value_ptr(ambientColour));
 
+        }
+        else
+        {
+            if (Constants::VERBOSE)
+            {
+                cout << "GraphicsComponent: Cound not find ambientColour/ambientStrength uniform locations"
+                     << endl;
+            }
         }
         // Set Diffuse Light Values
         vector<LightInstance*>::
@@ -577,7 +589,7 @@ namespace Dream
 
             if (uLightPos > 0)
             {
-                vec3 lightPos = (*lights)->getTransform()->getTranslation();
+                vec3 lightPos = (*lights)->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
                 glUniform3fv(uLightPos  ,1, value_ptr(lightPos));
             }
             else
@@ -618,7 +630,7 @@ namespace Dream
         mat4 modelMatrix;
         // Get raw data
         vec3 translation = sceneObject->getTranslation();
-        quat rot = sceneObject->getTransform()->getOrientation();
+        quat rot = sceneObject->getTransform().getOrientation();
         vec3 scaleValue = sceneObject->getScale();
         // Translate
         modelMatrix = translate(modelMatrix,translation);

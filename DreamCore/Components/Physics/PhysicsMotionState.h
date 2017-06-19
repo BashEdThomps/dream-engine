@@ -18,23 +18,22 @@
 #pragma once
 
 #include <LinearMath/btMotionState.h>
+#include "../Transform3D.h"
 
 class btTransform;
 
 namespace Dream
 {
-    class Transform3D;
-
     class PhysicsMotionState : public btMotionState
     {
     protected:
-        Transform3D* mDreamTransformHandle;
+        Transform3D& mDreamTransform;
 
     public:
-        PhysicsMotionState(Transform3D*);
+        PhysicsMotionState(Transform3D&);
         ~PhysicsMotionState();
 
-        void setTransform(Transform3D*);
+        void setTransform(Transform3D&);
 
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);

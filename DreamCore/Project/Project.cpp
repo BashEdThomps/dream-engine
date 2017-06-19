@@ -163,12 +163,11 @@ namespace Dream
         return loadSuccess;
     }
 
-    bool
+    void
     Project::createProjectRuntime
     ()
     {
         mRuntime.reset(new ProjectRuntime(this, mWindowComponentHandle));
-        return true;
     }
 
     bool
