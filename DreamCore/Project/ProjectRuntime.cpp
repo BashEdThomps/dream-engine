@@ -326,7 +326,9 @@ namespace Dream
     {
         if (Constants::VERBOSE)
         {
-            cout << "==== ProjectDefinition: UpdateLogic Called @ " << mTime->getTimeDelta() << " ====" << endl;
+            cout << endl
+                 << "==== ProjectDefinition: UpdateLogic Called @ " << mTime->getTimeDelta() << " ===="
+                 << endl << endl;
         }
 
         mActiveSceneRuntime->createAllAssetInstances();
@@ -357,7 +359,9 @@ namespace Dream
     {
         if (Constants::VERBOSE)
         {
-            cout << "==== ProjectDefinition: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ====" << endl;
+            cout << endl
+                 << "==== ProjectDefinition: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ===="
+                 << endl << endl;
         }
 
         // Draw 3D/PhysicsDebug/2D
@@ -376,7 +380,9 @@ namespace Dream
     {
         if (Constants::VERBOSE)
         {
-            cout << "==== ProjectDefinition: updateFlush Called @ " << mTime->getTimeDelta() << " ====" << endl;
+            cout << endl
+                 << "==== ProjectDefinition: updateFlush Called @ " << mTime->getTimeDelta() << " ===="
+                 << endl << endl;
         }
         // Cleanup Old
         mActiveSceneRuntime.get()->flush();
@@ -387,6 +393,13 @@ namespace Dream
     ()
     {
         return mActiveSceneRuntime.get() != nullptr;
+    }
+
+    SceneRuntime*
+    ProjectRuntime::getActiveSceneRuntime
+    ()
+    {
+        return mActiveSceneRuntime.get();
     }
 
     void

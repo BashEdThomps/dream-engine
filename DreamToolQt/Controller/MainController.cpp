@@ -209,13 +209,16 @@ MainController::onProjectOpenAction
     updateWindowTitle(mProjectDirectory);
     Project *project = mDreamModel->getProject();
 
-    emit notifyProjectNameChanged(QString::fromStdString(project->getName()));
-    emit notifyProjectAuthorChanged(QString::fromStdString(project->getAuthor()));
-    emit notifyProjectDescriptionChanged(QString::fromStdString(project->getDescription()));
-    emit notifyProjectWindowWidthChanged(project->getWindowWidth());
-    emit notifyProjectWindowHeightChanged(project->getWindowHeight());
-    emit notifyProjectSceneListChanged(getSceneNamesListModel(project->getSceneList()));
-    emit notifyProjectStartupSceneChanged(QString::fromStdString(project->getStartupScene()->getName()));
+    emit notifyProjectNameChanged(QString::fromStdString(project->getProjectDefinitionHandle()->getName()));
+    emit notifyProjectAuthorChanged(QString::fromStdString(project->getProjectDefinitionHandle()->getAuthor()));
+    emit notifyProjectDescriptionChanged(QString::fromStdString(project->getProjectDefinitionHandle()->getDescription()));
+    emit notifyProjectWindowWidthChanged(project->getProjectDefinitionHandle()->getWindowWidth());
+    emit notifyProjectWindowHeightChanged(project->getProjectDefinitionHandle()->getWindowHeight());
+
+    // TODO
+    //emit notifyProjectSceneListChanged(getSceneNamesListModel(project->getSceneList()));
+    //emit notifyProjectStartupSceneChanged(QString::fromStdString(project->getStartupScene()->getName()));
+
     emit notifyProjectWidgetsEnabledChanged(true);
 
     mProjectTreeModel.reset(new ProjectTreeModel(project,mMainWindowHandle->getProjectTreeView()));
@@ -224,13 +227,7 @@ MainController::onProjectOpenAction
     mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(project,mMainWindowHandle->getAssetDefinitionTreeView()));
     mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
 
-    emit notifyStatusBarProjectLoaded(
-    QString::fromStdString(
-        "MainController: Successfuly Loaded Project: " +
-        project->getName() + " (" +
-        project->getUuid() + ")"
-        )
-    );
+    emit notifyStatusBarProjectLoaded(QString::fromStdString(project->getProjectRuntimeHandle()->getNameAndUuidString()));
     connectTreeViewModel();
 }
 
@@ -271,7 +268,7 @@ MainController::onProjectSaveAction
 
 QStringListModel*
 MainController::getSceneNamesListModel
-(vector<Scene*> sceneList)
+(vector<SceneDefinition*> sceneList)
 {
     QStringList sceneNameList;
     mSceneListModel.reset(new QStringListModel(mMainWindowHandle));

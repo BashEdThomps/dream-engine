@@ -24,6 +24,9 @@
 
 #include "SceneObject/SceneObjectDefinition.h"
 
+
+#include "../Utilities/String.h"
+
 using std::cout;
 using std::endl;
 
@@ -94,6 +97,10 @@ namespace Dream
     SceneDefinition::getPhysicsDebug
     ()
     {
+        if (mJson[Constants::SCENE_PHYSICS_DEBUG].is_null())
+        {
+            return false;
+        }
         return mJson[Constants::SCENE_PHYSICS_DEBUG];
     }
 
@@ -101,6 +108,10 @@ namespace Dream
     SceneDefinition::getNotes
     ()
     {
+        if (mJson[Constants::SCENE_NOTES].is_null())
+        {
+            return "";
+        }
         return mJson[Constants::SCENE_NOTES];
     }
 
@@ -188,12 +199,22 @@ namespace Dream
 
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
+            if (Constants::DEBUG)
+            {
+                cout << "SceneDefinition: Could not find clear colour in json" << endl;
+            }
             return colour;
         }
 
         colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]);
         colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]);
         colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]);
+
+        if (Constants::DEBUG)
+        {
+            cout << "SceneObjectDefinition: Using clear colour "
+                 << String::floatVectorToString(colour) << endl;
+        }
 
         return colour;
     }

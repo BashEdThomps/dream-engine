@@ -102,6 +102,7 @@ namespace Dream
         void destructActiveSceneRuntime();
 
         bool hasActiveSceneRuntime();
+        SceneRuntime* getActiveSceneRuntime();
 
         void useDefinition(IDefinition*) override;
 

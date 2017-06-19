@@ -48,7 +48,7 @@ SelectionHighlighter::init
 
 void
 SelectionHighlighter::setSelectedObject
-(SceneObject* selected)
+(SceneObjectRuntime* selected)
 {
     qDebug() << "SelectionHighlighter: Selecting "
              << QString::fromStdString(selected->getNameAndUuidString());
@@ -400,7 +400,7 @@ SelectionHighlighter::initShader
     glDeleteShader(fragmentShader);
 }
 
-SceneObject*
+SceneObjectRuntime*
 SelectionHighlighter::getSelectedObject
 ()
 {

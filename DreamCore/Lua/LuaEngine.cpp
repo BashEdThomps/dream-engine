@@ -201,7 +201,7 @@ namespace Dream
 
         if (scriptInstance->getError())
         {
-            cerr << "LuaEngine: Cannot load script " << id << " while in error state" << endl;
+           cerr << "LuaEngine: Cannot load script " << id << " while in error state" << endl;
            return false;
         }
 
@@ -332,6 +332,8 @@ namespace Dream
 
         if (scriptInstance->getError())
         {
+            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
+                                              << " in error state" << endl;
             return false;
         }
 
@@ -367,6 +369,9 @@ namespace Dream
 
         if (scriptInstance->getError())
         {
+            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
+                                              << " in error state" << endl;
+
             return false;
         }
 
@@ -403,6 +408,9 @@ namespace Dream
 
         if (scriptInstance->getError())
         {
+            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
+                                              << " in error state" << endl;
+
             return false;
         }
 
@@ -447,6 +455,9 @@ namespace Dream
 
         if (scriptInstance->getError())
         {
+            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
+                                              << " in error state" << endl;
+
             return false;
         }
 

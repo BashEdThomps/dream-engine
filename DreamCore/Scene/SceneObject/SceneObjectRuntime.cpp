@@ -48,6 +48,8 @@
 
 
 using std::vector;
+using std::flush;
+
 using glm::vec3;
 
 namespace Dream
@@ -542,9 +544,14 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Asset Intance of: ("
-                 << definition->getType() << ") " << definition->getName()
-                 << ", for  " << mParentRuntimeHandle->getNameAndUuidString()
-                 << endl;
+                 << definition->getType() << ") " << definition->getName() << flush;
+
+            if (mParentRuntimeHandle)
+            {
+                 cout << ", for  " << mParentRuntimeHandle->getNameAndUuidString() << flush;
+            }
+
+            cout << endl;
         }
 
         if(definition->isTypeAnimation())
@@ -686,7 +693,7 @@ namespace Dream
         }
         // hottest trainwreck 2017!
         mAudioInstance.reset(
-                    mParentRuntimeHandle->getSceneRuntimeHandle()
+                    mSceneRuntimeHandle
                     ->getProjectRuntimeHandle()
                     ->getAudioComponentHandle()
                     ->newAudioInstance(definition,this)

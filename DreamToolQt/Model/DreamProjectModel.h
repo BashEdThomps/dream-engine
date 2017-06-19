@@ -40,7 +40,7 @@ public:
     ~DreamProjectModel();
     bool loadProject(QString path);
     Project* getProject();
-    vector<Scene*> getScenes();
+    vector<SceneDefinition*> getScenes();
     vector<AssetDefinition*> getAssetDefinitions();
     void setProjectName(string name);
     void setProjectAuthor(string author);
@@ -52,17 +52,17 @@ public:
     void closeProject();
 
     bool startScene();
-    Scene* stopActiveScene();
+    SceneRuntime* stopActiveScene();
     void setupHeartbeatTimer();
 
     AssetDefinition *getAssetDefinitionByUuid(std::string uuid);
-    Scene *getSceneByUuid(std::string uuid);
+    SceneDefinition *getSceneDefByUuid(std::string uuid);
 
-    Scene *getSelectedScene();
-    void setSelectedScene(Scene* selectedScene);
+    SceneDefinition *getSelectedScene();
+    void setSelectedScene(SceneDefinition* selectedScene);
 
 signals:
-    void notifySelectedSceneChanged(Scene* scene);
+    void notifySelectedSceneChanged(SceneDefinition* scene);
 
 private:
     // Owned Objects
@@ -70,7 +70,7 @@ private:
     unique_ptr<QTimer>  mHeartbeatTimer;
     // Handles
     QOpenGLWindowComponent *mWindowComponentHandle;
-    Scene                  *mSelectedSceneHandle;
+    SceneDefinition* mSelectedSceneHandle;
 };
 
 #endif // DREAMMODEL_H

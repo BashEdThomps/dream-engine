@@ -5,7 +5,6 @@
 #include <QMouseEvent>
 #include <QPointF>
 
-
 WindowInputState::WindowInputState
 ()
     : // Init list
@@ -81,14 +80,19 @@ QOpenGLWindowComponent::paintGL
     updateInputState();
     if (mProjectHandle)
     {
-        if (mProjectHandle->hasActiveScene())
+        ProjectRuntime* pRuntime = mProjectHandle->getProjectRuntimeHandle();
+        if (pRuntime->hasActiveSceneRuntime())
         {
-            if (mProjectHandle->getActiveScene()->getRuntime()->getState() != DONE)
+            SceneRuntime *sRuntime = pRuntime->getActiveSceneRuntime();
+            glm::mat4 viewMatrix = pRuntime->getGraphicsComponentHandle()->getViewMatrix();
+            glm::mat4 projectionMatrix = pRuntime->getGraphicsComponentHandle()->getProjectionMatrix();
+
+            if (sRuntime->getState() != SCENE_STATE_DONE)
             {
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                mProjectHandle->updateAll();
+                pRuntime->updateAll();
 
                 if (mGridHandle)
                 {
@@ -100,8 +104,8 @@ QOpenGLWindowComponent::paintGL
 
                             Constants::checkGLError("QOGLWC: After Grid Init");
                         }
-                        mGridHandle->setViewMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getViewMatrix());
-                        mGridHandle->setProjectionMatrix(mProjectHandle->getRuntime()->getGraphicsComponent()->getProjectionMatrix());
+                        mGridHandle->setViewMatrix(viewMatrix);
+                        mGridHandle->setProjectionMatrix(projectionMatrix);
                         mGridHandle->draw();
                     }
                     else
@@ -123,18 +127,8 @@ QOpenGLWindowComponent::paintGL
                         mSelectionHighlighterHandle->init();
                 Constants::checkGLError("QOGLWC: SelectionHighlighter after Init");
                     }
-                    mSelectionHighlighterHandle->setViewMatrix
-                            (
-                                mProjectHandle->getRuntime()
-                                ->getGraphicsComponent()
-                                ->getViewMatrix()
-                                );
-                    mSelectionHighlighterHandle->setProjectionMatrix
-                            (
-                                mProjectHandle->getRuntime()
-                                ->getGraphicsComponent()
-                                ->getProjectionMatrix()
-                                );
+                    mSelectionHighlighterHandle->setViewMatrix(viewMatrix);
+                    mSelectionHighlighterHandle->setProjectionMatrix(projectionMatrix);
                     mSelectionHighlighterHandle->draw();
                 Constants::checkGLError("QOGLWC: SelectionHighlighter after draw");
                 }
@@ -152,18 +146,8 @@ QOpenGLWindowComponent::paintGL
                         mRelationshipTreeHandle->init();
                         Constants::checkGLError("QOGLWC: RelTree after init");
                     }
-                    mRelationshipTreeHandle->setViewMatrix
-                            (
-                                mProjectHandle->getRuntime()
-                                ->getGraphicsComponent()
-                                ->getViewMatrix()
-                                );
-                    mRelationshipTreeHandle->setProjectionMatrix
-                            (
-                                mProjectHandle->getRuntime()
-                                ->getGraphicsComponent()
-                                ->getProjectionMatrix()
-                                );
+                    mRelationshipTreeHandle->setViewMatrix(viewMatrix);
+                    mRelationshipTreeHandle->setProjectionMatrix(projectionMatrix);
                     mRelationshipTreeHandle->draw();
 
                     Constants::checkGLError("QOGLWC: RelTree after draw");
@@ -199,7 +183,7 @@ QOpenGLWindowComponent::init
 
 void
 QOpenGLWindowComponent::updateComponent
-(Scene*)
+(SceneRuntime*)
 {
 
 }
@@ -227,7 +211,7 @@ QOpenGLWindowComponent::setProject
 
 void
 QOpenGLWindowComponent::cleanUp
-(Scene*)
+(SceneRuntime*)
 {
 
 }
@@ -260,8 +244,8 @@ QOpenGLWindowComponent::mouseMoveEvent
         int dX = x - mInputState.mouseLastX;
         int dY = y - mInputState.mouseLastY;
 
-        mProjectHandle->getRuntime()
-                      ->getCamera()
+        mProjectHandle->getProjectRuntimeHandle()
+                      ->getCameraHandle()
                       ->processMouseMovement(dX,dY,false);
         mInputState.mouseLastX = x;
         mInputState.mouseLastY = y;
@@ -278,14 +262,14 @@ QOpenGLWindowComponent::updateInputState
         return;
     }
 
-    Camera *camHandle = mProjectHandle->getRuntime()->getCamera();
-    SceneObject *selected = mSelectionHighlighterHandle->getSelectedObject();
-    Transform3D *transform = nullptr;
+    Camera *camHandle = mProjectHandle->getProjectRuntimeHandle()->getCameraHandle();
+    SceneObjectRuntime *selected = mSelectionHighlighterHandle->getSelectedObject();
+    Transform3D transform;
 
     float deltaTime = static_cast<float>
     (
-        mProjectHandle->getRuntime()
-                      ->getTime()
+        mProjectHandle->getProjectRuntimeHandle()
+                      ->getTimeHandle()
                       ->getTimeDelta()
     );
 
@@ -314,17 +298,14 @@ QOpenGLWindowComponent::updateInputState
         if (selected)
         {
             transform = selected->getTransform();
-            if (transform)
-            {
-                transform->setTranslationZ(
-                    transform->getTranslationZ() +
-                    (
-                        mInputState.shiftPressed ?
-                        mGridHandle->getMajorSpacing() :
-                        mGridHandle->getMinorSpacing()
-                    )
-                );
-            }
+            transform.setTranslationZ(
+                transform.getTranslationZ() +
+                (
+                    mInputState.shiftPressed ?
+                    mGridHandle->getMajorSpacing() :
+                    mGridHandle->getMinorSpacing()
+                )
+            );
         }
     }
 
@@ -333,17 +314,14 @@ QOpenGLWindowComponent::updateInputState
         if (selected)
         {
             transform = selected->getTransform();
-            if (transform)
-            {
-                transform->setTranslationZ(
-                    transform->getTranslationZ() -
-                    (
-                        mInputState.shiftPressed ?
-                        mGridHandle->getMajorSpacing() :
-                        mGridHandle->getMinorSpacing()
-                    )
-                );
-            }
+            transform.setTranslationZ(
+                transform.getTranslationZ() -
+                (
+                    mInputState.shiftPressed ?
+                    mGridHandle->getMajorSpacing() :
+                    mGridHandle->getMinorSpacing()
+                )
+            );
         }
     }
 
@@ -352,17 +330,14 @@ QOpenGLWindowComponent::updateInputState
         if (selected)
         {
             transform = selected->getTransform();
-            if (transform)
-            {
-                transform->setTranslationX(
-                    transform->getTranslationX() -
-                    (
-                        mInputState.shiftPressed ?
-                        mGridHandle->getMajorSpacing() :
-                        mGridHandle->getMinorSpacing()
-                    )
-                );
-            }
+            transform.setTranslationX(
+                transform.getTranslationX() -
+                (
+                    mInputState.shiftPressed ?
+                    mGridHandle->getMajorSpacing() :
+                    mGridHandle->getMinorSpacing()
+                )
+            );
         }
     }
 
@@ -371,17 +346,14 @@ QOpenGLWindowComponent::updateInputState
         if (selected)
         {
             transform = selected->getTransform();
-            if (transform)
-            {
-                transform->setTranslationX(
-                    transform->getTranslationX() +
-                    (
-                        mInputState.shiftPressed ?
-                        mGridHandle->getMajorSpacing() :
-                        mGridHandle->getMinorSpacing()
-                    )
-                );
-            }
+            transform.setTranslationX(
+                transform.getTranslationX() +
+                (
+                    mInputState.shiftPressed ?
+                    mGridHandle->getMajorSpacing() :
+                    mGridHandle->getMinorSpacing()
+                )
+            );
         }
     }
 }

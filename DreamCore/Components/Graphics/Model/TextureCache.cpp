@@ -47,8 +47,8 @@ namespace Dream
     {
       if (Constants::DEBUG)
       {
-        cout << "TextureCache: Loading from dir: " << directory_c << endl;
-        cout << "TextureCache: -> File: " << file_c << endl;
+        cout << "TextureCache: Loading from: "
+             << directory_c << "/" << file_c << endl;
       }
         //Generate texture ID and load texture data
         string filename = string(file_c);
@@ -85,6 +85,9 @@ namespace Dream
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
+
+        Constants::checkGLError("After texture creation");
+
         SOIL_free_image_data(image);
 
         Texture texture;
@@ -109,6 +112,7 @@ namespace Dream
        for (Texture texture : sTextureCache)
        {
            glDeleteTextures(1,&texture.id);
+           Constants::checkGLError("After free texture");
        }
        sTextureCache.clear();
     }

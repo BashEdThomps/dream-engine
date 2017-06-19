@@ -83,6 +83,8 @@ int main(int argc, const char** argv)
     // Run the project
     while(srHandle->getState() != SceneState::SCENE_STATE_DONE)
     {
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         prHandle->updateAll();
         std::this_thread::yield();
     }

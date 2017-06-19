@@ -99,6 +99,8 @@ namespace Dream
             return false;
         }
 
+        Constants::checkGLError("After GLEW init");
+
         if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: OpenGL Version " << glGetString(GL_VERSION) << endl;
@@ -106,12 +108,19 @@ namespace Dream
         }
 
         onWindowDimensionsChanged();
+        Constants::checkGLError("After initial window dimensions changed");
 
         glEnable(GL_DEPTH_TEST);
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+        Constants::checkGLError("After enable depth");
+        //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        Constants::checkGLError("After perspective correction");
 
         create2DVertexObjects();
+        Constants::checkGLError("After create 2D Vertex VBO/VAO");
+
         createFontVertexObjects();
+        Constants::checkGLError("After create Font 2D VBO/VAO");
 
         if (Constants::DEBUG)
         {
@@ -137,6 +146,8 @@ namespace Dream
 
         glViewport(0, 0, windowWidth, windowHeight);
 
+        Constants::checkGLError("After glViewport");
+
         // Ortho projection for 2D
         mOrthoProjection = ortho
         (
@@ -146,6 +157,9 @@ namespace Dream
             0.0f,
             -1.0f, 1.0f
         );
+
+        Constants::checkGLError("After ortho");
+
         // Perspective Projection Matrix
         mProjectionMatrix = perspective(
             mCamera->getZoom(),
@@ -153,6 +167,8 @@ namespace Dream
             mMinimumDraw,
             mMaximumDraw
         );
+
+        Constants::checkGLError("After projection matrix");
 
         if (Constants::VERBOSE)
         {
@@ -168,6 +184,11 @@ namespace Dream
     GraphicsComponent::preRender
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Pre Render" << endl;
+        }
+        Constants::checkGLError("before pre render");
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glEnable(GL_BLEND);
@@ -186,14 +207,22 @@ namespace Dream
         {
             glClearColor(0.0f,0.0f,0.0f,0.0f);
         }
+
+        Constants::checkGLError("after pre render");
     }
 
     void
     GraphicsComponent::postRender
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Post Render" << endl;
+        }
+        Constants::checkGLError("before post render");
         glDisable(GL_CULL_FACE);
         glDisable (GL_BLEND);
+        Constants::checkGLError("after post render");
     }
 
     void
@@ -324,6 +353,10 @@ namespace Dream
     GraphicsComponent::clear2DQueue
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Clear 2D Queue" << endl;
+        }
         m2DQueue.clear();
     }
 
@@ -338,6 +371,10 @@ namespace Dream
     GraphicsComponent::draw2DQueue
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Draw 2D Queue" << endl;
+        }
         for (SceneObjectRuntime* sceneObj : m2DQueue)
         {
             if (sceneObj->hasSpriteInstance())
@@ -355,6 +392,10 @@ namespace Dream
     GraphicsComponent::clear3DQueue
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Clear 3D Queue" << endl;
+        }
         m3DQueue.clear();
     }
 
@@ -369,6 +410,10 @@ namespace Dream
     GraphicsComponent::draw3DQueue
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Draw 3D Queue" << endl;
+        }
         for (SceneObjectRuntime* it : m3DQueue)
         {
             drawModel(it);
@@ -533,6 +578,9 @@ namespace Dream
     GraphicsComponent::drawModel
     (SceneObjectRuntime* sceneObject)
     {
+
+        Constants::checkGLError("Before drawModel");
+
         if (Constants::VERBOSE)
         {
            cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
@@ -569,10 +617,11 @@ namespace Dream
         {
             if (Constants::VERBOSE)
             {
-                cout << "GraphicsComponent: Cound not find ambientColour/ambientStrength uniform locations"
+                cout << "GraphicsComponent: Warning, cound not find ambientColour/ambientStrength uniform locations"
                      << endl;
             }
         }
+
         // Set Diffuse Light Values
         vector<LightInstance*>::
                 iterator lights;
@@ -612,7 +661,10 @@ namespace Dream
                     cout << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;
                 }
             }
+
         }
+
+        Constants::checkGLError("After light pos uniform");
 
         // Pass view/projection transform to shader
         glUniformMatrix4fv
@@ -621,11 +673,15 @@ namespace Dream
             1, GL_FALSE, value_ptr(mProjectionMatrix)
         );
 
+        Constants::checkGLError("After set projection");
+
         glUniformMatrix4fv
         (
             glGetUniformLocation(shader->getShaderProgram(), "view"),
             1, GL_FALSE, value_ptr(mViewMatrix)
         );
+
+        Constants::checkGLError("After set view");
         // calculate the model matrix
         mat4 modelMatrix;
         // Get raw data
@@ -646,12 +702,16 @@ namespace Dream
                     glGetUniformLocation(shader->getShaderProgram(), "model"),
                     1, GL_FALSE, value_ptr(modelMatrix)
                     );
+
+        Constants::checkGLError("After set model");
         // Draw using shader
         model->draw(shader);
+
+        Constants::checkGLError("After Draw");
         // Unbind shader
         glBindVertexArray(0);
         glUseProgram(0);
-        Constants::checkGLError("After 3D Draw");
+        Constants::checkGLError("After unbind");
     }
 
 

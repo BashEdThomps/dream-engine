@@ -60,8 +60,8 @@ signals:
     void notifyProjectWidgetsEnabledChanged(bool enabled);
     void notifyStatusBarProjectLoaded(QString);
     void notifyNoSceneSelected();
-    void notifyPlayingScene(Scene* scene);
-    void notifyStoppedScene(Scene* scene);
+    void notifyPlayingScene(SceneRuntime* scene);
+    void notifyStoppedScene(SceneRuntime* scene);
 
 public slots:
     void onProjectNewAction();
@@ -81,8 +81,8 @@ public slots:
     void onProjectStartupSceneChanged(QString startupScene);
     void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
 
-    void onSelectedSceneChanged(Scene *scene);
-    void onSceneStopped(Scene* scene);
+    void onSelectedSceneChanged(SceneDefinition *scene);
+    void onSceneStopped(SceneRuntime* scene);
 
     void onGridToggleAction(bool enabled);
     void onToggleDebugAction(bool enabled);
@@ -107,7 +107,7 @@ private: // Methods
     void createConnections();
     void updateWindowTitle(QString msg);
     void connectTreeViewModel();
-    QStringListModel* getSceneNamesListModel(vector<Scene*> sceneList);
+    QStringListModel* getSceneNamesListModel(vector<SceneDefinition*> sceneList);
     string getSceneNameFromModelIndex(int index);
 
 };

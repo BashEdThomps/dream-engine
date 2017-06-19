@@ -29,14 +29,14 @@ public:
     explicit SelectionHighlighter(QObject *parent = 0);
     ~SelectionHighlighter();
 
-    void setSelectedObject(SceneObject* object);
-    SceneObject* getSelectedObject();
+    void setSelectedObject(SceneObjectRuntime* object);
+    SceneObjectRuntime* getSelectedObject();
     void init() override;
     void draw() override;
     void initShader() override;
 
 private:
-    SceneObject* mSelectedObjectHandle;
+    SceneObjectRuntime* mSelectedObjectHandle;
     void updateVertexBuffer();
     glm::vec3 mSelectionColour;
     glm::vec3 mXColour;

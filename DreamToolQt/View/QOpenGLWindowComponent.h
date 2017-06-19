@@ -2,13 +2,14 @@
 #define GLWIDGET_H
 
 #include <DreamCore.h>
-#include <QOpenGLWidget>
-#include <QSurfaceFormat>
-#include <QOpenGLContext>
-
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
+
+
+#include <QOpenGLWidget>
+#include <QSurfaceFormat>
+#include <QOpenGLContext>
 
 using namespace Dream;
 
@@ -41,10 +42,10 @@ public:
     ~QOpenGLWindowComponent();
 
     bool init() override;
-    void updateComponent(Scene*) override;
+    void updateComponent(SceneRuntime*) override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
-    void cleanUp(Scene*) override;
+    void cleanUp(SceneRuntime*) override;
     void setProject(Project* engine);
     void setGrid(Grid* grid);
     void setGridEnabled(bool enabled);

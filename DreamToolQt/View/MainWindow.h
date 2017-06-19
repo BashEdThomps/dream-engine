@@ -78,7 +78,7 @@ public slots:
     void onInvalidProjectDirectory(QString directory);
     void onNoSceneSelected();
     void showStatusBarMessage(QString msg);
-    void onSceneStopped(Scene* scene);
+    void onSceneStopped(SceneRuntime* scene);
 
     void keyPressEvent(QKeyEvent*) override;
     void keyReleaseEvent(QKeyEvent*) override;
