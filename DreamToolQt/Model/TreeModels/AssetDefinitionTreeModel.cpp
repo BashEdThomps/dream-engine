@@ -174,17 +174,6 @@ void
 AssetDefinitionTreeModel::setupModelData
 ()
 {
-    QList<QVariant> assetDefinitionsNodeData;
-    assetDefinitionsNodeData << QString("Asset Definitions");
-    AssetDefinitionTreeItem *assetDefinitionsTreeItem = new AssetDefinitionTreeItem(
-        assetDefinitionsNodeData,
-        GenericTreeItemType::TREE_NODE,
-        nullptr,
-        mRootItem
-    );
-
-    mRootItem->appendChild(assetDefinitionsTreeItem);
-
     // Create Asset Type Nodes
     QList<QVariant> animationNode;
     animationNode << QString("Animation");
@@ -193,9 +182,9 @@ AssetDefinitionTreeModel::setupModelData
                 animationNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(animationTreeItem);
+    mRootItem->appendChild(animationTreeItem);
 
     QList<QVariant> audioNode;
     audioNode << QString("Audio");
@@ -204,9 +193,9 @@ AssetDefinitionTreeModel::setupModelData
                 audioNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(audioTreeItem);
+    mRootItem->appendChild(audioTreeItem);
 
     QList<QVariant> fontNode;
     fontNode << QString("Font");
@@ -215,9 +204,9 @@ AssetDefinitionTreeModel::setupModelData
                 fontNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(fontTreeItem);
+    mRootItem->appendChild(fontTreeItem);
 
     QList<QVariant> lightNode;
     lightNode << QString("Light");
@@ -226,9 +215,9 @@ AssetDefinitionTreeModel::setupModelData
                 lightNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(lightTreeItem);
+    mRootItem->appendChild(lightTreeItem);
 
     QList<QVariant> modelNode;
     modelNode << QString("Model");
@@ -237,9 +226,9 @@ AssetDefinitionTreeModel::setupModelData
                 modelNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(modelTreeItem);
+    mRootItem->appendChild(modelTreeItem);
 
     QList<QVariant> physicsObjectNode;
     physicsObjectNode << QString("Physics Object");
@@ -248,9 +237,9 @@ AssetDefinitionTreeModel::setupModelData
                 physicsObjectNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(physicsObjectTreeItem);
+    mRootItem->appendChild(physicsObjectTreeItem);
 
     QList<QVariant> scriptNode;
     scriptNode << QString("Script");
@@ -259,9 +248,9 @@ AssetDefinitionTreeModel::setupModelData
                 scriptNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(scriptTreeItem);
+    mRootItem->appendChild(scriptTreeItem);
 
     QList<QVariant> shaderNode;
     shaderNode << QString("Shader");
@@ -270,9 +259,9 @@ AssetDefinitionTreeModel::setupModelData
                 shaderNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(shaderTreeItem);
+    mRootItem->appendChild(shaderTreeItem);
 
     QList<QVariant> spriteNode;
     spriteNode << QString("Sprite");
@@ -281,9 +270,9 @@ AssetDefinitionTreeModel::setupModelData
                 spriteNode,
                 GenericTreeItemType::TREE_NODE,
                 nullptr,
-                assetDefinitionsTreeItem
+                mRootItem
             );
-    assetDefinitionsTreeItem->appendChild(spriteTreeItem);
+    mRootItem->appendChild(spriteTreeItem);
 
     for (AssetDefinition *definition : mProject->getAssetDefinitionsHandleList())
     {

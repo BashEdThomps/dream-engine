@@ -36,14 +36,13 @@
 
 namespace Dream
 {
-    map<string,const aiScene*> AssimpModelInstance::AssimpModelCache = map<string,const aiScene*>();
-    Importer AssimpModelInstance::mImporter;
+    map<string,Importer*> AssimpModelInstance::AssimpModelCache = map<string,Importer*>();
 
-    const aiScene*
+    Importer*
     AssimpModelInstance::getModelFromCache
     (string path)
     {
-        for (pair<string,const aiScene*> it : AssimpModelCache)
+        for (pair<string,Importer*> it : AssimpModelCache)
         {
             if (it.first.compare(path) == 0)
             {
@@ -60,16 +59,18 @@ namespace Dream
           cout << "AssimpModelInstance: Loading " << path << " from disk" << endl;
         }
 
-        const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+        Importer* importer = new Importer();
+        importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
+        const aiScene* scene = importer->GetScene();
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            cerr << "AssimpModelInstance: Error " << mImporter.GetErrorString() << endl;
+            cerr << "AssimpModelInstance: Error " << importer->GetErrorString() << endl;
             return nullptr;
         }
 
-        AssimpModelCache.insert(pair<string,const aiScene*>(path,scene));
-        return scene;
+        AssimpModelCache.insert(pair<string,Importer*>(path,importer));
+        return importer;
     }
 
     AssimpModelInstance::AssimpModelInstance
@@ -112,7 +113,7 @@ namespace Dream
         {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;
         }
-        const aiScene* scene = getModelFromCache(path);
+        const aiScene* scene = getModelFromCache(path)->GetScene();
         if(scene == nullptr)
         {
             return false;
@@ -242,16 +243,15 @@ namespace Dream
     AssimpModelInstance::cleanUpCache
     ()
     {
-        /*
         if (Constants::DEBUG)
         {
             cout << "AssimpModelInstance: Cleaning up model cache" << endl;
         }
-        for (pair<string,const aiScene*> meshes : AssimpModelCache)
+        for (pair<string,Importer*> imp : AssimpModelCache)
         {
-            delete meshes.second;
+            imp.second->FreeScene();
+            delete imp.second;
         }
-        */
         AssimpModelCache.clear();
     }
 

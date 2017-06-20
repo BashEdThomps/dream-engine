@@ -30,7 +30,7 @@ public:
     explicit SelectionHighlighter(QObject *parent = 0);
     ~SelectionHighlighter();
 
-    void setSelectedObject(SceneObjectRuntime* object);
+    void setSelectedSceneObjectRuntimeHandle(SceneObjectRuntime* object);
     SceneObjectRuntime* getSelectedObject();
     void init() override;
     void draw() override;

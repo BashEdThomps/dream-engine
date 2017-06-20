@@ -71,4 +71,11 @@ namespace Dream
         return mTimeDelta.count();
     }
 
+    double
+    Time::scaleValue
+    (double value)
+    {
+       return value*getTimeDelta();
+    }
+
 } // End of Dream

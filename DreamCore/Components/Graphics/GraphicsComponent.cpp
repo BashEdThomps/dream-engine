@@ -189,10 +189,12 @@ namespace Dream
             cout << "GraphicsComponent: Pre Render" << endl;
         }
         Constants::checkGLError("before pre render");
+
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // Clear the colorbuffer
         if (mActiveSceneRuntimeHandle)
         {
@@ -364,6 +366,12 @@ namespace Dream
     GraphicsComponent::addTo2DQueue
     (SceneObjectRuntime* object)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Adding "
+                 << object->getNameAndUuidString()
+                 << " to 2D Queue" << endl;
+        }
         m2DQueue.push_back(object);
     }
 
@@ -403,6 +411,12 @@ namespace Dream
     GraphicsComponent::addTo3DQueue
     (SceneObjectRuntime* object)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Adding "
+                 << object->getNameAndUuidString()
+                 << " to 3D Queue" << endl;
+        }
         m3DQueue.push_back(object);
     }
 
@@ -572,6 +586,8 @@ namespace Dream
         }
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
+        glUseProgram(0);
+
     }
 
     void

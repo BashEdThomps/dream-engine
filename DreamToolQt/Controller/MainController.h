@@ -65,7 +65,7 @@ signals:
     void notifyStatusBarProjectLoaded(QString);
     void notifyNoSceneSelected();
     void notifyPlayingScene(SceneRuntime* scene);
-    void notifyStoppedScene(SceneRuntime* scene);
+    void notifyStoppedScene(SceneDefinition* scene);
 
 public slots:
     void onProjectNewAction();

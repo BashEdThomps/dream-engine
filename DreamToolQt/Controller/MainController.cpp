@@ -119,8 +119,8 @@ MainController::createConnections
     // Scene Stopped
     connect
     (
-        this,SIGNAL(notifyStoppedScene(Scene*)),
-        mMainWindowHandle,SLOT(onSceneStopped(Scene*))
+        this,SIGNAL(notifyStoppedScene(SceneDefinition*)),
+        mMainWindowHandle,SLOT(onSceneStopped(SceneDefinition*))
     );
     // Open Default Project
     connect
@@ -143,8 +143,8 @@ MainController::createConnections
     // Valid Scene Selected
     connect
     (
-        mDreamModel.get(), SIGNAL(notifySelectedSceneChanged(Scene*)),
-        this, SLOT(onSelectedSceneChanged(Scene*))
+        mDreamModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
+        this, SLOT(onSelectedSceneChanged(SceneDefinition*))
     );
     // Project Directory Changed
     connect
@@ -208,33 +208,37 @@ MainController::onProjectOpenAction
     }
     updateWindowTitle(mProjectDirectory);
     Project *project = mDreamModel->getProject();
+    ProjectDefinition* pdHandle = project->getProjectDefinitionHandle();
 
-    emit notifyProjectNameChanged(QString::fromStdString(project->getProjectDefinitionHandle()->getName()));
-    emit notifyProjectAuthorChanged(QString::fromStdString(project->getProjectDefinitionHandle()->getAuthor()));
-    emit notifyProjectDescriptionChanged(QString::fromStdString(project->getProjectDefinitionHandle()->getDescription()));
-    emit notifyProjectWindowWidthChanged(project->getProjectDefinitionHandle()->getWindowWidth());
-    emit notifyProjectWindowHeightChanged(project->getProjectDefinitionHandle()->getWindowHeight());
+    if (pdHandle)
+    {
+        emit notifyProjectNameChanged(QString::fromStdString(pdHandle->getName()));
+        emit notifyProjectAuthorChanged(QString::fromStdString(pdHandle->getAuthor()));
+        emit notifyProjectDescriptionChanged(QString::fromStdString(pdHandle->getDescription()));
+        emit notifyProjectWindowWidthChanged(pdHandle->getWindowWidth());
+        emit notifyProjectWindowHeightChanged(pdHandle->getWindowHeight());
+        emit notifyProjectSceneListChanged(getSceneNamesListModel(pdHandle->getSceneDefinitionsHandleList()));
+        emit notifyProjectStartupSceneChanged(QString::fromStdString(pdHandle->getName()));
 
-    // TODO
-    //emit notifyProjectSceneListChanged(getSceneNamesListModel(project->getSceneList()));
-    //emit notifyProjectStartupSceneChanged(QString::fromStdString(project->getStartupScene()->getName()));
+        emit notifyProjectWidgetsEnabledChanged(true);
 
-    emit notifyProjectWidgetsEnabledChanged(true);
+        mProjectTreeModel.reset(
+            new ProjectTreeModel(pdHandle,mMainWindowHandle->getProjectTreeView())
+        );
+        mMainWindowHandle->getProjectTreeView()->setModel(mProjectTreeModel.get());
 
-    mProjectTreeModel.reset(new ProjectTreeModel(project->getProjectDefinitionHandle(),mMainWindowHandle->getProjectTreeView()));
-    mMainWindowHandle->getProjectTreeView()->setModel(mProjectTreeModel.get());
-
-    mAssetDefinitionTreeModel.reset
-    (
-        new AssetDefinitionTreeModel
+        mAssetDefinitionTreeModel.reset
         (
-            project->getProjectDefinitionHandle(),mMainWindowHandle->getAssetDefinitionTreeView()
-        )
-    );
-    mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
+            new AssetDefinitionTreeModel
+            (
+                pdHandle,mMainWindowHandle->getAssetDefinitionTreeView()
+            )
+        );
+        mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
 
-    emit notifyStatusBarProjectLoaded(QString::fromStdString(project->getProjectDefinitionHandle()->getNameAndUuidString()));
-    connectTreeViewModel();
+        emit notifyStatusBarProjectLoaded(QString::fromStdString(pdHandle->getNameAndUuidString()));
+        connectTreeViewModel();
+    }
 }
 
 void
@@ -248,6 +252,7 @@ MainController::connectTreeViewModel
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
         this, SLOT(onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
+
     // assetDefinitionTreeView
     connect
     (
@@ -369,7 +374,8 @@ MainController::onProjectStopAction
 ()
 {
     SceneRuntime* SceneRuntime = mDreamModel->stopActiveSceneRuntime();
-    emit notifyStoppedScene(SceneRuntime);
+    // TODO
+    //emit notifyStoppedScene(SceneRuntime->getSceneDefinitionHandle());
 }
 
 void
@@ -443,6 +449,7 @@ MainController::setupPropertiesTreeViewModel
     ProjectDefinition *projectDefinition;
     AssetDefinition *assetDefinition = nullptr;
     SceneDefinition *sceneDefinition = nullptr;
+    SceneObjectRuntime *sceneObjectRuntime = nullptr;
     SceneObjectDefinition *sceneObjectDefinition = nullptr;
 
     switch(item->getItemType())
@@ -474,9 +481,19 @@ MainController::setupPropertiesTreeViewModel
 
             if (mSelectionHighlighter)
             {
-                // TODO
-                qDebug() << "MainController: Selection setter method disabled.";
-                //mSelectionHighlighter->setSelectedObject(sceneObject);
+                if (mDreamModel->getProject()->hasProjectRuntime())
+                {
+                    ProjectRuntime* prHandle = mDreamModel->getProject()->getProjectRuntimeHandle();
+                    if (prHandle->hasActiveSceneRuntime())
+                    {
+                        sceneObjectRuntime = mDreamModel
+                            ->getProject()
+                            ->getProjectRuntimeHandle()
+                            ->getActiveSceneRuntimeHandle()
+                            ->getSceneObjectRuntimeHandleByUuid(sceneObjectDefinition->getUuid());
+                        mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(sceneObjectRuntime);
+                    }
+                }
             }
 
             break;

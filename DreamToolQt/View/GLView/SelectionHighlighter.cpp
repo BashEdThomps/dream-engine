@@ -53,7 +53,7 @@ SelectionHighlighter::init
 }
 
 void
-SelectionHighlighter::setSelectedObject
+SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
 (SceneObjectRuntime* selected)
 {
     qDebug() << "SelectionHighlighter: Selecting "
@@ -221,7 +221,7 @@ SelectionHighlighter::draw
 {
     if (!mVertexBuffer.empty())
     {
-        glEnable(GL_LINE_SMOOTH);
+        preRender();
         qDebug() << "SelectionHighlighter: Drawing all - " << mVertexBuffer.size()/2 << " lines.";
 
         // Enable shader program
@@ -313,7 +313,7 @@ SelectionHighlighter::draw
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         glUseProgram(0);
-        glDisable(GL_LINE_SMOOTH);
+        postRender();
     }
 }
 

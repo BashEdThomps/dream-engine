@@ -52,6 +52,8 @@ public slots:
 
 protected: // Inherited Functions
     void initGLDrawable();
+    void preRender();
+    void postRender();
 
 private: // Member Functions
     virtual void initShader();

@@ -129,7 +129,7 @@
   </widget>
   <widget class="QDockWidget" name="projectDockWidget">
    <property name="windowTitle">
-    <string>Project Tree</string>
+    <string>Scenegraph</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>

@@ -170,19 +170,13 @@ void
 ProjectTreeModel::setupModelData
 (ProjectTreeItem *parent)
 {
-    QList<QVariant> sceneNodeData;
-    sceneNodeData << QString("Scenes");
-
-    ProjectTreeItem *scenesNode = new ProjectTreeItem(sceneNodeData,GenericTreeItemType::TREE_NODE,nullptr,parent);
-    parent->appendChild(scenesNode);
-
     for (SceneDefinition *scene : mProject->getSceneDefinitionsHandleList())
     {
         QList<QVariant> nextSceneData;
         nextSceneData << QString::fromStdString(scene->getName());
 
-        ProjectTreeItem *nextScene = new ProjectTreeItem(nextSceneData,GenericTreeItemType::SCENE,scene,scenesNode);
-        scenesNode->appendChild(nextScene);
+        ProjectTreeItem *nextScene = new ProjectTreeItem(nextSceneData,GenericTreeItemType::SCENE,scene,parent);
+        parent->appendChild(nextScene);
 
         // Setup SceneObjects
         SceneObjectDefinition *rootSceneObject = scene->getRootSceneObjectDefinitionHandle();

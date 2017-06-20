@@ -156,6 +156,7 @@ ScenePropertiesModel::createRenderingProperties
 ()
 {
     qDebug() << "ScenePropertiesModel: createRenderingProperties";
+
     // Rendering
     QList<QVariant> renderingData;
     renderingData << "Rendering" << "";
@@ -163,6 +164,7 @@ ScenePropertiesModel::createRenderingProperties
     mRootItem->appendChild(renderingProperty);
 
     qDebug() << "ScenePropertiesModel: createRenderingProperties (ClearColour)";
+
     // Clear Color
     QList<QVariant> clearColorData;
     clearColorData << "Clear Color" << "";
@@ -183,11 +185,8 @@ ScenePropertiesModel::createRenderingProperties
     clearColor_Blue_Data << "Blue" << clear[2];
     clearColorProperty->appendChild(new PropertiesItem(clearColor_Blue_Data,mScene));
 
-    QList<QVariant> clearColor_Alpha_Data;
-    clearColor_Alpha_Data << "Alpha" << clear[3];
-    clearColorProperty->appendChild(new PropertiesItem(clearColor_Alpha_Data,mScene));
-
     qDebug() << "ScenePropertiesModel: createRenderingProperties (AmbientLight)";
+
     // Ambient Light Color
     QList<QVariant> ambientLightData;
     ambientLightData << "Ambient Light" << "";
@@ -259,18 +258,19 @@ ScenePropertiesModel::createPhysicsProperties
         PropertiesItem *gravityProperty = new PropertiesItem(gravityData,mScene);
         physicsProperty->appendChild(gravityProperty);
         {
+            vector<float> gravity = mScene->getGravity();
             QList<QVariant> gravityDataX;
-            gravityDataX << "X" << mScene->getGravity()[Constants::X_INDEX];
+            gravityDataX << "X" << gravity[Constants::X_INDEX];
             PropertiesItem *gravityPropertyX = new PropertiesItem(gravityDataX,mScene);
             gravityProperty->appendChild(gravityPropertyX);
 
             QList<QVariant> gravityDataY;
-            gravityDataY << "Y" << mScene->getGravity()[Constants::Y_INDEX];
+            gravityDataY << "Y" << gravity[Constants::Y_INDEX];
             PropertiesItem *gravityPropertyY = new PropertiesItem(gravityDataY,mScene);
             gravityProperty->appendChild(gravityPropertyY);
 
             QList<QVariant> gravityDataZ;
-            gravityDataZ << "Z" << mScene->getGravity()[Constants::Z_INDEX];
+            gravityDataZ << "Z" << gravity[Constants::Z_INDEX];
             PropertiesItem *gravityPropertyZ = new PropertiesItem(gravityDataZ,mScene);
             gravityProperty->appendChild(gravityPropertyZ);
         }

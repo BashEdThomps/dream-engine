@@ -69,13 +69,36 @@ GLDrawable::initGLDrawable
 }
 
 void
+GLDrawable::preRender
+()
+{
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);
+    Constants::checkGLError("GLDrawable: After pre render");
+}
+
+void
+GLDrawable::postRender
+()
+{
+    glDisable(GL_CULL_FACE);
+    glDisable (GL_BLEND);
+    glDisable(GL_LINE_SMOOTH);
+    Constants::checkGLError("GLDrawable: After post render");
+
+}
+
+void
 GLDrawable::draw
 ()
 {
     if (!mVertexBuffer.empty())
     {
+        preRender();
         qDebug() << "GLDrawer: Drawing all - " << mVertexBuffer.size()/2 << " lines.";
-        glEnable(GL_LINE_SMOOTH);
 
         // Enable shader program
         glUseProgram(mShaderProgram);
@@ -131,7 +154,7 @@ GLDrawable::draw
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         glUseProgram(0);
-        glDisable(GL_LINE_SMOOTH);
+        postRender();
     }
 }
 

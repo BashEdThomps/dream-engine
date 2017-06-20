@@ -77,22 +77,25 @@ void
 QOpenGLWindowComponent::paintGL
 ()
 {
-    updateInputState();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
     if (mProjectHandle)
     {
         ProjectRuntime* pRuntime = mProjectHandle->getProjectRuntimeHandle();
         if (pRuntime->hasActiveSceneRuntime())
         {
+            updateInputState();
             SceneRuntime *sRuntime = pRuntime->getActiveSceneRuntimeHandle();
-            glm::mat4 viewMatrix = pRuntime->getGraphicsComponentHandle()->getViewMatrix();
-            glm::mat4 projectionMatrix = pRuntime->getGraphicsComponentHandle()->getProjectionMatrix();
+
 
             if (sRuntime->getState() != SCENE_STATE_DONE)
             {
+                pRuntime->updateLogic();
+                pRuntime->updateGraphics();
+                pRuntime->updateFlush();
 
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-                pRuntime->updateAll();
+                glm::mat4 viewMatrix = pRuntime->getGraphicsComponentHandle()->getViewMatrix();
+                glm::mat4 projectionMatrix = pRuntime->getGraphicsComponentHandle()->getProjectionMatrix();
 
                 if (mGridHandle)
                 {
@@ -114,30 +117,19 @@ QOpenGLWindowComponent::paintGL
                         Constants::checkGLError("QOGLWC: After Grid Draw");
                     }
                 }
-                else
-                {
-                    cout << "QOGLWC: No Grid Handle" << endl;
-                }
-
 
                 if (mSelectionHighlighterHandle)
                 {
                     if (!mSelectionHighlighterHandle->isInitialised())
                     {
                         mSelectionHighlighterHandle->init();
-                Constants::checkGLError("QOGLWC: SelectionHighlighter after Init");
+                        Constants::checkGLError("QOGLWC: SelectionHighlighter after Init");
                     }
                     mSelectionHighlighterHandle->setViewMatrix(viewMatrix);
                     mSelectionHighlighterHandle->setProjectionMatrix(projectionMatrix);
                     mSelectionHighlighterHandle->draw();
-                Constants::checkGLError("QOGLWC: SelectionHighlighter after draw");
+                    Constants::checkGLError("QOGLWC: SelectionHighlighter after draw");
                 }
-                else if (Constants::DEBUG)
-                {
-                    cout << "QOGLWC: No SelectionHighlighter Handle" << endl;
-                }
-
-
 
                 if (mRelationshipTreeHandle && mRelationshipTreeEnabled)
                 {
@@ -153,25 +145,20 @@ QOpenGLWindowComponent::paintGL
                     Constants::checkGLError("QOGLWC: RelTree after draw");
                 }
 
-
-                /*
-                 * mProjectHandle->updateGraphics();
-                 * Constants::checkGLError("QOGLWC: after update gfx");
-                 * mProjectHandle->updateFlush();
-                 */
             }
         }
         else
         {
             cout << "QOpenGLWindowComponent: Cannot draw, no active scene" << endl;
         }
+
     }
     // If no active scene, blank screen
     else
     {
         glClearColor(0.0f,0.0f,0.0f,0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
+    glDisable(GL_DEPTH_TEST);
 }
 
 bool
@@ -263,7 +250,11 @@ QOpenGLWindowComponent::updateInputState
     }
 
     Camera *camHandle = mProjectHandle->getProjectRuntimeHandle()->getCameraHandle();
-    SceneObjectRuntime *selected = mSelectionHighlighterHandle->getSelectedObject();
+    SceneObjectRuntime *selected = nullptr;
+    if (mSelectionHighlighterHandle)
+    {
+        selected = mSelectionHighlighterHandle->getSelectedObject();
+    }
     Transform3D transform;
 
     float deltaTime = static_cast<float>

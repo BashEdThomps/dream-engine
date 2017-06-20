@@ -347,7 +347,14 @@ namespace Dream
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[Constants::LUA_UPDATE_FUNCTION];
-            luabind::call_function<void>(funq,sceneObject);
+            if (funq.is_valid())
+            {
+                luabind::call_function<void>(funq,sceneObject);
+            }
+            else
+            {
+                cerr << "LuaEngine: Attempted to call onUpdate on invalid function."<< endl;
+            }
         }
         catch (luabind::error &e)
         {
@@ -386,7 +393,15 @@ namespace Dream
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[Constants::LUA_INIT_FUNCTION];
-            luabind::call_function<void>(funq,sceneObject);
+            if (funq.is_valid())
+            {
+                luabind::call_function<void>(funq,sceneObject);
+            }
+            else
+            {
+                cerr << "LuaEngine: Attempted to call onInit on invalid function."<< endl;
+            }
+
         }
         catch (luabind::error &e)
         {
@@ -427,10 +442,16 @@ namespace Dream
             luabind::object reg = luabind::registry(mState);
             luabind::object table = reg[id];
             luabind::object funq = table[Constants::LUA_INPUT_FUNCTION];
-
-            for(InputEvent event : mInputEvents)
+            if (funq.is_valid())
             {
-               luabind::call_function<void>(funq,sceneObject,event);
+                for(InputEvent event : mInputEvents)
+                {
+                   luabind::call_function<void>(funq,sceneObject,event);
+                }
+            }
+            else
+            {
+                cerr << "LuaEngine: Attempted to call onInput on invalid function."<< endl;
             }
 
             clearInputEvents();
@@ -475,9 +496,16 @@ namespace Dream
             luabind::object table = reg[id];
             luabind::object funq = table[Constants::LUA_EVENT_FUNCTION];
             vector<Event> events = sceneObject->getEventQueue();
-            for (Event event : events)
+            if (funq.is_valid())
             {
-                luabind::call_function<void>(funq,sceneObject,event);
+                for (Event event : events)
+                {
+                    luabind::call_function<void>(funq,sceneObject,event);
+                }
+            }
+            else
+            {
+                cerr << "LuaEngine: Attempted to call onInit on invalid function."<< endl;
             }
             sceneObject->cleanUpEvents();
         }

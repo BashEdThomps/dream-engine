@@ -65,7 +65,6 @@ namespace Dream
         unique_ptr<SceneRuntime> mActiveSceneRuntime;
         Project* mProjectHandle;
 
-
     public: // Public Functions
         ProjectRuntime(Project* parentProject, IWindowComponent* wcHandle = nullptr);
         ~ProjectRuntime();

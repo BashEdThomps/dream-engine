@@ -15,7 +15,10 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "RelationshipTree.h"
+
+#include <QDebug>
 
 RelationshipTree::RelationshipTree
 (QObject* parentHandle)
@@ -27,7 +30,7 @@ RelationshipTree::RelationshipTree
 {
     if (Constants::DEBUG)
     {
-        cout << "RelationshipTree: Constructing Object";
+        qDebug() << "RelationshipTree: Constructing Object";
     }
 }
 
@@ -36,7 +39,7 @@ RelationshipTree::~RelationshipTree
 {
     if (Constants::DEBUG)
     {
-        cout << "RelationshipTree: Denstructing Object";
+        qDebug() << "RelationshipTree: Denstructing Object";
     }
 }
 

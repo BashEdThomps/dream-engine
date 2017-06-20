@@ -20,6 +20,7 @@ namespace Dream
         double getCurrentTime();
         double getLastTime();
         double getTimeDelta();
+        double scaleValue(double value);
         void update();
         void show();
     };

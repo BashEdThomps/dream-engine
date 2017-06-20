@@ -50,9 +50,8 @@ namespace Dream
     {
     private:
         // Static
-        static map<string,const aiScene*> AssimpModelCache;
-        static const aiScene* getModelFromCache(string);
-        static Importer mImporter;
+        static map<string,Importer*> AssimpModelCache;
+        static Importer* getModelFromCache(string);
 
         // Variables
         vector<AssimpMesh> mMeshes;

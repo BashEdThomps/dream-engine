@@ -27,7 +27,6 @@ DreamProjectModel::DreamProjectModel
       mSelectedSceneHandle(nullptr)
 {
     setupHeartbeatTimer();
-    mProject.reset(new Project(mWindowComponentHandle));
 }
 
 void
@@ -38,7 +37,7 @@ DreamProjectModel::setupHeartbeatTimer
     {
         mHeartbeatTimer.reset(new QTimer(this));
         connect(mHeartbeatTimer.get(), SIGNAL(timeout()), mWindowComponentHandle, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(16);
+        mHeartbeatTimer->start(34);
     }
 }
 
@@ -144,22 +143,14 @@ DreamProjectModel::startSceneRuntimeFromDefinition
 
     qDebug() << "DreamModel: *** Start Scene ***";
 
-    ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
+    ProjectRuntime* prHandle = mProject->createProjectRuntime();
+    prHandle->initComponents();
+
     SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definitionHandle);
-
-    //TODO
-    bool loadResult = false;//mProject->loadActiveScene();
-
-    if (!loadResult)
-    {
-        qDebug() << "DreamModel: Error initialising dream Project";
-        return false;
-    }
 
     mWindowComponentHandle->setProject(mProject.get());
 
-    //emit notifyPlayingScene(sceneDefinitionHandle);
-    return true;
+    return srHandle != nullptr;
 }
 
 SceneDefinition*

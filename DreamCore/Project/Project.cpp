@@ -165,11 +165,26 @@ namespace Dream
         return loadSuccess;
     }
 
-    void
+    ProjectRuntime*
     Project::createProjectRuntime
     ()
     {
         mRuntime.reset(new ProjectRuntime(this, mWindowComponentHandle));
+        return mRuntime.get();
+    }
+
+    bool
+    Project::hasProjectRuntime
+    ()
+    {
+        return mRuntime != nullptr;
+    }
+
+    bool
+    Project::hasProjectDefinition
+    ()
+    {
+        return mDefinition != nullptr;
     }
 
     bool

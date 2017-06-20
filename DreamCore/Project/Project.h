@@ -57,10 +57,12 @@ namespace Dream
         bool openFromArgumentParser(ArgumentParser &parser);
         bool openFromDirectory(string directory);
 
-        void createProjectRuntime();
+        ProjectRuntime* createProjectRuntime();
+        bool hasProjectRuntime();
 
         string getProjectPath();
 
+        bool hasProjectDefinition();
     }; // End of Project
 
 } // End of Dream

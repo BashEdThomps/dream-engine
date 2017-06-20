@@ -896,12 +896,9 @@ namespace Dream
     SceneObjectRuntime::loadChildrenFromDefinition
     (SceneObjectDefinition* definitionHandle)
     {
+        vector<SceneObjectDefinition*> definitions = definitionHandle->getChildDefinitionsHandleList();
         for
-        (
-            auto it = begin(definitionHandle->getChildDefinitionsHandleList());
-            it != end(definitionHandle->getChildDefinitionsHandleList());
-            it++
-        )
+        (auto it = begin(definitions); it != end(definitions); it++)
         {
             SceneObjectRuntime* child = new SceneObjectRuntime(mSceneRuntimeHandle);
             child->setParentRuntimeHandle(this);
