@@ -52,7 +52,7 @@ namespace Dream
         virtual ~LuaEngine();
 
         bool init();
-        bool createAllScripts();
+        bool createScript(SceneObjectRuntime*,LuaScriptInstance*);
         bool loadScript(SceneObjectRuntime*);
         bool update();
         void stackDump();
@@ -69,7 +69,7 @@ namespace Dream
         void clearInputEvents();
 
     private:// Variables
-        LuaScriptCache mScriptCache;
+        unique_ptr<LuaScriptCache> mScriptCache;
         ProjectRuntime* mProjectRuntimeHandle;
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"

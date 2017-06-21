@@ -18,6 +18,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "../IComponent.h"
 #include <LinearMath/btVector3.h>
@@ -25,6 +26,7 @@
 
 using glm::mat4;
 using std::vector;
+using std::unique_ptr;
 
 class btDynamicsWorld;
 class btDefaultCollisionConfiguration;
@@ -45,7 +47,7 @@ namespace Dream
     class PhysicsComponent : public IComponent
     {
     protected:
-        PhysicsDebugDrawer *mDebugDrawer;
+        unique_ptr<PhysicsDebugDrawer> mDebugDrawer;
         btDynamicsWorld *mDynamicsWorld;
         btBroadphaseInterface *mBroadphase;
         btDefaultCollisionConfiguration *mCollisionConfiguration;

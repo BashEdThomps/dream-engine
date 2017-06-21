@@ -143,7 +143,6 @@ namespace Dream
         return mText;
     }
 
-
     int
     FontInstance::getWidth
     ()

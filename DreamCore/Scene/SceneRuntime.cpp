@@ -42,9 +42,9 @@ using std::cerr;
 namespace Dream
 {
     SceneRuntime::SceneRuntime
-    (ProjectRuntime* project)
+    (SceneDefinition* sdHandle, ProjectRuntime* project)
         : // Init list
-          Runtime(),
+          Runtime(sdHandle),
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
@@ -54,6 +54,7 @@ namespace Dream
         {
             cout << "SceneRuntime: Constructing " << endl;
         }
+        useDefinition(mDefinitionHandle);
 
     }
 
@@ -226,54 +227,6 @@ namespace Dream
     }
 
     void
-    SceneRuntime::createAllAssetInstances
-    ()
-    {
-        if (Constants::VERBOSE)
-        {
-            cout << "SceneRuntime: Create All Asset Instances Called" << endl;
-        }
-
-        mRootSceneObjectRuntime->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* sceneObjectRuntime)
-                {
-                    // Not loaded
-                    if (!sceneObjectRuntime->getLoadedFlag())
-                    {
-                        sceneObjectRuntime->createAssetInstances();
-                    }
-                    return nullptr;
-                }
-            )
-        );
-    }
-
-    void
-    SceneRuntime::loadAllAssetInstances
-    ()
-    {
-        mRootSceneObjectRuntime->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* sceneObjectRuntime)
-                {
-                    // Not loaded && not marked to delete
-                    if (!sceneObjectRuntime->getLoadedFlag())
-                    {
-                        sceneObjectRuntime->loadAssetInstances();
-                    }
-                    return nullptr;
-                }
-            )
-        );
-        setState(SCENE_STATE_LOADED);
-    }
-
-    void
     SceneRuntime::collectGarbage
     ()
     {
@@ -309,7 +262,6 @@ namespace Dream
                  << sceneDefinitionHandle->getNameAndUuidString() << endl;
         }
 
-
         // Assign Runtime attributes from Definition
         setName(sceneDefinitionHandle->getName());
         setUuid(sceneDefinitionHandle->getUuid());
@@ -320,20 +272,17 @@ namespace Dream
         setCameraTransform(sceneDefinitionHandle->getCameraTransform());
         setCameraMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
 
-        // Create Root SceneObjectRuntime
-        setRootSceneObjectRuntime(new SceneObjectRuntime(this));
-        mRootSceneObjectRuntime->useDefinition(sceneDefinitionHandle->getRootSceneObjectDefinitionHandle());
-
         mProjectRuntimeHandle->getGraphicsComponentHandle()->setActiveSceneRuntimeHandle(this);
-
         mProjectRuntimeHandle->getPhysicsComponentHandle()->setGravity(getGravity());
         mProjectRuntimeHandle->getPhysicsComponentHandle()->setDebug(getPhysicsDebug());
-
         mProjectRuntimeHandle->getCameraHandle()->setTransform(getCameraTransform());
         mProjectRuntimeHandle->getCameraHandle()->setMovementSpeed(getCameraMovementSpeed());
 
-        createAllAssetInstances();
-        loadAllAssetInstances();
+        // Create Root SceneObjectRuntime
+        SceneObjectDefinition* sodHandle = sceneDefinitionHandle->getRootSceneObjectDefinitionHandle();
+        setRootSceneObjectRuntime(new SceneObjectRuntime(sodHandle,this));
+
+        setState(SCENE_STATE_LOADED);
     }
 
     bool

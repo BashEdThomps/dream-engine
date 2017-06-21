@@ -90,6 +90,7 @@ public slots:
 
     void onGridToggleAction(bool enabled);
     void onToggleDebugAction(bool enabled);
+    void onTogglePhysicsDebugAction(bool enable);
 
 private: // Variables
     MainWindow *mMainWindowHandle;

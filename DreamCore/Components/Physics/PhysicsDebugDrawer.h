@@ -55,6 +55,8 @@ namespace Dream
         int  getDebugMode() const { return mDebugMode;}
         string btVecToString(const btVector3&);
         void drawAll();
+        void preRender();
+        void postRender();
 
     };
 

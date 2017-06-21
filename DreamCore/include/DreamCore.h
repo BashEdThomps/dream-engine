@@ -10,6 +10,7 @@
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Graphics/BoundingBox.h"
 #include "../Components/Graphics/Model/AssimpModelInstance.h"
+#include "../Components/Physics/PhysicsComponent.h"
 
 #include "../Components/Window/IWindowComponent.h"
 

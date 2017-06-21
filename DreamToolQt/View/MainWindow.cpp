@@ -44,11 +44,13 @@ MainWindow::MainWindow
 {
     ui->setupUi(this);
     setupGL(parent);
-    setupAddRemoveButtonMenus();
+    setupAssetDefinitionAddRemoveButtonMenus();
+    setupScenegraphAddRemoveButtonMenus();
+    setupPropertiesAddRemoveButtonMenus();
 }
 
 void
-MainWindow::setupAddRemoveButtonMenus
+MainWindow::setupAssetDefinitionAddRemoveButtonMenus
 ()
 {
     mAddAssetDefinitionMenu.reset(new QMenu());
@@ -56,15 +58,47 @@ MainWindow::setupAddRemoveButtonMenus
 
     for (pair<AssetType,string> typePair : Constants::DREAM_ASSET_TYPES_MAP)
     {
-        QMenu *typeMenu = mAddAssetDefinitionMenu->addMenu(QString::fromStdString(typePair.second));
+        QMenu *typeMenu = mAddAssetDefinitionMenu->addMenu(QString::fromStdString(Constants::getAssetTypeReadableName(typePair.second)));
 
         for (string format : Constants::DREAM_ASSET_FORMATS_MAP[typePair.first])
         {
-            QAction *action = new QAction(QString::fromStdString(format));
+            QAction *action = new QAction(QString::fromStdString(Constants::getAssetFormatReadableName(format)));
             typeMenu->addAction(action);
         }
     }
     ui->addAssetDefinitionButton->setMenu(mAddAssetDefinitionMenu.get());
+}
+
+
+void
+MainWindow::setupScenegraphAddRemoveButtonMenus
+()
+{
+    mAddScenegraphMenu.reset(new QMenu());
+
+    QAction *scene = new QAction(QString("Scene..."));
+    QAction *sceneObject = new QAction(QString("SceneObject..."));
+
+    mAddScenegraphMenu->addAction(scene);
+    mAddScenegraphMenu->addAction(sceneObject);
+
+    ui->scenegraphAddButton->setMenu(mAddScenegraphMenu.get());
+}
+
+void
+MainWindow::setupPropertiesAddRemoveButtonMenus
+()
+{
+    mAddPropertiesMenu.reset(new QMenu());
+
+    QAction *asset = new QAction(QString("Asset..."));
+    QAction *sceneObject = new QAction(QString("Child SceneObject..."));
+
+    mAddPropertiesMenu->addAction(asset);
+    mAddPropertiesMenu->addAction(sceneObject);
+
+    ui->propertiesAddButton->setMenu(mAddPropertiesMenu.get());
+
 }
 
 void
@@ -111,6 +145,11 @@ MainWindow::getActionCloseProject
 ()
 {
     return ui->actionCloseProject;
+}
+
+QAction *MainWindow::getActionTogglePhysicsDebug()
+{
+   return ui->actionTogglePhysicsDebug;
 }
 
 

@@ -20,8 +20,9 @@
 namespace Dream
 {
     Runtime::Runtime
-    (string uuid, string name)
+    (IDefinition* defHandle, string uuid, string name)
         : // Init List
+          mDefinitionHandle(defHandle),
           mUuid(uuid),
           mName(name)
     {

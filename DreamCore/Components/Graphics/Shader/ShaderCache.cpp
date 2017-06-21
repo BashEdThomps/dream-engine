@@ -49,7 +49,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "ShaderCache: Destructing" << endl;
+            cout << "ShaderCache: Constructing" << endl;
         }
     }
 

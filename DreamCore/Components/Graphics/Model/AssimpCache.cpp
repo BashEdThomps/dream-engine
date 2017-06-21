@@ -35,7 +35,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "AssimpCache: Destructing" << endl;
+            cout << "AssimpCache: Contructing" << endl;
         }
     }
 

@@ -241,13 +241,22 @@ namespace Dream
 
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
+            cerr << "SceneDefinition: Could not find "
+                 << Constants::SCENE_AMBIENT_LIGHT_COLOUR
+                 << endl;
             return colour;
         }
 
-        colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]);
-        colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]);
-        colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]);
-        colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::ALPHA]);
+        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED]);
+        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN]);
+        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]);
+        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA]);
+
+        if (Constants::DEBUG)
+        {
+            cout << "SceneObjectDefinition: Using ambient colour "
+                 << String::floatVectorToString(colour) << endl;
+        }
 
         return colour;
     }

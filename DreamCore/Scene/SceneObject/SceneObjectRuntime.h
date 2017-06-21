@@ -72,6 +72,7 @@ namespace Dream
 
         SceneRuntime* mSceneRuntimeHandle;
         SceneObjectRuntime* mParentRuntimeHandle;
+        string mProjectPath;
 
         bool mLoaded;
         bool mHasFocus;
@@ -79,7 +80,7 @@ namespace Dream
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
         void loadChildrenFromDefinition(SceneObjectDefinition *definitionHandle);
     public:
-        SceneObjectRuntime(SceneRuntime* sceneRuntimeHandle = nullptr);
+        SceneObjectRuntime(SceneObjectDefinition* sdHandle, SceneRuntime* sceneRuntimeHandle = nullptr);
 
         ~SceneObjectRuntime();
 
@@ -118,40 +119,34 @@ namespace Dream
 
         void resetTransform();
 
-        void setAnimationInstance(AnimationInstance*);
+        //void setAnimationInstance(AnimationInstance*);
+        //void setAudioInstance(AudioInstance*);
+        //void setModelInstance(AssimpModelInstance*);
+        //void setScriptInstance(LuaScriptInstance*);
+        //void setShaderInstance(ShaderInstance*);
+        //void setPhysicsObjectInstance(PhysicsObjectInstance*);
+        //void setLightInstance(LightInstance*);
+        //void setSpriteInstance(SpriteInstance*);
+        //void setFontInstance(FontInstance*);
+
         AnimationInstance* getAnimationInstance();
-        bool hasAnimationInstance();
-
-        void setAudioInstance(AudioInstance*);
         AudioInstance* getAudioInstance();
-        bool hasAudioInstance();
-
-        void setModelInstance(AssimpModelInstance*);
         AssimpModelInstance* getModelInstance();
-        bool hasModelInstance();
-
-        void setScriptInstance(LuaScriptInstance*);
         LuaScriptInstance* getScriptInstance();
-        bool hasScriptInstance();
-
-        void setShaderInstance(ShaderInstance*);
         ShaderInstance* getShaderInstance();
-        bool hasShaderInstance();
-
-        void setPhysicsObjectInstance(PhysicsObjectInstance*);
         PhysicsObjectInstance* getPhysicsObjectInstance();
-        bool hasPhysicsObjectInstance();
-
-        void setLightInstance(LightInstance*);
         LightInstance* getLightInstance();
-        bool hasLightInstance();
-
-        void setSpriteInstance(SpriteInstance*);
         SpriteInstance* getSpriteInstance();
-        bool hasSpriteInstance();
-
-        void setFontInstance(FontInstance*);
         FontInstance* getFontInstance();
+
+        bool hasAnimationInstance();
+        bool hasAudioInstance();
+        bool hasModelInstance();
+        bool hasScriptInstance();
+        bool hasShaderInstance();
+        bool hasPhysicsObjectInstance();
+        bool hasLightInstance();
+        bool hasSpriteInstance();
         bool hasFontInstance();
 
         void addAssetDefinitionUuidToLoad(string);
@@ -172,8 +167,6 @@ namespace Dream
         bool hasEvents();
         void sendEvent(Event);
         vector<Event> getEventQueue();
-
-        void loadAssetInstances();
 
         SceneObjectRuntime* getChildRuntimeHandleByUuid(string);
 

@@ -51,7 +51,7 @@ namespace Dream
 
     ProjectRuntime::ProjectRuntime
     (Project* projectHandle,IWindowComponent* windowComponentHandle)
-        : Runtime(),
+        : Runtime(projectHandle->getProjectDefinitionHandle()),
           mDone(false),
           mWindowComponentHandle(windowComponentHandle),
           mProjectHandle(projectHandle)
@@ -60,6 +60,9 @@ namespace Dream
         {
             cout << "ProjectRuntime: Constructing" << endl;
         }
+        initCaches();
+        initComponents();
+        useDefinition(mDefinitionHandle);
     }
 
     ProjectRuntime::~ProjectRuntime
@@ -132,8 +135,6 @@ namespace Dream
         {
             return false;
         }
-
-        initCaches();
 
         if (Constants::VERBOSE)
         {
@@ -254,14 +255,12 @@ namespace Dream
         return mAnimationComponent.get();
     }
 
-
     AudioComponent*
     ProjectRuntime::getAudioComponentHandle
     ()
     {
         return mAudioComponent.get();
     }
-
 
     PhysicsComponent*
     ProjectRuntime::getPhysicsComponentHandle
@@ -270,14 +269,12 @@ namespace Dream
         return mPhysicsComponent.get();
     }
 
-
     GraphicsComponent*
     ProjectRuntime::getGraphicsComponentHandle
     ()
     {
         return mGraphicsComponent.get();
     }
-
 
     Camera*
     ProjectRuntime::getCameraHandle
@@ -304,12 +301,9 @@ namespace Dream
                  << endl << endl;
         }
 
-        mActiveSceneRuntime->createAllAssetInstances();
-        mActiveSceneRuntime->loadAllAssetInstances();
-
         mTime->update();
 
-        mLuaEngine->createAllScripts();
+        //mLuaEngine->createAllScripts();
         mLuaEngine->update();
 
         mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
@@ -337,12 +331,10 @@ namespace Dream
                  << endl << endl;
         }
         // Draw 3D/PhysicsDebug/2D
-        mGraphicsComponent->preRender();
         mGraphicsComponent->draw3DQueue();
-        mPhysicsComponent->drawDebug();
         mGraphicsComponent->draw2DQueue();
+        mPhysicsComponent->drawDebug();
         mWindowComponentHandle->swapBuffers();
-        mGraphicsComponent->postRender();
     }
 
     void
@@ -395,25 +387,15 @@ namespace Dream
             return nullptr;
         }
 
-        if (hasActiveSceneRuntime())
-        {
-            if(Constants::DEBUG)
-            {
-                cout << "ProjectRuntime: Destructing currently active SceneRuntime" << endl;
-            }
-        }
-
         // Load the new scene
         if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Loading SceneRuntime" << endl;
         }
 
-        mActiveSceneRuntime.reset(new SceneRuntime(this));
-        mActiveSceneRuntime->useDefinition(sceneDefinitionHandle);
+        mActiveSceneRuntime.reset(new SceneRuntime(sceneDefinitionHandle , this));
 
         return mActiveSceneRuntime.get();
-
     }
 
     Project*
@@ -425,7 +407,7 @@ namespace Dream
 
     void
     ProjectRuntime::useDefinition
-    (IDefinition* definitionHandle)
+    (IDefinition*)
     {
         /*
             ProjectDefinition *pdHandle = dynamic_cast<ProjectDefinition*>(definitionHandle);

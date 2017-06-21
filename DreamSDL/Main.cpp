@@ -72,8 +72,6 @@ int main(int argc, const char** argv)
     ProjectDefinition* pdHandle = project.getProjectDefinitionHandle();
     SceneDefinition* startupSceneDefinitionHandle = pdHandle->getStartupSceneDefinitionHandle();
 
-    prHandle->initComponents();
-
     SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(startupSceneDefinitionHandle);
 
     //Constants::dreamSetVerbose(false);

@@ -26,6 +26,11 @@ namespace Dream
     (AssetDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "LuaScriptInstance: Constructing "
+                 << mDefinitionHandle->getNameAndUuidString() << endl;
+        }
         mError = false;
         return;
     }
@@ -35,7 +40,8 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "LuaScriptInstance: Destroying Object" << endl;
+            cout << "LuaScriptInstance: Destructing "
+                 << mDefinitionHandle->getNameAndUuidString() << endl;
         }
     }
 

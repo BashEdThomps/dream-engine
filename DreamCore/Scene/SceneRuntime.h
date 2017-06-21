@@ -56,7 +56,7 @@ namespace Dream
         bool mPhysicsDebug;
 
     public:
-        SceneRuntime(ProjectRuntime* parent = nullptr);
+        SceneRuntime(SceneDefinition* sdHandle, ProjectRuntime* parent = nullptr);
         ~SceneRuntime();
 
         SceneState getState();
@@ -77,7 +77,6 @@ namespace Dream
         void processSceneObjectRuntimeCleanUpQueue();
 
         void createAllAssetInstances();
-        void loadAllAssetInstances();
 
         void useDefinition(IDefinition* sceneDefinitionHandle) override;
 

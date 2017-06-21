@@ -60,7 +60,8 @@ namespace Dream
         FileReader reader(path);
         if(!reader.readIntoString())
         {
-            cerr << "LuaScriptCache: Error reading Lua script into cache" << path << endl;
+            cerr << "LuaScriptCache: Error reading Lua script into cache from path '"
+                 << path << "'" << endl;
            return "";
         }
         if (Constants::DEBUG)

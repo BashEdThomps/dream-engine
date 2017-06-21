@@ -59,6 +59,7 @@ public:
     void setProjectWindowWidth(int width);
     void setProjectWindowHeight(int height);
     void setDebug(bool enabled);
+    void setPhysicsDebug(bool enabled);
     void closeProject();
 
     bool startSceneRuntimeFromDefinition(SceneDefinition* definitionHandle);

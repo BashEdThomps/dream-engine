@@ -54,7 +54,8 @@ namespace Dream
                               "uniform mat4 view;\n"
                               "uniform mat4 projection;\n"
                               "\n"
-                              "void main () {\n"
+                              "void main ()\n"
+                              "{\n"
                               "    gl_Position = projection * view * vec4(position,1.0);\n"
                               "    Color = color;\n"
                               "}";
@@ -65,7 +66,8 @@ namespace Dream
                                 "\n"
                                 "out vec4 fragColor;\n"
                                 "\n"
-                                "void main() { \n"
+                                "void main()\n"
+                                "{\n"
                                 "    fragColor = vec4(Color,1.0);\n"
                                 "}";
         // Compile shaders
@@ -159,12 +161,14 @@ namespace Dream
     PhysicsDebugDrawer::drawLine
     (const btVector3& from,const btVector3& to,const btVector3& color)
     {
+        /*
         if (Constants::VERBOSE)
         {
-            cout << "PhysicsDebugDrawer: Drawing line from " << btVecToString(from)
+            cout << "PhysicsDebugDrawer: Queuing line from " << btVecToString(from)
                  << " to " << btVecToString(to)
                  << " with colour " << btVecToString(color) << endl;
         }
+        */
         drawLine(from,to,color,color);
     }
 
@@ -238,14 +242,16 @@ namespace Dream
     PhysicsDebugDrawer::drawAll
     ()
     {
-        glEnable(GL_LINE_SMOOTH);
+        preRender();
+        /*
         if (Constants::VERBOSE)
         {
-            cout << "PhysicsDebugDrawer: Drawing all - " << mVertexBuffer.size()/2 << " lines." << endl;
+            cout << "PhysicsDebugDrawer: Drawing " << mVertexBuffer.size()/2 << " lines." << endl;
         }
+        */
+
         // Enable shader program
         glUseProgram(mShaderProgram);
-
 
         // Set the projection matrix
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
@@ -280,27 +286,48 @@ namespace Dream
         glBindVertexArray(mVAO);
         // Vertex Positions
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(
-                    0, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(PhysicsDebugVertex)),
-                    static_cast<GLvoid*>(0)
-                    );
+        glVertexAttribPointer
+        (
+            0, 3, GL_FLOAT, GL_FALSE,
+            static_cast<GLint>(sizeof(PhysicsDebugVertex)),
+            static_cast<GLvoid*>(0)
+        );
         // Vertex Colors
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(
-                    1, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(PhysicsDebugVertex)),
-                    (GLvoid*)offsetof(PhysicsDebugVertex, Color)
-                    );
+        glVertexAttribPointer
+        (
+            1, 3, GL_FLOAT, GL_FALSE,
+            static_cast<GLint>(sizeof(PhysicsDebugVertex)),
+            (GLvoid*)offsetof(PhysicsDebugVertex, Color)
+        );
         // Draw
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
         // Unbind
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         glUseProgram(0);
-        glDisable(GL_LINE_SMOOTH);
+        postRender();
         // Clear old buffer
         mVertexBuffer.clear();
     }
+    void
+    PhysicsDebugDrawer::preRender
+    ()
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glDisable(GL_DEPTH_TEST);
+        Constants::checkGLError("PhysicsDebugDrawer: After pre render");
+    }
 
+    void
+    PhysicsDebugDrawer::postRender
+    ()
+    {
+        glDisable (GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_DEPTH_TEST);
+        Constants::checkGLError("PhysicsDebugDrawer: After post render");
+    }
 } // End of Dream

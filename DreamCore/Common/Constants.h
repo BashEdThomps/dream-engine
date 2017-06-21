@@ -94,6 +94,30 @@ namespace Dream
         const static string ASSET_FORMAT_SHADER_GLSL;
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_SPRITE_IMAGE;
+
+        const static string ASSET_TYPE_ANIMATION_READABLE;
+        const static string ASSET_TYPE_AUDIO_READABLE;
+        const static string ASSET_TYPE_LIGHT_READABLE;
+        const static string ASSET_TYPE_FONT_READABLE;
+        const static string ASSET_TYPE_MODEL_READABLE;
+        const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
+        const static string ASSET_TYPE_SCRIPT_READABLE;
+        const static string ASSET_TYPE_SHADER_READABLE;
+        const static string ASSET_TYPE_SPRITE_READABLE;
+        const static string ASSET_FORMAT_READABLE;
+        const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;
+        const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
+        const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
+        const static string ASSET_FORMAT_AUDIO_WAV_READABLE;
+        const static string ASSET_FORMAT_ANIMATION_DREAM_READABLE;
+        const static string ASSET_FORMAT_FONT_TTF_READABLE;
+        const static string ASSET_FORMAT_SHADER_GLSL_READABLE;
+        const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
+        const static string ASSET_FORMAT_SPRITE_IMAGE_READABLE;
+
+        const static string getAssetTypeReadableName(string);
+        const static string getAssetFormatReadableName(string);
+
         // Scene ================================================================
         const static string SCENE_NOTES;
         const static string SCENE_SCENE_OBJECTS;
@@ -169,6 +193,7 @@ namespace Dream
         const static string ASSET_ATTR_SIZE;
         const static string ASSET_ATTR_COMPOUND_CHILDREN;
         const static string ASSET_ATTR_KINEMATIC;
+
         const static string COLLISION_SHAPE_SPHERE;
         const static string COLLISION_SHAPE_BOX;
         const static string COLLISION_SHAPE_CYLINDER;
@@ -181,6 +206,19 @@ namespace Dream
         const static string COLLISION_SHAPE_HEIGHTFIELD_TERRAIN;
         const static string COLLISION_SHAPE_STATIC_PLANE;
         const static string COLLISION_SHAPE_COMPOUND;
+
+        const static string COLLISION_SHAPE_SPHERE_READABLE;
+        const static string COLLISION_SHAPE_BOX_READABLE;
+        const static string COLLISION_SHAPE_CYLINDER_READABLE;
+        const static string COLLISION_SHAPE_CAPSULE_READABLE;
+        const static string COLLISION_SHAPE_CONE_READABLE;
+        const static string COLLISION_SHAPE_MULTI_SPHERE_READABLE;
+        const static string COLLISION_SHAPE_CONVEX_HULL_READABLE;
+        const static string COLLISION_SHAPE_CONVEX_TRIANGLE_MESH_READABLE;
+        const static string COLLISION_SHAPE_BVH_TRIANGLE_MESH_READABLE;
+        const static string COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE;
+        const static string COLLISION_SHAPE_STATIC_PLANE_READABLE;
+        const static string COLLISION_SHAPE_COMPOUND_READABLE;
         // Event ================================================================
         const static string EVENT_SENDER;
         const static string EVENT_TYPE;

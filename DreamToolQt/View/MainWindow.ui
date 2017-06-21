@@ -122,6 +122,8 @@
      <string>View</string>
     </property>
     <addaction name="actionToggleGrid"/>
+    <addaction name="actionToggleDebug"/>
+    <addaction name="actionTogglePhysicsDebug"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProject"/>
@@ -194,7 +196,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="projectTreeAddButton">
+          <widget class="QPushButton" name="scenegraphAddButton">
            <property name="maximumSize">
             <size>
              <width>24</width>
@@ -220,7 +222,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="projectTreeRemoveButton">
+          <widget class="QPushButton" name="scenegraphRemoveButton">
            <property name="maximumSize">
             <size>
              <width>24</width>
@@ -418,7 +420,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>
@@ -437,8 +439,6 @@
    <addaction name="actionStop"/>
    <addaction name="actionReload"/>
    <addaction name="separator"/>
-   <addaction name="actionToggleGrid"/>
-   <addaction name="actionToggleDebug"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
    <addaction name="actionOpen_Test_Project"/>
@@ -700,7 +700,7 @@
      <normaloff>:/images/view-list-icons-symbolic.png</normaloff>:/images/view-list-icons-symbolic.png</iconset>
    </property>
    <property name="text">
-    <string>Toggle Grid</string>
+    <string>Grid</string>
    </property>
    <property name="toolTip">
     <string>Toggle Grid</string>
@@ -736,6 +736,20 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionTogglePhysicsDebug">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Physics Debug</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

@@ -41,6 +41,7 @@ namespace Dream
         btRigidBody *mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
         bool mKinematic;
+        bool mInPhysicsWorld;
         vector<CompoundChild> mCompoundChildren;
 
     public:
@@ -53,6 +54,9 @@ namespace Dream
         void getWorldTransform(btTransform&);
         btCollisionObject* getCollisionObject();
         void setLinearVelocity(float, float, float);
+
+        bool isInPhysicsWorld();
+        void setInPhysicsWorld(bool inPhysicsWorld);
 
     protected:
         void loadExtraAttributes(json);

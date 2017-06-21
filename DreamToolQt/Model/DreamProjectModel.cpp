@@ -36,7 +36,7 @@ DreamProjectModel::setupHeartbeatTimer
     {
         mHeartbeatTimer.reset(new QTimer(this));
         connect(mHeartbeatTimer.get(), SIGNAL(timeout()), mWindowComponentHandle, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(33);
+        mHeartbeatTimer->start(16);
     }
 }
 
@@ -139,18 +139,11 @@ DreamProjectModel::startSceneRuntimeFromDefinition
         qDebug() << "DreamModel: No SceneDefinition selected";
         return false;
     }
-
-    qDebug() << "DreamModel: *** Start Scene ***";
-
+    qDebug() << endl << "          ===== DreamModel - Start Scene =====" << endl;
     ProjectRuntime* prHandle = mProject->createProjectRuntime();
-    prHandle->initComponents();
-
     SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definitionHandle);
-
     mWindowComponentHandle->setProjectRuntimeHandle(mProject->getProjectRuntimeHandle());
-
     setupHeartbeatTimer();
-
     return srHandle != nullptr;
 }
 
@@ -172,16 +165,24 @@ SceneRuntime*
 DreamProjectModel::stopActiveSceneRuntime
 ()
 {
-    ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
-    SceneRuntime* srHandle = prHandle->getActiveSceneRuntimeHandle();
-
-    if (srHandle)
+    if (mProject)
     {
-        srHandle->setState(SCENE_STATE_STOPPED);
-        prHandle->resetActiveSceneRuntime();
-    }
+        ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
+        if (prHandle)
+        {
+            SceneRuntime* srHandle = prHandle->getActiveSceneRuntimeHandle();
 
-    return srHandle;
+            if (srHandle)
+            {
+                srHandle->setState(SCENE_STATE_STOPPED);
+                prHandle->resetActiveSceneRuntime();
+                return srHandle;
+            }
+        }
+        mProject->resetProjectRuntime();
+    }
+    mWindowComponentHandle->setProjectRuntimeHandle(nullptr);
+    return nullptr;
 }
 
 void
@@ -190,6 +191,18 @@ DreamProjectModel::setDebug
 {
     Constants::dreamSetVerbose(enabled);
     Constants::dreamSetDebug(enabled);
+}
+
+void DreamProjectModel::setPhysicsDebug(bool enabled)
+{
+    if (mProject)
+    {
+        ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
+        if (prHandle)
+        {
+            prHandle->getPhysicsComponentHandle()->setDebug(enabled);
+        }
+    }
 }
 
 void

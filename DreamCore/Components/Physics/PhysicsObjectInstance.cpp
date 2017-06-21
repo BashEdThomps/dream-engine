@@ -45,11 +45,26 @@ namespace Dream
         return scene;
     }
 
+    bool PhysicsObjectInstance::isInPhysicsWorld()
+    {
+        return mInPhysicsWorld;
+    }
+
+    void PhysicsObjectInstance::setInPhysicsWorld(bool inPhysicsWorld)
+    {
+        mInPhysicsWorld = inPhysicsWorld;
+    }
+
     PhysicsObjectInstance::PhysicsObjectInstance
     (AssetDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
-          mKinematic(false)
+          mKinematic(false),
+          mInPhysicsWorld(false)
     {
+        if (Constants::DEBUG)
+        {
+            cout << "PhysicsObjectInstance: Constructing" << endl;
+        }
         return;
     }
 
@@ -58,7 +73,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "PhysicsObjectInstance: Destroying Object" << endl;
+            cout << "PhysicsObjectInstance: Destroying" << endl;
         }
 
         /***** Deletes are handled by PhysicsComponent! *****/

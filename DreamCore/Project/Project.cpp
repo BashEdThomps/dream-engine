@@ -180,6 +180,11 @@ namespace Dream
         return mRuntime != nullptr;
     }
 
+    void Project::resetProjectRuntime()
+    {
+        mRuntime.reset(nullptr);
+    }
+
     bool
     Project::hasProjectDefinition
     ()

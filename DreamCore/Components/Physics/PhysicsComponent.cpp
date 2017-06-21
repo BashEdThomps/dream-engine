@@ -43,7 +43,6 @@ namespace Dream
     ()
         : IComponent()
     {
-        mDebugDrawer = nullptr;
         mDebug = false;
     }
 
@@ -97,12 +96,6 @@ namespace Dream
         {
             delete mDynamicsWorld;
             mDynamicsWorld = nullptr;
-        }
-        // DebugDrawer
-        if (mDebugDrawer != nullptr)
-        {
-            delete mDebugDrawer;
-            mDebugDrawer = nullptr;
         }
         // Solver
         if (mSolver != nullptr)
@@ -164,6 +157,11 @@ namespace Dream
                     );
         mDynamicsWorld->setGravity(mGravity);
 
+        mDebugDrawer.reset(new PhysicsDebugDrawer());
+        mDebugDrawer->init();
+        mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+        mDynamicsWorld->setDebugDrawer(mDebugDrawer.get());
+
         if (Constants::DEBUG)
         {
             cout << "done." << endl;
@@ -179,14 +177,7 @@ namespace Dream
         {
             cout << "PhysicsComponent: Update Called" << endl;
         }
-        // Setup Debug
-        if (mDebug && mDebugDrawer == nullptr)
-        {
-            mDebugDrawer = new PhysicsDebugDrawer();
-            mDebugDrawer->init();
-            mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
-            mDynamicsWorld->setDebugDrawer(mDebugDrawer);
-        }
+
         populatePhysicsWorld(scene);
 
         btScalar stepValue = static_cast<btScalar>(mTime->getTimeDelta());
@@ -254,12 +245,16 @@ namespace Dream
                     if (so->hasPhysicsObjectInstance())
                     {
                         PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
-                        if (Constants::DEBUG)
+                        if (!physicsObject->isInPhysicsWorld())
                         {
-                            cout << "PhysicsComponent: Adding SceneObjectRuntime " << so->getUuid()
-                            << " to Physics World" << endl;
+                            if (Constants::DEBUG)
+                            {
+                                cout << "PhysicsComponent: Adding SceneObjectRuntime " << so->getUuid()
+                                << " to Physics World" << endl;
+                            }
+                            addPhysicsObjectInstance(physicsObject);
+                            physicsObject->setInPhysicsWorld(true);
                         }
-                        addPhysicsObjectInstance(physicsObject);
                     }
                     return nullptr;
                 }

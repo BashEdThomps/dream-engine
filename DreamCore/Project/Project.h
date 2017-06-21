@@ -40,8 +40,8 @@ namespace Dream
     {
         // Variables
     private:
-        unique_ptr<ProjectRuntime> mRuntime;
         unique_ptr<ProjectDefinition> mDefinition;
+        unique_ptr<ProjectRuntime> mRuntime;
         IWindowComponent* mWindowComponentHandle;
         string mProjectPath;
 
@@ -59,6 +59,7 @@ namespace Dream
 
         ProjectRuntime* createProjectRuntime();
         bool hasProjectRuntime();
+        void resetProjectRuntime();
 
         string getProjectPath();
 

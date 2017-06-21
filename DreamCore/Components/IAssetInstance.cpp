@@ -54,7 +54,7 @@ namespace Dream
     IAssetInstance::getNameAndUuidString
     ()
     {
-        return getName() + " (" + getUuid() + ")";
+        return "["+getName()+" : "+getUuid()+"]";
     }
 
     string

@@ -72,6 +72,7 @@ void
 GLDrawable::preRender
 ()
 {
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glEnable(GL_BLEND);
@@ -84,6 +85,7 @@ void
 GLDrawable::postRender
 ()
 {
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glDisable (GL_BLEND);
     glDisable(GL_LINE_SMOOTH);

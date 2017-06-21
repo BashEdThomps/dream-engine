@@ -157,11 +157,6 @@ QOpenGLWindowComponent::paintGL
                 mProjectRuntimeHandle = nullptr;
             }
         }
-        else
-        {
-            cout << "QOpenGLWindowComponent: Cannot draw, no active scene" << endl;
-        }
-
     }
     // If no active scene, blank screen
     else
@@ -259,7 +254,6 @@ QOpenGLWindowComponent::updateInputState
     {
         selected = mSelectionHighlighterHandle->getSelectedObject();
     }
-    Transform3D transform;
 
     float deltaTime = static_cast<float>
     (
@@ -285,6 +279,8 @@ QOpenGLWindowComponent::updateInputState
     {
         camHandle->processKeyboard(CAMERA_MOVEMENT_RIGHT,deltaTime);
     }
+
+    Transform3D transform;
 
     if(mInputState.upPressed)
     {

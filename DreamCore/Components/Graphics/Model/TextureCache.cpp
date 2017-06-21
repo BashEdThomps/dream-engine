@@ -22,12 +22,20 @@ namespace Dream
     TextureCache::TextureCache
     ()
     {
-
+        if (Constants::DEBUG)
+        {
+            cout << "TextureCache: Constructing" << endl;
+        }
     }
 
     TextureCache::~TextureCache
     ()
     {
+        if (Constants::DEBUG)
+        {
+            cout << "TextureCache: Constructing" << endl;
+        }
+
         for (Texture texture : mCache)
         {
             glDeleteTextures(1,&texture.id);

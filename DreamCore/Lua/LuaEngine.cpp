@@ -89,8 +89,13 @@ namespace Dream
 {
     LuaEngine::LuaEngine
     (ProjectRuntime* projectHandle)
-        :mProjectRuntimeHandle(projectHandle)
+        : mProjectRuntimeHandle(projectHandle),
+          mScriptCache(new LuaScriptCache())
     {
+        if (Constants::DEBUG)
+        {
+            cout << "LuaEngine: Constructing Object" << endl;
+        }
     }
 
     LuaEngine::~LuaEngine
@@ -136,59 +141,48 @@ namespace Dream
     }
 
     bool
-    LuaEngine::createAllScripts
-    ()
+    LuaEngine::createScript
+    (SceneObjectRuntime* sceneObject,LuaScriptInstance* luaScript)
     {
-        if (Constants::VERBOSE)
+        if (luaScript == nullptr)
         {
-            cout << "LuaEngine: CreateAllScripts Called" << endl;
+            cerr << "LuaEngine: Load Failed, LuaScriptInstance is NULL" << endl;
+            return false;
         }
 
-        for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
+        if (sceneObject == nullptr)
         {
-            SceneObjectRuntime *sceneObject = entry.first;
-            LuaScriptInstance *luaScript = entry.second;
-
-            if (luaScript == nullptr)
-            {
-                cerr << "LuaEngine: Load Failed, LuaScriptInstance is NULL" << endl;
-                continue;
-            }
-
-            if (sceneObject == nullptr)
-            {
-                cerr << "LuaEngine: Load Failed, SceneObjectRuntime is NULL" << endl;
-                continue;
-            }
-
-            if (luaScript->getLoadedFlag())
-            {
-                continue;
-            }
-
-            if (Constants::DEBUG)
-            {
-                cout << "LuaEngine: loading script '" << luaScript->getName()
-                     << "' for '"
-                     << sceneObject->getName()
-                     << "'" << endl;
-                cout << "LuaEngine: Loading Lua script from " << luaScript->getAbsolutePath()
-                     << endl << flush;
-            }
-
-            if (!loadScript(sceneObject))
-            {
-                return false;
-            }
-
-            if (Constants::DEBUG)
-            {
-                cout << "LuaEngine: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
-            }
-
-            luaScript->setLoadedFlag(true);
-            executeScriptInit(sceneObject);
+            cerr << "LuaEngine: Load Failed, SceneObjectRuntime is NULL" << endl;
+            return false;
         }
+
+        if (luaScript->getLoadedFlag())
+        {
+            return false;
+        }
+
+        if (Constants::DEBUG)
+        {
+            cout << "LuaEngine: loading script '" << luaScript->getName()
+                 << "' for '"
+                 << sceneObject->getName()
+                 << "'" << endl;
+            cout << "LuaEngine: Loading Lua script from " << luaScript->getAbsolutePath()
+                 << endl << flush;
+        }
+
+        if (!loadScript(sceneObject))
+        {
+            return false;
+        }
+
+        if (Constants::DEBUG)
+        {
+            cout << "LuaEngine: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
+        }
+
+        luaScript->setLoadedFlag(true);
+        executeScriptInit(sceneObject);
 
         return true;
     }
@@ -226,7 +220,7 @@ namespace Dream
 
             object newScriptTable = newtable(mState);
             string path = scriptInstance->getAbsolutePath();
-            string script = mScriptCache.getScript(path);
+            string script = mScriptCache->getScript(path);
 
             if (Constants::DEBUG)
             {
@@ -725,7 +719,7 @@ namespace Dream
         module(mState)
         [
             class_<SceneObjectRuntime>("SceneObjectRuntime")
-                .def(constructor<>())
+
                 .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeHandleByUuid)
                 .def("getParent",&SceneObjectRuntime::getParentRuntimeHandle)
                 .def("setParent",&SceneObjectRuntime::setParentRuntimeHandle)
@@ -736,28 +730,22 @@ namespace Dream
                 .def("addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad)
 
                 .def("getAnimationInstance",&SceneObjectRuntime::getAnimationInstance)
-                .def("setAnimationInstance",&SceneObjectRuntime::setAnimationInstance)
-
                 .def("getAudioInstance",&SceneObjectRuntime::getAudioInstance)
-                .def("setAudioInstance",&SceneObjectRuntime::setAudioInstance)
-
                 .def("getSpriteInstance",&SceneObjectRuntime::getSpriteInstance)
-                .def("setSpriteInstance",&SceneObjectRuntime::setSpriteInstance)
-
                 .def("getModelInstance",&SceneObjectRuntime::getModelInstance)
-                .def("setModelInstance",&SceneObjectRuntime::setModelInstance)
-
                 .def("getShaderInstance",&SceneObjectRuntime::getShaderInstance)
-                .def("setShaderInstance",&SceneObjectRuntime::setShaderInstance)
-
                 .def("getLightInstance",&SceneObjectRuntime::getLightInstance)
-                .def("setLightInstance",&SceneObjectRuntime::setLightInstance)
-
                 .def("getFontInstance",&SceneObjectRuntime::getFontInstance)
-                .def("setFontInstance",&SceneObjectRuntime::setFontInstance)
-
                 .def("getPhysicsObjectInstance",&SceneObjectRuntime::getPhysicsObjectInstance)
-                .def("setPhysicsObjectInstance",&SceneObjectRuntime::setPhysicsObjectInstance)
+
+                //.def("setAnimationInstance",&SceneObjectRuntime::setAnimationInstance)
+                //.def("setAudioInstance",&SceneObjectRuntime::setAudioInstance)
+                //.def("setSpriteInstance",&SceneObjectRuntime::setSpriteInstance)
+                //.def("setModelInstance",&SceneObjectRuntime::setModelInstance)
+                //.def("setShaderInstance",&SceneObjectRuntime::setShaderInstance)
+                //.def("setLightInstance",&SceneObjectRuntime::setLightInstance)
+                //.def("setFontInstance",&SceneObjectRuntime::setFontInstance)
+                //.def("setPhysicsObjectInstance",&SceneObjectRuntime::setPhysicsObjectInstance)
 
             ];
     }
@@ -768,7 +756,7 @@ namespace Dream
     {
         debugRegisteringClass("Transform3D");
         module(mState) [
-                class_<Transform3D>("Transform3D")
+            class_<Transform3D>("Transform3D")
                 .def(constructor<>())
                 // Translation ===========================================================
                 .def("getTransformType",&Transform3D::getTransformType)
@@ -781,9 +769,7 @@ namespace Dream
                 .def("translateByX",&Transform3D::translateByX)
                 .def("translateByY",&Transform3D::translateByY)
                 .def("translateByZ",&Transform3D::translateByZ)
-                .def("setTranslation",
-                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation)
-                     )
+                .def("setTranslation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation))
                 // Rotation =============================================================
                 .def("getRotationX",&Transform3D::getRotationX)
                 .def("getRotationY",&Transform3D::getRotationY)
@@ -794,9 +780,7 @@ namespace Dream
                 .def("rotateByX",&Transform3D::rotateByX)
                 .def("rotateByY",&Transform3D::rotateByY)
                 .def("rotateByZ",&Transform3D::rotateByZ)
-                .def("setRotation",
-                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation)
-                     )
+                .def("setRotation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation))
                 // Scale ================================================================
                 .def("getScaleX",&Transform3D::getScaleX)
                 .def("getScaleY",&Transform3D::getScaleY)
@@ -807,10 +791,8 @@ namespace Dream
                 .def("scaleByX",&Transform3D::scaleByX)
                 .def("scaleByY",&Transform3D::scaleByY)
                 .def("scaleByZ",&Transform3D::scaleByZ)
-                .def("setScale",
-                     static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale)
-                     )
-                ];
+                .def("setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale))
+        ];
     }
 
     void
@@ -1037,7 +1019,17 @@ namespace Dream
     LuaEngine::addToScriptMap
     (SceneObjectRuntime *sceneObject, LuaScriptInstance* script)
     {
-        mScriptMap.insert(pair<SceneObjectRuntime*,LuaScriptInstance*>(sceneObject,script));
+        if (Constants::DEBUG)
+        {
+           cout << "LuaEngine: Adding " << script->getNameAndUuidString()
+                << " to script map for " << sceneObject->getNameAndUuidString()
+                <<endl;
+        }
+
+        if (createScript(sceneObject,script))
+        {
+            mScriptMap.insert(pair<SceneObjectRuntime*,LuaScriptInstance*>(sceneObject,script));
+        }
     }
 
 } // End of Dream

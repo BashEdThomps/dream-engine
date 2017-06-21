@@ -27,10 +27,11 @@ namespace Dream
     class Runtime
     {
     protected:
+        IDefinition* mDefinitionHandle;
         string mUuid;
         string mName;
     public:
-        Runtime(string uuid = "", string name = "");
+        Runtime(IDefinition* defHandle, string uuid = "", string name = "");
         virtual ~Runtime();
 
         string getUuid();

@@ -56,8 +56,11 @@ void
 SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
 (SceneObjectRuntime* selected)
 {
+    if (selected)
+    {
     qDebug() << "SelectionHighlighter: Selecting "
              << QString::fromStdString(selected->getNameAndUuidString());
+    }
     mSelectedObjectHandle = selected;
     updateVertexBuffer();
 }
@@ -68,6 +71,10 @@ SelectionHighlighter::updateVertexBuffer
 {
     qDebug() << "SelectionHighlighter: Updating Vertex Buffer" ;
     mVertexBuffer.clear();
+    if (!mSelectedObjectHandle)
+    {
+        return;
+    }
 
     BoundingBox bounds;
 

@@ -132,6 +132,27 @@ namespace Dream
     const string Constants::ASSET_FORMAT_SHADER_GLSL = "glsl";
     const string Constants::ASSET_FORMAT_LIGHT_POINT = "point";
     const string Constants::ASSET_FORMAT_SPRITE_IMAGE = "image";
+
+    const string Constants::ASSET_TYPE_ANIMATION_READABLE = "Animation";
+    const string Constants::ASSET_TYPE_AUDIO_READABLE = "Audio";
+    const string Constants::ASSET_TYPE_LIGHT_READABLE = "Light";
+    const string Constants::ASSET_TYPE_FONT_READABLE = "Font";
+    const string Constants::ASSET_TYPE_MODEL_READABLE = "Model";
+    const string Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE = "Physics Object";
+    const string Constants::ASSET_TYPE_SCRIPT_READABLE = "Script";
+    const string Constants::ASSET_TYPE_SHADER_READABLE = "Shader";
+    const string Constants::ASSET_TYPE_SPRITE_READABLE = "Sprite";
+
+    const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
+    const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
+    const string Constants::ASSET_FORMAT_AUDIO_OGG_READABLE = "Ogg";
+    const string Constants::ASSET_FORMAT_AUDIO_WAV_READABLE = "Wav";
+    const string Constants::ASSET_FORMAT_ANIMATION_DREAM_READABLE = "Dream Animation";
+    const string Constants::ASSET_FORMAT_FONT_TTF_READABLE = "TTF Font";
+    const string Constants::ASSET_FORMAT_SHADER_GLSL_READABLE = "GLSL";
+    const string Constants::ASSET_FORMAT_LIGHT_POINT_READABLE = "Point Light";
+    const string Constants::ASSET_FORMAT_SPRITE_IMAGE_READABLE = "Sprite Image";
+
     // Scene ====================================================================
     const string Constants::SCENE_NOTES = "notes";
     const string Constants::SCENE_SCENE_OBJECTS = "objects";
@@ -206,6 +227,7 @@ namespace Dream
     const string Constants::ASSET_ATTR_SIZE = "size";
     const string Constants::ASSET_ATTR_COMPOUND_CHILDREN = "compoundChildren";
     const string Constants::ASSET_ATTR_KINEMATIC = "kinematic";
+
     const string Constants::COLLISION_SHAPE_SPHERE = "btShpereShape";
     const string Constants::COLLISION_SHAPE_BOX = "btBoxShape";
     const string Constants::COLLISION_SHAPE_CYLINDER = "btCylinderShape";
@@ -218,6 +240,20 @@ namespace Dream
     const string Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN = "btHeightfieldTerrainShape";
     const string Constants::COLLISION_SHAPE_STATIC_PLANE = "btStaticPlaneShape";
     const string Constants::COLLISION_SHAPE_COMPOUND = "btCompoundShape";
+
+    const string Constants::COLLISION_SHAPE_SPHERE_READABLE = "Sphere";
+    const string Constants::COLLISION_SHAPE_BOX_READABLE = "Box";
+    const string Constants::COLLISION_SHAPE_CYLINDER_READABLE = "Cylinder";
+    const string Constants::COLLISION_SHAPE_CAPSULE_READABLE = "Capsule";
+    const string Constants::COLLISION_SHAPE_CONE_READABLE = "Cone";
+    const string Constants::COLLISION_SHAPE_MULTI_SPHERE_READABLE = "Multi-Sphere";
+    const string Constants::COLLISION_SHAPE_CONVEX_HULL_READABLE = "Convex Hull";
+    const string Constants::COLLISION_SHAPE_CONVEX_TRIANGLE_MESH_READABLE = "Convex Triangle Mesh";
+    const string Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH_READABLE = "BVH Triangle Mesh";
+    const string Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE = "Heightfield Terrain";
+    const string Constants::COLLISION_SHAPE_STATIC_PLANE_READABLE = "Static Plane";
+    const string Constants::COLLISION_SHAPE_COMPOUND_READABLE = "Compound Shape";
+
     // Event ====================================================================
     const string Constants::EVENT_SENDER = "sender";
     const string Constants::EVENT_TYPE = "type";
@@ -407,6 +443,140 @@ namespace Dream
             return SPRITE;
         }
         return NONE;
+    }
+
+    const string
+    Constants::getAssetTypeReadableName
+    (string type)
+    {
+        if (type.compare(ASSET_TYPE_ANIMATION) == 0)
+        {
+            return ASSET_TYPE_ANIMATION_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_AUDIO) == 0)
+        {
+            return ASSET_TYPE_AUDIO_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_FONT) == 0)
+        {
+            return ASSET_TYPE_FONT_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_LIGHT) == 0)
+        {
+            return ASSET_TYPE_LIGHT_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_MODEL) == 0)
+        {
+            return ASSET_TYPE_MODEL_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
+        {
+            return ASSET_TYPE_PHYSICS_OBJECT_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_SCRIPT) == 0)
+        {
+            return ASSET_TYPE_SCRIPT_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_SHADER) == 0)
+        {
+            return ASSET_TYPE_SHADER_READABLE;
+        }
+        else if (type.compare(ASSET_TYPE_SPRITE) == 0)
+        {
+            return ASSET_TYPE_SPRITE_READABLE;
+        }
+        return "";
+    }
+    const string
+    Constants::getAssetFormatReadableName
+    (string format)
+    {
+        if (format.compare(ASSET_FORMAT_SCRIPT_LUA) == 0)
+        {
+           return ASSET_FORMAT_SCRIPT_LUA_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP) == 0)
+        {
+           return ASSET_FORMAT_MODEL_ASSIMP_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_AUDIO_OGG) == 0)
+        {
+           return ASSET_FORMAT_AUDIO_OGG_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_AUDIO_WAV) == 0)
+        {
+           return ASSET_FORMAT_AUDIO_WAV_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_FONT_TTF) == 0)
+        {
+           return ASSET_FORMAT_FONT_TTF_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_SHADER_GLSL) == 0)
+        {
+           return ASSET_FORMAT_SHADER_GLSL_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_LIGHT_POINT) == 0)
+        {
+           return ASSET_FORMAT_LIGHT_POINT_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE) == 0)
+        {
+           return ASSET_FORMAT_SPRITE_IMAGE_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_ANIMATION_DREAM) == 0)
+        {
+            return ASSET_FORMAT_ANIMATION_DREAM_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_SPHERE) == 0)
+        {
+            return COLLISION_SHAPE_SPHERE_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_BOX) == 0)
+        {
+            return COLLISION_SHAPE_BOX_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_CYLINDER) == 0)
+        {
+            return COLLISION_SHAPE_CYLINDER_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_CAPSULE) == 0)
+        {
+            return COLLISION_SHAPE_CAPSULE_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_CONE) == 0)
+        {
+            return COLLISION_SHAPE_MULTI_SPHERE_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_CONVEX_HULL) == 0)
+        {
+            return COLLISION_SHAPE_CONVEX_HULL_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_CONVEX_TRIANGLE_MESH) == 0)
+        {
+            return COLLISION_SHAPE_CONVEX_TRIANGLE_MESH_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
+        {
+            return COLLISION_SHAPE_BVH_TRIANGLE_MESH_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0)
+        {
+            return COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_STATIC_PLANE) == 0)
+        {
+            return COLLISION_SHAPE_STATIC_PLANE_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_COMPOUND) == 0)
+        {
+            return COLLISION_SHAPE_COMPOUND_READABLE;
+        }
+        else if (format.compare(COLLISION_SHAPE_MULTI_SPHERE) == 0)
+        {
+            return COLLISION_SHAPE_MULTI_SPHERE_READABLE;
+        }
+
+        return "";
     }
 
 } // End of Dream

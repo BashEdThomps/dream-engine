@@ -62,10 +62,14 @@ public:
     QAction* getActionToggleGrid();
     QAction* getActionToggleDebug();
     QAction* getActionCloseProject();
+    QAction* getActionTogglePhysicsDebug();
 
     QOpenGLWindowComponent* getWindowComponent();
 
-    void setupAddRemoveButtonMenus();
+    void setupAssetDefinitionAddRemoveButtonMenus();
+    void setupScenegraphAddRemoveButtonMenus();
+    void setupPropertiesAddRemoveButtonMenus();
+
 private: // Methods
     bool shouldPassKey(int key);
 
@@ -87,7 +91,10 @@ private:
     void setupGL(QWidget *parent);
     unique_ptr<QOpenGLWindowComponent> mWindowComponent;
     const static vector<int> mKeysPassedToWindow;
+
     unique_ptr<QMenu> mAddAssetDefinitionMenu;
+    unique_ptr<QMenu> mAddScenegraphMenu;
+    unique_ptr<QMenu> mAddPropertiesMenu;
 };
 
 #endif // MAINWINDOW_H

@@ -55,10 +55,11 @@ using glm::vec3;
 
 namespace Dream
 {
-    SceneObjectRuntime::SceneObjectRuntime(SceneRuntime* sceneRuntimeHandle)
+    SceneObjectRuntime::SceneObjectRuntime(SceneObjectDefinition* sdHandle, SceneRuntime* srHandle)
         : // Init list
-          Runtime(),
-          mSceneRuntimeHandle(sceneRuntimeHandle),
+          Runtime(sdHandle),
+          mSceneRuntimeHandle(srHandle),
+          mParentRuntimeHandle(nullptr),
           mLoaded(false),
           mHasFocus(false)
 
@@ -67,6 +68,8 @@ namespace Dream
         {
             cout << "SceneObjectRuntime: Constructing Object" << endl;
         }
+
+        useDefinition(sdHandle);
     }
 
     SceneObjectRuntime::~SceneObjectRuntime
@@ -182,12 +185,14 @@ namespace Dream
         return mTransform.getTranslation();
     }
 
+    /*
     void
     SceneObjectRuntime::setAnimationInstance
     (AnimationInstance* animationAsset)
     {
         mAnimationInstance.reset(animationAsset);
     }
+    */
 
     AnimationInstance*
     SceneObjectRuntime::getAnimationInstance
@@ -196,12 +201,14 @@ namespace Dream
         return mAnimationInstance.get();
     }
 
+    /*
     void
     SceneObjectRuntime::setAudioInstance
     (AudioInstance* audioAsset)
     {
         mAudioInstance.reset(audioAsset);
     }
+    */
 
     AudioInstance*
     SceneObjectRuntime::getAudioInstance
@@ -210,12 +217,14 @@ namespace Dream
         return mAudioInstance.get();
     }
 
+    /*
     void
     SceneObjectRuntime::setModelInstance
     (AssimpModelInstance* modelAsset)
     {
         mModelInstance.reset(modelAsset);
     }
+    */
 
     AssimpModelInstance*
     SceneObjectRuntime::getModelInstance
@@ -224,12 +233,14 @@ namespace Dream
         return mModelInstance.get();
     }
 
+    /*
     void
     SceneObjectRuntime::setScriptInstance
     (LuaScriptInstance* scriptAsset)
     {
         mScriptInstance.reset(scriptAsset);
     }
+    */
 
     LuaScriptInstance*
     SceneObjectRuntime::getScriptInstance
@@ -238,12 +249,14 @@ namespace Dream
         return mScriptInstance.get();
     }
 
+    /*
     void
     SceneObjectRuntime::setShaderInstance
     (ShaderInstance* shaderAsset)
     {
         mShaderInstance.reset(shaderAsset);
     }
+    */
 
     ShaderInstance*
     SceneObjectRuntime::getShaderInstance
@@ -252,12 +265,14 @@ namespace Dream
         return mShaderInstance.get();
     }
 
+    /*
     void
     SceneObjectRuntime::setLightInstance
     (LightInstance* lightAsset)
     {
         mLightInstance.reset(lightAsset);
     }
+    */
 
     LightInstance*
     SceneObjectRuntime::getLightInstance
@@ -322,12 +337,14 @@ namespace Dream
         return mAssetDefinitionUuidLoadQueue;
     }
 
+    /*
     void
     SceneObjectRuntime::setFontInstance
     (FontInstance* font)
     {
         mFontInstance.reset(font);
     }
+    */
 
     FontInstance*
     SceneObjectRuntime::getFontInstance
@@ -336,12 +353,14 @@ namespace Dream
         return mFontInstance.get();
     }
 
+    /*
     void
     SceneObjectRuntime::setPhysicsObjectInstance
     (PhysicsObjectInstance* poi)
     {
         return mPhysicsObjectInstance.reset(poi);
     }
+    */
 
     PhysicsObjectInstance*
     SceneObjectRuntime::getPhysicsObjectInstance
@@ -392,10 +411,14 @@ namespace Dream
         mHasFocus = focus;
     }
 
-    void SceneObjectRuntime::setSpriteInstance(SpriteInstance* spriteAsset)
+    /*
+    void
+    SceneObjectRuntime::setSpriteInstance
+    (SpriteInstance* spriteAsset)
     {
         mSpriteInstance.reset(spriteAsset);
     }
+    */
 
     SpriteInstance*
     SceneObjectRuntime::getSpriteInstance
@@ -491,6 +514,8 @@ namespace Dream
     SceneObjectRuntime::createAssetInstance
     (AssetDefinition* definition)
     {
+        mProjectPath = mSceneRuntimeHandle->getProjectRuntimeHandle()->getProjectHandle()->getProjectPath();
+
         if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Asset Intance of: ("
@@ -545,65 +570,6 @@ namespace Dream
             cerr << "SceneObjectRuntime: Invalid Asset Instance Type"
                  << definition->getType() << endl;
         }
-    }
-
-    void
-    SceneObjectRuntime::loadAssetInstances
-    ()
-    {
-        string projectPath = mSceneRuntimeHandle->getProjectRuntimeHandle()->getProjectHandle()->getProjectPath();
-
-        if (Constants::DEBUG)
-        {
-            cout << "SceneObjectRuntime: Loading Asset Instances Data for "
-                 << getNameAndUuidString() << endl;
-        }
-
-
-        if(mAudioInstance)
-        {
-            mAudioInstance->load(projectPath);
-        }
-
-        if(mAnimationInstance)
-        {
-            mAnimationInstance->load(projectPath);
-        }
-
-        if(mModelInstance)
-        {
-            mModelInstance->load(projectPath);
-        }
-
-        if(mShaderInstance)
-        {
-            mShaderInstance->load(projectPath);
-        }
-
-        if(mLightInstance)
-        {
-            mLightInstance->load(projectPath);
-        }
-
-        if(mSpriteInstance)
-        {
-            mSpriteInstance->load(projectPath);
-        }
-
-        if(mScriptInstance)
-        {
-            mScriptInstance->load(projectPath);
-        }
-
-        if(mPhysicsObjectInstance)
-        {
-            mPhysicsObjectInstance->load(projectPath);
-        }
-
-        if(mFontInstance)
-        {
-            mFontInstance->load(projectPath);
-        }
 
         setLoadedFlag(true);
     }
@@ -617,9 +583,10 @@ namespace Dream
             cout << "SceneObjectRuntime: Creating Physics Object Asset Instance." << endl;
         }
         mPhysicsObjectInstance.reset
-                (
-                    new PhysicsObjectInstance(definition, this)
-                    );
+        (
+            new PhysicsObjectInstance(definition, this)
+        );
+        mPhysicsObjectInstance->load(mProjectPath);
     }
 
     void
@@ -630,7 +597,11 @@ namespace Dream
         {
             cout << "SceneObjectRuntime: Creating Animation asset instance." << endl;
         }
-        mAnimationInstance.reset(new AnimationInstance(definition,this));
+        mAnimationInstance.reset
+        (
+            new AnimationInstance(definition,this)
+        );
+        mAnimationInstance->load(mProjectPath);
     }
 
     void
@@ -642,12 +613,14 @@ namespace Dream
             cout << "SceneObjectRuntime: Creating Audio asset instance." << endl;
         }
         // hottest trainwreck 2017!
-        mAudioInstance.reset(
-                    mSceneRuntimeHandle
-                    ->getProjectRuntimeHandle()
-                    ->getAudioComponentHandle()
-                    ->newAudioInstance(definition,this)
-                    );
+        mAudioInstance.reset
+        (
+            mSceneRuntimeHandle
+                ->getProjectRuntimeHandle()
+                ->getAudioComponentHandle()
+                ->newAudioInstance(definition,this)
+        );
+        mAudioInstance->load(mProjectPath);
     }
 
     void
@@ -668,6 +641,7 @@ namespace Dream
                 this
             )
         );
+        mModelInstance->load(mProjectPath);
     }
 
     void
@@ -679,8 +653,8 @@ namespace Dream
             cout << "SceneObjectRuntime: Creating Script asset instance." << endl;
         }
         mScriptInstance.reset(new LuaScriptInstance(definition,this));
-        mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()
-                ->addToScriptMap(this,mScriptInstance.get());
+        mScriptInstance->load(mProjectPath);
+        mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()->addToScriptMap(this,mScriptInstance.get());
     }
 
     void
@@ -700,6 +674,7 @@ namespace Dream
                 this
             )
         );
+        mShaderInstance->load(mProjectPath);
     }
 
     void
@@ -711,6 +686,7 @@ namespace Dream
             cout << "SceneObjectRuntime: Creating Light Asset instance." << endl;
         }
         mLightInstance.reset(new LightInstance(definition, this));
+        mLightInstance->load(mProjectPath);
     }
 
     void
@@ -730,6 +706,7 @@ namespace Dream
                 this
             )
         );
+        mSpriteInstance->load(mProjectPath);
     }
 
     void
@@ -749,6 +726,7 @@ namespace Dream
                 this
             )
         );
+        mFontInstance->load(mProjectPath);
     }
 
     bool
@@ -861,8 +839,9 @@ namespace Dream
        setUuid(defHandle->getUuid());
        setTransform(defHandle->getTransform());
        setAssetDefinitionLoadQueue(defHandle->getAssetDefinitionLoadQueue());
-       loadChildrenFromDefinition(defHandle);
+       createAssetInstances();
 
+       loadChildrenFromDefinition(defHandle);
     }
 
     void
@@ -880,9 +859,8 @@ namespace Dream
         for
         (auto it = begin(definitions); it != end(definitions); it++)
         {
-            SceneObjectRuntime* child = new SceneObjectRuntime(mSceneRuntimeHandle);
+            SceneObjectRuntime* child = new SceneObjectRuntime(*it, mSceneRuntimeHandle);
             child->setParentRuntimeHandle(this);
-            child->useDefinition((*it));
             mChildRuntimes.push_back(unique_ptr<SceneObjectRuntime>(child));
         }
     }

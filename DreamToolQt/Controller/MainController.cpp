@@ -116,6 +116,12 @@ MainController::createConnections
         mMainWindowHandle->getActionToggleDebug(),SIGNAL(triggered(bool)),
         this,SLOT(onToggleDebugAction(bool))
     );
+    // Action Toggle Physics Debug
+    connect
+    (
+        mMainWindowHandle->getActionTogglePhysicsDebug(),SIGNAL(triggered(bool)),
+        this,SLOT(onTogglePhysicsDebugAction(bool))
+    );
     // Scene Stopped
     connect
     (
@@ -551,6 +557,11 @@ MainController::onToggleDebugAction
 (bool enabled)
 {
     mDreamModel->setDebug(enabled);
+}
+
+void MainController::onTogglePhysicsDebugAction(bool enable)
+{
+   mDreamModel->setPhysicsDebug(enable);
 }
 
 RelationshipTree*

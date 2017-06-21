@@ -116,7 +116,6 @@ namespace Dream
         onWindowDimensionsChanged();
         Constants::checkGLError("After initial window dimensions changed");
 
-        glEnable(GL_DEPTH_TEST);
 
         Constants::checkGLError("After enable depth");
         //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -178,11 +177,11 @@ namespace Dream
 
         if (Constants::VERBOSE)
         {
-            cout << "GraphicsComponent: Window dimensions changed" << endl
-                 << "\tWindowWidth:" << mWindowComponentHandle->getWidth() << endl
-                 << "\tWindowHeight:" << mWindowComponentHandle->getHeight() << endl
-                 << "\tMinDraw: " << mMinimumDraw << endl
-                 << "\tMaxDraw: " << mMaximumDraw << endl;
+            cout << "GraphicsComponent: Window dimensions changed "
+                 << " WindowWidth:" << mWindowComponentHandle->getWidth()
+                 << " WindowHeight:" << mWindowComponentHandle->getHeight()
+                 << " MinDraw: " << mMinimumDraw
+                 << " MaxDraw: " << mMaximumDraw << endl;
         }
     }
 
@@ -196,6 +195,7 @@ namespace Dream
         }
         Constants::checkGLError("before pre render");
 
+        glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glEnable(GL_BLEND);
@@ -228,8 +228,9 @@ namespace Dream
             cout << "GraphicsComponent: Post Render" << endl;
         }
         Constants::checkGLError("before post render");
+        glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
-        glDisable (GL_BLEND);
+        glDisable(GL_BLEND);
         Constants::checkGLError("after post render");
     }
 
@@ -385,6 +386,8 @@ namespace Dream
     GraphicsComponent::draw2DQueue
     ()
     {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Draw 2D Queue" << endl;
@@ -400,6 +403,7 @@ namespace Dream
                 drawFont(sceneObj);
             }
         }
+        glDisable(GL_BLEND);
     }
 
     void
@@ -430,6 +434,7 @@ namespace Dream
     GraphicsComponent::draw3DQueue
     ()
     {
+        preRender();
         if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Draw 3D Queue" << endl;
@@ -438,6 +443,7 @@ namespace Dream
         {
             drawModel(it);
         }
+        postRender();
     }
 
     mat4
