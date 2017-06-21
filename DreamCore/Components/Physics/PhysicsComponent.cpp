@@ -54,6 +54,44 @@ namespace Dream
         {
             cout << "PhysicsComponent: Destroying Object" << endl;
         }
+
+        vector<btCollisionShape*> shapes;
+
+        int i;
+        for (i=mDynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
+        {
+            btCollisionObject* obj = mDynamicsWorld->getCollisionObjectArray()[i];
+            btRigidBody* body = btRigidBody::upcast(obj);
+            btCollisionShape* shape = body->getCollisionShape();
+            if (shape)
+            {
+                shapes.push_back(shape);
+            }
+            if (body && body->getMotionState())
+            {
+                if (Constants::DEBUG)
+                {
+                    cout << "PhysicsComponent: Deleting a motion state" << endl;
+                }
+                delete body->getMotionState();
+            }
+            if (Constants::DEBUG)
+            {
+                cout << "PhysicsComponent: Deleting a collision object" << endl;
+            }
+            mDynamicsWorld->removeCollisionObject(obj);
+            delete obj;
+        }
+
+        for (btCollisionShape* shape : shapes)
+        {
+            if (Constants::DEBUG)
+            {
+                cout << "PhysicsComponent: Deleting Shape" << endl;
+            }
+            delete shape;
+        }
+
         // Dynamics World
         if (mDynamicsWorld != nullptr)
         {
@@ -181,11 +219,7 @@ namespace Dream
     PhysicsComponent::removePhysicsObjectInstance
     (PhysicsObjectInstance* obj)
     {
-        if (obj->getInPhysicsWorld())
-        {
-            removeRigidBody(obj->getRigidBody());
-            obj->setInPhysicsWorld(false);
-        }
+        removeRigidBody(obj->getRigidBody());
     }
 
     void
@@ -211,41 +245,26 @@ namespace Dream
     (SceneRuntime* scene)
     {
         scene->getRootSceneObjectRuntimeHandle()->applyToAll
-                (
-                    function<void*(SceneObjectRuntime*)>
-                    (
-                        [&](SceneObjectRuntime* so)
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* so)
+                {
+                    // Has physics
+                    if (so->hasPhysicsObjectInstance())
+                    {
+                        PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
+                        if (Constants::DEBUG)
                         {
-                        // Has physics
-                        if (so->hasPhysicsObjectInstance())
-                        {
-                            PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
-                            // Marked for deletion and in physics world, remove
-                            if (so->getDeleteFlag() && physicsObject->getInPhysicsWorld())
-                            {
-                                if (Constants::DEBUG)
-                                {
-                                    cout << "PhysicsComponent: Removing SceneObjectRuntime " << so->getUuid()
-                                    << " from Physics World" << endl;
-                                }
-                                removePhysicsObjectInstance(physicsObject);
-                            }
-                            // Not marked for deletion and not in world, add
-                            if (!so->getDeleteFlag() && !physicsObject->getInPhysicsWorld())
-                            {
-                                if (Constants::DEBUG)
-                                {
-                                    cout << "PhysicsComponent: Adding SceneObjectRuntime " << so->getUuid()
-                                    << " to Physics World" << endl;
-                                }
-                                addPhysicsObjectInstance(physicsObject);
-                                physicsObject->setInPhysicsWorld(true);
-                            }
+                            cout << "PhysicsComponent: Adding SceneObjectRuntime " << so->getUuid()
+                            << " to Physics World" << endl;
                         }
-                        return nullptr;
+                        addPhysicsObjectInstance(physicsObject);
                     }
-                    )
-                );
+                    return nullptr;
+                }
+            )
+        );
     }
 
     void
@@ -333,55 +352,6 @@ namespace Dream
         if (mDebug)
         {
             mDebugDrawer->drawAll();
-        }
-    }
-
-    void
-    PhysicsComponent::cleanUp
-    (SceneRuntime* scene)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "PhysicsComponent: Cleaning up physics for "
-                 << scene->getNameAndUuidString()
-                 << endl;
-        }
-
-        vector<btCollisionShape*> shapes;
-
-        int i;
-        for (i=mDynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
-        {
-            btCollisionObject* obj = mDynamicsWorld->getCollisionObjectArray()[i];
-            btRigidBody* body = btRigidBody::upcast(obj);
-            btCollisionShape* shape = body->getCollisionShape();
-            if (shape)
-            {
-                shapes.push_back(shape);
-            }
-            if (body && body->getMotionState())
-            {
-                if (Constants::DEBUG)
-                {
-                    cout << "PhysicsComponent: Deleting a motion state" << endl;
-                }
-                delete body->getMotionState();
-            }
-            if (Constants::DEBUG)
-            {
-                cout << "PhysicsComponent: Deleting a collision object" << endl;
-            }
-            mDynamicsWorld->removeCollisionObject(obj);
-            delete obj;
-        }
-
-        for (btCollisionShape* shape : shapes)
-        {
-            if (Constants::DEBUG)
-            {
-                cout << "PhysicsComponent: Deleting Shape" << endl;
-            }
-            delete shape;
         }
     }
 

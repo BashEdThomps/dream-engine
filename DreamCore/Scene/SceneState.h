@@ -25,7 +25,6 @@ namespace Dream
         SCENE_STATE_NOT_LOADED,
         SCENE_STATE_LOADED,
         SCENE_STATE_RUNNING,
-        SCENE_STATE_DONE,
-        SCENE_STATE_CLEANED_UP
+        SCENE_STATE_STOPPED
     };
 }

@@ -98,7 +98,10 @@ GLDrawable::draw
     if (!mVertexBuffer.empty())
     {
         preRender();
-        qDebug() << "GLDrawer: Drawing all - " << mVertexBuffer.size()/2 << " lines.";
+        if (Constants::VERBOSE)
+        {
+            qDebug() << "GLDrawable: Drawing - " << mVertexBuffer.size()/2 << " lines.";
+        }
 
         // Enable shader program
         glUseProgram(mShaderProgram);

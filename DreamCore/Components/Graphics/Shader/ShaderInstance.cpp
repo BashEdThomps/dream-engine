@@ -25,8 +25,9 @@ namespace Dream
 {
 
     ShaderInstance::ShaderInstance
-    (AssetDefinition* definition,SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform)
+    (ShaderCache* cache, AssetDefinition* definition,SceneObjectRuntime* transform)
+        : IAssetInstance(definition,transform),
+          mCacheHandle(cache)
     {
         if (Constants::DEBUG)
         {
@@ -55,7 +56,8 @@ namespace Dream
     ShaderInstance::load
     (string projectPath)
     {
-        mShaderProgram = ShaderCache::getShader(mDefinitionHandle->getUuid());
+        mShaderProgram = mCacheHandle->getShader(mDefinitionHandle->getUuid());
+
         if (mShaderProgram == 0)
         {
             string mVertexShaderSource;
@@ -133,7 +135,7 @@ namespace Dream
             // Delete the shaders as they're linked into our program now and no longer necessery
             glDeleteShader(mVertexShader);
             glDeleteShader(mFragmentShader);
-            ShaderCache::putShader(mDefinitionHandle->getUuid(),mShaderProgram);
+            mCacheHandle->putShader(mDefinitionHandle->getUuid(),mShaderProgram);
         }
         mLoaded = (mShaderProgram != 0);
         return mLoaded;
@@ -161,7 +163,7 @@ namespace Dream
     ShaderInstance::syncUniforms
     ()
     {
-       syncUniform1f();
+        syncUniform1f();
     }
 
     void
@@ -170,11 +172,11 @@ namespace Dream
     {
         for (pair<string,GLfloat> obj : mUniform1fMap)
         {
-           if (obj.first == location)
-           {
-               obj.second = value;
-               return;
-           }
+            if (obj.first == location)
+            {
+                obj.second = value;
+                return;
+            }
         }
         mUniform1fMap.insert(pair<string,GLfloat>(location,value));
     }

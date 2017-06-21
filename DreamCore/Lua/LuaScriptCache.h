@@ -27,14 +27,14 @@ namespace Dream
 {
     class LuaScriptCache
     {
-    public:
-        static map<string,string> sScriptCache;
-        static string getScript(string);
-        static string readIntoCache(string);
-        static void cleanUp();
     private:
+        map<string,string> mScriptCache;
+    public:
         LuaScriptCache();
         ~LuaScriptCache();
+        string getScript(string);
+        string readIntoCache(string);
+
     };
 }
 

@@ -19,14 +19,11 @@
 
 namespace Dream
 {
-
-    map<string,GLuint> ShaderCache::sShaderCache = map<string,GLuint>();
-
     GLuint
     ShaderCache::getShader
     (string uuid)
     {
-        for(pair<string,GLuint> it : sShaderCache)
+        for(pair<string,GLuint> it : mCache)
         {
             if (it.first.compare(uuid) == 0)
             {
@@ -44,24 +41,32 @@ namespace Dream
     ShaderCache::putShader
     (string uuid, GLuint shaderProgram)
     {
-        sShaderCache.insert(pair<string,GLuint>(uuid,shaderProgram));
+        mCache.insert(pair<string,GLuint>(uuid,shaderProgram));
     }
 
-    void
-    ShaderCache::cleanUp
+    ShaderCache::ShaderCache
     ()
     {
         if (Constants::DEBUG)
         {
-            cout << "ShaderCache: Cleaning up" << endl;
+            cout << "ShaderCache: Destructing" << endl;
+        }
+    }
+
+    ShaderCache::~ShaderCache
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "ShaderCache: Destructing" << endl;
         }
 
-        for (pair<string,GLuint> shaderPair : sShaderCache)
+        for (pair<string,GLuint> shaderPair : mCache)
         {
             glDeleteProgram(shaderPair.second);
         }
 
-        sShaderCache.clear();
+        mCache.clear();
     }
 
 } // End of Dream

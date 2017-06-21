@@ -30,7 +30,6 @@
 #include "../../IAssetInstance.h"
 #include "../BoundingBox.h"
 
-
 struct aiScene;
 struct aiMaterial;
 struct aiMesh;
@@ -43,17 +42,18 @@ using Assimp::Importer;
 namespace Dream
 {
     class Texture;
+    class TextureCache;
     class ShaderInstance;
     class AssimpMesh;
+    class AssimpCache;
 
     class AssimpModelInstance : public IAssetInstance
     {
     private:
-        // Static
-        static map<string,Importer*> AssimpModelCache;
-        static Importer* getModelFromCache(string);
-
         // Variables
+        AssimpCache* mModelCacheHandle;
+        TextureCache* mTextureCacheHandle;
+
         vector<AssimpMesh> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
@@ -67,12 +67,11 @@ namespace Dream
         void updateBoundingBox(aiMesh* mesh);
         void initBoundingBox();
     public:
-        AssimpModelInstance(AssetDefinition*,SceneObjectRuntime*);
+        AssimpModelInstance(AssimpCache*, TextureCache*,  AssetDefinition*,SceneObjectRuntime*);
         ~AssimpModelInstance();
         bool load(string);
         void draw(ShaderInstance*);
         void loadExtraAttributes(json);
-        static void cleanUpCache();
         BoundingBox getBoundingBox();
         void setModelMatrix(mat4);
         mat4 getModelMatrix();

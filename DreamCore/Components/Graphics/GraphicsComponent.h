@@ -100,7 +100,6 @@ namespace Dream
         void onWindowDimensionsChanged();
         void preRender();
         void postRender();
-        void cleanUp(SceneRuntime*) override;
         void setActiveSceneRuntimeHandle(SceneRuntime*);
 
     }; // End of GraphicsComponent

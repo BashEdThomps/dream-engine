@@ -48,7 +48,6 @@ namespace Dream
     PhysicsObjectInstance::PhysicsObjectInstance
     (AssetDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
-          mInPhysicsWorld(false),
           mKinematic(false)
     {
         return;
@@ -345,20 +344,6 @@ namespace Dream
         mMotionState->getWorldTransform(transform);
     }
 
-    void
-    PhysicsObjectInstance::setInPhysicsWorld
-    (bool in)
-    {
-        mInPhysicsWorld = in;
-    }
-
-    bool
-    PhysicsObjectInstance::getInPhysicsWorld
-    ()
-    {
-        return mInPhysicsWorld;
-    }
-
     btCollisionObject*
     PhysicsObjectInstance::getCollisionObject
     ()
@@ -372,7 +357,6 @@ namespace Dream
     {
         mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
-
 
     AssetDefinition*
     PhysicsObjectInstance::getAssetDefinitionByUuid

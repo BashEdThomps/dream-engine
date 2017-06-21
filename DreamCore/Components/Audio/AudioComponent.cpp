@@ -39,6 +39,14 @@ namespace Dream
     AudioComponent::~AudioComponent
     ()
     {
+        for (ALuint source : mSources)
+        {
+            if (Constants::DEBUG)
+            {
+                   cout << "AudioComponent: Stopping source " << source << endl;
+            }
+            alSourceStop(source);
+        }
         deleteAllSources();
         deleteAllBuffers();
     }
@@ -282,14 +290,6 @@ namespace Dream
         updatePlayQueue();
         updatePauseQueue();
         updateStopQueue();
-        cleanUpBuffersAndSources();
-    }
-
-    void
-    AudioComponent::cleanUpBuffersAndSources
-    ()
-    {
-        // TODO
     }
 
     void AudioComponent::updatePlayQueue()
@@ -486,23 +486,4 @@ namespace Dream
 
     }
 
-    void
-    AudioComponent::cleanUp
-    (SceneRuntime* scene)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "AudioComponent: Cleanup Called" << endl;
-        }
-        for (ALuint source : mSources)
-        {
-            if (Constants::DEBUG)
-            {
-                   cout << "AudioComponent: Stopping source " << source << endl;
-            }
-            alSourceStop(source);
-        }
-        deleteAllBuffers();
-        deleteAllSources();
-    }
 } // End of Dream

@@ -33,7 +33,6 @@ namespace Dream
 
         bool init() override;
         void updateComponent(SceneRuntime*) override;
-        void cleanUp(SceneRuntime*) override;
 
         void play (AnimationInstance*);
         void pause(AnimationInstance*);

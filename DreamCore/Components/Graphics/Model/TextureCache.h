@@ -21,7 +21,7 @@
 #include <iostream>
 #include <vector>
 
-#include <SOIL/SOIL.h>
+#include <SOIL.h>
 #include <GL/glew.h>
 
 #include "Texture.h"
@@ -32,16 +32,15 @@ using namespace std;
 
 namespace Dream
 {
-  class TextureCache
-  {
-    static vector<Texture> sTextureCache;
-  public:
-    TextureCache();
-    ~TextureCache();
-    static Texture loadTextureFromFile(const char*, const char*, const char*);
-    static vector<Texture> getTextureCache();
-    static void cleanUp();
-  };
+    class TextureCache
+    {
+        vector<Texture> mCache;
+    public:
+        TextureCache();
+        ~TextureCache();
+        Texture loadTextureFromFile(const char*, const char*, const char*);
+        vector<Texture> getTextureCache();
+    };
 
 } // End Dream
 

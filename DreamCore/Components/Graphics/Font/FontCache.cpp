@@ -26,16 +26,12 @@
 
 namespace Dream
 {
-    unique_ptr<FT_Library> FontCache::mFreeTypeLib;
-    map<AssetDefinition*,map<GLchar, FontCharacter>> FontCache::mCache;
-
-    void
-    FontCache::initFreeTypeLib
+    FontCache::FontCache
     ()
     {
         if (mFreeTypeLib == nullptr)
         {
-             if (Constants::DEBUG)
+            if (Constants::DEBUG)
             {
                 cout << "FontInstance: Initialising FreeType" << endl;
             }
@@ -49,8 +45,7 @@ namespace Dream
         }
     }
 
-    void
-    FontCache::destroyFreeTypeLib
+    FontCache::~FontCache
     ()
     {
         if (mFreeTypeLib)
@@ -62,13 +57,6 @@ namespace Dream
             FT_Done_FreeType(*mFreeTypeLib.get());
             mFreeTypeLib.release();
         }
-    }
-
-    void
-    FontCache::clearCache
-    ()
-    {
-        mCache.clear();
     }
 
     map<GLchar,FontCharacter>
@@ -132,7 +120,7 @@ namespace Dream
                         GL_RED,
                         GL_UNSIGNED_BYTE,
                         (*fontFace)->glyph->bitmap.buffer
-            );
+                        );
 
             //cout << "FontInstance: Char Texture Buffered" << endl;
 

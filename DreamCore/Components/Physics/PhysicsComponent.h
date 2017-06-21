@@ -70,7 +70,6 @@ namespace Dream
         void checkContactManifolds(SceneRuntime* scene);
         SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
-        void cleanUp(SceneRuntime* scene) override;
     };// End of PhysicsComponent
 
 } // End of Dream

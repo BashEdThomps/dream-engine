@@ -57,7 +57,6 @@ namespace Dream
         ~AudioComponent();
         bool init() override;
         void updateComponent(SceneRuntime*) override;
-        void cleanUp(SceneRuntime*) override;
 
         void setSourcePosision(ALuint, vector<float>);
         void setListenerPosition(vector<float>);
@@ -90,7 +89,6 @@ namespace Dream
         void updatePlayQueue();
         void updatePauseQueue();
         void updateStopQueue();
-        void cleanUpBuffersAndSources();
 
         void deleteAllSources();
         void deleteAllBuffers();

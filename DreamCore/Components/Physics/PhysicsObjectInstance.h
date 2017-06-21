@@ -40,7 +40,6 @@ namespace Dream
         btMotionState *mMotionState;
         btRigidBody *mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
-        bool mInPhysicsWorld;
         bool mKinematic;
         vector<CompoundChild> mCompoundChildren;
 
@@ -52,8 +51,6 @@ namespace Dream
         btCollisionShape* getCollisionShape();
         btRigidBody* getRigidBody();
         void getWorldTransform(btTransform&);
-        void setInPhysicsWorld(bool);
-        bool getInPhysicsWorld();
         btCollisionObject* getCollisionObject();
         void setLinearVelocity(float, float, float);
 

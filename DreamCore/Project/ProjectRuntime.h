@@ -43,6 +43,10 @@ namespace Dream
     class Camera;
     class SceneRuntime;
     class SceneDefinition;
+    class TextureCache;
+    class AssimpCache;
+    class FontCache;
+    class ShaderCache;
 
     class Time;
 
@@ -60,6 +64,11 @@ namespace Dream
         unique_ptr<PhysicsComponent> mPhysicsComponent;
         unique_ptr<AnimationComponent> mAnimationComponent;
         unique_ptr<LuaEngine> mLuaEngine;
+
+        unique_ptr<TextureCache> mTextureCache;
+        unique_ptr<AssimpCache> mModelCache;
+        unique_ptr<FontCache> mFontCache;
+        unique_ptr<ShaderCache> mShaderCache;
 
         IWindowComponent* mWindowComponentHandle;
         unique_ptr<SceneRuntime> mActiveSceneRuntime;
@@ -84,7 +93,8 @@ namespace Dream
         Project* getProjectHandle();
 
         bool initComponents();
-        void cleanupComponents();
+
+        void collectGarbage() override;
 
         void updateAll();
         void updateLogic();
@@ -98,12 +108,17 @@ namespace Dream
         void setWindowHeight(int);
 
         SceneRuntime* constructActiveSceneRuntime(SceneDefinition* sceneDefinitionHandle);
-        void destructActiveSceneRuntime();
 
         bool hasActiveSceneRuntime();
         SceneRuntime* getActiveSceneRuntimeHandle();
+        void resetActiveSceneRuntime();
 
         void useDefinition(IDefinition*) override;
+
+        FontCache* getFontCacheHandle();
+        ShaderCache* getShaderCacheHandle();
+        TextureCache* getTextureCacheHandle();
+        AssimpCache* getModelCacheHandle();
 
     private: // Member Functions
         bool initAnimationComponent();
@@ -112,6 +127,7 @@ namespace Dream
         bool initGraphicsComponent();
         bool initWindowComponent();
         bool initLuaEngine();
+        bool initCaches();
     };
 
 } // End Dream

@@ -1,9 +1,9 @@
 /*
- * ShaderCache.h
+ * AssimpCache.h
  *
- * Created: 16/12/2016 2016 by Ashley
+ * Created: 20 2017 by Ashley
  *
- * Copyright 2016 Octronic. All rights reserved.
+ * Copyright 2017 Octronic. All rights reserved.
  *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
@@ -15,29 +15,25 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-
 #pragma once
 
-#include <iostream>
+#include <string>
 #include <map>
-#include <GL/glew.h>
+#include <assimp/Importer.hpp>
 
-#include "../../../Common/Constants.h"
-
-using namespace std;
+using std::string;
+using std::map;
+using ::Assimp::Importer;
 
 namespace Dream
 {
-    class ShaderCache
+    class AssimpCache
     {
-
     private:
-        map<string,GLuint> mCache;
+        map<string,Importer*> mCache;
     public:
-        ShaderCache();
-        ~ShaderCache();
-
-        GLuint getShader(string);
-        void   putShader(string,GLuint);
+        AssimpCache();
+        ~AssimpCache();
+        Importer* getModelFromCache(string);
     };
 }

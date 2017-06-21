@@ -35,14 +35,16 @@ using namespace std;
 
 namespace Dream
 {
+    class ShaderCache;
+
     class ShaderInstance : public IAssetInstance
     {
     private:
         GLuint mShaderProgram;
         map<string, GLfloat> mUniform1fMap;
+        ShaderCache *mCacheHandle;
     public:
-        ShaderInstance();
-        ShaderInstance(AssetDefinition*,SceneObjectRuntime*);
+        ShaderInstance(ShaderCache* cache, AssetDefinition*,SceneObjectRuntime*);
         ~ShaderInstance();
         bool load(string);
         void use();

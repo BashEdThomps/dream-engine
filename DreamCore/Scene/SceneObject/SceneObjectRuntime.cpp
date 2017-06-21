@@ -36,6 +36,7 @@
 #include "../../Components/Graphics/Light/LightInstance.h"
 #include "../../Components/Graphics/Sprite/SpriteInstance.h"
 #include "../../Components/Physics/PhysicsObjectInstance.h"
+#include "../../Components/Physics/PhysicsComponent.h"
 
 #include "../../Lua/LuaScriptInstance.h"
 #include "../../Lua/LuaEngine.h"
@@ -59,8 +60,7 @@ namespace Dream
           Runtime(),
           mSceneRuntimeHandle(sceneRuntimeHandle),
           mLoaded(false),
-          mHasFocus(false),
-          mDelete(false)
+          mHasFocus(false)
 
     {
         if (Constants::DEBUG)
@@ -75,6 +75,17 @@ namespace Dream
         if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Destroying Object" << endl;
+        }
+
+        if (hasPhysicsObjectInstance())
+        {
+            mSceneRuntimeHandle->getProjectRuntimeHandle()
+                ->getPhysicsComponentHandle()->removePhysicsObjectInstance(getPhysicsObjectInstance());
+        }
+
+        if (hasScriptInstance())
+        {
+            mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()->removeFromScriptMap(this);
         }
     }
 
@@ -106,41 +117,6 @@ namespace Dream
     ()
     {
         setScale(1.0f, 1.0f, 1.0f);
-    }
-
-    void
-    SceneObjectRuntime::deleteChildRuntimes
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "SceneObjectRuntime: Deleting "
-                 << mChildRuntimes.size()
-                 << "child runtimes of "
-                 << getNameAndUuidString() << endl;
-        }
-        mChildRuntimes.clear();
-    }
-
-    void
-    SceneObjectRuntime::deleteAssetInstances
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "SceneObjectRuntime: Deleting asset instances for "
-                 << getNameAndUuidString() << endl;
-        }
-
-        mAudioInstance.reset();
-        mAnimationInstance.reset();
-        mModelInstance.reset();
-        mShaderInstance.reset();
-        mLightInstance.reset();
-        mSpriteInstance.reset();
-        mScriptInstance.reset();
-        mPhysicsObjectInstance.reset();
-        mFontInstance.reset();
     }
 
     void
@@ -428,20 +404,6 @@ namespace Dream
         return mSpriteInstance.get();
     }
 
-    void
-    SceneObjectRuntime::setDeleteFlag
-    (bool del)
-    {
-        mDelete = del;
-    }
-
-    bool
-    SceneObjectRuntime::getDeleteFlag
-    ()
-    {
-        return mDelete;
-    }
-
     bool
     SceneObjectRuntime::getLoadedFlag
     ()
@@ -470,26 +432,14 @@ namespace Dream
         mEventQueue.push_back(event);
     }
 
-    vector<Event>&
+    vector<Event>
     SceneObjectRuntime::getEventQueue
     ()
     {
         return mEventQueue;
     }
 
-    void
-    SceneObjectRuntime::cleanUp
-    ()
-    {
-        cleanUpEvents();
-        deleteAssetInstances();
-        setLoadedFlag(false);
-        setDeleteFlag(false);
-    }
-
-    void
-    SceneObjectRuntime::cleanUpEvents
-    ()
+    void SceneObjectRuntime::collectGarbage()
     {
         mEventQueue.clear();
     }
@@ -709,9 +659,15 @@ namespace Dream
             cout << "SceneObjectRuntime: Creating Model asset instance." << endl;
         }
         mModelInstance.reset
-                (
-                    new AssimpModelInstance(definition,this)
-                    );
+        (
+            new AssimpModelInstance
+            (
+                mSceneRuntimeHandle->getProjectRuntimeHandle()->getModelCacheHandle(),
+                mSceneRuntimeHandle->getProjectRuntimeHandle()->getTextureCacheHandle(),
+                definition,
+                this
+            )
+        );
     }
 
     void
@@ -735,7 +691,15 @@ namespace Dream
         {
             cout << "SceneObjectRuntime: Creating Shader asset instance." << endl;
         }
-        mShaderInstance.reset(new ShaderInstance(definition, this));
+        mShaderInstance.reset
+        (
+            new ShaderInstance
+            (
+                mSceneRuntimeHandle->getProjectRuntimeHandle()->getShaderCacheHandle(),
+                definition,
+                this
+            )
+        );
     }
 
     void
@@ -757,7 +721,15 @@ namespace Dream
         {
             cout << "SceneObjectRuntime: Creating Sprite Asset instance." << endl;
         }
-        mSpriteInstance.reset(new SpriteInstance(definition, this));
+        mSpriteInstance.reset
+        (
+            new SpriteInstance
+            (
+                mSceneRuntimeHandle->getProjectRuntimeHandle()->getTextureCacheHandle(),
+                definition,
+                this
+            )
+        );
     }
 
     void
@@ -768,7 +740,15 @@ namespace Dream
         {
             cout << "SceneObjectRuntime: Creating Font Asset instance." << endl;
         }
-        mFontInstance.reset(new FontInstance(definition, this));
+        mFontInstance.reset
+        (
+            new FontInstance
+            (
+                mSceneRuntimeHandle->getProjectRuntimeHandle()->getFontCacheHandle(),
+                definition,
+                this
+            )
+        );
     }
 
     bool

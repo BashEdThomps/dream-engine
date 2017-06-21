@@ -45,8 +45,7 @@ public:
     void updateComponent(SceneRuntime*) override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
-    void cleanUp(SceneRuntime*) override;
-    void setProject(Project* engine);
+    void setProjectRuntimeHandle(ProjectRuntime* prHandle);
     void setGrid(Grid* grid);
     void setGridEnabled(bool enabled);
     void setSelectionHighlighter(SelectionHighlighter* highlighter);
@@ -63,13 +62,14 @@ protected:
     void updateInputState();
 
 private:
-    Project *mProjectHandle;
+    ProjectRuntime* mProjectRuntimeHandle;
     Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
     RelationshipTree *mRelationshipTreeHandle;
     bool mGridEnabled;
     bool mRelationshipTreeEnabled;
     WindowInputState mInputState;
+    bool mPaintInProgress;
 };
 
 #endif // GLWIDGET_H

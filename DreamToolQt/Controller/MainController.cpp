@@ -374,8 +374,6 @@ MainController::onProjectStopAction
 ()
 {
     SceneRuntime* SceneRuntime = mDreamModel->stopActiveSceneRuntime();
-    // TODO
-    //emit notifyStoppedScene(SceneRuntime->getSceneDefinitionHandle());
 }
 
 void

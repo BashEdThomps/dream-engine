@@ -38,17 +38,16 @@ namespace Dream
     {
 
     private:
-        static unique_ptr<FT_Library> mFreeTypeLib;
-        static map<AssetDefinition*, map<GLchar, FontCharacter>> mCache;
-        static map<GLchar, FontCharacter> generateCharMap(AssetDefinition*, FT_Face* face);
+        unique_ptr<FT_Library> mFreeTypeLib;
+        map<AssetDefinition*, map<GLchar, FontCharacter>> mCache;
+        map<GLchar, FontCharacter> generateCharMap(AssetDefinition*, FT_Face* face);
 
     public:
-        static void initFreeTypeLib();
-        static void destroyFreeTypeLib();
-        static FT_Library* getFreeTypeLib();
+        FontCache();
+        ~FontCache();
 
-        static void clearCache();
-        static map<GLchar, FontCharacter> getCharMap(AssetDefinition*, FT_Face* face);
+        FT_Library* getFreeTypeLib();
+        map<GLchar, FontCharacter> getCharMap(AssetDefinition*, FT_Face* face);
 
     };
 }

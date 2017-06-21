@@ -26,7 +26,6 @@ DreamProjectModel::DreamProjectModel
       mWindowComponentHandle(windowComponent),
       mSelectedSceneHandle(nullptr)
 {
-    setupHeartbeatTimer();
 }
 
 void
@@ -37,7 +36,7 @@ DreamProjectModel::setupHeartbeatTimer
     {
         mHeartbeatTimer.reset(new QTimer(this));
         connect(mHeartbeatTimer.get(), SIGNAL(timeout()), mWindowComponentHandle, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(34);
+        mHeartbeatTimer->start(33);
     }
 }
 
@@ -148,7 +147,9 @@ DreamProjectModel::startSceneRuntimeFromDefinition
 
     SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definitionHandle);
 
-    mWindowComponentHandle->setProject(mProject.get());
+    mWindowComponentHandle->setProjectRuntimeHandle(mProject->getProjectRuntimeHandle());
+
+    setupHeartbeatTimer();
 
     return srHandle != nullptr;
 }
@@ -176,9 +177,10 @@ DreamProjectModel::stopActiveSceneRuntime
 
     if (srHandle)
     {
-        srHandle->setState(SCENE_STATE_DONE);
-        srHandle->cleanUp();
+        srHandle->setState(SCENE_STATE_STOPPED);
+        prHandle->resetActiveSceneRuntime();
     }
+
     return srHandle;
 }
 

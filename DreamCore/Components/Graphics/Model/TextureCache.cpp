@@ -19,51 +19,53 @@
 
 namespace Dream
 {
-
-    vector<Texture> TextureCache::sTextureCache = vector<Texture>();
-
     TextureCache::TextureCache
     ()
     {
 
     }
 
+    TextureCache::~TextureCache
+    ()
+    {
+        for (Texture texture : mCache)
+        {
+            glDeleteTextures(1,&texture.id);
+            Constants::checkGLError("After free texture");
+        }
+        return;
+    }
+
     vector<Texture>
     TextureCache::getTextureCache
     ()
     {
-        return sTextureCache;
-    }
-
-    TextureCache::~TextureCache
-    ()
-    {
-        return;
+        return mCache;
     }
 
     Texture
     TextureCache::loadTextureFromFile
     (const char* file_c, const char* directory_c, const char* type)
     {
-      if (Constants::DEBUG)
-      {
-        cout << "TextureCache: Loading from: "
-             << directory_c << "/" << file_c << endl;
-      }
+        if (Constants::DEBUG)
+        {
+            cout << "TextureCache: Loading from: "
+                 << directory_c << "/" << file_c << endl;
+        }
         //Generate texture ID and load texture data
         string filename = string(file_c);
         string directory = string(directory_c);
         filename = directory + '/' + filename;
 
-        for (Texture nextTexture : sTextureCache)
+        for (Texture nextTexture : mCache)
         {
             if (nextTexture.path == filename)
             {
-              if (Constants::DEBUG)
-              {
-                cout << "TextureCache: Found cached texture." << endl;
-              }
-              return nextTexture;
+                if (Constants::DEBUG)
+                {
+                    cout << "TextureCache: Found cached texture." << endl;
+                }
+                return nextTexture;
             }
         }
 
@@ -96,24 +98,9 @@ namespace Dream
         texture.type = type;
         texture.width = width;
         texture.height = height;
-        sTextureCache.push_back(texture);
+        mCache.push_back(texture);
 
         return texture;
     }
 
-    void
-    TextureCache::cleanUp
-    ()
-    {
-       if (Constants::DEBUG)
-       {
-           cout << "TextureCache: Cleaning Up" << endl;
-       }
-       for (Texture texture : sTextureCache)
-       {
-           glDeleteTextures(1,&texture.id);
-           Constants::checkGLError("After free texture");
-       }
-       sTextureCache.clear();
-    }
 } // End of Dream

@@ -22,8 +22,6 @@
 
 namespace Dream
 {
-    map<string,string> LuaScriptCache::sScriptCache = map<string,string>();
-
     LuaScriptCache::LuaScriptCache
     ()
     {
@@ -41,7 +39,7 @@ namespace Dream
     LuaScriptCache::getScript
     (string path)
     {
-      for (pair<string,string> it : sScriptCache)
+      for (pair<string,string> it : mScriptCache)
       {
          if (it.first == path)
          {
@@ -70,18 +68,7 @@ namespace Dream
             cout << "LuaScriptCache: Inserting script " << path << endl;
         }
         string content = reader.getContentsAsString();
-        sScriptCache.insert(pair<string,string>(path,content));
+        mScriptCache.insert(pair<string,string>(path,content));
         return content;
-    }
-
-    void
-    LuaScriptCache::cleanUp
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "LuaScriptCache: Cleaning Up" << endl;
-        }
-        sScriptCache.clear();
     }
 }

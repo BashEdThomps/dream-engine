@@ -105,6 +105,7 @@ macx: LIBS += \
     -framework OpenGL \
     -L/opt/octronic/builds/Dream/DreamCore \
     -L/opt/octronic/builds/Dream/Luabind \
+    -L/opt/octronic/builds/Dream/SOIL \
     -L/usr/local/lib \
     -L/opt/local/lib \
     -L/usr/lib \
@@ -118,6 +119,7 @@ macx: LIBS += \
 LIBS += \
     -L/opt/octronic/builds/Dream/DreamCore \
     -L/opt/octronic/builds/Dream/Luabind \
+    -L/opt/octronic/builds/Dream/SOIL \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
     -lfreetype \

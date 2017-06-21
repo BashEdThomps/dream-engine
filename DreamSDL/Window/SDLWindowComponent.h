@@ -40,7 +40,6 @@ namespace DreamSDL
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
-        void cleanUp(SceneRuntime*) override;
 
     private:
         bool initSDL();

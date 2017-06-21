@@ -38,13 +38,14 @@ namespace Dream
     {
     private:
         int mSize;
+        FontCache *mCacheHandle;
         unique_ptr<FT_Face> mFontFace;
         vector<float> mColour;
         string mText;
     private: // Methods
         void generateCharacterMap();
     public:
-        FontInstance(AssetDefinition*,SceneObjectRuntime*);
+        FontInstance(FontCache*, AssetDefinition*,SceneObjectRuntime*);
         ~FontInstance();
 
         bool load(string);

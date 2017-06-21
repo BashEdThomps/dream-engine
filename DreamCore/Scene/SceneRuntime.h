@@ -39,7 +39,6 @@ namespace Dream
     class AssetDefinition;
     class SceneObjectRuntime;
 
-
     class SceneRuntime : public Runtime
     {
     private:
@@ -49,7 +48,7 @@ namespace Dream
         vector<float> mAmbientColour;
         ProjectRuntime* mProjectRuntimeHandle;
 
-        vector<SceneObjectRuntime*> mSceneObjectRuntimeDeleteQueue;
+        vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         unique_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;
 
         Transform3D mCameraTransform;
@@ -72,20 +71,17 @@ namespace Dream
         vector<float> getAmbientColour();
         void setAmbientColour(vector<float> ambientColour);
 
-        vector<SceneObjectRuntime*> getSceneObjectRuntimeDeleteQueue();
-        void addSceneObjectRuntimeToDeleteQueue(SceneObjectRuntime*);
-        void clearSceneObjectRuntimeDeleteQueue();
-        void destroySceneObjectRuntimeDeleteQueue();
-
-        void findDeleteFlaggedSceneObjectRuntimes();
-        void findDeleteFlaggedScripts();
+        vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue();
+        void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
+        void clearSceneObjectRuntimeCleanUpQueue();
+        void processSceneObjectRuntimeCleanUpQueue();
 
         void createAllAssetInstances();
         void loadAllAssetInstances();
-        void useDefinition(IDefinition* sceneDefinitionHandle);
 
-        void cleanUpSceneObjectRuntimes();
-        void cleanUp();
+        void useDefinition(IDefinition* sceneDefinitionHandle) override;
+
+        void setDeleteFlagOnAllSceneObjectRuntimes();
 
         bool hasRootSceneObjectRuntime();
         void setRootSceneObjectRuntime(SceneObjectRuntime* sceneObjectHandle);
@@ -102,7 +98,7 @@ namespace Dream
 
         int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
 
-        void flush();
+        void collectGarbage() override;
 
         void setAssetDefinitionUuidLoadQueue(vector<string> loadQueue);
 

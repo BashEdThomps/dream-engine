@@ -28,6 +28,7 @@ extern "C"
 #include <map>
 #include <iostream>
 
+#include "LuaScriptCache.h"
 #include "InputEvent.h"
 
 #include "../Common/Constants.h"
@@ -49,22 +50,26 @@ namespace Dream
     public: // Methods
         LuaEngine(ProjectRuntime* projectHandle);
         virtual ~LuaEngine();
+
         bool init();
         bool createAllScripts();
         bool loadScript(SceneObjectRuntime*);
         bool update();
         void stackDump();
-        void cleanUp(SceneRuntime*);
+
         bool executeScriptInit(SceneObjectRuntime*);
         bool executeScriptUpdate(SceneObjectRuntime*);
         bool executeScriptInputHandler(SceneObjectRuntime*);
         bool executeScriptEventHandler(SceneObjectRuntime*);
+
         void removeFromScriptMap(SceneObjectRuntime*);
         void addToScriptMap(SceneObjectRuntime*,LuaScriptInstance*);
+
         void addInputEvent(InputEvent event);
         void clearInputEvents();
 
     private:// Variables
+        LuaScriptCache mScriptCache;
         ProjectRuntime* mProjectRuntimeHandle;
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"

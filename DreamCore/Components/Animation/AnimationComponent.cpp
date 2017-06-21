@@ -184,11 +184,4 @@ namespace Dream
         }
     }
 
-    void
-    AnimationComponent::cleanUp
-    (SceneRuntime* scene)
-    {
-
-    }
-
 } // End of Dream

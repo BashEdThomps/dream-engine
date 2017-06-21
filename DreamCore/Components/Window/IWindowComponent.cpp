@@ -24,12 +24,12 @@ namespace Dream
 
     IWindowComponent::IWindowComponent
     ()
-        : IComponent()
+        : IComponent(),
+          mWidth(Constants::DEFAULT_SCREEN_WIDTH),
+          mHeight(Constants::DEFAULT_SCREEN_HEIGHT),
+          mShouldClose(false),
+          mSizeHasChanged(false)
     {
-        setWidth(Constants::DEFAULT_SCREEN_WIDTH);
-        setHeight(Constants::DEFAULT_SCREEN_HEIGHT);
-        setShouldClose(false);
-        mSizeHasChanged = false;
     }
 
     IWindowComponent::~IWindowComponent

@@ -75,7 +75,6 @@ namespace Dream
 
         bool mLoaded;
         bool mHasFocus;
-        bool mDelete;
 
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
         void loadChildrenFromDefinition(SceneObjectDefinition *definitionHandle);
@@ -83,11 +82,8 @@ namespace Dream
         SceneObjectRuntime(SceneRuntime* sceneRuntimeHandle = nullptr);
 
         ~SceneObjectRuntime();
-        void deleteChildRuntimes();
-        void deleteAssetInstances();
-        void cleanUp();
-        void cleanUpEvents();
-        void resetRuntime();
+
+        void collectGarbage() override;
 
         SceneRuntime* getSceneRuntimeHandle();
         SceneObjectRuntime* getParentObjectRuntimeHandle();
@@ -170,15 +166,12 @@ namespace Dream
         bool hasFocus();
         void setHasFocus(bool);
 
-        void setDeleteFlag(bool);
-        bool getDeleteFlag();
-
         bool getLoadedFlag();
         void setLoadedFlag(bool);
 
         bool hasEvents();
         void sendEvent(Event);
-        vector<Event>& getEventQueue();
+        vector<Event> getEventQueue();
 
         void loadAssetInstances();
 

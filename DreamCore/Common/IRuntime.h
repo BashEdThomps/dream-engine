@@ -42,6 +42,9 @@ namespace Dream
         bool hasName(string name);
 
         string getNameAndUuidString();
+
         virtual void useDefinition(IDefinition*) = 0;
+
+        virtual void collectGarbage() = 0;
     };
 }

@@ -78,6 +78,12 @@ namespace Dream
         {
             cout << "GraphicsComponent: Destroying Object" << endl;
         }
+
+        clear2DQueue();
+        clear3DQueue();
+        clearLightQueue();
+
+        mActiveSceneRuntimeHandle = nullptr;
     }
 
     bool
@@ -752,20 +758,6 @@ namespace Dream
     ()
     {
         return mCamera;
-    }
-
-    void
-    GraphicsComponent::cleanUp
-    (SceneRuntime* scene)
-    {
-        clear2DQueue();
-        clear3DQueue();
-        clearLightQueue();
-        // Clean up caches
-        TextureCache::cleanUp();
-        ShaderCache::cleanUp();
-        AssimpModelInstance::cleanUpCache();
-        mActiveSceneRuntimeHandle = nullptr;
     }
 
     void

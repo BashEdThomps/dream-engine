@@ -30,12 +30,13 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
 (const QSurfaceFormat& format, QWidget* parent)
     : QOpenGLWidget(parent),
       IWindowComponent(),
-      mProjectHandle(nullptr),
+      mProjectRuntimeHandle(nullptr),
       mGridHandle(nullptr),
       mSelectionHighlighterHandle(nullptr),
       mRelationshipTreeHandle(nullptr),
       mGridEnabled(true),
-      mRelationshipTreeEnabled(true)
+      mRelationshipTreeEnabled(true),
+      mPaintInProgress(false)
 {
     setFormat(format);
 }
@@ -43,7 +44,7 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
 QOpenGLWindowComponent::~QOpenGLWindowComponent
 ()
 {
-    mProjectHandle = nullptr;
+    mProjectRuntimeHandle = nullptr;
     mGridHandle = nullptr;
     mSelectionHighlighterHandle = nullptr;
     mRelationshipTreeHandle = nullptr;
@@ -77,25 +78,31 @@ void
 QOpenGLWindowComponent::paintGL
 ()
 {
+    if (mPaintInProgress)
+    {
+        cerr << "QOGLWC: Attempted to paint while painting in progress" << endl;
+        return;
+    }
+
+    mPaintInProgress = true;
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
-    if (mProjectHandle)
+
+    if (mProjectRuntimeHandle)
     {
-        ProjectRuntime* pRuntime = mProjectHandle->getProjectRuntimeHandle();
-        if (pRuntime->hasActiveSceneRuntime())
+        if (mProjectRuntimeHandle->hasActiveSceneRuntime())
         {
             updateInputState();
-            SceneRuntime *sRuntime = pRuntime->getActiveSceneRuntimeHandle();
+            SceneRuntime *sRuntime = mProjectRuntimeHandle->getActiveSceneRuntimeHandle();
 
 
-            if (sRuntime->getState() != SCENE_STATE_DONE)
+            if (sRuntime->getState() != SCENE_STATE_STOPPED)
             {
-                pRuntime->updateLogic();
-                pRuntime->updateGraphics();
-                pRuntime->updateFlush();
+                mProjectRuntimeHandle->updateAll();
 
-                glm::mat4 viewMatrix = pRuntime->getGraphicsComponentHandle()->getViewMatrix();
-                glm::mat4 projectionMatrix = pRuntime->getGraphicsComponentHandle()->getProjectionMatrix();
+                glm::mat4 viewMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getViewMatrix();
+                glm::mat4 projectionMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getProjectionMatrix();
 
                 if (mGridHandle)
                 {
@@ -144,7 +151,10 @@ QOpenGLWindowComponent::paintGL
 
                     Constants::checkGLError("QOGLWC: RelTree after draw");
                 }
-
+            }
+            else
+            {
+                mProjectRuntimeHandle = nullptr;
             }
         }
         else
@@ -158,7 +168,10 @@ QOpenGLWindowComponent::paintGL
     {
         glClearColor(0.0f,0.0f,0.0f,0.0f);
     }
+
     glDisable(GL_DEPTH_TEST);
+
+    mPaintInProgress = false;
 }
 
 bool
@@ -190,17 +203,10 @@ QOpenGLWindowComponent::swapBuffers
 }
 
 void
-QOpenGLWindowComponent::setProject
-(Project* engine)
+QOpenGLWindowComponent::setProjectRuntimeHandle
+(ProjectRuntime* engine)
 {
-    mProjectHandle = engine;
-}
-
-void
-QOpenGLWindowComponent::cleanUp
-(SceneRuntime*)
-{
-
+    mProjectRuntimeHandle = engine;
 }
 
 void
@@ -221,7 +227,7 @@ void
 QOpenGLWindowComponent::mouseMoveEvent
 (QMouseEvent *event)
 {
-    if (mProjectHandle)
+    if (mProjectRuntimeHandle)
     {
         QPointF pos = event->localPos();
 
@@ -231,9 +237,7 @@ QOpenGLWindowComponent::mouseMoveEvent
         int dX = x - mInputState.mouseLastX;
         int dY = y - mInputState.mouseLastY;
 
-        mProjectHandle->getProjectRuntimeHandle()
-                      ->getCameraHandle()
-                      ->processMouseMovement(dX,dY,false);
+        mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(dX,dY,false);
         mInputState.mouseLastX = x;
         mInputState.mouseLastY = y;
     }
@@ -244,12 +248,12 @@ void
 QOpenGLWindowComponent::updateInputState
 ()
 {
-    if (!mProjectHandle)
+    if (!mProjectRuntimeHandle)
     {
         return;
     }
 
-    Camera *camHandle = mProjectHandle->getProjectRuntimeHandle()->getCameraHandle();
+    Camera *camHandle = mProjectRuntimeHandle->getCameraHandle();
     SceneObjectRuntime *selected = nullptr;
     if (mSelectionHighlighterHandle)
     {
@@ -259,9 +263,7 @@ QOpenGLWindowComponent::updateInputState
 
     float deltaTime = static_cast<float>
     (
-        mProjectHandle->getProjectRuntimeHandle()
-                      ->getTimeHandle()
-                      ->getTimeDelta()
+        mProjectRuntimeHandle->getTimeHandle()->getTimeDelta()
     );
 
     if (mInputState.wPressed)

@@ -23,7 +23,7 @@
 #include <assimp/postprocess.h>
 
 #include "glm/glm.hpp"
-#include <SOIL/SOIL.h>
+#include <SOIL.h>
 
 #include "AssimpMesh.h"
 #include "Texture.h"
@@ -34,48 +34,15 @@
 #include "../../../Common/Constants.h"
 #include "../../AssetDefinition.h"
 
+#include "AssimpCache.h"
+
 namespace Dream
 {
-    map<string,Importer*> AssimpModelInstance::AssimpModelCache = map<string,Importer*>();
-
-    Importer*
-    AssimpModelInstance::getModelFromCache
-    (string path)
-    {
-        for (pair<string,Importer*> it : AssimpModelCache)
-        {
-            if (it.first.compare(path) == 0)
-            {
-                if (Constants::DEBUG)
-                {
-                    cout << "AssimpModelInstance: Found cached scene for " << path << endl;
-                }
-                return it.second;
-            }
-        }
-
-        if (Constants::DEBUG)
-        {
-          cout << "AssimpModelInstance: Loading " << path << " from disk" << endl;
-        }
-
-        Importer* importer = new Importer();
-        importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
-        const aiScene* scene = importer->GetScene();
-        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-        {
-            cerr << "AssimpModelInstance: Error " << importer->GetErrorString() << endl;
-            return nullptr;
-        }
-
-        AssimpModelCache.insert(pair<string,Importer*>(path,importer));
-        return importer;
-    }
-
     AssimpModelInstance::AssimpModelInstance
-    (AssetDefinition* definition, SceneObjectRuntime* transform)
-    : IAssetInstance(definition,transform)
+    (AssimpCache* modelCache, TextureCache* texCache, AssetDefinition* definition, SceneObjectRuntime* transform)
+        : IAssetInstance(definition,transform),
+          mModelCacheHandle(modelCache),
+          mTextureCacheHandle(texCache)
     {
         if (Constants::DEBUG)
         {
@@ -113,7 +80,7 @@ namespace Dream
         {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;
         }
-        const aiScene* scene = getModelFromCache(path)->GetScene();
+        const aiScene* scene = mModelCacheHandle->getModelFromCache(path)->GetScene();
         if(scene == nullptr)
         {
             return false;
@@ -225,7 +192,7 @@ namespace Dream
         {
             aiString str;
             mat->GetTexture(type, i, &str);
-            Texture tex = TextureCache::loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+            Texture tex = mTextureCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
             textures.push_back(tex);
         }
         return textures;
@@ -236,23 +203,6 @@ namespace Dream
     (nlohmann::json jsonData)
     {
 
-    }
-
-
-    void
-    AssimpModelInstance::cleanUpCache
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "AssimpModelInstance: Cleaning up model cache" << endl;
-        }
-        for (pair<string,Importer*> imp : AssimpModelCache)
-        {
-            imp.second->FreeScene();
-            delete imp.second;
-        }
-        AssimpModelCache.clear();
     }
 
     BoundingBox

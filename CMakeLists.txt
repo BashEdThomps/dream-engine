@@ -2,9 +2,10 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream)
 
+set(DREAM_BUILD_SOIL    ON)
 set(DREAM_BUILD_LUABIND ON)
-set(DREAM_BUILD_CORE ON)
-set(DREAM_BUILD_SDL ON)
+set(DREAM_BUILD_CORE    ON)
+set(DREAM_BUILD_SDL     ON)
 
 set(DREAM_BUILD_LUABIND_TESTS OFF) # Broken, possible boost version issues :'(
 set(DREAM_BUILD_TESTS OFF)         # Needs updating, badly...
@@ -45,6 +46,11 @@ if (APPLE)
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
     set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
     set(CMAKE_MACOSX_RPATH 1)
+endif()
+
+# SOIL Library
+if (DREAM_BUILD_LUABIND)
+    add_subdirectory(SOIL)
 endif()
 
 # Luabind Library

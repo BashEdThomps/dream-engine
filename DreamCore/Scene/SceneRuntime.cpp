@@ -31,6 +31,11 @@
 
 #include "../Lua/LuaEngine.h"
 
+#include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/Camera.h"
+#include "../Components/Physics/PhysicsComponent.h"
+
+
 using std::cout;
 using std::cerr;
 
@@ -117,72 +122,27 @@ namespace Dream
         mAmbientColour = ambientColour;
     }
 
-    vector<SceneObjectRuntime*>
-    SceneRuntime::getSceneObjectRuntimeDeleteQueue
-    ()
-    {
-        return mSceneObjectRuntimeDeleteQueue;
-    }
-
-    void
-    SceneRuntime::addSceneObjectRuntimeToDeleteQueue
-    (SceneObjectRuntime* object)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "SceneRuntime: Adding "
-                 << object->getNameAndUuidString()
-                 << " to SceneObjectRuntime delete queue" << endl;
-        }
-       mSceneObjectRuntimeDeleteQueue.push_back(object);
-    }
-
-    void
-    SceneRuntime::clearSceneObjectRuntimeDeleteQueue
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "SceneRuntime: clearSceneObjectRuntimeDeleteQueue" << endl;
-        }
-        mSceneObjectRuntimeDeleteQueue.clear();
-    }
-
-    void
-    SceneRuntime::destroySceneObjectRuntimeDeleteQueue
-    ()
-    {
-        if (!mSceneObjectRuntimeDeleteQueue.empty())
-        {
-            for(SceneObjectRuntime* obj : mSceneObjectRuntimeDeleteQueue)
-            {
-                obj->cleanUp();
-            }
-        }
-        clearSceneObjectRuntimeDeleteQueue();
-    }
-
     SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeHandleByUuid
     (string uuid)
     {
         return static_cast<SceneObjectRuntime*>
-        (
-            mRootSceneObjectRuntime->applyToAll
-            (
-                function<void*(SceneObjectRuntime*)>
                 (
-                    [&](SceneObjectRuntime* currentRuntime)
-                    {
-                        if (currentRuntime->hasUuid(uuid))
-                        {
-                            return currentRuntime;
+                    mRootSceneObjectRuntime->applyToAll
+                    (
+                        function<void*(SceneObjectRuntime*)>
+                        (
+                            [&](SceneObjectRuntime* currentRuntime)
+        {
+                            if (currentRuntime->hasUuid(uuid))
+                            {
+                                return currentRuntime;
+                            }
+                            return static_cast<SceneObjectRuntime*>(nullptr);
                         }
-                        return static_cast<SceneObjectRuntime*>(nullptr);
-                    }
-                )
-            )
-        );
+                        )
+                    )
+                );
     }
 
     SceneObjectRuntime*
@@ -190,22 +150,22 @@ namespace Dream
     (string name)
     {
         return static_cast<SceneObjectRuntime*>
-        (
-            mRootSceneObjectRuntime->applyToAll
-            (
-                function<void*(SceneObjectRuntime*)>
                 (
-                    [&](SceneObjectRuntime* currentRuntime)
-                    {
-                        if (currentRuntime->hasName(name))
-                        {
-                            return currentRuntime;
+                    mRootSceneObjectRuntime->applyToAll
+                    (
+                        function<void*(SceneObjectRuntime*)>
+                        (
+                            [&](SceneObjectRuntime* currentRuntime)
+        {
+                            if (currentRuntime->hasName(name))
+                            {
+                                return currentRuntime;
+                            }
+                            return static_cast<SceneObjectRuntime*>(nullptr);
                         }
-                        return static_cast<SceneObjectRuntime*>(nullptr);
-                    }
-                )
-            )
-        );
+                        )
+                    )
+                );
     }
 
     int
@@ -214,16 +174,16 @@ namespace Dream
     {
         int count = 0;
         mRootSceneObjectRuntime->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime*)
-                {
-                    count++;
-                    return nullptr;
-                }
-            )
-        );
+                (
+                    function<void*(SceneObjectRuntime*)>
+                    (
+                        [&](SceneObjectRuntime*)
+        {
+                        count++;
+                        return nullptr;
+                    }
+                    )
+                );
         return count;
     }
 
@@ -243,7 +203,7 @@ namespace Dream
             (
                 [&](SceneObjectRuntime* obj)
                 {
-                        cout << "SceneObjectRuntime: showScenegraph not implemented" << endl;
+                    cout << "SceneObjectRuntime: showScenegraph not implemented" << endl;
                     //obj->showStatus();
                     return nullptr;
                 }
@@ -266,31 +226,6 @@ namespace Dream
     }
 
     void
-    SceneRuntime::findDeleteFlaggedSceneObjectRuntimes
-    ()
-    {
-        if (Constants::VERBOSE)
-        {
-            cout << "SceneRuntime: findDeleteFlaggedSceneObjects Called" << endl;
-        }
-
-        mRootSceneObjectRuntime->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* obj)
-                {
-                    if (obj->getDeleteFlag())
-                    {
-                        addSceneObjectRuntimeToDeleteQueue(obj);
-                    }
-                    return nullptr;
-                }
-            )
-        );
-    }
-
-    void
     SceneRuntime::createAllAssetInstances
     ()
     {
@@ -305,8 +240,8 @@ namespace Dream
             (
                 [&](SceneObjectRuntime* sceneObjectRuntime)
                 {
-                    // Not loaded && not marked to delete
-                    if (!sceneObjectRuntime->getLoadedFlag() && !sceneObjectRuntime->getDeleteFlag())
+                    // Not loaded
+                    if (!sceneObjectRuntime->getLoadedFlag())
                     {
                         sceneObjectRuntime->createAssetInstances();
                     }
@@ -329,92 +264,22 @@ namespace Dream
                     // Not loaded && not marked to delete
                     if (!sceneObjectRuntime->getLoadedFlag())
                     {
-                        if(!sceneObjectRuntime->getDeleteFlag())
-                        {
-                            sceneObjectRuntime->loadAssetInstances();
-                        }
+                        sceneObjectRuntime->loadAssetInstances();
                     }
                     return nullptr;
                 }
             )
         );
-
         setState(SCENE_STATE_LOADED);
     }
-    void
-    SceneRuntime::findDeleteFlaggedScripts
-    ()
-    {
-        if (Constants::VERBOSE)
-        {
-            cout << "SceneRuntime: Cleanup Deleted Scripts Called" << endl;
-        }
-        vector<SceneObjectRuntime*> objects = getSceneObjectRuntimeDeleteQueue();
-
-        for (SceneObjectRuntime* runtime : objects)
-        {
-            mProjectRuntimeHandle->getLuaEngineHandle()->removeFromScriptMap(runtime);
-        }
-    }
 
     void
-    SceneRuntime::cleanUpSceneObjectRuntimes
+    SceneRuntime::collectGarbage
     ()
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneRuntime: cleanUpSceneObjectRuntimes" << endl;
-        }
-
-        mRootSceneObjectRuntime->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* objectRuntime)
-                {
-                    objectRuntime->setDeleteFlag(true);
-                    return nullptr;
-                }
-            )
-        );
-    }
-
-    void
-    SceneRuntime::flush
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "SceneRuntime: flush" << endl;
-        }
-        findDeleteFlaggedSceneObjectRuntimes();
-        findDeleteFlaggedScripts();
-        destroySceneObjectRuntimeDeleteQueue();
-    }
-
-    void
-    SceneRuntime::cleanUp
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "SceneRuntime: cleanUp called on "
-                 <<  getNameAndUuidString()
-                 << endl;
-        }
-
-        if(getState() == SCENE_STATE_DONE)
-        {
-           cleanUpSceneObjectRuntimes();
-           flush();
-           setState(SCENE_STATE_CLEANED_UP);
-        }
-        else
-        {
-            cerr << "SceneRuntime: Cannot cleanUp Scene "
-                 << getNameAndUuidString()
-                 << " State != DONE"
-                 << endl;
+            cout << "SceneRuntime: Collecting Garbage" << endl;
         }
     }
 
@@ -444,6 +309,7 @@ namespace Dream
                  << sceneDefinitionHandle->getNameAndUuidString() << endl;
         }
 
+
         // Assign Runtime attributes from Definition
         setName(sceneDefinitionHandle->getName());
         setUuid(sceneDefinitionHandle->getUuid());
@@ -458,6 +324,16 @@ namespace Dream
         setRootSceneObjectRuntime(new SceneObjectRuntime(this));
         mRootSceneObjectRuntime->useDefinition(sceneDefinitionHandle->getRootSceneObjectDefinitionHandle());
 
+        mProjectRuntimeHandle->getGraphicsComponentHandle()->setActiveSceneRuntimeHandle(this);
+
+        mProjectRuntimeHandle->getPhysicsComponentHandle()->setGravity(getGravity());
+        mProjectRuntimeHandle->getPhysicsComponentHandle()->setDebug(getPhysicsDebug());
+
+        mProjectRuntimeHandle->getCameraHandle()->setTransform(getCameraTransform());
+        mProjectRuntimeHandle->getCameraHandle()->setMovementSpeed(getCameraMovementSpeed());
+
+        createAllAssetInstances();
+        loadAllAssetInstances();
     }
 
     bool

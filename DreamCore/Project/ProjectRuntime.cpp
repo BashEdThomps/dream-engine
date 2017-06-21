@@ -30,11 +30,18 @@
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/Camera.h"
+
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 
 #include "../Lua/LuaEngine.h"
+
+#include "../Components/Graphics/Model/AssimpCache.h"
+#include "../Components/Graphics/Model/TextureCache.h"
+#include "../Components/Graphics/Shader/ShaderCache.h"
+#include "../Components/Graphics/Font/FontCache.h"
+
 
 using std::endl;
 
@@ -76,51 +83,6 @@ namespace Dream
     (bool done)
     {
         mDone = done;
-    }
-
-    void
-    ProjectRuntime::cleanupComponents
-    ()
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "ProjectRuntime: Cleaning up Components..." << endl;
-        }
-
-        if (mWindowComponentHandle)
-        {
-            mWindowComponentHandle->cleanUp(mActiveSceneRuntime.get());
-        }
-
-        if(mGraphicsComponent)
-        {
-            mGraphicsComponent->cleanUp(mActiveSceneRuntime.get());
-        }
-
-        if(mPhysicsComponent)
-        {
-            mPhysicsComponent->cleanUp(mActiveSceneRuntime.get());
-        }
-
-        if(mAudioComponent)
-        {
-            mAudioComponent->cleanUp(mActiveSceneRuntime.get());
-        }
-
-        if(mAnimationComponent)
-        {
-            mAnimationComponent->cleanUp(mActiveSceneRuntime.get());
-        }
-
-        if (mLuaEngine)
-        {
-            mLuaEngine->cleanUp(mActiveSceneRuntime.get());
-        }
-
-        if (Constants::VERBOSE)
-        {
-            cout << "Dream: Finished Cleaning Up Components." << endl;
-        }
     }
 
     Time*
@@ -170,6 +132,8 @@ namespace Dream
         {
             return false;
         }
+
+        initCaches();
 
         if (Constants::VERBOSE)
         {
@@ -265,6 +229,15 @@ namespace Dream
             return false;
         }
         return true;
+    }
+
+    bool ProjectRuntime::initCaches()
+    {
+       mFontCache.reset(new FontCache());
+       mModelCache.reset(new AssimpCache());
+       mShaderCache.reset(new ShaderCache());
+       mTextureCache.reset(new TextureCache());
+       return true;
     }
 
     bool
@@ -363,7 +336,6 @@ namespace Dream
                  << "==== ProjectDefinition: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ===="
                  << endl << endl;
         }
-
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->preRender();
         mGraphicsComponent->draw3DQueue();
@@ -371,11 +343,10 @@ namespace Dream
         mGraphicsComponent->draw2DQueue();
         mWindowComponentHandle->swapBuffers();
         mGraphicsComponent->postRender();
-
     }
 
     void
-    ProjectRuntime::updateFlush
+    ProjectRuntime::collectGarbage
     ()
     {
         if (Constants::VERBOSE)
@@ -385,7 +356,7 @@ namespace Dream
                  << endl << endl;
         }
         // Cleanup Old
-        mActiveSceneRuntime.get()->flush();
+        mActiveSceneRuntime.get()->collectGarbage();
     }
 
     bool
@@ -410,7 +381,7 @@ namespace Dream
         {
             updateLogic();
             updateGraphics();
-            updateFlush();
+            collectGarbage();
         }
     }
 
@@ -430,7 +401,6 @@ namespace Dream
             {
                 cout << "ProjectRuntime: Destructing currently active SceneRuntime" << endl;
             }
-            destructActiveSceneRuntime();
         }
 
         // Load the new scene
@@ -438,31 +408,12 @@ namespace Dream
         {
             cout << "ProjectRuntime: Loading SceneRuntime" << endl;
         }
+
         mActiveSceneRuntime.reset(new SceneRuntime(this));
         mActiveSceneRuntime->useDefinition(sceneDefinitionHandle);
 
-        mGraphicsComponent->setActiveSceneRuntimeHandle(mActiveSceneRuntime.get());
-
-        mPhysicsComponent->setGravity(mActiveSceneRuntime->getGravity());
-        mPhysicsComponent->setDebug(mActiveSceneRuntime->getPhysicsDebug());
-
-        mCamera->setTransform(mActiveSceneRuntime->getCameraTransform());
-        mCamera->setMovementSpeed(mActiveSceneRuntime->getCameraMovementSpeed());
-
-        mActiveSceneRuntime->createAllAssetInstances();
-        mActiveSceneRuntime->loadAllAssetInstances();
-
         return mActiveSceneRuntime.get();
 
-    }
-
-    void
-    ProjectRuntime::destructActiveSceneRuntime
-    ()
-    {
-        mActiveSceneRuntime.get()->cleanUp();
-        cleanupComponents();
-        mActiveSceneRuntime.reset();
     }
 
     Project*
@@ -474,8 +425,45 @@ namespace Dream
 
     void
     ProjectRuntime::useDefinition
-    (IDefinition*)
+    (IDefinition* definitionHandle)
     {
+        /*
+            ProjectDefinition *pdHandle = dynamic_cast<ProjectDefinition*>(definitionHandle);
+        */
+    }
 
+    FontCache*
+    ProjectRuntime::getFontCacheHandle
+    ()
+    {
+        return mFontCache.get();
+    }
+
+    ShaderCache*
+    ProjectRuntime::getShaderCacheHandle
+    ()
+    {
+        return mShaderCache.get();
+    }
+
+    TextureCache*
+    ProjectRuntime::getTextureCacheHandle
+    ()
+    {
+        return mTextureCache.get();
+    }
+
+    AssimpCache*
+    ProjectRuntime::getModelCacheHandle
+    ()
+    {
+       return mModelCache.get();
+    }
+
+    void
+    ProjectRuntime::resetActiveSceneRuntime
+    ()
+    {
+        mActiveSceneRuntime.reset();
     }
 }

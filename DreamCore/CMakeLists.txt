@@ -11,7 +11,6 @@ find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
-find_package(SOIL REQUIRED)
 find_package(OggVorbis REQUIRED)
 find_package(ALUT REQUIRED)
 
@@ -34,11 +33,11 @@ include_directories(
     ${ALUT_INCLUDE_DIR}
     ${GLEW_INCLUDE_DIRS}
     ${assimp_INCLUDE_DIRS}
-    ${SOIL_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
     ${Luabind_INCLUDE_DIRS}
+    ${SOIL_INCLUDE_DIRS}
     ${FREETYPE_INCLUDE_DIR_ft2build}
 )
 
@@ -49,13 +48,13 @@ target_link_libraries(
     -lpthread
     -ldl
     Luabind
+    SOIL
     ${LUA_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${OGGVORBIS_LIBRARIES}
     ${ALUT_LIBRARY}
     ${assimp_LIBRARIES}
-    ${SOIL_LIBRARIES}
     ${GLEW_LIBRARIES}
     ${BULLET_LIBRARY}
     ${FREETYPE_LIBRARIES}

@@ -22,8 +22,9 @@ namespace Dream
 {
 
   SpriteInstance::SpriteInstance
-  (AssetDefinition* definition, SceneObjectRuntime* transform)
-      : IAssetInstance(definition,transform)
+  (TextureCache* cache, AssetDefinition* definition, SceneObjectRuntime* transform)
+      : IAssetInstance(definition,transform),
+        mCacheHandle(cache)
   {
     loadExtraAttributes(mDefinitionHandle->getJson());
   }
@@ -49,7 +50,7 @@ namespace Dream
         cout << "SpriteInstance: Loading sprite from " << path << endl;
     }
 
-    Texture tex = TextureCache::loadTextureFromFile("sprite",directory.c_str(),"sprite");
+    Texture tex = mCacheHandle->loadTextureFromFile("sprite",directory.c_str(),"sprite");
     mTexture = tex.id;
     mWidth = tex.width;
     mHeight = tex.height;
@@ -84,4 +85,5 @@ namespace Dream
   {
     return mHeight;
   }
+
 } // End Dream

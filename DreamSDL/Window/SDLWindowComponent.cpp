@@ -145,9 +145,9 @@ namespace DreamSDL
             {
                 if (Constants::DEBUG)
                 {
-                    cout << ">>> SDLWindowComponent: SDL_QUIT Event" << endl;
+                    cout << "SDLWindowComponent: SDL_QUIT Event" << endl;
                 }
-                scene->setState(Dream::SCENE_STATE_DONE);
+                scene->setState(Dream::SCENE_STATE_STOPPED);
                 break;
             }
             else if (event.type == SDL_WINDOWEVENT)
@@ -202,13 +202,6 @@ namespace DreamSDL
     void SDLWindowComponent::swapBuffers()
     {
         SDL_GL_SwapWindow(mWindow);
-    }
-
-    void
-    SDLWindowComponent::cleanUp
-    (SceneRuntime* scene)
-    {
-
     }
 
 } // End of Dream

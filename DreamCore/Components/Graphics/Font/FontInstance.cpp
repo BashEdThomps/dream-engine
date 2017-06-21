@@ -27,14 +27,11 @@ namespace Dream
 {
 
     FontInstance::FontInstance
-    (AssetDefinition* definition, SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform)
-    {
-        if (!FontCache::getFreeTypeLib())
-        {
-            FontCache::initFreeTypeLib();
-        }
+    (FontCache* cache, AssetDefinition* definition, SceneObjectRuntime* transform)
+        : IAssetInstance(definition,transform),
+          mCacheHandle(cache)
 
+    {
         mColour = {1,1,1};
         mFontFace = nullptr;
         setText("NO TEXT SET");
@@ -63,11 +60,11 @@ namespace Dream
             cout << "FontInstance: Loading font from " << path << endl;
         }
 
-        if (FontCache::getFreeTypeLib())
+        if (mCacheHandle->getFreeTypeLib())
         {
 
             mFontFace.reset(new FT_Face());
-            if (FT_New_Face(*FontCache::getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
+            if (FT_New_Face(*mCacheHandle->getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
             {
                 cerr << "FontInstance: Unable to create font. Error calling FT_New_Face" << endl;
             }
@@ -116,7 +113,7 @@ namespace Dream
                  << endl;
         }
 
-        FontCache::getCharMap(mDefinitionHandle,mFontFace.get());
+        mCacheHandle->getCharMap(mDefinitionHandle,mFontFace.get());
 
         if (Constants::DEBUG)
         {
@@ -182,6 +179,6 @@ namespace Dream
     FontInstance::getCharMap
     ()
     {
-        return FontCache::getCharMap(mDefinitionHandle,mFontFace.get());
+        return mCacheHandle->getCharMap(mDefinitionHandle,mFontFace.get());
     }
 } // End Dream

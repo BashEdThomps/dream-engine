@@ -20,7 +20,6 @@
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
 
-#include "LuaScriptCache.h"
 #include "LuaScriptInstance.h"
 
 #include "../Components/Event.h"
@@ -49,22 +48,40 @@
 
 #include "../Utilities/Math.h"
 
-using namespace std;
+using std::ostringstream;
+using std::exception;
+using std::cout;
+using std::cerr;
+using std::string;
+
+using luabind::object;
+using luabind::from_stack;
+using luabind::call_function;
+using luabind::globals;
+using luabind::class_;
+using luabind::constructor;
+using luabind::open;
+using luabind::set_pcall_callback;
+using luabind::registry;
+using luabind::error;
+using luabind::module;
+using luabind::value;
+using luabind::nil;
+using luabind::newtable;
 
 int
 errorHandler
 (lua_State *L)
 {
     // log the error message
-    luabind::object msg(luabind::from_stack( L, -1 ));
-    std::ostringstream str;
+    object msg(from_stack( L, -1 ));
+    ostringstream str;
     str << "Lua - RuntimeError: " << msg;
     cerr << str.str() << endl;
     // log the callstack
-    std::string traceback = luabind::call_function<std::string>( luabind::globals(L)["debug"]["traceback"] );
-    traceback = std::string( "Lua - Traceback: " ) + traceback;
+    string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
+    traceback = string( "Lua - Traceback: " ) + traceback;
     cerr << traceback.c_str() << endl;
-    // return unmodified error object
     return 1;
 }
 
@@ -89,7 +106,7 @@ namespace Dream
             lua_close(mState);
         }
 
-        LuaScriptCache::cleanUp();
+        mScriptMap.clear();
     }
 
     bool
@@ -103,9 +120,9 @@ namespace Dream
         mState = luaL_newstate();
         if (mState)
         {
-            luabind::open(mState);
+            open(mState);
             luaopen_base(mState);
-            luabind::set_pcall_callback(&errorHandler);
+            set_pcall_callback(&errorHandler);
             luaL_dostring(mState, mScriptLoadFromString.c_str());
             exposeAPI();
             return true;
@@ -146,16 +163,6 @@ namespace Dream
 
             if (luaScript->getLoadedFlag())
             {
-                continue;
-            }
-
-            if (sceneObject->getDeleteFlag())
-            {
-
-                if (Constants::DEBUG)
-                {
-                    cout << "LuaEngine: SceneObjectRuntime marked for deletion, not loading script." << endl;
-                }
                 continue;
             }
 
@@ -217,21 +224,21 @@ namespace Dream
                 cout << "LuaEngine: Creating new table for " << id << endl;
             }
 
-            luabind::object newtable = luabind::newtable(mState);
+            object newScriptTable = newtable(mState);
             string path = scriptInstance->getAbsolutePath();
-            string script = LuaScriptCache::getScript(path);
+            string script = mScriptCache.getScript(path);
 
             if (Constants::DEBUG)
             {
                 cout << "LuaEngine: calling scriptLoadFromString in lua for " << id << endl;
             }
 
-            luabind::call_function<void>(mState, "scriptLoadFromString", newtable, script.c_str());
+            call_function<void>(mState, "scriptLoadFromString", newScriptTable, script.c_str());
 
-            luabind::object reg = luabind::registry(mState);
-            reg[id] = newtable;
+            object reg = registry(mState);
+            reg[id] = newScriptTable;
         }
-        catch (luabind::error &e)
+        catch (error &e)
         {
             cerr << "LuaEngine: loadScript exception:" << endl
                  << "\t" << e.what() << endl;
@@ -290,14 +297,6 @@ namespace Dream
         for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
         {
             SceneObjectRuntime* key = entry.first;
-            if (key->getDeleteFlag())
-            {
-                if (Constants::DEBUG)
-                {
-                    cout << "LuaEngine: Skipping update on " << key->getUuid() << endl;
-                }
-                continue;
-            }
 
             if (!executeScriptUpdate(key))
             {
@@ -344,19 +343,19 @@ namespace Dream
 
         try
         {
-            luabind::object reg = luabind::registry(mState);
-            luabind::object table = reg[id];
-            luabind::object funq = table[Constants::LUA_UPDATE_FUNCTION];
+            object reg = registry(mState);
+            object table = reg[id];
+            object funq = table[Constants::LUA_UPDATE_FUNCTION];
             if (funq.is_valid())
             {
-                luabind::call_function<void>(funq,sceneObject);
+                call_function<void>(funq,sceneObject);
             }
             else
             {
                 cerr << "LuaEngine: Attempted to call onUpdate on invalid function."<< endl;
             }
         }
-        catch (luabind::error &e)
+        catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onUpdate exception:" << endl << e.what() << endl;
@@ -390,12 +389,12 @@ namespace Dream
         }
         try
         {
-            luabind::object reg = luabind::registry(mState);
-            luabind::object table = reg[id];
-            luabind::object funq = table[Constants::LUA_INIT_FUNCTION];
+            object reg = registry(mState);
+            object table = reg[id];
+            object funq = table[Constants::LUA_INIT_FUNCTION];
             if (funq.is_valid())
             {
-                luabind::call_function<void>(funq,sceneObject);
+                call_function<void>(funq,sceneObject);
             }
             else
             {
@@ -403,7 +402,7 @@ namespace Dream
             }
 
         }
-        catch (luabind::error &e)
+        catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onInit exception:" << endl << e.what() << endl;
@@ -439,14 +438,14 @@ namespace Dream
 
         try
         {
-            luabind::object reg = luabind::registry(mState);
-            luabind::object table = reg[id];
-            luabind::object funq = table[Constants::LUA_INPUT_FUNCTION];
+            object reg = registry(mState);
+            object table = reg[id];
+            object funq = table[Constants::LUA_INPUT_FUNCTION];
             if (funq.is_valid())
             {
                 for(InputEvent event : mInputEvents)
                 {
-                   luabind::call_function<void>(funq,sceneObject,event);
+                   call_function<void>(funq,sceneObject,event);
                 }
             }
             else
@@ -456,7 +455,7 @@ namespace Dream
 
             clearInputEvents();
         }
-        catch (luabind::error &e)
+        catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onInput exception:" << endl << e.what() << endl;
@@ -492,24 +491,23 @@ namespace Dream
 
         try
         {
-            luabind::object reg = luabind::registry(mState);
-            luabind::object table = reg[id];
-            luabind::object funq = table[Constants::LUA_EVENT_FUNCTION];
+            object reg = registry(mState);
+            object table = reg[id];
+            object funq = table[Constants::LUA_EVENT_FUNCTION];
             vector<Event> events = sceneObject->getEventQueue();
             if (funq.is_valid())
             {
                 for (Event event : events)
                 {
-                    luabind::call_function<void>(funq,sceneObject,event);
+                    call_function<void>(funq,sceneObject,event);
                 }
             }
             else
             {
                 cerr << "LuaEngine: Attempted to call onInit on invalid function."<< endl;
             }
-            sceneObject->cleanUpEvents();
         }
-        catch (luabind::error &e)
+        catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
             cerr << "LuaEngine: onEvent exception:"
@@ -543,9 +541,9 @@ namespace Dream
     LuaEngine::exposeProjectRuntime
     ()
     {
-        luabind::module(mState)
+        module(mState)
         [
-            luabind::class_<ProjectRuntime>("ProjectRuntime")
+            class_<ProjectRuntime>("ProjectRuntime")
                 .def("getAudioComponent",&ProjectRuntime::getAudioComponentHandle)
                 .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponentHandle)
                 .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponentHandle)
@@ -553,24 +551,24 @@ namespace Dream
                 .def("getTime",&ProjectRuntime::getTimeHandle)
                 .def("getCamera",&ProjectRuntime::getCameraHandle)
         ];
-        luabind::globals(mState)["Runtime"] = mProjectRuntimeHandle;
+        globals(mState)["Runtime"] = mProjectRuntimeHandle;
     }
 
     void
     LuaEngine::exposeCamera
     ()
     {
-        luabind::module(mState)
+        module(mState)
                 [
                 luabind::class_<Camera>("Camera")
                 .def("processKeyboard",&Camera::processKeyboard)
                 .def("processMouseMovement",&Camera::processMouseMovement)
                 .enum_("CameraMovement")
                 [
-                    luabind::value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
-                    luabind::value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
-                    luabind::value("LEFT",     CAMERA_MOVEMENT_LEFT),
-                    luabind::value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
+                    value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
+                    value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
+                    value("LEFT",     CAMERA_MOVEMENT_LEFT),
+                    value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
                 ]
                 ];
     }
@@ -587,9 +585,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AnimationComponent");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<AnimationComponent>("AnimationComponent")
+                class_<AnimationComponent>("AnimationComponent")
                 // TODO
                 ];
     }
@@ -599,9 +597,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AnimationInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<AnimationInstance>("AnimationInstance")
+                class_<AnimationInstance>("AnimationInstance")
                 // TODO
                 ];
     }
@@ -611,9 +609,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("FontInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<FontInstance>("FontInstance")
+                class_<FontInstance>("FontInstance")
                 .def("setText",&FontInstance::setText)
                 .def("getText",&FontInstance::getText)
                 ];
@@ -624,9 +622,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("GraphicsComponent");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<GraphicsComponent>("GraphicsComponent")
+                class_<GraphicsComponent>("GraphicsComponent")
                 ];
     }
 
@@ -635,9 +633,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("LightInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<LightInstance>("LightInstance")
+                class_<LightInstance>("LightInstance")
                 // TODO
                 ];
     }
@@ -647,9 +645,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ShaderInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<ShaderInstance>("ShaderInstance")
+                class_<ShaderInstance>("ShaderInstance")
                 .def("getUuid", &ShaderInstance::getUuid)
                 .def("setUniform1f", &ShaderInstance::setUniform1f)
                 ];
@@ -660,9 +658,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SpriteInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<SpriteInstance>("SpriteInstance")
+                class_<SpriteInstance>("SpriteInstance")
                 // TODO
                 ];
     }
@@ -672,9 +670,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsComponent");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<PhysicsComponent>("PhysicsComponent")
+                class_<PhysicsComponent>("PhysicsComponent")
                 .def("setDebug",&PhysicsComponent::setDebug)
                 ];
     }
@@ -684,9 +682,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsObjectInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<PhysicsObjectInstance>("PhysicsObjectInstance")
+                class_<PhysicsObjectInstance>("PhysicsObjectInstance")
                 .def("getUuid", &PhysicsObjectInstance::getUuid)
                 .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
                 ];
@@ -697,9 +695,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("IWindiwComponent");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<IWindowComponent>("IWindowComponent")
+                class_<IWindowComponent>("IWindowComponent")
                 .def("getWidth",&IWindowComponent::getWidth)
                 .def("getHeight",&IWindowComponent::getHeight)
                 .def("setShouldClose",&IWindowComponent::setShouldClose)
@@ -711,9 +709,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Math");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<Math>("Math")
+                class_<Math>("Math")
                 .def("degreesToRadians",&Math::degreesToRadians)
                 .def("radiansToDegrees",&Math::radiansToDegrees)
                 ];
@@ -724,10 +722,10 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SceneObjectRuntime");
-        luabind::module(mState)
+        module(mState)
         [
-            luabind::class_<SceneObjectRuntime>("SceneObjectRuntime")
-                .def(luabind::constructor<>())
+            class_<SceneObjectRuntime>("SceneObjectRuntime")
+                .def(constructor<>())
                 .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeHandleByUuid)
                 .def("getParent",&SceneObjectRuntime::getParentRuntimeHandle)
                 .def("setParent",&SceneObjectRuntime::setParentRuntimeHandle)
@@ -761,8 +759,6 @@ namespace Dream
                 .def("getPhysicsObjectInstance",&SceneObjectRuntime::getPhysicsObjectInstance)
                 .def("setPhysicsObjectInstance",&SceneObjectRuntime::setPhysicsObjectInstance)
 
-                .def("getDeleteFlag",&SceneObjectRuntime::getDeleteFlag)
-                .def("setDeleteFlag",&SceneObjectRuntime::setDeleteFlag)
             ];
     }
 
@@ -771,9 +767,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Transform3D");
-        luabind::module(mState) [
-                luabind::class_<Transform3D>("Transform3D")
-                .def(luabind::constructor<>())
+        module(mState) [
+                class_<Transform3D>("Transform3D")
+                .def(constructor<>())
                 // Translation ===========================================================
                 .def("getTransformType",&Transform3D::getTransformType)
                 .def("getTranslationX",&Transform3D::getTranslationX)
@@ -822,12 +818,13 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Time");
-        luabind::module(mState) [
-                luabind::class_<Time>("Time")
+        module(mState) [
+            class_<Time>("Time")
                 .def("getCurrentTime",&Time::getCurrentTime)
                 .def("getLastTime",&Time::getLastTime)
                 .def("getTimeDelta",&Time::getTimeDelta)
-                ];
+                .def("scaleValue",&Time::scaleValue)
+        ];
     }
 
     void
@@ -835,9 +832,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AssimpModelInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<AssimpModelInstance>("AssimpModelInstance")
+                class_<AssimpModelInstance>("AssimpModelInstance")
                 // TODO
                 ];
     }
@@ -847,9 +844,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Event");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<Event>("Event")
+                class_<Event>("Event")
                 .def("getSender",&Event::getSender)
                 .def("getType",&Event::getType)
                 .def("getAttribute",&Event::getAttribute)
@@ -862,9 +859,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("IAssetInstance");
-        luabind::module(mState)
+        module(mState)
                 [
-                luabind::class_<IAssetInstance>("IAssetInstance")
+                class_<IAssetInstance>("IAssetInstance")
                 ];
     }
 
@@ -872,9 +869,9 @@ namespace Dream
     LuaEngine::exposeAudioComponent
     ()
     {
-        luabind::module(mState)
+        module(mState)
         [
-                luabind::class_<AudioComponent>("AudioComponent")
+                class_<AudioComponent>("AudioComponent")
                     .def("playAudioAsset",&AudioComponent::playAudioAsset)
                     .def("pauseAudioAsset",&AudioComponent::pauseAudioAsset)
                     .def("stopAudioAsset",&AudioComponent::stopAudioAsset)
@@ -894,17 +891,17 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioInstance");
-        luabind::module(mState)
+        module(mState)
         [
-            luabind::class_<AudioInstance>("AudioInstance")
+            class_<AudioInstance>("AudioInstance")
                 .def("getStatus",&AudioInstance::getStatus),
 
-            luabind::class_<AudioStatus>("AudioStatus")
+            class_<AudioStatus>("AudioStatus")
                 .enum_("AudioStatus")
                 [
-                    luabind::value("PLAYING", AudioStatus::PLAYING),
-                    luabind::value("PAUSED",  AudioStatus::PAUSED),
-                    luabind::value("STOPPED", AudioStatus::STOPPED)
+                    value("PLAYING", AudioStatus::PLAYING),
+                    value("PAUSED",  AudioStatus::PAUSED),
+                    value("STOPPED", AudioStatus::STOPPED)
                 ]
         ];
     }
@@ -914,9 +911,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("InputEvent");
-        luabind::module(mState)
+        module(mState)
         [
-            luabind::class_<InputEvent>("InputEvent")
+            class_<InputEvent>("InputEvent")
 
                 .def("getSource",&InputEvent::getSource)
                 .def("setSource",&InputEvent::setSource)
@@ -945,40 +942,40 @@ namespace Dream
                 .def("getButton",&InputEvent::getButton)
                 .def("setButton",&InputEvent::setButton),
 
-            luabind::class_<InputSource>("InputSource")
+            class_<InputSource>("InputSource")
                 .enum_("InputSource")
                 [
-                    luabind::value("INPUT_SOURCE_KEYBOARD",InputSource::INPUT_SOURCE_KEYBOARD),
-                    luabind::value("INPUT_SOURCE_MOUSE",InputSource::INPUT_SOURCE_MOUSE),
-                    luabind::value("INPUT_SOURCE_GAMEPAD",InputSource::INPUT_SOURCE_GAMEPAD),
-                    luabind::value("INPUT_SOURCE_NONE",InputSource::INPUT_SOURCE_NONE)
+                    value("INPUT_SOURCE_KEYBOARD",InputSource::INPUT_SOURCE_KEYBOARD),
+                    value("INPUT_SOURCE_MOUSE",InputSource::INPUT_SOURCE_MOUSE),
+                    value("INPUT_SOURCE_GAMEPAD",InputSource::INPUT_SOURCE_GAMEPAD),
+                    value("INPUT_SOURCE_NONE",InputSource::INPUT_SOURCE_NONE)
                 ],
 
-            luabind::class_<KeyEventType>("KeyEventType")
+            class_<KeyEventType>("KeyEventType")
                 .enum_("KeyEventType")
                 [
-                    luabind::value("KEY_PRESSED",KeyEventType::KEY_PRESSED),
-                    luabind::value("KEY_RELEASED",KeyEventType::KEY_RELEASED),
-                    luabind::value("KEY_NONE",KeyEventType::KEY_NONE)
+                    value("KEY_PRESSED",KeyEventType::KEY_PRESSED),
+                    value("KEY_RELEASED",KeyEventType::KEY_RELEASED),
+                    value("KEY_NONE",KeyEventType::KEY_NONE)
                 ],
 
-            luabind::class_<MouseEventType>("MouseEventType")
+            class_<MouseEventType>("MouseEventType")
                 .enum_("MouseEventType")
                 [
-                    luabind::value("MOUSE_BUTTON_PRESSED",MouseEventType::MOUSE_BUTTON_PRESSED),
-                    luabind::value("MOUSE_BUTTON_RELEASED",MouseEventType::MOUSE_BUTTON_RELEASED),
-                    luabind::value("MOUSE_SCROLL",MouseEventType::MOUSE_SCROLL),
-                    luabind::value("MOUSE_MOTION",MouseEventType::MOUSE_MOTION),
-                    luabind::value("MOUSE_NONE",MouseEventType::MOUSE_NONE)
+                    value("MOUSE_BUTTON_PRESSED",MouseEventType::MOUSE_BUTTON_PRESSED),
+                    value("MOUSE_BUTTON_RELEASED",MouseEventType::MOUSE_BUTTON_RELEASED),
+                    value("MOUSE_SCROLL",MouseEventType::MOUSE_SCROLL),
+                    value("MOUSE_MOTION",MouseEventType::MOUSE_MOTION),
+                    value("MOUSE_NONE",MouseEventType::MOUSE_NONE)
                 ],
 
-            luabind::class_<GamepadEventType>("GamepadEventType")
+            class_<GamepadEventType>("GamepadEventType")
                 .enum_("GamepadEventType")
                 [
-                    luabind::value("GAMEPAD_AXIS",GamepadEventType::GAMEPAD_AXIS),
-                    luabind::value("GAMEPAD_BUTTON_PRESSED",GamepadEventType::GAMEPAD_BUTTON_PRESSED),
-                    luabind::value("GAMEPAD_BUTTON_RELEASED",GamepadEventType::GAMEPAD_BUTTON_RELEASED),
-                    luabind::value("GAMEPAD_NONE",GamepadEventType::GAMEPAD_NONE)
+                    value("GAMEPAD_AXIS",GamepadEventType::GAMEPAD_AXIS),
+                    value("GAMEPAD_BUTTON_PRESSED",GamepadEventType::GAMEPAD_BUTTON_PRESSED),
+                    value("GAMEPAD_BUTTON_RELEASED",GamepadEventType::GAMEPAD_BUTTON_RELEASED),
+                    value("GAMEPAD_NONE",GamepadEventType::GAMEPAD_NONE)
                 ]
         ];
     }
@@ -1013,31 +1010,6 @@ namespace Dream
     }
 
     void
-    LuaEngine::cleanUp
-    (SceneRuntime* scene)
-    {
-        if (Constants::DEBUG)
-        {
-            cout << "LuaEngine: Cleaning up" << endl;
-        }
-
-        luabind::object reg = luabind::registry(mState);
-
-        for(pair<SceneObjectRuntime*,LuaScriptInstance*> scriptPair : mScriptMap)
-        {
-            string id = scriptPair.first->getUuid();
-            string soName = scriptPair.first->getName();
-
-            reg[id] = luabind::nil;
-
-            if (Constants::DEBUG)
-            {
-                cout << "LuaEngine: Removed script " << id << " for " << soName << " from registry" << endl;
-            }
-        }
-        mScriptMap.clear();
-    }
-    void
     LuaEngine::removeFromScriptMap
     (SceneObjectRuntime* sceneObject)
     {
@@ -1046,6 +1018,15 @@ namespace Dream
         {
            if ((*iter).first == sceneObject)
            {
+               string id = (*iter).first->getUuid();
+               object reg = registry(mState);
+               reg[id] = nil;
+
+               if (Constants::DEBUG)
+               {
+                    cout << "LuaEngine: Removed script for " << (*iter).first->getNameAndUuidString() << endl;
+               }
+
                mScriptMap.erase(iter++);
                break;
            }
