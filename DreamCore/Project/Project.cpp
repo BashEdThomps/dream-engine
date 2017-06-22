@@ -122,7 +122,7 @@ namespace Dream
             return false;
         }
 
-        string uuid;
+        string projectFileName;
         bool hasAssetDirectory = false;
 
         for (string filename : directoryContents)
@@ -130,10 +130,12 @@ namespace Dream
             size_t dotJsonIndex = filename.find(Constants::PROJECT_EXTENSION);
             if (dotJsonIndex != string::npos)
             {
-                uuid = filename.substr(0,dotJsonIndex);
+                projectFileName = filename.substr(0,dotJsonIndex);
                 if (Constants::DEBUG)
                 {
-                    cout << "Project: openFromDirectory - Found uuid " << uuid << endl;
+                    cout << "Project: openFromDirectory - Found project file "
+                         << projectFileName
+                         << endl;
                 }
             }
             else if (filename.compare(Constants::ASSET_DIR) == 0)
@@ -146,7 +148,7 @@ namespace Dream
             }
         }
 
-        if (uuid.size() != static_cast<size_t>(Constants::PROJECT_UUID_LENGTH)  || !hasAssetDirectory)
+        if (projectFileName.size() == 0 || !hasAssetDirectory)
         {
             cerr << "Project: Error " << directory << " is not a valid project directory!" << endl;
             return false;
@@ -154,12 +156,13 @@ namespace Dream
 
         if (Constants::VERBOSE)
         {
-            cout << "Project: Loading " << uuid << Constants::PROJECT_EXTENSION << " from Directory" << directory << endl;
+            cout << "Project: Loading " << projectFileName << Constants::PROJECT_EXTENSION << " from Directory" << directory << endl;
         }
 
-        string projectFilePath = directory + Constants::PROJECT_PATH_SEP + uuid + Constants::PROJECT_EXTENSION;
+        string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
 
         FileReader projectFileReader(projectFilePath);
+
         projectFileReader.readIntoString();
         bool loadSuccess = openFromFileReader(directory, projectFileReader);
         return loadSuccess;

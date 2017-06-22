@@ -344,7 +344,7 @@ namespace Dream
         if (Constants::VERBOSE)
         {
             cout << endl
-                 << "==== ProjectDefinition: updateFlush Called @ " << mTime->getTimeDelta() << " ===="
+                 << "==== ProjectDefinition: CollectGarbage Called @ " << mTime->getTimeDelta() << " ===="
                  << endl << endl;
         }
         // Cleanup Old

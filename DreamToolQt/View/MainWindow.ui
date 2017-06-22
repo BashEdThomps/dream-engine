@@ -507,7 +507,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="addAssetDefinitionButton">
+          <widget class="QPushButton" name="assetDefinitionAddButton">
            <property name="maximumSize">
             <size>
              <width>24</width>
@@ -533,7 +533,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="removeAssetDefinitionButton">
+          <widget class="QPushButton" name="assetDefinitionRemoveButton">
            <property name="maximumSize">
             <size>
              <width>24</width>
@@ -603,6 +603,9 @@
    <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionSave">
    <property name="icon">
@@ -618,6 +621,9 @@
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionReload">
    <property name="icon">
@@ -632,6 +638,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionSettings">
@@ -663,6 +672,9 @@
    <property name="shortcut">
     <string>Ctrl+P</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionStop">
    <property name="icon">
@@ -674,6 +686,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionOpen_Test_Project">
@@ -708,6 +723,9 @@
    <property name="shortcut">
     <string>Ctrl+G</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionToggleDebug">
    <property name="checkable">
@@ -728,6 +746,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionCloseProject">

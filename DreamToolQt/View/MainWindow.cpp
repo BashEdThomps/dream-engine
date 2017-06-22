@@ -24,6 +24,11 @@
 
 #include "View/QOpenGLWindowComponent.h"
 
+using std::pair;
+using std::begin;
+using std::find;
+using std::end;
+
 const vector<int> MainWindow::mKeysPassedToWindow =
 {
     Qt::Key_W,
@@ -43,30 +48,119 @@ MainWindow::MainWindow
       ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     setupGL(parent);
     setupAssetDefinitionAddRemoveButtonMenus();
     setupScenegraphAddRemoveButtonMenus();
     setupPropertiesAddRemoveButtonMenus();
+
+    setPlaybackActionsEnabled(false);
+    setSaveActionEnabled(false);
+    setAddRemoveButtonsEnabled(false);
+}
+
+void
+MainWindow::setAddRemoveButtonsEnabled
+(bool enabled)
+{
+   ui->assetDefinitionAddButton->setEnabled(enabled);
+   ui->assetDefinitionRemoveButton->setEnabled(enabled);
+
+   ui->scenegraphAddButton->setEnabled(enabled);
+   ui->scenegraphRemoveButton->setEnabled(enabled);
+
+   ui->propertiesAddButton->setEnabled(enabled);
+   ui->propertiesRemoveButton->setEnabled(enabled);
+}
+
+void
+MainWindow::setPlaybackActionsEnabled
+(bool enabled)
+{
+    ui->actionPlay->setEnabled(enabled);
+    ui->actionStop->setEnabled(enabled);
+    ui->actionReload->setEnabled(enabled);
+}
+
+void
+MainWindow::setOpenActionEnabled
+(bool enabled)
+{
+    ui->actionOpen->setEnabled(enabled);
+}
+
+QAction*
+MainWindow::getScenegraphAddSceneAction
+()
+{
+    return mScenegraphAddSceneAction.get();
+}
+
+QAction*
+MainWindow::getScenegraphAddSceneObjectAction
+()
+{
+    return mScenegraphAddSceneObjectAction.get();
+}
+
+QAction*
+MainWindow::getPropertiesAddAssetAction
+()
+{
+    return mPropertiesAddAssetAction.get();
+}
+
+QAction*
+MainWindow::getPropertiesAddSceneObjectChildAction
+()
+{
+    return mPropertiesAddSceneObjectChildAction.get();
+}
+
+QAction*
+MainWindow::getAssetDefinitionAddAction
+(AssetType type, string format)
+{
+   return mAssetDefinitionAddActionsMap.at(type).at(format);
+}
+
+void
+MainWindow::setSaveActionEnabled
+(bool enabled)
+{
+    ui->actionSave->setEnabled(enabled);
+}
+
+void
+MainWindow::setNewActionEnabled
+(bool enabled)
+{
+    ui->actionNew->setEnabled(enabled);
 }
 
 void
 MainWindow::setupAssetDefinitionAddRemoveButtonMenus
 ()
 {
-    mAddAssetDefinitionMenu.reset(new QMenu());
-    mAddAssetDefinitionMenu->setWindowTitle("New Definition");
+    mAssetDefinitionAddMenu.reset(new QMenu());
+    mAssetDefinitionAddMenu->setWindowTitle("New Definition");
 
     for (pair<AssetType,string> typePair : Constants::DREAM_ASSET_TYPES_MAP)
     {
-        QMenu *typeMenu = mAddAssetDefinitionMenu->addMenu(QString::fromStdString(Constants::getAssetTypeReadableName(typePair.second)));
+        QMenu *typeMenu = mAssetDefinitionAddMenu->addMenu(QString::fromStdString(Constants::getAssetTypeReadableName(typePair.second)));
+
+        map<string,QAction*> formatActions;
 
         for (string format : Constants::DREAM_ASSET_FORMATS_MAP[typePair.first])
         {
             QAction *action = new QAction(QString::fromStdString(Constants::getAssetFormatReadableName(format)));
             typeMenu->addAction(action);
+            formatActions.insert(pair<string,QAction*>(format,action));
         }
+
+        mAssetDefinitionAddActionsMap.insert(pair<AssetType,map<string,QAction*>>(typePair.first,formatActions));
     }
-    ui->addAssetDefinitionButton->setMenu(mAddAssetDefinitionMenu.get());
+    ui->assetDefinitionAddButton->setMenu(mAssetDefinitionAddMenu.get());
 }
 
 
@@ -74,30 +168,30 @@ void
 MainWindow::setupScenegraphAddRemoveButtonMenus
 ()
 {
-    mAddScenegraphMenu.reset(new QMenu());
+    mScenegraphAddMenu.reset(new QMenu());
 
-    QAction *scene = new QAction(QString("Scene..."));
-    QAction *sceneObject = new QAction(QString("SceneObject..."));
+    mScenegraphAddSceneAction.reset(new QAction(QString("Scene")));
+    mScenegraphAddSceneObjectAction.reset(new QAction(QString("Scene Object")));
 
-    mAddScenegraphMenu->addAction(scene);
-    mAddScenegraphMenu->addAction(sceneObject);
+    mScenegraphAddMenu->addAction(mScenegraphAddSceneAction.get());
+    mScenegraphAddMenu->addAction(mScenegraphAddSceneObjectAction.get());
 
-    ui->scenegraphAddButton->setMenu(mAddScenegraphMenu.get());
+    ui->scenegraphAddButton->setMenu(mScenegraphAddMenu.get());
 }
 
 void
 MainWindow::setupPropertiesAddRemoveButtonMenus
 ()
 {
-    mAddPropertiesMenu.reset(new QMenu());
+    mPropertiesAddMenu.reset(new QMenu());
 
-    QAction *asset = new QAction(QString("Asset..."));
-    QAction *sceneObject = new QAction(QString("Child SceneObject..."));
+    mPropertiesAddAssetAction.reset(new QAction(QString("Asset")));
+    mPropertiesAddSceneObjectChildAction.reset(new QAction(QString("Child Scene Object")));
 
-    mAddPropertiesMenu->addAction(asset);
-    mAddPropertiesMenu->addAction(sceneObject);
+    mPropertiesAddMenu->addAction(mPropertiesAddAssetAction.get());
+    mPropertiesAddMenu->addAction(mPropertiesAddSceneObjectChildAction.get());
 
-    ui->propertiesAddButton->setMenu(mAddPropertiesMenu.get());
+    ui->propertiesAddButton->setMenu(mPropertiesAddMenu.get());
 
 }
 
@@ -147,7 +241,9 @@ MainWindow::getActionCloseProject
     return ui->actionCloseProject;
 }
 
-QAction *MainWindow::getActionTogglePhysicsDebug()
+QAction*
+MainWindow::getActionTogglePhysicsDebug
+()
 {
    return ui->actionTogglePhysicsDebug;
 }
@@ -296,10 +392,10 @@ MainWindow::shouldPassKey
 {
     return std::find
     (
-        std::begin(mKeysPassedToWindow),
-        std::end(mKeysPassedToWindow),
+        begin(mKeysPassedToWindow),
+        end(mKeysPassedToWindow),
         key
-    ) != std::end(mKeysPassedToWindow);
+    ) != end(mKeysPassedToWindow);
 }
 
 void

@@ -238,6 +238,21 @@ namespace Dream
         // Window
         const static int DEFAULT_SCREEN_WIDTH;
         const static int DEFAULT_SCREEN_HEIGHT;
+        // Camera ===============================================================
+        const static unsigned int CAMERA_MOVEMENT_FORWARD;
+        const static unsigned int CAMERA_MOVEMENT_BACKWARD;
+        const static unsigned int CAMERA_MOVEMENT_LEFT;
+        const static unsigned int CAMERA_MOVEMENT_RIGHT;
+        const static float CAMERA_PITCH_MAX;
+        const static float CAMERA_ZOOM_MIN;
+        const static float CAMERA_ZOOM_MAX;
+        const static float CAMERA_YAW;
+        const static float CAMERA_YAW_OFFSET;
+        const static float CAMERA_PITCH;
+        const static float CAMERA_SPEED;
+        const static float CAMERA_SENSITIVTY;
+        const static float CAMERA_ZOOM;
+
         // Data Maps ============================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;

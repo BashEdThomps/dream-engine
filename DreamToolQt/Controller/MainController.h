@@ -15,8 +15,8 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef MAINCONTROLLER_H
-#define MAINCONTROLLER_H
+
+#pragma once
 
 #include <memory>
 
@@ -28,8 +28,11 @@
 #include <QSurfaceFormat>
 
 #include "../Model/DreamProjectModel.h"
+#include "../Model/ProjectDirectoryModel.h"
+#include "../Model/PreferencesModel.h"
 #include "../Model/TreeModels/ProjectTreeModel.h"
 #include "../Model/TreeModels/AssetDefinitionTreeModel.h"
+#include "../Model/TreeModels/Properties/PropertiesModel.h"
 
 #include "../View/MainWindow.h"
 #include "../View/GLView/Grid.h"
@@ -92,29 +95,39 @@ public slots:
     void onToggleDebugAction(bool enabled);
     void onTogglePhysicsDebugAction(bool enable);
 
+    void onScenegraphAddSceneAction();
+    void onScenegraphAddSceneObjectAction();
+    void onPropertiesAddAssetAction();
+    void onPropertiesAddSceneObjectChildAction();
+
+private: // Methods
+    void openProject();
+    void updateWindowTitle(QString msg);
+
+    void setValidProjectActionsEnabled(bool enabled);
+
+    void createConnections();
+    void setupMenuActionConnections();
+    void setupPropertiesTreeViewModel(GenericTreeItem *item);
+
+    QStringListModel* getSceneNamesListModel(vector<SceneDefinition*> sceneList);
+    void connectTreeViewModel();
+    string getSceneNameFromModelIndex(int index);
+
+
 private: // Variables
     MainWindow *mMainWindowHandle;
     QOpenGLWindowComponent *mWindowComponentHandle;
-
     QString mProjectDirectory;
-
+    ProjectDirectoryModel mProjectDirectoryModel;
+    PreferencesModel mPreferencesModel;
     unique_ptr<QErrorMessage> mInvalidProjectDirectoryError;
     unique_ptr<QStringListModel> mSceneListModel;
     unique_ptr<ProjectTreeModel> mProjectTreeModel;
     unique_ptr<AssetDefinitionTreeModel> mAssetDefinitionTreeModel;
+    unique_ptr<PropertiesModel> mPropertiesModel;
     unique_ptr<DreamProjectModel> mDreamModel;
     unique_ptr<Grid> mGrid;
     unique_ptr<SelectionHighlighter> mSelectionHighlighter;
     unique_ptr<RelationshipTree> mRelationshipTree;
-
-private: // Methods
-    void setupPropertiesTreeViewModel(GenericTreeItem *item);
-    void createConnections();
-    void updateWindowTitle(QString msg);
-    void connectTreeViewModel();
-    QStringListModel* getSceneNamesListModel(vector<SceneDefinition*> sceneList);
-    string getSceneNameFromModelIndex(int index);
-
 };
-
-#endif // MAINCONTROLLER_H

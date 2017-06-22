@@ -4,12 +4,12 @@ namespace Dream
 {
     // Constructor with vectors
     Camera::Camera
-    (glm::vec3 translation, glm::vec3 up, float yaw, float pitch)
+    (vec3 translation, vec3 up, float yaw, float pitch)
     {
-        mFront = glm::vec3(0.0f, 0.0f, -1.0f);
-        mMovementSpeed = SPEED;
-        mMouseSensitivity = SENSITIVTY;
-        mZoom = ZOOM;
+        mFront = vec3(0.0f, 0.0f, -1.0f);
+        mMovementSpeed = Constants::CAMERA_SPEED;
+        mMouseSensitivity = Constants::CAMERA_SENSITIVTY;
+        mZoom = Constants::CAMERA_ZOOM;
         mTranslation = translation;
         mWorldUp = up;
         mYaw = yaw;
@@ -26,11 +26,11 @@ namespace Dream
     )
     {
         mFront            = {0.0f, 0.0f, -1.0f};
-        mMovementSpeed    = SPEED;
-        mMouseSensitivity = SENSITIVTY;
-        mZoom             = ZOOM;
-        mTranslation      = glm::vec3(posX, posY, posZ);
-        mWorldUp          = glm::vec3(upX,  upY,  upZ);
+        mMovementSpeed    = Constants::CAMERA_SPEED;
+        mMouseSensitivity = Constants::CAMERA_SENSITIVTY;
+        mZoom             = Constants::CAMERA_ZOOM;
+        mTranslation      = vec3(posX, posY, posZ);
+        mWorldUp          = vec3(upX,  upY,  upZ);
         mYaw              = yaw;
         mPitch            = pitch;
         updateCameraVectors();
@@ -46,41 +46,41 @@ namespace Dream
         return;
     }
 
-    glm::mat4
+    mat4
     Camera::getViewMatrix
     ()
     {
-        return glm::lookAt(mTranslation,mTranslation+mFront,mUp);
+        return lookAt(mTranslation,mTranslation+mFront,mUp);
     }
 
     void
     Camera::processKeyboard
-    (int direction, float deltaTime)
+    (unsigned int direction, float deltaTime)
     {
         float velocity = mMovementSpeed * deltaTime;
 
-        if (direction == CAMERA_MOVEMENT_FORWARD)
+        if (direction == Constants::CAMERA_MOVEMENT_FORWARD)
         {
             mTranslation.x += mFront.x * velocity;
             mTranslation.y += mFront.y * velocity;
             mTranslation.z += mFront.z * velocity;
         }
 
-        if (direction == CAMERA_MOVEMENT_BACKWARD)
+        if (direction == Constants::CAMERA_MOVEMENT_BACKWARD)
         {
             mTranslation.x -= mFront.x * velocity;
             mTranslation.y -= mFront.y * velocity;
             mTranslation.z -= mFront.z * velocity;
         }
 
-        if (direction == CAMERA_MOVEMENT_LEFT)
+        if (direction == Constants::CAMERA_MOVEMENT_LEFT)
         {
             mTranslation.x -= mRight.x * velocity;
             mTranslation.y -= mRight.y * velocity;
             mTranslation.z -= mRight.z * velocity;
         }
 
-        if (direction == CAMERA_MOVEMENT_RIGHT)
+        if (direction == Constants::CAMERA_MOVEMENT_RIGHT)
         {
             mTranslation.x += mRight.x * velocity;
             mTranslation.y += mRight.y * velocity;
@@ -88,18 +88,18 @@ namespace Dream
         }
     }
 
-    glm::vec3
+    vec3
     Camera::getTranslation
     ()
     {
         return mTranslation;
     }
 
-    glm::vec3
+    vec3
     Camera::getRotation
     ()
     {
-        return glm::vec3 (mPitch,mYaw,0.0f);
+        return vec3 (mPitch,mYaw,0.0f);
     }
 
     void
@@ -112,14 +112,14 @@ namespace Dream
         // Make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch)
         {
-            if (mPitch > PITCH_MAX)
+            if (mPitch > Constants::CAMERA_PITCH_MAX)
             {
-                mPitch = PITCH_MAX;
+                mPitch = Constants::CAMERA_PITCH_MAX;
             }
 
-            if (mPitch < -PITCH_MAX)
+            if (mPitch < -Constants::CAMERA_PITCH_MAX)
             {
-                mPitch = -PITCH_MAX;
+                mPitch = -Constants::CAMERA_PITCH_MAX;
             }
         }
 
@@ -136,19 +136,19 @@ namespace Dream
             return;
         }
 
-        if (mZoom >= ZOOM_MIN && mZoom <= ZOOM_MAX)
+        if (mZoom >= Constants::CAMERA_ZOOM_MIN && mZoom <= Constants::CAMERA_ZOOM_MAX)
         {
             mZoom -= yoffset;
         }
 
-        if (mZoom <= ZOOM_MIN)
+        if (mZoom <= Constants::CAMERA_ZOOM_MIN)
         {
-            mZoom = ZOOM_MIN;
+            mZoom = Constants::CAMERA_ZOOM_MIN;
         }
 
-        if (mZoom >= ZOOM_MAX)
+        if (mZoom >= Constants::CAMERA_ZOOM_MAX)
         {
-            mZoom = ZOOM_MAX;
+            mZoom = Constants::CAMERA_ZOOM_MAX;
         }
 
         if (Constants::DEBUG)
@@ -161,18 +161,18 @@ namespace Dream
     Camera::updateCameraVectors
     ()
     {
-        float adjustedYaw = mYaw + YAW_OFFSET;
+        float adjustedYaw = mYaw + Constants::CAMERA_YAW_OFFSET;
         mFront.x = static_cast<float>(cos(radians(adjustedYaw)) * cos(radians(mPitch)));
         mFront.y = static_cast<float>(sin(radians(mPitch)));
         mFront.z = static_cast<float>(sin(radians(adjustedYaw)) * cos(radians(mPitch)));
-        mFront = glm::normalize(mFront);
-        mRight = glm::normalize(glm::cross(mFront, mWorldUp));
-        mUp    = glm::normalize(glm::cross(mRight, mFront));
+        mFront = normalize(mFront);
+        mRight = normalize(cross(mFront, mWorldUp));
+        mUp    = normalize(cross(mRight, mFront));
     }
 
     void
     Camera::setRotation
-    (glm::vec3 rotation)
+    (vec3 rotation)
     {
         mPitch = rotation.x;
         mYaw = rotation.y;
@@ -181,7 +181,7 @@ namespace Dream
 
     void
     Camera::setTranslation
-    (glm::vec3 translation)
+    (vec3 translation)
     {
         mTranslation = translation;
     }

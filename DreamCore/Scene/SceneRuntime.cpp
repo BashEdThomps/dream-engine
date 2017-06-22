@@ -232,8 +232,19 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "SceneRuntime: Collecting Garbage" << endl;
+            cout << "SceneRuntime: Collecting Garbage " << getNameAndUuidString() << endl;
         }
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<void*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* runt)
+                {
+                        runt->collectGarbage();
+                        return nullptr;
+                }
+            )
+        );
     }
 
     ProjectRuntime*

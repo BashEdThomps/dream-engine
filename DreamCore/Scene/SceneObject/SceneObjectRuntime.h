@@ -167,6 +167,7 @@ namespace Dream
         bool hasEvents();
         void sendEvent(Event);
         vector<Event> getEventQueue();
+        void clearEventQueue();
 
         SceneObjectRuntime* getChildRuntimeHandleByUuid(string);
 

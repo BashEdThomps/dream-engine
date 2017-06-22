@@ -232,7 +232,15 @@ QOpenGLWindowComponent::mouseMoveEvent
         int dX = x - mInputState.mouseLastX;
         int dY = y - mInputState.mouseLastY;
 
-        mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(dX,dY,false);
+        int threshold = 150;
+        if (
+            dX < threshold && dX > -threshold
+            &&
+            dY < threshold && dY > -threshold
+        )
+        {
+            mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(dX,dY,true);
+        }
         mInputState.mouseLastX = x;
         mInputState.mouseLastY = y;
     }
@@ -262,88 +270,55 @@ QOpenGLWindowComponent::updateInputState
 
     if (mInputState.wPressed)
     {
-        camHandle->processKeyboard(CAMERA_MOVEMENT_FORWARD,deltaTime);
+        camHandle->processKeyboard(Constants::CAMERA_MOVEMENT_FORWARD,deltaTime);
     }
 
     if(mInputState.aPressed)
     {
-        camHandle->processKeyboard(CAMERA_MOVEMENT_LEFT,deltaTime);
+        camHandle->processKeyboard(Constants::CAMERA_MOVEMENT_LEFT,deltaTime);
     }
 
     if (mInputState.sPressed)
     {
-        camHandle->processKeyboard(CAMERA_MOVEMENT_BACKWARD,deltaTime);
+        camHandle->processKeyboard(Constants::CAMERA_MOVEMENT_BACKWARD,deltaTime);
     }
 
     if(mInputState.dPressed)
     {
-        camHandle->processKeyboard(CAMERA_MOVEMENT_RIGHT,deltaTime);
+        camHandle->processKeyboard(Constants::CAMERA_MOVEMENT_RIGHT,deltaTime);
     }
 
-    Transform3D transform;
 
-    if(mInputState.upPressed)
+    if (selected)
     {
-        if (selected)
+        Transform3D transform = selected->getTransform();
+        float moveAmount = mInputState.shiftPressed ?
+                               mGridHandle->getMajorSpacing() :
+                               mGridHandle->getMinorSpacing();
+        if(mInputState.upPressed)
         {
-            transform = selected->getTransform();
-            transform.setTranslationZ(
-                transform.getTranslationZ() +
-                (
-                    mInputState.shiftPressed ?
-                    mGridHandle->getMajorSpacing() :
-                    mGridHandle->getMinorSpacing()
-                )
-            );
+            qDebug() << "QOGLWC: Moving Selected up";
+            transform.translateByZ(moveAmount);
         }
-    }
 
-    if(mInputState.downPressed)
-    {
-        if (selected)
+        if(mInputState.downPressed)
         {
-            transform = selected->getTransform();
-            transform.setTranslationZ(
-                transform.getTranslationZ() -
-                (
-                    mInputState.shiftPressed ?
-                    mGridHandle->getMajorSpacing() :
-                    mGridHandle->getMinorSpacing()
-                )
-            );
+            qDebug() << "QOGLWC: Moving Selected down";
+            transform.translateByZ(-moveAmount);
         }
-    }
 
-    if(mInputState.leftPressed)
-    {
-        if (selected)
+        if(mInputState.leftPressed)
         {
-            transform = selected->getTransform();
-            transform.setTranslationX(
-                transform.getTranslationX() -
-                (
-                    mInputState.shiftPressed ?
-                    mGridHandle->getMajorSpacing() :
-                    mGridHandle->getMinorSpacing()
-                )
-            );
+            qDebug() << "QOGLWC: Moving Selected left";
+            transform.translateByX(-moveAmount);
         }
-    }
 
-    if(mInputState.rightPressed)
-    {
-        if (selected)
+        if(mInputState.rightPressed)
         {
-            transform = selected->getTransform();
-            transform.setTranslationX(
-                transform.getTranslationX() +
-                (
-                    mInputState.shiftPressed ?
-                    mGridHandle->getMajorSpacing() :
-                    mGridHandle->getMinorSpacing()
-                )
-            );
+            qDebug() << "QOGLWC: Moving Selected right";
+            transform.translateByX(moveAmount);
         }
+        selected->setTransform(transform);
     }
 }
 

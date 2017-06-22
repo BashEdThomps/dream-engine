@@ -26,3 +26,4 @@
 #include "../Project/ProjectRuntime.h"
 
 #include "../Utilities/ArgumentParser.h"
+#include "../Utilities/Uuid.h"

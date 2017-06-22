@@ -462,9 +462,18 @@ namespace Dream
         return mEventQueue;
     }
 
-    void SceneObjectRuntime::collectGarbage()
+    void SceneObjectRuntime::clearEventQueue()
     {
         mEventQueue.clear();
+    }
+
+    void SceneObjectRuntime::collectGarbage()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "SceneObjectRuntime: Collecting Garbage " << getNameAndUuidString() << endl;
+        }
+        clearEventQueue();
     }
 
     bool

@@ -34,7 +34,7 @@ SOURCES += \
     Controller/MainController.cpp \
     \
     Model/DreamProjectModel.cpp \
-    Model/ProjectDirModel.cpp \
+    Model/ProjectDirectoryModel.cpp \
     \
     Model/TreeModels/AssetDefinitionTreeItem.cpp \
     Model/TreeModels/AssetDefinitionTreeModel.cpp \
@@ -67,7 +67,7 @@ HEADERS  += \
     Controller/MainController.h \
     \
     Model/DreamProjectModel.h \
-    Model/ProjectDirModel.h \
+    Model/ProjectDirectoryModel.h \
     \
     Model/TreeModels/AssetDefinitionTreeItem.h \
     Model/TreeModels/AssetDefinitionTreeModel.h \
@@ -85,6 +85,7 @@ HEADERS  += \
     Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.h \
     Model/TreeModels/Properties/Shader/ShaderTemplateComboDelegate.h \
     Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.h \
+    \
     View/GLView/Grid.h \
     View/GLView/SelectionHighlighter.h \
     View/GLView/GLDrawable.h \

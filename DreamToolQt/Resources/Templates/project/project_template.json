@@ -1,13 +1,14 @@
 {
-	"uuid": "",
-	"name": "",
-	"author": "",
-	"description": "",
-	"scenes": [],
-	"assets": [],
-	"windowSize":
+    "uuid": "",
+    "name": "",
+    "author": "",
+    "description": "",
+    "scenes": [],
+    "assets": [],
+    "startupScene" : "",
+    "windowSize":
     {
-		"width":  1000,
-		"height": 1000
-	}
+        "width":  1000,
+        "height": 1000
+    }
 }

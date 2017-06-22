@@ -273,6 +273,22 @@ namespace Dream
     // Window
     const int Constants::DEFAULT_SCREEN_WIDTH  = 1280;
     const int Constants::DEFAULT_SCREEN_HEIGHT =  720;
+    // Camera ===================================================================
+    const unsigned int Constants::CAMERA_MOVEMENT_FORWARD  = 0;
+    const unsigned int Constants::CAMERA_MOVEMENT_BACKWARD = 1;
+    const unsigned int Constants::CAMERA_MOVEMENT_LEFT = 2;
+    const unsigned int Constants::CAMERA_MOVEMENT_RIGHT = 3;
+
+    const float Constants::CAMERA_PITCH_MAX = 75.0f;
+    const float Constants::CAMERA_ZOOM_MIN = 1.0f;
+    const float Constants::CAMERA_ZOOM_MAX = 45.0f;
+    const float Constants::CAMERA_YAW = 00.0f;
+    const float Constants::CAMERA_YAW_OFFSET = 90.0f;
+    const float Constants::CAMERA_PITCH = 0.0f;
+    const float Constants::CAMERA_SPEED = 10.0f;
+    const float Constants::CAMERA_SENSITIVTY = 0.125f;
+    const float Constants::CAMERA_ZOOM = 45.0f;
+
     // Data =====================================================================
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =

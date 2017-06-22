@@ -495,6 +495,7 @@ namespace Dream
                 {
                     call_function<void>(funq,sceneObject,event);
                 }
+                sceneObject->clearEventQueue();
             }
             else
             {
@@ -559,10 +560,10 @@ namespace Dream
                 .def("processMouseMovement",&Camera::processMouseMovement)
                 .enum_("CameraMovement")
                 [
-                    value("FORWARD",  CAMERA_MOVEMENT_FORWARD),
-                    value("BACKWARD", CAMERA_MOVEMENT_BACKWARD),
-                    value("LEFT",     CAMERA_MOVEMENT_LEFT),
-                    value("RIGHT",    CAMERA_MOVEMENT_RIGHT)
+                    value("FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD),
+                    value("BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD),
+                    value("LEFT",     Constants::CAMERA_MOVEMENT_LEFT),
+                    value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
                 ]
                 ];
     }

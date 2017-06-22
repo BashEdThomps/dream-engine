@@ -35,7 +35,6 @@ GLDrawable::GLDrawable
 GLDrawable::~GLDrawable
 ()
 {
-    qDebug() << "GLDrawable: Destructor Called";
     if (mVao > 0)
     {
         glDeleteVertexArrays(1,&mVao);

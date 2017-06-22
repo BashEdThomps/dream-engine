@@ -48,7 +48,10 @@ Grid::Grid
 Grid::~Grid
 ()
 {
-
+    if (Constants::DEBUG)
+    {
+        cout << "Grid: Destructing" << endl;
+    }
 }
 
 void

@@ -15,7 +15,10 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "InputEvent.h"
+
+#include "../Common/Constants.h"
 
 namespace Dream
 {
@@ -30,13 +33,19 @@ namespace Dream
           mPressed(false),
           mButton(0)
     {
-
+        if (Constants::DEBUG)
+        {
+            cout << "InputEvent: Constructing" << endl;
+        }
     }
 
     InputEvent::~InputEvent
     ()
     {
-
+        if (Constants::DEBUG)
+        {
+            cout << "InputEvent: Destructing" << endl;
+        }
     }
 
     InputSource
