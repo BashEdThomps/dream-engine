@@ -106,13 +106,24 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="separator"/>
     <addaction name="actionSettings"/>
+    <addaction name="separator"/>
     <addaction name="actionCloseProject"/>
    </widget>
-   <widget class="QMenu" name="menuProject">
+   <widget class="QMenu" name="menuScene">
     <property name="title">
      <string>Scene</string>
     </property>
+    <widget class="QMenu" name="menuNew">
+     <property name="title">
+      <string>New</string>
+     </property>
+     <addaction name="actionSceneMenuNewScene"/>
+     <addaction name="actionSceneNewSceneObject"/>
+    </widget>
+    <addaction name="menuNew"/>
+    <addaction name="separator"/>
     <addaction name="actionPlay"/>
     <addaction name="actionStop"/>
     <addaction name="actionReload"/>
@@ -125,8 +136,15 @@
     <addaction name="actionToggleDebug"/>
     <addaction name="actionTogglePhysicsDebug"/>
    </widget>
+   <widget class="QMenu" name="menuAsset">
+    <property name="title">
+     <string>Asset</string>
+    </property>
+    <addaction name="actionAssetMenuAddAssetToSceneObject"/>
+   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuProject"/>
+   <addaction name="menuScene"/>
+   <addaction name="menuAsset"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QDockWidget" name="projectDockWidget">
@@ -176,78 +194,6 @@
           <bool>false</bool>
          </property>
         </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="scenegraphAddButton">
-           <property name="maximumSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../Resources/Resources.qrc">
-             <normaloff>:/images/list-add.png</normaloff>:/images/list-add.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="scenegraphRemoveButton">
-           <property name="maximumSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../Resources/Resources.qrc">
-             <normaloff>:/images/list-remove.png</normaloff>:/images/list-remove.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </item>
@@ -323,125 +269,10 @@
          </attribute>
         </widget>
        </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="propertiesAddButton">
-           <property name="maximumSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../Resources/Resources.qrc">
-             <normaloff>:/images/list-add.png</normaloff>:/images/list-add.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="propertiesRemoveButton">
-           <property name="maximumSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../Resources/Resources.qrc">
-             <normaloff>:/images/list-remove.png</normaloff>:/images/list-remove.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="autoRepeat">
-            <bool>false</bool>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
       </layout>
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QToolBar" name="toolBar">
-   <property name="focusPolicy">
-    <enum>Qt::ClickFocus</enum>
-   </property>
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <property name="movable">
-    <bool>false</bool>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>32</width>
-     <height>32</height>
-    </size>
-   </property>
-   <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonIconOnly</enum>
-   </property>
-   <property name="floatable">
-    <bool>false</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionNew"/>
-   <addaction name="actionOpen"/>
-   <addaction name="actionSave"/>
-   <addaction name="separator"/>
-   <addaction name="actionPlay"/>
-   <addaction name="actionStop"/>
-   <addaction name="actionReload"/>
-   <addaction name="separator"/>
-   <addaction name="actionSettings"/>
-   <addaction name="separator"/>
-   <addaction name="actionOpen_Test_Project"/>
   </widget>
   <widget class="QDockWidget" name="assetDefinitionDockWidget">
    <property name="windowTitle">
@@ -488,82 +319,48 @@
          </property>
         </widget>
        </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="assetDefinitionAddButton">
-           <property name="maximumSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../Resources/Resources.qrc">
-             <normaloff>:/images/list-add.png</normaloff>:/images/list-add.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="assetDefinitionRemoveButton">
-           <property name="maximumSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../Resources/Resources.qrc">
-             <normaloff>:/images/list-remove.png</normaloff>:/images/list-remove.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>24</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
       </layout>
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="focusPolicy">
+    <enum>Qt::ClickFocus</enum>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionPlay"/>
+   <addaction name="actionStop"/>
+   <addaction name="actionReload"/>
+   <addaction name="separator"/>
+   <addaction name="actionOpen_Test_Project"/>
   </widget>
   <action name="actionNew">
    <property name="checkable">
@@ -585,6 +382,9 @@
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
@@ -602,6 +402,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -621,6 +424,9 @@
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
@@ -639,6 +445,9 @@
    <property name="shortcut">
     <string>Ctrl+R</string>
    </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
@@ -649,13 +458,19 @@
      <normaloff>:/images/system-run.png</normaloff>:/images/system-run.png</iconset>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>Preferences</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+,</string>
    </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
    <property name="visible">
     <bool>true</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
    <property name="priority">
     <enum>QAction::NormalPriority</enum>
@@ -672,6 +487,9 @@
    <property name="shortcut">
     <string>Ctrl+P</string>
    </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
@@ -687,6 +505,9 @@
    <property name="shortcut">
     <string>Ctrl+W</string>
    </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
@@ -701,6 +522,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionToggleGrid">
@@ -723,6 +547,9 @@
    <property name="shortcut">
     <string>Ctrl+G</string>
    </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
@@ -742,10 +569,13 @@
     <string>Debug</string>
    </property>
    <property name="toolTip">
-    <string>Enable/Disable Debug Output</string>
+    <string>Toggle Debug Output</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -753,10 +583,13 @@
   </action>
   <action name="actionCloseProject">
    <property name="text">
-    <string>Close Project</string>
+    <string>Close</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionTogglePhysicsDebug">
@@ -771,6 +604,27 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionSceneMenuNewScene">
+   <property name="text">
+    <string>Scene</string>
+   </property>
+  </action>
+  <action name="actionSceneNewSceneObject">
+   <property name="text">
+    <string>Scene Object</string>
+   </property>
+  </action>
+  <action name="actionAssetMenuAddAssetToSceneObject">
+   <property name="text">
+    <string>Add to Scene Object</string>
+   </property>
+   <property name="toolTip">
+    <string>Add a Scene Object to the selected item.</string>
    </property>
   </action>
  </widget>

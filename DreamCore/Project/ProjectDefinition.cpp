@@ -150,7 +150,7 @@ namespace Dream
 
         for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
-            addAssetDefinition(it);
+            loadAssetDefinition(it);
         }
     }
 
@@ -165,12 +165,12 @@ namespace Dream
 
         for (nlohmann::json it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
-            addSceneDefinition(it);
+            loadSceneDefinition(it);
         }
     }
 
     void
-    ProjectDefinition::addAssetDefinition
+    ProjectDefinition::loadAssetDefinition
     (json assetDefinition)
     {
         mAssetDefinitions.push_back
@@ -222,7 +222,7 @@ namespace Dream
     }
 
     void
-    ProjectDefinition::addSceneDefinition
+    ProjectDefinition::loadSceneDefinition
     (json scene)
     {
         mSceneDefinitions.push_back

@@ -70,8 +70,7 @@ namespace Dream
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();
-
-        void addAssetDefinition(json assetDefinition);
-        void addSceneDefinition(json sceneDefinition);
+        void loadAssetDefinition(json assetDefinition);
+        void loadSceneDefinition(json sceneDefinition);
     };
 }

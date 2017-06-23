@@ -66,24 +66,22 @@ public:
     QAction* getActionCloseProject();
     QAction* getActionTogglePhysicsDebug();
 
+
     QOpenGLWindowComponent* getWindowComponent();
 
-    void setupAssetDefinitionAddRemoveButtonMenus();
-    void setupScenegraphAddRemoveButtonMenus();
-    void setupPropertiesAddRemoveButtonMenus();
-
-    void setAddRemoveButtonsEnabled(bool enabled);
     void setPlaybackActionsEnabled(bool enabled);
+    void setMenuActionsEnabled(bool enabled);
 
     void setNewActionEnabled(bool enabled);
     void setSaveActionEnabled(bool enabled);
     void setOpenActionEnabled(bool enabled);
 
+    void setupAssetMenuNewDefinition();
     QAction* getAssetDefinitionAddAction(AssetType type, string format);
-    QAction* getScenegraphAddSceneAction();
-    QAction* getScenegraphAddSceneObjectAction();
-    QAction* getPropertiesAddAssetAction();
-    QAction* getPropertiesAddSceneObjectChildAction();
+
+    QAction* getSceneMenuNewSceneAction();
+    QAction* getSceneMenuNewSceneObjectAction();
+    QAction* getAssetMenuAddToSceneObjectAction();
 
 private: // Methods
     bool shouldPassKey(int key);
@@ -109,14 +107,6 @@ private:
 
     unique_ptr<QMenu> mAssetDefinitionAddMenu;
     map<AssetType,map<string,QAction*>> mAssetDefinitionAddActionsMap;
-
-    unique_ptr<QMenu> mScenegraphAddMenu;
-    unique_ptr<QAction> mScenegraphAddSceneAction;
-    unique_ptr<QAction> mScenegraphAddSceneObjectAction;
-
-    unique_ptr<QMenu> mPropertiesAddMenu;
-    unique_ptr<QAction> mPropertiesAddAssetAction;
-    unique_ptr<QAction> mPropertiesAddSceneObjectChildAction;
 };
 
 #endif // MAINWINDOW_H

@@ -95,24 +95,25 @@ public slots:
     void onToggleDebugAction(bool enabled);
     void onTogglePhysicsDebugAction(bool enable);
 
-    void onScenegraphAddSceneAction();
-    void onScenegraphAddSceneObjectAction();
-    void onPropertiesAddAssetAction();
-    void onPropertiesAddSceneObjectChildAction();
+    void onSceneMenuNewScene();
+    void onSceneMenuNewSceneObject();
+    void onAssetMenuAddToSceneObject();
 
 private: // Methods
     void openProject();
     void updateWindowTitle(QString msg);
 
     void setValidProjectActionsEnabled(bool enabled);
-
-    void createConnections();
-    void setupMenuActionConnections();
     void setupPropertiesTreeViewModel(GenericTreeItem *item);
 
     QStringListModel* getSceneNamesListModel(vector<SceneDefinition*> sceneList);
-    void connectTreeViewModel();
     string getSceneNameFromModelIndex(int index);
+
+    void createConnections();
+    void connectTreeMenuActions();
+    void connectMainMenuToolbarActions();
+    void connectUi();
+    void connectTreeViewModel();
 
 
 private: // Variables

@@ -61,65 +61,110 @@ void
 MainController::createConnections
 ()
 {
+    connectTreeMenuActions();
+    connectMainMenuToolbarActions();
+    connectUi();
+    connectTreeViewModel();
+}
+
+void
+MainController::connectMainMenuToolbarActions
+()
+{
     // actionNew
     connect
     (
         mMainWindowHandle->getActionNew(), SIGNAL(triggered()),
         this, SLOT(onProjectNewAction())
     );
+
     // actionOpen
     connect
     (
         mMainWindowHandle->getActionOpen(), SIGNAL(triggered()),
         this, SLOT(onProjectOpenAction())
     );
+
     // actionSave
     connect
     (
         mMainWindowHandle->getActionSave(), SIGNAL(triggered()),
         this, SLOT(onProjectSaveAction())
     );
+
     // actionReload
     connect
     (
         mMainWindowHandle->getActionReload(), SIGNAL(triggered()),
         this, SLOT(onProjectReloadAction())
     );
+
     // actionPlay
     connect
     (
         mMainWindowHandle->getActionPlay(), SIGNAL(triggered()),
         this, SLOT(onProjectPlayAction())
     );
+
     // actionStop
     connect
     (
         mMainWindowHandle->getActionStop(), SIGNAL(triggered()),
         this, SLOT(onProjectStopAction())
     );
+
     // actionCloseProject
     connect
     (
         mMainWindowHandle->getActionCloseProject(), SIGNAL(triggered()),
         this, SLOT(onProjectClosedAction())
     );
+
     // Action Toggle Grid
     connect
     (
         mMainWindowHandle->getActionToggleGrid(),SIGNAL(triggered(bool)),
         this,SLOT(onGridToggleAction(bool))
     );
+
     // Action Toggle Debug
     connect
     (
         mMainWindowHandle->getActionToggleDebug(),SIGNAL(triggered(bool)),
         this,SLOT(onToggleDebugAction(bool))
     );
+
     // Action Toggle Physics Debug
     connect
     (
         mMainWindowHandle->getActionTogglePhysicsDebug(),SIGNAL(triggered(bool)),
         this,SLOT(onTogglePhysicsDebugAction(bool))
+    );
+
+    // Open Default Project
+    connect
+    (
+        mMainWindowHandle->getActionOpenTestProject(), SIGNAL(triggered()),
+        this, SLOT(onProjectOpenTestProjectAction())
+    );
+}
+
+void
+MainController::connectUi
+()
+{
+
+    // Status Bar
+    connect
+    (
+        this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
+        mMainWindowHandle, SLOT(showStatusBarMessage(QString))
+    );
+    // Project Directory Changed
+    connect
+    (
+        this, SIGNAL(notifyProjectDirectoryChanged(QString)),
+        mMainWindowHandle, SLOT(setWindowTitle(QString))
     );
     // Scene Stopped
     connect
@@ -127,11 +172,11 @@ MainController::createConnections
         this,SIGNAL(notifyStoppedScene(SceneDefinition*)),
         mMainWindowHandle,SLOT(onSceneStopped(SceneDefinition*))
     );
-    // Open Default Project
+    // Valid Scene Selected
     connect
     (
-        mMainWindowHandle->getActionOpenTestProject(), SIGNAL(triggered()),
-        this, SLOT(onProjectOpenTestProjectAction())
+        mDreamModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
+        this, SLOT(onSelectedSceneChanged(SceneDefinition*))
     );
     // Invalid Project Directory
     connect
@@ -145,31 +190,12 @@ MainController::createConnections
         this,SIGNAL(notifyNoSceneSelected()),
         mMainWindowHandle, SLOT(onNoSceneSelected())
     );
-    // Valid Scene Selected
-    connect
-    (
-        mDreamModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
-        this, SLOT(onSelectedSceneChanged(SceneDefinition*))
-    );
-    // Project Directory Changed
-    connect
-    (
-        this, SIGNAL(notifyProjectDirectoryChanged(QString)),
-        mMainWindowHandle, SLOT(setWindowTitle(QString))
-     );
-    // Status Bar
-    connect
-    (
-        this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-        mMainWindowHandle, SLOT(showStatusBarMessage(QString))
-    );
 }
 
 void
 MainController::setValidProjectActionsEnabled
 (bool enabled)
 {
-    mMainWindowHandle->setAddRemoveButtonsEnabled(enabled);
     mMainWindowHandle->setPlaybackActionsEnabled(enabled);
     mMainWindowHandle->setSaveActionEnabled(enabled);
 }
@@ -418,28 +444,26 @@ MainController::openProject
     connectTreeViewModel();
 }
 
-void MainController::setupMenuActionConnections()
+void MainController::connectTreeMenuActions()
 {
+    // Scene Menu
     connect
     (
-        mMainWindowHandle->getScenegraphAddSceneObjectAction(),SIGNAL(triggered()),
-        this, SLOT(onScenegraphAddSceneObjectAction())
+        mMainWindowHandle->getSceneMenuNewSceneObjectAction(),SIGNAL(triggered()),
+        this, SLOT(onSceneMenuNewSceneObject())
 
     );
     connect
     (
-        mMainWindowHandle->getScenegraphAddSceneAction(),SIGNAL(triggered()),
-        this, SLOT(onScenegraphAddSceneAction())
+        mMainWindowHandle->getSceneMenuNewSceneAction(),SIGNAL(triggered()),
+        this, SLOT(onSceneMenuNewScene())
     );
+
+    // Assets Menu
     connect
     (
-        mMainWindowHandle->getPropertiesAddAssetAction(),SIGNAL(triggered()),
-        this, SLOT(onPropertiesAddAssetAction())
-    );
-    connect
-    (
-        mMainWindowHandle->getPropertiesAddSceneObjectChildAction(),SIGNAL(triggered()),
-        this, SLOT(onPropertiesAddSceneObjectChildAction())
+        mMainWindowHandle->getAssetMenuAddToSceneObjectAction(),SIGNAL(triggered()),
+        this, SLOT(onAssetMenuAddToSceneObject())
     );
 }
 
@@ -591,31 +615,28 @@ MainController::onTogglePhysicsDebugAction
 }
 
 void
-MainController::onScenegraphAddSceneAction
+MainController::onSceneMenuNewScene
 ()
 {
-
+    qDebug() << "MainController: onScenegraphAddSceneAction";
+    Project* pHandle = mDreamModel->getProject();
+    if (pHandle)
+    {
+    }
 }
 
 void
-MainController::onScenegraphAddSceneObjectAction
+MainController::onSceneMenuNewSceneObject
 ()
 {
-
+    qDebug() << "MainController: onScenegraphAddSceneObjectAction";
 }
 
 void
-MainController::onPropertiesAddAssetAction
+MainController::onAssetMenuAddToSceneObject
 ()
 {
-
-}
-
-void
-MainController::onPropertiesAddSceneObjectChildAction
-()
-{
-
+    qDebug() << "MainController: onPropertiesAddAssetAction";
 }
 
 RelationshipTree*

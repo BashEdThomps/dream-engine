@@ -48,29 +48,10 @@ MainWindow::MainWindow
       ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     setupGL(parent);
-    setupAssetDefinitionAddRemoveButtonMenus();
-    setupScenegraphAddRemoveButtonMenus();
-    setupPropertiesAddRemoveButtonMenus();
-
+    setupAssetMenuNewDefinition();
     setPlaybackActionsEnabled(false);
     setSaveActionEnabled(false);
-    setAddRemoveButtonsEnabled(false);
-}
-
-void
-MainWindow::setAddRemoveButtonsEnabled
-(bool enabled)
-{
-   ui->assetDefinitionAddButton->setEnabled(enabled);
-   ui->assetDefinitionRemoveButton->setEnabled(enabled);
-
-   ui->scenegraphAddButton->setEnabled(enabled);
-   ui->scenegraphRemoveButton->setEnabled(enabled);
-
-   ui->propertiesAddButton->setEnabled(enabled);
-   ui->propertiesRemoveButton->setEnabled(enabled);
 }
 
 void
@@ -83,6 +64,12 @@ MainWindow::setPlaybackActionsEnabled
 }
 
 void
+MainWindow::setMenuActionsEnabled
+(bool enabled)
+{
+}
+
+void
 MainWindow::setOpenActionEnabled
 (bool enabled)
 {
@@ -90,38 +77,31 @@ MainWindow::setOpenActionEnabled
 }
 
 QAction*
-MainWindow::getScenegraphAddSceneAction
-()
-{
-    return mScenegraphAddSceneAction.get();
-}
-
-QAction*
-MainWindow::getScenegraphAddSceneObjectAction
-()
-{
-    return mScenegraphAddSceneObjectAction.get();
-}
-
-QAction*
-MainWindow::getPropertiesAddAssetAction
-()
-{
-    return mPropertiesAddAssetAction.get();
-}
-
-QAction*
-MainWindow::getPropertiesAddSceneObjectChildAction
-()
-{
-    return mPropertiesAddSceneObjectChildAction.get();
-}
-
-QAction*
 MainWindow::getAssetDefinitionAddAction
 (AssetType type, string format)
 {
-   return mAssetDefinitionAddActionsMap.at(type).at(format);
+    return mAssetDefinitionAddActionsMap.at(type).at(format);
+}
+
+QAction*
+MainWindow::getSceneMenuNewSceneAction
+()
+{
+    return ui->actionSceneMenuNewScene;
+}
+
+QAction*
+MainWindow::getSceneMenuNewSceneObjectAction
+()
+{
+    return ui->actionSceneNewSceneObject;
+}
+
+QAction*
+MainWindow::getAssetMenuAddToSceneObjectAction
+()
+{
+    return ui->actionAssetMenuAddAssetToSceneObject;
 }
 
 void
@@ -139,11 +119,11 @@ MainWindow::setNewActionEnabled
 }
 
 void
-MainWindow::setupAssetDefinitionAddRemoveButtonMenus
+MainWindow::setupAssetMenuNewDefinition
 ()
 {
     mAssetDefinitionAddMenu.reset(new QMenu());
-    mAssetDefinitionAddMenu->setWindowTitle("New Definition");
+    mAssetDefinitionAddMenu->setTitle("New Definition");
 
     for (pair<AssetType,string> typePair : Constants::DREAM_ASSET_TYPES_MAP)
     {
@@ -160,39 +140,7 @@ MainWindow::setupAssetDefinitionAddRemoveButtonMenus
 
         mAssetDefinitionAddActionsMap.insert(pair<AssetType,map<string,QAction*>>(typePair.first,formatActions));
     }
-    ui->assetDefinitionAddButton->setMenu(mAssetDefinitionAddMenu.get());
-}
-
-
-void
-MainWindow::setupScenegraphAddRemoveButtonMenus
-()
-{
-    mScenegraphAddMenu.reset(new QMenu());
-
-    mScenegraphAddSceneAction.reset(new QAction(QString("Scene")));
-    mScenegraphAddSceneObjectAction.reset(new QAction(QString("Scene Object")));
-
-    mScenegraphAddMenu->addAction(mScenegraphAddSceneAction.get());
-    mScenegraphAddMenu->addAction(mScenegraphAddSceneObjectAction.get());
-
-    ui->scenegraphAddButton->setMenu(mScenegraphAddMenu.get());
-}
-
-void
-MainWindow::setupPropertiesAddRemoveButtonMenus
-()
-{
-    mPropertiesAddMenu.reset(new QMenu());
-
-    mPropertiesAddAssetAction.reset(new QAction(QString("Asset")));
-    mPropertiesAddSceneObjectChildAction.reset(new QAction(QString("Child Scene Object")));
-
-    mPropertiesAddMenu->addAction(mPropertiesAddAssetAction.get());
-    mPropertiesAddMenu->addAction(mPropertiesAddSceneObjectChildAction.get());
-
-    ui->propertiesAddButton->setMenu(mPropertiesAddMenu.get());
-
+    ui->menuAsset->addMenu(mAssetDefinitionAddMenu.get());
 }
 
 void
@@ -206,7 +154,7 @@ MainWindow::setupGL
 
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );
-    glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
+    glFormat.setProfile( QSurfaceFormat::CoreProfile );
     glFormat.setSamples(4);
     mWindowComponent.reset(new QOpenGLWindowComponent(glFormat,parent));
 
