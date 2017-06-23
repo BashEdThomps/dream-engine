@@ -622,6 +622,11 @@ MainController::onSceneMenuNewScene
     Project* pHandle = mDreamModel->getProject();
     if (pHandle)
     {
+        ProjectDefintion* pdHandle = pHandle->getProjectDefinitionHandle();
+        if (pdHandle)
+        {
+            SceneDefinition sdHandle = new SceneDefinition();
+        }
     }
 }
 
