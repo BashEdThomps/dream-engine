@@ -132,6 +132,7 @@
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionToggleHighlightSelection"/>
     <addaction name="actionToggleGrid"/>
     <addaction name="actionToggleDebug"/>
     <addaction name="actionTogglePhysicsDebug"/>
@@ -140,7 +141,7 @@
     <property name="title">
      <string>Asset</string>
     </property>
-    <addaction name="actionAssetMenuAddAssetToSceneObject"/>
+    <addaction name="actionAssetMenuAddAssetToSelectedSceneObject"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuScene"/>
@@ -172,12 +173,12 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="scenegraphTreeViewLayout">
        <property name="spacing">
         <number>0</number>
        </property>
        <item>
-        <widget class="QTreeView" name="projectTreeView">
+        <widget class="QTreeView" name="scenegraphTreeView">
          <property name="frameShadow">
           <enum>QFrame::Sunken</enum>
          </property>
@@ -225,7 +226,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
+      <layout class="QVBoxLayout" name="propertiesTreeViewLayout">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -299,7 +300,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="assetDefinitionTreeViewLayout">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -539,7 +540,7 @@
      <normaloff>:/images/view-list-icons-symbolic.png</normaloff>:/images/view-list-icons-symbolic.png</iconset>
    </property>
    <property name="text">
-    <string>Grid</string>
+    <string>Show Grid</string>
    </property>
    <property name="toolTip">
     <string>Toggle Grid</string>
@@ -566,7 +567,7 @@
      <normaloff>:/images/view-list-details-symbolic.png</normaloff>:/images/view-list-details-symbolic.png</iconset>
    </property>
    <property name="text">
-    <string>Debug</string>
+    <string>Show Debug Output</string>
    </property>
    <property name="toolTip">
     <string>Toggle Debug Output</string>
@@ -597,10 +598,10 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
-    <string>Physics Debug</string>
+    <string>Show Physics Debug</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -610,21 +611,38 @@
    </property>
   </action>
   <action name="actionSceneMenuNewScene">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Scene</string>
    </property>
   </action>
   <action name="actionSceneNewSceneObject">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Scene Object</string>
    </property>
   </action>
-  <action name="actionAssetMenuAddAssetToSceneObject">
+  <action name="actionAssetMenuAddAssetToSelectedSceneObject">
    <property name="text">
-    <string>Add to Scene Object</string>
+    <string>Add to Selected Scene Object</string>
    </property>
    <property name="toolTip">
     <string>Add a Scene Object to the selected item.</string>
+   </property>
+  </action>
+  <action name="actionToggleHighlightSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Highlight Selection</string>
    </property>
   </action>
  </widget>

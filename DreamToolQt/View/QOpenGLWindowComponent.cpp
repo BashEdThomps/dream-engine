@@ -10,14 +10,11 @@ WindowInputState::WindowInputState
     : // Init list
      mouseLastX(0),
      mouseLastY(0),
-
      shiftPressed(false),
-
      wPressed(false),
      aPressed(false),
      sPressed(false),
      dPressed(false),
-
      upPressed(false),
      downPressed(false),
      leftPressed(false),
@@ -36,6 +33,7 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mRelationshipTreeHandle(nullptr),
       mGridEnabled(true),
       mRelationshipTreeEnabled(true),
+      mSelectionHighlighterEnabled(true),
       mPaintInProgress(false)
 {
     setFormat(format);
@@ -205,17 +203,24 @@ QOpenGLWindowComponent::setProjectRuntimeHandle
 }
 
 void
-QOpenGLWindowComponent::setGrid
+QOpenGLWindowComponent::setGridHandle
 (Grid* grid)
 {
     mGridHandle = grid;
 }
 
 void
-QOpenGLWindowComponent::setSelectionHighlighter
+QOpenGLWindowComponent::setSelectionHighlighterHandle
 (SelectionHighlighter* highlighter)
 {
     mSelectionHighlighterHandle = highlighter;
+}
+
+void
+QOpenGLWindowComponent::setRelationshipTreeHandle
+(RelationshipTree* tree)
+{
+    mRelationshipTreeHandle = tree;
 }
 
 void
@@ -368,10 +373,17 @@ QOpenGLWindowComponent::setGridEnabled
 }
 
 void
-QOpenGLWindowComponent::setRelationshipTree
-(RelationshipTree* tree)
+QOpenGLWindowComponent::setSelectionHighlighterEnabled
+(bool enabled)
 {
-    mRelationshipTreeHandle = tree;
+    mSelectionHighlighterEnabled = enabled;
+}
+
+void
+QOpenGLWindowComponent::setRelationshipTreeEnabled
+(bool enabled)
+{
+    mRelationshipTreeEnabled = enabled;
 }
 
 void

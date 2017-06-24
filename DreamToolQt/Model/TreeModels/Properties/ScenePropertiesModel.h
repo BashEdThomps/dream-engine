@@ -16,8 +16,7 @@
  * this file belongs to.
  */
 
-#ifndef SCENEPROPERTIESMODEL_H
-#define SCENEPROPERTIESMODEL_H
+#pragma once
 
 #include "PropertiesModel.h"
 #include <DreamCore.h>
@@ -41,7 +40,6 @@ public:
     void createPhysicsProperties();
 
 private:
-    SceneDefinition *mScene;
+    SceneDefinition *mSceneDefinition;
 };
 
-#endif // SCENEPROPERTIESMODEL_H

@@ -24,10 +24,10 @@ using Dream::Constants;
 
 ScenePropertiesModel::ScenePropertiesModel
 (SceneDefinition *scene, QTreeView* parent)
-    : PropertiesModel(parent)
+    : PropertiesModel(parent),
+      mSceneDefinition(scene)
 {
     qDebug() << "ScenePropertiesModel: Constructor called";
-    mScene = scene;
     createRoot();
     createProperties();
 }
@@ -39,16 +39,15 @@ ScenePropertiesModel::~ScenePropertiesModel
     delete mRootItem;
 }
 
-
 void
 ScenePropertiesModel::createRoot
 ()
 {
     qDebug() << "ScenePropertiesModel: craeteRoot";
     QList<QVariant> rootData;
-    rootData << QString::fromStdString(mScene->getName())
-             << QString::fromStdString(mScene->getUuid());
-    mRootItem = new PropertiesItem(rootData,mScene);
+    rootData << QString::fromStdString(mSceneDefinition->getName())
+             << QString::fromStdString(mSceneDefinition->getUuid());
+    mRootItem = new PropertiesItem(rootData,mSceneDefinition);
 }
 
 void
@@ -79,8 +78,8 @@ ScenePropertiesModel::createNameProperties
      // Name
     QList<QVariant> nameData;
     nameData << "Name"
-             << QString::fromStdString(mScene->getName());
-    PropertiesItem *nameProperty = new PropertiesItem(nameData,mScene);
+             << QString::fromStdString(mSceneDefinition->getName());
+    PropertiesItem *nameProperty = new PropertiesItem(nameData,mSceneDefinition);
     mRootItem->appendChild(nameProperty);
 }
 
@@ -92,8 +91,8 @@ ScenePropertiesModel::createNotesProperties
     // Notes
     QList<QVariant> notesData;
     notesData << "Notes"
-             << QString::fromStdString(mScene->getNotes());
-    PropertiesItem *notesProperty = new PropertiesItem(notesData,mScene);
+             << QString::fromStdString(mSceneDefinition->getNotes());
+    PropertiesItem *notesProperty = new PropertiesItem(notesData,mSceneDefinition);
     mRootItem->appendChild(notesProperty);
 }
 
@@ -105,50 +104,53 @@ ScenePropertiesModel::createCameraProperties
     // Camera
     QList<QVariant> cameraData;
     cameraData << "Camera" << "";
-    PropertiesItem *cameraProperty = new PropertiesItem(cameraData,mScene);
+    PropertiesItem *cameraProperty = new PropertiesItem(cameraData,mSceneDefinition);
     mRootItem->appendChild(cameraProperty);
 
+    qDebug() << "ScenePropertiesModel: createCameraProperties translation";
     // Camera Translation
     QList<QVariant> cameraTranslationData;
     cameraTranslationData << "Translation" << "";
-    PropertiesItem* cameraTranslationProperty = new PropertiesItem(cameraTranslationData, mScene);
+    PropertiesItem* cameraTranslationProperty = new PropertiesItem(cameraTranslationData, mSceneDefinition);
     cameraProperty->appendChild(cameraTranslationProperty);
 
-    Transform3D defaultTransform = mScene->getCameraTransform();
+    Transform3D defaultTransform = mSceneDefinition->getCameraTransform();
     QList<QVariant> cameraTranslationX_Data;
     cameraTranslationX_Data << "X" << QString::number(static_cast<double>(defaultTransform.getTranslation().x));
-    cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationX_Data,mScene));
+    cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationX_Data,mSceneDefinition));
 
     QList<QVariant> cameraTranslationY_Data;
     cameraTranslationY_Data << "Y" << QString::number(static_cast<double>(defaultTransform.getTranslation().y));
-    cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationY_Data,mScene));
+    cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationY_Data,mSceneDefinition));
 
     QList<QVariant> cameraTranslationZ_Data;
     cameraTranslationZ_Data << "Z" << QString::number(static_cast<double>(defaultTransform.getTranslation().z));
-    cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationZ_Data,mScene));
+    cameraTranslationProperty->appendChild(new PropertiesItem(cameraTranslationZ_Data,mSceneDefinition));
 
+    qDebug() << "ScenePropertiesModel: createCameraProperties rotation";
     // Camera Rotation
     QList<QVariant> cameraRotationData;
     cameraRotationData << "Rotation" << "";
-    PropertiesItem *cameraRotationProperty = new PropertiesItem(cameraRotationData, mScene);
+    PropertiesItem *cameraRotationProperty = new PropertiesItem(cameraRotationData, mSceneDefinition);
     cameraProperty->appendChild(cameraRotationProperty);
 
     QList<QVariant> cameraRotationX_Data;
     cameraRotationX_Data << "X" << QString::number(static_cast<double>(defaultTransform.getRotation().x));
-    cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationX_Data,mScene));
+    cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationX_Data,mSceneDefinition));
 
     QList<QVariant> cameraRotationY_Data;
     cameraRotationY_Data << "Y" << QString::number(static_cast<double>(defaultTransform.getRotation().y));
-    cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationY_Data,mScene));
+    cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationY_Data,mSceneDefinition));
 
     QList<QVariant> cameraRotationZ_Data;
     cameraRotationZ_Data << "Z" << QString::number(static_cast<double>(defaultTransform.getRotation().z));
-    cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationZ_Data,mScene));
+    cameraRotationProperty->appendChild(new PropertiesItem(cameraRotationZ_Data,mSceneDefinition));
 
+    qDebug() << "ScenePropertiesModel: createCameraProperties speed";
     // Camera Speed
     QList<QVariant> cameraSpeedData;
-    cameraSpeedData << "Speed" << QString::number(static_cast<double>(mScene->getCameraMovementSpeed()));
-    cameraProperty->appendChild(new PropertiesItem(cameraSpeedData, mScene));
+    cameraSpeedData << "Speed" << QString::number(static_cast<double>(mSceneDefinition->getCameraMovementSpeed()));
+    cameraProperty->appendChild(new PropertiesItem(cameraSpeedData, mSceneDefinition));
 }
 
 void
@@ -160,7 +162,7 @@ ScenePropertiesModel::createRenderingProperties
     // Rendering
     QList<QVariant> renderingData;
     renderingData << "Rendering" << "";
-    PropertiesItem *renderingProperty = new PropertiesItem(renderingData,mScene);
+    PropertiesItem *renderingProperty = new PropertiesItem(renderingData,mSceneDefinition);
     mRootItem->appendChild(renderingProperty);
 
     qDebug() << "ScenePropertiesModel: createRenderingProperties (ClearColour)";
@@ -168,78 +170,59 @@ ScenePropertiesModel::createRenderingProperties
     // Clear Color
     QList<QVariant> clearColorData;
     clearColorData << "Clear Color" << "";
-    PropertiesItem *clearColorProperty = new PropertiesItem(clearColorData, mScene);
+    PropertiesItem *clearColorProperty = new PropertiesItem(clearColorData, mSceneDefinition);
     renderingProperty->appendChild(clearColorProperty);
 
-    vector<float> clear = mScene->getClearColour();
+    vector<float> clear = mSceneDefinition->getClearColour();
 
     QList<QVariant> clearColor_Red_Data;
     clearColor_Red_Data << "Red" << clear[0];
-    clearColorProperty->appendChild(new PropertiesItem(clearColor_Red_Data,mScene));
+    clearColorProperty->appendChild(new PropertiesItem(clearColor_Red_Data,mSceneDefinition));
 
     QList<QVariant> clearColor_Green_Data;
     clearColor_Green_Data << "Green" << clear[1];
-    clearColorProperty->appendChild(new PropertiesItem(clearColor_Green_Data,mScene));
+    clearColorProperty->appendChild(new PropertiesItem(clearColor_Green_Data,mSceneDefinition));
 
     QList<QVariant> clearColor_Blue_Data;
     clearColor_Blue_Data << "Blue" << clear[2];
-    clearColorProperty->appendChild(new PropertiesItem(clearColor_Blue_Data,mScene));
+    clearColorProperty->appendChild(new PropertiesItem(clearColor_Blue_Data,mSceneDefinition));
 
     qDebug() << "ScenePropertiesModel: createRenderingProperties (AmbientLight)";
 
+    vector<float> ambient = mSceneDefinition->getAmbientColour();
     // Ambient Light Color
     QList<QVariant> ambientLightData;
     ambientLightData << "Ambient Light" << "";
-    PropertiesItem *ambientLightProperty = new PropertiesItem(ambientLightData, mScene);
+    PropertiesItem *ambientLightProperty = new PropertiesItem(ambientLightData, mSceneDefinition);
     renderingProperty->appendChild(ambientLightProperty);
 
     QList<QVariant> ambientLight_Red_Data;
     ambientLight_Red_Data
         << "Red"
-        << QString::number
-           (
-               static_cast<double>
-               (
-                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::RED]
-               )
-           );
-    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Red_Data,mScene));
+        << QString::number(
+               static_cast<double>(ambient[Constants::RED_INDEX]));
+    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Red_Data,mSceneDefinition));
 
     QList<QVariant> ambientLight_Green_Data;
     ambientLight_Green_Data
         << "Green"
-        << QString::number
-           (
-               static_cast<double>
-               (
-                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]
-               )
-           );
-    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Green_Data,mScene));
+        << QString::number(
+              static_cast<double>( ambient[Constants::GREEN_INDEX]));
+    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Green_Data,mSceneDefinition));
 
     QList<QVariant> ambientLight_Blue_Data;
     ambientLight_Blue_Data
         << "Blue"
-        << QString::number
-           (
-               static_cast<double>
-               (
-                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]
-               )
-           );
-    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Blue_Data,mScene));
+        << QString::number(
+               static_cast<double>(ambient[Constants::BLUE_INDEX]));
+    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Blue_Data,mSceneDefinition));
 
     QList<QVariant> ambientLight_Alpha_Data;
     ambientLight_Alpha_Data
         << "Alpha"
-        << QString::number
-           (
-               static_cast<double>
-               (
-                   mScene->getJson()[Constants::SCENE_CLEAR_COLOUR][Constants::ALPHA]
-               )
-           );
-    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Alpha_Data,mScene));
+        << QString::number(
+               static_cast<double>(ambient[Constants::ALPHA_INDEX]));
+    ambientLightProperty->appendChild(new PropertiesItem(ambientLight_Alpha_Data,mSceneDefinition));
 }
 
 void
@@ -250,35 +233,35 @@ ScenePropertiesModel::createPhysicsProperties
     // Physics
     QList<QVariant> physicsData;
     physicsData << "Physics"  << "";
-    PropertiesItem *physicsProperty = new PropertiesItem(physicsData,mScene);
+    PropertiesItem *physicsProperty = new PropertiesItem(physicsData,mSceneDefinition);
     mRootItem->appendChild(physicsProperty);
     {
         QList<QVariant> gravityData;
         gravityData << "Gravity" << "";
-        PropertiesItem *gravityProperty = new PropertiesItem(gravityData,mScene);
+        PropertiesItem *gravityProperty = new PropertiesItem(gravityData,mSceneDefinition);
         physicsProperty->appendChild(gravityProperty);
         {
-            vector<float> gravity = mScene->getGravity();
+            vector<float> gravity = mSceneDefinition->getGravity();
             QList<QVariant> gravityDataX;
             gravityDataX << "X" << gravity[Constants::X_INDEX];
-            PropertiesItem *gravityPropertyX = new PropertiesItem(gravityDataX,mScene);
+            PropertiesItem *gravityPropertyX = new PropertiesItem(gravityDataX,mSceneDefinition);
             gravityProperty->appendChild(gravityPropertyX);
 
             QList<QVariant> gravityDataY;
             gravityDataY << "Y" << gravity[Constants::Y_INDEX];
-            PropertiesItem *gravityPropertyY = new PropertiesItem(gravityDataY,mScene);
+            PropertiesItem *gravityPropertyY = new PropertiesItem(gravityDataY,mSceneDefinition);
             gravityProperty->appendChild(gravityPropertyY);
 
             QList<QVariant> gravityDataZ;
             gravityDataZ << "Z" << gravity[Constants::Z_INDEX];
-            PropertiesItem *gravityPropertyZ = new PropertiesItem(gravityDataZ,mScene);
+            PropertiesItem *gravityPropertyZ = new PropertiesItem(gravityDataZ,mSceneDefinition);
             gravityProperty->appendChild(gravityPropertyZ);
         }
     }
 
     QList<QVariant> debugData;
-    debugData << "Debug" << mScene->getPhysicsDebug();
-    PropertiesItem *debugProperty = new PropertiesItem(debugData,mScene);
+    debugData << "Debug" << mSceneDefinition->getPhysicsDebug();
+    PropertiesItem *debugProperty = new PropertiesItem(debugData,mSceneDefinition);
     physicsProperty->appendChild(debugProperty);
 }
 

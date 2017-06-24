@@ -40,7 +40,6 @@ SOURCES += \
     Model/TreeModels/AssetDefinitionTreeModel.cpp \
     Model/TreeModels/GenericTreeItem.cpp \
     Model/TreeModels/ProjectTreeItem.cpp \
-    Model/TreeModels/ProjectTreeModel.cpp \
     \
     Model/TreeModels/Properties/PropertiesModel.cpp \
     Model/TreeModels/Properties/ScenePropertiesModel.cpp \
@@ -57,7 +56,8 @@ SOURCES += \
     View/GLView/GLDrawable.cpp \
     View/GLView/RelationshipTree.cpp \
     Test/TestProjectDirModel.cpp \
-    Model/PreferencesModel.cpp
+    Model/PreferencesModel.cpp \
+    Model/TreeModels/ScenegraphTreeModel.cpp
 
 
 HEADERS  += \
@@ -74,7 +74,6 @@ HEADERS  += \
     Model/TreeModels/GenericTreeItem.h \
     Model/TreeModels/ProjectTreeItem.h \
     \
-    Model/TreeModels/ProjectTreeModel.h \
     Model/TreeModels/Properties/PropertiesModel.h \
     Model/TreeModels/Properties/AssetDefinitionPropertiesModel.h \
     Model/TreeModels/Properties/ProjectPropertiesModel.h \
@@ -92,7 +91,8 @@ HEADERS  += \
     View/GLView/RelationshipTree.h \
     Test/TestProjectDirModel.h \
     Test/catch.hpp \
-    Model/PreferencesModel.h
+    Model/PreferencesModel.h \
+    Model/TreeModels/ScenegraphTreeModel.h
 
 
 FORMS    += View/MainWindow.ui

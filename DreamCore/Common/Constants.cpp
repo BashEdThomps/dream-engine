@@ -157,6 +157,7 @@ namespace Dream
     const string Constants::SCENE_NOTES = "notes";
     const string Constants::SCENE_SCENE_OBJECTS = "objects";
     const string Constants::SCENE_CAMERA = "camera";
+    const float  Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED = 10.0f;
     const string Constants::SCENE_TRANSLATION = "translation";
     const string Constants::SCENE_ROTATION = "rotation";
     const string Constants::SCENE_MOVEMENT_SPEED = "movementSpeed";
@@ -164,7 +165,9 @@ namespace Dream
     const string Constants::SCENE_AMBIENT_LIGHT_COLOUR = "ambientLight";
     const string Constants::SCENE_GRAVITY = "gravity";
     const string Constants::SCENE_PHYSICS_DEBUG = "physicsDebug";
+    const string Constants::SCENE_DEFAULT_NAME = "Untitled Scene";
     // SceneObject ==============================================================
+    const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
     const string Constants::SCENE_OBJECT_HAS_FOCUS = "hasFocus";
     const string Constants::SCENE_OBJECT_TRANSLATION = "translation";

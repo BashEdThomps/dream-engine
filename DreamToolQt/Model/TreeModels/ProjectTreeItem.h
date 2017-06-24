@@ -15,20 +15,17 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROJECTTREEITEM_H
-#define PROJECTTREEITEM_H
+#pragma once
 
 #include "GenericTreeItem.h"
 #include <QList>
 #include <QVariant>
 
-class ProjectTreeItem : public GenericTreeItem
+class ScenegraphTreeItem : public GenericTreeItem
 {
 public:
-    explicit ProjectTreeItem(const QList<QVariant> &data, GenericTreeItemType type, void* item, ProjectTreeItem *parentItem = 0);
+    explicit ScenegraphTreeItem(const QList<QVariant> &data, GenericTreeItemType type, void* item, ScenegraphTreeItem *parentItem = 0);
     void* getItem();
 private:
     void* mItem;
 };
-
-#endif // PROJECTTREEITEM_H

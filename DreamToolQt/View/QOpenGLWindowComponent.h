@@ -46,10 +46,14 @@ public:
     void getCurrentDimensions() override;
     void swapBuffers() override;
     void setProjectRuntimeHandle(ProjectRuntime* prHandle);
-    void setGrid(Grid* grid);
+    void setGridHandle(Grid* grid);
+    void setSelectionHighlighterHandle(SelectionHighlighter* highlighter);
+    void setRelationshipTreeHandle(RelationshipTree* tree);
+
     void setGridEnabled(bool enabled);
-    void setSelectionHighlighter(SelectionHighlighter* highlighter);
-    void setRelationshipTree(RelationshipTree* tree);
+    void setSelectionHighlighterEnabled(bool enabled);
+    void setRelationshipTreeEnabled(bool enabled);
+
 
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
@@ -66,8 +70,11 @@ private:
     Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
     RelationshipTree *mRelationshipTreeHandle;
+
     bool mGridEnabled;
     bool mRelationshipTreeEnabled;
+    bool mSelectionHighlighterEnabled;
+
     WindowInputState mInputState;
     bool mPaintInProgress;
 };

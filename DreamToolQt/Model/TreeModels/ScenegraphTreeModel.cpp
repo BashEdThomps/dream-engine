@@ -16,42 +16,42 @@
  * this file belongs to.
  */
 
-#include "ProjectTreeModel.h"
+#include "ScenegraphTreeModel.h"
 #include <QStringList>
+#include <QDebug>
 
-ProjectTreeModel::ProjectTreeModel
+using Dream::SceneDefinition;
+
+ScenegraphTreeModel::ScenegraphTreeModel
 (ProjectDefinition *project, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    mProject = project;
-    QList<QVariant> rootData;
-    rootData << QString::fromStdString(project->getName());
-    mRootItem = new ProjectTreeItem(rootData,GenericTreeItemType::PROJECT,nullptr);
-    setupModelData(mRootItem);
+
+    mProjectDefinitionHandle = project;
+
+    qDebug() << "ScenegraphTreeModel: Constructing for "
+             << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
+
+    setupModelData();
 }
 
-ProjectTreeModel::~ProjectTreeModel
+ScenegraphTreeModel::~ScenegraphTreeModel
 ()
 {
-    delete mRootItem;
+    qDebug() << "ScenegraphTreeModel: Destructing for "
+             << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
+    mRootItem.release();
 }
 
 int
-ProjectTreeModel::columnCount
+ScenegraphTreeModel::columnCount
 (const QModelIndex &parent) const
 {
-    if (parent.isValid())
-    {
-        return static_cast<ProjectTreeItem*>(parent.internalPointer())->columnCount();
-    }
-    else
-    {
-        return mRootItem->columnCount();
-    }
+    return 1;
 }
 
 QVariant
-ProjectTreeModel::data
+ScenegraphTreeModel::data
 (const QModelIndex &index, int role) const
 {
     if (!index.isValid())
@@ -64,36 +64,31 @@ ProjectTreeModel::data
         return QVariant();
     }
 
-    ProjectTreeItem *item = static_cast<ProjectTreeItem*>(index.internalPointer());
+    ScenegraphTreeItem *item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
 
     return item->data(index.column());
 }
 
 Qt::ItemFlags
-ProjectTreeModel::flags
+ScenegraphTreeModel::flags
 (const QModelIndex &index) const
 {
-    if (!index.isValid())
-    {
-        return 0;
-    }
     return QAbstractItemModel::flags(index);
 }
 
 QVariant
-ProjectTreeModel::headerData
-(int section, Qt::Orientation orientation,
-                               int role) const
+ScenegraphTreeModel::headerData
+(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
-        return mRootItem->data(section);
+        return QVariant(QString::fromStdString(mProjectDefinitionHandle->getName()));
     }
     return QVariant();
 }
 
 QModelIndex
-ProjectTreeModel::index
+ScenegraphTreeModel::index
 (int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
@@ -101,15 +96,15 @@ ProjectTreeModel::index
         return QModelIndex();
     }
 
-    ProjectTreeItem *parentItem;
+    ScenegraphTreeItem *parentItem;
 
     if (!parent.isValid())
     {
-        parentItem = mRootItem;
+        parentItem = mRootItem.get();
     }
     else
     {
-        parentItem = static_cast<ProjectTreeItem*>(parent.internalPointer());
+        parentItem = static_cast<ScenegraphTreeItem*>(parent.internalPointer());
     }
 
     GenericTreeItem *childItem = parentItem->child(row);
@@ -125,7 +120,7 @@ ProjectTreeModel::index
 }
 
 QModelIndex
-ProjectTreeModel::parent
+ScenegraphTreeModel::parent
 (const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -133,10 +128,10 @@ ProjectTreeModel::parent
         return QModelIndex();
     }
 
-    ProjectTreeItem *childItem = static_cast<ProjectTreeItem*>(index.internalPointer());
+    ScenegraphTreeItem *childItem = static_cast<ScenegraphTreeItem*>(index.internalPointer());
     GenericTreeItem *parentItem = childItem->parentItem();
 
-    if (parentItem == mRootItem)
+    if (parentItem == mRootItem.get())
     {
         return QModelIndex();
     }
@@ -145,10 +140,10 @@ ProjectTreeModel::parent
 }
 
 int
-ProjectTreeModel::rowCount
+ScenegraphTreeModel::rowCount
 (const QModelIndex &parent) const
 {
-    ProjectTreeItem *parentItem;
+    ScenegraphTreeItem *parentItem;
 
     if (parent.column() > 0)
     {
@@ -157,53 +152,69 @@ ProjectTreeModel::rowCount
 
     if (!parent.isValid())
     {
-        parentItem = mRootItem;
+        parentItem = mRootItem.get();
     }
     else
     {
-        parentItem = static_cast<ProjectTreeItem*>(parent.internalPointer());
+        parentItem = static_cast<ScenegraphTreeItem*>(parent.internalPointer());
     }
     return parentItem->childCount();
 }
 
 void
-ProjectTreeModel::setupModelData
-(ProjectTreeItem *parent)
+ScenegraphTreeModel::setupModelData
+()
 {
-    for (SceneDefinition *scene : mProject->getSceneDefinitionsHandleList())
-    {
-        QList<QVariant> nextSceneData;
-        nextSceneData << QString::fromStdString(scene->getName());
+    emit beginResetModel();
+    qDebug() << "ScenegraphTreeModel: Setting up project "
+             << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
 
-        ProjectTreeItem *nextScene = new ProjectTreeItem(nextSceneData,GenericTreeItemType::SCENE,scene,parent);
-        parent->appendChild(nextScene);
+    QList<QVariant> rootData;
+    rootData << QString::fromStdString(mProjectDefinitionHandle->getName());
+    mRootItem.reset(new ScenegraphTreeItem(rootData,GenericTreeItemType::PROJECT,nullptr));
+
+    for (SceneDefinition *sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsHandleList())
+    {
+        qDebug() << "ScenegraphTreeModel: Adding Scene "
+                 << QString::fromStdString(sceneHandle->getNameAndUuidString());
+
+        QList<QVariant> nextSceneData;
+        nextSceneData << QString::fromStdString(sceneHandle->getName());
+
+        ScenegraphTreeItem *nextScene = new ScenegraphTreeItem(
+            nextSceneData,GenericTreeItemType::SCENE,sceneHandle,mRootItem.get()
+        );
+        mRootItem->appendChild(nextScene);
 
         // Setup SceneObjects
-        SceneObjectDefinition *rootSceneObject = scene->getRootSceneObjectDefinitionHandle();
+        SceneObjectDefinition *rootSceneObject = sceneHandle->getRootSceneObjectDefinitionHandle();
         QList<QVariant> rootSceneObjectData;
         rootSceneObjectData << QString::fromStdString(rootSceneObject->getName());
-        ProjectTreeItem *rootSceneObjectItem;
-        rootSceneObjectItem = new ProjectTreeItem(
+        ScenegraphTreeItem *rootSceneObjectItem;
+
+        rootSceneObjectItem = new ScenegraphTreeItem(
             rootSceneObjectData,
             GenericTreeItemType::SCENE_OBJECT,
             rootSceneObject,
             nextScene
         );
+
         nextScene->appendChild(rootSceneObjectItem);
         appendSceneObjects(rootSceneObject,rootSceneObjectItem);
     }
+    emit endResetModel();
 }
 
 void
-ProjectTreeModel::appendSceneObjects
-(SceneObjectDefinition *parentSceneObject, ProjectTreeItem* parentTreeNode)
+ScenegraphTreeModel::appendSceneObjects
+(SceneObjectDefinition *parentSceneObject, ScenegraphTreeItem* parentTreeNode)
 {
     for (SceneObjectDefinition *sceneObject : parentSceneObject->getChildDefinitionsHandleList())
     {
         // Setup Child
         QList<QVariant> sceneObjectData;
         sceneObjectData << QString::fromStdString(sceneObject->getName());
-        ProjectTreeItem *sceneObjectItem = new ProjectTreeItem(
+        ScenegraphTreeItem *sceneObjectItem = new ScenegraphTreeItem(
             sceneObjectData,
             GenericTreeItemType::SCENE_OBJECT,
             sceneObject,

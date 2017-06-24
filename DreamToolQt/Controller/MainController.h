@@ -30,7 +30,7 @@
 #include "../Model/DreamProjectModel.h"
 #include "../Model/ProjectDirectoryModel.h"
 #include "../Model/PreferencesModel.h"
-#include "../Model/TreeModels/ProjectTreeModel.h"
+#include "../Model/TreeModels/ScenegraphTreeModel.h"
 #include "../Model/TreeModels/AssetDefinitionTreeModel.h"
 #include "../Model/TreeModels/Properties/PropertiesModel.h"
 
@@ -50,9 +50,10 @@ public:
     MainController(MainWindow* parent);
     ~MainController();
 
-    Grid *getGrid();
-    SelectionHighlighter *getSelectionHighlighter();
-    RelationshipTree *getRelationshipTree();
+
+    Grid *getGridHandle();
+    SelectionHighlighter *getSelectionHighlighterHandle();
+    RelationshipTree *getRelationshipTreeHandle();
 
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);
@@ -68,53 +69,82 @@ signals:
     void notifyStatusBarProjectLoaded(QString);
     void notifyNoSceneSelected();
     void notifyPlayingScene(SceneRuntime* scene);
-    void notifyStoppedScene(SceneDefinition* scene);
+    //void notifyStoppedScene(SceneDefinition* scene);
+
+    void notifyScenegraphUpdated();
 
 public slots:
-    void onProjectNewAction();
-    void onProjectOpenAction();
-    void onProjectSaveAction();
-    void onProjectReloadAction();
-    void onProjectPlayAction();
-    void onProjectStopAction();
-    void onProjectOpenTestProjectAction();
-    void onProjectClosedAction();
+    void onAction_File_New();
+    void onAction_File_Open();
+    void onAction_File_Save();
+    void onAction_File_OpenTestProject();
+    void onAction_File_Close();
 
-    void onProjectNameChanged(QString name);
-    void onProjectAuthorChanged(QString author);
-    void onProjectDescriptionChanged(QString desc);
-    void onProjectWindowWidthChanged(QString width);
-    void onProjectWindowHeightChanged(QString height);
-    void onProjectStartupSceneChanged(QString startupScene);
-    void onTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
+    void onAction_Scene_Reload();
+    void onAction_Scene_Play();
+    void onAction_Scene_Stop();
 
-    void onSelectedSceneChanged(SceneDefinition *scene);
-    void onSceneStopped(SceneDefinition* scene);
 
-    void onGridToggleAction(bool enabled);
-    void onToggleDebugAction(bool enabled);
-    void onTogglePhysicsDebugAction(bool enable);
+    void onUI_ProjectNameChanged(QString name);
+    void onUI_ProjectAuthorChanged(QString author);
+    void onUI_ProjectDescriptionChanged(QString desc);
+    void onUI_ProjectWindowWidthChanged(QString width);
+    void onUI_ProjectWindowHeightChanged(QString height);
+    void onUI_ProjectStartupSceneChanged(QString startupScene);
 
-    void onSceneMenuNewScene();
-    void onSceneMenuNewSceneObject();
-    void onAssetMenuAddToSceneObject();
+    void onUI_TreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
 
+    void onUI_SelectedSceneChanged(SceneDefinition *scene);
+
+    void onAction_View_ToggleGrid(bool enabled);
+    void onAction_View_ToggleDebug(bool enabled);
+    void onAction_View_TogglePhysicsDebug(bool enable);
+    void onAction_View_ToggleSelectionHighlighter(bool enabled);
+
+    void onAction_Scene_NewScene();
+    void onAction_Scene_NewSceneObject();
+
+
+    void onUI_ScenegraphUpdated();
+
+    void onAction_Asset_AddToSelectedSceneObject();
+    void onAction_Asset_NewDefinition_Animation();
+    void onAction_Asset_NewDefinition_Audio();
+    void onAction_Asset_NewDefinition_Font();
+    void onAction_Asset_NewDefinition_Light();
+    void onAction_Asset_NewDefinition_Model();
+    void onAction_Asset_NewDefinition_PhysicsObject();
+    void onAction_Asset_NewDefinition_Script();
+    void onAction_Asset_NewDefinition_Shader();
+    void onAction_Asset_NewDefinition_Sprite();
 private: // Methods
+    // Setup
+    void setupUI();
+    void setupUI_GLWidgets();
+    void setupUI_PropertiesTreeViewModel(GenericTreeItem *item);
+
+    void setupConnections();
+
+    // Misc
     void openProject();
     void updateWindowTitle(QString msg);
 
-    void setValidProjectActionsEnabled(bool enabled);
-    void setupPropertiesTreeViewModel(GenericTreeItem *item);
+    void setActionsEnabled_ValidProject(bool enabled);
 
     QStringListModel* getSceneNamesListModel(vector<SceneDefinition*> sceneList);
+
+    // Signal/Slot Connections
+    void connectMenus();
+
+    void connectFileMenu();
+    void connectSceneMenu();
+    void connectAssetMenu();
+    void connectViewMenu();
+
+    void connectUI();
+    void connectUI_TreeViewModels();
+
     string getSceneNameFromModelIndex(int index);
-
-    void createConnections();
-    void connectTreeMenuActions();
-    void connectMainMenuToolbarActions();
-    void connectUi();
-    void connectTreeViewModel();
-
 
 private: // Variables
     MainWindow *mMainWindowHandle;
@@ -124,7 +154,7 @@ private: // Variables
     PreferencesModel mPreferencesModel;
     unique_ptr<QErrorMessage> mInvalidProjectDirectoryError;
     unique_ptr<QStringListModel> mSceneListModel;
-    unique_ptr<ProjectTreeModel> mProjectTreeModel;
+    unique_ptr<ScenegraphTreeModel> mScenegraphTreeModel;
     unique_ptr<AssetDefinitionTreeModel> mAssetDefinitionTreeModel;
     unique_ptr<PropertiesModel> mPropertiesModel;
     unique_ptr<DreamProjectModel> mDreamModel;

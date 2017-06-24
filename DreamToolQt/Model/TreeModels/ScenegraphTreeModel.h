@@ -21,15 +21,18 @@
 #include <QAbstractItemModel>
 #include "ProjectTreeItem.h"
 #include <DreamCore.h>
+#include <memory>
 
-using namespace Dream;
+using std::unique_ptr;
+using Dream::SceneObjectDefinition;
+using Dream::ProjectDefinition;
 
-class ProjectTreeModel : public QAbstractItemModel
+class ScenegraphTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit ProjectTreeModel(ProjectDefinition *project, QObject *parent = 0);
-    ~ProjectTreeModel();
+    explicit ScenegraphTreeModel(ProjectDefinition *project, QObject *parent = 0);
+    ~ScenegraphTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -39,10 +42,10 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-private:
+    void setupModelData();
 
-    void setupModelData(ProjectTreeItem *parent);
-    void appendSceneObjects(SceneObjectDefinition *parentSceneObject, ProjectTreeItem* parentTreeNode);
-    ProjectDefinition *mProject;
-    ProjectTreeItem *mRootItem;
+private:
+    void appendSceneObjects(SceneObjectDefinition *parentSceneObject, ScenegraphTreeItem* parentTreeNode);
+    ProjectDefinition *mProjectDefinitionHandle;
+    unique_ptr<ScenegraphTreeItem> mRootItem;
 };

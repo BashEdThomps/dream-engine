@@ -50,38 +50,39 @@ public:
     ~MainWindow();
     Ui::MainWindow *ui;
 
-    QTreeView* getProjectTreeView();
+    QOpenGLWindowComponent* getWindowComponent();
+
+    QTreeView* getScenegraphTreeView();
     QTreeView* getPropertiesTreeView();
     QTreeView* getAssetDefinitionTreeView();
 
-    QAction* getActionNew();
-    QAction* getActionSave();
-    QAction* getActionOpen();
-    QAction* getActionReload();
-    QAction* getActionStop();
-    QAction* getActionPlay();
-    QAction* getActionOpenTestProject();
-    QAction* getActionToggleGrid();
-    QAction* getActionToggleDebug();
-    QAction* getActionCloseProject();
-    QAction* getActionTogglePhysicsDebug();
+    QAction* getAction_File_New();
+    QAction* getAction_File_Save();
+    QAction* getAction_File_Open();
+    QAction* getAction_File_CloseProject();
+    QAction* getAction_File_OpenTestProject();
 
+    void setActionEnabled_File_New(bool enabled);
+    void setActionEnabled_File_Save(bool enabled);
+    void setActionEnabled_File_Open(bool enabled);
 
-    QOpenGLWindowComponent* getWindowComponent();
+    QAction* getAction_Scene_Stop();
+    QAction* getAction_Scene_Play();
+    QAction* getAction_Scene_Reload();
+    QAction* getAction_Scene_NewScene();
+    QAction* getAction_Scene_NewSceneObject();
 
-    void setPlaybackActionsEnabled(bool enabled);
-    void setMenuActionsEnabled(bool enabled);
+    void setActionsEnabled_Scene_Playback(bool enabled);
 
-    void setNewActionEnabled(bool enabled);
-    void setSaveActionEnabled(bool enabled);
-    void setOpenActionEnabled(bool enabled);
+    QAction* getAction_View_ToggleGrid();
+    QAction* getAction_View_ToggleDebug();
+    QAction* getAction_View_TogglePhysicsDebug();
+    QAction* getAction_View_ToggleHighlightSelected();
 
-    void setupAssetMenuNewDefinition();
-    QAction* getAssetDefinitionAddAction(AssetType type, string format);
+    QAction* getAction_Asset_NewDefinition(AssetType type);
+    QAction* getAction_Asset_AddToSelectedSceneObject();
 
-    QAction* getSceneMenuNewSceneAction();
-    QAction* getSceneMenuNewSceneObjectAction();
-    QAction* getAssetMenuAddToSceneObjectAction();
+    void setupMenu_Asset_NewDefinition();
 
 private: // Methods
     bool shouldPassKey(int key);
@@ -104,9 +105,8 @@ private:
     void setupGL(QWidget *parent);
     unique_ptr<QOpenGLWindowComponent> mWindowComponent;
     const static vector<int> mKeysPassedToWindow;
-
-    unique_ptr<QMenu> mAssetDefinitionAddMenu;
-    map<AssetType,map<string,QAction*>> mAssetDefinitionAddActionsMap;
+    map<AssetType,QAction*> mActionMap_Asset_NewDefinition;
+    unique_ptr<QMenu> mMenu_Asset_NewDefinition;
 };
 
 #endif // MAINWINDOW_H

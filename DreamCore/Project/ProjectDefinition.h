@@ -67,6 +67,7 @@ namespace Dream
 
         void removeAssetDefinition(AssetDefinition* assetDef);
         vector<AssetDefinition*> getAssetDefinitionsHandleList();
+        SceneDefinition* createNewSceneDefinition();
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();

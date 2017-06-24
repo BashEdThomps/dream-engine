@@ -21,6 +21,8 @@
 #include <json.hpp>
 #include <string>
 
+#include "../Components/Transform3D.h"
+
 using std::string;
 using nlohmann::json;
 
@@ -46,5 +48,6 @@ namespace Dream
         void setUuid(string uuid);
 
         string getNameAndUuidString();
+        Transform3D getTransformFromJson(json &jsonTransform);
     };
 }

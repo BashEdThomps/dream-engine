@@ -19,10 +19,10 @@
 
 #include "Project.h"
 
+#include "../Common/Constants.h"
 #include "../Components/AssetDefinition.h"
 #include "../Scene/SceneDefinition.h"
-
-#include "../Common/Constants.h"
+#include "../Utilities/Uuid.h"
 
 using std::cout;
 using std::endl;
@@ -273,6 +273,19 @@ namespace Dream
             definitionsList.push_back((*it).get());
         }
         return definitionsList;
+    }
+
+    SceneDefinition*
+    ProjectDefinition::createNewSceneDefinition
+    ()
+    {
+        json scene;
+        scene[Constants::UUID] = Uuid::generateUuid();
+        scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
+        SceneDefinition *sdHandle = new SceneDefinition(this,scene);
+        mSceneDefinitions.push_back(unique_ptr<SceneDefinition>(sdHandle));
+        sdHandle->createNewRootSceneObjectDefinition();
+        return sdHandle;
     }
 
     SceneDefinition*

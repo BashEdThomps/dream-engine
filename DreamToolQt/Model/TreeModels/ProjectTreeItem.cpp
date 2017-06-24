@@ -18,15 +18,15 @@
 #include "ProjectTreeItem.h"
 #include <QStringList>
 
-ProjectTreeItem::ProjectTreeItem
-(const QList<QVariant> &data, GenericTreeItemType type, void* item, ProjectTreeItem *parent)
+ScenegraphTreeItem::ScenegraphTreeItem
+(const QList<QVariant> &data, GenericTreeItemType type, void* item, ScenegraphTreeItem *parent)
     : GenericTreeItem(data, type, parent)
 {
     mItem = item;
 }
 
 void*
-ProjectTreeItem::getItem
+ScenegraphTreeItem::getItem
 ()
 {
     return mItem;

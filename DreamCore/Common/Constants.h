@@ -122,6 +122,7 @@ namespace Dream
         const static string SCENE_NOTES;
         const static string SCENE_SCENE_OBJECTS;
         const static string SCENE_CAMERA;
+        const static float  SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
         const static string SCENE_TRANSLATION;
         const static string SCENE_ROTATION;
         const static string SCENE_MOVEMENT_SPEED;
@@ -129,7 +130,9 @@ namespace Dream
         const static string SCENE_AMBIENT_LIGHT_COLOUR;
         const static string SCENE_GRAVITY;
         const static string SCENE_PHYSICS_DEBUG;
+        const static string SCENE_DEFAULT_NAME;
         // SceneObject ==========================================================
+        const static string SCENE_OBJECT_ROOT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
         const static string SCENE_OBJECT_HAS_FOCUS;
         const static string SCENE_OBJECT_TRANSLATION;

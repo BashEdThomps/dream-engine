@@ -49,13 +49,13 @@ MainWindow::MainWindow
 {
     ui->setupUi(this);
     setupGL(parent);
-    setupAssetMenuNewDefinition();
-    setPlaybackActionsEnabled(false);
-    setSaveActionEnabled(false);
+    setupMenu_Asset_NewDefinition();
+    setActionsEnabled_Scene_Playback(false);
+    setActionEnabled_File_Save(false);
 }
 
 void
-MainWindow::setPlaybackActionsEnabled
+MainWindow::setActionsEnabled_Scene_Playback
 (bool enabled)
 {
     ui->actionPlay->setEnabled(enabled);
@@ -64,83 +64,75 @@ MainWindow::setPlaybackActionsEnabled
 }
 
 void
-MainWindow::setMenuActionsEnabled
-(bool enabled)
-{
-}
-
-void
-MainWindow::setOpenActionEnabled
+MainWindow::setActionEnabled_File_Open
 (bool enabled)
 {
     ui->actionOpen->setEnabled(enabled);
 }
 
 QAction*
-MainWindow::getAssetDefinitionAddAction
-(AssetType type, string format)
+MainWindow::getAction_Asset_NewDefinition
+(AssetType type)
 {
-    return mAssetDefinitionAddActionsMap.at(type).at(format);
+    return mActionMap_Asset_NewDefinition.at(type);
 }
 
 QAction*
-MainWindow::getSceneMenuNewSceneAction
+MainWindow::getAction_Scene_NewScene
 ()
 {
     return ui->actionSceneMenuNewScene;
 }
 
 QAction*
-MainWindow::getSceneMenuNewSceneObjectAction
+MainWindow::getAction_Scene_NewSceneObject
 ()
 {
     return ui->actionSceneNewSceneObject;
 }
 
 QAction*
-MainWindow::getAssetMenuAddToSceneObjectAction
+MainWindow::getAction_Asset_AddToSelectedSceneObject
 ()
 {
-    return ui->actionAssetMenuAddAssetToSceneObject;
+    return ui->actionAssetMenuAddAssetToSelectedSceneObject;
 }
 
 void
-MainWindow::setSaveActionEnabled
+MainWindow::setActionEnabled_File_Save
 (bool enabled)
 {
     ui->actionSave->setEnabled(enabled);
 }
 
 void
-MainWindow::setNewActionEnabled
+MainWindow::setActionEnabled_File_New
 (bool enabled)
 {
     ui->actionNew->setEnabled(enabled);
 }
 
 void
-MainWindow::setupAssetMenuNewDefinition
+MainWindow::setupMenu_Asset_NewDefinition
 ()
 {
-    mAssetDefinitionAddMenu.reset(new QMenu());
-    mAssetDefinitionAddMenu->setTitle("New Definition");
+    mMenu_Asset_NewDefinition.reset(new QMenu());
+    mMenu_Asset_NewDefinition->setTitle("New Definition");
 
     for (pair<AssetType,string> typePair : Constants::DREAM_ASSET_TYPES_MAP)
     {
-        QMenu *typeMenu = mAssetDefinitionAddMenu->addMenu(QString::fromStdString(Constants::getAssetTypeReadableName(typePair.second)));
-
-        map<string,QAction*> formatActions;
-
-        for (string format : Constants::DREAM_ASSET_FORMATS_MAP[typePair.first])
-        {
-            QAction *action = new QAction(QString::fromStdString(Constants::getAssetFormatReadableName(format)));
-            typeMenu->addAction(action);
-            formatActions.insert(pair<string,QAction*>(format,action));
-        }
-
-        mAssetDefinitionAddActionsMap.insert(pair<AssetType,map<string,QAction*>>(typePair.first,formatActions));
+        QAction *typeAction = new QAction
+        (
+            QString::fromStdString
+            (
+                Constants::getAssetTypeReadableName(typePair.second)
+            )
+        );
+        mMenu_Asset_NewDefinition->addAction(typeAction);
+        mActionMap_Asset_NewDefinition.insert(pair<AssetType,QAction*>(typePair.first, typeAction));
     }
-    ui->menuAsset->addMenu(mAssetDefinitionAddMenu.get());
+
+    ui->menuAsset->addMenu(mMenu_Asset_NewDefinition.get());
 }
 
 void
@@ -169,50 +161,50 @@ MainWindow::~MainWindow
 }
 
 QAction*
-MainWindow::getActionNew
+MainWindow::getAction_File_New
 ()
 {
     return ui->actionNew;
 }
 
 QAction*
-MainWindow::getActionOpen
+MainWindow::getAction_File_Open
 ()
 {
     return ui->actionOpen;
 }
 
 QAction*
-MainWindow::getActionCloseProject
+MainWindow::getAction_File_CloseProject
 ()
 {
     return ui->actionCloseProject;
 }
 
 QAction*
-MainWindow::getActionTogglePhysicsDebug
+MainWindow::getAction_View_TogglePhysicsDebug
 ()
 {
-   return ui->actionTogglePhysicsDebug;
+    return ui->actionTogglePhysicsDebug;
 }
 
 
 QAction*
-MainWindow::getActionSave
+MainWindow::getAction_File_Save
 ()
 {
     return ui->actionSave;
 }
 
 QAction*
-MainWindow::getActionPlay
+MainWindow::getAction_Scene_Play
 ()
 {
     return ui->actionPlay;
 }
 
 QAction*
-MainWindow::getActionStop
+MainWindow::getAction_Scene_Stop
 ()
 {
     return ui->actionStop;
@@ -237,10 +229,10 @@ MainWindow::onNoSceneSelected
 }
 
 QTreeView*
-MainWindow::getProjectTreeView
+MainWindow::getScenegraphTreeView
 ()
 {
-    return ui->projectTreeView;
+    return ui->scenegraphTreeView;
 }
 
 QTreeView*
@@ -265,28 +257,28 @@ MainWindow::showStatusBarMessage
 }
 
 QAction*
-MainWindow::getActionReload
+MainWindow::getAction_Scene_Reload
 ()
 {
     return ui->actionReload;
 }
 
 QAction*
-MainWindow::getActionOpenTestProject
+MainWindow::getAction_File_OpenTestProject
 ()
 {
     return ui->actionOpen_Test_Project;
 }
 
 QAction*
-MainWindow::getActionToggleGrid
+MainWindow::getAction_View_ToggleGrid
 ()
 {
     return ui->actionToggleGrid;
 }
 
 QAction*
-MainWindow::getActionToggleDebug
+MainWindow::getAction_View_ToggleDebug
 ()
 {
     return ui->actionToggleDebug;
@@ -326,7 +318,7 @@ MainWindow::keyPressEvent
 
     if (shouldPassKey(ke->key()))
     {
-       mWindowComponent->keyPressEvent(ke);
+        mWindowComponent->keyPressEvent(ke);
     }
     else
     {
@@ -339,11 +331,11 @@ MainWindow::shouldPassKey
 (int key)
 {
     return std::find
-    (
-        begin(mKeysPassedToWindow),
-        end(mKeysPassedToWindow),
-        key
-    ) != end(mKeysPassedToWindow);
+            (
+                begin(mKeysPassedToWindow),
+                end(mKeysPassedToWindow),
+                key
+                ) != end(mKeysPassedToWindow);
 }
 
 void
@@ -354,7 +346,7 @@ MainWindow::keyReleaseEvent
 
     if (shouldPassKey(ke->key()))
     {
-       mWindowComponent->keyReleaseEvent(ke);
+        mWindowComponent->keyReleaseEvent(ke);
     }
     else
     {

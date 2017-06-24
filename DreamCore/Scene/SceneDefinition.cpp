@@ -24,8 +24,8 @@
 
 #include "SceneObject/SceneObjectDefinition.h"
 
-
 #include "../Utilities/String.h"
+#include "../Utilities/Uuid.h"
 
 using std::cout;
 using std::endl;
@@ -83,13 +83,30 @@ namespace Dream
     SceneDefinition::setCameraMovementSpeed
     (float speed)
     {
+        checkCamera();
         mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED] = speed;
+    }
+
+    void
+    SceneDefinition::checkCamera
+    ()
+    {
+        if (mJson[Constants::SCENE_CAMERA].is_null())
+        {
+            mJson[Constants::SCENE_CAMERA] = {};
+        }
     }
 
     float
     SceneDefinition::getCameraMovementSpeed
     ()
     {
+        checkCamera();
+        if (mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED].is_null())
+        {
+            mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED] =
+                    Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
+        }
         return mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED];
     }
 
@@ -99,7 +116,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_PHYSICS_DEBUG].is_null())
         {
-            return false;
+            mJson[Constants::SCENE_PHYSICS_DEBUG] = false;
         }
         return mJson[Constants::SCENE_PHYSICS_DEBUG];
     }
@@ -110,7 +127,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_NOTES].is_null())
         {
-            return "";
+            mJson[Constants::SCENE_NOTES] = "";
         }
         return mJson[Constants::SCENE_NOTES];
     }
@@ -126,27 +143,32 @@ namespace Dream
     SceneDefinition::getCameraTransform
     ()
     {
-        Transform3D defaultCameraTransform;
+        return getTransformFromJson(mJson[Constants::SCENE_CAMERA]);
+    }
 
+    void
+    SceneDefinition::setCameraTransform
+    (Transform3D transform)
+    {
         json camera = mJson[Constants::SCENE_CAMERA];
 
-        if (!camera.is_null())
+        if (camera.is_null())
         {
-            json translation = camera[Constants::SCENE_TRANSLATION];
-            defaultCameraTransform.setTranslation(
-                translation[Constants::X],
-                translation[Constants::Y],
-                translation[Constants::Z]
-            );
-            json rotation = camera[Constants::SCENE_ROTATION];
-            defaultCameraTransform.setRotation(
-                rotation[Constants::X],
-                rotation[Constants::Y],
-                rotation[Constants::Z]
-            );
+            camera = {};
+            camera[Constants::SCENE_TRANSLATION] = {};
+            camera[Constants::SCENE_ROTATION] = {};
         }
 
-        return defaultCameraTransform;
+        json translation = camera[Constants::SCENE_TRANSLATION];
+        json rotation = camera[Constants::SCENE_ROTATION];
+
+        translation[Constants::X] = transform.getTranslationX();
+        translation[Constants::Y] = transform.getTranslationY();
+        translation[Constants::Z] = transform.getTranslationZ();
+
+        rotation[Constants::X] = transform.getRotationX();
+        rotation[Constants::Y] = transform.getRotationY();
+        rotation[Constants::Z] = transform.getRotationZ();
     }
 
     vector<float>
@@ -159,9 +181,12 @@ namespace Dream
         {
             if (Constants::DEBUG)
             {
-                cout << "SceneDefinition: Scene gravity is null" << endl;
+                cout << "SceneDefinition: Scene gravity is null, setting default" << endl;
             }
-            return gravity;
+            mJson[Constants::SCENE_GRAVITY][Constants::X] = 0.0f;
+            mJson[Constants::SCENE_GRAVITY][Constants::Y] = 0.0f;
+            mJson[Constants::SCENE_GRAVITY][Constants::Z] = 0.0f;
+
         }
 
         if (Constants::DEBUG)
@@ -181,7 +206,6 @@ namespace Dream
     (vector<float> gravity)
     {
         if (mJson[Constants::SCENE_GRAVITY].is_null())
-
         {
             mJson[Constants::SCENE_GRAVITY] = {};
         }
@@ -201,9 +225,12 @@ namespace Dream
         {
             if (Constants::DEBUG)
             {
-                cout << "SceneDefinition: Could not find clear colour in json" << endl;
+                cout << "SceneDefinition: Could not find clear colour in json, setting default" << endl;
             }
-            return colour;
+            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = 0.0f;
+            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = 0.0f;
+            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = 0.0f;
+
         }
 
         colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]);
@@ -239,12 +266,18 @@ namespace Dream
     {
         vector<float> colour;
 
-        if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
+        if (mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR].is_null() ||
+            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED].is_null())
         {
-            cerr << "SceneDefinition: Could not find "
-                 << Constants::SCENE_AMBIENT_LIGHT_COLOUR
-                 << endl;
-            return colour;
+            if (Constants::DEBUG)
+            {
+                cout << "SceneDefinition: Could not find ambient light colour, setting default" << endl;;
+            }
+            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR] = {};
+            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED] = 1.0f;
+            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN] = 1.0f;
+            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE] = 1.0f;
+            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = 1.0f;
         }
 
         colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED]);
@@ -287,6 +320,17 @@ namespace Dream
     SceneDefinition::getProjectDefinitionHandle
     ()
     {
-       return mProjectDefinitionHandle;
+        return mProjectDefinitionHandle;
+    }
+
+    SceneObjectDefinition *SceneDefinition::createNewRootSceneObjectDefinition()
+    {
+        json rootDefJson;
+        rootDefJson[Constants::NAME] = Constants::SCENE_OBJECT_ROOT_NAME;
+        rootDefJson[Constants::UUID] = Uuid::generateUuid();
+        SceneObjectDefinition *rootSoDefinition;
+        rootSoDefinition = new SceneObjectDefinition(nullptr,this,rootDefJson);
+        mRootSceneObjectDefinition.reset(rootSoDefinition);
+        return rootSoDefinition;
     }
 }

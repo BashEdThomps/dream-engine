@@ -30,8 +30,8 @@ namespace Dream
     SceneObjectDefinition::SceneObjectDefinition
     (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData)
         : IDefinition(jsonData),
-          mSceneDefinitionHandle(sceneDefinitionHandle),
-          mParentSceneObjectHandle(parentHandle)
+          mParentSceneObjectHandle(parentHandle),
+          mSceneDefinitionHandle(sceneDefinitionHandle)
     {
         if (Constants::DEBUG)
         {
@@ -74,7 +74,6 @@ namespace Dream
         return mJson[Constants::NAME];
     }
 
-
     bool
     SceneObjectDefinition::hasUuid
     (string uuid)
@@ -100,51 +99,7 @@ namespace Dream
     SceneObjectDefinition::getTransform
     ()
     {
-        Transform3D transform;
-
-        string transformType;
-        if (!mJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE].is_null())
-        {
-            transformType = mJson[Constants::SCENE_OBJECT_TRANSFORM_TYPE];
-            transform.setTransformType(transformType);
-        }
-        else
-        {
-            transformType = Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
-            transform.setTransformType(transformType);
-        }
-
-        if (!mJson[Constants::SCENE_OBJECT_TRANSLATION].is_null())
-        {
-            json translation = mJson[Constants::SCENE_OBJECT_TRANSLATION];
-            transform.setTranslation(
-                translation[Constants::X],
-                translation[Constants::Y],
-                translation[Constants::Z]
-            );
-        }
-
-        if (!mJson[Constants::SCENE_OBJECT_ROTATION].is_null())
-        {
-            json rotation = mJson[Constants::SCENE_OBJECT_ROTATION];
-            transform.setRotation(
-                rotation[Constants::X],
-                rotation[Constants::Y],
-                rotation[Constants::Z]
-            );
-        }
-
-        if (!mJson[Constants::SCENE_OBJECT_SCALE].is_null())
-        {
-            json scale = mJson[Constants::SCENE_OBJECT_SCALE];
-            transform.setScale(
-                scale[Constants::X],
-                scale[Constants::Y],
-                scale[Constants::Z]
-            );
-        }
-
-        return transform;
+        return getTransformFromJson(mJson);
     }
 
     void
