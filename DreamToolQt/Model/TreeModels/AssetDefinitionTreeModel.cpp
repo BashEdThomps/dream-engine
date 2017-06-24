@@ -24,14 +24,7 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel
     : QAbstractItemModel(parent)
 {
     mProject = project;
-    QList<QVariant> rootData;
-    rootData << QString::fromStdString(project->getName());
-    mRootItem = new AssetDefinitionTreeItem(
-        rootData,
-        GenericTreeItemType::TREE_NODE,
-        nullptr,
-        nullptr
-    );
+
     setupModelData();
 }
 
@@ -174,6 +167,18 @@ void
 AssetDefinitionTreeModel::setupModelData
 ()
 {
+    emit beginResetModel();
+
+    // Create Root Node
+    QList<QVariant> rootData;
+    rootData << QString::fromStdString(mProject->getName());
+    mRootItem = new AssetDefinitionTreeItem(
+        rootData,
+        GenericTreeItemType::TREE_NODE,
+        nullptr,
+        nullptr
+    );
+
     // Create Asset Type Nodes
     QList<QVariant> animationNode;
     animationNode << QString("Animation");
@@ -385,4 +390,6 @@ AssetDefinitionTreeModel::setupModelData
         }
 
     }
+
+    emit endResetModel();
 }

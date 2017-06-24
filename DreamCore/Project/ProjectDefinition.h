@@ -19,6 +19,7 @@
 #pragma once
 
 #include "../Common/IDefinition.h"
+#include "../Common/Constants.h"
 
 using std::string;
 using std::vector;
@@ -68,6 +69,7 @@ namespace Dream
         void removeAssetDefinition(AssetDefinition* assetDef);
         vector<AssetDefinition*> getAssetDefinitionsHandleList();
         SceneDefinition* createNewSceneDefinition();
+        AssetDefinition* createNewAssetDefinition(AssetType type);
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();

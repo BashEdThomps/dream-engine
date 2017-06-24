@@ -84,7 +84,6 @@ public slots:
     void onAction_Scene_Play();
     void onAction_Scene_Stop();
 
-
     void onUI_ProjectNameChanged(QString name);
     void onUI_ProjectAuthorChanged(QString author);
     void onUI_ProjectDescriptionChanged(QString desc);
@@ -93,7 +92,6 @@ public slots:
     void onUI_ProjectStartupSceneChanged(QString startupScene);
 
     void onUI_TreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
-
     void onUI_SelectedSceneChanged(SceneDefinition *scene);
 
     void onAction_View_ToggleGrid(bool enabled);
@@ -104,10 +102,11 @@ public slots:
     void onAction_Scene_NewScene();
     void onAction_Scene_NewSceneObject();
 
-
     void onUI_ScenegraphUpdated();
+    void onUI_AssetDefinitionsUpdated();
 
-    void onAction_Asset_AddToSelectedSceneObject();
+    void onAction_Asset_AddToSelectedSceneObjectDefinition();
+
     void onAction_Asset_NewDefinition_Animation();
     void onAction_Asset_NewDefinition_Audio();
     void onAction_Asset_NewDefinition_Font();
@@ -149,16 +148,25 @@ private: // Methods
 private: // Variables
     MainWindow *mMainWindowHandle;
     QOpenGLWindowComponent *mWindowComponentHandle;
+
+    ProjectDefinition *mSelectedProjectDefinitionHandle;
+    AssetDefinition *mSelectedAssetDefinitionHandle;
+    SceneDefinition *mSelectedSceneDefinitionHandle;
+    SceneObjectDefinition *mSelectedSceneObjectDefinitionHandle;
+
     QString mProjectDirectory;
     ProjectDirectoryModel mProjectDirectoryModel;
     PreferencesModel mPreferencesModel;
+
     unique_ptr<QErrorMessage> mInvalidProjectDirectoryError;
     unique_ptr<QStringListModel> mSceneListModel;
     unique_ptr<ScenegraphTreeModel> mScenegraphTreeModel;
     unique_ptr<AssetDefinitionTreeModel> mAssetDefinitionTreeModel;
     unique_ptr<PropertiesModel> mPropertiesModel;
-    unique_ptr<DreamProjectModel> mDreamModel;
     unique_ptr<Grid> mGrid;
     unique_ptr<SelectionHighlighter> mSelectionHighlighter;
     unique_ptr<RelationshipTree> mRelationshipTree;
+    // Delete anything that relies on project before DreamModel
+    unique_ptr<DreamProjectModel> mDreamProjectModel;
+
 };

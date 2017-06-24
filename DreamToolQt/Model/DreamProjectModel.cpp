@@ -213,3 +213,22 @@ DreamProjectModel::closeProject
     mProject.reset(nullptr);
     mHeartbeatTimer.reset(nullptr);
 }
+
+IDefinition*
+DreamProjectModel::createNewAssetDefinition
+(AssetType type)
+{
+    if (mProject)
+    {
+        ProjectDefinition* pdHandle = mProject->getProjectDefinitionHandle();
+        if (pdHandle)
+        {
+            AssetDefinition *adHandle = pdHandle->createNewAssetDefinition(type);
+            if (adHandle)
+            {
+                return adHandle;
+            }
+        }
+    }
+    return nullptr;
+}

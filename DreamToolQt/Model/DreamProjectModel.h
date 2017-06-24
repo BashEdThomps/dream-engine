@@ -37,6 +37,7 @@ using std::vector;
 using Dream::AssetDefinition;
 using Dream::SceneDefinition;
 using Dream::Project;
+using Dream::IDefinition;
 
 class DreamProjectModel : public QObject
 {
@@ -71,6 +72,8 @@ public:
 
     SceneDefinition* getSelectedSceneDefinitionHandle();
     void setSelectedSceneDefinitionHandle(SceneDefinition* selectedScene);
+
+    IDefinition *createNewAssetDefinition(AssetType type);
 
 signals:
     void notifySelectedSceneChanged(SceneDefinition* scene);

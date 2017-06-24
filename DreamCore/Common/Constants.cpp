@@ -142,6 +142,7 @@ namespace Dream
     const string Constants::ASSET_TYPE_SCRIPT_READABLE = "Script";
     const string Constants::ASSET_TYPE_SHADER_READABLE = "Shader";
     const string Constants::ASSET_TYPE_SPRITE_READABLE = "Sprite";
+    const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
 
     const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";

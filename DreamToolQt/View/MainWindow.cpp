@@ -51,7 +51,18 @@ MainWindow::MainWindow
     setupGL(parent);
     setupMenu_Asset_NewDefinition();
     setActionsEnabled_Scene_Playback(false);
+    setActionsEnabled_Scene_Modification(false);
     setActionEnabled_File_Save(false);
+}
+
+void
+MainWindow::setActionsEnabled_Scene_Modification
+(bool enabled)
+{
+    ui->actionSceneMenuNewScene->setEnabled(enabled);
+    ui->actionSceneNewSceneObject->setEnabled(enabled);
+    ui->actionAssetMenuAddAssetToSelectedSceneObject->setEnabled(enabled);
+    mMenu_Asset_NewDefinition->setEnabled(enabled);
 }
 
 void

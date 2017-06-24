@@ -148,9 +148,9 @@ namespace Dream
         if (jsonTransform[Constants::SCENE_OBJECT_SCALE].is_null())
         {
             jsonTransform[Constants::SCENE_OBJECT_SCALE] = {
-                { Constants::X, 0.0f },
-                { Constants::Y, 0.0f },
-                { Constants::Z, 0.0f }
+                { Constants::X, 1.0f },
+                { Constants::Y, 1.0f },
+                { Constants::Z, 1.0f }
             };
         }
 

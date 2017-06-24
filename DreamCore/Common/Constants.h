@@ -94,6 +94,7 @@ namespace Dream
         const static string ASSET_FORMAT_SHADER_GLSL;
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_SPRITE_IMAGE;
+        const static string ASSET_DEFINITION_DEFAULT_NAME;
 
         const static string ASSET_TYPE_ANIMATION_READABLE;
         const static string ASSET_TYPE_AUDIO_READABLE;

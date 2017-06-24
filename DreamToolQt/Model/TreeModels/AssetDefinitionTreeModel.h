@@ -39,8 +39,9 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-private:
     void setupModelData();
+
+private:
     ProjectDefinition *mProject;
     AssetDefinitionTreeItem *mRootItem;
 };

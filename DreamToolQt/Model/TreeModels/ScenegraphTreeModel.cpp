@@ -40,7 +40,10 @@ ScenegraphTreeModel::~ScenegraphTreeModel
 {
     qDebug() << "ScenegraphTreeModel: Destructing for "
              << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
-    mRootItem.release();
+    if (mRootItem)
+    {
+        mRootItem.release();
+    }
 }
 
 int

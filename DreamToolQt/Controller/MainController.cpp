@@ -34,13 +34,16 @@
 
 MainController::MainController
 (MainWindow* parent)
-    : QObject(parent)
+    : QObject(parent),
+      mMainWindowHandle(parent),
+      mWindowComponentHandle(parent->getWindowComponent()),
+      mSelectedProjectDefinitionHandle(nullptr),
+      mSelectedAssetDefinitionHandle(nullptr),
+      mSelectedSceneDefinitionHandle(nullptr),
+      mSelectedSceneObjectDefinitionHandle(nullptr)
 {
     qDebug() << "MainController: Constructing Object";
-    mMainWindowHandle = parent;
-    mWindowComponentHandle = parent->getWindowComponent();
-    mDreamModel.reset(new DreamProjectModel(this,mWindowComponentHandle));
-
+    mDreamProjectModel.reset(new DreamProjectModel(this,mWindowComponentHandle));
     setupUI();
     setupConnections();
 }
@@ -79,11 +82,10 @@ MainController::setupUI_PropertiesTreeViewModel
 (GenericTreeItem *item)
 {
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
-    ProjectDefinition *projectDefinition;
-    AssetDefinition *assetDefinition = nullptr;
-    SceneDefinition *sceneDefinition = nullptr;
+
+
+
     SceneObjectRuntime *sceneObjectRuntime = nullptr;
-    SceneObjectDefinition *sceneObjectDefinition = nullptr;
 
     // Reset the selected object
     if (mSelectionHighlighter)
@@ -95,41 +97,41 @@ MainController::setupUI_PropertiesTreeViewModel
     {
         case GenericTreeItemType::PROJECT:
             qDebug() << "MainController: Selected a project";
-            projectDefinition = mDreamModel->getProject()->getProjectDefinitionHandle();
-            mPropertiesModel.reset(new ProjectPropertiesModel(projectDefinition,propertiesTreeView));
+            mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
+            mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
             break;
         case GenericTreeItemType::ASSET_DEFINITION:
             qDebug() << "MainController: Selected an asset definition";
-            assetDefinition = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
-            mPropertiesModel.reset(new AssetDefinitionPropertiesModel(assetDefinition,propertiesTreeView));
+            mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
+            mPropertiesModel.reset(new AssetDefinitionPropertiesModel(mSelectedAssetDefinitionHandle,propertiesTreeView));
             // Set Type Delegate
             break;
         case GenericTreeItemType::SCENE:
-            sceneDefinition = static_cast<SceneDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
-            mDreamModel->setSelectedSceneDefinitionHandle(sceneDefinition);
-            if (sceneDefinition)
+            mSelectedSceneDefinitionHandle = static_cast<SceneDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
+            mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
+            if (mSelectedSceneDefinitionHandle)
             {
-                mPropertiesModel.reset(new ScenePropertiesModel(sceneDefinition,propertiesTreeView));
+                mPropertiesModel.reset(new ScenePropertiesModel(mSelectedSceneDefinitionHandle,propertiesTreeView));
                 qDebug() << "MainController: Selected a scene";
             }
             break;
         case GenericTreeItemType::SCENE_OBJECT:
             qDebug() << "MainController: Selected a scene object";
-            sceneObjectDefinition = static_cast<SceneObjectDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
-            mPropertiesModel.reset(new SceneObjectPropertiesModel(sceneObjectDefinition,propertiesTreeView));
+            mSelectedSceneObjectDefinitionHandle = static_cast<SceneObjectDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
+            mPropertiesModel.reset(new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView));
 
             if (mSelectionHighlighter)
             {
-                if (mDreamModel->getProject()->hasProjectRuntime())
+                if (mDreamProjectModel->getProject()->hasProjectRuntime())
                 {
-                    ProjectRuntime* prHandle = mDreamModel->getProject()->getProjectRuntimeHandle();
+                    ProjectRuntime* prHandle = mDreamProjectModel->getProject()->getProjectRuntimeHandle();
                     if (prHandle->hasActiveSceneRuntime())
                     {
-                        sceneObjectRuntime = mDreamModel
+                        sceneObjectRuntime = mDreamProjectModel
                             ->getProject()
                             ->getProjectRuntimeHandle()
                             ->getActiveSceneRuntimeHandle()
-                            ->getSceneObjectRuntimeHandleByUuid(sceneObjectDefinition->getUuid());
+                            ->getSceneObjectRuntimeHandleByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
                         mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(sceneObjectRuntime);
                     }
                 }
@@ -263,7 +265,7 @@ MainController::connectAssetMenu
         mMainWindowHandle->getAction_Asset_AddToSelectedSceneObject(),
         SIGNAL(triggered()),
         this,
-        SLOT(onAction_Asset_AddToSelectedSceneObject())
+        SLOT(onAction_Asset_AddToSelectedSceneObjectDefinition())
     );
 
     // Asset Menu -> New Definition -> Animation
@@ -394,8 +396,8 @@ MainController::connectUI
     // Valid Scene Selected
     connect
     (
-        mDreamModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
-        this, SLOT(onSelectedSceneChanged(SceneDefinition*))
+        mDreamProjectModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
+        this, SLOT(onUI_SelectedSceneChanged(SceneDefinition*))
     );
     // Invalid Project Directory
     connect
@@ -409,8 +411,6 @@ MainController::connectUI
         this,SIGNAL(notifyNoSceneSelected()),
         mMainWindowHandle, SLOT(onNoSceneSelected())
     );
-
-    connectUI_TreeViewModels();
 }
 
 void
@@ -449,6 +449,7 @@ MainController::setActionsEnabled_ValidProject
 (bool enabled)
 {
     mMainWindowHandle->setActionsEnabled_Scene_Playback(enabled);
+    mMainWindowHandle->setActionsEnabled_Scene_Modification(enabled);
     mMainWindowHandle->setActionEnabled_File_Save(enabled);
 }
 
@@ -472,10 +473,10 @@ MainController::onAction_Scene_Play
 ()
 {
     qDebug() << "MainController: onReloadProject Clicked";
-    SceneDefinition *sceneDefinitionHandle = mDreamModel->getSelectedSceneDefinitionHandle();
+    SceneDefinition *sceneDefinitionHandle = mDreamProjectModel->getSelectedSceneDefinitionHandle();
     if (sceneDefinitionHandle)
     {
-        mDreamModel->startSceneRuntimeFromDefinition(sceneDefinitionHandle);
+        mDreamProjectModel->startSceneRuntimeFromDefinition(sceneDefinitionHandle);
     }
     else
     {
@@ -495,7 +496,7 @@ void
 MainController::onAction_Scene_Stop
 ()
 {
-    mDreamModel->stopActiveSceneRuntime();
+    mDreamProjectModel->stopActiveSceneRuntime();
 }
 
 void
@@ -607,7 +608,7 @@ MainController::onAction_File_Close
 
     mMainWindowHandle->getPropertiesTreeView()->setModel(nullptr);
 
-    mDreamModel->closeProject();
+    mDreamProjectModel->closeProject();
 
     setActionsEnabled_ValidProject(false);
 }
@@ -625,14 +626,14 @@ void
 MainController::onAction_View_ToggleDebug
 (bool enabled)
 {
-    mDreamModel->setDebug(enabled);
+    mDreamProjectModel->setDebug(enabled);
 }
 
 void
 MainController::onAction_View_TogglePhysicsDebug
 (bool enable)
 {
-    mDreamModel->setPhysicsDebug(enable);
+    mDreamProjectModel->setPhysicsDebug(enable);
 }
 
 void
@@ -649,7 +650,7 @@ MainController::onAction_Scene_NewScene
 ()
 {
     qDebug() << "MainController: onScenegraphAddSceneAction";
-    Project* pHandle = mDreamModel->getProject();
+    Project* pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
         ProjectDefinition* pdHandle = pHandle->getProjectDefinitionHandle();
@@ -674,10 +675,17 @@ MainController::onAction_Scene_NewSceneObject
 // Asset Menu
 
 void
-MainController::onAction_Asset_AddToSelectedSceneObject
+MainController::onAction_Asset_AddToSelectedSceneObjectDefinition
 ()
 {
-    qDebug() << "MainController: onPropertiesAddAssetAction";
+    qDebug() << "MainController: onAction_Asset_AddToSelectedSceneObjectDefinition ";
+    if (mSelectedSceneObjectDefinitionHandle && mSelectedAssetDefinitionHandle)
+    {
+        mSelectedSceneObjectDefinitionHandle->addAssetDefinitionUuidToLoadQueue
+        (
+            mSelectedAssetDefinitionHandle->getUuid()
+        );
+    }
 }
 
 void
@@ -685,45 +693,64 @@ MainController::onAction_Asset_NewDefinition_Animation
 ()
 {
     qDebug() << "MainController: Creating new Animation Asset Definition";
+    if (mDreamProjectModel->createNewAssetDefinition(ANIMATION))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 void
 MainController::onAction_Asset_NewDefinition_Audio
 ()
 {
-
     qDebug() << "MainController: Creating new Audio Asset Definition";
+    if (mDreamProjectModel->createNewAssetDefinition(AUDIO))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 void
 MainController::onAction_Asset_NewDefinition_Font
 ()
 {
-
     qDebug() << "MainController: Creating new Font Asset Definition";
+    if (mDreamProjectModel->createNewAssetDefinition(FONT))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 void
 MainController::onAction_Asset_NewDefinition_Light
 ()
 {
-
     qDebug() << "MainController: Creating new Light Asset Definition";
+    if (mDreamProjectModel->createNewAssetDefinition(LIGHT))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 void
 MainController::onAction_Asset_NewDefinition_Model
 ()
 {
-
     qDebug() << "MainController: Creating new Model Asset Definition";
+    if (mDreamProjectModel->createNewAssetDefinition(MODEL))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 void
 MainController::onAction_Asset_NewDefinition_PhysicsObject
 ()
 {
-
     qDebug() << "MainController: Creating new Physics Object Asset Definition";
+    if (mDreamProjectModel->createNewAssetDefinition(PHYSICS_OBJECT))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 void
@@ -731,7 +758,10 @@ MainController::onAction_Asset_NewDefinition_Script
 ()
 {
     qDebug() << "MainController: Creating new Script Asset Definition";
-
+    if (mDreamProjectModel->createNewAssetDefinition(SCRIPT))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 void
@@ -739,7 +769,10 @@ MainController::onAction_Asset_NewDefinition_Shader
 ()
 {
     qDebug() << "MainController: Creating new Shader Asset Definition";
-
+    if (mDreamProjectModel->createNewAssetDefinition(SHADER))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 void
@@ -747,6 +780,10 @@ MainController::onAction_Asset_NewDefinition_Sprite
 ()
 {
     qDebug() << "MainController: Creating new Sprite Asset Definition";
+    if (mDreamProjectModel->createNewAssetDefinition(SPRITE))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
 }
 
 // UI Signal/Slot Handlers ======================================================
@@ -754,7 +791,7 @@ void
 MainController::onUI_SelectedSceneChanged
 (SceneDefinition *scene)
 {
-    mDreamModel->setSelectedSceneDefinitionHandle(scene);
+    mDreamProjectModel->setSelectedSceneDefinitionHandle(scene);
     mMainWindowHandle->showStatusBarMessage(
         QString("Selected Scene: %1").
             arg(QString::fromStdString(scene->getName())
@@ -771,11 +808,19 @@ MainController::onUI_ScenegraphUpdated
 }
 
 void
+MainController::onUI_AssetDefinitionsUpdated
+()
+{
+    qDebug() << "MainController: updating scenegraph tree model";
+    mAssetDefinitionTreeModel->setupModelData();
+}
+
+void
 MainController::onUI_ProjectNameChanged
 (QString name)
 {
     qDebug() << "MainController: Name set to " << name;
-    mDreamModel->setProjectName(name.toStdString());
+    mDreamProjectModel->setProjectName(name.toStdString());
 }
 
 void
@@ -783,7 +828,7 @@ MainController::onUI_ProjectAuthorChanged
 (QString author)
 {
     qDebug() << "MainController: Author set to " << author;
-    mDreamModel->setProjectAuthor(author.toStdString());
+    mDreamProjectModel->setProjectAuthor(author.toStdString());
 }
 
 void
@@ -791,7 +836,7 @@ MainController::onUI_ProjectDescriptionChanged
 (QString desc)
 {
     qDebug() << "MainController: Description set to " << desc;
-    mDreamModel->setProjectDescription(desc.toStdString());
+    mDreamProjectModel->setProjectDescription(desc.toStdString());
 }
 
 void
@@ -799,7 +844,7 @@ MainController::onUI_ProjectWindowWidthChanged
 (QString width)
 {
     qDebug() << "MainController: Window Width set to " << width;
-    mDreamModel->setProjectWindowWidth(width.toInt());
+    mDreamProjectModel->setProjectWindowWidth(width.toInt());
 }
 
 void
@@ -807,7 +852,7 @@ MainController::onUI_ProjectWindowHeightChanged
 (QString height)
 {
     qDebug() << "MainController: Window Height set to " << height;
-    mDreamModel->setProjectWindowHeight(height.toInt());
+    mDreamProjectModel->setProjectWindowHeight(height.toInt());
 }
 
 void
@@ -816,10 +861,10 @@ MainController::onUI_ProjectStartupSceneChanged
 {
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
     qDebug() << "MainController: startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
-    SceneDefinition* sceneHandle = mDreamModel->getProject()
+    SceneDefinition* sceneHandle = mDreamProjectModel->getProject()
         ->getProjectDefinitionHandle()
         ->getSceneDefinitionHandleByUuid(sceneName);
-    mDreamModel->setProjectStartupSceneByUuid(sceneHandle->getUuid());
+    mDreamProjectModel->setProjectStartupSceneByUuid(sceneHandle->getUuid());
 }
 
 // Object Handle Getters ========================================================
@@ -851,7 +896,7 @@ void
 MainController::openProject
 ()
 {
-    bool loadResult = mDreamModel->loadProject(mProjectDirectory);
+    bool loadResult = mDreamProjectModel->loadProject(mProjectDirectory);
     qDebug() << "MainController: Load Project Result " << loadResult;
     if (!loadResult)
     {
@@ -860,7 +905,7 @@ MainController::openProject
         return;
     }
     updateWindowTitle(mProjectDirectory);
-    ProjectDefinition *currentProject = mDreamModel->getProject()->getProjectDefinitionHandle();
+    ProjectDefinition *currentProject = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
 
     emit notifyProjectNameChanged(QString::fromStdString(currentProject->getName()));
     emit notifyProjectAuthorChanged(QString::fromStdString(currentProject->getAuthor()));

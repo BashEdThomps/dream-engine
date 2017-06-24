@@ -121,7 +121,7 @@ namespace Dream
     ProjectDefinition::getWindowHeight
     ()
     {
-       return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT];
+        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT];
     }
 
     void
@@ -174,12 +174,12 @@ namespace Dream
     (json assetDefinition)
     {
         mAssetDefinitions.push_back
-        (
-            unique_ptr<AssetDefinition>
-            (
-                new AssetDefinition(this,assetDefinition)
-            )
-        );
+                (
+                    unique_ptr<AssetDefinition>
+                    (
+                        new AssetDefinition(this,assetDefinition)
+                        )
+                    );
     }
 
     void
@@ -193,10 +193,10 @@ namespace Dream
         }
 
         remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
-            [&](const unique_ptr<AssetDefinition>& thisDefinition)
-            {
-                return thisDefinition.get() == assetDefinitionHandle;
-            }
+                  [&](const unique_ptr<AssetDefinition>& thisDefinition)
+        {
+            return thisDefinition.get() == assetDefinitionHandle;
+        }
         );
     }
 
@@ -226,12 +226,12 @@ namespace Dream
     (json scene)
     {
         mSceneDefinitions.push_back
-        (
-            unique_ptr<SceneDefinition>
-            (
-                new SceneDefinition(this,scene)
-            )
-        );
+                (
+                    unique_ptr<SceneDefinition>
+                    (
+                        new SceneDefinition(this,scene)
+                        )
+                    );
     }
 
     size_t
@@ -257,12 +257,12 @@ namespace Dream
 
     vector<SceneDefinition *> ProjectDefinition::getSceneDefinitionsHandleList()
     {
-       vector<SceneDefinition*> list;
-       for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
-       {
-           list.push_back((*it).get());
-       }
-       return list;
+        vector<SceneDefinition*> list;
+        for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
+        {
+            list.push_back((*it).get());
+        }
+        return list;
     }
 
     vector<AssetDefinition*> ProjectDefinition::getAssetDefinitionsHandleList()
@@ -286,6 +286,19 @@ namespace Dream
         mSceneDefinitions.push_back(unique_ptr<SceneDefinition>(sdHandle));
         sdHandle->createNewRootSceneObjectDefinition();
         return sdHandle;
+    }
+
+    AssetDefinition*
+    ProjectDefinition::createNewAssetDefinition
+    (AssetType type)
+    {
+        json assetDefinitionJson;
+        assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
+        assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
+        assetDefinitionJson[Constants::ASSET_TYPE] = Constants::assetTypeToString(type);
+        AssetDefinition* adHandle = new AssetDefinition(this, assetDefinitionJson);
+        mAssetDefinitions.push_back(unique_ptr<AssetDefinition>(adHandle));
+        return adHandle;
     }
 
     SceneDefinition*

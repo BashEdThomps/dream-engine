@@ -73,6 +73,7 @@ public:
     QAction* getAction_Scene_NewSceneObject();
 
     void setActionsEnabled_Scene_Playback(bool enabled);
+    void setActionsEnabled_Scene_Modification(bool enabled);
 
     QAction* getAction_View_ToggleGrid();
     QAction* getAction_View_ToggleDebug();
