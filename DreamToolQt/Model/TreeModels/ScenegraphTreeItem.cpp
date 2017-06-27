@@ -1,5 +1,5 @@
 /*
- * ProjectProjectTreeItem.cpp
+ * ProjectScenegraphTreeItem.cpp
  *
  * Created: 15 2017 by Ashley
  *
@@ -15,13 +15,15 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "ProjectTreeItem.h"
+#include "ScenegraphTreeItem.h"
 #include <QStringList>
+#include <QDebug>
 
 ScenegraphTreeItem::ScenegraphTreeItem
 (const QList<QVariant> &data, GenericTreeItemType type, void* item, ScenegraphTreeItem *parent)
     : GenericTreeItem(data, type, parent)
 {
+    qDebug() << "ScenegraphTreeItem: Constructing";
     mItem = item;
 }
 

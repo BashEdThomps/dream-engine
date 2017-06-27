@@ -44,14 +44,6 @@ namespace Dream
         SceneObjectDefinition(SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle,  json data);
         ~SceneObjectDefinition();
 
-        bool hasUuid(string);
-        void setUuid(string);
-        string getUuid();
-
-        bool hasName(string);
-        void setName(string);
-        string getName();
-
         void setHasFocus(bool focus);
         bool hasFocus();
 
@@ -60,11 +52,12 @@ namespace Dream
 
         Transform3D getTransform();
 
-        void showStatus();
+        void showStatus() override;
 
         vector<SceneObjectDefinition*> getChildDefinitionsHandleList();
 
         SceneDefinition *getSceneDefinitionHandle();
+        json getJson() override;
 
     private:
         void loadChildSceneObjectDefinitions(json definition);

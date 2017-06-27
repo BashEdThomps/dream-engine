@@ -18,14 +18,16 @@
 #include "AssetDefinitionTypeComboDelegate.h"
 #include <DreamCore.h>
 #include <QComboBox>
+#include <QDebug>
 
-using namespace Dream;
+using Dream::Constants;
+using Dream::AssetType;
 
 AssetDefinitionTypeComboDelegate::AssetDefinitionTypeComboDelegate
 (QObject* parent)
     : QItemDelegate (parent)
 {
-
+    qDebug() <<  "AssetDefinitionTypeComboDelegate: Constructing";
 }
 
 QWidget*

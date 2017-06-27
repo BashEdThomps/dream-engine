@@ -25,13 +25,14 @@ using Dream::SceneDefinition;
 
 class ScenePropertiesModel : public PropertiesModel
 {
+    Q_OBJECT
 public:
     ScenePropertiesModel(SceneDefinition *scene, QTreeView* parent = 0);
     ~ScenePropertiesModel();
 
     void createRoot() override;
     void createProperties() override;
-    void createDelegates() override;
+    void createDelegates();
 
     void createNameProperties();
     void createNotesProperties();

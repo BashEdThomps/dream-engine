@@ -15,18 +15,27 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROPERTIESMODEL_H
-#define PROPERTIESMODEL_H
+
+#pragma once
+
+#include "PropertiesItem.h"
 
 #include <QAbstractItemModel>
 #include <QTreeView>
-#include "PropertiesItem.h"
+#include <QItemDelegate>
+
+#include <memory>
+#include <map>
+
+using std::unique_ptr;
+using std::map;
 
 class PropertiesModel : public QAbstractItemModel
 {
+    Q_OBJECT
 public:
     PropertiesModel(QTreeView* parent = 0);
-    virtual ~PropertiesModel();
+    ~PropertiesModel();
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
@@ -37,17 +46,16 @@ public:
     bool insertColumns(int position, int columns,const QModelIndex &parent = QModelIndex()) override;
     bool insertRows(int position, int rows, const QModelIndex &parent = QModelIndex()) override;
     QModelIndex parent(const QModelIndex &index) const override;
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
     bool removeColumns(int position, int columns, const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int position, int rows,  const QModelIndex &parent = QModelIndex()) override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual void createRoot() = 0;
     virtual void createProperties() = 0;
-    virtual void createDelegates() = 0;
+    void setTreeViewDelegateForRow(int,QItemDelegate*);
 protected:
-    PropertiesItem *mRootItem;
-    QTreeView *mTreeView;
+    unique_ptr<PropertiesItem> mRootItem;
+    QTreeView *mTreeViewHandle;
+    map<int,QItemDelegate*> mViewDelegates;
 };
-
-#endif // PROPERTIESMODEL_H

@@ -36,7 +36,6 @@ namespace Dream
             cout << "AssetDefinition: Constructing "
                  << getNameAndUuidString() << endl;
         }
-        //showStatus();
     }
 
     AssetDefinition::~AssetDefinition

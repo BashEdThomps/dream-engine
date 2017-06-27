@@ -116,6 +116,11 @@ public slots:
     void onAction_Asset_NewDefinition_Script();
     void onAction_Asset_NewDefinition_Shader();
     void onAction_Asset_NewDefinition_Sprite();
+    void onAction_Debug_DumpProjectDefinitionJson(bool toggled);
+
+    void onPropertyEvent_ModelFileBrowseButtonClicked(AssetDefinition* adHandle);
+    void onPropertyEvent_ModelAdditionalFilesButtonClicked(AssetDefinition *adHandle);
+
 private: // Methods
     // Setup
     void setupUI();
@@ -139,6 +144,7 @@ private: // Methods
     void connectSceneMenu();
     void connectAssetMenu();
     void connectViewMenu();
+    void connectDebugMenu();
 
     void connectUI();
     void connectUI_TreeViewModels();

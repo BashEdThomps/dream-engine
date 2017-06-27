@@ -20,16 +20,19 @@
 #include <QComboBox>
 #include <QDebug>
 
+using Dream::Constants;
+
 AssetDefinitionFormatComboDelegate::AssetDefinitionFormatComboDelegate(std::string type, QObject* parent)
     : QItemDelegate(parent)
 {
+   qDebug() << "AssetDefinitionFormatComboDelegate: Constructing Object";
     mAssetType = Constants::assetTypeFromString(type);
 }
 
 AssetDefinitionFormatComboDelegate::~AssetDefinitionFormatComboDelegate
 ()
 {
-    qDebug() << "AssetDefinitionFormatComboDelegate: Destroying Object";
+   qDebug() << "AssetDefinitionFormatComboDelegate: Destroying Object";
 }
 
 QWidget*
@@ -40,7 +43,7 @@ const
     QComboBox *editor = new QComboBox(parent);
     editor->setDuplicatesEnabled(false);
     editor->setEditable(false);
-    editor->setMinimumHeight(25);
+    editor->setInsertPolicy(QComboBox::NoInsert);
     vector<std::string> formats = Constants::DREAM_ASSET_FORMATS_MAP[mAssetType];
     QStringList list;
     for (std::string format : formats)
@@ -58,7 +61,7 @@ const
 {
     QString value = index.model()->data(index, Qt::DisplayRole).toString();
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
-    comboBox->addItem(value);
+    comboBox->setCurrentText(value);
 }
 
 void
@@ -77,12 +80,4 @@ AssetDefinitionFormatComboDelegate::updateEditorGeometry
 const
 {
     editor->setGeometry(option.rect);
-}
-
-QSize
-AssetDefinitionFormatComboDelegate::sizeHint
-( const QStyleOptionViewItem & option, const QModelIndex & index )
-const
-{
-    return QSize(100,25);
 }

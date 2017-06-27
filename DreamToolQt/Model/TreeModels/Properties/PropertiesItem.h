@@ -16,8 +16,7 @@
  * this file belongs to.
  */
 
-#ifndef PROPERTIESITEM_H
-#define PROPERTIESITEM_H
+#pragma once
 
 #include <QList>
 #include <QVariant>
@@ -44,8 +43,6 @@ public:
 private:
     QList<PropertiesItem*> mChildItems;
     QList<QVariant> mItemData;
-    PropertiesItem *mParentItem;
-    void           *mItem;
+    PropertiesItem *mParentItemHandle;
+    void           *mItemHandle;
 };
-
-#endif // PROPERTIESITEM_H

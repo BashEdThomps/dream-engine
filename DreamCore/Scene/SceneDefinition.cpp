@@ -42,11 +42,18 @@ namespace Dream
                  << getNameAndUuidString() << endl;
         }
 
-        json sceneObjects = mJson[Constants::SCENE_SCENE_OBJECTS];
+        json rootSceneObject = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
 
-        if (!sceneObjects.is_null() && sceneObjects.is_array())
+        if (rootSceneObject.is_null())
         {
-            loadRootSceneObjectDefinition(sceneObjects[0]);
+            if (Constants::DEBUG)
+            {
+                cout << "SceneDefinition: No root SceneObject found!!" << endl;
+            }
+        }
+        else
+        {
+            loadRootSceneObjectDefinition(rootSceneObject);
         }
     }
 
@@ -71,12 +78,12 @@ namespace Dream
 
     void
     SceneDefinition::loadRootSceneObjectDefinition
-    (json jsonArray)
+    (json rsoJson)
     {
-        if (!jsonArray.is_null())
-        {
-            mRootSceneObjectDefinition.reset(new SceneObjectDefinition(nullptr, this,jsonArray));
-        }
+        mRootSceneObjectDefinition.reset
+        (
+            new SceneObjectDefinition(nullptr, this, rsoJson)
+        );
     }
 
     void
@@ -323,7 +330,9 @@ namespace Dream
         return mProjectDefinitionHandle;
     }
 
-    SceneObjectDefinition *SceneDefinition::createNewRootSceneObjectDefinition()
+    SceneObjectDefinition*
+    SceneDefinition::createNewRootSceneObjectDefinition
+    ()
     {
         json rootDefJson;
         rootDefJson[Constants::NAME] = Constants::SCENE_OBJECT_ROOT_NAME;
@@ -332,5 +341,13 @@ namespace Dream
         rootSoDefinition = new SceneObjectDefinition(nullptr,this,rootDefJson);
         mRootSceneObjectDefinition.reset(rootSoDefinition);
         return rootSoDefinition;
+    }
+
+    json
+    SceneDefinition::getJson
+    ()
+    {
+       mJson[Constants::SCENE_ROOT_SCENE_OBJECT] = mRootSceneObjectDefinition->getJson();
+       return mJson;
     }
 }

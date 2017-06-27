@@ -14,7 +14,9 @@
  * If you have any questions regarding the use of this file, feel free to
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
+ *
  */
+
 #include "ProjectDefinition.h"
 
 #include "Project.h"
@@ -293,11 +295,23 @@ namespace Dream
     (AssetType type)
     {
         json assetDefinitionJson;
+
+        string defaultFormat = Constants::getAssetFormatString(*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
+        if (Constants::DEBUG)
+        {
+            cout << "ProjectDefinition: Creating new AssetDefinition with default Format"
+                 << defaultFormat
+                 << endl;
+        }
+
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::assetTypeToString(type);
+        assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
+
         AssetDefinition* adHandle = new AssetDefinition(this, assetDefinitionJson);
         mAssetDefinitions.push_back(unique_ptr<AssetDefinition>(adHandle));
+
         return adHandle;
     }
 
@@ -306,5 +320,40 @@ namespace Dream
     ()
     {
         return getSceneDefinitionHandleByUuid(getStartupSceneUuid());
+    }
+
+    /*
+     * Json Structure
+     * {
+     *  name,
+     *  uuid,
+     *  startupScene(uuid),
+     *  description,
+     *  author,
+     *  windowSize : {
+     *      width,
+     *      height
+     *  },
+     *  assets: [],
+     *  scenes: []
+     * }
+     */
+    json
+    ProjectDefinition::getJson
+    ()
+    {
+        mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
+        for (AssetDefinition *adHandle : getAssetDefinitionsHandleList())
+        {
+           mJson[Constants::PROJECT_ASSET_ARRAY].push_back(adHandle->getJson());
+        }
+
+        mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
+        for (SceneDefinition* sdHandle : getSceneDefinitionsHandleList())
+        {
+            mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sdHandle->getJson());
+        }
+
+        return mJson;
     }
 }

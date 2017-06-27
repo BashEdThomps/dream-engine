@@ -38,8 +38,7 @@ ScenegraphTreeModel::ScenegraphTreeModel
 ScenegraphTreeModel::~ScenegraphTreeModel
 ()
 {
-    qDebug() << "ScenegraphTreeModel: Destructing for "
-             << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
+    qDebug() << "ScenegraphTreeModel: Destructing";
     if (mRootItem)
     {
         mRootItem.release();

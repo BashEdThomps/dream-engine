@@ -71,8 +71,10 @@ SelectionHighlighter::updateVertexBuffer
 {
     qDebug() << "SelectionHighlighter: Updating Vertex Buffer" ;
     mVertexBuffer.clear();
+
     if (!mSelectedObjectHandle)
     {
+        qDebug() << "SelectionHighlighter: No object selected";
         return;
     }
 

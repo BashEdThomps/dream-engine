@@ -15,8 +15,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SCENEOBJECTPROPERTIESMODEL_H
-#define SCENEOBJECTPROPERTIESMODEL_H
+#pragma once
 
 #include "PropertiesModel.h"
 #include <DreamCore.h>
@@ -25,13 +24,14 @@ using namespace Dream;
 
 class SceneObjectPropertiesModel : public PropertiesModel
 {
+    Q_OBJECT
 public:
     SceneObjectPropertiesModel(SceneObjectDefinition *sceneObject,QTreeView* parent = 0);
     ~SceneObjectPropertiesModel();
 
     void createRoot() override;
     void createProperties() override;
-    void createDelegates() override;
+    void createDelegates();
 
     void createNameProperty();
     void createTranslationProperty();
@@ -42,7 +42,5 @@ public:
     void createAssetInstancesProperty();
     void createChildrenProperty();
 private:
-    SceneObjectDefinition *mSceneObject;
+    SceneObjectDefinition *mSceneObjectDefinitionHandle;
 };
-
-#endif // SCENEOBJECTPROPERTIESMODEL_H

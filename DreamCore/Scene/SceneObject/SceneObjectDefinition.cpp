@@ -53,48 +53,6 @@ namespace Dream
         }
     }
 
-    bool
-    SceneObjectDefinition::hasName
-    (string name)
-    {
-        return getName().compare(name) == 0;
-    }
-
-    void
-    SceneObjectDefinition::setName
-    (string name)
-    {
-        mJson[Constants::NAME] = name;
-    }
-
-    string
-    SceneObjectDefinition::getName
-    ()
-    {
-        return mJson[Constants::NAME];
-    }
-
-    bool
-    SceneObjectDefinition::hasUuid
-    (string uuid)
-    {
-        return (getUuid().compare(uuid) == 0);
-    }
-
-    void
-    SceneObjectDefinition::setUuid
-    (string uuid)
-    {
-        mJson[Constants::UUID] = uuid;
-    }
-
-    string
-    SceneObjectDefinition::getUuid
-    ()
-    {
-        return mJson[Constants::UUID];
-    }
-
     Transform3D
     SceneObjectDefinition::getTransform
     ()
@@ -185,5 +143,17 @@ namespace Dream
     ()
     {
         return mSceneDefinitionHandle;
+    }
+
+    json
+    SceneObjectDefinition::getJson
+    ()
+    {
+        mJson[Constants::SCENE_OBJECT_CHILDREN] = json::array();
+        for (SceneObjectDefinition* sodHandle : getChildDefinitionsHandleList())
+        {
+            mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sodHandle->getJson());
+        }
+        return mJson;
     }
 }

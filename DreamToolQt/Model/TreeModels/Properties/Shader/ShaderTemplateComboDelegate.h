@@ -15,13 +15,13 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SHADERTEMPLATECOMBODELEGATE_H
-#define SHADERTEMPLATECOMBODELEGATE_H
+#pragma once
 
 #include <QItemDelegate>
 
 class ShaderTemplateComboDelegate : public QItemDelegate
 {
+    Q_OBJECT
 public:
     ShaderTemplateComboDelegate(QObject* parent = 0);
     ~ShaderTemplateComboDelegate();
@@ -32,5 +32,3 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 };
-
-#endif // SHADERTEMPLATECOMBODELEGATE_H

@@ -18,11 +18,13 @@
 
 #pragma once
 
+#include <memory>
 #include <QAbstractItemModel>
 #include "AssetDefinitionTreeItem.h"
 #include <DreamCore.h>
 
-using namespace Dream;
+using Dream::ProjectDefinition;
+using std::unique_ptr;
 
 class AssetDefinitionTreeModel : public QAbstractItemModel
 {
@@ -42,6 +44,6 @@ public:
     void setupModelData();
 
 private:
-    ProjectDefinition *mProject;
-    AssetDefinitionTreeItem *mRootItem;
+    ProjectDefinition *mProjectHandle;
+    unique_ptr<AssetDefinitionTreeItem> mRootItem;
 };

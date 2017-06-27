@@ -16,12 +16,13 @@
  * this file belongs to.
  */
 #include "ProjectPropertiesModel.h"
+#include <QDebug>
 
 ProjectPropertiesModel::ProjectPropertiesModel
 (ProjectDefinition *project,QTreeView* parent)
     : PropertiesModel(parent)
 {
-    mProject = project;
+    mProjectDefinitionHandle = project;
     createRoot();
     createProperties();
 }
@@ -30,10 +31,11 @@ void
 ProjectPropertiesModel::createRoot
 ()
 {
+    qDebug() << "ProjectPropertiesModel: Constructing";
     QList<QVariant> rootData;
-    rootData << QString::fromStdString(mProject->getName())
-             << QString::fromStdString(mProject->getUuid());
-    mRootItem = new PropertiesItem(rootData,mProject);
+    rootData << QString::fromStdString(mProjectDefinitionHandle->getName())
+             << QString::fromStdString(mProjectDefinitionHandle->getUuid());
+    mRootItem.reset(new PropertiesItem(rootData,mProjectDefinitionHandle));
 }
 
 void
@@ -51,5 +53,5 @@ ProjectPropertiesModel::createDelegates
 ProjectPropertiesModel::~ProjectPropertiesModel
 ()
 {
-    delete mRootItem;
+    qDebug() << "ProjectPropertiesModel: Destructing";
 }

@@ -63,6 +63,7 @@ MainWindow::setActionsEnabled_Scene_Modification
     ui->actionSceneNewSceneObject->setEnabled(enabled);
     ui->actionAssetMenuAddAssetToSelectedSceneObject->setEnabled(enabled);
     mMenu_Asset_NewDefinition->setEnabled(enabled);
+    setActionEnabled_Debug_DumpProjectDefinitionJson(enabled);
 }
 
 void
@@ -109,6 +110,21 @@ MainWindow::getAction_Asset_AddToSelectedSceneObject
     return ui->actionAssetMenuAddAssetToSelectedSceneObject;
 }
 
+QAction*
+MainWindow::getAction_Debug_DumpProjectDefinitionJson
+()
+{
+    return ui->actionDebug_DumpProjectDefinitionJson;
+}
+
+void
+MainWindow::setActionEnabled_Debug_DumpProjectDefinitionJson
+(bool enabled)
+{
+
+    ui->actionDebug_DumpProjectDefinitionJson->setEnabled(enabled);
+}
+
 void
 MainWindow::setActionEnabled_File_Save
 (bool enabled)
@@ -147,22 +163,30 @@ MainWindow::setupMenu_Asset_NewDefinition
 }
 
 void
+MainWindow::setPropertiesDockWidgetTitle
+(QString title)
+{
+   ui->propertiesDockWidget->setWindowTitle(title);
+}
+
+void
 MainWindow::setupGL
 (QWidget *parent)
 {
-    QVBoxLayout *glVerticalLayout = new QVBoxLayout(ui->centralWidget);
-    glVerticalLayout->setSpacing(0);
-    glVerticalLayout->setContentsMargins(0,0,0,0);
-    glVerticalLayout->setObjectName(QStringLiteral("glVerticalLayout"));
+    //QVBoxLayout *glVerticalLayout = new QVBoxLayout(ui->centralWidget);
+    //glVerticalLayout->setSpacing(0);
+    //glVerticalLayout->setContentsMargins(0,0,0,0);
+    //glVerticalLayout->setObjectName(QStringLiteral("glVerticalLayout"));
 
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );
     glFormat.setProfile( QSurfaceFormat::CoreProfile );
     glFormat.setSamples(4);
     mWindowComponent.reset(new QOpenGLWindowComponent(glFormat,parent));
+    ui->centralWidget->layout()->addWidget(mWindowComponent.get());
 
-    glVerticalLayout->addWidget(mWindowComponent.get());
-    ui->previewTab->setLayout(glVerticalLayout);
+    //glVerticalLayout->addWidget(mWindowComponent.get());
+    //ui->centralWidget->setLayout(glVerticalLayout);
 }
 
 MainWindow::~MainWindow

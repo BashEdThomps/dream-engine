@@ -1,5 +1,5 @@
 /*
-* Dream::Util::UUID
+* UUID
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,23 @@
 #include "Uuid.h"
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 
 namespace Dream
 {
     string Uuid::generateUuid()
     {
+        srand(static_cast<unsigned int>(time(NULL)));
         size_t bufSize = sizeof(char)*20;
         char* buffer = static_cast<char*>(malloc(bufSize));
         snprintf(
-                    buffer, bufSize,
-                    "%02x%02x-%02x%02x-%02x%02x-%02x%02x",
-                    rand()%255, rand()%255,
-                    rand()%255, rand()%255,
-                    rand()%255, rand()%255,
-                    rand()%255, rand()%255
-                    );
+            buffer, bufSize,
+            "%02x%02x-%02x%02x-%02x%02x-%02x%02x",
+            rand()%255, rand()%255,
+            rand()%255, rand()%255,
+            rand()%255, rand()%255,
+            rand()%255, rand()%255
+        );
         string retval = string(buffer);
         free(buffer);
         return retval;

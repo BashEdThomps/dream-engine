@@ -13,7 +13,6 @@
         <file>images/view-list-icons-symbolic.png</file>
         <file>images/view-list-details-symbolic.png</file>
         <file>images/list-add.png</file>
-        <file>templates/project/project_template.json</file>
         <file>templates/script/Lua/lua</file>
         <file>templates/shader/Basic2D/fragment</file>
         <file>templates/shader/Basic2D/vertex</file>

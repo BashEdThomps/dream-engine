@@ -19,7 +19,7 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include "ProjectTreeItem.h"
+#include "ScenegraphTreeItem.h"
 #include <DreamCore.h>
 #include <memory>
 

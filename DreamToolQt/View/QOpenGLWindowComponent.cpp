@@ -78,7 +78,7 @@ QOpenGLWindowComponent::paintGL
 {
     if (mPaintInProgress)
     {
-        cerr << "QOGLWC: Attempted to paint while painting in progress" << endl;
+        cerr << "QOGLWC: Attempted to paint before previous paintGL call has finished" << endl;
         return;
     }
 

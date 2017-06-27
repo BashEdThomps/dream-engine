@@ -24,11 +24,20 @@
 
 using namespace std;
 
+namespace Dream
+{
+    class AssetDefinition;
+    class ProjectDefinition;
+}
+
+using Dream::AssetDefinition;
+using Dream::ProjectDefinition;
+
 class ProjectDirectoryModel : public QObject
 {
     Q_OBJECT
 public:
-    ProjectDirectoryModel(QObject* parent = nullptr);
+    ProjectDirectoryModel(ProjectDefinition* pdHanndle = nullptr, QObject* parent = nullptr);
     ~ProjectDirectoryModel();
 
     bool createProjectDirectory();
@@ -41,7 +50,7 @@ public:
     bool createScriptDirectory();
     bool createShaderDirectory();
     bool createSpriteDirectory();
-    bool createProjectFile();
+    bool writeProjectFile();
     bool inflateFromDirectory(QString absolutePath);
     bool createNewProjectTree(QString absolutePath);
 
@@ -57,7 +66,6 @@ public:
     bool spriteDirectoryExists();
 
     bool projectFileExists();
-
     bool isValidProject();
 
     QString getProjectDirectoryAbsolutePath();
@@ -72,7 +80,17 @@ public:
     QString getSpriteDirectoryAbsolutePath();
     QString getProjectFileAbsolutePath();
 
-private:
+    bool assetMainFileExists(AssetDefinition *adHandle, string format = "" );
+    bool deleteMainAssetFile(AssetDefinition *adHandle, string format = "" );
+    bool copyMainAssetFile(AssetDefinition *adHandle, QFile& assetFile, string format = "" );
+
+    bool copyAdditionalFile(AssetDefinition *adHandle, QFile& assetFile);
+
+    ProjectDefinition *getProjectDefinitionHandle();
+    void setProjectDefinitionHandle(ProjectDefinition *projectDefinitionHandle);
+
+private: // Variables
+    ProjectDefinition* mProjectDefinitionHandle;
     QString mAbsolutePath;
     QDir mProjectDirectory;
     QDir mAssetsDirectory;
@@ -85,4 +103,6 @@ private:
     QDir mShaderDirectory;
     QDir mSpriteDirectory;
     QString getProjectName();
+private: // Methods
+    QString createAssetTargetPath(AssetDefinition *adHandle, string format = "");
 };

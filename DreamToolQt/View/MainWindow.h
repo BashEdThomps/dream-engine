@@ -83,7 +83,12 @@ public:
     QAction* getAction_Asset_NewDefinition(AssetType type);
     QAction* getAction_Asset_AddToSelectedSceneObject();
 
+    QAction* getAction_Debug_DumpProjectDefinitionJson();
+    void setActionEnabled_Debug_DumpProjectDefinitionJson(bool enabled);
+
     void setupMenu_Asset_NewDefinition();
+
+    void setPropertiesDockWidgetTitle(QString title);
 
 private: // Methods
     bool shouldPassKey(int key);

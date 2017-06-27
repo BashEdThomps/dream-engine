@@ -36,7 +36,6 @@ ScenePropertiesModel::~ScenePropertiesModel
 ()
 {
     qDebug() << "ScenePropertiesModel: Desstructor called";
-    delete mRootItem;
 }
 
 void
@@ -47,7 +46,7 @@ ScenePropertiesModel::createRoot
     QList<QVariant> rootData;
     rootData << QString::fromStdString(mSceneDefinition->getName())
              << QString::fromStdString(mSceneDefinition->getUuid());
-    mRootItem = new PropertiesItem(rootData,mSceneDefinition);
+    mRootItem.reset(new PropertiesItem(rootData,mSceneDefinition));
 }
 
 void

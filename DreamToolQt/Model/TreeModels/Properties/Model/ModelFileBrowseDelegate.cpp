@@ -1,7 +1,7 @@
 /*
- * ScriptTemplateComboDelegate.cpp
+ * ModelFileBrowseDelegate.cpp
  *
- * Created: 01 2017 by Ashley
+ * Created: 25 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,74 +15,79 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "ScriptTemplateComboDelegate.h"
-#include <QComboBox>
+
+#include "ModelFileBrowseDelegate.h"
+
 #include <QDebug>
+#include <QToolButton>
 #include <DreamCore.h>
 
-using namespace Dream;
-
-ScriptTemplateComboDelegate::ScriptTemplateComboDelegate
-(QObject* parent)
-    : QItemDelegate (parent)
+ModelFileBrowseDelegate::ModelFileBrowseDelegate
+(AssetDefinition* adHandle, QObject* parent)
+    : QItemDelegate (parent),
+      mAssetDefinitionHandle(adHandle)
 {
-
-    qDebug() << "ScriptFormatComboDelegate: Constructing Object";
+    qDebug() << "ModelFileBrowseDelegate: Constructing";
 }
 
-ScriptTemplateComboDelegate::~ScriptTemplateComboDelegate
+ModelFileBrowseDelegate::~ModelFileBrowseDelegate
 ()
 {
-    qDebug() << "ScriptFormatComboDelegate: Destructing Object";
+    qDebug() << "ModelFileBrowseDelegate: Destructing";
 }
 
 QWidget*
-ScriptTemplateComboDelegate::createEditor
+ModelFileBrowseDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem & option , const QModelIndex & index )
 const
 {
-    QComboBox *editor = new QComboBox(parent);
-    editor->setDuplicatesEnabled(false);
-    editor->setEditable(false);
-    editor->setMinimumHeight(25);
-    QStringList list;
-    list << QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA);
-    editor->addItems(list);
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Browse...");
+    connect
+    (
+        editor,SIGNAL(clicked(bool)),
+        this, SLOT(onBrowseButtonClicked(bool))
+    );
     return editor;
 }
 
 void
-ScriptTemplateComboDelegate::setEditorData
+ModelFileBrowseDelegate::setEditorData
 (QWidget *editor, const QModelIndex &index)
 const
 {
+    /*
     QString value = index.model()->data(index, Qt::DisplayRole).toString();
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
     comboBox->addItem(value);
+    */
 }
 
 void
-ScriptTemplateComboDelegate::setModelData
+ModelFileBrowseDelegate::setModelData
 (QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
 const
 {
-    QComboBox *comboBox = static_cast<QComboBox*>(editor);
-    QString value = comboBox->currentText();
-    model->setData(index, value);
+    /*
+        QComboBox *comboBox = static_cast<QComboBox*>(editor);
+        QString value = comboBox->currentText();
+        model->setData(index, value);
+    */
 }
 
 void
-ScriptTemplateComboDelegate::updateEditorGeometry
+ModelFileBrowseDelegate::updateEditorGeometry
 (QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex & index )
 const
 {
     editor->setGeometry(option.rect);
 }
 
-QSize
-ScriptTemplateComboDelegate::sizeHint
-( const QStyleOptionViewItem & option, const QModelIndex & index )
-const
+void
+ModelFileBrowseDelegate::onBrowseButtonClicked
+(bool checked)
 {
-    return QSize(100,25);
+    qDebug() << "ModelFileBrowseDelegate: Browse was clicked"
+             << checked;
+    emit notifyModelFileBrowseButtonClicked(mAssetDefinitionHandle);
 }

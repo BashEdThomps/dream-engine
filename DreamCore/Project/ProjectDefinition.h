@@ -58,7 +58,7 @@ namespace Dream
 
         void loadChildDefinitions();
 
-        void showStatus();
+        void showStatus() override;
         size_t countAssetDefinitions();
         AssetDefinition *getAssetDefinitionHandleByUuid(string uuid);
 
@@ -70,6 +70,7 @@ namespace Dream
         vector<AssetDefinition*> getAssetDefinitionsHandleList();
         SceneDefinition* createNewSceneDefinition();
         AssetDefinition* createNewAssetDefinition(AssetType type);
+        json getJson() override;
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();

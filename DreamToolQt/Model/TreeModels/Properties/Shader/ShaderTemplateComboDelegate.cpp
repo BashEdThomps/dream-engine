@@ -20,11 +20,12 @@
 #include <QDebug>
 #include <DreamCore.h>
 
-using namespace Dream;
+using Dream::Constants;
 
 ShaderTemplateComboDelegate::ShaderTemplateComboDelegate(QObject* parent)
     : QItemDelegate(parent)
 {
+    qDebug() << "ShaderFormatComboDelegate: Constructing Object";
 }
 
 ShaderTemplateComboDelegate::~ShaderTemplateComboDelegate

@@ -17,6 +17,7 @@
  */
 #include "AssetDefinitionTreeItem.h"
 #include <QStringList>
+#include <QDebug>
 
 AssetDefinitionTreeItem::AssetDefinitionTreeItem
 (
@@ -27,6 +28,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
 )
     : GenericTreeItem(data, type, parent)
 {
+    qDebug() << "AssetDefinitionTreeItem: Constructing";
     mDefinition = definition;
 }
 

@@ -18,21 +18,25 @@
 
 #include "PropertiesItem.h"
 
+#include <QDebug>
+
 PropertiesItem::PropertiesItem(const QList<QVariant> &data, void* item, PropertiesItem *parent)
 {
+    qDebug() << "PropertiesItem: Constructing";
     mItemData = data;
-    mParentItem = parent;
-    mItem = item;
+    mParentItemHandle = parent;
+    mItemHandle = item;
 }
 
 PropertiesItem::~PropertiesItem()
 {
+    qDebug() << "PropertiesItem: Destructing";
     qDeleteAll(mChildItems);
 }
 
 void PropertiesItem::setParent(PropertiesItem* parent)
 {
-    mParentItem = parent;
+    mParentItemHandle = parent;
 }
 
 void PropertiesItem::appendChild(PropertiesItem *item)
@@ -63,23 +67,23 @@ QVariant PropertiesItem::data(int column) const
 
 PropertiesItem *PropertiesItem::parentItem()
 {
-    return mParentItem;
+    return mParentItemHandle;
 }
 
 int PropertiesItem::row() const
 {
-    if (mParentItem)
+    if (mParentItemHandle)
     {
-        return mParentItem->mChildItems.indexOf(const_cast<PropertiesItem*>(this));
+        return mParentItemHandle->mChildItems.indexOf(const_cast<PropertiesItem*>(this));
     }
     return 0;
 }
 
 int PropertiesItem::childNumber() const
 {
-    if (mParentItem)
+    if (mParentItemHandle)
     {
-        return mParentItem->mChildItems.indexOf(const_cast<PropertiesItem*>(this));
+        return mParentItemHandle->mChildItems.indexOf(const_cast<PropertiesItem*>(this));
     }
     return 0;
 }

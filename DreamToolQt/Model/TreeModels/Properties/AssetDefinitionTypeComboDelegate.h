@@ -15,13 +15,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ASSETDEFINITIONTYPECOMBODELEGATE_H
-#define ASSETDEFINITIONTYPECOMBODELEGATE_H
+
+#pragma once
 
 #include <QItemDelegate>
 
 class AssetDefinitionTypeComboDelegate : public QItemDelegate
 {
+    Q_OBJECT
 public:
     AssetDefinitionTypeComboDelegate(QObject* parent = 0);
 
@@ -30,5 +31,3 @@ public:
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
-
-#endif // ASSETDEFINITIONTYPECOMBODELEGATE_H

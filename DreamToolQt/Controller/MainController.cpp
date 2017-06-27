@@ -30,6 +30,9 @@
 #include "../Model/TreeModels/Properties/ScenePropertiesModel.h"
 #include "../Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h"
 
+#include <iostream>
+using std::cout;
+
 // Constructors/Destructors =====================================================
 
 MainController::MainController
@@ -83,9 +86,13 @@ MainController::setupUI_PropertiesTreeViewModel
 {
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
 
-
-
-    SceneObjectRuntime *sceneObjectRuntime = nullptr;
+    /*
+     * mSelectedProjectDefinitionHandle = nullptr;
+     * mSelectedAssetDefinitionHandle = nullptr;
+     * mSelectedSceneDefinitionHandle = nullptr;
+     * mSelectedSceneObjectDefinitionHandle = nullptr;
+     */
+    SceneObjectRuntime *selectedSceneObjectRuntime = nullptr;
 
     // Reset the selected object
     if (mSelectionHighlighter)
@@ -99,26 +106,46 @@ MainController::setupUI_PropertiesTreeViewModel
             qDebug() << "MainController: Selected a project";
             mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
             mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
+            mMainWindowHandle->setPropertiesDockWidgetTitle("Project Properties");
             break;
+
         case GenericTreeItemType::ASSET_DEFINITION:
             qDebug() << "MainController: Selected an asset definition";
             mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
             mPropertiesModel.reset(new AssetDefinitionPropertiesModel(mSelectedAssetDefinitionHandle,propertiesTreeView));
-            // Set Type Delegate
+
+            mMainWindowHandle->setPropertiesDockWidgetTitle("Asset Definition Properties");
+
+            connect
+            (
+                mPropertiesModel.get(), SIGNAL(notifyModelFileBrowseButtonClicked(AssetDefinition*)),
+                this, SLOT(onPropertyEvent_ModelFileBrowseButtonClicked(AssetDefinition*))
+            );
+            connect
+            (
+                mPropertiesModel.get(), SIGNAL(notifyModelAdditionalFilesButtonClicked(AssetDefinition*)),
+                this, SLOT(onPropertyEvent_ModelAdditionalFilesButtonClicked(AssetDefinition*))
+            );
             break;
+
         case GenericTreeItemType::SCENE:
+            qDebug() << "MainController: Selected a scene";
             mSelectedSceneDefinitionHandle = static_cast<SceneDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
             if (mSelectedSceneDefinitionHandle)
             {
                 mPropertiesModel.reset(new ScenePropertiesModel(mSelectedSceneDefinitionHandle,propertiesTreeView));
-                qDebug() << "MainController: Selected a scene";
             }
+
+            mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Properties");
             break;
+
         case GenericTreeItemType::SCENE_OBJECT:
             qDebug() << "MainController: Selected a scene object";
             mSelectedSceneObjectDefinitionHandle = static_cast<SceneObjectDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mPropertiesModel.reset(new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView));
+
+            mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Object Properties");
 
             if (mSelectionHighlighter)
             {
@@ -127,17 +154,17 @@ MainController::setupUI_PropertiesTreeViewModel
                     ProjectRuntime* prHandle = mDreamProjectModel->getProject()->getProjectRuntimeHandle();
                     if (prHandle->hasActiveSceneRuntime())
                     {
-                        sceneObjectRuntime = mDreamProjectModel
+                        selectedSceneObjectRuntime = mDreamProjectModel
                             ->getProject()
                             ->getProjectRuntimeHandle()
                             ->getActiveSceneRuntimeHandle()
                             ->getSceneObjectRuntimeHandleByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
-                        mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(sceneObjectRuntime);
+                        mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(selectedSceneObjectRuntime);
                     }
                 }
             }
-
             break;
+
         case GenericTreeItemType::TREE_NODE:
             qDebug() << "MainController: Selected a tree node";
             break;
@@ -167,6 +194,7 @@ MainController::connectMenus
     connectSceneMenu();
     connectAssetMenu();
     connectViewMenu();
+    connectDebugMenu();
 }
 
 void
@@ -378,6 +406,19 @@ MainController::connectViewMenu
 }
 
 void
+MainController::connectDebugMenu
+()
+{
+    connect
+    (
+        mMainWindowHandle->getAction_Debug_DumpProjectDefinitionJson(),
+        SIGNAL(triggered(bool)),
+        this,
+        SLOT(onAction_Debug_DumpProjectDefinitionJson(bool))
+    );
+}
+
+void
 MainController::connectUI
 ()
 {
@@ -468,6 +509,7 @@ MainController::getSceneNamesListModel
     mSceneListModel->setStringList(sceneNameList);
     return mSceneListModel.get();
 }
+
 void
 MainController::onAction_Scene_Play
 ()
@@ -540,6 +582,7 @@ MainController::onAction_File_New
             qDebug() << "MainController: Project is valid";
             setActionsEnabled_ValidProject(true);
             openProject();
+            mProjectDirectoryModel.writeProjectFile();
 
         }
         else
@@ -584,13 +627,24 @@ void
 MainController::onAction_File_Save
 ()
 {
-    QFileDialog saveDialog;
-    saveDialog.setDirectory(QDir::home());
-    saveDialog.setFileMode(QFileDialog::Directory);
-    saveDialog.setAcceptMode(QFileDialog::AcceptSave);
-
-    if(saveDialog.exec())
+    bool saveResult = mProjectDirectoryModel.writeProjectFile();
+    if(saveResult)
     {
+        emit notifyStatusBarProjectLoaded(
+            QString::fromStdString(
+                "Successfuly Saved Project: " +
+                mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
+            )
+        );
+    }
+    else
+    {
+        emit notifyStatusBarProjectLoaded(
+            QString::fromStdString(
+                "Error Saving Project: " +
+                mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
+            )
+        );
     }
 }
 
@@ -598,6 +652,11 @@ void
 MainController::onAction_File_Close
 ()
 {
+    mSelectedProjectDefinitionHandle = nullptr;
+    mSelectedAssetDefinitionHandle = nullptr;
+    mSelectedSceneDefinitionHandle = nullptr;
+    mSelectedSceneObjectDefinitionHandle = nullptr;
+
     mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
 
     mMainWindowHandle->getScenegraphTreeView()->setModel(nullptr);
@@ -786,6 +845,81 @@ MainController::onAction_Asset_NewDefinition_Sprite
     }
 }
 
+void
+MainController::onPropertyEvent_ModelFileBrowseButtonClicked
+(AssetDefinition* adHandle)
+{
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::ExistingFile);
+    openDialog.setDirectory(QDir::home());
+
+    if(openDialog.exec())
+    {
+
+        QString sourceFilePath = openDialog.selectedFiles().first();
+        QFile sourceFile(sourceFilePath);
+
+        qDebug() << "MainController: Using Assimp file"
+                 << sourceFilePath;
+
+        bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
+
+        if (fileExists)
+        {
+            QString fileName = QFileInfo(sourceFile).fileName();
+            auto result = QMessageBox::question
+            (
+                mMainWindowHandle,
+                "Overwrite Existing File?",
+                "An asset file all ready exists. Do you want to replace it?"
+            );
+            if (result != QMessageBox::Yes)
+            {
+                qDebug() << "MainController: Copy of" << fileName
+                         <<"was cancelled.";
+               return;
+            }
+
+            if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
+            {
+                qDebug() << "MainController: Error, unable to delete main asset file for"
+                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                return;
+            }
+        }
+
+        bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
+
+        qDebug() << "MainController: Copy "
+                 << (copyResult ? "Success":"Failed");
+    }
+}
+
+void
+MainController::onPropertyEvent_ModelAdditionalFilesButtonClicked
+(AssetDefinition* adHandle)
+{
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::ExistingFiles);
+    openDialog.setDirectory(QDir::home());
+
+    if(openDialog.exec())
+    {
+        for (QString sourceFilePath : openDialog.selectedFiles())
+        {
+            QFile sourceFile(sourceFilePath);
+
+            qDebug() << "MainController: Using Additional file"
+                     << sourceFilePath;
+
+            bool copyResult = mProjectDirectoryModel.copyAdditionalFile(adHandle,sourceFile);
+
+            qDebug() << "MainController: Copy "
+                     << (copyResult ? "Success":"Failed");
+        }
+    }
+}
+
 // UI Signal/Slot Handlers ======================================================
 void
 MainController::onUI_SelectedSceneChanged
@@ -897,6 +1031,14 @@ MainController::openProject
 ()
 {
     bool loadResult = mDreamProjectModel->loadProject(mProjectDirectory);
+
+    mProjectDirectoryModel.setProjectDefinitionHandle
+    (
+        mDreamProjectModel->getProject()->getProjectDefinitionHandle()
+    );
+
+    mProjectDirectoryModel.inflateFromDirectory(mProjectDirectory);
+
     qDebug() << "MainController: Load Project Result " << loadResult;
     if (!loadResult)
     {
@@ -904,7 +1046,9 @@ MainController::openProject
         emit notifyProjectWidgetsEnabledChanged(false);
         return;
     }
+
     updateWindowTitle(mProjectDirectory);
+
     ProjectDefinition *currentProject = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
 
     emit notifyProjectNameChanged(QString::fromStdString(currentProject->getName()));
@@ -913,7 +1057,6 @@ MainController::openProject
     emit notifyProjectWindowWidthChanged(currentProject->getWindowWidth());
     emit notifyProjectWindowHeightChanged(currentProject->getWindowHeight());
     emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneDefinitionsHandleList()));
-    //emit notifyProjectStartupSceneChanged(QString::fromStdString(currentProject->getStartupSceneDefinitionHandle()->getName()));
     emit notifyProjectWidgetsEnabledChanged(true);
 
     mScenegraphTreeModel.reset(new ScenegraphTreeModel(currentProject,mMainWindowHandle->getScenegraphTreeView()));
@@ -940,3 +1083,13 @@ MainController::getSceneNameFromModelIndex
     return mSceneListModel->stringList().at(index).toStdString();
 }
 
+void
+MainController::onAction_Debug_DumpProjectDefinitionJson
+(bool toggled)
+{
+    cout << mDreamProjectModel
+            ->getProject()
+            ->getProjectDefinitionHandle()
+            ->getJson().dump(1) << endl;
+    ;
+}

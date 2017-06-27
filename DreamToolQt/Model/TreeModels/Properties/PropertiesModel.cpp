@@ -18,15 +18,28 @@
 #include "PropertiesModel.h"
 #include <QDebug>
 
+using std::pair;
+
 PropertiesModel::PropertiesModel(QTreeView* parent)
     : QAbstractItemModel (parent)
 {
-    mTreeView = parent;
+    qDebug() << "PropertiesModel: Constructing";
+    mTreeViewHandle = parent;
 }
 
-PropertiesModel::~PropertiesModel()
+PropertiesModel::~PropertiesModel
+()
 {
-
+    qDebug() << "PropertiesModel: Destructing";
+    for (pair<int,QItemDelegate*> delegatePair : mViewDelegates)
+    {
+        int index = delegatePair.first;
+        QItemDelegate* delegate = delegatePair.second;
+        qDebug() << "PropertiesModel: Clearing delegate on row" << index;
+        mTreeViewHandle->setItemDelegateForRow(index,nullptr);
+        delete delegate;
+    }
+    mViewDelegates.clear();
 }
 
 PropertiesItem *PropertiesModel::getItem(const QModelIndex &index) const
@@ -39,7 +52,7 @@ PropertiesItem *PropertiesModel::getItem(const QModelIndex &index) const
             return item;
         }
     }
-    return mRootItem;
+    return mRootItem.get();
 }
 
 bool PropertiesModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -145,7 +158,7 @@ QModelIndex PropertiesModel::parent(const QModelIndex &index) const
         return QModelIndex();
     }
 
-    if (parentItem == mRootItem)
+    if (parentItem == mRootItem.get())
     {
         //qDebug() << QString("PropertiesModel: Parent is root item @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
@@ -172,6 +185,11 @@ QVariant PropertiesModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
     {
         return QVariant();
+    }
+
+    if (role == Qt::SizeHintRole)
+    {
+        return QSize(100,24);
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole)
@@ -224,7 +242,7 @@ QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &paren
     if (!parent.isValid())
     {
         //qDebug() << QString("PropertiesModel: Parent is invalid for row %1 col %2").arg(row).arg(column);
-        parentItem = mRootItem;
+        parentItem = mRootItem.get();
     }
     else
     {
@@ -253,7 +271,7 @@ int PropertiesModel::rowCount(const QModelIndex &parent) const
 
     if (!parent.isValid())
     {
-        parentItem = mRootItem;
+        parentItem = mRootItem.get();
     }
     else
     {
@@ -261,4 +279,12 @@ int PropertiesModel::rowCount(const QModelIndex &parent) const
     }
 
     return parentItem->childCount();
+}
+
+void
+PropertiesModel::setTreeViewDelegateForRow
+(int index, QItemDelegate *delegate)
+{
+    mViewDelegates.insert(pair<int,QItemDelegate*>(index,delegate));
+    mTreeViewHandle->setItemDelegateForRow(index,delegate);
 }

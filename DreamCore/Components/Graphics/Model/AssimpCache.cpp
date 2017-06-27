@@ -73,7 +73,7 @@ namespace Dream
 
         if (Constants::DEBUG)
         {
-          cout << "AssimpModelInstance: Loading " << path << " from disk" << endl;
+          cout << "AssimpCache: Loading " << path << " from disk" << endl;
         }
 
         Importer* importer = new Importer();
@@ -82,7 +82,7 @@ namespace Dream
         const aiScene* scene = importer->GetScene();
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            cerr << "AssimpModelInstance: Error " << importer->GetErrorString() << endl;
+            cerr << "AssimpCache: Error " << importer->GetErrorString() << endl;
             return nullptr;
         }
 

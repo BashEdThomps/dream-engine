@@ -15,8 +15,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROJECTPROPERTIESMODEL_H
-#define PROJECTPROPERTIESMODEL_H
+#pragma once
 
 #include "PropertiesModel.h"
 #include <DreamCore.h>
@@ -25,14 +24,13 @@ using namespace Dream;
 
 class ProjectPropertiesModel : public PropertiesModel
 {
+    Q_OBJECT
 public:
     ProjectPropertiesModel(ProjectDefinition *project, QTreeView* parent = 0);
     ~ProjectPropertiesModel();
     void createRoot() override;
     void createProperties() override;
-    void createDelegates() override;
+    void createDelegates();
 private:
-    ProjectDefinition *mProject;
+    ProjectDefinition *mProjectDefinitionHandle;
 };
-
-#endif // PROJECTPROPERTIESMODEL_H

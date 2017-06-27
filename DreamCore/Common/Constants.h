@@ -115,13 +115,9 @@ namespace Dream
         const static string ASSET_FORMAT_SHADER_GLSL_READABLE;
         const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
         const static string ASSET_FORMAT_SPRITE_IMAGE_READABLE;
-
-        const static string getAssetTypeReadableName(string);
-        const static string getAssetFormatReadableName(string);
-
         // Scene ================================================================
         const static string SCENE_NOTES;
-        const static string SCENE_SCENE_OBJECTS;
+        const static string SCENE_ROOT_SCENE_OBJECT;
         const static string SCENE_CAMERA;
         const static float  SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
         const static string SCENE_TRANSLATION;
@@ -262,6 +258,10 @@ namespace Dream
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
         static string assetTypeToString(AssetType type);
         static AssetType assetTypeFromString(string type);
+        static string getAssetFormatString(string format);
+        static string getAssetTypeReadableName(string);
+        static string getAssetFormatReadableName(string);
+
     };
 }
 

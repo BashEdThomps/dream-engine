@@ -36,7 +36,7 @@ namespace Dream
         IDefinition(json data);
         virtual ~IDefinition();
 
-        json getJson();
+        virtual json getJson();
         virtual void showStatus() = 0;
 
         bool hasName(string name);

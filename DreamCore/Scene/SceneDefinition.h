@@ -42,7 +42,7 @@ namespace Dream
     public:
         SceneDefinition(ProjectDefinition* projectHandle, json data);
         ~SceneDefinition();
-        void showStatus();
+        void showStatus() override;
         void loadRootSceneObjectDefinition(json jsonArray);
         void setCameraMovementSpeed(float speed);
         float getCameraMovementSpeed();
@@ -60,6 +60,7 @@ namespace Dream
         SceneObjectDefinition* getRootSceneObjectDefinitionHandle();
         ProjectDefinition* getProjectDefinitionHandle();
         SceneObjectDefinition* createNewRootSceneObjectDefinition();
+        json getJson() override;
     private:
         void checkCamera();
     };

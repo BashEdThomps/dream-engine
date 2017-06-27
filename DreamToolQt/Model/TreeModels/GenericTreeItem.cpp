@@ -17,10 +17,13 @@
  */
 #include "GenericTreeItem.h"
 #include <QStringList>
+#include <QDebug>
 
 GenericTreeItem::GenericTreeItem
 (const QList<QVariant> &data, GenericTreeItemType type, GenericTreeItem *parent)
 {
+
+    //qDebug() << "GenericTreeItem: Constructing";
     mType = type;
     mParentItem = parent;
     mItemData = data;
@@ -29,6 +32,7 @@ GenericTreeItem::GenericTreeItem
 GenericTreeItem::~GenericTreeItem
 ()
 {
+    qDebug() << "GenericTreeItem: Destructing";
     qDeleteAll(mChildItems);
 }
 

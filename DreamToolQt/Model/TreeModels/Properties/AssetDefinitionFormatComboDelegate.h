@@ -15,16 +15,17 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ASSETDEFINITIONFORMATCOMBODELEGATE_H
-#define ASSETDEFINITIONFORMATCOMBODELEGATE_H
+
+#pragma once
 
 #include <DreamCore.h>
 #include <QItemDelegate>
 
-using namespace Dream;
+using Dream::AssetType;
 
 class AssetDefinitionFormatComboDelegate : public QItemDelegate
 {
+    Q_OBJECT
 public:
     AssetDefinitionFormatComboDelegate(std::string type, QObject* parent = 0);
     ~AssetDefinitionFormatComboDelegate();
@@ -33,9 +34,7 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-private:
-    Dream::AssetType mAssetType;
-};
 
-#endif // ASSETDEFINITIONFORMATCOMBODELEGATE_H
+private:
+    AssetType mAssetType;
+};

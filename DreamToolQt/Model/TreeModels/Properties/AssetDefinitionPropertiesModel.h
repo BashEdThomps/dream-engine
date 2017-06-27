@@ -15,22 +15,42 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ASSETDEFINITIONPROPERTIESMODEL_H
-#define ASSETDEFINITIONPROPERTIESMODEL_H
+#pragma once
 
 #include "PropertiesModel.h"
 #include <DreamCore.h>
+#include <memory>
+
+using std::unique_ptr;
+using Dream::AssetDefinition;
+
+class ModelFileBrowseDelegate;
+class BrowseForAdditionalFilesDelegate;
 
 class AssetDefinitionPropertiesModel : public PropertiesModel
 {
+    Q_OBJECT
+private:
+    const static int NAME_INDEX;
+    const static int TYPE_INDEX;
+    const static int FORMAT_INDEX;
+    const static int SCRIPT_TEMPLATE_INDEX;
+    const static int SHADER_TEMPLATE_INDEX;
+    const static int MODEL_ASSIMP_FILE_INDEX;
+    const static int MODEL_OTHER_FILE_INDEX;
 public:
     AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QTreeView *parent = 0);
     ~AssetDefinitionPropertiesModel();
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+
     void createRoot() override;
     void createProperties() override;
-    void createDelegates() override;
+
 private:
-    Dream::AssetDefinition* mAssetDefinition;
+    AssetDefinition* mAssetDefinitionHandle;
+    ModelFileBrowseDelegate* mModelFileBrowseDelegateHandle;
+    BrowseForAdditionalFilesDelegate* mModelAdditionalFilesDelegateHandle;
 
     void createAudioLoopProperty();
     void createAudioFileProperty();
@@ -39,7 +59,7 @@ private:
     void createFontFileProperty();
     void createLightColorProperty();
     void createModelFileProperty();
-    void createModelOtherFilesProperty();
+    void createModelAdditionalFilesProperty();
     void craetePhysicsCollisionShapeProperty();
     void createPhysicsMassProperty();
     void createPhysicsMarginProperty();
@@ -48,7 +68,16 @@ private:
     void createShaderTemplateProperty();
     void createSpriteTileSizeProperty();
     void createSpriteFileProperty();
+    void createFormatProperty();
+    void createTypeProperty();
+    void createNameProperty();
 
+public slots:
+    void onModelFileBrowseButtonClicked(AssetDefinition*);
+    void onModelAdditionalFilesButtonClicked(AssetDefinition*);
+
+signals:
+    void notifyModelFileBrowseButtonClicked(AssetDefinition*);
+    void notifyModelAdditionalFilesButtonClicked(AssetDefinition*);
 };
 
-#endif // ASSETDEFINITIONPROPERTIESMODEL_H

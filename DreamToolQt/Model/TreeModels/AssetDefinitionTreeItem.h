@@ -15,8 +15,8 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ASSET_DEFINITION_TREEITEM_H
-#define ASSET_DEFINITION_TREEITEM_H
+
+#pragma once
 
 #include <DreamCore.h>
 #include "GenericTreeItem.h"
@@ -39,5 +39,3 @@ public:
 private:
     Dream::AssetDefinition *mDefinition;
 };
-
-#endif // ASSET_DEFINITION_TREEITEM_H

@@ -22,12 +22,14 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+using Dream::AssetDefinition;
 using Dream::Constants;
 using Dream::Uuid;
 
 ProjectDirectoryModel::ProjectDirectoryModel
-(QObject* parent)
-    : QObject(parent)
+(ProjectDefinition* pdHandle, QObject* parent)
+    : QObject(parent),
+      mProjectDefinitionHandle(pdHandle)
 {
     qDebug() << "ProjectDirectoryModel: Constructing Object";
 }
@@ -53,54 +55,63 @@ ProjectDirectoryModel::inflateFromDirectory
     }
 
     mAssetsDirectory = QDir(getAssetsDirectoryAbsolutePath());
+    mAssetsDirectory.makeAbsolute();
     if (!assetsDirectoryExists())
     {
         return false;
     }
 
     mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+    mAnimationDirectory.makeAbsolute();
     if (!animationDirectoryExists())
     {
         return false;
     }
 
     mAudioDirectory = QDir(getAudioDirectoryAbsolutePath());
+    mAudioDirectory.makeAbsolute();
     if (!audioDirectoryExists())
     {
         return false;
     }
 
     mFontDirectory = QDir(getFontDirectoryAbsolutePath());
+    mFontDirectory.makeAbsolute();
     if (!fontDirectoryExists())
     {
         return false;
     }
 
     mModelDirectory = QDir(getModelDirectoryAbsolutePath());
+    mModelDirectory.makeAbsolute();
     if (!modelDirectoryExists())
     {
         return false;
     }
 
     mPhysicsObjetDirectory = QDir(getPhysicsObjectDirectoryAbsolutePath());
+    mPhysicsObjetDirectory.makeAbsolute();
     if (!physicsObjectDirectoryExists())
     {
         return false;
     }
 
     mScriptDirectory = QDir(getScriptDirectoryAbsolutePath());
+    mScriptDirectory.makeAbsolute();
     if (!scriptDirectoryExists())
     {
         return false;
     }
 
     mShaderDirectory = QDir(getShaderDirectoryAbsolutePath());
+    mShaderDirectory.makeAbsolute();
     if (!shaderDirectoryExists())
     {
         return false;
     }
 
     mSpriteDirectory = QDir(getSpriteDirectoryAbsolutePath());
+    mSpriteDirectory.makeAbsolute();
     if (!spriteDirectoryExists())
     {
         return false;
@@ -223,45 +234,23 @@ ProjectDirectoryModel::createNewProjectTree
         }
     }
 
-    if (!projectFileExists())
-    {
-        if (!createProjectFile())
-        {
-            qDebug() << "ProjectDirectoryModel: Unable to create project file"
-                     << getProjectFileAbsolutePath();
-            return false;
-        }
-    }
-
     return true;
 }
 
-bool ProjectDirectoryModel::createProjectFile()
+bool ProjectDirectoryModel::writeProjectFile()
 {
-    qDebug() << "ProjectDirectoryModel: Creating project file "
-             << getProjectFileAbsolutePath();
-
-    QFile templateFile(":/templates/project/project_template.json");
-
-
-    if (!templateFile.open(QIODevice::ReadOnly))
+    if (!mProjectDefinitionHandle)
     {
-        qDebug() << "ProjectDirectoryModel: Cannot open project template file"
-                 << templateFile.errorString();
+        qDebug() << "ProjectDirectoryModel: No ProjectDefinition set";
         return false;
     }
 
-    QByteArray templateFileData = templateFile.readAll();
-    QJsonDocument templateFileDoc(QJsonDocument::fromJson(templateFileData));
-    QJsonObject templateFileObject = templateFileDoc.object();
+    qDebug() << "ProjectDirectoryModel: Creating project file "
+             << getProjectFileAbsolutePath();
 
-    templateFileObject[QString::fromStdString(Constants::UUID)] = QString::fromStdString(Uuid::generateUuid());
-    templateFileObject[QString::fromStdString(Constants::NAME)] = getProjectName();
+    QByteArray projectFileData = mProjectDefinitionHandle->getJson().dump(1).c_str();
 
-    QByteArray output = QJsonDocument(templateFileObject).toJson();
-    qDebug() << "ProjectDirectoryModel: writing "
-             << output
-             << " to "
+    qDebug() << "ProjectDirectoryModel: writing project file to "
              << getProjectFileAbsolutePath();
 
     QFile projectFile(getProjectFileAbsolutePath());
@@ -274,7 +263,7 @@ bool ProjectDirectoryModel::createProjectFile()
 
     projectFile.setPermissions(QFileDevice::Permission::ReadOwner | QFileDevice::Permission::WriteOwner);
 
-    bool result = projectFile.write(output);
+    bool result = projectFile.write(projectFileData);
     projectFile.close();
 
     return result;
@@ -615,6 +604,20 @@ ProjectDirectoryModel::getProjectFileAbsolutePath
 }
 
 bool
+ProjectDirectoryModel::assetMainFileExists
+(AssetDefinition *adHandle, string format)
+{
+    QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
+    return QFile(assetFileTargetPath).exists();
+}
+
+bool ProjectDirectoryModel::deleteMainAssetFile(Dream::AssetDefinition *adHandle, string format)
+{
+    QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
+    return QFile(assetFileTargetPath).remove();
+}
+
+bool
 ProjectDirectoryModel::assetsDirectoryExists
 ()
 {
@@ -718,4 +721,111 @@ ProjectDirectoryModel::getProjectName
 ()
 {
     return  QFileInfo(getProjectDirectoryAbsolutePath()).fileName();
+}
+
+QString
+ProjectDirectoryModel::createAssetTargetPath
+(AssetDefinition* adHandle, string format)
+{
+    QString assetFileTargetPath;
+
+    // Get type directory
+    assetFileTargetPath = mAssetsDirectory.filePath(
+        QString::fromStdString(adHandle->getAssetTypeDirectory())
+    );
+
+    // Create uuid directory
+    QDir typeDir(assetFileTargetPath);
+    if (!typeDir.mkpath(QString::fromStdString(adHandle->getUuid())))
+    {
+        qDebug() << "ProjectDirectoryModel: Error could not create"
+                 << QString::fromStdString(adHandle->getUuid())
+                 << "in"
+                 << assetFileTargetPath;
+
+        return QString();
+    }
+
+    // Update to add uuid to path
+    assetFileTargetPath = QDir(assetFileTargetPath).filePath(QString::fromStdString(adHandle->getUuid()));
+
+    qDebug() << "ProjectDirectoryModel: Created path " << assetFileTargetPath;
+
+    // Update to add "Format" to path
+    if (format.empty())
+    {
+        assetFileTargetPath = QDir(assetFileTargetPath).filePath(
+            QString::fromStdString(adHandle->getFormat())
+        );
+    }
+    else
+    {
+        assetFileTargetPath = QDir(assetFileTargetPath).filePath(
+            QString::fromStdString(format)
+        );
+    }
+
+    return assetFileTargetPath;
+}
+
+bool
+ProjectDirectoryModel::copyMainAssetFile
+(AssetDefinition* adHandle, QFile& assetSourceFile, string format)
+{
+    QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
+
+    qDebug() << "ProjectDirectoryModel: Copying asset file for "
+         << QString::fromStdString(adHandle->getNameAndUuidString())
+         << ", with format "
+         << QString::fromStdString(adHandle->getFormat())
+         << " from "
+         << assetSourceFile.fileName()
+         << " to "
+         << assetFileTargetPath;
+
+    bool copyResult = assetSourceFile.copy(assetFileTargetPath);
+    if (!copyResult)
+    {
+        qDebug() << "ProjectDirectoryModel: Coyping error" << assetSourceFile.errorString();
+    }
+    return copyResult;
+}
+
+bool
+ProjectDirectoryModel::copyAdditionalFile
+(AssetDefinition* adHandle, QFile& assetSourceFile)
+{
+    QString assetFileTargetPath = createAssetTargetPath
+    (
+        adHandle,
+        QFileInfo(assetSourceFile.fileName()).fileName().toStdString()
+    );
+
+    qDebug() << "ProjectDirectoryModel: Copying asset file for "
+         << QString::fromStdString(adHandle->getNameAndUuidString())
+         << " from "
+         << assetSourceFile.fileName()
+         << " to "
+         << assetFileTargetPath;
+
+    bool copyResult = assetSourceFile.copy(assetFileTargetPath);
+    if (!copyResult)
+    {
+        qDebug() << "ProjectDirectoryModel: Coyping error" << assetSourceFile.errorString();
+    }
+    return copyResult;
+}
+
+ProjectDefinition*
+ProjectDirectoryModel::getProjectDefinitionHandle
+()
+{
+    return mProjectDefinitionHandle;
+}
+
+void
+ProjectDirectoryModel::setProjectDefinitionHandle
+(ProjectDefinition *projectDefinitionHandle)
+{
+    mProjectDefinitionHandle = projectDefinitionHandle;
 }

@@ -156,7 +156,7 @@ namespace Dream
 
     // Scene ====================================================================
     const string Constants::SCENE_NOTES = "notes";
-    const string Constants::SCENE_SCENE_OBJECTS = "objects";
+    const string Constants::SCENE_ROOT_SCENE_OBJECT = "root";
     const string Constants::SCENE_CAMERA = "camera";
     const float  Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED = 10.0f;
     const string Constants::SCENE_TRANSLATION = "translation";
@@ -270,8 +270,8 @@ namespace Dream
     const string Constants::LUA_INPUT_FUNCTION  = "onInput";
     const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
     // Shader ===================================================================
-    const string Constants::SHADER_FRAGMENT = "fragment";
-    const string Constants::SHADER_VERTEX = "vertex";
+    const string Constants::SHADER_FRAGMENT = ".fragment";
+    const string Constants::SHADER_VERTEX = ".vertex";
     // Audio
     const size_t Constants::AUDIO_BUFFER_SIZE = 32768;
     // Window
@@ -297,33 +297,15 @@ namespace Dream
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =
     {
-        {
-            AssetType::ANIMATION, ASSET_TYPE_ANIMATION
-        },
-        {
-            AssetType::AUDIO, ASSET_TYPE_AUDIO
-        },
-        {
-            AssetType::FONT, ASSET_TYPE_FONT
-        },
-        {
-            AssetType::LIGHT, ASSET_TYPE_LIGHT
-        },
-        {
-            AssetType::MODEL, ASSET_TYPE_MODEL
-        },
-        {
-            AssetType::PHYSICS_OBJECT, ASSET_TYPE_PHYSICS_OBJECT
-        },
-        {
-            AssetType::SCRIPT, ASSET_TYPE_SCRIPT
-        },
-        {
-            AssetType::SHADER, ASSET_TYPE_SHADER
-        },
-        {
-            AssetType::SPRITE, ASSET_TYPE_SPRITE
-        }
+        {AssetType::ANIMATION,      ASSET_TYPE_ANIMATION},
+        {AssetType::AUDIO,          ASSET_TYPE_AUDIO},
+        {AssetType::FONT,           ASSET_TYPE_FONT},
+        {AssetType::LIGHT,          ASSET_TYPE_LIGHT},
+        {AssetType::MODEL,          ASSET_TYPE_MODEL},
+        {AssetType::PHYSICS_OBJECT, ASSET_TYPE_PHYSICS_OBJECT},
+        {AssetType::SCRIPT,         ASSET_TYPE_SCRIPT},
+        {AssetType::SHADER,         ASSET_TYPE_SHADER},
+        {AssetType::SPRITE,         ASSET_TYPE_SPRITE}
     };
 
     map<AssetType,vector<string>> Constants::DREAM_ASSET_FORMATS_MAP =
@@ -465,7 +447,7 @@ namespace Dream
         return NONE;
     }
 
-    const string
+    string
     Constants::getAssetTypeReadableName
     (string type)
     {
@@ -507,7 +489,8 @@ namespace Dream
         }
         return "";
     }
-    const string
+
+    string
     Constants::getAssetFormatReadableName
     (string format)
     {
@@ -598,5 +581,98 @@ namespace Dream
 
         return "";
     }
+
+    string
+    Constants::getAssetFormatString
+    (string format)
+    {
+        if (format.compare(ASSET_FORMAT_SCRIPT_LUA) == 0)
+        {
+           return ASSET_FORMAT_SCRIPT_LUA;
+        }
+        else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP) == 0)
+        {
+           return ASSET_FORMAT_MODEL_ASSIMP;
+        }
+        else if (format.compare(ASSET_FORMAT_AUDIO_OGG) == 0)
+        {
+           return ASSET_FORMAT_AUDIO_OGG;
+        }
+        else if (format.compare(ASSET_FORMAT_AUDIO_WAV) == 0)
+        {
+           return ASSET_FORMAT_AUDIO_WAV;
+        }
+        else if (format.compare(ASSET_FORMAT_FONT_TTF) == 0)
+        {
+           return ASSET_FORMAT_FONT_TTF;
+        }
+        else if (format.compare(ASSET_FORMAT_SHADER_GLSL) == 0)
+        {
+           return ASSET_FORMAT_SHADER_GLSL;
+        }
+        else if (format.compare(ASSET_FORMAT_LIGHT_POINT) == 0)
+        {
+           return ASSET_FORMAT_LIGHT_POINT;
+        }
+        else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE) == 0)
+        {
+           return ASSET_FORMAT_SPRITE_IMAGE;
+        }
+        else if (format.compare(ASSET_FORMAT_ANIMATION_DREAM) == 0)
+        {
+            return ASSET_FORMAT_ANIMATION_DREAM;
+        }
+        else if (format.compare(COLLISION_SHAPE_SPHERE) == 0)
+        {
+            return COLLISION_SHAPE_SPHERE;
+        }
+        else if (format.compare(COLLISION_SHAPE_BOX) == 0)
+        {
+            return COLLISION_SHAPE_BOX;
+        }
+        else if (format.compare(COLLISION_SHAPE_CYLINDER) == 0)
+        {
+            return COLLISION_SHAPE_CYLINDER;
+        }
+        else if (format.compare(COLLISION_SHAPE_CAPSULE) == 0)
+        {
+            return COLLISION_SHAPE_CAPSULE;
+        }
+        else if (format.compare(COLLISION_SHAPE_CONE) == 0)
+        {
+            return COLLISION_SHAPE_MULTI_SPHERE;
+        }
+        else if (format.compare(COLLISION_SHAPE_CONVEX_HULL) == 0)
+        {
+            return COLLISION_SHAPE_CONVEX_HULL;
+        }
+        else if (format.compare(COLLISION_SHAPE_CONVEX_TRIANGLE_MESH) == 0)
+        {
+            return COLLISION_SHAPE_CONVEX_TRIANGLE_MESH;
+        }
+        else if (format.compare(COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
+        {
+            return COLLISION_SHAPE_BVH_TRIANGLE_MESH;
+        }
+        else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0)
+        {
+            return COLLISION_SHAPE_HEIGHTFIELD_TERRAIN;
+        }
+        else if (format.compare(COLLISION_SHAPE_STATIC_PLANE) == 0)
+        {
+            return COLLISION_SHAPE_STATIC_PLANE;
+        }
+        else if (format.compare(COLLISION_SHAPE_COMPOUND) == 0)
+        {
+            return COLLISION_SHAPE_COMPOUND;
+        }
+        else if (format.compare(COLLISION_SHAPE_MULTI_SPHERE) == 0)
+        {
+            return COLLISION_SHAPE_MULTI_SPHERE;
+        }
+
+        return "";
+    }
+
 
 } // End of Dream

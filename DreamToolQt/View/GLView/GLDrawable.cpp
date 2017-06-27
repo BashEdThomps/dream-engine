@@ -26,6 +26,8 @@ using namespace Dream;
 GLDrawable::GLDrawable
 (QObject *parent)
     : QObject(parent),
+      mVao(0),
+      mVbo(0),
       mShaderProgram(0),
       mInitialised(false)
 {

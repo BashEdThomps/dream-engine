@@ -39,7 +39,7 @@ SOURCES += \
     Model/TreeModels/AssetDefinitionTreeItem.cpp \
     Model/TreeModels/AssetDefinitionTreeModel.cpp \
     Model/TreeModels/GenericTreeItem.cpp \
-    Model/TreeModels/ProjectTreeItem.cpp \
+    Model/TreeModels/ScenegraphTreeItem.cpp \
     \
     Model/TreeModels/Properties/PropertiesModel.cpp \
     Model/TreeModels/Properties/ScenePropertiesModel.cpp \
@@ -57,7 +57,10 @@ SOURCES += \
     View/GLView/RelationshipTree.cpp \
     Test/TestProjectDirModel.cpp \
     Model/PreferencesModel.cpp \
-    Model/TreeModels/ScenegraphTreeModel.cpp
+    Model/TreeModels/ScenegraphTreeModel.cpp \
+    Model/TreeModels/Properties/Model/ModelFileBrowseDelegate.cpp \
+    Model/TreeModels/Properties/OpenInTextEditorDelegate.cpp \
+    Model/TreeModels/Properties/BrowseForAdditionalFilesDelegate.cpp
 
 
 HEADERS  += \
@@ -72,7 +75,7 @@ HEADERS  += \
     Model/TreeModels/AssetDefinitionTreeItem.h \
     Model/TreeModels/AssetDefinitionTreeModel.h \
     Model/TreeModels/GenericTreeItem.h \
-    Model/TreeModels/ProjectTreeItem.h \
+    Model/TreeModels/ScenegraphTreeItem.h \
     \
     Model/TreeModels/Properties/PropertiesModel.h \
     Model/TreeModels/Properties/AssetDefinitionPropertiesModel.h \
@@ -92,7 +95,10 @@ HEADERS  += \
     Test/TestProjectDirModel.h \
     Test/catch.hpp \
     Model/PreferencesModel.h \
-    Model/TreeModels/ScenegraphTreeModel.h
+    Model/TreeModels/ScenegraphTreeModel.h \
+    Model/TreeModels/Properties/Model/ModelFileBrowseDelegate.h \
+    Model/TreeModels/Properties/OpenInTextEditorDelegate.h \
+    Model/TreeModels/Properties/BrowseForAdditionalFilesDelegate.h
 
 
 FORMS    += View/MainWindow.ui

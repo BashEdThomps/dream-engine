@@ -19,18 +19,29 @@
 #include "AssetDefinitionPropertiesModel.h"
 #include "AssetDefinitionTypeComboDelegate.h"
 #include "AssetDefinitionFormatComboDelegate.h"
+#include "BrowseForAdditionalFilesDelegate.h"
+#include "OpenInTextEditorDelegate.h"
 
 #include "Shader/ShaderTemplateComboDelegate.h"
 #include "Script/ScriptTemplateComboDelegate.h"
+#include "Model/ModelFileBrowseDelegate.h"
 
 #include <QDebug>
+// Index Constants
+const int AssetDefinitionPropertiesModel::NAME_INDEX = 0;
+const int AssetDefinitionPropertiesModel::TYPE_INDEX = 1;
+const int AssetDefinitionPropertiesModel::FORMAT_INDEX = 2;
+const int AssetDefinitionPropertiesModel::SCRIPT_TEMPLATE_INDEX = 3;
+const int AssetDefinitionPropertiesModel::SHADER_TEMPLATE_INDEX = 3;
+const int AssetDefinitionPropertiesModel::MODEL_ASSIMP_FILE_INDEX = 3;
+const int AssetDefinitionPropertiesModel::MODEL_OTHER_FILE_INDEX = 4;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
 (Dream::AssetDefinition *definition, QTreeView* parent)
-    : PropertiesModel(parent)
+    : PropertiesModel(parent),
+      mAssetDefinitionHandle(definition)
 {
-    mAssetDefinition = definition;
-    createDelegates();
+    qDebug() <<  "AssetDefinitionPropertiesModel: Constructing";
     createRoot();
     createProperties();
 }
@@ -38,19 +49,7 @@ AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
 AssetDefinitionPropertiesModel::~AssetDefinitionPropertiesModel
 ()
 {
-    delete mRootItem;
-}
-
-void
-AssetDefinitionPropertiesModel::createDelegates
-()
-{
-    mTreeView->setItemDelegateForRow(
-        1 ,new AssetDefinitionTypeComboDelegate()
-    );
-    mTreeView->setItemDelegateForRow(
-        2, new AssetDefinitionFormatComboDelegate(mAssetDefinition->getType())
-    );
+    qDebug() <<  "AssetDefinitionPropertiesModel: Destructing";
 }
 
 void
@@ -58,73 +57,110 @@ AssetDefinitionPropertiesModel::createRoot
 ()
 {
     QList<QVariant> rootData;
-    rootData << QString::fromStdString(mAssetDefinition->getName())
-             << QString::fromStdString(mAssetDefinition->getUuid());
-    mRootItem = new PropertiesItem(rootData,mAssetDefinition);
+    rootData << QString::fromStdString(mAssetDefinitionHandle->getName())
+             << QString::fromStdString(mAssetDefinitionHandle->getUuid());
+    mRootItem.reset(new PropertiesItem(rootData,mAssetDefinitionHandle));
+}
+
+void
+AssetDefinitionPropertiesModel::createNameProperty
+()
+{
+    QList<QVariant> nameData;
+    nameData << "Name" << QString::fromStdString(mAssetDefinitionHandle->getName());
+    PropertiesItem *nameProperty = new PropertiesItem(nameData,mAssetDefinitionHandle);
+    mRootItem->appendChild(nameProperty);
+}
+
+void
+AssetDefinitionPropertiesModel::onModelFileBrowseButtonClicked
+(AssetDefinition *adHandle)
+{
+    emit notifyModelFileBrowseButtonClicked(adHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onModelAdditionalFilesButtonClicked
+(AssetDefinition *adHandle)
+{
+    emit notifyModelAdditionalFilesButtonClicked(adHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::createTypeProperty
+()
+{
+    QList<QVariant> typeData;
+    typeData << "Type" << QString::fromStdString(mAssetDefinitionHandle->getType());
+    PropertiesItem *typeProperty = new PropertiesItem(typeData,mAssetDefinitionHandle);
+    mRootItem->appendChild(typeProperty);
+
+    setTreeViewDelegateForRow(TYPE_INDEX, new AssetDefinitionTypeComboDelegate());
+}
+
+void
+AssetDefinitionPropertiesModel::createFormatProperty
+()
+{
+    QList<QVariant> formatData;
+    formatData << "Format" << QString::fromStdString(mAssetDefinitionHandle->getFormat());
+    PropertiesItem *formatProperty = new PropertiesItem(formatData,mAssetDefinitionHandle);
+    mRootItem->appendChild(formatProperty);
+
+    setTreeViewDelegateForRow(
+        FORMAT_INDEX,
+        new AssetDefinitionFormatComboDelegate(mAssetDefinitionHandle->getType())
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createProperties
 ()
 {
-    // Name
-    QList<QVariant> nameData;
-    nameData << "Name" << QString::fromStdString(mAssetDefinition->getName());
-    PropertiesItem *nameProperty = new PropertiesItem(nameData,mAssetDefinition);
-    mRootItem->appendChild(nameProperty);
+    createNameProperty();
+    createTypeProperty();
+    createFormatProperty();
 
-    // Type
-    QList<QVariant> typeData;
-    typeData << "Type" << QString::fromStdString(mAssetDefinition->getType());
-    PropertiesItem *typeProperty = new PropertiesItem(typeData,mAssetDefinition);
-    mRootItem->appendChild(typeProperty);
-
-    // Format
-    QList<QVariant> formatData;
-    formatData << "Format" << QString::fromStdString(mAssetDefinition->getFormat());
-    PropertiesItem *formatProperty = new PropertiesItem(formatData,mAssetDefinition);
-    mRootItem->appendChild(formatProperty);
-
-    if (mAssetDefinition->isTypeAnimation())
+    if (mAssetDefinitionHandle->isTypeAnimation())
     {
 
     }
-    else if (mAssetDefinition->isTypeAudio())
+    else if (mAssetDefinitionHandle->isTypeAudio())
     {
         createAudioLoopProperty();
         createAudioFileProperty();
     }
-    else if (mAssetDefinition->isTypeFont())
+    else if (mAssetDefinitionHandle->isTypeFont())
     {
         createFontColorProperty();
         createFontSizeProperty();
         createFontFileProperty();
     }
-    else if (mAssetDefinition->isTypeLight())
+    else if (mAssetDefinitionHandle->isTypeLight())
     {
         createLightColorProperty();
     }
-    else if (mAssetDefinition->isTypeModel())
+    else if (mAssetDefinitionHandle->isTypeModel())
     {
         createModelFileProperty();
-        createModelOtherFilesProperty();
+        createModelAdditionalFilesProperty();
     }
-    else if (mAssetDefinition->isTypePhysicsObject())
+    else if (mAssetDefinitionHandle->isTypePhysicsObject())
     {
         craetePhysicsCollisionShapeProperty();
         createPhysicsMassProperty();
         createPhysicsMarginProperty();
         createPhysicsKinematicProperty();
     }
-    else if (mAssetDefinition->isTypeScript())
+    else if (mAssetDefinitionHandle->isTypeScript())
     {
         createScriptTemplateProperty();
     }
-    else if (mAssetDefinition->isTypeShader())
+    else if (mAssetDefinitionHandle->isTypeShader())
     {
         createShaderTemplateProperty();
     }
-    else if (mAssetDefinition->isTypeSprite())
+    else if (mAssetDefinitionHandle->isTypeSprite())
     {
         createSpriteTileSizeProperty();
         createSpriteFileProperty();
@@ -177,14 +213,49 @@ void
 AssetDefinitionPropertiesModel::createModelFileProperty
 ()
 {
+    qDebug() << "AssetDefintionPropertiesModel: Creating Model Assimp File Delegate";
+    mModelFileBrowseDelegateHandle = new ModelFileBrowseDelegate(mAssetDefinitionHandle, this);
 
+    setTreeViewDelegateForRow
+    (
+        MODEL_ASSIMP_FILE_INDEX,
+        mModelFileBrowseDelegateHandle
+    );
+
+    QList<QVariant> mfData;
+    mfData << "Model File" << "";
+    PropertiesItem *mfProperty = new PropertiesItem(mfData,mAssetDefinitionHandle);
+    mRootItem->appendChild(mfProperty);
+
+    connect
+    (
+        mModelFileBrowseDelegateHandle,SIGNAL(notifyModelFileBrowseButtonClicked(AssetDefinition*)),
+        this, SLOT(onModelFileBrowseButtonClicked(AssetDefinition*))
+    );
 }
 
 void
-AssetDefinitionPropertiesModel::createModelOtherFilesProperty
+AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
 ()
 {
+    qDebug() << "AssetDefinitionPropertiesModel: Create Model Additional Files Delegate";
+    mModelAdditionalFilesDelegateHandle = new BrowseForAdditionalFilesDelegate(mAssetDefinitionHandle,this);
+    setTreeViewDelegateForRow
+    (
+        MODEL_OTHER_FILE_INDEX,
+        mModelAdditionalFilesDelegateHandle
+    );
 
+    QList<QVariant> data;
+    data << "Additional Files" << "";
+    PropertiesItem *property = new PropertiesItem(data,mAssetDefinitionHandle);
+    mRootItem->appendChild(property);
+
+    connect
+    (
+        mModelAdditionalFilesDelegateHandle,SIGNAL(notifyBrowseButtonClicked(AssetDefinition*)),
+        this, SLOT(onModelAdditionalFilesButtonClicked(AssetDefinition*))
+    );
 }
 
 void
@@ -220,14 +291,15 @@ AssetDefinitionPropertiesModel::createScriptTemplateProperty
 ()
 {
     qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
-    mTreeView->setItemDelegateForRow(
-        3 ,new ScriptTemplateComboDelegate()
+    mTreeViewHandle->setItemDelegateForRow(
+        SCRIPT_TEMPLATE_INDEX,
+        new ScriptTemplateComboDelegate()
     );
 
     // Template
     QList<QVariant> templateData;
     templateData << "Template" << "";
-    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinition);
+    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinitionHandle);
     mRootItem->appendChild(templateProperty);
 }
 
@@ -236,14 +308,15 @@ AssetDefinitionPropertiesModel::createShaderTemplateProperty
 ()
 {
     qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
-    mTreeView->setItemDelegateForRow(
-        3 ,new ShaderTemplateComboDelegate()
+    mTreeViewHandle->setItemDelegateForRow(
+        SHADER_TEMPLATE_INDEX,
+        new ShaderTemplateComboDelegate()
     );
 
     // Template
     QList<QVariant> templateData;
     templateData << "Template" << "";
-    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinition);
+    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinitionHandle);
     mRootItem->appendChild(templateProperty);
 }
 
@@ -261,4 +334,29 @@ AssetDefinitionPropertiesModel::createSpriteFileProperty
 
 }
 
+bool
+AssetDefinitionPropertiesModel::setData
+(const QModelIndex &index, const QVariant &value, int role)
+{
+    qDebug() << "AssetDefinitionPropertiesModel: setData ::"
+             << "index.row=" << index.row()
+             << "index.column=" << index.column()
+             << "value=" << value;
+
+    if (role != Qt::EditRole)
+    {
+        qDebug() << "AssetDefinitionPropertiesModel: Role is not Qt::EditRole :/";
+        return false;
+    }
+
+    PropertiesItem *item = getItem(index);
+    bool result = item->setData(index.column(), value);
+
+    if (result)
+    {
+        emit dataChanged(index, index);
+    }
+
+    return result;
+}
 

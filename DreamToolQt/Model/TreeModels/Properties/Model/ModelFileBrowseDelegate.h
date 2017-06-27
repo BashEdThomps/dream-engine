@@ -1,7 +1,7 @@
 /*
- * ScriptTemplateComboDelegate.h
+ * ModelFileBrowseDelegate.h
  *
- * Created: 01 2017 by Ashley
+ * Created: 25 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,20 +15,33 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #pragma once
+
 #include <QItemDelegate>
 
-class ScriptTemplateComboDelegate : public QItemDelegate
+namespace Dream
+{
+    class AssetDefinition;
+}
+
+using Dream::AssetDefinition;
+
+class ModelFileBrowseDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    ScriptTemplateComboDelegate(QObject* parent = 0);
-    ~ScriptTemplateComboDelegate();
+    ModelFileBrowseDelegate(AssetDefinition* adHandle, QObject* parent = nullptr);
+    ~ModelFileBrowseDelegate();
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-
+signals:
+    void notifyModelFileBrowseButtonClicked(AssetDefinition*);
+public slots:
+    void onBrowseButtonClicked(bool checked);
+private:
+    AssetDefinition* mAssetDefinitionHandle;
 };
