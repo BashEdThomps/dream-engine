@@ -1,48 +1,39 @@
 # Dream
-Dream is a 3D Multimedia/Game Engine.
+Dream is a 3D Multimedia and Game Engine.
 
+## Key Features
 * Platform Independant
 * Written in C++
+* OpenGL Graphics
+* OpenAL Audio
 * Scriptable in Lua
-* Written with SDL2/OpenGL
-* Uses Bullet Physics/Collision Libraries
-* Web-based Project Editor
+* Uses Bullet Physics & Collision Libraries
+* Included Project Editor Written in Qt
 
-The proceeding sections give an architectural overview of the Dream engine.
+## Architecture
+The next sections give an architectural overview of the Dream engine.
 
-## Project
-Projects are the highest level of object in Dream. Projects are composed of a .json project definition
-file and an accompanying assets directory.
+### Project
+Projects are the highest level of object in Dream. Projects are composed of a .json project definition file and an accompanying assets directory.
 
-## Scenes
-A Project contains one or more Scenes that are to be displayed. A Scene is composed of a SceneObjects
-that have parent-child relationships and are arranged into a scene graph data structure. Each SceneObject
-is assigned zero or more AssetDefinitions to instanciate at runtime.
+### Scenes
+A Project contains one or more Scenes that are to be displayed. A Scene is composed of one or more SceneObjects.
 
-## AssetDefinition & AssetInstance
-A Project also contains AssetDefinition objects. An AssetDefinition describes something that can be
-assigned to a SceneObejct and placed in a Scene at runtime. AssetDefinitions define an asset's
-properties and are defined once and used multiple times to create AssetInstances.
-AssetInstances are inflated from AssetDefinition which can be thought of a blueprint. Instances are
-then assigned to a SceneObject within the Scene. There are several types of AssetInstance available.
+### SceneObjects
+SceneObjects are used to construct a 'Scenegraph' data tree that describes the relationship of objects in the Scene. SceneObjects are assigned parent-child relationships from which they inherit their transformation. Each SceneObject is assigned zero or more Assets to instanciate at runtime.
+
+### Assets
+A Project also contains Asset objects. An Asset describes something that can be assigned to a SceneObejct and placed in a Scene at runtime. AssetDefinitions are used to define an Asset's properties once and used multiple times to create Asset instances. AssetDefinitions are defined at the Project level so that they can be shared by many Scenes and SceneObjects. There are several types of AssetInstance available.
 
 * Animation
 * Audio
-* Lights
-* Models
-* Physics Objects
-* Scripts
-* Shaders
-* Sprites
-* Fonts
+* Font
+* Light
+* Model
+* Physics Object
+* Script
+* Shader
+* Sprite
 
 # DreamTool
-
-DreamTool is the Project editor for Dream. It's a web application that is designed to be 100%
-independent from the DreamEngine. Projects that are created with the tool are stored by
-default in ~/.dreamtool/proj-uuid/. DreamTool is...
-
-* Web Based
-* Hosted Locally or SaaSy
-* Implemented with NodeJS, Koa and AngularUI Bootstrap
-* As well as loads of Angular Plug-Ins (with thanks to their respective devs :)
+DreamTool is the real-time project editor for Dream. It is cross-platrofm, written in Qt.
