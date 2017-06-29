@@ -18,17 +18,17 @@
 
 #pragma once
 
-#include "PropertiesItem.h"
+#include "AbstractPropertiesItem.h"
 
 #include <QAbstractItemModel>
 #include <QTreeView>
 #include <QItemDelegate>
 
 #include <memory>
-#include <map>
+
+class ItemDelegateProxy;
 
 using std::unique_ptr;
-using std::map;
 
 class PropertiesModel : public QAbstractItemModel
 {
@@ -40,22 +40,23 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    PropertiesItem *getItem(const QModelIndex &index) const;
+    AbstractPropertiesItem *getItem(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-    bool insertColumns(int position, int columns,const QModelIndex &parent = QModelIndex()) override;
-    bool insertRows(int position, int rows, const QModelIndex &parent = QModelIndex()) override;
     QModelIndex parent(const QModelIndex &index) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
-    bool removeColumns(int position, int columns, const QModelIndex &parent = QModelIndex()) override;
-    bool removeRows(int position, int rows,  const QModelIndex &parent = QModelIndex()) override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual void createRoot() = 0;
     virtual void createProperties() = 0;
-    void setTreeViewDelegateForRow(int,QItemDelegate*);
+
+    //bool insertColumns(int position, int columns,const QModelIndex &parent = QModelIndex()) override;
+    //bool insertRows(int position, int rows, const QModelIndex &parent = QModelIndex()) override;
+    //bool removeColumns(int position, int columns, const QModelIndex &parent = QModelIndex()) override;
+    //bool removeRows(int position, int rows,  const QModelIndex &parent = QModelIndex()) override;
+
 protected:
-    unique_ptr<PropertiesItem> mRootItem;
+    unique_ptr<AbstractPropertiesItem> mRootItem;
+    unique_ptr<ItemDelegateProxy> mItemDelegateProxy;
     QTreeView *mTreeViewHandle;
-    map<int,QItemDelegate*> mViewDelegates;
 };

@@ -30,8 +30,8 @@
 #include "../Model/DreamProjectModel.h"
 #include "../Model/ProjectDirectoryModel.h"
 #include "../Model/PreferencesModel.h"
-#include "../Model/TreeModels/ScenegraphTreeModel.h"
-#include "../Model/TreeModels/AssetDefinitionTreeModel.h"
+#include "../Model/TreeModels/Scenegraph/ScenegraphTreeModel.h"
+#include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.h"
 #include "../Model/TreeModels/Properties/PropertiesModel.h"
 
 #include "../View/MainWindow.h"

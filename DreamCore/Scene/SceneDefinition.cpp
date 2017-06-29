@@ -246,7 +246,7 @@ namespace Dream
 
         if (Constants::DEBUG)
         {
-            cout << "SceneObjectDefinition: Using clear colour "
+            cout << "SceneDefinition: Using clear colour "
                  << String::floatVectorToString(colour) << endl;
         }
 
@@ -294,7 +294,7 @@ namespace Dream
 
         if (Constants::DEBUG)
         {
-            cout << "SceneObjectDefinition: Using ambient colour "
+            cout << "SceneDefinition: Using ambient colour "
                  << String::floatVectorToString(colour) << endl;
         }
 

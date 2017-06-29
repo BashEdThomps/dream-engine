@@ -17,7 +17,12 @@
  */
 
 #include "SceneObjectPropertiesModel.h"
+
 #include <QDebug>
+
+#include "SceneObjectPropertiesItem.h"
+#include "../DoubleSpinBoxDelegate.h"
+#include "../CheckBoxDelegate.h"
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
 (SceneObjectDefinition *sceneObject, QTreeView *parent)
@@ -44,7 +49,7 @@ SceneObjectPropertiesModel::createRoot
     QList<QVariant> rootData;
     rootData << QString::fromStdString(mSceneObjectDefinitionHandle->getName())
              << QString::fromStdString(mSceneObjectDefinitionHandle->getUuid());
-    mRootItem.reset(new PropertiesItem(rootData,mSceneObjectDefinitionHandle));
+    mRootItem.reset(new SceneObjectPropertiesItem(rootData,mSceneObjectDefinitionHandle));
 }
 
 void
@@ -68,29 +73,69 @@ void SceneObjectPropertiesModel::createNameProperty()
     qDebug() << "SceneObjectPropertiesModel: createName";
     QList<QVariant> nameData;
     nameData << "Name" << QString::fromStdString(mSceneObjectDefinitionHandle->getName());
-    mRootItem->appendChild(new PropertiesItem(nameData,mSceneObjectDefinitionHandle));
+    mRootItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            nameData,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_NAME
+        )
+    );
 }
 
 void SceneObjectPropertiesModel::createTranslationProperty()
 {
     qDebug() << "SceneObjectPropertiesModel: createTranslationProperty";
+    Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
+
     QList<QVariant> translationData;
     translationData << "Translation" << "";
-    PropertiesItem *translationItem = new PropertiesItem(translationData,mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *translationItem = new SceneObjectPropertiesItem
+    (
+        translationData,
+        mSceneObjectDefinitionHandle
+    );
     mRootItem->appendChild(translationItem);
 
-    Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
     QList<QVariant> translationDataX;
     translationDataX << "X" << transform.getTranslation().x;
-    translationItem->appendChild(new PropertiesItem(translationDataX,mSceneObjectDefinitionHandle));
+    translationItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            translationDataX,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_TRANSLATION_X,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 
     QList<QVariant> translationDataY;
     translationDataY << "Y" << transform.getTranslation().y;
-    translationItem->appendChild(new PropertiesItem(translationDataY,mSceneObjectDefinitionHandle));
+    translationItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            translationDataY,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_TRANSLATION_Y,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 
     QList<QVariant> translationDataZ;
     translationDataZ << "Z" << transform.getTranslation().z;
-    translationItem->appendChild(new PropertiesItem(translationDataZ,mSceneObjectDefinitionHandle));
+    translationItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            translationDataZ,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_TRANSLATION_Z,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 }
 
 void SceneObjectPropertiesModel::createRotationProperty()
@@ -98,22 +143,49 @@ void SceneObjectPropertiesModel::createRotationProperty()
     qDebug() << "SceneObjectPropertiesModel: createRotationProperty";
     QList<QVariant> rotationData;
     rotationData << "Rotation" << "";
-    PropertiesItem *rotationItem = new PropertiesItem(rotationData,mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *rotationItem = new SceneObjectPropertiesItem(rotationData,mSceneObjectDefinitionHandle);
     mRootItem->appendChild(rotationItem);
 
     Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
 
     QList<QVariant> rotationDataX;
     rotationDataX << "X" << transform.getRotation().x;
-    rotationItem->appendChild(new PropertiesItem(rotationDataX,mSceneObjectDefinitionHandle));
+    rotationItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            rotationDataX,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_ROTATION_X,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 
     QList<QVariant> rotationDataY;
     rotationDataY << "Y" << transform.getRotation().y;
-    rotationItem->appendChild(new PropertiesItem(rotationDataY,mSceneObjectDefinitionHandle));
+    rotationItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            rotationDataY,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_ROTATION_Y,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 
     QList<QVariant> rotationDataZ;
     rotationDataZ << "Z" << transform.getRotation().z;
-    rotationItem->appendChild(new PropertiesItem(rotationDataZ,mSceneObjectDefinitionHandle));
+    rotationItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            rotationDataZ,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_ROTATION_Z,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 }
 
 void SceneObjectPropertiesModel::createScaleProperty()
@@ -122,22 +194,49 @@ void SceneObjectPropertiesModel::createScaleProperty()
     qDebug() << "SceneObjectPropertiesModel: createScaleProperty";
     QList<QVariant> scaleData;
     scaleData << "Scale" << "";
-    PropertiesItem *scaleItem = new PropertiesItem(scaleData,mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *scaleItem = new SceneObjectPropertiesItem(scaleData,mSceneObjectDefinitionHandle);
     mRootItem->appendChild(scaleItem);
 
     Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
 
     QList<QVariant> scaleDataX;
     scaleDataX << "X" << transform.getScale().x;
-    scaleItem->appendChild(new PropertiesItem(scaleDataX,mSceneObjectDefinitionHandle));
+    scaleItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            scaleDataX,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_SCALE_X,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 
     QList<QVariant> scaleDataY;
     scaleDataY << "Y" << transform.getScale().y;
-    scaleItem->appendChild(new PropertiesItem(scaleDataY,mSceneObjectDefinitionHandle));
+    scaleItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            scaleDataY,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_SCALE_Y,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 
     QList<QVariant> scaleDataZ;
     scaleDataZ << "Z" << transform.getScale().z;
-    scaleItem->appendChild(new PropertiesItem(scaleDataZ,mSceneObjectDefinitionHandle));
+    scaleItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            scaleDataZ,
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_SCALE_Z,
+            new DoubleSpinBoxDelegate()
+        )
+    );
 }
 
 void SceneObjectPropertiesModel::createTransformTypeProperty()
@@ -146,7 +245,11 @@ void SceneObjectPropertiesModel::createTransformTypeProperty()
     Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
     QList<QVariant> transformTypeData;
     transformTypeData << "Transform Type" << QString::fromStdString(transform.getTransformType());
-    PropertiesItem *transformTypeItem = new PropertiesItem(transformTypeData,mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *transformTypeItem = new SceneObjectPropertiesItem
+    (
+        transformTypeData,
+        mSceneObjectDefinitionHandle
+    );
     mRootItem->appendChild(transformTypeItem);
 }
 
@@ -155,7 +258,13 @@ void SceneObjectPropertiesModel::createHasFocusProperty()
     qDebug() << "SceneObjectPropertiesModel: createHasFocusProperty";
     QList<QVariant> hasFocusData;
     hasFocusData << "Has Focus" << mSceneObjectDefinitionHandle->hasFocus();
-    PropertiesItem *hasFocusItem = new PropertiesItem(hasFocusData,mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *hasFocusItem = new SceneObjectPropertiesItem
+    (
+        hasFocusData,
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_HAS_FOCUS,
+        new CheckBoxDelegate()
+    );
     mRootItem->appendChild(hasFocusItem);
 }
 
@@ -165,7 +274,11 @@ void SceneObjectPropertiesModel::createAssetInstancesProperty()
     QList<QVariant> assetDefData;
     vector<string> definitionsToLoad = mSceneObjectDefinitionHandle->getAssetDefinitionLoadQueue();
     assetDefData << "Asset Definitions" << QString::number(definitionsToLoad.size());
-    PropertiesItem *assetDefItem = new PropertiesItem(assetDefData,mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *assetDefItem = new SceneObjectPropertiesItem
+    (
+        assetDefData,
+        mSceneObjectDefinitionHandle
+    );
     mRootItem->appendChild(assetDefItem);
 
     for (std::string adUuid : definitionsToLoad)
@@ -175,7 +288,7 @@ void SceneObjectPropertiesModel::createAssetInstancesProperty()
                ->getProjectDefinitionHandle()
                ->getAssetDefinitionHandleByUuid(adUuid);
        assetInstanceData << QString::fromStdString(definition->getName()) << QString::fromStdString(definition->getType());
-       assetDefItem->appendChild(new PropertiesItem(assetInstanceData,mSceneObjectDefinitionHandle));
+       assetDefItem->appendChild(new SceneObjectPropertiesItem(assetInstanceData,mSceneObjectDefinitionHandle));
     }
 }
 
@@ -184,18 +297,13 @@ void SceneObjectPropertiesModel::createChildrenProperty()
     qDebug() << "SceneObjectPropertiesModel: createChildrenProperty";
     QList<QVariant> childrenData;
     childrenData << "Children" << QString::number(mSceneObjectDefinitionHandle->getChildDefinitionsHandleList().size());
-    PropertiesItem *childrenItem = new PropertiesItem(childrenData,mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *childrenItem = new SceneObjectPropertiesItem(childrenData,mSceneObjectDefinitionHandle);
     mRootItem->appendChild(childrenItem);
 
     for (SceneObjectDefinition* child : mSceneObjectDefinitionHandle->getChildDefinitionsHandleList())
     {
        QList<QVariant> childData;
        childData << QString::fromStdString(child->getName()) << QString::fromStdString(child->getUuid());
-       childrenItem->appendChild(new PropertiesItem(childData,mSceneObjectDefinitionHandle));
+       childrenItem->appendChild(new SceneObjectPropertiesItem(childData,mSceneObjectDefinitionHandle));
     }
-}
-
-void SceneObjectPropertiesModel::createDelegates()
-{
-
 }

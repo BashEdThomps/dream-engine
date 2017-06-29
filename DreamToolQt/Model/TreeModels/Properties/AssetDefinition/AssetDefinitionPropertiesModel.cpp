@@ -17,24 +17,20 @@
  */
 
 #include "AssetDefinitionPropertiesModel.h"
+
+#include "AssetDefinitionPropertiesItem.h"
 #include "AssetDefinitionTypeComboDelegate.h"
 #include "AssetDefinitionFormatComboDelegate.h"
 #include "BrowseForAdditionalFilesDelegate.h"
 #include "OpenInTextEditorDelegate.h"
-
 #include "Shader/ShaderTemplateComboDelegate.h"
 #include "Script/ScriptTemplateComboDelegate.h"
 #include "Model/ModelFileBrowseDelegate.h"
 
+#include <DreamCore.h>
 #include <QDebug>
-// Index Constants
-const int AssetDefinitionPropertiesModel::NAME_INDEX = 0;
-const int AssetDefinitionPropertiesModel::TYPE_INDEX = 1;
-const int AssetDefinitionPropertiesModel::FORMAT_INDEX = 2;
-const int AssetDefinitionPropertiesModel::SCRIPT_TEMPLATE_INDEX = 3;
-const int AssetDefinitionPropertiesModel::SHADER_TEMPLATE_INDEX = 3;
-const int AssetDefinitionPropertiesModel::MODEL_ASSIMP_FILE_INDEX = 3;
-const int AssetDefinitionPropertiesModel::MODEL_OTHER_FILE_INDEX = 4;
+
+using Dream::Constants;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
 (Dream::AssetDefinition *definition, QTreeView* parent)
@@ -59,7 +55,7 @@ AssetDefinitionPropertiesModel::createRoot
     QList<QVariant> rootData;
     rootData << QString::fromStdString(mAssetDefinitionHandle->getName())
              << QString::fromStdString(mAssetDefinitionHandle->getUuid());
-    mRootItem.reset(new PropertiesItem(rootData,mAssetDefinitionHandle));
+    mRootItem.reset(new AssetDefinitionPropertiesItem(rootData,mAssetDefinitionHandle));
 }
 
 void
@@ -68,7 +64,12 @@ AssetDefinitionPropertiesModel::createNameProperty
 {
     QList<QVariant> nameData;
     nameData << "Name" << QString::fromStdString(mAssetDefinitionHandle->getName());
-    PropertiesItem *nameProperty = new PropertiesItem(nameData,mAssetDefinitionHandle);
+    AssetDefinitionPropertiesItem *nameProperty = new AssetDefinitionPropertiesItem
+    (
+        nameData,
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_NAME
+    );
     mRootItem->appendChild(nameProperty);
 }
 
@@ -92,10 +93,15 @@ AssetDefinitionPropertiesModel::createTypeProperty
 {
     QList<QVariant> typeData;
     typeData << "Type" << QString::fromStdString(mAssetDefinitionHandle->getType());
-    PropertiesItem *typeProperty = new PropertiesItem(typeData,mAssetDefinitionHandle);
+    AssetDefinitionPropertiesItem *typeProperty = new AssetDefinitionPropertiesItem
+    (
+        typeData,
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_TYPE,
+        new AssetDefinitionTypeComboDelegate(mAssetDefinitionHandle)
+    );
     mRootItem->appendChild(typeProperty);
 
-    setTreeViewDelegateForRow(TYPE_INDEX, new AssetDefinitionTypeComboDelegate());
 }
 
 void
@@ -104,13 +110,14 @@ AssetDefinitionPropertiesModel::createFormatProperty
 {
     QList<QVariant> formatData;
     formatData << "Format" << QString::fromStdString(mAssetDefinitionHandle->getFormat());
-    PropertiesItem *formatProperty = new PropertiesItem(formatData,mAssetDefinitionHandle);
-    mRootItem->appendChild(formatProperty);
-
-    setTreeViewDelegateForRow(
-        FORMAT_INDEX,
-        new AssetDefinitionFormatComboDelegate(mAssetDefinitionHandle->getType())
+    AssetDefinitionPropertiesItem *formatProperty = new AssetDefinitionPropertiesItem
+    (
+        formatData,
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_FORMAT,
+        new AssetDefinitionFormatComboDelegate(mAssetDefinitionHandle)
     );
+    mRootItem->appendChild(formatProperty);
 }
 
 void
@@ -216,15 +223,15 @@ AssetDefinitionPropertiesModel::createModelFileProperty
     qDebug() << "AssetDefintionPropertiesModel: Creating Model Assimp File Delegate";
     mModelFileBrowseDelegateHandle = new ModelFileBrowseDelegate(mAssetDefinitionHandle, this);
 
-    setTreeViewDelegateForRow
-    (
-        MODEL_ASSIMP_FILE_INDEX,
-        mModelFileBrowseDelegateHandle
-    );
-
     QList<QVariant> mfData;
     mfData << "Model File" << "";
-    PropertiesItem *mfProperty = new PropertiesItem(mfData,mAssetDefinitionHandle);
+    AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
+    (
+        mfData,
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_MODEL_FILE,
+        mModelFileBrowseDelegateHandle
+    );
     mRootItem->appendChild(mfProperty);
 
     connect
@@ -240,15 +247,16 @@ AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
 {
     qDebug() << "AssetDefinitionPropertiesModel: Create Model Additional Files Delegate";
     mModelAdditionalFilesDelegateHandle = new BrowseForAdditionalFilesDelegate(mAssetDefinitionHandle,this);
-    setTreeViewDelegateForRow
-    (
-        MODEL_OTHER_FILE_INDEX,
-        mModelAdditionalFilesDelegateHandle
-    );
 
     QList<QVariant> data;
     data << "Additional Files" << "";
-    PropertiesItem *property = new PropertiesItem(data,mAssetDefinitionHandle);
+    AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
+    (
+        data,
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES,
+        mModelAdditionalFilesDelegateHandle
+    );
     mRootItem->appendChild(property);
 
     connect
@@ -291,15 +299,15 @@ AssetDefinitionPropertiesModel::createScriptTemplateProperty
 ()
 {
     qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
-    mTreeViewHandle->setItemDelegateForRow(
-        SCRIPT_TEMPLATE_INDEX,
-        new ScriptTemplateComboDelegate()
-    );
 
     // Template
     QList<QVariant> templateData;
     templateData << "Template" << "";
-    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinitionHandle);
+    AssetDefinitionPropertiesItem *templateProperty = new AssetDefinitionPropertiesItem
+    (
+        templateData,
+        mAssetDefinitionHandle
+    );
     mRootItem->appendChild(templateProperty);
 }
 
@@ -308,15 +316,15 @@ AssetDefinitionPropertiesModel::createShaderTemplateProperty
 ()
 {
     qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
-    mTreeViewHandle->setItemDelegateForRow(
-        SHADER_TEMPLATE_INDEX,
-        new ShaderTemplateComboDelegate()
-    );
 
     // Template
     QList<QVariant> templateData;
     templateData << "Template" << "";
-    PropertiesItem *templateProperty = new PropertiesItem(templateData,mAssetDefinitionHandle);
+    AssetDefinitionPropertiesItem *templateProperty = new AssetDefinitionPropertiesItem
+    (
+        templateData,
+        mAssetDefinitionHandle
+    );
     mRootItem->appendChild(templateProperty);
 }
 
@@ -349,13 +357,20 @@ AssetDefinitionPropertiesModel::setData
         return false;
     }
 
-    PropertiesItem *item = getItem(index);
-    bool result = item->setData(index.column(), value);
+    AssetDefinitionPropertiesItem *item = static_cast<AssetDefinitionPropertiesItem*>(getItem(index));
+
+    bool result = item->setData(index.column(),value);
 
     if (result)
     {
         emit dataChanged(index, index);
+        QItemDelegate* delegateHandle = item->getDelegate();
+        if (delegateHandle)
+        {
+
+        }
     }
+
 
     return result;
 }

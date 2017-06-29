@@ -1,5 +1,5 @@
 /*
- * PropertiesItem.cpp
+ * AbstractPropertiesItem.cpp
  *
  * Created: 18 2017 by Ashley
  *
@@ -16,79 +16,89 @@
  * this file belongs to.
  */
 
-#include "PropertiesItem.h"
+#include "AbstractPropertiesItem.h"
 
 #include <QDebug>
 
-PropertiesItem::PropertiesItem(const QList<QVariant> &data, void* item, PropertiesItem *parent)
+AbstractPropertiesItem::AbstractPropertiesItem
+(const QList<QVariant> &data, QItemDelegate* delegate, AbstractPropertiesItem *parent)
+    : mItemData(data),
+      mParentItemHandle(parent)
 {
-    qDebug() << "PropertiesItem: Constructing";
-    mItemData = data;
-    mParentItemHandle = parent;
-    mItemHandle = item;
+    qDebug() << "AbstractPropertiesItem: Constructing";
+    setDelegate(delegate);
 }
 
-PropertiesItem::~PropertiesItem()
-{
-    qDebug() << "PropertiesItem: Destructing";
-    qDeleteAll(mChildItems);
-}
-
-void PropertiesItem::setParent(PropertiesItem* parent)
+void AbstractPropertiesItem::setParent(AbstractPropertiesItem* parent)
 {
     mParentItemHandle = parent;
 }
 
-void PropertiesItem::appendChild(PropertiesItem *item)
+void
+AbstractPropertiesItem::setDelegate
+(QItemDelegate* delegate)
+{
+    mDelegate.reset(delegate);
+}
+
+QItemDelegate*
+AbstractPropertiesItem::getDelegate
+()
+{
+    return mDelegate.get();
+}
+
+void AbstractPropertiesItem::appendChild(AbstractPropertiesItem *item)
 {
     item->setParent(this);
     mChildItems.append(item);
 }
 
-PropertiesItem *PropertiesItem::child(int row)
+AbstractPropertiesItem *AbstractPropertiesItem::child(int row)
 {
     return mChildItems.value(row);
 }
 
-int PropertiesItem::childCount() const
+int AbstractPropertiesItem::childCount() const
 {
     return mChildItems.count();
 }
 
-int PropertiesItem::columnCount() const
+int AbstractPropertiesItem::columnCount() const
 {
     return mItemData.count();
 }
 
-QVariant PropertiesItem::data(int column) const
+QVariant AbstractPropertiesItem::data(int column) const
 {
     return mItemData.value(column);
 }
 
-PropertiesItem *PropertiesItem::parentItem()
+AbstractPropertiesItem *AbstractPropertiesItem::parentItem()
 {
     return mParentItemHandle;
 }
 
-int PropertiesItem::row() const
+int AbstractPropertiesItem::row() const
 {
     if (mParentItemHandle)
     {
-        return mParentItemHandle->mChildItems.indexOf(const_cast<PropertiesItem*>(this));
+        return mParentItemHandle->mChildItems.indexOf(const_cast<AbstractPropertiesItem*>(this));
     }
     return 0;
 }
 
-int PropertiesItem::childNumber() const
+int AbstractPropertiesItem::childNumber() const
 {
     if (mParentItemHandle)
     {
-        return mParentItemHandle->mChildItems.indexOf(const_cast<PropertiesItem*>(this));
+        return mParentItemHandle->mChildItems.indexOf(const_cast<AbstractPropertiesItem*>(this));
     }
     return 0;
 }
 
-bool PropertiesItem::insertChildren(int position, int count, int columns)
+/*
+bool AbstractPropertiesItem::insertChildren(int position, int count, int columns)
 {
     if (position < 0 || position > mChildItems.size())
     {
@@ -98,13 +108,15 @@ bool PropertiesItem::insertChildren(int position, int count, int columns)
     for (int row = 0; row < count; ++row)
     {
         QList<QVariant> data;
-        PropertiesItem *item = new PropertiesItem(data, nullptr, this);
+        AbstractPropertiesItem *item = new AbstractPropertiesItem(data, nullptr, "", nullptr, this);
         mChildItems.insert(position, item);
     }
     return true;
 }
+*/
 
-bool PropertiesItem::insertColumns(int position, int columns)
+/*
+bool AbstractPropertiesItem::insertColumns(int position, int columns)
 {
     if (position < 0 || position > mItemData.size())
     {
@@ -116,15 +128,17 @@ bool PropertiesItem::insertColumns(int position, int columns)
         mItemData.insert(position, QVariant());
     }
 
-    foreach (PropertiesItem *child, mChildItems)
+    foreach (AbstractPropertiesItem *child, mChildItems)
     {
         child->insertColumns(position, columns);
     }
 
     return true;
 }
+*/
 
-bool PropertiesItem::removeChildren(int position, int count)
+/*
+bool AbstractPropertiesItem::removeChildren(int position, int count)
 {
     if (position < 0 || position + count > mChildItems.size())
     {
@@ -138,8 +152,10 @@ bool PropertiesItem::removeChildren(int position, int count)
 
     return true;
 }
+*/
 
-bool PropertiesItem::removeColumns(int position, int columns)
+/*
+bool AbstractPropertiesItem::removeColumns(int position, int columns)
 {
     if (position < 0 || position + columns > mItemData.size())
     {
@@ -151,15 +167,16 @@ bool PropertiesItem::removeColumns(int position, int columns)
         mItemData.removeAt(position);
     }
 
-    foreach (PropertiesItem *child, mChildItems)
+    foreach (AbstractPropertiesItem *child, mChildItems)
     {
         child->removeColumns(position, columns);
     }
 
     return true;
 }
+*/
 
-bool PropertiesItem::setData(int column, const QVariant &value)
+bool AbstractPropertiesItem::setData(int column, const QVariant &value)
 {
     if (column < 0 || column >= mItemData.size())
     {

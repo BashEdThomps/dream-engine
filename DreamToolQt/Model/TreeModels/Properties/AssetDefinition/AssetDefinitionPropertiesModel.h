@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "PropertiesModel.h"
+#include "../PropertiesModel.h"
 #include <DreamCore.h>
 #include <memory>
 
@@ -30,14 +30,6 @@ class BrowseForAdditionalFilesDelegate;
 class AssetDefinitionPropertiesModel : public PropertiesModel
 {
     Q_OBJECT
-private:
-    const static int NAME_INDEX;
-    const static int TYPE_INDEX;
-    const static int FORMAT_INDEX;
-    const static int SCRIPT_TEMPLATE_INDEX;
-    const static int SHADER_TEMPLATE_INDEX;
-    const static int MODEL_ASSIMP_FILE_INDEX;
-    const static int MODEL_OTHER_FILE_INDEX;
 public:
     AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QTreeView *parent = 0);
     ~AssetDefinitionPropertiesModel();

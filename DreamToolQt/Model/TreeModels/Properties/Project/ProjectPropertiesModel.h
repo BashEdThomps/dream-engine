@@ -1,7 +1,7 @@
 /*
- * AssetDefinitionTypeComboDelegate.h
+ * ProjectPropertiesModel.h
  *
- * Created: 20 2017 by Ashley
+ * Created: 17 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,19 +15,21 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-
 #pragma once
 
-#include <QItemDelegate>
+#include "../PropertiesModel.h"
+#include <DreamCore.h>
 
-class AssetDefinitionTypeComboDelegate : public QItemDelegate
+using namespace Dream;
+
+class ProjectPropertiesModel : public PropertiesModel
 {
     Q_OBJECT
 public:
-    AssetDefinitionTypeComboDelegate(QObject* parent = 0);
-
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
-    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    ProjectPropertiesModel(ProjectDefinition *project, QTreeView* parent = 0);
+    ~ProjectPropertiesModel();
+    void createRoot() override;
+    void createProperties() override;
+private:
+    ProjectDefinition *mProjectDefinitionHandle;
 };

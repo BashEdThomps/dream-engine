@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "ProjectPropertiesModel.h"
+#include "ProjectPropertiesItem.h"
 #include <QDebug>
 
 ProjectPropertiesModel::ProjectPropertiesModel
@@ -35,20 +36,13 @@ ProjectPropertiesModel::createRoot
     QList<QVariant> rootData;
     rootData << QString::fromStdString(mProjectDefinitionHandle->getName())
              << QString::fromStdString(mProjectDefinitionHandle->getUuid());
-    mRootItem.reset(new PropertiesItem(rootData,mProjectDefinitionHandle));
+    mRootItem.reset(new ProjectPropertiesItem(rootData,mProjectDefinitionHandle));
 }
 
 void
 ProjectPropertiesModel::createProperties
 ()
 {}
-
-void
-ProjectPropertiesModel::createDelegates
-()
-{
-
-}
 
 ProjectPropertiesModel::~ProjectPropertiesModel
 ()

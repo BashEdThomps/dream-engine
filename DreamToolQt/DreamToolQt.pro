@@ -29,76 +29,103 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     \
-    View/MainWindow.cpp \
-    View/QOpenGLWindowComponent.cpp \
     Controller/MainController.cpp \
     \
     Model/DreamProjectModel.cpp \
     Model/ProjectDirectoryModel.cpp \
+    Model/PreferencesModel.cpp \
     \
-    Model/TreeModels/AssetDefinitionTreeItem.cpp \
-    Model/TreeModels/AssetDefinitionTreeModel.cpp \
-    Model/TreeModels/GenericTreeItem.cpp \
-    Model/TreeModels/ScenegraphTreeItem.cpp \
-    \
-    Model/TreeModels/Properties/PropertiesModel.cpp \
-    Model/TreeModels/Properties/ScenePropertiesModel.cpp \
-    Model/TreeModels/Properties/SceneObjectPropertiesModel.cpp \
-    Model/TreeModels/Properties/ProjectPropertiesModel.cpp \
-    Model/TreeModels/Properties/AssetDefinitionPropertiesModel.cpp \
-    Model/TreeModels/Properties/PropertiesItem.cpp \
-    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.cpp \
-    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.cpp \
-    Model/TreeModels/Properties/Shader/ShaderTemplateComboDelegate.cpp \
-    Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.cpp \
+    View/QOpenGLWindowComponent.cpp \
+    View/MainWindow.cpp \
     View/GLView/Grid.cpp \
     View/GLView/SelectionHighlighter.cpp \
     View/GLView/GLDrawable.cpp \
     View/GLView/RelationshipTree.cpp \
+    \
     Test/TestProjectDirModel.cpp \
-    Model/PreferencesModel.cpp \
-    Model/TreeModels/ScenegraphTreeModel.cpp \
-    Model/TreeModels/Properties/Model/ModelFileBrowseDelegate.cpp \
-    Model/TreeModels/Properties/OpenInTextEditorDelegate.cpp \
-    Model/TreeModels/Properties/BrowseForAdditionalFilesDelegate.cpp
+    \
+    Model/TreeModels/GenericTreeItem.cpp \
+    \
+    Model/TreeModels/Scenegraph/ScenegraphTreeModel.cpp \
+    Model/TreeModels/Scenegraph/ScenegraphTreeItem.cpp \
+    \
+    Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.cpp \
+    Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.cpp \
+    \
+    Model/TreeModels/Properties/ItemDelegateProxy.cpp \
+    Model/TreeModels/Properties/PropertiesModel.cpp \
+    Model/TreeModels/Properties/AbstractPropertiesItem.cpp \
+    \
+    Model/TreeModels/Properties/AssetDefinition/OpenInTextEditorDelegate.cpp \
+    Model/TreeModels/Properties/AssetDefinition/BrowseForAdditionalFilesDelegate.cpp \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesModel.cpp \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionTypeComboDelegate.cpp \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionFormatComboDelegate.cpp \
+    Model/TreeModels/Properties/AssetDefinition/Model/ModelFileBrowseDelegate.cpp \
+    Model/TreeModels/Properties/AssetDefinition/Shader/ShaderTemplateComboDelegate.cpp \
+    Model/TreeModels/Properties/AssetDefinition/Script/ScriptTemplateComboDelegate.cpp \
+    \
+    Model/TreeModels/Properties/Scene/ScenePropertiesModel.cpp \
+    Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesModel.cpp \
+    Model/TreeModels/Properties/Project/ProjectPropertiesModel.cpp \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesItem.cpp \
+    Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesItem.cpp \
+    Model/TreeModels/Properties/Scene/ScenePropertiesItem.cpp \
+    Model/TreeModels/Properties/DoubleSpinBoxDelegate.cpp \
+    Model/TreeModels/Properties/CheckBoxDelegate.cpp \
+    Model/TreeModels/Properties/Project/ProjectPropertiesItem.cpp
+
 
 
 HEADERS  += \
-    View/MainWindow.h \
-    View/QOpenGLWindowComponent.h \
     \
     Controller/MainController.h \
     \
     Model/DreamProjectModel.h \
     Model/ProjectDirectoryModel.h \
+    Model/PreferencesModel.h \
     \
-    Model/TreeModels/AssetDefinitionTreeItem.h \
-    Model/TreeModels/AssetDefinitionTreeModel.h \
-    Model/TreeModels/GenericTreeItem.h \
-    Model/TreeModels/ScenegraphTreeItem.h \
-    \
-    Model/TreeModels/Properties/PropertiesModel.h \
-    Model/TreeModels/Properties/AssetDefinitionPropertiesModel.h \
-    Model/TreeModels/Properties/ProjectPropertiesModel.h \
-    Model/TreeModels/Properties/SceneObjectPropertiesModel.h \
-    Model/TreeModels/Properties/ScenePropertiesModel.h \
-    Model/TreeModels/Properties/PropertiesItem.h \
-    Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h \
-    Model/TreeModels/Properties/AssetDefinitionFormatComboDelegate.h \
-    Model/TreeModels/Properties/Shader/ShaderTemplateComboDelegate.h \
-    Model/TreeModels/Properties/Script/ScriptTemplateComboDelegate.h \
-    \
+    View/MainWindow.h \
+    View/QOpenGLWindowComponent.h \
     View/GLView/Grid.h \
     View/GLView/SelectionHighlighter.h \
     View/GLView/GLDrawable.h \
     View/GLView/RelationshipTree.h \
+    \
     Test/TestProjectDirModel.h \
     Test/catch.hpp \
-    Model/PreferencesModel.h \
-    Model/TreeModels/ScenegraphTreeModel.h \
-    Model/TreeModels/Properties/Model/ModelFileBrowseDelegate.h \
-    Model/TreeModels/Properties/OpenInTextEditorDelegate.h \
-    Model/TreeModels/Properties/BrowseForAdditionalFilesDelegate.h
+    \
+    Model/TreeModels/GenericTreeItem.h \
+    \
+    Model/TreeModels/Scenegraph/ScenegraphTreeModel.h \
+    Model/TreeModels/Scenegraph/ScenegraphTreeItem.h \
+    \
+    Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.h \
+    Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.h \
+    \
+    Model/TreeModels/Properties/ItemDelegateProxy.h \
+    Model/TreeModels/Properties/PropertiesModel.h \
+    Model/TreeModels/Properties/AbstractPropertiesItem.h \
+    \
+    Model/TreeModels/Properties/AssetDefinition/OpenInTextEditorDelegate.h \
+    Model/TreeModels/Properties/AssetDefinition/BrowseForAdditionalFilesDelegate.h \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesModel.h \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionTypeComboDelegate.h \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionFormatComboDelegate.h \
+    Model/TreeModels/Properties/AssetDefinition/Model/ModelFileBrowseDelegate.h \
+    Model/TreeModels/Properties/AssetDefinition/Shader/ShaderTemplateComboDelegate.h \
+    Model/TreeModels/Properties/AssetDefinition/Script/ScriptTemplateComboDelegate.h \
+    \
+    Model/TreeModels/Properties/Scene/ScenePropertiesModel.h \
+    Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesModel.h \
+    Model/TreeModels/Properties/Project/ProjectPropertiesModel.h \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesItem.h \
+    Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesItem.h \
+    Model/TreeModels/Properties/Scene/ScenePropertiesItem.h \
+    Model/TreeModels/Properties/DoubleSpinBoxDelegate.h \
+    Model/TreeModels/Properties/CheckBoxDelegate.h \
+    Model/TreeModels/Properties/Project/ProjectPropertiesItem.h
+
 
 
 FORMS    += View/MainWindow.ui

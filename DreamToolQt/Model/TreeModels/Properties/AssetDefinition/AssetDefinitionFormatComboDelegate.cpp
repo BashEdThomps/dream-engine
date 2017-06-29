@@ -16,17 +16,19 @@
  * this file belongs to.
  */
 #include "AssetDefinitionFormatComboDelegate.h"
-#include "../AssetDefinitionTreeItem.h"
+
+#include "../../AssetDefinitionTreeItem.h"
 #include <QComboBox>
 #include <QDebug>
 
 using Dream::Constants;
 
-AssetDefinitionFormatComboDelegate::AssetDefinitionFormatComboDelegate(std::string type, QObject* parent)
-    : QItemDelegate(parent)
+AssetDefinitionFormatComboDelegate::AssetDefinitionFormatComboDelegate
+(AssetDefinition* adHandle, QObject* parent)
+    : QItemDelegate(parent),
+      mAssetDefinitionHandle(adHandle)
 {
    qDebug() << "AssetDefinitionFormatComboDelegate: Constructing Object";
-    mAssetType = Constants::assetTypeFromString(type);
 }
 
 AssetDefinitionFormatComboDelegate::~AssetDefinitionFormatComboDelegate
@@ -40,17 +42,23 @@ AssetDefinitionFormatComboDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem & option , const QModelIndex & index )
 const
 {
+
+    qDebug() << "AssetDefinitionFormatComboDelegate: createEditor";
     QComboBox *editor = new QComboBox(parent);
     editor->setDuplicatesEnabled(false);
     editor->setEditable(false);
     editor->setInsertPolicy(QComboBox::NoInsert);
-    vector<std::string> formats = Constants::DREAM_ASSET_FORMATS_MAP[mAssetType];
+
+    AssetType type = Constants::assetTypeFromString(mAssetDefinitionHandle->getType());
+    // Setup List
+    vector<string> formats = Constants::DREAM_ASSET_FORMATS_MAP[type];
     QStringList list;
-    for (std::string format : formats)
+    for (string format : formats)
     {
         list.push_back(QString::fromStdString(format));
     }
     editor->addItems(list);
+
     return editor;
 }
 
@@ -59,9 +67,11 @@ AssetDefinitionFormatComboDelegate::setEditorData
 (QWidget *editor, const QModelIndex &index)
 const
 {
+    qDebug() << "AssetDefinitionFormatComboDelegate: setEditorData";
     QString value = index.model()->data(index, Qt::DisplayRole).toString();
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
     comboBox->setCurrentText(value);
+    mAssetDefinitionHandle->setFormat(value.toStdString());
 }
 
 void
@@ -69,6 +79,7 @@ AssetDefinitionFormatComboDelegate::setModelData
 (QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
 const
 {
+    qDebug() << "AssetDefinitionFormatComboDelegate: setModelData";
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
     QString value = comboBox->currentText();
     model->setData(index, value);
@@ -79,5 +90,6 @@ AssetDefinitionFormatComboDelegate::updateEditorGeometry
 (QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex & index )
 const
 {
+    qDebug() << "AssetDefinitionFormatComboDelegate: updateEditorGeometry";
     editor->setGeometry(option.rect);
 }

@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "PropertiesModel.h"
+#include "../PropertiesModel.h"
 #include <DreamCore.h>
 
 using namespace Dream;
@@ -31,7 +31,6 @@ public:
 
     void createRoot() override;
     void createProperties() override;
-    void createDelegates();
 
     void createNameProperty();
     void createTranslationProperty();

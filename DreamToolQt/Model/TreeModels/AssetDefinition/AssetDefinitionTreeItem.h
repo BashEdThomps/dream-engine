@@ -1,7 +1,7 @@
 /*
- * ScenePropertiesModel.h
+ * AssetDefinitionTreeItem.h
  *
- * Created: 17 2017 by Ashley
+ * Created: 15 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -18,29 +18,24 @@
 
 #pragma once
 
-#include "PropertiesModel.h"
 #include <DreamCore.h>
+#include "../GenericTreeItem.h"
+#include <QList>
+#include <QVariant>
 
-using Dream::SceneDefinition;
-
-class ScenePropertiesModel : public PropertiesModel
+class AssetDefinitionTreeItem : public GenericTreeItem
 {
-    Q_OBJECT
 public:
-    ScenePropertiesModel(SceneDefinition *scene, QTreeView* parent = 0);
-    ~ScenePropertiesModel();
 
-    void createRoot() override;
-    void createProperties() override;
-    void createDelegates();
+    explicit AssetDefinitionTreeItem(
+        const QList<QVariant> &data,
+        GenericTreeItemType type,
+        Dream::AssetDefinition* definiion,
+        AssetDefinitionTreeItem *parentItem = 0
+    );
 
-    void createNameProperties();
-    void createNotesProperties();
-    void createCameraProperties();
-    void createRenderingProperties();
-    void createPhysicsProperties();
+    Dream::AssetDefinition *getAssetDefinition();
 
 private:
-    SceneDefinition *mSceneDefinition;
+    Dream::AssetDefinition *mDefinition;
 };
-

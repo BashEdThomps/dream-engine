@@ -1,7 +1,7 @@
 /*
- * AssetDefinitionFormatComboDelegate.h
+ * AssetDefinitionTypeComboDelegate.h
  *
- * Created: 30 2017 by Ashley
+ * Created: 20 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -18,23 +18,21 @@
 
 #pragma once
 
-#include <DreamCore.h>
 #include <QItemDelegate>
+#include <DreamCore.h>
 
-using Dream::AssetType;
+using Dream::AssetDefinition;
 
-class AssetDefinitionFormatComboDelegate : public QItemDelegate
+class AssetDefinitionTypeComboDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    AssetDefinitionFormatComboDelegate(std::string type, QObject* parent = 0);
-    ~AssetDefinitionFormatComboDelegate();
+    AssetDefinitionTypeComboDelegate(AssetDefinition* adHandle, QObject* parent = 0);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
 private:
-    AssetType mAssetType;
+    AssetDefinition* mAssetDefinitionHandle;
 };

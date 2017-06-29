@@ -24,8 +24,10 @@ using Dream::Constants;
 using Dream::AssetType;
 
 AssetDefinitionTypeComboDelegate::AssetDefinitionTypeComboDelegate
-(QObject* parent)
-    : QItemDelegate (parent)
+(AssetDefinition* adHandle, QObject* parent)
+    : QItemDelegate (parent),
+      mAssetDefinitionHandle(adHandle)
+
 {
     qDebug() <<  "AssetDefinitionTypeComboDelegate: Constructing";
 }
@@ -53,6 +55,7 @@ const
     QString value = index.model()->data(index, Qt::DisplayRole).toString();
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
     comboBox->addItem(value);
+    mAssetDefinitionHandle->setType(value.toStdString());
 }
 
 void

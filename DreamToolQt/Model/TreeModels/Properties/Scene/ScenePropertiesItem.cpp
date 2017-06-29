@@ -1,7 +1,7 @@
 /*
- * ProjectPropertiesModel.h
+ * ScenePropertiesItem.cpp
  *
- * Created: 17 2017 by Ashley
+ * Created: 29 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,22 +15,25 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#pragma once
+#include "ScenePropertiesItem.h"
 
-#include "PropertiesModel.h"
-#include <DreamCore.h>
-
-using namespace Dream;
-
-class ProjectPropertiesModel : public PropertiesModel
+ScenePropertiesItem::ScenePropertiesItem
+(
+    const QList<QVariant> &data,
+    SceneDefinition* sdHandle,
+    SceneProperty property,
+    QItemDelegate* delegate,
+    AbstractPropertiesItem *parent
+)
+    : AbstractPropertiesItem(data,delegate,parent),
+      mSceneDefinitionHandle(sdHandle),
+      mProperty(property)
 {
-    Q_OBJECT
-public:
-    ProjectPropertiesModel(ProjectDefinition *project, QTreeView* parent = 0);
-    ~ProjectPropertiesModel();
-    void createRoot() override;
-    void createProperties() override;
-    void createDelegates();
-private:
-    ProjectDefinition *mProjectDefinitionHandle;
-};
+
+}
+
+ScenePropertiesItem::~ScenePropertiesItem
+()
+{
+
+}

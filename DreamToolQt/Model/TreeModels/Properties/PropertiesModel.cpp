@@ -17,6 +17,7 @@
  */
 #include "PropertiesModel.h"
 #include <QDebug>
+#include "ItemDelegateProxy.h"
 
 using std::pair;
 
@@ -25,28 +26,21 @@ PropertiesModel::PropertiesModel(QTreeView* parent)
 {
     qDebug() << "PropertiesModel: Constructing";
     mTreeViewHandle = parent;
+    mItemDelegateProxy.reset(new ItemDelegateProxy());
+    mTreeViewHandle->setItemDelegateForColumn(1,mItemDelegateProxy.get());
 }
 
 PropertiesModel::~PropertiesModel
 ()
 {
     qDebug() << "PropertiesModel: Destructing";
-    for (pair<int,QItemDelegate*> delegatePair : mViewDelegates)
-    {
-        int index = delegatePair.first;
-        QItemDelegate* delegate = delegatePair.second;
-        qDebug() << "PropertiesModel: Clearing delegate on row" << index;
-        mTreeViewHandle->setItemDelegateForRow(index,nullptr);
-        delete delegate;
-    }
-    mViewDelegates.clear();
 }
 
-PropertiesItem *PropertiesModel::getItem(const QModelIndex &index) const
+AbstractPropertiesItem *PropertiesModel::getItem(const QModelIndex &index) const
 {
     if (index.isValid())
     {
-        PropertiesItem *item = static_cast<PropertiesItem*>(index.internalPointer());
+        AbstractPropertiesItem *item = static_cast<AbstractPropertiesItem*>(index.internalPointer());
         if (item)
         {
             return item;
@@ -72,6 +66,7 @@ bool PropertiesModel::setHeaderData(int section, Qt::Orientation orientation, co
     return result;
 }
 
+/*
 bool PropertiesModel::insertColumns(int position, int columns,const QModelIndex &parent)
 {
     bool success;
@@ -82,7 +77,9 @@ bool PropertiesModel::insertColumns(int position, int columns,const QModelIndex 
 
     return success;
 }
+*/
 
+/*
 bool PropertiesModel::removeColumns(int position, int columns, const QModelIndex &parent)
 {
     bool success;
@@ -98,10 +95,12 @@ bool PropertiesModel::removeColumns(int position, int columns, const QModelIndex
 
     return success;
 }
+*/
 
+/*
 bool PropertiesModel::insertRows(int position, int rows, const QModelIndex &parent)
 {
-    PropertiesItem *parentItem = getItem(parent);
+    AbstractPropertiesItem *parentItem = getItem(parent);
     bool success;
 
     beginInsertRows(parent, position, position + rows - 1);
@@ -110,10 +109,12 @@ bool PropertiesModel::insertRows(int position, int rows, const QModelIndex &pare
 
     return success;
 }
+*/
 
+/*
 bool PropertiesModel::removeRows(int position, int rows,  const QModelIndex &parent)
 {
-    PropertiesItem *parentItem = getItem(parent);
+    AbstractPropertiesItem *parentItem = getItem(parent);
     bool success = true;
 
     beginRemoveRows(parent, position, position + rows - 1);
@@ -122,15 +123,17 @@ bool PropertiesModel::removeRows(int position, int rows,  const QModelIndex &par
 
     return success;
 }
+*/
 
 bool PropertiesModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole)
+    /*if (role != Qt::EditRole)
     {
         return false;
     }
+    */
 
-    PropertiesItem *item = getItem(index);
+    AbstractPropertiesItem *item = getItem(index);
     bool result = item->setData(index.column(), value);
 
     if (result)
@@ -145,22 +148,19 @@ QModelIndex PropertiesModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
-        //qDebug() << QString("PropertiesModel: Invalid Index @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
-    PropertiesItem *childItem = static_cast<PropertiesItem*>(index.internalPointer());
-    PropertiesItem *parentItem = childItem->parentItem();
+    AbstractPropertiesItem *childItem = static_cast<AbstractPropertiesItem*>(index.internalPointer());
+    AbstractPropertiesItem *parentItem = childItem->parentItem();
 
     if (parentItem == nullptr)
     {
-        //qDebug() << QString("PropertiesModel: Parent is nullptr @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
     if (parentItem == mRootItem.get())
     {
-        //qDebug() << QString("PropertiesModel: Parent is root item @ col: %1, row: %2").arg(index.column()).arg(index.row());
         return QModelIndex();
     }
 
@@ -171,7 +171,7 @@ int PropertiesModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
-        return static_cast<PropertiesItem*>(parent.internalPointer())->columnCount();
+        return static_cast<AbstractPropertiesItem*>(parent.internalPointer())->columnCount();
     }
     else
     {
@@ -197,7 +197,7 @@ QVariant PropertiesModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    PropertiesItem *item = static_cast<PropertiesItem*>(index.internalPointer());
+    AbstractPropertiesItem *item = static_cast<AbstractPropertiesItem*>(index.internalPointer());
 
     return item->data(index.column());
 }
@@ -233,37 +233,34 @@ QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &paren
 {
     if (!hasIndex(row, column, parent))
     {
-        //qDebug() << QString("PropertiesModel: No index for row %1 col %2").arg(row).arg(column);
         return QModelIndex();
     }
 
-    PropertiesItem *parentItem;
+    AbstractPropertiesItem *parentItem;
 
     if (!parent.isValid())
     {
-        //qDebug() << QString("PropertiesModel: Parent is invalid for row %1 col %2").arg(row).arg(column);
         parentItem = mRootItem.get();
     }
     else
     {
-        parentItem = static_cast<PropertiesItem*>(parent.internalPointer());
+        parentItem = static_cast<AbstractPropertiesItem*>(parent.internalPointer());
     }
 
-    PropertiesItem *childItem = parentItem->child(row);
+    AbstractPropertiesItem *childItem = parentItem->child(row);
     if (childItem)
     {
         return createIndex(row, column, childItem);
     }
     else
     {
-        //qDebug() << QString("PropertiesModel: childItem is null for row %1 col %2").arg(row).arg(column);
         return QModelIndex();
     }
 }
 
 int PropertiesModel::rowCount(const QModelIndex &parent) const
 {
-    PropertiesItem *parentItem;
+    AbstractPropertiesItem *parentItem;
     if (parent.column() > 0)
     {
         return 0;
@@ -275,16 +272,8 @@ int PropertiesModel::rowCount(const QModelIndex &parent) const
     }
     else
     {
-        parentItem = static_cast<PropertiesItem*>(parent.internalPointer());
+        parentItem = static_cast<AbstractPropertiesItem*>(parent.internalPointer());
     }
 
     return parentItem->childCount();
-}
-
-void
-PropertiesModel::setTreeViewDelegateForRow
-(int index, QItemDelegate *delegate)
-{
-    mViewDelegates.insert(pair<int,QItemDelegate*>(index,delegate));
-    mTreeViewHandle->setItemDelegateForRow(index,delegate);
 }

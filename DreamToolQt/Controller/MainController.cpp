@@ -24,11 +24,10 @@
 #include <DreamCore.h>
 #include <QOpenGLContext>
 
-#include "../Model/TreeModels/Properties/AssetDefinitionPropertiesModel.h"
-#include "../Model/TreeModels/Properties/ProjectPropertiesModel.h"
-#include "../Model/TreeModels/Properties/SceneObjectPropertiesModel.h"
-#include "../Model/TreeModels/Properties/ScenePropertiesModel.h"
-#include "../Model/TreeModels/Properties/AssetDefinitionTypeComboDelegate.h"
+#include "../Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesModel.h"
+#include "../Model/TreeModels/Properties/Project/ProjectPropertiesModel.h"
+#include "../Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesModel.h"
+#include "../Model/TreeModels/Properties/Scene/ScenePropertiesModel.h"
 
 #include <iostream>
 using std::cout;
@@ -85,13 +84,6 @@ MainController::setupUI_PropertiesTreeViewModel
 (GenericTreeItem *item)
 {
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
-
-    /*
-     * mSelectedProjectDefinitionHandle = nullptr;
-     * mSelectedAssetDefinitionHandle = nullptr;
-     * mSelectedSceneDefinitionHandle = nullptr;
-     * mSelectedSceneObjectDefinitionHandle = nullptr;
-     */
     SceneObjectRuntime *selectedSceneObjectRuntime = nullptr;
 
     // Reset the selected object
@@ -99,6 +91,8 @@ MainController::setupUI_PropertiesTreeViewModel
     {
         mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
     }
+
+    mPropertiesModel.reset(nullptr);
 
     switch(item->getItemType())
     {
@@ -132,6 +126,7 @@ MainController::setupUI_PropertiesTreeViewModel
             qDebug() << "MainController: Selected a scene";
             mSelectedSceneDefinitionHandle = static_cast<SceneDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
+
             if (mSelectedSceneDefinitionHandle)
             {
                 mPropertiesModel.reset(new ScenePropertiesModel(mSelectedSceneDefinitionHandle,propertiesTreeView));

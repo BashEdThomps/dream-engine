@@ -1,7 +1,7 @@
 /*
- * ProjectTreeItem.h
+ * SceneObjectPropertiesItem.cpp
  *
- * Created: 15 2017 by Ashley
+ * Created: 29 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,17 +15,24 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#pragma once
+#include "SceneObjectPropertiesItem.h"
 
-#include "GenericTreeItem.h"
-#include <QList>
-#include <QVariant>
-
-class ScenegraphTreeItem : public GenericTreeItem
+SceneObjectPropertiesItem::SceneObjectPropertiesItem
+(
+    const QList<QVariant> &data,
+    SceneObjectDefinition* sodHandle,
+    SceneObjectProperty property,
+    QItemDelegate* delegate,
+    AbstractPropertiesItem *parent
+)
+    : AbstractPropertiesItem(data,delegate,parent),
+      mSceneObjectDefinitionHandle(sodHandle),
+      mProperty(property)
 {
-public:
-    explicit ScenegraphTreeItem(const QList<QVariant> &data, GenericTreeItemType type, void* item, ScenegraphTreeItem *parentItem = 0);
-    void* getItem();
-private:
-    void* mItem;
-};
+}
+
+SceneObjectPropertiesItem::~SceneObjectPropertiesItem
+()
+{
+
+}
