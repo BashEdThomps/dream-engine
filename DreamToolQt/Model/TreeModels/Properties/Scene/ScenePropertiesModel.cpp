@@ -404,3 +404,10 @@ ScenePropertiesModel::createPhysicsProperties
     physicsProperty->appendChild(debugProperty);
 }
 
+bool
+ScenePropertiesModel::setData
+(const QModelIndex &index, const QVariant &value, int role)
+{
+    return false;
+}
+

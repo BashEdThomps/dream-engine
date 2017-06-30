@@ -358,19 +358,38 @@ AssetDefinitionPropertiesModel::setData
     }
 
     AssetDefinitionPropertiesItem *item = static_cast<AssetDefinitionPropertiesItem*>(getItem(index));
+    AssetDefinition* adHandle = item->getAssetDefinitionHandle();
+
+    switch(item->getProperty())
+    {
+        case ASSET_DEFINITION_PROPERTY_NAME:
+            adHandle->setName(value.toString().toStdString());
+            break;
+        case ASSET_DEFINITION_PROPERTY_TYPE:
+            adHandle->setType(value.toString().toStdString());
+            break;
+        case ASSET_DEFINITION_PROPERTY_FORMAT:
+            adHandle->setFormat(value.toString().toStdString());
+            break;
+        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
+        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
+        case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
+        case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
+        case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
+        case ASSET_DEFINITION_PROPERTY_NONE:
+            break;
+    }
 
     bool result = item->setData(index.column(),value);
 
     if (result)
     {
         emit dataChanged(index, index);
-        QItemDelegate* delegateHandle = item->getDelegate();
-        if (delegateHandle)
-        {
-
-        }
     }
-
 
     return result;
 }

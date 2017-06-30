@@ -36,7 +36,10 @@ PropertiesModel::~PropertiesModel
     qDebug() << "PropertiesModel: Destructing";
 }
 
-AbstractPropertiesItem *PropertiesModel::getItem(const QModelIndex &index) const
+AbstractPropertiesItem*
+PropertiesModel::getItem
+(const QModelIndex &index)
+const
 {
     if (index.isValid())
     {
@@ -49,7 +52,8 @@ AbstractPropertiesItem *PropertiesModel::getItem(const QModelIndex &index) const
     return mRootItem.get();
 }
 
-bool PropertiesModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+bool PropertiesModel::setHeaderData
+(int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
     {
@@ -66,73 +70,10 @@ bool PropertiesModel::setHeaderData(int section, Qt::Orientation orientation, co
     return result;
 }
 
-/*
-bool PropertiesModel::insertColumns(int position, int columns,const QModelIndex &parent)
+bool
+PropertiesModel::setData
+(const QModelIndex &index, const QVariant &value, int role)
 {
-    bool success;
-
-    beginInsertColumns(parent, position, position + columns - 1);
-    success = mRootItem->insertColumns(position, columns);
-    endInsertColumns();
-
-    return success;
-}
-*/
-
-/*
-bool PropertiesModel::removeColumns(int position, int columns, const QModelIndex &parent)
-{
-    bool success;
-
-    beginRemoveColumns(parent, position, position + columns - 1);
-    success = mRootItem->removeColumns(position, columns);
-    endRemoveColumns();
-
-    if (mRootItem->columnCount() == 0)
-    {
-        removeRows(0, rowCount());
-    }
-
-    return success;
-}
-*/
-
-/*
-bool PropertiesModel::insertRows(int position, int rows, const QModelIndex &parent)
-{
-    AbstractPropertiesItem *parentItem = getItem(parent);
-    bool success;
-
-    beginInsertRows(parent, position, position + rows - 1);
-    success = parentItem->insertChildren(position, rows, mRootItem->columnCount());
-    endInsertRows();
-
-    return success;
-}
-*/
-
-/*
-bool PropertiesModel::removeRows(int position, int rows,  const QModelIndex &parent)
-{
-    AbstractPropertiesItem *parentItem = getItem(parent);
-    bool success = true;
-
-    beginRemoveRows(parent, position, position + rows - 1);
-    success = parentItem->removeChildren(position, rows);
-    endRemoveRows();
-
-    return success;
-}
-*/
-
-bool PropertiesModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    /*if (role != Qt::EditRole)
-    {
-        return false;
-    }
-    */
-
     AbstractPropertiesItem *item = getItem(index);
     bool result = item->setData(index.column(), value);
 
@@ -144,7 +85,10 @@ bool PropertiesModel::setData(const QModelIndex &index, const QVariant &value, i
     return result;
 }
 
-QModelIndex PropertiesModel::parent(const QModelIndex &index) const
+QModelIndex
+PropertiesModel::parent
+(const QModelIndex &index)
+const
 {
     if (!index.isValid())
     {
@@ -167,7 +111,10 @@ QModelIndex PropertiesModel::parent(const QModelIndex &index) const
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int PropertiesModel::columnCount(const QModelIndex &parent) const
+int
+PropertiesModel::columnCount
+(const QModelIndex &parent)
+const
 {
     if (parent.isValid())
     {
@@ -180,7 +127,10 @@ int PropertiesModel::columnCount(const QModelIndex &parent) const
 }
 
 
-QVariant PropertiesModel::data(const QModelIndex &index, int role) const
+QVariant
+PropertiesModel::data
+(const QModelIndex &index, int role)
+const
 {
     if (!index.isValid())
     {
@@ -203,7 +153,9 @@ QVariant PropertiesModel::data(const QModelIndex &index, int role) const
 }
 
 
-Qt::ItemFlags PropertiesModel::flags(const QModelIndex &index) const
+Qt::ItemFlags
+PropertiesModel::flags
+(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -218,7 +170,10 @@ Qt::ItemFlags PropertiesModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index);
 }
 
-QVariant PropertiesModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant
+PropertiesModel::headerData
+(int section, Qt::Orientation orientation, int role)
+const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
@@ -229,7 +184,10 @@ QVariant PropertiesModel::headerData(int section, Qt::Orientation orientation, i
 }
 
 
-QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex
+PropertiesModel::index
+(int row, int column, const QModelIndex &parent)
+const
 {
     if (!hasIndex(row, column, parent))
     {
@@ -258,7 +216,9 @@ QModelIndex PropertiesModel::index(int row, int column, const QModelIndex &paren
     }
 }
 
-int PropertiesModel::rowCount(const QModelIndex &parent) const
+int
+PropertiesModel::rowCount
+(const QModelIndex &parent) const
 {
     AbstractPropertiesItem *parentItem;
     if (parent.column() > 0)

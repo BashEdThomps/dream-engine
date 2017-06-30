@@ -30,6 +30,8 @@ public:
     ~ProjectPropertiesModel();
     void createRoot() override;
     void createProperties() override;
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 private:
     ProjectDefinition *mProjectDefinitionHandle;
 };

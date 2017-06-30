@@ -18,9 +18,13 @@
 #pragma once
 
 #include "../PropertiesModel.h"
-#include <DreamCore.h>
 
-using namespace Dream;
+namespace Dream
+{
+    class SceneObjectDefinition;
+}
+
+using Dream::SceneObjectDefinition;
 
 class SceneObjectPropertiesModel : public PropertiesModel
 {
@@ -40,6 +44,8 @@ public:
     void createHasFocusProperty();
     void createAssetInstancesProperty();
     void createChildrenProperty();
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 private:
     SceneObjectDefinition *mSceneObjectDefinitionHandle;
 };

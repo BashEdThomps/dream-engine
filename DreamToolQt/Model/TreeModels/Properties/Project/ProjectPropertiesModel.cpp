@@ -44,6 +44,13 @@ ProjectPropertiesModel::createProperties
 ()
 {}
 
+bool
+ProjectPropertiesModel::setData
+(const QModelIndex &index, const QVariant &value, int role)
+{
+    return false;
+}
+
 ProjectPropertiesModel::~ProjectPropertiesModel
 ()
 {

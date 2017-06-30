@@ -49,12 +49,6 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual void createRoot() = 0;
     virtual void createProperties() = 0;
-
-    //bool insertColumns(int position, int columns,const QModelIndex &parent = QModelIndex()) override;
-    //bool insertRows(int position, int rows, const QModelIndex &parent = QModelIndex()) override;
-    //bool removeColumns(int position, int columns, const QModelIndex &parent = QModelIndex()) override;
-    //bool removeRows(int position, int rows,  const QModelIndex &parent = QModelIndex()) override;
-
 protected:
     unique_ptr<AbstractPropertiesItem> mRootItem;
     unique_ptr<ItemDelegateProxy> mItemDelegateProxy;

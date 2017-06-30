@@ -37,3 +37,17 @@ AssetDefinitionPropertiesItem::~AssetDefinitionPropertiesItem
 {
 
 }
+
+AssetDefinitionProperty
+AssetDefinitionPropertiesItem::getProperty
+()
+{
+    return mProperty;
+}
+
+AssetDefinition*
+AssetDefinitionPropertiesItem::getAssetDefinitionHandle
+()
+{
+    return mAssetDefinitionHandle;
+}

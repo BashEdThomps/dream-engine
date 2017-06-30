@@ -245,9 +245,6 @@ bool ProjectDirectoryModel::writeProjectFile()
         return false;
     }
 
-    qDebug() << "ProjectDirectoryModel: Creating project file "
-             << getProjectFileAbsolutePath();
-
     QByteArray projectFileData = mProjectDefinitionHandle->getJson().dump(1).c_str();
 
     qDebug() << "ProjectDirectoryModel: writing project file to "
@@ -255,7 +252,7 @@ bool ProjectDirectoryModel::writeProjectFile()
 
     QFile projectFile(getProjectFileAbsolutePath());
 
-    if (!projectFile.open(QIODevice::ReadWrite))
+    if (!projectFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
        qDebug() << "ProjectDirectoryModel: unable to open project file for modification";
        return false;

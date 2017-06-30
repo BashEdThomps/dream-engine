@@ -56,6 +56,8 @@ public:
         AbstractPropertiesItem *parent = nullptr
     );
     ~AssetDefinitionPropertiesItem();
+    AssetDefinitionProperty getProperty();
+    AssetDefinition* getAssetDefinitionHandle();
 private:
     AssetDefinition* mAssetDefinitionHandle;
     AssetDefinitionProperty mProperty;

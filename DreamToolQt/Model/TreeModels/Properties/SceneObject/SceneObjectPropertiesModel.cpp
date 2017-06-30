@@ -18,11 +18,16 @@
 
 #include "SceneObjectPropertiesModel.h"
 
+#include <DreamCore.h>
 #include <QDebug>
 
 #include "SceneObjectPropertiesItem.h"
 #include "../DoubleSpinBoxDelegate.h"
 #include "../CheckBoxDelegate.h"
+
+using Dream::Transform3D;
+using Dream::AssetDefinition;
+using Dream::SceneObjectDefinition;
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
 (SceneObjectDefinition *sceneObject, QTreeView *parent)
@@ -68,7 +73,9 @@ SceneObjectPropertiesModel::createProperties
 }
 
 
-void SceneObjectPropertiesModel::createNameProperty()
+void
+SceneObjectPropertiesModel::createNameProperty
+()
 {
     qDebug() << "SceneObjectPropertiesModel: createName";
     QList<QVariant> nameData;
@@ -84,7 +91,9 @@ void SceneObjectPropertiesModel::createNameProperty()
     );
 }
 
-void SceneObjectPropertiesModel::createTranslationProperty()
+void
+SceneObjectPropertiesModel::createTranslationProperty
+()
 {
     qDebug() << "SceneObjectPropertiesModel: createTranslationProperty";
     Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
@@ -138,7 +147,9 @@ void SceneObjectPropertiesModel::createTranslationProperty()
     );
 }
 
-void SceneObjectPropertiesModel::createRotationProperty()
+void
+SceneObjectPropertiesModel::createRotationProperty
+()
 {
     qDebug() << "SceneObjectPropertiesModel: createRotationProperty";
     QList<QVariant> rotationData;
@@ -188,7 +199,9 @@ void SceneObjectPropertiesModel::createRotationProperty()
     );
 }
 
-void SceneObjectPropertiesModel::createScaleProperty()
+void
+SceneObjectPropertiesModel::createScaleProperty
+()
 {
 
     qDebug() << "SceneObjectPropertiesModel: createScaleProperty";
@@ -239,7 +252,9 @@ void SceneObjectPropertiesModel::createScaleProperty()
     );
 }
 
-void SceneObjectPropertiesModel::createTransformTypeProperty()
+void
+SceneObjectPropertiesModel::createTransformTypeProperty
+()
 {
     qDebug() << "SceneObjectPropertiesModel: createTransformTypeProperty";
     Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
@@ -253,7 +268,9 @@ void SceneObjectPropertiesModel::createTransformTypeProperty()
     mRootItem->appendChild(transformTypeItem);
 }
 
-void SceneObjectPropertiesModel::createHasFocusProperty()
+void
+SceneObjectPropertiesModel::createHasFocusProperty
+()
 {
     qDebug() << "SceneObjectPropertiesModel: createHasFocusProperty";
     QList<QVariant> hasFocusData;
@@ -268,7 +285,9 @@ void SceneObjectPropertiesModel::createHasFocusProperty()
     mRootItem->appendChild(hasFocusItem);
 }
 
-void SceneObjectPropertiesModel::createAssetInstancesProperty()
+void
+SceneObjectPropertiesModel::createAssetInstancesProperty
+()
 {
     qDebug() << "SceneObjectPropertiesModel: createAssetInstancesProperty";
     QList<QVariant> assetDefData;
@@ -292,7 +311,9 @@ void SceneObjectPropertiesModel::createAssetInstancesProperty()
     }
 }
 
-void SceneObjectPropertiesModel::createChildrenProperty()
+void
+SceneObjectPropertiesModel::createChildrenProperty
+()
 {
     qDebug() << "SceneObjectPropertiesModel: createChildrenProperty";
     QList<QVariant> childrenData;
@@ -306,4 +327,57 @@ void SceneObjectPropertiesModel::createChildrenProperty()
        childData << QString::fromStdString(child->getName()) << QString::fromStdString(child->getUuid());
        childrenItem->appendChild(new SceneObjectPropertiesItem(childData,mSceneObjectDefinitionHandle));
     }
+}
+
+bool
+SceneObjectPropertiesModel::setData
+(const QModelIndex &index, const QVariant &value, int role)
+{
+    SceneObjectPropertiesItem *item = static_cast<SceneObjectPropertiesItem*>(getItem(index));
+    SceneObjectDefinition *sdHandle = item->getSceneObjectDefinitionHandle();
+
+    switch(item->getProperty())
+    {
+        case SCENE_OBJECT_PROPERTY_NAME:
+            sdHandle->setName(value.toString().toStdString());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
+            sdHandle->getTransform().setTranslationX(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
+            sdHandle->getTransform().setTranslationY(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
+            sdHandle->getTransform().setTranslationZ(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_X:
+            sdHandle->getTransform().setRotationX(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
+            sdHandle->getTransform().setRotationY(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
+            sdHandle->getTransform().setRotationZ(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_X:
+            sdHandle->getTransform().setScaleX(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_Y:
+            sdHandle->getTransform().setScaleY(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_Z:
+            sdHandle->getTransform().setScaleZ(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
+            sdHandle->getTransform().setTransformType(value.toString().toStdString());
+            break;
+        case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
+            sdHandle->setHasFocus(value.toBool());
+            break;
+        case SCENE_OBJECT_PROPERTY_NONE:
+            break;
+
+    }
+
+    return false;
 }

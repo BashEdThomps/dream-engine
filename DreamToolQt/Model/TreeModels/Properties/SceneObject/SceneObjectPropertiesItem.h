@@ -56,6 +56,8 @@ public:
         AbstractPropertiesItem *parent = nullptr
     );
     ~SceneObjectPropertiesItem();
+    SceneObjectDefinition* getSceneObjectDefinitionHandle();
+    SceneObjectProperty getProperty();
 private:
     SceneObjectDefinition *mSceneObjectDefinitionHandle;
     SceneObjectProperty mProperty;

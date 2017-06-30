@@ -36,3 +36,17 @@ SceneObjectPropertiesItem::~SceneObjectPropertiesItem
 {
 
 }
+
+SceneObjectDefinition*
+SceneObjectPropertiesItem::getSceneObjectDefinitionHandle
+()
+{
+    return mSceneObjectDefinitionHandle;
+}
+
+SceneObjectProperty
+SceneObjectPropertiesItem::getProperty
+()
+{
+   return mProperty;
+}
