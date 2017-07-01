@@ -11,6 +11,8 @@ WindowInputState::WindowInputState
      mouseLastX(0),
      mouseLastY(0),
      shiftPressed(false),
+     altPressed(false),
+     ctrlPressed(false),
      wPressed(false),
      aPressed(false),
      sPressed(false),
@@ -19,6 +21,7 @@ WindowInputState::WindowInputState
      downPressed(false),
      leftPressed(false),
      rightPressed(false)
+
 {
 
 }
@@ -303,13 +306,27 @@ QOpenGLWindowComponent::updateInputState
         if(mInputState.upPressed)
         {
             qDebug() << "QOGLWC: Moving Selected up";
-            transform.translateByZ(moveAmount);
+            if (mInputState.altPressed)
+            {
+                transform.translateByY(moveAmount);
+            }
+            else
+            {
+                transform.translateByZ(moveAmount);
+            }
         }
 
         if(mInputState.downPressed)
         {
             qDebug() << "QOGLWC: Moving Selected down";
-            transform.translateByZ(-moveAmount);
+            if (mInputState.altPressed)
+            {
+                transform.translateByY(-moveAmount);
+            }
+            else
+            {
+                transform.translateByZ(-moveAmount);
+            }
         }
 
         if(mInputState.leftPressed)
@@ -349,6 +366,9 @@ QOpenGLWindowComponent::keyPressEvent
             break;
         case Qt::Key_Shift:
             mInputState.shiftPressed = true;
+            break;
+        case Qt::Key_Alt:
+            mInputState.altPressed = true;
             break;
         case Qt::Key_Up:
             mInputState.upPressed = true;
@@ -407,6 +427,9 @@ QOpenGLWindowComponent::keyReleaseEvent
             break;
         case Qt::Key_Shift:
             mInputState.shiftPressed = false;
+            break;
+        case Qt::Key_Alt:
+            mInputState.altPressed = false;
             break;
         case Qt::Key_Up:
             mInputState.upPressed = false;

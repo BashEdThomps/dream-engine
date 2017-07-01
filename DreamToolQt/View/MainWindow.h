@@ -15,8 +15,8 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -55,6 +55,8 @@ public:
     QTreeView* getScenegraphTreeView();
     QTreeView* getPropertiesTreeView();
     QTreeView* getAssetDefinitionTreeView();
+
+    QAction* getAction_Preferences();
 
     QAction* getAction_File_New();
     QAction* getAction_File_Save();
@@ -115,4 +117,3 @@ private:
     unique_ptr<QMenu> mMenu_Asset_NewDefinition;
 };
 
-#endif // MAINWINDOW_H

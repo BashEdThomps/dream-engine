@@ -40,7 +40,7 @@ public:
     void createRenderingProperties();
     void createPhysicsProperties();
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    //bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 private:
     SceneDefinition *mSceneDefinition;
 };

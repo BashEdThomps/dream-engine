@@ -49,15 +49,21 @@ class AssetDefinitionPropertiesItem : public AbstractPropertiesItem
 public:
     AssetDefinitionPropertiesItem
     (
-        const QList<QVariant> &data,
+        QString title,
         AssetDefinition* adHandle,
         AssetDefinitionProperty property = ASSET_DEFINITION_PROPERTY_NONE,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
+
     ~AssetDefinitionPropertiesItem();
+
     AssetDefinitionProperty getProperty();
+
     AssetDefinition* getAssetDefinitionHandle();
+
+    bool setData(int column,const QVariant &value) override;
+    QVariant data(int column) override;
 private:
     AssetDefinition* mAssetDefinitionHandle;
     AssetDefinitionProperty mProperty;

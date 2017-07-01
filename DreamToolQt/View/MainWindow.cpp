@@ -39,7 +39,8 @@ const vector<int> MainWindow::mKeysPassedToWindow =
     Qt::Key_Down,
     Qt::Key_Left,
     Qt::Key_Right,
-    Qt::Key_Shift
+    Qt::Key_Shift,
+    Qt::Key_Alt
 };
 
 MainWindow::MainWindow
@@ -284,6 +285,13 @@ MainWindow::getAssetDefinitionTreeView
     return ui->assetDefinitionTreeView;
 }
 
+QAction*
+MainWindow::getAction_Preferences
+()
+{
+    return ui->actionPreferences;
+}
+
 void
 MainWindow::showStatusBarMessage
 (QString msg)
@@ -349,7 +357,7 @@ void
 MainWindow::keyPressEvent
 (QKeyEvent* ke)
 {
-    qDebug() << "MainWindow:" << ke->key() << "pressed";
+    //qDebug() << "MainWindow:" << ke->key() << "pressed";
 
     if (shouldPassKey(ke->key()))
     {
@@ -377,7 +385,7 @@ void
 MainWindow::keyReleaseEvent
 (QKeyEvent* ke)
 {
-    qDebug() << "MainWindow:" << ke->key() << " released";
+    //qDebug() << "MainWindow:" << ke->key() << " released";
 
     if (shouldPassKey(ke->key()))
     {

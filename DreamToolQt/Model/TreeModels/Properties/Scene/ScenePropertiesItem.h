@@ -64,13 +64,18 @@ class ScenePropertiesItem : public AbstractPropertiesItem
 public:
     ScenePropertiesItem
     (
-        const QList<QVariant> &data,
+        QString title,
         SceneDefinition* sdHandle,
         SceneProperty property = SCENE_PROPERTY_NONE,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
+
     ~ScenePropertiesItem();
+
+    QVariant data(int column) override;
+    bool setData(int column, const QVariant &value) override;
+
 private:
     SceneDefinition* mSceneDefinitionHandle;
     SceneProperty mProperty;

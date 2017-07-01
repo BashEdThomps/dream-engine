@@ -22,6 +22,8 @@
 #include <vector>
 #include <json.hpp>
 
+#include "../Common/Constants.h"
+
 using std::string;
 using std::unique_ptr;
 using std::vector;
@@ -58,6 +60,8 @@ namespace Dream
         bool openFromDirectory(string directory);
 
         ProjectRuntime* createProjectRuntime();
+        static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
+
         bool hasProjectRuntime();
         void resetProjectRuntime();
 

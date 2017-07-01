@@ -22,6 +22,8 @@ public:
     int  mouseLastY;
 
     bool shiftPressed;
+    bool altPressed;
+    bool ctrlPressed;
 
     bool wPressed;
     bool aPressed;

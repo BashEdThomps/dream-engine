@@ -39,6 +39,7 @@ namespace Dream
                  << getNameAndUuidString()
                  << endl;
         }
+        mTransform = Transform3D(jsonData[Constants::TRANSFORM]);
         loadChildSceneObjectDefinitions(jsonData);
     }
 
@@ -53,11 +54,11 @@ namespace Dream
         }
     }
 
-    Transform3D
+    Transform3D&
     SceneObjectDefinition::getTransform
     ()
     {
-        return getTransformFromJson(mJson);
+        return mTransform;
     }
 
     void
@@ -150,6 +151,7 @@ namespace Dream
     ()
     {
         mJson[Constants::SCENE_OBJECT_CHILDREN] = json::array();
+        mJson[Constants::TRANSFORM] = mTransform.getJson();
         for (SceneObjectDefinition* sodHandle : getChildDefinitionsHandleList())
         {
             mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sodHandle->getJson());

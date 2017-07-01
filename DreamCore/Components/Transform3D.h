@@ -23,6 +23,7 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <LinearMath/btVector3.h>
+#include <LinearMath/btQuaternion.h>
 
 using std::string;
 using nlohmann::json;
@@ -38,10 +39,10 @@ namespace Dream
     quat mOrientation;
     vec3 mScale;
     string mTransformType;
-    json mJson;
+
   public:
     Transform3D();
-    Transform3D(Transform3D*);
+    explicit Transform3D(json j);
     vec3 getTranslation();
     void setTranslation(vec3);
     void setTranslation(float, float, float);
@@ -52,6 +53,7 @@ namespace Dream
     void setTranslationY(float);
     void setTranslationZ(float);
     btVector3 getTranslationAsBtVector3();
+    btQuaternion getOrientationAsBtQuaternion();
 
     quat getOrientation();
     void setOrientation(float,float,float,float);

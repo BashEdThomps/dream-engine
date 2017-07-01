@@ -43,6 +43,7 @@ namespace Dream
         }
 
         json rootSceneObject = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
+        mCameraTransform = Transform3D(mJson[Constants::SCENE_CAMERA_TRANSFORM]);
 
         if (rootSceneObject.is_null())
         {
@@ -90,31 +91,19 @@ namespace Dream
     SceneDefinition::setCameraMovementSpeed
     (float speed)
     {
-        checkCamera();
-        mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED] = speed;
+        mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
     }
 
-    void
-    SceneDefinition::checkCamera
-    ()
-    {
-        if (mJson[Constants::SCENE_CAMERA].is_null())
-        {
-            mJson[Constants::SCENE_CAMERA] = {};
-        }
-    }
 
     float
     SceneDefinition::getCameraMovementSpeed
     ()
     {
-        checkCamera();
-        if (mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED].is_null())
+        if (mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED].is_null())
         {
-            mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED] =
-                    Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
+            mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
         }
-        return mJson[Constants::SCENE_CAMERA][Constants::SCENE_MOVEMENT_SPEED];
+        return mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED];
     }
 
     bool
@@ -150,32 +139,14 @@ namespace Dream
     SceneDefinition::getCameraTransform
     ()
     {
-        return getTransformFromJson(mJson[Constants::SCENE_CAMERA]);
+        return mCameraTransform;
     }
 
     void
     SceneDefinition::setCameraTransform
     (Transform3D transform)
     {
-        json camera = mJson[Constants::SCENE_CAMERA];
-
-        if (camera.is_null())
-        {
-            camera = {};
-            camera[Constants::SCENE_TRANSLATION] = {};
-            camera[Constants::SCENE_ROTATION] = {};
-        }
-
-        json translation = camera[Constants::SCENE_TRANSLATION];
-        json rotation = camera[Constants::SCENE_ROTATION];
-
-        translation[Constants::X] = transform.getTranslationX();
-        translation[Constants::Y] = transform.getTranslationY();
-        translation[Constants::Z] = transform.getTranslationZ();
-
-        rotation[Constants::X] = transform.getRotationX();
-        rotation[Constants::Y] = transform.getRotationY();
-        rotation[Constants::Z] = transform.getRotationZ();
+        mCameraTransform = transform;
     }
 
     vector<float>
@@ -337,6 +308,8 @@ namespace Dream
         json rootDefJson;
         rootDefJson[Constants::NAME] = Constants::SCENE_OBJECT_ROOT_NAME;
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
+        Transform3D transform;
+        rootDefJson[Constants::TRANSFORM] = transform.getJson();
         SceneObjectDefinition *rootSoDefinition;
         rootSoDefinition = new SceneObjectDefinition(nullptr,this,rootDefJson);
         mRootSceneObjectDefinition.reset(rootSoDefinition);
@@ -348,6 +321,7 @@ namespace Dream
     ()
     {
        mJson[Constants::SCENE_ROOT_SCENE_OBJECT] = mRootSceneObjectDefinition->getJson();
+       mJson[Constants::SCENE_CAMERA_TRANSFORM] = getCameraTransform().getJson();
        return mJson;
     }
 }

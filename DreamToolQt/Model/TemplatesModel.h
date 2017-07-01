@@ -1,7 +1,7 @@
 /*
- * ProjectTreeItem.h
+ * TemplatesModel.h
  *
- * Created: 15 2017 by Ashley
+ * Created: 01 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,23 +15,25 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #pragma once
 
-#include "../GenericTreeItem.h"
-#include <QList>
-#include <QVariant>
+#include <QObject>
 
-class ScenegraphTreeItem : public GenericTreeItem
+class TemplatesModel : public QObject
 {
-public:
-    explicit ScenegraphTreeItem
-    (
-        const QList<QVariant> &data,
-        GenericTreeItemType type,
-        void* item,
-        ScenegraphTreeItem *parentItem = 0
-    );
-    void* getItem();
+    Q_OBJECT
 private:
-    void* mItem;
+    static const QString TEMPLATE_ROOT_PATH;
+    static const QString TEMPLATE_SCRIPT_PATH;
+    static const QString TEMPLATE_SHADER_PATH;
+public:
+    explicit TemplatesModel(QObject *parent = 0);
+
+    QString getScriptTemplate(QString templateName);
+    QString getShaderTemplate(QString templateName, QString fileName);
+
+signals:
+
+public slots:
 };

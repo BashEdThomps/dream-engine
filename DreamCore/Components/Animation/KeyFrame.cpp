@@ -100,9 +100,7 @@ namespace Dream
         for (int frameIndex = 0; frameIndex < numFrames; frameIndex++)
         {
             Frame *nextFrame = new Frame();
-            nextFrame->setTranslation(mTranslation);
-            nextFrame->setRotation(mRotation);
-            nextFrame->setScale(mScale);
+            nextFrame->setTransform(mTransform);
             //nextFrame->showStatus();
             addPlaybackFrame(nextFrame);
         }
@@ -112,6 +110,7 @@ namespace Dream
     KeyFrame::generateLinearInterpolationFrames
     (KeyFrame* toKeyFrame, long numFrames)
     {
+        /*
         vector<float> toTranslation     = toKeyFrame->getTranslation();
         vector<float> toTranslationStep =  vector<float>(3);
         toTranslationStep[0] = ((toTranslation[0] - mTranslation[0]) / numFrames);
@@ -154,6 +153,7 @@ namespace Dream
             //nextFrame->showStatus();
             addPlaybackFrame(nextFrame);
         }
+        */
     }
 
     float
@@ -191,7 +191,7 @@ namespace Dream
             float y = getBezierPoint(ya, yb, i);
             float z = getBezierPoint(za, zb, i);
 
-            nextFrame->setTranslation({x,y,z});
+            //nextFrame->setTranslation({x,y,z});
 
             addPlaybackFrame(nextFrame);
         }
@@ -204,46 +204,18 @@ namespace Dream
         mPlaybackFrames.push_back(frame);
     }
 
-    vector<float>
-    KeyFrame::getTranslation
+    Transform3D
+    KeyFrame::getTransform
     ()
     {
-        return mTranslation;
-    }
-
-    vector<float>
-    KeyFrame::getRotation
-    ()
-    {
-        return mRotation;
-    }
-
-    vector<float>
-    KeyFrame::getScale
-    ()
-    {
-        return mScale;
+        return mTransform;
     }
 
     void
-    KeyFrame::setRotation
-    (vector<float> rotation)
+    KeyFrame::setTransform
+    (Transform3D transform)
     {
-        mRotation = rotation;
-    }
-
-    void
-    KeyFrame::setScale
-    (vector<float> scale)
-    {
-        mScale = scale;
-    }
-
-    void
-    KeyFrame::setTranslation
-    (vector<float> translation)
-    {
-        mTranslation = translation;
+        mTransform = transform;
     }
 
     void
@@ -297,9 +269,7 @@ namespace Dream
             cout << "KeyFrame:" <<  endl
                  << "\t         UUID: " << mUUID <<  endl
                  << "\t         Name: " << mName <<  endl
-                 << "\t  Translation: " << String::floatVectorToString(mTranslation)<<  endl
-                 << "\t     Rotation: " << String::floatVectorToString(mRotation)<<  endl
-                 << "\t        Scale: " << String::floatVectorToString(mScale) <<  endl
+                 << "\t    Transform: " << mTransform.getJson().dump() <<  endl
                  << "\t   Start Time: " << mStartTimeMS <<  endl
                  << "\t         Wrap: " << String::boolToYesNo(mWrap) <<  endl
                  << "\tInterpolation: " << getInterpolationType()

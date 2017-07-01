@@ -79,6 +79,7 @@ public:
     QString getShaderDirectoryAbsolutePath();
     QString getSpriteDirectoryAbsolutePath();
     QString getProjectFileAbsolutePath();
+    QString getProjectDirectoryName();
 
     bool assetMainFileExists(AssetDefinition *adHandle, string format = "" );
     bool deleteMainAssetFile(AssetDefinition *adHandle, string format = "" );

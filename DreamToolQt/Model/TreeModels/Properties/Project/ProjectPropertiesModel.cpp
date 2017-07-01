@@ -33,23 +33,20 @@ ProjectPropertiesModel::createRoot
 ()
 {
     qDebug() << "ProjectPropertiesModel: Constructing";
-    QList<QVariant> rootData;
-    rootData << QString::fromStdString(mProjectDefinitionHandle->getName())
-             << QString::fromStdString(mProjectDefinitionHandle->getUuid());
-    mRootItem.reset(new ProjectPropertiesItem(rootData,mProjectDefinitionHandle));
+    mRootItem.reset
+    (
+        new ProjectPropertiesItem
+        (
+            QString::fromStdString(mProjectDefinitionHandle->getName()),
+            mProjectDefinitionHandle
+        )
+    );
 }
 
 void
 ProjectPropertiesModel::createProperties
 ()
 {}
-
-bool
-ProjectPropertiesModel::setData
-(const QModelIndex &index, const QVariant &value, int role)
-{
-    return false;
-}
 
 ProjectPropertiesModel::~ProjectPropertiesModel
 ()

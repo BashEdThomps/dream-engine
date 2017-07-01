@@ -39,13 +39,18 @@ class ProjectPropertiesItem : public AbstractPropertiesItem
 public:
     ProjectPropertiesItem
     (
-        const QList<QVariant> &data,
+        QString title,
         ProjectDefinition* pdHandle,
         ProjectProperty property = PROJECT_PROPERTY_NONE,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
+
     ~ProjectPropertiesItem();
+
+    QVariant data(int column) override;
+    bool setData(int column, const QVariant &value) override;
+
 private:
     ProjectDefinition *mProjectDefinitionHandle;
     ProjectProperty mProperty;

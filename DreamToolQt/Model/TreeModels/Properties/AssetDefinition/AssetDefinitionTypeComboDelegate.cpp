@@ -16,6 +16,9 @@
  * this file belongs to.
  */
 #include "AssetDefinitionTypeComboDelegate.h"
+
+#include "AssetDefinitionPropertiesItem.h"
+
 #include <DreamCore.h>
 #include <QComboBox>
 #include <QDebug>
@@ -44,6 +47,10 @@ const
         list << QString::fromStdString(type.second);
     }
     editor->addItems(list);
+    AssetDefinitionPropertiesItem *item = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
+    string type = item->getAssetDefinitionHandle()->getType();
+    int typeIndex = editor->findText(QString::fromStdString(type));
+    editor->setCurrentIndex(typeIndex);
     return editor;
 }
 

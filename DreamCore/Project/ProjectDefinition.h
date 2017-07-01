@@ -71,6 +71,7 @@ namespace Dream
         SceneDefinition* createNewSceneDefinition();
         AssetDefinition* createNewAssetDefinition(AssetType type);
         json getJson() override;
+
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();

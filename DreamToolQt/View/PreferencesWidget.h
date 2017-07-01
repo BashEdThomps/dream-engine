@@ -1,7 +1,7 @@
 /*
- * ProjectTreeItem.h
+ * PreferencesWidget.h
  *
- * Created: 15 2017 by Ashley
+ * Created: 01 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -17,21 +17,22 @@
  */
 #pragma once
 
-#include "../GenericTreeItem.h"
-#include <QList>
-#include <QVariant>
+#include <QDialog>
+#include <QPushButton>
 
-class ScenegraphTreeItem : public GenericTreeItem
+namespace Ui {
+    class PreferencesWidget;
+}
+
+class PreferencesWidget : public QDialog
 {
+    Q_OBJECT
+
 public:
-    explicit ScenegraphTreeItem
-    (
-        const QList<QVariant> &data,
-        GenericTreeItemType type,
-        void* item,
-        ScenegraphTreeItem *parentItem = 0
-    );
-    void* getItem();
+    explicit PreferencesWidget(QWidget *parent = 0);
+    ~PreferencesWidget();
+
+    QPushButton* getButton_OK();
 private:
-    void* mItem;
+    Ui::PreferencesWidget *ui;
 };

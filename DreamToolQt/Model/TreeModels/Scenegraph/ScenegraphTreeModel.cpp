@@ -172,7 +172,9 @@ ScenegraphTreeModel::setupModelData
              << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
 
     QList<QVariant> rootData;
-    rootData << QString::fromStdString(mProjectDefinitionHandle->getName());
+    rootData << QString::fromStdString(mProjectDefinitionHandle->getName())
+             << QString::fromStdString(mProjectDefinitionHandle->getUuid());
+
     mRootItem.reset(new ScenegraphTreeItem(rootData,GenericTreeItemType::PROJECT,nullptr));
 
     for (SceneDefinition *sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsHandleList())
@@ -183,7 +185,8 @@ ScenegraphTreeModel::setupModelData
         QList<QVariant> nextSceneData;
         nextSceneData << QString::fromStdString(sceneHandle->getName());
 
-        ScenegraphTreeItem *nextScene = new ScenegraphTreeItem(
+        ScenegraphTreeItem *nextScene = new ScenegraphTreeItem
+        (
             nextSceneData,GenericTreeItemType::SCENE,sceneHandle,mRootItem.get()
         );
         mRootItem->appendChild(nextScene);

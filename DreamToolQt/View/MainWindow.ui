@@ -90,7 +90,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="separator"/>
-    <addaction name="actionSettings"/>
+    <addaction name="actionPreferences"/>
     <addaction name="separator"/>
     <addaction name="actionCloseProject"/>
    </widget>
@@ -182,13 +182,16 @@
           <number>15</number>
          </property>
          <property name="rootIsDecorated">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="uniformRowHeights">
           <bool>true</bool>
          </property>
          <property name="animated">
           <bool>false</bool>
+         </property>
+         <property name="allColumnsShowFocus">
+          <bool>true</bool>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -199,6 +202,9 @@
          <property name="expandsOnDoubleClick">
           <bool>false</bool>
          </property>
+         <attribute name="headerVisible">
+          <bool>true</bool>
+         </attribute>
         </widget>
        </item>
       </layout>
@@ -301,13 +307,13 @@
           <bool>true</bool>
          </property>
          <property name="headerHidden">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="expandsOnDoubleClick">
           <bool>false</bool>
          </property>
          <attribute name="headerVisible">
-          <bool>true</bool>
+          <bool>false</bool>
          </attribute>
          <attribute name="headerDefaultSectionSize">
           <number>125</number>
@@ -516,7 +522,7 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionSettings">
+  <action name="actionPreferences">
    <property name="icon">
     <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/images/system-run.png</normaloff>:/images/system-run.png</iconset>

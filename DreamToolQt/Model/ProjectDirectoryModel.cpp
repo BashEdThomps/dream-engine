@@ -600,6 +600,13 @@ ProjectDirectoryModel::getProjectFileAbsolutePath
     return mProjectDirectory.filePath(info.fileName()+QString::fromStdString(Constants::PROJECT_EXTENSION));
 }
 
+QString
+ProjectDirectoryModel::getProjectDirectoryName
+()
+{
+    return mProjectDirectory.dirName();
+}
+
 bool
 ProjectDirectoryModel::assetMainFileExists
 (AssetDefinition *adHandle, string format)

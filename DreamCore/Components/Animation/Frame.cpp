@@ -9,9 +9,10 @@ namespace Dream
     Frame::Frame
     ()
     {
-        mTranslation = vector<float>(3);
-        mRotation = vector<float>(3);
-        mScale = vector<float>(3);
+        if (Constants::DEBUG)
+        {
+            cout << "Frame: Constructing Object" << endl;
+        }
     }
 
 
@@ -26,53 +27,25 @@ namespace Dream
 
     void
     Frame::applyToTransform
-    (Transform3D* transform)
+    (Transform3D& transform)
     {
         //transform->setTranslation(mTranslation);
         //transform->setRotation(mRotation);
         //transform->setScale(mScale);
     }
 
-    vector<float>
-    Frame::getTranslation
+    Transform3D
+    Frame::getTransform
     ()
     {
-        return mTranslation;
-    }
-
-    vector<float>
-    Frame::getRotation
-    ()
-    {
-        return mRotation;
-    }
-
-    vector<float>
-    Frame::getScale
-    ()
-    {
-        return mScale;
+        return mTransform;
     }
 
     void
-    Frame::setRotation
-    (vector<float> rotation)
+    Frame::setTransform
+    (Transform3D transform)
     {
-        mRotation = rotation;
-    }
-
-    void
-    Frame::setScale
-    (vector<float> scale)
-    {
-        mScale = scale;
-    }
-
-    void
-    Frame::setTranslation
-    (vector<float> translation)
-    {
-        mTranslation = translation;
+        mTransform = transform;
     }
 
     void
@@ -81,12 +54,7 @@ namespace Dream
     {
         if (Constants::DEBUG)
         {
-            cout << "Frame"
-                 << "{" << endl
-                 << "\tTranslation: " << String::floatVectorToString(mTranslation) << endl
-                 << "\tRotation: " << String::floatVectorToString(mRotation) << endl
-                 << "\tScale: " << String::floatVectorToString(mScale) << endl
-                 << "}" << endl;
+            cout << "Frame " << mTransform.getJson().dump() << endl;
         }
     }
 

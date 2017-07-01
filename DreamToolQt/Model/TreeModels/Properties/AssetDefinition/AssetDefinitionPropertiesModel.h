@@ -34,7 +34,7 @@ public:
     AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QTreeView *parent = 0);
     ~AssetDefinitionPropertiesModel();
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+    //bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     void createRoot() override;
     void createProperties() override;

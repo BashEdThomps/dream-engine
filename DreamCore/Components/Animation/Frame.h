@@ -11,19 +11,16 @@ namespace Dream
     class Frame
     {
     private:
-        vector<float> mTranslation;
-        vector<float> mRotation;
-        vector<float> mScale;
+        Transform3D mTransform;
     public:
         Frame();
         ~Frame();
-        void applyToTransform(Transform3D*);
-        vector<float> getTranslation();
-        void setTranslation(vector<float>);
-        vector<float> getRotation();
-        void setRotation(vector<float>);
-        vector<float> getScale();
-        void setScale(vector<float>);
+
+        void applyToTransform(Transform3D&);
+
+        Transform3D getTransform();
+        void setTransform(Transform3D transform);
+
         void showStatus();
     }; // End Frame
 

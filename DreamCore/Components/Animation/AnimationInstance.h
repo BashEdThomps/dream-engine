@@ -40,7 +40,7 @@ namespace Dream
         void pause();
         void step(double);
         void showStatus();
-        void applyTransform(Transform3D*);
+        void applyTransform(Transform3D);
     private:
         void generatePlaybackFrames();
         void addKeyFrame(KeyFrame*);

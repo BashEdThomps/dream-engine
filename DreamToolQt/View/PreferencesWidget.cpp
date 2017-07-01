@@ -1,7 +1,7 @@
 /*
- * ProjectTreeItem.h
+ * PreferencesWidget.cpp
  *
- * Created: 15 2017 by Ashley
+ * Created: 01 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,23 +15,24 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#pragma once
+#include "PreferencesWidget.h"
+#include "ui_PreferencesWidget.h"
 
-#include "../GenericTreeItem.h"
-#include <QList>
-#include <QVariant>
-
-class ScenegraphTreeItem : public GenericTreeItem
+PreferencesWidget::PreferencesWidget(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::PreferencesWidget)
 {
-public:
-    explicit ScenegraphTreeItem
-    (
-        const QList<QVariant> &data,
-        GenericTreeItemType type,
-        void* item,
-        ScenegraphTreeItem *parentItem = 0
-    );
-    void* getItem();
-private:
-    void* mItem;
-};
+    ui->setupUi(this);
+}
+
+PreferencesWidget::~PreferencesWidget()
+{
+    delete ui;
+}
+
+QPushButton*
+PreferencesWidget::getButton_OK
+()
+{
+    return ui->okButton;
+}

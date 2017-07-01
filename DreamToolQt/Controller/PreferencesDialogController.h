@@ -1,7 +1,7 @@
 /*
- * ProjectTreeItem.h
+ * PreferencesDialogController.h
  *
- * Created: 15 2017 by Ashley
+ * Created: 01 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -17,21 +17,29 @@
  */
 #pragma once
 
-#include "../GenericTreeItem.h"
-#include <QList>
-#include <QVariant>
+#include <QObject>
+#include <QDialog>
+#include "../View/PreferencesWidget.h"
+#include "../Model/PreferencesModel.h"
 
-class ScenegraphTreeItem : public GenericTreeItem
+class PreferencesDialogController : public QObject
 {
+    Q_OBJECT
 public:
-    explicit ScenegraphTreeItem
-    (
-        const QList<QVariant> &data,
-        GenericTreeItemType type,
-        void* item,
-        ScenegraphTreeItem *parentItem = 0
-    );
-    void* getItem();
+    explicit PreferencesDialogController(QObject *parent = 0);
+    void showDialog();
+    void hideDialog();
+
+signals:
+
+public slots:
+    void onButton_OK();
+
 private:
-    void* mItem;
+    void createConnections();
+
+    PreferencesModel mPreferencesModel;
+    PreferencesWidget mPreferencesWidget;
+    QDialog mPreferencesDialog;
+
 };

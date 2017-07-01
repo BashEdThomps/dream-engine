@@ -49,10 +49,13 @@ public:
         QOpenGLWindowComponent *windowComponent = nullptr
     );
     ~DreamProjectModel();
+
     bool loadProject(QString path);
     Project* getProject();
+
     vector<SceneDefinition*> getScenes();
     vector<AssetDefinition*> getAssetDefinitions();
+
     void setProjectName(string name);
     void setProjectAuthor(string author);
     void setProjectDescription(string desc);

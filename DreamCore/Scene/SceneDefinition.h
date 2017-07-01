@@ -21,6 +21,7 @@
 #include <vector>
 #include <memory>
 #include "../Common/IDefinition.h"
+#include "../Components/Transform3D.h"
 
 using std::vector;
 using std::unique_ptr;
@@ -29,7 +30,6 @@ namespace Dream
 {
     class ProjectDefinition;
     class SceneObject;
-    class Transform3D;
     class SceneObjectDefinition;
 
     class SceneDefinition : public IDefinition
@@ -38,6 +38,7 @@ namespace Dream
     private:
         unique_ptr<SceneObjectDefinition> mRootSceneObjectDefinition;
         ProjectDefinition* mProjectDefinitionHandle;
+        Transform3D mCameraTransform;
 
     public:
         SceneDefinition(ProjectDefinition* projectHandle, json data);

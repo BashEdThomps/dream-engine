@@ -73,7 +73,10 @@ SOURCES += \
     Model/TreeModels/Properties/Scene/ScenePropertiesItem.cpp \
     Model/TreeModels/Properties/DoubleSpinBoxDelegate.cpp \
     Model/TreeModels/Properties/CheckBoxDelegate.cpp \
-    Model/TreeModels/Properties/Project/ProjectPropertiesItem.cpp
+    Model/TreeModels/Properties/Project/ProjectPropertiesItem.cpp \
+    Model/TemplatesModel.cpp \
+    View/PreferencesWidget.cpp \
+    Controller/PreferencesDialogController.cpp
 
 
 
@@ -124,11 +127,15 @@ HEADERS  += \
     Model/TreeModels/Properties/Scene/ScenePropertiesItem.h \
     Model/TreeModels/Properties/DoubleSpinBoxDelegate.h \
     Model/TreeModels/Properties/CheckBoxDelegate.h \
-    Model/TreeModels/Properties/Project/ProjectPropertiesItem.h
+    Model/TreeModels/Properties/Project/ProjectPropertiesItem.h \
+    Model/TemplatesModel.h \
+    View/PreferencesWidget.h \
+    Controller/PreferencesDialogController.h
 
 
 
-FORMS    += View/MainWindow.ui
+FORMS    += View/MainWindow.ui \
+    View/PreferencesWidget.ui
 
 RESOURCES += \
     Resources/Resources.qrc

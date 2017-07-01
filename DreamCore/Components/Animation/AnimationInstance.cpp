@@ -144,19 +144,8 @@ namespace Dream
             for (nlohmann::json it : jsonKeyFrames)
             {
                 KeyFrame *nextKeyFrame = new KeyFrame();
-                vector<float> translation(3), rotation(3), scale(3);
 
-                translation[Constants::X_INDEX] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::X];
-                translation[Constants::Y_INDEX] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::Y];
-                translation[Constants::Z_INDEX] = it[Constants::ASSET_ATTR_TRANSLATION][Constants::Z];
-
-                rotation[Constants::X_INDEX] = it[Constants::ASSET_ATTR_ROTATION][Constants::X];
-                rotation[Constants::Y_INDEX] = it[Constants::ASSET_ATTR_ROTATION][Constants::Y];
-                rotation[Constants::Z_INDEX] = it[Constants::ASSET_ATTR_ROTATION][Constants::Z];
-
-                scale[Constants::X_INDEX] = it[Constants::ASSET_ATTR_SCALE][Constants::X];
-                scale[Constants::Y_INDEX] = it[Constants::ASSET_ATTR_SCALE][Constants::Y];
-                scale[Constants::Z_INDEX] = it[Constants::ASSET_ATTR_SCALE][Constants::Z];
+                Transform3D transform(it[Constants::TRANSFORM]);
 
                 long startTime   = it[Constants::ASSET_ATTR_START_TIME];
 
@@ -174,9 +163,7 @@ namespace Dream
                 nextKeyFrame->setInterpolationType(interpolation);
                 nextKeyFrame->setUUID(uuid);
                 nextKeyFrame->setStartTimeMS(startTime);
-                nextKeyFrame->setTranslation(translation);
-                nextKeyFrame->setRotation(rotation);
-                nextKeyFrame->setScale(scale);
+                nextKeyFrame->setTransform(transform);
                 nextKeyFrame->setWrap(wrap);
 
                 nextKeyFrame->showStatus();
@@ -268,7 +255,7 @@ namespace Dream
 
     void
     AnimationInstance::applyTransform
-    (Transform3D* transform)
+    (Transform3D transform)
     {
         if (mPlaying && mCurrentPlaybackFrame < mPlaybackFrames.size())
         {

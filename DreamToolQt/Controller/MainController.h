@@ -27,9 +27,10 @@
 #include <QItemSelection>
 #include <QSurfaceFormat>
 
+#include "PreferencesDialogController.h"
+
 #include "../Model/DreamProjectModel.h"
 #include "../Model/ProjectDirectoryModel.h"
-#include "../Model/PreferencesModel.h"
 #include "../Model/TreeModels/Scenegraph/ScenegraphTreeModel.h"
 #include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.h"
 #include "../Model/TreeModels/Properties/PropertiesModel.h"
@@ -74,6 +75,7 @@ signals:
     void notifyScenegraphUpdated();
 
 public slots:
+    void onAction_Preferences();
     void onAction_File_New();
     void onAction_File_Open();
     void onAction_File_Save();
@@ -140,6 +142,7 @@ private: // Methods
     // Signal/Slot Connections
     void connectMenus();
 
+    void connectPreferences();
     void connectFileMenu();
     void connectSceneMenu();
     void connectAssetMenu();
@@ -162,7 +165,7 @@ private: // Variables
 
     QString mProjectDirectory;
     ProjectDirectoryModel mProjectDirectoryModel;
-    PreferencesModel mPreferencesModel;
+    PreferencesDialogController mPreferencesDialogController;
 
     unique_ptr<QErrorMessage> mInvalidProjectDirectoryError;
     unique_ptr<QStringListModel> mSceneListModel;

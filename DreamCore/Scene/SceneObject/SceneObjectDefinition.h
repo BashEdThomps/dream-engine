@@ -23,6 +23,7 @@
 #include <memory>
 
 #include "../../Common/IDefinition.h"
+#include "../../Components/Transform3D.h"
 
 using std::string;
 using std::vector;
@@ -30,7 +31,6 @@ using std::unique_ptr;
 
 namespace Dream
 {
-    class Transform3D;
     class SceneDefinition;
 
     class SceneObjectDefinition : public IDefinition
@@ -39,6 +39,7 @@ namespace Dream
         SceneObjectDefinition* mParentSceneObjectHandle;
         SceneDefinition* mSceneDefinitionHandle;
         vector<unique_ptr<SceneObjectDefinition>> mChildDefinitions;
+        Transform3D mTransform;
 
     public:
         SceneObjectDefinition(SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle,  json data);
@@ -50,7 +51,7 @@ namespace Dream
         void addAssetDefinitionUuidToLoadQueue(string uuid);
         vector<string> getAssetDefinitionLoadQueue();
 
-        Transform3D getTransform();
+        Transform3D& getTransform();
 
         void showStatus() override;
 

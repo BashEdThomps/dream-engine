@@ -93,6 +93,7 @@ namespace Dream
     const string Constants::PATH_DELIMETER = "::";
     const string Constants::HTTP_ARG = "--http";
     // Project ==================================================================
+    const string Constants::PROJECT_DEFAULT_NAME = "Untitled Project";
     const string Constants::PROJECT_DIRECTORY_ARG = "--project-dir";
     const string Constants::PROJECT_UUID_ARG = "--uuid";
     const int    Constants::PROJECT_UUID_LENGTH = 19;
@@ -106,8 +107,10 @@ namespace Dream
     const string Constants::PROJECT_ASSET_ARRAY = "assets";
     const string Constants::PROJECT_STARTUP_SCENE = "startupScene";
     const string Constants::PROJECT_WINDOW_SIZE  = "windowSize";
-    const string Constants::PROJECT_WIDTH = "width";
-    const string Constants::PROJECT_HEIGHT = "height";
+    const string Constants::PROJECT_WINDOW_WIDTH = "width";
+    const string Constants::PROJECT_WINDOW_HEIGHT = "height";
+    const int    Constants::PROJECT_DEFAULT_WINDOW_WIDTH = 1280;
+    const int    Constants::PROJECT_DEFAULT_WINDOW_HEIGHT = 720;
     // Asset ====================================================================
     const string Constants::UUID = "uuid";
     const string Constants::NAME = "name";
@@ -157,11 +160,9 @@ namespace Dream
     // Scene ====================================================================
     const string Constants::SCENE_NOTES = "notes";
     const string Constants::SCENE_ROOT_SCENE_OBJECT = "root";
-    const string Constants::SCENE_CAMERA = "camera";
     const float  Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED = 10.0f;
-    const string Constants::SCENE_TRANSLATION = "translation";
-    const string Constants::SCENE_ROTATION = "rotation";
-    const string Constants::SCENE_MOVEMENT_SPEED = "movementSpeed";
+    const string Constants::SCENE_CAMERA_MOVEMENT_SPEED = "cameraMovementSpeed";
+    const string Constants::SCENE_CAMERA_TRANSFORM = "cameraTransform";
     const string Constants::SCENE_CLEAR_COLOUR = "clearColour";
     const string Constants::SCENE_AMBIENT_LIGHT_COLOUR = "ambientLight";
     const string Constants::SCENE_GRAVITY = "gravity";
@@ -171,14 +172,13 @@ namespace Dream
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
     const string Constants::SCENE_OBJECT_HAS_FOCUS = "hasFocus";
-    const string Constants::SCENE_OBJECT_TRANSLATION = "translation";
-    const string Constants::SCENE_OBJECT_ROTATION = "rotation";
-    const string Constants::SCENE_OBJECT_SCALE = "scale";
-    const string Constants::SCENE_OBJECT_TRANSFORM_TYPE = "transformType";
-    const string Constants::SCENE_OBJECT_TRANSFORM_TYPE_OFFSET = "offset";
-    const string Constants::SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE = "absolute";
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
     // Transform ================================================================
+    const string Constants::TRANSFORM = "transform";
+    const string Constants::TRANSFORM_TRANSLATION = "translation";
+    const string Constants::TRANSFORM_ROTATION = "rotation";
+    const string Constants::TRANSFORM_SCALE = "scale";
+    const string Constants::TRANSFORM_TYPE = "transformType";
     const string Constants::TRANSFORM_TYPE_ABSOLUTE = "absolute";
     const string Constants::TRANSFORM_TYPE_OFFSET = "offset";
     // Font =====================================================================
@@ -204,9 +204,6 @@ namespace Dream
     const unsigned int Constants::RGBA_VECTOR_SIZE = 4;
     // Animation ================================================================
     const string Constants::ASSET_ATTR_KEYFRAMES     = "keyframes";
-    const string Constants::ASSET_ATTR_TRANSLATION   = "translation";
-    const string Constants::ASSET_ATTR_ROTATION      = "rotation";
-    const string Constants::ASSET_ATTR_SCALE         = "scale";
     const string Constants::ASSET_ATTR_START_TIME    = "startTime";
     const string Constants::ASSET_ATTR_WRAP          = "wrap";
     const string Constants::ASSET_ATTR_LOOP          = "loop";
@@ -270,8 +267,8 @@ namespace Dream
     const string Constants::LUA_INPUT_FUNCTION  = "onInput";
     const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
     // Shader ===================================================================
-    const string Constants::SHADER_FRAGMENT = ".fragment";
-    const string Constants::SHADER_VERTEX = ".vertex";
+    const string Constants::SHADER_FRAGMENT = ".frag";
+    const string Constants::SHADER_VERTEX = ".vert";
     // Audio
     const size_t Constants::AUDIO_BUFFER_SIZE = 32768;
     // Window

@@ -17,15 +17,18 @@
  */
 #include "SceneObjectPropertiesItem.h"
 
+#include <DreamCore.h>
+#include <QVariant>
+
 SceneObjectPropertiesItem::SceneObjectPropertiesItem
 (
-    const QList<QVariant> &data,
+    QString name,
     SceneObjectDefinition* sodHandle,
     SceneObjectProperty property,
     QItemDelegate* delegate,
     AbstractPropertiesItem *parent
 )
-    : AbstractPropertiesItem(data,delegate,parent),
+    : AbstractPropertiesItem(name,delegate,parent),
       mSceneObjectDefinitionHandle(sodHandle),
       mProperty(property)
 {
@@ -49,4 +52,99 @@ SceneObjectPropertiesItem::getProperty
 ()
 {
    return mProperty;
+}
+
+bool
+SceneObjectPropertiesItem::setData
+(int column, const QVariant &value)
+{
+    if (column == 0)
+    {
+        return false;
+    }
+
+    switch(getProperty())
+    {
+        case SCENE_OBJECT_PROPERTY_NAME:
+            mSceneObjectDefinitionHandle->setName(value.toString().toStdString());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
+            mSceneObjectDefinitionHandle->getTransform().setTranslationX(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
+            mSceneObjectDefinitionHandle->getTransform().setTranslationY(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
+            mSceneObjectDefinitionHandle->getTransform().setTranslationZ(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_X:
+            mSceneObjectDefinitionHandle->getTransform().setRotationX(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
+            mSceneObjectDefinitionHandle->getTransform().setRotationY(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
+            mSceneObjectDefinitionHandle->getTransform().setRotationZ(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_X:
+            mSceneObjectDefinitionHandle->getTransform().setScaleX(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_Y:
+            mSceneObjectDefinitionHandle->getTransform().setScaleY(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_Z:
+            mSceneObjectDefinitionHandle->getTransform().setScaleZ(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
+            mSceneObjectDefinitionHandle->getTransform().setTransformType(value.toString().toStdString());
+            break;
+        case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
+            mSceneObjectDefinitionHandle->setHasFocus(value.toBool());
+            break;
+        case SCENE_OBJECT_PROPERTY_NONE:
+            break;
+    }
+
+    return true;
+}
+
+QVariant
+SceneObjectPropertiesItem::data
+(int column)
+{
+    if (column == 0)
+    {
+        return QVariant(mTitle);
+    }
+
+    switch(getProperty())
+    {
+        case SCENE_OBJECT_PROPERTY_NAME:
+            return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getName()));
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationX());
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationY());
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationZ());
+        case SCENE_OBJECT_PROPERTY_ROTATION_X:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getRotationX());
+        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getRotationY());
+        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getRotationZ());
+        case SCENE_OBJECT_PROPERTY_SCALE_X:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getScaleX());
+        case SCENE_OBJECT_PROPERTY_SCALE_Y:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getScaleY());
+        case SCENE_OBJECT_PROPERTY_SCALE_Z:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getScaleZ());
+        case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
+            return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getTransform().getTransformType()));
+        case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
+            return QVariant(mSceneObjectDefinitionHandle->hasFocus());
+        case SCENE_OBJECT_PROPERTY_NONE:
+            return QVariant();
+    }
+    return QVariant();
 }

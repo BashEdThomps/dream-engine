@@ -19,13 +19,13 @@
 
 ScenePropertiesItem::ScenePropertiesItem
 (
-    const QList<QVariant> &data,
+    QString title,
     SceneDefinition* sdHandle,
     SceneProperty property,
     QItemDelegate* delegate,
     AbstractPropertiesItem *parent
 )
-    : AbstractPropertiesItem(data,delegate,parent),
+    : AbstractPropertiesItem(title,delegate,parent),
       mSceneDefinitionHandle(sdHandle),
       mProperty(property)
 {
@@ -36,4 +36,14 @@ ScenePropertiesItem::~ScenePropertiesItem
 ()
 {
 
+}
+
+QVariant ScenePropertiesItem::data(int column)
+{
+    return QVariant();
+}
+
+bool ScenePropertiesItem::setData(int column, const QVariant &value)
+{
+    return false;
 }

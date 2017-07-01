@@ -23,6 +23,8 @@
 #include <QModelIndexList>
 #include <DreamCore.h>
 #include <QOpenGLContext>
+#include <QLayout>
+#include <QVBoxLayout>
 
 #include "../Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesModel.h"
 #include "../Model/TreeModels/Properties/Project/ProjectPropertiesModel.h"
@@ -185,11 +187,23 @@ void
 MainController::connectMenus
 ()
 {
+    connectPreferences();
     connectFileMenu();
     connectSceneMenu();
     connectAssetMenu();
     connectViewMenu();
     connectDebugMenu();
+}
+
+void
+MainController::connectPreferences
+()
+{
+    connect
+    (
+        mMainWindowHandle->getAction_Preferences(),SIGNAL(triggered()),
+        this, SLOT(onAction_Preferences())
+    );
 }
 
 void
@@ -554,8 +568,7 @@ MainController::onUI_TreeViewSelectionChanged
 // File Menu
 
 void
-MainController::onAction_File_New
-()
+MainController::onAction_File_New ()
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
@@ -571,19 +584,13 @@ MainController::onAction_File_New
         }
 
         bool createResult = mProjectDirectoryModel.createNewProjectTree(mProjectDirectory);
+        ProjectDefinition* newDef = Project::createNewProjectDefinition(mProjectDirectoryModel.getProjectDirectoryName().toStdString());
+        mProjectDirectoryModel.setProjectDefinitionHandle(newDef);
+        bool projectFileResult = mProjectDirectoryModel.writeProjectFile();
 
-        if (createResult && mProjectDirectoryModel.isValidProject())
+        if (createResult && projectFileResult)
         {
-            qDebug() << "MainController: Project is valid";
-            setActionsEnabled_ValidProject(true);
             openProject();
-            mProjectDirectoryModel.writeProjectFile();
-
-        }
-        else
-        {
-            qDebug() << "MainController: Project is NOT valid";
-            setActionsEnabled_ValidProject(false);
         }
     }
 }
@@ -1005,6 +1012,13 @@ MainController::getRelationshipTreeHandle
     return mRelationshipTree.get();
 }
 
+void
+MainController::onAction_Preferences
+()
+{
+    mPreferencesDialogController.showDialog();
+}
+
 Grid*
 MainController::getGridHandle
 ()
@@ -1067,6 +1081,7 @@ MainController::openProject
             currentProject->getUuid() + ")"
         )
     );
+
     setActionsEnabled_ValidProject(true);
     connectUI_TreeViewModels();
 }

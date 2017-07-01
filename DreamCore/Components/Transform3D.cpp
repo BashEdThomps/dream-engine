@@ -32,12 +32,43 @@ namespace Dream
     }
 
     Transform3D::Transform3D
-    (Transform3D* obj)
+    (json jsonTransform)
     {
-        mTransformType = obj->getTransformType();
-        mTranslation = obj->getTranslation();
-        mOrientation = obj->getOrientation();
-        mScale =obj->getScale();
+        if (!jsonTransform[Constants::TRANSFORM_TYPE].is_null())
+        {
+            setTransformType(jsonTransform[Constants::TRANSFORM_TYPE]);
+        }
+        else
+        {
+            setTransformType(Constants::TRANSFORM_TYPE_ABSOLUTE);
+        }
+
+        if (!jsonTransform[Constants::TRANSFORM_TRANSLATION].is_null())
+        {
+            setTranslation(
+                jsonTransform[Constants::TRANSFORM_TRANSLATION][Constants::X],
+                jsonTransform[Constants::TRANSFORM_TRANSLATION][Constants::Y],
+                jsonTransform[Constants::TRANSFORM_TRANSLATION][Constants::Z]
+            );
+        }
+
+        if (!jsonTransform[Constants::TRANSFORM_ROTATION].is_null())
+        {
+            setRotation(
+                jsonTransform[Constants::TRANSFORM_ROTATION][Constants::X],
+                jsonTransform[Constants::TRANSFORM_ROTATION][Constants::Y],
+                jsonTransform[Constants::TRANSFORM_ROTATION][Constants::Z]
+            );
+        }
+
+        if (!jsonTransform[Constants::TRANSFORM_SCALE].is_null())
+        {
+            setScale(
+                jsonTransform[Constants::TRANSFORM_SCALE][Constants::X],
+                jsonTransform[Constants::TRANSFORM_SCALE][Constants::Y],
+                jsonTransform[Constants::TRANSFORM_SCALE][Constants::Z]
+            );
+        }
     }
 
     // Translation ===================================================================
@@ -334,6 +365,15 @@ namespace Dream
         return btVector3(getTranslationX(),getTranslationY(),getTranslationZ());
     }
 
+    btQuaternion
+    Transform3D::getOrientationAsBtQuaternion
+    ()
+    {
+        btQuaternion quat;
+        quat.setEulerZYX(getRotationX(),getRotationY(),getRotationZ());
+        return quat;
+    }
+
     btVector3
     Transform3D::getRotationAsBtVector3
     ()
@@ -359,7 +399,25 @@ namespace Dream
     Transform3D::getJson
     ()
     {
-        return mJson;
+        json j = json::object();
+        // Translation Type
+        j[Constants::TRANSFORM_TYPE] = getTransformType();
+        // Translation
+        j[Constants::TRANSFORM_TRANSLATION] = json::object();
+        j[Constants::TRANSFORM_TRANSLATION][Constants::X] = getTranslationX();
+        j[Constants::TRANSFORM_TRANSLATION][Constants::Y] = getTranslationY();
+        j[Constants::TRANSFORM_TRANSLATION][Constants::Z] = getTranslationZ();
+        // Rotation
+        j[Constants::TRANSFORM_ROTATION] = json::object();
+        j[Constants::TRANSFORM_ROTATION][Constants::X] = getRotationX();
+        j[Constants::TRANSFORM_ROTATION][Constants::Y] = getRotationY();
+        j[Constants::TRANSFORM_ROTATION][Constants::Z] = getRotationZ();
+        // Scale
+        j[Constants::TRANSFORM_SCALE] = json::object();
+        j[Constants::TRANSFORM_SCALE][Constants::X] = getScaleX();
+        j[Constants::TRANSFORM_SCALE][Constants::Y] = getScaleY();
+        j[Constants::TRANSFORM_SCALE][Constants::Z] = getScaleZ();
+        return j;
     }
 
 } // End of Dream

@@ -52,21 +52,23 @@ void
 AssetDefinitionPropertiesModel::createRoot
 ()
 {
-    QList<QVariant> rootData;
-    rootData << QString::fromStdString(mAssetDefinitionHandle->getName())
-             << QString::fromStdString(mAssetDefinitionHandle->getUuid());
-    mRootItem.reset(new AssetDefinitionPropertiesItem(rootData,mAssetDefinitionHandle));
+    mRootItem.reset
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            QString::fromStdString(mAssetDefinitionHandle->getName()),
+            mAssetDefinitionHandle
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createNameProperty
 ()
 {
-    QList<QVariant> nameData;
-    nameData << "Name" << QString::fromStdString(mAssetDefinitionHandle->getName());
     AssetDefinitionPropertiesItem *nameProperty = new AssetDefinitionPropertiesItem
     (
-        nameData,
+        "Name",
         mAssetDefinitionHandle,
         ASSET_DEFINITION_PROPERTY_NAME
     );
@@ -91,11 +93,9 @@ void
 AssetDefinitionPropertiesModel::createTypeProperty
 ()
 {
-    QList<QVariant> typeData;
-    typeData << "Type" << QString::fromStdString(mAssetDefinitionHandle->getType());
     AssetDefinitionPropertiesItem *typeProperty = new AssetDefinitionPropertiesItem
     (
-        typeData,
+        "Type",
         mAssetDefinitionHandle,
         ASSET_DEFINITION_PROPERTY_TYPE,
         new AssetDefinitionTypeComboDelegate(mAssetDefinitionHandle)
@@ -108,11 +108,9 @@ void
 AssetDefinitionPropertiesModel::createFormatProperty
 ()
 {
-    QList<QVariant> formatData;
-    formatData << "Format" << QString::fromStdString(mAssetDefinitionHandle->getFormat());
     AssetDefinitionPropertiesItem *formatProperty = new AssetDefinitionPropertiesItem
     (
-        formatData,
+        "Format",
         mAssetDefinitionHandle,
         ASSET_DEFINITION_PROPERTY_FORMAT,
         new AssetDefinitionFormatComboDelegate(mAssetDefinitionHandle)
@@ -223,11 +221,9 @@ AssetDefinitionPropertiesModel::createModelFileProperty
     qDebug() << "AssetDefintionPropertiesModel: Creating Model Assimp File Delegate";
     mModelFileBrowseDelegateHandle = new ModelFileBrowseDelegate(mAssetDefinitionHandle, this);
 
-    QList<QVariant> mfData;
-    mfData << "Model File" << "";
     AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
     (
-        mfData,
+        "Model File" ,
         mAssetDefinitionHandle,
         ASSET_DEFINITION_PROPERTY_MODEL_FILE,
         mModelFileBrowseDelegateHandle
@@ -248,11 +244,9 @@ AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
     qDebug() << "AssetDefinitionPropertiesModel: Create Model Additional Files Delegate";
     mModelAdditionalFilesDelegateHandle = new BrowseForAdditionalFilesDelegate(mAssetDefinitionHandle,this);
 
-    QList<QVariant> data;
-    data << "Additional Files" << "";
     AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
     (
-        data,
+        "Additional Files",
         mAssetDefinitionHandle,
         ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES,
         mModelAdditionalFilesDelegateHandle
@@ -298,14 +292,11 @@ void
 AssetDefinitionPropertiesModel::createScriptTemplateProperty
 ()
 {
-    qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
-
+    qDebug() << "AssetDefintionPropertiesModel: Creating Script Template Delegate";
     // Template
-    QList<QVariant> templateData;
-    templateData << "Template" << "";
     AssetDefinitionPropertiesItem *templateProperty = new AssetDefinitionPropertiesItem
     (
-        templateData,
+        "Template",
         mAssetDefinitionHandle
     );
     mRootItem->appendChild(templateProperty);
@@ -318,11 +309,9 @@ AssetDefinitionPropertiesModel::createShaderTemplateProperty
     qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
 
     // Template
-    QList<QVariant> templateData;
-    templateData << "Template" << "";
     AssetDefinitionPropertiesItem *templateProperty = new AssetDefinitionPropertiesItem
     (
-        templateData,
+        "Template",
         mAssetDefinitionHandle
     );
     mRootItem->appendChild(templateProperty);
@@ -341,56 +330,3 @@ AssetDefinitionPropertiesModel::createSpriteFileProperty
 {
 
 }
-
-bool
-AssetDefinitionPropertiesModel::setData
-(const QModelIndex &index, const QVariant &value, int role)
-{
-    qDebug() << "AssetDefinitionPropertiesModel: setData ::"
-             << "index.row=" << index.row()
-             << "index.column=" << index.column()
-             << "value=" << value;
-
-    if (role != Qt::EditRole)
-    {
-        qDebug() << "AssetDefinitionPropertiesModel: Role is not Qt::EditRole :/";
-        return false;
-    }
-
-    AssetDefinitionPropertiesItem *item = static_cast<AssetDefinitionPropertiesItem*>(getItem(index));
-    AssetDefinition* adHandle = item->getAssetDefinitionHandle();
-
-    switch(item->getProperty())
-    {
-        case ASSET_DEFINITION_PROPERTY_NAME:
-            adHandle->setName(value.toString().toStdString());
-            break;
-        case ASSET_DEFINITION_PROPERTY_TYPE:
-            adHandle->setType(value.toString().toStdString());
-            break;
-        case ASSET_DEFINITION_PROPERTY_FORMAT:
-            adHandle->setFormat(value.toString().toStdString());
-            break;
-        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
-        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
-        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
-        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
-        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
-        case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
-        case ASSET_DEFINITION_PROPERTY_NONE:
-            break;
-    }
-
-    bool result = item->setData(index.column(),value);
-
-    if (result)
-    {
-        emit dataChanged(index, index);
-    }
-
-    return result;
-}
-

@@ -15,10 +15,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PREFERENCESMODEL_H
-#define PREFERENCESMODEL_H
+#pragma once
 
 #include <QObject>
+#include <json.hpp>
+#include <string>
+
+using nlohmann::json;
+using std::string;
 
 class PreferencesModel : public QObject
 {
@@ -26,9 +30,23 @@ class PreferencesModel : public QObject
 public:
     explicit PreferencesModel(QObject *parent = 0);
 
-signals:
+    bool savePreferenecsFile();
+    bool loadPreferencesFile();
 
-public slots:
+    void setDefaultProjectDirectory(QString dir);
+    QString getDefaultProjectDirectory();
+
+    void setExternalTextEditorPath(QString path);
+    QString getExternalTextEditorPath();
+
+private: // Member Functions
+    QString getPreferencesFilePath();
+    QString getPreferencesDirectoryPath();
+
+private: // Variables
+    json mJson;
+    const static string PREFERENCES_FILE_NAME;
+    const static string PREFERENCES_DIRECTORY_NAME;
+    const static string JSON_DEFAULT_PROJECT_DIRECTORY;
+    const static string JSON_EXTERNAL_TEXT_EDITOR_PATH;
 };
-
-#endif // PREFERENCESMODEL_H

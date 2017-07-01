@@ -32,32 +32,33 @@ class AbstractPropertiesItem
 public:
     AbstractPropertiesItem
     (
-        const QList<QVariant> &data,
+        QString title,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
 
+    virtual ~AbstractPropertiesItem();
+
     void appendChild(AbstractPropertiesItem *child);
     AbstractPropertiesItem *child(int row);
     int childCount() const;
-    int columnCount() const;
-    QVariant data(int column) const;
-    int row() const;
-    AbstractPropertiesItem *parentItem();
     int childNumber() const;
-    bool setData(int column, const QVariant &value);
+
+    int row() const;
+    int columnCount() const;
+
+    AbstractPropertiesItem *parentItem();
     void setParent(AbstractPropertiesItem* parent);
+
     void setDelegate(QItemDelegate* delegate);
     QItemDelegate* getDelegate();
 
-    //bool insertChildren(int position, int count, int columns);
-    //bool insertColumns(int position, int columns);
-    //bool removeChildren(int position, int count);
-    //bool removeColumns(int position, int columns);
+    virtual bool setData(int column, const QVariant &value) = 0;
+    virtual QVariant data(int column) = 0;
 
-private:
+protected:
     QList<AbstractPropertiesItem*> mChildItems;
-    QList<QVariant> mItemData;
+    QString mTitle;
     AbstractPropertiesItem *mParentItemHandle;
     unique_ptr<QItemDelegate> mDelegate;
 };

@@ -40,14 +40,15 @@ ItemDelegateProxy::createEditor
 (QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index)
 const
 {
-    //qDebug() << "ItemDelegateProxy: createEditor getting delegate for " << index.column() << index.row();
     QItemDelegate* pi = static_cast<AbstractPropertiesItem*>(index.internalPointer())->getDelegate();
     if (pi)
     {
-        //qDebug() << "ItemDelegateProxy: createEditor got delegate for " << index.column() << index.row();
+        qDebug() << "ItemDelegateProxy: createEditor got delegate for"
+                 << index.column() << "," << index.row();
         return pi->createEditor(parent,option,index);
     }
-    //qDebug() << "ItemDelegateProxy: createEditor getting delegate for " << index.column() << index.row();
+    qDebug() << "ItemDelegateProxy: createEditor getting delegate for"
+             << index.column() << "," << index.row();
     return new QLineEdit(parent);
 }
 
@@ -56,18 +57,19 @@ ItemDelegateProxy::setEditorData
 (QWidget *editor, const QModelIndex &index)
 const
 {
-    //qDebug() << "ItemDelegateProxy: setEditorData getting delegate for " << index.column() << index.row();
     QItemDelegate* pi = static_cast<AbstractPropertiesItem*>(index.internalPointer())->getDelegate();
     if (pi)
     {
-        //qDebug() << "ItemDelegateProxy: setEditorData got delegate for " << index.column() << index.row();
+        qDebug() << "ItemDelegateProxy: setEditorData got delegate for"
+                 << index.column() << ","  << index.row();
         pi->setEditorData(editor,index);
         return;
     }
-    //qDebug() << "ItemDelegateProxy: setEditorData no delegate for " << index.column() << index.row();
+    qDebug() << "ItemDelegateProxy: setEditorData no delegate for"
+             << index.column() << ","  << index.row();
     QString value = index.model()->data(index, Qt::DisplayRole).toString();
-    QLineEdit *comboBox = static_cast<QLineEdit*>(editor);
-    comboBox->setText(value);
+    QLineEdit *lineEdit = static_cast<QLineEdit*>(editor);
+    lineEdit->setText(value);
 }
 
 void
@@ -75,15 +77,16 @@ ItemDelegateProxy::setModelData
 (QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
 const
 {
-    //qDebug() << "ItemDelegateProxy: setModelData getting delegate for " << index.column() << index.row();
     QItemDelegate* pi = static_cast<AbstractPropertiesItem*>(index.internalPointer())->getDelegate();
     if (pi)
     {
-        //qDebug() << "ItemDelegateProxy: setModelData got delegate for " << index.column() << index.row();
+        qDebug() << "ItemDelegateProxy: setModelData got delegate for"
+                 << index.column() << ","  << index.row();
         pi->setModelData(editor,model,index);
         return;
     }
-    //qDebug() << "ItemDelegateProxy: setModelData no delegate for " << index.column() << index.row();
+    qDebug() << "ItemDelegateProxy: setModelData no delegate for"
+             << index.column() << ","  << index.row();
     QLineEdit *comboBox = static_cast<QLineEdit*>(editor);
     QString value = comboBox->text();
     model->setData(index, value);
@@ -94,15 +97,16 @@ ItemDelegateProxy::updateEditorGeometry
 (QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index)
 const
 {
-    //qDebug() << "ItemDelegateProxy: updateEditorGeometry getting delegate for " << index.column() << index.row();
     QItemDelegate* pi = static_cast<AbstractPropertiesItem*>(index.internalPointer())->getDelegate();
     if (pi)
     {
-        //qDebug() << "ItemDelegateProxy: updateEditorGeometry got delegate for " << index.column() << index.row();
+        qDebug() << "ItemDelegateProxy: updateEditorGeometry got delegate for"
+                 << index.column() << ","  << index.row();
         pi->updateEditorGeometry(editor,option,index);
         return;
     }
-    //qDebug() << "ItemDelegateProxy: updateEditorGeometry no delegate for " << index.column() << index.row();
+    qDebug() << "ItemDelegateProxy: updateEditorGeometry no delegate for"
+             << index.column() << ","  << index.row();
     editor->setGeometry(option.rect);
 }
 

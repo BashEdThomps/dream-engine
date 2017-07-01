@@ -45,7 +45,6 @@ public:
     void createAssetInstancesProperty();
     void createChildrenProperty();
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 private:
     SceneObjectDefinition *mSceneObjectDefinitionHandle;
 };

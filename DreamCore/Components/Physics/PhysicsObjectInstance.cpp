@@ -143,28 +143,11 @@ namespace Dream
                     {
                         CompoundChild child;
                         child.uuid = childJson[Constants::UUID];
-                        // Translation
-                        nlohmann::json translationJson = childJson[Constants::ASSET_ATTR_TRANSLATION];
-                        if (!translationJson.is_null())
-                        {
-                            child.transform.setOrigin(btVector3(
-                                translationJson[Constants::X],
-                                translationJson[Constants::Y],
-                                translationJson[Constants::Z]
-                            ));
-                        }
-                        // Rotation
-                        nlohmann::json rotationJson = childJson[Constants::ASSET_ATTR_ROTATION];
-                        if (!rotationJson.is_null())
-                        {
-                            btQuaternion quat;
-                            quat.setEulerZYX(
-                                        rotationJson[Constants::Z],
-                                        rotationJson[Constants::Y],
-                                        rotationJson[Constants::X]
-                                        );
-                            child.transform.setRotation(quat);
-                        }
+                        Transform3D childTransform(childJson[Constants::TRANSFORM]);
+
+                        child.transform.setOrigin(btVector3(childTransform.getTranslationAsBtVector3()));
+                        child.transform.setRotation(childTransform.getOrientationAsBtQuaternion());
+
                         if (Constants::DEBUG)
                         {
                             cout << "PhysicsObjectInstance: Adding compound child "
@@ -173,6 +156,7 @@ namespace Dream
                                  << mUuid
                                  << endl;
                         }
+
                         mCompoundChildren.push_back(child);
                     }
                 }

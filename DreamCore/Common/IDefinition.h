@@ -48,6 +48,5 @@ namespace Dream
         void setUuid(string uuid);
 
         string getNameAndUuidString();
-        Transform3D getTransformFromJson(json &jsonTransform);
     };
 }

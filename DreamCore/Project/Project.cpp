@@ -47,6 +47,7 @@
 #include "../Utilities/ArgumentParser.h"
 #include "../Utilities/FileReader.h"
 #include "../Utilities/String.h"
+#include "../Utilities/Uuid.h"
 
 namespace Dream
 {
@@ -174,6 +175,29 @@ namespace Dream
     {
         mRuntime.reset(new ProjectRuntime(this, mWindowComponentHandle));
         return mRuntime.get();
+    }
+
+    ProjectDefinition*
+    Project::createNewProjectDefinition
+    (string name)
+    {
+        json j = json::object();
+
+        j[Constants::NAME] = name;
+        j[Constants::UUID] = Uuid::generateUuid();
+        j[Constants::PROJECT_AUTHOR] = "";
+        j[Constants::PROJECT_DESCRIPTION] = "";
+        j[Constants::PROJECT_STARTUP_SCENE] = "";
+
+        j[Constants::PROJECT_WINDOW_SIZE] = json::object();
+        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = Constants::PROJECT_DEFAULT_WINDOW_WIDTH;
+        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT] = Constants::PROJECT_DEFAULT_WINDOW_HEIGHT;
+
+        j[Constants::PROJECT_ASSET_ARRAY] = json::array();
+        j[Constants::PROJECT_SCENE_ARRAY] = json::array();
+
+        ProjectDefinition* newProjectDefinitionHandle = new ProjectDefinition(j);
+        return newProjectDefinitionHandle;
     }
 
     bool

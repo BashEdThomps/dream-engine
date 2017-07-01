@@ -17,7 +17,8 @@
  */
 #include "AssetDefinitionFormatComboDelegate.h"
 
-#include "../../AssetDefinitionTreeItem.h"
+#include "AssetDefinitionPropertiesItem.h"
+
 #include <QComboBox>
 #include <QDebug>
 
@@ -59,6 +60,10 @@ const
     }
     editor->addItems(list);
 
+    AssetDefinitionPropertiesItem *item = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
+    string format = item->getAssetDefinitionHandle()->getFormat();
+    int formatIndex = editor->findText(QString::fromStdString(format));
+    editor->setCurrentIndex(formatIndex);
     return editor;
 }
 

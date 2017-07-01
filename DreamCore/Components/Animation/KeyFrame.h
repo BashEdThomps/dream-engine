@@ -6,6 +6,7 @@
 #include "Frame.h"
 
 #include "../../Common/Constants.h"
+#include "../Transform3D.h"
 
 namespace Dream
 {
@@ -18,9 +19,7 @@ namespace Dream
         long mStartTimeMS;
         bool mWrap;
         vector<Frame*> mPlaybackFrames;
-        vector<float> mTranslation;
-        vector<float> mRotation;
-        vector<float> mScale;
+        Transform3D mTransform;
         string mName;
         string mUUID;
         string mInterpolationType;
@@ -35,18 +34,19 @@ namespace Dream
         void setWrap(bool);
         long getStartTimeMS();
         void setStartTimeMS(long);
-        vector<float> getTranslation();
-        void setTranslation( vector<float>);
-        vector<float> getRotation();
-        void setRotation( vector<float>);
-        vector<float> getScale();
-        void setScale( vector<float>);
+
+        Transform3D getTransform();
+        void setTransform(Transform3D transform);
+
         string getName();
         void setName( string);
+
         string getUUID();
         void setUUID( string);
+
         void setInterpolationType( string);
         string getInterpolationType();
+
         float getBezierPoint(float,float,float);
 
         bool isInterpolationTypeNone();

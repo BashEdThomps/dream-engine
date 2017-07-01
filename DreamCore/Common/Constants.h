@@ -55,6 +55,7 @@ namespace Dream
         const static string PATH_DELIMETER;
         const static string HTTP_ARG;
         // Project ==============================================================
+        const static string PROJECT_DEFAULT_NAME;
         const static string PROJECT_DIRECTORY_ARG;
         const static string PROJECT_UUID_ARG;
         const static int    PROJECT_UUID_LENGTH;
@@ -68,8 +69,10 @@ namespace Dream
         const static string PROJECT_ASSET_ARRAY;
         const static string PROJECT_STARTUP_SCENE;
         const static string PROJECT_WINDOW_SIZE;
-        const static string PROJECT_WIDTH;
-        const static string PROJECT_HEIGHT;
+        const static string PROJECT_WINDOW_WIDTH;
+        const static string PROJECT_WINDOW_HEIGHT;
+        const static int    PROJECT_DEFAULT_WINDOW_WIDTH;
+        const static int    PROJECT_DEFAULT_WINDOW_HEIGHT;
         // Asset ================================================================
         const static string UUID;
         const static string NAME;
@@ -118,10 +121,9 @@ namespace Dream
         // Scene ================================================================
         const static string SCENE_NOTES;
         const static string SCENE_ROOT_SCENE_OBJECT;
-        const static string SCENE_CAMERA;
+        const static string SCENE_CAMERA_TRANSFORM;
+        const static string  SCENE_CAMERA_MOVEMENT_SPEED;
         const static float  SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
-        const static string SCENE_TRANSLATION;
-        const static string SCENE_ROTATION;
         const static string SCENE_MOVEMENT_SPEED;
         const static string SCENE_CLEAR_COLOUR;
         const static string SCENE_AMBIENT_LIGHT_COLOUR;
@@ -132,14 +134,13 @@ namespace Dream
         const static string SCENE_OBJECT_ROOT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
         const static string SCENE_OBJECT_HAS_FOCUS;
-        const static string SCENE_OBJECT_TRANSLATION;
-        const static string SCENE_OBJECT_ROTATION;
-        const static string SCENE_OBJECT_SCALE;
-        const static string SCENE_OBJECT_TRANSFORM_TYPE;
-        const static string SCENE_OBJECT_TRANSFORM_TYPE_OFFSET;
-        const static string SCENE_OBJECT_TRANSFORM_TYPE_ABSOLUTE;
         const static string SCENE_OBJECT_ASSET_INSTANCES;
         // Transform ============================================================
+        const static string TRANSFORM;
+        const static string TRANSFORM_TYPE;
+        const static string TRANSFORM_TRANSLATION;
+        const static string TRANSFORM_ROTATION;
+        const static string TRANSFORM_SCALE;
         const static string TRANSFORM_TYPE_ABSOLUTE;
         const static string TRANSFORM_TYPE_OFFSET;
         // Font =================================================================
@@ -166,9 +167,6 @@ namespace Dream
 
         // Animation =============================================================
         const static string ASSET_ATTR_KEYFRAMES;
-        const static string ASSET_ATTR_TRANSLATION;
-        const static string ASSET_ATTR_ROTATION;
-        const static string ASSET_ATTR_SCALE;
         const static string ASSET_ATTR_START_TIME;
         const static string ASSET_ATTR_WRAP;
         const static string ASSET_ATTR_LOOP;

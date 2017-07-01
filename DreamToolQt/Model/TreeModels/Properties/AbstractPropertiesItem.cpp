@@ -21,12 +21,18 @@
 #include <QDebug>
 
 AbstractPropertiesItem::AbstractPropertiesItem
-(const QList<QVariant> &data, QItemDelegate* delegate, AbstractPropertiesItem *parent)
-    : mItemData(data),
+(QString title, QItemDelegate* delegate, AbstractPropertiesItem *parent)
+    : mTitle(title),
       mParentItemHandle(parent)
 {
     qDebug() << "AbstractPropertiesItem: Constructing";
     setDelegate(delegate);
+}
+
+AbstractPropertiesItem::~AbstractPropertiesItem
+()
+{
+
 }
 
 void AbstractPropertiesItem::setParent(AbstractPropertiesItem* parent)
@@ -66,12 +72,7 @@ int AbstractPropertiesItem::childCount() const
 
 int AbstractPropertiesItem::columnCount() const
 {
-    return mItemData.count();
-}
-
-QVariant AbstractPropertiesItem::data(int column) const
-{
-    return mItemData.value(column);
+    return 2;
 }
 
 AbstractPropertiesItem *AbstractPropertiesItem::parentItem()
@@ -95,94 +96,4 @@ int AbstractPropertiesItem::childNumber() const
         return mParentItemHandle->mChildItems.indexOf(const_cast<AbstractPropertiesItem*>(this));
     }
     return 0;
-}
-
-/*
-bool AbstractPropertiesItem::insertChildren(int position, int count, int columns)
-{
-    if (position < 0 || position > mChildItems.size())
-    {
-        return false;
-    }
-
-    for (int row = 0; row < count; ++row)
-    {
-        QList<QVariant> data;
-        AbstractPropertiesItem *item = new AbstractPropertiesItem(data, nullptr, "", nullptr, this);
-        mChildItems.insert(position, item);
-    }
-    return true;
-}
-*/
-
-/*
-bool AbstractPropertiesItem::insertColumns(int position, int columns)
-{
-    if (position < 0 || position > mItemData.size())
-    {
-        return false;
-    }
-
-    for (int column = 0; column < columns; ++column)
-    {
-        mItemData.insert(position, QVariant());
-    }
-
-    foreach (AbstractPropertiesItem *child, mChildItems)
-    {
-        child->insertColumns(position, columns);
-    }
-
-    return true;
-}
-*/
-
-/*
-bool AbstractPropertiesItem::removeChildren(int position, int count)
-{
-    if (position < 0 || position + count > mChildItems.size())
-    {
-        return false;
-    }
-
-    for (int row = 0; row < count; ++row)
-    {
-        delete mChildItems.takeAt(position);
-    }
-
-    return true;
-}
-*/
-
-/*
-bool AbstractPropertiesItem::removeColumns(int position, int columns)
-{
-    if (position < 0 || position + columns > mItemData.size())
-    {
-        return false;
-    }
-
-    for (int column = 0; column < columns; ++column)
-    {
-        mItemData.removeAt(position);
-    }
-
-    foreach (AbstractPropertiesItem *child, mChildItems)
-    {
-        child->removeColumns(position, columns);
-    }
-
-    return true;
-}
-*/
-
-bool AbstractPropertiesItem::setData(int column, const QVariant &value)
-{
-    if (column < 0 || column >= mItemData.size())
-    {
-        return false;
-    }
-
-    mItemData[column] = value;
-    return true;
 }

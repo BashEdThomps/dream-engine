@@ -19,13 +19,13 @@
 
 ProjectPropertiesItem::ProjectPropertiesItem
 (
-    const QList<QVariant> &data,
+    QString title,
     ProjectDefinition* pdHandle,
     ProjectProperty property,
     QItemDelegate* delegate,
     AbstractPropertiesItem *parent
 )
-    : AbstractPropertiesItem (data,delegate,parent),
+    : AbstractPropertiesItem (title,delegate,parent),
       mProjectDefinitionHandle(pdHandle),
       mProperty(property)
 {
@@ -36,4 +36,14 @@ ProjectPropertiesItem::~ProjectPropertiesItem
 ()
 {
 
+}
+
+QVariant ProjectPropertiesItem::data(int column)
+{
+    return QVariant();
+}
+
+bool ProjectPropertiesItem::setData(int column, const QVariant &value)
+{
+    return false;
 }

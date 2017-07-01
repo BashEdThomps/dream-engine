@@ -36,7 +36,7 @@ CheckBoxDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem & option , const QModelIndex & index )
 const
 {
-    qDebug() << "CheckBoxDelegate: Creating spinbox";
+    qDebug() << "CheckBoxDelegate: Creating checkbox";
     QCheckBox *editor = new QCheckBox(parent);
     return editor;
 }

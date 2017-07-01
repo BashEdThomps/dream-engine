@@ -109,28 +109,28 @@ namespace Dream
     ProjectDefinition::getWindowWidth
     ()
     {
-        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WIDTH];
+        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH];
     }
 
     void
     ProjectDefinition::setWindowWidth
     (int width)
     {
-        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WIDTH] = width;
+        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = width;
     }
 
     int
     ProjectDefinition::getWindowHeight
     ()
     {
-        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT];
+        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT];
     }
 
     void
     ProjectDefinition::setWindowHeight
     (int height)
     {
-        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_HEIGHT] = height;
+        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT] = height;
     }
 
     void
@@ -284,9 +284,11 @@ namespace Dream
         json scene;
         scene[Constants::UUID] = Uuid::generateUuid();
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
+        Transform3D camTransform;
+        scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
         SceneDefinition *sdHandle = new SceneDefinition(this,scene);
-        mSceneDefinitions.push_back(unique_ptr<SceneDefinition>(sdHandle));
         sdHandle->createNewRootSceneObjectDefinition();
+        mSceneDefinitions.push_back(unique_ptr<SceneDefinition>(sdHandle));
         return sdHandle;
     }
 
