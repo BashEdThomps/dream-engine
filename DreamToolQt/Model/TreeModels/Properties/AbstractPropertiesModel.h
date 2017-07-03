@@ -26,16 +26,14 @@
 
 #include <memory>
 
-class ItemDelegateProxy;
-
 using std::unique_ptr;
 
-class PropertiesModel : public QAbstractItemModel
+class AbstractPropertiesModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    PropertiesModel(QTreeView* parent = 0);
-    ~PropertiesModel();
+    AbstractPropertiesModel(QItemDelegate* delegate, QTreeView* parent = 0);
+    ~AbstractPropertiesModel();
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
@@ -49,8 +47,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual void createRoot() = 0;
     virtual void createProperties() = 0;
+
 protected:
     unique_ptr<AbstractPropertiesItem> mRootItem;
-    unique_ptr<ItemDelegateProxy> mItemDelegateProxy;
     QTreeView *mTreeViewHandle;
 };

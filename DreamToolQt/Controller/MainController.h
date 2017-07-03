@@ -33,7 +33,7 @@
 #include "../Model/ProjectDirectoryModel.h"
 #include "../Model/TreeModels/Scenegraph/ScenegraphTreeModel.h"
 #include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.h"
-#include "../Model/TreeModels/Properties/PropertiesModel.h"
+#include "../Model/TreeModels/Properties/AbstractPropertiesModel.h"
 
 #include "../View/MainWindow.h"
 #include "../View/GLView/Grid.h"
@@ -93,7 +93,8 @@ public slots:
     void onUI_ProjectWindowHeightChanged(QString height);
     void onUI_ProjectStartupSceneChanged(QString startupScene);
 
-    void onUI_TreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
+    void onUI_ScenegraphTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
+    void onUI_AssetDefinitionTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
     void onUI_SelectedSceneChanged(SceneDefinition *scene);
 
     void onAction_View_ToggleGrid(bool enabled);
@@ -127,7 +128,8 @@ private: // Methods
     // Setup
     void setupUI();
     void setupUI_GLWidgets();
-    void setupUI_PropertiesTreeViewModel(GenericTreeItem *item);
+    void setupUI_ScenegraphPropertiesTreeViewModel(ScenegraphTreeItem *item);
+    void setupUI_AssetDefinitionPropertiesTreeViewModel(AssetDefinitionTreeItem *item);
 
     void setupConnections();
 
@@ -169,12 +171,15 @@ private: // Variables
 
     unique_ptr<QErrorMessage> mInvalidProjectDirectoryError;
     unique_ptr<QStringListModel> mSceneListModel;
-    unique_ptr<ScenegraphTreeModel> mScenegraphTreeModel;
+
     unique_ptr<AssetDefinitionTreeModel> mAssetDefinitionTreeModel;
-    unique_ptr<PropertiesModel> mPropertiesModel;
+    unique_ptr<ScenegraphTreeModel> mScenegraphTreeModel;
+    unique_ptr<AbstractPropertiesModel> mPropertiesModel;
+
     unique_ptr<Grid> mGrid;
     unique_ptr<SelectionHighlighter> mSelectionHighlighter;
     unique_ptr<RelationshipTree> mRelationshipTree;
+
     // Delete anything that relies on project before DreamModel
     unique_ptr<DreamProjectModel> mDreamProjectModel;
 

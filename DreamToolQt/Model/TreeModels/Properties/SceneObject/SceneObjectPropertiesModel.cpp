@@ -22,8 +22,7 @@
 #include <QDebug>
 
 #include "SceneObjectPropertiesItem.h"
-#include "../DoubleSpinBoxDelegate.h"
-#include "../CheckBoxDelegate.h"
+#include "SceneObjectPropertiesTreeDelegate.h"
 
 using Dream::Transform3D;
 using Dream::AssetDefinition;
@@ -31,7 +30,7 @@ using Dream::SceneObjectDefinition;
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
 (SceneObjectDefinition *sceneObject, QTreeView *parent)
-    : PropertiesModel(parent)
+    : AbstractPropertiesModel(new SceneObjectPropertiesTreeDelegate(), parent)
 {
     qDebug() << "SceneObjectPropertiesModel: Constructor called";
     mSceneObjectDefinitionHandle = sceneObject;
@@ -107,8 +106,7 @@ SceneObjectPropertiesModel::createTranslationProperty
         (
             "X",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_TRANSLATION_X,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_TRANSLATION_X
         )
     );
 
@@ -118,8 +116,7 @@ SceneObjectPropertiesModel::createTranslationProperty
         (
             "Y",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_TRANSLATION_Y,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_TRANSLATION_Y
         )
     );
 
@@ -129,8 +126,7 @@ SceneObjectPropertiesModel::createTranslationProperty
         (
             "Z",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_TRANSLATION_Z,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_TRANSLATION_Z
         )
     );
 }
@@ -151,8 +147,7 @@ SceneObjectPropertiesModel::createRotationProperty
         (
             "X",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_ROTATION_X,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_ROTATION_X
         )
     );
 
@@ -162,8 +157,7 @@ SceneObjectPropertiesModel::createRotationProperty
         (
             "Y",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_ROTATION_Y,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_ROTATION_Y
         )
     );
 
@@ -173,8 +167,7 @@ SceneObjectPropertiesModel::createRotationProperty
         (
             "Z",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_ROTATION_Z,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_ROTATION_Z
         )
     );
 }
@@ -196,8 +189,7 @@ SceneObjectPropertiesModel::createScaleProperty
         (
             "X",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_SCALE_X,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_SCALE_X
         )
     );
 
@@ -207,8 +199,7 @@ SceneObjectPropertiesModel::createScaleProperty
         (
             "Y",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_SCALE_Y,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_SCALE_Y
         )
     );
 
@@ -218,8 +209,7 @@ SceneObjectPropertiesModel::createScaleProperty
         (
             "Z",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_SCALE_Z,
-            new DoubleSpinBoxDelegate()
+            SCENE_OBJECT_PROPERTY_SCALE_Z
         )
     );
 }
@@ -247,8 +237,7 @@ SceneObjectPropertiesModel::createHasFocusProperty
     (
         "Has Focus",
         mSceneObjectDefinitionHandle,
-        SCENE_OBJECT_PROPERTY_HAS_FOCUS,
-        new CheckBoxDelegate()
+        SCENE_OBJECT_PROPERTY_HAS_FOCUS
     );
     mRootItem->appendChild(hasFocusItem);
 }

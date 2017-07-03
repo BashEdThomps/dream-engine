@@ -18,12 +18,12 @@
 
 #pragma once
 
-#include "../PropertiesModel.h"
+#include "../AbstractPropertiesModel.h"
 #include <DreamCore.h>
 
 using Dream::SceneDefinition;
 
-class ScenePropertiesModel : public PropertiesModel
+class ScenePropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
@@ -40,7 +40,6 @@ public:
     void createRenderingProperties();
     void createPhysicsProperties();
 
-    //bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 private:
     SceneDefinition *mSceneDefinition;
 };

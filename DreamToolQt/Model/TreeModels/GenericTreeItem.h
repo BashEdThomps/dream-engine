@@ -15,25 +15,18 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef GENERIC_TREE_TREEITEM_H
-#define GENERIC_TREE_TREEITEM_H
+
+#pragma once
 
 #include <QList>
 #include <QVariant>
 
-enum GenericTreeItemType
-{
-    PROJECT,
-    ASSET_DEFINITION,
-    SCENE,
-    SCENE_OBJECT,
-    TREE_NODE
-};
+
 
 class GenericTreeItem
 {
 public:
-    explicit GenericTreeItem(const QList<QVariant> &data, GenericTreeItemType type, GenericTreeItem *parentItem = 0);
+    explicit GenericTreeItem(QString title = "", GenericTreeItem *parentItem = 0);
     ~GenericTreeItem();
 
     void appendChild(GenericTreeItem *child);
@@ -43,14 +36,9 @@ public:
     QVariant data(int column) const;
     int row() const;
     GenericTreeItem *parentItem();
-    GenericTreeItemType getItemType();
 
-private:
+protected:
     QList<GenericTreeItem*> mChildItems;
-    QList<QVariant> mItemData;
     GenericTreeItem *mParentItem;
-    GenericTreeItemType mType;
-    std::string mUuid;
+    QString mTitle;
 };
-
-#endif // GENERIC_TREE_TREEITEM_H

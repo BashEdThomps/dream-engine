@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "../PropertiesModel.h"
+#include "../AbstractPropertiesModel.h"
 #include <DreamCore.h>
 #include <memory>
 
@@ -27,22 +27,18 @@ using Dream::AssetDefinition;
 class ModelFileBrowseDelegate;
 class BrowseForAdditionalFilesDelegate;
 
-class AssetDefinitionPropertiesModel : public PropertiesModel
+class AssetDefinitionPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    AssetDefinitionPropertiesModel(Dream::AssetDefinition *definition, QTreeView *parent = 0);
+    AssetDefinitionPropertiesModel(AssetDefinition *definition, QTreeView *parent = 0);
     ~AssetDefinitionPropertiesModel();
-
-    //bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     void createRoot() override;
     void createProperties() override;
 
 private:
     AssetDefinition* mAssetDefinitionHandle;
-    ModelFileBrowseDelegate* mModelFileBrowseDelegateHandle;
-    BrowseForAdditionalFilesDelegate* mModelAdditionalFilesDelegateHandle;
 
     void createAudioLoopProperty();
     void createAudioFileProperty();

@@ -52,7 +52,6 @@ public:
         QString title,
         AssetDefinition* adHandle,
         AssetDefinitionProperty property = ASSET_DEFINITION_PROPERTY_NONE,
-        QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
 

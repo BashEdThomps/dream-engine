@@ -15,6 +15,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "MainController.h"
 
 #include <QDebug>
@@ -82,30 +83,16 @@ MainController::setupUI_GLWidgets
 }
 
 void
-MainController::setupUI_PropertiesTreeViewModel
-(GenericTreeItem *item)
+MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
+(AssetDefinitionTreeItem* item)
 {
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
-    SceneObjectRuntime *selectedSceneObjectRuntime = nullptr;
-
-    // Reset the selected object
-    if (mSelectionHighlighter)
-    {
-        mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
-    }
 
     mPropertiesModel.reset(nullptr);
 
-    switch(item->getItemType())
+    switch(item->getType())
     {
-        case GenericTreeItemType::PROJECT:
-            qDebug() << "MainController: Selected a project";
-            mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
-            mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
-            mMainWindowHandle->setPropertiesDockWidgetTitle("Project Properties");
-            break;
-
-        case GenericTreeItemType::ASSET_DEFINITION:
+        case AssetDefinitionTreeItemType::ASSET_DEFINITION:
             qDebug() << "MainController: Selected an asset definition";
             mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
             mPropertiesModel.reset(new AssetDefinitionPropertiesModel(mSelectedAssetDefinitionHandle,propertiesTreeView));
@@ -124,7 +111,42 @@ MainController::setupUI_PropertiesTreeViewModel
             );
             break;
 
-        case GenericTreeItemType::SCENE:
+        case AssetDefinitionTreeItemType::ASSET_TREE_NODE:
+            qDebug() << "MainController: Selected an asset tree node";
+            break;
+    }
+
+    if (mPropertiesModel)
+    {
+        propertiesTreeView->setModel(mPropertiesModel.get());
+    }
+}
+
+void
+MainController::setupUI_ScenegraphPropertiesTreeViewModel
+(ScenegraphTreeItem *item)
+{
+    QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
+    SceneObjectRuntime *selectedSceneObjectRuntime = nullptr;
+
+    // Reset the selected object
+    if (mSelectionHighlighter)
+    {
+        mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
+    }
+
+    mPropertiesModel.reset(nullptr);
+
+    switch(item->getType())
+    {
+        case ScenegraphTreeItemType::SCENEGRAPH_PROJECT:
+            qDebug() << "MainController: Selected a project";
+            mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
+            mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
+            mMainWindowHandle->setPropertiesDockWidgetTitle("Project Properties");
+            break;
+
+        case ScenegraphTreeItemType::SCENEGRAPH_SCENE:
             qDebug() << "MainController: Selected a scene";
             mSelectedSceneDefinitionHandle = static_cast<SceneDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
@@ -137,7 +159,7 @@ MainController::setupUI_PropertiesTreeViewModel
             mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Properties");
             break;
 
-        case GenericTreeItemType::SCENE_OBJECT:
+        case ScenegraphTreeItemType::SCENEGRAPH_SCENE_OBJECT:
             qDebug() << "MainController: Selected a scene object";
             mSelectedSceneObjectDefinitionHandle = static_cast<SceneObjectDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mPropertiesModel.reset(new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView));
@@ -162,7 +184,7 @@ MainController::setupUI_PropertiesTreeViewModel
             }
             break;
 
-        case GenericTreeItemType::TREE_NODE:
+        case ScenegraphTreeItemType::SCENEGRAPH_TREE_NODE:
             qDebug() << "MainController: Selected a tree node";
             break;
     }
@@ -472,7 +494,7 @@ MainController::connectUI_TreeViewModels
     (
         mMainWindowHandle->getScenegraphTreeView()->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-        this, SLOT(onUI_TreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
+        this, SLOT(onUI_ScenegraphTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
 
     // assetDefinitionTreeView
@@ -480,7 +502,7 @@ MainController::connectUI_TreeViewModels
     (
         mMainWindowHandle->getAssetDefinitionTreeView()->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-        this, SLOT(onUI_TreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
+        this, SLOT(onUI_AssetDefinitionTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
     );
 
     mMainWindowHandle->getScenegraphTreeView()->expandAll();
@@ -551,14 +573,27 @@ MainController::onAction_Scene_Stop
 }
 
 void
-MainController::onUI_TreeViewSelectionChanged
+MainController::onUI_ScenegraphTreeViewSelectionChanged
 (const QItemSelection& selected,const QItemSelection& deselected)
 {
     QModelIndexList indexes = selected.indexes();
     if (indexes.size() > 0)
     {
-        GenericTreeItem *selected = static_cast<GenericTreeItem*>(indexes.at(0).internalPointer());
-        setupUI_PropertiesTreeViewModel(selected);
+        ScenegraphTreeItem *selected = static_cast<ScenegraphTreeItem*>(indexes.at(0).internalPointer());
+        setupUI_ScenegraphPropertiesTreeViewModel(selected);
+        mMainWindowHandle->getPropertiesTreeView()->expandAll();
+    }
+}
+
+void
+MainController::onUI_AssetDefinitionTreeViewSelectionChanged
+(const QItemSelection& selected,const QItemSelection& deselected)
+{
+    QModelIndexList indexes = selected.indexes();
+    if (indexes.size() > 0)
+    {
+        AssetDefinitionTreeItem *selected = static_cast<AssetDefinitionTreeItem*>(indexes.at(0).internalPointer());
+        setupUI_AssetDefinitionPropertiesTreeViewModel(selected);
         mMainWindowHandle->getPropertiesTreeView()->expandAll();
     }
 }

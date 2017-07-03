@@ -155,23 +155,23 @@ namespace Dream
 
         // Ortho projection for 2D
         mOrthoProjection = ortho
-        (
-            0.0f,
-            static_cast<float>(windowWidth),
-            static_cast<float>(windowHeight),
-            0.0f,
-            -1.0f, 1.0f
-        );
+                (
+                    0.0f,
+                    static_cast<float>(windowWidth),
+                    static_cast<float>(windowHeight),
+                    0.0f,
+                    -1.0f, 1.0f
+                    );
 
         Constants::checkGLError("After ortho");
 
         // Perspective Projection Matrix
         mProjectionMatrix = perspective(
-            mCamera->getZoom(),
-            static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
-            mMinimumDraw,
-            mMaximumDraw
-        );
+                    mCamera->getZoom(),
+                    static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
+                    mMinimumDraw,
+                    mMaximumDraw
+                    );
 
         Constants::checkGLError("After projection matrix");
 
@@ -205,11 +205,11 @@ namespace Dream
         if (mActiveSceneRuntimeHandle)
         {
             glClearColor(
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
-            );
+                        mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
+                    mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
+                    mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
+                    mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
+                    );
         }
         else
         {
@@ -298,63 +298,63 @@ namespace Dream
             clearLightQueue();
 
             scene->getRootSceneObjectRuntimeHandle()->applyToAll
-            (
-                function < void*(SceneObjectRuntime*) >
-                (
-                    [&](SceneObjectRuntime* object)
-                    {
-                        // Models
-                        if (object->hasModelInstance())
-                        {
-                            if (object->hasShaderInstance())
+                    (
+                        function < void*(SceneObjectRuntime*) >
+                        (
+                            [&](SceneObjectRuntime* object)
+            {
+                            // Models
+                            if (object->hasModelInstance())
                             {
-                                addTo3DQueue(object);
+                                if (object->hasShaderInstance())
+                                {
+                                    addTo3DQueue(object);
+                                }
+                                else
+                                {
+                                    cerr << "GraphicsComponent: Object " << object->getUuid()
+                                    << " has model, but no shader assigned." << endl;
+                                }
                             }
-                            else
-                            {
-                                cerr << "GraphicsComponent: Object " << object->getUuid()
-                                     << " has model, but no shader assigned." << endl;
-                            }
-                        }
 
-                        // Sprites
-                        if (object->hasSpriteInstance())
-                        {
-                            if (object->hasShaderInstance())
+                            // Sprites
+                            if (object->hasSpriteInstance())
                             {
-                                addTo2DQueue(object);
+                                if (object->hasShaderInstance())
+                                {
+                                    addTo2DQueue(object);
+                                }
+                                else
+                                {
+                                    cerr << "GraphicsComponent: Object " << object->getUuid()
+                                    << " has sprite, but no shader assigned." << endl;
+                                }
                             }
-                            else
-                            {
-                                cerr << "GraphicsComponent: Object " << object->getUuid()
-                                     << " has sprite, but no shader assigned." << endl;
-                            }
-                        }
 
-                        // Fonts
-                        if (object->hasFontInstance())
-                        {
-                            if (object->hasShaderInstance())
+                            // Fonts
+                            if (object->hasFontInstance())
                             {
-                                addTo2DQueue(object);
+                                if (object->hasShaderInstance())
+                                {
+                                    addTo2DQueue(object);
+                                }
+                                else
+                                {
+                                    cerr << "GraphicsComponent: Object " << object->getUuid()
+                                    << " has font, but no shader assigned." << endl;
+                                }
                             }
-                            else
+
+                            // Lights
+                            if (object->hasLightInstance())
                             {
-                                cerr << "GraphicsComponent: Object " << object->getUuid()
-                                     << " has font, but no shader assigned." << endl;
+                                addToLightQueue(object->getLightInstance());
                             }
-                        }
 
-                        // Lights
-                        if (object->hasLightInstance())
-                        {
-                            addToLightQueue(object->getLightInstance());
+                            return nullptr;
                         }
-
-                        return nullptr;
-                    }
-                )
-            );
+                        )
+                    );
         }
     }
 
@@ -546,7 +546,7 @@ namespace Dream
         glUniform3f(
                     glGetUniformLocation(shader->getShaderProgram(), "textColor"),
                     font->getColour()[0], font->getColour()[1], font->getColour()[2]
-        );
+                );
 
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(mFontVAO);
@@ -611,7 +611,7 @@ namespace Dream
 
         if (Constants::VERBOSE)
         {
-           cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
+            cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
         }
 
         // Get Assets
@@ -630,10 +630,10 @@ namespace Dream
             {
                 vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
                 ambientColour = vec3(
-                    ambient[Constants::RED_INDEX],
-                    ambient[Constants::GREEN_INDEX],
-                    ambient[Constants::BLUE_INDEX]
-                );
+                            ambient[Constants::RED_INDEX],
+                        ambient[Constants::GREEN_INDEX],
+                        ambient[Constants::BLUE_INDEX]
+                        );
                 strength = ambient[Constants::ALPHA_INDEX];
             }
 
@@ -696,18 +696,18 @@ namespace Dream
 
         // Pass view/projection transform to shader
         glUniformMatrix4fv
-        (
-            glGetUniformLocation(shader->getShaderProgram(), "projection"),
-            1, GL_FALSE, value_ptr(mProjectionMatrix)
-        );
+                (
+                    glGetUniformLocation(shader->getShaderProgram(), "projection"),
+                    1, GL_FALSE, value_ptr(mProjectionMatrix)
+                    );
 
         Constants::checkGLError("After set projection");
 
         glUniformMatrix4fv
-        (
-            glGetUniformLocation(shader->getShaderProgram(), "view"),
-            1, GL_FALSE, value_ptr(mViewMatrix)
-        );
+                (
+                    glGetUniformLocation(shader->getShaderProgram(), "view"),
+                    1, GL_FALSE, value_ptr(mViewMatrix)
+                    );
 
         Constants::checkGLError("After set view");
         // calculate the model matrix

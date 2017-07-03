@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include <QDialog>
+#include <QVBoxLayout>
 #include "../View/PreferencesWidget.h"
 #include "../Model/PreferencesModel.h"
 
@@ -27,19 +28,24 @@ class PreferencesDialogController : public QObject
     Q_OBJECT
 public:
     explicit PreferencesDialogController(QObject *parent = 0);
+    ~PreferencesDialogController();
     void showDialog();
     void hideDialog();
 
-signals:
-
 public slots:
     void onButton_OK();
+    void onButton_DefaultProjectDirectoryBrowse();
+    void onButton_ExternalTextEditorBrowse();
 
-private:
+protected:
+    void setupLayout();
+    void setupDialog();
+    void setupValues();
     void createConnections();
 
     PreferencesModel mPreferencesModel;
-    PreferencesWidget mPreferencesWidget;
     QDialog mPreferencesDialog;
+    PreferencesWidget mPreferencesWidget;
+    QVBoxLayout mPreferencesDialogLayout;
 
 };

@@ -15,29 +15,27 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "PropertiesModel.h"
+#include "AbstractPropertiesModel.h"
 #include <QDebug>
-#include "ItemDelegateProxy.h"
 
 using std::pair;
 
-PropertiesModel::PropertiesModel(QTreeView* parent)
-    : QAbstractItemModel (parent)
+AbstractPropertiesModel::AbstractPropertiesModel(QItemDelegate* delegate, QTreeView* parent)
+    : QAbstractItemModel (parent),
+      mTreeViewHandle(parent)
 {
     qDebug() << "PropertiesModel: Constructing";
-    mTreeViewHandle = parent;
-    mItemDelegateProxy.reset(new ItemDelegateProxy());
-    mTreeViewHandle->setItemDelegateForColumn(1,mItemDelegateProxy.get());
+    mTreeViewHandle->setItemDelegateForColumn(1,delegate);
 }
 
-PropertiesModel::~PropertiesModel
+AbstractPropertiesModel::~AbstractPropertiesModel
 ()
 {
     qDebug() << "PropertiesModel: Destructing";
 }
 
 AbstractPropertiesItem*
-PropertiesModel::getItem
+AbstractPropertiesModel::getItem
 (const QModelIndex &index)
 const
 {
@@ -52,7 +50,7 @@ const
     return mRootItem.get();
 }
 
-bool PropertiesModel::setHeaderData
+bool AbstractPropertiesModel::setHeaderData
 (int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
@@ -71,7 +69,7 @@ bool PropertiesModel::setHeaderData
 }
 
 bool
-PropertiesModel::setData
+AbstractPropertiesModel::setData
 (const QModelIndex &index, const QVariant &value, int role)
 {
     AbstractPropertiesItem *item = getItem(index);
@@ -86,7 +84,7 @@ PropertiesModel::setData
 }
 
 QModelIndex
-PropertiesModel::parent
+AbstractPropertiesModel::parent
 (const QModelIndex &index)
 const
 {
@@ -112,7 +110,7 @@ const
 }
 
 int
-PropertiesModel::columnCount
+AbstractPropertiesModel::columnCount
 (const QModelIndex &parent)
 const
 {
@@ -128,7 +126,7 @@ const
 
 
 QVariant
-PropertiesModel::data
+AbstractPropertiesModel::data
 (const QModelIndex &index, int role)
 const
 {
@@ -154,7 +152,7 @@ const
 
 
 Qt::ItemFlags
-PropertiesModel::flags
+AbstractPropertiesModel::flags
 (const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -171,7 +169,7 @@ PropertiesModel::flags
 }
 
 QVariant
-PropertiesModel::headerData
+AbstractPropertiesModel::headerData
 (int section, Qt::Orientation orientation, int role)
 const
 {
@@ -185,7 +183,7 @@ const
 
 
 QModelIndex
-PropertiesModel::index
+AbstractPropertiesModel::index
 (int row, int column, const QModelIndex &parent)
 const
 {
@@ -217,7 +215,7 @@ const
 }
 
 int
-PropertiesModel::rowCount
+AbstractPropertiesModel::rowCount
 (const QModelIndex &parent) const
 {
     AbstractPropertiesItem *parentItem;

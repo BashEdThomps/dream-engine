@@ -36,3 +36,31 @@ PreferencesWidget::getButton_OK
 {
     return ui->okButton;
 }
+
+QPushButton*
+PreferencesWidget::getButton_DefaultProjectDirectoryBrowse
+()
+{
+    return ui->defaultProjectDirectoryBrowseButton;
+}
+
+QPushButton*
+PreferencesWidget::getButton_ExternalTextEditorBrowse
+()
+{
+    return ui->externalTextEditorBrowseButton;
+}
+
+void
+PreferencesWidget::onDefaultProjectDirectoryChanged
+(QString dir)
+{
+    ui->defaultProjectDirectoryValueLabel->setText(dir);
+}
+
+void
+PreferencesWidget::onExternalTextEditorChanged
+(QString path)
+{
+    ui->externalTextEditorValueLabel->setText(path);
+}

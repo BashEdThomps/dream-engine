@@ -52,18 +52,9 @@ SOURCES += \
     Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.cpp \
     Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.cpp \
     \
-    Model/TreeModels/Properties/ItemDelegateProxy.cpp \
-    Model/TreeModels/Properties/PropertiesModel.cpp \
     Model/TreeModels/Properties/AbstractPropertiesItem.cpp \
     \
-    Model/TreeModels/Properties/AssetDefinition/OpenInTextEditorDelegate.cpp \
-    Model/TreeModels/Properties/AssetDefinition/BrowseForAdditionalFilesDelegate.cpp \
     Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesModel.cpp \
-    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionTypeComboDelegate.cpp \
-    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionFormatComboDelegate.cpp \
-    Model/TreeModels/Properties/AssetDefinition/Model/ModelFileBrowseDelegate.cpp \
-    Model/TreeModels/Properties/AssetDefinition/Shader/ShaderTemplateComboDelegate.cpp \
-    Model/TreeModels/Properties/AssetDefinition/Script/ScriptTemplateComboDelegate.cpp \
     \
     Model/TreeModels/Properties/Scene/ScenePropertiesModel.cpp \
     Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesModel.cpp \
@@ -71,12 +62,15 @@ SOURCES += \
     Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesItem.cpp \
     Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesItem.cpp \
     Model/TreeModels/Properties/Scene/ScenePropertiesItem.cpp \
-    Model/TreeModels/Properties/DoubleSpinBoxDelegate.cpp \
-    Model/TreeModels/Properties/CheckBoxDelegate.cpp \
     Model/TreeModels/Properties/Project/ProjectPropertiesItem.cpp \
     Model/TemplatesModel.cpp \
     View/PreferencesWidget.cpp \
-    Controller/PreferencesDialogController.cpp
+    Controller/PreferencesDialogController.cpp \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesTreeDelegate.cpp \
+    Model/TreeModels/Properties/Scene/ScenePropertiesTreeDelegate.cpp \
+    Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesTreeDelegate.cpp \
+    Model/TreeModels/Properties/Project/ProjectPropertiesTreeDelegate.cpp \
+    Model/TreeModels/Properties/AbstractPropertiesModel.cpp
 
 
 
@@ -106,18 +100,10 @@ HEADERS  += \
     Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.h \
     Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.h \
     \
-    Model/TreeModels/Properties/ItemDelegateProxy.h \
-    Model/TreeModels/Properties/PropertiesModel.h \
     Model/TreeModels/Properties/AbstractPropertiesItem.h \
+    Model/TreeModels/Properties/AbstractPropertiesModel.h \
     \
-    Model/TreeModels/Properties/AssetDefinition/OpenInTextEditorDelegate.h \
-    Model/TreeModels/Properties/AssetDefinition/BrowseForAdditionalFilesDelegate.h \
     Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesModel.h \
-    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionTypeComboDelegate.h \
-    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionFormatComboDelegate.h \
-    Model/TreeModels/Properties/AssetDefinition/Model/ModelFileBrowseDelegate.h \
-    Model/TreeModels/Properties/AssetDefinition/Shader/ShaderTemplateComboDelegate.h \
-    Model/TreeModels/Properties/AssetDefinition/Script/ScriptTemplateComboDelegate.h \
     \
     Model/TreeModels/Properties/Scene/ScenePropertiesModel.h \
     Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesModel.h \
@@ -125,12 +111,14 @@ HEADERS  += \
     Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesItem.h \
     Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesItem.h \
     Model/TreeModels/Properties/Scene/ScenePropertiesItem.h \
-    Model/TreeModels/Properties/DoubleSpinBoxDelegate.h \
-    Model/TreeModels/Properties/CheckBoxDelegate.h \
     Model/TreeModels/Properties/Project/ProjectPropertiesItem.h \
     Model/TemplatesModel.h \
     View/PreferencesWidget.h \
-    Controller/PreferencesDialogController.h
+    Controller/PreferencesDialogController.h \
+    Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesTreeDelegate.h \
+    Model/TreeModels/Properties/Scene/ScenePropertiesTreeDelegate.h \
+    Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesTreeDelegate.h \
+    Model/TreeModels/Properties/Project/ProjectPropertiesTreeDelegate.h
 
 
 

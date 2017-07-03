@@ -21,17 +21,31 @@
 #include <QList>
 #include <QVariant>
 
+enum ScenegraphTreeItemType
+{
+    SCENEGRAPH_PROJECT,
+    SCENEGRAPH_SCENE,
+    SCENEGRAPH_SCENE_OBJECT,
+    SCENEGRAPH_TREE_NODE
+};
+
 class ScenegraphTreeItem : public GenericTreeItem
 {
 public:
     explicit ScenegraphTreeItem
     (
-        const QList<QVariant> &data,
-        GenericTreeItemType type,
+        QString title,
+        ScenegraphTreeItemType type,
         void* item,
-        ScenegraphTreeItem *parentItem = 0
+        ScenegraphTreeItem* parentItem = nullptr
     );
-    void* getItem();
+
+    ~ScenegraphTreeItem();
+
+    void* getItem() const;
+    ScenegraphTreeItemType getType() const;
+    QVariant data(int column) const;
 private:
     void* mItem;
+    ScenegraphTreeItemType mType;
 };

@@ -18,24 +18,43 @@
 
 #pragma once
 
-#include <DreamCore.h>
 #include "../GenericTreeItem.h"
 #include <QList>
 #include <QVariant>
+
+namespace Dream
+{
+    class AssetDefinition;
+}
+
+using Dream::AssetDefinition;
+
+enum AssetDefinitionTreeItemType
+{
+    ASSET_DEFINITION,
+    ASSET_TREE_NODE
+};
 
 class AssetDefinitionTreeItem : public GenericTreeItem
 {
 public:
 
-    explicit AssetDefinitionTreeItem(
-        const QList<QVariant> &data,
-        GenericTreeItemType type,
-        Dream::AssetDefinition* definiion,
-        AssetDefinitionTreeItem *parentItem = 0
+    AssetDefinitionTreeItem
+    (
+        QString title,
+        AssetDefinitionTreeItemType type,
+        AssetDefinition* definiion = nullptr,
+        AssetDefinitionTreeItem *parentItem = nullptr
     );
 
-    Dream::AssetDefinition *getAssetDefinition();
+    AssetDefinition *getAssetDefinition();
+
+    AssetDefinitionTreeItemType getType() const;
+    void setType(AssetDefinitionTreeItemType type);
+    QVariant data(int column) const;
 
 private:
-    Dream::AssetDefinition *mDefinition;
+    AssetDefinition *mDefinition;
+    AssetDefinitionTreeItemType mType;
+
 };

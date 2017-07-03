@@ -17,11 +17,13 @@
  */
 #include "ProjectPropertiesModel.h"
 #include "ProjectPropertiesItem.h"
+#include "ProjectPropertiesTreeDelegate.h"
+
 #include <QDebug>
 
 ProjectPropertiesModel::ProjectPropertiesModel
 (ProjectDefinition *project,QTreeView* parent)
-    : PropertiesModel(parent)
+    : AbstractPropertiesModel(new ProjectPropertiesTreeDelegate(), parent)
 {
     mProjectDefinitionHandle = project;
     createRoot();

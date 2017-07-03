@@ -67,7 +67,7 @@ namespace Dream
         Camera *mCamera;
 
         float mMinimumDraw = 0.1f;
-        float mMaximumDraw = 1000.0f;
+        float mMaximumDraw = 100000.0f;
 
         vector<SceneObjectRuntime*> m2DQueue;
         vector<SceneObjectRuntime*> m3DQueue;

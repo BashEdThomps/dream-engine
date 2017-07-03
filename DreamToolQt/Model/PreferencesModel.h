@@ -39,6 +39,11 @@ public:
     void setExternalTextEditorPath(QString path);
     QString getExternalTextEditorPath();
 
+protected:
+    void initPreferencesModel();
+    bool createPreferencesDirectory();
+
+    void setDefaultPreferences();
 private: // Member Functions
     QString getPreferencesFilePath();
     QString getPreferencesDirectoryPath();
@@ -49,4 +54,8 @@ private: // Variables
     const static string PREFERENCES_DIRECTORY_NAME;
     const static string JSON_DEFAULT_PROJECT_DIRECTORY;
     const static string JSON_EXTERNAL_TEXT_EDITOR_PATH;
+
+signals:
+    void notifyDefaultProjectDirectoryChanged(QString directory);
+    void notifyExternalTextEditorChanged(QString editorPath);
 };

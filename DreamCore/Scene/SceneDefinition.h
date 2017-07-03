@@ -43,25 +43,48 @@ namespace Dream
     public:
         SceneDefinition(ProjectDefinition* projectHandle, json data);
         ~SceneDefinition();
+
         void showStatus() override;
+
         void loadRootSceneObjectDefinition(json jsonArray);
+
         void setCameraMovementSpeed(float speed);
         float getCameraMovementSpeed();
+
+        void setPhysicsDebug(bool debug);
         bool getPhysicsDebug();
+
         string getNotes();
         void setNotes(string notes);
-        Transform3D getCameraTransform();
+
+        Transform3D& getCameraTransform();
         void setCameraTransform(Transform3D transform);
+
         vector<float> getGravity();
         void setGravity(vector<float> gravity);
+        void setGravityX(float);
+        void setGravityY(float);
+        void setGravityZ(float);
+
         vector<float> getClearColour();
         void setClearColour(vector<float> clearColour);
+        void setClearColourR(float);
+        void setClearColourG(float);
+        void setClearColourB(float);
+
         vector<float> getAmbientColour();
         void setAmbientColour(vector<float> ambientColour);
+        void setAmbientColourR(float);
+        void setAmbientColourG(float);
+        void setAmbientColourB(float);
+        void setAmbientColourA(float);
+
         SceneObjectDefinition* getRootSceneObjectDefinitionHandle();
         ProjectDefinition* getProjectDefinitionHandle();
         SceneObjectDefinition* createNewRootSceneObjectDefinition();
+
         json getJson() override;
+
     private:
         void checkCamera();
     };

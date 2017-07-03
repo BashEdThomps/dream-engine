@@ -16,20 +16,59 @@
  * this file belongs to.
  */
 #include "ScenegraphTreeItem.h"
-#include <QStringList>
 #include <QDebug>
+#include <DreamCore.h>
+
+using Dream::ProjectDefinition;
+using Dream::SceneDefinition;
+using Dream::SceneObjectDefinition;
 
 ScenegraphTreeItem::ScenegraphTreeItem
-(const QList<QVariant> &data, GenericTreeItemType type, void* item, ScenegraphTreeItem *parent)
-    : GenericTreeItem(data, type, parent)
+(QString title, ScenegraphTreeItemType type, void* item, ScenegraphTreeItem *parent)
+    : GenericTreeItem(title, parent),
+      mItem(item),
+      mType(type)
 {
     qDebug() << "ScenegraphTreeItem: Constructing";
-    mItem = item;
+}
+
+ScenegraphTreeItem::~ScenegraphTreeItem
+()
+{
+   qDebug() << "ScenegraphTreeItem: Destructing";
 }
 
 void*
 ScenegraphTreeItem::getItem
 ()
+const
 {
     return mItem;
+}
+
+ScenegraphTreeItemType
+ScenegraphTreeItem::getType
+()
+const
+{
+   return mType;
+}
+
+QVariant
+ScenegraphTreeItem::data
+(int column)
+const
+{
+    switch (getType())
+    {
+        case SCENEGRAPH_PROJECT:
+            return QVariant(QString::fromStdString(static_cast<ProjectDefinition*>(mItem)->getName()));
+        case SCENEGRAPH_SCENE:
+            return QVariant(QString::fromStdString(static_cast<SceneDefinition*>(mItem)->getName()));
+        case SCENEGRAPH_SCENE_OBJECT:
+            return QVariant(QString::fromStdString(static_cast<SceneObjectDefinition*>(mItem)->getName()));
+        case SCENEGRAPH_TREE_NODE:
+            return QVariant(mTitle);
+    }
+    return QVariant();
 }

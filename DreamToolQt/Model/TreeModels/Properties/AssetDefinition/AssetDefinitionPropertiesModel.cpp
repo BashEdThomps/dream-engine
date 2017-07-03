@@ -19,13 +19,7 @@
 #include "AssetDefinitionPropertiesModel.h"
 
 #include "AssetDefinitionPropertiesItem.h"
-#include "AssetDefinitionTypeComboDelegate.h"
-#include "AssetDefinitionFormatComboDelegate.h"
-#include "BrowseForAdditionalFilesDelegate.h"
-#include "OpenInTextEditorDelegate.h"
-#include "Shader/ShaderTemplateComboDelegate.h"
-#include "Script/ScriptTemplateComboDelegate.h"
-#include "Model/ModelFileBrowseDelegate.h"
+#include "AssetDefinitionPropertiesTreeDelegate.h"
 
 #include <DreamCore.h>
 #include <QDebug>
@@ -33,8 +27,8 @@
 using Dream::Constants;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
-(Dream::AssetDefinition *definition, QTreeView* parent)
-    : PropertiesModel(parent),
+(AssetDefinition *definition, QTreeView* parent)
+    : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(this), parent),
       mAssetDefinitionHandle(definition)
 {
     qDebug() <<  "AssetDefinitionPropertiesModel: Constructing";
@@ -97,8 +91,7 @@ AssetDefinitionPropertiesModel::createTypeProperty
     (
         "Type",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_TYPE,
-        new AssetDefinitionTypeComboDelegate(mAssetDefinitionHandle)
+        ASSET_DEFINITION_PROPERTY_TYPE
     );
     mRootItem->appendChild(typeProperty);
 
@@ -112,8 +105,7 @@ AssetDefinitionPropertiesModel::createFormatProperty
     (
         "Format",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_FORMAT,
-        new AssetDefinitionFormatComboDelegate(mAssetDefinitionHandle)
+        ASSET_DEFINITION_PROPERTY_FORMAT
     );
     mRootItem->appendChild(formatProperty);
 }
@@ -219,22 +211,14 @@ AssetDefinitionPropertiesModel::createModelFileProperty
 ()
 {
     qDebug() << "AssetDefintionPropertiesModel: Creating Model Assimp File Delegate";
-    mModelFileBrowseDelegateHandle = new ModelFileBrowseDelegate(mAssetDefinitionHandle, this);
 
     AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
     (
         "Model File" ,
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_MODEL_FILE,
-        mModelFileBrowseDelegateHandle
+        ASSET_DEFINITION_PROPERTY_MODEL_FILE
     );
     mRootItem->appendChild(mfProperty);
-
-    connect
-    (
-        mModelFileBrowseDelegateHandle,SIGNAL(notifyModelFileBrowseButtonClicked(AssetDefinition*)),
-        this, SLOT(onModelFileBrowseButtonClicked(AssetDefinition*))
-    );
 }
 
 void
@@ -242,22 +226,13 @@ AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
 ()
 {
     qDebug() << "AssetDefinitionPropertiesModel: Create Model Additional Files Delegate";
-    mModelAdditionalFilesDelegateHandle = new BrowseForAdditionalFilesDelegate(mAssetDefinitionHandle,this);
-
     AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
     (
         "Additional Files",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES,
-        mModelAdditionalFilesDelegateHandle
+        ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES
     );
     mRootItem->appendChild(property);
-
-    connect
-    (
-        mModelAdditionalFilesDelegateHandle,SIGNAL(notifyBrowseButtonClicked(AssetDefinition*)),
-        this, SLOT(onModelAdditionalFilesButtonClicked(AssetDefinition*))
-    );
 }
 
 void

@@ -1,7 +1,7 @@
 /*
- * ItemDelegateProxy.h
+ * SceneObjectPropertiesTreeDelegate.h
  *
- * Created: 28 2017 by Ashley
+ * Created: 03 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -20,15 +20,17 @@
 
 #include <QItemDelegate>
 
-class ItemDelegateProxy : public QItemDelegate
+class SceneObjectPropertiesModel;
+
+class SceneObjectPropertiesTreeDelegate : public QItemDelegate
 {
-    Q_OBJECT
 public:
-    ItemDelegateProxy(QObject* parent = nullptr);
-    ~ItemDelegateProxy();
+    SceneObjectPropertiesTreeDelegate(SceneObjectPropertiesModel* parent = nullptr);
+    ~SceneObjectPropertiesTreeDelegate();
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
 };

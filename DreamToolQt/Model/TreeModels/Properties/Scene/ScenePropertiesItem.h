@@ -76,6 +76,7 @@ public:
     QVariant data(int column) override;
     bool setData(int column, const QVariant &value) override;
 
+    SceneProperty getProperty();
 private:
     SceneDefinition* mSceneDefinitionHandle;
     SceneProperty mProperty;

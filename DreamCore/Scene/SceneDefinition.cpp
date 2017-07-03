@@ -32,7 +32,8 @@ using std::endl;
 
 namespace Dream
 {
-    SceneDefinition::SceneDefinition(ProjectDefinition* projectDefinitionHandle, json data)
+    SceneDefinition::SceneDefinition
+    (ProjectDefinition* projectDefinitionHandle, json data)
         : IDefinition(data),
           mProjectDefinitionHandle(projectDefinitionHandle)
     {
@@ -58,7 +59,8 @@ namespace Dream
         }
     }
 
-    SceneDefinition::~SceneDefinition()
+    SceneDefinition::~SceneDefinition
+    ()
     {
         if (Constants::DEBUG)
         {
@@ -106,6 +108,13 @@ namespace Dream
         return mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED];
     }
 
+    void
+    SceneDefinition::setPhysicsDebug
+    (bool debug)
+    {
+        mJson[Constants::SCENE_PHYSICS_DEBUG] = debug;
+    }
+
     bool
     SceneDefinition::getPhysicsDebug
     ()
@@ -135,7 +144,7 @@ namespace Dream
         mJson[Constants::SCENE_NOTES] = notes;
     }
 
-    Transform3D
+    Transform3D&
     SceneDefinition::getCameraTransform
     ()
     {
@@ -193,6 +202,27 @@ namespace Dream
         mJson[Constants::SCENE_GRAVITY][Constants::Z] = gravity[Constants::Z_INDEX] ;
     }
 
+    void
+    SceneDefinition::setGravityX
+    (float x)
+    {
+        mJson[Constants::SCENE_GRAVITY][Constants::X] = x;
+    }
+
+    void
+    SceneDefinition::setGravityY
+    (float y)
+    {
+        mJson[Constants::SCENE_GRAVITY][Constants::Y] = y;
+    }
+
+    void
+    SceneDefinition::setGravityZ
+    (float z)
+    {
+        mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
+    }
+
     vector<float>
     SceneDefinition::getClearColour
     ()
@@ -236,6 +266,28 @@ namespace Dream
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = colour[Constants::RED_INDEX];
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = colour[Constants::GREEN_INDEX];
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = colour[Constants::BLUE_INDEX] ;
+    }
+
+    void
+    SceneDefinition::setClearColourR
+    (float r)
+    {
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]  = r;
+    }
+
+    void
+    SceneDefinition::setClearColourG
+    (float g)
+    {
+
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]  = g;
+    }
+
+    void
+    SceneDefinition::setClearColourB
+    (float b)
+    {
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
     }
 
     vector<float>
@@ -285,6 +337,38 @@ namespace Dream
         mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN] = colour[Constants::GREEN_INDEX];
         mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]  = colour[Constants::BLUE_INDEX] ;
         mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = colour[Constants::ALPHA_INDEX];
+    }
+
+    void
+    SceneDefinition::setAmbientColourR
+    (float r)
+    {
+
+        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED] = r;
+    }
+
+    void
+    SceneDefinition::setAmbientColourG
+    (float g)
+    {
+
+        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN] =g;
+    }
+
+    void
+    SceneDefinition::setAmbientColourB
+    (float b)
+    {
+
+        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE] = b;
+    }
+
+    void
+    SceneDefinition::setAmbientColourA
+    (float a)
+    {
+
+        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = a;
     }
 
     SceneObjectDefinition*

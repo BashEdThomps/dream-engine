@@ -102,7 +102,7 @@ AssetDefinitionTreeModel::index
         return QModelIndex();
     }
 
-    GenericTreeItem *parentItem;
+    AssetDefinitionTreeItem *parentItem;
 
     if (!parent.isValid())
     {
@@ -113,7 +113,7 @@ AssetDefinitionTreeModel::index
         parentItem = static_cast<AssetDefinitionTreeItem*>(parent.internalPointer());
     }
 
-    GenericTreeItem *childItem = parentItem->child(row);
+    AssetDefinitionTreeItem *childItem = static_cast<AssetDefinitionTreeItem*>(parentItem->child(row));
 
     if (childItem)
     {
@@ -134,8 +134,13 @@ AssetDefinitionTreeModel::parent
         return QModelIndex();
     }
 
-    GenericTreeItem *childItem = static_cast<GenericTreeItem*>(index.internalPointer());
-    GenericTreeItem *parentItem = childItem->parentItem();
+    AssetDefinitionTreeItem *childItem = static_cast<AssetDefinitionTreeItem*>(index.internalPointer());
+    AssetDefinitionTreeItem *parentItem = nullptr;
+
+    if (childItem)
+    {
+        parentItem = static_cast<AssetDefinitionTreeItem*>(childItem->parentItem());
+    }
 
     if (parentItem == mRootItem.get())
     {
@@ -174,122 +179,103 @@ AssetDefinitionTreeModel::setupModelData
     emit beginResetModel();
 
     // Create Root Node
-    QList<QVariant> rootData;
-    rootData << QString::fromStdString(mProjectHandle->getName());
     mRootItem.reset
     (
         new AssetDefinitionTreeItem
         (
-            rootData,
-            GenericTreeItemType::TREE_NODE,
+            QString::fromStdString(mProjectHandle->getName()),
+            AssetDefinitionTreeItemType::ASSET_TREE_NODE,
             nullptr,
             nullptr
         )
     );
 
     // Create Asset Type Nodes
-    QList<QVariant> animationNode;
-    animationNode << QString("Animation");
     AssetDefinitionTreeItem* animationTreeItem =
     new AssetDefinitionTreeItem
     (
-        animationNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Animation"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
     mRootItem->appendChild(animationTreeItem);
 
-    QList<QVariant> audioNode;
-    audioNode << QString("Audio");
     AssetDefinitionTreeItem* audioTreeItem =
     new AssetDefinitionTreeItem
     (
-        audioNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Audio"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
     mRootItem->appendChild(audioTreeItem);
 
-    QList<QVariant> fontNode;
-    fontNode << QString("Font");
     AssetDefinitionTreeItem* fontTreeItem =
     new AssetDefinitionTreeItem
     (
-        fontNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Font"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
     mRootItem->appendChild(fontTreeItem);
 
-    QList<QVariant> lightNode;
-    lightNode << QString("Light");
     AssetDefinitionTreeItem* lightTreeItem =
     new AssetDefinitionTreeItem
     (
-        lightNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Light"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
     mRootItem->appendChild(lightTreeItem);
 
-    QList<QVariant> modelNode;
-    modelNode << QString("Model");
     AssetDefinitionTreeItem* modelTreeItem =
     new AssetDefinitionTreeItem
     (
-        modelNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Model"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
     mRootItem->appendChild(modelTreeItem);
 
-    QList<QVariant> physicsObjectNode;
-    physicsObjectNode << QString("Physics Object");
     AssetDefinitionTreeItem* physicsObjectTreeItem =
     new AssetDefinitionTreeItem
     (
-        physicsObjectNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Physics Object"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
     mRootItem->appendChild(physicsObjectTreeItem);
 
-    QList<QVariant> scriptNode;
-    scriptNode << QString("Script");
     AssetDefinitionTreeItem* scriptTreeItem =
-            new AssetDefinitionTreeItem(
-                scriptNode,
-                GenericTreeItemType::TREE_NODE,
-                nullptr,
-                mRootItem.get()
-            );
+    new AssetDefinitionTreeItem
+    (
+        QString("Script"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
+        nullptr,
+        mRootItem.get()
+    );
     mRootItem->appendChild(scriptTreeItem);
 
-    QList<QVariant> shaderNode;
-    shaderNode << QString("Shader");
     AssetDefinitionTreeItem* shaderTreeItem =
     new AssetDefinitionTreeItem
     (
-        shaderNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Shader"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
     mRootItem->appendChild(shaderTreeItem);
 
-    QList<QVariant> spriteNode;
-    spriteNode << QString("Sprite");
     AssetDefinitionTreeItem* spriteTreeItem =
     new AssetDefinitionTreeItem
     (
-        spriteNode,
-        GenericTreeItemType::TREE_NODE,
+        QString("Sprite"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
         nullptr,
         mRootItem.get()
     );
@@ -297,17 +283,14 @@ AssetDefinitionTreeModel::setupModelData
 
     for (AssetDefinition* definition : mProjectHandle->getAssetDefinitionsHandleList())
     {
-        QList<QVariant> nextDefinitionData;
-        nextDefinitionData << QString::fromStdString(definition->getName());
-
         if (definition->getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0)
         {
             animationTreeItem->appendChild
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     animationTreeItem
                  )
@@ -319,8 +302,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     audioTreeItem
                  )
@@ -332,8 +315,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     fontTreeItem
                )
@@ -345,8 +328,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     lightTreeItem
                  )
@@ -358,8 +341,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     modelTreeItem
                 )
@@ -371,8 +354,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     physicsObjectTreeItem
                 )
@@ -384,8 +367,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     scriptTreeItem
                 )
@@ -397,8 +380,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     shaderTreeItem
                 )
@@ -410,8 +393,8 @@ AssetDefinitionTreeModel::setupModelData
             (
                 new AssetDefinitionTreeItem
                 (
-                    nextDefinitionData,
-                    GenericTreeItemType::ASSET_DEFINITION,
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     spriteTreeItem
                 )

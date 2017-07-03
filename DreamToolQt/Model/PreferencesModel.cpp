@@ -31,7 +31,47 @@ PreferencesModel::PreferencesModel
 (QObject *parent)
     : QObject(parent)
 {
+    qDebug() << "PreferencesModel: Constructing";
 
+    createPreferencesDirectory();
+
+    if(!loadPreferencesFile())
+    {
+        if(savePreferenecsFile())
+        {
+            if (loadPreferencesFile())
+            {
+                qDebug() << "PreferencesModel: Created Initial Preferences file";
+            }
+        }
+        else
+        {
+            qWarning() << "PreferencesModel: WARNING: Initialisation Failed!";
+        }
+    }
+    else
+    {
+        qDebug() << "PreferencesModel: Initialised from existing preferences file";
+    }
+}
+
+bool
+PreferencesModel::createPreferencesDirectory
+()
+{
+    QDir dir(getPreferencesDirectoryPath());
+    if (!dir.exists())
+    {
+        qDebug() << "PreferencesModel: Creating Preferences Directory"
+                 << getPreferencesDirectoryPath();
+        return QDir().mkdir(getPreferencesDirectoryPath());
+    }
+    else
+    {
+        qDebug() << "PreferencesModel: Found Preferences Directory"
+                 << getPreferencesDirectoryPath();
+    }
+    return true;
 }
 
 QString
@@ -40,7 +80,6 @@ PreferencesModel::getPreferencesDirectoryPath
 {
     QString preferencesDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     preferencesDir = QDir(preferencesDir).filePath(QString::fromStdString(PREFERENCES_DIRECTORY_NAME));
-    qDebug() << "PreferencesModel: Using path" << preferencesDir;
     return preferencesDir;
 }
 
@@ -50,22 +89,49 @@ PreferencesModel::getPreferencesFilePath
 {
     QString prefDir = getPreferencesDirectoryPath();
     QString prefFile = QDir(prefDir).filePath(QString::fromStdString(PREFERENCES_FILE_NAME));
-    qDebug() << "PreferencesModel: Using File" << prefFile;
     return prefFile;
+}
+
+void
+PreferencesModel::setDefaultPreferences
+()
+{
+    mJson = json::object();
+    setDefaultProjectDirectory("~");
+    setExternalTextEditorPath("/Applications/Atom.app");
 }
 
 bool
 PreferencesModel::savePreferenecsFile
 ()
 {
-   QString path = getPreferencesFilePath();
-   return false;
+    qDebug() << "PreferencesModel: Saving Preferences To" << getPreferencesFilePath();
+    if (mJson.is_null())
+    {
+        setDefaultPreferences();
+    }
+    QFile prefFile(getPreferencesFilePath());
+    prefFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    bool writeResult = prefFile.write(mJson.dump(1).c_str());
+    prefFile.close();
+    return writeResult;
 }
 
 bool
 PreferencesModel::loadPreferencesFile
 ()
 {
+    qDebug() << "PreferencesModel: Loading Preferences From" << getPreferencesFilePath();
+    QFile prefFile(getPreferencesFilePath());
+    if (prefFile.exists())
+    {
+        prefFile.open(QIODevice::ReadOnly);
+        QByteArray rawJsonData = prefFile.readAll();
+        QString jsonString(rawJsonData);
+        mJson = json::parse(jsonString.toStdString());
+        prefFile.close();
+        return true;
+    }
     return false;
 }
 
@@ -74,6 +140,7 @@ PreferencesModel::setDefaultProjectDirectory
 (QString dir)
 {
     mJson[JSON_DEFAULT_PROJECT_DIRECTORY] = dir.toStdString();
+    emit notifyDefaultProjectDirectoryChanged(dir);
 }
 
 QString
@@ -88,6 +155,7 @@ PreferencesModel::setExternalTextEditorPath
 (QString path)
 {
     mJson[JSON_EXTERNAL_TEXT_EDITOR_PATH] = path.toStdString();
+    emit notifyExternalTextEditorChanged(path);
 }
 
 QString

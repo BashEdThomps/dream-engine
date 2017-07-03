@@ -42,7 +42,6 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
     void setupModelData();
-
 private:
     ProjectDefinition *mProjectHandle;
     unique_ptr<AssetDefinitionTreeItem> mRootItem;

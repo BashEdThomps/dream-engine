@@ -33,6 +33,13 @@ public:
     ~PreferencesWidget();
 
     QPushButton* getButton_OK();
+    QPushButton *getButton_DefaultProjectDirectoryBrowse();
+    QPushButton *getButton_ExternalTextEditorBrowse();
+
+public slots:
+   void onDefaultProjectDirectoryChanged(QString dir);
+   void onExternalTextEditorChanged(QString path);
+
 private:
     Ui::PreferencesWidget *ui;
 };

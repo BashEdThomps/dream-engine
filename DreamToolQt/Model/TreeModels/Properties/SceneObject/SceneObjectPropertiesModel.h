@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "../PropertiesModel.h"
+#include "../AbstractPropertiesModel.h"
 
 namespace Dream
 {
@@ -26,7 +26,7 @@ namespace Dream
 
 using Dream::SceneObjectDefinition;
 
-class SceneObjectPropertiesModel : public PropertiesModel
+class SceneObjectPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:

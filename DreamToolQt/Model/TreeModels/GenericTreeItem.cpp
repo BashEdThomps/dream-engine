@@ -15,18 +15,17 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "GenericTreeItem.h"
 #include <QStringList>
 #include <QDebug>
 
 GenericTreeItem::GenericTreeItem
-(const QList<QVariant> &data, GenericTreeItemType type, GenericTreeItem *parent)
+(QString title, GenericTreeItem *parent)
+    : mParentItem(parent),
+      mTitle(title)
 {
-
-    //qDebug() << "GenericTreeItem: Constructing";
-    mType = type;
-    mParentItem = parent;
-    mItemData = data;
+    qDebug() << "GenericTreeItem: Constructing";
 }
 
 GenericTreeItem::~GenericTreeItem
@@ -61,14 +60,20 @@ int
 GenericTreeItem::columnCount
 () const
 {
-    return mItemData.count();
+    return 1;
 }
 
 QVariant
 GenericTreeItem::data
 (int column) const
 {
-    return mItemData.value(column);
+    switch (column)
+    {
+        case 0:
+            return QVariant(mTitle);
+    }
+
+    return QVariant();
 }
 
 GenericTreeItem*
@@ -86,11 +91,4 @@ GenericTreeItem::row
         return mParentItem->mChildItems.indexOf(const_cast<GenericTreeItem*>(this));
 
     return 0;
-}
-
-GenericTreeItemType
-GenericTreeItem::getItemType
-()
-{
-   return mType;
 }

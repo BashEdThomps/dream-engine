@@ -24,10 +24,9 @@ AssetDefinitionPropertiesItem::AssetDefinitionPropertiesItem
     QString title,
     AssetDefinition* mAssetDefinitionHandle,
     AssetDefinitionProperty property,
-    QItemDelegate* delegate,
     AbstractPropertiesItem *parent
 )
-    : AbstractPropertiesItem(title,delegate,parent),
+    : AbstractPropertiesItem(title,nullptr,parent),
       mAssetDefinitionHandle(mAssetDefinitionHandle),
       mProperty(property)
 {

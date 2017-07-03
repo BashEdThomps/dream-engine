@@ -18,21 +18,52 @@
 #include "AssetDefinitionTreeItem.h"
 #include <QStringList>
 #include <QDebug>
+#include <DreamCore.h>
 
 AssetDefinitionTreeItem::AssetDefinitionTreeItem
 (
-        const QList<QVariant> &data,
-        GenericTreeItemType type,
-        Dream::AssetDefinition* definition,
+        QString title,
+        AssetDefinitionTreeItemType type,
+        AssetDefinition* definition,
         AssetDefinitionTreeItem *parent
 )
-    : GenericTreeItem(data, type, parent)
+    : GenericTreeItem(title, parent),
+      mDefinition(definition),
+      mType(type)
 {
     qDebug() << "AssetDefinitionTreeItem: Constructing";
-    mDefinition = definition;
 }
 
-Dream::AssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()
+AssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()
 {
    return mDefinition;
+}
+
+AssetDefinitionTreeItemType
+AssetDefinitionTreeItem::getType
+()
+const
+{
+    return mType;
+}
+
+void
+AssetDefinitionTreeItem::setType
+(AssetDefinitionTreeItemType type)
+{
+    mType = type;
+}
+
+QVariant
+AssetDefinitionTreeItem::data
+(int column)
+const
+{
+    switch (getType())
+    {
+        case ASSET_DEFINITION:
+            return QVariant(QString::fromStdString(mDefinition->getName()));
+        case ASSET_TREE_NODE:
+            return QVariant(mTitle);
+    }
 }

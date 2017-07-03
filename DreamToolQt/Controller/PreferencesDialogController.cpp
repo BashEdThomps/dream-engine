@@ -19,17 +19,57 @@
 
 #include <QDebug>
 #include <QVBoxLayout>
+#include <QFileDialog>
 
 PreferencesDialogController::PreferencesDialogController
 (QObject *parent)
     : QObject(parent)
 {
     qDebug() << "PreferencesController: Constructing";
-    mPreferencesDialog.setModal(true);
-    mPreferencesDialog.setWindowTitle("Preferences");
-    mPreferencesDialog.setLayout(new QVBoxLayout());
-    mPreferencesDialog.layout()->addWidget(&mPreferencesWidget);
+    setupLayout();
+    setupDialog();
+    setupValues();
     createConnections();
+}
+
+PreferencesDialogController::~PreferencesDialogController
+()
+{
+    qDebug() << "PreferencesController: Destructing";
+}
+
+void
+PreferencesDialogController::setupLayout
+()
+{
+    mPreferencesDialogLayout.addWidget(&mPreferencesWidget);
+    mPreferencesDialogLayout.setMargin(0);
+}
+
+void
+PreferencesDialogController::setupDialog
+()
+{
+    mPreferencesDialog.setLayout(&mPreferencesDialogLayout);
+    mPreferencesDialog.setWindowTitle("Preferences");
+    mPreferencesDialog.setSizeGripEnabled(false);
+    mPreferencesDialog.setModal(true);
+    mPreferencesDialog.setFixedSize(mPreferencesWidget.size());
+}
+
+void
+PreferencesDialogController::setupValues
+()
+{
+    mPreferencesWidget.onDefaultProjectDirectoryChanged
+    (
+        mPreferencesModel.getDefaultProjectDirectory()
+    );
+
+    mPreferencesWidget.onExternalTextEditorChanged
+    (
+        mPreferencesModel.getExternalTextEditorPath()
+    );
 }
 
 void
@@ -50,19 +90,99 @@ void
 PreferencesDialogController::createConnections
 ()
 {
+    // On OK Button
     connect
-    (
-        mPreferencesWidget.getButton_OK(),SIGNAL(pressed()),
-        this,SLOT(onButton_OK())
-    );
+            (
+                mPreferencesWidget.getButton_OK(),
+                SIGNAL(pressed()),
+                this,
+                SLOT(onButton_OK())
+                );
+
+    // on Default Project Dir Browse Button
+    connect
+            (
+                mPreferencesWidget.getButton_DefaultProjectDirectoryBrowse(),
+                SIGNAL(pressed()),
+                this,
+                SLOT(onButton_DefaultProjectDirectoryBrowse())
+                );
+
+    // On External Text Editor Button
+    connect
+            (
+                mPreferencesWidget.getButton_ExternalTextEditorBrowse(),
+                SIGNAL(pressed()),
+                this,
+                SLOT(onButton_ExternalTextEditorBrowse())
+                );
+    // Set Default Project Dir Label
+    connect
+            (
+                &mPreferencesModel,
+                SIGNAL(notifyDefaultProjectDirectoryChanged(QString)),
+                &mPreferencesWidget,
+                SLOT(onDefaultProjectDirectoryChanged(QString))
+                );
+    // Set External Text Editor Label
+    connect
+            (
+                &mPreferencesModel,
+                SIGNAL(notifyExternalTextEditorChanged(QString)),
+                &mPreferencesWidget,
+                SLOT(onExternalTextEditorChanged(QString))
+
+                );
 }
 
 void
 PreferencesDialogController::onButton_OK
 ()
 {
-   mPreferencesModel.savePreferenecsFile();
-   hideDialog();
+    mPreferencesModel.savePreferenecsFile();
+    hideDialog();
+}
+
+void
+PreferencesDialogController::onButton_DefaultProjectDirectoryBrowse
+()
+{
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::Directory);
+    openDialog.setDirectory(QDir::home());
+
+    if(openDialog.exec())
+    {
+        QString directory = openDialog.selectedFiles().first();
+
+        if (directory.size() == 0)
+        {
+            return;
+        }
+
+        mPreferencesModel.setDefaultProjectDirectory(directory);
+    }
+}
+
+void
+PreferencesDialogController::onButton_ExternalTextEditorBrowse
+()
+{
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::ExistingFile);
+    openDialog.setDirectory(QDir::home());
+
+    if(openDialog.exec())
+    {
+        QString textEditorPath = openDialog.selectedFiles().first();
+
+        if (textEditorPath.size() == 0)
+        {
+            return;
+        }
+
+        mPreferencesModel.setExternalTextEditorPath(textEditorPath);
+    }
 }
 
 

@@ -39,10 +39,6 @@ ScenegraphTreeModel::~ScenegraphTreeModel
 ()
 {
     qDebug() << "ScenegraphTreeModel: Destructing";
-    if (mRootItem)
-    {
-        mRootItem.release();
-    }
 }
 
 int
@@ -109,7 +105,7 @@ ScenegraphTreeModel::index
         parentItem = static_cast<ScenegraphTreeItem*>(parent.internalPointer());
     }
 
-    GenericTreeItem *childItem = parentItem->child(row);
+    ScenegraphTreeItem *childItem = static_cast<ScenegraphTreeItem*>(parentItem->child(row));
 
     if (childItem)
     {
@@ -131,7 +127,7 @@ ScenegraphTreeModel::parent
     }
 
     ScenegraphTreeItem *childItem = static_cast<ScenegraphTreeItem*>(index.internalPointer());
-    GenericTreeItem *parentItem = childItem->parentItem();
+    ScenegraphTreeItem *parentItem = static_cast<ScenegraphTreeItem*>(childItem->parentItem());
 
     if (parentItem == mRootItem.get())
     {
@@ -171,35 +167,35 @@ ScenegraphTreeModel::setupModelData
     qDebug() << "ScenegraphTreeModel: Setting up project "
              << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
 
-    QList<QVariant> rootData;
-    rootData << QString::fromStdString(mProjectDefinitionHandle->getName())
-             << QString::fromStdString(mProjectDefinitionHandle->getUuid());
-
-    mRootItem.reset(new ScenegraphTreeItem(rootData,GenericTreeItemType::PROJECT,nullptr));
+    mRootItem.reset
+    (
+        new ScenegraphTreeItem
+        (
+            QString::fromStdString(mProjectDefinitionHandle->getName()),
+            ScenegraphTreeItemType::SCENEGRAPH_PROJECT,
+            mProjectDefinitionHandle
+        )
+    );
 
     for (SceneDefinition *sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsHandleList())
     {
         qDebug() << "ScenegraphTreeModel: Adding Scene "
                  << QString::fromStdString(sceneHandle->getNameAndUuidString());
 
-        QList<QVariant> nextSceneData;
-        nextSceneData << QString::fromStdString(sceneHandle->getName());
-
         ScenegraphTreeItem *nextScene = new ScenegraphTreeItem
         (
-            nextSceneData,GenericTreeItemType::SCENE,sceneHandle,mRootItem.get()
+            QString::fromStdString(sceneHandle->getName()),
+            ScenegraphTreeItemType::SCENEGRAPH_SCENE,
+            sceneHandle,mRootItem.get()
         );
         mRootItem->appendChild(nextScene);
 
         // Setup SceneObjects
         SceneObjectDefinition *rootSceneObject = sceneHandle->getRootSceneObjectDefinitionHandle();
-        QList<QVariant> rootSceneObjectData;
-        rootSceneObjectData << QString::fromStdString(rootSceneObject->getName());
-        ScenegraphTreeItem *rootSceneObjectItem;
-
-        rootSceneObjectItem = new ScenegraphTreeItem(
-            rootSceneObjectData,
-            GenericTreeItemType::SCENE_OBJECT,
+        ScenegraphTreeItem *rootSceneObjectItem = new ScenegraphTreeItem
+        (
+            QString::fromStdString(rootSceneObject->getName()),
+            ScenegraphTreeItemType::SCENEGRAPH_SCENE_OBJECT,
             rootSceneObject,
             nextScene
         );
@@ -217,11 +213,10 @@ ScenegraphTreeModel::appendSceneObjects
     for (SceneObjectDefinition *sceneObject : parentSceneObject->getChildDefinitionsHandleList())
     {
         // Setup Child
-        QList<QVariant> sceneObjectData;
-        sceneObjectData << QString::fromStdString(sceneObject->getName());
-        ScenegraphTreeItem *sceneObjectItem = new ScenegraphTreeItem(
-            sceneObjectData,
-            GenericTreeItemType::SCENE_OBJECT,
+        ScenegraphTreeItem *sceneObjectItem = new ScenegraphTreeItem
+        (
+            QString::fromStdString(sceneObject->getName()),
+            ScenegraphTreeItemType::SCENEGRAPH_SCENE_OBJECT,
             sceneObject,
             parentTreeNode
         );

@@ -22,15 +22,14 @@
 #include <DreamCore.h>
 
 #include "ScenePropertiesItem.h"
-#include "../DoubleSpinBoxDelegate.h"
-#include "../CheckBoxDelegate.h"
+#include "ScenePropertiesTreeDelegate.h"
 
 using Dream::Transform3D;
 using Dream::Constants;
 
 ScenePropertiesModel::ScenePropertiesModel
 (SceneDefinition *scene, QTreeView* parent)
-    : PropertiesModel(parent),
+    : AbstractPropertiesModel(new ScenePropertiesTreeDelegate(), parent),
       mSceneDefinition(scene)
 {
     qDebug() << "ScenePropertiesModel: Constructor called";
@@ -110,8 +109,7 @@ ScenePropertiesModel::createCameraProperties
                 (
                     "X",
                     mSceneDefinition,
-                    SCENE_PROPERTY_CAMERA_TRANSLATION_X,
-                    new DoubleSpinBoxDelegate()
+                    SCENE_PROPERTY_CAMERA_TRANSLATION_X
                 )
             );
 
@@ -121,8 +119,7 @@ ScenePropertiesModel::createCameraProperties
                 (
                     "Y",
                     mSceneDefinition,
-                    SCENE_PROPERTY_CAMERA_TRANSLATION_Y,
-                    new DoubleSpinBoxDelegate()
+                    SCENE_PROPERTY_CAMERA_TRANSLATION_Y
                 )
             );
 
@@ -132,8 +129,7 @@ ScenePropertiesModel::createCameraProperties
                 (
                     "Z",
                     mSceneDefinition,
-                    SCENE_PROPERTY_CAMERA_TRANSLATION_Z,
-                    new DoubleSpinBoxDelegate()
+                    SCENE_PROPERTY_CAMERA_TRANSLATION_Z
                 )
             );
         }
@@ -153,8 +149,7 @@ ScenePropertiesModel::createCameraProperties
                 (
                     "X",
                     mSceneDefinition,
-                    SCENE_PROPERTY_CAMERA_ROTATION_X,
-                    new DoubleSpinBoxDelegate()
+                    SCENE_PROPERTY_CAMERA_ROTATION_X
                 )
             );
 
@@ -164,8 +159,7 @@ ScenePropertiesModel::createCameraProperties
                 (
                     "Y",
                     mSceneDefinition,
-                    SCENE_PROPERTY_CAMERA_ROTATION_Y,
-                    new DoubleSpinBoxDelegate()
+                    SCENE_PROPERTY_CAMERA_ROTATION_Y
                 )
             );
 
@@ -175,8 +169,7 @@ ScenePropertiesModel::createCameraProperties
                 (
                     "Z",
                     mSceneDefinition,
-                    SCENE_PROPERTY_CAMERA_ROTATION_Z,
-                    new DoubleSpinBoxDelegate()
+                    SCENE_PROPERTY_CAMERA_ROTATION_Z
                 )
             );
 
@@ -188,8 +181,7 @@ ScenePropertiesModel::createCameraProperties
                 (
                     "Speed",
                     mSceneDefinition,
-                    SCENE_PROPERTY_CAMERA_SPEED,
-                    new DoubleSpinBoxDelegate()
+                    SCENE_PROPERTY_CAMERA_SPEED
                 )
             );
         }
@@ -218,8 +210,7 @@ ScenePropertiesModel::createRenderingProperties
             (
                 "Red",
                 mSceneDefinition,
-                SCENE_PROPERTY_CLEAR_RED,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_CLEAR_RED
             )
         );
 
@@ -229,8 +220,7 @@ ScenePropertiesModel::createRenderingProperties
             (
                 "Green",
                 mSceneDefinition,
-                SCENE_PROPERTY_CLEAR_GREEN,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_CLEAR_GREEN
             )
         );
 
@@ -240,8 +230,7 @@ ScenePropertiesModel::createRenderingProperties
             (
                 "Blue",
                 mSceneDefinition,
-                SCENE_PROPERTY_CLEAR_BLUE,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_CLEAR_BLUE
             )
         );
     }
@@ -258,8 +247,7 @@ ScenePropertiesModel::createRenderingProperties
             (
                 "Red",
                 mSceneDefinition,
-                SCENE_PROPERTY_AMBIENT_RED,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_AMBIENT_RED
             )
         );
 
@@ -269,8 +257,7 @@ ScenePropertiesModel::createRenderingProperties
             (
                 "Green",
                 mSceneDefinition,
-                SCENE_PROPERTY_AMBIENT_GREEN,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_AMBIENT_GREEN
             )
         );
 
@@ -280,8 +267,7 @@ ScenePropertiesModel::createRenderingProperties
             (
                 "Blue",
                 mSceneDefinition,
-                SCENE_PROPERTY_AMBIENT_BLUE,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_AMBIENT_BLUE
             )
         );
 
@@ -291,8 +277,7 @@ ScenePropertiesModel::createRenderingProperties
             (
                 "Alpha",
                 mSceneDefinition,
-                SCENE_PROPERTY_AMBIENT_ALPHA,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_AMBIENT_ALPHA
             )
         );
     }
@@ -314,8 +299,7 @@ ScenePropertiesModel::createPhysicsProperties
             (
                 "X",
                 mSceneDefinition,
-                SCENE_PROPERTY_PHYSICS_GRAVITY_X,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_PHYSICS_GRAVITY_X
             );
             gravityProperty->appendChild(gravityPropertyX);
 
@@ -323,8 +307,7 @@ ScenePropertiesModel::createPhysicsProperties
             (
                 "Y",
                 mSceneDefinition,
-                SCENE_PROPERTY_PHYSICS_GRAVITY_Y,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_PHYSICS_GRAVITY_Y
             );
             gravityProperty->appendChild(gravityPropertyY);
 
@@ -332,8 +315,7 @@ ScenePropertiesModel::createPhysicsProperties
             (
                 "Z",
                 mSceneDefinition,
-                SCENE_PROPERTY_PHYSICS_GRAVITY_Z,
-                new DoubleSpinBoxDelegate()
+                SCENE_PROPERTY_PHYSICS_GRAVITY_Z
             );
             gravityProperty->appendChild(gravityPropertyZ);
         }
@@ -343,8 +325,7 @@ ScenePropertiesModel::createPhysicsProperties
     (
         "Debug",
         mSceneDefinition,
-        SCENE_PROPERTY_PHYSICS_DEBUG,
-        new CheckBoxDelegate()
+        SCENE_PROPERTY_PHYSICS_DEBUG
     );
     physicsProperty->appendChild(debugProperty);
 }

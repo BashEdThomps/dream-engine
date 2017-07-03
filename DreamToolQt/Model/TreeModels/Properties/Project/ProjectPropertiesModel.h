@@ -17,12 +17,12 @@
  */
 #pragma once
 
-#include "../PropertiesModel.h"
+#include "../AbstractPropertiesModel.h"
 #include <DreamCore.h>
 
 using namespace Dream;
 
-class ProjectPropertiesModel : public PropertiesModel
+class ProjectPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
