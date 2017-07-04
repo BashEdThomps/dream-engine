@@ -28,10 +28,10 @@ class ProjectPropertiesModel : public AbstractPropertiesModel
 public:
     ProjectPropertiesModel(ProjectDefinition *project, QTreeView* parent = 0);
     ~ProjectPropertiesModel();
+
     void createRoot() override;
     void createProperties() override;
 
-    //bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 private:
     ProjectDefinition *mProjectDefinitionHandle;
 };

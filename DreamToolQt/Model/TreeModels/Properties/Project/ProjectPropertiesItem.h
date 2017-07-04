@@ -45,11 +45,11 @@ public:
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
-
     ~ProjectPropertiesItem();
 
     QVariant data(int column) override;
     bool setData(int column, const QVariant &value) override;
+    ProjectProperty getProperty();
 
 private:
     ProjectDefinition *mProjectDefinitionHandle;

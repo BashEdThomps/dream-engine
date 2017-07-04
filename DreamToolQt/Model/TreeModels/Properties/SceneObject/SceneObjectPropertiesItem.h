@@ -30,15 +30,22 @@ using Dream::SceneObjectDefinition;
 enum SceneObjectProperty
 {
     SCENE_OBJECT_PROPERTY_NAME,
+
+    SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE,
     SCENE_OBJECT_PROPERTY_TRANSLATION_X,
     SCENE_OBJECT_PROPERTY_TRANSLATION_Y,
     SCENE_OBJECT_PROPERTY_TRANSLATION_Z,
+
+    SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE,
     SCENE_OBJECT_PROPERTY_ROTATION_X,
     SCENE_OBJECT_PROPERTY_ROTATION_Y,
     SCENE_OBJECT_PROPERTY_ROTATION_Z,
+
+    SCENE_OBJECT_PROPERTY_SCALE_CAPTURE,
     SCENE_OBJECT_PROPERTY_SCALE_X,
     SCENE_OBJECT_PROPERTY_SCALE_Y,
     SCENE_OBJECT_PROPERTY_SCALE_Z,
+
     SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE,
     SCENE_OBJECT_PROPERTY_HAS_FOCUS,
     SCENE_OBJECT_PROPERTY_NONE
@@ -61,8 +68,8 @@ public:
     SceneObjectDefinition* getSceneObjectDefinitionHandle();
     SceneObjectProperty getProperty();
 
-    QVariant data(int column) override;
     bool setData(int column, const QVariant &value) override;
+    QVariant data(int column) override;
 
 private:
     SceneObjectDefinition *mSceneObjectDefinitionHandle;

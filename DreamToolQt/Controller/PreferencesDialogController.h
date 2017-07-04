@@ -31,6 +31,7 @@ public:
     ~PreferencesDialogController();
     void showDialog();
     void hideDialog();
+    PreferencesModel& getPreferencesModel();
 
 public slots:
     void onButton_OK();

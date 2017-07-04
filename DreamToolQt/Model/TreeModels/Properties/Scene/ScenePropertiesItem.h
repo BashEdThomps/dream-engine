@@ -32,10 +32,12 @@ enum SceneProperty
     SCENE_PROPERTY_NAME,
     SCENE_PROPERTY_NOTES,
 
+    SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE,
     SCENE_PROPERTY_CAMERA_TRANSLATION_X,
     SCENE_PROPERTY_CAMERA_TRANSLATION_Y,
     SCENE_PROPERTY_CAMERA_TRANSLATION_Z,
 
+    SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE,
     SCENE_PROPERTY_CAMERA_ROTATION_X,
     SCENE_PROPERTY_CAMERA_ROTATION_Y,
     SCENE_PROPERTY_CAMERA_ROTATION_Z,
@@ -70,13 +72,12 @@ public:
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
-
     ~ScenePropertiesItem();
 
-    QVariant data(int column) override;
     bool setData(int column, const QVariant &value) override;
-
+    QVariant data(int column) override;
     SceneProperty getProperty();
+
 private:
     SceneDefinition* mSceneDefinitionHandle;
     SceneProperty mProperty;

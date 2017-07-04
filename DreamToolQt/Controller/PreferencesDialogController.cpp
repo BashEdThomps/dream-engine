@@ -86,6 +86,13 @@ PreferencesDialogController::hideDialog
     mPreferencesDialog.hide();
 }
 
+PreferencesModel&
+PreferencesDialogController::getPreferencesModel
+()
+{
+    return mPreferencesModel;
+}
+
 void
 PreferencesDialogController::createConnections
 ()

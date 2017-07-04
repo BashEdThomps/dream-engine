@@ -59,6 +59,10 @@ private:
     void createFormatProperty();
     void createTypeProperty();
     void createNameProperty();
+    void createShaderEditProperties();
+    void createShaderEditVertexProperty();
+    void createShaderEditFragmentProperty();
+    void createScriptFileProperty();
 
 public slots:
     void onModelFileBrowseButtonClicked(AssetDefinition*);

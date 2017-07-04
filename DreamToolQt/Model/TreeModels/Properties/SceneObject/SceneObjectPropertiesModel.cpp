@@ -30,7 +30,7 @@ using Dream::SceneObjectDefinition;
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
 (SceneObjectDefinition *sceneObject, QTreeView *parent)
-    : AbstractPropertiesModel(new SceneObjectPropertiesTreeDelegate(), parent)
+    : AbstractPropertiesModel(new SceneObjectPropertiesTreeDelegate(this,parent), parent)
 {
     qDebug() << "SceneObjectPropertiesModel: Constructor called";
     mSceneObjectDefinitionHandle = sceneObject;
@@ -91,12 +91,11 @@ SceneObjectPropertiesModel::createTranslationProperty
 ()
 {
     qDebug() << "SceneObjectPropertiesModel: createTranslationProperty";
-    Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
-
     SceneObjectPropertiesItem *translationItem = new SceneObjectPropertiesItem
     (
         "Translation",
-        mSceneObjectDefinitionHandle
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE
     );
     mRootItem->appendChild(translationItem);
 
@@ -136,10 +135,13 @@ SceneObjectPropertiesModel::createRotationProperty
 ()
 {
     qDebug() << "SceneObjectPropertiesModel: createRotationProperty";
-    SceneObjectPropertiesItem *rotationItem = new SceneObjectPropertiesItem("Rotation",mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *rotationItem = new SceneObjectPropertiesItem
+    (
+        "Rotation",
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE
+    );
     mRootItem->appendChild(rotationItem);
-
-    Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
 
     rotationItem->appendChild
     (
@@ -178,10 +180,13 @@ SceneObjectPropertiesModel::createScaleProperty
 {
 
     qDebug() << "SceneObjectPropertiesModel: createScaleProperty";
-    SceneObjectPropertiesItem *scaleItem = new SceneObjectPropertiesItem("Scale",mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *scaleItem = new SceneObjectPropertiesItem
+    (
+        "Scale",
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_SCALE_CAPTURE
+    );
     mRootItem->appendChild(scaleItem);
-
-    Transform3D transform = mSceneObjectDefinitionHandle->getTransform();
 
     scaleItem->appendChild
     (

@@ -28,7 +28,7 @@ using Dream::Constants;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
 (AssetDefinition *definition, QTreeView* parent)
-    : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(this), parent),
+    : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(this, parent), parent),
       mAssetDefinitionHandle(definition)
 {
     qDebug() <<  "AssetDefinitionPropertiesModel: Constructing";
@@ -60,13 +60,49 @@ void
 AssetDefinitionPropertiesModel::createNameProperty
 ()
 {
-    AssetDefinitionPropertiesItem *nameProperty = new AssetDefinitionPropertiesItem
+    mRootItem->appendChild
     (
-        "Name",
-        mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_NAME
+        new AssetDefinitionPropertiesItem
+        (
+            "Name",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_NAME
+        )
     );
-    mRootItem->appendChild(nameProperty);
+}
+
+void
+AssetDefinitionPropertiesModel::createShaderEditProperties
+()
+{
+    createShaderEditVertexProperty();
+    createShaderEditFragmentProperty();
+}
+
+void AssetDefinitionPropertiesModel::createShaderEditVertexProperty()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Vertex",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE
+        )
+    );
+}
+
+void AssetDefinitionPropertiesModel::createShaderEditFragmentProperty()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Fragment",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE
+        )
+    );
 }
 
 void
@@ -152,10 +188,12 @@ AssetDefinitionPropertiesModel::createProperties
     else if (mAssetDefinitionHandle->isTypeScript())
     {
         createScriptTemplateProperty();
+        createScriptFileProperty();
     }
     else if (mAssetDefinitionHandle->isTypeShader())
     {
         createShaderTemplateProperty();
+        createShaderEditProperties();
     }
     else if (mAssetDefinitionHandle->isTypeSprite())
     {
@@ -304,4 +342,19 @@ AssetDefinitionPropertiesModel::createSpriteFileProperty
 ()
 {
 
+}
+
+void
+AssetDefinitionPropertiesModel::createScriptFileProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Script File",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_SCRIPT_FILE
+        )
+    );
 }

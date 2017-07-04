@@ -23,11 +23,18 @@
 
 ProjectPropertiesModel::ProjectPropertiesModel
 (ProjectDefinition *project,QTreeView* parent)
-    : AbstractPropertiesModel(new ProjectPropertiesTreeDelegate(), parent)
+    : AbstractPropertiesModel(new ProjectPropertiesTreeDelegate(this,parent), parent),
+       mProjectDefinitionHandle(project)
 {
-    mProjectDefinitionHandle = project;
+    qDebug() << "ProjectPropertiesModel: Contructing";
     createRoot();
     createProperties();
+}
+
+ProjectPropertiesModel::~ProjectPropertiesModel
+()
+{
+    qDebug() << "ProjectPropertiesModel: Destructing";
 }
 
 void
@@ -48,10 +55,6 @@ ProjectPropertiesModel::createRoot
 void
 ProjectPropertiesModel::createProperties
 ()
-{}
-
-ProjectPropertiesModel::~ProjectPropertiesModel
-()
 {
-    qDebug() << "ProjectPropertiesModel: Destructing";
+    // TODO
 }

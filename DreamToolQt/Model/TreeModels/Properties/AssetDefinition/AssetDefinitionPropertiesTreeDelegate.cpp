@@ -33,8 +33,9 @@ using Dream::Constants;
 using std::vector;
 
 AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
-(AssetDefinitionPropertiesModel* parent)
-    : QItemDelegate (parent)
+(AssetDefinitionPropertiesModel* model, QObject* parent)
+    : QItemDelegate (parent),
+      mModelHandle(model)
 {
     qDebug() << "AssetDefinitionTreeDelegate: Constructing";
 }
@@ -94,7 +95,7 @@ AssetDefinitionPropertiesTreeDelegate::createModelFileButton
 const
 {
     QToolButton *editor = new QToolButton(parent);
-    editor->setText("Browse...");
+    editor->setText("Model Files...");
     connect
     (
         editor,SIGNAL(clicked(bool)),
@@ -109,7 +110,7 @@ AssetDefinitionPropertiesTreeDelegate::createModelAdditionalFilesButton
 const
 {
     QToolButton *editor = new QToolButton(parent);
-    editor->setText("Browse...");
+    editor->setText("Additional Files...");
     connect
     (
         editor,SIGNAL(clicked(bool)),
@@ -150,6 +151,38 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createOpenVertexShaderInEditorButton
+(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+const
+{
+   QToolButton *button = new QToolButton(parent);
+   button->setText("Edit Vertex Shader");
+   return button;
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createOpenFragmentShaderInEditorButton
+(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+const
+{
+   QToolButton *button = new QToolButton(parent);
+   button->setText("Edit Fragment Shader");
+   return button;
+
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createOpenScriptInEditorButton
+(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+const
+{
+   QToolButton *button = new QToolButton(parent);
+   button->setText("Edit Script");
+   return button;
+
+}
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index)
 const
@@ -175,11 +208,11 @@ const
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
             return createModelAdditionalFilesButton(adItem,parent);
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-            break;
+            return createOpenScriptInEditorButton(adItem,parent);
         case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
-            break;
+            return createOpenVertexShaderInEditorButton(adItem,parent);
         case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
-            break;
+            return createOpenFragmentShaderInEditorButton(adItem,parent);
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
             break;
         case ASSET_DEFINITION_PROPERTY_NONE:
@@ -286,7 +319,6 @@ AssetDefinitionPropertiesTreeDelegate::onButton_ModelFileButtonClicked
 {
     qDebug() << "ModelFileBrowseDelegate: Browse was clicked"
              << checked;
-    //emit notifyModelFileBrowseButtonClicked(mAssetDefinitionHandle);
 }
 
 void
@@ -295,5 +327,4 @@ AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFilesClicked
 {
     qDebug() << "BrowseForAdditionalFilesDelegate: Browse was clicked"
              << checked;
-    //emit notifyBrowseButtonClicked(mAssetDefinitionHandle);
 }

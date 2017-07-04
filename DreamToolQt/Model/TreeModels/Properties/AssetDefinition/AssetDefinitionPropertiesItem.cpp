@@ -59,7 +59,7 @@ AssetDefinitionPropertiesItem::setData
 {
     if (column == 0)
     {
-        return false;
+        return true;
     }
 
     switch(getProperty())
@@ -73,6 +73,7 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_FORMAT:
             mAssetDefinitionHandle->setFormat(value.toString().toStdString());
             break;
+
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
@@ -85,7 +86,6 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_NONE:
             break;
     }
-
     return true;
 }
 
@@ -118,4 +118,5 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_NONE:
             return QVariant();
     }
+    return QVariant();
 }

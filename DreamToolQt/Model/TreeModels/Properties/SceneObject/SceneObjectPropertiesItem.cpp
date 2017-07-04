@@ -65,6 +65,12 @@ SceneObjectPropertiesItem::setData
 
     switch(getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
+            break;
         case SCENE_OBJECT_PROPERTY_NAME:
             mSceneObjectDefinitionHandle->setName(value.toString().toStdString());
             break;
@@ -119,6 +125,12 @@ SceneObjectPropertiesItem::data
 
     switch(getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
+            break;
+        case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
+            break;
+        case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
+            break;
         case SCENE_OBJECT_PROPERTY_NAME:
             return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getName()));
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:

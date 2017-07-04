@@ -607,7 +607,7 @@ MainController::onAction_File_New ()
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
-    openDialog.setDirectory(QDir::home());
+    openDialog.setDirectory(mPreferencesDialogController.getPreferencesModel().getDefaultProjectDirectory());
 
     if(openDialog.exec())
     {
@@ -636,7 +636,7 @@ MainController::onAction_File_Open
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
-    openDialog.setDirectory(QDir::home());
+    openDialog.setDirectory(mPreferencesDialogController.getPreferencesModel().getDefaultProjectDirectory());
     openDialog.setAcceptMode(QFileDialog::AcceptOpen);
 
     if(openDialog.exec())

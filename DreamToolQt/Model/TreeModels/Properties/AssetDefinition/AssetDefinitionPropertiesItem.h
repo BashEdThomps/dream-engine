@@ -54,15 +54,13 @@ public:
         AssetDefinitionProperty property = ASSET_DEFINITION_PROPERTY_NONE,
         AbstractPropertiesItem *parent = nullptr
     );
-
     ~AssetDefinitionPropertiesItem();
-
-    AssetDefinitionProperty getProperty();
-
-    AssetDefinition* getAssetDefinitionHandle();
 
     bool setData(int column,const QVariant &value) override;
     QVariant data(int column) override;
+    AssetDefinitionProperty getProperty();
+    AssetDefinition* getAssetDefinitionHandle();
+
 private:
     AssetDefinition* mAssetDefinitionHandle;
     AssetDefinitionProperty mProperty;

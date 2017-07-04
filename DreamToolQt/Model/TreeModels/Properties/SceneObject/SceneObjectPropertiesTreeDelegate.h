@@ -25,7 +25,7 @@ class SceneObjectPropertiesModel;
 class SceneObjectPropertiesTreeDelegate : public QItemDelegate
 {
 public:
-    SceneObjectPropertiesTreeDelegate(SceneObjectPropertiesModel* parent = nullptr);
+    SceneObjectPropertiesTreeDelegate(SceneObjectPropertiesModel* model, QObject* parent = nullptr);
     ~SceneObjectPropertiesTreeDelegate();
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -33,4 +33,11 @@ public:
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
+protected:
+    SceneObjectPropertiesModel *mModelHandle;
+
+    QWidget* createCaptureTranslationButton(QWidget* parent) const;
+    QWidget* createCaptureRotationButton(QWidget* parent) const;
+    QWidget* createCaptureScaleButton(QWidget* parent) const;
+    QWidget* createTransformTypeComboBox(QWidget* parent) const;
 };

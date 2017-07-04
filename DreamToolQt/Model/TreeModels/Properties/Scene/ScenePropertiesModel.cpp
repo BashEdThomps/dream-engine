@@ -29,7 +29,7 @@ using Dream::Constants;
 
 ScenePropertiesModel::ScenePropertiesModel
 (SceneDefinition *scene, QTreeView* parent)
-    : AbstractPropertiesModel(new ScenePropertiesTreeDelegate(), parent),
+    : AbstractPropertiesModel(new ScenePropertiesTreeDelegate(this,parent), parent),
       mSceneDefinition(scene)
 {
     qDebug() << "ScenePropertiesModel: Constructor called";
@@ -96,10 +96,13 @@ ScenePropertiesModel::createCameraProperties
     ScenePropertiesItem *cameraProperty = new ScenePropertiesItem("Camera",mSceneDefinition);
     mRootItem->appendChild(cameraProperty);
     {
-        Transform3D defaultTransform = mSceneDefinition->getCameraTransform();
-
         qDebug() << "ScenePropertiesModel: createCameraProperties translation";
-        ScenePropertiesItem* cameraTranslationProperty = new ScenePropertiesItem("Translation", mSceneDefinition);
+        ScenePropertiesItem* cameraTranslationProperty = new ScenePropertiesItem
+        (
+            "Translation",
+            mSceneDefinition,
+            SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE
+        );
 
         cameraProperty->appendChild(cameraTranslationProperty);
         {
@@ -138,7 +141,9 @@ ScenePropertiesModel::createCameraProperties
         ScenePropertiesItem *cameraRotationProperty = new ScenePropertiesItem
         (
             "Rotation",
-            mSceneDefinition
+            mSceneDefinition,
+            SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE
+
         );
 
         cameraProperty->appendChild(cameraRotationProperty);

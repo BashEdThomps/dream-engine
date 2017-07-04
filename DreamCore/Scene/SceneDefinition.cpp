@@ -166,19 +166,10 @@ namespace Dream
 
         if (mJson[Constants::SCENE_GRAVITY].is_null())
         {
-            if (Constants::DEBUG)
-            {
-                cout << "SceneDefinition: Scene gravity is null, setting default" << endl;
-            }
             mJson[Constants::SCENE_GRAVITY][Constants::X] = 0.0f;
             mJson[Constants::SCENE_GRAVITY][Constants::Y] = 0.0f;
             mJson[Constants::SCENE_GRAVITY][Constants::Z] = 0.0f;
 
-        }
-
-        if (Constants::DEBUG)
-        {
-            cout <<"SceneDefinition: Gravity is " << mJson[Constants::SCENE_GRAVITY] << endl;
         }
 
         gravity.push_back(mJson[Constants::SCENE_GRAVITY][Constants::X]);
@@ -231,10 +222,6 @@ namespace Dream
 
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
-            if (Constants::DEBUG)
-            {
-                cout << "SceneDefinition: Could not find clear colour in json, setting default" << endl;
-            }
             mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = 0.0f;
             mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = 0.0f;
             mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = 0.0f;
@@ -244,12 +231,6 @@ namespace Dream
         colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]);
         colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]);
         colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]);
-
-        if (Constants::DEBUG)
-        {
-            cout << "SceneDefinition: Using clear colour "
-                 << String::floatVectorToString(colour) << endl;
-        }
 
         return colour;
     }
@@ -299,10 +280,6 @@ namespace Dream
         if (mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR].is_null() ||
             mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED].is_null())
         {
-            if (Constants::DEBUG)
-            {
-                cout << "SceneDefinition: Could not find ambient light colour, setting default" << endl;;
-            }
             mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR] = {};
             mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED] = 1.0f;
             mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN] = 1.0f;
@@ -314,12 +291,6 @@ namespace Dream
         colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN]);
         colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]);
         colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA]);
-
-        if (Constants::DEBUG)
-        {
-            cout << "SceneDefinition: Using ambient colour "
-                 << String::floatVectorToString(colour) << endl;
-        }
 
         return colour;
     }

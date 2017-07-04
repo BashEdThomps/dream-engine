@@ -28,7 +28,7 @@ class AssetDefinitionPropertiesTreeDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    AssetDefinitionPropertiesTreeDelegate(AssetDefinitionPropertiesModel* parent = nullptr);
+    AssetDefinitionPropertiesTreeDelegate(AssetDefinitionPropertiesModel* model, QObject *parent = nullptr);
     ~AssetDefinitionPropertiesTreeDelegate();
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -39,10 +39,15 @@ public slots:
     void onButton_ModelFileButtonClicked(bool checked);
     void onButton_ModelAdditionalFilesClicked(bool checked);
 protected:
+    AssetDefinitionPropertiesModel *mModelHandle;
+
     QWidget *createFormatComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const;
     QWidget *createTypeComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const ;
     QWidget *createModelFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createModelAdditionalFilesButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createScriptTemplateComboBox(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createShaderTemplateComboBox(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
+    QWidget *createOpenVertexShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget *createOpenFragmentShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget *createOpenScriptInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
 };

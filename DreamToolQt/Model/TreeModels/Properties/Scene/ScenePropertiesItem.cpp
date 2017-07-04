@@ -49,7 +49,9 @@ ScenePropertiesItem::getProperty
     return mProperty;
 }
 
-QVariant ScenePropertiesItem::data(int column)
+QVariant
+ScenePropertiesItem::data
+(int column)
 {
     if (column == 0)
     {
@@ -106,7 +108,9 @@ QVariant ScenePropertiesItem::data(int column)
     return QVariant();
 }
 
-bool ScenePropertiesItem::setData(int column, const QVariant &value)
+bool
+ScenePropertiesItem::setData
+(int column, const QVariant &value)
 {
     if (column == 0)
     {
@@ -178,7 +182,6 @@ bool ScenePropertiesItem::setData(int column, const QVariant &value)
                 break;
             case SCENE_PROPERTY_NONE:
                 break;
-
         }
 
         return true;

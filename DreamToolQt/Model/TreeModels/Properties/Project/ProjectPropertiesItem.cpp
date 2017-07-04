@@ -17,6 +17,9 @@
  */
 #include "ProjectPropertiesItem.h"
 
+#include <DreamCore.h>
+#include <QDebug>
+
 ProjectPropertiesItem::ProjectPropertiesItem
 (
     QString title,
@@ -29,21 +32,65 @@ ProjectPropertiesItem::ProjectPropertiesItem
       mProjectDefinitionHandle(pdHandle),
       mProperty(property)
 {
-
+    qDebug() << "ProjectPropertiesItem: Constructing";
 }
 
 ProjectPropertiesItem::~ProjectPropertiesItem
 ()
 {
-
+    qDebug() << "ProjectPropertiesItem: Destructing";
 }
 
-QVariant ProjectPropertiesItem::data(int column)
+QVariant
+ProjectPropertiesItem::data
+(int column)
 {
+    if (column == 0)
+    {
+        return QVariant(mTitle);
+    }
+
+    switch(getProperty())
+    {
+        case PROJECT_PROPERTY_NAME:
+            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getName()));
+        case PROJECT_PROPERTY_AUTHOR:
+            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getAuthor()));
+        case PROJECT_PROPERTY_NONE:
+            break;
+    }
+
     return QVariant();
 }
 
-bool ProjectPropertiesItem::setData(int column, const QVariant &value)
+bool
+ProjectPropertiesItem::setData
+(int column, const QVariant &value)
 {
-    return false;
+    if (column == 0)
+    {
+        return true;
+    }
+
+    switch (getProperty())
+    {
+        case PROJECT_PROPERTY_NAME:
+            mProjectDefinitionHandle->setName(value.toString().toStdString());
+            break;
+        case PROJECT_PROPERTY_AUTHOR:
+            mProjectDefinitionHandle->setAuthor(value.toString().toStdString());
+            break;
+        case PROJECT_PROPERTY_NONE:
+            break;
+
+    }
+
+    return true;
+}
+
+ProjectProperty
+ProjectPropertiesItem::getProperty
+()
+{
+    return mProperty;
 }
