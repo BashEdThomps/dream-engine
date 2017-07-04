@@ -58,3 +58,10 @@ ProjectPropertiesModel::createProperties
 {
     // TODO
 }
+
+void
+ProjectPropertiesModel::createDelegateConnections
+()
+{
+    // TODO
+}

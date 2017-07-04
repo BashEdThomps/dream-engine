@@ -101,14 +101,20 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
 
             connect
             (
-                mPropertiesModel.get(), SIGNAL(notifyModelFileBrowseButtonClicked(AssetDefinition*)),
-                this, SLOT(onPropertyEvent_ModelFileBrowseButtonClicked(AssetDefinition*))
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_ModelFile(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_ModelFile(AssetDefinition*))
             );
+
             connect
             (
-                mPropertiesModel.get(), SIGNAL(notifyModelAdditionalFilesButtonClicked(AssetDefinition*)),
-                this, SLOT(onPropertyEvent_ModelAdditionalFilesButtonClicked(AssetDefinition*))
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_ModelAdditionalFiles(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(AssetDefinition*))
             );
+
             break;
 
         case AssetDefinitionTreeItemType::ASSET_TREE_NODE:
@@ -312,7 +318,6 @@ MainController::connectSceneMenu
 
     );
 }
-
 
 void
 MainController::connectAssetMenu
@@ -794,6 +799,7 @@ MainController::onAction_Asset_NewDefinition_Animation
         onUI_AssetDefinitionsUpdated();
     }
 }
+
 void
 MainController::onAction_Asset_NewDefinition_Audio
 ()
@@ -883,7 +889,7 @@ MainController::onAction_Asset_NewDefinition_Sprite
 }
 
 void
-MainController::onPropertyEvent_ModelFileBrowseButtonClicked
+MainController::onAssetDefinitionProperty_ModelFile
 (AssetDefinition* adHandle)
 {
     QFileDialog openDialog;
@@ -933,7 +939,7 @@ MainController::onPropertyEvent_ModelFileBrowseButtonClicked
 }
 
 void
-MainController::onPropertyEvent_ModelAdditionalFilesButtonClicked
+MainController::onAssetDefinitionProperty_ModelAdditionalFiles
 (AssetDefinition* adHandle)
 {
     QFileDialog openDialog;

@@ -37,6 +37,9 @@ public:
     void createRoot() override;
     void createProperties() override;
 
+    AssetDefinition* getAssetDefinitionHandle();
+    void createDelegateConnections() override;
+
 private:
     AssetDefinition* mAssetDefinitionHandle;
 
@@ -65,11 +68,11 @@ private:
     void createScriptFileProperty();
 
 public slots:
-    void onModelFileBrowseButtonClicked(AssetDefinition*);
-    void onModelAdditionalFilesButtonClicked(AssetDefinition*);
+    void onButton_ModelFile();
+    void onButton_ModelAdditionalFiles();
 
 signals:
-    void notifyModelFileBrowseButtonClicked(AssetDefinition*);
-    void notifyModelAdditionalFilesButtonClicked(AssetDefinition*);
+    void notifyButton_ModelFile(AssetDefinition*);
+    void notifyButton_ModelAdditionalFiles(AssetDefinition*);
 };
 

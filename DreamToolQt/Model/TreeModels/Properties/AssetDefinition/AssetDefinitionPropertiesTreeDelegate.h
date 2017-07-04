@@ -35,9 +35,15 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
 public slots:
-    void onButton_ModelFileButtonClicked(bool checked);
-    void onButton_ModelAdditionalFilesClicked(bool checked);
+    void onButton_ModelFile(bool);
+    void onButton_ModelAdditionalFiles(bool);
+
+signals:
+    void notifyButton_ModelFile();
+    void notifyButton_ModelAdditionalFiles();
+
 protected:
     AssetDefinitionPropertiesModel *mModelHandle;
 

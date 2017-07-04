@@ -65,6 +65,10 @@ SceneObjectPropertiesItem::setData
 
     switch(getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_CHILD:
+            break;
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
+            break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
@@ -125,6 +129,10 @@ SceneObjectPropertiesItem::data
 
     switch(getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_CHILD:
+            break;
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
+            break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:

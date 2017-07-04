@@ -34,6 +34,7 @@ AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
     qDebug() <<  "AssetDefinitionPropertiesModel: Constructing";
     createRoot();
     createProperties();
+    createDelegateConnections();
 }
 
 AssetDefinitionPropertiesModel::~AssetDefinitionPropertiesModel
@@ -106,17 +107,17 @@ void AssetDefinitionPropertiesModel::createShaderEditFragmentProperty()
 }
 
 void
-AssetDefinitionPropertiesModel::onModelFileBrowseButtonClicked
-(AssetDefinition *adHandle)
+AssetDefinitionPropertiesModel::onButton_ModelFile
+()
 {
-    emit notifyModelFileBrowseButtonClicked(adHandle);
+    emit notifyButton_ModelFile(mAssetDefinitionHandle);
 }
 
 void
-AssetDefinitionPropertiesModel::onModelAdditionalFilesButtonClicked
-(AssetDefinition *adHandle)
+AssetDefinitionPropertiesModel::onButton_ModelAdditionalFiles
+()
 {
-    emit notifyModelAdditionalFilesButtonClicked(adHandle);
+    emit notifyButton_ModelAdditionalFiles(mAssetDefinitionHandle);
 }
 
 void
@@ -200,6 +201,13 @@ AssetDefinitionPropertiesModel::createProperties
         createSpriteTileSizeProperty();
         createSpriteFileProperty();
     }
+}
+
+AssetDefinition*
+AssetDefinitionPropertiesModel::getAssetDefinitionHandle
+()
+{
+   return mAssetDefinitionHandle;
 }
 
 void
@@ -356,5 +364,31 @@ AssetDefinitionPropertiesModel::createScriptFileProperty
             mAssetDefinitionHandle,
             ASSET_DEFINITION_PROPERTY_SCRIPT_FILE
         )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createDelegateConnections
+()
+{
+    AssetDefinitionPropertiesTreeDelegate* delegate;
+    delegate = static_cast<AssetDefinitionPropertiesTreeDelegate*>(mDelegateHandle);
+
+    // Model
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_ModelFile()),
+        this,
+        SLOT(onButton_ModelFile())
+    );
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_ModelAdditionalFiles()),
+        this,
+        SLOT(onButton_ModelAdditionalFiles())
     );
 }

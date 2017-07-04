@@ -71,6 +71,13 @@ ScenePropertiesModel::createProperties
 }
 
 void
+ScenePropertiesModel::createDelegateConnections
+()
+{
+
+}
+
+void
 ScenePropertiesModel::createNameProperties
 ()
 {

@@ -31,6 +31,7 @@ public:
 
     void createRoot() override;
     void createProperties() override;
+    void createDelegateConnections() override;
 
 private:
     ProjectDefinition *mProjectDefinitionHandle;

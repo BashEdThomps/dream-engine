@@ -40,4 +40,6 @@ protected:
     QWidget* createCaptureRotationButton(QWidget* parent) const;
     QWidget* createCaptureScaleButton(QWidget* parent) const;
     QWidget* createTransformTypeComboBox(QWidget* parent) const;
+    QWidget* createRemoveAssetDefinitionButton(QWidget* parent) const;
+    QWidget* createRemoveChildButton(QWidget* parent) const;
 };

@@ -121,8 +121,8 @@ public slots:
     void onAction_Asset_NewDefinition_Sprite();
     void onAction_Debug_DumpProjectDefinitionJson(bool toggled);
 
-    void onPropertyEvent_ModelFileBrowseButtonClicked(AssetDefinition* adHandle);
-    void onPropertyEvent_ModelAdditionalFilesButtonClicked(AssetDefinition *adHandle);
+    void onAssetDefinitionProperty_ModelFile(AssetDefinition* adHandle);
+    void onAssetDefinitionProperty_ModelAdditionalFiles(AssetDefinition* adHandle);
 
 private: // Methods
     // Setup

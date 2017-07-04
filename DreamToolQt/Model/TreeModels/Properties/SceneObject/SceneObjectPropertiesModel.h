@@ -35,6 +35,7 @@ public:
 
     void createRoot() override;
     void createProperties() override;
+    void createDelegateConnections() override;
 
     void createNameProperty();
     void createTranslationProperty();

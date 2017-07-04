@@ -45,10 +45,13 @@ public:
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+
     virtual void createRoot() = 0;
     virtual void createProperties() = 0;
+    virtual void createDelegateConnections() = 0;
 
 protected:
     unique_ptr<AbstractPropertiesItem> mRootItem;
     QTreeView *mTreeViewHandle;
+    QItemDelegate *mDelegateHandle;
 };

@@ -99,7 +99,7 @@ const
     connect
     (
         editor,SIGNAL(clicked(bool)),
-        this, SLOT(onButton_ModelFileClicked(bool))
+        this, SLOT(onButton_ModelFile(bool))
     );
     return editor;
 }
@@ -114,7 +114,7 @@ const
     connect
     (
         editor,SIGNAL(clicked(bool)),
-        this, SLOT(onButton_ModelAdditionalFilesClicked(bool))
+        this, SLOT(onButton_ModelAdditionalFiles(bool))
     );
     return editor;
 }
@@ -314,17 +314,19 @@ const
 }
 
 void
-AssetDefinitionPropertiesTreeDelegate::onButton_ModelFileButtonClicked
-(bool checked)
+AssetDefinitionPropertiesTreeDelegate::onButton_ModelFile
+(bool clicked)
 {
-    qDebug() << "ModelFileBrowseDelegate: Browse was clicked"
-             << checked;
+    qDebug() << "ModelFileBrowseDelegate: Browse was clicked";
+    emit notifyButton_ModelFile();
 }
 
 void
-AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFilesClicked
-(bool checked)
+AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFiles
+(bool clicked)
 {
-    qDebug() << "BrowseForAdditionalFilesDelegate: Browse was clicked"
-             << checked;
+    qDebug() << "BrowseForAdditionalFilesDelegate: Browse was clicked";
+    emit notifyButton_ModelAdditionalFiles();
 }
+
+

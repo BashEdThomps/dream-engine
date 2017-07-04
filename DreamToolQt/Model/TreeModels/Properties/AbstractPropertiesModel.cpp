@@ -22,7 +22,8 @@ using std::pair;
 
 AbstractPropertiesModel::AbstractPropertiesModel(QItemDelegate* delegate, QTreeView* parent)
     : QAbstractItemModel (parent),
-      mTreeViewHandle(parent)
+      mTreeViewHandle(parent),
+      mDelegateHandle(delegate)
 {
     qDebug() << "PropertiesModel: Constructing";
     mTreeViewHandle->setItemDelegateForColumn(1,delegate);

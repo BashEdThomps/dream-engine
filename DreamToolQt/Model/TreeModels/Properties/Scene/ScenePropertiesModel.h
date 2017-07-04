@@ -33,6 +33,7 @@ public:
 
     void createRoot() override;
     void createProperties() override;
+    void createDelegateConnections() override;
 
     void createNameProperties();
     void createNotesProperties();

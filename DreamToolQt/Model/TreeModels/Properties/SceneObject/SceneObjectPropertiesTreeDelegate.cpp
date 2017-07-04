@@ -47,6 +47,26 @@ SceneObjectPropertiesTreeDelegate::~SceneObjectPropertiesTreeDelegate
 }
 
 QWidget*
+SceneObjectPropertiesTreeDelegate::createRemoveAssetDefinitionButton
+(QWidget *parent)
+const
+{
+   QToolButton* button = new QToolButton(parent);
+   button->setText("Remove Asset");
+   return button;
+}
+
+QWidget*
+SceneObjectPropertiesTreeDelegate::createRemoveChildButton
+(QWidget *parent)
+const
+{
+   QToolButton* button = new QToolButton(parent);
+   button->setText("Remove Child");
+   return button;
+}
+
+QWidget*
 SceneObjectPropertiesTreeDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -54,6 +74,10 @@ SceneObjectPropertiesTreeDelegate::createEditor
 
     switch (sopItem->getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_CHILD:
+            return createRemoveChildButton(parent);
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
+            return createRemoveAssetDefinitionButton(parent);
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             return createCaptureTranslationButton(parent);
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
@@ -93,6 +117,10 @@ SceneObjectPropertiesTreeDelegate::setEditorData
     SceneObjectPropertiesItem* sopItem = static_cast<SceneObjectPropertiesItem*>(index.internalPointer());
     switch (sopItem->getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_CHILD:
+            break;
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
+            break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
@@ -131,6 +159,10 @@ void SceneObjectPropertiesTreeDelegate::setModelData
     SceneObjectPropertiesItem* sopItem = static_cast<SceneObjectPropertiesItem*>(index.internalPointer());
     switch (sopItem->getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_CHILD:
+            break;
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
+            break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:

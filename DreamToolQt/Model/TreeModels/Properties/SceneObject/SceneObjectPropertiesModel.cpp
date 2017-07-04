@@ -69,6 +69,13 @@ SceneObjectPropertiesModel::createProperties
     createChildrenProperty();
 }
 
+void
+SceneObjectPropertiesModel::createDelegateConnections
+()
+{
+
+}
+
 
 void
 SceneObjectPropertiesModel::createNameProperty
@@ -273,7 +280,8 @@ SceneObjectPropertiesModel::createAssetInstancesProperty
                 (
                     definition->getName()
                 ),
-                mSceneObjectDefinitionHandle
+                mSceneObjectDefinitionHandle,
+                SCENE_OBJECT_PROPERTY_ASSET_DEFINITION
             )
         );
     }
@@ -294,7 +302,8 @@ SceneObjectPropertiesModel::createChildrenProperty
             new SceneObjectPropertiesItem
             (
                 QString::fromStdString(child->getName()),
-                mSceneObjectDefinitionHandle
+                mSceneObjectDefinitionHandle,
+                SCENE_OBJECT_PROPERTY_CHILD
             )
         );
     }
