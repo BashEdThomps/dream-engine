@@ -70,7 +70,8 @@ SOURCES += \
     Model/TreeModels/Properties/Scene/ScenePropertiesTreeDelegate.cpp \
     Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesTreeDelegate.cpp \
     Model/TreeModels/Properties/Project/ProjectPropertiesTreeDelegate.cpp \
-    Model/TreeModels/Properties/AbstractPropertiesModel.cpp
+    Model/TreeModels/Properties/AbstractPropertiesModel.cpp \
+    Model/MacOSOpenModel.cpp
 
 
 
@@ -118,7 +119,8 @@ HEADERS  += \
     Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesTreeDelegate.h \
     Model/TreeModels/Properties/Scene/ScenePropertiesTreeDelegate.h \
     Model/TreeModels/Properties/SceneObject/SceneObjectPropertiesTreeDelegate.h \
-    Model/TreeModels/Properties/Project/ProjectPropertiesTreeDelegate.h
+    Model/TreeModels/Properties/Project/ProjectPropertiesTreeDelegate.h \
+    Model/MacOSOpenModel.h
 
 
 

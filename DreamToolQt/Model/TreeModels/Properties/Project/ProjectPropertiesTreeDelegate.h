@@ -24,6 +24,7 @@ class ProjectPropertiesModel;
 
 class ProjectPropertiesTreeDelegate : public QItemDelegate
 {
+    Q_OBJECT
 public:
     ProjectPropertiesTreeDelegate(ProjectPropertiesModel* model, QObject* parent = nullptr);
     ~ProjectPropertiesTreeDelegate();

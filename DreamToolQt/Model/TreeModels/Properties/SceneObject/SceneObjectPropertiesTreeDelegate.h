@@ -24,6 +24,7 @@ class SceneObjectPropertiesModel;
 
 class SceneObjectPropertiesTreeDelegate : public QItemDelegate
 {
+    Q_OBJECT
 public:
     SceneObjectPropertiesTreeDelegate(SceneObjectPropertiesModel* model, QObject* parent = nullptr);
     ~SceneObjectPropertiesTreeDelegate();
@@ -32,6 +33,20 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
+public slots:
+    void onButton_CaptureTranslation(bool);
+    void onButton_CaptureRotation(bool);
+    void onButton_CaptureScale(bool);
+    void onButton_RemoveAsset(bool);
+    void onButton_RemoveChild(bool);
+
+signals:
+    void notifyButton_CaptureTranslation();
+    void notifyButton_CaptureRotation();
+    void notifyButton_CaptureScale();
+    void notifyButton_RemoveAsset();
+    void notifyButton_RemoveChild();
 
 protected:
     SceneObjectPropertiesModel *mModelHandle;

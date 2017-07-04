@@ -46,6 +46,21 @@ public:
     void createAssetInstancesProperty();
     void createChildrenProperty();
 
+
+public slots:
+    void onButton_CaptureTranslation();
+    void onButton_CaptureRotation();
+    void onButton_CaptureScale();
+    void onButton_RemoveAsset();
+    void onButton_RemoveChild();
+
+signals:
+    void notifyButton_CaptureTranslation(SceneObjectDefinition*);
+    void notifyButton_CaptureRotation(SceneObjectDefinition*);
+    void notifyButton_CaptureScale(SceneObjectDefinition*);
+    void notifyButton_RemoveAsset(SceneObjectDefinition*);
+    void notifyButton_RemoveChild(SceneObjectDefinition*);
+
 private:
     SceneObjectDefinition *mSceneObjectDefinitionHandle;
 };

@@ -1,7 +1,7 @@
 /*
- * LuaScriptCache.h
+ * MacOSOpenModel.h
  *
- * Created: 04/04/2017 2017 by Ashley
+ * Created: 04 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
  *
@@ -15,24 +15,32 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #pragma once
 
-#include <iostream>
-#include <map>
+#include <QObject>
 
-using namespace std;
+#include <QProcess>
 
-namespace Dream
+#include <memory>
+#include <vector>
+
+using std::unique_ptr;
+using std::vector;
+class PreferencesModel;
+
+class MacOSOpenModel : public QObject
 {
-    class LuaScriptCache
-    {
-    private:
-        map<string,string> mScriptCache;
-    public:
-        LuaScriptCache();
-        ~LuaScriptCache();
-        string getScript(string);
-        string readIntoCache(string);
+    Q_OBJECT
+public:
+    explicit MacOSOpenModel(PreferencesModel* pmHandle, QObject *parent = 0);
+    void openInExternalEditor(QString filePath);
 
-    };
-}
+signals:
+
+public slots:
+
+protected:
+    PreferencesModel* mPreferencesModelHandle;
+    vector<unique_ptr<QProcess>> mProcessList;
+};

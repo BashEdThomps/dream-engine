@@ -58,6 +58,68 @@ AssetDefinitionPropertiesModel::createRoot
 }
 
 void
+AssetDefinitionPropertiesModel::createProperties
+()
+{
+    createNameProperty();
+    createTypeProperty();
+    createFormatProperty();
+
+    if (mAssetDefinitionHandle->isTypeAnimation())
+    {
+
+    }
+    else if (mAssetDefinitionHandle->isTypeAudio())
+    {
+        createAudioLoopProperty();
+        createAudioFileProperty();
+        createRemoveFilesProperty();
+    }
+    else if (mAssetDefinitionHandle->isTypeFont())
+    {
+        createFontColorProperty();
+        createFontSizeProperty();
+        createFontFileProperty();
+    }
+    else if (mAssetDefinitionHandle->isTypeLight())
+    {
+        createLightColorProperty();
+    }
+    else if (mAssetDefinitionHandle->isTypeModel())
+    {
+        createModelFileProperty();
+        createModelAdditionalFilesProperty();
+        createRemoveFilesProperty();
+    }
+    else if (mAssetDefinitionHandle->isTypePhysicsObject())
+    {
+        craetePhysicsCollisionShapeProperty();
+        createPhysicsMassProperty();
+        createPhysicsMarginProperty();
+        createPhysicsKinematicProperty();
+    }
+    else if (mAssetDefinitionHandle->isTypeScript())
+    {
+        createTemplateProperty();
+        createScriptFileProperty();
+        createRemoveFilesProperty();
+    }
+    else if (mAssetDefinitionHandle->isTypeShader())
+    {
+        createTemplateProperty();
+        createShaderEditProperties();
+        createRemoveFilesProperty();
+    }
+    else if (mAssetDefinitionHandle->isTypeSprite())
+    {
+        createSpriteTileSizeProperty();
+        createSpriteFileProperty();
+        createRemoveFilesProperty();
+    }
+}
+
+
+void
 AssetDefinitionPropertiesModel::createNameProperty
 ()
 {
@@ -145,62 +207,6 @@ AssetDefinitionPropertiesModel::createFormatProperty
         ASSET_DEFINITION_PROPERTY_FORMAT
     );
     mRootItem->appendChild(formatProperty);
-}
-
-void
-AssetDefinitionPropertiesModel::createProperties
-()
-{
-    createNameProperty();
-    createTypeProperty();
-    createFormatProperty();
-
-    if (mAssetDefinitionHandle->isTypeAnimation())
-    {
-
-    }
-    else if (mAssetDefinitionHandle->isTypeAudio())
-    {
-        createAudioLoopProperty();
-        createAudioFileProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypeFont())
-    {
-        createFontColorProperty();
-        createFontSizeProperty();
-        createFontFileProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypeLight())
-    {
-        createLightColorProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypeModel())
-    {
-        createModelFileProperty();
-        createModelAdditionalFilesProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypePhysicsObject())
-    {
-        craetePhysicsCollisionShapeProperty();
-        createPhysicsMassProperty();
-        createPhysicsMarginProperty();
-        createPhysicsKinematicProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypeScript())
-    {
-        createScriptTemplateProperty();
-        createScriptFileProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypeShader())
-    {
-        createShaderTemplateProperty();
-        createShaderEditProperties();
-    }
-    else if (mAssetDefinitionHandle->isTypeSprite())
-    {
-        createSpriteTileSizeProperty();
-        createSpriteFileProperty();
-    }
 }
 
 AssetDefinition*
@@ -310,30 +316,16 @@ AssetDefinitionPropertiesModel::createPhysicsKinematicProperty
 }
 
 void
-AssetDefinitionPropertiesModel::createScriptTemplateProperty
+AssetDefinitionPropertiesModel::createTemplateProperty
 ()
 {
-    qDebug() << "AssetDefintionPropertiesModel: Creating Script Template Delegate";
+    qDebug() << "AssetDefintionPropertiesModel: Creating Template Delegate";
     // Template
     AssetDefinitionPropertiesItem *templateProperty = new AssetDefinitionPropertiesItem
     (
         "Template",
-        mAssetDefinitionHandle
-    );
-    mRootItem->appendChild(templateProperty);
-}
-
-void
-AssetDefinitionPropertiesModel::createShaderTemplateProperty
-()
-{
-    qDebug() << "AssetDefintionPropertiesModel: Creating Shader Template Delegate";
-
-    // Template
-    AssetDefinitionPropertiesItem *templateProperty = new AssetDefinitionPropertiesItem
-    (
-        "Template",
-        mAssetDefinitionHandle
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_TEMPLATE
     );
     mRootItem->appendChild(templateProperty);
 }
@@ -368,6 +360,21 @@ AssetDefinitionPropertiesModel::createScriptFileProperty
 }
 
 void
+AssetDefinitionPropertiesModel::createRemoveFilesProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Remove Files",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_REMOVE_FILES
+        )
+    );
+}
+
+void
 AssetDefinitionPropertiesModel::createDelegateConnections
 ()
 {
@@ -391,4 +398,72 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         this,
         SLOT(onButton_ModelAdditionalFiles())
     );
+
+    // Remove Files
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_RemoveFiles()),
+        this,
+        SLOT(onButton_RemoveFiles())
+    );
+
+    // Edit Script
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_EditScript()),
+        this,
+        SLOT(onButton_EditScript())
+    );
+
+
+    // Edit Shader
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_EditVertexShader()),
+        this,
+        SLOT(onButton_EditVertexShader())
+    );
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_EditFragmentShader()),
+        this,
+        SLOT(onButton_EditFragmentShader())
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_RemoveFiles
+()
+{
+    qDebug() << "AssetDefinitionPropertiesModel: RemoveFiles";
+    emit notifyButton_RemoveFiles(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_EditScript
+()
+{
+    qDebug() << "AssetDefinitionPropertiesModel: EditScript";
+    emit notifyButton_EditScript(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_EditFragmentShader
+()
+{
+    qDebug() << "AssetDefinitionPropertiesModel: EditFragmentShader";
+    emit notifyButton_EditFragmentShader(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_EditVertexShader
+()
+{
+    qDebug() << "AssetDefinitionPropertiesModel: EditVertexShader";
+    emit notifyButton_EditVertexShader(mAssetDefinitionHandle);
 }

@@ -34,6 +34,7 @@
 #include "../Model/TreeModels/Scenegraph/ScenegraphTreeModel.h"
 #include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.h"
 #include "../Model/TreeModels/Properties/AbstractPropertiesModel.h"
+#include "../Model/MacOSOpenModel.h"
 
 #include "../View/MainWindow.h"
 #include "../View/GLView/Grid.h"
@@ -123,6 +124,18 @@ public slots:
 
     void onAssetDefinitionProperty_ModelFile(AssetDefinition* adHandle);
     void onAssetDefinitionProperty_ModelAdditionalFiles(AssetDefinition* adHandle);
+    void onAssetDefinitionProperty_RemoveFiles(AssetDefinition* adHandle);
+
+    void onAssetDefinitionProperty_EditScript(AssetDefinition* adHandle);
+    void onAssetDefinitionProperty_EditVertexShader(AssetDefinition* adHandle);
+    void onAssetDefinitionProperty_EditFragmentShader(AssetDefinition* adHandle);
+
+    void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
+    void onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*);
+    void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);
+    void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*);
+    void onSceneObjectProperty_RemoveChild(SceneObjectDefinition*);
+
 
 private: // Methods
     // Setup
@@ -182,5 +195,6 @@ private: // Variables
 
     // Delete anything that relies on project before DreamModel
     unique_ptr<DreamProjectModel> mDreamProjectModel;
+    unique_ptr<MacOSOpenModel> mMacOsOpenModel;
 
 };

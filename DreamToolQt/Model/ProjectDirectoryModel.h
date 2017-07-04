@@ -81,14 +81,18 @@ public:
     QString getProjectFileAbsolutePath();
     QString getProjectDirectoryName();
 
-    bool assetMainFileExists(AssetDefinition *adHandle, string format = "" );
-    bool deleteMainAssetFile(AssetDefinition *adHandle, string format = "" );
-    bool copyMainAssetFile(AssetDefinition *adHandle, QFile& assetFile, string format = "" );
-
+    bool assetMainFileExists(AssetDefinition *adHandle, QString format = "" );
+    bool deleteMainAssetFile(AssetDefinition *adHandle, QString format = "" );
+    bool copyMainAssetFile(AssetDefinition *adHandle, QFile& assetFile, QString format = "" );
+    bool deleteAssetDataDirectory(AssetDefinition *adHandle);
     bool copyAdditionalFile(AssetDefinition *adHandle, QFile& assetFile);
 
     ProjectDefinition *getProjectDefinitionHandle();
     void setProjectDefinitionHandle(ProjectDefinition *projectDefinitionHandle);
+
+    QString createAssetTargetPath(AssetDefinition *adHandle, QString format = "");
+    QString getAssetDataPath(AssetDefinition *adHandle);
+    void touchFile(QString filePath);
 
 private: // Variables
     ProjectDefinition* mProjectDefinitionHandle;
@@ -104,6 +108,5 @@ private: // Variables
     QDir mShaderDirectory;
     QDir mSpriteDirectory;
     QString getProjectName();
-private: // Methods
-    QString createAssetTargetPath(AssetDefinition *adHandle, string format = "");
+
 };

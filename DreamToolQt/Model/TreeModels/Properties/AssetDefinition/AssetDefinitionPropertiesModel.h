@@ -36,9 +36,9 @@ public:
 
     void createRoot() override;
     void createProperties() override;
+    void createDelegateConnections() override;
 
     AssetDefinition* getAssetDefinitionHandle();
-    void createDelegateConnections() override;
 
 private:
     AssetDefinition* mAssetDefinitionHandle;
@@ -55,8 +55,7 @@ private:
     void createPhysicsMassProperty();
     void createPhysicsMarginProperty();
     void createPhysicsKinematicProperty();
-    void createScriptTemplateProperty();
-    void createShaderTemplateProperty();
+    void createTemplateProperty();
     void createSpriteTileSizeProperty();
     void createSpriteFileProperty();
     void createFormatProperty();
@@ -66,13 +65,23 @@ private:
     void createShaderEditVertexProperty();
     void createShaderEditFragmentProperty();
     void createScriptFileProperty();
+    void createRemoveFilesProperty();
 
 public slots:
     void onButton_ModelFile();
     void onButton_ModelAdditionalFiles();
+    void onButton_RemoveFiles();
+    void onButton_EditScript();
+    void onButton_EditFragmentShader();
+    void onButton_EditVertexShader();
 
 signals:
     void notifyButton_ModelFile(AssetDefinition*);
     void notifyButton_ModelAdditionalFiles(AssetDefinition*);
+    void notifyButton_RemoveFiles(AssetDefinition*);
+    void notifyButton_EditScript(AssetDefinition*);
+    void notifyButton_EditFragmentShader(AssetDefinition*);
+    void notifyButton_EditVertexShader(AssetDefinition*);
+
 };
 

@@ -47,26 +47,6 @@ SceneObjectPropertiesTreeDelegate::~SceneObjectPropertiesTreeDelegate
 }
 
 QWidget*
-SceneObjectPropertiesTreeDelegate::createRemoveAssetDefinitionButton
-(QWidget *parent)
-const
-{
-   QToolButton* button = new QToolButton(parent);
-   button->setText("Remove Asset");
-   return button;
-}
-
-QWidget*
-SceneObjectPropertiesTreeDelegate::createRemoveChildButton
-(QWidget *parent)
-const
-{
-   QToolButton* button = new QToolButton(parent);
-   button->setText("Remove Child");
-   return button;
-}
-
-QWidget*
 SceneObjectPropertiesTreeDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -203,34 +183,44 @@ SceneObjectPropertiesTreeDelegate::updateEditorGeometry
     editor->setGeometry(option.rect);
 }
 
-QWidget*
-SceneObjectPropertiesTreeDelegate::createCaptureTranslationButton
-(QWidget* parent)
-const
+void
+SceneObjectPropertiesTreeDelegate::onButton_CaptureTranslation
+(bool)
 {
-    QToolButton *button = new QToolButton(parent);
-    button->setText("Capture Translation");
-    return button;
+    qDebug() << "SceneObjectPropertiesDelegate: CaptureTranslation";
+    emit notifyButton_CaptureTranslation();
 }
 
-QWidget*
-SceneObjectPropertiesTreeDelegate::createCaptureRotationButton
-(QWidget* parent)
-const
+void
+SceneObjectPropertiesTreeDelegate::onButton_CaptureRotation
+(bool)
 {
-    QToolButton *button = new QToolButton(parent);
-    button->setText("Capture Rotation");
-    return button;
+    qDebug() << "SceneObjectPropertiesDelegate: CaptureRotation";
+    emit notifyButton_CaptureRotation();
 }
 
-QWidget*
-SceneObjectPropertiesTreeDelegate::createCaptureScaleButton
-(QWidget* parent)
-const
+void
+SceneObjectPropertiesTreeDelegate::onButton_CaptureScale
+(bool)
 {
-    QToolButton *button = new QToolButton(parent);
-    button->setText("Capture Scale");
-    return button;
+    qDebug() << "SceneObjectPropertiesDelegate: CaptureScale";
+    emit notifyButton_CaptureScale();
+}
+
+void
+SceneObjectPropertiesTreeDelegate::onButton_RemoveAsset
+(bool)
+{
+    qDebug() << "SceneObjectPropertiesDelegate: RemoveAsset";
+    emit notifyButton_RemoveAsset();
+}
+
+void
+SceneObjectPropertiesTreeDelegate::onButton_RemoveChild
+(bool)
+{
+    qDebug() << "SceneObjectPropertiesDelegate: RemoveChild";
+    emit notifyButton_RemoveChild();
 }
 
 QWidget*
@@ -241,4 +231,90 @@ SceneObjectPropertiesTreeDelegate::createTransformTypeComboBox
     combo->addItem(QString::fromStdString(Constants::TRANSFORM_TYPE_ABSOLUTE));
     combo->addItem(QString::fromStdString(Constants::TRANSFORM_TYPE_OFFSET));
     return combo;
+}
+
+QWidget*
+SceneObjectPropertiesTreeDelegate::createCaptureTranslationButton
+(QWidget* parent)
+const
+{
+    QToolButton *button = new QToolButton(parent);
+    button->setText("Capture Translation");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_CaptureTranslation(bool))
+    );
+    return button;
+}
+
+QWidget*
+SceneObjectPropertiesTreeDelegate::createCaptureRotationButton
+(QWidget* parent)
+const
+{
+    QToolButton *button = new QToolButton(parent);
+    button->setText("Capture Rotation");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_CaptureRotation(bool))
+    );
+    return button;
+}
+
+QWidget*
+SceneObjectPropertiesTreeDelegate::createCaptureScaleButton
+(QWidget* parent)
+const
+{
+    QToolButton *button = new QToolButton(parent);
+    button->setText("Capture Scale");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_CaptureScale(bool))
+    );
+    return button;
+}
+
+
+QWidget*
+SceneObjectPropertiesTreeDelegate::createRemoveAssetDefinitionButton
+(QWidget *parent)
+const
+{
+    QToolButton* button = new QToolButton(parent);
+    button->setText("Remove Asset");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_RemoveAsset(bool))
+    );
+    return button;
+}
+
+QWidget*
+SceneObjectPropertiesTreeDelegate::createRemoveChildButton
+(QWidget *parent)
+const
+{
+   QToolButton* button = new QToolButton(parent);
+   button->setText("Remove Child");
+   connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_RemoveChild(bool))
+    );
+   return button;
 }

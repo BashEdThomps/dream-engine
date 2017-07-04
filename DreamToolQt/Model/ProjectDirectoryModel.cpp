@@ -609,13 +609,13 @@ ProjectDirectoryModel::getProjectDirectoryName
 
 bool
 ProjectDirectoryModel::assetMainFileExists
-(AssetDefinition *adHandle, string format)
+(AssetDefinition *adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).exists();
 }
 
-bool ProjectDirectoryModel::deleteMainAssetFile(Dream::AssetDefinition *adHandle, string format)
+bool ProjectDirectoryModel::deleteMainAssetFile(AssetDefinition *adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).remove();
@@ -728,8 +728,40 @@ ProjectDirectoryModel::getProjectName
 }
 
 QString
+ProjectDirectoryModel::getAssetDataPath
+(AssetDefinition* adHandle)
+{
+    QString assetDataPath;
+
+    // Get type directory
+    assetDataPath = mAssetsDirectory.filePath
+    (
+        QString::fromStdString(adHandle->getAssetTypeDirectory())
+    );
+
+    // Get uuid directory
+    QDir typeDir(assetDataPath);
+    assetDataPath = typeDir.filePath
+    (
+        QString::fromStdString(adHandle->getUuid())
+    );
+
+    return assetDataPath;
+}
+
+void
+ProjectDirectoryModel::touchFile
+(QString assetFileTargetPath)
+{
+    qDebug() << "ProjectDirectoryModel: Touching file" << assetFileTargetPath;
+    QFile newFile(assetFileTargetPath);
+    newFile.open(QIODevice::ReadWrite);
+    newFile.close();
+}
+
+QString
 ProjectDirectoryModel::createAssetTargetPath
-(AssetDefinition* adHandle, string format)
+(AssetDefinition* adHandle, QString format)
 {
     QString assetFileTargetPath;
 
@@ -756,7 +788,7 @@ ProjectDirectoryModel::createAssetTargetPath
     qDebug() << "ProjectDirectoryModel: Created path " << assetFileTargetPath;
 
     // Update to add "Format" to path
-    if (format.empty())
+    if (format.isEmpty())
     {
         assetFileTargetPath = QDir(assetFileTargetPath).filePath(
             QString::fromStdString(adHandle->getFormat())
@@ -764,9 +796,7 @@ ProjectDirectoryModel::createAssetTargetPath
     }
     else
     {
-        assetFileTargetPath = QDir(assetFileTargetPath).filePath(
-            QString::fromStdString(format)
-        );
+        assetFileTargetPath = QDir(assetFileTargetPath).filePath(format);
     }
 
     return assetFileTargetPath;
@@ -774,7 +804,7 @@ ProjectDirectoryModel::createAssetTargetPath
 
 bool
 ProjectDirectoryModel::copyMainAssetFile
-(AssetDefinition* adHandle, QFile& assetSourceFile, string format)
+(AssetDefinition* adHandle, QFile& assetSourceFile, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
 
@@ -796,13 +826,24 @@ ProjectDirectoryModel::copyMainAssetFile
 }
 
 bool
+ProjectDirectoryModel::deleteAssetDataDirectory
+(AssetDefinition* adHandle)
+{
+
+    QString assetDataPath = getAssetDataPath(adHandle);
+    qDebug() << "ProjectDirectoryModel: Deleting Asset Data Directory"
+             << assetDataPath;
+    return QDir(assetDataPath).removeRecursively();
+}
+
+bool
 ProjectDirectoryModel::copyAdditionalFile
 (AssetDefinition* adHandle, QFile& assetSourceFile)
 {
     QString assetFileTargetPath = createAssetTargetPath
     (
         adHandle,
-        QFileInfo(assetSourceFile.fileName()).fileName().toStdString()
+        QFileInfo(assetSourceFile.fileName()).fileName()
     );
 
     qDebug() << "ProjectDirectoryModel: Copying asset file for "

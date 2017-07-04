@@ -15,9 +15,8 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef INPUTEVENT_H
-#define INPUTEVENT_H
 
+#pragma once
 
 namespace Dream
 {
@@ -97,5 +96,3 @@ namespace Dream
         char mButton;
     };
 }
-
-#endif // INPUTEVENT_H

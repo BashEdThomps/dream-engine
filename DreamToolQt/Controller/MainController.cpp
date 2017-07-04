@@ -48,7 +48,25 @@ MainController::MainController
       mSelectedSceneObjectDefinitionHandle(nullptr)
 {
     qDebug() << "MainController: Constructing Object";
-    mDreamProjectModel.reset(new DreamProjectModel(this,mWindowComponentHandle));
+
+    mDreamProjectModel.reset
+    (
+        new DreamProjectModel
+        (
+            this,
+            mWindowComponentHandle
+        )
+    );
+
+    mMacOsOpenModel.reset
+    (
+        new MacOSOpenModel
+        (
+            &mPreferencesDialogController.getPreferencesModel(),
+            this
+        )
+    );
+
     setupUI();
     setupConnections();
 }
@@ -115,6 +133,38 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(AssetDefinition*))
             );
 
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_RemoveFiles(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_RemoveFiles(AssetDefinition*))
+            );
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_EditScript(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_EditScript(AssetDefinition*))
+            );
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_EditVertexShader(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_EditVertexShader(AssetDefinition*))
+            );
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_EditFragmentShader(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_EditFragmentShader(AssetDefinition*))
+            );
+
             break;
 
         case AssetDefinitionTreeItemType::ASSET_TREE_NODE:
@@ -150,6 +200,8 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
             mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
             mMainWindowHandle->setPropertiesDockWidgetTitle("Project Properties");
+
+
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE:
@@ -171,6 +223,46 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             mPropertiesModel.reset(new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView));
 
             mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Object Properties");
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_CaptureTranslation(SceneObjectDefinition*)),
+                this,
+                SLOT(onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*))
+            );
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_CaptureRotation(SceneObjectDefinition*)),
+                this,
+                SLOT(onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*))
+            );
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_CaptureScale(SceneObjectDefinition*)),
+                this,
+                SLOT(onSceneObjectProperty_CaptureScale(SceneObjectDefinition*))
+            );
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*)),
+                this,
+                SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*))
+            );
+
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*)),
+                this,
+                SLOT(onSceneObjectProperty_RemoveChild(SceneObjectDefinition*))
+            );
 
             if (mSelectionHighlighter)
             {
@@ -1143,4 +1235,103 @@ MainController::onAction_Debug_DumpProjectDefinitionJson
             ->getProjectDefinitionHandle()
             ->getJson().dump(1) << endl;
     ;
+}
+
+void
+MainController::onAssetDefinitionProperty_RemoveFiles
+(AssetDefinition* adHandle)
+{
+    auto result = QMessageBox::question
+    (
+        mMainWindowHandle,
+        "Remove Asset Data?",
+        "Are you sure you want to remove Asset data?"
+    );
+
+    if (result == QMessageBox::Yes)
+    {
+        mProjectDirectoryModel.deleteAssetDataDirectory(adHandle);
+        return;
+    }
+}
+
+void
+MainController::onAssetDefinitionProperty_EditScript
+(AssetDefinition* adHandle)
+{
+    qDebug() << "MainController: EditScript";
+    QString filePath = mProjectDirectoryModel.createAssetTargetPath(adHandle);
+    mProjectDirectoryModel.touchFile(filePath);
+    mMacOsOpenModel->openInExternalEditor(filePath);
+}
+
+void
+MainController::onAssetDefinitionProperty_EditVertexShader
+(AssetDefinition* adHandle)
+{
+    qDebug() << "MainController: EditVertexShader";
+    QString filePath = mProjectDirectoryModel.createAssetTargetPath
+    (
+        adHandle,
+        QString::fromStdString
+        (
+            Constants::ASSET_FORMAT_SHADER_GLSL +
+            Constants::SHADER_VERTEX
+        )
+    );
+    mProjectDirectoryModel.touchFile(filePath);
+    mMacOsOpenModel->openInExternalEditor(filePath);
+}
+
+void
+MainController::onAssetDefinitionProperty_EditFragmentShader
+(AssetDefinition* adHandle)
+{
+    qDebug() << "MainController: EditFragmentShader";
+    QString filePath = mProjectDirectoryModel.createAssetTargetPath
+    (
+        adHandle,
+        QString::fromStdString
+        (
+            Constants::ASSET_FORMAT_SHADER_GLSL +
+            Constants::SHADER_FRAGMENT
+        )
+    );
+    mProjectDirectoryModel.touchFile(filePath);
+    mMacOsOpenModel->openInExternalEditor(filePath);
+}
+
+void
+MainController::onSceneObjectProperty_CaptureTranslation
+(SceneObjectDefinition*)
+{
+    qDebug() << "MainController: CaptureTranslation";
+}
+
+void
+MainController::onSceneObjectProperty_CaptureRotation
+(SceneObjectDefinition*)
+{
+    qDebug() << "MainController: CaptureRotation";
+}
+
+void
+MainController::onSceneObjectProperty_CaptureScale
+(SceneObjectDefinition*)
+{
+    qDebug() << "MainController: CaptureScale";
+}
+
+void
+MainController::onSceneObjectProperty_RemoveAsset
+(SceneObjectDefinition*)
+{
+    qDebug() << "MainController: RemoveAsset";
+}
+
+void
+MainController::onSceneObjectProperty_RemoveChild
+(SceneObjectDefinition*)
+{
+    qDebug() << "MainController: RemoveChild";
 }

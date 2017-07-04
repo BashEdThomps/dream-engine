@@ -74,6 +74,8 @@ AssetDefinitionPropertiesItem::setData
             mAssetDefinitionHandle->setFormat(value.toString().toStdString());
             break;
 
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
+        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
@@ -100,6 +102,10 @@ AssetDefinitionPropertiesItem::data
 
     switch(getProperty())
     {
+        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
+            break;
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
+            break;
         case ASSET_DEFINITION_PROPERTY_NAME:
             return QVariant(QString::fromStdString(mAssetDefinitionHandle->getName()));
         case ASSET_DEFINITION_PROPERTY_TYPE:

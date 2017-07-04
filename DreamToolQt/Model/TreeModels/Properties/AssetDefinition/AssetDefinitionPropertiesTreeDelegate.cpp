@@ -25,6 +25,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QToolButton>
+#include <QHBoxLayout>
 
 #include <vector>
 
@@ -95,11 +96,13 @@ AssetDefinitionPropertiesTreeDelegate::createModelFileButton
 const
 {
     QToolButton *editor = new QToolButton(parent);
-    editor->setText("Model Files...");
+    editor->setText("Model File...");
     connect
     (
-        editor,SIGNAL(clicked(bool)),
-        this, SLOT(onButton_ModelFile(bool))
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ModelFile(bool))
     );
     return editor;
 }
@@ -113,8 +116,10 @@ const
     editor->setText("Additional Files...");
     connect
     (
-        editor,SIGNAL(clicked(bool)),
-        this, SLOT(onButton_ModelAdditionalFiles(bool))
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ModelAdditionalFiles(bool))
     );
     return editor;
 }
@@ -157,6 +162,13 @@ const
 {
    QToolButton *button = new QToolButton(parent);
    button->setText("Edit Vertex Shader");
+   connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_EditVertexShader(bool))
+    );
    return button;
 }
 
@@ -167,6 +179,13 @@ const
 {
    QToolButton *button = new QToolButton(parent);
    button->setText("Edit Fragment Shader");
+   connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_EditFragmentShader(bool))
+    );
    return button;
 
 }
@@ -176,10 +195,44 @@ AssetDefinitionPropertiesTreeDelegate::createOpenScriptInEditorButton
 (AssetDefinitionPropertiesItem* adItem, QWidget* parent)
 const
 {
-   QToolButton *button = new QToolButton(parent);
-   button->setText("Edit Script");
-   return button;
+    QToolButton *button = new QToolButton(parent);
+    button->setText("Edit Script");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_EditScript(bool))
+    );
+    return button;
 
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createRemoveFilesButton
+(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+const
+{
+    QToolButton *button = new QToolButton(parent);
+    button->setText("Remove Files");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_RemoveFiles(bool))
+    );
+    return button;
+
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createTemplateComboBox
+(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+const
+{
+    QComboBox *templateCombo = new QComboBox(parent);
+    return templateCombo;
 }
 
 QWidget*
@@ -191,6 +244,10 @@ const
 
     switch(adItem->getProperty())
     {
+        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
+            return createTemplateComboBox(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
+            return createRemoveFilesButton(adItem, parent);
         case ASSET_DEFINITION_PROPERTY_NAME:
             return new QLineEdit(parent);
         case ASSET_DEFINITION_PROPERTY_TYPE:
@@ -217,7 +274,6 @@ const
             break;
         case ASSET_DEFINITION_PROPERTY_NONE:
             return new QLineEdit(parent);
-
     }
     return new QLineEdit(parent);
 }
@@ -229,6 +285,7 @@ const
 {
     AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
     QString value = index.model()->data(index, Qt::DisplayRole).toString();
+
     switch(adItem->getProperty())
     {
         case ASSET_DEFINITION_PROPERTY_NAME:
@@ -240,27 +297,20 @@ const
         case ASSET_DEFINITION_PROPERTY_FORMAT:
             static_cast<QComboBox*>(editor)->setCurrentText(value);
             break;
+
+        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
-            break;
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_NONE:
             break;
-
     }
 }
 
@@ -281,27 +331,19 @@ const
         case ASSET_DEFINITION_PROPERTY_FORMAT:
             model->setData(index,static_cast<QComboBox*>(editor)->currentText());
             break;
+        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
-            break;
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
-            break;
         case ASSET_DEFINITION_PROPERTY_NONE:
             break;
-
     }
 }
 
@@ -317,7 +359,7 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_ModelFile
 (bool clicked)
 {
-    qDebug() << "ModelFileBrowseDelegate: Browse was clicked";
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: ModelFile was clicked";
     emit notifyButton_ModelFile();
 }
 
@@ -325,8 +367,40 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFiles
 (bool clicked)
 {
-    qDebug() << "BrowseForAdditionalFilesDelegate: Browse was clicked";
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: ModelAdditionalFiles was clicked";
     emit notifyButton_ModelAdditionalFiles();
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_RemoveFiles
+(bool clicked)
+{
+   qDebug() << "AssetDefinitionPropertiesTreeDelegate: RemoveFiles was clicked";
+   emit notifyButton_RemoveFiles();
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_EditVertexShader
+(bool clicked)
+{
+   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditVertexShader was clicked";
+   emit notifyButton_EditVertexShader();
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_EditFragmentShader
+(bool clicked)
+{
+   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditFragmentShader was clicked";
+   emit notifyButton_EditFragmentShader();
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
+(bool clicked)
+{
+   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditScript was clicked";
+   emit notifyButton_EditScript();
 }
 
 

@@ -67,13 +67,55 @@ SceneObjectPropertiesModel::createProperties
     createHasFocusProperty();
     createAssetInstancesProperty();
     createChildrenProperty();
+    createDelegateConnections();
 }
 
 void
 SceneObjectPropertiesModel::createDelegateConnections
 ()
 {
+    SceneObjectPropertiesTreeDelegate *delegate;
+    delegate = static_cast<SceneObjectPropertiesTreeDelegate*>(mDelegateHandle);
 
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_CaptureTranslation()),
+        this,
+        SLOT(onButton_CaptureTranslation())
+    );
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_CaptureRotation()),
+        this,
+        SLOT(onButton_CaptureRotation())
+    );
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_CaptureScale()),
+        this,
+        SLOT(onButton_CaptureScale())
+    );
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_RemoveAsset()),
+        this,
+        SLOT(onButton_RemoveAsset())
+    );
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_RemoveChild()),
+        this,
+        SLOT(onButton_RemoveChild())
+    );
 }
 
 
@@ -307,4 +349,44 @@ SceneObjectPropertiesModel::createChildrenProperty
             )
         );
     }
+}
+
+void
+SceneObjectPropertiesModel::onButton_CaptureTranslation
+()
+{
+    qDebug() << "SceneObjectPropertiesModel: CaptureTranslation";
+    emit notifyButton_CaptureTranslation(mSceneObjectDefinitionHandle);
+}
+
+void
+SceneObjectPropertiesModel::onButton_CaptureRotation
+()
+{
+    qDebug() << "SceneObjectPropertiesModel: CaptureRotation";
+    emit notifyButton_CaptureRotation(mSceneObjectDefinitionHandle);
+}
+
+void
+SceneObjectPropertiesModel::onButton_CaptureScale
+()
+{
+    qDebug() << "SceneObjectPropertiesModel: CaptureScale";
+    emit notifyButton_CaptureScale(mSceneObjectDefinitionHandle);
+}
+
+void
+SceneObjectPropertiesModel::onButton_RemoveAsset
+()
+{
+    qDebug() << "SceneObjectPropertiesModel: RemoveAsset";
+    emit notifyButton_RemoveAsset(mSceneObjectDefinitionHandle);
+}
+
+void
+SceneObjectPropertiesModel::onButton_RemoveChild
+()
+{
+    qDebug() << "SceneObjectPropertiesModel: RemoveChild";
+    emit notifyButton_RemoveChild(mSceneObjectDefinitionHandle);
 }

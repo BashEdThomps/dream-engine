@@ -39,10 +39,19 @@ public:
 public slots:
     void onButton_ModelFile(bool);
     void onButton_ModelAdditionalFiles(bool);
+    void onButton_RemoveFiles(bool clicked);
+    void onButton_EditVertexShader(bool clicked);
+    void onButton_EditFragmentShader(bool clicked);
+    void onButton_EditScript(bool clicked);
 
 signals:
     void notifyButton_ModelFile();
     void notifyButton_ModelAdditionalFiles();
+    void notifyButton_RemoveFiles();
+
+    void notifyButton_EditScript();
+    void notifyButton_EditFragmentShader();
+    void notifyButton_EditVertexShader();
 
 protected:
     AssetDefinitionPropertiesModel *mModelHandle;
@@ -56,4 +65,6 @@ protected:
     QWidget *createOpenVertexShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createOpenFragmentShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createOpenScriptInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget *createRemoveFilesButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget *createTemplateComboBox(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
 };

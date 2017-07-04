@@ -27,13 +27,16 @@ extern "C"
 
 #include <map>
 #include <iostream>
+#include <memory>
 
 #include "LuaScriptCache.h"
 #include "InputEvent.h"
-
 #include "../Common/Constants.h"
 
-using namespace std;
+using std::unique_ptr;
+using std::string;
+using std::map;
+using std::vector;
 
 int errorHandler(lua_State*);
 

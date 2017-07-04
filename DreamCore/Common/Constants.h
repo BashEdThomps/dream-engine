@@ -259,7 +259,6 @@ namespace Dream
         static string getAssetFormatString(string format);
         static string getAssetTypeReadableName(string);
         static string getAssetFormatReadableName(string);
-
     };
 }
 

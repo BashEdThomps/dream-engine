@@ -68,6 +68,7 @@ ScenePropertiesModel::createProperties
     createCameraProperties();
     createRenderingProperties();
     createPhysicsProperties();
+    createDelegateConnections();
 }
 
 void

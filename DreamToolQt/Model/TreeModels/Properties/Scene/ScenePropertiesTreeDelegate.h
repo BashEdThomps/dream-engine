@@ -24,6 +24,7 @@ class ScenePropertiesModel;
 
 class ScenePropertiesTreeDelegate : public QItemDelegate
 {
+    Q_OBJECT
 public:
     ScenePropertiesTreeDelegate(ScenePropertiesModel* model, QObject *parent = nullptr);
    ~ScenePropertiesTreeDelegate();
