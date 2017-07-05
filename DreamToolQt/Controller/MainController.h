@@ -133,8 +133,9 @@ public slots:
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);
-    void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*);
-    void onSceneObjectProperty_RemoveChild(SceneObjectDefinition*);
+
+    void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,AssetDefinition*);
+    void onSceneObjectProperty_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*);
 
 
 private: // Methods

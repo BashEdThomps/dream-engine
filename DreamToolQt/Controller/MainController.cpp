@@ -1324,14 +1324,14 @@ MainController::onSceneObjectProperty_CaptureScale
 
 void
 MainController::onSceneObjectProperty_RemoveAsset
-(SceneObjectDefinition*)
+(SceneObjectDefinition* sodHandle,AssetDefinition* adHandle)
 {
     qDebug() << "MainController: RemoveAsset";
 }
 
 void
 MainController::onSceneObjectProperty_RemoveChild
-(SceneObjectDefinition*)
+(SceneObjectDefinition* sodHandle, SceneObjectDefinition* sodChildHandle)
 {
     qDebug() << "MainController: RemoveChild";
 }

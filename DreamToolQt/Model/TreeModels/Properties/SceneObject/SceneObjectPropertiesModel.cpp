@@ -314,18 +314,18 @@ SceneObjectPropertiesModel::createAssetInstancesProperty
        AssetDefinition* definition = mSceneObjectDefinitionHandle->getSceneDefinitionHandle()
                ->getProjectDefinitionHandle()
                ->getAssetDefinitionHandleByUuid(adUuid);
-        assetDefItem->appendChild
-        (
-            new SceneObjectPropertiesItem
+
+       SceneObjectPropertiesItem *adItem = new SceneObjectPropertiesItem
+       (
+            QString::fromStdString
             (
-                QString::fromStdString
-                (
-                    definition->getName()
-                ),
-                mSceneObjectDefinitionHandle,
-                SCENE_OBJECT_PROPERTY_ASSET_DEFINITION
-            )
-        );
+                definition->getName()
+            ),
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_ASSET_DEFINITION
+       );
+       adItem->setTargetAssetDefinitionHandle(definition);
+       assetDefItem->appendChild(adItem);
     }
 }
 
@@ -339,15 +339,14 @@ SceneObjectPropertiesModel::createChildrenProperty
 
     for (SceneObjectDefinition* child : mSceneObjectDefinitionHandle->getChildDefinitionsHandleList())
     {
-        childrenItem->appendChild
+        SceneObjectPropertiesItem *childItem = new SceneObjectPropertiesItem
         (
-            new SceneObjectPropertiesItem
-            (
-                QString::fromStdString(child->getName()),
-                mSceneObjectDefinitionHandle,
-                SCENE_OBJECT_PROPERTY_CHILD
-            )
+            QString::fromStdString(child->getName()),
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_CHILD
         );
+        childItem->setTargetSceneObjectDefinitionHandle(child);
+        childrenItem->appendChild(childItem);
     }
 }
 
@@ -377,16 +376,16 @@ SceneObjectPropertiesModel::onButton_CaptureScale
 
 void
 SceneObjectPropertiesModel::onButton_RemoveAsset
-()
+(AssetDefinition* adHandle)
 {
     qDebug() << "SceneObjectPropertiesModel: RemoveAsset";
-    emit notifyButton_RemoveAsset(mSceneObjectDefinitionHandle);
+    emit notifyButton_RemoveAsset(mSceneObjectDefinitionHandle,adHandle);
 }
 
 void
 SceneObjectPropertiesModel::onButton_RemoveChild
-()
+(SceneObjectDefinition* sodHandle)
 {
     qDebug() << "SceneObjectPropertiesModel: RemoveChild";
-    emit notifyButton_RemoveChild(mSceneObjectDefinitionHandle);
+    emit notifyButton_RemoveChild(mSceneObjectDefinitionHandle,sodHandle);
 }

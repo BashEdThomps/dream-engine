@@ -23,9 +23,11 @@
 namespace Dream
 {
     class SceneObjectDefinition;
+    class AssetDefinition;
 }
 
 using Dream::SceneObjectDefinition;
+using Dream::AssetDefinition;
 
 enum SceneObjectProperty
 {
@@ -73,7 +75,15 @@ public:
     bool setData(int column, const QVariant &value) override;
     QVariant data(int column) override;
 
+    SceneObjectDefinition* getTargetSceneObjectDefinitionHandle() const;
+    void setTargetSceneObjectDefinitionHandle(SceneObjectDefinition* targetSceneObjectDefinitionHandle);
+
+    AssetDefinition* getTargetAssetDefinitionHandle() const;
+    void setTargetAssetDefinitionHandle(AssetDefinition* targetAssetDefinitionHandle);
+
 private:
-    SceneObjectDefinition *mSceneObjectDefinitionHandle;
     SceneObjectProperty mProperty;
+    SceneObjectDefinition *mSceneObjectDefinitionHandle;
+    SceneObjectDefinition *mTargetSceneObjectDefinitionHandle;
+    AssetDefinition *mTargetAssetDefinitionHandle;
 };

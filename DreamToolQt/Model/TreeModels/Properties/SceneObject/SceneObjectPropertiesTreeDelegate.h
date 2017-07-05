@@ -20,6 +20,15 @@
 
 #include <QItemDelegate>
 
+namespace Dream
+{
+    class AssetDefinition;
+    class SceneObjectDefinition;
+}
+
+using Dream::AssetDefinition;
+using Dream::SceneObjectDefinition;
+
 class SceneObjectPropertiesModel;
 
 class SceneObjectPropertiesTreeDelegate : public QItemDelegate
@@ -38,15 +47,15 @@ public slots:
     void onButton_CaptureTranslation(bool);
     void onButton_CaptureRotation(bool);
     void onButton_CaptureScale(bool);
-    void onButton_RemoveAsset(bool);
-    void onButton_RemoveChild(bool);
+    void onButton_RemoveAsset(bool,void*);
+    void onButton_RemoveChild(bool,void*);
 
 signals:
     void notifyButton_CaptureTranslation();
     void notifyButton_CaptureRotation();
     void notifyButton_CaptureScale();
-    void notifyButton_RemoveAsset();
-    void notifyButton_RemoveChild();
+    void notifyButton_RemoveAsset(AssetDefinition*);
+    void notifyButton_RemoveChild(SceneObjectDefinition*);
 
 protected:
     SceneObjectPropertiesModel *mModelHandle;
@@ -55,6 +64,6 @@ protected:
     QWidget* createCaptureRotationButton(QWidget* parent) const;
     QWidget* createCaptureScaleButton(QWidget* parent) const;
     QWidget* createTransformTypeComboBox(QWidget* parent) const;
-    QWidget* createRemoveAssetDefinitionButton(QWidget* parent) const;
-    QWidget* createRemoveChildButton(QWidget* parent) const;
+    QWidget* createRemoveAssetDefinitionButton(AssetDefinition* adHandle, QWidget* parent) const;
+    QWidget* createRemoveChildButton(SceneObjectDefinition* sodHandle, QWidget* parent) const;
 };

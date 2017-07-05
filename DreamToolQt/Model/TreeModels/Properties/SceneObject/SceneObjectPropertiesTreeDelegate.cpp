@@ -25,6 +25,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QToolButton>
+#include "../../TreeModelToolButton.h"
 
 #include "SceneObjectPropertiesModel.h"
 #include "SceneObjectPropertiesItem.h"
@@ -51,13 +52,12 @@ SceneObjectPropertiesTreeDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     SceneObjectPropertiesItem* sopItem = static_cast<SceneObjectPropertiesItem*>(index.internalPointer());
-
     switch (sopItem->getProperty())
     {
         case SCENE_OBJECT_PROPERTY_CHILD:
-            return createRemoveChildButton(parent);
+            return createRemoveChildButton(sopItem->getTargetSceneObjectDefinitionHandle(),parent);
         case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
-            return createRemoveAssetDefinitionButton(parent);
+            return createRemoveAssetDefinitionButton(sopItem->getTargetAssetDefinitionHandle(),parent);
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             return createCaptureTranslationButton(parent);
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
@@ -82,9 +82,7 @@ SceneObjectPropertiesTreeDelegate::createEditor
             return new QCheckBox(parent);
         case SCENE_OBJECT_PROPERTY_NONE:
             return new QLineEdit(parent);
-
     }
-
     return new QLineEdit(parent);
 }
 
@@ -209,18 +207,20 @@ SceneObjectPropertiesTreeDelegate::onButton_CaptureScale
 
 void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveAsset
-(bool)
+(bool, void* vHandle)
 {
     qDebug() << "SceneObjectPropertiesDelegate: RemoveAsset";
-    emit notifyButton_RemoveAsset();
+    AssetDefinition* adHandle = static_cast<AssetDefinition*>(vHandle);
+    emit notifyButton_RemoveAsset(adHandle);
 }
 
 void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveChild
-(bool)
+(bool, void* vHandle)
 {
     qDebug() << "SceneObjectPropertiesDelegate: RemoveChild";
-    emit notifyButton_RemoveChild();
+    SceneObjectDefinition* sodHandle = static_cast<SceneObjectDefinition*>(vHandle);
+    emit notifyButton_RemoveChild(sodHandle);
 }
 
 QWidget*
@@ -287,34 +287,34 @@ const
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createRemoveAssetDefinitionButton
-(QWidget *parent)
+(AssetDefinition* adHandle, QWidget *parent)
 const
 {
-    QToolButton* button = new QToolButton(parent);
+    TreeModelToolButton* button = new TreeModelToolButton(adHandle,parent);
     button->setText("Remove Asset");
     connect
     (
         button,
-        SIGNAL(clicked(bool)),
+        SIGNAL(notifyClickedWithData(bool,void*)),
         this,
-        SLOT(onButton_RemoveAsset(bool))
+        SLOT(onButton_RemoveAsset(bool,void*))
     );
     return button;
 }
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createRemoveChildButton
-(QWidget *parent)
+(SceneObjectDefinition* sodHandle, QWidget *parent)
 const
 {
-   QToolButton* button = new QToolButton(parent);
+   TreeModelToolButton* button = new TreeModelToolButton(sodHandle,parent);
    button->setText("Remove Child");
    connect
     (
         button,
-        SIGNAL(clicked(bool)),
+        SIGNAL(notifyClickedWithData(bool,void*)),
         this,
-        SLOT(onButton_RemoveChild(bool))
+        SLOT(onButton_RemoveChild(bool,void*))
     );
    return button;
 }

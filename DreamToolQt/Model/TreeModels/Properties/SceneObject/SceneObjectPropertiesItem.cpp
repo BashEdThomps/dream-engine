@@ -168,3 +168,23 @@ SceneObjectPropertiesItem::data
     }
     return QVariant();
 }
+
+SceneObjectDefinition* SceneObjectPropertiesItem::getTargetSceneObjectDefinitionHandle() const
+{
+    return mTargetSceneObjectDefinitionHandle;
+}
+
+void SceneObjectPropertiesItem::setTargetSceneObjectDefinitionHandle(SceneObjectDefinition* targetSceneObjectDefinitionHandle)
+{
+    mTargetSceneObjectDefinitionHandle = targetSceneObjectDefinitionHandle;
+}
+
+AssetDefinition* SceneObjectPropertiesItem::getTargetAssetDefinitionHandle() const
+{
+    return mTargetAssetDefinitionHandle;
+}
+
+void SceneObjectPropertiesItem::setTargetAssetDefinitionHandle(AssetDefinition* targetAssetDefinitionHandle)
+{
+    mTargetAssetDefinitionHandle = targetAssetDefinitionHandle;
+}
