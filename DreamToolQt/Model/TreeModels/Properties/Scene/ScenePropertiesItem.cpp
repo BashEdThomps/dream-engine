@@ -61,6 +61,10 @@ ScenePropertiesItem::data
     {
         switch (getProperty())
         {
+            case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
+                break;
+            case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
+                break;
             case SCENE_PROPERTY_NAME:
                 return QVariant(QString::fromStdString(mSceneDefinitionHandle->getName()));
             case SCENE_PROPERTY_NOTES:
@@ -120,6 +124,10 @@ ScenePropertiesItem::setData
     {
         switch(getProperty())
         {
+            case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
+                break;
+            case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
+                break;
             case SCENE_PROPERTY_NAME:
                 mSceneDefinitionHandle->setName(value.toString().toStdString());
                 break;

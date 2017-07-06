@@ -29,9 +29,14 @@ private:
     static const QString TEMPLATE_SHADER_PATH;
 public:
     explicit TemplatesModel(QObject *parent = 0);
+    ~TemplatesModel();
 
     QString getScriptTemplate(QString templateName);
+    QList<QString> getScriptTemplateNames();
+
     QString getShaderTemplate(QString templateName, QString fileName);
+    QList<QString> getShaderTemplateNames();
+
 
 signals:
 

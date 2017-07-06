@@ -165,18 +165,18 @@ SceneRuntime*
 DreamProjectModel::stopActiveSceneRuntime
 ()
 {
+    SceneRuntime *srHandle = nullptr;
     if (mProject)
     {
         ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
         if (prHandle)
         {
-            SceneRuntime* srHandle = prHandle->getActiveSceneRuntimeHandle();
+            srHandle = prHandle->getActiveSceneRuntimeHandle();
 
             if (srHandle)
             {
                 srHandle->setState(SCENE_STATE_STOPPED);
                 prHandle->resetActiveSceneRuntime();
-                return srHandle;
             }
         }
         mProject->resetProjectRuntime();

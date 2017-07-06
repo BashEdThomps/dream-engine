@@ -104,17 +104,17 @@ SceneObjectPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyButton_RemoveAsset()),
+        SIGNAL(notifyButton_RemoveAsset(AssetDefinition*)),
         this,
-        SLOT(onButton_RemoveAsset())
+        SLOT(onButton_RemoveAsset(AssetDefinition*))
     );
 
     connect
     (
         delegate,
-        SIGNAL(notifyButton_RemoveChild()),
+        SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*)),
         this,
-        SLOT(onButton_RemoveChild())
+        SLOT(onButton_RemoveChild(SceneObjectDefinition*))
     );
 }
 

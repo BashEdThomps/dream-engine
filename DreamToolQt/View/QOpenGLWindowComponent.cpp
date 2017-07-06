@@ -21,7 +21,6 @@ WindowInputState::WindowInputState
      downPressed(false),
      leftPressed(false),
      rightPressed(false)
-
 {
 
 }

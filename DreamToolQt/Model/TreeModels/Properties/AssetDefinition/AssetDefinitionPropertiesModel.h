@@ -26,12 +26,13 @@ using Dream::AssetDefinition;
 
 class ModelFileBrowseDelegate;
 class BrowseForAdditionalFilesDelegate;
+class TemplatesModel;
 
 class AssetDefinitionPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    AssetDefinitionPropertiesModel(AssetDefinition *definition, QTreeView *parent = 0);
+    AssetDefinitionPropertiesModel(AssetDefinition *definition, TemplatesModel* templatesModel, QTreeView *parent = 0);
     ~AssetDefinitionPropertiesModel();
 
     void createRoot() override;
@@ -74,6 +75,8 @@ public slots:
     void onButton_EditScript();
     void onButton_EditFragmentShader();
     void onButton_EditVertexShader();
+    void onCombo_ScriptTemplateChanged(const QString&);
+    void onCombo_ShaderTemplateChanged(const QString&);
 
 signals:
     void notifyButton_ModelFile(AssetDefinition*);
@@ -82,6 +85,7 @@ signals:
     void notifyButton_EditScript(AssetDefinition*);
     void notifyButton_EditFragmentShader(AssetDefinition*);
     void notifyButton_EditVertexShader(AssetDefinition*);
-
+    void notifyCombo_ScriptTemplateChanged(AssetDefinition*, const QString&);
+    void notifyCombo_ShaderTemplateChanged(AssetDefinition*, const QString&);
 };
 

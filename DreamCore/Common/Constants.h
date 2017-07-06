@@ -132,6 +132,7 @@ namespace Dream
         const static string SCENE_DEFAULT_NAME;
         // SceneObject ==========================================================
         const static string SCENE_OBJECT_ROOT_NAME;
+        const static string SCENE_OBJECT_DEFAULT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
         const static string SCENE_OBJECT_HAS_FOCUS;
         const static string SCENE_OBJECT_ASSET_INSTANCES;
@@ -226,6 +227,8 @@ namespace Dream
         // Shader ===============================================================
         const static string SHADER_FRAGMENT;
         const static string SHADER_VERTEX;
+        const static string SHADER_FRAGMENT_FILE_NAME;
+        const static string SHADER_VERTEX_FILE_NAME;
         // Lua ==================================================================
         const static string LUA_INIT_FUNCTION;
         const static string LUA_UPDATE_FUNCTION;

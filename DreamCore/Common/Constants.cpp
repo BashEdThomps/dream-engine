@@ -170,6 +170,7 @@ namespace Dream
     const string Constants::SCENE_DEFAULT_NAME = "Untitled Scene";
     // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
+    const string Constants::SCENE_OBJECT_DEFAULT_NAME = "New Scene Object";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
     const string Constants::SCENE_OBJECT_HAS_FOCUS = "hasFocus";
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
@@ -268,7 +269,16 @@ namespace Dream
     const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
     // Shader ===================================================================
     const string Constants::SHADER_FRAGMENT = ".frag";
-    const string Constants::SHADER_VERTEX = ".vert";
+    const string Constants::SHADER_VERTEX   = ".vert";
+
+    const string Constants::SHADER_FRAGMENT_FILE_NAME
+        = Constants::ASSET_FORMAT_SHADER_GLSL +
+          Constants::SHADER_FRAGMENT ;
+
+    const string Constants::SHADER_VERTEX_FILE_NAME
+        = Constants::ASSET_FORMAT_SHADER_GLSL +
+          Constants::SHADER_VERTEX;
+
     // Audio
     const size_t Constants::AUDIO_BUFFER_SIZE = 32768;
     // Window

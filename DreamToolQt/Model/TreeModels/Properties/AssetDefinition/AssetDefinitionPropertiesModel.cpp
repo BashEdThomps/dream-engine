@@ -20,6 +20,7 @@
 
 #include "AssetDefinitionPropertiesItem.h"
 #include "AssetDefinitionPropertiesTreeDelegate.h"
+#include "../../../TemplatesModel.h"
 
 #include <DreamCore.h>
 #include <QDebug>
@@ -27,8 +28,8 @@
 using Dream::Constants;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
-(AssetDefinition *definition, QTreeView* parent)
-    : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(this, parent), parent),
+(AssetDefinition *definition, TemplatesModel* templatesModel, QTreeView* parent)
+    : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(templatesModel, this, parent), parent),
       mAssetDefinitionHandle(definition)
 {
     qDebug() <<  "AssetDefinitionPropertiesModel: Constructing";
@@ -434,6 +435,24 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         this,
         SLOT(onButton_EditFragmentShader())
     );
+
+    // Script Template
+    connect
+    (
+        delegate,
+        SIGNAL(notifyCombo_ScriptTemplateChanged(const QString&)),
+        this,
+        SLOT(onCombo_ScriptTemplateChanged(const QString&))
+    );
+
+    // Shader Template
+    connect
+    (
+        delegate,
+        SIGNAL(notifyCombo_ShaderTemplateChanged(const QString&)),
+        this,
+        SLOT(onCombo_ShaderTemplateChanged(const QString&))
+    );
 }
 
 void
@@ -466,4 +485,20 @@ AssetDefinitionPropertiesModel::onButton_EditVertexShader
 {
     qDebug() << "AssetDefinitionPropertiesModel: EditVertexShader";
     emit notifyButton_EditVertexShader(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onCombo_ScriptTemplateChanged
+(const QString& templateName)
+{
+    qDebug() << "AssetDefinitionPropertiesModel: Script Template Changed";
+    emit notifyCombo_ScriptTemplateChanged(mAssetDefinitionHandle,templateName);
+}
+
+void
+AssetDefinitionPropertiesModel::onCombo_ShaderTemplateChanged
+(const QString& templateName)
+{
+    qDebug() << "AssetDefinitionPropertiesModel: Shader Template Changed";
+    emit notifyCombo_ShaderTemplateChanged(mAssetDefinitionHandle,templateName);
 }

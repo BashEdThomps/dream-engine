@@ -35,6 +35,7 @@
 #include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeModel.h"
 #include "../Model/TreeModels/Properties/AbstractPropertiesModel.h"
 #include "../Model/MacOSOpenModel.h"
+#include "../Model/TemplatesModel.h"
 
 #include "../View/MainWindow.h"
 #include "../View/GLView/Grid.h"
@@ -130,6 +131,9 @@ public slots:
     void onAssetDefinitionProperty_EditVertexShader(AssetDefinition* adHandle);
     void onAssetDefinitionProperty_EditFragmentShader(AssetDefinition* adHandle);
 
+    void onAssetDefinitionProperty_ScriptTemplateChanged(AssetDefinition*,const QString&);
+    void onAssetDefinitionProperty_ShaderTemplateChanged(AssetDefinition*,const QString&);
+
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);
@@ -182,6 +186,7 @@ private: // Variables
     QString mProjectDirectory;
     ProjectDirectoryModel mProjectDirectoryModel;
     PreferencesDialogController mPreferencesDialogController;
+    TemplatesModel mTemplatesModel;
 
     unique_ptr<QErrorMessage> mInvalidProjectDirectoryError;
     unique_ptr<QStringListModel> mSceneListModel;

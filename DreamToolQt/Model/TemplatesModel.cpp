@@ -15,27 +15,62 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "TemplatesModel.h"
+
+#include <QDir>
+#include <QDebug>
 
 const QString TemplatesModel::TEMPLATE_ROOT_PATH = ":/templates/";
 const QString TemplatesModel::TEMPLATE_SCRIPT_PATH = "script/";
 const QString TemplatesModel::TEMPLATE_SHADER_PATH = "shader/";
 
-TemplatesModel::TemplatesModel(QObject *parent) : QObject(parent)
+TemplatesModel::TemplatesModel
+(QObject *parent)
+    : QObject(parent)
 {
+    qDebug() << "TemplatesModel: Constructing";
 
+    qDebug() << "TemplatesModel: Scripts:"
+             << getScriptTemplateNames();
+
+    qDebug() << "TemplatesModel: Shaders:"
+             << getShaderTemplateNames();
+}
+
+TemplatesModel::~TemplatesModel
+()
+{
+    qDebug() << "TemplatesModel: Destructing";
 }
 
 QString
 TemplatesModel::getScriptTemplate
 (QString templateName)
 {
+    return QString();
+}
 
+QList<QString>
+TemplatesModel::getScriptTemplateNames
+()
+{
+    QDir scriptTenplatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SCRIPT_PATH);
+    return scriptTenplatesDir.entryList(QDir::AllDirs);
 }
 
 QString
 TemplatesModel::getShaderTemplate
 (QString templateName, QString fileName)
 {
+    return QString();
+}
+
+QList<QString>
+TemplatesModel::getShaderTemplateNames
+()
+{
+    QDir shaderTenplatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SHADER_PATH);
+    return shaderTenplatesDir.entryList(QDir::AllDirs);
 
 }

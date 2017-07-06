@@ -107,9 +107,12 @@
     </widget>
     <addaction name="menuNew"/>
     <addaction name="separator"/>
+    <addaction name="actionSceneRemoveScene"/>
+    <addaction name="separator"/>
     <addaction name="actionPlay"/>
     <addaction name="actionStop"/>
     <addaction name="actionReload"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -513,7 +516,7 @@
     <string>Run Project</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>Ctrl+]</string>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -573,7 +576,7 @@
     <string>Stop</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+W</string>
+    <string>Ctrl+[</string>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -686,6 +689,9 @@
    <property name="text">
     <string>Scene</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
   </action>
   <action name="actionSceneNewSceneObject">
    <property name="enabled">
@@ -694,6 +700,9 @@
    <property name="text">
     <string>Scene Object</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+M</string>
+   </property>
   </action>
   <action name="actionAssetMenuAddAssetToSelectedSceneObject">
    <property name="text">
@@ -701,6 +710,9 @@
    </property>
    <property name="toolTip">
     <string>Add a Scene Object to the selected item.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
   <action name="actionToggleHighlightSelection">
@@ -713,10 +725,21 @@
    <property name="text">
     <string>Highlight Selection</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+H</string>
+   </property>
   </action>
   <action name="actionDebug_DumpProjectDefinitionJson">
    <property name="text">
     <string>Dump Project Definition Json</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
+   </property>
+  </action>
+  <action name="actionSceneRemoveScene">
+   <property name="text">
+    <string>Remove Scene</string>
    </property>
   </action>
  </widget>

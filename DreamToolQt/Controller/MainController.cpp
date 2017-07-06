@@ -113,10 +113,19 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
         case AssetDefinitionTreeItemType::ASSET_DEFINITION:
             qDebug() << "MainController: Selected an asset definition";
             mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
-            mPropertiesModel.reset(new AssetDefinitionPropertiesModel(mSelectedAssetDefinitionHandle,propertiesTreeView));
+            mPropertiesModel.reset
+            (
+                new AssetDefinitionPropertiesModel
+                (
+                    mSelectedAssetDefinitionHandle,
+                    &mTemplatesModel,
+                    propertiesTreeView
+                )
+            );
 
             mMainWindowHandle->setPropertiesDockWidgetTitle("Asset Definition Properties");
 
+            // Model File
             connect
             (
                 mPropertiesModel.get(),
@@ -125,6 +134,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SLOT(onAssetDefinitionProperty_ModelFile(AssetDefinition*))
             );
 
+            // Model Additional Files
             connect
             (
                 mPropertiesModel.get(),
@@ -133,6 +143,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(AssetDefinition*))
             );
 
+            // Remove Files
             connect
             (
                 mPropertiesModel.get(),
@@ -141,6 +152,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SLOT(onAssetDefinitionProperty_RemoveFiles(AssetDefinition*))
             );
 
+            // Edit Script
             connect
             (
                 mPropertiesModel.get(),
@@ -149,6 +161,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SLOT(onAssetDefinitionProperty_EditScript(AssetDefinition*))
             );
 
+            // Edit Vertex Shader
             connect
             (
                 mPropertiesModel.get(),
@@ -157,6 +170,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SLOT(onAssetDefinitionProperty_EditVertexShader(AssetDefinition*))
             );
 
+            // Edit Fragment Shader
             connect
             (
                 mPropertiesModel.get(),
@@ -165,6 +179,23 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SLOT(onAssetDefinitionProperty_EditFragmentShader(AssetDefinition*))
             );
 
+            // Script Template
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyCombo_ScriptTemplateChanged(AssetDefinition*,const QString&)),
+                this,
+                SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(AssetDefinition*,const QString&))
+            );
+
+            // Shader Template
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyCombo_ShaderTemplateChanged(AssetDefinition*,const QString&)),
+                this,
+                SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(AssetDefinition*,const QString&))
+            );
             break;
 
         case AssetDefinitionTreeItemType::ASSET_TREE_NODE:
@@ -251,17 +282,17 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*)),
+                SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*,AssetDefinition*)),
                 this,
-                SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*))
+                SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,AssetDefinition*))
             );
 
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*)),
+                SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*)),
                 this,
-                SLOT(onSceneObjectProperty_RemoveChild(SceneObjectDefinition*))
+                SLOT(onSceneObjectProperty_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*))
             );
 
             if (mSelectionHighlighter)
@@ -863,6 +894,12 @@ MainController::onAction_Scene_NewSceneObject
 ()
 {
     qDebug() << "MainController: onScenegraphAddSceneObjectAction";
+    if (mSelectedSceneObjectDefinitionHandle)
+    {
+        mSelectedSceneObjectDefinitionHandle->createNewChildSceneObjectDefinition();
+                onUI_ScenegraphUpdated();
+
+    }
 }
 
 // Asset Menu
@@ -1074,6 +1111,7 @@ MainController::onUI_ScenegraphUpdated
 {
     qDebug() << "MainController: updating scenegraph tree model";
     mScenegraphTreeModel->setupModelData();
+    mMainWindowHandle->getScenegraphTreeView()->expandAll();
 }
 
 void
@@ -1082,6 +1120,7 @@ MainController::onUI_AssetDefinitionsUpdated
 {
     qDebug() << "MainController: updating scenegraph tree model";
     mAssetDefinitionTreeModel->setupModelData();
+    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -1302,6 +1341,52 @@ MainController::onAssetDefinitionProperty_EditFragmentShader
 }
 
 void
+MainController::onAssetDefinitionProperty_ScriptTemplateChanged
+(AssetDefinition* adHandle, const QString& templateName)
+{
+    qDebug() << "MainController: Script Template Changed";
+
+    auto result = QMessageBox::question
+    (
+        mMainWindowHandle,
+        "Apply Template?",
+        "This will overwrite the Script. Are you sure you want to continue?"
+    );
+
+    if (result == QMessageBox::Yes)
+    {
+        QString scriptContent = mTemplatesModel.getScriptTemplate(templateName);
+    }
+}
+
+void
+MainController::onAssetDefinitionProperty_ShaderTemplateChanged
+(AssetDefinition* adHandle, const QString& templateName)
+{
+    qDebug() << "MainController: Shader Template Changed";
+
+    auto result = QMessageBox::question
+    (
+        mMainWindowHandle,
+        "Apply Template?",
+        "This will overwrite the Shader. Are you sure you want to continue?"
+    );
+
+    if (result == QMessageBox::Yes)
+    {
+        QString fragmentContent = mTemplatesModel.getShaderTemplate
+        (
+            templateName,QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME)
+        );
+
+        QString vertexContent = mTemplatesModel.getShaderTemplate
+        (
+            templateName,QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME)
+        );
+    }
+}
+
+void
 MainController::onSceneObjectProperty_CaptureTranslation
 (SceneObjectDefinition*)
 {
@@ -1326,12 +1411,21 @@ void
 MainController::onSceneObjectProperty_RemoveAsset
 (SceneObjectDefinition* sodHandle,AssetDefinition* adHandle)
 {
-    qDebug() << "MainController: RemoveAsset";
+    qDebug() << "MainController: RemoveAsset"
+             << QString::fromStdString(adHandle->getNameAndUuidString())
+             << "from"
+             << QString::fromStdString(sodHandle->getNameAndUuidString());
+    sodHandle->removeAssetDefinitionFromLoadQueue(adHandle);
 }
 
 void
 MainController::onSceneObjectProperty_RemoveChild
 (SceneObjectDefinition* sodHandle, SceneObjectDefinition* sodChildHandle)
 {
-    qDebug() << "MainController: RemoveChild";
+    qDebug() << "MainController: RemoveChild"
+             << QString::fromStdString(sodChildHandle->getNameAndUuidString())
+             << "from"
+             << QString::fromStdString(sodHandle->getNameAndUuidString());
+    sodHandle->removeChildSceneObjectDefinition(sodChildHandle);
+    onUI_ScenegraphUpdated();
 }

@@ -19,6 +19,7 @@
 
 #include "AssetDefinitionPropertiesItem.h"
 #include "AssetDefinitionPropertiesModel.h"
+#include "../../../TemplatesModel.h"
 
 #include <DreamCore.h>
 #include <QDebug>
@@ -26,6 +27,7 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QHBoxLayout>
+#include <QStandardItemModel>
 
 #include <vector>
 
@@ -34,9 +36,10 @@ using Dream::Constants;
 using std::vector;
 
 AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
-(AssetDefinitionPropertiesModel* model, QObject* parent)
+(TemplatesModel* templatesModel, AssetDefinitionPropertiesModel* model, QObject* parent)
     : QItemDelegate (parent),
-      mModelHandle(model)
+      mModelHandle(model),
+      mTemplatesModelHandle(templatesModel)
 {
     qDebug() << "AssetDefinitionTreeDelegate: Constructing";
 }
@@ -133,9 +136,29 @@ const
     editor->setDuplicatesEnabled(false);
     editor->setEditable(false);
     editor->setMinimumHeight(25);
-    QStringList list;
-    list << QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA);
-    editor->addItems(list);
+
+    QString selectPrompt = "Select Template";
+    editor->addItem(selectPrompt);
+    int promptIndex = editor->findText(selectPrompt);
+    qobject_cast<QStandardItemModel*>
+    (
+        editor->model()
+    )->item(promptIndex)->setEnabled(false);
+
+    QStringList templates = mTemplatesModelHandle->getScriptTemplateNames();
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Got script templates"
+             << templates;
+    editor->addItems(templates);
+
+    editor->setCurrentIndex(promptIndex);
+
+    connect
+    (
+        editor,
+        SIGNAL(currentTextChanged(const QString&)),
+        this,
+        SLOT(onCombo_ScriptTemplateChanged(const QString&))
+    );
     return editor;
 }
 
@@ -148,10 +171,29 @@ const
     editor->setDuplicatesEnabled(false);
     editor->setEditable(false);
     editor->setMinimumHeight(25);
-    QStringList list;
-    list << QString::fromStdString(Constants::SHADER_VERTEX)
-         << QString::fromStdString(Constants::SHADER_FRAGMENT);
-    editor->addItems(list);
+
+    QString selectPrompt = "Select Template";
+    editor->addItem(selectPrompt);
+    int promptIndex = editor->findText(selectPrompt);
+    qobject_cast<QStandardItemModel*>
+    (
+        editor->model()
+    )->item(promptIndex)->setEnabled(false);
+
+    QStringList templates = mTemplatesModelHandle->getShaderTemplateNames();
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Got shader templates"
+             << templates;
+    editor->addItems(templates);
+
+    editor->setCurrentIndex(promptIndex);
+
+    connect
+    (
+        editor,
+        SIGNAL(currentTextChanged(const QString&)),
+        this,
+        SLOT(onCombo_ShaderTemplateChanged(const QString&))
+    );
     return editor;
 }
 
@@ -231,8 +273,15 @@ AssetDefinitionPropertiesTreeDelegate::createTemplateComboBox
 (AssetDefinitionPropertiesItem* adItem, QWidget* parent)
 const
 {
-    QComboBox *templateCombo = new QComboBox(parent);
-    return templateCombo;
+    if (adItem->getAssetDefinitionHandle()->isTypeScript())
+    {
+        return createScriptTemplateComboBox(adItem,parent);
+    }
+    else if (adItem->getAssetDefinitionHandle()->isTypeShader())
+    {
+        return createShaderTemplateComboBox(adItem,parent);
+    }
+    return new QComboBox();
 }
 
 QWidget*
@@ -401,6 +450,26 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
 {
    qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditScript was clicked";
    emit notifyButton_EditScript();
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onCombo_ScriptTemplateChanged
+(const QString& templateName)
+{
+
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Script Template"
+             << templateName << "selected";
+    emit notifyCombo_ScriptTemplateChanged(templateName);
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onCombo_ShaderTemplateChanged
+(const QString& templateName)
+{
+
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Shader Template"
+             << templateName << "selected";
+    emit notifyCombo_ShaderTemplateChanged(templateName);
 }
 
 

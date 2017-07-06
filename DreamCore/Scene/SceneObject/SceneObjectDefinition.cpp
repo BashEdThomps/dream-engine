@@ -16,13 +16,11 @@
  * this file belongs to.
  */
 #include "SceneObjectDefinition.h"
-
 #include "SceneObjectRuntime.h"
 
+#include "../../Components/AssetDefinition.h"
 #include "../../Common/Constants.h"
-
 #include "../../Components/Transform3D.h"
-
 #include "../../Utilities/Uuid.h"
 
 namespace Dream
@@ -81,10 +79,37 @@ namespace Dream
     }
 
     void
+    SceneObjectDefinition::addAssetDefinitionToLoadQueue
+    (AssetDefinition* adHandle)
+    {
+        addAssetDefinitionUuidToLoadQueue(adHandle->getUuid());
+    }
+
+    void
     SceneObjectDefinition::addAssetDefinitionUuidToLoadQueue
     (string uuid)
     {
         mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].push_back(uuid);
+    }
+
+    void
+    SceneObjectDefinition::removeAssetDefinitionUuidFromLoadQueue
+    (string uuid)
+    {
+        auto iter = find
+        (
+            begin(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
+            end(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
+            uuid
+        );
+        mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].erase(iter);
+    }
+
+    void
+    SceneObjectDefinition::removeAssetDefinitionFromLoadQueue
+    (AssetDefinition* adHandle)
+    {
+        removeAssetDefinitionUuidFromLoadQueue(adHandle->getUuid());
     }
 
     vector<string>
@@ -139,6 +164,49 @@ namespace Dream
         return list;
     }
 
+    void
+    SceneObjectDefinition::addChildSceneObjectDefinition
+    (SceneObjectDefinition* child)
+    {
+        mChildDefinitions.push_back(unique_ptr<SceneObjectDefinition>(child));
+    }
+
+    void
+    SceneObjectDefinition::removeChildSceneObjectDefinition
+    (SceneObjectDefinition* child)
+    {
+        auto iter = begin(mChildDefinitions);
+        auto endPos = end(mChildDefinitions);
+        while (iter != endPos)
+        {
+            if ((*iter).get() == child)
+            {
+                mChildDefinitions.erase(iter);
+                return;
+            }
+            iter++;
+        }
+    }
+
+    SceneObjectDefinition*
+    SceneObjectDefinition::createNewChildSceneObjectDefinition
+    ()
+    {
+        json defJson;
+        defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
+        defJson[Constants::UUID] = Uuid::generateUuid();
+
+        Transform3D transform;
+        defJson[Constants::TRANSFORM] = transform.getJson();
+
+        SceneObjectDefinition *soDefinition;
+        soDefinition = new SceneObjectDefinition(this,mSceneDefinitionHandle,defJson);
+
+        addChildSceneObjectDefinition(soDefinition);
+
+        return soDefinition;
+    }
+
     SceneDefinition*
     SceneObjectDefinition::getSceneDefinitionHandle
     ()
@@ -158,4 +226,5 @@ namespace Dream
         }
         return mJson;
     }
+
 }

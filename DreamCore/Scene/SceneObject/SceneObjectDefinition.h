@@ -31,6 +31,7 @@ using std::unique_ptr;
 
 namespace Dream
 {
+    class AssetDefinition;
     class SceneDefinition;
 
     class SceneObjectDefinition : public IDefinition
@@ -48,7 +49,12 @@ namespace Dream
         void setHasFocus(bool focus);
         bool hasFocus();
 
+        void addAssetDefinitionToLoadQueue(AssetDefinition* adHandle);
         void addAssetDefinitionUuidToLoadQueue(string uuid);
+
+        void removeAssetDefinitionFromLoadQueue(AssetDefinition* adHandle);
+        void removeAssetDefinitionUuidFromLoadQueue(string uuid);
+
         vector<string> getAssetDefinitionLoadQueue();
 
         Transform3D& getTransform();
@@ -56,6 +62,9 @@ namespace Dream
         void showStatus() override;
 
         vector<SceneObjectDefinition*> getChildDefinitionsHandleList();
+        void addChildSceneObjectDefinition(SceneObjectDefinition* child);
+        void removeChildSceneObjectDefinition(SceneObjectDefinition* child);
+        SceneObjectDefinition* createNewChildSceneObjectDefinition();
 
         SceneDefinition *getSceneDefinitionHandle();
         json getJson() override;

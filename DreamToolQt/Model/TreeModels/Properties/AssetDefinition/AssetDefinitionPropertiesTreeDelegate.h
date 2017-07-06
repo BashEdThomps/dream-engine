@@ -23,12 +23,13 @@
 #include "AssetDefinitionPropertiesItem.h"
 
 class AssetDefinitionPropertiesModel;
+class TemplatesModel;
 
 class AssetDefinitionPropertiesTreeDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    AssetDefinitionPropertiesTreeDelegate(AssetDefinitionPropertiesModel* model, QObject *parent = nullptr);
+    AssetDefinitionPropertiesTreeDelegate(TemplatesModel* tpModel, AssetDefinitionPropertiesModel* model, QObject *parent = nullptr);
     ~AssetDefinitionPropertiesTreeDelegate();
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -44,6 +45,9 @@ public slots:
     void onButton_EditFragmentShader(bool clicked);
     void onButton_EditScript(bool clicked);
 
+    void onCombo_ScriptTemplateChanged(const QString&);
+    void onCombo_ShaderTemplateChanged(const QString&);
+
 signals:
     void notifyButton_ModelFile();
     void notifyButton_ModelAdditionalFiles();
@@ -52,9 +56,13 @@ signals:
     void notifyButton_EditScript();
     void notifyButton_EditFragmentShader();
     void notifyButton_EditVertexShader();
+    void notifyCombo_ScriptTemplateChanged(const QString&);
+    void notifyCombo_ShaderTemplateChanged(const QString&);
+
 
 protected:
     AssetDefinitionPropertiesModel *mModelHandle;
+    TemplatesModel* mTemplatesModelHandle;
 
     QWidget *createFormatComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const;
     QWidget *createTypeComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const ;

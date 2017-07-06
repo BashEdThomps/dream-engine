@@ -62,7 +62,10 @@ MainWindow::setActionsEnabled_Scene_Modification
 {
     ui->actionSceneMenuNewScene->setEnabled(enabled);
     ui->actionSceneNewSceneObject->setEnabled(enabled);
+    ui->actionSceneRemoveScene->setEnabled(enabled);
+
     ui->actionAssetMenuAddAssetToSelectedSceneObject->setEnabled(enabled);
+
     mMenu_Asset_NewDefinition->setEnabled(enabled);
     setActionEnabled_Debug_DumpProjectDefinitionJson(enabled);
 }
