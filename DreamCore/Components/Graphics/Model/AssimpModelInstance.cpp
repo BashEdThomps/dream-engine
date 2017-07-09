@@ -221,6 +221,7 @@ namespace Dream
             cout << "AssimpModelInstance: Updating bounding box for "
                  << getNameAndUuidString() << endl;
         }
+
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {
             aiVector3D vertex = mesh->mVertices[i];
@@ -257,6 +258,21 @@ namespace Dream
                 mBoundingBox.minimum.z = vertex.z;
             }
         }
+
+        float maxBound;
+        maxBound = (
+            mBoundingBox.maximum.x > mBoundingBox.maximum.y ?
+            mBoundingBox.maximum.x :
+            mBoundingBox.maximum.y
+        );
+
+        maxBound = (
+            maxBound > mBoundingBox.maximum.z ?
+            maxBound :
+            mBoundingBox.maximum.z
+        );
+
+        mBoundingBox.maxDimension = maxBound;
     }
 
     void

@@ -23,12 +23,6 @@ namespace Dream
 {
     class PhysicsMotionState;
 
-    struct CompoundChild
-    {
-        btTransform transform;
-        string      uuid;
-    };
-
     class PhysicsObjectInstance : public IAssetInstance
     {
 
@@ -40,9 +34,7 @@ namespace Dream
         btMotionState *mMotionState;
         btRigidBody *mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
-        bool mKinematic;
         bool mInPhysicsWorld;
-        vector<CompoundChild> mCompoundChildren;
 
     public:
         PhysicsObjectInstance(AssetDefinition*,SceneObjectRuntime*);

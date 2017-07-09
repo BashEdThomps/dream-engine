@@ -20,6 +20,9 @@
 
 #include <QDir>
 #include <QDebug>
+#include <DreamCore.h>
+
+using Dream::Constants;
 
 const QString TemplatesModel::TEMPLATE_ROOT_PATH = ":/templates/";
 const QString TemplatesModel::TEMPLATE_SCRIPT_PATH = "script/";
@@ -48,6 +51,28 @@ QString
 TemplatesModel::getScriptTemplate
 (QString templateName)
 {
+    qDebug() << "TemplatesModel: Getting script template" << templateName;
+
+    QDir templatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SCRIPT_PATH);
+    QString scriptAbsPath = QDir(templatesDir.filePath(templateName)).filePath
+        (
+            QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA)
+        );
+
+    qDebug() << "TemplatesModel: from " << scriptAbsPath;
+
+    QFile scriptFile(scriptAbsPath);
+    if (scriptFile.exists())
+    {
+        scriptFile.open(QIODevice::ReadOnly);
+        QString templateContent = scriptFile.readAll();
+        scriptFile.close();
+        qDebug() << "TemplatesModel: Got Script"
+                 << endl
+                 << templateContent;
+        return templateContent;
+    }
+
     return QString();
 }
 
@@ -55,14 +80,34 @@ QList<QString>
 TemplatesModel::getScriptTemplateNames
 ()
 {
-    QDir scriptTenplatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SCRIPT_PATH);
-    return scriptTenplatesDir.entryList(QDir::AllDirs);
+    QDir scriptTemplatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SCRIPT_PATH);
+    return scriptTemplatesDir.entryList(QDir::AllDirs);
 }
 
 QString
 TemplatesModel::getShaderTemplate
 (QString templateName, QString fileName)
 {
+    qDebug() << "TemplatesModel: Getting shader template" << templateName
+             << "file" << fileName;
+
+    QDir templatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SHADER_PATH);
+    QString absPath = QDir(templatesDir.filePath(templateName)).filePath(fileName);
+
+    qDebug() << "TemplatesModel: from " << absPath;
+
+    QFile scriptFile(absPath);
+    if (scriptFile.exists())
+    {
+        scriptFile.open(QIODevice::ReadOnly);
+        QString templateContent = scriptFile.readAll();
+        scriptFile.close();
+        qDebug() << "TemplateModel: Got " << fileName
+                 << endl
+                 << templateContent;
+        return templateContent;
+    }
+
     return QString();
 }
 

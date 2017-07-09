@@ -93,6 +93,7 @@ public:
     QString createAssetTargetPath(AssetDefinition *adHandle, QString format = "");
     QString getAssetDataPath(AssetDefinition *adHandle);
     void touchFile(QString filePath);
+    bool writeAssetData(QString, AssetDefinition*,QString fileName = "", bool overwrite = true);
 
 private: // Variables
     ProjectDefinition* mProjectDefinitionHandle;

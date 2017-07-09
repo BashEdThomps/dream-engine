@@ -25,9 +25,11 @@
 #include <QDebug>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QCheckBox>
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QStandardItemModel>
+#include <QSpinBox>
 
 #include <vector>
 
@@ -40,6 +42,7 @@ AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
     : QItemDelegate (parent),
       mModelHandle(model),
       mTemplatesModelHandle(templatesModel)
+
 {
     qDebug() << "AssetDefinitionTreeDelegate: Constructing";
 }
@@ -94,8 +97,42 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createAudioFileButton
+(AssetDefinitionPropertiesItem*, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Audio File...");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_AudioFile(bool))
+    );
+    return editor;
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createFontFileButton
+(AssetDefinitionPropertiesItem*, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Font File...");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_FontFile(bool))
+    );
+    return editor;
+}
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createModelFileButton
-(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+(AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
     QToolButton *editor = new QToolButton(parent);
@@ -111,8 +148,25 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createPhysicsBvhTriangleMeshFileButton
+(AssetDefinitionPropertiesItem*, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Mesh File...");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_PhysicsBvhTriangleMeshFile(bool))
+    );
+    return editor;
+}
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createModelAdditionalFilesButton
-(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+(AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
     QToolButton *editor = new QToolButton(parent);
@@ -129,7 +183,7 @@ const
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createScriptTemplateComboBox
-(AssetDefinitionPropertiesItem* adItem, QWidget *parent)
+(AssetDefinitionPropertiesItem*, QWidget *parent)
 const
 {
     QComboBox *editor = new QComboBox(parent);
@@ -155,16 +209,17 @@ const
     connect
     (
         editor,
-        SIGNAL(currentTextChanged(const QString&)),
+        SIGNAL(activated(const QString&)),
         this,
         SLOT(onCombo_ScriptTemplateChanged(const QString&))
     );
+
     return editor;
 }
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createShaderTemplateComboBox
-(AssetDefinitionPropertiesItem* adItem, QWidget *parent)
+(AssetDefinitionPropertiesItem*, QWidget *parent)
 const
 {
     QComboBox *editor = new QComboBox(parent);
@@ -190,16 +245,17 @@ const
     connect
     (
         editor,
-        SIGNAL(currentTextChanged(const QString&)),
+        SIGNAL(activated(const QString&)),
         this,
         SLOT(onCombo_ShaderTemplateChanged(const QString&))
     );
+
     return editor;
 }
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createOpenVertexShaderInEditorButton
-(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+(AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
    QToolButton *button = new QToolButton(parent);
@@ -216,7 +272,7 @@ const
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createOpenFragmentShaderInEditorButton
-(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+(AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
    QToolButton *button = new QToolButton(parent);
@@ -234,7 +290,7 @@ const
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createOpenScriptInEditorButton
-(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+(AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
     QToolButton *button = new QToolButton(parent);
@@ -252,7 +308,7 @@ const
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createRemoveFilesButton
-(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
+(AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
     QToolButton *button = new QToolButton(parent);
@@ -286,41 +342,93 @@ const
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createEditor
-(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index)
+(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index)
 const
 {
     AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
+    QDoubleSpinBox *spinBox = nullptr;
 
     switch(adItem->getProperty())
     {
+            // QCheckBox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+            return new QCheckBox(parent);
+
+            // QDoubleSpinBox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
+            spinBox = new QDoubleSpinBox(parent);
+            return spinBox;
+
+            //QDoubleSpinBox 0.0 - 1.0
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
+            spinBox = new QDoubleSpinBox(parent);
+            spinBox->setRange(0.0,1.0);
+            spinBox->setDecimals(3);
+            return spinBox;
+
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+            return createPhysicsBvhTriangleMeshFileButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_TEMPLATE:
             return createTemplateComboBox(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
             return createRemoveFilesButton(adItem, parent);
-        case ASSET_DEFINITION_PROPERTY_NAME:
-            return new QLineEdit(parent);
+
         case ASSET_DEFINITION_PROPERTY_TYPE:
             return createTypeComboBox(adItem, parent);
+
         case ASSET_DEFINITION_PROPERTY_FORMAT:
             return createFormatComboBox(adItem,parent);
-        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
-            break;
+
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
-            break;
+            return createAudioFileButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
-            break;
+            return createFontFileButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
             return createModelFileButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
             return createModelAdditionalFilesButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
             return createOpenScriptInEditorButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
             return createOpenVertexShaderInEditorButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
             return createOpenFragmentShaderInEditorButton(adItem,parent);
+
+            // Not Used
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
+        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
-            break;
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_NAME:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_NONE:
             return new QLineEdit(parent);
     }
@@ -333,20 +441,51 @@ AssetDefinitionPropertiesTreeDelegate::setEditorData
 const
 {
     AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
-    QString value = index.model()->data(index, Qt::DisplayRole).toString();
+    QVariant value = index.model()->data(index, Qt::DisplayRole);
 
     switch(adItem->getProperty())
     {
-        case ASSET_DEFINITION_PROPERTY_NAME:
-            static_cast<QLineEdit*>(editor)->setText(value);
-            break;
-        case ASSET_DEFINITION_PROPERTY_TYPE:
-            static_cast<QComboBox*>(editor)->addItem(index.model()->data(index, Qt::DisplayRole).toString());
-            break;
-        case ASSET_DEFINITION_PROPERTY_FORMAT:
-            static_cast<QComboBox*>(editor)->setCurrentText(value);
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+            static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
             break;
 
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
+            static_cast<QDoubleSpinBox*>(editor)->setValue(value.toDouble());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_NAME:
+            static_cast<QLineEdit*>(editor)->setText(value.toString());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_TYPE:
+        case ASSET_DEFINITION_PROPERTY_FORMAT:
+            static_cast<QComboBox*>(editor)->setCurrentText(value.toString());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_TEMPLATE:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
@@ -359,6 +498,7 @@ const
         case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
             break;
     }
 }
@@ -371,15 +511,53 @@ const
     AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
     switch(adItem->getProperty())
     {
+        // QCheckBox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+            model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
+            break;
+
+        // QDoubleSpinBox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
+            model->setData(index,static_cast<QDoubleSpinBox*>(editor)->value());
+            break;
+
+        // QLineEdit
         case ASSET_DEFINITION_PROPERTY_NAME:
             model->setData(index,static_cast<QLineEdit*>(editor)->text());
             break;
+
+        // QComboBox
         case ASSET_DEFINITION_PROPERTY_TYPE:
-            model->setData(index,static_cast<QComboBox*>(editor)->currentText());
-            break;
         case ASSET_DEFINITION_PROPERTY_FORMAT:
             model->setData(index,static_cast<QComboBox*>(editor)->currentText());
             break;
+
+        // Not Used
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_TEMPLATE:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
@@ -398,23 +576,48 @@ const
 
 void
 AssetDefinitionPropertiesTreeDelegate::updateEditorGeometry
-(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index)
+(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&)
 const
 {
     editor->setGeometry(option.rect);
 }
 
 void
+AssetDefinitionPropertiesTreeDelegate::onButton_AudioFile
+(bool)
+{
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: AudioFile was clicked";
+    emit notifyButton_AudioFile();
+}
+
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_FontFile
+(bool)
+{
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: FontFile was clicked";
+    emit notifyButton_FontFile();
+}
+
+void
 AssetDefinitionPropertiesTreeDelegate::onButton_ModelFile
-(bool clicked)
+(bool)
 {
     qDebug() << "AssetDefinitionPropertiesTreeDelegate: ModelFile was clicked";
     emit notifyButton_ModelFile();
 }
 
 void
+AssetDefinitionPropertiesTreeDelegate::onButton_PhysicsBvhTriangleMeshFile
+(bool)
+{
+    qDebug() << "AssetDefinitionPropertiesTreeDelegate: PhysicsBvhTriangleMeshFile was clicked";
+    emit notifyButton_PhysicsBvhTriangleMeshFile();
+}
+
+void
 AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFiles
-(bool clicked)
+(bool)
 {
     qDebug() << "AssetDefinitionPropertiesTreeDelegate: ModelAdditionalFiles was clicked";
     emit notifyButton_ModelAdditionalFiles();
@@ -422,7 +625,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFiles
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_RemoveFiles
-(bool clicked)
+(bool)
 {
    qDebug() << "AssetDefinitionPropertiesTreeDelegate: RemoveFiles was clicked";
    emit notifyButton_RemoveFiles();
@@ -430,7 +633,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_RemoveFiles
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_EditVertexShader
-(bool clicked)
+(bool)
 {
    qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditVertexShader was clicked";
    emit notifyButton_EditVertexShader();
@@ -438,7 +641,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditVertexShader
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_EditFragmentShader
-(bool clicked)
+(bool)
 {
    qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditFragmentShader was clicked";
    emit notifyButton_EditFragmentShader();
@@ -446,7 +649,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditFragmentShader
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
-(bool clicked)
+(bool)
 {
    qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditScript was clicked";
    emit notifyButton_EditScript();
@@ -466,10 +669,7 @@ void
 AssetDefinitionPropertiesTreeDelegate::onCombo_ShaderTemplateChanged
 (const QString& templateName)
 {
-
     qDebug() << "AssetDefinitionPropertiesTreeDelegate: Shader Template"
              << templateName << "selected";
     emit notifyCombo_ShaderTemplateChanged(templateName);
 }
-
-

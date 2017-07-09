@@ -759,6 +759,23 @@ ProjectDirectoryModel::touchFile
     newFile.close();
 }
 
+bool
+ProjectDirectoryModel::writeAssetData
+(QString data, AssetDefinition* adHandle, QString fileName, bool overwrite)
+{
+    bool retval = false;
+    QString absPath = createAssetTargetPath(adHandle,fileName);
+    QFile file(absPath);
+
+    if (!file.exists() || overwrite)
+    {
+        file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+        retval = file.write(data.toUtf8());
+        file.close();
+    }
+    return retval;
+}
+
 QString
 ProjectDirectoryModel::createAssetTargetPath
 (AssetDefinition* adHandle, QString format)

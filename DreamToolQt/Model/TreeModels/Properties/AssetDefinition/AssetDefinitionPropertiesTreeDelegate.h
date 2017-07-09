@@ -24,6 +24,7 @@
 
 class AssetDefinitionPropertiesModel;
 class TemplatesModel;
+class QComboBox;
 
 class AssetDefinitionPropertiesTreeDelegate : public QItemDelegate
 {
@@ -38,17 +39,21 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 public slots:
+    void onButton_AudioFile(bool);
+    void onButton_FontFile(bool);
     void onButton_ModelFile(bool);
     void onButton_ModelAdditionalFiles(bool);
     void onButton_RemoveFiles(bool clicked);
     void onButton_EditVertexShader(bool clicked);
     void onButton_EditFragmentShader(bool clicked);
     void onButton_EditScript(bool clicked);
-
+    void onButton_PhysicsBvhTriangleMeshFile(bool clicked);
     void onCombo_ScriptTemplateChanged(const QString&);
     void onCombo_ShaderTemplateChanged(const QString&);
 
 signals:
+    void notifyButton_AudioFile();
+    void notifyButton_FontFile();
     void notifyButton_ModelFile();
     void notifyButton_ModelAdditionalFiles();
     void notifyButton_RemoveFiles();
@@ -56,6 +61,9 @@ signals:
     void notifyButton_EditScript();
     void notifyButton_EditFragmentShader();
     void notifyButton_EditVertexShader();
+
+    void notifyButton_PhysicsBvhTriangleMeshFile();
+
     void notifyCombo_ScriptTemplateChanged(const QString&);
     void notifyCombo_ShaderTemplateChanged(const QString&);
 
@@ -66,7 +74,9 @@ protected:
 
     QWidget *createFormatComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const;
     QWidget *createTypeComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const ;
+    QWidget *createFontFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createModelFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
+    QWidget *createAudioFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createModelAdditionalFilesButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createScriptTemplateComboBox(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createShaderTemplateComboBox(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
@@ -75,4 +85,5 @@ protected:
     QWidget *createOpenScriptInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createRemoveFilesButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createTemplateComboBox(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget *createPhysicsBvhTriangleMeshFileButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
 };

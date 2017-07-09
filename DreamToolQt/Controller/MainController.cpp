@@ -125,6 +125,24 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
 
             mMainWindowHandle->setPropertiesDockWidgetTitle("Asset Definition Properties");
 
+            // Audio File
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_AudioFile(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_AudioFile(AssetDefinition*))
+            );
+
+            // Font File
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_FontFile(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_FontFile(AssetDefinition*))
+            );
+
             // Model File
             connect
             (
@@ -183,18 +201,27 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyCombo_ScriptTemplateChanged(AssetDefinition*,const QString&)),
+                SIGNAL(notifyCombo_ScriptTemplateChanged(AssetDefinition*,QString)),
                 this,
-                SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(AssetDefinition*,const QString&))
+                SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(AssetDefinition*,QString))
             );
 
             // Shader Template
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyCombo_ShaderTemplateChanged(AssetDefinition*,const QString&)),
+                SIGNAL(notifyCombo_ShaderTemplateChanged(AssetDefinition*,QString)),
                 this,
-                SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(AssetDefinition*,const QString&))
+                SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(AssetDefinition*,QString))
+            );
+
+            // PhysicsObject Mesh File
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(AssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(AssetDefinition*))
             );
             break;
 
@@ -1068,6 +1095,56 @@ MainController::onAssetDefinitionProperty_ModelFile
 }
 
 void
+MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
+(AssetDefinition* adHandle)
+{
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::ExistingFile);
+    openDialog.setDirectory(QDir::home());
+
+    if(openDialog.exec())
+    {
+
+        QString sourceFilePath = openDialog.selectedFiles().first();
+        QFile sourceFile(sourceFilePath);
+
+        qDebug() << "MainController: Using BvhTriangleMesh file"
+                 << sourceFilePath;
+
+        bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
+
+        if (fileExists)
+        {
+            QString fileName = QFileInfo(sourceFile).fileName();
+            auto result = QMessageBox::question
+            (
+                mMainWindowHandle,
+                "Overwrite Existing File?",
+                "An asset file all ready exists. Do you want to replace it?"
+            );
+            if (result != QMessageBox::Yes)
+            {
+                qDebug() << "MainController: Copy of" << fileName
+                         <<"was cancelled.";
+               return;
+            }
+
+            if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
+            {
+                qDebug() << "MainController: Error, unable to delete main asset file for"
+                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                return;
+            }
+        }
+
+        bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
+
+        qDebug() << "MainController: Copy "
+                 << (copyResult ? "Success":"Failed");
+    }
+}
+
+void
 MainController::onAssetDefinitionProperty_ModelAdditionalFiles
 (AssetDefinition* adHandle)
 {
@@ -1277,6 +1354,115 @@ MainController::onAction_Debug_DumpProjectDefinitionJson
 }
 
 void
+MainController::onAssetDefinitionProperty_AudioFile
+(AssetDefinition* adHandle)
+{
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::ExistingFile);
+    openDialog.setDirectory(QDir::home());
+
+    QStringList filters;
+    filters << "*.wav" << "*.ogg";
+    openDialog.setNameFilters(filters);
+
+    if(openDialog.exec())
+    {
+
+        QString sourceFilePath = openDialog.selectedFiles().first();
+        QFile sourceFile(sourceFilePath);
+
+        qDebug() << "MainController: Using Audio file"
+                 << sourceFilePath;
+
+        bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
+
+        if (fileExists)
+        {
+            QString fileName = QFileInfo(sourceFile).fileName();
+            auto result = QMessageBox::question
+            (
+                mMainWindowHandle,
+                "Overwrite Existing File?",
+                "An asset file all ready exists. Do you want to replace it?"
+            );
+            if (result != QMessageBox::Yes)
+            {
+                qDebug() << "MainController: Copy of" << fileName
+                         <<"was cancelled.";
+               return;
+            }
+
+            if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
+            {
+                qDebug() << "MainController: Error, unable to delete main asset file for"
+                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                return;
+            }
+        }
+
+        bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
+
+        qDebug() << "MainController: Copy "
+                 << (copyResult ? "Success":"Failed");
+    }
+}
+
+void
+MainController::onAssetDefinitionProperty_FontFile
+(AssetDefinition* adHandle)
+{
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::ExistingFile);
+    openDialog.setDirectory(QDir::home());
+
+    QStringList filters;
+    filters << "*.ttf";
+    openDialog.setNameFilters(filters);
+
+
+    if(openDialog.exec())
+    {
+
+        QString sourceFilePath = openDialog.selectedFiles().first();
+        QFile sourceFile(sourceFilePath);
+
+        qDebug() << "MainController: Using Font file"
+                 << sourceFilePath;
+
+        bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
+
+        if (fileExists)
+        {
+            QString fileName = QFileInfo(sourceFile).fileName();
+            auto result = QMessageBox::question
+            (
+                mMainWindowHandle,
+                "Overwrite Existing File?",
+                "An asset file all ready exists. Do you want to replace it?"
+            );
+            if (result != QMessageBox::Yes)
+            {
+                qDebug() << "MainController: Copy of" << fileName
+                         <<"was cancelled.";
+               return;
+            }
+
+            if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
+            {
+                qDebug() << "MainController: Error, unable to delete main asset file for"
+                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                return;
+            }
+        }
+
+        bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
+
+        qDebug() << "MainController: Copy "
+                 << (copyResult ? "Success":"Failed");
+    }
+}
+
+void
 MainController::onAssetDefinitionProperty_RemoveFiles
 (AssetDefinition* adHandle)
 {
@@ -1346,17 +1532,9 @@ MainController::onAssetDefinitionProperty_ScriptTemplateChanged
 {
     qDebug() << "MainController: Script Template Changed";
 
-    auto result = QMessageBox::question
-    (
-        mMainWindowHandle,
-        "Apply Template?",
-        "This will overwrite the Script. Are you sure you want to continue?"
-    );
+    QString scriptContent = mTemplatesModel.getScriptTemplate(templateName);
 
-    if (result == QMessageBox::Yes)
-    {
-        QString scriptContent = mTemplatesModel.getScriptTemplate(templateName);
-    }
+    mProjectDirectoryModel.writeAssetData(scriptContent,adHandle);
 }
 
 void
@@ -1365,25 +1543,33 @@ MainController::onAssetDefinitionProperty_ShaderTemplateChanged
 {
     qDebug() << "MainController: Shader Template Changed";
 
-    auto result = QMessageBox::question
+    QString fragmentContent = mTemplatesModel.getShaderTemplate
     (
-        mMainWindowHandle,
-        "Apply Template?",
-        "This will overwrite the Shader. Are you sure you want to continue?"
+        templateName,
+        QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME)
     );
 
-    if (result == QMessageBox::Yes)
-    {
-        QString fragmentContent = mTemplatesModel.getShaderTemplate
-        (
-            templateName,QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME)
-        );
+    mProjectDirectoryModel.writeAssetData
+    (
+        fragmentContent,
+        adHandle,
+        QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME),
+        true
+    );
 
-        QString vertexContent = mTemplatesModel.getShaderTemplate
-        (
-            templateName,QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME)
-        );
-    }
+    QString vertexContent = mTemplatesModel.getShaderTemplate
+    (
+        templateName,
+        QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME)
+    );
+
+    mProjectDirectoryModel.writeAssetData
+    (
+        vertexContent,
+        adHandle,
+        QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME),
+        true
+    );
 }
 
 void

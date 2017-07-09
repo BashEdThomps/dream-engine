@@ -31,6 +31,7 @@
 #include "SceneObjectPropertiesItem.h"
 
 using Dream::Constants;
+using std::numeric_limits;
 
 SceneObjectPropertiesTreeDelegate::SceneObjectPropertiesTreeDelegate
 (SceneObjectPropertiesModel* model, QObject* parent)
@@ -52,6 +53,7 @@ SceneObjectPropertiesTreeDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     SceneObjectPropertiesItem* sopItem = static_cast<SceneObjectPropertiesItem*>(index.internalPointer());
+    QDoubleSpinBox* spinbox = nullptr;
     switch (sopItem->getProperty())
     {
         case SCENE_OBJECT_PROPERTY_CHILD:
@@ -75,7 +77,10 @@ SceneObjectPropertiesTreeDelegate::createEditor
         case SCENE_OBJECT_PROPERTY_SCALE_X:
         case SCENE_OBJECT_PROPERTY_SCALE_Y:
         case SCENE_OBJECT_PROPERTY_SCALE_Z:
-            return new QDoubleSpinBox(parent);
+            spinbox = new QDoubleSpinBox(parent);
+            spinbox->setRange(numeric_limits<double>::lowest(), numeric_limits<double>::max());
+            spinbox->setDecimals(3);
+            return spinbox;
         case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
             return createTransformTypeComboBox(parent);
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:

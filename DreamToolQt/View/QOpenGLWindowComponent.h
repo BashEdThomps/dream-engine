@@ -21,6 +21,9 @@ public:
     int  mouseLastX;
     int  mouseLastY;
 
+    int mouseWheelLastX;
+    int mouseWheelLastY;
+
     bool shiftPressed;
     bool altPressed;
     bool ctrlPressed;
@@ -66,6 +69,7 @@ protected:
     void resizeGL( int w, int h ) override;
     void paintGL() override;
     void updateInputState();
+    void wheelEvent(QWheelEvent* event) override;
 
 private:
     ProjectRuntime* mProjectRuntimeHandle;

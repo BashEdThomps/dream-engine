@@ -22,6 +22,7 @@
 #include <json.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>
 
@@ -54,6 +55,7 @@ namespace Dream
     void setTranslationZ(float);
     btVector3 getTranslationAsBtVector3();
     btQuaternion getOrientationAsBtQuaternion();
+    btTransform getTransformAsBtTransform();
 
     quat getOrientation();
     void setOrientation(float,float,float,float);

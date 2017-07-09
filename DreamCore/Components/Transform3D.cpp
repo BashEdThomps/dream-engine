@@ -374,6 +374,16 @@ namespace Dream
         return quat;
     }
 
+    btTransform
+    Transform3D::getTransformAsBtTransform
+    ()
+    {
+        btTransform transform;
+        transform.setRotation(getOrientationAsBtQuaternion());
+        transform.setOrigin(getTranslationAsBtVector3());
+        return transform;
+    }
+
     btVector3
     Transform3D::getRotationAsBtVector3
     ()

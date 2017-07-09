@@ -197,6 +197,7 @@ namespace Dream
         defJson[Constants::UUID] = Uuid::generateUuid();
 
         Transform3D transform;
+        transform.setScale(1.0f,1.0f,1.0f);
         defJson[Constants::TRANSFORM] = transform.getJson();
 
         SceneObjectDefinition *soDefinition;

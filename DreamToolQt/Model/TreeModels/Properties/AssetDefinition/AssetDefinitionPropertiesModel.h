@@ -44,48 +44,80 @@ public:
 private:
     AssetDefinition* mAssetDefinitionHandle;
 
-    void createAudioLoopProperty();
-    void createAudioFileProperty();
-    void createFontColorProperty();
-    void createFontSizeProperty();
-    void createFontFileProperty();
-    void createLightColorProperty();
-    void createModelFileProperty();
-    void createModelAdditionalFilesProperty();
-    void craetePhysicsCollisionShapeProperty();
-    void createPhysicsMassProperty();
-    void createPhysicsMarginProperty();
-    void createPhysicsKinematicProperty();
-    void createTemplateProperty();
-    void createSpriteTileSizeProperty();
-    void createSpriteFileProperty();
     void createFormatProperty();
     void createTypeProperty();
     void createNameProperty();
+    void createRemoveFilesProperty();
+    void createTemplateProperty();
+
+    void createAudioLoopProperty();
+    void createAudioFileProperty();
+
+    void createFontColorProperty();
+    void createFontSizeProperty();
+    void createFontFileProperty();
+
+    void createLightColorProperty();
+
+    void createModelFileProperty();
+    void createModelAdditionalFilesProperty();
+
+    void createPhysicsMassProperty();
+    void createPhysicsMarginProperty();
+    void createPhysicsKinematicProperty();
+    void createPhysicsHalfExtentsProperty();
+    void createPhysicsConstantProperty();
+    void createPhysicsNormalProperty();
+    void createPhysicsRadiusProperty();
+    void createPhysicsBvhTriangleMeshFileProperty();
+
+    void createSpriteTileSizeProperty();
+    void createSpriteFileProperty();
+
     void createShaderEditProperties();
     void createShaderEditVertexProperty();
     void createShaderEditFragmentProperty();
+
     void createScriptFileProperty();
-    void createRemoveFilesProperty();
+
 
 public slots:
+    void onButton_RemoveFiles();
+
+    void onButton_AudioFile();
+
+    void onButton_FontFile();
+
     void onButton_ModelFile();
     void onButton_ModelAdditionalFiles();
-    void onButton_RemoveFiles();
+
+
     void onButton_EditScript();
+    void onCombo_ScriptTemplateChanged(const QString&);
+
     void onButton_EditFragmentShader();
     void onButton_EditVertexShader();
-    void onCombo_ScriptTemplateChanged(const QString&);
     void onCombo_ShaderTemplateChanged(const QString&);
 
+    void onButton_PhysicsBvhTriangleMeshFile();
+
 signals:
+    void notifyButton_RemoveFiles(AssetDefinition*);
+
+    void notifyButton_AudioFile(AssetDefinition*);
+
+    void notifyButton_FontFile(AssetDefinition*);
+
     void notifyButton_ModelFile(AssetDefinition*);
     void notifyButton_ModelAdditionalFiles(AssetDefinition*);
-    void notifyButton_RemoveFiles(AssetDefinition*);
+
     void notifyButton_EditScript(AssetDefinition*);
+    void notifyCombo_ScriptTemplateChanged(AssetDefinition*, const QString&);
+
     void notifyButton_EditFragmentShader(AssetDefinition*);
     void notifyButton_EditVertexShader(AssetDefinition*);
-    void notifyCombo_ScriptTemplateChanged(AssetDefinition*, const QString&);
     void notifyCombo_ShaderTemplateChanged(AssetDefinition*, const QString&);
+
+    void notifyButton_PhysicsBvhTriangleMeshFile(AssetDefinition*);
 };
 

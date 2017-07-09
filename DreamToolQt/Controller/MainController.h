@@ -123,6 +123,10 @@ public slots:
     void onAction_Asset_NewDefinition_Sprite();
     void onAction_Debug_DumpProjectDefinitionJson(bool toggled);
 
+    void onAssetDefinitionProperty_AudioFile(AssetDefinition* adHandle);
+
+    void onAssetDefinitionProperty_FontFile(AssetDefinition* adHandle);
+
     void onAssetDefinitionProperty_ModelFile(AssetDefinition* adHandle);
     void onAssetDefinitionProperty_ModelAdditionalFiles(AssetDefinition* adHandle);
     void onAssetDefinitionProperty_RemoveFiles(AssetDefinition* adHandle);
@@ -131,16 +135,17 @@ public slots:
     void onAssetDefinitionProperty_EditVertexShader(AssetDefinition* adHandle);
     void onAssetDefinitionProperty_EditFragmentShader(AssetDefinition* adHandle);
 
-    void onAssetDefinitionProperty_ScriptTemplateChanged(AssetDefinition*,const QString&);
-    void onAssetDefinitionProperty_ShaderTemplateChanged(AssetDefinition*,const QString&);
+    void onAssetDefinitionProperty_ScriptTemplateChanged(AssetDefinition*, const QString&);
+    void onAssetDefinitionProperty_ShaderTemplateChanged(AssetDefinition*, const QString&);
 
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);
 
-    void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,AssetDefinition*);
-    void onSceneObjectProperty_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*);
+    void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*, AssetDefinition*);
+    void onSceneObjectProperty_RemoveChild(SceneObjectDefinition*, SceneObjectDefinition*);
 
+    void onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(AssetDefinition* adHandle);
 
 private: // Methods
     // Setup

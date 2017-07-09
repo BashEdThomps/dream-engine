@@ -58,7 +58,6 @@ namespace Dream
     PhysicsObjectInstance::PhysicsObjectInstance
     (AssetDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
-          mKinematic(false),
           mInPhysicsWorld(false)
     {
         if (Constants::DEBUG)
@@ -122,46 +121,6 @@ namespace Dream
     PhysicsObjectInstance::loadExtraAttributes
     (nlohmann::json jsonData, AssetDefinition* definition, bool isChild)
     {
-        if (!isChild)
-        {
-            // Kinematic
-            if (!jsonData[Constants::ASSET_ATTR_KINEMATIC].is_null())
-            {
-                mKinematic = static_cast<bool>(jsonData[Constants::ASSET_ATTR_KINEMATIC]);
-            }
-            else
-            {
-                mKinematic = false;
-            }
-            // Compound Children
-            if (definition->getFormat().compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
-            {
-                nlohmann::json compoundChildArray = jsonData[Constants::ASSET_ATTR_COMPOUND_CHILDREN];
-                if (!compoundChildArray.is_null() && compoundChildArray.is_array())
-                {
-                    for (nlohmann::json childJson : compoundChildArray)
-                    {
-                        CompoundChild child;
-                        child.uuid = childJson[Constants::UUID];
-                        Transform3D childTransform(childJson[Constants::TRANSFORM]);
-
-                        child.transform.setOrigin(btVector3(childTransform.getTranslationAsBtVector3()));
-                        child.transform.setRotation(childTransform.getOrientationAsBtQuaternion());
-
-                        if (Constants::DEBUG)
-                        {
-                            cout << "PhysicsObjectInstance: Adding compound child "
-                                 << child.uuid
-                                 << " to parent "
-                                 << mUuid
-                                 << endl;
-                        }
-
-                        mCompoundChildren.push_back(child);
-                    }
-                }
-            }
-        }
     }
 
     bool
@@ -181,14 +140,24 @@ namespace Dream
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);
-        mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(btScalar(mass), mMotionState, mCollisionShape, inertia);
+        mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo
+        (
+            btScalar(mass),
+            mMotionState,
+            mCollisionShape,
+            inertia
+        );
+
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
-        if (mKinematic)
+
+        if (mDefinitionHandle->getPhysicsObjectKinematic())
         {
             mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
             mRigidBody->setActivationState(DISABLE_DEACTIVATION);
         }
+
         mLoaded = (mRigidBody != nullptr);
+
         return mLoaded;
     }
 
@@ -201,15 +170,15 @@ namespace Dream
 
         if (format.compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
         {
-            btScalar radius = definition->getJson()[Constants::ASSET_ATTR_RADIUS];
+            btScalar radius = definition->getPhysicsObjectRadius();
             collisionShape = new btSphereShape(radius);
         }
         else if (format.compare(Constants::COLLISION_SHAPE_BOX) == 0)
         {
             btScalar boxX, boxY, boxZ;
-            boxX = definition->getJson()[Constants::ASSET_ATTR_SIZE][Constants::X];
-            boxY = definition->getJson()[Constants::ASSET_ATTR_SIZE][Constants::Y];
-            boxZ = definition->getJson()[Constants::ASSET_ATTR_SIZE][Constants::Z];
+            boxX = definition->getPhysicsObjectHalfExtentsX();
+            boxY = definition->getPhysicsObjectHalfExtentsY();
+            boxZ = definition->getPhysicsObjectHalfExtentsZ();
             collisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CYLINDER) == 0)
@@ -256,12 +225,14 @@ namespace Dream
         }
         else if (format.compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
         {
-            float x = definition->getJson()[Constants::ASSET_ATTR_NORMAL][Constants::X];
-            float y = definition->getJson()[Constants::ASSET_ATTR_NORMAL][Constants::Y];
-            float z = definition->getJson()[Constants::ASSET_ATTR_NORMAL][Constants::Z];
-            float constant = definition->getJson()[Constants::ASSET_ATTR_CONSTANT];
+            float x = definition->getPhysicsObjectNormalX();
+            float y = definition->getPhysicsObjectNormalY();
+            float z = definition->getPhysicsObjectNormalZ();
+            float constant = definition->getPhysicsObjectConstant();
+
             btVector3 planeNormal(x,y,z);
             btScalar planeConstant = btScalar(constant);
+
             collisionShape = new btStaticPlaneShape(planeNormal,planeConstant);
         }
         else if (format.compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
@@ -269,18 +240,18 @@ namespace Dream
             collisionShape = new btCompoundShape();
             btCompoundShape *compound = static_cast<btCompoundShape*>(collisionShape);
 
-            for (CompoundChild child : mCompoundChildren)
+            for (CompoundChildDefinition child : mDefinitionHandle->getPhysicsObjectCompoundChildren())
             {
                 AssetDefinition  *def = getAssetDefinitionByUuid(child.uuid);
                 loadExtraAttributes(def->getJson(),def,true);
                 btCollisionShape *shape = createCollisionShape(def,projectPath);
-                compound->addChildShape(child.transform,shape);
+                compound->addChildShape(child.transform.getTransformAsBtTransform(),shape);
             }
         }
 
         if (collisionShape)
         {
-            btScalar margin = definition->getJson()[Constants::ASSET_ATTR_MARGIN];
+            btScalar margin = definition->getPhysicsObjectMargin();
             collisionShape->setMargin(margin);
         }
 

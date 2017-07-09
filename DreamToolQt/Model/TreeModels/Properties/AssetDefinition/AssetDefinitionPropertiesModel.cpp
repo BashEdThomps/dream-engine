@@ -81,6 +81,7 @@ AssetDefinitionPropertiesModel::createProperties
         createFontColorProperty();
         createFontSizeProperty();
         createFontFileProperty();
+        createRemoveFilesProperty();
     }
     else if (mAssetDefinitionHandle->isTypeLight())
     {
@@ -94,10 +95,27 @@ AssetDefinitionPropertiesModel::createProperties
     }
     else if (mAssetDefinitionHandle->isTypePhysicsObject())
     {
-        craetePhysicsCollisionShapeProperty();
         createPhysicsMassProperty();
         createPhysicsMarginProperty();
         createPhysicsKinematicProperty();
+
+        if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_BOX)
+        {
+            createPhysicsHalfExtentsProperty();
+        }
+        else if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_SPHERE)
+        {
+           createPhysicsRadiusProperty();
+        }
+        else if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_STATIC_PLANE)
+        {
+           createPhysicsNormalProperty();
+           createPhysicsConstantProperty();
+        }
+        else if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH)
+        {
+           createPhysicsBvhTriangleMeshFileProperty();
+        }
     }
     else if (mAssetDefinitionHandle->isTypeScript())
     {
@@ -118,7 +136,6 @@ AssetDefinitionPropertiesModel::createProperties
         createRemoveFilesProperty();
     }
 }
-
 
 void
 AssetDefinitionPropertiesModel::createNameProperty
@@ -143,7 +160,9 @@ AssetDefinitionPropertiesModel::createShaderEditProperties
     createShaderEditFragmentProperty();
 }
 
-void AssetDefinitionPropertiesModel::createShaderEditVertexProperty()
+void
+AssetDefinitionPropertiesModel::createShaderEditVertexProperty
+()
 {
     mRootItem->appendChild
     (
@@ -156,7 +175,9 @@ void AssetDefinitionPropertiesModel::createShaderEditVertexProperty()
     );
 }
 
-void AssetDefinitionPropertiesModel::createShaderEditFragmentProperty()
+void
+AssetDefinitionPropertiesModel::createShaderEditFragmentProperty
+()
 {
     mRootItem->appendChild
     (
@@ -167,6 +188,27 @@ void AssetDefinitionPropertiesModel::createShaderEditFragmentProperty()
             ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE
         )
     );
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_AudioFile
+()
+{
+    emit notifyButton_AudioFile(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_FontFile
+()
+{
+    emit notifyButton_FontFile(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_PhysicsBvhTriangleMeshFile
+()
+{
+    emit notifyButton_PhysicsBvhTriangleMeshFile(mAssetDefinitionHandle);
 }
 
 void
@@ -221,42 +263,165 @@ void
 AssetDefinitionPropertiesModel::createAudioLoopProperty
 ()
 {
-
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Loop",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_AUDIO_LOOP
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createAudioFileProperty
 ()
 {
-
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Audio File",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_AUDIO_FILE
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createFontColorProperty
 ()
 {
+    auto colour = new AssetDefinitionPropertiesItem
+    (
+        "Colour",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_FONT_COLOUR
+    );
 
+    auto red = new AssetDefinitionPropertiesItem
+    (
+        "Red",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED
+    );
+
+    auto green = new AssetDefinitionPropertiesItem
+    (
+        "Green",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN
+    );
+
+    auto blue = new AssetDefinitionPropertiesItem
+    (
+        "Blue",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE
+    );
+
+    colour->appendChild(red);
+    colour->appendChild(green);
+    colour->appendChild(blue);
+    mRootItem->appendChild(colour);
 }
 
 void
 AssetDefinitionPropertiesModel::createFontSizeProperty
 ()
 {
-
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Size",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_FONT_SIZE
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createFontFileProperty
 ()
 {
-
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Font File",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_FONT_FILE
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createLightColorProperty
 ()
 {
+    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Properties";
+    auto colourProperty = new AssetDefinitionPropertiesItem
+    (
+        "Colour",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR
+    );
 
+    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property red";
+    auto colourPropertyRed = new AssetDefinitionPropertiesItem
+    (
+        "Red",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED
+    );
+
+    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property green";
+    auto colourPropertyGreen = new AssetDefinitionPropertiesItem
+    (
+        "Green",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN
+    );
+
+    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property blue";
+    auto colourPropertyBlue = new AssetDefinitionPropertiesItem
+    (
+        "Blue",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE
+    );
+
+    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property alpha";
+    auto colourPropertyAlpha = new AssetDefinitionPropertiesItem
+    (
+        "Alpha",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA
+    );
+
+    colourProperty->appendChild(colourPropertyRed);
+    colourProperty->appendChild(colourPropertyGreen);
+    colourProperty->appendChild(colourPropertyBlue);
+    colourProperty->appendChild(colourPropertyAlpha);
+
+    mRootItem->appendChild(colourProperty);
+}
+
+void
+AssetDefinitionPropertiesModel::createPhysicsBvhTriangleMeshFileProperty
+()
+{
+    qDebug() << "AssetDefintionPropertiesModel: Creating Physics BvhTriangleMesh File Property";
+
+    AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
+    (
+        "Mesh File" ,
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE
+    );
+    mRootItem->appendChild(mfProperty);
 }
 
 void
@@ -289,31 +454,165 @@ AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
 }
 
 void
-AssetDefinitionPropertiesModel::craetePhysicsCollisionShapeProperty
+AssetDefinitionPropertiesModel::createPhysicsHalfExtentsProperty
 ()
 {
+    auto halfExtents = new AssetDefinitionPropertiesItem
+    (
+        "Half Extents",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS
+    );
 
+    halfExtents->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "X",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X
+        )
+    );
+
+    halfExtents->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Y",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y
+        )
+    );
+
+    halfExtents->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Z",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z
+        )
+    );
+
+    mRootItem->appendChild(halfExtents);
+}
+
+void
+AssetDefinitionPropertiesModel::createPhysicsRadiusProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Radius",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createPhysicsNormalProperty
+()
+{
+    auto normalProperty = new AssetDefinitionPropertiesItem
+    (
+        "Normal",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL
+    );
+
+    normalProperty->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "X",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X
+        )
+    );
+
+    normalProperty->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Y",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y
+        )
+    );
+
+    normalProperty->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Z",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z
+        )
+    );
+    mRootItem->appendChild(normalProperty);
+}
+
+void
+AssetDefinitionPropertiesModel::createPhysicsConstantProperty
+()
+{
+    mRootItem->appendChild
+    (
+         new AssetDefinitionPropertiesItem
+        (
+            "Constant",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createPhysicsMassProperty
 ()
 {
-
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Mass",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createPhysicsMarginProperty
 ()
 {
-
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Margin",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN
+        )
+    );
 }
 
 void
 AssetDefinitionPropertiesModel::createPhysicsKinematicProperty
 ()
 {
-
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Kinematic",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC
+        )
+    );
 }
 
 void
@@ -382,6 +681,26 @@ AssetDefinitionPropertiesModel::createDelegateConnections
     AssetDefinitionPropertiesTreeDelegate* delegate;
     delegate = static_cast<AssetDefinitionPropertiesTreeDelegate*>(mDelegateHandle);
 
+    // Audio
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_AudioFile()),
+        this,
+        SLOT(onButton_AudioFile())
+    );
+
+    // Font
+
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_FontFile()),
+        this,
+        SLOT(onButton_FontFile())
+    );
+
     // Model
 
     connect
@@ -440,18 +759,27 @@ AssetDefinitionPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyCombo_ScriptTemplateChanged(const QString&)),
+        SIGNAL(notifyCombo_ScriptTemplateChanged(QString)),
         this,
-        SLOT(onCombo_ScriptTemplateChanged(const QString&))
+        SLOT(onCombo_ScriptTemplateChanged(QString))
     );
 
     // Shader Template
     connect
     (
         delegate,
-        SIGNAL(notifyCombo_ShaderTemplateChanged(const QString&)),
+        SIGNAL(notifyCombo_ShaderTemplateChanged(QString)),
         this,
-        SLOT(onCombo_ShaderTemplateChanged(const QString&))
+        SLOT(onCombo_ShaderTemplateChanged(QString))
+    );
+
+    // Physics Object
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile()),
+        this,
+        SLOT(onButton_PhysicsBvhTriangleMeshFile())
     );
 }
 

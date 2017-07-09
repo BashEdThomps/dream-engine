@@ -10,6 +10,8 @@ WindowInputState::WindowInputState
     : // Init list
      mouseLastX(0),
      mouseLastY(0),
+     mouseWheelLastX(0),
+     mouseWheelLastY(0),
      shiftPressed(false),
      altPressed(false),
      ctrlPressed(false),
@@ -127,29 +129,37 @@ QOpenGLWindowComponent::paintGL
 
                 if (mSelectionHighlighterHandle)
                 {
-                    if (!mSelectionHighlighterHandle->isInitialised())
+                    if (mSelectionHighlighterEnabled)
                     {
-                        mSelectionHighlighterHandle->init();
-                        Constants::checkGLError("QOGLWC: SelectionHighlighter after Init");
+                        if (!mSelectionHighlighterHandle->isInitialised())
+                        {
+                            mSelectionHighlighterHandle->init();
+                            Constants::checkGLError("QOGLWC: SelectionHighlighter after Init");
+                        }
+
+                        mSelectionHighlighterHandle->setViewMatrix(viewMatrix);
+                        mSelectionHighlighterHandle->setProjectionMatrix(projectionMatrix);
+                        mSelectionHighlighterHandle->draw();
+                        Constants::checkGLError("QOGLWC: SelectionHighlighter after draw");
                     }
-                    mSelectionHighlighterHandle->setViewMatrix(viewMatrix);
-                    mSelectionHighlighterHandle->setProjectionMatrix(projectionMatrix);
-                    mSelectionHighlighterHandle->draw();
-                    Constants::checkGLError("QOGLWC: SelectionHighlighter after draw");
                 }
 
-                if (mRelationshipTreeHandle && mRelationshipTreeEnabled)
+                if (mRelationshipTreeHandle)
                 {
-                    if (!mRelationshipTreeHandle->isInitialised())
+                    if (mRelationshipTreeEnabled)
                     {
-                        mRelationshipTreeHandle->init();
-                        Constants::checkGLError("QOGLWC: RelTree after init");
-                    }
-                    mRelationshipTreeHandle->setViewMatrix(viewMatrix);
-                    mRelationshipTreeHandle->setProjectionMatrix(projectionMatrix);
-                    mRelationshipTreeHandle->draw();
+                        if (!mRelationshipTreeHandle->isInitialised())
+                        {
+                            mRelationshipTreeHandle->init();
+                            Constants::checkGLError("QOGLWC: RelTree after init");
+                        }
 
-                    Constants::checkGLError("QOGLWC: RelTree after draw");
+                        mRelationshipTreeHandle->setViewMatrix(viewMatrix);
+                        mRelationshipTreeHandle->setProjectionMatrix(projectionMatrix);
+                        mRelationshipTreeHandle->draw();
+
+                        Constants::checkGLError("QOGLWC: RelTree after draw");
+                    }
                 }
             }
             else
@@ -226,9 +236,23 @@ QOpenGLWindowComponent::setRelationshipTreeHandle
 }
 
 void
+QOpenGLWindowComponent::wheelEvent
+(QWheelEvent* event)
+{
+    if (mProjectRuntimeHandle)
+    {
+        QPoint pos = event->pixelDelta();
+        int x = static_cast<int>( pos.x() );
+        int y = static_cast<int>( pos.y() );
+        mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(-x,-y,true);
+    }
+}
+
+void
 QOpenGLWindowComponent::mouseMoveEvent
 (QMouseEvent *event)
 {
+    /*
     if (mProjectRuntimeHandle)
     {
         QPointF pos = event->localPos();
@@ -251,7 +275,7 @@ QOpenGLWindowComponent::mouseMoveEvent
         mInputState.mouseLastX = x;
         mInputState.mouseLastY = y;
     }
-
+    */
 }
 
 void

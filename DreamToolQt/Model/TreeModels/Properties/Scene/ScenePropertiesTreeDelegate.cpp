@@ -26,6 +26,8 @@
 #include <QCheckBox>
 #include <QToolButton>
 
+using std::numeric_limits;
+
 ScenePropertiesTreeDelegate::ScenePropertiesTreeDelegate
 (ScenePropertiesModel* model, QObject* parent)
     : QItemDelegate(parent),
@@ -45,6 +47,7 @@ ScenePropertiesTreeDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
+    QDoubleSpinBox *spinbox = nullptr;
     switch (spiHandle->getProperty())
     {
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
@@ -78,7 +81,10 @@ ScenePropertiesTreeDelegate::createEditor
         case SCENE_PROPERTY_PHYSICS_GRAVITY_X:
         case SCENE_PROPERTY_PHYSICS_GRAVITY_Y:
         case SCENE_PROPERTY_PHYSICS_GRAVITY_Z:
-            return new QDoubleSpinBox(parent);
+            spinbox = new QDoubleSpinBox(parent);
+            spinbox->setRange(numeric_limits<double>::lowest(), numeric_limits<double>::max());
+            spinbox->setDecimals(3);
+            return spinbox;
 
         case SCENE_PROPERTY_PHYSICS_DEBUG:
             return new QCheckBox(parent);

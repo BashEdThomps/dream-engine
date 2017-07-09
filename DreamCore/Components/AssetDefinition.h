@@ -23,6 +23,8 @@
 #include <json.hpp>
 
 #include "../Common/IDefinition.h"
+#include "../Common/Constants.h"
+#include "../Components/Transform3D.h"
 
 using std::string;
 using std::vector;
@@ -30,16 +32,33 @@ using nlohmann::json;
 
 namespace Dream
 {
+    class CompoundChildDefinition
+    {
+    public:
+       Transform3D transform;
+       string      uuid;
+
+       json getJson()
+       {
+           json retval = json::object();
+           retval[Constants::UUID] = uuid;
+           retval[Constants::TRANSFORM] = transform.getJson();
+           return retval;
+       }
+    };
+
     class ProjectDefinition;
 
     class AssetDefinition : public IDefinition
     {
-    private:
-        ProjectDefinition *mProjectDefinitionHandle;
 
     public:
+        static AssetType getAssetType(json);
         AssetDefinition(ProjectDefinition*, json);
-        ~AssetDefinition();
+        virtual ~AssetDefinition();
+
+        ProjectDefinition *getProjectHandle();
+        void showStatus();
 
         void setType(string);
         string getType();
@@ -59,20 +78,87 @@ namespace Dream
         bool isTypeSprite();
         bool isTypeFont();
 
-        bool isScriptFormatLua();
-        bool isModelFormatAssimp();
-
-        bool isAudioFormatWav();
-        bool isAudioFormatOgg();
-
         string getAssetPath();
 
         void setProjectPath(string);
         string getProjectPath();
 
-        void showStatus();
+        // Common
+        void  setColourRed(float);
+        float getColourRed();
 
-        ProjectDefinition *getProjectHandle();
+        void  setColourGreen(float);
+        float getColourGreen();
+
+        void  setColourBlue(float);
+        float getColourBlue();
+
+        void  setColourAlpha(float);
+        float getColourAlpha();
+
+        void  setSize(float);
+        float getSize();
+
+        // Animation
+
+        // Audio
+        bool isAudioFormatWav();
+        bool isAudioFormatOgg();
+
+        void setAudioLoop(bool);
+        bool getAudioLoop();
+
+        // Model
+        bool isModelFormatAssimp();
+
+        // Script
+        bool isScriptFormatLua();
+
+        // Physics
+        void  setPhysicsObjectMass(float mass);
+        float getPhysicsObjectMass();
+
+        void  setPhysicsObjectMargin(float margin);
+        float getPhysicsObjectMargin();
+
+        void setPhysicsObjectKinematic(bool kinematic);
+        bool getPhysicsObjectKinematic();
+
+        void  setPhysicsObjectHalfExtentsX(float halfExtentX);
+        float getPhysicsObjectHalfExtentsX();
+
+        void  setPhysicsObjectHalfExtentsY(float halfExtentY);
+        float getPhysicsObjectHalfExtentsY();
+
+        void  setPhysicsObjectHalfExtentsZ(float halfExtentZ);
+        float getPhysicsObjectHalfExtentsZ();
+
+        void  setPhysicsObjectNormalX(float normalX);
+        float getPhysicsObjectNormalX();
+
+        void  setPhysicsObjectNormalY(float normalY);
+        float getPhysicsObjectNormalY();
+
+        void  setPhysicsObjectNormalZ(float normalZ);
+        float getPhysicsObjectNormalZ();
+
+        float getPhysicsObjectRadius();
+        void  setPhysicsObjectRadius(float rad);
+
+        float getPhysicsObjectConstant();
+        void  setPhysicsObjectConstant(float constant);
+
+        void addPhysicsObjectCompoundChild(CompoundChildDefinition child);
+        vector<CompoundChildDefinition> getPhysicsObjectCompoundChildren();
+        void removePhysicsObjectCompoundChild(CompoundChildDefinition def);
+
+    protected:
+        ProjectDefinition *mProjectDefinitionHandle;
+
+        void makeCompoundChildren();
+        void makeHalfExtentsObject();
+        void makeLightColourObject();
+        void makeNormalObject();
 
     }; // End of AssetDefinition
 

@@ -491,19 +491,31 @@ namespace Dream
         model = translate(model, vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
         model = scale(model, vec3(size.x*scaleValue,size.y*scaleValue, 1.0f));
         // Pass uniform arguments to shader
-        glUniformMatrix4fv(glGetUniformLocation(
-                               shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, value_ptr(model)
-                           );
-        glUniform3fv(glGetUniformLocation(
-                         shader->getShaderProgram(), "spriteColor"),
-                     1, value_ptr(color)
-                     );
-        glUniform1i(glGetUniformLocation(shader->getShaderProgram(),"image"),0);
-        glUniformMatrix4fv(glGetUniformLocation(
-                               shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, value_ptr(mOrthoProjection)
-                           );
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "model"),
+            1,
+            GL_FALSE,
+            value_ptr(model)
+        );
+        glUniform3fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "spriteColor"),
+            1,
+            value_ptr(color)
+        );
+        glUniform1i
+        (
+            glGetUniformLocation(shader->getShaderProgram(),"image"),
+            0
+        );
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "projection"),
+            1,
+            GL_FALSE,
+            value_ptr(mOrthoProjection)
+        );
         // Bind texture
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,sprite->getTexture());
@@ -543,24 +555,33 @@ namespace Dream
         model = scale(model, vec3(size.x*scaleValue,size.y*scaleValue, 1.0f));
 
         // Activate corresponding render state
-        glUniform3f(
-                    glGetUniformLocation(shader->getShaderProgram(), "textColor"),
-                    font->getColour()[0], font->getColour()[1], font->getColour()[2]
-                );
+        glUniform3f
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "textColor"),
+            font->getColour()[0],
+            font->getColour()[1],
+            font->getColour()[2]
+        );
 
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(mFontVAO);
 
         // Pass uniform arguments to shader
-        glUniformMatrix4fv(glGetUniformLocation(
-                               shader->getShaderProgram(), "model"),
-                           1, GL_FALSE, value_ptr(model)
-                           );
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "model"),
+            1,
+            GL_FALSE,
+            value_ptr(model)
+        );
 
-        glUniformMatrix4fv(glGetUniformLocation(
-                               shader->getShaderProgram(), "projection"),
-                           1, GL_FALSE, value_ptr(mOrthoProjection)
-                           );
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "projection"),
+            1,
+            GL_FALSE,
+            value_ptr(mOrthoProjection)
+        );
 
         // Iterate through all characters
         string text = font->getText();
@@ -623,7 +644,7 @@ namespace Dream
         GLint uAmbientColor    = glGetUniformLocation(shader->getShaderProgram(),"ambientColor");
         GLfloat strength = 1.0f;
 
-        if (uAmbientColor > 0 && uAmbientStrength > 0)
+        if (uAmbientColor != -1 && uAmbientStrength != -1)
         {
             vec3 ambientColour(1.0f);
             if (mActiveSceneRuntimeHandle)
@@ -651,11 +672,14 @@ namespace Dream
         }
 
         // Set Diffuse Light Values
-        vector<LightInstance*>::
-                iterator lights;
+        vector<LightInstance*>::iterator lights;
         int i;
         for (i=1, lights = mLightQueue.begin(); lights != mLightQueue.end(); lights++, i++)
         {
+            if (Constants::DEBUG)
+            {
+                cout << "GraphicsComponent: Setting uniforms for light " << i << endl;
+            }
             stringstream uPosStr;
             uPosStr << "diffusePos_" << i;
             stringstream uColorStr;
@@ -664,7 +688,7 @@ namespace Dream
             GLint uLightPos   = glGetUniformLocation(shader->getShaderProgram(),uPosStr.str().c_str());
             GLint uLightColor = glGetUniformLocation(shader->getShaderProgram(),uColorStr.str().c_str());
 
-            if (uLightPos > 0)
+            if (uLightPos != -1)
             {
                 vec3 lightPos = (*lights)->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
                 glUniform3fv(uLightPos  ,1, value_ptr(lightPos));
@@ -677,7 +701,7 @@ namespace Dream
                 }
             }
 
-            if (uLightColor > 0)
+            if (uLightColor != -1)
             {
                 vec3 lightColor = (*lights)->getColor();
                 glUniform3fv(uLightColor,1, value_ptr(lightColor));
@@ -689,25 +713,28 @@ namespace Dream
                     cout << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;
                 }
             }
-
         }
 
         Constants::checkGLError("After light pos uniform");
 
         // Pass view/projection transform to shader
         glUniformMatrix4fv
-                (
-                    glGetUniformLocation(shader->getShaderProgram(), "projection"),
-                    1, GL_FALSE, value_ptr(mProjectionMatrix)
-                    );
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "projection"),
+            1,
+            GL_FALSE,
+            value_ptr(mProjectionMatrix)
+        );
 
         Constants::checkGLError("After set projection");
 
         glUniformMatrix4fv
-                (
-                    glGetUniformLocation(shader->getShaderProgram(), "view"),
-                    1, GL_FALSE, value_ptr(mViewMatrix)
-                    );
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "view"),
+            1,
+            GL_FALSE,
+            value_ptr(mViewMatrix)
+        );
 
         Constants::checkGLError("After set view");
         // calculate the model matrix
@@ -726,10 +753,13 @@ namespace Dream
         model->setModelMatrix(modelMatrix);
 
         // Pass model matrix to shader
-        glUniformMatrix4fv(
-                    glGetUniformLocation(shader->getShaderProgram(), "model"),
-                    1, GL_FALSE, value_ptr(modelMatrix)
-                    );
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(shader->getShaderProgram(), "model"),
+            1,
+            GL_FALSE,
+            value_ptr(modelMatrix)
+        );
 
         Constants::checkGLError("After set model");
         // Draw using shader

@@ -14,14 +14,14 @@
         <file>images/view-list-details-symbolic.png</file>
         <file>images/list-add.png</file>
         <file>templates/script/Lua/lua</file>
-        <file>templates/shader/Basic2D/fragment</file>
-        <file>templates/shader/Basic2D/vertex</file>
-        <file>templates/shader/Basic3D/fragment</file>
-        <file>templates/shader/Basic3D/vertex</file>
-        <file>templates/shader/FontInstance/fragment</file>
-        <file>templates/shader/FontInstance/vertex</file>
-        <file>templates/shader/Lit3D/fragment</file>
-        <file>templates/shader/Lit3D/vertex</file>
         <file>images/list-remove.png</file>
+        <file>templates/shader/Basic2D/glsl.frag</file>
+        <file>templates/shader/Basic2D/glsl.vert</file>
+        <file>templates/shader/Basic3D/glsl.frag</file>
+        <file>templates/shader/Basic3D/glsl.vert</file>
+        <file>templates/shader/FontInstance/glsl.frag</file>
+        <file>templates/shader/FontInstance/glsl.vert</file>
+        <file>templates/shader/Lit3D/glsl.frag</file>
+        <file>templates/shader/Lit3D/glsl.vert</file>
     </qresource>
 </RCC>

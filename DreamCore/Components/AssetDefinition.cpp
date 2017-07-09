@@ -26,6 +26,13 @@ using std::endl;
 
 namespace Dream
 {
+    AssetType
+    AssetDefinition::getAssetType
+    (json js)
+    {
+       return Constants::assetTypeFromString(js[Constants::ASSET_TYPE]);
+    }
+
     AssetDefinition::AssetDefinition
     (ProjectDefinition* parent, json jsonDef)
         : IDefinition(jsonDef),
@@ -38,7 +45,7 @@ namespace Dream
         }
     }
 
-    AssetDefinition::~AssetDefinition
+   AssetDefinition::~AssetDefinition
     ()
     {
         if (Constants::DEBUG)
@@ -174,6 +181,24 @@ namespace Dream
         return getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0;
     }
 
+    void
+    AssetDefinition::setAudioLoop
+    (bool loop)
+    {
+        mJson[Constants::ASSET_ATTR_LOOP] = loop;
+    }
+
+    bool
+    AssetDefinition::getAudioLoop
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_LOOP].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_LOOP] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_LOOP];
+    }
+
     string
     AssetDefinition::getAssetTypeDirectory
     ()
@@ -230,12 +255,407 @@ namespace Dream
     }
 
     void
+    AssetDefinition::setColourRed
+    (float value)
+    {
+       makeLightColourObject();
+       mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::RED] = value;
+    }
+
+    float
+    AssetDefinition::getColourRed
+    ()
+    {
+        makeLightColourObject();
+        if (mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::RED].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::RED] = 0;
+        }
+
+        return mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::RED];
+    }
+
+    void
+    AssetDefinition::setColourGreen
+    (float value)
+    {
+        makeLightColourObject();
+        mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::GREEN] = value;
+    }
+
+    float
+    AssetDefinition::getColourGreen
+    ()
+    {
+        makeLightColourObject();
+        if (mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::GREEN].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::GREEN] = 0;
+        }
+
+        return mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::GREEN];
+
+    }
+
+    void
+    AssetDefinition::setColourBlue
+    (float value)
+    {
+        makeLightColourObject();
+       mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::BLUE] = value;
+    }
+
+    float
+    AssetDefinition::getColourBlue
+    ()
+    {
+        makeLightColourObject();
+        if (mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::BLUE].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::BLUE] = 0;
+        }
+
+        return mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::BLUE];
+
+    }
+
+    void
+    AssetDefinition::setColourAlpha
+    (float value)
+    {
+        makeLightColourObject();
+       mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::ALPHA] = value;
+    }
+
+    float
+    AssetDefinition::getColourAlpha
+    ()
+    {
+        makeLightColourObject();
+        return mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::ALPHA];
+    }
+
+    void
+    AssetDefinition::makeLightColourObject
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_LIGHT_COLOR].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_COLOR] = json::object();
+        }
+    }
+
+    void
+    AssetDefinition::setSize
+    (float size)
+    {
+       mJson[Constants::ASSET_ATTR_SIZE] = size;
+    }
+
+    float AssetDefinition::getSize()
+    {
+       if (mJson[Constants::ASSET_ATTR_SIZE].is_null())
+       {
+           mJson[Constants::ASSET_ATTR_SIZE] = 0;
+       }
+
+       return mJson[Constants::ASSET_ATTR_SIZE];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectMass
+    (float mass)
+    {
+        mJson[Constants::ASSET_ATTR_MASS] = mass;
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectMass
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_MASS].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_MASS] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MASS];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectMargin
+    (float margin)
+    {
+        mJson[Constants::ASSET_ATTR_MARGIN] = margin;
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectMargin
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_MARGIN].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_MARGIN] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MARGIN];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectKinematic
+    (bool kinematic)
+    {
+        mJson[Constants::ASSET_ATTR_KINEMATIC] = kinematic;
+    }
+
+    bool
+    AssetDefinition::getPhysicsObjectKinematic
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_KINEMATIC].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_KINEMATIC] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_KINEMATIC];
+    }
+
+    void
+    AssetDefinition::makeHalfExtentsObject
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_SIZE].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE] = json::object();
+        }
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectHalfExtentsX
+    (float halfExtentX)
+    {
+        makeHalfExtentsObject();
+        mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = halfExtentX;
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectHalfExtentsX
+    ()
+    {
+        makeHalfExtentsObject();
+        if (mJson[Constants::ASSET_ATTR_SIZE][Constants::X].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_SIZE][Constants::X];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectHalfExtentsY
+    (float halfExtentY)
+    {
+        makeHalfExtentsObject();
+        mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = halfExtentY;
+
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectHalfExtentsY
+    ()
+    {
+        makeHalfExtentsObject();
+        if (mJson[Constants::ASSET_ATTR_SIZE][Constants::Y].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Y];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectHalfExtentsZ
+    (float halfExtentZ)
+    {
+        makeHalfExtentsObject();
+        mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = halfExtentZ;
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectHalfExtentsZ
+    ()
+    {
+        makeHalfExtentsObject();
+        if (mJson[Constants::ASSET_ATTR_SIZE][Constants::Z].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Z];
+    }
+
+    void
+    AssetDefinition::makeNormalObject
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_NORMAL].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL] = json::object();
+        }
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectNormalX
+    (float halfExtentX)
+    {
+        makeNormalObject();
+        mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = halfExtentX;
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectNormalX
+    ()
+    {
+        makeNormalObject();
+        if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::X].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::X];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectNormalY
+    (float halfExtentY)
+    {
+        makeNormalObject();
+        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
+
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectNormalY
+    ()
+    {
+        makeNormalObject();
+        if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectNormalZ
+    (float halfExtentZ)
+    {
+        makeNormalObject();
+        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = halfExtentZ;
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectNormalZ
+    ()
+    {
+        makeNormalObject();
+        if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z];
+    }
+
+    void
     AssetDefinition::showStatus
     ()
     {
         if (Constants::DEBUG)
         {
             cout << "AssetDefinition: " << mJson.dump(1) << endl;
+        }
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectRadius
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_RADIUS].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_RADIUS] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_RADIUS];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectRadius
+    (float rad)
+    {
+        mJson[Constants::ASSET_ATTR_RADIUS] = rad;
+    }
+
+    float
+    AssetDefinition::getPhysicsObjectConstant
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_CONSTANT].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_CONSTANT] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_CONSTANT];
+    }
+
+    void
+    AssetDefinition::setPhysicsObjectConstant
+    (float constant)
+    {
+        mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
+    }
+
+    void
+    AssetDefinition::addPhysicsObjectCompoundChild
+    (CompoundChildDefinition def)
+    {
+       makeCompoundChildren();
+       mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].push_back(def.getJson());
+    }
+
+    vector<CompoundChildDefinition>
+    AssetDefinition::getPhysicsObjectCompoundChildren
+    ()
+    {
+        makeCompoundChildren();
+        vector<CompoundChildDefinition> retval;
+        for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
+        {
+           CompoundChildDefinition def;
+           def.uuid = childJson[Constants::UUID];
+           def.transform = Transform3D(childJson[Constants::TRANSFORM]);
+           retval.push_back(def);
+
+        }
+        return retval;
+    }
+
+    void
+    AssetDefinition::removePhysicsObjectCompoundChild
+    (CompoundChildDefinition def)
+    {
+        makeCompoundChildren();
+        for
+        (
+            auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+            iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+            iter++
+       )
+       {
+            if (*iter == def.getJson())
+            {
+               mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].erase(iter);
+               return;
+            }
+        }
+    }
+
+    void
+    AssetDefinition::makeCompoundChildren
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN] = json::array();
         }
     }
 
