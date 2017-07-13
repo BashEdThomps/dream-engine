@@ -19,6 +19,9 @@
 
 #include <QDebug>
 #include <QLineEdit>
+#include <QComboBox>
+#include <QSpinBox>
+
 #include "ProjectPropertiesModel.h"
 #include "ProjectPropertiesItem.h"
 
@@ -37,12 +40,38 @@ ProjectPropertiesTreeDelegate::~ProjectPropertiesTreeDelegate
 }
 
 QWidget*
+ProjectPropertiesTreeDelegate::createStartupSceneComboBox
+(ProjectPropertiesItem* ppiItem, QWidget* parent)
+const
+{
+    QComboBox* retval = new QComboBox(parent);
+    ProjectDefinition* pdHandle =  ppiItem->getProjectDefinitionHandle();
+    QStringList sceneList;
+    for (SceneDefinition* sdHandle : pdHandle->getSceneDefinitionsHandleList())
+    {
+        sceneList << QString::fromStdString(sdHandle->getName());
+    }
+    retval->addItems(sceneList);
+    return retval;
+}
+
+QWidget*
 ProjectPropertiesTreeDelegate::createEditor
-(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index) const
 {
     ProjectPropertiesItem* ppi = static_cast<ProjectPropertiesItem*>(index.internalPointer());
+
     switch(ppi->getProperty())
     {
+        case PROJECT_PROPERTY_WINDOW_WIDTH:
+        case PROJECT_PROPERTY_WINDOW_HEIGHT:
+            return new QSpinBox(parent);
+
+        case PROJECT_PROPERTY_STARTUP_SCENE:
+            return createStartupSceneComboBox(ppi,parent);
+
+        case PROJECT_PROPERTY_WINDOW_SIZE:
+        case PROJECT_PROPERTY_DESCRIPTION:
         case PROJECT_PROPERTY_NAME:
         case PROJECT_PROPERTY_AUTHOR:
         case PROJECT_PROPERTY_NONE:
@@ -55,14 +84,27 @@ void
 ProjectPropertiesTreeDelegate::setEditorData
 (QWidget *editor, const QModelIndex &index) const
 {
-    QString value = index.model()->data(index, Qt::DisplayRole).toString();
+    QVariant value = index.model()->data(index, Qt::DisplayRole);
     ProjectPropertiesItem* ppi = static_cast<ProjectPropertiesItem*>(index.internalPointer());
+
     switch(ppi->getProperty())
     {
+        case PROJECT_PROPERTY_WINDOW_WIDTH:
+        case PROJECT_PROPERTY_WINDOW_HEIGHT:
+            static_cast<QSpinBox*>(editor)->setValue(value.toInt());
+            break;
+
+        case PROJECT_PROPERTY_STARTUP_SCENE:
+            static_cast<QComboBox*>(editor)->setCurrentText(value.toString());
+            break;
+
+        case PROJECT_PROPERTY_DESCRIPTION:
         case PROJECT_PROPERTY_NAME:
         case PROJECT_PROPERTY_AUTHOR:
         case PROJECT_PROPERTY_NONE:
-            static_cast<QLineEdit*>(editor)->setText(value);
+            static_cast<QLineEdit*>(editor)->setText(value.toString());
+            break;
+        case PROJECT_PROPERTY_WINDOW_SIZE:
             break;
     }
 }
@@ -74,17 +116,29 @@ ProjectPropertiesTreeDelegate::setModelData
     ProjectPropertiesItem* ppi = static_cast<ProjectPropertiesItem*>(index.internalPointer());
     switch(ppi->getProperty())
     {
+        case PROJECT_PROPERTY_WINDOW_WIDTH:
+        case PROJECT_PROPERTY_WINDOW_HEIGHT:
+            model->setData(index,static_cast<QSpinBox*>(editor)->value());
+            break;
+
+        case PROJECT_PROPERTY_STARTUP_SCENE:
+            model->setData(index,static_cast<QComboBox*>(editor)->currentText());
+            break;
+
+        case PROJECT_PROPERTY_DESCRIPTION:
         case PROJECT_PROPERTY_NAME:
         case PROJECT_PROPERTY_AUTHOR:
         case PROJECT_PROPERTY_NONE:
             model->setData(index,static_cast<QLineEdit*>(editor)->text());
+            break;
+        case PROJECT_PROPERTY_WINDOW_SIZE:
             break;
     }
 }
 
 void
 ProjectPropertiesTreeDelegate::updateEditorGeometry
-(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&) const
 {
     editor->setGeometry(option.rect);
 }

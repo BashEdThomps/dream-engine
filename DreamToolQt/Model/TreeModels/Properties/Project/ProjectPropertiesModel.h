@@ -33,6 +33,13 @@ public:
     void createProperties() override;
     void createDelegateConnections() override;
 
+protected:
+    void createNameProperty();
+    void createAuthorProperty();
+    void createDescriptionProperty();
+    void createStartupSceneProperty();
+    void createWindowSizeProperty();
+
 private:
     ProjectDefinition *mProjectDefinitionHandle;
 };

@@ -31,7 +31,7 @@ using std::unique_ptr;
 
 namespace Dream
 {
-    class AssetDefinition;
+    class IAssetDefinition;
     class SceneDefinition;
 
     class SceneObjectDefinition : public IDefinition
@@ -49,10 +49,10 @@ namespace Dream
         void setHasFocus(bool focus);
         bool hasFocus();
 
-        void addAssetDefinitionToLoadQueue(AssetDefinition* adHandle);
+        void addAssetDefinitionToLoadQueue(IAssetDefinition* adHandle);
         void addAssetDefinitionUuidToLoadQueue(string uuid);
 
-        void removeAssetDefinitionFromLoadQueue(AssetDefinition* adHandle);
+        void removeAssetDefinitionFromLoadQueue(IAssetDefinition* adHandle);
         void removeAssetDefinitionUuidFromLoadQueue(string uuid);
 
         vector<string> getAssetDefinitionLoadQueue();

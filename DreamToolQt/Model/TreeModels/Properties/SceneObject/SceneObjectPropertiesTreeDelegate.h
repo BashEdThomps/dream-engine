@@ -22,11 +22,11 @@
 
 namespace Dream
 {
-    class AssetDefinition;
+    class IAssetDefinition;
     class SceneObjectDefinition;
 }
 
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 using Dream::SceneObjectDefinition;
 
 class SceneObjectPropertiesModel;
@@ -54,7 +54,7 @@ signals:
     void notifyButton_CaptureTranslation();
     void notifyButton_CaptureRotation();
     void notifyButton_CaptureScale();
-    void notifyButton_RemoveAsset(AssetDefinition*);
+    void notifyButton_RemoveAsset(IAssetDefinition*);
     void notifyButton_RemoveChild(SceneObjectDefinition*);
 
 protected:
@@ -64,6 +64,6 @@ protected:
     QWidget* createCaptureRotationButton(QWidget* parent) const;
     QWidget* createCaptureScaleButton(QWidget* parent) const;
     QWidget* createTransformTypeComboBox(QWidget* parent) const;
-    QWidget* createRemoveAssetDefinitionButton(AssetDefinition* adHandle, QWidget* parent) const;
+    QWidget* createRemoveAssetDefinitionButton(IAssetDefinition* adHandle, QWidget* parent) const;
     QWidget* createRemoveChildButton(SceneObjectDefinition* sodHandle, QWidget* parent) const;
 };

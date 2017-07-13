@@ -24,7 +24,7 @@
 #include "../Scene/SceneDefinition.h"
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
 
-#include "../Components/AssetDefinition.h"
+#include "../Components/IAssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
 #include "../Components/Animation/AnimationComponent.h"
@@ -42,13 +42,10 @@
 #include "../Components/Graphics/Shader/ShaderCache.h"
 #include "../Components/Graphics/Font/FontCache.h"
 
-
 using std::endl;
 
 namespace Dream
 {
-
-
     ProjectRuntime::ProjectRuntime
     (Project* projectHandle,IWindowComponent* windowComponentHandle)
         : Runtime(projectHandle->getProjectDefinitionHandle()),
@@ -144,7 +141,6 @@ namespace Dream
         return true;
     }
 
-
     bool
     ProjectRuntime::initWindowComponent
     ()
@@ -156,7 +152,6 @@ namespace Dream
         }
         return true;
     }
-
 
     bool
     ProjectRuntime::initAudioComponent
@@ -171,7 +166,6 @@ namespace Dream
         return true;
     }
 
-
     bool
     ProjectRuntime::initPhysicsComponent
     ()
@@ -185,7 +179,6 @@ namespace Dream
         }
         return true;
     }
-
 
     bool
     ProjectRuntime::initGraphicsComponent
@@ -202,7 +195,6 @@ namespace Dream
         }
         return true;
     }
-
 
     bool
     ProjectRuntime::initAnimationComponent
@@ -222,7 +214,7 @@ namespace Dream
     ProjectRuntime::initLuaEngine
     ()
     {
-        mLuaEngine.reset(new LuaEngine(this));
+        mLuaEngine.reset(new LuaEngine(this,mScriptCache.get()));
 
         if(!mLuaEngine->init())
         {
@@ -232,12 +224,15 @@ namespace Dream
         return true;
     }
 
-    bool ProjectRuntime::initCaches()
+    bool
+    ProjectRuntime::initCaches
+    ()
     {
        mFontCache.reset(new FontCache());
        mModelCache.reset(new AssimpCache());
        mShaderCache.reset(new ShaderCache());
        mTextureCache.reset(new TextureCache());
+       mScriptCache.reset(new LuaScriptCache());
        return true;
     }
 
@@ -446,6 +441,6 @@ namespace Dream
     ProjectRuntime::resetActiveSceneRuntime
     ()
     {
-        mActiveSceneRuntime.reset();
+        mActiveSceneRuntime.reset(nullptr);
     }
 }

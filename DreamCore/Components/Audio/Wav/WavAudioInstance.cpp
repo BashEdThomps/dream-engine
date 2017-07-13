@@ -16,13 +16,13 @@
  */
 
 #include "WavAudioInstance.h"
-#include "../AssetDefinition.h"
+#include "../AudioDefinition.h"
 
 namespace Dream
 {
 
     WavAudioInstance::WavAudioInstance
-    (AssetDefinition* definition, SceneObjectRuntime* transform)
+    (AudioDefinition* definition, SceneObjectRuntime* transform)
         : AudioInstance(definition, transform)
     {
         return;

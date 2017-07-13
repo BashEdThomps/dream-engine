@@ -24,10 +24,10 @@
 
 namespace Dream
 {
-    class AssetDefinition;
+    class IAssetDefinition;
 }
 
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 
 enum AssetDefinitionTreeItemType
 {
@@ -43,18 +43,18 @@ public:
     (
         QString title,
         AssetDefinitionTreeItemType type,
-        AssetDefinition* definiion = nullptr,
+        IAssetDefinition* definiion = nullptr,
         AssetDefinitionTreeItem *parentItem = nullptr
     );
 
-    AssetDefinition *getAssetDefinition();
+    IAssetDefinition *getAssetDefinition();
 
     AssetDefinitionTreeItemType getType() const;
     void setType(AssetDefinitionTreeItemType type);
     QVariant data(int column) const;
 
 private:
-    AssetDefinition *mDefinition;
+    IAssetDefinition *mDefinition;
     AssetDefinitionTreeItemType mType;
 
 };

@@ -35,7 +35,7 @@ namespace Dream
     class FileReader;
     class ProjectRuntime;
     class ProjectDefinition;
-    class AssetDefinition;
+    class IAssetDefinition;
     class IWindowComponent;
 
     class Project

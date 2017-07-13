@@ -27,7 +27,7 @@
 
 #include "../Common/Constants.h"
 
-#include "../Components/AssetDefinition.h"
+#include "../Components/IAssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
 #include "../Components/Audio/AudioComponent.h"

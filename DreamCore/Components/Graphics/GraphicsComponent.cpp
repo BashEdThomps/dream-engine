@@ -639,104 +639,49 @@ namespace Dream
         AssimpModelInstance* model = sceneObject->getModelInstance();
         ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
+
         // Set Ambient Light Values
-        GLint uAmbientStrength = glGetUniformLocation(shader->getShaderProgram(),"ambientStrength");
-        GLint uAmbientColor    = glGetUniformLocation(shader->getShaderProgram(),"ambientColor");
-        GLfloat strength = 1.0f;
+        GLfloat ambientStrength = 1.0f;
+        vec3 ambientColour(1.0f);
 
-        if (uAmbientColor != -1 && uAmbientStrength != -1)
+        if (mActiveSceneRuntimeHandle)
         {
-            vec3 ambientColour(1.0f);
-            if (mActiveSceneRuntimeHandle)
-            {
-                vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
-                ambientColour = vec3(
-                            ambient[Constants::RED_INDEX],
-                        ambient[Constants::GREEN_INDEX],
-                        ambient[Constants::BLUE_INDEX]
-                        );
-                strength = ambient[Constants::ALPHA_INDEX];
-            }
-
-            glUniform1f(uAmbientStrength,strength);
-            glUniform3fv(uAmbientColor,1,value_ptr(ambientColour));
-
+            vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
+            ambientColour = vec3
+            (
+                ambient[Constants::RED_INDEX],
+                ambient[Constants::GREEN_INDEX],
+                ambient[Constants::BLUE_INDEX]
+            );
+            ambientStrength = ambient[Constants::ALPHA_INDEX];
         }
-        else
-        {
-            if (Constants::VERBOSE)
-            {
-                cout << "GraphicsComponent: Warning, cound not find ambientColour/ambientStrength uniform locations"
-                     << endl;
-            }
-        }
+
+        shader->setAmbientLight(ambientColour,ambientStrength);
+        Constants::checkGLError("After ambient uniforms");
 
         // Set Diffuse Light Values
-        vector<LightInstance*>::iterator lights;
-        int i;
-        for (i=1, lights = mLightQueue.begin(); lights != mLightQueue.end(); lights++, i++)
+        int i=1;
+        for (auto light : mLightQueue)
         {
-            if (Constants::DEBUG)
-            {
-                cout << "GraphicsComponent: Setting uniforms for light " << i << endl;
-            }
-            stringstream uPosStr;
-            uPosStr << "diffusePos_" << i;
-            stringstream uColorStr;
-            uColorStr << "diffuseColor_" << i;
-
-            GLint uLightPos   = glGetUniformLocation(shader->getShaderProgram(),uPosStr.str().c_str());
-            GLint uLightColor = glGetUniformLocation(shader->getShaderProgram(),uColorStr.str().c_str());
-
-            if (uLightPos != -1)
-            {
-                vec3 lightPos = (*lights)->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
-                glUniform3fv(uLightPos  ,1, value_ptr(lightPos));
-            }
-            else
-            {
-                if (Constants::VERBOSE)
-                {
-                    cout << "GraphicsComponent: cannot find uniform for " << uPosStr.str() << endl;
-                }
-            }
-
-            if (uLightColor != -1)
-            {
-                vec3 lightColor = (*lights)->getColor();
-                glUniform3fv(uLightColor,1, value_ptr(lightColor));
-            }
-            else
-            {
-                if (Constants::VERBOSE)
-                {
-                    cout << "GraphicsComponent: cannot find uniform for " << uColorStr.str() << endl;
-                }
-            }
+            vec3 lightPos = light->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
+            vec3 lightColour = light->getColor();
+            shader->setPointLight(i,lightPos,lightColour);
+            i++;
         }
-
         Constants::checkGLError("After light pos uniform");
 
         // Pass view/projection transform to shader
-        glUniformMatrix4fv
-        (
-            glGetUniformLocation(shader->getShaderProgram(), "projection"),
-            1,
-            GL_FALSE,
-            value_ptr(mProjectionMatrix)
-        );
 
+        shader->setProjectionMatrix(mProjectionMatrix);
         Constants::checkGLError("After set projection");
 
-        glUniformMatrix4fv
-        (
-            glGetUniformLocation(shader->getShaderProgram(), "view"),
-            1,
-            GL_FALSE,
-            value_ptr(mViewMatrix)
-        );
-
+        shader->setViewMatrix(mViewMatrix);
         Constants::checkGLError("After set view");
+
+        // Pass Viewer Position Uniform
+        shader->setViewerPosition(mCamera->getTranslation());
+        Constants::checkGLError("After set camPos uniform");
+
         // calculate the model matrix
         mat4 modelMatrix;
         // Get raw data
@@ -753,22 +698,16 @@ namespace Dream
         model->setModelMatrix(modelMatrix);
 
         // Pass model matrix to shader
-        glUniformMatrix4fv
-        (
-            glGetUniformLocation(shader->getShaderProgram(), "model"),
-            1,
-            GL_FALSE,
-            value_ptr(modelMatrix)
-        );
-
+        shader->setModelMatrix(modelMatrix);
         Constants::checkGLError("After set model");
+
         // Draw using shader
         model->draw(shader);
-
         Constants::checkGLError("After Draw");
-        // Unbind shader
+
         glBindVertexArray(0);
-        glUseProgram(0);
+
+        shader->unbind();
         Constants::checkGLError("After unbind");
     }
 

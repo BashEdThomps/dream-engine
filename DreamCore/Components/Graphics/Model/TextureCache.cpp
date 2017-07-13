@@ -67,7 +67,7 @@ namespace Dream
 
         for (Texture nextTexture : mCache)
         {
-            if (nextTexture.path == filename)
+            if (nextTexture.path == filename && nextTexture.type == type)
             {
                 if (Constants::DEBUG)
                 {

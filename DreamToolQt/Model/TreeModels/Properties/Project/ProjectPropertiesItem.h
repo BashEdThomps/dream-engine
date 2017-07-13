@@ -31,7 +31,12 @@ enum ProjectProperty
 {
     PROJECT_PROPERTY_NAME,
     PROJECT_PROPERTY_AUTHOR,
-    PROJECT_PROPERTY_NONE,
+    PROJECT_PROPERTY_DESCRIPTION,
+    PROJECT_PROPERTY_WINDOW_SIZE,
+    PROJECT_PROPERTY_WINDOW_WIDTH,
+    PROJECT_PROPERTY_WINDOW_HEIGHT,
+    PROJECT_PROPERTY_STARTUP_SCENE,
+    PROJECT_PROPERTY_NONE
 };
 
 class ProjectPropertiesItem : public AbstractPropertiesItem
@@ -49,7 +54,9 @@ public:
 
     QVariant data(int column) override;
     bool setData(int column, const QVariant &value) override;
+
     ProjectProperty getProperty();
+    ProjectDefinition* getProjectDefinitionHandle();
 
 private:
     ProjectDefinition *mProjectDefinitionHandle;

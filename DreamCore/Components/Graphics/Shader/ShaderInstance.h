@@ -31,29 +31,65 @@
 #include "../../../Common/Constants.h"
 #include "../../IAssetInstance.h"
 
-using namespace std;
+using std::string;
+using nlohmann::json;
+using glm::mat4;
+using glm::vec3;
 
 namespace Dream
 {
     class ShaderCache;
+    class ShaderDefinition;
 
     class ShaderInstance : public IAssetInstance
     {
     private:
+        const static GLint UNIFORM_NOT_FOUND;
         GLuint mShaderProgram;
         map<string, GLfloat> mUniform1fMap;
         ShaderCache *mCacheHandle;
     public:
-        ShaderInstance(ShaderCache* cache, AssetDefinition*,SceneObjectRuntime*);
+        ShaderInstance(ShaderCache* cache, ShaderDefinition*,SceneObjectRuntime*);
         ~ShaderInstance();
+
         bool load(string);
+        void loadExtraAttributes(json);
+
         void use();
-        void syncUniforms();
+        void unbind();
         GLuint getShaderProgram();
-        void loadExtraAttributes(nlohmann::json);
-    public:
-        // 1f
+
+        // Diffuse & Specular
+        bool setDiffuseColour(vec3 diffuse, string name = "diffuseColour");
+        bool setSpecularColour(vec3 specular, string name = "specularColour");
+
+        // Point Light
+        bool setPointLight(int index, vec3 position, vec3 colour);
+        bool setPointLightColour(int index, vec3 colour);
+        bool setPointLightPosition(int index, vec3 position);
+
+        // Ambient Light
+        bool setAmbientLight(vec3,float);
+        bool setAmbientColour(vec3,string name = "ambientColour");
+        bool setAmbientStrength(float,string name = "ambientStrength");
+
+        // MVP
+        bool setModelMatrix(mat4,string name = "model");
+        bool setViewMatrix(mat4,string name = "view");
+        bool setProjectionMatrix(mat4,string name = "projection");
+
+        // Viewer
+        bool setViewerPosition(vec3, string name = "viewPos");
+
+        // Other Uniforms
         void setUniform1f(string, GLfloat);
+        void syncUniforms();
+
+        void bindVertexArray(GLuint);
+        void unbindVertexArray();
+
+        GLint getUniformLocation(string name);
+
     private:
         // 1f
         void syncUniform1f();

@@ -44,6 +44,7 @@ namespace Dream
     class SceneRuntime;
     class SceneDefinition;
     class TextureCache;
+    class LuaScriptCache;
     class AssimpCache;
     class FontCache;
     class ShaderCache;
@@ -69,6 +70,7 @@ namespace Dream
         unique_ptr<AssimpCache> mModelCache;
         unique_ptr<FontCache> mFontCache;
         unique_ptr<ShaderCache> mShaderCache;
+        unique_ptr<LuaScriptCache> mScriptCache;
 
         IWindowComponent* mWindowComponentHandle;
         unique_ptr<SceneRuntime> mActiveSceneRuntime;

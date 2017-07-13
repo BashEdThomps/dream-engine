@@ -29,13 +29,13 @@ namespace Dream
 {
     class Project;
     class SceneDefinition;
-    class AssetDefinition;
+    class IAssetDefinition;
 
     class ProjectDefinition : public IDefinition
     {
     private:
         vector<unique_ptr<SceneDefinition>> mSceneDefinitions;
-        vector<unique_ptr<AssetDefinition>> mAssetDefinitions;
+        vector<unique_ptr<IAssetDefinition>> mAssetDefinitions;
     public:
         ProjectDefinition(json data);
         ~ProjectDefinition();
@@ -60,16 +60,16 @@ namespace Dream
 
         void showStatus() override;
         size_t countAssetDefinitions();
-        AssetDefinition *getAssetDefinitionHandleByUuid(string uuid);
+        IAssetDefinition *getAssetDefinitionHandleByUuid(string uuid);
 
         size_t countScenesDefinitions();
         SceneDefinition *getSceneDefinitionHandleByUuid(string uuid);
         vector<SceneDefinition*> getSceneDefinitionsHandleList();
 
-        void removeAssetDefinition(AssetDefinition* assetDef);
-        vector<AssetDefinition*> getAssetDefinitionsHandleList();
+        void removeAssetDefinition(IAssetDefinition* assetDef);
+        vector<IAssetDefinition*> getAssetDefinitionsHandleList();
         SceneDefinition* createNewSceneDefinition();
-        AssetDefinition* createNewAssetDefinition(AssetType type);
+        IAssetDefinition* createNewAssetDefinition(AssetType type);
         json getJson() override;
 
     private:
@@ -77,5 +77,6 @@ namespace Dream
         void loadAssetDefinitions();
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
+        IAssetDefinition* createAssetDefinitionInstance(json assetDefinitionJs);
     };
 }

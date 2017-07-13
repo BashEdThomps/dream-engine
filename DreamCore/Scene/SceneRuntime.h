@@ -36,7 +36,7 @@ namespace Dream
     class SceneObject;
     class SceneDefinition;
     class IAssetInstance;
-    class AssetDefinition;
+    class IAssetDefinition;
     class SceneObjectRuntime;
 
     class SceneRuntime : public Runtime

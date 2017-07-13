@@ -1,19 +1,19 @@
 #include "LightInstance.h"
 
-#include "../../AssetDefinition.h"
+#include "LightDefinition.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
     LightInstance::LightInstance
     (
-        AssetDefinition* definition,
+        LightDefinition* definition,
         SceneObjectRuntime* transform
-    )
-        : IAssetInstance(definition,transform)
+    ) : IAssetInstance(definition,transform),
+        mColor(glm::vec3(0.0f,0.0f,0.0f)),
+        mIntensity(0.0f)
+
     {
-        mColor     = glm::vec3(0.0f,0.0f,0.0f);
-        mIntensity = 0.0f;
         loadExtraAttributes(definition->getJson());
     }
 

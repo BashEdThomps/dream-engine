@@ -19,10 +19,20 @@
 
 #include <DreamCore.h>
 
+using Dream::AnimationDefinition;
+using Dream::AudioDefinition;
+using Dream::FontDefinition;
+using Dream::LightDefinition;
+using Dream::ModelDefinition;
+using Dream::PhysicsObjectDefinition;
+using Dream::ScriptDefinition;
+using Dream::ShaderDefinition;
+using Dream::SpriteDefinition;
+
 AssetDefinitionPropertiesItem::AssetDefinitionPropertiesItem
 (
     QString title,
-    AssetDefinition* mAssetDefinitionHandle,
+    IAssetDefinition* mAssetDefinitionHandle,
     AssetDefinitionProperty property,
     AbstractPropertiesItem *parent
 )
@@ -46,7 +56,7 @@ AssetDefinitionPropertiesItem::getProperty
     return mProperty;
 }
 
-AssetDefinition*
+IAssetDefinition*
 AssetDefinitionPropertiesItem::getAssetDefinitionHandle
 ()
 {
@@ -64,43 +74,45 @@ AssetDefinitionPropertiesItem::setData
 
     switch(getProperty())
     {
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+            break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
-            mAssetDefinitionHandle->setPhysicsObjectConstant(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setConstant(value.toFloat());
             break;
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
-            mAssetDefinitionHandle->setPhysicsObjectRadius(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setRadius(value.toFloat());
             break;
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
-            mAssetDefinitionHandle->setPhysicsObjectNormalX(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setNormalX(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
-            mAssetDefinitionHandle->setPhysicsObjectNormalY(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setNormalY(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
-            mAssetDefinitionHandle->setPhysicsObjectNormalZ(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setNormalZ(value.toFloat());
             break;
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
-            mAssetDefinitionHandle->setPhysicsObjectHalfExtentsX(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setHalfExtentsX(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
-            mAssetDefinitionHandle->setPhysicsObjectHalfExtentsY(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setHalfExtentsY(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
-            mAssetDefinitionHandle->setPhysicsObjectHalfExtentsZ(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setHalfExtentsZ(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
-            mAssetDefinitionHandle->setPhysicsObjectMass(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setMass(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
-            mAssetDefinitionHandle->setPhysicsObjectMargin(value.toFloat());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setMargin(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
-            mAssetDefinitionHandle->setPhysicsObjectKinematic(value.toBool());
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setKinematic(value.toBool());
             break;
 
             // Common
@@ -116,35 +128,35 @@ AssetDefinitionPropertiesItem::setData
 
             // Audio
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
-            mAssetDefinitionHandle->setAudioLoop(value.toBool());
+            dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->setLoop(value.toBool());
             break;
 
             // Font
         case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
-            mAssetDefinitionHandle->setSize(value.toFloat());
+            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setSize(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
-            mAssetDefinitionHandle->setColourRed(value.toFloat());
+            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
-            mAssetDefinitionHandle->setColourRed(value.toFloat());
+            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-            mAssetDefinitionHandle->setColourRed(value.toFloat());
+            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
             break;
 
             // Light
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
-            mAssetDefinitionHandle->setColourRed(value.toFloat());
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
-            mAssetDefinitionHandle->setColourGreen(value.toFloat());
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setColourGreen(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
-            mAssetDefinitionHandle->setColourBlue(value.toFloat());
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setColourBlue(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
-            mAssetDefinitionHandle->setColourAlpha(value.toFloat());
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setIntensity(value.toFloat());
             break;
 
             // Not used
@@ -181,59 +193,61 @@ AssetDefinitionPropertiesItem::data
 
     switch(getProperty())
     {
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+            break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectConstant());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getConstant());
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectRadius());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getRadius());
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectNormalX());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getNormalX());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectNormalY());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getNormalY());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectNormalZ());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getNormalZ());
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
             return QVariant();
 
             // Physics Object
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectHalfExtentsX());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getHalfExtentsX());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectHalfExtentsY());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getHalfExtentsY());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectHalfExtentsZ());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getHalfExtentsZ());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectMass());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getMass());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectMargin());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getMargin());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
-            return QVariant(mAssetDefinitionHandle->getPhysicsObjectKinematic());
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getKinematic());
 
             // Audio
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
-            return QVariant(mAssetDefinitionHandle->getAudioLoop());
+            return QVariant(dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->getLoop());
 
             // Font
         case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
-            return QVariant(mAssetDefinitionHandle->getSize());
+            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getSize());
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
-            return QVariant(mAssetDefinitionHandle->getColourRed());
+            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getColourRed());
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
-            return QVariant(mAssetDefinitionHandle->getColourGreen());
+            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getColourGreen());
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-            return QVariant(mAssetDefinitionHandle->getColourBlue());
+            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getColourBlue());
 
             // Light
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
-            return QVariant(mAssetDefinitionHandle->getColourRed());
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getColourRed());
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
-            return QVariant(mAssetDefinitionHandle->getColourGreen());
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getColourGreen());
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
-            return QVariant(mAssetDefinitionHandle->getColourBlue());
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getColourBlue());
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
-            return QVariant(mAssetDefinitionHandle->getColourAlpha());
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getIntensity());
 
             // Common
         case ASSET_DEFINITION_PROPERTY_NAME:

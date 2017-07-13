@@ -2,7 +2,17 @@
 
 #include "../Common/Constants.h"
 
-#include "../Components/AssetDefinition.h"
+#include "../Components/IAssetDefinition.h"
+#include "../Components/Animation/AnimationDefinition.h"
+#include "../Components/Audio/AudioDefinition.h"
+#include "../Components/Graphics/Font/FontDefinition.h"
+#include "../Components/Graphics/Light/LightDefinition.h"
+#include "../Components/Graphics/Model/ModelDefinition.h"
+#include "../Components/Graphics/Shader/ShaderDefinition.h"
+#include "../Components/Graphics/Sprite/SpriteDefinition.h"
+#include "../Components/Physics/PhysicsObjectDefinition.h"
+#include "../Lua/ScriptDefinition.h"
+
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
 

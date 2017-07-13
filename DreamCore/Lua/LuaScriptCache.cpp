@@ -25,15 +25,20 @@ namespace Dream
     LuaScriptCache::LuaScriptCache
     ()
     {
-
+        if (Constants::DEBUG)
+        {
+            cout << "LuaScriptInstance: Constructing" << endl;
+        }
     }
 
     LuaScriptCache::~LuaScriptCache
     ()
     {
-
+        if (Constants::DEBUG)
+        {
+            cout << "LuaScriptInstance: Destructing" << endl;
+        }
     }
-
 
     string
     LuaScriptCache::getScript

@@ -8,13 +8,14 @@ using glm::vec3;
 
 namespace Dream
 {
+    class LightDefinition;
     class LightInstance : public IAssetInstance
     {
         vec3 mColor;
         float mIntensity;
 
     public:
-        LightInstance(AssetDefinition*, SceneObjectRuntime*);
+        LightInstance(LightDefinition*, SceneObjectRuntime*);
         ~LightInstance();
 
         bool load(string);

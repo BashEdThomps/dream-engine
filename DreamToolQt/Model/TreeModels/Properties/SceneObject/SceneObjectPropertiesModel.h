@@ -22,11 +22,11 @@
 namespace Dream
 {
     class SceneObjectDefinition;
-    class AssetDefinition;
+    class IAssetDefinition;
 }
 
 using Dream::SceneObjectDefinition;
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 
 class SceneObjectPropertiesModel : public AbstractPropertiesModel
 {
@@ -53,7 +53,7 @@ public slots:
     void onButton_CaptureTranslation();
     void onButton_CaptureRotation();
     void onButton_CaptureScale();
-    void onButton_RemoveAsset(AssetDefinition*);
+    void onButton_RemoveAsset(IAssetDefinition*);
     void onButton_RemoveChild(SceneObjectDefinition*);
 
 signals:
@@ -61,7 +61,7 @@ signals:
     void notifyButton_CaptureRotation(SceneObjectDefinition*);
     void notifyButton_CaptureScale(SceneObjectDefinition*);
 
-    void notifyButton_RemoveAsset(SceneObjectDefinition*, AssetDefinition*);
+    void notifyButton_RemoveAsset(SceneObjectDefinition*, IAssetDefinition*);
     void notifyButton_RemoveChild(SceneObjectDefinition*, SceneObjectDefinition*);
 
 private:

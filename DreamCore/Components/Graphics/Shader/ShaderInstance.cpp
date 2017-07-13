@@ -15,17 +15,22 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 #include "ShaderInstance.h"
 
 #include "ShaderCache.h"
-#include "../../AssetDefinition.h"
+#include "ShaderDefinition.h"
 #include "../../../Utilities/FileReader.h"
+
+using glm::value_ptr;
 
 namespace Dream
 {
 
+    const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
+
     ShaderInstance::ShaderInstance
-    (ShaderCache* cache, AssetDefinition* definition,SceneObjectRuntime* transform)
+    (ShaderCache* cache, ShaderDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mCacheHandle(cache)
     {
@@ -50,6 +55,187 @@ namespace Dream
     ()
     {
         return mShaderProgram;
+    }
+
+    bool
+    ShaderInstance::setDiffuseColour
+    (vec3 diffuse, string name)
+    {
+       GLint location = getUniformLocation(name);
+       if (location == UNIFORM_NOT_FOUND)
+       {
+          cerr << "ShaderInstance: Unable to find uniform for " << name << endl;
+          return false;
+       }
+
+       glUniform3fv(location,1,value_ptr(diffuse));
+       return true;
+
+    }
+
+    bool
+    ShaderInstance::setSpecularColour
+    (vec3 specular, string name)
+    {
+       GLint location = getUniformLocation(name);
+       if (location == UNIFORM_NOT_FOUND)
+       {
+          cerr << "ShaderInstance: Unable to find uniform for " << name << endl;
+          return false;
+       }
+
+       glUniform3fv(location,1,value_ptr(specular));
+       return true;
+    }
+
+    bool
+    ShaderInstance::setPointLight
+    (int index, vec3 position, vec3 colour)
+    {
+        return setPointLightColour(index,colour) &&
+                setPointLightPosition(index,position);
+    }
+
+    bool
+    ShaderInstance::setPointLightColour
+    (int index, vec3 colour)
+    {
+        stringstream name;
+        name << "pointLightColour_" << index;
+        GLint location = getUniformLocation(name.str());
+
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name.str() << endl;
+            return false;
+        }
+
+        glUniform3fv(location,1, value_ptr(colour));
+        return true;
+    }
+
+    bool
+    ShaderInstance::setPointLightPosition
+    (int index, vec3 position)
+    {
+        stringstream name;
+        name << "pointLightPos_" << index;
+        GLint location = getUniformLocation(name.str());
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name.str() << endl;
+            return false;
+        }
+
+        glUniform3fv(location, 1, value_ptr(position));
+        return true;
+    }
+
+    bool
+    ShaderInstance::setAmbientLight
+    (vec3 colour, float strength)
+    {
+       return setAmbientColour(colour) && setAmbientStrength(strength);
+    }
+
+    bool
+    ShaderInstance::setAmbientColour
+    (vec3 value, string name)
+    {
+        GLint location = getUniformLocation(name);
+
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name << endl;
+            return false;
+        }
+
+        glUniform3fv(location,1,value_ptr(value));
+        return true;
+    }
+
+    bool
+    ShaderInstance::setAmbientStrength
+    (float value, string name)
+    {
+
+        GLint location = getUniformLocation(name);
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name << endl;
+            return false;
+        }
+
+        glUniform1f(location,value);
+        return true;
+    }
+
+    bool
+    ShaderInstance::setModelMatrix
+    (mat4 value, string name)
+    {
+        GLint location =  getUniformLocation(name);
+
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name << endl;
+            return false;
+        }
+
+        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
+
+        return true;
+    }
+
+    bool
+    ShaderInstance::setViewMatrix
+    (mat4 value, string name)
+    {
+        GLint location = getUniformLocation(name);
+
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name << endl;
+            return false;
+        }
+
+        glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
+
+        return true;
+    }
+
+    bool
+    ShaderInstance::setProjectionMatrix
+    (mat4 value, string name)
+    {
+        GLint location = getUniformLocation(name);
+
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name << endl;
+            return false;
+        }
+
+        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
+
+        return true;
+    }
+
+    bool
+    ShaderInstance::setViewerPosition
+    (vec3 value, string name)
+    {
+        GLint uCamPos = getUniformLocation(name);
+
+        if (uCamPos == UNIFORM_NOT_FOUND)
+        {
+            cerr << "ShaderInstance: Unable to find uinform " <<  name << endl;
+            return false;
+        }
+
+        glUniform3fv(uCamPos,1,value_ptr(value));
+
+        return true;
     }
 
     bool
@@ -106,7 +292,7 @@ namespace Dream
             if (!success)
             {
                 glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
-                cerr << "ShaderInstance: SHADER:VERTEX:COMPILATION_FAILED\n" << infoLog << endl;
+                cerr << "ShaderInstance: SHADER VERTEX COMPILATION FAILED\n" << infoLog << endl;
             }
             // Fragment Shader
             mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -118,7 +304,7 @@ namespace Dream
             if (!success)
             {
                 glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
-                cerr << "ShaderInstance: SHADER:FRAGMENT:COMPILATION_FAILED\n" << infoLog << endl;
+                cerr << "ShaderInstance: SHADER FRAGMENT COMPILATION FAILED\n" << infoLog << endl;
             }
             // Shader Program
             mShaderProgram = glCreateProgram();
@@ -130,7 +316,7 @@ namespace Dream
             if (!success)
             {
                 glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-                cerr << "ShaderInstance: SHADER:PROGRAM:LINKING_FAILED\n" << infoLog << endl;
+                cerr << "ShaderInstance: SHADER PROGRAM LINKING FAILED\n" << infoLog << endl;
             }
             // Delete the shaders as they're linked into our program now and no longer necessery
             glDeleteShader(mVertexShader);
@@ -167,6 +353,27 @@ namespace Dream
     }
 
     void
+    ShaderInstance::bindVertexArray
+    (GLuint vao)
+    {
+        glBindVertexArray(vao);
+    }
+
+    void
+    ShaderInstance::unbindVertexArray
+    ()
+    {
+        bindVertexArray(0);
+    }
+
+    GLint
+    ShaderInstance::getUniformLocation
+    (string name)
+    {
+        return glGetUniformLocation(mShaderProgram,name.c_str());
+    }
+
+    void
     ShaderInstance::setUniform1f
     (string location, GLfloat value)
     {
@@ -181,6 +388,13 @@ namespace Dream
         mUniform1fMap.insert(pair<string,GLfloat>(location,value));
     }
 
+    void
+    ShaderInstance::unbind
+    ()
+    {
+        glUseProgram(0);
+    }
+
     // GL Syncros ==============================================================
 
     // 1f
@@ -188,13 +402,13 @@ namespace Dream
     ShaderInstance::syncUniform1f
     ()
     {
-        GLint prog = getShaderProgram();
+        GLuint prog = getShaderProgram();
 
         for (pair<string,GLfloat> it : mUniform1fMap)
         {
             string name = it.first;
             GLfloat val = it.second;
-            GLint location = glGetUniformLocation(prog,name.c_str());
+            GLint location = getUniformLocation(name);
             if (Constants::VERBOSE)
             {
                 cout << "ShaderInstance: "
@@ -206,6 +420,13 @@ namespace Dream
                      << " val: " << val
                      << endl;
             }
+
+            if (location == UNIFORM_NOT_FOUND)
+            {
+                cerr << "ShaderProgram: unable to find uniform " << name << endl;
+                continue;
+            }
+
             glUniform1f(location,val);
         }
     }

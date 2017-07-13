@@ -40,6 +40,7 @@ namespace Dream
     quat mOrientation;
     vec3 mScale;
     string mTransformType;
+    Transform3D* mParentHandle;
 
   public:
     Transform3D();

@@ -25,21 +25,20 @@
 
 namespace Dream
 {
-      class LuaScriptInstance : public IAssetInstance
-      {
+    class ScriptDefinition;
 
-      public:
-        LuaScriptInstance(AssetDefinition*,SceneObjectRuntime*);
+    class LuaScriptInstance : public IAssetInstance
+    {
+
+    public:
+        LuaScriptInstance(ScriptDefinition*,SceneObjectRuntime*);
         ~LuaScriptInstance(void);
         bool load(string);
         void update();
         void loadExtraAttributes(json);
         bool getError();
         void setError(bool);
-
-      private:
+    private:
         bool mError;
-
-      }; // End of LuaScriptInstance
-
+    }; // End of LuaScriptInstance
 } // End of Dream

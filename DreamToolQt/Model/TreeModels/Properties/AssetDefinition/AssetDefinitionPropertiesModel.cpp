@@ -28,7 +28,7 @@
 using Dream::Constants;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
-(AssetDefinition *definition, TemplatesModel* templatesModel, QTreeView* parent)
+(IAssetDefinition *definition, TemplatesModel* templatesModel, QTreeView* parent)
     : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(templatesModel, this, parent), parent),
       mAssetDefinitionHandle(definition)
 {
@@ -252,7 +252,7 @@ AssetDefinitionPropertiesModel::createFormatProperty
     mRootItem->appendChild(formatProperty);
 }
 
-AssetDefinition*
+IAssetDefinition*
 AssetDefinitionPropertiesModel::getAssetDefinitionHandle
 ()
 {

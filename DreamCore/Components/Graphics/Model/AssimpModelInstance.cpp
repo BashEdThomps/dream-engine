@@ -32,14 +32,14 @@
 #include "../BoundingBox.h"
 #include "../Shader/ShaderInstance.h"
 #include "../../../Common/Constants.h"
-#include "../../AssetDefinition.h"
+#include "ModelDefinition.h"
 
 #include "AssimpCache.h"
 
 namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
-    (AssimpCache* modelCache, TextureCache* texCache, AssetDefinition* definition, SceneObjectRuntime* transform)
+    (AssimpCache* modelCache, TextureCache* texCache, IAssetDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mModelCacheHandle(modelCache),
           mTextureCacheHandle(texCache)
@@ -175,12 +175,43 @@ namespace Dream
 
         // Process material
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        vector<Texture> diffuseMaps = loadMaterialTextures(material,aiTextureType_DIFFUSE, "texture_diffuse");
+
+        // Diffuse Textures
+        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        if (diffuseMaps.size() > 0 && Constants::DEBUG)
+        {
+            cout << "AssimpModelInstance: Inserting " << diffuseMaps.size() << " diffuse textures" << endl;
+
+        }
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
+
+        // Specular Textures
+        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        if (specularMaps.size() > 0 && Constants::DEBUG)
+        {
+            cout << "AssimpModelInstance: Inserting " << specularMaps.size() << " specular textures" << endl;
+
+        }
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-        return AssimpMesh(this,vertices, indices, textures);
+        // Normal Textures
+        vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normals");
+        if (normalMaps.size() > 0 && Constants::DEBUG)
+        {
+            cout << "AssimpModelInstance: Inserting " << normalMaps.size() << " normal textures" << endl;
+
+        }
+        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+        // Colours
+
+        aiColor3D diffuse (0.f,0.f,0.f);
+        aiColor3D specular(0.f,0.f,0.f);
+
+        material->Get(AI_MATKEY_COLOR_DIFFUSE,diffuse);
+        material->Get(AI_MATKEY_COLOR_SPECULAR,specular);
+
+        return AssimpMesh(this, vertices, indices, textures, diffuse, specular);
     }
 
     vector<Texture>
@@ -200,7 +231,7 @@ namespace Dream
 
     void
     AssimpModelInstance::loadExtraAttributes
-    (nlohmann::json jsonData)
+    (json)
     {
 
     }

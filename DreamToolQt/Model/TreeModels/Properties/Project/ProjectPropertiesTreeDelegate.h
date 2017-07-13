@@ -21,6 +21,7 @@
 #include <QItemDelegate>
 
 class ProjectPropertiesModel;
+class ProjectPropertiesItem;
 
 class ProjectPropertiesTreeDelegate : public QItemDelegate
 {
@@ -37,4 +38,5 @@ public:
 protected:
     ProjectPropertiesModel *mModelHandle;
 
+    QWidget* createStartupSceneComboBox(ProjectPropertiesItem* ppiHandle, QWidget* parent) const;
 };

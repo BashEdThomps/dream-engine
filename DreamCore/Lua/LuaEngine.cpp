@@ -88,9 +88,9 @@ errorHandler
 namespace Dream
 {
     LuaEngine::LuaEngine
-    (ProjectRuntime* projectHandle)
-        : mProjectRuntimeHandle(projectHandle),
-          mScriptCache(new LuaScriptCache())
+    (ProjectRuntime* projectHandle, LuaScriptCache* cache)
+        : mScriptCacheHandle(cache),
+          mProjectRuntimeHandle(projectHandle)
     {
         if (Constants::DEBUG)
         {
@@ -142,7 +142,7 @@ namespace Dream
 
     bool
     LuaEngine::createScript
-    (SceneObjectRuntime* sceneObject,LuaScriptInstance* luaScript)
+    (SceneObjectRuntime* sceneObject, LuaScriptInstance* luaScript)
     {
         if (luaScript == nullptr)
         {
@@ -158,6 +158,11 @@ namespace Dream
 
         if (luaScript->getLoadedFlag())
         {
+            if (Constants::DEBUG)
+            {
+               cout << "LuaEngine: Script " << luaScript->getNameAndUuidString()
+                    << " is all ready loaded" << endl;
+            }
             return false;
         }
 
@@ -220,7 +225,7 @@ namespace Dream
 
             object newScriptTable = newtable(mState);
             string path = scriptInstance->getAbsolutePath();
-            string script = mScriptCache->getScript(path);
+            string script = mScriptCacheHandle->getScript(path);
 
             if (Constants::DEBUG)
             {

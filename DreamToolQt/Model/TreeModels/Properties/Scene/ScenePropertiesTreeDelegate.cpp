@@ -44,12 +44,14 @@ ScenePropertiesTreeDelegate::~ScenePropertiesTreeDelegate
 
 QWidget*
 ScenePropertiesTreeDelegate::createEditor
-(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index) const
 {
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
     QDoubleSpinBox *spinbox = nullptr;
     switch (spiHandle->getProperty())
     {
+        case SCENE_PROPERTY_CAMERA:
+            return createCameraAllCaptureButton(parent);
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
             return createCameraTranslationCaptureButton(parent);
         case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
@@ -103,6 +105,8 @@ ScenePropertiesTreeDelegate::setEditorData
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
     switch (spiHandle->getProperty())
     {
+        case SCENE_PROPERTY_CAMERA:
+            break;
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
             break;
         case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
@@ -152,6 +156,8 @@ ScenePropertiesTreeDelegate::setModelData
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
     switch (spiHandle->getProperty())
     {
+        case SCENE_PROPERTY_CAMERA:
+            break;
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
             break;
         case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
@@ -195,10 +201,52 @@ ScenePropertiesTreeDelegate::setModelData
 
 void
 ScenePropertiesTreeDelegate::updateEditorGeometry
-(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&) const
 {
 
     editor->setGeometry(option.rect);
+}
+
+void
+ScenePropertiesTreeDelegate::onButton_CaptureCameraTranslation
+(bool)
+{
+    qDebug() << "ScenePropertiesTreeDelegate: CaptureCameraTranslation";
+    emit notifyButton_CaptureCameraTranslation();
+}
+
+void
+ScenePropertiesTreeDelegate::onButton_CaptureCameraRotation
+(bool)
+{
+    qDebug() << "ScenePropertiesTreeDelegate: CaptureCameraRotation";
+    emit notifyButton_CaptureCameraRotation();
+}
+
+QWidget*
+ScenePropertiesTreeDelegate::createCameraAllCaptureButton
+(QWidget* parent) const
+{
+    QToolButton* button = new QToolButton(parent);
+    button->setText("Capture");
+
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_CaptureCameraTranslation(bool))
+    );
+
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_CaptureCameraRotation(bool))
+    );
+
+    return button;
 }
 
 QWidget*
@@ -207,6 +255,13 @@ ScenePropertiesTreeDelegate::createCameraTranslationCaptureButton
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Capture Translation");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_CaptureCameraTranslation(bool))
+    );
     return button;
 }
 
@@ -216,5 +271,12 @@ ScenePropertiesTreeDelegate::createCameraRotationCaptureButton
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Capture Rotation");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_CaptureCameraRotation(bool))
+    );
     return button;
 }

@@ -41,7 +41,17 @@
 #include "../../Lua/LuaScriptInstance.h"
 #include "../../Lua/LuaEngine.h"
 
-#include "../../Components/AssetDefinition.h"
+#include "../../Components/IAssetDefinition.h"
+
+#include "../../Components/Animation/AnimationDefinition.h"
+#include "../../Components/Audio/AudioDefinition.h"
+#include "../../Components/Graphics/Font/FontDefinition.h"
+#include "../../Components/Graphics/Light/LightDefinition.h"
+#include "../../Components/Graphics/Model/ModelDefinition.h"
+#include "../../Components/Physics/PhysicsObjectDefinition.h"
+#include "../../Components/Graphics/Shader/ShaderDefinition.h"
+#include "../../Components/Graphics/Sprite/SpriteDefinition.h"
+#include "../../Lua/ScriptDefinition.h"
 
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
@@ -411,15 +421,6 @@ namespace Dream
         mHasFocus = focus;
     }
 
-    /*
-    void
-    SceneObjectRuntime::setSpriteInstance
-    (SpriteInstance* spriteAsset)
-    {
-        mSpriteInstance.reset(spriteAsset);
-    }
-    */
-
     SpriteInstance*
     SceneObjectRuntime::getSpriteInstance
     ()
@@ -512,7 +513,7 @@ namespace Dream
     SceneObjectRuntime::createAssetInstanceFromAssetDefinitionByUuid
     (string uuid)
     {
-        AssetDefinition* assetDefinition;
+        IAssetDefinition* assetDefinition;
         assetDefinition = mSceneRuntimeHandle->getProjectRuntimeHandle()
                 ->getProjectHandle()->getProjectDefinitionHandle()
                 ->getAssetDefinitionHandleByUuid(uuid);
@@ -521,7 +522,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createAssetInstance
-    (AssetDefinition* definition)
+    (IAssetDefinition* definition)
     {
         mProjectPath = mSceneRuntimeHandle->getProjectRuntimeHandle()->getProjectHandle()->getProjectPath();
 
@@ -540,39 +541,39 @@ namespace Dream
 
         if(definition->isTypeAnimation())
         {
-            createAnimationInstance(definition);
+            createAnimationInstance(dynamic_cast<AnimationDefinition*>(definition));
         }
         else if (definition->isTypeAudio())
         {
-            createAudioInstance(definition);
+            createAudioInstance(dynamic_cast<AudioDefinition*>(definition));
         }
         else if (definition->isTypeModel())
         {
-            createModelInstance(definition);
+            createModelInstance(dynamic_cast<ModelDefinition*>(definition));
         }
         else if (definition->isTypeScript())
         {
-            createScriptInstance(definition);
+            createScriptInstance(dynamic_cast<ScriptDefinition*>(definition));
         }
         else if (definition->isTypeShader())
         {
-            createShaderInstance(definition);
+            createShaderInstance(dynamic_cast<ShaderDefinition*>(definition));
         }
         else if (definition->isTypePhysicsObject())
         {
-            createPhysicsObjectInstance(definition);
+            createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(definition));
         }
         else if (definition->isTypeLight())
         {
-            createLightInstance(definition);
+            createLightInstance(dynamic_cast<LightDefinition*>(definition));
         }
         else if (definition->isTypeSprite())
         {
-            createSpriteInstance(definition);
+            createSpriteInstance(dynamic_cast<SpriteDefinition*>(definition));
         }
         else if (definition->isTypeFont())
         {
-            createFontInstance(definition);
+            createFontInstance(dynamic_cast<FontDefinition*>(definition));
         }
         else
         {
@@ -585,7 +586,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createPhysicsObjectInstance
-    (AssetDefinition* definition)
+    (PhysicsObjectDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -600,7 +601,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createAnimationInstance
-    (AssetDefinition* definition)
+    (AnimationDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -615,7 +616,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createAudioInstance
-    (AssetDefinition* definition)
+    (AudioDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -634,7 +635,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createModelInstance
-    (AssetDefinition* definition)
+    (ModelDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -655,7 +656,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createScriptInstance
-    (AssetDefinition* definition)
+    (ScriptDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -668,7 +669,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createShaderInstance
-    (AssetDefinition* definition)
+    (ShaderDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -688,7 +689,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createLightInstance
-    (AssetDefinition* definition)
+    (LightDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -700,7 +701,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createSpriteInstance
-    (AssetDefinition* definition)
+    (SpriteDefinition* definition)
     {
         if (Constants::DEBUG)
         {
@@ -720,7 +721,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createFontInstance
-    (AssetDefinition* definition)
+    (FontDefinition* definition)
     {
         if (Constants::DEBUG)
         {

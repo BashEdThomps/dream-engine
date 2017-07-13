@@ -61,6 +61,8 @@ ScenePropertiesItem::data
     {
         switch (getProperty())
         {
+            case SCENE_PROPERTY_CAMERA:
+                break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
                 break;
             case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
@@ -124,6 +126,8 @@ ScenePropertiesItem::setData
     {
         switch(getProperty())
         {
+            case SCENE_PROPERTY_CAMERA:
+                break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
                 break;
             case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:

@@ -18,7 +18,7 @@
 #include "SceneObjectDefinition.h"
 #include "SceneObjectRuntime.h"
 
-#include "../../Components/AssetDefinition.h"
+#include "../../Components/IAssetDefinition.h"
 #include "../../Common/Constants.h"
 #include "../../Components/Transform3D.h"
 #include "../../Utilities/Uuid.h"
@@ -80,7 +80,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::addAssetDefinitionToLoadQueue
-    (AssetDefinition* adHandle)
+    (IAssetDefinition* adHandle)
     {
         addAssetDefinitionUuidToLoadQueue(adHandle->getUuid());
     }
@@ -107,7 +107,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::removeAssetDefinitionFromLoadQueue
-    (AssetDefinition* adHandle)
+    (IAssetDefinition* adHandle)
     {
         removeAssetDefinitionUuidFromLoadQueue(adHandle->getUuid());
     }

@@ -34,7 +34,7 @@ namespace Qt
 using std::string;
 using std::vector;
 
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 using Dream::SceneDefinition;
 using Dream::Project;
 using Dream::IDefinition;
@@ -54,7 +54,7 @@ public:
     Project* getProject();
 
     vector<SceneDefinition*> getScenes();
-    vector<AssetDefinition*> getAssetDefinitions();
+    vector<IAssetDefinition*> getAssetDefinitions();
 
     void setProjectName(string name);
     void setProjectAuthor(string author);
@@ -70,7 +70,7 @@ public:
     SceneRuntime* stopActiveSceneRuntime();
     void setupHeartbeatTimer();
 
-    AssetDefinition* getAssetDefinitionHandleByUuid(string uuid);
+    IAssetDefinition* getAssetDefinitionHandleByUuid(string uuid);
     SceneDefinition* getSceneDefinitionHandleByUuid(string uuid);
 
     SceneDefinition* getSelectedSceneDefinitionHandle();

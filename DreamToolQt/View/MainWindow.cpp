@@ -156,7 +156,7 @@ MainWindow::setupMenu_Asset_NewDefinition
         (
             QString::fromStdString
             (
-                Constants::getAssetTypeReadableName(typePair.second)
+                Constants::getAssetTypeReadableNameFromString(typePair.second)
             )
         );
         mMenu_Asset_NewDefinition->addAction(typeAction);

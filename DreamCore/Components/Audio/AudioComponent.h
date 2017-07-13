@@ -37,7 +37,7 @@ using std::vector;
 namespace Dream
 {
     class AudioInstance;
-    class AssetDefinition;
+    class AudioDefinition;
     class SceneObjectRuntime;
 
     class AudioComponent : public IComponent
@@ -73,7 +73,7 @@ namespace Dream
         float getSampleOffset(ALuint);
         float getSampleOffset(AudioInstance*);
         vector<char> getAudioBuffer(AudioInstance*, ALint, ALint);
-        AudioInstance* newAudioInstance(AssetDefinition*,SceneObjectRuntime*);
+        AudioInstance* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
 
     protected:
         ALuint generateBuffers(size_t);

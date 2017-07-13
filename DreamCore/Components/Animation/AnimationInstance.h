@@ -3,6 +3,7 @@
 #include <vector>
 #include <json.hpp>
 #include "../IAssetInstance.h"
+#include "AnimationDefinition.h"
 
 using std::vector;
 using nlohmann::json;
@@ -11,7 +12,6 @@ namespace Dream
 {
     class Frame;
     class KeyFrame;
-    class AssetDefinition;
     class Transform3D;
 
     class AnimationInstance : public IAssetInstance
@@ -29,7 +29,7 @@ namespace Dream
         bool mLoop;
         bool mPlaying;
     public:
-        AnimationInstance(AssetDefinition*,SceneObjectRuntime*);
+        AnimationInstance(AnimationDefinition*,SceneObjectRuntime*);
         ~AnimationInstance();
         bool load(string);
         bool isLooping();

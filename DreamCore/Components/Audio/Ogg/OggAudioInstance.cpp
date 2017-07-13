@@ -19,9 +19,9 @@
 
 #include <vorbis/vorbisfile.h>
 
-#include "../AssetDefinition.h"
-#include "../../Common/Constants.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../AudioDefinition.h"
+#include "../../../Common/Constants.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 using std::cerr;
 using std::cout;
@@ -29,7 +29,7 @@ using std::cout;
 namespace Dream
 {
     OggAudioInstance::OggAudioInstance
-    (AssetDefinition* definition,SceneObjectRuntime* transform)
+    (AudioDefinition* definition,SceneObjectRuntime* transform)
         : AudioInstance(definition,transform)
     {
 

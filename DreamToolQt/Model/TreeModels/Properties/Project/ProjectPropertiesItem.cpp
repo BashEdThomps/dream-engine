@@ -52,12 +52,28 @@ ProjectPropertiesItem::data
 
     switch(getProperty())
     {
+
+        case PROJECT_PROPERTY_WINDOW_WIDTH:
+            return QVariant(mProjectDefinitionHandle->getWindowWidth());
+        case PROJECT_PROPERTY_WINDOW_HEIGHT:
+            return QVariant(mProjectDefinitionHandle->getWindowHeight());
+
+        case PROJECT_PROPERTY_DESCRIPTION:
+            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getDescription()));
+
+        case PROJECT_PROPERTY_STARTUP_SCENE:
+            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getStartupSceneUuid()));
+
         case PROJECT_PROPERTY_NAME:
             return QVariant(QString::fromStdString(mProjectDefinitionHandle->getName()));
+
         case PROJECT_PROPERTY_AUTHOR:
             return QVariant(QString::fromStdString(mProjectDefinitionHandle->getAuthor()));
+
+        // Not Used
+        case PROJECT_PROPERTY_WINDOW_SIZE:
         case PROJECT_PROPERTY_NONE:
-            break;
+            return QVariant();
     }
 
     return QVariant();
@@ -74,12 +90,28 @@ ProjectPropertiesItem::setData
 
     switch (getProperty())
     {
+        case PROJECT_PROPERTY_DESCRIPTION:
+            mProjectDefinitionHandle->setDescription(value.toString().toStdString());
+            break;
+
+        case PROJECT_PROPERTY_WINDOW_WIDTH:
+            mProjectDefinitionHandle->setWindowWidth(value.toInt());
+            break;
+        case PROJECT_PROPERTY_WINDOW_HEIGHT:
+            mProjectDefinitionHandle->setWindowHeight(value.toInt());
+            break;
+
+        case PROJECT_PROPERTY_STARTUP_SCENE:
+            mProjectDefinitionHandle->setStartupSceneUuid(value.toString().toStdString());
+            break;
         case PROJECT_PROPERTY_NAME:
             mProjectDefinitionHandle->setName(value.toString().toStdString());
             break;
         case PROJECT_PROPERTY_AUTHOR:
             mProjectDefinitionHandle->setAuthor(value.toString().toStdString());
             break;
+
+        case PROJECT_PROPERTY_WINDOW_SIZE:
         case PROJECT_PROPERTY_NONE:
             break;
 
@@ -93,4 +125,11 @@ ProjectPropertiesItem::getProperty
 ()
 {
     return mProperty;
+}
+
+ProjectDefinition*
+ProjectPropertiesItem::getProjectDefinitionHandle
+()
+{
+   return mProjectDefinitionHandle;
 }

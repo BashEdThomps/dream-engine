@@ -22,7 +22,7 @@
 #include <memory>
 
 using std::unique_ptr;
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 
 class ModelFileBrowseDelegate;
 class BrowseForAdditionalFilesDelegate;
@@ -32,17 +32,17 @@ class AssetDefinitionPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    AssetDefinitionPropertiesModel(AssetDefinition *definition, TemplatesModel* templatesModel, QTreeView *parent = 0);
+    AssetDefinitionPropertiesModel(IAssetDefinition *definition, TemplatesModel* templatesModel, QTreeView *parent = 0);
     ~AssetDefinitionPropertiesModel();
 
     void createRoot() override;
     void createProperties() override;
     void createDelegateConnections() override;
 
-    AssetDefinition* getAssetDefinitionHandle();
+    IAssetDefinition* getAssetDefinitionHandle();
 
 private:
-    AssetDefinition* mAssetDefinitionHandle;
+    IAssetDefinition* mAssetDefinitionHandle;
 
     void createFormatProperty();
     void createTypeProperty();
@@ -102,22 +102,22 @@ public slots:
     void onButton_PhysicsBvhTriangleMeshFile();
 
 signals:
-    void notifyButton_RemoveFiles(AssetDefinition*);
+    void notifyButton_RemoveFiles(IAssetDefinition*);
 
-    void notifyButton_AudioFile(AssetDefinition*);
+    void notifyButton_AudioFile(IAssetDefinition*);
 
-    void notifyButton_FontFile(AssetDefinition*);
+    void notifyButton_FontFile(IAssetDefinition*);
 
-    void notifyButton_ModelFile(AssetDefinition*);
-    void notifyButton_ModelAdditionalFiles(AssetDefinition*);
+    void notifyButton_ModelFile(IAssetDefinition*);
+    void notifyButton_ModelAdditionalFiles(IAssetDefinition*);
 
-    void notifyButton_EditScript(AssetDefinition*);
-    void notifyCombo_ScriptTemplateChanged(AssetDefinition*, const QString&);
+    void notifyButton_EditScript(IAssetDefinition*);
+    void notifyCombo_ScriptTemplateChanged(IAssetDefinition*, const QString&);
 
-    void notifyButton_EditFragmentShader(AssetDefinition*);
-    void notifyButton_EditVertexShader(AssetDefinition*);
-    void notifyCombo_ShaderTemplateChanged(AssetDefinition*, const QString&);
+    void notifyButton_EditFragmentShader(IAssetDefinition*);
+    void notifyButton_EditVertexShader(IAssetDefinition*);
+    void notifyCombo_ShaderTemplateChanged(IAssetDefinition*, const QString&);
 
-    void notifyButton_PhysicsBvhTriangleMeshFile(AssetDefinition*);
+    void notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*);
 };
 

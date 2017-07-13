@@ -17,21 +17,21 @@
 
 #include "LuaScriptInstance.h"
 
-#include "../Components/AssetDefinition.h"
+#include "ScriptDefinition.h"
 
 namespace Dream
 {
 
     LuaScriptInstance::LuaScriptInstance
-    (AssetDefinition* definition, SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform)
+    (ScriptDefinition* definition, SceneObjectRuntime* transform)
+        : IAssetInstance(definition,transform),
+        mError(false)
     {
         if (Constants::DEBUG)
         {
             cout << "LuaScriptInstance: Constructing "
                  << mDefinitionHandle->getNameAndUuidString() << endl;
         }
-        mError = false;
         return;
     }
 

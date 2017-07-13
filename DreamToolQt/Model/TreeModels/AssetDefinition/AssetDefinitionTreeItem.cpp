@@ -24,7 +24,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
 (
         QString title,
         AssetDefinitionTreeItemType type,
-        AssetDefinition* definition,
+        IAssetDefinition* definition,
         AssetDefinitionTreeItem *parent
 )
     : GenericTreeItem(title, parent),
@@ -34,7 +34,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
     qDebug() << "AssetDefinitionTreeItem: Constructing";
 }
 
-AssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()
+IAssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()
 {
    return mDefinition;
 }

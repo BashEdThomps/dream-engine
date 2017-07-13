@@ -10,7 +10,7 @@
 #include "../../Project/ProjectDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
-#include "../AssetDefinition.h"
+#include "PhysicsObjectDefinition.h"
 
 namespace Dream
 {
@@ -56,7 +56,7 @@ namespace Dream
     }
 
     PhysicsObjectInstance::PhysicsObjectInstance
-    (AssetDefinition* definition,SceneObjectRuntime* transform)
+    (PhysicsObjectDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mInPhysicsWorld(false)
     {
@@ -119,7 +119,7 @@ namespace Dream
 
     void
     PhysicsObjectInstance::loadExtraAttributes
-    (nlohmann::json jsonData, AssetDefinition* definition, bool isChild)
+    (nlohmann::json jsonData, IAssetDefinition* definition, bool isChild)
     {
     }
 
@@ -127,8 +127,12 @@ namespace Dream
     PhysicsObjectInstance::load
     (string projectPath)
     {
-        loadExtraAttributes(mDefinitionHandle->getJson(),mDefinitionHandle,false);
-        mCollisionShape = createCollisionShape(mDefinitionHandle,projectPath);
+        PhysicsObjectDefinition* podHandle = dynamic_cast<PhysicsObjectDefinition*>
+        (
+            mDefinitionHandle
+        );
+        loadExtraAttributes(podHandle->getJson(),mDefinitionHandle,false);
+        mCollisionShape = createCollisionShape(podHandle,projectPath);
         if (!mCollisionShape)
         {
             cerr << "PhysicsObjectInstance: Unable to create collision shape" << endl;
@@ -150,7 +154,7 @@ namespace Dream
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
-        if (mDefinitionHandle->getPhysicsObjectKinematic())
+        if (podHandle->getKinematic())
         {
             mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
             mRigidBody->setActivationState(DISABLE_DEACTIVATION);
@@ -163,22 +167,22 @@ namespace Dream
 
     btCollisionShape*
     PhysicsObjectInstance::createCollisionShape
-    (AssetDefinition* definition, string projectPath)
+    (PhysicsObjectDefinition* podHandle, string projectPath)
     {
-        string format = definition->getFormat();
+        string format = podHandle->getFormat();
         btCollisionShape *collisionShape = NULL;
 
         if (format.compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
         {
-            btScalar radius = definition->getPhysicsObjectRadius();
+            btScalar radius = podHandle->getRadius();
             collisionShape = new btSphereShape(radius);
         }
         else if (format.compare(Constants::COLLISION_SHAPE_BOX) == 0)
         {
             btScalar boxX, boxY, boxZ;
-            boxX = definition->getPhysicsObjectHalfExtentsX();
-            boxY = definition->getPhysicsObjectHalfExtentsY();
-            boxZ = definition->getPhysicsObjectHalfExtentsZ();
+            boxX = podHandle->getHalfExtentsX();
+            boxY = podHandle->getHalfExtentsY();
+            boxZ = podHandle->getHalfExtentsZ();
             collisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CYLINDER) == 0)
@@ -208,7 +212,7 @@ namespace Dream
         else if (format.compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
             // Load Collision Data
-            string path = projectPath+definition->getAssetPath();
+            string path = projectPath+podHandle->getAssetPath();
             if (Constants::DEBUG)
             {
                 cout << "PhysicsObjectInstance: Loading collision geometry from "
@@ -225,10 +229,10 @@ namespace Dream
         }
         else if (format.compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
         {
-            float x = definition->getPhysicsObjectNormalX();
-            float y = definition->getPhysicsObjectNormalY();
-            float z = definition->getPhysicsObjectNormalZ();
-            float constant = definition->getPhysicsObjectConstant();
+            float x = podHandle->getNormalX();
+            float y = podHandle->getNormalY();
+            float z = podHandle->getNormalZ();
+            float constant = podHandle->getConstant();
 
             btVector3 planeNormal(x,y,z);
             btScalar planeConstant = btScalar(constant);
@@ -240,9 +244,9 @@ namespace Dream
             collisionShape = new btCompoundShape();
             btCompoundShape *compound = static_cast<btCompoundShape*>(collisionShape);
 
-            for (CompoundChildDefinition child : mDefinitionHandle->getPhysicsObjectCompoundChildren())
+            for (CompoundChildDefinition child : podHandle->getCompoundChildren())
             {
-                AssetDefinition  *def = getAssetDefinitionByUuid(child.uuid);
+                PhysicsObjectDefinition *def = getAssetDefinitionByUuid(child.uuid);
                 loadExtraAttributes(def->getJson(),def,true);
                 btCollisionShape *shape = createCollisionShape(def,projectPath);
                 compound->addChildShape(child.transform.getTransformAsBtTransform(),shape);
@@ -251,7 +255,7 @@ namespace Dream
 
         if (collisionShape)
         {
-            btScalar margin = definition->getPhysicsObjectMargin();
+            btScalar margin = podHandle->getMargin();
             collisionShape->setMargin(margin);
         }
 
@@ -328,10 +332,15 @@ namespace Dream
         mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
 
-    AssetDefinition*
+    PhysicsObjectDefinition*
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
     {
-        return mDefinitionHandle->getProjectHandle()->getAssetDefinitionHandleByUuid(uuid);
+        return dynamic_cast<PhysicsObjectDefinition*>
+        (
+            mDefinitionHandle
+                ->getProjectHandle()
+                ->getAssetDefinitionHandleByUuid(uuid)
+        );
     }
 } // End of Dream

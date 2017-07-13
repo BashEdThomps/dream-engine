@@ -5,7 +5,6 @@
 #include "KeyFrame.h"
 
 #include "../../Common/Constants.h"
-#include "../AssetDefinition.h"
 #include "../../Utilities/String.h"
 
 namespace Dream
@@ -29,7 +28,7 @@ namespace Dream
 
 
     AnimationInstance::AnimationInstance
-    (AssetDefinition* definition, SceneObjectRuntime* runtime)
+    (AnimationDefinition* definition, SceneObjectRuntime* runtime)
         : IAssetInstance(definition,runtime)
     {
         mCurrentPlaybackFrame = 0;

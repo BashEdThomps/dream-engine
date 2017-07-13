@@ -80,7 +80,7 @@ const
     editor->setEditable(false);
     editor->setInsertPolicy(QComboBox::NoInsert);
 
-    AssetType type = Constants::assetTypeFromString(item->getAssetDefinitionHandle()->getType());
+    AssetType type = Constants::getAssetTypeEnumFromString(item->getAssetDefinitionHandle()->getType());
     // Setup List
     vector<string> formats = Constants::DREAM_ASSET_FORMATS_MAP[type];
     QStringList list;

@@ -161,10 +161,10 @@ namespace Dream
     Camera::updateCameraVectors
     ()
     {
-        float adjustedYaw = mYaw + Constants::CAMERA_YAW_OFFSET;
-        mFront.x = static_cast<float>(cos(radians(adjustedYaw)) * cos(radians(mPitch)));
-        mFront.y = static_cast<float>(sin(radians(mPitch)));
-        mFront.z = static_cast<float>(sin(radians(adjustedYaw)) * cos(radians(mPitch)));
+        //float adjustedYaw = mYaw + Constants::CAMERA_YAW_OFFSET;
+        mFront.x = static_cast<float>(cos(mYaw) * cos(mPitch));
+        mFront.y = static_cast<float>(sin(mPitch));
+        mFront.z = static_cast<float>(sin(mYaw) * cos(mPitch));
         mFront = normalize(mFront);
         mRight = normalize(cross(mFront, mWorldUp));
         mUp    = normalize(cross(mRight, mFront));

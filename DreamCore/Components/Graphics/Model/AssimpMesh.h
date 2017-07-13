@@ -23,18 +23,31 @@ namespace Dream
         GLuint mVAO;
         GLuint mVBO;
         GLuint mEBO;
+
+        AssimpModelInstance* mParentHandle;
+
         vector<Vertex>  mVertices;
         vector<GLuint>  mIndices;
         vector<Texture> mTextures;
-        AssimpModelInstance* mParentHandle;
+
+        aiColor3D mDiffuseColour;
+        aiColor3D mSpecularColour;
+
+
+        void bindTextures(ShaderInstance*);
+        void bindDiffuse(ShaderInstance*);
+        void bindSpecular(ShaderInstance*);
+
     public:
         AssimpMesh
         (
-                AssimpModelInstance*,
-                vector<Vertex>,
-                vector<GLuint>,
-                vector<Texture>
-                );
+                AssimpModelInstance* parent,
+                vector<Vertex> vertexArray,
+                vector<GLuint> indexArray,
+                vector<Texture> textureArray,
+                aiColor3D diffuse = aiColor3D(0.0f),
+                aiColor3D specular = aiColor3D(0.0f)
+        );
         ~AssimpMesh();
         void draw(ShaderInstance*);
         void init();

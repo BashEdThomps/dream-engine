@@ -30,6 +30,7 @@ using nlohmann::json;
 namespace Dream
 {
     class TextureCache;
+    class SpriteDefinition;
 
     class SpriteInstance : public IAssetInstance
     {
@@ -40,7 +41,7 @@ namespace Dream
         GLenum mTextureFormat;
         TextureCache* mCacheHandle;
     public:
-        SpriteInstance(TextureCache*, AssetDefinition*, SceneObjectRuntime*);
+        SpriteInstance(TextureCache*, SpriteDefinition*, SceneObjectRuntime*);
         ~SpriteInstance();
         bool load(string);
         void loadExtraAttributes(json);

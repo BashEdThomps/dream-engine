@@ -67,7 +67,7 @@ namespace Dream
         void updateBoundingBox(aiMesh* mesh);
         void initBoundingBox();
     public:
-        AssimpModelInstance(AssimpCache*, TextureCache*,  AssetDefinition*,SceneObjectRuntime*);
+        AssimpModelInstance(AssimpCache*, TextureCache*,  IAssetDefinition*,SceneObjectRuntime*);
         ~AssimpModelInstance();
         bool load(string);
         void draw(ShaderInstance*);

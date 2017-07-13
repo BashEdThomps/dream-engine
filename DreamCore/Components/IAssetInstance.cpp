@@ -17,16 +17,18 @@
 
 #include "IAssetInstance.h"
 
-#include "AssetDefinition.h"
+#include "IAssetDefinition.h"
 #include "../Utilities/Uuid.h"
 
 namespace Dream
 {
     IAssetInstance::IAssetInstance
-    (AssetDefinition* definition, SceneObjectRuntime* runtime)
-          : mDefinitionHandle(definition),
-          mSceneObjectRuntimeHandle(runtime),
-          mUuid(Uuid::generateUuid())
+    (IAssetDefinition* definition, SceneObjectRuntime* runtime)
+          : mLoaded(false),
+            mAbsolutePath(""),
+            mDefinitionHandle(definition),
+            mSceneObjectRuntimeHandle(runtime),
+            mUuid(Uuid::generateUuid())
     {
 
     }

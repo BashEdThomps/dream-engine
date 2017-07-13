@@ -16,6 +16,8 @@ using std::vector;
 
 namespace Dream
 {
+    class AudioDefinition;
+
     class AudioInstance : public IAssetInstance
     {
     protected:
@@ -28,7 +30,7 @@ namespace Dream
         AudioStatus mStatus;
 
     public:
-        AudioInstance(AssetDefinition*,SceneObjectRuntime*);
+        AudioInstance(AudioDefinition*,SceneObjectRuntime*);
 
         void setLooping(bool);
         bool isLooping();

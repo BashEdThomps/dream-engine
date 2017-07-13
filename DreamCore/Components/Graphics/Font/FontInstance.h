@@ -33,6 +33,7 @@ namespace Dream
 {
     class FontCache;
     class FontCharacter;
+    class FontDefinition;
 
     class FontInstance : public IAssetInstance
     {
@@ -45,7 +46,7 @@ namespace Dream
     private: // Methods
         void generateCharacterMap();
     public:
-        FontInstance(FontCache*, AssetDefinition*,SceneObjectRuntime*);
+        FontInstance(FontCache*, FontDefinition*,SceneObjectRuntime*);
         ~FontInstance();
 
         bool load(string);

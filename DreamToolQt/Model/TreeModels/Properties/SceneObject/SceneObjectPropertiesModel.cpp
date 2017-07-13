@@ -25,7 +25,7 @@
 #include "SceneObjectPropertiesTreeDelegate.h"
 
 using Dream::Transform3D;
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 using Dream::SceneObjectDefinition;
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
@@ -36,7 +36,7 @@ SceneObjectPropertiesModel::SceneObjectPropertiesModel
     mSceneObjectDefinitionHandle = sceneObject;
     createRoot();
     createProperties();
-
+    createDelegateConnections();
 }
 
 SceneObjectPropertiesModel::~SceneObjectPropertiesModel
@@ -67,7 +67,6 @@ SceneObjectPropertiesModel::createProperties
     createHasFocusProperty();
     createAssetInstancesProperty();
     createChildrenProperty();
-    createDelegateConnections();
 }
 
 void
@@ -104,9 +103,9 @@ SceneObjectPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyButton_RemoveAsset(AssetDefinition*)),
+        SIGNAL(notifyButton_RemoveAsset(IAssetDefinition*)),
         this,
-        SLOT(onButton_RemoveAsset(AssetDefinition*))
+        SLOT(onButton_RemoveAsset(IAssetDefinition*))
     );
 
     connect
@@ -311,7 +310,7 @@ SceneObjectPropertiesModel::createAssetInstancesProperty
 
     for (std::string adUuid : definitionsToLoad)
     {
-       AssetDefinition* definition = mSceneObjectDefinitionHandle->getSceneDefinitionHandle()
+       IAssetDefinition* definition = mSceneObjectDefinitionHandle->getSceneDefinitionHandle()
                ->getProjectDefinitionHandle()
                ->getAssetDefinitionHandleByUuid(adUuid);
 
@@ -376,7 +375,7 @@ SceneObjectPropertiesModel::onButton_CaptureScale
 
 void
 SceneObjectPropertiesModel::onButton_RemoveAsset
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     qDebug() << "SceneObjectPropertiesModel: RemoveAsset";
     emit notifyButton_RemoveAsset(mSceneObjectDefinitionHandle,adHandle);

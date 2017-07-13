@@ -30,11 +30,12 @@ using Dream::Constants;
 ScenePropertiesModel::ScenePropertiesModel
 (SceneDefinition *scene, QTreeView* parent)
     : AbstractPropertiesModel(new ScenePropertiesTreeDelegate(this,parent), parent),
-      mSceneDefinition(scene)
+      mSceneDefinitionHandle(scene)
 {
     qDebug() << "ScenePropertiesModel: Constructor called";
     createRoot();
     createProperties();
+    createDelegateConnections();
 }
 
 ScenePropertiesModel::~ScenePropertiesModel
@@ -52,8 +53,8 @@ ScenePropertiesModel::createRoot
     (
         new ScenePropertiesItem
         (
-            QString::fromStdString(mSceneDefinition->getName()),
-            mSceneDefinition
+            QString::fromStdString(mSceneDefinitionHandle->getName()),
+            mSceneDefinitionHandle
         )
     );
 }
@@ -68,14 +69,32 @@ ScenePropertiesModel::createProperties
     createCameraProperties();
     createRenderingProperties();
     createPhysicsProperties();
-    createDelegateConnections();
 }
 
 void
 ScenePropertiesModel::createDelegateConnections
 ()
 {
+    ScenePropertiesTreeDelegate *delegate;
+    delegate = static_cast<ScenePropertiesTreeDelegate*>(mDelegateHandle);
 
+    // Camera Translation
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_CaptureCameraTranslation()),
+        this,
+        SLOT(onButton_CaptureCameraTranslation())
+    );
+
+    // Camera Rotation
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_CaptureCameraRotation()),
+        this,
+        SLOT(onButton_CaptureCameraRotation())
+    );
 }
 
 void
@@ -83,8 +102,15 @@ ScenePropertiesModel::createNameProperties
 ()
 {
     qDebug() << "ScenePropertiesModel: createNameProperties";
-    ScenePropertiesItem *nameProperty = new ScenePropertiesItem("Name",mSceneDefinition,SCENE_PROPERTY_NAME);
-    mRootItem->appendChild(nameProperty);
+    mRootItem->appendChild
+    (
+        new ScenePropertiesItem
+        (
+            "Name",
+            mSceneDefinitionHandle,
+            SCENE_PROPERTY_NAME
+        )
+    );
 }
 
 void
@@ -92,8 +118,15 @@ ScenePropertiesModel::createNotesProperties
 ()
 {
     qDebug() << "ScenePropertiesModel: createNotesProperties";
-    ScenePropertiesItem *notesProperty = new ScenePropertiesItem("Notes",mSceneDefinition,SCENE_PROPERTY_NOTES);
-    mRootItem->appendChild(notesProperty);
+    mRootItem->appendChild
+    (
+        new ScenePropertiesItem
+        (
+            "Notes",
+            mSceneDefinitionHandle,
+            SCENE_PROPERTY_NOTES
+        )
+    );
 }
 
 void
@@ -101,14 +134,14 @@ ScenePropertiesModel::createCameraProperties
 ()
 {
     qDebug() << "ScenePropertiesModel: createCameraProperties";
-    ScenePropertiesItem *cameraProperty = new ScenePropertiesItem("Camera",mSceneDefinition);
+    ScenePropertiesItem *cameraProperty = new ScenePropertiesItem("Camera",mSceneDefinitionHandle,SCENE_PROPERTY_CAMERA);
     mRootItem->appendChild(cameraProperty);
     {
         qDebug() << "ScenePropertiesModel: createCameraProperties translation";
         ScenePropertiesItem* cameraTranslationProperty = new ScenePropertiesItem
         (
             "Translation",
-            mSceneDefinition,
+            mSceneDefinitionHandle,
             SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE
         );
 
@@ -119,7 +152,7 @@ ScenePropertiesModel::createCameraProperties
                 new ScenePropertiesItem
                 (
                     "X",
-                    mSceneDefinition,
+                    mSceneDefinitionHandle,
                     SCENE_PROPERTY_CAMERA_TRANSLATION_X
                 )
             );
@@ -129,7 +162,7 @@ ScenePropertiesModel::createCameraProperties
                 new ScenePropertiesItem
                 (
                     "Y",
-                    mSceneDefinition,
+                    mSceneDefinitionHandle,
                     SCENE_PROPERTY_CAMERA_TRANSLATION_Y
                 )
             );
@@ -139,7 +172,7 @@ ScenePropertiesModel::createCameraProperties
                 new ScenePropertiesItem
                 (
                     "Z",
-                    mSceneDefinition,
+                    mSceneDefinitionHandle,
                     SCENE_PROPERTY_CAMERA_TRANSLATION_Z
                 )
             );
@@ -149,7 +182,7 @@ ScenePropertiesModel::createCameraProperties
         ScenePropertiesItem *cameraRotationProperty = new ScenePropertiesItem
         (
             "Rotation",
-            mSceneDefinition,
+            mSceneDefinitionHandle,
             SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE
 
         );
@@ -161,7 +194,7 @@ ScenePropertiesModel::createCameraProperties
                 new ScenePropertiesItem
                 (
                     "X",
-                    mSceneDefinition,
+                    mSceneDefinitionHandle,
                     SCENE_PROPERTY_CAMERA_ROTATION_X
                 )
             );
@@ -171,7 +204,7 @@ ScenePropertiesModel::createCameraProperties
                 new ScenePropertiesItem
                 (
                     "Y",
-                    mSceneDefinition,
+                    mSceneDefinitionHandle,
                     SCENE_PROPERTY_CAMERA_ROTATION_Y
                 )
             );
@@ -181,7 +214,7 @@ ScenePropertiesModel::createCameraProperties
                 new ScenePropertiesItem
                 (
                     "Z",
-                    mSceneDefinition,
+                    mSceneDefinitionHandle,
                     SCENE_PROPERTY_CAMERA_ROTATION_Z
                 )
             );
@@ -193,7 +226,7 @@ ScenePropertiesModel::createCameraProperties
                 new ScenePropertiesItem
                 (
                     "Speed",
-                    mSceneDefinition,
+                    mSceneDefinitionHandle,
                     SCENE_PROPERTY_CAMERA_SPEED
                 )
             );
@@ -206,15 +239,15 @@ ScenePropertiesModel::createRenderingProperties
 ()
 {
     qDebug() << "ScenePropertiesModel: createRenderingProperties";
-    vector<float> clear = mSceneDefinition->getClearColour();
+    vector<float> clear = mSceneDefinitionHandle->getClearColour();
 
-    ScenePropertiesItem *renderingProperty = new ScenePropertiesItem("Rendering",mSceneDefinition);
+    ScenePropertiesItem *renderingProperty = new ScenePropertiesItem("Rendering",mSceneDefinitionHandle);
     mRootItem->appendChild(renderingProperty);
     {
 
         qDebug() << "ScenePropertiesModel: createRenderingProperties (ClearColour)";
         // Clear Color
-        ScenePropertiesItem *clearColorProperty = new ScenePropertiesItem("Clear Colour", mSceneDefinition);
+        ScenePropertiesItem *clearColorProperty = new ScenePropertiesItem("Clear Colour", mSceneDefinitionHandle);
         renderingProperty->appendChild(clearColorProperty);
 
         clearColorProperty->appendChild
@@ -222,7 +255,7 @@ ScenePropertiesModel::createRenderingProperties
             new ScenePropertiesItem
             (
                 "Red",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_CLEAR_RED
             )
         );
@@ -232,7 +265,7 @@ ScenePropertiesModel::createRenderingProperties
             new ScenePropertiesItem
             (
                 "Green",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_CLEAR_GREEN
             )
         );
@@ -242,16 +275,16 @@ ScenePropertiesModel::createRenderingProperties
             new ScenePropertiesItem
             (
                 "Blue",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_CLEAR_BLUE
             )
         );
     }
 
     qDebug() << "ScenePropertiesModel: createRenderingProperties (AmbientLight)";
-    vector<float> ambient = mSceneDefinition->getAmbientColour();
+    vector<float> ambient = mSceneDefinitionHandle->getAmbientColour();
 
-    ScenePropertiesItem *ambientLightProperty = new ScenePropertiesItem("Ambient Light", mSceneDefinition);
+    ScenePropertiesItem *ambientLightProperty = new ScenePropertiesItem("Ambient Light", mSceneDefinitionHandle);
     renderingProperty->appendChild(ambientLightProperty);
     {
         ambientLightProperty->appendChild
@@ -259,7 +292,7 @@ ScenePropertiesModel::createRenderingProperties
             new ScenePropertiesItem
             (
                 "Red",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_AMBIENT_RED
             )
         );
@@ -269,7 +302,7 @@ ScenePropertiesModel::createRenderingProperties
             new ScenePropertiesItem
             (
                 "Green",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_AMBIENT_GREEN
             )
         );
@@ -279,7 +312,7 @@ ScenePropertiesModel::createRenderingProperties
             new ScenePropertiesItem
             (
                 "Blue",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_AMBIENT_BLUE
             )
         );
@@ -289,7 +322,7 @@ ScenePropertiesModel::createRenderingProperties
             new ScenePropertiesItem
             (
                 "Alpha",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_AMBIENT_ALPHA
             )
         );
@@ -301,17 +334,17 @@ ScenePropertiesModel::createPhysicsProperties
 ()
 {
     qDebug() << "ScenePropertiesModel: createPhysicsProperties";
-    ScenePropertiesItem *physicsProperty = new ScenePropertiesItem("Physics",mSceneDefinition);
+    ScenePropertiesItem *physicsProperty = new ScenePropertiesItem("Physics",mSceneDefinitionHandle);
     mRootItem->appendChild(physicsProperty);
     {
-        ScenePropertiesItem *gravityProperty = new ScenePropertiesItem("Gravity",mSceneDefinition);
+        ScenePropertiesItem *gravityProperty = new ScenePropertiesItem("Gravity",mSceneDefinitionHandle);
         physicsProperty->appendChild(gravityProperty);
         {
-            vector<float> gravity = mSceneDefinition->getGravity();
+            vector<float> gravity = mSceneDefinitionHandle->getGravity();
             ScenePropertiesItem *gravityPropertyX = new ScenePropertiesItem
             (
                 "X",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_PHYSICS_GRAVITY_X
             );
             gravityProperty->appendChild(gravityPropertyX);
@@ -319,7 +352,7 @@ ScenePropertiesModel::createPhysicsProperties
             ScenePropertiesItem *gravityPropertyY = new ScenePropertiesItem
             (
                 "Y",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_PHYSICS_GRAVITY_Y
             );
             gravityProperty->appendChild(gravityPropertyY);
@@ -327,7 +360,7 @@ ScenePropertiesModel::createPhysicsProperties
             ScenePropertiesItem *gravityPropertyZ = new ScenePropertiesItem
             (
                 "Z",
-                mSceneDefinition,
+                mSceneDefinitionHandle,
                 SCENE_PROPERTY_PHYSICS_GRAVITY_Z
             );
             gravityProperty->appendChild(gravityPropertyZ);
@@ -337,8 +370,24 @@ ScenePropertiesModel::createPhysicsProperties
     ScenePropertiesItem *debugProperty = new ScenePropertiesItem
     (
         "Debug",
-        mSceneDefinition,
+        mSceneDefinitionHandle,
         SCENE_PROPERTY_PHYSICS_DEBUG
     );
     physicsProperty->appendChild(debugProperty);
+}
+
+void
+ScenePropertiesModel::onButton_CaptureCameraTranslation
+()
+{
+    qDebug() << "ScenePropertiesModel: CaptureCameraTranslation";
+    emit notifyButton_CaptureCameraTranslation(mSceneDefinitionHandle);
+}
+
+void
+ScenePropertiesModel::onButton_CaptureCameraRotation
+()
+{
+    qDebug() << "ScenePropertiesModel: CaptureCameraTranslation";
+    emit notifyButton_CaptureCameraRotation(mSceneDefinitionHandle);
 }

@@ -172,10 +172,20 @@ ScenegraphTreeModel::setupModelData
         new ScenegraphTreeItem
         (
             QString::fromStdString(mProjectDefinitionHandle->getName()),
-            ScenegraphTreeItemType::SCENEGRAPH_PROJECT,
+            ScenegraphTreeItemType::SCENEGRAPH_TREE_NODE,
             mProjectDefinitionHandle
         )
     );
+
+    auto project = new ScenegraphTreeItem
+    (
+        QString::fromStdString(mProjectDefinitionHandle->getName()),
+        ScenegraphTreeItemType::SCENEGRAPH_PROJECT,
+        mProjectDefinitionHandle,
+        mRootItem.get()
+    );
+
+    mRootItem->appendChild(project);
 
     for (SceneDefinition *sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsHandleList())
     {
@@ -186,9 +196,10 @@ ScenegraphTreeModel::setupModelData
         (
             QString::fromStdString(sceneHandle->getName()),
             ScenegraphTreeItemType::SCENEGRAPH_SCENE,
-            sceneHandle,mRootItem.get()
+            sceneHandle,
+            project
         );
-        mRootItem->appendChild(nextScene);
+        project->appendChild(nextScene);
 
         // Setup SceneObjects
         SceneObjectDefinition *rootSceneObject = sceneHandle->getRootSceneObjectDefinitionHandle();

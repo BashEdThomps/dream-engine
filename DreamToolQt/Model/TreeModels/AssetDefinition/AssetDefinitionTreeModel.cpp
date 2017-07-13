@@ -21,7 +21,7 @@
 #include <QDebug>
 
 using Dream::Constants;
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 
 AssetDefinitionTreeModel::AssetDefinitionTreeModel
 (ProjectDefinition* project, QObject *parent)
@@ -281,7 +281,7 @@ AssetDefinitionTreeModel::setupModelData
     );
     mRootItem->appendChild(spriteTreeItem);
 
-    for (AssetDefinition* definition : mProjectHandle->getAssetDefinitionsHandleList())
+    for (IAssetDefinition* definition : mProjectHandle->getAssetDefinitionsHandleList())
     {
         if (definition->getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0)
         {

@@ -16,13 +16,13 @@
 
 #include "SpriteInstance.h"
 #include "../Model/TextureCache.h"
-#include "../../AssetDefinition.h"
+#include "SpriteDefinition.h"
 
 namespace Dream
 {
 
   SpriteInstance::SpriteInstance
-  (TextureCache* cache, AssetDefinition* definition, SceneObjectRuntime* transform)
+  (TextureCache* cache, SpriteDefinition* definition, SceneObjectRuntime* transform)
       : IAssetInstance(definition,transform),
         mCacheHandle(cache)
   {

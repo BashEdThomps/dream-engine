@@ -249,11 +249,21 @@ namespace Dream
                         {
                             if (Constants::DEBUG)
                             {
-                                cout << "PhysicsComponent: Adding SceneObjectRuntime " << so->getUuid()
-                                << " to Physics World" << endl;
+                                cout << "PhysicsComponent: Adding SceneObject "
+                                     << so->getNameAndUuidString()
+                                     << " to Physics World" << endl;
                             }
                             addPhysicsObjectInstance(physicsObject);
                             physicsObject->setInPhysicsWorld(true);
+                        }
+                        else
+                        {
+                             if (Constants::DEBUG)
+                            {
+                                cout << "PhysicsComponent: SceneObject "
+                                     << so->getNameAndUuidString()
+                                     << " is in the Physics World" << endl;
+                            }
                         }
                     }
                     return nullptr;

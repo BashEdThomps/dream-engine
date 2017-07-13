@@ -56,6 +56,11 @@ void
 ProjectPropertiesModel::createProperties
 ()
 {
+    createNameProperty();
+    createAuthorProperty();
+    createDescriptionProperty();
+    createStartupSceneProperty();
+    createWindowSizeProperty();
     // TODO
 }
 
@@ -64,4 +69,98 @@ ProjectPropertiesModel::createDelegateConnections
 ()
 {
     // TODO
+}
+
+void
+ProjectPropertiesModel::createNameProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Name",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_NAME
+        )
+    );
+}
+
+void
+ProjectPropertiesModel::createAuthorProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Author",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_AUTHOR
+        )
+    );
+}
+
+void
+ProjectPropertiesModel::createDescriptionProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Description",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_DESCRIPTION
+        )
+    );
+}
+
+void
+ProjectPropertiesModel::createStartupSceneProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Startup Scene",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_STARTUP_SCENE
+        )
+    );
+}
+
+void
+ProjectPropertiesModel::createWindowSizeProperty
+()
+{
+    auto windowSize = new ProjectPropertiesItem
+    (
+        "Window Size",
+        mProjectDefinitionHandle,
+        PROJECT_PROPERTY_WINDOW_SIZE
+    );
+
+    windowSize->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Width",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_WINDOW_WIDTH
+        )
+    );
+
+    windowSize->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Height",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_WINDOW_HEIGHT
+        )
+    );
+
+    mRootItem->appendChild(windowSize);
 }

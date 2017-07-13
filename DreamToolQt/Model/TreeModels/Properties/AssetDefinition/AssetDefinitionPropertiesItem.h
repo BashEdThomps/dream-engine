@@ -22,10 +22,10 @@
 
 namespace Dream
 {
-    class AssetDefinition;
+    class IAssetDefinition;
 }
 
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 
 enum AssetDefinitionProperty
 {
@@ -100,7 +100,7 @@ public:
     AssetDefinitionPropertiesItem
     (
         QString title,
-        AssetDefinition* adHandle,
+        IAssetDefinition* adHandle,
         AssetDefinitionProperty property = ASSET_DEFINITION_PROPERTY_NONE,
         AbstractPropertiesItem *parent = nullptr
     );
@@ -109,9 +109,9 @@ public:
     bool setData(int column,const QVariant &value) override;
     QVariant data(int column) override;
     AssetDefinitionProperty getProperty();
-    AssetDefinition* getAssetDefinitionHandle();
+    IAssetDefinition* getAssetDefinitionHandle();
 
 private:
-    AssetDefinition* mAssetDefinitionHandle;
+    IAssetDefinition* mAssetDefinitionHandle;
     AssetDefinitionProperty mProperty;
 };

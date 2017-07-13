@@ -257,11 +257,15 @@ namespace Dream
         // Data Maps ============================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
-        static string assetTypeToString(AssetType type);
-        static AssetType assetTypeFromString(string type);
-        static string getAssetFormatString(string format);
-        static string getAssetTypeReadableName(string);
-        static string getAssetFormatReadableName(string);
+
+
+        static string getAssetTypeStringFromTypeEnum(AssetType type);
+        static AssetType getAssetTypeEnumFromString(string type);
+
+        static string getAssetTypeReadableNameFromString(string);
+
+        static string getAssetFormatStringFromReadableName(string format);
+        static string getAssetFormatReadableNameFromString(string);
     };
 }
 

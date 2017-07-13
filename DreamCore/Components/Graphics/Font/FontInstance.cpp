@@ -20,14 +20,14 @@
 #include "FontInstance.h"
 #include "FontCharacter.h"
 
-#include "../../AssetDefinition.h"
+#include "FontDefinition.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
 
     FontInstance::FontInstance
-    (FontCache* cache, AssetDefinition* definition, SceneObjectRuntime* transform)
+    (FontCache* cache, FontDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mCacheHandle(cache)
 

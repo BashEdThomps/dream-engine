@@ -20,6 +20,8 @@
 #include <DreamCore.h>
 #include <QVariant>
 
+using Dream::Constants;
+
 SceneObjectPropertiesItem::SceneObjectPropertiesItem
 (
     QString name,
@@ -29,8 +31,8 @@ SceneObjectPropertiesItem::SceneObjectPropertiesItem
     AbstractPropertiesItem *parent
 )
     : AbstractPropertiesItem(name,delegate,parent),
-      mSceneObjectDefinitionHandle(sodHandle),
-      mProperty(property)
+      mProperty(property),
+      mSceneObjectDefinitionHandle(sodHandle)
 {
 }
 
@@ -132,7 +134,16 @@ SceneObjectPropertiesItem::data
         case SCENE_OBJECT_PROPERTY_CHILD:
             break;
         case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
-            break;
+            return QVariant
+            (
+                QString::fromStdString
+                (
+                    Constants::getAssetTypeReadableNameFromString
+                    (
+                        getTargetAssetDefinitionHandle()->getType()
+                    )
+                )
+            );
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
@@ -179,12 +190,12 @@ void SceneObjectPropertiesItem::setTargetSceneObjectDefinitionHandle(SceneObject
     mTargetSceneObjectDefinitionHandle = targetSceneObjectDefinitionHandle;
 }
 
-AssetDefinition* SceneObjectPropertiesItem::getTargetAssetDefinitionHandle() const
+IAssetDefinition* SceneObjectPropertiesItem::getTargetAssetDefinitionHandle() const
 {
     return mTargetAssetDefinitionHandle;
 }
 
-void SceneObjectPropertiesItem::setTargetAssetDefinitionHandle(AssetDefinition* targetAssetDefinitionHandle)
+void SceneObjectPropertiesItem::setTargetAssetDefinitionHandle(IAssetDefinition* targetAssetDefinitionHandle)
 {
     mTargetAssetDefinitionHandle = targetAssetDefinitionHandle;
 }

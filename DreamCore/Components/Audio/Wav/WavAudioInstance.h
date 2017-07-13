@@ -21,7 +21,7 @@
 #include <fstream>
 #include <json.hpp>
 
-#include "AudioInstance.h"
+#include "../AudioInstance.h"
 #include "WavHeader.h"
 
 using std::string;
@@ -36,7 +36,7 @@ namespace Dream
         WavHeader mWavHeader;
 
     public:
-        WavAudioInstance(AssetDefinition*,SceneObjectRuntime*);
+        WavAudioInstance(AudioDefinition*,SceneObjectRuntime*);
         ~WavAudioInstance();
 
         long getFileSize(FILE* inFile);

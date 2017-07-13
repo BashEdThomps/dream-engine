@@ -33,10 +33,19 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
+public slots:
+   void onButton_CaptureCameraTranslation(bool);
+   void onButton_CaptureCameraRotation(bool);
+
+signals:
+   void notifyButton_CaptureCameraTranslation();
+   void notifyButton_CaptureCameraRotation();
+
 protected:
     ScenePropertiesModel *mModelHandle;
 
+    QWidget* createCameraAllCaptureButton(QWidget* parent) const;
     QWidget* createCameraTranslationCaptureButton(QWidget* parent) const;
     QWidget* createCameraRotationCaptureButton(QWidget* parent) const;
-
 };

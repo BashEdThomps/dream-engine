@@ -18,10 +18,10 @@
 #include <iostream>
 
 #include "AudioComponent.h"
-#include "WavAudioInstance.h"
-#include "OggAudioInstance.h"
+#include "Wav/WavAudioInstance.h"
+#include "Ogg/OggAudioInstance.h"
 
-#include "../AssetDefinition.h"
+#include "AudioDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 using std::cout;
@@ -470,7 +470,7 @@ namespace Dream
 
     AudioInstance*
     AudioComponent::newAudioInstance
-    (AssetDefinition* definition,SceneObjectRuntime* rt)
+    (AudioDefinition* definition,SceneObjectRuntime* rt)
     {
         if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {

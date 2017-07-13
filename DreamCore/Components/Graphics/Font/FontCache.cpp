@@ -66,7 +66,7 @@ namespace Dream
 
     map<GLchar,FontCharacter>
     FontCache::getCharMap
-    (AssetDefinition* definition, FT_Face* face)
+    (IAssetDefinition* definition, FT_Face* face)
     {
         auto it = mCache.find(definition);
         if (it != end(mCache))
@@ -89,7 +89,7 @@ namespace Dream
 
     map<GLchar,FontCharacter>
     FontCache::generateCharMap
-    (AssetDefinition* definition, FT_Face* fontFace)
+    (IAssetDefinition* definition, FT_Face* fontFace)
     {
         if (Constants::DEBUG)
         {
@@ -156,7 +156,7 @@ namespace Dream
             cout << "FontCache: Finished Generating Character Map." << endl;
         }
 
-        mCache.insert(pair<AssetDefinition*,map<GLchar,FontCharacter>>(definition,charMap));
+        mCache.insert(pair<IAssetDefinition*,map<GLchar,FontCharacter>>(definition,charMap));
         return charMap;
     }
 

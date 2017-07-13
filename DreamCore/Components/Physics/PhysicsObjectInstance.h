@@ -22,6 +22,7 @@ struct aiNode;
 namespace Dream
 {
     class PhysicsMotionState;
+    class PhysicsObjectDefinition;
 
     class PhysicsObjectInstance : public IAssetInstance
     {
@@ -37,10 +38,10 @@ namespace Dream
         bool mInPhysicsWorld;
 
     public:
-        PhysicsObjectInstance(AssetDefinition*,SceneObjectRuntime*);
+        PhysicsObjectInstance(PhysicsObjectDefinition*,SceneObjectRuntime*);
         ~PhysicsObjectInstance();
         bool load(string);
-        btCollisionShape* createCollisionShape(AssetDefinition*, string projectPath);
+        btCollisionShape* createCollisionShape(PhysicsObjectDefinition*, string projectPath);
         btCollisionShape* getCollisionShape();
         btRigidBody* getRigidBody();
         void getWorldTransform(btTransform&);
@@ -52,11 +53,10 @@ namespace Dream
 
     protected:
         void loadExtraAttributes(json);
-        void loadExtraAttributes(json,AssetDefinition*,bool);
+        void loadExtraAttributes(json,IAssetDefinition*,bool);
         void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
         void processAssimpMesh(aiMesh*, btTriangleMesh*);
-        AssetDefinition* getAssetDefinitionByUuid(string);
+        PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
 
     }; // End of PhysicsObjectInstance
-
 } // End of Dream

@@ -41,7 +41,15 @@ public:
     void createRenderingProperties();
     void createPhysicsProperties();
 
+public slots:
+    void onButton_CaptureCameraTranslation();
+    void onButton_CaptureCameraRotation();
+
+signals:
+    void notifyButton_CaptureCameraTranslation(SceneDefinition*);
+    void notifyButton_CaptureCameraRotation(SceneDefinition*);
+
 private:
-    SceneDefinition *mSceneDefinition;
+    SceneDefinition *mSceneDefinitionHandle;
 };
 

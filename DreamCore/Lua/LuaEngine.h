@@ -51,7 +51,7 @@ namespace Dream
     class LuaEngine
     {
     public: // Methods
-        LuaEngine(ProjectRuntime* projectHandle);
+        LuaEngine(ProjectRuntime* projectHandle, LuaScriptCache* cache);
         virtual ~LuaEngine();
 
         bool init();
@@ -72,7 +72,7 @@ namespace Dream
         void clearInputEvents();
 
     private:// Variables
-        unique_ptr<LuaScriptCache> mScriptCache;
+        LuaScriptCache* mScriptCacheHandle;
         ProjectRuntime* mProjectRuntimeHandle;
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"

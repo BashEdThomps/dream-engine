@@ -290,14 +290,14 @@ namespace Dream
     const unsigned int Constants::CAMERA_MOVEMENT_LEFT = 2;
     const unsigned int Constants::CAMERA_MOVEMENT_RIGHT = 3;
 
-    const float Constants::CAMERA_PITCH_MAX = 75.0f;
+    const float Constants::CAMERA_PITCH_MAX = 1.565f;
     const float Constants::CAMERA_ZOOM_MIN = 1.0f;
     const float Constants::CAMERA_ZOOM_MAX = 45.0f;
     const float Constants::CAMERA_YAW = 00.0f;
-    const float Constants::CAMERA_YAW_OFFSET = 90.0f;
+    const float Constants::CAMERA_YAW_OFFSET = 180.0f;
     const float Constants::CAMERA_PITCH = 0.0f;
     const float Constants::CAMERA_SPEED = 10.0f;
-    const float Constants::CAMERA_SENSITIVTY = 0.125f;
+    const float Constants::CAMERA_SENSITIVTY = 0.001f;
     const float Constants::CAMERA_ZOOM = 45.0f;
 
     // Data =====================================================================
@@ -385,7 +385,9 @@ namespace Dream
         }
     };
 
-    string Constants::assetTypeToString(AssetType type)
+    string
+    Constants::getAssetTypeStringFromTypeEnum
+    (AssetType type)
     {
         switch (type)
         {
@@ -413,7 +415,9 @@ namespace Dream
         return "";
     }
 
-    AssetType Constants::assetTypeFromString(string type)
+    AssetType
+    Constants::getAssetTypeEnumFromString
+    (string type)
     {
         if (type.compare(ASSET_TYPE_ANIMATION) == 0)
         {
@@ -455,7 +459,7 @@ namespace Dream
     }
 
     string
-    Constants::getAssetTypeReadableName
+    Constants::getAssetTypeReadableNameFromString
     (string type)
     {
         if (type.compare(ASSET_TYPE_ANIMATION) == 0)
@@ -498,7 +502,7 @@ namespace Dream
     }
 
     string
-    Constants::getAssetFormatReadableName
+    Constants::getAssetFormatReadableNameFromString
     (string format)
     {
         if (format.compare(ASSET_FORMAT_SCRIPT_LUA) == 0)
@@ -590,90 +594,90 @@ namespace Dream
     }
 
     string
-    Constants::getAssetFormatString
+    Constants::getAssetFormatStringFromReadableName
     (string format)
     {
-        if (format.compare(ASSET_FORMAT_SCRIPT_LUA) == 0)
+        if (format.compare(ASSET_FORMAT_SCRIPT_LUA_READABLE) == 0)
         {
            return ASSET_FORMAT_SCRIPT_LUA;
         }
-        else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP) == 0)
+        else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP_READABLE) == 0)
         {
            return ASSET_FORMAT_MODEL_ASSIMP;
         }
-        else if (format.compare(ASSET_FORMAT_AUDIO_OGG) == 0)
+        else if (format.compare(ASSET_FORMAT_AUDIO_OGG_READABLE) == 0)
         {
            return ASSET_FORMAT_AUDIO_OGG;
         }
-        else if (format.compare(ASSET_FORMAT_AUDIO_WAV) == 0)
+        else if (format.compare(ASSET_FORMAT_AUDIO_WAV_READABLE) == 0)
         {
            return ASSET_FORMAT_AUDIO_WAV;
         }
-        else if (format.compare(ASSET_FORMAT_FONT_TTF) == 0)
+        else if (format.compare(ASSET_FORMAT_FONT_TTF_READABLE) == 0)
         {
            return ASSET_FORMAT_FONT_TTF;
         }
-        else if (format.compare(ASSET_FORMAT_SHADER_GLSL) == 0)
+        else if (format.compare(ASSET_FORMAT_SHADER_GLSL_READABLE) == 0)
         {
            return ASSET_FORMAT_SHADER_GLSL;
         }
-        else if (format.compare(ASSET_FORMAT_LIGHT_POINT) == 0)
+        else if (format.compare(ASSET_FORMAT_LIGHT_POINT_READABLE) == 0)
         {
            return ASSET_FORMAT_LIGHT_POINT;
         }
-        else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE) == 0)
+        else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE_READABLE) == 0)
         {
            return ASSET_FORMAT_SPRITE_IMAGE;
         }
-        else if (format.compare(ASSET_FORMAT_ANIMATION_DREAM) == 0)
+        else if (format.compare(ASSET_FORMAT_ANIMATION_DREAM_READABLE) == 0)
         {
             return ASSET_FORMAT_ANIMATION_DREAM;
         }
-        else if (format.compare(COLLISION_SHAPE_SPHERE) == 0)
+        else if (format.compare(COLLISION_SHAPE_SPHERE_READABLE) == 0)
         {
             return COLLISION_SHAPE_SPHERE;
         }
-        else if (format.compare(COLLISION_SHAPE_BOX) == 0)
+        else if (format.compare(COLLISION_SHAPE_BOX_READABLE) == 0)
         {
             return COLLISION_SHAPE_BOX;
         }
-        else if (format.compare(COLLISION_SHAPE_CYLINDER) == 0)
+        else if (format.compare(COLLISION_SHAPE_CYLINDER_READABLE) == 0)
         {
             return COLLISION_SHAPE_CYLINDER;
         }
-        else if (format.compare(COLLISION_SHAPE_CAPSULE) == 0)
+        else if (format.compare(COLLISION_SHAPE_CAPSULE_READABLE) == 0)
         {
             return COLLISION_SHAPE_CAPSULE;
         }
-        else if (format.compare(COLLISION_SHAPE_CONE) == 0)
+        else if (format.compare(COLLISION_SHAPE_CONE_READABLE) == 0)
         {
-            return COLLISION_SHAPE_MULTI_SPHERE;
+            return COLLISION_SHAPE_CONE;
         }
-        else if (format.compare(COLLISION_SHAPE_CONVEX_HULL) == 0)
+        else if (format.compare(COLLISION_SHAPE_CONVEX_HULL_READABLE) == 0)
         {
             return COLLISION_SHAPE_CONVEX_HULL;
         }
-        else if (format.compare(COLLISION_SHAPE_CONVEX_TRIANGLE_MESH) == 0)
+        else if (format.compare(COLLISION_SHAPE_CONVEX_TRIANGLE_MESH_READABLE) == 0)
         {
             return COLLISION_SHAPE_CONVEX_TRIANGLE_MESH;
         }
-        else if (format.compare(COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
+        else if (format.compare(COLLISION_SHAPE_BVH_TRIANGLE_MESH_READABLE) == 0)
         {
             return COLLISION_SHAPE_BVH_TRIANGLE_MESH;
         }
-        else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0)
+        else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE) == 0)
         {
             return COLLISION_SHAPE_HEIGHTFIELD_TERRAIN;
         }
-        else if (format.compare(COLLISION_SHAPE_STATIC_PLANE) == 0)
+        else if (format.compare(COLLISION_SHAPE_STATIC_PLANE_READABLE) == 0)
         {
             return COLLISION_SHAPE_STATIC_PLANE;
         }
-        else if (format.compare(COLLISION_SHAPE_COMPOUND) == 0)
+        else if (format.compare(COLLISION_SHAPE_COMPOUND_READABLE) == 0)
         {
             return COLLISION_SHAPE_COMPOUND;
         }
-        else if (format.compare(COLLISION_SHAPE_MULTI_SPHERE) == 0)
+        else if (format.compare(COLLISION_SHAPE_MULTI_SPHERE_READABLE) == 0)
         {
             return COLLISION_SHAPE_MULTI_SPHERE;
         }

@@ -27,7 +27,7 @@ using nlohmann::json;
 
 namespace Dream
 {
-    class AssetDefinition;
+    class IAssetDefinition;
     class SceneObjectRuntime;
 
     class IAssetInstance
@@ -35,11 +35,11 @@ namespace Dream
     protected:
         bool mLoaded;
         string mAbsolutePath;
-        AssetDefinition *mDefinitionHandle;
+        IAssetDefinition *mDefinitionHandle;
         SceneObjectRuntime* mSceneObjectRuntimeHandle;
         string mUuid;
     public:
-        IAssetInstance(AssetDefinition*, SceneObjectRuntime* runtimeHandle);
+        IAssetInstance(IAssetDefinition*, SceneObjectRuntime* runtimeHandle);
         virtual ~IAssetInstance();
 
         string getUuid();

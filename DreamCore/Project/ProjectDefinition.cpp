@@ -22,9 +22,19 @@
 #include "Project.h"
 
 #include "../Common/Constants.h"
-#include "../Components/AssetDefinition.h"
 #include "../Scene/SceneDefinition.h"
 #include "../Utilities/Uuid.h"
+
+#include "../Components/IAssetDefinition.h"
+#include "../Components/Animation/AnimationDefinition.h"
+#include "../Components/Audio/AudioDefinition.h"
+#include "../Components/Graphics/Font/FontDefinition.h"
+#include "../Components/Graphics/Light/LightDefinition.h"
+#include "../Components/Graphics/Model/ModelDefinition.h"
+#include "../Components/Physics/PhysicsObjectDefinition.h"
+#include "../Components/Graphics/Shader/ShaderDefinition.h"
+#include "../Components/Graphics/Sprite/SpriteDefinition.h"
+#include "../Lua/ScriptDefinition.h"
 
 using std::cout;
 using std::endl;
@@ -171,22 +181,67 @@ namespace Dream
         }
     }
 
+
+    IAssetDefinition*
+    ProjectDefinition::createAssetDefinitionInstance
+    (json assetDefinitionJs)
+    {
+        IAssetDefinition* newDef = nullptr;
+        AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
+
+        switch (type)
+        {
+            case ANIMATION:
+                newDef = new AnimationDefinition(this,assetDefinitionJs);
+                break;
+            case AUDIO:
+                newDef = new AudioDefinition(this,assetDefinitionJs);
+                break;
+            case FONT:
+                newDef = new FontDefinition(this,assetDefinitionJs);
+                break;
+            case LIGHT:
+                newDef = new LightDefinition(this,assetDefinitionJs);
+                break;
+            case MODEL:
+                newDef = new ModelDefinition(this,assetDefinitionJs);
+                break;
+            case PHYSICS_OBJECT:
+                newDef = new PhysicsObjectDefinition(this,assetDefinitionJs);
+                break;
+            case SCRIPT:
+                newDef = new ScriptDefinition(this,assetDefinitionJs);
+                break;
+            case SHADER:
+                newDef = new ShaderDefinition(this,assetDefinitionJs);
+                break;
+            case SPRITE:
+                newDef = new SpriteDefinition(this,assetDefinitionJs);
+                break;
+            case NONE:
+                cerr << "ProjectDefinition: Unable to create Asset Definition. Unknown Type" << endl;
+                newDef = nullptr;
+                break;
+        }
+        return newDef;
+    }
+
     void
     ProjectDefinition::loadAssetDefinition
-    (json assetDefinition)
+    (json assetDefinitionJs)
     {
-        mAssetDefinitions.push_back
-                (
-                    unique_ptr<AssetDefinition>
-                    (
-                        new AssetDefinition(this,assetDefinition)
-                        )
-                    );
+
+        IAssetDefinition *newDef = createAssetDefinitionInstance(assetDefinitionJs);
+
+        if (newDef)
+        {
+            mAssetDefinitions.push_back(unique_ptr<IAssetDefinition>(newDef));
+        }
     }
 
     void
     ProjectDefinition::removeAssetDefinition
-    (AssetDefinition* assetDefinitionHandle)
+    (IAssetDefinition* assetDefinitionHandle)
     {
         if (Constants::DEBUG)
         {
@@ -195,7 +250,7 @@ namespace Dream
         }
 
         remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
-                  [&](const unique_ptr<AssetDefinition>& thisDefinition)
+                  [&](const unique_ptr<IAssetDefinition>& thisDefinition)
         {
             return thisDefinition.get() == assetDefinitionHandle;
         }
@@ -209,7 +264,7 @@ namespace Dream
         return mAssetDefinitions.size();
     }
 
-    AssetDefinition*
+    IAssetDefinition*
     ProjectDefinition::getAssetDefinitionHandleByUuid
     (string uuid)
     {
@@ -227,13 +282,7 @@ namespace Dream
     ProjectDefinition::loadSceneDefinition
     (json scene)
     {
-        mSceneDefinitions.push_back
-                (
-                    unique_ptr<SceneDefinition>
-                    (
-                        new SceneDefinition(this,scene)
-                        )
-                    );
+        mSceneDefinitions.push_back(unique_ptr<SceneDefinition>(new SceneDefinition(this,scene)));
     }
 
     size_t
@@ -267,9 +316,9 @@ namespace Dream
         return list;
     }
 
-    vector<AssetDefinition*> ProjectDefinition::getAssetDefinitionsHandleList()
+    vector<IAssetDefinition*> ProjectDefinition::getAssetDefinitionsHandleList()
     {
-        vector<AssetDefinition*> definitionsList;
+        vector<IAssetDefinition*> definitionsList;
         for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
         {
             definitionsList.push_back((*it).get());
@@ -292,13 +341,13 @@ namespace Dream
         return sdHandle;
     }
 
-    AssetDefinition*
+    IAssetDefinition*
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
         json assetDefinitionJson;
 
-        string defaultFormat = Constants::getAssetFormatString(*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
+        string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
         if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: Creating new AssetDefinition with default Format"
@@ -308,11 +357,10 @@ namespace Dream
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
-        assetDefinitionJson[Constants::ASSET_TYPE] = Constants::assetTypeToString(type);
+        assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
-
-        AssetDefinition* adHandle = new AssetDefinition(this, assetDefinitionJson);
-        mAssetDefinitions.push_back(unique_ptr<AssetDefinition>(adHandle));
+        IAssetDefinition* adHandle = createAssetDefinitionInstance(assetDefinitionJson);
+        mAssetDefinitions.push_back(unique_ptr<IAssetDefinition>(adHandle));
 
         return adHandle;
     }
@@ -324,28 +372,12 @@ namespace Dream
         return getSceneDefinitionHandleByUuid(getStartupSceneUuid());
     }
 
-    /*
-     * Json Structure
-     * {
-     *  name,
-     *  uuid,
-     *  startupScene(uuid),
-     *  description,
-     *  author,
-     *  windowSize : {
-     *      width,
-     *      height
-     *  },
-     *  assets: [],
-     *  scenes: []
-     * }
-     */
     json
     ProjectDefinition::getJson
     ()
     {
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
-        for (AssetDefinition *adHandle : getAssetDefinitionsHandleList())
+        for (IAssetDefinition *adHandle : getAssetDefinitionsHandleList())
         {
            mJson[Constants::PROJECT_ASSET_ARRAY].push_back(adHandle->getJson());
         }

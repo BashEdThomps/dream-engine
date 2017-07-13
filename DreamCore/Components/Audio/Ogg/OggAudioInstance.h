@@ -18,7 +18,7 @@
 #pragma once
 
 #include <string>
-#include "AudioInstance.h"
+#include "../AudioInstance.h"
 
 using std::string;
 
@@ -28,7 +28,7 @@ namespace Dream
     {
 
     public:
-        OggAudioInstance(AssetDefinition*, SceneObjectRuntime*);
+        OggAudioInstance(AudioDefinition*, SceneObjectRuntime*);
         ~OggAudioInstance();
 
         bool load(string) override;

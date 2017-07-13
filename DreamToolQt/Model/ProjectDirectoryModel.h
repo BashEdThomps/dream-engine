@@ -26,11 +26,11 @@ using namespace std;
 
 namespace Dream
 {
-    class AssetDefinition;
+    class IAssetDefinition;
     class ProjectDefinition;
 }
 
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 using Dream::ProjectDefinition;
 
 class ProjectDirectoryModel : public QObject
@@ -81,19 +81,19 @@ public:
     QString getProjectFileAbsolutePath();
     QString getProjectDirectoryName();
 
-    bool assetMainFileExists(AssetDefinition *adHandle, QString format = "" );
-    bool deleteMainAssetFile(AssetDefinition *adHandle, QString format = "" );
-    bool copyMainAssetFile(AssetDefinition *adHandle, QFile& assetFile, QString format = "" );
-    bool deleteAssetDataDirectory(AssetDefinition *adHandle);
-    bool copyAdditionalFile(AssetDefinition *adHandle, QFile& assetFile);
+    bool assetMainFileExists(IAssetDefinition *adHandle, QString format = "" );
+    bool deleteMainAssetFile(IAssetDefinition *adHandle, QString format = "" );
+    bool copyMainAssetFile(IAssetDefinition *adHandle, QFile& assetFile, QString format = "" );
+    bool deleteAssetDataDirectory(IAssetDefinition *adHandle);
+    bool copyAdditionalFile(IAssetDefinition *adHandle, QFile& assetFile);
 
     ProjectDefinition *getProjectDefinitionHandle();
     void setProjectDefinitionHandle(ProjectDefinition *projectDefinitionHandle);
 
-    QString createAssetTargetPath(AssetDefinition *adHandle, QString format = "");
-    QString getAssetDataPath(AssetDefinition *adHandle);
+    QString createAssetTargetPath(IAssetDefinition *adHandle, QString format = "");
+    QString getAssetDataPath(IAssetDefinition *adHandle);
     void touchFile(QString filePath);
-    bool writeAssetData(QString, AssetDefinition*,QString fileName = "", bool overwrite = true);
+    bool writeAssetData(QString, IAssetDefinition*,QString fileName = "", bool overwrite = true);
 
 private: // Variables
     ProjectDefinition* mProjectDefinitionHandle;

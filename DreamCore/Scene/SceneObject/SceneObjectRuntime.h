@@ -47,9 +47,19 @@ namespace Dream
     class FontInstance;
     class PhysicsObjectInstance;
     class LuaScriptInstance;
-    class AssetDefinition;
     class SceneRuntime;
     class SceneObjectDefinition;
+
+    class IAssetDefinition;
+    class AnimationDefinition;
+    class AudioDefinition;
+    class LightDefinition;
+    class FontDefinition;
+    class ModelDefinition;
+    class PhysicsObjectDefinition;
+    class ScriptDefinition;
+    class ShaderDefinition;
+    class SpriteDefinition;
 
     class SceneObjectRuntime : public Runtime
     {
@@ -79,6 +89,7 @@ namespace Dream
 
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
         void loadChildrenFromDefinition(SceneObjectDefinition *definitionHandle);
+
     public:
         SceneObjectRuntime(SceneObjectDefinition* sdHandle, SceneRuntime* sceneRuntimeHandle = nullptr);
 
@@ -91,16 +102,16 @@ namespace Dream
 
         void createAssetInstances();
         void createAssetInstanceFromAssetDefinitionByUuid(string);
-        void createAssetInstance(AssetDefinition*);
-        void createAnimationInstance(AssetDefinition*);
-        void createAudioInstance(AssetDefinition*);
-        void createModelInstance(AssetDefinition*);
-        void createScriptInstance(AssetDefinition*);
-        void createShaderInstance(AssetDefinition*);
-        void createPhysicsObjectInstance(AssetDefinition*);
-        void createLightInstance(AssetDefinition*);
-        void createFontInstance(AssetDefinition*);
-        void createSpriteInstance(AssetDefinition*);
+        void createAssetInstance(IAssetDefinition*);
+        void createAnimationInstance(AnimationDefinition*);
+        void createAudioInstance(AudioDefinition*);
+        void createModelInstance(ModelDefinition*);
+        void createScriptInstance(ScriptDefinition*);
+        void createShaderInstance(ShaderDefinition*);
+        void createPhysicsObjectInstance(PhysicsObjectDefinition*);
+        void createLightInstance(LightDefinition*);
+        void createFontInstance(FontDefinition*);
+        void createSpriteInstance(SpriteDefinition*);
 
         vec3 getTranslation();
         void setTranslation(float, float, float);

@@ -23,11 +23,11 @@
 namespace Dream
 {
     class SceneObjectDefinition;
-    class AssetDefinition;
+    class IAssetDefinition;
 }
 
 using Dream::SceneObjectDefinition;
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 
 enum SceneObjectProperty
 {
@@ -78,12 +78,12 @@ public:
     SceneObjectDefinition* getTargetSceneObjectDefinitionHandle() const;
     void setTargetSceneObjectDefinitionHandle(SceneObjectDefinition* targetSceneObjectDefinitionHandle);
 
-    AssetDefinition* getTargetAssetDefinitionHandle() const;
-    void setTargetAssetDefinitionHandle(AssetDefinition* targetAssetDefinitionHandle);
+    IAssetDefinition* getTargetAssetDefinitionHandle() const;
+    void setTargetAssetDefinitionHandle(IAssetDefinition* targetAssetDefinitionHandle);
 
 private:
     SceneObjectProperty mProperty;
     SceneObjectDefinition *mSceneObjectDefinitionHandle;
     SceneObjectDefinition *mTargetSceneObjectDefinitionHandle;
-    AssetDefinition *mTargetAssetDefinitionHandle;
+    IAssetDefinition *mTargetAssetDefinitionHandle;
 };

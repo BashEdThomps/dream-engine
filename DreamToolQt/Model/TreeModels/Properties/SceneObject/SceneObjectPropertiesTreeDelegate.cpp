@@ -104,6 +104,7 @@ SceneObjectPropertiesTreeDelegate::setEditorData
             break;
         case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
             break;
+
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
@@ -113,6 +114,7 @@ SceneObjectPropertiesTreeDelegate::setEditorData
         case SCENE_OBJECT_PROPERTY_NAME:
             static_cast<QLineEdit*>(editor)->setText(value.toString());
             break;
+
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
@@ -215,7 +217,7 @@ SceneObjectPropertiesTreeDelegate::onButton_RemoveAsset
 (bool, void* vHandle)
 {
     qDebug() << "SceneObjectPropertiesDelegate: RemoveAsset";
-    AssetDefinition* adHandle = static_cast<AssetDefinition*>(vHandle);
+    IAssetDefinition* adHandle = static_cast<IAssetDefinition*>(vHandle);
     emit notifyButton_RemoveAsset(adHandle);
 }
 
@@ -292,7 +294,7 @@ const
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createRemoveAssetDefinitionButton
-(AssetDefinition* adHandle, QWidget *parent)
+(IAssetDefinition* adHandle, QWidget *parent)
 const
 {
     TreeModelToolButton* button = new TreeModelToolButton(adHandle,parent);

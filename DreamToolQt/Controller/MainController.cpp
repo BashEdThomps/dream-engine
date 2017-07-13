@@ -129,99 +129,99 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_AudioFile(AssetDefinition*)),
+                SIGNAL(notifyButton_AudioFile(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_AudioFile(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_AudioFile(IAssetDefinition*))
             );
 
             // Font File
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_FontFile(AssetDefinition*)),
+                SIGNAL(notifyButton_FontFile(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_FontFile(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_FontFile(IAssetDefinition*))
             );
 
             // Model File
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_ModelFile(AssetDefinition*)),
+                SIGNAL(notifyButton_ModelFile(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_ModelFile(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_ModelFile(IAssetDefinition*))
             );
 
             // Model Additional Files
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_ModelAdditionalFiles(AssetDefinition*)),
+                SIGNAL(notifyButton_ModelAdditionalFiles(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition*))
             );
 
             // Remove Files
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_RemoveFiles(AssetDefinition*)),
+                SIGNAL(notifyButton_RemoveFiles(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_RemoveFiles(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_RemoveFiles(IAssetDefinition*))
             );
 
             // Edit Script
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_EditScript(AssetDefinition*)),
+                SIGNAL(notifyButton_EditScript(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_EditScript(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_EditScript(IAssetDefinition*))
             );
 
             // Edit Vertex Shader
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_EditVertexShader(AssetDefinition*)),
+                SIGNAL(notifyButton_EditVertexShader(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_EditVertexShader(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_EditVertexShader(IAssetDefinition*))
             );
 
             // Edit Fragment Shader
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_EditFragmentShader(AssetDefinition*)),
+                SIGNAL(notifyButton_EditFragmentShader(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_EditFragmentShader(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_EditFragmentShader(IAssetDefinition*))
             );
 
             // Script Template
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyCombo_ScriptTemplateChanged(AssetDefinition*,QString)),
+                SIGNAL(notifyCombo_ScriptTemplateChanged(IAssetDefinition*,QString)),
                 this,
-                SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(AssetDefinition*,QString))
+                SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*,QString))
             );
 
             // Shader Template
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyCombo_ShaderTemplateChanged(AssetDefinition*,QString)),
+                SIGNAL(notifyCombo_ShaderTemplateChanged(IAssetDefinition*,QString)),
                 this,
-                SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(AssetDefinition*,QString))
+                SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*,QString))
             );
 
             // PhysicsObject Mesh File
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(AssetDefinition*)),
+                SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(AssetDefinition*))
+                SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition*))
             );
             break;
 
@@ -258,8 +258,6 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
             mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
             mMainWindowHandle->setPropertiesDockWidgetTitle("Project Properties");
-
-
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE:
@@ -273,6 +271,24 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             }
 
             mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Properties");
+
+            // Capture Camera Translation
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_CaptureCameraTranslation(SceneDefinition*)),
+                this,
+                SLOT(onSceneProperty_CaptureCameraTranslation(SceneDefinition*))
+            );
+
+            // Capture Camera Rotation
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_CaptureCameraRotation(SceneDefinition*)),
+                this,
+                SLOT(onSceneProperty_CaptureCameraRotation(SceneDefinition*))
+            );
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE_OBJECT:
@@ -309,9 +325,9 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*,AssetDefinition*)),
+                SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*)),
                 this,
-                SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,AssetDefinition*))
+                SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*))
             );
 
             connect
@@ -1046,7 +1062,7 @@ MainController::onAction_Asset_NewDefinition_Sprite
 
 void
 MainController::onAssetDefinitionProperty_ModelFile
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
@@ -1096,7 +1112,7 @@ MainController::onAssetDefinitionProperty_ModelFile
 
 void
 MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
@@ -1145,8 +1161,58 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
 }
 
 void
+MainController::onSceneProperty_CaptureCameraTranslation
+(SceneDefinition* sdHandle)
+{
+    qDebug() << "MainController: CaptureCameraTranslation";
+    Project *pHandle = mDreamProjectModel->getProject();
+    if (pHandle)
+    {
+        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        if (prHandle)
+        {
+            sdHandle->getCameraTransform().setTranslation
+            (
+                prHandle->getCameraHandle()->getTranslation()
+            );
+            return;
+        }
+        qDebug() << "MainController: CaptureCameraTranslation - No ProjectRuntime";
+        return;
+    }
+    qDebug() << "MainController: CaptureCameraTranslation - No Project";
+    return;
+}
+
+void
+MainController::onSceneProperty_CaptureCameraRotation
+(SceneDefinition* sdHandle)
+{
+    qDebug() << "MainController: CaptureCameraRotation";
+    Project *pHandle = mDreamProjectModel->getProject();
+    if (pHandle)
+    {
+        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        if (prHandle)
+        {
+            sdHandle->getCameraTransform().setRotation
+            (
+                prHandle->getCameraHandle()->getRotation()
+            );
+            return;
+        }
+        qDebug() << "MainController: CaptureCameraRotation - No ProjectRuntime";
+        return;
+    }
+    qDebug() << "MainController: CaptureCameraRotation - No Project";
+    return;
+
+
+}
+
+void
 MainController::onAssetDefinitionProperty_ModelAdditionalFiles
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFiles);
@@ -1355,7 +1421,7 @@ MainController::onAction_Debug_DumpProjectDefinitionJson
 
 void
 MainController::onAssetDefinitionProperty_AudioFile
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
@@ -1409,7 +1475,7 @@ MainController::onAssetDefinitionProperty_AudioFile
 
 void
 MainController::onAssetDefinitionProperty_FontFile
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
@@ -1464,7 +1530,7 @@ MainController::onAssetDefinitionProperty_FontFile
 
 void
 MainController::onAssetDefinitionProperty_RemoveFiles
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     auto result = QMessageBox::question
     (
@@ -1482,7 +1548,7 @@ MainController::onAssetDefinitionProperty_RemoveFiles
 
 void
 MainController::onAssetDefinitionProperty_EditScript
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     qDebug() << "MainController: EditScript";
     QString filePath = mProjectDirectoryModel.createAssetTargetPath(adHandle);
@@ -1492,7 +1558,7 @@ MainController::onAssetDefinitionProperty_EditScript
 
 void
 MainController::onAssetDefinitionProperty_EditVertexShader
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     qDebug() << "MainController: EditVertexShader";
     QString filePath = mProjectDirectoryModel.createAssetTargetPath
@@ -1510,7 +1576,7 @@ MainController::onAssetDefinitionProperty_EditVertexShader
 
 void
 MainController::onAssetDefinitionProperty_EditFragmentShader
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     qDebug() << "MainController: EditFragmentShader";
     QString filePath = mProjectDirectoryModel.createAssetTargetPath
@@ -1528,7 +1594,7 @@ MainController::onAssetDefinitionProperty_EditFragmentShader
 
 void
 MainController::onAssetDefinitionProperty_ScriptTemplateChanged
-(AssetDefinition* adHandle, const QString& templateName)
+(IAssetDefinition* adHandle, const QString& templateName)
 {
     qDebug() << "MainController: Script Template Changed";
 
@@ -1539,7 +1605,7 @@ MainController::onAssetDefinitionProperty_ScriptTemplateChanged
 
 void
 MainController::onAssetDefinitionProperty_ShaderTemplateChanged
-(AssetDefinition* adHandle, const QString& templateName)
+(IAssetDefinition* adHandle, const QString& templateName)
 {
     qDebug() << "MainController: Shader Template Changed";
 
@@ -1574,28 +1640,83 @@ MainController::onAssetDefinitionProperty_ShaderTemplateChanged
 
 void
 MainController::onSceneObjectProperty_CaptureTranslation
-(SceneObjectDefinition*)
+(SceneObjectDefinition* sodHandle)
 {
     qDebug() << "MainController: CaptureTranslation";
+    Project *pHandle = mDreamProjectModel->getProject();
+    if (pHandle)
+    {
+        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        if (prHandle)
+        {
+            SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
+            if (srHandle)
+            {
+               SceneObjectRuntime *sorHandle;
+               sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+               if (sorHandle)
+               {
+                  sodHandle->getTransform().setTranslation(sorHandle->getTranslation());
+               }
+            }
+        }
+    }
 }
 
 void
 MainController::onSceneObjectProperty_CaptureRotation
-(SceneObjectDefinition*)
+(SceneObjectDefinition* sodHandle)
 {
     qDebug() << "MainController: CaptureRotation";
+    Project *pHandle = mDreamProjectModel->getProject();
+    if (pHandle)
+    {
+        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        if (prHandle)
+        {
+            SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
+            if (srHandle)
+            {
+               SceneObjectRuntime *sorHandle;
+               sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+               if (sorHandle)
+               {
+                  sodHandle->getTransform().setRotation(sorHandle->getRotation());
+               }
+            }
+        }
+    }
 }
 
 void
 MainController::onSceneObjectProperty_CaptureScale
-(SceneObjectDefinition*)
+(SceneObjectDefinition* sodHandle)
 {
     qDebug() << "MainController: CaptureScale";
+    Project *pHandle = mDreamProjectModel->getProject();
+    if (pHandle)
+    {
+        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        if (prHandle)
+        {
+            SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
+            if (srHandle)
+            {
+               SceneObjectRuntime *sorHandle;
+               sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+               if (sorHandle)
+               {
+                  sodHandle->getTransform().setScale(sorHandle->getScale());
+               }
+            }
+        }
+    }
+
 }
 
 void
 MainController::onSceneObjectProperty_RemoveAsset
-(SceneObjectDefinition* sodHandle,AssetDefinition* adHandle)
+(SceneObjectDefinition* sodHandle,IAssetDefinition* adHandle)
 {
     qDebug() << "MainController: RemoveAsset"
              << QString::fromStdString(adHandle->getNameAndUuidString())

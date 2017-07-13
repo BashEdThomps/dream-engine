@@ -9,8 +9,16 @@ namespace Dream
             AssimpModelInstance* parent,
             vector<Vertex> vertices,
             vector<GLuint> indices,
-            vector<Texture> textures
-    )
+            vector<Texture> textures,
+            aiColor3D diffuse,
+            aiColor3D specular
+    ) : mParentHandle(parent),
+        mVertices(vertices),
+        mIndices(indices),
+        mTextures(textures),
+        mDiffuseColour(diffuse),
+        mSpecularColour(specular)
+
     {
         if (Constants::DEBUG)
         {
@@ -18,60 +26,97 @@ namespace Dream
                  << parent->getName()
                  << endl;
         }
-        mParentHandle = parent;
-        mVertices = vertices;
-        mIndices  = indices;
-        mTextures = textures;
-        init();
+                init();
     }
 
     AssimpMesh::~AssimpMesh
     ()
     {
-        /*
         if (Constants::DEBUG)
         {
             cout << "AssimpMesh: Destroying Mesh for "
-                 << mParentHandle->getName()
+                 << mParentHandle->getNameAndUuidString()
                  << endl;
         }
-        */
+    }
+
+    void
+    AssimpMesh::bindTextures
+    (ShaderInstance*)
+    {
+        GLuint diffuseNr  = 1;
+        GLuint specularNr = 1;
+        GLuint normalNr   = 1;
+
+        size_t numTextures = mTextures.size();
+
+        for(GLuint i = 0; i < numTextures; i++)
+        {
+
+            // Activate proper texture unit before binding
+            glActiveTexture(GL_TEXTURE0 + i);
+
+            // Retrieve texture number (the N in diffuse_textureN)
+            stringstream materialStr;
+            string name = mTextures[i].type;
+            materialStr << name << "_";
+            GLuint idx = 0;
+
+            if(name == "texture_diffuse")
+            {
+                idx = diffuseNr++;
+                materialStr << idx; // Transfer GLuint to stream
+            }
+            else if(name == "texture_specular")
+            {
+                idx = specularNr++;
+                materialStr << idx; // Transfer GLuint to stream
+            }
+            else if (name == "texture_normals")
+            {
+                idx = normalNr++;
+                materialStr << idx;
+            }
+
+            if (Constants::DEBUG)
+            {
+                cout << "AssimpMesh: Binding Material " << materialStr.str()
+                     << " at position " << mTextures[i].id
+                     << " for " << mParentHandle->getNameAndUuidString()
+                     << endl;
+            }
+
+            glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
+        }
+        glActiveTexture(GL_TEXTURE0);
+    }
+
+    void
+    AssimpMesh::bindDiffuse
+    (ShaderInstance *shaderHandle)
+    {
+        shaderHandle->setDiffuseColour(vec3(mDiffuseColour.r,mDiffuseColour.g,mDiffuseColour.b));
+    }
+
+    void
+    AssimpMesh::bindSpecular
+    (ShaderInstance *shaderHandle)
+    {
+        shaderHandle->setSpecularColour(vec3(mDiffuseColour.r,mDiffuseColour.g,mDiffuseColour.b));
     }
 
     void
     AssimpMesh::draw
     (ShaderInstance* shader)
     {
-        GLuint diffuseNr = 1;
-        GLuint specularNr = 1;
-        size_t numTextures = mTextures.size();
-        for(GLuint i = 0; i < numTextures; i++)
-        {
-            glActiveTexture(GL_TEXTURE0 + i); // Activate proper texture unit before binding
-            // Retrieve texture number (the N in diffuse_textureN)
-            stringstream materialStr;
-            string number;
-            string name = mTextures[i].type;
-            materialStr << "material." << name;
-
-            if(name == "texture_diffuse")
-            {
-                materialStr << diffuseNr++; // Transfer GLuint to stream
-            }
-            else if(name == "texture_specular")
-            {
-                materialStr << specularNr++; // Transfer GLuint to stream
-            }
-            materialStr << number;
-            glUniform1f(glGetUniformLocation(shader->getShaderProgram(), materialStr.str().c_str()), i);
-            glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
-        }
-        glActiveTexture(GL_TEXTURE0);
+        bindTextures(shader);
+        bindDiffuse(shader);
+        bindSpecular(shader);
 
         // Draw mesh
-        glBindVertexArray(mVAO);
+        shader->bindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        shader->unbindVertexArray();
     }
 
     void

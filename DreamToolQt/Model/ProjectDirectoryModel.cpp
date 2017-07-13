@@ -22,7 +22,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-using Dream::AssetDefinition;
+using Dream::IAssetDefinition;
 using Dream::Constants;
 using Dream::Uuid;
 
@@ -609,13 +609,13 @@ ProjectDirectoryModel::getProjectDirectoryName
 
 bool
 ProjectDirectoryModel::assetMainFileExists
-(AssetDefinition *adHandle, QString format)
+(IAssetDefinition *adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).exists();
 }
 
-bool ProjectDirectoryModel::deleteMainAssetFile(AssetDefinition *adHandle, QString format)
+bool ProjectDirectoryModel::deleteMainAssetFile(IAssetDefinition *adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).remove();
@@ -729,7 +729,7 @@ ProjectDirectoryModel::getProjectName
 
 QString
 ProjectDirectoryModel::getAssetDataPath
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
     QString assetDataPath;
 
@@ -761,7 +761,7 @@ ProjectDirectoryModel::touchFile
 
 bool
 ProjectDirectoryModel::writeAssetData
-(QString data, AssetDefinition* adHandle, QString fileName, bool overwrite)
+(QString data, IAssetDefinition* adHandle, QString fileName, bool overwrite)
 {
     bool retval = false;
     QString absPath = createAssetTargetPath(adHandle,fileName);
@@ -778,7 +778,7 @@ ProjectDirectoryModel::writeAssetData
 
 QString
 ProjectDirectoryModel::createAssetTargetPath
-(AssetDefinition* adHandle, QString format)
+(IAssetDefinition* adHandle, QString format)
 {
     QString assetFileTargetPath;
 
@@ -821,7 +821,7 @@ ProjectDirectoryModel::createAssetTargetPath
 
 bool
 ProjectDirectoryModel::copyMainAssetFile
-(AssetDefinition* adHandle, QFile& assetSourceFile, QString format)
+(IAssetDefinition* adHandle, QFile& assetSourceFile, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
 
@@ -844,7 +844,7 @@ ProjectDirectoryModel::copyMainAssetFile
 
 bool
 ProjectDirectoryModel::deleteAssetDataDirectory
-(AssetDefinition* adHandle)
+(IAssetDefinition* adHandle)
 {
 
     QString assetDataPath = getAssetDataPath(adHandle);
@@ -855,7 +855,7 @@ ProjectDirectoryModel::deleteAssetDataDirectory
 
 bool
 ProjectDirectoryModel::copyAdditionalFile
-(AssetDefinition* adHandle, QFile& assetSourceFile)
+(IAssetDefinition* adHandle, QFile& assetSourceFile)
 {
     QString assetFileTargetPath = createAssetTargetPath
     (

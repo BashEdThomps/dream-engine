@@ -59,7 +59,7 @@ DreamProjectModel::getScenes
     return mProject->getProjectDefinitionHandle()->getSceneDefinitionsHandleList();
 }
 
-vector<AssetDefinition*>
+vector<IAssetDefinition*>
 DreamProjectModel::getAssetDefinitions
 ()
 {
@@ -116,7 +116,7 @@ DreamProjectModel::setProjectWindowHeight
     mProject->getProjectDefinitionHandle()->setWindowHeight(height);
 }
 
-AssetDefinition*
+IAssetDefinition*
 DreamProjectModel::getAssetDefinitionHandleByUuid
 (std::string uuid)
 {
@@ -165,12 +165,14 @@ SceneRuntime*
 DreamProjectModel::stopActiveSceneRuntime
 ()
 {
-    SceneRuntime *srHandle = nullptr;
+    mWindowComponentHandle->setProjectRuntimeHandle(nullptr);
+
     if (mProject)
     {
         ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
         if (prHandle)
         {
+            SceneRuntime *srHandle = nullptr;
             srHandle = prHandle->getActiveSceneRuntimeHandle();
 
             if (srHandle)
@@ -181,7 +183,6 @@ DreamProjectModel::stopActiveSceneRuntime
         }
         mProject->resetProjectRuntime();
     }
-    mWindowComponentHandle->setProjectRuntimeHandle(nullptr);
     return nullptr;
 }
 
@@ -223,7 +224,7 @@ DreamProjectModel::createNewAssetDefinition
         ProjectDefinition* pdHandle = mProject->getProjectDefinitionHandle();
         if (pdHandle)
         {
-            AssetDefinition *adHandle = pdHandle->createNewAssetDefinition(type);
+            IAssetDefinition *adHandle = pdHandle->createNewAssetDefinition(type);
             if (adHandle)
             {
                 return adHandle;
