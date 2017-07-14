@@ -23,22 +23,19 @@
 
 #include <DreamCore.h>
 
+using Dream::Constants;
+
 int main(int argc, char *argv[])
 {
-    Dream::Constants::dreamSetVerbose(true);
-
+    Constants::dreamSetVerbose(true);
     QApplication a(argc, argv);
-
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );
     glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     glFormat.setSamples(4);
     QSurfaceFormat::setDefaultFormat(glFormat);
-
     MainWindow mainWindow;
     MainController mainController(&mainWindow);
-
     mainWindow.show();
-
     return a.exec();
 }

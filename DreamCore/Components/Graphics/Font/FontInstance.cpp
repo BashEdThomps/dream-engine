@@ -105,19 +105,18 @@ namespace Dream
 
         if (Constants::DEBUG)
         {
-            cout << "FontInstance" << endl
-                 << "\tr: "    << red   << endl
-                 << "\tg: "    << green << endl
-                 << "\tb: "    << blue  << endl
-                 << "\tSize: " << mSize << endl
+            cout << "FontInstance: Red: " << red
+                 << " Green: " << green
+                 << " Blue: " << blue
+                 << " Size: " << mSize
                  << endl;
         }
 
-        mCacheHandle->getCharMap(mDefinitionHandle,mFontFace.get());
+        mCacheHandle->getCharMap(dynamic_cast<FontDefinition*>(mDefinitionHandle),mFontFace.get());
 
         if (Constants::DEBUG)
         {
-            cout << "FontInstance: finished loading extra attributes" << endl;
+            cout << "FontInstance: Finished loading extra attributes" << endl;
         }
         return;
     }
@@ -178,6 +177,10 @@ namespace Dream
     FontInstance::getCharMap
     ()
     {
-        return mCacheHandle->getCharMap(mDefinitionHandle,mFontFace.get());
+        return mCacheHandle->getCharMap
+        (
+            dynamic_cast<FontDefinition*>(mDefinitionHandle),
+            mFontFace.get()
+        );
     }
 } // End Dream

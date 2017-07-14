@@ -29,12 +29,14 @@ namespace Dream
         vector<Vertex>  mVertices;
         vector<GLuint>  mIndices;
         vector<Texture> mTextures;
+        vector<GLuint>  mTexturesInUse;
 
         aiColor3D mDiffuseColour;
         aiColor3D mSpecularColour;
 
 
         void bindTextures(ShaderInstance*);
+        void unbindTextures();
         void bindDiffuse(ShaderInstance*);
         void bindSpecular(ShaderInstance*);
 

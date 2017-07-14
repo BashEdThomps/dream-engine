@@ -32,13 +32,13 @@ ProjectPropertiesItem::ProjectPropertiesItem
       mProjectDefinitionHandle(pdHandle),
       mProperty(property)
 {
-    qDebug() << "ProjectPropertiesItem: Constructing";
+   // qDebug() << "ProjectPropertiesItem: Constructing";
 }
 
 ProjectPropertiesItem::~ProjectPropertiesItem
 ()
 {
-    qDebug() << "ProjectPropertiesItem: Destructing";
+   // qDebug() << "ProjectPropertiesItem: Destructing";
 }
 
 QVariant

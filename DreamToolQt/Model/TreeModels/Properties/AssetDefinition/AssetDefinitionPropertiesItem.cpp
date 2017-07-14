@@ -139,10 +139,10 @@ AssetDefinitionPropertiesItem::setData
             dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
-            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
+            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourGreen(value.toFloat());
             break;
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
+            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourBlue(value.toFloat());
             break;
 
             // Light

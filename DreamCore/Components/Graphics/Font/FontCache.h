@@ -31,7 +31,7 @@ using std::map;
 
 namespace Dream
 {
-    class IAssetDefinition;
+    class FontDefinition;
     class FontCharacter;
 
     class FontCache
@@ -39,15 +39,15 @@ namespace Dream
 
     private:
         unique_ptr<FT_Library> mFreeTypeLib;
-        map<IAssetDefinition*, map<GLchar, FontCharacter>> mCache;
-        map<GLchar, FontCharacter> generateCharMap(IAssetDefinition*, FT_Face* face);
+        map<FontDefinition*, map<GLchar, FontCharacter>> mCache;
+        map<GLchar, FontCharacter> generateCharMap(FontDefinition*, FT_Face* face);
 
     public:
         FontCache();
         ~FontCache();
 
         FT_Library* getFreeTypeLib();
-        map<GLchar, FontCharacter> getCharMap(IAssetDefinition*, FT_Face* face);
+        map<GLchar, FontCharacter> getCharMap(FontDefinition*, FT_Face* face);
 
     };
 }

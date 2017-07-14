@@ -31,7 +31,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
       mDefinition(definition),
       mType(type)
 {
-    qDebug() << "AssetDefinitionTreeItem: Constructing";
+    //qDebug() << "AssetDefinitionTreeItem: Constructing";
 }
 
 IAssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()

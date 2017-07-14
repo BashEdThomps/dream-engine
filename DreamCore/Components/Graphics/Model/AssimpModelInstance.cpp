@@ -36,6 +36,8 @@
 
 #include "AssimpCache.h"
 
+using std::numeric_limits;
+
 namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
@@ -57,8 +59,8 @@ namespace Dream
     AssimpModelInstance::initBoundingBox
     ()
     {
-        mBoundingBox.maximum = glm::vec3(std::numeric_limits<float>::min());
-        mBoundingBox.minimum = glm::vec3(std::numeric_limits<float>::max());
+        mBoundingBox.maximum = vec3(numeric_limits<float>::min());
+        mBoundingBox.minimum = vec3(numeric_limits<float>::max());
     }
 
     AssimpModelInstance::~AssimpModelInstance
@@ -95,10 +97,9 @@ namespace Dream
     AssimpModelInstance::draw
     (ShaderInstance* shader)
     {
-        size_t nMeshes = mMeshes.size();
-        for(size_t i = 0; i < nMeshes; i++ )
+        for(AssimpMesh mesh : mMeshes)
         {
-            mMeshes[i].draw(shader);
+            mesh.draw(shader);
         }
     }
 
@@ -120,14 +121,12 @@ namespace Dream
         }
     }
 
-    AssimpMesh
-    AssimpModelInstance::processMesh
-    (aiMesh* mesh, const aiScene* scene)
+    vector<Vertex>
+    AssimpModelInstance::processVertexData
+    (aiMesh* mesh)
     {
-        vector<Vertex>  vertices;
-        vector<GLuint>  indices;
-        vector<Texture> textures;
 
+        vector<Vertex>  vertices;
         for(GLuint i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
@@ -162,7 +161,16 @@ namespace Dream
 
             vertices.push_back(vertex);
         }
+        return vertices;
 
+    }
+
+    vector<GLuint>
+    AssimpModelInstance::processIndexData
+    (aiMesh* mesh)
+    {
+
+        vector<GLuint> indices;
         // Process indices
         for(GLuint i = 0; i < mesh->mNumFaces; i++)
         {
@@ -172,7 +180,14 @@ namespace Dream
                 indices.push_back(face.mIndices[j]);
             }
         }
+        return indices;
+    }
 
+    vector<Texture>
+    AssimpModelInstance::processTextureData
+    (aiMesh* mesh,const aiScene* scene)
+    {
+        vector<Texture> textures;
         // Process material
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -202,14 +217,33 @@ namespace Dream
 
         }
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+        return textures;
+
+    }
+
+    AssimpMesh
+    AssimpModelInstance::processMesh
+    (aiMesh* mesh, const aiScene* scene)
+    {
+        vector<Vertex>  vertices = processVertexData(mesh);
+        vector<GLuint>  indices = processIndexData(mesh);
+        vector<Texture> textures = processTextureData(mesh,scene);
 
         // Colours
 
         aiColor3D diffuse (0.f,0.f,0.f);
         aiColor3D specular(0.f,0.f,0.f);
+        aiString materialName;
 
+        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         material->Get(AI_MATKEY_COLOR_DIFFUSE,diffuse);
         material->Get(AI_MATKEY_COLOR_SPECULAR,specular);
+        material->Get(AI_MATKEY_NAME,materialName);
+
+        if (Constants::DEBUG)
+        {
+            cout << "AssimpModelInstance: Using Material " << materialName.C_Str() << endl;
+        }
 
         return AssimpMesh(this, vertices, indices, textures, diffuse, specular);
     }

@@ -25,13 +25,13 @@ GenericTreeItem::GenericTreeItem
     : mParentItem(parent),
       mTitle(title)
 {
-    qDebug() << "GenericTreeItem: Constructing";
+    //qDebug() << "GenericTreeItem: Constructing";
 }
 
 GenericTreeItem::~GenericTreeItem
 ()
 {
-    qDebug() << "GenericTreeItem: Destructing";
+    //qDebug() << "GenericTreeItem: Destructing";
     qDeleteAll(mChildItems);
 }
 

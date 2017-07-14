@@ -29,13 +29,13 @@ ScenegraphTreeItem::ScenegraphTreeItem
       mItem(item),
       mType(type)
 {
-    qDebug() << "ScenegraphTreeItem: Constructing";
+   // qDebug() << "ScenegraphTreeItem: Constructing";
 }
 
 ScenegraphTreeItem::~ScenegraphTreeItem
 ()
 {
-   qDebug() << "ScenegraphTreeItem: Destructing";
+   //qDebug() << "ScenegraphTreeItem: Destructing";
 }
 
 void*

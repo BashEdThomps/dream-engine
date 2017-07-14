@@ -54,7 +54,8 @@ AssetDefinitionPropertiesTreeDelegate::~AssetDefinitionPropertiesTreeDelegate
 }
 
 QWidget*
-AssetDefinitionPropertiesTreeDelegate::createTypeComboBox(AssetDefinitionPropertiesItem *item, QWidget* parent)
+AssetDefinitionPropertiesTreeDelegate::createTypeComboBox
+(AssetDefinitionPropertiesItem *item, QWidget* parent)
 const
 {
     QComboBox *editor = new QComboBox(parent);
@@ -71,7 +72,8 @@ const
 }
 
 QWidget*
-AssetDefinitionPropertiesTreeDelegate::createFormatComboBox(AssetDefinitionPropertiesItem* item, QWidget* parent)
+AssetDefinitionPropertiesTreeDelegate::createFormatComboBox
+(AssetDefinitionPropertiesItem* item, QWidget* parent)
 const
 {
     qDebug() << "AssetDefinitionTreeDelegate: createEditor";

@@ -32,12 +32,13 @@ namespace Dream
     AssimpMesh::~AssimpMesh
     ()
     {
-        if (Constants::DEBUG)
+        /*if (Constants::DEBUG)
         {
             cout << "AssimpMesh: Destroying Mesh for "
                  << mParentHandle->getNameAndUuidString()
                  << endl;
         }
+        */
     }
 
     void
@@ -52,10 +53,10 @@ namespace Dream
 
         for(GLuint i = 0; i < numTextures; i++)
         {
-
             // Activate proper texture unit before binding
-            glActiveTexture(GL_TEXTURE0 + i);
-
+            GLuint nextTexture = GL_TEXTURE0 + i;
+            glActiveTexture(nextTexture);
+            mTexturesInUse.push_back(nextTexture);
             // Retrieve texture number (the N in diffuse_textureN)
             stringstream materialStr;
             string name = mTextures[i].type;
@@ -81,7 +82,8 @@ namespace Dream
             if (Constants::DEBUG)
             {
                 cout << "AssimpMesh: Binding Material " << materialStr.str()
-                     << " at position " << mTextures[i].id
+                     << " with GL Texture " << mTextures[i].id
+                     << " to unit " << nextTexture
                      << " for " << mParentHandle->getNameAndUuidString()
                      << endl;
             }
@@ -92,31 +94,50 @@ namespace Dream
     }
 
     void
+    AssimpMesh::unbindTextures
+    ()
+    {
+        for (GLuint texture : mTexturesInUse)
+        {
+            glActiveTexture(texture);
+            glBindTexture(GL_TEXTURE_2D,0);
+        }
+        mTexturesInUse.clear();
+    }
+
+    void
     AssimpMesh::bindDiffuse
     (ShaderInstance *shaderHandle)
     {
-        shaderHandle->setDiffuseColour(vec3(mDiffuseColour.r,mDiffuseColour.g,mDiffuseColour.b));
+        shaderHandle->setDiffuseColour
+        (
+            vec3(mDiffuseColour.r, mDiffuseColour.g, mDiffuseColour.b)
+        );
     }
 
     void
     AssimpMesh::bindSpecular
     (ShaderInstance *shaderHandle)
     {
-        shaderHandle->setSpecularColour(vec3(mDiffuseColour.r,mDiffuseColour.g,mDiffuseColour.b));
+        shaderHandle->setSpecularColour
+        (
+            vec3(mSpecularColour.r, mSpecularColour.g, mSpecularColour.b)
+        );
     }
 
     void
     AssimpMesh::draw
     (ShaderInstance* shader)
     {
+        // Bind Shader Values
         bindTextures(shader);
         bindDiffuse(shader);
         bindSpecular(shader);
-
         // Draw mesh
         shader->bindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, 0);
         shader->unbindVertexArray();
+        unbindTextures();
     }
 
     void

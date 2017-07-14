@@ -76,26 +76,26 @@ namespace Dream
             buffer = NULL;
             filelength = getFileSize(wavFile);
             cout << "WavAudioInstance: Status..."    << endl;
-            cout << "\tFile is          :" << filelength << " bytes." << endl;
-            cout << "\tRIFF header      :"
+            cout << "WavAudioInstance:\tFile size is: " << filelength << " bytes." << endl;
+            cout << "WavAudioInstance:\tRIFF header: "
                       << mWavHeader.RIFF[0] << mWavHeader.RIFF[1]
                       << mWavHeader.RIFF[2] << mWavHeader.RIFF[3]
                       << endl;
-            cout << "\tWAVE header      :" << mWavHeader.WAVE[0]
+            cout << "WavAudioInstance:\tWAVE header: " << mWavHeader.WAVE[0]
                       << mWavHeader.WAVE[1]     << mWavHeader.WAVE[2]
                       << mWavHeader.WAVE[3]     << endl;
-            cout << "\tFMT              :" << mWavHeader.fmt[0]
+            cout << "WavAudioInstance:\tFMT: " << mWavHeader.fmt[0]
                       << mWavHeader.fmt[1]      << mWavHeader.fmt[2]
                       << mWavHeader.fmt[3]      << endl;
-            cout << "\tData size        :" << mWavHeader.ChunkSize        << endl;
-            cout << "\tSampling Rate    :" << mWavHeader.SamplesPerSecond << endl;
-            cout << "\tBits used        :" << mWavHeader.BitsPerSample    << endl;
-            cout << "\tChannels         :" << mWavHeader.NumOfChannels    << endl;
-            cout << "\tBytes per second :" << mWavHeader.BytesPerSecond   << endl;
-            cout << "\tData length      :" << mWavHeader.Subchunk2Size    << endl;
-            cout << "\tAudio Format     :" << mWavHeader.AudioFormat      << endl;
-            cout << "\tBlock align      :" << mWavHeader.BlockAlign       << endl;
-            cout << "\tData string      :"
+            cout << "WavAudioInstance:\tData size: " << mWavHeader.ChunkSize << endl;
+            cout << "WavAudioInstance:\tSampling Rate: " << mWavHeader.SamplesPerSecond << endl;
+            cout << "WavAudioInstance:\tBits used: " << mWavHeader.BitsPerSample << endl;
+            cout << "WavAudioInstance:\tChannels: " << mWavHeader.NumOfChannels << endl;
+            cout << "WavAudioInstance:\tBytes per second: " << mWavHeader.BytesPerSecond << endl;
+            cout << "WavAudioInstance:\tData length: " << mWavHeader.Subchunk2Size << endl;
+            cout << "WavAudioInstance:\tAudio Format: " << mWavHeader.AudioFormat << endl;
+            cout << "WavAudioInstance:\tBlock align: " << mWavHeader.BlockAlign << endl;
+            cout << "WavAudioInstance:\tData string: "
                       << mWavHeader.Subchunk2ID[0] << mWavHeader.Subchunk2ID[1]
                       << mWavHeader.Subchunk2ID[2] << mWavHeader.Subchunk2ID[3]
                       << endl;

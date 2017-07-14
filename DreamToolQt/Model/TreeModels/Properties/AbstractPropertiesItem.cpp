@@ -25,7 +25,7 @@ AbstractPropertiesItem::AbstractPropertiesItem
     : mTitle(title),
       mParentItemHandle(parent)
 {
-    qDebug() << "AbstractPropertiesItem: Constructing";
+    //qDebug() << "AbstractPropertiesItem: Constructing";
     setDelegate(delegate);
 }
 

@@ -573,7 +573,9 @@ namespace Dream
                 ];
     }
 
-    void LuaEngine::debugRegisteringClass(string className)
+    void
+    LuaEngine::debugRegisteringClass
+    (string className)
     {
         if (Constants::VERBOSE)
             cout << "LuaEngine: Registering Class " << className << endl;
@@ -727,6 +729,7 @@ namespace Dream
             class_<SceneObjectRuntime>("SceneObjectRuntime")
 
                 .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeHandleByUuid)
+
                 .def("getParent",&SceneObjectRuntime::getParentRuntimeHandle)
                 .def("setParent",&SceneObjectRuntime::setParentRuntimeHandle)
 
@@ -735,23 +738,23 @@ namespace Dream
 
                 .def("addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad)
 
-                .def("getAnimationInstance",&SceneObjectRuntime::getAnimationInstance)
-                .def("getAudioInstance",&SceneObjectRuntime::getAudioInstance)
-                .def("getSpriteInstance",&SceneObjectRuntime::getSpriteInstance)
-                .def("getModelInstance",&SceneObjectRuntime::getModelInstance)
-                .def("getShaderInstance",&SceneObjectRuntime::getShaderInstance)
-                .def("getLightInstance",&SceneObjectRuntime::getLightInstance)
-                .def("getFontInstance",&SceneObjectRuntime::getFontInstance)
-                .def("getPhysicsObjectInstance",&SceneObjectRuntime::getPhysicsObjectInstance)
+                .def("getAnimation",&SceneObjectRuntime::getAnimationInstance)
+                .def("getAudio",&SceneObjectRuntime::getAudioInstance)
+                .def("getSprite",&SceneObjectRuntime::getSpriteInstance)
+                .def("getModel",&SceneObjectRuntime::getModelInstance)
+                .def("getShader",&SceneObjectRuntime::getShaderInstance)
+                .def("getLight",&SceneObjectRuntime::getLightInstance)
+                .def("getFont",&SceneObjectRuntime::getFontInstance)
+                .def("getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance)
 
-                //.def("setAnimationInstance",&SceneObjectRuntime::setAnimationInstance)
-                //.def("setAudioInstance",&SceneObjectRuntime::setAudioInstance)
-                //.def("setSpriteInstance",&SceneObjectRuntime::setSpriteInstance)
-                //.def("setModelInstance",&SceneObjectRuntime::setModelInstance)
-                //.def("setShaderInstance",&SceneObjectRuntime::setShaderInstance)
-                //.def("setLightInstance",&SceneObjectRuntime::setLightInstance)
-                //.def("setFontInstance",&SceneObjectRuntime::setFontInstance)
-                //.def("setPhysicsObjectInstance",&SceneObjectRuntime::setPhysicsObjectInstance)
+                .def("hasAnimation",&SceneObjectRuntime::hasAnimationInstance)
+                .def("hasAudio",&SceneObjectRuntime::hasAudioInstance)
+                .def("hasSprite",&SceneObjectRuntime::hasSpriteInstance)
+                .def("hasModel",&SceneObjectRuntime::hasModelInstance)
+                .def("hasShader",&SceneObjectRuntime::hasShaderInstance)
+                .def("hasLight",&SceneObjectRuntime::hasLightInstance)
+                .def("hasFont",&SceneObjectRuntime::hasFontInstance)
+                .def("hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance)
 
             ];
     }
@@ -859,10 +862,10 @@ namespace Dream
     {
         module(mState)
         [
-                class_<AudioComponent>("AudioComponent")
-                    .def("playAudioAsset",&AudioComponent::playAudioAsset)
-                    .def("pauseAudioAsset",&AudioComponent::pauseAudioAsset)
-                    .def("stopAudioAsset",&AudioComponent::stopAudioAsset)
+            class_<AudioComponent>("AudioComponent")
+                .def("play",&AudioComponent::playAudioAsset)
+                .def("pause",&AudioComponent::pauseAudioAsset)
+                .def("stop",&AudioComponent::stopAudioAsset)
         ];
     }
 

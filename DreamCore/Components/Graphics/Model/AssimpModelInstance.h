@@ -26,6 +26,7 @@
 #include <assimp/material.h>
 
 #include <glm/matrix.hpp>
+#include <GL/glew.h>
 
 #include "../../IAssetInstance.h"
 #include "../BoundingBox.h"
@@ -46,6 +47,8 @@ namespace Dream
     class ShaderInstance;
     class AssimpMesh;
     class AssimpCache;
+    class Vertex;
+    class Texture;
 
     class AssimpModelInstance : public IAssetInstance
     {
@@ -60,12 +63,16 @@ namespace Dream
         mat4 mModelMatrix;
 
         // Methods
-        void processNode(aiNode*, const aiScene*);
-        AssimpMesh processMesh(aiMesh*, const aiScene*);
         void loadModel(string);
         vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
         void updateBoundingBox(aiMesh* mesh);
         void initBoundingBox();
+
+        void processNode(aiNode*, const aiScene*);
+        AssimpMesh processMesh(aiMesh*, const aiScene*);
+        vector<Vertex> processVertexData(aiMesh* mesh);
+        vector<GLuint> processIndexData(aiMesh* mesh);
+        vector<Texture> processTextureData(aiMesh* mesh, const aiScene* scene);
     public:
         AssimpModelInstance(AssimpCache*, TextureCache*,  IAssetDefinition*,SceneObjectRuntime*);
         ~AssimpModelInstance();

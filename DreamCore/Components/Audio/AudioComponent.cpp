@@ -49,6 +49,11 @@ namespace Dream
         }
         deleteAllSources();
         deleteAllBuffers();
+        if (mDevice)
+        {
+            alcCloseDevice(mDevice);
+            mDevice = nullptr;
+        }
     }
 
     bool
