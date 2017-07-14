@@ -38,6 +38,8 @@ namespace Dream
     {
 
     private:
+        const static char CHAR_MAP_START;
+        const static char CHAR_MAP_END;
         unique_ptr<FT_Library> mFreeTypeLib;
         map<FontDefinition*, map<GLchar, FontCharacter>> mCache;
         map<GLchar, FontCharacter> generateCharMap(FontDefinition*, FT_Face* face);

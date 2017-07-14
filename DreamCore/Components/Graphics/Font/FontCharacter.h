@@ -21,17 +21,22 @@
 #include "glm/glm.hpp"
 #include "GL/glew.h"
 
-using namespace glm;
+using glm::ivec2;
 
 namespace Dream
 {
     class FontCharacter
     {
     public:
-        GLuint     TextureID;  // ID handle of the glyph texture
-        glm::ivec2 Size;       // Size of glyph
-        glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
-        GLuint     Advance;    // Offset to advance to next glyph
+        FontCharacter();
+        FontCharacter(GLuint textureId, ivec2 size, ivec2 bearing, GLuint advance);
+        FontCharacter(const FontCharacter&);
+        ~FontCharacter();
+
+        GLuint TextureID; // ID handle of the glyph texture
+        ivec2  Size;      // Size of glyph
+        ivec2  Bearing;   // Offset from baseline to left/top of glyph
+        GLuint Advance;   // Offset to advance to next glyph
 
     };
 }

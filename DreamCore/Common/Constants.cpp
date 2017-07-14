@@ -55,7 +55,7 @@ namespace Dream
             errorCode = glGetError();
             if (errorCode!=0)
             {
-                cerr << "GraphicsComponent: Error Check " << marker << ": " << endl;
+                cerr << "OpenGL Error Check " << marker << ": " << endl;
                 switch (errorCode)
                 {
                     case GL_NO_ERROR:

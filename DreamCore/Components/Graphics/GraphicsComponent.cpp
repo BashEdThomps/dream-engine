@@ -204,12 +204,13 @@ namespace Dream
         // Clear the colorbuffer
         if (mActiveSceneRuntimeHandle)
         {
-            glClearColor(
-                        mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
-                    );
+            glClearColor
+            (
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
+            );
         }
         else
         {
@@ -242,15 +243,18 @@ namespace Dream
         {
             cout << "GraphicsComponent: Creating 2D VAO/VBO" << endl;
         }
+        // Generate
         glGenVertexArrays(1, &mSpriteQuadVAO);
         glGenBuffers(1, &mSpriteVBO);
+        // Setup
         glBindBuffer(GL_ARRAY_BUFFER, mSpriteVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(mSpriteVertices), mSpriteVertices, GL_STATIC_DRAW);
         glBindVertexArray(mSpriteQuadVAO);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), static_cast<GLvoid*>(0));
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glVertexAttribPointer(mSpriteQuadVAO, 4, GL_FLOAT, GL_FALSE, 0, 0);
+        // Unbind
         glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
     void
@@ -261,17 +265,19 @@ namespace Dream
         {
             cout << "GraphicsComponent: Creating Font VAO/VBO" << endl;
         }
-        glGenBuffers(1, &mFontVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, mFontVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 5, NULL, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glEnableVertexAttribArray(0);
+        // Generate
         glGenVertexArrays(1, &mFontVAO);
+        glGenBuffers(1, &mFontVBO);
+        // Setup
+        glBindBuffer(GL_ARRAY_BUFFER, mFontVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 5 * 6, NULL, GL_STATIC_DRAW);
         glBindVertexArray(mFontVAO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3, 0);
+        // Unbind
         glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
     void
@@ -299,63 +305,67 @@ namespace Dream
             clearLightQueue();
 
             scene->getRootSceneObjectRuntimeHandle()->applyToAll
-                    (
-                        function < void*(SceneObjectRuntime*) >
-                        (
-                            [&](SceneObjectRuntime* object)
-            {
-                            // Models
-                            if (object->hasModelInstance())
+            (
+                function<void*(SceneObjectRuntime*)>
+                (
+                    [&](SceneObjectRuntime* object)
+                    {
+                        // Models
+                        if (object->hasModelInstance())
+                        {
+                            if (object->hasShaderInstance())
                             {
-                                if (object->hasShaderInstance())
-                                {
-                                    addTo3DQueue(object);
-                                }
-                                else
-                                {
-                                    cerr << "GraphicsComponent: Object " << object->getUuid()
-                                    << " has model, but no shader assigned." << endl;
-                                }
+                                addTo3DQueue(object);
                             }
-
-                            // Sprites
-                            if (object->hasSpriteInstance())
+                            else
                             {
-                                if (object->hasShaderInstance())
-                                {
-                                    addTo2DQueue(object);
-                                }
-                                else
-                                {
-                                    cerr << "GraphicsComponent: Object " << object->getUuid()
-                                    << " has sprite, but no shader assigned." << endl;
-                                }
+                                cerr << "GraphicsComponent: Object " << object->getUuid()
+                                << " has model, but no shader assigned." << endl;
                             }
-
-                            // Fonts
-                            if (object->hasFontInstance())
-                            {
-                                if (object->hasShaderInstance())
-                                {
-                                    addTo2DQueue(object);
-                                }
-                                else
-                                {
-                                    cerr << "GraphicsComponent: Object " << object->getUuid()
-                                    << " has font, but no shader assigned." << endl;
-                                }
-                            }
-
-                            // Lights
-                            if (object->hasLightInstance())
-                            {
-                                addToLightQueue(object->getLightInstance());
-                            }
-
-                            return nullptr;
                         }
-                        )
-                    );
+
+                        // Sprites
+                        if (object->hasSpriteInstance())
+                        {
+                            if (object->hasShaderInstance())
+                            {
+                                addTo2DQueue(object);
+                            }
+                            else
+                            {
+                                cerr << "GraphicsComponent: Object "
+                                     << object->getUuid()
+                                     << " has sprite, but no shader assigned."
+                                     << endl;
+                            }
+                         }
+
+                        // Fonts
+                        if (object->hasFontInstance())
+                        {
+                            if (object->hasShaderInstance())
+                            {
+                                addTo3DQueue(object);
+                            }
+                            else
+                            {
+                                cerr << "GraphicsComponent: Object "
+                                     << object->getUuid()
+                                     << " has font, but no shader assigned."
+                                     << endl;
+                            }
+                        }
+
+                        // Lights
+                        if (object->hasLightInstance())
+                        {
+                            addToLightQueue(object->getLightInstance());
+                        }
+
+                        return nullptr;
+                    }
+                )
+            );
         }
     }
 
@@ -399,10 +409,6 @@ namespace Dream
             {
                 drawSprite(sceneObj);
             }
-            else if (sceneObj->hasFontInstance())
-            {
-                drawFont(sceneObj);
-            }
         }
         glDisable(GL_BLEND);
     }
@@ -436,14 +442,25 @@ namespace Dream
     ()
     {
         preRender();
+
         if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Draw 3D Queue" << endl;
         }
+
         for (SceneObjectRuntime* it : m3DQueue)
         {
-            drawModel(it);
+            if (it->hasModelInstance())
+            {
+                drawModel(it);
+            }
+            else if (it->hasFontInstance())
+            {
+                drawFont(it);
+                Constants::checkGLError("GfxComponent: After Draw Font");
+            }
         }
+
         postRender();
     }
 
@@ -548,41 +565,44 @@ namespace Dream
         ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
 
-        // Offset origin to middle of sprite
+        shader->setProjectionMatrix(mProjectionMatrix);
+        Constants::checkGLError("GfxComponent: Font: After set projection matrix");
 
-        vec2 size = vec2(font->getWidth(),font->getHeight());
-        GLfloat rotateValue = sceneObject->getTransform().getRotationZ();
-        GLfloat scaleValue = sceneObject->getTransform().getScaleZ();
+        shader->setViewMatrix(mViewMatrix);
+        Constants::checkGLError("GfxComponent: Font: After set view matrix");
 
-        float tX = sceneObject->getTransform().getTranslationX();
-        float tY = sceneObject->getTransform().getTranslationY();
+        // calculate the model matrix
+        mat4 modelMatrix;
+        // Get raw data
+        vec3 translation = sceneObject->getTranslation();
+        quat rot = sceneObject->getTransform().getOrientation();
+        vec3 scaleValue = sceneObject->getScale();
+        // Translate
+        modelMatrix = translate(modelMatrix,translation);
+        // Rotate
+        mat4 rotMat = mat4_cast(rot);
+        modelMatrix = modelMatrix * rotMat;
+        // Scale
+        modelMatrix = scale(modelMatrix, scaleValue);
 
-        mat4 model;
-        vec2 position = vec2(tX,tY);
-        model = translate(model, vec3(position, 0.0f));
-        model = translate(model, vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = rotate(model, rotateValue, vec3(0.0f, 0.0f, 1.0f));
-        model = translate(model, vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-        model = scale(model, vec3(size.x*scaleValue,size.y*scaleValue, 1.0f));
+        // Pass model matrix to shader
+        shader->setModelMatrix(modelMatrix);
+        Constants::checkGLError("GfxComponent: Font: After set model matrix");
 
         // Activate corresponding render state
-        /*glUniform3fv
+        glUniform3fv
         (
             glGetUniformLocation(shader->getShaderProgram(), "textColor"),
             1,
-            value_ptr(
-                vec3(font->getColour()[0],font->getColour()[1],font->getColour()[2])
-            )
+            value_ptr(vec3(font->getColour()[0],font->getColour()[1],font->getColour()[2]))
         );
-        */
+        Constants::checkGLError("GfxComponent: Font: After textColor");
 
         glActiveTexture(GL_TEXTURE0);
-        glBindVertexArray(mFontVAO);
+        Constants::checkGLError("GfxComponent: Font: After ActivateTexture");
 
-        // Pass uniform arguments to shader
-        shader->setModelMatrix(model);
-        shader->setViewMatrix(mViewMatrix);
-        shader->setProjectionMatrix(mProjectionMatrix);
+        shader->bindVertexArray(mFontVAO);
+        Constants::checkGLError("GfxComponent: Font: After Bind VAO");
 
         // Iterate through all characters
         string text = font->getText();
@@ -591,32 +611,44 @@ namespace Dream
         {
             FontCharacter ch = charMap[*c];
 
-            GLfloat xpos = tX + ch.Bearing.x;// * scale;
-            //GLfloat ypos = tY - (ch.Size.y - ch.Bearing.y) * scale;
-            GLfloat ypos = tY - (ch.Bearing.y);// * scale);
+            GLfloat xpos = translation.x + ch.Bearing.x;
+            GLfloat ypos = translation.y - ch.Bearing.y;
 
-            GLfloat w = ch.Size.x;// * scale;
-            GLfloat h = ch.Size.y;// * scale;
+            GLfloat w = ch.Size.x;
+            GLfloat h = ch.Size.y;
+
             // Update VBO for each character
             GLfloat vertices[6][5] = {
-                { xpos,     ypos + h, 0.0,  0.0, 1.0 },
-                { xpos,     ypos,     0.0,  0.0, 0.0 },
-                { xpos + w, ypos,     0.0,  1.0, 0.0 },
+                { xpos,     ypos + h, 0.0,    0.0, 1.0 },
+                { xpos,     ypos,     0.0,    0.0, 0.0 },
+                { xpos + w, ypos,     0.0,    1.0, 0.0 },
 
-                { xpos,     ypos + h, 0.0,  0.0, 1.0 },
-                { xpos + w, ypos,     0.0,  1.0, 0.0 },
-                { xpos + w, ypos + h, 0.0,  1.0, 1.0 }
+                { xpos,     ypos + h, 0.0,    0.0, 1.0 },
+                { xpos + w, ypos,     0.0,    1.0, 0.0 },
+                { xpos + w, ypos + h, 0.0,    1.0, 1.0 }
             };
+
             // Render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            Constants::checkGLError("GfxComponent: Font: After ActivateTexture");
+
             // Update content of VBO memory
             glBindBuffer(GL_ARRAY_BUFFER, mFontVBO);
+            Constants::checkGLError("GfxComponent: Font: Bind Buffer");
+
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            Constants::checkGLError("GfxComponent: Font: After Buffer Sub Data");
+
             // Render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
+            Constants::checkGLError("GfxComponent: Font: After Draw Call");
+
             // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            tX += (ch.Advance >> 6);// * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+            translation.x += (ch.Advance >> 6);// * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
             glBindBuffer(GL_ARRAY_BUFFER, 0);
+            Constants::checkGLError("GfxComponent: Font: After unbind buffer");
+
+            Constants::checkGLError("GfxComponent: Font: After set view");
         }
         shader->unbindVertexArray();
         glBindTexture(GL_TEXTURE_2D, 0);

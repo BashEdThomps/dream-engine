@@ -19,5 +19,38 @@
 
 namespace Dream
 {
+    FontCharacter::FontCharacter
+    ()
+    {
+
+    }
+
+    FontCharacter::FontCharacter
+    (GLuint textureId, ivec2 size, ivec2 bearing, GLuint advance)
+    : TextureID(textureId),
+      Size(size),
+      Bearing(bearing),
+      Advance(advance)
+    {
+
+    }
+
+    FontCharacter::FontCharacter(const FontCharacter &that)
+    {
+        this->TextureID  = that.TextureID;
+        this->Size = that.Size;
+        this->Bearing = that.Bearing;
+        this->Advance = that.Advance;
+    }
+
+    FontCharacter::~FontCharacter()
+    {
+        /*
+        if (TextureID != -1)
+        {
+            glDeleteTextures(1,&TextureID);
+        }
+        */
+    }
 
 } // End Dream

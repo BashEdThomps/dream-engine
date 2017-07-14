@@ -36,7 +36,7 @@ DreamProjectModel::setupHeartbeatTimer
     {
         mHeartbeatTimer.reset(new QTimer(this));
         connect(mHeartbeatTimer.get(), SIGNAL(timeout()), mWindowComponentHandle, SLOT(update()),Qt::DirectConnection);
-        mHeartbeatTimer->start(16);
+        mHeartbeatTimer->start(100);
     }
 }
 
