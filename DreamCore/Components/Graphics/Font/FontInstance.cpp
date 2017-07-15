@@ -34,7 +34,7 @@ namespace Dream
     {
         mColour = {1,1,1};
         mFontFace = nullptr;
-        setText("NO TEXT SET");
+        setText("The quick brown fox jumps over the lazy doge.");
     }
 
     FontInstance::~FontInstance
@@ -161,9 +161,9 @@ namespace Dream
     FontInstance::setColour
     (float red, float green, float blue)
     {
-        mColour[0] = red;
-        mColour[1] = green;
-        mColour[2] = blue;
+        mColour[Constants::RED_INDEX] = red;
+        mColour[Constants::GREEN_INDEX] = green;
+        mColour[Constants::BLUE_INDEX] = blue;
     }
 
     vector<float>
@@ -171,6 +171,18 @@ namespace Dream
     ()
     {
         return mColour;
+    }
+
+    vec3
+    FontInstance::getColourAsVec3
+    ()
+    {
+        return vec3
+        (
+            mColour[Constants::RED_INDEX],
+            mColour[Constants::GREEN_INDEX],
+            mColour[Constants::BLUE_INDEX]
+        );
     }
 
     map<GLchar,FontCharacter>

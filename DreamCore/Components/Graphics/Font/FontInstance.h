@@ -20,6 +20,7 @@
 #include <memory>
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -28,6 +29,7 @@
 
 using std::string;
 using nlohmann::json;
+using glm::vec3;
 
 namespace Dream
 {
@@ -59,6 +61,7 @@ namespace Dream
 
         void setColour(float,float,float);
         vector<float> getColour();
+        vec3 getColourAsVec3();
 
         void setSize(int);
         int getWidth();

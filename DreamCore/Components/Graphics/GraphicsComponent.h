@@ -69,23 +69,33 @@ namespace Dream
         float mMinimumDraw = 0.1f;
         float mMaximumDraw = 100000.0f;
 
-        vector<SceneObjectRuntime*> m2DQueue;
-        vector<SceneObjectRuntime*> m3DQueue;
-        vector<LightInstance*> mLightQueue;
+        vector<SceneObjectRuntime*> mSpriteQueue;
+        vector<SceneObjectRuntime*> mModelQueue;
+        vector<SceneObjectRuntime*> mFontQueue;
+        vector<LightInstance*>      mLightQueue;
 
         IWindowComponent *mWindowComponentHandle;
         SceneRuntime* mActiveSceneRuntimeHandle;
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
         ~GraphicsComponent(void);
-        void clear2DQueue();
-        void addTo2DQueue(SceneObjectRuntime*);
-        void draw2DQueue();
+
+        void clearSpriteQueue();
+        void addToSpriteQueue(SceneObjectRuntime*);
+        void drawSpriteQueue();
+
         void addToLightQueue(LightInstance*);
         void clearLightQueue();
-        void clear3DQueue();
-        void addTo3DQueue(SceneObjectRuntime*);
-        void draw3DQueue();
+
+        void clearModelQueue();
+        void addToModelQueue(SceneObjectRuntime*);
+        void drawModelQueue();
+
+        void clearFontQueue();
+        void addToFontQueue(SceneObjectRuntime*);
+        void drawFontQueue();
+
+
         bool init(void) override;
         void updateComponent(SceneRuntime*) override;
         void drawSprite(SceneObjectRuntime*);

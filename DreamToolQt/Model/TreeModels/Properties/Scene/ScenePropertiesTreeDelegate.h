@@ -37,6 +37,7 @@ public:
 public slots:
    void onButton_CaptureCameraTranslation(bool);
    void onButton_CaptureCameraRotation(bool);
+   void onButton_CaptureCameraAll(bool);
 
 signals:
    void notifyButton_CaptureCameraTranslation();

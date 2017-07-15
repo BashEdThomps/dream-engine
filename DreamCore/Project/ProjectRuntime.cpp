@@ -326,8 +326,9 @@ namespace Dream
                  << endl << endl;
         }
         // Draw 3D/PhysicsDebug/2D
-        mGraphicsComponent->draw3DQueue();
-        mGraphicsComponent->draw2DQueue();
+        mGraphicsComponent->drawModelQueue();
+        mGraphicsComponent->drawFontQueue();
+        mGraphicsComponent->drawSpriteQueue();
         mPhysicsComponent->drawDebug();
         mWindowComponentHandle->swapBuffers();
     }

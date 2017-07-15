@@ -223,6 +223,13 @@ ScenePropertiesTreeDelegate::onButton_CaptureCameraRotation
     emit notifyButton_CaptureCameraRotation();
 }
 
+void ScenePropertiesTreeDelegate::onButton_CaptureCameraAll(bool)
+{
+    qDebug() << "ScenePropertiesTreeDelegate: CaptureCameraAll";
+    emit notifyButton_CaptureCameraTranslation();
+    emit notifyButton_CaptureCameraRotation();
+}
+
 QWidget*
 ScenePropertiesTreeDelegate::createCameraAllCaptureButton
 (QWidget* parent) const
@@ -235,15 +242,7 @@ ScenePropertiesTreeDelegate::createCameraAllCaptureButton
         button,
         SIGNAL(clicked(bool)),
         this,
-        SLOT(onButton_CaptureCameraTranslation(bool))
-    );
-
-    connect
-    (
-        button,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_CaptureCameraRotation(bool))
+        SLOT(onButton_CaptureCameraAll(bool))
     );
 
     return button;

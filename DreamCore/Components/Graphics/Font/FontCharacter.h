@@ -22,9 +22,20 @@
 #include "GL/glew.h"
 
 using glm::ivec2;
+using glm::vec3;
+using glm::vec2;
 
 namespace Dream
 {
+    struct FontCharacterVertex
+    {
+        vec3 Translation;
+        vec2 TextureCoordinates;
+
+        FontCharacterVertex(vec3 translation, vec2 coords)
+            : Translation(translation), TextureCoordinates(coords){}
+    };
+
     class FontCharacter
     {
     public:
