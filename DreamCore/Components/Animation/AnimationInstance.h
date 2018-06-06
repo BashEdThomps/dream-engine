@@ -1,7 +1,15 @@
 #pragma once
 
+#pragma once
+
+#ifdef __APPLE__
+    #include <nlohmann/json.hpp>
+#else
+    #include <json.hpp>
+#endif
+
+
 #include <vector>
-#include <json.hpp>
 #include "../IAssetInstance.h"
 #include "AnimationDefinition.h"
 

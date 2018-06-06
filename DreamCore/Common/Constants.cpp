@@ -173,6 +173,7 @@ namespace Dream
     const string Constants::SCENE_OBJECT_DEFAULT_NAME = "New Scene Object";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
     const string Constants::SCENE_OBJECT_HAS_FOCUS = "hasFocus";
+    const string Constants::SCENE_OBJECT_FOLLOWS_CAMERA = "followsCamera";
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";

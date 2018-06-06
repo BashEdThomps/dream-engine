@@ -65,6 +65,7 @@ SceneObjectPropertiesModel::createProperties
     createScaleProperty();
     createTransformTypeProperty();
     createHasFocusProperty();
+    createFollowsCameraProperty();
     createAssetInstancesProperty();
     createChildrenProperty();
 }
@@ -279,6 +280,22 @@ SceneObjectPropertiesModel::createTransformTypeProperty
         SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE
     );
     mRootItem->appendChild(transformTypeItem);
+}
+
+void
+SceneObjectPropertiesModel::createFollowsCameraProperty
+()
+{
+    qDebug() << "SceneObjectPropertiesModel: createFollowsCameraProperty";
+    mRootItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            "Follows Camera",
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA
+        )
+    );
 }
 
 void

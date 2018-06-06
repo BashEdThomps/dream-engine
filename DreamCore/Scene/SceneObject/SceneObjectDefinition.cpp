@@ -79,6 +79,24 @@ namespace Dream
     }
 
     void
+    SceneObjectDefinition::setFollowsCamera
+    (bool fc)
+    {
+        mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA] = fc;
+    }
+
+    bool
+    SceneObjectDefinition::followsCamera
+    ()
+    {
+        if (mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA].is_null())
+        {
+            mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA] = false;
+        }
+        return mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA];
+    }
+
+    void
     SceneObjectDefinition::addAssetDefinitionToLoadQueue
     (IAssetDefinition* adHandle)
     {

@@ -49,6 +49,9 @@ namespace Dream
         void setHasFocus(bool focus);
         bool hasFocus();
 
+        void setFollowsCamera(bool fc);
+        bool followsCamera();
+
         void addAssetDefinitionToLoadQueue(IAssetDefinition* adHandle);
         void addAssetDefinitionUuidToLoadQueue(string uuid);
 
@@ -72,4 +75,5 @@ namespace Dream
     private:
         void loadChildSceneObjectDefinitions(json definition);
     };
+
 }

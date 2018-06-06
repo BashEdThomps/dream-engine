@@ -89,6 +89,7 @@ namespace Dream
 
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
         void loadChildrenFromDefinition(SceneObjectDefinition *definitionHandle);
+        bool mFollowsCamera;
 
     public:
         SceneObjectRuntime(SceneObjectDefinition* sdHandle, SceneRuntime* sceneRuntimeHandle = nullptr);
@@ -198,5 +199,7 @@ namespace Dream
 
         void useDefinition(IDefinition* iDefinitionHandle) override;
 
+        bool followsCamera() const;
+        void setFollowsCamera(bool followsCamera);
     };
 }

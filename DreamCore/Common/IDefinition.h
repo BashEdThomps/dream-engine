@@ -18,7 +18,12 @@
 
 #pragma once
 
-#include <json.hpp>
+#ifdef __APPLE__
+    #include <nlohmann/json.hpp>
+#else
+    #include <json.hpp>
+#endif
+
 #include <string>
 
 #include "../Components/Transform3D.h"

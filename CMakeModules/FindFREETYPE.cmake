@@ -60,6 +60,7 @@ find_path(
   ft2build.h
   ${FREETYPE_FIND_ARGS}
   PATH_SUFFIXES
+    /usr/local/include/freetype2/
     include/freetype2
     include
     freetype2
@@ -72,6 +73,7 @@ find_path(
     config/ftheader.h
   ${FREETYPE_FIND_ARGS}
   PATH_SUFFIXES
+    /usr/local/include/freetype2/
     include/freetype2
     include
     freetype2

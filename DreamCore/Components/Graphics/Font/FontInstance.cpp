@@ -34,7 +34,7 @@ namespace Dream
     {
         mColour = {1,1,1};
         mFontFace = nullptr;
-        setText("The quick brown fox jumps over the lazy doge.");
+        setText("NO_TEXT_SET");
     }
 
     FontInstance::~FontInstance

@@ -52,6 +52,8 @@
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
+#include "../../Utilities/Math.h"
+
 using glm::vec3;
 using glm::mat4;
 using glm::rotate;
@@ -187,7 +189,7 @@ namespace Dream
     }
 
     void
-    GraphicsComponent::preRender
+    GraphicsComponent::preModelRender
     ()
     {
         if (Constants::DEBUG)
@@ -223,7 +225,7 @@ namespace Dream
     }
 
     void
-    GraphicsComponent::postRender
+    GraphicsComponent::postModelRender
     ()
     {
         if (Constants::DEBUG)
@@ -233,6 +235,54 @@ namespace Dream
         Constants::checkGLError("before post render");
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+        Constants::checkGLError("after post render");
+    }
+
+    void
+    GraphicsComponent::preFontRender
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Pre Render" << endl;
+        }
+        Constants::checkGLError("before pre render");
+
+        glEnable(GL_DEPTH_TEST);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // Clear the colorbuffer
+        if (mActiveSceneRuntimeHandle)
+        {
+            glClearColor
+            (
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
+                mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
+            );
+        }
+        else
+        {
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
+        }
+
+        Constants::checkGLError("after pre render");
+    }
+
+    void
+    GraphicsComponent::postFontRender
+    ()
+    {
+        if (Constants::DEBUG)
+        {
+            cout << "GraphicsComponent: Post Render" << endl;
+        }
+        Constants::checkGLError("before post render");
+        glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
         Constants::checkGLError("after post render");
     }
@@ -431,7 +481,7 @@ namespace Dream
     GraphicsComponent::drawModelQueue
     ()
     {
-        preRender();
+        preModelRender();
         if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Draw 3D Queue" << endl;
@@ -441,7 +491,7 @@ namespace Dream
             drawModel(it);
             Constants::checkGLError("GfxComponent: After Draw Model");
         }
-        postRender();
+        postModelRender();
     }
 
     void
@@ -472,7 +522,7 @@ namespace Dream
     GraphicsComponent::drawFontQueue
     ()
     {
-        preRender();
+        preFontRender();
         if (Constants::DEBUG)
         {
             cout << "GraphicsComponent: Draw Font Queue" << endl;
@@ -482,7 +532,7 @@ namespace Dream
             drawFont(it);
             Constants::checkGLError("GfxComponent: After Draw Font");
         }
-        postRender();
+        postFontRender();
     }
 
     mat4
@@ -586,11 +636,6 @@ namespace Dream
         ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
 
-        // Get raw data
-        vec3 translation = sceneObject->getTranslation();
-        quat rot = sceneObject->getTransform().getOrientation();
-        vec3 scaleValue = sceneObject->getScale();
-
         shader->setProjectionMatrix(mProjectionMatrix);
         Constants::checkGLError("GfxComponent: Font: After set projection matrix");
 
@@ -609,43 +654,73 @@ namespace Dream
         }
 
         // calculate the model matrix
+        vec3 fontTranslation = sceneObject->getTranslation();
+        vec3 translation = mCamera->getRelativeTranslation(fontTranslation.z);
+        mat4 rotationMatrix = mCamera->getRelativeRotation(translation);
 
         // Iterate through all characters
         string text = font->getText();
         map<GLchar,FontCharacter> charMap = font->getCharMap();
         for (string::const_iterator c = text.begin(); c != text.end(); c++)
         {
-            // Translate
             mat4 modelMatrix;
-            modelMatrix = translate(modelMatrix,translation);
-            // Rotate
-            mat4 rotMat = mat4_cast(rot);
-            modelMatrix = modelMatrix * rotMat;
-            // Scale
-            modelMatrix = scale(modelMatrix, scaleValue);
+
+            if (sceneObject->followsCamera())
+            {
+                if (Constants::DEBUG)
+                {
+                    cout << "GraphicsComponent: Font: Applying Camera Transform" << endl;
+                }
+
+                //modelMatrix *= rotationMatrix;
+                modelMatrix = translate(modelMatrix,translation);
+                modelMatrix = translate(modelMatrix,vec3(fontTranslation.x,fontTranslation.y,0.0f));
+            }
 
             // Pass model matrix to shader
             shader->setModelMatrix(modelMatrix);
             Constants::checkGLError("GfxComponent: Font: After set model matrix");
 
+            float fontScalar = 10.0f;
             FontCharacter ch = charMap[*c];
-
-            GLfloat xpos = ch.Bearing.x;
-            GLfloat ypos = ch.Bearing.y;
-
-            GLfloat w = ch.Size.x;
-            GLfloat h = ch.Size.y;
+            GLfloat xpos = ch.Bearing.x / fontScalar;
+            GLfloat ypos = ch.Bearing.y / fontScalar;
+            GLfloat width = ch.Size.x   / fontScalar;
+            GLfloat height = ch.Size.y  / fontScalar;
 
 
             FontCharacterVertex vertices[6] =
             {
-                FontCharacterVertex(vec3(xpos    , ypos - h, 0.0f), vec2(0.0f, 1.0f)), // Bottom Left
-                FontCharacterVertex(vec3(xpos + w, ypos    , 0.0f), vec2(1.0f, 0.0f)), // Top Right
-                FontCharacterVertex(vec3(xpos    , ypos    , 0.0f), vec2(0.0f, 0.0f)), // Top Left
-
-                FontCharacterVertex(vec3(xpos + w, ypos    , 0.0f), vec2(1.0f, 0.0f)), // Top Right
-                FontCharacterVertex(vec3(xpos    , ypos - h, 0.0f), vec2(0.0f, 1.0f)), // Bottom Left
-                FontCharacterVertex(vec3(xpos + w, ypos - h, 0.0f), vec2(1.0f, 1.0f)), // Bottom Right
+                FontCharacterVertex // Bottom Left
+                (
+                    vec3(xpos, ypos - height, 0.0f),
+                    vec2(0.0f, 1.0f)
+                ),
+                FontCharacterVertex // Top Right
+                (
+                    vec3(xpos + width, ypos, 0.0f),
+                    vec2(1.0f, 0.0f)
+                ),
+                FontCharacterVertex // Top Left
+                (
+                    vec3(xpos, ypos, 0.0f),
+                    vec2(0.0f, 0.0f)
+                ),
+                FontCharacterVertex // Top Right
+                (
+                    vec3(xpos + width, ypos, 0.0f),
+                    vec2(1.0f, 0.0f)
+                ),
+                FontCharacterVertex // Bottom Left
+                (
+                    vec3(xpos, ypos - height, 0.0f),
+                    vec2(0.0f, 1.0f)
+                ),
+                FontCharacterVertex // Bottom Right
+                (
+                    vec3(xpos + width, ypos - height, 0.0f),
+                    vec2(1.0f, 1.0f)
+                )
             };
 
             cout << "GraphicsComponent: Font texture is " << ch.TextureID << endl;
@@ -680,7 +755,9 @@ namespace Dream
             Constants::checkGLError("GfxComponent: Font: After Draw Call");
 
             // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            translation.x += (ch.Advance >> 6);// * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+            // Bitshift by 6 to get value in pixels (2^6 = 64)
+
+            translation.x += (ch.Advance >> 6)/fontScalar; // * scale;
         }
         shader->unbindVertexArray();
         glBindTexture(GL_TEXTURE_2D, 0);

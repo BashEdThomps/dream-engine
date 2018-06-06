@@ -45,6 +45,7 @@ public:
     void createScaleProperty();
     void createTransformTypeProperty();
     void createHasFocusProperty();
+    void createFollowsCameraProperty();
     void createAssetInstancesProperty();
     void createChildrenProperty();
 

@@ -740,6 +740,7 @@ void
 MainController::onAction_Scene_Stop
 ()
 {
+    mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
     mDreamProjectModel->stopActiveSceneRuntime();
 }
 

@@ -34,12 +34,13 @@ namespace Dream
         float mZoom;
     public:
         // Constructor with vectors
-        Camera(
-                vec3 position = vec3(0.0f, 0.0f, 0.0f),
-                vec3 up = vec3(0.0f, 1.0f, 0.0f),
-                float   yaw      = Constants::CAMERA_YAW,
-                float   pitch    = Constants::CAMERA_PITCH
-                );
+        Camera
+        (
+            vec3  position = vec3(0.0f, 0.0f, 0.0f),
+            vec3  up       = vec3(0.0f, 1.0f, 0.0f),
+            float yaw      = Constants::CAMERA_YAW,
+            float pitch    = Constants::CAMERA_PITCH
+        );
 
         // Constructor with scalar values
         Camera(float, float, float, float, float, float, float, float);
@@ -60,6 +61,12 @@ namespace Dream
         float getZoom();
 
         void setTransform(Transform3D);
+
+        vec3 getRelativeTranslation(float relative);
+        mat4 getRelativeRotation(vec3 relative);
+
+        vec3 getUp();
+        vec3 getFront();
     private:
         float radians(float);
 

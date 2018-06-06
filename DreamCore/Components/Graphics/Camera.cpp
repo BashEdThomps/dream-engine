@@ -53,6 +53,39 @@ namespace Dream
         return lookAt(mTranslation,mTranslation+mFront,mUp);
     }
 
+    vec3
+    Camera::getUp
+    ()
+    {
+        return mUp;
+    }
+
+    vec3
+    Camera::getFront
+    ()
+    {
+        return mFront;
+    }
+
+    vec3
+    Camera::getRelativeTranslation
+    (float relative)
+    {
+        return vec3
+        (
+            mTranslation.x + (mFront.x * relative),
+            mTranslation.y + (mFront.y * relative),
+            mTranslation.z + (mFront.z * relative)
+        );
+    }
+
+    mat4
+    Camera::getRelativeRotation
+    (vec3 relativePosition)
+    {
+        return lookAt(relativePosition,getTranslation()-mFront,mUp);
+    }
+
     void
     Camera::processKeyboard
     (unsigned int direction, float deltaTime)

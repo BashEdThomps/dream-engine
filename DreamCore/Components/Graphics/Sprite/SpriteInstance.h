@@ -20,8 +20,6 @@
 
 #include <GL/glew.h>
 
-#include <json.hpp>
-
 #include "../../../Common/Constants.h"
 #include "../../../Components/IAssetInstance.h"
 

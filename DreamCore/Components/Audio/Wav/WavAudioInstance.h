@@ -19,7 +19,15 @@
 
 #include <string>
 #include <fstream>
-#include <json.hpp>
+
+#pragma once
+
+#ifdef __APPLE__
+    #include <nlohmann/json.hpp>
+#else
+    #include <json.hpp>
+#endif
+
 
 #include "../AudioInstance.h"
 #include "WavHeader.h"

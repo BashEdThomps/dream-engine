@@ -20,7 +20,12 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include <json.hpp>
+
+#ifdef __APPLE__
+    #include <nlohmann/json.hpp>
+#else
+    #include <json.hpp>
+#endif
 
 #include "../Common/Constants.h"
 

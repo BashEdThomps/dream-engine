@@ -18,7 +18,14 @@
 #pragma once
 
 #include <string>
-#include <json.hpp>
+
+#pragma once
+
+#ifdef __APPLE__
+    #include <nlohmann/json.hpp>
+#else
+    #include <json.hpp>
+#endif
 
 #include "../Common/Constants.h"
 

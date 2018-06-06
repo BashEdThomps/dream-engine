@@ -76,6 +76,7 @@ namespace Dream
 
         IWindowComponent *mWindowComponentHandle;
         SceneRuntime* mActiveSceneRuntimeHandle;
+
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
         ~GraphicsComponent(void);
@@ -90,11 +91,14 @@ namespace Dream
         void clearModelQueue();
         void addToModelQueue(SceneObjectRuntime*);
         void drawModelQueue();
+        void preModelRender();
+        void postModelRender();
 
         void clearFontQueue();
         void addToFontQueue(SceneObjectRuntime*);
         void drawFontQueue();
-
+        void preFontRender();
+        void postFontRender();
 
         bool init(void) override;
         void updateComponent(SceneRuntime*) override;
@@ -108,8 +112,7 @@ namespace Dream
         mat4 getViewMatrix();
         mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();
-        void preRender();
-        void postRender();
+
         void setActiveSceneRuntimeHandle(SceneRuntime*);
 
     }; // End of GraphicsComponent

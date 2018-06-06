@@ -5,8 +5,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <json.hpp>
-
 #include <assimp/Importer.hpp>
 #include <btBulletDynamicsCommon.h>
 

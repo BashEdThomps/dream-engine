@@ -18,7 +18,11 @@
 #pragma once
 
 #include <QObject>
-#include <json.hpp>
+#ifdef __APPLE__
+    #include <nlohmann/json.hpp>
+#else
+    #include <json.hpp>
+#endif
 #include <string>
 
 using nlohmann::json;
@@ -28,7 +32,7 @@ class PreferencesModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit PreferencesModel(QObject *parent = 0);
+    explicit PreferencesModel(QObject *parent = nullptr);
 
     bool savePreferenecsFile();
     bool loadPreferencesFile();

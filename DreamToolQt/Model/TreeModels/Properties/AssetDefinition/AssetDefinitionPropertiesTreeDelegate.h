@@ -39,10 +39,10 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 public slots:
-    void onButton_AudioFile(bool);
-    void onButton_FontFile(bool);
-    void onButton_ModelFile(bool);
-    void onButton_ModelAdditionalFiles(bool);
+    void onButton_AudioFile(bool clicked);
+    void onButton_FontFile(bool clicked);
+    void onButton_ModelFile(bool clicked);
+    void onButton_ModelAdditionalFiles(bool clicked);
     void onButton_RemoveFiles(bool clicked);
     void onButton_EditVertexShader(bool clicked);
     void onButton_EditFragmentShader(bool clicked);
@@ -50,6 +50,7 @@ public slots:
     void onButton_PhysicsBvhTriangleMeshFile(bool clicked);
     void onCombo_ScriptTemplateChanged(const QString&);
     void onCombo_ShaderTemplateChanged(const QString&);
+    void onButton_FontColourDialog(bool clicked) ;
 
 signals:
     void notifyButton_AudioFile();
@@ -86,4 +87,5 @@ protected:
     QWidget *createRemoveFilesButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createTemplateComboBox(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createPhysicsBvhTriangleMeshFileButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
+    QWidget *createFontColourDialogButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
 };

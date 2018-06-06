@@ -84,6 +84,7 @@ SceneObjectPropertiesTreeDelegate::createEditor
         case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
             return createTransformTypeComboBox(parent);
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
+        case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
             return new QCheckBox(parent);
         case SCENE_OBJECT_PROPERTY_NONE:
             return new QLineEdit(parent);
@@ -130,6 +131,7 @@ SceneObjectPropertiesTreeDelegate::setEditorData
             static_cast<QComboBox*>(editor)->setCurrentText(value.toString());
             break;
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
+        case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
             static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
             break;
         case SCENE_OBJECT_PROPERTY_NONE:
@@ -172,6 +174,7 @@ void SceneObjectPropertiesTreeDelegate::setModelData
             model->setData(index,static_cast<QComboBox*>(editor)->currentText());
             break;
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
+        case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
             model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
             break;
         case SCENE_OBJECT_PROPERTY_NONE:

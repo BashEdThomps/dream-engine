@@ -15,8 +15,8 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef MATH_H
-#define MATH_H
+
+#pragma once
 
 namespace Dream
 {
@@ -25,9 +25,7 @@ namespace Dream
     public:
         Math();
         ~Math();
-        float degreesToRadians(float degrees);
-        float radiansToDegrees(float radians);
+        static float degreesToRadians(float degrees);
+        static float radiansToDegrees(float radians);
     }; // End of Math
 } // End of Dream
-
-#endif // MATH_H

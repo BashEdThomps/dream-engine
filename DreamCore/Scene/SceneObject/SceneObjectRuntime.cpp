@@ -71,7 +71,8 @@ namespace Dream
           mSceneRuntimeHandle(srHandle),
           mParentRuntimeHandle(nullptr),
           mLoaded(false),
-          mHasFocus(false)
+          mHasFocus(false),
+          mFollowsCamera(false)
 
     {
         if (Constants::DEBUG)
@@ -848,6 +849,7 @@ namespace Dream
        setName(defHandle->getName());
        setUuid(defHandle->getUuid());
        setTransform(defHandle->getTransform());
+       setFollowsCamera(defHandle->followsCamera());
        setAssetDefinitionLoadQueue(defHandle->getAssetDefinitionLoadQueue());
        createAssetInstances();
 
@@ -874,4 +876,19 @@ namespace Dream
             mChildRuntimes.push_back(unique_ptr<SceneObjectRuntime>(child));
         }
     }
+
+    bool
+    SceneObjectRuntime::followsCamera
+    () const
+    {
+        return mFollowsCamera;
+    }
+
+    void
+    SceneObjectRuntime::setFollowsCamera
+    (bool followsCamera)
+    {
+        mFollowsCamera = followsCamera;
+    }
+
 }

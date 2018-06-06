@@ -20,7 +20,14 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <json.hpp>
+
+#pragma once
+
+#ifdef __APPLE__
+    #include <nlohmann/json.hpp>
+#else
+    #include <json.hpp>
+#endif
 
 #include "../Common/IDefinition.h"
 #include "../Common/Constants.h"

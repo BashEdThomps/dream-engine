@@ -56,7 +56,7 @@ AssetDefinitionTreeItem::setType
 
 QVariant
 AssetDefinitionTreeItem::data
-(int column)
+(int)
 const
 {
     switch (getType())

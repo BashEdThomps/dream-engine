@@ -113,6 +113,9 @@ SceneObjectPropertiesItem::setData
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
             mSceneObjectDefinitionHandle->setHasFocus(value.toBool());
             break;
+        case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
+            mSceneObjectDefinitionHandle->setFollowsCamera(value.toBool());
+            break;
         case SCENE_OBJECT_PROPERTY_NONE:
             break;
     }
@@ -174,6 +177,8 @@ SceneObjectPropertiesItem::data
             return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getTransform().getTransformType()));
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
             return QVariant(mSceneObjectDefinitionHandle->hasFocus());
+        case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
+            return QVariant(mSceneObjectDefinitionHandle->followsCamera());
         case SCENE_OBJECT_PROPERTY_NONE:
             return QVariant();
     }

@@ -30,6 +30,7 @@
 #include <QHBoxLayout>
 #include <QStandardItemModel>
 #include <QSpinBox>
+#include <QColorDialog>
 
 #include <vector>
 
@@ -51,6 +52,31 @@ AssetDefinitionPropertiesTreeDelegate::~AssetDefinitionPropertiesTreeDelegate
 ()
 {
     qDebug() << "AssetDefinitionTreeDelegate: Destructing";
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createFontColourDialogButton
+(AssetDefinitionPropertiesItem*, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Pick Colour");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_FontColourDialog(bool))
+    );
+    return editor;
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_FontColourDialog
+(bool)
+{
+   QColorDialog *editor = new QColorDialog();
+   editor->show();
 }
 
 QWidget*
@@ -357,23 +383,28 @@ const
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             return new QCheckBox(parent);
 
-            // QDoubleSpinBox
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+            // QDoubleSpinBox all range
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
-        case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
             spinBox = new QDoubleSpinBox(parent);
+            spinBox->setRange(numeric_limits<double>::lowest(), numeric_limits<double>::max());
+            return spinBox;
+
+            // QDoubleSpinBox - 0 to max
+        case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+            spinBox = new QDoubleSpinBox(parent);
+            spinBox->setRange(0.0, numeric_limits<double>::max());
             return spinBox;
 
             //QDoubleSpinBox 0.0 - 1.0
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
@@ -422,14 +453,17 @@ const
         case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
             return createOpenFragmentShaderInEditorButton(adItem,parent);
 
+        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
+            return createFontColourDialogButton(adItem,parent);
+
             // Not Used
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
         case ASSET_DEFINITION_PROPERTY_NAME:
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_NONE:
             return new QLineEdit(parent);
