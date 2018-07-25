@@ -27,7 +27,6 @@ namespace DreamSDL
     SDLWindowComponent::SDLWindowComponent
     () : IWindowComponent()
     {
-        if (Constants::DEBUG)
         {
             cout << "SDLWindowComponent: Constructing" << endl;
         }
@@ -37,7 +36,6 @@ namespace DreamSDL
     SDLWindowComponent::~SDLWindowComponent
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SDLWindowComponent: Destructing" << endl;
         }
@@ -84,7 +82,6 @@ namespace DreamSDL
 
         if (mWindow == nullptr)
         {
-            if (Constants::DEBUG)
             {
                 cout << "SDLWindowComponent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
             }
@@ -92,7 +89,6 @@ namespace DreamSDL
             return false;
         }
         //SDL_SetRelativeMouseMode(SDL_TRUE);
-        if (Constants::DEBUG)
         {
             cout << "SDLWindowComponent: Initialised SDL" << endl;
         }
@@ -119,7 +115,6 @@ namespace DreamSDL
             return false;
         }
 
-        if (Constants::DEBUG)
         {
             cout << "SDLWindowComponent: Initialised SDL::OpenGL" << endl;
         }
@@ -143,7 +138,6 @@ namespace DreamSDL
         {
             if (event.type == SDL_QUIT)
             {
-                if (Constants::DEBUG)
                 {
                     cout << "SDLWindowComponent: SDL_QUIT Event" << endl;
                 }
@@ -166,12 +160,10 @@ namespace DreamSDL
                 memcpy(&e,&event,sizeof(SDL_Event));
                 mEvents.push_back(e);
             }
-            if (Constants::DEBUG)
             {
                 cout << "SDLWindowComponent::update GameController Implementation Disabled!" << endl;
             }
         }
-        if (Constants::VERBOSE)
         {
             cout << "SDLWindowComponent " << mEvents.size() << " Events" << endl;
         }
@@ -191,7 +183,6 @@ namespace DreamSDL
             SDL_GetWindowSize(mWindow, &mWidth, &mHeight);
         }
 
-        if (Constants::DEBUG)
         {
             cout << "SDLWindowComponent: Window size changed to "
                  << mWidth << "," << mHeight << endl;

@@ -24,17 +24,11 @@ namespace Dream
         {
             if (it.first.compare(path) == 0)
             {
-                if (Constants::DEBUG)
-                {
                     cout << "PhysicsObjectInstance: Found cached scene for " << path << endl;
-                }
                 return it.second;
             }
         }
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsObjectInstance: Loading " << path << " from disk" << endl;
-        }
         const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
@@ -60,20 +54,14 @@ namespace Dream
         : IAssetInstance(definition,transform),
           mInPhysicsWorld(false)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsObjectInstance: Constructing" << endl;
-        }
         return;
     }
 
     PhysicsObjectInstance::~PhysicsObjectInstance
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsObjectInstance: Destroying" << endl;
-        }
 
         /***** Deletes are handled by PhysicsComponent! *****/
 
@@ -213,11 +201,8 @@ namespace Dream
         {
             // Load Collision Data
             string path = projectPath+podHandle->getAssetPath();
-            if (Constants::DEBUG)
-            {
                 cout << "PhysicsObjectInstance: Loading collision geometry from "
                      << path << endl;
-            }
             const aiScene* scene = getModelFromCache(path);
             btTriangleMesh *triMesh = new btTriangleMesh();
             processAssimpNode(scene->mRootNode, scene, triMesh);

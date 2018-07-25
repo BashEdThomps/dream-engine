@@ -25,25 +25,6 @@ using namespace std;
 
 namespace Dream
 {
-    bool Constants::DEBUG(false);
-    bool Constants::VERBOSE(false);
-
-    void Constants::dreamSetDebug(bool debug)
-    {
-        cout << "===== DEBUG: " << (debug? "Enabled" : "Disabled") << " =====" << endl;
-        DEBUG = debug;
-    }
-
-    void Constants::dreamSetVerbose(bool verbose)
-    {
-        cout << "===== VERBOSE: " << (verbose? "Enabled" : "Disabled") << " =====" << endl;
-        VERBOSE = verbose;
-        if (VERBOSE)
-        {
-            dreamSetDebug(true);
-        }
-    }
-
     bool
     Constants::checkGLError
     (string marker)
@@ -55,30 +36,30 @@ namespace Dream
             errorCode = glGetError();
             if (errorCode!=0)
             {
-                cerr << "OpenGL Error Check " << marker << ": " << endl;
+                logger->error("OpenGL Error Check {}:", marker);
                 switch (errorCode)
                 {
                     case GL_NO_ERROR:
-                        cerr << "\tGL_NO_ERROR" << endl;
+                        logger->error("\tGL_NO_ERROR");
                         break;
                     case GL_INVALID_ENUM:
-                        cerr << "\tGL_INVALID_ENUM" << endl;
+                        logger->error("\tGL_INVALID_ENUM" );
                         break;
                     case GL_INVALID_VALUE:
-                        cerr << "\tGL_INVALID_VALUE" << endl;
+                        logger->error("\tGL_INVALID_VALUE");
                         break;
                     case GL_INVALID_OPERATION:
-                        cerr << "\tGL_INVALID_OPERATION" << endl;
+                        logger->error("\tGL_INVALID_OPERATION");
                         break;
                     case GL_INVALID_FRAMEBUFFER_OPERATION:
-                        cerr << "\tGL_INVALID_FRAMEBUFFER_OPERATION" << endl;
+                        logger->error("\tGL_INVALID_FRAMEBUFFER_OPERATION");
                         break;
                     case GL_OUT_OF_MEMORY:
-                        cerr << "\tGL_OUT_OF_MEMORY" << endl;
+                        logger->error("\tGL_OUT_OF_MEMORY");
                         break;
                 }
-                cerr << "\tName: " << glewGetErrorString(errorCode) << endl;
-                cerr << "\tCode: " << errorCode << endl;
+                logger->error("\tName: {}" , glewGetErrorString(errorCode) );
+                logger->error("\tCode: {}" , errorCode );
                 wasError = true;
             }
         }
@@ -685,6 +666,8 @@ namespace Dream
 
         return "";
     }
+
+    shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_color_mt("Constants");
 
 
 } // End of Dream

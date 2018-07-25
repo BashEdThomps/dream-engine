@@ -13,10 +13,7 @@ namespace Dream
     PhysicsDebugDrawer::~PhysicsDebugDrawer
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsDebugDrawer: Destroying Object" << endl;
-        }
     }
 
     void
@@ -185,20 +182,14 @@ namespace Dream
     PhysicsDebugDrawer::drawSphere
     (const btVector3& p, btScalar radius, const btVector3& color)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsDebugDrawer: Draw Sphere is not implemented" << endl;
-        }
     }
 
     void
     PhysicsDebugDrawer::drawTriangle
     (const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsDebugDrawer: Draw Triangle is not implemented" << endl;
-        }
     }
 
     void
@@ -212,30 +203,21 @@ namespace Dream
     PhysicsDebugDrawer::draw3dText
     (const btVector3& location,const char* textString)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsDebugDrawer: Draw 3DText is not implemented" << endl;
-        }
     }
 
     void
     PhysicsDebugDrawer::reportErrorWarning
     (const char* warningString)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsDebugDrawer: " << warningString << endl;
-        }
     }
 
     void
     PhysicsDebugDrawer::drawContactPoint
     (const btVector3& pointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsDebugDrawer: Draw Contact Point is not implemented" << endl;
-        }
     }
 
     void

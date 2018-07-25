@@ -101,7 +101,6 @@ GLDrawable::draw
     if (!mVertexBuffer.empty())
     {
         preRender();
-        if (Constants::VERBOSE)
         {
             qDebug() << "GLDrawable: Drawing - " << mVertexBuffer.size()/2 << " lines.";
         }

@@ -33,17 +33,11 @@ namespace Dream
     FontCache::FontCache
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "FontCahce: Constructing" << endl;
-        }
+        cout << "FontCahce: Constructing" << endl;
 
         if (mFreeTypeLib == nullptr)
         {
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Initialising FreeType" << endl;
-            }
+            cout << "FontCache: Initialising FreeType" << endl;
 
             mFreeTypeLib.reset(new FT_Library());
             if (FT_Init_FreeType(mFreeTypeLib.get()))
@@ -59,10 +53,7 @@ namespace Dream
     {
         if (mFreeTypeLib)
         {
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Destroying FreeType" << endl;
-            }
+            cout << "FontCache: Destroying FreeType" << endl;
             FT_Done_FreeType(*mFreeTypeLib.get());
             mFreeTypeLib.release();
         }
@@ -72,15 +63,12 @@ namespace Dream
             FontDefinition* fdHandle = definitionMapPair.first;
             for (auto glCharFontCharMap : definitionMapPair.second)
             {
-               FontCharacter fChar = glCharFontCharMap.second;
-               if (Constants::VERBOSE)
-               {
-                   cout << "FontCache: Deleting GL texture " << fChar.TextureID
-                        << " for character " << glCharFontCharMap.first
-                        << " of font " << fdHandle->getNameAndUuidString()
-                        << endl;
-               }
-               glDeleteTextures(1, &fChar.TextureID);
+                FontCharacter fChar = glCharFontCharMap.second;
+                cout << "FontCache: Deleting GL texture " << fChar.TextureID
+                     << " for character " << glCharFontCharMap.first
+                     << " of font " << fdHandle->getNameAndUuidString()
+                     << endl;
+                glDeleteTextures(1, &fChar.TextureID);
             }
         }
     }
@@ -92,23 +80,17 @@ namespace Dream
         auto it = mCache.find(definition);
         if (it != end(mCache))
         {
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Found"
-                     << definition->getNameAndUuidString()
-                     << " in font cache."
-                     << endl;
-            }
+            cout << "FontCache: Found"
+                 << definition->getNameAndUuidString()
+                 << " in font cache."
+                 << endl;
             return mCache[definition];
         }
         else
         {
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Generating New Font "
-                     << definition->getNameAndUuidString()
-                     << endl;
-            }
+            cout << "FontCache: Generating New Font "
+                 << definition->getNameAndUuidString()
+                 << endl;
             return generateCharMap(definition,face);
         }
     }
@@ -125,10 +107,7 @@ namespace Dream
     FontCache::generateCharMap
     (FontDefinition* definition, FT_Face* fontFace)
     {
-        if (Constants::DEBUG)
-        {
-            cout << "FontCache: Generating Character Map..." << endl;
-        }
+        cout << "FontCache: Generating Character Map..." << endl;
 
         map<GLchar, FontCharacter> charMap;
 
@@ -136,10 +115,7 @@ namespace Dream
 
         for (GLubyte c = CHAR_MAP_START; c < CHAR_MAP_END; c++)
         {
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: FreeType: load Glyph for char " << c << endl;
-            }
+            cout << "FontCache: FreeType: load Glyph for char " << c << endl;
 
             // Load character glyph
             if (FT_Load_Char(*fontFace, c, FT_LOAD_RENDER))
@@ -154,30 +130,24 @@ namespace Dream
             GLuint texture;
             glGenTextures(1, &texture);
 
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Using Texture " << texture << endl;
-            }
+            cout << "FontCache: Using Texture " << texture << endl;
 
             // Bind current texture
             glBindTexture(GL_TEXTURE_2D, texture);
             glTexImage2D
-            (
-                GL_TEXTURE_2D, // Target texture
-                0,             // Level of detail (mipmap)
-                GL_RED,        // InternalFormat Number of colour components
-                static_cast<GLsizei>((*fontFace)->glyph->bitmap.width), // Width
-                static_cast<GLsizei>((*fontFace)->glyph->bitmap.rows),  // Height
-                0, // Border
-                GL_RED, // Format of pixel data
-                GL_UNSIGNED_BYTE, // Type of pixel data
-                (*fontFace)->glyph->bitmap.buffer // Data
-            );
+                    (
+                        GL_TEXTURE_2D, // Target texture
+                        0,             // Level of detail (mipmap)
+                        GL_RED,        // InternalFormat Number of colour components
+                        static_cast<GLsizei>((*fontFace)->glyph->bitmap.width), // Width
+                        static_cast<GLsizei>((*fontFace)->glyph->bitmap.rows),  // Height
+                        0, // Border
+                        GL_RED, // Format of pixel data
+                        GL_UNSIGNED_BYTE, // Type of pixel data
+                        (*fontFace)->glyph->bitmap.buffer // Data
+                        );
 
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Char Texture Buffered" << endl;
-            }
+            cout << "FontCache: Char Texture Buffered" << endl;
 
             // Set texture options
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);//GL_CLAMP_TO_EDGE);
@@ -185,32 +155,23 @@ namespace Dream
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Texture options set" << endl;
-            }
+            cout << "FontCache: Texture options set" << endl;
 
             // Now store character for later use
             FontCharacter character = FontCharacter(
-                texture,
-                ivec2((*fontFace)->glyph->bitmap.width, (*fontFace)->glyph->bitmap.rows),
-                ivec2((*fontFace)->glyph->bitmap_left, (*fontFace)->glyph->bitmap_top),
-                static_cast<GLuint>((*fontFace)->glyph->advance.x)
-            );
+                        texture,
+                        ivec2((*fontFace)->glyph->bitmap.width, (*fontFace)->glyph->bitmap.rows),
+                        ivec2((*fontFace)->glyph->bitmap_left, (*fontFace)->glyph->bitmap_top),
+                        static_cast<GLuint>((*fontFace)->glyph->advance.x)
+                        );
             charMap.insert(pair<GLchar, FontCharacter>(c, character));
 
-            if (Constants::DEBUG)
-            {
-                cout << "FontCache: Texture inserted into map" << endl;
-            }
+            cout << "FontCache: Texture inserted into map" << endl;
         }
 
         FT_Done_Face(*fontFace);
 
-        if (Constants::DEBUG)
-        {
-            cout << "FontCache: Finished Generating Character Map." << endl;
-        }
+        cout << "FontCache: Finished Generating Character Map." << endl;
 
         mCache.insert(pair<FontDefinition*,map<GLchar,FontCharacter>>(definition,charMap));
         return charMap;

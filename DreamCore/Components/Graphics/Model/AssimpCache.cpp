@@ -33,19 +33,13 @@ namespace Dream
     AssimpCache::AssimpCache
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssimpCache: Contructing" << endl;
-        }
     }
 
     AssimpCache::~AssimpCache
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssimpCache: Destructing" << endl;
-        }
         for (auto imp : mCache)
         {
             if (imp.second != nullptr)
@@ -63,18 +57,12 @@ namespace Dream
         {
             if (it.first.compare(path) == 0)
             {
-                if (Constants::DEBUG)
-                {
                     cout << "AssimpCache: Found cached scene for " << path << endl;
-                }
                 return it.second;
             }
         }
 
-        if (Constants::DEBUG)
-        {
           cout << "AssimpCache: Loading " << path << " from disk" << endl;
-        }
 
         Importer* importer = new Importer();
         importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);

@@ -27,18 +27,14 @@ namespace Dream
         : IAssetInstance(definition,transform),
         mError(false)
     {
-        if (Constants::DEBUG)
-        {
             cout << "LuaScriptInstance: Constructing "
                  << mDefinitionHandle->getNameAndUuidString() << endl;
-        }
         return;
     }
 
     LuaScriptInstance::~LuaScriptInstance
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "LuaScriptInstance: Destructing "
                  << mDefinitionHandle->getNameAndUuidString() << endl;
@@ -50,7 +46,6 @@ namespace Dream
     (string projectPath)
     {
         mAbsolutePath = projectPath + mDefinitionHandle->getAssetPath();
-        if (Constants::DEBUG)
         {
             cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
         }

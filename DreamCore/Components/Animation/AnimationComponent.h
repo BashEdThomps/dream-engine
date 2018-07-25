@@ -20,13 +20,15 @@
 
 #include "AnimationInstance.h"
 #include "../IComponent.h"
+#include "../../Common/ILoggable.h"
 
 namespace Dream
 {
-    class AnimationComponent : public IComponent
+    class AnimationComponent : public IComponent, ILoggable
     {
     private:
         Time* mTime;
+        const static string _CLASSNAME_;
     public:
         AnimationComponent();
         ~AnimationComponent();

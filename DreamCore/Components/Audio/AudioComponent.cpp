@@ -41,10 +41,7 @@ namespace Dream
     {
         for (ALuint source : mSources)
         {
-            if (Constants::DEBUG)
-            {
-                   cout << "AudioComponent: Stopping source " << source << endl;
-            }
+            cout << "AudioComponent: Stopping source " << source << endl;
             alSourceStop(source);
         }
         deleteAllSources();
@@ -60,10 +57,7 @@ namespace Dream
     AudioComponent::init
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AudioComponent: Initialising..." << endl;
-        }
+        cout << "AudioComponent: Initialising..." << endl;
         mDevice = alcOpenDevice(nullptr);
         mContext = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
@@ -94,11 +88,7 @@ namespace Dream
     {
         for (ALuint buffer : mBuffers)
         {
-            if (Constants::DEBUG)
-            {
-                   cout << "AudioComponent: Deleting buffer " << buffer << endl;
-            }
-
+            cout << "AudioComponent: Deleting buffer " << buffer << endl;
             deleteBuffers(1, buffer);
         }
     }
@@ -125,10 +115,7 @@ namespace Dream
     {
         for (ALuint source : mSources)
         {
-            if (Constants::DEBUG)
-            {
-                cout << "AudioComponent: Deleting buffer " << source << endl;
-            }
+            cout << "AudioComponent: Deleting buffer " << source << endl;
             deleteSources(1, source);
         }
     }
@@ -165,10 +152,7 @@ namespace Dream
     AudioComponent::playSource
     (ALuint source)
     {
-        if (Constants::DEBUG)
-        {
-            cout <<   "AudioComponent: Playing source " << source << endl;
-        }
+        cout <<   "AudioComponent: Playing source " << source << endl;
         alSourcePlay(source);
     }
 
@@ -176,11 +160,7 @@ namespace Dream
     AudioComponent::stopSource
     (ALuint source)
     {
-        if (Constants::DEBUG)
-        {
-            cout <<   "AudioComponent: Stopping source " << source << endl;
-        }
-
+        cout <<   "AudioComponent: Stopping source " << source << endl;
         alSourceStop(source);
     }
 
@@ -188,11 +168,7 @@ namespace Dream
     AudioComponent::pauseSource
     (ALuint source)
     {
-        if (Constants::DEBUG)
-        {
-            cout <<   "AudioComponent: Pausing source " << source << endl;
-        }
-
+        cout <<   "AudioComponent: Pausing source " << source << endl;
         alSourcePause(source);
     }
 
@@ -227,16 +203,13 @@ namespace Dream
                     //audioAsset->getAudioDataBuffer().clear();
                 }
                 mPlayQueue.push_back(audioAsset);
-                if (Constants::DEBUG)
-                {
-                    cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to play queue." << endl;;
-                }
+                cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to play queue." << endl;;
             }
         }
         catch (const exception &ex)
         {
             cerr << "AudioComponent: Unable to push asset to play queue" << asset->getNameAndUuidString() << endl
-                      << ex.what() << endl;
+                 << ex.what() << endl;
         }
     }
 
@@ -249,10 +222,7 @@ namespace Dream
             if (find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end())
             {
                 mPauseQueue.push_back(dynamic_cast<AudioInstance*>(asset));
-                if (Constants::DEBUG)
-                {
-                    cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to pause queue." << endl;;
-                }
+                cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to pause queue." << endl;;
             }
         }
         catch (const exception &ex)
@@ -271,16 +241,13 @@ namespace Dream
             if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
             {
                 mStopQueue.push_back(asset);
-                if (Constants::DEBUG)
-                {
-                    cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to stop queue." << endl;;
-                }
+                cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to stop queue." << endl;;
             }
         }
         catch (const exception &ex)
         {
             cerr << "AudioComponent: Unable to push asset to stop queue" << asset->getNameAndUuidString() << endl
-                      << ex.what() << endl;
+                 << ex.what() << endl;
         }
     }
 
@@ -288,10 +255,7 @@ namespace Dream
     AudioComponent::updateComponent
     (SceneRuntime*)
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AudioComponent: Updating Component" << endl;
-        }
+        cout << "AudioComponent: Updating Component" << endl;
         updatePlayQueue();
         updatePauseQueue();
         updateStopQueue();
@@ -299,11 +263,7 @@ namespace Dream
 
     void AudioComponent::updatePlayQueue()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AudioComponent: Updating Play Queue" << endl;
-        }
-
+        cout << "AudioComponent: Updating Play Queue" << endl;
         for (AudioInstance* audioAsset : mPlayQueue)
         {
             if (getAudioStatus(audioAsset) != PLAYING)
@@ -313,10 +273,7 @@ namespace Dream
             }
             else
             {
-                if (Constants::DEBUG)
-                {
-                    cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already playing" << endl;
-                }
+                cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already playing" << endl;
             }
         }
         mPlayQueue.clear();
@@ -326,10 +283,7 @@ namespace Dream
     AudioComponent::updatePauseQueue
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AudioComponent: Updating Pause Queue" << endl;
-        }
+        cout << "AudioComponent: Updating Pause Queue" << endl;
         for (AudioInstance* audioAsset : mPauseQueue)
         {
             if (getAudioStatus(audioAsset) != PAUSED)
@@ -339,10 +293,7 @@ namespace Dream
             }
             else
             {
-                if (Constants::DEBUG)
-                {
-                    cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already paused" << endl;
-                }
+                cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already paused" << endl;
             }
         }
         mPauseQueue.clear();
@@ -352,10 +303,7 @@ namespace Dream
     AudioComponent::updateStopQueue
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AudioComponent: Updating Stop Queue" << endl;
-        }
+        cout << "AudioComponent: Updating Stop Queue" << endl;
 
         for (AudioInstance* audioAsset : mStopQueue)
         {
@@ -366,10 +314,7 @@ namespace Dream
             }
             else
             {
-                if (Constants::DEBUG)
-                {
-                    cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already stopped" << endl;
-                }
+                cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already stopped" << endl;
             }
         }
         mStopQueue.clear();

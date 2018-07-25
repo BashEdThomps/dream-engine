@@ -44,7 +44,6 @@ namespace Dream
     ProjectDefinition::ProjectDefinition(json data)
         : IDefinition(data)
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: Constructing "
                  << getNameAndUuidString() << endl;
@@ -56,7 +55,6 @@ namespace Dream
     ProjectDefinition::~ProjectDefinition
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: Destructing "
                  << getNameAndUuidString() << endl;
@@ -67,7 +65,6 @@ namespace Dream
     ProjectDefinition::showStatus
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: " << mJson.dump(1) << endl;
         }
@@ -155,7 +152,6 @@ namespace Dream
     ProjectDefinition::loadAssetDefinitions
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: Loading AssetDefinitions from JSON" << endl;
         }
@@ -170,7 +166,6 @@ namespace Dream
     ProjectDefinition::loadSceneDefinitions
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: Loading ScenesDefinitions from JSON" << endl;
         }
@@ -243,7 +238,6 @@ namespace Dream
     ProjectDefinition::removeAssetDefinition
     (IAssetDefinition* assetDefinitionHandle)
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: Removing AssetDefinition "
                  << assetDefinitionHandle->getNameAndUuidString() << endl;
@@ -348,7 +342,6 @@ namespace Dream
         json assetDefinitionJson;
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
-        if (Constants::DEBUG)
         {
             cout << "ProjectDefinition: Creating new AssetDefinition with default Format"
                  << defaultFormat

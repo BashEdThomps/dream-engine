@@ -17,10 +17,7 @@ namespace Dream
     KeyFrame::~KeyFrame
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "KeyFrame: Destroying Object" << endl;
-        }
     }
 
     bool
@@ -48,11 +45,8 @@ namespace Dream
     KeyFrame::generatePlaybackFrames
     (KeyFrame* toKeyFrame)
     {
-        if (Constants::DEBUG)
-        {
             cout << "KeyFrame: Generating " << mInterpolationType << " playback frames from "
                  << mName << " to " << toKeyFrame->getName() <<  endl;
-        }
         long keyFrameDurationMS = toKeyFrame->getStartTimeMS() - getStartTimeMS();
         long numFrames = static_cast<long>(
             (keyFrameDurationMS/1000.0f) * AnimationInstance::getFramesPerSecond()
@@ -264,8 +258,6 @@ namespace Dream
     KeyFrame::showStatus
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "KeyFrame:" <<  endl
                  << "\t         UUID: " << mUUID <<  endl
                  << "\t         Name: " << mName <<  endl
@@ -274,7 +266,6 @@ namespace Dream
                  << "\t         Wrap: " << String::boolToYesNo(mWrap) <<  endl
                  << "\tInterpolation: " << getInterpolationType()
                  <<  endl;
-        }
     }
 
     void

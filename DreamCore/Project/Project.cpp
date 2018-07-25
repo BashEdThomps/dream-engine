@@ -53,25 +53,19 @@ namespace Dream
 {
     Project::Project
     (IWindowComponent* windowComponent)
-        : mWindowComponentHandle(windowComponent)
+        : ILoggable("Project"),
+          mWindowComponentHandle(windowComponent)
     {
-        if (Constants::DEBUG)
-        {
-            cout << "Project: Constructing " << endl;
-        }
+        getLog()->info("Constructing");
     }
 
     Project::~Project()
     {
-        if (Constants::DEBUG)
+        auto log = getLog();
+        log->info("Denstructing");
+        if (mDefinition)
         {
-            cout << "Project: Destructing ";
-            if (mDefinition)
-            {
-                 cout << mDefinition->getNameAndUuidString();
-            }
-
-            cout << endl;
+             log->info(mDefinition->getNameAndUuidString());
         }
     }
 
@@ -79,25 +73,21 @@ namespace Dream
     Project::openFromFileReader
     (string projectPath, FileReader &reader)
     {
-        if (Constants::DEBUG)
-        {
-            cout << "Project: Loading project from FileReader " << reader.getPath() << endl;
-        }
+        auto log = getLog();
+        log->info("Loading project from FileReader", reader.getPath());
 
         string projectJsonStr = reader.getContentsAsString();
 
         if (projectJsonStr.empty())
         {
-            cerr << "Project: Loading Failed. Project Content is Empty" << endl;
+            log->error("Loading Failed. Project Content is Empty");
             return false;
         }
 
         json projectJson = json::parse(projectJsonStr);
 
-        if (Constants::DEBUG)
-        {
-            cout << "Project: Project path " << projectPath << endl;
-        }
+        log->info("Project path", projectPath);
+
         mProjectPath = projectPath;
         mDefinition.reset(new ProjectDefinition(projectJson));
         return true;
@@ -110,9 +100,9 @@ namespace Dream
         DIR *dir;
         struct dirent *ent;
         vector<string> directoryContents;
-        if ((dir = opendir(directory.c_str())) != NULL)
+        if ((dir = opendir(directory.c_str())) != nullptr)
         {
-            while ((ent = readdir (dir)) != NULL)
+            while ((ent = readdir (dir)) != nullptr)
             {
                 directoryContents.push_back(string(ent->d_name));
             }
@@ -132,7 +122,6 @@ namespace Dream
             if (dotJsonIndex != string::npos)
             {
                 projectFileName = filename.substr(0,dotJsonIndex);
-                if (Constants::DEBUG)
                 {
                     cout << "Project: openFromDirectory - Found project file "
                          << projectFileName
@@ -141,7 +130,6 @@ namespace Dream
             }
             else if (filename.compare(Constants::ASSET_DIR) == 0)
             {
-                if (Constants::DEBUG)
                 {
                     cout << "Project: openFromDirectory - Found asset directory " << endl;
                 }
@@ -155,7 +143,6 @@ namespace Dream
             return false;
         }
 
-        if (Constants::VERBOSE)
         {
             cout << "Project: Loading " << projectFileName << Constants::PROJECT_EXTENSION << " from Directory" << directory << endl;
         }
@@ -223,7 +210,6 @@ namespace Dream
     Project::openFromArgumentParser
     (ArgumentParser &parser)
     {
-        if (Constants::VERBOSE)
         {
             cout << "Project: Loading from ArgumentParser" << endl;
         }

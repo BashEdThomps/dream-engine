@@ -36,7 +36,6 @@ namespace DreamSDL
 
       int numJoysticks = SDL_NumJoysticks();
 
-      if (Constants::DEBUG)
       {
         cout << "JoystickManager: Initialising "<< numJoysticks << " Joysticks" << endl;
       }
@@ -45,14 +44,12 @@ namespace DreamSDL
       {
         // Push JS Handle
         JoystickHandles.push_back(SDL_JoystickOpen(joystickIndex));
-        if (Constants::DEBUG)
         {
           cout << "JoystickManager: Opened joystick at index " << joystickIndex << endl;
         }
         // Push Controller Handle
         if (!SDL_IsGameController(joystickIndex))
         {
-          if (Constants::DEBUG)
           {
             cout << "JoystickManager: js at index " << joystickIndex
                  << " is not a GameController." << endl;
@@ -60,7 +57,6 @@ namespace DreamSDL
           continue;
         }
         ControllerHandles.push_back(SDL_GameControllerOpen(joystickIndex));
-        if (Constants::DEBUG)
         {
           cout << "JoystickManager: Opened GameController from js index " << joystickIndex << endl;
         }
@@ -70,7 +66,6 @@ namespace DreamSDL
 
     void SDLJoystickManager::destroy()
     {
-      if (Constants::DEBUG)
       {
         cout << "JoystickManager: destroy called" << endl;
       }

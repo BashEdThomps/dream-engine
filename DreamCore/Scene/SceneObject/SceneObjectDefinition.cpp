@@ -31,7 +31,6 @@ namespace Dream
           mParentSceneObjectHandle(parentHandle),
           mSceneDefinitionHandle(sceneDefinitionHandle)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectDefinition: Constructing "
                  << getNameAndUuidString()
@@ -44,7 +43,6 @@ namespace Dream
     SceneObjectDefinition::~SceneObjectDefinition
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectDefinition: Destructing "
                  << getNameAndUuidString()
@@ -146,7 +144,6 @@ namespace Dream
     SceneObjectDefinition::showStatus
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectDefinition: " << mJson.dump(1) << endl;
         }

@@ -23,35 +23,29 @@
 namespace Dream
 {
     LuaScriptCache::LuaScriptCache
-    ()
+    () : ILoggable ("LuaScriptCache")
     {
-        if (Constants::DEBUG)
-        {
-            cout << "LuaScriptInstance: Constructing" << endl;
-        }
+        auto log = getLog();
+        log->info("Constructing");
     }
 
     LuaScriptCache::~LuaScriptCache
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "LuaScriptInstance: Destructing" << endl;
-        }
+        auto log = getLog();
+        log->info("Destructing");
     }
 
     string
     LuaScriptCache::getScript
     (string path)
     {
+        auto log = getLog();
       for (pair<string,string> it : mScriptCache)
       {
          if (it.first == path)
          {
-             if (Constants::DEBUG)
-             {
-                 cout << "LuaScriptCache: Found script in cache " << path << endl;
-             }
+             log->info("Found script in cache {}", path);
              return it.second;
          }
       }
@@ -62,17 +56,14 @@ namespace Dream
     LuaScriptCache::readIntoCache
     (string path)
     {
+        auto log = getLog();
         FileReader reader(path);
         if(!reader.readIntoString())
         {
-            cerr << "LuaScriptCache: Error reading Lua script into cache from path '"
-                 << path << "'" << endl;
+            log->error("Error reading Lua script into cache from path '{}'", path);
            return "";
         }
-        if (Constants::DEBUG)
-        {
-            cout << "LuaScriptCache: Inserting script " << path << endl;
-        }
+        log->info("Inserting script ", path);
         string content = reader.getContentsAsString();
         mScriptCache.insert(pair<string,string>(path,content));
         return content;

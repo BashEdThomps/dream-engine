@@ -27,10 +27,7 @@ namespace Dream
         {
             if (it.first.compare(uuid) == 0)
             {
-                if (Constants::DEBUG)
-                {
                     cout << "ShaderCache: Found Shader " << uuid << endl;
-                }
                 return it.second;
             }
         }
@@ -47,19 +44,13 @@ namespace Dream
     ShaderCache::ShaderCache
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "ShaderCache: Constructing" << endl;
-        }
     }
 
     ShaderCache::~ShaderCache
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "ShaderCache: Destructing" << endl;
-        }
 
         for (pair<string,GLuint> shaderPair : mCache)
         {

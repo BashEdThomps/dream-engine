@@ -35,7 +35,7 @@
    <string>Dream Tool</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../Resources/Resources.qrc">
+   <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
     <normaloff>:/icons/DreamTool.icns</normaloff>:/icons/DreamTool.icns</iconset>
   </property>
   <property name="windowOpacity">
@@ -443,8 +443,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/document-new.png</normaloff>:/images/document-new.png</iconset>
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+     <normaloff>:/svg/file-solid.svg</normaloff>:/svg/file-solid.svg</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -464,8 +464,8 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/document-open.png</normaloff>:/images/document-open.png</iconset>
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+     <normaloff>:/svg/folder-open-solid.svg</normaloff>:/svg/folder-open-solid.svg</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -485,8 +485,8 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/document-save.png</normaloff>:/images/document-save.png</iconset>
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+     <normaloff>:/svg/save-solid.svg</normaloff>:/svg/save-solid.svg</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -506,8 +506,8 @@
   </action>
   <action name="actionReload">
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/media-playlist-repeat.png</normaloff>:/images/media-playlist-repeat.png</iconset>
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+     <normaloff>:/svg/redo-alt-solid.svg</normaloff>:/svg/redo-alt-solid.svg</iconset>
    </property>
    <property name="text">
     <string>Reload</string>
@@ -527,7 +527,7 @@
   </action>
   <action name="actionPreferences">
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
      <normaloff>:/images/system-run.png</normaloff>:/images/system-run.png</iconset>
    </property>
    <property name="text">
@@ -551,8 +551,8 @@
   </action>
   <action name="actionPlay">
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/media-playback-start.png</normaloff>:/images/media-playback-start.png</iconset>
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+     <normaloff>:/svg/play-solid.svg</normaloff>:/svg/play-solid.svg</iconset>
    </property>
    <property name="text">
     <string>Play</string>
@@ -569,8 +569,8 @@
   </action>
   <action name="actionStop">
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/media-playback-stop.png</normaloff>:/images/media-playback-stop.png</iconset>
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+     <normaloff>:/svg/stop-solid.svg</normaloff>:/svg/stop-solid.svg</iconset>
    </property>
    <property name="text">
     <string>Stop</string>
@@ -587,7 +587,7 @@
   </action>
   <action name="actionOpen_Test_Project">
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
      <normaloff>:/images/document-open.png</normaloff>:/images/document-open.png</iconset>
    </property>
    <property name="text">
@@ -608,7 +608,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
      <normaloff>:/images/view-list-icons-symbolic.png</normaloff>:/images/view-list-icons-symbolic.png</iconset>
    </property>
    <property name="text">
@@ -635,7 +635,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
+    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
      <normaloff>:/images/view-list-details-symbolic.png</normaloff>:/images/view-list-details-symbolic.png</iconset>
    </property>
    <property name="text">
@@ -745,7 +745,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="../Resources/Resources.qrc"/>
+  <include location="../../../../software/dream/DreamToolQt/Resources/Resources.qrc"/>
  </resources>
  <connections/>
 </ui>

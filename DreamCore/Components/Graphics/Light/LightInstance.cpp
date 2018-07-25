@@ -20,10 +20,7 @@ namespace Dream
     LightInstance::~LightInstance
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "LightInstance: Destroying Object" << endl;
-        }
         return;
     }
 

@@ -49,10 +49,7 @@ namespace Dream
     PhysicsComponent::~PhysicsComponent
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsComponent: Destroying Object" << endl;
-        }
 
         vector<btCollisionShape*> shapes;
 
@@ -68,26 +65,17 @@ namespace Dream
             }
             if (body && body->getMotionState())
             {
-                if (Constants::DEBUG)
-                {
                     cout << "PhysicsComponent: Deleting a motion state" << endl;
-                }
                 delete body->getMotionState();
             }
-            if (Constants::DEBUG)
-            {
                 cout << "PhysicsComponent: Deleting a collision object" << endl;
-            }
             mDynamicsWorld->removeCollisionObject(obj);
             delete obj;
         }
 
         for (btCollisionShape* shape : shapes)
         {
-            if (Constants::DEBUG)
-            {
                 cout << "PhysicsComponent: Deleting Shape" << endl;
-            }
             delete shape;
         }
 
@@ -127,10 +115,7 @@ namespace Dream
     PhysicsComponent::setGravity
     (vector<float> gravity)
     {
-        if (Constants::DEBUG)
-        {
             cout <<"PhysicsComponent: Setting Gravity" << String::floatVectorToString(gravity) << endl;
-        }
         mGravity = btVector3(gravity[0],gravity[1],gravity[2]);
         if (mDynamicsWorld != nullptr)
         {
@@ -141,10 +126,7 @@ namespace Dream
     bool PhysicsComponent::init
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsComponent: Initialising...";
-        }
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -162,10 +144,7 @@ namespace Dream
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
         mDynamicsWorld->setDebugDrawer(mDebugDrawer.get());
 
-        if (Constants::DEBUG)
-        {
             cout << "done." << endl;
-        }
         return true;
     }
 
@@ -173,10 +152,7 @@ namespace Dream
     PhysicsComponent::updateComponent
     (SceneRuntime* scene)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "PhysicsComponent: Update Called" << endl;
-        }
 
         populatePhysicsWorld(scene);
 
@@ -194,16 +170,10 @@ namespace Dream
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsComponent: Adding Rigid Body to Dynamics World" << endl;
-        }
         mDynamicsWorld->addRigidBody(rigidBody);
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsComponent: World has " << mDynamicsWorld->getNumCollisionObjects()
                  << " rigid bodies." << endl;
-        }
     }
 
     void
@@ -217,10 +187,7 @@ namespace Dream
     PhysicsComponent::removeRigidBody
     (btRigidBody *rigidBody)
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsComponent: Removing Rigid Body from Dynamics World" << endl;
-        }
         mDynamicsWorld->removeRigidBody(rigidBody);
     }
 
@@ -247,23 +214,17 @@ namespace Dream
                         PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
                         if (!physicsObject->isInPhysicsWorld())
                         {
-                            if (Constants::DEBUG)
-                            {
                                 cout << "PhysicsComponent: Adding SceneObject "
                                      << so->getNameAndUuidString()
                                      << " to Physics World" << endl;
-                            }
                             addPhysicsObjectInstance(physicsObject);
                             physicsObject->setInPhysicsWorld(true);
                         }
                         else
                         {
-                             if (Constants::DEBUG)
-                            {
                                 cout << "PhysicsComponent: SceneObject "
                                      << so->getNameAndUuidString()
                                      << " is in the Physics World" << endl;
-                            }
                         }
                     }
                     return nullptr;

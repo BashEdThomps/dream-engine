@@ -20,11 +20,13 @@
 #include <iostream>
 #include <map>
 
+#include "../Common/ILoggable.h"
+
 using namespace std;
 
 namespace Dream
 {
-    class LuaScriptCache
+    class LuaScriptCache : public ILoggable
     {
     private:
         map<string,string> mScriptCache;

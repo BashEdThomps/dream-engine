@@ -38,21 +38,15 @@ namespace Dream
         : IDefinition(jsonDef),
           mProjectDefinitionHandle(parent)
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssetDefinition: Constructing "
                  << getNameAndUuidString() << endl;
-        }
     }
 
     IAssetDefinition::~IAssetDefinition
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssetDefinition: Destructing "
                  << getNameAndUuidString() << endl;
-        }
     }
 
     void
@@ -216,10 +210,7 @@ namespace Dream
     IAssetDefinition::showStatus
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssetDefinition: " << mJson.dump(1) << endl;
-        }
     }
 
     ProjectDefinition*

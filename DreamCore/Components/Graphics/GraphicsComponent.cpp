@@ -65,7 +65,7 @@ namespace Dream
 
     GraphicsComponent::GraphicsComponent
     (Camera* camera, IWindowComponent* windowComponent)
-        : IComponent(),
+        : IComponent(), ILoggable("GraphicsComponent"),
           mCamera(camera),
           mWindowComponentHandle(windowComponent),
           mActiveSceneRuntimeHandle(nullptr)
@@ -76,10 +76,8 @@ namespace Dream
     GraphicsComponent::~GraphicsComponent
     (void)
     {
-        if (Constants::DEBUG)
-        {
-            cout << "GraphicsComponent: Destroying Object" << endl;
-        }
+        auto log = getLog();
+        log->info("Destroying Object");
 
         clearSpriteQueue();
         clearFontQueue();
@@ -93,28 +91,25 @@ namespace Dream
     GraphicsComponent::init
     (void)
     {
-        if (Constants::DEBUG)
-        {
-            cout << "GraphicsComponent: Initialising" << endl;
-            cout << "GraphicsComponent: Initialising GLEW" << endl;
-        }
+        auto log = getLog();
+        log->info("Initialising");
+        log->info("Initialising GLEW");
 
         glewExperimental = GL_TRUE;
         GLenum glewInitResult = glewInit();
 
         if (glewInitResult != GLEW_OK)
         {
-            cerr << "GraphicsComponent: GLEW failed to initialise." << endl;
+            log->error("GLEW failed to initialise");
             return false;
         }
 
         Constants::checkGLError("After GLEW init");
 
-        if (Constants::DEBUG)
-        {
-            cout << "GraphicsComponent: OpenGL Version " << glGetString(GL_VERSION) << endl;
-            cout << "GraphicsComponent: Shader Version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
-        }
+        log->info(
+            "OpenGL Version {}\nShader Version {}",
+            glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION)
+        );
 
         onWindowDimensionsChanged();
         Constants::checkGLError("After initial window dimensions changed");
@@ -130,10 +125,7 @@ namespace Dream
         createFontVertexObjects();
         Constants::checkGLError("After create Font 2D VBO/VAO");
 
-        if (Constants::DEBUG)
-        {
-            cout << "GraphicsComponent: Initialisation Done." << endl;
-        }
+        log->info("Initialisation Done.");
         return true;
     }
 
@@ -141,15 +133,18 @@ namespace Dream
     GraphicsComponent::onWindowDimensionsChanged
     ()
     {
+        auto log = getLog();
 
         // Define the viewport dimensions
         int windowWidth  = mWindowComponentHandle->getWidth();
         int windowHeight = mWindowComponentHandle->getHeight();
 
-        if (Constants::DEBUG)
         {
-            cout << "GraphicsComponwnt: Window Dimensions Changed! "
-                 << windowWidth << "," << windowHeight << endl;
+            log->info
+            (
+                "Window Dimensions Changed! {}x{}",
+                 windowWidth , windowHeight
+            );
         }
 
         glViewport(0, 0, windowWidth, windowHeight);
@@ -158,13 +153,13 @@ namespace Dream
 
         // Ortho projection for 2D
         mOrthoProjection = ortho
-                (
-                    0.0f,
-                    static_cast<float>(windowWidth),
-                    static_cast<float>(windowHeight),
-                    0.0f,
-                    -1.0f, 1.0f
-                    );
+        (
+            0.0f,
+            static_cast<float>(windowWidth),
+            static_cast<float>(windowHeight),
+            0.0f,
+            -1.0f, 1.0f
+        );
 
         Constants::checkGLError("After ortho");
 
@@ -178,24 +173,24 @@ namespace Dream
 
         Constants::checkGLError("After projection matrix");
 
-        if (Constants::VERBOSE)
-        {
-            cout << "GraphicsComponent: Window dimensions changed "
-                 << " WindowWidth:" << mWindowComponentHandle->getWidth()
-                 << " WindowHeight:" << mWindowComponentHandle->getHeight()
-                 << " MinDraw: " << mMinimumDraw
-                 << " MaxDraw: " << mMaximumDraw << endl;
-        }
+        log->debug
+        (
+            "GraphicsComponent: Window dimensions changed\n"
+            "WindowWidth: {}"
+            "\nWindowHeight: {}"
+            "\nMinDraw: {}"
+            "\nMaxDraw: {}",
+            mWindowComponentHandle->getWidth(),
+            mWindowComponentHandle->getHeight(),
+            mMinimumDraw, mMaximumDraw
+        );
     }
 
     void
     GraphicsComponent::preModelRender
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Pre Render" << endl;
-        }
         Constants::checkGLError("before pre render");
 
         glEnable(GL_DEPTH_TEST);
@@ -228,10 +223,7 @@ namespace Dream
     GraphicsComponent::postModelRender
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Post Render" << endl;
-        }
         Constants::checkGLError("before post render");
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
@@ -243,10 +235,7 @@ namespace Dream
     GraphicsComponent::preFontRender
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Pre Render" << endl;
-        }
         Constants::checkGLError("before pre render");
 
         glEnable(GL_DEPTH_TEST);
@@ -277,10 +266,7 @@ namespace Dream
     GraphicsComponent::postFontRender
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Post Render" << endl;
-        }
         Constants::checkGLError("before post render");
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
@@ -291,10 +277,7 @@ namespace Dream
     GraphicsComponent::create2DVertexObjects
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Creating 2D VAO/VBO" << endl;
-        }
         // Generate
         glGenVertexArrays(1, &mSpriteQuadVAO);
         glGenBuffers(1, &mSpriteVBO);
@@ -313,10 +296,7 @@ namespace Dream
     GraphicsComponent::createFontVertexObjects
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Creating Font VAO/VBO" << endl;
-        }
         // Generate
         glGenVertexArrays(1, &mFontVAO);
         glGenBuffers(1, &mFontVBO);
@@ -326,10 +306,7 @@ namespace Dream
     GraphicsComponent::updateComponent
     (SceneRuntime* scene)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "GraphicsComponrnt: updateComponent(Scene*) Called" << endl;
-        }
 
         if (mWindowComponentHandle->sizeHasChanged())
         {
@@ -416,10 +393,7 @@ namespace Dream
     GraphicsComponent::clearSpriteQueue
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Clear 2D Queue" << endl;
-        }
         mSpriteQueue.clear();
     }
 
@@ -427,12 +401,9 @@ namespace Dream
     GraphicsComponent::addToSpriteQueue
     (SceneObjectRuntime* object)
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Adding "
                  << object->getNameAndUuidString()
                  << " to Sprite Queue" << endl;
-        }
         mSpriteQueue.push_back(object);
     }
 
@@ -442,10 +413,7 @@ namespace Dream
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Draw 2D Queue" << endl;
-        }
         for (SceneObjectRuntime* sceneObj : mSpriteQueue)
         {
             drawSprite(sceneObj);
@@ -457,10 +425,7 @@ namespace Dream
     GraphicsComponent::clearModelQueue
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Clear 3D Queue" << endl;
-        }
         mModelQueue.clear();
     }
 
@@ -468,12 +433,9 @@ namespace Dream
     GraphicsComponent::addToModelQueue
     (SceneObjectRuntime* object)
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Adding "
                  << object->getNameAndUuidString()
                  << " to 3D Queue" << endl;
-        }
         mModelQueue.push_back(object);
     }
 
@@ -482,10 +444,7 @@ namespace Dream
     ()
     {
         preModelRender();
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Draw 3D Queue" << endl;
-        }
         for (SceneObjectRuntime* it : mModelQueue)
         {
             drawModel(it);
@@ -498,10 +457,7 @@ namespace Dream
     GraphicsComponent::clearFontQueue
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Clear Font Queue" << endl;
-        }
         mFontQueue.clear();
     }
 
@@ -509,12 +465,9 @@ namespace Dream
     GraphicsComponent::addToFontQueue
     (SceneObjectRuntime* object)
     {
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Adding "
                  << object->getNameAndUuidString()
                  << " to Font Queue" << endl;
-        }
         mFontQueue.push_back(object);
     }
 
@@ -523,10 +476,7 @@ namespace Dream
     ()
     {
         preFontRender();
-        if (Constants::DEBUG)
-        {
             cout << "GraphicsComponent: Draw Font Queue" << endl;
-        }
         for (SceneObjectRuntime* it : mFontQueue)
         {
             drawFont(it);
@@ -553,10 +503,7 @@ namespace Dream
     GraphicsComponent::drawSprite
     (SceneObjectRuntime* sceneObject)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "GraphicsComponent: Drawing Sprite " << sceneObject->getNameAndUuidString() << endl;
-        }
 
         // Get Assets
         SpriteInstance* sprite = sceneObject->getSpriteInstance();
@@ -626,10 +573,7 @@ namespace Dream
     GraphicsComponent::drawFont
     (SceneObjectRuntime* sceneObject)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "GraphicsComponent: Drawing Font " << sceneObject->getNameAndUuidString() << endl;
-        }
 
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
@@ -648,7 +592,7 @@ namespace Dream
         {
             glUniform3fv(fontColourLocation,1,value_ptr(fontColour));
         }
-        else if (Constants::DEBUG)
+        else
         {
             cout << "GraphicsComponent: Font: Unable to set textColour uniform";
         }
@@ -667,10 +611,7 @@ namespace Dream
 
             if (sceneObject->followsCamera())
             {
-                if (Constants::DEBUG)
-                {
                     cout << "GraphicsComponent: Font: Applying Camera Transform" << endl;
-                }
 
                 //modelMatrix *= rotationMatrix;
                 modelMatrix = translate(modelMatrix,translation);
@@ -770,10 +711,7 @@ namespace Dream
     {
         Constants::checkGLError("Before drawModel");
 
-        if (Constants::VERBOSE)
-        {
             cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
-        }
 
         // Get Assets
         AssimpModelInstance* model = sceneObject->getModelInstance();

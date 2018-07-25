@@ -33,19 +33,13 @@ namespace Dream
           mPressed(false),
           mButton(0)
     {
-        if (Constants::DEBUG)
-        {
             cout << "InputEvent: Constructing" << endl;
-        }
     }
 
     InputEvent::~InputEvent
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "InputEvent: Destructing" << endl;
-        }
     }
 
     InputSource

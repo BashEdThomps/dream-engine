@@ -30,10 +30,7 @@ namespace Dream
 
     Event::~Event()
     {
-        if (Constants::VERBOSE)
-        {
             cout << "Event: Destroying Object" << endl;
-        }
         mAttributes.clear();
     }
 

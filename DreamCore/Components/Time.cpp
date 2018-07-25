@@ -26,10 +26,7 @@ namespace Dream
     Time::update
     ()
     {
-        if (Constants::VERBOSE)
-        {
             cout << "Time: Update Called" << endl;
-        }
         mLastTime    = mCurrentTime;
         mCurrentTime = high_resolution_clock::now();
         mTimeDelta   = mCurrentTime-mLastTime;
@@ -41,13 +38,10 @@ namespace Dream
     Time::show
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "Time: " << endl
                  << "\tCurrent Time: " << getCurrentTime() << endl
                  << "\t   Last Time: " << getLastTime() << endl
                  << "\t  Time Delta: " << getTimeDelta() << endl;
-        }
     }
 
     double

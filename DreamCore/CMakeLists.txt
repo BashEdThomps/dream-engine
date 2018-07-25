@@ -13,8 +13,9 @@ find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
 find_package(OggVorbis REQUIRED)
 find_package(ALUT REQUIRED)
+find_package(SPDLOG REQUIRED)
+find_package(Lua REQUIRED)
 
-find_package(Lua          REQUIRED   )
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
 message("\t I @ " ${LUA_INCLUDE_DIR} )
@@ -38,6 +39,7 @@ include_directories(
     ${LUA_INCLUDE_DIR}
     ${Luabind_INCLUDE_DIRS}
     ${SOIL_INCLUDE_DIRS}
+    ${SPDLOG_INCLUDE_DIR}
     ${FREETYPE_INCLUDE_DIR_ft2build}
 )
 

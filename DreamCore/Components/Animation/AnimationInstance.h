@@ -12,6 +12,7 @@
 #include <vector>
 #include "../IAssetInstance.h"
 #include "AnimationDefinition.h"
+#include "../../Common/ILoggable.h"
 
 using std::vector;
 using nlohmann::json;
@@ -22,7 +23,7 @@ namespace Dream
     class KeyFrame;
     class Transform3D;
 
-    class AnimationInstance : public IAssetInstance
+    class AnimationInstance : public IAssetInstance, ILoggable
     {
 
     private:

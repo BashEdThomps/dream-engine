@@ -22,19 +22,13 @@ namespace Dream
     TextureCache::TextureCache
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "TextureCache: Constructing" << endl;
-        }
     }
 
     TextureCache::~TextureCache
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "TextureCache: Constructing" << endl;
-        }
 
         for (Texture texture : mCache)
         {
@@ -55,11 +49,8 @@ namespace Dream
     TextureCache::loadTextureFromFile
     (const char* file_c, const char* directory_c, const char* type)
     {
-        if (Constants::DEBUG)
-        {
             cout << "TextureCache: Loading from: "
                  << directory_c << "/" << file_c << endl;
-        }
         //Generate texture ID and load texture data
         string filename = string(file_c);
         string directory = string(directory_c);
@@ -69,10 +60,7 @@ namespace Dream
         {
             if (nextTexture.path == filename && nextTexture.type == type)
             {
-                if (Constants::DEBUG)
-                {
                     cout << "TextureCache: Found cached texture." << endl;
-                }
                 return nextTexture;
             }
         }

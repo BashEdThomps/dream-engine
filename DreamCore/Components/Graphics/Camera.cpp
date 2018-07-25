@@ -39,10 +39,7 @@ namespace Dream
     Camera::~Camera
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "Camera: Destroying Object" << endl;
-        }
         return;
     }
 
@@ -183,11 +180,7 @@ namespace Dream
         {
             mZoom = Constants::CAMERA_ZOOM_MAX;
         }
-
-        if (Constants::DEBUG)
-        {
             cout << "Camera: Zoom is " << mZoom << endl;
-        }
     }
 
     void

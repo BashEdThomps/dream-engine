@@ -37,7 +37,6 @@ namespace Dream
         : IDefinition(data),
           mProjectDefinitionHandle(projectDefinitionHandle)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneDefinition: Constructing "
                  << getNameAndUuidString() << endl;
@@ -48,7 +47,6 @@ namespace Dream
 
         if (rootSceneObject.is_null())
         {
-            if (Constants::DEBUG)
             {
                 cout << "SceneDefinition: No root SceneObject found!!" << endl;
             }
@@ -62,7 +60,6 @@ namespace Dream
     SceneDefinition::~SceneDefinition
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneDefinition: Destructing "
                  << getNameAndUuidString() << endl;
@@ -73,7 +70,6 @@ namespace Dream
     SceneDefinition::showStatus
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneDefinition: " << mJson.dump(1) << endl;
         }

@@ -32,10 +32,7 @@ namespace Dream
   SpriteInstance::~SpriteInstance
   ()
   {
-        if (Constants::DEBUG)
-        {
             cout << "SpriteInstance: Destroying Object" << endl;
-        }
       return;
   }
 
@@ -45,10 +42,7 @@ namespace Dream
   {
     string path = projectPath + mDefinitionHandle->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
-    if (Constants::DEBUG)
-    {
         cout << "SpriteInstance: Loading sprite from " << path << endl;
-    }
 
     Texture tex = mCacheHandle->loadTextureFromFile("sprite",directory.c_str(),"sprite");
     mTexture = tex.id;

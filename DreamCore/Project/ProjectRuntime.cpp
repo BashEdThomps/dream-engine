@@ -53,7 +53,6 @@ namespace Dream
           mWindowComponentHandle(windowComponentHandle),
           mProjectHandle(projectHandle)
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Constructing" << endl;
         }
@@ -65,7 +64,6 @@ namespace Dream
     ProjectRuntime::~ProjectRuntime
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Destructing" << endl;
         }
@@ -96,7 +94,6 @@ namespace Dream
     ProjectRuntime::initComponents
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Initialising Components..." << endl;
         }
@@ -133,7 +130,6 @@ namespace Dream
             return false;
         }
 
-        if (Constants::VERBOSE)
         {
             cout << "Dream: Successfuly created Components." << endl;
         }
@@ -289,7 +285,6 @@ namespace Dream
     ProjectRuntime::updateLogic
     ()
     {
-        if (Constants::VERBOSE)
         {
             cout << endl
                  << "==== ProjectDefinition: UpdateLogic Called @ " << mTime->getTimeDelta() << " ===="
@@ -319,7 +314,6 @@ namespace Dream
     ProjectRuntime::updateGraphics
     ()
     {
-        if (Constants::VERBOSE)
         {
             cout << endl
                  << "==== ProjectDefinition: UpdateGraphics Called @ " << mTime->getTimeDelta() << " ===="
@@ -337,7 +331,6 @@ namespace Dream
     ProjectRuntime::collectGarbage
     ()
     {
-        if (Constants::VERBOSE)
         {
             cout << endl
                  << "==== ProjectDefinition: CollectGarbage Called @ " << mTime->getTimeDelta() << " ===="
@@ -384,7 +377,6 @@ namespace Dream
         }
 
         // Load the new scene
-        if (Constants::DEBUG)
         {
             cout << "ProjectRuntime: Loading SceneRuntime" << endl;
         }

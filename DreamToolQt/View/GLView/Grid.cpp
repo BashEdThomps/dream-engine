@@ -38,7 +38,6 @@ Grid::Grid
       mMinorColour(minorColour)
 
 {
-    if (Constants::DEBUG)
     {
         cout << "Grid: Constructing with majorSpacing: " << mMajorSpacing
              << ", minorSpacing: " << mMinorSpacing << endl;
@@ -48,7 +47,6 @@ Grid::Grid
 Grid::~Grid
 ()
 {
-    if (Constants::DEBUG)
     {
         cout << "Grid: Destructing" << endl;
     }

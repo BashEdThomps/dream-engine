@@ -23,5 +23,11 @@
         <file>templates/shader/FontInstance/glsl.vert</file>
         <file>templates/shader/Lit3D/glsl.frag</file>
         <file>templates/shader/Lit3D/glsl.vert</file>
+        <file>svg/redo-alt-solid.svg</file>
+        <file>svg/stop-solid.svg</file>
+        <file>svg/play-solid.svg</file>
+        <file>svg/save-solid.svg</file>
+        <file>svg/folder-open-solid.svg</file>
+        <file>svg/file-solid.svg</file>
     </qresource>
 </RCC>

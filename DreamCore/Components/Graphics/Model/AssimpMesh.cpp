@@ -20,12 +20,9 @@ namespace Dream
         mSpecularColour(specular)
 
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssimpMesh: Constructing Mesh for "
                  << parent->getName()
                  << endl;
-        }
                 init();
     }
 
@@ -79,14 +76,11 @@ namespace Dream
                 materialStr << idx;
             }
 
-            if (Constants::DEBUG)
-            {
                 cout << "AssimpMesh: Binding Material " << materialStr.str()
                      << " with GL Texture " << mTextures[i].id
                      << " to unit " << nextTexture
                      << " for " << mParentHandle->getNameAndUuidString()
                      << endl;
-            }
 
             glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
         }

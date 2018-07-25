@@ -9,20 +9,14 @@ namespace Dream
     Frame::Frame
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "Frame: Constructing Object" << endl;
-        }
+        cout << "Frame: Constructing Object" << endl;
     }
 
 
     Frame::~Frame
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "Frame: Destroying Object" << endl;
-        }
+        cout << "Frame: Destroying Object" << endl;
     }
 
     void
@@ -52,10 +46,7 @@ namespace Dream
     Frame::showStatus
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "Frame " << mTransform.getJson().dump() << endl;
-        }
+        cout << "Frame " << mTransform.getJson().dump() << endl;
     }
 
 } // End of Dream

@@ -75,7 +75,6 @@ namespace Dream
           mFollowsCamera(false)
 
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Constructing Object" << endl;
         }
@@ -86,7 +85,6 @@ namespace Dream
     SceneObjectRuntime::~SceneObjectRuntime
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Destroying Object" << endl;
         }
@@ -471,7 +469,6 @@ namespace Dream
 
     void SceneObjectRuntime::collectGarbage()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Collecting Garbage " << getNameAndUuidString() << endl;
         }
@@ -527,7 +524,6 @@ namespace Dream
     {
         mProjectPath = mSceneRuntimeHandle->getProjectRuntimeHandle()->getProjectHandle()->getProjectPath();
 
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Asset Intance of: ("
                  << definition->getType() << ") " << definition->getName() << flush;
@@ -589,7 +585,6 @@ namespace Dream
     SceneObjectRuntime::createPhysicsObjectInstance
     (PhysicsObjectDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Physics Object Asset Instance." << endl;
         }
@@ -604,7 +599,6 @@ namespace Dream
     SceneObjectRuntime::createAnimationInstance
     (AnimationDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Animation asset instance." << endl;
         }
@@ -619,7 +613,6 @@ namespace Dream
     SceneObjectRuntime::createAudioInstance
     (AudioDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Audio asset instance." << endl;
         }
@@ -638,7 +631,6 @@ namespace Dream
     SceneObjectRuntime::createModelInstance
     (ModelDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Model asset instance." << endl;
         }
@@ -659,7 +651,6 @@ namespace Dream
     SceneObjectRuntime::createScriptInstance
     (ScriptDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Script asset instance." << endl;
         }
@@ -672,7 +663,6 @@ namespace Dream
     SceneObjectRuntime::createShaderInstance
     (ShaderDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Shader asset instance." << endl;
         }
@@ -692,7 +682,6 @@ namespace Dream
     SceneObjectRuntime::createLightInstance
     (LightDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Light Asset instance." << endl;
         }
@@ -704,7 +693,6 @@ namespace Dream
     SceneObjectRuntime::createSpriteInstance
     (SpriteDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Sprite Asset instance." << endl;
         }
@@ -724,7 +712,6 @@ namespace Dream
     SceneObjectRuntime::createFontInstance
     (FontDefinition* definition)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneObjectRuntime: Creating Font Asset instance." << endl;
         }
@@ -839,7 +826,6 @@ namespace Dream
     {
        SceneObjectDefinition *defHandle = dynamic_cast<SceneObjectDefinition*>(iDefinitionHandle);
 
-       if (Constants::DEBUG)
        {
            cout << "SceneObjectRuntime: Using Definition "
                 << defHandle->getNameAndUuidString()

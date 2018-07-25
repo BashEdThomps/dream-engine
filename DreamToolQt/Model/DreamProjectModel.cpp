@@ -190,8 +190,6 @@ void
 DreamProjectModel::setDebug
 (bool enabled)
 {
-    Constants::dreamSetVerbose(enabled);
-    Constants::dreamSetDebug(enabled);
 }
 
 void DreamProjectModel::setPhysicsDebug(bool enabled)

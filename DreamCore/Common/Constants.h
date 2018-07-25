@@ -21,6 +21,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include "spdlog/spdlog.h"
+
 
 using namespace std;
 
@@ -44,10 +46,6 @@ namespace Dream
     {
     public:
         // Debug ================================================================
-        static bool DEBUG;
-        static bool VERBOSE;
-        static void dreamSetDebug(bool debug);
-        static void dreamSetVerbose(bool verbose);
         static bool checkGLError(string);
         // Misc =================================================================
         const static string DIR_PATH_SEP;
@@ -267,6 +265,8 @@ namespace Dream
 
         static string getAssetFormatStringFromReadableName(string format);
         static string getAssetFormatReadableNameFromString(string);
+
+        static shared_ptr<spdlog::logger> logger;
     };
 }
 

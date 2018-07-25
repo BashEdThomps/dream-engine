@@ -28,6 +28,7 @@
 #endif
 
 #include "../Common/Constants.h"
+#include "../Common/ILoggable.h"
 
 using std::string;
 using std::unique_ptr;
@@ -43,7 +44,7 @@ namespace Dream
     class IAssetDefinition;
     class IWindowComponent;
 
-    class Project
+    class Project : public ILoggable
     {
         // Variables
     private:

@@ -29,20 +29,16 @@ namespace Dream
 {
     AnimationComponent::AnimationComponent
     ()
-        : IComponent()
+        : IComponent(),
+          ILoggable ("AnimationComponent")
     {
-
     }
 
 
     AnimationComponent::~AnimationComponent
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationComponent: Destroying Object" << endl;
-        }
-
+        getLog()->info("Destroying Object");
     }
 
 
@@ -50,10 +46,7 @@ namespace Dream
     AnimationComponent::init
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationComponent: Initialisation Done." << endl;
-        }
+        getLog()->debug("Initialisation Done");
         return true;
     }
 
@@ -79,7 +72,6 @@ namespace Dream
                 }
             )
         );
-
     }
 
 
@@ -92,8 +84,10 @@ namespace Dream
             AnimationInstance* animAsset;
             animAsset = dynamic_cast<AnimationInstance*>(asset);
             animAsset->play();
-        } catch (exception & ex) {
-            cerr << "AnimationComponent: Exception playing animation." << ex.what() << endl;
+        }
+        catch (exception & ex)
+        {
+            getLog()->error("Exception playing animation.", ex.what());
         }
     }
 
@@ -110,7 +104,7 @@ namespace Dream
         }
         catch (exception & ex)
         {
-            cerr << "AnimationComponent: Exception pausing animation." << ex.what() << endl;
+            getLog()->error("Exception pausing animation.", ex.what());
         }
     }
 
@@ -127,7 +121,7 @@ namespace Dream
         }
         catch (exception & ex)
         {
-            cerr << "AnimationComponent: Exception stopping animation." << ex.what() << endl;
+            getLog()->error("Exception stopping animation." , ex.what());
         }
     }
 
@@ -136,9 +130,10 @@ namespace Dream
     AnimationComponent::isLooping
     (AnimationInstance* asset)
     {
+        auto log = getLog();
         if (!asset)
         {
-            cerr << "AnimationComponent: asset is null in isLooping... " << endl;
+            log->error("Asset is null in isLooping... ");
             return false;
         }
 
@@ -148,15 +143,14 @@ namespace Dream
             animationAsset = dynamic_cast<AnimationInstance*>(asset);
             if (!animationAsset)
             {
-                cerr << "AnimationComponent: animationAsset is null in isLooping... " << endl;
+                log->error("AnimationAsset is null in isLooping... ");
                 return false;
             }
             return animationAsset->isLooping();
         }
         catch (exception &ex)
         {
-            cerr << "AnimationComponent: Exception in isLooping... " << endl;
-            cerr << ex.what() << endl;
+            log->error("Exception in isLooping... ", ex.what());
         }
         return false;
     }
@@ -166,22 +160,20 @@ namespace Dream
     AnimationComponent::setLooping
     (AnimationInstance* asset, bool looping)
     {
+        auto log = getLog();
         try
         {
             AnimationInstance* animationAsset;
             animationAsset = dynamic_cast<AnimationInstance*>(asset);
             animationAsset->setLooping(looping);
-            if (Constants::DEBUG)
-            {
-                cout << "AnimationComponent: Setting " << animationAsset->getNameAndUuidString()
-                     << " looping: " << String::boolToYesNo(looping) << endl;
-            }
+            log->debug(
+                "Setting", animationAsset->getNameAndUuidString(),
+                "looping: ", String::boolToYesNo(looping)
+            );
         }
         catch (exception &ex)
         {
-            cerr << "AnimationComponent: Exception in setLooping... " << endl;
-            cerr << ex.what() << endl;
+            log->error("Exception in setLooping... ", ex.what());
         }
     }
-
 } // End of Dream

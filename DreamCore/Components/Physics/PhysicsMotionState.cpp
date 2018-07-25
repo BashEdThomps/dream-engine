@@ -38,29 +38,20 @@ namespace Dream
         : btMotionState(),
         mDreamTransform(dreamTransform)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "PhysicsMotionState: Constructor called" << endl;
-        }
     }
 
     PhysicsMotionState::~PhysicsMotionState
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "PhysicsMotionState: Destroying Object" << endl;
-        }
     }
 
     void
     PhysicsMotionState::setTransform
     (Transform3D& transform)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "PhysicsMotionState: setTransform called" << endl;
-        }
         mDreamTransform = transform;
     }
 
@@ -68,10 +59,7 @@ namespace Dream
     PhysicsMotionState::getWorldTransform
     (btTransform &worldTrans) const
     {
-        if (Constants::VERBOSE)
-        {
             cout << "PhysicsMotionState: getWorldTransform called" << endl;
-        }
         // Translation
         worldTrans.setOrigin(mDreamTransform.getTranslationAsBtVector3());
         // Rotation
@@ -84,10 +72,7 @@ namespace Dream
     PhysicsMotionState::setWorldTransform
     (const btTransform &worldTrans)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "PhysicsMotionState: setWorldTransform called" << endl;
-        }
 
         // Translation
         btVector3 pos = worldTrans.getOrigin();
@@ -101,10 +86,7 @@ namespace Dream
     PhysicsMotionState::setKinematicPos
     (btTransform &trans)
     {
-        if (Constants::VERBOSE)
-        {
             cout << "PhysicsMotionState: setKinematicPos called" << endl;
-        }
         btVector3 pos = trans.getOrigin();
         mDreamTransform.setTranslation(pos.x(), pos.y(), pos.z());
     }

@@ -35,7 +35,6 @@ namespace Dream
     FileReader::~FileReader
     ()
     {
-        if (Constants::DEBUG)
         {
          cout << "FileReader: Destroying reader for " << mPath << endl;
         }

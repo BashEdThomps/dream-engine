@@ -46,11 +46,8 @@ namespace Dream
           mModelCacheHandle(modelCache),
           mTextureCacheHandle(texCache)
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssimpModelInstance: Constructing "
                  << definition->getNameAndUuidString() << endl;
-        }
         initBoundingBox();
         return;
     }
@@ -66,10 +63,7 @@ namespace Dream
     AssimpModelInstance::~AssimpModelInstance
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssimpModelInstance: Destroying Object" << endl;
-        }
         return;
     }
 
@@ -78,10 +72,7 @@ namespace Dream
     (string projectPath)
     {
         string path = projectPath + mDefinitionHandle->getAssetPath();
-        if (Constants::DEBUG)
-        {
             cout << "AssimpModelInstance: Loading Model - " << path << endl;
-        }
         const aiScene* scene = mModelCacheHandle->getModelFromCache(path)->GetScene();
         if(scene == nullptr)
         {
@@ -193,7 +184,7 @@ namespace Dream
 
         // Diffuse Textures
         vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-        if (diffuseMaps.size() > 0 && Constants::DEBUG)
+        if (diffuseMaps.size() > 0 )
         {
             cout << "AssimpModelInstance: Inserting " << diffuseMaps.size() << " diffuse textures" << endl;
 
@@ -202,7 +193,7 @@ namespace Dream
 
         // Specular Textures
         vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        if (specularMaps.size() > 0 && Constants::DEBUG)
+        if (specularMaps.size() > 0)
         {
             cout << "AssimpModelInstance: Inserting " << specularMaps.size() << " specular textures" << endl;
 
@@ -211,7 +202,7 @@ namespace Dream
 
         // Normal Textures
         vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normals");
-        if (normalMaps.size() > 0 && Constants::DEBUG)
+        if (normalMaps.size() > 0)
         {
             cout << "AssimpModelInstance: Inserting " << normalMaps.size() << " normal textures" << endl;
 
@@ -240,10 +231,7 @@ namespace Dream
         material->Get(AI_MATKEY_COLOR_SPECULAR,specular);
         material->Get(AI_MATKEY_NAME,materialName);
 
-        if (Constants::DEBUG)
-        {
             cout << "AssimpModelInstance: Using Material " << materialName.C_Str() << endl;
-        }
 
         return AssimpMesh(this, vertices, indices, textures, diffuse, specular);
     }
@@ -281,11 +269,8 @@ namespace Dream
     AssimpModelInstance::updateBoundingBox
     (aiMesh* mesh)
     {
-        if (Constants::DEBUG)
-        {
             cout << "AssimpModelInstance: Updating bounding box for "
                  << getNameAndUuidString() << endl;
-        }
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {

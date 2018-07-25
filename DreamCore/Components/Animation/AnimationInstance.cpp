@@ -29,7 +29,7 @@ namespace Dream
 
     AnimationInstance::AnimationInstance
     (AnimationDefinition* definition, SceneObjectRuntime* runtime)
-        : IAssetInstance(definition,runtime)
+        : IAssetInstance(definition,runtime), ILoggable ("AnimationInstance")
     {
         mCurrentPlaybackFrame = 0;
         mLoop = false;
@@ -40,10 +40,8 @@ namespace Dream
     AnimationInstance::~AnimationInstance
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationInstance: Destroying Object" << endl;
-        }
+        auto log = getLog();
+        log->info("Destroying Object");
         deleteKeyFrames();
         deletePlaybackFrames();
     }
@@ -52,11 +50,8 @@ namespace Dream
     AnimationInstance::showStatus
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationInstance:" << endl;
-            cout << "\tLoop: " << String::boolToYesNo(mLoop) << endl;
-        }
+        auto log = getLog();
+        log->info("\tLoop: {}",String::boolToYesNo(mLoop));
     }
 
     bool
@@ -80,10 +75,8 @@ namespace Dream
     AnimationInstance::generatePlaybackFrames
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout<<"AnimationInstance: Generating Playback Frames" << endl;
-        }
+        auto log = getLog();
+        log->info("Generating Playback Frames");
 
         for (KeyFrame* currentKeyFrame : mKeyFrames)
         {
@@ -92,24 +85,15 @@ namespace Dream
             // End of Vector?
             if (currentKeyFrame == mKeyFrames.back())
             {
-                if (Constants::DEBUG)
-                {
-                    cout << "AnimationInstance: Last KeyFrame, checking for wrap..." << endl;
-                }
+                log->info("Last KeyFrame, checking for wrap..." );
                 if (currentKeyFrame->getWrap())
                 {
-                    if (Constants::DEBUG)
-                    {
-                        cout << "AnimationInstance: KeyFrame wraps to beginning." << endl;
-                    }
+                    log->info("KeyFrame wraps to beginning." );
                     nextKeyFrame = (*mKeyFrames.begin());
                 }
                 else
                 {
-                    if (Constants::DEBUG)
-                    {
-                        cout << "AnimationInstance: Last KeyFrame does not wrap." << endl;
-                    }
+                    log->info("Last KeyFrame does not wrap." );
                     break;
                 }
             }
@@ -122,24 +106,19 @@ namespace Dream
             vector<Frame*> frames = currentKeyFrame->getPlaybackFrames();
             mPlaybackFrames.insert(mPlaybackFrames.end(),frames.begin(),frames.end());
         }
-        if (Constants::DEBUG)
-        {
-            cout<<"AnimationInstance: Finished Generating Playback Frames" << endl;
-        }
+        log->info("Finished Generating Playback Frames" );
     }
 
     void
     AnimationInstance::loadExtraAttributes
     (nlohmann::json jsonObj)
     {
+        auto log = getLog();
         showStatus();
         if (!jsonObj[Constants::ASSET_ATTR_KEYFRAMES].is_null() && jsonObj[Constants::ASSET_ATTR_KEYFRAMES].is_array())
         {
             nlohmann::json jsonKeyFrames = jsonObj[Constants::ASSET_ATTR_KEYFRAMES];
-            if (Constants::DEBUG)
-            {
-                cout << "AnimationInstance: Loading KeyFrames" << endl;
-            }
+            log->info( "Loading KeyFrames" );
             for (nlohmann::json it : jsonKeyFrames)
             {
                 KeyFrame *nextKeyFrame = new KeyFrame();
@@ -177,29 +156,25 @@ namespace Dream
     AnimationInstance::step
     (double deltaTime)
     {
+        auto log = getLog();
         if (mPlaying)
         {
             int advanceBy = ceil(deltaTime / (1000/getFramesPerSecond()));
             if (advanceBy > Constants::MAX_FRAME_ADVANCE) return;
             mCurrentPlaybackFrame += advanceBy;
-            if (Constants::DEBUG)
-            {
-                cout << "AnimationInstance: Delta time: " << deltaTime << ", Advance By: " << advanceBy <<  " frames to frame: " << mCurrentPlaybackFrame << endl;
-            }
+            log->info(
+                "Delta time: {}, Advance By: {} frames to frame: {}",
+                deltaTime, advanceBy, mCurrentPlaybackFrame
+            );
+
             if (mCurrentPlaybackFrame > mPlaybackFrames.size())
             {
                 if (!mLoop)
                 {
-                    if (Constants::DEBUG)
-                    {
-                        cout << "AnimationInstance: Playback Finished" << endl;
-                    }
+                    log->info("Playback Finished" );
                     mPlaying = false;
                 }
-                if (Constants::DEBUG)
-                {
-                    cout << "AnimationInstance: Returning to Frame 0" << endl;
-                }
+                log->info("Returning to Frame 0" );
                 mCurrentPlaybackFrame = 0;
             }
         }
@@ -209,10 +184,8 @@ namespace Dream
     AnimationInstance::play
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationInstance: Playing Animation" << getName() << endl;
-        }
+        auto log = getLog();
+        log->info("Playing Animation", getName() );
         mPlaying = true;
     }
 
@@ -220,10 +193,8 @@ namespace Dream
     AnimationInstance::pause
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationInstance: Pausing Animation" << getName() << endl;
-        }
+        auto log = getLog();
+        log->info("AnimationInstance: Pausing Animation", getName() );
         mPlaying = false;
     }
 
@@ -231,10 +202,8 @@ namespace Dream
     AnimationInstance::stop
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationInstance: Stopping Animation" << getName() << endl;
-        }
+        auto log = getLog();
+        log->info( "AnimationInstance: Stopping Animation" , getName() );
         mPlaying = false;
         mCurrentPlaybackFrame = 0;
     }
@@ -267,10 +236,8 @@ namespace Dream
     AnimationInstance::deleteKeyFrames
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationInstance: Deleting Key Frames" << endl;
-        }
+        auto log = getLog();
+        log->info("Deleting Key Frames" );
         for (KeyFrame* pKeyFrame : mKeyFrames)
         {
             delete pKeyFrame;
@@ -282,11 +249,8 @@ namespace Dream
     AnimationInstance::deletePlaybackFrames
     ()
     {
-        if (Constants::DEBUG)
-        {
-            cout << "AnimationInstance: Playback Frames" << endl;
-        }
-
+        auto log = getLog();
+        log->info( "AnimationInstance: Playback Frames" );
         for (Frame* pFrame : mPlaybackFrames)
         {
             delete pFrame;
@@ -294,4 +258,4 @@ namespace Dream
         mPlaybackFrames.clear();
     }
 
-     } // End of Dream
+ } // End of Dream

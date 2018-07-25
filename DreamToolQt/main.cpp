@@ -27,7 +27,6 @@ using Dream::Constants;
 
 int main(int argc, char *argv[])
 {
-    Constants::dreamSetVerbose(true);
     QApplication a(argc, argv);
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );

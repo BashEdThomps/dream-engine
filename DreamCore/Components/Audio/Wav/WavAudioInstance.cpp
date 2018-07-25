@@ -43,7 +43,7 @@ namespace Dream
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
 
-        if (wavFile == NULL)
+        if (wavFile == nullptr)
         {
             cerr << "WavAudioInstance:: Unable to open wave file: " << absPath << endl;
             return false;

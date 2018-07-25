@@ -23,7 +23,6 @@ namespace Dream
     ArgumentParser::ArgumentParser
     (int argc, const char** argv)
     {
-        if (Constants::DEBUG)
         {
             cout << "ArgumentParser: Constructing" << endl;
         }
@@ -36,7 +35,6 @@ namespace Dream
     ArgumentParser::~ArgumentParser
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "ArgumentParser: Destructing" << endl;
         }
@@ -55,7 +53,6 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mDreamPath = string(mArgv[i+1]);
-                    if (Constants::DEBUG)
                     {
                         cout << "ArgumentParser: Got Dream Path " << mDreamPath << endl;
                     }
@@ -70,7 +67,6 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mProjectUUID = string(mArgv[i+1]);
-                    if (Constants::DEBUG)
                     {
                         cout << "ArgumentParser: Got Project UUID " << mProjectUUID << endl;
                     }
@@ -86,7 +82,6 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mHttpUrl = string(mArgv[i+1]);
-                    if (Constants::DEBUG)
                     {
                         cout << "ArgumentParser: Loading project over HTTP from " << mHttpUrl << endl;
                     }
@@ -107,13 +102,11 @@ namespace Dream
 
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
-        if (Constants::DEBUG)
         {
             cout << "ArgumentParser: Got Project Path " << mProjectPath << endl;
         }
         mProjectFilePath = mProjectPath + Constants::PROJECT_PATH_SEP + mProjectUUID + Constants::PROJECT_EXTENSION;
 
-        if (Constants::DEBUG)
         {
             cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << endl;
         }

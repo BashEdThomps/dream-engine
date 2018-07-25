@@ -22,7 +22,6 @@ using DreamSDL::SDLWindowComponent;
 
 void showUsage(const char** argv)
 {
-    if (Constants::DEBUG)
     {
         cout << "Usage:" << endl
              << argv[0] << endl
@@ -34,14 +33,11 @@ void showUsage(const char** argv)
 int main(int argc, const char** argv)
 {
 
-    Constants::dreamSetVerbose(true);
-
     unique_ptr<SDLWindowComponent> windowComponent(new SDLWindowComponent());
 
     Project project(windowComponent.get());
 
 
-    if (Constants::DEBUG)
     {
         cout << "Main: Starting..." << endl;
     }

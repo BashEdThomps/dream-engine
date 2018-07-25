@@ -24,6 +24,7 @@
 #include <GL/glew.h>
 #include <glm/matrix.hpp>
 #include "../IComponent.h"
+#include "../../Common/ILoggable.h"
 
 using std::string;
 using std::map;
@@ -40,7 +41,7 @@ namespace Dream
     class SceneRuntime;
     class SceneObjectRuntime;
 
-    class GraphicsComponent : public IComponent
+    class GraphicsComponent : public IComponent, ILoggable
     {
     private:
         mat4 mProjectionMatrix;

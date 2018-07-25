@@ -28,7 +28,6 @@ RelationshipTree::RelationshipTree
       mRootSceneObjectHandle(nullptr),
       mLeafSceneObjectHandle(nullptr)
 {
-    if (Constants::DEBUG)
     {
         qDebug() << "RelationshipTree: Constructing Object";
     }
@@ -37,7 +36,6 @@ RelationshipTree::RelationshipTree
 RelationshipTree::~RelationshipTree
 ()
 {
-    if (Constants::DEBUG)
     {
         qDebug() << "RelationshipTree: Denstructing Object";
     }

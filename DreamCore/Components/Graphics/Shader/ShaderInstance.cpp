@@ -34,20 +34,14 @@ namespace Dream
         : IAssetInstance(definition,transform),
           mCacheHandle(cache)
     {
-        if (Constants::DEBUG)
-        {
             cout << "ShaderInstance: Constructing Object" << endl;
-        }
         mShaderProgram = 0;
     }
 
     ShaderInstance::~ShaderInstance
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "ShaderInstance: Destroying Object" << endl;
-        }
     }
 
     GLuint
@@ -263,8 +257,6 @@ namespace Dream
             fragmentReader->readIntoString();
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
-            if (Constants::DEBUG)
-            {
                 cout << "ShaderInstance: Loading Shader "
                      << mDefinitionHandle->getNameAndUuidString()
                      << endl
@@ -278,7 +270,6 @@ namespace Dream
                      << endl
                      << mFragmentShaderSource
                      << endl;
-            }
             // 2. Compile shaders
             GLint success;
             GLchar infoLog[512];
@@ -409,8 +400,6 @@ namespace Dream
             string name = it.first;
             GLfloat val = it.second;
             GLint location = getUniformLocation(name);
-            if (Constants::VERBOSE)
-            {
                 cout << "ShaderInstance: "
                      << getUuid()
                      << " Sync Uinform1f -> "
@@ -419,7 +408,6 @@ namespace Dream
                      << " loc: " << location
                      << " val: " << val
                      << endl;
-            }
 
             if (location == UNIFORM_NOT_FOUND)
             {

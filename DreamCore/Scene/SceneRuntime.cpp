@@ -50,7 +50,6 @@ namespace Dream
           mAmbientColour({0,0,0}),
           mProjectRuntimeHandle(project)
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneRuntime: Constructing " << endl;
         }
@@ -61,7 +60,6 @@ namespace Dream
     SceneRuntime::~SceneRuntime
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneRuntime: Destructing " << endl;
         }
@@ -230,7 +228,6 @@ namespace Dream
     SceneRuntime::collectGarbage
     ()
     {
-        if (Constants::DEBUG)
         {
             cout << "SceneRuntime: Collecting Garbage " << getNameAndUuidString() << endl;
         }
@@ -267,7 +264,6 @@ namespace Dream
     {
         SceneDefinition *sceneDefinitionHandle = dynamic_cast<SceneDefinition*>(iDefinitionHandle);
 
-        if (Constants::DEBUG)
         {
             cout << "SceneRuntime: Using SceneDefinition "
                  << sceneDefinitionHandle->getNameAndUuidString() << endl;

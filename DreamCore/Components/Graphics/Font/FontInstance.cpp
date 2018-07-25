@@ -40,10 +40,7 @@ namespace Dream
     FontInstance::~FontInstance
     ()
     {
-        if (Constants::DEBUG)
-        {
             cout << "FontInstance: Destroying Object" << endl;
-        }
 
         return;
     }
@@ -55,10 +52,7 @@ namespace Dream
         string path = projectPath + mDefinitionHandle->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
 
-        if (Constants::DEBUG)
-        {
             cout << "FontInstance: Loading font from " << path << endl;
-        }
 
         if (mCacheHandle->getFreeTypeLib())
         {
@@ -103,21 +97,15 @@ namespace Dream
                         );
         }
 
-        if (Constants::DEBUG)
-        {
             cout << "FontInstance: Red: " << red
                  << " Green: " << green
                  << " Blue: " << blue
                  << " Size: " << mSize
                  << endl;
-        }
 
         mCacheHandle->getCharMap(dynamic_cast<FontDefinition*>(mDefinitionHandle),mFontFace.get());
 
-        if (Constants::DEBUG)
-        {
             cout << "FontInstance: Finished loading extra attributes" << endl;
-        }
         return;
     }
 

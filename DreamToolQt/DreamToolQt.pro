@@ -8,7 +8,7 @@ QMAKE_CXXFLAGS_WARN_ON = -Wno-ignored-qualifiers # Not available in GCC? -Wno-ad
 
 QT += core gui opengl
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 
 TARGET = DreamToolQt
