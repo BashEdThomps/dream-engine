@@ -24,7 +24,7 @@ namespace Dream
 {
     InputEvent::InputEvent
     (InputSource source)
-        : mSource(source),
+        : ILoggable("InputSource"), mSource(source),
           mKeyEventType(KEY_NONE),
           mMouseEventType(MOUSE_NONE),
           mGamepadEventType(GAMEPAD_NONE),
@@ -33,13 +33,15 @@ namespace Dream
           mPressed(false),
           mButton(0)
     {
-            cout << "InputEvent: Constructing" << endl;
+        auto log = getLog();
+        log->info( "InputEvent: Constructing" );
     }
 
     InputEvent::~InputEvent
     ()
     {
-            cout << "InputEvent: Destructing" << endl;
+        auto log = getLog();
+        log->info( "InputEvent: Destructing" );
     }
 
     InputSource

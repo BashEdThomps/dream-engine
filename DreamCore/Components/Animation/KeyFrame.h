@@ -13,7 +13,7 @@ namespace Dream
 
     using namespace std;
 
-    class KeyFrame
+    class KeyFrame : public ILoggable
     {
     private:
         long mStartTimeMS;

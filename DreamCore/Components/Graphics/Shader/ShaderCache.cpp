@@ -23,11 +23,12 @@ namespace Dream
     ShaderCache::getShader
     (string uuid)
     {
+        auto log = getLog();
         for(pair<string,GLuint> it : mCache)
         {
             if (it.first.compare(uuid) == 0)
             {
-                    cout << "ShaderCache: Found Shader " << uuid << endl;
+                    log->info( "ShaderCache: Found Shader " , uuid );
                 return it.second;
             }
         }
@@ -43,14 +44,17 @@ namespace Dream
 
     ShaderCache::ShaderCache
     ()
+        :ILoggable ("ShaderCache")
     {
-            cout << "ShaderCache: Constructing" << endl;
+        auto log = getLog();
+            log->info( "ShaderCache: Constructing" );
     }
 
     ShaderCache::~ShaderCache
     ()
     {
-            cout << "ShaderCache: Destructing" << endl;
+        auto log = getLog();
+            log->info( "ShaderCache: Destructing" );
 
         for (pair<string,GLuint> shaderPair : mCache)
         {

@@ -3,13 +3,14 @@
 #include <glm/glm.hpp>
 
 #include "../../IAssetInstance.h"
+#include "../../../Common/ILoggable.h"
 
 using glm::vec3;
 
 namespace Dream
 {
     class LightDefinition;
-    class LightInstance : public IAssetInstance
+    class LightInstance : public IAssetInstance, ILoggable
     {
         vec3 mColor;
         float mIntensity;

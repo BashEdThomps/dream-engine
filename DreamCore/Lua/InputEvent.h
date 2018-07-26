@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "../Common/ILoggable.h"
+
 namespace Dream
 {
     enum InputSource
@@ -52,7 +54,7 @@ namespace Dream
         GAMEPAD_NONE
     };
 
-    class InputEvent
+    class InputEvent : public ILoggable
     {
     public:
         InputEvent(InputSource source = INPUT_SOURCE_NONE);

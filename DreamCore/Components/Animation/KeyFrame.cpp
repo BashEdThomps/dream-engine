@@ -10,6 +10,7 @@ namespace Dream
 
     KeyFrame::KeyFrame
     ()
+        : ILoggable ("KeyFrame")
     {
         mInterpolationType = Constants::DREAM_ANIMATION_INTERPOLATION_NONE;
     }
@@ -17,7 +18,8 @@ namespace Dream
     KeyFrame::~KeyFrame
     ()
     {
-            cout << "KeyFrame: Destroying Object" << endl;
+        auto log = getLog();
+            log->info("KeyFrame: Destroying Object");
     }
 
     bool
@@ -45,8 +47,12 @@ namespace Dream
     KeyFrame::generatePlaybackFrames
     (KeyFrame* toKeyFrame)
     {
-            cout << "KeyFrame: Generating " << mInterpolationType << " playback frames from "
-                 << mName << " to " << toKeyFrame->getName() <<  endl;
+        auto log = getLog();
+        log->info
+        (
+           "Generating playback frames for {} from {} to {}",
+            mInterpolationType, mName, toKeyFrame->getName()
+        );
         long keyFrameDurationMS = toKeyFrame->getStartTimeMS() - getStartTimeMS();
         long numFrames = static_cast<long>(
             (keyFrameDurationMS/1000.0f) * AnimationInstance::getFramesPerSecond()
@@ -258,14 +264,23 @@ namespace Dream
     KeyFrame::showStatus
     ()
     {
-            cout << "KeyFrame:" <<  endl
-                 << "\t         UUID: " << mUUID <<  endl
-                 << "\t         Name: " << mName <<  endl
-                 << "\t    Transform: " << mTransform.getJson().dump() <<  endl
-                 << "\t   Start Time: " << mStartTimeMS <<  endl
-                 << "\t         Wrap: " << String::boolToYesNo(mWrap) <<  endl
-                 << "\tInterpolation: " << getInterpolationType()
-                 <<  endl;
+        auto log = getLog();
+        log->info
+        (
+            "KeyFrame:\n"
+             "\t         UUID: {}\n"
+             "\t         Name: {}\n"
+             "\t    Transform: {}\n"
+             "\t   Start Time: {}\n"
+             "\t         Wrap: {}\n"
+             "\tInterpolation: {}\n" ,
+            mUUID,
+            mName,
+            mTransform.getJson().dump(),
+            mStartTimeMS,
+            String::boolToYesNo(mWrap),
+            getInterpolationType()
+        );
     }
 
     void

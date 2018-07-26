@@ -35,21 +35,18 @@ namespace Dream
     SceneDefinition::SceneDefinition
     (ProjectDefinition* projectDefinitionHandle, json data)
         : IDefinition(data),
+          ILoggable("SceneDefinition"),
           mProjectDefinitionHandle(projectDefinitionHandle)
     {
-        {
-            cout << "SceneDefinition: Constructing "
-                 << getNameAndUuidString() << endl;
-        }
+        auto log = getLog();
+        log->info( "SceneDefinition: Constructing ", getNameAndUuidString() );
 
         json rootSceneObject = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
         mCameraTransform = Transform3D(mJson[Constants::SCENE_CAMERA_TRANSFORM]);
 
         if (rootSceneObject.is_null())
         {
-            {
-                cout << "SceneDefinition: No root SceneObject found!!" << endl;
-            }
+            log->info( "SceneDefinition: No root SceneObject found!!" );
         }
         else
         {
@@ -60,29 +57,23 @@ namespace Dream
     SceneDefinition::~SceneDefinition
     ()
     {
-        {
-            cout << "SceneDefinition: Destructing "
-                 << getNameAndUuidString() << endl;
-        }
+        auto log = getLog();
+        log->info( "SceneDefinition: Destructing {}", getNameAndUuidString() );
     }
 
     void
     SceneDefinition::showStatus
     ()
     {
-        {
-            cout << "SceneDefinition: " << mJson.dump(1) << endl;
-        }
+        auto log = getLog();
+        log->info( mJson.dump(1) );
     }
 
     void
     SceneDefinition::loadRootSceneObjectDefinition
     (json rsoJson)
     {
-        mRootSceneObjectDefinition.reset
-        (
-            new SceneObjectDefinition(nullptr, this, rsoJson)
-        );
+        mRootSceneObjectDefinition.reset(new SceneObjectDefinition(nullptr, this, rsoJson));
     }
 
     void
@@ -371,8 +362,8 @@ namespace Dream
     SceneDefinition::getJson
     ()
     {
-       mJson[Constants::SCENE_ROOT_SCENE_OBJECT] = mRootSceneObjectDefinition->getJson();
-       mJson[Constants::SCENE_CAMERA_TRANSFORM] = getCameraTransform().getJson();
-       return mJson;
+        mJson[Constants::SCENE_ROOT_SCENE_OBJECT] = mRootSceneObjectDefinition->getJson();
+        mJson[Constants::SCENE_CAMERA_TRANSFORM] = getCameraTransform().getJson();
+        return mJson;
     }
 }

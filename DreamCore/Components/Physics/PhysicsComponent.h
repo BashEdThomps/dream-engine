@@ -24,6 +24,8 @@
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
 
+#include "../../Common/ILoggable.h"
+
 using glm::mat4;
 using std::vector;
 using std::unique_ptr;
@@ -44,7 +46,7 @@ namespace Dream
     class SceneRuntime;
     class SceneObjectRuntime;
 
-    class PhysicsComponent : public IComponent
+    class PhysicsComponent : public IComponent, ILoggable
     {
     protected:
         unique_ptr<PhysicsDebugDrawer> mDebugDrawer;

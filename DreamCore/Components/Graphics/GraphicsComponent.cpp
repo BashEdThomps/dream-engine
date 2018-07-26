@@ -63,318 +63,324 @@ using glm::scale;
 namespace Dream
 {
 
-    GraphicsComponent::GraphicsComponent
-    (Camera* camera, IWindowComponent* windowComponent)
-        : IComponent(), ILoggable("GraphicsComponent"),
-          mCamera(camera),
-          mWindowComponentHandle(windowComponent),
-          mActiveSceneRuntimeHandle(nullptr)
-    {
+GraphicsComponent::GraphicsComponent
+(Camera* camera, IWindowComponent* windowComponent)
+    : IComponent(), ILoggable("GraphicsComponent"),
+      mCamera(camera),
+      mWindowComponentHandle(windowComponent),
+      mActiveSceneRuntimeHandle(nullptr)
+{
 
+}
+
+GraphicsComponent::~GraphicsComponent
+(void)
+{
+    auto log = getLog();
+    log->info("Destroying Object");
+
+    clearSpriteQueue();
+    clearFontQueue();
+    clearModelQueue();
+    clearLightQueue();
+
+    mActiveSceneRuntimeHandle = nullptr;
+}
+
+bool
+GraphicsComponent::init
+(void)
+{
+    auto log = getLog();
+    log->info("Initialising");
+    log->info("Initialising GLEW");
+
+    glewExperimental = GL_TRUE;
+    GLenum glewInitResult = glewInit();
+
+    if (glewInitResult != GLEW_OK)
+    {
+        log->error("GLEW failed to initialise");
+        return false;
     }
 
-    GraphicsComponent::~GraphicsComponent
-    (void)
-    {
-        auto log = getLog();
-        log->info("Destroying Object");
+    Constants::checkGLError("After GLEW init");
 
+    log->info(
+        "OpenGL Version {}\nShader Version {}",
+        glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION)
+    );
+
+    onWindowDimensionsChanged();
+    Constants::checkGLError("After initial window dimensions changed");
+
+
+    Constants::checkGLError("After enable depth");
+    //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    Constants::checkGLError("After perspective correction");
+
+    create2DVertexObjects();
+    Constants::checkGLError("After create 2D Vertex VBO/VAO");
+
+    createFontVertexObjects();
+    Constants::checkGLError("After create Font 2D VBO/VAO");
+
+    log->info("Initialisation Done.");
+    return true;
+}
+
+void
+GraphicsComponent::onWindowDimensionsChanged
+()
+{
+    auto log = getLog();
+
+    // Define the viewport dimensions
+    int windowWidth  = mWindowComponentHandle->getWidth();
+    int windowHeight = mWindowComponentHandle->getHeight();
+
+    {
+        log->info
+        (
+            "Window Dimensions Changed! {}x{}",
+             windowWidth , windowHeight
+        );
+    }
+
+    glViewport(0, 0, windowWidth, windowHeight);
+
+    Constants::checkGLError("After glViewport");
+
+    // Ortho projection for 2D
+    mOrthoProjection = ortho
+    (
+        0.0f,
+        static_cast<float>(windowWidth),
+        static_cast<float>(windowHeight),
+        0.0f,
+        -1.0f, 1.0f
+    );
+
+    Constants::checkGLError("After ortho");
+
+    // Perspective Projection Matrix
+    mProjectionMatrix = perspective(
+                mCamera->getZoom(),
+                static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
+                mMinimumDraw,
+                mMaximumDraw
+                );
+
+    Constants::checkGLError("After projection matrix");
+
+    log->debug
+    (
+        "GraphicsComponent: Window dimensions changed\n"
+        "WindowWidth: {}"
+        "\nWindowHeight: {}"
+        "\nMinDraw: {}"
+        "\nMaxDraw: {}",
+        mWindowComponentHandle->getWidth(),
+        mWindowComponentHandle->getHeight(),
+        mMinimumDraw, mMaximumDraw
+    );
+}
+
+void
+GraphicsComponent::preModelRender
+()
+{
+    auto log = getLog();
+   log->info("GraphicsComponent: Pre Render" );
+    Constants::checkGLError("before pre render");
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Clear the colorbuffer
+    if (mActiveSceneRuntimeHandle)
+    {
+        glClearColor
+        (
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
+        );
+    }
+    else
+    {
+        glClearColor(0.0f,0.0f,0.0f,0.0f);
+    }
+
+    Constants::checkGLError("after pre render");
+}
+
+void
+GraphicsComponent::postModelRender
+()
+{
+    auto log = getLog();
+        log->info("GraphicsComponent: Post Render" );
+    Constants::checkGLError("before post render");
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+    Constants::checkGLError("after post render");
+}
+
+void
+GraphicsComponent::preFontRender
+()
+{
+    auto log = getLog();
+        log->info("GraphicsComponent: Pre Render" );
+    Constants::checkGLError("before pre render");
+
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Clear the colorbuffer
+    if (mActiveSceneRuntimeHandle)
+    {
+        glClearColor
+        (
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
+            mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
+        );
+    }
+    else
+    {
+        glClearColor(0.0f,0.0f,0.0f,0.0f);
+    }
+
+    Constants::checkGLError("after pre render");
+}
+
+void
+GraphicsComponent::postFontRender
+()
+{
+    auto log = getLog();
+        log->info("GraphicsComponent: Post Render" );
+    Constants::checkGLError("before post render");
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    Constants::checkGLError("after post render");
+}
+
+void
+GraphicsComponent::create2DVertexObjects
+()
+{
+    auto log = getLog();
+        log->info("GraphicsComponent: Creating 2D VAO/VBO" );
+    // Generate
+    glGenVertexArrays(1, &mSpriteQuadVAO);
+    glGenBuffers(1, &mSpriteVBO);
+    // Setup
+    glBindBuffer(GL_ARRAY_BUFFER, mSpriteVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mSpriteVertices), mSpriteVertices, GL_STATIC_DRAW);
+    glBindVertexArray(mSpriteQuadVAO);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(mSpriteQuadVAO, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+    // Unbind
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void
+GraphicsComponent::createFontVertexObjects
+()
+{
+    auto log = getLog();
+        log->info("GraphicsComponent: Creating Font VAO/VBO" );
+    // Generate
+    glGenVertexArrays(1, &mFontVAO);
+    glGenBuffers(1, &mFontVBO);
+}
+
+void
+GraphicsComponent::updateComponent
+(SceneRuntime* scene)
+{
+    auto log = getLog();
+        log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
+
+    if (mWindowComponentHandle->sizeHasChanged())
+    {
+        onWindowDimensionsChanged();
+    }
+
+    // View transform
+    mViewMatrix = mCamera->getViewMatrix();
+
+    if (!mWindowComponentHandle->shouldClose())
+    {
+        // Clear existing Queues
         clearSpriteQueue();
-        clearFontQueue();
         clearModelQueue();
+        clearFontQueue();
         clearLightQueue();
 
-        mActiveSceneRuntimeHandle = nullptr;
-    }
-
-    bool
-    GraphicsComponent::init
-    (void)
-    {
-        auto log = getLog();
-        log->info("Initialising");
-        log->info("Initialising GLEW");
-
-        glewExperimental = GL_TRUE;
-        GLenum glewInitResult = glewInit();
-
-        if (glewInitResult != GLEW_OK)
-        {
-            log->error("GLEW failed to initialise");
-            return false;
-        }
-
-        Constants::checkGLError("After GLEW init");
-
-        log->info(
-            "OpenGL Version {}\nShader Version {}",
-            glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION)
-        );
-
-        onWindowDimensionsChanged();
-        Constants::checkGLError("After initial window dimensions changed");
-
-
-        Constants::checkGLError("After enable depth");
-        //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-        Constants::checkGLError("After perspective correction");
-
-        create2DVertexObjects();
-        Constants::checkGLError("After create 2D Vertex VBO/VAO");
-
-        createFontVertexObjects();
-        Constants::checkGLError("After create Font 2D VBO/VAO");
-
-        log->info("Initialisation Done.");
-        return true;
-    }
-
-    void
-    GraphicsComponent::onWindowDimensionsChanged
-    ()
-    {
-        auto log = getLog();
-
-        // Define the viewport dimensions
-        int windowWidth  = mWindowComponentHandle->getWidth();
-        int windowHeight = mWindowComponentHandle->getHeight();
-
-        {
-            log->info
-            (
-                "Window Dimensions Changed! {}x{}",
-                 windowWidth , windowHeight
-            );
-        }
-
-        glViewport(0, 0, windowWidth, windowHeight);
-
-        Constants::checkGLError("After glViewport");
-
-        // Ortho projection for 2D
-        mOrthoProjection = ortho
+        scene->getRootSceneObjectRuntimeHandle()->applyToAll
         (
-            0.0f,
-            static_cast<float>(windowWidth),
-            static_cast<float>(windowHeight),
-            0.0f,
-            -1.0f, 1.0f
-        );
-
-        Constants::checkGLError("After ortho");
-
-        // Perspective Projection Matrix
-        mProjectionMatrix = perspective(
-                    mCamera->getZoom(),
-                    static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
-                    mMinimumDraw,
-                    mMaximumDraw
-                    );
-
-        Constants::checkGLError("After projection matrix");
-
-        log->debug
-        (
-            "GraphicsComponent: Window dimensions changed\n"
-            "WindowWidth: {}"
-            "\nWindowHeight: {}"
-            "\nMinDraw: {}"
-            "\nMaxDraw: {}",
-            mWindowComponentHandle->getWidth(),
-            mWindowComponentHandle->getHeight(),
-            mMinimumDraw, mMaximumDraw
-        );
-    }
-
-    void
-    GraphicsComponent::preModelRender
-    ()
-    {
-            cout << "GraphicsComponent: Pre Render" << endl;
-        Constants::checkGLError("before pre render");
-
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        // Clear the colorbuffer
-        if (mActiveSceneRuntimeHandle)
-        {
-            glClearColor
+            function<void*(SceneObjectRuntime*)>
             (
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
-            );
-        }
-        else
-        {
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
-        }
-
-        Constants::checkGLError("after pre render");
-    }
-
-    void
-    GraphicsComponent::postModelRender
-    ()
-    {
-            cout << "GraphicsComponent: Post Render" << endl;
-        Constants::checkGLError("before post render");
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_BLEND);
-        Constants::checkGLError("after post render");
-    }
-
-    void
-    GraphicsComponent::preFontRender
-    ()
-    {
-            cout << "GraphicsComponent: Pre Render" << endl;
-        Constants::checkGLError("before pre render");
-
-        glEnable(GL_DEPTH_TEST);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        // Clear the colorbuffer
-        if (mActiveSceneRuntimeHandle)
-        {
-            glClearColor
-            (
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
-                mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
-            );
-        }
-        else
-        {
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
-        }
-
-        Constants::checkGLError("after pre render");
-    }
-
-    void
-    GraphicsComponent::postFontRender
-    ()
-    {
-            cout << "GraphicsComponent: Post Render" << endl;
-        Constants::checkGLError("before post render");
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        Constants::checkGLError("after post render");
-    }
-
-    void
-    GraphicsComponent::create2DVertexObjects
-    ()
-    {
-            cout << "GraphicsComponent: Creating 2D VAO/VBO" << endl;
-        // Generate
-        glGenVertexArrays(1, &mSpriteQuadVAO);
-        glGenBuffers(1, &mSpriteVBO);
-        // Setup
-        glBindBuffer(GL_ARRAY_BUFFER, mSpriteVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(mSpriteVertices), mSpriteVertices, GL_STATIC_DRAW);
-        glBindVertexArray(mSpriteQuadVAO);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(mSpriteQuadVAO, 4, GL_FLOAT, GL_FALSE, 0, 0);
-        // Unbind
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
-    void
-    GraphicsComponent::createFontVertexObjects
-    ()
-    {
-            cout << "GraphicsComponent: Creating Font VAO/VBO" << endl;
-        // Generate
-        glGenVertexArrays(1, &mFontVAO);
-        glGenBuffers(1, &mFontVBO);
-    }
-
-    void
-    GraphicsComponent::updateComponent
-    (SceneRuntime* scene)
-    {
-            cout << "GraphicsComponrnt: updateComponent(Scene*) Called" << endl;
-
-        if (mWindowComponentHandle->sizeHasChanged())
-        {
-            onWindowDimensionsChanged();
-        }
-
-        // View transform
-        mViewMatrix = mCamera->getViewMatrix();
-
-        if (!mWindowComponentHandle->shouldClose())
-        {
-            // Clear existing Queues
-            clearSpriteQueue();
-            clearModelQueue();
-            clearFontQueue();
-            clearLightQueue();
-
-            scene->getRootSceneObjectRuntimeHandle()->applyToAll
-            (
-                function<void*(SceneObjectRuntime*)>
-                (
-                    [&](SceneObjectRuntime* object)
+                [&](SceneObjectRuntime* object)
+                {
+                    // Models
+                    if (object->hasModelInstance())
                     {
-                        // Models
-                        if (object->hasModelInstance())
+                        if (object->hasShaderInstance())
                         {
-                            if (object->hasShaderInstance())
-                            {
-                                addToModelQueue(object);
-                            }
-                            else
-                            {
-                                cerr << "GraphicsComponent: Object " << object->getUuid()
-                                << " has model, but no shader assigned." << endl;
-                            }
+                            addToModelQueue(object);
                         }
-
-                        // Sprites
-                        if (object->hasSpriteInstance())
+                        else
                         {
-                            if (object->hasShaderInstance())
-                            {
-                                addToSpriteQueue(object);
-                            }
-                            else
-                            {
-                                cerr << "GraphicsComponent: Object "
-                                     << object->getUuid()
-                                     << " has sprite, but no shader assigned."
-                                     << endl;
-                            }
-                         }
-
-                        // Fonts
-                        if (object->hasFontInstance())
-                        {
-                            if (object->hasShaderInstance())
-                            {
-                                addToFontQueue(object);
-                            }
-                            else
-                            {
-                                cerr << "GraphicsComponent: Object "
-                                     << object->getUuid()
-                                     << " has font, but no shader assigned."
-                                     << endl;
-                            }
+                            log->error("GraphicsComponent: Object {} has model, but no shader assigned." , object->getUuid());
                         }
+                    }
+
+                    // Sprites
+                    if (object->hasSpriteInstance())
+                    {
+                        if (object->hasShaderInstance())
+                        {
+                            addToSpriteQueue(object);
+                        }
+                        else
+                        {
+                            log->error(
+                                "GraphicsComponent: Object {} has sprite, but no shader assigned.",
+                                 object->getUuid()
+                            );
+                        }
+                     }
+
+                    // Fonts
+                    if (object->hasFontInstance())
+                    {
+                        if (object->hasShaderInstance())
+                        {
+                            addToFontQueue(object);
+                        }
+                        else
+                        {
+                            log->error(
+                                "GraphicsComponent: Object {} has font, but no shader assigned.",
+                                 object->getUuid()
+                            );
+                        }
+                    }
 
                         // Lights
                         if (object->hasLightInstance())
@@ -393,7 +399,8 @@ namespace Dream
     GraphicsComponent::clearSpriteQueue
     ()
     {
-            cout << "GraphicsComponent: Clear 2D Queue" << endl;
+        auto log = getLog();
+            log->info("GraphicsComponent: Clear 2D Queue" );
         mSpriteQueue.clear();
     }
 
@@ -401,9 +408,10 @@ namespace Dream
     GraphicsComponent::addToSpriteQueue
     (SceneObjectRuntime* object)
     {
-            cout << "GraphicsComponent: Adding "
-                 << object->getNameAndUuidString()
-                 << " to Sprite Queue" << endl;
+        auto log = getLog();
+            log->info("GraphicsComponent: Adding {} to Sprite Queue",
+                 object->getNameAndUuidString()
+                      );
         mSpriteQueue.push_back(object);
     }
 
@@ -411,9 +419,10 @@ namespace Dream
     GraphicsComponent::drawSpriteQueue
     ()
     {
+        auto log = getLog();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            cout << "GraphicsComponent: Draw 2D Queue" << endl;
+            log->info("GraphicsComponent: Draw 2D Queue" );
         for (SceneObjectRuntime* sceneObj : mSpriteQueue)
         {
             drawSprite(sceneObj);
@@ -425,7 +434,8 @@ namespace Dream
     GraphicsComponent::clearModelQueue
     ()
     {
-            cout << "GraphicsComponent: Clear 3D Queue" << endl;
+        auto log = getLog();
+            log->info("GraphicsComponent: Clear 3D Queue" );
         mModelQueue.clear();
     }
 
@@ -433,9 +443,11 @@ namespace Dream
     GraphicsComponent::addToModelQueue
     (SceneObjectRuntime* object)
     {
-            cout << "GraphicsComponent: Adding "
-                 << object->getNameAndUuidString()
-                 << " to 3D Queue" << endl;
+        auto log = getLog();
+        log->info(
+            "GraphicsComponent: Adding {} to 3D Queue",
+             object->getNameAndUuidString()
+          );
         mModelQueue.push_back(object);
     }
 
@@ -443,8 +455,9 @@ namespace Dream
     GraphicsComponent::drawModelQueue
     ()
     {
+        auto log = getLog();
         preModelRender();
-            cout << "GraphicsComponent: Draw 3D Queue" << endl;
+            log->info("GraphicsComponent: Draw 3D Queue" );
         for (SceneObjectRuntime* it : mModelQueue)
         {
             drawModel(it);
@@ -457,7 +470,8 @@ namespace Dream
     GraphicsComponent::clearFontQueue
     ()
     {
-            cout << "GraphicsComponent: Clear Font Queue" << endl;
+        auto log = getLog();
+            log->info("GraphicsComponent: Clear Font Queue" );
         mFontQueue.clear();
     }
 
@@ -465,9 +479,9 @@ namespace Dream
     GraphicsComponent::addToFontQueue
     (SceneObjectRuntime* object)
     {
-            cout << "GraphicsComponent: Adding "
-                 << object->getNameAndUuidString()
-                 << " to Font Queue" << endl;
+        auto log = getLog();
+            log->info("GraphicsComponent: Adding {} to Font Queue",
+                 object->getNameAndUuidString());
         mFontQueue.push_back(object);
     }
 
@@ -475,8 +489,9 @@ namespace Dream
     GraphicsComponent::drawFontQueue
     ()
     {
+        auto log = getLog();
         preFontRender();
-            cout << "GraphicsComponent: Draw Font Queue" << endl;
+            log->info("GraphicsComponent: Draw Font Queue" );
         for (SceneObjectRuntime* it : mFontQueue)
         {
             drawFont(it);
@@ -503,7 +518,8 @@ namespace Dream
     GraphicsComponent::drawSprite
     (SceneObjectRuntime* sceneObject)
     {
-            cout << "GraphicsComponent: Drawing Sprite " << sceneObject->getNameAndUuidString() << endl;
+        auto log = getLog();
+            log->info("GraphicsComponent: Drawing Sprite {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
         SpriteInstance* sprite = sceneObject->getSpriteInstance();
@@ -573,7 +589,8 @@ namespace Dream
     GraphicsComponent::drawFont
     (SceneObjectRuntime* sceneObject)
     {
-            cout << "GraphicsComponent: Drawing Font " << sceneObject->getNameAndUuidString() << endl;
+        auto log = getLog();
+            log->info("GraphicsComponent: Drawing Font {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
@@ -594,13 +611,13 @@ namespace Dream
         }
         else
         {
-            cout << "GraphicsComponent: Font: Unable to set textColour uniform";
+            log->info("GraphicsComponent: Font: Unable to set textColour uniform");
         }
 
         // calculate the model matrix
         vec3 fontTranslation = sceneObject->getTranslation();
         vec3 translation = mCamera->getRelativeTranslation(fontTranslation.z);
-        mat4 rotationMatrix = mCamera->getRelativeRotation(translation);
+        //mat4 rotationMatrix = mCamera->getRelativeRotation(translation);
 
         // Iterate through all characters
         string text = font->getText();
@@ -611,7 +628,7 @@ namespace Dream
 
             if (sceneObject->followsCamera())
             {
-                    cout << "GraphicsComponent: Font: Applying Camera Transform" << endl;
+                    log->info("GraphicsComponent: Font: Applying Camera Transform" );
 
                 //modelMatrix *= rotationMatrix;
                 modelMatrix = translate(modelMatrix,translation);
@@ -664,7 +681,7 @@ namespace Dream
                 )
             };
 
-            cout << "GraphicsComponent: Font texture is " << ch.TextureID << endl;
+            log->info("GraphicsComponent: Font texture is " , ch.TextureID );
             // Setup Texture
             glActiveTexture(GL_TEXTURE0);
             Constants::checkGLError("GfxComponent: Font: After ActivateTexture");
@@ -682,7 +699,7 @@ namespace Dream
             glVertexAttribPointer(
                 0, 3, GL_FLOAT, GL_FALSE,
                 sizeof(FontCharacterVertex),
-                static_cast<GLvoid*>(0)
+                static_cast<GLvoid*>(nullptr)
             );
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(
@@ -709,9 +726,10 @@ namespace Dream
     GraphicsComponent::drawModel
     (SceneObjectRuntime* sceneObject)
     {
+        auto log = getLog();
         Constants::checkGLError("Before drawModel");
 
-            cout << "GraphicsComponent: Drawing Model " << sceneObject->getNameAndUuidString() << endl;
+            log->info("GraphicsComponent: Drawing Model " , sceneObject->getNameAndUuidString() );
 
         // Get Assets
         AssimpModelInstance* model = sceneObject->getModelInstance();

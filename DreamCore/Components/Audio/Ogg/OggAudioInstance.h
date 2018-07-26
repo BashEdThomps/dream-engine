@@ -19,12 +19,13 @@
 
 #include <string>
 #include "../AudioInstance.h"
+#include "../../../Common/ILoggable.h"
 
 using std::string;
 
 namespace Dream
 {
-    class OggAudioInstance : public AudioInstance
+    class OggAudioInstance : public AudioInstance, ILoggable
     {
 
     public:

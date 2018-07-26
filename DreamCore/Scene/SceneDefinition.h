@@ -21,6 +21,7 @@
 #include <vector>
 #include <memory>
 #include "../Common/IDefinition.h"
+#include "../Common/ILoggable.h"
 #include "../Components/Transform3D.h"
 
 using std::vector;
@@ -32,7 +33,7 @@ namespace Dream
     class SceneObject;
     class SceneObjectDefinition;
 
-    class SceneDefinition : public IDefinition
+    class SceneDefinition : public IDefinition, ILoggable
     {
 
     private:

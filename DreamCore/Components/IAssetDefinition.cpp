@@ -30,23 +30,26 @@ namespace Dream
     IAssetDefinition::getAssetType
     (json js)
     {
-       return Constants::getAssetTypeEnumFromString(js[Constants::ASSET_TYPE]);
+        return Constants::getAssetTypeEnumFromString(js[Constants::ASSET_TYPE]);
     }
 
     IAssetDefinition::IAssetDefinition
     (ProjectDefinition* parent, json jsonDef)
         : IDefinition(jsonDef),
+          ILoggable ("AssetDefinition"),
           mProjectDefinitionHandle(parent)
     {
-            cout << "AssetDefinition: Constructing "
-                 << getNameAndUuidString() << endl;
+        auto log = getLog();
+        log->info( "AssetDefinition: Constructing {}",
+                   getNameAndUuidString() );
     }
 
     IAssetDefinition::~IAssetDefinition
     ()
     {
-            cout << "AssetDefinition: Destructing "
-                 << getNameAndUuidString() << endl;
+        auto log = getLog();
+        log->info( "AssetDefinition: Destructing {}",
+                   getNameAndUuidString() );
     }
 
     void
@@ -80,7 +83,7 @@ namespace Dream
     {
         if (mJson[Constants::ASSET_FORMAT].is_null())
         {
-           mJson[Constants::ASSET_FORMAT] = "";
+            mJson[Constants::ASSET_FORMAT] = "";
         }
 
         return mJson[Constants::ASSET_FORMAT];
@@ -210,7 +213,8 @@ namespace Dream
     IAssetDefinition::showStatus
     ()
     {
-            cout << "AssetDefinition: " << mJson.dump(1) << endl;
+        auto log = getLog();
+        log->info( "AssetDefinition: " , mJson.dump(1) );
     }
 
     ProjectDefinition*

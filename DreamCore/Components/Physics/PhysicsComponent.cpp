@@ -41,7 +41,8 @@ namespace Dream
 {
     PhysicsComponent::PhysicsComponent
     ()
-        : IComponent()
+        : IComponent(),
+          ILoggable("PhysicsComponent")
     {
         mDebug = false;
     }
@@ -49,7 +50,8 @@ namespace Dream
     PhysicsComponent::~PhysicsComponent
     ()
     {
-            cout << "PhysicsComponent: Destroying Object" << endl;
+        auto log = getLog();
+        log->info( "PhysicsComponent: Destroying Object" );
 
         vector<btCollisionShape*> shapes;
 
@@ -65,17 +67,17 @@ namespace Dream
             }
             if (body && body->getMotionState())
             {
-                    cout << "PhysicsComponent: Deleting a motion state" << endl;
+                log->info( "PhysicsComponent: Deleting a motion state" );
                 delete body->getMotionState();
             }
-                cout << "PhysicsComponent: Deleting a collision object" << endl;
+            log->info( "PhysicsComponent: Deleting a collision object" );
             mDynamicsWorld->removeCollisionObject(obj);
             delete obj;
         }
 
         for (btCollisionShape* shape : shapes)
         {
-                cout << "PhysicsComponent: Deleting Shape" << endl;
+            log->info( "PhysicsComponent: Deleting Shape" );
             delete shape;
         }
 
@@ -115,7 +117,8 @@ namespace Dream
     PhysicsComponent::setGravity
     (vector<float> gravity)
     {
-            cout <<"PhysicsComponent: Setting Gravity" << String::floatVectorToString(gravity) << endl;
+        auto log = getLog();
+        log->info("PhysicsComponent: Setting Gravity" , String::floatVectorToString(gravity) );
         mGravity = btVector3(gravity[0],gravity[1],gravity[2]);
         if (mDynamicsWorld != nullptr)
         {
@@ -126,7 +129,8 @@ namespace Dream
     bool PhysicsComponent::init
     ()
     {
-            cout << "PhysicsComponent: Initialising...";
+        auto log = getLog();
+        log->info( "PhysicsComponent: Initialising...");
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -144,7 +148,7 @@ namespace Dream
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
         mDynamicsWorld->setDebugDrawer(mDebugDrawer.get());
 
-            cout << "done." << endl;
+        log->info( "done." );
         return true;
     }
 
@@ -152,7 +156,8 @@ namespace Dream
     PhysicsComponent::updateComponent
     (SceneRuntime* scene)
     {
-            cout << "PhysicsComponent: Update Called" << endl;
+        auto log = getLog();
+        log->info( "PhysicsComponent: Update Called" );
 
         populatePhysicsWorld(scene);
 
@@ -170,10 +175,10 @@ namespace Dream
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
     {
-            cout << "PhysicsComponent: Adding Rigid Body to Dynamics World" << endl;
+        auto log = getLog();
+        log->info( "PhysicsComponent: Adding Rigid Body to Dynamics World" );
         mDynamicsWorld->addRigidBody(rigidBody);
-            cout << "PhysicsComponent: World has " << mDynamicsWorld->getNumCollisionObjects()
-                 << " rigid bodies." << endl;
+        log->info( "PhysicsComponent: World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
     }
 
     void
@@ -187,7 +192,8 @@ namespace Dream
     PhysicsComponent::removeRigidBody
     (btRigidBody *rigidBody)
     {
-            cout << "PhysicsComponent: Removing Rigid Body from Dynamics World" << endl;
+        auto log = getLog();
+        log->info( "PhysicsComponent: Removing Rigid Body from Dynamics World" );
         mDynamicsWorld->removeRigidBody(rigidBody);
     }
 
@@ -202,35 +208,32 @@ namespace Dream
     PhysicsComponent::populatePhysicsWorld
     (SceneRuntime* scene)
     {
+        auto log = getLog();
         scene->getRootSceneObjectRuntimeHandle()->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* so)
-                {
-                    // Has physics
-                    if (so->hasPhysicsObjectInstance())
-                    {
-                        PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
-                        if (!physicsObject->isInPhysicsWorld())
+                (
+                    function<void*(SceneObjectRuntime*)>
+                    (
+                        [&](SceneObjectRuntime* so)
+        {
+                        // Has physics
+                        if (so->hasPhysicsObjectInstance())
                         {
-                                cout << "PhysicsComponent: Adding SceneObject "
-                                     << so->getNameAndUuidString()
-                                     << " to Physics World" << endl;
-                            addPhysicsObjectInstance(physicsObject);
-                            physicsObject->setInPhysicsWorld(true);
+                            PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
+                            if (!physicsObject->isInPhysicsWorld())
+                            {
+                                log->info( "PhysicsComponent: Adding SceneObject {} to physics world", so->getNameAndUuidString());
+                                addPhysicsObjectInstance(physicsObject);
+                                physicsObject->setInPhysicsWorld(true);
+                            }
+                            else
+                            {
+                                log->info( "PhysicsComponent: SceneObject {} is in the physics world",so->getNameAndUuidString());
+                            }
                         }
-                        else
-                        {
-                                cout << "PhysicsComponent: SceneObject "
-                                     << so->getNameAndUuidString()
-                                     << " is in the Physics World" << endl;
-                        }
+                        return nullptr;
                     }
-                    return nullptr;
-                }
-            )
-        );
+                    )
+                );
     }
 
     void

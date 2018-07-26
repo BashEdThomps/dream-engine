@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include "../Common/ILoggable.h"
 
 using std::chrono::time_point;
 using std::chrono::high_resolution_clock;
@@ -8,7 +9,7 @@ using std::chrono::duration;
 
 namespace Dream
 {
-    class Time
+    class Time : public ILoggable
     {
     private:
         time_point<high_resolution_clock> mCurrentTime;

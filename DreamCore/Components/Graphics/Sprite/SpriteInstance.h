@@ -21,6 +21,7 @@
 #include <GL/glew.h>
 
 #include "../../../Common/Constants.h"
+#include "../../../Common/ILoggable.h"
 #include "../../../Components/IAssetInstance.h"
 
 using nlohmann::json;
@@ -30,7 +31,7 @@ namespace Dream
     class TextureCache;
     class SpriteDefinition;
 
-    class SpriteInstance : public IAssetInstance
+    class SpriteInstance : public IAssetInstance, ILoggable
     {
     private:
         int mWidth;

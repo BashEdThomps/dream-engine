@@ -19,6 +19,7 @@
 #pragma once
 
 #include "../Common/IDefinition.h"
+#include "../Common/ILoggable.h"
 #include "../Common/Constants.h"
 
 using std::string;
@@ -31,7 +32,7 @@ namespace Dream
     class SceneDefinition;
     class IAssetDefinition;
 
-    class ProjectDefinition : public IDefinition
+    class ProjectDefinition : public IDefinition, ILoggable
     {
     private:
         vector<unique_ptr<SceneDefinition>> mSceneDefinitions;

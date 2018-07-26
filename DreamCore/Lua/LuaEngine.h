@@ -32,6 +32,7 @@ extern "C"
 #include "LuaScriptCache.h"
 #include "InputEvent.h"
 #include "../Common/Constants.h"
+#include "../Common/ILoggable.h"
 
 using std::unique_ptr;
 using std::string;
@@ -48,7 +49,7 @@ namespace Dream
     class LuaScriptInstance;
     class Event;
 
-    class LuaEngine
+    class LuaEngine : public ILoggable
     {
     public: // Methods
         LuaEngine(ProjectRuntime* projectHandle, LuaScriptCache* cache);

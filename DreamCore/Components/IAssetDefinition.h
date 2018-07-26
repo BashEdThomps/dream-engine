@@ -30,6 +30,7 @@
 #endif
 
 #include "../Common/IDefinition.h"
+#include "../Common/ILoggable.h"
 #include "../Common/Constants.h"
 #include "Transform3D.h"
 
@@ -41,7 +42,7 @@ namespace Dream
 {
     class ProjectDefinition;
 
-    class IAssetDefinition : public IDefinition
+    class IAssetDefinition : public IDefinition, ILoggable
     {
 
     public:

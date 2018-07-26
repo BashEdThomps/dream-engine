@@ -23,14 +23,11 @@
 #include "../../../Common/Constants.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
-using std::cerr;
-using std::cout;
-
 namespace Dream
 {
     OggAudioInstance::OggAudioInstance
     (AudioDefinition* definition,SceneObjectRuntime* transform)
-        : AudioInstance(definition,transform)
+        : AudioInstance(definition,transform), ILoggable ("OggAudioInstance")
     {
 
     }
@@ -45,8 +42,9 @@ namespace Dream
     OggAudioInstance::load
     (string projectPath)
     {
+        auto log = getLog();
         string absPath = projectPath+mDefinitionHandle->getAssetPath();
-        cout << "OggAudioInstance: Loading Instance: " << absPath << endl;
+        log->info("Loading Instance: {}", absPath);
 
         // 0 for Little-Endian, 1 for Big-Endian
         int endian = 0;
@@ -58,8 +56,7 @@ namespace Dream
         FILE *file = fopen(absPath.c_str(), "rb");
         if (file == nullptr)
         {
-            cerr << "OggAudioInstance:: Cannot open " << absPath
-                      << " for reading..." << endl;
+            log->error("Cannot open {} for reading", absPath);
             return false;
         }
 
@@ -67,8 +64,7 @@ namespace Dream
         OggVorbis_File oggFile;
         if (ov_open(file, &oggFile, nullptr, 0) != 0)
         {
-            cerr << "OggAudioInstance: Error opening " << absPath
-                      << " for decoding..." << endl;
+            log->error("Error opening {} for decoding");
             return false;
         }
 
@@ -98,7 +94,7 @@ namespace Dream
             if (bytes < 0)
             {
                 ov_clear(&oggFile);
-                cerr << "OggAudioInstance: Error decoding " << absPath << endl;
+                log->error("Error decoding {}", absPath);
                 return false;
             }
             // Append to end of buffer

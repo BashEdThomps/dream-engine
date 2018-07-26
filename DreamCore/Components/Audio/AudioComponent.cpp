@@ -24,14 +24,11 @@
 #include "AudioDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
-using std::cout;
-using std::endl;
-
 namespace Dream
 {
     AudioComponent::AudioComponent
     ()
-        : IComponent()
+        : IComponent(), ILoggable("AudioComponent")
     {
 
     }
@@ -39,9 +36,10 @@ namespace Dream
     AudioComponent::~AudioComponent
     ()
     {
+        auto log = getLog();
         for (ALuint source : mSources)
         {
-            cout << "AudioComponent: Stopping source " << source << endl;
+            log->info("Stopping source {}" , source);
             alSourceStop(source);
         }
         deleteAllSources();
@@ -57,7 +55,8 @@ namespace Dream
     AudioComponent::init
     ()
     {
-        cout << "AudioComponent: Initialising..." << endl;
+        auto log = getLog();
+        log->info("Initialising...");
         mDevice = alcOpenDevice(nullptr);
         mContext = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
@@ -86,9 +85,10 @@ namespace Dream
     AudioComponent::deleteAllBuffers
     ()
     {
+        auto log = getLog();
         for (ALuint buffer : mBuffers)
         {
-            cout << "AudioComponent: Deleting buffer " << buffer << endl;
+            log->info("Deleting buffer {}" , buffer);
             deleteBuffers(1, buffer);
         }
     }
@@ -113,9 +113,10 @@ namespace Dream
     AudioComponent::deleteAllSources
     ()
     {
+        auto log = getLog();
         for (ALuint source : mSources)
         {
-            cout << "AudioComponent: Deleting buffer " << source << endl;
+            log->info("Deleting buffer {}" , source);
             deleteSources(1, source);
         }
     }
@@ -152,7 +153,8 @@ namespace Dream
     AudioComponent::playSource
     (ALuint source)
     {
-        cout <<   "AudioComponent: Playing source " << source << endl;
+        auto log = getLog();
+        log->info(  "Playing source {}" , source);
         alSourcePlay(source);
     }
 
@@ -160,7 +162,8 @@ namespace Dream
     AudioComponent::stopSource
     (ALuint source)
     {
-        cout <<   "AudioComponent: Stopping source " << source << endl;
+        auto log = getLog();
+        log->info(  "Stopping source {}" , source);
         alSourceStop(source);
     }
 
@@ -168,7 +171,8 @@ namespace Dream
     AudioComponent::pauseSource
     (ALuint source)
     {
-        cout <<   "AudioComponent: Pausing source " << source << endl;
+        auto log = getLog();
+        log->info(  "Pausing source {}" , source);
         alSourcePause(source);
     }
 
@@ -177,6 +181,7 @@ namespace Dream
     AudioComponent::pushToPlayQueue
     (AudioInstance* asset)
     {
+        auto log = getLog();
         try
         {
             if (find(mPlayQueue.begin(),mPlayQueue.end(), asset) == mPlayQueue.end())
@@ -203,13 +208,16 @@ namespace Dream
                     //audioAsset->getAudioDataBuffer().clear();
                 }
                 mPlayQueue.push_back(audioAsset);
-                cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to play queue." << endl;;
+                log->info("Pushed {} to play queue" , asset->getNameAndUuidString());
             }
         }
         catch (const exception &ex)
         {
-            cerr << "AudioComponent: Unable to push asset to play queue" << asset->getNameAndUuidString() << endl
-                 << ex.what() << endl;
+            log->error(
+                "Unable to push asset to play queue {}\n{}",
+                asset->getNameAndUuidString(),
+                ex.what()
+            );
         }
     }
 
@@ -217,18 +225,18 @@ namespace Dream
     AudioComponent::pushToPauseQueue
     (AudioInstance* asset)
     {
+        auto log = getLog();
         try
         {
             if (find(mPauseQueue.begin(),mPauseQueue.end(), asset) == mPauseQueue.end())
             {
                 mPauseQueue.push_back(dynamic_cast<AudioInstance*>(asset));
-                cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to pause queue." << endl;;
+                log->info("Pushed {} to play queue", asset->getNameAndUuidString());
             }
         }
         catch (const exception &ex)
         {
-            cerr << "AudioComponent: Unable to push asset to pause queue" << asset->getNameAndUuidString() << endl
-                      << ex.what() << endl;
+            log->error("Unable to push asset to pause queue {}\n{}", asset->getNameAndUuidString(),ex.what());
         }
     }
 
@@ -236,18 +244,22 @@ namespace Dream
     AudioComponent::pushToStopQueue
     (AudioInstance* asset)
     {
+        auto log = getLog();
         try
         {
             if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
             {
                 mStopQueue.push_back(asset);
-                cout << "AudioComponent: Pushed " << asset->getNameAndUuidString() << " to stop queue." << endl;;
+                log->info("Pushed " , asset->getNameAndUuidString() , " to stop queue.");;
             }
         }
         catch (const exception &ex)
         {
-            cerr << "AudioComponent: Unable to push asset to stop queue" << asset->getNameAndUuidString() << endl
-                 << ex.what() << endl;
+            log->error
+            (
+                "Unable to push asset to stop queue {}\n{}",
+                asset->getNameAndUuidString(),ex.what()
+            );
         }
     }
 
@@ -255,7 +267,8 @@ namespace Dream
     AudioComponent::updateComponent
     (SceneRuntime*)
     {
-        cout << "AudioComponent: Updating Component" << endl;
+        auto log = getLog();
+        log->info("Updating Component");
         updatePlayQueue();
         updatePauseQueue();
         updateStopQueue();
@@ -263,7 +276,8 @@ namespace Dream
 
     void AudioComponent::updatePlayQueue()
     {
-        cout << "AudioComponent: Updating Play Queue" << endl;
+        auto log = getLog();
+        log->info("Updating Play Queue");
         for (AudioInstance* audioAsset : mPlayQueue)
         {
             if (getAudioStatus(audioAsset) != PLAYING)
@@ -273,7 +287,7 @@ namespace Dream
             }
             else
             {
-                cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already playing" << endl;
+                log->info("" , audioAsset->getNameAndUuidString() , " is already playing");
             }
         }
         mPlayQueue.clear();
@@ -283,7 +297,8 @@ namespace Dream
     AudioComponent::updatePauseQueue
     ()
     {
-        cout << "AudioComponent: Updating Pause Queue" << endl;
+        auto log = getLog();
+        log->info("Updating Pause Queue");
         for (AudioInstance* audioAsset : mPauseQueue)
         {
             if (getAudioStatus(audioAsset) != PAUSED)
@@ -293,7 +308,7 @@ namespace Dream
             }
             else
             {
-                cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already paused" << endl;
+                log->info("{} is already paused", audioAsset->getNameAndUuidString());
             }
         }
         mPauseQueue.clear();
@@ -303,7 +318,8 @@ namespace Dream
     AudioComponent::updateStopQueue
     ()
     {
-        cout << "AudioComponent: Updating Stop Queue" << endl;
+        auto log = getLog();
+        log->info("Updating Stop Queue");
 
         for (AudioInstance* audioAsset : mStopQueue)
         {
@@ -314,7 +330,7 @@ namespace Dream
             }
             else
             {
-                cout << "AudioComponent: " << audioAsset->getNameAndUuidString() << " is already stopped" << endl;
+                log->info("" , audioAsset->getNameAndUuidString() , " is already stopped");
             }
         }
         mStopQueue.clear();
@@ -354,6 +370,7 @@ namespace Dream
     AudioComponent::getAudioBuffer
     (AudioInstance* asset, int offset, int length)
     {
+        auto log = getLog();
         vector<char> retval = vector<char>(length);
         try
         {
@@ -365,8 +382,12 @@ namespace Dream
         }
         catch (const exception &ex)
         {
-            cerr << "AudioComponent: Unable to get buffer data for " << asset->getNameAndUuidString()
-                      << ex.what() << endl;
+            log->error
+            (
+                "Unable to get buffer data for {}\n{}",
+                asset->getNameAndUuidString(),
+                ex.what()
+            );
         }
         return retval;
     }
@@ -375,6 +396,7 @@ namespace Dream
     AudioComponent::getSampleOffset
     (AudioInstance* asset)
     {
+        auto log = getLog();
         try
         {
             AudioInstance* audioAsset;
@@ -383,8 +405,11 @@ namespace Dream
         }
         catch (const exception &ex)
         {
-            cerr << "AudioComponent: Could not get sample offset for asset" << asset->getNameAndUuidString() << endl;
-            cerr << ex.what() << endl;
+            log->error(
+                "Could not get sample offset for asset {}\n{}" ,
+                asset->getNameAndUuidString(),
+                ex.what()
+            );
         }
         return 0.0f;
     }
@@ -393,6 +418,7 @@ namespace Dream
     AudioComponent::getAudioStatus
     (AudioInstance* audioAsset)
     {
+        auto log = getLog();
         try
         {
             int state;
@@ -406,14 +432,17 @@ namespace Dream
                 case AL_PAUSED:
                     return PAUSED;
                 default:
-                    cerr << "AudioComponent: Unknown Audio State for " << audioAsset->getNameAndUuidString() << endl;
+                    log->error("Unknown Audio State for {} " , audioAsset->getNameAndUuidString());
                     return UNKNOWN;
             }
         }
         catch (const exception &ex)
         {
-            cerr << "AudioComponent: Unable to get state of asset " << audioAsset->getNameAndUuidString()
-                      << endl << ex.what() << endl;
+           log->error(
+              "Unable to get state of asset {} {} ",
+              audioAsset->getNameAndUuidString(),
+              ex.what()
+            );
         }
         return UNKNOWN;
     }
@@ -422,6 +451,7 @@ namespace Dream
     AudioComponent::newAudioInstance
     (AudioDefinition* definition,SceneObjectRuntime* rt)
     {
+        auto log = getLog();
         if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
             return new WavAudioInstance(definition,rt);
@@ -430,8 +460,7 @@ namespace Dream
         {
             return new OggAudioInstance(definition,rt);
         }
-        cerr << "AudioComponent: Error, unrecognised audio format "
-             << definition->getFormat() << endl;
+        log->error("Error, unrecognised audio format {}", definition->getFormat());
         return nullptr;
 
     }

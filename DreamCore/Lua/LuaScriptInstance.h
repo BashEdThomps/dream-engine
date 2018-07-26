@@ -21,13 +21,14 @@
 #include <string>
 
 #include "../Common/Constants.h"
+#include "../Common/ILoggable.h"
 #include "../Components/IAssetInstance.h"
 
 namespace Dream
 {
     class ScriptDefinition;
 
-    class LuaScriptInstance : public IAssetInstance
+    class LuaScriptInstance : public IAssetInstance, ILoggable
     {
 
     public:

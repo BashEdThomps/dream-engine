@@ -25,21 +25,22 @@
 #include <assimp/scene.h>
 
 using std::pair;
-using std::cout;
-using std::endl;
 
 namespace Dream
 {
     AssimpCache::AssimpCache
     ()
+        :ILoggable ("AssimpCache")
     {
-            cout << "AssimpCache: Contructing" << endl;
+        auto log = getLog();
+            log->info("Contructing" );
     }
 
     AssimpCache::~AssimpCache
     ()
     {
-            cout << "AssimpCache: Destructing" << endl;
+        auto log = getLog();
+            log->info("Destructing" );
         for (auto imp : mCache)
         {
             if (imp.second != nullptr)
@@ -53,16 +54,17 @@ namespace Dream
     AssimpCache::getModelFromCache
     (string path)
     {
+        auto log = getLog();
         for (pair<string,Importer*> it : mCache)
         {
             if (it.first.compare(path) == 0)
             {
-                    cout << "AssimpCache: Found cached scene for " << path << endl;
+                    log->info("Found cached scene for {}", path );
                 return it.second;
             }
         }
 
-          cout << "AssimpCache: Loading " << path << " from disk" << endl;
+          log->info("Loading {} from disk",  path);
 
         Importer* importer = new Importer();
         importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -70,7 +72,7 @@ namespace Dream
         const aiScene* scene = importer->GetScene();
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            cerr << "AssimpCache: Error " << importer->GetErrorString() << endl;
+            log->error( "Error {}" ,importer->GetErrorString() );
             return nullptr;
         }
 

@@ -24,6 +24,7 @@ namespace Dream
   SpriteInstance::SpriteInstance
   (TextureCache* cache, SpriteDefinition* definition, SceneObjectRuntime* transform)
       : IAssetInstance(definition,transform),
+        ILoggable ("SpriteInstance"),
         mCacheHandle(cache)
   {
     loadExtraAttributes(mDefinitionHandle->getJson());
@@ -32,7 +33,8 @@ namespace Dream
   SpriteInstance::~SpriteInstance
   ()
   {
-            cout << "SpriteInstance: Destroying Object" << endl;
+      auto log = getLog();
+            log->info( "SpriteInstance: Destroying Object" );
       return;
   }
 
@@ -40,9 +42,10 @@ namespace Dream
   SpriteInstance::load
   (string projectPath)
   {
+      auto log = getLog();
     string path = projectPath + mDefinitionHandle->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
-        cout << "SpriteInstance: Loading sprite from " << path << endl;
+        log->info( "SpriteInstance: Loading sprite from {}" , path );
 
     Texture tex = mCacheHandle->loadTextureFromFile("sprite",directory.c_str(),"sprite");
     mTexture = tex.id;

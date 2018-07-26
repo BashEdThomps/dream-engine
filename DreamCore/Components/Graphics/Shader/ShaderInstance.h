@@ -29,6 +29,7 @@
 #include <glm/matrix.hpp>
 
 #include "../../../Common/Constants.h"
+#include "../../../Common/ILoggable.h"
 #include "../../IAssetInstance.h"
 
 using std::string;
@@ -41,7 +42,7 @@ namespace Dream
     class ShaderCache;
     class ShaderDefinition;
 
-    class ShaderInstance : public IAssetInstance
+    class ShaderInstance : public IAssetInstance, ILoggable
     {
     private:
         const static GLint UNIFORM_NOT_FOUND;

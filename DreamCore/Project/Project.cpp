@@ -65,7 +65,7 @@ namespace Dream
         log->info("Denstructing");
         if (mDefinition)
         {
-             log->info(mDefinition->getNameAndUuidString());
+            log->info(mDefinition->getNameAndUuidString());
         }
     }
 
@@ -97,6 +97,7 @@ namespace Dream
     Project::openFromDirectory
     (string directory)
     {
+        auto log = getLog();
         DIR *dir;
         struct dirent *ent;
         vector<string> directoryContents;
@@ -108,8 +109,9 @@ namespace Dream
             }
             closedir (dir);
         }
-        else {
-            cerr << "Unable to open directory " << directory << endl;
+        else
+        {
+            log->error( "Unable to open directory {}", directory );
             return false;
         }
 
@@ -122,29 +124,25 @@ namespace Dream
             if (dotJsonIndex != string::npos)
             {
                 projectFileName = filename.substr(0,dotJsonIndex);
-                {
-                    cout << "Project: openFromDirectory - Found project file "
-                         << projectFileName
-                         << endl;
-                }
+                log->info( "Project: openFromDirectory - Found project file ",
+                           projectFileName
+                           );
             }
             else if (filename.compare(Constants::ASSET_DIR) == 0)
             {
-                {
-                    cout << "Project: openFromDirectory - Found asset directory " << endl;
-                }
+                log->info( "Project: openFromDirectory - Found asset directory " );
                 hasAssetDirectory = true;
             }
         }
 
         if (projectFileName.size() == 0 || !hasAssetDirectory)
         {
-            cerr << "Project: Error " << directory << " is not a valid project directory!" << endl;
+            log->error( "Project: Error {} is not a valid project directory!", directory  );
             return false;
         }
 
         {
-            cout << "Project: Loading " << projectFileName << Constants::PROJECT_EXTENSION << " from Directory" << directory << endl;
+            log->info( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
         }
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
@@ -210,9 +208,8 @@ namespace Dream
     Project::openFromArgumentParser
     (ArgumentParser &parser)
     {
-        {
-            cout << "Project: Loading from ArgumentParser" << endl;
-        }
+        auto log = getLog();
+        log->info( "Project: Loading from ArgumentParser" );
         FileReader projectFileReader(parser.getProjectFilePath());
         projectFileReader.readIntoString();
         bool loadSuccess = openFromFileReader(parser.getProjectPath(), projectFileReader);

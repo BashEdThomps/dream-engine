@@ -36,17 +36,15 @@
 #include "../Components/Graphics/Sprite/SpriteDefinition.h"
 #include "../Lua/ScriptDefinition.h"
 
-using std::cout;
-using std::endl;
-
 namespace Dream
 {
     ProjectDefinition::ProjectDefinition(json data)
-        : IDefinition(data)
+        : IDefinition(data) ,
+          ILoggable("ProjectDefinition")
     {
         {
-            cout << "ProjectDefinition: Constructing "
-                 << getNameAndUuidString() << endl;
+            auto log = getLog();
+            log->info( "ProjectDefinition: Constructing {}", getNameAndUuidString() );
         }
         loadChildDefinitions();
     }
@@ -55,9 +53,9 @@ namespace Dream
     ProjectDefinition::~ProjectDefinition
     ()
     {
+            auto log = getLog();
         {
-            cout << "ProjectDefinition: Destructing "
-                 << getNameAndUuidString() << endl;
+            log->info( "ProjectDefinition: Destructing {}",getNameAndUuidString() );
         }
     }
 
@@ -65,8 +63,9 @@ namespace Dream
     ProjectDefinition::showStatus
     ()
     {
+            auto log = getLog();
         {
-            cout << "ProjectDefinition: " << mJson.dump(1) << endl;
+            log->info( "ProjectDefinition: {}" , mJson.dump(1) );
         }
     }
 
@@ -152,9 +151,8 @@ namespace Dream
     ProjectDefinition::loadAssetDefinitions
     ()
     {
-        {
-            cout << "ProjectDefinition: Loading AssetDefinitions from JSON" << endl;
-        }
+            auto log = getLog();
+            log->info( "ProjectDefinition: Loading AssetDefinitions from JSON" );
 
         for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
@@ -166,9 +164,8 @@ namespace Dream
     ProjectDefinition::loadSceneDefinitions
     ()
     {
-        {
-            cout << "ProjectDefinition: Loading ScenesDefinitions from JSON" << endl;
-        }
+            auto log = getLog();
+            log->info( "ProjectDefinition: Loading ScenesDefinitions from JSON" );
 
         for (nlohmann::json it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
@@ -181,6 +178,7 @@ namespace Dream
     ProjectDefinition::createAssetDefinitionInstance
     (json assetDefinitionJs)
     {
+            auto log = getLog();
         IAssetDefinition* newDef = nullptr;
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
 
@@ -214,7 +212,7 @@ namespace Dream
                 newDef = new SpriteDefinition(this,assetDefinitionJs);
                 break;
             case NONE:
-                cerr << "ProjectDefinition: Unable to create Asset Definition. Unknown Type" << endl;
+                log->error( "ProjectDefinition: Unable to create Asset Definition. Unknown Type" );
                 newDef = nullptr;
                 break;
         }
@@ -238,10 +236,9 @@ namespace Dream
     ProjectDefinition::removeAssetDefinition
     (IAssetDefinition* assetDefinitionHandle)
     {
-        {
-            cout << "ProjectDefinition: Removing AssetDefinition "
-                 << assetDefinitionHandle->getNameAndUuidString() << endl;
-        }
+            auto log = getLog();
+            log->info( "ProjectDefinition: Removing AssetDefinition {}",
+                 assetDefinitionHandle->getNameAndUuidString() );
 
         remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
                   [&](const unique_ptr<IAssetDefinition>& thisDefinition)
@@ -339,13 +336,12 @@ namespace Dream
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
+            auto log = getLog();
         json assetDefinitionJson;
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
         {
-            cout << "ProjectDefinition: Creating new AssetDefinition with default Format"
-                 << defaultFormat
-                 << endl;
+            log->info( "ProjectDefinition: Creating new AssetDefinition with default Format {}", defaultFormat);
         }
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;

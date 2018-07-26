@@ -12,12 +12,13 @@
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
 #include "../../../Common/Constants.h"
+#include "../../../Common/ILoggable.h"
 
 
 namespace Dream
 {
     class AssimpModelInstance;
-    class AssimpMesh
+    class AssimpMesh : public ILoggable
     {
     private:
         GLuint mVAO;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../IAssetInstance.h"
+#include "../../Common/ILoggable.h"
 
 #include <string>
 #include <map>
@@ -22,7 +23,7 @@ namespace Dream
     class PhysicsMotionState;
     class PhysicsObjectDefinition;
 
-    class PhysicsObjectInstance : public IAssetInstance
+    class PhysicsObjectInstance : public IAssetInstance, ILoggable
     {
 
     private:

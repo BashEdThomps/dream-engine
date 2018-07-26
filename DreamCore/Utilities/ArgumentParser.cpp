@@ -22,10 +22,10 @@ namespace Dream
 {
     ArgumentParser::ArgumentParser
     (int argc, const char** argv)
+        : ILoggable ("ArgumentParser")
     {
-        {
-            cout << "ArgumentParser: Constructing" << endl;
-        }
+        auto log = getLog();
+        log->info( "ArgumentParser: Constructing" );
         mArgc = argc;
         mArgv = argv;
         mUsingHttp = false;
@@ -35,15 +35,15 @@ namespace Dream
     ArgumentParser::~ArgumentParser
     ()
     {
-        {
-            cout << "ArgumentParser: Destructing" << endl;
-        }
+        auto log = getLog();
+        log->info( "ArgumentParser: Destructing" );
     }
 
     void
     ArgumentParser::parse
     ()
     {
+        auto log = getLog();
         string *nextArg;
         for (int i=0;i<mArgc;i++)
         {
@@ -53,9 +53,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mDreamPath = string(mArgv[i+1]);
-                    {
-                        cout << "ArgumentParser: Got Dream Path " << mDreamPath << endl;
-                    }
+                    log->info( "ArgumentParser: Got Dream Path {}" , mDreamPath );
                 }
                 else
                 {
@@ -67,9 +65,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mProjectUUID = string(mArgv[i+1]);
-                    {
-                        cout << "ArgumentParser: Got Project UUID " << mProjectUUID << endl;
-                    }
+                    log->info( "ArgumentParser: Got Project UUID {}" , mProjectUUID );
                 }
                 else
                 {
@@ -82,13 +78,11 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mHttpUrl = string(mArgv[i+1]);
-                    {
-                        cout << "ArgumentParser: Loading project over HTTP from " << mHttpUrl << endl;
-                    }
+                    log->info( "ArgumentParser: Loading project over HTTP from {}" , mHttpUrl );
                 }
                 else
                 {
-                    cerr << "ArgumentParser: --http passed without URL argument." << endl;
+                    log->error( "ArgumentParser: --http passed without URL argument." );
                 }
             }
             delete nextArg;
@@ -102,14 +96,10 @@ namespace Dream
 
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
-        {
-            cout << "ArgumentParser: Got Project Path " << mProjectPath << endl;
-        }
+        log->info( "ArgumentParser: Got Project Path {}" , mProjectPath );
         mProjectFilePath = mProjectPath + Constants::PROJECT_PATH_SEP + mProjectUUID + Constants::PROJECT_EXTENSION;
 
-        {
-            cout << "ArgumentParser: Got Project File Path " << mProjectFilePath << endl;
-        }
+        log->info( "ArgumentParser: Got Project File Path {} " , mProjectFilePath );
     }
 
     string

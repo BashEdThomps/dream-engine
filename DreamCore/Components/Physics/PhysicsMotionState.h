@@ -19,12 +19,13 @@
 
 #include <LinearMath/btMotionState.h>
 #include "../Transform3D.h"
+#include "../../Common/ILoggable.h"
 
 class btTransform;
 
 namespace Dream
 {
-    class PhysicsMotionState : public btMotionState
+    class PhysicsMotionState : public btMotionState, ILoggable
     {
     protected:
         Transform3D& mDreamTransform;

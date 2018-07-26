@@ -3,12 +3,13 @@
 #include <vector>
 
 #include "../../Common/Constants.h"
+#include "../../Common/ILoggable.h"
 #include "../Transform3D.h"
 
 namespace Dream
 {
     using namespace std;
-    class Frame
+    class Frame : ILoggable
     {
     private:
         Transform3D mTransform;

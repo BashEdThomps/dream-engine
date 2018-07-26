@@ -36,22 +36,26 @@ namespace Dream
     PhysicsMotionState::PhysicsMotionState
     (Transform3D& dreamTransform)
         : btMotionState(),
-        mDreamTransform(dreamTransform)
+          ILoggable("PhysicsMotionState"),
+          mDreamTransform(dreamTransform)
     {
-            cout << "PhysicsMotionState: Constructor called" << endl;
+        auto log = getLog();
+        log->info( "PhysicsMotionState: Constructor called" );
     }
 
     PhysicsMotionState::~PhysicsMotionState
     ()
     {
-            cout << "PhysicsMotionState: Destroying Object" << endl;
+        auto log = getLog();
+        log->info( "PhysicsMotionState: Destroying Object" );
     }
 
     void
     PhysicsMotionState::setTransform
     (Transform3D& transform)
     {
-            cout << "PhysicsMotionState: setTransform called" << endl;
+        auto log = getLog();
+        log->info( "PhysicsMotionState: setTransform called" );
         mDreamTransform = transform;
     }
 
@@ -59,7 +63,8 @@ namespace Dream
     PhysicsMotionState::getWorldTransform
     (btTransform &worldTrans) const
     {
-            cout << "PhysicsMotionState: getWorldTransform called" << endl;
+        auto log = getLog();
+        log->info( "PhysicsMotionState: getWorldTransform called" );
         // Translation
         worldTrans.setOrigin(mDreamTransform.getTranslationAsBtVector3());
         // Rotation
@@ -72,7 +77,8 @@ namespace Dream
     PhysicsMotionState::setWorldTransform
     (const btTransform &worldTrans)
     {
-            cout << "PhysicsMotionState: setWorldTransform called" << endl;
+        auto log = getLog();
+        log->info( "PhysicsMotionState: setWorldTransform called" );
 
         // Translation
         btVector3 pos = worldTrans.getOrigin();
@@ -86,7 +92,8 @@ namespace Dream
     PhysicsMotionState::setKinematicPos
     (btTransform &trans)
     {
-            cout << "PhysicsMotionState: setKinematicPos called" << endl;
+        auto log = getLog();
+        log->info( "PhysicsMotionState: setKinematicPos called" );
         btVector3 pos = trans.getOrigin();
         mDreamTransform.setTranslation(pos.x(), pos.y(), pos.z());
     }

@@ -21,13 +21,15 @@
 #include <map>
 #include <assimp/Importer.hpp>
 
+#include "../../../Common/ILoggable.h"
+
 using std::string;
 using std::map;
 using ::Assimp::Importer;
 
 namespace Dream
 {
-    class AssimpCache
+    class AssimpCache : public ILoggable
     {
     private:
         map<string,Importer*> mCache;

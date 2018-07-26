@@ -20,19 +20,20 @@ namespace Dream
 
     const aiScene* PhysicsObjectInstance::getModelFromCache(string path)
     {
+        auto log = spdlog::stdout_color_mt("PhysicsObjectModelCache");
         for (pair<string,const aiScene*> it : AssimpModelCache)
         {
             if (it.first.compare(path) == 0)
             {
-                    cout << "PhysicsObjectInstance: Found cached scene for " << path << endl;
+                log->info( "Found cached scene for {} ", path );
                 return it.second;
             }
         }
-            cout << "PhysicsObjectInstance: Loading " << path << " from disk" << endl;
+        log->info( "Loading {} from disk", path);
         const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            cerr << "PhysicsObjectInstance: Error importing model " << mImporter.GetErrorString() << endl;
+            log->error( "Error importing model {} " ,mImporter.GetErrorString() );
             return nullptr;
         }
         AssimpModelCache.insert(pair<string,const aiScene*>(path,scene));
@@ -52,16 +53,19 @@ namespace Dream
     PhysicsObjectInstance::PhysicsObjectInstance
     (PhysicsObjectDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
+          ILoggable ("PhysicsObjectInstance"),
           mInPhysicsWorld(false)
     {
-            cout << "PhysicsObjectInstance: Constructing" << endl;
+        auto log = getLog();
+        log->info( "Constructing" );
         return;
     }
 
     PhysicsObjectInstance::~PhysicsObjectInstance
     ()
     {
-            cout << "PhysicsObjectInstance: Destroying" << endl;
+        auto log = getLog();
+        log->info( "Destroying" );
 
         /***** Deletes are handled by PhysicsComponent! *****/
 
@@ -115,15 +119,16 @@ namespace Dream
     PhysicsObjectInstance::load
     (string projectPath)
     {
+        auto log = getLog();
         PhysicsObjectDefinition* podHandle = dynamic_cast<PhysicsObjectDefinition*>
-        (
-            mDefinitionHandle
-        );
+                (
+                    mDefinitionHandle
+                    );
         loadExtraAttributes(podHandle->getJson(),mDefinitionHandle,false);
         mCollisionShape = createCollisionShape(podHandle,projectPath);
         if (!mCollisionShape)
         {
-            cerr << "PhysicsObjectInstance: Unable to create collision shape" << endl;
+            log->error( "Unable to create collision shape" );
             return false;
         }
         float mass = mDefinitionHandle->getJson()[Constants::ASSET_ATTR_MASS];
@@ -133,12 +138,12 @@ namespace Dream
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);
         mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo
-        (
-            btScalar(mass),
-            mMotionState,
-            mCollisionShape,
-            inertia
-        );
+                (
+                    btScalar(mass),
+                    mMotionState,
+                    mCollisionShape,
+                    inertia
+                    );
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
@@ -157,8 +162,9 @@ namespace Dream
     PhysicsObjectInstance::createCollisionShape
     (PhysicsObjectDefinition* podHandle, string projectPath)
     {
+        auto log = getLog();
         string format = podHandle->getFormat();
-        btCollisionShape *collisionShape = NULL;
+        btCollisionShape *collisionShape = nullptr;
 
         if (format.compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
         {
@@ -201,8 +207,7 @@ namespace Dream
         {
             // Load Collision Data
             string path = projectPath+podHandle->getAssetPath();
-                cout << "PhysicsObjectInstance: Loading collision geometry from "
-                     << path << endl;
+            log->info( "Loading collision geometry from {}", path );
             const aiScene* scene = getModelFromCache(path);
             btTriangleMesh *triMesh = new btTriangleMesh();
             processAssimpNode(scene->mRootNode, scene, triMesh);
@@ -322,10 +327,10 @@ namespace Dream
     (string uuid)
     {
         return dynamic_cast<PhysicsObjectDefinition*>
-        (
-            mDefinitionHandle
-                ->getProjectHandle()
-                ->getAssetDefinitionHandleByUuid(uuid)
-        );
+                (
+                    mDefinitionHandle
+                    ->getProjectHandle()
+                    ->getAssetDefinitionHandleByUuid(uuid)
+                    );
     }
 } // End of Dream

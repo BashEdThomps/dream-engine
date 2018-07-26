@@ -26,6 +26,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include "../../../Common/ILoggable.h"
+
 using std::unique_ptr;
 using std::map;
 
@@ -34,7 +36,7 @@ namespace Dream
     class FontDefinition;
     class FontCharacter;
 
-    class FontCache
+    class FontCache : public ILoggable
     {
 
     private:

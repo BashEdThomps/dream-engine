@@ -28,14 +28,14 @@ namespace Dream
     SceneObjectDefinition::SceneObjectDefinition
     (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData)
         : IDefinition(jsonData),
+          ILoggable ("SceneObjectDefinition"),
           mParentSceneObjectHandle(parentHandle),
           mSceneDefinitionHandle(sceneDefinitionHandle)
     {
-        {
-            cout << "SceneObjectDefinition: Constructing "
-                 << getNameAndUuidString()
-                 << endl;
-        }
+        auto log = getLog();
+        log->info( "SceneObjectDefinition: Constructing {}",
+                   getNameAndUuidString()
+                   );
         mTransform = Transform3D(jsonData[Constants::TRANSFORM]);
         loadChildSceneObjectDefinitions(jsonData);
     }
@@ -43,11 +43,10 @@ namespace Dream
     SceneObjectDefinition::~SceneObjectDefinition
     ()
     {
-        {
-            cout << "SceneObjectDefinition: Destructing "
-                 << getNameAndUuidString()
-                 << endl;
-        }
+        auto log = getLog();
+        log->info( "SceneObjectDefinition: Destructing {}",
+                   getNameAndUuidString()
+                   );
     }
 
     Transform3D&
@@ -113,11 +112,11 @@ namespace Dream
     (string uuid)
     {
         auto iter = find
-        (
-            begin(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
-            end(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
-            uuid
-        );
+                (
+                    begin(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
+                end(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
+                uuid
+                );
         mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].erase(iter);
     }
 
@@ -144,9 +143,8 @@ namespace Dream
     SceneObjectDefinition::showStatus
     ()
     {
-        {
-            cout << "SceneObjectDefinition: " << mJson.dump(1) << endl;
-        }
+        auto log = getLog();
+        log->info( mJson.dump(1) );
     }
 
     void
@@ -174,7 +172,7 @@ namespace Dream
         vector<SceneObjectDefinition*> list;
         for (auto it = begin(mChildDefinitions); it != end(mChildDefinitions); it++)
         {
-           list.push_back((*it).get());
+            list.push_back((*it).get());
         }
         return list;
     }
@@ -242,5 +240,4 @@ namespace Dream
         }
         return mJson;
     }
-
 }

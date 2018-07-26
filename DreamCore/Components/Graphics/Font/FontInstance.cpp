@@ -28,7 +28,7 @@ namespace Dream
 
     FontInstance::FontInstance
     (FontCache* cache, FontDefinition* definition, SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform),
+        : IAssetInstance(definition,transform),ILoggable ("FontInstance"),
           mCacheHandle(cache)
 
     {
@@ -40,7 +40,8 @@ namespace Dream
     FontInstance::~FontInstance
     ()
     {
-            cout << "FontInstance: Destroying Object" << endl;
+        auto log = getLog();
+        log->info("Destroying Object" );
 
         return;
     }
@@ -49,10 +50,11 @@ namespace Dream
     FontInstance::load
     (string projectPath)
     {
+        auto log = getLog();
         string path = projectPath + mDefinitionHandle->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
 
-            cout << "FontInstance: Loading font from " << path << endl;
+            log->info("Loading font from ", path );
 
         if (mCacheHandle->getFreeTypeLib())
         {
@@ -60,12 +62,12 @@ namespace Dream
             mFontFace.reset(new FT_Face());
             if (FT_New_Face(*mCacheHandle->getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
             {
-                cerr << "FontInstance: Unable to create font. Error calling FT_New_Face" << endl;
+                log->error("Unable to create font. Error calling FT_New_Face" );
             }
         }
         else
         {
-            cerr << "FontInstance: Cannot instanciate font, FreeTypeLib == nullptr" << endl;
+            log->error("Cannot instanciate font, FreeTypeLib == nullptr" );
             mLoaded = false;
             return false;
         }
@@ -81,6 +83,7 @@ namespace Dream
     FontInstance::loadExtraAttributes
     (nlohmann::json jsonData)
     {
+        auto log = getLog();
         float red = jsonData[Constants::FONT_COLOUR][Constants::RED];
         float green = jsonData[Constants::FONT_COLOUR][Constants::GREEN];
         float blue = jsonData[Constants::FONT_COLOUR][Constants::BLUE];
@@ -97,15 +100,9 @@ namespace Dream
                         );
         }
 
-            cout << "FontInstance: Red: " << red
-                 << " Green: " << green
-                 << " Blue: " << blue
-                 << " Size: " << mSize
-                 << endl;
-
+        log->info("FontInstance: Red: {}\nGreen: {}\nBlue: {}\nSize: {}\n",red,green,blue,mSize);
         mCacheHandle->getCharMap(dynamic_cast<FontDefinition*>(mDefinitionHandle),mFontFace.get());
-
-            cout << "FontInstance: Finished loading extra attributes" << endl;
+        log->info("FontInstance: Finished loading extra attributes" );
         return;
     }
 

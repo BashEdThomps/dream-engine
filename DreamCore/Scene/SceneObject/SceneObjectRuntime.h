@@ -23,6 +23,7 @@
 #include <glm/vec3.hpp>
 
 #include "../../Common/IRuntime.h"
+#include "../../Common/ILoggable.h"
 
 #include "../../Components/Transform3D.h"
 
@@ -61,7 +62,7 @@ namespace Dream
     class ShaderDefinition;
     class SpriteDefinition;
 
-    class SceneObjectRuntime : public Runtime
+    class SceneObjectRuntime : public Runtime, ILoggable
     {
 
     private:

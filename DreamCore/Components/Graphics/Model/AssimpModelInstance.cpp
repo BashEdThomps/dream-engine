@@ -43,11 +43,12 @@ namespace Dream
     AssimpModelInstance::AssimpModelInstance
     (AssimpCache* modelCache, TextureCache* texCache, IAssetDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
+          ILoggable("AssimpModelInstance"),
           mModelCacheHandle(modelCache),
           mTextureCacheHandle(texCache)
     {
-            cout << "AssimpModelInstance: Constructing "
-                 << definition->getNameAndUuidString() << endl;
+        auto log = getLog();
+            log->info( "AssimpModelInstance: Constructing {}", definition->getNameAndUuidString() );
         initBoundingBox();
         return;
     }
@@ -63,7 +64,8 @@ namespace Dream
     AssimpModelInstance::~AssimpModelInstance
     ()
     {
-            cout << "AssimpModelInstance: Destroying Object" << endl;
+        auto log = getLog();
+            log->info( "AssimpModelInstance: Destroying Object");
         return;
     }
 
@@ -71,8 +73,9 @@ namespace Dream
     AssimpModelInstance::load
     (string projectPath)
     {
+        auto log = getLog();
         string path = projectPath + mDefinitionHandle->getAssetPath();
-            cout << "AssimpModelInstance: Loading Model - " << path << endl;
+            log->info( "AssimpModelInstance: Loading Model - {}" , path);
         const aiScene* scene = mModelCacheHandle->getModelFromCache(path)->GetScene();
         if(scene == nullptr)
         {
@@ -178,6 +181,7 @@ namespace Dream
     AssimpModelInstance::processTextureData
     (aiMesh* mesh,const aiScene* scene)
     {
+        auto log = getLog();
         vector<Texture> textures;
         // Process material
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -186,7 +190,7 @@ namespace Dream
         vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         if (diffuseMaps.size() > 0 )
         {
-            cout << "AssimpModelInstance: Inserting " << diffuseMaps.size() << " diffuse textures" << endl;
+            log->info( "AssimpModelInstance: Inserting {} diffuse textre" , diffuseMaps.size());
 
         }
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -195,7 +199,7 @@ namespace Dream
         vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         if (specularMaps.size() > 0)
         {
-            cout << "AssimpModelInstance: Inserting " << specularMaps.size() << " specular textures" << endl;
+            log->info( "AssimpModelInstance: Inserting {} specular texture", specularMaps.size());
 
         }
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
@@ -204,7 +208,7 @@ namespace Dream
         vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normals");
         if (normalMaps.size() > 0)
         {
-            cout << "AssimpModelInstance: Inserting " << normalMaps.size() << " normal textures" << endl;
+            log->info( "AssimpModelInstance: Inserting {} normal texture", normalMaps.size());
 
         }
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
@@ -216,6 +220,7 @@ namespace Dream
     AssimpModelInstance::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
+        auto log = getLog();
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
         vector<Texture> textures = processTextureData(mesh,scene);
@@ -231,7 +236,7 @@ namespace Dream
         material->Get(AI_MATKEY_COLOR_SPECULAR,specular);
         material->Get(AI_MATKEY_NAME,materialName);
 
-            cout << "AssimpModelInstance: Using Material " << materialName.C_Str() << endl;
+        log->info( "AssimpModelInstance: Using Material {}" , materialName.C_Str());
 
         return AssimpMesh(this, vertices, indices, textures, diffuse, specular);
     }
@@ -269,8 +274,8 @@ namespace Dream
     AssimpModelInstance::updateBoundingBox
     (aiMesh* mesh)
     {
-            cout << "AssimpModelInstance: Updating bounding box for "
-                 << getNameAndUuidString() << endl;
+        auto log = getLog();
+            log->info( "AssimpModelInstance: Updating bounding box for {}", getNameAndUuidString() );
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {

@@ -10,6 +10,7 @@ namespace Dream
         LightDefinition* definition,
         SceneObjectRuntime* transform
     ) : IAssetInstance(definition,transform),
+        ILoggable("LightInstance"),
         mColor(glm::vec3(0.0f,0.0f,0.0f)),
         mIntensity(0.0f)
 
@@ -20,7 +21,8 @@ namespace Dream
     LightInstance::~LightInstance
     ()
     {
-            cout << "LightInstance: Destroying Object" << endl;
+        auto log = getLog();
+        log->info("Destroying Object" );
         return;
     }
 
@@ -36,6 +38,7 @@ namespace Dream
     LightInstance::loadExtraAttributes
     (nlohmann::json json)
     {
+        auto log = getLog();
         nlohmann::json jsonColor = json[Constants::ASSET_ATTR_LIGHT_COLOR];
         if (!jsonColor.is_null())
         {
@@ -46,7 +49,7 @@ namespace Dream
         }
         else
         {
-            cerr <<"LightInstance: Unable to find color in json" << endl;
+            log->error("Unable to find color in json" );
         }
     }
 

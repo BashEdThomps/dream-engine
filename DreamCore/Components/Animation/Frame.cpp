@@ -8,15 +8,18 @@ namespace Dream
 {
     Frame::Frame
     ()
+        : ILoggable ("Frame")
     {
-        cout << "Frame: Constructing Object" << endl;
+        auto log = getLog();
+        log->info("Constructing Object");
     }
 
 
     Frame::~Frame
     ()
     {
-        cout << "Frame: Destroying Object" << endl;
+        auto log = getLog();
+        log->info("Destroying Object");
     }
 
     void
@@ -46,7 +49,8 @@ namespace Dream
     Frame::showStatus
     ()
     {
-        cout << "Frame " << mTransform.getJson().dump() << endl;
+        auto log = getLog();
+        log->info(mTransform.getJson().dump());
     }
 
 } // End of Dream

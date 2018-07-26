@@ -12,7 +12,8 @@ namespace Dream
             vector<Texture> textures,
             aiColor3D diffuse,
             aiColor3D specular
-    ) : mParentHandle(parent),
+    ) : ILoggable("AssimpMesh"),
+        mParentHandle(parent),
         mVertices(vertices),
         mIndices(indices),
         mTextures(textures),
@@ -20,28 +21,23 @@ namespace Dream
         mSpecularColour(specular)
 
     {
-            cout << "AssimpMesh: Constructing Mesh for "
-                 << parent->getName()
-                 << endl;
-                init();
+        auto log = getLog();
+        log->info("AssimpMesh: Constructing Mesh for {}", parent->getName());
+        init();
     }
 
     AssimpMesh::~AssimpMesh
     ()
     {
-        /*if (Constants::DEBUG)
-        {
-            cout << "AssimpMesh: Destroying Mesh for "
-                 << mParentHandle->getNameAndUuidString()
-                 << endl;
-        }
-        */
+        auto log = getLog();
+        log->info("AssimpMesh: Destroying Mesh for {}",mParentHandle->getNameAndUuidString());
     }
 
     void
     AssimpMesh::bindTextures
     (ShaderInstance*)
     {
+        auto log = getLog();
         GLuint diffuseNr  = 1;
         GLuint specularNr = 1;
         GLuint normalNr   = 1;
@@ -76,11 +72,16 @@ namespace Dream
                 materialStr << idx;
             }
 
-                cout << "AssimpMesh: Binding Material " << materialStr.str()
-                     << " with GL Texture " << mTextures[i].id
-                     << " to unit " << nextTexture
-                     << " for " << mParentHandle->getNameAndUuidString()
-                     << endl;
+                log->info(
+                    "AssimpMesh: Binding Material {}\n"
+                     "with GL Texture {}\n"
+                     "to unit {}\n"
+                     "for {}\n",
+                          materialStr.str(),
+                          mTextures[i].id,
+                          nextTexture,
+                          mParentHandle->getNameAndUuidString()
+                     );
 
             glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
         }
@@ -129,7 +130,7 @@ namespace Dream
         bindSpecular(shader);
         // Draw mesh
         shader->bindVertexArray(mVAO);
-        glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
         shader->unbindVertexArray();
         unbindTextures();
     }
@@ -151,7 +152,7 @@ namespace Dream
         glVertexAttribPointer(
                     0, 3, GL_FLOAT, GL_FALSE,
                     static_cast<GLint>(sizeof(Vertex)),
-                    static_cast<GLvoid*>(0)
+                    static_cast<GLvoid*>(nullptr)
                     );
         // Vertex Normals
         glEnableVertexAttribArray(1);

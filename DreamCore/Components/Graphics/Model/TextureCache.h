@@ -26,13 +26,14 @@
 
 #include "Texture.h"
 #include "../../../Common/Constants.h"
+#include "../../../Common/ILoggable.h"
 
 
 using namespace std;
 
 namespace Dream
 {
-    class TextureCache
+    class TextureCache : public ILoggable
     {
         vector<Texture> mCache;
     public:

@@ -23,7 +23,8 @@ namespace Dream
 
     WavAudioInstance::WavAudioInstance
     (AudioDefinition* definition, SceneObjectRuntime* transform)
-        : AudioInstance(definition, transform)
+        : AudioInstance(definition, transform),
+          ILoggable ("WavAudioInstance")
     {
         return;
     }
@@ -38,20 +39,21 @@ namespace Dream
     WavAudioInstance::load
     (string projectPath)
     {
+        auto log = getLog();
         string absPath = projectPath + mDefinitionHandle->getAssetPath();
-        cout << "WavAudioInstance: Loading wav file from " << absPath << endl;
+        log->info("Loading wav file from {}", absPath);
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
 
         if (wavFile == nullptr)
         {
-            cerr << "WavAudioInstance:: Unable to open wave file: " << absPath << endl;
+            log->error("Unable to open wave file: {}", absPath);
             return false;
         }
 
         //Read the header
         size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
-        cout << "WavAudioInstance: Header Read " << bytesRead << " bytes." << endl;
+        log->info("Header Read {} bytes" ,bytesRead);
         if (bytesRead > 0)
         {
             //Read the data
@@ -71,34 +73,52 @@ namespace Dream
             {
                 mFormat = AL_FORMAT_STEREO16;
             }
-            cout << "WavAudioInstance: Read " << mAudioDataBuffer.size() << " bytes." << endl;
+            log->info("Read {} bytes", mAudioDataBuffer.size());
             delete [] buffer;
             buffer = NULL;
             filelength = getFileSize(wavFile);
-            cout << "WavAudioInstance: Status..."    << endl;
-            cout << "WavAudioInstance:\tFile size is: " << filelength << " bytes." << endl;
-            cout << "WavAudioInstance:\tRIFF header: "
-                      << mWavHeader.RIFF[0] << mWavHeader.RIFF[1]
-                      << mWavHeader.RIFF[2] << mWavHeader.RIFF[3]
-                      << endl;
-            cout << "WavAudioInstance:\tWAVE header: " << mWavHeader.WAVE[0]
-                      << mWavHeader.WAVE[1]     << mWavHeader.WAVE[2]
-                      << mWavHeader.WAVE[3]     << endl;
-            cout << "WavAudioInstance:\tFMT: " << mWavHeader.fmt[0]
-                      << mWavHeader.fmt[1]      << mWavHeader.fmt[2]
-                      << mWavHeader.fmt[3]      << endl;
-            cout << "WavAudioInstance:\tData size: " << mWavHeader.ChunkSize << endl;
-            cout << "WavAudioInstance:\tSampling Rate: " << mWavHeader.SamplesPerSecond << endl;
-            cout << "WavAudioInstance:\tBits used: " << mWavHeader.BitsPerSample << endl;
-            cout << "WavAudioInstance:\tChannels: " << mWavHeader.NumOfChannels << endl;
-            cout << "WavAudioInstance:\tBytes per second: " << mWavHeader.BytesPerSecond << endl;
-            cout << "WavAudioInstance:\tData length: " << mWavHeader.Subchunk2Size << endl;
-            cout << "WavAudioInstance:\tAudio Format: " << mWavHeader.AudioFormat << endl;
-            cout << "WavAudioInstance:\tBlock align: " << mWavHeader.BlockAlign << endl;
-            cout << "WavAudioInstance:\tData string: "
-                      << mWavHeader.Subchunk2ID[0] << mWavHeader.Subchunk2ID[1]
-                      << mWavHeader.Subchunk2ID[2] << mWavHeader.Subchunk2ID[3]
-                      << endl;
+
+            log->info(
+                "Status...\n"
+                "\tFile size is: {} bytes\n"
+                "\tRIFF header: {}{}{}{}\n"
+                "\tWAVE header: {}{}{}{}\n"
+                "\tFMT: {}{}{}{}\n"
+                "\tData size: {}\n"
+                "\tSampling Rate: {}\n"
+                "\tBits used: {}\n"
+                "\tChannels: {}\n"
+                "\tBytes per second: {}\n"
+                "\tData length: {}\n"
+                "\tAudio Format: {}\n"
+                "\tBlock align: {}\n"
+                "\tData string: {}{}{}{}\n",
+                  filelength,
+                  mWavHeader.RIFF[0] ,
+                  mWavHeader.RIFF[1],
+                  mWavHeader.RIFF[2] ,
+                  mWavHeader.RIFF[3],
+                  mWavHeader.WAVE[0],
+                  mWavHeader.WAVE[1] ,
+                  mWavHeader.WAVE[2],
+                  mWavHeader.WAVE[3] ,
+                  mWavHeader.fmt[0],
+                  mWavHeader.fmt[1] ,
+                  mWavHeader.fmt[2],
+                  mWavHeader.fmt[3] ,
+                  mWavHeader.ChunkSize ,
+                  mWavHeader.SamplesPerSecond ,
+                  mWavHeader.BitsPerSample ,
+                  mWavHeader.NumOfChannels ,
+                  mWavHeader.BytesPerSecond ,
+                  mWavHeader.Subchunk2Size,
+                  mWavHeader.AudioFormat ,
+                  mWavHeader.BlockAlign,
+                  mWavHeader.Subchunk2ID[0] ,
+                  mWavHeader.Subchunk2ID[1],
+                  mWavHeader.Subchunk2ID[2] ,
+                  mWavHeader.Subchunk2ID[3]
+            );
         }
         fclose(wavFile);
         return true;

@@ -9,6 +9,7 @@
 #include <glm/vec3.hpp>
 
 #include "../../Common/Constants.h"
+#include "../../Common/ILoggable.h"
 #include "../Transform3D.h"
 
 using glm::vec3;
@@ -16,7 +17,7 @@ using glm::mat4;
 
 namespace Dream
 {
-    class Camera
+    class Camera : public ILoggable
     {
     private:
         // Camera Attributes

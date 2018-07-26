@@ -31,6 +31,7 @@
 
 #include "AudioStatus.h"
 #include "../IComponent.h"
+#include "../../Common/ILoggable.h"
 
 using std::vector;
 
@@ -40,7 +41,7 @@ namespace Dream
     class AudioDefinition;
     class SceneObjectRuntime;
 
-    class AudioComponent : public IComponent
+    class AudioComponent : public IComponent, ILoggable
     {
 
     private:

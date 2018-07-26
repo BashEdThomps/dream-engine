@@ -22,6 +22,7 @@
 #include <vector>
 #include <memory>
 
+#include "../../Common/ILoggable.h"
 #include "../../Common/IDefinition.h"
 #include "../../Components/Transform3D.h"
 
@@ -34,7 +35,7 @@ namespace Dream
     class IAssetDefinition;
     class SceneDefinition;
 
-    class SceneObjectDefinition : public IDefinition
+    class SceneObjectDefinition : public IDefinition, ILoggable
     {
     private:
         SceneObjectDefinition* mParentSceneObjectHandle;

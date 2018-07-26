@@ -11,6 +11,7 @@ namespace Dream
 {
     Time::Time
     ()
+        : ILoggable ("Time")
     {
         mCurrentTime = high_resolution_clock::now();
         mLastTime = high_resolution_clock::now();
@@ -26,7 +27,8 @@ namespace Dream
     Time::update
     ()
     {
-            cout << "Time: Update Called" << endl;
+        auto log = getLog();
+        log->info( "Time: Update Called" );
         mLastTime    = mCurrentTime;
         mCurrentTime = high_resolution_clock::now();
         mTimeDelta   = mCurrentTime-mLastTime;
@@ -38,10 +40,17 @@ namespace Dream
     Time::show
     ()
     {
-            cout << "Time: " << endl
-                 << "\tCurrent Time: " << getCurrentTime() << endl
-                 << "\t   Last Time: " << getLastTime() << endl
-                 << "\t  Time Delta: " << getTimeDelta() << endl;
+        auto log = getLog();
+        log->info
+        (
+           "Time: "
+           "\tCurrent Time: {}"
+           "\t   Last Time: {}"
+           "\t  Time Delta: {}" ,
+           getCurrentTime(),
+           getLastTime(),
+           getTimeDelta()
+        );
     }
 
     double
@@ -69,7 +78,7 @@ namespace Dream
     Time::scaleValue
     (double value)
     {
-       return value*getTimeDelta();
+        return value*getTimeDelta();
     }
 
 } // End of Dream

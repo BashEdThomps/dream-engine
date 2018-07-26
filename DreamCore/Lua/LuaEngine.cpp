@@ -73,15 +73,15 @@ int
 errorHandler
 (lua_State *L)
 {
+    auto log = spdlog::stdout_color_mt("LuaErrorHandler");
     // log the error message
     object msg(from_stack( L, -1 ));
     ostringstream str;
-    str << "Lua - RuntimeError: " << msg;
-    cerr << str.str() << endl;
+    str << "RuntimeError:" <<  msg <<  str.str();
     // log the callstack
     string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
-    traceback = string( "Lua - Traceback: " ) + traceback;
-    cerr << traceback.c_str() << endl;
+    traceback = string( "Backtrace" ) + traceback;
+    log->error("{} {}",str.str(), traceback.c_str());
     return 1;
 }
 
@@ -89,20 +89,19 @@ namespace Dream
 {
     LuaEngine::LuaEngine
     (ProjectRuntime* projectHandle, LuaScriptCache* cache)
-        : mScriptCacheHandle(cache),
+        : ILoggable("LuaEngine"),
+          mScriptCacheHandle(cache),
           mProjectRuntimeHandle(projectHandle)
     {
-        {
-            cout << "LuaEngine: Constructing Object" << endl;
-        }
+        auto log = getLog();
+        log->info( "Constructing Object" );
     }
 
     LuaEngine::~LuaEngine
     ()
     {
-        {
-            cout << "LuaEngine: Destroying Object" << endl;
-        }
+        auto log = getLog();
+        log->info( "Destroying Object" );
 
         if (mState != nullptr)
         {
@@ -116,9 +115,8 @@ namespace Dream
     LuaEngine::init
     ()
     {
-        {
-            cout << "LuaEngine: Initialising LuaEngine" << endl;
-        }
+        auto log = getLog();
+            log->info( "Initialising LuaEngine" );
         mState = luaL_newstate();
         if (mState)
         {
@@ -131,8 +129,8 @@ namespace Dream
         }
         else
         {
-            cerr << "LuaEngine: Error creating lua state, LuaEngine::mState == nullptr"
-                 << endl;
+            log->error( "Error creating lua state, LuaEngine::mState == nullptr"
+                 );
         }
         return false;
     }
@@ -141,34 +139,30 @@ namespace Dream
     LuaEngine::createScript
     (SceneObjectRuntime* sceneObject, LuaScriptInstance* luaScript)
     {
+        auto log = getLog();
         if (luaScript == nullptr)
         {
-            cerr << "LuaEngine: Load Failed, LuaScriptInstance is NULL" << endl;
+            log->error( "Load Failed, LuaScriptInstance is NULL" );
             return false;
         }
 
         if (sceneObject == nullptr)
         {
-            cerr << "LuaEngine: Load Failed, SceneObjectRuntime is NULL" << endl;
+            log->error( "Load Failed, SceneObjectRuntime is NULL" );
             return false;
         }
 
         if (luaScript->getLoadedFlag())
         {
             {
-               cout << "LuaEngine: Script " << luaScript->getNameAndUuidString()
-                    << " is all ready loaded" << endl;
+               log->info( "Script {} is already loaded" , luaScript->getNameAndUuidString());
             }
             return false;
         }
 
         {
-            cout << "LuaEngine: loading script '" << luaScript->getName()
-                 << "' for '"
-                 << sceneObject->getName()
-                 << "'" << endl;
-            cout << "LuaEngine: Loading Lua script from " << luaScript->getAbsolutePath()
-                 << endl << flush;
+            log->info( "Loading script '{}' for '{}'" , luaScript->getName(),sceneObject->getName());
+            log->info( "Loading Lua script from {}" , luaScript->getAbsolutePath());
         }
 
         if (!loadScript(sceneObject))
@@ -177,7 +171,7 @@ namespace Dream
         }
 
         {
-            cout << "LuaEngine: Loaded " << sceneObject->getUuid() << " Successfully" << endl;
+            log->info( "Loaded {} successfully" , sceneObject->getUuid());
         }
 
         luaScript->setLoadedFlag(true);
@@ -190,29 +184,30 @@ namespace Dream
     LuaEngine::loadScript
     (SceneObjectRuntime* sceneObject)
     {
+        auto log = getLog();
         string id = sceneObject->getUuid();
         LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
 
         if (!mState)
         {
-            cerr << "LuaEngine: Cannot load script, mState == nullptr!" << endl;
+            log->error( "Cannot load script, mState == nullptr!" );
             return false;
         }
 
         if (scriptInstance->getError())
         {
-           cerr << "LuaEngine: Cannot load script " << id << " while in error state" << endl;
+           log->error( "Cannot load script {} while in error state",id );
            return false;
         }
 
         {
-            cout << "LuaEngine: loadScript called for " << id << endl;
+            log->info( "loadScript called for {}", id );
         }
 
         try
         {
             {
-                cout << "LuaEngine: Creating new table for " << id << endl;
+                log->info( "Creating new table for {}" ,id );
             }
 
             object newScriptTable = newtable(mState);
@@ -220,7 +215,7 @@ namespace Dream
             string script = mScriptCacheHandle->getScript(path);
 
             {
-                cout << "LuaEngine: calling scriptLoadFromString in lua for " << id << endl;
+                log->info( "calling scriptLoadFromString in lua for {}" , id );
             }
 
             call_function<void>(mState, "scriptLoadFromString", newScriptTable, script.c_str());
@@ -230,8 +225,7 @@ namespace Dream
         }
         catch (error &e)
         {
-            cerr << "LuaEngine: loadScript exception:" << endl
-                 << "\t" << e.what() << endl;
+            log->error("loadScript exception:\n\t{}" , e.what() );
             scriptInstance->setError(true);
             return false;
         }
@@ -242,7 +236,8 @@ namespace Dream
     LuaEngine::stackDump
     ()
     {
-        cerr << "LuaEngine: Stack Dump!" << endl;
+        auto log = getLog();
+        log->error( "Stack Dump!" );
         int i;
         int top = lua_gettop(mState);
         // repeat for each level
@@ -253,34 +248,32 @@ namespace Dream
             {
                 // strings
                 case LUA_TSTRING:
-                    cerr << lua_tostring(mState, i);
+                    log->error( lua_tostring(mState, i));
                     break;
                     // booleans
                 case LUA_TBOOLEAN:
-                    cerr << (lua_toboolean(mState, i) ? "true" : "false");
+                    log->error( (lua_toboolean(mState, i) ? "true" : "false"));
                     break;
                     // numbers
                 case LUA_TNUMBER:
-                    cerr << lua_tonumber(mState, i);
+                    log->error( lua_tonumber(mState, i));
                     break;
                     // other values
                 default:
-                    cout << lua_typename(mState, t);
+                    log->info( lua_typename(mState, t));
                     break;
             }
-            // put a separator
-            cerr << " ";
         }
         // end the listing
-        cerr << endl;
     }
 
     bool
     LuaEngine::update
     ()
     {
+        auto log = getLog();
         {
-            cout << "LuaEngine: Update Called" << endl;
+            log->info( "Update Called" );
         }
 
         for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
@@ -315,18 +308,18 @@ namespace Dream
     LuaEngine::executeScriptUpdate
     (SceneObjectRuntime* sceneObject)
     {
+        auto log = getLog();
         string id = sceneObject->getUuid();
         LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
-            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
-                                              << " in error state" << endl;
+            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
         {
-            cout << "LuaEngine: Calling onUpdate for " << sceneObject->getNameAndUuidString() << endl;
+            log->info( "Calling onUpdate for {}" ,sceneObject->getNameAndUuidString() );
         }
 
         try
@@ -340,14 +333,14 @@ namespace Dream
             }
             else
             {
-                cerr << "LuaEngine: Attempted to call onUpdate on invalid function."<< endl;
+                log->error( "Attempted to call onUpdate on invalid function.");
             }
         }
         catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
-            cerr << "LuaEngine: onUpdate exception:" << endl << e.what() << endl;
-            cerr << error << endl;
+            log->error( "onUpdate exception: {}" , e.what() );
+            log->error( error );
             scriptInstance->setError(true);
             return false;
         }
@@ -358,22 +351,18 @@ namespace Dream
     LuaEngine::executeScriptInit
     (SceneObjectRuntime* sceneObject)
     {
+        auto log = getLog();
         string id = sceneObject->getUuid();
         LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
 
-        if (scriptInstance->getError())
+        if (scriptInstance->getError() )
         {
-            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
-                                              << " in error state" << endl;
+            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
 
             return false;
         }
 
-        {
-            cout << "LuaEngine: Calling onInit in " << scriptInstance->getName()
-                 <<" for " << sceneObject->getName()
-                << endl;
-        }
+        log->info( "Calling onInit in {} for ",  scriptInstance->getName(),  sceneObject->getName());
         try
         {
             object reg = registry(mState);
@@ -385,15 +374,15 @@ namespace Dream
             }
             else
             {
-                cerr << "LuaEngine: Attempted to call onInit on invalid function."<< endl;
+                log->error( "Attempted to call onInit on invalid function.");
             }
 
         }
         catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
-            cerr << "LuaEngine: onInit exception:" << endl << e.what() << endl;
-            cerr << error << endl;
+            log->error( "onInit exception: {}" , e.what() );
+            log->error( error );
             scriptInstance->setError(true);
             return false;
         }
@@ -404,23 +393,17 @@ namespace Dream
     LuaEngine::executeScriptInputHandler
     (SceneObjectRuntime* sceneObject)
     {
+        auto log = getLog();
         string id = sceneObject->getUuid();
         LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
-            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
-                                              << " in error state" << endl;
-
+            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-
-        {
-            cout << "LuaEngine: Calling onInput for "
-                 << sceneObject->getNameAndUuidString()
-                 << " (Has Focus)" << endl << flush;
-        }
+        log->info( "Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
 
         try
         {
@@ -436,7 +419,7 @@ namespace Dream
             }
             else
             {
-                cerr << "LuaEngine: Attempted to call onInput on invalid function."<< endl;
+                log->error( "Attempted to call onInput on invalid function.");
             }
 
             clearInputEvents();
@@ -444,8 +427,8 @@ namespace Dream
         catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
-            cerr << "LuaEngine: onInput exception:" << endl << e.what() << endl;
-            cerr << error << endl;
+            log->error( "onInput exception: {}" ,  e.what() );
+            log->error( error );
             scriptInstance->setError(true);
             return false;
         }
@@ -456,22 +439,19 @@ namespace Dream
     LuaEngine::executeScriptEventHandler
     (SceneObjectRuntime* sceneObject)
     {
+        auto log = getLog();
         string id = sceneObject->getUuid();
         LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
-            cerr << "LuaEngine: Cannot execute " << scriptInstance->getNameAndUuidString()
-                                              << " in error state" << endl;
-
+            log->error( "Cannot execute {} in error state ",  scriptInstance->getNameAndUuidString());
             return false;
         }
 
 
         {
-            cout << "LuaEngine: Calling onEvent for "
-                 << sceneObject->getNameAndUuidString()
-                 << endl;
+            log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
         }
 
         try
@@ -490,17 +470,14 @@ namespace Dream
             }
             else
             {
-                cerr << "LuaEngine: Attempted to call onInit on invalid function."<< endl;
+                log->error( "Attempted to call onInit on invalid function.");
             }
         }
         catch (error &e)
         {
             string error = lua_tostring( e.state(), -1 );
-            cerr << "LuaEngine: onEvent exception:"
-                 << endl
-                 << e.what()
-                 << endl;
-            cerr << error << endl;
+            log->error( "onEvent exception: {}", e.what());
+            log->error( error );
             scriptInstance->setError(true);
             return false;
         }
@@ -563,7 +540,8 @@ namespace Dream
     LuaEngine::debugRegisteringClass
     (string className)
     {
-            cout << "LuaEngine: Registering Class " << className << endl;
+        auto log = getLog();
+        log->info( "Registering Class {}",  className );
         return;
     }
 
@@ -989,6 +967,7 @@ namespace Dream
     LuaEngine::removeFromScriptMap
     (SceneObjectRuntime* sceneObject)
     {
+        auto log = getLog();
         map<SceneObjectRuntime*,LuaScriptInstance*>::iterator iter;
         for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
         {
@@ -999,7 +978,8 @@ namespace Dream
                reg[id] = nil;
 
                {
-                    cout << "LuaEngine: Removed script for " << (*iter).first->getNameAndUuidString() << endl;
+                   string name = (*iter).first->getNameAndUuidString();
+                    log->info( "Removed script for {}" , name );
                }
 
                mScriptMap.erase(iter++);
@@ -1012,10 +992,13 @@ namespace Dream
     LuaEngine::addToScriptMap
     (SceneObjectRuntime *sceneObject, LuaScriptInstance* script)
     {
+        auto log = getLog();
         {
-           cout << "LuaEngine: Adding " << script->getNameAndUuidString()
-                << " to script map for " << sceneObject->getNameAndUuidString()
-                <<endl;
+            log->info(
+                "Adding {} to script map for {}",
+                script->getNameAndUuidString(),
+                sceneObject->getNameAndUuidString()
+            );
         }
 
         if (createScript(sceneObject,script))

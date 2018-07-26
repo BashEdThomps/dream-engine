@@ -25,30 +25,28 @@ namespace Dream
     LuaScriptInstance::LuaScriptInstance
     (ScriptDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
-        mError(false)
+          ILoggable("LuaScriptInstance"),
+          mError(false)
     {
-            cout << "LuaScriptInstance: Constructing "
-                 << mDefinitionHandle->getNameAndUuidString() << endl;
+        auto log = getLog();
+        log->info( "LuaScriptInstance: Constructing {}", mDefinitionHandle->getNameAndUuidString() );
         return;
     }
 
     LuaScriptInstance::~LuaScriptInstance
     ()
     {
-        {
-            cout << "LuaScriptInstance: Destructing "
-                 << mDefinitionHandle->getNameAndUuidString() << endl;
-        }
+        auto log = getLog();
+        log->info("LuaScriptInstance: Destructing ", mDefinitionHandle->getNameAndUuidString() );
     }
 
     bool
     LuaScriptInstance::load
     (string projectPath)
     {
+        auto log = getLog();
         mAbsolutePath = projectPath + mDefinitionHandle->getAssetPath();
-        {
-            cout << "LuaScriptInstance: Script at " << mAbsolutePath << endl;
-        }
+        log->info( "LuaScriptInstance: Script at {}" , mAbsolutePath );
         return mAbsolutePath.size() != 0;
     }
 

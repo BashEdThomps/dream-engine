@@ -12,7 +12,9 @@ namespace Dream
     public:
         ILoggable(string classname);
         virtual ~ILoggable();
-        std::shared_ptr<spdlog::logger> getLog();
+        void setLogClassName(string);
+    protected:
+        std::shared_ptr<spdlog::logger> getLog() const;
         string  _CLASSNAME_;
     };
 }

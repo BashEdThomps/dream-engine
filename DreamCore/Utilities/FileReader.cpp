@@ -28,6 +28,7 @@ namespace Dream
 
     FileReader::FileReader
     (string path)
+        : ILoggable ("FileReader")
     {
         mPath = path;
     }
@@ -35,9 +36,8 @@ namespace Dream
     FileReader::~FileReader
     ()
     {
-        {
-         cout << "FileReader: Destroying reader for " << mPath << endl;
-        }
+        auto log = getLog();
+         log->info( "FileReader: Destroying reader for {}" , mPath );
     }
 
     string

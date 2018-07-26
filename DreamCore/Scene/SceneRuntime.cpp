@@ -36,8 +36,6 @@
 #include "../Components/Physics/PhysicsComponent.h"
 
 
-using std::cout;
-using std::cerr;
 
 namespace Dream
 {
@@ -45,14 +43,14 @@ namespace Dream
     (SceneDefinition* sdHandle, ProjectRuntime* project)
         : // Init list
           Runtime(sdHandle),
+          ILoggable ("SceneRuntime"),
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
           mProjectRuntimeHandle(project)
     {
-        {
-            cout << "SceneRuntime: Constructing " << endl;
-        }
+        auto log = getLog();
+        log->info( "SceneRuntime: Constructing " );
         useDefinition(mDefinitionHandle);
 
     }
@@ -60,9 +58,8 @@ namespace Dream
     SceneRuntime::~SceneRuntime
     ()
     {
-        {
-            cout << "SceneRuntime: Destructing " << endl;
-        }
+        auto log = getLog();
+        log->info( "SceneRuntime: Destructing " );
     }
 
     SceneState
@@ -190,24 +187,25 @@ namespace Dream
     SceneRuntime::showScenegraph
     ()
     {
+        auto log = getLog();
         if (!mRootSceneObjectRuntime)
         {
-            cout << "SceneRuntime: Scenegraph is empty (no root SceneObjectRuntime)" << endl;
+            log->info( "SceneRuntime: Scenegraph is empty (no root SceneObjectRuntime)" );
             return;
         }
 
         mRootSceneObjectRuntime->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* obj)
-                {
-                    cout << "SceneObjectRuntime: showScenegraph not implemented" << endl;
-                    //obj->showStatus();
-                    return nullptr;
-                }
-            )
-        );
+                (
+                    function<void*(SceneObjectRuntime*)>
+                    (
+                        [&](SceneObjectRuntime* obj)
+        {
+                        log->info( "SceneObjectRuntime: showScenegraph not implemented" );
+                        //obj->showStatus();
+                        return nullptr;
+                    }
+                    )
+                );
     }
 
     void
@@ -228,20 +226,19 @@ namespace Dream
     SceneRuntime::collectGarbage
     ()
     {
-        {
-            cout << "SceneRuntime: Collecting Garbage " << getNameAndUuidString() << endl;
-        }
+        auto log = getLog();
+        log->info( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
         mRootSceneObjectRuntime->applyToAll
-        (
-            function<void*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* runt)
-                {
+                (
+                    function<void*(SceneObjectRuntime*)>
+                    (
+                        [&](SceneObjectRuntime* runt)
+        {
                         runt->collectGarbage();
                         return nullptr;
-                }
-            )
-        );
+                    }
+                    )
+                );
     }
 
     ProjectRuntime*
@@ -262,12 +259,10 @@ namespace Dream
     SceneRuntime::useDefinition
     (IDefinition* iDefinitionHandle)
     {
+        auto log = getLog();
         SceneDefinition *sceneDefinitionHandle = dynamic_cast<SceneDefinition*>(iDefinitionHandle);
 
-        {
-            cout << "SceneRuntime: Using SceneDefinition "
-                 << sceneDefinitionHandle->getNameAndUuidString() << endl;
-        }
+        log->info( "SceneRuntime: Using SceneDefinition ",  sceneDefinitionHandle->getNameAndUuidString() );
 
         // Assign Runtime attributes from Definition
         setName(sceneDefinitionHandle->getName());

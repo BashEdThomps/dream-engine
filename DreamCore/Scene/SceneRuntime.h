@@ -24,6 +24,7 @@
 #include "SceneState.h"
 
 #include "../Common/IRuntime.h"
+#include "../Common/ILoggable.h"
 #include "../Components/Transform3D.h"
 
 using std::string;
@@ -39,7 +40,7 @@ namespace Dream
     class IAssetDefinition;
     class SceneObjectRuntime;
 
-    class SceneRuntime : public Runtime
+    class SceneRuntime : public Runtime , ILoggable
     {
     private:
         SceneState mState;

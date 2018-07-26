@@ -5,6 +5,7 @@ namespace Dream
     // Constructor with vectors
     Camera::Camera
     (vec3 translation, vec3 up, float yaw, float pitch)
+        : ILoggable("Camera")
     {
         mFront = vec3(0.0f, 0.0f, -1.0f);
         mMovementSpeed = Constants::CAMERA_SPEED;
@@ -24,6 +25,7 @@ namespace Dream
             float upX, float upY, float upZ,
             float yaw, float pitch
     )
+        :ILoggable ("Camera")
     {
         mFront            = {0.0f, 0.0f, -1.0f};
         mMovementSpeed    = Constants::CAMERA_SPEED;
@@ -39,7 +41,8 @@ namespace Dream
     Camera::~Camera
     ()
     {
-            cout << "Camera: Destroying Object" << endl;
+        auto log = getLog();
+        log->info("Destroying Object");
         return;
     }
 
@@ -161,6 +164,7 @@ namespace Dream
     Camera::processMouseScroll
     (float yoffset)
     {
+        auto log = getLog();
         if (yoffset == 0.0f)
         {
             return;
@@ -180,7 +184,7 @@ namespace Dream
         {
             mZoom = Constants::CAMERA_ZOOM_MAX;
         }
-            cout << "Camera: Zoom is " << mZoom << endl;
+            log->info("Zoom is {}" ,mZoom );
     }
 
     void

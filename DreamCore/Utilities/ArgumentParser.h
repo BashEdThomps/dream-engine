@@ -20,12 +20,13 @@
 #include <iostream>
 
 #include "../Common/Constants.h"
+#include "../Common/ILoggable.h"
 
 using namespace std;
 
 namespace Dream
 {
-    class ArgumentParser
+    class ArgumentParser : ILoggable
     {
 
     private:

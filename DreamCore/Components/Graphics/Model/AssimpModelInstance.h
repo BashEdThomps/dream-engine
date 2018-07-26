@@ -35,6 +35,7 @@
 
 #include "../../IAssetInstance.h"
 #include "../BoundingBox.h"
+#include "../../../Common/ILoggable.h"
 
 struct aiScene;
 struct aiMaterial;
@@ -55,7 +56,7 @@ namespace Dream
     class Vertex;
     class Texture;
 
-    class AssimpModelInstance : public IAssetInstance
+    class AssimpModelInstance : public IAssetInstance, ILoggable
     {
     private:
         // Variables
