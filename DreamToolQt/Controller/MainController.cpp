@@ -26,6 +26,7 @@
 #include <QOpenGLContext>
 #include <QLayout>
 #include <QVBoxLayout>
+#include <QColorDialog>
 
 #include "../Model/TreeModels/Properties/AssetDefinition/AssetDefinitionPropertiesModel.h"
 #include "../Model/TreeModels/Properties/Project/ProjectPropertiesModel.h"
@@ -33,6 +34,7 @@
 #include "../Model/TreeModels/Properties/Scene/ScenePropertiesModel.h"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 using std::cout;
 
 // Constructors/Destructors =====================================================
@@ -47,7 +49,14 @@ MainController::MainController
       mSelectedSceneDefinitionHandle(nullptr),
       mSelectedSceneObjectDefinitionHandle(nullptr)
 {
-    qDebug() << "MainController: Constructing Object";
+    auto log = spdlog::get("MainController");
+
+    if (!log)
+    {
+        log = spdlog::stdout_color_mt("MainController");
+    }
+
+    log->info( "Constructing Object");
 
     mDreamProjectModel.reset
     (
@@ -74,7 +83,8 @@ MainController::MainController
 MainController::~MainController
 ()
 {
-    qDebug() << "MainController: Destroying Object";
+    auto log = spdlog::get("MainController");
+    log->info( "Destroying Object");
 }
 
 // Setup ========================================================================
@@ -104,6 +114,7 @@ void
 MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
 (AssetDefinitionTreeItem* item)
 {
+    auto log = spdlog::get("MainController");
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
 
     mPropertiesModel.reset(nullptr);
@@ -111,7 +122,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
     switch(item->getType())
     {
         case AssetDefinitionTreeItemType::ASSET_DEFINITION:
-            qDebug() << "MainController: Selected an asset definition";
+            log->info( "Selected an asset definition");
             mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
             mPropertiesModel.reset
             (
@@ -226,7 +237,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             break;
 
         case AssetDefinitionTreeItemType::ASSET_TREE_NODE:
-            qDebug() << "MainController: Selected an asset tree node";
+            log->info( "Selected an asset tree node");
             break;
     }
 
@@ -240,6 +251,7 @@ void
 MainController::setupUI_ScenegraphPropertiesTreeViewModel
 (ScenegraphTreeItem *item)
 {
+    auto log = spdlog::get("MainController");
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
     SceneObjectRuntime *selectedSceneObjectRuntime = nullptr;
 
@@ -254,14 +266,14 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
     switch(item->getType())
     {
         case ScenegraphTreeItemType::SCENEGRAPH_PROJECT:
-            qDebug() << "MainController: Selected a project";
+            log->info( "Selected a project");
             mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
             mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
             mMainWindowHandle->setPropertiesDockWidgetTitle("Project Properties");
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE:
-            qDebug() << "MainController: Selected a scene";
+            log->info( "Selected a scene");
             mSelectedSceneDefinitionHandle = static_cast<SceneDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
 
@@ -289,10 +301,23 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
                 this,
                 SLOT(onSceneProperty_CaptureCameraRotation(SceneDefinition*))
             );
+
+            // Choose Clear Colour
+            connect
+            (
+                mPropertiesModel.get(), SIGNAL(notifyButton_ChooseClearColour(SceneDefinition*)),
+                this, SLOT(onSceneProperty_ChooseClearColour(SceneDefinition*))
+            );
+            // Choose Ambient Colour
+            connect
+            (
+                mPropertiesModel.get(), SIGNAL(notifyButton_ChooseAmbientColour(SceneDefinition*)),
+                this, SLOT(onSceneProperty_ChooseAmbientColour(SceneDefinition*))
+            );
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE_OBJECT:
-            qDebug() << "MainController: Selected a scene object";
+            log->info( "Selected a scene object");
             mSelectedSceneObjectDefinitionHandle = static_cast<SceneObjectDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mPropertiesModel.reset(new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView));
 
@@ -357,7 +382,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_TREE_NODE:
-            qDebug() << "MainController: Selected a tree node";
+            log->info( "Selected a tree node");
             break;
     }
 
@@ -716,7 +741,8 @@ void
 MainController::onAction_Scene_Play
 ()
 {
-    qDebug() << "MainController: onReloadProject Clicked";
+    auto log = spdlog::get("MainController");
+    log->info( "onReloadProject Clicked");
     SceneDefinition *sceneDefinitionHandle = mDreamProjectModel->getSelectedSceneDefinitionHandle();
     if (sceneDefinitionHandle)
     {
@@ -748,6 +774,7 @@ void
 MainController::onUI_ScenegraphTreeViewSelectionChanged
 (const QItemSelection& selected,const QItemSelection& deselected)
 {
+    Q_UNUSED(deselected)
     QModelIndexList indexes = selected.indexes();
     if (indexes.size() > 0)
     {
@@ -761,6 +788,7 @@ void
 MainController::onUI_AssetDefinitionTreeViewSelectionChanged
 (const QItemSelection& selected,const QItemSelection& deselected)
 {
+    Q_UNUSED(deselected)
     QModelIndexList indexes = selected.indexes();
     if (indexes.size() > 0)
     {
@@ -917,7 +945,8 @@ void
 MainController::onAction_Scene_NewScene
 ()
 {
-    qDebug() << "MainController: onScenegraphAddSceneAction";
+    auto log = spdlog::get("MainController");
+    log->info( "onScenegraphAddSceneAction");
     Project* pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
@@ -937,7 +966,8 @@ void
 MainController::onAction_Scene_NewSceneObject
 ()
 {
-    qDebug() << "MainController: onScenegraphAddSceneObjectAction";
+    auto log = spdlog::get("MainController");
+    log->info( "onScenegraphAddSceneObjectAction");
     if (mSelectedSceneObjectDefinitionHandle)
     {
         mSelectedSceneObjectDefinitionHandle->createNewChildSceneObjectDefinition();
@@ -952,7 +982,8 @@ void
 MainController::onAction_Asset_AddToSelectedSceneObjectDefinition
 ()
 {
-    qDebug() << "MainController: onAction_Asset_AddToSelectedSceneObjectDefinition ";
+    auto log = spdlog::get("MainController");
+    log->info( "onAction_Asset_AddToSelectedSceneObjectDefinition ");
     if (mSelectedSceneObjectDefinitionHandle && mSelectedAssetDefinitionHandle)
     {
         mSelectedSceneObjectDefinitionHandle->addAssetDefinitionUuidToLoadQueue
@@ -966,7 +997,8 @@ void
 MainController::onAction_Asset_NewDefinition_Animation
 ()
 {
-    qDebug() << "MainController: Creating new Animation Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Animation Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(ANIMATION))
     {
         onUI_AssetDefinitionsUpdated();
@@ -977,7 +1009,8 @@ void
 MainController::onAction_Asset_NewDefinition_Audio
 ()
 {
-    qDebug() << "MainController: Creating new Audio Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Audio Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(AUDIO))
     {
         onUI_AssetDefinitionsUpdated();
@@ -988,7 +1021,8 @@ void
 MainController::onAction_Asset_NewDefinition_Font
 ()
 {
-    qDebug() << "MainController: Creating new Font Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Font Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(FONT))
     {
         onUI_AssetDefinitionsUpdated();
@@ -999,7 +1033,8 @@ void
 MainController::onAction_Asset_NewDefinition_Light
 ()
 {
-    qDebug() << "MainController: Creating new Light Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Light Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(LIGHT))
     {
         onUI_AssetDefinitionsUpdated();
@@ -1010,7 +1045,8 @@ void
 MainController::onAction_Asset_NewDefinition_Model
 ()
 {
-    qDebug() << "MainController: Creating new Model Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Model Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(MODEL))
     {
         onUI_AssetDefinitionsUpdated();
@@ -1021,7 +1057,8 @@ void
 MainController::onAction_Asset_NewDefinition_PhysicsObject
 ()
 {
-    qDebug() << "MainController: Creating new Physics Object Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Physics Object Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(PHYSICS_OBJECT))
     {
         onUI_AssetDefinitionsUpdated();
@@ -1032,7 +1069,8 @@ void
 MainController::onAction_Asset_NewDefinition_Script
 ()
 {
-    qDebug() << "MainController: Creating new Script Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Script Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(SCRIPT))
     {
         onUI_AssetDefinitionsUpdated();
@@ -1043,7 +1081,8 @@ void
 MainController::onAction_Asset_NewDefinition_Shader
 ()
 {
-    qDebug() << "MainController: Creating new Shader Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Shader Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(SHADER))
     {
         onUI_AssetDefinitionsUpdated();
@@ -1054,7 +1093,8 @@ void
 MainController::onAction_Asset_NewDefinition_Sprite
 ()
 {
-    qDebug() << "MainController: Creating new Sprite Asset Definition";
+    auto log = spdlog::get("MainController");
+    log->info( "Creating new Sprite Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(SPRITE))
     {
         onUI_AssetDefinitionsUpdated();
@@ -1065,6 +1105,7 @@ void
 MainController::onAssetDefinitionProperty_ModelFile
 (IAssetDefinition* adHandle)
 {
+    auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(QDir::home());
@@ -1075,8 +1116,7 @@ MainController::onAssetDefinitionProperty_ModelFile
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
 
-        qDebug() << "MainController: Using Assimp file"
-                 << sourceFilePath;
+        log->info( "Using Assimp file {}", sourceFilePath.toStdString());
 
         bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
 
@@ -1091,23 +1131,22 @@ MainController::onAssetDefinitionProperty_ModelFile
             );
             if (result != QMessageBox::Yes)
             {
-                qDebug() << "MainController: Copy of" << fileName
-                         <<"was cancelled.";
+                log->info( "Copy of {} was cancelled", fileName.toStdString());
                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
-                qDebug() << "MainController: Error, unable to delete main asset file for"
-                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                log->info( "Error, unable to delete main asset file for {}",
+                         adHandle->getNameAndUuidString());
                 return;
             }
         }
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
-        qDebug() << "MainController: Copy "
-                 << (copyResult ? "Success":"Failed");
+        log->info( "Copy {} "
+                 , (copyResult ? "Success":"Failed"));
     }
 }
 
@@ -1115,6 +1154,7 @@ void
 MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
 (IAssetDefinition* adHandle)
 {
+    auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(QDir::home());
@@ -1125,8 +1165,7 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
 
-        qDebug() << "MainController: Using BvhTriangleMesh file"
-                 << sourceFilePath;
+        log->info( "Using BvhTriangleMesh file {}", sourceFilePath.toStdString());
 
         bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
 
@@ -1141,23 +1180,21 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
             );
             if (result != QMessageBox::Yes)
             {
-                qDebug() << "MainController: Copy of" << fileName
-                         <<"was cancelled.";
+                log->info( "Copy of {} was cancelled." , fileName.toStdString());
                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
-                qDebug() << "MainController: Error, unable to delete main asset file for"
-                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                log->info( "Error, unable to delete main asset file for {}",
+                         adHandle->getNameAndUuidString());
                 return;
             }
         }
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
-        qDebug() << "MainController: Copy "
-                 << (copyResult ? "Success":"Failed");
+        log->info( "Copy {}", (copyResult ? "Success":"Failed"));
     }
 }
 
@@ -1165,7 +1202,8 @@ void
 MainController::onSceneProperty_CaptureCameraTranslation
 (SceneDefinition* sdHandle)
 {
-    qDebug() << "MainController: CaptureCameraTranslation";
+    auto log = spdlog::get("MainController");
+    log->info( "CaptureCameraTranslation");
     Project *pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
@@ -1178,10 +1216,10 @@ MainController::onSceneProperty_CaptureCameraTranslation
             );
             return;
         }
-        qDebug() << "MainController: CaptureCameraTranslation - No ProjectRuntime";
+        log->info( "CaptureCameraTranslation - No ProjectRuntime");
         return;
     }
-    qDebug() << "MainController: CaptureCameraTranslation - No Project";
+    log->info( "CaptureCameraTranslation - No Project");
     return;
 }
 
@@ -1189,7 +1227,8 @@ void
 MainController::onSceneProperty_CaptureCameraRotation
 (SceneDefinition* sdHandle)
 {
-    qDebug() << "MainController: CaptureCameraRotation";
+    auto log = spdlog::get("MainController");
+    log->info( "CaptureCameraRotation");
     Project *pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
@@ -1202,19 +1241,70 @@ MainController::onSceneProperty_CaptureCameraRotation
             );
             return;
         }
-        qDebug() << "MainController: CaptureCameraRotation - No ProjectRuntime";
+        log->info( "CaptureCameraRotation - No ProjectRuntime");
         return;
     }
-    qDebug() << "MainController: CaptureCameraRotation - No Project";
+    log->info( "CaptureCameraRotation - No Project");
     return;
 
 
+}
+
+void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition* sceneDef)
+{
+    auto log = spdlog::get("MainController");
+    log->info( "Choose Ambient Colour");
+
+    QColor currentColour;
+
+    auto colour = sceneDef->getAmbientColour();
+    currentColour.setRgbF(
+        static_cast<double>(colour[0]), // r
+        static_cast<double>(colour[1]), // g
+        static_cast<double>(colour[2]), // b
+        static_cast<double>(colour[3])  // a
+
+    );
+
+    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Ambient Colour",QColorDialog::ShowAlphaChannel);
+
+    if (chosenColour.isValid())
+    {
+       sceneDef->setAmbientColourR(static_cast<float>(chosenColour.redF()));
+       sceneDef->setAmbientColourG(static_cast<float>(chosenColour.greenF()));
+       sceneDef->setAmbientColourB(static_cast<float>(chosenColour.blueF()));
+       sceneDef->setAmbientColourA(static_cast<float>(chosenColour.alphaF()));
+    }
+
+}
+
+void MainController::onSceneProperty_ChooseClearColour(SceneDefinition* sceneDef)
+{
+    auto log = spdlog::get("MainController");
+    log->info( "Choose Clear Colour");
+    QColor currentColour;
+    auto colour = sceneDef->getClearColour();
+    currentColour.setRgbF(
+        static_cast<double>(colour[0]), // r
+        static_cast<double>(colour[1]), // g
+        static_cast<double>(colour[2]) // b
+    );
+
+    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Clear Colour");
+
+    if (chosenColour.isValid())
+    {
+       sceneDef->setClearColourR(static_cast<float>(chosenColour.redF()));
+       sceneDef->setClearColourG(static_cast<float>(chosenColour.greenF()));
+       sceneDef->setClearColourB(static_cast<float>(chosenColour.blueF()));
+    }
 }
 
 void
 MainController::onAssetDefinitionProperty_ModelAdditionalFiles
 (IAssetDefinition* adHandle)
 {
+    auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFiles);
     openDialog.setDirectory(QDir::home());
@@ -1225,13 +1315,13 @@ MainController::onAssetDefinitionProperty_ModelAdditionalFiles
         {
             QFile sourceFile(sourceFilePath);
 
-            qDebug() << "MainController: Using Additional file"
-                     << sourceFilePath;
+            log->info( "Using Additional file {}",
+                      sourceFilePath.toStdString());
 
             bool copyResult = mProjectDirectoryModel.copyAdditionalFile(adHandle,sourceFile);
 
-            qDebug() << "MainController: Copy "
-                     << (copyResult ? "Success":"Failed");
+            log->info( "Copy ",
+                      (copyResult ? "Success":"Failed"));
         }
     }
 }
@@ -1241,6 +1331,7 @@ void
 MainController::onUI_SelectedSceneChanged
 (SceneDefinition *scene)
 {
+    auto log = spdlog::get("MainController");
     mDreamProjectModel->setSelectedSceneDefinitionHandle(scene);
     mMainWindowHandle->showStatusBarMessage(
         QString("Selected Scene: %1").
@@ -1253,7 +1344,8 @@ void
 MainController::onUI_ScenegraphUpdated
 ()
 {
-    qDebug() << "MainController: updating scenegraph tree model";
+    auto log = spdlog::get("MainController");
+    log->info( "updating scenegraph tree model");
     mScenegraphTreeModel->setupModelData();
     mMainWindowHandle->getScenegraphTreeView()->expandAll();
 }
@@ -1262,7 +1354,8 @@ void
 MainController::onUI_AssetDefinitionsUpdated
 ()
 {
-    qDebug() << "MainController: updating scenegraph tree model";
+    auto log = spdlog::get("MainController");
+    log->info( "updating scenegraph tree model");
     mAssetDefinitionTreeModel->setupModelData();
     mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
 }
@@ -1271,7 +1364,8 @@ void
 MainController::onUI_ProjectNameChanged
 (QString name)
 {
-    qDebug() << "MainController: Name set to " << name;
+    auto log = spdlog::get("MainController");
+    log->info( "Name set to {}" , name.toStdString());
     mDreamProjectModel->setProjectName(name.toStdString());
 }
 
@@ -1279,7 +1373,8 @@ void
 MainController::onUI_ProjectAuthorChanged
 (QString author)
 {
-    qDebug() << "MainController: Author set to " << author;
+    auto log = spdlog::get("MainController");
+    log->info( "Author set to " , author.toStdString());
     mDreamProjectModel->setProjectAuthor(author.toStdString());
 }
 
@@ -1287,7 +1382,8 @@ void
 MainController::onUI_ProjectDescriptionChanged
 (QString desc)
 {
-    qDebug() << "MainController: Description set to " << desc;
+    auto log = spdlog::get("MainController");
+    log->info( "Description set to " , desc.toStdString());
     mDreamProjectModel->setProjectDescription(desc.toStdString());
 }
 
@@ -1295,7 +1391,8 @@ void
 MainController::onUI_ProjectWindowWidthChanged
 (QString width)
 {
-    qDebug() << "MainController: Window Width set to " << width;
+    auto log = spdlog::get("MainController");
+    log->info( "Window Width set to " , width.toStdString());
     mDreamProjectModel->setProjectWindowWidth(width.toInt());
 }
 
@@ -1303,7 +1400,8 @@ void
 MainController::onUI_ProjectWindowHeightChanged
 (QString height)
 {
-    qDebug() << "MainController: Window Height set to " << height;
+    auto log = spdlog::get("MainController");
+    log->info( "Window Height set to {}" , height.toStdString());
     mDreamProjectModel->setProjectWindowHeight(height.toInt());
 }
 
@@ -1311,8 +1409,9 @@ void
 MainController::onUI_ProjectStartupSceneChanged
 (QString startupSceneIndex)
 {
+    auto log = spdlog::get("MainController");
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
-    qDebug() << "MainController: startupScene set to " << startupSceneIndex << " " << QString::fromStdString(sceneName);
+    log->info( "startupScene set to {} {}" , startupSceneIndex.toStdString() ,  sceneName);
     SceneDefinition* sceneHandle = mDreamProjectModel->getProject()
         ->getProjectDefinitionHandle()
         ->getSceneDefinitionHandleByUuid(sceneName);
@@ -1355,6 +1454,7 @@ void
 MainController::openProject
 ()
 {
+    auto log = spdlog::get("MainController");
     bool loadResult = mDreamProjectModel->loadProject(mProjectDirectory);
 
     mProjectDirectoryModel.setProjectDefinitionHandle
@@ -1364,13 +1464,15 @@ MainController::openProject
 
     mProjectDirectoryModel.inflateFromDirectory(mProjectDirectory);
 
-    qDebug() << "MainController: Load Project Result " << loadResult;
+    log->info( "Load Project Result {}", loadResult);
     if (!loadResult)
     {
         emit notifyInvalidProjectDirectory(mProjectDirectory);
         emit notifyProjectWidgetsEnabledChanged(false);
         return;
     }
+
+    mMainWindowHandle->clearOpenGLComponentRuntime();
 
     updateWindowTitle(mProjectDirectory);
 
@@ -1413,6 +1515,7 @@ void
 MainController::onAction_Debug_DumpProjectDefinitionJson
 (bool toggled)
 {
+    Q_UNUSED(toggled)
     cout << mDreamProjectModel
             ->getProject()
             ->getProjectDefinitionHandle()
@@ -1424,6 +1527,7 @@ void
 MainController::onAssetDefinitionProperty_AudioFile
 (IAssetDefinition* adHandle)
 {
+    auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(QDir::home());
@@ -1438,8 +1542,7 @@ MainController::onAssetDefinitionProperty_AudioFile
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
 
-        qDebug() << "MainController: Using Audio file"
-                 << sourceFilePath;
+        log->info( "Using Audio file", sourceFilePath.toStdString());
 
         bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
 
@@ -1454,23 +1557,51 @@ MainController::onAssetDefinitionProperty_AudioFile
             );
             if (result != QMessageBox::Yes)
             {
-                qDebug() << "MainController: Copy of" << fileName
-                         <<"was cancelled.";
+                log->info( "Copy of {} was cancelled" , fileName.toStdString());
                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
-                qDebug() << "MainController: Error, unable to delete main asset file for"
-                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                log->info( "Error, unable to delete main asset file for {}",
+                          adHandle->getNameAndUuidString());
                 return;
             }
         }
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
-        qDebug() << "MainController: Copy "
-                 << (copyResult ? "Success":"Failed");
+        log->info( "Copy ",
+                  (copyResult ? "Success":"Failed"));
+
+        showImportResultDialog(copyResult, adHandle, sourceFile.fileName());
+
+    }
+}
+
+void
+MainController::showImportResultDialog(bool success, IAssetDefinition* adHandle, QString source)
+{
+    if (!success)
+    {
+        ;
+        QMessageBox::critical
+        (
+            mMainWindowHandle,
+            QString("Import Failed"),
+            QString("Unable to import\n\n%1\n\nnto\n\n%2")
+                .arg(source,QString::fromStdString(adHandle->getAssetPath()))
+        );
+    }
+    else
+    {
+        QMessageBox::information
+        (
+            mMainWindowHandle,
+            QString("Import Success"),
+            QString("Successfuly imported\n\n%1\n\nto\n\n%2")
+                .arg(source,QString::fromStdString(adHandle->getAssetPath()))
+        );
     }
 }
 
@@ -1478,6 +1609,7 @@ void
 MainController::onAssetDefinitionProperty_FontFile
 (IAssetDefinition* adHandle)
 {
+    auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(QDir::home());
@@ -1493,8 +1625,7 @@ MainController::onAssetDefinitionProperty_FontFile
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
 
-        qDebug() << "MainController: Using Font file"
-                 << sourceFilePath;
+        log->info( "Using Font file {}", sourceFilePath.toStdString());
 
         bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
 
@@ -1509,23 +1640,24 @@ MainController::onAssetDefinitionProperty_FontFile
             );
             if (result != QMessageBox::Yes)
             {
-                qDebug() << "MainController: Copy of" << fileName
-                         <<"was cancelled.";
+                log->info( "Copy of {} was cancelled" , fileName.toStdString());
                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
-                qDebug() << "MainController: Error, unable to delete main asset file for"
-                         << QString::fromStdString(adHandle->getNameAndUuidString());
+                log->info( "Error, unable to delete main asset file for {}"
+                         ,adHandle->getNameAndUuidString()
+                           );
                 return;
             }
         }
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
-        qDebug() << "MainController: Copy "
-                 << (copyResult ? "Success":"Failed");
+        log->info( "Copy {} ",
+                  (copyResult ? "Success":"Failed")
+                );
     }
 }
 
@@ -1537,7 +1669,7 @@ MainController::onAssetDefinitionProperty_RemoveFiles
     (
         mMainWindowHandle,
         "Remove Asset Data?",
-        "Are you sure you want to remove Asset data?"
+        "Are you sure you want to delete the asset data?"
     );
 
     if (result == QMessageBox::Yes)
@@ -1551,7 +1683,8 @@ void
 MainController::onAssetDefinitionProperty_EditScript
 (IAssetDefinition* adHandle)
 {
-    qDebug() << "MainController: EditScript";
+    auto log = spdlog::get("MainController");
+    log->info( "EditScript");
     QString filePath = mProjectDirectoryModel.createAssetTargetPath(adHandle);
     mProjectDirectoryModel.touchFile(filePath);
     mMacOsOpenModel->openInExternalEditor(filePath);
@@ -1561,7 +1694,8 @@ void
 MainController::onAssetDefinitionProperty_EditVertexShader
 (IAssetDefinition* adHandle)
 {
-    qDebug() << "MainController: EditVertexShader";
+    auto log = spdlog::get("MainController");
+    log->info( "EditVertexShader");
     QString filePath = mProjectDirectoryModel.createAssetTargetPath
     (
         adHandle,
@@ -1579,7 +1713,8 @@ void
 MainController::onAssetDefinitionProperty_EditFragmentShader
 (IAssetDefinition* adHandle)
 {
-    qDebug() << "MainController: EditFragmentShader";
+    auto log = spdlog::get("MainController");
+    log->info( "EditFragmentShader");
     QString filePath = mProjectDirectoryModel.createAssetTargetPath
     (
         adHandle,
@@ -1597,18 +1732,30 @@ void
 MainController::onAssetDefinitionProperty_ScriptTemplateChanged
 (IAssetDefinition* adHandle, const QString& templateName)
 {
-    qDebug() << "MainController: Script Template Changed";
+    auto log = spdlog::get("MainController");
+    log->info( "Script Template Changed");
 
-    QString scriptContent = mTemplatesModel.getScriptTemplate(templateName);
+    auto result = QMessageBox::question
+    (
+        mMainWindowHandle,
+        "Load Script Template",
+        "Are you sure you want to load this template? Any existing data will be lost."
+    );
 
-    mProjectDirectoryModel.writeAssetData(scriptContent,adHandle);
+    if (result == QMessageBox::Yes)
+    {
+        QString scriptContent = mTemplatesModel.getScriptTemplate(templateName);
+        mProjectDirectoryModel.writeAssetData(scriptContent,adHandle);
+        return;
+    }
 }
 
 void
 MainController::onAssetDefinitionProperty_ShaderTemplateChanged
 (IAssetDefinition* adHandle, const QString& templateName)
 {
-    qDebug() << "MainController: Shader Template Changed";
+    auto log = spdlog::get("MainController");
+    log->info( "Shader Template Changed");
 
     QString fragmentContent = mTemplatesModel.getShaderTemplate
     (
@@ -1643,7 +1790,8 @@ void
 MainController::onSceneObjectProperty_CaptureTranslation
 (SceneObjectDefinition* sodHandle)
 {
-    qDebug() << "MainController: CaptureTranslation";
+    auto log = spdlog::get("MainController");
+    log->info( "CaptureTranslation");
     Project *pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
@@ -1668,7 +1816,8 @@ void
 MainController::onSceneObjectProperty_CaptureRotation
 (SceneObjectDefinition* sodHandle)
 {
-    qDebug() << "MainController: CaptureRotation";
+    auto log = spdlog::get("MainController");
+    log->info( "CaptureRotation");
     Project *pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
@@ -1693,7 +1842,8 @@ void
 MainController::onSceneObjectProperty_CaptureScale
 (SceneObjectDefinition* sodHandle)
 {
-    qDebug() << "MainController: CaptureScale";
+    auto log = spdlog::get("MainController");
+    log->info( "CaptureScale");
     Project *pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
@@ -1719,10 +1869,12 @@ void
 MainController::onSceneObjectProperty_RemoveAsset
 (SceneObjectDefinition* sodHandle,IAssetDefinition* adHandle)
 {
-    qDebug() << "MainController: RemoveAsset"
-             << QString::fromStdString(adHandle->getNameAndUuidString())
-             << "from"
-             << QString::fromStdString(sodHandle->getNameAndUuidString());
+    auto log = spdlog::get("MainController");
+    log->info(
+         "RemoveAsset {} from {}",
+         adHandle->getNameAndUuidString(),
+         sodHandle->getNameAndUuidString()
+    );
     sodHandle->removeAssetDefinitionFromLoadQueue(adHandle);
 }
 
@@ -1730,10 +1882,12 @@ void
 MainController::onSceneObjectProperty_RemoveChild
 (SceneObjectDefinition* sodHandle, SceneObjectDefinition* sodChildHandle)
 {
-    qDebug() << "MainController: RemoveChild"
-             << QString::fromStdString(sodChildHandle->getNameAndUuidString())
-             << "from"
-             << QString::fromStdString(sodHandle->getNameAndUuidString());
+    auto log = spdlog::get("MainController");
+    log->info(
+         "RemoveChild {} from {}",
+         sodChildHandle->getNameAndUuidString(),
+         sodHandle->getNameAndUuidString()
+    );
     sodHandle->removeChildSceneObjectDefinition(sodChildHandle);
     onUI_ScenegraphUpdated();
 }

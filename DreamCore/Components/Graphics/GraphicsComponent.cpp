@@ -70,7 +70,8 @@ GraphicsComponent::GraphicsComponent
       mWindowComponentHandle(windowComponent),
       mActiveSceneRuntimeHandle(nullptr)
 {
-
+    auto log = getLog();
+    log->info("Constructing");
 }
 
 GraphicsComponent::~GraphicsComponent
@@ -107,7 +108,7 @@ GraphicsComponent::init
     Constants::checkGLError("After GLEW init");
 
     log->info(
-        "OpenGL Version {}\nShader Version {}",
+        "OpenGL Version {}, Shader Version {}",
         glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION)
     );
 
@@ -175,14 +176,11 @@ GraphicsComponent::onWindowDimensionsChanged
 
     log->debug
     (
-        "GraphicsComponent: Window dimensions changed\n"
-        "WindowWidth: {}"
-        "\nWindowHeight: {}"
-        "\nMinDraw: {}"
-        "\nMaxDraw: {}",
+        "Window dimensions changed: width: {}, height: {} min draw: {}, max draw {}",
         mWindowComponentHandle->getWidth(),
         mWindowComponentHandle->getHeight(),
-        mMinimumDraw, mMaximumDraw
+        mMinimumDraw,
+        mMaximumDraw
     );
 }
 
@@ -191,7 +189,7 @@ GraphicsComponent::preModelRender
 ()
 {
     auto log = getLog();
-   log->info("GraphicsComponent: Pre Render" );
+   log->info("Pre Render" );
     Constants::checkGLError("before pre render");
 
     glEnable(GL_DEPTH_TEST);
@@ -225,11 +223,10 @@ GraphicsComponent::postModelRender
 ()
 {
     auto log = getLog();
-        log->info("GraphicsComponent: Post Render" );
+        log->info("Post Render" );
     Constants::checkGLError("before post render");
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_BLEND);
+    //glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_BLEND);
     Constants::checkGLError("after post render");
 }
 
@@ -238,11 +235,11 @@ GraphicsComponent::preFontRender
 ()
 {
     auto log = getLog();
-        log->info("GraphicsComponent: Pre Render" );
+    log->info("Pre Render" );
     Constants::checkGLError("before pre render");
 
     glEnable(GL_DEPTH_TEST);
-
+    glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -270,10 +267,10 @@ GraphicsComponent::postFontRender
 ()
 {
     auto log = getLog();
-        log->info("GraphicsComponent: Post Render" );
+        log->info("Post Render" );
     Constants::checkGLError("before post render");
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
+    //glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_BLEND);
     Constants::checkGLError("after post render");
 }
 
@@ -282,7 +279,7 @@ GraphicsComponent::create2DVertexObjects
 ()
 {
     auto log = getLog();
-        log->info("GraphicsComponent: Creating 2D VAO/VBO" );
+        log->info("Creating 2D VAO/VBO" );
     // Generate
     glGenVertexArrays(1, &mSpriteQuadVAO);
     glGenBuffers(1, &mSpriteVBO);
@@ -302,7 +299,7 @@ GraphicsComponent::createFontVertexObjects
 ()
 {
     auto log = getLog();
-        log->info("GraphicsComponent: Creating Font VAO/VBO" );
+        log->info("Creating Font VAO/VBO" );
     // Generate
     glGenVertexArrays(1, &mFontVAO);
     glGenBuffers(1, &mFontVBO);
@@ -346,7 +343,7 @@ GraphicsComponent::updateComponent
                         }
                         else
                         {
-                            log->error("GraphicsComponent: Object {} has model, but no shader assigned." , object->getUuid());
+                            log->error("Object {} has model, but no shader assigned." , object->getUuid());
                         }
                     }
 
@@ -360,7 +357,7 @@ GraphicsComponent::updateComponent
                         else
                         {
                             log->error(
-                                "GraphicsComponent: Object {} has sprite, but no shader assigned.",
+                                "Object {} has sprite, but no shader assigned.",
                                  object->getUuid()
                             );
                         }
@@ -376,7 +373,7 @@ GraphicsComponent::updateComponent
                         else
                         {
                             log->error(
-                                "GraphicsComponent: Object {} has font, but no shader assigned.",
+                                "Object {} has font, but no shader assigned.",
                                  object->getUuid()
                             );
                         }
@@ -400,7 +397,7 @@ GraphicsComponent::updateComponent
     ()
     {
         auto log = getLog();
-            log->info("GraphicsComponent: Clear 2D Queue" );
+            log->info("Clear 2D Queue" );
         mSpriteQueue.clear();
     }
 
@@ -409,7 +406,7 @@ GraphicsComponent::updateComponent
     (SceneObjectRuntime* object)
     {
         auto log = getLog();
-            log->info("GraphicsComponent: Adding {} to Sprite Queue",
+            log->info("Adding {} to Sprite Queue",
                  object->getNameAndUuidString()
                       );
         mSpriteQueue.push_back(object);
@@ -422,12 +419,13 @@ GraphicsComponent::updateComponent
         auto log = getLog();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            log->info("GraphicsComponent: Draw 2D Queue" );
+        glEnable(GL_DEPTH_TEST);
+        log->info("Draw 2D Queue" );
         for (SceneObjectRuntime* sceneObj : mSpriteQueue)
         {
             drawSprite(sceneObj);
         }
-        glDisable(GL_BLEND);
+        //glDisable(GL_BLEND);
     }
 
     void
@@ -435,7 +433,7 @@ GraphicsComponent::updateComponent
     ()
     {
         auto log = getLog();
-            log->info("GraphicsComponent: Clear 3D Queue" );
+            log->info("Clear 3D Queue" );
         mModelQueue.clear();
     }
 
@@ -445,7 +443,7 @@ GraphicsComponent::updateComponent
     {
         auto log = getLog();
         log->info(
-            "GraphicsComponent: Adding {} to 3D Queue",
+            "Adding {} to 3D Queue",
              object->getNameAndUuidString()
           );
         mModelQueue.push_back(object);
@@ -457,11 +455,11 @@ GraphicsComponent::updateComponent
     {
         auto log = getLog();
         preModelRender();
-            log->info("GraphicsComponent: Draw 3D Queue" );
+            log->info("Draw 3D Queue" );
         for (SceneObjectRuntime* it : mModelQueue)
         {
             drawModel(it);
-            Constants::checkGLError("GfxComponent: After Draw Model");
+            Constants::checkGLError("After Draw Model");
         }
         postModelRender();
     }
@@ -471,7 +469,7 @@ GraphicsComponent::updateComponent
     ()
     {
         auto log = getLog();
-            log->info("GraphicsComponent: Clear Font Queue" );
+            log->info("Clear Font Queue" );
         mFontQueue.clear();
     }
 
@@ -480,7 +478,7 @@ GraphicsComponent::updateComponent
     (SceneObjectRuntime* object)
     {
         auto log = getLog();
-            log->info("GraphicsComponent: Adding {} to Font Queue",
+            log->info("Adding {} to Font Queue",
                  object->getNameAndUuidString());
         mFontQueue.push_back(object);
     }
@@ -491,11 +489,11 @@ GraphicsComponent::updateComponent
     {
         auto log = getLog();
         preFontRender();
-            log->info("GraphicsComponent: Draw Font Queue" );
+            log->info("Draw Font Queue" );
         for (SceneObjectRuntime* it : mFontQueue)
         {
             drawFont(it);
-            Constants::checkGLError("GfxComponent: After Draw Font");
+            Constants::checkGLError("After Draw Font");
         }
         postFontRender();
     }
@@ -519,7 +517,7 @@ GraphicsComponent::updateComponent
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
-            log->info("GraphicsComponent: Drawing Sprite {}", sceneObject->getNameAndUuidString() );
+            log->info("Drawing Sprite {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
         SpriteInstance* sprite = sceneObject->getSpriteInstance();
@@ -590,7 +588,7 @@ GraphicsComponent::updateComponent
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
-            log->info("GraphicsComponent: Drawing Font {}", sceneObject->getNameAndUuidString() );
+        log->info("Drawing Font {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
@@ -598,10 +596,10 @@ GraphicsComponent::updateComponent
         shader->use();
 
         shader->setProjectionMatrix(mProjectionMatrix);
-        Constants::checkGLError("GfxComponent: Font: After set projection matrix");
+        Constants::checkGLError("Font: After set projection matrix");
 
         shader->setViewMatrix(mViewMatrix);
-        Constants::checkGLError("GfxComponent: Font: After set view matrix");
+        Constants::checkGLError("Font: After set view matrix");
 
         vec3 fontColour = font->getColourAsVec3();
         GLint fontColourLocation = glGetUniformLocation(shader->getShaderProgram(),"textColour");
@@ -611,12 +609,13 @@ GraphicsComponent::updateComponent
         }
         else
         {
-            log->info("GraphicsComponent: Font: Unable to set textColour uniform");
+            log->info("Font: Unable to set textColour uniform");
         }
 
         // calculate the model matrix
         vec3 fontTranslation = sceneObject->getTranslation();
-        vec3 translation = mCamera->getRelativeTranslation(fontTranslation.z);
+        vec3 camTranslation = mCamera->getRelativeTranslation(fontTranslation.z);
+        float advance = 0;
         //mat4 rotationMatrix = mCamera->getRelativeRotation(translation);
 
         // Iterate through all characters
@@ -628,16 +627,16 @@ GraphicsComponent::updateComponent
 
             if (sceneObject->followsCamera())
             {
-                    log->info("GraphicsComponent: Font: Applying Camera Transform" );
-
+                log->info("Font: Applying Camera Transform" );
                 //modelMatrix *= rotationMatrix;
-                modelMatrix = translate(modelMatrix,translation);
-                modelMatrix = translate(modelMatrix,vec3(fontTranslation.x,fontTranslation.y,0.0f));
+                modelMatrix = translate(modelMatrix,camTranslation);
             }
+
+            modelMatrix = translate(modelMatrix,vec3(fontTranslation.x+advance,fontTranslation.y,fontTranslation.z));
 
             // Pass model matrix to shader
             shader->setModelMatrix(modelMatrix);
-            Constants::checkGLError("GfxComponent: Font: After set model matrix");
+            Constants::checkGLError("Font: After set model matrix");
 
             float fontScalar = 10.0f;
             FontCharacter ch = charMap[*c];
@@ -681,20 +680,20 @@ GraphicsComponent::updateComponent
                 )
             };
 
-            log->info("GraphicsComponent: Font texture is " , ch.TextureID );
+            log->info("Font texture is {}" , ch.TextureID );
             // Setup Texture
             glActiveTexture(GL_TEXTURE0);
-            Constants::checkGLError("GfxComponent: Font: After ActivateTexture");
+            Constants::checkGLError("Font: After ActivateTexture");
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            Constants::checkGLError("GfxComponent: Font: After BindTexture");
+            Constants::checkGLError("Font: After BindTexture");
             // Setup VBO
             glBindBuffer(GL_ARRAY_BUFFER, mFontVBO);
-            Constants::checkGLError("GfxComponent: Font: Bind Buffer");
+            Constants::checkGLError("Font: Bind Buffer");
             glBufferData(GL_ARRAY_BUFFER, sizeof(FontCharacterVertex)*6, &vertices[0], GL_STATIC_DRAW);
-            Constants::checkGLError("GfxComponent: Font: After Buffer Data");
+            Constants::checkGLError("Font: After Buffer Data");
             // Setup VAO
             shader->bindVertexArray(mFontVAO);
-            Constants::checkGLError("GfxComponent: Font: After Bind VAO");
+            Constants::checkGLError("Font: After Bind VAO");
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(
                 0, 3, GL_FLOAT, GL_FALSE,
@@ -710,12 +709,12 @@ GraphicsComponent::updateComponent
 
             // Render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
-            Constants::checkGLError("GfxComponent: Font: After Draw Call");
+            Constants::checkGLError("Font: After Draw Call");
 
             // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             // Bitshift by 6 to get value in pixels (2^6 = 64)
 
-            translation.x += (ch.Advance >> 6)/fontScalar; // * scale;
+            advance += (ch.Advance >> 6)/fontScalar; // * scale;
         }
         shader->unbindVertexArray();
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -729,7 +728,7 @@ GraphicsComponent::updateComponent
         auto log = getLog();
         Constants::checkGLError("Before drawModel");
 
-            log->info("GraphicsComponent: Drawing Model " , sceneObject->getNameAndUuidString() );
+            log->info("Drawing Model " , sceneObject->getNameAndUuidString() );
 
         // Get Assets
         AssimpModelInstance* model = sceneObject->getModelInstance();

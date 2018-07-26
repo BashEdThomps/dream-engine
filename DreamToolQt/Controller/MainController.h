@@ -29,6 +29,7 @@
 
 #include "PreferencesDialogController.h"
 
+
 #include "../Model/DreamProjectModel.h"
 #include "../Model/ProjectDirectoryModel.h"
 #include "../Model/TreeModels/Scenegraph/ScenegraphTreeModel.h"
@@ -149,8 +150,12 @@ public slots:
 
     void onSceneProperty_CaptureCameraTranslation(SceneDefinition*);
     void onSceneProperty_CaptureCameraRotation(SceneDefinition*);
+    void onSceneProperty_ChooseAmbientColour(SceneDefinition*);
+    void onSceneProperty_ChooseClearColour(SceneDefinition*);
 
 
+protected:
+    void showImportResultDialog(bool success, IAssetDefinition* adHandle, QString source);
 private: // Methods
     // Setup
     void setupUI();

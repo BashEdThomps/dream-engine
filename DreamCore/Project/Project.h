@@ -55,7 +55,7 @@ namespace Dream
 
         // Public Methods
     public:
-        Project(IWindowComponent* wcHandle = 0);
+        Project(IWindowComponent* wcHandle = nullptr);
         ~Project();
 
         ProjectRuntime* getProjectRuntimeHandle();

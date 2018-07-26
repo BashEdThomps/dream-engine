@@ -92,6 +92,7 @@ public:
 
     void setPropertiesDockWidgetTitle(QString title);
 
+    void clearOpenGLComponentRuntime();
 private: // Methods
     bool shouldPassKey(int key);
 

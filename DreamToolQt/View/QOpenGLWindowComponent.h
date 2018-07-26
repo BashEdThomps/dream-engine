@@ -59,10 +59,10 @@ public:
     void setSelectionHighlighterEnabled(bool enabled);
     void setRelationshipTreeEnabled(bool enabled);
 
-
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
+    void clearProjectRuntimeHandle();
 
 protected:
     void initializeGL() override;

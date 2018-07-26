@@ -45,10 +45,12 @@ enum SceneProperty
 
     SCENE_PROPERTY_CAMERA_SPEED,
 
+    SCENE_PROPERTY_CLEAR_PARENT,
     SCENE_PROPERTY_CLEAR_RED,
     SCENE_PROPERTY_CLEAR_GREEN,
     SCENE_PROPERTY_CLEAR_BLUE,
 
+    SCENE_PROPERTY_AMBIENT_PARENT,
     SCENE_PROPERTY_AMBIENT_RED,
     SCENE_PROPERTY_AMBIENT_GREEN,
     SCENE_PROPERTY_AMBIENT_BLUE,
@@ -67,13 +69,14 @@ class ScenePropertiesItem : public AbstractPropertiesItem
 public:
     ScenePropertiesItem
     (
-        QString title,
-        SceneDefinition* sdHandle,
-        SceneProperty property = SCENE_PROPERTY_NONE,
-        QItemDelegate* delegate = nullptr,
-        AbstractPropertiesItem *parent = nullptr
-    );
-    ~ScenePropertiesItem();
+            QString title,
+            SceneDefinition* sdHandle,
+            SceneProperty property = SCENE_PROPERTY_NONE,
+            QItemDelegate* delegate = nullptr,
+            AbstractPropertiesItem *parent = nullptr
+            );
+
+    ~ScenePropertiesItem() override;
 
     bool setData(int column, const QVariant &value) override;
     QVariant data(int column) override;

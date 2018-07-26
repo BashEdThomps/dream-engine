@@ -101,7 +101,8 @@ QOpenGLWindowComponent::paintGL
 
             if (sRuntime->getState() != SCENE_STATE_STOPPED)
             {
-                mProjectRuntimeHandle->updateAll();
+                mProjectRuntimeHandle->updateLogic();
+                //mProjectRuntimeHandle->updateAll();
 
                 glm::mat4 viewMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getViewMatrix();
                 glm::mat4 projectionMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getProjectionMatrix();
@@ -161,6 +162,8 @@ QOpenGLWindowComponent::paintGL
                         Constants::checkGLError("QOGLWC: RelTree after draw");
                     }
                 }
+                mProjectRuntimeHandle->updateGraphics();
+                mProjectRuntimeHandle->collectGarbage();
             }
             else
             {
@@ -467,4 +470,9 @@ QOpenGLWindowComponent::keyReleaseEvent
             mInputState.rightPressed = false;
             break;
     }
+}
+
+void QOpenGLWindowComponent::clearProjectRuntimeHandle()
+{
+   mProjectRuntimeHandle = nullptr;
 }

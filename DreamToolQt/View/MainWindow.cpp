@@ -153,12 +153,12 @@ MainWindow::setupMenu_Asset_NewDefinition
     for (pair<AssetType,string> typePair : Constants::DREAM_ASSET_TYPES_MAP)
     {
         QAction *typeAction = new QAction
-        (
-            QString::fromStdString
-            (
-                Constants::getAssetTypeReadableNameFromString(typePair.second)
-            )
-        );
+                (
+                    QString::fromStdString
+                    (
+                        Constants::getAssetTypeReadableNameFromString(typePair.second)
+                        )
+                    );
         mMenu_Asset_NewDefinition->addAction(typeAction);
         mActionMap_Asset_NewDefinition.insert(pair<AssetType,QAction*>(typePair.first, typeAction));
     }
@@ -170,7 +170,7 @@ void
 MainWindow::setPropertiesDockWidgetTitle
 (QString title)
 {
-   ui->propertiesDockWidget->setWindowTitle(title);
+    ui->propertiesDockWidget->setWindowTitle(title);
 }
 
 void
@@ -264,6 +264,11 @@ void
 MainWindow::onNoSceneSelected
 ()
 {
+    QMessageBox::critical(
+                this,
+                tr("No Scene Scelected"),
+                tr("Please select a scene from the Scenegraph tree before running")
+                );
     showStatusBarMessage(QString("No Scene Selected to Run!"));
 }
 
@@ -335,6 +340,13 @@ MainWindow::getWindowComponent
 ()
 {
     return mWindowComponent.get();
+}
+
+void
+MainWindow::clearOpenGLComponentRuntime
+()
+{
+    mWindowComponent->clearProjectRuntimeHandle();
 }
 
 void

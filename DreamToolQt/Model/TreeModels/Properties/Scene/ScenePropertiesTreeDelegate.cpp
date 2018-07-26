@@ -21,6 +21,7 @@
 #include "ScenePropertiesItem.h"
 
 #include <QDebug>
+#include <QLabel>
 #include <QLineEdit>
 #include <QDoubleSpinBox>
 #include <QCheckBox>
@@ -34,6 +35,7 @@ ScenePropertiesTreeDelegate::ScenePropertiesTreeDelegate
       mModelHandle(model)
 {
     qDebug() << "ScenePropertiesTreeDelegate: Constructing";
+    setClipping(true);
 }
 
 ScenePropertiesTreeDelegate::~ScenePropertiesTreeDelegate
@@ -48,7 +50,8 @@ ScenePropertiesTreeDelegate::createEditor
 {
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
     QDoubleSpinBox *spinbox = nullptr;
-    switch (spiHandle->getProperty())
+    SceneProperty property = spiHandle->getProperty();
+    switch (property)
     {
         case SCENE_PROPERTY_CAMERA:
             return createCameraAllCaptureButton(parent);
@@ -58,7 +61,6 @@ ScenePropertiesTreeDelegate::createEditor
             return createCameraRotationCaptureButton(parent);
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
-        case SCENE_PROPERTY_NONE:
             return new QLineEdit(parent);
 
         case SCENE_PROPERTY_CAMERA_TRANSLATION_X:
@@ -87,19 +89,24 @@ ScenePropertiesTreeDelegate::createEditor
             spinbox->setRange(numeric_limits<double>::lowest(), numeric_limits<double>::max());
             spinbox->setDecimals(3);
             return spinbox;
-
         case SCENE_PROPERTY_PHYSICS_DEBUG:
             return new QCheckBox(parent);
 
+        case SCENE_PROPERTY_AMBIENT_PARENT:
+           return createAmbientColourPaletteButton(parent);
+
+        case SCENE_PROPERTY_CLEAR_PARENT:
+           return createClearColourPaletteButton(parent);
+
+        case SCENE_PROPERTY_NONE:
+            return new QLabel(parent);
     }
-    return new QLineEdit(parent);
 }
 
 void
 ScenePropertiesTreeDelegate::setEditorData
 (QWidget *editor, const QModelIndex &index) const
 {
-
     QVariant value = index.model()->data(index, Qt::DisplayRole);
 
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
@@ -113,7 +120,6 @@ ScenePropertiesTreeDelegate::setEditorData
             break;
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
-        case SCENE_PROPERTY_NONE:
             static_cast<QLineEdit*>(editor)->setText(value.toString());
             break;
 
@@ -146,6 +152,9 @@ ScenePropertiesTreeDelegate::setEditorData
             static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
             break;
 
+        case SCENE_PROPERTY_NONE:
+            break;
+
     }
 }
 
@@ -164,7 +173,6 @@ ScenePropertiesTreeDelegate::setModelData
             break;
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
-        case SCENE_PROPERTY_NONE:
             model->setData(index, static_cast<QLineEdit*>(editor)->text());
             break;
 
@@ -196,6 +204,14 @@ ScenePropertiesTreeDelegate::setModelData
         case SCENE_PROPERTY_PHYSICS_DEBUG:
             model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
             break;
+
+        case SCENE_PROPERTY_NONE:
+            model->setData(index, static_cast<QLabel*>(editor)->text());
+            break;
+
+        case SCENE_PROPERTY_AMBIENT_PARENT:
+        case SCENE_PROPERTY_CLEAR_PARENT:
+            break;
     }
 }
 
@@ -203,7 +219,6 @@ void
 ScenePropertiesTreeDelegate::updateEditorGeometry
 (QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&) const
 {
-
     editor->setGeometry(option.rect);
 }
 
@@ -228,6 +243,19 @@ void ScenePropertiesTreeDelegate::onButton_CaptureCameraAll(bool)
     qDebug() << "ScenePropertiesTreeDelegate: CaptureCameraAll";
     emit notifyButton_CaptureCameraTranslation();
     emit notifyButton_CaptureCameraRotation();
+}
+
+void ScenePropertiesTreeDelegate::onButton_ChooseAmbientColour(bool)
+{
+    qDebug() << "ScenePropertiesTreeDelegate: ChooseAmbientColour";
+    emit notifyButton_ChooseAmbientColour();
+}
+
+void ScenePropertiesTreeDelegate::onButton_ChooseClearColour(bool)
+{
+
+    qDebug() << "ScenePropertiesTreeDelegate: ChooseClearColour";
+    emit notifyButton_ChooseClearColour();
 }
 
 QWidget*
@@ -276,6 +304,34 @@ ScenePropertiesTreeDelegate::createCameraRotationCaptureButton
         SIGNAL(clicked(bool)),
         this,
         SLOT(onButton_CaptureCameraRotation(bool))
+    );
+    return button;
+}
+
+QWidget*ScenePropertiesTreeDelegate::createAmbientColourPaletteButton(QWidget* parent) const
+{
+    QToolButton* button = new QToolButton(parent);
+    button->setText("Choose Colour...");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ChooseAmbientColour(bool))
+    );
+    return button;
+}
+
+QWidget*ScenePropertiesTreeDelegate::createClearColourPaletteButton(QWidget* parent) const
+{
+    QToolButton* button = new QToolButton(parent);
+    button->setText("Choose Colour...");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ChooseClearColour(bool))
     );
     return button;
 }

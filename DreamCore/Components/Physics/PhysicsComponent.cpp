@@ -51,7 +51,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "PhysicsComponent: Destroying Object" );
+        log->info( "Destroying Object" );
 
         vector<btCollisionShape*> shapes;
 
@@ -67,17 +67,17 @@ namespace Dream
             }
             if (body && body->getMotionState())
             {
-                log->info( "PhysicsComponent: Deleting a motion state" );
+                log->info( "Deleting a motion state" );
                 delete body->getMotionState();
             }
-            log->info( "PhysicsComponent: Deleting a collision object" );
+            log->info( "Deleting a collision object" );
             mDynamicsWorld->removeCollisionObject(obj);
             delete obj;
         }
 
         for (btCollisionShape* shape : shapes)
         {
-            log->info( "PhysicsComponent: Deleting Shape" );
+            log->info( "Deleting Shape" );
             delete shape;
         }
 
@@ -118,7 +118,7 @@ namespace Dream
     (vector<float> gravity)
     {
         auto log = getLog();
-        log->info("PhysicsComponent: Setting Gravity" , String::floatVectorToString(gravity) );
+        log->info("Setting Gravity" , String::floatVectorToString(gravity) );
         mGravity = btVector3(gravity[0],gravity[1],gravity[2]);
         if (mDynamicsWorld != nullptr)
         {
@@ -130,7 +130,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "PhysicsComponent: Initialising...");
+        log->info( "Initialising Component");
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -148,7 +148,7 @@ namespace Dream
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
         mDynamicsWorld->setDebugDrawer(mDebugDrawer.get());
 
-        log->info( "done." );
+        log->info("Finished initialising PhysicsComponent");
         return true;
     }
 
@@ -157,7 +157,7 @@ namespace Dream
     (SceneRuntime* scene)
     {
         auto log = getLog();
-        log->info( "PhysicsComponent: Update Called" );
+        log->info( "Update Called" );
 
         populatePhysicsWorld(scene);
 
@@ -176,9 +176,9 @@ namespace Dream
     (btRigidBody *rigidBody)
     {
         auto log = getLog();
-        log->info( "PhysicsComponent: Adding Rigid Body to Dynamics World" );
+        log->info( "Adding Rigid Body to Dynamics World" );
         mDynamicsWorld->addRigidBody(rigidBody);
-        log->info( "PhysicsComponent: World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
+        log->info( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
     }
 
     void
@@ -193,7 +193,7 @@ namespace Dream
     (btRigidBody *rigidBody)
     {
         auto log = getLog();
-        log->info( "PhysicsComponent: Removing Rigid Body from Dynamics World" );
+        log->info( "Removing Rigid Body from Dynamics World" );
         mDynamicsWorld->removeRigidBody(rigidBody);
     }
 
@@ -221,13 +221,13 @@ namespace Dream
                             PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
                             if (!physicsObject->isInPhysicsWorld())
                             {
-                                log->info( "PhysicsComponent: Adding SceneObject {} to physics world", so->getNameAndUuidString());
+                                log->info( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
                                 addPhysicsObjectInstance(physicsObject);
                                 physicsObject->setInPhysicsWorld(true);
                             }
                             else
                             {
-                                log->info( "PhysicsComponent: SceneObject {} is in the physics world",so->getNameAndUuidString());
+                                log->info( "SceneObject {} is in the physics world",so->getNameAndUuidString());
                             }
                         }
                         return nullptr;

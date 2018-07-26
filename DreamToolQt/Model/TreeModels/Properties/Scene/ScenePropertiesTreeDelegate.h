@@ -27,7 +27,7 @@ class ScenePropertiesTreeDelegate : public QItemDelegate
     Q_OBJECT
 public:
     ScenePropertiesTreeDelegate(ScenePropertiesModel* model, QObject *parent = nullptr);
-   ~ScenePropertiesTreeDelegate();
+   ~ScenePropertiesTreeDelegate() override;
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
@@ -38,10 +38,14 @@ public slots:
    void onButton_CaptureCameraTranslation(bool);
    void onButton_CaptureCameraRotation(bool);
    void onButton_CaptureCameraAll(bool);
+    void onButton_ChooseAmbientColour(bool);
+    void onButton_ChooseClearColour(bool);
 
 signals:
    void notifyButton_CaptureCameraTranslation();
    void notifyButton_CaptureCameraRotation();
+   void notifyButton_ChooseClearColour();
+   void notifyButton_ChooseAmbientColour();
 
 protected:
     ScenePropertiesModel *mModelHandle;
@@ -49,4 +53,6 @@ protected:
     QWidget* createCameraAllCaptureButton(QWidget* parent) const;
     QWidget* createCameraTranslationCaptureButton(QWidget* parent) const;
     QWidget* createCameraRotationCaptureButton(QWidget* parent) const;
+    QWidget* createAmbientColourPaletteButton(QWidget* parent) const;
+    QWidget* createClearColourPaletteButton(QWidget* parent) const;
 };

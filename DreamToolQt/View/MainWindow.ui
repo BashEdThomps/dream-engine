@@ -5,6 +5,9 @@
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -35,7 +38,7 @@
    <string>Dream Tool</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+   <iconset resource="../Resources/Resources.qrc">
     <normaloff>:/icons/DreamTool.icns</normaloff>:/icons/DreamTool.icns</iconset>
   </property>
   <property name="windowOpacity">
@@ -146,7 +149,7 @@
     <string>Scenegraph</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="projectDockContents">
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -157,7 +160,7 @@
       <number>0</number>
      </property>
      <property name="topMargin">
-      <number>0</number>
+      <number>8</number>
      </property>
      <property name="rightMargin">
       <number>0</number>
@@ -170,44 +173,126 @@
        <property name="spacing">
         <number>0</number>
        </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QTreeView" name="scenegraphTreeView">
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
-         </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="autoExpandDelay">
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
           <number>0</number>
          </property>
-         <property name="indentation">
-          <number>15</number>
-         </property>
-         <property name="rootIsDecorated">
-          <bool>true</bool>
-         </property>
-         <property name="uniformRowHeights">
-          <bool>true</bool>
-         </property>
-         <property name="animated">
-          <bool>false</bool>
-         </property>
-         <property name="allColumnsShowFocus">
-          <bool>true</bool>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="headerHidden">
-          <bool>true</bool>
-         </property>
-         <property name="expandsOnDoubleClick">
-          <bool>false</bool>
-         </property>
-         <attribute name="headerVisible">
-          <bool>false</bool>
-         </attribute>
+         <widget class="QWidget" name="tab">
+          <attribute name="title">
+           <string>Scenegraph</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTreeView" name="scenegraphTreeView">
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="autoExpandDelay">
+              <number>0</number>
+             </property>
+             <property name="indentation">
+              <number>15</number>
+             </property>
+             <property name="rootIsDecorated">
+              <bool>true</bool>
+             </property>
+             <property name="uniformRowHeights">
+              <bool>true</bool>
+             </property>
+             <property name="animated">
+              <bool>false</bool>
+             </property>
+             <property name="allColumnsShowFocus">
+              <bool>true</bool>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+             <property name="headerHidden">
+              <bool>true</bool>
+             </property>
+             <property name="expandsOnDoubleClick">
+              <bool>false</bool>
+             </property>
+             <attribute name="headerVisible">
+              <bool>false</bool>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_2">
+          <attribute name="title">
+           <string>Assets</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTreeView" name="assetDefinitionTreeView">
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="autoExpandDelay">
+              <number>0</number>
+             </property>
+             <property name="indentation">
+              <number>15</number>
+             </property>
+             <property name="uniformRowHeights">
+              <bool>true</bool>
+             </property>
+             <property name="animated">
+              <bool>false</bool>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+             <property name="headerHidden">
+              <bool>true</bool>
+             </property>
+             <property name="expandsOnDoubleClick">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -337,71 +422,9 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="assetDefinitionDockWidget">
-   <property name="windowTitle">
-    <string>Asset Definitions</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QVBoxLayout" name="verticalLayout_3">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <layout class="QVBoxLayout" name="assetDefinitionTreeViewLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QTreeView" name="assetDefinitionTreeView">
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="autoExpandDelay">
-          <number>0</number>
-         </property>
-         <property name="indentation">
-          <number>15</number>
-         </property>
-         <property name="uniformRowHeights">
-          <bool>true</bool>
-         </property>
-         <property name="animated">
-          <bool>false</bool>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="headerHidden">
-          <bool>true</bool>
-         </property>
-         <property name="expandsOnDoubleClick">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -455,7 +478,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/svg/file-solid.svg</normaloff>:/svg/file-solid.svg</iconset>
    </property>
    <property name="text">
@@ -476,7 +499,7 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/svg/folder-open-solid.svg</normaloff>:/svg/folder-open-solid.svg</iconset>
    </property>
    <property name="text">
@@ -497,7 +520,7 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/svg/save-solid.svg</normaloff>:/svg/save-solid.svg</iconset>
    </property>
    <property name="text">
@@ -518,7 +541,7 @@
   </action>
   <action name="actionReload">
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/svg/redo-alt-solid.svg</normaloff>:/svg/redo-alt-solid.svg</iconset>
    </property>
    <property name="text">
@@ -539,7 +562,7 @@
   </action>
   <action name="actionPreferences">
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/images/system-run.png</normaloff>:/images/system-run.png</iconset>
    </property>
    <property name="text">
@@ -563,7 +586,7 @@
   </action>
   <action name="actionPlay">
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/svg/play-solid.svg</normaloff>:/svg/play-solid.svg</iconset>
    </property>
    <property name="text">
@@ -581,7 +604,7 @@
   </action>
   <action name="actionStop">
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/svg/stop-solid.svg</normaloff>:/svg/stop-solid.svg</iconset>
    </property>
    <property name="text">
@@ -599,7 +622,7 @@
   </action>
   <action name="actionOpen_Test_Project">
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/images/document-open.png</normaloff>:/images/document-open.png</iconset>
    </property>
    <property name="text">
@@ -620,7 +643,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/images/view-list-icons-symbolic.png</normaloff>:/images/view-list-icons-symbolic.png</iconset>
    </property>
    <property name="text">
@@ -647,7 +670,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../../software/dream/DreamToolQt/Resources/Resources.qrc">
+    <iconset resource="../Resources/Resources.qrc">
      <normaloff>:/images/view-list-details-symbolic.png</normaloff>:/images/view-list-details-symbolic.png</iconset>
    </property>
    <property name="text">
@@ -757,7 +780,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="../../../../software/dream/DreamToolQt/Resources/Resources.qrc"/>
+  <include location="../Resources/Resources.qrc"/>
  </resources>
  <connections/>
 </ui>

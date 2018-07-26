@@ -95,6 +95,18 @@ ScenePropertiesModel::createDelegateConnections
         this,
         SLOT(onButton_CaptureCameraRotation())
     );
+
+    // Clear Colour Chooser
+    connect(
+        delegate, SIGNAL(notifyButton_ChooseClearColour()),
+        this, SLOT(onButton_ChooseClearColour())
+    );
+
+    // Ambient Colour Chooser
+    connect(
+        delegate, SIGNAL(notifyButton_ChooseAmbientColour()),
+        this, SLOT(onButton_ChooseAmbientColour())
+    );
 }
 
 void
@@ -241,13 +253,13 @@ ScenePropertiesModel::createRenderingProperties
     qDebug() << "ScenePropertiesModel: createRenderingProperties";
     vector<float> clear = mSceneDefinitionHandle->getClearColour();
 
-    ScenePropertiesItem *renderingProperty = new ScenePropertiesItem("Rendering",mSceneDefinitionHandle);
+    auto renderingProperty = new ScenePropertiesItem("Rendering",mSceneDefinitionHandle);
     mRootItem->appendChild(renderingProperty);
     {
 
         qDebug() << "ScenePropertiesModel: createRenderingProperties (ClearColour)";
         // Clear Color
-        ScenePropertiesItem *clearColorProperty = new ScenePropertiesItem("Clear Colour", mSceneDefinitionHandle);
+        auto clearColorProperty = new ScenePropertiesItem("Clear Colour", mSceneDefinitionHandle,SCENE_PROPERTY_CLEAR_PARENT);
         renderingProperty->appendChild(clearColorProperty);
 
         clearColorProperty->appendChild
@@ -284,7 +296,9 @@ ScenePropertiesModel::createRenderingProperties
     qDebug() << "ScenePropertiesModel: createRenderingProperties (AmbientLight)";
     vector<float> ambient = mSceneDefinitionHandle->getAmbientColour();
 
-    ScenePropertiesItem *ambientLightProperty = new ScenePropertiesItem("Ambient Light", mSceneDefinitionHandle);
+    auto *ambientLightProperty = new ScenePropertiesItem(
+        "Ambient Light", mSceneDefinitionHandle,SCENE_PROPERTY_AMBIENT_PARENT
+    );
     renderingProperty->appendChild(ambientLightProperty);
     {
         ambientLightProperty->appendChild
@@ -390,4 +404,17 @@ ScenePropertiesModel::onButton_CaptureCameraRotation
 {
     qDebug() << "ScenePropertiesModel: CaptureCameraTranslation";
     emit notifyButton_CaptureCameraRotation(mSceneDefinitionHandle);
+}
+
+void ScenePropertiesModel::onButton_ChooseClearColour()
+{
+    qDebug() << "ScenePropertiesModel: Choose Clear Colour";
+    emit notifyButton_ChooseClearColour(mSceneDefinitionHandle);
+}
+
+void ScenePropertiesModel::onButton_ChooseAmbientColour()
+{
+    qDebug() << "ScenePropertiesModel: Choose Ambient Colour";
+    emit notifyButton_ChooseAmbientColour(mSceneDefinitionHandle);
+
 }

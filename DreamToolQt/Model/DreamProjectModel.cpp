@@ -140,11 +140,19 @@ DreamProjectModel::startSceneRuntimeFromDefinition
         return false;
     }
     qDebug() << endl << "          ===== DreamModel - Start Scene =====" << endl;
+
     ProjectRuntime* prHandle = mProject->createProjectRuntime();
-    SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definitionHandle);
-    mWindowComponentHandle->setProjectRuntimeHandle(mProject->getProjectRuntimeHandle());
-    setupHeartbeatTimer();
-    return srHandle != nullptr;
+    if (prHandle != nullptr)
+    {
+        SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definitionHandle);
+        if (srHandle != nullptr)
+        {
+            mWindowComponentHandle->setProjectRuntimeHandle(mProject->getProjectRuntimeHandle());
+            setupHeartbeatTimer();
+            return srHandle != nullptr;
+        }
+    }
+    return false;
 }
 
 SceneDefinition*
