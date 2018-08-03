@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <spdlog/spdlog.h>
+
 using std::cout;
 
 // Constructors/Destructors =====================================================
@@ -59,25 +60,26 @@ MainController::MainController
     log->info( "Constructing Object");
 
     mDreamProjectModel.reset
-    (
-        new DreamProjectModel
-        (
-            this,
-            mWindowComponentHandle
-        )
-    );
+            (
+                new DreamProjectModel
+                (
+                    this,
+                    mWindowComponentHandle
+                    )
+                );
 
     mMacOsOpenModel.reset
-    (
-        new MacOSOpenModel
-        (
-            &mPreferencesDialogController.getPreferencesModel(),
-            this
-        )
-    );
+            (
+                new MacOSOpenModel
+                (
+                    &mPreferencesDialogController.getPreferencesModel(),
+                    this
+                    )
+                );
 
     setupUI();
     setupConnections();
+    mScriptEditor.setProjectDirectoryModelHandle(&mProjectDirectoryModel);
 }
 
 MainController::~MainController
@@ -93,7 +95,7 @@ void
 MainController::setupUI
 ()
 {
-   setupUI_GLWidgets();
+    setupUI_GLWidgets();
 }
 
 void
@@ -125,115 +127,106 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             log->info( "Selected an asset definition");
             mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
             mPropertiesModel.reset
-            (
-                new AssetDefinitionPropertiesModel
-                (
-                    mSelectedAssetDefinitionHandle,
-                    &mTemplatesModel,
-                    propertiesTreeView
-                )
-            );
+                    (
+                        new AssetDefinitionPropertiesModel
+                        (
+                            mSelectedAssetDefinitionHandle,
+                            &mTemplatesModel,
+                            propertiesTreeView
+                            )
+                        );
 
             mMainWindowHandle->setPropertiesDockWidgetTitle("Asset Definition Properties");
 
             // Audio File
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_AudioFile(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_AudioFile(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_AudioFile(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_AudioFile(IAssetDefinition*))
+                        );
 
             // Font File
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_FontFile(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_FontFile(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_FontFile(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_FontFile(IAssetDefinition*))
+                        );
 
             // Model File
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_ModelFile(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_ModelFile(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_ModelFile(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_ModelFile(IAssetDefinition*))
+                        );
 
             // Model Additional Files
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_ModelAdditionalFiles(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_ModelAdditionalFiles(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition*))
+                        );
 
             // Remove Files
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_RemoveFiles(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_RemoveFiles(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_RemoveFiles(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_RemoveFiles(IAssetDefinition*))
+                        );
 
             // Edit Script
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_EditScript(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_EditScript(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_EditScript(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_EditScript(IAssetDefinition*))
+                        );
 
             // Edit Vertex Shader
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_EditVertexShader(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_EditVertexShader(IAssetDefinition*))
-            );
-
-            // Edit Fragment Shader
-            connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_EditFragmentShader(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_EditFragmentShader(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_EditShader(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_EditShader(IAssetDefinition*))
+                        );
 
             // Script Template
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyCombo_ScriptTemplateChanged(IAssetDefinition*,QString)),
-                this,
-                SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*,QString))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyCombo_ScriptTemplateChanged(IAssetDefinition*,QString)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*,QString))
+                        );
 
             // Shader Template
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyCombo_ShaderTemplateChanged(IAssetDefinition*,QString)),
-                this,
-                SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*,QString))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyCombo_ShaderTemplateChanged(IAssetDefinition*,QString)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*,QString))
+                        );
 
             // PhysicsObject Mesh File
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*)),
-                this,
-                SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*)),
+                        this,
+                        SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition*))
+                        );
             break;
 
         case AssetDefinitionTreeItemType::ASSET_TREE_NODE:
@@ -286,34 +279,34 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 
             // Capture Camera Translation
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_CaptureCameraTranslation(SceneDefinition*)),
-                this,
-                SLOT(onSceneProperty_CaptureCameraTranslation(SceneDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_CaptureCameraTranslation(SceneDefinition*)),
+                        this,
+                        SLOT(onSceneProperty_CaptureCameraTranslation(SceneDefinition*))
+                        );
 
             // Capture Camera Rotation
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_CaptureCameraRotation(SceneDefinition*)),
-                this,
-                SLOT(onSceneProperty_CaptureCameraRotation(SceneDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_CaptureCameraRotation(SceneDefinition*)),
+                        this,
+                        SLOT(onSceneProperty_CaptureCameraRotation(SceneDefinition*))
+                        );
 
             // Choose Clear Colour
             connect
-            (
-                mPropertiesModel.get(), SIGNAL(notifyButton_ChooseClearColour(SceneDefinition*)),
-                this, SLOT(onSceneProperty_ChooseClearColour(SceneDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseClearColour(SceneDefinition*)),
+                        this, SLOT(onSceneProperty_ChooseClearColour(SceneDefinition*))
+                        );
             // Choose Ambient Colour
             connect
-            (
-                mPropertiesModel.get(), SIGNAL(notifyButton_ChooseAmbientColour(SceneDefinition*)),
-                this, SLOT(onSceneProperty_ChooseAmbientColour(SceneDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseAmbientColour(SceneDefinition*)),
+                        this, SLOT(onSceneProperty_ChooseAmbientColour(SceneDefinition*))
+                        );
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE_OBJECT:
@@ -324,44 +317,44 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Object Properties");
 
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_CaptureTranslation(SceneObjectDefinition*)),
-                this,
-                SLOT(onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_CaptureTranslation(SceneObjectDefinition*)),
+                        this,
+                        SLOT(onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*))
+                        );
 
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_CaptureRotation(SceneObjectDefinition*)),
-                this,
-                SLOT(onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_CaptureRotation(SceneObjectDefinition*)),
+                        this,
+                        SLOT(onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*))
+                        );
 
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_CaptureScale(SceneObjectDefinition*)),
-                this,
-                SLOT(onSceneObjectProperty_CaptureScale(SceneObjectDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_CaptureScale(SceneObjectDefinition*)),
+                        this,
+                        SLOT(onSceneObjectProperty_CaptureScale(SceneObjectDefinition*))
+                        );
 
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*)),
-                this,
-                SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*)),
+                        this,
+                        SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*))
+                        );
 
             connect
-            (
-                mPropertiesModel.get(),
-                SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*)),
-                this,
-                SLOT(onSceneObjectProperty_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*))
-            );
+                    (
+                        mPropertiesModel.get(),
+                        SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*)),
+                        this,
+                        SLOT(onSceneObjectProperty_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*))
+                        );
 
             if (mSelectionHighlighter)
             {
@@ -371,10 +364,10 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
                     if (prHandle->hasActiveSceneRuntime())
                     {
                         selectedSceneObjectRuntime = mDreamProjectModel
-                            ->getProject()
-                            ->getProjectRuntimeHandle()
-                            ->getActiveSceneRuntimeHandle()
-                            ->getSceneObjectRuntimeHandleByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
+                                ->getProject()
+                                ->getProjectRuntimeHandle()
+                                ->getActiveSceneRuntimeHandle()
+                                ->getSceneObjectRuntimeHandleByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
                         mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(selectedSceneObjectRuntime);
                     }
                 }
@@ -419,10 +412,10 @@ MainController::connectPreferences
 ()
 {
     connect
-    (
-        mMainWindowHandle->getAction_Preferences(),SIGNAL(triggered()),
-        this, SLOT(onAction_Preferences())
-    );
+            (
+                mMainWindowHandle->getAction_Preferences(),SIGNAL(triggered()),
+                this, SLOT(onAction_Preferences())
+                );
 }
 
 void
@@ -431,38 +424,31 @@ MainController::connectFileMenu
 {
     // actionNew
     connect
-    (
-        mMainWindowHandle->getAction_File_New(), SIGNAL(triggered()),
-        this, SLOT(onAction_File_New())
-    );
+            (
+                mMainWindowHandle->getAction_File_New(), SIGNAL(triggered()),
+                this, SLOT(onAction_File_New())
+                );
 
     // actionOpen
     connect
-    (
-        mMainWindowHandle->getAction_File_Open(), SIGNAL(triggered()),
-        this, SLOT(onAction_File_Open())
-    );
+            (
+                mMainWindowHandle->getAction_File_Open(), SIGNAL(triggered()),
+                this, SLOT(onAction_File_Open())
+                );
 
     // actionSave
     connect
-    (
-        mMainWindowHandle->getAction_File_Save(), SIGNAL(triggered()),
-        this, SLOT(onAction_File_Save())
-    );
+            (
+                mMainWindowHandle->getAction_File_Save(), SIGNAL(triggered()),
+                this, SLOT(onAction_File_Save())
+                );
 
     // actionCloseProject
     connect
-    (
-        mMainWindowHandle->getAction_File_CloseProject(), SIGNAL(triggered()),
-        this, SLOT(onAction_File_Close())
-    );
-
-    // Open Default Project
-    connect
-    (
-        mMainWindowHandle->getAction_File_OpenTestProject(), SIGNAL(triggered()),
-        this, SLOT(onAction_File_OpenTestProject())
-    );
+            (
+                mMainWindowHandle->getAction_File_CloseProject(), SIGNAL(triggered()),
+                this, SLOT(onAction_File_Close())
+                );
 }
 
 void
@@ -471,43 +457,43 @@ MainController::connectSceneMenu
 {
     // actionPlay
     connect
-    (
-        mMainWindowHandle->getAction_Scene_Play(), SIGNAL(triggered()),
-        this, SLOT(onAction_Scene_Play())
-    );
+            (
+                mMainWindowHandle->getAction_Scene_Play(), SIGNAL(triggered()),
+                this, SLOT(onAction_Scene_Play())
+                );
 
     // actionReload
     connect
-    (
-        mMainWindowHandle->getAction_Scene_Reload(), SIGNAL(triggered()),
-        this, SLOT(onAction_Scene_Reload())
-    );
+            (
+                mMainWindowHandle->getAction_Scene_Reload(), SIGNAL(triggered()),
+                this, SLOT(onAction_Scene_Reload())
+                );
 
     // actionStop
     connect
-    (
-        mMainWindowHandle->getAction_Scene_Stop(), SIGNAL(triggered()),
-        this, SLOT(onAction_Scene_Stop())
-    );
+            (
+                mMainWindowHandle->getAction_Scene_Stop(), SIGNAL(triggered()),
+                this, SLOT(onAction_Scene_Stop())
+                );
 
     // New Scene
     connect
-    (
-        mMainWindowHandle->getAction_Scene_NewScene(),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Scene_NewScene())
-    );
+            (
+                mMainWindowHandle->getAction_Scene_NewScene(),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Scene_NewScene())
+                );
 
     // New Scene Object
     connect
-    (
-        mMainWindowHandle->getAction_Scene_NewSceneObject(),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Scene_NewSceneObject())
+            (
+                mMainWindowHandle->getAction_Scene_NewSceneObject(),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Scene_NewSceneObject())
 
-    );
+                );
 }
 
 void
@@ -516,93 +502,93 @@ MainController::connectAssetMenu
 {
     // Assets Menu -> Add To Selected SceneObject
     connect
-    (
-        mMainWindowHandle->getAction_Asset_AddToSelectedSceneObject(),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_AddToSelectedSceneObjectDefinition())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_AddToSelectedSceneObject(),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_AddToSelectedSceneObjectDefinition())
+                );
 
     // Asset Menu -> New Definition -> Animation
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::ANIMATION),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Animation())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::ANIMATION),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Animation())
+                );
 
     // Asset Menu -> New Definition -> Audio
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::AUDIO),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Audio())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::AUDIO),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Audio())
+                );
 
     // Asset Menu -> New Definition -> Font
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::FONT),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Font())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::FONT),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Font())
+                );
 
     // Asset Menu -> New Definition -> Light
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::LIGHT),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Light())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::LIGHT),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Light())
+                );
 
     // Asset Menu -> New Definition -> Model
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::MODEL),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Model())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::MODEL),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Model())
+                );
 
     // Asset Menu -> New Definition -> Physics Object
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::PHYSICS_OBJECT),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_PhysicsObject())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::PHYSICS_OBJECT),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_PhysicsObject())
+                );
 
     // Asset Menu -> New Definition -> Script
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SCRIPT),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Script())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SCRIPT),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Script())
+                );
 
     // Asset Menu -> New Definition -> Shader
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SHADER),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Shader())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SHADER),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Shader())
+                );
 
     // Asset Menu -> New Definition -> Sprite
     connect
-    (
-        mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SPRITE),
-        SIGNAL(triggered()),
-        this,
-        SLOT(onAction_Asset_NewDefinition_Sprite())
-    );
+            (
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SPRITE),
+                SIGNAL(triggered()),
+                this,
+                SLOT(onAction_Asset_NewDefinition_Sprite())
+                );
 }
 
 void
@@ -611,24 +597,24 @@ MainController::connectViewMenu
 {
     // Action Toggle Grid
     connect
-    (
-        mMainWindowHandle->getAction_View_ToggleGrid(),SIGNAL(triggered(bool)),
-        this,SLOT(onAction_View_ToggleGrid(bool))
-    );
+            (
+                mMainWindowHandle->getAction_View_ToggleGrid(),SIGNAL(triggered(bool)),
+                this,SLOT(onAction_View_ToggleGrid(bool))
+                );
 
     // Action Toggle Debug
     connect
-    (
-        mMainWindowHandle->getAction_View_ToggleDebug(),SIGNAL(triggered(bool)),
-        this,SLOT(onAction_View_ToggleDebug(bool))
-    );
+            (
+                mMainWindowHandle->getAction_View_ToggleDebug(),SIGNAL(triggered(bool)),
+                this,SLOT(onAction_View_ToggleDebug(bool))
+                );
 
     // Action Toggle Physics Debug
     connect
-    (
-        mMainWindowHandle->getAction_View_TogglePhysicsDebug(),SIGNAL(triggered(bool)),
-        this,SLOT(onAction_View_TogglePhysicsDebug(bool))
-    );
+            (
+                mMainWindowHandle->getAction_View_TogglePhysicsDebug(),SIGNAL(triggered(bool)),
+                this,SLOT(onAction_View_TogglePhysicsDebug(bool))
+                );
 
 }
 
@@ -637,12 +623,12 @@ MainController::connectDebugMenu
 ()
 {
     connect
-    (
-        mMainWindowHandle->getAction_Debug_DumpProjectDefinitionJson(),
-        SIGNAL(triggered(bool)),
-        this,
-        SLOT(onAction_Debug_DumpProjectDefinitionJson(bool))
-    );
+            (
+                mMainWindowHandle->getAction_Debug_DumpProjectDefinitionJson(),
+                SIGNAL(triggered(bool)),
+                this,
+                SLOT(onAction_Debug_DumpProjectDefinitionJson(bool))
+                );
 }
 
 void
@@ -651,34 +637,34 @@ MainController::connectUI
 {
     // Status Bar
     connect
-    (
-        this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-        mMainWindowHandle, SLOT(showStatusBarMessage(QString))
-    );
+            (
+                this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
+                mMainWindowHandle, SLOT(showStatusBarMessage(QString))
+                );
     // Project Directory Changed
     connect
-    (
-        this, SIGNAL(notifyProjectDirectoryChanged(QString)),
-        mMainWindowHandle, SLOT(setWindowTitle(QString))
-    );
+            (
+                this, SIGNAL(notifyProjectDirectoryChanged(QString)),
+                mMainWindowHandle, SLOT(setWindowTitle(QString))
+                );
     // Valid Scene Selected
     connect
-    (
-        mDreamProjectModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
-        this, SLOT(onUI_SelectedSceneChanged(SceneDefinition*))
-    );
+            (
+                mDreamProjectModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
+                this, SLOT(onUI_SelectedSceneChanged(SceneDefinition*))
+                );
     // Invalid Project Directory
     connect
-    (
-        this, SIGNAL(notifyInvalidProjectDirectory(QString)),
-        mMainWindowHandle, SLOT(onInvalidProjectDirectory(QString))
-    );
+            (
+                this, SIGNAL(notifyInvalidProjectDirectory(QString)),
+                mMainWindowHandle, SLOT(onInvalidProjectDirectory(QString))
+                );
     // No Scene Selected
     connect
-    (
-        this,SIGNAL(notifyNoSceneSelected()),
-        mMainWindowHandle, SLOT(onNoSceneSelected())
-    );
+            (
+                this,SIGNAL(notifyNoSceneSelected()),
+                mMainWindowHandle, SLOT(onNoSceneSelected())
+                );
 }
 
 void
@@ -687,22 +673,22 @@ MainController::connectUI_TreeViewModels
 {
     // projectTreeView
     connect
-    (
-        mMainWindowHandle->getScenegraphTreeView()->selectionModel(),
-        SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-        this, SLOT(onUI_ScenegraphTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
-    );
+            (
+                mMainWindowHandle->getScenegraphTreeView()->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+                this, SLOT(onUI_ScenegraphTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
+                );
 
     // assetDefinitionTreeView
     connect
-    (
-        mMainWindowHandle->getAssetDefinitionTreeView()->selectionModel(),
-        SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-        this, SLOT(onUI_AssetDefinitionTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
-    );
+            (
+                mMainWindowHandle->getAssetDefinitionTreeView()->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+                this, SLOT(onUI_AssetDefinitionTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
+                );
 
     mMainWindowHandle->getScenegraphTreeView()->expandAll();
-    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+    //mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -758,8 +744,8 @@ void
 MainController::onAction_Scene_Reload
 ()
 {
-   onAction_Scene_Stop();
-   onAction_Scene_Play();
+    onAction_Scene_Stop();
+    onAction_Scene_Play();
 }
 
 void
@@ -853,14 +839,6 @@ MainController::onAction_File_Open
 }
 
 void
-MainController::onAction_File_OpenTestProject
-()
-{
-    mProjectDirectory = "/Users/Ashley/.dreamtool/de60-75ff-5cb7-c4a9";
-    openProject();
-}
-
-void
 MainController::onAction_File_Save
 ()
 {
@@ -868,20 +846,20 @@ MainController::onAction_File_Save
     if(saveResult)
     {
         emit notifyStatusBarProjectLoaded(
-            QString::fromStdString(
-                "Successfuly Saved Project: " +
-                mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
-            )
-        );
+                    QString::fromStdString(
+                        "Successfuly Saved Project: " +
+                        mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
+                        )
+                    );
     }
     else
     {
         emit notifyStatusBarProjectLoaded(
-            QString::fromStdString(
-                "Error Saving Project: " +
-                mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
-            )
-        );
+                    QString::fromStdString(
+                        "Error Saving Project: " +
+                        mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
+                        )
+                    );
     }
 }
 
@@ -936,7 +914,7 @@ void
 MainController::onAction_View_ToggleSelectionHighlighter
 (bool enabled)
 {
-   mWindowComponentHandle->setSelectionHighlighterEnabled(enabled);
+    mWindowComponentHandle->setSelectionHighlighterEnabled(enabled);
 }
 
 // Scene Menu
@@ -971,7 +949,7 @@ MainController::onAction_Scene_NewSceneObject
     if (mSelectedSceneObjectDefinitionHandle)
     {
         mSelectedSceneObjectDefinitionHandle->createNewChildSceneObjectDefinition();
-                onUI_ScenegraphUpdated();
+        onUI_ScenegraphUpdated();
 
     }
 }
@@ -987,9 +965,9 @@ MainController::onAction_Asset_AddToSelectedSceneObjectDefinition
     if (mSelectedSceneObjectDefinitionHandle && mSelectedAssetDefinitionHandle)
     {
         mSelectedSceneObjectDefinitionHandle->addAssetDefinitionUuidToLoadQueue
-        (
-            mSelectedAssetDefinitionHandle->getUuid()
-        );
+                (
+                    mSelectedAssetDefinitionHandle->getUuid()
+                    );
     }
 }
 
@@ -1124,21 +1102,21 @@ MainController::onAssetDefinitionProperty_ModelFile
         {
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
-            (
-                mMainWindowHandle,
-                "Overwrite Existing File?",
-                "An asset file all ready exists. Do you want to replace it?"
-            );
+                    (
+                        mMainWindowHandle,
+                        "Overwrite Existing File?",
+                        "An asset file all ready exists. Do you want to replace it?"
+                        );
             if (result != QMessageBox::Yes)
             {
                 log->info( "Copy of {} was cancelled", fileName.toStdString());
-               return;
+                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
                 log->info( "Error, unable to delete main asset file for {}",
-                         adHandle->getNameAndUuidString());
+                           adHandle->getNameAndUuidString());
                 return;
             }
         }
@@ -1146,7 +1124,7 @@ MainController::onAssetDefinitionProperty_ModelFile
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
         log->info( "Copy {} "
-                 , (copyResult ? "Success":"Failed"));
+                   , (copyResult ? "Success":"Failed"));
     }
 }
 
@@ -1173,21 +1151,21 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
         {
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
-            (
-                mMainWindowHandle,
-                "Overwrite Existing File?",
-                "An asset file all ready exists. Do you want to replace it?"
-            );
+                    (
+                        mMainWindowHandle,
+                        "Overwrite Existing File?",
+                        "An asset file all ready exists. Do you want to replace it?"
+                        );
             if (result != QMessageBox::Yes)
             {
                 log->info( "Copy of {} was cancelled." , fileName.toStdString());
-               return;
+                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
                 log->info( "Error, unable to delete main asset file for {}",
-                         adHandle->getNameAndUuidString());
+                           adHandle->getNameAndUuidString());
                 return;
             }
         }
@@ -1211,9 +1189,9 @@ MainController::onSceneProperty_CaptureCameraTranslation
         if (prHandle)
         {
             sdHandle->getCameraTransform().setTranslation
-            (
-                prHandle->getCameraHandle()->getTranslation()
-            );
+                    (
+                        prHandle->getCameraHandle()->getTranslation()
+                        );
             return;
         }
         log->info( "CaptureCameraTranslation - No ProjectRuntime");
@@ -1236,9 +1214,9 @@ MainController::onSceneProperty_CaptureCameraRotation
         if (prHandle)
         {
             sdHandle->getCameraTransform().setRotation
-            (
-                prHandle->getCameraHandle()->getRotation()
-            );
+                    (
+                        prHandle->getCameraHandle()->getRotation()
+                        );
             return;
         }
         log->info( "CaptureCameraRotation - No ProjectRuntime");
@@ -1259,21 +1237,21 @@ void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition* sceneD
 
     auto colour = sceneDef->getAmbientColour();
     currentColour.setRgbF(
-        static_cast<double>(colour[0]), // r
-        static_cast<double>(colour[1]), // g
-        static_cast<double>(colour[2]), // b
-        static_cast<double>(colour[3])  // a
+                static_cast<double>(colour[0]), // r
+            static_cast<double>(colour[1]), // g
+            static_cast<double>(colour[2]), // b
+            static_cast<double>(colour[3])  // a
 
-    );
+            );
 
     auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Ambient Colour",QColorDialog::ShowAlphaChannel);
 
     if (chosenColour.isValid())
     {
-       sceneDef->setAmbientColourR(static_cast<float>(chosenColour.redF()));
-       sceneDef->setAmbientColourG(static_cast<float>(chosenColour.greenF()));
-       sceneDef->setAmbientColourB(static_cast<float>(chosenColour.blueF()));
-       sceneDef->setAmbientColourA(static_cast<float>(chosenColour.alphaF()));
+        sceneDef->setAmbientColourR(static_cast<float>(chosenColour.redF()));
+        sceneDef->setAmbientColourG(static_cast<float>(chosenColour.greenF()));
+        sceneDef->setAmbientColourB(static_cast<float>(chosenColour.blueF()));
+        sceneDef->setAmbientColourA(static_cast<float>(chosenColour.alphaF()));
     }
 
 }
@@ -1285,18 +1263,18 @@ void MainController::onSceneProperty_ChooseClearColour(SceneDefinition* sceneDef
     QColor currentColour;
     auto colour = sceneDef->getClearColour();
     currentColour.setRgbF(
-        static_cast<double>(colour[0]), // r
-        static_cast<double>(colour[1]), // g
-        static_cast<double>(colour[2]) // b
-    );
+                static_cast<double>(colour[0]), // r
+            static_cast<double>(colour[1]), // g
+            static_cast<double>(colour[2]) // b
+            );
 
     auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Clear Colour");
 
     if (chosenColour.isValid())
     {
-       sceneDef->setClearColourR(static_cast<float>(chosenColour.redF()));
-       sceneDef->setClearColourG(static_cast<float>(chosenColour.greenF()));
-       sceneDef->setClearColourB(static_cast<float>(chosenColour.blueF()));
+        sceneDef->setClearColourR(static_cast<float>(chosenColour.redF()));
+        sceneDef->setClearColourG(static_cast<float>(chosenColour.greenF()));
+        sceneDef->setClearColourB(static_cast<float>(chosenColour.blueF()));
     }
 }
 
@@ -1316,12 +1294,12 @@ MainController::onAssetDefinitionProperty_ModelAdditionalFiles
             QFile sourceFile(sourceFilePath);
 
             log->info( "Using Additional file {}",
-                      sourceFilePath.toStdString());
+                       sourceFilePath.toStdString());
 
             bool copyResult = mProjectDirectoryModel.copyAdditionalFile(adHandle,sourceFile);
 
             log->info( "Copy ",
-                      (copyResult ? "Success":"Failed"));
+                       (copyResult ? "Success":"Failed"));
         }
     }
 }
@@ -1334,10 +1312,10 @@ MainController::onUI_SelectedSceneChanged
     auto log = spdlog::get("MainController");
     mDreamProjectModel->setSelectedSceneDefinitionHandle(scene);
     mMainWindowHandle->showStatusBarMessage(
-        QString("Selected Scene: %1").
-            arg(QString::fromStdString(scene->getName())
-        )
-    );
+                QString("Selected Scene: %1").
+                arg(QString::fromStdString(scene->getName())
+                    )
+                );
 }
 
 void
@@ -1357,7 +1335,7 @@ MainController::onUI_AssetDefinitionsUpdated
     auto log = spdlog::get("MainController");
     log->info( "updating scenegraph tree model");
     mAssetDefinitionTreeModel->setupModelData();
-    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+    //mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -1413,8 +1391,8 @@ MainController::onUI_ProjectStartupSceneChanged
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
     log->info( "startupScene set to {} {}" , startupSceneIndex.toStdString() ,  sceneName);
     SceneDefinition* sceneHandle = mDreamProjectModel->getProject()
-        ->getProjectDefinitionHandle()
-        ->getSceneDefinitionHandleByUuid(sceneName);
+            ->getProjectDefinitionHandle()
+            ->getSceneDefinitionHandleByUuid(sceneName);
     mDreamProjectModel->setProjectStartupSceneByUuid(sceneHandle->getUuid());
 }
 
@@ -1458,9 +1436,9 @@ MainController::openProject
     bool loadResult = mDreamProjectModel->loadProject(mProjectDirectory);
 
     mProjectDirectoryModel.setProjectDefinitionHandle
-    (
-        mDreamProjectModel->getProject()->getProjectDefinitionHandle()
-    );
+            (
+                mDreamProjectModel->getProject()->getProjectDefinitionHandle()
+                );
 
     mProjectDirectoryModel.inflateFromDirectory(mProjectDirectory);
 
@@ -1493,12 +1471,12 @@ MainController::openProject
     mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
 
     emit notifyStatusBarProjectLoaded(
-        QString::fromStdString(
-            "Successfuly Loaded Project: " +
-            currentProject->getName() + " (" +
-            currentProject->getUuid() + ")"
-        )
-    );
+                QString::fromStdString(
+                    "Successfuly Loaded Project: " +
+                    currentProject->getName() + " (" +
+                    currentProject->getUuid() + ")"
+                    )
+                );
 
     setActionsEnabled_ValidProject(true);
     connectUI_TreeViewModels();
@@ -1550,21 +1528,21 @@ MainController::onAssetDefinitionProperty_AudioFile
         {
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
-            (
-                mMainWindowHandle,
-                "Overwrite Existing File?",
-                "An asset file all ready exists. Do you want to replace it?"
-            );
+                    (
+                        mMainWindowHandle,
+                        "Overwrite Existing File?",
+                        "An asset file all ready exists. Do you want to replace it?"
+                        );
             if (result != QMessageBox::Yes)
             {
                 log->info( "Copy of {} was cancelled" , fileName.toStdString());
-               return;
+                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
                 log->info( "Error, unable to delete main asset file for {}",
-                          adHandle->getNameAndUuidString());
+                           adHandle->getNameAndUuidString());
                 return;
             }
         }
@@ -1572,7 +1550,7 @@ MainController::onAssetDefinitionProperty_AudioFile
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
         log->info( "Copy ",
-                  (copyResult ? "Success":"Failed"));
+                   (copyResult ? "Success":"Failed"));
 
         showImportResultDialog(copyResult, adHandle, sourceFile.fileName());
 
@@ -1586,22 +1564,22 @@ MainController::showImportResultDialog(bool success, IAssetDefinition* adHandle,
     {
         ;
         QMessageBox::critical
-        (
-            mMainWindowHandle,
-            QString("Import Failed"),
-            QString("Unable to import\n\n%1\n\nnto\n\n%2")
-                .arg(source,QString::fromStdString(adHandle->getAssetPath()))
-        );
+                (
+                    mMainWindowHandle,
+                    QString("Import Failed"),
+                    QString("Unable to import\n\n%1\n\nnto\n\n%2")
+                    .arg(source,QString::fromStdString(adHandle->getAssetPath()))
+                    );
     }
     else
     {
         QMessageBox::information
-        (
-            mMainWindowHandle,
-            QString("Import Success"),
-            QString("Successfuly imported\n\n%1\n\nto\n\n%2")
-                .arg(source,QString::fromStdString(adHandle->getAssetPath()))
-        );
+                (
+                    mMainWindowHandle,
+                    QString("Import Success"),
+                    QString("Successfuly imported\n\n%1\n\nto\n\n%2")
+                    .arg(source,QString::fromStdString(adHandle->getAssetPath()))
+                    );
     }
 }
 
@@ -1633,21 +1611,21 @@ MainController::onAssetDefinitionProperty_FontFile
         {
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
-            (
-                mMainWindowHandle,
-                "Overwrite Existing File?",
-                "An asset file all ready exists. Do you want to replace it?"
-            );
+                    (
+                        mMainWindowHandle,
+                        "Overwrite Existing File?",
+                        "An asset file all ready exists. Do you want to replace it?"
+                        );
             if (result != QMessageBox::Yes)
             {
                 log->info( "Copy of {} was cancelled" , fileName.toStdString());
-               return;
+                return;
             }
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
                 log->info( "Error, unable to delete main asset file for {}"
-                         ,adHandle->getNameAndUuidString()
+                           ,adHandle->getNameAndUuidString()
                            );
                 return;
             }
@@ -1656,8 +1634,8 @@ MainController::onAssetDefinitionProperty_FontFile
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
         log->info( "Copy {} ",
-                  (copyResult ? "Success":"Failed")
-                );
+                   (copyResult ? "Success":"Failed")
+                   );
     }
 }
 
@@ -1666,11 +1644,11 @@ MainController::onAssetDefinitionProperty_RemoveFiles
 (IAssetDefinition* adHandle)
 {
     auto result = QMessageBox::question
-    (
-        mMainWindowHandle,
-        "Remove Asset Data?",
-        "Are you sure you want to delete the asset data?"
-    );
+            (
+                mMainWindowHandle,
+                "Remove Asset Data?",
+                "Are you sure you want to delete the asset data?"
+                );
 
     if (result == QMessageBox::Yes)
     {
@@ -1683,49 +1661,16 @@ void
 MainController::onAssetDefinitionProperty_EditScript
 (IAssetDefinition* adHandle)
 {
-    auto log = spdlog::get("MainController");
-    log->info( "EditScript");
-    QString filePath = mProjectDirectoryModel.createAssetTargetPath(adHandle);
-    mProjectDirectoryModel.touchFile(filePath);
-    mMacOsOpenModel->openInExternalEditor(filePath);
+    mScriptEditor.openScript(dynamic_cast<ScriptDefinition*>(adHandle));
 }
 
 void
-MainController::onAssetDefinitionProperty_EditVertexShader
+MainController::onAssetDefinitionProperty_EditShader
 (IAssetDefinition* adHandle)
 {
     auto log = spdlog::get("MainController");
-    log->info( "EditVertexShader");
-    QString filePath = mProjectDirectoryModel.createAssetTargetPath
-    (
-        adHandle,
-        QString::fromStdString
-        (
-            Constants::ASSET_FORMAT_SHADER_GLSL +
-            Constants::SHADER_VERTEX
-        )
-    );
-    mProjectDirectoryModel.touchFile(filePath);
-    mMacOsOpenModel->openInExternalEditor(filePath);
-}
-
-void
-MainController::onAssetDefinitionProperty_EditFragmentShader
-(IAssetDefinition* adHandle)
-{
-    auto log = spdlog::get("MainController");
-    log->info( "EditFragmentShader");
-    QString filePath = mProjectDirectoryModel.createAssetTargetPath
-    (
-        adHandle,
-        QString::fromStdString
-        (
-            Constants::ASSET_FORMAT_SHADER_GLSL +
-            Constants::SHADER_FRAGMENT
-        )
-    );
-    mProjectDirectoryModel.touchFile(filePath);
-    mMacOsOpenModel->openInExternalEditor(filePath);
+    log->info( "EditShader");
+    mScriptEditor.openShader(dynamic_cast<ShaderDefinition*>(adHandle));
 }
 
 void
@@ -1736,11 +1681,11 @@ MainController::onAssetDefinitionProperty_ScriptTemplateChanged
     log->info( "Script Template Changed");
 
     auto result = QMessageBox::question
-    (
-        mMainWindowHandle,
-        "Load Script Template",
-        "Are you sure you want to load this template? Any existing data will be lost."
-    );
+            (
+                mMainWindowHandle,
+                "Load Script Template",
+                "Are you sure you want to load this template? Any existing data will be lost."
+                );
 
     if (result == QMessageBox::Yes)
     {
@@ -1758,32 +1703,32 @@ MainController::onAssetDefinitionProperty_ShaderTemplateChanged
     log->info( "Shader Template Changed");
 
     QString fragmentContent = mTemplatesModel.getShaderTemplate
-    (
-        templateName,
-        QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME)
-    );
+            (
+                templateName,
+                QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME)
+                );
 
     mProjectDirectoryModel.writeAssetData
-    (
-        fragmentContent,
-        adHandle,
-        QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME),
-        true
-    );
+            (
+                fragmentContent,
+                adHandle,
+                QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME),
+                true
+                );
 
     QString vertexContent = mTemplatesModel.getShaderTemplate
-    (
-        templateName,
-        QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME)
-    );
+            (
+                templateName,
+                QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME)
+                );
 
     mProjectDirectoryModel.writeAssetData
-    (
-        vertexContent,
-        adHandle,
-        QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME),
-        true
-    );
+            (
+                vertexContent,
+                adHandle,
+                QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME),
+                true
+                );
 }
 
 void
@@ -1801,12 +1746,12 @@ MainController::onSceneObjectProperty_CaptureTranslation
             SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
             if (srHandle)
             {
-               SceneObjectRuntime *sorHandle;
-               sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
-               if (sorHandle)
-               {
-                  sodHandle->getTransform().setTranslation(sorHandle->getTranslation());
-               }
+                SceneObjectRuntime *sorHandle;
+                sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+                if (sorHandle)
+                {
+                    sodHandle->getTransform().setTranslation(sorHandle->getTranslation());
+                }
             }
         }
     }
@@ -1827,12 +1772,12 @@ MainController::onSceneObjectProperty_CaptureRotation
             SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
             if (srHandle)
             {
-               SceneObjectRuntime *sorHandle;
-               sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
-               if (sorHandle)
-               {
-                  sodHandle->getTransform().setRotation(sorHandle->getRotation());
-               }
+                SceneObjectRuntime *sorHandle;
+                sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+                if (sorHandle)
+                {
+                    sodHandle->getTransform().setRotation(sorHandle->getRotation());
+                }
             }
         }
     }
@@ -1853,12 +1798,12 @@ MainController::onSceneObjectProperty_CaptureScale
             SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
             if (srHandle)
             {
-               SceneObjectRuntime *sorHandle;
-               sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
-               if (sorHandle)
-               {
-                  sodHandle->getTransform().setScale(sorHandle->getScale());
-               }
+                SceneObjectRuntime *sorHandle;
+                sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+                if (sorHandle)
+                {
+                    sodHandle->getTransform().setScale(sorHandle->getScale());
+                }
             }
         }
     }
@@ -1871,10 +1816,10 @@ MainController::onSceneObjectProperty_RemoveAsset
 {
     auto log = spdlog::get("MainController");
     log->info(
-         "RemoveAsset {} from {}",
-         adHandle->getNameAndUuidString(),
-         sodHandle->getNameAndUuidString()
-    );
+                "RemoveAsset {} from {}",
+                adHandle->getNameAndUuidString(),
+                sodHandle->getNameAndUuidString()
+                );
     sodHandle->removeAssetDefinitionFromLoadQueue(adHandle);
 }
 
@@ -1884,10 +1829,10 @@ MainController::onSceneObjectProperty_RemoveChild
 {
     auto log = spdlog::get("MainController");
     log->info(
-         "RemoveChild {} from {}",
-         sodChildHandle->getNameAndUuidString(),
-         sodHandle->getNameAndUuidString()
-    );
+                "RemoveChild {} from {}",
+                sodChildHandle->getNameAndUuidString(),
+                sodHandle->getNameAndUuidString()
+                );
     sodHandle->removeChildSceneObjectDefinition(sodChildHandle);
     onUI_ScenegraphUpdated();
 }

@@ -84,8 +84,7 @@ enum AssetDefinitionProperty
     ASSET_DEFINITION_PROPERTY_SCRIPT_FILE,
 
     // Shader
-    ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE,
-    ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE,
+    ASSET_DEFINITION_PROPERTY_SHADER_FILES,
 
     // Sprite
     ASSET_DEFINITION_PROPERTY_SPRITE_FILE,
@@ -104,7 +103,7 @@ public:
         AssetDefinitionProperty property = ASSET_DEFINITION_PROPERTY_NONE,
         AbstractPropertiesItem *parent = nullptr
     );
-    ~AssetDefinitionPropertiesItem();
+    ~AssetDefinitionPropertiesItem() override;
 
     bool setData(int column,const QVariant &value) override;
     QVariant data(int column) override;

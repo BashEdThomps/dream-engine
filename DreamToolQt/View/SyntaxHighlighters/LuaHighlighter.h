@@ -26,28 +26,33 @@
  * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUAHIGHLIGHTER_H
-#define LUAHIGHLIGHTER_H
+#pragma once
 
 #include <QSyntaxHighlighter>
 
 class LuaHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
+
 public:
-    explicit LuaHighlighter(QObject *parent = 0);
-    void highlightBlock(const QString& text);
-    
-signals:
-    
-public slots:
+        LuaHighlighter(QTextDocument *parent = nullptr);
 
-private:
-    QColor numberColor;
-    QColor endColor;
-    QColor functionColor;
-    QColor commentColor;
-    
+    protected:
+        void highlightBlock(const QString &text);
+
+    private:
+        struct HighlightingRule
+        {
+            QRegExp pattern;
+            QTextCharFormat format;
+        };
+        QVector<HighlightingRule> highlightingRules;
+
+        QTextCharFormat keywordFormat;
+        QTextCharFormat classFormat;
+        QTextCharFormat singleLineCommentFormat;
+        QTextCharFormat multiLineCommentFormat;
+        QTextCharFormat quotationFormat;
+        QTextCharFormat functionFormat;
+        QTextCharFormat constantFormat;
 };
-
-#endif // LUAHIGHLIGHTER_H

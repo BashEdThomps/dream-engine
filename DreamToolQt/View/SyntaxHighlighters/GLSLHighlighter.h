@@ -31,39 +31,36 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 *******************************************************************************/
 
-#ifndef _GLSL_SYNTAX_HIGHLIGHTER_QT_H_
-#define _GLSL_SYNTAX_HIGHLIGHTER_QT_H_
-
+#pragma onceo
 #include <QtGui/QSyntaxHighlighter>
 #include <QtGui/QTextCharFormat>
 
-class GlslSyntaxHighlighter: public QSyntaxHighlighter {
+class GlslSyntaxHighlighter: public QSyntaxHighlighter
+{
 Q_OBJECT
 public:
-	GlslSyntaxHighlighter(QTextDocument *parent = 0);
+    GlslSyntaxHighlighter(QTextDocument *parent = nullptr);
 
 protected:
-	void highlightBlock(const QString &text);
+    void highlightBlock(const QString &text);
 
 private:
-	void addPatternFromList(QStringList &list, QTextCharFormat &format);
+    void addPatternFromList(QStringList &list, QTextCharFormat &format);
 
-	struct HighlightingRule {
-		QRegExp pattern;
-		QTextCharFormat format;
-	};
-	QVector<HighlightingRule> highlightingRules;
+    struct HighlightingRule {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+    QVector<HighlightingRule> highlightingRules;
 
-	QRegExp commentStartExpression;
-	QRegExp commentEndExpression;
+    QRegExp commentStartExpression;
+    QRegExp commentEndExpression;
 
-	QTextCharFormat statementFormat;
-	QTextCharFormat commentFormat;
-	QTextCharFormat preprocessorFormat;
-	QTextCharFormat numberFormat;
-	QTextCharFormat typesFormat;
-	QTextCharFormat swizzleFormat;
+    QTextCharFormat statementFormat;
+    QTextCharFormat commentFormat;
+    QTextCharFormat preprocessorFormat;
+    QTextCharFormat numberFormat;
+    QTextCharFormat typesFormat;
+    QTextCharFormat swizzleFormat;
 };
-
-#endif
 

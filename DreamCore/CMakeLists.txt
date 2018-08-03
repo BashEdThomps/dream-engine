@@ -39,6 +39,7 @@ include_directories(
     ${LUA_INCLUDE_DIR}
     ${Luabind_INCLUDE_DIRS}
     ${SOIL_INCLUDE_DIRS}
+    ${NANOVG_INCLUDE_DIRS}
     ${SPDLOG_INCLUDE_DIR}
     ${FREETYPE_INCLUDE_DIR_ft2build}
 )
@@ -51,6 +52,7 @@ target_link_libraries(
     -ldl
     Luabind
     SOIL
+    NanoVG
     ${LUA_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${OPENGL_LIBRARIES}

@@ -156,36 +156,20 @@ void
 AssetDefinitionPropertiesModel::createShaderEditProperties
 ()
 {
-    createShaderEditVertexProperty();
-    createShaderEditFragmentProperty();
+    createShaderEditFilesProperty();
 }
 
 void
-AssetDefinitionPropertiesModel::createShaderEditVertexProperty
+AssetDefinitionPropertiesModel::createShaderEditFilesProperty
 ()
 {
     mRootItem->appendChild
     (
         new AssetDefinitionPropertiesItem
         (
-            "Vertex",
+            "Shader Files",
             mAssetDefinitionHandle,
-            ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE
-        )
-    );
-}
-
-void
-AssetDefinitionPropertiesModel::createShaderEditFragmentProperty
-()
-{
-    mRootItem->appendChild
-    (
-        new AssetDefinitionPropertiesItem
-        (
-            "Fragment",
-            mAssetDefinitionHandle,
-            ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE
+            ASSET_DEFINITION_PROPERTY_SHADER_FILES
         )
     );
 }
@@ -742,17 +726,9 @@ AssetDefinitionPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyButton_EditVertexShader()),
+        SIGNAL(notifyButton_EditShader()),
         this,
-        SLOT(onButton_EditVertexShader())
-    );
-
-    connect
-    (
-        delegate,
-        SIGNAL(notifyButton_EditFragmentShader()),
-        this,
-        SLOT(onButton_EditFragmentShader())
+        SLOT(onButton_EditShader())
     );
 
     // Script Template
@@ -800,19 +776,11 @@ AssetDefinitionPropertiesModel::onButton_EditScript
 }
 
 void
-AssetDefinitionPropertiesModel::onButton_EditFragmentShader
+AssetDefinitionPropertiesModel::onButton_EditShader
 ()
 {
-    qDebug() << "AssetDefinitionPropertiesModel: EditFragmentShader";
-    emit notifyButton_EditFragmentShader(mAssetDefinitionHandle);
-}
-
-void
-AssetDefinitionPropertiesModel::onButton_EditVertexShader
-()
-{
-    qDebug() << "AssetDefinitionPropertiesModel: EditVertexShader";
-    emit notifyButton_EditVertexShader(mAssetDefinitionHandle);
+    qDebug() << "AssetDefinitionPropertiesModel: EditShader";
+    emit notifyButton_EditShader(mAssetDefinitionHandle);
 }
 
 void

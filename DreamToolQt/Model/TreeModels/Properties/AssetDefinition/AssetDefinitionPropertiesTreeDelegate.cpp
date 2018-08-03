@@ -282,38 +282,20 @@ const
 }
 
 QWidget*
-AssetDefinitionPropertiesTreeDelegate::createOpenVertexShaderInEditorButton
+AssetDefinitionPropertiesTreeDelegate::createOpenShaderInEditorButton
 (AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
    QToolButton *button = new QToolButton(parent);
-   button->setText("Edit Vertex Shader");
+   button->setText("Edit Shader");
    connect
     (
         button,
         SIGNAL(clicked(bool)),
         this,
-        SLOT(onButton_EditVertexShader(bool))
+        SLOT(onButton_EditShader(bool))
     );
    return button;
-}
-
-QWidget*
-AssetDefinitionPropertiesTreeDelegate::createOpenFragmentShaderInEditorButton
-(AssetDefinitionPropertiesItem*, QWidget* parent)
-const
-{
-   QToolButton *button = new QToolButton(parent);
-   button->setText("Edit Fragment Shader");
-   connect
-    (
-        button,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_EditFragmentShader(bool))
-    );
-   return button;
-
 }
 
 QWidget*
@@ -447,11 +429,8 @@ const
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
             return createOpenScriptInEditorButton(adItem,parent);
 
-        case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
-            return createOpenVertexShaderInEditorButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
-            return createOpenFragmentShaderInEditorButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
+            return createOpenShaderInEditorButton(adItem,parent);
 
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
             return createFontColourDialogButton(adItem,parent);
@@ -530,8 +509,7 @@ const
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
+        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
@@ -602,8 +580,7 @@ const
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_VERTEX_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_FRAGMENT_FILE:
+        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
             break;
@@ -668,19 +645,11 @@ AssetDefinitionPropertiesTreeDelegate::onButton_RemoveFiles
 }
 
 void
-AssetDefinitionPropertiesTreeDelegate::onButton_EditVertexShader
+AssetDefinitionPropertiesTreeDelegate::onButton_EditShader
 (bool)
 {
-   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditVertexShader was clicked";
-   emit notifyButton_EditVertexShader();
-}
-
-void
-AssetDefinitionPropertiesTreeDelegate::onButton_EditFragmentShader
-(bool)
-{
-   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditFragmentShader was clicked";
-   emit notifyButton_EditFragmentShader();
+   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditShader was clicked";
+   emit notifyButton_EditShader();
 }
 
 void

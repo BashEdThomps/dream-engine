@@ -77,7 +77,7 @@ AssetDefinitionTreeModel::flags
 {
     if (!index.isValid())
     {
-        return 0;
+        return nullptr;
     }
     return QAbstractItemModel::flags(index);
 }

@@ -149,7 +149,7 @@
     <string>Scenegraph</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="QWidget" name="projectDockContents">
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -323,7 +323,7 @@
     <string>Properties</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="QWidget" name="propertiesDockContents">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -439,15 +439,15 @@
     <bool>false</bool>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftToolBarArea</set>
+    <set>Qt::BottomToolBarArea|Qt::LeftToolBarArea|Qt::TopToolBarArea</set>
    </property>
    <property name="orientation">
     <enum>Qt::Vertical</enum>
    </property>
    <property name="iconSize">
     <size>
-     <width>24</width>
-     <height>24</height>
+     <width>20</width>
+     <height>20</height>
     </size>
    </property>
    <property name="toolButtonStyle">
@@ -460,7 +460,7 @@
     <enum>LeftToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>

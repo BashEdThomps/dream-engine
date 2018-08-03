@@ -318,6 +318,7 @@ namespace Dream
         mGraphicsComponent->drawModelQueue();
         mGraphicsComponent->drawFontQueue();
         mGraphicsComponent->drawSpriteQueue();
+        mGraphicsComponent->drawNanoVG();
         mPhysicsComponent->drawDebug();
         mWindowComponentHandle->swapBuffers();
     }

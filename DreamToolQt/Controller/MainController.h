@@ -28,7 +28,7 @@
 #include <QSurfaceFormat>
 
 #include "PreferencesDialogController.h"
-
+#include "ScriptEditorController.h"
 
 #include "../Model/DreamProjectModel.h"
 #include "../Model/ProjectDirectoryModel.h"
@@ -46,6 +46,8 @@
 using std::string;
 using Dream::SceneDefinition;
 using Dream::SceneRuntime;
+using Dream::ScriptDefinition;
+using Dream::ShaderDefinition;
 
 class MainController : public QObject
 {
@@ -53,7 +55,6 @@ class MainController : public QObject
 public:
     MainController(MainWindow* parent);
     ~MainController();
-
 
     Grid *getGridHandle();
     SelectionHighlighter *getSelectionHighlighterHandle();
@@ -82,7 +83,6 @@ public slots:
     void onAction_File_New();
     void onAction_File_Open();
     void onAction_File_Save();
-    void onAction_File_OpenTestProject();
     void onAction_File_Close();
 
     void onAction_Scene_Reload();
@@ -133,8 +133,7 @@ public slots:
     void onAssetDefinitionProperty_RemoveFiles(IAssetDefinition* adHandle);
 
     void onAssetDefinitionProperty_EditScript(IAssetDefinition* adHandle);
-    void onAssetDefinitionProperty_EditVertexShader(IAssetDefinition* adHandle);
-    void onAssetDefinitionProperty_EditFragmentShader(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_EditShader(IAssetDefinition* adHandle);
 
     void onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*, const QString&);
     void onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*, const QString&);
@@ -216,5 +215,7 @@ private: // Variables
     // Delete anything that relies on project before DreamModel
     unique_ptr<DreamProjectModel> mDreamProjectModel;
     unique_ptr<MacOSOpenModel> mMacOsOpenModel;
+
+    ScriptEditorController mScriptEditor;
 
 };

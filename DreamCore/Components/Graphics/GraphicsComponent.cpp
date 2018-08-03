@@ -54,6 +54,8 @@
 
 #include "../../Utilities/Math.h"
 
+#include "../NanoVG/src/nanovg_gl.h"
+
 using glm::vec3;
 using glm::mat4;
 using glm::rotate;
@@ -72,6 +74,8 @@ GraphicsComponent::GraphicsComponent
 {
     auto log = getLog();
     log->info("Constructing");
+
+
 }
 
 GraphicsComponent::~GraphicsComponent
@@ -79,7 +83,7 @@ GraphicsComponent::~GraphicsComponent
 {
     auto log = getLog();
     log->info("Destroying Object");
-
+    nvgDeleteGL3(mNanoVGContext);
     clearSpriteQueue();
     clearFontQueue();
     clearModelQueue();
@@ -125,6 +129,11 @@ GraphicsComponent::init
 
     createFontVertexObjects();
     Constants::checkGLError("After create Font 2D VBO/VAO");
+
+    log->info("Creating NanoVG Context");
+    mNanoVGContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+
+
 
     log->info("Initialisation Done.");
     return true;
@@ -272,6 +281,35 @@ GraphicsComponent::postFontRender
     //glDisable(GL_DEPTH_TEST);
     //glDisable(GL_BLEND);
     Constants::checkGLError("after post render");
+}
+
+void GraphicsComponent::drawNanoVG()
+{
+    int boxSize = 150;
+    int circleSize = 50;
+
+    int width, height;
+    width = mWindowComponentHandle->getWidth();
+    height = mWindowComponentHandle->getHeight();
+
+    int boxX, boxY, circleX, circleY;
+    boxX = width/2 - boxSize/2;
+    boxY = height/2 - boxSize/2;
+
+    circleX = width/2;
+    circleY = height/2;
+
+
+    nvgBeginFrame(mNanoVGContext,width,height,static_cast<float>(width)/static_cast<float>(height));
+
+    nvgBeginPath(mNanoVGContext);
+    nvgRect(mNanoVGContext, boxX, boxY, boxSize, boxSize);
+    nvgCircle(mNanoVGContext, circleX, circleY, circleSize);
+    nvgPathWinding(mNanoVGContext, NVG_HOLE);	// Mark circle as a hole.
+    nvgFillColor(mNanoVGContext, nvgRGBA(255,192,0,255));
+    nvgFill(mNanoVGContext);
+
+    nvgEndFrame(mNanoVGContext);
 }
 
 void

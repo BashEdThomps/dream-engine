@@ -28,10 +28,20 @@ namespace Dream
 {
     class IAssetDefinition;
     class ProjectDefinition;
+    class ScriptDefinition;
+    class ShaderDefinition;
 }
 
 using Dream::IAssetDefinition;
 using Dream::ProjectDefinition;
+using Dream::ScriptDefinition;
+using Dream::ShaderDefinition;
+
+typedef struct
+{
+    QByteArray vertexShader;
+    QByteArray fragmentShader;
+} ShaderFileTuple;
 
 class ProjectDirectoryModel : public QObject
 {
@@ -95,6 +105,9 @@ public:
     void touchFile(QString filePath);
     bool writeAssetData(QString, IAssetDefinition*,QString fileName = "", bool overwrite = true);
 
+    QByteArray readScriptData(ScriptDefinition* scriptDef);
+    ShaderFileTuple readShaderData(ShaderDefinition* shaderDef);
+
 private: // Variables
     ProjectDefinition* mProjectDefinitionHandle;
     QString mAbsolutePath;
@@ -111,3 +124,5 @@ private: // Variables
     QString getProjectName();
 
 };
+
+

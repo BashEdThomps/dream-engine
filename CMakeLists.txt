@@ -4,6 +4,7 @@ project (Dream)
 
 set(DREAM_BUILD_SOIL    ON)
 set(DREAM_BUILD_LUABIND ON)
+set(DREAM_BUILD_NANOVG  ON)
 set(DREAM_BUILD_CORE    ON)
 set(DREAM_BUILD_SDL     ON)
 
@@ -12,7 +13,6 @@ set(DREAM_BUILD_TESTS OFF)         # Needs updating, badly...
 
 set(
   CMAKE_MODULE_PATH
-  ${CMAKE_MODULE_PATH}
   "${Dream_SOURCE_DIR}/CMakeModules"
 )
 
@@ -63,6 +63,10 @@ if (DREAM_BUILD_LUABIND_TESTS)
     add_subdirectory(LuabindTests)
 endif()
 
+# NanoVG Library
+if (DREAM_BUILD_NANOVG)
+    add_subdirectory (NanoVG)
+endif()
 
 # DreamCore Library
 if (DREAM_BUILD_CORE)
@@ -78,3 +82,5 @@ endif()
 if (DREAM_BUILD_SDL)
     add_subdirectory (DreamSDL)
 endif()
+
+

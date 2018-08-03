@@ -27,110 +27,82 @@
  */
 
 #include "LuaHighlighter.h"
-#include <cstdio>
 
-LuaHighlighter::LuaHighlighter(QObject *parent) :
-    QSyntaxHighlighter(parent)
+
+LuaHighlighter::LuaHighlighter(QTextDocument *parent)
+     : QSyntaxHighlighter(parent)
 {
-    endColor.setRgb(0x00, 0x00, 0xFF);
-    commentColor.setRgb(0x08, 0xA0, 0x80);
+    /**
+     * This is the syntax highlighter copied from the example in the qt4 docs,
+     * and modified look for lua style text.
+     *
+     * Each rule is applied in order to the text in a given block.  The last
+     * rule to match wins.
+     */
+    HighlightingRule rule;
+
+    constantFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("[-+]?(?:(?:\\d+\\.\\d+)|(?:\\.\\d+)|(?:\\d+\\.?))");
+    rule.format = constantFormat;
+    highlightingRules.append(rule);
+
+    classFormat.setForeground(Qt::darkMagenta);
+    rule.pattern = QRegExp("\\b[A-Za-z][A-Za-z0-9_]*\\b");
+    rule.format = classFormat;
+    highlightingRules.append(rule);
+
+    functionFormat.setForeground(Qt::blue);
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+ *(?=\\()");
+    rule.format = functionFormat;
+    highlightingRules.append(rule);
+
+    keywordFormat.setForeground(Qt::darkBlue);
+    keywordFormat.setFontWeight(QFont::Bold);
+    QStringList keywordPatterns;
+    keywordPatterns
+            << "\\bdo\\b" << "\\bend\\b" << "\\bfor\\b" << "\\bwhile\\b"
+            << "\\bif\\b" << "\\bthen\\b" << "\\belse\\b" << "\\belseif\\b"
+            << "\\brepeat\\b" << "\\buntil\\b" << "\\bfunction\\b" << "\\blocal\\b"
+            << "\\breturn\\b" << "\\bin\\b" << "\\bbreak\\b" << "\\bnot\\b"
+            << "\\bnil\\b" << "\\band\\b" << "\\bor\\b" << "\\btrue\\b"
+            << "\\bfalse\\b";
+    foreach (QString pattern, keywordPatterns)
+    {
+        rule.pattern = QRegExp(pattern);
+        rule.format = keywordFormat;
+        highlightingRules.append(rule);
+    }
+
+    quotationFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("\"[^\"]*\"");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    rule.pattern = QRegExp("'[^']*'");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    singleLineCommentFormat.setForeground(Qt::gray);
+    singleLineCommentFormat.setFontItalic(true);
+    rule.pattern = QRegExp("--[^\n]*");
+    rule.format = singleLineCommentFormat;
+    highlightingRules.append(rule);
+
 }
 
-void LuaHighlighter::highlightBlock(const QString& text)
+void LuaHighlighter::highlightBlock(const QString &text)
 {
-    QFont bold;
-    bold.setBold(true);
-
-    for(int i = 0; i < text.length(); i++)
+    foreach (HighlightingRule rule, highlightingRules)
     {
-        if(text.at(i).isNumber())
+        QRegExp expression(rule.pattern);
+        int index = text.indexOf(expression);
+        while (index >= 0)
         {
-            setFormat(i, 1, QColor(0xFF, 0x80, 0x00));
-        }
-
-        QString edited = text;
-        edited = edited.replace("\t", " ");
-
-        QStringList list = edited.split(" ");
-        QString word;
-
-        for(int i = 0; i < list.size(); i++)
-        {
-            word = list.at(i);
-            if(word == "end")
-                setFormat(text.indexOf(word), word.length(), endColor);
-            else if(word == "function")
-                setFormat(text.indexOf(word), word.length(), endColor);
-            else if(word == "if" || word == "else" || word == "then" || word == "elseif" || word == "nil" || word == "for" || word == "do")
-                setFormat(text.indexOf(word), word.length(), bold);
-        }
-
-        int idx;
-        // Keywords
-        /*int idx = text.indexOf("end");
-
-        if(idx != -1)
-            setFormat(idx, 3, endColor);
-
-        idx = text.indexOf("function");
-
-        if(idx != -1)
-            setFormat(idx, 8, endColor);
-
-
-        // Bold
-        idx = text.indexOf("if");
-
-        if(idx != -1)
-            setFormat(idx, 2, bold);
-
-        idx = text.indexOf("else");
-
-        if(idx != -1)
-            setFormat(idx, 4, bold);
-
-
-        idx = text.indexOf("then");
-
-        if(idx != -1)
-            setFormat(idx, 4, bold);
-
-        idx = text.indexOf("for");
-
-        if(idx != -1)
-            setFormat(idx, 3, bold);
-
-        idx = text.indexOf("do");
-
-        if(idx != -1)
-            setFormat(idx, 2, bold);
-
-        idx = text.indexOf("nil");
-
-        if(idx != -1)
-            setFormat(idx, 3, bold);*/
-
-        // Comments
-        idx = text.indexOf("--");
-        int comment = idx;
-
-        if(idx != -1)
-        {
-            setFormat(idx, text.length() - idx, commentColor);
-        }
-
-        // Quotes
-        idx = text.indexOf("\"");
-
-        if(idx != -1 && (idx < comment || comment == -1))
-        {
-            int idx2 = text.indexOf("\"", idx + 1);
-
-            if(idx2 != -1)
-            {
-                idx2++;
-                setFormat(idx, idx2 - idx, Qt::red);
-            }
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = text.indexOf(expression, index + length);
         }
     }
 }
+
+

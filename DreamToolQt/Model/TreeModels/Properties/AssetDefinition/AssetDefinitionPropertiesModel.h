@@ -75,8 +75,7 @@ private:
     void createSpriteFileProperty();
 
     void createShaderEditProperties();
-    void createShaderEditVertexProperty();
-    void createShaderEditFragmentProperty();
+    void createShaderEditFilesProperty();
 
     void createScriptFileProperty();
 
@@ -95,8 +94,7 @@ public slots:
     void onButton_EditScript();
     void onCombo_ScriptTemplateChanged(const QString&);
 
-    void onButton_EditFragmentShader();
-    void onButton_EditVertexShader();
+    void onButton_EditShader();
     void onCombo_ShaderTemplateChanged(const QString&);
 
     void onButton_PhysicsBvhTriangleMeshFile();
@@ -114,8 +112,7 @@ signals:
     void notifyButton_EditScript(IAssetDefinition*);
     void notifyCombo_ScriptTemplateChanged(IAssetDefinition*, const QString&);
 
-    void notifyButton_EditFragmentShader(IAssetDefinition*);
-    void notifyButton_EditVertexShader(IAssetDefinition*);
+    void notifyButton_EditShader(IAssetDefinition*);
     void notifyCombo_ShaderTemplateChanged(IAssetDefinition*, const QString&);
 
     void notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*);

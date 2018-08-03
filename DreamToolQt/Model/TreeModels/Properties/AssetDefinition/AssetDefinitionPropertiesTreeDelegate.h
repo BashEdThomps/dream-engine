@@ -44,8 +44,7 @@ public slots:
     void onButton_ModelFile(bool clicked);
     void onButton_ModelAdditionalFiles(bool clicked);
     void onButton_RemoveFiles(bool clicked);
-    void onButton_EditVertexShader(bool clicked);
-    void onButton_EditFragmentShader(bool clicked);
+    void onButton_EditShader(bool clicked);
     void onButton_EditScript(bool clicked);
     void onButton_PhysicsBvhTriangleMeshFile(bool clicked);
     void onCombo_ScriptTemplateChanged(const QString&);
@@ -60,8 +59,7 @@ signals:
     void notifyButton_RemoveFiles();
 
     void notifyButton_EditScript();
-    void notifyButton_EditFragmentShader();
-    void notifyButton_EditVertexShader();
+    void notifyButton_EditShader();
 
     void notifyButton_PhysicsBvhTriangleMeshFile();
 
@@ -81,8 +79,7 @@ protected:
     QWidget *createModelAdditionalFilesButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createScriptTemplateComboBox(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget *createShaderTemplateComboBox(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
-    QWidget *createOpenVertexShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
-    QWidget *createOpenFragmentShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget *createOpenShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createOpenScriptInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createRemoveFilesButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createTemplateComboBox(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
