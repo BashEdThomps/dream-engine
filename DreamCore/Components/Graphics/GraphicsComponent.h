@@ -17,9 +17,7 @@
 
 #pragma once
 
-#define NANOVG_GL3_IMPLEMENTATION
 
-#include "../NanoVG/src/nanovg.h"
 
 #include <string>
 #include <map>
@@ -34,6 +32,8 @@ using std::string;
 using std::map;
 using std::vector;
 using glm::mat4;
+
+typedef struct NVGcontext NVGcontext;
 
 namespace Dream
 {
@@ -81,7 +81,7 @@ namespace Dream
 
         IWindowComponent *mWindowComponentHandle;
         SceneRuntime* mActiveSceneRuntimeHandle;
-        NVGcontext* mNanoVGContext;
+        NVGcontext* mNVGContext;
 
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
@@ -105,8 +105,6 @@ namespace Dream
         void drawFontQueue();
         void preFontRender();
         void postFontRender();
-
-        void drawNanoVG();
 
         bool init(void) override;
         void updateComponent(SceneRuntime*) override;

@@ -43,8 +43,8 @@ class QOpenGLWindowComponent : public QOpenGLWidget, public IWindowComponent
 {
     Q_OBJECT
 public:
-    QOpenGLWindowComponent(const QSurfaceFormat& format, QWidget* parent = 0 );
-    ~QOpenGLWindowComponent();
+    QOpenGLWindowComponent(QWidget* parent = nullptr );
+    ~QOpenGLWindowComponent() override;
 
     bool init() override;
     void updateComponent(SceneRuntime*) override;

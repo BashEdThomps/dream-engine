@@ -766,10 +766,12 @@ bool
 ProjectDirectoryModel::writeAssetData
 (QString data, IAssetDefinition* adHandle, QString fileName, bool overwrite)
 {
+    auto log = spdlog::get("ProjectDirectoryModel");
+
     bool retval = false;
     QString absPath = createAssetTargetPath(adHandle,fileName);
     QFile file(absPath);
-
+    log->info("Write Asset Data to {}",absPath.toStdString());
     if (!file.exists() || overwrite)
     {
         file.open(QIODevice::ReadWrite | QIODevice::Truncate);
@@ -831,8 +833,13 @@ ProjectDirectoryModel::createAssetTargetPath
                 QString::fromStdString(adHandle->getAssetTypeDirectory())
                 );
 
+    log->info("Using path {}", assetFileTargetPath.toStdString());
+
     // Create uuid directory
     QDir typeDir(assetFileTargetPath);
+
+    log->info("Full asset path is {}",typeDir.absolutePath().toStdString());
+
     if (!typeDir.mkpath(QString::fromStdString(adHandle->getUuid())))
     {
         log->error("Error could not create {} in {}",adHandle->getUuid(),assetFileTargetPath.toStdString());
@@ -842,20 +849,23 @@ ProjectDirectoryModel::createAssetTargetPath
     // Update to add uuid to path
     assetFileTargetPath = QDir(assetFileTargetPath).filePath(QString::fromStdString(adHandle->getUuid()));
 
-    log->info("Created path ", assetFileTargetPath.toStdString());
+    log->info("Created path {}", assetFileTargetPath.toStdString());
 
     // Update to add "Format" to path
     if (format.isEmpty())
     {
+        log->info("No format argument passed, using format: {}", adHandle->getFormat());
         assetFileTargetPath = QDir(assetFileTargetPath).filePath(
                     QString::fromStdString(adHandle->getFormat())
                     );
     }
     else
     {
+        log->info("Format argument passed, using format: {}", format.toStdString());
         assetFileTargetPath = QDir(assetFileTargetPath).filePath(format);
     }
 
+    log->info("Returning absolute path: {}",assetFileTargetPath.toStdString());
     return assetFileTargetPath;
 }
 

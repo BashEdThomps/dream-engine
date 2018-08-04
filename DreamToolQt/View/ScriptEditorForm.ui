@@ -67,11 +67,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QPushButton" name="revertButton">
-       <property name="text">
-        <string>Revert</string>
-       </property>
-      </widget>
+      <widget class="QComboBox" name="templateComboBox"/>
      </item>
      <item>
       <spacer name="horizontalSpacer">
@@ -85,6 +81,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="revertButton">
+       <property name="text">
+        <string>Revert</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="saveButton">

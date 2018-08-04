@@ -102,8 +102,9 @@ public:
 
     QString createAssetTargetPath(IAssetDefinition *adHandle, QString format = "");
     QString getAssetDataPath(IAssetDefinition *adHandle);
+
     void touchFile(QString filePath);
-    bool writeAssetData(QString, IAssetDefinition*,QString fileName = "", bool overwrite = true);
+    bool writeAssetData(QString data, IAssetDefinition* definition,QString fileName = "", bool overwrite = true);
 
     QByteArray readScriptData(ScriptDefinition* scriptDef);
     ShaderFileTuple readShaderData(ShaderDefinition* shaderDef);

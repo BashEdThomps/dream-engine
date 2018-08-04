@@ -152,6 +152,8 @@ public slots:
     void onSceneProperty_ChooseAmbientColour(SceneDefinition*);
     void onSceneProperty_ChooseClearColour(SceneDefinition*);
 
+    void onCreateNewAssetDefinition(QString type);
+
 
 protected:
     void showImportResultDialog(bool success, IAssetDefinition* adHandle, QString source);

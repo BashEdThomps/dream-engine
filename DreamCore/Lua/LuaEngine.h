@@ -59,10 +59,12 @@ namespace Dream
         bool createScript(SceneObjectRuntime*,LuaScriptInstance*);
         bool loadScript(SceneObjectRuntime*);
         bool update();
+        bool updateNanoVG();
         void stackDump();
 
         bool executeScriptInit(SceneObjectRuntime*);
         bool executeScriptUpdate(SceneObjectRuntime*);
+        bool executeScriptNanoVG(SceneObjectRuntime*);
         bool executeScriptInputHandler(SceneObjectRuntime*);
         bool executeScriptEventHandler(SceneObjectRuntime*);
 
@@ -115,6 +117,7 @@ namespace Dream
         void exposeSceneObjectRuntime();
         void exposeTime();
         void exposeTransform3D();
+        void exposeNanoVG();
     }; // End of LuaComponent
 
 } // End of Dream

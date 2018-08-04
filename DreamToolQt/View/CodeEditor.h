@@ -57,7 +57,7 @@ class CodeEditor : public QPlainTextEdit
     Q_OBJECT
 
 public:
-    CodeEditor(QWidget *parent = 0);
+    CodeEditor(QWidget *parent = nullptr);
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
@@ -72,22 +72,26 @@ private slots:
 
 private:
     QWidget *lineNumberArea;
+    QFont mLineNumberFont;
 };
 
 
 class LineNumberArea : public QWidget
 {
 public:
-    LineNumberArea(CodeEditor *editor) : QWidget(editor) {
+    LineNumberArea(CodeEditor *editor) : QWidget(editor)
+    {
         codeEditor = editor;
     }
 
-    QSize sizeHint() const {
+    QSize sizeHint() const
+    {
         return QSize(codeEditor->lineNumberAreaWidth(), 0);
     }
 
 protected:
-    void paintEvent(QPaintEvent *event) {
+    void paintEvent(QPaintEvent *event)
+    {
         codeEditor->lineNumberAreaPaintEvent(event);
     }
 

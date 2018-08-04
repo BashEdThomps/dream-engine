@@ -28,7 +28,7 @@ WindowInputState::WindowInputState
 }
 
 QOpenGLWindowComponent::QOpenGLWindowComponent
-(const QSurfaceFormat& format, QWidget* parent)
+(QWidget* parent)
     : QOpenGLWidget(parent),
       IWindowComponent(),
       mProjectRuntimeHandle(nullptr),
@@ -40,7 +40,7 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mSelectionHighlighterEnabled(true),
       mPaintInProgress(false)
 {
-    setFormat(format);
+    //setFormat(format);
 }
 
 QOpenGLWindowComponent::~QOpenGLWindowComponent

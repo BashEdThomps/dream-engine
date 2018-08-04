@@ -32,6 +32,7 @@
 #include "../Components/Graphics/Camera.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 
@@ -55,7 +56,7 @@ namespace Dream
           mProjectHandle(projectHandle)
     {
         auto log = getLog();
-        log->info( "ProjectRuntime: Constructing" );
+        log->info( "Constructing" );
         initCaches();
         initComponents();
         useDefinition(mDefinitionHandle);
@@ -65,7 +66,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "ProjectRuntime: Destructing" );
+        log->info( "Destructing" );
     }
 
     IWindowComponent*
@@ -94,7 +95,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "ProjectRuntime: Initialising Components..." );
+        log->info( "Initialising Components..." );
 
         mTime.reset(new Time());
 
@@ -127,7 +128,7 @@ namespace Dream
         {
             return false;
         }
-        log->info( "Dream: Successfuly created Components." );
+        log->info( "Successfuly created Components." );
 
         return true;
     }
@@ -139,7 +140,7 @@ namespace Dream
         auto log = getLog();
         if (!mWindowComponentHandle->init())
         {
-            log->error( "ProjectRuntime: Unable to initialise WindowComponent" );
+            log->error( "Unable to initialise WindowComponent" );
             return false;
         }
         return true;
@@ -153,7 +154,7 @@ namespace Dream
         mAudioComponent.reset(new AudioComponent());
         if (!mAudioComponent->init())
         {
-            log->error( "Dream: Unable to initialise AudioComponent." );
+            log->error( "Unable to initialise AudioComponent." );
             return false;
         }
         return true;
@@ -168,7 +169,7 @@ namespace Dream
         mPhysicsComponent->setTime(mTime.get());
         if (!mPhysicsComponent->init())
         {
-            log->error( "ComponentManager: Unable to initialise PhysicsComponent." );
+            log->error( "Unable to initialise PhysicsComponent." );
             return false;
         }
         return true;
@@ -185,7 +186,14 @@ namespace Dream
 
         if (!mGraphicsComponent->init())
         {
-            log->error( "ProjectRuntime: Unable to initialise Graphics Component." );
+            log->error( "Unable to initialise Graphics Component." );
+            return false;
+        }
+
+        mNanoVGComponent.reset(new NanoVGComponent(mWindowComponentHandle));
+        if (!mNanoVGComponent->init())
+        {
+            log->error( "Unable to initialise NanoVG Component.");
             return false;
         }
         return true;
@@ -200,7 +208,7 @@ namespace Dream
         mAnimationComponent->setTime(mTime.get());
         if (!mAnimationComponent->init())
         {
-            log->error( "ProjectRuntime: Unable to initialise Animation Component." );
+            log->error( "Unable to initialise Animation Component." );
             return false;
         }
         return true;
@@ -215,7 +223,7 @@ namespace Dream
 
         if(!mLuaEngine->init())
         {
-            log->error( "ProjectRuntime: Unable to initialise Lua Engine." );
+            log->error( "Unable to initialise Lua Engine." );
             return false;
         }
         return true;
@@ -268,6 +276,13 @@ namespace Dream
         return mGraphicsComponent.get();
     }
 
+    NanoVGComponent*
+    ProjectRuntime::getNanoVGComponentHandle
+    ()
+    {
+       return mNanoVGComponent.get();
+    }
+
     Camera*
     ProjectRuntime::getCameraHandle
     ()
@@ -287,7 +302,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("==== ProjectDefinition: UpdateLogic Called @ {}  ====",  mTime->getTimeDelta());
+        log->info("==== UpdateLogic Called @ {}  ====",  mTime->getTimeDelta());
 
         mTime->update();
 
@@ -313,12 +328,12 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("==== ProjectDefinition: UpdateGraphics Called @ {}  ====" , mTime->getTimeDelta());
+        log->info("==== UpdateGraphics Called @ {}  ====" , mTime->getTimeDelta());
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->drawModelQueue();
         mGraphicsComponent->drawFontQueue();
         mGraphicsComponent->drawSpriteQueue();
-        mGraphicsComponent->drawNanoVG();
+        mLuaEngine->updateNanoVG();
         mPhysicsComponent->drawDebug();
         mWindowComponentHandle->swapBuffers();
     }
@@ -328,7 +343,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("==== ProjectDefinition: CollectGarbage Called @ {}  ====", mTime->getTimeDelta());
+        log->info("==== CollectGarbage Called @ {}  ====", mTime->getTimeDelta());
         // Cleanup Old
         mActiveSceneRuntime.get()->collectGarbage();
     }
@@ -366,14 +381,12 @@ namespace Dream
         auto log = getLog();
         if (!sceneDefinitionHandle)
         {
-            log->error( "ProjectRuntime: Cannot load SceneRuntime. SceneDefinitoin is nullptr!" );
+            log->error( "Cannot load SceneRuntime. SceneDefinitoin is nullptr!" );
             return nullptr;
         }
 
         // Load the new scene
-        {
-            log->info( "ProjectRuntime: Loading SceneRuntime" );
-        }
+        log->info( "Loading SceneRuntime" );
 
         mActiveSceneRuntime.reset(new SceneRuntime(sceneDefinitionHandle , this));
 

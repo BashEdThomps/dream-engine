@@ -24,6 +24,7 @@ file(
     GLOB_RECURSE
     NANOVG_SOURCES
     "${PROJECT_SOURCE_DIR}/src/*.c"
+    "${PROJECT_SOURCE_DIR}/src/*.h"
 )
 
 file(GLOB NANOVG_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/nanovg.h")

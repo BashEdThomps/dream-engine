@@ -19,7 +19,6 @@
 
 #include "AssetDefinitionPropertiesItem.h"
 #include "AssetDefinitionPropertiesModel.h"
-#include "../../../TemplatesModel.h"
 
 #include <DreamCore.h>
 #include <QDebug>
@@ -39,10 +38,9 @@ using Dream::Constants;
 using std::vector;
 
 AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
-(TemplatesModel* templatesModel, AssetDefinitionPropertiesModel* model, QObject* parent)
+(AssetDefinitionPropertiesModel* model, QObject* parent)
     : QItemDelegate (parent),
-      mModelHandle(model),
-      mTemplatesModelHandle(templatesModel)
+      mModelHandle(model)
 
 {
     qDebug() << "AssetDefinitionTreeDelegate: Constructing";
@@ -209,77 +207,7 @@ const
     return editor;
 }
 
-QWidget*
-AssetDefinitionPropertiesTreeDelegate::createScriptTemplateComboBox
-(AssetDefinitionPropertiesItem*, QWidget *parent)
-const
-{
-    QComboBox *editor = new QComboBox(parent);
-    editor->setDuplicatesEnabled(false);
-    editor->setEditable(false);
-    editor->setMinimumHeight(25);
 
-    QString selectPrompt = "Select Template";
-    editor->addItem(selectPrompt);
-    int promptIndex = editor->findText(selectPrompt);
-    qobject_cast<QStandardItemModel*>
-    (
-        editor->model()
-    )->item(promptIndex)->setEnabled(false);
-
-    QStringList templates = mTemplatesModelHandle->getScriptTemplateNames();
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Got script templates"
-             << templates;
-    editor->addItems(templates);
-
-    editor->setCurrentIndex(promptIndex);
-
-    connect
-    (
-        editor,
-        SIGNAL(activated(const QString&)),
-        this,
-        SLOT(onCombo_ScriptTemplateChanged(const QString&))
-    );
-
-    return editor;
-}
-
-QWidget*
-AssetDefinitionPropertiesTreeDelegate::createShaderTemplateComboBox
-(AssetDefinitionPropertiesItem*, QWidget *parent)
-const
-{
-    QComboBox *editor = new QComboBox(parent);
-    editor->setDuplicatesEnabled(false);
-    editor->setEditable(false);
-    editor->setMinimumHeight(25);
-
-    QString selectPrompt = "Select Template";
-    editor->addItem(selectPrompt);
-    int promptIndex = editor->findText(selectPrompt);
-    qobject_cast<QStandardItemModel*>
-    (
-        editor->model()
-    )->item(promptIndex)->setEnabled(false);
-
-    QStringList templates = mTemplatesModelHandle->getShaderTemplateNames();
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Got shader templates"
-             << templates;
-    editor->addItems(templates);
-
-    editor->setCurrentIndex(promptIndex);
-
-    connect
-    (
-        editor,
-        SIGNAL(activated(const QString&)),
-        this,
-        SLOT(onCombo_ShaderTemplateChanged(const QString&))
-    );
-
-    return editor;
-}
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createOpenShaderInEditorButton
@@ -335,22 +263,6 @@ const
 }
 
 QWidget*
-AssetDefinitionPropertiesTreeDelegate::createTemplateComboBox
-(AssetDefinitionPropertiesItem* adItem, QWidget* parent)
-const
-{
-    if (adItem->getAssetDefinitionHandle()->isTypeScript())
-    {
-        return createScriptTemplateComboBox(adItem,parent);
-    }
-    else if (adItem->getAssetDefinitionHandle()->isTypeShader())
-    {
-        return createShaderTemplateComboBox(adItem,parent);
-    }
-    return new QComboBox();
-}
-
-QWidget*
 AssetDefinitionPropertiesTreeDelegate::createEditor
 (QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index)
 const
@@ -401,9 +313,6 @@ const
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
             return createPhysicsBvhTriangleMeshFileButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
-            return createTemplateComboBox(adItem,parent);
 
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
             return createRemoveFilesButton(adItem, parent);
@@ -501,7 +410,6 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
-        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
@@ -572,7 +480,6 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
-        case ASSET_DEFINITION_PROPERTY_TEMPLATE:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
@@ -660,21 +567,6 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
    emit notifyButton_EditScript();
 }
 
-void
-AssetDefinitionPropertiesTreeDelegate::onCombo_ScriptTemplateChanged
-(const QString& templateName)
-{
 
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Script Template"
-             << templateName << "selected";
-    emit notifyCombo_ScriptTemplateChanged(templateName);
-}
 
-void
-AssetDefinitionPropertiesTreeDelegate::onCombo_ShaderTemplateChanged
-(const QString& templateName)
-{
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: Shader Template"
-             << templateName << "selected";
-    emit notifyCombo_ShaderTemplateChanged(templateName);
-}
+

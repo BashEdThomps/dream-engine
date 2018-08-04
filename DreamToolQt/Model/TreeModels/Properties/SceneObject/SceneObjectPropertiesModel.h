@@ -32,8 +32,8 @@ class SceneObjectPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    SceneObjectPropertiesModel(SceneObjectDefinition *sceneObject,QTreeView* parent = 0);
-    ~SceneObjectPropertiesModel();
+    SceneObjectPropertiesModel(SceneObjectDefinition *sceneObject,QTreeView* parent = nullptr);
+    ~SceneObjectPropertiesModel() override;
 
     void createRoot() override;
     void createProperties() override;

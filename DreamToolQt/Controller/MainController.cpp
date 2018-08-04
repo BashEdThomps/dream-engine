@@ -59,27 +59,19 @@ MainController::MainController
 
     log->info( "Constructing Object");
 
-    mDreamProjectModel.reset
-            (
-                new DreamProjectModel
-                (
-                    this,
-                    mWindowComponentHandle
-                    )
-                );
+    mDreamProjectModel.reset(new DreamProjectModel(this,mWindowComponentHandle));
 
-    mMacOsOpenModel.reset
-            (
-                new MacOSOpenModel
-                (
-                    &mPreferencesDialogController.getPreferencesModel(),
-                    this
-                    )
-                );
+    mMacOsOpenModel.reset(
+        new MacOSOpenModel(
+            &mPreferencesDialogController.getPreferencesModel(),this
+        )
+    );
 
     setupUI();
     setupConnections();
+
     mScriptEditor.setProjectDirectoryModelHandle(&mProjectDirectoryModel);
+    mScriptEditor.setTemplatesModelHandle(&mTemplatesModel);
 }
 
 MainController::~MainController
@@ -96,6 +88,12 @@ MainController::setupUI
 ()
 {
     setupUI_GLWidgets();
+    connect(
+        mMainWindowHandle,
+        SIGNAL(notifyCreateNewAssetDefinition(QString)),
+        this,
+        SLOT(onCreateNewAssetDefinition(QString))
+    );
 }
 
 void
@@ -126,17 +124,12 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
         case AssetDefinitionTreeItemType::ASSET_DEFINITION:
             log->info( "Selected an asset definition");
             mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
-            mPropertiesModel.reset
-                    (
-                        new AssetDefinitionPropertiesModel
-                        (
-                            mSelectedAssetDefinitionHandle,
-                            &mTemplatesModel,
-                            propertiesTreeView
-                            )
-                        );
-
-            mMainWindowHandle->setPropertiesDockWidgetTitle("Asset Definition Properties");
+            mPropertiesModel.reset(
+                new AssetDefinitionPropertiesModel(
+                    mSelectedAssetDefinitionHandle,
+                    propertiesTreeView
+                )
+            );
 
             // Audio File
             connect
@@ -262,7 +255,6 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             log->info( "Selected a project");
             mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
             mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
-            mMainWindowHandle->setPropertiesDockWidgetTitle("Project Properties");
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE:
@@ -275,7 +267,6 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
                 mPropertiesModel.reset(new ScenePropertiesModel(mSelectedSceneDefinitionHandle,propertiesTreeView));
             }
 
-            mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Properties");
 
             // Capture Camera Translation
             connect
@@ -314,7 +305,6 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             mSelectedSceneObjectDefinitionHandle = static_cast<SceneObjectDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
             mPropertiesModel.reset(new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView));
 
-            mMainWindowHandle->setPropertiesDockWidgetTitle("Scene Object Properties");
 
             connect
                     (
@@ -637,10 +627,10 @@ MainController::connectUI
 {
     // Status Bar
     connect
-            (
-                this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-                mMainWindowHandle, SLOT(showStatusBarMessage(QString))
-                );
+        (
+        this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
+        mMainWindowHandle, SLOT(showStatusBarMessage(QString))
+        );
     // Project Directory Changed
     connect
             (
@@ -1279,6 +1269,46 @@ void MainController::onSceneProperty_ChooseClearColour(SceneDefinition* sceneDef
 }
 
 void
+MainController::onCreateNewAssetDefinition
+(QString type)
+{
+    AssetType assetType = Constants::getAssetTypeEnumFromString(type.toLower().toStdString());
+
+    switch(assetType)
+    {
+       case ANIMATION:
+            onAction_Asset_NewDefinition_Animation();
+            break;
+        case AUDIO:
+            onAction_Asset_NewDefinition_Audio();
+            break;
+        case FONT:
+            onAction_Asset_NewDefinition_Font();
+            break;
+        case LIGHT:
+            onAction_Asset_NewDefinition_Light();
+            break;
+        case MODEL:
+            onAction_Asset_NewDefinition_Model();
+            break;
+        case PHYSICS_OBJECT:
+            onAction_Asset_NewDefinition_PhysicsObject();
+            break;
+        case SCRIPT:
+            onAction_Asset_NewDefinition_Script();
+            break;
+        case SHADER:
+            onAction_Asset_NewDefinition_Shader();
+            break;
+        case SPRITE:
+            onAction_Asset_NewDefinition_Sprite();
+            break;
+        case NONE:
+            break;
+    }
+}
+
+void
 MainController::onAssetDefinitionProperty_ModelAdditionalFiles
 (IAssetDefinition* adHandle)
 {
@@ -1335,7 +1365,7 @@ MainController::onUI_AssetDefinitionsUpdated
     auto log = spdlog::get("MainController");
     log->info( "updating scenegraph tree model");
     mAssetDefinitionTreeModel->setupModelData();
-    //mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -1677,20 +1707,32 @@ void
 MainController::onAssetDefinitionProperty_ScriptTemplateChanged
 (IAssetDefinition* adHandle, const QString& templateName)
 {
+    // TODO - Move this to the script editor window
     auto log = spdlog::get("MainController");
     log->info( "Script Template Changed");
+    auto result = QMessageBox::Yes;
 
-    auto result = QMessageBox::question
-            (
-                mMainWindowHandle,
-                "Load Script Template",
-                "Are you sure you want to load this template? Any existing data will be lost."
-                );
+    if (mProjectDirectoryModel.assetMainFileExists(adHandle))
+    {
+        result = QMessageBox::question
+        (
+            mMainWindowHandle,
+            "Load Script Template",
+            "Are you sure you want to load this template? Any existing data will be lost."
+        );
+    }
 
     if (result == QMessageBox::Yes)
     {
         QString scriptContent = mTemplatesModel.getScriptTemplate(templateName);
-        mProjectDirectoryModel.writeAssetData(scriptContent,adHandle);
+        log->info(
+            "Proceeding to write template {} to {} \n {}",
+            templateName.toStdString(),
+            adHandle->getName(),
+            scriptContent.toStdString()
+        );
+        bool writeOK = mProjectDirectoryModel.writeAssetData(scriptContent,adHandle,"",true);
+        log->info("Write template success? {}",writeOK);
         return;
     }
 }

@@ -25,14 +25,21 @@
 #include <DreamCore.h>
 #include <QDebug>
 
+#include <spdlog/spdlog.h>
+
 using Dream::Constants;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
-(IAssetDefinition *definition, TemplatesModel* templatesModel, QTreeView* parent)
-    : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(templatesModel, this, parent), parent),
+(IAssetDefinition *definition, QTreeView* parent)
+    : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(this, parent), parent),
       mAssetDefinitionHandle(definition)
 {
-    qDebug() <<  "AssetDefinitionPropertiesModel: Constructing";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    if (log == nullptr)
+    {
+        log = spdlog::stdout_color_mt("AssetDefinitionPropertiesModel");
+    }
+    log->info( "Constructing");
     createRoot();
     createProperties();
     createDelegateConnections();
@@ -41,7 +48,8 @@ AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
 AssetDefinitionPropertiesModel::~AssetDefinitionPropertiesModel
 ()
 {
-    qDebug() <<  "AssetDefinitionPropertiesModel: Destructing";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info( "Destructing");
 }
 
 void
@@ -119,13 +127,11 @@ AssetDefinitionPropertiesModel::createProperties
     }
     else if (mAssetDefinitionHandle->isTypeScript())
     {
-        createTemplateProperty();
         createScriptFileProperty();
         createRemoveFilesProperty();
     }
     else if (mAssetDefinitionHandle->isTypeShader())
     {
-        createTemplateProperty();
         createShaderEditProperties();
         createRemoveFilesProperty();
     }
@@ -345,7 +351,8 @@ void
 AssetDefinitionPropertiesModel::createLightColorProperty
 ()
 {
-    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Properties";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Creating Light Colour Properties");
     auto colourProperty = new AssetDefinitionPropertiesItem
     (
         "Colour",
@@ -353,7 +360,7 @@ AssetDefinitionPropertiesModel::createLightColorProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR
     );
 
-    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property red";
+    log->info("Creating Light Colour Property red");
     auto colourPropertyRed = new AssetDefinitionPropertiesItem
     (
         "Red",
@@ -361,7 +368,7 @@ AssetDefinitionPropertiesModel::createLightColorProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED
     );
 
-    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property green";
+    log->info("Creating Light Colour Property green");
     auto colourPropertyGreen = new AssetDefinitionPropertiesItem
     (
         "Green",
@@ -369,7 +376,7 @@ AssetDefinitionPropertiesModel::createLightColorProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN
     );
 
-    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property blue";
+    log->info("Creating Light Colour Property blue");
     auto colourPropertyBlue = new AssetDefinitionPropertiesItem
     (
         "Blue",
@@ -377,7 +384,7 @@ AssetDefinitionPropertiesModel::createLightColorProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE
     );
 
-    qDebug() << "AssetDefinitionPropertiesModel: Creating Light Colour Property alpha";
+    log->info("Creating Light Colour Property alpha");
     auto colourPropertyAlpha = new AssetDefinitionPropertiesItem
     (
         "Alpha",
@@ -397,7 +404,8 @@ void
 AssetDefinitionPropertiesModel::createPhysicsBvhTriangleMeshFileProperty
 ()
 {
-    qDebug() << "AssetDefintionPropertiesModel: Creating Physics BvhTriangleMesh File Property";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("AssetDefintionPropertiesModel: Creating Physics BvhTriangleMesh File Property");
 
     AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
     (
@@ -412,7 +420,8 @@ void
 AssetDefinitionPropertiesModel::createModelFileProperty
 ()
 {
-    qDebug() << "AssetDefintionPropertiesModel: Creating Model Assimp File Delegate";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("AssetDefintionPropertiesModel: Creating Model Assimp File Delegate");
 
     AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
     (
@@ -427,7 +436,8 @@ void
 AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
 ()
 {
-    qDebug() << "AssetDefinitionPropertiesModel: Create Model Additional Files Delegate";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Create Model Additional Files Delegate");
     AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
     (
         "Additional Files",
@@ -600,21 +610,6 @@ AssetDefinitionPropertiesModel::createPhysicsKinematicProperty
 }
 
 void
-AssetDefinitionPropertiesModel::createTemplateProperty
-()
-{
-    qDebug() << "AssetDefintionPropertiesModel: Creating Template Delegate";
-    // Template
-    AssetDefinitionPropertiesItem *templateProperty = new AssetDefinitionPropertiesItem
-    (
-        "Template",
-        mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_TEMPLATE
-    );
-    mRootItem->appendChild(templateProperty);
-}
-
-void
 AssetDefinitionPropertiesModel::createSpriteTileSizeProperty
 ()
 {
@@ -731,24 +726,6 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         SLOT(onButton_EditShader())
     );
 
-    // Script Template
-    connect
-    (
-        delegate,
-        SIGNAL(notifyCombo_ScriptTemplateChanged(QString)),
-        this,
-        SLOT(onCombo_ScriptTemplateChanged(QString))
-    );
-
-    // Shader Template
-    connect
-    (
-        delegate,
-        SIGNAL(notifyCombo_ShaderTemplateChanged(QString)),
-        this,
-        SLOT(onCombo_ShaderTemplateChanged(QString))
-    );
-
     // Physics Object
     connect
     (
@@ -763,7 +740,8 @@ void
 AssetDefinitionPropertiesModel::onButton_RemoveFiles
 ()
 {
-    qDebug() << "AssetDefinitionPropertiesModel: RemoveFiles";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("RemoveFiles");
     emit notifyButton_RemoveFiles(mAssetDefinitionHandle);
 }
 
@@ -771,7 +749,8 @@ void
 AssetDefinitionPropertiesModel::onButton_EditScript
 ()
 {
-    qDebug() << "AssetDefinitionPropertiesModel: EditScript";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("EditScript");
     emit notifyButton_EditScript(mAssetDefinitionHandle);
 }
 
@@ -779,7 +758,8 @@ void
 AssetDefinitionPropertiesModel::onButton_EditShader
 ()
 {
-    qDebug() << "AssetDefinitionPropertiesModel: EditShader";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("EditShader");
     emit notifyButton_EditShader(mAssetDefinitionHandle);
 }
 
@@ -787,7 +767,8 @@ void
 AssetDefinitionPropertiesModel::onCombo_ScriptTemplateChanged
 (const QString& templateName)
 {
-    qDebug() << "AssetDefinitionPropertiesModel: Script Template Changed";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Script Template Changed");
     emit notifyCombo_ScriptTemplateChanged(mAssetDefinitionHandle,templateName);
 }
 
@@ -795,6 +776,7 @@ void
 AssetDefinitionPropertiesModel::onCombo_ShaderTemplateChanged
 (const QString& templateName)
 {
-    qDebug() << "AssetDefinitionPropertiesModel: Shader Template Changed";
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Shader Template Changed");
     emit notifyCombo_ShaderTemplateChanged(mAssetDefinitionHandle,templateName);
 }

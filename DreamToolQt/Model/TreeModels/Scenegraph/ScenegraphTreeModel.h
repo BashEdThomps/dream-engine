@@ -31,8 +31,8 @@ class ScenegraphTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit ScenegraphTreeModel(ProjectDefinition *project, QObject *parent = 0);
-    ~ScenegraphTreeModel();
+    explicit ScenegraphTreeModel(ProjectDefinition *project, QObject *parent = nullptr);
+    ~ScenegraphTreeModel() override;
 
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;

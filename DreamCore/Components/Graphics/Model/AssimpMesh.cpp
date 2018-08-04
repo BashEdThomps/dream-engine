@@ -73,15 +73,12 @@ namespace Dream
             }
 
                 log->info(
-                    "AssimpMesh: Binding Material {}\n"
-                     "with GL Texture {}\n"
-                     "to unit {}\n"
-                     "for {}\n",
-                          materialStr.str(),
-                          mTextures[i].id,
-                          nextTexture,
-                          mParentHandle->getNameAndUuidString()
-                     );
+                    "AssimpMesh: Binding Material {} with GL Texture {} to unit {} for {}",
+                      materialStr.str(),
+                      mTextures[i].id,
+                      nextTexture,
+                      mParentHandle->getNameAndUuidString()
+                 );
 
             glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
         }

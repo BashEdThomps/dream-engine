@@ -231,6 +231,7 @@ namespace Dream
         // Lua ==================================================================
         const static string LUA_INIT_FUNCTION;
         const static string LUA_UPDATE_FUNCTION;
+        const static string LUA_NANOVG_FUNCTION;
         const static string LUA_INPUT_FUNCTION;
         const static string LUA_EVENT_FUNCTION;
         // Audio

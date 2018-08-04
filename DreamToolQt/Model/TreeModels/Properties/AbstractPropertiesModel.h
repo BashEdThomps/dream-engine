@@ -32,8 +32,8 @@ class AbstractPropertiesModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    AbstractPropertiesModel(QItemDelegate* delegate, QTreeView* parent = 0);
-    ~AbstractPropertiesModel();
+    AbstractPropertiesModel(QItemDelegate* delegate, QTreeView* parent = nullptr);
+    ~AbstractPropertiesModel() override;
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;

@@ -37,6 +37,7 @@ namespace Dream
     class AnimationComponent;
     class AudioComponent;
     class GraphicsComponent;
+    class NanoVGComponent;
     class IWindowComponent;
     class PhysicsComponent;
     class LuaEngine;
@@ -66,6 +67,7 @@ namespace Dream
         unique_ptr<PhysicsComponent> mPhysicsComponent;
         unique_ptr<AnimationComponent> mAnimationComponent;
         unique_ptr<LuaEngine> mLuaEngine;
+        unique_ptr<NanoVGComponent> mNanoVGComponent;
 
         unique_ptr<TextureCache> mTextureCache;
         unique_ptr<AssimpCache> mModelCache;
@@ -91,6 +93,7 @@ namespace Dream
         AudioComponent* getAudioComponentHandle();
         PhysicsComponent* getPhysicsComponentHandle();
         GraphicsComponent* getGraphicsComponentHandle();
+        NanoVGComponent* getNanoVGComponentHandle();
         IWindowComponent* getWindowComponentHandle();
         LuaEngine* getLuaEngineHandle();
         Project* getProjectHandle();

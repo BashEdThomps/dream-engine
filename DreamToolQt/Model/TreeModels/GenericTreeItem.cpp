@@ -83,6 +83,11 @@ GenericTreeItem::parentItem
     return mParentItem;
 }
 
+QString GenericTreeItem::getTitle() const
+{
+    return mTitle;
+}
+
 int
 GenericTreeItem::row
 () const

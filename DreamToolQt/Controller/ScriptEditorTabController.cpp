@@ -6,8 +6,10 @@
 
 using std::make_shared;
 
-ScriptEditorTabController::ScriptEditorTabController(QWidget *parent)
+ScriptEditorTabController::ScriptEditorTabController(QString fileType, QWidget *parent)
     : QWidget(parent),
+      mFileType(fileType),
+      mTextHasChanged(false),
       mAssetDefinitionHandle(nullptr),
       mTextEdit(nullptr)
 {
@@ -21,6 +23,14 @@ ScriptEditorTabController::ScriptEditorTabController(QWidget *parent)
     mForm.setupUi(this);
     mTextEdit = mForm.textEdit;
     mTextEdit->setUndoRedoEnabled(true);
+
+    QTextDocument *doc = mTextEdit->document();
+    QFont font = doc->defaultFont();
+    font.setFamily("Courier New");
+    font.setPointSize(16);
+    doc->setDefaultFont(font);
+
+    connect(mTextEdit,SIGNAL(textChanged()),this,SLOT(onTextChanged()));
 }
 
 ScriptEditorTabController::~ScriptEditorTabController()
@@ -58,10 +68,30 @@ void ScriptEditorTabController::useGLSLHighlighter()
 void ScriptEditorTabController::setPlainText(QString data)
 {
     mTextEdit->setPlainText(data);
+    mTextHasChanged = false;
 }
 
 QString ScriptEditorTabController::getPlainText()
 {
-   return mTextEdit->toPlainText();
+    return mTextEdit->toPlainText();
 }
 
+bool ScriptEditorTabController::hasTextChanged()
+{
+    return mTextHasChanged;
+}
+
+void ScriptEditorTabController::onTextChanged()
+{
+   mTextHasChanged = true;
+}
+
+QString ScriptEditorTabController::getFileType() const
+{
+    return mFileType;
+}
+
+void ScriptEditorTabController::clearTextChanged()
+{
+    mTextHasChanged = false;
+}

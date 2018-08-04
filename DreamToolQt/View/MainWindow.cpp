@@ -21,13 +21,18 @@
 #include <QDebug>
 #include <vector>
 #include <algorithm>
+#include <memory>
 
 #include "View/QOpenGLWindowComponent.h"
+#include <spdlog/spdlog.h>
+#include <QMenu>
+
 
 using std::pair;
 using std::begin;
 using std::find;
 using std::end;
+using std::make_shared;
 
 const vector<int> MainWindow::mKeysPassedToWindow =
 {
@@ -48,12 +53,188 @@ MainWindow::MainWindow
     : QMainWindow(parent),
       ui(new Ui::MainWindow)
 {
+    auto log = spdlog::get("MainWindow");
+    if (log == nullptr)
+    {
+        log = spdlog::stdout_color_mt("MainWindow");
+    }
+
+    log->info("Constructing");
+
     ui->setupUi(this);
+    setupUiFeatures();
+
     setupGL(parent);
     setupMenu_Asset_NewDefinition();
     setActionsEnabled_Scene_Playback(false);
     setActionsEnabled_Scene_Modification(false);
     setActionEnabled_File_Save(false);
+}
+
+void MainWindow::setupUiFeatures()
+{
+    ui->dataGLSplitter->setStretchFactor(1,10);
+
+    ui->scenegraphPropertiesSplitter->setStretchFactor(1,1);
+
+    ui->scenegraphTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(
+                ui->scenegraphTreeView,
+                SIGNAL(customContextMenuRequested(const QPoint &)),
+                this,
+                SLOT(onScenegraphContextMenuRequested(const QPoint &))
+                );
+    ui->assetDefinitionTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(
+                ui->assetDefinitionTreeView,
+                SIGNAL(customContextMenuRequested(const QPoint &)),
+                this,
+                SLOT(onAsseetDefinitionContextMenuRequested(const QPoint &))
+                );
+}
+
+void
+MainWindow::onScenegraphContextMenuRequested
+(const QPoint &point)
+{
+    auto log = spdlog::get("MainWindow");
+    log->info("SceneGraph Context Menu Requested {},{}",point.x(),point.y());
+    QModelIndex index = ui->scenegraphTreeView->indexAt(point);
+    if (index.isValid())
+    {
+        auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+        auto contextMenu = createScenegraphTreeContextMenu(item);
+        contextMenu->exec(ui->scenegraphTreeView->mapToGlobal(point));
+    }
+}
+
+void
+MainWindow::onAsseetDefinitionContextMenuRequested
+(const QPoint &point)
+{
+
+    auto log = spdlog::get("MainWindow");
+    log->info("Asset Definition Context Menu Requested {},{}",point.x(),point.y());
+    QModelIndex index = ui->assetDefinitionTreeView->indexAt(point);
+    if (index.isValid())
+    {
+        auto item = static_cast<AssetDefinitionTreeItem*>(index.internalPointer());
+        auto contextMenu = createAssetDefinitionTreeContextMenu(item);
+        contextMenu->exec(ui->assetDefinitionTreeView->mapToGlobal(point));
+    }
+}
+
+void MainWindow::onCreateAssetDefinitionAction()
+{
+    CreateAssetAction* caa = dynamic_cast<CreateAssetAction*>(sender());
+    auto log = spdlog::get("MainWindow");
+    log->info("Create Asset Definition of type {}", caa->getType().toStdString());
+    emit notifyCreateNewAssetDefinition(caa->getType());
+}
+
+shared_ptr<QMenu>
+MainWindow::createAssetDefinitionTreeContextMenu
+(AssetDefinitionTreeItem* item)
+{
+    IAssetDefinition* assetDef;
+    auto menu = make_shared<QMenu>();
+    QAction* nameAction = nullptr;
+    CreateAssetAction* createAction = nullptr;
+    QAction* deleteAction = nullptr;
+    switch (item->getType())
+    {
+       case ASSET_DEFINITION:
+            assetDef = static_cast<IAssetDefinition*>(item->getAssetDefinition());
+            nameAction = new QAction(QString::fromStdString(assetDef->getName()));
+            nameAction->setEnabled(false);
+            menu->addAction(nameAction);
+            menu->addSeparator();
+            deleteAction = new QAction("Delete");
+            menu->addAction(deleteAction);
+            break;
+       case ASSET_TREE_NODE:
+            createAction = new CreateAssetAction(
+                item->getTitle(),
+                QString("New %1 Asset").arg(item->getTitle())
+            );
+            menu->addAction(createAction);
+            break;
+    }
+
+    if (createAction != nullptr)
+    {
+        connect(
+            createAction,SIGNAL(triggered()),
+            this,SLOT(onCreateAssetDefinitionAction())
+        );
+    }
+    return menu;
+}
+
+shared_ptr<QMenu>
+MainWindow::createScenegraphTreeContextMenu
+(ScenegraphTreeItem* item)
+{
+    ProjectDefinition* projectDef = nullptr;
+    SceneDefinition* sceneDef = nullptr;
+    SceneObjectDefinition* sceneObjectDef = nullptr;
+
+    QAction* titleAction = nullptr;
+    QAction* deleteAction = nullptr;
+    QAction* addChildAction = nullptr;
+    QMenu*   addAssetMenu = nullptr;
+
+    auto menu = make_shared<QMenu>();
+    switch (item->getType())
+    {
+        case SCENEGRAPH_PROJECT:
+            projectDef = static_cast<ProjectDefinition*>(item->getItem());
+
+            titleAction = new QAction(QString::fromStdString(projectDef->getName()));
+            titleAction->setEnabled(false);
+            menu->addAction(titleAction);
+            menu->addSeparator();
+
+            break;
+        case SCENEGRAPH_SCENE:
+            sceneDef = static_cast<SceneDefinition*>(item->getItem());
+
+            titleAction = new QAction(QString::fromStdString(sceneDef->getName()));
+            titleAction->setEnabled(false);
+            deleteAction = new QAction("Delete");
+            menu->addAction(titleAction);
+            menu->addSeparator();
+            menu->addAction(deleteAction);
+
+            break;
+        case SCENEGRAPH_SCENE_OBJECT:
+            sceneObjectDef = static_cast<SceneObjectDefinition*>(item->getItem());
+
+            titleAction = new QAction(QString::fromStdString(sceneObjectDef->getName()));
+            titleAction->setEnabled(false);
+            deleteAction = new QAction("Delete");
+            addChildAction = new QAction("Add Child");
+            menu->addAction(titleAction);
+            menu->addSeparator();
+            menu->addAction(addChildAction);
+            addAssetMenu = menu->addMenu("Add Asset");
+            createAssetsMenu(addAssetMenu);
+            menu->addAction(deleteAction);
+
+            break;
+        case SCENEGRAPH_TREE_NODE :
+            break;
+    }
+
+
+    return menu;
+}
+
+void
+MainWindow::createAssetsMenu
+(QMenu* menu)
+{
+
 }
 
 void
@@ -167,30 +348,15 @@ MainWindow::setupMenu_Asset_NewDefinition
 }
 
 void
-MainWindow::setPropertiesDockWidgetTitle
-(QString title)
-{
-    ui->propertiesDockWidget->setWindowTitle(title);
-}
-
-void
 MainWindow::setupGL
 (QWidget *parent)
 {
-    //QVBoxLayout *glVerticalLayout = new QVBoxLayout(ui->centralWidget);
-    //glVerticalLayout->setSpacing(0);
-    //glVerticalLayout->setContentsMargins(0,0,0,0);
-    //glVerticalLayout->setObjectName(QStringLiteral("glVerticalLayout"));
-
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );
     glFormat.setProfile( QSurfaceFormat::CoreProfile );
     glFormat.setSamples(4);
-    mWindowComponent.reset(new QOpenGLWindowComponent(glFormat,parent));
-    ui->centralWidget->layout()->addWidget(mWindowComponent.get());
-
-    //glVerticalLayout->addWidget(mWindowComponent.get());
-    //ui->centralWidget->setLayout(glVerticalLayout);
+    mWindowComponentHandle = ui->openGLWidget;
+    mWindowComponentHandle->setFormat(glFormat);
 }
 
 MainWindow::~MainWindow
@@ -339,14 +505,14 @@ QOpenGLWindowComponent*
 MainWindow::getWindowComponent
 ()
 {
-    return mWindowComponent.get();
+    return mWindowComponentHandle;
 }
 
 void
 MainWindow::clearOpenGLComponentRuntime
 ()
 {
-    mWindowComponent->clearProjectRuntimeHandle();
+    mWindowComponentHandle->clearProjectRuntimeHandle();
 }
 
 void
@@ -376,7 +542,7 @@ MainWindow::keyPressEvent
 
     if (shouldPassKey(ke->key()))
     {
-        mWindowComponent->keyPressEvent(ke);
+        mWindowComponentHandle->keyPressEvent(ke);
     }
     else
     {
@@ -404,10 +570,33 @@ MainWindow::keyReleaseEvent
 
     if (shouldPassKey(ke->key()))
     {
-        mWindowComponent->keyReleaseEvent(ke);
+        mWindowComponentHandle->keyReleaseEvent(ke);
     }
     else
     {
         QMainWindow::keyReleaseEvent(ke);
     }
+}
+
+CreateAssetAction::CreateAssetAction
+(QString type, QObject* parent)
+    : QAction(parent),
+      mType(type) {}
+
+CreateAssetAction::CreateAssetAction
+(QString type, const QString& text, QObject* parent)
+    : QAction(text,parent),
+      mType(type)
+{}
+
+CreateAssetAction::CreateAssetAction
+(QString type, const QIcon& icon, const QString& text, QObject* parent)
+    : QAction(icon,text,parent),
+      mType(type) {}
+
+QString
+CreateAssetAction::
+getType() const
+{
+    return mType;
 }

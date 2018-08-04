@@ -26,14 +26,13 @@ using Dream::IAssetDefinition;
 
 class ModelFileBrowseDelegate;
 class BrowseForAdditionalFilesDelegate;
-class TemplatesModel;
 
 class AssetDefinitionPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    AssetDefinitionPropertiesModel(IAssetDefinition *definition, TemplatesModel* templatesModel, QTreeView *parent = 0);
-    ~AssetDefinitionPropertiesModel();
+    AssetDefinitionPropertiesModel(IAssetDefinition *definition, QTreeView *parent = nullptr);
+    ~AssetDefinitionPropertiesModel() override;
 
     void createRoot() override;
     void createProperties() override;
@@ -48,7 +47,6 @@ private:
     void createTypeProperty();
     void createNameProperty();
     void createRemoveFilesProperty();
-    void createTemplateProperty();
 
     void createAudioLoopProperty();
     void createAudioFileProperty();

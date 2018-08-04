@@ -18,6 +18,7 @@
 #include "GLDrawable.h"
 #include <DreamCore.h>
 #include <QDebug>
+#include "spdlog/spdlog.h"
 
 using namespace std;
 using namespace glm;
@@ -31,12 +32,19 @@ GLDrawable::GLDrawable
       mShaderProgram(0),
       mInitialised(false)
 {
-
+    auto log = spdlog::get("GLDrawable");
+    if (log == nullptr)
+    {
+        log = spdlog::stdout_color_mt("GLDrawable");
+    }
+    log->info("Constructing");
 }
 
 GLDrawable::~GLDrawable
 ()
 {
+    auto log = spdlog::get("GLDrawable");
+    log->info("Destroying");
     if (mVao > 0)
     {
         glDeleteVertexArrays(1,&mVao);
@@ -63,7 +71,8 @@ void
 GLDrawable::initGLDrawable
 ()
 {
-    qDebug() << "GLDrawable: Initialising";
+    auto log = spdlog::get("GLDrawable");
+    log->info("Initialising");
     initShader();
     initVaoVbo();
     mInitialised = true;
@@ -98,11 +107,12 @@ void
 GLDrawable::draw
 ()
 {
+    auto log = spdlog::get("GLDrawable");
     if (!mVertexBuffer.empty())
     {
         preRender();
         {
-            qDebug() << "GLDrawable: Drawing - " << mVertexBuffer.size()/2 << " lines.";
+            log->info("Drawing {} lines", mVertexBuffer.size()/2);
         }
 
         // Enable shader program
@@ -112,7 +122,7 @@ GLDrawable::draw
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
         if (projUniform == -1)
         {
-            cerr << "GLDrawable: Unable to find Uniform Location for projection" << endl;
+            log->error("Unable to find Uniform Location for projection");
             return;
         }
         else
@@ -124,7 +134,7 @@ GLDrawable::draw
         GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
         if (viewUniform == -1)
         {
-            cerr << "GLDrawable: Unable to find Uniform Location for view" << endl;
+            log->error("Unable to find Uniform Location for view");
             return;
         }
         else
@@ -167,7 +177,8 @@ void
 GLDrawable::initShader
 ()
 {
-    qDebug() << "GLDrawable: Initialising Shader";
+    auto log = spdlog::get("GLDrawable");
+    log->info("Initialising Shader");
 
     string vertexShaderSource;
     string fragmentShaderSource;
@@ -216,7 +227,7 @@ GLDrawable::initShader
     if (!success)
     {
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-        cerr << "GLDrawable: SHADER:VERTEX:COMPILATION_FAILED\n" << infoLog << endl;
+        log->error("SHADER::VERTEX: COMPILATION_FAILED {}", infoLog);
     }
 
     // Fragment Shader
@@ -230,7 +241,7 @@ GLDrawable::initShader
     if (!success)
     {
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-        cerr << "GLDrawable: SHADER:FRAGMENT:COMPILATION_FAILED\n" << infoLog << endl;
+        log->error("SHADER::FRAGMENT: COMPILATION_FAILED {}",  infoLog);
     }
 
     // Shader Program
@@ -243,7 +254,7 @@ GLDrawable::initShader
     glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-        cerr << "GLDrawable: SHADER:PROGRAM:LINKING_FAILED\n" << infoLog << endl;
+        log->error(" SHADER::PROGRAM: LINKING_FAILED {}"  ,infoLog );
     }
 
     // Delete the shaders as they're linked into our program now and no longer necessery

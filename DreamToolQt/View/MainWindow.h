@@ -32,6 +32,8 @@
 #include <QKeyEvent>
 
 #include "../View/QOpenGLWindowComponent.h"
+#include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.h"
+#include "../Model/TreeModels/Scenegraph/ScenegraphTreeItem.h"
 
 using std::unique_ptr;
 using std::map;
@@ -42,12 +44,25 @@ namespace Ui
     class MainWindow;
 }
 
+class CreateAssetAction : public QAction
+{
+public:
+    CreateAssetAction(QString type,QObject *parent = nullptr);
+    CreateAssetAction(QString type,const QString &text, QObject *parent = nullptr);
+    CreateAssetAction(QString type,const QIcon &icon, const QString &text, QObject *parent = nullptr);
+
+    QString getType() const;
+
+private:
+    QString mType;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow( ) override;
     Ui::MainWindow *ui;
 
     QOpenGLWindowComponent* getWindowComponent();
@@ -90,8 +105,6 @@ public:
 
     void setupMenu_Asset_NewDefinition();
 
-    void setPropertiesDockWidgetTitle(QString title);
-
     void clearOpenGLComponentRuntime();
 private: // Methods
     bool shouldPassKey(int key);
@@ -100,6 +113,7 @@ signals:
     void notifyActionNew(QString);
     void notifyActionOpen(QString);
     void notifyActionSave(QString);
+    void notifyCreateNewAssetDefinition(QString type);
 
 public slots:
     void onInvalidProjectDirectory(QString directory);
@@ -110,11 +124,20 @@ public slots:
     void keyPressEvent(QKeyEvent*) override;
     void keyReleaseEvent(QKeyEvent*) override;
 
+protected:
+    void setupUiFeatures();
+private slots:
+    void onScenegraphContextMenuRequested(const QPoint& point);
+    void onAsseetDefinitionContextMenuRequested(const QPoint& point);
+    void onCreateAssetDefinitionAction();
 private:
     void setupGL(QWidget *parent);
-    unique_ptr<QOpenGLWindowComponent> mWindowComponent;
+    QOpenGLWindowComponent* mWindowComponentHandle;
     const static vector<int> mKeysPassedToWindow;
     map<AssetType,QAction*> mActionMap_Asset_NewDefinition;
     unique_ptr<QMenu> mMenu_Asset_NewDefinition;
+    shared_ptr<QMenu> createAssetDefinitionTreeContextMenu(AssetDefinitionTreeItem*);
+    shared_ptr<QMenu> createScenegraphTreeContextMenu(ScenegraphTreeItem*);
+    void createAssetsMenu(QMenu* menu);
 };
 

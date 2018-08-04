@@ -37,6 +37,8 @@ public:
     int row() const;
     GenericTreeItem *parentItem();
 
+    QString getTitle() const;
+
 protected:
     QList<GenericTreeItem*> mChildItems;
     GenericTreeItem *mParentItem;

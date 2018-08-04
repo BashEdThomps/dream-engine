@@ -58,7 +58,7 @@ namespace Dream
 
     public:
         SceneRuntime(SceneDefinition* sdHandle, ProjectRuntime* parent = nullptr);
-        ~SceneRuntime();
+        ~SceneRuntime() override;
 
         SceneState getState();
         void setState(SceneState state);

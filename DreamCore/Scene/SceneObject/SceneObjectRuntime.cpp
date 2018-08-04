@@ -77,7 +77,7 @@ namespace Dream
 
     {
         auto log = getLog();
-        log->info( "SceneObjectRuntime: Constructing Object" );
+        log->info( "Constructing Object" );
         useDefinition(sdHandle);
     }
 
@@ -85,7 +85,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "SceneObjectRuntime: Destroying Object" );
+        log->info( "Destroying Object" );
 
         if (hasPhysicsObjectInstance())
         {
@@ -468,7 +468,7 @@ namespace Dream
     void SceneObjectRuntime::collectGarbage()
     {
         auto log = getLog();
-        log->info( "SceneObjectRuntime: Collecting Garbage " ,getNameAndUuidString() );
+        log->info( "Collecting Garbage {}" ,getNameAndUuidString() );
         clearEventQueue();
     }
 
@@ -522,7 +522,7 @@ namespace Dream
         auto log = getLog();
         mProjectPath = mSceneRuntimeHandle->getProjectRuntimeHandle()->getProjectHandle()->getProjectPath();
 
-        log->info( "SceneObjectRuntime: Creating Asset Intance of: ({}) {}", definition->getType() ,  definition->getName());
+        log->info( "Creating Asset Intance of: ({}) {}", definition->getType() ,  definition->getName());
 
         if (mParentRuntimeHandle)
         {
@@ -567,8 +567,7 @@ namespace Dream
         }
         else
         {
-            log->error( "SceneObjectRuntime: Invalid Asset Instance Type {}",
-                        definition->getType() );
+            log->error( "Invalid Asset Instance Type {}",definition->getType() );
         }
 
         setLoadedFlag(true);
@@ -579,11 +578,8 @@ namespace Dream
     (PhysicsObjectDefinition* definition)
     {
         auto log = getLog();
-        log->info( "SceneObjectRuntime: Creating Physics Object Asset Instance." );
-        mPhysicsObjectInstance.reset
-                (
-                    new PhysicsObjectInstance(definition, this)
-                    );
+        log->info( "Creating Physics Object Asset Instance." );
+        mPhysicsObjectInstance.reset ( new PhysicsObjectInstance(definition, this));
         mPhysicsObjectInstance->load(mProjectPath);
     }
 
@@ -592,13 +588,8 @@ namespace Dream
     (AnimationDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Animation asset instance." );
-        }
-        mAnimationInstance.reset
-                (
-                    new AnimationInstance(definition,this)
-                    );
+        log->info( "Creating Animation asset instance." );
+        mAnimationInstance.reset(new AnimationInstance(definition,this));
         mAnimationInstance->load(mProjectPath);
     }
 
@@ -607,9 +598,7 @@ namespace Dream
     (AudioDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Audio asset instance." );
-        }
+        log->info( "Creating Audio asset instance." );
         // hottest trainwreck 2017!
         mAudioInstance.reset
                 (
@@ -626,9 +615,7 @@ namespace Dream
     (ModelDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Model asset instance." );
-        }
+        log->info( "Creating Model asset instance." );
         mModelInstance.reset
                 (
                     new AssimpModelInstance
@@ -647,9 +634,7 @@ namespace Dream
     (ScriptDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Script asset instance." );
-        }
+            log->info( "Creating Script asset instance." );
         mScriptInstance.reset(new LuaScriptInstance(definition,this));
         mScriptInstance->load(mProjectPath);
         mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()->addToScriptMap(this,mScriptInstance.get());
@@ -660,9 +645,7 @@ namespace Dream
     (ShaderDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Shader asset instance." );
-        }
+            log->info( "Creating Shader asset instance." );
         mShaderInstance.reset
                 (
                     new ShaderInstance
@@ -680,9 +663,7 @@ namespace Dream
     (LightDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Light Asset instance." );
-        }
+            log->info( "Creating Light Asset instance." );
         mLightInstance.reset(new LightInstance(definition, this));
         mLightInstance->load(mProjectPath);
     }
@@ -692,9 +673,7 @@ namespace Dream
     (SpriteDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Sprite Asset instance." );
-        }
+            log->info( "Creating Sprite Asset instance." );
         mSpriteInstance.reset
                 (
                     new SpriteInstance
@@ -712,9 +691,7 @@ namespace Dream
     (FontDefinition* definition)
     {
         auto log = getLog();
-        {
-            log->info( "SceneObjectRuntime: Creating Font Asset instance." );
-        }
+            log->info( "Creating Font Asset instance." );
         mFontInstance.reset
                 (
                     new FontInstance
@@ -825,19 +802,14 @@ namespace Dream
     (IDefinition* iDefinitionHandle)
     {
         SceneObjectDefinition *defHandle = dynamic_cast<SceneObjectDefinition*>(iDefinitionHandle);
-
         auto log = getLog();
-            log->info( "SceneObjectRuntime: Using Definition "
-                       , defHandle->getNameAndUuidString()
-                       );
-
+        log->info( "Using Definition {}", defHandle->getNameAndUuidString());
         setName(defHandle->getName());
         setUuid(defHandle->getUuid());
         setTransform(defHandle->getTransform());
         setFollowsCamera(defHandle->followsCamera());
         setAssetDefinitionLoadQueue(defHandle->getAssetDefinitionLoadQueue());
         createAssetInstances();
-
         loadChildrenFromDefinition(defHandle);
     }
 

@@ -247,6 +247,7 @@ namespace Dream
     // Lua ======================================================================
     const string Constants::LUA_INIT_FUNCTION   = "onInit";
     const string Constants::LUA_UPDATE_FUNCTION = "onUpdate";
+    const string Constants::LUA_NANOVG_FUNCTION = "onNanoVG";
     const string Constants::LUA_INPUT_FUNCTION  = "onInput";
     const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
     // Shader ===================================================================

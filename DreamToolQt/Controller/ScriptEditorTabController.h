@@ -21,7 +21,7 @@ class ScriptEditorTabController : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ScriptEditorTabController(QWidget *parent = nullptr);
+    explicit ScriptEditorTabController(QString fileType, QWidget *parent = nullptr);
     ~ScriptEditorTabController() override;
 
     void setAssetDefinitionHandle(IAssetDefinition* definitionHandle);
@@ -30,12 +30,18 @@ public:
     void useGLSLHighlighter();
     void setPlainText(QString data);
     QString getPlainText();
+    bool hasTextChanged();
+    void clearTextChanged();
+
+    QString getFileType() const;
 
 signals:
 
 public slots:
-
+    void onTextChanged();
 private:
+    QString mFileType;
+    bool mTextHasChanged;
     shared_ptr<QSyntaxHighlighter> mHighlighter;
     IAssetDefinition* mAssetDefinitionHandle;
     CodeEditor* mTextEdit;

@@ -33,6 +33,7 @@
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Graphics/Font/FontInstance.h"
 #include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Graphics/Light/LightInstance.h"
 #include "../Components/Graphics/Shader/ShaderInstance.h"
 #include "../Components/Graphics/Sprite/SpriteInstance.h"
@@ -47,6 +48,8 @@
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
 
 #include "../Utilities/Math.h"
+
+#include "../../NanoVG/src/nanovg.h"
 
 using std::ostringstream;
 using std::exception;
@@ -68,12 +71,17 @@ using luabind::module;
 using luabind::value;
 using luabind::nil;
 using luabind::newtable;
+using luabind::def;
 
 int
 errorHandler
 (lua_State *L)
 {
-    auto log = spdlog::stdout_color_mt("LuaErrorHandler");
+    auto log = spdlog::get("LuaErrorHandler");
+    if (log == nullptr)
+    {
+        log = spdlog::stdout_color_mt("LuaErrorHandler");
+    }
     // log the error message
     object msg(from_stack( L, -1 ));
     ostringstream str;
@@ -129,8 +137,7 @@ namespace Dream
         }
         else
         {
-            log->error( "Error creating lua state, LuaEngine::mState == nullptr"
-                 );
+            log->error( "Error creating lua state, LuaEngine::mState == nullptr");
         }
         return false;
     }
@@ -154,25 +161,19 @@ namespace Dream
 
         if (luaScript->getLoadedFlag())
         {
-            {
-               log->info( "Script {} is already loaded" , luaScript->getNameAndUuidString());
-            }
+            log->info( "Script {} is already loaded" , luaScript->getNameAndUuidString());
             return false;
         }
 
-        {
             log->info( "Loading script '{}' for '{}'" , luaScript->getName(),sceneObject->getName());
             log->info( "Loading Lua script from {}" , luaScript->getAbsolutePath());
-        }
 
         if (!loadScript(sceneObject))
         {
             return false;
         }
 
-        {
-            log->info( "Loaded {} successfully" , sceneObject->getUuid());
-        }
+        log->info( "Loaded {} successfully" , sceneObject->getUuid());
 
         luaScript->setLoadedFlag(true);
         executeScriptInit(sceneObject);
@@ -200,23 +201,17 @@ namespace Dream
            return false;
         }
 
-        {
-            log->info( "loadScript called for {}", id );
-        }
+        log->info( "loadScript called for {}", id );
 
         try
         {
-            {
-                log->info( "Creating new table for {}" ,id );
-            }
+            log->info( "Creating new table for {}" ,id );
 
             object newScriptTable = newtable(mState);
             string path = scriptInstance->getAbsolutePath();
             string script = mScriptCacheHandle->getScript(path);
 
-            {
-                log->info( "calling scriptLoadFromString in lua for {}" , id );
-            }
+            log->info( "calling scriptLoadFromString in lua for {}" , id );
 
             call_function<void>(mState, "scriptLoadFromString", newScriptTable, script.c_str());
 
@@ -225,7 +220,7 @@ namespace Dream
         }
         catch (error &e)
         {
-            log->error("loadScript exception:\n\t{}" , e.what() );
+            log->error("loadScript exception: {}" , e.what() );
             scriptInstance->setError(true);
             return false;
         }
@@ -272,9 +267,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        {
-            log->info( "Update Called" );
-        }
+        log->info( "Update Called" );
 
         for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
         {
@@ -305,6 +298,25 @@ namespace Dream
     }
 
     bool
+    LuaEngine::updateNanoVG
+    ()
+    {
+        auto log = getLog();
+        log->info( "UpdateNanoVG Called" );
+
+        for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
+        {
+            SceneObjectRuntime* key = entry.first;
+
+            if (!executeScriptNanoVG(key))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool
     LuaEngine::executeScriptUpdate
     (SceneObjectRuntime* sceneObject)
     {
@@ -318,9 +330,7 @@ namespace Dream
             return false;
         }
 
-        {
-            log->info( "Calling onUpdate for {}" ,sceneObject->getNameAndUuidString() );
-        }
+        log->info( "Calling onUpdate for {}" ,sceneObject->getNameAndUuidString() );
 
         try
         {
@@ -336,10 +346,51 @@ namespace Dream
                 log->error( "Attempted to call onUpdate on invalid function.");
             }
         }
-        catch (error &e)
+        catch (error e)
         {
             string error = lua_tostring( e.state(), -1 );
             log->error( "onUpdate exception: {}" , e.what() );
+            log->error( error );
+            scriptInstance->setError(true);
+            return false;
+        }
+        return true;
+    }
+
+    bool
+    LuaEngine::executeScriptNanoVG
+    (SceneObjectRuntime* sceneObject)
+    {
+        auto log = getLog();
+        string id = sceneObject->getUuid();
+        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+
+        if (scriptInstance->getError())
+        {
+            log->error( "Cannot execute NanoVG {} in error state", scriptInstance->getNameAndUuidString());
+            return false;
+        }
+
+        log->info( "Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
+
+        try
+        {
+            object reg = registry(mState);
+            object table = reg[id];
+            object funq = table[Constants::LUA_NANOVG_FUNCTION];
+            if (funq.is_valid())
+            {
+                call_function<void>(funq,sceneObject);
+            }
+            else
+            {
+                log->error( "Attempted to call onNanoVG on invalid function.");
+            }
+        }
+        catch (luabind::error e)
+        {
+            string error = lua_tostring( e.state(), -1 );
+            log->error( "onNanoVG exception: {}" , e.what() );
             log->error( error );
             scriptInstance->setError(true);
             return false;
@@ -358,11 +409,10 @@ namespace Dream
         if (scriptInstance->getError() )
         {
             log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
-
             return false;
         }
 
-        log->info( "Calling onInit in {} for ",  scriptInstance->getName(),  sceneObject->getName());
+        log->info( "Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
         try
         {
             object reg = registry(mState);
@@ -378,7 +428,7 @@ namespace Dream
             }
 
         }
-        catch (error &e)
+        catch (error e)
         {
             string error = lua_tostring( e.state(), -1 );
             log->error( "onInit exception: {}" , e.what() );
@@ -424,7 +474,7 @@ namespace Dream
 
             clearInputEvents();
         }
-        catch (error &e)
+        catch (error e)
         {
             string error = lua_tostring( e.state(), -1 );
             log->error( "onInput exception: {}" ,  e.what() );
@@ -449,10 +499,7 @@ namespace Dream
             return false;
         }
 
-
-        {
-            log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
-        }
+        log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
 
         try
         {
@@ -470,10 +517,10 @@ namespace Dream
             }
             else
             {
-                log->error( "Attempted to call onInit on invalid function.");
+                log->error( "Attempted to call onEvent on invalid function.");
             }
         }
-        catch (error &e)
+        catch (error e)
         {
             string error = lua_tostring( e.state(), -1 );
             log->error( "onEvent exception: {}", e.what());
@@ -509,6 +556,7 @@ namespace Dream
             class_<ProjectRuntime>("ProjectRuntime")
                 .def("getAudioComponent",&ProjectRuntime::getAudioComponentHandle)
                 .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponentHandle)
+                .def("getNanoVGComponent",&ProjectRuntime::getNanoVGComponentHandle)
                 .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponentHandle)
                 .def("getWindowComponent",&ProjectRuntime::getWindowComponentHandle)
                 .def("getTime",&ProjectRuntime::getTimeHandle)
@@ -823,6 +871,7 @@ namespace Dream
     LuaEngine::exposeAudioComponent
     ()
     {
+        debugRegisteringClass("AudioComponent");
         module(mState)
         [
             class_<AudioComponent>("AudioComponent")
@@ -961,6 +1010,7 @@ namespace Dream
         exposeSpriteInstance();
         exposeTime();
         exposeTransform3D();
+        exposeNanoVG();
     }
 
     void
@@ -977,10 +1027,8 @@ namespace Dream
                object reg = registry(mState);
                reg[id] = nil;
 
-               {
-                   string name = (*iter).first->getNameAndUuidString();
-                    log->info( "Removed script for {}" , name );
-               }
+               string name = (*iter).first->getNameAndUuidString();
+               log->info( "Removed script for {}" , name );
 
                mScriptMap.erase(iter++);
                break;
@@ -993,18 +1041,131 @@ namespace Dream
     (SceneObjectRuntime *sceneObject, LuaScriptInstance* script)
     {
         auto log = getLog();
-        {
-            log->info(
-                "Adding {} to script map for {}",
-                script->getNameAndUuidString(),
-                sceneObject->getNameAndUuidString()
-            );
-        }
+        log->info(
+            "Adding {} to script map for {}",
+            script->getNameAndUuidString(),
+            sceneObject->getNameAndUuidString()
+        );
 
         if (createScript(sceneObject,script))
         {
             mScriptMap.insert(pair<SceneObjectRuntime*,LuaScriptInstance*>(sceneObject,script));
         }
+    }
+
+    void
+    LuaEngine::exposeNanoVG
+    ()
+    {
+        debugRegisteringClass("NanoVG");
+        module(mState)[
+            class_<NVGcolor>("NVGcolor"),
+            class_<NVGpaint>("NVGpaint"),
+            class_<NVGglyphPosition>("NVGglyphPosition"),
+            class_<NVGtextRow>("NVGtextRow"),
+            class_<NanoVGComponent>("NanoVG")
+                .enum_("NVGsolidity")
+                [
+                    value("NVG_SOLID",NVG_SOLID),
+                    value("NVG_HOLE",NVG_HOLE)
+                ]
+               .def("BeginFrame",&NanoVGComponent::BeginFrame)
+               .def("CancelFrame",&NanoVGComponent::CancelFrame)
+               .def("EndFrame",&NanoVGComponent::EndFrame)
+               .def("GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation)
+               .def("GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc)
+               .def("GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate)
+               .def("RGB",&NanoVGComponent::RGB)
+               .def("RGBf",&NanoVGComponent::RGBf)
+               .def("RGBA",&NanoVGComponent::RGBA)
+               .def("RGBAf",&NanoVGComponent::RGBAf)
+               .def("LerpRGBA",&NanoVGComponent::LerpRGBA)
+               .def("TransRGBA",&NanoVGComponent::TransRGBA)
+               .def("TransRGBAf",&NanoVGComponent::TransRGBAf)
+               .def("HSL",&NanoVGComponent::HSL)
+               .def("HSLA",&NanoVGComponent::HSLA)
+               .def("Save",&NanoVGComponent::Save)
+               .def("Restore",&NanoVGComponent::Restore)
+               .def("Reset",&NanoVGComponent::Reset)
+               .def("ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias)
+               .def("StrokeColor",&NanoVGComponent::StrokeColor)
+               .def("StrokePaint",&NanoVGComponent::StrokePaint)
+               .def("FillColor",&NanoVGComponent::FillColor)
+               .def("FillPaint",&NanoVGComponent::FillPaint)
+               .def("MiterLimit",&NanoVGComponent::MiterLimit)
+               .def("StrokeWidth",&NanoVGComponent::StrokeWidth)
+               .def("LineCap",&NanoVGComponent::LineCap)
+               .def("LineJoin",&NanoVGComponent::LineJoin)
+               .def("GlobalAlpha",&NanoVGComponent::GlobalAlpha)
+               .def("ResetTransform",&NanoVGComponent::ResetTransform)
+               .def("Transform",&NanoVGComponent::Transform)
+               .def("Translate",&NanoVGComponent::Translate)
+               .def("Rotate",&NanoVGComponent::Rotate)
+               .def("SkewX",&NanoVGComponent::SkewX)
+               .def("SkewY",&NanoVGComponent::SkewY)
+               .def("Scale;",&NanoVGComponent::Scale)
+               .def("CurrentTransform",&NanoVGComponent::CurrentTransform)
+               .def("TransformIdentity",&NanoVGComponent::TransformIdentity)
+               .def("TransformTranslate",&NanoVGComponent::TransformTranslate)
+               .def("TransformScale",&NanoVGComponent::TransformScale)
+               .def("TransformRotate",&NanoVGComponent::TransformRotate)
+               .def("TransformSkewX",&NanoVGComponent::TransformSkewX)
+               .def("TransformSkewY",&NanoVGComponent::TransformSkewY)
+               .def("TransformMultiply",&NanoVGComponent::TransformMultiply)
+               .def("TransformPremultiply",&NanoVGComponent::TransformPremultiply)
+               .def("TransformInverse",&NanoVGComponent::TransformInverse)
+               .def("TransformPoint",&NanoVGComponent::TransformPoint)
+               .def("DegToRad",&NanoVGComponent::DegToRad)
+               .def("RadToDeg",&NanoVGComponent::RadToDeg)
+               .def("CreateImage",&NanoVGComponent::CreateImage)
+               .def("CreateImageMem",&NanoVGComponent::CreateImageMem)
+               .def("CreateImageRGBA",&NanoVGComponent::CreateImageRGBA)
+               .def("UpdateImage",&NanoVGComponent::UpdateImage)
+               .def("ImageSize",&NanoVGComponent::ImageSize)
+               .def("DeleteImage",&NanoVGComponent::DeleteImage)
+               .def("LinearGradient",&NanoVGComponent::LinearGradient)
+               .def("BoxGradient",&NanoVGComponent::BoxGradient)
+               .def("RadialGradient",&NanoVGComponent::RadialGradient)
+               .def("ImagePattern",&NanoVGComponent::ImagePattern)
+               .def("Scissor",&NanoVGComponent::Scissor)
+               .def("IntersectScissor",&NanoVGComponent::IntersectScissor)
+               .def("ResetScissor",&NanoVGComponent::ResetScissor)
+               .def("BeginPath",&NanoVGComponent::BeginPath)
+               .def("MoveTo",&NanoVGComponent::MoveTo)
+               .def("LineTo",&NanoVGComponent::LineTo)
+               .def("BezierTo",&NanoVGComponent::BezierTo)
+               .def("QuadTo",&NanoVGComponent::QuadTo)
+               .def("ArcTo",&NanoVGComponent::ArcTo)
+               .def("ClosePath",&NanoVGComponent::ClosePath)
+               .def("PathWinding",&NanoVGComponent::PathWinding)
+               .def("Arc",&NanoVGComponent::Arc)
+               .def("Rect",&NanoVGComponent::Rect)
+               .def("RoundedRect",&NanoVGComponent::RoundedRect)
+               .def("RoundedRectVarying",&NanoVGComponent::RoundedRectVarying)
+               .def("Ellipse",&NanoVGComponent::Ellipse)
+               .def("Circle",&NanoVGComponent::Circle)
+               .def("Fill",&NanoVGComponent::Fill)
+               .def("Stroke",&NanoVGComponent::Stroke)
+               .def("CreateFont",&NanoVGComponent::CreateFont)
+               .def("CreateFontMem",&NanoVGComponent::CreateFontMem)
+               .def("FindFont",&NanoVGComponent::FindFont)
+               .def("AddFallbackFontId",&NanoVGComponent::AddFallbackFontId)
+               .def("AddFallbackFont",&NanoVGComponent::AddFallbackFont)
+               .def("FontSize",&NanoVGComponent::FontSize)
+               .def("FontBlur",&NanoVGComponent::FontBlur)
+               .def("TextLetterSpacing",&NanoVGComponent::TextLetterSpacing)
+               .def("TextLineHeight",&NanoVGComponent::TextLineHeight)
+               .def("TextAlign",&NanoVGComponent::TextAlign)
+               .def("FontFaceId",&NanoVGComponent::FontFaceId)
+               .def("FontFace",&NanoVGComponent::FontFace)
+               .def("Text",&NanoVGComponent::Text)
+               .def("TextBox",&NanoVGComponent::TextBox)
+               .def("TextBounds",&NanoVGComponent::TextBounds)
+               .def("TextBoxBounds",&NanoVGComponent::TextBoxBounds)
+               .def("TextGlyphPositions",&NanoVGComponent::TextGlyphPositions)
+               .def("TextMetrics",&NanoVGComponent::TextMetrics)
+               .def("TextBreakLines",&NanoVGComponent::TextBreakLines)
+        ];
     }
 
 } // End of Dream
