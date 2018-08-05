@@ -44,6 +44,6 @@ private:
     bool mTextHasChanged;
     shared_ptr<QSyntaxHighlighter> mHighlighter;
     IAssetDefinition* mAssetDefinitionHandle;
-    CodeEditor* mTextEdit;
+    CodeEditorWidget* mTextEdit;
     Ui::ScriptEditorTabForm mForm;
 };

@@ -19,6 +19,7 @@
 #include "ScenegraphTreeModel.h"
 #include <QStringList>
 #include <QDebug>
+#include <memory>
 
 using Dream::SceneDefinition;
 
@@ -32,6 +33,9 @@ ScenegraphTreeModel::ScenegraphTreeModel
     qDebug() << "ScenegraphTreeModel: Constructing for "
              << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
 
+    mProjectIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_boxes.svg"));
+    mSceneIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_clapper.svg"));
+    mSceneObjectIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_Bowling.svg"));
     setupModelData();
 }
 
@@ -55,6 +59,23 @@ ScenegraphTreeModel::data
     if (!index.isValid())
     {
         return QVariant();
+    }
+
+    if (role == Qt::DecorationRole )
+    {
+        auto data = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+        switch (data->getType())
+        {
+            case SCENEGRAPH_PROJECT:
+                return QVariant(*mProjectIcon.get());
+            case SCENEGRAPH_SCENE:
+                return QVariant(*mSceneIcon.get());
+            case SCENEGRAPH_SCENE_OBJECT:
+                return QVariant(*mSceneObjectIcon.get());
+            case SCENEGRAPH_TREE_NODE:
+                return QVariant();
+
+        }
     }
 
     if (role != Qt::DisplayRole)
@@ -215,6 +236,13 @@ ScenegraphTreeModel::setupModelData
         appendSceneObjects(rootSceneObject,rootSceneObjectItem);
     }
     emit endResetModel();
+}
+
+void ScenegraphTreeModel::forceDataChanged()
+{
+
+   setupModelData();
+   emit dataChanged(QModelIndex(),QModelIndex());
 }
 
 void

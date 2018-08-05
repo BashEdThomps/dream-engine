@@ -16,7 +16,7 @@
  * this file belongs to.
  */
 
-#include "View/MainWindow.h"
+#include "Controller/MainWindowController.h"
 #include "Controller/MainController.h"
 #include <QApplication>
 #include <QSurfaceFormat>
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     glFormat.setSamples(4);
     QSurfaceFormat::setDefaultFormat(glFormat);
-    MainWindow mainWindow;
+    MainWindowController mainWindow;
     MainController mainController(&mainWindow);
     mainWindow.show();
     return a.exec();

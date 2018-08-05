@@ -25,6 +25,11 @@
 
 namespace Dream
 {
+    SceneObjectDefinition* SceneObjectDefinition::getParentSceneObjectHandle() const
+    {
+        return mParentSceneObjectHandle;
+    }
+
     SceneObjectDefinition::SceneObjectDefinition
     (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData)
         : IDefinition(jsonData),
@@ -188,12 +193,18 @@ namespace Dream
     SceneObjectDefinition::removeChildSceneObjectDefinition
     (SceneObjectDefinition* child)
     {
+        auto log = getLog();
         auto iter = begin(mChildDefinitions);
         auto endPos = end(mChildDefinitions);
         while (iter != endPos)
         {
             if ((*iter).get() == child)
             {
+                log->info(
+                    "Found child to {} remove from {}",
+                    child->getNameAndUuidString(),
+                    getNameAndUuidString()
+                );
                 mChildDefinitions.erase(iter);
                 return;
             }

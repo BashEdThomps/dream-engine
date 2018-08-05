@@ -36,7 +36,6 @@ SOURCES += \
     Model/PreferencesModel.cpp \
     \
     View/QOpenGLWindowComponent.cpp \
-    View/MainWindow.cpp \
     View/GLView/Grid.cpp \
     View/GLView/SelectionHighlighter.cpp \
     View/GLView/GLDrawable.cpp \
@@ -77,7 +76,8 @@ SOURCES += \
     View/SyntaxHighlighters/GLSLHighlighter.cpp \
     View/SyntaxHighlighters/LuaHighlighter.cpp \
     Controller/ScriptEditorTabController.cpp \
-    View/CodeEditor.cpp
+    Controller/MainWindowController.cpp \
+    View/CodeEditorWidget.cpp
 
 
 
@@ -89,7 +89,6 @@ HEADERS  += \
     Model/ProjectDirectoryModel.h \
     Model/PreferencesModel.h \
     \
-    View/MainWindow.h \
     View/QOpenGLWindowComponent.h \
     View/GLView/Grid.h \
     View/GLView/SelectionHighlighter.h \
@@ -132,7 +131,8 @@ HEADERS  += \
     View/SyntaxHighlighters/GLSLHighlighter.h \
     View/SyntaxHighlighters/LuaHighlighter.h \
     Controller/ScriptEditorTabController.h \
-    View/CodeEditor.h
+    Controller/MainWindowController.h \
+    View/CodeEditorWidget.h
 
 
 

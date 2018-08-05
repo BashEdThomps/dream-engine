@@ -223,9 +223,7 @@ namespace Dream
     ProjectDefinition::loadAssetDefinition
     (json assetDefinitionJs)
     {
-
         IAssetDefinition *newDef = createAssetDefinitionInstance(assetDefinitionJs);
-
         if (newDef)
         {
             mAssetDefinitions.push_back(unique_ptr<IAssetDefinition>(newDef));
@@ -236,16 +234,28 @@ namespace Dream
     ProjectDefinition::removeAssetDefinition
     (IAssetDefinition* assetDefinitionHandle)
     {
-            auto log = getLog();
-            log->info( "ProjectDefinition: Removing AssetDefinition {}",
-                 assetDefinitionHandle->getNameAndUuidString() );
-
-        remove_if(begin(mAssetDefinitions),end(mAssetDefinitions),
-                  [&](const unique_ptr<IAssetDefinition>& thisDefinition)
-        {
-            return thisDefinition.get() == assetDefinitionHandle;
-        }
+        auto log = getLog();
+        log->info(
+            "Removing AssetDefinition {} from {}",
+            assetDefinitionHandle->getNameAndUuidString(),
+            getNameAndUuidString()
         );
+        auto iter = begin(mAssetDefinitions);
+        auto endPos = end(mAssetDefinitions);
+        while (iter != endPos)
+        {
+            if ((*iter).get() == assetDefinitionHandle)
+            {
+                log->info(
+                    "Found AssetDefinition to {} remove from {}",
+                    assetDefinitionHandle->getNameAndUuidString(),
+                    getNameAndUuidString()
+                );
+                mAssetDefinitions.erase(iter);
+                return;
+            }
+            iter++;
+        }
     }
 
     size_t
@@ -305,6 +315,33 @@ namespace Dream
             list.push_back((*it).get());
         }
         return list;
+    }
+
+    void ProjectDefinition::removeSceneDefinition(SceneDefinition* sceneDef)
+    {
+        auto log = getLog();
+        log->info(
+            "Removing SceneDefinition {} from {}",
+            sceneDef->getNameAndUuidString(),
+            getNameAndUuidString()
+        );
+
+        auto iter = begin(mSceneDefinitions);
+        auto endPos = end(mSceneDefinitions);
+        while (iter != endPos)
+        {
+            if ((*iter).get() == sceneDef)
+            {
+                log->info(
+                    "Found scene to {} remove from {}",
+                    sceneDef->getNameAndUuidString(),
+                    getNameAndUuidString()
+                );
+                mSceneDefinitions.erase(iter);
+                return;
+            }
+            iter++;
+        }
     }
 
     vector<IAssetDefinition*> ProjectDefinition::getAssetDefinitionsHandleList()
@@ -378,5 +415,38 @@ namespace Dream
         }
 
         return mJson;
+    }
+
+    map<AssetType, vector<IAssetDefinition*>>
+    ProjectDefinition::getAssetDefinitionHandlesMap
+    ()
+    {
+        vector<IAssetDefinition*> adHandles = getAssetDefinitionsHandleList();
+        map<AssetType,vector<IAssetDefinition*>> handlesMap;
+
+        auto beginHandles =  begin(adHandles);
+        auto endHandles = end(adHandles);
+        auto currentHandle = beginHandles;
+
+        auto endMap = end(handlesMap);
+
+        // Iterate over AD Handles
+        while (currentHandle != endHandles)
+        {
+            // Current AD type
+            AssetType currentType = Constants::getAssetTypeEnumFromString((*currentHandle)->getType());
+            // Find type vector in map
+            auto typeVector = handlesMap.find(currentType);
+            // Vector does not exist
+            if (typeVector == endMap)
+            {
+                // Create it
+                vector<IAssetDefinition*> typeVector;
+                handlesMap.insert(std::pair<AssetType,vector<IAssetDefinition*>>(currentType,typeVector));
+            }
+            handlesMap.at(currentType).push_back((*currentHandle));
+            currentHandle++;
+        }
+        return handlesMap;
     }
 }

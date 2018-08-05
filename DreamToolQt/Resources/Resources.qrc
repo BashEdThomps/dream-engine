@@ -29,5 +29,9 @@
         <file>svg/save-solid.svg</file>
         <file>svg/folder-open-solid.svg</file>
         <file>svg/file-solid.svg</file>
+        <file>svg/noun_Bowling.svg</file>
+        <file>svg/noun_clapper.svg</file>
+        <file>svg/noun_boxes.svg</file>
+        <file>svg/noun_Object.svg</file>
     </qresource>
 </RCC>

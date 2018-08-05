@@ -50,6 +50,15 @@ ScriptEditorController::openScript
 (ScriptDefinition* scriptDefinitionHandle)
 {
     auto log = spdlog::get("ScriptEditorController");
+
+    int index = isAssetOpen(scriptDefinitionHandle);
+    if (index > -1)
+    {
+        mTabWidget->setCurrentIndex(index);
+        getAllUpInYourFace();
+        return;
+    }
+
     if (mProjectDirectoryModelHandle != nullptr)
     {
         //clearExistingTabs();
@@ -66,6 +75,8 @@ ScriptEditorController::openScript
                     .append(" (%1)")
                     .arg(QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA))
                     );
+
+        mTabWidget->setCurrentIndex(mTabWidget->count()-1);
         getAllUpInYourFace();
     }
 
@@ -84,6 +95,15 @@ ScriptEditorController::openShader
 (ShaderDefinition* shaderDefinitionHandle)
 {
     auto log = spdlog::get("ScriptEditorController");
+    int index = isAssetOpen(shaderDefinitionHandle);
+
+    if (index > -1)
+    {
+        mTabWidget->setCurrentIndex(index);
+        getAllUpInYourFace();
+        return;
+    }
+
     if (mProjectDirectoryModelHandle != nullptr)
     {
         //clearExistingTabs();
@@ -124,6 +144,7 @@ ScriptEditorController::openShader
                     .arg(QString::fromStdString(Constants::SHADER_FRAGMENT))
                     );
 
+        mTabWidget->setCurrentIndex(mTabWidget->count()-1);
         getAllUpInYourFace();
     }
 }
@@ -141,7 +162,6 @@ void ScriptEditorController::getAllUpInYourFace()
     activateWindow();
     raise();
     setFocus();
-    mTabWidget->setCurrentIndex(mTabWidget->count()-1);
 }
 
 void ScriptEditorController::onTabCloseRequested(int index)
@@ -252,12 +272,48 @@ ScriptEditorController::onComboTemplateChanged
 {
     auto log = spdlog::get("ScriptEditorController");
     log->info("Selected template {}",templateName.toStdString());
+
+    // Get current tab
+    int tabIndex = mTabWidget->currentIndex();
+    ScriptEditorTabController* currentAssetDefinition = mTabForms.at(tabIndex).get();
+
+    // Get file type
+    QString fileType = currentAssetDefinition->getFileType();
+
+    QString vertex = QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME);
+    QString fragment = QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME);
+    QString lua = QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA);
+    QString templateContent;
+
+    // Get Lua Template
+    if (fileType == lua)
+    {
+        templateContent = mTemplatesModelHandle->getScriptTemplate(templateName);
+    }
+    // Get Shader Template
+    else if (fileType == vertex)
+    {
+        templateContent = mTemplatesModelHandle->getShaderTemplate(templateName, vertex);
+    }
+    else if (fileType == fragment)
+    {
+        templateContent = mTemplatesModelHandle->getShaderTemplate(templateName, fragment);
+    }
+
+    currentAssetDefinition->setPlainText(templateContent);
 }
 
 int
 ScriptEditorController::isAssetOpen
 (Dream::IAssetDefinition* definition)
 {
+    for (shared_ptr<ScriptEditorTabController> tab : mTabForms)
+    {
+       if (tab->getAssetDefinitionHandle() == definition)
+       {
+           return mTabWidget->indexOf(tab.get());
+       }
+    }
     return -1;
 }
 

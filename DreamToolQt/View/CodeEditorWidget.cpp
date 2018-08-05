@@ -40,10 +40,10 @@
 
 #include <QtGui>
 
-#include "CodeEditor.h"
+#include "CodeEditorWidget.h"
 
 
-CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
+CodeEditorWidget::CodeEditorWidget(QWidget *parent) : QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
     mLineNumberFont.setFamily("Courier New");
@@ -59,7 +59,7 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 
 
 
-int CodeEditor::lineNumberAreaWidth()
+int CodeEditorWidget::lineNumberAreaWidth()
 {
     int digits = 1;
     int max = qMax(1, blockCount());
@@ -76,14 +76,14 @@ int CodeEditor::lineNumberAreaWidth()
 
 
 
-void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
+void CodeEditorWidget::updateLineNumberAreaWidth(int /* newBlockCount */)
 {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
 
 
-void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
+void CodeEditorWidget::updateLineNumberArea(const QRect &rect, int dy)
 {
     if (dy)
         lineNumberArea->scroll(0, dy);
@@ -96,7 +96,7 @@ void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
 
 
 
-void CodeEditor::resizeEvent(QResizeEvent *e)
+void CodeEditorWidget::resizeEvent(QResizeEvent *e)
 {
     QPlainTextEdit::resizeEvent(e);
 
@@ -106,7 +106,7 @@ void CodeEditor::resizeEvent(QResizeEvent *e)
 
 
 
-void CodeEditor::highlightCurrentLine()
+void CodeEditorWidget::highlightCurrentLine()
 {
     QList<QTextEdit::ExtraSelection> extraSelections;
 
@@ -128,7 +128,7 @@ void CodeEditor::highlightCurrentLine()
 
 
 
-void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
+void CodeEditorWidget::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(lineNumberArea);
     painter.setFont(mLineNumberFont);

@@ -73,6 +73,8 @@ namespace Dream
         SceneDefinition *getSceneDefinitionHandle();
         json getJson() override;
 
+        SceneObjectDefinition* getParentSceneObjectHandle() const;
+
     private:
         void loadChildSceneObjectDefinitions(json definition);
     };

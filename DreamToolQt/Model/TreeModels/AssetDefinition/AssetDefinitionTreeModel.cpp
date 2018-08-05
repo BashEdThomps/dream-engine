@@ -19,6 +19,7 @@
 #include "AssetDefinitionTreeModel.h"
 #include <QStringList>
 #include <QDebug>
+#include <QIcon>
 
 using Dream::Constants;
 using Dream::IAssetDefinition;
@@ -30,6 +31,7 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel
     qDebug() << "AssetDefinitionTreeModel: Constructing";
     mProjectHandle = project;
     setupModelData();
+    mAssetDefinitionIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_Object.svg"));
 }
 
 AssetDefinitionTreeModel::~AssetDefinitionTreeModel
@@ -61,12 +63,25 @@ AssetDefinitionTreeModel::data
         return QVariant();
     }
 
+    AssetDefinitionTreeItem *item = static_cast<AssetDefinitionTreeItem*>(index.internalPointer());
+
+    if (role == Qt::DecorationRole )
+    {
+        switch (item->getType())
+        {
+            case ASSET_DEFINITION:
+                return QVariant(*(mAssetDefinitionIcon.get()));
+            case ASSET_TREE_NODE:
+                return QVariant();
+        }
+        return QVariant();
+    }
+
     if (role != Qt::DisplayRole)
     {
         return QVariant();
     }
 
-    AssetDefinitionTreeItem *item = static_cast<AssetDefinitionTreeItem*>(index.internalPointer());
 
     return item->data(index.column());
 }

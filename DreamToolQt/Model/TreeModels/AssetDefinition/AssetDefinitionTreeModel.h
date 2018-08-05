@@ -45,4 +45,5 @@ public:
 private:
     ProjectDefinition *mProjectHandle;
     unique_ptr<AssetDefinitionTreeItem> mRootItem;
+    unique_ptr<QIcon> mAssetDefinitionIcon;
 };

@@ -38,7 +38,7 @@
 #include "../Model/MacOSOpenModel.h"
 #include "../Model/TemplatesModel.h"
 
-#include "../View/MainWindow.h"
+#include "../Controller/MainWindowController.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
@@ -53,12 +53,13 @@ class MainController : public QObject
 {
     Q_OBJECT
 public:
-    MainController(MainWindow* parent);
+    MainController(MainWindowController* parent);
     ~MainController();
 
     Grid *getGridHandle();
     SelectionHighlighter *getSelectionHighlighterHandle();
     RelationshipTree *getRelationshipTreeHandle();
+    void forceScenegraphTreeDataChanged();
 
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);
@@ -77,8 +78,10 @@ signals:
     //void notifyStoppedScene(SceneDefinition* scene);
 
     void notifyScenegraphUpdated();
+    void notifyProjectDefinitionChanged(ProjectDefinition*);
 
 public slots:
+    void onScenegraphTreeDataChanged();
     void onAction_Preferences();
     void onAction_File_New();
     void onAction_File_Open();
@@ -190,7 +193,7 @@ private: // Methods
     string getSceneNameFromModelIndex(int index);
 
 private: // Variables
-    MainWindow *mMainWindowHandle;
+    MainWindowController *mMainWindowHandle;
     QOpenGLWindowComponent *mWindowComponentHandle;
 
     ProjectDefinition *mSelectedProjectDefinitionHandle;

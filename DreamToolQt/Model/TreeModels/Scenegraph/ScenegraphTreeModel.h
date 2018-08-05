@@ -22,6 +22,7 @@
 #include "ScenegraphTreeItem.h"
 #include <DreamCore.h>
 #include <memory>
+#include <QIcon>
 
 using std::unique_ptr;
 using Dream::SceneObjectDefinition;
@@ -43,9 +44,13 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
     void setupModelData();
+    void forceDataChanged();
 
 private:
     void appendSceneObjects(SceneObjectDefinition *parentSceneObject, ScenegraphTreeItem* parentTreeNode);
     ProjectDefinition *mProjectDefinitionHandle;
     unique_ptr<ScenegraphTreeItem> mRootItem;
+    unique_ptr<QIcon> mProjectIcon;
+    unique_ptr<QIcon> mSceneIcon;
+    unique_ptr<QIcon> mSceneObjectIcon;
 };

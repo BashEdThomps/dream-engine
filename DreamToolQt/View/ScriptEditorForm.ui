@@ -34,11 +34,14 @@
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
      </property>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
      <property name="usesScrollButtons">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -47,7 +50,7 @@
       <bool>true</bool>
      </property>
      <property name="movable">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -64,8 +67,27 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="spacing">
-      <number>0</number>
+      <number>6</number>
      </property>
+     <property name="leftMargin">
+      <number>4</number>
+     </property>
+     <property name="topMargin">
+      <number>4</number>
+     </property>
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
+     <property name="bottomMargin">
+      <number>4</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>From Template</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QComboBox" name="templateComboBox"/>
      </item>
@@ -73,6 +95,9 @@
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>

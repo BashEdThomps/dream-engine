@@ -41,7 +41,7 @@ using std::cout;
 // Constructors/Destructors =====================================================
 
 MainController::MainController
-(MainWindow* parent)
+(MainWindowController* parent)
     : QObject(parent),
       mMainWindowHandle(parent),
       mWindowComponentHandle(parent->getWindowComponent()),
@@ -93,6 +93,16 @@ MainController::setupUI
         SIGNAL(notifyCreateNewAssetDefinition(QString)),
         this,
         SLOT(onCreateNewAssetDefinition(QString))
+    );
+    connect(
+        mMainWindowHandle,
+        SIGNAL(notifyScenegraphTreeDataChanged()),
+        this,
+        SLOT(onScenegraphTreeDataChanged())
+    );
+    connect(
+        this, SIGNAL(notifyProjectDefinitionChanged(ProjectDefinition*)),
+        mMainWindowHandle, SLOT(onProjectDefinitionChanged(ProjectDefinition*))
     );
 }
 
@@ -255,6 +265,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             log->info( "Selected a project");
             mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
             mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
+            emit notifyProjectDefinitionChanged(mSelectedProjectDefinitionHandle);
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE:
@@ -678,7 +689,7 @@ MainController::connectUI_TreeViewModels
                 );
 
     mMainWindowHandle->getScenegraphTreeView()->expandAll();
-    //mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -1435,6 +1446,17 @@ MainController::getRelationshipTreeHandle
     return mRelationshipTree.get();
 }
 
+void MainController::forceScenegraphTreeDataChanged()
+{
+    mScenegraphTreeModel->forceDataChanged();
+    mMainWindowHandle->getScenegraphTreeView()->expandAll();
+}
+
+void MainController::onScenegraphTreeDataChanged()
+{
+   forceScenegraphTreeDataChanged();
+}
+
 void
 MainController::onAction_Preferences
 ()
@@ -1493,6 +1515,7 @@ MainController::openProject
     emit notifyProjectWindowHeightChanged(currentProject->getWindowHeight());
     emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneDefinitionsHandleList()));
     emit notifyProjectWidgetsEnabledChanged(true);
+    emit notifyProjectDefinitionChanged(currentProject);
 
     mScenegraphTreeModel.reset(new ScenegraphTreeModel(currentProject,mMainWindowHandle->getScenegraphTreeView()));
     mMainWindowHandle->getScenegraphTreeView()->setModel(mScenegraphTreeModel.get());

@@ -126,11 +126,23 @@
           </property>
           <item>
            <widget class="QTreeView" name="scenegraphTreeView">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
             <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>0</number>
             </property>
             <property name="alternatingRowColors">
              <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="verticalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
             </property>
             <property name="autoExpandDelay">
              <number>0</number>
@@ -145,7 +157,7 @@
              <bool>true</bool>
             </property>
             <property name="animated">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="allColumnsShowFocus">
              <bool>true</bool>
@@ -154,13 +166,13 @@
              <bool>true</bool>
             </property>
             <property name="headerHidden">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="expandsOnDoubleClick">
              <bool>false</bool>
             </property>
             <attribute name="headerVisible">
-             <bool>false</bool>
+             <bool>true</bool>
             </attribute>
            </widget>
           </item>
@@ -194,8 +206,26 @@
           </property>
           <item>
            <widget class="QTreeView" name="assetDefinitionTreeView">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>0</number>
+            </property>
             <property name="alternatingRowColors">
              <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="verticalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
             </property>
             <property name="autoExpandDelay">
              <number>0</number>
@@ -207,13 +237,13 @@
              <bool>true</bool>
             </property>
             <property name="animated">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
             </property>
             <property name="headerHidden">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="expandsOnDoubleClick">
              <bool>false</bool>
@@ -230,11 +260,17 @@
         <property name="focusPolicy">
          <enum>Qt::ClickFocus</enum>
         </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
         <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="lineWidth">
+         <number>0</number>
         </property>
         <property name="autoScroll">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="editTriggers">
          <set>QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
@@ -246,7 +282,7 @@
          <bool>true</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
+         <enum>QAbstractItemView::SingleSelection</enum>
         </property>
         <property name="verticalScrollMode">
          <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -261,7 +297,7 @@
          <bool>true</bool>
         </property>
         <property name="animated">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="allColumnsShowFocus">
          <bool>true</bool>
@@ -270,13 +306,13 @@
          <bool>true</bool>
         </property>
         <property name="headerHidden">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="expandsOnDoubleClick">
          <bool>false</bool>
         </property>
         <attribute name="headerVisible">
-         <bool>false</bool>
+         <bool>true</bool>
         </attribute>
         <attribute name="headerDefaultSectionSize">
          <number>125</number>

@@ -66,12 +66,15 @@ namespace Dream
         size_t countScenesDefinitions();
         SceneDefinition *getSceneDefinitionHandleByUuid(string uuid);
         vector<SceneDefinition*> getSceneDefinitionsHandleList();
+        void removeSceneDefinition(SceneDefinition* sceneDef);
 
         void removeAssetDefinition(IAssetDefinition* assetDef);
         vector<IAssetDefinition*> getAssetDefinitionsHandleList();
         SceneDefinition* createNewSceneDefinition();
         IAssetDefinition* createNewAssetDefinition(AssetType type);
         json getJson() override;
+
+        map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionHandlesMap();
 
     private:
         void loadSceneDefinitions();
