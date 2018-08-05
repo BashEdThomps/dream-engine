@@ -97,6 +97,8 @@ public slots:
 
     void onButton_PhysicsBvhTriangleMeshFile();
 
+    void onButton_LightChooseColour();
+
 signals:
     void notifyButton_RemoveFiles(IAssetDefinition*);
 
@@ -114,5 +116,7 @@ signals:
     void notifyCombo_ShaderTemplateChanged(IAssetDefinition*, const QString&);
 
     void notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*);
+
+    void notifyButton_LightChooseColour(IAssetDefinition*);
 };
 

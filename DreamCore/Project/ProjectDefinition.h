@@ -65,6 +65,7 @@ namespace Dream
 
         size_t countScenesDefinitions();
         SceneDefinition *getSceneDefinitionHandleByUuid(string uuid);
+        SceneDefinition *getSceneDefinitionHandleByName(string uuid);
         vector<SceneDefinition*> getSceneDefinitionsHandleList();
         void removeSceneDefinition(SceneDefinition* sceneDef);
 

@@ -39,6 +39,8 @@ namespace Dream
         void  setIntensity(float);
         float getIntensity();
 
+        vector<float> getColourVector();
+
     protected:
         void makeColourObject();
 

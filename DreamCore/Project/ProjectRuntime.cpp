@@ -381,7 +381,7 @@ namespace Dream
         auto log = getLog();
         if (!sceneDefinitionHandle)
         {
-            log->error( "Cannot load SceneRuntime. SceneDefinitoin is nullptr!" );
+            log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
             return nullptr;
         }
 

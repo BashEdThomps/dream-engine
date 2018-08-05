@@ -230,6 +230,15 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                         this,
                         SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition*))
                         );
+
+            // Light Colour
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_LightChooseColour(IAssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_LightChooseColour(IAssetDefinition*))
+            );
             break;
 
         case AssetDefinitionTreeItemType::ASSET_TREE_NODE:
@@ -1794,6 +1803,33 @@ MainController::onAssetDefinitionProperty_ShaderTemplateChanged
                 QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME),
                 true
                 );
+}
+
+void MainController::onAssetDefinitionProperty_LightChooseColour(IAssetDefinition* def)
+{
+    auto log = spdlog::get("MainController");
+    log->info( "Choose Light Colour");
+
+    QColor currentColour;
+    auto lightDef = dynamic_cast<LightDefinition*>(def);
+
+    auto colour = lightDef->getColourVector();
+    currentColour.setRgbF(
+            static_cast<double>(colour[0]), // r
+            static_cast<double>(colour[1]), // g
+            static_cast<double>(colour[2]), // b
+            static_cast<double>(colour[3])  // i
+    );
+
+    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Light Colour",QColorDialog::ShowAlphaChannel);
+
+    if (chosenColour.isValid())
+    {
+        lightDef->setColourRed(static_cast<float>(chosenColour.redF()));
+        lightDef->setColourGreen(static_cast<float>(chosenColour.greenF()));
+        lightDef->setColourBlue(static_cast<float>(chosenColour.blueF()));
+        lightDef->setIntensity(static_cast<float>(chosenColour.alphaF()));
+    }
 }
 
 void

@@ -27,5 +27,8 @@ namespace Dream
         ~Math();
         static float degreesToRadians(float degrees);
         static float radiansToDegrees(float radians);
+        static float _sinf(float x);
+        static float _sqrtf(float x);
+        static float _pow(float x, float y);
     }; // End of Math
 } // End of Dream

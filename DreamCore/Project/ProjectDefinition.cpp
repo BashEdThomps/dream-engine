@@ -294,6 +294,20 @@ namespace Dream
     }
 
     SceneDefinition*
+    ProjectDefinition::getSceneDefinitionHandleByName
+    (string name)
+    {
+        for(auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
+        {
+            if ((*it)->hasName(name))
+            {
+                return (*it).get();
+            }
+        }
+        return nullptr;
+    }
+
+    SceneDefinition*
     ProjectDefinition::getSceneDefinitionHandleByUuid
     (string uuid)
     {
@@ -395,7 +409,10 @@ namespace Dream
     ProjectDefinition::getStartupSceneDefinitionHandle
     ()
     {
-        return getSceneDefinitionHandleByUuid(getStartupSceneUuid());
+        auto log = getLog();
+        string startupScene = getStartupSceneUuid();
+        log->info("Finding startup scene {}", startupScene);
+        return getSceneDefinitionHandleByName(startupScene);
     }
 
     json

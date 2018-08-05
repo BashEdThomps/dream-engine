@@ -201,6 +201,11 @@ AssetDefinitionPropertiesModel::onButton_PhysicsBvhTriangleMeshFile
     emit notifyButton_PhysicsBvhTriangleMeshFile(mAssetDefinitionHandle);
 }
 
+void AssetDefinitionPropertiesModel::onButton_LightChooseColour()
+{
+    emit notifyButton_LightChooseColour(mAssetDefinitionHandle);
+}
+
 void
 AssetDefinitionPropertiesModel::onButton_ModelFile
 ()
@@ -733,6 +738,15 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile()),
         this,
         SLOT(onButton_PhysicsBvhTriangleMeshFile())
+    );
+
+    // Light
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_LightChooseColour()),
+        this,
+        SLOT(onButton_LightChooseColour())
     );
 }
 

@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPointF>
+#include <spdlog/spdlog.h>
 
 WindowInputState::WindowInputState
 ()
@@ -40,12 +41,20 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mSelectionHighlighterEnabled(true),
       mPaintInProgress(false)
 {
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("QOpenGLWindowComponent");
+    }
+    log->info("Constructing");
     //setFormat(format);
 }
 
 QOpenGLWindowComponent::~QOpenGLWindowComponent
 ()
 {
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    log->info("Destructing");
     mProjectRuntimeHandle = nullptr;
     mGridHandle = nullptr;
     mSelectionHighlighterHandle = nullptr;
@@ -56,15 +65,16 @@ void
 QOpenGLWindowComponent::initializeGL
 ()
 {
+    auto log = spdlog::get("QOpenGLWindowComponent");
     // get context opengl-version
-    qDebug() << "QOpenGLWindowComponent: Widget OpenGl: " << format().majorVersion() << "." << format().minorVersion();
-    qDebug() << "QOpenGLWindowComponent: Context valid: " << context()->isValid();
-    qDebug() << "QOpenGLWindowComponent: Really used OpenGl: " << context()->format().majorVersion() << "." << context()->format().minorVersion();
-    qDebug() << "QOpenGLWindowComponent: OpenGl information:";
-    qDebug() << "QOpenGLWindowComponent: 	VENDOR:       " << (char*)glGetString(GL_VENDOR);
-    qDebug() << "QOpenGLWindowComponent:    RENDERDER:    " << (char*)glGetString(GL_RENDERER);
-    qDebug() << "QOpenGLWindowComponent:    VERSION:      " << (char*)glGetString(GL_VERSION);
-    qDebug() << "QOpenGLWindowComponent:    GLSL VERSION: " << (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
+    log->info("OpenGL Version: {}.{}", format().majorVersion(), format().minorVersion());
+    log->info("Context valid: {}",  context()->isValid());
+    log->info("Really used OpenGl: {}.{}", context()->format().majorVersion(), context()->format().minorVersion());
+    log->info("OpenGl information:");
+    log->info("VENDOR:       {}", static_cast<const unsigned char*>(glGetString(GL_VENDOR)));
+    log->info("RENDERDER:    {}", static_cast<const unsigned char*>(glGetString(GL_RENDERER)));
+    log->info("VERSION:      {}", static_cast<const unsigned char*>(glGetString(GL_VERSION)));
+    log->info("GLSL VERSION: {}", static_cast<const unsigned char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 }
 
 void
@@ -80,9 +90,10 @@ void
 QOpenGLWindowComponent::paintGL
 ()
 {
+    auto log = spdlog::get("QOpenGLWindowComponent");
     if (mPaintInProgress)
     {
-        cerr << "QOGLWC: Attempted to paint before previous paintGL call has finished" << endl;
+        log->error("Attempted to paint before previous paintGL call has finished");
         return;
     }
 
@@ -123,7 +134,7 @@ QOpenGLWindowComponent::paintGL
                     }
                     else
                     {
-                        cout << "QOGLWC: Grid Disabled" << endl;
+                        log->error("QOGLWC: Grid Disabled");
                         Constants::checkGLError("QOGLWC: After Grid Draw");
                     }
                 }
@@ -255,36 +266,16 @@ void
 QOpenGLWindowComponent::mouseMoveEvent
 (QMouseEvent *event)
 {
-    /*
-    if (mProjectRuntimeHandle)
-    {
-        QPointF pos = event->localPos();
-
-        int x = static_cast<int>( pos.x() - ( getWidth()  / 2 ) );
-        int y = static_cast<int>( pos.y() - ( getHeight() / 2 ) );
-
-        int dX = x - mInputState.mouseLastX;
-        int dY = y - mInputState.mouseLastY;
-
-        int threshold = 150;
-        if (
-            dX < threshold && dX > -threshold
-            &&
-            dY < threshold && dY > -threshold
-        )
-        {
-            mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(dX,dY,true);
-        }
-        mInputState.mouseLastX = x;
-        mInputState.mouseLastY = y;
-    }
-    */
+    auto pos = event->localPos();
+    mMouseX = pos.x();
+    mMouseY = pos.y();
 }
 
 void
 QOpenGLWindowComponent::updateInputState
 ()
 {
+    auto log = spdlog::get("QOpenGLWindowComponent");
     if (!mProjectRuntimeHandle)
     {
         return;
@@ -331,7 +322,7 @@ QOpenGLWindowComponent::updateInputState
                                mGridHandle->getMinorSpacing();
         if(mInputState.upPressed)
         {
-            qDebug() << "QOGLWC: Moving Selected up";
+            log->info("Moving Selected up");
             if (mInputState.altPressed)
             {
                 transform.translateByY(moveAmount);
@@ -344,7 +335,7 @@ QOpenGLWindowComponent::updateInputState
 
         if(mInputState.downPressed)
         {
-            qDebug() << "QOGLWC: Moving Selected down";
+            log->info("Moving Selected down");
             if (mInputState.altPressed)
             {
                 transform.translateByY(-moveAmount);
@@ -357,13 +348,13 @@ QOpenGLWindowComponent::updateInputState
 
         if(mInputState.leftPressed)
         {
-            qDebug() << "QOGLWC: Moving Selected left";
+            log->info("Moving Selected left");
             transform.translateByX(-moveAmount);
         }
 
         if(mInputState.rightPressed)
         {
-            qDebug() << "QOGLWC: Moving Selected right";
+            log->info("Moving Selected right");
             transform.translateByX(moveAmount);
         }
         selected->setTransform(transform);
@@ -374,7 +365,8 @@ void
 QOpenGLWindowComponent::keyPressEvent
 (QKeyEvent *event)
 {
-    qDebug() << "QOpenGLWindowComponent: Pressed Key" << event->key();
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    log->info("Pressed Key {}", event->key());
 
     switch (event->key())
     {
@@ -436,7 +428,8 @@ void
 QOpenGLWindowComponent::keyReleaseEvent
 (QKeyEvent* event)
 {
-    qDebug() << "QOpenGLWindowComponent: Released Key" << event->key();
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    log->info("Released Key {}", event->key());
     switch (event->key())
     {
         case Qt::Key_W:

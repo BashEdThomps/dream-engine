@@ -626,7 +626,14 @@ namespace Dream
                         this
                         )
                     );
-        mModelInstance->load(mProjectPath);
+        try {
+            mModelInstance->load(mProjectPath);
+        }
+        catch (std::exception e)
+        {
+            log->error("Exception while loading model resource {}",e.what());
+            return;
+        }
     }
 
     void

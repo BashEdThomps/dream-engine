@@ -352,11 +352,33 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
         case ASSET_DEFINITION_PROPERTY_NAME:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_NONE:
             return new QLineEdit(parent);
+        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
+            return createLightColourPaletteButton(parent);
     }
     return new QLineEdit(parent);
+}
+
+
+QWidget* AssetDefinitionPropertiesTreeDelegate::createLightColourPaletteButton(QWidget* parent) const
+{
+    QToolButton* button = new QToolButton(parent);
+    button->setText("Choose Colour...");
+    connect
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_LightChooseColour(bool))
+    );
+    return button;
+}
+
+void AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseColour(bool clicked)
+{
+    Q_UNUSED(clicked)
+    emit notifyButton_LightChooseColour();
 }
 
 void

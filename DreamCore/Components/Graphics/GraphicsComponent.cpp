@@ -224,8 +224,8 @@ namespace Dream
         auto log = getLog();
         log->info("Post Render" );
         Constants::checkGLError("before post render");
-        //glDisable(GL_DEPTH_TEST);
-        //glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
         Constants::checkGLError("after post render");
     }
 
@@ -268,8 +268,8 @@ namespace Dream
         auto log = getLog();
         log->info("Post Render" );
         Constants::checkGLError("before post render");
-        //glDisable(GL_DEPTH_TEST);
-        //glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
         Constants::checkGLError("after post render");
     }
 
@@ -383,7 +383,9 @@ namespace Dream
                             // Lights
                             if (object->hasLightInstance())
                             {
-                                addToLightQueue(object->getLightInstance());
+                                LightInstance* light = object->getLightInstance();
+                                log->info("Adding light instance to queue {}",light->getNameAndUuidString());
+                                addToLightQueue(light);
                             }
 
                             return nullptr;
@@ -756,7 +758,10 @@ namespace Dream
         {
             vec3 lightPos = light->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
             vec3 lightColour = light->getColor();
-            shader->setPointLight(i,lightPos,lightColour);
+            if(!shader->setPointLight(i,lightPos,lightColour))
+            {
+                log->error("Error setting point light {} for shader {}", i,shader->getNameAndUuidString());
+            }
             i++;
         }
         Constants::checkGLError("After light pos uniform");

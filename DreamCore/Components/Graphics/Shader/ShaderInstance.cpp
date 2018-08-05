@@ -36,7 +36,7 @@ namespace Dream
           mCacheHandle(cache)
     {
         auto log = getLog();
-        log->info( "ShaderInstance: Constructing Object" );
+        log->info( "Constructing Object" );
         mShaderProgram = 0;
     }
 
@@ -44,7 +44,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "ShaderInstance: Destroying Object" );
+        log->info( "Destroying Object" );
     }
 
     GLuint
@@ -62,7 +62,7 @@ namespace Dream
         GLint location = getUniformLocation(name);
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uniform for {}", name );
+            log->error( "Unable to find diffuce colour uniform '{}' in {}", name,getNameAndUuidString() );
             return false;
         }
 
@@ -79,7 +79,7 @@ namespace Dream
         GLint location = getUniformLocation(name);
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uniform for ", name );
+            log->error( "Unable to find specular colour uniform {} in {}", name, getNameAndUuidString() );
             return false;
         }
 
@@ -106,7 +106,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform " , name.str() );
+            log->error( "Unable to find point light colour uinform {} in {}" , name.str(), getNameAndUuidString()  );
             return false;
         }
 
@@ -124,7 +124,7 @@ namespace Dream
         GLint location = getUniformLocation(name.str());
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform " ,  name.str() );
+            log->error( "Unable to find point light position uinform {} in {}" ,  name.str(), getNameAndUuidString()  );
             return false;
         }
 
@@ -148,7 +148,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform " ,  name );
+            log->error( "Unable to find ambient colour uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -165,7 +165,7 @@ namespace Dream
         GLint location = getUniformLocation(name);
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform " ,  name );
+            log->error( "Unable to find ambient strength uniform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -182,7 +182,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform {}" , name );
+            log->error( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
             return false;
         }
 
@@ -200,7 +200,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform {}" ,  name );
+            log->error( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -218,7 +218,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform {}" ,  name );
+            log->error( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -236,7 +236,7 @@ namespace Dream
 
         if (uCamPos == UNIFORM_NOT_FOUND)
         {
-            log->error( "ShaderInstance: Unable to find uinform {}" ,  name );
+            log->error( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -272,9 +272,9 @@ namespace Dream
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
             log->info(
-               "ShaderInstance: Loading Shader {}\n",
-               "ShaderInstance: Vertex: {}\n{}\n",
-               "ShaderInstance: Fragment: {}\n{}\n",
+               "Loading Shader {}\n",
+               "Vertex: {}\n{}\n",
+               "Fragment: {}\n{}\n",
                mDefinitionHandle->getNameAndUuidString(),
                absVertexPath,
                mVertexShaderSource,
@@ -294,7 +294,7 @@ namespace Dream
             if (!success)
             {
                 glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
-                log->error( "ShaderInstance: SHADER VERTEX COMPILATION FAILED\n {}" ,infoLog );
+                log->error( "SHADER VERTEX COMPILATION FAILED\n {}" ,infoLog );
             }
             // Fragment Shader
             mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -306,7 +306,7 @@ namespace Dream
             if (!success)
             {
                 glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
-                log->error( "ShaderInstance: SHADER FRAGMENT COMPILATION FAILED\n {}" , infoLog );
+                log->error( "SHADER FRAGMENT COMPILATION FAILED\n {}" , infoLog );
             }
             // Shader Program
             mShaderProgram = glCreateProgram();
@@ -318,7 +318,7 @@ namespace Dream
             if (!success)
             {
                 glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-                log->error( "ShaderInstance: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+                log->error( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
             }
             // Delete the shaders as they're linked into our program now and no longer necessery
             glDeleteShader(mVertexShader);
@@ -413,7 +413,7 @@ namespace Dream
             GLfloat val = it.second;
             GLint location = getUniformLocation(name);
             log->info(
-                "ShaderInstance: {}\n"
+                "{}\n"
                 " Sync Uinform1f -> \n"
                 " prog: {}\n"
                 " name: {}'n"
@@ -424,7 +424,7 @@ namespace Dream
 
             if (location == UNIFORM_NOT_FOUND)
             {
-                log->error( "ShaderProgram: unable to find uniform " , name );
+                log->error( "unable to find 1f uniform '{}' in {}" , name ,getNameAndUuidString());
                 continue;
             }
 

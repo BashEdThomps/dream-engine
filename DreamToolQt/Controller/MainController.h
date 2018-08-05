@@ -141,6 +141,8 @@ public slots:
     void onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*, const QString&);
     void onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*, const QString&);
 
+    void onAssetDefinitionProperty_LightChooseColour(IAssetDefinition*);
+
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);

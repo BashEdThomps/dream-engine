@@ -28,7 +28,9 @@ namespace Dream
           mWidth(Constants::DEFAULT_SCREEN_WIDTH),
           mHeight(Constants::DEFAULT_SCREEN_HEIGHT),
           mShouldClose(false),
-          mSizeHasChanged(false)
+          mSizeHasChanged(false),
+          mMouseX(0),
+          mMouseY(0)
     {
     }
 
@@ -108,6 +110,16 @@ namespace Dream
         bool temp = mSizeHasChanged;
         mSizeHasChanged = false;
         return temp;
+    }
+
+    double IWindowComponent::getMouseX()
+    {
+        return mMouseX;
+    }
+
+    double IWindowComponent::getMouseY()
+    {
+       return mMouseY;
     }
 
 } // End of Dream

@@ -111,6 +111,11 @@ namespace Dream
         return mJson[Constants::ASSET_ATTR_LIGHT_COLOR][Constants::ALPHA];
     }
 
+    vector<float> LightDefinition::getColourVector()
+    {
+        return {getColourRed(), getColourGreen(), getColourBlue(), getIntensity()};
+    }
+
     void
     LightDefinition::makeColourObject
     ()

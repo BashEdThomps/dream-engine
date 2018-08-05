@@ -35,4 +35,19 @@ namespace Dream
         return static_cast<float>(radians*(180/M_PI));
     }
 
+    float Math::_sinf(float x)
+    {
+        return sinf(x);
+    }
+
+    float Math::_pow(float x, float y)
+    {
+        return pow(x,y);
+    }
+
+    float Math::_sqrtf(float x)
+    {
+        return sqrtf(x);
+    }
+
 } // End of Dream

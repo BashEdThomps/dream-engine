@@ -50,6 +50,8 @@ namespace Dream
       bool shouldClose();
       void setShouldClose(bool);
       bool sizeHasChanged();
+      double getMouseX();
+      double getMouseY();
 
     protected:
       int mWidth;
@@ -57,5 +59,7 @@ namespace Dream
       string mName;
       bool mShouldClose;
       bool mSizeHasChanged;
+      double mMouseX;
+      double mMouseY;
     };
 }

@@ -29,6 +29,7 @@ class QComboBox;
 class AssetDefinitionPropertiesTreeDelegate : public QItemDelegate
 {
     Q_OBJECT
+    QWidget*createLightColourPaletteButton(QWidget* parent) const;
 public:
     AssetDefinitionPropertiesTreeDelegate(AssetDefinitionPropertiesModel* model, QObject *parent = nullptr);
     ~AssetDefinitionPropertiesTreeDelegate() override;
@@ -48,6 +49,7 @@ public slots:
     void onButton_EditScript(bool clicked);
     void onButton_PhysicsBvhTriangleMeshFile(bool clicked);
     void onButton_FontColourDialog(bool clicked) ;
+    void onButton_LightChooseColour(bool clicked);
 
 signals:
     void notifyButton_AudioFile();
@@ -60,6 +62,7 @@ signals:
     void notifyButton_EditShader();
 
     void notifyButton_PhysicsBvhTriangleMeshFile();
+    void notifyButton_LightChooseColour();
 
 protected:
     AssetDefinitionPropertiesModel *mModelHandle;

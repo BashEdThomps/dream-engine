@@ -25,7 +25,7 @@ void showUsage(const char** argv)
     {
         cout << "Usage:" << endl
              << argv[0] << endl
-             << "\t" << Constants::PROJECT_DIRECTORY_ARG << " </home/username/.dreamtool>" << endl
+             << "\t" << Constants::PROJECT_DIRECTORY_ARG << " <path/to/dream/project>" << endl
              << "\t" << Constants::PROJECT_UUID_ARG      << " <project_uuid>" << endl;
     }
 }
@@ -67,6 +67,14 @@ int main(int argc, const char** argv)
     ProjectRuntime* prHandle = project.createProjectRuntime();
     ProjectDefinition* pdHandle = project.getProjectDefinitionHandle();
     SceneDefinition* startupSceneDefinitionHandle = pdHandle->getStartupSceneDefinitionHandle();
+
+    if (startupSceneDefinitionHandle == nullptr)
+    {
+        cerr << "Main: Error, could not find startup scene definition" << endl;
+        return 1;
+    }
+
+    cout << "Main: Using Startup Scene " << startupSceneDefinitionHandle->getNameAndUuidString() << endl;
 
     SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(startupSceneDefinitionHandle);
 

@@ -40,15 +40,10 @@
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Physics/PhysicsObjectInstance.h"
 #include "../Components/Window/IWindowComponent.h"
-
 #include "../Project/ProjectRuntime.h"
-
 #include "../Scene/SceneRuntime.h"
-
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
-
 #include "../Utilities/Math.h"
-
 #include "../../NanoVG/src/nanovg.h"
 
 using std::ostringstream;
@@ -84,13 +79,13 @@ errorHandler
     }
     // log the error message
     object msg(from_stack( L, -1 ));
-    ostringstream str;
-    str << "RuntimeError:" <<  msg <<  str.str();
+    stringstream ss;
+    ss << msg;
+    log->error("RuntimeError: {}",ss.str());
     // log the callstack
     string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
-    traceback = string( "Backtrace" ) + traceback;
-    log->error("{} {}",str.str(), traceback.c_str());
-    return 1;
+    log->error("TraceBack: {}", traceback.c_str());
+    return 0;
 }
 
 namespace Dream
@@ -714,6 +709,8 @@ namespace Dream
                 .def("getWidth",&IWindowComponent::getWidth)
                 .def("getHeight",&IWindowComponent::getHeight)
                 .def("setShouldClose",&IWindowComponent::setShouldClose)
+                .def("getMouseX",&IWindowComponent::getMouseX)
+                .def("getMouseY",&IWindowComponent::getMouseY)
                 ];
     }
 
@@ -723,11 +720,16 @@ namespace Dream
     {
         debugRegisteringClass("Math");
         module(mState)
-                [
-                class_<Math>("Math")
-                .def("degreesToRadians",&Math::degreesToRadians)
-                .def("radiansToDegrees",&Math::radiansToDegrees)
-                ];
+        [
+            class_<Math>("Math")
+            .scope[
+                luabind::def("degreesToRadians",&Math::degreesToRadians),
+                luabind::def("radiansToDegrees",&Math::radiansToDegrees),
+                luabind::def("pow",&Math::_pow),
+                luabind::def("sinf",&Math::_sinf),
+                luabind::def("sqrtf",&Math::_sqrtf)
+            ]
+        ];
     }
 
     void
