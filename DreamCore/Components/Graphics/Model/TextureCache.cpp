@@ -52,8 +52,7 @@ namespace Dream
     (const char* file_c, const char* directory_c, const char* type)
     {
         auto log = getLog();
-            log->info( "TextureCache: Loading from: {}/{}",
-                 directory_c , file_c );
+            log->info( "TextureCache: Loading from: {}/{}", directory_c , file_c );
         //Generate texture ID and load texture data
         string filename = string(file_c);
         string directory = string(directory_c);
@@ -73,8 +72,10 @@ namespace Dream
 
         int width = 0;
         int height = 0;
+        int channels = 0;
 
-        unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
+        unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
+        log->info("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
         // Assign texture to ID
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);

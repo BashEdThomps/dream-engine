@@ -198,6 +198,7 @@ namespace Dream
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
         // Clear the colorbuffer
         if (mActiveSceneRuntimeHandle)
         {
@@ -213,6 +214,8 @@ namespace Dream
         {
             glClearColor(0.0f,0.0f,0.0f,0.0f);
         }
+
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Constants::checkGLError("after pre render");
     }
@@ -426,7 +429,8 @@ namespace Dream
         {
             drawSprite(sceneObj);
         }
-        //glDisable(GL_BLEND);
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
     }
 
     void
@@ -741,42 +745,69 @@ namespace Dream
         {
             vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
             ambientColour = vec3
-                    (
-                        ambient[Constants::RED_INDEX],
-                    ambient[Constants::GREEN_INDEX],
-                    ambient[Constants::BLUE_INDEX]
-                    );
+            (
+                ambient[Constants::RED_INDEX],
+                ambient[Constants::GREEN_INDEX],
+                ambient[Constants::BLUE_INDEX]
+            );
             ambientStrength = ambient[Constants::ALPHA_INDEX];
         }
 
-        shader->setAmbientLight(ambientColour,ambientStrength);
+        //shader->setAmbientLight(ambientColour,ambientStrength);
+
+        shader->addUniform(ShaderUniform(UniformType::FLOAT3,"ambientColour",1,glm::value_ptr(ambientColour)));
+        shader->addUniform(ShaderUniform(UniformType::FLOAT1,"ambientStrength",1,&ambientStrength));
         Constants::checkGLError("After ambient uniforms");
 
+        GLint numLights = static_cast<GLint>(mLightQueue.size());
+        shader->addUniform(ShaderUniform(UniformType::INT1,"numPointLights",1,&numLights));
+
+        //shader->setUniform1ui("numPointLights",numLights);
+
         // Set Diffuse Light Values
-        int i=1;
+        int i=0;
+        const static int max_lights = 10;
+        vec3 lightPos[max_lights];
+        vec3 lightColour[max_lights];
+
         for (auto light : mLightQueue)
         {
-            vec3 lightPos = light->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
-            vec3 lightColour = light->getColor();
-            if(!shader->setPointLight(i,lightPos,lightColour))
+            if (i > max_lights-1)
             {
-                log->error("Error setting point light {} for shader {}", i,shader->getNameAndUuidString());
+                break;
             }
+
+            lightPos[i] = light->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
+            lightColour[i] = light->getColor();
             i++;
         }
+
+        shader->addUniform(ShaderUniform(FLOAT3,"pointLightPos",numLights,glm::value_ptr(lightPos[0])));
+        shader->addUniform(ShaderUniform(FLOAT3,"pointLightColour",numLights,glm::value_ptr(lightColour[0])));
         Constants::checkGLError("After light pos uniform");
 
-        // Pass view/projection transform to shader
 
+        vec3 cameraTranslation = mCamera->getTranslation();
+        shader->addUniform(ShaderUniform(FLOAT3,"cameraPos",1,glm::value_ptr(cameraTranslation)));
+        Constants::checkGLError("After camera pos uniform");
+
+        // Pass Viewer Position Uniform
+        //shader->setViewerPosition(mCamera->getTranslation());
+        vec3 camPos = mCamera->getTranslation();
+        shader->addUniform(ShaderUniform(FLOAT3,"cameraPos",1,glm::value_ptr(camPos)));
+        Constants::checkGLError("After set camPos uniform");
+
+        shader->syncUniforms();
+        Constants::checkGLError("After sync uniforms");
+
+        // Pass view/projection transform to shader
         shader->setProjectionMatrix(mProjectionMatrix);
         Constants::checkGLError("After set projection");
 
         shader->setViewMatrix(mViewMatrix);
         Constants::checkGLError("After set view");
 
-        // Pass Viewer Position Uniform
-        shader->setViewerPosition(mCamera->getTranslation());
-        Constants::checkGLError("After set camPos uniform");
+
 
         // calculate the model matrix
         mat4 modelMatrix;

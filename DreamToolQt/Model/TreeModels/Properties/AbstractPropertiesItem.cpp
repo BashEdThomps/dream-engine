@@ -18,14 +18,19 @@
 
 #include "AbstractPropertiesItem.h"
 
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 AbstractPropertiesItem::AbstractPropertiesItem
 (QString title, QItemDelegate* delegate, AbstractPropertiesItem *parent)
     : mTitle(title),
       mParentItemHandle(parent)
 {
-    //qDebug() << "AbstractPropertiesItem: Constructing";
+    auto log = spdlog::get("AbstractPropertiesItem");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("AbstractPropertiesItem");
+    }
+    log->info("Constructing");
     setDelegate(delegate);
 }
 
@@ -33,6 +38,8 @@ AbstractPropertiesItem::~AbstractPropertiesItem
 ()
 {
 
+    auto log = spdlog::get("AbstractPropertiesItem");
+    log->info("Destructing");
 }
 
 void AbstractPropertiesItem::setParent(AbstractPropertiesItem* parent)

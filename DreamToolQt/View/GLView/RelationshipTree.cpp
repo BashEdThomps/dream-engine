@@ -17,8 +17,7 @@
  */
 
 #include "RelationshipTree.h"
-
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 RelationshipTree::RelationshipTree
 (QObject* parentHandle)
@@ -28,17 +27,20 @@ RelationshipTree::RelationshipTree
       mRootSceneObjectHandle(nullptr),
       mLeafSceneObjectHandle(nullptr)
 {
+    auto log = spdlog::get("RelationshipTree");
+    if (log==nullptr)
     {
-        qDebug() << "RelationshipTree: Constructing Object";
+
+        log = spdlog::stdout_color_mt("RelationshipTree");
     }
+    log->info("Constructing Object");
 }
 
 RelationshipTree::~RelationshipTree
 ()
 {
-    {
-        qDebug() << "RelationshipTree: Denstructing Object";
-    }
+    auto log = spdlog::get("RelationshipTree");
+    log->info("Denstructing Object");
 }
 
 void

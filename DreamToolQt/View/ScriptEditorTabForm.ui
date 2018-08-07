@@ -30,7 +30,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="CodeEditor" name="textEdit">
+    <widget class="CodeEditorWidget" name="textEdit">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -49,9 +49,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CodeEditor</class>
+   <class>CodeEditorWidget</class>
    <extends>QPlainTextEdit</extends>
-   <header>View/CodeEditor.h</header>
+   <header>View/CodeEditorWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

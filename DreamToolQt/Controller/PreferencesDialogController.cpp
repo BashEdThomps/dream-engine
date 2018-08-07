@@ -17,7 +17,7 @@
  */
 #include "PreferencesDialogController.h"
 
-#include <QDebug>
+#include <spdlog/spdlog.h>
 #include <QVBoxLayout>
 #include <QFileDialog>
 
@@ -25,7 +25,12 @@ PreferencesDialogController::PreferencesDialogController
 (QObject *parent)
     : QObject(parent)
 {
-    qDebug() << "PreferencesController: Constructing";
+    auto log = spdlog::get("PreferencesDialogController");
+    if (log==nullptr)
+    {
+        log = spdlog::stderr_color_mt("PreferencesDialogController");
+    }
+    log->info("Constructing");
     setupLayout();
     setupDialog();
     setupValues();
@@ -35,7 +40,8 @@ PreferencesDialogController::PreferencesDialogController
 PreferencesDialogController::~PreferencesDialogController
 ()
 {
-    qDebug() << "PreferencesController: Destructing";
+    auto log = spdlog::get("PreferencesDialogController");
+    log->info("Destructing");
 }
 
 void

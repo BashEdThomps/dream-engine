@@ -20,6 +20,7 @@
 #include "Controller/MainController.h"
 #include <QApplication>
 #include <QSurfaceFormat>
+#include <spdlog/spdlog.h>
 
 #include <DreamCore.h>
 
@@ -27,6 +28,8 @@ using Dream::Constants;
 
 int main(int argc, char *argv[])
 {
+    spdlog::set_level(spdlog::level::info);
+
     QApplication a(argc, argv);
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );

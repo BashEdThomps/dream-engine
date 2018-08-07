@@ -18,7 +18,7 @@
 
 #include "AssetDefinitionTreeModel.h"
 #include <QStringList>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 #include <QIcon>
 
 using Dream::Constants;
@@ -28,7 +28,12 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel
 (ProjectDefinition* project, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    qDebug() << "AssetDefinitionTreeModel: Constructing";
+    auto log = spdlog::get("AssetDefinitionTreeModel");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("AssetDefinitionTreeModel");
+    }
+    log->info("Constructing");
     mProjectHandle = project;
     setupModelData();
     mAssetDefinitionIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_Object.svg"));
@@ -37,7 +42,8 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel
 AssetDefinitionTreeModel::~AssetDefinitionTreeModel
 ()
 {
-    qDebug() << "AssetDefinitionTreeModel: Destructing";
+    auto log = spdlog::get("AssetDefinitionTreeModel");
+    log->info("Destructing");
 }
 
 int
@@ -191,6 +197,7 @@ void
 AssetDefinitionTreeModel::setupModelData
 ()
 {
+    auto log = spdlog::get("AssetDefinitionTreeModel");
     emit beginResetModel();
 
     // Create Root Node
@@ -417,8 +424,7 @@ AssetDefinitionTreeModel::setupModelData
         }
         else
         {
-            cerr << "AssetDefinitionTreeModel: Unable to add asset definition to tree with type "
-                 << definition->getType() << endl;
+            log->error("Unable to add asset definition to tree with type {}",definition->getType());
         }
     }
     emit endResetModel();

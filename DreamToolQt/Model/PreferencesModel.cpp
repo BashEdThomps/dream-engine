@@ -18,8 +18,9 @@
 #include "PreferencesModel.h"
 
 #include <QStandardPaths>
-#include <QDebug>
 #include <QDir>
+
+#include <spdlog/spdlog.h>
 
 const string PreferencesModel::PREFERENCES_DIRECTORY_NAME = "DreamTool";
 const string PreferencesModel::PREFERENCES_FILE_NAME = "preferences.json";
@@ -31,7 +32,12 @@ PreferencesModel::PreferencesModel
 (QObject *parent)
     : QObject(parent)
 {
-    qDebug() << "PreferencesModel: Constructing";
+    auto log = spdlog::get("PreferencesModel");
+    if (log == nullptr)
+    {
+        log = spdlog::stdout_color_mt("PreferencesModel");
+    }
+    log->info("Constructing");
 
     createPreferencesDirectory();
 
@@ -41,17 +47,17 @@ PreferencesModel::PreferencesModel
         {
             if (loadPreferencesFile())
             {
-                qDebug() << "PreferencesModel: Created Initial Preferences file";
+                log->info("Created Initial Preferences file");
             }
         }
         else
         {
-            qWarning() << "PreferencesModel: WARNING: Initialisation Failed!";
+            log->error("Initialisation Failed!");
         }
     }
     else
     {
-        qDebug() << "PreferencesModel: Initialised from existing preferences file";
+        log->info("Initialised from existing preferences file");
     }
 }
 
@@ -59,17 +65,16 @@ bool
 PreferencesModel::createPreferencesDirectory
 ()
 {
+    auto log = spdlog::get("PreferencesModel");
     QDir dir(getPreferencesDirectoryPath());
     if (!dir.exists())
     {
-        qDebug() << "PreferencesModel: Creating Preferences Directory"
-                 << getPreferencesDirectoryPath();
+        log->info("Creating Preferences Directory {}", getPreferencesDirectoryPath().toStdString());
         return QDir().mkdir(getPreferencesDirectoryPath());
     }
     else
     {
-        qDebug() << "PreferencesModel: Found Preferences Directory"
-                 << getPreferencesDirectoryPath();
+        log->info("Found Preferences Directory {}",  getPreferencesDirectoryPath().toStdString());
     }
     return true;
 }
@@ -105,7 +110,8 @@ bool
 PreferencesModel::savePreferenecsFile
 ()
 {
-    qDebug() << "PreferencesModel: Saving Preferences To" << getPreferencesFilePath();
+    auto log = spdlog::get("PreferencesModel");
+    log->info("Saving Preferences To {}" , getPreferencesFilePath().toStdString());
     if (mJson.is_null())
     {
         setDefaultPreferences();
@@ -121,7 +127,8 @@ bool
 PreferencesModel::loadPreferencesFile
 ()
 {
-    qDebug() << "PreferencesModel: Loading Preferences From" << getPreferencesFilePath();
+    auto log = spdlog::get("PreferencesModel");
+    log->info("Loading Preferences From {}",  getPreferencesFilePath().toStdString());
     QFile prefFile(getPreferencesFilePath());
     if (prefFile.exists())
     {

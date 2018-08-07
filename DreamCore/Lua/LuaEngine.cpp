@@ -654,11 +654,24 @@ namespace Dream
     {
         debugRegisteringClass("ShaderInstance");
         module(mState)
-                [
-                class_<ShaderInstance>("ShaderInstance")
+        [
+            class_<ShaderInstance>("ShaderInstance")
                 .def("getUuid", &ShaderInstance::getUuid)
-                .def("setUniform1f", &ShaderInstance::setUniform1f)
-                ];
+                .def("addUniform", &ShaderInstance::addUniform)
+        ];
+
+        debugRegisteringClass("ShaderUniform");
+        module(mState)
+        [
+            class_<ShaderUniform>("ShaderUniform")
+                .enum_("UniformType")
+                [
+                   value("INT1",UniformType::INT1),
+                   value("INT2",UniformType::INT2),
+                   value("INT3",UniformType::INT3),
+                   value("INT4",UniformType::INT4)
+                ]
+        ];
     }
 
     void
@@ -1070,6 +1083,15 @@ namespace Dream
                 [
                     value("NVG_SOLID",NVG_SOLID),
                     value("NVG_HOLE",NVG_HOLE)
+                ]
+                .enum_("NVGImageFlags")
+                [
+                   value("NVG_IMAGE_GENERATE_MIPMAPS",NVG_IMAGE_GENERATE_MIPMAPS),
+                   value("NVG_IMAGE_REPEATX",NVG_IMAGE_REPEATX),
+                   value("NVG_IMAGE_REPEATY",NVG_IMAGE_REPEATY),
+                   value("NVG_IMAGE_FLIPY",NVG_IMAGE_FLIPY),
+                   value("NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED),
+                   value("NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST)
                 ]
                .def("BeginFrame",&NanoVGComponent::BeginFrame)
                .def("CancelFrame",&NanoVGComponent::CancelFrame)

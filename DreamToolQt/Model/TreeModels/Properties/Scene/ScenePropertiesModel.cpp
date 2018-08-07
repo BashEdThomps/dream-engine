@@ -18,7 +18,7 @@
 
 #include "ScenePropertiesModel.h"
 
-#include <QDebug>
+#include <spdlog/spdlog.h>
 #include <DreamCore.h>
 
 #include "ScenePropertiesItem.h"
@@ -32,7 +32,12 @@ ScenePropertiesModel::ScenePropertiesModel
     : AbstractPropertiesModel(new ScenePropertiesTreeDelegate(this,parent), parent),
       mSceneDefinitionHandle(scene)
 {
-    qDebug() << "ScenePropertiesModel: Constructor called";
+    auto log = spdlog::get("ScenePropertiesModel");
+    if (log == nullptr)
+    {
+        log = spdlog::stderr_color_mt("ScenePropertiesModel");
+    }
+    log->info("Constructor called");
     createRoot();
     createProperties();
     createDelegateConnections();
@@ -41,14 +46,16 @@ ScenePropertiesModel::ScenePropertiesModel
 ScenePropertiesModel::~ScenePropertiesModel
 ()
 {
-    qDebug() << "ScenePropertiesModel: Desstructor called";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("Desstructor called");
 }
 
 void
 ScenePropertiesModel::createRoot
 ()
 {
-    qDebug() << "ScenePropertiesModel: craeteRoot";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("craeteRoot");
     mRootItem.reset
     (
         new ScenePropertiesItem
@@ -63,7 +70,8 @@ void
 ScenePropertiesModel::createProperties
 ()
 {
-    qDebug() << "ScenePropertiesModel: createProperties";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("createProperties");
     createNameProperties();
     createNotesProperties();
     createCameraProperties();
@@ -113,7 +121,8 @@ void
 ScenePropertiesModel::createNameProperties
 ()
 {
-    qDebug() << "ScenePropertiesModel: createNameProperties";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("createNameProperties");
     mRootItem->appendChild
     (
         new ScenePropertiesItem
@@ -129,7 +138,8 @@ void
 ScenePropertiesModel::createNotesProperties
 ()
 {
-    qDebug() << "ScenePropertiesModel: createNotesProperties";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("createNotesProperties");
     mRootItem->appendChild
     (
         new ScenePropertiesItem
@@ -145,11 +155,12 @@ void
 ScenePropertiesModel::createCameraProperties
 ()
 {
-    qDebug() << "ScenePropertiesModel: createCameraProperties";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("createCameraProperties");
     ScenePropertiesItem *cameraProperty = new ScenePropertiesItem("Camera",mSceneDefinitionHandle,SCENE_PROPERTY_CAMERA);
     mRootItem->appendChild(cameraProperty);
     {
-        qDebug() << "ScenePropertiesModel: createCameraProperties translation";
+        log->info("createCameraProperties translation");
         ScenePropertiesItem* cameraTranslationProperty = new ScenePropertiesItem
         (
             "Translation",
@@ -190,7 +201,7 @@ ScenePropertiesModel::createCameraProperties
             );
         }
 
-        qDebug() << "ScenePropertiesModel: createCameraProperties rotation";
+        log->info("createCameraProperties rotation");
         ScenePropertiesItem *cameraRotationProperty = new ScenePropertiesItem
         (
             "Rotation",
@@ -231,7 +242,7 @@ ScenePropertiesModel::createCameraProperties
                 )
             );
 
-            qDebug() << "ScenePropertiesModel: createCameraProperties speed";
+            log->info("createCameraProperties speed");
 
             cameraProperty->appendChild
             (
@@ -250,14 +261,15 @@ void
 ScenePropertiesModel::createRenderingProperties
 ()
 {
-    qDebug() << "ScenePropertiesModel: createRenderingProperties";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("createRenderingProperties");
     vector<float> clear = mSceneDefinitionHandle->getClearColour();
 
     auto renderingProperty = new ScenePropertiesItem("Rendering",mSceneDefinitionHandle);
     mRootItem->appendChild(renderingProperty);
     {
 
-        qDebug() << "ScenePropertiesModel: createRenderingProperties (ClearColour)";
+        log->info("createRenderingProperties (ClearColour)");
         // Clear Color
         auto clearColorProperty = new ScenePropertiesItem("Clear Colour", mSceneDefinitionHandle,SCENE_PROPERTY_CLEAR_PARENT);
         renderingProperty->appendChild(clearColorProperty);
@@ -293,7 +305,7 @@ ScenePropertiesModel::createRenderingProperties
         );
     }
 
-    qDebug() << "ScenePropertiesModel: createRenderingProperties (AmbientLight)";
+    log->info("createRenderingProperties (AmbientLight)");
     vector<float> ambient = mSceneDefinitionHandle->getAmbientColour();
 
     auto *ambientLightProperty = new ScenePropertiesItem(
@@ -347,7 +359,8 @@ void
 ScenePropertiesModel::createPhysicsProperties
 ()
 {
-    qDebug() << "ScenePropertiesModel: createPhysicsProperties";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("createPhysicsProperties");
     ScenePropertiesItem *physicsProperty = new ScenePropertiesItem("Physics",mSceneDefinitionHandle);
     mRootItem->appendChild(physicsProperty);
     {
@@ -394,7 +407,8 @@ void
 ScenePropertiesModel::onButton_CaptureCameraTranslation
 ()
 {
-    qDebug() << "ScenePropertiesModel: CaptureCameraTranslation";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("CaptureCameraTranslation");
     emit notifyButton_CaptureCameraTranslation(mSceneDefinitionHandle);
 }
 
@@ -402,19 +416,22 @@ void
 ScenePropertiesModel::onButton_CaptureCameraRotation
 ()
 {
-    qDebug() << "ScenePropertiesModel: CaptureCameraTranslation";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("CaptureCameraTranslation");
     emit notifyButton_CaptureCameraRotation(mSceneDefinitionHandle);
 }
 
 void ScenePropertiesModel::onButton_ChooseClearColour()
 {
-    qDebug() << "ScenePropertiesModel: Choose Clear Colour";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("Choose Clear Colour");
     emit notifyButton_ChooseClearColour(mSceneDefinitionHandle);
 }
 
 void ScenePropertiesModel::onButton_ChooseAmbientColour()
 {
-    qDebug() << "ScenePropertiesModel: Choose Ambient Colour";
+    auto log = spdlog::get("ScenePropertiesModel");
+    log->info("Choose Ambient Colour");
     emit notifyButton_ChooseAmbientColour(mSceneDefinitionHandle);
 
 }

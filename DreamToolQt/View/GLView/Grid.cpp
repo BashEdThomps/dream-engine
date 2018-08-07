@@ -17,7 +17,7 @@
  */
 #include "Grid.h"
 #include <DreamCore.h>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 using namespace glm;
 using namespace std;
@@ -38,18 +38,19 @@ Grid::Grid
       mMinorColour(minorColour)
 
 {
+    auto log = spdlog::get("Grid");
+    if (log == nullptr)
     {
-        cout << "Grid: Constructing with majorSpacing: " << mMajorSpacing
-             << ", minorSpacing: " << mMinorSpacing << endl;
+        log = spdlog::stdout_color_mt("Grid");
     }
+    log->info("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
 }
 
 Grid::~Grid
 ()
 {
-    {
-        cout << "Grid: Destructing" << endl;
-    }
+    auto log = spdlog::get("Grid");
+    log->info("Destructing");
 }
 
 void
@@ -66,7 +67,8 @@ Grid::initMajorGridData
 ()
 {
 
-    qDebug() << "Grid: Init Major Data";
+    auto log = spdlog::get("Grid");
+    log->info("Init Major Data");
     float halfSize = (mSize/2.0f);
 
     // Major Grid
@@ -103,7 +105,8 @@ void
 Grid::initMinorGridData
 ()
 {
-    qDebug() << "Grid: Init Minor Data";
+    auto log = spdlog::get("Grid");
+    log->info("Init Minor Data");
     float halfSize = (mSize/2.0f);
 
     // Minor Grid

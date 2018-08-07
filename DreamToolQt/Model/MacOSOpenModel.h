@@ -33,7 +33,7 @@ class MacOSOpenModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit MacOSOpenModel(PreferencesModel* pmHandle, QObject *parent = 0);
+    explicit MacOSOpenModel(PreferencesModel* pmHandle, QObject *parent = nullptr);
     void openInExternalEditor(QString filePath);
 
 signals:

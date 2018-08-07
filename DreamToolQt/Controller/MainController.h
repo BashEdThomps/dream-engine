@@ -82,6 +82,7 @@ signals:
 
 public slots:
     void onScenegraphTreeDataChanged();
+    void onPropertiesTreeDataChanged();
     void onAction_Preferences();
     void onAction_File_New();
     void onAction_File_Open();
@@ -224,5 +225,6 @@ private: // Variables
     unique_ptr<MacOSOpenModel> mMacOsOpenModel;
 
     ScriptEditorController mScriptEditor;
+    QDir mLastDirectory;
 
 };

@@ -37,21 +37,74 @@ using nlohmann::json;
 using glm::mat4;
 using glm::vec3;
 
+
+
 namespace Dream
 {
     class ShaderCache;
     class ShaderDefinition;
+
+    enum UniformType
+    {
+        // Int
+        INT1,
+        INT2,
+        INT3,
+        INT4,
+        // uInt
+        UINT1,
+        UINT2,
+        UINT3,
+        UINT4,
+        // Float
+        FLOAT1,
+        FLOAT2,
+        FLOAT3,
+        FLOAT4,
+        // Double
+        DOUBLE1,
+        DOUBLE2,
+        DOUBLE3,
+        DOUBLE4
+    };
+
+    class ShaderUniform : ILoggable
+    {
+    public:
+        ShaderUniform(UniformType type, string name, int count, void* data);
+        ~ShaderUniform() override;
+
+        bool operator==(const ShaderUniform& other) const;
+
+        UniformType getType() const;
+        void setType(const UniformType& type);
+        string getName() const;
+        void setName(const string& name);
+        void* getData() const;
+        void setData(void* data);
+        int getCount() const;
+        void setCount(int count);
+
+    private:
+        UniformType mType;
+        string mName;
+        void* mData;
+        int mCount;
+
+    };
+
 
     class ShaderInstance : public IAssetInstance, ILoggable
     {
     private:
         const static GLint UNIFORM_NOT_FOUND;
         GLuint mShaderProgram;
-        map<string, GLfloat> mUniform1fMap;
+        vector<ShaderUniform> mUniformVector;
         ShaderCache *mCacheHandle;
     public:
         ShaderInstance(ShaderCache* cache, ShaderDefinition*,SceneObjectRuntime*);
         ~ShaderInstance();
+
 
         bool load(string);
         void loadExtraAttributes(json);
@@ -82,18 +135,14 @@ namespace Dream
         // Viewer
         bool setViewerPosition(vec3, string name = "viewPos");
 
-        // Other Uniforms
-        void setUniform1f(string, GLfloat);
-        void syncUniforms();
-
         void bindVertexArray(GLuint);
         void unbindVertexArray();
 
         GLint getUniformLocation(string name);
 
-    private:
-        // 1f
-        void syncUniform1f();
+        void addUniform(ShaderUniform uniform);
+
+        void syncUniforms();
     }; // End of ShaderInstance
 
 } // End of Dream

@@ -20,7 +20,7 @@
 #include "ScenePropertiesModel.h"
 #include "ScenePropertiesItem.h"
 
-#include <QDebug>
+#include <spdlog/spdlog.h>
 #include <QLabel>
 #include <QLineEdit>
 #include <QDoubleSpinBox>
@@ -34,14 +34,20 @@ ScenePropertiesTreeDelegate::ScenePropertiesTreeDelegate
     : QItemDelegate(parent),
       mModelHandle(model)
 {
-    qDebug() << "ScenePropertiesTreeDelegate: Constructing";
+    auto log = spdlog::get("ScenePropertiesTreeDelegate");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("ScenePropertiesTreeDelegate");
+    }
+    log->info("Constructing");
     setClipping(true);
 }
 
 ScenePropertiesTreeDelegate::~ScenePropertiesTreeDelegate
 ()
 {
-    qDebug() << "ScenePropertiesTreeDelegate: Constructing";
+    auto log = spdlog::get("ScenePropertiesTreeDelegate");
+    log->info("Constructing");
 }
 
 QWidget*
@@ -116,6 +122,8 @@ ScenePropertiesTreeDelegate::setEditorData
             break;
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
             break;
+        case SCENE_PROPERTY_CLEAR_PARENT:
+        case SCENE_PROPERTY_AMBIENT_PARENT:
         case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
             break;
         case SCENE_PROPERTY_NAME:
@@ -226,7 +234,8 @@ void
 ScenePropertiesTreeDelegate::onButton_CaptureCameraTranslation
 (bool)
 {
-    qDebug() << "ScenePropertiesTreeDelegate: CaptureCameraTranslation";
+    auto log = spdlog::get("ScenePropertiesTreeDelegate");
+    log->info("CaptureCameraTranslation");
     emit notifyButton_CaptureCameraTranslation();
 }
 
@@ -234,27 +243,31 @@ void
 ScenePropertiesTreeDelegate::onButton_CaptureCameraRotation
 (bool)
 {
-    qDebug() << "ScenePropertiesTreeDelegate: CaptureCameraRotation";
+    auto log = spdlog::get("ScenePropertiesTreeDelegate");
+    log->info("CaptureCameraRotation");
     emit notifyButton_CaptureCameraRotation();
 }
 
 void ScenePropertiesTreeDelegate::onButton_CaptureCameraAll(bool)
 {
-    qDebug() << "ScenePropertiesTreeDelegate: CaptureCameraAll";
+    auto log = spdlog::get("ScenePropertiesTreeDelegate");
+    log->info("CaptureCameraAll");
     emit notifyButton_CaptureCameraTranslation();
     emit notifyButton_CaptureCameraRotation();
 }
 
 void ScenePropertiesTreeDelegate::onButton_ChooseAmbientColour(bool)
 {
-    qDebug() << "ScenePropertiesTreeDelegate: ChooseAmbientColour";
+    auto log = spdlog::get("ScenePropertiesTreeDelegate");
+    log->info("ChooseAmbientColour");
     emit notifyButton_ChooseAmbientColour();
 }
 
 void ScenePropertiesTreeDelegate::onButton_ChooseClearColour(bool)
 {
+    auto log = spdlog::get("ScenePropertiesTreeDelegate");
 
-    qDebug() << "ScenePropertiesTreeDelegate: ChooseClearColour";
+    log->info("ChooseClearColour");
     emit notifyButton_ChooseClearColour();
 }
 

@@ -19,7 +19,7 @@
 #include "SceneObjectPropertiesModel.h"
 
 #include <DreamCore.h>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 #include "SceneObjectPropertiesItem.h"
 #include "SceneObjectPropertiesTreeDelegate.h"
@@ -32,7 +32,13 @@ SceneObjectPropertiesModel::SceneObjectPropertiesModel
 (SceneObjectDefinition *sceneObject, QTreeView *parent)
     : AbstractPropertiesModel(new SceneObjectPropertiesTreeDelegate(this,parent), parent)
 {
-    qDebug() << "SceneObjectPropertiesModel: Constructor called";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("SceneObjectPropertiesModel");
+    }
+
+    log->info("Constructor called");
     mSceneObjectDefinitionHandle = sceneObject;
     createRoot();
     createProperties();
@@ -42,14 +48,16 @@ SceneObjectPropertiesModel::SceneObjectPropertiesModel
 SceneObjectPropertiesModel::~SceneObjectPropertiesModel
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: Destructor called";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("Destructor called");
 }
 
 void
 SceneObjectPropertiesModel::createRoot
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: CreateRoot";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("CreateRoot");
     QString name = QString::fromStdString(mSceneObjectDefinitionHandle->getName());
     mRootItem.reset(new SceneObjectPropertiesItem(name,mSceneObjectDefinitionHandle));
 }
@@ -58,7 +66,8 @@ void
 SceneObjectPropertiesModel::createProperties
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: CreateProperties";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("CreateProperties");
     createNameProperty();
     createTranslationProperty();
     createRotationProperty();
@@ -123,7 +132,8 @@ void
 SceneObjectPropertiesModel::createNameProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createName";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createName");
     mRootItem->appendChild
     (
         new SceneObjectPropertiesItem
@@ -139,7 +149,8 @@ void
 SceneObjectPropertiesModel::createTranslationProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createTranslationProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createTranslationProperty");
     SceneObjectPropertiesItem *translationItem = new SceneObjectPropertiesItem
     (
         "Translation",
@@ -183,7 +194,8 @@ void
 SceneObjectPropertiesModel::createRotationProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createRotationProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createRotationProperty");
     SceneObjectPropertiesItem *rotationItem = new SceneObjectPropertiesItem
     (
         "Rotation",
@@ -228,7 +240,8 @@ SceneObjectPropertiesModel::createScaleProperty
 ()
 {
 
-    qDebug() << "SceneObjectPropertiesModel: createScaleProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createScaleProperty");
     SceneObjectPropertiesItem *scaleItem = new SceneObjectPropertiesItem
     (
         "Scale",
@@ -272,7 +285,8 @@ void
 SceneObjectPropertiesModel::createTransformTypeProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createTransformTypeProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createTransformTypeProperty");
     SceneObjectPropertiesItem *transformTypeItem = new SceneObjectPropertiesItem
     (
         "Transform Type",
@@ -286,7 +300,8 @@ void
 SceneObjectPropertiesModel::createFollowsCameraProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createFollowsCameraProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createFollowsCameraProperty");
     mRootItem->appendChild
     (
         new SceneObjectPropertiesItem
@@ -302,7 +317,8 @@ void
 SceneObjectPropertiesModel::createHasFocusProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createHasFocusProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createHasFocusProperty");
     SceneObjectPropertiesItem *hasFocusItem = new SceneObjectPropertiesItem
     (
         "Has Focus",
@@ -316,7 +332,8 @@ void
 SceneObjectPropertiesModel::createAssetInstancesProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createAssetInstancesProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createAssetInstancesProperty");
     vector<string> definitionsToLoad = mSceneObjectDefinitionHandle->getAssetDefinitionLoadQueue();
     SceneObjectPropertiesItem *assetDefItem = new SceneObjectPropertiesItem
     (
@@ -349,7 +366,8 @@ void
 SceneObjectPropertiesModel::createChildrenProperty
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: createChildrenProperty";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createChildrenProperty");
     SceneObjectPropertiesItem *childrenItem = new SceneObjectPropertiesItem("Children",mSceneObjectDefinitionHandle);
     mRootItem->appendChild(childrenItem);
 
@@ -370,7 +388,8 @@ void
 SceneObjectPropertiesModel::onButton_CaptureTranslation
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: CaptureTranslation";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("CaptureTranslation");
     emit notifyButton_CaptureTranslation(mSceneObjectDefinitionHandle);
 }
 
@@ -378,7 +397,8 @@ void
 SceneObjectPropertiesModel::onButton_CaptureRotation
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: CaptureRotation";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("CaptureRotation");
     emit notifyButton_CaptureRotation(mSceneObjectDefinitionHandle);
 }
 
@@ -386,7 +406,8 @@ void
 SceneObjectPropertiesModel::onButton_CaptureScale
 ()
 {
-    qDebug() << "SceneObjectPropertiesModel: CaptureScale";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("CaptureScale");
     emit notifyButton_CaptureScale(mSceneObjectDefinitionHandle);
 }
 
@@ -394,7 +415,8 @@ void
 SceneObjectPropertiesModel::onButton_RemoveAsset
 (IAssetDefinition* adHandle)
 {
-    qDebug() << "SceneObjectPropertiesModel: RemoveAsset";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("RemoveAsset");
     emit notifyButton_RemoveAsset(mSceneObjectDefinitionHandle,adHandle);
 }
 
@@ -402,6 +424,7 @@ void
 SceneObjectPropertiesModel::onButton_RemoveChild
 (SceneObjectDefinition* sodHandle)
 {
-    qDebug() << "SceneObjectPropertiesModel: RemoveChild";
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("RemoveChild");
     emit notifyButton_RemoveChild(mSceneObjectDefinitionHandle,sodHandle);
 }

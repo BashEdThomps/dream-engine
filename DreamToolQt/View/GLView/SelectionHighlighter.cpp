@@ -17,7 +17,7 @@
  */
 
 #include "SelectionHighlighter.h"
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 using Dream::AssimpModelInstance;
 
@@ -35,20 +35,27 @@ SelectionHighlighter::SelectionHighlighter
       mZColour(vec3(0.0f, 0.0f, 1.0f)),
       mOffset(0.1f)
 {
-    qDebug() << "SelectionHighlighter: Constructing Object";
+    auto log = spdlog::get("SelectionHighlighter");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("SelectionHighlighter");
+    }
+    log->info("Constructing Object");
 }
 
 SelectionHighlighter::~SelectionHighlighter
 ()
 {
-    qDebug() << "SelectionHighlighter: Destructing Object";
+    auto log = spdlog::get("SelectionHighlighter");
+    log->info("Destructing Object");
 }
 
 void
 SelectionHighlighter::init
 ()
 {
-    qDebug() << "SelectionHighlighter: Initialising";
+    auto log = spdlog::get("SelectionHighlighter");
+    log->info("Initialising");
     initGLDrawable();
 }
 
@@ -56,10 +63,10 @@ void
 SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
 (SceneObjectRuntime* selected)
 {
+    auto log = spdlog::get("SelectionHighlighter");
     if (selected)
     {
-    qDebug() << "SelectionHighlighter: Selecting "
-             << QString::fromStdString(selected->getNameAndUuidString());
+    log->info("Selecting {}",selected->getNameAndUuidString());
     }
     mSelectedObjectHandle = selected;
     updateVertexBuffer();
@@ -69,12 +76,13 @@ void
 SelectionHighlighter::updateVertexBuffer
 ()
 {
-    qDebug() << "SelectionHighlighter: Updating Vertex Buffer" ;
+    auto log = spdlog::get("SelectionHighlighter");
+    log->info("Updating Vertex Buffer") ;
     mVertexBuffer.clear();
 
     if (!mSelectedObjectHandle)
     {
-        qDebug() << "SelectionHighlighter: No object selected";
+        log->info("No object selected");
         return;
     }
 
@@ -85,15 +93,9 @@ SelectionHighlighter::updateVertexBuffer
         bounds = mSelectedObjectHandle->getModelInstance()->getBoundingBox();
     }
 
-    qDebug() << "SelectionHighlighter: Minimum Bounds "
-             << bounds.minimum.x << ","
-             << bounds.minimum.y << ","
-             << bounds.minimum.z;
+    log->info("Minimum Bounds {},{},{}",bounds.minimum.x ,bounds.minimum.y, bounds.minimum.z);
+    log->info("Maximum Bounds {},{},{}",bounds.maximum.x ,bounds.maximum.y, bounds.maximum.z);
 
-    qDebug() << "SelectionHighlighter: Maximum Bounds "
-             << bounds.maximum.x << ","
-             << bounds.maximum.y << ","
-             << bounds.maximum.z;
 
     // Top Quad
 
@@ -228,10 +230,11 @@ void
 SelectionHighlighter::draw
 ()
 {
+    auto log = spdlog::get("SelectionHighlighter");
     if (!mVertexBuffer.empty())
     {
         preRender();
-        qDebug() << "SelectionHighlighter: Drawing all - " << mVertexBuffer.size()/2 << " lines.";
+        log->info("Drawing all - {} lines", mVertexBuffer.size()/2);
 
         // Enable shader program
         glUseProgram(mShaderProgram);
@@ -240,7 +243,7 @@ SelectionHighlighter::draw
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
         if (projUniform == -1)
         {
-            cerr << "SelectionHighlighter: Unable to find Uniform Location for projection" << endl;
+            log->error("Unable to find Uniform Location for projection");
             return;
         }
         else
@@ -252,7 +255,7 @@ SelectionHighlighter::draw
         GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
         if (viewUniform == -1)
         {
-            cerr << "SelectionHighlighter: Unable to find Uniform Location for view" << endl;
+            log->error("Unable to find Uniform Location for view");
             return;
         }
         else
@@ -266,7 +269,7 @@ SelectionHighlighter::draw
             GLint modelUniform = glGetUniformLocation(mShaderProgram, "model");
             if (modelUniform == -1)
             {
-                cerr << "SelectionHighlighter: Unable to find Uniform Location for Model" << endl;
+                log->error("Unable to find Uniform Location for Model");
                 return;
             }
             else
@@ -330,7 +333,8 @@ void
 SelectionHighlighter::initShader
 ()
 {
-    qDebug() << "SelectionHighlighter: Initialising shader";
+    auto log = spdlog::get("SelectionHighlighter");
+    log->info("Initialising shader");
 
     string vertexShaderSource;
     string fragmentShaderSource;
@@ -380,7 +384,7 @@ SelectionHighlighter::initShader
     if (!success)
     {
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-        cerr << "SelectionHighlighter: SHADER:VERTEX:COMPILATION_FAILED\n" << infoLog << endl;
+        log->error("SHADER:VERTEX:COMPILATION_FAILED\n{}", infoLog);
     }
 
     // Fragment Shader
@@ -394,7 +398,7 @@ SelectionHighlighter::initShader
     if (!success)
     {
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-        cerr << "SelectionHighlighter: SHADER:FRAGMENT:COMPILATION_FAILED\n" << infoLog << endl;
+        log->error("SHADER:FRAGMENT:COMPILATION_FAILED\n{}", infoLog);
     }
 
     // Shader Program
@@ -408,7 +412,7 @@ SelectionHighlighter::initShader
     if (!success)
     {
         glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-        cerr << "SelectionHighlighter: SHADER:PROGRAM:LINKING_FAILED\n" << infoLog << endl;
+        log->error("SHADER:PROGRAM:LINKING_FAILED\n{}" ,infoLog);
     }
 
     // Delete the shaders as they're linked into our program now and no longer necessery

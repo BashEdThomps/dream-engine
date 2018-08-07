@@ -18,7 +18,7 @@
 
 #include "ScenegraphTreeModel.h"
 #include <QStringList>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 #include <memory>
 
 using Dream::SceneDefinition;
@@ -27,11 +27,15 @@ ScenegraphTreeModel::ScenegraphTreeModel
 (ProjectDefinition *project, QObject *parent)
     : QAbstractItemModel(parent)
 {
+    auto log = spdlog::get("ScenegraphTreeModel");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("ScenegraphTreeModel");
+    }
 
     mProjectDefinitionHandle = project;
 
-    qDebug() << "ScenegraphTreeModel: Constructing for "
-             << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
+    log->info("Constructing for {}",mProjectDefinitionHandle->getNameAndUuidString());
 
     mProjectIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_boxes.svg"));
     mSceneIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_clapper.svg"));
@@ -42,7 +46,9 @@ ScenegraphTreeModel::ScenegraphTreeModel
 ScenegraphTreeModel::~ScenegraphTreeModel
 ()
 {
-    qDebug() << "ScenegraphTreeModel: Destructing";
+    auto log = spdlog::get("ScenegraphTreeModel");
+
+    log->info("Destructing");
 }
 
 int
@@ -184,9 +190,9 @@ void
 ScenegraphTreeModel::setupModelData
 ()
 {
+    auto log = spdlog::get("ScenegraphTreeModel");
     emit beginResetModel();
-    qDebug() << "ScenegraphTreeModel: Setting up project "
-             << QString::fromStdString(mProjectDefinitionHandle->getNameAndUuidString());
+    log->info("Setting up project {}",mProjectDefinitionHandle->getNameAndUuidString());
 
     mRootItem.reset
     (
@@ -210,8 +216,7 @@ ScenegraphTreeModel::setupModelData
 
     for (SceneDefinition *sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsHandleList())
     {
-        qDebug() << "ScenegraphTreeModel: Adding Scene "
-                 << QString::fromStdString(sceneHandle->getNameAndUuidString());
+        log->info("Adding Scene {}",sceneHandle->getNameAndUuidString());
 
         ScenegraphTreeItem *nextScene = new ScenegraphTreeItem
         (
@@ -240,7 +245,6 @@ ScenegraphTreeModel::setupModelData
 
 void ScenegraphTreeModel::forceDataChanged()
 {
-
    setupModelData();
    emit dataChanged(QModelIndex(),QModelIndex());
 }

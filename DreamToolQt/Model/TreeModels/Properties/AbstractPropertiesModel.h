@@ -49,6 +49,7 @@ public:
     virtual void createRoot() = 0;
     virtual void createProperties() = 0;
     virtual void createDelegateConnections() = 0;
+    void forceDataChanged();
 
 protected:
     unique_ptr<AbstractPropertiesItem> mRootItem;

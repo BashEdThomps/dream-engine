@@ -76,7 +76,16 @@ namespace Dream
         auto log = getLog();
         string path = projectPath + mDefinitionHandle->getAssetPath();
             log->info( "AssimpModelInstance: Loading Model - {}" , path);
-        const aiScene* scene = mModelCacheHandle->getModelFromCache(path)->GetScene();
+
+        auto model = mModelCacheHandle->getModelFromCache(path);
+
+        if (model == nullptr)
+        {
+            return false;
+        }
+
+        const aiScene* scene = model->GetScene();
+
         if(scene == nullptr)
         {
             return false;
@@ -238,7 +247,7 @@ namespace Dream
 
         log->info( "AssimpModelInstance: Using Material {}" , materialName.C_Str());
 
-        return AssimpMesh(this, vertices, indices, textures, diffuse, specular);
+        return AssimpMesh(this, string(mesh->mName.C_Str()), vertices, indices, textures, diffuse, specular);
     }
 
     vector<Texture>

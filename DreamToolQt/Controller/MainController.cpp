@@ -48,7 +48,8 @@ MainController::MainController
       mSelectedProjectDefinitionHandle(nullptr),
       mSelectedAssetDefinitionHandle(nullptr),
       mSelectedSceneDefinitionHandle(nullptr),
-      mSelectedSceneObjectDefinitionHandle(nullptr)
+      mSelectedSceneObjectDefinitionHandle(nullptr),
+      mLastDirectory(QDir::home())
 {
     auto log = spdlog::get("MainController");
 
@@ -99,6 +100,12 @@ MainController::setupUI
         SIGNAL(notifyScenegraphTreeDataChanged()),
         this,
         SLOT(onScenegraphTreeDataChanged())
+    );
+    connect(
+        mMainWindowHandle,
+        SIGNAL(notifyPropertiesTreeDataChanged()),
+        this,
+        SLOT(onPropertiesTreeDataChanged())
     );
     connect(
         this, SIGNAL(notifyProjectDefinitionChanged(ProjectDefinition*)),
@@ -808,6 +815,7 @@ MainController::onAction_File_New ()
     if(openDialog.exec())
     {
         mProjectDirectory = openDialog.selectedFiles().first();
+        mLastDirectory = (mProjectDirectory);
 
         if (mProjectDirectory.size() == 0)
         {
@@ -844,6 +852,8 @@ MainController::onAction_File_Open
     {
         return;
     }
+
+    mLastDirectory = QDir(mProjectDirectory);
 
     openProject();
 }
@@ -1096,13 +1106,14 @@ MainController::onAssetDefinitionProperty_ModelFile
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
-    openDialog.setDirectory(QDir::home());
+    openDialog.setDirectory(mLastDirectory);
 
     if(openDialog.exec())
     {
 
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
+        mLastDirectory.setPath(sourceFilePath);
 
         log->info( "Using Assimp file {}", sourceFilePath.toStdString());
 
@@ -1145,13 +1156,14 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
-    openDialog.setDirectory(QDir::home());
+    openDialog.setDirectory(mLastDirectory);
 
     if(openDialog.exec())
     {
 
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
+        mLastDirectory.setPath(sourceFilePath);
 
         log->info( "Using BvhTriangleMesh file {}", sourceFilePath.toStdString());
 
@@ -1198,10 +1210,8 @@ MainController::onSceneProperty_CaptureCameraTranslation
         ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
         if (prHandle)
         {
-            sdHandle->getCameraTransform().setTranslation
-                    (
-                        prHandle->getCameraHandle()->getTranslation()
-                        );
+
+            sdHandle->getCameraTransform().setTranslation(prHandle->getCameraHandle()->getTranslation());
             return;
         }
         log->info( "CaptureCameraTranslation - No ProjectRuntime");
@@ -1223,10 +1233,13 @@ MainController::onSceneProperty_CaptureCameraRotation
         ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
         if (prHandle)
         {
-            sdHandle->getCameraTransform().setRotation
-                    (
-                        prHandle->getCameraHandle()->getRotation()
-                        );
+            auto rotation = prHandle->getCameraHandle()->getRotation();
+            if (prHandle->getCameraHandle()->getTranslation().y > 0)
+            {
+                rotation.x = -rotation.x;
+                rotation.y = -rotation.y;
+            }
+            sdHandle->getCameraTransform().setRotation(rotation);
             return;
         }
         log->info( "CaptureCameraRotation - No ProjectRuntime");
@@ -1292,6 +1305,8 @@ void
 MainController::onCreateNewAssetDefinition
 (QString type)
 {
+    auto log = spdlog::get("MainController");
+    log->info("Creating new asset definnition {}",type.toStdString());
     AssetType assetType = Constants::getAssetTypeEnumFromString(type.toLower().toStdString());
 
     switch(assetType)
@@ -1335,13 +1350,14 @@ MainController::onAssetDefinitionProperty_ModelAdditionalFiles
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFiles);
-    openDialog.setDirectory(QDir::home());
+    openDialog.setDirectory(mLastDirectory);
 
     if(openDialog.exec())
     {
         for (QString sourceFilePath : openDialog.selectedFiles())
         {
             QFile sourceFile(sourceFilePath);
+            mLastDirectory.setPath(sourceFilePath);
 
             log->info( "Using Additional file {}",
                        sourceFilePath.toStdString());
@@ -1463,7 +1479,12 @@ void MainController::forceScenegraphTreeDataChanged()
 
 void MainController::onScenegraphTreeDataChanged()
 {
-   forceScenegraphTreeDataChanged();
+    forceScenegraphTreeDataChanged();
+}
+
+void MainController::onPropertiesTreeDataChanged()
+{
+    mPropertiesModel->forceDataChanged();
 }
 
 void
@@ -1570,7 +1591,7 @@ MainController::onAssetDefinitionProperty_AudioFile
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
-    openDialog.setDirectory(QDir::home());
+    openDialog.setDirectory(mLastDirectory);
 
     QStringList filters;
     filters << "*.wav" << "*.ogg";
@@ -1578,9 +1599,9 @@ MainController::onAssetDefinitionProperty_AudioFile
 
     if(openDialog.exec())
     {
-
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
+        mLastDirectory.setPath(sourceFilePath);
 
         log->info( "Using Audio file", sourceFilePath.toStdString());
 
@@ -1617,6 +1638,8 @@ MainController::onAssetDefinitionProperty_AudioFile
         showImportResultDialog(copyResult, adHandle, sourceFile.fileName());
 
     }
+
+    mPropertiesModel->forceDataChanged();
 }
 
 void
@@ -1652,7 +1675,7 @@ MainController::onAssetDefinitionProperty_FontFile
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
-    openDialog.setDirectory(QDir::home());
+    openDialog.setDirectory(mLastDirectory);
 
     QStringList filters;
     filters << "*.ttf";
@@ -1664,6 +1687,7 @@ MainController::onAssetDefinitionProperty_FontFile
 
         QString sourceFilePath = openDialog.selectedFiles().first();
         QFile sourceFile(sourceFilePath);
+        mLastDirectory.setPath(sourceFilePath);
 
         log->info( "Using Font file {}", sourceFilePath.toStdString());
 
@@ -1717,6 +1741,8 @@ MainController::onAssetDefinitionProperty_RemoveFiles
         mProjectDirectoryModel.deleteAssetDataDirectory(adHandle);
         return;
     }
+
+    mPropertiesModel->forceDataChanged();
 }
 
 void
@@ -1830,6 +1856,8 @@ void MainController::onAssetDefinitionProperty_LightChooseColour(IAssetDefinitio
         lightDef->setColourBlue(static_cast<float>(chosenColour.blueF()));
         lightDef->setIntensity(static_cast<float>(chosenColour.alphaF()));
     }
+
+    mPropertiesModel->forceDataChanged();
 }
 
 void
@@ -1856,6 +1884,8 @@ MainController::onSceneObjectProperty_CaptureTranslation
             }
         }
     }
+
+    mPropertiesModel->forceDataChanged();
 }
 
 void
@@ -1882,6 +1912,8 @@ MainController::onSceneObjectProperty_CaptureRotation
             }
         }
     }
+
+    mPropertiesModel->forceDataChanged();
 }
 
 void
@@ -1909,6 +1941,8 @@ MainController::onSceneObjectProperty_CaptureScale
         }
     }
 
+   mPropertiesModel->forceDataChanged();
+
 }
 
 void
@@ -1922,6 +1956,9 @@ MainController::onSceneObjectProperty_RemoveAsset
                 sodHandle->getNameAndUuidString()
                 );
     sodHandle->removeAssetDefinitionFromLoadQueue(adHandle);
+
+    mPropertiesModel->forceDataChanged();
+    mMainWindowHandle->getPropertiesTreeView()->update();
 }
 
 void
@@ -1936,4 +1973,6 @@ MainController::onSceneObjectProperty_RemoveChild
                 );
     sodHandle->removeChildSceneObjectDefinition(sodChildHandle);
     onUI_ScenegraphUpdated();
+
+    mPropertiesModel->forceDataChanged();
 }

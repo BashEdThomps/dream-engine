@@ -16,7 +16,7 @@
  * this file belongs to.
  */
 #include "AbstractPropertiesModel.h"
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 using std::pair;
 
@@ -25,14 +25,20 @@ AbstractPropertiesModel::AbstractPropertiesModel(QItemDelegate* delegate, QTreeV
       mTreeViewHandle(parent),
       mDelegateHandle(delegate)
 {
-    qDebug() << "PropertiesModel: Constructing";
+    auto log = spdlog::get("AbstractPropertiesModel");
+    if (log==nullptr)
+    {
+        log = spdlog::stderr_color_mt("AbstractPropertiesModel");
+    }
+    log->info("PropertiesModel: Constructing");
     mTreeViewHandle->setItemDelegateForColumn(1,delegate);
 }
 
 AbstractPropertiesModel::~AbstractPropertiesModel
 ()
 {
-    qDebug() << "PropertiesModel: Destructing";
+    auto log = spdlog::get("AbstractPropertiesModel");
+    log->info("PropertiesModel: Destructing");
 }
 
 AbstractPropertiesItem*
@@ -235,4 +241,17 @@ AbstractPropertiesModel::rowCount
     }
 
     return parentItem->childCount();
+}
+
+void AbstractPropertiesModel::forceDataChanged()
+{
+   auto log = spdlog::get("AbstractPropertiesModel");
+   log->info("Force Data Changed");
+   beginResetModel();
+   createRoot();
+   createProperties();
+   createDelegateConnections();
+   endResetModel();
+   mTreeViewHandle->expandAll();
+   emit dataChanged(QModelIndex(), QModelIndex());
 }

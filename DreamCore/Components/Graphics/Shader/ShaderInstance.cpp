@@ -62,7 +62,7 @@ namespace Dream
         GLint location = getUniformLocation(name);
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "Unable to find diffuce colour uniform '{}' in {}", name,getNameAndUuidString() );
+            log->error( "Unable to find diffuse colour uniform '{}' in {}", name,getNameAndUuidString() );
             return false;
         }
 
@@ -272,14 +272,12 @@ namespace Dream
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
             log->info(
-               "Loading Shader {}\n",
-               "Vertex: {}\n{}\n",
-               "Fragment: {}\n{}\n",
-               mDefinitionHandle->getNameAndUuidString(),
-               absVertexPath,
-               mVertexShaderSource,
-               absFragmentPath,
-               mFragmentShaderSource
+                "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
+                mDefinitionHandle->getNameAndUuidString(),
+                absVertexPath,
+                mVertexShaderSource,
+                absFragmentPath,
+                mFragmentShaderSource
             );
             // 2. Compile shaders
             GLint success;
@@ -333,8 +331,9 @@ namespace Dream
     ShaderInstance::use
     ()
     {
+        auto log = spdlog::get("ShaderInstance");
+        log->info("Using Shader Program {} for {}",mShaderProgram,getNameAndUuidString());
         glUseProgram(mShaderProgram);
-        syncUniforms();
     }
 
     void
@@ -346,13 +345,6 @@ namespace Dream
     }
 
     // API Setters =============================================================
-
-    void
-    ShaderInstance::syncUniforms
-    ()
-    {
-        syncUniform1f();
-    }
 
     void
     ShaderInstance::bindVertexArray
@@ -375,19 +367,14 @@ namespace Dream
         return glGetUniformLocation(mShaderProgram,name.c_str());
     }
 
-    void
-    ShaderInstance::setUniform1f
-    (string location, GLfloat value)
+    void ShaderInstance::addUniform(ShaderUniform uniform)
     {
-        for (pair<string,GLfloat> obj : mUniform1fMap)
+        auto inVector = find(begin(mUniformVector),end(mUniformVector),uniform);
+        if (inVector != end(mUniformVector))
         {
-            if (obj.first == location)
-            {
-                obj.second = value;
-                return;
-            }
+            mUniformVector.erase(inVector);
         }
-        mUniform1fMap.insert(pair<string,GLfloat>(location,value));
+        mUniformVector.push_back(uniform);
     }
 
     void
@@ -398,38 +385,203 @@ namespace Dream
     }
 
     // GL Syncros ==============================================================
-
-    // 1f
     void
-    ShaderInstance::syncUniform1f
+    ShaderInstance::syncUniforms
     ()
     {
         auto log = getLog();
+        log->info("Synchronising uniforms for {}",getNameAndUuidString());
         GLuint prog = getShaderProgram();
 
-        for (pair<string,GLfloat> it : mUniform1fMap)
+        for (ShaderUniform uniform : mUniformVector)
         {
-            string name = it.first;
-            GLfloat val = it.second;
-            GLint location = getUniformLocation(name);
+            GLint location = getUniformLocation(uniform.getName());
             log->info(
-                "{}\n"
-                " Sync Uinform1f -> \n"
-                " prog: {}\n"
-                " name: {}'n"
-                " loc: {}\n"
-                " val: {}\n",
-                getUuid(),prog,name,location,val
+                " Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
+                getUuid(),
+                prog,
+                uniform.getName(),
+                location,
+                uniform.getCount()
             );
 
             if (location == UNIFORM_NOT_FOUND)
             {
-                log->error( "unable to find 1f uniform '{}' in {}" , name ,getNameAndUuidString());
+                log->error( "Unable to find uniform location '{}' in {}" , uniform.getName() ,getNameAndUuidString());
                 continue;
             }
 
-            glUniform1f(location,val);
+            switch (uniform.getType())
+            {
+                // Int
+                case INT1:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform1iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
+                    }
+                    break;
+                case INT2:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform2iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
+                    }
+                    break;
+                case INT3:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform3iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
+                    }
+                    break;
+                case INT4:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform2iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
+                    }
+                    break;
+
+                    // Uint
+                case UINT1:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform1uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
+                    }
+                    break;
+                case UINT2:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform2uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
+                    }
+                    break;
+                case UINT3:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform3uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
+                    }
+                    break;
+                case UINT4:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform4uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
+                    }
+                    break;
+
+                    // Float
+                case FLOAT1:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform1fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
+                    }
+                    break;
+                case FLOAT2:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform2fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
+                    }
+                    break;
+                case FLOAT3:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform3fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
+                    }
+                    break;
+                case FLOAT4:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform4fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
+                    }
+                    break;
+
+                    // Double
+                case DOUBLE1:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform1dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
+                    }
+                    break;
+                case DOUBLE2:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform2dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
+                    }
+                    break;
+                case DOUBLE3:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform3dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
+                    }
+                    break;
+                case DOUBLE4:
+                    if (uniform.getCount() > 0)
+                    {
+                        glUniform4dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
+                    }
+                    break;
+            }
         }
+    }
+
+
+
+    ShaderUniform::ShaderUniform(UniformType type, string name, int count, void* data)
+        : ILoggable ("ShaderUniform"),
+          mType(type),
+          mName(name),
+          mData(data),
+          mCount(count)
+
+    {
+        auto log = getLog();
+        log->info("Constructing uniform {}, count {}",mName,count);
+    }
+
+    ShaderUniform::~ShaderUniform()
+    {
+
+    }
+
+    bool ShaderUniform::operator==(const ShaderUniform& other) const
+    {
+       return getName().compare(other.getName()) == 0;
+    }
+
+    int ShaderUniform::getCount() const
+    {
+        return mCount;
+    }
+
+    void ShaderUniform::setCount(int count)
+    {
+        mCount = count;
+    }
+
+    void* ShaderUniform::getData() const
+    {
+        return mData;
+    }
+
+    void ShaderUniform::setData(void* data)
+    {
+        mData = data;
+    }
+
+    string ShaderUniform::getName() const
+    {
+        return mName;
+    }
+
+    void ShaderUniform::setName(const string& name)
+    {
+        mName = name;
+    }
+
+    UniformType ShaderUniform::getType() const
+    {
+        return mType;
+    }
+
+    void ShaderUniform::setType(const UniformType& type)
+    {
+        mType = type;
     }
 
 } // End of Dream

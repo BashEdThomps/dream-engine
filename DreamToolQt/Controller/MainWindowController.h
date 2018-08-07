@@ -147,6 +147,7 @@ signals:
     void notifyActionSave(QString);
     void notifyCreateNewAssetDefinition(QString type);
     void notifyScenegraphTreeDataChanged();
+    void notifyPropertiesTreeDataChanged();
 
 public slots:
     void onInvalidProjectDirectory(QString directory);
@@ -170,6 +171,10 @@ private slots:
     void onScenegraphMenuAddSceneObjectTriggered();
     void onScenegraphMenuDeleteSceneObjectTriggered();
     void onAddAssetToSceneObjectTriggered();
+
+    void onScenegraphTreeViewActivated(const QModelIndex &index);
+    void onPropertiesTreeViewActivated(const QModelIndex &index);
+    void onAssetDefinitionTreeViewActivated(const QModelIndex &index);
 
 private:
     ProjectDefinition* mProjectDefinitionHandle;

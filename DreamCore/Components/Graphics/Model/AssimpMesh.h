@@ -21,11 +21,13 @@ namespace Dream
     class AssimpMesh : public ILoggable
     {
     private:
+        AssimpModelInstance* mParentHandle;
+        string  mName;
+
         GLuint mVAO;
         GLuint mVBO;
         GLuint mEBO;
 
-        AssimpModelInstance* mParentHandle;
 
         vector<Vertex>  mVertices;
         vector<GLuint>  mIndices;
@@ -45,6 +47,7 @@ namespace Dream
         AssimpMesh
         (
                 AssimpModelInstance* parent,
+                string name,
                 vector<Vertex> vertexArray,
                 vector<GLuint> indexArray,
                 vector<Texture> textureArray,
@@ -54,5 +57,7 @@ namespace Dream
         ~AssimpMesh();
         void draw(ShaderInstance*);
         void init();
+        string getName() const;
+        void setName(const string& name);
     };
 }

@@ -76,22 +76,40 @@ void MainWindowController::setupUiFeatures()
 {
     ui->dataGLSplitter->setStretchFactor(1,10);
 
-    ui->scenegraphPropertiesSplitter->setStretchFactor(1,1);
+    ui->scenegraphPropertiesSplitter->setStretchFactor(3,1);
 
     ui->scenegraphTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(
-                ui->scenegraphTreeView,
-                SIGNAL(customContextMenuRequested(const QPoint &)),
-                this,
-                SLOT(onScenegraphContextMenuRequested(const QPoint &))
-                );
+        ui->scenegraphTreeView,
+        SIGNAL(customContextMenuRequested(const QPoint &)),
+        this,
+        SLOT(onScenegraphContextMenuRequested(const QPoint &))
+    );
     ui->assetDefinitionTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(
-                ui->assetDefinitionTreeView,
-                SIGNAL(customContextMenuRequested(const QPoint &)),
-                this,
-                SLOT(onAsseetDefinitionContextMenuRequested(const QPoint &))
-                );
+        ui->assetDefinitionTreeView,
+        SIGNAL(customContextMenuRequested(const QPoint &)),
+        this,
+        SLOT(onAsseetDefinitionContextMenuRequested(const QPoint &))
+    );
+    connect(
+        ui->assetDefinitionTreeView,
+        SIGNAL(activated(const QModelIndex&)),
+        this,
+        SLOT(onAssetDefinitionTreeViewActivated(const QModelIndex&))
+    );
+    connect(
+        ui->scenegraphTreeView,
+        SIGNAL(activated(const QModelIndex&)),
+        this,
+        SLOT(onScenegraphTreeViewActivated(const QModelIndex&))
+    );
+    connect(
+        ui->propertiesTreeView,
+        SIGNAL(activated(const QModelIndex&)),
+        this,
+        SLOT(onPropertiesTreeViewActivated(const QModelIndex&))
+    );
 }
 
 void
@@ -167,9 +185,9 @@ MainWindowController::createAssetDefinitionTreeContextMenu
     if (createAction != nullptr)
     {
         connect(
-                    createAction,SIGNAL(triggered()),
-                    this,SLOT(onCreateAssetDefinitionAction())
-                    );
+            createAction,SIGNAL(triggered()),
+            this,SLOT(onCreateAssetDefinitionAction())
+        );
     }
     return menu;
 }
@@ -244,7 +262,9 @@ MainWindowController::createScenegraphTreeContextMenu
 }
 
 
-void MainWindowController::onScenegraphMenuAddNewSceneTriggered()
+void
+MainWindowController::onScenegraphMenuAddNewSceneTriggered
+()
 {
     auto log = spdlog::get("MainWindowController");
     log->info("Scenegraph Menu: Add New Scene");
@@ -257,7 +277,9 @@ void MainWindowController::onScenegraphMenuAddNewSceneTriggered()
     emit notifyScenegraphTreeDataChanged();
 }
 
-void MainWindowController::onScenegraphMenuDeleteSceneTriggered()
+void
+MainWindowController::onScenegraphMenuDeleteSceneTriggered
+()
 {
     auto log = spdlog::get("MainWindowController");
     log->info("Scenegraph Menu: Delete Scene");
@@ -271,7 +293,9 @@ void MainWindowController::onScenegraphMenuDeleteSceneTriggered()
     emit notifyScenegraphTreeDataChanged();
 }
 
-void MainWindowController::onScenegraphMenuAddSceneObjectTriggered()
+void
+MainWindowController::onScenegraphMenuAddSceneObjectTriggered
+()
 {
     auto log = spdlog::get("MainWindowController");
     log->info("Scenegraph Menu: Add Scene Object");
@@ -296,7 +320,9 @@ void MainWindowController::onScenegraphMenuAddSceneObjectTriggered()
     emit notifyScenegraphTreeDataChanged();
 }
 
-void MainWindowController::onScenegraphMenuDeleteSceneObjectTriggered()
+void
+MainWindowController::onScenegraphMenuDeleteSceneObjectTriggered
+()
 {
     auto log = spdlog::get("MainWindowController");
     log->info("Scenegraph Menu: Delete Scene Object");
@@ -333,6 +359,55 @@ void MainWindowController::onAddAssetToSceneObjectTriggered()
         sceneObjHandle->addAssetDefinitionToLoadQueue(adHandle);
     }
     emit notifyScenegraphTreeDataChanged();
+    emit notifyPropertiesTreeDataChanged();
+}
+
+void
+MainWindowController::onScenegraphTreeViewActivated
+(const QModelIndex& index)
+{
+    auto log = spdlog::get("MainWindowController");
+    if (index.isValid())
+    {
+        auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+        log->info("Valid index in current tree {}",item->getTitle().toStdString());
+    }
+    else
+    {
+        log->info("No valid index in current tree");
+    }
+}
+
+void
+MainWindowController::onPropertiesTreeViewActivated
+(const QModelIndex& index)
+{
+    auto log = spdlog::get("MainWindowController");
+    if (index.isValid())
+    {
+        auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+        log->info("Valid index in current tree {}",item->getTitle().toStdString());
+    }
+    else
+    {
+        log->info("No valid index in current tree");
+    }
+}
+
+void
+MainWindowController::onAssetDefinitionTreeViewActivated
+(const QModelIndex& index)
+{
+    auto log = spdlog::get("MainWindowController");
+    if (index.isValid())
+    {
+        auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+        log->info("Valid index in current tree {}",item->getTitle().toStdString());
+    }
+    else
+    {
+        log->info("No valid index in current tree");
+    }
 }
 
 
@@ -760,10 +835,6 @@ ScenegraphMenuAction::getItemHandle
 {
    return mItemHandle;
 }
-
-
-
-
 
 AddAssetToSceneObjectAction::AddAssetToSceneObjectAction
 (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHandle, QObject* parent)
