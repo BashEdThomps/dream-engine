@@ -59,6 +59,7 @@ private:
 
     void createModelFileProperty();
     void createModelAdditionalFilesProperty();
+    void createModelMaterialShaderProperty();
 
     void createPhysicsMassProperty();
     void createPhysicsMarginProperty();
@@ -99,24 +100,19 @@ public slots:
 
     void onButton_LightChooseColour();
 
+    void onButton_ModelMaterialShaderMap();
 signals:
     void notifyButton_RemoveFiles(IAssetDefinition*);
-
     void notifyButton_AudioFile(IAssetDefinition*);
-
     void notifyButton_FontFile(IAssetDefinition*);
-
     void notifyButton_ModelFile(IAssetDefinition*);
     void notifyButton_ModelAdditionalFiles(IAssetDefinition*);
-
     void notifyButton_EditScript(IAssetDefinition*);
     void notifyCombo_ScriptTemplateChanged(IAssetDefinition*, const QString&);
-
     void notifyButton_EditShader(IAssetDefinition*);
     void notifyCombo_ShaderTemplateChanged(IAssetDefinition*, const QString&);
-
     void notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*);
-
     void notifyButton_LightChooseColour(IAssetDefinition*);
+    void notifyButton_ModelMaterialShaderMap(IAssetDefinition*);
 };
 

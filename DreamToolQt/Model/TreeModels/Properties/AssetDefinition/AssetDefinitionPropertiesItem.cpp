@@ -175,6 +175,7 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
             break;
     }
     return true;
@@ -271,6 +272,7 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
             return QVariant();
     }
     return QVariant();

@@ -4,6 +4,7 @@ in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
 
+
 out vec4 color;
 
 uniform sampler2D texture_diffuse1;
@@ -28,23 +29,31 @@ vec3 calculateDiffuse(vec3 normal, vec3 lightPos,vec3 lightColour, vec3 fragPos)
 
 void main()
 {
+    vec3  specularUnused = specularColour;
     vec4 objectColor = vec4(texture(texture_diffuse1, TexCoords));
+
+    // Don't use 'transparent' fragments
+    if(objectColor.a < 0.5)
+            discard;
 
     // Calculate Ambient
     vec3 ambient = vec3(ambientStrength * ambientColour);
 
     // Calculate Diffuse
     vec3 norm = normalize(Normal);
-    vec3 diffuse = vec3(0.0);
-
-    for(int i=0; i<numPointLights; i++)
+    vec3 diffuseLightSum = vec3(0);
+    vec3 diffuseSum = diffuseColour;
+    if (numPointLights > 0)
     {
-        diffuse = diffuse + calculateDiffuse(norm, pointLightPos[i], pointLightColour[i], FragPos);
+        for(int i=0; i<numPointLights; i++)
+        {
+                    diffuseLightSum = diffuseLightSum + calculateDiffuse(norm, pointLightPos[i], pointLightColour[i], FragPos);
+        }
+        diffuseLightSum = diffuseLightSum / numPointLights;
+        diffuseSum = diffuseSum * diffuseLightSum;
     }
-
-    diffuse = diffuse / numPointLights;
-
     // Combine Ambient & diffuse
-    vec4 ambientDiffuseColor = vec4((ambient + diffuse),1.0f) * objectColor;
-    color = ambientDiffuseColor;
+    color = vec4((ambient + diffuseSum),1.0f) * objectColor;
 }
+
+

@@ -24,7 +24,10 @@ namespace Dream
     {
     public:
         ModelDefinition(ProjectDefinition* pdHandle, json js);
-
         bool isFormatAssimp();
+
+        bool addMaterialShader(string material, string shader);
+        json* getMaterialShaders();
+        void removeMaterialShader(string material);
     };
 }

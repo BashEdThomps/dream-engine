@@ -194,6 +194,11 @@ namespace Dream
         vector<Texture> textures;
         // Process material
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        aiString name;
+        aiGetMaterialString(material,AI_MATKEY_NAME,&name);
+
+        log->info("Loading material {} for {}",name.C_Str(), getNameAndUuidString());
+
 
         // Diffuse Textures
         vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
@@ -352,5 +357,7 @@ namespace Dream
     {
         return mModelMatrix;
     }
+
+
 
 } // End of Dream

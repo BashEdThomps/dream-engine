@@ -192,6 +192,14 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                         this,
                         SLOT(onAssetDefinitionProperty_RemoveFiles(IAssetDefinition*))
                         );
+            // Model Material/Shader Map
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_ModelMaterialShaderMap(IAssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefinition*))
+            );
 
             // Edit Script
             connect
@@ -1743,6 +1751,15 @@ MainController::onAssetDefinitionProperty_RemoveFiles
     }
 
     mPropertiesModel->forceDataChanged();
+}
+
+void MainController::onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefinition* adHandle)
+{
+    auto log = spdlog::get("MainController");
+    log->info("Opening Material/Shader Map Widget");
+    mMaterialShaderTableController.setModelDefinition(dynamic_cast<ModelDefinition*>(adHandle));
+    mMaterialShaderTableController.setProjectPath(mProjectDirectoryModel.getProjectDirectoryAbsolutePath());
+    mMaterialShaderTableController.getAllUpInYourFace();
 }
 
 void

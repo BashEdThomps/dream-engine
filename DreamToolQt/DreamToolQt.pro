@@ -77,7 +77,9 @@ SOURCES += \
     View/SyntaxHighlighters/LuaHighlighter.cpp \
     Controller/ScriptEditorTabController.cpp \
     Controller/MainWindowController.cpp \
-    View/CodeEditorWidget.cpp
+    View/CodeEditorWidget.cpp \
+    Model/MaterialShaderTableModel.cpp \
+    Controller/MaterialShaderTableController.cpp
 
 
 
@@ -132,14 +134,17 @@ HEADERS  += \
     View/SyntaxHighlighters/LuaHighlighter.h \
     Controller/ScriptEditorTabController.h \
     Controller/MainWindowController.h \
-    View/CodeEditorWidget.h
+    View/CodeEditorWidget.h \
+    Model/MaterialShaderTableModel.h \
+    Controller/MaterialShaderTableController.h
 
 
 
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
     View/ScriptEditorForm.ui \
-    View/ScriptEditorTabForm.ui
+    View/ScriptEditorTabForm.ui \
+    View/MaterialShaderTableForm.ui
 
 RESOURCES += \
     Resources/Resources.qrc
@@ -168,7 +173,8 @@ LIBS += \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
     -lfreetype \
-    -lGLEW
+    -lGLEW \
+    -lAssimp
 
 INCLUDEPATH += \
     $$PWD/../DreamCore/include \

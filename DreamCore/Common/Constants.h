@@ -223,6 +223,10 @@ namespace Dream
         const static string EVENT_TYPE_COLLISION;
         // Light ================================================================
         const static string ASSET_ATTR_LIGHT_COLOR;
+        // Model ================================================================
+        const static string ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST;
+        const static string ASSET_ATTR_MODEL_MATERIAL;
+        const static string ASSET_ATTR_MODEL_SHADER;
         // Shader ===============================================================
         const static string SHADER_FRAGMENT;
         const static string SHADER_VERTEX;

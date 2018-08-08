@@ -16,6 +16,14 @@
  * this file belongs to.
  */
 #include "ModelDefinition.h"
+#include <spdlog/spdlog.h>
+#include <map>
+
+using std::find;
+using std::begin;
+using std::end;
+using std::pair;
+using nlohmann::json;
 
 namespace Dream
 {
@@ -24,6 +32,12 @@ namespace Dream
         : IAssetDefinition(pdHandle,js)
     {
 
+        auto log = spdlog::get("ModelDefinition");
+        if (log == nullptr)
+        {
+            log = spdlog::stdout_color_mt("ModelDefinition");
+        }
+        log->info("Constructing");
     }
 
     bool
@@ -31,5 +45,69 @@ namespace Dream
     ()
     {
         return getFormat().compare(Constants::ASSET_FORMAT_MODEL_ASSIMP) == 0;
+    }
+
+    bool
+    ModelDefinition::addMaterialShader
+    (string material, string shader)
+    {
+        if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].is_null())
+        {
+             mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST] = json::array();
+        }
+
+        for (json matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST])
+        {
+            if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MATERIAL] == material)
+            {
+                matShad[Constants::ASSET_ATTR_MODEL_SHADER] = shader;
+                return false;
+            }
+        }
+
+        auto shaderJson = json::object();
+        shaderJson[Constants::ASSET_ATTR_MODEL_MATERIAL] = material;
+        shaderJson[Constants::ASSET_ATTR_MODEL_SHADER] = shader;
+        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].push_back(shaderJson);
+        return true;
+    }
+
+    json*
+    ModelDefinition::getMaterialShaders
+    ()
+    {
+        if(mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST] = json::array();
+            json first = {
+                {Constants::ASSET_ATTR_MODEL_MATERIAL, "Material"},
+                {Constants::ASSET_ATTR_MODEL_SHADER,   "Shader"},
+            };
+            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].push_back(first);
+
+        }
+        return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST];
+    }
+
+    void
+    ModelDefinition::removeMaterialShader
+    (string material)
+    {
+        auto log = spdlog::get("ModelDefinition");
+        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST];
+        for (auto nextShader : shaderMap)
+        {
+            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MATERIAL];
+            if (materialName.is_string())
+            {
+                string materialNameStr = materialName;
+                if (material.compare(materialNameStr) == 0)
+                {
+                    log->info("Removing material form {} shader map {}",getName(),material);
+                    shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
+                }
+            }
+        }
+        log->error("Could not remove {} from {} shader map, object not found",getName(), material);
     }
 }

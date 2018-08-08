@@ -157,6 +157,23 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createModelMaterialShaderButton
+(AssetDefinitionPropertiesItem*, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Edit Map...");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ModelMaterialShaderMap(bool))
+    );
+    return editor;
+}
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createModelFileButton
 (AssetDefinitionPropertiesItem*, QWidget* parent)
 const
@@ -335,6 +352,9 @@ const
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
             return createModelAdditionalFilesButton(adItem,parent);
 
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
+            return createModelMaterialShaderButton(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
             return createOpenScriptInEditorButton(adItem,parent);
 
@@ -379,6 +399,12 @@ void AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseColour(bool clic
 {
     Q_UNUSED(clicked)
     emit notifyButton_LightChooseColour();
+}
+
+void AssetDefinitionPropertiesTreeDelegate::onButton_ModelMaterialShaderMap(bool clicked)
+{
+   Q_UNUSED(clicked)
+   emit notifyButton_ModelMaterialShaderMap();
 }
 
 void
@@ -438,6 +464,7 @@ const
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
@@ -508,6 +535,7 @@ const
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:

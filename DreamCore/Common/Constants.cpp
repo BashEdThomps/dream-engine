@@ -244,6 +244,10 @@ namespace Dream
     const string Constants::EVENT_TYPE_COLLISION = "collision";
     // Light ====================================================================
     const string Constants::ASSET_ATTR_LIGHT_COLOR   = "colour";
+    // Model ================================================================
+    const string Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST = "material_shader_list";
+    const string Constants::ASSET_ATTR_MODEL_MATERIAL = "material";
+    const string Constants::ASSET_ATTR_MODEL_SHADER = "shader";
     // Lua ======================================================================
     const string Constants::LUA_INIT_FUNCTION   = "onInit";
     const string Constants::LUA_UPDATE_FUNCTION = "onUpdate";

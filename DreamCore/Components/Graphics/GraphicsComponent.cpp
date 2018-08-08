@@ -762,8 +762,6 @@ namespace Dream
         GLint numLights = static_cast<GLint>(mLightQueue.size());
         shader->addUniform(ShaderUniform(UniformType::INT1,"numPointLights",1,&numLights));
 
-        //shader->setUniform1ui("numPointLights",numLights);
-
         // Set Diffuse Light Values
         int i=0;
         const static int max_lights = 10;
@@ -792,7 +790,6 @@ namespace Dream
         Constants::checkGLError("After camera pos uniform");
 
         // Pass Viewer Position Uniform
-        //shader->setViewerPosition(mCamera->getTranslation());
         vec3 camPos = mCamera->getTranslation();
         shader->addUniform(ShaderUniform(FLOAT3,"cameraPos",1,glm::value_ptr(camPos)));
         Constants::checkGLError("After set camPos uniform");
@@ -806,8 +803,6 @@ namespace Dream
 
         shader->setViewMatrix(mViewMatrix);
         Constants::checkGLError("After set view");
-
-
 
         // calculate the model matrix
         mat4 modelMatrix;

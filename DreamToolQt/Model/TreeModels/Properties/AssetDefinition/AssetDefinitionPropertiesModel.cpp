@@ -99,6 +99,7 @@ AssetDefinitionPropertiesModel::createProperties
     {
         createModelFileProperty();
         createModelAdditionalFilesProperty();
+        createModelMaterialShaderProperty();
         createRemoveFilesProperty();
     }
     else if (mAssetDefinitionHandle->isTypePhysicsObject())
@@ -452,6 +453,22 @@ AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
     mRootItem->appendChild(property);
 }
 
+
+void
+AssetDefinitionPropertiesModel::createModelMaterialShaderProperty
+()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Create Model Material/Shader Delegate");
+    AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
+    (
+        "Shader Map",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE
+    );
+    mRootItem->appendChild(property);
+}
+
 void
 AssetDefinitionPropertiesModel::createPhysicsHalfExtentsProperty
 ()
@@ -695,6 +712,8 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         SLOT(onButton_ModelFile())
     );
 
+    // Additional Files
+
     connect
     (
         delegate,
@@ -710,6 +729,15 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         SIGNAL(notifyButton_RemoveFiles()),
         this,
         SLOT(onButton_RemoveFiles())
+    );
+
+    // Material Shader Map
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_ModelMaterialShaderMap()),
+        this,
+        SLOT(onButton_ModelMaterialShaderMap())
     );
 
     // Edit Script
@@ -793,4 +821,13 @@ AssetDefinitionPropertiesModel::onCombo_ShaderTemplateChanged
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
     log->info("Shader Template Changed");
     emit notifyCombo_ShaderTemplateChanged(mAssetDefinitionHandle,templateName);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_ModelMaterialShaderMap
+()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Material Shader Map Clicked");
+    emit notifyButton_ModelMaterialShaderMap(mAssetDefinitionHandle);
 }

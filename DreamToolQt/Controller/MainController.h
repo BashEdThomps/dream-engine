@@ -39,6 +39,7 @@
 #include "../Model/TemplatesModel.h"
 
 #include "../Controller/MainWindowController.h"
+#include "../Controller/MaterialShaderTableController.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
@@ -135,6 +136,7 @@ public slots:
     void onAssetDefinitionProperty_ModelFile(IAssetDefinition* adHandle);
     void onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition* adHandle);
     void onAssetDefinitionProperty_RemoveFiles(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefinition* adHandle);
 
     void onAssetDefinitionProperty_EditScript(IAssetDefinition* adHandle);
     void onAssetDefinitionProperty_EditShader(IAssetDefinition* adHandle);
@@ -226,5 +228,5 @@ private: // Variables
 
     ScriptEditorController mScriptEditor;
     QDir mLastDirectory;
-
+    MaterialShaderTableController mMaterialShaderTableController;
 };
