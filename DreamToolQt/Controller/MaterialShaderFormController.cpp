@@ -1,9 +1,10 @@
-#include "MaterialShaderTableController.h"
+#include "MaterialShaderFormController.h"
 #include <spdlog/spdlog.h>
 #include <DreamCore.h>
 #include <assimp/scene.h>
+#include <QMessageBox>
 
-MaterialShaderTableController::MaterialShaderTableController
+MaterialShaderFormController::MaterialShaderFormController
 (QWidget *parent)
     : QWidget(parent),
       mModelDefinitionHandle(nullptr)
@@ -16,26 +17,35 @@ MaterialShaderTableController::MaterialShaderTableController
     }
     log->info("Constructing");
     mUi.setupUi(this);
-    setWindowTitle("Material<->Shader Mappings");
+    setWindowTitle("Material to Shader Mappings");
+    mTableDelegate = unique_ptr<MaterialShaderTableDelegate>(new MaterialShaderTableDelegate(mUi.tableView));
+    mUi.tableView->setItemDelegate(mTableDelegate.get());
+    /*
     connect(mUi.addButton,SIGNAL(clicked(bool)),this,SLOT(onAddButtonClicked(bool)));
     connect(mUi.removeButton,SIGNAL(clicked(bool)),this,SLOT(onRemoveButtonClicked(bool)));
     connect(mUi.readMaterialsButton,SIGNAL(clicked(bool)),this,SLOT(onReadMaterialsButtonClicked(bool)));
+    */
 }
 
-MaterialShaderTableController::~MaterialShaderTableController
+MaterialShaderFormController::~MaterialShaderFormController
 ()
 {
     auto log = spdlog::get("MaterialShaderTableController");
     log->info("Destructing");
 }
 
-void MaterialShaderTableController::setProjectPath(QString projectPath)
+void MaterialShaderFormController::setProjectPath(QString projectPath)
 {
     mProjectPath = projectPath;
 }
 
+void MaterialShaderFormController::setShaderHandlesVector(vector<ShaderDefinition*> shaders)
+{
+    mTableDelegate->setShaderDefinitions(shaders);
+}
+
 void
-MaterialShaderTableController::setModelDefinition
+MaterialShaderFormController::setModelDefinition
 (Dream::ModelDefinition* def)
 {
     mModelDefinitionHandle = def;
@@ -43,7 +53,7 @@ MaterialShaderTableController::setModelDefinition
 }
 
 void
-MaterialShaderTableController::onAddButtonClicked
+MaterialShaderFormController::onAddButtonClicked
 (bool)
 {
     auto log = spdlog::get("MaterialShaderTableController");
@@ -52,7 +62,7 @@ MaterialShaderTableController::onAddButtonClicked
 }
 
 void
-MaterialShaderTableController::onRemoveButtonClicked
+MaterialShaderFormController::onRemoveButtonClicked
 (bool)
 {
     auto log = spdlog::get("MaterialShaderTableController");
@@ -61,7 +71,7 @@ MaterialShaderTableController::onRemoveButtonClicked
     mTableModel.removeRows(selected.row(),1,QModelIndex());
 }
 
-void MaterialShaderTableController::onReadMaterialsButtonClicked(bool)
+void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
 {
     auto log = spdlog::get("MaterialShaderTableController");
     log->info("Read Mateerials from Model Button Clicked");
@@ -80,6 +90,8 @@ void MaterialShaderTableController::onReadMaterialsButtonClicked(bool)
     if (model == nullptr)
     {
         log->error("Model from assimp is null");
+        mModelDefinitionHandle->clearMaterialShaderList();
+        QMessageBox::warning(this, "No Model Available","Cannot populate materials, model data not found.");
         return;
     }
 
@@ -92,16 +104,20 @@ void MaterialShaderTableController::onReadMaterialsButtonClicked(bool)
     }
 
     int rows = processAssimpNode(scene->mRootNode, scene);
-    mTableModel.insertRows(0,rows,QModelIndex());
+    mUi.tableView->update();
+    //mTableModel.insertRows(0,rows,QModelIndex());
 }
 
 void
-MaterialShaderTableController::populate
+MaterialShaderFormController::populate
 ()
 {
    auto log = spdlog::get("MaterialShaderTableController");
+   log->info("Populating");
    if (mModelDefinitionHandle != nullptr)
    {
+       log->info("ModelDefinition is present");
+       onReadMaterialsButtonClicked(true);
        mTableModel.setModelDefinition(mModelDefinitionHandle);
        mUi.tableView->setModel(&mTableModel);
        mUi.tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -112,7 +128,7 @@ MaterialShaderTableController::populate
    }
 }
 
-void MaterialShaderTableController::getAllUpInYourFace()
+void MaterialShaderFormController::getAllUpInYourFace()
 {
     show();
     activateWindow();
@@ -121,7 +137,7 @@ void MaterialShaderTableController::getAllUpInYourFace()
 }
 
 int
-MaterialShaderTableController::processAssimpNode
+MaterialShaderFormController::processAssimpNode
 (aiNode* node, const aiScene* scene)
 {
     auto log = spdlog::get("MaterialShaderTableController");
@@ -138,9 +154,13 @@ MaterialShaderTableController::processAssimpNode
         aiGetMaterialString(material,AI_MATKEY_NAME,&name);
         string materialStr = string(name.C_Str());
         log->info("Adding material {}",materialStr);
-        if (mModelDefinitionHandle->addMaterialShader(materialStr,"<Not Set>"))
+        if (mModelDefinitionHandle->addMaterialShader(materialStr,""))
         {
             materialCount++;
+        }
+        else
+        {
+            log->info("{} was all ready in the SD JSON",materialStr);
         }
     }
     // Then do the same for each of its children
@@ -151,4 +171,4 @@ MaterialShaderTableController::processAssimpNode
     return materialCount;
 }
 
-AssimpCache MaterialShaderTableController::mAssimpCache;
+AssimpCache MaterialShaderFormController::mAssimpCache;

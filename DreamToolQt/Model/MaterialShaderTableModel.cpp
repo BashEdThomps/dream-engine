@@ -28,6 +28,7 @@ int
 MaterialShaderTableModel::rowCount
 (const QModelIndex& parent) const
 {
+    Q_UNUSED(parent)
     auto log = spdlog::get("MaterialShaderTableModel");
     log->info("rowCount");
 
@@ -131,6 +132,7 @@ bool
 MaterialShaderTableModel::setData
 (const QModelIndex& index, const QVariant& value, int role)
 {
+    Q_UNUSED(role)
     auto log = spdlog::get("MaterialShaderTableModel");
     log->info("SetData");
 
@@ -155,10 +157,11 @@ MaterialShaderTableModel::setData
     return true;
 }
 
-bool
+/*bool
 MaterialShaderTableModel::insertRows
 (int row, int count, const QModelIndex& index)
 {
+    Q_UNUSED(index)
     auto log = spdlog::get("MaterialShaderTableModel");
     log->info("insertRows");
 
@@ -181,11 +184,14 @@ MaterialShaderTableModel::insertRows
     }
     return true;
 }
+*/
 
+/*
 bool
 MaterialShaderTableModel::removeRows
 (int row, int count, const QModelIndex& parent)
 {
+    Q_UNUSED(parent)
     if (row < 0 || count < 1)
     {
         return true;
@@ -209,10 +215,17 @@ MaterialShaderTableModel::removeRows
     }
     return true;
 }
+*/
+
 Qt::ItemFlags MaterialShaderTableModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
+
+    if (index.column() == 0)
+    {
+        return QAbstractTableModel::flags(index) & !(Qt::ItemIsEditable);
+    }
 
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 }

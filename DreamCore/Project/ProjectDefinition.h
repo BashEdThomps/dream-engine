@@ -31,6 +31,7 @@ namespace Dream
     class Project;
     class SceneDefinition;
     class IAssetDefinition;
+    class ShaderDefinition;
 
     class ProjectDefinition : public IDefinition, ILoggable
     {
@@ -76,6 +77,7 @@ namespace Dream
         json getJson() override;
 
         map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionHandlesMap();
+        vector<ShaderDefinition*> getShaderAssetDefinitionHandleVector();
 
     private:
         void loadSceneDefinitions();

@@ -39,7 +39,7 @@
 #include "../Model/TemplatesModel.h"
 
 #include "../Controller/MainWindowController.h"
-#include "../Controller/MaterialShaderTableController.h"
+#include "../Controller/MaterialShaderFormController.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
@@ -61,6 +61,7 @@ public:
     SelectionHighlighter *getSelectionHighlighterHandle();
     RelationshipTree *getRelationshipTreeHandle();
     void forceScenegraphTreeDataChanged();
+
 
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);
@@ -228,5 +229,5 @@ private: // Variables
 
     ScriptEditorController mScriptEditor;
     QDir mLastDirectory;
-    MaterialShaderTableController mMaterialShaderTableController;
+    MaterialShaderFormController mMaterialShaderTableController;
 };

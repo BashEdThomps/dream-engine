@@ -466,4 +466,18 @@ namespace Dream
         }
         return handlesMap;
     }
+
+    vector<ShaderDefinition*> ProjectDefinition::getShaderAssetDefinitionHandleVector()
+    {
+        vector<ShaderDefinition*> shaderHandles;
+        for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
+        {
+            IAssetDefinition* next = (*it).get();
+            if (next->getType() == Constants::ASSET_TYPE_SHADER)
+            {
+               shaderHandles.push_back(dynamic_cast<ShaderDefinition*>(next));
+            }
+        }
+        return shaderHandles;
+    }
 }

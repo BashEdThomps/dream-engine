@@ -321,6 +321,55 @@ namespace Dream
             onWindowDimensionsChanged();
         }
 
+        /*
+         * Let's think about rendering pipeline optimisation...
+         *
+         * I want to order my rendering quque in such a way that it minimises shader
+         * changes. Using one shader per ModelInstance is OK but I'm moving to a
+         * 1-shader-per-material approach to allow ModelInstances to be rendered
+         * with multiple shaders, depending on their material.
+         *
+         * Each ModelIinstance has a table of Materials present within the model and the
+         * ShaderInstance that said material want's to be rendered with.
+         *
+         * Using this data I can find all of the meshes in the scene that want to
+         * use any given shader. Then I can build a data structure that holds the
+         * relationship of ShaderInstance to vector<Mesh>. These meshes can be
+         * ordered by distance to implement draw distance limiting.
+         *
+         * e.g
+         *
+         * // Meshes in Frustum OrderedBy Distance Ascending
+         *
+         * vector<Mesh> mMeshes;
+         *
+         * auto meshItr = begin( mMeshes )
+         *
+         * for (Mesh m : mMeshes)
+         * {
+         *     if (mesh.radiusFromCamera() > RenderDistanceMax) break;
+         *
+         *     addToVBO(mMesh)
+         * }
+         *
+         * setupShader(currentShader)
+         * render(currentShader,VBO);
+         *  setTextures()    \
+         *  setUniforms()     \ etc...
+         *  setVariables()   /
+         *
+         * For each ShaderInstance I can setup the shader and render the vector of
+         * meshes (Possibly globbed into a single VBO) in order from furthest to
+         * or vice cersa. without switching shaders.
+         *
+         * The goal is to have each shader used only once per frame.
+         *
+         * The initial map can be built at load-time rather than once per frame,
+         * then meshes ordered by distance once per frame as this is dynamic, but
+         * mesh's material/shader will never change.
+         *
+         */
+
         // View transform
         mViewMatrix = mCamera->getViewMatrix();
 
@@ -333,68 +382,68 @@ namespace Dream
             clearLightQueue();
 
             scene->getRootSceneObjectRuntimeHandle()->applyToAll
-                    (
-                        function<void*(SceneObjectRuntime*)>
-                        (
-                            [&](SceneObjectRuntime* object)
-            {
-                            // Models
-                            if (object->hasModelInstance())
+            (
+                function<void*(SceneObjectRuntime*)>
+                (
+                    [&](SceneObjectRuntime* object)
+                    {
+                        // Models
+                        if (object->hasModelInstance())
+                        {
+                            if (object->hasShaderInstance())
                             {
-                                if (object->hasShaderInstance())
-                                {
-                                    addToModelQueue(object);
-                                }
-                                else
-                                {
-                                    log->error("Object {} has model, but no shader assigned." , object->getUuid());
-                                }
+                                addToModelQueue(object);
                             }
-
-                            // Sprites
-                            if (object->hasSpriteInstance())
+                            else
                             {
-                                if (object->hasShaderInstance())
-                                {
-                                    addToSpriteQueue(object);
-                                }
-                                else
-                                {
-                                    log->error(
-                                    "Object {} has sprite, but no shader assigned.",
-                                    object->getUuid()
-                                    );
-                                }
+                                log->error("Object {} has model, but no shader assigned." , object->getUuid());
                             }
-
-                            // Fonts
-                            if (object->hasFontInstance())
-                            {
-                                if (object->hasShaderInstance())
-                                {
-                                    addToFontQueue(object);
-                                }
-                                else
-                                {
-                                    log->error(
-                                    "Object {} has font, but no shader assigned.",
-                                    object->getUuid()
-                                    );
-                                }
-                            }
-
-                            // Lights
-                            if (object->hasLightInstance())
-                            {
-                                LightInstance* light = object->getLightInstance();
-                                log->info("Adding light instance to queue {}",light->getNameAndUuidString());
-                                addToLightQueue(light);
-                            }
-
-                            return nullptr;
                         }
-                        )
-                    );
+
+                        // Sprites
+                        if (object->hasSpriteInstance())
+                        {
+                            if (object->hasShaderInstance())
+                            {
+                                addToSpriteQueue(object);
+                            }
+                            else
+                            {
+                                log->error(
+                                "Object {} has sprite, but no shader assigned.",
+                                object->getUuid()
+                                );
+                            }
+                        }
+
+                        // Fonts
+                        if (object->hasFontInstance())
+                        {
+                            if (object->hasShaderInstance())
+                            {
+                                addToFontQueue(object);
+                            }
+                            else
+                            {
+                                log->error(
+                                "Object {} has font, but no shader assigned.",
+                                object->getUuid()
+                                );
+                            }
+                        }
+
+                        // Lights
+                        if (object->hasLightInstance())
+                        {
+                            LightInstance* light = object->getLightInstance();
+                            log->info("Adding light instance to queue {}",light->getNameAndUuidString());
+                            addToLightQueue(light);
+                        }
+
+                        return nullptr;
+                    }
+                )
+            );
         }
     }
 

@@ -47,7 +47,7 @@ namespace Dream
         return getFormat().compare(Constants::ASSET_FORMAT_MODEL_ASSIMP) == 0;
     }
 
-    bool
+    bool // Indicates whether a new insertion was made
     ModelDefinition::addMaterialShader
     (string material, string shader)
     {
@@ -79,12 +79,6 @@ namespace Dream
         if(mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].is_null())
         {
             mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST] = json::array();
-            json first = {
-                {Constants::ASSET_ATTR_MODEL_MATERIAL, "Material"},
-                {Constants::ASSET_ATTR_MODEL_SHADER,   "Shader"},
-            };
-            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].push_back(first);
-
         }
         return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST];
     }
@@ -109,5 +103,10 @@ namespace Dream
             }
         }
         log->error("Could not remove {} from {} shader map, object not found",getName(), material);
+    }
+
+    void ModelDefinition::clearMaterialShaderList()
+    {
+        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].clear();
     }
 }

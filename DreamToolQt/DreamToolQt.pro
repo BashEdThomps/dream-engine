@@ -79,7 +79,8 @@ SOURCES += \
     Controller/MainWindowController.cpp \
     View/CodeEditorWidget.cpp \
     Model/MaterialShaderTableModel.cpp \
-    Controller/MaterialShaderTableController.cpp
+    Model/MaterialShaderTableDelegate.cpp \
+    Controller/MaterialShaderFormController.cpp
 
 
 
@@ -136,7 +137,8 @@ HEADERS  += \
     Controller/MainWindowController.h \
     View/CodeEditorWidget.h \
     Model/MaterialShaderTableModel.h \
-    Controller/MaterialShaderTableController.h
+    Model/MaterialShaderTableDelegate.h \
+    Controller/MaterialShaderFormController.h
 
 
 

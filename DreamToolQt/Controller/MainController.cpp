@@ -1151,6 +1151,7 @@ MainController::onAssetDefinitionProperty_ModelFile
         }
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
+        dynamic_cast<ModelDefinition*>(adHandle)->clearMaterialShaderList();
 
         log->info( "Copy {} "
                    , (copyResult ? "Success":"Failed"));
@@ -1757,8 +1758,14 @@ void MainController::onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefi
 {
     auto log = spdlog::get("MainController");
     log->info("Opening Material/Shader Map Widget");
-    mMaterialShaderTableController.setModelDefinition(dynamic_cast<ModelDefinition*>(adHandle));
     mMaterialShaderTableController.setProjectPath(mProjectDirectoryModel.getProjectDirectoryAbsolutePath());
+    mMaterialShaderTableController.setModelDefinition(dynamic_cast<ModelDefinition*>(adHandle));
+    if (mSelectedProjectDefinitionHandle == nullptr)
+    {
+        log->info("SelectedProjectDefinition Handle is nullptr, setting from directory model");
+        mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinitionHandle();
+    }
+    mMaterialShaderTableController.setShaderHandlesVector(mSelectedProjectDefinitionHandle->getShaderAssetDefinitionHandleVector());
     mMaterialShaderTableController.getAllUpInYourFace();
 }
 

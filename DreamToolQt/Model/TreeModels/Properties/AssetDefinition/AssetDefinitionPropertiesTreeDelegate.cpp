@@ -21,7 +21,7 @@
 #include "AssetDefinitionPropertiesModel.h"
 
 #include <DreamCore.h>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QCheckBox>
@@ -43,13 +43,19 @@ AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
       mModelHandle(model)
 
 {
-    qDebug() << "AssetDefinitionTreeDelegate: Constructing";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    if (log==nullptr)
+    {
+        log=spdlog::stdout_color_mt("AssetDefinitionPropertiesTreeDelegate");
+    }
+    log->info("Constructing");
 }
 
 AssetDefinitionPropertiesTreeDelegate::~AssetDefinitionPropertiesTreeDelegate
 ()
 {
-    qDebug() << "AssetDefinitionTreeDelegate: Destructing";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("Destructing");
 }
 
 QWidget*
@@ -60,12 +66,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Pick Colour");
     connect
-    (
-        editor,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_FontColourDialog(bool))
-    );
+            (
+                editor,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_FontColourDialog(bool))
+                );
     return editor;
 }
 
@@ -73,8 +79,8 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_FontColourDialog
 (bool)
 {
-   QColorDialog *editor = new QColorDialog();
-   editor->show();
+    QColorDialog *editor = new QColorDialog();
+    editor->show();
 }
 
 QWidget*
@@ -100,7 +106,8 @@ AssetDefinitionPropertiesTreeDelegate::createFormatComboBox
 (AssetDefinitionPropertiesItem* item, QWidget* parent)
 const
 {
-    qDebug() << "AssetDefinitionTreeDelegate: createEditor";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("createEditor");
     QComboBox *editor = new QComboBox(parent);
     editor->setDuplicatesEnabled(false);
     editor->setEditable(false);
@@ -130,12 +137,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Audio File...");
     connect
-    (
-        editor,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_AudioFile(bool))
-    );
+            (
+                editor,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_AudioFile(bool))
+                );
     return editor;
 }
 
@@ -147,12 +154,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Font File...");
     connect
-    (
-        editor,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_FontFile(bool))
-    );
+            (
+                editor,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_FontFile(bool))
+                );
     return editor;
 }
 
@@ -164,12 +171,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Edit Map...");
     connect
-    (
-        editor,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_ModelMaterialShaderMap(bool))
-    );
+            (
+                editor,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_ModelMaterialShaderMap(bool))
+                );
     return editor;
 }
 
@@ -181,12 +188,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Model File...");
     connect
-    (
-        editor,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_ModelFile(bool))
-    );
+            (
+                editor,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_ModelFile(bool))
+                );
     return editor;
 }
 
@@ -198,12 +205,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Mesh File...");
     connect
-    (
-        editor,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_PhysicsBvhTriangleMeshFile(bool))
-    );
+            (
+                editor,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_PhysicsBvhTriangleMeshFile(bool))
+                );
     return editor;
 }
 
@@ -215,12 +222,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Additional Files...");
     connect
-    (
-        editor,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_ModelAdditionalFiles(bool))
-    );
+            (
+                editor,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_ModelAdditionalFiles(bool))
+                );
     return editor;
 }
 
@@ -231,16 +238,16 @@ AssetDefinitionPropertiesTreeDelegate::createOpenShaderInEditorButton
 (AssetDefinitionPropertiesItem*, QWidget* parent)
 const
 {
-   QToolButton *button = new QToolButton(parent);
-   button->setText("Edit Shader");
-   connect
-    (
-        button,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_EditShader(bool))
-    );
-   return button;
+    QToolButton *button = new QToolButton(parent);
+    button->setText("Edit Shader");
+    connect
+            (
+                button,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_EditShader(bool))
+                );
+    return button;
 }
 
 QWidget*
@@ -251,12 +258,12 @@ const
     QToolButton *button = new QToolButton(parent);
     button->setText("Edit Script");
     connect
-    (
-        button,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_EditScript(bool))
-    );
+            (
+                button,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_EditScript(bool))
+                );
     return button;
 
 }
@@ -269,12 +276,12 @@ const
     QToolButton *button = new QToolButton(parent);
     button->setText("Remove Files");
     connect
-    (
-        button,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_RemoveFiles(bool))
-    );
+            (
+                button,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_RemoveFiles(bool))
+                );
     return button;
 
 }
@@ -289,7 +296,7 @@ const
 
     switch(adItem->getProperty())
     {
-            // QCheckBox
+        // QCheckBox
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             return new QCheckBox(parent);
@@ -386,12 +393,12 @@ QWidget* AssetDefinitionPropertiesTreeDelegate::createLightColourPaletteButton(Q
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
     connect
-    (
-        button,
-        SIGNAL(clicked(bool)),
-        this,
-        SLOT(onButton_LightChooseColour(bool))
-    );
+            (
+                button,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_LightChooseColour(bool))
+                );
     return button;
 }
 
@@ -403,8 +410,8 @@ void AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseColour(bool clic
 
 void AssetDefinitionPropertiesTreeDelegate::onButton_ModelMaterialShaderMap(bool clicked)
 {
-   Q_UNUSED(clicked)
-   emit notifyButton_ModelMaterialShaderMap();
+    Q_UNUSED(clicked)
+    emit notifyButton_ModelMaterialShaderMap();
 }
 
 void
@@ -488,7 +495,7 @@ const
             model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
             break;
 
-        // QDoubleSpinBox
+            // QDoubleSpinBox
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
@@ -510,18 +517,18 @@ const
             model->setData(index,static_cast<QDoubleSpinBox*>(editor)->value());
             break;
 
-        // QLineEdit
+            // QLineEdit
         case ASSET_DEFINITION_PROPERTY_NAME:
             model->setData(index,static_cast<QLineEdit*>(editor)->text());
             break;
 
-        // QComboBox
+            // QComboBox
         case ASSET_DEFINITION_PROPERTY_TYPE:
         case ASSET_DEFINITION_PROPERTY_FORMAT:
             model->setData(index,static_cast<QComboBox*>(editor)->currentText());
             break;
 
-        // Not Used
+            // Not Used
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
@@ -556,7 +563,8 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_AudioFile
 (bool)
 {
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: AudioFile was clicked";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("AudioFile was clicked");
     emit notifyButton_AudioFile();
 }
 
@@ -565,7 +573,8 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_FontFile
 (bool)
 {
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: FontFile was clicked";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("FontFile was clicked");
     emit notifyButton_FontFile();
 }
 
@@ -573,7 +582,8 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_ModelFile
 (bool)
 {
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: ModelFile was clicked";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("ModelFile was clicked");
     emit notifyButton_ModelFile();
 }
 
@@ -581,7 +591,8 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_PhysicsBvhTriangleMeshFile
 (bool)
 {
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: PhysicsBvhTriangleMeshFile was clicked";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("PhysicsBvhTriangleMeshFile was clicked");
     emit notifyButton_PhysicsBvhTriangleMeshFile();
 }
 
@@ -589,7 +600,8 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFiles
 (bool)
 {
-    qDebug() << "AssetDefinitionPropertiesTreeDelegate: ModelAdditionalFiles was clicked";
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("ModelAdditionalFiles was clicked");
     emit notifyButton_ModelAdditionalFiles();
 }
 
@@ -597,24 +609,27 @@ void
 AssetDefinitionPropertiesTreeDelegate::onButton_RemoveFiles
 (bool)
 {
-   qDebug() << "AssetDefinitionPropertiesTreeDelegate: RemoveFiles was clicked";
-   emit notifyButton_RemoveFiles();
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("RemoveFiles was clicked");
+    emit notifyButton_RemoveFiles();
 }
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_EditShader
 (bool)
 {
-   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditShader was clicked";
-   emit notifyButton_EditShader();
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("EditShader was clicked");
+    emit notifyButton_EditShader();
 }
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
 (bool)
 {
-   qDebug() << "AssetDefinitionPropertiesTreeDelegate: EditScript was clicked";
-   emit notifyButton_EditScript();
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("EditScript was clicked");
+    emit notifyButton_EditScript();
 }
 
 
