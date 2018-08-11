@@ -1,8 +1,6 @@
 #pragma once
 
 #include "../IComponent.h"
-#include "../../Common/ILoggable.h"
-
 #include "../../NanoVG/src/nanovg.h"
 
 typedef struct NVGcontext NVGcontext;
@@ -10,7 +8,7 @@ typedef struct NVGcontext NVGcontext;
 namespace Dream
 {
     class IWindowComponent;
-class NanoVGComponent : public IComponent, ILoggable
+class NanoVGComponent : public IComponent
 {
 public:
     NanoVGComponent(IWindowComponent* windowComponentHandle);
@@ -486,7 +484,7 @@ public:
 
     bool init() override;
 
-    void updateComponent(SceneRuntime*) override;
+    void updateComponent() override;
 protected:
         NVGcontext* mContext;
         IWindowComponent* mWindowComponentHandle;

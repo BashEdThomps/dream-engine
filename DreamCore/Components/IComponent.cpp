@@ -16,11 +16,15 @@
  */
 
 #include "IComponent.h"
+#include "Time.h"
 
 namespace Dream
 {
 
     IComponent::IComponent()
+        :ILoggable("IComponent"),
+          mRunning(false),
+          mShouldUpdate(false)
     {
 
     }
@@ -35,6 +39,72 @@ namespace Dream
     void IComponent::setTime(Time* time)
     {
         mTime = time;
+    }
+
+    bool IComponent::getRunning() const
+    {
+        return mRunning;
+    }
+
+    void IComponent::setRunning(volatile bool running)
+    {
+        mRunning = running;
+    }
+
+    bool IComponent::getShouldUpdate() const
+    {
+        return mShouldUpdate;
+    }
+
+    void IComponent::setShouldUpdate(volatile bool shouldUpdate)
+    {
+        mShouldUpdate = shouldUpdate;
+    }
+
+    void IComponent::beginUpdate()
+    {
+        mUpdateBeginTime = mTime->nowLL();
+        mUpdateComplete = false;
+        mShouldUpdate = false;
+    }
+
+    void IComponent::endUpdate()
+    {
+        auto log = getLog();
+        mUpdateEndTime =  mTime->nowLL();
+        mUpdateComplete = true;
+        log->info("Update Complete in {}",getUpdateTime());
+
+    }
+
+    bool IComponent::getUpdateComplete() const
+    {
+        return mUpdateComplete;
+    }
+
+    long long IComponent::getUpdateBeginTime() const
+    {
+        return mUpdateBeginTime;
+    }
+
+    long long IComponent::getUpdateTime() const
+    {
+        return mUpdateEndTime-mUpdateBeginTime;
+    }
+
+    long long IComponent::getYieldedTime() const
+    {
+       return abs(mUpdateBeginTime-mUpdateEndTime);
+    }
+
+    long long IComponent::getUpdateEndTime() const
+    {
+        return mUpdateEndTime;
+    }
+
+    void IComponent::setActiveSceneRuntime(SceneRuntime* runtime)
+    {
+       mActiveSceneRuntimeHandle = runtime;
     }
 
 } // End of Dream

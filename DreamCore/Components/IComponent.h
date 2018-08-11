@@ -17,23 +17,48 @@
 
 #pragma once
 
+#include "../Common/ILoggable.h"
+
 namespace Dream
 {
     class Time;
     class SceneRuntime;
 
-    class IComponent
+    class IComponent : public ILoggable
     {
 
     public:
         IComponent();
         virtual ~IComponent();
         virtual bool init() = 0;
-        virtual void updateComponent(SceneRuntime*) = 0;
+        virtual void updateComponent() = 0;
         void setTime(Time*);
 
+        bool getRunning() const;
+        void setRunning(volatile bool running);
+
+        bool getShouldUpdate() const;
+        void setShouldUpdate(volatile bool shouldUpdate);
+
+        long long getUpdateEndTime() const;
+        long long getUpdateBeginTime() const;
+        long long getUpdateTime() const;
+        long long getYieldedTime() const;
+        void setActiveSceneRuntime(SceneRuntime* runtime);
+        bool getUpdateComplete() const;
+
     protected:
+        void beginUpdate();
+        void endUpdate();
+
+        long long mUpdateBeginTime;
+        long long mUpdateEndTime;
+
         Time* mTime;
+        volatile bool mRunning;
+        volatile bool mShouldUpdate;
+        SceneRuntime* mActiveSceneRuntimeHandle;
+        volatile bool mUpdateComplete;
 
     }; // End of IComponent
 

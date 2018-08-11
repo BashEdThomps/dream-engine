@@ -18,12 +18,14 @@ namespace Dream
     public:
         Time();
         ~Time();
-        double getCurrentTime();
-        double getLastTime();
-        double getTimeDelta();
-        double scaleValue(double value);
-        void update();
+        double getCurrentFrameTime();
+        double getLastFrameTime();
+        double getFrameTimeDelta();
+        double scaleValueByFrameTime(double value);
+        void updateFrameTime();
         void show();
+        double now();
+        long long nowLL();
     };
 
 } // End of Dream

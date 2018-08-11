@@ -6,25 +6,23 @@ namespace Dream
 
     AssimpMesh::AssimpMesh
     (
-            AssimpModelInstance* parent,
-            string name,
-            vector<Vertex> vertices,
-            vector<GLuint> indices,
-            vector<Texture> textures,
-            aiColor3D diffuse,
-            aiColor3D specular
+        AssimpModelInstance* parent,
+        string name,
+        vector<Vertex> vertices,
+        vector<GLuint> indices,
+        vector<Texture> textures,
+        AssimpMaterial material
     ) : ILoggable("AssimpMesh"),
         mParentHandle(parent),
+        mMaterial(material),
         mName(name),
         mVertices(vertices),
         mIndices(indices),
-        mTextures(textures),
-        mDiffuseColour(diffuse),
-        mSpecularColour(specular)
+        mTextures(textures)
 
     {
         auto log = getLog();
-        log->info("AssimpMesh: Constructing Mesh for {}", parent->getName());
+        log->trace("Constructing Mesh for {}", parent->getName());
         init();
     }
 
@@ -32,7 +30,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("AssimpMesh: Destroying Mesh for {}",mParentHandle->getNameAndUuidString());
+        log->trace("Destroying Mesh for {}",mParentHandle->getNameAndUuidString());
     }
 
     string AssimpMesh::getName() const
@@ -85,7 +83,7 @@ namespace Dream
             }
 
             log->info(
-                  "AssimpMesh: Binding Material {} with GL Texture {} to unit {} for {} in {}",
+                  "Binding Material {} with GL Texture {} to unit {} for {} in {}",
                   materialStr.str(),
                   mTextures[i].id,
                   nextTexture,
@@ -114,18 +112,30 @@ namespace Dream
     AssimpMesh::bindDiffuse
     (ShaderInstance *shaderHandle)
     {
-        auto diffuse = vec3(mDiffuseColour.r, mDiffuseColour.g, mDiffuseColour.b);
-        //shaderHandle->setDiffuseColour(diffuse);
-        shaderHandle->addUniform(ShaderUniform(FLOAT3,"diffuseColour",1,glm::value_ptr(diffuse)));
+        aiColor3D diff = mMaterial.mColorDiffuse;
+        auto diffuse = vec3(diff.r, diff.g, diff.b);
+        shaderHandle->addUniform(ShaderUniform(FLOAT3,"materialDiffuseColour",1,glm::value_ptr(diffuse)));
+        shaderHandle->addUniform(ShaderUniform(FLOAT1,"materialDiffuseStrength",1,&mMaterial.mRefracti));
     }
 
     void
     AssimpMesh::bindSpecular
     (ShaderInstance *shaderHandle)
     {
-        auto specular = vec3(mSpecularColour.r, mSpecularColour.g, mSpecularColour.b);
-        //shaderHandle->setSpecularColour(specular);
-        shaderHandle->addUniform(ShaderUniform(FLOAT3,"specularColour",1,glm::value_ptr(specular)));
+        aiColor3D spec = mMaterial.mColorSpecular;
+        auto specular = vec3(spec.r, spec.g, spec.b);
+        shaderHandle->addUniform(ShaderUniform(FLOAT3,"materialSpecularColour",1,glm::value_ptr(specular)));
+        shaderHandle->addUniform(ShaderUniform(FLOAT1,"materialSpecularStrength",1,&mMaterial.mShininess));
+    }
+
+    void
+    AssimpMesh::bindAmbient
+    (ShaderInstance *shaderHandle)
+    {
+        aiColor3D amb = mMaterial.mColorAmbient;
+        auto ambient = vec3(amb.r, amb.g, amb.b);
+        shaderHandle->addUniform(ShaderUniform(FLOAT3,"materialAmbientColour",1,glm::value_ptr(ambient)));
+        shaderHandle->addUniform(ShaderUniform(FLOAT1,"materialAmbientStrength",1,&mMaterial.mOpacity));
     }
 
     void
@@ -136,11 +146,16 @@ namespace Dream
         bindTextures(shader);
         bindDiffuse(shader);
         bindSpecular(shader);
+
+        // Sync Uniforms
+        shader->syncUniforms();
+        Constants::checkGLError("After sync uniforms");
+
         // Draw mesh
         shader->bindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
         shader->unbindVertexArray();
-        unbindTextures();
+        //unbindTextures();
     }
 
     void

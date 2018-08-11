@@ -26,14 +26,14 @@ namespace Dream
     () : ILoggable ("LuaScriptCache")
     {
         auto log = getLog();
-        log->info("Constructing");
+        log->trace("Constructing");
     }
 
     LuaScriptCache::~LuaScriptCache
     ()
     {
         auto log = getLog();
-        log->info("Destructing");
+        log->trace("Destructing");
     }
 
     string

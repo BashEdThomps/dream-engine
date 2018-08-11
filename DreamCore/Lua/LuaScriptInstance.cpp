@@ -29,7 +29,7 @@ namespace Dream
           mError(false)
     {
         auto log = getLog();
-        log->info( "LuaScriptInstance: Constructing {}", mDefinitionHandle->getNameAndUuidString() );
+        log->trace( "Constructing {}", mDefinitionHandle->getNameAndUuidString() );
         return;
     }
 
@@ -37,7 +37,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("LuaScriptInstance: Destructing ", mDefinitionHandle->getNameAndUuidString() );
+        log->trace("Destructing ", mDefinitionHandle->getNameAndUuidString() );
     }
 
     bool
@@ -46,7 +46,7 @@ namespace Dream
     {
         auto log = getLog();
         mAbsolutePath = projectPath + mDefinitionHandle->getAssetPath();
-        log->info( "LuaScriptInstance: Script at {}" , mAbsolutePath );
+        log->info( "Script at {}" , mAbsolutePath );
         return mAbsolutePath.size() != 0;
     }
 

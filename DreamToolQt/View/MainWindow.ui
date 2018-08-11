@@ -87,7 +87,7 @@
        </property>
        <widget class="QTabWidget" name="tabWidget">
         <property name="tabPosition">
-         <enum>QTabWidget::West</enum>
+         <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
          <number>0</number>
@@ -172,7 +172,7 @@
              <bool>false</bool>
             </property>
             <attribute name="headerVisible">
-             <bool>true</bool>
+             <bool>false</bool>
             </attribute>
            </widget>
           </item>
@@ -312,7 +312,7 @@
          <bool>false</bool>
         </property>
         <attribute name="headerVisible">
-         <bool>true</bool>
+         <bool>false</bool>
         </attribute>
         <attribute name="headerDefaultSectionSize">
          <number>125</number>
@@ -401,7 +401,20 @@
     <property name="title">
      <string>Debug</string>
     </property>
+    <widget class="QMenu" name="menuSet_Log_Level">
+     <property name="title">
+      <string>Set Log Level</string>
+     </property>
+     <addaction name="actionLogLevelTrace"/>
+     <addaction name="actionLogLevelDebug"/>
+     <addaction name="actionLogLevelInfo"/>
+     <addaction name="actionLogLevelWarn"/>
+     <addaction name="actionLogLevelError"/>
+     <addaction name="actionLogLevelCritical"/>
+     <addaction name="actionLogLevelOff"/>
+    </widget>
     <addaction name="actionDebug_DumpProjectDefinitionJson"/>
+    <addaction name="menuSet_Log_Level"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuScene"/>
@@ -762,6 +775,41 @@
   <action name="actionSceneRemoveScene">
    <property name="text">
     <string>Remove Scene</string>
+   </property>
+  </action>
+  <action name="actionLogLevelTrace">
+   <property name="text">
+    <string>Trace</string>
+   </property>
+  </action>
+  <action name="actionLogLevelDebug">
+   <property name="text">
+    <string>Debug</string>
+   </property>
+  </action>
+  <action name="actionLogLevelInfo">
+   <property name="text">
+    <string>Info</string>
+   </property>
+  </action>
+  <action name="actionLogLevelWarn">
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionLogLevelError">
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionLogLevelCritical">
+   <property name="text">
+    <string>Critical</string>
+   </property>
+  </action>
+  <action name="actionLogLevelOff">
+   <property name="text">
+    <string>Off</string>
    </property>
   </action>
  </widget>

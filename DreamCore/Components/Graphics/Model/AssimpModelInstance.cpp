@@ -35,6 +35,7 @@
 #include "ModelDefinition.h"
 
 #include "AssimpCache.h"
+#include "AssimpMaterial.h"
 
 using std::numeric_limits;
 
@@ -48,7 +49,7 @@ namespace Dream
           mTextureCacheHandle(texCache)
     {
         auto log = getLog();
-            log->info( "AssimpModelInstance: Constructing {}", definition->getNameAndUuidString() );
+            log->trace( "Constructing {}", definition->getNameAndUuidString() );
         initBoundingBox();
         return;
     }
@@ -65,7 +66,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-            log->info( "AssimpModelInstance: Destroying Object");
+            log->trace( "Destroying Object");
         return;
     }
 
@@ -75,7 +76,7 @@ namespace Dream
     {
         auto log = getLog();
         string path = projectPath + mDefinitionHandle->getAssetPath();
-            log->info( "AssimpModelInstance: Loading Model - {}" , path);
+            log->info( "Loading Model - {}" , path);
 
         auto model = mModelCacheHandle->getModelFromCache(path);
 
@@ -204,7 +205,7 @@ namespace Dream
         vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         if (diffuseMaps.size() > 0 )
         {
-            log->info( "AssimpModelInstance: Inserting {} diffuse textre" , diffuseMaps.size());
+            log->info( "Inserting {} diffuse textre" , diffuseMaps.size());
 
         }
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -213,7 +214,7 @@ namespace Dream
         vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         if (specularMaps.size() > 0)
         {
-            log->info( "AssimpModelInstance: Inserting {} specular texture", specularMaps.size());
+            log->info( "Inserting {} specular texture", specularMaps.size());
 
         }
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
@@ -222,7 +223,7 @@ namespace Dream
         vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normals");
         if (normalMaps.size() > 0)
         {
-            log->info( "AssimpModelInstance: Inserting {} normal texture", normalMaps.size());
+            log->info( "Inserting {} normal texture", normalMaps.size());
 
         }
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
@@ -239,20 +240,50 @@ namespace Dream
         vector<GLuint>  indices = processIndexData(mesh);
         vector<Texture> textures = processTextureData(mesh,scene);
 
-        // Colours
-
-        aiColor3D diffuse (0.f,0.f,0.f);
-        aiColor3D specular(0.f,0.f,0.f);
-        aiString materialName;
+        // Material info Colours
 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        material->Get(AI_MATKEY_COLOR_DIFFUSE,diffuse);
-        material->Get(AI_MATKEY_COLOR_SPECULAR,specular);
-        material->Get(AI_MATKEY_NAME,materialName);
+        AssimpMaterial aMaterial;
 
-        log->info( "AssimpModelInstance: Using Material {}" , materialName.C_Str());
+        /*  Material Attributes
+            AI_MATKEY_NAME
+            AI_MATKEY_TWOSIDED
+            AI_MATKEY_SHADING_MODEL
+            AI_MATKEY_ENABLE_WIREFRAME
+            AI_MATKEY_BLEND_FUNC
+            AI_MATKEY_OPACITY
+            AI_MATKEY_BUMPSCALING
+            AI_MATKEY_SHININESS
+            AI_MATKEY_REFLECTIVITY
+            AI_MATKEY_SHININESS_STRENGTH
+            AI_MATKEY_REFRACTI
+            AI_MATKEY_COLOR_DIFFUSE
+            AI_MATKEY_COLOR_AMBIENT
+            AI_MATKEY_COLOR_SPECULAR
+            AI_MATKEY_COLOR_EMISSIVE
+            AI_MATKEY_COLOR_TRANSPARENT
+            AI_MATKEY_COLOR_REFLECTIVE
+        */
+        material->Get(AI_MATKEY_NAME,aMaterial.mName);
+        material->Get(AI_MATKEY_TWOSIDED,aMaterial.mTwoSided);
+        material->Get(AI_MATKEY_SHADING_MODEL,aMaterial.mShadingModel);
+        material->Get(AI_MATKEY_ENABLE_WIREFRAME,aMaterial.mEnableWireframe);
+        material->Get(AI_MATKEY_BLEND_FUNC,aMaterial.mBlendFunc);
+        material->Get(AI_MATKEY_OPACITY,aMaterial.mOpacity);
+        material->Get(AI_MATKEY_BUMPSCALING,aMaterial.mBumpScaling);
+        material->Get(AI_MATKEY_SHININESS,aMaterial.mShininess);
+        material->Get(AI_MATKEY_REFLECTIVITY,aMaterial.mReflectivity);
+        material->Get(AI_MATKEY_SHININESS_STRENGTH,aMaterial.mShininessStrength);
+        material->Get(AI_MATKEY_COLOR_DIFFUSE,aMaterial.mColorDiffuse);
+        material->Get(AI_MATKEY_COLOR_AMBIENT,aMaterial.mColorAmbient);
+        material->Get(AI_MATKEY_COLOR_SPECULAR,aMaterial.mColorSpecular);
+        material->Get(AI_MATKEY_COLOR_EMISSIVE,aMaterial.mColorEmissive);
+        material->Get(AI_MATKEY_COLOR_TRANSPARENT,aMaterial.mColorTransparent);
+        material->Get(AI_MATKEY_COLOR_REFLECTIVE,aMaterial.mColorReflective);
 
-        return AssimpMesh(this, string(mesh->mName.C_Str()), vertices, indices, textures, diffuse, specular);
+        log->info( "Using Material {}" , aMaterial.mName.C_Str());
+
+        return AssimpMesh(this, string(mesh->mName.C_Str()), vertices, indices, textures, aMaterial);
     }
 
     vector<Texture>
@@ -289,7 +320,7 @@ namespace Dream
     (aiMesh* mesh)
     {
         auto log = getLog();
-            log->info( "AssimpModelInstance: Updating bounding box for {}", getNameAndUuidString() );
+            log->info( "Updating bounding box for {}", getNameAndUuidString() );
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {

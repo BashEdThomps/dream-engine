@@ -25,7 +25,7 @@ namespace Dream
         : ILoggable ("ArgumentParser")
     {
         auto log = getLog();
-        log->info( "ArgumentParser: Constructing" );
+        log->trace( "Constructing" );
         mArgc = argc;
         mArgv = argv;
         mUsingHttp = false;
@@ -36,7 +36,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "ArgumentParser: Destructing" );
+        log->trace( "Destructing" );
     }
 
     void
@@ -53,7 +53,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mDreamPath = string(mArgv[i+1]);
-                    log->info( "ArgumentParser: Got Dream Path {}" , mDreamPath );
+                    log->info( "Got Dream Path {}" , mDreamPath );
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mProjectUUID = string(mArgv[i+1]);
-                    log->info( "ArgumentParser: Got Project UUID {}" , mProjectUUID );
+                    log->info( "Got Project UUID {}" , mProjectUUID );
                 }
                 else
                 {
@@ -78,11 +78,11 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mHttpUrl = string(mArgv[i+1]);
-                    log->info( "ArgumentParser: Loading project over HTTP from {}" , mHttpUrl );
+                    log->info( "Loading project over HTTP from {}" , mHttpUrl );
                 }
                 else
                 {
-                    log->error( "ArgumentParser: --http passed without URL argument." );
+                    log->error( "--http passed without URL argument." );
                 }
             }
             delete nextArg;
@@ -96,10 +96,10 @@ namespace Dream
 
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
-        log->info( "ArgumentParser: Got Project Path {}" , mProjectPath );
+        log->info( "Got Project Path {}" , mProjectPath );
         mProjectFilePath = mProjectPath + Constants::PROJECT_PATH_SEP + mProjectUUID + Constants::PROJECT_EXTENSION;
 
-        log->info( "ArgumentParser: Got Project File Path {} " , mProjectFilePath );
+        log->info( "Got Project File Path {} " , mProjectFilePath );
     }
 
     string

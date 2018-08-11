@@ -47,7 +47,7 @@ public:
     ~QOpenGLWindowComponent() override;
 
     bool init() override;
-    void updateComponent(SceneRuntime*) override;
+    void updateComponent() override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
     void setProjectRuntimeHandle(ProjectRuntime* prHandle);
@@ -70,6 +70,7 @@ protected:
     void paintGL() override;
     void updateInputState();
     void wheelEvent(QWheelEvent* event) override;
+    void drawStats();
 
 private:
     ProjectRuntime* mProjectRuntimeHandle;
@@ -83,6 +84,9 @@ private:
 
     WindowInputState mInputState;
     bool mPaintInProgress;
+    vector<double> mFrameTimes;
+    int mMaxFrameTimeValues;
+    double averageFrameTime();
 };
 
 #endif // GLWIDGET_H

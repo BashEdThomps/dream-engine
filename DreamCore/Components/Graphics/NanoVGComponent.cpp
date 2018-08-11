@@ -11,17 +11,18 @@ namespace Dream
 {
 
     NanoVGComponent::NanoVGComponent(IWindowComponent* windowComponentHandle)
-        : IComponent (), ILoggable ("NanoVGComponent"),
+        : IComponent () ,
           mWindowComponentHandle(windowComponentHandle)
     {
+        setLogClassName("NanoVGComponent");
         auto log = getLog();
-        log->info("Constructing");
+        log->trace("Constructing");
     }
 
     NanoVGComponent::~NanoVGComponent()
     {
         auto log = getLog();
-        log->info("Destructing");
+        log->trace("Destructing");
         nvgDeleteGL3(mContext);
     }
 
@@ -33,7 +34,7 @@ namespace Dream
         return mContext != nullptr;
     }
 
-    void NanoVGComponent::updateComponent(SceneRuntime*)
+    void NanoVGComponent::updateComponent()
     {
 
     }

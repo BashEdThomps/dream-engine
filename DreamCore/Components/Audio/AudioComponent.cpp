@@ -28,9 +28,9 @@ namespace Dream
 {
     AudioComponent::AudioComponent
     ()
-        : IComponent(), ILoggable("AudioComponent")
+        : IComponent()
     {
-
+        setLogClassName("AudioComponent");
     }
 
     AudioComponent::~AudioComponent
@@ -57,6 +57,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Initialising...");
+        mRunning = true;
         mDevice = alcOpenDevice(nullptr);
         mContext = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
@@ -265,13 +266,22 @@ namespace Dream
 
     void
     AudioComponent::updateComponent
-    (SceneRuntime*)
+    ()
     {
-        auto log = getLog();
-        log->info("Updating Component");
-        updatePlayQueue();
-        updatePauseQueue();
-        updateStopQueue();
+        while(mRunning)
+        {
+            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            {
+                beginUpdate();
+                auto log = getLog();
+                log->info("Updating Component");
+                updatePlayQueue();
+                updatePauseQueue();
+                updateStopQueue();
+                endUpdate();
+            }
+            std::this_thread::yield();
+        }
     }
 
     void AudioComponent::updatePlayQueue()

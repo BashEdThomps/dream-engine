@@ -67,9 +67,21 @@ MainWindowController::MainWindowController
 
     setupGL(parent);
     setupMenu_Asset_NewDefinition();
+    setupMenu_Debug();
     setActionsEnabled_Scene_Playback(false);
     setActionsEnabled_Scene_Modification(false);
     setActionEnabled_File_Save(false);
+}
+
+void MainWindowController::setupMenu_Debug()
+{
+    connect(ui->actionLogLevelTrace,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(ui->actionLogLevelDebug,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(ui->actionLogLevelInfo,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(ui->actionLogLevelWarn,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(ui->actionLogLevelError,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(ui->actionLogLevelCritical,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(ui->actionLogLevelOff,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
 }
 
 void MainWindowController::setupUiFeatures()
@@ -408,6 +420,15 @@ MainWindowController::onAssetDefinitionTreeViewActivated
     {
         log->info("No valid index in current tree");
     }
+}
+
+void MainWindowController::onMenu_Debug_LogLevelChanged(bool)
+{
+    auto log = spdlog::get("MainWindowController");
+    auto action = dynamic_cast<QAction*>(sender());
+    QString level = action->text();
+    log->info("Setting log level to {}",level.toStdString());
+    spdlog::set_level(spdlog::level::from_str(level.toLower().toStdString()));
 }
 
 

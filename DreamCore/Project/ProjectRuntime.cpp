@@ -30,6 +30,7 @@
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/Camera.h"
+#include "../Components/ComponentThread.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
@@ -157,6 +158,8 @@ namespace Dream
             log->error( "Unable to initialise AudioComponent." );
             return false;
         }
+        mAudioComponent->setRunning(true);
+        mAudioComponentThread.reset(new ComponentThread(mAudioComponent.get()));
         return true;
     }
 
@@ -172,6 +175,8 @@ namespace Dream
             log->error( "Unable to initialise PhysicsComponent." );
             return false;
         }
+        mPhysicsComponent->setRunning(true);
+        mPhysicsComponentThread.reset(new ComponentThread(mPhysicsComponent.get()));
         return true;
     }
 
@@ -189,6 +194,8 @@ namespace Dream
             log->error( "Unable to initialise Graphics Component." );
             return false;
         }
+        mGraphicsComponent->setRunning(true);
+        mGraphicsComponentThread.reset(new ComponentThread(mGraphicsComponent.get()));
 
         mNanoVGComponent.reset(new NanoVGComponent(mWindowComponentHandle));
         if (!mNanoVGComponent->init())
@@ -211,6 +218,8 @@ namespace Dream
             log->error( "Unable to initialise Animation Component." );
             return false;
         }
+        mAnimationComponent->setRunning(true);
+        mAnimationComponentThread.reset(new ComponentThread(mAnimationComponent.get()));
         return true;
     }
 
@@ -226,6 +235,8 @@ namespace Dream
             log->error( "Unable to initialise Lua Engine." );
             return false;
         }
+        mLuaEngine->setRunning(true);
+        mLuaEngineThread.reset(new ComponentThread(mLuaEngine.get()));
         return true;
     }
 
@@ -302,25 +313,63 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("==== UpdateLogic Called @ {}  ====",  mTime->getTimeDelta());
+        log->info("==== UpdateLogic Called @ {}  ====",  mTime->getFrameTimeDelta());
 
-        mTime->update();
+        mTime->updateFrameTime();
 
-        //mLuaEngine->createAllScripts();
-        mLuaEngine->update();
+        //mLuaEngine->updateComponent();
+        mLuaEngine->setActiveSceneRuntime(mActiveSceneRuntime.get());
+        mLuaEngine->setShouldUpdate(true);
 
-        mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
-        mAudioComponent->updateComponent(mActiveSceneRuntime.get());
-        mWindowComponentHandle->updateComponent(mActiveSceneRuntime.get());
-        mPhysicsComponent->updateComponent(mActiveSceneRuntime.get());
+        //mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
+        mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+        mAnimationComponent->setShouldUpdate(true);
 
-        // Update Graphics/Physics Components
+        //mAudioComponent->updateComponent(mActiveSceneRuntime.get());
+        mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+        mAudioComponent->setShouldUpdate(true);
 
-        mGraphicsComponent->updateComponent(mActiveSceneRuntime.get());
+        mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
+        mWindowComponentHandle->updateComponent();
+
+        //mPhysicsComponent->updateComponent(mActiveSceneRuntime.get());
+        mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+        mPhysicsComponent->setShouldUpdate(true);
+
+        //mGraphicsComponent->updateComponent(mActiveSceneRuntime.get());
+        mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+        mGraphicsComponent->setShouldUpdate(true);
+
         mPhysicsComponent->setViewProjectionMatrix(
-                    mGraphicsComponent->getViewMatrix(),
-                    mGraphicsComponent->getProjectionMatrix()
-                    );
+            mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
+        );
+    }
+
+    bool ProjectRuntime::allThreadsHaveUpdated
+    ()
+    {
+        auto log = getLog();
+        bool animation = mAnimationComponent->getUpdateComplete();
+        bool audio = mAudioComponent->getUpdateComplete();
+        bool graphics = mGraphicsComponent->getUpdateComplete();
+        bool physics = mPhysicsComponent->getUpdateComplete();
+        bool lua = mLuaEngine->getUpdateComplete();
+        log->info(
+            "\n========================================\n"
+            "Animation..........[{}]\n"
+            "Audio..............[{}]\n"
+            "Graphics...........[{}]\n"
+            "Physics............[{}]\n"
+            "Lua................[{}]\n"
+            "========================================",
+            animation ? "√" : " ",
+            audio     ? "√" : " ",
+            graphics  ? "√" : " ",
+            physics   ? "√" : " ",
+            lua       ? "√" : " "
+        );
+
+       return animation && audio && graphics && physics && lua;
     }
 
     void
@@ -328,8 +377,17 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("==== UpdateGraphics Called @ {}  ====" , mTime->getTimeDelta());
+        log->info("==== UpdateGraphics Called @ {}  ====" , mTime->getFrameTimeDelta());
+
+        while (!allThreadsHaveUpdated())
+        {
+            log->info("UpdateGraphics Waiting... {}" , mTime->getFrameTimeDelta());
+            std::this_thread::yield();
+        }
+        log->info("==== UpdateGraphics Ready to draw @ {}  ====" , mTime->now());
+
         // Draw 3D/PhysicsDebug/2D
+        mGraphicsComponent->handleResize();
         mGraphicsComponent->drawModelQueue();
         mGraphicsComponent->drawFontQueue();
         mGraphicsComponent->drawSpriteQueue();
@@ -343,7 +401,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("==== CollectGarbage Called @ {}  ====", mTime->getTimeDelta());
+        log->info("==== CollectGarbage Called @ {}  ====", mTime->getFrameTimeDelta());
         // Cleanup Old
         mActiveSceneRuntime.get()->collectGarbage();
     }
@@ -435,6 +493,62 @@ namespace Dream
     ()
     {
         return mModelCache.get();
+    }
+
+    void ProjectRuntime::cleanUpThreads()
+    {
+        auto log = getLog();
+        log->info("Cleaning up ComponentThreads");
+        cleanUpLuaEngineThread();
+        cleanUpPhysicsComponentThread();
+        cleanUpAnimationComponentThread();
+        cleanUpAudioComponentThread();
+        cleanUpGraphicsComponentThread();
+    }
+
+    void ProjectRuntime::cleanUpLuaEngineThread()
+    {
+        auto log = getLog();
+        log->info("Cleaning up LuaEngineThread");
+        mLuaEngine->setRunning(false);
+        mLuaEngine->setShouldUpdate(false);
+        mLuaEngineThread->join();
+    }
+
+    void ProjectRuntime::cleanUpAudioComponentThread()
+    {
+        auto log = getLog();
+        log->info("Cleaning up AudioComponentThread");
+        mAudioComponent->setRunning(false);
+        mAudioComponent->setShouldUpdate(false);
+        mAudioComponentThread->join();
+    }
+
+    void ProjectRuntime::cleanUpPhysicsComponentThread()
+    {
+        auto log = getLog();
+        log->info("Cleaning up PhysicsComponentThread");
+        mPhysicsComponent->setRunning(false);
+        mPhysicsComponent->setShouldUpdate(false);
+        mPhysicsComponentThread->join();
+    }
+
+    void ProjectRuntime::cleanUpGraphicsComponentThread()
+    {
+        auto log = getLog();
+        log->info("Cleaning up PhysicsComponentThread");
+        mGraphicsComponent->setRunning(false);
+        mGraphicsComponent->setShouldUpdate(false);
+        mGraphicsComponentThread->join();
+    }
+
+    void ProjectRuntime::cleanUpAnimationComponentThread()
+    {
+        auto log = getLog();
+        log->info("Cleaning up PhysicsComponentThread");
+        mAnimationComponent->setRunning(false);
+        mAnimationComponent->setShouldUpdate(false);
+        mAnimationComponentThread->join();
     }
 
     void

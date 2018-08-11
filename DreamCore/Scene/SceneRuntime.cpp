@@ -50,7 +50,7 @@ namespace Dream
           mProjectRuntimeHandle(project)
     {
         auto log = getLog();
-        log->info( "SceneRuntime: Constructing " );
+        log->trace( "Constructing " );
         useDefinition(mDefinitionHandle);
 
     }
@@ -59,7 +59,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "SceneRuntime: Destructing " );
+        log->trace( "Destructing " );
     }
 
     SceneState
@@ -122,46 +122,28 @@ namespace Dream
     SceneRuntime::getSceneObjectRuntimeHandleByUuid
     (string uuid)
     {
-        return static_cast<SceneObjectRuntime*>
-                (
-                    mRootSceneObjectRuntime->applyToAll
-                    (
-                        function<void*(SceneObjectRuntime*)>
-                        (
-                            [&](SceneObjectRuntime* currentRuntime)
-        {
-                            if (currentRuntime->hasUuid(uuid))
-                            {
-                                return currentRuntime;
-                            }
-                            return static_cast<SceneObjectRuntime*>(nullptr);
-                        }
-                        )
-                    )
-                );
+        return static_cast<SceneObjectRuntime*>(mRootSceneObjectRuntime->applyToAll(
+            function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* currentRuntime){
+                if (currentRuntime->hasUuid(uuid)){
+                    return currentRuntime;
+                }
+                return static_cast<SceneObjectRuntime*>(nullptr);
+            }
+        )));
     }
 
     SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeHandleByName
     (string name)
     {
-        return static_cast<SceneObjectRuntime*>
-                (
-                    mRootSceneObjectRuntime->applyToAll
-                    (
-                        function<void*(SceneObjectRuntime*)>
-                        (
-                            [&](SceneObjectRuntime* currentRuntime)
-        {
-                            if (currentRuntime->hasName(name))
-                            {
-                                return currentRuntime;
-                            }
-                            return static_cast<SceneObjectRuntime*>(nullptr);
-                        }
-                        )
-                    )
-                );
+        return static_cast<SceneObjectRuntime*>(
+            mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* currentRuntime){
+                if (currentRuntime->hasName(name)){
+                    return currentRuntime;
+                }
+                return static_cast<SceneObjectRuntime*>(nullptr);
+            }
+        )));
     }
 
     int
@@ -169,17 +151,11 @@ namespace Dream
     ()
     {
         int count = 0;
-        mRootSceneObjectRuntime->applyToAll
-                (
-                    function<void*(SceneObjectRuntime*)>
-                    (
-                        [&](SceneObjectRuntime*)
-        {
-                        count++;
-                        return nullptr;
-                    }
-                    )
-                );
+        mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>(
+            [&](SceneObjectRuntime*){
+            count++;
+            return nullptr;
+        }));
         return count;
     }
 
@@ -190,22 +166,15 @@ namespace Dream
         auto log = getLog();
         if (!mRootSceneObjectRuntime)
         {
-            log->info( "SceneRuntime: Scenegraph is empty (no root SceneObjectRuntime)" );
+            log->info( "Scenegraph is empty (no root SceneObjectRuntime)" );
             return;
         }
 
-        mRootSceneObjectRuntime->applyToAll
-                (
-                    function<void*(SceneObjectRuntime*)>
-                    (
-                        [&](SceneObjectRuntime* obj)
-        {
-                        log->info( "SceneObjectRuntime: showScenegraph not implemented" );
-                        //obj->showStatus();
-                        return nullptr;
-                    }
-                    )
-                );
+        mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* obj){
+            log->info("showScenegraph not implemented");
+            //obj->showStatus();
+            return nullptr;
+    }));
     }
 
     void
@@ -227,18 +196,11 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
-        mRootSceneObjectRuntime->applyToAll
-                (
-                    function<void*(SceneObjectRuntime*)>
-                    (
-                        [&](SceneObjectRuntime* runt)
-        {
-                        runt->collectGarbage();
-                        return nullptr;
-                    }
-                    )
-                );
+        log->info( "Collecting Garbage {}" , getNameAndUuidString() );
+        mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* runt){
+            runt->collectGarbage();
+            return nullptr;
+        }));
     }
 
     ProjectRuntime*
@@ -262,7 +224,7 @@ namespace Dream
         auto log = getLog();
         SceneDefinition *sceneDefinitionHandle = dynamic_cast<SceneDefinition*>(iDefinitionHandle);
 
-        log->info( "SceneRuntime: Using SceneDefinition ",  sceneDefinitionHandle->getNameAndUuidString() );
+        log->info( "Using SceneDefinition ",  sceneDefinitionHandle->getNameAndUuidString() );
 
         // Assign Runtime attributes from Definition
         setName(sceneDefinitionHandle->getName());
@@ -274,7 +236,7 @@ namespace Dream
         setCameraTransform(sceneDefinitionHandle->getCameraTransform());
         setCameraMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
 
-        mProjectRuntimeHandle->getGraphicsComponentHandle()->setActiveSceneRuntimeHandle(this);
+        mProjectRuntimeHandle->getGraphicsComponentHandle()->setActiveSceneRuntime(this);
         mProjectRuntimeHandle->getPhysicsComponentHandle()->setGravity(getGravity());
         mProjectRuntimeHandle->getPhysicsComponentHandle()->setDebug(getPhysicsDebug());
         mProjectRuntimeHandle->getCameraHandle()->setTransform(getCameraTransform());

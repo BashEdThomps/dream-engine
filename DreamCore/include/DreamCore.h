@@ -17,11 +17,15 @@
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
 
+#include "../Components/Animation/AnimationComponent.h"
+#include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
+#include "../Lua/LuaEngine.h"
+#include "../Components/Physics/PhysicsComponent.h"
+
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Graphics/BoundingBox.h"
 #include "../Components/Graphics/Model/AssimpModelInstance.h"
-#include "../Components/Physics/PhysicsComponent.h"
 
 #include "../Components/Window/IWindowComponent.h"
 

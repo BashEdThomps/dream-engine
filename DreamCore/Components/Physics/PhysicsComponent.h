@@ -24,8 +24,6 @@
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
 
-#include "../../Common/ILoggable.h"
-
 using glm::mat4;
 using std::vector;
 using std::unique_ptr;
@@ -46,7 +44,7 @@ namespace Dream
     class SceneRuntime;
     class SceneObjectRuntime;
 
-    class PhysicsComponent : public IComponent, ILoggable
+    class PhysicsComponent : public IComponent
     {
     protected:
         unique_ptr<PhysicsDebugDrawer> mDebugDrawer;
@@ -65,7 +63,7 @@ namespace Dream
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init() override;
-        void updateComponent(SceneRuntime*) override;
+        void updateComponent() override;
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);

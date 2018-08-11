@@ -406,39 +406,48 @@ namespace Dream
     Constants::getAssetTypeEnumFromString
     (string type)
     {
-        if (type.compare(ASSET_TYPE_ANIMATION) == 0)
+        if (type.compare(ASSET_TYPE_ANIMATION) == 0 ||
+            type.compare(ASSET_TYPE_ANIMATION_READABLE) == 0)
         {
             return ANIMATION;
         }
-        else if (type.compare(ASSET_TYPE_AUDIO) == 0)
+        else if (type.compare(ASSET_TYPE_AUDIO) == 0 ||
+                 type.compare(ASSET_TYPE_AUDIO_READABLE) == 0)
         {
             return AUDIO;
         }
-        else if (type.compare(ASSET_TYPE_FONT) == 0)
+        else if (type.compare(ASSET_TYPE_FONT) == 0 ||
+                 type.compare(ASSET_TYPE_FONT_READABLE) == 0)
         {
             return FONT;
         }
-        else if (type.compare(ASSET_TYPE_LIGHT) == 0)
+        else if (type.compare(ASSET_TYPE_LIGHT) == 0 ||
+                 type.compare(ASSET_TYPE_LIGHT_READABLE) == 0)
         {
             return LIGHT;
         }
-        else if (type.compare(ASSET_TYPE_MODEL) == 0)
+        else if (type.compare(ASSET_TYPE_MODEL) == 0 ||
+                 type.compare(ASSET_TYPE_MODEL_READABLE) == 0)
         {
             return MODEL;
         }
-        else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
+        else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0 ||
+                 type.compare(ASSET_TYPE_PHYSICS_OBJECT_READABLE) == 0)
         {
             return PHYSICS_OBJECT;
         }
-        else if (type.compare(ASSET_TYPE_SCRIPT) == 0)
+        else if (type.compare(ASSET_TYPE_SCRIPT) == 0 ||
+                 type.compare(ASSET_TYPE_SCRIPT_READABLE) == 0)
         {
             return SCRIPT;
         }
-        else if (type.compare(ASSET_TYPE_SHADER) == 0)
+        else if (type.compare(ASSET_TYPE_SHADER) == 0 ||
+                 type.compare(ASSET_TYPE_SHADER_READABLE) == 0)
         {
             return SHADER;
         }
-        else if (type.compare(ASSET_TYPE_SPRITE) == 0)
+        else if (type.compare(ASSET_TYPE_SPRITE) == 0 ||
+                 type.compare(ASSET_TYPE_SPRITE_READABLE) == 0)
         {
             return SPRITE;
         }

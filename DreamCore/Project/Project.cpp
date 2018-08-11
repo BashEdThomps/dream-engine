@@ -56,13 +56,13 @@ namespace Dream
         : ILoggable("Project"),
           mWindowComponentHandle(windowComponent)
     {
-        getLog()->info("Constructing");
+        getLog()->trace("Constructing");
     }
 
     Project::~Project()
     {
         auto log = getLog();
-        log->info("Denstructing");
+        log->trace("Denstructing");
         if (mDefinition)
         {
             log->info(mDefinition->getNameAndUuidString());
@@ -194,7 +194,11 @@ namespace Dream
 
     void Project::resetProjectRuntime()
     {
-        mRuntime.reset(nullptr);
+        if(mRuntime != nullptr)
+        {
+            mRuntime->cleanUpThreads();
+            mRuntime.reset(nullptr);
+        }
     }
 
     bool

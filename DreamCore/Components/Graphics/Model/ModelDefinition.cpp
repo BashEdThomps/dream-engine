@@ -37,7 +37,7 @@ namespace Dream
         {
             log = spdlog::stdout_color_mt("ModelDefinition");
         }
-        log->info("Constructing");
+        log->trace("Constructing");
     }
 
     bool

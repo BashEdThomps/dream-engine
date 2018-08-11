@@ -31,7 +31,6 @@
 
 #include "AudioStatus.h"
 #include "../IComponent.h"
-#include "../../Common/ILoggable.h"
 
 using std::vector;
 
@@ -41,7 +40,7 @@ namespace Dream
     class AudioDefinition;
     class SceneObjectRuntime;
 
-    class AudioComponent : public IComponent, ILoggable
+    class AudioComponent : public IComponent
     {
 
     private:
@@ -55,9 +54,9 @@ namespace Dream
 
     public:
         AudioComponent();
-        ~AudioComponent();
+        ~AudioComponent() override;
         bool init() override;
-        void updateComponent(SceneRuntime*) override;
+        void updateComponent() override;
 
         void setSourcePosision(ALuint, vector<float>);
         void setListenerPosition(vector<float>);

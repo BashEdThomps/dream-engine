@@ -38,7 +38,7 @@ namespace Dream
           mSceneDefinitionHandle(sceneDefinitionHandle)
     {
         auto log = getLog();
-        log->info( "SceneObjectDefinition: Constructing {}",
+        log->trace( "Constructing {}",
                    getNameAndUuidString()
                    );
         mTransform = Transform3D(jsonData[Constants::TRANSFORM]);
@@ -49,7 +49,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "SceneObjectDefinition: Destructing {}",
+        log->trace( "Destructing {}",
                    getNameAndUuidString()
                    );
     }

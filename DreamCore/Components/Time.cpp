@@ -24,7 +24,7 @@ namespace Dream
     }
 
     void
-    Time::update
+    Time::updateFrameTime
     ()
     {
         auto log = getLog();
@@ -32,7 +32,6 @@ namespace Dream
         mLastTime    = mCurrentTime;
         mCurrentTime = high_resolution_clock::now();
         mTimeDelta   = mCurrentTime-mLastTime;
-        //show();
         return;
     }
 
@@ -47,38 +46,50 @@ namespace Dream
            "\tCurrent Time: {}"
            "\t   Last Time: {}"
            "\t  Time Delta: {}" ,
-           getCurrentTime(),
-           getLastTime(),
-           getTimeDelta()
+           getCurrentFrameTime(),
+           getLastFrameTime(),
+           getFrameTimeDelta()
         );
     }
 
     double
-    Time::getCurrentTime
+    Time::getCurrentFrameTime
     ()
     {
         return mCurrentTime.time_since_epoch().count();
     }
 
     double
-    Time::getLastTime
+    Time::getLastFrameTime
     ()
     {
         return mLastTime.time_since_epoch().count();
     }
 
     double
-    Time::getTimeDelta
+    Time::getFrameTimeDelta
     ()
     {
         return mTimeDelta.count();
     }
 
     double
-    Time::scaleValue
+    Time::scaleValueByFrameTime
     (double value)
     {
-        return value*getTimeDelta();
+        return value*getFrameTimeDelta();
+    }
+
+    double
+    Time::now()
+    {
+        return high_resolution_clock::now().time_since_epoch().count();
+    }
+
+    long long
+    Time::nowLL()
+    {
+        return high_resolution_clock::now().time_since_epoch().count();
     }
 
 } // End of Dream

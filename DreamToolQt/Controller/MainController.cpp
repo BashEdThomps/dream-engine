@@ -1315,8 +1315,8 @@ MainController::onCreateNewAssetDefinition
 (QString type)
 {
     auto log = spdlog::get("MainController");
-    log->info("Creating new asset definnition {}",type.toStdString());
-    AssetType assetType = Constants::getAssetTypeEnumFromString(type.toLower().toStdString());
+    log->info("Creating new asset definition {}",type.toStdString());
+    AssetType assetType = Constants::getAssetTypeEnumFromString(type.toStdString());
 
     switch(assetType)
     {

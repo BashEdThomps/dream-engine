@@ -65,20 +65,20 @@ namespace Dream
 
     GraphicsComponent::GraphicsComponent
     (Camera* camera, IWindowComponent* windowComponent)
-        : IComponent(), ILoggable("GraphicsComponent"),
+        : IComponent(),
           mCamera(camera),
-          mWindowComponentHandle(windowComponent),
-          mActiveSceneRuntimeHandle(nullptr)
+          mWindowComponentHandle(windowComponent)
     {
+        setLogClassName("GraphicsComponent");
         auto log = getLog();
-        log->info("Constructing");
+        log->trace("Constructing");
     }
 
     GraphicsComponent::~GraphicsComponent
     (void)
     {
         auto log = getLog();
-        log->info("Destroying Object");
+        log->trace("Destroying Object");
         clearSpriteQueue();
         clearFontQueue();
         clearModelQueue();
@@ -311,17 +311,19 @@ namespace Dream
 
     void
     GraphicsComponent::updateComponent
-    (SceneRuntime* scene)
+    ()
     {
-        auto log = getLog();
-        log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
-
-        if (mWindowComponentHandle->sizeHasChanged())
+        while(mRunning)
         {
-            onWindowDimensionsChanged();
-        }
+            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            {
+                beginUpdate();
+                auto log = getLog();
+                log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
 
-        /*
+
+
+                /*
          * Let's think about rendering pipeline optimisation...
          *
          * I want to order my rendering quque in such a way that it minimises shader
@@ -370,81 +372,86 @@ namespace Dream
          *
          */
 
-        // View transform
-        mViewMatrix = mCamera->getViewMatrix();
+                // View transform
+                mViewMatrix = mCamera->getViewMatrix();
 
-        if (!mWindowComponentHandle->shouldClose())
-        {
-            // Clear existing Queues
-            clearSpriteQueue();
-            clearModelQueue();
-            clearFontQueue();
-            clearLightQueue();
+                if (!mWindowComponentHandle->shouldClose())
+                {
+                    // Clear existing Queues
+                    clearSpriteQueue();
+                    clearModelQueue();
+                    clearFontQueue();
+                    clearLightQueue();
 
-            scene->getRootSceneObjectRuntimeHandle()->applyToAll
-            (
-                function<void*(SceneObjectRuntime*)>
-                (
-                    [&](SceneObjectRuntime* object)
+                    mActiveSceneRuntimeHandle->getRootSceneObjectRuntimeHandle()->applyToAll
+                            (
+                                function<void*(SceneObjectRuntime*)>
+                                (
+                                    [&](SceneObjectRuntime* object)
                     {
-                        // Models
-                        if (object->hasModelInstance())
-                        {
-                            if (object->hasShaderInstance())
-                            {
-                                addToModelQueue(object);
-                            }
-                            else
-                            {
-                                log->error("Object {} has model, but no shader assigned." , object->getUuid());
-                            }
-                        }
+                                    // Models
+                                    if (object->hasModelInstance())
+                                    {
+                                        if (object->hasShaderInstance())
+                                        {
+                                            addToModelQueue(object);
+                                        }
+                                        else
+                                        {
+                                            log->error("Object {} has model, but no shader assigned." , object->getUuid());
+                                        }
+                                    }
 
-                        // Sprites
-                        if (object->hasSpriteInstance())
-                        {
-                            if (object->hasShaderInstance())
-                            {
-                                addToSpriteQueue(object);
-                            }
-                            else
-                            {
-                                log->error(
-                                "Object {} has sprite, but no shader assigned.",
-                                object->getUuid()
-                                );
-                            }
-                        }
+                                    // Sprites
+                                    if (object->hasSpriteInstance())
+                                    {
+                                        if (object->hasShaderInstance())
+                                        {
+                                            addToSpriteQueue(object);
+                                        }
+                                        else
+                                        {
+                                            log->error(
+                                            "Object {} has sprite, but no shader assigned.",
+                                            object->getUuid()
+                                            );
+                                        }
+                                    }
 
-                        // Fonts
-                        if (object->hasFontInstance())
-                        {
-                            if (object->hasShaderInstance())
-                            {
-                                addToFontQueue(object);
-                            }
-                            else
-                            {
-                                log->error(
-                                "Object {} has font, but no shader assigned.",
-                                object->getUuid()
-                                );
-                            }
-                        }
+                                    // Fonts
+                                    if (object->hasFontInstance())
+                                    {
+                                        if (object->hasShaderInstance())
+                                        {
+                                            addToFontQueue(object);
+                                        }
+                                        else
+                                        {
+                                            log->error(
+                                            "Object {} has font, but no shader assigned.",
+                                            object->getUuid()
+                                            );
+                                        }
+                                    }
 
-                        // Lights
-                        if (object->hasLightInstance())
-                        {
-                            LightInstance* light = object->getLightInstance();
-                            log->info("Adding light instance to queue {}",light->getNameAndUuidString());
-                            addToLightQueue(light);
-                        }
+                                    // Lights
+                                    if (object->hasLightInstance())
+                                    {
+                                        LightInstance* light = object->getLightInstance();
+                                        log->info("Adding light instance to queue {}",light->getNameAndUuidString());
+                                        addToLightQueue(light);
+                                    }
 
-                        return nullptr;
-                    }
-                )
-            );
+                                    return nullptr;
+                                }
+                                )
+                            );
+                }
+                endUpdate();
+            }
+            std::this_thread::yield();
         }
+
     }
 
     void
@@ -500,10 +507,19 @@ namespace Dream
         mModelQueue.push_back(object);
     }
 
+    void GraphicsComponent::handleResize()
+    {
+        if (mWindowComponentHandle->sizeHasChanged())
+        {
+            onWindowDimensionsChanged();
+        }
+    }
+
     void
     GraphicsComponent::drawModelQueue
     ()
     {
+
         auto log = getLog();
         preModelRender();
         log->info("Draw 3D Queue" );
@@ -787,31 +803,29 @@ namespace Dream
         shader->use();
 
         // Set Ambient Light Values
-        GLfloat ambientStrength = 1.0f;
-        vec3 ambientColour(1.0f);
+        GLfloat worldAmbientStrength = 1.0f;
+        vec3 worldAmbientColour(1.0f);
 
         if (mActiveSceneRuntimeHandle)
         {
             vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
-            ambientColour = vec3
-            (
-                ambient[Constants::RED_INDEX],
-                ambient[Constants::GREEN_INDEX],
-                ambient[Constants::BLUE_INDEX]
-            );
-            ambientStrength = ambient[Constants::ALPHA_INDEX];
+            worldAmbientColour = vec3
+                    (
+                        ambient[Constants::RED_INDEX],
+                    ambient[Constants::GREEN_INDEX],
+                    ambient[Constants::BLUE_INDEX]
+                    );
+            worldAmbientStrength = ambient[Constants::ALPHA_INDEX];
         }
 
-        //shader->setAmbientLight(ambientColour,ambientStrength);
-
-        shader->addUniform(ShaderUniform(UniformType::FLOAT3,"ambientColour",1,glm::value_ptr(ambientColour)));
-        shader->addUniform(ShaderUniform(UniformType::FLOAT1,"ambientStrength",1,&ambientStrength));
-        Constants::checkGLError("After ambient uniforms");
+        shader->addUniform(ShaderUniform(UniformType::FLOAT3,"worldAmbientColour",1,glm::value_ptr(worldAmbientColour)));
+        shader->addUniform(ShaderUniform(UniformType::FLOAT1,"worldAmbientStrength",1,&worldAmbientStrength));
+        Constants::checkGLError("After world ambient uniforms");
 
         GLint numLights = static_cast<GLint>(mLightQueue.size());
         shader->addUniform(ShaderUniform(UniformType::INT1,"numPointLights",1,&numLights));
 
-        // Set Diffuse Light Values
+        // Set Point Light Values
         int i=0;
         const static int max_lights = 10;
         vec3 lightPos[max_lights];
@@ -842,9 +856,6 @@ namespace Dream
         vec3 camPos = mCamera->getTranslation();
         shader->addUniform(ShaderUniform(FLOAT3,"cameraPos",1,glm::value_ptr(camPos)));
         Constants::checkGLError("After set camPos uniform");
-
-        shader->syncUniforms();
-        Constants::checkGLError("After sync uniforms");
 
         // Pass view/projection transform to shader
         shader->setProjectionMatrix(mProjectionMatrix);
@@ -902,12 +913,4 @@ namespace Dream
     {
         return mCamera;
     }
-
-    void
-    GraphicsComponent::setActiveSceneRuntimeHandle
-    (SceneRuntime* scene)
-    {
-        mActiveSceneRuntimeHandle = scene;
-    }
-
 } // End of Dream

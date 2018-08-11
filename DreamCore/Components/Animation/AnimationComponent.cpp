@@ -29,9 +29,10 @@ namespace Dream
 {
     AnimationComponent::AnimationComponent
     ()
-        : IComponent(),
-          ILoggable ("AnimationComponent")
+        : IComponent()
+
     {
+        setLogClassName("AnimationComponent");
     }
 
 
@@ -53,25 +54,34 @@ namespace Dream
 
     void
     AnimationComponent::updateComponent
-    (SceneRuntime *scene)
+    ()
     {
-        scene->getRootSceneObjectRuntimeHandle()->applyToAll
-        (
-            function< void* (SceneObjectRuntime*) >
-            (
-                [&](SceneObjectRuntime* currentSceneObject)
+        while(mRunning)
+        {
+            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            {
+                beginUpdate();
+                mActiveSceneRuntimeHandle->getRootSceneObjectRuntimeHandle()->applyToAll
+                        (
+                            function< void* (SceneObjectRuntime*) >
+                            (
+                                [&](SceneObjectRuntime* currentSceneObject)
                 {
-                    if (currentSceneObject->hasAnimationInstance())
-                    {
-                        AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
-                        animInstance->step(mTime->getTimeDelta());
-                            // TODO: Fix dis
-                        //animInstance->applyTransform(&(currentSceneObject->getTransform()));
-                    }
-                    return nullptr;
-                }
-            )
-        );
+                                if (currentSceneObject->hasAnimationInstance())
+                                {
+                                    AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
+                                    animInstance->step(mTime->getFrameTimeDelta());
+                                    // TODO: Fix dis
+                                    //animInstance->applyTransform(&(currentSceneObject->getTransform()));
+                                }
+                                return nullptr;
+                            }
+                            )
+                        );
+                endUpdate();
+            }
+            std::this_thread::yield();
+        }
     }
 
 
@@ -167,9 +177,9 @@ namespace Dream
             animationAsset = dynamic_cast<AnimationInstance*>(asset);
             animationAsset->setLooping(looping);
             log->debug(
-                "Setting", animationAsset->getNameAndUuidString(),
-                "looping: ", String::boolToYesNo(looping)
-            );
+                        "Setting", animationAsset->getNameAndUuidString(),
+                        "looping: ", String::boolToYesNo(looping)
+                        );
         }
         catch (exception &ex)
         {

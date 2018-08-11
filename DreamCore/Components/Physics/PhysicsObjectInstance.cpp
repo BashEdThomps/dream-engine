@@ -57,7 +57,7 @@ namespace Dream
           mInPhysicsWorld(false)
     {
         auto log = getLog();
-        log->info( "Constructing" );
+        log->trace( "Constructing" );
         return;
     }
 
@@ -65,7 +65,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Destroying" );
+        log->trace( "Destroying" );
 
         /***** Deletes are handled by PhysicsComponent! *****/
 

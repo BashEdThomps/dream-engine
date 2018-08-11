@@ -77,7 +77,7 @@ namespace Dream
 
     {
         auto log = getLog();
-        log->info( "Constructing Object" );
+        log->trace( "Constructing Object" );
         useDefinition(sdHandle);
     }
 
@@ -85,7 +85,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Destroying Object" );
+        log->trace( "Destroying Object" );
 
         if (hasPhysicsObjectInstance())
         {

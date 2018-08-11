@@ -39,14 +39,14 @@ namespace Dream
           mProjectDefinitionHandle(projectDefinitionHandle)
     {
         auto log = getLog();
-        log->info( "SceneDefinition: Constructing ", getNameAndUuidString() );
+        log->trace( "Constructing ", getNameAndUuidString() );
 
         json rootSceneObject = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
         mCameraTransform = Transform3D(mJson[Constants::SCENE_CAMERA_TRANSFORM]);
 
         if (rootSceneObject.is_null())
         {
-            log->info( "SceneDefinition: No root SceneObject found!!" );
+            log->info( "No root SceneObject found!!" );
         }
         else
         {
@@ -58,7 +58,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "SceneDefinition: Destructing {}", getNameAndUuidString() );
+        log->trace( "Destructing {}", getNameAndUuidString() );
     }
 
     void

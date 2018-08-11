@@ -9,6 +9,7 @@
 
 #include "Texture.h"
 
+#include "AssimpMaterial.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
 #include "../../../Common/Constants.h"
@@ -18,41 +19,38 @@
 namespace Dream
 {
     class AssimpModelInstance;
+
     class AssimpMesh : public ILoggable
     {
     private:
         AssimpModelInstance* mParentHandle;
+        AssimpMaterial mMaterial;
         string  mName;
 
         GLuint mVAO;
         GLuint mVBO;
         GLuint mEBO;
 
-
         vector<Vertex>  mVertices;
         vector<GLuint>  mIndices;
         vector<Texture> mTextures;
         vector<GLuint>  mTexturesInUse;
 
-        aiColor3D mDiffuseColour;
-        aiColor3D mSpecularColour;
-
-
         void bindTextures(ShaderInstance*);
         void unbindTextures();
         void bindDiffuse(ShaderInstance*);
         void bindSpecular(ShaderInstance*);
+        void bindAmbient(ShaderInstance* shaderHandle);
 
     public:
         AssimpMesh
         (
-                AssimpModelInstance* parent,
-                string name,
-                vector<Vertex> vertexArray,
-                vector<GLuint> indexArray,
-                vector<Texture> textureArray,
-                aiColor3D diffuse = aiColor3D(0.0f),
-                aiColor3D specular = aiColor3D(0.0f)
+            AssimpModelInstance* parent,
+            string name,
+            vector<Vertex> vertexArray,
+            vector<GLuint> indexArray,
+            vector<Texture> textureArray,
+            AssimpMaterial material
         );
         ~AssimpMesh();
         void draw(ShaderInstance*);

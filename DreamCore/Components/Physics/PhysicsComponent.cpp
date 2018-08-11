@@ -41,9 +41,9 @@ namespace Dream
 {
     PhysicsComponent::PhysicsComponent
     ()
-        : IComponent(),
-          ILoggable("PhysicsComponent")
+        : IComponent()
     {
+        setLogClassName("PhysicsComponent");
         mDebug = false;
     }
 
@@ -154,20 +154,27 @@ namespace Dream
 
     void
     PhysicsComponent::updateComponent
-    (SceneRuntime* scene)
+    ()
     {
-        auto log = getLog();
-        log->info( "Update Called" );
-
-        populatePhysicsWorld(scene);
-
-        btScalar stepValue = static_cast<btScalar>(mTime->getTimeDelta());
-        mDynamicsWorld->stepSimulation(stepValue);
-        checkContactManifolds(scene);
-
-        if (mDebug)
+        while(mRunning)
         {
-            mDynamicsWorld->debugDrawWorld();
+            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            {
+                beginUpdate();
+                auto log = getLog();
+                log->info( "Update Called" );
+                populatePhysicsWorld(mActiveSceneRuntimeHandle);
+                btScalar stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
+                mDynamicsWorld->stepSimulation(stepValue);
+                checkContactManifolds(mActiveSceneRuntimeHandle);
+                // Put debug info to queue, no GL calls made
+                if (mDebug)
+                {
+                    mDynamicsWorld->debugDrawWorld();
+                }
+                endUpdate();
+            }
+            std::this_thread::yield();
         }
     }
 

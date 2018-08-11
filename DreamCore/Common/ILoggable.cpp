@@ -12,6 +12,11 @@ namespace Dream
 
     }
 
+    string ILoggable::getClassName()
+    {
+        return _CLASSNAME_;
+    }
+
     std::shared_ptr<spdlog::logger> ILoggable::getLog() const
     {
         auto log = spdlog::get(_CLASSNAME_);

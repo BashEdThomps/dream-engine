@@ -34,14 +34,14 @@ namespace Dream
           mButton(0)
     {
         auto log = getLog();
-        log->info( "InputEvent: Constructing" );
+        log->trace( "Constructing" );
     }
 
     InputEvent::~InputEvent
     ()
     {
         auto log = getLog();
-        log->info( "InputEvent: Destructing" );
+        log->trace( "Destructing" );
     }
 
     InputSource

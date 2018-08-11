@@ -72,19 +72,14 @@ int
 errorHandler
 (lua_State *L)
 {
-    auto log = spdlog::get("LuaErrorHandler");
-    if (log == nullptr)
-    {
-        log = spdlog::stdout_color_mt("LuaErrorHandler");
-    }
     // log the error message
     object msg(from_stack( L, -1 ));
     stringstream ss;
     ss << msg;
-    log->error("RuntimeError: {}",ss.str());
+    cerr << "RuntimeError: " << ss.str() << endl;
     // log the callstack
     string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
-    log->error("TraceBack: {}", traceback.c_str());
+    cerr << "TraceBack: " << traceback.c_str();
     return 0;
 }
 
@@ -92,19 +87,20 @@ namespace Dream
 {
     LuaEngine::LuaEngine
     (ProjectRuntime* projectHandle, LuaScriptCache* cache)
-        : ILoggable("LuaEngine"),
+        : IComponent(),
           mScriptCacheHandle(cache),
           mProjectRuntimeHandle(projectHandle)
     {
+        setLogClassName("LuaEngine");
         auto log = getLog();
-        log->info( "Constructing Object" );
+        log->trace( "Constructing Object" );
     }
 
     LuaEngine::~LuaEngine
     ()
     {
         auto log = getLog();
-        log->info( "Destroying Object" );
+        log->trace( "Destroying Object" );
 
         if (mState != nullptr)
         {
@@ -119,7 +115,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-            log->info( "Initialising LuaEngine" );
+        log->info( "Initialising LuaEngine" );
         mState = luaL_newstate();
         if (mState)
         {
@@ -160,8 +156,8 @@ namespace Dream
             return false;
         }
 
-            log->info( "Loading script '{}' for '{}'" , luaScript->getName(),sceneObject->getName());
-            log->info( "Loading Lua script from {}" , luaScript->getAbsolutePath());
+        log->info( "Loading script '{}' for '{}'" , luaScript->getName(),sceneObject->getName());
+        log->info( "Loading Lua script from {}" , luaScript->getAbsolutePath());
 
         if (!loadScript(sceneObject))
         {
@@ -192,8 +188,8 @@ namespace Dream
 
         if (scriptInstance->getError())
         {
-           log->error( "Cannot load script {} while in error state",id );
-           return false;
+            log->error( "Cannot load script {} while in error state",id );
+            return false;
         }
 
         log->info( "loadScript called for {}", id );
@@ -257,39 +253,47 @@ namespace Dream
         // end the listing
     }
 
-    bool
-    LuaEngine::update
+    void
+    LuaEngine::updateComponent
     ()
     {
-        auto log = getLog();
-        log->info( "Update Called" );
-
-        for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
+        while(mRunning)
         {
-            SceneObjectRuntime* key = entry.first;
-
-            if (!executeScriptUpdate(key))
+            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
             {
-                return false;
-            }
+                beginUpdate();
+                auto log = getLog();
+                log->info( "Update Called" );
 
-            if (key->hasFocus())
-            {
-                if (!executeScriptInputHandler(key))
+                for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
                 {
-                    return false;
-                }
-            }
+                    SceneObjectRuntime* key = entry.first;
 
-            if (key->hasEvents())
-            {
-                if (!executeScriptEventHandler(key))
-                {
-                    return false;
+                    if (!executeScriptUpdate(key))
+                    {
+                        return;
+                    }
+
+                    if (key->hasFocus())
+                    {
+                        if (!executeScriptInputHandler(key))
+                        {
+                            return;
+                        }
+                    }
+
+                    if (key->hasEvents())
+                    {
+                        if (!executeScriptEventHandler(key))
+                        {
+                            return;
+                        }
+                    }
                 }
+                endUpdate();
             }
+            std::this_thread::yield();
         }
-        return true;
     }
 
     bool
@@ -459,7 +463,7 @@ namespace Dream
             {
                 for(InputEvent event : mInputEvents)
                 {
-                   call_function<void>(funq,sceneObject,event);
+                    call_function<void>(funq,sceneObject,event);
                 }
             }
             else
@@ -547,8 +551,8 @@ namespace Dream
     ()
     {
         module(mState)
-        [
-            class_<ProjectRuntime>("ProjectRuntime")
+                [
+                class_<ProjectRuntime>("ProjectRuntime")
                 .def("getAudioComponent",&ProjectRuntime::getAudioComponentHandle)
                 .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponentHandle)
                 .def("getNanoVGComponent",&ProjectRuntime::getNanoVGComponentHandle)
@@ -556,7 +560,7 @@ namespace Dream
                 .def("getWindowComponent",&ProjectRuntime::getWindowComponentHandle)
                 .def("getTime",&ProjectRuntime::getTimeHandle)
                 .def("getCamera",&ProjectRuntime::getCameraHandle)
-        ];
+                ];
         globals(mState)["Runtime"] = mProjectRuntimeHandle;
     }
 
@@ -571,10 +575,10 @@ namespace Dream
                 .def("processMouseMovement",&Camera::processMouseMovement)
                 .enum_("CameraMovement")
                 [
-                    value("FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD),
-                    value("BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD),
-                    value("LEFT",     Constants::CAMERA_MOVEMENT_LEFT),
-                    value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
+                value("FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD),
+                value("BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD),
+                value("LEFT",     Constants::CAMERA_MOVEMENT_LEFT),
+                value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
                 ]
                 ];
     }
@@ -654,24 +658,24 @@ namespace Dream
     {
         debugRegisteringClass("ShaderInstance");
         module(mState)
-        [
-            class_<ShaderInstance>("ShaderInstance")
+                [
+                class_<ShaderInstance>("ShaderInstance")
                 .def("getUuid", &ShaderInstance::getUuid)
                 .def("addUniform", &ShaderInstance::addUniform)
-        ];
+                ];
 
         debugRegisteringClass("ShaderUniform");
         module(mState)
-        [
-            class_<ShaderUniform>("ShaderUniform")
+                [
+                class_<ShaderUniform>("ShaderUniform")
                 .enum_("UniformType")
                 [
-                   value("INT1",UniformType::INT1),
-                   value("INT2",UniformType::INT2),
-                   value("INT3",UniformType::INT3),
-                   value("INT4",UniformType::INT4)
+                value("INT1",UniformType::INT1),
+                value("INT2",UniformType::INT2),
+                value("INT3",UniformType::INT3),
+                value("INT4",UniformType::INT4)
                 ]
-        ];
+                ];
     }
 
     void
@@ -733,16 +737,16 @@ namespace Dream
     {
         debugRegisteringClass("Math");
         module(mState)
-        [
-            class_<Math>("Math")
-            .scope[
+                [
+                class_<Math>("Math")
+                .scope[
                 luabind::def("degreesToRadians",&Math::degreesToRadians),
                 luabind::def("radiansToDegrees",&Math::radiansToDegrees),
                 luabind::def("pow",&Math::_pow),
                 luabind::def("sinf",&Math::_sinf),
                 luabind::def("sqrtf",&Math::_sqrtf)
-            ]
-        ];
+                ]
+                ];
     }
 
     void
@@ -751,8 +755,8 @@ namespace Dream
     {
         debugRegisteringClass("SceneObjectRuntime");
         module(mState)
-        [
-            class_<SceneObjectRuntime>("SceneObjectRuntime")
+                [
+                class_<SceneObjectRuntime>("SceneObjectRuntime")
 
                 .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeHandleByUuid)
 
@@ -782,7 +786,7 @@ namespace Dream
                 .def("hasFont",&SceneObjectRuntime::hasFontInstance)
                 .def("hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance)
 
-            ];
+                ];
     }
 
     void
@@ -791,7 +795,7 @@ namespace Dream
     {
         debugRegisteringClass("Transform3D");
         module(mState) [
-            class_<Transform3D>("Transform3D")
+                class_<Transform3D>("Transform3D")
                 .def(constructor<>())
                 // Translation ===========================================================
                 .def("getTransformType",&Transform3D::getTransformType)
@@ -827,7 +831,7 @@ namespace Dream
                 .def("scaleByY",&Transform3D::scaleByY)
                 .def("scaleByZ",&Transform3D::scaleByZ)
                 .def("setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale))
-        ];
+                ];
     }
 
     void
@@ -836,12 +840,12 @@ namespace Dream
     {
         debugRegisteringClass("Time");
         module(mState) [
-            class_<Time>("Time")
-                .def("getCurrentTime",&Time::getCurrentTime)
-                .def("getLastTime",&Time::getLastTime)
-                .def("getTimeDelta",&Time::getTimeDelta)
-                .def("scaleValue",&Time::scaleValue)
-        ];
+                class_<Time>("Time")
+                .def("getCurrentFrameTime",&Time::getCurrentFrameTime)
+                .def("getLastFrameTime",&Time::getLastFrameTime)
+                .def("getFrameTimeDelta",&Time::getFrameTimeDelta)
+                .def("scaleValueByFrameTime",&Time::scaleValueByFrameTime)
+                ];
     }
 
     void
@@ -888,12 +892,12 @@ namespace Dream
     {
         debugRegisteringClass("AudioComponent");
         module(mState)
-        [
-            class_<AudioComponent>("AudioComponent")
+                [
+                class_<AudioComponent>("AudioComponent")
                 .def("play",&AudioComponent::playAudioAsset)
                 .def("pause",&AudioComponent::pauseAudioAsset)
                 .def("stop",&AudioComponent::stopAudioAsset)
-        ];
+                ];
     }
 
 
@@ -910,18 +914,18 @@ namespace Dream
     {
         debugRegisteringClass("AudioInstance");
         module(mState)
-        [
-            class_<AudioInstance>("AudioInstance")
+                [
+                class_<AudioInstance>("AudioInstance")
                 .def("getStatus",&AudioInstance::getStatus),
 
-            class_<AudioStatus>("AudioStatus")
+                class_<AudioStatus>("AudioStatus")
                 .enum_("AudioStatus")
                 [
-                    value("PLAYING", AudioStatus::PLAYING),
-                    value("PAUSED",  AudioStatus::PAUSED),
-                    value("STOPPED", AudioStatus::STOPPED)
+                value("PLAYING", AudioStatus::PLAYING),
+                value("PAUSED",  AudioStatus::PAUSED),
+                value("STOPPED", AudioStatus::STOPPED)
                 ]
-        ];
+                ];
     }
 
     void
@@ -930,8 +934,8 @@ namespace Dream
     {
         debugRegisteringClass("InputEvent");
         module(mState)
-        [
-            class_<InputEvent>("InputEvent")
+                [
+                class_<InputEvent>("InputEvent")
 
                 .def("getSource",&InputEvent::getSource)
                 .def("setSource",&InputEvent::setSource)
@@ -960,42 +964,42 @@ namespace Dream
                 .def("getButton",&InputEvent::getButton)
                 .def("setButton",&InputEvent::setButton),
 
-            class_<InputSource>("InputSource")
+                class_<InputSource>("InputSource")
                 .enum_("InputSource")
                 [
-                    value("INPUT_SOURCE_KEYBOARD",InputSource::INPUT_SOURCE_KEYBOARD),
-                    value("INPUT_SOURCE_MOUSE",InputSource::INPUT_SOURCE_MOUSE),
-                    value("INPUT_SOURCE_GAMEPAD",InputSource::INPUT_SOURCE_GAMEPAD),
-                    value("INPUT_SOURCE_NONE",InputSource::INPUT_SOURCE_NONE)
+                value("INPUT_SOURCE_KEYBOARD",InputSource::INPUT_SOURCE_KEYBOARD),
+                value("INPUT_SOURCE_MOUSE",InputSource::INPUT_SOURCE_MOUSE),
+                value("INPUT_SOURCE_GAMEPAD",InputSource::INPUT_SOURCE_GAMEPAD),
+                value("INPUT_SOURCE_NONE",InputSource::INPUT_SOURCE_NONE)
                 ],
 
-            class_<KeyEventType>("KeyEventType")
+                class_<KeyEventType>("KeyEventType")
                 .enum_("KeyEventType")
                 [
-                    value("KEY_PRESSED",KeyEventType::KEY_PRESSED),
-                    value("KEY_RELEASED",KeyEventType::KEY_RELEASED),
-                    value("KEY_NONE",KeyEventType::KEY_NONE)
+                value("KEY_PRESSED",KeyEventType::KEY_PRESSED),
+                value("KEY_RELEASED",KeyEventType::KEY_RELEASED),
+                value("KEY_NONE",KeyEventType::KEY_NONE)
                 ],
 
-            class_<MouseEventType>("MouseEventType")
+                class_<MouseEventType>("MouseEventType")
                 .enum_("MouseEventType")
                 [
-                    value("MOUSE_BUTTON_PRESSED",MouseEventType::MOUSE_BUTTON_PRESSED),
-                    value("MOUSE_BUTTON_RELEASED",MouseEventType::MOUSE_BUTTON_RELEASED),
-                    value("MOUSE_SCROLL",MouseEventType::MOUSE_SCROLL),
-                    value("MOUSE_MOTION",MouseEventType::MOUSE_MOTION),
-                    value("MOUSE_NONE",MouseEventType::MOUSE_NONE)
+                value("MOUSE_BUTTON_PRESSED",MouseEventType::MOUSE_BUTTON_PRESSED),
+                value("MOUSE_BUTTON_RELEASED",MouseEventType::MOUSE_BUTTON_RELEASED),
+                value("MOUSE_SCROLL",MouseEventType::MOUSE_SCROLL),
+                value("MOUSE_MOTION",MouseEventType::MOUSE_MOTION),
+                value("MOUSE_NONE",MouseEventType::MOUSE_NONE)
                 ],
 
-            class_<GamepadEventType>("GamepadEventType")
+                class_<GamepadEventType>("GamepadEventType")
                 .enum_("GamepadEventType")
                 [
-                    value("GAMEPAD_AXIS",GamepadEventType::GAMEPAD_AXIS),
-                    value("GAMEPAD_BUTTON_PRESSED",GamepadEventType::GAMEPAD_BUTTON_PRESSED),
-                    value("GAMEPAD_BUTTON_RELEASED",GamepadEventType::GAMEPAD_BUTTON_RELEASED),
-                    value("GAMEPAD_NONE",GamepadEventType::GAMEPAD_NONE)
+                value("GAMEPAD_AXIS",GamepadEventType::GAMEPAD_AXIS),
+                value("GAMEPAD_BUTTON_PRESSED",GamepadEventType::GAMEPAD_BUTTON_PRESSED),
+                value("GAMEPAD_BUTTON_RELEASED",GamepadEventType::GAMEPAD_BUTTON_RELEASED),
+                value("GAMEPAD_NONE",GamepadEventType::GAMEPAD_NONE)
                 ]
-        ];
+                ];
     }
 
     void
@@ -1036,18 +1040,18 @@ namespace Dream
         map<SceneObjectRuntime*,LuaScriptInstance*>::iterator iter;
         for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
         {
-           if ((*iter).first == sceneObject)
-           {
-               string id = (*iter).first->getUuid();
-               object reg = registry(mState);
-               reg[id] = nil;
+            if ((*iter).first == sceneObject)
+            {
+                string id = (*iter).first->getUuid();
+                object reg = registry(mState);
+                reg[id] = nil;
 
-               string name = (*iter).first->getNameAndUuidString();
-               log->info( "Removed script for {}" , name );
+                string name = (*iter).first->getNameAndUuidString();
+                log->info( "Removed script for {}" , name );
 
-               mScriptMap.erase(iter++);
-               break;
-           }
+                mScriptMap.erase(iter++);
+                break;
+            }
         }
     }
 
@@ -1057,10 +1061,10 @@ namespace Dream
     {
         auto log = getLog();
         log->info(
-            "Adding {} to script map for {}",
-            script->getNameAndUuidString(),
-            sceneObject->getNameAndUuidString()
-        );
+                    "Adding {} to script map for {}",
+                    script->getNameAndUuidString(),
+                    sceneObject->getNameAndUuidString()
+                    );
 
         if (createScript(sceneObject,script))
         {
@@ -1074,122 +1078,122 @@ namespace Dream
     {
         debugRegisteringClass("NanoVG");
         module(mState)[
-            class_<NVGcolor>("NVGcolor"),
-            class_<NVGpaint>("NVGpaint"),
-            class_<NVGglyphPosition>("NVGglyphPosition"),
-            class_<NVGtextRow>("NVGtextRow"),
-            class_<NanoVGComponent>("NanoVG")
+                class_<NVGcolor>("NVGcolor"),
+                class_<NVGpaint>("NVGpaint"),
+                class_<NVGglyphPosition>("NVGglyphPosition"),
+                class_<NVGtextRow>("NVGtextRow"),
+                class_<NanoVGComponent>("NanoVG")
                 .enum_("NVGsolidity")
                 [
-                    value("NVG_SOLID",NVG_SOLID),
-                    value("NVG_HOLE",NVG_HOLE)
+                value("NVG_SOLID",NVG_SOLID),
+                value("NVG_HOLE",NVG_HOLE)
                 ]
                 .enum_("NVGImageFlags")
                 [
-                   value("NVG_IMAGE_GENERATE_MIPMAPS",NVG_IMAGE_GENERATE_MIPMAPS),
-                   value("NVG_IMAGE_REPEATX",NVG_IMAGE_REPEATX),
-                   value("NVG_IMAGE_REPEATY",NVG_IMAGE_REPEATY),
-                   value("NVG_IMAGE_FLIPY",NVG_IMAGE_FLIPY),
-                   value("NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED),
-                   value("NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST)
+                value("NVG_IMAGE_GENERATE_MIPMAPS",NVG_IMAGE_GENERATE_MIPMAPS),
+                value("NVG_IMAGE_REPEATX",NVG_IMAGE_REPEATX),
+                value("NVG_IMAGE_REPEATY",NVG_IMAGE_REPEATY),
+                value("NVG_IMAGE_FLIPY",NVG_IMAGE_FLIPY),
+                value("NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED),
+                value("NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST)
                 ]
-               .def("BeginFrame",&NanoVGComponent::BeginFrame)
-               .def("CancelFrame",&NanoVGComponent::CancelFrame)
-               .def("EndFrame",&NanoVGComponent::EndFrame)
-               .def("GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation)
-               .def("GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc)
-               .def("GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate)
-               .def("RGB",&NanoVGComponent::RGB)
-               .def("RGBf",&NanoVGComponent::RGBf)
-               .def("RGBA",&NanoVGComponent::RGBA)
-               .def("RGBAf",&NanoVGComponent::RGBAf)
-               .def("LerpRGBA",&NanoVGComponent::LerpRGBA)
-               .def("TransRGBA",&NanoVGComponent::TransRGBA)
-               .def("TransRGBAf",&NanoVGComponent::TransRGBAf)
-               .def("HSL",&NanoVGComponent::HSL)
-               .def("HSLA",&NanoVGComponent::HSLA)
-               .def("Save",&NanoVGComponent::Save)
-               .def("Restore",&NanoVGComponent::Restore)
-               .def("Reset",&NanoVGComponent::Reset)
-               .def("ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias)
-               .def("StrokeColor",&NanoVGComponent::StrokeColor)
-               .def("StrokePaint",&NanoVGComponent::StrokePaint)
-               .def("FillColor",&NanoVGComponent::FillColor)
-               .def("FillPaint",&NanoVGComponent::FillPaint)
-               .def("MiterLimit",&NanoVGComponent::MiterLimit)
-               .def("StrokeWidth",&NanoVGComponent::StrokeWidth)
-               .def("LineCap",&NanoVGComponent::LineCap)
-               .def("LineJoin",&NanoVGComponent::LineJoin)
-               .def("GlobalAlpha",&NanoVGComponent::GlobalAlpha)
-               .def("ResetTransform",&NanoVGComponent::ResetTransform)
-               .def("Transform",&NanoVGComponent::Transform)
-               .def("Translate",&NanoVGComponent::Translate)
-               .def("Rotate",&NanoVGComponent::Rotate)
-               .def("SkewX",&NanoVGComponent::SkewX)
-               .def("SkewY",&NanoVGComponent::SkewY)
-               .def("Scale;",&NanoVGComponent::Scale)
-               .def("CurrentTransform",&NanoVGComponent::CurrentTransform)
-               .def("TransformIdentity",&NanoVGComponent::TransformIdentity)
-               .def("TransformTranslate",&NanoVGComponent::TransformTranslate)
-               .def("TransformScale",&NanoVGComponent::TransformScale)
-               .def("TransformRotate",&NanoVGComponent::TransformRotate)
-               .def("TransformSkewX",&NanoVGComponent::TransformSkewX)
-               .def("TransformSkewY",&NanoVGComponent::TransformSkewY)
-               .def("TransformMultiply",&NanoVGComponent::TransformMultiply)
-               .def("TransformPremultiply",&NanoVGComponent::TransformPremultiply)
-               .def("TransformInverse",&NanoVGComponent::TransformInverse)
-               .def("TransformPoint",&NanoVGComponent::TransformPoint)
-               .def("DegToRad",&NanoVGComponent::DegToRad)
-               .def("RadToDeg",&NanoVGComponent::RadToDeg)
-               .def("CreateImage",&NanoVGComponent::CreateImage)
-               .def("CreateImageMem",&NanoVGComponent::CreateImageMem)
-               .def("CreateImageRGBA",&NanoVGComponent::CreateImageRGBA)
-               .def("UpdateImage",&NanoVGComponent::UpdateImage)
-               .def("ImageSize",&NanoVGComponent::ImageSize)
-               .def("DeleteImage",&NanoVGComponent::DeleteImage)
-               .def("LinearGradient",&NanoVGComponent::LinearGradient)
-               .def("BoxGradient",&NanoVGComponent::BoxGradient)
-               .def("RadialGradient",&NanoVGComponent::RadialGradient)
-               .def("ImagePattern",&NanoVGComponent::ImagePattern)
-               .def("Scissor",&NanoVGComponent::Scissor)
-               .def("IntersectScissor",&NanoVGComponent::IntersectScissor)
-               .def("ResetScissor",&NanoVGComponent::ResetScissor)
-               .def("BeginPath",&NanoVGComponent::BeginPath)
-               .def("MoveTo",&NanoVGComponent::MoveTo)
-               .def("LineTo",&NanoVGComponent::LineTo)
-               .def("BezierTo",&NanoVGComponent::BezierTo)
-               .def("QuadTo",&NanoVGComponent::QuadTo)
-               .def("ArcTo",&NanoVGComponent::ArcTo)
-               .def("ClosePath",&NanoVGComponent::ClosePath)
-               .def("PathWinding",&NanoVGComponent::PathWinding)
-               .def("Arc",&NanoVGComponent::Arc)
-               .def("Rect",&NanoVGComponent::Rect)
-               .def("RoundedRect",&NanoVGComponent::RoundedRect)
-               .def("RoundedRectVarying",&NanoVGComponent::RoundedRectVarying)
-               .def("Ellipse",&NanoVGComponent::Ellipse)
-               .def("Circle",&NanoVGComponent::Circle)
-               .def("Fill",&NanoVGComponent::Fill)
-               .def("Stroke",&NanoVGComponent::Stroke)
-               .def("CreateFont",&NanoVGComponent::CreateFont)
-               .def("CreateFontMem",&NanoVGComponent::CreateFontMem)
-               .def("FindFont",&NanoVGComponent::FindFont)
-               .def("AddFallbackFontId",&NanoVGComponent::AddFallbackFontId)
-               .def("AddFallbackFont",&NanoVGComponent::AddFallbackFont)
-               .def("FontSize",&NanoVGComponent::FontSize)
-               .def("FontBlur",&NanoVGComponent::FontBlur)
-               .def("TextLetterSpacing",&NanoVGComponent::TextLetterSpacing)
-               .def("TextLineHeight",&NanoVGComponent::TextLineHeight)
-               .def("TextAlign",&NanoVGComponent::TextAlign)
-               .def("FontFaceId",&NanoVGComponent::FontFaceId)
-               .def("FontFace",&NanoVGComponent::FontFace)
-               .def("Text",&NanoVGComponent::Text)
-               .def("TextBox",&NanoVGComponent::TextBox)
-               .def("TextBounds",&NanoVGComponent::TextBounds)
-               .def("TextBoxBounds",&NanoVGComponent::TextBoxBounds)
-               .def("TextGlyphPositions",&NanoVGComponent::TextGlyphPositions)
-               .def("TextMetrics",&NanoVGComponent::TextMetrics)
-               .def("TextBreakLines",&NanoVGComponent::TextBreakLines)
-        ];
+                .def("BeginFrame",&NanoVGComponent::BeginFrame)
+                .def("CancelFrame",&NanoVGComponent::CancelFrame)
+                .def("EndFrame",&NanoVGComponent::EndFrame)
+                .def("GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation)
+                .def("GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc)
+                .def("GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate)
+                .def("RGB",&NanoVGComponent::RGB)
+                .def("RGBf",&NanoVGComponent::RGBf)
+                .def("RGBA",&NanoVGComponent::RGBA)
+                .def("RGBAf",&NanoVGComponent::RGBAf)
+                .def("LerpRGBA",&NanoVGComponent::LerpRGBA)
+                .def("TransRGBA",&NanoVGComponent::TransRGBA)
+                .def("TransRGBAf",&NanoVGComponent::TransRGBAf)
+                .def("HSL",&NanoVGComponent::HSL)
+                .def("HSLA",&NanoVGComponent::HSLA)
+                .def("Save",&NanoVGComponent::Save)
+                .def("Restore",&NanoVGComponent::Restore)
+                .def("Reset",&NanoVGComponent::Reset)
+                .def("ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias)
+                .def("StrokeColor",&NanoVGComponent::StrokeColor)
+                .def("StrokePaint",&NanoVGComponent::StrokePaint)
+                .def("FillColor",&NanoVGComponent::FillColor)
+                .def("FillPaint",&NanoVGComponent::FillPaint)
+                .def("MiterLimit",&NanoVGComponent::MiterLimit)
+                .def("StrokeWidth",&NanoVGComponent::StrokeWidth)
+                .def("LineCap",&NanoVGComponent::LineCap)
+                .def("LineJoin",&NanoVGComponent::LineJoin)
+                .def("GlobalAlpha",&NanoVGComponent::GlobalAlpha)
+                .def("ResetTransform",&NanoVGComponent::ResetTransform)
+                .def("Transform",&NanoVGComponent::Transform)
+                .def("Translate",&NanoVGComponent::Translate)
+                .def("Rotate",&NanoVGComponent::Rotate)
+                .def("SkewX",&NanoVGComponent::SkewX)
+                .def("SkewY",&NanoVGComponent::SkewY)
+                .def("Scale;",&NanoVGComponent::Scale)
+                .def("CurrentTransform",&NanoVGComponent::CurrentTransform)
+                .def("TransformIdentity",&NanoVGComponent::TransformIdentity)
+                .def("TransformTranslate",&NanoVGComponent::TransformTranslate)
+                .def("TransformScale",&NanoVGComponent::TransformScale)
+                .def("TransformRotate",&NanoVGComponent::TransformRotate)
+                .def("TransformSkewX",&NanoVGComponent::TransformSkewX)
+                .def("TransformSkewY",&NanoVGComponent::TransformSkewY)
+                .def("TransformMultiply",&NanoVGComponent::TransformMultiply)
+                .def("TransformPremultiply",&NanoVGComponent::TransformPremultiply)
+                .def("TransformInverse",&NanoVGComponent::TransformInverse)
+                .def("TransformPoint",&NanoVGComponent::TransformPoint)
+                .def("DegToRad",&NanoVGComponent::DegToRad)
+                .def("RadToDeg",&NanoVGComponent::RadToDeg)
+                .def("CreateImage",&NanoVGComponent::CreateImage)
+                .def("CreateImageMem",&NanoVGComponent::CreateImageMem)
+                .def("CreateImageRGBA",&NanoVGComponent::CreateImageRGBA)
+                .def("UpdateImage",&NanoVGComponent::UpdateImage)
+                .def("ImageSize",&NanoVGComponent::ImageSize)
+                .def("DeleteImage",&NanoVGComponent::DeleteImage)
+                .def("LinearGradient",&NanoVGComponent::LinearGradient)
+                .def("BoxGradient",&NanoVGComponent::BoxGradient)
+                .def("RadialGradient",&NanoVGComponent::RadialGradient)
+                .def("ImagePattern",&NanoVGComponent::ImagePattern)
+                .def("Scissor",&NanoVGComponent::Scissor)
+                .def("IntersectScissor",&NanoVGComponent::IntersectScissor)
+                .def("ResetScissor",&NanoVGComponent::ResetScissor)
+                .def("BeginPath",&NanoVGComponent::BeginPath)
+                .def("MoveTo",&NanoVGComponent::MoveTo)
+                .def("LineTo",&NanoVGComponent::LineTo)
+                .def("BezierTo",&NanoVGComponent::BezierTo)
+                .def("QuadTo",&NanoVGComponent::QuadTo)
+                .def("ArcTo",&NanoVGComponent::ArcTo)
+                .def("ClosePath",&NanoVGComponent::ClosePath)
+                .def("PathWinding",&NanoVGComponent::PathWinding)
+                .def("Arc",&NanoVGComponent::Arc)
+                .def("Rect",&NanoVGComponent::Rect)
+                .def("RoundedRect",&NanoVGComponent::RoundedRect)
+                .def("RoundedRectVarying",&NanoVGComponent::RoundedRectVarying)
+                .def("Ellipse",&NanoVGComponent::Ellipse)
+                .def("Circle",&NanoVGComponent::Circle)
+                .def("Fill",&NanoVGComponent::Fill)
+                .def("Stroke",&NanoVGComponent::Stroke)
+                .def("CreateFont",&NanoVGComponent::CreateFont)
+                .def("CreateFontMem",&NanoVGComponent::CreateFontMem)
+                .def("FindFont",&NanoVGComponent::FindFont)
+                .def("AddFallbackFontId",&NanoVGComponent::AddFallbackFontId)
+                .def("AddFallbackFont",&NanoVGComponent::AddFallbackFont)
+                .def("FontSize",&NanoVGComponent::FontSize)
+                .def("FontBlur",&NanoVGComponent::FontBlur)
+                .def("TextLetterSpacing",&NanoVGComponent::TextLetterSpacing)
+                .def("TextLineHeight",&NanoVGComponent::TextLineHeight)
+                .def("TextAlign",&NanoVGComponent::TextAlign)
+                .def("FontFaceId",&NanoVGComponent::FontFaceId)
+                .def("FontFace",&NanoVGComponent::FontFace)
+                .def("Text",&NanoVGComponent::Text)
+                .def("TextBox",&NanoVGComponent::TextBox)
+                .def("TextBounds",&NanoVGComponent::TextBounds)
+                .def("TextBoxBounds",&NanoVGComponent::TextBoxBounds)
+                .def("TextGlyphPositions",&NanoVGComponent::TextGlyphPositions)
+                .def("TextMetrics",&NanoVGComponent::TextMetrics)
+                .def("TextBreakLines",&NanoVGComponent::TextBreakLines)
+                ];
     }
 
 } // End of Dream

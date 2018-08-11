@@ -24,17 +24,16 @@
 
 namespace Dream
 {
-    class AnimationComponent : public IComponent, ILoggable
+    class AnimationComponent : public IComponent
     {
     private:
         Time* mTime;
-        const static string _CLASSNAME_;
     public:
         AnimationComponent();
-        ~AnimationComponent();
+        ~AnimationComponent() override;
 
         bool init() override;
-        void updateComponent(SceneRuntime*) override;
+        void updateComponent() override;
 
         void play (AnimationInstance*);
         void pause(AnimationInstance*);

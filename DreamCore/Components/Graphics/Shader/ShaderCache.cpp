@@ -28,7 +28,7 @@ namespace Dream
         {
             if (it.first.compare(uuid) == 0)
             {
-                    log->info( "Found Shader " , uuid );
+                log->info( "Found Shader " , uuid );
                 return it.second;
             }
         }
@@ -47,14 +47,14 @@ namespace Dream
         :ILoggable ("ShaderCache")
     {
         auto log = getLog();
-            log->info( "Constructing" );
+        log->trace( "Constructing" );
     }
 
     ShaderCache::~ShaderCache
     ()
     {
         auto log = getLog();
-            log->info( "Destructing" );
+        log->trace( "Destructing" );
 
         for (pair<string,GLuint> shaderPair : mCache)
         {

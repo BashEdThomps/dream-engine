@@ -4,7 +4,10 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPointF>
+#include <QPainter>
 #include <spdlog/spdlog.h>
+#include <DreamCore.h>
+#include <QChar>
 
 WindowInputState::WindowInputState
 ()
@@ -39,7 +42,8 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mGridEnabled(true),
       mRelationshipTreeEnabled(true),
       mSelectionHighlighterEnabled(true),
-      mPaintInProgress(false)
+      mPaintInProgress(false),
+      mMaxFrameTimeValues(100)
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (log==nullptr)
@@ -115,9 +119,13 @@ QOpenGLWindowComponent::paintGL
                 mProjectRuntimeHandle->updateLogic();
                 //mProjectRuntimeHandle->updateAll();
 
+                mProjectRuntimeHandle->updateGraphics();
+                mProjectRuntimeHandle->collectGarbage();
+
                 glm::mat4 viewMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getViewMatrix();
                 glm::mat4 projectionMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getProjectionMatrix();
 
+                glDisable(GL_DEPTH_TEST);
                 if (mGridHandle)
                 {
                     if(mGridEnabled)
@@ -173,8 +181,8 @@ QOpenGLWindowComponent::paintGL
                         Constants::checkGLError("QOGLWC: RelTree after draw");
                     }
                 }
-                mProjectRuntimeHandle->updateGraphics();
-                mProjectRuntimeHandle->collectGarbage();
+                drawStats();
+
             }
             else
             {
@@ -188,9 +196,82 @@ QOpenGLWindowComponent::paintGL
         glClearColor(0.0f,0.0f,0.0f,0.0f);
     }
 
-    glDisable(GL_DEPTH_TEST);
 
     mPaintInProgress = false;
+}
+
+void
+QOpenGLWindowComponent::drawStats()
+{
+    auto project = mActiveSceneRuntimeHandle->getProjectRuntimeHandle();
+    double frame = project->getTimeHandle()->getFrameTimeDelta();
+    mFrameTimes.push_back(frame);
+
+    if (mFrameTimes.size() > mMaxFrameTimeValues)
+    {
+        mFrameTimes.erase(begin(mFrameTimes));
+    }
+
+    long long animation = project->getAnimationComponentHandle()->getUpdateTime();
+    long long animationYield = project->getAnimationComponentHandle()->getYieldedTime();
+
+    long long audio = project->getAudioComponentHandle()->getUpdateTime();
+    long long  audioYield = project->getAudioComponentHandle()->getYieldedTime() ;
+
+    long long graphics = project->getGraphicsComponentHandle()->getUpdateTime();
+    long long graphicsYield = project->getGraphicsComponentHandle()->getYieldedTime();
+
+    long long lua = project->getLuaEngineHandle()->getUpdateTime();
+    long long luaYield = project->getLuaEngineHandle()->getYieldedTime();
+
+    long long physics = project->getPhysicsComponentHandle()->getUpdateTime();
+    long long physicsYield = project->getPhysicsComponentHandle()->getYieldedTime();
+
+    QPainter painter(this);
+
+    int topLeftX, topLeftY;
+    topLeftX = 0;
+    topLeftY = 0;
+
+    QRectF rect(0,0,getWidth(),getHeight()/10);
+    QBrush brush(QColor(0,0,0,128));
+
+    painter.fillRect(rect,brush);
+
+    painter.setPen(Qt::white);
+    painter.setFont(QFont("Arial", 16));
+    QString text(
+            "Frame:     %1s     %12 FPS\n"
+            "Animation: %2µs  / %3µs | Audio: %4µs / %5µs\n"
+            "Graphics:  %6µs  / %7µs | Lua:   %8µs / %9µs\n"
+            "Physics:   %10µs / %11µs"
+    );
+    text = text
+        .arg(frame)
+        .arg(animation, 9, 10, QChar('0'))
+        .arg(animationYield, 9, 10, QChar('0'))
+        .arg(audio, 9, 10, QChar('0'))
+        .arg(audioYield, 9, 10, QChar('0'))
+        .arg(graphics, 9, 10, QChar('0'))
+        .arg(graphicsYield, 9, 10, QChar('0'))
+        .arg(lua, 9, 10, QChar('0'))
+        .arg(luaYield, 9, 10, QChar('0'))
+        .arg(physics, 9, 10, QChar('0'))
+        .arg(physicsYield, 9,10, QChar('0'))
+        .arg(1.0/averageFrameTime());
+
+    painter.drawText(topLeftX, topLeftY,getWidth(), getHeight(), Qt::AlignLeft,text);
+    painter.end();
+}
+
+double QOpenGLWindowComponent::averageFrameTime()
+{
+    double total = 0.0;
+    for (double ft : mFrameTimes)
+    {
+        total += ft;
+    }
+    return total / mFrameTimes.size();
 }
 
 bool
@@ -200,26 +281,11 @@ QOpenGLWindowComponent::init
     return true;
 }
 
-void
-QOpenGLWindowComponent::updateComponent
-(SceneRuntime*)
-{
+void QOpenGLWindowComponent::updateComponent(){}
 
-}
+void QOpenGLWindowComponent::getCurrentDimensions(){}
 
-void
-QOpenGLWindowComponent::getCurrentDimensions
-()
-{
-
-}
-
-void
-QOpenGLWindowComponent::swapBuffers
-()
-{
-
-}
+void QOpenGLWindowComponent::swapBuffers(){}
 
 void
 QOpenGLWindowComponent::setProjectRuntimeHandle
@@ -290,7 +356,7 @@ QOpenGLWindowComponent::updateInputState
 
     float deltaTime = static_cast<float>
     (
-        mProjectRuntimeHandle->getTimeHandle()->getTimeDelta()
+        mProjectRuntimeHandle->getTimeHandle()->getFrameTimeDelta()
     );
 
     if (mInputState.wPressed)

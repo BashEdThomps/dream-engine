@@ -40,7 +40,7 @@ namespace Dream
           mProjectDefinitionHandle(parent)
     {
         auto log = getLog();
-        log->info( "AssetDefinition: Constructing {}",
+        log->trace( "Constructing {}",
                    getNameAndUuidString() );
     }
 
@@ -48,7 +48,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "AssetDefinition: Destructing {}",
+        log->trace( "Destructing {}",
                    getNameAndUuidString() );
     }
 
@@ -214,7 +214,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "AssetDefinition: " , mJson.dump(1) );
+        log->info( mJson.dump(1) );
     }
 
     ProjectDefinition*

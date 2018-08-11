@@ -50,6 +50,7 @@ namespace Dream
     class AssimpCache;
     class FontCache;
     class ShaderCache;
+    class ComponentThread;
 
     class Time;
 
@@ -62,12 +63,25 @@ namespace Dream
 
         unique_ptr<Time> mTime;
         unique_ptr<Camera> mCamera;
+
         unique_ptr<AudioComponent> mAudioComponent;
+        unique_ptr<ComponentThread> mAudioComponentThread;
+
         unique_ptr<GraphicsComponent> mGraphicsComponent;
+        unique_ptr<ComponentThread> mGraphicsComponentThread;
+
         unique_ptr<PhysicsComponent> mPhysicsComponent;
+        unique_ptr<ComponentThread> mPhysicsComponentThread;
+
         unique_ptr<AnimationComponent> mAnimationComponent;
+        unique_ptr<ComponentThread> mAnimationComponentThread;
+
         unique_ptr<LuaEngine> mLuaEngine;
+        unique_ptr<ComponentThread> mLuaEngineThread;
+
         unique_ptr<NanoVGComponent> mNanoVGComponent;
+
+        // Caches
 
         unique_ptr<TextureCache> mTextureCache;
         unique_ptr<AssimpCache> mModelCache;
@@ -81,7 +95,7 @@ namespace Dream
 
     public: // Public Functions
         ProjectRuntime(Project* parentProject, IWindowComponent* wcHandle = nullptr);
-        ~ProjectRuntime();
+        ~ProjectRuntime() override;
 
         void setDone(bool);
         bool isDone();
@@ -126,6 +140,8 @@ namespace Dream
         TextureCache* getTextureCacheHandle();
         AssimpCache* getModelCacheHandle();
 
+        void cleanUpThreads();
+
     private: // Member Functions
         bool initAnimationComponent();
         bool initAudioComponent();
@@ -134,6 +150,13 @@ namespace Dream
         bool initWindowComponent();
         bool initLuaEngine();
         bool initCaches();
+
+        void cleanUpAnimationComponentThread();
+        void cleanUpAudioComponentThread();
+        void cleanUpGraphicsComponentThread();
+        void cleanUpLuaEngineThread();
+        void cleanUpPhysicsComponentThread();
+        bool allThreadsHaveUpdated();
     };
 
 } // End Dream

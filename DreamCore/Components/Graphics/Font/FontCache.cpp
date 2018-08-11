@@ -34,7 +34,7 @@ namespace Dream
     () : ILoggable ("FontCache")
     {
         auto log = getLog();
-        log->info("Constructing");
+        log->trace("Constructing");
 
         if (mFreeTypeLib == nullptr)
         {
@@ -55,7 +55,7 @@ namespace Dream
         auto log = getLog();
         if (mFreeTypeLib)
         {
-            log->info("Destroying FreeType");
+            log->trace("Destroying FreeType");
             FT_Done_FreeType(*mFreeTypeLib.get());
             mFreeTypeLib.release();
         }

@@ -23,14 +23,14 @@ namespace Dream
     () : ILoggable ("TextureCache")
     {
         auto log = getLog();
-            log->info( "TextureCache: Constructing" );
+        log->trace( "Constructing" );
     }
 
     TextureCache::~TextureCache
     ()
     {
         auto log = getLog();
-            log->info( "TextureCache: Constructing" );
+        log->trace( "Constructing" );
 
         for (Texture texture : mCache)
         {
@@ -52,7 +52,7 @@ namespace Dream
     (const char* file_c, const char* directory_c, const char* type)
     {
         auto log = getLog();
-            log->info( "TextureCache: Loading from: {}/{}", directory_c , file_c );
+        log->info( "Loading from: {}/{}", directory_c , file_c );
         //Generate texture ID and load texture data
         string filename = string(file_c);
         string directory = string(directory_c);
@@ -62,7 +62,7 @@ namespace Dream
         {
             if (nextTexture.path == filename && nextTexture.type == type)
             {
-                    log->info( "TextureCache: Found cached texture." );
+                log->info( "Found cached texture." );
                 return nextTexture;
             }
         }

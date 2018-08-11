@@ -42,10 +42,8 @@ namespace Dream
         : IDefinition(data) ,
           ILoggable("ProjectDefinition")
     {
-        {
-            auto log = getLog();
-            log->info( "ProjectDefinition: Constructing {}", getNameAndUuidString() );
-        }
+        auto log = getLog();
+        log->trace( "Constructing {}", getNameAndUuidString() );
         loadChildDefinitions();
     }
 
@@ -53,20 +51,16 @@ namespace Dream
     ProjectDefinition::~ProjectDefinition
     ()
     {
-            auto log = getLog();
-        {
-            log->info( "ProjectDefinition: Destructing {}",getNameAndUuidString() );
-        }
+        auto log = getLog();
+        log->trace( "Destructing {}",getNameAndUuidString() );
     }
 
     void
     ProjectDefinition::showStatus
     ()
     {
-            auto log = getLog();
-        {
-            log->info( "ProjectDefinition: {}" , mJson.dump(1) );
-        }
+        auto log = getLog();
+        log->info(mJson.dump(1) );
     }
 
     void
@@ -151,8 +145,8 @@ namespace Dream
     ProjectDefinition::loadAssetDefinitions
     ()
     {
-            auto log = getLog();
-            log->info( "ProjectDefinition: Loading AssetDefinitions from JSON" );
+        auto log = getLog();
+        log->info( "Loading AssetDefinitions from JSON" );
 
         for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
@@ -164,8 +158,8 @@ namespace Dream
     ProjectDefinition::loadSceneDefinitions
     ()
     {
-            auto log = getLog();
-            log->info( "ProjectDefinition: Loading ScenesDefinitions from JSON" );
+        auto log = getLog();
+        log->info( "Loading ScenesDefinitions from JSON" );
 
         for (nlohmann::json it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
@@ -178,7 +172,7 @@ namespace Dream
     ProjectDefinition::createAssetDefinitionInstance
     (json assetDefinitionJs)
     {
-            auto log = getLog();
+        auto log = getLog();
         IAssetDefinition* newDef = nullptr;
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
 
@@ -212,7 +206,7 @@ namespace Dream
                 newDef = new SpriteDefinition(this,assetDefinitionJs);
                 break;
             case NONE:
-                log->error( "ProjectDefinition: Unable to create Asset Definition. Unknown Type" );
+                log->error( "Unable to create Asset Definition. Unknown Type" );
                 newDef = nullptr;
                 break;
         }
@@ -236,10 +230,10 @@ namespace Dream
     {
         auto log = getLog();
         log->info(
-            "Removing AssetDefinition {} from {}",
-            assetDefinitionHandle->getNameAndUuidString(),
-            getNameAndUuidString()
-        );
+                    "Removing AssetDefinition {} from {}",
+                    assetDefinitionHandle->getNameAndUuidString(),
+                    getNameAndUuidString()
+                    );
         auto iter = begin(mAssetDefinitions);
         auto endPos = end(mAssetDefinitions);
         while (iter != endPos)
@@ -247,10 +241,10 @@ namespace Dream
             if ((*iter).get() == assetDefinitionHandle)
             {
                 log->info(
-                    "Found AssetDefinition to {} remove from {}",
-                    assetDefinitionHandle->getNameAndUuidString(),
-                    getNameAndUuidString()
-                );
+                            "Found AssetDefinition to {} remove from {}",
+                            assetDefinitionHandle->getNameAndUuidString(),
+                            getNameAndUuidString()
+                            );
                 mAssetDefinitions.erase(iter);
                 return;
             }
@@ -335,10 +329,10 @@ namespace Dream
     {
         auto log = getLog();
         log->info(
-            "Removing SceneDefinition {} from {}",
-            sceneDef->getNameAndUuidString(),
-            getNameAndUuidString()
-        );
+                    "Removing SceneDefinition {} from {}",
+                    sceneDef->getNameAndUuidString(),
+                    getNameAndUuidString()
+                    );
 
         auto iter = begin(mSceneDefinitions);
         auto endPos = end(mSceneDefinitions);
@@ -347,10 +341,10 @@ namespace Dream
             if ((*iter).get() == sceneDef)
             {
                 log->info(
-                    "Found scene to {} remove from {}",
-                    sceneDef->getNameAndUuidString(),
-                    getNameAndUuidString()
-                );
+                            "Found scene to {} remove from {}",
+                            sceneDef->getNameAndUuidString(),
+                            getNameAndUuidString()
+                            );
                 mSceneDefinitions.erase(iter);
                 return;
             }
@@ -387,12 +381,12 @@ namespace Dream
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
-            auto log = getLog();
+        auto log = getLog();
         json assetDefinitionJson;
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
         {
-            log->info( "ProjectDefinition: Creating new AssetDefinition with default Format {}", defaultFormat);
+            log->info( "Creating new AssetDefinition with default Format {}", defaultFormat);
         }
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
@@ -422,7 +416,7 @@ namespace Dream
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
         for (IAssetDefinition *adHandle : getAssetDefinitionsHandleList())
         {
-           mJson[Constants::PROJECT_ASSET_ARRAY].push_back(adHandle->getJson());
+            mJson[Constants::PROJECT_ASSET_ARRAY].push_back(adHandle->getJson());
         }
 
         mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
@@ -475,7 +469,7 @@ namespace Dream
             IAssetDefinition* next = (*it).get();
             if (next->getType() == Constants::ASSET_TYPE_SHADER)
             {
-               shaderHandles.push_back(dynamic_cast<ShaderDefinition*>(next));
+                shaderHandles.push_back(dynamic_cast<ShaderDefinition*>(next));
             }
         }
         return shaderHandles;

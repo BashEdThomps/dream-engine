@@ -40,14 +40,14 @@ namespace Dream
           mDreamTransform(dreamTransform)
     {
         auto log = getLog();
-        log->info( "PhysicsMotionState: Constructor called" );
+        log->trace( "Constructor called" );
     }
 
     PhysicsMotionState::~PhysicsMotionState
     ()
     {
         auto log = getLog();
-        log->info( "PhysicsMotionState: Destroying Object" );
+        log->trace( "Destroying Object" );
     }
 
     void
@@ -55,7 +55,7 @@ namespace Dream
     (Transform3D& transform)
     {
         auto log = getLog();
-        log->info( "PhysicsMotionState: setTransform called" );
+        log->info( "setTransform called" );
         mDreamTransform = transform;
     }
 
@@ -64,7 +64,7 @@ namespace Dream
     (btTransform &worldTrans) const
     {
         auto log = getLog();
-        log->info( "PhysicsMotionState: getWorldTransform called" );
+        log->info( "getWorldTransform called" );
         // Translation
         worldTrans.setOrigin(mDreamTransform.getTranslationAsBtVector3());
         // Rotation
@@ -78,7 +78,7 @@ namespace Dream
     (const btTransform &worldTrans)
     {
         auto log = getLog();
-        log->info( "PhysicsMotionState: setWorldTransform called" );
+        log->info( "setWorldTransform called" );
 
         // Translation
         btVector3 pos = worldTrans.getOrigin();
@@ -93,7 +93,7 @@ namespace Dream
     (btTransform &trans)
     {
         auto log = getLog();
-        log->info( "PhysicsMotionState: setKinematicPos called" );
+        log->info( "setKinematicPos called" );
         btVector3 pos = trans.getOrigin();
         mDreamTransform.setTranslation(pos.x(), pos.y(), pos.z());
     }

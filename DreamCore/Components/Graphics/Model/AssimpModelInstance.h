@@ -56,6 +56,8 @@ namespace Dream
     class Vertex;
     class Texture;
 
+
+
     class AssimpModelInstance : public IAssetInstance, ILoggable
     {
     private:
@@ -70,6 +72,7 @@ namespace Dream
 
         // Methods
         void loadModel(string);
+        void loadShaders();
         vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
         void updateBoundingBox(aiMesh* mesh);
         void initBoundingBox();
@@ -79,6 +82,7 @@ namespace Dream
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
         vector<Texture> processTextureData(aiMesh* mesh, const aiScene* scene);
+        map<string,unique_ptr<ShaderInstance>> mMaterialShaderMap;
     public:
         AssimpModelInstance(AssimpCache*, TextureCache*,  IAssetDefinition*,SceneObjectRuntime*);
         ~AssimpModelInstance();

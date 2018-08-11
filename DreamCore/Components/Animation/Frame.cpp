@@ -11,7 +11,7 @@ namespace Dream
         : ILoggable ("Frame")
     {
         auto log = getLog();
-        log->info("Constructing Object");
+        log->trace("Constructing Object");
     }
 
 
@@ -19,7 +19,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Destroying Object");
+        log->trace("Destroying Object");
     }
 
     void

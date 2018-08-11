@@ -26,7 +26,6 @@
 #include <GL/glew.h>
 #include <glm/matrix.hpp>
 #include "../IComponent.h"
-#include "../../Common/ILoggable.h"
 
 using std::string;
 using std::map;
@@ -45,7 +44,7 @@ namespace Dream
     class SceneRuntime;
     class SceneObjectRuntime;
 
-    class GraphicsComponent : public IComponent, ILoggable
+    class GraphicsComponent : public IComponent
     {
     private:
         mat4 mProjectionMatrix;
@@ -78,14 +77,10 @@ namespace Dream
         vector<SceneObjectRuntime*> mModelQueue;
         vector<SceneObjectRuntime*> mFontQueue;
         vector<LightInstance*>      mLightQueue;
-
         IWindowComponent *mWindowComponentHandle;
-        SceneRuntime* mActiveSceneRuntimeHandle;
-        NVGcontext* mNVGContext;
-
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
-        ~GraphicsComponent(void);
+        ~GraphicsComponent() override;
 
         void clearSpriteQueue();
         void addToSpriteQueue(SceneObjectRuntime*);
@@ -107,7 +102,7 @@ namespace Dream
         void postFontRender();
 
         bool init(void) override;
-        void updateComponent(SceneRuntime*) override;
+        void updateComponent() override;
         void drawSprite(SceneObjectRuntime*);
         void drawFont(SceneObjectRuntime*);
         void drawModel(SceneObjectRuntime*);
@@ -118,9 +113,6 @@ namespace Dream
         mat4 getViewMatrix();
         mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();
-
-        void setActiveSceneRuntimeHandle(SceneRuntime*);
-
+        void handleResize();
     }; // End of GraphicsComponent
-
 } // End of Dream

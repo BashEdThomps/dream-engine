@@ -36,7 +36,7 @@ namespace DreamSDL
         SDL_Window* getWindow();
         vector<SDL_Event> getSDL_Events();
 
-        void updateComponent(SceneRuntime*) override;
+        void updateComponent() override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;

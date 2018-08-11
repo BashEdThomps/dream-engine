@@ -175,6 +175,7 @@ private slots:
     void onScenegraphTreeViewActivated(const QModelIndex &index);
     void onPropertiesTreeViewActivated(const QModelIndex &index);
     void onAssetDefinitionTreeViewActivated(const QModelIndex &index);
+    void onMenu_Debug_LogLevelChanged(bool);
 
 private:
     ProjectDefinition* mProjectDefinitionHandle;
@@ -187,5 +188,6 @@ private:
     shared_ptr<QMenu> createAssetDefinitionTreeContextMenu(AssetDefinitionTreeItem*);
     shared_ptr<QMenu> createScenegraphTreeContextMenu(ScenegraphTreeItem*);
     void createAssetsMenu(QMenu* menu,ScenegraphTreeItem* item);
+    void setupMenu_Debug();
 };
 
