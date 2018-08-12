@@ -54,7 +54,9 @@ namespace Dream
           ILoggable ("ProjectRuntime"),
           mDone(false),
           mWindowComponentHandle(windowComponentHandle),
-          mProjectHandle(projectHandle)
+          mProjectHandle(projectHandle),
+          mGraphicsUpdating(false),
+          mLogicUpdating(false)
     {
         auto log = getLog();
         log->info( "Constructing" );
@@ -308,41 +310,44 @@ namespace Dream
         return mLuaEngine.get();
     }
 
-    void
+    bool
     ProjectRuntime::updateLogic
     ()
     {
-        auto log = getLog();
-        log->info("==== UpdateLogic Called @ {}  ====",  mTime->getFrameTimeDelta());
+        if (!mGraphicsUpdating && !mLogicUpdating)
+        {
+            auto log = getLog();
+            log->info("==== UpdateLogic Called @ {}  ====",  mTime->now());
 
-        mTime->updateFrameTime();
+            mLogicUpdating = true;
 
-        //mLuaEngine->updateComponent();
-        mLuaEngine->setActiveSceneRuntime(mActiveSceneRuntime.get());
-        mLuaEngine->setShouldUpdate(true);
+            mTime->updateFrameTime();
 
-        //mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
-        mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-        mAnimationComponent->setShouldUpdate(true);
+            //mLuaEngine->updateComponent();
+            mLuaEngine->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mLuaEngine->setShouldUpdate(true);
 
-        //mAudioComponent->updateComponent(mActiveSceneRuntime.get());
-        mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-        mAudioComponent->setShouldUpdate(true);
+            //mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
+            mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mAnimationComponent->setShouldUpdate(true);
 
-        mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
-        mWindowComponentHandle->updateComponent();
+            //mAudioComponent->updateComponent(mActiveSceneRuntime.get());
+            mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mAudioComponent->setShouldUpdate(true);
 
-        //mPhysicsComponent->updateComponent(mActiveSceneRuntime.get());
-        mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-        mPhysicsComponent->setShouldUpdate(true);
+            mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mWindowComponentHandle->updateComponent();
 
-        //mGraphicsComponent->updateComponent(mActiveSceneRuntime.get());
-        mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-        mGraphicsComponent->setShouldUpdate(true);
+            //mPhysicsComponent->updateComponent(mActiveSceneRuntime.get());
+            mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mPhysicsComponent->setShouldUpdate(true);
 
-        mPhysicsComponent->setViewProjectionMatrix(
-            mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
-        );
+            //mGraphicsComponent->updateComponent(mActiveSceneRuntime.get());
+            mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mGraphicsComponent->setShouldUpdate(true);
+            return true;
+        }
+        return false;
     }
 
     bool ProjectRuntime::allThreadsHaveUpdated
@@ -369,7 +374,8 @@ namespace Dream
             lua       ? "√" : " "
         );
 
-       return animation && audio && graphics && physics && lua;
+        mLogicUpdating = !animation || !audio || !graphics || !physics || !lua;
+        return animation && audio && graphics && physics && lua;
     }
 
     void
@@ -377,23 +383,25 @@ namespace Dream
     ()
     {
         auto log = getLog();
+        log->info(
+            "\n====================\nReady to draw @ {}\n====================",
+            getTimeHandle()->now()
+        );
+
         log->info("==== UpdateGraphics Called @ {}  ====" , mTime->getFrameTimeDelta());
-
-        while (!allThreadsHaveUpdated())
-        {
-            log->info("UpdateGraphics Waiting... {}" , mTime->getFrameTimeDelta());
-            std::this_thread::yield();
-        }
-        log->info("==== UpdateGraphics Ready to draw @ {}  ====" , mTime->now());
-
+        mGraphicsUpdating = true;
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->handleResize();
         mGraphicsComponent->drawModelQueue();
         mGraphicsComponent->drawFontQueue();
         mGraphicsComponent->drawSpriteQueue();
         mLuaEngine->updateNanoVG();
+        mPhysicsComponent->setViewProjectionMatrix(
+            mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
+        );
         mPhysicsComponent->drawDebug();
         mWindowComponentHandle->swapBuffers();
+        mGraphicsUpdating = false;
     }
 
     void
@@ -460,12 +468,7 @@ namespace Dream
 
     void
     ProjectRuntime::useDefinition
-    (IDefinition*)
-    {
-        /*
-            ProjectDefinition *pdHandle = dynamic_cast<ProjectDefinition*>(definitionHandle);
-        */
-    }
+    (IDefinition*) {}
 
     FontCache*
     ProjectRuntime::getFontCacheHandle
@@ -493,6 +496,16 @@ namespace Dream
     ()
     {
         return mModelCache.get();
+    }
+
+    volatile bool ProjectRuntime::getGraphicsUpdating() const
+    {
+        return mGraphicsUpdating;
+    }
+
+    volatile bool ProjectRuntime::getLogicUpdating() const
+    {
+        return mGraphicsUpdating;
     }
 
     void ProjectRuntime::cleanUpThreads()

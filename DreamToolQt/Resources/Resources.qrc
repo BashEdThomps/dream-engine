@@ -33,5 +33,6 @@
         <file>svg/noun_clapper.svg</file>
         <file>svg/noun_boxes.svg</file>
         <file>svg/noun_Object.svg</file>
+        <file>svg/volume-up-solid.svg</file>
     </qresource>
 </RCC>

@@ -142,19 +142,8 @@ namespace Dream
         mYaw   += xoffset * mMouseSensitivity;
         mPitch -= yoffset * mMouseSensitivity;
 
-        // Make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (constrainPitch)
-        {
-            if (mPitch > Constants::CAMERA_PITCH_MAX)
-            {
-                mPitch = Constants::CAMERA_PITCH_MAX;
-            }
-
-            if (mPitch < -Constants::CAMERA_PITCH_MAX)
-            {
-                mPitch = -Constants::CAMERA_PITCH_MAX;
-            }
-        }
+        mYaw = fmodf(mYaw,M_PI*2);
+        mPitch = fmodf(mPitch,M_PI*2);
 
         // Update Front, Right and Up Vectors using the updated Eular angles
         updateCameraVectors();

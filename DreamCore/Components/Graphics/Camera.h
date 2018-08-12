@@ -68,6 +68,7 @@ namespace Dream
 
         vec3 getUp();
         vec3 getFront();
+
     private:
         float radians(float);
 

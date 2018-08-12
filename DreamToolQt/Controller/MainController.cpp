@@ -18,6 +18,9 @@
 
 #include "MainController.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include <QDebug>
 #include <QFileDialog>
 #include <QErrorMessage>
@@ -110,6 +113,11 @@ MainController::setupUI
     connect(
         this, SIGNAL(notifyProjectDefinitionChanged(ProjectDefinition*)),
         mMainWindowHandle, SLOT(onProjectDefinitionChanged(ProjectDefinition*))
+    );
+    connect
+    (
+        mMainWindowHandle, SIGNAL(notifyMainVolumeChanged(int)),
+        this, SLOT(onMainVolumeChanged(int))
     );
 }
 
@@ -1243,11 +1251,6 @@ MainController::onSceneProperty_CaptureCameraRotation
         if (prHandle)
         {
             auto rotation = prHandle->getCameraHandle()->getRotation();
-            if (prHandle->getCameraHandle()->getTranslation().y > 0)
-            {
-                rotation.x = -rotation.x;
-                rotation.y = -rotation.y;
-            }
             sdHandle->getCameraTransform().setRotation(rotation);
             return;
         }
@@ -1350,6 +1353,29 @@ MainController::onCreateNewAssetDefinition
         case NONE:
             break;
     }
+}
+
+void MainController::onMainVolumeChanged(int vol)
+{
+    auto log = spdlog::get("MainController");
+   if (mDreamProjectModel != nullptr)
+   {
+       auto project = mDreamProjectModel->getProject();
+       if (project != nullptr)
+       {
+           auto runtime = project->getProjectRuntimeHandle();
+           if (runtime != nullptr)
+           {
+               auto audio = runtime->getAudioComponentHandle();
+               if (audio != nullptr)
+               {
+                   auto volume = vol/100.0f;
+                   log->info("Setting volume to {}",volume);
+                   audio->setVolume(volume);
+               }
+           }
+       }
+   }
 }
 
 void

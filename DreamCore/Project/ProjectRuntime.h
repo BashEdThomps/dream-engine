@@ -117,9 +117,10 @@ namespace Dream
         void collectGarbage() override;
 
         void updateAll();
-        void updateLogic();
+        bool updateLogic();
         void updateGraphics();
         void updateFlush();
+        bool allThreadsHaveUpdated();
 
         int getWindowWidth();
         void setWindowWidth(int);
@@ -139,9 +140,13 @@ namespace Dream
         ShaderCache* getShaderCacheHandle();
         TextureCache* getTextureCacheHandle();
         AssimpCache* getModelCacheHandle();
+        volatile bool mGraphicsUpdating;
+        volatile bool mLogicUpdating;
+
+        volatile bool getLogicUpdating() const;
+        volatile bool getGraphicsUpdating() const;
 
         void cleanUpThreads();
-
     private: // Member Functions
         bool initAnimationComponent();
         bool initAudioComponent();
@@ -156,7 +161,6 @@ namespace Dream
         void cleanUpGraphicsComponentThread();
         void cleanUpLuaEngineThread();
         void cleanUpPhysicsComponentThread();
-        bool allThreadsHaveUpdated();
     };
 
 } // End Dream

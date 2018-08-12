@@ -113,20 +113,6 @@ namespace Dream
         void unbind();
         GLuint getShaderProgram();
 
-        // Diffuse & Specular
-        bool setDiffuseColour(vec3 diffuse, string name = "diffuseColour");
-        bool setSpecularColour(vec3 specular, string name = "specularColour");
-
-        // Point Light
-        bool setPointLight(int index, vec3 position, vec3 colour);
-        bool setPointLightColour(int index, vec3 colour);
-        bool setPointLightPosition(int index, vec3 position);
-
-        // Ambient Light
-        bool setAmbientLight(vec3,float);
-        bool setAmbientColour(vec3,string name = "ambientColour");
-        bool setAmbientStrength(float,string name = "ambientStrength");
-
         // MVP
         bool setModelMatrix(mat4,string name = "model");
         bool setViewMatrix(mat4,string name = "view");
@@ -141,6 +127,7 @@ namespace Dream
         GLint getUniformLocation(string name);
 
         void addUniform(ShaderUniform uniform);
+        void addUniform(UniformType type, string name, int count, void* data);
 
         void syncUniforms();
     }; // End of ShaderInstance

@@ -19,11 +19,20 @@ namespace Dream
 
     std::shared_ptr<spdlog::logger> ILoggable::getLog() const
     {
-        auto log = spdlog::get(_CLASSNAME_);
-        if (log == nullptr)
+        try
         {
-            log = spdlog::stdout_color_mt(_CLASSNAME_);
+            auto log = spdlog::get(_CLASSNAME_);
+            if (log == nullptr)
+            {
+                log = spdlog::stdout_color_mt(_CLASSNAME_);
+            }
+            return log;
         }
-        return log;
+        catch (spdlog::spdlog_ex ex)
+        {
+           cerr << "********** Exception getting log for " << _CLASSNAME_ <<" **********"
+                << endl << ex.what() << endl;
+           return nullptr;
+        }
     }
 }

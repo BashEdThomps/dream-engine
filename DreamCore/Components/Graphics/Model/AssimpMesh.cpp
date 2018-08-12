@@ -54,6 +54,8 @@ namespace Dream
 
         size_t numTextures = mTextures.size();
 
+        log->info("Binding {} textures",numTextures);
+
         for(GLuint i = 0; i < numTextures; i++)
         {
             // Activate proper texture unit before binding
@@ -155,7 +157,6 @@ namespace Dream
         shader->bindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
         shader->unbindVertexArray();
-        //unbindTextures();
     }
 
     void

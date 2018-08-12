@@ -77,13 +77,13 @@ private:
     Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
     RelationshipTree *mRelationshipTreeHandle;
+    volatile bool mPaintInProgress;
 
     bool mGridEnabled;
     bool mRelationshipTreeEnabled;
     bool mSelectionHighlighterEnabled;
 
     WindowInputState mInputState;
-    bool mPaintInProgress;
     vector<double> mFrameTimes;
     int mMaxFrameTimeValues;
     double averageFrameTime();

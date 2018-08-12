@@ -74,6 +74,7 @@ namespace Dream
         float getSampleOffset(AudioInstance*);
         vector<char> getAudioBuffer(AudioInstance*, ALint, ALint);
         AudioInstance* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
+        void setVolume(float);
 
     protected:
         ALuint generateBuffers(size_t);

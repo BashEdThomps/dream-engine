@@ -18,7 +18,8 @@
 #include "MainWindowController.h"
 #include "ui_MainWindow.h"
 #include <QWindow>
-#include <QDebug>
+#include <QSpacerItem>
+#include <QLabel>
 #include <vector>
 #include <algorithm>
 #include <memory>
@@ -89,6 +90,21 @@ void MainWindowController::setupUiFeatures()
     ui->dataGLSplitter->setStretchFactor(1,10);
 
     ui->scenegraphPropertiesSplitter->setStretchFactor(3,1);
+
+    mVolumeSlider.setOrientation(Qt::Horizontal);
+    mVolumeSlider.setMinimum(0);
+    mVolumeSlider.setMaximum(100);
+    mVolumeSlider.setSingleStep(1);
+    mVolumeSlider.setMinimumWidth(150);
+    mVolumeSlider.setMaximumWidth(150);
+    mVolumeSlider.setValue(100);
+    connect(&mVolumeSlider,SIGNAL(valueChanged(int)),this,SLOT(onMainVolumeChanged(int)));
+    QIcon* volIcon = new QIcon(":svg/volume-up-solid.svg");
+    QLabel* volLabel = new QLabel();
+    volLabel->setPixmap(volIcon->pixmap(QSize(16,16)));
+    volLabel->setFixedSize(QSize(16,16));
+    ui->statusBar->addPermanentWidget(volLabel,1);
+    ui->statusBar->addPermanentWidget(&mVolumeSlider,1);
 
     ui->scenegraphTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(
@@ -428,6 +444,7 @@ void MainWindowController::onMenu_Debug_LogLevelChanged(bool)
     auto action = dynamic_cast<QAction*>(sender());
     QString level = action->text();
     log->info("Setting log level to {}",level.toStdString());
+    showStatusBarMessage(QString("Log Level: %1").arg(level));
     spdlog::set_level(spdlog::level::from_str(level.toLower().toStdString()));
 }
 
@@ -898,4 +915,12 @@ AddAssetToSceneObjectAction::getAssetDefinitionHandle
 () const
 {
     return mAssetDefinitionHandle;
+}
+
+
+void MainWindowController::onMainVolumeChanged(int vol)
+{
+   auto log = spdlog::get("MainWindowController");
+   log->info("Volume changed to {}",vol);
+   emit notifyMainVolumeChanged(vol);
 }

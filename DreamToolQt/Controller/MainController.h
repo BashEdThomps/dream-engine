@@ -162,6 +162,7 @@ public slots:
     void onSceneProperty_ChooseClearColour(SceneDefinition*);
 
     void onCreateNewAssetDefinition(QString type);
+    void onMainVolumeChanged(int);
 
 
 protected:

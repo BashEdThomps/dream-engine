@@ -204,7 +204,11 @@ namespace Dream
                     vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                     alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
                             static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
-                    alSourcei(audioAsset->getSource(), AL_BUFFER, audioAsset->getBuffer());
+                    alSourcei(
+                        audioAsset->getSource(),
+                        AL_BUFFER,
+                        static_cast<ALint>(audioAsset->getBuffer())
+                    );
                     setSourcePosision(audioAsset->getSource(), position);
                     //audioAsset->getAudioDataBuffer().clear();
                 }
@@ -473,6 +477,13 @@ namespace Dream
         log->error("Error, unrecognised audio format {}", definition->getFormat());
         return nullptr;
 
+    }
+
+    void
+    AudioComponent::setVolume
+    (float volume)
+    {
+       alListenerf(AL_GAIN,volume);
     }
 
 } // End of Dream

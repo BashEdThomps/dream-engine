@@ -28,6 +28,7 @@
 #include <QMessageBox>
 #include <QStringListModel>
 #include <QTreeView>
+#include <QSlider>
 #include <QAction>
 #include <QKeyEvent>
 
@@ -148,6 +149,7 @@ signals:
     void notifyCreateNewAssetDefinition(QString type);
     void notifyScenegraphTreeDataChanged();
     void notifyPropertiesTreeDataChanged();
+    void notifyMainVolumeChanged(int);
 
 public slots:
     void onInvalidProjectDirectory(QString directory);
@@ -162,6 +164,8 @@ public slots:
 protected:
     void setupUiFeatures();
 
+protected slots:
+    void onMainVolumeChanged(int);
 private slots:
     void onScenegraphContextMenuRequested(const QPoint& point);
     void onAsseetDefinitionContextMenuRequested(const QPoint& point);
@@ -189,5 +193,6 @@ private:
     shared_ptr<QMenu> createScenegraphTreeContextMenu(ScenegraphTreeItem*);
     void createAssetsMenu(QMenu* menu,ScenegraphTreeItem* item);
     void setupMenu_Debug();
+    QSlider mVolumeSlider;
 };
 

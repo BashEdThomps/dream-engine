@@ -166,7 +166,7 @@
              <bool>true</bool>
             </property>
             <property name="headerHidden">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="expandsOnDoubleClick">
              <bool>false</bool>
@@ -306,7 +306,7 @@
          <bool>true</bool>
         </property>
         <property name="headerHidden">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="expandsOnDoubleClick">
          <bool>false</bool>
@@ -781,35 +781,56 @@
    <property name="text">
     <string>Trace</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+6</string>
+   </property>
   </action>
   <action name="actionLogLevelDebug">
    <property name="text">
     <string>Debug</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
    </property>
   </action>
   <action name="actionLogLevelInfo">
    <property name="text">
     <string>Info</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
   </action>
   <action name="actionLogLevelWarn">
    <property name="text">
     <string>Warning</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
    </property>
   </action>
   <action name="actionLogLevelError">
    <property name="text">
     <string>Error</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
   </action>
   <action name="actionLogLevelCritical">
    <property name="text">
     <string>Critical</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
   </action>
   <action name="actionLogLevelOff">
    <property name="text">
     <string>Off</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
    </property>
   </action>
  </widget>

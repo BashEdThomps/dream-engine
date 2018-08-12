@@ -192,8 +192,8 @@ namespace Dream
         Constants::checkGLError("before pre render");
 
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -785,7 +785,7 @@ namespace Dream
         }
         shader->unbindVertexArray();
         glBindTexture(GL_TEXTURE_2D, 0);
-        shader->unbind();
+        //shader->unbind();
     }
 
     void
@@ -811,19 +811,19 @@ namespace Dream
             vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
             worldAmbientColour = vec3
                     (
-                        ambient[Constants::RED_INDEX],
+                    ambient[Constants::RED_INDEX],
                     ambient[Constants::GREEN_INDEX],
                     ambient[Constants::BLUE_INDEX]
                     );
             worldAmbientStrength = ambient[Constants::ALPHA_INDEX];
         }
 
-        shader->addUniform(ShaderUniform(UniformType::FLOAT3,"worldAmbientColour",1,glm::value_ptr(worldAmbientColour)));
-        shader->addUniform(ShaderUniform(UniformType::FLOAT1,"worldAmbientStrength",1,&worldAmbientStrength));
+        shader->addUniform(UniformType::FLOAT3,"worldAmbientColour",1,glm::value_ptr(worldAmbientColour));
+        shader->addUniform(UniformType::FLOAT1,"worldAmbientStrength",1,&worldAmbientStrength);
         Constants::checkGLError("After world ambient uniforms");
 
         GLint numLights = static_cast<GLint>(mLightQueue.size());
-        shader->addUniform(ShaderUniform(UniformType::INT1,"numPointLights",1,&numLights));
+        shader->addUniform(UniformType::INT1,"numPointLights",1,&numLights);
 
         // Set Point Light Values
         int i=0;
@@ -843,19 +843,14 @@ namespace Dream
             i++;
         }
 
-        shader->addUniform(ShaderUniform(FLOAT3,"pointLightPos",numLights,glm::value_ptr(lightPos[0])));
-        shader->addUniform(ShaderUniform(FLOAT3,"pointLightColour",numLights,glm::value_ptr(lightColour[0])));
+        shader->addUniform(FLOAT3,"pointLightPos",numLights,glm::value_ptr(lightPos[0]));
+        shader->addUniform(FLOAT3,"pointLightColour",numLights,glm::value_ptr(lightColour[0]));
         Constants::checkGLError("After light pos uniform");
 
 
         vec3 cameraTranslation = mCamera->getTranslation();
-        shader->addUniform(ShaderUniform(FLOAT3,"cameraPos",1,glm::value_ptr(cameraTranslation)));
+        shader->addUniform(FLOAT3,"cameraPos",1,glm::value_ptr(cameraTranslation));
         Constants::checkGLError("After camera pos uniform");
-
-        // Pass Viewer Position Uniform
-        vec3 camPos = mCamera->getTranslation();
-        shader->addUniform(ShaderUniform(FLOAT3,"cameraPos",1,glm::value_ptr(camPos)));
-        Constants::checkGLError("After set camPos uniform");
 
         // Pass view/projection transform to shader
         shader->setProjectionMatrix(mProjectionMatrix);
@@ -886,11 +881,6 @@ namespace Dream
         // Draw using shader
         model->draw(shader);
         Constants::checkGLError("After Draw");
-
-        glBindVertexArray(0);
-
-        shader->unbind();
-        Constants::checkGLError("After unbind");
     }
 
     void

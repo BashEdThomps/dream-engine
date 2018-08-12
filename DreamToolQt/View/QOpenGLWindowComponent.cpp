@@ -39,11 +39,12 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mGridHandle(nullptr),
       mSelectionHighlighterHandle(nullptr),
       mRelationshipTreeHandle(nullptr),
+      mPaintInProgress(false),
       mGridEnabled(true),
       mRelationshipTreeEnabled(true),
       mSelectionHighlighterEnabled(true),
-      mPaintInProgress(false),
       mMaxFrameTimeValues(100)
+
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (log==nullptr)
@@ -97,27 +98,35 @@ QOpenGLWindowComponent::paintGL
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (mPaintInProgress)
     {
-        log->error("Attempted to paint before previous paintGL call has finished");
+
+        log->trace("PaintGL all ready in progress");
         return;
     }
 
-    mPaintInProgress = true;
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+    log->trace("PaintGL");
 
     if (mProjectRuntimeHandle)
     {
         if (mProjectRuntimeHandle->hasActiveSceneRuntime())
         {
+            mPaintInProgress = true;
             updateInputState();
             SceneRuntime *sRuntime = mProjectRuntimeHandle->getActiveSceneRuntimeHandle();
 
-
             if (sRuntime->getState() != SCENE_STATE_STOPPED)
             {
-                mProjectRuntimeHandle->updateLogic();
-                //mProjectRuntimeHandle->updateAll();
+                while(mProjectRuntimeHandle->updateLogic())
+                {
+                    std::this_thread::yield();
+                }
+
+                while (!mProjectRuntimeHandle->allThreadsHaveUpdated())
+                {
+                    std::this_thread::yield();
+                }
+
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glEnable(GL_DEPTH_TEST);
 
                 mProjectRuntimeHandle->updateGraphics();
                 mProjectRuntimeHandle->collectGarbage();
@@ -125,7 +134,8 @@ QOpenGLWindowComponent::paintGL
                 glm::mat4 viewMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getViewMatrix();
                 glm::mat4 projectionMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getProjectionMatrix();
 
-                glDisable(GL_DEPTH_TEST);
+                // glDisable(GL_DEPTH_TEST);
+
                 if (mGridHandle)
                 {
                     if(mGridEnabled)
@@ -134,7 +144,7 @@ QOpenGLWindowComponent::paintGL
                         {
                             mGridHandle->init();
 
-                            Constants::checkGLError("QOGLWC: After Grid Init");
+                            Constants::checkGLError("After Grid Init");
                         }
                         mGridHandle->setViewMatrix(viewMatrix);
                         mGridHandle->setProjectionMatrix(projectionMatrix);
@@ -142,8 +152,8 @@ QOpenGLWindowComponent::paintGL
                     }
                     else
                     {
-                        log->error("QOGLWC: Grid Disabled");
-                        Constants::checkGLError("QOGLWC: After Grid Draw");
+                        log->trace("Grid Disabled");
+                        Constants::checkGLError("After Grid Draw");
                     }
                 }
 
@@ -154,13 +164,13 @@ QOpenGLWindowComponent::paintGL
                         if (!mSelectionHighlighterHandle->isInitialised())
                         {
                             mSelectionHighlighterHandle->init();
-                            Constants::checkGLError("QOGLWC: SelectionHighlighter after Init");
+                            Constants::checkGLError("SelectionHighlighter after Init");
                         }
 
                         mSelectionHighlighterHandle->setViewMatrix(viewMatrix);
                         mSelectionHighlighterHandle->setProjectionMatrix(projectionMatrix);
                         mSelectionHighlighterHandle->draw();
-                        Constants::checkGLError("QOGLWC: SelectionHighlighter after draw");
+                        Constants::checkGLError("SelectionHighlighter after draw");
                     }
                 }
 
@@ -171,14 +181,14 @@ QOpenGLWindowComponent::paintGL
                         if (!mRelationshipTreeHandle->isInitialised())
                         {
                             mRelationshipTreeHandle->init();
-                            Constants::checkGLError("QOGLWC: RelTree after init");
+                            Constants::checkGLError("RelTree after init");
                         }
 
                         mRelationshipTreeHandle->setViewMatrix(viewMatrix);
                         mRelationshipTreeHandle->setProjectionMatrix(projectionMatrix);
                         mRelationshipTreeHandle->draw();
 
-                        Constants::checkGLError("QOGLWC: RelTree after draw");
+                        Constants::checkGLError("RelTree after draw");
                     }
                 }
                 drawStats();
@@ -188,6 +198,7 @@ QOpenGLWindowComponent::paintGL
             {
                 mProjectRuntimeHandle = nullptr;
             }
+            mPaintInProgress = false;
         }
     }
     // If no active scene, blank screen
@@ -195,9 +206,6 @@ QOpenGLWindowComponent::paintGL
     {
         glClearColor(0.0f,0.0f,0.0f,0.0f);
     }
-
-
-    mPaintInProgress = false;
 }
 
 void
@@ -227,25 +235,37 @@ QOpenGLWindowComponent::drawStats()
     long long physics = project->getPhysicsComponentHandle()->getUpdateTime();
     long long physicsYield = project->getPhysicsComponentHandle()->getYieldedTime();
 
+    bool madDetail = false;;
     QPainter painter(this);
 
     int topLeftX, topLeftY;
-    topLeftX = 0;
-    topLeftY = 0;
+    topLeftX = 10;
+    topLeftY = 10;
 
-    QRectF rect(0,0,getWidth(),getHeight()/10);
-    QBrush brush(QColor(0,0,0,128));
+    QRectF rect;
+    if (madDetail)
+    {
+        rect = QRect(0,0,getWidth(),getHeight()/10);
+    }
+    else
+    {
+        rect = QRect(0,0,getWidth(), 36);
+    }
+    QBrush brush(QColor(0,0,0,96));
 
     painter.fillRect(rect,brush);
 
     painter.setPen(Qt::white);
     painter.setFont(QFont("Arial", 16));
-    QString text(
-            "Frame:     %1s     %12 FPS\n"
-            "Animation: %2µs  / %3µs | Audio: %4µs / %5µs\n"
-            "Graphics:  %6µs  / %7µs | Lua:   %8µs / %9µs\n"
-            "Physics:   %10µs / %11µs"
-    );
+    QString text;
+
+    if (madDetail)
+    {
+    text =
+        "Frame:     %1s     %12 FPS\n"
+        "Animation: %2µs  / %3µs | Audio: %4µs / %5µs\n"
+        "Graphics:  %6µs  / %7µs | Lua:   %8µs / %9µs\n"
+        "Physics:   %10µs / %11µs";
     text = text
         .arg(frame)
         .arg(animation, 9, 10, QChar('0'))
@@ -259,7 +279,11 @@ QOpenGLWindowComponent::drawStats()
         .arg(physics, 9, 10, QChar('0'))
         .arg(physicsYield, 9,10, QChar('0'))
         .arg(1.0/averageFrameTime());
-
+    }
+    else
+    {
+       text = QString("FPS %1").arg(1.0/averageFrameTime());
+    }
     painter.drawText(topLeftX, topLeftY,getWidth(), getHeight(), Qt::AlignLeft,text);
     painter.end();
 }
@@ -324,7 +348,7 @@ QOpenGLWindowComponent::wheelEvent
         QPoint pos = event->pixelDelta();
         int x = static_cast<int>( pos.x() );
         int y = static_cast<int>( pos.y() );
-        mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(-x,-y,true);
+        mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(x,-y,true);
     }
 }
 
@@ -388,7 +412,7 @@ QOpenGLWindowComponent::updateInputState
                                mGridHandle->getMinorSpacing();
         if(mInputState.upPressed)
         {
-            log->info("Moving Selected up");
+            log->trace("Moving Selected up");
             if (mInputState.altPressed)
             {
                 transform.translateByY(moveAmount);
@@ -401,7 +425,7 @@ QOpenGLWindowComponent::updateInputState
 
         if(mInputState.downPressed)
         {
-            log->info("Moving Selected down");
+            log->trace("Moving Selected down");
             if (mInputState.altPressed)
             {
                 transform.translateByY(-moveAmount);
@@ -414,13 +438,13 @@ QOpenGLWindowComponent::updateInputState
 
         if(mInputState.leftPressed)
         {
-            log->info("Moving Selected left");
+            log->trace("Moving Selected left");
             transform.translateByX(-moveAmount);
         }
 
         if(mInputState.rightPressed)
         {
-            log->info("Moving Selected right");
+            log->trace("Moving Selected right");
             transform.translateByX(moveAmount);
         }
         selected->setTransform(transform);
@@ -432,7 +456,7 @@ QOpenGLWindowComponent::keyPressEvent
 (QKeyEvent *event)
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
-    log->info("Pressed Key {}", event->key());
+    log->trace("Pressed Key {}", event->key());
 
     switch (event->key())
     {
@@ -495,7 +519,7 @@ QOpenGLWindowComponent::keyReleaseEvent
 (QKeyEvent* event)
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
-    log->info("Released Key {}", event->key());
+    log->trace("Released Key {}", event->key());
     switch (event->key())
     {
         case Qt::Key_W:

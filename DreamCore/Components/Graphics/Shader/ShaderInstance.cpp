@@ -26,7 +26,6 @@ using glm::value_ptr;
 
 namespace Dream
 {
-
     const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
 
     ShaderInstance::ShaderInstance
@@ -52,125 +51,6 @@ namespace Dream
     ()
     {
         return mShaderProgram;
-    }
-
-    bool
-    ShaderInstance::setDiffuseColour
-    (vec3 diffuse, string name)
-    {
-        auto log = getLog();
-        GLint location = getUniformLocation(name);
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            log->error( "Unable to find diffuse colour uniform '{}' in {}", name,getNameAndUuidString() );
-            return false;
-        }
-
-        glUniform3fv(location,1,value_ptr(diffuse));
-        return true;
-
-    }
-
-    bool
-    ShaderInstance::setSpecularColour
-    (vec3 specular, string name)
-    {
-        auto log = getLog();
-        GLint location = getUniformLocation(name);
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            log->error( "Unable to find specular colour uniform {} in {}", name, getNameAndUuidString() );
-            return false;
-        }
-
-        glUniform3fv(location,1,value_ptr(specular));
-        return true;
-    }
-
-    bool
-    ShaderInstance::setPointLight
-    (int index, vec3 position, vec3 colour)
-    {
-        return setPointLightColour(index,colour) &&
-                setPointLightPosition(index,position);
-    }
-
-    bool
-    ShaderInstance::setPointLightColour
-    (int index, vec3 colour)
-    {
-        auto log = getLog();
-        stringstream name;
-        name << "pointLightColour_" << index;
-        GLint location = getUniformLocation(name.str());
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            log->error( "Unable to find point light colour uinform {} in {}" , name.str(), getNameAndUuidString()  );
-            return false;
-        }
-
-        glUniform3fv(location,1, value_ptr(colour));
-        return true;
-    }
-
-    bool
-    ShaderInstance::setPointLightPosition
-    (int index, vec3 position)
-    {
-        auto log = getLog();
-        stringstream name;
-        name << "pointLightPos_" << index;
-        GLint location = getUniformLocation(name.str());
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            log->error( "Unable to find point light position uinform {} in {}" ,  name.str(), getNameAndUuidString()  );
-            return false;
-        }
-
-        glUniform3fv(location, 1, value_ptr(position));
-        return true;
-    }
-
-    bool
-    ShaderInstance::setAmbientLight
-    (vec3 colour, float strength)
-    {
-        return setAmbientColour(colour) && setAmbientStrength(strength);
-    }
-
-    bool
-    ShaderInstance::setAmbientColour
-    (vec3 value, string name)
-    {
-        auto log = getLog();
-        GLint location = getUniformLocation(name);
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            log->error( "Unable to find ambient colour uinform {} in {}" ,  name, getNameAndUuidString()  );
-            return false;
-        }
-
-        glUniform3fv(location,1,value_ptr(value));
-        return true;
-    }
-
-    bool
-    ShaderInstance::setAmbientStrength
-    (float value, string name)
-    {
-        auto log = getLog();
-
-        GLint location = getUniformLocation(name);
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            log->error( "Unable to find ambient strength uniform {} in {}" ,  name, getNameAndUuidString()  );
-            return false;
-        }
-
-        glUniform1f(location,value);
-        return true;
     }
 
     bool
@@ -331,9 +211,14 @@ namespace Dream
     ShaderInstance::use
     ()
     {
-        auto log = spdlog::get("ShaderInstance");
-        log->info("Using Shader Program {} for {}",mShaderProgram,getNameAndUuidString());
-        glUseProgram(mShaderProgram);
+        GLint currentShader = 0;
+        glGetIntegerv(GL_CURRENT_PROGRAM,&currentShader);
+        if (static_cast<GLuint>(currentShader) != mShaderProgram)
+        {
+            auto log = spdlog::get("ShaderInstance");
+            log->info("Using Shader Program {} for {}",mShaderProgram,getNameAndUuidString());
+            glUseProgram(mShaderProgram);
+        }
     }
 
     void
@@ -365,6 +250,17 @@ namespace Dream
     (string name)
     {
         return glGetUniformLocation(mShaderProgram,name.c_str());
+    }
+
+    void ShaderInstance::addUniform(UniformType type, string name, int count, void* data)
+    {
+        ShaderUniform uniform(type,name,count,data);
+        auto inVector = find(begin(mUniformVector),end(mUniformVector),uniform);
+        if (inVector != end(mUniformVector))
+        {
+            mUniformVector.erase(inVector);
+        }
+        mUniformVector.push_back(uniform);
     }
 
     void ShaderInstance::addUniform(ShaderUniform uniform)
@@ -536,7 +432,8 @@ namespace Dream
 
     ShaderUniform::~ShaderUniform()
     {
-
+       auto log = getLog();
+       log->trace("Destructing");
     }
 
     bool ShaderUniform::operator==(const ShaderUniform& other) const

@@ -661,7 +661,6 @@ namespace Dream
                 [
                 class_<ShaderInstance>("ShaderInstance")
                 .def("getUuid", &ShaderInstance::getUuid)
-                .def("addUniform", &ShaderInstance::addUniform)
                 ];
 
         debugRegisteringClass("ShaderUniform");

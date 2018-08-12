@@ -54,8 +54,11 @@ namespace Dream
     (PhysicsObjectDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           ILoggable ("PhysicsObjectInstance"),
-          mInPhysicsWorld(false)
-    {
+         mCollisionShape(nullptr),
+         mMotionState(nullptr),
+         mRigidBody(nullptr),
+         mRigidBodyConstructionInfo(nullptr),
+         mInPhysicsWorld(false) {
         auto log = getLog();
         log->trace( "Constructing" );
         return;
