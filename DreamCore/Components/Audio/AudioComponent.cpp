@@ -31,12 +31,15 @@ namespace Dream
         : IComponent()
     {
         setLogClassName("AudioComponent");
+        auto log = getLog();
+        log->trace("Constructing");
     }
 
     AudioComponent::~AudioComponent
     ()
     {
         auto log = getLog();
+        log->trace("Destructing");
         for (ALuint source : mSources)
         {
             log->info("Stopping source {}" , source);
@@ -277,8 +280,6 @@ namespace Dream
             if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
             {
                 beginUpdate();
-                auto log = getLog();
-                log->info("Updating Component");
                 updatePlayQueue();
                 updatePauseQueue();
                 updateStopQueue();

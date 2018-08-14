@@ -36,6 +36,7 @@ namespace Dream
     class Project;
     class AnimationComponent;
     class AudioComponent;
+    class InputComponent;
     class GraphicsComponent;
     class NanoVGComponent;
     class IWindowComponent;
@@ -66,6 +67,9 @@ namespace Dream
 
         unique_ptr<AudioComponent> mAudioComponent;
         unique_ptr<ComponentThread> mAudioComponentThread;
+
+        unique_ptr<InputComponent> mInputComponent;
+        unique_ptr<ComponentThread> mInputComponentThread;
 
         unique_ptr<GraphicsComponent> mGraphicsComponent;
         unique_ptr<ComponentThread> mGraphicsComponentThread;
@@ -111,6 +115,7 @@ namespace Dream
         IWindowComponent* getWindowComponentHandle();
         LuaComponent* getLuaComponentHandle();
         Project* getProjectHandle();
+        InputComponent* getInputComponentHandle();
 
         bool initComponents();
 
@@ -150,6 +155,7 @@ namespace Dream
     private: // Member Functions
         bool initAnimationComponent();
         bool initAudioComponent();
+        bool initInputComponent();
         bool initPhysicsComponent();
         bool initGraphicsComponent();
         bool initWindowComponent();
@@ -158,6 +164,7 @@ namespace Dream
 
         void cleanUpAnimationComponentThread();
         void cleanUpAudioComponentThread();
+        void cleanUpInputComponentThread();
         void cleanUpGraphicsComponentThread();
         void cleanUpLuaComponentThread();
         void cleanUpPhysicsComponentThread();

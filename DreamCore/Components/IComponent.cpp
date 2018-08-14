@@ -63,6 +63,8 @@ namespace Dream
 
     void IComponent::beginUpdate()
     {
+        auto log = getLog();
+        log->info("Updating Component");
         mUpdateBeginTime = mTime->nowLL();
         mUpdateComplete = false;
         mShouldUpdate = false;

@@ -29,6 +29,7 @@
 #include "../Components/Transform3D.h"
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Audio/AudioComponent.h"
+#include "../Components/Input/InputComponent.h"
 #include "../Components/Graphics/Camera.h"
 #include "../Components/ComponentThread.h"
 
@@ -112,6 +113,11 @@ namespace Dream
             return false;
         }
 
+        if (!initInputComponent())
+        {
+            return false;
+        }
+
         if(!initPhysicsComponent())
         {
             return false;
@@ -162,6 +168,20 @@ namespace Dream
         }
         mAudioComponent->setRunning(true);
         mAudioComponentThread.reset(new ComponentThread(mAudioComponent.get()));
+        return true;
+    }
+
+    bool ProjectRuntime::initInputComponent()
+    {
+        auto log = getLog();
+        mInputComponent.reset(new InputComponent());
+        if (!mInputComponent->init())
+        {
+            log->error( "Unable to initialise InputComponent." );
+            return false;
+        }
+        mInputComponent->setRunning(true);
+        mInputComponentThread.reset(new ComponentThread(mInputComponent.get()));
         return true;
     }
 
@@ -323,26 +343,24 @@ namespace Dream
 
             mTime->updateFrameTime();
 
-            //mLuaComponent->updateComponent();
+            mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mInputComponent->setShouldUpdate(true);
+
             mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
             mLuaComponent->setShouldUpdate(true);
 
-            //mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
             mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
             mAnimationComponent->setShouldUpdate(true);
 
-            //mAudioComponent->updateComponent(mActiveSceneRuntime.get());
             mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
             mAudioComponent->setShouldUpdate(true);
 
             mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
             mWindowComponentHandle->updateComponent();
 
-            //mPhysicsComponent->updateComponent(mActiveSceneRuntime.get());
             mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
             mPhysicsComponent->setShouldUpdate(true);
 
-            //mGraphicsComponent->updateComponent(mActiveSceneRuntime.get());
             mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
             mGraphicsComponent->setShouldUpdate(true);
             return true;
@@ -356,6 +374,7 @@ namespace Dream
         auto log = getLog();
         bool animation = mAnimationComponent->getUpdateComplete();
         bool audio = mAudioComponent->getUpdateComplete();
+        bool input = mInputComponent->getUpdateComplete();
         bool graphics = mGraphicsComponent->getUpdateComplete();
         bool physics = mPhysicsComponent->getUpdateComplete();
         bool lua = mLuaComponent->getUpdateComplete();
@@ -363,19 +382,21 @@ namespace Dream
             "\n========================================\n"
             "Animation..........[{}]\n"
             "Audio..............[{}]\n"
+            "Input..............[{}]\n"
             "Graphics...........[{}]\n"
             "Physics............[{}]\n"
             "Lua................[{}]\n"
             "========================================",
             animation ? "√" : " ",
             audio     ? "√" : " ",
+            input     ? "√" : " ",
             graphics  ? "√" : " ",
             physics   ? "√" : " ",
             lua       ? "√" : " "
         );
 
-        mLogicUpdating = !animation || !audio || !graphics || !physics || !lua;
-        return animation && audio && graphics && physics && lua;
+        mLogicUpdating = !animation || !audio || !input || !graphics || !physics || !lua;
+        return animation && audio && input && graphics && physics && lua;
     }
 
     void
@@ -515,6 +536,7 @@ namespace Dream
         cleanUpLuaComponentThread();
         cleanUpPhysicsComponentThread();
         cleanUpAnimationComponentThread();
+        cleanUpInputComponentThread();
         cleanUpAudioComponentThread();
         cleanUpGraphicsComponentThread();
     }
@@ -526,6 +548,15 @@ namespace Dream
         mLuaComponent->setRunning(false);
         mLuaComponent->setShouldUpdate(false);
         mLuaComponentThread->join();
+    }
+
+    void ProjectRuntime::cleanUpInputComponentThread()
+    {
+        auto log = getLog();
+        log->info("Cleaning up InputComponentThread");
+        mInputComponent->setRunning(false);
+        mInputComponent->setShouldUpdate(false);
+        mInputComponentThread->join();
     }
 
     void ProjectRuntime::cleanUpAudioComponentThread()
