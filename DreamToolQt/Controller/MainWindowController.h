@@ -173,6 +173,7 @@ private slots:
     void onScenegraphMenuAddNewSceneTriggered();
     void onScenegraphMenuDeleteSceneTriggered();
     void onScenegraphMenuAddSceneObjectTriggered();
+    void onScenegraphMenuDuplicateSceneObjectTriggered();
     void onScenegraphMenuDeleteSceneObjectTriggered();
     void onAddAssetToSceneObjectTriggered();
 

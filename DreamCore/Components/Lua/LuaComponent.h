@@ -31,8 +31,8 @@ extern "C"
 
 #include "LuaScriptCache.h"
 #include "InputEvent.h"
-#include "../Common/Constants.h"
-#include "../Components/IComponent.h"
+#include "../../Common/Constants.h"
+#include "../IComponent.h"
 
 using std::unique_ptr;
 using std::string;
@@ -49,11 +49,11 @@ namespace Dream
     class LuaScriptInstance;
     class Event;
 
-    class LuaEngine : public IComponent
+    class LuaComponent : public IComponent
     {
     public: // Methods
-        LuaEngine(ProjectRuntime* projectHandle, LuaScriptCache* cache);
-        virtual ~LuaEngine();
+        LuaComponent(ProjectRuntime* projectHandle, LuaScriptCache* cache);
+        virtual ~LuaComponent();
 
         bool init() override;
         void updateComponent() override;
@@ -81,9 +81,10 @@ namespace Dream
                 "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
                 "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = load(script_string,nil,nil,scriptTable)\n"
-                "    --setfenv(chunk, scriptTable)\n"
+                "    local chunk = assert(load(script_string,nil,nil,scriptTable))\n"
+                "    if not chunk then return false end\n"
                 "    chunk()\n"
+                "    return true\n"
                 "end";
         lua_State *mState;
         map<SceneObjectRuntime*, LuaScriptInstance*> mScriptMap;

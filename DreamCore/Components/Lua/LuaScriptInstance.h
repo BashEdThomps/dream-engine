@@ -20,9 +20,9 @@
 #include <vector>
 #include <string>
 
-#include "../Common/Constants.h"
-#include "../Common/ILoggable.h"
-#include "../Components/IAssetInstance.h"
+#include "../../Common/Constants.h"
+#include "../../Common/ILoggable.h"
+#include "../IAssetInstance.h"
 
 namespace Dream
 {

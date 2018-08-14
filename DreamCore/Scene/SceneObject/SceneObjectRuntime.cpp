@@ -37,10 +37,6 @@
 #include "../../Components/Graphics/Sprite/SpriteInstance.h"
 #include "../../Components/Physics/PhysicsObjectInstance.h"
 #include "../../Components/Physics/PhysicsComponent.h"
-
-#include "../../Lua/LuaScriptInstance.h"
-#include "../../Lua/LuaEngine.h"
-
 #include "../../Components/IAssetDefinition.h"
 
 #include "../../Components/Animation/AnimationDefinition.h"
@@ -51,7 +47,12 @@
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
 #include "../../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../../Components/Graphics/Sprite/SpriteDefinition.h"
-#include "../../Lua/ScriptDefinition.h"
+
+#include "../../Components/Lua/ScriptDefinition.h"
+#include "../../Components/Lua/LuaScriptInstance.h"
+#include "../../Components/Lua/LuaComponent.h"
+
+
 
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
@@ -95,7 +96,7 @@ namespace Dream
 
         if (hasScriptInstance())
         {
-            mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()->removeFromScriptMap(this);
+            mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaComponentHandle()->removeFromScriptMap(this);
         }
     }
 
@@ -644,7 +645,7 @@ namespace Dream
             log->info( "Creating Script asset instance." );
         mScriptInstance.reset(new LuaScriptInstance(definition,this));
         mScriptInstance->load(mProjectPath);
-        mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaEngineHandle()->addToScriptMap(this,mScriptInstance.get());
+        mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaComponentHandle()->addToScriptMap(this,mScriptInstance.get());
     }
 
     void

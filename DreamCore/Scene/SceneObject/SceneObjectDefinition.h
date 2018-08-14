@@ -62,6 +62,7 @@ namespace Dream
         vector<string> getAssetDefinitionLoadQueue();
 
         Transform3D& getTransform();
+        void setTransform(Transform3D& tform);
 
         void showStatus() override;
 
@@ -74,6 +75,7 @@ namespace Dream
         json getJson() override;
 
         SceneObjectDefinition* getParentSceneObjectHandle() const;
+        SceneObjectDefinition* duplicate();
 
     private:
         void loadChildSceneObjectDefinitions(json definition);

@@ -34,7 +34,7 @@
 #include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../Components/Graphics/Sprite/SpriteDefinition.h"
-#include "../Lua/ScriptDefinition.h"
+#include "../Components/Lua/ScriptDefinition.h"
 
 namespace Dream
 {

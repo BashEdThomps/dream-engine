@@ -25,8 +25,11 @@ namespace Dream
 
     class PhysicsObjectInstance : public IAssetInstance, ILoggable
     {
+    public:
+        static void clearAssimpModelCache();
 
     private:
+
         static map<string,const aiScene*> AssimpModelCache;
         static ::Assimp::Importer mImporter;
         static const aiScene* getModelFromCache(string);

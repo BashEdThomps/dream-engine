@@ -163,7 +163,9 @@ namespace Dream
     Transform3D::setRotation
     (float x, float y, float z)
     {
-        mOrientation = quat(vec3(x,y,z));
+        mOrientation = glm::rotate(mOrientation,x,vec3(1.0f,0.0f,0.0f));
+        mOrientation = glm::rotate(mOrientation,y,vec3(0.0f,1.0f,0.0f));
+        mOrientation = glm::rotate(mOrientation,z,vec3(0.0f,0.0f,1.0f));
     }
 
     float
@@ -301,24 +303,21 @@ namespace Dream
     Transform3D::rotateByX
     (float delta)
     {
-        vec3 euler = eulerAngles(mOrientation);
-        mOrientation = quat(vec3(euler.x+delta,euler.y,euler.z));
+        mOrientation = glm::rotate(mOrientation,delta,vec3(1.0f,0.0f,0.0f));
     }
 
     void
     Transform3D::rotateByY
     (float delta)
     {
-        vec3 euler = eulerAngles(mOrientation);
-        mOrientation = quat(vec3(euler.x,euler.y+delta,euler.z));
+        mOrientation = glm::rotate(mOrientation,delta,vec3(0.0f,1.0f,0.0f));
     }
 
     void
     Transform3D::rotateByZ
     (float delta)
     {
-        vec3 euler = eulerAngles(mOrientation);
-        mOrientation = quat(vec3(euler.x,euler.y,euler.z+delta));
+        mOrientation = glm::rotate(mOrientation,delta,vec3(0.0f,0.0f,1.0f));
     }
 
     void

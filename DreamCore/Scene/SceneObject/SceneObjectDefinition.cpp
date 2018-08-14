@@ -30,6 +30,15 @@ namespace Dream
         return mParentSceneObjectHandle;
     }
 
+    SceneObjectDefinition* SceneObjectDefinition::duplicate()
+    {
+        auto newSOD = new SceneObjectDefinition(mParentSceneObjectHandle,mSceneDefinitionHandle,mJson);
+        newSOD->setUuid(Uuid::generateUuid());
+        newSOD->setName((newSOD->getName()+" (Copy)"));
+        mParentSceneObjectHandle->addChildSceneObjectDefinition(newSOD);
+        return newSOD;
+    }
+
     SceneObjectDefinition::SceneObjectDefinition
     (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData)
         : IDefinition(jsonData),
@@ -38,9 +47,7 @@ namespace Dream
           mSceneDefinitionHandle(sceneDefinitionHandle)
     {
         auto log = getLog();
-        log->trace( "Constructing {}",
-                   getNameAndUuidString()
-                   );
+        log->trace( "Constructing {}",getNameAndUuidString());
         mTransform = Transform3D(jsonData[Constants::TRANSFORM]);
         loadChildSceneObjectDefinitions(jsonData);
     }
@@ -59,6 +66,11 @@ namespace Dream
     ()
     {
         return mTransform;
+    }
+
+    void SceneObjectDefinition::setTransform(Transform3D& tform)
+    {
+        mTransform = tform;
     }
 
     void

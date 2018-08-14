@@ -37,7 +37,7 @@
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 
-#include "../Lua/LuaEngine.h"
+#include "../Components/Lua/LuaComponent.h"
 
 #include "../Components/Graphics/Model/AssimpCache.h"
 #include "../Components/Graphics/Model/TextureCache.h"
@@ -127,7 +127,7 @@ namespace Dream
             return false;
         }
 
-        if (!initLuaEngine())
+        if (!initLuaComponent())
         {
             return false;
         }
@@ -226,19 +226,19 @@ namespace Dream
     }
 
     bool
-    ProjectRuntime::initLuaEngine
+    ProjectRuntime::initLuaComponent
     ()
     {
         auto log = getLog();
-        mLuaEngine.reset(new LuaEngine(this,mScriptCache.get()));
+        mLuaComponent.reset(new LuaComponent(this,mScriptCache.get()));
 
-        if(!mLuaEngine->init())
+        if(!mLuaComponent->init())
         {
             log->error( "Unable to initialise Lua Engine." );
             return false;
         }
-        mLuaEngine->setRunning(true);
-        mLuaEngineThread.reset(new ComponentThread(mLuaEngine.get()));
+        mLuaComponent->setRunning(true);
+        mLuaComponentThread.reset(new ComponentThread(mLuaComponent.get()));
         return true;
     }
 
@@ -303,11 +303,11 @@ namespace Dream
         return mCamera.get();
     }
 
-    LuaEngine*
-    ProjectRuntime::getLuaEngineHandle
+    LuaComponent*
+    ProjectRuntime::getLuaComponentHandle
     ()
     {
-        return mLuaEngine.get();
+        return mLuaComponent.get();
     }
 
     bool
@@ -323,9 +323,9 @@ namespace Dream
 
             mTime->updateFrameTime();
 
-            //mLuaEngine->updateComponent();
-            mLuaEngine->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mLuaEngine->setShouldUpdate(true);
+            //mLuaComponent->updateComponent();
+            mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+            mLuaComponent->setShouldUpdate(true);
 
             //mAnimationComponent->updateComponent(mActiveSceneRuntime.get());
             mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
@@ -358,7 +358,7 @@ namespace Dream
         bool audio = mAudioComponent->getUpdateComplete();
         bool graphics = mGraphicsComponent->getUpdateComplete();
         bool physics = mPhysicsComponent->getUpdateComplete();
-        bool lua = mLuaEngine->getUpdateComplete();
+        bool lua = mLuaComponent->getUpdateComplete();
         log->info(
             "\n========================================\n"
             "Animation..........[{}]\n"
@@ -395,7 +395,7 @@ namespace Dream
         mGraphicsComponent->drawModelQueue();
         mGraphicsComponent->drawFontQueue();
         mGraphicsComponent->drawSpriteQueue();
-        mLuaEngine->updateNanoVG();
+        // mLuaComponent->updateNanoVG();
         mPhysicsComponent->setViewProjectionMatrix(
             mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
         );
@@ -498,12 +498,12 @@ namespace Dream
         return mModelCache.get();
     }
 
-    volatile bool ProjectRuntime::getGraphicsUpdating() const
+    bool ProjectRuntime::getGraphicsUpdating() const
     {
         return mGraphicsUpdating;
     }
 
-    volatile bool ProjectRuntime::getLogicUpdating() const
+    bool ProjectRuntime::getLogicUpdating() const
     {
         return mGraphicsUpdating;
     }
@@ -512,20 +512,20 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Cleaning up ComponentThreads");
-        cleanUpLuaEngineThread();
+        cleanUpLuaComponentThread();
         cleanUpPhysicsComponentThread();
         cleanUpAnimationComponentThread();
         cleanUpAudioComponentThread();
         cleanUpGraphicsComponentThread();
     }
 
-    void ProjectRuntime::cleanUpLuaEngineThread()
+    void ProjectRuntime::cleanUpLuaComponentThread()
     {
         auto log = getLog();
-        log->info("Cleaning up LuaEngineThread");
-        mLuaEngine->setRunning(false);
-        mLuaEngine->setShouldUpdate(false);
-        mLuaEngineThread->join();
+        log->info("Cleaning up LuaComponentThread");
+        mLuaComponent->setRunning(false);
+        mLuaComponent->setShouldUpdate(false);
+        mLuaComponentThread->join();
     }
 
     void ProjectRuntime::cleanUpAudioComponentThread()

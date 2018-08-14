@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../Common/ILoggable.h"
+#include "../../Common/ILoggable.h"
 
 namespace Dream
 {

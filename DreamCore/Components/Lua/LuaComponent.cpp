@@ -1,5 +1,5 @@
 /*
- * LuaEngine
+ * LuaComponent
  *
  * Copyright 2016 Octronic. All rights reserved.
  *
@@ -14,7 +14,7 @@
  * this file belongs to.
  */
 
-#include "LuaEngine.h"
+#include "LuaComponent.h"
 
 #include <sstream>
 #include <luabind/luabind.hpp>
@@ -22,29 +22,29 @@
 
 #include "LuaScriptInstance.h"
 
-#include "../Components/Event.h"
-#include "../Components/Transform3D.h"
-#include "../Components/Time.h"
-#include "../Components/Animation/AnimationComponent.h"
-#include "../Components/Animation/AnimationInstance.h"
-#include "../Components/Audio/AudioComponent.h"
-#include "../Components/Audio/AudioInstance.h"
-#include "../Components/Graphics/Model/AssimpModelInstance.h"
-#include "../Components/Graphics/Camera.h"
-#include "../Components/Graphics/Font/FontInstance.h"
-#include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Graphics/NanoVGComponent.h"
-#include "../Components/Graphics/Light/LightInstance.h"
-#include "../Components/Graphics/Shader/ShaderInstance.h"
-#include "../Components/Graphics/Sprite/SpriteInstance.h"
-#include "../Components/Physics/PhysicsComponent.h"
-#include "../Components/Physics/PhysicsObjectInstance.h"
-#include "../Components/Window/IWindowComponent.h"
-#include "../Project/ProjectRuntime.h"
-#include "../Scene/SceneRuntime.h"
-#include "../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../Utilities/Math.h"
-#include "../../NanoVG/src/nanovg.h"
+#include "../Event.h"
+#include "../Transform3D.h"
+#include "../Time.h"
+#include "../Animation/AnimationComponent.h"
+#include "../Animation/AnimationInstance.h"
+#include "../Audio/AudioComponent.h"
+#include "../Audio/AudioInstance.h"
+#include "../Graphics/Model/AssimpModelInstance.h"
+#include "../Graphics/Camera.h"
+#include "../Graphics/Font/FontInstance.h"
+#include "../Graphics/GraphicsComponent.h"
+#include "../Graphics/NanoVGComponent.h"
+#include "../Graphics/Light/LightInstance.h"
+#include "../Graphics/Shader/ShaderInstance.h"
+#include "../Graphics/Sprite/SpriteInstance.h"
+#include "../Physics/PhysicsComponent.h"
+#include "../Physics/PhysicsObjectInstance.h"
+#include "../Window/IWindowComponent.h"
+#include "../../Project/ProjectRuntime.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Utilities/Math.h"
+#include "../../../NanoVG/src/nanovg.h"
 
 using std::ostringstream;
 using std::exception;
@@ -78,25 +78,25 @@ errorHandler
     ss << msg;
     cerr << "RuntimeError: " << ss.str() << endl;
     // log the callstack
-    string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
-    cerr << "TraceBack: " << traceback.c_str();
+    //string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
+    //cerr << "TraceBack: " << traceback.c_str();
     return 0;
 }
 
 namespace Dream
 {
-    LuaEngine::LuaEngine
+    LuaComponent::LuaComponent
     (ProjectRuntime* projectHandle, LuaScriptCache* cache)
         : IComponent(),
           mScriptCacheHandle(cache),
           mProjectRuntimeHandle(projectHandle)
     {
-        setLogClassName("LuaEngine");
+        setLogClassName("LuaComponent");
         auto log = getLog();
         log->trace( "Constructing Object" );
     }
 
-    LuaEngine::~LuaEngine
+    LuaComponent::~LuaComponent
     ()
     {
         auto log = getLog();
@@ -111,11 +111,11 @@ namespace Dream
     }
 
     bool
-    LuaEngine::init
+    LuaComponent::init
     ()
     {
         auto log = getLog();
-        log->info( "Initialising LuaEngine" );
+        log->info( "Initialising LuaComponent" );
         mState = luaL_newstate();
         if (mState)
         {
@@ -128,13 +128,13 @@ namespace Dream
         }
         else
         {
-            log->error( "Error creating lua state, LuaEngine::mState == nullptr");
+            log->error( "Error creating lua state, LuaComponent::mState == nullptr");
         }
         return false;
     }
 
     bool
-    LuaEngine::createScript
+    LuaComponent::createScript
     (SceneObjectRuntime* sceneObject, LuaScriptInstance* luaScript)
     {
         auto log = getLog();
@@ -173,7 +173,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::loadScript
+    LuaComponent::loadScript
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
@@ -204,10 +204,20 @@ namespace Dream
 
             log->info( "calling scriptLoadFromString in lua for {}" , id );
 
-            call_function<void>(mState, "scriptLoadFromString", newScriptTable, script.c_str());
+            bool result = call_function<bool>(mState, "scriptLoadFromString", newScriptTable, script.c_str());
 
-            object reg = registry(mState);
-            reg[id] = newScriptTable;
+            if (result)
+            {
+                log->info("Loaded Script Successfully");
+                object reg = registry(mState);
+                reg[id] = newScriptTable;
+            }
+            else
+            {
+                log->info("Loaded Script Failed");
+                scriptInstance->setError(true);
+                return false;
+            }
         }
         catch (error &e)
         {
@@ -219,7 +229,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::stackDump
+    LuaComponent::stackDump
     ()
     {
         auto log = getLog();
@@ -254,7 +264,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::updateComponent
+    LuaComponent::updateComponent
     ()
     {
         while(mRunning)
@@ -297,7 +307,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::updateNanoVG
+    LuaComponent::updateNanoVG
     ()
     {
         auto log = getLog();
@@ -316,7 +326,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::executeScriptUpdate
+    LuaComponent::executeScriptUpdate
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
@@ -357,7 +367,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::executeScriptNanoVG
+    LuaComponent::executeScriptNanoVG
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
@@ -398,7 +408,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::executeScriptInit
+    LuaComponent::executeScriptInit
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
@@ -439,7 +449,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::executeScriptInputHandler
+    LuaComponent::executeScriptInputHandler
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
@@ -485,7 +495,7 @@ namespace Dream
     }
 
     bool
-    LuaEngine::executeScriptEventHandler
+    LuaComponent::executeScriptEventHandler
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
@@ -531,14 +541,14 @@ namespace Dream
     }
 
     void
-    LuaEngine::addInputEvent
+    LuaComponent::addInputEvent
     (InputEvent event)
     {
         mInputEvents.push_back(event);
     }
 
     void
-    LuaEngine::clearInputEvents
+    LuaComponent::clearInputEvents
     ()
     {
         mInputEvents.clear();
@@ -547,7 +557,7 @@ namespace Dream
     // API Exposure Methods ======================================================
 
     void
-    LuaEngine::exposeProjectRuntime
+    LuaComponent::exposeProjectRuntime
     ()
     {
         module(mState)
@@ -565,7 +575,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeCamera
+    LuaComponent::exposeCamera
     ()
     {
         module(mState)
@@ -584,7 +594,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::debugRegisteringClass
+    LuaComponent::debugRegisteringClass
     (string className)
     {
         auto log = getLog();
@@ -593,7 +603,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeAnimationComponent
+    LuaComponent::exposeAnimationComponent
     ()
     {
         debugRegisteringClass("AnimationComponent");
@@ -605,7 +615,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeAnimationInstance
+    LuaComponent::exposeAnimationInstance
     ()
     {
         debugRegisteringClass("AnimationInstance");
@@ -617,7 +627,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeFontInstance
+    LuaComponent::exposeFontInstance
     ()
     {
         debugRegisteringClass("FontInstance");
@@ -630,7 +640,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeGraphicsComponent
+    LuaComponent::exposeGraphicsComponent
     ()
     {
         debugRegisteringClass("GraphicsComponent");
@@ -641,7 +651,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeLightInstance
+    LuaComponent::exposeLightInstance
     ()
     {
         debugRegisteringClass("LightInstance");
@@ -653,7 +663,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeShaderInstance
+    LuaComponent::exposeShaderInstance
     ()
     {
         debugRegisteringClass("ShaderInstance");
@@ -678,7 +688,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeSpriteInstance
+    LuaComponent::exposeSpriteInstance
     ()
     {
         debugRegisteringClass("SpriteInstance");
@@ -690,7 +700,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposePhysicsComponent
+    LuaComponent::exposePhysicsComponent
     ()
     {
         debugRegisteringClass("PhysicsComponent");
@@ -702,7 +712,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposePhysicsObjectInstance
+    LuaComponent::exposePhysicsObjectInstance
     ()
     {
         debugRegisteringClass("PhysicsObjectInstance");
@@ -715,7 +725,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeIWindowComponent
+    LuaComponent::exposeIWindowComponent
     ()
     {
         debugRegisteringClass("IWindiwComponent");
@@ -731,7 +741,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeMath
+    LuaComponent::exposeMath
     ()
     {
         debugRegisteringClass("Math");
@@ -749,7 +759,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeSceneObjectRuntime
+    LuaComponent::exposeSceneObjectRuntime
     ()
     {
         debugRegisteringClass("SceneObjectRuntime");
@@ -789,7 +799,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeTransform3D
+    LuaComponent::exposeTransform3D
     ()
     {
         debugRegisteringClass("Transform3D");
@@ -834,7 +844,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeTime
+    LuaComponent::exposeTime
     ()
     {
         debugRegisteringClass("Time");
@@ -844,11 +854,13 @@ namespace Dream
                 .def("getLastFrameTime",&Time::getLastFrameTime)
                 .def("getFrameTimeDelta",&Time::getFrameTimeDelta)
                 .def("scaleValueByFrameTime",&Time::scaleValueByFrameTime)
+                .def("now",&Time::now)
+                .def("nowLL",&Time::nowLL)
                 ];
     }
 
     void
-    LuaEngine::exposeAssimpModelInstance
+    LuaComponent::exposeAssimpModelInstance
     ()
     {
         debugRegisteringClass("AssimpModelInstance");
@@ -860,7 +872,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeEvent
+    LuaComponent::exposeEvent
     ()
     {
         debugRegisteringClass("Event");
@@ -875,7 +887,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeIAssetInstance
+    LuaComponent::exposeIAssetInstance
     ()
     {
         debugRegisteringClass("IAssetInstance");
@@ -886,7 +898,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeAudioComponent
+    LuaComponent::exposeAudioComponent
     ()
     {
         debugRegisteringClass("AudioComponent");
@@ -901,14 +913,14 @@ namespace Dream
 
 
     void
-    LuaEngine::exposeLuaScriptInstance
+    LuaComponent::exposeLuaScriptInstance
     ()
     {
         // TODO
     }
 
     void
-    LuaEngine::exposeAudioInstance
+    LuaComponent::exposeAudioInstance
     ()
     {
         debugRegisteringClass("AudioInstance");
@@ -928,7 +940,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeInputEvent
+    LuaComponent::exposeInputEvent
     ()
     {
         debugRegisteringClass("InputEvent");
@@ -1002,7 +1014,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeAPI
+    LuaComponent::exposeAPI
     ()
     {
         exposeAnimationComponent();
@@ -1032,7 +1044,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::removeFromScriptMap
+    LuaComponent::removeFromScriptMap
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
@@ -1055,7 +1067,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::addToScriptMap
+    LuaComponent::addToScriptMap
     (SceneObjectRuntime *sceneObject, LuaScriptInstance* script)
     {
         auto log = getLog();
@@ -1072,7 +1084,7 @@ namespace Dream
     }
 
     void
-    LuaEngine::exposeNanoVG
+    LuaComponent::exposeNanoVG
     ()
     {
         debugRegisteringClass("NanoVG");

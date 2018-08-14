@@ -47,5 +47,6 @@ namespace Dream
         virtual void useDefinition(IDefinition*) = 0;
 
         virtual void collectGarbage() = 0;
+        IDefinition* getDefinitionHandle();
     };
 }

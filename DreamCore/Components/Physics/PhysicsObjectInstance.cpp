@@ -18,9 +18,25 @@ namespace Dream
     map<string,const aiScene*> PhysicsObjectInstance::AssimpModelCache = map<string,const aiScene*>();
     ::Assimp::Importer PhysicsObjectInstance::mImporter;
 
+    void PhysicsObjectInstance::clearAssimpModelCache()
+    {
+        auto log = spdlog::get("PhysicsObjectModelCache");
+        if (log == nullptr)
+        {
+            log = spdlog::stdout_color_mt("PhysicsObjectModelCache");
+        }
+        log->info("Clearing Assimp model cache");
+        AssimpModelCache.clear();
+    }
+
     const aiScene* PhysicsObjectInstance::getModelFromCache(string path)
     {
-        auto log = spdlog::stdout_color_mt("PhysicsObjectModelCache");
+        auto log = spdlog::get("PhysicsObjectModelCache");
+        if (log == nullptr)
+        {
+            log = spdlog::stdout_color_mt("PhysicsObjectModelCache");
+        }
+
         for (pair<string,const aiScene*> it : AssimpModelCache)
         {
             if (it.first.compare(path) == 0)

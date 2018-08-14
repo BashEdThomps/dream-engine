@@ -248,6 +248,8 @@ namespace Dream
         const static unsigned int CAMERA_MOVEMENT_BACKWARD;
         const static unsigned int CAMERA_MOVEMENT_LEFT;
         const static unsigned int CAMERA_MOVEMENT_RIGHT;
+        const static unsigned int CAMERA_MOVEMENT_UP;
+        const static unsigned int CAMERA_MOVEMENT_DOWN;
         const static float CAMERA_PITCH_MAX;
         const static float CAMERA_ZOOM_MIN;
         const static float CAMERA_ZOOM_MAX;

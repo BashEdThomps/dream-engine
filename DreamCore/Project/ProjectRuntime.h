@@ -40,7 +40,7 @@ namespace Dream
     class NanoVGComponent;
     class IWindowComponent;
     class PhysicsComponent;
-    class LuaEngine;
+    class LuaComponent;
     class Transform3D;
     class Camera;
     class SceneRuntime;
@@ -76,8 +76,8 @@ namespace Dream
         unique_ptr<AnimationComponent> mAnimationComponent;
         unique_ptr<ComponentThread> mAnimationComponentThread;
 
-        unique_ptr<LuaEngine> mLuaEngine;
-        unique_ptr<ComponentThread> mLuaEngineThread;
+        unique_ptr<LuaComponent> mLuaComponent;
+        unique_ptr<ComponentThread> mLuaComponentThread;
 
         unique_ptr<NanoVGComponent> mNanoVGComponent;
 
@@ -109,7 +109,7 @@ namespace Dream
         GraphicsComponent* getGraphicsComponentHandle();
         NanoVGComponent* getNanoVGComponentHandle();
         IWindowComponent* getWindowComponentHandle();
-        LuaEngine* getLuaEngineHandle();
+        LuaComponent* getLuaComponentHandle();
         Project* getProjectHandle();
 
         bool initComponents();
@@ -143,8 +143,8 @@ namespace Dream
         volatile bool mGraphicsUpdating;
         volatile bool mLogicUpdating;
 
-        volatile bool getLogicUpdating() const;
-        volatile bool getGraphicsUpdating() const;
+        bool getLogicUpdating() const;
+        bool getGraphicsUpdating() const;
 
         void cleanUpThreads();
     private: // Member Functions
@@ -153,13 +153,13 @@ namespace Dream
         bool initPhysicsComponent();
         bool initGraphicsComponent();
         bool initWindowComponent();
-        bool initLuaEngine();
+        bool initLuaComponent();
         bool initCaches();
 
         void cleanUpAnimationComponentThread();
         void cleanUpAudioComponentThread();
         void cleanUpGraphicsComponentThread();
-        void cleanUpLuaEngineThread();
+        void cleanUpLuaComponentThread();
         void cleanUpPhysicsComponentThread();
     };
 

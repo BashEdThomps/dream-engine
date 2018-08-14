@@ -87,6 +87,8 @@ private:
     vector<double> mFrameTimes;
     int mMaxFrameTimeValues;
     double averageFrameTime();
+    void moveSelectedSceneObject(SceneObjectRuntime* selected);
+    void moveCamera();
 };
 
 #endif // GLWIDGET_H

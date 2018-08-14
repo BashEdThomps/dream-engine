@@ -19,6 +19,11 @@
 
 namespace Dream
 {
+    IDefinition* Runtime::getDefinitionHandle()
+    {
+        return mDefinitionHandle;
+    }
+
     Runtime::Runtime
     (IDefinition* defHandle, string uuid, string name)
         : // Init List
@@ -83,4 +88,5 @@ namespace Dream
     {
         return getUuid().compare(uuid) == 0;
     }
+
 }

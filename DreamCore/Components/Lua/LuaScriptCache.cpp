@@ -18,7 +18,7 @@
 
 #include "LuaScriptCache.h"
 
-#include "../Utilities/FileReader.h"
+#include "../../Utilities/FileReader.h"
 
 namespace Dream
 {

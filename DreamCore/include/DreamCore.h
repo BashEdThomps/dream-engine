@@ -12,7 +12,7 @@
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../Components/Graphics/Sprite/SpriteDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
-#include "../Lua/ScriptDefinition.h"
+#include "../Components/Lua/ScriptDefinition.h"
 
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
@@ -20,7 +20,7 @@
 #include "../Components/Animation/AnimationComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
-#include "../Lua/LuaEngine.h"
+#include "../Components/Lua/LuaComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 
 #include "../Components/Graphics/Camera.h"

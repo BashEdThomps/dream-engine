@@ -274,8 +274,10 @@ namespace Dream
     // Camera ===================================================================
     const unsigned int Constants::CAMERA_MOVEMENT_FORWARD  = 0;
     const unsigned int Constants::CAMERA_MOVEMENT_BACKWARD = 1;
-    const unsigned int Constants::CAMERA_MOVEMENT_LEFT = 2;
-    const unsigned int Constants::CAMERA_MOVEMENT_RIGHT = 3;
+    const unsigned int Constants::CAMERA_MOVEMENT_LEFT     = 2;
+    const unsigned int Constants::CAMERA_MOVEMENT_RIGHT    = 3;
+    const unsigned int Constants::CAMERA_MOVEMENT_UP       = 4;
+    const unsigned int Constants::CAMERA_MOVEMENT_DOWN     = 5;
 
     const float Constants::CAMERA_PITCH_MAX = 1.565f;
     const float Constants::CAMERA_ZOOM_MIN = 1.0f;

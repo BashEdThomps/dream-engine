@@ -24,7 +24,7 @@ namespace Dream
             float posX, float posY, float posZ,
             float upX, float upY, float upZ,
             float yaw, float pitch
-    )
+            )
         :ILoggable ("Camera")
     {
         mFront            = {0.0f, 0.0f, -1.0f};
@@ -72,11 +72,11 @@ namespace Dream
     (float relative)
     {
         return vec3
-        (
-            mTranslation.x + (mFront.x * relative),
-            mTranslation.y + (mFront.y * relative),
-            mTranslation.z + (mFront.z * relative)
-        );
+                (
+                    mTranslation.x + (mFront.x * relative),
+                    mTranslation.y + (mFront.y * relative),
+                    mTranslation.z + (mFront.z * relative)
+                    );
     }
 
     mat4
@@ -119,6 +119,17 @@ namespace Dream
             mTranslation.y += mRight.y * velocity;
             mTranslation.z += mRight.z * velocity;
         }
+
+        if (direction == Constants::CAMERA_MOVEMENT_DOWN)
+        {
+            mTranslation.y -= velocity;
+        }
+
+        if (direction == Constants::CAMERA_MOVEMENT_UP)
+        {
+            mTranslation.y += velocity;
+        }
+
     }
 
     vec3
@@ -141,6 +152,20 @@ namespace Dream
     {
         mYaw   += xoffset * mMouseSensitivity;
         mPitch -= yoffset * mMouseSensitivity;
+
+        // Make sure that when pitch is out of bounds, screen doesn't get flipped
+        if (constrainPitch)
+        {
+            if (mPitch > Constants::CAMERA_PITCH_MAX)
+            {
+                mPitch = Constants::CAMERA_PITCH_MAX;
+            }
+
+            if (mPitch < -Constants::CAMERA_PITCH_MAX)
+            {
+                mPitch = -Constants::CAMERA_PITCH_MAX;
+            }
+        }
 
         mYaw = fmodf(mYaw,M_PI*2);
         mPitch = fmodf(mPitch,M_PI*2);
@@ -173,7 +198,7 @@ namespace Dream
         {
             mZoom = Constants::CAMERA_ZOOM_MAX;
         }
-            log->info("Zoom is {}" ,mZoom );
+        log->info("Zoom is {}" ,mZoom );
     }
 
     void
@@ -244,8 +269,8 @@ namespace Dream
     Camera::setTransform
     (Transform3D transform)
     {
-       setTranslation(transform.getTranslation());
-       setRotation(transform.getRotation());
+        setTranslation(transform.getTranslation());
+        setRotation(transform.getRotation());
     }
 
     float

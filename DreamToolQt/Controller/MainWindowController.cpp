@@ -231,6 +231,7 @@ MainWindowController::createScenegraphTreeContextMenu
     ScenegraphMenuAction* titleAction = nullptr;
     ScenegraphMenuAction* deleteAction = nullptr;
     ScenegraphMenuAction* addChildAction = nullptr;
+    ScenegraphMenuAction* duplicateAction = nullptr;
     QMenu*   addAssetMenu = nullptr;
 
     auto menu = make_shared<QMenu>();
@@ -269,14 +270,17 @@ MainWindowController::createScenegraphTreeContextMenu
             titleAction->setEnabled(false);
             deleteAction = new ScenegraphMenuAction(item, "Delete Scene Object",menu.get());
             addChildAction = new ScenegraphMenuAction(item, "Add Child",menu.get());
+            duplicateAction = new ScenegraphMenuAction(item, "Duplicate",menu.get());
 
             menu->addAction(titleAction);
             menu->addSeparator();
             menu->addAction(addChildAction);
+            menu->addAction(duplicateAction);
             addAssetMenu = menu->addMenu("Add Asset");
             createAssetsMenu(addAssetMenu,item);
             menu->addAction(deleteAction);
 
+            connect(duplicateAction,SIGNAL(triggered()), this, SLOT(onScenegraphMenuDuplicateSceneObjectTriggered()));
             connect(addChildAction,SIGNAL(triggered()), this, SLOT(onScenegraphMenuAddSceneObjectTriggered()));
             connect(deleteAction,SIGNAL(triggered()), this, SLOT(onScenegraphMenuDeleteSceneObjectTriggered()));
 
@@ -342,6 +346,32 @@ MainWindowController::onScenegraphMenuAddSceneObjectTriggered
                 "Created scene object {} for {}",
                 newSceneObject->getNameAndUuidString(),
                 sceneObjectDefinitionHandle->getNameAndUuidString()
+            );
+            break;
+    }
+    emit notifyScenegraphTreeDataChanged();
+}
+
+void MainWindowController::onScenegraphMenuDuplicateSceneObjectTriggered()
+{
+    auto log = spdlog::get("MainWindowController");
+    log->info("Scenegraph Menu: Duplicate Scene Object");
+
+    auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
+
+    switch (action->getItemHandle()->getType())
+    {
+        case SCENEGRAPH_TREE_NODE:
+        case SCENEGRAPH_PROJECT:
+        case SCENEGRAPH_SCENE:
+            break;
+        case SCENEGRAPH_SCENE_OBJECT:
+            auto sceneObjectDefinitionHandle = static_cast<SceneObjectDefinition*>(action->getItemHandle()->getItem());
+            auto duplicateSO = sceneObjectDefinitionHandle->duplicate();
+            log->info(
+                "Duplicated scene object {} to {}",
+                sceneObjectDefinitionHandle->getNameAndUuidString(),
+                duplicateSO->getNameAndUuidString()
             );
             break;
     }

@@ -189,7 +189,5 @@ INCLUDEPATH += \
     /usr/local/include/freetype2 \
     /opt/local/include
 
-RCC_DIR = Resources
-
 DEPENDPATH += \
     $$PWD/../DreamCore/include

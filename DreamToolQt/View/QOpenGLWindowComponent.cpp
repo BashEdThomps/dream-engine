@@ -12,21 +12,21 @@
 WindowInputState::WindowInputState
 ()
     : // Init list
-     mouseLastX(0),
-     mouseLastY(0),
-     mouseWheelLastX(0),
-     mouseWheelLastY(0),
-     shiftPressed(false),
-     altPressed(false),
-     ctrlPressed(false),
-     wPressed(false),
-     aPressed(false),
-     sPressed(false),
-     dPressed(false),
-     upPressed(false),
-     downPressed(false),
-     leftPressed(false),
-     rightPressed(false)
+      mouseLastX(0),
+      mouseLastY(0),
+      mouseWheelLastX(0),
+      mouseWheelLastY(0),
+      shiftPressed(false),
+      altPressed(false),
+      ctrlPressed(false),
+      wPressed(false),
+      aPressed(false),
+      sPressed(false),
+      dPressed(false),
+      upPressed(false),
+      downPressed(false),
+      leftPressed(false),
+      rightPressed(false)
 {
 
 }
@@ -125,11 +125,12 @@ QOpenGLWindowComponent::paintGL
                     std::this_thread::yield();
                 }
 
+                mProjectRuntimeHandle->collectGarbage();
+
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glEnable(GL_DEPTH_TEST);
 
                 mProjectRuntimeHandle->updateGraphics();
-                mProjectRuntimeHandle->collectGarbage();
 
                 glm::mat4 viewMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getViewMatrix();
                 glm::mat4 projectionMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getProjectionMatrix();
@@ -229,8 +230,8 @@ QOpenGLWindowComponent::drawStats()
     long long graphics = project->getGraphicsComponentHandle()->getUpdateTime();
     long long graphicsYield = project->getGraphicsComponentHandle()->getYieldedTime();
 
-    long long lua = project->getLuaEngineHandle()->getUpdateTime();
-    long long luaYield = project->getLuaEngineHandle()->getYieldedTime();
+    long long lua = project->getLuaComponentHandle()->getUpdateTime();
+    long long luaYield = project->getLuaComponentHandle()->getYieldedTime();
 
     long long physics = project->getPhysicsComponentHandle()->getUpdateTime();
     long long physicsYield = project->getPhysicsComponentHandle()->getYieldedTime();
@@ -261,28 +262,28 @@ QOpenGLWindowComponent::drawStats()
 
     if (madDetail)
     {
-    text =
-        "Frame:     %1s     %12 FPS\n"
-        "Animation: %2µs  / %3µs | Audio: %4µs / %5µs\n"
-        "Graphics:  %6µs  / %7µs | Lua:   %8µs / %9µs\n"
-        "Physics:   %10µs / %11µs";
-    text = text
-        .arg(frame)
-        .arg(animation, 9, 10, QChar('0'))
-        .arg(animationYield, 9, 10, QChar('0'))
-        .arg(audio, 9, 10, QChar('0'))
-        .arg(audioYield, 9, 10, QChar('0'))
-        .arg(graphics, 9, 10, QChar('0'))
-        .arg(graphicsYield, 9, 10, QChar('0'))
-        .arg(lua, 9, 10, QChar('0'))
-        .arg(luaYield, 9, 10, QChar('0'))
-        .arg(physics, 9, 10, QChar('0'))
-        .arg(physicsYield, 9,10, QChar('0'))
-        .arg(1.0/averageFrameTime());
+        text =
+                "Frame:     %1s     %12 FPS\n"
+                "Animation: %2µs  / %3µs | Audio: %4µs / %5µs\n"
+                "Graphics:  %6µs  / %7µs | Lua:   %8µs / %9µs\n"
+                "Physics:   %10µs / %11µs";
+        text = text
+                .arg(frame)
+                .arg(animation, 9, 10, QChar('0'))
+                .arg(animationYield, 9, 10, QChar('0'))
+                .arg(audio, 9, 10, QChar('0'))
+                .arg(audioYield, 9, 10, QChar('0'))
+                .arg(graphics, 9, 10, QChar('0'))
+                .arg(graphicsYield, 9, 10, QChar('0'))
+                .arg(lua, 9, 10, QChar('0'))
+                .arg(luaYield, 9, 10, QChar('0'))
+                .arg(physics, 9, 10, QChar('0'))
+                .arg(physicsYield, 9,10, QChar('0'))
+                .arg(1.0/averageFrameTime());
     }
     else
     {
-       text = QString("FPS %1").arg(1.0/averageFrameTime());
+        text = QString("FPS %1").arg(1.0/averageFrameTime());
     }
     painter.drawText(topLeftX, topLeftY,getWidth(), getHeight(), Qt::AlignLeft,text);
     painter.end();
@@ -362,6 +363,57 @@ QOpenGLWindowComponent::mouseMoveEvent
 }
 
 void
+QOpenGLWindowComponent::moveSelectedSceneObject
+(SceneObjectRuntime* selected)
+{
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    Transform3D transform = selected->getTransform();
+    float moveAmount = mInputState.shiftPressed ?
+                mGridHandle->getMajorSpacing() :
+                mGridHandle->getMinorSpacing();
+
+    if(mInputState.upPressed)
+    {
+        log->trace("Moving Selected up");
+        if (mInputState.altPressed)
+        {
+            transform.translateByY(moveAmount);
+        }
+        else
+        {
+            transform.translateByZ(moveAmount);
+        }
+    }
+
+    if(mInputState.downPressed)
+    {
+        log->trace("Moving Selected down");
+        if (mInputState.altPressed)
+        {
+            transform.translateByY(-moveAmount);
+        }
+        else
+        {
+            transform.translateByZ(-moveAmount);
+        }
+    }
+
+    if(mInputState.leftPressed)
+    {
+        log->trace("Moving Selected left");
+        transform.translateByX(-moveAmount);
+    }
+
+    if(mInputState.rightPressed)
+    {
+        log->trace("Moving Selected right");
+        transform.translateByX(moveAmount);
+    }
+
+    selected->setTransform(transform);
+}
+
+void
 QOpenGLWindowComponent::updateInputState
 ()
 {
@@ -371,21 +423,35 @@ QOpenGLWindowComponent::updateInputState
         return;
     }
 
-    Camera *camHandle = mProjectRuntimeHandle->getCameraHandle();
     SceneObjectRuntime *selected = nullptr;
+
     if (mSelectionHighlighterHandle)
     {
         selected = mSelectionHighlighterHandle->getSelectedObject();
     }
 
-    float deltaTime = static_cast<float>
-    (
-        mProjectRuntimeHandle->getTimeHandle()->getFrameTimeDelta()
-    );
+    if (selected)
+    {
+        moveSelectedSceneObject(selected);
+    }
+
+    moveCamera();
+}
+
+void
+QOpenGLWindowComponent::moveCamera
+()
+{
+    Camera *camHandle = mProjectRuntimeHandle->getCameraHandle();
+    float deltaTime = static_cast<float>(mProjectRuntimeHandle->getTimeHandle()->getFrameTimeDelta());
 
     if (mInputState.wPressed)
     {
-        camHandle->processKeyboard(Constants::CAMERA_MOVEMENT_FORWARD,deltaTime);
+        camHandle->processKeyboard
+        (
+            mInputState.altPressed ? Constants::CAMERA_MOVEMENT_UP : Constants::CAMERA_MOVEMENT_FORWARD,
+            deltaTime
+        );
     }
 
     if(mInputState.aPressed)
@@ -395,59 +461,16 @@ QOpenGLWindowComponent::updateInputState
 
     if (mInputState.sPressed)
     {
-        camHandle->processKeyboard(Constants::CAMERA_MOVEMENT_BACKWARD,deltaTime);
+        camHandle->processKeyboard
+        (
+            mInputState.altPressed ? Constants::CAMERA_MOVEMENT_DOWN : Constants::CAMERA_MOVEMENT_BACKWARD,
+            deltaTime
+        );
     }
 
     if(mInputState.dPressed)
     {
         camHandle->processKeyboard(Constants::CAMERA_MOVEMENT_RIGHT,deltaTime);
-    }
-
-
-    if (selected)
-    {
-        Transform3D transform = selected->getTransform();
-        float moveAmount = mInputState.shiftPressed ?
-                               mGridHandle->getMajorSpacing() :
-                               mGridHandle->getMinorSpacing();
-        if(mInputState.upPressed)
-        {
-            log->trace("Moving Selected up");
-            if (mInputState.altPressed)
-            {
-                transform.translateByY(moveAmount);
-            }
-            else
-            {
-                transform.translateByZ(moveAmount);
-            }
-        }
-
-        if(mInputState.downPressed)
-        {
-            log->trace("Moving Selected down");
-            if (mInputState.altPressed)
-            {
-                transform.translateByY(-moveAmount);
-            }
-            else
-            {
-                transform.translateByZ(-moveAmount);
-            }
-        }
-
-        if(mInputState.leftPressed)
-        {
-            log->trace("Moving Selected left");
-            transform.translateByX(-moveAmount);
-        }
-
-        if(mInputState.rightPressed)
-        {
-            log->trace("Moving Selected right");
-            transform.translateByX(moveAmount);
-        }
-        selected->setTransform(transform);
     }
 }
 
@@ -557,5 +580,5 @@ QOpenGLWindowComponent::keyReleaseEvent
 
 void QOpenGLWindowComponent::clearProjectRuntimeHandle()
 {
-   mProjectRuntimeHandle = nullptr;
+    mProjectRuntimeHandle = nullptr;
 }

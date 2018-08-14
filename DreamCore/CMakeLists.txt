@@ -15,6 +15,7 @@ find_package(OggVorbis REQUIRED)
 find_package(ALUT REQUIRED)
 find_package(SPDLOG REQUIRED)
 find_package(Lua REQUIRED)
+find_package(Gainput REQUIRED)
 
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
@@ -42,6 +43,7 @@ include_directories(
     ${NANOVG_INCLUDE_DIRS}
     ${SPDLOG_INCLUDE_DIR}
     ${FREETYPE_INCLUDE_DIR_ft2build}
+    ${GAINPUT_INCLUDE_DIR}
 )
 
 add_library(DreamCore SHARED ${SRC_DIR})
@@ -53,6 +55,7 @@ target_link_libraries(
     Luabind
     SOIL
     NanoVG
+    ${GAINPUT_LIB}
     ${LUA_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${OPENGL_LIBRARIES}

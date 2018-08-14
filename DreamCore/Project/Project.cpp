@@ -37,8 +37,7 @@
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Physics/PhysicsObjectInstance.h"
 #include "../Components/Window/IWindowComponent.h"
-
-#include "../Lua/LuaEngine.h"
+#include "../Components/Lua/LuaComponent.h"
 
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
