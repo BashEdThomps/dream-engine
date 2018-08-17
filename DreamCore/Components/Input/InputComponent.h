@@ -8,7 +8,7 @@ using namespace gainput;
 
 namespace Dream
 {
-    enum InputButton
+    enum InputSource
     {
         FaceButtonNorth,
         FaceButtonEast,
@@ -39,20 +39,25 @@ namespace Dream
         AnalogRightButton
     };
 
+    class LuaComponent;
+
     class InputComponent : public IComponent
     {
     public:
-        InputComponent();
+        InputComponent(bool parallel = false);
         ~InputComponent() override;
 
         bool init() override;
         void updateComponent() override;
+        void setLuaComponentHandle(LuaComponent* luaHandle);
 
     private:
+        const static float ANALOG_DEAD_ZONE;
         unique_ptr<InputMap> mInputMap;
         InputManager mInputManager;
         vector<DeviceId> mDevices;
-
+        LuaComponent* mLuaComponentHandle;
+        bool mInputMapSet;
     };
 
 }

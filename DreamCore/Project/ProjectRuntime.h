@@ -61,6 +61,7 @@ namespace Dream
 
     private: // Member Variables
         bool mDone;
+        bool mParallel;
 
         unique_ptr<Time> mTime;
         unique_ptr<Camera> mCamera;
@@ -145,13 +146,16 @@ namespace Dream
         ShaderCache* getShaderCacheHandle();
         TextureCache* getTextureCacheHandle();
         AssimpCache* getModelCacheHandle();
-        volatile bool mGraphicsUpdating;
-        volatile bool mLogicUpdating;
+        bool mGraphicsUpdating;
+        bool mLogicUpdating;
 
         bool getLogicUpdating() const;
         bool getGraphicsUpdating() const;
 
         void cleanUpThreads();
+        bool getParallel() const;
+        void setParallel(bool parallel);
+
     private: // Member Functions
         bool initAnimationComponent();
         bool initAudioComponent();

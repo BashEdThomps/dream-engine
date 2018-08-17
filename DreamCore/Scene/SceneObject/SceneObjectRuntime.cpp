@@ -58,6 +58,10 @@
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
 
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 using std::vector;
 using std::flush;
@@ -817,6 +821,7 @@ namespace Dream
         setTransform(defHandle->getTransform());
         setFollowsCamera(defHandle->followsCamera());
         setAssetDefinitionLoadQueue(defHandle->getAssetDefinitionLoadQueue());
+        setHasFocus(defHandle->hasFocus());
         createAssetInstances();
         loadChildrenFromDefinition(defHandle);
     }
@@ -856,4 +861,42 @@ namespace Dream
         mFollowsCamera = followsCamera;
     }
 
+    void
+    SceneObjectRuntime::walk
+    (float leftStickX, float leftStickY)
+    {
+        auto log = getLog();
+        log->critical("Walk: ({},{}) ",leftStickX,leftStickY);
+
+        if (leftStickX == 0 && leftStickY == 0)
+        {
+            return;
+        }
+
+        // Translate to current
+        mat4 mtx;
+        mtx = glm::translate(mtx,mTransform.getTranslation());
+         // Rotate to current
+        mat4 rotMat = mat4_cast(mTransform.getOrientation());
+        mtx = mtx * rotMat;
+
+        // Rotate to new
+        quat newRotation = glm::rotate(leftStickX,vec3(0,1,0));
+        mat4 newRotMat = mat4_cast(newRotation);
+        mtx = mtx * newRotMat;
+
+        // Translate to new
+        mtx = glm::translate(mtx,vec3(0,0,-leftStickY));
+        mTransform.setOrientation(quat(mtx));
+        mTransform.setTranslation(glm::vec3(mtx[3]));
+
+        if (mPhysicsObjectInstance != nullptr)
+        {
+            auto rb = mPhysicsObjectInstance->getRigidBody();
+            if (rb!=nullptr)
+            {
+                rb->setCenterOfMassTransform(mTransform.getTransformAsBtTransform());
+            }
+        }
+    }
 }

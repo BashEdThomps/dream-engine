@@ -94,6 +94,7 @@ public slots:
     void onAction_Scene_Reload();
     void onAction_Scene_Play();
     void onAction_Scene_Stop();
+    void onAction_ControlSceneTriggered(bool);
 
     void onUI_ProjectNameChanged(QString name);
     void onUI_ProjectAuthorChanged(QString author);

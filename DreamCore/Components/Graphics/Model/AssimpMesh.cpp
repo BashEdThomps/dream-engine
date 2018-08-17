@@ -114,30 +114,50 @@ namespace Dream
     AssimpMesh::bindDiffuse
     (ShaderInstance *shaderHandle)
     {
-        aiColor3D diff = mMaterial.mColorDiffuse;
-        auto diffuse = vec3(diff.r, diff.g, diff.b);
-        shaderHandle->addUniform(ShaderUniform(FLOAT3,"materialDiffuseColour",1,glm::value_ptr(diffuse)));
-        shaderHandle->addUniform(ShaderUniform(FLOAT1,"materialDiffuseStrength",1,&mMaterial.mRefracti));
+        auto log = getLog();
+        aiColor4D diff = mMaterial.mColorDiffuse;
+        auto diffuse = vec4(diff.r, diff.g, diff.b, diff.a);
+        log->critical("Material Diffuse for {}: ({},{},{},{})",getName(),diff.r, diff.g, diff.b, diff.a);
+        shaderHandle->addUniform(FLOAT4,"materialDiffuseColour",1,&diffuse);
     }
 
     void
     AssimpMesh::bindSpecular
     (ShaderInstance *shaderHandle)
     {
-        aiColor3D spec = mMaterial.mColorSpecular;
-        auto specular = vec3(spec.r, spec.g, spec.b);
-        shaderHandle->addUniform(ShaderUniform(FLOAT3,"materialSpecularColour",1,glm::value_ptr(specular)));
-        shaderHandle->addUniform(ShaderUniform(FLOAT1,"materialSpecularStrength",1,&mMaterial.mShininess));
+        auto log = getLog();
+        aiColor4D spec = mMaterial.mColorSpecular;
+        auto specular = vec4(spec.r, spec.g, spec.b, spec.a);
+        log->critical(
+            "Material Specular for {}: ({},{},{},{}) strength {}",
+            getName(),
+            spec.r, spec.g, spec.b, spec.a,
+            mMaterial.mShininessStrength
+        );
+        shaderHandle->addUniform(FLOAT4,"materialSpecularColour",1,&specular);
+        shaderHandle->addUniform(FLOAT1,"materialSpecularStrength",1,&mMaterial.mShininessStrength);
     }
 
     void
     AssimpMesh::bindAmbient
     (ShaderInstance *shaderHandle)
     {
-        aiColor3D amb = mMaterial.mColorAmbient;
-        auto ambient = vec3(amb.r, amb.g, amb.b);
-        shaderHandle->addUniform(ShaderUniform(FLOAT3,"materialAmbientColour",1,glm::value_ptr(ambient)));
-        shaderHandle->addUniform(ShaderUniform(FLOAT1,"materialAmbientStrength",1,&mMaterial.mOpacity));
+        auto log = getLog();
+        aiColor4D amb = mMaterial.mColorAmbient;
+        log->critical(
+            "Material Ambient for {}: ({},{},{},{})",
+            getName(),
+            amb.r, amb.g, amb.b, amb.a
+        );
+        auto ambient = vec4(amb.r, amb.g, amb.b, amb.a);
+        shaderHandle->addUniform(FLOAT4,"materialAmbientColour",1,&ambient);
+    }
+
+    void
+    AssimpMesh::bindOpacity
+    (ShaderInstance* shaderHandle)
+    {
+        shaderHandle->addUniform(FLOAT1,"materialOpacity",1,&mMaterial.mOpacity);
     }
 
     void
@@ -148,6 +168,7 @@ namespace Dream
         bindTextures(shader);
         bindDiffuse(shader);
         bindSpecular(shader);
+        bindOpacity(shader);
 
         // Sync Uniforms
         shader->syncUniforms();

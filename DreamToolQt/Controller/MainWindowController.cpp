@@ -473,7 +473,7 @@ void MainWindowController::onMenu_Debug_LogLevelChanged(bool)
     auto log = spdlog::get("MainWindowController");
     auto action = dynamic_cast<QAction*>(sender());
     QString level = action->text();
-    log->info("Setting log level to {}",level.toStdString());
+    cout << "Setting log level to " << level.toStdString() << endl;
     showStatusBarMessage(QString("Log Level: %1").arg(level));
     spdlog::set_level(spdlog::level::from_str(level.toLower().toStdString()));
 }
@@ -565,6 +565,13 @@ MainWindowController::getAction_Scene_NewSceneObject
 ()
 {
     return ui->actionSceneNewSceneObject;
+}
+
+QAction*
+MainWindowController::getAction_ControlScene
+()
+{
+    return ui->actionControl;
 }
 
 QAction*
@@ -757,13 +764,6 @@ MainWindowController::getAction_Scene_Reload
 ()
 {
     return ui->actionReload;
-}
-
-QAction*
-MainWindowController::getAction_File_OpenTestProject
-()
-{
-    return ui->actionOpen_Test_Project;
 }
 
 QAction*

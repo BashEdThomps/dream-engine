@@ -61,17 +61,13 @@ namespace Dream
         FLOAT2,
         FLOAT3,
         FLOAT4,
-        // Double
-        DOUBLE1,
-        DOUBLE2,
-        DOUBLE3,
-        DOUBLE4
     };
 
     class ShaderUniform : ILoggable
     {
     public:
         ShaderUniform(UniformType type, string name, int count, void* data);
+        ShaderUniform(const ShaderUniform&) = delete;
         ~ShaderUniform() override;
 
         bool operator==(const ShaderUniform& other) const;
@@ -99,7 +95,7 @@ namespace Dream
     private:
         const static GLint UNIFORM_NOT_FOUND;
         GLuint mShaderProgram;
-        vector<ShaderUniform> mUniformVector;
+        vector<shared_ptr<ShaderUniform>> mUniformVector;
         ShaderCache *mCacheHandle;
     public:
         ShaderInstance(ShaderCache* cache, ShaderDefinition*,SceneObjectRuntime*);
@@ -126,7 +122,6 @@ namespace Dream
 
         GLint getUniformLocation(string name);
 
-        void addUniform(ShaderUniform uniform);
         void addUniform(UniformType type, string name, int count, void* data);
 
         void syncUniforms();

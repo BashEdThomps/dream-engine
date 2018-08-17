@@ -264,22 +264,22 @@ namespace Dream
             AI_MATKEY_COLOR_TRANSPARENT
             AI_MATKEY_COLOR_REFLECTIVE
         */
-        material->Get(AI_MATKEY_NAME,aMaterial.mName);
-        material->Get(AI_MATKEY_TWOSIDED,aMaterial.mTwoSided);
-        material->Get(AI_MATKEY_SHADING_MODEL,aMaterial.mShadingModel);
-        material->Get(AI_MATKEY_ENABLE_WIREFRAME,aMaterial.mEnableWireframe);
-        material->Get(AI_MATKEY_BLEND_FUNC,aMaterial.mBlendFunc);
-        material->Get(AI_MATKEY_OPACITY,aMaterial.mOpacity);
-        material->Get(AI_MATKEY_BUMPSCALING,aMaterial.mBumpScaling);
-        material->Get(AI_MATKEY_SHININESS,aMaterial.mShininess);
-        material->Get(AI_MATKEY_REFLECTIVITY,aMaterial.mReflectivity);
-        material->Get(AI_MATKEY_SHININESS_STRENGTH,aMaterial.mShininessStrength);
-        material->Get(AI_MATKEY_COLOR_DIFFUSE,aMaterial.mColorDiffuse);
-        material->Get(AI_MATKEY_COLOR_AMBIENT,aMaterial.mColorAmbient);
-        material->Get(AI_MATKEY_COLOR_SPECULAR,aMaterial.mColorSpecular);
-        material->Get(AI_MATKEY_COLOR_EMISSIVE,aMaterial.mColorEmissive);
-        material->Get(AI_MATKEY_COLOR_TRANSPARENT,aMaterial.mColorTransparent);
-        material->Get(AI_MATKEY_COLOR_REFLECTIVE,aMaterial.mColorReflective);
+        aiGetMaterialString(material,  AI_MATKEY_NAME,               &aMaterial.mName);
+        aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial.mTwoSided);
+        aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial.mShadingModel);
+        aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial.mEnableWireframe);
+        aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial.mBlendFunc);
+        aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial.mOpacity);
+        aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial.mBumpScaling);
+        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial.mShininess);
+        aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial.mReflectivity);
+        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial.mShininessStrength);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial.mColorDiffuse);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial.mColorAmbient);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial.mColorSpecular);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial.mColorEmissive);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial.mColorTransparent);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial.mColorReflective);
 
         log->info( "Using Material {}" , aMaterial.mName.C_Str());
 

@@ -205,7 +205,7 @@ SelectionHighlighter::updateVertexBuffer
     x1.Position = vec3(0);
     x1.Color = mXColour;
     mVertexBuffer.push_back(x1);
-    x2.Position = vec3(bounds.maxDimension*2,0,0);
+    x2.Position = vec3(fabs(bounds.maxDimension*2),0,0);
     x2.Color = mXColour;
     mVertexBuffer.push_back(x2);
 
@@ -213,7 +213,7 @@ SelectionHighlighter::updateVertexBuffer
     y1.Position = vec3(0);
     y1.Color = mYColour;
     mVertexBuffer.push_back(y1);
-    y2.Position = vec3(0,bounds.maxDimension*2,0);
+    y2.Position = vec3(0,fabs(bounds.maxDimension*2),0);
     y2.Color = mYColour;
     mVertexBuffer.push_back(y2);
 
@@ -221,7 +221,7 @@ SelectionHighlighter::updateVertexBuffer
     z1.Position = vec3(0);
     z1.Color = mZColour;
     mVertexBuffer.push_back(z1);
-    z2.Position = vec3(0,0,bounds.maxDimension*2);
+    z2.Position = vec3(0,0,-1*fabs(bounds.maxDimension*2));
     z2.Color = mZColour;
     mVertexBuffer.push_back(z2);
 }
@@ -234,6 +234,7 @@ SelectionHighlighter::draw
     if (!mVertexBuffer.empty())
     {
         preRender();
+        glLineWidth(4);
         log->info("Drawing all - {} lines", mVertexBuffer.size()/2);
 
         // Enable shader program
@@ -326,6 +327,7 @@ SelectionHighlighter::draw
         glBindVertexArray(0);
         glUseProgram(0);
         postRender();
+        glLineWidth(1);
     }
 }
 

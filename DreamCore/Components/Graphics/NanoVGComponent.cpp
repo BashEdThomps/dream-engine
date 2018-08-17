@@ -10,8 +10,8 @@
 namespace Dream
 {
 
-    NanoVGComponent::NanoVGComponent(IWindowComponent* windowComponentHandle)
-        : IComponent () ,
+    NanoVGComponent::NanoVGComponent(IWindowComponent* windowComponentHandle, bool parallel)
+        : IComponent (parallel) ,
           mWindowComponentHandle(windowComponentHandle)
     {
         setLogClassName("NanoVGComponent");

@@ -298,6 +298,7 @@ const
     {
         // QCheckBox
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             return new QCheckBox(parent);
 
@@ -311,6 +312,7 @@ const
             return spinBox;
 
             // QDoubleSpinBox - 0 to max
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
         case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
@@ -425,6 +427,7 @@ const
     switch(adItem->getProperty())
     {
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
             break;
@@ -447,6 +450,7 @@ const
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
             static_cast<QDoubleSpinBox*>(editor)->setValue(value.toDouble());
             break;
 
@@ -491,6 +495,7 @@ const
     {
         // QCheckBox
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
             break;
@@ -506,6 +511,7 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
         case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
@@ -631,7 +637,3 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
     log->info("EditScript was clicked");
     emit notifyButton_EditScript();
 }
-
-
-
-

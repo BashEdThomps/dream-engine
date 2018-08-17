@@ -21,8 +21,9 @@
 namespace Dream
 {
 
-    IComponent::IComponent()
+    IComponent::IComponent(bool parallel)
         :ILoggable("IComponent"),
+          mParallel(parallel),
           mRunning(false),
           mShouldUpdate(false)
     {
@@ -46,17 +47,17 @@ namespace Dream
         return mRunning;
     }
 
-    void IComponent::setRunning(volatile bool running)
+    void IComponent::setRunning(bool running)
     {
         mRunning = running;
     }
 
-    bool IComponent::getShouldUpdate() const
+    bool IComponent::getShouldUpdate()
     {
         return mShouldUpdate;
     }
 
-    void IComponent::setShouldUpdate(volatile bool shouldUpdate)
+    void IComponent::setShouldUpdate(bool shouldUpdate)
     {
         mShouldUpdate = shouldUpdate;
     }
@@ -66,20 +67,35 @@ namespace Dream
         auto log = getLog();
         log->info("Updating Component");
         mUpdateBeginTime = mTime->nowLL();
-        mUpdateComplete = false;
-        mShouldUpdate = false;
+        setUpdateComplete(false);
+        setShouldUpdate(false);
     }
 
     void IComponent::endUpdate()
     {
         auto log = getLog();
         mUpdateEndTime =  mTime->nowLL();
-        mUpdateComplete = true;
+        setUpdateComplete(true);
         log->info("Update Complete in {}",getUpdateTime());
 
     }
 
-    bool IComponent::getUpdateComplete() const
+    void IComponent::setUpdateComplete(bool complete)
+    {
+        mUpdateComplete = complete;
+    }
+
+    bool IComponent::getParallel() const
+    {
+        return mParallel;
+    }
+
+    void IComponent::setParallel(bool parallel)
+    {
+        mParallel = parallel;
+    }
+
+    bool IComponent::getUpdateComplete()
     {
         return mUpdateComplete;
     }

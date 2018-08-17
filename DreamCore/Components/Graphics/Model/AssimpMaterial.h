@@ -11,18 +11,18 @@ namespace Dream
         int mTwoSided;
         int mShadingModel;
         int mEnableWireframe;
-        aiString mBlendFunc;
+        int mBlendFunc;
         ai_real mOpacity;
-        float mBumpScaling;
+        ai_real mBumpScaling;
         ai_real mShininess;
         ai_real mReflectivity;
         ai_real mShininessStrength;
         ai_real mRefracti;
-        aiColor3D mColorDiffuse;
-        aiColor3D mColorAmbient;
-        aiColor3D mColorSpecular;
-        aiColor3D mColorEmissive;
-        aiColor3D mColorTransparent;
-        aiColor3D mColorReflective;
+        aiColor4D mColorDiffuse;
+        aiColor4D mColorAmbient;
+        aiColor4D mColorSpecular;
+        aiColor4D mColorEmissive;
+        aiColor4D mColorTransparent;
+        aiColor4D mColorReflective;
     };
 }

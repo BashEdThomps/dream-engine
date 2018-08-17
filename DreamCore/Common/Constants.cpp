@@ -206,11 +206,13 @@ namespace Dream
     const string Constants::ASSET_ATTR_MASS   = "mass";
     const string Constants::ASSET_ATTR_MARGIN = "margin";
     const string Constants::ASSET_ATTR_RADIUS = "radius";
+    const string Constants::ASSET_ATTR_HEIGHT = "height";
     const string Constants::ASSET_ATTR_NORMAL = "normal";
     const string Constants::ASSET_ATTR_CONSTANT = "const ant";
     const string Constants::ASSET_ATTR_SIZE = "size";
     const string Constants::ASSET_ATTR_COMPOUND_CHILDREN = "compoundChildren";
     const string Constants::ASSET_ATTR_KINEMATIC = "kinematic";
+    const string Constants::ASSET_ATTR_CONTROLLABLE = "controllable";
 
     const string Constants::COLLISION_SHAPE_SPHERE = "btShpereShape";
     const string Constants::COLLISION_SHAPE_BOX = "btBoxShape";

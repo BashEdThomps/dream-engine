@@ -29,7 +29,7 @@ namespace Dream
     private:
         Time* mTime;
     public:
-        AnimationComponent();
+        AnimationComponent(bool parallel = false);
         ~AnimationComponent() override;
 
         bool init() override;

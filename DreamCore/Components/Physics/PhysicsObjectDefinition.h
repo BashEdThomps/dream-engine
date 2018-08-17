@@ -73,8 +73,14 @@ namespace Dream
         float getRadius();
         void  setRadius(float rad);
 
+        float getHeight();
+        void setHeight(float height);
+
         float getConstant();
         void  setConstant(float constant);
+
+        bool getControllableCharacter();
+        void setControllableCharacter(bool controllable);
 
         void addCompoundChild(CompoundChildDefinition child);
         void removeCompoundChild(CompoundChildDefinition def);

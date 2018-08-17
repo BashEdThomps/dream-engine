@@ -107,6 +107,7 @@ AssetDefinitionPropertiesModel::createProperties
         createPhysicsMassProperty();
         createPhysicsMarginProperty();
         createPhysicsKinematicProperty();
+        createPhysicsControllableProperty();
 
         if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_BOX)
         {
@@ -124,6 +125,11 @@ AssetDefinitionPropertiesModel::createProperties
         else if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH)
         {
            createPhysicsBvhTriangleMeshFileProperty();
+        }
+        else if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_CAPSULE)
+        {
+            createPhysicsRadiusProperty();
+            createPhysicsHeightProperty();
         }
     }
     else if (mAssetDefinitionHandle->isTypeScript())
@@ -524,6 +530,36 @@ AssetDefinitionPropertiesModel::createPhysicsRadiusProperty
             "Radius",
             mAssetDefinitionHandle,
             ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createPhysicsHeightProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Height",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createPhysicsControllableProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "User Controllable",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE
         )
     );
 }

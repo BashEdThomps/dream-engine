@@ -240,6 +240,21 @@ namespace Dream
         mJson[Constants::ASSET_ATTR_RADIUS] = rad;
     }
 
+    float PhysicsObjectDefinition::getHeight()
+    {
+        if (mJson[Constants::ASSET_ATTR_HEIGHT].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_HEIGHT] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_HEIGHT];
+
+    }
+
+    void PhysicsObjectDefinition::setHeight(float height)
+    {
+        mJson[Constants::ASSET_ATTR_HEIGHT] = height;
+    }
+
     float
     PhysicsObjectDefinition::getConstant
     ()
@@ -256,6 +271,25 @@ namespace Dream
     (float constant)
     {
         mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
+    }
+
+    bool
+    PhysicsObjectDefinition::getControllableCharacter
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_CONTROLLABLE].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_CONTROLLABLE] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_CONTROLLABLE];
+
+    }
+
+    void
+    PhysicsObjectDefinition::setControllableCharacter
+    (bool controllable)
+    {
+        mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
     }
 
     void

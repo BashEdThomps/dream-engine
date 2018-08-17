@@ -53,6 +53,8 @@ CodeEditorWidget::CodeEditorWidget(QWidget *parent) : QPlainTextEdit(parent)
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
+    int fontWidth = QFontMetrics(this->currentCharFormat().font()).averageCharWidth();
+    setTabStopDistance(4*fontWidth);
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 }

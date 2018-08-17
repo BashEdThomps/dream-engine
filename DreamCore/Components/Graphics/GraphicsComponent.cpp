@@ -53,6 +53,7 @@
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 #include "../../Utilities/Math.h"
+#include "../Time.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -64,8 +65,8 @@ namespace Dream
 {
 
     GraphicsComponent::GraphicsComponent
-    (Camera* camera, IWindowComponent* windowComponent)
-        : IComponent(),
+    (Camera* camera, IWindowComponent* windowComponent, bool parallel)
+        : IComponent(parallel),
           mCamera(camera),
           mWindowComponentHandle(windowComponent)
     {
@@ -321,8 +322,6 @@ namespace Dream
                 auto log = getLog();
                 log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
 
-
-
                 /*
          * Let's think about rendering pipeline optimisation...
          *
@@ -448,8 +447,10 @@ namespace Dream
                             );
                 }
                 endUpdate();
+
+                if (!mParallel) break;
             }
-            std::this_thread::yield();
+            if (mParallel) std::this_thread::yield();
         }
 
     }
@@ -818,7 +819,7 @@ namespace Dream
             worldAmbientStrength = ambient[Constants::ALPHA_INDEX];
         }
 
-        shader->addUniform(UniformType::FLOAT3,"worldAmbientColour",1,glm::value_ptr(worldAmbientColour));
+        shader->addUniform(UniformType::FLOAT3,"worldAmbientColour",1,&worldAmbientColour);
         shader->addUniform(UniformType::FLOAT1,"worldAmbientStrength",1,&worldAmbientStrength);
         Constants::checkGLError("After world ambient uniforms");
 
@@ -843,13 +844,13 @@ namespace Dream
             i++;
         }
 
-        shader->addUniform(FLOAT3,"pointLightPos",numLights,glm::value_ptr(lightPos[0]));
-        shader->addUniform(FLOAT3,"pointLightColour",numLights,glm::value_ptr(lightColour[0]));
+        shader->addUniform(FLOAT3,"pointLightPos",numLights,&lightPos[0]);
+        shader->addUniform(FLOAT3,"pointLightColour",numLights,&lightColour[0]);
         Constants::checkGLError("After light pos uniform");
 
 
         vec3 cameraTranslation = mCamera->getTranslation();
-        shader->addUniform(FLOAT3,"cameraPos",1,glm::value_ptr(cameraTranslation));
+        shader->addUniform(FLOAT3,"cameraPos",1,&cameraTranslation);
         Constants::checkGLError("After camera pos uniform");
 
         // Pass view/projection transform to shader

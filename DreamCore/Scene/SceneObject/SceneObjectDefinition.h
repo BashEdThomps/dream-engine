@@ -45,7 +45,7 @@ namespace Dream
 
     public:
         SceneObjectDefinition(SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle,  json data);
-        ~SceneObjectDefinition();
+        ~SceneObjectDefinition() override;
 
         void setHasFocus(bool focus);
         bool hasFocus();

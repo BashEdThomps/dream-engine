@@ -30,9 +30,9 @@ extern "C"
 #include <memory>
 
 #include "LuaScriptCache.h"
-#include "InputEvent.h"
 #include "../../Common/Constants.h"
 #include "../IComponent.h"
+#include <gainput/gainput.h>
 
 using std::unique_ptr;
 using std::string;
@@ -71,8 +71,7 @@ namespace Dream
         void removeFromScriptMap(SceneObjectRuntime*);
         void addToScriptMap(SceneObjectRuntime*,LuaScriptInstance*);
 
-        void addInputEvent(InputEvent event);
-        void clearInputEvents();
+        void setInputMap(gainput::InputMap *map);
 
     private:// Variables
         LuaScriptCache* mScriptCacheHandle;
@@ -88,7 +87,7 @@ namespace Dream
                 "end";
         lua_State *mState;
         map<SceneObjectRuntime*, LuaScriptInstance*> mScriptMap;
-        vector<InputEvent> mInputEvents;
+        gainput::InputMap* mInputMap;
 
     private: // Methods
         // API Exposure Methods ======================================================
@@ -103,7 +102,7 @@ namespace Dream
         void exposeEvent();
         void exposeFontInstance();
         void exposeGraphicsComponent();
-        void exposeInputEvent();
+        void exposeGainput();
         void exposeAudioComponent();
         void exposeAudioInstance();
         void exposeIAssetInstance();

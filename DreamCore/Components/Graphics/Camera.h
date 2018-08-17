@@ -26,6 +26,8 @@ namespace Dream
         vec3 mUp;
         vec3 mRight;
         vec3 mWorldUp;
+        vec3 mLookAt;
+        bool mFreeMode;
         // Eular Angles
         float mYaw;
         float mPitch;
@@ -49,9 +51,11 @@ namespace Dream
         mat4 getViewMatrix();
         void processKeyboard(unsigned int, float);
         void processMouseMovement(float, float, bool);
+        void pan(float, float, bool);
         void processMouseScroll(float);
         void updateCameraVectors();
         void setTranslation(vec3);
+        void setTranslation(float,float,float);
         vec3 getTranslation();
         void setRotation(vec3);
         vec3 getRotation();
@@ -60,8 +64,21 @@ namespace Dream
         void  setMouseSensitivity(float);
         float getMouseSensitivity();
         float getZoom();
-
+        void setLookAt(float x, float y, float z);
+        void setLookAt(Transform3D);
+        void setFreeMode(bool freemode);
         void setTransform(Transform3D);
+        void orbit(Transform3D target,float elevation, float radius, float pitch, float yaw);
+
+        void flyForward(float speed);
+        void flyBackward(float speed);
+        void flyLeft(float speed);
+        void flyRight(float speed);
+        void flyUp(float speed);
+        void flyDown(float speed);
+        void flyX(float speed);
+        void flyY(float speed);
+        void flyZ(float speed);
 
         vec3 getRelativeTranslation(float relative);
         mat4 getRelativeRotation(vec3 relative);

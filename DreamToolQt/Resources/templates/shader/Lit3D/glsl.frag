@@ -4,67 +4,63 @@ in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
 
-
 out vec4 color;
 
 uniform sampler2D texture_diffuse1;
 
-uniform vec3  worldAmbientColour;
+
+
+uniform vec3 worldAmbientColour;
 uniform float worldAmbientStrength;
 
-uniform vec3  materialAmbientColour;
-uniform float materialAmbientStrength;
+uniform vec4  materialAmbientColour;
 
-uniform vec3 materialDiffuseColour;
-uniform float materialDiffuseStrength;
+uniform float materialOpacity;
 
-uniform vec3 materialSpecularColour;
+uniform vec4  materialDiffuseColour;
+
+uniform vec4  materialSpecularColour;
 uniform float materialSpecularStrength;
 
-uniform int numPointLights;
+uniform int  numPointLights;
 uniform vec3 pointLightPos[10];
 uniform vec3 pointLightColour[10];
 
-vec3 calculatePointLight(vec3 normal, vec3 lightPos,vec3 lightColour, vec3 fragPos)
+vec4 calculatePointLight(vec3 normal, vec3 lightPos,vec3 lightColour, vec3 fragPos)
 {
     vec3 lightDirection = normalize(lightPos-fragPos);
     float intensity = max(dot(normal,lightDirection), 0.0);
     vec3 lightFinal = lightColour * intensity;
-    return lightFinal;
+    return vec4(lightFinal,1.0f);
 }
 
 void main()
 {
-    vec4 objectColor = vec4(texture(texture_diffuse1, TexCoords));
-    vec3 materialSpecular = materialSpecularColour * materialSpecularStrength;
-    vec3 materialDiffuse = materialDiffuseColour * materialDiffuseStrength;
-    vec3 materialAmbient = materialAmbientColour * materialAmbientStrength;
-    vec3 worldAmbient = worldAmbientStrength * worldAmbientColour;
+    vec4 textureColour = vec4(texture(texture_diffuse1, TexCoords));
+    vec4 worldAmbient = vec4(worldAmbientColour * worldAmbientStrength,1.0);
+    vec4 specular = materialSpecularColour * materialSpecularStrength;
 
-    // Don't use 'transparent' fragments
-    if(objectColor.a < 0.5)
+    if (textureColour.a < 0.05f)
+    {
         discard;
+    }
 
-    vec3 colourSum = materialDiffuse + materialAmbient + materialSpecular + worldAmbient;
-
-    // Calculate Diffuse
-    vec3 norm = normalize(Normal);
-
+    vec4 pointLightSum = vec4(0);
     if (numPointLights > 0)
     {
-    vec3 pointLightSum = vec3(0);
+    // Calculate Diffuse
+        vec3 norm = normalize(Normal);
+
         for(int i=0; i<numPointLights; i++)
         {
             pointLightSum = pointLightSum + calculatePointLight(norm, pointLightPos[i], pointLightColour[i], FragPos);
         }
         pointLightSum = pointLightSum / numPointLights;
-        colourSum = colourSum + pointLightSum;
+        pointLightSum.a = 1.0f;
     }
 
-    vec3 colourSumNormalised = normalize(colourSum);
-
     // Combine with object colour
-    color = vec4(colourSumNormalised,1.0f) * objectColor;
+    color = textureColour * (worldAmbient + pointLightSum);
 }
 
 

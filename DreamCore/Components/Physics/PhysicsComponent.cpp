@@ -175,8 +175,10 @@ namespace Dream
                     mDynamicsWorld->debugDrawWorld();
                 }
                 endUpdate();
+
+                if (!mParallel) break;
             }
-            std::this_thread::yield();
+            if (mParallel) std::this_thread::yield();
         }
     }
 
@@ -186,7 +188,14 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Adding Rigid Body to Dynamics World" );
-        mDynamicsWorld->addRigidBody(rigidBody);
+        if (rigidBody != nullptr)
+        {
+            mDynamicsWorld->addRigidBody(rigidBody);
+        }
+        else
+        {
+            log->error("Unable to add rigid body to dynamics world, nullptr");
+        }
         log->info( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
     }
 
@@ -203,7 +212,14 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Removing Rigid Body from Dynamics World" );
-        mDynamicsWorld->removeRigidBody(rigidBody);
+        if (rigidBody != nullptr)
+        {
+            mDynamicsWorld->removeRigidBody(rigidBody);
+        }
+        else
+        {
+            log->error("Unable to remove rigidBody, nullptr");
+        }
     }
 
     void
@@ -230,13 +246,13 @@ namespace Dream
                             PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
                             if (!physicsObject->isInPhysicsWorld())
                             {
-                                log->info( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
+                                log->trace( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
                                 addPhysicsObjectInstance(physicsObject);
                                 physicsObject->setInPhysicsWorld(true);
                             }
                             else
                             {
-                                log->info( "SceneObject {} is in the physics world",so->getNameAndUuidString());
+                                log->trace( "SceneObject {} is in the physics world",so->getNameAndUuidString());
                             }
                         }
                         return nullptr;

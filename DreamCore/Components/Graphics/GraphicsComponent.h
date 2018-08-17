@@ -79,7 +79,7 @@ namespace Dream
         vector<LightInstance*>      mLightQueue;
         IWindowComponent *mWindowComponentHandle;
     public:
-        GraphicsComponent(Camera*,IWindowComponent*);
+        GraphicsComponent(Camera*,IWindowComponent*, bool parallel = false);
         ~GraphicsComponent() override;
 
         void clearSpriteQueue();

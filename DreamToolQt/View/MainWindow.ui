@@ -469,6 +469,8 @@
    <addaction name="actionPlay"/>
    <addaction name="actionStop"/>
    <addaction name="actionReload"/>
+   <addaction name="separator"/>
+   <addaction name="actionControl"/>
   </widget>
   <action name="actionNew">
    <property name="checkable">
@@ -551,7 +553,7 @@
     <string>Run Project</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+]</string>
+    <string>Ctrl+R</string>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -593,7 +595,7 @@
     <string>Play</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+P</string>
+    <string>Ctrl+[</string>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -611,27 +613,12 @@
     <string>Stop</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+[</string>
+    <string>Ctrl+]</string>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
-    <bool>false</bool>
-   </property>
-  </action>
-  <action name="actionOpen_Test_Project">
-   <property name="icon">
-    <iconset resource="../Resources/Resources.qrc">
-     <normaloff>:/images/document-open.png</normaloff>:/images/document-open.png</iconset>
-   </property>
-   <property name="text">
-    <string>Open Test Project</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
-   </property>
-   <property name="autoRepeat">
     <bool>false</bool>
    </property>
   </action>
@@ -831,6 +818,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionControl">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Resources/Resources.qrc">
+     <normaloff>:/svg/computer-mouse-svgrepo-com.svg</normaloff>:/svg/computer-mouse-svgrepo-com.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Control</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
    </property>
   </action>
  </widget>

@@ -24,7 +24,7 @@ namespace Dream
 {
     InputEvent::InputEvent
     (InputSource source)
-        : ILoggable("InputSource"), mSource(source),
+        : ILoggable("InputEvent"), mSource(source),
           mKeyEventType(KEY_NONE),
           mMouseEventType(MOUSE_NONE),
           mGamepadEventType(GAMEPAD_NONE),

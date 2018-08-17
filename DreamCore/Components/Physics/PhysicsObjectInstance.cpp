@@ -166,6 +166,13 @@ namespace Dream
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
+        if (podHandle->getControllableCharacter())
+        {
+            mRigidBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
+            mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+            mRigidBody->setAngularFactor(btVector3(0,1,0));
+        }
+
         if (podHandle->getKinematic())
         {
             mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
@@ -200,11 +207,17 @@ namespace Dream
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CYLINDER) == 0)
         {
-            //collisionShape = new btCylinderShape();
+            btScalar boxX, boxY, boxZ;
+            boxX = podHandle->getHalfExtentsX();
+            boxY = podHandle->getHalfExtentsY();
+            boxZ = podHandle->getHalfExtentsZ();
+            collisionShape = new btCylinderShape(btVector3(boxX,boxY,boxZ));
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CAPSULE) == 0)
         {
-            //collisionShape = new btCapsuleShape();
+            float radius = podHandle->getRadius();
+            float height = podHandle->getHeight();
+            collisionShape = new btCapsuleShape(radius,height);
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CONE) == 0)
         {

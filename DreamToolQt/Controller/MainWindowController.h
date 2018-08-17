@@ -112,7 +112,6 @@ public:
     QAction* getAction_File_Save();
     QAction* getAction_File_Open();
     QAction* getAction_File_CloseProject();
-    QAction* getAction_File_OpenTestProject();
 
     void setActionEnabled_File_New(bool enabled);
     void setActionEnabled_File_Save(bool enabled);
@@ -134,6 +133,7 @@ public:
 
     QAction* getAction_Asset_NewDefinition(AssetType type);
     QAction* getAction_Asset_AddToSelectedSceneObject();
+    QAction* getAction_ControlScene();
 
     QAction* getAction_Debug_DumpProjectDefinitionJson();
     void setActionEnabled_Debug_DumpProjectDefinitionJson(bool enabled);

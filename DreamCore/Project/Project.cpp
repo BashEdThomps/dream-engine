@@ -195,7 +195,8 @@ namespace Dream
     {
         if(mRuntime != nullptr)
         {
-            mRuntime->cleanUpThreads();
+            if (mRuntime->getParallel())
+                mRuntime->cleanUpThreads();
             mRuntime.reset(nullptr);
         }
     }

@@ -33,6 +33,7 @@
 #include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>
+#include "../Common/ILoggable.h"
 
 using std::string;
 using nlohmann::json;
@@ -41,7 +42,7 @@ using glm::quat;
 
 namespace Dream
 {
-  class Transform3D
+  class Transform3D : public ILoggable
   {
   private:
     vec3 mTranslation;
@@ -68,6 +69,7 @@ namespace Dream
 
     quat getOrientation();
     void setOrientation(float,float,float,float);
+    void setOrientation(quat);
 
     vec3 getRotation();
     void setRotation(float, float, float);
@@ -106,7 +108,6 @@ namespace Dream
     void scaleByZ(float);
 
     json getJson();
-
   };
 
 } // End of Dream

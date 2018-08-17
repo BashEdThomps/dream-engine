@@ -34,7 +34,7 @@ WindowInputState::WindowInputState
 QOpenGLWindowComponent::QOpenGLWindowComponent
 (QWidget* parent)
     : QOpenGLWidget(parent),
-      IWindowComponent(),
+      IWindowComponent(false),
       mProjectRuntimeHandle(nullptr),
       mGridHandle(nullptr),
       mSelectionHighlighterHandle(nullptr),
@@ -43,7 +43,8 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mGridEnabled(true),
       mRelationshipTreeEnabled(true),
       mSelectionHighlighterEnabled(true),
-      mMaxFrameTimeValues(100)
+      mMaxFrameTimeValues(100),
+      mControlScene(false)
 
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
@@ -115,14 +116,23 @@ QOpenGLWindowComponent::paintGL
 
             if (sRuntime->getState() != SCENE_STATE_STOPPED)
             {
-                while(mProjectRuntimeHandle->updateLogic())
+                if (mProjectRuntimeHandle->getParallel())
                 {
-                    std::this_thread::yield();
-                }
+                    // Wait for an update to trigger
+                    while(!mProjectRuntimeHandle->updateLogic())
+                    {
+                        std::this_thread::yield();
+                    }
 
-                while (!mProjectRuntimeHandle->allThreadsHaveUpdated())
+                    // Wait for update threads to finish
+                    while (!mProjectRuntimeHandle->allThreadsHaveUpdated())
+                    {
+                        std::this_thread::yield();
+                    }
+                }
+                else
                 {
-                    std::this_thread::yield();
+                    mProjectRuntimeHandle->updateLogic();
                 }
 
                 mProjectRuntimeHandle->collectGarbage();
@@ -289,6 +299,18 @@ QOpenGLWindowComponent::drawStats()
     painter.end();
 }
 
+bool QOpenGLWindowComponent::getControlScene() const
+{
+    return mControlScene;
+}
+
+void QOpenGLWindowComponent::setControlScene(bool controlScene)
+{
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    log->critical("Scene Control Enabled {}",controlScene);
+    mControlScene = controlScene;
+}
+
 double QOpenGLWindowComponent::averageFrameTime()
 {
     double total = 0.0;
@@ -344,12 +366,17 @@ void
 QOpenGLWindowComponent::wheelEvent
 (QWheelEvent* event)
 {
-    if (mProjectRuntimeHandle)
+    if (mControlScene)
     {
-        QPoint pos = event->pixelDelta();
-        int x = static_cast<int>( pos.x() );
-        int y = static_cast<int>( pos.y() );
-        mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(x,-y,true);
+        auto log = spdlog::get("QOpenGLWindowComponent");
+        log->critical("WheelEvent");
+        if (mProjectRuntimeHandle)
+        {
+            QPoint pos = event->pixelDelta();
+            int x = static_cast<int>( pos.x() );
+            int y = static_cast<int>( pos.y() );
+            mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(x,-y,true);
+        }
     }
 }
 
@@ -357,91 +384,105 @@ void
 QOpenGLWindowComponent::mouseMoveEvent
 (QMouseEvent *event)
 {
-    auto pos = event->localPos();
-    mMouseX = pos.x();
-    mMouseY = pos.y();
+    if (mControlScene)
+    {
+        auto log = spdlog::get("QOpenGLWindowComponent");
+        log->critical("MouseMoveEvent");
+        auto pos = event->localPos();
+        mMouseX = pos.x();
+        mMouseY = pos.y();
+    }
 }
 
 void
 QOpenGLWindowComponent::moveSelectedSceneObject
 (SceneObjectRuntime* selected)
 {
-    auto log = spdlog::get("QOpenGLWindowComponent");
-    Transform3D transform = selected->getTransform();
-    float moveAmount = mInputState.shiftPressed ?
-                mGridHandle->getMajorSpacing() :
-                mGridHandle->getMinorSpacing();
-
-    if(mInputState.upPressed)
+    if (mControlScene)
     {
-        log->trace("Moving Selected up");
-        if (mInputState.altPressed)
-        {
-            transform.translateByY(moveAmount);
-        }
-        else
-        {
-            transform.translateByZ(moveAmount);
-        }
-    }
+        auto log = spdlog::get("QOpenGLWindowComponent");
+        Transform3D transform = selected->getTransform();
+        float moveAmount = mInputState.shiftPressed ?
+                    mGridHandle->getMajorSpacing() :
+                    mGridHandle->getMinorSpacing();
 
-    if(mInputState.downPressed)
-    {
-        log->trace("Moving Selected down");
-        if (mInputState.altPressed)
+        if(mInputState.upPressed)
         {
-            transform.translateByY(-moveAmount);
+            log->trace("Moving Selected up");
+            if (mInputState.altPressed)
+            {
+                transform.translateByY(moveAmount);
+            }
+            else
+            {
+                transform.translateByZ(moveAmount);
+            }
         }
-        else
+
+        if(mInputState.downPressed)
         {
-            transform.translateByZ(-moveAmount);
+            log->trace("Moving Selected down");
+            if (mInputState.altPressed)
+            {
+                transform.translateByY(-moveAmount);
+            }
+            else
+            {
+                transform.translateByZ(-moveAmount);
+            }
         }
-    }
 
-    if(mInputState.leftPressed)
-    {
-        log->trace("Moving Selected left");
-        transform.translateByX(-moveAmount);
-    }
+        if(mInputState.leftPressed)
+        {
+            log->trace("Moving Selected left");
+            transform.translateByX(-moveAmount);
+        }
 
-    if(mInputState.rightPressed)
-    {
-        log->trace("Moving Selected right");
-        transform.translateByX(moveAmount);
-    }
+        if(mInputState.rightPressed)
+        {
+            log->trace("Moving Selected right");
+            transform.translateByX(moveAmount);
+        }
 
-    selected->setTransform(transform);
+        selected->setTransform(transform);
+    }
 }
 
 void
 QOpenGLWindowComponent::updateInputState
 ()
 {
-    auto log = spdlog::get("QOpenGLWindowComponent");
-    if (!mProjectRuntimeHandle)
+    if (mControlScene)
     {
-        return;
+        auto log = spdlog::get("QOpenGLWindowComponent");
+        if (!mProjectRuntimeHandle)
+        {
+            return;
+        }
+
+        SceneObjectRuntime *selected = nullptr;
+
+        if (mSelectionHighlighterHandle)
+        {
+            selected = mSelectionHighlighterHandle->getSelectedObject();
+        }
+
+        if (selected)
+        {
+            moveSelectedSceneObject(selected);
+        }
+
+        moveCamera();
     }
-
-    SceneObjectRuntime *selected = nullptr;
-
-    if (mSelectionHighlighterHandle)
-    {
-        selected = mSelectionHighlighterHandle->getSelectedObject();
-    }
-
-    if (selected)
-    {
-        moveSelectedSceneObject(selected);
-    }
-
-    moveCamera();
 }
 
 void
 QOpenGLWindowComponent::moveCamera
 ()
 {
+
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    log->critical("MoveCamera");
     Camera *camHandle = mProjectRuntimeHandle->getCameraHandle();
     float deltaTime = static_cast<float>(mProjectRuntimeHandle->getTimeHandle()->getFrameTimeDelta());
 
@@ -478,41 +519,44 @@ void
 QOpenGLWindowComponent::keyPressEvent
 (QKeyEvent *event)
 {
-    auto log = spdlog::get("QOpenGLWindowComponent");
-    log->trace("Pressed Key {}", event->key());
-
-    switch (event->key())
+    if (mControlScene)
     {
-        case Qt::Key_W:
-            mInputState.wPressed = true;
-            break;
-        case Qt::Key_A:
-            mInputState.aPressed = true;
-            break;
-        case Qt::Key_S:
-            mInputState.sPressed = true;
-            break;
-        case Qt::Key_D:
-            mInputState.dPressed = true;
-            break;
-        case Qt::Key_Shift:
-            mInputState.shiftPressed = true;
-            break;
-        case Qt::Key_Alt:
-            mInputState.altPressed = true;
-            break;
-        case Qt::Key_Up:
-            mInputState.upPressed = true;
-            break;
-        case Qt::Key_Down:
-            mInputState.downPressed = true;
-            break;
-        case Qt::Key_Left:
-            mInputState.leftPressed = true;
-            break;
-        case Qt::Key_Right:
-            mInputState.rightPressed = true;
-            break;
+        auto log = spdlog::get("QOpenGLWindowComponent");
+        log->trace("Pressed Key {}", event->key());
+
+        switch (event->key())
+        {
+            case Qt::Key_W:
+                mInputState.wPressed = true;
+                break;
+            case Qt::Key_A:
+                mInputState.aPressed = true;
+                break;
+            case Qt::Key_S:
+                mInputState.sPressed = true;
+                break;
+            case Qt::Key_D:
+                mInputState.dPressed = true;
+                break;
+            case Qt::Key_Shift:
+                mInputState.shiftPressed = true;
+                break;
+            case Qt::Key_Alt:
+                mInputState.altPressed = true;
+                break;
+            case Qt::Key_Up:
+                mInputState.upPressed = true;
+                break;
+            case Qt::Key_Down:
+                mInputState.downPressed = true;
+                break;
+            case Qt::Key_Left:
+                mInputState.leftPressed = true;
+                break;
+            case Qt::Key_Right:
+                mInputState.rightPressed = true;
+                break;
+        }
     }
 }
 
@@ -541,40 +585,43 @@ void
 QOpenGLWindowComponent::keyReleaseEvent
 (QKeyEvent* event)
 {
-    auto log = spdlog::get("QOpenGLWindowComponent");
-    log->trace("Released Key {}", event->key());
-    switch (event->key())
+    if (mControlScene)
     {
-        case Qt::Key_W:
-            mInputState.wPressed = false;
-            break;
-        case Qt::Key_A:
-            mInputState.aPressed = false;
-            break;
-        case Qt::Key_S:
-            mInputState.sPressed = false;
-            break;
-        case Qt::Key_D:
-            mInputState.dPressed = false;
-            break;
-        case Qt::Key_Shift:
-            mInputState.shiftPressed = false;
-            break;
-        case Qt::Key_Alt:
-            mInputState.altPressed = false;
-            break;
-        case Qt::Key_Up:
-            mInputState.upPressed = false;
-            break;
-        case Qt::Key_Down:
-            mInputState.downPressed = false;
-            break;
-        case Qt::Key_Left:
-            mInputState.leftPressed = false;
-            break;
-        case Qt::Key_Right:
-            mInputState.rightPressed = false;
-            break;
+        auto log = spdlog::get("QOpenGLWindowComponent");
+        log->trace("Released Key {}", event->key());
+        switch (event->key())
+        {
+            case Qt::Key_W:
+                mInputState.wPressed = false;
+                break;
+            case Qt::Key_A:
+                mInputState.aPressed = false;
+                break;
+            case Qt::Key_S:
+                mInputState.sPressed = false;
+                break;
+            case Qt::Key_D:
+                mInputState.dPressed = false;
+                break;
+            case Qt::Key_Shift:
+                mInputState.shiftPressed = false;
+                break;
+            case Qt::Key_Alt:
+                mInputState.altPressed = false;
+                break;
+            case Qt::Key_Up:
+                mInputState.upPressed = false;
+                break;
+            case Qt::Key_Down:
+                mInputState.downPressed = false;
+                break;
+            case Qt::Key_Left:
+                mInputState.leftPressed = false;
+                break;
+            case Qt::Key_Right:
+                mInputState.rightPressed = false;
+                break;
+        }
     }
 }
 

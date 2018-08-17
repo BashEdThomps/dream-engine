@@ -22,7 +22,7 @@
 #include "ShaderDefinition.h"
 #include "../../../Utilities/FileReader.h"
 
-using glm::value_ptr;
+using namespace glm;
 
 namespace Dream
 {
@@ -152,13 +152,13 @@ namespace Dream
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
             log->info(
-                "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
-                mDefinitionHandle->getNameAndUuidString(),
-                absVertexPath,
-                mVertexShaderSource,
-                absFragmentPath,
-                mFragmentShaderSource
-            );
+                        "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
+                        mDefinitionHandle->getNameAndUuidString(),
+                        absVertexPath,
+                        mVertexShaderSource,
+                        absFragmentPath,
+                        mFragmentShaderSource
+                        );
             // 2. Compile shaders
             GLint success;
             GLchar infoLog[512];
@@ -254,23 +254,18 @@ namespace Dream
 
     void ShaderInstance::addUniform(UniformType type, string name, int count, void* data)
     {
-        ShaderUniform uniform(type,name,count,data);
-        auto inVector = find(begin(mUniformVector),end(mUniformVector),uniform);
-        if (inVector != end(mUniformVector))
+        auto log = getLog();
+        for (auto uniform : mUniformVector)
         {
-            mUniformVector.erase(inVector);
+            if (uniform->getName().compare(name) == 0)
+            {
+                log->critical("Updating uniform {}", uniform->getName());
+                uniform->setData(data);
+                return;
+            }
         }
-        mUniformVector.push_back(uniform);
-    }
-
-    void ShaderInstance::addUniform(ShaderUniform uniform)
-    {
-        auto inVector = find(begin(mUniformVector),end(mUniformVector),uniform);
-        if (inVector != end(mUniformVector))
-        {
-            mUniformVector.erase(inVector);
-        }
-        mUniformVector.push_back(uniform);
+        log->critical("Creating uniform {}", name);
+        mUniformVector.push_back(make_shared<ShaderUniform>(type,name,count,data));
     }
 
     void
@@ -286,132 +281,78 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Synchronising uniforms for {}",getNameAndUuidString());
+        log->critical("Synchronising uniforms for {}",getNameAndUuidString());
         GLuint prog = getShaderProgram();
 
-        for (ShaderUniform uniform : mUniformVector)
+        for (shared_ptr<ShaderUniform> uniform : mUniformVector)
         {
-            GLint location = getUniformLocation(uniform.getName());
-            log->info(
-                " Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
-                getUuid(),
-                prog,
-                uniform.getName(),
-                location,
-                uniform.getCount()
-            );
-
-            if (location == UNIFORM_NOT_FOUND)
+            if (uniform->getCount() == 0)
             {
-                log->error( "Unable to find uniform location '{}' in {}" , uniform.getName() ,getNameAndUuidString());
                 continue;
             }
 
-            switch (uniform.getType())
+            GLint location = getUniformLocation(uniform->getName());
+            log->critical(
+                        "Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
+                        getUuid(),
+                        prog,
+                        uniform->getName(),
+                        location,
+                        uniform->getCount()
+                        );
+
+            if (location == UNIFORM_NOT_FOUND)
             {
-                // Int
-                case INT1:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform1iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
-                    }
-                    break;
-                case INT2:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform2iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
-                    }
-                    break;
-                case INT3:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform3iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
-                    }
-                    break;
-                case INT4:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform2iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
-                    }
-                    break;
+                log->error( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
+                continue;
+            }
+            else
+            {
+                switch (uniform->getType())
+                {
+                    // Int
+                    case INT1:
+                        glUniform1i(location,*static_cast<GLint*>(uniform->getData()));
+                        break;
+                    case INT2:
+                        glUniform2iv(location,uniform->getCount(),value_ptr(*static_cast<ivec2*>(uniform->getData())));
+                        break;
+                    case INT3:
+                        glUniform3iv(location,uniform->getCount(),value_ptr(*static_cast<ivec3*>(uniform->getData())));
+                        break;
+                    case INT4:
+                        glUniform4iv(location,uniform->getCount(),value_ptr(*static_cast<ivec4*>(uniform->getData())));
+                        break;
 
                     // Uint
-                case UINT1:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform1uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
-                    }
-                    break;
-                case UINT2:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform2uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
-                    }
-                    break;
-                case UINT3:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform3uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
-                    }
-                    break;
-                case UINT4:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform4uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
-                    }
-                    break;
+                    case UINT1:
+                        glUniform1ui(location,*static_cast<GLuint*>(uniform->getData()));
+                        break;
+                    case UINT2:
+                        glUniform2uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec2*>(uniform->getData())));
+                        break;
+                    case UINT3:
+                        glUniform3uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec3*>(uniform->getData())));
+                        break;
+                    case UINT4:
+                        glUniform4uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec4*>(uniform->getData())));
+                        break;
 
-                    // Float
-                case FLOAT1:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform1fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
-                    }
-                    break;
-                case FLOAT2:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform2fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
-                    }
-                    break;
-                case FLOAT3:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform3fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
-                    }
-                    break;
-                case FLOAT4:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform4fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
-                    }
-                    break;
-
-                    // Double
-                case DOUBLE1:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform1dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
-                    }
-                    break;
-                case DOUBLE2:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform2dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
-                    }
-                    break;
-                case DOUBLE3:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform3dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
-                    }
-                    break;
-                case DOUBLE4:
-                    if (uniform.getCount() > 0)
-                    {
-                        glUniform4dv(location,uniform.getCount(),static_cast<GLdouble*>(uniform.getData()));
-                    }
-                    break;
+                    // float
+                    case FLOAT1:
+                        glUniform1f(location,*static_cast<GLfloat*>(uniform->getData()));
+                        break;
+                    case FLOAT2:
+                        glUniform2fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec2*>(uniform->getData())));
+                        break;
+                    case FLOAT3:
+                        glUniform3fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec3*>(uniform->getData())));
+                        break;
+                    case FLOAT4:
+                        glUniform4fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec4*>(uniform->getData())));
+                        break;
+                }
+                Constants::checkGLError("After sync single uniform");
             }
         }
     }
@@ -422,23 +363,117 @@ namespace Dream
         : ILoggable ("ShaderUniform"),
           mType(type),
           mName(name),
-          mData(data),
           mCount(count)
 
     {
         auto log = getLog();
         log->info("Constructing uniform {}, count {}",mName,count);
+        switch (type)
+        {
+            case Dream::INT1:
+                mData = new GLint[count];
+                memcpy(mData,data,sizeof(GLint)*static_cast<unsigned long>(count));
+                break;
+            case Dream::INT2:
+                mData = new ivec2[count];
+                memcpy(mData,data,sizeof(ivec2)*static_cast<unsigned long>(count));
+                break;
+            case Dream::INT3:
+                mData = new ivec3[count];
+                memcpy(mData,data,sizeof(ivec3)*static_cast<unsigned long>(count));
+                break;
+            case Dream::INT4:
+                mData = new ivec4[count];
+                memcpy(mData,data,sizeof(ivec4)*static_cast<unsigned long>(count));
+                break;
+
+            case Dream::UINT1:
+                mData = new GLint[count];
+                memcpy(mData,data,sizeof(GLuint)*static_cast<unsigned long>(count));
+                break;
+            case Dream::UINT2:
+                mData = new uvec2[count];
+                memcpy(mData,data,sizeof(uvec2)*static_cast<unsigned long>(count));
+                break;
+            case Dream::UINT3:
+                mData = new uvec3[count];
+                memcpy(mData,data,sizeof(uvec3)*static_cast<unsigned long>(count));
+                break;
+            case Dream::UINT4:
+                mData = new uvec4[count];
+                memcpy(mData,data,sizeof(uvec4)*static_cast<unsigned long>(count));
+                break;
+
+            case Dream::FLOAT1:
+                mData = new GLint[count];
+                memcpy(mData,data,sizeof(GLfloat)*static_cast<unsigned long>(count));
+                break;
+            case Dream::FLOAT2:
+                mData = new vec2[count];
+                memcpy(mData,data,sizeof(vec2)*static_cast<unsigned long>(count));
+                break;
+            case Dream::FLOAT3:
+                mData = new vec3[count];
+                memcpy(mData,data,sizeof(vec3)*static_cast<unsigned long>(count));
+                break;
+            case Dream::FLOAT4:
+                mData = new vec4[count];
+                memcpy(mData,data,sizeof(vec4)*static_cast<unsigned long>(count));
+                break;
+
+        }
     }
 
     ShaderUniform::~ShaderUniform()
     {
-       auto log = getLog();
-       log->trace("Destructing");
+        auto log = getLog();
+        log->trace("Destructing {} {}", mName, mCount);
+        switch (mType)
+        {
+            case Dream::INT1:
+                delete[] static_cast<GLint*>(mData);
+                break;
+            case Dream::INT2:
+                delete[] static_cast<ivec2*>(mData);
+                break;
+            case Dream::INT3:
+                delete[] static_cast<ivec3*>(mData);
+                break;
+            case Dream::INT4:
+                delete[] static_cast<ivec4*>(mData);
+                break;
+
+            case Dream::UINT1:
+                delete[] static_cast<GLuint*>(mData);
+                break;
+            case Dream::UINT2:
+                delete[] static_cast<uvec2*>(mData);
+                break;
+            case Dream::UINT3:
+                delete[] static_cast<uvec3*>(mData);
+                break;
+            case Dream::UINT4:
+                delete[] static_cast<uvec4*>(mData);
+                break;
+
+            case Dream::FLOAT1:
+                delete[] static_cast<GLfloat*>(mData);
+                break;
+            case Dream::FLOAT2:
+                delete[] static_cast<vec2*>(mData);
+                break;
+            case Dream::FLOAT3:
+                delete[] static_cast<vec3*>(mData);
+                break;
+            case Dream::FLOAT4:
+                delete[] static_cast<vec4*>(mData);
+                break;
+        }
     }
 
     bool ShaderUniform::operator==(const ShaderUniform& other) const
     {
-       return getName().compare(other.getName()) == 0;
+        return getName().compare(other.getName()) == 0;
     }
 
     int ShaderUniform::getCount() const
@@ -458,7 +493,49 @@ namespace Dream
 
     void ShaderUniform::setData(void* data)
     {
-        mData = data;
+        switch (mType)
+        {
+            case Dream::INT1:
+                memcpy(mData,data,sizeof(GLint)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::INT2:
+                memcpy(mData,data,sizeof(ivec2)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::INT3:
+                memcpy(mData,data,sizeof(ivec3)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::INT4:
+                memcpy(mData,data,sizeof(ivec4)*static_cast<unsigned long>(mCount));
+                break;
+
+            case Dream::UINT1:
+                memcpy(mData,data,sizeof(GLuint)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::UINT2:
+                memcpy(mData,data,sizeof(uvec2)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::UINT3:
+                memcpy(mData,data,sizeof(uvec3)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::UINT4:
+                memcpy(mData,data,sizeof(uvec4)*static_cast<unsigned long>(mCount));
+                break;
+
+            case Dream::FLOAT1:
+                memcpy(mData,data,sizeof(GLfloat)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::FLOAT2:
+                memcpy(mData,data,sizeof(vec2)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::FLOAT3:
+                memcpy(mData,data,sizeof(vec3)*static_cast<unsigned long>(mCount));
+                break;
+            case Dream::FLOAT4:
+                memcpy(mData,data,sizeof(vec4)*static_cast<unsigned long>(mCount));
+                break;
+
+        }
+
     }
 
     string ShaderUniform::getName() const

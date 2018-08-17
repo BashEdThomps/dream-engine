@@ -80,6 +80,9 @@ AssetDefinitionPropertiesItem::setData
             dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setConstant(value.toFloat());
             break;
 
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setHeight(value.toFloat());
+            break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
             dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setRadius(value.toFloat());
             break;
@@ -114,7 +117,9 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
             dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setKinematic(value.toBool());
             break;
-
+    case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setControllableCharacter(value.toBool());
+            break;
             // Common
         case ASSET_DEFINITION_PROPERTY_NAME:
             mAssetDefinitionHandle->setName(value.toString().toStdString());
@@ -197,6 +202,9 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getConstant());
 
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getHeight());
+
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getRadius());
 
@@ -223,6 +231,8 @@ AssetDefinitionPropertiesItem::data
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getMargin());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getKinematic());
+    case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getControllableCharacter());
 
             // Audio
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:

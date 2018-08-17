@@ -37,6 +37,7 @@
 #include "../Graphics/Light/LightInstance.h"
 #include "../Graphics/Shader/ShaderInstance.h"
 #include "../Graphics/Sprite/SpriteInstance.h"
+#include "../Input/InputComponent.h"
 #include "../Physics/PhysicsComponent.h"
 #include "../Physics/PhysicsObjectInstance.h"
 #include "../Window/IWindowComponent.h"
@@ -301,8 +302,10 @@ namespace Dream
                     }
                 }
                 endUpdate();
+
+                if (!mParallel) break;
             }
-            std::this_thread::yield();
+            if (mParallel) std::this_thread::yield();
         }
     }
 
@@ -471,17 +474,12 @@ namespace Dream
             object funq = table[Constants::LUA_INPUT_FUNCTION];
             if (funq.is_valid())
             {
-                for(InputEvent event : mInputEvents)
-                {
-                    call_function<void>(funq,sceneObject,event);
-                }
+                call_function<void>(funq,sceneObject,mInputMap);
             }
             else
             {
                 log->error( "Attempted to call onInput on invalid function.");
             }
-
-            clearInputEvents();
         }
         catch (error e)
         {
@@ -541,17 +539,10 @@ namespace Dream
     }
 
     void
-    LuaComponent::addInputEvent
-    (InputEvent event)
+    LuaComponent::setInputMap
+    (gainput::InputMap *map)
     {
-        mInputEvents.push_back(event);
-    }
-
-    void
-    LuaComponent::clearInputEvents
-    ()
-    {
-        mInputEvents.clear();
+        mInputMap = map;
     }
 
     // API Exposure Methods ======================================================
@@ -561,8 +552,8 @@ namespace Dream
     ()
     {
         module(mState)
-                [
-                class_<ProjectRuntime>("ProjectRuntime")
+        [
+            class_<ProjectRuntime>("ProjectRuntime")
                 .def("getAudioComponent",&ProjectRuntime::getAudioComponentHandle)
                 .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponentHandle)
                 .def("getNanoVGComponent",&ProjectRuntime::getNanoVGComponentHandle)
@@ -570,7 +561,7 @@ namespace Dream
                 .def("getWindowComponent",&ProjectRuntime::getWindowComponentHandle)
                 .def("getTime",&ProjectRuntime::getTimeHandle)
                 .def("getCamera",&ProjectRuntime::getCameraHandle)
-                ];
+        ];
         globals(mState)["Runtime"] = mProjectRuntimeHandle;
     }
 
@@ -579,18 +570,33 @@ namespace Dream
     ()
     {
         module(mState)
-                [
-                luabind::class_<Camera>("Camera")
+        [
+            luabind::class_<Camera>("Camera")
                 .def("processKeyboard",&Camera::processKeyboard)
                 .def("processMouseMovement",&Camera::processMouseMovement)
-                .enum_("CameraMovement")
-                [
+                .def("pan",&Camera::pan)
+                .def("flyForward",&Camera::flyForward)
+                .def("flyBackward",&Camera::flyBackward)
+                .def("flyLeft",&Camera::flyLeft)
+                .def("flyRight",&Camera::flyRight)
+                .def("flyUp",&Camera::flyUp)
+                .def("flyDown",&Camera::flyDown)
+                .def("flyX",&Camera::flyX)
+                .def("flyY",&Camera::flyY)
+                .def("flyZ",&Camera::flyZ)
+                .def("setFreeMode",&Camera::setFreeMode)
+                .def("setLookAt",static_cast<void(Camera::*)(float,float,float)>(&Camera::setLookAt))
+                .def("setLookAt",static_cast<void(Camera::*)(Transform3D)>( &Camera::setLookAt))
+                .def("setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation))
+                .def("orbit",&Camera::orbit)
+            .enum_("CameraMovement")
+            [
                 value("FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD),
                 value("BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD),
                 value("LEFT",     Constants::CAMERA_MOVEMENT_LEFT),
                 value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
-                ]
-                ];
+            ]
+        ];
     }
 
     void
@@ -675,16 +681,27 @@ namespace Dream
 
         debugRegisteringClass("ShaderUniform");
         module(mState)
-                [
-                class_<ShaderUniform>("ShaderUniform")
+        [
+            class_<ShaderUniform>("ShaderUniform")
                 .enum_("UniformType")
                 [
-                value("INT1",UniformType::INT1),
-                value("INT2",UniformType::INT2),
-                value("INT3",UniformType::INT3),
-                value("INT4",UniformType::INT4)
+                    value("INT1",UniformType::INT1),
+                    value("INT2",UniformType::INT2),
+                    value("INT3",UniformType::INT3),
+                    value("INT4",UniformType::INT4),
+
+                    value("UINT1",UniformType::UINT1),
+                    value("UINT2",UniformType::UINT2),
+                    value("UINT3",UniformType::UINT3),
+                    value("UINT4",UniformType::UINT4),
+
+                    value("FLOAT1",UniformType::FLOAT1),
+                    value("FLOAT2",UniformType::FLOAT2),
+                    value("FLOAT3",UniformType::FLOAT3),
+                    value("FLOAT4",UniformType::FLOAT4)
+
                 ]
-                ];
+        ];
     }
 
     void
@@ -753,6 +770,7 @@ namespace Dream
                 luabind::def("radiansToDegrees",&Math::radiansToDegrees),
                 luabind::def("pow",&Math::_pow),
                 luabind::def("sinf",&Math::_sinf),
+                luabind::def("cosf",&Math::_cosf),
                 luabind::def("sqrtf",&Math::_sqrtf)
                 ]
                 ];
@@ -777,6 +795,7 @@ namespace Dream
 
                 .def("addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad)
 
+                .def("walk",&SceneObjectRuntime::walk)
                 .def("getAnimation",&SceneObjectRuntime::getAnimationInstance)
                 .def("getAudio",&SceneObjectRuntime::getAudioInstance)
                 .def("getSprite",&SceneObjectRuntime::getSpriteInstance)
@@ -940,77 +959,51 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeInputEvent
+    LuaComponent::exposeGainput
     ()
     {
-        debugRegisteringClass("InputEvent");
+        debugRegisteringClass("Gainput");
         module(mState)
-                [
-                class_<InputEvent>("InputEvent")
+        [
+                class_<gainput::InputMap>("InputMap")
+                    .def("GetBool",&gainput::InputMap::GetBool)
+                    .def("GetBoolIsNew",&gainput::InputMap::GetBoolIsNew)
+                    .def("GetBoolPrevious",&gainput::InputMap::GetBoolPrevious)
+                    .def("GetBoolWasDown",&gainput::InputMap::GetBoolWasDown)
+                    .def("GetFloat",&gainput::InputMap::GetFloat)
+                    .def("GetFloatPrevious",&gainput::InputMap::GetFloatPrevious)
+                    .def("GetFloatDelta",&gainput::InputMap::GetFloatDelta)
+                    .enum_("InputSource")
+                    [
+                        value("FaceButtonNorth", InputSource::FaceButtonNorth),
+                        value("FaceButtonEast", InputSource::FaceButtonEast),
+                        value("FaceButtonWest", InputSource::FaceButtonWest),
+                        value("FaceButtonSouth", InputSource::FaceButtonSouth),
 
-                .def("getSource",&InputEvent::getSource)
-                .def("setSource",&InputEvent::setSource)
+                        value("FaceHome", InputSource::FaceHome),
+                        value("FaceStart", InputSource::FaceStart),
+                        value("FaceSelect", InputSource::FaceSelect),
 
-                .def("getMouseEventType",&InputEvent::getMouseEventType)
-                .def("setMouseEventType",&InputEvent::setMouseEventType)
+                        value("ShoulderLeft", InputSource::ShoulderLeft),
+                        value("ShoulderRight", InputSource::ShoulderRight),
 
-                .def("getKeyEventType",&InputEvent::getKeyEventType)
-                .def("setKeyEventType",&InputEvent::setKeyEventType)
+                        value("TriggerLeft", InputSource::TriggerLeft),
+                        value("TriggerRight", InputSource::TriggerRight),
 
-                .def("getGamepadEventType",&InputEvent::getGamepadEventType)
-                .def("setGamepadEventType",&InputEvent::setGamepadEventType)
+                        value("DPadNorth", InputSource::DPadNorth),
+                        value("DPadSouth", InputSource::DPadSouth),
+                        value("DPadEast", InputSource::DPadEast),
+                        value("DPadWest", InputSource::DPadWest),
 
-                .def("getX",&InputEvent::getX)
-                .def("setX",&InputEvent::setX)
+                        value("AnalogLeftStickX", InputSource::AnalogLeftStickX),
+                        value("AnalogLeftStickY", InputSource::AnalogLeftStickY),
+                        value("AnalogLeftButton", InputSource::AnalogLeftButton),
 
-                .def("getY",&InputEvent::getY)
-                .def("setY",&InputEvent::setY)
-
-                .def("isPressed",&InputEvent::isPressed)
-                .def("setPressed",&InputEvent::setPressed)
-
-                .def("getKey",&InputEvent::getKey)
-                .def("setKey",&InputEvent::setKey)
-
-                .def("getButton",&InputEvent::getButton)
-                .def("setButton",&InputEvent::setButton),
-
-                class_<InputSource>("InputSource")
-                .enum_("InputSource")
-                [
-                value("INPUT_SOURCE_KEYBOARD",InputSource::INPUT_SOURCE_KEYBOARD),
-                value("INPUT_SOURCE_MOUSE",InputSource::INPUT_SOURCE_MOUSE),
-                value("INPUT_SOURCE_GAMEPAD",InputSource::INPUT_SOURCE_GAMEPAD),
-                value("INPUT_SOURCE_NONE",InputSource::INPUT_SOURCE_NONE)
-                ],
-
-                class_<KeyEventType>("KeyEventType")
-                .enum_("KeyEventType")
-                [
-                value("KEY_PRESSED",KeyEventType::KEY_PRESSED),
-                value("KEY_RELEASED",KeyEventType::KEY_RELEASED),
-                value("KEY_NONE",KeyEventType::KEY_NONE)
-                ],
-
-                class_<MouseEventType>("MouseEventType")
-                .enum_("MouseEventType")
-                [
-                value("MOUSE_BUTTON_PRESSED",MouseEventType::MOUSE_BUTTON_PRESSED),
-                value("MOUSE_BUTTON_RELEASED",MouseEventType::MOUSE_BUTTON_RELEASED),
-                value("MOUSE_SCROLL",MouseEventType::MOUSE_SCROLL),
-                value("MOUSE_MOTION",MouseEventType::MOUSE_MOTION),
-                value("MOUSE_NONE",MouseEventType::MOUSE_NONE)
-                ],
-
-                class_<GamepadEventType>("GamepadEventType")
-                .enum_("GamepadEventType")
-                [
-                value("GAMEPAD_AXIS",GamepadEventType::GAMEPAD_AXIS),
-                value("GAMEPAD_BUTTON_PRESSED",GamepadEventType::GAMEPAD_BUTTON_PRESSED),
-                value("GAMEPAD_BUTTON_RELEASED",GamepadEventType::GAMEPAD_BUTTON_RELEASED),
-                value("GAMEPAD_NONE",GamepadEventType::GAMEPAD_NONE)
-                ]
-                ];
+                        value("AnalogRightStickX", InputSource::AnalogRightStickX),
+                        value("AnalogRightStickY", InputSource::AnalogRightStickY),
+                        value("AnalogRightButton", InputSource::AnalogRightButton)
+                    ]
+        ];
     }
 
     void
@@ -1024,7 +1017,7 @@ namespace Dream
         exposeProjectRuntime();
         exposeEvent();
         exposeFontInstance();
-        exposeInputEvent();
+        exposeGainput();
         exposeGraphicsComponent();
         exposeIAssetInstance();
         exposeAudioInstance();

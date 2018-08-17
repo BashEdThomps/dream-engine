@@ -49,11 +49,12 @@ using std::endl;
 
 namespace Dream
 {
-    ProjectRuntime::ProjectRuntime
+        ProjectRuntime::ProjectRuntime
     (Project* projectHandle,IWindowComponent* windowComponentHandle)
         : Runtime(projectHandle->getProjectDefinitionHandle()),
           ILoggable ("ProjectRuntime"),
           mDone(false),
+          mParallel(false),
           mWindowComponentHandle(windowComponentHandle),
           mProjectHandle(projectHandle),
           mGraphicsUpdating(false),
@@ -86,6 +87,18 @@ namespace Dream
     {
         mDone = done;
     }
+
+    bool ProjectRuntime::getParallel() const
+    {
+        return mParallel;
+    }
+
+    void ProjectRuntime::setParallel(bool parallel)
+    {
+        mParallel = parallel;
+    }
+
+
 
     Time*
     ProjectRuntime::getTimeHandle
@@ -167,7 +180,8 @@ namespace Dream
             return false;
         }
         mAudioComponent->setRunning(true);
-        mAudioComponentThread.reset(new ComponentThread(mAudioComponent.get()));
+        if (mParallel)
+            mAudioComponentThread.reset(new ComponentThread(mAudioComponent.get()));
         return true;
     }
 
@@ -181,7 +195,8 @@ namespace Dream
             return false;
         }
         mInputComponent->setRunning(true);
-        mInputComponentThread.reset(new ComponentThread(mInputComponent.get()));
+        if (mParallel)
+            mInputComponentThread.reset(new ComponentThread(mInputComponent.get()));
         return true;
     }
 
@@ -198,7 +213,8 @@ namespace Dream
             return false;
         }
         mPhysicsComponent->setRunning(true);
-        mPhysicsComponentThread.reset(new ComponentThread(mPhysicsComponent.get()));
+        if (mParallel)
+            mPhysicsComponentThread.reset(new ComponentThread(mPhysicsComponent.get()));
         return true;
     }
 
@@ -217,7 +233,9 @@ namespace Dream
             return false;
         }
         mGraphicsComponent->setRunning(true);
-        mGraphicsComponentThread.reset(new ComponentThread(mGraphicsComponent.get()));
+
+        if (mParallel)
+            mGraphicsComponentThread.reset(new ComponentThread(mGraphicsComponent.get()));
 
         mNanoVGComponent.reset(new NanoVGComponent(mWindowComponentHandle));
         if (!mNanoVGComponent->init())
@@ -241,7 +259,9 @@ namespace Dream
             return false;
         }
         mAnimationComponent->setRunning(true);
-        mAnimationComponentThread.reset(new ComponentThread(mAnimationComponent.get()));
+
+        if (mParallel)
+            mAnimationComponentThread.reset(new ComponentThread(mAnimationComponent.get()));
         return true;
     }
 
@@ -258,7 +278,14 @@ namespace Dream
             return false;
         }
         mLuaComponent->setRunning(true);
-        mLuaComponentThread.reset(new ComponentThread(mLuaComponent.get()));
+
+        if (mParallel)
+            mLuaComponentThread.reset(new ComponentThread(mLuaComponent.get()));
+
+        if (mInputComponent != nullptr)
+        {
+            mInputComponent->setLuaComponentHandle(mLuaComponent.get());
+        }
         return true;
     }
 
@@ -334,43 +361,94 @@ namespace Dream
     ProjectRuntime::updateLogic
     ()
     {
+        auto log = getLog();
+
         if (!mGraphicsUpdating && !mLogicUpdating)
         {
-            auto log = getLog();
-            log->info("==== UpdateLogic Called @ {}  ====",  mTime->now());
+            if (mParallel)
+            {
 
-            mLogicUpdating = true;
+                mLogicUpdating = true;
 
-            mTime->updateFrameTime();
+                log->info("==== UpdateLogic (Parallel) Called @ {}  ====",  mTime->now());
 
-            mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mInputComponent->setShouldUpdate(true);
+                mTime->updateFrameTime();
 
-            mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mLuaComponent->setShouldUpdate(true);
+                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mInputComponent->setShouldUpdate(true);
 
-            mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mAnimationComponent->setShouldUpdate(true);
+                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mLuaComponent->setShouldUpdate(true);
 
-            mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mAudioComponent->setShouldUpdate(true);
+                mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mAnimationComponent->setShouldUpdate(true);
 
-            mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mWindowComponentHandle->updateComponent();
+                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mAudioComponent->setShouldUpdate(true);
 
-            mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mPhysicsComponent->setShouldUpdate(true);
+                mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mWindowComponentHandle->updateComponent();
 
-            mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-            mGraphicsComponent->setShouldUpdate(true);
-            return true;
+                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPhysicsComponent->setShouldUpdate(true);
+
+                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mGraphicsComponent->setShouldUpdate(true);
+                return true;
+            }
+            else
+            {
+                mLogicUpdating = true;
+
+                log->info("==== UpdateLogic (SingleThreaded) Called @ {}  ====",  mTime->now());
+
+                mTime->updateFrameTime();
+
+                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mInputComponent->setShouldUpdate(true);
+                mInputComponent->updateComponent();
+
+                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mLuaComponent->setShouldUpdate(true);
+                mLuaComponent->updateComponent();
+
+                mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mAnimationComponent->setShouldUpdate(true);
+                mAnimationComponent->updateComponent();
+
+                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mAudioComponent->setShouldUpdate(true);
+                mAudioComponent->updateComponent();
+
+                mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mWindowComponentHandle->updateComponent();
+                mWindowComponentHandle->updateComponent();
+
+                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPhysicsComponent->setShouldUpdate(true);
+                mPhysicsComponent->updateComponent();
+
+                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mGraphicsComponent->setShouldUpdate(true);
+                mGraphicsComponent->updateComponent();
+
+                mLogicUpdating = false;
+
+                return true;
+            }
         }
-        return false;
+
+         return false;
     }
 
     bool ProjectRuntime::allThreadsHaveUpdated
     ()
     {
+        if (!mParallel)
+        {
+            return false;
+        }
+
         auto log = getLog();
         bool animation = mAnimationComponent->getUpdateComplete();
         bool audio = mAudioComponent->getUpdateComplete();
@@ -547,7 +625,10 @@ namespace Dream
         log->info("Cleaning up LuaComponentThread");
         mLuaComponent->setRunning(false);
         mLuaComponent->setShouldUpdate(false);
-        mLuaComponentThread->join();
+        if (mLuaComponentThread->joinable())
+        {
+            mLuaComponentThread->join();
+        }
     }
 
     void ProjectRuntime::cleanUpInputComponentThread()
@@ -556,7 +637,10 @@ namespace Dream
         log->info("Cleaning up InputComponentThread");
         mInputComponent->setRunning(false);
         mInputComponent->setShouldUpdate(false);
-        mInputComponentThread->join();
+        if (mInputComponentThread->joinable())
+        {
+            mInputComponentThread->join();
+        }
     }
 
     void ProjectRuntime::cleanUpAudioComponentThread()
@@ -565,7 +649,10 @@ namespace Dream
         log->info("Cleaning up AudioComponentThread");
         mAudioComponent->setRunning(false);
         mAudioComponent->setShouldUpdate(false);
-        mAudioComponentThread->join();
+        if (mAudioComponentThread->joinable())
+        {
+            mAudioComponentThread->join();
+        }
     }
 
     void ProjectRuntime::cleanUpPhysicsComponentThread()
@@ -574,7 +661,10 @@ namespace Dream
         log->info("Cleaning up PhysicsComponentThread");
         mPhysicsComponent->setRunning(false);
         mPhysicsComponent->setShouldUpdate(false);
-        mPhysicsComponentThread->join();
+        if (mPhysicsComponentThread->joinable())
+        {
+            mPhysicsComponentThread->join();
+        }
     }
 
     void ProjectRuntime::cleanUpGraphicsComponentThread()
@@ -583,7 +673,10 @@ namespace Dream
         log->info("Cleaning up PhysicsComponentThread");
         mGraphicsComponent->setRunning(false);
         mGraphicsComponent->setShouldUpdate(false);
-        mGraphicsComponentThread->join();
+        if (mGraphicsComponentThread->joinable())
+        {
+            mGraphicsComponentThread->join();
+        }
     }
 
     void ProjectRuntime::cleanUpAnimationComponentThread()
@@ -592,7 +685,10 @@ namespace Dream
         log->info("Cleaning up PhysicsComponentThread");
         mAnimationComponent->setRunning(false);
         mAnimationComponent->setShouldUpdate(false);
-        mAnimationComponentThread->join();
+        if (mAnimationComponentThread->joinable())
+        {
+            mAnimationComponentThread->join();
+        }
     }
 
     void

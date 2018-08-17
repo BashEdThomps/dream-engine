@@ -42,6 +42,7 @@ namespace Dream
         void bindSpecular(ShaderInstance*);
         void bindAmbient(ShaderInstance* shaderHandle);
 
+        void bindOpacity(ShaderInstance* shaderHandle);
     public:
         AssimpMesh
         (

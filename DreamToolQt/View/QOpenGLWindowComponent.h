@@ -64,6 +64,9 @@ public:
     void keyReleaseEvent(QKeyEvent *event) override;
     void clearProjectRuntimeHandle();
 
+    bool getControlScene() const;
+    void setControlScene(bool controlScene);
+
 protected:
     void initializeGL() override;
     void resizeGL( int w, int h ) override;
@@ -73,6 +76,7 @@ protected:
     void drawStats();
 
 private:
+    bool mControlScene;
     ProjectRuntime* mProjectRuntimeHandle;
     Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;

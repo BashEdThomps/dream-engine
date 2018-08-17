@@ -5,7 +5,8 @@ namespace Dream
     // Constructor with vectors
     Camera::Camera
     (vec3 translation, vec3 up, float yaw, float pitch)
-        : ILoggable("Camera")
+        : ILoggable("Camera"),
+          mFreeMode(true)
     {
         mFront = vec3(0.0f, 0.0f, -1.0f);
         mMovementSpeed = Constants::CAMERA_SPEED;
@@ -25,7 +26,8 @@ namespace Dream
             float upX, float upY, float upZ,
             float yaw, float pitch
             )
-        :ILoggable ("Camera")
+        :ILoggable ("Camera"),
+        mFreeMode(true)
     {
         mFront            = {0.0f, 0.0f, -1.0f};
         mMovementSpeed    = Constants::CAMERA_SPEED;
@@ -50,7 +52,14 @@ namespace Dream
     Camera::getViewMatrix
     ()
     {
-        return lookAt(mTranslation,mTranslation+mFront,mUp);
+        if (mFreeMode)
+        {
+            return lookAt(mTranslation,mTranslation+mFront,mUp);
+        }
+        else
+        {
+            return lookAt(mTranslation,mLookAt,mUp);
+        }
     }
 
     vec3
@@ -72,11 +81,11 @@ namespace Dream
     (float relative)
     {
         return vec3
-                (
-                    mTranslation.x + (mFront.x * relative),
-                    mTranslation.y + (mFront.y * relative),
-                    mTranslation.z + (mFront.z * relative)
-                    );
+        (
+            mTranslation.x + (mFront.x * relative),
+            mTranslation.y + (mFront.y * relative),
+            mTranslation.z + (mFront.z * relative)
+        );
     }
 
     mat4
@@ -129,7 +138,81 @@ namespace Dream
         {
             mTranslation.y += velocity;
         }
+    }
 
+    void
+    Camera::flyForward
+    (float speed)
+    {
+        mTranslation.x += mFront.x * speed;
+        mTranslation.y += mFront.y * speed;
+        mTranslation.z += mFront.z * speed;
+    }
+
+    void
+    Camera::flyZ
+    (float speed)
+    {
+        mTranslation.x += mFront.x * speed;
+        mTranslation.y += mFront.y * speed;
+        mTranslation.z += mFront.z * speed;
+    }
+
+    void
+    Camera::flyBackward
+    (float speed)
+    {
+        mTranslation.x -= mFront.x * speed;
+        mTranslation.y -= mFront.y * speed;
+        mTranslation.z -= mFront.z * speed;
+    }
+
+    void
+    Camera::flyLeft
+    (float speed)
+    {
+        mTranslation.x -= mRight.x * speed;
+        mTranslation.y -= mRight.y * speed;
+        mTranslation.z -= mRight.z * speed;
+    }
+
+    void
+    Camera::flyRight
+    (float speed)
+    {
+        mTranslation.x += mRight.x * speed;
+        mTranslation.y += mRight.y * speed;
+        mTranslation.z += mRight.z * speed;
+    }
+
+    void
+    Camera::flyX
+    (float speed)
+    {
+        mTranslation.x += mRight.x * speed;
+        mTranslation.y += mRight.y * speed;
+        mTranslation.z += mRight.z * speed;
+    }
+
+    void
+    Camera::flyUp
+    (float speed)
+    {
+        mTranslation.y += speed;
+    }
+
+    void
+    Camera::flyY
+    (float speed)
+    {
+        mTranslation.y += speed;
+    }
+
+    void
+    Camera::flyDown
+    (float speed)
+    {
+        mTranslation.y -= speed;
     }
 
     vec3
@@ -144,6 +227,34 @@ namespace Dream
     ()
     {
         return vec3 (mPitch,mYaw,0.0f);
+    }
+
+    void
+    Camera::pan
+    (float xoffset, float yoffset, bool constrainPitch)
+    {
+        mYaw   += xoffset;
+        mPitch -= yoffset;
+
+        // Make sure that when pitch is out of bounds, screen doesn't get flipped
+        if (constrainPitch)
+        {
+            if (mPitch > Constants::CAMERA_PITCH_MAX)
+            {
+                mPitch = Constants::CAMERA_PITCH_MAX;
+            }
+
+            if (mPitch < -Constants::CAMERA_PITCH_MAX)
+            {
+                mPitch = -Constants::CAMERA_PITCH_MAX;
+            }
+        }
+
+        mYaw = fmodf(mYaw,static_cast<float>(M_PI)*2);
+        mPitch = fmodf(mPitch,static_cast<float>(M_PI)*2);
+
+        // Update Front, Right and Up Vectors using the updated Eular angles
+        updateCameraVectors();
     }
 
     void
@@ -167,8 +278,8 @@ namespace Dream
             }
         }
 
-        mYaw = fmodf(mYaw,M_PI*2);
-        mPitch = fmodf(mPitch,M_PI*2);
+        mYaw = fmodf(mYaw,static_cast<float>(M_PI)*2);
+        mPitch = fmodf(mPitch,static_cast<float>(M_PI)*2);
 
         // Update Front, Right and Up Vectors using the updated Eular angles
         updateCameraVectors();
@@ -205,13 +316,21 @@ namespace Dream
     Camera::updateCameraVectors
     ()
     {
-        //float adjustedYaw = mYaw + Constants::CAMERA_YAW_OFFSET;
-        mFront.x = static_cast<float>(cos(mYaw) * cos(mPitch));
-        mFront.y = static_cast<float>(sin(mPitch));
-        mFront.z = static_cast<float>(sin(mYaw) * cos(mPitch));
-        mFront = normalize(mFront);
-        mRight = normalize(cross(mFront, mWorldUp));
-        mUp    = normalize(cross(mRight, mFront));
+        if (!mFreeMode)
+        {
+            mFront = normalize(mLookAt);
+            mRight = normalize(cross(mFront, mWorldUp));
+            mUp    = mWorldUp;
+        }
+        else
+        {
+            mFront.x = static_cast<float>(cos(mYaw) * cos(mPitch));
+            mFront.y = static_cast<float>(sin(mPitch));
+            mFront.z = static_cast<float>(sin(mYaw) * cos(mPitch));
+            mFront = normalize(mFront);
+            mRight = normalize(cross(mFront, mWorldUp));
+            mUp    = normalize(cross(mRight, mFront));
+        }
     }
 
     void
@@ -228,6 +347,13 @@ namespace Dream
     (vec3 translation)
     {
         mTranslation = translation;
+    }
+
+    void Camera::setTranslation(float x, float y , float z)
+    {
+        mTranslation.x = x;
+        mTranslation.y = y;
+        mTranslation.z = z;
     }
 
     void
@@ -265,12 +391,43 @@ namespace Dream
         return mZoom;
     }
 
+    void Camera::setLookAt(float x, float y, float z)
+    {
+        mLookAt.x = x;
+        mLookAt.y = y;
+        mLookAt.z = z;
+    }
+
+    void Camera::setLookAt(Transform3D transform)
+    {
+        mLookAt = transform.getTranslation();
+    }
+
+    void Camera::setFreeMode(bool freemode)
+    {
+       mFreeMode = freemode;
+    }
+
     void
     Camera::setTransform
     (Transform3D transform)
     {
         setTranslation(transform.getTranslation());
         setRotation(transform.getRotation());
+    }
+
+    void
+    Camera::orbit
+    (Transform3D target, float elevation, float radius, float pitch, float yaw)
+    {
+        mat4 mtx;
+        auto tx = target.getTranslation();
+        tx.y += elevation;
+        mtx = translate(mtx, tx);
+        mtx = rotate(mtx,pitch, vec3(1,0,0));
+        mtx = rotate(mtx,yaw, vec3(0,1,0));
+        mtx = translate(mtx,vec3(0,0,-radius));
+        mTranslation = vec3(mtx[3]);
     }
 
     float

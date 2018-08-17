@@ -202,5 +202,6 @@ namespace Dream
 
         bool followsCamera() const;
         void setFollowsCamera(bool followsCamera);
+        void walk(float,float);
     };
 }

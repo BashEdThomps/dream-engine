@@ -11,7 +11,7 @@ namespace Dream
 class NanoVGComponent : public IComponent
 {
 public:
-    NanoVGComponent(IWindowComponent* windowComponentHandle);
+    NanoVGComponent(IWindowComponent* windowComponentHandle, bool parallel = false);
     ~NanoVGComponent() override;
 
     // Begin drawing a new frame

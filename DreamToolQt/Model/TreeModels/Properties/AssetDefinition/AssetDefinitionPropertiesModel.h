@@ -69,6 +69,8 @@ private:
     void createPhysicsNormalProperty();
     void createPhysicsRadiusProperty();
     void createPhysicsBvhTriangleMeshFileProperty();
+    void createPhysicsHeightProperty();
+    void createPhysicsControllableProperty();
 
     void createSpriteTileSizeProperty();
     void createSpriteFileProperty();

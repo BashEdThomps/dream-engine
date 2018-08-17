@@ -19,11 +19,18 @@
 
 #include "../Common/Constants.h"
 
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+using namespace glm;
+
 namespace Dream
 {
 
     Transform3D::Transform3D
-    ()
+    () : ILoggable("Transform3D")
     {
         mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
         mTranslation   = vec3(0.0f);
@@ -33,6 +40,7 @@ namespace Dream
 
     Transform3D::Transform3D
     (json jsonTransform)
+    : ILoggable("Transform3D")
     {
         if (!jsonTransform[Constants::TRANSFORM_TYPE].is_null())
         {
@@ -144,12 +152,7 @@ namespace Dream
     Transform3D::getRotation
     ()
     {
-        vec3 rotation(3);
-        vec3 euler = eulerAngles(mOrientation);
-        rotation[0] = euler.x;
-        rotation[1] = euler.y;
-        rotation[2] = euler.z;
-        return rotation;
+        return eulerAngles(mOrientation);
     }
 
     void
@@ -404,6 +407,13 @@ namespace Dream
         mOrientation = quat(w,x,y,z);
     }
 
+    void
+    Transform3D::setOrientation
+    (quat orientation)
+    {
+        mOrientation = orientation;
+    }
+
     json
     Transform3D::getJson
     ()
@@ -428,5 +438,7 @@ namespace Dream
         j[Constants::TRANSFORM_SCALE][Constants::Z] = getScaleZ();
         return j;
     }
+
+
 
 } // End of Dream

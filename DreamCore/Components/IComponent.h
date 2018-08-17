@@ -28,37 +28,42 @@ namespace Dream
     {
 
     public:
-        IComponent();
+        IComponent(bool parallel = false);
         virtual ~IComponent();
         virtual bool init() = 0;
         virtual void updateComponent() = 0;
         void setTime(Time*);
 
         bool getRunning() const;
-        void setRunning(volatile bool running);
+        void setRunning(bool running);
 
-        bool getShouldUpdate() const;
-        void setShouldUpdate(volatile bool shouldUpdate);
+        bool getShouldUpdate();
+        void setShouldUpdate(bool shouldUpdate);
 
         long long getUpdateEndTime() const;
         long long getUpdateBeginTime() const;
         long long getUpdateTime() const;
         long long getYieldedTime() const;
         void setActiveSceneRuntime(SceneRuntime* runtime);
-        bool getUpdateComplete() const;
+        bool getUpdateComplete();
+
+        bool getParallel() const;
+        void setParallel(bool parallel);
 
     protected:
         void beginUpdate();
         void endUpdate();
+        void setUpdateComplete(bool complete);
 
         long long mUpdateBeginTime;
         long long mUpdateEndTime;
 
         Time* mTime;
+        bool mParallel;
         volatile bool mRunning;
         volatile bool mShouldUpdate;
-        SceneRuntime* mActiveSceneRuntimeHandle;
         volatile bool mUpdateComplete;
+        SceneRuntime* mActiveSceneRuntimeHandle;
 
     }; // End of IComponent
 

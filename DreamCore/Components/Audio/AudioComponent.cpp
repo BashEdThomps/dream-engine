@@ -27,8 +27,8 @@
 namespace Dream
 {
     AudioComponent::AudioComponent
-    ()
-        : IComponent()
+    (bool parallel)
+        : IComponent(parallel)
     {
         setLogClassName("AudioComponent");
         auto log = getLog();
@@ -284,8 +284,10 @@ namespace Dream
                 updatePauseQueue();
                 updateStopQueue();
                 endUpdate();
+
+                if (!mParallel) break;
             }
-            std::this_thread::yield();
+            if (mParallel) std::this_thread::yield();
         }
     }
 

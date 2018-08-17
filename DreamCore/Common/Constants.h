@@ -186,11 +186,13 @@ namespace Dream
         const static string ASSET_ATTR_MASS;
         const static string ASSET_ATTR_MARGIN;
         const static string ASSET_ATTR_RADIUS;
+        const static string ASSET_ATTR_HEIGHT;
         const static string ASSET_ATTR_NORMAL;
         const static string ASSET_ATTR_CONSTANT;
         const static string ASSET_ATTR_SIZE;
         const static string ASSET_ATTR_COMPOUND_CHILDREN;
         const static string ASSET_ATTR_KINEMATIC;
+        const static string ASSET_ATTR_CONTROLLABLE;
 
         const static string COLLISION_SHAPE_SPHERE;
         const static string COLLISION_SHAPE_BOX;

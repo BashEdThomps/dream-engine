@@ -40,6 +40,11 @@ namespace Dream
         return sinf(x);
     }
 
+    float Math::_cosf(float x)
+    {
+        return cosf(x);
+    }
+
     float Math::_pow(float x, float y)
     {
         return pow(x,y);

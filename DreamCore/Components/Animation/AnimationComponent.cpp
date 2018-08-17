@@ -28,8 +28,8 @@
 namespace Dream
 {
     AnimationComponent::AnimationComponent
-    ()
-        : IComponent()
+    (bool parallel)
+        : IComponent(parallel)
 
     {
         setLogClassName("AnimationComponent");
@@ -79,8 +79,10 @@ namespace Dream
                             )
                         );
                 endUpdate();
+
+                if (!mParallel) break;
             }
-            std::this_thread::yield();
+            if (mParallel) std::this_thread::yield();
         }
     }
 

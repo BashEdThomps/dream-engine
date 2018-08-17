@@ -78,15 +78,11 @@ int main(int argc, const char** argv)
 
     SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(startupSceneDefinitionHandle);
 
-    //Constants::dreamSetVerbose(false);
-    //Constants::dreamSetDebug(false);
-
     // Run the project
     while(srHandle->getState() != SceneState::SCENE_STATE_STOPPED)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         prHandle->updateAll();
-        std::this_thread::yield();
     }
 
     cout << endl

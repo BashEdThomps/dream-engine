@@ -527,6 +527,14 @@ MainController::connectSceneMenu
                 SLOT(onAction_Scene_NewSceneObject())
 
                 );
+    // Connect Control Scene
+    connect
+    (
+        mMainWindowHandle->getAction_ControlScene(),
+        SIGNAL(toggled(bool)),
+        this,
+        SLOT(onAction_ControlSceneTriggered(bool))
+    );
 }
 
 void
@@ -787,6 +795,13 @@ MainController::onAction_Scene_Stop
 {
     mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
     mDreamProjectModel->stopActiveSceneRuntime();
+}
+
+void MainController::onAction_ControlSceneTriggered(bool activated)
+{
+    auto log = spdlog::get("MainController");
+    log->critical("Scene Control Enabled {}",activated);
+   mWindowComponentHandle->setControlScene(activated);
 }
 
 void
@@ -1587,6 +1602,16 @@ MainController::openProject
 
     mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(currentProject,mMainWindowHandle->getAssetDefinitionTreeView()));
     mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
+    mSelectedSceneDefinitionHandle = currentProject->getStartupSceneDefinitionHandle();
+    mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
+    if (mSelectedSceneDefinitionHandle != nullptr)
+    {
+        log->info("Set selected scene to startup scene {}",mSelectedSceneDefinitionHandle->getNameAndUuidString());
+    }
+    else
+    {
+        log->error("Could not find startup scene");
+    }
 
     emit notifyStatusBarProjectLoaded(
                 QString::fromStdString(
@@ -1598,6 +1623,7 @@ MainController::openProject
 
     setActionsEnabled_ValidProject(true);
     connectUI_TreeViewModels();
+
 }
 
 string
