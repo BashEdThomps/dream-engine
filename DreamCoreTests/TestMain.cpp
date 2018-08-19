@@ -27,9 +27,9 @@
 #include "Scene/TestSceneObject.h"
 
 #include "Asset/TestAsset.h"
-#include "Asset/Animation/TestFrame.h"
-#include "Asset/Animation/TestKeyFrame.h"
-#include "Asset/Animation/TestAnimation.h"
+#include "Asset/Path/TestFrame.h"
+#include "Asset/Path/TestKeyFrame.h"
+#include "Asset/Path/TestPath.h"
 
 int testUnit() {
 	int result = 0;
@@ -51,20 +51,20 @@ int testAsset() {
 	return result;
 }
 
-int testAssetAnimation() {
+int testAssetPath() {
 	int result = 0;
 
-	Dream::Asset::Animation::Test::TestFrame testFrame;
+	Dream::Asset::Path::Test::TestFrame testFrame;
 	testFrame.run();
 	result += testFrame.getResult();
 
-	Dream::Asset::Animation::Test::TestKeyFrame testKeyFrame;
+	Dream::Asset::Path::Test::TestKeyFrame testKeyFrame;
 	testKeyFrame.run();
 	result += testKeyFrame.getResult();
 
-	Dream::Asset::Animation::Test::TestAnimation testAnimation;
-	testAnimation.run();
-	result += testAnimation.getResult();
+	Dream::Asset::Path::Test::TestPath testPath;
+	testPath.run();
+	result += testPath.getResult();
 
 	return result;
 }
@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
 	int result = 0;
 	result += testUnit();
 	result += testUtil();
-	result += testAssetAnimation();
+	result += testAssetPath();
 	result += testAsset();
 	result += testScene();
 	result += testDream();

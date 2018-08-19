@@ -80,29 +80,22 @@ private:
 
     void createScriptFileProperty();
 
+    void createPathListProperty();
 
 public slots:
     void onButton_RemoveFiles();
-
     void onButton_AudioFile();
-
     void onButton_FontFile();
-
     void onButton_ModelFile();
     void onButton_ModelAdditionalFiles();
-
-
     void onButton_EditScript();
     void onCombo_ScriptTemplateChanged(const QString&);
-
     void onButton_EditShader();
     void onCombo_ShaderTemplateChanged(const QString&);
-
     void onButton_PhysicsBvhTriangleMeshFile();
-
     void onButton_LightChooseColour();
-
     void onButton_ModelMaterialShaderMap();
+    void onButton_PathList();
 signals:
     void notifyButton_RemoveFiles(IAssetDefinition*);
     void notifyButton_AudioFile(IAssetDefinition*);
@@ -116,5 +109,6 @@ signals:
     void notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*);
     void notifyButton_LightChooseColour(IAssetDefinition*);
     void notifyButton_ModelMaterialShaderMap(IAssetDefinition*);
+    void notifyButton_PathList(IAssetDefinition*);
 };
 

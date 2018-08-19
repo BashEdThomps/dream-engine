@@ -74,9 +74,9 @@ AssetDefinitionPropertiesModel::createProperties
     createTypeProperty();
     createFormatProperty();
 
-    if (mAssetDefinitionHandle->isTypeAnimation())
+    if (mAssetDefinitionHandle->isTypePath())
     {
-
+        createPathListProperty();
     }
     else if (mAssetDefinitionHandle->isTypeAudio())
     {
@@ -693,6 +693,19 @@ AssetDefinitionPropertiesModel::createScriptFileProperty
             mAssetDefinitionHandle,
             ASSET_DEFINITION_PROPERTY_SCRIPT_FILE
         )
+                );
+}
+
+void AssetDefinitionPropertiesModel::createPathListProperty()
+{
+     mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Path List",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PATH_LIST
+        )
     );
 }
 
@@ -812,6 +825,15 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         this,
         SLOT(onButton_LightChooseColour())
     );
+
+    // Path
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_PathList()),
+        this,
+        SLOT(onButton_PathList())
+    );
 }
 
 void
@@ -866,4 +888,11 @@ AssetDefinitionPropertiesModel::onButton_ModelMaterialShaderMap
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
     log->info("Material Shader Map Clicked");
     emit notifyButton_ModelMaterialShaderMap(mAssetDefinitionHandle);
+}
+
+void AssetDefinitionPropertiesModel::onButton_PathList()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Path List Button Clicked");
+    emit notifyButton_PathList(mAssetDefinitionHandle);
 }

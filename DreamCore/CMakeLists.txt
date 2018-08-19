@@ -16,6 +16,7 @@ find_package(ALUT REQUIRED)
 find_package(SPDLOG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(Gainput REQUIRED)
+find_package(TinySpline REQUIRED)
 
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
@@ -44,6 +45,7 @@ include_directories(
     ${SPDLOG_INCLUDE_DIR}
     ${FREETYPE_INCLUDE_DIR_ft2build}
     ${GAINPUT_INCLUDE_DIR}
+    ${TINY_SPLINE_INCLUDE_DIR}
 )
 
 add_library(DreamCore SHARED ${SRC_DIR})
@@ -55,6 +57,8 @@ target_link_libraries(
     Luabind
     SOIL
     NanoVG
+    ${TINY_SPLINE_LIB}
+    ${TINY_SPLINE_CPP_LIB}
     ${GAINPUT_LIB}
     ${LUA_LIBRARIES}
     ${OPENAL_LIBRARY}

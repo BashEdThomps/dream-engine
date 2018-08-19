@@ -62,7 +62,7 @@ namespace Dream
 
         string getAssetTypeDirectory();
 
-        bool isTypeAnimation();
+        bool isTypePath();
         bool isTypeAudio();
         bool isTypeModel();
         bool isTypeScript();

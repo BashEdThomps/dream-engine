@@ -1,5 +1,5 @@
 /*
-* Dream::Animation::Test::TestAnimation
+* Dream::Path::Test::TestPath
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "TestAnimation.h"
+#include "TestPath.h"
 
 namespace Dream {
 	namespace Asset {
-		namespace Animation {
+		namespace Path {
 			namespace Test {
-				TestAnimation::TestAnimation() : Dream::Unit::Unit("Dream::Asset::Animation::Animation") {
+				TestPath::TestPath() : Dream::Unit::Unit("Dream::Asset::Path::Path") {
 				}
 
-				TestAnimation::~TestAnimation() {
+				TestPath::~TestPath() {
 				}
 
-				void TestAnimation::run() {
+				void TestPath::run() {
 					header();
 					assertInconclusive("No tests to run");
 				}

@@ -70,9 +70,9 @@ ProjectDirectoryModel::inflateFromDirectory
         return false;
     }
 
-    mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
-    mAnimationDirectory.makeAbsolute();
-    if (!animationDirectoryExists())
+    mPathDirectory = QDir(getPathDirectoryAbsolutePath());
+    mPathDirectory.makeAbsolute();
+    if (!pathDirectoryExists())
     {
         return false;
     }
@@ -162,11 +162,11 @@ ProjectDirectoryModel::createNewProjectTree
         }
     }
 
-    if (!animationDirectoryExists())
+    if (!pathDirectoryExists())
     {
-        if (!createAnimationDirectory())
+        if (!createPathDirectory())
         {
-            log->info("Unable to create directory {}",getAnimationDirectoryAbsolutePath().toStdString());
+            log->info("Unable to create directory {}",getPathDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -175,7 +175,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createAudioDirectory())
         {
-            log->info("Unable to create directory {}",getAnimationDirectoryAbsolutePath().toStdString());
+            log->info("Unable to create directory {}",getPathDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -302,17 +302,17 @@ ProjectDirectoryModel::createAssetsDirectory
 
 
 bool
-ProjectDirectoryModel::createAnimationDirectory
+ProjectDirectoryModel::createPathDirectory
 ()
 {
     bool result = false;
     if (assetsDirectoryExists())
     {
-        result = mAssetsDirectory.mkdir(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+        result = mAssetsDirectory.mkdir(QString::fromStdString(Constants::ASSET_TYPE_PATH));
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -331,7 +331,7 @@ ProjectDirectoryModel::createAudioDirectory
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -350,7 +350,7 @@ ProjectDirectoryModel::createFontDirectory
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -369,7 +369,7 @@ ProjectDirectoryModel::createModelDirectory
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -388,7 +388,7 @@ ProjectDirectoryModel::createPhysicsObjectDirectory
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -407,7 +407,7 @@ ProjectDirectoryModel::createScriptDirectory
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -426,7 +426,7 @@ ProjectDirectoryModel::createShaderDirectory
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -445,7 +445,7 @@ ProjectDirectoryModel::createSpriteDirectory
 
         if (result)
         {
-            mAnimationDirectory = QDir(getAnimationDirectoryAbsolutePath());
+            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
         }
 
     }
@@ -507,12 +507,12 @@ ProjectDirectoryModel::getProjectDirectoryAbsolutePath
 }
 
 QString
-ProjectDirectoryModel::getAnimationDirectoryAbsolutePath
+ProjectDirectoryModel::getPathDirectoryAbsolutePath
 ()
 {
     if (assetsDirectoryExists())
     {
-        return mAssetsDirectory.filePath(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+        return mAssetsDirectory.filePath(QString::fromStdString(Constants::ASSET_TYPE_PATH));
     }
     return QString();
 }
@@ -646,12 +646,12 @@ ProjectDirectoryModel::audioDirectoryExists
 }
 
 bool
-ProjectDirectoryModel::animationDirectoryExists
+ProjectDirectoryModel::pathDirectoryExists
 ()
 {
     if (assetsDirectoryExists())
     {
-        return mAssetsDirectory.exists(QString::fromStdString(Constants::ASSET_TYPE_ANIMATION));
+        return mAssetsDirectory.exists(QString::fromStdString(Constants::ASSET_TYPE_PATH));
     }
     return false;
 }

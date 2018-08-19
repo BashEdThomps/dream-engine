@@ -80,7 +80,10 @@ SOURCES += \
     View/CodeEditorWidget.cpp \
     Model/MaterialShaderTableModel.cpp \
     Model/MaterialShaderTableDelegate.cpp \
-    Controller/MaterialShaderFormController.cpp
+    Controller/MaterialShaderFormController.cpp \
+    View/GLView/PathPointViewer.cpp \
+    Model/PathEditorTableModel.cpp \
+    Controller/PathEditorFormController.cpp
 
 
 
@@ -138,7 +141,10 @@ HEADERS  += \
     View/CodeEditorWidget.h \
     Model/MaterialShaderTableModel.h \
     Model/MaterialShaderTableDelegate.h \
-    Controller/MaterialShaderFormController.h
+    Controller/MaterialShaderFormController.h \
+    View/GLView/PathPointViewer.h \
+    Controller/PathEditorFormController.h \
+    Model/PathEditorTableModel.h
 
 
 
@@ -146,7 +152,8 @@ FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
     View/ScriptEditorForm.ui \
     View/ScriptEditorTabForm.ui \
-    View/MaterialShaderTableForm.ui
+    View/MaterialShaderTableForm.ui \
+    View/PathEditorTableForm.ui
 
 RESOURCES += \
     Resources/Resources.qrc
@@ -176,7 +183,8 @@ LIBS += \
     -lDreamCore \
     -lfreetype \
     -lGLEW \
-    -lAssimp
+    -lAssimp \
+    -ltinyspline -ltinysplinecpp
 
 INCLUDEPATH += \
     $$PWD/../DreamCore/include \

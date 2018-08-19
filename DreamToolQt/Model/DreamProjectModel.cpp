@@ -189,7 +189,14 @@ DreamProjectModel::stopActiveSceneRuntime
                 prHandle->resetActiveSceneRuntime();
             }
         }
+
         mProject->resetProjectRuntime();
+
+        if (mHeartbeatTimer != nullptr)
+        {
+            mHeartbeatTimer->stop();
+            mHeartbeatTimer.reset(nullptr);
+        }
     }
     return nullptr;
 }
@@ -218,7 +225,6 @@ DreamProjectModel::closeProject
 {
     stopActiveSceneRuntime();
     mProject.reset(nullptr);
-    mHeartbeatTimer.reset(nullptr);
 }
 
 IDefinition*

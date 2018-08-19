@@ -1,5 +1,5 @@
 /*
-* Dream::Animation::Test::TestKeyFrame
+* Dream::Path::Test::TestKeyFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 namespace Dream {
 	namespace Asset {
-		namespace Animation {
+		namespace Path {
 			namespace Test {
 				class TestKeyFrame : public Dream::Unit::Unit {
 				public:
@@ -33,7 +33,7 @@ namespace Dream {
 				//private:
 				}; // End of TestKeyFrame
 			} // End of Test
-		} // End of Animation
+		} // End of Path
 	} // End of Asset
 } // End of Dream
 

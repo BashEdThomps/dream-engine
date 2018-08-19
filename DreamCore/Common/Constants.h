@@ -30,7 +30,7 @@ namespace Dream
 {
     enum AssetType
     {
-        ANIMATION,
+        PATH,
         AUDIO,
         FONT,
         LIGHT,
@@ -76,7 +76,7 @@ namespace Dream
         const static string NAME;
         const static string ASSET_TYPE;
         const static string ASSET_DIR;
-        const static string ASSET_TYPE_ANIMATION;
+        const static string ASSET_TYPE_PATH;
         const static string ASSET_TYPE_AUDIO;
         const static string ASSET_TYPE_LIGHT;
         const static string ASSET_TYPE_FONT;
@@ -90,14 +90,14 @@ namespace Dream
         const static string ASSET_FORMAT_MODEL_ASSIMP;
         const static string ASSET_FORMAT_AUDIO_OGG;
         const static string ASSET_FORMAT_AUDIO_WAV;
-        const static string ASSET_FORMAT_ANIMATION_DREAM;
+        const static string ASSET_FORMAT_PATH_DREAM;
         const static string ASSET_FORMAT_FONT_TTF;
         const static string ASSET_FORMAT_SHADER_GLSL;
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_SPRITE_IMAGE;
         const static string ASSET_DEFINITION_DEFAULT_NAME;
 
-        const static string ASSET_TYPE_ANIMATION_READABLE;
+        const static string ASSET_TYPE_PATH_READABLE;
         const static string ASSET_TYPE_AUDIO_READABLE;
         const static string ASSET_TYPE_LIGHT_READABLE;
         const static string ASSET_TYPE_FONT_READABLE;
@@ -111,7 +111,7 @@ namespace Dream
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
         const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
         const static string ASSET_FORMAT_AUDIO_WAV_READABLE;
-        const static string ASSET_FORMAT_ANIMATION_DREAM_READABLE;
+        const static string ASSET_FORMAT_PATH_DREAM_READABLE;
         const static string ASSET_FORMAT_FONT_TTF_READABLE;
         const static string ASSET_FORMAT_SHADER_GLSL_READABLE;
         const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
@@ -165,19 +165,21 @@ namespace Dream
         const static unsigned int RGB_VECTOR_SIZE;
         const static unsigned int RGBA_VECTOR_SIZE;
 
-        // Animation =============================================================
+        // Path =============================================================
         const static string ASSET_ATTR_KEYFRAMES;
         const static string ASSET_ATTR_START_TIME;
         const static string ASSET_ATTR_WRAP;
         const static string ASSET_ATTR_LOOP;
         const static string ASSET_ATTR_INTERPOLATION;
-        const static int DREAM_ANIMATION_STOPPED;
-        const static int DREAM_ANIMATION_PLAYING;
-        const static int DREAM_ANIMATION_PAUSED;
+        const static string ASSET_ATTR_CONTROL_POINTS;
+        const static string ASSET_ATTR_INDEX;
+        const static int DREAM_PATH_STOPPED;
+        const static int DREAM_PATH_PLAYING;
+        const static int DREAM_PATH_PAUSED;
         const static int MAX_FRAME_ADVANCE;
-        const static string DREAM_ANIMATION_INTERPOLATION_NONE;
-        const static string DREAM_ANIMATION_INTERPOLATION_LINEAR;
-        const static string DREAM_ANIMATION_INTERPOLATION_BEZIER;
+        const static string DREAM_PATH_INTERPOLATION_NONE;
+        const static string DREAM_PATH_INTERPOLATION_LINEAR;
+        const static string DREAM_PATH_INTERPOLATION_BEZIER;
         // Sprite ===============================================================
         const static string SPRITE_TILE_SIZE;
         const static string SPRITE_TILE_WIDTH;

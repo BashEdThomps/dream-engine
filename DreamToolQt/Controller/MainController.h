@@ -39,10 +39,12 @@
 #include "../Model/TemplatesModel.h"
 
 #include "../Controller/MainWindowController.h"
+#include "../Controller/PathEditorFormController.h"
 #include "../Controller/MaterialShaderFormController.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
+#include "../View/GLView/PathPointViewer.h"
 
 using std::string;
 using Dream::SceneDefinition;
@@ -60,8 +62,8 @@ public:
     Grid *getGridHandle();
     SelectionHighlighter *getSelectionHighlighterHandle();
     RelationshipTree *getRelationshipTreeHandle();
+    PathPointViewer* getPathPointViewerHandle();
     void forceScenegraphTreeDataChanged();
-
 
 signals:
     void notifyProjectDirectoryChanged(QString projectDir);
@@ -120,7 +122,7 @@ public slots:
 
     void onAction_Asset_AddToSelectedSceneObjectDefinition();
 
-    void onAction_Asset_NewDefinition_Animation();
+    void onAction_Asset_NewDefinition_Path();
     void onAction_Asset_NewDefinition_Audio();
     void onAction_Asset_NewDefinition_Font();
     void onAction_Asset_NewDefinition_Light();
@@ -147,6 +149,7 @@ public slots:
     void onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*, const QString&);
 
     void onAssetDefinitionProperty_LightChooseColour(IAssetDefinition*);
+    void onAssetDefinitionProperty_PathList(IAssetDefinition*);
 
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*);
@@ -224,6 +227,7 @@ private: // Variables
     unique_ptr<Grid> mGrid;
     unique_ptr<SelectionHighlighter> mSelectionHighlighter;
     unique_ptr<RelationshipTree> mRelationshipTree;
+    unique_ptr<PathPointViewer> mPathPointViewer;
 
     // Delete anything that relies on project before DreamModel
     unique_ptr<DreamProjectModel> mDreamProjectModel;
@@ -232,4 +236,5 @@ private: // Variables
     ScriptEditorController mScriptEditor;
     QDir mLastDirectory;
     MaterialShaderFormController mMaterialShaderTableController;
+    PathEditorFormController mPathEditorFormController;
 };

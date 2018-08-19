@@ -73,7 +73,7 @@ namespace Test {
 		assertTrue("Got first scene from project by UUID",firstScene != NULL);
 
 		if (firstScene != NULL) {
-			assertTrue("Project Scene has animation enabled", firstScene->isAnimationEnabled());
+			assertTrue("Project Scene has path enabled", firstScene->isPathEnabled());
 			assertFalse("Project Scene has audio enabled",      firstScene->isAudioEnabled());
 			assertFalse("Project Scene has physics enabled",   firstScene->isPhysicsEnabled());
 			assertFalse("Project Scene has input enabled",      firstScene->isInputEnabled());

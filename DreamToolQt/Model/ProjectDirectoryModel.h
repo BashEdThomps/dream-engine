@@ -52,7 +52,7 @@ public:
 
     bool createProjectDirectory();
     bool createAssetsDirectory();
-    bool createAnimationDirectory();
+    bool createPathDirectory();
     bool createAudioDirectory();
     bool createFontDirectory();
     bool createModelDirectory();
@@ -67,7 +67,7 @@ public:
     bool projectDirectoryExists();
     bool assetsDirectoryExists();
     bool audioDirectoryExists();
-    bool animationDirectoryExists();
+    bool pathDirectoryExists();
     bool fontDirectoryExists();
     bool modelDirectoryExists();
     bool physicsObjectDirectoryExists();
@@ -80,7 +80,7 @@ public:
 
     QString getProjectDirectoryAbsolutePath();
     QString getAssetsDirectoryAbsolutePath();
-    QString getAnimationDirectoryAbsolutePath();
+    QString getPathDirectoryAbsolutePath();
     QString getAudioDirectoryAbsolutePath();
     QString getFontDirectoryAbsolutePath();
     QString getModelDirectoryAbsolutePath();
@@ -114,7 +114,7 @@ private: // Variables
     QString mAbsolutePath;
     QDir mProjectDirectory;
     QDir mAssetsDirectory;
-    QDir mAnimationDirectory;
+    QDir mPathDirectory;
     QDir mAudioDirectory;
     QDir mFontDirectory;
     QDir mModelDirectory;

@@ -19,7 +19,7 @@
 
 #include <DreamCore.h>
 
-using Dream::AnimationDefinition;
+using Dream::PathDefinition;
 using Dream::AudioDefinition;
 using Dream::FontDefinition;
 using Dream::LightDefinition;
@@ -170,8 +170,8 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
-        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
@@ -231,7 +231,7 @@ AssetDefinitionPropertiesItem::data
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getMargin());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getKinematic());
-    case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getControllableCharacter());
 
             // Audio
@@ -273,7 +273,7 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
-        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:

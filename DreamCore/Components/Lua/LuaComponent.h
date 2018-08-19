@@ -94,8 +94,8 @@ namespace Dream
 
         void debugRegisteringClass(string className);
         void exposeAPI();
-        void exposeAnimationComponent();
-        void exposeAnimationInstance();
+        void exposePathComponent();
+        void exposePathInstance();
         void exposeAssimpModelInstance();
         void exposeCamera();
         void exposeProjectRuntime();

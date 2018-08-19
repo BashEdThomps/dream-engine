@@ -306,23 +306,41 @@ namespace Dream
     PhysicsObjectInstance::processAssimpMesh
     (aiMesh* mesh, btTriangleMesh* triMesh)
     {
-        for(unsigned int i = 0; i < mesh->mNumVertices; i+=3)
+        auto log = getLog();
+        for(unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
             btVector3 v1, v2, v3;
-            // v1
-            v1.setX(mesh->mVertices[i].x);
-            v1.setY(mesh->mVertices[i].y);
-            v1.setZ(mesh->mVertices[i].z);
-            // v2
-            v2.setX(mesh->mVertices[i+1].x);
-            v2.setY(mesh->mVertices[i+1].y);
-            v2.setZ(mesh->mVertices[i+1].z);
-            // v3
-            v3.setX(mesh->mVertices[i+2].x);
-            v3.setY(mesh->mVertices[i+2].y);
-            v3.setZ(mesh->mVertices[i+2].z);
-            // Add triangle
-            triMesh->addTriangle(v1,v2,v3);
+            aiFace current = mesh->mFaces[i];
+            if (current.mNumIndices == 3) // Triangle
+            {
+                unsigned int ind1, ind2, ind3;
+                ind1 = current.mIndices[0];
+                ind2 = current.mIndices[1];
+                ind3 = current.mIndices[2];
+                aiVector3D vert1, vert2, vert3;
+                vert1 = mesh->mVertices[ind1];
+                vert2 = mesh->mVertices[ind2];
+                vert3 = mesh->mVertices[ind3];
+
+                // v1
+                v1.setX(vert1.x);
+                v1.setY(vert1.y);
+                v1.setZ(vert1.z);
+                // v2
+                v2.setX(vert2.x);
+                v2.setY(vert2.y);
+                v2.setZ(vert2.z);
+                // v3
+                v3.setX(vert3.x);
+                v3.setY(vert3.y);
+                v3.setZ(vert3.z);
+                // Add triangle
+                triMesh->addTriangle(v1,v2,v3);
+            }
+            else
+            {
+                log->error("Error creating collision shape. Not a triangle, {} indices",current.mNumIndices);
+            }
         }
     }
 

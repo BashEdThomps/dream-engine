@@ -40,7 +40,7 @@ namespace Dream
     class Scene;
     class Event;
     class AudioInstance;
-    class AnimationInstance;
+    class PathInstance;
     class AssimpModelInstance;
     class LightInstance;
     class ShaderInstance;
@@ -52,7 +52,7 @@ namespace Dream
     class SceneObjectDefinition;
 
     class IAssetDefinition;
-    class AnimationDefinition;
+    class PathDefinition;
     class AudioDefinition;
     class LightDefinition;
     class FontDefinition;
@@ -67,7 +67,7 @@ namespace Dream
 
     private:
         unique_ptr<AudioInstance> mAudioInstance;
-        unique_ptr<AnimationInstance> mAnimationInstance;
+        unique_ptr<PathInstance> mPathInstance;
         unique_ptr<AssimpModelInstance> mModelInstance;
         unique_ptr<ShaderInstance> mShaderInstance;
         unique_ptr<LightInstance> mLightInstance;
@@ -105,7 +105,7 @@ namespace Dream
         void createAssetInstances();
         void createAssetInstanceFromAssetDefinitionByUuid(string);
         void createAssetInstance(IAssetDefinition*);
-        void createAnimationInstance(AnimationDefinition*);
+        void createPathInstance(PathDefinition*);
         void createAudioInstance(AudioDefinition*);
         void createModelInstance(ModelDefinition*);
         void createScriptInstance(ScriptDefinition*);
@@ -132,7 +132,7 @@ namespace Dream
 
         void resetTransform();
 
-        //void setAnimationInstance(AnimationInstance*);
+        //void setPathInstance(PathInstance*);
         //void setAudioInstance(AudioInstance*);
         //void setModelInstance(AssimpModelInstance*);
         //void setScriptInstance(LuaScriptInstance*);
@@ -142,7 +142,7 @@ namespace Dream
         //void setSpriteInstance(SpriteInstance*);
         //void setFontInstance(FontInstance*);
 
-        AnimationInstance* getAnimationInstance();
+        PathInstance* getPathInstance();
         AudioInstance* getAudioInstance();
         AssimpModelInstance* getModelInstance();
         LuaScriptInstance* getScriptInstance();
@@ -152,7 +152,7 @@ namespace Dream
         SpriteInstance* getSpriteInstance();
         FontInstance* getFontInstance();
 
-        bool hasAnimationInstance();
+        bool hasPathInstance();
         bool hasAudioInstance();
         bool hasModelInstance();
         bool hasScriptInstance();

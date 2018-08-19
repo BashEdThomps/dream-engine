@@ -21,7 +21,7 @@ message("Using modules path: " ${CMAKE_MODULE_PATH})
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 
-
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")

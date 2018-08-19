@@ -117,7 +117,7 @@ namespace Dream
         auto log = getLog();
         aiColor4D diff = mMaterial.mColorDiffuse;
         auto diffuse = vec4(diff.r, diff.g, diff.b, diff.a);
-        log->critical("Material Diffuse for {}: ({},{},{},{})",getName(),diff.r, diff.g, diff.b, diff.a);
+        log->trace("Material Diffuse for {}: ({},{},{},{})",getName(),diff.r, diff.g, diff.b, diff.a);
         shaderHandle->addUniform(FLOAT4,"materialDiffuseColour",1,&diffuse);
     }
 
@@ -128,7 +128,7 @@ namespace Dream
         auto log = getLog();
         aiColor4D spec = mMaterial.mColorSpecular;
         auto specular = vec4(spec.r, spec.g, spec.b, spec.a);
-        log->critical(
+        log->trace(
             "Material Specular for {}: ({},{},{},{}) strength {}",
             getName(),
             spec.r, spec.g, spec.b, spec.a,
@@ -144,7 +144,7 @@ namespace Dream
     {
         auto log = getLog();
         aiColor4D amb = mMaterial.mColorAmbient;
-        log->critical(
+        log->trace(
             "Material Ambient for {}: ({},{},{},{})",
             getName(),
             amb.r, amb.g, amb.b, amb.a

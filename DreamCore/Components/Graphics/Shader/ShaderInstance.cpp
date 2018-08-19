@@ -259,12 +259,12 @@ namespace Dream
         {
             if (uniform->getName().compare(name) == 0)
             {
-                log->critical("Updating uniform {}", uniform->getName());
+                log->trace("Updating uniform {}", uniform->getName());
                 uniform->setData(data);
                 return;
             }
         }
-        log->critical("Creating uniform {}", name);
+        log->info("Creating uniform {}", name);
         mUniformVector.push_back(make_shared<ShaderUniform>(type,name,count,data));
     }
 
@@ -281,7 +281,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->critical("Synchronising uniforms for {}",getNameAndUuidString());
+        log->info("Synchronising uniforms for {}",getNameAndUuidString());
         GLuint prog = getShaderProgram();
 
         for (shared_ptr<ShaderUniform> uniform : mUniformVector)
@@ -292,7 +292,7 @@ namespace Dream
             }
 
             GLint location = getUniformLocation(uniform->getName());
-            log->critical(
+            log->trace(
                         "Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
                         getUuid(),
                         prog,
@@ -303,7 +303,7 @@ namespace Dream
 
             if (location == UNIFORM_NOT_FOUND)
             {
-                log->error( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
+                log->warn( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
                 continue;
             }
             else

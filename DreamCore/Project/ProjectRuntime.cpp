@@ -27,7 +27,7 @@
 #include "../Components/IAssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
-#include "../Components/Animation/AnimationComponent.h"
+#include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Input/InputComponent.h"
 #include "../Components/Graphics/Camera.h"
@@ -141,7 +141,7 @@ namespace Dream
             return false;
         }
 
-        if(!initAnimationComponent())
+        if(!initPathComponent())
         {
             return false;
         }
@@ -247,21 +247,21 @@ namespace Dream
     }
 
     bool
-    ProjectRuntime::initAnimationComponent
+    ProjectRuntime::initPathComponent
     ()
     {
         auto log = getLog();
-        mAnimationComponent.reset(new AnimationComponent());
-        mAnimationComponent->setTime(mTime.get());
-        if (!mAnimationComponent->init())
+        mPathComponent.reset(new PathComponent());
+        mPathComponent->setTime(mTime.get());
+        if (!mPathComponent->init())
         {
-            log->error( "Unable to initialise Animation Component." );
+            log->error( "Unable to initialise Path Component." );
             return false;
         }
-        mAnimationComponent->setRunning(true);
+        mPathComponent->setRunning(true);
 
         if (mParallel)
-            mAnimationComponentThread.reset(new ComponentThread(mAnimationComponent.get()));
+            mPathComponentThread.reset(new ComponentThread(mPathComponent.get()));
         return true;
     }
 
@@ -308,11 +308,11 @@ namespace Dream
         return mDone;
     }
 
-    AnimationComponent*
-    ProjectRuntime::getAnimationComponentHandle
+    PathComponent*
+    ProjectRuntime::getPathComponentHandle
     ()
     {
-        return mAnimationComponent.get();
+        return mPathComponent.get();
     }
 
     AudioComponent*
@@ -380,8 +380,8 @@ namespace Dream
                 mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
                 mLuaComponent->setShouldUpdate(true);
 
-                mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-                mAnimationComponent->setShouldUpdate(true);
+                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPathComponent->setShouldUpdate(true);
 
                 mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
                 mAudioComponent->setShouldUpdate(true);
@@ -412,9 +412,9 @@ namespace Dream
                 mLuaComponent->setShouldUpdate(true);
                 mLuaComponent->updateComponent();
 
-                mAnimationComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
-                mAnimationComponent->setShouldUpdate(true);
-                mAnimationComponent->updateComponent();
+                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPathComponent->setShouldUpdate(true);
+                mPathComponent->updateComponent();
 
                 mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
                 mAudioComponent->setShouldUpdate(true);
@@ -450,7 +450,7 @@ namespace Dream
         }
 
         auto log = getLog();
-        bool animation = mAnimationComponent->getUpdateComplete();
+        bool path = mPathComponent->getUpdateComplete();
         bool audio = mAudioComponent->getUpdateComplete();
         bool input = mInputComponent->getUpdateComplete();
         bool graphics = mGraphicsComponent->getUpdateComplete();
@@ -458,14 +458,14 @@ namespace Dream
         bool lua = mLuaComponent->getUpdateComplete();
         log->info(
             "\n========================================\n"
-            "Animation..........[{}]\n"
+            "Path..........[{}]\n"
             "Audio..............[{}]\n"
             "Input..............[{}]\n"
             "Graphics...........[{}]\n"
             "Physics............[{}]\n"
             "Lua................[{}]\n"
             "========================================",
-            animation ? "√" : " ",
+            path ? "√" : " ",
             audio     ? "√" : " ",
             input     ? "√" : " ",
             graphics  ? "√" : " ",
@@ -473,8 +473,8 @@ namespace Dream
             lua       ? "√" : " "
         );
 
-        mLogicUpdating = !animation || !audio || !input || !graphics || !physics || !lua;
-        return animation && audio && input && graphics && physics && lua;
+        mLogicUpdating = !path || !audio || !input || !graphics || !physics || !lua;
+        return path && audio && input && graphics && physics && lua;
     }
 
     void
@@ -613,7 +613,7 @@ namespace Dream
         log->info("Cleaning up ComponentThreads");
         cleanUpLuaComponentThread();
         cleanUpPhysicsComponentThread();
-        cleanUpAnimationComponentThread();
+        cleanUpPathComponentThread();
         cleanUpInputComponentThread();
         cleanUpAudioComponentThread();
         cleanUpGraphicsComponentThread();
@@ -679,15 +679,15 @@ namespace Dream
         }
     }
 
-    void ProjectRuntime::cleanUpAnimationComponentThread()
+    void ProjectRuntime::cleanUpPathComponentThread()
     {
         auto log = getLog();
         log->info("Cleaning up PhysicsComponentThread");
-        mAnimationComponent->setRunning(false);
-        mAnimationComponent->setShouldUpdate(false);
-        if (mAnimationComponentThread->joinable())
+        mPathComponent->setRunning(false);
+        mPathComponent->setShouldUpdate(false);
+        if (mPathComponentThread->joinable())
         {
-            mAnimationComponentThread->join();
+            mPathComponentThread->join();
         }
     }
 

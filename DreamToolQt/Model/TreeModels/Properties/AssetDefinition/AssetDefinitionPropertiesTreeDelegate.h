@@ -29,7 +29,6 @@ class QComboBox;
 class AssetDefinitionPropertiesTreeDelegate : public QItemDelegate
 {
     Q_OBJECT
-    QWidget*createLightColourPaletteButton(QWidget* parent) const;
 public:
     AssetDefinitionPropertiesTreeDelegate(AssetDefinitionPropertiesModel* model, QObject *parent = nullptr);
     ~AssetDefinitionPropertiesTreeDelegate() override;
@@ -40,6 +39,7 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 public slots:
+    void onButton_PathList(bool clicked);
     void onButton_AudioFile(bool clicked);
     void onButton_FontFile(bool clicked);
     void onButton_ModelFile(bool clicked);
@@ -53,6 +53,7 @@ public slots:
     void onButton_ModelMaterialShaderMap(bool clicked);
 
 signals:
+    void notifyButton_PathList();
     void notifyButton_AudioFile();
     void notifyButton_FontFile();
     void notifyButton_ModelFile();
@@ -81,4 +82,7 @@ protected:
     QWidget *createPhysicsBvhTriangleMeshFileButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
     QWidget *createFontColourDialogButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createModelMaterialShaderButton(AssetDefinitionPropertiesItem* adItem, QWidget *parent) const;
+    QWidget* createLightColourPaletteButton(QWidget* parent) const;
+    QWidget* createPathListButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
+
 };

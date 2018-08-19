@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::Instances::Animation::Dream::Test::TestFrame
+* Dream::Asset::Instances::Path::Dream::Test::TestFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 namespace Dream {
 namespace Asset {
-namespace Animation {
+namespace Path {
 namespace Test {
 	class TestFrame : public Dream::Unit::Unit {
 	public:

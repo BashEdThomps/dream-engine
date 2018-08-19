@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::Instances::Animation::Dream::Test::TestFrame
+* Dream::Asset::Instances::Path::Dream::Test::TestFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 
 #include "TestFrame.h"
 
-#include "../../../src/Asset/Instances/Animation/Dream/Frame.h"
+#include "../../../src/Asset/Instances/Path/Dream/Frame.h"
 
 namespace Dream     {
 namespace Asset     {
-namespace Animation {
+namespace Path {
 namespace Test      {
 	
-	TestFrame::TestFrame() : Dream::Unit::Unit("Dream::Asset::Animation:Frame") {}
+	TestFrame::TestFrame() : Dream::Unit::Unit("Dream::Asset::Path:Frame") {}
 	TestFrame::~TestFrame() {}
 
 	void TestFrame::run() {

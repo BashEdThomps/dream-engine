@@ -329,7 +329,7 @@ namespace Dream
             mFront.z = static_cast<float>(sin(mYaw) * cos(mPitch));
             mFront = normalize(mFront);
             mRight = normalize(cross(mFront, mWorldUp));
-            mUp    = normalize(cross(mRight, mFront));
+            mUp    = mWorldUp;//normalize(cross(mRight, mFront));
         }
     }
 

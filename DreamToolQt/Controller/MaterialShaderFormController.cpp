@@ -20,11 +20,6 @@ MaterialShaderFormController::MaterialShaderFormController
     setWindowTitle("Material to Shader Mappings");
     mTableDelegate = unique_ptr<MaterialShaderTableDelegate>(new MaterialShaderTableDelegate(mUi.tableView));
     mUi.tableView->setItemDelegate(mTableDelegate.get());
-    /*
-    connect(mUi.addButton,SIGNAL(clicked(bool)),this,SLOT(onAddButtonClicked(bool)));
-    connect(mUi.removeButton,SIGNAL(clicked(bool)),this,SLOT(onRemoveButtonClicked(bool)));
-    connect(mUi.readMaterialsButton,SIGNAL(clicked(bool)),this,SLOT(onReadMaterialsButtonClicked(bool)));
-    */
 }
 
 MaterialShaderFormController::~MaterialShaderFormController
@@ -103,9 +98,8 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
         return;
     }
 
-    int rows = processAssimpNode(scene->mRootNode, scene);
+    processAssimpNode(scene->mRootNode, scene);
     mUi.tableView->update();
-    //mTableModel.insertRows(0,rows,QModelIndex());
 }
 
 void

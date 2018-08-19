@@ -3,7 +3,7 @@
 #include "../Common/Constants.h"
 
 #include "../Components/IAssetDefinition.h"
-#include "../Components/Animation/AnimationDefinition.h"
+#include "../Components/Path/PathDefinition.h"
 #include "../Components/Audio/AudioDefinition.h"
 #include "../Components/Graphics/Font/FontDefinition.h"
 #include "../Components/Graphics/Light/LightDefinition.h"
@@ -17,7 +17,7 @@
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
 
-#include "../Components/Animation/AnimationComponent.h"
+#include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Lua/LuaComponent.h"

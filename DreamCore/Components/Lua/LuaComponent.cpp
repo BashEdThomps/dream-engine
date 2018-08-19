@@ -25,8 +25,8 @@
 #include "../Event.h"
 #include "../Transform3D.h"
 #include "../Time.h"
-#include "../Animation/AnimationComponent.h"
-#include "../Animation/AnimationInstance.h"
+#include "../Path/PathComponent.h"
+#include "../Path/PathInstance.h"
 #include "../Audio/AudioComponent.h"
 #include "../Audio/AudioInstance.h"
 #include "../Graphics/Model/AssimpModelInstance.h"
@@ -609,25 +609,25 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeAnimationComponent
+    LuaComponent::exposePathComponent
     ()
     {
-        debugRegisteringClass("AnimationComponent");
+        debugRegisteringClass("PathComponent");
         module(mState)
                 [
-                class_<AnimationComponent>("AnimationComponent")
+                class_<PathComponent>("PathComponent")
                 // TODO
                 ];
     }
 
     void
-    LuaComponent::exposeAnimationInstance
+    LuaComponent::exposePathInstance
     ()
     {
-        debugRegisteringClass("AnimationInstance");
+        debugRegisteringClass("PathInstance");
         module(mState)
                 [
-                class_<AnimationInstance>("AnimationInstance")
+                class_<PathInstance>("PathInstance")
                 // TODO
                 ];
     }
@@ -796,7 +796,7 @@ namespace Dream
                 .def("addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad)
 
                 .def("walk",&SceneObjectRuntime::walk)
-                .def("getAnimation",&SceneObjectRuntime::getAnimationInstance)
+                .def("getPath",&SceneObjectRuntime::getPathInstance)
                 .def("getAudio",&SceneObjectRuntime::getAudioInstance)
                 .def("getSprite",&SceneObjectRuntime::getSpriteInstance)
                 .def("getModel",&SceneObjectRuntime::getModelInstance)
@@ -805,7 +805,7 @@ namespace Dream
                 .def("getFont",&SceneObjectRuntime::getFontInstance)
                 .def("getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance)
 
-                .def("hasAnimation",&SceneObjectRuntime::hasAnimationInstance)
+                .def("hasPath",&SceneObjectRuntime::hasPathInstance)
                 .def("hasAudio",&SceneObjectRuntime::hasAudioInstance)
                 .def("hasSprite",&SceneObjectRuntime::hasSpriteInstance)
                 .def("hasModel",&SceneObjectRuntime::hasModelInstance)
@@ -1010,8 +1010,8 @@ namespace Dream
     LuaComponent::exposeAPI
     ()
     {
-        exposeAnimationComponent();
-        exposeAnimationInstance();
+        exposePathComponent();
+        exposePathInstance();
         exposeAssimpModelInstance();
         exposeCamera();
         exposeProjectRuntime();

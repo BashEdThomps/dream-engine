@@ -1,10 +1,10 @@
-#ifndef GLWIDGET_H
-#define GLWIDGET_H
+#pragma once
 
 #include <DreamCore.h>
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
+#include "../View/GLView/PathPointViewer.h"
 
 
 #include <QOpenGLWidget>
@@ -54,6 +54,7 @@ public:
     void setGridHandle(Grid* grid);
     void setSelectionHighlighterHandle(SelectionHighlighter* highlighter);
     void setRelationshipTreeHandle(RelationshipTree* tree);
+    void setPathPointViewerHandle(PathPointViewer* handle);
 
     void setGridEnabled(bool enabled);
     void setSelectionHighlighterEnabled(bool enabled);
@@ -81,6 +82,7 @@ private:
     Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
     RelationshipTree *mRelationshipTreeHandle;
+    PathPointViewer* mPathPointViewerHandle;
     volatile bool mPaintInProgress;
 
     bool mGridEnabled;
@@ -94,5 +96,3 @@ private:
     void moveSelectedSceneObject(SceneObjectRuntime* selected);
     void moveCamera();
 };
-
-#endif // GLWIDGET_H

@@ -1,5 +1,5 @@
 /*
-* Dream::AnimationComponent
+* Dream::PathComponent
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,28 +18,21 @@
 
 #pragma once
 
-#include "AnimationInstance.h"
+#include "PathInstance.h"
 #include "../IComponent.h"
 #include "../../Common/ILoggable.h"
 
 namespace Dream
 {
-    class AnimationComponent : public IComponent
+    class PathComponent : public IComponent
     {
-    private:
-        Time* mTime;
     public:
-        AnimationComponent(bool parallel = false);
-        ~AnimationComponent() override;
+        PathComponent(bool parallel = false);
+        ~PathComponent() override;
 
         bool init() override;
         void updateComponent() override;
 
-        void play (AnimationInstance*);
-        void pause(AnimationInstance*);
-        void stop (AnimationInstance*);
-        bool isLooping(AnimationInstance*);
-        void setLooping(AnimationInstance*,bool);
-    }; // End of AnimationComponent
+    }; // End of PathComponent
 
 } // End of Dream

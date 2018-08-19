@@ -97,7 +97,7 @@ namespace Dream
     const string Constants::NAME = "name";
     const string Constants::ASSET_TYPE = "type";
     const string Constants::ASSET_DIR = "assets";
-    const string Constants::ASSET_TYPE_ANIMATION = "animation";
+    const string Constants::ASSET_TYPE_PATH = "path";
     const string Constants::ASSET_TYPE_AUDIO = "audio";
     const string Constants::ASSET_TYPE_LIGHT = "light";
     const string Constants::ASSET_TYPE_FONT = "font";
@@ -111,13 +111,13 @@ namespace Dream
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
     const string Constants::ASSET_FORMAT_AUDIO_WAV = "wav";
     const string Constants::ASSET_FORMAT_AUDIO_OGG = "ogg";
-    const string Constants::ASSET_FORMAT_ANIMATION_DREAM = "dream";
+    const string Constants::ASSET_FORMAT_PATH_DREAM = "dream";
     const string Constants::ASSET_FORMAT_FONT_TTF = "ttf";
     const string Constants::ASSET_FORMAT_SHADER_GLSL = "glsl";
     const string Constants::ASSET_FORMAT_LIGHT_POINT = "point";
     const string Constants::ASSET_FORMAT_SPRITE_IMAGE = "image";
 
-    const string Constants::ASSET_TYPE_ANIMATION_READABLE = "Animation";
+    const string Constants::ASSET_TYPE_PATH_READABLE = "Path";
     const string Constants::ASSET_TYPE_AUDIO_READABLE = "Audio";
     const string Constants::ASSET_TYPE_LIGHT_READABLE = "Light";
     const string Constants::ASSET_TYPE_FONT_READABLE = "Font";
@@ -132,7 +132,7 @@ namespace Dream
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
     const string Constants::ASSET_FORMAT_AUDIO_OGG_READABLE = "Ogg";
     const string Constants::ASSET_FORMAT_AUDIO_WAV_READABLE = "Wav";
-    const string Constants::ASSET_FORMAT_ANIMATION_DREAM_READABLE = "Dream Animation";
+    const string Constants::ASSET_FORMAT_PATH_DREAM_READABLE = "Dream Path";
     const string Constants::ASSET_FORMAT_FONT_TTF_READABLE = "TTF Font";
     const string Constants::ASSET_FORMAT_SHADER_GLSL_READABLE = "GLSL";
     const string Constants::ASSET_FORMAT_LIGHT_POINT_READABLE = "Point Light";
@@ -185,19 +185,21 @@ namespace Dream
     const unsigned int Constants::XYZ_VECTOR_SIZE = 3;
     const unsigned int Constants::RGB_VECTOR_SIZE = 3;
     const unsigned int Constants::RGBA_VECTOR_SIZE = 4;
-    // Animation ================================================================
+    // Path ================================================================
     const string Constants::ASSET_ATTR_KEYFRAMES     = "keyframes";
     const string Constants::ASSET_ATTR_START_TIME    = "startTime";
     const string Constants::ASSET_ATTR_WRAP          = "wrap";
     const string Constants::ASSET_ATTR_LOOP          = "loop";
     const string Constants::ASSET_ATTR_INTERPOLATION = "interpolation";
-    const int Constants::DREAM_ANIMATION_STOPPED = 0;
-    const int Constants::DREAM_ANIMATION_PLAYING = 1;
-    const int Constants::DREAM_ANIMATION_PAUSED  = 2;
+    const string Constants::ASSET_ATTR_CONTROL_POINTS = "ctrl_points";
+    const string Constants::ASSET_ATTR_INDEX = "index";
+    const int Constants::DREAM_PATH_STOPPED = 0;
+    const int Constants::DREAM_PATH_PLAYING = 1;
+    const int Constants::DREAM_PATH_PAUSED  = 2;
     const int Constants::MAX_FRAME_ADVANCE       = 10;
-    const string Constants::DREAM_ANIMATION_INTERPOLATION_NONE   = "none";
-    const string Constants::DREAM_ANIMATION_INTERPOLATION_LINEAR = "linear";
-    const string Constants::DREAM_ANIMATION_INTERPOLATION_BEZIER = "bezier";
+    const string Constants::DREAM_PATH_INTERPOLATION_NONE   = "none";
+    const string Constants::DREAM_PATH_INTERPOLATION_LINEAR = "linear";
+    const string Constants::DREAM_PATH_INTERPOLATION_BEZIER = "bezier";
     // Sprite ===================================================================
     const string Constants::SPRITE_TILE_SIZE   = "tileSize";
     const string Constants::SPRITE_TILE_WIDTH  = "width";
@@ -295,7 +297,7 @@ namespace Dream
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =
     {
-        {AssetType::ANIMATION,      ASSET_TYPE_ANIMATION},
+        {AssetType::PATH,      ASSET_TYPE_PATH},
         {AssetType::AUDIO,          ASSET_TYPE_AUDIO},
         {AssetType::FONT,           ASSET_TYPE_FONT},
         {AssetType::LIGHT,          ASSET_TYPE_LIGHT},
@@ -309,9 +311,9 @@ namespace Dream
     map<AssetType,vector<string>> Constants::DREAM_ASSET_FORMATS_MAP =
     {
         {
-            AssetType::ANIMATION,
+            AssetType::PATH,
             {
-                ASSET_FORMAT_ANIMATION_DREAM
+                ASSET_FORMAT_PATH_DREAM
             }
         },
         {
@@ -382,8 +384,8 @@ namespace Dream
     {
         switch (type)
         {
-            case ANIMATION:
-                return ASSET_TYPE_ANIMATION;
+            case PATH:
+                return ASSET_TYPE_PATH;
             case AUDIO:
                 return ASSET_TYPE_AUDIO;
             case FONT:
@@ -410,10 +412,10 @@ namespace Dream
     Constants::getAssetTypeEnumFromString
     (string type)
     {
-        if (type.compare(ASSET_TYPE_ANIMATION) == 0 ||
-            type.compare(ASSET_TYPE_ANIMATION_READABLE) == 0)
+        if (type.compare(ASSET_TYPE_PATH) == 0 ||
+            type.compare(ASSET_TYPE_PATH_READABLE) == 0)
         {
-            return ANIMATION;
+            return PATH;
         }
         else if (type.compare(ASSET_TYPE_AUDIO) == 0 ||
                  type.compare(ASSET_TYPE_AUDIO_READABLE) == 0)
@@ -462,9 +464,9 @@ namespace Dream
     Constants::getAssetTypeReadableNameFromString
     (string type)
     {
-        if (type.compare(ASSET_TYPE_ANIMATION) == 0)
+        if (type.compare(ASSET_TYPE_PATH) == 0)
         {
-            return ASSET_TYPE_ANIMATION_READABLE;
+            return ASSET_TYPE_PATH_READABLE;
         }
         else if (type.compare(ASSET_TYPE_AUDIO) == 0)
         {
@@ -537,9 +539,9 @@ namespace Dream
         {
            return ASSET_FORMAT_SPRITE_IMAGE_READABLE;
         }
-        else if (format.compare(ASSET_FORMAT_ANIMATION_DREAM) == 0)
+        else if (format.compare(ASSET_FORMAT_PATH_DREAM) == 0)
         {
-            return ASSET_FORMAT_ANIMATION_DREAM_READABLE;
+            return ASSET_FORMAT_PATH_DREAM_READABLE;
         }
         else if (format.compare(COLLISION_SHAPE_SPHERE) == 0)
         {
@@ -629,9 +631,9 @@ namespace Dream
         {
            return ASSET_FORMAT_SPRITE_IMAGE;
         }
-        else if (format.compare(ASSET_FORMAT_ANIMATION_DREAM_READABLE) == 0)
+        else if (format.compare(ASSET_FORMAT_PATH_DREAM_READABLE) == 0)
         {
-            return ASSET_FORMAT_ANIMATION_DREAM;
+            return ASSET_FORMAT_PATH_DREAM;
         }
         else if (format.compare(COLLISION_SHAPE_SPHERE_READABLE) == 0)
         {

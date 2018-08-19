@@ -35,16 +35,17 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
 (QWidget* parent)
     : QOpenGLWidget(parent),
       IWindowComponent(false),
+      mControlScene(false),
       mProjectRuntimeHandle(nullptr),
       mGridHandle(nullptr),
       mSelectionHighlighterHandle(nullptr),
       mRelationshipTreeHandle(nullptr),
+      mPathPointViewerHandle(nullptr),
       mPaintInProgress(false),
       mGridEnabled(true),
       mRelationshipTreeEnabled(true),
       mSelectionHighlighterEnabled(true),
-      mMaxFrameTimeValues(100),
-      mControlScene(false)
+      mMaxFrameTimeValues(100)
 
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
@@ -65,6 +66,7 @@ QOpenGLWindowComponent::~QOpenGLWindowComponent
     mGridHandle = nullptr;
     mSelectionHighlighterHandle = nullptr;
     mRelationshipTreeHandle = nullptr;
+    mPathPointViewerHandle = nullptr;
 }
 
 void
@@ -147,6 +149,7 @@ QOpenGLWindowComponent::paintGL
 
                 // glDisable(GL_DEPTH_TEST);
 
+                log->critical("Drawing Grid");
                 if (mGridHandle)
                 {
                     if(mGridEnabled)
@@ -168,6 +171,7 @@ QOpenGLWindowComponent::paintGL
                     }
                 }
 
+                log->critical("Drawing Selection Highlighter");
                 if (mSelectionHighlighterHandle)
                 {
                     if (mSelectionHighlighterEnabled)
@@ -185,6 +189,7 @@ QOpenGLWindowComponent::paintGL
                     }
                 }
 
+                log->critical("Drawing Relationship Tree");
                 if (mRelationshipTreeHandle)
                 {
                     if (mRelationshipTreeEnabled)
@@ -194,16 +199,27 @@ QOpenGLWindowComponent::paintGL
                             mRelationshipTreeHandle->init();
                             Constants::checkGLError("RelTree after init");
                         }
-
                         mRelationshipTreeHandle->setViewMatrix(viewMatrix);
                         mRelationshipTreeHandle->setProjectionMatrix(projectionMatrix);
                         mRelationshipTreeHandle->draw();
-
                         Constants::checkGLError("RelTree after draw");
                     }
                 }
-                drawStats();
 
+                log->critical("Drawing Path List Nodes");
+                if (mPathPointViewerHandle)
+                {
+                    if (!mPathPointViewerHandle->isInitialised())
+                    {
+                        mPathPointViewerHandle->init();
+                        Constants::checkGLError("AnimViewer after init");
+                    }
+                    mPathPointViewerHandle->setViewMatrix(viewMatrix);
+                    mPathPointViewerHandle->setProjectionMatrix(projectionMatrix);
+                    mPathPointViewerHandle->draw();
+                    Constants::checkGLError("AnimViewer after draw");
+                }
+                drawStats();
             }
             else
             {
@@ -231,8 +247,8 @@ QOpenGLWindowComponent::drawStats()
         mFrameTimes.erase(begin(mFrameTimes));
     }
 
-    long long animation = project->getAnimationComponentHandle()->getUpdateTime();
-    long long animationYield = project->getAnimationComponentHandle()->getYieldedTime();
+    long long path = project->getPathComponentHandle()->getUpdateTime();
+    long long pathYield = project->getPathComponentHandle()->getYieldedTime();
 
     long long audio = project->getAudioComponentHandle()->getUpdateTime();
     long long  audioYield = project->getAudioComponentHandle()->getYieldedTime() ;
@@ -274,13 +290,13 @@ QOpenGLWindowComponent::drawStats()
     {
         text =
                 "Frame:     %1s     %12 FPS\n"
-                "Animation: %2µs  / %3µs | Audio: %4µs / %5µs\n"
+                "Path: %2µs  / %3µs | Audio: %4µs / %5µs\n"
                 "Graphics:  %6µs  / %7µs | Lua:   %8µs / %9µs\n"
                 "Physics:   %10µs / %11µs";
         text = text
                 .arg(frame)
-                .arg(animation, 9, 10, QChar('0'))
-                .arg(animationYield, 9, 10, QChar('0'))
+                .arg(path, 9, 10, QChar('0'))
+                .arg(pathYield, 9, 10, QChar('0'))
                 .arg(audio, 9, 10, QChar('0'))
                 .arg(audioYield, 9, 10, QChar('0'))
                 .arg(graphics, 9, 10, QChar('0'))
@@ -307,7 +323,7 @@ bool QOpenGLWindowComponent::getControlScene() const
 void QOpenGLWindowComponent::setControlScene(bool controlScene)
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
-    log->critical("Scene Control Enabled {}",controlScene);
+    log->info("Scene Control Enabled {}",controlScene);
     mControlScene = controlScene;
 }
 
@@ -362,6 +378,11 @@ QOpenGLWindowComponent::setRelationshipTreeHandle
     mRelationshipTreeHandle = tree;
 }
 
+void QOpenGLWindowComponent::setPathPointViewerHandle(PathPointViewer* handle)
+{
+   mPathPointViewerHandle = handle;
+}
+
 void
 QOpenGLWindowComponent::wheelEvent
 (QWheelEvent* event)
@@ -369,7 +390,7 @@ QOpenGLWindowComponent::wheelEvent
     if (mControlScene)
     {
         auto log = spdlog::get("QOpenGLWindowComponent");
-        log->critical("WheelEvent");
+        log->trace("WheelEvent");
         if (mProjectRuntimeHandle)
         {
             QPoint pos = event->pixelDelta();
@@ -387,7 +408,7 @@ QOpenGLWindowComponent::mouseMoveEvent
     if (mControlScene)
     {
         auto log = spdlog::get("QOpenGLWindowComponent");
-        log->critical("MouseMoveEvent");
+        log->trace("MouseMoveEvent");
         auto pos = event->localPos();
         mMouseX = pos.x();
         mMouseY = pos.y();
@@ -482,7 +503,7 @@ QOpenGLWindowComponent::moveCamera
 {
 
     auto log = spdlog::get("QOpenGLWindowComponent");
-    log->critical("MoveCamera");
+    log->trace("MoveCamera");
     Camera *camHandle = mProjectRuntimeHandle->getCameraHandle();
     float deltaTime = static_cast<float>(mProjectRuntimeHandle->getTimeHandle()->getFrameTimeDelta());
 

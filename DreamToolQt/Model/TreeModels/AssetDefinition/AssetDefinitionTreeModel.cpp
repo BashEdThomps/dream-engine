@@ -213,15 +213,6 @@ AssetDefinitionTreeModel::setupModelData
     );
 
     // Create Asset Type Nodes
-    AssetDefinitionTreeItem* animationTreeItem =
-    new AssetDefinitionTreeItem
-    (
-        QString("Animation"),
-        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
-        nullptr,
-        mRootItem.get()
-    );
-    mRootItem->appendChild(animationTreeItem);
 
     AssetDefinitionTreeItem* audioTreeItem =
     new AssetDefinitionTreeItem
@@ -262,6 +253,16 @@ AssetDefinitionTreeModel::setupModelData
         mRootItem.get()
     );
     mRootItem->appendChild(modelTreeItem);
+
+    AssetDefinitionTreeItem* pathTreeItem =
+    new AssetDefinitionTreeItem
+    (
+        QString("Path"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
+        nullptr,
+        mRootItem.get()
+    );
+    mRootItem->appendChild(pathTreeItem);
 
     AssetDefinitionTreeItem* physicsObjectTreeItem =
     new AssetDefinitionTreeItem
@@ -305,16 +306,16 @@ AssetDefinitionTreeModel::setupModelData
 
     for (IAssetDefinition* definition : mProjectHandle->getAssetDefinitionsHandleList())
     {
-        if (definition->getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0)
+        if (definition->getType().compare(Constants::ASSET_TYPE_PATH) == 0)
         {
-            animationTreeItem->appendChild
+            pathTreeItem->appendChild
             (
                 new AssetDefinitionTreeItem
                 (
                     QString::fromStdString(definition->getName()),
                     AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
-                    animationTreeItem
+                    pathTreeItem
                  )
             );
         }

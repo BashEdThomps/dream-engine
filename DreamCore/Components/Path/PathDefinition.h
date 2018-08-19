@@ -1,5 +1,5 @@
 /*
- * AnimationDefinition.h
+ * PathDefinition.h
  *
  * Created: 11 2017 by Ashley
  *
@@ -23,10 +23,18 @@
 namespace Dream
 {
 
-    class AnimationDefinition : public IAssetDefinition
+    class PathDefinition : public IAssetDefinition
     {
     public:
-        AnimationDefinition(ProjectDefinition*, json);
+        PathDefinition(ProjectDefinition*, json);
+        ~PathDefinition() override;
+
+        void setWrap(bool wrap);
+        bool getWrap();
+        json createControlPoint(int index);
+        json* getControlPoint(int i);
+        json* getControlPoints();
+        size_t   numberOfControlPoints();
     };
 
 }

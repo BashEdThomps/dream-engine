@@ -34,7 +34,7 @@ namespace Dream
     // Forward Declarations
 
     class Project;
-    class AnimationComponent;
+    class PathComponent;
     class AudioComponent;
     class InputComponent;
     class GraphicsComponent;
@@ -78,8 +78,8 @@ namespace Dream
         unique_ptr<PhysicsComponent> mPhysicsComponent;
         unique_ptr<ComponentThread> mPhysicsComponentThread;
 
-        unique_ptr<AnimationComponent> mAnimationComponent;
-        unique_ptr<ComponentThread> mAnimationComponentThread;
+        unique_ptr<PathComponent> mPathComponent;
+        unique_ptr<ComponentThread> mPathComponentThread;
 
         unique_ptr<LuaComponent> mLuaComponent;
         unique_ptr<ComponentThread> mLuaComponentThread;
@@ -108,7 +108,7 @@ namespace Dream
         Camera* getCameraHandle();
         Time* getTimeHandle();
 
-        AnimationComponent* getAnimationComponentHandle();
+        PathComponent* getPathComponentHandle();
         AudioComponent* getAudioComponentHandle();
         PhysicsComponent* getPhysicsComponentHandle();
         GraphicsComponent* getGraphicsComponentHandle();
@@ -157,7 +157,7 @@ namespace Dream
         void setParallel(bool parallel);
 
     private: // Member Functions
-        bool initAnimationComponent();
+        bool initPathComponent();
         bool initAudioComponent();
         bool initInputComponent();
         bool initPhysicsComponent();
@@ -166,7 +166,7 @@ namespace Dream
         bool initLuaComponent();
         bool initCaches();
 
-        void cleanUpAnimationComponentThread();
+        void cleanUpPathComponentThread();
         void cleanUpAudioComponentThread();
         void cleanUpInputComponentThread();
         void cleanUpGraphicsComponentThread();

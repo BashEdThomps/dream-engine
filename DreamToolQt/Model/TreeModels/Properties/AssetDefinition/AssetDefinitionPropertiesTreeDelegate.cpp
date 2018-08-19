@@ -198,6 +198,22 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createPathListButton
+(AssetDefinitionPropertiesItem*, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Edit List...");
+    connect(
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_PathList(bool))
+    );
+    return editor;
+}
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createPhysicsBvhTriangleMeshFileButton
 (AssetDefinitionPropertiesItem*, QWidget* parent)
 const
@@ -373,10 +389,12 @@ const
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
             return createFontColourDialogButton(adItem,parent);
 
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
+            return createPathListButton(adItem,parent);
+
             // Not Used
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
-        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
@@ -470,7 +488,7 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
-        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
@@ -543,7 +561,7 @@ const
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
-        case ASSET_DEFINITION_PROPERTY_ANIMATION_FILE:
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
@@ -563,6 +581,15 @@ AssetDefinitionPropertiesTreeDelegate::updateEditorGeometry
 const
 {
     editor->setGeometry(option.rect);
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_PathList
+(bool)
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("Path List was clicked");
+    emit notifyButton_PathList();
 }
 
 void

@@ -27,7 +27,7 @@
 #include "../../Common/Constants.h"
 
 #include "../../Components/Event.h"
-#include "../../Components/Animation/AnimationInstance.h"
+#include "../../Components/Path/PathInstance.h"
 #include "../../Components/Audio/AudioInstance.h"
 #include "../../Components/Audio/AudioComponent.h"
 #include "../../Components/Graphics/Font/FontInstance.h"
@@ -39,7 +39,7 @@
 #include "../../Components/Physics/PhysicsComponent.h"
 #include "../../Components/IAssetDefinition.h"
 
-#include "../../Components/Animation/AnimationDefinition.h"
+#include "../../Components/Path/PathDefinition.h"
 #include "../../Components/Audio/AudioDefinition.h"
 #include "../../Components/Graphics/Font/FontDefinition.h"
 #include "../../Components/Graphics/Light/LightDefinition.h"
@@ -199,18 +199,18 @@ namespace Dream
 
     /*
     void
-    SceneObjectRuntime::setAnimationInstance
-    (AnimationInstance* animationAsset)
+    SceneObjectRuntime::setPathInstance
+    (PathInstance* pathAsset)
     {
-        mAnimationInstance.reset(animationAsset);
+        mPathInstance.reset(pathAsset);
     }
     */
 
-    AnimationInstance*
-    SceneObjectRuntime::getAnimationInstance
+    PathInstance*
+    SceneObjectRuntime::getPathInstance
     ()
     {
-        return mAnimationInstance.get();
+        return mPathInstance.get();
     }
 
     /*
@@ -485,10 +485,10 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::hasAnimationInstance
+    SceneObjectRuntime::hasPathInstance
     ()
     {
-        return mAnimationInstance != nullptr;
+        return mPathInstance != nullptr;
     }
 
     bool
@@ -534,9 +534,9 @@ namespace Dream
             log->info( " for {} " ,mParentRuntimeHandle->getNameAndUuidString());
         }
 
-        if(definition->isTypeAnimation())
+        if(definition->isTypePath())
         {
-            createAnimationInstance(dynamic_cast<AnimationDefinition*>(definition));
+            createPathInstance(dynamic_cast<PathDefinition*>(definition));
         }
         else if (definition->isTypeAudio())
         {
@@ -589,13 +589,13 @@ namespace Dream
     }
 
     void
-    SceneObjectRuntime::createAnimationInstance
-    (AnimationDefinition* definition)
+    SceneObjectRuntime::createPathInstance
+    (PathDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Animation asset instance." );
-        mAnimationInstance.reset(new AnimationInstance(definition,this));
-        mAnimationInstance->load(mProjectPath);
+        log->info( "Creating Path asset instance." );
+        mPathInstance.reset(new PathInstance(definition,this));
+        mPathInstance->load(mProjectPath);
     }
 
     void

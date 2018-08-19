@@ -26,7 +26,7 @@
 #include "../Utilities/Uuid.h"
 
 #include "../Components/IAssetDefinition.h"
-#include "../Components/Animation/AnimationDefinition.h"
+#include "../Components/Path/PathDefinition.h"
 #include "../Components/Audio/AudioDefinition.h"
 #include "../Components/Graphics/Font/FontDefinition.h"
 #include "../Components/Graphics/Light/LightDefinition.h"
@@ -178,8 +178,8 @@ namespace Dream
 
         switch (type)
         {
-            case ANIMATION:
-                newDef = new AnimationDefinition(this,assetDefinitionJs);
+            case PATH:
+                newDef = new PathDefinition(this,assetDefinitionJs);
                 break;
             case AUDIO:
                 newDef = new AudioDefinition(this,assetDefinitionJs);

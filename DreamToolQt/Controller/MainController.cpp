@@ -119,6 +119,22 @@ MainController::setupUI
         mMainWindowHandle, SIGNAL(notifyMainVolumeChanged(int)),
         this, SLOT(onMainVolumeChanged(int))
     );
+    // Path List Form
+    connect
+    (
+        &mPathEditorFormController,
+        SIGNAL(notifyTableChanged()),
+        mPathPointViewer.get(),
+        SLOT(onUpdateRequested())
+    );
+    connect
+    (
+        &mPathEditorFormController,
+        SIGNAL(notifySelectedRowChanged(int)),
+        mPathPointViewer.get(),
+        SLOT(onSelectionChanged(int))
+    );
+
 }
 
 void
@@ -133,6 +149,9 @@ MainController::setupUI_GLWidgets
 
     mRelationshipTree.reset(new RelationshipTree(this));
     mWindowComponentHandle->setRelationshipTreeHandle(getRelationshipTreeHandle());
+
+    mPathPointViewer.reset(new PathPointViewer(this));
+    mWindowComponentHandle->setPathPointViewerHandle(getPathPointViewerHandle());
 }
 
 void
@@ -261,6 +280,14 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SIGNAL(notifyButton_LightChooseColour(IAssetDefinition*)),
                 this,
                 SLOT(onAssetDefinitionProperty_LightChooseColour(IAssetDefinition*))
+            );
+            // Path List
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_PathList(IAssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_PathList(IAssetDefinition*))
             );
             break;
 
@@ -550,13 +577,13 @@ MainController::connectAssetMenu
                 SLOT(onAction_Asset_AddToSelectedSceneObjectDefinition())
                 );
 
-    // Asset Menu -> New Definition -> Animation
+    // Asset Menu -> New Definition -> Path
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::ANIMATION),
+                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::PATH),
                 SIGNAL(triggered()),
                 this,
-                SLOT(onAction_Asset_NewDefinition_Animation())
+                SLOT(onAction_Asset_NewDefinition_Path())
                 );
 
     // Asset Menu -> New Definition -> Audio
@@ -1023,12 +1050,12 @@ MainController::onAction_Asset_AddToSelectedSceneObjectDefinition
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Animation
+MainController::onAction_Asset_NewDefinition_Path
 ()
 {
     auto log = spdlog::get("MainController");
-    log->info( "Creating new Animation Asset Definition");
-    if (mDreamProjectModel->createNewAssetDefinition(ANIMATION))
+    log->info( "Creating new Path Asset Definition");
+    if (mDreamProjectModel->createNewAssetDefinition(PATH))
     {
         onUI_AssetDefinitionsUpdated();
     }
@@ -1338,8 +1365,8 @@ MainController::onCreateNewAssetDefinition
 
     switch(assetType)
     {
-       case ANIMATION:
-            onAction_Asset_NewDefinition_Animation();
+       case PATH:
+            onAction_Asset_NewDefinition_Path();
             break;
         case AUDIO:
             onAction_Asset_NewDefinition_Audio();
@@ -1519,6 +1546,11 @@ MainController::getRelationshipTreeHandle
 ()
 {
     return mRelationshipTree.get();
+}
+
+PathPointViewer* MainController::getPathPointViewerHandle()
+{
+   return mPathPointViewer.get();
 }
 
 void MainController::forceScenegraphTreeDataChanged()
@@ -1934,6 +1966,17 @@ void MainController::onAssetDefinitionProperty_LightChooseColour(IAssetDefinitio
     }
 
     mPropertiesModel->forceDataChanged();
+}
+
+void
+MainController::onAssetDefinitionProperty_PathList
+(IAssetDefinition* adHandle)
+{
+    auto log = spdlog::get("MainController");
+    log->info("Opening PathList Widget");
+    mPathEditorFormController.setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
+    mPathPointViewer->setPathDefinitionHandle(dynamic_cast<PathDefinition*>(adHandle));
+    mPathEditorFormController.getAllUpInYourFace();
 }
 
 void

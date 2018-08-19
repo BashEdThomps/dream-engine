@@ -111,10 +111,10 @@ namespace Dream
     }
 
     bool
-    IAssetDefinition::isTypeAnimation
+    IAssetDefinition::isTypePath
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0;
+        return getType().compare(Constants::ASSET_TYPE_PATH) == 0;
     }
 
     bool
@@ -157,9 +157,9 @@ namespace Dream
     IAssetDefinition::getAssetTypeDirectory
     ()
     {
-        if (isTypeAnimation())
+        if (isTypePath())
         {
-            return Constants::ASSET_TYPE_ANIMATION;
+            return Constants::ASSET_TYPE_PATH;
         }
         else if (isTypeAudio())
         {

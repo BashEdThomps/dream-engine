@@ -1,5 +1,5 @@
 /*
-* Dream::Animation::Test::TestKeyFrame
+* Dream::Path::Test::TestKeyFrame
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
 
 namespace Dream {
 	namespace Asset {
-		namespace Animation {
+		namespace Path {
 			namespace Test {
-				TestKeyFrame::TestKeyFrame() : Dream::Unit::Unit("Dream::Asset::Animation::KeyFrame"){
+				TestKeyFrame::TestKeyFrame() : Dream::Unit::Unit("Dream::Asset::Path::KeyFrame"){
 				}
 
 				TestKeyFrame::~TestKeyFrame() {
@@ -32,6 +32,6 @@ namespace Dream {
 					assertInconclusive("No Tests to Run.");
 				}
 			} // End of Test
-		} // End of Animation
+		} // End of Path
 	} // End Asset
 } // End of Dream

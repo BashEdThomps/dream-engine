@@ -157,65 +157,7 @@ MaterialShaderTableModel::setData
     return true;
 }
 
-/*bool
-MaterialShaderTableModel::insertRows
-(int row, int count, const QModelIndex& index)
-{
-    Q_UNUSED(index)
-    auto log = spdlog::get("MaterialShaderTableModel");
-    log->info("insertRows");
 
-    if (mModelDefinitionHandle != nullptr)
-    {
-        log->info("inserting {} rows at {}", count, row);
-        beginInsertRows(QModelIndex(),row, row+count-1);
-        for (int i=0; i<count; i++)
-        {
-            auto newRow = json::object();
-            newRow[Constants::ASSET_ATTR_MODEL_MATERIAL] = "Unset Material";
-            newRow[Constants::ASSET_ATTR_MODEL_SHADER] = "Unset Shader";
-            mModelDefinitionHandle->getMaterialShaders()->push_back(newRow);
-        }
-        endInsertRows();
-    }
-    else
-    {
-        log->info("No ModelDefinition Pointer");
-    }
-    return true;
-}
-*/
-
-/*
-bool
-MaterialShaderTableModel::removeRows
-(int row, int count, const QModelIndex& parent)
-{
-    Q_UNUSED(parent)
-    if (row < 0 || count < 1)
-    {
-        return true;
-    }
-    auto log = spdlog::get("MaterialShaderTableModel");
-    log->info("Removing row(s) from {} count {}",row,count);
-    if (mModelDefinitionHandle != nullptr)
-    {
-        if (mModelDefinitionHandle->getMaterialShaders()->empty())
-        {
-            return true;
-        }
-
-        beginRemoveRows(QModelIndex(),row, row+count-1);
-        auto start = mModelDefinitionHandle->getMaterialShaders()->begin();
-        for (int i=0; i<count; i++)
-        {
-            mModelDefinitionHandle->getMaterialShaders()->erase(start+row+i);
-        }
-        endRemoveRows();
-    }
-    return true;
-}
-*/
 
 Qt::ItemFlags MaterialShaderTableModel::flags(const QModelIndex &index) const
 {
