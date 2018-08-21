@@ -197,9 +197,11 @@ namespace Dream
     const int Constants::DREAM_PATH_PLAYING = 1;
     const int Constants::DREAM_PATH_PAUSED  = 2;
     const int Constants::MAX_FRAME_ADVANCE       = 10;
-    const string Constants::DREAM_PATH_INTERPOLATION_NONE   = "none";
-    const string Constants::DREAM_PATH_INTERPOLATION_LINEAR = "linear";
-    const string Constants::DREAM_PATH_INTERPOLATION_BEZIER = "bezier";
+    const string Constants::DREAM_PATH_SPLINE_TYPE  = "spline_type";
+    const string Constants::DREAM_PATH_TYPE_OPEN = "open";
+    const string Constants::DREAM_PATH_TYPE_CLAMPED = "clamped";
+    const string Constants::DREAM_PATH_TYPE_BEZIER = "bezier";
+
     // Sprite ===================================================================
     const string Constants::SPRITE_TILE_SIZE   = "tileSize";
     const string Constants::SPRITE_TILE_WIDTH  = "width";
@@ -689,5 +691,10 @@ namespace Dream
 
     shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_color_mt("Constants");
 
+    vector<string> Constants::DREAM_ANIMATION_SPLINE_TYPES {
+        DREAM_PATH_TYPE_OPEN,
+        DREAM_PATH_TYPE_BEZIER,
+        DREAM_PATH_TYPE_CLAMPED
+    };
 
 } // End of Dream

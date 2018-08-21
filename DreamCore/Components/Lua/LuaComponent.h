@@ -118,6 +118,7 @@ namespace Dream
         void exposeTime();
         void exposeTransform3D();
         void exposeNanoVG();
+        void exposeGLM();
     }; // End of LuaComponent
 
 } // End of Dream

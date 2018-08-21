@@ -290,11 +290,16 @@ namespace Dream
             contactManifold =  mDynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
             const btCollisionObject* objA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
             const btCollisionObject* objB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
-            SceneObjectRuntime* sObjA = getSceneObjectRuntime(scene, objA);
-            SceneObjectRuntime* sObjB = getSceneObjectRuntime(scene, objB);
-
-            Event e(sObjB->getUuid(),Constants::EVENT_TYPE_COLLISION);
-            sObjA->sendEvent(e);
+            if (objA != nullptr && objB != nullptr)
+            {
+                SceneObjectRuntime* sObjA = getSceneObjectRuntime(scene, objA);
+                SceneObjectRuntime* sObjB = getSceneObjectRuntime(scene, objB);
+                if (sObjA != nullptr && sObjB != nullptr)
+                {
+                    Event e(sObjB->getUuid(),Constants::EVENT_TYPE_COLLISION);
+                    sObjA->sendEvent(e);
+                }
+            }
 
             /*
            * More detail about contact.

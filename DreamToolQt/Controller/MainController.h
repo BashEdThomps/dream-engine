@@ -167,6 +167,7 @@ public slots:
 
     void onCreateNewAssetDefinition(QString type);
     void onMainVolumeChanged(int);
+    void onPathEditorClosed();
 
 
 protected:

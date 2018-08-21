@@ -17,16 +17,18 @@
  */
 #include "MainWindowController.h"
 #include "ui_MainWindow.h"
+
 #include <QWindow>
 #include <QSpacerItem>
 #include <QLabel>
+#include <QMenu>
+
 #include <vector>
 #include <algorithm>
 #include <memory>
 
 #include "View/QOpenGLWindowComponent.h"
 #include <spdlog/spdlog.h>
-#include <QMenu>
 
 
 using std::pair;
@@ -785,6 +787,14 @@ MainWindowController::getWindowComponent
 ()
 {
     return mWindowComponentHandle;
+}
+
+void MainWindowController::addRightDockWidget(QWidget* widget)
+{
+    mRightDockWidget.setWidget(widget);
+    addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, &mRightDockWidget);
+    //mRightDockWidget.setVisible(true);
+    mRightDockWidget.show();
 }
 
 void

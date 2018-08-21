@@ -69,9 +69,13 @@ PathPointViewer::setPathDefinitionHandle
 (PathDefinition* selected)
 {
     auto log = spdlog::get("PathPointViewer");
-    if (selected)
+    if (selected != nullptr)
     {
         log->info("Selecting {}",selected->getNameAndUuidString());
+    }
+    else
+    {
+        log->info("Path selection cleared");
     }
     mPathDefinitionHandle = selected;
     updateVertexBuffer();
@@ -85,7 +89,7 @@ PathPointViewer::updateVertexBuffer
     log->info("Updating Vertex Buffer") ;
     mVertexBuffer.clear();
 
-    if (!mPathDefinitionHandle)
+    if (mPathDefinitionHandle == nullptr)
     {
         log->info("No object selected");
         return;
@@ -411,9 +415,13 @@ PathPointViewer::generateSpline
 {
     vector<vec3> points = generateSplinePoints();
 
+    if (points.size() == 0)
+    {
+        return;
+    }
+
     for (int i = 0; i<points.size()-1; i++)
     {
-
         LineVertex v1, v2;
         v1.Position = points.at(i);
         v1.Color = mCurveColour;
@@ -429,15 +437,24 @@ PathPointViewer::generateSplinePoints
 ()
 {
     vector<vec3> points;
+
     auto log = spdlog::get("PathPointViewer");
     log->info(
-        "Generating spline with {} control points",
+        "Generating {} spline with {} control points",
+                mPathDefinitionHandle->getSplineType(),
         mPathDefinitionHandle->numberOfControlPoints()
     );
 
+    if (mPathDefinitionHandle->numberOfControlPoints() <= 3)
+    {
+        log->error("Not enough control points");
+        return points;
+    }
+
     BSpline spline(
         mPathDefinitionHandle->numberOfControlPoints(),
-        3, 3, TS_CLAMPED);
+        3, 3, mPathDefinitionHandle->getSplineTypeEnum()
+    );
 
     vector<tinyspline::real> ctrlp = spline.controlPoints();
 

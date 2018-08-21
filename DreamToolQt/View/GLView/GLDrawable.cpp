@@ -100,7 +100,6 @@ GLDrawable::postRender
     glDisable (GL_BLEND);
     glDisable(GL_LINE_SMOOTH);
     Constants::checkGLError("GLDrawable: After post render");
-
 }
 
 void

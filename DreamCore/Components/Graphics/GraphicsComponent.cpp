@@ -387,7 +387,7 @@ namespace Dream
                                 function<void*(SceneObjectRuntime*)>
                                 (
                                     [&](SceneObjectRuntime* object)
-                    {
+                                    {
                                     // Models
                                     if (object->hasModelInstance())
                                     {

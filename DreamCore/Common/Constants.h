@@ -177,9 +177,11 @@ namespace Dream
         const static int DREAM_PATH_PLAYING;
         const static int DREAM_PATH_PAUSED;
         const static int MAX_FRAME_ADVANCE;
-        const static string DREAM_PATH_INTERPOLATION_NONE;
-        const static string DREAM_PATH_INTERPOLATION_LINEAR;
-        const static string DREAM_PATH_INTERPOLATION_BEZIER;
+        const static string DREAM_PATH_SPLINE_TYPE;
+        const static string DREAM_PATH_TYPE_OPEN;
+        const static string DREAM_PATH_TYPE_CLAMPED;
+        const static string DREAM_PATH_TYPE_BEZIER;
+
         // Sprite ===============================================================
         const static string SPRITE_TILE_SIZE;
         const static string SPRITE_TILE_WIDTH;
@@ -267,7 +269,7 @@ namespace Dream
         // Data Maps ============================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
-
+        static vector<string> DREAM_ANIMATION_SPLINE_TYPES;
 
         static string getAssetTypeStringFromTypeEnum(AssetType type);
         static AssetType getAssetTypeEnumFromString(string type);

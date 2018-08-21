@@ -32,7 +32,7 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-
+    spdlog::set_level(spdlog::level::off);
     unique_ptr<SDLWindowComponent> windowComponent(new SDLWindowComponent());
 
     Project project(windowComponent.get());

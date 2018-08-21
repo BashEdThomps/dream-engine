@@ -134,6 +134,13 @@ MainController::setupUI
         mPathPointViewer.get(),
         SLOT(onSelectionChanged(int))
     );
+    connect
+    (
+        &mPathEditorFormController,
+        SIGNAL(notifyCloseEvent()),
+        this,
+        SLOT(onPathEditorClosed())
+    );
 
 }
 
@@ -431,6 +438,10 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
                         mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(selectedSceneObjectRuntime);
                     }
                 }
+            }
+            else
+            {
+                log->error("Selection Highlighter is nullptr");
             }
             break;
 
@@ -1420,6 +1431,11 @@ void MainController::onMainVolumeChanged(int vol)
    }
 }
 
+void MainController::onPathEditorClosed()
+{
+   mPathPointViewer->setPathDefinitionHandle(nullptr);
+}
+
 void
 MainController::onAssetDefinitionProperty_ModelAdditionalFiles
 (IAssetDefinition* adHandle)
@@ -1850,7 +1866,8 @@ void MainController::onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefi
         mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinitionHandle();
     }
     mMaterialShaderTableController.setShaderHandlesVector(mSelectedProjectDefinitionHandle->getShaderAssetDefinitionHandleVector());
-    mMaterialShaderTableController.getAllUpInYourFace();
+    //mMaterialShaderTableController.getAllUpInYourFace();
+    mMainWindowHandle->addRightDockWidget(&mMaterialShaderTableController);
 }
 
 void
@@ -1976,7 +1993,8 @@ MainController::onAssetDefinitionProperty_PathList
     log->info("Opening PathList Widget");
     mPathEditorFormController.setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
     mPathPointViewer->setPathDefinitionHandle(dynamic_cast<PathDefinition*>(adHandle));
-    mPathEditorFormController.getAllUpInYourFace();
+    //mPathEditorFormController.getAllUpInYourFace();
+    mMainWindowHandle->addRightDockWidget(&mPathEditorFormController);
 }
 
 void

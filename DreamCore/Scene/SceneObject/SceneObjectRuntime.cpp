@@ -180,21 +180,21 @@ namespace Dream
     SceneObjectRuntime::getRotation
     ()
     {
-        return mTransform.getRotation();
+        return getTransform().getRotation();
     }
 
     vec3
     SceneObjectRuntime::getScale
     ()
     {
-        return mTransform.getScale();
+        return getTransform().getScale();
     }
 
     vec3
     SceneObjectRuntime::getTranslation
     ()
     {
-        return mTransform.getTranslation();
+        return getTransform().getTranslation();
     }
 
     /*
@@ -399,6 +399,14 @@ namespace Dream
     SceneObjectRuntime::getTransform
     ()
     {
+        auto log = getLog();
+        if (mTransform.getTransformType().compare(Constants::TRANSFORM_TYPE_OFFSET) == 0)
+        {
+            log->critical("Returning Offset Transform for {}",getNameAndUuidString());
+            mOffsetTransform = mTransform.offsetFrom(getParentRuntimeHandle()->getTransform());
+            return mOffsetTransform;
+        }
+        log->critical("Returning Absolute Transform for {}", getNameAndUuidString());
         return mTransform;
     }
 
@@ -605,13 +613,12 @@ namespace Dream
         auto log = getLog();
         log->info( "Creating Audio asset instance." );
         // hottest trainwreck 2017!
-        mAudioInstance.reset
-                (
-                    mSceneRuntimeHandle
-                    ->getProjectRuntimeHandle()
+        mAudioInstance.reset(
+            mSceneRuntimeHandle
+                ->getProjectRuntimeHandle()
                     ->getAudioComponentHandle()
-                    ->newAudioInstance(definition,this)
-                    );
+                        ->newAudioInstance(definition,this)
+        );
         mAudioInstance->load(mProjectPath);
     }
 
@@ -646,7 +653,7 @@ namespace Dream
     (ScriptDefinition* definition)
     {
         auto log = getLog();
-            log->info( "Creating Script asset instance." );
+        log->info( "Creating Script asset instance." );
         mScriptInstance.reset(new LuaScriptInstance(definition,this));
         mScriptInstance->load(mProjectPath);
         mSceneRuntimeHandle->getProjectRuntimeHandle()->getLuaComponentHandle()->addToScriptMap(this,mScriptInstance.get());
@@ -657,7 +664,7 @@ namespace Dream
     (ShaderDefinition* definition)
     {
         auto log = getLog();
-            log->info( "Creating Shader asset instance." );
+        log->info( "Creating Shader asset instance." );
         mShaderInstance.reset
                 (
                     new ShaderInstance
@@ -675,7 +682,7 @@ namespace Dream
     (LightDefinition* definition)
     {
         auto log = getLog();
-            log->info( "Creating Light Asset instance." );
+        log->info( "Creating Light Asset instance." );
         mLightInstance.reset(new LightInstance(definition, this));
         mLightInstance->load(mProjectPath);
     }
@@ -685,7 +692,7 @@ namespace Dream
     (SpriteDefinition* definition)
     {
         auto log = getLog();
-            log->info( "Creating Sprite Asset instance." );
+        log->info( "Creating Sprite Asset instance." );
         mSpriteInstance.reset
                 (
                     new SpriteInstance
@@ -703,7 +710,7 @@ namespace Dream
     (FontDefinition* definition)
     {
         auto log = getLog();
-            log->info( "Creating Font Asset instance." );
+        log->info( "Creating Font Asset instance." );
         mFontInstance.reset
                 (
                     new FontInstance
@@ -720,13 +727,20 @@ namespace Dream
     SceneObjectRuntime::applyToAll
     (function<bool(SceneObjectRuntime*)> funk)
     {
+        auto log = getLog();
+        log->critical(
+            "{}::applyToAll(bool) applying to {} children",
+            getNameAndUuidString(),
+            mChildRuntimes.size()
+        );
+
         bool retval = funk(this);
 
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
             if ((*it))
             {
-                retval = retval || funk((*it).get());
+                retval = retval || (*it)->applyToAll(funk);
             }
         }
         return retval;
@@ -736,8 +750,15 @@ namespace Dream
     SceneObjectRuntime::applyToAll
     (function<void*(SceneObjectRuntime*)> funk)
     {
+        auto log = getLog();
+        log->critical(
+            "{}::applyToAll(void*) applying to {} children",
+            getNameAndUuidString(),
+            mChildRuntimes.size()
+        );
+
         void* retval = funk(this);
-        if (retval)
+        if (retval != nullptr)
         {
             return retval;
         }
@@ -746,8 +767,8 @@ namespace Dream
         {
             if ((*it))
             {
-                retval = funk((*it).get());
-                if (retval)
+                retval = (*it)->applyToAll(funk);
+                if (retval != nullptr)
                 {
                     return retval;
                 }
@@ -762,9 +783,9 @@ namespace Dream
     {
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
-            if (*it)
+            if (*it != nullptr)
             {
-                if ((*it).get()->hasUuid(uuid))
+                if ((*it)->hasUuid(uuid))
 
                 {
                     return (*it).get();
@@ -868,7 +889,7 @@ namespace Dream
         auto log = getLog();
         log->critical("Walk: ({},{}) ",leftStickX,leftStickY);
 
-        if (leftStickX == 0 && leftStickY == 0)
+        if (leftStickX == 0.0f && leftStickY == 0.0f)
         {
             return;
         }

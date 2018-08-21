@@ -81,6 +81,7 @@ private:
     void createScriptFileProperty();
 
     void createPathListProperty();
+    void createPathSplineFormatProperty();
 
 public slots:
     void onButton_RemoveFiles();

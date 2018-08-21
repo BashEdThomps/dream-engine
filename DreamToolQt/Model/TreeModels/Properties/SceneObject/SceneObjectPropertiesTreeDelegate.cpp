@@ -18,7 +18,7 @@
 #include "SceneObjectPropertiesTreeDelegate.h"
 
 #include <DreamCore.h>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 #include <QItemDelegate>
 #include <QLineEdit>
 #include <QDoubleSpinBox>
@@ -39,13 +39,19 @@ SceneObjectPropertiesTreeDelegate::SceneObjectPropertiesTreeDelegate
       mModelHandle(model)
 
 {
-    qDebug() << "SceneObjectPropertiesTreeDelegate: Constructing";
+    auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
+    if (log == nullptr)
+    {
+        log = spdlog::stdout_color_mt("SceneObjectPropertiesTreeDelegate");
+    }
+    log->trace("Constructing");
 }
 
 SceneObjectPropertiesTreeDelegate::~SceneObjectPropertiesTreeDelegate
 ()
 {
-    qDebug() << "SceneObjectPropertiesTreeDelegate: Destructing";
+    auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
+    log->trace("Destructing");
 }
 
 QWidget*
@@ -195,7 +201,8 @@ void
 SceneObjectPropertiesTreeDelegate::onButton_CaptureTranslation
 (bool)
 {
-    qDebug() << "SceneObjectPropertiesDelegate: CaptureTranslation";
+    auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
+    log->info("CaptureTranslation");
     emit notifyButton_CaptureTranslation();
 }
 
@@ -203,7 +210,8 @@ void
 SceneObjectPropertiesTreeDelegate::onButton_CaptureRotation
 (bool)
 {
-    qDebug() << "SceneObjectPropertiesDelegate: CaptureRotation";
+    auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
+    log->info("CaptureRotation");
     emit notifyButton_CaptureRotation();
 }
 
@@ -211,7 +219,8 @@ void
 SceneObjectPropertiesTreeDelegate::onButton_CaptureScale
 (bool)
 {
-    qDebug() << "SceneObjectPropertiesDelegate: CaptureScale";
+    auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
+    log->info("CaptureScale");
     emit notifyButton_CaptureScale();
 }
 
@@ -219,7 +228,8 @@ void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveAsset
 (bool, void* vHandle)
 {
-    qDebug() << "SceneObjectPropertiesDelegate: RemoveAsset";
+    auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
+    log->info("RemoveAsset");
     IAssetDefinition* adHandle = static_cast<IAssetDefinition*>(vHandle);
     emit notifyButton_RemoveAsset(adHandle);
 }
@@ -228,7 +238,8 @@ void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveChild
 (bool, void* vHandle)
 {
-    qDebug() << "SceneObjectPropertiesDelegate: RemoveChild";
+    auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
+    log->info("RemoveChild");
     SceneObjectDefinition* sodHandle = static_cast<SceneObjectDefinition*>(vHandle);
     emit notifyButton_RemoveChild(sodHandle);
 }

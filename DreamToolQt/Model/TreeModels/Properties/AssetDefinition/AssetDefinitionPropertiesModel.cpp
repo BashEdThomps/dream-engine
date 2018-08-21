@@ -76,6 +76,7 @@ AssetDefinitionPropertiesModel::createProperties
 
     if (mAssetDefinitionHandle->isTypePath())
     {
+        createPathSplineFormatProperty();
         createPathListProperty();
     }
     else if (mAssetDefinitionHandle->isTypeAudio())
@@ -698,13 +699,26 @@ AssetDefinitionPropertiesModel::createScriptFileProperty
 
 void AssetDefinitionPropertiesModel::createPathListProperty()
 {
-     mRootItem->appendChild
+    mRootItem->appendChild
     (
         new AssetDefinitionPropertiesItem
         (
             "Path List",
             mAssetDefinitionHandle,
             ASSET_DEFINITION_PROPERTY_PATH_LIST
+        )
+    );
+}
+
+void AssetDefinitionPropertiesModel::createPathSplineFormatProperty()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Spline Type",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PATH_TYPE
         )
     );
 }

@@ -36,10 +36,27 @@ namespace Dream
         double getUStep() const;
         void setUStep(double uStep);
         vector<vec3> getSplinePoints() const;
+        vec3 getSplinePoint(int) const;
         void recalculate();
+
+        void generate();
+        const static int SPLINE_DIMENSIONS;
+        const static int SPLINE_DEGREES;
+
+        int getCurrentIndex() const;
+        void setCurrentIndex(int currentIndex);
+
+        vec3 stepPath();
+
+        bool getWrapPath() const;
+        void setWrapPath(bool wrapPath);
 
     private:
         void loadExtraAttributes(json) override;
+
+    private:
+        bool mWrapPath;
+        int mCurrentIndex;
         unique_ptr<BSpline> mSpline;
         double mUStep;
         vector<vec3> mSplinePoints;

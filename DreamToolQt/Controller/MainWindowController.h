@@ -24,6 +24,7 @@
 
 #include <GL/glew.h>
 
+#include <QDockWidget>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QStringListModel>
@@ -101,6 +102,8 @@ public:
     Ui::MainWindow *ui;
 
     QOpenGLWindowComponent* getWindowComponent();
+
+    void addRightDockWidget(QWidget* widget);
 
     QTreeView* getScenegraphTreeView();
     QTreeView* getPropertiesTreeView();
@@ -195,5 +198,7 @@ private:
     void createAssetsMenu(QMenu* menu,ScenegraphTreeItem* item);
     void setupMenu_Debug();
     QSlider mVolumeSlider;
+    QDockWidget mRightDockWidget;
 };
+
 

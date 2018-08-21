@@ -23,6 +23,7 @@
 #include <glm/matrix.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 using namespace glm;
 
@@ -34,8 +35,25 @@ namespace Dream
     {
         mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
         mTranslation   = vec3(0.0f);
-        mScale         = vec3(0.0f);
+        mScale         = vec3(1.0f);
         mOrientation   = quat();
+    }
+
+    Transform3D::Transform3D(mat4 fromMatrix)
+        : ILoggable("Transform3D")
+    {
+       mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
+
+       glm::vec3 scale;
+       glm::quat rotation;
+       glm::vec3 translation;
+       glm::vec3 skew;
+       glm::vec4 perspective;
+       glm::decompose(fromMatrix, scale, rotation, translation, skew, perspective);
+
+       mTranslation  = translation;
+       mOrientation = rotation;
+       mScale = scale;
     }
 
     Transform3D::Transform3D
@@ -174,6 +192,7 @@ namespace Dream
     float
     Transform3D::getRotationX
     ()
+    const
     {
         return eulerAngles(mOrientation).x;
     }
@@ -181,6 +200,7 @@ namespace Dream
     float
     Transform3D::getRotationY
     ()
+    const
     {
         return eulerAngles(mOrientation).y;
     }
@@ -188,6 +208,7 @@ namespace Dream
     float
     Transform3D::getRotationZ
     ()
+    const
     {
         return eulerAngles(mOrientation).z;
     }
@@ -363,13 +384,15 @@ namespace Dream
     btVector3
     Transform3D::getTranslationAsBtVector3
     ()
+    const
     {
-        return btVector3(getTranslationX(),getTranslationY(),getTranslationZ());
+        return btVector3(mTranslation.x,mTranslation.y,mTranslation.z);
     }
 
     btQuaternion
     Transform3D::getOrientationAsBtQuaternion
     ()
+    const
     {
         btQuaternion quat;
         quat.setEulerZYX(getRotationX(),getRotationY(),getRotationZ());
@@ -379,6 +402,7 @@ namespace Dream
     btTransform
     Transform3D::getTransformAsBtTransform
     ()
+    const
     {
         btTransform transform;
         transform.setRotation(getOrientationAsBtQuaternion());
@@ -396,6 +420,7 @@ namespace Dream
     quat
     Transform3D::getOrientation
     ()
+    const
     {
         return mOrientation;
     }
@@ -439,6 +464,25 @@ namespace Dream
         return j;
     }
 
-
+    Transform3D Transform3D::offsetFrom(Transform3D parent)
+    {
+        auto log = getLog();
+        log->critical(
+            "Generating offset transform from parent T({},{},{}) R({},{},{})",
+            parent.getTranslationX(), parent.getTranslationY(), parent.getTranslationZ(),
+            parent.getRotationX(), parent.getRotationY(), parent.getRotationZ()
+        );
+       // Tx to parent
+       mat4 mtx = glm::translate(parent.getTranslation());
+       // match parent rotation
+       mat4 rot = mat4_cast(parent.getOrientation());
+       mtx = mtx*rot;
+       // Tx to child (this)
+       mtx = glm::translate(mtx, mTranslation);
+       // Set child rotation
+       rot = mat4_cast(mOrientation);
+       mtx = mtx*rot;
+       return Transform3D(mtx);
+    }
 
 } // End of Dream

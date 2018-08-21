@@ -20,6 +20,7 @@ MaterialShaderFormController::MaterialShaderFormController
     setWindowTitle("Material to Shader Mappings");
     mTableDelegate = unique_ptr<MaterialShaderTableDelegate>(new MaterialShaderTableDelegate(mUi.tableView));
     mUi.tableView->setItemDelegate(mTableDelegate.get());
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 
 MaterialShaderFormController::~MaterialShaderFormController

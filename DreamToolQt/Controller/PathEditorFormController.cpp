@@ -20,7 +20,7 @@ PathEditorFormController::PathEditorFormController
     connect(mUi.addButton,SIGNAL(clicked(bool)),this,SLOT(onAddButtonClicked(bool)));
     connect(mUi.removeButton,SIGNAL(clicked(bool)),this,SLOT(onRemoveButtonClicked(bool)));
     connect(&mTableModel,SIGNAL(changed()),this,SLOT(onTableChanged()));
-
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 
 PathEditorFormController::~PathEditorFormController
@@ -78,7 +78,17 @@ PathEditorFormController::onTableSelectionChanged
 {
     Q_UNUSED(desel)
     auto log = spdlog::get("PathEditorFormController");
-    int row = sel.first().indexes().first().row();
+    if (sel.count() == 0)
+    {
+        return;
+    }
+    auto indexes = sel.first().indexes();
+    if (indexes.count() == 0)
+    {
+        return;
+    }
+
+    int row = indexes.first().row();
     log->critical("Selected row {}",row);
     emit notifySelectedRowChanged(row);
 }
@@ -108,10 +118,20 @@ PathEditorFormController::populate
     }
 }
 
-void PathEditorFormController::getAllUpInYourFace()
+void
+PathEditorFormController::getAllUpInYourFace
+()
 {
     show();
     activateWindow();
     raise();
     setFocus();
+}
+
+void
+PathEditorFormController::closeEvent
+(QCloseEvent* event)
+{
+    emit notifyCloseEvent();
+    QWidget::closeEvent(event);
 }

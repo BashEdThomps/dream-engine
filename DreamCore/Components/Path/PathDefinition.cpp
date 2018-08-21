@@ -77,4 +77,43 @@ namespace Dream
         }
         return nullptr;
     }
+
+    string
+    PathDefinition::getSplineType
+    ()
+    {
+        if (mJson[Constants::DREAM_PATH_SPLINE_TYPE].is_null())
+        {
+            mJson[Constants::DREAM_PATH_SPLINE_TYPE] = Constants::DREAM_PATH_TYPE_CLAMPED;
+        }
+        return mJson[Constants::DREAM_PATH_SPLINE_TYPE];
+    }
+
+    void PathDefinition::setSplineType(string type)
+    {
+        mJson[Constants::DREAM_PATH_SPLINE_TYPE] = type;
+    }
+
+    tsBSplineType
+    PathDefinition::getSplineTypeEnum
+    ()
+    {
+        string type = getSplineType();
+        if (type.compare(Constants::DREAM_PATH_TYPE_OPEN) == 0)
+        {
+            return TS_OPENED;
+        }
+        else if (type.compare(Constants::DREAM_PATH_TYPE_CLAMPED) == 0)
+        {
+            return TS_CLAMPED;
+        }
+        else if (type.compare(Constants::DREAM_PATH_TYPE_BEZIER) == 0)
+        {
+            return TS_BEZIERS;
+        }
+        else
+        {
+            return TS_NONE;
+        }
+    }
 }

@@ -76,6 +76,7 @@ namespace Dream
         unique_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
         unique_ptr<FontInstance> mFontInstance;
         Transform3D mTransform;
+        Transform3D mOffsetTransform;
 
         vector<Event> mEventQueue;
         vector<string> mAssetDefinitionUuidLoadQueue;
@@ -95,12 +96,11 @@ namespace Dream
     public:
         SceneObjectRuntime(SceneObjectDefinition* sdHandle, SceneRuntime* sceneRuntimeHandle = nullptr);
 
-        ~SceneObjectRuntime();
+        ~SceneObjectRuntime() override;
 
         void collectGarbage() override;
 
         SceneRuntime* getSceneRuntimeHandle();
-        SceneObjectRuntime* getParentObjectRuntimeHandle();
 
         void createAssetInstances();
         void createAssetInstanceFromAssetDefinitionByUuid(string);

@@ -82,7 +82,8 @@ protected:
     QWidget *createPhysicsBvhTriangleMeshFileButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
     QWidget *createFontColourDialogButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createModelMaterialShaderButton(AssetDefinitionPropertiesItem* adItem, QWidget *parent) const;
-    QWidget* createLightColourPaletteButton(QWidget* parent) const;
-    QWidget* createPathListButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
+    QWidget *createLightColourPaletteButton(QWidget* parent) const;
+    QWidget *createPathListButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
+    QWidget *createPathTypeComboBox(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const;
 
 };

@@ -75,7 +75,7 @@ PathEditorTableModel::data
         switch(index.column())
         {
             case 0:
-                retval =  (*row)[Constants::ASSET_ATTR_INDEX];
+                retval =  index.row();//(*row)[Constants::ASSET_ATTR_INDEX];
                 break;
             case 1:
                 retval =  (*row)[Constants::X];
@@ -116,7 +116,7 @@ PathEditorTableModel::headerData
         switch (section)
         {
             case 0:
-                return QString("Control Point");
+                return QString("");
             case 1:
                 return QString("X");
             case 2:

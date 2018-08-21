@@ -35,6 +35,7 @@
 
 using Dream::AssetType;
 using Dream::Constants;
+using Dream::PathDefinition;
 using std::vector;
 
 AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
@@ -214,6 +215,26 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createPathTypeComboBox
+(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const
+{
+    QComboBox *editor = new QComboBox(parent);
+    QStringList list ;
+
+    for (string type : Constants::DREAM_ANIMATION_SPLINE_TYPES)
+    {
+        list << QString::fromStdString(type);
+    }
+
+    editor->addItems(list);
+    auto pathDef = dynamic_cast<PathDefinition*>(assetDef->getAssetDefinitionHandle());
+    string type = pathDef->getSplineType();
+    int typeIndex = editor->findText(QString::fromStdString(type));
+    editor->setCurrentIndex(typeIndex);
+    return editor;
+}
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createPhysicsBvhTriangleMeshFileButton
 (AssetDefinitionPropertiesItem*, QWidget* parent)
 const
@@ -246,8 +267,6 @@ const
                 );
     return editor;
 }
-
-
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createOpenShaderInEditorButton
@@ -359,6 +378,9 @@ const
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
             return createRemoveFilesButton(adItem, parent);
 
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
+            return createPathTypeComboBox(adItem,parent);
+
         case ASSET_DEFINITION_PROPERTY_TYPE:
             return createTypeComboBox(adItem, parent);
 
@@ -407,8 +429,9 @@ const
     return new QLineEdit(parent);
 }
 
-
-QWidget* AssetDefinitionPropertiesTreeDelegate::createLightColourPaletteButton(QWidget* parent) const
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createLightColourPaletteButton
+(QWidget* parent) const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
@@ -422,13 +445,17 @@ QWidget* AssetDefinitionPropertiesTreeDelegate::createLightColourPaletteButton(Q
     return button;
 }
 
-void AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseColour(bool clicked)
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseColour
+(bool clicked)
 {
     Q_UNUSED(clicked)
     emit notifyButton_LightChooseColour();
 }
 
-void AssetDefinitionPropertiesTreeDelegate::onButton_ModelMaterialShaderMap(bool clicked)
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_ModelMaterialShaderMap
+(bool clicked)
 {
     Q_UNUSED(clicked)
     emit notifyButton_ModelMaterialShaderMap();
@@ -478,6 +505,7 @@ const
 
         case ASSET_DEFINITION_PROPERTY_TYPE:
         case ASSET_DEFINITION_PROPERTY_FORMAT:
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
             static_cast<QComboBox*>(editor)->setCurrentText(value.toString());
             break;
 
@@ -549,6 +577,7 @@ const
             // QComboBox
         case ASSET_DEFINITION_PROPERTY_TYPE:
         case ASSET_DEFINITION_PROPERTY_FORMAT:
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
             model->setData(index,static_cast<QComboBox*>(editor)->currentText());
             break;
 
@@ -600,7 +629,6 @@ AssetDefinitionPropertiesTreeDelegate::onButton_AudioFile
     log->info("AudioFile was clicked");
     emit notifyButton_AudioFile();
 }
-
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_FontFile

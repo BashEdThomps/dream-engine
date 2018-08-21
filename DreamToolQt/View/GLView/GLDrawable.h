@@ -15,8 +15,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef GLDRAWABLE_H
-#define GLDRAWABLE_H
+#pragma once
 
 #include <QObject>
 #include <GL/glew.h>
@@ -67,6 +66,5 @@ protected: // Variables
     vector<LineVertex> mVertexBuffer;
     GLuint mShaderProgram;
     bool mInitialised;
+    void addLineVertex(LineVertex lv);
 };
-
-#endif // GLDRAWABLE_H

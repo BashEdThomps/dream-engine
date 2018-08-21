@@ -66,7 +66,7 @@ SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
     auto log = spdlog::get("SelectionHighlighter");
     if (selected)
     {
-    log->info("Selecting {}",selected->getNameAndUuidString());
+        log->info("Selecting {}",selected->getNameAndUuidString());
     }
     mSelectedObjectHandle = selected;
     updateVertexBuffer();

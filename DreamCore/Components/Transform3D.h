@@ -49,10 +49,10 @@ namespace Dream
     quat mOrientation;
     vec3 mScale;
     string mTransformType;
-    Transform3D* mParentHandle;
 
   public:
     Transform3D();
+    Transform3D(glm::mat4 fromMatrix);
     explicit Transform3D(json j);
     vec3 getTranslation();
     void setTranslation(vec3);
@@ -63,20 +63,20 @@ namespace Dream
     void setTranslationX(float);
     void setTranslationY(float);
     void setTranslationZ(float);
-    btVector3 getTranslationAsBtVector3();
-    btQuaternion getOrientationAsBtQuaternion();
-    btTransform getTransformAsBtTransform();
+    btVector3 getTranslationAsBtVector3() const;
+    btQuaternion getOrientationAsBtQuaternion() const;
+    btTransform getTransformAsBtTransform() const;
 
-    quat getOrientation();
+    quat getOrientation() const;
     void setOrientation(float,float,float,float);
     void setOrientation(quat);
 
     vec3 getRotation();
     void setRotation(float, float, float);
     void setRotation(vec3 rot);
-    float getRotationX();
-    float getRotationY();
-    float getRotationZ();
+    float getRotationX() const;
+    float getRotationY() const;
+    float getRotationZ() const;
     void setRotationX(float);
     void setRotationY(float);
     void setRotationZ(float);
@@ -108,6 +108,8 @@ namespace Dream
     void scaleByZ(float);
 
     json getJson();
+
+    Transform3D offsetFrom(Transform3D parent);
   };
 
 } // End of Dream

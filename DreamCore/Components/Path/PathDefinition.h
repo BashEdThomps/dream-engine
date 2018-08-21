@@ -19,6 +19,7 @@
 #pragma once
 
 #include "../IAssetDefinition.h"
+#include <tinysplinecpp.h>
 
 namespace Dream
 {
@@ -35,6 +36,9 @@ namespace Dream
         json* getControlPoint(int i);
         json* getControlPoints();
         size_t   numberOfControlPoints();
+        string getSplineType();
+        void setSplineType(string type);
+        tsBSplineType getSplineTypeEnum();
     };
 
 }

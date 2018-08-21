@@ -30,6 +30,7 @@ ScriptEditorController::ScriptEditorController
     setupRevertSaveSignals();
     createTemplatesComboBox(mScriptEditor.templateComboBox);
     clearExistingTabs();
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 
 ScriptEditorController::~ScriptEditorController

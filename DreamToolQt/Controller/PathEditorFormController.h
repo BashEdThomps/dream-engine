@@ -36,6 +36,7 @@ private slots:
 signals:
     void notifyTableChanged();
     void notifySelectedRowChanged(int);
+    void notifyCloseEvent();
 
 private:
     void populate();
@@ -45,4 +46,10 @@ protected:
     QString mProjectPath;
     PathEditorTableModel mTableModel;
     Ui::PathEditorTableForm mUi;
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent* event) override;
 };
+
+

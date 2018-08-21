@@ -74,6 +74,10 @@ AssetDefinitionPropertiesItem::setData
 
     switch(getProperty())
     {
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
+            dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->setSplineType(value.toString().toStdString());
+            break;
+
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
@@ -117,7 +121,7 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
             dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setKinematic(value.toBool());
             break;
-    case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
             dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setControllableCharacter(value.toBool());
             break;
             // Common
@@ -197,6 +201,9 @@ AssetDefinitionPropertiesItem::data
 
     switch(getProperty())
     {
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
+            return QVariant(QString::fromStdString(dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->getSplineType()));
+
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:

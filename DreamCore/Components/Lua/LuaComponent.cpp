@@ -614,10 +614,9 @@ namespace Dream
     {
         debugRegisteringClass("PathComponent");
         module(mState)
-                [
-                class_<PathComponent>("PathComponent")
-                // TODO
-                ];
+        [
+            class_<PathComponent>("PathComponent")
+        ];
     }
 
     void
@@ -626,10 +625,15 @@ namespace Dream
     {
         debugRegisteringClass("PathInstance");
         module(mState)
-                [
-                class_<PathInstance>("PathInstance")
-                // TODO
-                ];
+        [
+        class_<PathInstance>("PathInstance")
+            .def("generate",&PathInstance::generate)
+            .def("getSplinePoints",&PathInstance::getSplinePoints)
+            .def("getSplinePoint",&PathInstance::getSplinePoint)
+            .def("getUStep",&PathInstance::getUStep)
+            .def("setUStep",&PathInstance::setUStep)
+            .def("stepPath",&PathInstance::stepPath)
+        ];
     }
 
     void
@@ -837,6 +841,7 @@ namespace Dream
                 .def("translateByY",&Transform3D::translateByY)
                 .def("translateByZ",&Transform3D::translateByZ)
                 .def("setTranslation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation))
+                .def("setTranslation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setTranslation))
                 // Rotation =============================================================
                 .def("getRotationX",&Transform3D::getRotationX)
                 .def("getRotationY",&Transform3D::getRotationY)
@@ -848,6 +853,7 @@ namespace Dream
                 .def("rotateByY",&Transform3D::rotateByY)
                 .def("rotateByZ",&Transform3D::rotateByZ)
                 .def("setRotation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation))
+                .def("setRotation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setRotation))
                 // Scale ================================================================
                 .def("getScaleX",&Transform3D::getScaleX)
                 .def("getScaleY",&Transform3D::getScaleY)
@@ -859,6 +865,7 @@ namespace Dream
                 .def("scaleByY",&Transform3D::scaleByY)
                 .def("scaleByZ",&Transform3D::scaleByZ)
                 .def("setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale))
+                .def("setScale",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setScale))
                 ];
     }
 
@@ -944,7 +951,7 @@ namespace Dream
     {
         debugRegisteringClass("AudioInstance");
         module(mState)
-                [
+        [
                 class_<AudioInstance>("AudioInstance")
                 .def("getStatus",&AudioInstance::getStatus),
 
@@ -1034,6 +1041,7 @@ namespace Dream
         exposeTime();
         exposeTransform3D();
         exposeNanoVG();
+        exposeGLM();
     }
 
     void
@@ -1198,6 +1206,18 @@ namespace Dream
                 .def("TextMetrics",&NanoVGComponent::TextMetrics)
                 .def("TextBreakLines",&NanoVGComponent::TextBreakLines)
                 ];
+    }
+
+    void LuaComponent::exposeGLM()
+    {
+        debugRegisteringClass("GLM");
+        module(mState)
+        [
+            class_<glm::vec3>("vec3")
+                .def_readwrite("x",&glm::vec3::x)
+                .def_readwrite("y",&glm::vec3::y)
+                .def_readwrite("z",&glm::vec3::z)
+        ];
     }
 
 } // End of Dream

@@ -158,9 +158,9 @@ namespace DreamSDL
                 memcpy(&e,&event,sizeof(SDL_Event));
                 mEvents.push_back(e);
             }
-            {
-                cout << "SDLWindowComponent::update GameController Implementation Disabled!" << endl;
-            }
+           // {
+           //     cout << "SDLWindowComponent::update GameController Implementation Disabled!" << endl;
+           // }
         }
         {
             cout << "SDLWindowComponent " << mEvents.size() << " Events" << endl;
