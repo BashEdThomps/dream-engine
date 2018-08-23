@@ -120,6 +120,11 @@ MainController::setupUI
         this, SLOT(onMainVolumeChanged(int))
     );
     // Path List Form
+    connectPathEditorSignals();
+}
+
+void MainController::connectPathEditorSignals()
+{
     connect
     (
         &mPathEditorFormController,
@@ -141,7 +146,33 @@ MainController::setupUI
         this,
         SLOT(onPathEditorClosed())
     );
-
+    connect
+    (
+        &mPathEditorFormController,
+        SIGNAL(notifyPathVisibilityChanged(bool)),
+        this,
+        SLOT(onPathVisibilityChanged(bool))
+    );
+    connect
+    (
+        &mPathEditorFormController,
+        SIGNAL(notifyTangentVisibilityChanged(bool)),
+        mPathPointViewer.get(),
+        SLOT(onTangentVisibilityChanged(bool))
+    );
+    connect
+    (
+        &mPathEditorFormController,
+        SIGNAL(notifyTangentIndexChanged(int)),
+        mPathPointViewer.get(),
+        SLOT(onTangentIndexChanged(int))
+    );
+    connect(
+        mPathPointViewer.get(),
+        SIGNAL(notifyNumberOfTangentsChanged(int)),
+        &mPathEditorFormController,
+        SLOT(onNumberOfTangentsChanged(int))
+    );
 }
 
 void
@@ -1433,7 +1464,12 @@ void MainController::onMainVolumeChanged(int vol)
 
 void MainController::onPathEditorClosed()
 {
-   mPathPointViewer->setPathDefinitionHandle(nullptr);
+    mPathPointViewer->setPathDefinitionHandle(nullptr);
+}
+
+void MainController::onPathVisibilityChanged(bool visible)
+{
+   mPathPointViewer->setPathVisible(visible);
 }
 
 void

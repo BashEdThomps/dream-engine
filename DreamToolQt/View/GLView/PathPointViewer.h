@@ -22,6 +22,7 @@
 
 using glm::vec3;
 using Dream::PathDefinition;
+using Dream::PathInstance;
 
 class PathPointViewer : public GLDrawable
 {
@@ -36,22 +37,39 @@ public:
     void initShader() override;
 
     vector<vec3> generateSplinePoints();
+    void setPathVisible(bool visible);
+
+    size_t getTangentIndex() const;
+    void setTangentIndex(const size_t& tangentIndex);
+
+    bool getDrawTangent() const;
+    void setDrawTangent(bool drawTangent);
 
 public slots:
     void onUpdateRequested();
     void onSelectionChanged(int);
+    void onTangentIndexChanged(int);
+    void onTangentVisibilityChanged(bool);
 
 private:
     void generateNode(json cp);
 
+signals:
+    void notifyNumberOfTangentsChanged(int);
+
 private:
     PathDefinition* mPathDefinitionHandle;
+    unique_ptr<PathInstance> mPathInstance;
     void updateVertexBuffer();
     vec3 mSelectedColour;
     vec3 mUnselectedColour;
     vec3 mCurveColour;
+    vec3 mTangentColour;
+    size_t mTangentIndex;
+    bool mDrawTangent;
     float mNodeSize;
     int mSelectedCp;
     double mUStep;
     void generateSpline();
+    bool mVisible;
 };

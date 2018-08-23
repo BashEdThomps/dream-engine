@@ -110,9 +110,7 @@ GLDrawable::draw
     if (!mVertexBuffer.empty())
     {
         preRender();
-        {
             log->info("Drawing {} lines", mVertexBuffer.size()/2);
-        }
 
         // Enable shader program
         glUseProgram(mShaderProgram);

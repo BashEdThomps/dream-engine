@@ -181,6 +181,7 @@ namespace Dream
         const static string DREAM_PATH_TYPE_OPEN;
         const static string DREAM_PATH_TYPE_CLAMPED;
         const static string DREAM_PATH_TYPE_BEZIER;
+        const static string ASSET_ATTR_STEP_SCALAR;
 
         // Sprite ===============================================================
         const static string SPRITE_TILE_SIZE;

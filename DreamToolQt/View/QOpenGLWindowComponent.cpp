@@ -149,7 +149,7 @@ QOpenGLWindowComponent::paintGL
 
                 // glDisable(GL_DEPTH_TEST);
 
-                log->critical("Drawing Grid");
+                log->trace("Drawing Grid");
                 if (mGridHandle)
                 {
                     if(mGridEnabled)
@@ -171,7 +171,7 @@ QOpenGLWindowComponent::paintGL
                     }
                 }
 
-                log->critical("Drawing Selection Highlighter");
+                log->trace("Drawing Selection Highlighter");
                 if (mSelectionHighlighterHandle)
                 {
                     if (mSelectionHighlighterEnabled)
@@ -189,7 +189,7 @@ QOpenGLWindowComponent::paintGL
                     }
                 }
 
-                log->critical("Drawing Relationship Tree");
+                log->trace("Drawing Relationship Tree");
                 if (mRelationshipTreeHandle)
                 {
                     if (mRelationshipTreeEnabled)
@@ -206,7 +206,7 @@ QOpenGLWindowComponent::paintGL
                     }
                 }
 
-                log->critical("Drawing Path List Nodes");
+                log->trace("Drawing Path List Nodes");
                 if (mPathPointViewerHandle)
                 {
                     if (!mPathPointViewerHandle->isInitialised())

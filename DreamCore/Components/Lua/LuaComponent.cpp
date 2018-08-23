@@ -842,6 +842,7 @@ namespace Dream
                 .def("translateByZ",&Transform3D::translateByZ)
                 .def("setTranslation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation))
                 .def("setTranslation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setTranslation))
+                .def("getTranslation",&Transform3D::getTranslation)
                 // Rotation =============================================================
                 .def("getRotationX",&Transform3D::getRotationX)
                 .def("getRotationY",&Transform3D::getRotationY)
@@ -854,6 +855,9 @@ namespace Dream
                 .def("rotateByZ",&Transform3D::rotateByZ)
                 .def("setRotation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation))
                 .def("setRotation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setRotation))
+                .def("getOrientation",&Transform3D::getOrientation)
+                .def("setOrientation",static_cast<void(Transform3D::*)(float,float,float,float)>(&Transform3D::setOrientation))
+                .def("setOrientation",static_cast<void(Transform3D::*)(glm::quat)>(&Transform3D::setOrientation))
                 // Scale ================================================================
                 .def("getScaleX",&Transform3D::getScaleX)
                 .def("getScaleY",&Transform3D::getScaleY)
@@ -1216,7 +1220,12 @@ namespace Dream
             class_<glm::vec3>("vec3")
                 .def_readwrite("x",&glm::vec3::x)
                 .def_readwrite("y",&glm::vec3::y)
-                .def_readwrite("z",&glm::vec3::z)
+                .def_readwrite("z",&glm::vec3::z),
+            class_<glm::quat>("quat")
+                .def_readwrite("w",&glm::quat::w)
+                .def_readwrite("x",&glm::quat::x)
+                .def_readwrite("y",&glm::quat::y)
+                .def_readwrite("z",&glm::quat::z)
         ];
     }
 

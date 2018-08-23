@@ -116,4 +116,18 @@ namespace Dream
             return TS_NONE;
         }
     }
+
+    void PathDefinition::setStepScalar(double scalar)
+    {
+        mJson[Constants::ASSET_ATTR_STEP_SCALAR] = scalar;
+    }
+
+    double PathDefinition::getStepScalar()
+    {
+        if (mJson[Constants::ASSET_ATTR_STEP_SCALAR].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_STEP_SCALAR] = 1.0;
+        }
+        return mJson[Constants::ASSET_ATTR_STEP_SCALAR];
+    }
 }

@@ -32,12 +32,16 @@ PathPointViewer::PathPointViewer
 (QObject *parent)
     : GLDrawable(parent),
       mPathDefinitionHandle(nullptr),
+      mPathInstance(nullptr),
       mSelectedColour(vec3(0.0f, 1.0f, 0.0f)),
-      mUnselectedColour(vec3(0.75f, 0.0f, 0.75f)),
-      mCurveColour(vec3(1.0f, 0.5f, 0.0f)),
+      mUnselectedColour(vec3(0.75f, 0.75f, 0.0f)),
+      mCurveColour(vec3(1.0f, 0.0f, 1.0f)),
+      mTangentColour(vec3(0.25f,1.0f,0.0f)),
+      mDrawTangent(false),
       mNodeSize(0.25f),
       mSelectedCp(-1),
-      mUStep(0.05)
+      mUStep(0.05),
+      mVisible(true)
 
 {
     auto log = spdlog::get("PathPointViewer");
@@ -103,10 +107,73 @@ PathPointViewer::updateVertexBuffer
             generateNode(cp);
         }
     }
-    if (controlPoints->size() > 1)
+    if (controlPoints->size() > 3)
     {
         generateSpline();
     }
+}
+
+bool PathPointViewer::getDrawTangent() const
+{
+    return mDrawTangent;
+}
+
+void PathPointViewer::setDrawTangent(bool drawTangent)
+{
+    mDrawTangent = drawTangent;
+}
+
+size_t PathPointViewer::getTangentIndex() const
+{
+    return mTangentIndex;
+}
+
+void PathPointViewer::setTangentIndex(const size_t& tangentIndex)
+{
+    mTangentIndex = tangentIndex;
+}
+
+void PathPointViewer::generateSpline()
+{
+    if (mPathInstance == nullptr)
+    {
+        mPathInstance = unique_ptr<PathInstance>(new PathInstance(mPathDefinitionHandle,nullptr));
+   }
+   mPathInstance->load("");
+
+    emit notifyNumberOfTangentsChanged(
+        static_cast<int>(mPathInstance->getSplineDerivatives().size())
+    );
+
+   vector<vec3> splinePoints = mPathInstance->getSplinePoints();
+
+   for (size_t i=1; i < splinePoints.size(); i++)
+   {
+       vec3 current = splinePoints.at(i-1);
+       vec3 next = splinePoints.at(i);
+
+       LineVertex v1,v2;
+       v1.Position  = current;
+       v1.Color = mCurveColour;
+       v2.Position = next;
+       v2.Color = mCurveColour;
+       mVertexBuffer.push_back(v1);
+       mVertexBuffer.push_back(v2);
+   }
+
+   auto tans = mPathInstance->getSplineDerivatives();
+
+   if (mDrawTangent && mTangentIndex > 0 && mTangentIndex < tans.size())
+   {
+       pair<vec3,vec3> tangent = tans.at(mTangentIndex);
+       LineVertex v1, v2;
+       v1.Position = tangent.first;
+       v1.Color = vec3(1,0,0);
+       v2.Position = tangent.second;
+       v2.Color = vec3(0,1,0);
+       mVertexBuffer.push_back(v1);
+       mVertexBuffer.push_back(v2);
+   }
 }
 
 void
@@ -232,6 +299,11 @@ void
 PathPointViewer::draw
 ()
 {
+    if (!mVisible)
+    {
+        return;
+    }
+
     auto log = spdlog::get("PathPointViewer");
     if (!mVertexBuffer.empty())
     {
@@ -405,95 +477,27 @@ void PathPointViewer::onUpdateRequested()
 
 void PathPointViewer::onSelectionChanged(int index)
 {
-   mSelectedCp = index;
-   updateVertexBuffer();
+    mSelectedCp = index;
+    updateVertexBuffer();
 }
 
-void
-PathPointViewer::generateSpline
-()
+void PathPointViewer::onTangentIndexChanged(int val)
 {
-    vector<vec3> points = generateSplinePoints();
-
-    if (points.size() == 0)
-    {
-        return;
-    }
-
-    for (int i = 0; i<points.size()-1; i++)
-    {
-        LineVertex v1, v2;
-        v1.Position = points.at(i);
-        v1.Color = mCurveColour;
-        mVertexBuffer.push_back(v1);
-        v2.Position = points.at(i+1);
-        v2.Color = mCurveColour;
-        mVertexBuffer.push_back(v2);
-    }
-}
-
-vector<vec3>
-PathPointViewer::generateSplinePoints
-()
-{
-    vector<vec3> points;
-
     auto log = spdlog::get("PathPointViewer");
-    log->info(
-        "Generating {} spline with {} control points",
-                mPathDefinitionHandle->getSplineType(),
-        mPathDefinitionHandle->numberOfControlPoints()
-    );
+    log->critical("onTangentIndexChanged {}",val);
+    mTangentIndex = static_cast<size_t>(val);
+    updateVertexBuffer();
+}
 
-    if (mPathDefinitionHandle->numberOfControlPoints() <= 3)
-    {
-        log->error("Not enough control points");
-        return points;
-    }
+void PathPointViewer::onTangentVisibilityChanged(bool draw)
+{
+    auto log = spdlog::get("PathPointViewer");
+    log->critical("onTangentVisibilityChanged {}",draw);
+    mDrawTangent = draw;
+    updateVertexBuffer();
+}
 
-    BSpline spline(
-        mPathDefinitionHandle->numberOfControlPoints(),
-        3, 3, mPathDefinitionHandle->getSplineTypeEnum()
-    );
-
-    vector<tinyspline::real> ctrlp = spline.controlPoints();
-
-    size_t i=0;
-    for (json cp : *mPathDefinitionHandle->getControlPoints())
-    {
-        double x = cp[Constants::X];
-        double y = cp[Constants::Y];
-        double z = cp[Constants::Z];
-        // Setup control points.
-        ctrlp[i++] = x;
-        ctrlp[i++] = y;
-        ctrlp[i++] = z;
-    }
-    spline.setControlPoints(ctrlp);
-
-    mUStep = 1.0/(mPathDefinitionHandle->numberOfControlPoints()*10);
-
-    try
-    {
-        // Stores our evaluation results.
-        vector<real> result;
-        for (double u = 0.0; u <= 1.0; u += mUStep)
-        {
-            result = spline.eval(u).result();
-
-            log->critical("Got spline point u:{}\t({},{},{})",u,
-                result[0], result[1], result[2]
-            );
-            points.push_back(vec3(result[0], result[1], result[2]));
-        }
-    }
-    catch (exception& ex)
-    {
-        log->error("Unable to generate point: {}",ex.what());
-        return vector<vec3>();
-    }
-
-
-    log->info("Finished Loading spline points for {}",mPathDefinitionHandle->getNameAndUuidString());
-    return points;
+void PathPointViewer::setPathVisible(bool visible)
+{
+    mVisible = visible;
 }

@@ -221,7 +221,7 @@ SelectionHighlighter::updateVertexBuffer
     z1.Position = vec3(0);
     z1.Color = mZColour;
     mVertexBuffer.push_back(z1);
-    z2.Position = vec3(0,0,-1*fabs(bounds.maxDimension*2));
+    z2.Position = vec3(0,0,fabs(bounds.maxDimension*2));
     z2.Color = mZColour;
     mVertexBuffer.push_back(z2);
 }

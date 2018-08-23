@@ -60,6 +60,7 @@ Grid::init
     initGLDrawable();
     initMinorGridData();
     initMajorGridData();
+    initAxisLines();
 }
 
 void
@@ -143,6 +144,38 @@ Grid::initMinorGridData
         mVertexBuffer.push_back(minorStart);
         mVertexBuffer.push_back(minorEnd);
     }
+}
+
+void Grid::initAxisLines()
+{
+    vec3 red(1,0,0);
+    vec3 green(0,1,0);
+    vec3 blue(0,0,1);
+
+    LineVertex xStart, xEnd;
+    xStart.Position = vec3(0);
+    xStart.Color = red;
+    xEnd.Position = vec3(mSize,0,0);
+    xEnd.Color = red;
+    mVertexBuffer.push_back(xStart);
+    mVertexBuffer.push_back(xEnd);
+
+
+    LineVertex yStart, yEnd;
+    yStart.Position = vec3(0);
+    yStart.Color = green;
+    yEnd.Position = vec3(0,mSize,0);
+    yEnd.Color = green;
+    mVertexBuffer.push_back(yStart);
+    mVertexBuffer.push_back(yEnd);
+
+    LineVertex zStart, zEnd;
+    zStart.Position = vec3(0);
+    zStart.Color = blue;
+    zEnd.Position = vec3(0,0,mSize);
+    zEnd.Color = blue;
+    mVertexBuffer.push_back(zStart);
+    mVertexBuffer.push_back(zEnd);
 }
 
 float

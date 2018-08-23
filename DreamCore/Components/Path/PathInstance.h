@@ -3,21 +3,18 @@
 #pragma once
 
 #ifdef __APPLE__
-    #include <nlohmann/json.hpp>
+#include <nlohmann/json.hpp>
 #else
-    #include <json.hpp>
+#include <json.hpp>
 #endif
 
 
 #include <memory>
 #include <vector>
 
-#include <tinysplinecpp.h>
-
 #include "PathDefinition.h"
 #include "../IAssetInstance.h"
 #include "../../Common/ILoggable.h"
-
 
 using namespace tinyspline;
 using namespace std;
@@ -36,6 +33,7 @@ namespace Dream
         double getUStep() const;
         void setUStep(double uStep);
         vector<vec3> getSplinePoints() const;
+        vector<quat> getSplineTangents() const;
         vec3 getSplinePoint(int) const;
         void recalculate();
 
@@ -43,23 +41,27 @@ namespace Dream
         const static int SPLINE_DIMENSIONS;
         const static int SPLINE_DEGREES;
 
-        int getCurrentIndex() const;
-        void setCurrentIndex(int currentIndex);
+        size_t getCurrentIndex() const;
+        void setCurrentIndex(size_t currentIndex);
 
-        vec3 stepPath();
+        Transform3D stepPath();
 
         bool getWrapPath() const;
         void setWrapPath(bool wrapPath);
+        quat getHeading(vec3 point, vec3 v1, vec3 v2);
+
+        vector<pair<vec3, vec3> > getSplineDerivatives() const;
 
     private:
         void loadExtraAttributes(json) override;
 
     private:
         bool mWrapPath;
-        int mCurrentIndex;
-        unique_ptr<BSpline> mSpline;
+        size_t mCurrentIndex;
         double mUStep;
         vector<vec3> mSplinePoints;
+        vector<pair<vec3,vec3>> mSplineDerivatives;
+        vector<quat> mSplineTangents;
 
     }; // End of PathInstance
 

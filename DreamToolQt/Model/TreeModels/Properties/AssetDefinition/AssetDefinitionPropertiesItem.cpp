@@ -78,6 +78,9 @@ AssetDefinitionPropertiesItem::setData
             dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->setSplineType(value.toString().toStdString());
             break;
 
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
+            dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->setStepScalar(value.toDouble());
+            break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
@@ -204,8 +207,12 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
             return QVariant(QString::fromStdString(dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->getSplineType()));
 
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
+            return QVariant(dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->getStepScalar());
+
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
             break;
+
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getConstant());
 

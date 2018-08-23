@@ -168,6 +168,7 @@ public slots:
     void onCreateNewAssetDefinition(QString type);
     void onMainVolumeChanged(int);
     void onPathEditorClosed();
+    void onPathVisibilityChanged(bool visible);
 
 
 protected:
@@ -238,4 +239,5 @@ private: // Variables
     QDir mLastDirectory;
     MaterialShaderFormController mMaterialShaderTableController;
     PathEditorFormController mPathEditorFormController;
+    void connectPathEditorSignals();
 };

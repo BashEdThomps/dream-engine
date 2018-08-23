@@ -39,6 +39,8 @@ namespace Dream
         string getSplineType();
         void setSplineType(string type);
         tsBSplineType getSplineTypeEnum();
+        void setStepScalar(double scaler);
+        double getStepScalar();
     };
 
 }

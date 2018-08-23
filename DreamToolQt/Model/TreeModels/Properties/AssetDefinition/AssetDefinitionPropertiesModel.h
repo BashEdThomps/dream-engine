@@ -81,6 +81,7 @@ private:
     void createScriptFileProperty();
 
     void createPathListProperty();
+    void createPathStepProperty();
     void createPathSplineFormatProperty();
 
 public slots:

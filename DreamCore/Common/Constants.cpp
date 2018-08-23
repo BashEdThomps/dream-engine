@@ -193,6 +193,7 @@ namespace Dream
     const string Constants::ASSET_ATTR_INTERPOLATION = "interpolation";
     const string Constants::ASSET_ATTR_CONTROL_POINTS = "ctrl_points";
     const string Constants::ASSET_ATTR_INDEX = "index";
+    const string Constants::ASSET_ATTR_STEP_SCALAR = "scalar";
     const int Constants::DREAM_PATH_STOPPED = 0;
     const int Constants::DREAM_PATH_PLAYING = 1;
     const int Constants::DREAM_PATH_PAUSED  = 2;

@@ -77,6 +77,7 @@ AssetDefinitionPropertiesModel::createProperties
     if (mAssetDefinitionHandle->isTypePath())
     {
         createPathSplineFormatProperty();
+        createPathStepProperty();
         createPathListProperty();
     }
     else if (mAssetDefinitionHandle->isTypeAudio())
@@ -703,9 +704,22 @@ void AssetDefinitionPropertiesModel::createPathListProperty()
     (
         new AssetDefinitionPropertiesItem
         (
-            "Path List",
+            "Node List",
             mAssetDefinitionHandle,
             ASSET_DEFINITION_PROPERTY_PATH_LIST
+        )
+                );
+}
+
+void AssetDefinitionPropertiesModel::createPathStepProperty()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Step",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PATH_STEP
         )
     );
 }

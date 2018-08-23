@@ -42,6 +42,7 @@ public:
 protected: // Member functions
     void initMajorGridData();
     void initMinorGridData();
+    void initAxisLines();
 
 protected: // Variables
     float mSize;

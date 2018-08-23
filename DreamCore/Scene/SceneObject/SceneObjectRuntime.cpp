@@ -402,11 +402,11 @@ namespace Dream
         auto log = getLog();
         if (mTransform.getTransformType().compare(Constants::TRANSFORM_TYPE_OFFSET) == 0)
         {
-            log->critical("Returning Offset Transform for {}",getNameAndUuidString());
+            log->info("Returning Offset Transform for {}",getNameAndUuidString());
             mOffsetTransform = mTransform.offsetFrom(getParentRuntimeHandle()->getTransform());
             return mOffsetTransform;
         }
-        log->critical("Returning Absolute Transform for {}", getNameAndUuidString());
+        log->info("Returning Absolute Transform for {}", getNameAndUuidString());
         return mTransform;
     }
 
@@ -728,7 +728,7 @@ namespace Dream
     (function<bool(SceneObjectRuntime*)> funk)
     {
         auto log = getLog();
-        log->critical(
+        log->trace(
             "{}::applyToAll(bool) applying to {} children",
             getNameAndUuidString(),
             mChildRuntimes.size()
@@ -751,7 +751,7 @@ namespace Dream
     (function<void*(SceneObjectRuntime*)> funk)
     {
         auto log = getLog();
-        log->critical(
+        log->trace(
             "{}::applyToAll(void*) applying to {} children",
             getNameAndUuidString(),
             mChildRuntimes.size()
@@ -887,7 +887,7 @@ namespace Dream
     (float leftStickX, float leftStickY)
     {
         auto log = getLog();
-        log->critical("Walk: ({},{}) ",leftStickX,leftStickY);
+        log->trace("Walk: ({},{}) ",leftStickX,leftStickY);
 
         if (leftStickX == 0.0f && leftStickY == 0.0f)
         {

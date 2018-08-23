@@ -184,9 +184,9 @@ namespace Dream
     Transform3D::setRotation
     (float x, float y, float z)
     {
-        mOrientation = glm::rotate(mOrientation,x,vec3(1.0f,0.0f,0.0f));
-        mOrientation = glm::rotate(mOrientation,y,vec3(0.0f,1.0f,0.0f));
-        mOrientation = glm::rotate(mOrientation,z,vec3(0.0f,0.0f,1.0f));
+        mOrientation = glm::rotate(glm::radians(x),vec3(1.0f,0.0f,0.0f));
+        mOrientation = glm::rotate(mOrientation,glm::radians(y),vec3(0.0f,1.0f,0.0f));
+        mOrientation = glm::rotate(mOrientation,glm::radians(z),vec3(0.0f,0.0f,1.0f));
     }
 
     float
@@ -327,21 +327,21 @@ namespace Dream
     Transform3D::rotateByX
     (float delta)
     {
-        mOrientation = glm::rotate(mOrientation,delta,vec3(1.0f,0.0f,0.0f));
+        mOrientation = glm::rotate(mOrientation,glm::radians(delta),vec3(1.0f,0.0f,0.0f));
     }
 
     void
     Transform3D::rotateByY
     (float delta)
     {
-        mOrientation = glm::rotate(mOrientation,delta,vec3(0.0f,1.0f,0.0f));
+        mOrientation = glm::rotate(mOrientation,glm::radians(delta),vec3(0.0f,1.0f,0.0f));
     }
 
     void
     Transform3D::rotateByZ
     (float delta)
     {
-        mOrientation = glm::rotate(mOrientation,delta,vec3(0.0f,0.0f,1.0f));
+        mOrientation = glm::rotate(mOrientation,glm::radians(delta),vec3(0.0f,0.0f,1.0f));
     }
 
     void

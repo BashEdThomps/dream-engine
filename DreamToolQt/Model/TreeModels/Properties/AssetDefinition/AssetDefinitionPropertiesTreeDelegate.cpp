@@ -355,6 +355,7 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
             spinBox = new QDoubleSpinBox(parent);
             spinBox->setRange(0.0, numeric_limits<double>::max());
             return spinBox;
@@ -496,6 +497,7 @@ const
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
             static_cast<QDoubleSpinBox*>(editor)->setValue(value.toDouble());
             break;
 
@@ -566,6 +568,7 @@ const
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
             model->setData(index,static_cast<QDoubleSpinBox*>(editor)->value());
             break;
 

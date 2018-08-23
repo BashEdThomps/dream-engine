@@ -28,15 +28,25 @@ public:
     void setPathDefinition(PathDefinition* def);
     void getAllUpInYourFace();
 
+public slots:
+    void onNumberOfTangentsChanged(int num);
+
 private slots:
     void onAddButtonClicked(bool);
     void onRemoveButtonClicked(bool);
     void onTableChanged();
     void onTableSelectionChanged(const QItemSelection&, const QItemSelection&);
+    void onPathVisibleButtonClicked(bool);
+    void onTangentVisibleButtonClicked(bool);
+    void onTangentIndexChanged(int val);
+
 signals:
     void notifyTableChanged();
     void notifySelectedRowChanged(int);
     void notifyCloseEvent();
+    void notifyPathVisibilityChanged(bool);
+    void notifyTangentVisibilityChanged(bool);
+    void notifyTangentIndexChanged(int);
 
 private:
     void populate();

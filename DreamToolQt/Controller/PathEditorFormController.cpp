@@ -20,6 +20,9 @@ PathEditorFormController::PathEditorFormController
     connect(mUi.addButton,SIGNAL(clicked(bool)),this,SLOT(onAddButtonClicked(bool)));
     connect(mUi.removeButton,SIGNAL(clicked(bool)),this,SLOT(onRemoveButtonClicked(bool)));
     connect(&mTableModel,SIGNAL(changed()),this,SLOT(onTableChanged()));
+    connect(mUi.pathVisibleButton,SIGNAL(clicked(bool)),this,SLOT(onPathVisibleButtonClicked(bool)));
+    connect(mUi.tangentButton,SIGNAL(clicked(bool)),this,SLOT(onTangentVisibleButtonClicked(bool)));
+    connect(mUi.tangentIndexSlider,SIGNAL(valueChanged(int)),this,SLOT(onTangentIndexChanged(int)));
     setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 
@@ -93,6 +96,21 @@ PathEditorFormController::onTableSelectionChanged
     emit notifySelectedRowChanged(row);
 }
 
+void PathEditorFormController::onPathVisibleButtonClicked(bool visible)
+{
+    emit notifyPathVisibilityChanged(visible);
+}
+
+void PathEditorFormController::onTangentVisibleButtonClicked(bool visible)
+{
+   emit notifyTangentVisibilityChanged(visible);
+}
+
+void PathEditorFormController::onTangentIndexChanged(int val)
+{
+   emit notifyTangentIndexChanged(val);
+}
+
 void
 PathEditorFormController::populate
 ()
@@ -126,6 +144,13 @@ PathEditorFormController::getAllUpInYourFace
     activateWindow();
     raise();
     setFocus();
+}
+
+void PathEditorFormController::onNumberOfTangentsChanged(int num)
+{
+   mUi.tangentIndexSlider->setMinimum(0);
+   mUi.tangentIndexSlider->setMaximum(num);
+   mUi.tangentIndexSlider->setTickInterval(1);
 }
 
 void
