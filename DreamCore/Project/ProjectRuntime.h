@@ -46,7 +46,7 @@ namespace Dream
     class Camera;
     class SceneRuntime;
     class SceneDefinition;
-    class TextureCache;
+    class MaterialCache;
     class LuaScriptCache;
     class AssimpCache;
     class FontCache;
@@ -88,7 +88,7 @@ namespace Dream
 
         // Caches
 
-        unique_ptr<TextureCache> mTextureCache;
+        unique_ptr<MaterialCache> mTextureCache;
         unique_ptr<AssimpCache> mModelCache;
         unique_ptr<FontCache> mFontCache;
         unique_ptr<ShaderCache> mShaderCache;
@@ -144,7 +144,7 @@ namespace Dream
 
         FontCache* getFontCacheHandle();
         ShaderCache* getShaderCacheHandle();
-        TextureCache* getTextureCacheHandle();
+        MaterialCache* getTextureCacheHandle();
         AssimpCache* getModelCacheHandle();
         bool mGraphicsUpdating;
         bool mLogicUpdating;

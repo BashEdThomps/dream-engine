@@ -15,14 +15,14 @@
 #include <glm/glm.hpp>
 
 #include "SpriteInstance.h"
-#include "../Model/TextureCache.h"
+#include "../Model/MaterialCache.h"
 #include "SpriteDefinition.h"
 
 namespace Dream
 {
 
   SpriteInstance::SpriteInstance
-  (TextureCache* cache, SpriteDefinition* definition, SceneObjectRuntime* transform)
+  (MaterialCache* cache, SpriteDefinition* definition, SceneObjectRuntime* transform)
       : IAssetInstance(definition,transform),
         ILoggable ("SpriteInstance"),
         mCacheHandle(cache)
@@ -47,10 +47,10 @@ namespace Dream
     string directory = path.substr(0, path.find_last_of('/'));
         log->info( "SpriteInstance: Loading sprite from {}" , path );
 
-    Texture tex = mCacheHandle->loadTextureFromFile("sprite",directory.c_str(),"sprite");
-    mTexture = tex.id;
-    mWidth = tex.width;
-    mHeight = tex.height;
+    shared_ptr<Texture> tex = mCacheHandle->loadTextureFromFile("sprite",directory.c_str(),"sprite");
+    mTexture = tex->id;
+    mWidth = tex->width;
+    mHeight = tex->height;
     mLoaded = (mTexture > 0);
     return mLoaded;
   }

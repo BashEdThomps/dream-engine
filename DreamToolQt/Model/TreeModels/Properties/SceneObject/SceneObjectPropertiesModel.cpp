@@ -74,7 +74,9 @@ SceneObjectPropertiesModel::createProperties
     createScaleProperty();
     createTransformTypeProperty();
     createHasFocusProperty();
+    createAlwaysDrawProperty();
     createFollowsCameraProperty();
+    createStaticProperty();
     createAssetInstancesProperty();
     createChildrenProperty();
 }
@@ -328,6 +330,20 @@ SceneObjectPropertiesModel::createHasFocusProperty
     mRootItem->appendChild(hasFocusItem);
 }
 
+void SceneObjectPropertiesModel::createAlwaysDrawProperty()
+{
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createAlwaysDrawProperty");
+    SceneObjectPropertiesItem *hasFocusItem = new SceneObjectPropertiesItem
+    (
+        "Always Draw",
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_ALWAYS_DRAW
+    );
+    mRootItem->appendChild(hasFocusItem);
+
+}
+
 void
 SceneObjectPropertiesModel::createAssetInstancesProperty
 ()
@@ -382,6 +398,20 @@ SceneObjectPropertiesModel::createChildrenProperty
         childItem->setTargetSceneObjectDefinitionHandle(child);
         childrenItem->appendChild(childItem);
     }
+}
+
+void SceneObjectPropertiesModel::createStaticProperty()
+{
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createStaticProperty");
+    SceneObjectPropertiesItem *hasFocusItem = new SceneObjectPropertiesItem
+    (
+        "Static",
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_STATIC
+    );
+    mRootItem->appendChild(hasFocusItem);
+
 }
 
 void

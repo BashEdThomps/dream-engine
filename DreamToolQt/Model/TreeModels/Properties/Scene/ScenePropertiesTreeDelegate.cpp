@@ -78,6 +78,7 @@ ScenePropertiesTreeDelegate::createEditor
         case SCENE_PROPERTY_CAMERA_ROTATION_Z:
 
         case SCENE_PROPERTY_CAMERA_SPEED:
+        case SCENE_PROPERTY_MESH_CULL_DISTANCE:
 
         case SCENE_PROPERTY_CLEAR_RED:
         case SCENE_PROPERTY_CLEAR_GREEN:
@@ -140,6 +141,7 @@ ScenePropertiesTreeDelegate::setEditorData
         case SCENE_PROPERTY_CAMERA_ROTATION_Z:
 
         case SCENE_PROPERTY_CAMERA_SPEED:
+        case SCENE_PROPERTY_MESH_CULL_DISTANCE:
 
         case SCENE_PROPERTY_CLEAR_RED:
         case SCENE_PROPERTY_CLEAR_GREEN:
@@ -193,6 +195,7 @@ ScenePropertiesTreeDelegate::setModelData
         case SCENE_PROPERTY_CAMERA_ROTATION_Z:
 
         case SCENE_PROPERTY_CAMERA_SPEED:
+        case SCENE_PROPERTY_MESH_CULL_DISTANCE:
 
         case SCENE_PROPERTY_CLEAR_RED:
         case SCENE_PROPERTY_CLEAR_GREEN:

@@ -13,6 +13,7 @@ namespace Dream
         float maxDimension;
         vec3 minimum;
         vec3 maximum;
+        vec3 getCenter();
     };
 }
 

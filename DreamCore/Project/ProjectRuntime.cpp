@@ -41,7 +41,7 @@
 #include "../Components/Lua/LuaComponent.h"
 
 #include "../Components/Graphics/Model/AssimpCache.h"
-#include "../Components/Graphics/Model/TextureCache.h"
+#include "../Components/Graphics/Model/MaterialCache.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
 #include "../Components/Graphics/Font/FontCache.h"
 
@@ -296,7 +296,7 @@ namespace Dream
         mFontCache.reset(new FontCache());
         mModelCache.reset(new AssimpCache());
         mShaderCache.reset(new ShaderCache());
-        mTextureCache.reset(new TextureCache());
+        mTextureCache.reset(new MaterialCache());
         mScriptCache.reset(new LuaScriptCache());
         return true;
     }
@@ -554,6 +554,14 @@ namespace Dream
         log->info( "Loading SceneRuntime" );
 
         mActiveSceneRuntime.reset(new SceneRuntime(sceneDefinitionHandle , this));
+        if (mGraphicsComponent != nullptr)
+        {
+            mGraphicsComponent->setMeshCullDistance(sceneDefinitionHandle->getMeshCullDistance());
+        }
+        else
+        {
+            log->error("Unable to set mesh cull distance, graphics component is still null");
+        }
 
         return mActiveSceneRuntime.get();
     }
@@ -583,7 +591,7 @@ namespace Dream
         return mShaderCache.get();
     }
 
-    TextureCache*
+    MaterialCache*
     ProjectRuntime::getTextureCacheHandle
     ()
     {

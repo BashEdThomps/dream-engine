@@ -113,6 +113,20 @@ namespace Dream
         return mJson[Constants::SCENE_PHYSICS_DEBUG];
     }
 
+    void SceneDefinition::setMeshCullDistance(float mcd)
+    {
+        mJson[Constants::SCENE_MESH_CULL_DISTANCE] = mcd;
+    }
+
+    float SceneDefinition::getMeshCullDistance()
+    {
+        if (mJson[Constants::SCENE_MESH_CULL_DISTANCE].is_null())
+        {
+            mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
+        }
+        return mJson[Constants::SCENE_MESH_CULL_DISTANCE];
+    }
+
     string
     SceneDefinition::getNotes
     ()

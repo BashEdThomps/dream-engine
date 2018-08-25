@@ -45,9 +45,11 @@ public:
     void createScaleProperty();
     void createTransformTypeProperty();
     void createHasFocusProperty();
+    void createAlwaysDrawProperty();
     void createFollowsCameraProperty();
     void createAssetInstancesProperty();
     void createChildrenProperty();
+    void createStaticProperty();
 
 
 public slots:

@@ -12,6 +12,7 @@
 #include "AssimpMaterial.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
+#include "../BoundingBox.h"
 #include "../../../Common/Constants.h"
 #include "../../../Common/ILoggable.h"
 
@@ -24,25 +25,25 @@ namespace Dream
     {
     private:
         AssimpModelInstance* mParentHandle;
-        AssimpMaterial mMaterial;
+        AssimpMaterial* mMaterialHandle;
         string  mName;
 
         GLuint mVAO;
         GLuint mVBO;
-        GLuint mEBO;
+        GLuint mIBO;
 
         vector<Vertex>  mVertices;
         vector<GLuint>  mIndices;
-        vector<Texture> mTextures;
-        vector<GLuint>  mTexturesInUse;
+        BoundingBox mBoundingBox;
 
         void bindTextures(ShaderInstance*);
+        void bindTexture(Texture* material);
         void unbindTextures();
         void bindDiffuse(ShaderInstance*);
         void bindSpecular(ShaderInstance*);
         void bindAmbient(ShaderInstance* shaderHandle);
-
         void bindOpacity(ShaderInstance* shaderHandle);
+
     public:
         AssimpMesh
         (
@@ -50,13 +51,18 @@ namespace Dream
             string name,
             vector<Vertex> vertexArray,
             vector<GLuint> indexArray,
-            vector<Texture> textureArray,
-            AssimpMaterial material
+            AssimpMaterial* material
         );
+
         ~AssimpMesh();
         void draw(ShaderInstance*);
         void init();
+
         string getName() const;
         void setName(const string& name);
+        BoundingBox getBoundingBox() const;
+        void setBoundingBox(const BoundingBox& boundingBox);
+        vector<Vertex> getVertices() const;
+        vector<GLuint> getIndices() const;
     };
 }

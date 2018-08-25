@@ -36,7 +36,8 @@
 #include "Light/LightInstance.h"
 
 #include "Model/AssimpModelInstance.h"
-#include "Model/TextureCache.h"
+#include "Model/AssimpMesh.h"
+#include "Model/MaterialCache.h"
 
 #include "Shader/ShaderInstance.h"
 #include "Shader/ShaderCache.h"
@@ -50,6 +51,7 @@
 #include "../../Common/Constants.h"
 
 #include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 #include "../../Utilities/Math.h"
@@ -63,12 +65,17 @@ using glm::scale;
 
 namespace Dream
 {
-
     GraphicsComponent::GraphicsComponent
     (Camera* camera, IWindowComponent* windowComponent, bool parallel)
         : IComponent(parallel),
           mCamera(camera),
-          mWindowComponentHandle(windowComponent)
+          mMinimumDraw(1.0f),
+          mMaximumDraw(3000.0f),
+          mMeshCullDistance(2500.0f),
+          mWindowComponentHandle(windowComponent),
+          mModelQueueType(LINEAR)
+
+
     {
         setLogClassName("GraphicsComponent");
         auto log = getLog();
@@ -115,9 +122,7 @@ namespace Dream
         onWindowDimensionsChanged();
         Constants::checkGLError("After initial window dimensions changed");
 
-
-        Constants::checkGLError("After enable depth");
-        //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         Constants::checkGLError("After perspective correction");
 
         create2DVertexObjects();
@@ -154,23 +159,20 @@ namespace Dream
 
         // Ortho projection for 2D
         mOrthoProjection = ortho
-                (
-                    0.0f,
-                    static_cast<float>(windowWidth),
-                    static_cast<float>(windowHeight),
-                    0.0f,
-                    -1.0f, 1.0f
-                    );
+        (
+            0.0f, static_cast<float>(windowWidth),
+            static_cast<float>(windowHeight), 0.0f
+        );
 
         Constants::checkGLError("After ortho");
 
         // Perspective Projection Matrix
         mProjectionMatrix = perspective(
-                    mCamera->getZoom(),
-                    static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
-                    mMinimumDraw,
-                    mMaximumDraw
-                    );
+            mCamera->getZoom(),
+            static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
+            mMinimumDraw,
+            mMaximumDraw
+        );
 
         Constants::checkGLError("After projection matrix");
 
@@ -184,6 +186,16 @@ namespace Dream
                     );
     }
 
+    float GraphicsComponent::getMeshCullDistance() const
+    {
+        return mMeshCullDistance;
+    }
+
+    void GraphicsComponent::setMeshCullDistance(float meshCullDistance)
+    {
+        mMeshCullDistance = meshCullDistance;
+    }
+
     void
     GraphicsComponent::preModelRender
     ()
@@ -193,12 +205,12 @@ namespace Dream
         Constants::checkGLError("before pre render");
 
         glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 
         // Clear the colorbuffer
         if (mActiveSceneRuntimeHandle)
@@ -215,8 +227,6 @@ namespace Dream
         {
             glClearColor(0.0f,0.0f,0.0f,0.0f);
         }
-
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Constants::checkGLError("after pre render");
     }
@@ -240,11 +250,6 @@ namespace Dream
         auto log = getLog();
         log->info("Pre Render" );
         Constants::checkGLError("before pre render");
-
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Clear the colorbuffer
         if (mActiveSceneRuntimeHandle)
@@ -322,54 +327,6 @@ namespace Dream
                 auto log = getLog();
                 log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
 
-                /*
-         * Let's think about rendering pipeline optimisation...
-         *
-         * I want to order my rendering quque in such a way that it minimises shader
-         * changes. Using one shader per ModelInstance is OK but I'm moving to a
-         * 1-shader-per-material approach to allow ModelInstances to be rendered
-         * with multiple shaders, depending on their material.
-         *
-         * Each ModelIinstance has a table of Materials present within the model and the
-         * ShaderInstance that said material want's to be rendered with.
-         *
-         * Using this data I can find all of the meshes in the scene that want to
-         * use any given shader. Then I can build a data structure that holds the
-         * relationship of ShaderInstance to vector<Mesh>. These meshes can be
-         * ordered by distance to implement draw distance limiting.
-         *
-         * e.g
-         *
-         * // Meshes in Frustum OrderedBy Distance Ascending
-         *
-         * vector<Mesh> mMeshes;
-         *
-         * auto meshItr = begin( mMeshes )
-         *
-         * for (Mesh m : mMeshes)
-         * {
-         *     if (mesh.radiusFromCamera() > RenderDistanceMax) break;
-         *
-         *     addToVBO(mMesh)
-         * }
-         *
-         * setupShader(currentShader)
-         * render(currentShader,VBO);
-         *  setTextures()    \
-         *  setUniforms()     \ etc...
-         *  setVariables()   /
-         *
-         * For each ShaderInstance I can setup the shader and render the vector of
-         * meshes (Possibly globbed into a single VBO) in order from furthest to
-         * or vice cersa. without switching shaders.
-         *
-         * The goal is to have each shader used only once per frame.
-         *
-         * The initial map can be built at load-time rather than once per frame,
-         * then meshes ordered by distance once per frame as this is dynamic, but
-         * mesh's material/shader will never change.
-         *
-         */
 
                 // View transform
                 mViewMatrix = mCamera->getViewMatrix();
@@ -499,13 +456,81 @@ namespace Dream
         mModelQueue.clear();
     }
 
+
+        /* INTERMISSION =========================================================
+         *
+         * Let's think about rendering pipeline optimisation...
+         *
+         * I want to order my rendering quque in such a way that it minimises shader
+         * changes. Using one shader per ModelInstance is OK but I'm moving to a
+         * 1-shader-per-material approach to allow ModelInstances to be rendered
+         * with multiple shaders, depending on their material.
+         *
+         * Each ModelIinstance has a table of Materials present within the model and the
+         * ShaderInstance that said material want's to be rendered with.
+         *
+         * Using this data I can find all of the meshes in the scene that want to
+         * use any given shader. Then I can build a data structure that holds the
+         * relationship of ShaderInstance to vector<Mesh>. These meshes can be
+         * ordered by distance to implement draw distance limiting.
+         *
+         * e.g
+         *
+         * // Meshes in Frustum OrderedBy Distance Ascending
+         *
+         * vector<Mesh> mMeshes;
+         *
+         * auto meshItr = begin( mMeshes )
+         *
+         * for (Mesh m : mMeshes)
+         * {
+         *     if (mesh.radiusFromCamera() > RenderDistanceMax) break;
+         *
+         *     addToVBO(mMesh)
+         * }
+         *
+         * setupShader(currentShader)
+         * render(currentShader,VBO);
+         *  setTextures()    \
+         *  setUniforms()     \ etc...
+         *  setVariables()   /
+         *
+         * For each ShaderInstance I can setup the shader and render the vector of
+         * meshes (Possibly globbed into a single VBO) in order from furthest to
+         * or vice cersa. without switching shaders.
+         *
+         * The goal is to have each shader used only once per frame.
+         *
+         * The initial map can be built at load-time rather than once per frame,
+         * then meshes ordered by distance once per frame as this is dynamic, but
+         * mesh's material/shader will never change.
+         *
+         * =======================================================================
+         */
+
+
+
     void
     GraphicsComponent::addToModelQueue
     (SceneObjectRuntime* object)
     {
         auto log = getLog();
         log->info("Adding {} to 3D Queue",object->getNameAndUuidString());
-        mModelQueue.push_back(object);
+        switch(mModelQueueType)
+        {
+            case LINEAR:
+                mModelQueue.push_back(object);
+                break;
+            case OPTIMISED:
+                break;
+        }
+    }
+
+
+    void GraphicsComponent::debugOptimisedModelQueue()
+    {
+        auto log = getLog();
+        log->critical("Optimised Model Queue");
     }
 
     void GraphicsComponent::handleResize()
@@ -880,7 +905,8 @@ namespace Dream
         Constants::checkGLError("After set model");
 
         // Draw using shader
-        model->draw(shader);
+        bool always = sceneObject->getSceneObjectDefinitionHandle()->getAlwaysDraw();
+        model->draw(shader, translation, mCamera->getTranslation(),mMeshCullDistance, always);
         Constants::checkGLError("After Draw");
     }
 

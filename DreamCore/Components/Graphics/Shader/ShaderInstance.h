@@ -81,11 +81,15 @@ namespace Dream
         int getCount() const;
         void setCount(int count);
 
+        GLint getLocation() const;
+        void setLocation(GLint location);
+
     private:
         UniformType mType;
         string mName;
         void* mData;
         int mCount;
+        GLint mLocation;
 
     };
 

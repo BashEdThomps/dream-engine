@@ -67,6 +67,9 @@ SceneObjectPropertiesItem::setData
 
     switch(getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_ALWAYS_DRAW:
+            mSceneObjectDefinitionHandle->setAlwaysDraw(value.toBool());
+            break;
         case SCENE_OBJECT_PROPERTY_CHILD:
             break;
         case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
@@ -116,6 +119,9 @@ SceneObjectPropertiesItem::setData
         case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
             mSceneObjectDefinitionHandle->setFollowsCamera(value.toBool());
             break;
+        case SCENE_OBJECT_PROPERTY_STATIC:
+            mSceneObjectDefinitionHandle->setStatic(value.toBool());
+            break;
         case SCENE_OBJECT_PROPERTY_NONE:
             break;
     }
@@ -134,19 +140,14 @@ SceneObjectPropertiesItem::data
 
     switch(getProperty())
     {
+        case SCENE_OBJECT_PROPERTY_ALWAYS_DRAW:
+            return QVariant(mSceneObjectDefinitionHandle->getAlwaysDraw());
+
         case SCENE_OBJECT_PROPERTY_CHILD:
             break;
         case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
-            return QVariant
-            (
-                QString::fromStdString
-                (
-                    Constants::getAssetTypeReadableNameFromString
-                    (
-                        getTargetAssetDefinitionHandle()->getType()
-                    )
-                )
-            );
+            return QVariant(QString::fromStdString(Constants::getAssetTypeReadableNameFromString(getTargetAssetDefinitionHandle()->getType())));
+
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
@@ -179,8 +180,11 @@ SceneObjectPropertiesItem::data
             return QVariant(mSceneObjectDefinitionHandle->hasFocus());
         case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
             return QVariant(mSceneObjectDefinitionHandle->followsCamera());
+        case SCENE_OBJECT_PROPERTY_STATIC:
+            return QVariant(mSceneObjectDefinitionHandle->getStatic());
         case SCENE_OBJECT_PROPERTY_NONE:
             return QVariant();
+
     }
     return QVariant();
 }

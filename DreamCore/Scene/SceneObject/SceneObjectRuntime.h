@@ -101,6 +101,7 @@ namespace Dream
         void collectGarbage() override;
 
         SceneRuntime* getSceneRuntimeHandle();
+        SceneObjectDefinition* getSceneObjectDefinitionHandle();
 
         void createAssetInstances();
         void createAssetInstanceFromAssetDefinitionByUuid(string);

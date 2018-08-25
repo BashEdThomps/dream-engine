@@ -73,6 +73,7 @@ namespace Dream
     const string Constants::DREAM_TOOL_DIR = ".dreamtool";
     const string Constants::PATH_DELIMETER = "::";
     const string Constants::HTTP_ARG = "--http";
+
     // Project ==================================================================
     const string Constants::PROJECT_DEFAULT_NAME = "Untitled Project";
     const string Constants::PROJECT_DIRECTORY_ARG = "--project-dir";
@@ -92,6 +93,7 @@ namespace Dream
     const string Constants::PROJECT_WINDOW_HEIGHT = "height";
     const int    Constants::PROJECT_DEFAULT_WINDOW_WIDTH = 1280;
     const int    Constants::PROJECT_DEFAULT_WINDOW_HEIGHT = 720;
+
     // Asset ====================================================================
     const string Constants::UUID = "uuid";
     const string Constants::NAME = "name";
@@ -149,6 +151,8 @@ namespace Dream
     const string Constants::SCENE_GRAVITY = "gravity";
     const string Constants::SCENE_PHYSICS_DEBUG = "physicsDebug";
     const string Constants::SCENE_DEFAULT_NAME = "Untitled Scene";
+    const string Constants::SCENE_MESH_CULL_DISTANCE = "mesh_cull_distance";
+
     // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
     const string Constants::SCENE_OBJECT_DEFAULT_NAME = "New Scene Object";
@@ -156,6 +160,9 @@ namespace Dream
     const string Constants::SCENE_OBJECT_HAS_FOCUS = "hasFocus";
     const string Constants::SCENE_OBJECT_FOLLOWS_CAMERA = "followsCamera";
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
+    const string Constants::SCENE_OBJECT_ALWAYS_DRAW = "always_draw";
+    const string Constants::SCENE_OBJECT_STATIC = "static";
+
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";
     const string Constants::TRANSFORM_TRANSLATION = "translation";
@@ -164,9 +171,11 @@ namespace Dream
     const string Constants::TRANSFORM_TYPE = "transformType";
     const string Constants::TRANSFORM_TYPE_ABSOLUTE = "absolute";
     const string Constants::TRANSFORM_TYPE_OFFSET = "offset";
+
     // Font =====================================================================
     const string Constants::FONT_SIZE = "size";
     const string Constants::FONT_COLOUR = "colour";
+
     // Generic ==================================================================
     const string Constants::X = "x";
     const string Constants::Y = "y";
@@ -185,6 +194,7 @@ namespace Dream
     const unsigned int Constants::XYZ_VECTOR_SIZE = 3;
     const unsigned int Constants::RGB_VECTOR_SIZE = 3;
     const unsigned int Constants::RGBA_VECTOR_SIZE = 4;
+
     // Path ================================================================
     const string Constants::ASSET_ATTR_KEYFRAMES     = "keyframes";
     const string Constants::ASSET_ATTR_START_TIME    = "startTime";
@@ -207,6 +217,7 @@ namespace Dream
     const string Constants::SPRITE_TILE_SIZE   = "tileSize";
     const string Constants::SPRITE_TILE_WIDTH  = "width";
     const string Constants::SPRITE_TILE_HEIGHT = "height";
+
     // Physics ==================================================================
     const string Constants::ASSET_ATTR_MASS   = "mass";
     const string Constants::ASSET_ATTR_MARGIN = "margin";
@@ -249,18 +260,22 @@ namespace Dream
     const string Constants::EVENT_SENDER = "sender";
     const string Constants::EVENT_TYPE = "type";
     const string Constants::EVENT_TYPE_COLLISION = "collision";
+
     // Light ====================================================================
     const string Constants::ASSET_ATTR_LIGHT_COLOR   = "colour";
+
     // Model ================================================================
     const string Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST = "material_shader_list";
     const string Constants::ASSET_ATTR_MODEL_MATERIAL = "material";
     const string Constants::ASSET_ATTR_MODEL_SHADER = "shader";
+
     // Lua ======================================================================
     const string Constants::LUA_INIT_FUNCTION   = "onInit";
     const string Constants::LUA_UPDATE_FUNCTION = "onUpdate";
     const string Constants::LUA_NANOVG_FUNCTION = "onNanoVG";
     const string Constants::LUA_INPUT_FUNCTION  = "onInput";
     const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
+
     // Shader ===================================================================
     const string Constants::SHADER_FRAGMENT = ".frag";
     const string Constants::SHADER_VERTEX   = ".vert";
@@ -273,11 +288,13 @@ namespace Dream
         = Constants::ASSET_FORMAT_SHADER_GLSL +
           Constants::SHADER_VERTEX;
 
-    // Audio
+    // Audio ====================================================================
     const size_t Constants::AUDIO_BUFFER_SIZE = 32768;
-    // Window
+
+    // Window ===================================================================
     const int Constants::DEFAULT_SCREEN_WIDTH  = 1280;
     const int Constants::DEFAULT_SCREEN_HEIGHT =  720;
+
     // Camera ===================================================================
     const unsigned int Constants::CAMERA_MOVEMENT_FORWARD  = 0;
     const unsigned int Constants::CAMERA_MOVEMENT_BACKWARD = 1;

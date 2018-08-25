@@ -139,7 +139,7 @@ namespace Dream
                 ts_bspline_eval(&derivative, u, &net3);
                 ts_deboornet_result(&net3, &result3);
 
-                log->critical("Generating with u={}",u);
+                log->info("Generating with u={}",u);
                 log->info("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
 
                 for (i = 0; i < ts_deboornet_dimension(&net2); i++)
@@ -240,7 +240,7 @@ namespace Dream
         retval.setTranslation(thisPoint);
         retval.setOrientation(thisOrient);
         vec3 ang = eulerAngles(thisOrient);
-        log->critical("Got spline point {}/{} T({},{},{}) R({},{},{})",
+        log->trace("Got spline point {}/{} T({},{},{}) R({},{},{})",
             mCurrentIndex,mSplinePoints.size(),
             thisPoint.x, thisPoint.y, thisPoint.z,
             ang.x, ang.y, ang.z

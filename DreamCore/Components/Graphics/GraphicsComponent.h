@@ -43,6 +43,15 @@ namespace Dream
     class LightInstance;
     class SceneRuntime;
     class SceneObjectRuntime;
+    class Texture;
+    class AssimpMesh;
+    class AssimpMaterial;
+
+    enum ModelQueueType
+    {
+        OPTIMISED,
+        LINEAR
+    };
 
     class GraphicsComponent : public IComponent
     {
@@ -70,8 +79,9 @@ namespace Dream
 
         Camera *mCamera;
 
-        float mMinimumDraw = 0.1f;
-        float mMaximumDraw = 100000.0f;
+        float mMinimumDraw;
+        float mMaximumDraw;
+        float mMeshCullDistance;
 
         vector<SceneObjectRuntime*> mSpriteQueue;
         vector<SceneObjectRuntime*> mModelQueue;
@@ -114,5 +124,9 @@ namespace Dream
         mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();
         void handleResize();
+        float getMeshCullDistance() const;
+        void setMeshCullDistance(float meshCullDistance);
+        ModelQueueType mModelQueueType;
+        void debugOptimisedModelQueue();
     }; // End of GraphicsComponent
 } // End of Dream

@@ -482,6 +482,8 @@ namespace Dream
        // Set child rotation
        rot = mat4_cast(mOrientation);
        mtx = mtx*rot;
+       // Maintain Scale
+       mtx = glm::scale(mtx,getScale());
        return Transform3D(mtx);
     }
 

@@ -27,7 +27,7 @@
 
 #include "AssimpMesh.h"
 #include "Texture.h"
-#include "TextureCache.h"
+#include "MaterialCache.h"
 
 #include "../BoundingBox.h"
 #include "../Shader/ShaderInstance.h"
@@ -36,17 +36,20 @@
 
 #include "AssimpCache.h"
 #include "AssimpMaterial.h"
+#include <memory>
 
+using std::shared_ptr;
+using std::make_shared;
 using std::numeric_limits;
 
 namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
-    (AssimpCache* modelCache, TextureCache* texCache, IAssetDefinition* definition, SceneObjectRuntime* transform)
+    (AssimpCache* modelCache, MaterialCache* texCache, IAssetDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           ILoggable("AssimpModelInstance"),
           mModelCacheHandle(modelCache),
-          mTextureCacheHandle(texCache)
+          mMaterialCacheHandle(texCache)
     {
         auto log = getLog();
             log->trace( "Constructing {}", definition->getNameAndUuidString() );
@@ -99,11 +102,19 @@ namespace Dream
 
     void
     AssimpModelInstance::draw
-    (ShaderInstance* shader)
+    (ShaderInstance* shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
     {
-        for(AssimpMesh mesh : mMeshes)
+        auto log = getLog();
+        for(shared_ptr<AssimpMesh> mesh : mMeshes)
         {
-            mesh.draw(shader);
+            vec3 center = transform + mesh->getBoundingBox().getCenter();
+            float distance = glm::distance(center,camPos);
+            if (!alwaysDraw && distance > maxDistance)
+            {
+                log->info("Mesh exceeds max distance, skipping");
+                continue;
+            }
+            mesh->draw(shader);
         }
     }
 
@@ -115,7 +126,7 @@ namespace Dream
         for(GLuint i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            updateBoundingBox(mesh);
+            updateBoundingBox(mBoundingBox, mesh);
             mMeshes.push_back(processMesh(mesh, scene));
         }
         // Then do the same for each of its children
@@ -187,9 +198,9 @@ namespace Dream
         return indices;
     }
 
-    vector<Texture>
+    void
     AssimpModelInstance::processTextureData
-    (aiMesh* mesh,const aiScene* scene)
+    (aiMesh* mesh,const aiScene* scene, AssimpMaterial* aMaterialHandle)
     {
         auto log = getLog();
         vector<Texture> textures;
@@ -200,92 +211,73 @@ namespace Dream
 
         log->info("Loading material {} for {}",name.C_Str(), getNameAndUuidString());
 
-
         // Diffuse Textures
-        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-        if (diffuseMaps.size() > 0 )
-        {
-            log->info( "Inserting {} diffuse textre" , diffuseMaps.size());
+        if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+            aMaterialHandle->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
 
-        }
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
         // Specular Textures
-        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        if (specularMaps.size() > 0)
-        {
-            log->info( "Inserting {} specular texture", specularMaps.size());
-
-        }
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+        if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
+            aMaterialHandle->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
 
         // Normal Textures
-        vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normals");
-        if (normalMaps.size() > 0)
-        {
-            log->info( "Inserting {} normal texture", normalMaps.size());
-
-        }
-        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-        return textures;
-
+        if(material->GetTextureCount(aiTextureType_NORMALS) > 0)
+            aMaterialHandle->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS, "texture_normals");
     }
 
-    AssimpMesh
+    shared_ptr<AssimpMesh>
     AssimpModelInstance::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
         auto log = getLog();
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
-        vector<Texture> textures = processTextureData(mesh,scene);
 
         // Material info Colours
-
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        AssimpMaterial aMaterial;
 
-        /*  Material Attributes
-            AI_MATKEY_NAME
-            AI_MATKEY_TWOSIDED
-            AI_MATKEY_SHADING_MODEL
-            AI_MATKEY_ENABLE_WIREFRAME
-            AI_MATKEY_BLEND_FUNC
-            AI_MATKEY_OPACITY
-            AI_MATKEY_BUMPSCALING
-            AI_MATKEY_SHININESS
-            AI_MATKEY_REFLECTIVITY
-            AI_MATKEY_SHININESS_STRENGTH
-            AI_MATKEY_REFRACTI
-            AI_MATKEY_COLOR_DIFFUSE
-            AI_MATKEY_COLOR_AMBIENT
-            AI_MATKEY_COLOR_SPECULAR
-            AI_MATKEY_COLOR_EMISSIVE
-            AI_MATKEY_COLOR_TRANSPARENT
-            AI_MATKEY_COLOR_REFLECTIVE
-        */
-        aiGetMaterialString(material,  AI_MATKEY_NAME,               &aMaterial.mName);
-        aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial.mTwoSided);
-        aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial.mShadingModel);
-        aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial.mEnableWireframe);
-        aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial.mBlendFunc);
-        aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial.mOpacity);
-        aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial.mBumpScaling);
-        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial.mShininess);
-        aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial.mReflectivity);
-        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial.mShininessStrength);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial.mColorDiffuse);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial.mColorAmbient);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial.mColorSpecular);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial.mColorEmissive);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial.mColorTransparent);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial.mColorReflective);
+        aiString name;
+        aiGetMaterialString(material,  AI_MATKEY_NAME,               &name);
 
-        log->info( "Using Material {}" , aMaterial.mName.C_Str());
+        shared_ptr<AssimpMaterial> aMaterial = mMaterialCacheHandle->getMaterialByName(name);
 
-        return AssimpMesh(this, string(mesh->mName.C_Str()), vertices, indices, textures, aMaterial);
+        if (aMaterial == nullptr)
+        {
+            log->info("Creating Material {}", name.C_Str());
+            aMaterial = make_shared<AssimpMaterial>();
+
+            aMaterial->mName = name;
+            aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
+            aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial->mShadingModel);
+            aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial->mEnableWireframe);
+            aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial->mBlendFunc);
+            aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial->mOpacity);
+            aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial->mBumpScaling);
+            aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mShininess);
+            aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial->mReflectivity);
+            aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial->mShininessStrength);
+            aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial->mColorDiffuse);
+            aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial->mColorAmbient);
+            aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial->mColorSpecular);
+            aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
+            aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
+            aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
+
+            mMaterialCacheHandle->addMaterialToCache(aMaterial);
+
+            processTextureData(mesh,scene, aMaterial.get());
+        }
+
+        log->info( "Using Material {}" , aMaterial->mName.C_Str());
+
+        BoundingBox box;
+        updateBoundingBox(box, mesh);
+        auto aMesh = make_shared<AssimpMesh>(this, string(mesh->mName.C_Str()), vertices, indices, aMaterial.get());
+        aMesh->setBoundingBox(box);
+        return aMesh;
     }
 
+    /*
     vector<Texture>
     AssimpModelInstance::loadMaterialTextures
     (aiMaterial* mat, aiTextureType type, string typeName)
@@ -295,10 +287,21 @@ namespace Dream
         {
             aiString str;
             mat->GetTexture(type, i, &str);
-            Texture tex = mTextureCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+            Texture tex = mMaterialCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
             textures.push_back(tex);
         }
         return textures;
+    }
+    */
+
+    shared_ptr<Texture>
+    AssimpModelInstance::loadMaterialTexture
+    (aiMaterial* mat, aiTextureType type, string typeName)
+    {
+        aiString str;
+        mat->GetTexture(type, 0, &str);
+        auto tex = mMaterialCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+        return tex;
     }
 
     void
@@ -317,59 +320,59 @@ namespace Dream
 
     void
     AssimpModelInstance::updateBoundingBox
-    (aiMesh* mesh)
+    (BoundingBox& box, aiMesh* mesh)
     {
         auto log = getLog();
-            log->info( "Updating bounding box for {}", getNameAndUuidString() );
+        log->info( "Updating bounding box for {}", getNameAndUuidString() );
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {
             aiVector3D vertex = mesh->mVertices[i];
 
             // Maximum
-            if (mBoundingBox.maximum.x < vertex.x)
+            if (box.maximum.x < vertex.x)
             {
-                mBoundingBox.maximum.x = vertex.x;
+                box.maximum.x = vertex.x;
             }
 
-            if (mBoundingBox.maximum.y < vertex.y)
+            if (box.maximum.y < vertex.y)
             {
-                mBoundingBox.maximum.y = vertex.y;
+                box.maximum.y = vertex.y;
             }
 
-            if (mBoundingBox.maximum.z < vertex.z)
+            if (box.maximum.z < vertex.z)
             {
-                mBoundingBox.maximum.z = vertex.z;
+                box.maximum.z = vertex.z;
             }
 
             // Maximum
-            if (mBoundingBox.minimum.x > vertex.x)
+            if (box.minimum.x > vertex.x)
             {
-                mBoundingBox.minimum.x = vertex.x;
+                box.minimum.x = vertex.x;
             }
 
-            if (mBoundingBox.minimum.y > vertex.y)
+            if (box.minimum.y > vertex.y)
             {
-                mBoundingBox.minimum.y = vertex.y;
+                box.minimum.y = vertex.y;
             }
 
-            if (mBoundingBox.minimum.z > vertex.z)
+            if (box.minimum.z > vertex.z)
             {
-                mBoundingBox.minimum.z = vertex.z;
+                box.minimum.z = vertex.z;
             }
         }
 
         float maxBound;
         maxBound = (
-            mBoundingBox.maximum.x > mBoundingBox.maximum.y ?
-            mBoundingBox.maximum.x :
-            mBoundingBox.maximum.y
+            box.maximum.x > box.maximum.y ?
+            box.maximum.x :
+            box.maximum.y
         );
 
         maxBound = (
-            maxBound > mBoundingBox.maximum.z ?
+            maxBound > box.maximum.z ?
             maxBound :
-            mBoundingBox.maximum.z
+            box.maximum.z
         );
 
         mBoundingBox.maxDimension = maxBound;
@@ -388,7 +391,5 @@ namespace Dream
     {
         return mModelMatrix;
     }
-
-
 
 } // End of Dream

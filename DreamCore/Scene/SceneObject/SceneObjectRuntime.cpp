@@ -830,6 +830,11 @@ namespace Dream
         return mSceneRuntimeHandle;
     }
 
+    SceneObjectDefinition*SceneObjectRuntime::getSceneObjectDefinitionHandle()
+    {
+       return dynamic_cast<SceneObjectDefinition*>(getDefinitionHandle());
+    }
+
     void
     SceneObjectRuntime::useDefinition
     (IDefinition* iDefinitionHandle)

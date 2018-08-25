@@ -27,17 +27,21 @@ namespace DreamSDL
     SDLWindowComponent::SDLWindowComponent
     () : IWindowComponent()
     {
+        auto log = spdlog::get("SDLWindowComponent");
+        if (log == nullptr)
         {
-            cout << "SDLWindowComponent: Constructing" << endl;
+            log = spdlog::stdout_color_mt("SDLWindowComponent");
         }
+        log->info("Constructing" );
         mName = "Dream";
     }
 
     SDLWindowComponent::~SDLWindowComponent
     ()
     {
+        auto log = spdlog::get("SDLWindowComponent");
         {
-            cout << "SDLWindowComponent: Destructing" << endl;
+            log->info("Destructing" );
         }
         if (mWindow != nullptr)
         {
@@ -67,9 +71,10 @@ namespace DreamSDL
     SDLWindowComponent::initSDL
     ()
     {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER ) != 0)
+        auto log = spdlog::get("SDLWindowComponent");
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) != 0)
         {
-            cerr << "SDL_Init Error: " << SDL_GetError() << endl;
+            log->error("SDL_Init Error: {}" ,SDL_GetError() );
             return false;
         }
 
@@ -82,16 +87,11 @@ namespace DreamSDL
 
         if (mWindow == nullptr)
         {
-            {
-                cout << "SDLWindowComponent: SDL_CreateWindow Error = " << SDL_GetError() << endl;
-            }
+            log->info("SDL_CreateWindow Error = {}" ,SDL_GetError() );
             SDL_Quit();
             return false;
         }
-        //SDL_SetRelativeMouseMode(SDL_TRUE);
-        {
-            cout << "SDLWindowComponent: Initialised SDL" << endl;
-        }
+        log->info("Initialised SDL" );
 
         return true;
     }
@@ -100,24 +100,21 @@ namespace DreamSDL
     SDLWindowComponent::initGL
     ()
     {
+        auto log = spdlog::get("SDLWindowComponent");
         //Use OpenGL 3.2 core
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
         //Create context
         mContext = SDL_GL_CreateContext(mWindow);
         if(mContext == nullptr)
         {
-            cerr << "SDLWindowComponent: OpenGL context could not be created! "
-                 << "SDL Says: " << SDL_GetError() << endl;
+            log->error("OpenGL context could not be created! {}", SDL_GetError() );
             return false;
         }
-
-        {
-            cout << "SDLWindowComponent: Initialised SDL::OpenGL" << endl;
-        }
+        log->info("Initialised SDL::OpenGL");
         return true;
     }
 
@@ -130,6 +127,7 @@ namespace DreamSDL
     SDLWindowComponent::updateComponent
     ()
     {
+        auto log = spdlog::get("SDLWindowComponent");
 
         mEvents.clear();
         SDL_Event event;
@@ -138,7 +136,7 @@ namespace DreamSDL
         {
             if (event.type == SDL_QUIT)
             {
-                cout << "SDLWindowComponent: SDL_QUIT Event" << endl;
+                log->info("SDL_QUIT Event");
                 mActiveSceneRuntimeHandle->setState(Dream::SCENE_STATE_STOPPED);
                 break;
             }
@@ -158,13 +156,8 @@ namespace DreamSDL
                 memcpy(&e,&event,sizeof(SDL_Event));
                 mEvents.push_back(e);
             }
-           // {
-           //     cout << "SDLWindowComponent::update GameController Implementation Disabled!" << endl;
-           // }
         }
-        {
-            cout << "SDLWindowComponent " << mEvents.size() << " Events" << endl;
-        }
+        log->info("{} events", mEvents.size());
 
     }
 
@@ -175,16 +168,13 @@ namespace DreamSDL
 
     void SDLWindowComponent::getCurrentDimensions()
     {
+        auto log = spdlog::get("SDLWindowComponent");
 
         if (mWindow != nullptr)
         {
             SDL_GetWindowSize(mWindow, &mWidth, &mHeight);
         }
-
-        {
-            cout << "SDLWindowComponent: Window size changed to "
-                 << mWidth << "," << mHeight << endl;
-        }
+        log->info("SDLWindowComponent: Window size changed to {},{}", mWidth , mHeight );
         mSizeHasChanged = true;
     }
 

@@ -60,7 +60,6 @@ private:
     void createModelFileProperty();
     void createModelAdditionalFilesProperty();
     void createModelMaterialShaderProperty();
-
     void createPhysicsMassProperty();
     void createPhysicsMarginProperty();
     void createPhysicsKinematicProperty();
@@ -113,4 +112,3 @@ signals:
     void notifyButton_ModelMaterialShaderMap(IAssetDefinition*);
     void notifyButton_PathList(IAssetDefinition*);
 };
-

@@ -53,6 +53,9 @@ enum SceneObjectProperty
     SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA,
     SCENE_OBJECT_PROPERTY_CHILD,
     SCENE_OBJECT_PROPERTY_ASSET_DEFINITION,
+    SCENE_OBJECT_PROPERTY_ALWAYS_DRAW,
+    SCENE_OBJECT_PROPERTY_STATIC,
+
     SCENE_OBJECT_PROPERTY_NONE
 };
 
@@ -68,7 +71,7 @@ public:
         AbstractPropertiesItem *parent = nullptr
     );
 
-    ~SceneObjectPropertiesItem();
+    ~SceneObjectPropertiesItem() override;
 
     SceneObjectDefinition* getSceneObjectDefinitionHandle();
     SceneObjectProperty getProperty();

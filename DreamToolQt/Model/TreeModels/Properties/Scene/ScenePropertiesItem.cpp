@@ -61,6 +61,13 @@ ScenePropertiesItem::data
     {
         switch (getProperty())
         {
+            case SCENE_PROPERTY_CLEAR_PARENT:
+                break;
+            case SCENE_PROPERTY_AMBIENT_PARENT:
+                break;
+            case SCENE_PROPERTY_MESH_CULL_DISTANCE:
+                return QVariant(mSceneDefinitionHandle->getMeshCullDistance());
+                break;
             case SCENE_PROPERTY_CAMERA:
                 break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
@@ -126,6 +133,13 @@ ScenePropertiesItem::setData
     {
         switch(getProperty())
         {
+            case SCENE_PROPERTY_CLEAR_PARENT:
+                break;
+            case SCENE_PROPERTY_AMBIENT_PARENT:
+                break;
+            case SCENE_PROPERTY_MESH_CULL_DISTANCE:
+                mSceneDefinitionHandle->setMeshCullDistance(value.toFloat());
+                break;
             case SCENE_PROPERTY_CAMERA:
                 break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:

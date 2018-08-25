@@ -43,7 +43,7 @@ namespace Dream
 
     public:
         SceneDefinition(ProjectDefinition* projectHandle, json data);
-        ~SceneDefinition();
+        ~SceneDefinition() override;
 
         void showStatus() override;
 
@@ -54,6 +54,9 @@ namespace Dream
 
         void setPhysicsDebug(bool debug);
         bool getPhysicsDebug();
+
+        void setMeshCullDistance(float mcd);
+        float getMeshCullDistance();
 
         string getNotes();
         void setNotes(string notes);

@@ -39,6 +39,8 @@ namespace Dream
         return newSOD;
     }
 
+
+
     SceneObjectDefinition::SceneObjectDefinition
     (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData)
         : IDefinition(jsonData),
@@ -262,5 +264,33 @@ namespace Dream
             mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sodHandle->getJson());
         }
         return mJson;
+    }
+
+    bool SceneObjectDefinition::getAlwaysDraw()
+    {
+        if (mJson[Constants::SCENE_OBJECT_ALWAYS_DRAW].is_null())
+        {
+            mJson[Constants::SCENE_OBJECT_ALWAYS_DRAW] = false;
+        }
+        return mJson[Constants::SCENE_OBJECT_ALWAYS_DRAW];
+    }
+
+    void SceneObjectDefinition::setAlwaysDraw(bool alwaysDraw)
+    {
+        mJson[Constants::SCENE_OBJECT_ALWAYS_DRAW] = alwaysDraw;
+    }
+
+    void SceneObjectDefinition::setStatic(bool d)
+    {
+        mJson[Constants::SCENE_OBJECT_STATIC] = d;
+    }
+
+    bool SceneObjectDefinition::getStatic()
+    {
+       if (mJson[Constants::SCENE_OBJECT_STATIC].is_null())
+       {
+           mJson[Constants::SCENE_OBJECT_STATIC] = false;
+       }
+       return mJson[Constants::SCENE_OBJECT_STATIC];
     }
 }

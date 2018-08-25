@@ -216,7 +216,8 @@ namespace Dream
         if (static_cast<GLuint>(currentShader) != mShaderProgram)
         {
             auto log = spdlog::get("ShaderInstance");
-            log->info("Using Shader Program {} for {}",mShaderProgram,getNameAndUuidString());
+            log->debug("Switching Shader Program from {} to {} for {}",
+                          currentShader,mShaderProgram,getNameAndUuidString());
             glUseProgram(mShaderProgram);
         }
     }
@@ -265,7 +266,9 @@ namespace Dream
             }
         }
         log->info("Creating uniform {}", name);
-        mUniformVector.push_back(make_shared<ShaderUniform>(type,name,count,data));
+        auto newUniform = make_shared<ShaderUniform>(type,name,count,data);
+        newUniform->setLocation(glGetUniformLocation(mShaderProgram, name.c_str()));
+        mUniformVector.push_back(newUniform);
     }
 
     void
@@ -291,16 +294,16 @@ namespace Dream
                 continue;
             }
 
-            GLint location = getUniformLocation(uniform->getName());
             log->trace(
                         "Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
                         getUuid(),
                         prog,
                         uniform->getName(),
-                        location,
+                        uniform->getLocation(),
                         uniform->getCount()
                         );
 
+            auto location = uniform->getLocation();
             if (location == UNIFORM_NOT_FOUND)
             {
                 log->warn( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
@@ -484,6 +487,16 @@ namespace Dream
     void ShaderUniform::setCount(int count)
     {
         mCount = count;
+    }
+
+    GLint ShaderUniform::getLocation() const
+    {
+        return mLocation;
+    }
+
+    void ShaderUniform::setLocation(GLint location)
+    {
+        mLocation = location;
     }
 
     void* ShaderUniform::getData() const

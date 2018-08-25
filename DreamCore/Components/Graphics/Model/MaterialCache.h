@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include <SOIL.h>
 #include <GL/glew.h>
@@ -27,20 +28,27 @@
 #include "Texture.h"
 #include "../../../Common/Constants.h"
 #include "../../../Common/ILoggable.h"
+#include "AssimpMaterial.h"
 
 
 using namespace std;
 
 namespace Dream
 {
-    class TextureCache : public ILoggable
+    class AssimpMesh;
+    class MaterialCache : public ILoggable
     {
-        vector<Texture> mCache;
+        vector<shared_ptr<Texture>> mTextureCache;
+        vector<shared_ptr<AssimpMaterial>> mMaterialCache;
     public:
-        TextureCache();
-        ~TextureCache();
-        Texture loadTextureFromFile(const char*, const char*, const char*);
-        vector<Texture> getTextureCache();
+        MaterialCache();
+        ~MaterialCache();
+        vector<shared_ptr<Texture>>& getTextureCache();
+        vector<shared_ptr<AssimpMaterial>>& getMaterialCache();
+        shared_ptr<Texture> loadTextureFromFile(const char*, const char*, const char*);
+        shared_ptr<AssimpMaterial> getMaterialByName(aiString name);
+        void addMaterialToCache(shared_ptr<AssimpMaterial> mat);
+        void flushRawTextureImageData();
     };
 
 } // End Dream

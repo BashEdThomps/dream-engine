@@ -10,16 +10,13 @@ namespace Dream
         string name,
         vector<Vertex> vertices,
         vector<GLuint> indices,
-        vector<Texture> textures,
-        AssimpMaterial material
+        AssimpMaterial* material
     ) : ILoggable("AssimpMesh"),
         mParentHandle(parent),
-        mMaterial(material),
+        mMaterialHandle(material),
         mName(name),
         mVertices(vertices),
-        mIndices(indices),
-        mTextures(textures)
-
+        mIndices(indices)
     {
         auto log = getLog();
         log->trace("Constructing Mesh for {}", parent->getName());
@@ -43,71 +40,97 @@ namespace Dream
         mName = name;
     }
 
+    BoundingBox AssimpMesh::getBoundingBox() const
+    {
+        return mBoundingBox;
+    }
+
+    void AssimpMesh::setBoundingBox(const BoundingBox& boundingBox)
+    {
+        mBoundingBox = boundingBox;
+    }
+
+    vector<Vertex> AssimpMesh::getVertices() const
+    {
+        return mVertices;
+    }
+
+    vector<GLuint> AssimpMesh::getIndices() const
+    {
+        return mIndices;
+    }
+
     void
     AssimpMesh::bindTextures
     (ShaderInstance*)
     {
         auto log = getLog();
-        GLuint diffuseNr  = 1;
-        GLuint specularNr = 1;
-        GLuint normalNr   = 1;
+        bindTexture(mMaterialHandle->mDiffuseTexture.get());
+        bindTexture(mMaterialHandle->mSpecularTexture.get());
+        bindTexture(mMaterialHandle->mNormalTexture.get());
+        glActiveTexture(GL_TEXTURE0);
+    }
 
-        size_t numTextures = mTextures.size();
+    void AssimpMesh::bindTexture(Texture* t)
+    {
+        if (t == nullptr)
+        {
+            return;
+        }
+        auto log = getLog();
+        string name = t->type;
+        GLuint nextTexture = 0;
 
-        log->info("Binding {} textures",numTextures);
+        if (t->id == 0)
+        {
+            return;
+        }
 
-        for(GLuint i = 0; i < numTextures; i++)
+        if(name == "texture_diffuse")
         {
             // Activate proper texture unit before binding
-            GLuint nextTexture = GL_TEXTURE0 + i;
-            glActiveTexture(nextTexture);
-            mTexturesInUse.push_back(nextTexture);
-            // Retrieve texture number (the N in diffuse_textureN)
-            stringstream materialStr;
-            string name = mTextures[i].type;
-            materialStr << name << "_";
-            GLuint idx = 0;
-
-            if(name == "texture_diffuse")
-            {
-                idx = diffuseNr++;
-                materialStr << idx; // Transfer GLuint to stream
-            }
-            else if(name == "texture_specular")
-            {
-                idx = specularNr++;
-                materialStr << idx; // Transfer GLuint to stream
-            }
-            else if (name == "texture_normals")
-            {
-                idx = normalNr++;
-                materialStr << idx;
-            }
-
-            log->info(
-                  "Binding Material {} with GL Texture {} to unit {} for {} in {}",
-                  materialStr.str(),
-                  mTextures[i].id,
-                  nextTexture,
-                  getName(),
-                  mParentHandle->getNameAndUuidString()
-             );
-
-            glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
+            log->critical("Binding diffuse texture");
+            nextTexture = GL_TEXTURE0;
         }
-        glActiveTexture(GL_TEXTURE0);
+        else if(name == "texture_specular")
+        {
+            // Activate proper texture unit before binding
+            log->critical("Binding specular texture");
+            nextTexture = GL_TEXTURE1;
+        }
+        else if (name == "texture_normals")
+        {
+            // Activate proper texture unit before binding
+            log->critical("Binding normals texture");
+            nextTexture = GL_TEXTURE2;
+        }
+
+        log->info(
+              "Binding Material {} with GL Texture {} to unit {} for {} in {}",
+              name,
+              t->id,
+              nextTexture,
+              getName(),
+              mParentHandle->getNameAndUuidString()
+         );
+
+        glActiveTexture(nextTexture);
+        glBindTexture(GL_TEXTURE_2D, t->id);
     }
 
     void
     AssimpMesh::unbindTextures
     ()
     {
-        for (GLuint texture : mTexturesInUse)
-        {
-            glActiveTexture(texture);
-            glBindTexture(GL_TEXTURE_2D,0);
-        }
-        mTexturesInUse.clear();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D,0);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D,0);
+
     }
 
     void
@@ -115,7 +138,7 @@ namespace Dream
     (ShaderInstance *shaderHandle)
     {
         auto log = getLog();
-        aiColor4D diff = mMaterial.mColorDiffuse;
+        aiColor4D diff = mMaterialHandle->mColorDiffuse;
         auto diffuse = vec4(diff.r, diff.g, diff.b, diff.a);
         log->trace("Material Diffuse for {}: ({},{},{},{})",getName(),diff.r, diff.g, diff.b, diff.a);
         shaderHandle->addUniform(FLOAT4,"materialDiffuseColour",1,&diffuse);
@@ -126,16 +149,16 @@ namespace Dream
     (ShaderInstance *shaderHandle)
     {
         auto log = getLog();
-        aiColor4D spec = mMaterial.mColorSpecular;
+        aiColor4D spec = mMaterialHandle->mColorSpecular;
         auto specular = vec4(spec.r, spec.g, spec.b, spec.a);
         log->trace(
             "Material Specular for {}: ({},{},{},{}) strength {}",
             getName(),
             spec.r, spec.g, spec.b, spec.a,
-            mMaterial.mShininessStrength
+            mMaterialHandle->mShininessStrength
         );
         shaderHandle->addUniform(FLOAT4,"materialSpecularColour",1,&specular);
-        shaderHandle->addUniform(FLOAT1,"materialSpecularStrength",1,&mMaterial.mShininessStrength);
+        shaderHandle->addUniform(FLOAT1,"materialSpecularStrength",1,&mMaterialHandle->mShininessStrength);
     }
 
     void
@@ -143,7 +166,7 @@ namespace Dream
     (ShaderInstance *shaderHandle)
     {
         auto log = getLog();
-        aiColor4D amb = mMaterial.mColorAmbient;
+        aiColor4D amb = mMaterialHandle->mColorAmbient;
         log->trace(
             "Material Ambient for {}: ({},{},{},{})",
             getName(),
@@ -157,7 +180,7 @@ namespace Dream
     AssimpMesh::bindOpacity
     (ShaderInstance* shaderHandle)
     {
-        shaderHandle->addUniform(FLOAT1,"materialOpacity",1,&mMaterial.mOpacity);
+        shaderHandle->addUniform(FLOAT1,"materialOpacity",1,&mMaterialHandle->mOpacity);
     }
 
     void
@@ -177,7 +200,7 @@ namespace Dream
         // Draw mesh
         shader->bindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
-        shader->unbindVertexArray();
+        //shader->unbindVertexArray();
     }
 
     void
@@ -186,11 +209,11 @@ namespace Dream
     {
         glGenVertexArrays(1, &mVAO);
         glGenBuffers(1, &mVBO);
-        glGenBuffers(1, &mEBO);
+        glGenBuffers(1, &mIBO);
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertices.size() * sizeof(Vertex)), &mVertices[0], GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(mIndices.size() * sizeof(GLuint)),&mIndices[0], GL_STATIC_DRAW);
         // Vertex Positions
         glEnableVertexAttribArray(0);
@@ -215,5 +238,4 @@ namespace Dream
                     );
         glBindVertexArray(0);
     }
-
 } // End of Dream

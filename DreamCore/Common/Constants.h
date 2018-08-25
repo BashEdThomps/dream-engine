@@ -128,6 +128,7 @@ namespace Dream
         const static string SCENE_GRAVITY;
         const static string SCENE_PHYSICS_DEBUG;
         const static string SCENE_DEFAULT_NAME;
+        const static string SCENE_MESH_CULL_DISTANCE;
         // SceneObject ==========================================================
         const static string SCENE_OBJECT_ROOT_NAME;
         const static string SCENE_OBJECT_DEFAULT_NAME;
@@ -135,6 +136,9 @@ namespace Dream
         const static string SCENE_OBJECT_HAS_FOCUS;
         const static string SCENE_OBJECT_FOLLOWS_CAMERA;
         const static string SCENE_OBJECT_ASSET_INSTANCES;
+        const static string SCENE_OBJECT_ALWAYS_DRAW;
+        const static string SCENE_OBJECT_STATIC;
+
         // Transform ============================================================
         const static string TRANSFORM;
         const static string TRANSFORM_TYPE;
@@ -143,9 +147,11 @@ namespace Dream
         const static string TRANSFORM_SCALE;
         const static string TRANSFORM_TYPE_ABSOLUTE;
         const static string TRANSFORM_TYPE_OFFSET;
+
         // Font =================================================================
         const static string FONT_SIZE;
         const static string FONT_COLOUR;
+
         // Generic ==============================================================
         const static string X;
         const static string Y;
@@ -187,6 +193,7 @@ namespace Dream
         const static string SPRITE_TILE_SIZE;
         const static string SPRITE_TILE_WIDTH;
         const static string SPRITE_TILE_HEIGHT;
+
         // Physics ==============================================================
         const static string ASSET_ATTR_MASS;
         const static string ASSET_ATTR_MARGIN;
@@ -224,32 +231,40 @@ namespace Dream
         const static string COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE;
         const static string COLLISION_SHAPE_STATIC_PLANE_READABLE;
         const static string COLLISION_SHAPE_COMPOUND_READABLE;
+
         // Event ================================================================
         const static string EVENT_SENDER;
         const static string EVENT_TYPE;
         const static string EVENT_TYPE_COLLISION;
+
         // Light ================================================================
         const static string ASSET_ATTR_LIGHT_COLOR;
+
         // Model ================================================================
         const static string ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST;
         const static string ASSET_ATTR_MODEL_MATERIAL;
         const static string ASSET_ATTR_MODEL_SHADER;
+
         // Shader ===============================================================
         const static string SHADER_FRAGMENT;
         const static string SHADER_VERTEX;
         const static string SHADER_FRAGMENT_FILE_NAME;
         const static string SHADER_VERTEX_FILE_NAME;
+
         // Lua ==================================================================
         const static string LUA_INIT_FUNCTION;
         const static string LUA_UPDATE_FUNCTION;
         const static string LUA_NANOVG_FUNCTION;
         const static string LUA_INPUT_FUNCTION;
         const static string LUA_EVENT_FUNCTION;
-        // Audio
+
+        // Audio ================================================================
         const static size_t AUDIO_BUFFER_SIZE;
-        // Window
+
+        // Window ===============================================================
         const static int DEFAULT_SCREEN_WIDTH;
         const static int DEFAULT_SCREEN_HEIGHT;
+
         // Camera ===============================================================
         const static unsigned int CAMERA_MOVEMENT_FORWARD;
         const static unsigned int CAMERA_MOVEMENT_BACKWARD;

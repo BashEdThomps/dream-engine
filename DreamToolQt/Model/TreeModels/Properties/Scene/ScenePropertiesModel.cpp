@@ -253,6 +253,17 @@ ScenePropertiesModel::createCameraProperties
                     SCENE_PROPERTY_CAMERA_SPEED
                 )
             );
+
+            cameraProperty->appendChild
+            (
+                new ScenePropertiesItem
+                (
+                    "Mesh Cull",
+                    mSceneDefinitionHandle,
+                    SCENE_PROPERTY_MESH_CULL_DISTANCE
+                )
+            );
+
         }
     }
 }

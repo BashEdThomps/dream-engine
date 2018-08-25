@@ -28,7 +28,7 @@ using nlohmann::json;
 
 namespace Dream
 {
-    class TextureCache;
+    class MaterialCache;
     class SpriteDefinition;
 
     class SpriteInstance : public IAssetInstance, ILoggable
@@ -38,9 +38,9 @@ namespace Dream
         int mHeight;
         GLuint mTexture;
         GLenum mTextureFormat;
-        TextureCache* mCacheHandle;
+        MaterialCache* mCacheHandle;
     public:
-        SpriteInstance(TextureCache*, SpriteDefinition*, SceneObjectRuntime*);
+        SpriteInstance(MaterialCache*, SpriteDefinition*, SceneObjectRuntime*);
         ~SpriteInstance();
         bool load(string);
         void loadExtraAttributes(json);

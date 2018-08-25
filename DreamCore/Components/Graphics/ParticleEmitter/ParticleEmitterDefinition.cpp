@@ -1,5 +1,5 @@
 /*
- * ModelDefinition.h
+ * ParticleEmitterDefinition.cpp
  *
  * Created: 11 2017 by Ashley
  *
@@ -15,20 +15,13 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-
-#include "../../IAssetDefinition.h"
+#include "ParticleEmitterDefinition.h"
 
 namespace Dream
 {
-    class ModelDefinition : public IAssetDefinition
+    ParticleEmitterDefinition::ParticleEmitterDefinition
+    (ProjectDefinition* pdHandle, json js)
+        : IAssetDefinition(pdHandle,js)
     {
-    public:
-        ModelDefinition(ProjectDefinition* pdHandle, json js);
-        bool isFormatAssimp();
-
-        bool addMaterialShader(string material, string shader);
-        json* getMaterialShaders();
-        void removeMaterialShader(string material);
-        void clearMaterialShaderList();
-    };
+    }
 }

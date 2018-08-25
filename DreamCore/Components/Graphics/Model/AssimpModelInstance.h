@@ -22,9 +22,9 @@
 #include <map>
 
 #ifdef __APPLE__
-    #include <nlohmann/json.hpp>
+#include <nlohmann/json.hpp>
 #else
-    #include <json.hpp>
+#include <json.hpp>
 #endif
 
 #include <assimp/Importer.hpp>
@@ -49,23 +49,22 @@ using Assimp::Importer;
 namespace Dream
 {
     class Texture;
-    class TextureCache;
+    class MaterialCache;
     class ShaderInstance;
     class AssimpMesh;
     class AssimpCache;
     class Vertex;
     class Texture;
-
-
+    class AssimpMaterial;
 
     class AssimpModelInstance : public IAssetInstance, ILoggable
     {
     private:
         // Variables
         AssimpCache* mModelCacheHandle;
-        TextureCache* mTextureCacheHandle;
+        MaterialCache* mMaterialCacheHandle;
 
-        vector<AssimpMesh> mMeshes;
+        vector<shared_ptr<AssimpMesh>> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
@@ -73,26 +72,28 @@ namespace Dream
         // Methods
         void loadModel(string);
         void loadShaders();
-        vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
-        void updateBoundingBox(aiMesh* mesh);
+        //vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
+        shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType, string);
+
+        void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
         void initBoundingBox();
 
         void processNode(aiNode*, const aiScene*);
-        AssimpMesh processMesh(aiMesh*, const aiScene*);
+        shared_ptr<AssimpMesh> processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        vector<Texture> processTextureData(aiMesh* mesh, const aiScene* scene);
+        //vector<Texture> processTextureData(aiMesh* mesh, const aiScene* scene);
+        void processTextureData(aiMesh* mesh, const aiScene* scene, AssimpMaterial* materialHandle);
         map<string,unique_ptr<ShaderInstance>> mMaterialShaderMap;
     public:
-        AssimpModelInstance(AssimpCache*, TextureCache*,  IAssetDefinition*,SceneObjectRuntime*);
+        AssimpModelInstance(AssimpCache*, MaterialCache*,  IAssetDefinition*,SceneObjectRuntime*);
         ~AssimpModelInstance();
         bool load(string);
-        void draw(ShaderInstance*);
+        void draw(ShaderInstance*, vec3 transorm, vec3 camPos, float maxDistance, bool alwaysDraw = false);
         void loadExtraAttributes(json);
         BoundingBox getBoundingBox();
         void setModelMatrix(mat4);
         mat4 getModelMatrix();
-
     }; // End of AssimpModelInstance
 
 } // End of Dream

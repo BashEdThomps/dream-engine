@@ -32,19 +32,19 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-    spdlog::set_level(spdlog::level::off);
+
+    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
+    auto log = spdlog::stdout_color_mt("Main");
+
     unique_ptr<SDLWindowComponent> windowComponent(new SDLWindowComponent());
 
     Project project(windowComponent.get());
-
-
-    {
-        cout << "Main: Starting..." << endl;
-    }
+    log->trace("Starting...");
 
     if (argc < MINIMUM_ARGUMENTS)
     {
-        cerr << "Main: Minimum Number of Arguments Were Not Found." << endl;
+        log->error("Main: Minimum Number of Arguments Were Not Found.");
         showUsage(argv);
         return 1;
     }
@@ -55,14 +55,15 @@ int main(int argc, const char** argv)
 
     if (!loaded)
     {
-        cerr << "Main: Failed to Load Project." << endl;
+        log->error("Failed to Load Project.");
         return 1;
     }
 
-    cout << endl
-         << "          ==== Definition Loading Complete ====" << endl
-         << "          ====       Creating Runtime      ====" << endl
-         << endl;
+    log->info(
+         "          ==== Definition Loading Complete ====\n"
+         "          ====       Creating Runtime      ====\n");
+
+    spdlog::set_level(spdlog::level::off);
 
     ProjectRuntime* prHandle = project.createProjectRuntime();
     ProjectDefinition* pdHandle = project.getProjectDefinitionHandle();
@@ -70,25 +71,40 @@ int main(int argc, const char** argv)
 
     if (startupSceneDefinitionHandle == nullptr)
     {
-        cerr << "Main: Error, could not find startup scene definition" << endl;
+        log->error("Error, could not find startup scene definition");
         return 1;
     }
 
-    cout << "Main: Using Startup Scene " << startupSceneDefinitionHandle->getNameAndUuidString() << endl;
+    log->info("Using Startup Scene {}", startupSceneDefinitionHandle->getNameAndUuidString());
 
     SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(startupSceneDefinitionHandle);
 
     // Run the project
+    unsigned int frames = 0;
+    unsigned int time = SDL_GetTicks();
+    unsigned int one_sec = 1000;
     while(srHandle->getState() != SceneState::SCENE_STATE_STOPPED)
     {
+        prHandle->updateLogic();
+        prHandle->collectGarbage();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        prHandle->updateAll();
+        glEnable(GL_DEPTH_TEST);
+        prHandle->updateGraphics();
+        //std::this_thread::yield();
+
+        if (SDL_GetTicks() > time + one_sec)
+        {
+            cout << "FPS: " <<  frames << endl;
+            frames = 0;
+            time = SDL_GetTicks();
+        }
+        else
+        {
+            frames++;
+        }
     }
 
-    cout << endl
-         << "          ====     Done. Stack-based cleanUp     ====" << endl
-         << endl;
-
-
+    spdlog::set_level(spdlog::level::trace);
+    log->info("          ====     Done. Stack-based cleanUp     ====");
     return 0;
 }

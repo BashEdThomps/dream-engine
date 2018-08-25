@@ -77,6 +77,12 @@ namespace Dream
         SceneObjectDefinition* getParentSceneObjectHandle() const;
         SceneObjectDefinition* duplicate();
 
+        bool getAlwaysDraw();
+        void setAlwaysDraw(bool alwaysDraw);
+
+        void setStatic(bool d);
+        bool getStatic();
+
     private:
         void loadChildSceneObjectDefinitions(json definition);
     };

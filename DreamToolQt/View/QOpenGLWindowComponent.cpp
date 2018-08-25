@@ -282,8 +282,10 @@ QOpenGLWindowComponent::drawStats()
 
     painter.fillRect(rect,brush);
 
+    QFont font("Arial", 16);
     painter.setPen(Qt::white);
-    painter.setFont(QFont("Arial", 16));
+    painter.setFont(font);
+
     QString text;
 
     if (madDetail)

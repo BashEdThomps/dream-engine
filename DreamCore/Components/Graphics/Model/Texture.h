@@ -15,22 +15,30 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef TEXTURE_H
-#define TEXTURE_H
+
+#pragma once
 
 #include <GL/glew.h>
 #include <iostream>
 #include <assimp/types.h>
 
-namespace Dream {
+namespace Dream
+{
   using namespace std;
-  struct Texture {
-    GLuint id;
-    string type;
-    string path;
-    int width;
-    int height;
+  struct Texture
+  {
+    GLuint id = 0;
+    string type = "";
+    string path = "";
+    int width = 0;
+    int height = 0;
+    int channels = 0;
+    unsigned char* image = nullptr;
+    bool operator==(const Texture& other);
   };
-} // end of Dream
 
-#endif // TEXTURE_H
+  inline bool Texture::operator==(const Texture& other)
+  {
+     return this->id == other.id;
+  }
+} // end of Dream

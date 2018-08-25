@@ -1,5 +1,5 @@
 /*
- * ModelDefinition.h
+ * ParticleEmitterDefinition.h
  *
  * Created: 11 2017 by Ashley
  *
@@ -16,19 +16,17 @@
  * this file belongs to.
  */
 
+#pragma once
+
 #include "../../IAssetDefinition.h"
 
 namespace Dream
 {
-    class ModelDefinition : public IAssetDefinition
+    class ParticleEmitterDefinition : public IAssetDefinition
     {
     public:
-        ModelDefinition(ProjectDefinition* pdHandle, json js);
-        bool isFormatAssimp();
+        ParticleEmitterDefinition(ProjectDefinition* pdHandle, json js);
 
-        bool addMaterialShader(string material, string shader);
-        json* getMaterialShaders();
-        void removeMaterialShader(string material);
-        void clearMaterialShaderList();
     };
+
 }
