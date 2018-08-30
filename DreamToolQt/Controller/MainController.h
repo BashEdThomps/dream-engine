@@ -86,6 +86,7 @@ signals:
 
 public slots:
     void onScenegraphTreeDataChanged();
+    void onAssetDefinitionTreeDataChanged();
     void onPropertiesTreeDataChanged();
     void onAction_Preferences();
     void onAction_File_New();
@@ -148,7 +149,9 @@ public slots:
     void onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*, const QString&);
     void onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*, const QString&);
 
-    void onAssetDefinitionProperty_LightChooseColour(IAssetDefinition*);
+    void onAssetDefinitionProperty_LightChooseAmbient(IAssetDefinition*);
+    void onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefinition*);
+    void onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition*);
     void onAssetDefinitionProperty_PathList(IAssetDefinition*);
 
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
@@ -173,6 +176,7 @@ public slots:
 
 protected:
     void showImportResultDialog(bool success, IAssetDefinition* adHandle, QString source);
+    void forceAssetDefinitionTreeDataChanged();
 private: // Methods
     // Setup
     void setupUI();

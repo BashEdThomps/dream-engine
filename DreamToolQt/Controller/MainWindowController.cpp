@@ -189,7 +189,7 @@ MainWindowController::createAssetDefinitionTreeContextMenu
     auto menu = make_shared<QMenu>();
     QAction* nameAction = nullptr;
     CreateAssetAction* createAction = nullptr;
-    QAction* deleteAction = nullptr;
+    DeleteAssetDefinitionAction* deleteAction = nullptr;
     switch (item->getType())
     {
         case ASSET_DEFINITION:
@@ -198,7 +198,8 @@ MainWindowController::createAssetDefinitionTreeContextMenu
             nameAction->setEnabled(false);
             menu->addAction(nameAction);
             menu->addSeparator();
-            deleteAction = new QAction("Delete",menu.get());
+            deleteAction = new DeleteAssetDefinitionAction("Delete",menu.get());
+            deleteAction->mItemHandle = assetDef;
             menu->addAction(deleteAction);
             break;
         case ASSET_TREE_NODE:
@@ -218,6 +219,12 @@ MainWindowController::createAssetDefinitionTreeContextMenu
             createAction,SIGNAL(triggered()),
             this,SLOT(onCreateAssetDefinitionAction())
         );
+    }
+
+    if (deleteAction != nullptr)
+    {
+        connect(deleteAction,SIGNAL(triggered()),
+                this, SLOT(onAssetDefinitionMenuDeleteTriggered()));
     }
     return menu;
 }
@@ -404,6 +411,32 @@ MainWindowController::onScenegraphMenuDeleteSceneObjectTriggered
     {
        QMessageBox::warning(this,"Error","Cannot delete Root SceneObject");
     }
+}
+
+void
+MainWindowController::onAssetDefinitionMenuDeleteTriggered
+()
+{
+    auto log = spdlog::get("MainWindowController");
+    log->info("Delete AssetDefinition");
+
+    auto action = dynamic_cast<DeleteAssetDefinitionAction*>(sender());
+    auto assetDefinitionHandle = action->mItemHandle;
+
+    if (assetDefinitionHandle != nullptr)
+    {
+        log->info(
+            "Deleting Asset Definition scene object from {}",
+            assetDefinitionHandle->getNameAndUuidString()
+        );
+        mProjectDefinitionHandle->removeAssetDefinition(assetDefinitionHandle);
+        emit notifyAssetDefinitionTreeDataChanged();
+    }
+    else
+    {
+       QMessageBox::warning(this,"Error","Cannot delete Root SceneObject");
+    }
+
 }
 
 void MainWindowController::onAddAssetToSceneObjectTriggered()
@@ -824,7 +857,14 @@ MainWindowController::onSceneStopped
 
 void MainWindowController::onProjectDefinitionChanged(ProjectDefinition* def)
 {
-   mProjectDefinitionHandle = def;
+    mProjectDefinitionHandle = def;
+}
+
+void MainWindowController::onScenegraphTreeExpandRequested()
+{
+    auto log = spdlog::get("MainWindowController");
+    log->trace("onScenegraphTreeExpandRequested()");
+    ui->scenegraphTreeView->expandAll();
 }
 
 
@@ -963,4 +1003,25 @@ void MainWindowController::onMainVolumeChanged(int vol)
    auto log = spdlog::get("MainWindowController");
    log->info("Volume changed to {}",vol);
    emit notifyMainVolumeChanged(vol);
+}
+
+DeleteAssetDefinitionAction::DeleteAssetDefinitionAction
+(QObject* parent)
+    : QAction(parent)
+{
+
+}
+
+DeleteAssetDefinitionAction::DeleteAssetDefinitionAction
+(const QString& text, QObject* parent)
+    : QAction(text,parent)
+{
+
+}
+
+DeleteAssetDefinitionAction::DeleteAssetDefinitionAction
+(const QIcon& icon, const QString& text, QObject* parent)
+    : QAction(icon,text,parent)
+{
+
 }

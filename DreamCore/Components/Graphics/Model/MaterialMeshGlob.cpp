@@ -82,7 +82,7 @@ namespace Dream
 
         // Sync Uniforms
         mShader->syncUniforms();
-        Constants::checkGLError("After sync uniforms");
+        checkGLError();
 
         // Draw mesh
         mShader->bindVertexArray(mVAO);
@@ -165,7 +165,7 @@ namespace Dream
         auto log = getLog();
         aiColor4D diff = mMaterial->mColorDiffuse;
         auto diffuse = vec4(diff.r, diff.g, diff.b, diff.a);
-        log->trace("Material Diffuse for {}: ({},{},{},{})",mMaterial->mName.C_Str(),diff.r, diff.g, diff.b, diff.a);
+        log->trace("Material Diffuse for {}: ({},{},{})",mMaterial->mName.C_Str(),diff.r, diff.g, diff.b, diff.a);
         mShader->addUniform(FLOAT4,"materialDiffuseColour",1,&diffuse);
     }
 
@@ -177,12 +177,12 @@ namespace Dream
         aiColor4D spec = mMaterial->mColorSpecular;
         auto specular = vec4(spec.r, spec.g, spec.b, spec.a);
         log->trace(
-            "Material Specular ({},{},{},{}) strength {}",
+            "Material Specular ({},{},{}, {}) strength {}",
             spec.r, spec.g, spec.b, spec.a,
             mMaterial->mShininessStrength
         );
         mShader->addUniform(FLOAT4,"materialSpecularColour",1,&specular);
-        mShader->addUniform(FLOAT1,"materialSpecularStrength",1,&mMaterial->mShininessStrength);
+        mShader->addUniform(FLOAT1,"materialShininess",1,&mMaterial->mShininessStrength);
     }
 
     void
@@ -192,7 +192,7 @@ namespace Dream
         auto log = getLog();
         aiColor4D amb = mMaterial->mColorAmbient;
         log->trace(
-            "Material Ambient for ({},{},{},{})",
+            "Material Ambient for ({},{},{}, {})",
             amb.r, amb.g, amb.b, amb.a
         );
         auto ambient = vec4(amb.r, amb.g, amb.b, amb.a);

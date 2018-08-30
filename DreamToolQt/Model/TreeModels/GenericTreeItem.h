@@ -26,7 +26,7 @@
 class GenericTreeItem
 {
 public:
-    explicit GenericTreeItem(QString title = "", GenericTreeItem *parentItem = 0);
+    explicit GenericTreeItem(QString title = "", GenericTreeItem *parentItem = nullptr);
     ~GenericTreeItem();
 
     void appendChild(GenericTreeItem *child);

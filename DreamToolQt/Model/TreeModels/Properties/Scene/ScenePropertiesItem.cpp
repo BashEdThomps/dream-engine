@@ -61,6 +61,10 @@ ScenePropertiesItem::data
     {
         switch (getProperty())
         {
+            case SCENE_PROPERTY_MINIMUM_DRAW:
+                return QVariant(mSceneDefinitionHandle->getMinDrawDistance());
+            case SCENE_PROPERTY_MAXIMUM_DRAW:
+                return QVariant(mSceneDefinitionHandle->getMaxDrawDistance());
             case SCENE_PROPERTY_CLEAR_PARENT:
                 break;
             case SCENE_PROPERTY_AMBIENT_PARENT:
@@ -129,10 +133,17 @@ ScenePropertiesItem::setData
     {
         return false;
     }
+
     else if (column == 1)
     {
         switch(getProperty())
         {
+            case SCENE_PROPERTY_MINIMUM_DRAW:
+                mSceneDefinitionHandle->setMinDrawDistance(value.toFloat());
+                break;
+            case SCENE_PROPERTY_MAXIMUM_DRAW:
+                mSceneDefinitionHandle->setMaxDrawDistance(value.toFloat());
+                break;
             case SCENE_PROPERTY_CLEAR_PARENT:
                 break;
             case SCENE_PROPERTY_AMBIENT_PARENT:
@@ -209,9 +220,7 @@ ScenePropertiesItem::setData
             case SCENE_PROPERTY_NONE:
                 break;
         }
-
         return true;
     }
-
     return false;
 }

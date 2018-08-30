@@ -46,7 +46,10 @@ namespace Dream
     {
     public:
         // Debug ================================================================
-        static bool checkGLError(string);
+        static bool checkGLError_(string,int);
+
+#define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)
+
         // Misc =================================================================
         const static string DIR_PATH_SEP;
         const static string DREAM_TOOL_DIR;
@@ -94,6 +97,8 @@ namespace Dream
         const static string ASSET_FORMAT_FONT_TTF;
         const static string ASSET_FORMAT_SHADER_GLSL;
         const static string ASSET_FORMAT_LIGHT_POINT;
+        const static string ASSET_FORMAT_LIGHT_DIRECTIONAL;
+        const static string ASSET_FORMAT_LIGHT_SPOTLIGHT;
         const static string ASSET_FORMAT_SPRITE_IMAGE;
         const static string ASSET_DEFINITION_DEFAULT_NAME;
 
@@ -115,6 +120,8 @@ namespace Dream
         const static string ASSET_FORMAT_FONT_TTF_READABLE;
         const static string ASSET_FORMAT_SHADER_GLSL_READABLE;
         const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
+        const static string ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
+        const static string ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
         const static string ASSET_FORMAT_SPRITE_IMAGE_READABLE;
         // Scene ================================================================
         const static string SCENE_NOTES;
@@ -129,6 +136,9 @@ namespace Dream
         const static string SCENE_PHYSICS_DEBUG;
         const static string SCENE_DEFAULT_NAME;
         const static string SCENE_MESH_CULL_DISTANCE;
+        const static string SCENE_MIN_DRAW_DISTANCE;
+        const static string SCENE_MAX_DRAW_DISTANCE;
+
         // SceneObject ==========================================================
         const static string SCENE_OBJECT_ROOT_NAME;
         const static string SCENE_OBJECT_DEFAULT_NAME;
@@ -239,6 +249,15 @@ namespace Dream
 
         // Light ================================================================
         const static string ASSET_ATTR_LIGHT_COLOR;
+        const static string ASSET_ATTR_LIGHT_AMBIENT;
+        const static string ASSET_ATTR_LIGHT_DIFFUSE;
+        const static string ASSET_ATTR_LIGHT_SPECULAR;
+        const static string ASSET_ATTR_LIGHT_DIRECTION;
+        const static string ASSET_ATTR_LIGHT_CONSTANT;
+        const static string ASSET_ATTR_LIGHT_LINEAR;
+        const static string ASSET_ATTR_LIGHT_QUADRATIC;
+        const static string ASSET_ATTR_LIGHT_CUTOFF;
+        const static string ASSET_ATTR_LIGHT_OUTER_CUTOFF;
 
         // Model ================================================================
         const static string ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST;

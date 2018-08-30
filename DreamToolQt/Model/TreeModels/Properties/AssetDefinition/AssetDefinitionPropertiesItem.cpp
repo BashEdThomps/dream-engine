@@ -74,6 +74,8 @@ AssetDefinitionPropertiesItem::setData
 
     switch(getProperty())
     {
+
+
         case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
             dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->setSplineType(value.toString().toStdString());
             break;
@@ -158,25 +160,75 @@ AssetDefinitionPropertiesItem::setData
             break;
 
             // Light
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
-            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setAmbientRed(value.toFloat());
             break;
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
-            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setColourGreen(value.toFloat());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setAmbientGreen(value.toFloat());
             break;
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
-            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setColourBlue(value.toFloat());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setAmbientBlue(value.toFloat());
             break;
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
-            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setIntensity(value.toFloat());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setDiffuseRed(value.toFloat());
+            break;
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setDiffuseGreen(value.toFloat());
+            break;
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setDiffuseBlue(value.toFloat());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setSpecularRed(value.toFloat());
+            break;
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setSpecularGreen(value.toFloat());
+            break;
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setSpecularBlue(value.toFloat());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setDirectionX(value.toFloat());
+            break;
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setDirectionY(value.toFloat());
+            break;
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setDirectionZ(value.toFloat());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setConstant(value.toFloat());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setLinear(value.toFloat());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setQuadratic(value.toFloat());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setCutOff(value.toFloat());
+            break;
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
+            dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setOuterCutOff(value.toFloat());
             break;
 
             // Not used
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
@@ -263,14 +315,48 @@ AssetDefinitionPropertiesItem::data
             return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getColourBlue());
 
             // Light
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
-            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getColourRed());
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
-            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getColourGreen());
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
-            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getColourBlue());
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
-            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getIntensity());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getAmbientRed());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getAmbientGreen());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getAmbientBlue());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDiffuseRed());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDiffuseGreen());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDiffuseBlue());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getSpecularRed());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getSpecularGreen());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getSpecularBlue());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getConstant());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getLinear());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getQuadratic());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getCutOff());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getOuterCutOff());
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDirectionX());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDirectionY());
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+            return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDirectionZ());
 
             // Common
         case ASSET_DEFINITION_PROPERTY_NAME:
@@ -281,12 +367,17 @@ AssetDefinitionPropertiesItem::data
             return QVariant(QString::fromStdString(mAssetDefinitionHandle->getFormat()));
 
             // Not Used
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
+
+
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:

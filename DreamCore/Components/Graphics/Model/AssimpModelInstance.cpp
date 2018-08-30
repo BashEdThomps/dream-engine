@@ -52,7 +52,7 @@ namespace Dream
           mMaterialCacheHandle(texCache)
     {
         auto log = getLog();
-            log->trace( "Constructing {}", definition->getNameAndUuidString() );
+        log->trace( "Constructing {}", definition->getNameAndUuidString() );
         initBoundingBox();
         return;
     }
@@ -69,7 +69,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-            log->trace( "Destroying Object");
+        log->trace( "Destroying Object");
         return;
     }
 
@@ -79,7 +79,7 @@ namespace Dream
     {
         auto log = getLog();
         string path = projectPath + mDefinitionHandle->getAssetPath();
-            log->info( "Loading Model - {}" , path);
+        log->info( "Loading Model - {}" , path);
 
         auto model = mModelCacheHandle->getModelFromCache(path);
 
@@ -209,20 +209,29 @@ namespace Dream
         aiString name;
         aiGetMaterialString(material,AI_MATKEY_NAME,&name);
 
-        log->info("Loading material {} for {}",name.C_Str(), getNameAndUuidString());
+        log->info("Loading Textures {} for {}",name.C_Str(), getNameAndUuidString());
 
         // Diffuse Textures
         if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+        {
+            log->info("Loading Diffuse Texture {} for {}",name.C_Str(), getNameAndUuidString());
             aMaterialHandle->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        }
 
 
         // Specular Textures
         if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
+        {
+            log->info("Loading Specular {} for {}",name.C_Str(), getNameAndUuidString());
             aMaterialHandle->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
+        }
 
         // Normal Textures
         if(material->GetTextureCount(aiTextureType_NORMALS) > 0)
+        {
+            log->info("Loading Normal {} for {}",name.C_Str(), getNameAndUuidString());
             aMaterialHandle->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS, "texture_normals");
+        }
     }
 
     shared_ptr<AssimpMesh>
@@ -253,7 +262,7 @@ namespace Dream
             aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial->mBlendFunc);
             aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial->mOpacity);
             aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial->mBumpScaling);
-            aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mShininess);
+            aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mHardness);
             aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial->mReflectivity);
             aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial->mShininessStrength);
             aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial->mColorDiffuse);
@@ -266,9 +275,11 @@ namespace Dream
             mMaterialCacheHandle->addMaterialToCache(aMaterial);
 
             processTextureData(mesh,scene, aMaterial.get());
+
         }
 
         log->info( "Using Material {}" , aMaterial->mName.C_Str());
+        aMaterial->debug();
 
         BoundingBox box;
         updateBoundingBox(box, mesh);
@@ -300,8 +311,7 @@ namespace Dream
     {
         aiString str;
         mat->GetTexture(type, 0, &str);
-        auto tex = mMaterialCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
-        return tex;
+        return mMaterialCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
     }
 
     void
@@ -364,16 +374,16 @@ namespace Dream
 
         float maxBound;
         maxBound = (
-            box.maximum.x > box.maximum.y ?
-            box.maximum.x :
-            box.maximum.y
-        );
+                    box.maximum.x > box.maximum.y ?
+                        box.maximum.x :
+                        box.maximum.y
+                        );
 
         maxBound = (
-            maxBound > box.maximum.z ?
-            maxBound :
-            box.maximum.z
-        );
+                    maxBound > box.maximum.z ?
+                        maxBound :
+                        box.maximum.z
+                        );
 
         mBoundingBox.maxDimension = maxBound;
     }

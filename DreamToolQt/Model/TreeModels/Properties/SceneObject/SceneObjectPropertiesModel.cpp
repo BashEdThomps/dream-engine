@@ -354,7 +354,8 @@ SceneObjectPropertiesModel::createAssetInstancesProperty
     SceneObjectPropertiesItem *assetDefItem = new SceneObjectPropertiesItem
     (
         "Asset Definitions",
-        mSceneObjectDefinitionHandle
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_ASSET_DEFINITION_LIST
     );
     mRootItem->appendChild(assetDefItem);
 
@@ -384,7 +385,11 @@ SceneObjectPropertiesModel::createChildrenProperty
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
     log->info("createChildrenProperty");
-    SceneObjectPropertiesItem *childrenItem = new SceneObjectPropertiesItem("Children",mSceneObjectDefinitionHandle);
+    SceneObjectPropertiesItem *childrenItem = new SceneObjectPropertiesItem(
+        "Children",
+        mSceneObjectDefinitionHandle,
+        SCENE_OBJECT_PROPERTY_CHILD_LIST
+    );
     mRootItem->appendChild(childrenItem);
 
     for (SceneObjectDefinition* child : mSceneObjectDefinitionHandle->getChildDefinitionsHandleList())

@@ -55,7 +55,15 @@ private:
     void createFontSizeProperty();
     void createFontFileProperty();
 
-    void createLightColorProperty();
+    void createLightAmbientProperty();
+    void createLightDiffuseProperty();
+    void createLightSpecularProperty();
+    void createLightDirectionProperty();
+    void createLightConstantProperty();
+    void createLightQuadraticProperty();
+    void createLightLinearProperty();
+    void createLightCutOffProperty();
+    void createLightOuterCutOffProperty();
 
     void createModelFileProperty();
     void createModelAdditionalFilesProperty();
@@ -94,7 +102,9 @@ public slots:
     void onButton_EditShader();
     void onCombo_ShaderTemplateChanged(const QString&);
     void onButton_PhysicsBvhTriangleMeshFile();
-    void onButton_LightChooseColour();
+    void onButton_LightChooseAmbient();
+    void onButton_LightChooseSpecular();
+    void onButton_LightChooseDiffuse();
     void onButton_ModelMaterialShaderMap();
     void onButton_PathList();
 signals:
@@ -108,7 +118,10 @@ signals:
     void notifyButton_EditShader(IAssetDefinition*);
     void notifyCombo_ShaderTemplateChanged(IAssetDefinition*, const QString&);
     void notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*);
-    void notifyButton_LightChooseColour(IAssetDefinition*);
     void notifyButton_ModelMaterialShaderMap(IAssetDefinition*);
     void notifyButton_PathList(IAssetDefinition*);
+
+    void notifyButton_LightChooseAmbient(IAssetDefinition*);
+    void notifyButton_LightChooseSpecular(IAssetDefinition*);
+    void notifyButton_LightChooseDiffuse(IAssetDefinition*);
 };

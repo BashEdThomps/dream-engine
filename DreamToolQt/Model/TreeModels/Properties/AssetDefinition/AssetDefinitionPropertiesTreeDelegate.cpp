@@ -364,10 +364,23 @@ const
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
             spinBox = new QDoubleSpinBox(parent);
             spinBox->setRange(0.0,1.0);
             spinBox->setDecimals(3);
@@ -423,15 +436,21 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
         case ASSET_DEFINITION_PROPERTY_NAME:
         case ASSET_DEFINITION_PROPERTY_NONE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
             return new QLineEdit(parent);
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
-            return createLightColourPaletteButton(parent);
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
+            return createLightAmbientPaletteButton(parent);
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+            return createLightDiffusePaletteButton(parent);
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+            return createLightSpecularPaletteButton(parent);
     }
     return new QLineEdit(parent);
 }
 
 QWidget*
-AssetDefinitionPropertiesTreeDelegate::createLightColourPaletteButton
+AssetDefinitionPropertiesTreeDelegate::createLightDiffusePaletteButton
 (QWidget* parent) const
 {
     QToolButton* button = new QToolButton(parent);
@@ -441,17 +460,65 @@ AssetDefinitionPropertiesTreeDelegate::createLightColourPaletteButton
                 button,
                 SIGNAL(clicked(bool)),
                 this,
-                SLOT(onButton_LightChooseColour(bool))
+                SLOT(onButton_LightChooseDiffuse(bool))
+                );
+    return button;
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createLightAmbientPaletteButton
+(QWidget* parent) const
+{
+    QToolButton* button = new QToolButton(parent);
+    button->setText("Choose Colour...");
+    connect
+            (
+                button,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_LightChooseAmbient(bool))
+                );
+    return button;
+}
+
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createLightSpecularPaletteButton
+(QWidget* parent) const
+{
+    QToolButton* button = new QToolButton(parent);
+    button->setText("Choose Colour...");
+    connect
+            (
+                button,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(onButton_LightChooseSpecular(bool))
                 );
     return button;
 }
 
 void
-AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseColour
+AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseAmbient
 (bool clicked)
 {
     Q_UNUSED(clicked)
-    emit notifyButton_LightChooseColour();
+    emit notifyButton_LightChooseAmbient();
+}
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseDiffuse
+(bool clicked)
+{
+    Q_UNUSED(clicked)
+    emit notifyButton_LightChooseDiffuse();
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseSpecular
+(bool clicked)
+{
+    Q_UNUSED(clicked)
+    emit notifyButton_LightChooseSpecular();
 }
 
 void
@@ -492,12 +559,26 @@ const
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
         case ASSET_DEFINITION_PROPERTY_PATH_STEP:
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
             static_cast<QDoubleSpinBox*>(editor)->setValue(value.toDouble());
             break;
 
@@ -528,7 +609,10 @@ const
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
             break;
     }
 }
@@ -564,10 +648,25 @@ const
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
+
         case ASSET_DEFINITION_PROPERTY_PATH_STEP:
             model->setData(index,static_cast<QDoubleSpinBox*>(editor)->value());
             break;
@@ -591,7 +690,10 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:

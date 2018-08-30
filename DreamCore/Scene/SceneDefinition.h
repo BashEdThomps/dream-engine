@@ -58,6 +58,15 @@ namespace Dream
         void setMeshCullDistance(float mcd);
         float getMeshCullDistance();
 
+        void setMinDrawDistance(float mdd);
+        float getMinDrawDistance();
+
+        void setMaxDrawDistance(float mdd);
+        float getMaxDrawDistance();
+
+
+
+
         string getNotes();
         void setNotes(string notes);
 

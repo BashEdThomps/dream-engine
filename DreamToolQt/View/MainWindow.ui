@@ -39,7 +39,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../Resources/Resources.qrc">
-    <normaloff>:/icons/DreamTool.icns</normaloff>:/icons/DreamTool.icns</iconset>
+    <normaloff>:/icons/Ag.icns</normaloff>:/icons/Ag.icns</iconset>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -126,6 +126,9 @@
           </property>
           <item>
            <widget class="QTreeView" name="scenegraphTreeView">
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -134,6 +137,15 @@
             </property>
             <property name="lineWidth">
              <number>0</number>
+            </property>
+            <property name="dragEnabled">
+             <bool>true</bool>
+            </property>
+            <property name="dragDropMode">
+             <enum>QAbstractItemView::InternalMove</enum>
+            </property>
+            <property name="defaultDropAction">
+             <enum>Qt::MoveAction</enum>
             </property>
             <property name="alternatingRowColors">
              <bool>true</bool>
@@ -145,7 +157,7 @@
              <enum>QAbstractItemView::ScrollPerPixel</enum>
             </property>
             <property name="autoExpandDelay">
-             <number>0</number>
+             <number>-1</number>
             </property>
             <property name="indentation">
              <number>15</number>
@@ -157,7 +169,7 @@
              <bool>true</bool>
             </property>
             <property name="animated">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="allColumnsShowFocus">
              <bool>true</bool>
@@ -228,7 +240,7 @@
              <enum>QAbstractItemView::ScrollPerPixel</enum>
             </property>
             <property name="autoExpandDelay">
-             <number>0</number>
+             <number>-1</number>
             </property>
             <property name="indentation">
              <number>15</number>
@@ -288,7 +300,7 @@
          <enum>QAbstractItemView::ScrollPerPixel</enum>
         </property>
         <property name="autoExpandDelay">
-         <number>0</number>
+         <number>-1</number>
         </property>
         <property name="indentation">
          <number>10</number>
@@ -297,7 +309,7 @@
          <bool>true</bool>
         </property>
         <property name="animated">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="allColumnsShowFocus">
          <bool>true</bool>
@@ -306,13 +318,13 @@
          <bool>true</bool>
         </property>
         <property name="headerHidden">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="expandsOnDoubleClick">
          <bool>false</bool>
         </property>
         <attribute name="headerVisible">
-         <bool>false</bool>
+         <bool>true</bool>
         </attribute>
         <attribute name="headerDefaultSectionSize">
          <number>125</number>

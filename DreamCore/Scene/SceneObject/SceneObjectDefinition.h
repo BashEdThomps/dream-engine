@@ -44,7 +44,7 @@ namespace Dream
         Transform3D mTransform;
 
     public:
-        SceneObjectDefinition(SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle,  json data);
+        SceneObjectDefinition(SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle,  json data, bool randomUuid = false);
         ~SceneObjectDefinition() override;
 
         void setHasFocus(bool focus);
@@ -69,7 +69,7 @@ namespace Dream
         vector<SceneObjectDefinition*> getChildDefinitionsHandleList();
         void addChildSceneObjectDefinition(SceneObjectDefinition* child);
         void removeChildSceneObjectDefinition(SceneObjectDefinition* child);
-        SceneObjectDefinition* createNewChildSceneObjectDefinition();
+        SceneObjectDefinition* createNewChildSceneObjectDefinition(json* def = nullptr);
 
         SceneDefinition *getSceneDefinitionHandle();
         json getJson() override;
@@ -84,7 +84,7 @@ namespace Dream
         bool getStatic();
 
     private:
-        void loadChildSceneObjectDefinitions(json definition);
+        void loadChildSceneObjectDefinitions(json definition, bool randomUuid = false);
     };
 
 }

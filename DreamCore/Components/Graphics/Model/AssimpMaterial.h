@@ -2,6 +2,7 @@
 
 #include <assimp/types.h>
 #include "Texture.h"
+#include "../../../Common/ILoggable.h"
 #include <vector>
 #include <memory>
 #include "../Vertex.h"
@@ -11,9 +12,12 @@ using namespace std;
 namespace Dream
 {
     class AssimpMesh;
-    class AssimpMaterial
+    class AssimpMaterial : public ILoggable
     {
     public:
+        AssimpMaterial();
+        ~AssimpMaterial() override;
+
         aiString mName;
         int mTwoSided = -1;
         int mShadingModel = -1;
@@ -21,7 +25,7 @@ namespace Dream
         int mBlendFunc = -1;
         ai_real mOpacity = 0.0f;
         ai_real mBumpScaling = 0.0f;
-        ai_real mShininess = 0.0f;
+        ai_real mHardness = 0.0f;
         ai_real mReflectivity = 0.0f;
         ai_real mShininessStrength = 0.0f;
         ai_real mRefracti = 0.0f;
@@ -35,5 +39,6 @@ namespace Dream
         shared_ptr<Texture> mSpecularTexture;
         shared_ptr<Texture> mNormalTexture;
         bool operator==(const AssimpMaterial& other);
+        void debug();
     };
 }

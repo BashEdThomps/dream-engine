@@ -88,7 +88,7 @@ GLDrawable::preRender
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
-    Constants::checkGLError("GLDrawable: After pre render");
+    checkGLError();
 }
 
 void
@@ -99,7 +99,7 @@ GLDrawable::postRender
     glDisable(GL_CULL_FACE);
     glDisable (GL_BLEND);
     glDisable(GL_LINE_SMOOTH);
-    Constants::checkGLError("GLDrawable: After post render");
+    checkGLError();
 }
 
 void

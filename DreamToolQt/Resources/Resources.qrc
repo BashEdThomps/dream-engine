@@ -35,5 +35,12 @@
         <file>svg/noun_Object.svg</file>
         <file>svg/volume-up-solid.svg</file>
         <file>svg/computer-mouse-svgrepo-com.svg</file>
+        <file>templates/shader/Diffuse Shader/glsl.frag</file>
+        <file>templates/shader/Diffuse Shader/glsl.vert</file>
+        <file>templates/shader/Texture Shader/glsl.frag</file>
+        <file>templates/shader/Texture Shader/glsl.vert</file>
+        <file>icons/Ag.icns</file>
+        <file>templates/shader/Phong/glsl.frag</file>
+        <file>templates/shader/Phong/glsl.vert</file>
     </qresource>
 </RCC>

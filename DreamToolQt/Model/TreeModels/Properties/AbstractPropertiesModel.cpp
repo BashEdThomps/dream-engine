@@ -144,7 +144,7 @@ const
 
     if (role == Qt::SizeHintRole)
     {
-        return QSize(100,24);
+        return QSize(200,24);
     }
 
     if (role != Qt::DisplayRole && role != Qt::EditRole)
@@ -164,7 +164,7 @@ AbstractPropertiesModel::flags
 {
     if (!index.isValid())
     {
-        return 0;
+        return nullptr;
     }
 
     if (index.column() != 0)
@@ -182,7 +182,11 @@ const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
-        return mRootItem->data(section);
+        switch (section)
+        {
+            case 0:
+                return mRootItem->data(section);
+        }
     }
 
     return QVariant();

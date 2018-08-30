@@ -93,6 +93,21 @@ private:
     QString mType;
 };
 
+class DeleteAssetDefinitionAction : public QAction
+{
+public:
+    DeleteAssetDefinitionAction
+    (QObject *parent = nullptr);
+
+    DeleteAssetDefinitionAction
+    (const QString &text, QObject *parent = nullptr);
+
+    DeleteAssetDefinitionAction
+    (const QIcon &icon, const QString &text, QObject *parent = nullptr);
+
+    IAssetDefinition* mItemHandle;
+};
+
 class MainWindowController : public QMainWindow
 {
     Q_OBJECT
@@ -153,6 +168,7 @@ signals:
     void notifyScenegraphTreeDataChanged();
     void notifyPropertiesTreeDataChanged();
     void notifyMainVolumeChanged(int);
+    void notifyAssetDefinitionTreeDataChanged();
 
 public slots:
     void onInvalidProjectDirectory(QString directory);
@@ -160,6 +176,7 @@ public slots:
     void showStatusBarMessage(QString msg);
     void onSceneStopped(SceneDefinition* scene);
     void onProjectDefinitionChanged(ProjectDefinition*);
+    void onScenegraphTreeExpandRequested();
 
     void keyPressEvent(QKeyEvent*) override;
     void keyReleaseEvent(QKeyEvent*) override;
@@ -178,6 +195,7 @@ private slots:
     void onScenegraphMenuAddSceneObjectTriggered();
     void onScenegraphMenuDuplicateSceneObjectTriggered();
     void onScenegraphMenuDeleteSceneObjectTriggered();
+    void onAssetDefinitionMenuDeleteTriggered();
     void onAddAssetToSceneObjectTriggered();
 
     void onScenegraphTreeViewActivated(const QModelIndex &index);

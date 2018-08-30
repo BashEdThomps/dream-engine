@@ -18,13 +18,15 @@
 #include "Uuid.h"
 #include <cstdio>
 #include <cstdlib>
-#include <ctime>
+#include <chrono>
+
+using namespace std::chrono;
 
 namespace Dream
 {
     string Uuid::generateUuid()
     {
-        srand(static_cast<unsigned int>(time(NULL)));
+        srand(static_cast<unsigned int>(high_resolution_clock::now().time_since_epoch().count()));
         size_t bufSize = sizeof(char)*20;
         char* buffer = static_cast<char*>(malloc(bufSize));
         snprintf(

@@ -211,60 +211,84 @@ ScenePropertiesModel::createCameraProperties
         );
 
         cameraProperty->appendChild(cameraRotationProperty);
-        {
-            cameraRotationProperty->appendChild
+        cameraRotationProperty->appendChild
+        (
+            new ScenePropertiesItem
             (
-                new ScenePropertiesItem
-                (
-                    "X",
-                    mSceneDefinitionHandle,
-                    SCENE_PROPERTY_CAMERA_ROTATION_X
-                )
-            );
+                "X",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_CAMERA_ROTATION_X
+            )
+        );
 
-            cameraRotationProperty->appendChild
+        cameraRotationProperty->appendChild
+        (
+            new ScenePropertiesItem
             (
-                new ScenePropertiesItem
-                (
-                    "Y",
-                    mSceneDefinitionHandle,
-                    SCENE_PROPERTY_CAMERA_ROTATION_Y
-                )
-            );
+                "Y",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_CAMERA_ROTATION_Y
+            )
+        );
 
-            cameraRotationProperty->appendChild
+        cameraRotationProperty->appendChild
+        (
+            new ScenePropertiesItem
             (
-                new ScenePropertiesItem
-                (
-                    "Z",
-                    mSceneDefinitionHandle,
-                    SCENE_PROPERTY_CAMERA_ROTATION_Z
-                )
-            );
+                "Z",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_CAMERA_ROTATION_Z
+            )
+        );
 
-            log->info("createCameraProperties speed");
+        log->info("createCameraProperties speed");
 
-            cameraProperty->appendChild
+        cameraProperty->appendChild
+        (
+            new ScenePropertiesItem
             (
-                new ScenePropertiesItem
-                (
-                    "Speed",
-                    mSceneDefinitionHandle,
-                    SCENE_PROPERTY_CAMERA_SPEED
-                )
-            );
+                "Speed",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_CAMERA_SPEED
+            )
+        );
 
-            cameraProperty->appendChild
+        cameraProperty->appendChild
+        (
+            new ScenePropertiesItem
             (
-                new ScenePropertiesItem
-                (
-                    "Mesh Cull",
-                    mSceneDefinitionHandle,
-                    SCENE_PROPERTY_MESH_CULL_DISTANCE
-                )
-            );
+                "Mesh Cull",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_MESH_CULL_DISTANCE
+            )
+        );
 
-        }
+        auto frustum =  new ScenePropertiesItem(
+            "Frustum",
+            mSceneDefinitionHandle,
+            SCENE_PROPERTY_NONE
+        );
+
+        frustum->appendChild
+        (
+            new ScenePropertiesItem
+            (
+                "Minimum Draw",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_MINIMUM_DRAW
+            )
+        );
+
+        frustum->appendChild
+        (
+            new ScenePropertiesItem
+            (
+                "Maximum Draw",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_MAXIMUM_DRAW
+            )
+        );
+        cameraProperty->appendChild(frustum);
     }
 }
 

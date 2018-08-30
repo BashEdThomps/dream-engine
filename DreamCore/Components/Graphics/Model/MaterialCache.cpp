@@ -37,7 +37,7 @@ namespace Dream
         for (shared_ptr<Texture> texture : mTextureCache)
         {
             glDeleteTextures(1,&texture->id);
-            Constants::checkGLError("MaterialCache: After free texture");
+            checkGLError();
         }
         return;
     }
@@ -131,6 +131,7 @@ namespace Dream
         log->info("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
         // Assign texture to ID
         glBindTexture(GL_TEXTURE_2D, textureID);
+        log->info("Bound to texture id {}",textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -143,7 +144,7 @@ namespace Dream
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        Constants::checkGLError("After texture creation");
+        checkGLError();
 
         auto texture = make_shared<Texture>();
         texture->path = filename;

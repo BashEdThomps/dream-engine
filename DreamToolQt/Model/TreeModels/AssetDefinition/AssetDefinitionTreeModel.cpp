@@ -83,12 +83,16 @@ AssetDefinitionTreeModel::data
         return QVariant();
     }
 
+
     if (role != Qt::DisplayRole)
     {
         return QVariant();
     }
 
-
+    if (item == nullptr)
+    {
+        return QVariant();
+    }
     return item->data(index.column());
 }
 
@@ -429,4 +433,10 @@ AssetDefinitionTreeModel::setupModelData
         }
     }
     emit endResetModel();
+}
+
+void AssetDefinitionTreeModel::forceDataChanged()
+{
+   setupModelData();
+   emit dataChanged(QModelIndex(),QModelIndex());
 }

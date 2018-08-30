@@ -128,5 +128,7 @@ namespace Dream
         void setMeshCullDistance(float meshCullDistance);
         ModelQueueType mModelQueueType;
         void debugOptimisedModelQueue();
+        void setMinimumDraw(float minimumDraw);
+        void setMaximumDraw(float maximumDraw);
     }; // End of GraphicsComponent
 } // End of Dream

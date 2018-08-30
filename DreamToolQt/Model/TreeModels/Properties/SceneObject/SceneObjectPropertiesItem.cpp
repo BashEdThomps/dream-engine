@@ -133,8 +133,12 @@ QVariant
 SceneObjectPropertiesItem::data
 (int column)
 {
-    if (column == 0)
+    if (column == 0 )
     {
+        if (getProperty() == SCENE_OBJECT_PROPERTY_NONE)
+        {
+            return QString::fromStdString(mSceneObjectDefinitionHandle->getUuid());
+        }
         return QVariant(mTitle);
     }
 

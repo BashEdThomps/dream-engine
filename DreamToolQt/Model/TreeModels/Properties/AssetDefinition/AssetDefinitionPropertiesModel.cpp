@@ -28,6 +28,8 @@
 #include <spdlog/spdlog.h>
 
 using Dream::Constants;
+using Dream::LightDefinition;
+using Dream::LightType;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
 (IAssetDefinition *definition, QTreeView* parent)
@@ -70,6 +72,7 @@ void
 AssetDefinitionPropertiesModel::createProperties
 ()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
     createNameProperty();
     createTypeProperty();
     createFormatProperty();
@@ -95,7 +98,35 @@ AssetDefinitionPropertiesModel::createProperties
     }
     else if (mAssetDefinitionHandle->isTypeLight())
     {
-        createLightColorProperty();
+        auto lightDef = dynamic_cast<LightDefinition*>(mAssetDefinitionHandle);
+
+        createLightAmbientProperty();
+        createLightDiffuseProperty();
+        createLightSpecularProperty();
+
+        log->info("Light Type is {}",lightDef->getFormat());
+
+        switch (lightDef->getType())
+        {
+            case LightType::LT_SPOTLIGHT:
+                createLightDirectionProperty();
+                createLightCutOffProperty();
+                createLightOuterCutOffProperty();
+                createLightConstantProperty();
+                createLightLinearProperty();
+                createLightQuadraticProperty();
+                break;
+            case LightType::LT_DIRECTIONAL:
+                createLightDirectionProperty();
+                break;
+            case LightType::LT_POINT:
+                createLightConstantProperty();
+                createLightLinearProperty();
+                createLightQuadraticProperty();
+                break;
+            case LightType::LT_NONE:
+                break;
+        }
     }
     else if (mAssetDefinitionHandle->isTypeModel())
     {
@@ -189,45 +220,7 @@ AssetDefinitionPropertiesModel::createShaderEditFilesProperty
     );
 }
 
-void
-AssetDefinitionPropertiesModel::onButton_AudioFile
-()
-{
-    emit notifyButton_AudioFile(mAssetDefinitionHandle);
-}
 
-void
-AssetDefinitionPropertiesModel::onButton_FontFile
-()
-{
-    emit notifyButton_FontFile(mAssetDefinitionHandle);
-}
-
-void
-AssetDefinitionPropertiesModel::onButton_PhysicsBvhTriangleMeshFile
-()
-{
-    emit notifyButton_PhysicsBvhTriangleMeshFile(mAssetDefinitionHandle);
-}
-
-void AssetDefinitionPropertiesModel::onButton_LightChooseColour()
-{
-    emit notifyButton_LightChooseColour(mAssetDefinitionHandle);
-}
-
-void
-AssetDefinitionPropertiesModel::onButton_ModelFile
-()
-{
-    emit notifyButton_ModelFile(mAssetDefinitionHandle);
-}
-
-void
-AssetDefinitionPropertiesModel::onButton_ModelAdditionalFiles
-()
-{
-    emit notifyButton_ModelAdditionalFiles(mAssetDefinitionHandle);
-}
 
 void
 AssetDefinitionPropertiesModel::createTypeProperty
@@ -362,16 +355,16 @@ AssetDefinitionPropertiesModel::createFontFileProperty
 }
 
 void
-AssetDefinitionPropertiesModel::createLightColorProperty
+AssetDefinitionPropertiesModel::createLightAmbientProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Creating Light Colour Properties");
-    auto colourProperty = new AssetDefinitionPropertiesItem
+    log->info("Creating Light Ambient Properties");
+    auto ambientProperty = new AssetDefinitionPropertiesItem
     (
-        "Colour",
+        "Ambient",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR
+        ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT
     );
 
     log->info("Creating Light Colour Property red");
@@ -379,7 +372,7 @@ AssetDefinitionPropertiesModel::createLightColorProperty
     (
         "Red",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_RED
+        ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED
     );
 
     log->info("Creating Light Colour Property green");
@@ -387,7 +380,7 @@ AssetDefinitionPropertiesModel::createLightColorProperty
     (
         "Green",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_GREEN
+        ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN
     );
 
     log->info("Creating Light Colour Property blue");
@@ -395,23 +388,220 @@ AssetDefinitionPropertiesModel::createLightColorProperty
     (
         "Blue",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_BLUE
+        ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE
     );
 
-    log->info("Creating Light Colour Property alpha");
-    auto colourPropertyAlpha = new AssetDefinitionPropertiesItem
+    ambientProperty->appendChild(colourPropertyRed);
+    ambientProperty->appendChild(colourPropertyGreen);
+    ambientProperty->appendChild(colourPropertyBlue);
+
+    mRootItem->appendChild(ambientProperty);
+}
+
+void
+AssetDefinitionPropertiesModel::createLightDiffuseProperty
+()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Creating Light Colour Properties");
+    auto diffuseProperty = new AssetDefinitionPropertiesItem
     (
-        "Alpha",
+        "Diffuse",
         mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_LIGHT_COLOUR_ALPHA
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE
+    );
+
+    log->info("Creating Light Colour Property red");
+    auto colourPropertyRed = new AssetDefinitionPropertiesItem
+    (
+        "Red",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED
+    );
+
+    log->info("Creating Light Colour Property green");
+    auto colourPropertyGreen = new AssetDefinitionPropertiesItem
+    (
+        "Green",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN
+    );
+
+    log->info("Creating Light Colour Property blue");
+    auto colourPropertyBlue = new AssetDefinitionPropertiesItem
+    (
+        "Blue",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE
+    );
+
+    diffuseProperty->appendChild(colourPropertyRed);
+    diffuseProperty->appendChild(colourPropertyGreen);
+    diffuseProperty->appendChild(colourPropertyBlue);
+
+    mRootItem->appendChild(diffuseProperty);
+}
+void
+AssetDefinitionPropertiesModel::createLightSpecularProperty
+()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Creating Light Specular Properties");
+    auto colourProperty = new AssetDefinitionPropertiesItem
+    (
+        "Specular",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR
+    );
+
+    log->info("Creating Light Colour Property red");
+    auto colourPropertyRed = new AssetDefinitionPropertiesItem
+    (
+        "Red",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED
+    );
+
+    log->info("Creating Light Colour Property green");
+    auto colourPropertyGreen = new AssetDefinitionPropertiesItem
+    (
+        "Green",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN
+    );
+
+    log->info("Creating Light Colour Property blue");
+    auto colourPropertyBlue = new AssetDefinitionPropertiesItem
+    (
+        "Blue",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE
     );
 
     colourProperty->appendChild(colourPropertyRed);
     colourProperty->appendChild(colourPropertyGreen);
     colourProperty->appendChild(colourPropertyBlue);
-    colourProperty->appendChild(colourPropertyAlpha);
 
     mRootItem->appendChild(colourProperty);
+}
+
+void
+AssetDefinitionPropertiesModel::createLightDirectionProperty
+()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->info("Creating Light Direction Properties");
+    auto directionProperty = new AssetDefinitionPropertiesItem
+    (
+        "Direction",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION
+    );
+
+    log->info("Creating Light Colour Property red");
+    auto colourPropertyRed = new AssetDefinitionPropertiesItem
+    (
+        "X",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X
+    );
+
+    log->info("Creating Light Colour Property green");
+    auto colourPropertyGreen = new AssetDefinitionPropertiesItem
+    (
+        "Y",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y
+    );
+
+    log->info("Creating Light Colour Property blue");
+    auto colourPropertyBlue = new AssetDefinitionPropertiesItem
+    (
+        "Z",
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z
+    );
+
+    directionProperty->appendChild(colourPropertyRed);
+    directionProperty->appendChild(colourPropertyGreen);
+    directionProperty->appendChild(colourPropertyBlue);
+
+    mRootItem->appendChild(directionProperty);
+}
+
+void
+AssetDefinitionPropertiesModel::createLightConstantProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Constant",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createLightQuadraticProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Quadratic",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createLightLinearProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Linear",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createLightCutOffProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Cut off",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createLightOuterCutOffProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Outer Cut off",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF
+        )
+    );
 }
 
 void
@@ -849,11 +1039,24 @@ AssetDefinitionPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyButton_LightChooseColour()),
+        SIGNAL(notifyButton_LightChooseAmbient()),
         this,
-        SLOT(onButton_LightChooseColour())
+        SLOT(onButton_LightChooseAmbient())
     );
-
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_LightChooseDiffuse()),
+        this,
+        SLOT(onButton_LightChooseDiffuse())
+    );
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_LightChooseSpecular()),
+        this,
+        SLOT(onButton_LightChooseSpecular())
+    );
     // Path
     connect
     (
@@ -923,4 +1126,54 @@ void AssetDefinitionPropertiesModel::onButton_PathList()
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
     log->info("Path List Button Clicked");
     emit notifyButton_PathList(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_AudioFile
+()
+{
+    emit notifyButton_AudioFile(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_FontFile
+()
+{
+    emit notifyButton_FontFile(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_PhysicsBvhTriangleMeshFile
+()
+{
+    emit notifyButton_PhysicsBvhTriangleMeshFile(mAssetDefinitionHandle);
+}
+
+void AssetDefinitionPropertiesModel::onButton_LightChooseAmbient()
+{
+    emit notifyButton_LightChooseAmbient(mAssetDefinitionHandle);
+}
+
+void AssetDefinitionPropertiesModel::onButton_LightChooseDiffuse()
+{
+    emit notifyButton_LightChooseDiffuse(mAssetDefinitionHandle);
+}
+
+void AssetDefinitionPropertiesModel::onButton_LightChooseSpecular()
+{
+    emit notifyButton_LightChooseSpecular(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_ModelFile
+()
+{
+    emit notifyButton_ModelFile(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_ModelAdditionalFiles
+()
+{
+    emit notifyButton_ModelAdditionalFiles(mAssetDefinitionHandle);
 }

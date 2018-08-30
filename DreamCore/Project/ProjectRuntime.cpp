@@ -557,6 +557,8 @@ namespace Dream
         if (mGraphicsComponent != nullptr)
         {
             mGraphicsComponent->setMeshCullDistance(sceneDefinitionHandle->getMeshCullDistance());
+            mGraphicsComponent->setMinimumDraw(sceneDefinitionHandle->getMinDrawDistance());
+            mGraphicsComponent->setMaximumDraw(sceneDefinitionHandle->getMaxDrawDistance());
         }
         else
         {

@@ -158,7 +158,7 @@ FORMS += View/MainWindow.ui \
 RESOURCES += \
     Resources/Resources.qrc
 
-ICON = Resources/icons/DreamTool.icns
+ICON = Resources/icons/Ag.icns
 
 macx: LIBS += \
     -framework OpenGL \

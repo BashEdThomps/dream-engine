@@ -43,6 +43,8 @@ namespace Dream
 {
     class ShaderCache;
     class ShaderDefinition;
+    class AssimpMaterial;
+    class LightInstance;
 
     enum UniformType
     {
@@ -97,8 +99,23 @@ namespace Dream
     class ShaderInstance : public IAssetInstance, ILoggable
     {
     private:
+        const static unsigned int MAX_LIGHTS;
         const static GLint UNIFORM_NOT_FOUND;
+        const static char* UNIFORM_POINT_LIGHT_COUNT;
+        const static char* UNIFORM_SPOT_LIGHT_COUNT;
+        const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
+
+        int mPointLightCount;
+        GLint mPointLightCountLocation;
+
+        int mSpotLightCount;
+        GLint mSpotLightCountLocation;
+
+        int mDirectionalLightCount;
+        GLint mDirectionalLightCountLocation;
+
         GLuint mShaderProgram;
+
         vector<shared_ptr<ShaderUniform>> mUniformVector;
         ShaderCache *mCacheHandle;
     public:
@@ -127,8 +144,10 @@ namespace Dream
         GLint getUniformLocation(string name);
 
         void addUniform(UniformType type, string name, int count, void* data);
+        void bindLight(LightInstance* light);
 
         void syncUniforms();
+        void bindMaterial(AssimpMaterial* material);
     }; // End of ShaderInstance
 
 } // End of Dream

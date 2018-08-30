@@ -17,6 +17,7 @@
  */
 #include "SceneObjectDefinition.h"
 #include "SceneObjectRuntime.h"
+#include <regex>
 
 #include "../../Components/IAssetDefinition.h"
 #include "../../Common/Constants.h"
@@ -32,9 +33,39 @@ namespace Dream
 
     SceneObjectDefinition* SceneObjectDefinition::duplicate()
     {
-        auto newSOD = new SceneObjectDefinition(mParentSceneObjectHandle,mSceneDefinitionHandle,mJson);
+        if (mParentSceneObjectHandle == nullptr)
+        {
+            return nullptr;
+        }
+
+        auto newSOD = new SceneObjectDefinition(mParentSceneObjectHandle,mSceneDefinitionHandle,mJson,true);
         newSOD->setUuid(Uuid::generateUuid());
-        newSOD->setName((newSOD->getName()+" (Copy)"));
+        string name = newSOD->getName();
+        regex numRegex("(\\d+)$");
+        cmatch match;
+        string resultStr;
+        auto num = -1;
+
+        if (regex_search(name.c_str(),match,numRegex))
+        {
+            resultStr = match[0].str();
+            num = atoi(resultStr.c_str());
+
+        }
+
+
+        if (num > -1)
+        {
+            num++;
+            name = name.substr(0,name.length()-resultStr.length());
+            name.append(std::to_string(num));
+            newSOD->setName(name);
+        }
+        else
+        {
+            newSOD->setName(getName()+" (Copy)");
+        }
+
         mParentSceneObjectHandle->addChildSceneObjectDefinition(newSOD);
         return newSOD;
     }
@@ -42,7 +73,7 @@ namespace Dream
 
 
     SceneObjectDefinition::SceneObjectDefinition
-    (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData)
+    (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData, bool randomUuid)
         : IDefinition(jsonData),
           ILoggable ("SceneObjectDefinition"),
           mParentSceneObjectHandle(parentHandle),
@@ -50,8 +81,13 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Constructing {}",getNameAndUuidString());
+        if (randomUuid)
+        {
+            mJson[Constants::UUID] = Uuid::generateUuid();
+            log->trace( "With new UUID",getNameAndUuidString());
+        }
         mTransform = Transform3D(jsonData[Constants::TRANSFORM]);
-        loadChildSceneObjectDefinitions(jsonData);
+        loadChildSceneObjectDefinitions(jsonData,randomUuid);
     }
 
     SceneObjectDefinition::~SceneObjectDefinition
@@ -59,8 +95,8 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing {}",
-                   getNameAndUuidString()
-                   );
+                    getNameAndUuidString()
+                    );
     }
 
     Transform3D&
@@ -130,13 +166,18 @@ namespace Dream
     SceneObjectDefinition::removeAssetDefinitionUuidFromLoadQueue
     (string uuid)
     {
+        auto log = getLog();
+        log->info("Attempting to remove instance of {} from {}",uuid,getNameAndUuidString());
         auto iter = find
                 (
                     begin(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
                 end(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
                 uuid
                 );
-        mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].erase(iter);
+        if (iter != end(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]))
+        {
+            mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].erase(iter);
+        }
     }
 
     void
@@ -168,7 +209,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::loadChildSceneObjectDefinitions
-    (json definition)
+    (json definition, bool randomUuid)
     {
         json childrenArray = definition[Constants::SCENE_OBJECT_CHILDREN];
 
@@ -176,9 +217,12 @@ namespace Dream
         {
             for (json childDefinition : childrenArray)
             {
-                mChildDefinitions.push_back
-                (
-                    unique_ptr<SceneObjectDefinition>(new SceneObjectDefinition(this, mSceneDefinitionHandle, childDefinition))
+                mChildDefinitions.push_back(
+                    unique_ptr<SceneObjectDefinition>(
+                        new SceneObjectDefinition(
+                            this, mSceneDefinitionHandle, childDefinition, randomUuid
+                        )
+                    )
                 );
             }
         }
@@ -215,10 +259,10 @@ namespace Dream
             if ((*iter).get() == child)
             {
                 log->info(
-                    "Found child to {} remove from {}",
-                    child->getNameAndUuidString(),
-                    getNameAndUuidString()
-                );
+                            "Found child to {} remove from {}",
+                            child->getNameAndUuidString(),
+                            getNameAndUuidString()
+                            );
                 mChildDefinitions.erase(iter);
                 return;
             }
@@ -228,23 +272,37 @@ namespace Dream
 
     SceneObjectDefinition*
     SceneObjectDefinition::createNewChildSceneObjectDefinition
-    ()
+    (json* fromJson)
     {
-        json defJson;
-        defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
-        defJson[Constants::UUID] = Uuid::generateUuid();
+        auto log = getLog();
+        log->info("Creating new child scene object");
 
-        Transform3D transform;
-        transform.setScale(1.0f,1.0f,1.0f);
-        defJson[Constants::TRANSFORM] = transform.getJson();
+        json defJson;
+
+        if (fromJson == nullptr)
+        {
+            log->info("from scratch");
+            defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
+
+            Transform3D transform;
+            transform.setScale(1.0f,1.0f,1.0f);
+            defJson[Constants::TRANSFORM] = transform.getJson();
+        }
+        else
+        {
+            log->info("from template copy");
+            defJson = json::parse(fromJson->dump());
+        }
 
         SceneObjectDefinition *soDefinition;
-        soDefinition = new SceneObjectDefinition(this,mSceneDefinitionHandle,defJson);
+        soDefinition = new SceneObjectDefinition(this,mSceneDefinitionHandle,defJson,true);
+
 
         addChildSceneObjectDefinition(soDefinition);
 
         return soDefinition;
     }
+
 
     SceneDefinition*
     SceneObjectDefinition::getSceneDefinitionHandle
@@ -287,10 +345,10 @@ namespace Dream
 
     bool SceneObjectDefinition::getStatic()
     {
-       if (mJson[Constants::SCENE_OBJECT_STATIC].is_null())
-       {
-           mJson[Constants::SCENE_OBJECT_STATIC] = false;
-       }
-       return mJson[Constants::SCENE_OBJECT_STATIC];
+        if (mJson[Constants::SCENE_OBJECT_STATIC].is_null())
+        {
+            mJson[Constants::SCENE_OBJECT_STATIC] = false;
+        }
+        return mJson[Constants::SCENE_OBJECT_STATIC];
     }
 }

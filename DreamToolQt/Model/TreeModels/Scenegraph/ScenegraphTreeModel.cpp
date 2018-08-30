@@ -18,6 +18,7 @@
 
 #include "ScenegraphTreeModel.h"
 #include <QStringList>
+#include <QMimeData>
 #include <spdlog/spdlog.h>
 #include <memory>
 
@@ -55,6 +56,7 @@ int
 ScenegraphTreeModel::columnCount
 (const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return 1;
 }
 
@@ -84,7 +86,7 @@ ScenegraphTreeModel::data
         }
     }
 
-    if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole && role != Qt::EditRole)
     {
         return QVariant();
     }
@@ -98,7 +100,25 @@ Qt::ItemFlags
 ScenegraphTreeModel::flags
 (const QModelIndex &index) const
 {
-    return QAbstractItemModel::flags(index);
+    auto flags = QAbstractItemModel::flags(index);
+    auto data = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+
+    if (data == nullptr)
+    {
+        return flags;
+    }
+
+    flags |= Qt::ItemIsEditable;
+
+    if (data->getType() == SCENEGRAPH_SCENE_OBJECT)
+    {
+        auto sod = static_cast<SceneObjectDefinition*>(data->getItem());
+        if (sod->getParentSceneObjectHandle() != nullptr)
+        {
+            flags |= (Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+        }
+    }
+    return flags;
 }
 
 QVariant
@@ -266,4 +286,129 @@ ScenegraphTreeModel::appendSceneObjects
         appendSceneObjects(sceneObject,sceneObjectItem);
         parentTreeNode->appendChild(sceneObjectItem);
     }
+
 }
+
+bool
+ScenegraphTreeModel::setData
+(const QModelIndex& index, const QVariant& value, int role)
+{
+    if (!index.isValid())
+    {
+        return true;
+    }
+
+    auto nameString = value.toString().toStdString();
+    auto data = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+    switch (data->getType())
+    {
+        case SCENEGRAPH_PROJECT:
+            static_cast<ProjectDefinition*>(data->getItem())->setName(nameString);
+            break;
+        case SCENEGRAPH_SCENE:
+            static_cast<SceneDefinition*>(data->getItem())->setName(nameString);
+            break;
+        case SCENEGRAPH_SCENE_OBJECT:
+            static_cast<SceneObjectDefinition*>(data->getItem())->setName(nameString);
+            break;
+        case SCENEGRAPH_TREE_NODE:
+            break;
+    }
+    emit dataChanged(index,index);
+    return true;
+}
+
+Qt::DropActions ScenegraphTreeModel::supportedDropActions() const
+{
+    return Qt::MoveAction | Qt::CopyAction;
+}
+
+
+bool ScenegraphTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
+{
+    auto log = spdlog::get("ScenegraphTreeModel");
+    log->info("Scenegraph Drop Detected!");
+
+    if(!canDropMimeData(data, action, row, column, parent))
+    {
+        log->error("Can't drop mime data");
+        return false;
+    }
+
+    if (action == Qt::IgnoreAction)
+    {
+        log->error("Ignore action");
+        return true;
+    }
+
+    if (action == Qt::MoveAction)
+    {
+        log->info("MoveAction");
+    }
+    else if (action == Qt::CopyAction)
+    {
+        log->info("CopyAction");
+    }
+
+    int beginRow;
+
+    if (row != -1)
+        beginRow = row;
+    else if (parent.isValid())
+        beginRow = parent.row();
+    else
+        beginRow = rowCount(QModelIndex());
+
+    auto parentItem = static_cast<ScenegraphTreeItem*>(parent.internalPointer());
+    if (parentItem->getType() == SCENEGRAPH_SCENE_OBJECT)
+    {
+        auto sceneObject = static_cast<SceneObjectDefinition*>(parentItem->getItem());
+        log->trace("Parent is {}, row {} col {} beginRow{}",sceneObject->getNameAndUuidString(),row,column,beginRow);
+        if (data->hasText())
+        {
+            json objectsArray = json::parse(data->text().toStdString());
+
+            if (!objectsArray.is_array())
+            {
+                return true;
+            }
+
+            for (json nextObjDef : objectsArray)
+            {
+                sceneObject->createNewChildSceneObjectDefinition(&nextObjDef);
+            }
+        }
+    }
+    forceDataChanged();
+    emit notifyExpandRequested();
+    return true;
+}
+
+
+QStringList ScenegraphTreeModel::mimeTypes() const
+{
+    QStringList types;
+    types << SO_MIME_TYPE;
+    return types;
+}
+
+QMimeData* ScenegraphTreeModel::mimeData(const QModelIndexList& indexes) const
+{
+    auto log = spdlog::get("ScenegraphTreeModel");
+    json sceneObjects = json::array();
+    foreach (auto index , indexes)
+    {
+       auto sceneObjectItem = static_cast<ScenegraphTreeItem*>(index.internalPointer());
+       if (sceneObjectItem->getType() == SCENEGRAPH_SCENE_OBJECT)
+       {
+            auto sceneObject = static_cast<SceneObjectDefinition*>(sceneObjectItem->getItem());
+            sceneObjects.push_back(sceneObject->getJson());
+       }
+    }
+    QMimeData* mimeData = QAbstractItemModel::mimeData(indexes);
+    mimeData->setText(QString::fromStdString(sceneObjects.dump()));
+    log->info("Moving mime data {}",sceneObjects.dump());
+    return mimeData;
+}
+
+const QString ScenegraphTreeModel::SO_MIME_TYPE = "application/x-dream-scene-object";

@@ -380,4 +380,32 @@ namespace Dream
         mJson[Constants::SCENE_CAMERA_TRANSFORM] = getCameraTransform().getJson();
         return mJson;
     }
+
+    void SceneDefinition::setMinDrawDistance(float mdd)
+    {
+       mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = mdd;
+    }
+
+    float SceneDefinition::getMinDrawDistance()
+    {
+        if (mJson[Constants::SCENE_MIN_DRAW_DISTANCE].is_null())
+        {
+           mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = 0.1f;
+        }
+        return mJson[Constants::SCENE_MIN_DRAW_DISTANCE];
+    }
+
+    void SceneDefinition::setMaxDrawDistance(float mdd)
+    {
+       mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = mdd;
+    }
+
+    float SceneDefinition::getMaxDrawDistance()
+    {
+        if (mJson[Constants::SCENE_MAX_DRAW_DISTANCE].is_null())
+        {
+           mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
+        }
+        return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
+    }
 }

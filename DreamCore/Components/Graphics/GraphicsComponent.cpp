@@ -65,6 +65,16 @@ using glm::scale;
 
 namespace Dream
 {
+    void GraphicsComponent::setMinimumDraw(float minimumDraw)
+    {
+        mMinimumDraw = minimumDraw;
+    }
+
+    void GraphicsComponent::setMaximumDraw(float maximumDraw)
+    {
+        mMaximumDraw = maximumDraw;
+    }
+
     GraphicsComponent::GraphicsComponent
     (Camera* camera, IWindowComponent* windowComponent, bool parallel)
         : IComponent(parallel),
@@ -112,7 +122,7 @@ namespace Dream
             return false;
         }
 
-        Constants::checkGLError("After GLEW init");
+        checkGLError();
 
         log->info(
                     "OpenGL Version {}, Shader Version {}",
@@ -120,16 +130,16 @@ namespace Dream
                     );
 
         onWindowDimensionsChanged();
-        Constants::checkGLError("After initial window dimensions changed");
+        checkGLError();
 
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-        Constants::checkGLError("After perspective correction");
+        checkGLError();
 
         create2DVertexObjects();
-        Constants::checkGLError("After create 2D Vertex VBO/VAO");
+        checkGLError();
 
         createFontVertexObjects();
-        Constants::checkGLError("After create Font 2D VBO/VAO");
+        checkGLError();
 
         log->info("Initialisation Done.");
         return true;
@@ -155,7 +165,7 @@ namespace Dream
 
         glViewport(0, 0, windowWidth, windowHeight);
 
-        Constants::checkGLError("After glViewport");
+        checkGLError();
 
         // Ortho projection for 2D
         mOrthoProjection = ortho
@@ -164,7 +174,7 @@ namespace Dream
             static_cast<float>(windowHeight), 0.0f
         );
 
-        Constants::checkGLError("After ortho");
+        checkGLError();
 
         // Perspective Projection Matrix
         mProjectionMatrix = perspective(
@@ -174,7 +184,7 @@ namespace Dream
             mMaximumDraw
         );
 
-        Constants::checkGLError("After projection matrix");
+        checkGLError();
 
         log->debug
                 (
@@ -202,7 +212,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Pre Render" );
-        Constants::checkGLError("before pre render");
+        checkGLError();
 
         glEnable(GL_DEPTH_TEST);
 
@@ -228,7 +238,7 @@ namespace Dream
             glClearColor(0.0f,0.0f,0.0f,0.0f);
         }
 
-        Constants::checkGLError("after pre render");
+        checkGLError();
     }
 
     void
@@ -237,10 +247,10 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Post Render" );
-        Constants::checkGLError("before post render");
+        checkGLError();
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
-        Constants::checkGLError("after post render");
+        checkGLError();
     }
 
     void
@@ -249,7 +259,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Pre Render" );
-        Constants::checkGLError("before pre render");
+        checkGLError();
 
         // Clear the colorbuffer
         if (mActiveSceneRuntimeHandle)
@@ -267,7 +277,7 @@ namespace Dream
             glClearColor(0.0f,0.0f,0.0f,0.0f);
         }
 
-        Constants::checkGLError("after pre render");
+        checkGLError();
     }
 
     void
@@ -276,10 +286,10 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Post Render" );
-        Constants::checkGLError("before post render");
+        checkGLError();
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
-        Constants::checkGLError("after post render");
+        checkGLError();
     }
 
 
@@ -552,7 +562,7 @@ namespace Dream
         for (SceneObjectRuntime* it : mModelQueue)
         {
             drawModel(it);
-            Constants::checkGLError("After Draw Model");
+            checkGLError();
         }
         postModelRender();
     }
@@ -586,7 +596,7 @@ namespace Dream
         for (SceneObjectRuntime* it : mFontQueue)
         {
             drawFont(it);
-            Constants::checkGLError("After Draw Font");
+            checkGLError();
         }
         postFontRender();
     }
@@ -689,10 +699,10 @@ namespace Dream
         shader->use();
 
         shader->setProjectionMatrix(mProjectionMatrix);
-        Constants::checkGLError("Font: After set projection matrix");
+        checkGLError();
 
         shader->setViewMatrix(mViewMatrix);
-        Constants::checkGLError("Font: After set view matrix");
+        checkGLError();
 
         vec3 fontColour = font->getColourAsVec3();
         GLint fontColourLocation = glGetUniformLocation(shader->getShaderProgram(),"textColour");
@@ -729,7 +739,7 @@ namespace Dream
 
             // Pass model matrix to shader
             shader->setModelMatrix(modelMatrix);
-            Constants::checkGLError("Font: After set model matrix");
+            checkGLError();
 
             float fontScalar = 10.0f;
             FontCharacter ch = charMap[*c];
@@ -776,17 +786,17 @@ namespace Dream
             log->info("Font texture is {}" , ch.TextureID );
             // Setup Texture
             glActiveTexture(GL_TEXTURE0);
-            Constants::checkGLError("Font: After ActivateTexture");
+            checkGLError();
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            Constants::checkGLError("Font: After BindTexture");
+            checkGLError();
             // Setup VBO
             glBindBuffer(GL_ARRAY_BUFFER, mFontVBO);
-            Constants::checkGLError("Font: Bind Buffer");
+            checkGLError();
             glBufferData(GL_ARRAY_BUFFER, sizeof(FontCharacterVertex)*6, &vertices[0], GL_STATIC_DRAW);
-            Constants::checkGLError("Font: After Buffer Data");
+            checkGLError();
             // Setup VAO
             shader->bindVertexArray(mFontVAO);
-            Constants::checkGLError("Font: After Bind VAO");
+            checkGLError();
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(
                         0, 3, GL_FLOAT, GL_FALSE,
@@ -802,7 +812,7 @@ namespace Dream
 
             // Render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
-            Constants::checkGLError("Font: After Draw Call");
+            checkGLError();
 
             // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             // Bitshift by 6 to get value in pixels (2^6 = 64)
@@ -819,7 +829,7 @@ namespace Dream
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
-        Constants::checkGLError("Before drawModel");
+        checkGLError();
 
         log->info("Drawing Model " , sceneObject->getNameAndUuidString() );
 
@@ -828,62 +838,25 @@ namespace Dream
         ShaderInstance* shader = sceneObject->getShaderInstance();
         shader->use();
 
-        // Set Ambient Light Values
-        GLfloat worldAmbientStrength = 1.0f;
-        vec3 worldAmbientColour(1.0f);
-
-        if (mActiveSceneRuntimeHandle)
-        {
-            vector<float> ambient = mActiveSceneRuntimeHandle->getAmbientColour();
-            worldAmbientColour = vec3
-                    (
-                    ambient[Constants::RED_INDEX],
-                    ambient[Constants::GREEN_INDEX],
-                    ambient[Constants::BLUE_INDEX]
-                    );
-            worldAmbientStrength = ambient[Constants::ALPHA_INDEX];
-        }
-
-        shader->addUniform(UniformType::FLOAT3,"worldAmbientColour",1,&worldAmbientColour);
-        shader->addUniform(UniformType::FLOAT1,"worldAmbientStrength",1,&worldAmbientStrength);
-        Constants::checkGLError("After world ambient uniforms");
-
-        GLint numLights = static_cast<GLint>(mLightQueue.size());
-        shader->addUniform(UniformType::INT1,"numPointLights",1,&numLights);
-
         // Set Point Light Values
-        int i=0;
-        const static int max_lights = 10;
-        vec3 lightPos[max_lights];
-        vec3 lightColour[max_lights];
-
-        for (auto light : mLightQueue)
+        log->info("The scene has {} lights", mLightQueue.size());
+        for (size_t i=0; i < mLightQueue.size(); i++)
         {
-            if (i > max_lights-1)
-            {
-                break;
-            }
-
-            lightPos[i] = light->getSceneObjectRuntimeHandle()->getTransform().getTranslation();
-            lightColour[i] = light->getColor();
-            i++;
+            auto light = mLightQueue.at(i);
+            shader->bindLight(light);
+            checkGLError();
         }
-
-        shader->addUniform(FLOAT3,"pointLightPos",numLights,&lightPos[0]);
-        shader->addUniform(FLOAT3,"pointLightColour",numLights,&lightColour[0]);
-        Constants::checkGLError("After light pos uniform");
-
 
         vec3 cameraTranslation = mCamera->getTranslation();
-        shader->addUniform(FLOAT3,"cameraPos",1,&cameraTranslation);
-        Constants::checkGLError("After camera pos uniform");
+        shader->addUniform(FLOAT3,"viewPos",1,&cameraTranslation);
+        checkGLError();
 
         // Pass view/projection transform to shader
         shader->setProjectionMatrix(mProjectionMatrix);
-        Constants::checkGLError("After set projection");
+        checkGLError();
 
         shader->setViewMatrix(mViewMatrix);
-        Constants::checkGLError("After set view");
+        checkGLError();
 
         // calculate the model matrix
         mat4 modelMatrix;
@@ -902,12 +875,12 @@ namespace Dream
 
         // Pass model matrix to shader
         shader->setModelMatrix(modelMatrix);
-        Constants::checkGLError("After set model");
+        checkGLError();
 
         // Draw using shader
         bool always = sceneObject->getSceneObjectDefinitionHandle()->getAlwaysDraw();
         model->draw(shader, translation, mCamera->getTranslation(),mMeshCullDistance, always);
-        Constants::checkGLError("After Draw");
+        checkGLError();
     }
 
     void

@@ -20,14 +20,16 @@
 
 #include <GL/glew.h>
 
+
 using namespace std;
 
 
 namespace Dream
 {
+
     bool
-    Constants::checkGLError
-    (string marker)
+    Constants::checkGLError_
+    (string file, int line)
     {
         GLenum errorCode = 0;
         bool wasError = false;
@@ -36,7 +38,7 @@ namespace Dream
             errorCode = glGetError();
             if (errorCode!=0)
             {
-                logger->error("OpenGL Error Check {}:", marker);
+                logger->error("OpenGL Error Check {}:{} ", file, line);
                 switch (errorCode)
                 {
                     case GL_NO_ERROR:
@@ -117,6 +119,14 @@ namespace Dream
     const string Constants::ASSET_FORMAT_FONT_TTF = "ttf";
     const string Constants::ASSET_FORMAT_SHADER_GLSL = "glsl";
     const string Constants::ASSET_FORMAT_LIGHT_POINT = "point";
+    const string Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL = "directional";
+    const string Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT = "spotlight";
+    const string Constants::ASSET_ATTR_LIGHT_DIRECTION = "direction";
+    const string Constants::ASSET_ATTR_LIGHT_CONSTANT = "constant";
+    const string Constants::ASSET_ATTR_LIGHT_LINEAR = "linear";
+    const string Constants::ASSET_ATTR_LIGHT_QUADRATIC = "quadratic";
+    const string Constants::ASSET_ATTR_LIGHT_CUTOFF = "cutoff";
+    const string Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF = "outer_cutoff";
     const string Constants::ASSET_FORMAT_SPRITE_IMAGE = "image";
 
     const string Constants::ASSET_TYPE_PATH_READABLE = "Path";
@@ -138,6 +148,8 @@ namespace Dream
     const string Constants::ASSET_FORMAT_FONT_TTF_READABLE = "TTF Font";
     const string Constants::ASSET_FORMAT_SHADER_GLSL_READABLE = "GLSL";
     const string Constants::ASSET_FORMAT_LIGHT_POINT_READABLE = "Point Light";
+    const string Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE = "Directional Light";
+    const string Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE = "Spotlight";
     const string Constants::ASSET_FORMAT_SPRITE_IMAGE_READABLE = "Sprite Image";
 
     // Scene ====================================================================
@@ -152,6 +164,8 @@ namespace Dream
     const string Constants::SCENE_PHYSICS_DEBUG = "physicsDebug";
     const string Constants::SCENE_DEFAULT_NAME = "Untitled Scene";
     const string Constants::SCENE_MESH_CULL_DISTANCE = "mesh_cull_distance";
+    const string Constants::SCENE_MIN_DRAW_DISTANCE = "min_draw";
+    const string Constants::SCENE_MAX_DRAW_DISTANCE = "max_draw";
 
     // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
@@ -263,6 +277,9 @@ namespace Dream
 
     // Light ====================================================================
     const string Constants::ASSET_ATTR_LIGHT_COLOR   = "colour";
+    const string Constants::ASSET_ATTR_LIGHT_DIFFUSE = "diffuse";
+    const string  Constants::ASSET_ATTR_LIGHT_AMBIENT = "ambient";
+    const string Constants::ASSET_ATTR_LIGHT_SPECULAR = "specular";
 
     // Model ================================================================
     const string Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST = "material_shader_list";
@@ -317,7 +334,7 @@ namespace Dream
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =
     {
-        {AssetType::PATH,      ASSET_TYPE_PATH},
+        {AssetType::PATH,           ASSET_TYPE_PATH},
         {AssetType::AUDIO,          ASSET_TYPE_AUDIO},
         {AssetType::FONT,           ASSET_TYPE_FONT},
         {AssetType::LIGHT,          ASSET_TYPE_LIGHT},
@@ -352,7 +369,9 @@ namespace Dream
         {
             AssetType::LIGHT,
             {
-                ASSET_FORMAT_LIGHT_POINT
+                ASSET_FORMAT_LIGHT_POINT,
+                ASSET_FORMAT_LIGHT_DIRECTIONAL,
+                ASSET_FORMAT_LIGHT_SPOTLIGHT
             }
         },
         {
@@ -527,14 +546,17 @@ namespace Dream
     Constants::getAssetFormatReadableNameFromString
     (string format)
     {
+        // Script
         if (format.compare(ASSET_FORMAT_SCRIPT_LUA) == 0)
         {
            return ASSET_FORMAT_SCRIPT_LUA_READABLE;
         }
+        // Model
         else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP) == 0)
         {
            return ASSET_FORMAT_MODEL_ASSIMP_READABLE;
         }
+        // Audio
         else if (format.compare(ASSET_FORMAT_AUDIO_OGG) == 0)
         {
            return ASSET_FORMAT_AUDIO_OGG_READABLE;
@@ -543,26 +565,40 @@ namespace Dream
         {
            return ASSET_FORMAT_AUDIO_WAV_READABLE;
         }
+        // Font
         else if (format.compare(ASSET_FORMAT_FONT_TTF) == 0)
         {
            return ASSET_FORMAT_FONT_TTF_READABLE;
         }
+        // Shader
         else if (format.compare(ASSET_FORMAT_SHADER_GLSL) == 0)
         {
            return ASSET_FORMAT_SHADER_GLSL_READABLE;
         }
+        // Light
         else if (format.compare(ASSET_FORMAT_LIGHT_POINT) == 0)
         {
            return ASSET_FORMAT_LIGHT_POINT_READABLE;
         }
+        else if (format.compare(ASSET_FORMAT_LIGHT_DIRECTIONAL) == 0)
+        {
+           return ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_LIGHT_SPOTLIGHT) == 0)
+        {
+           return ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
+        }
+        // Sprite
         else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE) == 0)
         {
            return ASSET_FORMAT_SPRITE_IMAGE_READABLE;
         }
+        // Path
         else if (format.compare(ASSET_FORMAT_PATH_DREAM) == 0)
         {
             return ASSET_FORMAT_PATH_DREAM_READABLE;
         }
+        // Physics
         else if (format.compare(COLLISION_SHAPE_SPHERE) == 0)
         {
             return COLLISION_SHAPE_SPHERE_READABLE;
@@ -647,6 +683,14 @@ namespace Dream
         {
            return ASSET_FORMAT_LIGHT_POINT;
         }
+        else if (format.compare(ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE) == 0)
+        {
+           return ASSET_FORMAT_LIGHT_DIRECTIONAL;
+        }
+        else if (format.compare(ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE) == 0)
+        {
+           return ASSET_FORMAT_LIGHT_SPOTLIGHT;
+        }
         else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE_READABLE) == 0)
         {
            return ASSET_FORMAT_SPRITE_IMAGE;
@@ -716,3 +760,5 @@ namespace Dream
     };
 
 } // End of Dream
+
+

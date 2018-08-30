@@ -59,6 +59,7 @@ ScenegraphTreeItem::data
 (int column)
 const
 {
+    Q_UNUSED(column)
     switch (getType())
     {
         case SCENEGRAPH_PROJECT:

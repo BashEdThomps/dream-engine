@@ -158,7 +158,7 @@ QOpenGLWindowComponent::paintGL
                         {
                             mGridHandle->init();
 
-                            Constants::checkGLError("After Grid Init");
+                            checkGLError();
                         }
                         mGridHandle->setViewMatrix(viewMatrix);
                         mGridHandle->setProjectionMatrix(projectionMatrix);
@@ -167,7 +167,7 @@ QOpenGLWindowComponent::paintGL
                     else
                     {
                         log->trace("Grid Disabled");
-                        Constants::checkGLError("After Grid Draw");
+                        checkGLError();
                     }
                 }
 
@@ -179,13 +179,13 @@ QOpenGLWindowComponent::paintGL
                         if (!mSelectionHighlighterHandle->isInitialised())
                         {
                             mSelectionHighlighterHandle->init();
-                            Constants::checkGLError("SelectionHighlighter after Init");
+                            checkGLError();
                         }
 
                         mSelectionHighlighterHandle->setViewMatrix(viewMatrix);
                         mSelectionHighlighterHandle->setProjectionMatrix(projectionMatrix);
                         mSelectionHighlighterHandle->draw();
-                        Constants::checkGLError("SelectionHighlighter after draw");
+                        checkGLError();
                     }
                 }
 
@@ -197,12 +197,12 @@ QOpenGLWindowComponent::paintGL
                         if (!mRelationshipTreeHandle->isInitialised())
                         {
                             mRelationshipTreeHandle->init();
-                            Constants::checkGLError("RelTree after init");
+                            checkGLError();
                         }
                         mRelationshipTreeHandle->setViewMatrix(viewMatrix);
                         mRelationshipTreeHandle->setProjectionMatrix(projectionMatrix);
                         mRelationshipTreeHandle->draw();
-                        Constants::checkGLError("RelTree after draw");
+                        checkGLError();
                     }
                 }
 
@@ -212,12 +212,12 @@ QOpenGLWindowComponent::paintGL
                     if (!mPathPointViewerHandle->isInitialised())
                     {
                         mPathPointViewerHandle->init();
-                        Constants::checkGLError("AnimViewer after init");
+                        checkGLError();
                     }
                     mPathPointViewerHandle->setViewMatrix(viewMatrix);
                     mPathPointViewerHandle->setProjectionMatrix(projectionMatrix);
                     mPathPointViewerHandle->draw();
-                    Constants::checkGLError("AnimViewer after draw");
+                    checkGLError();
                 }
                 drawStats();
             }
@@ -232,6 +232,7 @@ QOpenGLWindowComponent::paintGL
     else
     {
         glClearColor(0.0f,0.0f,0.0f,0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 }
 

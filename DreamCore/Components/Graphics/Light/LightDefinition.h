@@ -19,31 +19,84 @@
 #pragma once
 
 #include "../../IAssetDefinition.h"
+#include <glm/vec3.hpp>
+
+using namespace glm;
 
 namespace Dream
 {
+    enum LightType
+    {
+        LT_NONE,
+        LT_POINT,
+        LT_DIRECTIONAL,
+        LT_SPOTLIGHT
+    };
+
     class LightDefinition : public IAssetDefinition
     {
     public:
         LightDefinition(ProjectDefinition* pdHandle, json js);
-        // Common
-        void  setColourRed(float);
-        float getColourRed();
 
-        void  setColourGreen(float);
-        float getColourGreen();
+        void setDiffuse(vec3);
+        vec3 getDiffuse();
 
-        void  setColourBlue(float);
-        float getColourBlue();
+        void setAmbient(vec3);
+        vec3 getAmbient();
 
-        void  setIntensity(float);
-        float getIntensity();
+        void setSpecular(vec3);
+        vec3 getSpecular();
 
-        vector<float> getColourVector();
+        void setDirection(vec3);
+        vec3 getDirection();
 
-    protected:
-        void makeColourObject();
+        void setType(LightType);
+        LightType getType();
 
+        void setCutOff(float);
+        float getCutOff();
+
+        void setOuterCutOff(float);
+        float getOuterCutOff();
+
+        void setConstant(float);
+        float getConstant();
+
+        void setLinear(float);
+        float getLinear();
+
+        void setQuadratic(float);
+        float getQuadratic();
+
+        float getSpecularRed() ;
+        void setSpecularRed(float specularRed);
+        float getSpecularGreen() ;
+        void setSpecularGreen(float specularGreen);
+        float getSpecularBlue() ;
+        void setSpecularBlue(float specularBlue);
+
+        float getAmbientRed() ;
+        void setAmbientRed(float ambientRed);
+        float getAmbientGreen() ;
+        void setAmbientGreen(float ambientGreen);
+        float getAmbientBlue() ;
+        void setAmbientBlue(float ambientBlue);
+
+        float getDiffuseRed() ;
+        void setDiffuseRed(float diffuseRed);
+        float getDiffuseGreen() ;
+        void setDiffuseGreen(float diffuseGreen);
+        float getDiffuseBlue() ;
+        void setDiffuseBlue(float diffuseBlue);
+
+        float getDirectionX();
+        void setDirectionX(float dir);
+
+        float getDirectionY();
+        void setDirectionY(float dir);
+
+        float getDirectionZ();
+        void setDirectionZ(float dir);
     };
 
 }

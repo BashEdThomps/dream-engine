@@ -104,6 +104,13 @@ MainController::setupUI
         this,
         SLOT(onScenegraphTreeDataChanged())
     );
+
+     connect(
+        mMainWindowHandle,
+        SIGNAL(notifyAssetDefinitionTreeDataChanged()),
+        this,
+        SLOT(onAssetDefinitionTreeDataChanged())
+    );
     connect(
         mMainWindowHandle,
         SIGNAL(notifyPropertiesTreeDataChanged()),
@@ -315,9 +322,23 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_LightChooseColour(IAssetDefinition*)),
+                SIGNAL(notifyButton_LightChooseAmbient(IAssetDefinition*)),
                 this,
-                SLOT(onAssetDefinitionProperty_LightChooseColour(IAssetDefinition*))
+                SLOT(onAssetDefinitionProperty_LightChooseAmbient(IAssetDefinition*))
+            );
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_LightChooseDiffuse(IAssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefinition*))
+            );
+            connect
+            (
+                mPropertiesModel.get(),
+                SIGNAL(notifyButton_LightChooseSpecular(IAssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition*))
             );
             // Path List
             connect
@@ -788,6 +809,12 @@ MainController::connectUI_TreeViewModels
                 SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
                 this, SLOT(onUI_ScenegraphTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
                 );
+     connect(
+        mScenegraphTreeModel.get(),
+        SIGNAL(notifyExpandRequested()),
+        mMainWindowHandle,
+        SLOT(onScenegraphTreeExpandRequested())
+    );
 
     // assetDefinitionTreeView
     connect
@@ -1611,9 +1638,20 @@ void MainController::forceScenegraphTreeDataChanged()
     mMainWindowHandle->getScenegraphTreeView()->expandAll();
 }
 
+void MainController::forceAssetDefinitionTreeDataChanged()
+{
+    mAssetDefinitionTreeModel->forceDataChanged();
+    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+}
+
 void MainController::onScenegraphTreeDataChanged()
 {
     forceScenegraphTreeDataChanged();
+}
+
+void MainController::onAssetDefinitionTreeDataChanged()
+{
+    forceAssetDefinitionTreeDataChanged();
 }
 
 void MainController::onPropertiesTreeDataChanged()
@@ -1992,34 +2030,99 @@ MainController::onAssetDefinitionProperty_ShaderTemplateChanged
                 );
 }
 
-void MainController::onAssetDefinitionProperty_LightChooseColour(IAssetDefinition* def)
+void MainController::onAssetDefinitionProperty_LightChooseAmbient(IAssetDefinition* def)
 {
     auto log = spdlog::get("MainController");
-    log->info( "Choose Light Colour");
+    log->info( "Choose Diffuse Colour");
 
     QColor currentColour;
     auto lightDef = dynamic_cast<LightDefinition*>(def);
 
-    auto colour = lightDef->getColourVector();
+    auto colour = lightDef->getAmbient();
     currentColour.setRgbF(
-            static_cast<double>(colour[0]), // r
-            static_cast<double>(colour[1]), // g
-            static_cast<double>(colour[2]), // b
-            static_cast<double>(colour[3])  // i
+        static_cast<double>(colour.r),
+        static_cast<double>(colour.g),
+        static_cast<double>(colour.b)
     );
 
-    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Light Colour",QColorDialog::ShowAlphaChannel);
+    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Ambient Colour");
 
     if (chosenColour.isValid())
     {
-        lightDef->setColourRed(static_cast<float>(chosenColour.redF()));
-        lightDef->setColourGreen(static_cast<float>(chosenColour.greenF()));
-        lightDef->setColourBlue(static_cast<float>(chosenColour.blueF()));
-        lightDef->setIntensity(static_cast<float>(chosenColour.alphaF()));
+        lightDef->setAmbient(
+            vec3(
+                static_cast<float>(chosenColour.redF()),
+                static_cast<float>(chosenColour.greenF()),
+                static_cast<float>(chosenColour.blueF())
+            )
+        );
     }
 
     mPropertiesModel->forceDataChanged();
 }
+
+void MainController::onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefinition* def)
+{
+    auto log = spdlog::get("MainController");
+    log->info( "Choose Diffuse Colour");
+
+    QColor currentColour;
+    auto lightDef = dynamic_cast<LightDefinition*>(def);
+
+    auto colour = lightDef->getDiffuse();
+    currentColour.setRgbF(
+        static_cast<double>(colour.r),
+        static_cast<double>(colour.g),
+        static_cast<double>(colour.b)
+    );
+
+    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Diffuse Colour");
+
+    if (chosenColour.isValid())
+    {
+        lightDef->setDiffuse(
+            vec3(
+                static_cast<float>(chosenColour.redF()),
+                static_cast<float>(chosenColour.greenF()),
+                static_cast<float>(chosenColour.blueF())
+            )
+        );
+    }
+
+    mPropertiesModel->forceDataChanged();
+}
+
+void MainController::onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition* def)
+{
+    auto log = spdlog::get("MainController");
+    log->info( "Choose Specular Colour");
+
+    QColor currentColour;
+    auto lightDef = dynamic_cast<LightDefinition*>(def);
+
+    auto colour = lightDef->getSpecular();
+    currentColour.setRgbF(
+        static_cast<double>(colour.r),
+        static_cast<double>(colour.g),
+        static_cast<double>(colour.b)
+    );
+
+    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Specular Colour");
+
+    if (chosenColour.isValid())
+    {
+        lightDef->setSpecular(
+            vec3(
+                static_cast<float>(chosenColour.redF()),
+                static_cast<float>(chosenColour.greenF()),
+                static_cast<float>(chosenColour.blueF())
+            )
+        );
+    }
+
+    mPropertiesModel->forceDataChanged();
+}
+
 
 void
 MainController::onAssetDefinitionProperty_PathList

@@ -42,9 +42,19 @@ public:
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+    Qt::DropActions supportedDropActions() const override;
+    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
 
     void setupModelData();
     void forceDataChanged();
+
+    const static QString SO_MIME_TYPE;
+
+signals:
+    void notifyExpandRequested();
 
 private:
     void appendSceneObjects(SceneObjectDefinition *parentSceneObject, ScenegraphTreeItem* parentTreeNode);
@@ -54,3 +64,6 @@ private:
     unique_ptr<QIcon> mSceneIcon;
     unique_ptr<QIcon> mSceneObjectIcon;
 };
+
+
+

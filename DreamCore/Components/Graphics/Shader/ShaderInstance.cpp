@@ -21,6 +21,8 @@
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
 #include "../../../Utilities/FileReader.h"
+#include "../Model/AssimpMaterial.h"
+#include "../Light/LightInstance.h"
 
 using namespace glm;
 
@@ -32,6 +34,12 @@ namespace Dream
     (ShaderCache* cache, ShaderDefinition* definition,SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           ILoggable ("ShaderInstance"),
+          mPointLightCount(0),
+          mPointLightCountLocation(UNIFORM_NOT_FOUND),
+          mSpotLightCount(0),
+          mSpotLightCountLocation(UNIFORM_NOT_FOUND),
+          mDirectionalLightCount(0),
+          mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
           mCacheHandle(cache)
     {
         auto log = getLog();
@@ -203,7 +211,16 @@ namespace Dream
             glDeleteShader(mFragmentShader);
             mCacheHandle->putShader(mDefinitionHandle->getUuid(),mShaderProgram);
         }
+
         mLoaded = (mShaderProgram != 0);
+
+        if (mLoaded)
+        {
+            mPointLightCountLocation       =  glGetUniformLocation(mShaderProgram, UNIFORM_POINT_LIGHT_COUNT);
+            mSpotLightCountLocation        =  glGetUniformLocation(mShaderProgram, UNIFORM_SPOT_LIGHT_COUNT);
+            mDirectionalLightCountLocation =  glGetUniformLocation(mShaderProgram, UNIFORM_DIRECTIONAL_LIGHT_COUNT);
+        }
+
         return mLoaded;
     }
 
@@ -211,6 +228,9 @@ namespace Dream
     ShaderInstance::use
     ()
     {
+        mPointLightCount = 0;
+        mSpotLightCount = 0;
+        mDirectionalLightCount = 0;
         GLint currentShader = 0;
         glGetIntegerv(GL_CURRENT_PROGRAM,&currentShader);
         if (static_cast<GLuint>(currentShader) != mShaderProgram)
@@ -271,6 +291,138 @@ namespace Dream
         mUniformVector.push_back(newUniform);
     }
 
+    void ShaderInstance::bindMaterial(AssimpMaterial* material)
+    {
+        checkGLError();
+        auto log = getLog();
+        GLuint id;
+        if (material->mDiffuseTexture != nullptr)
+        {
+            id = material->mDiffuseTexture->id;
+            log->info("Found Diffuse Texture, binding {}",id);
+            glActiveTexture(GL_TEXTURE0);
+            checkGLError();
+            glBindTexture(GL_TEXTURE_2D, id);
+            checkGLError();
+            GLuint diffuseIndex = 0;
+            addUniform(INT1, "material.diffuse", 1, &diffuseIndex);
+        }
+
+        if (material->mSpecularTexture != nullptr)
+        {
+            id =  material->mSpecularTexture->id;
+            log->info("Found Specular Texture, binding {}",id);
+            glActiveTexture(GL_TEXTURE1);
+            checkGLError();
+            glBindTexture(GL_TEXTURE_2D, id);
+            checkGLError();
+            GLuint specularIndex = 1;
+            addUniform(INT1, "material.specular", 1, &specularIndex);
+        }
+
+        addUniform(FLOAT1, "material.shininess", 1, &material->mShininessStrength);
+
+    }
+
+
+    void ShaderInstance::bindLight(LightInstance* light)
+    {
+        auto log = getLog();
+        log->info("Binding light {} ({})",light->getNameAndUuidString(),light->getType());
+        DirLight dirData;
+        SpotLight spotData;
+        PointLight pointData;
+
+        /*
+
+        DirLight;
+            vec3 direction;
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+
+         PointLight;
+            vec3 position;
+            float constant;
+            float linear;
+            float quadratic;
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+
+        SpotLight;
+            vec3 position;
+            vec3 direction;
+            float cutOff;
+            float outerCutOff;
+            float constant;
+            float linear;
+            float quadratic;
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        */
+
+
+        switch (light->getType())
+        {
+            case LT_DIRECTIONAL:
+                if (mDirectionalLightCount == MAX_LIGHTS) {
+                    log->error("Max dir lights bound");
+                    return;
+                }
+                log->info("Binding dir light");
+                dirData = light->getDirectionalLightData();
+                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].direction",1, &dirData.direction);
+                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].ambient",1,   &dirData.ambient);
+                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].diffuse",1,   &dirData.diffuse);
+                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].specular",1,  &dirData.specular);
+                mDirectionalLightCount++;
+                break;
+
+            case LT_POINT:
+                if (mPointLightCount == MAX_LIGHTS) {
+                    log->error("Max point lights bound");
+                    return;
+                }
+                log->info("Binding point light");
+                pointData = light->getPointLightData();
+                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].ambient",1,   &pointData.ambient);
+                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].diffuse",1,   &pointData.diffuse);
+                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].specular",1,  &pointData.specular);
+                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].position",1,  &pointData.position);
+                addUniform(FLOAT1,"pointLights["+std::to_string(mDirectionalLightCount)+"].constant",1,  &pointData.constant);
+                addUniform(FLOAT1,"pointLights["+std::to_string(mDirectionalLightCount)+"].linear",1,    &pointData.linear);
+                addUniform(FLOAT1,"pointLights["+std::to_string(mDirectionalLightCount)+"].quadratic",1, &pointData.quadratic);
+
+                mPointLightCount++;
+                break;
+
+            case LT_SPOTLIGHT:
+                if (mSpotLightCount == MAX_LIGHTS) {
+                    log->error("Max spot lights bound");
+                    return;
+                }
+                log->info("Binding spot light");
+                spotData = light->getSpotLightData();
+                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].ambient",1,     &spotData.ambient);
+                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].diffuse",1,     &spotData.diffuse);
+                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].specular",1,    &spotData.specular);
+                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].position",1,    &spotData.position);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].constant",1,    &spotData.constant);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].linear",1,      &spotData.linear);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].quadratic",1,   &spotData.quadratic);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].cutOff",1,      &spotData.cutOff);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].outerCutOff",1, &spotData.outerCutOff);
+                mSpotLightCount++;
+                break;
+
+            case LT_NONE:
+                log->error("Cannot bind light with type NONE");
+                break;
+        }
+    }
+
     void
     ShaderInstance::unbind
     ()
@@ -286,6 +438,40 @@ namespace Dream
         auto log = getLog();
         log->info("Synchronising uniforms for {}",getNameAndUuidString());
         GLuint prog = getShaderProgram();
+
+        // Sync lighting uniforms
+
+        if (mPointLightCountLocation != UNIFORM_NOT_FOUND)
+        {
+            glUniform1i(mPointLightCountLocation,mPointLightCount);
+            checkGLError();
+        }
+        else
+        {
+            log->error("Could not find Point Light Location Uniform");
+        }
+
+        if (mSpotLightCountLocation != UNIFORM_NOT_FOUND)
+        {
+            glUniform1i(mSpotLightCountLocation,mSpotLightCount);
+            checkGLError();
+        }
+        else
+        {
+            log->error("Could not find Spot Light Location Uniform");
+        }
+
+        if (mDirectionalLightCountLocation != UNIFORM_NOT_FOUND)
+        {
+            glUniform1i(mDirectionalLightCountLocation,mDirectionalLightCount);
+            checkGLError();
+        }
+        else
+        {
+            log->error("Could not find Directional Light Location Uniform");
+        }
+
+        // Sync user uniforms
 
         for (shared_ptr<ShaderUniform> uniform : mUniformVector)
         {
@@ -355,7 +541,7 @@ namespace Dream
                         glUniform4fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec4*>(uniform->getData())));
                         break;
                 }
-                Constants::checkGLError("After sync single uniform");
+                checkGLError();
             }
         }
     }
@@ -570,5 +756,9 @@ namespace Dream
     {
         mType = type;
     }
+    const char* ShaderInstance::UNIFORM_POINT_LIGHT_COUNT = "pointLightCount";
+    const char* ShaderInstance::UNIFORM_SPOT_LIGHT_COUNT = "spotLightCount";
+    const char* ShaderInstance::UNIFORM_DIRECTIONAL_LIGHT_COUNT = "directionalLightCount";
+    const unsigned int ShaderInstance::MAX_LIGHTS = 10;
 
 } // End of Dream

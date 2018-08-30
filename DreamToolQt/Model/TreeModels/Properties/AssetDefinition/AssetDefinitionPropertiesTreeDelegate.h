@@ -49,8 +49,11 @@ public slots:
     void onButton_EditScript(bool clicked);
     void onButton_PhysicsBvhTriangleMeshFile(bool clicked);
     void onButton_FontColourDialog(bool clicked) ;
-    void onButton_LightChooseColour(bool clicked);
     void onButton_ModelMaterialShaderMap(bool clicked);
+
+    void onButton_LightChooseAmbient(bool clicked);
+    void onButton_LightChooseDiffuse(bool clicked);
+    void onButton_LightChooseSpecular(bool clicked);
 
 signals:
     void notifyButton_PathList();
@@ -64,8 +67,12 @@ signals:
     void notifyButton_EditShader();
 
     void notifyButton_PhysicsBvhTriangleMeshFile();
-    void notifyButton_LightChooseColour();
     void notifyButton_ModelMaterialShaderMap();
+
+
+    void notifyButton_LightChooseAmbient();
+    void notifyButton_LightChooseDiffuse();
+    void notifyButton_LightChooseSpecular();
 
 protected:
     AssetDefinitionPropertiesModel *mModelHandle;
@@ -82,7 +89,9 @@ protected:
     QWidget *createPhysicsBvhTriangleMeshFileButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
     QWidget *createFontColourDialogButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
     QWidget *createModelMaterialShaderButton(AssetDefinitionPropertiesItem* adItem, QWidget *parent) const;
-    QWidget *createLightColourPaletteButton(QWidget* parent) const;
+    QWidget *createLightAmbientPaletteButton(QWidget* parent) const;
+    QWidget *createLightDiffusePaletteButton(QWidget* parent) const;
+    QWidget *createLightSpecularPaletteButton(QWidget* parent) const;
     QWidget *createPathListButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
     QWidget *createPathTypeComboBox(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const;
 

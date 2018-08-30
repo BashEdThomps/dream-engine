@@ -158,7 +158,7 @@ namespace Dream
             mMaterialHandle->mShininessStrength
         );
         shaderHandle->addUniform(FLOAT4,"materialSpecularColour",1,&specular);
-        shaderHandle->addUniform(FLOAT1,"materialSpecularStrength",1,&mMaterialHandle->mShininessStrength);
+        shaderHandle->addUniform(FLOAT1,"materialShininess",1,&mMaterialHandle->mShininessStrength);
     }
 
     void
@@ -187,19 +187,22 @@ namespace Dream
     AssimpMesh::draw
     (ShaderInstance* shader)
     {
+        auto log = getLog();
         // Bind Shader Values
-        bindTextures(shader);
-        bindDiffuse(shader);
-        bindSpecular(shader);
-        bindOpacity(shader);
+        //bindTextures(shader);
+        //bindDiffuse(shader);
+        //bindSpecular(shader);
+        //bindOpacity(shader);
+        shader->bindMaterial(mMaterialHandle);
 
         // Sync Uniforms
         shader->syncUniforms();
-        Constants::checkGLError("After sync uniforms");
+        checkGLError();
 
         // Draw mesh
         shader->bindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
+        log->info("Completed a mesh draw");
         //shader->unbindVertexArray();
     }
 
