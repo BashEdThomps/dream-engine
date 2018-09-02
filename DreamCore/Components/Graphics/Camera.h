@@ -57,18 +57,16 @@ namespace Dream
         void setTranslation(vec3);
         void setTranslation(float,float,float);
         vec3 getTranslation();
-        void setRotation(vec3);
-        vec3 getRotation();
         void  setMovementSpeed(float);
         float getMovementSpeed();
         void  setMouseSensitivity(float);
         float getMouseSensitivity();
         float getZoom();
         void setLookAt(float x, float y, float z);
-        void setLookAt(Transform3D);
+        void setLookAt(vec3);
+        vec3 getLookAt();
         void setFreeMode(bool freemode);
-        void setTransform(Transform3D);
-        void orbit(Transform3D target,float elevation, float radius, float pitch, float yaw);
+        void orbit(vec3,float elevation, float radius, float pitch, float yaw);
 
         void flyForward(float speed);
         void flyBackward(float speed);
@@ -85,10 +83,9 @@ namespace Dream
 
         vec3 getUp();
         vec3 getFront();
-
-    private:
-        float radians(float);
-
+        float getYaw() const;
+        void setYaw(float yaw);
+        float getPitch() const;
+        void setPitch(float pitch);
     }; // End of Camera
-
 } // End of Dream

@@ -705,6 +705,11 @@ namespace Dream
         mSpriteInstance->load(mProjectPath);
     }
 
+    quat SceneObjectRuntime::getOrientation()
+    {
+       return mTransform.getOrientation();
+    }
+
     void
     SceneObjectRuntime::createFontInstance
     (FontDefinition* definition)

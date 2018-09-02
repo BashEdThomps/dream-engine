@@ -586,7 +586,7 @@ namespace Dream
                 .def("flyZ",&Camera::flyZ)
                 .def("setFreeMode",&Camera::setFreeMode)
                 .def("setLookAt",static_cast<void(Camera::*)(float,float,float)>(&Camera::setLookAt))
-                .def("setLookAt",static_cast<void(Camera::*)(Transform3D)>( &Camera::setLookAt))
+                .def("setLookAt",static_cast<void(Camera::*)(vec3)>( &Camera::setLookAt))
                 .def("setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation))
                 .def("orbit",&Camera::orbit)
             .enum_("CameraMovement")
@@ -858,6 +858,19 @@ namespace Dream
                 .def("getOrientation",&Transform3D::getOrientation)
                 .def("setOrientation",static_cast<void(Transform3D::*)(float,float,float,float)>(&Transform3D::setOrientation))
                 .def("setOrientation",static_cast<void(Transform3D::*)(glm::quat)>(&Transform3D::setOrientation))
+
+                .def("setOrientationW",&Transform3D::setOrientationW)
+                .def("getOrientationW",&Transform3D::getOrientationW)
+
+                .def("setOrientationX",&Transform3D::setOrientationX)
+                .def("getOrientationX",&Transform3D::getOrientationX)
+
+                .def("setOrientationY",&Transform3D::setOrientationY)
+                .def("getOrientationY",&Transform3D::getOrientationY)
+
+                .def("setOrientationZ",&Transform3D::setOrientationZ)
+                .def("getOrientationZ",&Transform3D::getOrientationZ)
+
                 // Scale ================================================================
                 .def("getScaleX",&Transform3D::getScaleX)
                 .def("getScaleY",&Transform3D::getScaleY)

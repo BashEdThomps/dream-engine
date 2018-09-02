@@ -27,9 +27,6 @@
 #include "../Utilities/String.h"
 #include "../Utilities/Uuid.h"
 
-using std::cout;
-using std::endl;
-
 namespace Dream
 {
     SceneDefinition::SceneDefinition
@@ -42,11 +39,10 @@ namespace Dream
         log->trace( "Constructing ", getNameAndUuidString() );
 
         json rootSceneObject = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
-        mCameraTransform = Transform3D(mJson[Constants::SCENE_CAMERA_TRANSFORM]);
 
         if (rootSceneObject.is_null())
         {
-            log->info( "No root SceneObject found!!" );
+            log->error( "No root SceneObject found!!" );
         }
         else
         {
@@ -145,18 +141,58 @@ namespace Dream
         mJson[Constants::SCENE_NOTES] = notes;
     }
 
-    Transform3D&
-    SceneDefinition::getCameraTransform
+    vec3
+    SceneDefinition::getCameraTranslation
     ()
     {
-        return mCameraTransform;
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+           setCameraTranslation(vec3(0));
+        }
+        return vec3(
+            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X],
+            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y],
+            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z]
+        );
     }
 
     void
-    SceneDefinition::setCameraTransform
-    (Transform3D transform)
+    SceneDefinition::setCameraTranslation
+    (vec3 transform)
     {
-        mCameraTransform = transform;
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+            mJson[Constants::SCENE_CAMERA_TRANSLATION] = json::object();
+        }
+        // Translation
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = transform.x;
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = transform.y;
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = transform.z;
+    }
+
+    glm::vec3 SceneDefinition::getCameraLookAt()
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+           setCameraLookAt(vec3(0));
+        }
+        return vec3(
+            mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X],
+            mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y],
+            mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z]
+        );
+    }
+
+    void SceneDefinition::setCameraLookAt(glm::vec3 lookAt)
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+            mJson[Constants::SCENE_CAMERA_LOOK_AT] = json::object();
+        }
+        // Translation
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = lookAt.x;
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y] = lookAt.y;
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z] = lookAt.z;
     }
 
     vector<float>
@@ -377,7 +413,6 @@ namespace Dream
     ()
     {
         mJson[Constants::SCENE_ROOT_SCENE_OBJECT] = mRootSceneObjectDefinition->getJson();
-        mJson[Constants::SCENE_CAMERA_TRANSFORM] = getCameraTransform().getJson();
         return mJson;
     }
 
@@ -407,5 +442,142 @@ namespace Dream
            mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
         }
         return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
+    }
+
+
+    float SceneDefinition::getCameraLookAtX()
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+           setCameraLookAt(vec3(0));
+        }
+        return mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X];
+    }
+
+    float SceneDefinition::getCameraLookAtY()
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+           setCameraLookAt(vec3(0));
+        }
+        return mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y];
+    }
+
+    float SceneDefinition::getCameraLookAtZ()
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+           setCameraLookAt(vec3(0));
+        }
+        return mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z];
+    }
+
+    void SceneDefinition::setCameraLookAtX(float val)
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+           setCameraLookAt(vec3(0));
+        }
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = val;
+    }
+
+    void SceneDefinition::setCameraLookAtY(float val)
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+           setCameraLookAt(vec3(0));
+        }
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y] = val;
+    }
+
+    void SceneDefinition::setCameraLookAtZ(float val)
+    {
+        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
+        {
+           setCameraLookAt(vec3(0));
+        }
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z] = val;
+    }
+
+    float SceneDefinition::getCameraTranslationX()
+    {
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+           setCameraTranslation(vec3(0));
+        }
+        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
+    }
+
+    float SceneDefinition::getCameraTranslationY()
+    {
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+           setCameraTranslation(vec3(0));
+        }
+        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
+    }
+
+    float SceneDefinition::getCameraTranslationZ()
+    {
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+           setCameraTranslation(vec3(0));
+        }
+        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
+    }
+
+    void SceneDefinition::setCameraTranslationX(float val)
+    {
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+           setCameraTranslation(vec3(0));
+        }
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
+    }
+
+    void SceneDefinition::setCameraTranslationY(float val)
+    {
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+           setCameraTranslation(vec3(0));
+        }
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
+    }
+
+    void SceneDefinition::setCameraTranslationZ(float val)
+    {
+        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
+        {
+           setCameraTranslation(vec3(0));
+        }
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
+    }
+
+    void SceneDefinition::setCameraPitch(float pitch)
+    {
+       mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
+    }
+
+    void SceneDefinition::setCameraYaw(float yaw)
+    {
+       mJson[Constants::SCENE_CAMERA_YAW] = yaw;
+    }
+
+    float SceneDefinition::getCameraPitch()
+    {
+       if (mJson[Constants::SCENE_CAMERA_PITCH].is_null())
+       {
+           mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
+       }
+       return  mJson[Constants::SCENE_CAMERA_PITCH];
+    }
+
+    float SceneDefinition::getCameraYaw()
+    {
+       if (mJson[Constants::SCENE_CAMERA_YAW].is_null())
+       {
+           mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
+       }
+       return  mJson[Constants::SCENE_CAMERA_YAW];
     }
 }

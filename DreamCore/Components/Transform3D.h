@@ -68,6 +68,19 @@ namespace Dream
     btTransform getTransformAsBtTransform() const;
 
     quat getOrientation() const;
+
+    float getOrientationW() const;
+    void  setOrientationW(float);
+
+    float getOrientationX() const;
+    void  setOrientationX(float);
+
+    float getOrientationY() const;
+    void setOrientationY(float);
+
+    float getOrientationZ() const;
+    void setOrientationZ(float);
+
     void setOrientation(float,float,float,float);
     void setOrientation(quat);
 
@@ -106,6 +119,9 @@ namespace Dream
     void scaleByX(float);
     void scaleByY(float);
     void scaleByZ(float);
+
+    glm::mat4 asMat4();
+    void setFromMat4(glm::mat4 mat);
 
     json getJson();
 

@@ -36,7 +36,7 @@ class SceneObjectPropertiesTreeDelegate : public QItemDelegate
     Q_OBJECT
 public:
     SceneObjectPropertiesTreeDelegate(SceneObjectPropertiesModel* model, QObject* parent = nullptr);
-    ~SceneObjectPropertiesTreeDelegate();
+    ~SceneObjectPropertiesTreeDelegate() override;
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
@@ -45,14 +45,14 @@ public:
 
 public slots:
     void onButton_CaptureTranslation(bool);
-    void onButton_CaptureRotation(bool);
+    void onButton_CaptureOrientation(bool);
     void onButton_CaptureScale(bool);
     void onButton_RemoveAsset(bool,void*);
     void onButton_RemoveChild(bool,void*);
 
 signals:
     void notifyButton_CaptureTranslation();
-    void notifyButton_CaptureRotation();
+    void notifyButton_CaptureOrientation();
     void notifyButton_CaptureScale();
     void notifyButton_RemoveAsset(IAssetDefinition*);
     void notifyButton_RemoveChild(SceneObjectDefinition*);
@@ -61,7 +61,7 @@ protected:
     SceneObjectPropertiesModel *mModelHandle;
 
     QWidget* createCaptureTranslationButton(QWidget* parent) const;
-    QWidget* createCaptureRotationButton(QWidget* parent) const;
+    QWidget* createCaptureOrientationButton(QWidget* parent) const;
     QWidget* createCaptureScaleButton(QWidget* parent) const;
     QWidget* createTransformTypeComboBox(QWidget* parent) const;
     QWidget* createRemoveAssetDefinitionButton(IAssetDefinition* adHandle, QWidget* parent) const;

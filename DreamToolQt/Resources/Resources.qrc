@@ -17,12 +17,8 @@
         <file>images/list-remove.png</file>
         <file>templates/shader/Basic2D/glsl.frag</file>
         <file>templates/shader/Basic2D/glsl.vert</file>
-        <file>templates/shader/Basic3D/glsl.frag</file>
-        <file>templates/shader/Basic3D/glsl.vert</file>
         <file>templates/shader/FontInstance/glsl.frag</file>
         <file>templates/shader/FontInstance/glsl.vert</file>
-        <file>templates/shader/Lit3D/glsl.frag</file>
-        <file>templates/shader/Lit3D/glsl.vert</file>
         <file>svg/redo-alt-solid.svg</file>
         <file>svg/stop-solid.svg</file>
         <file>svg/play-solid.svg</file>
@@ -35,10 +31,6 @@
         <file>svg/noun_Object.svg</file>
         <file>svg/volume-up-solid.svg</file>
         <file>svg/computer-mouse-svgrepo-com.svg</file>
-        <file>templates/shader/Diffuse Shader/glsl.frag</file>
-        <file>templates/shader/Diffuse Shader/glsl.vert</file>
-        <file>templates/shader/Texture Shader/glsl.frag</file>
-        <file>templates/shader/Texture Shader/glsl.vert</file>
         <file>icons/Ag.icns</file>
         <file>templates/shader/Phong/glsl.frag</file>
         <file>templates/shader/Phong/glsl.vert</file>

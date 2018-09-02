@@ -39,7 +39,6 @@ namespace Dream
     private:
         unique_ptr<SceneObjectDefinition> mRootSceneObjectDefinition;
         ProjectDefinition* mProjectDefinitionHandle;
-        Transform3D mCameraTransform;
 
     public:
         SceneDefinition(ProjectDefinition* projectHandle, json data);
@@ -65,13 +64,14 @@ namespace Dream
         float getMaxDrawDistance();
 
 
-
-
         string getNotes();
         void setNotes(string notes);
 
-        Transform3D& getCameraTransform();
-        void setCameraTransform(Transform3D transform);
+        vec3 getCameraTranslation();
+        void setCameraTranslation(vec3 trans);
+
+        vec3 getCameraLookAt();
+        void setCameraLookAt(vec3 lookAt);
 
         vector<float> getGravity();
         void setGravity(vector<float> gravity);
@@ -98,7 +98,25 @@ namespace Dream
 
         json getJson() override;
 
-    private:
-        void checkCamera();
+        float getCameraLookAtX();
+        float getCameraLookAtY();
+        float getCameraLookAtZ();
+
+        void setCameraLookAtX(float val);
+        void setCameraLookAtY(float val);
+        void setCameraLookAtZ(float val);
+
+        float getCameraTranslationX();
+        float getCameraTranslationY();
+        float getCameraTranslationZ();
+
+        void setCameraTranslationX(float val);
+        void setCameraTranslationY(float val);
+        void setCameraTranslationZ(float val);
+
+        void setCameraPitch(float pitch);
+        void setCameraYaw(float yaw);
+        float getCameraPitch();
+        float getCameraYaw();
     };
 }

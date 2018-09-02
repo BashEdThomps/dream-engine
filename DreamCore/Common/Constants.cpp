@@ -166,6 +166,10 @@ namespace Dream
     const string Constants::SCENE_MESH_CULL_DISTANCE = "mesh_cull_distance";
     const string Constants::SCENE_MIN_DRAW_DISTANCE = "min_draw";
     const string Constants::SCENE_MAX_DRAW_DISTANCE = "max_draw";
+    const string Constants::SCENE_CAMERA_TRANSLATION= "camera_translation";
+    const string Constants::SCENE_CAMERA_LOOK_AT = "camera_look_at";
+    const string Constants::SCENE_CAMERA_PITCH = "camera_pitch";
+    const string Constants::SCENE_CAMERA_YAW = "camera_yaw";
 
     // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
@@ -180,7 +184,7 @@ namespace Dream
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";
     const string Constants::TRANSFORM_TRANSLATION = "translation";
-    const string Constants::TRANSFORM_ROTATION = "rotation";
+    const string Constants::TRANSFORM_ORIENTATION = "orientation";
     const string Constants::TRANSFORM_SCALE = "scale";
     const string Constants::TRANSFORM_TYPE = "transformType";
     const string Constants::TRANSFORM_TYPE_ABSOLUTE = "absolute";
@@ -194,9 +198,11 @@ namespace Dream
     const string Constants::X = "x";
     const string Constants::Y = "y";
     const string Constants::Z = "z";
+    const string Constants::W = "w";
     const unsigned int Constants::X_INDEX = 0;
     const unsigned int Constants::Y_INDEX = 1;
     const unsigned int Constants::Z_INDEX = 2;
+    const unsigned int Constants::W_INDEX = 3;
     const string Constants::RED   = "r";
     const string Constants::GREEN = "g";
     const string Constants::BLUE  = "b";

@@ -138,6 +138,10 @@ namespace Dream
         const static string SCENE_MESH_CULL_DISTANCE;
         const static string SCENE_MIN_DRAW_DISTANCE;
         const static string SCENE_MAX_DRAW_DISTANCE;
+        const static string SCENE_CAMERA_TRANSLATION;
+        const static string SCENE_CAMERA_LOOK_AT;
+        const static string SCENE_CAMERA_PITCH;
+        const static string SCENE_CAMERA_YAW;
 
         // SceneObject ==========================================================
         const static string SCENE_OBJECT_ROOT_NAME;
@@ -153,7 +157,7 @@ namespace Dream
         const static string TRANSFORM;
         const static string TRANSFORM_TYPE;
         const static string TRANSFORM_TRANSLATION;
-        const static string TRANSFORM_ROTATION;
+        const static string TRANSFORM_ORIENTATION;
         const static string TRANSFORM_SCALE;
         const static string TRANSFORM_TYPE_ABSOLUTE;
         const static string TRANSFORM_TYPE_OFFSET;
@@ -166,9 +170,11 @@ namespace Dream
         const static string X;
         const static string Y;
         const static string Z;
+        const static string W;
         const static unsigned int X_INDEX;
         const static unsigned int Y_INDEX;
         const static unsigned int Z_INDEX;
+        const static unsigned int W_INDEX;
         const static string RED;
         const static string GREEN;
         const static string BLUE;

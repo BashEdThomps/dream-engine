@@ -63,8 +63,8 @@ ScenePropertiesTreeDelegate::createEditor
             return createCameraAllCaptureButton(parent);
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
             return createCameraTranslationCaptureButton(parent);
-        case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
-            return createCameraRotationCaptureButton(parent);
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_CAPTURE:
+            return createCameraLookAtCaptureButton(parent);
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
             return new QLineEdit(parent);
@@ -73,9 +73,12 @@ ScenePropertiesTreeDelegate::createEditor
         case SCENE_PROPERTY_CAMERA_TRANSLATION_Y:
         case SCENE_PROPERTY_CAMERA_TRANSLATION_Z:
 
-        case SCENE_PROPERTY_CAMERA_ROTATION_X:
-        case SCENE_PROPERTY_CAMERA_ROTATION_Y:
-        case SCENE_PROPERTY_CAMERA_ROTATION_Z:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_X:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_Y:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_Z:
+        case SCENE_PROPERTY_CAMERA_PITCH:
+        case SCENE_PROPERTY_CAMERA_YAW:
+
 
         case SCENE_PROPERTY_CAMERA_SPEED:
         case SCENE_PROPERTY_MESH_CULL_DISTANCE:
@@ -122,12 +125,10 @@ ScenePropertiesTreeDelegate::setEditorData
     switch (spiHandle->getProperty())
     {
         case SCENE_PROPERTY_CAMERA:
-            break;
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
-            break;
         case SCENE_PROPERTY_CLEAR_PARENT:
         case SCENE_PROPERTY_AMBIENT_PARENT:
-        case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_CAPTURE:
             break;
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
@@ -138,9 +139,11 @@ ScenePropertiesTreeDelegate::setEditorData
         case SCENE_PROPERTY_CAMERA_TRANSLATION_Y:
         case SCENE_PROPERTY_CAMERA_TRANSLATION_Z:
 
-        case SCENE_PROPERTY_CAMERA_ROTATION_X:
-        case SCENE_PROPERTY_CAMERA_ROTATION_Y:
-        case SCENE_PROPERTY_CAMERA_ROTATION_Z:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_X:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_Y:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_Z:
+        case SCENE_PROPERTY_CAMERA_PITCH:
+        case SCENE_PROPERTY_CAMERA_YAW:
 
         case SCENE_PROPERTY_CAMERA_SPEED:
         case SCENE_PROPERTY_MESH_CULL_DISTANCE:
@@ -180,10 +183,8 @@ ScenePropertiesTreeDelegate::setModelData
     switch (spiHandle->getProperty())
     {
         case SCENE_PROPERTY_CAMERA:
-            break;
         case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
-            break;
-        case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_CAPTURE:
             break;
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
@@ -194,9 +195,11 @@ ScenePropertiesTreeDelegate::setModelData
         case SCENE_PROPERTY_CAMERA_TRANSLATION_Y:
         case SCENE_PROPERTY_CAMERA_TRANSLATION_Z:
 
-        case SCENE_PROPERTY_CAMERA_ROTATION_X:
-        case SCENE_PROPERTY_CAMERA_ROTATION_Y:
-        case SCENE_PROPERTY_CAMERA_ROTATION_Z:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_X:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_Y:
+        case SCENE_PROPERTY_CAMERA_LOOK_AT_Z:
+        case SCENE_PROPERTY_CAMERA_PITCH:
+        case SCENE_PROPERTY_CAMERA_YAW:
 
         case SCENE_PROPERTY_CAMERA_SPEED:
         case SCENE_PROPERTY_MESH_CULL_DISTANCE:
@@ -249,12 +252,12 @@ ScenePropertiesTreeDelegate::onButton_CaptureCameraTranslation
 }
 
 void
-ScenePropertiesTreeDelegate::onButton_CaptureCameraRotation
+ScenePropertiesTreeDelegate::onButton_CaptureCameraLookAt
 (bool)
 {
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
-    log->info("CaptureCameraRotation");
-    emit notifyButton_CaptureCameraRotation();
+    log->info("CaptureCameraLookAt");
+    emit notifyButton_CaptureCameraLookAt();
 }
 
 void ScenePropertiesTreeDelegate::onButton_CaptureCameraAll(bool)
@@ -262,7 +265,7 @@ void ScenePropertiesTreeDelegate::onButton_CaptureCameraAll(bool)
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
     log->info("CaptureCameraAll");
     emit notifyButton_CaptureCameraTranslation();
-    emit notifyButton_CaptureCameraRotation();
+    emit notifyButton_CaptureCameraLookAt();
 }
 
 void ScenePropertiesTreeDelegate::onButton_ChooseAmbientColour(bool)
@@ -315,17 +318,17 @@ ScenePropertiesTreeDelegate::createCameraTranslationCaptureButton
 }
 
 QWidget*
-ScenePropertiesTreeDelegate::createCameraRotationCaptureButton
+ScenePropertiesTreeDelegate::createCameraLookAtCaptureButton
 (QWidget* parent) const
 {
     QToolButton* button = new QToolButton(parent);
-    button->setText("Capture Rotation");
+    button->setText("Capture Look At");
     connect
     (
         button,
         SIGNAL(clicked(bool)),
         this,
-        SLOT(onButton_CaptureCameraRotation(bool))
+        SLOT(onButton_CaptureCameraLookAt(bool))
     );
     return button;
 }

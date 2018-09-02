@@ -3,6 +3,26 @@
 namespace Dream
 {
     // Constructor with vectors
+    float Camera::getYaw() const
+    {
+        return mYaw;
+    }
+
+    void Camera::setYaw(float yaw)
+    {
+        mYaw = yaw;
+    }
+
+    float Camera::getPitch() const
+    {
+        return mPitch;
+    }
+
+    void Camera::setPitch(float pitch)
+    {
+        mPitch = pitch;
+    }
+
     Camera::Camera
     (vec3 translation, vec3 up, float yaw, float pitch)
         : ILoggable("Camera"),
@@ -222,13 +242,6 @@ namespace Dream
         return mTranslation;
     }
 
-    vec3
-    Camera::getRotation
-    ()
-    {
-        return vec3 (mPitch,mYaw,0.0f);
-    }
-
     void
     Camera::pan
     (float xoffset, float yoffset, bool constrainPitch)
@@ -334,15 +347,6 @@ namespace Dream
     }
 
     void
-    Camera::setRotation
-    (vec3 rotation)
-    {
-        mPitch = rotation.x;
-        mYaw = rotation.y;
-        updateCameraVectors();
-    }
-
-    void
     Camera::setTranslation
     (vec3 translation)
     {
@@ -398,9 +402,14 @@ namespace Dream
         mLookAt.z = z;
     }
 
-    void Camera::setLookAt(Transform3D transform)
+    void Camera::setLookAt(vec3 transform)
     {
-        mLookAt = transform.getTranslation();
+        mLookAt = transform;
+    }
+
+    glm::vec3 Camera::getLookAt()
+    {
+       return mLookAt;
     }
 
     void Camera::setFreeMode(bool freemode)
@@ -409,32 +418,16 @@ namespace Dream
     }
 
     void
-    Camera::setTransform
-    (Transform3D transform)
-    {
-        setTranslation(transform.getTranslation());
-        setRotation(transform.getRotation());
-    }
-
-    void
     Camera::orbit
-    (Transform3D target, float elevation, float radius, float pitch, float yaw)
+    (vec3 target, float elevation, float radius, float pitch, float yaw)
     {
         mat4 mtx;
-        auto tx = target.getTranslation();
-        tx.y += elevation;
-        mtx = translate(mtx, tx);
+        target.y += elevation;
+        mtx = translate(mtx, target);
         mtx = rotate(mtx,pitch, vec3(1,0,0));
         mtx = rotate(mtx,yaw, vec3(0,1,0));
         mtx = translate(mtx,vec3(0,0,-radius));
         mTranslation = vec3(mtx[3]);
-    }
-
-    float
-    Camera::radians
-    (float degrees)
-    {
-        return degrees * 0.01745329251994329576923690768489f;
     }
 
 } // End of Dream

@@ -178,7 +178,7 @@ namespace Dream
 
         // Perspective Projection Matrix
         mProjectionMatrix = perspective(
-            mCamera->getZoom(),
+            Constants::CAMERA_ZOOM,
             static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
             mMinimumDraw,
             mMaximumDraw

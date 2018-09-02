@@ -67,7 +67,7 @@ namespace Dream
           log->info("Loading {} from disk",  path);
 
         Importer* importer = new Importer();
-        importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+        importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
         const aiScene* scene = importer->GetScene();
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

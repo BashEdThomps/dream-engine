@@ -43,13 +43,13 @@ public:
 
 public slots:
     void onButton_CaptureCameraTranslation();
-    void onButton_CaptureCameraRotation();
+    void onButton_CaptureCameraLookAt();
     void onButton_ChooseClearColour();
     void onButton_ChooseAmbientColour();
 
 signals:
     void notifyButton_CaptureCameraTranslation(SceneDefinition*);
-    void notifyButton_CaptureCameraRotation(SceneDefinition*);
+    void notifyButton_CaptureCameraLookAt(SceneDefinition*);
     void notifyButton_ChooseClearColour(SceneDefinition*);
     void notifyButton_ChooseAmbientColour(SceneDefinition*);
 

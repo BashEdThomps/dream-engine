@@ -406,13 +406,13 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
                         SLOT(onSceneProperty_CaptureCameraTranslation(SceneDefinition*))
                         );
 
-            // Capture Camera Rotation
+            // Capture Camera Orientation
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_CaptureCameraRotation(SceneDefinition*)),
+                        SIGNAL(notifyButton_CaptureCameraLookAt(SceneDefinition*)),
                         this,
-                        SLOT(onSceneProperty_CaptureCameraRotation(SceneDefinition*))
+                        SLOT(onSceneProperty_CaptureCameraLookAt(SceneDefinition*))
                         );
 
             // Choose Clear Colour
@@ -446,9 +446,9 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_CaptureRotation(SceneObjectDefinition*)),
+                        SIGNAL(notifyButton_CaptureOrientation(SceneObjectDefinition*)),
                         this,
-                        SLOT(onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*))
+                        SLOT(onSceneObjectProperty_CaptureOrientation(SceneObjectDefinition*))
                         );
 
             connect
@@ -935,8 +935,10 @@ MainController::onUI_AssetDefinitionTreeViewSelectionChanged
 void
 MainController::onAction_File_New ()
 {
+    auto log = spdlog::get("MainController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
+    openDialog.setLabelText(QFileDialog::Accept, "Create Project");
     openDialog.setDirectory(mPreferencesDialogController.getPreferencesModel().getDefaultProjectDirectory());
 
     if(openDialog.exec())
@@ -947,6 +949,22 @@ MainController::onAction_File_New ()
         if (mProjectDirectory.size() == 0)
         {
             return;
+        }
+
+        if(!QDir(mProjectDirectory).isEmpty())
+        {
+            auto result = QMessageBox::question
+            (
+                mMainWindowHandle,
+                "Directory not empty",
+                "The chosen directory is not empty.\n\n Are you sure you want to create a project here?"
+            );
+
+            if (result != QMessageBox::Yes)
+            {
+                log->info( "Project creation was was cancelled for ", mProjectDirectory.toStdString());
+                return;
+            }
         }
 
         bool createResult = mProjectDirectoryModel.createNewProjectTree(mProjectDirectory);
@@ -967,6 +985,7 @@ MainController::onAction_File_Open
 {
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
+    openDialog.setLabelText(QFileDialog::Accept, "Open Project");
     openDialog.setDirectory(mPreferencesDialogController.getPreferencesModel().getDefaultProjectDirectory());
     openDialog.setAcceptMode(QFileDialog::AcceptOpen);
 
@@ -1338,8 +1357,14 @@ MainController::onSceneProperty_CaptureCameraTranslation
         ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
         if (prHandle)
         {
-
-            sdHandle->getCameraTransform().setTranslation(prHandle->getCameraHandle()->getTranslation());
+            auto translation = prHandle->getCameraHandle()->getTranslation();
+            sdHandle->setCameraTranslation(translation);
+            mMainWindowHandle->showStatusBarMessage(
+                QString("Captured Camera Translation x:%1, y:%2, z:%3")
+                        .arg(QString::number(translation.x, 'G', 5))
+                        .arg(QString::number(translation.y, 'G', 5))
+                        .arg(QString::number(translation.z, 'G', 5))
+            );
             return;
         }
         log->info( "CaptureCameraTranslation - No ProjectRuntime");
@@ -1350,29 +1375,37 @@ MainController::onSceneProperty_CaptureCameraTranslation
 }
 
 void
-MainController::onSceneProperty_CaptureCameraRotation
+MainController::onSceneProperty_CaptureCameraLookAt
 (SceneDefinition* sdHandle)
 {
     auto log = spdlog::get("MainController");
-    log->info( "CaptureCameraRotation");
+    log->info( "CaptureCameraLookAt");
     Project *pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
         ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
         if (prHandle)
         {
-            auto rotation = prHandle->getCameraHandle()->getRotation();
-            sdHandle->getCameraTransform().setRotation(rotation);
+            auto pitch = prHandle->getCameraHandle()->getPitch();
+            auto yaw = prHandle->getCameraHandle()->getYaw();
+
+            sdHandle->setCameraPitch(pitch);
+            sdHandle->setCameraYaw(yaw);
+            mMainWindowHandle->showStatusBarMessage(
+                QString("Captured Camera LookAt pitch: %1, yaw:%2")
+                        .arg(QString::number(pitch, 'G', 5))
+                        .arg(QString::number(yaw, 'G', 5))
+            );
             return;
         }
-        log->info( "CaptureCameraRotation - No ProjectRuntime");
+        log->info( "CaptureCameraLookAt - No ProjectRuntime");
         return;
     }
-    log->info( "CaptureCameraRotation - No Project");
+    log->info( "CaptureCameraLookAt - No Project");
     return;
-
-
 }
+
+
 
 void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition* sceneDef)
 {
@@ -2165,11 +2198,11 @@ MainController::onSceneObjectProperty_CaptureTranslation
 }
 
 void
-MainController::onSceneObjectProperty_CaptureRotation
+MainController::onSceneObjectProperty_CaptureOrientation
 (SceneObjectDefinition* sodHandle)
 {
     auto log = spdlog::get("MainController");
-    log->info( "CaptureRotation");
+    log->info( "CaptureOrientation");
     Project *pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
@@ -2183,7 +2216,7 @@ MainController::onSceneObjectProperty_CaptureRotation
                 sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
                 if (sorHandle)
                 {
-                    sodHandle->getTransform().setRotation(sorHandle->getRotation());
+                    sodHandle->getTransform().setOrientation(sorHandle->getOrientation());
                 }
             }
         }

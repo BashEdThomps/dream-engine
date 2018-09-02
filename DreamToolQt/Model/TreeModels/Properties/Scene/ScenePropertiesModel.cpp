@@ -95,13 +95,13 @@ ScenePropertiesModel::createDelegateConnections
         SLOT(onButton_CaptureCameraTranslation())
     );
 
-    // Camera Rotation
+    // Camera LookAt
     connect
     (
         delegate,
-        SIGNAL(notifyButton_CaptureCameraRotation()),
+        SIGNAL(notifyButton_CaptureCameraLookAt()),
         this,
-        SLOT(onButton_CaptureCameraRotation())
+        SLOT(onButton_CaptureCameraLookAt())
     );
 
     // Clear Colour Chooser
@@ -201,45 +201,69 @@ ScenePropertiesModel::createCameraProperties
             );
         }
 
-        log->info("createCameraProperties rotation");
-        ScenePropertiesItem *cameraRotationProperty = new ScenePropertiesItem
+        log->info("createCameraProperties LookAt");
+        ScenePropertiesItem *cameraLookAtProperty = new ScenePropertiesItem
         (
-            "Rotation",
+            "Orientation",
             mSceneDefinitionHandle,
-            SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE
+            SCENE_PROPERTY_CAMERA_LOOK_AT_CAPTURE
 
         );
 
-        cameraProperty->appendChild(cameraRotationProperty);
-        cameraRotationProperty->appendChild
+        cameraProperty->appendChild(cameraLookAtProperty);
+
+        /*
+        cameraLookAtProperty->appendChild
         (
             new ScenePropertiesItem
             (
                 "X",
                 mSceneDefinitionHandle,
-                SCENE_PROPERTY_CAMERA_ROTATION_X
+                SCENE_PROPERTY_CAMERA_LOOK_AT_X
             )
         );
 
-        cameraRotationProperty->appendChild
+        cameraLookAtProperty->appendChild
         (
             new ScenePropertiesItem
             (
                 "Y",
                 mSceneDefinitionHandle,
-                SCENE_PROPERTY_CAMERA_ROTATION_Y
+                SCENE_PROPERTY_CAMERA_LOOK_AT_Y
             )
         );
 
-        cameraRotationProperty->appendChild
+        cameraLookAtProperty->appendChild
         (
             new ScenePropertiesItem
             (
                 "Z",
                 mSceneDefinitionHandle,
-                SCENE_PROPERTY_CAMERA_ROTATION_Z
+                SCENE_PROPERTY_CAMERA_LOOK_AT_Z
             )
         );
+        */
+
+        cameraLookAtProperty->appendChild
+        (
+            new ScenePropertiesItem
+            (
+                "Pitch",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_CAMERA_PITCH
+            )
+        );
+
+        cameraLookAtProperty->appendChild
+        (
+            new ScenePropertiesItem
+            (
+                "Yaw",
+                mSceneDefinitionHandle,
+                SCENE_PROPERTY_CAMERA_YAW
+            )
+        );
+
 
         log->info("createCameraProperties speed");
 
@@ -448,12 +472,12 @@ ScenePropertiesModel::onButton_CaptureCameraTranslation
 }
 
 void
-ScenePropertiesModel::onButton_CaptureCameraRotation
+ScenePropertiesModel::onButton_CaptureCameraLookAt
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("CaptureCameraTranslation");
-    emit notifyButton_CaptureCameraRotation(mSceneDefinitionHandle);
+    log->info("CaptureCameraLookAt");
+    emit notifyButton_CaptureCameraLookAt(mSceneDefinitionHandle);
 }
 
 void ScenePropertiesModel::onButton_ChooseClearColour()

@@ -116,6 +116,8 @@ namespace Dream
         void createFontInstance(FontDefinition*);
         void createSpriteInstance(SpriteDefinition*);
 
+        quat getOrientation();
+
         vec3 getTranslation();
         void setTranslation(float, float, float);
         void setTranslation(vec3);

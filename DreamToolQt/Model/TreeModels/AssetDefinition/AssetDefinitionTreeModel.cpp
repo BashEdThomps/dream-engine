@@ -84,7 +84,7 @@ AssetDefinitionTreeModel::data
     }
 
 
-    if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole && role != Qt::EditRole )
     {
         return QVariant();
     }
@@ -104,6 +104,13 @@ AssetDefinitionTreeModel::flags
     {
         return nullptr;
     }
+
+    if (static_cast<AssetDefinitionTreeItem*>(index.internalPointer())->getType() == ASSET_DEFINITION)
+    {
+
+        return QAbstractItemModel::flags(index) |= Qt::ItemIsEditable;
+    }
+
     return QAbstractItemModel::flags(index);
 }
 
@@ -439,4 +446,26 @@ void AssetDefinitionTreeModel::forceDataChanged()
 {
    setupModelData();
    emit dataChanged(QModelIndex(),QModelIndex());
+}
+
+
+bool AssetDefinitionTreeModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    if (!index.isValid())
+    {
+        return true;
+    }
+
+    auto nameString = value.toString().toStdString();
+    auto data = static_cast<AssetDefinitionTreeItem*>(index.internalPointer());
+    switch (data->getType())
+    {
+        case ASSET_DEFINITION:
+            static_cast<IAssetDefinition*>(data->getAssetDefinition())->setName(nameString);
+            break;
+        case ASSET_TREE_NODE:
+            break;
+    }
+    emit dataChanged(index,index);
+    return true;
 }

@@ -4,6 +4,7 @@ out vec4 FragColor;
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
+	 sampler2D normalMap;
     float shininess;
 }; 
 
@@ -47,10 +48,16 @@ struct SpotLight {
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
+in vec3 Tangent;
+in vec3 Bitangent;
+in mat3 TBN;
+in vec3 TangentLightPos;
+in vec3 TangentViewPos;
+in vec3 TangentFragPos;
 
-uniform unsigned int pointLightCount;
-uniform unsigned int spotLightCount;
-uniform unsigned int directionalLightCount;
+uniform int pointLightCount;
+uniform int spotLightCount;
+uniform int directionalLightCount;
 
 uniform vec3 viewPos;
 uniform DirLight dirLights[MAX_LIGHTS];
@@ -66,7 +73,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 void main()
 {    
     // properties
-    vec3 norm = normalize(Normal);
+    //vec3 norm = normalize(Normal);
+	vec3 norm = texture(material.normalMap, TexCoords).rgb;
+	norm = normalize(norm * 2.0 - 1.0);   
+	norm = normalize(TBN * norm); 
     vec3 viewDir = normalize(viewPos - FragPos);
     
     // == =====================================================
@@ -88,7 +98,7 @@ void main()
 
     // phase 3: spot light
     for(int i = 0; i < spotLightCount; i++)
-        result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
+        result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);    
     
     FragColor = vec4(result, 1.0);
 }

@@ -41,7 +41,7 @@ public:
 
     void createNameProperty();
     void createTranslationProperty();
-    void createRotationProperty();
+    void createOrientationProperty();
     void createScaleProperty();
     void createTransformTypeProperty();
     void createHasFocusProperty();
@@ -54,14 +54,14 @@ public:
 
 public slots:
     void onButton_CaptureTranslation();
-    void onButton_CaptureRotation();
+    void onButton_CaptureOrientation();
     void onButton_CaptureScale();
     void onButton_RemoveAsset(IAssetDefinition*);
     void onButton_RemoveChild(SceneObjectDefinition*);
 
 signals:
     void notifyButton_CaptureTranslation(SceneObjectDefinition*);
-    void notifyButton_CaptureRotation(SceneObjectDefinition*);
+    void notifyButton_CaptureOrientation(SceneObjectDefinition*);
     void notifyButton_CaptureScale(SceneObjectDefinition*);
 
     void notifyButton_RemoveAsset(SceneObjectDefinition*, IAssetDefinition*);

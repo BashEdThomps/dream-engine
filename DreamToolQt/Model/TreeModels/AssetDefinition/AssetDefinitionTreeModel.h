@@ -47,4 +47,8 @@ private:
     ProjectDefinition *mProjectHandle;
     unique_ptr<AssetDefinitionTreeItem> mRootItem;
     unique_ptr<QIcon> mAssetDefinitionIcon;
+
+    // QAbstractItemModel interface
+public:
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 };

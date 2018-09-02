@@ -232,14 +232,21 @@ namespace Dream
         setClearColour(sceneDefinitionHandle->getClearColour());
         setGravity(sceneDefinitionHandle->getGravity());
         setPhysicsDebug(sceneDefinitionHandle->getPhysicsDebug());
-        setCameraTransform(sceneDefinitionHandle->getCameraTransform());
+        setCameraTranslation(sceneDefinitionHandle->getCameraTranslation());
+        setCameraPitch(sceneDefinitionHandle->getCameraPitch());
+        setCameraYaw(sceneDefinitionHandle->getCameraYaw());
         setCameraMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
 
+        // Propogate to project where required
         mProjectRuntimeHandle->getGraphicsComponentHandle()->setActiveSceneRuntime(this);
         mProjectRuntimeHandle->getPhysicsComponentHandle()->setGravity(getGravity());
         mProjectRuntimeHandle->getPhysicsComponentHandle()->setDebug(getPhysicsDebug());
-        mProjectRuntimeHandle->getCameraHandle()->setTransform(getCameraTransform());
-        mProjectRuntimeHandle->getCameraHandle()->setMovementSpeed(getCameraMovementSpeed());
+        auto camera = mProjectRuntimeHandle->getCameraHandle();
+        camera->setTranslation(getCameraTranslation());
+        camera->setPitch(getCameraPitch());
+        camera->setYaw(getCameraYaw());
+        camera->updateCameraVectors();
+        camera->setMovementSpeed(getCameraMovementSpeed());
 
         // Create Root SceneObjectRuntime
         SceneObjectDefinition* sodHandle = sceneDefinitionHandle->getRootSceneObjectDefinitionHandle();
@@ -276,18 +283,48 @@ namespace Dream
         mCameraMovementSpeed = cameraMovementSpeed;
     }
 
-    Transform3D
-    SceneRuntime::getCameraTransform
+    glm::vec3 SceneRuntime::getCameraLookAt()
+    {
+       return mCameraLookAt;
+    }
+
+    void SceneRuntime::setCameraLookAt(glm::vec3 lookAt)
+    {
+        mCameraLookAt = lookAt;
+    }
+
+    float SceneRuntime::getCameraPitch()
+    {
+        return mCameraPitch;
+    }
+
+    void SceneRuntime::setCameraPitch(float pitch)
+    {
+       mCameraPitch = pitch;
+    }
+
+    float SceneRuntime::getCameraYaw()
+    {
+       return mCameraYaw;
+    }
+
+    void SceneRuntime::setCameraYaw(float yaw)
+    {
+       mCameraYaw = yaw;
+    }
+
+    vec3
+    SceneRuntime::getCameraTranslation
     ()
     {
-        return mCameraTransform;
+        return mCameraTranslation;
     }
 
     void
-    SceneRuntime::setCameraTransform
-    (Transform3D cameraTransform)
+    SceneRuntime::setCameraTranslation
+    (vec3 cameraTransform)
     {
-        mCameraTransform = cameraTransform;
+        mCameraTranslation = cameraTransform;
     }
 
 } // End of Dream

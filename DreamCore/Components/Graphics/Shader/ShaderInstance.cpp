@@ -320,10 +320,21 @@ namespace Dream
             addUniform(INT1, "material.specular", 1, &specularIndex);
         }
 
+        if (material->mNormalTexture != nullptr)
+        {
+            id =  material->mNormalTexture->id;
+            log->info("Found Normal Texture, binding {}",id);
+            glActiveTexture(GL_TEXTURE2);
+            checkGLError();
+            glBindTexture(GL_TEXTURE_2D, id);
+            checkGLError();
+            GLuint normalIndex = 2;
+            addUniform(INT1, "material.normalMap", 1, &normalIndex);
+        }
+
         addUniform(FLOAT1, "material.shininess", 1, &material->mShininessStrength);
 
     }
-
 
     void ShaderInstance::bindLight(LightInstance* light)
     {
@@ -367,11 +378,12 @@ namespace Dream
         switch (light->getType())
         {
             case LT_DIRECTIONAL:
-                if (mDirectionalLightCount == MAX_LIGHTS) {
+                if (mDirectionalLightCount == MAX_LIGHTS)
+                {
                     log->error("Max dir lights bound");
                     return;
                 }
-                log->info("Binding dir light");
+                log->info("Binding dir light {}", mDirectionalLightCount);
                 dirData = light->getDirectionalLightData();
                 addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].direction",1, &dirData.direction);
                 addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].ambient",1,   &dirData.ambient);
@@ -381,39 +393,40 @@ namespace Dream
                 break;
 
             case LT_POINT:
-                if (mPointLightCount == MAX_LIGHTS) {
+                if (mPointLightCount == MAX_LIGHTS)
+                {
                     log->error("Max point lights bound");
                     return;
                 }
-                log->info("Binding point light");
+                log->info("Binding point light {}", mPointLightCount);
                 pointData = light->getPointLightData();
-                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].ambient",1,   &pointData.ambient);
-                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].diffuse",1,   &pointData.diffuse);
-                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].specular",1,  &pointData.specular);
-                addUniform(FLOAT3,"pointLights["+std::to_string(mDirectionalLightCount)+"].position",1,  &pointData.position);
-                addUniform(FLOAT1,"pointLights["+std::to_string(mDirectionalLightCount)+"].constant",1,  &pointData.constant);
-                addUniform(FLOAT1,"pointLights["+std::to_string(mDirectionalLightCount)+"].linear",1,    &pointData.linear);
-                addUniform(FLOAT1,"pointLights["+std::to_string(mDirectionalLightCount)+"].quadratic",1, &pointData.quadratic);
-
+                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].ambient",1,   &pointData.ambient);
+                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].diffuse",1,   &pointData.diffuse);
+                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].specular",1,  &pointData.specular);
+                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].position",1,  &pointData.position);
+                addUniform(FLOAT1,"pointLights["+std::to_string(mPointLightCount)+"].constant",1,  &pointData.constant);
+                addUniform(FLOAT1,"pointLights["+std::to_string(mPointLightCount)+"].linear",1,    &pointData.linear);
+                addUniform(FLOAT1,"pointLights["+std::to_string(mPointLightCount)+"].quadratic",1, &pointData.quadratic);
                 mPointLightCount++;
                 break;
 
             case LT_SPOTLIGHT:
-                if (mSpotLightCount == MAX_LIGHTS) {
+                if (mSpotLightCount == MAX_LIGHTS)
+                {
                     log->error("Max spot lights bound");
                     return;
                 }
-                log->info("Binding spot light");
+                log->info("Binding spot light {}", mSpotLightCount);
                 spotData = light->getSpotLightData();
-                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].ambient",1,     &spotData.ambient);
-                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].diffuse",1,     &spotData.diffuse);
-                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].specular",1,    &spotData.specular);
-                addUniform(FLOAT3,"spotLights["+std::to_string(mDirectionalLightCount)+"].position",1,    &spotData.position);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].constant",1,    &spotData.constant);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].linear",1,      &spotData.linear);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].quadratic",1,   &spotData.quadratic);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].cutOff",1,      &spotData.cutOff);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mDirectionalLightCount)+"].outerCutOff",1, &spotData.outerCutOff);
+                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].ambient",1,     &spotData.ambient);
+                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].diffuse",1,     &spotData.diffuse);
+                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].specular",1,    &spotData.specular);
+                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].position",1,    &spotData.position);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].constant",1,    &spotData.constant);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].linear",1,      &spotData.linear);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].quadratic",1,   &spotData.quadratic);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].cutOff",1,      &spotData.cutOff);
+                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].outerCutOff",1, &spotData.outerCutOff);
                 mSpotLightCount++;
                 break;
 

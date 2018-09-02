@@ -71,29 +71,36 @@ ScenePropertiesItem::data
                 break;
             case SCENE_PROPERTY_MESH_CULL_DISTANCE:
                 return QVariant(mSceneDefinitionHandle->getMeshCullDistance());
-                break;
             case SCENE_PROPERTY_CAMERA:
                 break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
                 break;
-            case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_CAPTURE:
                 break;
             case SCENE_PROPERTY_NAME:
                 return QVariant(QString::fromStdString(mSceneDefinitionHandle->getName()));
             case SCENE_PROPERTY_NOTES:
                 return QVariant(QString::fromStdString(mSceneDefinitionHandle->getNotes()));
+
             case SCENE_PROPERTY_CAMERA_TRANSLATION_X:
-                return QVariant(mSceneDefinitionHandle->getCameraTransform().getTranslationX());
+                return QVariant(mSceneDefinitionHandle->getCameraTranslationX());
             case SCENE_PROPERTY_CAMERA_TRANSLATION_Y:
-                return QVariant(mSceneDefinitionHandle->getCameraTransform().getTranslationY());
+                return QVariant(mSceneDefinitionHandle->getCameraTranslationY());
             case SCENE_PROPERTY_CAMERA_TRANSLATION_Z:
-                return QVariant(mSceneDefinitionHandle->getCameraTransform().getTranslationZ());
-            case SCENE_PROPERTY_CAMERA_ROTATION_X:
-                return QVariant(mSceneDefinitionHandle->getCameraTransform().getRotationX());
-            case SCENE_PROPERTY_CAMERA_ROTATION_Y:
-                return QVariant(mSceneDefinitionHandle->getCameraTransform().getRotationY());
-            case SCENE_PROPERTY_CAMERA_ROTATION_Z:
-                return QVariant(mSceneDefinitionHandle->getCameraTransform().getRotationZ());
+                return QVariant(mSceneDefinitionHandle->getCameraTranslationZ());
+
+            case SCENE_PROPERTY_CAMERA_PITCH:
+                return QVariant(mSceneDefinitionHandle->getCameraPitch());
+            case SCENE_PROPERTY_CAMERA_YAW:
+                return QVariant(mSceneDefinitionHandle->getCameraYaw());
+
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_X:
+                return QVariant(mSceneDefinitionHandle->getCameraLookAtX());
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_Y:
+                return QVariant(mSceneDefinitionHandle->getCameraLookAtY());
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_Z:
+                return QVariant(mSceneDefinitionHandle->getCameraLookAtZ());
+
             case SCENE_PROPERTY_CAMERA_SPEED:
                 return QVariant(mSceneDefinitionHandle->getCameraMovementSpeed());
             case SCENE_PROPERTY_CLEAR_RED:
@@ -155,7 +162,7 @@ ScenePropertiesItem::setData
                 break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_CAPTURE:
                 break;
-            case SCENE_PROPERTY_CAMERA_ROTATION_CAPTURE:
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_CAPTURE:
                 break;
             case SCENE_PROPERTY_NAME:
                 mSceneDefinitionHandle->setName(value.toString().toStdString());
@@ -164,23 +171,32 @@ ScenePropertiesItem::setData
                 mSceneDefinitionHandle->setNotes(value.toString().toStdString());
                 break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_X:
-                mSceneDefinitionHandle->getCameraTransform().setTranslationX(value.toFloat());
+                mSceneDefinitionHandle->setCameraTranslationX(value.toFloat());
                 break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_Y:
-                mSceneDefinitionHandle->getCameraTransform().setTranslationY(value.toFloat());
+                mSceneDefinitionHandle->setCameraTranslationY(value.toFloat());
                 break;
             case SCENE_PROPERTY_CAMERA_TRANSLATION_Z:
-                mSceneDefinitionHandle->getCameraTransform().setTranslationZ(value.toFloat());
+                mSceneDefinitionHandle->setCameraTranslationZ(value.toFloat());
                 break;
-            case SCENE_PROPERTY_CAMERA_ROTATION_X:
-                mSceneDefinitionHandle->getCameraTransform().setRotationX(value.toFloat());
+
+            case SCENE_PROPERTY_CAMERA_PITCH:
+                mSceneDefinitionHandle->setCameraPitch(value.toFloat());
                 break;
-            case SCENE_PROPERTY_CAMERA_ROTATION_Y:
-                mSceneDefinitionHandle->getCameraTransform().setRotationY(value.toFloat());
+            case SCENE_PROPERTY_CAMERA_YAW:
+                mSceneDefinitionHandle->setCameraYaw(value.toFloat());
                 break;
-            case SCENE_PROPERTY_CAMERA_ROTATION_Z:
-                mSceneDefinitionHandle->getCameraTransform().setRotationZ(value.toFloat());
+
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_X:
+                mSceneDefinitionHandle->setCameraLookAtX(value.toFloat());
                 break;
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_Y:
+                mSceneDefinitionHandle->setCameraLookAtY(value.toFloat());
+                break;
+            case SCENE_PROPERTY_CAMERA_LOOK_AT_Z:
+                mSceneDefinitionHandle->setCameraLookAtZ(value.toFloat());
+                break;
+
             case SCENE_PROPERTY_CAMERA_SPEED:
                 mSceneDefinitionHandle->setCameraMovementSpeed(value.toFloat());
                 break;

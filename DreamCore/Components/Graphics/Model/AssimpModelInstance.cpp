@@ -146,28 +146,44 @@ namespace Dream
         {
             Vertex vertex;
             // Process vertex positions, normals and texture coordinates
-            glm::vec3 vector;
 
-            vector.x = mesh->mVertices[i].x;
-            vector.y = mesh->mVertices[i].y;
-            vector.z = mesh->mVertices[i].z;
-            vertex.Position = vector;
+            vertex.Position.x = mesh->mVertices[i].x;
+            vertex.Position.y = mesh->mVertices[i].y;
+            vertex.Position.z = mesh->mVertices[i].z;
 
             if (mesh->mNormals)
             {
-                vector.x = mesh->mNormals[i].x;
-                vector.y = mesh->mNormals[i].y;
-                vector.z = mesh->mNormals[i].z;
-                vertex.Normal = vector;
+                vertex.Normal.x = mesh->mNormals[i].x;
+                vertex.Normal.y = mesh->mNormals[i].y;
+                vertex.Normal.z = mesh->mNormals[i].z;
+            }
+
+            if (mesh->mTangents)
+            {
+                vertex.Tangent.x = mesh->mTangents[i].x;
+                vertex.Tangent.y = mesh->mTangents[i].y;
+                vertex.Tangent.z = mesh->mTangents[i].z;
+            }
+            else
+            {
+                vertex.Tangent = glm::vec3(0.0f);
+            }
+
+            if (mesh->mBitangents)
+            {
+                vertex.Bitangent.x = mesh->mBitangents[i].x;
+                vertex.Bitangent.y = mesh->mBitangents[i].y;
+                vertex.Bitangent.z = mesh->mBitangents[i].z;
+            }
+            else
+            {
+                vertex.Bitangent = glm::vec3(0.0f);
             }
 
             if(mesh->mTextureCoords[0])
             {
-                glm::vec2 vec;
-                vec.x = mesh->mTextureCoords[0][i].x;
-                vec.y = mesh->mTextureCoords[0][i].y;
-                vertex.TexCoords = vec;
-
+                vertex.TexCoords.x = mesh->mTextureCoords[0][i].x;
+                vertex.TexCoords.y = mesh->mTextureCoords[0][i].y;
             }
             else
             {
@@ -217,7 +233,6 @@ namespace Dream
             log->info("Loading Diffuse Texture {} for {}",name.C_Str(), getNameAndUuidString());
             aMaterialHandle->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
         }
-
 
         // Specular Textures
         if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
@@ -287,23 +302,6 @@ namespace Dream
         aMesh->setBoundingBox(box);
         return aMesh;
     }
-
-    /*
-    vector<Texture>
-    AssimpModelInstance::loadMaterialTextures
-    (aiMaterial* mat, aiTextureType type, string typeName)
-    {
-        vector<Texture> textures;
-        for(GLuint i = 0; i < mat->GetTextureCount(type); i++)
-        {
-            aiString str;
-            mat->GetTexture(type, i, &str);
-            Texture tex = mMaterialCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
-            textures.push_back(tex);
-        }
-        return textures;
-    }
-    */
 
     shared_ptr<Texture>
     AssimpModelInstance::loadMaterialTexture

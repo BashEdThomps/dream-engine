@@ -76,7 +76,7 @@ SceneObjectPropertiesItem::setData
             break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
-        case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
@@ -92,14 +92,17 @@ SceneObjectPropertiesItem::setData
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
             mSceneObjectDefinitionHandle->getTransform().setTranslationZ(value.toFloat());
             break;
-        case SCENE_OBJECT_PROPERTY_ROTATION_X:
-            mSceneObjectDefinitionHandle->getTransform().setRotationX(value.toFloat());
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_W:
+            mSceneObjectDefinitionHandle->getTransform().setOrientationW(value.toFloat());
             break;
-        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
-            mSceneObjectDefinitionHandle->getTransform().setRotationY(value.toFloat());
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_X:
+            mSceneObjectDefinitionHandle->getTransform().setOrientationX(value.toFloat());
             break;
-        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
-            mSceneObjectDefinitionHandle->getTransform().setRotationZ(value.toFloat());
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Y:
+            mSceneObjectDefinitionHandle->getTransform().setOrientationY(value.toFloat());
+            break;
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Z:
+            mSceneObjectDefinitionHandle->getTransform().setOrientationZ(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_X:
             mSceneObjectDefinitionHandle->getTransform().setScaleX(value.toFloat());
@@ -154,7 +157,7 @@ SceneObjectPropertiesItem::data
 
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
-        case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
@@ -166,12 +169,14 @@ SceneObjectPropertiesItem::data
             return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationY());
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
             return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationZ());
-        case SCENE_OBJECT_PROPERTY_ROTATION_X:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getRotationX());
-        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getRotationY());
-        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getRotationZ());
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_W:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationW());
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_X:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationX());
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Y:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationY());
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Z:
+            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationZ());
         case SCENE_OBJECT_PROPERTY_SCALE_X:
             return QVariant(mSceneObjectDefinitionHandle->getTransform().getScaleX());
         case SCENE_OBJECT_PROPERTY_SCALE_Y:

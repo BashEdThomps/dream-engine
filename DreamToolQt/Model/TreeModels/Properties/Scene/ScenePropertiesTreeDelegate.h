@@ -36,14 +36,14 @@ public:
 
 public slots:
    void onButton_CaptureCameraTranslation(bool);
-   void onButton_CaptureCameraRotation(bool);
+   void onButton_CaptureCameraLookAt(bool);
    void onButton_CaptureCameraAll(bool);
     void onButton_ChooseAmbientColour(bool);
     void onButton_ChooseClearColour(bool);
 
 signals:
    void notifyButton_CaptureCameraTranslation();
-   void notifyButton_CaptureCameraRotation();
+   void notifyButton_CaptureCameraLookAt();
    void notifyButton_ChooseClearColour();
    void notifyButton_ChooseAmbientColour();
 
@@ -52,7 +52,7 @@ protected:
 
     QWidget* createCameraAllCaptureButton(QWidget* parent) const;
     QWidget* createCameraTranslationCaptureButton(QWidget* parent) const;
-    QWidget* createCameraRotationCaptureButton(QWidget* parent) const;
+    QWidget* createCameraLookAtCaptureButton(QWidget* parent) const;
     QWidget* createAmbientColourPaletteButton(QWidget* parent) const;
     QWidget* createClearColourPaletteButton(QWidget* parent) const;
 };

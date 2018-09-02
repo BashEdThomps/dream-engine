@@ -52,7 +52,10 @@ namespace Dream
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         unique_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;
 
-        Transform3D mCameraTransform;
+        vec3 mCameraTranslation;
+        vec3 mCameraLookAt;
+        float mCameraPitch;
+        float mCameraYaw;
         float mCameraMovementSpeed;
         bool mPhysicsDebug;
 
@@ -108,8 +111,17 @@ namespace Dream
         float getCameraMovementSpeed();
         void setCameraMovementSpeed(float cameraMovementSpeed);
 
-        Transform3D getCameraTransform();
-        void setCameraTransform(Transform3D cameraTransform);
+        vec3 getCameraTranslation();
+        void setCameraTranslation(vec3 cameraTransform);
+
+        vec3 getCameraLookAt();
+        void setCameraLookAt(vec3 lookAt);
+
+        float getCameraPitch();
+        void setCameraPitch(float);
+
+        float getCameraYaw();
+        void setCameraYaw(float);
 
     };
 } // End of Dream

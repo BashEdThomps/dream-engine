@@ -68,8 +68,8 @@ SceneObjectPropertiesTreeDelegate::createEditor
             return createRemoveAssetDefinitionButton(sopItem->getTargetAssetDefinitionHandle(),parent);
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             return createCaptureTranslationButton(parent);
-        case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
-            return createCaptureRotationButton(parent);
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
+            return createCaptureOrientationButton(parent);
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             return createCaptureScaleButton(parent);
         case SCENE_OBJECT_PROPERTY_NAME:
@@ -77,9 +77,10 @@ SceneObjectPropertiesTreeDelegate::createEditor
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
-        case SCENE_OBJECT_PROPERTY_ROTATION_X:
-        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
-        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_W:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_X:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Y:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Z:
         case SCENE_OBJECT_PROPERTY_SCALE_X:
         case SCENE_OBJECT_PROPERTY_SCALE_Y:
         case SCENE_OBJECT_PROPERTY_SCALE_Z:
@@ -116,7 +117,7 @@ SceneObjectPropertiesTreeDelegate::setEditorData
 
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
-        case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
@@ -127,9 +128,10 @@ SceneObjectPropertiesTreeDelegate::setEditorData
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
-        case SCENE_OBJECT_PROPERTY_ROTATION_X:
-        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
-        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_W:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_X:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Y:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Z:
         case SCENE_OBJECT_PROPERTY_SCALE_X:
         case SCENE_OBJECT_PROPERTY_SCALE_Y:
         case SCENE_OBJECT_PROPERTY_SCALE_Z:
@@ -162,7 +164,7 @@ void SceneObjectPropertiesTreeDelegate::setModelData
             break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
             break;
-        case SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
@@ -172,9 +174,10 @@ void SceneObjectPropertiesTreeDelegate::setModelData
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
-        case SCENE_OBJECT_PROPERTY_ROTATION_X:
-        case SCENE_OBJECT_PROPERTY_ROTATION_Y:
-        case SCENE_OBJECT_PROPERTY_ROTATION_Z:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_W:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_X:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Y:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_Z:
         case SCENE_OBJECT_PROPERTY_SCALE_X:
         case SCENE_OBJECT_PROPERTY_SCALE_Y:
         case SCENE_OBJECT_PROPERTY_SCALE_Z:
@@ -213,12 +216,12 @@ SceneObjectPropertiesTreeDelegate::onButton_CaptureTranslation
 }
 
 void
-SceneObjectPropertiesTreeDelegate::onButton_CaptureRotation
+SceneObjectPropertiesTreeDelegate::onButton_CaptureOrientation
 (bool)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
-    log->info("CaptureRotation");
-    emit notifyButton_CaptureRotation();
+    log->info("CaptureOrientation");
+    emit notifyButton_CaptureOrientation();
 }
 
 void
@@ -278,18 +281,18 @@ const
 }
 
 QWidget*
-SceneObjectPropertiesTreeDelegate::createCaptureRotationButton
+SceneObjectPropertiesTreeDelegate::createCaptureOrientationButton
 (QWidget* parent)
 const
 {
     QToolButton *button = new QToolButton(parent);
-    button->setText("Capture Rotation");
+    button->setText("Capture Orientation");
     connect
     (
         button,
         SIGNAL(clicked(bool)),
         this,
-        SLOT(onButton_CaptureRotation(bool))
+        SLOT(onButton_CaptureOrientation(bool))
     );
     return button;
 }

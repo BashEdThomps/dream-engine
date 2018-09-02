@@ -351,4 +351,8 @@ namespace Dream
         }
         return mJson[Constants::SCENE_OBJECT_STATIC];
     }
+
+
+
+
 }

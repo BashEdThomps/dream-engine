@@ -70,7 +70,7 @@ SceneObjectPropertiesModel::createProperties
     log->info("CreateProperties");
     createNameProperty();
     createTranslationProperty();
-    createRotationProperty();
+    createOrientationProperty();
     createScaleProperty();
     createTransformTypeProperty();
     createHasFocusProperty();
@@ -99,9 +99,9 @@ SceneObjectPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyButton_CaptureRotation()),
+        SIGNAL(notifyButton_CaptureOrientation()),
         this,
-        SLOT(onButton_CaptureRotation())
+        SLOT(onButton_CaptureOrientation())
     );
 
     connect
@@ -193,16 +193,16 @@ SceneObjectPropertiesModel::createTranslationProperty
 }
 
 void
-SceneObjectPropertiesModel::createRotationProperty
+SceneObjectPropertiesModel::createOrientationProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createRotationProperty");
+    log->info("create Orientation Property");
     SceneObjectPropertiesItem *rotationItem = new SceneObjectPropertiesItem
     (
-        "Rotation",
+        "Orientation",
         mSceneObjectDefinitionHandle,
-        SCENE_OBJECT_PROPERTY_ROTATION_CAPTURE
+        SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE
     );
     mRootItem->appendChild(rotationItem);
 
@@ -210,9 +210,19 @@ SceneObjectPropertiesModel::createRotationProperty
     (
         new SceneObjectPropertiesItem
         (
+            "W",
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_ORIENTATION_W
+        )
+    );
+
+    rotationItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
             "X",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_ROTATION_X
+            SCENE_OBJECT_PROPERTY_ORIENTATION_X
         )
     );
 
@@ -222,7 +232,7 @@ SceneObjectPropertiesModel::createRotationProperty
         (
             "Y",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_ROTATION_Y
+            SCENE_OBJECT_PROPERTY_ORIENTATION_Y
         )
     );
 
@@ -232,7 +242,7 @@ SceneObjectPropertiesModel::createRotationProperty
         (
             "Z",
             mSceneObjectDefinitionHandle,
-            SCENE_OBJECT_PROPERTY_ROTATION_Z
+            SCENE_OBJECT_PROPERTY_ORIENTATION_Z
         )
     );
 }
@@ -429,12 +439,12 @@ SceneObjectPropertiesModel::onButton_CaptureTranslation
 }
 
 void
-SceneObjectPropertiesModel::onButton_CaptureRotation
+SceneObjectPropertiesModel::onButton_CaptureOrientation
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("CaptureRotation");
-    emit notifyButton_CaptureRotation(mSceneObjectDefinitionHandle);
+    log->info("Capture Orientation");
+    emit notifyButton_CaptureOrientation(mSceneObjectDefinitionHandle);
 }
 
 void

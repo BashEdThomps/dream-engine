@@ -239,6 +239,20 @@ namespace Dream
                     static_cast<GLint>(sizeof(Vertex)),
                     (GLvoid*)offsetof(Vertex, TexCoords)
                     );
+        // Vertex Tangents
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(
+                    3, 3, GL_FLOAT, GL_FALSE,
+                    static_cast<GLint>(sizeof(Vertex)),
+                    (GLvoid*)offsetof(Vertex, Tangent)
+                    );
+        // Vertex Bitangents
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(
+                    4, 3, GL_FLOAT, GL_FALSE,
+                    static_cast<GLint>(sizeof(Vertex)),
+                    (GLvoid*)offsetof(Vertex, Bitangent)
+                    );
         glBindVertexArray(0);
     }
 } // End of Dream

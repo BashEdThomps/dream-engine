@@ -155,7 +155,7 @@ public slots:
     void onAssetDefinitionProperty_PathList(IAssetDefinition*);
 
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
-    void onSceneObjectProperty_CaptureRotation(SceneObjectDefinition*);
+    void onSceneObjectProperty_CaptureOrientation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);
 
     void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*, IAssetDefinition*);
@@ -164,7 +164,7 @@ public slots:
     void onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition* adHandle);
 
     void onSceneProperty_CaptureCameraTranslation(SceneDefinition*);
-    void onSceneProperty_CaptureCameraRotation(SceneDefinition*);
+    void onSceneProperty_CaptureCameraLookAt(SceneDefinition*);
     void onSceneProperty_ChooseAmbientColour(SceneDefinition*);
     void onSceneProperty_ChooseClearColour(SceneDefinition*);
 

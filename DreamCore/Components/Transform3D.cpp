@@ -78,12 +78,13 @@ namespace Dream
             );
         }
 
-        if (!jsonTransform[Constants::TRANSFORM_ROTATION].is_null())
+        if (!jsonTransform[Constants::TRANSFORM_ORIENTATION].is_null())
         {
-            setRotation(
-                jsonTransform[Constants::TRANSFORM_ROTATION][Constants::X],
-                jsonTransform[Constants::TRANSFORM_ROTATION][Constants::Y],
-                jsonTransform[Constants::TRANSFORM_ROTATION][Constants::Z]
+            setOrientation(
+                jsonTransform[Constants::TRANSFORM_ORIENTATION][Constants::W],
+                jsonTransform[Constants::TRANSFORM_ORIENTATION][Constants::X],
+                jsonTransform[Constants::TRANSFORM_ORIENTATION][Constants::Y],
+                jsonTransform[Constants::TRANSFORM_ORIENTATION][Constants::Z]
             );
         }
 
@@ -164,6 +165,27 @@ namespace Dream
         return mTranslation.z;
     }
 
+    void
+    Transform3D::translateByX
+    (float delta)
+    {
+        mTranslation.x += delta;
+    }
+
+    void
+    Transform3D::translateByY
+    (float delta)
+    {
+        mTranslation.y += delta;
+    }
+
+    void
+    Transform3D::translateByZ
+    (float delta)
+    {
+        mTranslation.z += delta;
+    }
+
     // Rotation ======================================================================
 
     vec3
@@ -184,9 +206,7 @@ namespace Dream
     Transform3D::setRotation
     (float x, float y, float z)
     {
-        mOrientation = glm::rotate(glm::radians(x),vec3(1.0f,0.0f,0.0f));
-        mOrientation = glm::rotate(mOrientation,glm::radians(y),vec3(0.0f,1.0f,0.0f));
-        mOrientation = glm::rotate(mOrientation,glm::radians(z),vec3(0.0f,0.0f,1.0f));
+        mOrientation = quat(vec3(x,y,z));
     }
 
     float
@@ -237,7 +257,90 @@ namespace Dream
         mOrientation = quat(vec3(euler.x,euler.y,z));
     }
 
-    // Scale =========================================================================
+    void
+    Transform3D::rotateByX
+    (float delta)
+    {
+        mOrientation = quat(vec3(delta,0,0)) * mOrientation;
+    }
+
+    void
+    Transform3D::rotateByY
+    (float delta)
+    {
+        mOrientation = quat(vec3(0,delta,0)) * mOrientation;
+    }
+
+    void
+    Transform3D::rotateByZ
+    (float delta)
+    {
+        mOrientation = quat(vec3(0,0,delta)) * mOrientation;
+    }
+
+    quat
+    Transform3D::getOrientation
+    ()
+    const
+    {
+        return mOrientation;
+    }
+
+    void
+    Transform3D::setOrientation
+    (float w, float x, float y, float z)
+    {
+        mOrientation = quat(w,x,y,z);
+    }
+
+    void
+    Transform3D::setOrientation
+    (quat orientation)
+    {
+        mOrientation = orientation;
+    }
+
+    float Transform3D::getOrientationW() const
+    {
+       return mOrientation.w;
+    }
+
+    void  Transform3D::setOrientationW(float w)
+    {
+       mOrientation.w = w;
+    }
+
+    float Transform3D::getOrientationX() const
+    {
+       return mOrientation.x;
+    }
+
+    void  Transform3D::setOrientationX(float x)
+    {
+       mOrientation.x = x;
+    }
+
+    float Transform3D::getOrientationY() const
+    {
+        return mOrientation.y;
+    }
+
+    void Transform3D::setOrientationY(float y)
+    {
+        mOrientation.y = y;
+    }
+
+    float Transform3D::getOrientationZ() const
+    {
+       return mOrientation.z;
+    }
+
+    void Transform3D::setOrientationZ(float z)
+    {
+       mOrientation.z = z;
+    }
+
+    // Scale ====================================================================
 
     vec3
     Transform3D::getScale
@@ -303,48 +406,6 @@ namespace Dream
     }
 
     void
-    Transform3D::translateByX
-    (float delta)
-    {
-        mTranslation.x += delta;
-    }
-
-    void
-    Transform3D::translateByY
-    (float delta)
-    {
-        mTranslation.y += delta;
-    }
-
-    void
-    Transform3D::translateByZ
-    (float delta)
-    {
-        mTranslation.z += delta;
-    }
-
-    void
-    Transform3D::rotateByX
-    (float delta)
-    {
-        mOrientation = glm::rotate(mOrientation,glm::radians(delta),vec3(1.0f,0.0f,0.0f));
-    }
-
-    void
-    Transform3D::rotateByY
-    (float delta)
-    {
-        mOrientation = glm::rotate(mOrientation,glm::radians(delta),vec3(0.0f,1.0f,0.0f));
-    }
-
-    void
-    Transform3D::rotateByZ
-    (float delta)
-    {
-        mOrientation = glm::rotate(mOrientation,glm::radians(delta),vec3(0.0f,0.0f,1.0f));
-    }
-
-    void
     Transform3D::scaleByX
     (float delta)
     {
@@ -365,7 +426,7 @@ namespace Dream
         mScale.z += delta;
     }
 
-    // Transform Type ================================================================
+    // Transform Type ===========================================================
 
     void
     Transform3D::setTransformType
@@ -381,6 +442,8 @@ namespace Dream
         return mTransformType;
     }
 
+    // Bullet Interfaces ========================================================
+
     btVector3
     Transform3D::getTranslationAsBtVector3
     ()
@@ -394,9 +457,13 @@ namespace Dream
     ()
     const
     {
-        btQuaternion quat;
-        quat.setEulerZYX(getRotationX(),getRotationY(),getRotationZ());
-        return quat;
+        return btQuaternion
+        (
+            mOrientation.x,
+            mOrientation.y,
+            mOrientation.z,
+            mOrientation.w
+        );
     }
 
     btTransform
@@ -417,28 +484,6 @@ namespace Dream
         return btVector3(getRotationX(),getRotationY(),getRotationZ());
     }
 
-    quat
-    Transform3D::getOrientation
-    ()
-    const
-    {
-        return mOrientation;
-    }
-
-    void
-    Transform3D::setOrientation
-    (float w, float x, float y, float z)
-    {
-        mOrientation = quat(w,x,y,z);
-    }
-
-    void
-    Transform3D::setOrientation
-    (quat orientation)
-    {
-        mOrientation = orientation;
-    }
-
     json
     Transform3D::getJson
     ()
@@ -451,11 +496,13 @@ namespace Dream
         j[Constants::TRANSFORM_TRANSLATION][Constants::X] = getTranslationX();
         j[Constants::TRANSFORM_TRANSLATION][Constants::Y] = getTranslationY();
         j[Constants::TRANSFORM_TRANSLATION][Constants::Z] = getTranslationZ();
-        // Rotation
-        j[Constants::TRANSFORM_ROTATION] = json::object();
-        j[Constants::TRANSFORM_ROTATION][Constants::X] = getRotationX();
-        j[Constants::TRANSFORM_ROTATION][Constants::Y] = getRotationY();
-        j[Constants::TRANSFORM_ROTATION][Constants::Z] = getRotationZ();
+        // Orientation
+        j[Constants::TRANSFORM_ORIENTATION] = json::object();
+
+        j[Constants::TRANSFORM_ORIENTATION][Constants::W] = mOrientation.w;
+        j[Constants::TRANSFORM_ORIENTATION][Constants::X] = mOrientation.x;
+        j[Constants::TRANSFORM_ORIENTATION][Constants::Y] = mOrientation.y;
+        j[Constants::TRANSFORM_ORIENTATION][Constants::Z] = mOrientation.z;
         // Scale
         j[Constants::TRANSFORM_SCALE] = json::object();
         j[Constants::TRANSFORM_SCALE][Constants::X] = getScaleX();
@@ -467,7 +514,7 @@ namespace Dream
     Transform3D Transform3D::offsetFrom(Transform3D parent)
     {
         auto log = getLog();
-        log->critical(
+        log->trace(
             "Generating offset transform from parent T({},{},{}) R({},{},{})",
             parent.getTranslationX(), parent.getTranslationY(), parent.getTranslationZ(),
             parent.getRotationX(), parent.getRotationY(), parent.getRotationZ()
@@ -486,5 +533,28 @@ namespace Dream
        mtx = glm::scale(mtx,getScale());
        return Transform3D(mtx);
     }
+
+    glm::mat4 Transform3D::asMat4()
+    {
+       mat4 trans = glm::translate(mTranslation);
+       mat4 rot = mat4_cast(mOrientation);
+       trans = trans*rot;
+       return glm::scale(trans,mScale);
+    }
+
+    void Transform3D::setFromMat4(glm::mat4 mat)
+    {
+       glm::vec3 scale;
+       glm::quat rotation;
+       glm::vec3 translation;
+       glm::vec3 skew;
+       glm::vec4 perspective;
+       glm::decompose(mat, scale, rotation, translation, skew, perspective);
+
+       mTranslation  = translation;
+       mOrientation = rotation;
+       mScale = scale;
+    }
+
 
 } // End of Dream
