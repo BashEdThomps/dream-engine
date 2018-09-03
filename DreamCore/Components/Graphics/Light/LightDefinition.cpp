@@ -22,8 +22,8 @@
 namespace Dream
 {
     LightDefinition::LightDefinition
-    (ProjectDefinition* pdHandle, json js)
-        : IAssetDefinition(pdHandle,js) {}
+    (shared_ptr<ProjectDefinition> pd, json js)
+        : IAssetDefinition(pd,js) {}
 
     void
     LightDefinition::setDiffuse

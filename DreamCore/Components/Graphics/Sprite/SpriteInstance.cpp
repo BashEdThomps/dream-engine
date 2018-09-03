@@ -22,12 +22,16 @@ namespace Dream
 {
 
   SpriteInstance::SpriteInstance
-  (MaterialCache* cache, SpriteDefinition* definition, SceneObjectRuntime* transform)
+  (
+    shared_ptr<MaterialCache> cache,
+    shared_ptr<SpriteDefinition> definition,
+    shared_ptr<SceneObjectRuntime> transform
+    )
       : IAssetInstance(definition,transform),
         ILoggable ("SpriteInstance"),
-        mCacheHandle(cache)
+        mCache(cache)
   {
-    loadExtraAttributes(mDefinitionHandle->getJson());
+    loadExtraAttributes(mDefinition->getJson());
   }
 
   SpriteInstance::~SpriteInstance
@@ -43,11 +47,11 @@ namespace Dream
   (string projectPath)
   {
       auto log = getLog();
-    string path = projectPath + mDefinitionHandle->getAssetPath();
+    string path = projectPath + mDefinition->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
         log->info( "SpriteInstance: Loading sprite from {}" , path );
 
-    shared_ptr<Texture> tex = mCacheHandle->loadTextureFromFile("sprite",directory.c_str(),"sprite");
+    shared_ptr<Texture> tex = mCache->loadTextureFromFile("sprite",directory.c_str(),"sprite");
     mTexture = tex->id;
     mWidth = tex->width;
     mHeight = tex->height;

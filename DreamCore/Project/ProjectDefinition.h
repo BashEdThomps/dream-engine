@@ -24,7 +24,6 @@
 
 using std::string;
 using std::vector;
-using std::unique_ptr;
 
 namespace Dream
 {
@@ -36,11 +35,12 @@ namespace Dream
     class ProjectDefinition : public IDefinition, ILoggable
     {
     private:
-        vector<unique_ptr<SceneDefinition>> mSceneDefinitions;
-        vector<unique_ptr<IAssetDefinition>> mAssetDefinitions;
+        vector<shared_ptr<SceneDefinition>> mSceneDefinitions;
+        vector<shared_ptr<IAssetDefinition>> mAssetDefinitions;
+        shared_ptr<ProjectDefinition> mThisShared;
     public:
         ProjectDefinition(json data);
-        ~ProjectDefinition();
+        ~ProjectDefinition() override;
 
         string getAuthor();
         void setAuthor(string author);
@@ -50,7 +50,7 @@ namespace Dream
 
         string getStartupSceneUuid();
         void setStartupSceneUuid(string sceneUuid);
-        SceneDefinition* getStartupSceneDefinitionHandle();
+        shared_ptr<SceneDefinition> getStartupSceneDefinition();
 
         int getWindowWidth();
         void setWindowWidth(int width);
@@ -62,28 +62,28 @@ namespace Dream
 
         void showStatus() override;
         size_t countAssetDefinitions();
-        IAssetDefinition *getAssetDefinitionHandleByUuid(string uuid);
+        shared_ptr<IAssetDefinition> getAssetDefinitionByUuid(string uuid);
 
         size_t countScenesDefinitions();
-        SceneDefinition *getSceneDefinitionHandleByUuid(string uuid);
-        SceneDefinition *getSceneDefinitionHandleByName(string uuid);
-        vector<SceneDefinition*> getSceneDefinitionsHandleList();
-        void removeSceneDefinition(SceneDefinition* sceneDef);
+        shared_ptr<SceneDefinition> getSceneDefinitionByUuid(string uuid);
+        shared_ptr<SceneDefinition> getSceneDefinitionByName(string uuid);
+        vector<shared_ptr<SceneDefinition>> getSceneDefinitionsList();
+        void removeSceneDefinition(shared_ptr<SceneDefinition> sceneDef);
 
-        void removeAssetDefinition(IAssetDefinition* assetDef);
-        vector<IAssetDefinition*> getAssetDefinitionsHandleList();
-        SceneDefinition* createNewSceneDefinition();
-        IAssetDefinition* createNewAssetDefinition(AssetType type);
+        void removeAssetDefinition(shared_ptr<IAssetDefinition> assetDef);
+        vector<shared_ptr<IAssetDefinition>> getAssetDefinitionsList();
+        shared_ptr<SceneDefinition> createNewSceneDefinition();
+        shared_ptr<IAssetDefinition> createNewAssetDefinition(AssetType type);
         json getJson() override;
 
-        map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionHandlesMap();
-        vector<ShaderDefinition*> getShaderAssetDefinitionHandleVector();
+        map<AssetType,vector<shared_ptr<IAssetDefinition>>> getAssetDefinitionsMap();
+        vector<shared_ptr<ShaderDefinition>> getShaderAssetDefinitionVector();
 
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
-        IAssetDefinition* createAssetDefinitionInstance(json assetDefinitionJs);
+        shared_ptr<IAssetDefinition>createAssetDefinitionInstance(json assetDefinitionJs);
     };
 }

@@ -4,15 +4,15 @@
 
 namespace Dream
 {
-    ComponentThread::ComponentThread(IComponent* component)
+    ComponentThread::ComponentThread(shared_ptr<IComponent> component)
         : thread(&IComponent::updateComponent,component),
           ILoggable ("ComponentThread"),
-          mComponentHandle(component)
+          mComponent(component)
 
     {
         auto log = getLog();
         log->trace(
-            "Constructing Update Thread for {}", dynamic_cast<ILoggable*>(component)->getClassName()
+            "Constructing Update Thread for {}", dynamic_cast<ILoggable*>(component.get())->getClassName()
         );
     }
 

@@ -51,9 +51,10 @@
 namespace Dream
 {
     Project::Project
-    (IWindowComponent* windowComponent)
+    (shared_ptr<IWindowComponent> windowComponent)
         : ILoggable("Project"),
-          mWindowComponentHandle(windowComponent)
+          mWindowComponent(windowComponent),
+          mThisShared(shared_ptr<Project>(this))
     {
         getLog()->trace("Constructing");
     }
@@ -61,8 +62,8 @@ namespace Dream
     Project::~Project()
     {
         auto log = getLog();
-        log->trace("Denstructing");
-        if (mDefinition)
+        log->trace("Destructing");
+        if (mDefinition != nullptr)
         {
             log->info(mDefinition->getNameAndUuidString());
         }
@@ -88,7 +89,7 @@ namespace Dream
         log->info("Project path", projectPath);
 
         mProjectPath = projectPath;
-        mDefinition.reset(new ProjectDefinition(projectJson));
+        mDefinition = make_shared<ProjectDefinition>(projectJson);
         return true;
     }
 
@@ -153,15 +154,15 @@ namespace Dream
         return loadSuccess;
     }
 
-    ProjectRuntime*
+    shared_ptr<ProjectRuntime>
     Project::createProjectRuntime
     ()
     {
-        mRuntime.reset(new ProjectRuntime(this, mWindowComponentHandle));
-        return mRuntime.get();
+        mRuntime = make_shared<ProjectRuntime>(mThisShared, mWindowComponent);
+        return mRuntime;
     }
 
-    ProjectDefinition*
+    shared_ptr<ProjectDefinition>
     Project::createNewProjectDefinition
     (string name)
     {
@@ -180,8 +181,7 @@ namespace Dream
         j[Constants::PROJECT_ASSET_ARRAY] = json::array();
         j[Constants::PROJECT_SCENE_ARRAY] = json::array();
 
-        ProjectDefinition* newProjectDefinitionHandle = new ProjectDefinition(j);
-        return newProjectDefinitionHandle;
+        return make_shared<ProjectDefinition>(j);
     }
 
     bool
@@ -196,8 +196,10 @@ namespace Dream
         if(mRuntime != nullptr)
         {
             if (mRuntime->getParallel())
+            {
                 mRuntime->cleanUpThreads();
-            mRuntime.reset(nullptr);
+            }
+            mRuntime.reset();
         }
     }
 
@@ -220,18 +222,18 @@ namespace Dream
         return loadSuccess;
     }
 
-    ProjectRuntime*
-    Project::getProjectRuntimeHandle
+    shared_ptr<ProjectRuntime>
+    Project::getProjectRuntime
     ()
     {
-        return mRuntime.get();
+        return mRuntime;
     }
 
-    ProjectDefinition*
-    Project::getProjectDefinitionHandle
+    shared_ptr<ProjectDefinition>
+    Project::getProjectDefinition
     ()
     {
-        return mDefinition.get();
+        return mDefinition;
     }
 
     string

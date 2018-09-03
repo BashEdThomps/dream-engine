@@ -25,6 +25,6 @@ namespace Dream
     class SpriteDefinition : public IAssetDefinition
     {
     public:
-        SpriteDefinition(ProjectDefinition* pdHandle, json js);
+        SpriteDefinition(shared_ptr<ProjectDefinition> pd, json js);
     };
 }

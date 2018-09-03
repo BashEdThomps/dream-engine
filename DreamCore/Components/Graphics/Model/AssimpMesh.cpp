@@ -6,14 +6,14 @@ namespace Dream
 
     AssimpMesh::AssimpMesh
     (
-        AssimpModelInstance* parent,
+        shared_ptr<AssimpModelInstance> parent,
         string name,
         vector<Vertex> vertices,
         vector<GLuint> indices,
-        AssimpMaterial* material
+        shared_ptr<AssimpMaterial> material
     ) : ILoggable("AssimpMesh"),
-        mParentHandle(parent),
-        mMaterialHandle(material),
+        mParent(parent),
+        mMaterial(material),
         mName(name),
         mVertices(vertices),
         mIndices(indices)
@@ -27,7 +27,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->trace("Destroying Mesh for {}",mParentHandle->getNameAndUuidString());
+        log->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
     }
 
     string AssimpMesh::getName() const
@@ -62,21 +62,22 @@ namespace Dream
 
     void
     AssimpMesh::bindTextures
-    (ShaderInstance*)
+    (shared_ptr<ShaderInstance>)
     {
         auto log = getLog();
-        bindTexture(mMaterialHandle->mDiffuseTexture.get());
-        bindTexture(mMaterialHandle->mSpecularTexture.get());
-        bindTexture(mMaterialHandle->mNormalTexture.get());
+        bindTexture(mMaterial->mDiffuseTexture);
+        bindTexture(mMaterial->mSpecularTexture);
+        bindTexture(mMaterial->mNormalTexture);
         glActiveTexture(GL_TEXTURE0);
     }
 
-    void AssimpMesh::bindTexture(Texture* t)
+    void AssimpMesh::bindTexture(shared_ptr<Texture> t)
     {
         if (t == nullptr)
         {
             return;
         }
+
         auto log = getLog();
         string name = t->type;
         GLuint nextTexture = 0;
@@ -111,7 +112,7 @@ namespace Dream
               t->id,
               nextTexture,
               getName(),
-              mParentHandle->getNameAndUuidString()
+              mParent->getNameAndUuidString()
          );
 
         glActiveTexture(nextTexture);
@@ -135,75 +136,74 @@ namespace Dream
 
     void
     AssimpMesh::bindDiffuse
-    (ShaderInstance *shaderHandle)
+    (shared_ptr<ShaderInstance> shader)
     {
         auto log = getLog();
-        aiColor4D diff = mMaterialHandle->mColorDiffuse;
+        aiColor4D diff = mMaterial->mColorDiffuse;
         auto diffuse = vec4(diff.r, diff.g, diff.b, diff.a);
         log->trace("Material Diffuse for {}: ({},{},{},{})",getName(),diff.r, diff.g, diff.b, diff.a);
-        shaderHandle->addUniform(FLOAT4,"materialDiffuseColour",1,&diffuse);
+        shader->addUniform(FLOAT4,"materialDiffuseColour",1,&diffuse);
     }
 
     void
     AssimpMesh::bindSpecular
-    (ShaderInstance *shaderHandle)
+    (shared_ptr<ShaderInstance> shader)
     {
         auto log = getLog();
-        aiColor4D spec = mMaterialHandle->mColorSpecular;
+        aiColor4D spec = mMaterial->mColorSpecular;
         auto specular = vec4(spec.r, spec.g, spec.b, spec.a);
         log->trace(
             "Material Specular for {}: ({},{},{},{}) strength {}",
             getName(),
             spec.r, spec.g, spec.b, spec.a,
-            mMaterialHandle->mShininessStrength
+            mMaterial->mShininessStrength
         );
-        shaderHandle->addUniform(FLOAT4,"materialSpecularColour",1,&specular);
-        shaderHandle->addUniform(FLOAT1,"materialShininess",1,&mMaterialHandle->mShininessStrength);
+        shader->addUniform(FLOAT4,"materialSpecularColour",1,&specular);
+        shader->addUniform(FLOAT1,"materialShininess",1,&mMaterial->mShininessStrength);
     }
 
     void
     AssimpMesh::bindAmbient
-    (ShaderInstance *shaderHandle)
+    (shared_ptr<ShaderInstance> shader)
     {
         auto log = getLog();
-        aiColor4D amb = mMaterialHandle->mColorAmbient;
+        aiColor4D amb = mMaterial->mColorAmbient;
         log->trace(
             "Material Ambient for {}: ({},{},{},{})",
             getName(),
             amb.r, amb.g, amb.b, amb.a
         );
         auto ambient = vec4(amb.r, amb.g, amb.b, amb.a);
-        shaderHandle->addUniform(FLOAT4,"materialAmbientColour",1,&ambient);
+        shader->addUniform(FLOAT4,"materialAmbientColour",1,&ambient);
     }
 
     void
     AssimpMesh::bindOpacity
-    (ShaderInstance* shaderHandle)
+    (shared_ptr<ShaderInstance> shader)
     {
-        shaderHandle->addUniform(FLOAT1,"materialOpacity",1,&mMaterialHandle->mOpacity);
+        shader->addUniform(FLOAT1,"materialOpacity",1,&mMaterial->mOpacity);
     }
 
     void
     AssimpMesh::draw
-    (ShaderInstance* shader)
+    (shared_ptr<ShaderInstance> shader)
     {
         auto log = getLog();
-        // Bind Shader Values
-        //bindTextures(shader);
-        //bindDiffuse(shader);
-        //bindSpecular(shader);
-        //bindOpacity(shader);
-        shader->bindMaterial(mMaterialHandle);
+
+        // Bind Material
+        shader->bindMaterial(mMaterial);
 
         // Sync Uniforms
         shader->syncUniforms();
         checkGLError();
 
-        // Draw mesh
+        // Bind VAO
         shader->bindVertexArray(mVAO);
+
+        // Draw mesh
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
+
         log->info("Completed a mesh draw");
-        //shader->unbindVertexArray();
     }
 
     void

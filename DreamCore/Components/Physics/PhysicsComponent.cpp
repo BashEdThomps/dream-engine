@@ -160,15 +160,15 @@ namespace Dream
     {
         while(mRunning)
         {
-            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
             {
                 beginUpdate();
                 auto log = getLog();
                 log->info( "Update Called" );
-                populatePhysicsWorld(mActiveSceneRuntimeHandle);
+                populatePhysicsWorld(mActiveSceneRuntime);
                 btScalar stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
                 mDynamicsWorld->stepSimulation(stepValue);
-                checkContactManifolds(mActiveSceneRuntimeHandle);
+                checkContactManifolds(mActiveSceneRuntime);
                 // Put debug info to queue, no GL calls made
                 if (mDebug)
                 {
@@ -201,7 +201,7 @@ namespace Dream
 
     void
     PhysicsComponent::removePhysicsObjectInstance
-    (PhysicsObjectInstance* obj)
+    (shared_ptr<PhysicsObjectInstance> obj)
     {
         removeRigidBody(obj->getRigidBody());
     }
@@ -224,26 +224,26 @@ namespace Dream
 
     void
     PhysicsComponent::addPhysicsObjectInstance
-    (PhysicsObjectInstance *physicsObjejct)
+    (shared_ptr<PhysicsObjectInstance> physicsObjejct)
     {
         addRigidBody(physicsObjejct->getRigidBody());
     }
 
     void
     PhysicsComponent::populatePhysicsWorld
-    (SceneRuntime* scene)
+    (shared_ptr<SceneRuntime> scene)
     {
         auto log = getLog();
-        scene->getRootSceneObjectRuntimeHandle()->applyToAll
+        scene->getRootSceneObjectRuntime()->applyToAll
                 (
-                    function<void*(SceneObjectRuntime*)>
+                    function<void*(shared_ptr<SceneObjectRuntime>)>
                     (
-                        [&](SceneObjectRuntime* so)
-        {
+                        [&](shared_ptr<SceneObjectRuntime> so)
+                        {
                         // Has physics
                         if (so->hasPhysicsObjectInstance())
                         {
-                            PhysicsObjectInstance* physicsObject = so->getPhysicsObjectInstance();
+                            auto physicsObject = so->getPhysicsObjectInstance();
                             if (!physicsObject->isInPhysicsWorld())
                             {
                                 log->trace( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
@@ -281,7 +281,7 @@ namespace Dream
 
     void
     PhysicsComponent::checkContactManifolds
-    (SceneRuntime* scene)
+    (shared_ptr<SceneRuntime> scene)
     {
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
         for (int i=0;i<numManifolds;i++)
@@ -292,8 +292,8 @@ namespace Dream
             const btCollisionObject* objB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
             if (objA != nullptr && objB != nullptr)
             {
-                SceneObjectRuntime* sObjA = getSceneObjectRuntime(scene, objA);
-                SceneObjectRuntime* sObjB = getSceneObjectRuntime(scene, objB);
+                auto sObjA = getSceneObjectRuntime(scene, objA);
+                auto sObjB = getSceneObjectRuntime(scene, objB);
                 if (sObjA != nullptr && sObjB != nullptr)
                 {
                     Event e(sObjB->getUuid(),Constants::EVENT_TYPE_COLLISION);
@@ -317,31 +317,28 @@ namespace Dream
         }
     }
 
-    SceneObjectRuntime*
+    shared_ptr<SceneObjectRuntime>
     PhysicsComponent::getSceneObjectRuntime
-    (SceneRuntime* scene, const btCollisionObject* collObj)
+    (shared_ptr<SceneRuntime> scene, const btCollisionObject* collObj)
     {
-        return static_cast<SceneObjectRuntime*>
-                (
-                    scene->getRootSceneObjectRuntimeHandle()->applyToAll
-                    (
-                        function<void*(SceneObjectRuntime*)>
-                        (
-                            [&](SceneObjectRuntime* next)
-        {
-                            if (next->hasPhysicsObjectInstance())
-                            {
-                                PhysicsObjectInstance* nextPO = next->getPhysicsObjectInstance();
-                                if (nextPO->getCollisionObject() == collObj)
-                                {
-                                    return next;
-                                }
-                            }
-                            return static_cast<SceneObjectRuntime*>(nullptr);
+        return scene->getRootSceneObjectRuntime()->applyToAll
+        (
+            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
+            (
+                [&](shared_ptr<SceneObjectRuntime> next)
+                {
+                    if (next->hasPhysicsObjectInstance())
+                    {
+                        auto nextPO = next->getPhysicsObjectInstance();
+                        if (nextPO->getCollisionObject() == collObj)
+                        {
+                            return next;
                         }
-                        )
-                    )
-                );
+                    }
+                    return shared_ptr<SceneObjectRuntime>();
+                }
+            )
+        );
     }
 
     void

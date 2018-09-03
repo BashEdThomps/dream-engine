@@ -45,8 +45,8 @@ namespace Dream
         WavHeader mWavHeader;
 
     public:
-        WavAudioInstance(AudioDefinition*,SceneObjectRuntime*);
-        ~WavAudioInstance();
+        WavAudioInstance(shared_ptr<AudioDefinition>, shared_ptr<SceneObjectRuntime>);
+        ~WavAudioInstance() override;
 
         long getFileSize(FILE* inFile);
 

@@ -23,11 +23,11 @@
 namespace Dream
 {
     IAssetInstance::IAssetInstance
-    (IAssetDefinition* definition, SceneObjectRuntime* runtime)
+    (shared_ptr<IAssetDefinition> definition, shared_ptr<SceneObjectRuntime> runtime)
           : mLoaded(false),
             mAbsolutePath(""),
-            mDefinitionHandle(definition),
-            mSceneObjectRuntimeHandle(runtime),
+            mDefinition(definition),
+            mSceneObjectRuntime(runtime),
             mUuid(Uuid::generateUuid())
     {
 
@@ -42,7 +42,7 @@ namespace Dream
     IAssetInstance::getName
     ()
     {
-        return mDefinitionHandle->getName();
+        return mDefinition->getName();
     }
 
     string
@@ -87,10 +87,10 @@ namespace Dream
         mLoaded = loaded;
     }
 
-    SceneObjectRuntime*
-    IAssetInstance::getSceneObjectRuntimeHandle
+    shared_ptr<SceneObjectRuntime>
+    IAssetInstance::getSceneObjectRuntime
     ()
     {
-        return mSceneObjectRuntimeHandle;
+        return mSceneObjectRuntime;
     }
 } // End of Dream

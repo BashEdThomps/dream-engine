@@ -10,9 +10,9 @@
 namespace Dream
 {
 
-    NanoVGComponent::NanoVGComponent(IWindowComponent* windowComponentHandle, bool parallel)
-        : IComponent (parallel) ,
-          mWindowComponentHandle(windowComponentHandle)
+    NanoVGComponent::NanoVGComponent(shared_ptr<IWindowComponent> windowComponent, bool parallel)
+        : IComponent (parallel),
+          mWindowComponent(windowComponent)
     {
         setLogClassName("NanoVGComponent");
         auto log = getLog();

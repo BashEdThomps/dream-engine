@@ -42,20 +42,25 @@ namespace Dream
     {
     private:
         int mSize;
-        FontCache *mCacheHandle;
-        unique_ptr<FT_Face> mFontFace;
+        shared_ptr<FontCache> mCache;
+        shared_ptr<FT_Face> mFontFace;
         vector<float> mColour;
         string mText;
     private: // Methods
         void generateCharacterMap();
     public:
-        FontInstance(FontCache*, FontDefinition*,SceneObjectRuntime*);
+        FontInstance(
+            shared_ptr<FontCache>,
+            shared_ptr<FontDefinition>,
+            shared_ptr<SceneObjectRuntime>
+        );
+
         ~FontInstance();
 
         bool load(string);
         void loadExtraAttributes(json);
 
-        FT_Face* getFontFace();
+        shared_ptr<FT_Face> getFontFace();
 
         void setText(string);
         string getText();

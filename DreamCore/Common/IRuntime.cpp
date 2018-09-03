@@ -19,15 +19,15 @@
 
 namespace Dream
 {
-    IDefinition* Runtime::getDefinitionHandle()
+    shared_ptr<IDefinition> Runtime::getDefinition()
     {
-        return mDefinitionHandle;
+        return mDefinition;
     }
 
     Runtime::Runtime
-    (IDefinition* defHandle, string uuid, string name)
+    (shared_ptr<IDefinition> def, string uuid, string name)
         : // Init List
-          mDefinitionHandle(defHandle),
+          mDefinition(def),
           mUuid(uuid),
           mName(name)
     {

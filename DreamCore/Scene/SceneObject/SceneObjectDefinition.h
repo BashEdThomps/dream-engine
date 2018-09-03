@@ -28,7 +28,7 @@
 
 using std::string;
 using std::vector;
-using std::unique_ptr;
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -38,13 +38,19 @@ namespace Dream
     class SceneObjectDefinition : public IDefinition, ILoggable
     {
     private:
-        SceneObjectDefinition* mParentSceneObjectHandle;
-        SceneDefinition* mSceneDefinitionHandle;
-        vector<unique_ptr<SceneObjectDefinition>> mChildDefinitions;
+        shared_ptr<SceneObjectDefinition> mParentSceneObject;
+        shared_ptr<SceneDefinition> mSceneDefinition;
+        shared_ptr<SceneObjectDefinition> mThisShared;
+        vector<shared_ptr<SceneObjectDefinition>> mChildDefinitions;
         Transform3D mTransform;
 
     public:
-        SceneObjectDefinition(SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle,  json data, bool randomUuid = false);
+        SceneObjectDefinition(
+            shared_ptr<SceneObjectDefinition> parent,
+            shared_ptr<SceneDefinition> sceneDefinition,
+            json data, bool randomUuid = false
+        );
+
         ~SceneObjectDefinition() override;
 
         void setHasFocus(bool focus);
@@ -53,10 +59,10 @@ namespace Dream
         void setFollowsCamera(bool fc);
         bool followsCamera();
 
-        void addAssetDefinitionToLoadQueue(IAssetDefinition* adHandle);
+        void addAssetDefinitionToLoadQueue(IAssetDefinition* ad);
         void addAssetDefinitionUuidToLoadQueue(string uuid);
 
-        void removeAssetDefinitionFromLoadQueue(IAssetDefinition* adHandle);
+        void removeAssetDefinitionFromLoadQueue(IAssetDefinition* ad);
         void removeAssetDefinitionUuidFromLoadQueue(string uuid);
 
         vector<string> getAssetDefinitionLoadQueue();
@@ -66,16 +72,16 @@ namespace Dream
 
         void showStatus() override;
 
-        vector<SceneObjectDefinition*> getChildDefinitionsHandleList();
-        void addChildSceneObjectDefinition(SceneObjectDefinition* child);
-        void removeChildSceneObjectDefinition(SceneObjectDefinition* child);
-        SceneObjectDefinition* createNewChildSceneObjectDefinition(json* def = nullptr);
+        vector<shared_ptr<SceneObjectDefinition>> getChildDefinitionsList();
+        void addChildSceneObjectDefinition(shared_ptr<SceneObjectDefinition> child);
+        void removeChildSceneObjectDefinition(shared_ptr<SceneObjectDefinition> child);
+        shared_ptr<SceneObjectDefinition> createNewChildSceneObjectDefinition(json* def = nullptr);
 
-        SceneDefinition *getSceneDefinitionHandle();
+        shared_ptr<SceneDefinition> getSceneDefinition();
         json getJson() override;
 
-        SceneObjectDefinition* getParentSceneObjectHandle() const;
-        SceneObjectDefinition* duplicate();
+        shared_ptr<SceneObjectDefinition> getParentSceneObject() const;
+        shared_ptr<SceneObjectDefinition> duplicate();
 
         bool getAlwaysDraw();
         void setAlwaysDraw(bool alwaysDraw);

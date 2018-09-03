@@ -107,15 +107,15 @@ namespace Dream
 
     void LightInstance::loadType()
     {
-        if (mDefinitionHandle->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL) == 0)
+        if (mDefinition->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL) == 0)
         {
             mType = LightType::LT_DIRECTIONAL;
         }
-        else if (mDefinitionHandle->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_POINT) == 0)
+        else if (mDefinition->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_POINT) == 0)
         {
             mType = LightType::LT_POINT;
         }
-        else if (mDefinitionHandle->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT) == 0)
+        else if (mDefinition->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT) == 0)
         {
             mType = LightType::LT_SPOTLIGHT;
         }
@@ -124,7 +124,7 @@ namespace Dream
     PointLight LightInstance::getPointLightData()
     {
         return PointLight {
-            mSceneObjectRuntimeHandle->getTransform().getTranslation(),
+            mSceneObjectRuntime->getTransform().getTranslation(),
             mConstant,
             mLinear,
             mQuadratic,
@@ -137,7 +137,7 @@ namespace Dream
     SpotLight LightInstance::getSpotLightData()
     {
         return SpotLight {
-            mSceneObjectRuntimeHandle->getTransform().getTranslation(),
+            mSceneObjectRuntime->getTransform().getTranslation(),
             mDirection,
             mCutOff,
             mOuterCutOff,
@@ -153,7 +153,7 @@ namespace Dream
     DirLight LightInstance::getDirectionalLightData()
     {
         return DirLight {
-            mSceneObjectRuntimeHandle->getTransform().getTranslation(),
+            mSceneObjectRuntime->getTransform().getTranslation(),
             mAmbient,
             mDiffuse,
             mSpecular
@@ -162,8 +162,8 @@ namespace Dream
 
     LightInstance::LightInstance
     (
-            LightDefinition* definition,
-            SceneObjectRuntime* transform
+            shared_ptr<LightDefinition> definition,
+            shared_ptr<SceneObjectRuntime> transform
             ) : IAssetInstance(definition,transform),
         ILoggable("LightInstance"),
 
@@ -204,7 +204,7 @@ namespace Dream
     {
         auto log = getLog();
 
-        auto lightDef = dynamic_cast<LightDefinition*>(mDefinitionHandle);
+        auto lightDef = dynamic_pointer_cast<LightDefinition>(mDefinition);
 
         mAmbient = lightDef->getAmbient();
         mDiffuse = lightDef->getDiffuse();

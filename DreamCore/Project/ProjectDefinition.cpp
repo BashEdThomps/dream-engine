@@ -7,13 +7,13 @@
  *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
+ * license should have been included with mThisShared file, or the project in which
+ * mThisShared file belongs to. You may also find the details of GPL v3 at:
  * http://www.gnu.org/licenses/gpl-3.0.txt
  *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
+ * If you have any questions regarding the use of mThisShared file, feel free to
+ * contact the author of mThisShared file, or the owner of the project in which
+ * mThisShared file belongs to.
  *
  */
 
@@ -40,7 +40,9 @@ namespace Dream
 {
     ProjectDefinition::ProjectDefinition(json data)
         : IDefinition(data) ,
-          ILoggable("ProjectDefinition")
+          ILoggable("ProjectDefinition"),
+          mThisShared(shared_ptr<ProjectDefinition>(this))
+
     {
         auto log = getLog();
         log->trace( "Constructing {}", getNameAndUuidString() );
@@ -168,42 +170,42 @@ namespace Dream
     }
 
 
-    IAssetDefinition*
+    shared_ptr<IAssetDefinition>
     ProjectDefinition::createAssetDefinitionInstance
     (json assetDefinitionJs)
     {
         auto log = getLog();
-        IAssetDefinition* newDef = nullptr;
+        shared_ptr<IAssetDefinition> newDef;
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
 
         switch (type)
         {
             case PATH:
-                newDef = new PathDefinition(this,assetDefinitionJs);
+                newDef = make_shared<PathDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case AUDIO:
-                newDef = new AudioDefinition(this,assetDefinitionJs);
+                newDef = make_shared<AudioDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case FONT:
-                newDef = new FontDefinition(this,assetDefinitionJs);
+                newDef = make_shared<FontDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case LIGHT:
-                newDef = new LightDefinition(this,assetDefinitionJs);
+                newDef = make_shared<LightDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case MODEL:
-                newDef = new ModelDefinition(this,assetDefinitionJs);
+                newDef = make_shared<ModelDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case PHYSICS_OBJECT:
-                newDef = new PhysicsObjectDefinition(this,assetDefinitionJs);
+                newDef = make_shared<PhysicsObjectDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case SCRIPT:
-                newDef = new ScriptDefinition(this,assetDefinitionJs);
+                newDef = make_shared<ScriptDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case SHADER:
-                newDef = new ShaderDefinition(this,assetDefinitionJs);
+                newDef = make_shared<ShaderDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case SPRITE:
-                newDef = new SpriteDefinition(this,assetDefinitionJs);
+                newDef = make_shared<SpriteDefinition>(mThisShared,assetDefinitionJs);
                 break;
             case NONE:
                 log->error( "Unable to create Asset Definition. Unknown Type" );
@@ -217,32 +219,32 @@ namespace Dream
     ProjectDefinition::loadAssetDefinition
     (json assetDefinitionJs)
     {
-        IAssetDefinition *newDef = createAssetDefinitionInstance(assetDefinitionJs);
-        if (newDef)
+        shared_ptr<IAssetDefinition> newDef = createAssetDefinitionInstance(assetDefinitionJs);
+        if (newDef != nullptr)
         {
-            mAssetDefinitions.push_back(unique_ptr<IAssetDefinition>(newDef));
+            mAssetDefinitions.push_back(newDef);
         }
     }
 
     void
     ProjectDefinition::removeAssetDefinition
-    (IAssetDefinition* assetDefinitionHandle)
+    (shared_ptr<IAssetDefinition> assetDefinition)
     {
         auto log = getLog();
         log->info(
                     "Removing AssetDefinition {} from {}",
-                    assetDefinitionHandle->getNameAndUuidString(),
+                    assetDefinition->getNameAndUuidString(),
                     getNameAndUuidString()
                     );
         auto iter = begin(mAssetDefinitions);
         auto endPos = end(mAssetDefinitions);
         while (iter != endPos)
         {
-            if ((*iter).get() == assetDefinitionHandle)
+            if ((*iter) == assetDefinition)
             {
                 log->info(
                             "Found AssetDefinition to {} remove from {}",
-                            assetDefinitionHandle->getNameAndUuidString(),
+                            assetDefinition->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
                 mAssetDefinitions.erase(iter);
@@ -259,15 +261,15 @@ namespace Dream
         return mAssetDefinitions.size();
     }
 
-    IAssetDefinition*
-    ProjectDefinition::getAssetDefinitionHandleByUuid
+    shared_ptr<IAssetDefinition>
+    ProjectDefinition::getAssetDefinitionByUuid
     (string uuid)
     {
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
             if ((*it)->hasUuid(uuid))
             {
-                return (*it).get();
+                return (*it);
             }
         }
         return nullptr;
@@ -277,7 +279,7 @@ namespace Dream
     ProjectDefinition::loadSceneDefinition
     (json scene)
     {
-        mSceneDefinitions.push_back(unique_ptr<SceneDefinition>(new SceneDefinition(this,scene)));
+        mSceneDefinitions.push_back(make_shared<SceneDefinition>(mThisShared,scene));
     }
 
     size_t
@@ -287,45 +289,49 @@ namespace Dream
         return mSceneDefinitions.size();
     }
 
-    SceneDefinition*
-    ProjectDefinition::getSceneDefinitionHandleByName
+    shared_ptr<SceneDefinition>
+    ProjectDefinition::getSceneDefinitionByName
     (string name)
     {
         for(auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
             if ((*it)->hasName(name))
             {
-                return (*it).get();
+                return (*it);
             }
         }
         return nullptr;
     }
 
-    SceneDefinition*
-    ProjectDefinition::getSceneDefinitionHandleByUuid
+    shared_ptr<SceneDefinition>
+    ProjectDefinition::getSceneDefinitionByUuid
     (string uuid)
     {
         for(auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
             if ((*it)->hasUuid(uuid))
             {
-                return (*it).get();
+                return (*it);
             }
         }
         return nullptr;
     }
 
-    vector<SceneDefinition *> ProjectDefinition::getSceneDefinitionsHandleList()
+    vector<shared_ptr<SceneDefinition>>
+    ProjectDefinition::getSceneDefinitionsList
+    ()
     {
-        vector<SceneDefinition*> list;
+        vector<shared_ptr<SceneDefinition>> list;
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
-            list.push_back((*it).get());
+            list.push_back((*it));
         }
         return list;
     }
 
-    void ProjectDefinition::removeSceneDefinition(SceneDefinition* sceneDef)
+    void
+    ProjectDefinition::removeSceneDefinition
+    (shared_ptr<SceneDefinition> sceneDef)
     {
         auto log = getLog();
         log->info(
@@ -338,7 +344,7 @@ namespace Dream
         auto endPos = end(mSceneDefinitions);
         while (iter != endPos)
         {
-            if ((*iter).get() == sceneDef)
+            if ((*iter) == sceneDef)
             {
                 log->info(
                             "Found scene to {} remove from {}",
@@ -352,17 +358,19 @@ namespace Dream
         }
     }
 
-    vector<IAssetDefinition*> ProjectDefinition::getAssetDefinitionsHandleList()
+    vector<shared_ptr<IAssetDefinition>>
+    ProjectDefinition::getAssetDefinitionsList
+    ()
     {
-        vector<IAssetDefinition*> definitionsList;
+        vector<shared_ptr<IAssetDefinition>> definitionsList;
         for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
         {
-            definitionsList.push_back((*it).get());
+            definitionsList.push_back((*it));
         }
         return definitionsList;
     }
 
-    SceneDefinition*
+    shared_ptr<SceneDefinition>
     ProjectDefinition::createNewSceneDefinition
     ()
     {
@@ -371,13 +379,13 @@ namespace Dream
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
         Transform3D camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
-        SceneDefinition *sdHandle = new SceneDefinition(this,scene);
-        sdHandle->createNewRootSceneObjectDefinition();
-        mSceneDefinitions.push_back(unique_ptr<SceneDefinition>(sdHandle));
-        return sdHandle;
+        shared_ptr<SceneDefinition> sd = make_shared<SceneDefinition>(mThisShared,scene);
+        sd->createNewRootSceneObjectDefinition();
+        mSceneDefinitions.push_back(sd);
+        return sd;
     }
 
-    IAssetDefinition*
+    shared_ptr<IAssetDefinition>
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
@@ -393,20 +401,20 @@ namespace Dream
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
-        IAssetDefinition* adHandle = createAssetDefinitionInstance(assetDefinitionJson);
-        mAssetDefinitions.push_back(unique_ptr<IAssetDefinition>(adHandle));
+        shared_ptr<IAssetDefinition> ad = createAssetDefinitionInstance(assetDefinitionJson);
+        mAssetDefinitions.push_back(ad);
 
-        return adHandle;
+        return ad;
     }
 
-    SceneDefinition*
-    ProjectDefinition::getStartupSceneDefinitionHandle
+    shared_ptr<SceneDefinition>
+    ProjectDefinition::getStartupSceneDefinition
     ()
     {
         auto log = getLog();
         string startupScene = getStartupSceneUuid();
         log->info("Finding startup scene {}", startupScene);
-        return getSceneDefinitionHandleByName(startupScene);
+        return getSceneDefinitionByName(startupScene);
     }
 
     json
@@ -414,64 +422,67 @@ namespace Dream
     ()
     {
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
-        for (IAssetDefinition *adHandle : getAssetDefinitionsHandleList())
+        for (shared_ptr<IAssetDefinition> ad : getAssetDefinitionsList())
         {
-            mJson[Constants::PROJECT_ASSET_ARRAY].push_back(adHandle->getJson());
+            mJson[Constants::PROJECT_ASSET_ARRAY].push_back(ad->getJson());
         }
 
         mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
-        for (SceneDefinition* sdHandle : getSceneDefinitionsHandleList())
+        for (shared_ptr<SceneDefinition> sd : getSceneDefinitionsList())
         {
-            mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sdHandle->getJson());
+            mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sd->getJson());
         }
 
         return mJson;
     }
 
-    map<AssetType, vector<IAssetDefinition*>>
-    ProjectDefinition::getAssetDefinitionHandlesMap
+    map<AssetType, vector<shared_ptr<IAssetDefinition>>>
+    ProjectDefinition::getAssetDefinitionsMap
     ()
     {
-        vector<IAssetDefinition*> adHandles = getAssetDefinitionsHandleList();
-        map<AssetType,vector<IAssetDefinition*>> handlesMap;
+        vector<shared_ptr<IAssetDefinition>> ads = getAssetDefinitionsList();
+        map<AssetType,vector<shared_ptr<IAssetDefinition>>> handlesMap;
 
-        auto beginHandles =  begin(adHandles);
-        auto endHandles = end(adHandles);
-        auto currentHandle = beginHandles;
+        auto begins =  begin(ads);
+        auto ends = end(ads);
+        auto current = begins;
 
         auto endMap = end(handlesMap);
 
-        // Iterate over AD Handles
-        while (currentHandle != endHandles)
+        // Iterate over AD s
+        while (current != ends)
         {
             // Current AD type
-            AssetType currentType = Constants::getAssetTypeEnumFromString((*currentHandle)->getType());
+            AssetType currentType = Constants::getAssetTypeEnumFromString((*current)->getType());
             // Find type vector in map
             auto typeVector = handlesMap.find(currentType);
             // Vector does not exist
             if (typeVector == endMap)
             {
                 // Create it
-                vector<IAssetDefinition*> typeVector;
-                handlesMap.insert(std::pair<AssetType,vector<IAssetDefinition*>>(currentType,typeVector));
+                vector<shared_ptr<IAssetDefinition>> typeVector;
+                handlesMap.insert(
+                    std::pair<AssetType,vector<shared_ptr<IAssetDefinition>>>
+                    (currentType,typeVector)
+                );
             }
-            handlesMap.at(currentType).push_back((*currentHandle));
-            currentHandle++;
+            handlesMap.at(currentType).push_back((*current));
+            current++;
         }
         return handlesMap;
     }
 
-    vector<ShaderDefinition*> ProjectDefinition::getShaderAssetDefinitionHandleVector()
+    vector<shared_ptr<ShaderDefinition>> ProjectDefinition::getShaderAssetDefinitionVector()
     {
-        vector<ShaderDefinition*> shaderHandles;
+        vector<shared_ptr<ShaderDefinition>> shaders;
         for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
         {
-            IAssetDefinition* next = (*it).get();
+            shared_ptr<IAssetDefinition> next = (*it);
             if (next->getType() == Constants::ASSET_TYPE_SHADER)
             {
-                shaderHandles.push_back(dynamic_cast<ShaderDefinition*>(next));
+                shaders.push_back(dynamic_pointer_cast<ShaderDefinition>(next));
             }
         }
-        return shaderHandles;
+        return shaders;
     }
 }

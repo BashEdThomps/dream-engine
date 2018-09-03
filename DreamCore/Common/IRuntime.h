@@ -18,7 +18,9 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
+using std::shared_ptr;
 using std::string;
 
 namespace Dream
@@ -27,11 +29,11 @@ namespace Dream
     class Runtime
     {
     protected:
-        IDefinition* mDefinitionHandle;
+        shared_ptr<IDefinition> mDefinition;
         string mUuid;
         string mName;
     public:
-        Runtime(IDefinition* defHandle, string uuid = "", string name = "");
+        Runtime(shared_ptr<IDefinition> def, string uuid = "", string name = "");
         virtual ~Runtime();
 
         string getUuid();
@@ -44,9 +46,9 @@ namespace Dream
 
         string getNameAndUuidString();
 
-        virtual void useDefinition(IDefinition*) = 0;
+        virtual void useDefinition(shared_ptr<IDefinition>) = 0;
 
         virtual void collectGarbage() = 0;
-        IDefinition* getDefinitionHandle();
+        shared_ptr<IDefinition> getDefinition();
     };
 }

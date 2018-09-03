@@ -58,18 +58,18 @@ namespace Dream
     {
         while(mRunning)
         {
-            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
             {
                 beginUpdate();
-                mActiveSceneRuntimeHandle->getRootSceneObjectRuntimeHandle()->applyToAll
+                mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                 (
-                    function< void* (SceneObjectRuntime*) >
+                    function< void* (shared_ptr<SceneObjectRuntime>) >
                     (
-                        [&](SceneObjectRuntime* currentSceneObject)
+                        [&](shared_ptr<SceneObjectRuntime> currentSceneObject)
                         {
                             if (currentSceneObject->hasPathInstance())
                             {
-                                PathInstance* animInstance = currentSceneObject->getPathInstance();
+                                shared_ptr<PathInstance> animInstance = currentSceneObject->getPathInstance();
                                 // TODO: Fix dis
                             }
                             return nullptr;

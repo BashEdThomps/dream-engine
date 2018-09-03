@@ -23,7 +23,7 @@ namespace Dream
     class ModelDefinition : public IAssetDefinition
     {
     public:
-        ModelDefinition(ProjectDefinition* pdHandle, json js);
+        ModelDefinition(shared_ptr<ProjectDefinition> pd, json js);
         bool isFormatAssimp();
 
         bool addMaterialShader(string material, string shader);

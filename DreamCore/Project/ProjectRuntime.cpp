@@ -49,22 +49,24 @@ using std::endl;
 
 namespace Dream
 {
-        ProjectRuntime::ProjectRuntime
-    (Project* projectHandle,IWindowComponent* windowComponentHandle)
-        : Runtime(projectHandle->getProjectDefinitionHandle()),
+    ProjectRuntime::ProjectRuntime
+    (shared_ptr<Project> project, shared_ptr<IWindowComponent> windowComponent)
+        : Runtime(project->getProjectDefinition()),
           ILoggable ("ProjectRuntime"),
           mDone(false),
           mParallel(false),
-          mWindowComponentHandle(windowComponentHandle),
-          mProjectHandle(projectHandle),
+          mWindowComponent(windowComponent),
+          mProject(project),
+          mThisShared(shared_ptr<ProjectRuntime>(this)),
           mGraphicsUpdating(false),
           mLogicUpdating(false)
+
     {
         auto log = getLog();
         log->info( "Constructing" );
         initCaches();
         initComponents();
-        useDefinition(mDefinitionHandle);
+        useDefinition(mDefinition);
     }
 
     ProjectRuntime::~ProjectRuntime
@@ -74,11 +76,11 @@ namespace Dream
         log->info( "Destructing" );
     }
 
-    IWindowComponent*
-    ProjectRuntime::getWindowComponentHandle
+    shared_ptr<IWindowComponent>
+    ProjectRuntime::getWindowComponent
     ()
     {
-        return mWindowComponentHandle;
+        return mWindowComponent;
     }
 
     void
@@ -100,11 +102,11 @@ namespace Dream
 
 
 
-    Time*
-    ProjectRuntime::getTimeHandle
+    shared_ptr<Time>
+    ProjectRuntime::getTime
     ()
     {
-        return mTime.get();
+        return mTime;
     }
 
     bool
@@ -114,7 +116,7 @@ namespace Dream
         auto log = getLog();
         log->info( "Initialising Components..." );
 
-        mTime.reset(new Time());
+        mTime = make_shared<Time>();
 
         if (!initWindowComponent())
         {
@@ -160,7 +162,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        if (!mWindowComponentHandle->init())
+        if (!mWindowComponent->init())
         {
             log->error( "Unable to initialise WindowComponent" );
             return false;
@@ -173,7 +175,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mAudioComponent.reset(new AudioComponent());
+        mAudioComponent = make_shared<AudioComponent>();
         if (!mAudioComponent->init())
         {
             log->error( "Unable to initialise AudioComponent." );
@@ -181,14 +183,14 @@ namespace Dream
         }
         mAudioComponent->setRunning(true);
         if (mParallel)
-            mAudioComponentThread.reset(new ComponentThread(mAudioComponent.get()));
+            mAudioComponentThread = make_shared<ComponentThread>(mAudioComponent);
         return true;
     }
 
     bool ProjectRuntime::initInputComponent()
     {
         auto log = getLog();
-        mInputComponent.reset(new InputComponent());
+        mInputComponent = make_shared<InputComponent>();
         if (!mInputComponent->init())
         {
             log->error( "Unable to initialise InputComponent." );
@@ -196,7 +198,7 @@ namespace Dream
         }
         mInputComponent->setRunning(true);
         if (mParallel)
-            mInputComponentThread.reset(new ComponentThread(mInputComponent.get()));
+            mInputComponentThread = make_shared<ComponentThread>(mInputComponent);
         return true;
     }
 
@@ -205,8 +207,8 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mPhysicsComponent.reset(new PhysicsComponent());
-        mPhysicsComponent->setTime(mTime.get());
+        mPhysicsComponent = make_shared<PhysicsComponent>();
+        mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
         {
             log->error( "Unable to initialise PhysicsComponent." );
@@ -214,7 +216,7 @@ namespace Dream
         }
         mPhysicsComponent->setRunning(true);
         if (mParallel)
-            mPhysicsComponentThread.reset(new ComponentThread(mPhysicsComponent.get()));
+            mPhysicsComponentThread = make_shared<ComponentThread>(mPhysicsComponent);
         return true;
     }
 
@@ -223,9 +225,9 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mCamera.reset(new Camera());
-        mGraphicsComponent.reset(new GraphicsComponent(mCamera.get(),mWindowComponentHandle));
-        mGraphicsComponent->setTime(mTime.get());
+        mCamera = make_shared<Camera>();
+        mGraphicsComponent = make_shared<GraphicsComponent>(mCamera,mWindowComponent);
+        mGraphicsComponent->setTime(mTime);
 
         if (!mGraphicsComponent->init())
         {
@@ -235,9 +237,9 @@ namespace Dream
         mGraphicsComponent->setRunning(true);
 
         if (mParallel)
-            mGraphicsComponentThread.reset(new ComponentThread(mGraphicsComponent.get()));
+            mGraphicsComponentThread = make_shared<ComponentThread>(mGraphicsComponent);
 
-        mNanoVGComponent.reset(new NanoVGComponent(mWindowComponentHandle));
+        mNanoVGComponent = make_shared<NanoVGComponent>(mWindowComponent);
         if (!mNanoVGComponent->init())
         {
             log->error( "Unable to initialise NanoVG Component.");
@@ -251,8 +253,8 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mPathComponent.reset(new PathComponent());
-        mPathComponent->setTime(mTime.get());
+        mPathComponent = make_shared<PathComponent>();
+        mPathComponent->setTime(mTime);
         if (!mPathComponent->init())
         {
             log->error( "Unable to initialise Path Component." );
@@ -261,7 +263,7 @@ namespace Dream
         mPathComponent->setRunning(true);
 
         if (mParallel)
-            mPathComponentThread.reset(new ComponentThread(mPathComponent.get()));
+            mPathComponentThread = make_shared<ComponentThread>(mPathComponent);
         return true;
     }
 
@@ -270,7 +272,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mLuaComponent.reset(new LuaComponent(this,mScriptCache.get()));
+        mLuaComponent = make_shared<LuaComponent>(mThisShared,mScriptCache);
 
         if(!mLuaComponent->init())
         {
@@ -280,11 +282,11 @@ namespace Dream
         mLuaComponent->setRunning(true);
 
         if (mParallel)
-            mLuaComponentThread.reset(new ComponentThread(mLuaComponent.get()));
+            mLuaComponentThread = make_shared<ComponentThread>(mLuaComponent);
 
         if (mInputComponent != nullptr)
         {
-            mInputComponent->setLuaComponentHandle(mLuaComponent.get());
+            mInputComponent->setLuaComponent(mLuaComponent);
         }
         return true;
     }
@@ -293,11 +295,11 @@ namespace Dream
     ProjectRuntime::initCaches
     ()
     {
-        mFontCache.reset(new FontCache());
-        mModelCache.reset(new AssimpCache());
-        mShaderCache.reset(new ShaderCache());
-        mTextureCache.reset(new MaterialCache());
-        mScriptCache.reset(new LuaScriptCache());
+        mFontCache = make_shared<FontCache>();
+        mModelCache = make_shared<AssimpCache>();
+        mShaderCache = make_shared<ShaderCache>();
+        mTextureCache = make_shared<MaterialCache>();
+        mScriptCache = make_shared<LuaScriptCache>();
         return true;
     }
 
@@ -308,53 +310,53 @@ namespace Dream
         return mDone;
     }
 
-    PathComponent*
-    ProjectRuntime::getPathComponentHandle
+    shared_ptr<PathComponent>
+    ProjectRuntime::getPathComponent
     ()
     {
-        return mPathComponent.get();
+        return mPathComponent;
     }
 
-    AudioComponent*
-    ProjectRuntime::getAudioComponentHandle
+    shared_ptr<AudioComponent>
+    ProjectRuntime::getAudioComponent
     ()
     {
-        return mAudioComponent.get();
+        return mAudioComponent;
     }
 
-    PhysicsComponent*
-    ProjectRuntime::getPhysicsComponentHandle
+    shared_ptr<PhysicsComponent>
+    ProjectRuntime::getPhysicsComponent
     ()
     {
-        return mPhysicsComponent.get();
+        return mPhysicsComponent;
     }
 
-    GraphicsComponent*
-    ProjectRuntime::getGraphicsComponentHandle
+    shared_ptr<GraphicsComponent>
+    ProjectRuntime::getGraphicsComponent
     ()
     {
-        return mGraphicsComponent.get();
+        return mGraphicsComponent;
     }
 
-    NanoVGComponent*
-    ProjectRuntime::getNanoVGComponentHandle
+    shared_ptr<NanoVGComponent>
+    ProjectRuntime::getNanoVGComponent
     ()
     {
-       return mNanoVGComponent.get();
+       return mNanoVGComponent;
     }
 
-    Camera*
-    ProjectRuntime::getCameraHandle
+    shared_ptr<Camera>
+    ProjectRuntime::getCamera
     ()
     {
-        return mCamera.get();
+        return mCamera;
     }
 
-    LuaComponent*
-    ProjectRuntime::getLuaComponentHandle
+    shared_ptr<LuaComponent>
+    ProjectRuntime::getLuaComponent
     ()
     {
-        return mLuaComponent.get();
+        return mLuaComponent;
     }
 
     bool
@@ -374,25 +376,25 @@ namespace Dream
 
                 mTime->updateFrameTime();
 
-                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mInputComponent->setShouldUpdate(true);
 
-                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mLuaComponent->setShouldUpdate(true);
 
-                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mPathComponent->setShouldUpdate(true);
 
-                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mAudioComponent->setShouldUpdate(true);
 
-                mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
-                mWindowComponentHandle->updateComponent();
+                mWindowComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+                mWindowComponent->updateComponent();
 
-                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mPhysicsComponent->setShouldUpdate(true);
 
-                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mGraphicsComponent->setShouldUpdate(true);
                 return true;
             }
@@ -404,31 +406,31 @@ namespace Dream
 
                 mTime->updateFrameTime();
 
-                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mInputComponent->setShouldUpdate(true);
                 mInputComponent->updateComponent();
 
-                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mLuaComponent->setShouldUpdate(true);
                 mLuaComponent->updateComponent();
 
-                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mPathComponent->setShouldUpdate(true);
                 mPathComponent->updateComponent();
 
-                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mAudioComponent->setShouldUpdate(true);
                 mAudioComponent->updateComponent();
 
-                mWindowComponentHandle->setActiveSceneRuntime(mActiveSceneRuntime.get());
-                mWindowComponentHandle->updateComponent();
-                mWindowComponentHandle->updateComponent();
+                mWindowComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+                mWindowComponent->updateComponent();
+                mWindowComponent->updateComponent();
 
-                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mPhysicsComponent->setShouldUpdate(true);
                 mPhysicsComponent->updateComponent();
 
-                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime.get());
+                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
                 mGraphicsComponent->setShouldUpdate(true);
                 mGraphicsComponent->updateComponent();
 
@@ -484,7 +486,7 @@ namespace Dream
         auto log = getLog();
         log->info(
             "\n====================\nReady to draw @ {}\n====================",
-            getTimeHandle()->now()
+            getTime()->now()
         );
 
         log->info("==== UpdateGraphics Called @ {}  ====" , mTime->getFrameTimeDelta());
@@ -499,7 +501,7 @@ namespace Dream
             mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
         );
         mPhysicsComponent->drawDebug();
-        mWindowComponentHandle->swapBuffers();
+        mWindowComponent->swapBuffers();
         mGraphicsUpdating = false;
     }
 
@@ -520,11 +522,11 @@ namespace Dream
         return mActiveSceneRuntime.get() != nullptr;
     }
 
-    SceneRuntime*
-    ProjectRuntime::getActiveSceneRuntimeHandle
+    shared_ptr<SceneRuntime>
+    ProjectRuntime::getActiveSceneRuntime
     ()
     {
-        return mActiveSceneRuntime.get();
+        return mActiveSceneRuntime;
     }
 
     void
@@ -539,12 +541,12 @@ namespace Dream
         }
     }
 
-    SceneRuntime*
+    shared_ptr<SceneRuntime>
     ProjectRuntime::constructActiveSceneRuntime
-    (SceneDefinition* sceneDefinitionHandle)
+    (shared_ptr<SceneDefinition> sceneDefinition)
     {
         auto log = getLog();
-        if (!sceneDefinitionHandle)
+        if (!sceneDefinition)
         {
             log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
             return nullptr;
@@ -553,58 +555,59 @@ namespace Dream
         // Load the new scene
         log->info( "Loading SceneRuntime" );
 
-        mActiveSceneRuntime.reset(new SceneRuntime(sceneDefinitionHandle , this));
+        mActiveSceneRuntime = make_shared<SceneRuntime>(sceneDefinition , mThisShared);
         if (mGraphicsComponent != nullptr)
         {
-            mGraphicsComponent->setMeshCullDistance(sceneDefinitionHandle->getMeshCullDistance());
-            mGraphicsComponent->setMinimumDraw(sceneDefinitionHandle->getMinDrawDistance());
-            mGraphicsComponent->setMaximumDraw(sceneDefinitionHandle->getMaxDrawDistance());
+            mGraphicsComponent->setMeshCullDistance(sceneDefinition->getMeshCullDistance());
+            mGraphicsComponent->setMinimumDraw(sceneDefinition->getMinDrawDistance());
+            mGraphicsComponent->setMaximumDraw(sceneDefinition->getMaxDrawDistance());
         }
         else
         {
             log->error("Unable to set mesh cull distance, graphics component is still null");
         }
 
-        return mActiveSceneRuntime.get();
+        return mActiveSceneRuntime;
     }
 
-    Project*
-    ProjectRuntime::getProjectHandle
+    shared_ptr<Project>
+    ProjectRuntime::getProject
     ()
     {
-        return mProjectHandle;
+        return mProject;
     }
 
     void
     ProjectRuntime::useDefinition
-    (IDefinition*) {}
+    (shared_ptr<IDefinition>)
+    {}
 
-    FontCache*
-    ProjectRuntime::getFontCacheHandle
+    shared_ptr<FontCache>
+    ProjectRuntime::getFontCache
     ()
     {
-        return mFontCache.get();
+        return mFontCache;
     }
 
-    ShaderCache*
-    ProjectRuntime::getShaderCacheHandle
+    shared_ptr<ShaderCache>
+    ProjectRuntime::getShaderCache
     ()
     {
-        return mShaderCache.get();
+        return mShaderCache;
     }
 
-    MaterialCache*
-    ProjectRuntime::getTextureCacheHandle
+    shared_ptr<MaterialCache>
+    ProjectRuntime::getTextureCache
     ()
     {
-        return mTextureCache.get();
+        return mTextureCache;
     }
 
-    AssimpCache*
-    ProjectRuntime::getModelCacheHandle
+    shared_ptr<AssimpCache>
+    ProjectRuntime::getModelCache
     ()
     {
-        return mModelCache.get();
+        return mModelCache;
     }
 
     bool ProjectRuntime::getGraphicsUpdating() const
@@ -705,6 +708,6 @@ namespace Dream
     ProjectRuntime::resetActiveSceneRuntime
     ()
     {
-        mActiveSceneRuntime.reset(nullptr);
+        mActiveSceneRuntime.reset();
     }
 }

@@ -37,9 +37,9 @@ int main(int argc, const char** argv)
     spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
     auto log = spdlog::stdout_color_mt("Main");
 
-    unique_ptr<SDLWindowComponent> windowComponent(new SDLWindowComponent());
+    shared_ptr<SDLWindowComponent> windowComponent = make_shared<SDLWindowComponent>();
 
-    Project project(windowComponent.get());
+    Project project(windowComponent);
     log->trace("Starting...");
 
     if (argc < MINIMUM_ARGUMENTS)
@@ -60,36 +60,36 @@ int main(int argc, const char** argv)
     }
 
     log->info(
-         "          ==== Definition Loading Complete ====\n"
-         "          ====       Creating Runtime      ====\n");
+         "√ Definition Loading Complete\n"
+         "Creating Runtime\n");
 
     spdlog::set_level(spdlog::level::off);
 
-    ProjectRuntime* prHandle = project.createProjectRuntime();
-    ProjectDefinition* pdHandle = project.getProjectDefinitionHandle();
-    SceneDefinition* startupSceneDefinitionHandle = pdHandle->getStartupSceneDefinitionHandle();
+    shared_ptr<ProjectRuntime> pr = project.createProjectRuntime();
+    shared_ptr<ProjectDefinition> pd = project.getProjectDefinition();
+    shared_ptr<SceneDefinition> startupSceneDefinition = pd->getStartupSceneDefinition();
 
-    if (startupSceneDefinitionHandle == nullptr)
+    if (startupSceneDefinition == nullptr)
     {
         log->error("Error, could not find startup scene definition");
         return 1;
     }
 
-    log->info("Using Startup Scene {}", startupSceneDefinitionHandle->getNameAndUuidString());
+    log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
 
-    SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(startupSceneDefinitionHandle);
+    shared_ptr<SceneRuntime> sr = pr->constructActiveSceneRuntime(startupSceneDefinition);
 
     // Run the project
     unsigned int frames = 0;
     unsigned int time = SDL_GetTicks();
     unsigned int one_sec = 1000;
-    while(srHandle->getState() != SceneState::SCENE_STATE_STOPPED)
+    while(sr->getState() != SceneState::SCENE_STATE_STOPPED)
     {
-        prHandle->updateLogic();
-        prHandle->collectGarbage();
+        pr->updateLogic();
+        pr->collectGarbage();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
-        prHandle->updateGraphics();
+        pr->updateGraphics();
         //std::this_thread::yield();
 
         if (SDL_GetTicks() > time + one_sec)
@@ -105,6 +105,6 @@ int main(int argc, const char** argv)
     }
 
     spdlog::set_level(spdlog::level::trace);
-    log->info("          ====     Done. Stack-based cleanUp     ====");
+    log->info("Run is done. Performing stack-based clean up");
     return 0;
 }

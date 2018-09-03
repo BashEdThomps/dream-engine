@@ -30,10 +30,11 @@
 namespace Dream
 {
     SceneDefinition::SceneDefinition
-    (ProjectDefinition* projectDefinitionHandle, json data)
+    (shared_ptr<ProjectDefinition> projectDefinition, json data)
         : IDefinition(data),
           ILoggable("SceneDefinition"),
-          mProjectDefinitionHandle(projectDefinitionHandle)
+          mProjectDefinition(projectDefinition),
+          mThisShared(shared_ptr<SceneDefinition>(this))
     {
         auto log = getLog();
         log->trace( "Constructing ", getNameAndUuidString() );
@@ -69,7 +70,7 @@ namespace Dream
     SceneDefinition::loadRootSceneObjectDefinition
     (json rsoJson)
     {
-        mRootSceneObjectDefinition.reset(new SceneObjectDefinition(nullptr, this, rsoJson));
+        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>(nullptr, mThisShared, rsoJson);
     }
 
     void
@@ -379,21 +380,21 @@ namespace Dream
         mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = a;
     }
 
-    SceneObjectDefinition*
-    SceneDefinition::getRootSceneObjectDefinitionHandle
+    shared_ptr<SceneObjectDefinition>
+    SceneDefinition::getRootSceneObjectDefinition
     ()
     {
-        return mRootSceneObjectDefinition.get();
+        return mRootSceneObjectDefinition;
     }
 
-    ProjectDefinition*
-    SceneDefinition::getProjectDefinitionHandle
+    shared_ptr<ProjectDefinition>
+    SceneDefinition::getProjectDefinition
     ()
     {
-        return mProjectDefinitionHandle;
+        return mProjectDefinition;
     }
 
-    SceneObjectDefinition*
+    shared_ptr<SceneObjectDefinition>
     SceneDefinition::createNewRootSceneObjectDefinition
     ()
     {
@@ -402,10 +403,8 @@ namespace Dream
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
         Transform3D transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
-        SceneObjectDefinition *rootSoDefinition;
-        rootSoDefinition = new SceneObjectDefinition(nullptr,this,rootDefJson);
-        mRootSceneObjectDefinition.reset(rootSoDefinition);
-        return rootSoDefinition;
+        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>(nullptr,mThisShared,rootDefJson);
+        return mRootSceneObjectDefinition;
     }
 
     json

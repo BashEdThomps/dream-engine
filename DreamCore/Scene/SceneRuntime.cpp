@@ -39,18 +39,19 @@
 namespace Dream
 {
     SceneRuntime::SceneRuntime
-    (SceneDefinition* sdHandle, ProjectRuntime* project)
+    (shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> project)
         : // Init list
-          Runtime(sdHandle),
+          Runtime(sd),
           ILoggable ("SceneRuntime"),
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
-          mProjectRuntimeHandle(project)
+          mProjectRuntime(project),
+          mThisShared(shared_ptr<SceneRuntime>(this))
     {
         auto log = getLog();
         log->trace( "Constructing " );
-        useDefinition(mDefinitionHandle);
+        useDefinition(mDefinition);
 
     }
 
@@ -117,32 +118,38 @@ namespace Dream
         mAmbientColour = ambientColour;
     }
 
-    SceneObjectRuntime*
-    SceneRuntime::getSceneObjectRuntimeHandleByUuid
+    shared_ptr<SceneObjectRuntime>
+    SceneRuntime::getSceneObjectRuntimeByUuid
     (string uuid)
     {
-        return static_cast<SceneObjectRuntime*>(mRootSceneObjectRuntime->applyToAll(
-            function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* currentRuntime){
-                if (currentRuntime->hasUuid(uuid)){
-                    return currentRuntime;
-                }
-                return static_cast<SceneObjectRuntime*>(nullptr);
+        return mRootSceneObjectRuntime->applyToAll(
+            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
+                ([&](shared_ptr<SceneObjectRuntime> currentRuntime)
+                {
+                    if (currentRuntime->hasUuid(uuid))
+                    {
+                        return currentRuntime;
+                    }
+                return shared_ptr<SceneObjectRuntime>(nullptr);
             }
-        )));
+        ));
     }
 
-    SceneObjectRuntime*
-    SceneRuntime::getSceneObjectRuntimeHandleByName
+    shared_ptr<SceneObjectRuntime>
+    SceneRuntime::getSceneObjectRuntimeByName
     (string name)
     {
-        return static_cast<SceneObjectRuntime*>(
-            mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* currentRuntime){
-                if (currentRuntime->hasName(name)){
+        return mRootSceneObjectRuntime->applyToAll(
+            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
+            ([&](shared_ptr<SceneObjectRuntime> currentRuntime)
+            {
+                if (currentRuntime->hasName(name))
+                {
                     return currentRuntime;
                 }
-                return static_cast<SceneObjectRuntime*>(nullptr);
+                return shared_ptr<SceneObjectRuntime>(nullptr);
             }
-        )));
+        ));
     }
 
     int
@@ -150,11 +157,14 @@ namespace Dream
     ()
     {
         int count = 0;
-        mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>(
-            [&](SceneObjectRuntime*){
-            count++;
-            return nullptr;
-        }));
+        mRootSceneObjectRuntime->applyToAll(
+            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
+            ([&](shared_ptr<SceneObjectRuntime>)
+            {
+                count++;
+                return nullptr;
+            }
+        ));
         return count;
     }
 
@@ -169,25 +179,29 @@ namespace Dream
             return;
         }
 
-        mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* obj){
-            log->info("showScenegraph not implemented");
-            //obj->showStatus();
-            return nullptr;
-    }));
+        mRootSceneObjectRuntime->applyToAll(
+            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
+            ([&](shared_ptr<SceneObjectRuntime>)
+            {
+                log->info("showScenegraph not implemented");
+                //obj->showStatus();
+                return nullptr;
+            }
+        ));
     }
 
     void
     SceneRuntime::setRootSceneObjectRuntime
-    (SceneObjectRuntime* root)
+    (shared_ptr<SceneObjectRuntime> root)
     {
-        mRootSceneObjectRuntime.reset(root);
+        mRootSceneObjectRuntime = root;
     }
 
-    SceneObjectRuntime*
-    SceneRuntime::getRootSceneObjectRuntimeHandle
+    shared_ptr<SceneObjectRuntime>
+    SceneRuntime::getRootSceneObjectRuntime
     ()
     {
-        return mRootSceneObjectRuntime.get();
+        return mRootSceneObjectRuntime;
     }
 
     void
@@ -196,17 +210,21 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Collecting Garbage {}" , getNameAndUuidString() );
-        mRootSceneObjectRuntime->applyToAll(function<void*(SceneObjectRuntime*)>([&](SceneObjectRuntime* runt){
-            runt->collectGarbage();
-            return nullptr;
-        }));
+        mRootSceneObjectRuntime->applyToAll(
+            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
+            ([&](shared_ptr<SceneObjectRuntime> runt)
+            {
+                runt->collectGarbage();
+                return nullptr;
+            }
+        ));
     }
 
-    ProjectRuntime*
-    SceneRuntime::getProjectRuntimeHandle
+    shared_ptr<ProjectRuntime>
+    SceneRuntime::getProjectRuntime
     ()
     {
-        return mProjectRuntimeHandle;
+        return mProjectRuntime;
     }
 
     bool
@@ -218,30 +236,30 @@ namespace Dream
 
     void
     SceneRuntime::useDefinition
-    (IDefinition* iDefinitionHandle)
+    (shared_ptr<IDefinition> iDefinition)
     {
         auto log = getLog();
-        SceneDefinition *sceneDefinitionHandle = dynamic_cast<SceneDefinition*>(iDefinitionHandle);
+        auto sceneDefinition = dynamic_pointer_cast<SceneDefinition>(iDefinition);
 
-        log->info( "Using SceneDefinition ",  sceneDefinitionHandle->getNameAndUuidString() );
+        log->info( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
 
         // Assign Runtime attributes from Definition
-        setName(sceneDefinitionHandle->getName());
-        setUuid(sceneDefinitionHandle->getUuid());
-        setAmbientColour(sceneDefinitionHandle->getAmbientColour());
-        setClearColour(sceneDefinitionHandle->getClearColour());
-        setGravity(sceneDefinitionHandle->getGravity());
-        setPhysicsDebug(sceneDefinitionHandle->getPhysicsDebug());
-        setCameraTranslation(sceneDefinitionHandle->getCameraTranslation());
-        setCameraPitch(sceneDefinitionHandle->getCameraPitch());
-        setCameraYaw(sceneDefinitionHandle->getCameraYaw());
-        setCameraMovementSpeed(sceneDefinitionHandle->getCameraMovementSpeed());
+        setName(sceneDefinition->getName());
+        setUuid(sceneDefinition->getUuid());
+        setAmbientColour(sceneDefinition->getAmbientColour());
+        setClearColour(sceneDefinition->getClearColour());
+        setGravity(sceneDefinition->getGravity());
+        setPhysicsDebug(sceneDefinition->getPhysicsDebug());
+        setCameraTranslation(sceneDefinition->getCameraTranslation());
+        setCameraPitch(sceneDefinition->getCameraPitch());
+        setCameraYaw(sceneDefinition->getCameraYaw());
+        setCameraMovementSpeed(sceneDefinition->getCameraMovementSpeed());
 
         // Propogate to project where required
-        mProjectRuntimeHandle->getGraphicsComponentHandle()->setActiveSceneRuntime(this);
-        mProjectRuntimeHandle->getPhysicsComponentHandle()->setGravity(getGravity());
-        mProjectRuntimeHandle->getPhysicsComponentHandle()->setDebug(getPhysicsDebug());
-        auto camera = mProjectRuntimeHandle->getCameraHandle();
+        mProjectRuntime->getGraphicsComponent()->setActiveSceneRuntime(mThisShared);
+        mProjectRuntime->getPhysicsComponent()->setGravity(getGravity());
+        mProjectRuntime->getPhysicsComponent()->setDebug(getPhysicsDebug());
+        auto camera = mProjectRuntime->getCamera();
         camera->setTranslation(getCameraTranslation());
         camera->setPitch(getCameraPitch());
         camera->setYaw(getCameraYaw());
@@ -249,8 +267,8 @@ namespace Dream
         camera->setMovementSpeed(getCameraMovementSpeed());
 
         // Create Root SceneObjectRuntime
-        SceneObjectDefinition* sodHandle = sceneDefinitionHandle->getRootSceneObjectDefinitionHandle();
-        setRootSceneObjectRuntime(new SceneObjectRuntime(sodHandle,this));
+        auto sod = sceneDefinition->getRootSceneObjectDefinition();
+        setRootSceneObjectRuntime(make_shared<SceneObjectRuntime>(sod,mThisShared));
 
         setState(SCENE_STATE_LOADED);
     }

@@ -26,7 +26,7 @@
 #include "../Common/ILoggable.h"
 
 using std::string;
-using std::unique_ptr;
+using std::shared_ptr;
 using std::vector;
 
 namespace Dream
@@ -63,60 +63,61 @@ namespace Dream
         bool mDone;
         bool mParallel;
 
-        unique_ptr<Time> mTime;
-        unique_ptr<Camera> mCamera;
+        shared_ptr<Time> mTime;
+        shared_ptr<Camera> mCamera;
 
-        unique_ptr<AudioComponent> mAudioComponent;
-        unique_ptr<ComponentThread> mAudioComponentThread;
+        shared_ptr<AudioComponent> mAudioComponent;
+        shared_ptr<ComponentThread> mAudioComponentThread;
 
-        unique_ptr<InputComponent> mInputComponent;
-        unique_ptr<ComponentThread> mInputComponentThread;
+        shared_ptr<InputComponent> mInputComponent;
+        shared_ptr<ComponentThread> mInputComponentThread;
 
-        unique_ptr<GraphicsComponent> mGraphicsComponent;
-        unique_ptr<ComponentThread> mGraphicsComponentThread;
+        shared_ptr<GraphicsComponent> mGraphicsComponent;
+        shared_ptr<ComponentThread> mGraphicsComponentThread;
 
-        unique_ptr<PhysicsComponent> mPhysicsComponent;
-        unique_ptr<ComponentThread> mPhysicsComponentThread;
+        shared_ptr<PhysicsComponent> mPhysicsComponent;
+        shared_ptr<ComponentThread> mPhysicsComponentThread;
 
-        unique_ptr<PathComponent> mPathComponent;
-        unique_ptr<ComponentThread> mPathComponentThread;
+        shared_ptr<PathComponent> mPathComponent;
+        shared_ptr<ComponentThread> mPathComponentThread;
 
-        unique_ptr<LuaComponent> mLuaComponent;
-        unique_ptr<ComponentThread> mLuaComponentThread;
+        shared_ptr<LuaComponent> mLuaComponent;
+        shared_ptr<ComponentThread> mLuaComponentThread;
 
-        unique_ptr<NanoVGComponent> mNanoVGComponent;
+        shared_ptr<NanoVGComponent> mNanoVGComponent;
 
         // Caches
 
-        unique_ptr<MaterialCache> mTextureCache;
-        unique_ptr<AssimpCache> mModelCache;
-        unique_ptr<FontCache> mFontCache;
-        unique_ptr<ShaderCache> mShaderCache;
-        unique_ptr<LuaScriptCache> mScriptCache;
+        shared_ptr<MaterialCache> mTextureCache;
+        shared_ptr<AssimpCache> mModelCache;
+        shared_ptr<FontCache> mFontCache;
+        shared_ptr<ShaderCache> mShaderCache;
+        shared_ptr<LuaScriptCache> mScriptCache;
 
-        IWindowComponent* mWindowComponentHandle;
-        unique_ptr<SceneRuntime> mActiveSceneRuntime;
-        Project* mProjectHandle;
+        shared_ptr<IWindowComponent> mWindowComponent;
+        shared_ptr<SceneRuntime> mActiveSceneRuntime;
+        shared_ptr<Project> mProject;
+        shared_ptr<ProjectRuntime> mThisShared;
 
     public: // Public Functions
-        ProjectRuntime(Project* parentProject, IWindowComponent* wcHandle = nullptr);
+        ProjectRuntime(shared_ptr<Project> parentProject, shared_ptr<IWindowComponent> wc = nullptr);
         ~ProjectRuntime() override;
 
         void setDone(bool);
         bool isDone();
 
-        Camera* getCameraHandle();
-        Time* getTimeHandle();
+        shared_ptr<Camera> getCamera();
+        shared_ptr<Time> getTime();
 
-        PathComponent* getPathComponentHandle();
-        AudioComponent* getAudioComponentHandle();
-        PhysicsComponent* getPhysicsComponentHandle();
-        GraphicsComponent* getGraphicsComponentHandle();
-        NanoVGComponent* getNanoVGComponentHandle();
-        IWindowComponent* getWindowComponentHandle();
-        LuaComponent* getLuaComponentHandle();
-        Project* getProjectHandle();
-        InputComponent* getInputComponentHandle();
+        shared_ptr<PathComponent> getPathComponent();
+        shared_ptr<AudioComponent> getAudioComponent();
+        shared_ptr<PhysicsComponent> getPhysicsComponent();
+        shared_ptr<GraphicsComponent> getGraphicsComponent();
+        shared_ptr<NanoVGComponent> getNanoVGComponent();
+        shared_ptr<IWindowComponent> getWindowComponent();
+        shared_ptr<LuaComponent> getLuaComponent();
+        shared_ptr<Project> getProject();
+        shared_ptr<InputComponent> getInputComponent();
 
         bool initComponents();
 
@@ -134,18 +135,19 @@ namespace Dream
         int getWindowHeight();
         void setWindowHeight(int);
 
-        SceneRuntime* constructActiveSceneRuntime(SceneDefinition* sceneDefinitionHandle);
+        shared_ptr<SceneRuntime> constructActiveSceneRuntime
+        (shared_ptr<SceneDefinition> sceneDefinition);
 
         bool hasActiveSceneRuntime();
-        SceneRuntime* getActiveSceneRuntimeHandle();
+        shared_ptr<SceneRuntime> getActiveSceneRuntime();
         void resetActiveSceneRuntime();
 
-        void useDefinition(IDefinition*) override;
+        void useDefinition(shared_ptr<IDefinition>) override;
 
-        FontCache* getFontCacheHandle();
-        ShaderCache* getShaderCacheHandle();
-        MaterialCache* getTextureCacheHandle();
-        AssimpCache* getModelCacheHandle();
+        shared_ptr<FontCache> getFontCache();
+        shared_ptr<ShaderCache> getShaderCache();
+        shared_ptr<MaterialCache> getTextureCache();
+        shared_ptr<AssimpCache> getModelCache();
         bool mGraphicsUpdating;
         bool mLogicUpdating;
 

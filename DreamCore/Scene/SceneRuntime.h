@@ -29,7 +29,7 @@
 
 using std::string;
 using std::vector;
-using std::unique_ptr;
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -47,10 +47,11 @@ namespace Dream
         vector<float> mGravity;
         vector<float> mClearColour;
         vector<float> mAmbientColour;
-        ProjectRuntime* mProjectRuntimeHandle;
+        shared_ptr<ProjectRuntime> mProjectRuntime;
+        shared_ptr<SceneRuntime> mThisShared;
 
-        vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
-        unique_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;
+        vector<shared_ptr<SceneObjectRuntime>> mSceneObjectRuntimeCleanUpQueue;
+        shared_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;
 
         vec3 mCameraTranslation;
         vec3 mCameraLookAt;
@@ -60,7 +61,7 @@ namespace Dream
         bool mPhysicsDebug;
 
     public:
-        SceneRuntime(SceneDefinition* sdHandle, ProjectRuntime* parent = nullptr);
+        SceneRuntime(shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> parent = nullptr);
         ~SceneRuntime() override;
 
         SceneState getState();
@@ -75,31 +76,31 @@ namespace Dream
         vector<float> getAmbientColour();
         void setAmbientColour(vector<float> ambientColour);
 
-        vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue();
-        void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
+        vector<shared_ptr<SceneObjectRuntime>> getSceneObjectRuntimeCleanUpQueue();
+        void addSceneObjectRuntimeToCleanUpQueue(shared_ptr<SceneObjectRuntime>);
         void clearSceneObjectRuntimeCleanUpQueue();
         void processSceneObjectRuntimeCleanUpQueue();
 
         void createAllAssetInstances();
 
-        void useDefinition(IDefinition* sceneDefinitionHandle) override;
+        void useDefinition(shared_ptr<IDefinition> sceneDefinition) override;
 
         void setDeleteFlagOnAllSceneObjectRuntimes();
 
         bool hasRootSceneObjectRuntime();
-        void setRootSceneObjectRuntime(SceneObjectRuntime* sceneObjectHandle);
-        SceneObjectRuntime* getRootSceneObjectRuntimeHandle();
+        void setRootSceneObjectRuntime(shared_ptr<SceneObjectRuntime> sceneObject);
+        shared_ptr<SceneObjectRuntime> getRootSceneObjectRuntime();
 
-        SceneObjectRuntime* getSceneObjectRuntimeHandleByName(string);
-        SceneObjectRuntime* getSceneObjectRuntimeHandleByUuid(string);
+        shared_ptr<SceneObjectRuntime> getSceneObjectRuntimeByName(string);
+        shared_ptr<SceneObjectRuntime> getSceneObjectRuntimeByUuid(string);
 
         int countSceneObjectRuntimes();
 
-        ProjectRuntime* getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> getProjectRuntime();
 
         void showScenegraph();
 
-        int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
+        int countChildrenOfSceneObjectRuntime(shared_ptr<SceneObjectRuntime>);
 
         void collectGarbage() override;
 

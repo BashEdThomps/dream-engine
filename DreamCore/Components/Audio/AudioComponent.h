@@ -44,9 +44,9 @@ namespace Dream
     {
 
     private:
-        vector<AudioInstance*> mPlayQueue;
-        vector<AudioInstance*> mPauseQueue;
-        vector<AudioInstance*> mStopQueue;
+        vector<shared_ptr<AudioInstance>>mPlayQueue;
+        vector<shared_ptr<AudioInstance>> mPauseQueue;
+        vector<shared_ptr<AudioInstance>> mStopQueue;
         vector<ALuint> mSources;
         vector<ALuint> mBuffers;
         ALCdevice*  mDevice;
@@ -61,19 +61,19 @@ namespace Dream
         void setSourcePosision(ALuint, vector<float>);
         void setListenerPosition(vector<float>);
 
-        void pushToPlayQueue(AudioInstance*);
-        void pushToPauseQueue(AudioInstance*);
-        void pushToStopQueue(AudioInstance*);
+        void pushToPlayQueue(shared_ptr<AudioInstance>);
+        void pushToPauseQueue(shared_ptr<AudioInstance>);
+        void pushToStopQueue(shared_ptr<AudioInstance>);
 
-        void playAudioAsset(AudioInstance*);
-        void pauseAudioAsset(AudioInstance*);
-        void stopAudioAsset(AudioInstance*);
-        AudioStatus getAudioStatus(AudioInstance*);
+        void playAudioAsset(shared_ptr<AudioInstance>);
+        void pauseAudioAsset(shared_ptr<AudioInstance>);
+        void stopAudioAsset(shared_ptr<AudioInstance>);
+        AudioStatus getAudioStatus(shared_ptr<AudioInstance>);
 
         float getSampleOffset(ALuint);
-        float getSampleOffset(AudioInstance*);
-        vector<char> getAudioBuffer(AudioInstance*, ALint, ALint);
-        AudioInstance* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
+        float getSampleOffset(shared_ptr<AudioInstance>);
+        vector<char> getAudioBuffer(shared_ptr<AudioInstance>, ALint, ALint);
+        shared_ptr<AudioInstance> newAudioInstance(shared_ptr<AudioDefinition>,shared_ptr<SceneObjectRuntime>);
         void setVolume(float);
 
     protected:

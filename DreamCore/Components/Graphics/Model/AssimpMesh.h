@@ -24,8 +24,8 @@ namespace Dream
     class AssimpMesh : public ILoggable
     {
     private:
-        AssimpModelInstance* mParentHandle;
-        AssimpMaterial* mMaterialHandle;
+        shared_ptr<AssimpModelInstance> mParent;
+        shared_ptr<AssimpMaterial> mMaterial;
         string  mName;
 
         GLuint mVAO;
@@ -36,26 +36,26 @@ namespace Dream
         vector<GLuint>  mIndices;
         BoundingBox mBoundingBox;
 
-        void bindTextures(ShaderInstance*);
-        void bindTexture(Texture* material);
+        void bindTextures(shared_ptr<ShaderInstance>);
+        void bindTexture(shared_ptr<Texture> material);
         void unbindTextures();
-        void bindDiffuse(ShaderInstance*);
-        void bindSpecular(ShaderInstance*);
-        void bindAmbient(ShaderInstance* shaderHandle);
-        void bindOpacity(ShaderInstance* shaderHandle);
+        void bindDiffuse(shared_ptr<ShaderInstance>);
+        void bindSpecular(shared_ptr<ShaderInstance>);
+        void bindAmbient(shared_ptr<ShaderInstance> shader);
+        void bindOpacity(shared_ptr<ShaderInstance> shader);
 
     public:
         AssimpMesh
         (
-            AssimpModelInstance* parent,
+            shared_ptr<AssimpModelInstance> parent,
             string name,
             vector<Vertex> vertexArray,
             vector<GLuint> indexArray,
-            AssimpMaterial* material
+            shared_ptr<AssimpMaterial> material
         );
 
         ~AssimpMesh();
-        void draw(ShaderInstance*);
+        void draw(shared_ptr<ShaderInstance>);
         void init();
 
         string getName() const;

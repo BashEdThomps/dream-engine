@@ -76,13 +76,15 @@ namespace Dream
     }
 
     GraphicsComponent::GraphicsComponent
-    (Camera* camera, IWindowComponent* windowComponent, bool parallel)
+    (shared_ptr<Camera> camera,
+     shared_ptr<IWindowComponent> windowComponent,
+     bool parallel)
         : IComponent(parallel),
           mCamera(camera),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
           mMeshCullDistance(2500.0f),
-          mWindowComponentHandle(windowComponent),
+          mWindowComponent(windowComponent),
           mModelQueueType(LINEAR)
 
 
@@ -102,7 +104,7 @@ namespace Dream
         clearModelQueue();
         clearLightQueue();
 
-        mActiveSceneRuntimeHandle = nullptr;
+        mActiveSceneRuntime = nullptr;
     }
 
     bool
@@ -152,8 +154,8 @@ namespace Dream
         auto log = getLog();
 
         // Define the viewport dimensions
-        int windowWidth  = mWindowComponentHandle->getWidth();
-        int windowHeight = mWindowComponentHandle->getHeight();
+        int windowWidth  = mWindowComponent->getWidth();
+        int windowHeight = mWindowComponent->getHeight();
 
         {
             log->info
@@ -189,8 +191,8 @@ namespace Dream
         log->debug
                 (
                     "Window dimensions changed: width: {}, height: {} min draw: {}, max draw {}",
-                    mWindowComponentHandle->getWidth(),
-                    mWindowComponentHandle->getHeight(),
+                    mWindowComponent->getWidth(),
+                    mWindowComponent->getHeight(),
                     mMinimumDraw,
                     mMaximumDraw
                     );
@@ -223,14 +225,14 @@ namespace Dream
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Clear the colorbuffer
-        if (mActiveSceneRuntimeHandle)
+        if (mActiveSceneRuntime)
         {
             glClearColor
                     (
-                        mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
+                        mActiveSceneRuntime->getClearColour()[Constants::RED_INDEX],
+                    mActiveSceneRuntime->getClearColour()[Constants::GREEN_INDEX],
+                    mActiveSceneRuntime->getClearColour()[Constants::BLUE_INDEX],
+                    mActiveSceneRuntime->getClearColour()[Constants::ALPHA_INDEX]
                     );
         }
         else
@@ -262,14 +264,14 @@ namespace Dream
         checkGLError();
 
         // Clear the colorbuffer
-        if (mActiveSceneRuntimeHandle)
+        if (mActiveSceneRuntime)
         {
             glClearColor
                     (
-                        mActiveSceneRuntimeHandle->getClearColour()[Constants::RED_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::GREEN_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::BLUE_INDEX],
-                    mActiveSceneRuntimeHandle->getClearColour()[Constants::ALPHA_INDEX]
+                        mActiveSceneRuntime->getClearColour()[Constants::RED_INDEX],
+                    mActiveSceneRuntime->getClearColour()[Constants::GREEN_INDEX],
+                    mActiveSceneRuntime->getClearColour()[Constants::BLUE_INDEX],
+                    mActiveSceneRuntime->getClearColour()[Constants::ALPHA_INDEX]
                     );
         }
         else
@@ -331,7 +333,7 @@ namespace Dream
     {
         while(mRunning)
         {
-            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
             {
                 beginUpdate();
                 auto log = getLog();
@@ -341,7 +343,7 @@ namespace Dream
                 // View transform
                 mViewMatrix = mCamera->getViewMatrix();
 
-                if (!mWindowComponentHandle->shouldClose())
+                if (!mWindowComponent->shouldClose())
                 {
                     // Clear existing Queues
                     clearSpriteQueue();
@@ -349,11 +351,11 @@ namespace Dream
                     clearFontQueue();
                     clearLightQueue();
 
-                    mActiveSceneRuntimeHandle->getRootSceneObjectRuntimeHandle()->applyToAll
+                    mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                             (
-                                function<void*(SceneObjectRuntime*)>
+                                function<void*(shared_ptr<SceneObjectRuntime>)>
                                 (
-                                    [&](SceneObjectRuntime* object)
+                                    [&](shared_ptr<SceneObjectRuntime> object)
                                     {
                                     // Models
                                     if (object->hasModelInstance())
@@ -403,7 +405,7 @@ namespace Dream
                                     // Lights
                                     if (object->hasLightInstance())
                                     {
-                                        LightInstance* light = object->getLightInstance();
+                                        shared_ptr<LightInstance> light = object->getLightInstance();
                                         log->info("Adding light instance to queue {}",light->getNameAndUuidString());
                                         addToLightQueue(light);
                                     }
@@ -433,7 +435,7 @@ namespace Dream
 
     void
     GraphicsComponent::addToSpriteQueue
-    (SceneObjectRuntime* object)
+    (shared_ptr<SceneObjectRuntime> object)
     {
         auto log = getLog();
         log->info("Adding {} to Sprite Queue",object->getNameAndUuidString());
@@ -449,7 +451,7 @@ namespace Dream
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
         log->info("Draw 2D Queue" );
-        for (SceneObjectRuntime* sceneObj : mSpriteQueue)
+        for (shared_ptr<SceneObjectRuntime> sceneObj : mSpriteQueue)
         {
             drawSprite(sceneObj);
         }
@@ -522,7 +524,7 @@ namespace Dream
 
     void
     GraphicsComponent::addToModelQueue
-    (SceneObjectRuntime* object)
+    (shared_ptr<SceneObjectRuntime> object)
     {
         auto log = getLog();
         log->info("Adding {} to 3D Queue",object->getNameAndUuidString());
@@ -545,7 +547,7 @@ namespace Dream
 
     void GraphicsComponent::handleResize()
     {
-        if (mWindowComponentHandle->sizeHasChanged())
+        if (mWindowComponent->sizeHasChanged())
         {
             onWindowDimensionsChanged();
         }
@@ -559,7 +561,7 @@ namespace Dream
         auto log = getLog();
         preModelRender();
         log->info("Draw 3D Queue" );
-        for (SceneObjectRuntime* it : mModelQueue)
+        for (shared_ptr<SceneObjectRuntime> it : mModelQueue)
         {
             drawModel(it);
             checkGLError();
@@ -578,7 +580,7 @@ namespace Dream
 
     void
     GraphicsComponent::addToFontQueue
-    (SceneObjectRuntime* object)
+    (shared_ptr<SceneObjectRuntime> object)
     {
         auto log = getLog();
         log->info("Adding {} to Font Queue",
@@ -593,7 +595,7 @@ namespace Dream
         auto log = getLog();
         preFontRender();
         log->info("Draw Font Queue" );
-        for (SceneObjectRuntime* it : mFontQueue)
+        for (shared_ptr<SceneObjectRuntime> it : mFontQueue)
         {
             drawFont(it);
             checkGLError();
@@ -617,14 +619,14 @@ namespace Dream
 
     void
     GraphicsComponent::drawSprite
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         log->info("Drawing Sprite {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
-        SpriteInstance* sprite = sceneObject->getSpriteInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<SpriteInstance> sprite = sceneObject->getSpriteInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject->getShaderInstance();
         // Get arguments
         vec2 size = vec2(sprite->getWidth(),sprite->getHeight());
 
@@ -688,14 +690,14 @@ namespace Dream
 
     void
     GraphicsComponent::drawFont
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         log->info("Drawing Font {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
-        FontInstance* font = sceneObject->getFontInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<FontInstance> font = sceneObject->getFontInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject->getShaderInstance();
         shader->use();
 
         shader->setProjectionMatrix(mProjectionMatrix);
@@ -826,7 +828,7 @@ namespace Dream
 
     void
     GraphicsComponent::drawModel
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         checkGLError();
@@ -834,8 +836,8 @@ namespace Dream
         log->info("Drawing Model " , sceneObject->getNameAndUuidString() );
 
         // Get Assets
-        AssimpModelInstance* model = sceneObject->getModelInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<AssimpModelInstance> model = sceneObject->getModelInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject->getShaderInstance();
         shader->use();
 
         // Set Point Light Values
@@ -878,14 +880,14 @@ namespace Dream
         checkGLError();
 
         // Draw using shader
-        bool always = sceneObject->getSceneObjectDefinitionHandle()->getAlwaysDraw();
+        bool always = sceneObject->getSceneObjectDefinition()->getAlwaysDraw();
         model->draw(shader, translation, mCamera->getTranslation(),mMeshCullDistance, always);
         checkGLError();
     }
 
     void
     GraphicsComponent::addToLightQueue
-    (LightInstance* lightInstance)
+    (shared_ptr<LightInstance> lightInstance)
     {
         mLightQueue.push_back(lightInstance);
     }
@@ -897,7 +899,7 @@ namespace Dream
         mLightQueue.clear();
     }
 
-    Camera*
+    shared_ptr<Camera>
     GraphicsComponent::getCamera
     ()
     {

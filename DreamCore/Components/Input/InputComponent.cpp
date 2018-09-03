@@ -25,16 +25,8 @@ namespace Dream
         mRunning = true;
         auto gamepad = mInputManager.CreateDevice<InputDevicePad>();
 
-        /*
-        auto gamepadDevice = mInputManager.GetDevice(gamepad);
-        gamepadDevice->SetDeadZone(PadButtonLeftStickX,ANALOG_DEAD_ZONE);
-        gamepadDevice->SetDeadZone(PadButtonLeftStickY,ANALOG_DEAD_ZONE);
-        gamepadDevice->SetDeadZone(PadButtonRightStickX,ANALOG_DEAD_ZONE);
-        gamepadDevice->SetDeadZone(PadButtonRightStickY,ANALOG_DEAD_ZONE);
-        */
-
         mDevices.push_back(gamepad);
-        mInputMap = unique_ptr<InputMap>(new InputMap(mInputManager));
+        mInputMap = make_shared<InputMap>(mInputManager);
 
         // Face Buttons
         mInputMap->MapBool(FaceButtonSouth,gamepad,PadButtonA);
@@ -79,7 +71,7 @@ namespace Dream
         auto log = getLog();
         while(mRunning)
         {
-            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
             {
                 beginUpdate();
                 mInputManager.Update();
@@ -146,11 +138,11 @@ namespace Dream
                 );
                 */
 
-                if (mLuaComponentHandle != nullptr)
+                if (mLuaComponent != nullptr)
                 {
                     if (!mInputMapSet)
                     {
-                        mLuaComponentHandle->setInputMap(mInputMap.get());
+                        mLuaComponent->setInputMap(mInputMap.get());
                         mInputMapSet = true;
                     }
                 }
@@ -166,9 +158,9 @@ namespace Dream
         }
     }
 
-    void InputComponent::setLuaComponentHandle(LuaComponent* luaHandle)
+    void InputComponent::setLuaComponent(shared_ptr<LuaComponent> lua)
     {
-       mLuaComponentHandle = luaHandle;
+       mLuaComponent = lua;
     }
 
     const float InputComponent::ANALOG_DEAD_ZONE = 0.1f;

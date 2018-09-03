@@ -31,7 +31,9 @@ namespace Dream
     const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
 
     ShaderInstance::ShaderInstance
-    (ShaderCache* cache, ShaderDefinition* definition,SceneObjectRuntime* transform)
+    (shared_ptr<ShaderCache> cache,
+     shared_ptr<ShaderDefinition> definition,
+     shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           ILoggable ("ShaderInstance"),
           mPointLightCount(0),
@@ -40,7 +42,7 @@ namespace Dream
           mSpotLightCountLocation(UNIFORM_NOT_FOUND),
           mDirectionalLightCount(0),
           mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
-          mCacheHandle(cache)
+          mCache(cache)
     {
         auto log = getLog();
         log->trace( "Constructing Object" );
@@ -138,7 +140,7 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        mShaderProgram = mCacheHandle->getShader(mDefinitionHandle->getUuid());
+        mShaderProgram = mCache->getShader(mDefinition->getUuid());
 
         if (mShaderProgram == 0)
         {
@@ -149,8 +151,8 @@ namespace Dream
             // 1. Open Shader Files into Memory
             FileReader *vertexReader, *fragmentReader;
             string absVertexPath, absFragmentPath;
-            absVertexPath   = projectPath+mDefinitionHandle->getAssetPath() + Constants::SHADER_VERTEX;
-            absFragmentPath = projectPath+mDefinitionHandle->getAssetPath() + Constants::SHADER_FRAGMENT;
+            absVertexPath   = projectPath+mDefinition->getAssetPath() + Constants::SHADER_VERTEX;
+            absFragmentPath = projectPath+mDefinition->getAssetPath() + Constants::SHADER_FRAGMENT;
             vertexReader = new FileReader(absVertexPath);
             vertexReader->readIntoString();
             mVertexShaderSource = vertexReader->getContentsAsString();
@@ -161,7 +163,7 @@ namespace Dream
             delete fragmentReader;
             log->info(
                         "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
-                        mDefinitionHandle->getNameAndUuidString(),
+                        mDefinition->getNameAndUuidString(),
                         absVertexPath,
                         mVertexShaderSource,
                         absFragmentPath,
@@ -209,7 +211,7 @@ namespace Dream
             // Delete the shaders as they're linked into our program now and no longer necessery
             glDeleteShader(mVertexShader);
             glDeleteShader(mFragmentShader);
-            mCacheHandle->putShader(mDefinitionHandle->getUuid(),mShaderProgram);
+            mCache->putShader(mDefinition->getUuid(),mShaderProgram);
         }
 
         mLoaded = (mShaderProgram != 0);
@@ -291,7 +293,7 @@ namespace Dream
         mUniformVector.push_back(newUniform);
     }
 
-    void ShaderInstance::bindMaterial(AssimpMaterial* material)
+    void ShaderInstance::bindMaterial(shared_ptr<AssimpMaterial> material)
     {
         checkGLError();
         auto log = getLog();
@@ -336,7 +338,7 @@ namespace Dream
 
     }
 
-    void ShaderInstance::bindLight(LightInstance* light)
+    void ShaderInstance::bindLight(shared_ptr<LightInstance> light)
     {
         auto log = getLog();
         log->info("Binding light {} ({})",light->getNameAndUuidString(),light->getType());

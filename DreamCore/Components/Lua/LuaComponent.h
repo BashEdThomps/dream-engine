@@ -39,7 +39,7 @@ using std::string;
 using std::map;
 using std::vector;
 
-int errorHandler(lua_State*);
+int errorr(lua_State*);
 
 namespace Dream
 {
@@ -52,30 +52,34 @@ namespace Dream
     class LuaComponent : public IComponent
     {
     public: // Methods
-        LuaComponent(ProjectRuntime* projectHandle, LuaScriptCache* cache);
-        virtual ~LuaComponent();
+        LuaComponent(
+            shared_ptr<ProjectRuntime> project,
+            shared_ptr<LuaScriptCache> cache
+        );
+
+       ~LuaComponent() override;
 
         bool init() override;
         void updateComponent() override;
-        bool createScript(SceneObjectRuntime*,LuaScriptInstance*);
-        bool loadScript(SceneObjectRuntime*);
+        bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>);
+        bool loadScript(shared_ptr<SceneObjectRuntime>);
         bool updateNanoVG();
         void stackDump();
 
-        bool executeScriptInit(SceneObjectRuntime*);
-        bool executeScriptUpdate(SceneObjectRuntime*);
-        bool executeScriptNanoVG(SceneObjectRuntime*);
-        bool executeScriptInputHandler(SceneObjectRuntime*);
-        bool executeScriptEventHandler(SceneObjectRuntime*);
+        bool executeScriptInit  (shared_ptr<SceneObjectRuntime>);
+        bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>);
+        bool executeScriptNanoVG(shared_ptr<SceneObjectRuntime>);
+        bool executeScriptInputr(shared_ptr<SceneObjectRuntime>);
+        bool executeScriptEventr(shared_ptr<SceneObjectRuntime>);
 
-        void removeFromScriptMap(SceneObjectRuntime*);
-        void addToScriptMap(SceneObjectRuntime*,LuaScriptInstance*);
+        void removeFromScriptMap(shared_ptr<SceneObjectRuntime>);
+        void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>);
 
         void setInputMap(gainput::InputMap *map);
 
     private:// Variables
-        LuaScriptCache* mScriptCacheHandle;
-        ProjectRuntime* mProjectRuntimeHandle;
+        shared_ptr<LuaScriptCache> mScriptCache;
+        shared_ptr<ProjectRuntime> mProjectRuntime;
         string mScriptLoadFromString =
                 "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
@@ -86,7 +90,7 @@ namespace Dream
                 "    return true\n"
                 "end";
         lua_State *mState;
-        map<SceneObjectRuntime*, LuaScriptInstance*> mScriptMap;
+        map<shared_ptr<SceneObjectRuntime>, shared_ptr<LuaScriptInstance>> mScriptMap;
         gainput::InputMap* mInputMap;
 
     private: // Methods

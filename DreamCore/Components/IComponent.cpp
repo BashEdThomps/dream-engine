@@ -37,7 +37,7 @@ namespace Dream
     }
 
 
-    void IComponent::setTime(Time* time)
+    void IComponent::setTime(shared_ptr<Time> time)
     {
         mTime = time;
     }
@@ -120,9 +120,9 @@ namespace Dream
         return mUpdateEndTime;
     }
 
-    void IComponent::setActiveSceneRuntime(SceneRuntime* runtime)
+    void IComponent::setActiveSceneRuntime(shared_ptr<SceneRuntime> runtime)
     {
-       mActiveSceneRuntimeHandle = runtime;
+       mActiveSceneRuntime = runtime;
     }
 
 } // End of Dream

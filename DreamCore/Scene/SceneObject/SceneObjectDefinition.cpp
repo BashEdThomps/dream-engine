@@ -26,58 +26,19 @@
 
 namespace Dream
 {
-    SceneObjectDefinition* SceneObjectDefinition::getParentSceneObjectHandle() const
-    {
-        return mParentSceneObjectHandle;
-    }
-
-    SceneObjectDefinition* SceneObjectDefinition::duplicate()
-    {
-        if (mParentSceneObjectHandle == nullptr)
-        {
-            return nullptr;
-        }
-
-        auto newSOD = new SceneObjectDefinition(mParentSceneObjectHandle,mSceneDefinitionHandle,mJson,true);
-        newSOD->setUuid(Uuid::generateUuid());
-        string name = newSOD->getName();
-        regex numRegex("(\\d+)$");
-        cmatch match;
-        string resultStr;
-        auto num = -1;
-
-        if (regex_search(name.c_str(),match,numRegex))
-        {
-            resultStr = match[0].str();
-            num = atoi(resultStr.c_str());
-
-        }
-
-
-        if (num > -1)
-        {
-            num++;
-            name = name.substr(0,name.length()-resultStr.length());
-            name.append(std::to_string(num));
-            newSOD->setName(name);
-        }
-        else
-        {
-            newSOD->setName(getName()+" (Copy)");
-        }
-
-        mParentSceneObjectHandle->addChildSceneObjectDefinition(newSOD);
-        return newSOD;
-    }
-
-
 
     SceneObjectDefinition::SceneObjectDefinition
-    (SceneObjectDefinition* parentHandle, SceneDefinition* sceneDefinitionHandle, json jsonData, bool randomUuid)
+    (
+        shared_ptr<SceneObjectDefinition> parent,
+        shared_ptr<SceneDefinition> sceneDefinition,
+        json jsonData,
+        bool randomUuid
+    )
         : IDefinition(jsonData),
           ILoggable ("SceneObjectDefinition"),
-          mParentSceneObjectHandle(parentHandle),
-          mSceneDefinitionHandle(sceneDefinitionHandle)
+          mParentSceneObject(parent),
+          mSceneDefinition(sceneDefinition),
+          mThisShared(shared_ptr<SceneObjectDefinition>(this))
     {
         auto log = getLog();
         log->trace( "Constructing {}",getNameAndUuidString());
@@ -150,9 +111,9 @@ namespace Dream
 
     void
     SceneObjectDefinition::addAssetDefinitionToLoadQueue
-    (IAssetDefinition* adHandle)
+    (IAssetDefinition* ad)
     {
-        addAssetDefinitionUuidToLoadQueue(adHandle->getUuid());
+        addAssetDefinitionUuidToLoadQueue(ad->getUuid());
     }
 
     void
@@ -182,9 +143,9 @@ namespace Dream
 
     void
     SceneObjectDefinition::removeAssetDefinitionFromLoadQueue
-    (IAssetDefinition* adHandle)
+    (IAssetDefinition* ad)
     {
-        removeAssetDefinitionUuidFromLoadQueue(adHandle->getUuid());
+        removeAssetDefinitionUuidFromLoadQueue(ad->getUuid());
     }
 
     vector<string>
@@ -218,45 +179,38 @@ namespace Dream
             for (json childDefinition : childrenArray)
             {
                 mChildDefinitions.push_back(
-                    unique_ptr<SceneObjectDefinition>(
-                        new SceneObjectDefinition(
-                            this, mSceneDefinitionHandle, childDefinition, randomUuid
-                        )
+                    make_shared<SceneObjectDefinition>(
+                            mThisShared, mSceneDefinition, childDefinition, randomUuid
                     )
                 );
             }
         }
     }
 
-    vector<SceneObjectDefinition*>
-    SceneObjectDefinition::getChildDefinitionsHandleList
+    vector<shared_ptr<SceneObjectDefinition>>
+    SceneObjectDefinition::getChildDefinitionsList
     ()
     {
-        vector<SceneObjectDefinition*> list;
-        for (auto it = begin(mChildDefinitions); it != end(mChildDefinitions); it++)
-        {
-            list.push_back((*it).get());
-        }
-        return list;
+        return mChildDefinitions;
     }
 
     void
     SceneObjectDefinition::addChildSceneObjectDefinition
-    (SceneObjectDefinition* child)
+    (shared_ptr<SceneObjectDefinition> child)
     {
-        mChildDefinitions.push_back(unique_ptr<SceneObjectDefinition>(child));
+        mChildDefinitions.push_back(child);
     }
 
     void
     SceneObjectDefinition::removeChildSceneObjectDefinition
-    (SceneObjectDefinition* child)
+    (shared_ptr<SceneObjectDefinition> child)
     {
         auto log = getLog();
         auto iter = begin(mChildDefinitions);
         auto endPos = end(mChildDefinitions);
         while (iter != endPos)
         {
-            if ((*iter).get() == child)
+            if ((*iter) == child)
             {
                 log->info(
                             "Found child to {} remove from {}",
@@ -270,7 +224,7 @@ namespace Dream
         }
     }
 
-    SceneObjectDefinition*
+    shared_ptr<SceneObjectDefinition>
     SceneObjectDefinition::createNewChildSceneObjectDefinition
     (json* fromJson)
     {
@@ -294,8 +248,8 @@ namespace Dream
             defJson = json::parse(fromJson->dump());
         }
 
-        SceneObjectDefinition *soDefinition;
-        soDefinition = new SceneObjectDefinition(this,mSceneDefinitionHandle,defJson,true);
+        shared_ptr<SceneObjectDefinition> soDefinition;
+        soDefinition = make_shared<SceneObjectDefinition>(mThisShared,mSceneDefinition,defJson,true);
 
 
         addChildSceneObjectDefinition(soDefinition);
@@ -304,11 +258,11 @@ namespace Dream
     }
 
 
-    SceneDefinition*
-    SceneObjectDefinition::getSceneDefinitionHandle
+    shared_ptr<SceneDefinition>
+    SceneObjectDefinition::getSceneDefinition
     ()
     {
-        return mSceneDefinitionHandle;
+        return mSceneDefinition;
     }
 
     json
@@ -317,9 +271,9 @@ namespace Dream
     {
         mJson[Constants::SCENE_OBJECT_CHILDREN] = json::array();
         mJson[Constants::TRANSFORM] = mTransform.getJson();
-        for (SceneObjectDefinition* sodHandle : getChildDefinitionsHandleList())
+        for (shared_ptr<SceneObjectDefinition> sod : getChildDefinitionsList())
         {
-            mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sodHandle->getJson());
+            mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sod->getJson());
         }
         return mJson;
     }
@@ -352,7 +306,49 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_STATIC];
     }
 
+    shared_ptr<SceneObjectDefinition> SceneObjectDefinition::getParentSceneObject() const
+    {
+        return mParentSceneObject;
+    }
 
+    shared_ptr<SceneObjectDefinition> SceneObjectDefinition::duplicate()
+    {
+        if (mParentSceneObject == nullptr)
+        {
+            return nullptr;
+        }
+
+        auto newSOD = make_shared<SceneObjectDefinition>(mParentSceneObject,mSceneDefinition,mJson,true);
+        newSOD->setUuid(Uuid::generateUuid());
+        string name = newSOD->getName();
+        regex numRegex("(\\d+)$");
+        cmatch match;
+        string resultStr;
+        auto num = -1;
+
+        if (regex_search(name.c_str(),match,numRegex))
+        {
+            resultStr = match[0].str();
+            num = atoi(resultStr.c_str());
+
+        }
+
+
+        if (num > -1)
+        {
+            num++;
+            name = name.substr(0,name.length()-resultStr.length());
+            name.append(std::to_string(num));
+            newSOD->setName(name);
+        }
+        else
+        {
+            newSOD->setName(getName()+" (Copy)");
+        }
+
+        mParentSceneObject->addChildSceneObjectDefinition(newSOD);
+        return newSOD;
+    }
 
 
 }

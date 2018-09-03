@@ -1,5 +1,4 @@
-#ifndef WavHeader_h
-#define WavHeader_h
+#pragma once
 
 #include <cstdint>
 
@@ -62,5 +61,3 @@ namespace Dream {
       } WavHeader ; // End of WavHeader
 
 } // End of Dream
-
-#endif /* WavHeader_h */

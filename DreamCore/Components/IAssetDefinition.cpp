@@ -34,10 +34,10 @@ namespace Dream
     }
 
     IAssetDefinition::IAssetDefinition
-    (ProjectDefinition* parent, json jsonDef)
+    (shared_ptr<ProjectDefinition> parent, json jsonDef)
         : IDefinition(jsonDef),
           ILoggable ("AssetDefinition"),
-          mProjectDefinitionHandle(parent)
+          mProjectDefinition(parent)
     {
         auto log = getLog();
         log->trace( "Constructing {}",
@@ -217,11 +217,11 @@ namespace Dream
         log->info( mJson.dump(1) );
     }
 
-    ProjectDefinition*
-    IAssetDefinition::getProjectHandle
+    shared_ptr<ProjectDefinition>
+    IAssetDefinition::getProject
     ()
     {
-        return mProjectDefinitionHandle;
+        return mProjectDefinition;
     }
 
 } // End of Dream

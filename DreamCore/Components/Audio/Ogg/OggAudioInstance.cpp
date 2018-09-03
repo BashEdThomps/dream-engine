@@ -26,7 +26,7 @@
 namespace Dream
 {
     OggAudioInstance::OggAudioInstance
-    (AudioDefinition* definition,SceneObjectRuntime* transform)
+    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
         : AudioInstance(definition,transform), ILoggable ("OggAudioInstance")
     {
 
@@ -43,7 +43,7 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        string absPath = projectPath+mDefinitionHandle->getAssetPath();
+        string absPath = projectPath+mDefinition->getAssetPath();
         log->info("Loading Instance: {}", absPath);
 
         // 0 for Little-Endian, 1 for Big-Endian

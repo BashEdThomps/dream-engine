@@ -70,7 +70,7 @@ using luabind::newtable;
 using luabind::def;
 
 int
-errorHandler
+errorr
 (lua_State *L)
 {
     // log the error message
@@ -87,10 +87,10 @@ errorHandler
 namespace Dream
 {
     LuaComponent::LuaComponent
-    (ProjectRuntime* projectHandle, LuaScriptCache* cache)
+    (shared_ptr<ProjectRuntime> project, shared_ptr<LuaScriptCache> cache)
         : IComponent(),
-          mScriptCacheHandle(cache),
-          mProjectRuntimeHandle(projectHandle)
+          mScriptCache(cache),
+          mProjectRuntime(project)
     {
         setLogClassName("LuaComponent");
         auto log = getLog();
@@ -122,7 +122,7 @@ namespace Dream
         {
             open(mState);
             luaopen_base(mState);
-            set_pcall_callback(&errorHandler);
+            set_pcall_callback(&errorr);
             luaL_dostring(mState, mScriptLoadFromString.c_str());
             exposeAPI();
             return true;
@@ -136,7 +136,7 @@ namespace Dream
 
     bool
     LuaComponent::createScript
-    (SceneObjectRuntime* sceneObject, LuaScriptInstance* luaScript)
+    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<LuaScriptInstance> luaScript)
     {
         auto log = getLog();
         if (luaScript == nullptr)
@@ -175,11 +175,11 @@ namespace Dream
 
     bool
     LuaComponent::loadScript
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (!mState)
         {
@@ -201,7 +201,7 @@ namespace Dream
 
             object newScriptTable = newtable(mState);
             string path = scriptInstance->getAbsolutePath();
-            string script = mScriptCacheHandle->getScript(path);
+            string script = mScriptCache->getScript(path);
 
             log->info( "calling scriptLoadFromString in lua for {}" , id );
 
@@ -270,15 +270,15 @@ namespace Dream
     {
         while(mRunning)
         {
-            if (mShouldUpdate && mActiveSceneRuntimeHandle != nullptr)
+            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
             {
                 beginUpdate();
                 auto log = getLog();
                 log->info( "Update Called" );
 
-                for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
+                for (auto entry : mScriptMap)
                 {
-                    SceneObjectRuntime* key = entry.first;
+                    auto key = entry.first;
 
                     if (!executeScriptUpdate(key))
                     {
@@ -287,7 +287,7 @@ namespace Dream
 
                     if (key->hasFocus())
                     {
-                        if (!executeScriptInputHandler(key))
+                        if (!executeScriptInputr(key))
                         {
                             return;
                         }
@@ -295,7 +295,7 @@ namespace Dream
 
                     if (key->hasEvents())
                     {
-                        if (!executeScriptEventHandler(key))
+                        if (!executeScriptEventr(key))
                         {
                             return;
                         }
@@ -316,9 +316,9 @@ namespace Dream
         auto log = getLog();
         log->info( "UpdateNanoVG Called" );
 
-        for (pair<SceneObjectRuntime*,LuaScriptInstance*> entry : mScriptMap)
+        for (auto entry : mScriptMap)
         {
-            SceneObjectRuntime* key = entry.first;
+            shared_ptr<SceneObjectRuntime> key = entry.first;
 
             if (!executeScriptNanoVG(key))
             {
@@ -330,11 +330,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptUpdate
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -371,11 +371,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptNanoVG
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -412,11 +412,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptInit
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError() )
         {
@@ -452,12 +452,12 @@ namespace Dream
     }
 
     bool
-    LuaComponent::executeScriptInputHandler
-    (SceneObjectRuntime* sceneObject)
+    LuaComponent::executeScriptInputr
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -493,12 +493,12 @@ namespace Dream
     }
 
     bool
-    LuaComponent::executeScriptEventHandler
-    (SceneObjectRuntime* sceneObject)
+    LuaComponent::executeScriptEventr
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -554,15 +554,15 @@ namespace Dream
         module(mState)
         [
             class_<ProjectRuntime>("ProjectRuntime")
-                .def("getAudioComponent",&ProjectRuntime::getAudioComponentHandle)
-                .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponentHandle)
-                .def("getNanoVGComponent",&ProjectRuntime::getNanoVGComponentHandle)
-                .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponentHandle)
-                .def("getWindowComponent",&ProjectRuntime::getWindowComponentHandle)
-                .def("getTime",&ProjectRuntime::getTimeHandle)
-                .def("getCamera",&ProjectRuntime::getCameraHandle)
+                .def("getAudioComponent",&ProjectRuntime::getAudioComponent)
+                .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponent)
+                .def("getNanoVGComponent",&ProjectRuntime::getNanoVGComponent)
+                .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponent)
+                .def("getWindowComponent",&ProjectRuntime::getWindowComponent)
+                .def("getTime",&ProjectRuntime::getTime)
+                .def("getCamera",&ProjectRuntime::getCamera)
         ];
-        globals(mState)["Runtime"] = mProjectRuntimeHandle;
+        globals(mState)["Runtime"] = mProjectRuntime.get();
     }
 
     void
@@ -789,10 +789,10 @@ namespace Dream
                 [
                 class_<SceneObjectRuntime>("SceneObjectRuntime")
 
-                .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeHandleByUuid)
+                .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid)
 
-                .def("getParent",&SceneObjectRuntime::getParentRuntimeHandle)
-                .def("setParent",&SceneObjectRuntime::setParentRuntimeHandle)
+                .def("getParent",&SceneObjectRuntime::getParentRuntime)
+                .def("setParent",&SceneObjectRuntime::setParentRuntime)
 
                 .def("getTransform",&SceneObjectRuntime::getTransform)
                 .def("setTransform",&SceneObjectRuntime::setTransform)
@@ -1063,10 +1063,10 @@ namespace Dream
 
     void
     LuaComponent::removeFromScriptMap
-    (SceneObjectRuntime* sceneObject)
+    (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
-        map<SceneObjectRuntime*,LuaScriptInstance*>::iterator iter;
+        map<shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>>::iterator iter;
         for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
         {
             if ((*iter).first == sceneObject)
@@ -1086,7 +1086,7 @@ namespace Dream
 
     void
     LuaComponent::addToScriptMap
-    (SceneObjectRuntime *sceneObject, LuaScriptInstance* script)
+    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<LuaScriptInstance> script)
     {
         auto log = getLog();
         log->info(
@@ -1097,7 +1097,10 @@ namespace Dream
 
         if (createScript(sceneObject,script))
         {
-            mScriptMap.insert(pair<SceneObjectRuntime*,LuaScriptInstance*>(sceneObject,script));
+            mScriptMap.insert(
+                pair<shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>>
+                (sceneObject,script)
+            );
         }
     }
 
@@ -1238,7 +1241,8 @@ namespace Dream
                 .def_readwrite("w",&glm::quat::w)
                 .def_readwrite("x",&glm::quat::x)
                 .def_readwrite("y",&glm::quat::y)
-                .def_readwrite("z",&glm::quat::z)
+                .def_readwrite("z",&glm::quat::z),
+            class_<glm::mat4>("mat4")
         ];
     }
 

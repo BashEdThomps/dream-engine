@@ -22,7 +22,7 @@ namespace Dream
 {
 
     WavAudioInstance::WavAudioInstance
-    (AudioDefinition* definition, SceneObjectRuntime* transform)
+    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
         : AudioInstance(definition, transform),
           ILoggable ("WavAudioInstance")
     {
@@ -40,7 +40,7 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        string absPath = projectPath + mDefinitionHandle->getAssetPath();
+        string absPath = projectPath + mDefinition->getAssetPath();
         log->info("Loading wav file from {}", absPath);
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");

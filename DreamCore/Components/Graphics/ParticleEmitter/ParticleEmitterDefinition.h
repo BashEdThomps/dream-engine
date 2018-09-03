@@ -25,8 +25,7 @@ namespace Dream
     class ParticleEmitterDefinition : public IAssetDefinition
     {
     public:
-        ParticleEmitterDefinition(ProjectDefinition* pdHandle, json js);
-
+        ParticleEmitterDefinition(shared_ptr<ProjectDefinition> pd, json js);
     };
 
 }

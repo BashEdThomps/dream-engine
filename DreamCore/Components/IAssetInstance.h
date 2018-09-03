@@ -42,11 +42,11 @@ namespace Dream
     protected:
         bool mLoaded;
         string mAbsolutePath;
-        IAssetDefinition *mDefinitionHandle;
-        SceneObjectRuntime* mSceneObjectRuntimeHandle;
+        shared_ptr<IAssetDefinition> mDefinition;
+        shared_ptr<SceneObjectRuntime> mSceneObjectRuntime;
         string mUuid;
     public:
-        IAssetInstance(IAssetDefinition*, SceneObjectRuntime* runtimeHandle);
+        IAssetInstance(shared_ptr<IAssetDefinition>, shared_ptr<SceneObjectRuntime> runtime);
         virtual ~IAssetInstance();
 
         string getUuid();
@@ -63,7 +63,7 @@ namespace Dream
         bool getLoadedFlag();
         void setLoadedFlag(bool);
 
-        SceneObjectRuntime* getSceneObjectRuntimeHandle();
+        shared_ptr<SceneObjectRuntime> getSceneObjectRuntime();
 
     }; // End of IAssetInstance
 

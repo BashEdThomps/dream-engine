@@ -6,7 +6,7 @@
 namespace Dream
 {
     AudioInstance::AudioInstance
-    (AudioDefinition* definition, SceneObjectRuntime* transform)
+    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition, transform)
     {
         setStatus(UNKNOWN);

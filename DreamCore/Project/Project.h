@@ -31,7 +31,7 @@
 #include "../Common/ILoggable.h"
 
 using std::string;
-using std::unique_ptr;
+using std::shared_ptr;
 using std::vector;
 using nlohmann::json;
 
@@ -48,25 +48,26 @@ namespace Dream
     {
         // Variables
     private:
-        unique_ptr<ProjectDefinition> mDefinition;
-        unique_ptr<ProjectRuntime> mRuntime;
-        IWindowComponent* mWindowComponentHandle;
+        shared_ptr<ProjectDefinition> mDefinition;
+        shared_ptr<ProjectRuntime> mRuntime;
+        shared_ptr<IWindowComponent> mWindowComponent;
         string mProjectPath;
+        shared_ptr<Project> mThisShared;
 
         // Public Methods
     public:
-        Project(IWindowComponent* wcHandle = nullptr);
+        Project(shared_ptr<IWindowComponent> wc = nullptr);
         ~Project();
 
-        ProjectRuntime* getProjectRuntimeHandle();
-        ProjectDefinition* getProjectDefinitionHandle();
+        shared_ptr<ProjectRuntime> getProjectRuntime();
+        shared_ptr<ProjectDefinition> getProjectDefinition();
 
         bool openFromFileReader(string directory, FileReader &fileReader);
         bool openFromArgumentParser(ArgumentParser &parser);
         bool openFromDirectory(string directory);
 
-        ProjectRuntime* createProjectRuntime();
-        static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
+        shared_ptr<ProjectRuntime> createProjectRuntime();
+        static shared_ptr<ProjectDefinition> createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
 
         bool hasProjectRuntime();
         void resetProjectRuntime();

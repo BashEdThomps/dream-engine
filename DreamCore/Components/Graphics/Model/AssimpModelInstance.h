@@ -59,10 +59,31 @@ namespace Dream
 
     class AssimpModelInstance : public IAssetInstance, ILoggable
     {
+    public:
+        AssimpModelInstance(
+            shared_ptr<AssimpCache>,
+            shared_ptr<MaterialCache>,
+            shared_ptr<IAssetDefinition>,
+            shared_ptr<SceneObjectRuntime>
+        );
+        ~AssimpModelInstance() override;
+        bool load(string) override;
+        void draw(
+            shared_ptr<ShaderInstance>,
+            vec3 transorm,
+            vec3 camPos,
+            float maxDistance,
+            bool alwaysDraw = false
+        );
+        void loadExtraAttributes(json) override;
+        BoundingBox getBoundingBox();
+        void setModelMatrix(mat4);
+        mat4 getModelMatrix();
     private:
         // Variables
-        AssimpCache* mModelCacheHandle;
-        MaterialCache* mMaterialCacheHandle;
+        shared_ptr<AssimpCache> mModelCache;
+        shared_ptr<MaterialCache> mMaterialCache;
+        shared_ptr<AssimpModelInstance> mThisShared;
 
         vector<shared_ptr<AssimpMesh>> mMeshes;
         string mDirectory;
@@ -83,17 +104,8 @@ namespace Dream
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
         //vector<Texture> processTextureData(aiMesh* mesh, const aiScene* scene);
-        void processTextureData(aiMesh* mesh, const aiScene* scene, AssimpMaterial* materialHandle);
+        void processTextureData(aiMesh* mesh, const aiScene* scene, AssimpMaterial* material);
         map<string,unique_ptr<ShaderInstance>> mMaterialShaderMap;
-    public:
-        AssimpModelInstance(AssimpCache*, MaterialCache*,  IAssetDefinition*,SceneObjectRuntime*);
-        ~AssimpModelInstance();
-        bool load(string);
-        void draw(ShaderInstance*, vec3 transorm, vec3 camPos, float maxDistance, bool alwaysDraw = false);
-        void loadExtraAttributes(json);
-        BoundingBox getBoundingBox();
-        void setModelMatrix(mat4);
-        mat4 getModelMatrix();
     }; // End of AssimpModelInstance
 
 } // End of Dream

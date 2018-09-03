@@ -27,7 +27,7 @@ namespace Dream
     class PathDefinition : public IAssetDefinition
     {
     public:
-        PathDefinition(ProjectDefinition*, json);
+        PathDefinition(shared_ptr<ProjectDefinition>, json);
         ~PathDefinition() override;
 
         void setWrap(bool wrap);

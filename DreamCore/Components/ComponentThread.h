@@ -13,9 +13,9 @@ namespace Dream
     class ComponentThread : public thread, ILoggable
     {
     public:
-        ComponentThread(IComponent* component);
+        ComponentThread(shared_ptr<IComponent> component);
         ~ComponentThread() override;
     protected:
-        IComponent* mComponentHandle;
+        shared_ptr<IComponent> mComponent;
     };
 }

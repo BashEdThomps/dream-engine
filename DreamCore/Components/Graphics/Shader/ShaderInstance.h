@@ -117,14 +117,18 @@ namespace Dream
         GLuint mShaderProgram;
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
-        ShaderCache *mCacheHandle;
+        shared_ptr<ShaderCache> mCache;
     public:
-        ShaderInstance(ShaderCache* cache, ShaderDefinition*,SceneObjectRuntime*);
-        ~ShaderInstance();
+        ShaderInstance(
+           shared_ptr<ShaderCache> cache,
+           shared_ptr<ShaderDefinition>,
+           shared_ptr<SceneObjectRuntime>
+        );
+        ~ShaderInstance() override;
 
 
-        bool load(string);
-        void loadExtraAttributes(json);
+        bool load(string) override;
+        void loadExtraAttributes(json) override;
 
         void use();
         void unbind();
@@ -144,10 +148,10 @@ namespace Dream
         GLint getUniformLocation(string name);
 
         void addUniform(UniformType type, string name, int count, void* data);
-        void bindLight(LightInstance* light);
+        void bindLight(shared_ptr<LightInstance> light);
 
         void syncUniforms();
-        void bindMaterial(AssimpMaterial* material);
+        void bindMaterial(shared_ptr<AssimpMaterial> material);
     }; // End of ShaderInstance
 
 } // End of Dream

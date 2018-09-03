@@ -67,7 +67,7 @@ namespace Dream
     }
 
     PhysicsObjectInstance::PhysicsObjectInstance
-    (PhysicsObjectDefinition* definition,SceneObjectRuntime* transform)
+    (shared_ptr<PhysicsObjectDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           ILoggable ("PhysicsObjectInstance"),
          mCollisionShape(nullptr),
@@ -125,12 +125,12 @@ namespace Dream
     PhysicsObjectInstance::loadExtraAttributes
     (nlohmann::json jsonData)
     {
-        loadExtraAttributes(jsonData,mDefinitionHandle,false);
+        loadExtraAttributes(jsonData,mDefinition,false);
     }
 
     void
     PhysicsObjectInstance::loadExtraAttributes
-    (nlohmann::json jsonData, IAssetDefinition* definition, bool isChild)
+    (nlohmann::json jsonData, shared_ptr<IAssetDefinition> definition, bool isChild)
     {
     }
 
@@ -139,20 +139,17 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        PhysicsObjectDefinition* podHandle = dynamic_cast<PhysicsObjectDefinition*>
-                (
-                    mDefinitionHandle
-                    );
-        loadExtraAttributes(podHandle->getJson(),mDefinitionHandle,false);
-        mCollisionShape = createCollisionShape(podHandle,projectPath);
+        auto pod = dynamic_pointer_cast<PhysicsObjectDefinition>(mDefinition);
+        loadExtraAttributes(pod->getJson(),mDefinition,false);
+        mCollisionShape = createCollisionShape(pod,projectPath);
         if (!mCollisionShape)
         {
             log->error( "Unable to create collision shape" );
             return false;
         }
-        float mass = mDefinitionHandle->getJson()[Constants::ASSET_ATTR_MASS];
+        float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
-        mMotionState = new PhysicsMotionState(mSceneObjectRuntimeHandle->getTransform());
+        mMotionState = new PhysicsMotionState(mSceneObjectRuntime->getTransform());
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);
@@ -166,14 +163,14 @@ namespace Dream
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
-        if (podHandle->getControllableCharacter())
+        if (pod->getControllableCharacter())
         {
             mRigidBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
             mRigidBody->setActivationState(DISABLE_DEACTIVATION);
             mRigidBody->setAngularFactor(btVector3(0,1,0));
         }
 
-        if (podHandle->getKinematic())
+        if (pod->getKinematic())
         {
             mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
             mRigidBody->setActivationState(DISABLE_DEACTIVATION);
@@ -186,37 +183,37 @@ namespace Dream
 
     btCollisionShape*
     PhysicsObjectInstance::createCollisionShape
-    (PhysicsObjectDefinition* podHandle, string projectPath)
+    (shared_ptr<PhysicsObjectDefinition> pod, string projectPath)
     {
         auto log = getLog();
-        string format = podHandle->getFormat();
+        string format = pod->getFormat();
         btCollisionShape *collisionShape = nullptr;
 
         if (format.compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
         {
-            btScalar radius = podHandle->getRadius();
+            btScalar radius = pod->getRadius();
             collisionShape = new btSphereShape(radius);
         }
         else if (format.compare(Constants::COLLISION_SHAPE_BOX) == 0)
         {
             btScalar boxX, boxY, boxZ;
-            boxX = podHandle->getHalfExtentsX();
-            boxY = podHandle->getHalfExtentsY();
-            boxZ = podHandle->getHalfExtentsZ();
+            boxX = pod->getHalfExtentsX();
+            boxY = pod->getHalfExtentsY();
+            boxZ = pod->getHalfExtentsZ();
             collisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CYLINDER) == 0)
         {
             btScalar boxX, boxY, boxZ;
-            boxX = podHandle->getHalfExtentsX();
-            boxY = podHandle->getHalfExtentsY();
-            boxZ = podHandle->getHalfExtentsZ();
+            boxX = pod->getHalfExtentsX();
+            boxY = pod->getHalfExtentsY();
+            boxZ = pod->getHalfExtentsZ();
             collisionShape = new btCylinderShape(btVector3(boxX,boxY,boxZ));
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CAPSULE) == 0)
         {
-            float radius = podHandle->getRadius();
-            float height = podHandle->getHeight();
+            float radius = pod->getRadius();
+            float height = pod->getHeight();
             collisionShape = new btCapsuleShape(radius,height);
         }
         else if (format.compare(Constants::COLLISION_SHAPE_CONE) == 0)
@@ -238,7 +235,7 @@ namespace Dream
         else if (format.compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
             // Load Collision Data
-            string path = projectPath+podHandle->getAssetPath();
+            string path = projectPath+pod->getAssetPath();
             log->info( "Loading collision geometry from {}", path );
             const aiScene* scene = getModelFromCache(path);
             btTriangleMesh *triMesh = new btTriangleMesh();
@@ -251,10 +248,10 @@ namespace Dream
         }
         else if (format.compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
         {
-            float x = podHandle->getNormalX();
-            float y = podHandle->getNormalY();
-            float z = podHandle->getNormalZ();
-            float constant = podHandle->getConstant();
+            float x = pod->getNormalX();
+            float y = pod->getNormalY();
+            float z = pod->getNormalZ();
+            float constant = pod->getConstant();
 
             btVector3 planeNormal(x,y,z);
             btScalar planeConstant = btScalar(constant);
@@ -266,9 +263,9 @@ namespace Dream
             collisionShape = new btCompoundShape();
             btCompoundShape *compound = static_cast<btCompoundShape*>(collisionShape);
 
-            for (CompoundChildDefinition child : podHandle->getCompoundChildren())
+            for (CompoundChildDefinition child : pod->getCompoundChildren())
             {
-                PhysicsObjectDefinition *def = getAssetDefinitionByUuid(child.uuid);
+                auto def = getAssetDefinitionByUuid(child.uuid);
                 loadExtraAttributes(def->getJson(),def,true);
                 btCollisionShape *shape = createCollisionShape(def,projectPath);
                 compound->addChildShape(child.transform.getTransformAsBtTransform(),shape);
@@ -277,7 +274,7 @@ namespace Dream
 
         if (collisionShape)
         {
-            btScalar margin = podHandle->getMargin();
+            btScalar margin = pod->getMargin();
             collisionShape->setMargin(margin);
         }
 
@@ -372,15 +369,15 @@ namespace Dream
         mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
 
-    PhysicsObjectDefinition*
+    shared_ptr<PhysicsObjectDefinition>
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
     {
-        return dynamic_cast<PhysicsObjectDefinition*>
+        return dynamic_pointer_cast<PhysicsObjectDefinition>
                 (
-                    mDefinitionHandle
-                    ->getProjectHandle()
-                    ->getAssetDefinitionHandleByUuid(uuid)
+                    mDefinition
+                    ->getProject()
+                    ->getAssetDefinitionByUuid(uuid)
                     );
     }
 } // End of Dream

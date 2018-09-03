@@ -28,7 +28,7 @@
 
 #include "../../../Common/ILoggable.h"
 
-using std::unique_ptr;
+using std::shared_ptr;
 using std::map;
 
 namespace Dream
@@ -42,16 +42,16 @@ namespace Dream
     private:
         const static char CHAR_MAP_START;
         const static char CHAR_MAP_END;
-        unique_ptr<FT_Library> mFreeTypeLib;
-        map<FontDefinition*, map<GLchar, FontCharacter>> mCache;
-        map<GLchar, FontCharacter> generateCharMap(FontDefinition*, FT_Face* face);
+        shared_ptr<FT_Library> mFreeTypeLib;
+        map<shared_ptr<FontDefinition>, map<GLchar, FontCharacter>> mCache;
+        map<GLchar, FontCharacter> generateCharMap(shared_ptr<FontDefinition>, shared_ptr<FT_Face> face);
 
     public:
         FontCache();
         ~FontCache();
 
-        FT_Library* getFreeTypeLib();
-        map<GLchar, FontCharacter> getCharMap(FontDefinition*, FT_Face* face);
+        shared_ptr<FT_Library> getFreeTypeLib();
+        map<GLchar, FontCharacter> getCharMap(shared_ptr<FontDefinition>, shared_ptr<FT_Face> face);
 
     };
 }

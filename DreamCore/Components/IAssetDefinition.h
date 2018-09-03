@@ -46,12 +46,12 @@ namespace Dream
     {
 
     public:
-        IAssetDefinition(ProjectDefinition*, json);
+        IAssetDefinition(shared_ptr<ProjectDefinition>, json);
         static AssetType getAssetType(json);
 
         virtual ~IAssetDefinition();
 
-        ProjectDefinition *getProjectHandle();
+        shared_ptr<ProjectDefinition> getProject();
         void showStatus();
 
         void setType(string);
@@ -78,7 +78,7 @@ namespace Dream
         string getProjectPath();
 
     protected:
-        ProjectDefinition *mProjectDefinitionHandle;
+        shared_ptr<ProjectDefinition> mProjectDefinition;
 
     }; // End of AssetDefinition
 

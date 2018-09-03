@@ -49,14 +49,14 @@ namespace Dream
 
         bool init() override;
         void updateComponent() override;
-        void setLuaComponentHandle(LuaComponent* luaHandle);
+        void setLuaComponent(shared_ptr<LuaComponent> lua);
 
     private:
         const static float ANALOG_DEAD_ZONE;
-        unique_ptr<InputMap> mInputMap;
+        shared_ptr<InputMap> mInputMap;
         InputManager mInputManager;
         vector<DeviceId> mDevices;
-        LuaComponent* mLuaComponentHandle;
+        shared_ptr<LuaComponent> mLuaComponent;
         bool mInputMapSet;
     };
 

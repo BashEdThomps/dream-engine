@@ -23,13 +23,16 @@ namespace Dream
 {
 
     LuaScriptInstance::LuaScriptInstance
-    (ScriptDefinition* definition, SceneObjectRuntime* transform)
+    (
+        shared_ptr<ScriptDefinition> definition,
+        shared_ptr<SceneObjectRuntime> transform
+    )
         : IAssetInstance(definition,transform),
           ILoggable("LuaScriptInstance"),
           mError(false)
     {
         auto log = getLog();
-        log->trace( "Constructing {}", mDefinitionHandle->getNameAndUuidString() );
+        log->trace( "Constructing {}", mDefinition->getNameAndUuidString() );
         return;
     }
 
@@ -37,7 +40,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->trace("Destructing ", mDefinitionHandle->getNameAndUuidString() );
+        log->trace("Destructing ", mDefinition->getNameAndUuidString() );
     }
 
     bool
@@ -45,7 +48,7 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        mAbsolutePath = projectPath + mDefinitionHandle->getAssetPath();
+        mAbsolutePath = projectPath + mDefinition->getAssetPath();
         log->info( "Script at {}" , mAbsolutePath );
         return mAbsolutePath.size() != 0;
     }

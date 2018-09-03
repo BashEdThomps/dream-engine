@@ -32,7 +32,7 @@ namespace Dream
         virtual ~IComponent();
         virtual bool init() = 0;
         virtual void updateComponent() = 0;
-        void setTime(Time*);
+        void setTime(shared_ptr<Time>);
 
         bool getRunning() const;
         void setRunning(bool running);
@@ -44,7 +44,7 @@ namespace Dream
         long long getUpdateBeginTime() const;
         long long getUpdateTime() const;
         long long getYieldedTime() const;
-        void setActiveSceneRuntime(SceneRuntime* runtime);
+        void setActiveSceneRuntime(shared_ptr<SceneRuntime> runtime);
         bool getUpdateComplete();
 
         bool getParallel() const;
@@ -58,12 +58,12 @@ namespace Dream
         long long mUpdateBeginTime;
         long long mUpdateEndTime;
 
-        Time* mTime;
+        shared_ptr<Time> mTime;
         bool mParallel;
         volatile bool mRunning;
         volatile bool mShouldUpdate;
         volatile bool mUpdateComplete;
-        SceneRuntime* mActiveSceneRuntimeHandle;
+        shared_ptr<SceneRuntime> mActiveSceneRuntime;
 
     }; // End of IComponent
 

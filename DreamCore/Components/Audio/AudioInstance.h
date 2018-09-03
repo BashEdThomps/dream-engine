@@ -30,7 +30,7 @@ namespace Dream
         AudioStatus mStatus;
 
     public:
-        AudioInstance(AudioDefinition*,SceneObjectRuntime*);
+        AudioInstance(shared_ptr<AudioDefinition>,shared_ptr<SceneObjectRuntime>);
 
         void setLooping(bool);
         bool isLooping();

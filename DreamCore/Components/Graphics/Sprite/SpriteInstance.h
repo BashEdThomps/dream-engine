@@ -38,9 +38,9 @@ namespace Dream
         int mHeight;
         GLuint mTexture;
         GLenum mTextureFormat;
-        MaterialCache* mCacheHandle;
+        shared_ptr<MaterialCache> mCache;
     public:
-        SpriteInstance(MaterialCache*, SpriteDefinition*, SceneObjectRuntime*);
+        SpriteInstance(shared_ptr<MaterialCache>, shared_ptr<SpriteDefinition>, shared_ptr<SceneObjectRuntime>);
         ~SpriteInstance();
         bool load(string);
         void loadExtraAttributes(json);

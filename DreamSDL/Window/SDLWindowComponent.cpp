@@ -137,7 +137,7 @@ namespace DreamSDL
             if (event.type == SDL_QUIT)
             {
                 log->info("SDL_QUIT Event");
-                mActiveSceneRuntimeHandle->setState(Dream::SCENE_STATE_STOPPED);
+                mActiveSceneRuntime->setState(Dream::SCENE_STATE_STOPPED);
                 break;
             }
             else if (event.type == SDL_WINDOWEVENT)

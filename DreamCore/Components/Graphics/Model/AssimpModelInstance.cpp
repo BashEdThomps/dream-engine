@@ -45,11 +45,16 @@ using std::numeric_limits;
 namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
-    (AssimpCache* modelCache, MaterialCache* texCache, IAssetDefinition* definition, SceneObjectRuntime* transform)
+    (
+        shared_ptr<AssimpCache> modelCache,
+        shared_ptr<MaterialCache> texCache,
+        shared_ptr<IAssetDefinition> definition,
+        shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           ILoggable("AssimpModelInstance"),
-          mModelCacheHandle(modelCache),
-          mMaterialCacheHandle(texCache)
+          mModelCache(modelCache),
+          mMaterialCache(texCache),
+          mThisShared(shared_ptr<AssimpModelInstance>(this))
     {
         auto log = getLog();
         log->trace( "Constructing {}", definition->getNameAndUuidString() );
@@ -78,10 +83,10 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        string path = projectPath + mDefinitionHandle->getAssetPath();
+        string path = projectPath + mDefinition->getAssetPath();
         log->info( "Loading Model - {}" , path);
 
-        auto model = mModelCacheHandle->getModelFromCache(path);
+        auto model = mModelCache->getModelFromCache(path);
 
         if (model == nullptr)
         {
@@ -102,7 +107,7 @@ namespace Dream
 
     void
     AssimpModelInstance::draw
-    (ShaderInstance* shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
+    (shared_ptr<ShaderInstance> shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
     {
         auto log = getLog();
         for(shared_ptr<AssimpMesh> mesh : mMeshes)
@@ -216,7 +221,7 @@ namespace Dream
 
     void
     AssimpModelInstance::processTextureData
-    (aiMesh* mesh,const aiScene* scene, AssimpMaterial* aMaterialHandle)
+    (aiMesh* mesh,const aiScene* scene, AssimpMaterial* aMaterial)
     {
         auto log = getLog();
         vector<Texture> textures;
@@ -231,21 +236,21 @@ namespace Dream
         if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
         {
             log->info("Loading Diffuse Texture {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterialHandle->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
+            aMaterial->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
         }
 
         // Specular Textures
         if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
         {
             log->info("Loading Specular {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterialHandle->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
+            aMaterial->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
         }
 
         // Normal Textures
         if(material->GetTextureCount(aiTextureType_NORMALS) > 0)
         {
             log->info("Loading Normal {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterialHandle->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS, "texture_normals");
+            aMaterial->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS, "texture_normals");
         }
     }
 
@@ -263,7 +268,7 @@ namespace Dream
         aiString name;
         aiGetMaterialString(material,  AI_MATKEY_NAME,               &name);
 
-        shared_ptr<AssimpMaterial> aMaterial = mMaterialCacheHandle->getMaterialByName(name);
+        shared_ptr<AssimpMaterial> aMaterial = mMaterialCache->getMaterialByName(name);
 
         if (aMaterial == nullptr)
         {
@@ -287,7 +292,7 @@ namespace Dream
             aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
             aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
 
-            mMaterialCacheHandle->addMaterialToCache(aMaterial);
+            mMaterialCache->addMaterialToCache(aMaterial);
 
             processTextureData(mesh,scene, aMaterial.get());
 
@@ -298,7 +303,13 @@ namespace Dream
 
         BoundingBox box;
         updateBoundingBox(box, mesh);
-        auto aMesh = make_shared<AssimpMesh>(this, string(mesh->mName.C_Str()), vertices, indices, aMaterial.get());
+        auto aMesh = make_shared<AssimpMesh>(
+            mThisShared,
+            string(mesh->mName.C_Str()),
+            vertices,
+            indices,
+            aMaterial
+        );
         aMesh->setBoundingBox(box);
         return aMesh;
     }
@@ -309,7 +320,7 @@ namespace Dream
     {
         aiString str;
         mat->GetTexture(type, 0, &str);
-        return mMaterialCacheHandle->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+        return mMaterialCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
     }
 
     void

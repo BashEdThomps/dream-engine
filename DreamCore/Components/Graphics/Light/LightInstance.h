@@ -67,11 +67,11 @@ namespace Dream
         LightType mType;
 
     public:
-        LightInstance(LightDefinition*, SceneObjectRuntime*);
-        ~LightInstance();
+        LightInstance(shared_ptr<LightDefinition>, shared_ptr<SceneObjectRuntime>);
+        ~LightInstance() override;
 
-        bool load(string);
-        void loadExtraAttributes(json);
+        bool load(string) override;
+        void loadExtraAttributes(json) override;
 
         static KMap getKMap(int distance);
         static map<int, KMap> K_VALUE_MAP;
