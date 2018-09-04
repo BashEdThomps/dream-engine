@@ -33,22 +33,10 @@ namespace Dream
     (shared_ptr<ProjectDefinition> projectDefinition, json data)
         : IDefinition(data),
           ILoggable("SceneDefinition"),
-          mProjectDefinition(projectDefinition),
-          mThisShared(shared_ptr<SceneDefinition>(this))
+          mProjectDefinition(projectDefinition)
     {
         auto log = getLog();
         log->trace( "Constructing ", getNameAndUuidString() );
-
-        json rootSceneObject = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
-
-        if (rootSceneObject.is_null())
-        {
-            log->error( "No root SceneObject found!!" );
-        }
-        else
-        {
-            loadRootSceneObjectDefinition(rootSceneObject);
-        }
     }
 
     SceneDefinition::~SceneDefinition
@@ -68,9 +56,23 @@ namespace Dream
 
     void
     SceneDefinition::loadRootSceneObjectDefinition
-    (json rsoJson)
+    ()
     {
-        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>(nullptr, mThisShared, rsoJson);
+        json rsoJson = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
+        auto log = getLog();
+        if (rsoJson.is_null())
+        {
+            log->error( "No root SceneObject found!!" );
+            return;
+        }
+
+        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>
+        (
+            nullptr,
+            dynamic_pointer_cast<SceneDefinition>(shared_from_this()),
+            rsoJson
+        );
+        mRootSceneObjectDefinition->loadChildSceneObjectDefinitions();
     }
 
     void
@@ -403,7 +405,12 @@ namespace Dream
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
         Transform3D transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
-        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>(nullptr,mThisShared,rootDefJson);
+        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>
+        (
+            nullptr,
+            dynamic_pointer_cast<SceneDefinition>(shared_from_this()),
+            rootDefJson
+        );
         return mRootSceneObjectDefinition;
     }
 

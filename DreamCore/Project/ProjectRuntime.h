@@ -97,7 +97,6 @@ namespace Dream
         shared_ptr<IWindowComponent> mWindowComponent;
         shared_ptr<SceneRuntime> mActiveSceneRuntime;
         shared_ptr<Project> mProject;
-        shared_ptr<ProjectRuntime> mThisShared;
 
     public: // Public Functions
         ProjectRuntime(shared_ptr<Project> parentProject, shared_ptr<IWindowComponent> wc = nullptr);

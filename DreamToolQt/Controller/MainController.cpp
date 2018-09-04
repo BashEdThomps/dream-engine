@@ -381,7 +381,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
     {
         case ScenegraphTreeItemType::SCENEGRAPH_PROJECT:
             log->info( "Selected a project");
-            mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
+            mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinition();
             mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
             emit notifyProjectDefinitionChanged(mSelectedProjectDefinitionHandle);
             break;

@@ -57,16 +57,12 @@ namespace Dream
           mParallel(false),
           mWindowComponent(windowComponent),
           mProject(project),
-          mThisShared(shared_ptr<ProjectRuntime>(this)),
           mGraphicsUpdating(false),
           mLogicUpdating(false)
 
     {
         auto log = getLog();
         log->info( "Constructing" );
-        initCaches();
-        initComponents();
-        useDefinition(mDefinition);
     }
 
     ProjectRuntime::~ProjectRuntime
@@ -272,7 +268,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mLuaComponent = make_shared<LuaComponent>(mThisShared,mScriptCache);
+        mLuaComponent = make_shared<LuaComponent>(dynamic_pointer_cast<ProjectRuntime>(shared_from_this()),mScriptCache);
 
         if(!mLuaComponent->init())
         {
@@ -546,7 +542,7 @@ namespace Dream
     (shared_ptr<SceneDefinition> sceneDefinition)
     {
         auto log = getLog();
-        if (!sceneDefinition)
+        if (sceneDefinition == nullptr)
         {
             log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
             return nullptr;
@@ -555,7 +551,9 @@ namespace Dream
         // Load the new scene
         log->info( "Loading SceneRuntime" );
 
-        mActiveSceneRuntime = make_shared<SceneRuntime>(sceneDefinition , mThisShared);
+        mActiveSceneRuntime = make_shared<SceneRuntime>(sceneDefinition , dynamic_pointer_cast<ProjectRuntime>(shared_from_this()));
+        mActiveSceneRuntime->useDefinition(sceneDefinition);
+
         if (mGraphicsComponent != nullptr)
         {
             mGraphicsComponent->setMeshCullDistance(sceneDefinition->getMeshCullDistance());
@@ -580,7 +578,10 @@ namespace Dream
     void
     ProjectRuntime::useDefinition
     (shared_ptr<IDefinition>)
-    {}
+    {
+        initCaches();
+        initComponents();
+    }
 
     shared_ptr<FontCache>
     ProjectRuntime::getFontCache

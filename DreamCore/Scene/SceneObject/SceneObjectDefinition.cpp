@@ -37,8 +37,7 @@ namespace Dream
         : IDefinition(jsonData),
           ILoggable ("SceneObjectDefinition"),
           mParentSceneObject(parent),
-          mSceneDefinition(sceneDefinition),
-          mThisShared(shared_ptr<SceneObjectDefinition>(this))
+          mSceneDefinition(sceneDefinition)
     {
         auto log = getLog();
         log->trace( "Constructing {}",getNameAndUuidString());
@@ -48,7 +47,6 @@ namespace Dream
             log->trace( "With new UUID",getNameAndUuidString());
         }
         mTransform = Transform3D(jsonData[Constants::TRANSFORM]);
-        loadChildSceneObjectDefinitions(jsonData,randomUuid);
     }
 
     SceneObjectDefinition::~SceneObjectDefinition
@@ -170,19 +168,21 @@ namespace Dream
 
     void
     SceneObjectDefinition::loadChildSceneObjectDefinitions
-    (json definition, bool randomUuid)
+    (bool randomUuid)
     {
-        json childrenArray = definition[Constants::SCENE_OBJECT_CHILDREN];
+        json childrenArray = mJson[Constants::SCENE_OBJECT_CHILDREN];
 
         if (!childrenArray.is_null() || childrenArray.is_array() )
         {
             for (json childDefinition : childrenArray)
             {
-                mChildDefinitions.push_back(
-                    make_shared<SceneObjectDefinition>(
-                            mThisShared, mSceneDefinition, childDefinition, randomUuid
-                    )
+                auto sod = make_shared<SceneObjectDefinition>(
+                       dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
+                        mSceneDefinition,
+                        childDefinition,
+                        randomUuid
                 );
+                mChildDefinitions.push_back(sod);
             }
         }
     }
@@ -249,9 +249,13 @@ namespace Dream
         }
 
         shared_ptr<SceneObjectDefinition> soDefinition;
-        soDefinition = make_shared<SceneObjectDefinition>(mThisShared,mSceneDefinition,defJson,true);
-
-
+        soDefinition = make_shared<SceneObjectDefinition>
+        (
+            dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
+            mSceneDefinition,
+            defJson,
+            true
+        );
         addChildSceneObjectDefinition(soDefinition);
 
         return soDefinition;

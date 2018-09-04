@@ -22,12 +22,10 @@ using DreamSDL::SDLWindowComponent;
 
 void showUsage(const char** argv)
 {
-    {
-        cout << "Usage:" << endl
-             << argv[0] << endl
-             << "\t" << Constants::PROJECT_DIRECTORY_ARG << " <path/to/dream/project>" << endl
-             << "\t" << Constants::PROJECT_UUID_ARG      << " <project_uuid>" << endl;
-    }
+    cout << "Usage:" << endl
+         << argv[0] << endl
+         << "\t" << Constants::PROJECT_DIRECTORY_ARG << " <path/to/dream/project>" << endl
+         << "\t" << Constants::PROJECT_UUID_ARG      << " <project_uuid>" << endl;
 }
 
 int main(int argc, const char** argv)
@@ -39,7 +37,8 @@ int main(int argc, const char** argv)
 
     shared_ptr<SDLWindowComponent> windowComponent = make_shared<SDLWindowComponent>();
 
-    Project project(windowComponent);
+    auto project = make_shared<Project>(windowComponent);
+
     log->trace("Starting...");
 
     if (argc < MINIMUM_ARGUMENTS)
@@ -51,7 +50,7 @@ int main(int argc, const char** argv)
 
     ArgumentParser parser(argc,argv);
 
-    bool loaded = project.openFromArgumentParser(parser);
+    bool loaded = project->openFromArgumentParser(parser);
 
     if (!loaded)
     {
@@ -65,8 +64,8 @@ int main(int argc, const char** argv)
 
     spdlog::set_level(spdlog::level::off);
 
-    shared_ptr<ProjectRuntime> pr = project.createProjectRuntime();
-    shared_ptr<ProjectDefinition> pd = project.getProjectDefinition();
+    shared_ptr<ProjectRuntime> pr = project->createProjectRuntime();
+    shared_ptr<ProjectDefinition> pd = project->getProjectDefinition();
     shared_ptr<SceneDefinition> startupSceneDefinition = pd->getStartupSceneDefinition();
 
     if (startupSceneDefinition == nullptr)

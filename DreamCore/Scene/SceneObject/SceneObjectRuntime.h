@@ -83,7 +83,6 @@ namespace Dream
 
         shared_ptr<SceneRuntime> mSceneRuntime;
         shared_ptr<SceneObjectRuntime> mParentRuntime;
-        shared_ptr<SceneObjectRuntime> mThisShared;
         string mProjectPath;
 
         bool mLoaded;

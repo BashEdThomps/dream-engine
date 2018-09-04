@@ -476,11 +476,13 @@ namespace Dream
         auto log = getLog();
         if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
-            return make_shared<WavAudioInstance>(definition,rt);
+            auto ai = make_shared<WavAudioInstance>(definition,rt);
+            return ai;
         }
         else if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
-            return make_shared<OggAudioInstance>(definition,rt);
+            auto ai = make_shared<OggAudioInstance>(definition,rt);
+            return ai;
         }
         log->error("Error, unrecognised audio format {}", definition->getFormat());
         return nullptr;

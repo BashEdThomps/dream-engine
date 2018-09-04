@@ -53,8 +53,7 @@ namespace Dream
     Project::Project
     (shared_ptr<IWindowComponent> windowComponent)
         : ILoggable("Project"),
-          mWindowComponent(windowComponent),
-          mThisShared(shared_ptr<Project>(this))
+          mWindowComponent(windowComponent)
     {
         getLog()->trace("Constructing");
     }
@@ -90,6 +89,7 @@ namespace Dream
 
         mProjectPath = projectPath;
         mDefinition = make_shared<ProjectDefinition>(projectJson);
+        mDefinition->loadChildDefinitions();
         return true;
     }
 
@@ -158,7 +158,9 @@ namespace Dream
     Project::createProjectRuntime
     ()
     {
-        mRuntime = make_shared<ProjectRuntime>(mThisShared, mWindowComponent);
+        auto log = getLog();
+        mRuntime = make_shared<ProjectRuntime>(shared_from_this(), mWindowComponent);
+        mRuntime->useDefinition(nullptr);
         return mRuntime;
     }
 

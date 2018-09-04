@@ -28,6 +28,7 @@
 #endif
 
 #include "../Common/Constants.h"
+#include <memory>
 
 using std::string;
 using nlohmann::json;
@@ -37,7 +38,8 @@ namespace Dream
     class IAssetDefinition;
     class SceneObjectRuntime;
 
-    class IAssetInstance
+    class IAssetInstance :
+        public std::enable_shared_from_this<IAssetInstance>
     {
     protected:
         bool mLoaded;

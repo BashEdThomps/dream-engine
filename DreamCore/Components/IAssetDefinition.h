@@ -34,6 +34,7 @@
 #include "../Common/Constants.h"
 #include "Transform3D.h"
 
+using std::weak_ptr;
 using std::string;
 using std::vector;
 using nlohmann::json;
@@ -46,12 +47,12 @@ namespace Dream
     {
 
     public:
-        IAssetDefinition(shared_ptr<ProjectDefinition>, json);
+        IAssetDefinition(weak_ptr<ProjectDefinition>, json);
         static AssetType getAssetType(json);
 
         virtual ~IAssetDefinition();
 
-        shared_ptr<ProjectDefinition> getProject();
+        weak_ptr<ProjectDefinition> getProject();
         void showStatus();
 
         void setType(string);
@@ -78,7 +79,7 @@ namespace Dream
         string getProjectPath();
 
     protected:
-        shared_ptr<ProjectDefinition> mProjectDefinition;
+        weak_ptr<ProjectDefinition> mProjectDefinition;
 
     }; // End of AssetDefinition
 

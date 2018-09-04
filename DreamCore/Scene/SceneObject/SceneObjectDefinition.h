@@ -40,7 +40,6 @@ namespace Dream
     private:
         shared_ptr<SceneObjectDefinition> mParentSceneObject;
         shared_ptr<SceneDefinition> mSceneDefinition;
-        shared_ptr<SceneObjectDefinition> mThisShared;
         vector<shared_ptr<SceneObjectDefinition>> mChildDefinitions;
         Transform3D mTransform;
 
@@ -89,8 +88,9 @@ namespace Dream
         void setStatic(bool d);
         bool getStatic();
 
+        void loadChildSceneObjectDefinitions(bool randomUuid = false);
+
     private:
-        void loadChildSceneObjectDefinitions(json definition, bool randomUuid = false);
     };
 
 }

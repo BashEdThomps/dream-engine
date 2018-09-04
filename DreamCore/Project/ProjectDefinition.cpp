@@ -7,13 +7,13 @@
  *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with mThisShared file, or the project in which
- * mThisShared file belongs to. You may also find the details of GPL v3 at:
+ * license should have been included with this file, or the project in which
+ * this file belongs to. You may also find the details of GPL v3 at:
  * http://www.gnu.org/licenses/gpl-3.0.txt
  *
- * If you have any questions regarding the use of mThisShared file, feel free to
- * contact the author of mThisShared file, or the owner of the project in which
- * mThisShared file belongs to.
+ * If you have any questions regarding the use of this file, feel free to
+ * contact the author of this file, or the owner of the project in which
+ * this file belongs to.
  *
  */
 
@@ -40,13 +40,11 @@ namespace Dream
 {
     ProjectDefinition::ProjectDefinition(json data)
         : IDefinition(data) ,
-          ILoggable("ProjectDefinition"),
-          mThisShared(shared_ptr<ProjectDefinition>(this))
+          ILoggable("ProjectDefinition")
 
     {
         auto log = getLog();
         log->trace( "Constructing {}", getNameAndUuidString() );
-        loadChildDefinitions();
     }
 
 
@@ -181,37 +179,38 @@ namespace Dream
         switch (type)
         {
             case PATH:
-                newDef = make_shared<PathDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<PathDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case AUDIO:
-                newDef = make_shared<AudioDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<AudioDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case FONT:
-                newDef = make_shared<FontDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<FontDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case LIGHT:
-                newDef = make_shared<LightDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<LightDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case MODEL:
-                newDef = make_shared<ModelDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<ModelDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case PHYSICS_OBJECT:
-                newDef = make_shared<PhysicsObjectDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<PhysicsObjectDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case SCRIPT:
-                newDef = make_shared<ScriptDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<ScriptDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case SHADER:
-                newDef = make_shared<ShaderDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<ShaderDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case SPRITE:
-                newDef = make_shared<SpriteDefinition>(mThisShared,assetDefinitionJs);
+                newDef = make_shared<SpriteDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
                 break;
             case NONE:
                 log->error( "Unable to create Asset Definition. Unknown Type" );
                 newDef = nullptr;
                 break;
         }
+
         return newDef;
     }
 
@@ -279,7 +278,10 @@ namespace Dream
     ProjectDefinition::loadSceneDefinition
     (json scene)
     {
-        mSceneDefinitions.push_back(make_shared<SceneDefinition>(mThisShared,scene));
+        auto so = make_shared<SceneDefinition>
+        (dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),scene);
+        so->loadRootSceneObjectDefinition();
+        mSceneDefinitions.push_back(so);
     }
 
     size_t
@@ -379,7 +381,7 @@ namespace Dream
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
         Transform3D camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
-        shared_ptr<SceneDefinition> sd = make_shared<SceneDefinition>(mThisShared,scene);
+        auto sd = make_shared<SceneDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),scene);
         sd->createNewRootSceneObjectDefinition();
         mSceneDefinitions.push_back(sd);
         return sd;

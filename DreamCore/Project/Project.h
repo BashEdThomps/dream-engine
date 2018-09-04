@@ -44,7 +44,9 @@ namespace Dream
     class IAssetDefinition;
     class IWindowComponent;
 
-    class Project : public ILoggable
+    class Project :
+        public ILoggable,
+        public std::enable_shared_from_this<Project>
     {
         // Variables
     private:
@@ -52,7 +54,6 @@ namespace Dream
         shared_ptr<ProjectRuntime> mRuntime;
         shared_ptr<IWindowComponent> mWindowComponent;
         string mProjectPath;
-        shared_ptr<Project> mThisShared;
 
         // Public Methods
     public:

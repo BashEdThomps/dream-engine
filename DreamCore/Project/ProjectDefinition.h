@@ -37,7 +37,6 @@ namespace Dream
     private:
         vector<shared_ptr<SceneDefinition>> mSceneDefinitions;
         vector<shared_ptr<IAssetDefinition>> mAssetDefinitions;
-        shared_ptr<ProjectDefinition> mThisShared;
     public:
         ProjectDefinition(json data);
         ~ProjectDefinition() override;

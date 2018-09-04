@@ -53,8 +53,7 @@ namespace Dream
         : IAssetInstance(definition,transform),
           ILoggable("AssimpModelInstance"),
           mModelCache(modelCache),
-          mMaterialCache(texCache),
-          mThisShared(shared_ptr<AssimpModelInstance>(this))
+          mMaterialCache(texCache)
     {
         auto log = getLog();
         log->trace( "Constructing {}", definition->getNameAndUuidString() );
@@ -304,7 +303,7 @@ namespace Dream
         BoundingBox box;
         updateBoundingBox(box, mesh);
         auto aMesh = make_shared<AssimpMesh>(
-            mThisShared,
+            dynamic_pointer_cast<AssimpModelInstance>(shared_from_this()),
             string(mesh->mName.C_Str()),
             vertices,
             indices,
@@ -410,5 +409,7 @@ namespace Dream
     {
         return mModelMatrix;
     }
+
+
 
 } // End of Dream

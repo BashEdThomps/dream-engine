@@ -79,11 +79,11 @@ namespace Dream
         BoundingBox getBoundingBox();
         void setModelMatrix(mat4);
         mat4 getModelMatrix();
+
     private:
         // Variables
         shared_ptr<AssimpCache> mModelCache;
         shared_ptr<MaterialCache> mMaterialCache;
-        shared_ptr<AssimpModelInstance> mThisShared;
 
         vector<shared_ptr<AssimpMesh>> mMeshes;
         string mDirectory;

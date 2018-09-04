@@ -46,13 +46,10 @@ namespace Dream
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
-          mProjectRuntime(project),
-          mThisShared(shared_ptr<SceneRuntime>(this))
+          mProjectRuntime(project)
     {
         auto log = getLog();
         log->trace( "Constructing " );
-        useDefinition(mDefinition);
-
     }
 
     SceneRuntime::~SceneRuntime
@@ -256,9 +253,17 @@ namespace Dream
         setCameraMovementSpeed(sceneDefinition->getCameraMovementSpeed());
 
         // Propogate to project where required
-        mProjectRuntime->getGraphicsComponent()->setActiveSceneRuntime(mThisShared);
-        mProjectRuntime->getPhysicsComponent()->setGravity(getGravity());
-        mProjectRuntime->getPhysicsComponent()->setDebug(getPhysicsDebug());
+        mProjectRuntime
+            ->getGraphicsComponent()
+            ->setActiveSceneRuntime(
+                dynamic_pointer_cast<SceneRuntime>(shared_from_this())
+            );
+        mProjectRuntime
+            ->getPhysicsComponent()
+            ->setGravity(getGravity());
+        mProjectRuntime
+            ->getPhysicsComponent()
+            ->setDebug(getPhysicsDebug());
         auto camera = mProjectRuntime->getCamera();
         camera->setTranslation(getCameraTranslation());
         camera->setPitch(getCameraPitch());
@@ -268,8 +273,12 @@ namespace Dream
 
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
-        setRootSceneObjectRuntime(make_shared<SceneObjectRuntime>(sod,mThisShared));
-
+        auto sor = make_shared<SceneObjectRuntime>(
+            sod,
+            dynamic_pointer_cast<SceneRuntime>(shared_from_this())
+        );
+        sor->useDefinition(sod);
+        setRootSceneObjectRuntime(sor);
         setState(SCENE_STATE_LOADED);
     }
 

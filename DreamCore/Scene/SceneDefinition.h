@@ -39,7 +39,6 @@ namespace Dream
     private:
         shared_ptr<SceneObjectDefinition> mRootSceneObjectDefinition;
         shared_ptr<ProjectDefinition> mProjectDefinition;
-        shared_ptr<SceneDefinition> mThisShared;
 
     public:
         SceneDefinition(shared_ptr<ProjectDefinition> project, json data);
@@ -47,7 +46,7 @@ namespace Dream
 
         void showStatus() override;
 
-        void loadRootSceneObjectDefinition(json jsonArray);
+        void loadRootSceneObjectDefinition();
 
         void setCameraMovementSpeed(float speed);
         float getCameraMovementSpeed();

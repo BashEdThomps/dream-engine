@@ -33,7 +33,7 @@ using nlohmann::json;
 
 namespace Dream
 {
-    class IDefinition
+    class IDefinition : public std::enable_shared_from_this<IDefinition>
     {
     protected:
         json mJson;

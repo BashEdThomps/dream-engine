@@ -48,7 +48,6 @@ namespace Dream
         vector<float> mClearColour;
         vector<float> mAmbientColour;
         shared_ptr<ProjectRuntime> mProjectRuntime;
-        shared_ptr<SceneRuntime> mThisShared;
 
         vector<shared_ptr<SceneObjectRuntime>> mSceneObjectRuntimeCleanUpQueue;
         shared_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;

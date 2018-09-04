@@ -76,7 +76,6 @@ namespace Dream
           ILoggable ("SceneObjectRuntime"),
           mSceneRuntime(sr),
           mParentRuntime(nullptr),
-          mThisShared(shared_ptr<SceneObjectRuntime>(this)),
           mLoaded(false),
           mHasFocus(false),
           mFollowsCamera(false)
@@ -84,7 +83,6 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Constructing Object" );
-        useDefinition(sd);
     }
 
     SceneObjectRuntime::~SceneObjectRuntime
@@ -103,7 +101,12 @@ namespace Dream
 
         if (hasScriptInstance())
         {
-            mSceneRuntime->getProjectRuntime()->getLuaComponent()->removeFromScriptMap(mThisShared);
+            mSceneRuntime
+                ->getProjectRuntime()
+                ->getLuaComponent()
+                ->removeFromScriptMap(
+                    dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+                );
         }
     }
 
@@ -524,7 +527,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Physics Object Asset Instance." );
-        mPhysicsObjectInstance = make_shared<PhysicsObjectInstance>(definition, mThisShared);
+        mPhysicsObjectInstance = make_shared<PhysicsObjectInstance>(definition, dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
         mPhysicsObjectInstance->load(mProjectPath);
     }
 
@@ -534,7 +537,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Path asset instance." );
-        mPathInstance = make_shared<PathInstance>(definition,mThisShared);
+        mPathInstance = make_shared<PathInstance>(definition,dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
         mPathInstance->load(mProjectPath);
     }
 
@@ -549,7 +552,7 @@ namespace Dream
             mSceneRuntime
                 ->getProjectRuntime()
                     ->getAudioComponent()
-                        ->newAudioInstance(definition,mThisShared)
+                        ->newAudioInstance(definition,dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()))
         );
         mAudioInstance->load(mProjectPath);
     }
@@ -565,7 +568,7 @@ namespace Dream
             mSceneRuntime->getProjectRuntime()->getModelCache(),
             mSceneRuntime->getProjectRuntime()->getTextureCache(),
             definition,
-            mThisShared
+            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
         );
 
         try
@@ -585,9 +588,9 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Script asset instance." );
-        mScriptInstance = make_shared<LuaScriptInstance>(definition,mThisShared);
+        mScriptInstance = make_shared<LuaScriptInstance>(definition,dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
         mScriptInstance->load(mProjectPath);
-        mSceneRuntime->getProjectRuntime()->getLuaComponent()->addToScriptMap(mThisShared,mScriptInstance);
+        mSceneRuntime->getProjectRuntime()->getLuaComponent()->addToScriptMap(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()),mScriptInstance);
     }
 
     void
@@ -600,7 +603,7 @@ namespace Dream
         (
             mSceneRuntime->getProjectRuntime()->getShaderCache(),
             definition,
-            mThisShared
+            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
         );
         mShaderInstance->load(mProjectPath);
     }
@@ -611,7 +614,10 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Light Asset instance." );
-        mLightInstance = make_shared<LightInstance>(definition, mThisShared);
+        mLightInstance = make_shared<LightInstance>(
+            definition,
+            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+        );
         mLightInstance->load(mProjectPath);
     }
 
@@ -625,7 +631,7 @@ namespace Dream
         (
             mSceneRuntime->getProjectRuntime()->getTextureCache(),
             definition,
-            mThisShared
+            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
         );
         mSpriteInstance->load(mProjectPath);
     }
@@ -645,7 +651,7 @@ namespace Dream
         (
             mSceneRuntime->getProjectRuntime()->getFontCache(),
             definition,
-            mThisShared
+            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
         );
         mFontInstance->load(mProjectPath);
     }
@@ -661,7 +667,7 @@ namespace Dream
             mChildRuntimes.size()
         );
 
-        bool retval = funk(mThisShared);
+        bool retval = funk(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
 
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -684,7 +690,7 @@ namespace Dream
             mChildRuntimes.size()
         );
 
-        shared_ptr<SceneObjectRuntime> retval = funk(mThisShared);
+        shared_ptr<SceneObjectRuntime> retval = funk(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
 
         if (retval != nullptr)
         {
@@ -796,7 +802,8 @@ namespace Dream
         (auto it = begin(definitions); it != end(definitions); it++)
         {
             shared_ptr<SceneObjectRuntime> child = make_shared<SceneObjectRuntime>(*it, mSceneRuntime);
-            child->setParentRuntime(mThisShared);
+            child->setParentRuntime(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
+            child->useDefinition(*it);
             mChildRuntimes.push_back(child);
         }
     }

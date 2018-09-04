@@ -26,7 +26,8 @@ using std::string;
 namespace Dream
 {
     class IDefinition;
-    class Runtime
+
+    class Runtime : public std::enable_shared_from_this<Runtime>
     {
     protected:
         shared_ptr<IDefinition> mDefinition;

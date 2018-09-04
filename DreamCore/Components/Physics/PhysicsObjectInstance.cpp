@@ -373,11 +373,7 @@ namespace Dream
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
     {
-        return dynamic_pointer_cast<PhysicsObjectDefinition>
-                (
-                    mDefinition
-                    ->getProject()
-                    ->getAssetDefinitionByUuid(uuid)
-                    );
+        auto proj = mDefinition->getProject().lock();
+        return dynamic_pointer_cast<PhysicsObjectDefinition>(proj->getAssetDefinitionByUuid(uuid));
     }
 } // End of Dream
