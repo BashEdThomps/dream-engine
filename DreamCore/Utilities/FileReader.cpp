@@ -28,7 +28,7 @@ namespace Dream
 
     FileReader::FileReader
     (string path)
-        : ILoggable ("FileReader")
+        : DreamObject ("FileReader")
     {
         mPath = path;
     }

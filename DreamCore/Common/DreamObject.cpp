@@ -1,23 +1,38 @@
-#include "ILoggable.h"
+#include "DreamObject.h"
+
+#include <iostream>
+
+using std::cerr;
+using std::endl;
 
 namespace Dream
 {
-    ILoggable::ILoggable(string classname) :_CLASSNAME_(classname) {}
+    DreamObject::DreamObject(string classname) :_CLASSNAME_(classname) {}
+    DreamObject::~DreamObject(){}
 
-    ILoggable::~ILoggable() {}
+    DreamObject* DreamObject::getRawPtr()
+    {
+        return this;
+    }
 
-    void ILoggable::setLogClassName(string name)
+    weak_ptr<DreamObject>
+    DreamObject::getWeakPtr()
+    {
+        return shared_from_this();
+    }
+
+    void DreamObject::setLogClassName(string name)
     {
        _CLASSNAME_ = name;
 
     }
 
-    string ILoggable::getClassName()
+    string DreamObject::getClassName()
     {
         return _CLASSNAME_;
     }
 
-    std::shared_ptr<spdlog::logger> ILoggable::getLog() const
+    std::shared_ptr<spdlog::logger> DreamObject::getLog() const
     {
         try
         {

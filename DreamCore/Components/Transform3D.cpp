@@ -31,7 +31,7 @@ namespace Dream
 {
 
     Transform3D::Transform3D
-    () : ILoggable("Transform3D")
+    () : DreamObject("Transform3D")
     {
         mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
         mTranslation   = vec3(0.0f);
@@ -40,7 +40,7 @@ namespace Dream
     }
 
     Transform3D::Transform3D(mat4 fromMatrix)
-        : ILoggable("Transform3D")
+        : DreamObject("Transform3D")
     {
        mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
 
@@ -58,7 +58,7 @@ namespace Dream
 
     Transform3D::Transform3D
     (json jsonTransform)
-    : ILoggable("Transform3D")
+    : DreamObject("Transform3D")
     {
         if (!jsonTransform[Constants::TRANSFORM_TYPE].is_null())
         {

@@ -25,7 +25,7 @@ public:
     ~PathEditorFormController() override;
 
     void setProjectPath(QString projectPath);
-    void setPathDefinition(PathDefinition* def);
+    void setPathDefinition(shared_ptr<PathDefinition> def);
     void getAllUpInYourFace();
 
 public slots:
@@ -52,7 +52,7 @@ private:
     void populate();
 
 protected:
-    PathDefinition* mPathDefinitionHandle;
+    shared_ptr<PathDefinition> mPathDefinitionHandle;
     QString mProjectPath;
     PathEditorTableModel mTableModel;
     Ui::PathEditorTableForm mUi;

@@ -4,7 +4,7 @@
 namespace Dream
 {
     AssimpMaterial::AssimpMaterial()
-        : ILoggable ("AssimpMaterial"),
+        : DreamObject ("AssimpMaterial"),
           mDiffuseTexture(nullptr),
           mSpecularTexture(nullptr),
           mNormalTexture(nullptr)

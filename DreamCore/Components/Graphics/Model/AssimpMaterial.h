@@ -2,17 +2,17 @@
 
 #include <assimp/types.h>
 #include "Texture.h"
-#include "../../../Common/ILoggable.h"
 #include <vector>
 #include <memory>
 #include "../Vertex.h"
+#include "../../../Common/DreamObject.h"
 
 using namespace std;
 
 namespace Dream
 {
     class AssimpMesh;
-    class AssimpMaterial : public ILoggable
+    class AssimpMaterial : public DreamObject
     {
     public:
         AssimpMaterial();

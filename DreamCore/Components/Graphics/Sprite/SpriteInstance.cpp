@@ -28,9 +28,10 @@ namespace Dream
     shared_ptr<SceneObjectRuntime> transform
     )
       : IAssetInstance(definition,transform),
-        ILoggable ("SpriteInstance"),
+
         mCache(cache)
   {
+    setLogClassName("SpriteInstance");
     loadExtraAttributes(mDefinition->getJson());
   }
 

@@ -25,7 +25,7 @@ using Dream::Constants;
 using Dream::IAssetDefinition;
 
 AssetDefinitionTreeModel::AssetDefinitionTreeModel
-(ProjectDefinition* project, QObject *parent)
+(shared_ptr<ProjectDefinition> project, QObject *parent)
     : QAbstractItemModel(parent)
 {
     auto log = spdlog::get("AssetDefinitionTreeModel");
@@ -315,7 +315,7 @@ AssetDefinitionTreeModel::setupModelData
     );
     mRootItem->appendChild(spriteTreeItem);
 
-    for (IAssetDefinition* definition : mProjectHandle->getAssetDefinitionsHandleList())
+    for (shared_ptr<IAssetDefinition> definition : mProjectHandle->getAssetDefinitionsList())
     {
         if (definition->getType().compare(Constants::ASSET_TYPE_PATH) == 0)
         {
@@ -461,7 +461,7 @@ bool AssetDefinitionTreeModel::setData(const QModelIndex& index, const QVariant&
     switch (data->getType())
     {
         case ASSET_DEFINITION:
-            static_cast<IAssetDefinition*>(data->getAssetDefinition())->setName(nameString);
+            dynamic_pointer_cast<IAssetDefinition>(data->getAssetDefinition())->setName(nameString);
             break;
         case ASSET_TREE_NODE:
             break;

@@ -49,7 +49,7 @@ MaterialShaderTableDelegate::createEditor
             {
                 combo->addItem(
                     QString::fromStdString(shaderDef->getName()),
-                    QVariant::fromValue(static_cast<void*>(shaderDef))
+                    QString::fromStdString(shaderDef->getUuid())
                 );
             }
             break;
@@ -57,7 +57,9 @@ MaterialShaderTableDelegate::createEditor
     return widget;
 }
 
-void MaterialShaderTableDelegate::setShaderDefinitions(const vector<ShaderDefinition*>& shaderDefinitions)
+void
+MaterialShaderTableDelegate::setShaderDefinitions
+(const vector<shared_ptr<ShaderDefinition>>& shaderDefinitions)
 {
     mShaderDefinitions = shaderDefinitions;
 }

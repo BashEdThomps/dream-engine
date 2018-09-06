@@ -25,7 +25,7 @@ namespace Dream
 
     Camera::Camera
     (vec3 translation, vec3 up, float yaw, float pitch)
-        : ILoggable("Camera"),
+        : DreamObject("Camera"),
           mFreeMode(true)
     {
         mFront = vec3(0.0f, 0.0f, -1.0f);
@@ -46,7 +46,7 @@ namespace Dream
             float upX, float upY, float upZ,
             float yaw, float pitch
             )
-        :ILoggable ("Camera"),
+        :DreamObject ("Camera"),
         mFreeMode(true)
     {
         mFront            = {0.0f, 0.0f, -1.0f};

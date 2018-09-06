@@ -33,20 +33,23 @@ ScriptEditorTabController::ScriptEditorTabController(QString fileType, QWidget *
     connect(mTextEdit,SIGNAL(textChanged()),this,SLOT(onTextChanged()));
 }
 
-ScriptEditorTabController::~ScriptEditorTabController()
+ScriptEditorTabController::~ScriptEditorTabController
+()
 {
     auto log = spdlog::get("ScriptEditorTabController");
     log->info("Destructing");
 }
 
-void ScriptEditorTabController::setAssetDefinitionHandle(Dream::IAssetDefinition* definitionHandle)
+void
+ScriptEditorTabController::setAssetDefinitionHandle
+(shared_ptr<IAssetDefinition> definitionHandle)
 {
     auto log = spdlog::get("ScriptEditorTabController");
     log->info("Using asset {}", definitionHandle->getNameAndUuidString());
     mAssetDefinitionHandle = definitionHandle;
 }
 
-Dream::IAssetDefinition*ScriptEditorTabController::getAssetDefinitionHandle()
+shared_ptr<IAssetDefinition> ScriptEditorTabController::getAssetDefinitionHandle()
 {
    return mAssetDefinitionHandle;
 }

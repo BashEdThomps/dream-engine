@@ -50,20 +50,20 @@ class AddAssetToSceneObjectAction : public QAction
 {
 public:
     AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, QObject *parent = nullptr);
+    (ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHadle, QObject *parent = nullptr);
 
     AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, const QString &text, QObject *parent = nullptr);
+    (ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHadle, const QString &text, QObject *parent = nullptr);
 
     AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, const QIcon &icon, const QString &text, QObject *parent = nullptr);
+    (ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHadle, const QIcon &icon, const QString &text, QObject *parent = nullptr);
 
     ScenegraphTreeItem* getItemHandle() const;
-    IAssetDefinition* getAssetDefinitionHandle() const;
+    shared_ptr<IAssetDefinition> getAssetDefinitionHandle() const;
 
 private:
     ScenegraphTreeItem* mItemHandle;
-    IAssetDefinition* mAssetDefinitionHandle;
+    shared_ptr<IAssetDefinition> mAssetDefinitionHandle;
 
 };
 
@@ -105,7 +105,7 @@ public:
     DeleteAssetDefinitionAction
     (const QIcon &icon, const QString &text, QObject *parent = nullptr);
 
-    IAssetDefinition* mItemHandle;
+    shared_ptr<IAssetDefinition> mItemHandle;
 };
 
 class MainWindowController : public QMainWindow
@@ -174,8 +174,8 @@ public slots:
     void onInvalidProjectDirectory(QString directory);
     void onNoSceneSelected();
     void showStatusBarMessage(QString msg);
-    void onSceneStopped(SceneDefinition* scene);
-    void onProjectDefinitionChanged(ProjectDefinition*);
+    void onSceneStopped(shared_ptr<SceneDefinition> scene);
+    void onProjectDefinitionChanged(shared_ptr<ProjectDefinition>);
     void onScenegraphTreeExpandRequested();
 
     void keyPressEvent(QKeyEvent*) override;
@@ -204,7 +204,7 @@ private slots:
     void onMenu_Debug_LogLevelChanged(bool);
 
 private:
-    ProjectDefinition* mProjectDefinitionHandle;
+    shared_ptr<ProjectDefinition> mProjectDefinitionHandle;
     bool shouldPassKey(int key);
     void setupGL(QWidget *parent);
     QOpenGLWindowComponent* mWindowComponentHandle;

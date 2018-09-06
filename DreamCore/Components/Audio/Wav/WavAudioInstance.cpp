@@ -23,9 +23,10 @@ namespace Dream
 
     WavAudioInstance::WavAudioInstance
     (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
-        : AudioInstance(definition, transform),
-          ILoggable ("WavAudioInstance")
+        : AudioInstance(definition, transform)
+
     {
+        setLogClassName("WavAudioInstance") ;
         return;
     }
 

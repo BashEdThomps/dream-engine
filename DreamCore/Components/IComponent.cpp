@@ -22,7 +22,7 @@ namespace Dream
 {
 
     IComponent::IComponent(bool parallel)
-        :ILoggable("IComponent"),
+        :DreamObject("IComponent"),
           mParallel(parallel),
           mRunning(false),
           mShouldUpdate(false)

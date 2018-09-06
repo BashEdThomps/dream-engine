@@ -19,6 +19,9 @@
 #pragma once
 
 #include "../AbstractPropertiesItem.h"
+#include <memory>
+
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -123,7 +126,7 @@ public:
     AssetDefinitionPropertiesItem
     (
         QString title,
-        IAssetDefinition* adHandle,
+        shared_ptr<IAssetDefinition> adHandle,
         AssetDefinitionProperty property = ASSET_DEFINITION_PROPERTY_NONE,
         AbstractPropertiesItem *parent = nullptr
     );
@@ -132,9 +135,9 @@ public:
     bool setData(int column,const QVariant &value) override;
     QVariant data(int column) override;
     AssetDefinitionProperty getProperty();
-    IAssetDefinition* getAssetDefinitionHandle();
+    shared_ptr<IAssetDefinition> getAssetDefinitionHandle();
 
 private:
-    IAssetDefinition* mAssetDefinitionHandle;
+    shared_ptr<IAssetDefinition> mAssetDefinitionHandle;
     AssetDefinitionProperty mProperty;
 };

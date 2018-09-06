@@ -26,6 +26,8 @@ namespace Dream
     class IAssetDefinition;
 }
 
+using std::shared_ptr;
+
 using Dream::SceneObjectDefinition;
 using Dream::IAssetDefinition;
 
@@ -69,7 +71,7 @@ public:
     SceneObjectPropertiesItem
     (
         QString name,
-        SceneObjectDefinition* sodHandle,
+        shared_ptr<SceneObjectDefinition> sodHandle,
         SceneObjectProperty property = SCENE_OBJECT_PROPERTY_NONE,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
@@ -77,21 +79,21 @@ public:
 
     ~SceneObjectPropertiesItem() override;
 
-    SceneObjectDefinition* getSceneObjectDefinitionHandle();
+    shared_ptr<SceneObjectDefinition> getSceneObjectDefinitionHandle();
     SceneObjectProperty getProperty();
 
     bool setData(int column, const QVariant &value) override;
     QVariant data(int column) override;
 
-    SceneObjectDefinition* getTargetSceneObjectDefinitionHandle() const;
-    void setTargetSceneObjectDefinitionHandle(SceneObjectDefinition* targetSceneObjectDefinitionHandle);
+    shared_ptr<SceneObjectDefinition> getTargetSceneObjectDefinitionHandle() const;
+    void setTargetSceneObjectDefinitionHandle(shared_ptr<SceneObjectDefinition> targetSceneObjectDefinitionHandle);
 
-    IAssetDefinition* getTargetAssetDefinitionHandle() const;
-    void setTargetAssetDefinitionHandle(IAssetDefinition* targetAssetDefinitionHandle);
+    shared_ptr<IAssetDefinition> getTargetAssetDefinitionHandle() const;
+    void setTargetAssetDefinitionHandle(shared_ptr<IAssetDefinition> targetAssetDefinitionHandle);
 
 private:
     SceneObjectProperty mProperty;
-    SceneObjectDefinition *mSceneObjectDefinitionHandle;
-    SceneObjectDefinition *mTargetSceneObjectDefinitionHandle;
-    IAssetDefinition *mTargetAssetDefinitionHandle;
+    shared_ptr<SceneObjectDefinition> mSceneObjectDefinitionHandle;
+    shared_ptr<SceneObjectDefinition> mTargetSceneObjectDefinitionHandle;
+    shared_ptr<IAssetDefinition> mTargetAssetDefinitionHandle;
 };

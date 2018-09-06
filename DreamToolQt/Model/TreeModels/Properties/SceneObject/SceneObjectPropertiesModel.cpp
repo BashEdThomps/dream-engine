@@ -29,7 +29,7 @@ using Dream::IAssetDefinition;
 using Dream::SceneObjectDefinition;
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
-(SceneObjectDefinition *sceneObject, QTreeView *parent)
+(shared_ptr<SceneObjectDefinition> sceneObject, QTreeView *parent)
     : AbstractPropertiesModel(new SceneObjectPropertiesTreeDelegate(this,parent), parent)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
@@ -115,17 +115,17 @@ SceneObjectPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyButton_RemoveAsset(IAssetDefinition*)),
+        SIGNAL(notifyButton_RemoveAsset(shared_ptr<IDefinition>)),
         this,
-        SLOT(onButton_RemoveAsset(IAssetDefinition*))
+        SLOT(onButton_RemoveAsset(shared_ptr<IDefinition>))
     );
 
     connect
     (
         delegate,
-        SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*)),
+        SIGNAL(notifyButton_RemoveChild(shared_ptr<IDefinition>)),
         this,
-        SLOT(onButton_RemoveChild(SceneObjectDefinition*))
+        SLOT(onButton_RemoveChild(shared_ptr<IDefinition>))
     );
 }
 
@@ -371,9 +371,10 @@ SceneObjectPropertiesModel::createAssetInstancesProperty
 
     for (std::string adUuid : definitionsToLoad)
     {
-       IAssetDefinition* definition = mSceneObjectDefinitionHandle->getSceneDefinitionHandle()
-               ->getProjectDefinitionHandle()
-               ->getAssetDefinitionHandleByUuid(adUuid);
+       shared_ptr<IAssetDefinition> definition = mSceneObjectDefinitionHandle
+           ->getSceneDefinition()
+               ->getProjectDefinition()
+                ->getAssetDefinitionByUuid(adUuid);
 
        SceneObjectPropertiesItem *adItem = new SceneObjectPropertiesItem
        (
@@ -402,7 +403,7 @@ SceneObjectPropertiesModel::createChildrenProperty
     );
     mRootItem->appendChild(childrenItem);
 
-    for (SceneObjectDefinition* child : mSceneObjectDefinitionHandle->getChildDefinitionsHandleList())
+    for (shared_ptr<SceneObjectDefinition> child : mSceneObjectDefinitionHandle->getChildDefinitionsList())
     {
         SceneObjectPropertiesItem *childItem = new SceneObjectPropertiesItem
         (
@@ -458,7 +459,7 @@ SceneObjectPropertiesModel::onButton_CaptureScale
 
 void
 SceneObjectPropertiesModel::onButton_RemoveAsset
-(IAssetDefinition* adHandle)
+(shared_ptr<IDefinition> adHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
     log->info("RemoveAsset");
@@ -467,7 +468,7 @@ SceneObjectPropertiesModel::onButton_RemoveAsset
 
 void
 SceneObjectPropertiesModel::onButton_RemoveChild
-(SceneObjectDefinition* sodHandle)
+(shared_ptr<IDefinition> sodHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
     log->info("RemoveChild");

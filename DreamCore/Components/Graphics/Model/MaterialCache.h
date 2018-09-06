@@ -27,7 +27,7 @@
 
 #include "Texture.h"
 #include "../../../Common/Constants.h"
-#include "../../../Common/ILoggable.h"
+#include "../../../Common/DreamObject.h"
 #include "AssimpMaterial.h"
 
 
@@ -36,7 +36,7 @@ using namespace std;
 namespace Dream
 {
     class AssimpMesh;
-    class MaterialCache : public ILoggable
+    class MaterialCache : public DreamObject
     {
         vector<shared_ptr<Texture>> mTextureCache;
         vector<shared_ptr<AssimpMaterial>> mMaterialCache;

@@ -36,7 +36,7 @@ namespace Dream
     PhysicsMotionState::PhysicsMotionState
     (Transform3D& dreamTransform)
         : btMotionState(),
-          ILoggable("PhysicsMotionState"),
+          DreamObject("PhysicsMotionState"),
           mDreamTransform(dreamTransform)
     {
         auto log = getLog();

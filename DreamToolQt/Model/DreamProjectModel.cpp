@@ -19,13 +19,18 @@
 
 #include <QTimer>
 #include <QDebug>
+#include <spdlog/spdlog.h>
 
 DreamProjectModel::DreamProjectModel
-(QObject *parent,QOpenGLWindowComponent *windowComponent)
+(QObject *parent,shared_ptr<QOpenGLWindowComponent> windowComponent)
     : QObject(parent),
-      mWindowComponentHandle(windowComponent),
-      mSelectedSceneHandle(nullptr)
+      mWindowComponent(windowComponent)
 {
+    auto log = spdlog::get("DreamProjectModel");
+    if (log == nullptr)
+    {
+        log = spdlog::stdout_color_mt("DreamProjectModel");
+    }
 }
 
 void
@@ -35,7 +40,7 @@ DreamProjectModel::setupHeartbeatTimer
     if (!mHeartbeatTimer)
     {
         mHeartbeatTimer.reset(new QTimer(this));
-        connect(mHeartbeatTimer.get(), SIGNAL(timeout()), mWindowComponentHandle, SLOT(update()),Qt::DirectConnection);
+        connect(mHeartbeatTimer.get(), SIGNAL(timeout()), mWindowComponent.get(), SLOT(update()),Qt::DirectConnection);
         mHeartbeatTimer->start(16);
     }
 }
@@ -45,32 +50,32 @@ DreamProjectModel::~DreamProjectModel
 {
 }
 
-Project*
+shared_ptr<Project>
 DreamProjectModel::getProject
 ()
 {
-    return mProject.get();
+    return mProject;
 }
 
-vector<SceneDefinition*>
+vector<shared_ptr<SceneDefinition>>
 DreamProjectModel::getScenes
 ()
 {
-    return mProject->getProjectDefinitionHandle()->getSceneDefinitionsHandleList();
+    return mProject->getProjectDefinition()->getSceneDefinitionsList();
 }
 
-vector<IAssetDefinition*>
+vector<shared_ptr<IAssetDefinition> >
 DreamProjectModel::getAssetDefinitions
 ()
 {
-    return mProject->getProjectDefinitionHandle()->getAssetDefinitionsHandleList();
+    return mProject->getProjectDefinition()->getAssetDefinitionsList();
 }
 
 bool
 DreamProjectModel::loadProject
 (QString path)
 {
-    mProject.reset(new Project(mWindowComponentHandle));
+    mProject = make_shared<Project>(mWindowComponent);
     return mProject->openFromDirectory(path.toStdString());
 }
 
@@ -78,76 +83,79 @@ void
 DreamProjectModel::setProjectName
 (string name)
 {
-    mProject->getProjectDefinitionHandle()->setName(name);
+    mProject->getProjectDefinition()->setName(name);
 }
 
 void
 DreamProjectModel::setProjectAuthor
 (string author)
 {
-    mProject->getProjectDefinitionHandle()->setAuthor(author);
+    mProject->getProjectDefinition()->setAuthor(author);
 }
 
 void
 DreamProjectModel::setProjectDescription
 (string desc)
 {
-    mProject->getProjectDefinitionHandle()->setDescription(desc);
+    mProject->getProjectDefinition()->setDescription(desc);
 }
 
 void
 DreamProjectModel::setProjectStartupSceneByUuid
 (string scene)
 {
-    mProject->getProjectDefinitionHandle()->setStartupSceneUuid(scene);
+    mProject->getProjectDefinition()->setStartupSceneUuid(scene);
 }
 
 void
 DreamProjectModel::setProjectWindowWidth
 (int width)
 {
-    mProject->getProjectDefinitionHandle()->setWindowWidth(width);
+    mProject->getProjectDefinition()->setWindowWidth(width);
 }
 
 void
 DreamProjectModel::setProjectWindowHeight
 (int height)
 {
-    mProject->getProjectDefinitionHandle()->setWindowHeight(height);
+    mProject->getProjectDefinition()->setWindowHeight(height);
 }
 
-IAssetDefinition*
-DreamProjectModel::getAssetDefinitionHandleByUuid
+shared_ptr<IAssetDefinition>
+DreamProjectModel::getAssetDefinitionByUuid
 (std::string uuid)
 {
-    return mProject->getProjectDefinitionHandle()->getAssetDefinitionHandleByUuid(uuid);
+    return mProject
+        ->getProjectDefinition()
+        ->getAssetDefinitionByUuid(uuid);
 }
 
-SceneDefinition*
-DreamProjectModel::getSceneDefinitionHandleByUuid
+shared_ptr<SceneDefinition>
+DreamProjectModel::getSceneDefinitionByUuid
 (string uuid)
 {
-    return getProject()->getProjectDefinitionHandle()->getSceneDefinitionHandleByUuid(uuid);
+    return getProject()->getProjectDefinition()->getSceneDefinitionByUuid(uuid);
 }
 
 bool
 DreamProjectModel::startSceneRuntimeFromDefinition
-(SceneDefinition* definitionHandle)
+(shared_ptr<SceneDefinition> definition)
 {
-    if (!definitionHandle)
+    auto log = spdlog::get("DreamProjectModel");
+    if (!definition)
     {
-        qDebug() << "DreamModel: No SceneDefinition selected";
+        log->info("No SceneDefinition selected");
         return false;
     }
-    qDebug() << endl << "          ===== DreamModel - Start Scene =====" << endl;
+    log->info("\n===== DreamModel - Start Scene =====");
 
-    ProjectRuntime* prHandle = mProject->createProjectRuntime();
+    shared_ptr<ProjectRuntime> prHandle = mProject->createProjectRuntime();
     if (prHandle != nullptr)
     {
-        SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definitionHandle);
+        shared_ptr<SceneRuntime> srHandle = prHandle->constructActiveSceneRuntime(definition);
         if (srHandle != nullptr)
         {
-            mWindowComponentHandle->setProjectRuntimeHandle(mProject->getProjectRuntimeHandle());
+            mWindowComponent->setProjectRuntime(mProject->getProjectRuntime());
             setupHeartbeatTimer();
             return srHandle != nullptr;
         }
@@ -155,33 +163,33 @@ DreamProjectModel::startSceneRuntimeFromDefinition
     return false;
 }
 
-SceneDefinition*
-DreamProjectModel::getSelectedSceneDefinitionHandle
+shared_ptr<SceneDefinition>
+DreamProjectModel::getSelectedSceneDefinition
 ()
 {
-    return mSelectedSceneHandle;
+    return mSelectedScene;
 }
 
 void
-DreamProjectModel::setSelectedSceneDefinitionHandle
-(SceneDefinition* selectedScene)
+DreamProjectModel::setSelectedSceneDefinition
+(shared_ptr<SceneDefinition>  selectedScene)
 {
-    mSelectedSceneHandle = selectedScene;
+    mSelectedScene = selectedScene;
 }
 
-SceneRuntime*
+shared_ptr<SceneRuntime>
 DreamProjectModel::stopActiveSceneRuntime
 ()
 {
-    mWindowComponentHandle->setProjectRuntimeHandle(nullptr);
+    mWindowComponent->setProjectRuntime(nullptr);
 
     if (mProject)
     {
-        ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> prHandle = mProject->getProjectRuntime();
         if (prHandle)
         {
-            SceneRuntime *srHandle = nullptr;
-            srHandle = prHandle->getActiveSceneRuntimeHandle();
+            shared_ptr<SceneRuntime> srHandle = nullptr;
+            srHandle = prHandle->getActiveSceneRuntime();
 
             if (srHandle)
             {
@@ -195,7 +203,7 @@ DreamProjectModel::stopActiveSceneRuntime
         if (mHeartbeatTimer != nullptr)
         {
             mHeartbeatTimer->stop();
-            mHeartbeatTimer.reset(nullptr);
+            mHeartbeatTimer.reset();
         }
     }
     return nullptr;
@@ -211,10 +219,10 @@ void DreamProjectModel::setPhysicsDebug(bool enabled)
 {
     if (mProject)
     {
-        ProjectRuntime* prHandle = mProject->getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> prHandle = mProject->getProjectRuntime();
         if (prHandle)
         {
-            prHandle->getPhysicsComponentHandle()->setDebug(enabled);
+            prHandle->getPhysicsComponent()->setDebug(enabled);
         }
     }
 }
@@ -224,19 +232,19 @@ DreamProjectModel::closeProject
 ()
 {
     stopActiveSceneRuntime();
-    mProject.reset(nullptr);
+    mProject.reset();
 }
 
-IDefinition*
+shared_ptr<IDefinition>
 DreamProjectModel::createNewAssetDefinition
 (AssetType type)
 {
     if (mProject)
     {
-        ProjectDefinition* pdHandle = mProject->getProjectDefinitionHandle();
+        shared_ptr<ProjectDefinition> pdHandle = mProject->getProjectDefinition();
         if (pdHandle)
         {
-            IAssetDefinition *adHandle = pdHandle->createNewAssetDefinition(type);
+            shared_ptr<IAssetDefinition> adHandle = pdHandle->createNewAssetDefinition(type);
             if (adHandle)
             {
                 return adHandle;

@@ -45,9 +45,9 @@ ProjectPropertiesTreeDelegate::createStartupSceneComboBox
 const
 {
     QComboBox* retval = new QComboBox(parent);
-    ProjectDefinition* pdHandle =  ppiItem->getProjectDefinitionHandle();
+    shared_ptr<ProjectDefinition> pdHandle =  ppiItem->getProjectDefinition();
     QStringList sceneList;
-    for (SceneDefinition* sdHandle : pdHandle->getSceneDefinitionsHandleList())
+    for (shared_ptr<SceneDefinition> sdHandle : pdHandle->getSceneDefinitionsList())
     {
         sceneList << QString::fromStdString(sdHandle->getName());
     }

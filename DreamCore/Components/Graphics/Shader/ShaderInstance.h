@@ -29,7 +29,7 @@
 #include <glm/matrix.hpp>
 
 #include "../../../Common/Constants.h"
-#include "../../../Common/ILoggable.h"
+#include "../../../Common/DreamObject.h"
 #include "../../IAssetInstance.h"
 
 using std::string;
@@ -65,7 +65,7 @@ namespace Dream
         FLOAT4,
     };
 
-    class ShaderUniform : ILoggable
+    class ShaderUniform : DreamObject
     {
     public:
         ShaderUniform(UniformType type, string name, int count, void* data);
@@ -96,7 +96,7 @@ namespace Dream
     };
 
 
-    class ShaderInstance : public IAssetInstance, ILoggable
+    class ShaderInstance : public IAssetInstance
     {
     private:
         const static unsigned int MAX_LIGHTS;

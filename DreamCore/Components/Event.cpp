@@ -23,7 +23,7 @@
 namespace Dream
 {
     Event::Event(string sender, string type)
-        : ILoggable("Event")
+        : DreamObject("Event")
     {
         setAttribute(Constants::EVENT_SENDER,sender);
         setAttribute(Constants::EVENT_TYPE,type);

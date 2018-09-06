@@ -24,6 +24,7 @@ namespace Dream
     IDefinition::IDefinition
     (json data)
         : // Init list
+          DreamObject("IDefinition"),
           mJson(data)
     {
 

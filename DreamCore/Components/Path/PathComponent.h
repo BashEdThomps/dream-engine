@@ -20,7 +20,6 @@
 
 #include "PathInstance.h"
 #include "../IComponent.h"
-#include "../../Common/ILoggable.h"
 
 namespace Dream
 {

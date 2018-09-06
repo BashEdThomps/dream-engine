@@ -20,13 +20,13 @@
 #include <iostream>
 #include <map>
 
-#include "../../Common/ILoggable.h"
+#include "../../Common/DreamObject.h"
 
 using namespace std;
 
 namespace Dream
 {
-    class LuaScriptCache : public ILoggable
+    class LuaScriptCache : public DreamObject
     {
     private:
         map<string,string> mScriptCache;

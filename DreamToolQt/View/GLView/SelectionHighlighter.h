@@ -27,17 +27,17 @@ using Dream::BoundingBox;
 class SelectionHighlighter : public GLDrawable
 {
 public:
-    explicit SelectionHighlighter(QObject *parent = 0);
-    ~SelectionHighlighter();
+    explicit SelectionHighlighter(QObject *parent = nullptr);
+    ~SelectionHighlighter() override;
 
-    void setSelectedSceneObjectRuntimeHandle(SceneObjectRuntime* object);
-    SceneObjectRuntime* getSelectedObject();
+    void setSelectedSceneObjectRuntimeHandle(shared_ptr<SceneObjectRuntime> object);
+    shared_ptr<SceneObjectRuntime> getSelectedObject();
     void init() override;
     void draw() override;
     void initShader() override;
 
 private:
-    SceneObjectRuntime* mSelectedObjectHandle;
+    shared_ptr<SceneObjectRuntime> mSelectedObjectHandle;
     void updateVertexBuffer();
     vec3 mSelectionColour;
     vec3 mXColour;

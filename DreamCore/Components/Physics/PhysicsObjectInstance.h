@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../IAssetInstance.h"
-#include "../../Common/ILoggable.h"
 
 #include <string>
 #include <map>
@@ -23,7 +22,7 @@ namespace Dream
     class PhysicsMotionState;
     class PhysicsObjectDefinition;
 
-    class PhysicsObjectInstance : public IAssetInstance, ILoggable
+    class PhysicsObjectInstance : public IAssetInstance
     {
     public:
         static void clearAssimpModelCache();

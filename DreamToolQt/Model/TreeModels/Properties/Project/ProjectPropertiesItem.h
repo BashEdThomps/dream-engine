@@ -19,6 +19,9 @@
 #pragma once
 
 #include "../AbstractPropertiesItem.h"
+#include <memory>
+
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -45,20 +48,20 @@ public:
     ProjectPropertiesItem
     (
         QString title,
-        ProjectDefinition* pdHandle,
+        shared_ptr<ProjectDefinition> pdHandle,
         ProjectProperty property = PROJECT_PROPERTY_NONE,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
     );
-    ~ProjectPropertiesItem();
+    ~ProjectPropertiesItem() override;
 
     QVariant data(int column) override;
     bool setData(int column, const QVariant &value) override;
 
     ProjectProperty getProperty();
-    ProjectDefinition* getProjectDefinitionHandle();
+    shared_ptr<ProjectDefinition> getProjectDefinition();
 
 private:
-    ProjectDefinition *mProjectDefinitionHandle;
+    shared_ptr<ProjectDefinition> mProjectDefinitionHandle;
     ProjectProperty mProperty;
 };

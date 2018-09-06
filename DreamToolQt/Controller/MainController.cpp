@@ -47,11 +47,7 @@ MainController::MainController
 (MainWindowController* parent)
     : QObject(parent),
       mMainWindowHandle(parent),
-      mWindowComponentHandle(parent->getWindowComponent()),
-      mSelectedProjectDefinitionHandle(nullptr),
-      mSelectedAssetDefinitionHandle(nullptr),
-      mSelectedSceneDefinitionHandle(nullptr),
-      mSelectedSceneObjectDefinitionHandle(nullptr),
+      mWindowComponent(parent->getWindowComponent()),
       mLastDirectory(QDir::home())
 {
     auto log = spdlog::get("MainController");
@@ -63,7 +59,7 @@ MainController::MainController
 
     log->info( "Constructing Object");
 
-    mDreamProjectModel.reset(new DreamProjectModel(this,mWindowComponentHandle));
+    mDreamProjectModel.reset(new DreamProjectModel(this,mWindowComponent));
 
     mMacOsOpenModel.reset(
         new MacOSOpenModel(
@@ -118,8 +114,8 @@ MainController::setupUI
         SLOT(onPropertiesTreeDataChanged())
     );
     connect(
-        this, SIGNAL(notifyProjectDefinitionChanged(ProjectDefinition*)),
-        mMainWindowHandle, SLOT(onProjectDefinitionChanged(ProjectDefinition*))
+        this, SIGNAL(notifyProjectDefinitionChanged(shared_ptr<ProjectDefinition>)),
+        mMainWindowHandle, SLOT(onProjectDefinitionChanged(shared_ptr<ProjectDefinition>))
     );
     connect
     (
@@ -187,16 +183,16 @@ MainController::setupUI_GLWidgets
 ()
 {
     mGrid.reset(new Grid(this));
-    mWindowComponentHandle->setGridHandle(getGridHandle());
+    mWindowComponent->setGridHandle(getGridHandle());
 
     mSelectionHighlighter.reset(new SelectionHighlighter(this));
-    mWindowComponentHandle->setSelectionHighlighterHandle(getSelectionHighlighterHandle());
+    mWindowComponent->setSelectionHighlighterHandle(getSelectionHighlighterHandle());
 
     mRelationshipTree.reset(new RelationshipTree(this));
-    mWindowComponentHandle->setRelationshipTreeHandle(getRelationshipTreeHandle());
+    mWindowComponent->setRelationshipTreeHandle(getRelationshipTreeHandle());
 
     mPathPointViewer.reset(new PathPointViewer(this));
-    mWindowComponentHandle->setPathPointViewerHandle(getPathPointViewerHandle());
+    mWindowComponent->setPathPointViewerHandle(getPathPointViewerHandle());
 }
 
 void
@@ -224,129 +220,129 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_AudioFile(IAssetDefinition*)),
+                        SIGNAL(notifyButton_AudioFile(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_AudioFile(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_AudioFile(shared_ptr<IAssetDefinition> ))
                         );
 
             // Font File
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_FontFile(IAssetDefinition*)),
+                        SIGNAL(notifyButton_FontFile(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_FontFile(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_FontFile(shared_ptr<IAssetDefinition> ))
                         );
 
             // Model File
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_ModelFile(IAssetDefinition*)),
+                        SIGNAL(notifyButton_ModelFile(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_ModelFile(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_ModelFile(shared_ptr<IAssetDefinition> ))
                         );
 
             // Model Additional Files
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_ModelAdditionalFiles(IAssetDefinition*)),
+                        SIGNAL(notifyButton_ModelAdditionalFiles(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(shared_ptr<IAssetDefinition> ))
                         );
 
             // Remove Files
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_RemoveFiles(IAssetDefinition*)),
+                        SIGNAL(notifyButton_RemoveFiles(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_RemoveFiles(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_RemoveFiles(shared_ptr<IAssetDefinition> ))
                         );
             // Model Material/Shader Map
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_ModelMaterialShaderMap(IAssetDefinition*)),
+                SIGNAL(notifyButton_ModelMaterialShaderMap(shared_ptr<IAssetDefinition> )),
                 this,
-                SLOT(onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefinition*))
+                SLOT(onAssetDefinitionProperty_ModelMaterialShaderMap(shared_ptr<IAssetDefinition> ))
             );
 
             // Edit Script
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_EditScript(IAssetDefinition*)),
+                        SIGNAL(notifyButton_EditScript(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_EditScript(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_EditScript(shared_ptr<IAssetDefinition> ))
                         );
 
             // Edit Vertex Shader
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_EditShader(IAssetDefinition*)),
+                        SIGNAL(notifyButton_EditShader(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_EditShader(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_EditShader(shared_ptr<IAssetDefinition> ))
                         );
 
             // Script Template
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyCombo_ScriptTemplateChanged(IAssetDefinition*,QString)),
+                        SIGNAL(notifyCombo_ScriptTemplateChanged(shared_ptr<IAssetDefinition> ,QString)),
                         this,
-                        SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*,QString))
+                        SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(shared_ptr<IAssetDefinition> ,QString))
                         );
 
             // Shader Template
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyCombo_ShaderTemplateChanged(IAssetDefinition*,QString)),
+                        SIGNAL(notifyCombo_ShaderTemplateChanged(shared_ptr<IAssetDefinition> ,QString)),
                         this,
-                        SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*,QString))
+                        SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(shared_ptr<IAssetDefinition> ,QString))
                         );
 
             // PhysicsObject Mesh File
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*)),
+                        SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(shared_ptr<IAssetDefinition> )),
                         this,
-                        SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition*))
+                        SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(shared_ptr<IAssetDefinition> ))
                         );
 
             // Light Colour
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_LightChooseAmbient(IAssetDefinition*)),
+                SIGNAL(notifyButton_LightChooseAmbient(shared_ptr<IAssetDefinition> )),
                 this,
-                SLOT(onAssetDefinitionProperty_LightChooseAmbient(IAssetDefinition*))
+                SLOT(onAssetDefinitionProperty_LightChooseAmbient(shared_ptr<IAssetDefinition> ))
             );
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_LightChooseDiffuse(IAssetDefinition*)),
+                SIGNAL(notifyButton_LightChooseDiffuse(shared_ptr<IAssetDefinition> )),
                 this,
-                SLOT(onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefinition*))
+                SLOT(onAssetDefinitionProperty_LightChooseDiffuse(shared_ptr<IAssetDefinition> ))
             );
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_LightChooseSpecular(IAssetDefinition*)),
+                SIGNAL(notifyButton_LightChooseSpecular(shared_ptr<IAssetDefinition> )),
                 this,
-                SLOT(onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition*))
+                SLOT(onAssetDefinitionProperty_LightChooseSpecular(shared_ptr<IAssetDefinition> ))
             );
             // Path List
             connect
             (
                 mPropertiesModel.get(),
-                SIGNAL(notifyButton_PathList(IAssetDefinition*)),
+                SIGNAL(notifyButton_PathList(shared_ptr<IAssetDefinition> )),
                 this,
-                SLOT(onAssetDefinitionProperty_PathList(IAssetDefinition*))
+                SLOT(onAssetDefinitionProperty_PathList(shared_ptr<IAssetDefinition> ))
             );
             break;
 
@@ -367,7 +363,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 {
     auto log = spdlog::get("MainController");
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
-    SceneObjectRuntime *selectedSceneObjectRuntime = nullptr;
+    shared_ptr<SceneObjectRuntime> selectedSceneObjectRuntime = nullptr;
 
     // Reset the selected object
     if (mSelectionHighlighter)
@@ -388,10 +384,13 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE:
             log->info( "Selected a scene");
-            mSelectedSceneDefinitionHandle = static_cast<SceneDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
-            mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
+            mSelectedSceneDefinitionHandle = dynamic_pointer_cast<SceneDefinition>(
+                    static_cast<ScenegraphTreeItem*>(item)
+                        ->getItem()
+            );
+            mDreamProjectModel->setSelectedSceneDefinition(mSelectedSceneDefinitionHandle);
 
-            if (mSelectedSceneDefinitionHandle)
+            if (mSelectedSceneDefinitionHandle != nullptr)
             {
                 mPropertiesModel.reset(new ScenePropertiesModel(mSelectedSceneDefinitionHandle,propertiesTreeView));
             }
@@ -401,92 +400,96 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_CaptureCameraTranslation(SceneDefinition*)),
+                        SIGNAL(notifyButton_CaptureCameraTranslation(shared_ptr<SceneDefinition> )),
                         this,
-                        SLOT(onSceneProperty_CaptureCameraTranslation(SceneDefinition*))
+                        SLOT(onSceneProperty_CaptureCameraTranslation(shared_ptr<SceneDefinition> ))
                         );
 
             // Capture Camera Orientation
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_CaptureCameraLookAt(SceneDefinition*)),
+                        SIGNAL(notifyButton_CaptureCameraLookAt(shared_ptr<SceneDefinition> )),
                         this,
-                        SLOT(onSceneProperty_CaptureCameraLookAt(SceneDefinition*))
+                        SLOT(onSceneProperty_CaptureCameraLookAt(shared_ptr<SceneDefinition> ))
                         );
 
             // Choose Clear Colour
             connect
                     (
-                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseClearColour(SceneDefinition*)),
-                        this, SLOT(onSceneProperty_ChooseClearColour(SceneDefinition*))
+                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseClearColour(shared_ptr<SceneDefinition> )),
+                        this, SLOT(onSceneProperty_ChooseClearColour(shared_ptr<SceneDefinition> ))
                         );
             // Choose Ambient Colour
             connect
                     (
-                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseAmbientColour(SceneDefinition*)),
-                        this, SLOT(onSceneProperty_ChooseAmbientColour(SceneDefinition*))
+                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseAmbientColour(shared_ptr<SceneDefinition> )),
+                        this, SLOT(onSceneProperty_ChooseAmbientColour(shared_ptr<SceneDefinition> ))
                         );
             break;
 
         case ScenegraphTreeItemType::SCENEGRAPH_SCENE_OBJECT:
             log->info( "Selected a scene object");
-            mSelectedSceneObjectDefinitionHandle = static_cast<SceneObjectDefinition*>(static_cast<ScenegraphTreeItem*>(item)->getItem());
-            mPropertiesModel.reset(new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView));
+            mSelectedSceneObjectDefinitionHandle = dynamic_pointer_cast<SceneObjectDefinition>(
+                static_cast<ScenegraphTreeItem*>(item)->getItem()
+            );
 
+            mPropertiesModel.reset(
+                new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView)
+            );
 
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_CaptureTranslation(SceneObjectDefinition*)),
+                        SIGNAL(notifyButton_CaptureTranslation(shared_ptr<SceneObjectDefinition>)),
                         this,
-                        SLOT(onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*))
+                        SLOT(onSceneObjectProperty_CaptureTranslation(shared_ptr<SceneObjectDefinition>))
                         );
 
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_CaptureOrientation(SceneObjectDefinition*)),
+                        SIGNAL(notifyButton_CaptureOrientation(shared_ptr<SceneObjectDefinition>)),
                         this,
-                        SLOT(onSceneObjectProperty_CaptureOrientation(SceneObjectDefinition*))
+                        SLOT(onSceneObjectProperty_CaptureOrientation(shared_ptr<SceneObjectDefinition>))
                         );
 
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_CaptureScale(SceneObjectDefinition*)),
+                        SIGNAL(notifyButton_CaptureScale(shared_ptr<SceneObjectDefinition>)),
                         this,
-                        SLOT(onSceneObjectProperty_CaptureScale(SceneObjectDefinition*))
+                        SLOT(onSceneObjectProperty_CaptureScale(shared_ptr<SceneObjectDefinition>))
                         );
 
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*)),
+                        SIGNAL(notifyButton_RemoveAsset(shared_ptr<SceneObjectDefinition>,shared_ptr<IDefinition> )),
                         this,
-                        SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,IAssetDefinition*))
+                        SLOT(onSceneObjectProperty_RemoveAsset(shared_ptr<SceneObjectDefinition>,shared_ptr<IDefinition> ))
                         );
 
             connect
                     (
                         mPropertiesModel.get(),
-                        SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*)),
+                        SIGNAL(notifyButton_RemoveChild(shared_ptr<SceneObjectDefinition>,shared_ptr<IDefinition>)),
                         this,
-                        SLOT(onSceneObjectProperty_RemoveChild(SceneObjectDefinition*,SceneObjectDefinition*))
+                        SLOT(onSceneObjectProperty_RemoveChild(shared_ptr<SceneObjectDefinition>,shared_ptr<IDefinition>))
                         );
 
             if (mSelectionHighlighter)
             {
                 if (mDreamProjectModel->getProject()->hasProjectRuntime())
                 {
-                    ProjectRuntime* prHandle = mDreamProjectModel->getProject()->getProjectRuntimeHandle();
+                    auto prHandle = mDreamProjectModel->getProject()->getProjectRuntime();
                     if (prHandle->hasActiveSceneRuntime())
                     {
                         selectedSceneObjectRuntime = mDreamProjectModel
                                 ->getProject()
-                                ->getProjectRuntimeHandle()
-                                ->getActiveSceneRuntimeHandle()
-                                ->getSceneObjectRuntimeHandleByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
+                                ->getProjectRuntime()
+                                ->getActiveSceneRuntime()
+                                ->getSceneObjectRuntimeByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
                         mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(selectedSceneObjectRuntime);
                     }
                 }
@@ -781,8 +784,8 @@ MainController::connectUI
     // Valid Scene Selected
     connect
             (
-                mDreamProjectModel.get(), SIGNAL(notifySelectedSceneChanged(SceneDefinition*)),
-                this, SLOT(onUI_SelectedSceneChanged(SceneDefinition*))
+                mDreamProjectModel.get(), SIGNAL(notifySelectedSceneChanged(shared_ptr<SceneDefinition> )),
+                this, SLOT(onUI_SelectedSceneChanged(shared_ptr<SceneDefinition> ))
                 );
     // Invalid Project Directory
     connect
@@ -846,7 +849,7 @@ MainController::setActionsEnabled_ValidProject
 
 QStringListModel*
 MainController::getSceneNamesListModel
-(vector<SceneDefinition*> sceneList)
+(vector<shared_ptr<SceneDefinition>> sceneList)
 {
     QStringList sceneNameList;
     mSceneListModel.reset(new QStringListModel(mMainWindowHandle));
@@ -866,7 +869,7 @@ MainController::onAction_Scene_Play
 {
     auto log = spdlog::get("MainController");
     log->info( "onReloadProject Clicked");
-    SceneDefinition *sceneDefinitionHandle = mDreamProjectModel->getSelectedSceneDefinitionHandle();
+    shared_ptr<SceneDefinition> sceneDefinitionHandle = mDreamProjectModel->getSelectedSceneDefinition();
     if (sceneDefinitionHandle)
     {
         mDreamProjectModel->startSceneRuntimeFromDefinition(sceneDefinitionHandle);
@@ -897,7 +900,7 @@ void MainController::onAction_ControlSceneTriggered(bool activated)
 {
     auto log = spdlog::get("MainController");
     log->critical("Scene Control Enabled {}",activated);
-   mWindowComponentHandle->setControlScene(activated);
+   mWindowComponent->setControlScene(activated);
 }
 
 void
@@ -968,7 +971,7 @@ MainController::onAction_File_New ()
         }
 
         bool createResult = mProjectDirectoryModel.createNewProjectTree(mProjectDirectory);
-        ProjectDefinition* newDef = Project::createNewProjectDefinition(mProjectDirectoryModel.getProjectDirectoryName().toStdString());
+        shared_ptr<ProjectDefinition> newDef = Project::createNewProjectDefinition(mProjectDirectoryModel.getProjectDirectoryName().toStdString());
         mProjectDirectoryModel.setProjectDefinitionHandle(newDef);
         bool projectFileResult = mProjectDirectoryModel.writeProjectFile();
 
@@ -1014,7 +1017,7 @@ MainController::onAction_File_Save
         emit notifyStatusBarProjectLoaded(
                     QString::fromStdString(
                         "Successfuly Saved Project: " +
-                        mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
+                        mDreamProjectModel->getProject()->getProjectDefinition()->getNameAndUuidString()
                         )
                     );
     }
@@ -1023,7 +1026,7 @@ MainController::onAction_File_Save
         emit notifyStatusBarProjectLoaded(
                     QString::fromStdString(
                         "Error Saving Project: " +
-                        mDreamProjectModel->getProject()->getProjectDefinitionHandle()->getNameAndUuidString()
+                        mDreamProjectModel->getProject()->getProjectDefinition()->getNameAndUuidString()
                         )
                     );
     }
@@ -1059,7 +1062,7 @@ void
 MainController::onAction_View_ToggleGrid
 (bool enabled)
 {
-    mWindowComponentHandle->setGridEnabled(enabled);
+    mWindowComponent->setGridEnabled(enabled);
 }
 
 void
@@ -1080,7 +1083,7 @@ void
 MainController::onAction_View_ToggleSelectionHighlighter
 (bool enabled)
 {
-    mWindowComponentHandle->setSelectionHighlighterEnabled(enabled);
+    mWindowComponent->setSelectionHighlighterEnabled(enabled);
 }
 
 // Scene Menu
@@ -1091,13 +1094,13 @@ MainController::onAction_Scene_NewScene
 {
     auto log = spdlog::get("MainController");
     log->info( "onScenegraphAddSceneAction");
-    Project* pHandle = mDreamProjectModel->getProject();
+    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
-        ProjectDefinition* pdHandle = pHandle->getProjectDefinitionHandle();
+        shared_ptr<ProjectDefinition> pdHandle = pHandle->getProjectDefinition();
         if (pdHandle)
         {
-            SceneDefinition *sdHandle = pdHandle->createNewSceneDefinition();
+            shared_ptr<SceneDefinition> sdHandle = pdHandle->createNewSceneDefinition();
             if (sdHandle)
             {
                 onUI_ScenegraphUpdated();
@@ -1247,7 +1250,7 @@ MainController::onAction_Asset_NewDefinition_Sprite
 
 void
 MainController::onAssetDefinitionProperty_ModelFile
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition> adHandle)
 {
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
@@ -1289,16 +1292,15 @@ MainController::onAssetDefinitionProperty_ModelFile
         }
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
-        dynamic_cast<ModelDefinition*>(adHandle)->clearMaterialShaderList();
+        dynamic_pointer_cast<ModelDefinition>(adHandle)->clearMaterialShaderList();
 
-        log->info( "Copy {} "
-                   , (copyResult ? "Success":"Failed"));
+        log->info( "Copy {} ", (copyResult ? "Success":"Failed"));
     }
 }
 
 void
 MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
@@ -1347,17 +1349,18 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
 
 void
 MainController::onSceneProperty_CaptureCameraTranslation
-(SceneDefinition* sdHandle)
+(shared_ptr<SceneDefinition>  sdHandle)
 {
     auto log = spdlog::get("MainController");
     log->info( "CaptureCameraTranslation");
-    Project *pHandle = mDreamProjectModel->getProject();
-    if (pHandle)
+    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
+
+    if (pHandle != nullptr)
     {
-        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
         if (prHandle)
         {
-            auto translation = prHandle->getCameraHandle()->getTranslation();
+            auto translation = prHandle->getCamera()->getTranslation();
             sdHandle->setCameraTranslation(translation);
             mMainWindowHandle->showStatusBarMessage(
                 QString("Captured Camera Translation x:%1, y:%2, z:%3")
@@ -1376,18 +1379,19 @@ MainController::onSceneProperty_CaptureCameraTranslation
 
 void
 MainController::onSceneProperty_CaptureCameraLookAt
-(SceneDefinition* sdHandle)
+(shared_ptr<SceneDefinition>  sdHandle)
 {
     auto log = spdlog::get("MainController");
     log->info( "CaptureCameraLookAt");
-    Project *pHandle = mDreamProjectModel->getProject();
-    if (pHandle)
+    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
+
+    if (pHandle != nullptr)
     {
-        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
         if (prHandle)
         {
-            auto pitch = prHandle->getCameraHandle()->getPitch();
-            auto yaw = prHandle->getCameraHandle()->getYaw();
+            auto pitch = prHandle->getCamera()->getPitch();
+            auto yaw = prHandle->getCamera()->getYaw();
 
             sdHandle->setCameraPitch(pitch);
             sdHandle->setCameraYaw(yaw);
@@ -1407,7 +1411,7 @@ MainController::onSceneProperty_CaptureCameraLookAt
 
 
 
-void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition* sceneDef)
+void MainController::onSceneProperty_ChooseAmbientColour(shared_ptr<SceneDefinition>  sceneDef)
 {
     auto log = spdlog::get("MainController");
     log->info( "Choose Ambient Colour");
@@ -1435,7 +1439,7 @@ void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition* sceneD
 
 }
 
-void MainController::onSceneProperty_ChooseClearColour(SceneDefinition* sceneDef)
+void MainController::onSceneProperty_ChooseClearColour(shared_ptr<SceneDefinition>  sceneDef)
 {
     auto log = spdlog::get("MainController");
     log->info( "Choose Clear Colour");
@@ -1507,10 +1511,10 @@ void MainController::onMainVolumeChanged(int vol)
        auto project = mDreamProjectModel->getProject();
        if (project != nullptr)
        {
-           auto runtime = project->getProjectRuntimeHandle();
+           auto runtime = project->getProjectRuntime();
            if (runtime != nullptr)
            {
-               auto audio = runtime->getAudioComponentHandle();
+               auto audio = runtime->getAudioComponent();
                if (audio != nullptr)
                {
                    auto volume = vol/100.0f;
@@ -1524,7 +1528,7 @@ void MainController::onMainVolumeChanged(int vol)
 
 void MainController::onPathEditorClosed()
 {
-    mPathPointViewer->setPathDefinitionHandle(nullptr);
+    mPathPointViewer->setPathDefinition(nullptr);
 }
 
 void MainController::onPathVisibilityChanged(bool visible)
@@ -1534,7 +1538,7 @@ void MainController::onPathVisibilityChanged(bool visible)
 
 void
 MainController::onAssetDefinitionProperty_ModelAdditionalFiles
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
@@ -1562,10 +1566,10 @@ MainController::onAssetDefinitionProperty_ModelAdditionalFiles
 // UI Signal/Slot Handlers ======================================================
 void
 MainController::onUI_SelectedSceneChanged
-(SceneDefinition *scene)
+(shared_ptr<SceneDefinition> scene)
 {
     auto log = spdlog::get("MainController");
-    mDreamProjectModel->setSelectedSceneDefinitionHandle(scene);
+    mDreamProjectModel->setSelectedSceneDefinition(scene);
     mMainWindowHandle->showStatusBarMessage(
                 QString("Selected Scene: %1").
                 arg(QString::fromStdString(scene->getName())
@@ -1645,9 +1649,9 @@ MainController::onUI_ProjectStartupSceneChanged
     auto log = spdlog::get("MainController");
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
     log->info( "startupScene set to {} {}" , startupSceneIndex.toStdString() ,  sceneName);
-    SceneDefinition* sceneHandle = mDreamProjectModel->getProject()
-            ->getProjectDefinitionHandle()
-            ->getSceneDefinitionHandleByUuid(sceneName);
+    shared_ptr<SceneDefinition>  sceneHandle = mDreamProjectModel->getProject()
+            ->getProjectDefinition()
+            ->getSceneDefinitionByUuid(sceneName);
     mDreamProjectModel->setProjectStartupSceneByUuid(sceneHandle->getUuid());
 }
 
@@ -1724,7 +1728,7 @@ MainController::openProject
 
     mProjectDirectoryModel.setProjectDefinitionHandle
             (
-                mDreamProjectModel->getProject()->getProjectDefinitionHandle()
+                mDreamProjectModel->getProject()->getProjectDefinition()
                 );
 
     mProjectDirectoryModel.inflateFromDirectory(mProjectDirectory);
@@ -1741,14 +1745,14 @@ MainController::openProject
 
     updateWindowTitle(mProjectDirectory);
 
-    ProjectDefinition *currentProject = mDreamProjectModel->getProject()->getProjectDefinitionHandle();
+    shared_ptr<ProjectDefinition> currentProject = mDreamProjectModel->getProject()->getProjectDefinition();
 
     emit notifyProjectNameChanged(QString::fromStdString(currentProject->getName()));
     emit notifyProjectAuthorChanged(QString::fromStdString(currentProject->getAuthor()));
     emit notifyProjectDescriptionChanged(QString::fromStdString(currentProject->getDescription()));
     emit notifyProjectWindowWidthChanged(currentProject->getWindowWidth());
     emit notifyProjectWindowHeightChanged(currentProject->getWindowHeight());
-    emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneDefinitionsHandleList()));
+    emit notifyProjectSceneListChanged(getSceneNamesListModel(currentProject->getSceneDefinitionsList()));
     emit notifyProjectWidgetsEnabledChanged(true);
     emit notifyProjectDefinitionChanged(currentProject);
 
@@ -1757,8 +1761,8 @@ MainController::openProject
 
     mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(currentProject,mMainWindowHandle->getAssetDefinitionTreeView()));
     mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
-    mSelectedSceneDefinitionHandle = currentProject->getStartupSceneDefinitionHandle();
-    mDreamProjectModel->setSelectedSceneDefinitionHandle(mSelectedSceneDefinitionHandle);
+    mSelectedSceneDefinitionHandle = currentProject->getStartupSceneDefinition();
+    mDreamProjectModel->setSelectedSceneDefinition(mSelectedSceneDefinitionHandle);
     if (mSelectedSceneDefinitionHandle != nullptr)
     {
         log->info("Set selected scene to startup scene {}",mSelectedSceneDefinitionHandle->getNameAndUuidString());
@@ -1795,14 +1799,14 @@ MainController::onAction_Debug_DumpProjectDefinitionJson
     Q_UNUSED(toggled)
     cout << mDreamProjectModel
             ->getProject()
-            ->getProjectDefinitionHandle()
+            ->getProjectDefinition()
             ->getJson().dump(1) << endl;
     ;
 }
 
 void
 MainController::onAssetDefinitionProperty_AudioFile
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
@@ -1859,7 +1863,7 @@ MainController::onAssetDefinitionProperty_AudioFile
 }
 
 void
-MainController::showImportResultDialog(bool success, IAssetDefinition* adHandle, QString source)
+MainController::showImportResultDialog(bool success, shared_ptr<IAssetDefinition>  adHandle, QString source)
 {
     if (!success)
     {
@@ -1886,7 +1890,7 @@ MainController::showImportResultDialog(bool success, IAssetDefinition* adHandle,
 
 void
 MainController::onAssetDefinitionProperty_FontFile
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     QFileDialog openDialog;
@@ -1943,7 +1947,7 @@ MainController::onAssetDefinitionProperty_FontFile
 
 void
 MainController::onAssetDefinitionProperty_RemoveFiles
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto result = QMessageBox::question
             (
@@ -1961,41 +1965,40 @@ MainController::onAssetDefinitionProperty_RemoveFiles
     mPropertiesModel->forceDataChanged();
 }
 
-void MainController::onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefinition* adHandle)
+void MainController::onAssetDefinitionProperty_ModelMaterialShaderMap(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     log->info("Opening Material/Shader Map Widget");
     mMaterialShaderTableController.setProjectPath(mProjectDirectoryModel.getProjectDirectoryAbsolutePath());
-    mMaterialShaderTableController.setModelDefinition(dynamic_cast<ModelDefinition*>(adHandle));
+    mMaterialShaderTableController.setModelDefinition(dynamic_pointer_cast<ModelDefinition>(adHandle));
     if (mSelectedProjectDefinitionHandle == nullptr)
     {
         log->info("SelectedProjectDefinition Handle is nullptr, setting from directory model");
-        mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinitionHandle();
+        mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinition();
     }
-    mMaterialShaderTableController.setShaderHandlesVector(mSelectedProjectDefinitionHandle->getShaderAssetDefinitionHandleVector());
-    //mMaterialShaderTableController.getAllUpInYourFace();
+    mMaterialShaderTableController.setShaderHandlesVector(mSelectedProjectDefinitionHandle->getShaderAssetDefinitionVector());
     mMainWindowHandle->addRightDockWidget(&mMaterialShaderTableController);
 }
 
 void
 MainController::onAssetDefinitionProperty_EditScript
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
-    mScriptEditor.openScript(dynamic_cast<ScriptDefinition*>(adHandle));
+    mScriptEditor.openScript(dynamic_pointer_cast<ScriptDefinition>(adHandle));
 }
 
 void
 MainController::onAssetDefinitionProperty_EditShader
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     log->info( "EditShader");
-    mScriptEditor.openShader(dynamic_cast<ShaderDefinition*>(adHandle));
+    mScriptEditor.openShader(dynamic_pointer_cast<ShaderDefinition>(adHandle));
 }
 
 void
 MainController::onAssetDefinitionProperty_ScriptTemplateChanged
-(IAssetDefinition* adHandle, const QString& templateName)
+(shared_ptr<IAssetDefinition>  adHandle, const QString& templateName)
 {
     // TODO - Move this to the script editor window
     auto log = spdlog::get("MainController");
@@ -2029,7 +2032,7 @@ MainController::onAssetDefinitionProperty_ScriptTemplateChanged
 
 void
 MainController::onAssetDefinitionProperty_ShaderTemplateChanged
-(IAssetDefinition* adHandle, const QString& templateName)
+(shared_ptr<IAssetDefinition>  adHandle, const QString& templateName)
 {
     auto log = spdlog::get("MainController");
     log->info( "Shader Template Changed");
@@ -2063,13 +2066,13 @@ MainController::onAssetDefinitionProperty_ShaderTemplateChanged
                 );
 }
 
-void MainController::onAssetDefinitionProperty_LightChooseAmbient(IAssetDefinition* def)
+void MainController::onAssetDefinitionProperty_LightChooseAmbient(shared_ptr<IAssetDefinition>  def)
 {
     auto log = spdlog::get("MainController");
     log->info( "Choose Diffuse Colour");
 
     QColor currentColour;
-    auto lightDef = dynamic_cast<LightDefinition*>(def);
+    auto lightDef = dynamic_pointer_cast<LightDefinition>(def);
 
     auto colour = lightDef->getAmbient();
     currentColour.setRgbF(
@@ -2094,13 +2097,15 @@ void MainController::onAssetDefinitionProperty_LightChooseAmbient(IAssetDefiniti
     mPropertiesModel->forceDataChanged();
 }
 
-void MainController::onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefinition* def)
+void
+MainController::onAssetDefinitionProperty_LightChooseDiffuse
+(shared_ptr<IAssetDefinition>  def)
 {
     auto log = spdlog::get("MainController");
     log->info( "Choose Diffuse Colour");
 
     QColor currentColour;
-    auto lightDef = dynamic_cast<LightDefinition*>(def);
+    auto lightDef = dynamic_pointer_cast<LightDefinition>(def);
 
     auto colour = lightDef->getDiffuse();
     currentColour.setRgbF(
@@ -2125,13 +2130,15 @@ void MainController::onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefiniti
     mPropertiesModel->forceDataChanged();
 }
 
-void MainController::onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition* def)
+void
+MainController::onAssetDefinitionProperty_LightChooseSpecular
+(shared_ptr<IAssetDefinition>  def)
 {
     auto log = spdlog::get("MainController");
     log->info( "Choose Specular Colour");
 
     QColor currentColour;
-    auto lightDef = dynamic_cast<LightDefinition*>(def);
+    auto lightDef = dynamic_pointer_cast<LightDefinition>(def);
 
     auto colour = lightDef->getSpecular();
     currentColour.setRgbF(
@@ -2159,33 +2166,33 @@ void MainController::onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinit
 
 void
 MainController::onAssetDefinitionProperty_PathList
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     log->info("Opening PathList Widget");
-    mPathEditorFormController.setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
-    mPathPointViewer->setPathDefinitionHandle(dynamic_cast<PathDefinition*>(adHandle));
+    mPathEditorFormController.setPathDefinition(dynamic_pointer_cast<PathDefinition>(adHandle));
+    mPathPointViewer->setPathDefinition(dynamic_pointer_cast<PathDefinition>(adHandle));
     //mPathEditorFormController.getAllUpInYourFace();
     mMainWindowHandle->addRightDockWidget(&mPathEditorFormController);
 }
 
 void
 MainController::onSceneObjectProperty_CaptureTranslation
-(SceneObjectDefinition* sodHandle)
+(shared_ptr<SceneObjectDefinition> sodHandle)
 {
     auto log = spdlog::get("MainController");
     log->info( "CaptureTranslation");
-    Project *pHandle = mDreamProjectModel->getProject();
+    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
-        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
         if (prHandle)
         {
-            SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
+            shared_ptr<SceneRuntime> srHandle = prHandle->getActiveSceneRuntime();
             if (srHandle)
             {
-                SceneObjectRuntime *sorHandle;
-                sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+                shared_ptr<SceneObjectRuntime> sorHandle;
+                sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
                 if (sorHandle)
                 {
                     sodHandle->getTransform().setTranslation(sorHandle->getTranslation());
@@ -2199,21 +2206,21 @@ MainController::onSceneObjectProperty_CaptureTranslation
 
 void
 MainController::onSceneObjectProperty_CaptureOrientation
-(SceneObjectDefinition* sodHandle)
+(shared_ptr<SceneObjectDefinition> sodHandle)
 {
     auto log = spdlog::get("MainController");
     log->info( "CaptureOrientation");
-    Project *pHandle = mDreamProjectModel->getProject();
+    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
-        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
         if (prHandle)
         {
-            SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
+            shared_ptr<SceneRuntime> srHandle = prHandle->getActiveSceneRuntime();
             if (srHandle)
             {
-                SceneObjectRuntime *sorHandle;
-                sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+                shared_ptr<SceneObjectRuntime> sorHandle;
+                sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
                 if (sorHandle)
                 {
                     sodHandle->getTransform().setOrientation(sorHandle->getOrientation());
@@ -2227,21 +2234,21 @@ MainController::onSceneObjectProperty_CaptureOrientation
 
 void
 MainController::onSceneObjectProperty_CaptureScale
-(SceneObjectDefinition* sodHandle)
+(shared_ptr<SceneObjectDefinition> sodHandle)
 {
     auto log = spdlog::get("MainController");
     log->info( "CaptureScale");
-    Project *pHandle = mDreamProjectModel->getProject();
+    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
-        ProjectRuntime *prHandle = pHandle->getProjectRuntimeHandle();
+        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
         if (prHandle)
         {
-            SceneRuntime *srHandle = prHandle->getActiveSceneRuntimeHandle();
+            shared_ptr<SceneRuntime> srHandle = prHandle->getActiveSceneRuntime();
             if (srHandle)
             {
-                SceneObjectRuntime *sorHandle;
-                sorHandle = srHandle->getSceneObjectRuntimeHandleByUuid(sodHandle->getUuid());
+                shared_ptr<SceneObjectRuntime> sorHandle;
+                sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
                 if (sorHandle)
                 {
                     sodHandle->getTransform().setScale(sorHandle->getScale());
@@ -2256,7 +2263,7 @@ MainController::onSceneObjectProperty_CaptureScale
 
 void
 MainController::onSceneObjectProperty_RemoveAsset
-(SceneObjectDefinition* sodHandle,IAssetDefinition* adHandle)
+(shared_ptr<SceneObjectDefinition> sodHandle,shared_ptr<IDefinition>  adHandle)
 {
     auto log = spdlog::get("MainController");
     log->info(
@@ -2264,7 +2271,7 @@ MainController::onSceneObjectProperty_RemoveAsset
                 adHandle->getNameAndUuidString(),
                 sodHandle->getNameAndUuidString()
                 );
-    sodHandle->removeAssetDefinitionFromLoadQueue(adHandle);
+    sodHandle->removeAssetDefinitionFromLoadQueue(dynamic_pointer_cast<IAssetDefinition>(adHandle));
 
     mPropertiesModel->forceDataChanged();
     mMainWindowHandle->getPropertiesTreeView()->update();
@@ -2272,7 +2279,7 @@ MainController::onSceneObjectProperty_RemoveAsset
 
 void
 MainController::onSceneObjectProperty_RemoveChild
-(SceneObjectDefinition* sodHandle, SceneObjectDefinition* sodChildHandle)
+(shared_ptr<SceneObjectDefinition> sodHandle, shared_ptr<IDefinition> sodChildHandle)
 {
     auto log = spdlog::get("MainController");
     log->info(
@@ -2280,7 +2287,7 @@ MainController::onSceneObjectProperty_RemoveChild
                 sodChildHandle->getNameAndUuidString(),
                 sodHandle->getNameAndUuidString()
                 );
-    sodHandle->removeChildSceneObjectDefinition(sodChildHandle);
+    sodHandle->removeChildSceneObjectDefinition(dynamic_pointer_cast<SceneObjectDefinition>(sodChildHandle));
     onUI_ScenegraphUpdated();
 
     mPropertiesModel->forceDataChanged();

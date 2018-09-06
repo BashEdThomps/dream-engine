@@ -227,7 +227,7 @@ AssetDefinitionPropertiesTreeDelegate::createPathTypeComboBox
     }
 
     editor->addItems(list);
-    auto pathDef = dynamic_cast<PathDefinition*>(assetDef->getAssetDefinitionHandle());
+    auto pathDef = dynamic_pointer_cast<PathDefinition>(assetDef->getAssetDefinitionHandle());
     string type = pathDef->getSplineType();
     int typeIndex = editor->findText(QString::fromStdString(type));
     editor->setCurrentIndex(typeIndex);

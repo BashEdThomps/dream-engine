@@ -19,6 +19,9 @@
 #pragma once
 
 #include "../AbstractPropertiesItem.h"
+#include <memory>
+
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -77,7 +80,7 @@ public:
     ScenePropertiesItem
     (
             QString title,
-            SceneDefinition* sdHandle,
+            shared_ptr<SceneDefinition> sdHandle,
             SceneProperty property = SCENE_PROPERTY_NONE,
             QItemDelegate* delegate = nullptr,
             AbstractPropertiesItem *parent = nullptr
@@ -90,6 +93,6 @@ public:
     SceneProperty getProperty();
 
 private:
-    SceneDefinition* mSceneDefinitionHandle;
+    shared_ptr<SceneDefinition> mSceneDefinitionHandle;
     SceneProperty mProperty;
 };

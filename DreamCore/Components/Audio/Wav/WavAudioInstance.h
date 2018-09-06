@@ -31,14 +31,13 @@
 
 #include "../AudioInstance.h"
 #include "WavHeader.h"
-#include "../../../Common/ILoggable.h"
 
 using std::string;
 using nlohmann::json;
 
 namespace Dream
 {
-    class WavAudioInstance : public AudioInstance, ILoggable
+    class WavAudioInstance : public AudioInstance
     {
 
     private:

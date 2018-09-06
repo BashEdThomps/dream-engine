@@ -44,7 +44,7 @@ namespace Dream
 
     ShaderCache::ShaderCache
     ()
-        :ILoggable ("ShaderCache")
+        :DreamObject ("ShaderCache")
     {
         auto log = getLog();
         log->trace( "Constructing" );

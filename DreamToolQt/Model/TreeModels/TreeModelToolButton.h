@@ -19,20 +19,23 @@
 #pragma once
 
 #include <QToolButton>
+#include <DreamCore.h>
+
+using Dream::DreamObject;
 
 class TreeModelToolButton : public QToolButton
 {
     Q_OBJECT
 public:
-    TreeModelToolButton(void* data, QWidget* parent);
-    void* getData() const;
+    TreeModelToolButton(shared_ptr<DreamObject> data, QWidget* parent);
+    shared_ptr<DreamObject> getData() const;
 
 signals:
-    void notifyClickedWithData(bool,void*);
+    void notifyClickedWithData(bool,shared_ptr<DreamObject>);
 
 public slots:
     void onClicked(bool);
 
 protected:
-    void* mData;
+    shared_ptr<DreamObject> mData;
 };

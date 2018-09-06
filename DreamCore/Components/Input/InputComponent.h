@@ -5,6 +5,7 @@
 #include <gainput/GainputInputMap.h>
 
 using namespace gainput;
+using std::vector;
 
 namespace Dream
 {

@@ -94,7 +94,7 @@ PathEditorTableModel::data
 
 void
 PathEditorTableModel::setPathDefinition
-(PathDefinition* def)
+(shared_ptr<PathDefinition> def)
 {
     auto log = spdlog::get("PathEditorTableModel");
     log->trace("setPathDefinition");

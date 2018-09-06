@@ -26,7 +26,6 @@
 #include FT_FREETYPE_H
 
 #include "../../IAssetInstance.h"
-#include "../../../Common/ILoggable.h"
 
 using std::string;
 using nlohmann::json;
@@ -38,7 +37,7 @@ namespace Dream
     class FontCharacter;
     class FontDefinition;
 
-    class FontInstance : public IAssetInstance, ILoggable
+    class FontInstance : public IAssetInstance
     {
     private:
         int mSize;

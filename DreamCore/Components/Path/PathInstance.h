@@ -14,7 +14,6 @@
 
 #include "PathDefinition.h"
 #include "../IAssetInstance.h"
-#include "../../Common/ILoggable.h"
 
 using namespace tinyspline;
 using namespace std;
@@ -22,7 +21,7 @@ using namespace nlohmann;
 
 namespace Dream
 {
-    class PathInstance : public IAssetInstance, ILoggable
+    class PathInstance : public IAssetInstance
     {
 
     public:

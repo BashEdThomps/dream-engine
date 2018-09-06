@@ -24,14 +24,13 @@ namespace Dream
 {
     IAssetInstance::IAssetInstance
     (shared_ptr<IAssetDefinition> definition, shared_ptr<SceneObjectRuntime> runtime)
-          : mLoaded(false),
+          : DreamObject("IAssetInstance"),
+            mLoaded(false),
             mAbsolutePath(""),
             mDefinition(definition),
             mSceneObjectRuntime(runtime),
             mUuid(Uuid::generateUuid())
-    {
-
-    }
+    {}
 
     IAssetInstance::~IAssetInstance
     ()

@@ -24,7 +24,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
 (
         QString title,
         AssetDefinitionTreeItemType type,
-        IAssetDefinition* definition,
+        shared_ptr<IAssetDefinition> definition,
         AssetDefinitionTreeItem *parent
 )
     : GenericTreeItem(title, parent),
@@ -34,7 +34,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
     //qDebug() << "AssetDefinitionTreeItem: Constructing";
 }
 
-IAssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()
+shared_ptr<IAssetDefinition> AssetDefinitionTreeItem::getAssetDefinition()
 {
    return mDefinition;
 }

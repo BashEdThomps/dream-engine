@@ -17,7 +17,7 @@
  */
 #include "TreeModelToolButton.h"
 
-TreeModelToolButton::TreeModelToolButton(void* data, QWidget* parent)
+TreeModelToolButton::TreeModelToolButton(shared_ptr<DreamObject> data, QWidget* parent)
     : QToolButton (parent),
       mData(data)
 {
@@ -30,7 +30,7 @@ TreeModelToolButton::TreeModelToolButton(void* data, QWidget* parent)
     );
 }
 
-void* TreeModelToolButton::getData() const
+shared_ptr<DreamObject> TreeModelToolButton::getData() const
 {
     return mData;
 }

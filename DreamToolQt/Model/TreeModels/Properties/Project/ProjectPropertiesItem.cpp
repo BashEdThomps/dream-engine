@@ -23,7 +23,7 @@
 ProjectPropertiesItem::ProjectPropertiesItem
 (
     QString title,
-    ProjectDefinition* pdHandle,
+    shared_ptr<ProjectDefinition> pdHandle,
     ProjectProperty property,
     QItemDelegate* delegate,
     AbstractPropertiesItem *parent
@@ -50,25 +50,27 @@ ProjectPropertiesItem::data
         return QVariant(mTitle);
     }
 
+    auto proj = mProjectDefinitionHandle;
+
     switch(getProperty())
     {
 
         case PROJECT_PROPERTY_WINDOW_WIDTH:
-            return QVariant(mProjectDefinitionHandle->getWindowWidth());
+            return QVariant(proj->getWindowWidth());
         case PROJECT_PROPERTY_WINDOW_HEIGHT:
-            return QVariant(mProjectDefinitionHandle->getWindowHeight());
+            return QVariant(proj->getWindowHeight());
 
         case PROJECT_PROPERTY_DESCRIPTION:
-            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getDescription()));
+            return QVariant(QString::fromStdString(proj->getDescription()));
 
         case PROJECT_PROPERTY_STARTUP_SCENE:
-            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getStartupSceneUuid()));
+            return QVariant(QString::fromStdString(proj->getStartupSceneUuid()));
 
         case PROJECT_PROPERTY_NAME:
-            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getName()));
+            return QVariant(QString::fromStdString(proj->getName()));
 
         case PROJECT_PROPERTY_AUTHOR:
-            return QVariant(QString::fromStdString(mProjectDefinitionHandle->getAuthor()));
+            return QVariant(QString::fromStdString(proj->getAuthor()));
 
         // Not Used
         case PROJECT_PROPERTY_WINDOW_SIZE:
@@ -88,27 +90,29 @@ ProjectPropertiesItem::setData
         return true;
     }
 
+    auto proj = mProjectDefinitionHandle;
+
     switch (getProperty())
     {
         case PROJECT_PROPERTY_DESCRIPTION:
-            mProjectDefinitionHandle->setDescription(value.toString().toStdString());
+            proj->setDescription(value.toString().toStdString());
             break;
 
         case PROJECT_PROPERTY_WINDOW_WIDTH:
-            mProjectDefinitionHandle->setWindowWidth(value.toInt());
+            proj->setWindowWidth(value.toInt());
             break;
         case PROJECT_PROPERTY_WINDOW_HEIGHT:
-            mProjectDefinitionHandle->setWindowHeight(value.toInt());
+            proj->setWindowHeight(value.toInt());
             break;
 
         case PROJECT_PROPERTY_STARTUP_SCENE:
-            mProjectDefinitionHandle->setStartupSceneUuid(value.toString().toStdString());
+            proj->setStartupSceneUuid(value.toString().toStdString());
             break;
         case PROJECT_PROPERTY_NAME:
-            mProjectDefinitionHandle->setName(value.toString().toStdString());
+            proj->setName(value.toString().toStdString());
             break;
         case PROJECT_PROPERTY_AUTHOR:
-            mProjectDefinitionHandle->setAuthor(value.toString().toStdString());
+            proj->setAuthor(value.toString().toStdString());
             break;
 
         case PROJECT_PROPERTY_WINDOW_SIZE:
@@ -127,8 +131,8 @@ ProjectPropertiesItem::getProperty
     return mProperty;
 }
 
-ProjectDefinition*
-ProjectPropertiesItem::getProjectDefinitionHandle
+shared_ptr<ProjectDefinition>
+ProjectPropertiesItem::getProjectDefinition
 ()
 {
    return mProjectDefinitionHandle;

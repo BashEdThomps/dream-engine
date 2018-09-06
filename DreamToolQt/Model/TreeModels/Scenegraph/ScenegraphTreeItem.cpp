@@ -24,7 +24,7 @@ using Dream::SceneDefinition;
 using Dream::SceneObjectDefinition;
 
 ScenegraphTreeItem::ScenegraphTreeItem
-(QString title, ScenegraphTreeItemType type, void* item, ScenegraphTreeItem *parent)
+(QString title, ScenegraphTreeItemType type, shared_ptr<IDefinition> item, ScenegraphTreeItem *parent)
     : GenericTreeItem(title, parent),
       mItem(item),
       mType(type)
@@ -38,7 +38,7 @@ ScenegraphTreeItem::~ScenegraphTreeItem
    //qDebug() << "ScenegraphTreeItem: Destructing";
 }
 
-void*
+shared_ptr<IDefinition>
 ScenegraphTreeItem::getItem
 ()
 const
@@ -63,11 +63,11 @@ const
     switch (getType())
     {
         case SCENEGRAPH_PROJECT:
-            return QVariant(QString::fromStdString(static_cast<ProjectDefinition*>(mItem)->getName()));
+            return QVariant(QString::fromStdString(mItem->getName()));
         case SCENEGRAPH_SCENE:
-            return QVariant(QString::fromStdString(static_cast<SceneDefinition*>(mItem)->getName()));
+            return QVariant(QString::fromStdString(mItem->getName()));
         case SCENEGRAPH_SCENE_OBJECT:
-            return QVariant(QString::fromStdString(static_cast<SceneObjectDefinition*>(mItem)->getName()));
+            return QVariant(QString::fromStdString(mItem->getName()));
         case SCENEGRAPH_TREE_NODE:
             return QVariant(mTitle);
     }

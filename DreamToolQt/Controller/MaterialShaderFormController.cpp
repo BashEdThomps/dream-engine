@@ -35,14 +35,16 @@ void MaterialShaderFormController::setProjectPath(QString projectPath)
     mProjectPath = projectPath;
 }
 
-void MaterialShaderFormController::setShaderHandlesVector(vector<ShaderDefinition*> shaders)
+void
+MaterialShaderFormController::setShaderHandlesVector
+(vector<shared_ptr<ShaderDefinition>> shaders)
 {
     mTableDelegate->setShaderDefinitions(shaders);
 }
 
 void
 MaterialShaderFormController::setModelDefinition
-(Dream::ModelDefinition* def)
+(shared_ptr<ModelDefinition> def)
 {
     mModelDefinitionHandle = def;
     populate();

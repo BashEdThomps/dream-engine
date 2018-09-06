@@ -69,12 +69,13 @@ namespace Dream
     PhysicsObjectInstance::PhysicsObjectInstance
     (shared_ptr<PhysicsObjectDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
-          ILoggable ("PhysicsObjectInstance"),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
          mRigidBody(nullptr),
          mRigidBodyConstructionInfo(nullptr),
-         mInPhysicsWorld(false) {
+         mInPhysicsWorld(false)
+    {
+        setLogClassName("PhysicsObjectInstance");
         auto log = getLog();
         log->trace( "Constructing" );
         return;
@@ -373,7 +374,7 @@ namespace Dream
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
     {
-        auto proj = mDefinition->getProject().lock();
+        auto proj = mDefinition->getProject();
         return dynamic_pointer_cast<PhysicsObjectDefinition>(proj->getAssetDefinitionByUuid(uuid));
     }
 } // End of Dream

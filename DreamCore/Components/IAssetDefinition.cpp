@@ -15,10 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "IAssetDefinition.h"
-
 #include <strings.h>
-
+#include "IAssetDefinition.h"
 #include "../Common/Constants.h"
 
 using std::cout;
@@ -26,19 +24,12 @@ using std::endl;
 
 namespace Dream
 {
-    AssetType
-    IAssetDefinition::getAssetType
-    (json js)
-    {
-        return Constants::getAssetTypeEnumFromString(js[Constants::ASSET_TYPE]);
-    }
-
     IAssetDefinition::IAssetDefinition
-    (weak_ptr<ProjectDefinition> parent, json jsonDef)
+    (shared_ptr<ProjectDefinition> parent, json jsonDef)
         : IDefinition(jsonDef),
-          ILoggable ("AssetDefinition"),
           mProjectDefinition(parent)
     {
+        setLogClassName("AssetDefinition");
         auto log = getLog();
         log->trace( "Constructing {}",
                    getNameAndUuidString() );
@@ -50,6 +41,13 @@ namespace Dream
         auto log = getLog();
         log->trace( "Destructing {}",
                    getNameAndUuidString() );
+    }
+
+    AssetType
+    IAssetDefinition::getAssetType
+    (json js)
+    {
+        return Constants::getAssetTypeEnumFromString(js[Constants::ASSET_TYPE]);
     }
 
     void
@@ -217,7 +215,7 @@ namespace Dream
         log->info( mJson.dump(1) );
     }
 
-    weak_ptr<ProjectDefinition>
+    shared_ptr<ProjectDefinition>
     IAssetDefinition::getProject
     ()
     {

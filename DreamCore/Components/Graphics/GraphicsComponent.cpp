@@ -189,13 +189,13 @@ namespace Dream
         checkGLError();
 
         log->debug
-                (
-                    "Window dimensions changed: width: {}, height: {} min draw: {}, max draw {}",
-                    mWindowComponent->getWidth(),
-                    mWindowComponent->getHeight(),
-                    mMinimumDraw,
-                    mMaximumDraw
-                    );
+        (
+            "Window dimensions changed: width: {}, height: {} min draw: {}, max draw {}",
+            mWindowComponent->getWidth(),
+            mWindowComponent->getHeight(),
+            mMinimumDraw,
+            mMaximumDraw
+        );
     }
 
     float GraphicsComponent::getMeshCullDistance() const
@@ -228,12 +228,12 @@ namespace Dream
         if (mActiveSceneRuntime)
         {
             glClearColor
-                    (
-                        mActiveSceneRuntime->getClearColour()[Constants::RED_INDEX],
-                    mActiveSceneRuntime->getClearColour()[Constants::GREEN_INDEX],
-                    mActiveSceneRuntime->getClearColour()[Constants::BLUE_INDEX],
-                    mActiveSceneRuntime->getClearColour()[Constants::ALPHA_INDEX]
-                    );
+            (
+                mActiveSceneRuntime->getClearColour()[Constants::RED_INDEX],
+                mActiveSceneRuntime->getClearColour()[Constants::GREEN_INDEX],
+                mActiveSceneRuntime->getClearColour()[Constants::BLUE_INDEX],
+                mActiveSceneRuntime->getClearColour()[Constants::ALPHA_INDEX]
+            );
         }
         else
         {
@@ -491,8 +491,6 @@ namespace Dream
          * // Meshes in Frustum OrderedBy Distance Ascending
          *
          * vector<Mesh> mMeshes;
-         *
-         * auto meshItr = begin( mMeshes )
          *
          * for (Mesh m : mMeshes)
          * {

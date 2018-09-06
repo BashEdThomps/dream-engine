@@ -23,12 +23,13 @@
 #include <QJsonObject>
 #include "spdlog/spdlog.h"
 
+using Dream::ShaderDefinition;
 using Dream::IAssetDefinition;
 using Dream::Constants;
 using Dream::Uuid;
 
 ProjectDirectoryModel::ProjectDirectoryModel
-(ProjectDefinition* pdHandle, QObject* parent)
+(shared_ptr<ProjectDefinition> pdHandle, QObject* parent)
     : QObject(parent),
       mProjectDefinitionHandle(pdHandle)
 {
@@ -611,13 +612,13 @@ ProjectDirectoryModel::getProjectDirectoryName
 
 bool
 ProjectDirectoryModel::assetMainFileExists
-(IAssetDefinition *adHandle, QString format)
+(shared_ptr<IAssetDefinition> adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).exists();
 }
 
-bool ProjectDirectoryModel::deleteMainAssetFile(IAssetDefinition *adHandle, QString format)
+bool ProjectDirectoryModel::deleteMainAssetFile(shared_ptr<IAssetDefinition> adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).remove();
@@ -731,7 +732,7 @@ ProjectDirectoryModel::getProjectName
 
 QString
 ProjectDirectoryModel::getAssetDataPath
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
     QString assetDataPath;
 
@@ -764,7 +765,7 @@ ProjectDirectoryModel::touchFile
 
 bool
 ProjectDirectoryModel::writeAssetData
-(QString data, IAssetDefinition* adHandle, QString fileName, bool overwrite)
+(QString data, shared_ptr<IAssetDefinition>  adHandle, QString fileName, bool overwrite)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
 
@@ -781,7 +782,7 @@ ProjectDirectoryModel::writeAssetData
     return retval;
 }
 
-QByteArray ProjectDirectoryModel::readScriptData(Dream::ScriptDefinition* scriptDef)
+QByteArray ProjectDirectoryModel::readScriptData(shared_ptr<ScriptDefinition> scriptDef)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     log->info( "readScriptData for {}", scriptDef->getNameAndUuidString());
@@ -796,7 +797,7 @@ QByteArray ProjectDirectoryModel::readScriptData(Dream::ScriptDefinition* script
     return data;
 }
 
-ShaderFileTuple ProjectDirectoryModel::readShaderData(Dream::ShaderDefinition* shaderDef)
+ShaderFileTuple ProjectDirectoryModel::readShaderData(shared_ptr<ShaderDefinition> shaderDef)
 {
     ShaderFileTuple shaderData;
     auto log = spdlog::get("ProjectDirectoryModel");
@@ -823,7 +824,7 @@ ShaderFileTuple ProjectDirectoryModel::readShaderData(Dream::ShaderDefinition* s
 
 QString
 ProjectDirectoryModel::createAssetTargetPath
-(IAssetDefinition* adHandle, QString format)
+(shared_ptr<IAssetDefinition>  adHandle, QString format)
 {
     QString assetFileTargetPath;
     auto log = spdlog::get("ProjectDirectoryModel");
@@ -871,7 +872,7 @@ ProjectDirectoryModel::createAssetTargetPath
 
 bool
 ProjectDirectoryModel::copyMainAssetFile
-(IAssetDefinition* adHandle, QFile& assetSourceFile, QString format)
+(shared_ptr<IAssetDefinition>  adHandle, QFile& assetSourceFile, QString format)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
@@ -894,7 +895,7 @@ ProjectDirectoryModel::copyMainAssetFile
 
 bool
 ProjectDirectoryModel::deleteAssetDataDirectory
-(IAssetDefinition* adHandle)
+(shared_ptr<IAssetDefinition>  adHandle)
 {
 
     auto log = spdlog::get("ProjectDirectoryModel");
@@ -905,7 +906,7 @@ ProjectDirectoryModel::deleteAssetDataDirectory
 
 bool
 ProjectDirectoryModel::copyAdditionalFile
-(IAssetDefinition* adHandle, QFile& assetSourceFile)
+(shared_ptr<IAssetDefinition>  adHandle, QFile& assetSourceFile)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     QString assetFileTargetPath = createAssetTargetPath
@@ -927,8 +928,8 @@ ProjectDirectoryModel::copyAdditionalFile
     return copyResult;
 }
 
-ProjectDefinition*
-ProjectDirectoryModel::getProjectDefinitionHandle
+shared_ptr<ProjectDefinition>
+ProjectDirectoryModel::getProjectDefinition
 ()
 {
     return mProjectDefinitionHandle;
@@ -936,7 +937,7 @@ ProjectDirectoryModel::getProjectDefinitionHandle
 
 void
 ProjectDirectoryModel::setProjectDefinitionHandle
-(ProjectDefinition *projectDefinitionHandle)
+(shared_ptr<ProjectDefinition> projectDefinitionHandle)
 {
     mProjectDefinitionHandle = projectDefinitionHandle;
 }

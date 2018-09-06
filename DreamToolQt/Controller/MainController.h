@@ -78,11 +78,11 @@ signals:
     void notifyProjectWidgetsEnabledChanged(bool enabled);
     void notifyStatusBarProjectLoaded(QString);
     void notifyNoSceneSelected();
-    void notifyPlayingScene(SceneRuntime* scene);
+    void notifyPlayingScene(shared_ptr<SceneRuntime> scene);
     //void notifyStoppedScene(SceneDefinition* scene);
 
     void notifyScenegraphUpdated();
-    void notifyProjectDefinitionChanged(ProjectDefinition*);
+    void notifyProjectDefinitionChanged(shared_ptr<ProjectDefinition>);
 
 public slots:
     void onScenegraphTreeDataChanged();
@@ -108,7 +108,7 @@ public slots:
 
     void onUI_ScenegraphTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
     void onUI_AssetDefinitionTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&);
-    void onUI_SelectedSceneChanged(SceneDefinition *scene);
+    void onUI_SelectedSceneChanged(shared_ptr<SceneDefinition> scene);
 
     void onAction_View_ToggleGrid(bool enabled);
     void onAction_View_ToggleDebug(bool enabled);
@@ -134,39 +134,39 @@ public slots:
     void onAction_Asset_NewDefinition_Sprite();
     void onAction_Debug_DumpProjectDefinitionJson(bool toggled);
 
-    void onAssetDefinitionProperty_AudioFile(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_AudioFile(shared_ptr<IAssetDefinition> adHandle);
 
-    void onAssetDefinitionProperty_FontFile(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_FontFile(shared_ptr<IAssetDefinition> adHandle);
 
-    void onAssetDefinitionProperty_ModelFile(IAssetDefinition* adHandle);
-    void onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition* adHandle);
-    void onAssetDefinitionProperty_RemoveFiles(IAssetDefinition* adHandle);
-    void onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_ModelFile(shared_ptr<IAssetDefinition> adHandle);
+    void onAssetDefinitionProperty_ModelAdditionalFiles(shared_ptr<IAssetDefinition> adHandle);
+    void onAssetDefinitionProperty_RemoveFiles(shared_ptr<IAssetDefinition>adHandle);
+    void onAssetDefinitionProperty_ModelMaterialShaderMap(shared_ptr<IAssetDefinition> adHandle);
 
-    void onAssetDefinitionProperty_EditScript(IAssetDefinition* adHandle);
-    void onAssetDefinitionProperty_EditShader(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_EditScript(shared_ptr<IAssetDefinition> adHandle);
+    void onAssetDefinitionProperty_EditShader(shared_ptr<IAssetDefinition> adHandle);
 
-    void onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition*, const QString&);
-    void onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition*, const QString&);
+    void onAssetDefinitionProperty_ScriptTemplateChanged(shared_ptr<IAssetDefinition>, const QString&);
+    void onAssetDefinitionProperty_ShaderTemplateChanged(shared_ptr<IAssetDefinition>, const QString&);
 
-    void onAssetDefinitionProperty_LightChooseAmbient(IAssetDefinition*);
-    void onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefinition*);
-    void onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition*);
-    void onAssetDefinitionProperty_PathList(IAssetDefinition*);
+    void onAssetDefinitionProperty_LightChooseAmbient(shared_ptr<IAssetDefinition>);
+    void onAssetDefinitionProperty_LightChooseDiffuse(shared_ptr<IAssetDefinition>);
+    void onAssetDefinitionProperty_LightChooseSpecular(shared_ptr<IAssetDefinition>);
+    void onAssetDefinitionProperty_PathList(shared_ptr<IAssetDefinition>);
 
-    void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
-    void onSceneObjectProperty_CaptureOrientation(SceneObjectDefinition*);
-    void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);
+    void onSceneObjectProperty_CaptureTranslation(shared_ptr<SceneObjectDefinition>);
+    void onSceneObjectProperty_CaptureOrientation(shared_ptr<SceneObjectDefinition>);
+    void onSceneObjectProperty_CaptureScale(shared_ptr<SceneObjectDefinition>);
 
-    void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*, IAssetDefinition*);
-    void onSceneObjectProperty_RemoveChild(SceneObjectDefinition*, SceneObjectDefinition*);
+    void onSceneObjectProperty_RemoveAsset(shared_ptr<SceneObjectDefinition>, shared_ptr<IDefinition>);
+    void onSceneObjectProperty_RemoveChild(shared_ptr<SceneObjectDefinition>, shared_ptr<IDefinition>);
 
-    void onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(shared_ptr<IAssetDefinition> adHandle);
 
-    void onSceneProperty_CaptureCameraTranslation(SceneDefinition*);
-    void onSceneProperty_CaptureCameraLookAt(SceneDefinition*);
-    void onSceneProperty_ChooseAmbientColour(SceneDefinition*);
-    void onSceneProperty_ChooseClearColour(SceneDefinition*);
+    void onSceneProperty_CaptureCameraTranslation(shared_ptr<SceneDefinition>);
+    void onSceneProperty_CaptureCameraLookAt(shared_ptr<SceneDefinition>);
+    void onSceneProperty_ChooseAmbientColour(shared_ptr<SceneDefinition>);
+    void onSceneProperty_ChooseClearColour(shared_ptr<SceneDefinition>);
 
     void onCreateNewAssetDefinition(QString type);
     void onMainVolumeChanged(int);
@@ -175,7 +175,7 @@ public slots:
 
 
 protected:
-    void showImportResultDialog(bool success, IAssetDefinition* adHandle, QString source);
+    void showImportResultDialog(bool success, shared_ptr<IAssetDefinition> adHandle, QString source);
     void forceAssetDefinitionTreeDataChanged();
 private: // Methods
     // Setup
@@ -192,7 +192,7 @@ private: // Methods
 
     void setActionsEnabled_ValidProject(bool enabled);
 
-    QStringListModel* getSceneNamesListModel(vector<SceneDefinition*> sceneList);
+    QStringListModel* getSceneNamesListModel(vector<shared_ptr<SceneDefinition>> sceneList);
 
     // Signal/Slot Connections
     void connectMenus();
@@ -211,12 +211,12 @@ private: // Methods
 
 private: // Variables
     MainWindowController *mMainWindowHandle;
-    QOpenGLWindowComponent *mWindowComponentHandle;
+    shared_ptr<QOpenGLWindowComponent> mWindowComponent;
 
-    ProjectDefinition *mSelectedProjectDefinitionHandle;
-    IAssetDefinition *mSelectedAssetDefinitionHandle;
-    SceneDefinition *mSelectedSceneDefinitionHandle;
-    SceneObjectDefinition *mSelectedSceneObjectDefinitionHandle;
+    shared_ptr<ProjectDefinition> mSelectedProjectDefinitionHandle;
+    shared_ptr<IAssetDefinition> mSelectedAssetDefinitionHandle;
+    shared_ptr<SceneDefinition> mSelectedSceneDefinitionHandle;
+    shared_ptr<SceneObjectDefinition> mSelectedSceneObjectDefinitionHandle;
 
     QString mProjectDirectory;
     ProjectDirectoryModel mProjectDirectoryModel;

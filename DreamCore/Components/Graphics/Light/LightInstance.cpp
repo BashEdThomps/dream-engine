@@ -5,6 +5,34 @@
 
 namespace Dream
 {
+    LightInstance::LightInstance
+    (
+        shared_ptr<LightDefinition> definition,
+        shared_ptr<SceneObjectRuntime> transform
+    ) : IAssetInstance(definition,transform),
+        mAmbient(glm::vec3(0.0f,0.0f,0.0f)),
+        mDiffuse(glm::vec3(0.0f,0.0f,0.0f)),
+        mSpecular(glm::vec3(0.0f,0.0f,0.0f)),
+        mDirection(glm::vec3(0.0f,0.0f,0.0f)),
+        mConstant(0.0f),
+        mLinear(0.0f),
+        mQuadratic(0.0f),
+        mCutOff(0.0f),
+        mOuterCutOff(0.0f),
+        mType(LightType::LT_NONE)
+
+    {
+        setLogClassName("LightInstance");
+        loadExtraAttributes(definition->getJson());
+    }
+
+    LightInstance::~LightInstance
+    ()
+    {
+        auto log = getLog();
+        log->info("Destroying Object" );
+    }
+
     vec3 LightInstance::getAmbient() const
     {
         return mAmbient;
@@ -160,35 +188,7 @@ namespace Dream
         };
     }
 
-    LightInstance::LightInstance
-    (
-            shared_ptr<LightDefinition> definition,
-            shared_ptr<SceneObjectRuntime> transform
-            ) : IAssetInstance(definition,transform),
-        ILoggable("LightInstance"),
 
-        mAmbient(glm::vec3(0.0f,0.0f,0.0f)),
-        mDiffuse(glm::vec3(0.0f,0.0f,0.0f)),
-        mSpecular(glm::vec3(0.0f,0.0f,0.0f)),
-        mDirection(glm::vec3(0.0f,0.0f,0.0f)),
-        mConstant(0.0f),
-        mLinear(0.0f),
-        mQuadratic(0.0f),
-        mCutOff(0.0f),
-        mOuterCutOff(0.0f),
-        mType(LightType::LT_NONE)
-
-    {
-        loadExtraAttributes(definition->getJson());
-    }
-
-    LightInstance::~LightInstance
-    ()
-    {
-        auto log = getLog();
-        log->info("Destroying Object" );
-        return;
-    }
 
     bool
     LightInstance::load

@@ -22,7 +22,7 @@ namespace Dream
 {
     ArgumentParser::ArgumentParser
     (int argc, const char** argv)
-        : ILoggable ("ArgumentParser")
+        : DreamObject ("ArgumentParser")
     {
         auto log = getLog();
         log->trace( "Constructing" );

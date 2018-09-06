@@ -28,7 +28,7 @@
 #endif
 
 #include "../Common/Constants.h"
-#include "../Common/ILoggable.h"
+#include "../Common/DreamObject.h"
 
 using std::string;
 using std::shared_ptr;
@@ -45,8 +45,7 @@ namespace Dream
     class IWindowComponent;
 
     class Project :
-        public ILoggable,
-        public std::enable_shared_from_this<Project>
+        public DreamObject
     {
         // Variables
     private:

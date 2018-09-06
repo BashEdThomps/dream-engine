@@ -19,14 +19,15 @@
 
 namespace Dream
 {
-    shared_ptr<IDefinition> Runtime::getDefinition()
+    shared_ptr<IDefinition> IRuntime::getDefinition()
     {
         return mDefinition;
     }
 
-    Runtime::Runtime
+    IRuntime::IRuntime
     (shared_ptr<IDefinition> def, string uuid, string name)
         : // Init List
+          DreamObject("IRuntime"),
           mDefinition(def),
           mUuid(uuid),
           mName(name)
@@ -34,56 +35,56 @@ namespace Dream
 
     }
 
-    Runtime::~Runtime
+    IRuntime::~IRuntime
     ()
     {
 
     }
 
     string
-    Runtime::getUuid
+    IRuntime::getUuid
     ()
     {
         return mUuid;
     }
 
     void
-    Runtime::setUuid
+    IRuntime::setUuid
     (string uuid)
     {
         mUuid = uuid;
     }
 
     string
-    Runtime::getName
+    IRuntime::getName
     ()
     {
         return mName;
     }
 
     void
-    Runtime::setName
+    IRuntime::setName
     (string name)
     {
         mName = name;
     }
 
     string
-    Runtime::getNameAndUuidString
+    IRuntime::getNameAndUuidString
     ()
     {
         return "[" + getName() + " : " + getUuid() + "]";
     }
 
     bool
-    Runtime::hasName
+    IRuntime::hasName
     (string name)
     {
         return getName().compare(name) == 0;
     }
 
     bool
-    Runtime::hasUuid
+    IRuntime::hasUuid
     (string uuid)
     {
         return getUuid().compare(uuid) == 0;

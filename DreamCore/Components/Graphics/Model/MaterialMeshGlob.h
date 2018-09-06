@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../Common/ILoggable.h"
+#include "../../../Common/DreamObject.h"
 #include <vector>
 #include "Texture.h"
 #include "../Vertex.h"
@@ -14,7 +14,7 @@ namespace Dream
     class ShaderInstance;
     class AssimpMaterial;
 
-    class MaterialMeshGlob : public ILoggable
+    class MaterialMeshGlob : public DreamObject
     {
     public:
         MaterialMeshGlob(ShaderInstance*, AssimpMaterial*);

@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "../Common/IRuntime.h"
-#include "../Common/ILoggable.h"
 
 using std::string;
 using std::shared_ptr;
@@ -56,7 +55,7 @@ namespace Dream
     class Time;
 
     // Class Declaration
-    class ProjectRuntime : public Runtime, ILoggable
+    class ProjectRuntime : public IRuntime
     {
 
     private: // Member Variables

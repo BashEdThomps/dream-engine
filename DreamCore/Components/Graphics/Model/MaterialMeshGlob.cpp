@@ -8,7 +8,7 @@ namespace Dream
 {
     MaterialMeshGlob::MaterialMeshGlob
     (ShaderInstance* shader, AssimpMaterial* material)
-        : ILoggable("MaterialMeshGlob"),
+        : DreamObject("MaterialMeshGlob"),
           mShader(shader),
           mMaterial(material)
     {

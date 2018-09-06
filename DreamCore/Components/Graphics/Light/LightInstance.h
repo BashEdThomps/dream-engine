@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 
 #include "../../IAssetInstance.h"
-#include "../../../Common/ILoggable.h"
 #include "LightDefinition.h"
 
 using glm::vec3;
@@ -53,7 +52,7 @@ namespace Dream
     } SpotLight;
 
     class LightDefinition;
-    class LightInstance : public IAssetInstance, ILoggable
+    class LightInstance : public IAssetInstance
     {
         vec3 mAmbient;
         vec3 mDiffuse;

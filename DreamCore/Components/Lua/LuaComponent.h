@@ -69,8 +69,8 @@ namespace Dream
         bool executeScriptInit  (shared_ptr<SceneObjectRuntime>);
         bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>);
         bool executeScriptNanoVG(shared_ptr<SceneObjectRuntime>);
-        bool executeScriptInputr(shared_ptr<SceneObjectRuntime>);
-        bool executeScriptEventr(shared_ptr<SceneObjectRuntime>);
+        bool executeScriptInput (shared_ptr<SceneObjectRuntime>);
+        bool executeScriptEvent (shared_ptr<SceneObjectRuntime>);
 
         void removeFromScriptMap(shared_ptr<SceneObjectRuntime>);
         void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>);
@@ -98,6 +98,7 @@ namespace Dream
 
         void debugRegisteringClass(string className);
         void exposeAPI();
+        void exposeDreamBase();
         void exposePathComponent();
         void exposePathInstance();
         void exposeAssimpModelInstance();

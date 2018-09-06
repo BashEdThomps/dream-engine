@@ -30,7 +30,7 @@ namespace Dream
 {
     AssimpCache::AssimpCache
     ()
-        :ILoggable ("AssimpCache")
+        :DreamObject ("AssimpCache")
     {
         auto log = getLog();
             log->info("Contructing" );

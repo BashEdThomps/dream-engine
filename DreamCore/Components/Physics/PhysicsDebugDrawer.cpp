@@ -4,7 +4,7 @@ namespace Dream
 {
 
     PhysicsDebugDrawer::PhysicsDebugDrawer
-    () : ILoggable ("PhysicsDebugDrawer")
+    () : DreamObject ("PhysicsDebugDrawer")
     {
         auto log = getLog();
         log->info( "Constructing Object" );

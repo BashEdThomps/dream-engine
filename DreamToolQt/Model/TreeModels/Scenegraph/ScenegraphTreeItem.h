@@ -20,6 +20,12 @@
 #include "../GenericTreeItem.h"
 #include <QList>
 #include <QVariant>
+#include <DreamCore.h>
+
+#include <memory>
+
+using std::shared_ptr;
+using Dream::IDefinition;
 
 enum ScenegraphTreeItemType
 {
@@ -36,16 +42,16 @@ public:
     (
         QString title,
         ScenegraphTreeItemType type,
-        void* item,
+        shared_ptr<IDefinition> item,
         ScenegraphTreeItem* parentItem = nullptr
     );
 
     ~ScenegraphTreeItem();
 
-    void* getItem() const;
+    shared_ptr<IDefinition> getItem() const;
     ScenegraphTreeItemType getType() const;
     QVariant data(int column) const;
 private:
-    void* mItem;
+    shared_ptr<IDefinition> mItem;
     ScenegraphTreeItemType mType;
 };

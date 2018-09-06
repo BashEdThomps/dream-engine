@@ -51,10 +51,10 @@ namespace Dream
         shared_ptr<IAssetDefinition> definition,
         shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
-          ILoggable("AssimpModelInstance"),
           mModelCache(modelCache),
           mMaterialCache(texCache)
     {
+        setLogClassName("AssimpModelInstance");
         auto log = getLog();
         log->trace( "Constructing {}", definition->getNameAndUuidString() );
         initBoundingBox();

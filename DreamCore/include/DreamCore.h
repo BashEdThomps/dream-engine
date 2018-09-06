@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Common/Constants.h"
+#include "../Common/DreamObject.h"
 
 #include "../Components/IAssetDefinition.h"
 #include "../Components/Path/PathDefinition.h"

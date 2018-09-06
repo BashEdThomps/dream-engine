@@ -98,7 +98,7 @@ MaterialShaderTableModel::data
 
 void
 MaterialShaderTableModel::setModelDefinition
-(ModelDefinition* def)
+(shared_ptr<ModelDefinition> def)
 {
     auto log = spdlog::get("MaterialShaderTableModel");
     log->info("setModelDefinition");

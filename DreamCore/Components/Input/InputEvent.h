@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../../Common/ILoggable.h"
+#include "../../Common/DreamObject.h"
 
 namespace Dream
 {
@@ -54,7 +54,7 @@ namespace Dream
         GAMEPAD_NONE
     };
 
-    class InputEvent : public ILoggable
+    class InputEvent : public DreamObject
     {
     public:
         InputEvent(InputSource source = INPUT_SOURCE_NONE);

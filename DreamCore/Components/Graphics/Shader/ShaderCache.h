@@ -23,13 +23,13 @@
 #include <GL/glew.h>
 
 #include "../../../Common/Constants.h"
-#include "../../../Common/ILoggable.h"
+#include "../../../Common/DreamObject.h"
 
 using namespace std;
 
 namespace Dream
 {
-    class ShaderCache : ILoggable
+    class ShaderCache : DreamObject
     {
 
     private:

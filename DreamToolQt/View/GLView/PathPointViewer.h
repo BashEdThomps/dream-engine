@@ -31,7 +31,7 @@ public:
     explicit PathPointViewer(QObject *parent = nullptr);
     ~PathPointViewer() override;
 
-    void setPathDefinitionHandle(PathDefinition* object);
+    void setPathDefinition(shared_ptr<PathDefinition> object);
     void init() override;
     void draw() override;
     void initShader() override;
@@ -58,7 +58,7 @@ signals:
     void notifyNumberOfTangentsChanged(int);
 
 private:
-    PathDefinition* mPathDefinitionHandle;
+    shared_ptr<PathDefinition> mPathDefinition;
     unique_ptr<PathInstance> mPathInstance;
     void updateVertexBuffer();
     vec3 mSelectedColour;

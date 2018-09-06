@@ -235,21 +235,21 @@ SceneObjectPropertiesTreeDelegate::onButton_CaptureScale
 
 void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveAsset
-(bool, void* vHandle)
+(bool, shared_ptr<DreamObject> vHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
     log->info("RemoveAsset");
-    IAssetDefinition* adHandle = static_cast<IAssetDefinition*>(vHandle);
+    shared_ptr<IAssetDefinition> adHandle = dynamic_pointer_cast<IAssetDefinition>(vHandle);
     emit notifyButton_RemoveAsset(adHandle);
 }
 
 void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveChild
-(bool, void* vHandle)
+(bool, shared_ptr<DreamObject> vHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
     log->info("RemoveChild");
-    SceneObjectDefinition* sodHandle = static_cast<SceneObjectDefinition*>(vHandle);
+    shared_ptr<SceneObjectDefinition> sodHandle = dynamic_pointer_cast<SceneObjectDefinition>(vHandle);
     emit notifyButton_RemoveChild(sodHandle);
 }
 
@@ -317,7 +317,7 @@ const
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createRemoveAssetDefinitionButton
-(IAssetDefinition* adHandle, QWidget *parent)
+(shared_ptr<IAssetDefinition> adHandle, QWidget *parent)
 const
 {
     TreeModelToolButton* button = new TreeModelToolButton(adHandle,parent);
@@ -325,16 +325,16 @@ const
     connect
     (
         button,
-        SIGNAL(notifyClickedWithData(bool,void*)),
+        SIGNAL(notifyClickedWithData(bool,shared_ptr<DreamObject>)),
         this,
-        SLOT(onButton_RemoveAsset(bool,void*))
+        SLOT(onButton_RemoveAsset(bool,shared_ptr<DreamObject>))
     );
     return button;
 }
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createRemoveChildButton
-(SceneObjectDefinition* sodHandle, QWidget *parent)
+(shared_ptr<SceneObjectDefinition> sodHandle, QWidget *parent)
 const
 {
    TreeModelToolButton* button = new TreeModelToolButton(sodHandle,parent);
@@ -342,9 +342,9 @@ const
    connect
     (
         button,
-        SIGNAL(notifyClickedWithData(bool,void*)),
+        SIGNAL(notifyClickedWithData(bool,shared_ptr<DreamObject>)),
         this,
-        SLOT(onButton_RemoveChild(bool,void*))
+        SLOT(onButton_RemoveChild(bool,shared_ptr<DreamObject>))
     );
    return button;
 }

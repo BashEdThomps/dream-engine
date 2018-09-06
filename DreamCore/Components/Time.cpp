@@ -11,7 +11,7 @@ namespace Dream
 {
     Time::Time
     ()
-        : ILoggable ("Time")
+        : DreamObject ("Time")
     {
         mCurrentTime = high_resolution_clock::now();
         mLastTime = high_resolution_clock::now();

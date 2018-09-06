@@ -25,7 +25,7 @@ using Dream::Constants;
 SceneObjectPropertiesItem::SceneObjectPropertiesItem
 (
     QString name,
-    SceneObjectDefinition* sodHandle,
+    shared_ptr<SceneObjectDefinition> sodHandle,
     SceneObjectProperty property,
     QItemDelegate* delegate,
     AbstractPropertiesItem *parent
@@ -42,7 +42,7 @@ SceneObjectPropertiesItem::~SceneObjectPropertiesItem
 
 }
 
-SceneObjectDefinition*
+shared_ptr<SceneObjectDefinition>
 SceneObjectPropertiesItem::getSceneObjectDefinitionHandle
 ()
 {
@@ -198,22 +198,30 @@ SceneObjectPropertiesItem::data
     return QVariant();
 }
 
-SceneObjectDefinition* SceneObjectPropertiesItem::getTargetSceneObjectDefinitionHandle() const
+shared_ptr<SceneObjectDefinition>
+SceneObjectPropertiesItem::getTargetSceneObjectDefinitionHandle
+() const
 {
     return mTargetSceneObjectDefinitionHandle;
 }
 
-void SceneObjectPropertiesItem::setTargetSceneObjectDefinitionHandle(SceneObjectDefinition* targetSceneObjectDefinitionHandle)
+void
+SceneObjectPropertiesItem::setTargetSceneObjectDefinitionHandle
+(shared_ptr<SceneObjectDefinition> targetSceneObjectDefinitionHandle)
 {
     mTargetSceneObjectDefinitionHandle = targetSceneObjectDefinitionHandle;
 }
 
-IAssetDefinition* SceneObjectPropertiesItem::getTargetAssetDefinitionHandle() const
+shared_ptr<IAssetDefinition>
+SceneObjectPropertiesItem::getTargetAssetDefinitionHandle
+() const
 {
     return mTargetAssetDefinitionHandle;
 }
 
-void SceneObjectPropertiesItem::setTargetAssetDefinitionHandle(IAssetDefinition* targetAssetDefinitionHandle)
+void
+SceneObjectPropertiesItem::setTargetAssetDefinitionHandle
+(shared_ptr<IAssetDefinition> targetAssetDefinitionHandle)
 {
     mTargetAssetDefinitionHandle = targetAssetDefinitionHandle;
 }

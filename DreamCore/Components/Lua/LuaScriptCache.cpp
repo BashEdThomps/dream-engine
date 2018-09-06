@@ -23,7 +23,7 @@
 namespace Dream
 {
     LuaScriptCache::LuaScriptCache
-    () : ILoggable ("LuaScriptCache")
+    () : DreamObject ("LuaScriptCache")
     {
         auto log = getLog();
         log->trace("Constructing");

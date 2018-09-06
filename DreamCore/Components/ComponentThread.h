@@ -1,7 +1,7 @@
 #pragma once
 
 #include <thread>
-#include "../Common/ILoggable.h"
+#include "../Common/DreamObject.h"
 
 using std::thread;
 
@@ -10,7 +10,7 @@ namespace Dream
     class IComponent;
     class SceneRuntime;
 
-    class ComponentThread : public thread, ILoggable
+    class ComponentThread : public thread, public DreamObject
     {
     public:
         ComponentThread(shared_ptr<IComponent> component);

@@ -24,8 +24,8 @@ public:
     explicit ScriptEditorTabController(QString fileType, QWidget *parent = nullptr);
     ~ScriptEditorTabController() override;
 
-    void setAssetDefinitionHandle(IAssetDefinition* definitionHandle);
-    IAssetDefinition* getAssetDefinitionHandle();
+    void setAssetDefinitionHandle(shared_ptr<IAssetDefinition> definitionHandle);
+    shared_ptr<IAssetDefinition> getAssetDefinitionHandle();
     void useLuaHighlighter();
     void useGLSLHighlighter();
     void setPlainText(QString data);
@@ -43,7 +43,7 @@ private:
     QString mFileType;
     bool mTextHasChanged;
     shared_ptr<QSyntaxHighlighter> mHighlighter;
-    IAssetDefinition* mAssetDefinitionHandle;
+    shared_ptr<IAssetDefinition> mAssetDefinitionHandle;
     CodeEditorWidget* mTextEdit;
     Ui::ScriptEditorTabForm mForm;
 };

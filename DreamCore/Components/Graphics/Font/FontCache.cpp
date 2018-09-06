@@ -31,7 +31,7 @@ namespace Dream
     const char FontCache::CHAR_MAP_END = 0x7F;
 
     FontCache::FontCache
-    () : ILoggable ("FontCache")
+    () : DreamObject ("FontCache")
     {
         auto log = getLog();
         log->trace("Constructing");

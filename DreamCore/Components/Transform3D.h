@@ -33,7 +33,7 @@
 #include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>
-#include "../Common/ILoggable.h"
+#include "../Common/DreamObject.h"
 
 using std::string;
 using nlohmann::json;
@@ -42,7 +42,7 @@ using glm::quat;
 
 namespace Dream
 {
-  class Transform3D : public ILoggable
+  class Transform3D : public DreamObject
   {
   private:
     vec3 mTranslation;

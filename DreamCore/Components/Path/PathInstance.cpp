@@ -15,11 +15,12 @@ namespace Dream
 
     PathInstance::PathInstance
     (shared_ptr<PathDefinition> definition, shared_ptr<SceneObjectRuntime> runtime)
-        : IAssetInstance(definition,runtime), ILoggable ("PathInstance"),
+        : IAssetInstance(definition,runtime),
           mWrapPath(true),
           mCurrentIndex(0),
           mUStep(0.05)
     {
+        setLogClassName("PathInstance");
         auto log = getLog();
         log->trace("Constructing Object");
 

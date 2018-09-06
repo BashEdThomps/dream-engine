@@ -30,7 +30,7 @@ class AssetDefinitionTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit AssetDefinitionTreeModel(ProjectDefinition *project, QObject *parent = nullptr);
+    explicit AssetDefinitionTreeModel(shared_ptr<ProjectDefinition>project, QObject *parent = nullptr);
     ~AssetDefinitionTreeModel() override;
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -44,7 +44,7 @@ public:
     void setupModelData();
     void forceDataChanged();
 private:
-    ProjectDefinition *mProjectHandle;
+    shared_ptr<ProjectDefinition>mProjectHandle;
     unique_ptr<AssetDefinitionTreeItem> mRootItem;
     unique_ptr<QIcon> mAssetDefinitionIcon;
 

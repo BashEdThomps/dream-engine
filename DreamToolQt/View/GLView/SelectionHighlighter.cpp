@@ -61,10 +61,10 @@ SelectionHighlighter::init
 
 void
 SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
-(SceneObjectRuntime* selected)
+(shared_ptr<SceneObjectRuntime> selected)
 {
     auto log = spdlog::get("SelectionHighlighter");
-    if (selected)
+    if (selected != nullptr)
     {
         log->info("Selecting {}",selected->getNameAndUuidString());
     }
@@ -422,7 +422,7 @@ SelectionHighlighter::initShader
     glDeleteShader(fragmentShader);
 }
 
-SceneObjectRuntime*
+shared_ptr<SceneObjectRuntime>
 SelectionHighlighter::getSelectedObject
 ()
 {

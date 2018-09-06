@@ -28,10 +28,11 @@ namespace Dream
 
     FontInstance::FontInstance
     (shared_ptr<FontCache> cache, shared_ptr<FontDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
-        : IAssetInstance(definition,transform),ILoggable ("FontInstance"),
+        : IAssetInstance(definition,transform),
           mCache(cache)
 
     {
+        setLogClassName("FontInstance");
         mColour = {1,1,1};
         mFontFace = nullptr;
         setText("NO_TEXT_SET");

@@ -14,7 +14,6 @@
 
 #include "../Graphics/Shader/ShaderInstance.h"
 #include "../../Common/Constants.h"
-#include "../../Common/ILoggable.h"
 
 using namespace std;
 
@@ -27,7 +26,7 @@ namespace Dream
         glm::vec3 Color;
     };
 
-    class PhysicsDebugDrawer : public btIDebugDraw, ILoggable
+    class PhysicsDebugDrawer : public btIDebugDraw, DreamObject
     {
         glm::mat4 mProjectionMatrix;
         glm::mat4 mViewMatrix;

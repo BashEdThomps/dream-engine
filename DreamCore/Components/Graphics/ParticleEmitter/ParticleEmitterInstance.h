@@ -3,14 +3,13 @@
 #include <glm/glm.hpp>
 
 #include "../../IAssetInstance.h"
-#include "../../../Common/ILoggable.h"
 
 using glm::vec3;
 
 namespace Dream
 {
     class ParticleEmitterDefinition;
-    class ParticleEmitterInstance : public IAssetInstance, ILoggable
+    class ParticleEmitterInstance : public IAssetInstance
     {
         vec3 mColor;
         float mIntensity;

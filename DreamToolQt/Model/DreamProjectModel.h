@@ -46,15 +46,15 @@ public:
     DreamProjectModel
     (
         QObject *parent = nullptr,
-        QOpenGLWindowComponent *windowComponent = nullptr
+        shared_ptr<QOpenGLWindowComponent> windowComponent = nullptr
     );
-    ~DreamProjectModel();
+    ~DreamProjectModel() override;
 
     bool loadProject(QString path);
-    Project* getProject();
+    shared_ptr<Project> getProject();
 
-    vector<SceneDefinition*> getScenes();
-    vector<IAssetDefinition*> getAssetDefinitions();
+    vector<shared_ptr<SceneDefinition>> getScenes();
+    vector<shared_ptr<IAssetDefinition>> getAssetDefinitions();
 
     void setProjectName(string name);
     void setProjectAuthor(string author);
@@ -66,27 +66,27 @@ public:
     void setPhysicsDebug(bool enabled);
     void closeProject();
 
-    bool startSceneRuntimeFromDefinition(SceneDefinition* definitionHandle);
-    SceneRuntime* stopActiveSceneRuntime();
+    bool startSceneRuntimeFromDefinition(shared_ptr<SceneDefinition> definition);
+    shared_ptr<SceneRuntime> stopActiveSceneRuntime();
     void setupHeartbeatTimer();
 
-    IAssetDefinition* getAssetDefinitionHandleByUuid(string uuid);
-    SceneDefinition* getSceneDefinitionHandleByUuid(string uuid);
+    shared_ptr<IAssetDefinition> getAssetDefinitionByUuid(string uuid);
+    shared_ptr<SceneDefinition> getSceneDefinitionByUuid(string uuid);
 
-    SceneDefinition* getSelectedSceneDefinitionHandle();
-    void setSelectedSceneDefinitionHandle(SceneDefinition* selectedScene);
+    shared_ptr<SceneDefinition> getSelectedSceneDefinition();
+    void setSelectedSceneDefinition(shared_ptr<SceneDefinition> selectedScene);
 
-    IDefinition *createNewAssetDefinition(AssetType type);
+    shared_ptr<IDefinition> createNewAssetDefinition(AssetType type);
 
 signals:
-    void notifySelectedSceneChanged(SceneDefinition* scene);
+    void notifySelectedSceneChanged(shared_ptr<SceneDefinition> scene);
 
 private:
     // Owned Objects
-    unique_ptr<Project> mProject;
-    unique_ptr<QTimer>  mHeartbeatTimer;
+    shared_ptr<Project> mProject;
+    shared_ptr<QTimer>  mHeartbeatTimer;
 
     // Handles
-    QOpenGLWindowComponent *mWindowComponentHandle;
-    SceneDefinition* mSelectedSceneHandle;
+    shared_ptr<QOpenGLWindowComponent> mWindowComponent;
+    shared_ptr<SceneDefinition> mSelectedScene;
 };

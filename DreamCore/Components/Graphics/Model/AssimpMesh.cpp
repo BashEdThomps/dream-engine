@@ -11,7 +11,7 @@ namespace Dream
         vector<Vertex> vertices,
         vector<GLuint> indices,
         shared_ptr<AssimpMaterial> material
-    ) : ILoggable("AssimpMesh"),
+    ) : DreamObject("AssimpMesh"),
         mParent(parent),
         mMaterial(material),
         mName(name),

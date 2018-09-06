@@ -48,7 +48,7 @@ void ScriptEditorController::setupRevertSaveSignals()
 
 void
 ScriptEditorController::openScript
-(ScriptDefinition* scriptDefinitionHandle)
+(shared_ptr<ScriptDefinition> scriptDefinitionHandle)
 {
     auto log = spdlog::get("ScriptEditorController");
 
@@ -93,7 +93,7 @@ void ScriptEditorController::setupCloseButtonSignal()
 
 void
 ScriptEditorController::openShader
-(ShaderDefinition* shaderDefinitionHandle)
+(shared_ptr<ShaderDefinition> shaderDefinitionHandle)
 {
     auto log = spdlog::get("ScriptEditorController");
     int index = isAssetOpen(shaderDefinitionHandle);
@@ -165,7 +165,9 @@ void ScriptEditorController::getAllUpInYourFace()
     setFocus();
 }
 
-void ScriptEditorController::onTabCloseRequested(int index)
+void
+ScriptEditorController::onTabCloseRequested
+(int index)
 {
 
     auto tabWidget = mTabForms.at(index);
@@ -188,7 +190,9 @@ void ScriptEditorController::onTabCloseRequested(int index)
     mTabForms.erase(mTabForms.begin() + index);
 }
 
-void ScriptEditorController::onRevertButtonClicked(bool checked)
+void
+ScriptEditorController::onRevertButtonClicked
+(bool checked)
 {
     Q_UNUSED(checked)
     auto log = spdlog::get("ScriptEditorController");
@@ -198,7 +202,7 @@ void ScriptEditorController::onRevertButtonClicked(bool checked)
         return;
     }
     auto currentWidgetHandle = mTabForms.at(tabIndex).get();
-    IAssetDefinition* adHandle = currentWidgetHandle->getAssetDefinitionHandle();
+    shared_ptr<IAssetDefinition> adHandle = currentWidgetHandle->getAssetDefinitionHandle();
     if (adHandle != nullptr)
     {
         int result = QMessageBox::question(
@@ -214,7 +218,9 @@ void ScriptEditorController::onRevertButtonClicked(bool checked)
     }
 }
 
-void ScriptEditorController::onSaveButtonClicked(bool checked)
+void
+ScriptEditorController::onSaveButtonClicked
+(bool checked)
 {
     Q_UNUSED(checked)
     auto log = spdlog::get("ScriptEditorController");
@@ -225,7 +231,7 @@ void ScriptEditorController::onSaveButtonClicked(bool checked)
     }
 
     auto currentWidgetHandle = mTabForms.at(tabIndex).get();
-    IAssetDefinition* adHandle = currentWidgetHandle->getAssetDefinitionHandle();
+    shared_ptr<IAssetDefinition> adHandle = currentWidgetHandle->getAssetDefinitionHandle();
     if (adHandle != nullptr)
     {
         log->info("Saving {}",adHandle->getNameAndUuidString());
@@ -306,7 +312,7 @@ ScriptEditorController::onComboTemplateChanged
 
 int
 ScriptEditorController::isAssetOpen
-(Dream::IAssetDefinition* definition)
+(shared_ptr<IAssetDefinition> definition)
 {
     for (shared_ptr<ScriptEditorTabController> tab : mTabForms)
     {

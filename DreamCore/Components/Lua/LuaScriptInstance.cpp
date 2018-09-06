@@ -28,9 +28,9 @@ namespace Dream
         shared_ptr<SceneObjectRuntime> transform
     )
         : IAssetInstance(definition,transform),
-          ILoggable("LuaScriptInstance"),
           mError(false)
     {
+        setLogClassName("LuaScriptInstance");
         auto log = getLog();
         log->trace( "Constructing {}", mDefinition->getNameAndUuidString() );
         return;

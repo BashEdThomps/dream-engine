@@ -22,6 +22,10 @@
 #include <QList>
 #include <QVariant>
 
+#include <memory>
+
+using std::shared_ptr;
+
 namespace Dream
 {
     class IAssetDefinition;
@@ -43,18 +47,18 @@ public:
     (
         QString title,
         AssetDefinitionTreeItemType type,
-        IAssetDefinition* definiion = nullptr,
+        shared_ptr<IAssetDefinition> definiion,
         AssetDefinitionTreeItem *parentItem = nullptr
     );
 
-    IAssetDefinition *getAssetDefinition();
+    shared_ptr<IAssetDefinition> getAssetDefinition();
 
     AssetDefinitionTreeItemType getType() const;
     void setType(AssetDefinitionTreeItemType type);
     QVariant data(int column) const;
 
 private:
-    IAssetDefinition *mDefinition;
+    shared_ptr<IAssetDefinition> mDefinition;
     AssetDefinitionTreeItemType mType;
 
 };

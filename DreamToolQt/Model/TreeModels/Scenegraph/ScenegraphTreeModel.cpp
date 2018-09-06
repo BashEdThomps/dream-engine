@@ -25,7 +25,7 @@
 using Dream::SceneDefinition;
 
 ScenegraphTreeModel::ScenegraphTreeModel
-(ProjectDefinition *project, QObject *parent)
+(shared_ptr<ProjectDefinition>project, QObject *parent)
     : QAbstractItemModel(parent)
 {
     auto log = spdlog::get("ScenegraphTreeModel");
@@ -112,8 +112,8 @@ ScenegraphTreeModel::flags
 
     if (data->getType() == SCENEGRAPH_SCENE_OBJECT)
     {
-        auto sod = static_cast<SceneObjectDefinition*>(data->getItem());
-        if (sod->getParentSceneObjectHandle() != nullptr)
+        auto sod = dynamic_pointer_cast<SceneObjectDefinition>(data->getItem());
+        if (sod->getParentSceneObject() != nullptr)
         {
             flags |= (Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
         }
@@ -234,7 +234,7 @@ ScenegraphTreeModel::setupModelData
 
     mRootItem->appendChild(project);
 
-    for (SceneDefinition *sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsHandleList())
+    for (shared_ptr<SceneDefinition> sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsList())
     {
         log->info("Adding Scene {}",sceneHandle->getNameAndUuidString());
 
@@ -248,7 +248,7 @@ ScenegraphTreeModel::setupModelData
         project->appendChild(nextScene);
 
         // Setup SceneObjects
-        SceneObjectDefinition *rootSceneObject = sceneHandle->getRootSceneObjectDefinitionHandle();
+        shared_ptr<SceneObjectDefinition> rootSceneObject = sceneHandle->getRootSceneObjectDefinition();
         ScenegraphTreeItem *rootSceneObjectItem = new ScenegraphTreeItem
         (
             QString::fromStdString(rootSceneObject->getName()),
@@ -271,9 +271,9 @@ void ScenegraphTreeModel::forceDataChanged()
 
 void
 ScenegraphTreeModel::appendSceneObjects
-(SceneObjectDefinition *parentSceneObject, ScenegraphTreeItem* parentTreeNode)
+(shared_ptr<SceneObjectDefinition>parentSceneObject, ScenegraphTreeItem* parentTreeNode)
 {
-    for (SceneObjectDefinition *sceneObject : parentSceneObject->getChildDefinitionsHandleList())
+    for (shared_ptr<SceneObjectDefinition>sceneObject : parentSceneObject->getChildDefinitionsList())
     {
         // Setup Child
         ScenegraphTreeItem *sceneObjectItem = new ScenegraphTreeItem
@@ -303,13 +303,13 @@ ScenegraphTreeModel::setData
     switch (data->getType())
     {
         case SCENEGRAPH_PROJECT:
-            static_cast<ProjectDefinition*>(data->getItem())->setName(nameString);
+            dynamic_pointer_cast<ProjectDefinition>(data->getItem())->setName(nameString);
             break;
         case SCENEGRAPH_SCENE:
-            static_cast<SceneDefinition*>(data->getItem())->setName(nameString);
+            dynamic_pointer_cast<SceneDefinition>(data->getItem())->setName(nameString);
             break;
         case SCENEGRAPH_SCENE_OBJECT:
-            static_cast<SceneObjectDefinition*>(data->getItem())->setName(nameString);
+            dynamic_pointer_cast<SceneObjectDefinition>(data->getItem())->setName(nameString);
             break;
         case SCENEGRAPH_TREE_NODE:
             break;
@@ -362,7 +362,7 @@ bool ScenegraphTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction act
     auto parentItem = static_cast<ScenegraphTreeItem*>(parent.internalPointer());
     if (parentItem->getType() == SCENEGRAPH_SCENE_OBJECT)
     {
-        auto sceneObject = static_cast<SceneObjectDefinition*>(parentItem->getItem());
+        auto sceneObject = dynamic_pointer_cast<SceneObjectDefinition>(parentItem->getItem());
         log->trace("Parent is {}, row {} col {} beginRow{}",sceneObject->getNameAndUuidString(),row,column,beginRow);
         if (data->hasText())
         {
@@ -401,7 +401,7 @@ QMimeData* ScenegraphTreeModel::mimeData(const QModelIndexList& indexes) const
        auto sceneObjectItem = static_cast<ScenegraphTreeItem*>(index.internalPointer());
        if (sceneObjectItem->getType() == SCENEGRAPH_SCENE_OBJECT)
        {
-            auto sceneObject = static_cast<SceneObjectDefinition*>(sceneObjectItem->getItem());
+            auto sceneObject = dynamic_pointer_cast<SceneObjectDefinition>(sceneObjectItem->getItem());
             sceneObjects.push_back(sceneObject->getJson());
        }
     }

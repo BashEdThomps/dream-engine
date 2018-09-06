@@ -22,14 +22,14 @@
 #include <vector>
 
 #include "../Common/Constants.h"
-#include "../Common/ILoggable.h"
+#include "../Common/DreamObject.h"
 
 using std::string;
 using std::vector;
 
 namespace Dream
 {
-    class FileReader : public ILoggable
+    class FileReader : public DreamObject
     {
     private:
         string mString;

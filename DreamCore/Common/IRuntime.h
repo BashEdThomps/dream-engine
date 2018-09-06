@@ -18,7 +18,8 @@
 #pragma once
 
 #include <string>
-#include <memory>
+
+#include "DreamObject.h"
 
 using std::shared_ptr;
 using std::string;
@@ -27,15 +28,15 @@ namespace Dream
 {
     class IDefinition;
 
-    class Runtime : public std::enable_shared_from_this<Runtime>
+    class IRuntime : public DreamObject
     {
     protected:
         shared_ptr<IDefinition> mDefinition;
         string mUuid;
         string mName;
     public:
-        Runtime(shared_ptr<IDefinition> def, string uuid = "", string name = "");
-        virtual ~Runtime();
+        IRuntime(shared_ptr<IDefinition> def, string uuid = "", string name = "");
+        virtual ~IRuntime();
 
         string getUuid();
         void setUuid(string uuid);

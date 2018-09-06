@@ -14,14 +14,14 @@
 #include "../Vertex.h"
 #include "../BoundingBox.h"
 #include "../../../Common/Constants.h"
-#include "../../../Common/ILoggable.h"
+#include "../../../Common/DreamObject.h"
 
 
 namespace Dream
 {
     class AssimpModelInstance;
 
-    class AssimpMesh : public ILoggable
+    class AssimpMesh : public DreamObject
     {
     private:
         shared_ptr<AssimpModelInstance> mParent;

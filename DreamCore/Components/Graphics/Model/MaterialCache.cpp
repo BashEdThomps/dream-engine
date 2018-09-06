@@ -20,7 +20,7 @@
 namespace Dream
 {
     MaterialCache::MaterialCache
-    () : ILoggable ("MaterialCache")
+    () : DreamObject ("MaterialCache")
     {
         auto log = getLog();
         log->trace( "Constructing" );

@@ -22,7 +22,6 @@
 #include <vector>
 #include <memory>
 
-#include "../../Common/ILoggable.h"
 #include "../../Common/IDefinition.h"
 #include "../../Components/Transform3D.h"
 
@@ -35,7 +34,7 @@ namespace Dream
     class IAssetDefinition;
     class SceneDefinition;
 
-    class SceneObjectDefinition : public IDefinition, ILoggable
+    class SceneObjectDefinition : public IDefinition
     {
     private:
         shared_ptr<SceneObjectDefinition> mParentSceneObject;
@@ -58,10 +57,10 @@ namespace Dream
         void setFollowsCamera(bool fc);
         bool followsCamera();
 
-        void addAssetDefinitionToLoadQueue(IAssetDefinition* ad);
+        void addAssetDefinitionToLoadQueue(shared_ptr<IAssetDefinition> ad);
         void addAssetDefinitionUuidToLoadQueue(string uuid);
 
-        void removeAssetDefinitionFromLoadQueue(IAssetDefinition* ad);
+        void removeAssetDefinitionFromLoadQueue(shared_ptr<IAssetDefinition> ad);
         void removeAssetDefinitionUuidFromLoadQueue(string uuid);
 
         vector<string> getAssetDefinitionLoadQueue();
@@ -90,7 +89,6 @@ namespace Dream
 
         void loadChildSceneObjectDefinitions(bool randomUuid = false);
 
-    private:
     };
 
 }

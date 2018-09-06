@@ -40,7 +40,7 @@ void PathEditorFormController::setProjectPath(QString projectPath)
 
 void
 PathEditorFormController::setPathDefinition
-(Dream::PathDefinition* def)
+(shared_ptr<PathDefinition> def)
 {
     mPathDefinitionHandle = def;
     populate();

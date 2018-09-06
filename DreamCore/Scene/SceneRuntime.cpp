@@ -41,13 +41,14 @@ namespace Dream
     SceneRuntime::SceneRuntime
     (shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> project)
         : // Init list
-          Runtime(sd),
-          ILoggable ("SceneRuntime"),
+          IRuntime(sd),
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
           mProjectRuntime(project)
     {
+
+        setLogClassName("SceneRuntime");
         auto log = getLog();
         log->trace( "Constructing " );
     }

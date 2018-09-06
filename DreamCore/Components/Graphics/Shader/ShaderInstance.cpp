@@ -35,7 +35,6 @@ namespace Dream
      shared_ptr<ShaderDefinition> definition,
      shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
-          ILoggable ("ShaderInstance"),
           mPointLightCount(0),
           mPointLightCountLocation(UNIFORM_NOT_FOUND),
           mSpotLightCount(0),
@@ -44,6 +43,8 @@ namespace Dream
           mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
           mCache(cache)
     {
+
+        setLogClassName("ShaderInstance");
         auto log = getLog();
         log->trace( "Constructing Object" );
         mShaderProgram = 0;
@@ -564,7 +565,7 @@ namespace Dream
 
 
     ShaderUniform::ShaderUniform(UniformType type, string name, int count, void* data)
-        : ILoggable ("ShaderUniform"),
+        : DreamObject ("ShaderUniform"),
           mType(type),
           mName(name),
           mCount(count)

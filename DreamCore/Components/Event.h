@@ -21,14 +21,14 @@
 #include <string>
 #include <map>
 
-#include "../Common/ILoggable.h"
+#include "../Common/DreamObject.h"
 
 using std::string;
 using std::map;
 
 namespace Dream
 {
-    class Event : public ILoggable
+    class Event : public DreamObject
     {
 
     private:

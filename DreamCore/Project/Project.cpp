@@ -52,7 +52,7 @@ namespace Dream
 {
     Project::Project
     (shared_ptr<IWindowComponent> windowComponent)
-        : ILoggable("Project"),
+        : DreamObject("Project"),
           mWindowComponent(windowComponent)
     {
         getLog()->trace("Constructing");
@@ -159,7 +159,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mRuntime = make_shared<ProjectRuntime>(shared_from_this(), mWindowComponent);
+        mRuntime = make_shared<ProjectRuntime>(dynamic_pointer_cast<Project>(shared_from_this()), mWindowComponent);
         mRuntime->useDefinition(nullptr);
         return mRuntime;
     }

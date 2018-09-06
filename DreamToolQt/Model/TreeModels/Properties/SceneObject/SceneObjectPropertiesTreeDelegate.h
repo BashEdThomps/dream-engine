@@ -19,15 +19,22 @@
 #pragma once
 
 #include <QItemDelegate>
+#include <memory>
+
+using std::shared_ptr;
 
 namespace Dream
 {
     class IAssetDefinition;
+    class IDefinition;
     class SceneObjectDefinition;
+    class DreamObject;
 }
 
+using Dream::IDefinition;
 using Dream::IAssetDefinition;
 using Dream::SceneObjectDefinition;
+using Dream::DreamObject;
 
 class SceneObjectPropertiesModel;
 
@@ -47,15 +54,15 @@ public slots:
     void onButton_CaptureTranslation(bool);
     void onButton_CaptureOrientation(bool);
     void onButton_CaptureScale(bool);
-    void onButton_RemoveAsset(bool,void*);
-    void onButton_RemoveChild(bool,void*);
+    void onButton_RemoveAsset(bool,shared_ptr<DreamObject>);
+    void onButton_RemoveChild(bool,shared_ptr<DreamObject>);
 
 signals:
     void notifyButton_CaptureTranslation();
     void notifyButton_CaptureOrientation();
     void notifyButton_CaptureScale();
-    void notifyButton_RemoveAsset(IAssetDefinition*);
-    void notifyButton_RemoveChild(SceneObjectDefinition*);
+    void notifyButton_RemoveAsset(shared_ptr<IDefinition>);
+    void notifyButton_RemoveChild(shared_ptr<IDefinition>);
 
 protected:
     SceneObjectPropertiesModel *mModelHandle;
@@ -64,6 +71,6 @@ protected:
     QWidget* createCaptureOrientationButton(QWidget* parent) const;
     QWidget* createCaptureScaleButton(QWidget* parent) const;
     QWidget* createTransformTypeComboBox(QWidget* parent) const;
-    QWidget* createRemoveAssetDefinitionButton(IAssetDefinition* adHandle, QWidget* parent) const;
-    QWidget* createRemoveChildButton(SceneObjectDefinition* sodHandle, QWidget* parent) const;
+    QWidget* createRemoveAssetDefinitionButton(shared_ptr<IAssetDefinition> adHandle, QWidget* parent) const;
+    QWidget* createRemoveChildButton(shared_ptr<SceneObjectDefinition> sodHandle, QWidget* parent) const;
 };

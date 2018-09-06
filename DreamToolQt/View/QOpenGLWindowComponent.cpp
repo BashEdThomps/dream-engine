@@ -114,7 +114,7 @@ QOpenGLWindowComponent::paintGL
         {
             mPaintInProgress = true;
             updateInputState();
-            SceneRuntime *sRuntime = mProjectRuntimeHandle->getActiveSceneRuntimeHandle();
+            shared_ptr<SceneRuntime> sRuntime = mProjectRuntimeHandle->getActiveSceneRuntime();
 
             if (sRuntime->getState() != SCENE_STATE_STOPPED)
             {
@@ -144,8 +144,8 @@ QOpenGLWindowComponent::paintGL
 
                 mProjectRuntimeHandle->updateGraphics();
 
-                glm::mat4 viewMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getViewMatrix();
-                glm::mat4 projectionMatrix = mProjectRuntimeHandle->getGraphicsComponentHandle()->getProjectionMatrix();
+                glm::mat4 viewMatrix = mProjectRuntimeHandle->getGraphicsComponent()->getViewMatrix();
+                glm::mat4 projectionMatrix = mProjectRuntimeHandle->getGraphicsComponent()->getProjectionMatrix();
 
                 // glDisable(GL_DEPTH_TEST);
 
@@ -239,8 +239,8 @@ QOpenGLWindowComponent::paintGL
 void
 QOpenGLWindowComponent::drawStats()
 {
-    auto project = mActiveSceneRuntimeHandle->getProjectRuntimeHandle();
-    double frame = project->getTimeHandle()->getFrameTimeDelta();
+    auto project = mActiveSceneRuntime->getProjectRuntime();
+    double frame = project->getTime()->getFrameTimeDelta();
     mFrameTimes.push_back(frame);
 
     if (mFrameTimes.size() > mMaxFrameTimeValues)
@@ -248,20 +248,20 @@ QOpenGLWindowComponent::drawStats()
         mFrameTimes.erase(begin(mFrameTimes));
     }
 
-    long long path = project->getPathComponentHandle()->getUpdateTime();
-    long long pathYield = project->getPathComponentHandle()->getYieldedTime();
+    long long path = project->getPathComponent()->getUpdateTime();
+    long long pathYield = project->getPathComponent()->getYieldedTime();
 
-    long long audio = project->getAudioComponentHandle()->getUpdateTime();
-    long long  audioYield = project->getAudioComponentHandle()->getYieldedTime() ;
+    long long audio = project->getAudioComponent()->getUpdateTime();
+    long long  audioYield = project->getAudioComponent()->getYieldedTime() ;
 
-    long long graphics = project->getGraphicsComponentHandle()->getUpdateTime();
-    long long graphicsYield = project->getGraphicsComponentHandle()->getYieldedTime();
+    long long graphics = project->getGraphicsComponent()->getUpdateTime();
+    long long graphicsYield = project->getGraphicsComponent()->getYieldedTime();
 
-    long long lua = project->getLuaComponentHandle()->getUpdateTime();
-    long long luaYield = project->getLuaComponentHandle()->getYieldedTime();
+    long long lua = project->getLuaComponent()->getUpdateTime();
+    long long luaYield = project->getLuaComponent()->getYieldedTime();
 
-    long long physics = project->getPhysicsComponentHandle()->getUpdateTime();
-    long long physicsYield = project->getPhysicsComponentHandle()->getYieldedTime();
+    long long physics = project->getPhysicsComponent()->getUpdateTime();
+    long long physicsYield = project->getPhysicsComponent()->getYieldedTime();
 
     bool madDetail = false;;
     QPainter painter(this);
@@ -354,8 +354,8 @@ void QOpenGLWindowComponent::getCurrentDimensions(){}
 void QOpenGLWindowComponent::swapBuffers(){}
 
 void
-QOpenGLWindowComponent::setProjectRuntimeHandle
-(ProjectRuntime* engine)
+QOpenGLWindowComponent::setProjectRuntime
+(shared_ptr<ProjectRuntime> engine)
 {
     mProjectRuntimeHandle = engine;
 }
@@ -399,7 +399,7 @@ QOpenGLWindowComponent::wheelEvent
             QPoint pos = event->pixelDelta();
             int x = static_cast<int>( pos.x() );
             int y = static_cast<int>( pos.y() );
-            mProjectRuntimeHandle->getCameraHandle()->processMouseMovement(x,-y,true);
+            mProjectRuntimeHandle->getCamera()->processMouseMovement(x,-y,true);
         }
     }
 }
@@ -420,7 +420,7 @@ QOpenGLWindowComponent::mouseMoveEvent
 
 void
 QOpenGLWindowComponent::moveSelectedSceneObject
-(SceneObjectRuntime* selected)
+(shared_ptr<SceneObjectRuntime> selected)
 {
     if (mControlScene)
     {
@@ -484,7 +484,7 @@ QOpenGLWindowComponent::updateInputState
             return;
         }
 
-        SceneObjectRuntime *selected = nullptr;
+        shared_ptr<SceneObjectRuntime> selected = nullptr;
 
         if (mSelectionHighlighterHandle)
         {
@@ -507,8 +507,8 @@ QOpenGLWindowComponent::moveCamera
 
     auto log = spdlog::get("QOpenGLWindowComponent");
     log->trace("MoveCamera");
-    Camera *camHandle = mProjectRuntimeHandle->getCameraHandle();
-    float deltaTime = static_cast<float>(mProjectRuntimeHandle->getTimeHandle()->getFrameTimeDelta());
+    shared_ptr<Camera> camHandle = mProjectRuntimeHandle->getCamera();
+    float deltaTime = static_cast<float>(mProjectRuntimeHandle->getTime()->getFrameTimeDelta());
 
     if (mInputState.wPressed)
     {

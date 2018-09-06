@@ -27,13 +27,14 @@
 #include <string>
 
 #include "../Components/Transform3D.h"
+#include "DreamObject.h"
 
 using std::string;
 using nlohmann::json;
 
 namespace Dream
 {
-    class IDefinition : public std::enable_shared_from_this<IDefinition>
+    class IDefinition : public DreamObject
     {
     protected:
         json mJson;

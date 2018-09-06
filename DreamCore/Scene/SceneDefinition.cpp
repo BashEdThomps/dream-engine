@@ -32,9 +32,9 @@ namespace Dream
     SceneDefinition::SceneDefinition
     (shared_ptr<ProjectDefinition> projectDefinition, json data)
         : IDefinition(data),
-          ILoggable("SceneDefinition"),
           mProjectDefinition(projectDefinition)
     {
+        setLogClassName("SceneDefinition");
         auto log = getLog();
         log->trace( "Constructing ", getNameAndUuidString() );
     }

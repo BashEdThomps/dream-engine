@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include "../Common/ILoggable.h"
+#include "../Common/DreamObject.h"
 
 namespace Dream
 {
     class Time;
     class SceneRuntime;
 
-    class IComponent : public ILoggable
+    class IComponent : public DreamObject
     {
 
     public:

@@ -26,8 +26,8 @@ class ProjectPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    ProjectPropertiesModel(ProjectDefinition *project, QTreeView* parent = 0);
-    ~ProjectPropertiesModel();
+    ProjectPropertiesModel(shared_ptr<ProjectDefinition> project, QTreeView* parent = nullptr);
+    ~ProjectPropertiesModel() override;
 
     void createRoot() override;
     void createProperties() override;
@@ -41,5 +41,5 @@ protected:
     void createWindowSizeProperty();
 
 private:
-    ProjectDefinition *mProjectDefinitionHandle;
+    shared_ptr<ProjectDefinition> mProjectDefinitionHandle;
 };

@@ -21,7 +21,7 @@
 #include <map>
 #include <assimp/Importer.hpp>
 
-#include "../../../Common/ILoggable.h"
+#include "../../../Common/DreamObject.h"
 
 using std::string;
 using std::map;
@@ -29,7 +29,7 @@ using ::Assimp::Importer;
 
 namespace Dream
 {
-    class AssimpCache : public ILoggable
+    class AssimpCache : public DreamObject
     {
     private:
         map<string,Importer*> mCache;

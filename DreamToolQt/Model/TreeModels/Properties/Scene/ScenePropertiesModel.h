@@ -28,7 +28,7 @@ class ScenePropertiesModel : public AbstractPropertiesModel
     Q_OBJECT
 public:
 
-    ScenePropertiesModel(SceneDefinition *scene, QTreeView* parent = nullptr);
+    ScenePropertiesModel(shared_ptr<SceneDefinition> scene, QTreeView* parent = nullptr);
     ~ScenePropertiesModel() override;
 
     void createRoot() override;
@@ -48,12 +48,12 @@ public slots:
     void onButton_ChooseAmbientColour();
 
 signals:
-    void notifyButton_CaptureCameraTranslation(SceneDefinition*);
-    void notifyButton_CaptureCameraLookAt(SceneDefinition*);
-    void notifyButton_ChooseClearColour(SceneDefinition*);
-    void notifyButton_ChooseAmbientColour(SceneDefinition*);
+    void notifyButton_CaptureCameraTranslation(shared_ptr<SceneDefinition>);
+    void notifyButton_CaptureCameraLookAt(shared_ptr<SceneDefinition>);
+    void notifyButton_ChooseClearColour(shared_ptr<SceneDefinition>);
+    void notifyButton_ChooseAmbientColour(shared_ptr<SceneDefinition>);
 
 private:
-    SceneDefinition *mSceneDefinitionHandle;
+    shared_ptr<SceneDefinition> mSceneDefinitionHandle;
 };
 

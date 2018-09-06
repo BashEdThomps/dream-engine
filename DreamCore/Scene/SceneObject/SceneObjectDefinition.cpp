@@ -35,10 +35,11 @@ namespace Dream
         bool randomUuid
     )
         : IDefinition(jsonData),
-          ILoggable ("SceneObjectDefinition"),
           mParentSceneObject(parent),
           mSceneDefinition(sceneDefinition)
     {
+
+        setLogClassName("SceneObjectDefinition");
         auto log = getLog();
         log->trace( "Constructing {}",getNameAndUuidString());
         if (randomUuid)
@@ -109,7 +110,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::addAssetDefinitionToLoadQueue
-    (IAssetDefinition* ad)
+    (shared_ptr<IAssetDefinition> ad)
     {
         addAssetDefinitionUuidToLoadQueue(ad->getUuid());
     }
@@ -141,7 +142,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::removeAssetDefinitionFromLoadQueue
-    (IAssetDefinition* ad)
+    (shared_ptr<IAssetDefinition> ad)
     {
         removeAssetDefinitionUuidFromLoadQueue(ad->getUuid());
     }
@@ -151,6 +152,11 @@ namespace Dream
     ()
     {
         vector<string> toLoad;
+        if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null())
+        {
+            mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES] = json::array();
+        }
+
         for (json uuid : mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES])
         {
             toLoad.push_back(uuid);
@@ -172,7 +178,7 @@ namespace Dream
     {
         json childrenArray = mJson[Constants::SCENE_OBJECT_CHILDREN];
 
-        if (!childrenArray.is_null() || childrenArray.is_array() )
+        if (!childrenArray.is_null() && childrenArray.is_array())
         {
             for (json childDefinition : childrenArray)
             {
@@ -182,6 +188,7 @@ namespace Dream
                         childDefinition,
                         randomUuid
                 );
+                sod->loadChildSceneObjectDefinitions();
                 mChildDefinitions.push_back(sod);
             }
         }
@@ -275,7 +282,7 @@ namespace Dream
     {
         mJson[Constants::SCENE_OBJECT_CHILDREN] = json::array();
         mJson[Constants::TRANSFORM] = mTransform.getJson();
-        for (shared_ptr<SceneObjectDefinition> sod : getChildDefinitionsList())
+        for (shared_ptr<SceneObjectDefinition> sod : mChildDefinitions)
         {
             mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sod->getJson());
         }
@@ -317,12 +324,16 @@ namespace Dream
 
     shared_ptr<SceneObjectDefinition> SceneObjectDefinition::duplicate()
     {
+        auto log = getLog();
+        // Nothing to assign duplicate to
         if (mParentSceneObject == nullptr)
         {
+            log->error("Cannot Duplicate. No parent to assign duplicate to");
             return nullptr;
         }
 
-        auto newSOD = make_shared<SceneObjectDefinition>(mParentSceneObject,mSceneDefinition,mJson,true);
+        auto newSOD = make_shared<SceneObjectDefinition>(mParentSceneObject,mSceneDefinition,getJson(),true);
+        newSOD->loadChildSceneObjectDefinitions(true);
         newSOD->setUuid(Uuid::generateUuid());
         string name = newSOD->getName();
         regex numRegex("(\\d+)$");

@@ -32,7 +32,7 @@ using Dream::LightDefinition;
 using Dream::LightType;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
-(IAssetDefinition *definition, QTreeView* parent)
+(shared_ptr<IAssetDefinition> definition, QTreeView* parent)
     : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(this, parent), parent),
       mAssetDefinitionHandle(definition)
 {
@@ -98,7 +98,7 @@ AssetDefinitionPropertiesModel::createProperties
     }
     else if (mAssetDefinitionHandle->isTypeLight())
     {
-        auto lightDef = dynamic_cast<LightDefinition*>(mAssetDefinitionHandle);
+        auto lightDef = dynamic_pointer_cast<LightDefinition>(mAssetDefinitionHandle);
 
         createLightAmbientProperty();
         createLightDiffuseProperty();
@@ -249,7 +249,7 @@ AssetDefinitionPropertiesModel::createFormatProperty
     mRootItem->appendChild(formatProperty);
 }
 
-IAssetDefinition*
+shared_ptr<IAssetDefinition>
 AssetDefinitionPropertiesModel::getAssetDefinitionHandle
 ()
 {

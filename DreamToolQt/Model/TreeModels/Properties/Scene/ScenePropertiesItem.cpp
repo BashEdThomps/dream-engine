@@ -24,7 +24,7 @@ using Dream::Constants;
 ScenePropertiesItem::ScenePropertiesItem
 (
     QString title,
-    SceneDefinition* sdHandle,
+    shared_ptr<SceneDefinition> sdHandle,
     SceneProperty property,
     QItemDelegate* delegate,
     AbstractPropertiesItem *parent

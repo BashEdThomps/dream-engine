@@ -31,7 +31,6 @@ using glm::vec3;
 PathPointViewer::PathPointViewer
 (QObject *parent)
     : GLDrawable(parent),
-      mPathDefinitionHandle(nullptr),
       mPathInstance(nullptr),
       mSelectedColour(vec3(0.0f, 1.0f, 0.0f)),
       mUnselectedColour(vec3(0.75f, 0.75f, 0.0f)),
@@ -69,8 +68,8 @@ PathPointViewer::init
 }
 
 void
-PathPointViewer::setPathDefinitionHandle
-(PathDefinition* selected)
+PathPointViewer::setPathDefinition
+(shared_ptr<PathDefinition> selected)
 {
     auto log = spdlog::get("PathPointViewer");
     if (selected != nullptr)
@@ -81,7 +80,7 @@ PathPointViewer::setPathDefinitionHandle
     {
         log->info("Path selection cleared");
     }
-    mPathDefinitionHandle = selected;
+    mPathDefinition = selected;
     updateVertexBuffer();
 }
 
@@ -93,13 +92,13 @@ PathPointViewer::updateVertexBuffer
     log->info("Updating Vertex Buffer") ;
     mVertexBuffer.clear();
 
-    if (mPathDefinitionHandle == nullptr)
+    if (mPathDefinition == nullptr)
     {
         log->info("No object selected");
         return;
     }
 
-    json* controlPoints = mPathDefinitionHandle->getControlPoints();
+    json* controlPoints = mPathDefinition->getControlPoints();
     if (controlPoints->is_array())
     {
         for (json cp : *controlPoints)
@@ -137,7 +136,7 @@ void PathPointViewer::generateSpline()
 {
     if (mPathInstance == nullptr)
     {
-        mPathInstance = unique_ptr<PathInstance>(new PathInstance(mPathDefinitionHandle,nullptr));
+        mPathInstance = unique_ptr<PathInstance>(new PathInstance(mPathDefinition,nullptr));
    }
    mPathInstance->load("");
 
@@ -339,7 +338,7 @@ PathPointViewer::draw
         }
 
         // Set the model matrix
-        if (mPathDefinitionHandle)
+        if (mPathDefinition)
         {
             GLint modelUniform = glGetUniformLocation(mShaderProgram, "model");
             if (modelUniform == -1)

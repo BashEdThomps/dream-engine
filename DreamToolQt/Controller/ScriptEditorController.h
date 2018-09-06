@@ -28,8 +28,8 @@ public:
     ScriptEditorController(QWidget* parent = nullptr);
     ~ScriptEditorController() override;
 
-    void openScript(ScriptDefinition* scriptDefinitionHandle);
-    void openShader(ShaderDefinition* shaderDefinitionHandle);
+    void openScript(shared_ptr<ScriptDefinition> scriptDefinitionHandle);
+    void openShader(shared_ptr<ShaderDefinition> shaderDefinitionHandle);
 
     void setProjectDirectoryModelHandle(ProjectDirectoryModel* projectDirectoryModelHandle);
     void getAllUpInYourFace();
@@ -41,7 +41,7 @@ protected:
     void createTemplatesComboBox(QComboBox* editor);
     void setupCloseButtonSignal();
     void clearExistingTabs();
-    int isAssetOpen(IAssetDefinition* definition);
+    int isAssetOpen(shared_ptr<IAssetDefinition> definition);
 
 protected slots:
     void onTabCloseRequested(int index);

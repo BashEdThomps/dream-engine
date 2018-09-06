@@ -72,8 +72,7 @@ namespace Dream
 {
     SceneObjectRuntime::SceneObjectRuntime(shared_ptr<SceneObjectDefinition> sd, shared_ptr<SceneRuntime> sr)
         : // Init list
-          Runtime(sd),
-          ILoggable ("SceneObjectRuntime"),
+          IRuntime(sd),
           mSceneRuntime(sr),
           mParentRuntime(nullptr),
           mLoaded(false),
@@ -81,6 +80,8 @@ namespace Dream
           mFollowsCamera(false)
 
     {
+
+        setLogClassName("SceneObjectRuntime");
         auto log = getLog();
         log->trace( "Constructing Object" );
     }

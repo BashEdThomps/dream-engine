@@ -27,9 +27,9 @@ namespace Dream
 {
     OggAudioInstance::OggAudioInstance
     (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
-        : AudioInstance(definition,transform), ILoggable ("OggAudioInstance")
+        : AudioInstance(definition,transform)
     {
-
+        setLogClassName("OggAudioInstance");
     }
 
     OggAudioInstance::~OggAudioInstance

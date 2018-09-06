@@ -24,17 +24,15 @@
 #pragma once
 
 #ifdef __APPLE__
-    #include <nlohmann/json.hpp>
+#include <nlohmann/json.hpp>
 #else
-    #include <json.hpp>
+#include <json.hpp>
 #endif
 
 #include "../Common/IDefinition.h"
-#include "../Common/ILoggable.h"
 #include "../Common/Constants.h"
 #include "Transform3D.h"
 
-using std::weak_ptr;
 using std::string;
 using std::vector;
 using nlohmann::json;
@@ -43,16 +41,16 @@ namespace Dream
 {
     class ProjectDefinition;
 
-    class IAssetDefinition : public IDefinition, ILoggable
+    class IAssetDefinition : public IDefinition
     {
 
     public:
-        IAssetDefinition(weak_ptr<ProjectDefinition>, json);
+        IAssetDefinition(shared_ptr<ProjectDefinition>, json);
         static AssetType getAssetType(json);
 
         virtual ~IAssetDefinition();
 
-        weak_ptr<ProjectDefinition> getProject();
+        shared_ptr<ProjectDefinition> getProject();
         void showStatus();
 
         void setType(string);
@@ -79,7 +77,7 @@ namespace Dream
         string getProjectPath();
 
     protected:
-        weak_ptr<ProjectDefinition> mProjectDefinition;
+        shared_ptr<ProjectDefinition> mProjectDefinition;
 
     }; // End of AssetDefinition
 

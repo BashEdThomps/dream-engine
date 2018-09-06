@@ -36,13 +36,16 @@
 #include "../Components/Graphics/Sprite/SpriteDefinition.h"
 #include "../Components/Lua/ScriptDefinition.h"
 
+using std::make_shared;
+
 namespace Dream
 {
     ProjectDefinition::ProjectDefinition(json data)
-        : IDefinition(data) ,
-          ILoggable("ProjectDefinition")
+        : IDefinition(data)
 
     {
+
+        setLogClassName("ProjectDefinition");
         auto log = getLog();
         log->trace( "Constructing {}", getNameAndUuidString() );
     }
@@ -173,45 +176,32 @@ namespace Dream
     (json assetDefinitionJs)
     {
         auto log = getLog();
-        shared_ptr<IAssetDefinition> newDef;
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
 
         switch (type)
         {
             case PATH:
-                newDef = make_shared<PathDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<PathDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case AUDIO:
-                newDef = make_shared<AudioDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<AudioDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case FONT:
-                newDef = make_shared<FontDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<FontDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case LIGHT:
-                newDef = make_shared<LightDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<LightDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case MODEL:
-                newDef = make_shared<ModelDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<ModelDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case PHYSICS_OBJECT:
-                newDef = make_shared<PhysicsObjectDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<PhysicsObjectDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case SCRIPT:
-                newDef = make_shared<ScriptDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<ScriptDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case SHADER:
-                newDef = make_shared<ShaderDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<ShaderDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case SPRITE:
-                newDef = make_shared<SpriteDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
-                break;
+                return make_shared<SpriteDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
             case NONE:
                 log->error( "Unable to create Asset Definition. Unknown Type" );
-                newDef = nullptr;
-                break;
+                return nullptr;
         }
-
-        return newDef;
     }
 
     void

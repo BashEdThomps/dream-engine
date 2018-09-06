@@ -3,6 +3,7 @@
 #include <QItemDelegate>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace Dream
 {
@@ -10,6 +11,7 @@ namespace Dream
 }
 
 using Dream::ShaderDefinition;
+using std::shared_ptr;
 using std::vector;
 using std::string;
 
@@ -20,11 +22,11 @@ public:
     MaterialShaderTableDelegate(QObject* parent  = nullptr);
     ~MaterialShaderTableDelegate() override;
     QWidget*createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-    void setShaderDefinitions(const vector<ShaderDefinition*>& shaderDefinitions);
+    void setShaderDefinitions(const vector<shared_ptr<ShaderDefinition>>& shaderDefinitions);
 
     void setMaterialList(vector<string> materialList);
 protected:
-    vector<ShaderDefinition*> mShaderDefinitions;
+    vector<shared_ptr<ShaderDefinition>> mShaderDefinitions;
     vector<string> mMaterialList;
 };
 

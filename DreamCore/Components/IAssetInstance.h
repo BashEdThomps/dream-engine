@@ -28,6 +28,7 @@
 #endif
 
 #include "../Common/Constants.h"
+#include "../Common/DreamObject.h"
 #include <memory>
 
 using std::string;
@@ -39,7 +40,7 @@ namespace Dream
     class SceneObjectRuntime;
 
     class IAssetInstance :
-        public std::enable_shared_from_this<IAssetInstance>
+        public DreamObject
     {
     protected:
         bool mLoaded;

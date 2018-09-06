@@ -22,11 +22,16 @@
 #include <QDebug>
 
 ProjectPropertiesModel::ProjectPropertiesModel
-(ProjectDefinition *project,QTreeView* parent)
+(shared_ptr<ProjectDefinition> project,QTreeView* parent)
     : AbstractPropertiesModel(new ProjectPropertiesTreeDelegate(this,parent), parent),
        mProjectDefinitionHandle(project)
 {
-    qDebug() << "ProjectPropertiesModel: Contructing";
+    auto log = spdlog::get("ProjectPropertiesModel");
+    if (log==nullptr)
+    {
+        log = spdlog::stdout_color_mt("ProjectPropertiesModel");
+    }
+    log->trace("Contructing");
     createRoot();
     createProperties();
 }
@@ -34,14 +39,16 @@ ProjectPropertiesModel::ProjectPropertiesModel
 ProjectPropertiesModel::~ProjectPropertiesModel
 ()
 {
-    qDebug() << "ProjectPropertiesModel: Destructing";
+    auto log = spdlog::get("ProjectPropertiesModel");
+    log->trace("Destructing");
 }
 
 void
 ProjectPropertiesModel::createRoot
 ()
 {
-    qDebug() << "ProjectPropertiesModel: Constructing";
+    auto log = spdlog::get("ProjectPropertiesModel");
+    log->trace("Constructing");
     mRootItem.reset
     (
         new ProjectPropertiesItem

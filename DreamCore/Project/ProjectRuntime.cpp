@@ -51,8 +51,7 @@ namespace Dream
 {
     ProjectRuntime::ProjectRuntime
     (shared_ptr<Project> project, shared_ptr<IWindowComponent> windowComponent)
-        : Runtime(project->getProjectDefinition()),
-          ILoggable ("ProjectRuntime"),
+        : IRuntime(project->getProjectDefinition()),
           mDone(false),
           mParallel(false),
           mWindowComponent(windowComponent),
@@ -61,6 +60,8 @@ namespace Dream
           mLogicUpdating(false)
 
     {
+
+        setLogClassName("ProjectRuntime");
         auto log = getLog();
         log->info( "Constructing" );
     }

@@ -32,7 +32,7 @@ class ScenegraphTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit ScenegraphTreeModel(ProjectDefinition *project, QObject *parent = nullptr);
+    explicit ScenegraphTreeModel(shared_ptr<ProjectDefinition>project, QObject *parent = nullptr);
     ~ScenegraphTreeModel() override;
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -57,8 +57,8 @@ signals:
     void notifyExpandRequested();
 
 private:
-    void appendSceneObjects(SceneObjectDefinition *parentSceneObject, ScenegraphTreeItem* parentTreeNode);
-    ProjectDefinition *mProjectDefinitionHandle;
+    void appendSceneObjects(shared_ptr<SceneObjectDefinition>parentSceneObject, ScenegraphTreeItem* parentTreeNode);
+    shared_ptr<ProjectDefinition>mProjectDefinitionHandle;
     unique_ptr<ScenegraphTreeItem> mRootItem;
     unique_ptr<QIcon> mProjectIcon;
     unique_ptr<QIcon> mSceneIcon;

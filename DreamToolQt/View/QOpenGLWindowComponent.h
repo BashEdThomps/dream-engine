@@ -50,7 +50,7 @@ public:
     void updateComponent() override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
-    void setProjectRuntimeHandle(ProjectRuntime* prHandle);
+    void setProjectRuntime(shared_ptr<ProjectRuntime> prHandle);
     void setGridHandle(Grid* grid);
     void setSelectionHighlighterHandle(SelectionHighlighter* highlighter);
     void setRelationshipTreeHandle(RelationshipTree* tree);
@@ -78,7 +78,7 @@ protected:
 
 private:
     bool mControlScene;
-    ProjectRuntime* mProjectRuntimeHandle;
+    shared_ptr<ProjectRuntime> mProjectRuntimeHandle;
     Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
     RelationshipTree *mRelationshipTreeHandle;
@@ -93,6 +93,6 @@ private:
     vector<double> mFrameTimes;
     int mMaxFrameTimeValues;
     double averageFrameTime();
-    void moveSelectedSceneObject(SceneObjectRuntime* selected);
+    void moveSelectedSceneObject(shared_ptr<SceneObjectRuntime> selected);
     void moveCamera();
 };
