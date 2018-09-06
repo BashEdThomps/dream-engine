@@ -20,9 +20,9 @@
 
 extern "C"
 {
-    #include "lua.h"
-    #include "lualib.h"
-    #include "lauxlib.h"
+    #include <lua.h>
+    #include <lualib.h>
+    #include <lauxlib.h>
 };
 
 #include <map>
@@ -30,8 +30,8 @@ extern "C"
 #include <memory>
 
 #include "LuaScriptCache.h"
-#include "../../Common/Constants.h"
-#include "../IComponent.h"
+#include "../../../Common/Constants.h"
+#include "../../IComponent.h"
 #include <gainput/gainput.h>
 
 using std::unique_ptr;
@@ -84,11 +84,24 @@ namespace Dream
                 "function scriptLoadFromString (scriptTable, script_string)\n"
                 "    local mt = {__index = _G}\n"
                 "    setmetatable(scriptTable, mt)\n"
+                "    local chunk = assert(loadstring(script_string))\n"
+                "    if not chunk then\n "
+                "       return false\n"
+                "    end\n"
+                "    setfenv(chunk, scriptTable)"
+                "    chunk()\n"
+                "    return true\n"
+                "end";
+
+                /*"function scriptLoadFromString (scriptTable, script_string)\n"
+                "    local mt = {__index = _G}\n"
+                "    setmetatable(scriptTable, mt)\n"
                 "    local chunk = assert(load(script_string,nil,nil,scriptTable))\n"
                 "    if not chunk then return false end\n"
                 "    chunk()\n"
                 "    return true\n"
                 "end";
+                        */
         lua_State *mState;
         map<shared_ptr<SceneObjectRuntime>, shared_ptr<LuaScriptInstance>> mScriptMap;
         gainput::InputMap* mInputMap;
@@ -110,7 +123,6 @@ namespace Dream
         void exposeGainput();
         void exposeAudioComponent();
         void exposeAudioInstance();
-        void exposeIAssetInstance();
         void exposeIWindowComponent();
         void exposeLightInstance();
         void exposeLuaScriptInstance();

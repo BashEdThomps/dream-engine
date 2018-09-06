@@ -28,5 +28,6 @@ namespace Dream
         ScriptDefinition(shared_ptr<ProjectDefinition> pd, json js);
 
         bool isFormatLua();
+        bool isFormatJS();
     };
 }

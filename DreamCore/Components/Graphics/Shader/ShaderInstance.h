@@ -65,7 +65,7 @@ namespace Dream
         FLOAT4,
     };
 
-    class ShaderUniform : DreamObject
+    class ShaderUniform : public DreamObject
     {
     public:
         ShaderUniform(UniformType type, string name, int count, void* data);

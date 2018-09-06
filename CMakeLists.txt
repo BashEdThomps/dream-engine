@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 2.8.0)
 project (Dream)
 
 set(DREAM_BUILD_SOIL    ON)
-set(DREAM_BUILD_LUABIND ON)
+set(DREAM_BUILD_LUABIND OFF)
 set(DREAM_BUILD_NANOVG  ON)
 set(DREAM_BUILD_CORE    ON)
 set(DREAM_BUILD_SDL     ON)
@@ -49,7 +49,7 @@ if (APPLE)
 endif()
 
 # SOIL Library
-if (DREAM_BUILD_LUABIND)
+if (DREAM_BUILD_SOIL)
     add_subdirectory(SOIL)
 endif()
 

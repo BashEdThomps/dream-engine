@@ -12,11 +12,12 @@ find_package(GLM        REQUIRED)
 find_package(GLEW       REQUIRED)
 find_package(assimp     REQUIRED)
 find_package(Lua        REQUIRED)
-find_package(FREETYPE REQUIRED)
+find_package(FREETYPE   REQUIRED)
+find_package(Luabind    REQUIRED)
 
 include_directories(
   ${SOIL_INCLUDE_DIRS}
-  ${Luabind_INCLUDE_DIRS}
+  ${LUABIND_INCLUDE_DIRS}
   ${DreamCore_INCLUDE_DIRS}
 
   ${OPENGL_INCLUDE_DIR}
@@ -39,7 +40,6 @@ add_executable (
 target_link_libraries(
   ${PROJECT_NAME}
   SOIL
-  Luabind
   DreamCore
   -lpthread
   -ldl

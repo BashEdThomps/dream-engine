@@ -15,15 +15,18 @@ find_package(OggVorbis REQUIRED)
 find_package(ALUT REQUIRED)
 find_package(SPDLOG REQUIRED)
 find_package(Lua REQUIRED)
+find_package(Luabind REQUIRED)
 find_package(Gainput REQUIRED)
 find_package(TinySpline REQUIRED)
 
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
 message("\t I @ " ${LUA_INCLUDE_DIR} )
+message("\t V: "${LUA_VERSION_STRING})
 
 message("Using LuaBind "                 )
-message("\t I @ " ${Luabind_INCLUDE_DIRS} )
+message("\t I @ " ${LUABIND_INCLUDE_DIRS} )
+message("\t L @ " ${LUABIND_LIBRARIES} )
 
 find_package(FREETYPE                       REQUIRED )
 message("Using Freetype " ${FREETYPE_VERSION_STRING} )
@@ -39,7 +42,7 @@ include_directories(
     ${GLM_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
-    ${Luabind_INCLUDE_DIRS}
+    ${LUABIND_INCLUDE_DIRS}
     ${SOIL_INCLUDE_DIRS}
     ${NANOVG_INCLUDE_DIRS}
     ${SPDLOG_INCLUDE_DIR}
@@ -54,13 +57,13 @@ target_link_libraries(
     DreamCore
     -lpthread
     -ldl
-    Luabind
     SOIL
     NanoVG
     ${TINY_SPLINE_LIB}
     ${TINY_SPLINE_CPP_LIB}
     ${GAINPUT_LIB}
     ${LUA_LIBRARIES}
+    ${LUABIND_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${OGGVORBIS_LIBRARIES}

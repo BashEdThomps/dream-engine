@@ -90,6 +90,7 @@ namespace Dream
         const static string ASSET_TYPE_SPRITE;
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_SCRIPT_LUA;
+        const static string ASSET_FORMAT_SCRIPT_JS;
         const static string ASSET_FORMAT_MODEL_ASSIMP;
         const static string ASSET_FORMAT_AUDIO_OGG;
         const static string ASSET_FORMAT_AUDIO_WAV;
@@ -113,6 +114,7 @@ namespace Dream
         const static string ASSET_TYPE_SPRITE_READABLE;
         const static string ASSET_FORMAT_READABLE;
         const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;
+        const static string ASSET_FORMAT_SCRIPT_JS_READABLE;
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
         const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
         const static string ASSET_FORMAT_AUDIO_WAV_READABLE;

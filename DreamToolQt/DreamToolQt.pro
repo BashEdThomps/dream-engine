@@ -163,13 +163,12 @@ ICON = Resources/icons/Ag.icns
 macx: LIBS += \
     -framework OpenGL \
     -L/opt/octronic/builds/Dream/DreamCore \
-    -L/opt/octronic/builds/Dream/Luabind \
     -L/opt/octronic/builds/Dream/SOIL \
     -L/usr/local/lib \
     -L/opt/local/lib \
     -L/usr/lib \
     -lDreamCore \
-    -llua.5.3 \
+    -llua.5.1 \
     -lLuabind \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lSOIL \
@@ -177,7 +176,6 @@ macx: LIBS += \
 
 LIBS += \
     -L/opt/octronic/builds/Dream/DreamCore \
-    -L/opt/octronic/builds/Dream/Luabind \
     -L/opt/octronic/builds/Dream/SOIL \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
@@ -190,8 +188,8 @@ INCLUDEPATH += \
     $$PWD/../DreamCore/include \
     /usr/local/include \
     /usr/include/bullet \
-    /usr/include/lua5.3 \
-    /usr/local/include/lua5.3 \
+    /usr/include/lua5.1 \
+    /usr/local/include/lua5.1 \
     /usr/local/include/bullet \
     /usr/include/freetype2 \
     /usr/local/include/freetype2 \

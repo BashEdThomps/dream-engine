@@ -1,5 +1,5 @@
 #include "InputComponent.h"
-#include "../Lua/LuaComponent.h"
+#include "../Scripting/Lua/LuaComponent.h"
 
 namespace Dream
 {

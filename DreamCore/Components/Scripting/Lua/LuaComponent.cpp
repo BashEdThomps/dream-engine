@@ -22,30 +22,30 @@
 
 #include "LuaScriptInstance.h"
 
-#include "../Event.h"
-#include "../Transform3D.h"
-#include "../Time.h"
-#include "../Path/PathComponent.h"
-#include "../Path/PathInstance.h"
-#include "../Audio/AudioComponent.h"
-#include "../Audio/AudioInstance.h"
-#include "../Graphics/Model/AssimpModelInstance.h"
-#include "../Graphics/Camera.h"
-#include "../Graphics/Font/FontInstance.h"
-#include "../Graphics/GraphicsComponent.h"
-#include "../Graphics/NanoVGComponent.h"
-#include "../Graphics/Light/LightInstance.h"
-#include "../Graphics/Shader/ShaderInstance.h"
-#include "../Graphics/Sprite/SpriteInstance.h"
-#include "../Input/InputComponent.h"
-#include "../Physics/PhysicsComponent.h"
-#include "../Physics/PhysicsObjectInstance.h"
-#include "../Window/IWindowComponent.h"
-#include "../../Project/ProjectRuntime.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Utilities/Math.h"
-#include "../../../NanoVG/src/nanovg.h"
+#include "../../Event.h"
+#include "../../Transform3D.h"
+#include "../../Time.h"
+#include "../../Path/PathComponent.h"
+#include "../../Path/PathInstance.h"
+#include "../../Audio/AudioComponent.h"
+#include "../../Audio/AudioInstance.h"
+#include "../../Graphics/Model/AssimpModelInstance.h"
+#include "../../Graphics/Camera.h"
+#include "../../Graphics/Font/FontInstance.h"
+#include "../../Graphics/GraphicsComponent.h"
+#include "../../Graphics/NanoVGComponent.h"
+#include "../../Graphics/Light/LightInstance.h"
+#include "../../Graphics/Shader/ShaderInstance.h"
+#include "../../Graphics/Sprite/SpriteInstance.h"
+#include "../../Input/InputComponent.h"
+#include "../../Physics/PhysicsComponent.h"
+#include "../../Physics/PhysicsObjectInstance.h"
+#include "../../Window/IWindowComponent.h"
+#include "../../../Project/ProjectRuntime.h"
+#include "../../../Scene/SceneRuntime.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Utilities/Math.h"
+#include "../../../../NanoVG/src/nanovg.h"
 
 using std::ostringstream;
 using std::exception;
@@ -68,6 +68,7 @@ using luabind::value;
 using luabind::nil;
 using luabind::newtable;
 using luabind::def;
+using luabind::bases;
 
 int
 errorr
@@ -90,7 +91,8 @@ namespace Dream
     (shared_ptr<ProjectRuntime> project, shared_ptr<LuaScriptCache> cache)
         : IComponent(),
           mScriptCache(cache),
-          mProjectRuntime(project)
+          mProjectRuntime(project),
+          mState(nullptr)
     {
         setLogClassName("LuaComponent");
         auto log = getLog();
@@ -118,12 +120,17 @@ namespace Dream
         auto log = getLog();
         log->info( "Initialising LuaComponent" );
         mState = luaL_newstate();
-        if (mState)
+        log->info( "got a state" );
+        if (mState != nullptr)
         {
-            open(mState);
+            luabind::open(mState);
+            log->info( "opened" );
             luaopen_base(mState);
+            log->info( "opened base" );
             set_pcall_callback(&errorr);
+            log->info( "set error callback" );
             luaL_dostring(mState, mScriptLoadFromString.c_str());
+            log->info( "loaded load string" );
             exposeAPI();
             return true;
         }
@@ -555,9 +562,17 @@ namespace Dream
         module(mState)
         [
             class_<DreamObject, shared_ptr<DreamObject>>("DreamObject"),
-            class_<IRuntime, DreamObject, shared_ptr<IRuntime>>("IRuntime"),
-            class_<IComponent, DreamObject, shared_ptr<IComponent>>("IComponent"),
-            class_<IAssetInstance, DreamObject, shared_ptr<IAssetInstance>>("IAssetInstance")
+            class_<IDefinition, DreamObject, shared_ptr<DreamObject>>("IDefinition"),
+            class_<IRuntime, DreamObject, shared_ptr<DreamObject>>("IRuntime"),
+            class_<IComponent, DreamObject, shared_ptr<DreamObject>>("IComponent"),
+            class_<IAssetDefinition, DreamObject, shared_ptr<DreamObject>>("IAssetDefinition"),
+            class_<IAssetInstance, DreamObject, shared_ptr<DreamObject>>("IAssetInstance"),
+            class_<IWindowComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("IWindowComponent")
+                .def("getWidth",&IWindowComponent::getWidth)
+                .def("getHeight",&IWindowComponent::getHeight)
+                .def("setShouldClose",&IWindowComponent::setShouldClose)
+                .def("getMouseX",&IWindowComponent::getMouseX)
+                .def("getMouseY",&IWindowComponent::getMouseY)
         ];
     }
 
@@ -568,7 +583,7 @@ namespace Dream
         debugRegisteringClass("ProjectRuntime");
         module(mState)
         [
-            class_<ProjectRuntime, IRuntime, shared_ptr<ProjectRuntime>>("ProjectRuntime")
+            class_<ProjectRuntime, bases<DreamObject,IRuntime>, shared_ptr<IRuntime>>("ProjectRuntime")
                 .def("getAudioComponent",&ProjectRuntime::getAudioComponent)
                 .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponent)
                 .def("getNanoVGComponent",&ProjectRuntime::getNanoVGComponent)
@@ -586,7 +601,7 @@ namespace Dream
     {
         module(mState)
         [
-            luabind::class_<Camera, shared_ptr<Camera>>("Camera")
+            luabind::class_<Camera, DreamObject, shared_ptr<DreamObject>>("Camera")
                 .def("processKeyboard",&Camera::processKeyboard)
                 .def("processMouseMovement",&Camera::processMouseMovement)
                 .def("pan",&Camera::pan)
@@ -631,7 +646,7 @@ namespace Dream
         debugRegisteringClass("PathComponent");
         module(mState)
         [
-            class_<PathComponent, IComponent, shared_ptr<PathComponent>>("PathComponent")
+            class_<PathComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("PathComponent")
         ];
     }
 
@@ -642,7 +657,7 @@ namespace Dream
         debugRegisteringClass("PathInstance");
         module(mState)
         [
-        class_<PathInstance, shared_ptr<PathInstance>>("PathInstance")
+        class_<PathInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("PathInstance")
             .def("generate",&PathInstance::generate)
             .def("getSplinePoints",&PathInstance::getSplinePoints)
             .def("getSplinePoint",&PathInstance::getSplinePoint)
@@ -658,11 +673,11 @@ namespace Dream
     {
         debugRegisteringClass("FontInstance");
         module(mState)
-                [
-                class_<FontInstance, shared_ptr<FontInstance>>("FontInstance")
-                .def("setText",&FontInstance::setText)
-                .def("getText",&FontInstance::getText)
-                ];
+        [
+            class_<FontInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("FontInstance")
+            .def("setText",&FontInstance::setText)
+            .def("getText",&FontInstance::getText)
+        ];
     }
 
     void
@@ -671,9 +686,9 @@ namespace Dream
     {
         debugRegisteringClass("GraphicsComponent");
         module(mState)
-                [
-                class_<GraphicsComponent, shared_ptr<GraphicsComponent>>("GraphicsComponent")
-                ];
+        [
+            class_<GraphicsComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("GraphicsComponent")
+        ];
     }
 
     void
@@ -682,10 +697,10 @@ namespace Dream
     {
         debugRegisteringClass("LightInstance");
         module(mState)
-                [
-                class_<LightInstance, shared_ptr<LightInstance>>("LightInstance")
-                // TODO
-                ];
+        [
+            class_<LightInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("LightInstance")
+            // TODO
+        ];
     }
 
     void
@@ -694,32 +709,29 @@ namespace Dream
     {
         debugRegisteringClass("ShaderInstance");
         module(mState)
-                [
-                class_<ShaderInstance, shared_ptr<ShaderInstance>>("ShaderInstance")
+        [
+            class_<ShaderInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("ShaderInstance")
                 .def("getUuid", &ShaderInstance::getUuid)
-                ];
+        ];
 
         debugRegisteringClass("ShaderUniform");
         module(mState)
         [
-            class_<ShaderUniform, shared_ptr<ShaderUniform>>("ShaderUniform")
+            class_<ShaderUniform, DreamObject, shared_ptr<DreamObject>>("ShaderUniform")
                 .enum_("UniformType")
                 [
                     value("INT1",UniformType::INT1),
                     value("INT2",UniformType::INT2),
                     value("INT3",UniformType::INT3),
                     value("INT4",UniformType::INT4),
-
                     value("UINT1",UniformType::UINT1),
                     value("UINT2",UniformType::UINT2),
                     value("UINT3",UniformType::UINT3),
                     value("UINT4",UniformType::UINT4),
-
                     value("FLOAT1",UniformType::FLOAT1),
                     value("FLOAT2",UniformType::FLOAT2),
                     value("FLOAT3",UniformType::FLOAT3),
                     value("FLOAT4",UniformType::FLOAT4)
-
                 ]
         ];
     }
@@ -730,10 +742,9 @@ namespace Dream
     {
         debugRegisteringClass("SpriteInstance");
         module(mState)
-                [
-                class_<SpriteInstance, shared_ptr<SpriteInstance>>("SpriteInstance")
-                // TODO
-                ];
+        [
+            class_<SpriteInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("SpriteInstance")
+        ];
     }
 
     void
@@ -742,10 +753,10 @@ namespace Dream
     {
         debugRegisteringClass("PhysicsComponent");
         module(mState)
-                [
-                class_<PhysicsComponent, shared_ptr<PhysicsComponent>>("PhysicsComponent")
+        [
+            class_<PhysicsComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("PhysicsComponent")
                 .def("setDebug",&PhysicsComponent::setDebug)
-                ];
+        ];
     }
 
     void
@@ -754,27 +765,11 @@ namespace Dream
     {
         debugRegisteringClass("PhysicsObjectInstance");
         module(mState)
-                [
-                class_<PhysicsObjectInstance, shared_ptr<PhysicsObjectInstance>>("PhysicsObjectInstance")
+        [
+            class_<PhysicsObjectInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("PhysicsObjectInstance")
                 .def("getUuid", &PhysicsObjectInstance::getUuid)
                 .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
-                ];
-    }
-
-    void
-    LuaComponent::exposeIWindowComponent
-    ()
-    {
-        debugRegisteringClass("IWindiwComponent");
-        module(mState)
-                [
-                class_<IWindowComponent, shared_ptr<IWindowComponent>>("IWindowComponent")
-                .def("getWidth",&IWindowComponent::getWidth)
-                .def("getHeight",&IWindowComponent::getHeight)
-                .def("setShouldClose",&IWindowComponent::setShouldClose)
-                .def("getMouseX",&IWindowComponent::getMouseX)
-                .def("getMouseY",&IWindowComponent::getMouseY)
-                ];
+        ];
     }
 
     void
@@ -783,17 +778,17 @@ namespace Dream
     {
         debugRegisteringClass("Math");
         module(mState)
-                [
-                class_<Math, shared_ptr<Math>>("Math")
+        [
+            class_<Math>("Math")
                 .scope[
-                luabind::def("degreesToRadians",&Math::degreesToRadians),
-                luabind::def("radiansToDegrees",&Math::radiansToDegrees),
-                luabind::def("pow",&Math::_pow),
-                luabind::def("sin",&Math::_sinf),
-                luabind::def("cos",&Math::_cosf),
-                luabind::def("sqrt",&Math::_sqrtf)
+                    luabind::def("degreesToRadians",&Math::degreesToRadians),
+                    luabind::def("radiansToDegrees",&Math::radiansToDegrees),
+                    luabind::def("pow",&Math::_pow),
+                    luabind::def("sin",&Math::_sinf),
+                    luabind::def("cos",&Math::_cosf),
+                    luabind::def("sqrt",&Math::_sqrtf)
                 ]
-                ];
+        ];
     }
 
     void
@@ -802,8 +797,8 @@ namespace Dream
     {
         debugRegisteringClass("SceneObjectRuntime");
         module(mState)
-                [
-            class_<SceneObjectRuntime, DreamObject, shared_ptr<DreamObject>>("DreamObject")
+        [
+            class_<SceneObjectRuntime, bases<DreamObject, IRuntime>, shared_ptr<DreamObject>>("DreamObject")
 
                 .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid)
 
@@ -833,8 +828,7 @@ namespace Dream
                 .def("hasLight",&SceneObjectRuntime::hasLightInstance)
                 .def("hasFont",&SceneObjectRuntime::hasFontInstance)
                 .def("hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance)
-
-                ];
+        ];
     }
 
     void
@@ -843,7 +837,7 @@ namespace Dream
     {
         debugRegisteringClass("Transform3D");
         module(mState) [
-            class_<Transform3D, shared_ptr<Transform3D>>("Transform3D")
+            class_<Transform3D, DreamObject, shared_ptr<DreamObject>>("Transform3D")
                 .def(constructor<>())
                 // Translation ===========================================================
                 .def("getTransformType",&Transform3D::getTransformType)
@@ -874,16 +868,12 @@ namespace Dream
                 .def("getOrientation",&Transform3D::getOrientation)
                 .def("setOrientation",static_cast<void(Transform3D::*)(float,float,float,float)>(&Transform3D::setOrientation))
                 .def("setOrientation",static_cast<void(Transform3D::*)(glm::quat)>(&Transform3D::setOrientation))
-
                 .def("setOrientationW",&Transform3D::setOrientationW)
                 .def("getOrientationW",&Transform3D::getOrientationW)
-
                 .def("setOrientationX",&Transform3D::setOrientationX)
                 .def("getOrientationX",&Transform3D::getOrientationX)
-
                 .def("setOrientationY",&Transform3D::setOrientationY)
                 .def("getOrientationY",&Transform3D::getOrientationY)
-
                 .def("setOrientationZ",&Transform3D::setOrientationZ)
                 .def("getOrientationZ",&Transform3D::getOrientationZ)
 
@@ -899,9 +889,7 @@ namespace Dream
                 .def("scaleByZ",&Transform3D::scaleByZ)
                 .def("setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale))
                 .def("setScale",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setScale))
-
-            //class_<DreamObject, Transform3D, shared_ptr<Transform3D>>("Transform3D")
-                ];
+            ];
     }
 
     void
@@ -909,15 +897,16 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Time");
-        module(mState) [
-                class_<Time, shared_ptr<Time>>("Time")
+        module(mState)
+        [
+            class_<Time, DreamObject, shared_ptr<Time>>("Time")
                 .def("getCurrentFrameTime",&Time::getCurrentFrameTime)
                 .def("getLastFrameTime",&Time::getLastFrameTime)
                 .def("getFrameTimeDelta",&Time::getFrameTimeDelta)
                 .def("scaleValueByFrameTime",&Time::scaleValueByFrameTime)
                 .def("now",&Time::now)
                 .def("nowLL",&Time::nowLL)
-                ];
+        ];
     }
 
     void
@@ -926,10 +915,9 @@ namespace Dream
     {
         debugRegisteringClass("AssimpModelInstance");
         module(mState)
-                [
-                class_<AssimpModelInstance, shared_ptr<AssimpModelInstance>>("AssimpModelInstance")
-                // TODO
-                ];
+        [
+            class_<AssimpModelInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("AssimpModelInstance")
+        ];
     }
 
     void
@@ -938,24 +926,13 @@ namespace Dream
     {
         debugRegisteringClass("Event");
         module(mState)
-                [
-                class_<Event, shared_ptr<Event>>("Event")
+        [
+            class_<Event, DreamObject, shared_ptr<DreamObject>>("Event")
                 .def("getSender",&Event::getSender)
                 .def("getType",&Event::getType)
                 .def("getAttribute",&Event::getAttribute)
                 .def("setAttribute",&Event::setAttribute)
-                ];
-    }
-
-    void
-    LuaComponent::exposeIAssetInstance
-    ()
-    {
-        debugRegisteringClass("IAssetInstance");
-        module(mState)
-                [
-                class_<IAssetInstance, shared_ptr<IAssetInstance>>("IAssetInstance")
-                ];
+        ];
     }
 
     void
@@ -964,12 +941,12 @@ namespace Dream
     {
         debugRegisteringClass("AudioComponent");
         module(mState)
-                [
-                class_<AudioComponent, shared_ptr<AudioComponent>>("AudioComponent")
+        [
+            class_<AudioComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("AudioComponent")
                 .def("play",&AudioComponent::playAudioAsset)
                 .def("pause",&AudioComponent::pauseAudioAsset)
                 .def("stop",&AudioComponent::stopAudioAsset)
-                ];
+        ];
     }
 
 
@@ -987,17 +964,16 @@ namespace Dream
         debugRegisteringClass("AudioInstance");
         module(mState)
         [
-                class_<AudioInstance, shared_ptr<AudioInstance>>("AudioInstance")
+            class_<AudioInstance, bases<DreamObject, IAssetInstance>, shared_ptr<AudioInstance>>("AudioInstance")
                 .def("getStatus",&AudioInstance::getStatus),
-
                 class_<AudioStatus>("AudioStatus")
-                .enum_("AudioStatus")
-                [
-                value("PLAYING", AudioStatus::PLAYING),
-                value("PAUSED",  AudioStatus::PAUSED),
-                value("STOPPED", AudioStatus::STOPPED)
-                ]
-                ];
+                    .enum_("AudioStatus")
+                    [
+                        value("PLAYING", AudioStatus::PLAYING),
+                        value("PAUSED",  AudioStatus::PAUSED),
+                        value("STOPPED", AudioStatus::STOPPED)
+                    ]
+        ];
     }
 
     void
@@ -1052,32 +1028,39 @@ namespace Dream
     LuaComponent::exposeAPI
     ()
     {
+        // Dream Base
         exposeDreamBase();
-        exposePathComponent();
-        exposePathInstance();
-        exposeAssimpModelInstance();
-        exposeCamera();
+        // Runtimes
         exposeProjectRuntime();
-        exposeEvent();
-        exposeFontInstance();
-        exposeGainput();
-        exposeGraphicsComponent();
-        //exposeIAssetInstance();
-        exposeAudioInstance();
-        exposeAudioComponent();
-        exposeIWindowComponent();
-        exposeLightInstance();
-        exposeLuaScriptInstance();
-        exposeMath();
-        exposePhysicsComponent();
-        exposePhysicsObjectInstance();
         exposeSceneObjectRuntime();
-        exposeShaderInstance();
-        exposeSpriteInstance();
+        // Dream Misc
+        exposeEvent();
+        exposeMath();
         exposeTime();
         exposeTransform3D();
+        // Audio
+        exposeAudioComponent();
+        exposeAudioInstance();
+        // Graphics
+        exposeGraphicsComponent();
+        exposeAssimpModelInstance();
+        exposeCamera();
+        exposeFontInstance();
+        exposeLightInstance();
+        exposeShaderInstance();
+        exposeSpriteInstance();
         exposeNanoVG();
         exposeGLM();
+        // Input
+        exposeGainput();
+        // Path
+        exposePathComponent();
+        exposePathInstance();
+        // Script
+        exposeLuaScriptInstance();
+        // Physics
+        exposePhysicsComponent();
+        exposePhysicsObjectInstance();
     }
 
     void

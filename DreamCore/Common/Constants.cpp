@@ -112,6 +112,7 @@ namespace Dream
     const string Constants::ASSET_TYPE_SPRITE = "sprite";
     const string Constants::ASSET_FORMAT = "format";
     const string Constants::ASSET_FORMAT_SCRIPT_LUA = "lua";
+    const string Constants::ASSET_FORMAT_SCRIPT_JS = "js";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
     const string Constants::ASSET_FORMAT_AUDIO_WAV = "wav";
     const string Constants::ASSET_FORMAT_AUDIO_OGG = "ogg";
@@ -141,6 +142,7 @@ namespace Dream
     const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
 
     const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
+    const string Constants::ASSET_FORMAT_SCRIPT_JS_READABLE = "JavaScript";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
     const string Constants::ASSET_FORMAT_AUDIO_OGG_READABLE = "Ogg";
     const string Constants::ASSET_FORMAT_AUDIO_WAV_READABLE = "Wav";
@@ -406,7 +408,8 @@ namespace Dream
         {
             AssetType::SCRIPT,
             {
-                ASSET_FORMAT_SCRIPT_LUA
+                ASSET_FORMAT_SCRIPT_LUA,
+                ASSET_FORMAT_SCRIPT_JS
             }
         },
         {
@@ -557,6 +560,10 @@ namespace Dream
         {
            return ASSET_FORMAT_SCRIPT_LUA_READABLE;
         }
+        else if (format.compare(ASSET_FORMAT_SCRIPT_JS) == 0)
+        {
+           return ASSET_FORMAT_SCRIPT_JS_READABLE;
+        }
         // Model
         else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP) == 0)
         {
@@ -664,6 +671,10 @@ namespace Dream
         if (format.compare(ASSET_FORMAT_SCRIPT_LUA_READABLE) == 0)
         {
            return ASSET_FORMAT_SCRIPT_LUA;
+        }
+        else if (format.compare(ASSET_FORMAT_SCRIPT_JS_READABLE) == 0)
+        {
+           return ASSET_FORMAT_SCRIPT_JS;
         }
         else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP_READABLE) == 0)
         {
