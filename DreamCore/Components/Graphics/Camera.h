@@ -1,5 +1,7 @@
 #pragma once
 
+#define GLM_FORCE_RADIANS
+
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -46,7 +48,6 @@ namespace Dream
         );
 
         // Constructor with scalar values
-        Camera(float, float, float, float, float, float, float, float);
         ~Camera();
         mat4 getViewMatrix();
         void processKeyboard(unsigned int, float);

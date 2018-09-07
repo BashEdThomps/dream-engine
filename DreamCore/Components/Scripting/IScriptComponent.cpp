@@ -106,35 +106,6 @@ namespace Dream
         return true;
     }
 
-    bool
-    IScriptComponent::loadScript
-    (shared_ptr<SceneObjectRuntime> sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-        shared_ptr<ScriptInstance> scriptInstance = dynamic_pointer_cast<ScriptInstance>(sceneObject->getScriptInstance());
-
-        if (scriptInstance->getError())
-        {
-            log->error( "Cannot load script {} while in error state",id );
-            return false;
-        }
-
-        log->info( "loadScript called for {}", id );
-
-        try
-        {
-        }
-        catch (std::exception &e)
-        {
-            log->error("loadScript exception: {}" , e.what() );
-            scriptInstance->setError(true);
-            return false;
-        }
-        return true;
-    }
-
-
     void
     IScriptComponent::updateComponent
     ()
@@ -245,49 +216,6 @@ namespace Dream
         // Physics
         exposePhysicsComponent();
         exposePhysicsObjectInstance();
-    }
-
-    void
-    IScriptComponent::removeFromScriptMap
-    (shared_ptr<SceneObjectRuntime> sceneObject)
-    {
-        auto log = getLog();
-        map<shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>>::iterator iter;
-        for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
-        {
-            if ((*iter).first == sceneObject)
-            {
-                string id = (*iter).first->getUuid();
-                //object reg = registry(mState);
-                //reg[id] = nil;
-
-                string name = (*iter).first->getNameAndUuidString();
-                log->info( "Removed script for {}" , name );
-
-                mScriptMap.erase(iter++);
-                break;
-            }
-        }
-    }
-
-    void
-    IScriptComponent::addToScriptMap
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<ScriptInstance> script)
-    {
-        auto log = getLog();
-        log->info(
-                    "Adding {} to script map for {}",
-                    script->getNameAndUuidString(),
-                    sceneObject->getNameAndUuidString()
-                    );
-
-        if (createScript(sceneObject,script))
-        {
-            mScriptMap.insert(
-                pair<shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>>
-                (sceneObject,script)
-            );
-        }
     }
 
 } // End of Dream

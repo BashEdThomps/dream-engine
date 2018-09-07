@@ -3,12 +3,10 @@ cmake_minimum_required (VERSION 2.8.0)
 project (Dream)
 
 set(DREAM_BUILD_SOIL    ON)
-set(DREAM_BUILD_LUABIND OFF)
 set(DREAM_BUILD_NANOVG  ON)
 set(DREAM_BUILD_CORE    ON)
 set(DREAM_BUILD_SDL     ON)
 
-set(DREAM_BUILD_LUABIND_TESTS OFF) # Broken, possible boost version issues :'(
 set(DREAM_BUILD_TESTS OFF)         # Needs updating, badly...
 
 set(

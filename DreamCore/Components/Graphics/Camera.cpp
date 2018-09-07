@@ -3,7 +3,33 @@
 namespace Dream
 {
     // Constructor with vectors
-    float Camera::getYaw() const
+
+
+    Camera::Camera
+    (vec3 translation, vec3 up, float yaw, float pitch)
+        : DreamObject("Camera"),
+        mTranslation(translation),
+        mFront(vec3(0.0f, 0.0f, -1.0f)),
+        mWorldUp(up),
+        mFreeMode(true),
+        mYaw(yaw),
+        mPitch(pitch),
+        mMovementSpeed(Constants::CAMERA_SPEED),
+        mMouseSensitivity(Constants::CAMERA_SENSITIVTY),
+        mZoom(Constants::CAMERA_ZOOM)
+    {
+        updateCameraVectors();
+    }
+
+    Camera::~Camera
+    ()
+    {
+        auto log = getLog();
+        log->info("Destroying Object");
+        return;
+    }
+
+     float Camera::getYaw() const
     {
         return mYaw;
     }
@@ -21,51 +47,6 @@ namespace Dream
     void Camera::setPitch(float pitch)
     {
         mPitch = pitch;
-    }
-
-    Camera::Camera
-    (vec3 translation, vec3 up, float yaw, float pitch)
-        : DreamObject("Camera"),
-          mFreeMode(true)
-    {
-        mFront = vec3(0.0f, 0.0f, -1.0f);
-        mMovementSpeed = Constants::CAMERA_SPEED;
-        mMouseSensitivity = Constants::CAMERA_SENSITIVTY;
-        mZoom = Constants::CAMERA_ZOOM;
-        mTranslation = translation;
-        mWorldUp = up;
-        mYaw = yaw;
-        mPitch = pitch;
-        updateCameraVectors();
-    }
-
-    // Constructor with scalar values
-    Camera::Camera
-    (
-            float posX, float posY, float posZ,
-            float upX, float upY, float upZ,
-            float yaw, float pitch
-            )
-        :DreamObject ("Camera"),
-        mFreeMode(true)
-    {
-        mFront            = {0.0f, 0.0f, -1.0f};
-        mMovementSpeed    = Constants::CAMERA_SPEED;
-        mMouseSensitivity = Constants::CAMERA_SENSITIVTY;
-        mZoom             = Constants::CAMERA_ZOOM;
-        mTranslation      = vec3(posX, posY, posZ);
-        mWorldUp          = vec3(upX,  upY,  upZ);
-        mYaw              = yaw;
-        mPitch            = pitch;
-        updateCameraVectors();
-    }
-
-    Camera::~Camera
-    ()
-    {
-        auto log = getLog();
-        log->info("Destroying Object");
-        return;
     }
 
     mat4
@@ -421,7 +402,7 @@ namespace Dream
     Camera::orbit
     (vec3 target, float elevation, float radius, float pitch, float yaw)
     {
-        mat4 mtx;
+        mat4 mtx(1.0f);
         target.y += elevation;
         mtx = translate(mtx, target);
         mtx = rotate(mtx,pitch, vec3(1,0,0));

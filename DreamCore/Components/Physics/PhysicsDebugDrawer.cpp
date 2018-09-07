@@ -178,7 +178,7 @@ namespace Dream
     (const btVector3& vec)
     {
         stringstream str;
-        str << "(" << vec.getX() << "," << vec.getY() << "," << vec.getZ();
+        str << "(" << vec.getX() << "," << vec.getY() << "," << vec.getZ() << ")";
         return str.str();
     }
 

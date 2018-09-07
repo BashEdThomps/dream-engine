@@ -51,7 +51,7 @@ namespace Dream
        virtual ~IScriptComponent() override;
 
         bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>);
-        bool loadScript(shared_ptr<SceneObjectRuntime>);
+        virtual bool loadScript(shared_ptr<SceneObjectRuntime>) = 0;
         bool updateNanoVG();
         void updateComponent() override;
         void stackDump();
@@ -62,8 +62,8 @@ namespace Dream
         virtual bool executeScriptInput (shared_ptr<SceneObjectRuntime>) = 0;
         virtual bool executeScriptEvent (shared_ptr<SceneObjectRuntime>) = 0;
 
-        void removeFromScriptMap(shared_ptr<SceneObjectRuntime>);
-        void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>);
+        virtual void removeFromScriptMap(shared_ptr<SceneObjectRuntime>) = 0;
+        virtual void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>) = 0;
         void setInputMap(gainput::InputMap *map);
 
     protected:// Variables

@@ -50,10 +50,8 @@
 
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptInstance.h"
-#include "../../Components/Scripting/ScriptInstance.h"
-#include "../../Components/Scripting/Lua/LuaScriptInstance.h"
-#include "../../Components/Scripting/Lua/LuaComponent.h"
 #include "../../Components/Scripting/JS/JSComponent.h"
+#include "../../Components/Scripting/JS/JSScriptInstance.h"
 
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
@@ -61,7 +59,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
-#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 using std::vector;
@@ -591,7 +588,7 @@ namespace Dream
         auto log = getLog();
         log->info( "Creating Script asset instance." );
         mScriptInstance = dynamic_pointer_cast<ScriptInstance>(
-            make_shared<LuaScriptInstance>(
+            make_shared<JSScriptInstance>(
                 definition,
                 dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
             )
@@ -849,13 +846,14 @@ namespace Dream
 
         // Translate to current
         mat4 mtx;
-        mtx = glm::translate(mtx,mTransform.getTranslation());
+        mtx = glm::translate(mat4(1), mTransform.getTranslation());
          // Rotate to current
         mat4 rotMat = mat4_cast(mTransform.getOrientation());
         mtx = mtx * rotMat;
 
         // Rotate to new
-        quat newRotation = glm::rotate(leftStickX,vec3(0,1,0));
+        quat q;
+        quat newRotation = glm::rotate(q,leftStickX,vec3(0,1,0));
         mat4 newRotMat = mat4_cast(newRotation);
         mtx = mtx * newRotMat;
 

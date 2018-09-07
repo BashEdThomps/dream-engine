@@ -15,15 +15,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "Transform3D.h"
 
 #include "../Common/Constants.h"
 
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
-#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 
 using namespace glm;
 
@@ -36,24 +35,18 @@ namespace Dream
         mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
         mTranslation   = vec3(0.0f);
         mScale         = vec3(1.0f);
-        mOrientation   = quat();
+        mOrientation   = quat(1.0f,0.0f,0.0f,0.0f);
     }
 
-    Transform3D::Transform3D(mat4 fromMatrix)
+    Transform3D::Transform3D(mat4 mtx)
         : DreamObject("Transform3D")
     {
        mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
 
-       glm::vec3 scale;
-       glm::quat rotation;
-       glm::vec3 translation;
-       glm::vec3 skew;
-       glm::vec4 perspective;
-       glm::decompose(fromMatrix, scale, rotation, translation, skew, perspective);
+       setOrientation(quat(mtx));
+       setTranslation(glm::vec3(mtx[3]));
+       setScale(vec3(1.0f));
 
-       mTranslation  = translation;
-       mOrientation = rotation;
-       mScale = scale;
     }
 
     Transform3D::Transform3D
@@ -520,7 +513,7 @@ namespace Dream
             parent.getRotationX(), parent.getRotationY(), parent.getRotationZ()
         );
        // Tx to parent
-       mat4 mtx = glm::translate(parent.getTranslation());
+       mat4 mtx = glm::translate(mat4(1), parent.getTranslation());
        // match parent rotation
        mat4 rot = mat4_cast(parent.getOrientation());
        mtx = mtx*rot;
@@ -536,24 +529,17 @@ namespace Dream
 
     glm::mat4 Transform3D::asMat4()
     {
-       mat4 trans = glm::translate(mTranslation);
+       mat4 trans = glm::translate(mat4(1), mTranslation);
        mat4 rot = mat4_cast(mOrientation);
        trans = trans*rot;
        return glm::scale(trans,mScale);
     }
 
-    void Transform3D::setFromMat4(glm::mat4 mat)
+    void Transform3D::setFromMat4(glm::mat4 mtx)
     {
-       glm::vec3 scale;
-       glm::quat rotation;
-       glm::vec3 translation;
-       glm::vec3 skew;
-       glm::vec4 perspective;
-       glm::decompose(mat, scale, rotation, translation, skew, perspective);
-
-       mTranslation  = translation;
-       mOrientation = rotation;
-       mScale = scale;
+       setOrientation(quat(mtx));
+       setTranslation(glm::vec3(mtx[3]));
+       setScale(vec3(1.0f));
     }
 
 

@@ -15,12 +15,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define GLM_FORCE_RADIANS
 #include "GraphicsComponent.h"
 
 #include <functional>
 
+
 #include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec2.hpp>
@@ -334,7 +335,7 @@ namespace Dream
     {
         beginUpdate();
         auto log = getLog();
-        log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
+        log->info("GraphicsComponrnt: updateComponent() Called" );
 
 
         // View transform
@@ -350,7 +351,7 @@ namespace Dream
 
             mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                     (
-                        function<void*(shared_ptr<SceneObjectRuntime>)>
+                        function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
                         (
                             [&](shared_ptr<SceneObjectRuntime> object)
                             {
@@ -850,18 +851,18 @@ namespace Dream
         checkGLError();
 
         // calculate the model matrix
-        mat4 modelMatrix;
+        mat4 modelMatrix = mat4(1.0f);
         // Get raw data
-        vec3 translation = sceneObject->getTranslation();
-        quat rot = sceneObject->getTransform().getOrientation();
-        vec3 scaleValue = sceneObject->getScale();
+        vec3 objTranslation = sceneObject->getTranslation();
+        quat objOrientation = sceneObject->getTransform().getOrientation();
+        vec3 objScale       = sceneObject->getScale();
         // Translate
-        modelMatrix = translate(modelMatrix,translation);
+        modelMatrix = translate(modelMatrix,objTranslation);
         // Rotate
-        mat4 rotMat = mat4_cast(rot);
+        mat4 rotMat = mat4_cast(objOrientation);
         modelMatrix = modelMatrix * rotMat;
         // Scale
-        modelMatrix = scale(modelMatrix, scaleValue);
+        modelMatrix = scale(modelMatrix, objScale);
         model->setModelMatrix(modelMatrix);
 
         // Pass model matrix to shader
@@ -870,7 +871,7 @@ namespace Dream
 
         // Draw using shader
         bool always = sceneObject->getSceneObjectDefinition()->getAlwaysDraw();
-        model->draw(shader, translation, mCamera->getTranslation(),mMeshCullDistance, always);
+        model->draw(shader, objTranslation, mCamera->getTranslation(), mMeshCullDistance, always);
         checkGLError();
     }
 

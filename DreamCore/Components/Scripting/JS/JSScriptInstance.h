@@ -21,12 +21,20 @@
 #include <string>
 
 #include "../../../Common/Constants.h"
+#include "../../Event.h"
 #include "../ScriptInstance.h"
+
+#include <gainput/gainput.h>
+
+#include <libplatform/libplatform.h>
+#include <v8.h>
+
 
 namespace Dream
 {
     class ScriptDefinition;
     class SceneObjectRuntime;
+    class ScriptCache;
 
     class JSScriptInstance : public ScriptInstance
     {
@@ -39,7 +47,24 @@ namespace Dream
         void loadExtraAttributes(json);
         bool getError();
         void setError(bool);
+        bool inflate(shared_ptr<ScriptCache>);
+
+        void onInit(shared_ptr<SceneObjectRuntime> so);
+        void onEvent(shared_ptr<SceneObjectRuntime> so, Event ev);
+        void onInput(shared_ptr<SceneObjectRuntime> so, gainput::InputMap* iMap);
+        void onUpdate(shared_ptr<SceneObjectRuntime> so);
+        void onUpdateNanoVG(shared_ptr<SceneObjectRuntime> so);
+
     private:
         bool mError;
+        v8::Persistent<v8::Script> mScript;
+        v8::Persistent<v8::Context> mContext;
+
+        // Functions we look for to call
+        v8::Persistent<v8::Function> mOnInitFunction;
+        v8::Persistent<v8::Function> mOnUpdateFunction;
+        v8::Persistent<v8::Function> mOnEventFunction;
+        v8::Persistent<v8::Function> mOnInputFunction;
+        v8::Persistent<v8::Function> mOnUpdateNanoVGFunction;
     }; // End of JSScriptInstance
 } // End of Dream

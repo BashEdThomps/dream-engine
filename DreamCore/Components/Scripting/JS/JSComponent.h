@@ -26,6 +26,8 @@
 #include "../../../Common/Constants.h"
 #include "../IScriptComponent.h"
 #include <gainput/gainput.h>
+#include <libplatform/libplatform.h>
+#include <v8.h>
 
 using std::unique_ptr;
 using std::string;
@@ -52,8 +54,7 @@ namespace Dream
 
         bool init() override;
         void updateComponent() override;
-        bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<JSScriptInstance>);
-        bool loadScript(shared_ptr<SceneObjectRuntime>);
+        bool loadScript(shared_ptr<SceneObjectRuntime>) override;
         bool updateNanoVG();
         void stackDump();
 
@@ -63,7 +64,12 @@ namespace Dream
         bool executeScriptInput (shared_ptr<SceneObjectRuntime>) override;
         bool executeScriptEvent (shared_ptr<SceneObjectRuntime>) override;
 
+        void removeFromScriptMap(shared_ptr<SceneObjectRuntime>) override;
+        void addToScriptMap(shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>) override;
+
     private:// Variables
+        shared_ptr<v8::Platform> mPlatform;
+        v8::Isolate* mIsolate;
 
     private: // Methods
         // API Exposure Methods ======================================================
@@ -92,6 +98,8 @@ namespace Dream
         void exposeTransform3D() override;
         void exposeNanoVG() override;
         void exposeGLM() override;
+
+
 
     }; // End of JSComponent
 

@@ -61,8 +61,7 @@ namespace Dream
 
         bool init() override;
         void updateComponent() override;
-        bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>);
-        bool loadScript(shared_ptr<SceneObjectRuntime>);
+        bool loadScript(shared_ptr<SceneObjectRuntime>) override;
         bool updateNanoVG();
         void stackDump();
 
@@ -72,8 +71,8 @@ namespace Dream
         bool executeScriptInput (shared_ptr<SceneObjectRuntime>) override;
         bool executeScriptEvent (shared_ptr<SceneObjectRuntime>) override;
 
-        void removeFromScriptMap(shared_ptr<SceneObjectRuntime>);
-        void addToScriptMap(shared_ptr<SceneObjectRuntime>, shared_ptr<LuaScriptInstance>);
+        void removeFromScriptMap(shared_ptr<SceneObjectRuntime>) override;
+        void addToScriptMap(shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>) override;
 
     private:
         string mScriptLoadFromString =

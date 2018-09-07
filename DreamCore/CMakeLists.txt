@@ -18,6 +18,7 @@ find_package(Lua REQUIRED)
 find_package(Luabind REQUIRED)
 find_package(Gainput REQUIRED)
 find_package(TinySpline REQUIRED)
+find_package(V8 REQUIRED)
 
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
@@ -27,6 +28,14 @@ message("\t V: "${LUA_VERSION_STRING})
 message("Using LuaBind "                 )
 message("\t I @ " ${LUABIND_INCLUDE_DIRS} )
 message("\t L @ " ${LUABIND_LIBRARIES} )
+
+if (${V8_FOUND})
+    message("Using V8")
+    message("\t  I @ " ${V8_INCLUDE_DIR})
+    message("\t  L @"  ${V8_LIBRARY})
+    message("\t  L @"  ${V8_BASE_LIBRARY})
+    message("\t  L @"  ${V8_PLATFORM_LIBRARY})
+endif()
 
 find_package(FREETYPE                       REQUIRED )
 message("Using Freetype " ${FREETYPE_VERSION_STRING} )
@@ -49,6 +58,7 @@ include_directories(
     ${FREETYPE_INCLUDE_DIR_ft2build}
     ${GAINPUT_INCLUDE_DIR}
     ${TINY_SPLINE_INCLUDE_DIR}
+    ${V8_INCLUDE_DIR}
 )
 
 add_library(DreamCore SHARED ${SRC_DIR})
@@ -72,6 +82,9 @@ target_link_libraries(
     ${GLEW_LIBRARIES}
     ${BULLET_LIBRARY}
     ${FREETYPE_LIBRARIES}
+    ${V8_PLATFORM_LIBRARY}
+    ${V8_BASE_LIBRARY}
+    ${V8_LIBRARY}
 )
 
 set(

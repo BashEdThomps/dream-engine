@@ -62,6 +62,9 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object" );
+        mIsolate->Dispose();
+        v8::V8::Dispose();
+        v8::V8::ShutdownPlatform();
         mScriptMap.clear();
     }
 
@@ -70,44 +73,35 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        return false;
-    }
+        log->info("Initialising JSComponent");
+        // Initialize V8.
+        v8::V8::InitializeICUDefaultLocation(_CLASSNAME_.c_str());
+        v8::V8::InitializeExternalStartupData(_CLASSNAME_.c_str());
+        mPlatform = v8::platform::NewDefaultPlatform();
+        v8::V8::InitializePlatform(mPlatform.get());
 
-    bool
-    JSComponent::createScript
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<JSScriptInstance> JSScript)
-    {
-        auto log = getLog();
-        if (JSScript == nullptr)
+        bool initSuccess = v8::V8::Initialize();
+        if (!initSuccess)
         {
-            log->error( "Load Failed, JSScriptInstance is NULL" );
+            log->error("Error while initialising V8 JSComponent");
             return false;
         }
 
-        if (sceneObject == nullptr)
-        {
-            log->error( "Load Failed, SceneObjectRuntime is NULL" );
-            return false;
-        }
+        log->trace("Created V8 Platform");
 
-        if (JSScript->getLoadedFlag())
-        {
-            log->info( "Script {} is already loaded" , JSScript->getNameAndUuidString());
-            return false;
-        }
+        v8::Isolate::CreateParams createParams;
+        createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
 
-        log->info( "Loading script '{}' for '{}'" , JSScript->getName(),sceneObject->getName());
-        log->info( "Loading JS script from {}" , JSScript->getAbsolutePath());
+        mIsolate = v8::Isolate::New(createParams);
 
-        if (!loadScript(sceneObject))
-        {
-            return false;
-        }
+        log->trace("Created V8 Isolate");
 
-        log->info( "Loaded {} successfully" , sceneObject->getUuid());
+        v8::Isolate::Scope isolateScope(mIsolate);
+        mIsolate->Enter();
 
-        JSScript->setLoadedFlag(true);
-        executeScriptInit(sceneObject);
+        log->trace("Created and entered V8 Isolate Scope");
+
+        exposeAPI();
 
         return true;
     }
@@ -118,7 +112,7 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<JSScriptInstance> scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
+        auto scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -130,6 +124,7 @@ namespace Dream
 
         try
         {
+            scriptInstance->inflate(mScriptCache);
         }
         catch (std::exception &e)
         {
@@ -138,6 +133,51 @@ namespace Dream
             return false;
         }
         return true;
+    }
+
+    void
+    JSComponent::removeFromScriptMap
+    (shared_ptr<SceneObjectRuntime> sceneObject)
+    {
+        auto log = getLog();
+        map<shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>>::iterator iter;
+        for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
+        {
+            if ((*iter).first == sceneObject)
+            {
+                string id = (*iter).first->getUuid();
+                //object reg = registry(mState);
+                //reg[id] = nil;
+
+                string name = (*iter).first->getNameAndUuidString();
+                log->info( "Removed script for {}" , name );
+
+                mScriptMap.erase(iter++);
+                break;
+            }
+        }
+    }
+
+    void
+    JSComponent::addToScriptMap
+    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<ScriptInstance> script)
+    {
+        auto log = getLog();
+        log->info(
+                    "Adding {} to script map for {}",
+                    script->getNameAndUuidString(),
+                    sceneObject->getNameAndUuidString()
+                    );
+
+        if (createScript(sceneObject,script))
+        {
+            mScriptMap.insert(
+                pair<
+                    shared_ptr<SceneObjectRuntime>,
+                    shared_ptr<ScriptInstance>
+                >(sceneObject,script)
+            );
+        }
     }
 
 
@@ -200,10 +240,9 @@ namespace Dream
     JSComponent::executeScriptUpdate
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
-        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        auto scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -213,7 +252,7 @@ namespace Dream
 
         log->info( "Calling onUpdate for {}" ,sceneObject->getNameAndUuidString() );
 
-        */
+        scriptInstance->onUpdate(sceneObject);
         return true;
     }
 
@@ -221,20 +260,19 @@ namespace Dream
     JSComponent::executeScriptNanoVG
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
-        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        auto scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
-            log->error( "Cannot execute NanoVG {} in error state", scriptInstance->getNameAndUuidString());
+            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
+        log->info( "Calling onUpdateNVG for {}" ,sceneObject->getNameAndUuidString() );
 
-        */
+        scriptInstance->onUpdateNanoVG(sceneObject);
         return true;
     }
 
@@ -242,20 +280,19 @@ namespace Dream
     JSComponent::executeScriptInit
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
-        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        auto scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
 
-        if (scriptInstance->getError() )
+        if (scriptInstance->getError())
         {
             log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
-        */
+        log->info( "Calling onInit for {}" ,sceneObject->getNameAndUuidString() );
 
+        scriptInstance->onInit(sceneObject);
         return true;
     }
 
@@ -263,10 +300,9 @@ namespace Dream
     JSComponent::executeScriptInput
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
-        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        auto scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -274,10 +310,9 @@ namespace Dream
             return false;
         }
 
-        log->info( "Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
-        */
+        log->info( "Calling onInput for {}" ,sceneObject->getNameAndUuidString() );
 
-
+        scriptInstance->onInput(sceneObject, mInputMap);
         return true;
     }
 
@@ -285,19 +320,24 @@ namespace Dream
     JSComponent::executeScriptEvent
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
-        /*
-        auto log = getLog();
+       auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        auto scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
-            log->error( "Cannot execute {} in error state ",  scriptInstance->getNameAndUuidString());
+            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
-        */
+        log->info( "Calling onEvent for {}" ,sceneObject->getNameAndUuidString() );
+
+        vector<Event> events = sceneObject->getEventQueue();
+        for (Event event : events)
+        {
+            scriptInstance->onEvent(sceneObject, event);
+        }
+        sceneObject->clearEventQueue();
         return true;
     }
 
@@ -953,4 +993,3 @@ namespace Dream
     }
 
 } // End of Dream
-

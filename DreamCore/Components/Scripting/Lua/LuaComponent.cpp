@@ -139,45 +139,11 @@ namespace Dream
         return false;
     }
 
-    bool
-    LuaComponent::createScript
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<LuaScriptInstance> luaScript)
-    {
-        auto log = getLog();
-        if (luaScript == nullptr)
-        {
-            log->error( "Load Failed, LuaScriptInstance is NULL" );
-            return false;
-        }
 
-        if (sceneObject == nullptr)
-        {
-            log->error( "Load Failed, SceneObjectRuntime is NULL" );
-            return false;
-        }
 
-        if (luaScript->getLoadedFlag())
-        {
-            log->info( "Script {} is already loaded" , luaScript->getNameAndUuidString());
-            return false;
-        }
-
-        log->info( "Loading script '{}' for '{}'" , luaScript->getName(),sceneObject->getName());
-        log->info( "Loading Lua script from {}" , luaScript->getAbsolutePath());
-
-        if (!loadScript(sceneObject))
-        {
-            return false;
-        }
-
-        log->info( "Loaded {} successfully" , sceneObject->getUuid());
-
-        luaScript->setLoadedFlag(true);
-        executeScriptInit(sceneObject);
-
-        return true;
-    }
-
+    /*
+     * Instanciate the script and put into global registry
+     */
     bool
     LuaComponent::loadScript
     (shared_ptr<SceneObjectRuntime> sceneObject)
@@ -1022,7 +988,7 @@ namespace Dream
 
     void
     LuaComponent::addToScriptMap
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<LuaScriptInstance> script)
+    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<ScriptInstance> script)
     {
         auto log = getLog();
         log->info(
@@ -1034,8 +1000,10 @@ namespace Dream
         if (createScript(sceneObject,script))
         {
             mScriptMap.insert(
-                pair<shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>>
-                (sceneObject,script)
+                pair<
+                    shared_ptr<SceneObjectRuntime>,
+                    shared_ptr<ScriptInstance>
+                >(sceneObject,script)
             );
         }
     }

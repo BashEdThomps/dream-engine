@@ -38,7 +38,6 @@
 #include "../Components/Window/IWindowComponent.h"
 
 #include "../Components/Scripting/IScriptComponent.h"
-#include "../Components/Scripting/Lua/LuaComponent.h"
 #include "../Components/Scripting/JS/JSComponent.h"
 
 #include "../Components/Graphics/Model/AssimpCache.h"
@@ -239,7 +238,7 @@ namespace Dream
     {
         auto log = getLog();
         mScriptComponent = dynamic_pointer_cast<IScriptComponent>(
-            make_shared<LuaComponent>(
+            make_shared<JSComponent>(
                 dynamic_pointer_cast<ProjectRuntime>(shared_from_this()),
                 mScriptCache
             )
@@ -247,7 +246,7 @@ namespace Dream
 
         if(!mScriptComponent->init())
         {
-            log->error( "Unable to initialise Lua Engine." );
+            log->error( "Unable to initialise Script Engine." );
             return false;
         }
 
@@ -376,7 +375,7 @@ namespace Dream
         mGraphicsComponent->drawModelQueue();
         mGraphicsComponent->drawFontQueue();
         mGraphicsComponent->drawSpriteQueue();
-        // mLuaComponent->updateNanoVG();
+        // mScriptComponent->updateNanoVG();
         mPhysicsComponent->setViewProjectionMatrix(
             mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
         );
