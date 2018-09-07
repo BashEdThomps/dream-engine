@@ -1,5 +1,5 @@
 /*
- * JSScriptInstance
+ * ScriptInstance
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,27 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "JSScriptInstance.h"
-#include "../ScriptDefinition.h"
+#include "ScriptInstance.h"
+
+#include "ScriptDefinition.h"
 
 namespace Dream
 {
 
-    JSScriptInstance::JSScriptInstance
+    ScriptInstance::ScriptInstance
     (
         shared_ptr<ScriptDefinition> definition,
         shared_ptr<SceneObjectRuntime> transform
     )
-        : ScriptInstance(definition,transform),
+        : IAssetInstance(definition,transform),
           mError(false)
     {
-        setLogClassName("JSScriptInstance");
+        setLogClassName("ScriptInstance");
         auto log = getLog();
         log->trace( "Constructing {}", mDefinition->getNameAndUuidString() );
         return;
     }
 
-    JSScriptInstance::~JSScriptInstance
+    ScriptInstance::~ScriptInstance
     ()
     {
         auto log = getLog();
@@ -43,7 +44,7 @@ namespace Dream
     }
 
     bool
-    JSScriptInstance::load
+    ScriptInstance::load
     (string projectPath)
     {
         auto log = getLog();
@@ -53,28 +54,28 @@ namespace Dream
     }
 
     void
-    JSScriptInstance::update
+    ScriptInstance::update
     ()
     {
 
     }
 
     bool
-    JSScriptInstance::getError
+    ScriptInstance::getError
     ()
     {
         return mError;
     }
 
     void
-    JSScriptInstance::setError
+    ScriptInstance::setError
     (bool err)
     {
         mError = err;
     }
 
 
-    void JSScriptInstance::loadExtraAttributes(nlohmann::json)
+    void ScriptInstance::loadExtraAttributes(nlohmann::json)
     {
 
     }

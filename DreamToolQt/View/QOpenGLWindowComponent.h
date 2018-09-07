@@ -91,7 +91,7 @@ private:
 
     WindowInputState mInputState;
     vector<double> mFrameTimes;
-    int mMaxFrameTimeValues;
+    size_t mMaxFrameTimeValues;
     double averageFrameTime();
     void moveSelectedSceneObject(shared_ptr<SceneObjectRuntime> selected);
     void moveCamera();

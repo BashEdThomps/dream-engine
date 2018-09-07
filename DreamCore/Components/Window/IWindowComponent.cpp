@@ -23,8 +23,8 @@ namespace Dream
 {
 
     IWindowComponent::IWindowComponent
-    (bool parallel)
-        : IComponent(parallel),
+    ()
+        : IComponent(),
           mWidth(Constants::DEFAULT_SCREEN_WIDTH),
           mHeight(Constants::DEFAULT_SCREEN_HEIGHT),
           mShouldClose(false),

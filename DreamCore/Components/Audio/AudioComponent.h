@@ -53,7 +53,7 @@ namespace Dream
         ALCcontext* mContext;
 
     public:
-        AudioComponent(bool parallel = false);
+        AudioComponent();
         ~AudioComponent() override;
         bool init() override;
         void updateComponent() override;

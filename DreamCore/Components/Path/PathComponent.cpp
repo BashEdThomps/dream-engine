@@ -28,8 +28,8 @@
 namespace Dream
 {
     PathComponent::PathComponent
-    (bool parallel)
-        : IComponent(parallel)
+    ()
+        : IComponent()
 
     {
         setLogClassName("PathComponent");
@@ -56,10 +56,6 @@ namespace Dream
     PathComponent::updateComponent
     ()
     {
-        while(mRunning)
-        {
-            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
-            {
                 beginUpdate();
                 mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                 (
@@ -77,10 +73,5 @@ namespace Dream
                     )
                 );
                 endUpdate();
-
-                if (!mParallel) break;
-            }
-            if (mParallel) std::this_thread::yield();
-        }
     }
 } // End of Dream

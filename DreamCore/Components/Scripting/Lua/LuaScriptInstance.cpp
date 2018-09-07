@@ -27,7 +27,7 @@ namespace Dream
         shared_ptr<ScriptDefinition> definition,
         shared_ptr<SceneObjectRuntime> transform
     )
-        : IAssetInstance(definition,transform),
+        : ScriptInstance(definition,transform),
           mError(false)
     {
         setLogClassName("LuaScriptInstance");

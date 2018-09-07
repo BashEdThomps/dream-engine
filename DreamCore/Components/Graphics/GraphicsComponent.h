@@ -89,7 +89,7 @@ namespace Dream
         vector<shared_ptr<LightInstance>>      mLightQueue;
         shared_ptr<IWindowComponent> mWindowComponent;
     public:
-        GraphicsComponent(shared_ptr<Camera>,shared_ptr<IWindowComponent>, bool parallel = false);
+        GraphicsComponent(shared_ptr<Camera>,shared_ptr<IWindowComponent>);
         ~GraphicsComponent() override;
 
         void clearSpriteQueue();

@@ -1,5 +1,5 @@
 /*
- * LuaScriptCache.cpp
+ * ScriptCache.cpp
  *
  * Created: 04/04/2017 2017 by Ashley
  *
@@ -16,20 +16,20 @@
  * this file belongs to.
  */
 
-#include "LuaScriptCache.h"
+#include "ScriptCache.h"
 
-#include "../../../Utilities/FileReader.h"
+#include "../../Utilities/FileReader.h"
 
 namespace Dream
 {
-    LuaScriptCache::LuaScriptCache
-    () : DreamObject ("LuaScriptCache")
+    ScriptCache::ScriptCache
+    () : DreamObject ("ScriptCache")
     {
         auto log = getLog();
         log->trace("Constructing");
     }
 
-    LuaScriptCache::~LuaScriptCache
+    ScriptCache::~ScriptCache
     ()
     {
         auto log = getLog();
@@ -37,7 +37,7 @@ namespace Dream
     }
 
     string
-    LuaScriptCache::getScript
+    ScriptCache::getScript
     (string path)
     {
         auto log = getLog();
@@ -53,14 +53,14 @@ namespace Dream
     }
 
     string
-    LuaScriptCache::readIntoCache
+    ScriptCache::readIntoCache
     (string path)
     {
         auto log = getLog();
         FileReader reader(path);
         if(!reader.readIntoString())
         {
-            log->error("Error reading Lua script into cache from path '{}'", path);
+            log->error("Error reading  script into cache from path '{}'", path);
            return "";
         }
         log->info("Inserting script ", path);

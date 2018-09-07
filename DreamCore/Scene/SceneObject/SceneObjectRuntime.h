@@ -45,7 +45,7 @@ namespace Dream
     class SpriteInstance;
     class FontInstance;
     class PhysicsObjectInstance;
-    class LuaScriptInstance;
+    class ScriptInstance;
     class SceneRuntime;
     class SceneObjectDefinition;
 
@@ -70,7 +70,7 @@ namespace Dream
         shared_ptr<ShaderInstance> mShaderInstance;
         shared_ptr<LightInstance> mLightInstance;
         shared_ptr<SpriteInstance> mSpriteInstance;
-        shared_ptr<LuaScriptInstance> mScriptInstance;
+        shared_ptr<ScriptInstance> mScriptInstance;
         shared_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
         shared_ptr<FontInstance> mFontInstance;
         Transform3D mTransform;
@@ -93,7 +93,6 @@ namespace Dream
 
     public:
         SceneObjectRuntime(shared_ptr<SceneObjectDefinition> sd, shared_ptr<SceneRuntime> sceneRuntime = nullptr);
-
         ~SceneObjectRuntime() override;
 
         void collectGarbage() override;
@@ -136,7 +135,7 @@ namespace Dream
         shared_ptr<PathInstance> getPathInstance();
         shared_ptr<AudioInstance> getAudioInstance();
         shared_ptr<AssimpModelInstance> getModelInstance();
-        shared_ptr<LuaScriptInstance> getScriptInstance();
+        shared_ptr<ScriptInstance> getScriptInstance();
         shared_ptr<ShaderInstance> getShaderInstance();
         shared_ptr<PhysicsObjectInstance> getPhysicsObjectInstance();
         shared_ptr<LightInstance> getLightInstance();

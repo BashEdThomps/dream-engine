@@ -1,5 +1,5 @@
 /*
- * LuaComponent
+ * JSComponent
  *
  * Copyright 2016 Octronic. All rights reserved.
  *
@@ -14,141 +14,73 @@
  * this file belongs to.
  */
 
-#include "LuaComponent.h"
+#include "JSComponent.h"
 
 #include <sstream>
-#include <luabind/luabind.hpp>
-#include <luabind/adopt_policy.hpp>
 
-#include "LuaScriptInstance.h"
+#include "JSScriptInstance.h"
 
-#include "../Event.h"
-#include "../Transform3D.h"
-#include "../Time.h"
-#include "../Path/PathComponent.h"
-#include "../Path/PathInstance.h"
-#include "../Audio/AudioComponent.h"
-#include "../Audio/AudioInstance.h"
-#include "../Graphics/Model/AssimpModelInstance.h"
-#include "../Graphics/Camera.h"
-#include "../Graphics/Font/FontInstance.h"
-#include "../Graphics/GraphicsComponent.h"
-#include "../Graphics/NanoVGComponent.h"
-#include "../Graphics/Light/LightInstance.h"
-#include "../Graphics/Shader/ShaderInstance.h"
-#include "../Graphics/Sprite/SpriteInstance.h"
-#include "../Input/InputComponent.h"
-#include "../Physics/PhysicsComponent.h"
-#include "../Physics/PhysicsObjectInstance.h"
-#include "../Window/IWindowComponent.h"
-#include "../../Project/ProjectRuntime.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Utilities/Math.h"
-#include "../../../NanoVG/src/nanovg.h"
+#include "../../Event.h"
+#include "../../Transform3D.h"
+#include "../../Time.h"
+#include "../../Path/PathComponent.h"
+#include "../../Path/PathInstance.h"
+#include "../../Audio/AudioComponent.h"
+#include "../../Audio/AudioInstance.h"
+#include "../../Graphics/Model/AssimpModelInstance.h"
+#include "../../Graphics/Camera.h"
+#include "../../Graphics/Font/FontInstance.h"
+#include "../../Graphics/GraphicsComponent.h"
+#include "../../Graphics/NanoVGComponent.h"
+#include "../../Graphics/Light/LightInstance.h"
+#include "../../Graphics/Shader/ShaderInstance.h"
+#include "../../Graphics/Sprite/SpriteInstance.h"
+#include "../../Input/InputComponent.h"
+#include "../../Physics/PhysicsComponent.h"
+#include "../../Physics/PhysicsObjectInstance.h"
+#include "../../Window/IWindowComponent.h"
+#include "../../../Project/ProjectRuntime.h"
+#include "../../../Scene/SceneRuntime.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Utilities/Math.h"
+#include "../../../../NanoVG/src/nanovg.h"
 
-using std::ostringstream;
-using std::exception;
-using std::cout;
-using std::cerr;
-using std::string;
-
-using luabind::object;
-using luabind::from_stack;
-using luabind::call_function;
-using luabind::globals;
-using luabind::class_;
-using luabind::constructor;
-using luabind::open;
-using luabind::set_pcall_callback;
-using luabind::registry;
-using luabind::error;
-using luabind::module;
-using luabind::value;
-using luabind::nil;
-using luabind::newtable;
-using luabind::def;
-using luabind::bases;
-
-int
-errorr
-(lua_State *L)
-{
-    // log the error message
-    object msg(from_stack( L, -1 ));
-    stringstream ss;
-    ss << msg;
-    cerr << "RuntimeError: " << ss.str() << endl;
-    // log the callstack
-    string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
-    cerr << "TraceBack: " << traceback.c_str();
-    return 0;
-}
 
 namespace Dream
 {
-    LuaComponent::LuaComponent
-    (shared_ptr<ProjectRuntime> project, shared_ptr<LuaScriptCache> cache)
-        : IComponent(),
-          mScriptCache(cache),
-          mProjectRuntime(project),
-          mState(nullptr)
+    JSComponent::JSComponent
+    (shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache)
+        : IScriptComponent(project,cache)
     {
-        setLogClassName("LuaComponent");
+        setLogClassName("JSComponent");
         auto log = getLog();
         log->trace( "Constructing Object" );
     }
 
-    LuaComponent::~LuaComponent
+    JSComponent::~JSComponent
     ()
     {
         auto log = getLog();
         log->trace( "Destroying Object" );
-
-        if (mState != nullptr)
-        {
-            lua_close(mState);
-        }
-
         mScriptMap.clear();
     }
 
     bool
-    LuaComponent::init
+    JSComponent::init
     ()
     {
         auto log = getLog();
-        log->info( "Initialising LuaComponent" );
-        mState = luaL_newstate();
-        log->info( "got a state" );
-        if (mState != nullptr)
-        {
-            luabind::open(mState);
-            log->info( "opened" );
-            luaopen_base(mState);
-            log->info( "opened base" );
-            set_pcall_callback(&errorr);
-            log->info( "set error callback" );
-            luaL_dostring(mState, mScriptLoadFromString.c_str());
-            log->info( "loaded load string" );
-            exposeAPI();
-            return true;
-        }
-        else
-        {
-            log->error( "Error creating lua state, LuaComponent::mState == nullptr");
-        }
         return false;
     }
 
     bool
-    LuaComponent::createScript
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<LuaScriptInstance> luaScript)
+    JSComponent::createScript
+    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<JSScriptInstance> JSScript)
     {
         auto log = getLog();
-        if (luaScript == nullptr)
+        if (JSScript == nullptr)
         {
-            log->error( "Load Failed, LuaScriptInstance is NULL" );
+            log->error( "Load Failed, JSScriptInstance is NULL" );
             return false;
         }
 
@@ -158,14 +90,14 @@ namespace Dream
             return false;
         }
 
-        if (luaScript->getLoadedFlag())
+        if (JSScript->getLoadedFlag())
         {
-            log->info( "Script {} is already loaded" , luaScript->getNameAndUuidString());
+            log->info( "Script {} is already loaded" , JSScript->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Loading script '{}' for '{}'" , luaScript->getName(),sceneObject->getName());
-        log->info( "Loading Lua script from {}" , luaScript->getAbsolutePath());
+        log->info( "Loading script '{}' for '{}'" , JSScript->getName(),sceneObject->getName());
+        log->info( "Loading JS script from {}" , JSScript->getAbsolutePath());
 
         if (!loadScript(sceneObject))
         {
@@ -174,25 +106,19 @@ namespace Dream
 
         log->info( "Loaded {} successfully" , sceneObject->getUuid());
 
-        luaScript->setLoadedFlag(true);
+        JSScript->setLoadedFlag(true);
         executeScriptInit(sceneObject);
 
         return true;
     }
 
     bool
-    LuaComponent::loadScript
+    JSComponent::loadScript
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
-
-        if (!mState)
-        {
-            log->error( "Cannot load script, mState == nullptr!" );
-            return false;
-        }
+        shared_ptr<JSScriptInstance> scriptInstance = dynamic_pointer_cast<JSScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -204,30 +130,8 @@ namespace Dream
 
         try
         {
-            log->info( "Creating new table for {}" ,id );
-
-            object newScriptTable = newtable(mState);
-            string path = scriptInstance->getAbsolutePath();
-            string script = mScriptCache->getScript(path);
-
-            log->info( "calling scriptLoadFromString in lua for {}" , id );
-
-            bool result = call_function<bool>(mState, "scriptLoadFromString", newScriptTable, script.c_str());
-
-            if (result)
-            {
-                log->info("Loaded Script Successfully");
-                object reg = registry(mState);
-                reg[id] = newScriptTable;
-            }
-            else
-            {
-                log->info("Loaded Script Failed");
-                scriptInstance->setError(true);
-                return false;
-            }
         }
-        catch (error &e)
+        catch (std::exception &e)
         {
             log->error("loadScript exception: {}" , e.what() );
             scriptInstance->setError(true);
@@ -236,88 +140,45 @@ namespace Dream
         return true;
     }
 
+
     void
-    LuaComponent::stackDump
+    JSComponent::updateComponent
     ()
     {
+        beginUpdate();
         auto log = getLog();
-        log->error( "Stack Dump!" );
-        int i;
-        int top = lua_gettop(mState);
-        // repeat for each level
-        for (i = 1; i <= top; i++)
+        log->info( "Update Called" );
+
+        for (auto entry : mScriptMap)
         {
-            int t = lua_type(mState, i);
-            switch (t)
+            auto key = entry.first;
+
+            if (!executeScriptUpdate(key))
             {
-                // strings
-                case LUA_TSTRING:
-                    log->error( lua_tostring(mState, i));
-                    break;
-                    // booleans
-                case LUA_TBOOLEAN:
-                    log->error( (lua_toboolean(mState, i) ? "true" : "false"));
-                    break;
-                    // numbers
-                case LUA_TNUMBER:
-                    log->error( lua_tonumber(mState, i));
-                    break;
-                    // other values
-                default:
-                    log->info( lua_typename(mState, t));
-                    break;
+                return;
             }
-        }
-        // end the listing
-    }
 
-    void
-    LuaComponent::updateComponent
-    ()
-    {
-        while(mRunning)
-        {
-            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
+            if (key->hasFocus())
             {
-                beginUpdate();
-                auto log = getLog();
-                log->info( "Update Called" );
-
-                for (auto entry : mScriptMap)
+                if (!executeScriptInput(key))
                 {
-                    auto key = entry.first;
-
-                    if (!executeScriptUpdate(key))
-                    {
-                        return;
-                    }
-
-                    if (key->hasFocus())
-                    {
-                        if (!executeScriptInput(key))
-                        {
-                            return;
-                        }
-                    }
-
-                    if (key->hasEvents())
-                    {
-                        if (!executeScriptEvent(key))
-                        {
-                            return;
-                        }
-                    }
+                    return;
                 }
-                endUpdate();
-
-                if (!mParallel) break;
             }
-            if (mParallel) std::this_thread::yield();
+
+            if (key->hasEvents())
+            {
+                if (!executeScriptEvent(key))
+                {
+                    return;
+                }
+            }
         }
+        endUpdate();
     }
 
     bool
-    LuaComponent::updateNanoVG
+    JSComponent::updateNanoVG
     ()
     {
         auto log = getLog();
@@ -336,12 +197,13 @@ namespace Dream
     }
 
     bool
-    LuaComponent::executeScriptUpdate
+    JSComponent::executeScriptUpdate
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
+        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -351,38 +213,18 @@ namespace Dream
 
         log->info( "Calling onUpdate for {}" ,sceneObject->getNameAndUuidString() );
 
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_UPDATE_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject);
-            }
-            else
-            {
-                log->error( "Attempted to call onUpdate on invalid function.");
-            }
-        }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onUpdate exception: {}" , e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
+        */
         return true;
     }
 
     bool
-    LuaComponent::executeScriptNanoVG
+    JSComponent::executeScriptNanoVG
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
+        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -392,38 +234,18 @@ namespace Dream
 
         log->info( "Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
 
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_NANOVG_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject);
-            }
-            else
-            {
-                log->error( "Attempted to call onNanoVG on invalid function.");
-            }
-        }
-        catch (luabind::error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onNanoVG exception: {}" , e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
+        */
         return true;
     }
 
     bool
-    LuaComponent::executeScriptInit
+    JSComponent::executeScriptInit
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
+        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError() )
         {
@@ -432,39 +254,19 @@ namespace Dream
         }
 
         log->info( "Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_INIT_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject);
-            }
-            else
-            {
-                log->error( "Attempted to call onInit on invalid function.");
-            }
+        */
 
-        }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onInit exception: {}" , e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
         return true;
     }
 
     bool
-    LuaComponent::executeScriptInput
+    JSComponent::executeScriptInput
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
+        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -473,39 +275,20 @@ namespace Dream
         }
 
         log->info( "Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
+        */
 
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_INPUT_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject,mInputMap);
-            }
-            else
-            {
-                log->error( "Attempted to call onInput on invalid function.");
-            }
-        }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onInput exception: {}" ,  e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
+
         return true;
     }
 
     bool
-    LuaComponent::executeScriptEvent
+    JSComponent::executeScriptEvent
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
+        /*
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<JSScriptInstance> scriptInstance = sceneObject->getScriptInstance();
 
         if (scriptInstance->getError())
         {
@@ -514,50 +297,17 @@ namespace Dream
         }
 
         log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
-
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_EVENT_FUNCTION];
-            vector<Event> events = sceneObject->getEventQueue();
-            if (funq.is_valid())
-            {
-                for (Event event : events)
-                {
-                    call_function<void>(funq,sceneObject,event);
-                }
-                sceneObject->clearEventQueue();
-            }
-            else
-            {
-                log->error( "Attempted to call onEvent on invalid function.");
-            }
-        }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onEvent exception: {}", e.what());
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
+        */
         return true;
-    }
-
-    void
-    LuaComponent::setInputMap
-    (gainput::InputMap *map)
-    {
-        mInputMap = map;
     }
 
     // API Exposure Methods ======================================================
 
     void
-    LuaComponent::exposeDreamBase
+    JSComponent::exposeDreamBase
     ()
     {
+        /*
         debugRegisteringClass("Dream base classes");
         module(mState)
         [
@@ -574,12 +324,14 @@ namespace Dream
                 .def("getMouseX",&IWindowComponent::getMouseX)
                 .def("getMouseY",&IWindowComponent::getMouseY)
         ];
+        */
     }
 
     void
-    LuaComponent::exposeProjectRuntime
+    JSComponent::exposeProjectRuntime
     ()
     {
+        /*
         debugRegisteringClass("ProjectRuntime");
         module(mState)
         [
@@ -593,15 +345,17 @@ namespace Dream
                 .def("getCamera",&ProjectRuntime::getCamera)
         ];
         globals(mState)["Runtime"] = mProjectRuntime.get();
+        */
     }
 
     void
-    LuaComponent::exposeCamera
+    JSComponent::exposeCamera
     ()
     {
+        /*
         module(mState)
         [
-            luabind::class_<Camera, DreamObject, shared_ptr<DreamObject>>("Camera")
+            JSbind::class_<Camera, DreamObject, shared_ptr<DreamObject>>("Camera")
                 .def("processKeyboard",&Camera::processKeyboard)
                 .def("processMouseMovement",&Camera::processMouseMovement)
                 .def("pan",&Camera::pan)
@@ -628,32 +382,27 @@ namespace Dream
                 value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
             ]
         ];
+        */
     }
 
     void
-    LuaComponent::debugRegisteringClass
-    (string className)
-    {
-        auto log = getLog();
-        log->info( "Registering Class {}",  className );
-        return;
-    }
-
-    void
-    LuaComponent::exposePathComponent
+    JSComponent::exposePathComponent
     ()
     {
+        /*
         debugRegisteringClass("PathComponent");
         module(mState)
         [
             class_<PathComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("PathComponent")
         ];
+        */
     }
 
     void
-    LuaComponent::exposePathInstance
+    JSComponent::exposePathInstance
     ()
     {
+        /*
         debugRegisteringClass("PathInstance");
         module(mState)
         [
@@ -665,12 +414,14 @@ namespace Dream
             .def("setUStep",&PathInstance::setUStep)
             .def("stepPath",&PathInstance::stepPath)
         ];
+        */
     }
 
     void
-    LuaComponent::exposeFontInstance
+    JSComponent::exposeFontInstance
     ()
     {
+        /*
         debugRegisteringClass("FontInstance");
         module(mState)
         [
@@ -678,35 +429,41 @@ namespace Dream
             .def("setText",&FontInstance::setText)
             .def("getText",&FontInstance::getText)
         ];
+        */
     }
 
     void
-    LuaComponent::exposeGraphicsComponent
+    JSComponent::exposeGraphicsComponent
     ()
     {
+        /*
         debugRegisteringClass("GraphicsComponent");
         module(mState)
         [
             class_<GraphicsComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("GraphicsComponent")
         ];
+        */
     }
 
     void
-    LuaComponent::exposeLightInstance
+    JSComponent::exposeLightInstance
     ()
     {
+        /*
         debugRegisteringClass("LightInstance");
         module(mState)
         [
             class_<LightInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("LightInstance")
             // TODO
         ];
+        */
     }
 
     void
-    LuaComponent::exposeShaderInstance
+    JSComponent::exposeShaderInstance
     ()
     {
+        /*
         debugRegisteringClass("ShaderInstance");
         module(mState)
         [
@@ -734,35 +491,41 @@ namespace Dream
                     value("FLOAT4",UniformType::FLOAT4)
                 ]
         ];
+        */
     }
 
     void
-    LuaComponent::exposeSpriteInstance
+    JSComponent::exposeSpriteInstance
     ()
     {
+    /*
         debugRegisteringClass("SpriteInstance");
         module(mState)
         [
             class_<SpriteInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("SpriteInstance")
         ];
+        */
     }
 
     void
-    LuaComponent::exposePhysicsComponent
+    JSComponent::exposePhysicsComponent
     ()
     {
+        /*
         debugRegisteringClass("PhysicsComponent");
         module(mState)
         [
             class_<PhysicsComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("PhysicsComponent")
                 .def("setDebug",&PhysicsComponent::setDebug)
         ];
+        */
     }
 
     void
-    LuaComponent::exposePhysicsObjectInstance
+    JSComponent::exposePhysicsObjectInstance
     ()
     {
+        /*
         debugRegisteringClass("PhysicsObjectInstance");
         module(mState)
         [
@@ -770,31 +533,35 @@ namespace Dream
                 .def("getUuid", &PhysicsObjectInstance::getUuid)
                 .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
         ];
+        */
     }
 
     void
-    LuaComponent::exposeMath
+    JSComponent::exposeMath
     ()
     {
+        /*
         debugRegisteringClass("Math");
         module(mState)
         [
             class_<Math>("Math")
                 .scope[
-                    luabind::def("degreesToRadians",&Math::degreesToRadians),
-                    luabind::def("radiansToDegrees",&Math::radiansToDegrees),
-                    luabind::def("pow",&Math::_pow),
-                    luabind::def("sin",&Math::_sinf),
-                    luabind::def("cos",&Math::_cosf),
-                    luabind::def("sqrt",&Math::_sqrtf)
+                    JSbind::def("degreesToRadians",&Math::degreesToRadians),
+                    JSbind::def("radiansToDegrees",&Math::radiansToDegrees),
+                    JSbind::def("pow",&Math::_pow),
+                    JSbind::def("sin",&Math::_sinf),
+                    JSbind::def("cos",&Math::_cosf),
+                    JSbind::def("sqrt",&Math::_sqrtf)
                 ]
         ];
+        */
     }
 
     void
-    LuaComponent::exposeSceneObjectRuntime
+    JSComponent::exposeSceneObjectRuntime
     ()
     {
+        /*
         debugRegisteringClass("SceneObjectRuntime");
         module(mState)
         [
@@ -829,12 +596,14 @@ namespace Dream
                 .def("hasFont",&SceneObjectRuntime::hasFontInstance)
                 .def("hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance)
         ];
+        */
     }
 
     void
-    LuaComponent::exposeTransform3D
+    JSComponent::exposeTransform3D
     ()
     {
+        /*
         debugRegisteringClass("Transform3D");
         module(mState) [
             class_<Transform3D, DreamObject, shared_ptr<DreamObject>>("Transform3D")
@@ -890,12 +659,14 @@ namespace Dream
                 .def("setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale))
                 .def("setScale",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setScale))
             ];
+            */
     }
 
     void
-    LuaComponent::exposeTime
+    JSComponent::exposeTime
     ()
     {
+        /*
         debugRegisteringClass("Time");
         module(mState)
         [
@@ -907,23 +678,27 @@ namespace Dream
                 .def("now",&Time::now)
                 .def("nowLL",&Time::nowLL)
         ];
+        */
     }
 
     void
-    LuaComponent::exposeAssimpModelInstance
+    JSComponent::exposeAssimpModelInstance
     ()
     {
+        /*
         debugRegisteringClass("AssimpModelInstance");
         module(mState)
         [
             class_<AssimpModelInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("AssimpModelInstance")
         ];
+        */
     }
 
     void
-    LuaComponent::exposeEvent
+    JSComponent::exposeEvent
     ()
     {
+        /*
         debugRegisteringClass("Event");
         module(mState)
         [
@@ -933,12 +708,14 @@ namespace Dream
                 .def("getAttribute",&Event::getAttribute)
                 .def("setAttribute",&Event::setAttribute)
         ];
+        */
     }
 
     void
-    LuaComponent::exposeAudioComponent
+    JSComponent::exposeAudioComponent
     ()
     {
+        /*
         debugRegisteringClass("AudioComponent");
         module(mState)
         [
@@ -947,20 +724,22 @@ namespace Dream
                 .def("pause",&AudioComponent::pauseAudioAsset)
                 .def("stop",&AudioComponent::stopAudioAsset)
         ];
+        */
     }
 
 
     void
-    LuaComponent::exposeLuaScriptInstance
+    JSComponent::exposeScriptInstance
     ()
     {
         // TODO
     }
 
     void
-    LuaComponent::exposeAudioInstance
+    JSComponent::exposeAudioInstance
     ()
     {
+        /*
         debugRegisteringClass("AudioInstance");
         module(mState)
         [
@@ -974,12 +753,14 @@ namespace Dream
                         value("STOPPED", AudioStatus::STOPPED)
                     ]
         ];
+        */
     }
 
     void
-    LuaComponent::exposeGainput
+    JSComponent::exposeGainput
     ()
     {
+        /*
         debugRegisteringClass("Gainput");
         module(mState)
         [
@@ -1022,94 +803,14 @@ namespace Dream
                         value("AnalogRightButton", InputSource::AnalogRightButton)
                     ]
         ];
+        */
     }
 
     void
-    LuaComponent::exposeAPI
+    JSComponent::exposeNanoVG
     ()
     {
-        // Dream Base
-        exposeDreamBase();
-        // Runtimes
-        exposeProjectRuntime();
-        exposeSceneObjectRuntime();
-        // Dream Misc
-        exposeEvent();
-        exposeMath();
-        exposeTime();
-        exposeTransform3D();
-        // Audio
-        exposeAudioComponent();
-        exposeAudioInstance();
-        // Graphics
-        exposeGraphicsComponent();
-        exposeAssimpModelInstance();
-        exposeCamera();
-        exposeFontInstance();
-        exposeLightInstance();
-        exposeShaderInstance();
-        exposeSpriteInstance();
-        exposeNanoVG();
-        exposeGLM();
-        // Input
-        exposeGainput();
-        // Path
-        exposePathComponent();
-        exposePathInstance();
-        // Script
-        exposeLuaScriptInstance();
-        // Physics
-        exposePhysicsComponent();
-        exposePhysicsObjectInstance();
-    }
-
-    void
-    LuaComponent::removeFromScriptMap
-    (shared_ptr<SceneObjectRuntime> sceneObject)
-    {
-        auto log = getLog();
-        map<shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>>::iterator iter;
-        for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
-        {
-            if ((*iter).first == sceneObject)
-            {
-                string id = (*iter).first->getUuid();
-                object reg = registry(mState);
-                reg[id] = nil;
-
-                string name = (*iter).first->getNameAndUuidString();
-                log->info( "Removed script for {}" , name );
-
-                mScriptMap.erase(iter++);
-                break;
-            }
-        }
-    }
-
-    void
-    LuaComponent::addToScriptMap
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<LuaScriptInstance> script)
-    {
-        auto log = getLog();
-        log->info(
-                    "Adding {} to script map for {}",
-                    script->getNameAndUuidString(),
-                    sceneObject->getNameAndUuidString()
-                    );
-
-        if (createScript(sceneObject,script))
-        {
-            mScriptMap.insert(
-                pair<shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>>
-                (sceneObject,script)
-            );
-        }
-    }
-
-    void
-    LuaComponent::exposeNanoVG
-    ()
-    {
+        /*
         debugRegisteringClass("NanoVG");
         module(mState)[
                 class_<NVGcolor>("NVGcolor"),
@@ -1228,10 +929,12 @@ namespace Dream
                 .def("TextMetrics",&NanoVGComponent::TextMetrics)
                 .def("TextBreakLines",&NanoVGComponent::TextBreakLines)
                 ];
+                */
     }
 
-    void LuaComponent::exposeGLM()
+    void JSComponent::exposeGLM()
     {
+        /*
         debugRegisteringClass("GLM");
         module(mState)
         [
@@ -1246,6 +949,7 @@ namespace Dream
                 .def_readwrite("z",&glm::quat::z),
             class_<glm::mat4>("mat4")
         ];
+        */
     }
 
 } // End of Dream

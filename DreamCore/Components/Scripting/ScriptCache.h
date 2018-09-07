@@ -1,5 +1,5 @@
 /*
- * LuaScriptCache.h
+ * ScriptCache.h
  *
  * Created: 04/04/2017 2017 by Ashley
  *
@@ -20,19 +20,19 @@
 #include <iostream>
 #include <map>
 
-#include "../../../Common/DreamObject.h"
+#include "../../Common/DreamObject.h"
 
 using namespace std;
 
 namespace Dream
 {
-    class LuaScriptCache : public DreamObject
+    class ScriptCache : public DreamObject
     {
     private:
         map<string,string> mScriptCache;
     public:
-        LuaScriptCache();
-        ~LuaScriptCache();
+        ScriptCache();
+        ~ScriptCache();
         string getScript(string);
         string readIntoCache(string);
 

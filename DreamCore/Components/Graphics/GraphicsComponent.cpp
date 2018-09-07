@@ -76,10 +76,11 @@ namespace Dream
     }
 
     GraphicsComponent::GraphicsComponent
-    (shared_ptr<Camera> camera,
-     shared_ptr<IWindowComponent> windowComponent,
-     bool parallel)
-        : IComponent(parallel),
+    (
+        shared_ptr<Camera> camera,
+        shared_ptr<IWindowComponent> windowComponent
+    )
+        : IComponent(),
           mCamera(camera),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
@@ -331,97 +332,87 @@ namespace Dream
     GraphicsComponent::updateComponent
     ()
     {
-        while(mRunning)
+        beginUpdate();
+        auto log = getLog();
+        log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
+
+
+        // View transform
+        mViewMatrix = mCamera->getViewMatrix();
+
+        if (!mWindowComponent->shouldClose())
         {
-            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
-            {
-                beginUpdate();
-                auto log = getLog();
-                log->info("GraphicsComponrnt: updateComponent(Scene*) Called" );
+            // Clear existing Queues
+            clearSpriteQueue();
+            clearModelQueue();
+            clearFontQueue();
+            clearLightQueue();
 
-
-                // View transform
-                mViewMatrix = mCamera->getViewMatrix();
-
-                if (!mWindowComponent->shouldClose())
-                {
-                    // Clear existing Queues
-                    clearSpriteQueue();
-                    clearModelQueue();
-                    clearFontQueue();
-                    clearLightQueue();
-
-                    mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
-                            (
-                                function<void*(shared_ptr<SceneObjectRuntime>)>
-                                (
-                                    [&](shared_ptr<SceneObjectRuntime> object)
-                                    {
-                                    // Models
-                                    if (object->hasModelInstance())
-                                    {
-                                        if (object->hasShaderInstance())
-                                        {
-                                            addToModelQueue(object);
-                                        }
-                                        else
-                                        {
-                                            log->error("Object {} has model, but no shader assigned." , object->getUuid());
-                                        }
-                                    }
-
-                                    // Sprites
-                                    if (object->hasSpriteInstance())
-                                    {
-                                        if (object->hasShaderInstance())
-                                        {
-                                            addToSpriteQueue(object);
-                                        }
-                                        else
-                                        {
-                                            log->error(
-                                            "Object {} has sprite, but no shader assigned.",
-                                            object->getUuid()
-                                            );
-                                        }
-                                    }
-
-                                    // Fonts
-                                    if (object->hasFontInstance())
-                                    {
-                                        if (object->hasShaderInstance())
-                                        {
-                                            addToFontQueue(object);
-                                        }
-                                        else
-                                        {
-                                            log->error(
-                                            "Object {} has font, but no shader assigned.",
-                                            object->getUuid()
-                                            );
-                                        }
-                                    }
-
-                                    // Lights
-                                    if (object->hasLightInstance())
-                                    {
-                                        shared_ptr<LightInstance> light = object->getLightInstance();
-                                        log->info("Adding light instance to queue {}",light->getNameAndUuidString());
-                                        addToLightQueue(light);
-                                    }
-
-                                    return nullptr;
+            mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+                    (
+                        function<void*(shared_ptr<SceneObjectRuntime>)>
+                        (
+                            [&](shared_ptr<SceneObjectRuntime> object)
+                            {
+                            // Models
+                            if (object->hasModelInstance())
+                            {
+                                if (object->hasShaderInstance())
+                                {
+                                    addToModelQueue(object);
                                 }
-                                )
-                            );
-                }
-                endUpdate();
+                                else
+                                {
+                                    log->error("Object {} has model, but no shader assigned." , object->getUuid());
+                                }
+                            }
 
-                if (!mParallel) break;
-            }
-            if (mParallel) std::this_thread::yield();
+                            // Sprites
+                            if (object->hasSpriteInstance())
+                            {
+                                if (object->hasShaderInstance())
+                                {
+                                    addToSpriteQueue(object);
+                                }
+                                else
+                                {
+                                    log->error(
+                                    "Object {} has sprite, but no shader assigned.",
+                                    object->getUuid()
+                                    );
+                                }
+                            }
+
+                            // Fonts
+                            if (object->hasFontInstance())
+                            {
+                                if (object->hasShaderInstance())
+                                {
+                                    addToFontQueue(object);
+                                }
+                                else
+                                {
+                                    log->error(
+                                    "Object {} has font, but no shader assigned.",
+                                    object->getUuid()
+                                    );
+                                }
+                            }
+
+                            // Lights
+                            if (object->hasLightInstance())
+                            {
+                                shared_ptr<LightInstance> light = object->getLightInstance();
+                                log->info("Adding light instance to queue {}",light->getNameAndUuidString());
+                                addToLightQueue(light);
+                            }
+
+                            return nullptr;
+                        }
+                    )
+                );
         }
-
+        endUpdate();
     }
 
     void

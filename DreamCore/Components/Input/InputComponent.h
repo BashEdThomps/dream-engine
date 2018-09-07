@@ -40,24 +40,24 @@ namespace Dream
         AnalogRightButton
     };
 
-    class LuaComponent;
+    class IScriptComponent;
 
     class InputComponent : public IComponent
     {
     public:
-        InputComponent(bool parallel = false);
+        InputComponent();
         ~InputComponent() override;
 
         bool init() override;
         void updateComponent() override;
-        void setLuaComponent(shared_ptr<LuaComponent> lua);
+        void setScriptComponent(shared_ptr<IScriptComponent> sc);
 
     private:
         const static float ANALOG_DEAD_ZONE;
         shared_ptr<InputMap> mInputMap;
         InputManager mInputManager;
         vector<DeviceId> mDevices;
-        shared_ptr<LuaComponent> mLuaComponent;
+        shared_ptr<IScriptComponent> mScriptComponent;
         bool mInputMapSet;
     };
 

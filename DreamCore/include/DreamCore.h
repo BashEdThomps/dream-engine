@@ -13,7 +13,7 @@
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../Components/Graphics/Sprite/SpriteDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
-#include "../Components/Lua/ScriptDefinition.h"
+#include "../Components/Scripting/ScriptDefinition.h"
 
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
@@ -21,7 +21,9 @@
 #include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Lua/LuaComponent.h"
+#include "../Components/Scripting/IScriptComponent.h"
+#include "../Components/Scripting/Lua/LuaComponent.h"
+#include "../Components/Scripting/JS/JSComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 
 #include "../Components/Graphics/Camera.h"

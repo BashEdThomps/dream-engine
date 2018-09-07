@@ -48,11 +48,12 @@
 #include "../../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../../Components/Graphics/Sprite/SpriteDefinition.h"
 
-#include "../../Components/Lua/ScriptDefinition.h"
-#include "../../Components/Lua/LuaScriptInstance.h"
-#include "../../Components/Lua/LuaComponent.h"
-
-
+#include "../../Components/Scripting/ScriptDefinition.h"
+#include "../../Components/Scripting/ScriptInstance.h"
+#include "../../Components/Scripting/ScriptInstance.h"
+#include "../../Components/Scripting/Lua/LuaScriptInstance.h"
+#include "../../Components/Scripting/Lua/LuaComponent.h"
+#include "../../Components/Scripting/JS/JSComponent.h"
 
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
@@ -104,7 +105,7 @@ namespace Dream
         {
             mSceneRuntime
                 ->getProjectRuntime()
-                ->getLuaComponent()
+                ->getScriptComponent()
                 ->removeFromScriptMap(
                     dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
                 );
@@ -225,7 +226,7 @@ namespace Dream
         return mModelInstance;
     }
 
-    shared_ptr<LuaScriptInstance>
+    shared_ptr<ScriptInstance>
     SceneObjectRuntime::getScriptInstance
     ()
     {
@@ -589,9 +590,20 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Script asset instance." );
-        mScriptInstance = make_shared<LuaScriptInstance>(definition,dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
+        mScriptInstance = dynamic_pointer_cast<ScriptInstance>(
+            make_shared<LuaScriptInstance>(
+                definition,
+                dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+            )
+        );
         mScriptInstance->load(mProjectPath);
-        mSceneRuntime->getProjectRuntime()->getLuaComponent()->addToScriptMap(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()),mScriptInstance);
+        mSceneRuntime
+            ->getProjectRuntime()
+            ->getScriptComponent()
+            ->addToScriptMap(
+                dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()),
+                mScriptInstance
+            );
     }
 
     void

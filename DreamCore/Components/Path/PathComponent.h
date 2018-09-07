@@ -15,7 +15,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #pragma once
 
 #include "PathInstance.h"
@@ -26,7 +25,7 @@ namespace Dream
     class PathComponent : public IComponent
     {
     public:
-        PathComponent(bool parallel = false);
+        PathComponent();
         ~PathComponent() override;
 
         bool init() override;

@@ -158,28 +158,19 @@ namespace Dream
     PhysicsComponent::updateComponent
     ()
     {
-        while(mRunning)
-        {
-            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
+            beginUpdate();
+            auto log = getLog();
+            log->info( "Update Called" );
+            populatePhysicsWorld(mActiveSceneRuntime);
+            btScalar stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
+            mDynamicsWorld->stepSimulation(stepValue);
+            checkContactManifolds(mActiveSceneRuntime);
+            // Put debug info to queue, no GL calls made
+            if (mDebug)
             {
-                beginUpdate();
-                auto log = getLog();
-                log->info( "Update Called" );
-                populatePhysicsWorld(mActiveSceneRuntime);
-                btScalar stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
-                mDynamicsWorld->stepSimulation(stepValue);
-                checkContactManifolds(mActiveSceneRuntime);
-                // Put debug info to queue, no GL calls made
-                if (mDebug)
-                {
-                    mDynamicsWorld->debugDrawWorld();
-                }
-                endUpdate();
-
-                if (!mParallel) break;
+                mDynamicsWorld->debugDrawWorld();
             }
-            if (mParallel) std::this_thread::yield();
-        }
+            endUpdate();
     }
 
     void

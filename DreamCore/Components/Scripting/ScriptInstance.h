@@ -1,5 +1,5 @@
 /*
-* LuaScriptInstance
+* ScriptInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,19 @@
 #include <vector>
 #include <string>
 
-#include "../../../Common/Constants.h"
-#include "../ScriptInstance.h"
+#include "../../Common/Constants.h"
+#include "../IAssetInstance.h"
 
 namespace Dream
 {
     class ScriptDefinition;
 
-    class LuaScriptInstance : public ScriptInstance
+    class ScriptInstance : public IAssetInstance
     {
 
     public:
-        LuaScriptInstance(shared_ptr<ScriptDefinition>,shared_ptr<SceneObjectRuntime>);
-        ~LuaScriptInstance(void);
+        ScriptInstance(shared_ptr<ScriptDefinition>,shared_ptr<SceneObjectRuntime>);
+        ~ScriptInstance(void);
         bool load(string);
         void update();
         void loadExtraAttributes(json);
@@ -40,5 +40,6 @@ namespace Dream
         void setError(bool);
     private:
         bool mError;
-    }; // End of LuaScriptInstance
+
+    }; // End of ScriptInstance
 } // End of Dream

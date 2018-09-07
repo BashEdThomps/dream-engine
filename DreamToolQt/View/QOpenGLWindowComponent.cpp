@@ -34,7 +34,7 @@ WindowInputState::WindowInputState
 QOpenGLWindowComponent::QOpenGLWindowComponent
 (QWidget* parent)
     : QOpenGLWidget(parent),
-      IWindowComponent(false),
+      IWindowComponent(),
       mControlScene(false),
       mProjectRuntimeHandle(nullptr),
       mGridHandle(nullptr),
@@ -118,24 +118,8 @@ QOpenGLWindowComponent::paintGL
 
             if (sRuntime->getState() != SCENE_STATE_STOPPED)
             {
-                if (mProjectRuntimeHandle->getParallel())
-                {
-                    // Wait for an update to trigger
-                    while(!mProjectRuntimeHandle->updateLogic())
-                    {
-                        std::this_thread::yield();
-                    }
 
-                    // Wait for update threads to finish
-                    while (!mProjectRuntimeHandle->allThreadsHaveUpdated())
-                    {
-                        std::this_thread::yield();
-                    }
-                }
-                else
-                {
-                    mProjectRuntimeHandle->updateLogic();
-                }
+                mProjectRuntimeHandle->updateLogic();
 
                 mProjectRuntimeHandle->collectGarbage();
 
@@ -257,8 +241,8 @@ QOpenGLWindowComponent::drawStats()
     long long graphics = project->getGraphicsComponent()->getUpdateTime();
     long long graphicsYield = project->getGraphicsComponent()->getYieldedTime();
 
-    long long lua = project->getLuaComponent()->getUpdateTime();
-    long long luaYield = project->getLuaComponent()->getYieldedTime();
+    long long lua = project->getScriptComponent()->getUpdateTime();
+    long long luaYield = project->getScriptComponent()->getYieldedTime();
 
     long long physics = project->getPhysicsComponent()->getUpdateTime();
     long long physicsYield = project->getPhysicsComponent()->getYieldedTime();

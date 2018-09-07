@@ -58,7 +58,7 @@ namespace Dream
         bool mDebug;
     public:
         PhysicsComponent();
-        ~PhysicsComponent();
+        ~PhysicsComponent() override;
         void populatePhysicsWorld(shared_ptr<SceneRuntime> scene);
         void setGravity(vector<float>);
         void setDebug(bool);

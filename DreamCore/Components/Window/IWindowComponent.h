@@ -30,7 +30,7 @@ namespace Dream
     class IWindowComponent : public IComponent
     {
     public:
-      IWindowComponent(bool parallel = false);
+      IWindowComponent();
       virtual ~IWindowComponent();
 
       bool init() = 0;

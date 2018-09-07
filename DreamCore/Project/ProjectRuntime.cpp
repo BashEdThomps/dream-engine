@@ -31,14 +31,15 @@
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Input/InputComponent.h"
 #include "../Components/Graphics/Camera.h"
-#include "../Components/ComponentThread.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 
-#include "../Components/Lua/LuaComponent.h"
+#include "../Components/Scripting/IScriptComponent.h"
+#include "../Components/Scripting/Lua/LuaComponent.h"
+#include "../Components/Scripting/JS/JSComponent.h"
 
 #include "../Components/Graphics/Model/AssimpCache.h"
 #include "../Components/Graphics/Model/MaterialCache.h"
@@ -53,12 +54,8 @@ namespace Dream
     (shared_ptr<Project> project, shared_ptr<IWindowComponent> windowComponent)
         : IRuntime(project->getProjectDefinition()),
           mDone(false),
-          mParallel(false),
-          mWindowComponent(windowComponent),
           mProject(project),
-          mGraphicsUpdating(false),
-          mLogicUpdating(false)
-
+          mWindowComponent(windowComponent)
     {
 
         setLogClassName("ProjectRuntime");
@@ -86,18 +83,6 @@ namespace Dream
     {
         mDone = done;
     }
-
-    bool ProjectRuntime::getParallel() const
-    {
-        return mParallel;
-    }
-
-    void ProjectRuntime::setParallel(bool parallel)
-    {
-        mParallel = parallel;
-    }
-
-
 
     shared_ptr<Time>
     ProjectRuntime::getTime
@@ -145,7 +130,7 @@ namespace Dream
             return false;
         }
 
-        if (!initLuaComponent())
+        if (!initScriptComponent())
         {
             return false;
         }
@@ -178,9 +163,6 @@ namespace Dream
             log->error( "Unable to initialise AudioComponent." );
             return false;
         }
-        mAudioComponent->setRunning(true);
-        if (mParallel)
-            mAudioComponentThread = make_shared<ComponentThread>(mAudioComponent);
         return true;
     }
 
@@ -193,9 +175,6 @@ namespace Dream
             log->error( "Unable to initialise InputComponent." );
             return false;
         }
-        mInputComponent->setRunning(true);
-        if (mParallel)
-            mInputComponentThread = make_shared<ComponentThread>(mInputComponent);
         return true;
     }
 
@@ -211,9 +190,6 @@ namespace Dream
             log->error( "Unable to initialise PhysicsComponent." );
             return false;
         }
-        mPhysicsComponent->setRunning(true);
-        if (mParallel)
-            mPhysicsComponentThread = make_shared<ComponentThread>(mPhysicsComponent);
         return true;
     }
 
@@ -231,10 +207,6 @@ namespace Dream
             log->error( "Unable to initialise Graphics Component." );
             return false;
         }
-        mGraphicsComponent->setRunning(true);
-
-        if (mParallel)
-            mGraphicsComponentThread = make_shared<ComponentThread>(mGraphicsComponent);
 
         mNanoVGComponent = make_shared<NanoVGComponent>(mWindowComponent);
         if (!mNanoVGComponent->init())
@@ -257,33 +229,31 @@ namespace Dream
             log->error( "Unable to initialise Path Component." );
             return false;
         }
-        mPathComponent->setRunning(true);
 
-        if (mParallel)
-            mPathComponentThread = make_shared<ComponentThread>(mPathComponent);
         return true;
     }
 
     bool
-    ProjectRuntime::initLuaComponent
+    ProjectRuntime::initScriptComponent
     ()
     {
         auto log = getLog();
-        mLuaComponent = make_shared<LuaComponent>(dynamic_pointer_cast<ProjectRuntime>(shared_from_this()),mScriptCache);
+        mScriptComponent = dynamic_pointer_cast<IScriptComponent>(
+            make_shared<LuaComponent>(
+                dynamic_pointer_cast<ProjectRuntime>(shared_from_this()),
+                mScriptCache
+            )
+        );
 
-        if(!mLuaComponent->init())
+        if(!mScriptComponent->init())
         {
             log->error( "Unable to initialise Lua Engine." );
             return false;
         }
-        mLuaComponent->setRunning(true);
-
-        if (mParallel)
-            mLuaComponentThread = make_shared<ComponentThread>(mLuaComponent);
 
         if (mInputComponent != nullptr)
         {
-            mInputComponent->setLuaComponent(mLuaComponent);
+            mInputComponent->setScriptComponent(mScriptComponent);
         }
         return true;
     }
@@ -296,7 +266,7 @@ namespace Dream
         mModelCache = make_shared<AssimpCache>();
         mShaderCache = make_shared<ShaderCache>();
         mTextureCache = make_shared<MaterialCache>();
-        mScriptCache = make_shared<LuaScriptCache>();
+        mScriptCache = make_shared<ScriptCache>();
         return true;
     }
 
@@ -349,11 +319,11 @@ namespace Dream
         return mCamera;
     }
 
-    shared_ptr<LuaComponent>
-    ProjectRuntime::getLuaComponent
+    shared_ptr<IScriptComponent>
+    ProjectRuntime::getScriptComponent
     ()
     {
-        return mLuaComponent;
+        return mScriptComponent;
     }
 
     bool
@@ -362,118 +332,32 @@ namespace Dream
     {
         auto log = getLog();
 
-        if (!mGraphicsUpdating && !mLogicUpdating)
-        {
-            if (mParallel)
-            {
+        log->info("UpdateLogic Called @ {}",  mTime->now());
 
-                mLogicUpdating = true;
+        mTime->updateFrameTime();
 
-                log->info("==== UpdateLogic (Parallel) Called @ {}  ====",  mTime->now());
+        mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+        mInputComponent->updateComponent();
 
-                mTime->updateFrameTime();
+        mScriptComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+        mScriptComponent->updateComponent();
 
-                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mInputComponent->setShouldUpdate(true);
+        mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+        mPathComponent->updateComponent();
 
-                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mLuaComponent->setShouldUpdate(true);
+        mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+        mAudioComponent->updateComponent();
 
-                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mPathComponent->setShouldUpdate(true);
+        mWindowComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+        mWindowComponent->updateComponent();
 
-                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mAudioComponent->setShouldUpdate(true);
+        mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+        mPhysicsComponent->updateComponent();
 
-                mWindowComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mWindowComponent->updateComponent();
+        mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+        mGraphicsComponent->updateComponent();
 
-                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mPhysicsComponent->setShouldUpdate(true);
-
-                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mGraphicsComponent->setShouldUpdate(true);
-                return true;
-            }
-            else
-            {
-                mLogicUpdating = true;
-
-                log->info("==== UpdateLogic (SingleThreaded) Called @ {}  ====",  mTime->now());
-
-                mTime->updateFrameTime();
-
-                mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mInputComponent->setShouldUpdate(true);
-                mInputComponent->updateComponent();
-
-                mLuaComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mLuaComponent->setShouldUpdate(true);
-                mLuaComponent->updateComponent();
-
-                mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mPathComponent->setShouldUpdate(true);
-                mPathComponent->updateComponent();
-
-                mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mAudioComponent->setShouldUpdate(true);
-                mAudioComponent->updateComponent();
-
-                mWindowComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mWindowComponent->updateComponent();
-                mWindowComponent->updateComponent();
-
-                mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mPhysicsComponent->setShouldUpdate(true);
-                mPhysicsComponent->updateComponent();
-
-                mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-                mGraphicsComponent->setShouldUpdate(true);
-                mGraphicsComponent->updateComponent();
-
-                mLogicUpdating = false;
-
-                return true;
-            }
-        }
-
-         return false;
-    }
-
-    bool ProjectRuntime::allThreadsHaveUpdated
-    ()
-    {
-        if (!mParallel)
-        {
-            return false;
-        }
-
-        auto log = getLog();
-        bool path = mPathComponent->getUpdateComplete();
-        bool audio = mAudioComponent->getUpdateComplete();
-        bool input = mInputComponent->getUpdateComplete();
-        bool graphics = mGraphicsComponent->getUpdateComplete();
-        bool physics = mPhysicsComponent->getUpdateComplete();
-        bool lua = mLuaComponent->getUpdateComplete();
-        log->info(
-            "\n========================================\n"
-            "Path..........[{}]\n"
-            "Audio..............[{}]\n"
-            "Input..............[{}]\n"
-            "Graphics...........[{}]\n"
-            "Physics............[{}]\n"
-            "Lua................[{}]\n"
-            "========================================",
-            path ? "√" : " ",
-            audio     ? "√" : " ",
-            input     ? "√" : " ",
-            graphics  ? "√" : " ",
-            physics   ? "√" : " ",
-            lua       ? "√" : " "
-        );
-
-        mLogicUpdating = !path || !audio || !input || !graphics || !physics || !lua;
-        return path && audio && input && graphics && physics && lua;
+        return true;
     }
 
     void
@@ -486,8 +370,7 @@ namespace Dream
             getTime()->now()
         );
 
-        log->info("==== UpdateGraphics Called @ {}  ====" , mTime->getFrameTimeDelta());
-        mGraphicsUpdating = true;
+        log->info("UpdateGraphics Called @" , mTime->getFrameTimeDelta());
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->handleResize();
         mGraphicsComponent->drawModelQueue();
@@ -499,7 +382,6 @@ namespace Dream
         );
         mPhysicsComponent->drawDebug();
         mWindowComponent->swapBuffers();
-        mGraphicsUpdating = false;
     }
 
     void
@@ -507,7 +389,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("==== CollectGarbage Called @ {}  ====", mTime->getFrameTimeDelta());
+        log->info("CollectGarbage Called @ {}", mTime->getFrameTimeDelta());
         // Cleanup Old
         mActiveSceneRuntime.get()->collectGarbage();
     }
@@ -610,100 +492,6 @@ namespace Dream
     ()
     {
         return mModelCache;
-    }
-
-    bool ProjectRuntime::getGraphicsUpdating() const
-    {
-        return mGraphicsUpdating;
-    }
-
-    bool ProjectRuntime::getLogicUpdating() const
-    {
-        return mGraphicsUpdating;
-    }
-
-    void ProjectRuntime::cleanUpThreads()
-    {
-        auto log = getLog();
-        log->info("Cleaning up ComponentThreads");
-        cleanUpLuaComponentThread();
-        cleanUpPhysicsComponentThread();
-        cleanUpPathComponentThread();
-        cleanUpInputComponentThread();
-        cleanUpAudioComponentThread();
-        cleanUpGraphicsComponentThread();
-    }
-
-    void ProjectRuntime::cleanUpLuaComponentThread()
-    {
-        auto log = getLog();
-        log->info("Cleaning up LuaComponentThread");
-        mLuaComponent->setRunning(false);
-        mLuaComponent->setShouldUpdate(false);
-        if (mLuaComponentThread->joinable())
-        {
-            mLuaComponentThread->join();
-        }
-    }
-
-    void ProjectRuntime::cleanUpInputComponentThread()
-    {
-        auto log = getLog();
-        log->info("Cleaning up InputComponentThread");
-        mInputComponent->setRunning(false);
-        mInputComponent->setShouldUpdate(false);
-        if (mInputComponentThread->joinable())
-        {
-            mInputComponentThread->join();
-        }
-    }
-
-    void ProjectRuntime::cleanUpAudioComponentThread()
-    {
-        auto log = getLog();
-        log->info("Cleaning up AudioComponentThread");
-        mAudioComponent->setRunning(false);
-        mAudioComponent->setShouldUpdate(false);
-        if (mAudioComponentThread->joinable())
-        {
-            mAudioComponentThread->join();
-        }
-    }
-
-    void ProjectRuntime::cleanUpPhysicsComponentThread()
-    {
-        auto log = getLog();
-        log->info("Cleaning up PhysicsComponentThread");
-        mPhysicsComponent->setRunning(false);
-        mPhysicsComponent->setShouldUpdate(false);
-        if (mPhysicsComponentThread->joinable())
-        {
-            mPhysicsComponentThread->join();
-        }
-    }
-
-    void ProjectRuntime::cleanUpGraphicsComponentThread()
-    {
-        auto log = getLog();
-        log->info("Cleaning up PhysicsComponentThread");
-        mGraphicsComponent->setRunning(false);
-        mGraphicsComponent->setShouldUpdate(false);
-        if (mGraphicsComponentThread->joinable())
-        {
-            mGraphicsComponentThread->join();
-        }
-    }
-
-    void ProjectRuntime::cleanUpPathComponentThread()
-    {
-        auto log = getLog();
-        log->info("Cleaning up PhysicsComponentThread");
-        mPathComponent->setRunning(false);
-        mPathComponent->setShouldUpdate(false);
-        if (mPathComponentThread->joinable())
-        {
-            mPathComponentThread->join();
-        }
     }
 
     void

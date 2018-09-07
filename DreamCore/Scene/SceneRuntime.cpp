@@ -32,7 +32,7 @@
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Physics/PhysicsComponent.h"
-#include "..//Components/Lua/LuaComponent.h"
+#include "../Components/Scripting/IScriptComponent.h"
 
 
 

@@ -1,5 +1,5 @@
 /*
- * LuaComponent.h
+ * JSComponent.h
  *
  * Created: 26/11/2016 2016 by Ashley
  *
@@ -18,20 +18,13 @@
 
 #pragma once
 
-extern "C"
-{
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
-};
-
 #include <map>
 #include <iostream>
 #include <memory>
 
-#include "LuaScriptCache.h"
-#include "../../Common/Constants.h"
-#include "../IComponent.h"
+#include "../ScriptCache.h"
+#include "../../../Common/Constants.h"
+#include "../IScriptComponent.h"
 #include <gainput/gainput.h>
 
 using std::unique_ptr;
@@ -39,103 +32,67 @@ using std::string;
 using std::map;
 using std::vector;
 
-int errorr(lua_State*);
-
 namespace Dream
 {
     class ProjectRuntime;
     class SceneRuntime;
     class SceneObjectRuntime;
-    class LuaScriptInstance;
+    class JSScriptInstance;
     class Event;
 
-    class LuaComponent : public IComponent
+    class JSComponent : public IScriptComponent
     {
     public: // Methods
-        LuaComponent(
+        JSComponent(
             shared_ptr<ProjectRuntime> project,
-            shared_ptr<LuaScriptCache> cache
+            shared_ptr<ScriptCache> cache
         );
 
-       ~LuaComponent() override;
+       ~JSComponent() override;
 
         bool init() override;
         void updateComponent() override;
-        bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>);
+        bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<JSScriptInstance>);
         bool loadScript(shared_ptr<SceneObjectRuntime>);
         bool updateNanoVG();
         void stackDump();
 
-        bool executeScriptInit  (shared_ptr<SceneObjectRuntime>);
-        bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>);
-        bool executeScriptNanoVG(shared_ptr<SceneObjectRuntime>);
-        bool executeScriptInput (shared_ptr<SceneObjectRuntime>);
-        bool executeScriptEvent (shared_ptr<SceneObjectRuntime>);
-
-        void removeFromScriptMap(shared_ptr<SceneObjectRuntime>);
-        void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>);
-
-        void setInputMap(gainput::InputMap *map);
+        bool executeScriptInit  (shared_ptr<SceneObjectRuntime>) override;
+        bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>) override;
+        bool executeScriptNanoVG(shared_ptr<SceneObjectRuntime>) override;
+        bool executeScriptInput (shared_ptr<SceneObjectRuntime>) override;
+        bool executeScriptEvent (shared_ptr<SceneObjectRuntime>) override;
 
     private:// Variables
-        shared_ptr<LuaScriptCache> mScriptCache;
-        shared_ptr<ProjectRuntime> mProjectRuntime;
-        string mScriptLoadFromString =
-                "function scriptLoadFromString (scriptTable, script_string)\n"
-                "    local mt = {__index = _G}\n"
-                "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = assert(loadstring(script_string))\n"
-                "    if not chunk then\n "
-                "       return false\n"
-                "    end\n"
-                "    setfenv(chunk, scriptTable)"
-                "    chunk()\n"
-                "    return true\n"
-                "end";
-
-                /*"function scriptLoadFromString (scriptTable, script_string)\n"
-                "    local mt = {__index = _G}\n"
-                "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = assert(load(script_string,nil,nil,scriptTable))\n"
-                "    if not chunk then return false end\n"
-                "    chunk()\n"
-                "    return true\n"
-                "end";
-                        */
-        lua_State *mState;
-        map<shared_ptr<SceneObjectRuntime>, shared_ptr<LuaScriptInstance>> mScriptMap;
-        gainput::InputMap* mInputMap;
 
     private: // Methods
         // API Exposure Methods ======================================================
 
-        void debugRegisteringClass(string className);
-        void exposeAPI();
-        void exposeDreamBase();
-        void exposePathComponent();
-        void exposePathInstance();
-        void exposeAssimpModelInstance();
-        void exposeCamera();
-        void exposeProjectRuntime();
-        void exposeEvent();
-        void exposeFontInstance();
-        void exposeGraphicsComponent();
-        void exposeGainput();
-        void exposeAudioComponent();
-        void exposeAudioInstance();
-        void exposeIWindowComponent();
-        void exposeLightInstance();
-        void exposeLuaScriptInstance();
-        void exposeMath();
-        void exposePhysicsComponent();
-        void exposePhysicsObjectInstance();
-        void exposeShaderInstance();
-        void exposeSpriteInstance();
-        void exposeSceneObjectRuntime();
-        void exposeTime();
-        void exposeTransform3D();
-        void exposeNanoVG();
-        void exposeGLM();
-    }; // End of LuaComponent
+        void exposeDreamBase() override;
+        void exposePathComponent() override;
+        void exposePathInstance() override;
+        void exposeAssimpModelInstance() override;
+        void exposeCamera() override;
+        void exposeProjectRuntime() override;
+        void exposeEvent() override;
+        void exposeFontInstance() override;
+        void exposeGraphicsComponent() override;
+        void exposeGainput() override;
+        void exposeAudioComponent() override;
+        void exposeAudioInstance() override;
+        void exposeLightInstance() override;
+        void exposeScriptInstance() override;
+        void exposeMath() override;
+        void exposePhysicsComponent() override;
+        void exposePhysicsObjectInstance() override;
+        void exposeShaderInstance() override;
+        void exposeSpriteInstance() override;
+        void exposeSceneObjectRuntime() override;
+        void exposeTime() override;
+        void exposeTransform3D() override;
+        void exposeNanoVG() override;
+        void exposeGLM() override;
+
+    }; // End of JSComponent
 
 } // End of Dream

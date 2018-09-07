@@ -40,13 +40,13 @@ namespace Dream
     class NanoVGComponent;
     class IWindowComponent;
     class PhysicsComponent;
-    class LuaComponent;
+    class IScriptComponent;
     class Transform3D;
     class Camera;
     class SceneRuntime;
     class SceneDefinition;
     class MaterialCache;
-    class LuaScriptCache;
+    class ScriptCache;
     class AssimpCache;
     class FontCache;
     class ShaderCache;
@@ -60,42 +60,29 @@ namespace Dream
 
     private: // Member Variables
         bool mDone;
-        bool mParallel;
 
         shared_ptr<Time> mTime;
         shared_ptr<Camera> mCamera;
+        shared_ptr<SceneRuntime> mActiveSceneRuntime;
+        shared_ptr<Project> mProject;
 
+        // Components
         shared_ptr<AudioComponent> mAudioComponent;
-        shared_ptr<ComponentThread> mAudioComponentThread;
-
         shared_ptr<InputComponent> mInputComponent;
-        shared_ptr<ComponentThread> mInputComponentThread;
-
         shared_ptr<GraphicsComponent> mGraphicsComponent;
-        shared_ptr<ComponentThread> mGraphicsComponentThread;
-
         shared_ptr<PhysicsComponent> mPhysicsComponent;
-        shared_ptr<ComponentThread> mPhysicsComponentThread;
-
         shared_ptr<PathComponent> mPathComponent;
-        shared_ptr<ComponentThread> mPathComponentThread;
-
-        shared_ptr<LuaComponent> mLuaComponent;
-        shared_ptr<ComponentThread> mLuaComponentThread;
-
+        shared_ptr<IScriptComponent> mScriptComponent;
         shared_ptr<NanoVGComponent> mNanoVGComponent;
+        shared_ptr<IWindowComponent> mWindowComponent;
 
         // Caches
-
         shared_ptr<MaterialCache> mTextureCache;
         shared_ptr<AssimpCache> mModelCache;
         shared_ptr<FontCache> mFontCache;
         shared_ptr<ShaderCache> mShaderCache;
-        shared_ptr<LuaScriptCache> mScriptCache;
+        shared_ptr<ScriptCache> mScriptCache;
 
-        shared_ptr<IWindowComponent> mWindowComponent;
-        shared_ptr<SceneRuntime> mActiveSceneRuntime;
-        shared_ptr<Project> mProject;
 
     public: // Public Functions
         ProjectRuntime(shared_ptr<Project> parentProject, shared_ptr<IWindowComponent> wc = nullptr);
@@ -113,7 +100,7 @@ namespace Dream
         shared_ptr<GraphicsComponent> getGraphicsComponent();
         shared_ptr<NanoVGComponent> getNanoVGComponent();
         shared_ptr<IWindowComponent> getWindowComponent();
-        shared_ptr<LuaComponent> getLuaComponent();
+        shared_ptr<IScriptComponent> getScriptComponent();
         shared_ptr<Project> getProject();
         shared_ptr<InputComponent> getInputComponent();
 
@@ -146,15 +133,6 @@ namespace Dream
         shared_ptr<ShaderCache> getShaderCache();
         shared_ptr<MaterialCache> getTextureCache();
         shared_ptr<AssimpCache> getModelCache();
-        bool mGraphicsUpdating;
-        bool mLogicUpdating;
-
-        bool getLogicUpdating() const;
-        bool getGraphicsUpdating() const;
-
-        void cleanUpThreads();
-        bool getParallel() const;
-        void setParallel(bool parallel);
 
     private: // Member Functions
         bool initPathComponent();
@@ -163,15 +141,8 @@ namespace Dream
         bool initPhysicsComponent();
         bool initGraphicsComponent();
         bool initWindowComponent();
-        bool initLuaComponent();
+        bool initScriptComponent();
         bool initCaches();
-
-        void cleanUpPathComponentThread();
-        void cleanUpAudioComponentThread();
-        void cleanUpInputComponentThread();
-        void cleanUpGraphicsComponentThread();
-        void cleanUpLuaComponentThread();
-        void cleanUpPhysicsComponentThread();
     };
 
 } // End Dream

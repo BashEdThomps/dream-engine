@@ -21,11 +21,8 @@
 namespace Dream
 {
 
-    IComponent::IComponent(bool parallel)
-        :DreamObject("IComponent"),
-          mParallel(parallel),
-          mRunning(false),
-          mShouldUpdate(false)
+    IComponent::IComponent()
+        :DreamObject("IComponent")
     {
 
     }
@@ -42,62 +39,30 @@ namespace Dream
         mTime = time;
     }
 
-    bool IComponent::getRunning() const
-    {
-        return mRunning;
-    }
-
-    void IComponent::setRunning(bool running)
-    {
-        mRunning = running;
-    }
-
-    bool IComponent::getShouldUpdate()
-    {
-        return mShouldUpdate;
-    }
-
-    void IComponent::setShouldUpdate(bool shouldUpdate)
-    {
-        mShouldUpdate = shouldUpdate;
-    }
-
     void IComponent::beginUpdate()
     {
         auto log = getLog();
         log->info("Updating Component");
         mUpdateBeginTime = mTime->nowLL();
-        setUpdateComplete(false);
-        setShouldUpdate(false);
+        setBusy(true);
     }
 
     void IComponent::endUpdate()
     {
         auto log = getLog();
         mUpdateEndTime =  mTime->nowLL();
-        setUpdateComplete(true);
+        setBusy(false);
         log->info("Update Complete in {}",getUpdateTime());
-
     }
 
-    void IComponent::setUpdateComplete(bool complete)
+    void IComponent::setBusy(bool complete)
     {
-        mUpdateComplete = complete;
+       mBusy = complete;
     }
 
-    bool IComponent::getParallel() const
+    bool IComponent::isBusy()
     {
-        return mParallel;
-    }
-
-    void IComponent::setParallel(bool parallel)
-    {
-        mParallel = parallel;
-    }
-
-    bool IComponent::getUpdateComplete()
-    {
-        return mUpdateComplete;
+       return mBusy;
     }
 
     long long IComponent::getUpdateBeginTime() const

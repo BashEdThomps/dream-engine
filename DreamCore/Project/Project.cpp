@@ -37,7 +37,7 @@
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Physics/PhysicsObjectInstance.h"
 #include "../Components/Window/IWindowComponent.h"
-#include "../Components/Lua/LuaComponent.h"
+#include "../Components/Scripting/IScriptComponent.h"
 
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
@@ -197,10 +197,6 @@ namespace Dream
     {
         if(mRuntime != nullptr)
         {
-            if (mRuntime->getParallel())
-            {
-                mRuntime->cleanUpThreads();
-            }
             mRuntime.reset();
         }
     }

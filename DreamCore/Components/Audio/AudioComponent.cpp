@@ -35,8 +35,8 @@
 namespace Dream
 {
     AudioComponent::AudioComponent
-    (bool parallel)
-        : IComponent(parallel)
+    ()
+        : IComponent()
     {
         setLogClassName("AudioComponent");
         auto log = getLog();
@@ -68,7 +68,6 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Initialising...");
-        mRunning = true;
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
@@ -284,20 +283,11 @@ namespace Dream
     AudioComponent::updateComponent
     ()
     {
-        while(mRunning)
-        {
-            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
-            {
-                beginUpdate();
-                updatePlayQueue();
-                updatePauseQueue();
-                updateStopQueue();
-                endUpdate();
-
-                if (!mParallel) break;
-            }
-            if (mParallel) std::this_thread::yield();
-        }
+        beginUpdate();
+        updatePlayQueue();
+        updatePauseQueue();
+        updateStopQueue();
+        endUpdate();
     }
 
     void AudioComponent::updatePlayQueue()

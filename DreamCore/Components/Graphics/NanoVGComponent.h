@@ -11,7 +11,7 @@ namespace Dream
 class NanoVGComponent : public IComponent
 {
 public:
-    NanoVGComponent(shared_ptr<IWindowComponent> windowComponent, bool parallel = false);
+    NanoVGComponent(shared_ptr<IWindowComponent> windowComponent);
     ~NanoVGComponent() override;
 
     // Begin drawing a new frame

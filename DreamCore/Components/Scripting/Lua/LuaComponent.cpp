@@ -88,10 +88,8 @@ errorr
 namespace Dream
 {
     LuaComponent::LuaComponent
-    (shared_ptr<ProjectRuntime> project, shared_ptr<LuaScriptCache> cache)
-        : IComponent(),
-          mScriptCache(cache),
-          mProjectRuntime(project),
+    (shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache)
+        : IScriptComponent(project, cache),
           mState(nullptr)
     {
         setLogClassName("LuaComponent");
@@ -186,7 +184,7 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
         if (!mState)
         {
@@ -241,7 +239,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->error( "Stack Dump!" );
+        log->error("Stack Dump!");
         int i;
         int top = lua_gettop(mState);
         // repeat for each level
@@ -275,45 +273,36 @@ namespace Dream
     LuaComponent::updateComponent
     ()
     {
-        while(mRunning)
+        beginUpdate();
+        auto log = getLog();
+        log->info( "Update Called" );
+
+        for (auto entry : mScriptMap)
         {
-            if (mShouldUpdate && mActiveSceneRuntime != nullptr)
+            auto key = entry.first;
+
+            if (!executeScriptUpdate(key))
             {
-                beginUpdate();
-                auto log = getLog();
-                log->info( "Update Called" );
-
-                for (auto entry : mScriptMap)
-                {
-                    auto key = entry.first;
-
-                    if (!executeScriptUpdate(key))
-                    {
-                        return;
-                    }
-
-                    if (key->hasFocus())
-                    {
-                        if (!executeScriptInput(key))
-                        {
-                            return;
-                        }
-                    }
-
-                    if (key->hasEvents())
-                    {
-                        if (!executeScriptEvent(key))
-                        {
-                            return;
-                        }
-                    }
-                }
-                endUpdate();
-
-                if (!mParallel) break;
+                return;
             }
-            if (mParallel) std::this_thread::yield();
+
+            if (key->hasFocus())
+            {
+                if (!executeScriptInput(key))
+                {
+                    return;
+                }
+            }
+
+            if (key->hasEvents())
+            {
+                if (!executeScriptEvent(key))
+                {
+                    return;
+                }
+            }
         }
+        endUpdate();
     }
 
     bool
@@ -321,7 +310,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "UpdateNanoVG Called" );
+        log->info("UpdateNanoVG Called");
 
         for (auto entry : mScriptMap)
         {
@@ -341,15 +330,15 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
-            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
+            log->error("Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Calling onUpdate for {}" ,sceneObject->getNameAndUuidString() );
+        log->info("Calling onUpdate for {}",sceneObject->getNameAndUuidString() );
 
         try
         {
@@ -362,13 +351,13 @@ namespace Dream
             }
             else
             {
-                log->error( "Attempted to call onUpdate on invalid function.");
+                log->error("Attempted to call onUpdate on invalid function.");
             }
         }
         catch (error e)
         {
             string error = lua_tostring( e.state(), -1 );
-            log->error( "onUpdate exception: {}" , e.what() );
+            log->error("onUpdate exception: {}" , e.what() );
             log->error( error );
             scriptInstance->setError(true);
             return false;
@@ -382,15 +371,15 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
-            log->error( "Cannot execute NanoVG {} in error state", scriptInstance->getNameAndUuidString());
+            log->error("Cannot execute NanoVG {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
+        log->info("Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
 
         try
         {
@@ -423,15 +412,15 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError() )
         {
-            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
+            log->error("Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
+        log->info("Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
         try
         {
             object reg = registry(mState);
@@ -443,14 +432,14 @@ namespace Dream
             }
             else
             {
-                log->error( "Attempted to call onInit on invalid function.");
+                log->error("Attempted to call onInit on invalid function.");
             }
 
         }
         catch (error e)
         {
             string error = lua_tostring( e.state(), -1 );
-            log->error( "onInit exception: {}" , e.what() );
+            log->error("onInit exception: {}" , e.what() );
             log->error( error );
             scriptInstance->setError(true);
             return false;
@@ -464,15 +453,15 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
-            log->error( "Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
+            log->error("Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
+        log->info("Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
 
         try
         {
@@ -485,7 +474,7 @@ namespace Dream
             }
             else
             {
-                log->error( "Attempted to call onInput on invalid function.");
+                log->error("Attempted to call onInput on invalid function.");
             }
         }
         catch (error e)
@@ -505,7 +494,7 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = sceneObject->getScriptInstance();
+        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -543,13 +532,6 @@ namespace Dream
             return false;
         }
         return true;
-    }
-
-    void
-    LuaComponent::setInputMap
-    (gainput::InputMap *map)
-    {
-        mInputMap = map;
     }
 
     // API Exposure Methods ======================================================
@@ -628,15 +610,6 @@ namespace Dream
                 value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
             ]
         ];
-    }
-
-    void
-    LuaComponent::debugRegisteringClass
-    (string className)
-    {
-        auto log = getLog();
-        log->info( "Registering Class {}",  className );
-        return;
     }
 
     void
@@ -951,7 +924,7 @@ namespace Dream
 
 
     void
-    LuaComponent::exposeLuaScriptInstance
+    LuaComponent::exposeScriptInstance
     ()
     {
         // TODO
@@ -1025,50 +998,11 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeAPI
-    ()
-    {
-        // Dream Base
-        exposeDreamBase();
-        // Runtimes
-        exposeProjectRuntime();
-        exposeSceneObjectRuntime();
-        // Dream Misc
-        exposeEvent();
-        exposeMath();
-        exposeTime();
-        exposeTransform3D();
-        // Audio
-        exposeAudioComponent();
-        exposeAudioInstance();
-        // Graphics
-        exposeGraphicsComponent();
-        exposeAssimpModelInstance();
-        exposeCamera();
-        exposeFontInstance();
-        exposeLightInstance();
-        exposeShaderInstance();
-        exposeSpriteInstance();
-        exposeNanoVG();
-        exposeGLM();
-        // Input
-        exposeGainput();
-        // Path
-        exposePathComponent();
-        exposePathInstance();
-        // Script
-        exposeLuaScriptInstance();
-        // Physics
-        exposePhysicsComponent();
-        exposePhysicsObjectInstance();
-    }
-
-    void
     LuaComponent::removeFromScriptMap
     (shared_ptr<SceneObjectRuntime> sceneObject)
     {
         auto log = getLog();
-        map<shared_ptr<SceneObjectRuntime>,shared_ptr<LuaScriptInstance>>::iterator iter;
+        map<shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>>::iterator iter;
         for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
         {
             if ((*iter).first == sceneObject)
