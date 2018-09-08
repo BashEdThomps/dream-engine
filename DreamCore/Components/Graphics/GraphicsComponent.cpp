@@ -620,17 +620,17 @@ namespace Dream
         // Get arguments
         vec2 size = vec2(sprite->getWidth(),sprite->getHeight());
 
-        Transform3D transform = sceneObject->getTransform();
+        auto transform = sceneObject->getTransform();
 
-        GLfloat rotateValue = transform.getRotationZ();
-        GLfloat scaleValue = transform.getScaleZ();
+        GLfloat rotateValue = transform->getRotationZ();
+        GLfloat scaleValue = transform->getScaleZ();
 
         vec3 color = vec3(1.0f);
         // Setup Shader
         shader->use();
 
-        float tX = transform.getTranslationX();
-        float tY = transform.getTranslationY();
+        float tX = transform->getTranslationX();
+        float tY = transform->getTranslationY();
 
         vec2 position = vec2(tX,tY);
         // Offset origin to middle of sprite
@@ -854,7 +854,7 @@ namespace Dream
         mat4 modelMatrix = mat4(1.0f);
         // Get raw data
         vec3 objTranslation = sceneObject->getTranslation();
-        quat objOrientation = sceneObject->getTransform().getOrientation();
+        quat objOrientation = sceneObject->getTransform()->getOrientation();
         vec3 objScale       = sceneObject->getScale();
         // Translate
         modelMatrix = translate(modelMatrix,objTranslation);

@@ -40,7 +40,7 @@ namespace Dream
         shared_ptr<SceneObjectDefinition> mParentSceneObject;
         shared_ptr<SceneDefinition> mSceneDefinition;
         vector<shared_ptr<SceneObjectDefinition>> mChildDefinitions;
-        Transform3D mTransform;
+        shared_ptr<Transform3D> mTransform;
 
     public:
         SceneObjectDefinition(
@@ -65,8 +65,8 @@ namespace Dream
 
         vector<string> getAssetDefinitionLoadQueue();
 
-        Transform3D& getTransform();
-        void setTransform(Transform3D& tform);
+        shared_ptr<Transform3D> getTransform();
+        void setTransform(shared_ptr<Transform3D> tform);
 
         void showStatus() override;
 

@@ -48,6 +48,10 @@
 
 namespace Dream
 {
+
+    bool JSComponent::mV8Initialised = false;
+    unique_ptr<v8::Platform> JSComponent::mPlatform;
+
     JSComponent::JSComponent
     (shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache)
         : IScriptComponent(project,cache)
@@ -63,8 +67,6 @@ namespace Dream
         auto log = getLog();
         log->trace( "Destroying Object" );
         mIsolate->Dispose();
-        v8::V8::Dispose();
-        v8::V8::ShutdownPlatform();
         mScriptMap.clear();
     }
 
@@ -74,14 +76,11 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Initialising JSComponent");
-        // Initialize V8.
-        v8::V8::InitializeICUDefaultLocation(_CLASSNAME_.c_str());
-        v8::V8::InitializeExternalStartupData(_CLASSNAME_.c_str());
-        mPlatform = v8::platform::NewDefaultPlatform();
-        v8::V8::InitializePlatform(mPlatform.get());
 
-        bool initSuccess = v8::V8::Initialize();
-        if (!initSuccess)
+        // Initialize V8.
+        v8StaticInit();
+
+        if (!mV8Initialised)
         {
             log->error("Error while initialising V8 JSComponent");
             return false;
@@ -104,6 +103,24 @@ namespace Dream
         exposeAPI();
 
         return true;
+    }
+
+    void JSComponent::v8StaticInit()
+    {
+       if (!mV8Initialised)
+       {
+        v8::V8::InitializeICUDefaultLocation("");
+        v8::V8::InitializeExternalStartupData("");
+        mPlatform = v8::platform::NewDefaultPlatform();
+        v8::V8::InitializePlatform(mPlatform.get());
+        mV8Initialised = v8::V8::Initialize();
+       }
+    }
+
+    void JSComponent::v8StaticShutdown()
+    {
+        v8::V8::Dispose();
+        v8::V8::ShutdownPlatform();
     }
 
     bool

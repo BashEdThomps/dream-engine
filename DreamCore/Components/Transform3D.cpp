@@ -91,6 +91,16 @@ namespace Dream
         }
     }
 
+    bool Transform3D::isTypeOffset()
+    {
+       return getTransformType().compare(Constants::TRANSFORM_TYPE_OFFSET) == 0;
+    }
+
+    bool Transform3D::isTypeAbsolute()
+    {
+       return getTransformType().compare(Constants::TRANSFORM_TYPE_ABSOLUTE) == 0;
+    }
+
     // Translation ===================================================================
 
     vec3
@@ -504,27 +514,27 @@ namespace Dream
         return j;
     }
 
-    Transform3D Transform3D::offsetFrom(Transform3D parent)
+    void Transform3D::offsetFrom(shared_ptr<Transform3D> parent, shared_ptr<Transform3D> initial)
     {
         auto log = getLog();
         log->trace(
             "Generating offset transform from parent T({},{},{}) R({},{},{})",
-            parent.getTranslationX(), parent.getTranslationY(), parent.getTranslationZ(),
-            parent.getRotationX(), parent.getRotationY(), parent.getRotationZ()
+            parent->getTranslationX(), parent->getTranslationY(), parent->getTranslationZ(),
+            parent->getRotationX(), parent->getRotationY(), parent->getRotationZ()
         );
        // Tx to parent
-       mat4 mtx = glm::translate(mat4(1), parent.getTranslation());
+       mat4 mtx = glm::translate(mat4(1), parent->getTranslation());
        // match parent rotation
-       mat4 rot = mat4_cast(parent.getOrientation());
+       mat4 rot = mat4_cast(parent->getOrientation());
        mtx = mtx*rot;
        // Tx to child (this)
-       mtx = glm::translate(mtx, mTranslation);
+       mtx = glm::translate(mtx, initial->getTranslation());
        // Set child rotation
-       rot = mat4_cast(mOrientation);
+       rot = mat4_cast(initial->getOrientation());
        mtx = mtx*rot;
+       setFromMat4(mtx);
        // Maintain Scale
-       mtx = glm::scale(mtx,getScale());
-       return Transform3D(mtx);
+       setScale(initial->getScale());
     }
 
     glm::mat4 Transform3D::asMat4()
@@ -539,7 +549,6 @@ namespace Dream
     {
        setOrientation(quat(mtx));
        setTranslation(glm::vec3(mtx[3]));
-       setScale(vec3(1.0f));
     }
 
 

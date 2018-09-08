@@ -283,10 +283,10 @@ SelectionHighlighter::draw
                 else
                 {
                     // Get raw data
-                    Transform3D transform = mSelectedObjectHandle->getTransform();
-                    vec3 translationValue = transform.getTranslation();
-                    quat rotValue = transform.getOrientation();
-                    vec3 scaleValue = transform.getScale();
+                    shared_ptr<Transform3D> transform = mSelectedObjectHandle->getTransform();
+                    vec3 translationValue = transform->getTranslation();
+                    quat rotValue = transform->getOrientation();
+                    vec3 scaleValue = transform->getScale();
                     // Translate
                     modelMatrix = translate(modelMatrix,translationValue);
                     // Rotate

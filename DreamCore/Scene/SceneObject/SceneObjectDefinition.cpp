@@ -29,11 +29,11 @@ namespace Dream
 
     SceneObjectDefinition::SceneObjectDefinition
     (
-        shared_ptr<SceneObjectDefinition> parent,
-        shared_ptr<SceneDefinition> sceneDefinition,
-        json jsonData,
-        bool randomUuid
-    )
+            shared_ptr<SceneObjectDefinition> parent,
+            shared_ptr<SceneDefinition> sceneDefinition,
+            json jsonData,
+            bool randomUuid
+            )
         : IDefinition(jsonData),
           mParentSceneObject(parent),
           mSceneDefinition(sceneDefinition)
@@ -47,7 +47,7 @@ namespace Dream
             mJson[Constants::UUID] = Uuid::generateUuid();
             log->trace( "With new UUID",getNameAndUuidString());
         }
-        mTransform = Transform3D(jsonData[Constants::TRANSFORM]);
+        mTransform = make_shared<Transform3D>(jsonData[Constants::TRANSFORM]);
     }
 
     SceneObjectDefinition::~SceneObjectDefinition
@@ -59,14 +59,16 @@ namespace Dream
                     );
     }
 
-    Transform3D&
+    shared_ptr<Transform3D>
     SceneObjectDefinition::getTransform
     ()
     {
         return mTransform;
     }
 
-    void SceneObjectDefinition::setTransform(Transform3D& tform)
+    void
+    SceneObjectDefinition::setTransform
+    (shared_ptr<Transform3D> tform)
     {
         mTransform = tform;
     }
@@ -183,11 +185,11 @@ namespace Dream
             for (json childDefinition : childrenArray)
             {
                 auto sod = make_shared<SceneObjectDefinition>(
-                       dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
-                        mSceneDefinition,
-                        childDefinition,
-                        randomUuid
-                );
+                            dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
+                            mSceneDefinition,
+                            childDefinition,
+                            randomUuid
+                            );
                 sod->loadChildSceneObjectDefinitions();
                 mChildDefinitions.push_back(sod);
             }
@@ -257,12 +259,12 @@ namespace Dream
 
         shared_ptr<SceneObjectDefinition> soDefinition;
         soDefinition = make_shared<SceneObjectDefinition>
-        (
-            dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
-            mSceneDefinition,
-            defJson,
-            true
-        );
+                (
+                    dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
+                    mSceneDefinition,
+                    defJson,
+                    true
+                    );
         addChildSceneObjectDefinition(soDefinition);
 
         return soDefinition;
@@ -281,7 +283,7 @@ namespace Dream
     ()
     {
         mJson[Constants::SCENE_OBJECT_CHILDREN] = json::array();
-        mJson[Constants::TRANSFORM] = mTransform.getJson();
+        mJson[Constants::TRANSFORM] = mTransform->getJson();
         for (shared_ptr<SceneObjectDefinition> sod : mChildDefinitions)
         {
             mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sod->getJson());

@@ -202,12 +202,12 @@ namespace Dream
                     audioAsset->setBuffer(generateBuffers(1));
                     audioAsset->setSource(generateSources(1));
 
-                    Transform3D transform = audioAsset->getSceneObjectRuntime()->getTransform();
+                    auto transform = audioAsset->getSceneObjectRuntime()->getTransform();
 
                     vector<float> position = {
-                        transform.getTranslation().x,
-                        transform.getTranslation().y,
-                        transform.getTranslation().z,
+                        transform->getTranslation().x,
+                        transform->getTranslation().y,
+                        transform->getTranslation().z,
                     };
                     vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                     alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],

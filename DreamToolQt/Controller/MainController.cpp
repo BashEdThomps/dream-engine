@@ -2195,7 +2195,7 @@ MainController::onSceneObjectProperty_CaptureTranslation
                 sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
                 if (sorHandle)
                 {
-                    sodHandle->getTransform().setTranslation(sorHandle->getTranslation());
+                    sodHandle->getTransform()->setTranslation(sorHandle->getTranslation());
                 }
             }
         }
@@ -2223,7 +2223,7 @@ MainController::onSceneObjectProperty_CaptureOrientation
                 sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
                 if (sorHandle)
                 {
-                    sodHandle->getTransform().setOrientation(sorHandle->getOrientation());
+                    sodHandle->getTransform()->setOrientation(sorHandle->getOrientation());
                 }
             }
         }
@@ -2251,7 +2251,7 @@ MainController::onSceneObjectProperty_CaptureScale
                 sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
                 if (sorHandle)
                 {
-                    sodHandle->getTransform().setScale(sorHandle->getScale());
+                    sodHandle->getTransform()->setScale(sorHandle->getScale());
                 }
             }
         }

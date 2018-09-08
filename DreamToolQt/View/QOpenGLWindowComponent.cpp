@@ -409,7 +409,7 @@ QOpenGLWindowComponent::moveSelectedSceneObject
     if (mControlScene)
     {
         auto log = spdlog::get("QOpenGLWindowComponent");
-        Transform3D transform = selected->getTransform();
+        shared_ptr<Transform3D> transform = selected->getTransform();
         float moveAmount = mInputState.shiftPressed ?
                     mGridHandle->getMajorSpacing() :
                     mGridHandle->getMinorSpacing();
@@ -419,11 +419,11 @@ QOpenGLWindowComponent::moveSelectedSceneObject
             log->trace("Moving Selected up");
             if (mInputState.altPressed)
             {
-                transform.translateByY(moveAmount);
+                transform->translateByY(moveAmount);
             }
             else
             {
-                transform.translateByZ(moveAmount);
+                transform->translateByZ(moveAmount);
             }
         }
 
@@ -432,24 +432,24 @@ QOpenGLWindowComponent::moveSelectedSceneObject
             log->trace("Moving Selected down");
             if (mInputState.altPressed)
             {
-                transform.translateByY(-moveAmount);
+                transform->translateByY(-moveAmount);
             }
             else
             {
-                transform.translateByZ(-moveAmount);
+                transform->translateByZ(-moveAmount);
             }
         }
 
         if(mInputState.leftPressed)
         {
             log->trace("Moving Selected left");
-            transform.translateByX(-moveAmount);
+            transform->translateByX(-moveAmount);
         }
 
         if(mInputState.rightPressed)
         {
             log->trace("Moving Selected right");
-            transform.translateByX(moveAmount);
+            transform->translateByX(moveAmount);
         }
 
         selected->setTransform(transform);

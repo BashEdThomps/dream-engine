@@ -54,6 +54,10 @@ namespace Dream
     Transform3D();
     Transform3D(glm::mat4 fromMatrix);
     explicit Transform3D(json j);
+
+    bool isTypeOffset();
+    bool isTypeAbsolute();
+
     vec3 getTranslation();
     void setTranslation(vec3);
     void setTranslation(float, float, float);
@@ -125,7 +129,7 @@ namespace Dream
 
     json getJson();
 
-    Transform3D offsetFrom(Transform3D parent);
+    void offsetFrom(shared_ptr<Transform3D>, shared_ptr<Transform3D>);
   };
 
 } // End of Dream

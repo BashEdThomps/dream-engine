@@ -73,8 +73,7 @@ namespace Dream
         shared_ptr<ScriptInstance> mScriptInstance;
         shared_ptr<PhysicsObjectInstance> mPhysicsObjectInstance;
         shared_ptr<FontInstance> mFontInstance;
-        Transform3D mTransform;
-        Transform3D mOffsetTransform;
+        shared_ptr<Transform3D> mTransform;
 
         vector<Event> mEventQueue;
         vector<string> mAssetDefinitionUuidLoadQueue;
@@ -91,6 +90,7 @@ namespace Dream
         void loadChildrenFromDefinition(shared_ptr<SceneObjectDefinition> definition);
         bool mFollowsCamera;
 
+        void initialTransform();
     public:
         SceneObjectRuntime(shared_ptr<SceneObjectDefinition> sd, shared_ptr<SceneRuntime> sceneRuntime = nullptr);
         ~SceneObjectRuntime() override;
@@ -158,8 +158,8 @@ namespace Dream
         string getTransformType();
         void setTransformType(string);
 
-        Transform3D& getTransform();
-        void setTransform(Transform3D);
+        shared_ptr<Transform3D> getTransform();
+        void setTransform(shared_ptr<Transform3D>);
 
         bool hasFocus();
         void setHasFocus(bool);
@@ -196,5 +196,6 @@ namespace Dream
         bool followsCamera() const;
         void setFollowsCamera(bool followsCamera);
         void walk(float,float);
+        void drive(float,float);
     };
 }

@@ -53,6 +53,8 @@ namespace Dream
        ~JSComponent() override;
 
         bool init() override;
+        static void v8StaticInit();
+        static void v8StaticShutdown();
         void updateComponent() override;
         bool loadScript(shared_ptr<SceneObjectRuntime>) override;
         bool updateNanoVG();
@@ -68,8 +70,9 @@ namespace Dream
         void addToScriptMap(shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>) override;
 
     private:// Variables
-        shared_ptr<v8::Platform> mPlatform;
+        static unique_ptr<v8::Platform> mPlatform;
         v8::Isolate* mIsolate;
+        static bool mV8Initialised;
 
     private: // Methods
         // API Exposure Methods ======================================================

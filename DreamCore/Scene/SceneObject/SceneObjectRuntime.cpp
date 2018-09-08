@@ -78,10 +78,10 @@ namespace Dream
           mFollowsCamera(false)
 
     {
-
         setLogClassName("SceneObjectRuntime");
         auto log = getLog();
         log->trace( "Constructing Object" );
+        mTransform = make_shared<Transform3D>();
     }
 
     SceneObjectRuntime::~SceneObjectRuntime
@@ -143,63 +143,63 @@ namespace Dream
     SceneObjectRuntime::setTranslation
     (vec3 translation)
     {
-        mTransform.setTranslation(translation);
+        mTransform->setTranslation(translation);
     }
 
     void
     SceneObjectRuntime::setRotation
     (vec3 rotation)
     {
-        mTransform.setRotation(rotation);
+        mTransform->setRotation(rotation);
     }
 
     void
     SceneObjectRuntime::setScale
     (vec3 scale)
     {
-        mTransform.setScale(scale);
+        mTransform->setScale(scale);
     }
 
     void
     SceneObjectRuntime::setTranslation
     (float x, float y, float z)
     {
-        mTransform.setTranslation(x,y,z);
+        mTransform->setTranslation(x,y,z);
     }
 
     void
     SceneObjectRuntime::setRotation
     (float x, float y, float z)
     {
-        mTransform.setRotation(x,y,z);
+        mTransform->setRotation(x,y,z);
     }
 
     void
     SceneObjectRuntime::setScale
     (float x, float y, float z)
     {
-        mTransform.setScale(x,y,z);
+        mTransform->setScale(x,y,z);
     }
 
     vec3
     SceneObjectRuntime::getRotation
     ()
     {
-        return getTransform().getRotation();
+        return getTransform()->getRotation();
     }
 
     vec3
     SceneObjectRuntime::getScale
     ()
     {
-        return getTransform().getScale();
+        return getTransform()->getScale();
     }
 
     vec3
     SceneObjectRuntime::getTranslation
     ()
     {
-        return getTransform().getTranslation();
+        return getTransform()->getTranslation();
     }
 
     shared_ptr<PathInstance>
@@ -318,34 +318,44 @@ namespace Dream
     SceneObjectRuntime::getTransformType
     ()
     {
-        return mTransform.getTransformType();
+        return mTransform->getTransformType();
     }
 
     void
     SceneObjectRuntime::setTransformType
     (string transformType)
     {
-        mTransform.setTransformType(transformType);
+        mTransform->setTransformType(transformType);
     }
 
-    Transform3D&
+    shared_ptr<Transform3D>
     SceneObjectRuntime::getTransform
     ()
     {
-        auto log = getLog();
-        if (mTransform.getTransformType().compare(Constants::TRANSFORM_TYPE_OFFSET) == 0)
-        {
-            log->info("Returning Offset Transform for {}",getNameAndUuidString());
-            mOffsetTransform = mTransform.offsetFrom(getParentRuntime()->getTransform());
-            return mOffsetTransform;
-        }
-        log->info("Returning Absolute Transform for {}", getNameAndUuidString());
         return mTransform;
     }
 
     void
+    SceneObjectRuntime::initialTransform()
+    {
+        auto log = getLog();
+        shared_ptr<Transform3D> initial = dynamic_pointer_cast<SceneObjectDefinition>(mDefinition)->getTransform();
+        if (initial->isTypeOffset())
+        {
+            log->info("Inheriting Offset Transform for {}",getNameAndUuidString());
+            mTransform->offsetFrom(getParentRuntime()->getTransform(), initial);
+        }
+        else
+        {
+            mTransform->setTranslation(initial->getTranslation());
+            mTransform->setOrientation(initial->getOrientation());
+            mTransform->setScale(initial->getScale());
+        }
+    }
+
+    void
     SceneObjectRuntime::setTransform
-    (Transform3D transform)
+    (shared_ptr<Transform3D> transform)
     {
         mTransform = transform;
     }
@@ -648,7 +658,7 @@ namespace Dream
 
     quat SceneObjectRuntime::getOrientation()
     {
-       return mTransform.getOrientation();
+       return mTransform->getOrientation();
     }
 
     void
@@ -788,10 +798,10 @@ namespace Dream
         log->info( "Using Definition {}", def->getNameAndUuidString());
         setName(def->getName());
         setUuid(def->getUuid());
-        setTransform(def->getTransform());
         setFollowsCamera(def->followsCamera());
         setAssetDefinitionLoadQueue(def->getAssetDefinitionLoadQueue());
         setHasFocus(def->hasFocus());
+        initialTransform();
         createAssetInstances();
         loadChildrenFromDefinition(def);
     }
@@ -833,7 +843,7 @@ namespace Dream
     }
 
     void
-    SceneObjectRuntime::walk
+    SceneObjectRuntime::drive
     (float leftStickX, float leftStickY)
     {
         auto log = getLog();
@@ -846,9 +856,9 @@ namespace Dream
 
         // Translate to current
         mat4 mtx;
-        mtx = glm::translate(mat4(1), mTransform.getTranslation());
+        mtx = glm::translate(mat4(1), mTransform->getTranslation());
          // Rotate to current
-        mat4 rotMat = mat4_cast(mTransform.getOrientation());
+        mat4 rotMat = mat4_cast(mTransform->getOrientation());
         mtx = mtx * rotMat;
 
         // Rotate to new
@@ -859,16 +869,23 @@ namespace Dream
 
         // Translate to new
         mtx = glm::translate(mtx,vec3(0,0,-leftStickY));
-        mTransform.setOrientation(quat(mtx));
-        mTransform.setTranslation(glm::vec3(mtx[3]));
+        mTransform->setOrientation(quat(mtx));
+        mTransform->setTranslation(glm::vec3(mtx[3]));
 
         if (mPhysicsObjectInstance != nullptr)
         {
             auto rb = mPhysicsObjectInstance->getRigidBody();
             if (rb!=nullptr)
             {
-                rb->setCenterOfMassTransform(mTransform.getTransformAsBtTransform());
+                rb->setCenterOfMassTransform(mTransform->getTransformAsBtTransform());
             }
         }
     }
+    void
+    SceneObjectRuntime::walk
+    (float leftStickX, float leftStickY)
+    {
+
+    }
+
 }

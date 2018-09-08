@@ -34,7 +34,7 @@ using std::cerr;
 namespace Dream
 {
     PhysicsMotionState::PhysicsMotionState
-    (Transform3D& dreamTransform)
+    (shared_ptr<Transform3D> dreamTransform)
         : btMotionState(),
           DreamObject("PhysicsMotionState"),
           mDreamTransform(dreamTransform)
@@ -52,7 +52,7 @@ namespace Dream
 
     void
     PhysicsMotionState::setTransform
-    (Transform3D& transform)
+    (shared_ptr<Transform3D> transform)
     {
         auto log = getLog();
         log->info( "setTransform called" );
@@ -65,12 +65,8 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "getWorldTransform called" );
-        // Translation
-        worldTrans.setOrigin(mDreamTransform.getTranslationAsBtVector3());
-        // Rotation
-        glm::quat glmRot = mDreamTransform.getOrientation();
-        btQuaternion btRot = btQuaternion(glmRot.x,glmRot.y,glmRot.z,glmRot.w);
-        worldTrans.setRotation(btRot);
+        worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
+        worldTrans.setRotation(mDreamTransform->getOrientationAsBtQuaternion());
     }
 
     void
@@ -82,10 +78,10 @@ namespace Dream
 
         // Translation
         btVector3 pos = worldTrans.getOrigin();
-        mDreamTransform.setTranslation(pos.x(), pos.y(), pos.z());
+        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
         // Rotation
         btQuaternion rot = worldTrans.getRotation();
-        mDreamTransform.setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
+        mDreamTransform->setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
     }
 
     void
@@ -95,7 +91,7 @@ namespace Dream
         auto log = getLog();
         log->info( "setKinematicPos called" );
         btVector3 pos = trans.getOrigin();
-        mDreamTransform.setTranslation(pos.x(), pos.y(), pos.z());
+        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
     }
 
 

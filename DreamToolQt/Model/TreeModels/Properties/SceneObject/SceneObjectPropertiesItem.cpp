@@ -84,37 +84,37 @@ SceneObjectPropertiesItem::setData
             mSceneObjectDefinitionHandle->setName(value.toString().toStdString());
             break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
-            mSceneObjectDefinitionHandle->getTransform().setTranslationX(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setTranslationX(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
-            mSceneObjectDefinitionHandle->getTransform().setTranslationY(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setTranslationY(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
-            mSceneObjectDefinitionHandle->getTransform().setTranslationZ(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setTranslationZ(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_ORIENTATION_W:
-            mSceneObjectDefinitionHandle->getTransform().setOrientationW(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setOrientationW(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_ORIENTATION_X:
-            mSceneObjectDefinitionHandle->getTransform().setOrientationX(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setOrientationX(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_ORIENTATION_Y:
-            mSceneObjectDefinitionHandle->getTransform().setOrientationY(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setOrientationY(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_ORIENTATION_Z:
-            mSceneObjectDefinitionHandle->getTransform().setOrientationZ(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setOrientationZ(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_X:
-            mSceneObjectDefinitionHandle->getTransform().setScaleX(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setScaleX(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_Y:
-            mSceneObjectDefinitionHandle->getTransform().setScaleY(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setScaleY(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_Z:
-            mSceneObjectDefinitionHandle->getTransform().setScaleZ(value.toFloat());
+            mSceneObjectDefinitionHandle->getTransform()->setScaleZ(value.toFloat());
             break;
         case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
-            mSceneObjectDefinitionHandle->getTransform().setTransformType(value.toString().toStdString());
+            mSceneObjectDefinitionHandle->getTransform()->setTransformType(value.toString().toStdString());
             break;
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
             mSceneObjectDefinitionHandle->setHasFocus(value.toBool());
@@ -164,27 +164,27 @@ SceneObjectPropertiesItem::data
         case SCENE_OBJECT_PROPERTY_NAME:
             return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getName()));
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationX());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getTranslationX());
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationY());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getTranslationY());
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Z:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getTranslationZ());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getTranslationZ());
         case SCENE_OBJECT_PROPERTY_ORIENTATION_W:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationW());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getOrientationW());
         case SCENE_OBJECT_PROPERTY_ORIENTATION_X:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationX());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getOrientationX());
         case SCENE_OBJECT_PROPERTY_ORIENTATION_Y:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationY());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getOrientationY());
         case SCENE_OBJECT_PROPERTY_ORIENTATION_Z:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getOrientationZ());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getOrientationZ());
         case SCENE_OBJECT_PROPERTY_SCALE_X:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getScaleX());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getScaleX());
         case SCENE_OBJECT_PROPERTY_SCALE_Y:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getScaleY());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getScaleY());
         case SCENE_OBJECT_PROPERTY_SCALE_Z:
-            return QVariant(mSceneObjectDefinitionHandle->getTransform().getScaleZ());
+            return QVariant(mSceneObjectDefinitionHandle->getTransform()->getScaleZ());
         case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
-            return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getTransform().getTransformType()));
+            return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getTransform()->getTransformType()));
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
             return QVariant(mSceneObjectDefinitionHandle->hasFocus());
         case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:
