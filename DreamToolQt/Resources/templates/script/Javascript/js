@@ -1,0 +1,29 @@
+/*
+    Dream Default Javascript Template
+    ash@octronic.co.uk 8/9/2018
+*/
+
+function onInit(sceneObject)
+{
+
+}
+
+function onEvent(sceneObject, event)
+{
+
+}
+
+function onInput(sceneObject, inputMap)
+{
+
+}
+
+function onUpdate(sceneObject)
+{
+
+}
+
+function onUpdateNanoVG(sceneObject)
+{
+
+}

@@ -34,5 +34,6 @@
         <file>icons/Ag.icns</file>
         <file>templates/shader/Phong/glsl.frag</file>
         <file>templates/shader/Phong/glsl.vert</file>
+        <file>templates/script/Javascript/js</file>
     </qresource>
 </RCC>

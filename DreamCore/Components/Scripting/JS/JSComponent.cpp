@@ -19,6 +19,9 @@
 #include <sstream>
 
 #include "JSScriptInstance.h"
+#include "JSScriptType.h"
+#include "JSScriptObject.h"
+#include "JSScriptGlobal.h"
 
 #include "../../Event.h"
 #include "../../Transform3D.h"
@@ -1008,5 +1011,6 @@ namespace Dream
         ];
         */
     }
+
 
 } // End of Dream
