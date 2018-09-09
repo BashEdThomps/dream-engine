@@ -19,6 +19,9 @@
 #include "../ScriptDefinition.h"
 #include "../ScriptCache.h"
 
+#include "Types/JSVec3.h"
+#include "Types/JSSceneObjectRuntime.h"
+
 namespace Dream
 {
 
@@ -93,6 +96,9 @@ namespace Dream
             src.c_str(),
             v8::NewStringType::kNormal
         ).ToLocalChecked();
+
+        Dream::JSVec3::Initialize(isolate,localContext);
+        Dream::JSSceneObjectRuntime::Initialize(isolate,localContext);
 
         v8::Local<v8::Script> script;
         if (v8::Script::Compile(localContext, scriptSrc).ToLocal(&script) == false)
@@ -188,20 +194,20 @@ namespace Dream
         }
 
         // Update NanoVG ===========================================================
-        v8::Local<v8::Value> onUpdateNanoVGFuncName = globalSpace->Get
+        v8::Local<v8::Value> onNanoVGFuncName = globalSpace->Get
         (
             v8::String::NewFromUtf8(isolate, Constants::LUA_NANOVG_FUNCTION.c_str())
         );
-        mOnUpdateNanoVGFunction.Reset(isolate, onUpdateNanoVGFuncName.As<v8::Function>());
-        v8::String::Utf8Value onUpdateNanoVGType(onUpdateNanoVGFuncName->TypeOf(isolate));
-        if(!onUpdateNanoVGFuncName->IsFunction())
+        mOnNanoVGFunction.Reset(isolate, onNanoVGFuncName.As<v8::Function>());
+        v8::String::Utf8Value onNanoVGType(onNanoVGFuncName->TypeOf(isolate));
+        if(!onNanoVGFuncName->IsFunction())
         {
-            log->error("Did not find onUpdateNanoVG function in ", getNameAndUuidString());
-            mOnUpdateNanoVGFunction.Reset();
+            log->error("Did not find onNanoVG function in ", getNameAndUuidString());
+            mOnNanoVGFunction.Reset();
         }
         else
         {
-            log->info("Found onUpdateNanoVG in {}",getNameAndUuidString());
+            log->info("Found onNanoVG in {}",getNameAndUuidString());
         }
         // Save script
         mScript.Reset(isolate, script);
@@ -255,10 +261,61 @@ namespace Dream
 
     void JSScriptInstance::onUpdate(shared_ptr<SceneObjectRuntime> so)
     {
+        v8::Isolate* isolate = v8::Isolate::GetCurrent();
+        // Create a stack-allocated handle scope.
+        v8::HandleScope handle_scope(isolate);
+        // Create an instance of the global context so we can plug variables in
+        v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
+        // Reset our current local context
+        v8::Local<v8::Context> localContext = mContext.Get(isolate);
+        localContext->Enter();
+        // Catch any errors the script might throw
+        v8::TryCatch try_catch(isolate);
+        // Script local
+        v8::Local<v8::Script> script = mScript.Get(isolate);
+        v8::Local<v8::Value> result;
 
+        /**
+         * Note: we do not need to Run the script again, just call our functions; this retains the values
+         * of local variables inside the script
+         */
+
+        // Run specific functions
+        v8::Local<v8::Function> updateFunc = mOnUpdateFunction.Get(isolate);
+        v8::Handle<v8::Value> argv[1];
+
+        /*
+            Point* p = ...;
+            Local<Object> obj = point_templ->NewInstance();
+            obj->SetInternalField(0, External::New(isolate, p));
+        */
+
+        v8::Local<v8::Object> localObj = JSSceneObjectRuntime::NewInstance();
+        JSSceneObjectRuntime wrapper;
+        wrapper.SetSceneObjectRuntime(so);
+        wrapper.Wrap(localObj);
+        argv[0] = v8::Local<v8::Value>::New(isolate,localObj);
+
+        result = updateFunc->Call(updateFunc->CreationContext()->Global(), 1, argv);
+        if (try_catch.HasCaught())
+        {
+            v8::String::Utf8Value error(try_catch.Exception());
+            cerr << "Unable to update " << static_cast<char*>(*error) << endl;
+        }
+        /*
+        if (!result.IsEmpty())
+        {
+             // get the param
+            v8::String::Utf8Value retvalJS(result->ToString());
+            // convert it to string
+            std::string retval = std::string(*retvalJS);
+            cerr << "V8 ---> Got update result:  update " << retval << endl;
+        }
+        */
+        localContext->Exit();
     }
 
-    void JSScriptInstance::onUpdateNanoVG(shared_ptr<SceneObjectRuntime> so)
+    void JSScriptInstance::onNanoVG(shared_ptr<SceneObjectRuntime> so)
     {
 
     }

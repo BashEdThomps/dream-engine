@@ -2017,7 +2017,7 @@ MainController::onAssetDefinitionProperty_ScriptTemplateChanged
 
     if (result == QMessageBox::Yes)
     {
-        QString scriptContent = mTemplatesModel.getScriptTemplate(templateName);
+        QString scriptContent = mTemplatesModel.getScriptTemplate(templateName,QString::fromStdString(adHandle->getFormat()));
         log->info(
             "Proceeding to write template {} to {} \n {}",
             templateName.toStdString(),

@@ -275,7 +275,7 @@ SelectionHighlighter::draw
             }
             else
             {
-                mat4 modelMatrix;
+                mat4 modelMatrix(1.0f);
                 if (mSelectedObjectHandle->hasModelInstance())
                 {
                    modelMatrix = mSelectedObjectHandle->getModelInstance()->getModelMatrix();

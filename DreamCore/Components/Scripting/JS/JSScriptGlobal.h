@@ -38,13 +38,11 @@ namespace Dream
      * A scripted type that can be accessed and created in JS
      */
     template<class T>
-    class ScriptGlobal : public ScriptObject
+    class JSScriptGlobal : public JSScriptObject
     {
     public:
-        ScriptGlobal()
-        { }
-        ~ScriptGlobal()
-        { }
+        JSScriptGlobal() { }
+        ~JSScriptGlobal(){ }
 
         static void StartTemplate(v8::Isolate* isolate)
         {
@@ -64,12 +62,10 @@ namespace Dream
         {
             // Create a new variable function callback
             ScriptGlobalCallbackPair* pair = new ScriptGlobalCallbackPair();
-
             // Copy params
             pair->variableName = static_cast<char*>(malloc(strlen(name) + 1));
             strcpy(pair->variableName, name);
             pair->getter = getter;
-
             // Set this up as an accessible variable name
             v8::Local<v8::ObjectTemplate> tpl = m_objectTemplate.Get(m_isolate);
             tpl->SetAccessor(v8::String::NewFromUtf8(m_isolate, name), Getter);
@@ -124,19 +120,16 @@ namespace Dream
     protected:
         // The function template
         static v8::Persistent<v8::ObjectTemplate> m_objectTemplate;
-
         // The name of this type inside the JS context
         static char* m_typeName;
-
         // The current isolate
         static v8::Isolate* m_isolate;
-
         // Linked list of getter/setter combinations for vars
         static ScriptGlobalCallbackPair* m_varList;
     };
 
-    template<class T> v8::Persistent<v8::ObjectTemplate> ScriptGlobal<T>::m_objectTemplate;
-    template<class T> char* ScriptGlobal<T>::m_typeName = nullptr;
-    template<class T> v8::Isolate* ScriptGlobal<T>::m_isolate = nullptr;
-    template<class T> ScriptGlobalCallbackPair* ScriptGlobal<T>::m_varList = nullptr;
+    template<class T> v8::Persistent<v8::ObjectTemplate> JSScriptGlobal<T>::m_objectTemplate;
+    template<class T> char* JSScriptGlobal<T>::m_typeName = nullptr;
+    template<class T> v8::Isolate* JSScriptGlobal<T>::m_isolate = nullptr;
+    template<class T> ScriptGlobalCallbackPair* JSScriptGlobal<T>::m_varList = nullptr;
 }

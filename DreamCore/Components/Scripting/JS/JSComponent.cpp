@@ -292,7 +292,7 @@ namespace Dream
 
         log->info( "Calling onUpdateNVG for {}" ,sceneObject->getNameAndUuidString() );
 
-        scriptInstance->onUpdateNanoVG(sceneObject);
+        scriptInstance->onNanoVG(sceneObject);
         return true;
     }
 

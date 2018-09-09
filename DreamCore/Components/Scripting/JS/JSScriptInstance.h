@@ -53,7 +53,7 @@ namespace Dream
         void onEvent(shared_ptr<SceneObjectRuntime> so, Event ev);
         void onInput(shared_ptr<SceneObjectRuntime> so, gainput::InputMap* iMap);
         void onUpdate(shared_ptr<SceneObjectRuntime> so);
-        void onUpdateNanoVG(shared_ptr<SceneObjectRuntime> so);
+        void onNanoVG(shared_ptr<SceneObjectRuntime> so);
 
     private:
         bool mError;
@@ -65,6 +65,6 @@ namespace Dream
         v8::Persistent<v8::Function> mOnUpdateFunction;
         v8::Persistent<v8::Function> mOnEventFunction;
         v8::Persistent<v8::Function> mOnInputFunction;
-        v8::Persistent<v8::Function> mOnUpdateNanoVGFunction;
+        v8::Persistent<v8::Function> mOnNanoVGFunction;
     }; // End of JSScriptInstance
 } // End of Dream

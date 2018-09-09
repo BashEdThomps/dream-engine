@@ -52,16 +52,13 @@ TemplatesModel::~TemplatesModel
 
 QString
 TemplatesModel::getScriptTemplate
-(QString templateName)
+(QString templateName, QString filename)
 {
     auto log = spdlog::get("TemplatesModel");
     log->info("Getting script template {}" , templateName.toStdString());
 
     QDir templatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SCRIPT_PATH);
-    QString scriptAbsPath = QDir(templatesDir.filePath(templateName)).filePath
-        (
-            QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA)
-        );
+    QString scriptAbsPath = QDir(templatesDir.filePath(templateName)).filePath(filename);
 
     log->info("from {}" , scriptAbsPath.toStdString());
 

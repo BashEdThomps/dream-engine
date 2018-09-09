@@ -1,6 +1,9 @@
 #pragma once
 
 #include "JSScriptObject.h"
+#include <string>
+
+using std::string;
 
 /**
  * Getter and setter functions for our classes to V8
@@ -13,41 +16,40 @@ typedef void (*ScriptTypeSetterFunc)(void*,v8::Local<v8::Value>);
  */
 namespace Dream
 {
-    class ScriptTypeCallbackPair
+    class JSScriptTypeCallbackPair
     {
     public:
-        ScriptTypeCallbackPair()
-            : variableName(nullptr),
-              getter(nullptr),
+        JSScriptTypeCallbackPair()
+            :  getter(nullptr),
               setter(nullptr),
               next(nullptr)
         {
 
         }
 
-        ~ScriptTypeCallbackPair()
+        ~JSScriptTypeCallbackPair()
         {
         }
 
     public:
-        char* variableName;
+        string variableName;
         ScriptTypeGetterFunc getter;
         ScriptTypeSetterFunc setter;
-        ScriptTypeCallbackPair* next;
+        JSScriptTypeCallbackPair* next;
     };
 
     /**
      * A scripted global object that can be accessed and created in JS
      */
     template<class T>
-    class ScriptType : public ScriptObject
+    class JSScriptType : public JSScriptObject
     {
     public:
-        ScriptType()
+        JSScriptType()
         {
         }
 
-        ~ScriptType()
+        ~JSScriptType()
         {
         }
 
@@ -63,30 +65,28 @@ namespace Dream
 
         static void
         SetTypeName
-        (char* name)
+        (string name)
         {
-            mTypeName = static_cast<char*>(malloc(strlen(name) + 1));
-            strcpy(mTypeName, name);
+            mTypeName = name;
             v8::Local<v8::FunctionTemplate> tpl = mFunctionTemplate.Get(mIsolate);
-            tpl->SetClassName(v8::String::NewFromUtf8(mIsolate, mTypeName));
+            tpl->SetClassName(v8::String::NewFromUtf8(mIsolate, mTypeName.c_str()));
         }
 
         static void
         AddVariable
-        (char* name, ScriptTypeGetterFunc getter, ScriptTypeSetterFunc setter)
+        (string name, ScriptTypeGetterFunc getter, ScriptTypeSetterFunc setter)
         {
             // Create a new variable function callback
-            ScriptTypeCallbackPair* pair = new ScriptTypeCallbackPair();
+            JSScriptTypeCallbackPair* pair = new JSScriptTypeCallbackPair();
 
             // Copy params
-            pair->variableName = static_cast<char*>(malloc(strlen(name) + 1));
-            strcpy(pair->variableName, name);
+            pair->variableName = name;
             pair->getter = getter;
             pair->setter = setter;
 
             // Set this up as an accessible variable name
             v8::Local<v8::FunctionTemplate> tpl = mFunctionTemplate.Get(mIsolate);
-            tpl->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(mIsolate, name), Getter, Setter);
+            tpl->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(mIsolate, name.c_str()), Getter, Setter);
 
             if(mVarList == nullptr)
             {
@@ -94,7 +94,7 @@ namespace Dream
                 return;
             }
 
-            ScriptTypeCallbackPair* current = mVarList;
+            JSScriptTypeCallbackPair* current = mVarList;
             while(current->next)
             {
                 current = current->next;
@@ -116,17 +116,17 @@ namespace Dream
             v8::Local<v8::Function> constructor = mConstructor.Get(mIsolate);
 
             // Inject this type name into V8
-            context->Global()->Set(v8::String::NewFromUtf8(mIsolate, mTypeName), constructor);
+            context->Global()->Set(v8::String::NewFromUtf8(mIsolate, mTypeName.c_str()), constructor);
         }
 
         static void
         AddFunction
-        (char* name, v8::FunctionCallback func)
+        (string name, v8::FunctionCallback func)
         {
             v8::Local<v8::FunctionTemplate> tpl = mFunctionTemplate.Get(mIsolate);
             tpl->PrototypeTemplate()->Set
             (
-                v8::String::NewFromUtf8(mIsolate, name),
+                v8::String::NewFromUtf8(mIsolate, name.c_str()),
                 v8::FunctionTemplate::New(mIsolate, func)
             );
         }
@@ -157,17 +157,17 @@ namespace Dream
         (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info)
         {
             // Unwrap our object
-            const T* obj = ScriptObject::Unwrap<T>(info.This());
+            const T* obj = JSScriptObject::Unwrap<T>(info.This());
             // Iterate through the callback list, looking for a registered callback function
-            ScriptTypeCallbackPair* current = mVarList;
+            JSScriptTypeCallbackPair* current = mVarList;
             while(current)
             {
                 v8::String::Utf8Value propName(property);
-                if(strcmp(current->variableName, *propName) == 0)
+                if(current->variableName.compare(*propName) == 0)
                 {
                     if(current->getter != nullptr)
                     {
-                        v8::Local<v8::Value> val = current->getter(mIsolate, static_cast<void*>(obj));
+                        v8::Local<v8::Value> val = current->getter(mIsolate, (void*)(obj));
                         info.GetReturnValue().Set(val);
                         return;
                     }
@@ -183,13 +183,13 @@ namespace Dream
             const v8::PropertyCallbackInfo<void>& info
         )
         {
-            T* obj = ScriptObject::Unwrap<T>(info.This());
+            T* obj = JSScriptObject::Unwrap<T>(info.This());
             // Iterate through the callback list, looking for a registered callback function
-            ScriptTypeCallbackPair* current = mVarList;
+            JSScriptTypeCallbackPair* current = mVarList;
             while(current)
             {
                 v8::String::Utf8Value propName(property);
-                if(strcmp(current->variableName, *propName) == 0)
+                if(current->variableName.compare(*propName) == 0)
                 {
                     if(current->setter != nullptr)
                     {
@@ -206,16 +206,16 @@ namespace Dream
         // The function template
         static v8::Persistent<v8::FunctionTemplate> mFunctionTemplate;
         // The name of this type inside the JS context
-        static char* mTypeName;
+        static string mTypeName;
         // The current isolate
         static v8::Isolate* mIsolate;
         // Linked list of getter/setter combinations for vars
-        static ScriptTypeCallbackPair* mVarList;
+        static JSScriptTypeCallbackPair* mVarList;
     };
 
-    template<class T> v8::Persistent<v8::Function> ScriptType<T>::mConstructor;
-    template<class T> v8::Persistent<v8::FunctionTemplate> ScriptType<T>::mFunctionTemplate;
-    template<class T> char* ScriptType<T>::mTypeName = nullptr;
-    template<class T> v8::Isolate* ScriptType<T>::mIsolate = nullptr;
-    template<class T> ScriptTypeCallbackPair* ScriptType<T>::mVarList = nullptr;
+    template<class T> v8::Persistent<v8::Function> JSScriptType<T>::mConstructor;
+    template<class T> v8::Persistent<v8::FunctionTemplate> JSScriptType<T>::mFunctionTemplate;
+    template<class T> string JSScriptType<T>::mTypeName;
+    template<class T> v8::Isolate* JSScriptType<T>::mIsolate = nullptr;
+    template<class T> JSScriptTypeCallbackPair* JSScriptType<T>::mVarList = nullptr;
 }

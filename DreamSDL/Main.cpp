@@ -60,7 +60,7 @@ int main(int argc, const char** argv)
 
     log->info("√ Definition Loading Complete... Creating Runtime");
 
-    //spdlog::set_level(spdlog::level::off);
+    spdlog::set_level(spdlog::level::off);
 
     shared_ptr<ProjectRuntime> pr = project->createProjectRuntime();
     shared_ptr<ProjectDefinition> pd = project->getProjectDefinition();

@@ -8,10 +8,11 @@ namespace Dream
     /**
      * A helper class that other types can be inherited from (handles basic V8 integration)
      */
-    class ScriptObject {
+    class JSScriptObject
+    {
     public:
-        ScriptObject();
-        ~ScriptObject();
+        JSScriptObject() {}
+        ~JSScriptObject() {}
 
         /**
          * Unwrap a v8::object back into a C++ object
@@ -21,11 +22,10 @@ namespace Dream
         {
             assert(!handle.IsEmpty());
             assert(handle->InternalFieldCount() > 0);
-
             // Cast to ObjectWrap before casting to T.  A direct cast from void
             // to T won't work right when T has more than one base class.
             void* ptr = handle->GetAlignedPointerFromInternalField(0);
-            ScriptObject* wrap = static_cast<ScriptObject*>(ptr);
+            JSScriptObject* wrap = static_cast<JSScriptObject*>(ptr);
             return static_cast<T*>(wrap);
         }
 
@@ -36,7 +36,6 @@ namespace Dream
         {
             assert(m_handle.IsEmpty());
             assert(handle->InternalFieldCount() > 0);
-
             handle->SetAlignedPointerInInternalField(0, this);
             m_handle.Reset(v8::Isolate::GetCurrent(), handle);
         }
