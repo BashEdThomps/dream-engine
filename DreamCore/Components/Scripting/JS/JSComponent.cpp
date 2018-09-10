@@ -19,9 +19,6 @@
 #include <sstream>
 
 #include "JSScriptInstance.h"
-#include "JSScriptType.h"
-#include "JSScriptObject.h"
-#include "JSScriptGlobal.h"
 
 #include "../../Event.h"
 #include "../../Transform3D.h"
@@ -47,6 +44,7 @@
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Utilities/Math.h"
 #include "../../../../NanoVG/src/nanovg.h"
+
 
 
 namespace Dream
@@ -166,9 +164,6 @@ namespace Dream
             if ((*iter).first == sceneObject)
             {
                 string id = (*iter).first->getUuid();
-                //object reg = registry(mState);
-                //reg[id] = nil;
-
                 string name = (*iter).first->getNameAndUuidString();
                 log->info( "Removed script for {}" , name );
 
@@ -621,8 +616,8 @@ namespace Dream
     JSComponent::exposeSceneObjectRuntime
     ()
     {
-        /*
         debugRegisteringClass("SceneObjectRuntime");
+        /*
         module(mState)
         [
             class_<SceneObjectRuntime, bases<DreamObject, IRuntime>, shared_ptr<DreamObject>>("DreamObject")
@@ -657,6 +652,9 @@ namespace Dream
                 .def("hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance)
         ];
         */
+
+
+
     }
 
     void
@@ -1011,6 +1009,6 @@ namespace Dream
         ];
         */
     }
-
-
 } // End of Dream
+
+

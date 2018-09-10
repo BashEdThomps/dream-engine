@@ -29,6 +29,9 @@
 #include <libplatform/libplatform.h>
 #include <v8.h>
 
+#include <v8pp/module.hpp>
+#include <v8pp/class.hpp>
+
 
 namespace Dream
 {
@@ -59,6 +62,7 @@ namespace Dream
         bool mError;
         v8::Persistent<v8::Script> mScript;
         v8::Persistent<v8::Context> mContext;
+        v8::Persistent<v8::Object> mPersistentSOR;
 
         // Functions we look for to call
         v8::Persistent<v8::Function> mOnInitFunction;

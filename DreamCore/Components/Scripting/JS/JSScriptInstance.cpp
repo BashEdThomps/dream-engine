@@ -19,8 +19,7 @@
 #include "../ScriptDefinition.h"
 #include "../ScriptCache.h"
 
-#include "Types/JSVec3.h"
-#include "Types/JSSceneObjectRuntime.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
@@ -97,8 +96,39 @@ namespace Dream
             v8::NewStringType::kNormal
         ).ToLocalChecked();
 
-        Dream::JSVec3::Initialize(isolate,localContext);
-        Dream::JSSceneObjectRuntime::Initialize(isolate,localContext);
+        v8pp::module dream_lib(isolate);
+
+        v8pp::class_<glm::vec3> vec3_ = v8pp::class_<glm::vec3>(isolate);
+        vec3_
+             .ctor<>()
+             .ctor<float>()
+             .ctor<float,float,float>()
+             .set("x",&glm::vec3::x)
+             .set("y",&glm::vec3::y)
+             .set("z",&glm::vec3::z);
+
+        dream_lib.set("vec3",vec3_);
+
+        v8pp::class_<Transform3D, v8pp::shared_ptr_traits> transform3D = v8pp::class_<Transform3D, v8pp::shared_ptr_traits>(isolate);
+        transform3D
+            .set("type",v8pp::property(&Transform3D::getTransformType,&Transform3D::setTransformType));
+
+        dream_lib.set("Transform3D",transform3D);
+
+        v8pp::class_<SceneObjectRuntime, v8pp::shared_ptr_traits> sor = v8pp::class_<SceneObjectRuntime, v8pp::shared_ptr_traits>(isolate);
+        sor.set("name",v8pp::property(&SceneObjectRuntime::getName, &SceneObjectRuntime::setName))
+           .set("uuid", v8pp::property(&SceneObjectRuntime::getUuid, &SceneObjectRuntime::setUuid))
+           .set("translation", v8pp::property(&SceneObjectRuntime::getTranslation))
+           .set("transform",v8pp::property(&SceneObjectRuntime::getTransform, &SceneObjectRuntime::setTransform));
+
+        dream_lib.set("SceneObjectRuntime",sor);
+
+        isolate
+            ->GetCurrentContext()
+            ->Global()
+            ->Set(v8::String::NewFromUtf8(isolate, "dream"), dream_lib.new_instance());
+
+        mPersistentSOR.Reset(isolate, sor.reference_external(isolate, mSceneObjectRuntime));
 
         v8::Local<v8::Script> script;
         if (v8::Script::Compile(localContext, scriptSrc).ToLocal(&script) == false)
@@ -275,34 +305,20 @@ namespace Dream
         v8::Local<v8::Script> script = mScript.Get(isolate);
         v8::Local<v8::Value> result;
 
-        /**
-         * Note: we do not need to Run the script again, just call our functions; this retains the values
-         * of local variables inside the script
-         */
-
         // Run specific functions
         v8::Local<v8::Function> updateFunc = mOnUpdateFunction.Get(isolate);
         v8::Handle<v8::Value> argv[1];
 
-        /*
-            Point* p = ...;
-            Local<Object> obj = point_templ->NewInstance();
-            obj->SetInternalField(0, External::New(isolate, p));
-        */
-
-        v8::Local<v8::Object> localObj = JSSceneObjectRuntime::NewInstance();
-        JSSceneObjectRuntime wrapper;
-        wrapper.SetSceneObjectRuntime(so);
-        wrapper.Wrap(localObj);
-        argv[0] = v8::Local<v8::Value>::New(isolate,localObj);
-
+        argv[0] =  mPersistentSOR.Get(isolate);
         result = updateFunc->Call(updateFunc->CreationContext()->Global(), 1, argv);
+
         if (try_catch.HasCaught())
         {
             v8::String::Utf8Value error(try_catch.Exception());
-            cerr << "Unable to update " << static_cast<char*>(*error) << endl;
+            cerr << "JSSCriptInstance: "<< getNameAndUuidString()
+                 << " Unable to update " << static_cast<char*>(*error) << endl;
         }
-        /*
+
         if (!result.IsEmpty())
         {
              // get the param
@@ -311,7 +327,7 @@ namespace Dream
             std::string retval = std::string(*retvalJS);
             cerr << "V8 ---> Got update result:  update " << retval << endl;
         }
-        */
+
         localContext->Exit();
     }
 
