@@ -26,6 +26,11 @@ namespace Dream
 
     }
 
+    ScriptDefinition::~ScriptDefinition()
+    {
+
+    }
+
     bool
     ScriptDefinition::isFormatLua
     ()
@@ -33,11 +38,5 @@ namespace Dream
         return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_LUA) == 0;
     }
 
-    bool
-    ScriptDefinition::isFormatJS
-    ()
-    {
-        return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_JS) == 0;
-    }
 
 }

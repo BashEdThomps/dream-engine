@@ -290,18 +290,12 @@ ScriptEditorController::onComboTemplateChanged
     QString vertex = QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME);
     QString fragment = QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME);
     QString lua = QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA);
-    QString js = QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_JS);
     QString templateContent;
 
     // Get Lua Template
     if (fileType == lua)
     {
         templateContent = mTemplatesModelHandle->getScriptTemplate(templateName, lua);
-    }
-    // Get Lua Template
-    else if (fileType == js)
-    {
-        templateContent = mTemplatesModelHandle->getScriptTemplate(templateName, js);
     }
     // Get Shader Template
     else if (fileType == vertex)

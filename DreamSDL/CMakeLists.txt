@@ -13,11 +13,9 @@ find_package(GLEW       REQUIRED)
 find_package(assimp     REQUIRED)
 find_package(Lua        REQUIRED)
 find_package(FREETYPE   REQUIRED)
-find_package(Luabind    REQUIRED)
 
 include_directories(
   ${SOIL_INCLUDE_DIRS}
-  ${LUABIND_INCLUDE_DIRS}
   ${DreamCore_INCLUDE_DIRS}
 
   ${OPENGL_INCLUDE_DIR}
@@ -50,6 +48,5 @@ target_link_libraries(
   ${SDLMIXER_LIBRARY}
   ${SDL2_IMAGE_LIBRARY}
   ${LUA_LIBRARIES}
-  ${LUABIND_LIBRARIES}
   ${FREETYPE_LIBRARIES}
 )

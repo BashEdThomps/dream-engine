@@ -14,13 +14,12 @@
  * this file belongs to.
  */
 
+
+
 #include "LuaComponent.h"
+#include "LuaScriptInstance.h"
 
 #include <sstream>
-#include <luabind/luabind.hpp>
-#include <luabind/adopt_policy.hpp>
-
-#include "LuaScriptInstance.h"
 
 #include "../../Event.h"
 #include "../../Transform3D.h"
@@ -47,50 +46,22 @@
 #include "../../../Utilities/Math.h"
 #include "../../../../NanoVG/src/nanovg.h"
 
+#define SOL_CHECK_ARGUMENTS 1
+//#define SOL_SAFE_FUNCTION 1
+#include "../../../include/sol.hpp"
+
 using std::ostringstream;
 using std::exception;
 using std::cout;
 using std::cerr;
 using std::string;
 
-using luabind::object;
-using luabind::from_stack;
-using luabind::call_function;
-using luabind::globals;
-using luabind::class_;
-using luabind::constructor;
-using luabind::open;
-using luabind::set_pcall_callback;
-using luabind::registry;
-using luabind::error;
-using luabind::module;
-using luabind::value;
-using luabind::nil;
-using luabind::newtable;
-using luabind::def;
-using luabind::bases;
-
-int
-errorr
-(lua_State *L)
-{
-    // log the error message
-    object msg(from_stack( L, -1 ));
-    stringstream ss;
-    ss << msg;
-    cerr << "RuntimeError: " << ss.str() << endl;
-    // log the callstack
-    string traceback = call_function<string>( globals(L)["debug"]["traceback"] );
-    cerr << "TraceBack: " << traceback.c_str();
-    return 0;
-}
-
 namespace Dream
 {
     LuaComponent::LuaComponent
     (shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache)
-        : IScriptComponent(project, cache),
-          mState(nullptr)
+        : IScriptComponent(project, cache)
+
     {
         setLogClassName("LuaComponent");
         auto log = getLog();
@@ -102,12 +73,6 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object" );
-
-        if (mState != nullptr)
-        {
-            lua_close(mState);
-        }
-
         mScriptMap.clear();
     }
 
@@ -118,28 +83,13 @@ namespace Dream
         auto log = getLog();
         log->info( "Initialising LuaComponent" );
         mState = luaL_newstate();
-        log->info( "got a state" );
-        if (mState != nullptr)
-        {
-            luabind::open(mState);
-            log->info( "opened" );
-            luaopen_base(mState);
-            log->info( "opened base" );
-            set_pcall_callback(&errorr);
-            log->info( "set error callback" );
-            luaL_dostring(mState, mScriptLoadFromString.c_str());
-            log->info( "loaded load string" );
-            exposeAPI();
-            return true;
-        }
-        else
-        {
-            log->error( "Error creating lua state, LuaComponent::mState == nullptr");
-        }
+        //luaL_openlibs(mState);
+        sol::state_view sView(mState);
+        sView.open_libraries(sol::lib::base, sol::lib::package);
+        log->info( "Got a sol state" );
+        exposeAPI();
         return false;
     }
-
-
 
     /*
      * Instanciate the script and put into global registry
@@ -150,13 +100,10 @@ namespace Dream
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
-        if (!mState)
-        {
-            log->error( "Cannot load script, mState == nullptr!" );
-            return false;
-        }
+        log->info( "loadScript called for {}", id );
+
+        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -164,75 +111,62 @@ namespace Dream
             return false;
         }
 
-        log->info( "loadScript called for {}", id );
+        string path = scriptInstance->getAbsolutePath();
+        string script = mScriptCache->getScript(path);
 
-        try
-        {
-            log->info( "Creating new table for {}" ,id );
+        log->info( "calling scriptLoadFromString in lua for {}" , id );
 
-            object newScriptTable = newtable(mState);
-            string path = scriptInstance->getAbsolutePath();
-            string script = mScriptCache->getScript(path);
+        sol::state_view solStateView(mState);
+        sol::environment environment(mState, sol::create, solStateView.globals());
 
-            log->info( "calling scriptLoadFromString in lua for {}" , id );
+        solStateView[sceneObject->getUuid()] = environment;
 
-            bool result = call_function<bool>(mState, "scriptLoadFromString", newScriptTable, script.c_str());
-
-            if (result)
+        auto exec_result = solStateView.script(
+            script,
+            environment,
+            [](lua_State*, sol::protected_function_result pfr)
             {
-                log->info("Loaded Script Successfully");
-                object reg = registry(mState);
-                reg[id] = newScriptTable;
+                // pfr will contain things that went wrong, for either loading or executing the script
+                // Can throw your own custom error
+                // You can also just return it, and let the call-site handle the error if necessary.
+                return pfr;
             }
-            else
-            {
-                log->info("Loaded Script Failed");
-                scriptInstance->setError(true);
-                return false;
-            }
-        }
-        catch (error &e)
+        );
+        // it did not work
+        if(!exec_result.valid())
         {
-            log->error("loadScript exception: {}" , e.what() );
-            scriptInstance->setError(true);
-            return false;
+           // An error has occured
+           sol::error err = exec_result;
+           std::string what = err.what();
+           log->error("Could not execute lua script: {}",what);
+           scriptInstance->setError(true);
+           return false;
         }
+
+        sol::function onInitFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INIT_FUNCTION];
+
+        auto initResult = onInitFunction(sceneObject);
+
+        if (!initResult.valid())
+        {
+            // An error has occured
+           sol::error err = initResult;
+           std::string what = err.what();
+           log->error("Could not execute onInit in lua script: {}",what);
+           scriptInstance->setError(true);
+           return false;
+        }
+
+        /*
+        sol::function onInputFunction  = solStateView[Constants::LUA_INPUT_FUNCTION];
+        sol::function onEventFunction  = solStateView[Constants::LUA_EVENT_FUNCTION];
+        sol::function onUpdateFunction = solStateView[Constants::LUA_UPDATE_FUNCTION];
+        sol::function onNanoVGFunction = solStateView[Constants::LUA_NANOVG_FUNCTION];
+        */
+
+        log->info("Loaded Script Successfully");
+
         return true;
-    }
-
-    void
-    LuaComponent::stackDump
-    ()
-    {
-        auto log = getLog();
-        log->error("Stack Dump!");
-        int i;
-        int top = lua_gettop(mState);
-        // repeat for each level
-        for (i = 1; i <= top; i++)
-        {
-            int t = lua_type(mState, i);
-            switch (t)
-            {
-                // strings
-                case LUA_TSTRING:
-                    log->error( lua_tostring(mState, i));
-                    break;
-                    // booleans
-                case LUA_TBOOLEAN:
-                    log->error( (lua_toboolean(mState, i) ? "true" : "false"));
-                    break;
-                    // numbers
-                case LUA_TNUMBER:
-                    log->error( lua_tonumber(mState, i));
-                    break;
-                    // other values
-                default:
-                    log->info( lua_typename(mState, t));
-                    break;
-            }
-        }
-        // end the listing
     }
 
     void
@@ -306,28 +240,22 @@ namespace Dream
 
         log->info("Calling onUpdate for {}",sceneObject->getNameAndUuidString() );
 
-        try
+        sol::state_view solStateView(mState);
+
+        sol::function onUpdateFunction = solStateView[sceneObject->getUuid()][Constants::LUA_UPDATE_FUNCTION];
+
+        auto result = onUpdateFunction(sceneObject);
+
+        if (!result.valid())
         {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_UPDATE_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject);
-            }
-            else
-            {
-                log->error("Attempted to call onUpdate on invalid function.");
-            }
+            // An error has occured
+           sol::error err = result;
+           std::string what = err.what();
+           log->error("Could not execute onUpdate in lua script: {}",what);
+           scriptInstance->setError(true);
+           return false;
         }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error("onUpdate exception: {}" , e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
+
         return true;
     }
 
@@ -346,29 +274,6 @@ namespace Dream
         }
 
         log->info("Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
-
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_NANOVG_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject);
-            }
-            else
-            {
-                log->error( "Attempted to call onNanoVG on invalid function.");
-            }
-        }
-        catch (luabind::error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onNanoVG exception: {}" , e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
         return true;
     }
 
@@ -387,29 +292,7 @@ namespace Dream
         }
 
         log->info("Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_INIT_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject);
-            }
-            else
-            {
-                log->error("Attempted to call onInit on invalid function.");
-            }
 
-        }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error("onInit exception: {}" , e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
         return true;
     }
 
@@ -429,28 +312,8 @@ namespace Dream
 
         log->info("Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
 
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_INPUT_FUNCTION];
-            if (funq.is_valid())
-            {
-                call_function<void>(funq,sceneObject,mInputMap);
-            }
-            else
-            {
-                log->error("Attempted to call onInput on invalid function.");
-            }
-        }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onInput exception: {}" ,  e.what() );
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
+        //scriptInstance->callOnInputFunction(mInputMap);
+
         return true;
     }
 
@@ -470,33 +333,8 @@ namespace Dream
 
         log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
 
-        try
-        {
-            object reg = registry(mState);
-            object table = reg[id];
-            object funq = table[Constants::LUA_EVENT_FUNCTION];
-            vector<Event> events = sceneObject->getEventQueue();
-            if (funq.is_valid())
-            {
-                for (Event event : events)
-                {
-                    call_function<void>(funq,sceneObject,event);
-                }
-                sceneObject->clearEventQueue();
-            }
-            else
-            {
-                log->error( "Attempted to call onEvent on invalid function.");
-            }
-        }
-        catch (error e)
-        {
-            string error = lua_tostring( e.state(), -1 );
-            log->error( "onEvent exception: {}", e.what());
-            log->error( error );
-            scriptInstance->setError(true);
-            return false;
-        }
+        //scriptInstance->callOnEventFunction(sceneObject->getEventQueue());
+
         return true;
     }
 
@@ -506,22 +344,22 @@ namespace Dream
     LuaComponent::exposeDreamBase
     ()
     {
+        /*
         debugRegisteringClass("Dream base classes");
-        module(mState)
-        [
-            class_<DreamObject, shared_ptr<DreamObject>>("DreamObject"),
-            class_<IDefinition, DreamObject, shared_ptr<DreamObject>>("IDefinition"),
-            class_<IRuntime, DreamObject, shared_ptr<DreamObject>>("IRuntime"),
-            class_<IComponent, DreamObject, shared_ptr<DreamObject>>("IComponent"),
-            class_<IAssetDefinition, DreamObject, shared_ptr<DreamObject>>("IAssetDefinition"),
-            class_<IAssetInstance, DreamObject, shared_ptr<DreamObject>>("IAssetInstance"),
-            class_<IWindowComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("IWindowComponent")
-                .def("getWidth",&IWindowComponent::getWidth)
-                .def("getHeight",&IWindowComponent::getHeight)
-                .def("setShouldClose",&IWindowComponent::setShouldClose)
-                .def("getMouseX",&IWindowComponent::getMouseX)
-                .def("getMouseY",&IWindowComponent::getMouseY)
-        ];
+        stateView.new_usertype<Dream::DreamObject>("DreamObject");
+        stateView.new_usertype<Dream::IDefinition>("IDefinition");
+        stateView.new_usertype<IRuntime>("IRuntime");
+        stateView.new_usertype<IComponent>("IComponent");
+        stateView.new_usertype<IAssetDefinition>("IAssetDefinition");
+        stateView.new_usertype<IAssetInstance>("IAssetInstance");
+        stateView.new_usertype<IWindowComponent>("IWindowComponent",
+            "getWidth",       &IWindowComponent::getWidth,
+            "getHeight",      &IWindowComponent::getHeight,
+            "setShouldClose", &IWindowComponent::setShouldClose,
+            "getMouseX",      &IWindowComponent::getMouseX,
+            "getMouseY",      &IWindowComponent::getMouseY
+        );
+        */
     }
 
     void
@@ -529,45 +367,46 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ProjectRuntime");
-        module(mState)
-        [
-            class_<ProjectRuntime, bases<DreamObject,IRuntime>, shared_ptr<IRuntime>>("ProjectRuntime")
-                .def("getAudioComponent",&ProjectRuntime::getAudioComponent)
-                .def("getGraphicsComponent",&ProjectRuntime::getGraphicsComponent)
-                .def("getNanoVGComponent",&ProjectRuntime::getNanoVGComponent)
-                .def("getPhysicsComponent",&ProjectRuntime::getPhysicsComponent)
-                .def("getWindowComponent",&ProjectRuntime::getWindowComponent)
-                .def("getTime",&ProjectRuntime::getTime)
-                .def("getCamera",&ProjectRuntime::getCamera)
-        ];
-        globals(mState)["Runtime"] = mProjectRuntime.get();
+        sol::state_view stateView(mState);
+        stateView.new_usertype<ProjectRuntime>("ProjectRuntime",
+            "getAudioComponent",&ProjectRuntime::getAudioComponent,
+            "getGraphicsComponent",&ProjectRuntime::getGraphicsComponent,
+            "getNanoVGComponent",&ProjectRuntime::getNanoVGComponent,
+            "getPhysicsComponent",&ProjectRuntime::getPhysicsComponent,
+            "getWindowComponent",&ProjectRuntime::getWindowComponent,
+            "getTime",&ProjectRuntime::getTime,
+            "getCamera",&ProjectRuntime::getCamera
+        );
+        stateView["Runtime"] = mProjectRuntime.get();
     }
 
     void
     LuaComponent::exposeCamera
     ()
     {
-        module(mState)
-        [
-            luabind::class_<Camera, DreamObject, shared_ptr<DreamObject>>("Camera")
-                .def("processKeyboard",&Camera::processKeyboard)
-                .def("processMouseMovement",&Camera::processMouseMovement)
-                .def("pan",&Camera::pan)
-                .def("flyForward",&Camera::flyForward)
-                .def("flyBackward",&Camera::flyBackward)
-                .def("flyLeft",&Camera::flyLeft)
-                .def("flyRight",&Camera::flyRight)
-                .def("flyUp",&Camera::flyUp)
-                .def("flyDown",&Camera::flyDown)
-                .def("flyX",&Camera::flyX)
-                .def("flyY",&Camera::flyY)
-                .def("flyZ",&Camera::flyZ)
-                .def("setFreeMode",&Camera::setFreeMode)
-                .def("setLookAt",static_cast<void(Camera::*)(float,float,float)>(&Camera::setLookAt))
-                .def("setLookAt",static_cast<void(Camera::*)(vec3)>( &Camera::setLookAt))
-                .def("setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation))
-                .def("orbit",&Camera::orbit)
+        debugRegisteringClass("Camera");
+        sol::state_view stateView(mState);
+        stateView.new_usertype<Camera>("Camera",
+            "processKeyboard",&Camera::processKeyboard,
+            "processMouseMovement",&Camera::processMouseMovement,
+            "pan",&Camera::pan,
+            "flyForward",&Camera::flyForward,
+            "flyBackward",&Camera::flyBackward,
+            "flyLeft",&Camera::flyLeft,
+            "flyRight",&Camera::flyRight,
+            "flyUp",&Camera::flyUp,
+            "flyDown",&Camera::flyDown,
+            "flyX",&Camera::flyX,
+            "flyY",&Camera::flyY,
+            "flyZ",&Camera::flyZ,
+            "setFreeMode",&Camera::setFreeMode,
+            "setLookAt",static_cast<void(Camera::*)(float,float,float)>(&Camera::setLookAt),
+            "setLookAt",static_cast<void(Camera::*)(vec3)>( &Camera::setLookAt),
+            "setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation),
+            "orbit",&Camera::orbit
+        );
 
+        /*
             .enum_("CameraMovement")
             [
                 value("FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD),
@@ -575,7 +414,7 @@ namespace Dream
                 value("LEFT",     Constants::CAMERA_MOVEMENT_LEFT),
                 value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
             ]
-        ];
+        */
     }
 
     void
@@ -583,10 +422,8 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PathComponent");
-        module(mState)
-        [
-            class_<PathComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("PathComponent")
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<PathComponent>("PathComponent");
     }
 
     void
@@ -594,16 +431,15 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PathInstance");
-        module(mState)
-        [
-        class_<PathInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("PathInstance")
-            .def("generate",&PathInstance::generate)
-            .def("getSplinePoints",&PathInstance::getSplinePoints)
-            .def("getSplinePoint",&PathInstance::getSplinePoint)
-            .def("getUStep",&PathInstance::getUStep)
-            .def("setUStep",&PathInstance::setUStep)
-            .def("stepPath",&PathInstance::stepPath)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<PathInstance>("PathInstance",
+            "generate",&PathInstance::generate,
+            "getSplinePoints",&PathInstance::getSplinePoints,
+            "getSplinePoint",&PathInstance::getSplinePoint,
+            "getUStep",&PathInstance::getUStep,
+            "setUStep",&PathInstance::setUStep,
+            "stepPath",&PathInstance::stepPath
+        );
     }
 
     void
@@ -611,12 +447,11 @@ namespace Dream
     ()
     {
         debugRegisteringClass("FontInstance");
-        module(mState)
-        [
-            class_<FontInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("FontInstance")
-            .def("setText",&FontInstance::setText)
-            .def("getText",&FontInstance::getText)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<FontInstance>("FontInstance",
+            "setText",&FontInstance::setText,
+            "getText",&FontInstance::getText
+        );
     }
 
     void
@@ -624,10 +459,8 @@ namespace Dream
     ()
     {
         debugRegisteringClass("GraphicsComponent");
-        module(mState)
-        [
-            class_<GraphicsComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("GraphicsComponent")
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<GraphicsComponent>("GraphicsComponent");
     }
 
     void
@@ -635,11 +468,8 @@ namespace Dream
     ()
     {
         debugRegisteringClass("LightInstance");
-        module(mState)
-        [
-            class_<LightInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("LightInstance")
-            // TODO
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<LightInstance>("LightInstance");
     }
 
     void
@@ -647,16 +477,15 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ShaderInstance");
-        module(mState)
-        [
-            class_<ShaderInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("ShaderInstance")
-                .def("getUuid", &ShaderInstance::getUuid)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<ShaderInstance>("ShaderInstance",
+            "getUuid", &ShaderInstance::getUuid
+        );
 
         debugRegisteringClass("ShaderUniform");
-        module(mState)
-        [
-            class_<ShaderUniform, DreamObject, shared_ptr<DreamObject>>("ShaderUniform")
+
+        stateView.new_usertype<ShaderUniform>("ShaderUniform");
+        /*
                 .enum_("UniformType")
                 [
                     value("INT1",UniformType::INT1),
@@ -672,7 +501,7 @@ namespace Dream
                     value("FLOAT3",UniformType::FLOAT3),
                     value("FLOAT4",UniformType::FLOAT4)
                 ]
-        ];
+                */
     }
 
     void
@@ -680,10 +509,8 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SpriteInstance");
-        module(mState)
-        [
-            class_<SpriteInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("SpriteInstance")
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<SpriteInstance>("SpriteInstance");
     }
 
     void
@@ -691,11 +518,10 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsComponent");
-        module(mState)
-        [
-            class_<PhysicsComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("PhysicsComponent")
-                .def("setDebug",&PhysicsComponent::setDebug)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<PhysicsComponent>("PhysicsComponent",
+            "setDebug",&PhysicsComponent::setDebug
+        );
     }
 
     void
@@ -703,12 +529,11 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsObjectInstance");
-        module(mState)
-        [
-            class_<PhysicsObjectInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("PhysicsObjectInstance")
-                .def("getUuid", &PhysicsObjectInstance::getUuid)
-                .def("setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<PhysicsObjectInstance>("PhysicsObjectInstance",
+            "getUuid", &PhysicsObjectInstance::getUuid,
+            "setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity
+        );
     }
 
     void
@@ -716,18 +541,15 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Math");
-        module(mState)
-        [
-            class_<Math>("Math")
-                .scope[
-                    luabind::def("degreesToRadians",&Math::degreesToRadians),
-                    luabind::def("radiansToDegrees",&Math::radiansToDegrees),
-                    luabind::def("pow",&Math::_pow),
-                    luabind::def("sin",&Math::_sinf),
-                    luabind::def("cos",&Math::_cosf),
-                    luabind::def("sqrt",&Math::_sqrtf)
-                ]
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<Math>("Math",
+            "degreesToRadians",&Math::degreesToRadians,
+            "radiansToDegrees",&Math::radiansToDegrees,
+            "pow",&Math::_pow,
+            "sin",&Math::_sinf,
+            "cos",&Math::_cosf,
+            "sqrt",&Math::_sqrtf
+        );
     }
 
     void
@@ -735,39 +557,33 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SceneObjectRuntime");
-        module(mState)
-        [
-            class_<SceneObjectRuntime, bases<DreamObject, IRuntime>, shared_ptr<DreamObject>>("DreamObject")
-
-                .def("getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid)
-
-                .def("getParent",&SceneObjectRuntime::getParentRuntime)
-                .def("setParent",&SceneObjectRuntime::setParentRuntime)
-
-                .def("getTransform",&SceneObjectRuntime::getTransform)
-                .def("setTransform",&SceneObjectRuntime::setTransform)
-
-                .def("addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad)
-
-                .def("walk",&SceneObjectRuntime::walk)
-                .def("getPath",&SceneObjectRuntime::getPathInstance)
-                .def("getAudio",&SceneObjectRuntime::getAudioInstance)
-                .def("getSprite",&SceneObjectRuntime::getSpriteInstance)
-                .def("getModel",&SceneObjectRuntime::getModelInstance)
-                .def("getShader",&SceneObjectRuntime::getShaderInstance)
-                .def("getLight",&SceneObjectRuntime::getLightInstance)
-                .def("getFont",&SceneObjectRuntime::getFontInstance)
-                .def("getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance)
-
-                .def("hasPath",&SceneObjectRuntime::hasPathInstance)
-                .def("hasAudio",&SceneObjectRuntime::hasAudioInstance)
-                .def("hasSprite",&SceneObjectRuntime::hasSpriteInstance)
-                .def("hasModel",&SceneObjectRuntime::hasModelInstance)
-                .def("hasShader",&SceneObjectRuntime::hasShaderInstance)
-                .def("hasLight",&SceneObjectRuntime::hasLightInstance)
-                .def("hasFont",&SceneObjectRuntime::hasFontInstance)
-                .def("hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<SceneObjectRuntime>("SceneObjectRuntime",
+            "getName",&SceneObjectRuntime::getName,
+            "getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid,
+            "getParent",&SceneObjectRuntime::getParentRuntime,
+            "setParent",&SceneObjectRuntime::setParentRuntime,
+            "getTransform",&SceneObjectRuntime::getTransform,
+            "setTransform",&SceneObjectRuntime::setTransform,
+            "addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad,
+            "walk",&SceneObjectRuntime::walk,
+            "getPath",&SceneObjectRuntime::getPathInstance,
+            "getAudio",&SceneObjectRuntime::getAudioInstance,
+            "getSprite",&SceneObjectRuntime::getSpriteInstance,
+            "getModel",&SceneObjectRuntime::getModelInstance,
+            "getShader",&SceneObjectRuntime::getShaderInstance,
+            "getLight",&SceneObjectRuntime::getLightInstance,
+            "getFont",&SceneObjectRuntime::getFontInstance,
+            "getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance,
+            "hasPath",&SceneObjectRuntime::hasPathInstance,
+            "hasAudio",&SceneObjectRuntime::hasAudioInstance,
+            "hasSprite",&SceneObjectRuntime::hasSpriteInstance,
+            "hasModel",&SceneObjectRuntime::hasModelInstance,
+            "hasShader",&SceneObjectRuntime::hasShaderInstance,
+            "hasLight",&SceneObjectRuntime::hasLightInstance,
+            "hasFont",&SceneObjectRuntime::hasFontInstance,
+            "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance
+        );
     }
 
     void
@@ -775,60 +591,59 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Transform3D");
-        module(mState) [
-            class_<Transform3D, DreamObject, shared_ptr<DreamObject>>("Transform3D")
-                .def(constructor<>())
-                // Translation ===========================================================
-                .def("getTransformType",&Transform3D::getTransformType)
-                .def("getTranslationX",&Transform3D::getTranslationX)
-                .def("getTranslationY",&Transform3D::getTranslationY)
-                .def("getTranslationZ",&Transform3D::getTranslationZ)
-                .def("setTranslationX",&Transform3D::setTranslationX)
-                .def("setTranslationY",&Transform3D::setTranslationY)
-                .def("setTranslationZ",&Transform3D::setTranslationZ)
-                .def("translateByX",&Transform3D::translateByX)
-                .def("translateByY",&Transform3D::translateByY)
-                .def("translateByZ",&Transform3D::translateByZ)
-                .def("setTranslation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation))
-                .def("setTranslation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setTranslation))
-                .def("getTranslation",&Transform3D::getTranslation)
-                // Rotation =============================================================
-                .def("getRotationX",&Transform3D::getRotationX)
-                .def("getRotationY",&Transform3D::getRotationY)
-                .def("getRotationZ",&Transform3D::getRotationZ)
-                .def("setRotationX",&Transform3D::setRotationX)
-                .def("setRotationY",&Transform3D::setRotationY)
-                .def("setRotationZ",&Transform3D::setRotationZ)
-                .def("rotateByX",&Transform3D::rotateByX)
-                .def("rotateByY",&Transform3D::rotateByY)
-                .def("rotateByZ",&Transform3D::rotateByZ)
-                .def("setRotation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation))
-                .def("setRotation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setRotation))
-                .def("getOrientation",&Transform3D::getOrientation)
-                .def("setOrientation",static_cast<void(Transform3D::*)(float,float,float,float)>(&Transform3D::setOrientation))
-                .def("setOrientation",static_cast<void(Transform3D::*)(glm::quat)>(&Transform3D::setOrientation))
-                .def("setOrientationW",&Transform3D::setOrientationW)
-                .def("getOrientationW",&Transform3D::getOrientationW)
-                .def("setOrientationX",&Transform3D::setOrientationX)
-                .def("getOrientationX",&Transform3D::getOrientationX)
-                .def("setOrientationY",&Transform3D::setOrientationY)
-                .def("getOrientationY",&Transform3D::getOrientationY)
-                .def("setOrientationZ",&Transform3D::setOrientationZ)
-                .def("getOrientationZ",&Transform3D::getOrientationZ)
+        sol::state_view stateView(mState);
+        stateView.new_usertype<Transform3D>("Transform3D",
+            // Translation ===========================================================
+            "getTransformType",&Transform3D::getTransformType,
+            "getTranslationX",&Transform3D::getTranslationX,
+            "getTranslationY",&Transform3D::getTranslationY,
+            "getTranslationZ",&Transform3D::getTranslationZ,
+            "setTranslationX",&Transform3D::setTranslationX,
+            "setTranslationY",&Transform3D::setTranslationY,
+            "setTranslationZ",&Transform3D::setTranslationZ,
+            "translateByX",&Transform3D::translateByX,
+            "translateByY",&Transform3D::translateByY,
+            "translateByZ",&Transform3D::translateByZ,
+            "setTranslation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation),
+            "setTranslation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setTranslation),
+            "getTranslation",&Transform3D::getTranslation,
+            // Rotation =============================================================
+            "getRotationX",&Transform3D::getRotationX,
+            "getRotationY",&Transform3D::getRotationY,
+            "getRotationZ",&Transform3D::getRotationZ,
+            "setRotationX",&Transform3D::setRotationX,
+            "setRotationY",&Transform3D::setRotationY,
+            "setRotationZ",&Transform3D::setRotationZ,
+            "rotateByX",&Transform3D::rotateByX,
+            "rotateByY",&Transform3D::rotateByY,
+            "rotateByZ",&Transform3D::rotateByZ,
+            "setRotation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation),
+            "setRotation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setRotation),
+            "getOrientation",&Transform3D::getOrientation,
+            "setOrientation",static_cast<void(Transform3D::*)(float,float,float,float)>(&Transform3D::setOrientation),
+            "setOrientation",static_cast<void(Transform3D::*)(glm::quat)>(&Transform3D::setOrientation),
+            "setOrientationW",&Transform3D::setOrientationW,
+            "getOrientationW",&Transform3D::getOrientationW,
+            "setOrientationX",&Transform3D::setOrientationX,
+            "getOrientationX",&Transform3D::getOrientationX,
+            "setOrientationY",&Transform3D::setOrientationY,
+            "getOrientationY",&Transform3D::getOrientationY,
+            "setOrientationZ",&Transform3D::setOrientationZ,
+            "getOrientationZ",&Transform3D::getOrientationZ,
 
-                // Scale ================================================================
-                .def("getScaleX",&Transform3D::getScaleX)
-                .def("getScaleY",&Transform3D::getScaleY)
-                .def("getScaleZ",&Transform3D::getScaleZ)
-                .def("setScaleX",&Transform3D::setScaleX)
-                .def("setScaleY",&Transform3D::setScaleY)
-                .def("setScaleZ",&Transform3D::setScaleZ)
-                .def("scaleByX",&Transform3D::scaleByX)
-                .def("scaleByY",&Transform3D::scaleByY)
-                .def("scaleByZ",&Transform3D::scaleByZ)
-                .def("setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale))
-                .def("setScale",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setScale))
-            ];
+            // Scale ================================================================
+            "getScaleX",&Transform3D::getScaleX,
+            "getScaleY",&Transform3D::getScaleY,
+            "getScaleZ",&Transform3D::getScaleZ,
+            "setScaleX",&Transform3D::setScaleX,
+            "setScaleY",&Transform3D::setScaleY,
+            "setScaleZ",&Transform3D::setScaleZ,
+            "scaleByX",&Transform3D::scaleByX,
+            "scaleByY",&Transform3D::scaleByY,
+            "scaleByZ",&Transform3D::scaleByZ,
+            "setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale),
+            "setScale",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setScale)
+        );
     }
 
     void
@@ -836,16 +651,15 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Time");
-        module(mState)
-        [
-            class_<Time, DreamObject, shared_ptr<Time>>("Time")
-                .def("getCurrentFrameTime",&Time::getCurrentFrameTime)
-                .def("getLastFrameTime",&Time::getLastFrameTime)
-                .def("getFrameTimeDelta",&Time::getFrameTimeDelta)
-                .def("scaleValueByFrameTime",&Time::scaleValueByFrameTime)
-                .def("now",&Time::now)
-                .def("nowLL",&Time::nowLL)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<Time>("Time",
+            "getCurrentFrameTime",&Time::getCurrentFrameTime,
+            "getLastFrameTime",&Time::getLastFrameTime,
+            "getFrameTimeDelta",&Time::getFrameTimeDelta,
+            "scaleValueByFrameTime",&Time::scaleValueByFrameTime,
+            "now",&Time::now,
+            "nowLL",&Time::nowLL
+        );
     }
 
     void
@@ -853,10 +667,8 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AssimpModelInstance");
-        module(mState)
-        [
-            class_<AssimpModelInstance, bases<DreamObject, IAssetInstance>, shared_ptr<IAssetInstance>>("AssimpModelInstance")
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<AssimpModelInstance>("AssimpModelInstance");
     }
 
     void
@@ -864,14 +676,13 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Event");
-        module(mState)
-        [
-            class_<Event, DreamObject, shared_ptr<DreamObject>>("Event")
-                .def("getSender",&Event::getSender)
-                .def("getType",&Event::getType)
-                .def("getAttribute",&Event::getAttribute)
-                .def("setAttribute",&Event::setAttribute)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<Event>("Event",
+            "getSender",&Event::getSender,
+            "getType",&Event::getType,
+            "getAttribute",&Event::getAttribute,
+            "setAttribute",&Event::setAttribute
+        );
     }
 
     void
@@ -879,13 +690,12 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioComponent");
-        module(mState)
-        [
-            class_<AudioComponent, bases<DreamObject, IComponent>, shared_ptr<IComponent>>("AudioComponent")
-                .def("play",&AudioComponent::playAudioAsset)
-                .def("pause",&AudioComponent::pauseAudioAsset)
-                .def("stop",&AudioComponent::stopAudioAsset)
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<AudioComponent>("AudioComponent",
+            "play",&AudioComponent::playAudioAsset,
+            "pause",&AudioComponent::pauseAudioAsset,
+            "stop",&AudioComponent::stopAudioAsset
+        );
     }
 
 
@@ -901,18 +711,19 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioInstance");
-        module(mState)
-        [
-            class_<AudioInstance, bases<DreamObject, IAssetInstance>, shared_ptr<AudioInstance>>("AudioInstance")
-                .def("getStatus",&AudioInstance::getStatus),
-                class_<AudioStatus>("AudioStatus")
-                    .enum_("AudioStatus")
-                    [
-                        value("PLAYING", AudioStatus::PLAYING),
-                        value("PAUSED",  AudioStatus::PAUSED),
-                        value("STOPPED", AudioStatus::STOPPED)
-                    ]
-        ];
+        sol::state_view stateView(mState);
+        stateView.new_usertype<AudioInstance>("AudioInstance",
+            "getStatus",&AudioInstance::getStatus
+        );
+                /*
+            mState.new_usertype<AudioStatus>("AudioStatus")
+                .enum_("AudioStatus")
+                [
+                    value("PLAYING", AudioStatus::PLAYING),
+                    value("PAUSED",  AudioStatus::PAUSED),
+                    value("STOPPED", AudioStatus::STOPPED)
+                ]
+                        */
     }
 
     void
@@ -920,16 +731,17 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Gainput");
-        module(mState)
-        [
-                class_<gainput::InputMap>("InputMap")
-                    .def("GetBool",&gainput::InputMap::GetBool)
-                    .def("GetBoolIsNew",&gainput::InputMap::GetBoolIsNew)
-                    .def("GetBoolPrevious",&gainput::InputMap::GetBoolPrevious)
-                    .def("GetBoolWasDown",&gainput::InputMap::GetBoolWasDown)
-                    .def("GetFloat",&gainput::InputMap::GetFloat)
-                    .def("GetFloatPrevious",&gainput::InputMap::GetFloatPrevious)
-                    .def("GetFloatDelta",&gainput::InputMap::GetFloatDelta)
+        sol::state_view stateView(mState);
+        stateView.new_usertype<gainput::InputMap>("InputMap",
+            "GetBool",&gainput::InputMap::GetBool,
+            "GetBoolIsNew",&gainput::InputMap::GetBoolIsNew,
+            "GetBoolPrevious",&gainput::InputMap::GetBoolPrevious,
+            "GetBoolWasDown",&gainput::InputMap::GetBoolWasDown,
+            "GetFloat",&gainput::InputMap::GetFloat,
+            "GetFloatPrevious",&gainput::InputMap::GetFloatPrevious,
+            "GetFloatDelta",&gainput::InputMap::GetFloatDelta
+        );
+        /*
                     .enum_("InputSource")
                     [
                         value("FaceButtonNorth", InputSource::FaceButtonNorth),
@@ -961,6 +773,7 @@ namespace Dream
                         value("AnalogRightButton", InputSource::AnalogRightButton)
                     ]
         ];
+        */
     }
 
     void
@@ -973,9 +786,11 @@ namespace Dream
         {
             if ((*iter).first == sceneObject)
             {
+                /*
                 string id = (*iter).first->getUuid();
                 object reg = registry(mState);
                 reg[id] = nil;
+                */
 
                 string name = (*iter).first->getNameAndUuidString();
                 log->info( "Removed script for {}" , name );
@@ -1012,13 +827,14 @@ namespace Dream
     LuaComponent::exposeNanoVG
     ()
     {
+        /*
         debugRegisteringClass("NanoVG");
-        module(mState)[
-                class_<NVGcolor>("NVGcolor"),
-                class_<NVGpaint>("NVGpaint"),
-                class_<NVGglyphPosition>("NVGglyphPosition"),
-                class_<NVGtextRow>("NVGtextRow"),
-                class_<NanoVGComponent>("NanoVG")
+        [
+                mState.new_usertype<NVGcolor>("NVGcolor"),
+                mState.new_usertype<NVGpaint>("NVGpaint"),
+                mState.new_usertype<NVGglyphPosition>("NVGglyphPosition"),
+                mState.new_usertype<NVGtextRow>("NVGtextRow"),
+                mState.new_usertype<NanoVGComponent>("NanoVG")
                 .enum_("NVGsolidity")
                 [
                 value("NVG_SOLID",NVG_SOLID),
@@ -1033,121 +849,123 @@ namespace Dream
                 value("NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED),
                 value("NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST)
                 ]
-                .def("BeginFrame",&NanoVGComponent::BeginFrame)
-                .def("CancelFrame",&NanoVGComponent::CancelFrame)
-                .def("EndFrame",&NanoVGComponent::EndFrame)
-                .def("GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation)
-                .def("GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc)
-                .def("GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate)
-                .def("RGB",&NanoVGComponent::RGB)
-                .def("RGBf",&NanoVGComponent::RGBf)
-                .def("RGBA",&NanoVGComponent::RGBA)
-                .def("RGBAf",&NanoVGComponent::RGBAf)
-                .def("LerpRGBA",&NanoVGComponent::LerpRGBA)
-                .def("TransRGBA",&NanoVGComponent::TransRGBA)
-                .def("TransRGBAf",&NanoVGComponent::TransRGBAf)
-                .def("HSL",&NanoVGComponent::HSL)
-                .def("HSLA",&NanoVGComponent::HSLA)
-                .def("Save",&NanoVGComponent::Save)
-                .def("Restore",&NanoVGComponent::Restore)
-                .def("Reset",&NanoVGComponent::Reset)
-                .def("ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias)
-                .def("StrokeColor",&NanoVGComponent::StrokeColor)
-                .def("StrokePaint",&NanoVGComponent::StrokePaint)
-                .def("FillColor",&NanoVGComponent::FillColor)
-                .def("FillPaint",&NanoVGComponent::FillPaint)
-                .def("MiterLimit",&NanoVGComponent::MiterLimit)
-                .def("StrokeWidth",&NanoVGComponent::StrokeWidth)
-                .def("LineCap",&NanoVGComponent::LineCap)
-                .def("LineJoin",&NanoVGComponent::LineJoin)
-                .def("GlobalAlpha",&NanoVGComponent::GlobalAlpha)
-                .def("ResetTransform",&NanoVGComponent::ResetTransform)
-                .def("Transform",&NanoVGComponent::Transform)
-                .def("Translate",&NanoVGComponent::Translate)
-                .def("Rotate",&NanoVGComponent::Rotate)
-                .def("SkewX",&NanoVGComponent::SkewX)
-                .def("SkewY",&NanoVGComponent::SkewY)
-                .def("Scale;",&NanoVGComponent::Scale)
-                .def("CurrentTransform",&NanoVGComponent::CurrentTransform)
-                .def("TransformIdentity",&NanoVGComponent::TransformIdentity)
-                .def("TransformTranslate",&NanoVGComponent::TransformTranslate)
-                .def("TransformScale",&NanoVGComponent::TransformScale)
-                .def("TransformRotate",&NanoVGComponent::TransformRotate)
-                .def("TransformSkewX",&NanoVGComponent::TransformSkewX)
-                .def("TransformSkewY",&NanoVGComponent::TransformSkewY)
-                .def("TransformMultiply",&NanoVGComponent::TransformMultiply)
-                .def("TransformPremultiply",&NanoVGComponent::TransformPremultiply)
-                .def("TransformInverse",&NanoVGComponent::TransformInverse)
-                .def("TransformPoint",&NanoVGComponent::TransformPoint)
-                .def("DegToRad",&NanoVGComponent::DegToRad)
-                .def("RadToDeg",&NanoVGComponent::RadToDeg)
-                .def("CreateImage",&NanoVGComponent::CreateImage)
-                .def("CreateImageMem",&NanoVGComponent::CreateImageMem)
-                .def("CreateImageRGBA",&NanoVGComponent::CreateImageRGBA)
-                .def("UpdateImage",&NanoVGComponent::UpdateImage)
-                .def("ImageSize",&NanoVGComponent::ImageSize)
-                .def("DeleteImage",&NanoVGComponent::DeleteImage)
-                .def("LinearGradient",&NanoVGComponent::LinearGradient)
-                .def("BoxGradient",&NanoVGComponent::BoxGradient)
-                .def("RadialGradient",&NanoVGComponent::RadialGradient)
-                .def("ImagePattern",&NanoVGComponent::ImagePattern)
-                .def("Scissor",&NanoVGComponent::Scissor)
-                .def("IntersectScissor",&NanoVGComponent::IntersectScissor)
-                .def("ResetScissor",&NanoVGComponent::ResetScissor)
-                .def("BeginPath",&NanoVGComponent::BeginPath)
-                .def("MoveTo",&NanoVGComponent::MoveTo)
-                .def("LineTo",&NanoVGComponent::LineTo)
-                .def("BezierTo",&NanoVGComponent::BezierTo)
-                .def("QuadTo",&NanoVGComponent::QuadTo)
-                .def("ArcTo",&NanoVGComponent::ArcTo)
-                .def("ClosePath",&NanoVGComponent::ClosePath)
-                .def("PathWinding",&NanoVGComponent::PathWinding)
-                .def("Arc",&NanoVGComponent::Arc)
-                .def("Rect",&NanoVGComponent::Rect)
-                .def("RoundedRect",&NanoVGComponent::RoundedRect)
-                .def("RoundedRectVarying",&NanoVGComponent::RoundedRectVarying)
-                .def("Ellipse",&NanoVGComponent::Ellipse)
-                .def("Circle",&NanoVGComponent::Circle)
-                .def("Fill",&NanoVGComponent::Fill)
-                .def("Stroke",&NanoVGComponent::Stroke)
-                .def("CreateFont",&NanoVGComponent::CreateFont)
-                .def("CreateFontMem",&NanoVGComponent::CreateFontMem)
-                .def("FindFont",&NanoVGComponent::FindFont)
-                .def("AddFallbackFontId",&NanoVGComponent::AddFallbackFontId)
-                .def("AddFallbackFont",&NanoVGComponent::AddFallbackFont)
-                .def("FontSize",&NanoVGComponent::FontSize)
-                .def("FontBlur",&NanoVGComponent::FontBlur)
-                .def("TextLetterSpacing",&NanoVGComponent::TextLetterSpacing)
-                .def("TextLineHeight",&NanoVGComponent::TextLineHeight)
-                .def("TextAlign",&NanoVGComponent::TextAlign)
-                .def("FontFaceId",&NanoVGComponent::FontFaceId)
-                .def("FontFace",&NanoVGComponent::FontFace)
-                .def("Text",&NanoVGComponent::Text)
-                .def("TextBox",&NanoVGComponent::TextBox)
-                .def("TextBounds",&NanoVGComponent::TextBounds)
-                .def("TextBoxBounds",&NanoVGComponent::TextBoxBounds)
-                .def("TextGlyphPositions",&NanoVGComponent::TextGlyphPositions)
-                .def("TextMetrics",&NanoVGComponent::TextMetrics)
-                .def("TextBreakLines",&NanoVGComponent::TextBreakLines)
-                ];
+                "BeginFrame",&NanoVGComponent::BeginFrame)
+                "CancelFrame",&NanoVGComponent::CancelFrame)
+                "EndFrame",&NanoVGComponent::EndFrame)
+                "GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation)
+                "GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc)
+                "GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate)
+                "RGB",&NanoVGComponent::RGB)
+                "RGBf",&NanoVGComponent::RGBf)
+                "RGBA",&NanoVGComponent::RGBA)
+                "RGBAf",&NanoVGComponent::RGBAf)
+                "LerpRGBA",&NanoVGComponent::LerpRGBA)
+                "TransRGBA",&NanoVGComponent::TransRGBA)
+                "TransRGBAf",&NanoVGComponent::TransRGBAf)
+                "HSL",&NanoVGComponent::HSL)
+                "HSLA",&NanoVGComponent::HSLA)
+                "Save",&NanoVGComponent::Save)
+                "Restore",&NanoVGComponent::Restore)
+                "Reset",&NanoVGComponent::Reset)
+                "ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias)
+                "StrokeColor",&NanoVGComponent::StrokeColor)
+                "StrokePaint",&NanoVGComponent::StrokePaint)
+                "FillColor",&NanoVGComponent::FillColor)
+                "FillPaint",&NanoVGComponent::FillPaint)
+                "MiterLimit",&NanoVGComponent::MiterLimit)
+                "StrokeWidth",&NanoVGComponent::StrokeWidth)
+                "LineCap",&NanoVGComponent::LineCap)
+                "LineJoin",&NanoVGComponent::LineJoin)
+                "GlobalAlpha",&NanoVGComponent::GlobalAlpha)
+                "ResetTransform",&NanoVGComponent::ResetTransform)
+                "Transform",&NanoVGComponent::Transform)
+                "Translate",&NanoVGComponent::Translate)
+                "Rotate",&NanoVGComponent::Rotate)
+                "SkewX",&NanoVGComponent::SkewX)
+                "SkewY",&NanoVGComponent::SkewY)
+                "Scale;",&NanoVGComponent::Scale)
+                "CurrentTransform",&NanoVGComponent::CurrentTransform)
+                "TransformIdentity",&NanoVGComponent::TransformIdentity)
+                "TransformTranslate",&NanoVGComponent::TransformTranslate)
+                "TransformScale",&NanoVGComponent::TransformScale)
+                "TransformRotate",&NanoVGComponent::TransformRotate)
+                "TransformSkewX",&NanoVGComponent::TransformSkewX)
+                "TransformSkewY",&NanoVGComponent::TransformSkewY)
+                "TransformMultiply",&NanoVGComponent::TransformMultiply)
+                "TransformPremultiply",&NanoVGComponent::TransformPremultiply)
+                "TransformInverse",&NanoVGComponent::TransformInverse)
+                "TransformPoint",&NanoVGComponent::TransformPoint)
+                "DegToRad",&NanoVGComponent::DegToRad)
+                "RadToDeg",&NanoVGComponent::RadToDeg)
+                "CreateImage",&NanoVGComponent::CreateImage)
+                "CreateImageMem",&NanoVGComponent::CreateImageMem)
+                "CreateImageRGBA",&NanoVGComponent::CreateImageRGBA)
+                "UpdateImage",&NanoVGComponent::UpdateImage)
+                "ImageSize",&NanoVGComponent::ImageSize)
+                "DeleteImage",&NanoVGComponent::DeleteImage)
+                "LinearGradient",&NanoVGComponent::LinearGradient)
+                "BoxGradient",&NanoVGComponent::BoxGradient)
+                "RadialGradient",&NanoVGComponent::RadialGradient)
+                "ImagePattern",&NanoVGComponent::ImagePattern)
+                "Scissor",&NanoVGComponent::Scissor)
+                "IntersectScissor",&NanoVGComponent::IntersectScissor)
+                "ResetScissor",&NanoVGComponent::ResetScissor)
+                "BeginPath",&NanoVGComponent::BeginPath)
+                "MoveTo",&NanoVGComponent::MoveTo)
+                "LineTo",&NanoVGComponent::LineTo)
+                "BezierTo",&NanoVGComponent::BezierTo)
+                "QuadTo",&NanoVGComponent::QuadTo)
+                "ArcTo",&NanoVGComponent::ArcTo)
+                "ClosePath",&NanoVGComponent::ClosePath)
+                "PathWinding",&NanoVGComponent::PathWinding)
+                "Arc",&NanoVGComponent::Arc)
+                "Rect",&NanoVGComponent::Rect)
+                "RoundedRect",&NanoVGComponent::RoundedRect)
+                "RoundedRectVarying",&NanoVGComponent::RoundedRectVarying)
+                "Ellipse",&NanoVGComponent::Ellipse)
+                "Circle",&NanoVGComponent::Circle)
+                "Fill",&NanoVGComponent::Fill)
+                "Stroke",&NanoVGComponent::Stroke)
+                "CreateFont",&NanoVGComponent::CreateFont)
+                "CreateFontMem",&NanoVGComponent::CreateFontMem)
+                "FindFont",&NanoVGComponent::FindFont)
+                "AddFallbackFontId",&NanoVGComponent::AddFallbackFontId)
+                "AddFallbackFont",&NanoVGComponent::AddFallbackFont)
+                "FontSize",&NanoVGComponent::FontSize)
+                "FontBlur",&NanoVGComponent::FontBlur)
+                "TextLetterSpacing",&NanoVGComponent::TextLetterSpacing)
+                "TextLineHeight",&NanoVGComponent::TextLineHeight)
+                "TextAlign",&NanoVGComponent::TextAlign)
+                "FontFaceId",&NanoVGComponent::FontFaceId)
+                "FontFace",&NanoVGComponent::FontFace)
+                "Text",&NanoVGComponent::Text)
+                "TextBox",&NanoVGComponent::TextBox)
+                "TextBounds",&NanoVGComponent::TextBounds)
+                "TextBoxBounds",&NanoVGComponent::TextBoxBounds)
+                "TextGlyphPositions",&NanoVGComponent::TextGlyphPositions)
+                "TextMetrics",&NanoVGComponent::TextMetrics)
+                "TextBreakLines",&NanoVGComponent::TextBreakLines)
+                */
     }
 
     void LuaComponent::exposeGLM()
     {
         debugRegisteringClass("GLM");
-        module(mState)
-        [
-            class_<glm::vec3>("vec3")
-                .def_readwrite("x",&glm::vec3::x)
-                .def_readwrite("y",&glm::vec3::y)
-                .def_readwrite("z",&glm::vec3::z),
-            class_<glm::quat>("quat")
-                .def_readwrite("w",&glm::quat::w)
-                .def_readwrite("x",&glm::quat::x)
-                .def_readwrite("y",&glm::quat::y)
-                .def_readwrite("z",&glm::quat::z),
-            class_<glm::mat4>("mat4")
-        ];
+        sol::state_view stateView(mState);
+
+        stateView.new_usertype<glm::vec3>("vec3",
+            "x", &glm::vec3::x,
+            "y", &glm::vec3::y,
+            "z", &glm::vec3::z
+        );
+        stateView.new_usertype<glm::quat>("quat",
+            "w", &glm::quat::w,
+            "x", &glm::quat::x,
+            "y", &glm::quat::y,
+            "z", &glm::quat::z
+        );
+
+        stateView.new_usertype<glm::mat4>("mat4");
     }
 
 } // End of Dream

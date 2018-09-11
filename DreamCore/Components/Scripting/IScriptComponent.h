@@ -64,13 +64,13 @@ namespace Dream
 
         virtual void removeFromScriptMap(shared_ptr<SceneObjectRuntime>) = 0;
         virtual void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>) = 0;
-        void setInputMap(gainput::InputMap *map);
+        void setInputMap(shared_ptr<gainput::InputMap> map);
 
     protected:// Variables
         shared_ptr<ScriptCache> mScriptCache;
         shared_ptr<ProjectRuntime> mProjectRuntime;
         map<shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>> mScriptMap;
-        gainput::InputMap* mInputMap;
+        shared_ptr<gainput::InputMap> mInputMap;
 
         // API Exposure Methods ======================================================
         void debugRegisteringClass(string className);

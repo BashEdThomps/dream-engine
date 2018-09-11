@@ -23,7 +23,7 @@ extern "C"
     #include <lua.h>
     #include <lualib.h>
     #include <lauxlib.h>
-};
+}
 
 #include <map>
 #include <iostream>
@@ -34,36 +34,30 @@ extern "C"
 #include "../IScriptComponent.h"
 #include <gainput/gainput.h>
 
+#include "LuaScriptInstance.h"
+
 using std::unique_ptr;
 using std::string;
 using std::map;
 using std::vector;
-
-int errorr(lua_State*);
 
 namespace Dream
 {
     class ProjectRuntime;
     class SceneRuntime;
     class SceneObjectRuntime;
-    class LuaScriptInstance;
     class Event;
 
     class LuaComponent : public IScriptComponent
     {
     public: // Methods
-        LuaComponent(
-            shared_ptr<ProjectRuntime> project,
-            shared_ptr<ScriptCache> cache
-        );
-
+        LuaComponent(shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache);
        ~LuaComponent() override;
 
         bool init() override;
         void updateComponent() override;
         bool loadScript(shared_ptr<SceneObjectRuntime>) override;
         bool updateNanoVG();
-        void stackDump();
 
         bool executeScriptInit  (shared_ptr<SceneObjectRuntime>) override;
         bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>) override;
@@ -75,29 +69,7 @@ namespace Dream
         void addToScriptMap(shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>) override;
 
     private:
-        string mScriptLoadFromString =
-                "function scriptLoadFromString (scriptTable, script_string)\n"
-                "    local mt = {__index = _G}\n"
-                "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = assert(loadstring(script_string))\n"
-                "    if not chunk then\n "
-                "       return false\n"
-                "    end\n"
-                "    setfenv(chunk, scriptTable)"
-                "    chunk()\n"
-                "    return true\n"
-                "end";
-
-                /*"function scriptLoadFromString (scriptTable, script_string)\n"
-                "    local mt = {__index = _G}\n"
-                "    setmetatable(scriptTable, mt)\n"
-                "    local chunk = assert(load(script_string,nil,nil,scriptTable))\n"
-                "    if not chunk then return false end\n"
-                "    chunk()\n"
-                "    return true\n"
-                "end";
-                        */
-        lua_State *mState;
+        lua_State* mState;
 
         // API Exposure Methods ======================================================
 

@@ -168,8 +168,7 @@ macx: LIBS += \
     -L/opt/local/lib \
     -L/usr/lib \
     -lDreamCore \
-    -llua.5.1 \
-    -lLuabind \
+    -llua.5.3 \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lSOIL \
     -lFreeType
@@ -188,8 +187,8 @@ INCLUDEPATH += \
     $$PWD/../DreamCore/include \
     /usr/local/include \
     /usr/include/bullet \
-    /usr/include/lua5.1 \
-    /usr/local/include/lua5.1 \
+    /usr/include/lua5.3 \
+    /usr/local/include/lua5.3 \
     /usr/local/include/bullet \
     /usr/include/freetype2 \
     /usr/local/include/freetype2 \

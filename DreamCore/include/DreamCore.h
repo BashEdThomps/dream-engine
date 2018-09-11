@@ -23,7 +23,6 @@
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Scripting/IScriptComponent.h"
 #include "../Components/Scripting/Lua/LuaComponent.h"
-#include "../Components/Scripting/JS/JSComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 
 #include "../Components/Graphics/Camera.h"

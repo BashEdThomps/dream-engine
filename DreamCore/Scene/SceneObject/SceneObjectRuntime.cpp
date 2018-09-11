@@ -50,8 +50,8 @@
 
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptInstance.h"
-#include "../../Components/Scripting/JS/JSComponent.h"
-#include "../../Components/Scripting/JS/JSScriptInstance.h"
+#include "../../Components/Scripting/Lua/LuaComponent.h"
+#include "../../Components/Scripting/Lua/LuaScriptInstance.h"
 
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
@@ -598,7 +598,7 @@ namespace Dream
         auto log = getLog();
         log->info( "Creating Script asset instance." );
         mScriptInstance = dynamic_pointer_cast<ScriptInstance>(
-            make_shared<JSScriptInstance>(
+            make_shared<LuaScriptInstance>(
                 definition,
                 dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
             )

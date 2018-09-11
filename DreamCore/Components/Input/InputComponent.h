@@ -40,8 +40,6 @@ namespace Dream
         AnalogRightButton
     };
 
-    class IScriptComponent;
-
     class InputComponent : public IComponent
     {
     public:
@@ -50,15 +48,14 @@ namespace Dream
 
         bool init() override;
         void updateComponent() override;
-        void setScriptComponent(shared_ptr<IScriptComponent> sc);
+
+        shared_ptr<InputMap> getInputMap() const;
 
     private:
         const static float ANALOG_DEAD_ZONE;
         shared_ptr<InputMap> mInputMap;
         InputManager mInputManager;
         vector<DeviceId> mDevices;
-        shared_ptr<IScriptComponent> mScriptComponent;
-        bool mInputMapSet;
     };
 
 }

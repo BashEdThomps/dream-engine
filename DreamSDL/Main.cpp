@@ -60,7 +60,7 @@ int main(int argc, const char** argv)
 
     log->info("√ Definition Loading Complete... Creating Runtime");
 
-    spdlog::set_level(spdlog::level::off);
+    //spdlog::set_level(spdlog::level::off);
 
     shared_ptr<ProjectRuntime> pr = project->createProjectRuntime();
     shared_ptr<ProjectDefinition> pd = project->getProjectDefinition();
@@ -87,7 +87,6 @@ int main(int argc, const char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         pr->updateGraphics();
-        //std::this_thread::yield();
 
         if (SDL_GetTicks() > time + one_sec)
         {

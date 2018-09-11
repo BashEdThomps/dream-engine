@@ -16,8 +16,8 @@
  */
 
 #include "LuaScriptInstance.h"
-
 #include "../ScriptDefinition.h"
+#include "../../../Common/Constants.h"
 
 namespace Dream
 {
@@ -27,8 +27,7 @@ namespace Dream
         shared_ptr<ScriptDefinition> definition,
         shared_ptr<SceneObjectRuntime> transform
     )
-        : ScriptInstance(definition,transform),
-          mError(false)
+        : ScriptInstance(definition,transform)
     {
         setLogClassName("LuaScriptInstance");
         auto log = getLog();
@@ -59,21 +58,6 @@ namespace Dream
     {
 
     }
-
-    bool
-    LuaScriptInstance::getError
-    ()
-    {
-        return mError;
-    }
-
-    void
-    LuaScriptInstance::setError
-    (bool err)
-    {
-        mError = err;
-    }
-
 
     void LuaScriptInstance::loadExtraAttributes(nlohmann::json)
     {

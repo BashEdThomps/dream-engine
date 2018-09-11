@@ -26,8 +26,8 @@ namespace Dream
     {
     public:
         ScriptDefinition(shared_ptr<ProjectDefinition> pd, json js);
+        virtual ~ScriptDefinition();
 
         bool isFormatLua();
-        bool isFormatJS();
     };
 }

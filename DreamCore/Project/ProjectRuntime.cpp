@@ -38,7 +38,7 @@
 #include "../Components/Window/IWindowComponent.h"
 
 #include "../Components/Scripting/IScriptComponent.h"
-#include "../Components/Scripting/JS/JSComponent.h"
+#include "../Components/Scripting/Lua/LuaComponent.h"
 
 #include "../Components/Graphics/Model/AssimpCache.h"
 #include "../Components/Graphics/Model/MaterialCache.h"
@@ -238,7 +238,7 @@ namespace Dream
     {
         auto log = getLog();
         mScriptComponent = dynamic_pointer_cast<IScriptComponent>(
-            make_shared<JSComponent>(
+            make_shared<LuaComponent>(
                 dynamic_pointer_cast<ProjectRuntime>(shared_from_this()),
                 mScriptCache
             )
@@ -252,7 +252,7 @@ namespace Dream
 
         if (mInputComponent != nullptr)
         {
-            mInputComponent->setScriptComponent(mScriptComponent);
+            mScriptComponent->setInputMap(mInputComponent->getInputMap());
         }
         return true;
     }

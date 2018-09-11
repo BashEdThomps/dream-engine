@@ -4,8 +4,7 @@
 namespace Dream
 {
     InputComponent::InputComponent()
-        : IComponent (),
-        mInputMapSet(false)
+        : IComponent ()
     {
         setLogClassName("InputComponent");
         auto log = getLog();
@@ -133,25 +132,12 @@ namespace Dream
         );
         */
 
-        if (mScriptComponent != nullptr)
-        {
-            if (!mInputMapSet)
-            {
-                mScriptComponent->setInputMap(mInputMap.get());
-                mInputMapSet = true;
-            }
-        }
-        else
-        {
-            log->error("Script Component is nullptr");
-        }
-
         endUpdate();
     }
 
-    void InputComponent::setScriptComponent(shared_ptr<IScriptComponent> sc)
+    shared_ptr<InputMap> InputComponent::getInputMap() const
     {
-       mScriptComponent = sc;
+        return mInputMap;
     }
 
     const float InputComponent::ANALOG_DEAD_ZONE = 0.1f;

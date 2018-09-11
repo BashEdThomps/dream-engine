@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include "../ScriptInstance.h"
+#include "../../Event.h"
+#include <gainput/gainput.h>
 #include <vector>
 #include <string>
-
-#include "../../../Common/Constants.h"
-#include "../ScriptInstance.h"
 
 namespace Dream
 {
@@ -31,14 +31,14 @@ namespace Dream
     {
 
     public:
-        LuaScriptInstance(shared_ptr<ScriptDefinition>,shared_ptr<SceneObjectRuntime>);
+        LuaScriptInstance(
+            shared_ptr<ScriptDefinition>,
+            shared_ptr<SceneObjectRuntime>
+        );
         ~LuaScriptInstance(void);
         bool load(string);
         void update();
-        void loadExtraAttributes(json);
-        bool getError();
-        void setError(bool);
-    private:
-        bool mError;
+        void loadExtraAttributes(nlohmann::json);
+
     }; // End of LuaScriptInstance
 } // End of Dream

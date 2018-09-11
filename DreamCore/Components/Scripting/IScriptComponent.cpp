@@ -163,7 +163,7 @@ namespace Dream
 
     void
     IScriptComponent::setInputMap
-    (gainput::InputMap *map)
+    (shared_ptr<gainput::InputMap> map)
     {
         mInputMap = map;
     }
