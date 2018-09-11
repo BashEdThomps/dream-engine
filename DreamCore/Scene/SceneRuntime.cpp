@@ -237,7 +237,13 @@ namespace Dream
     (shared_ptr<IDefinition> iDefinition)
     {
         auto log = getLog();
+
         auto sceneDefinition = dynamic_pointer_cast<SceneDefinition>(iDefinition);
+
+        if (sceneDefinition == nullptr)
+        {
+            return;
+        }
 
         log->info( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
 
@@ -254,23 +260,29 @@ namespace Dream
         setCameraMovementSpeed(sceneDefinition->getCameraMovementSpeed());
 
         // Propogate to project where required
-        mProjectRuntime
-            ->getGraphicsComponent()
-            ->setActiveSceneRuntime(
-                dynamic_pointer_cast<SceneRuntime>(shared_from_this())
-            );
-        mProjectRuntime
-            ->getPhysicsComponent()
-            ->setGravity(getGravity());
-        mProjectRuntime
-            ->getPhysicsComponent()
-            ->setDebug(getPhysicsDebug());
-        auto camera = mProjectRuntime->getCamera();
-        camera->setTranslation(getCameraTranslation());
-        camera->setPitch(getCameraPitch());
-        camera->setYaw(getCameraYaw());
-        camera->updateCameraVectors();
-        camera->setMovementSpeed(getCameraMovementSpeed());
+        auto gfx = mProjectRuntime->getGraphicsComponent().lock();
+        if (gfx != nullptr)
+        {
+            gfx->setActiveSceneRuntime(dynamic_pointer_cast<SceneRuntime>(shared_from_this()));
+        }
+
+        auto physics = mProjectRuntime->getPhysicsComponent().lock();
+        if (physics != nullptr)
+        {
+            physics->setGravity(getGravity());
+            physics->setDebug(getPhysicsDebug());
+        }
+
+        auto camera = mProjectRuntime->getCamera().lock();
+
+        if (camera != nullptr)
+        {
+            camera->setTranslation(getCameraTranslation());
+            camera->setPitch(getCameraPitch());
+            camera->setYaw(getCameraYaw());
+            camera->updateCameraVectors();
+            camera->setMovementSpeed(getCameraMovementSpeed());
+        }
 
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();

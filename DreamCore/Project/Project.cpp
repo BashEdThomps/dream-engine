@@ -195,10 +195,11 @@ namespace Dream
 
     void Project::resetProjectRuntime()
     {
-        if(mRuntime != nullptr)
-        {
-            mRuntime.reset();
-        }
+        auto log = getLog();
+        log->debug("Resetting project runtime");
+        mRuntime.reset();
+        log->debug("Runtime now has {} references", mRuntime.use_count());
+
     }
 
     bool

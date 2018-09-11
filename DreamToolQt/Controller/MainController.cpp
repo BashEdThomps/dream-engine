@@ -363,13 +363,6 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 {
     auto log = spdlog::get("MainController");
     QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
-    shared_ptr<SceneObjectRuntime> selectedSceneObjectRuntime = nullptr;
-
-    // Reset the selected object
-    if (mSelectionHighlighter)
-    {
-        mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
-    }
 
     mPropertiesModel.reset(nullptr);
 
@@ -482,15 +475,21 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             {
                 if (mDreamProjectModel->getProject()->hasProjectRuntime())
                 {
-                    auto prHandle = mDreamProjectModel->getProject()->getProjectRuntime();
-                    if (prHandle->hasActiveSceneRuntime())
+                    weak_ptr<ProjectRuntime> prHandleWeak = mDreamProjectModel->getProject()->getProjectRuntime();
+                    auto prHandle = prHandleWeak.lock();
+                    if (prHandle != nullptr && prHandle->hasActiveSceneRuntime())
                     {
-                        selectedSceneObjectRuntime = mDreamProjectModel
+                        weak_ptr<SceneRuntime> sceneRuntimeWeak = mDreamProjectModel
                                 ->getProject()
                                 ->getProjectRuntime()
-                                ->getActiveSceneRuntime()
-                                ->getSceneObjectRuntimeByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
-                        mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(selectedSceneObjectRuntime);
+                                ->getActiveSceneRuntime();
+
+                        auto sceneRuntime = sceneRuntimeWeak.lock();
+                        if (sceneRuntime != nullptr)
+                        {
+                            auto selected = sceneRuntime->getSceneObjectRuntimeByUuid(mSelectedSceneObjectDefinitionHandle->getUuid());
+                            mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(selected);
+                        }
                     }
                 }
             }
@@ -892,7 +891,6 @@ void
 MainController::onAction_Scene_Stop
 ()
 {
-    mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
     mDreamProjectModel->stopActiveSceneRuntime();
 }
 
@@ -1040,8 +1038,6 @@ MainController::onAction_File_Close
     mSelectedAssetDefinitionHandle = nullptr;
     mSelectedSceneDefinitionHandle = nullptr;
     mSelectedSceneObjectDefinitionHandle = nullptr;
-
-    mSelectionHighlighter->setSelectedSceneObjectRuntimeHandle(nullptr);
 
     mMainWindowHandle->getScenegraphTreeView()->setModel(nullptr);
     mScenegraphTreeModel.reset();
@@ -1353,14 +1349,22 @@ MainController::onSceneProperty_CaptureCameraTranslation
 {
     auto log = spdlog::get("MainController");
     log->info( "CaptureCameraTranslation");
-    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
+    weak_ptr<Project> pHandleWeak = mDreamProjectModel->getProject();
+    auto pHandle = pHandleWeak.lock();
 
     if (pHandle != nullptr)
     {
-        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
-        if (prHandle)
+        weak_ptr<ProjectRuntime> prHandleWeak = pHandle->getProjectRuntime();
+        auto prHandle = prHandleWeak.lock();
+        if (prHandle != nullptr)
         {
-            auto translation = prHandle->getCamera()->getTranslation();
+            auto camera = prHandle->getCamera().lock();
+            if ( camera == nullptr)
+            {
+                return;
+            }
+
+            auto translation = camera->getTranslation();
             sdHandle->setCameraTranslation(translation);
             mMainWindowHandle->showStatusBarMessage(
                 QString("Captured Camera Translation x:%1, y:%2, z:%3")
@@ -1383,15 +1387,22 @@ MainController::onSceneProperty_CaptureCameraLookAt
 {
     auto log = spdlog::get("MainController");
     log->info( "CaptureCameraLookAt");
-    shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
+    weak_ptr<Project> pHandleWeak = mDreamProjectModel->getProject();
+    auto pHandle = pHandleWeak.lock();
 
     if (pHandle != nullptr)
     {
-        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
-        if (prHandle)
+        weak_ptr<ProjectRuntime> prHandleWeak = pHandle->getProjectRuntime();
+        auto prHandle = prHandleWeak.lock();
+        if (prHandle == nullptr)
         {
-            auto pitch = prHandle->getCamera()->getPitch();
-            auto yaw = prHandle->getCamera()->getYaw();
+            auto camera = prHandle->getCamera().lock();
+            if ( camera == nullptr)
+            {
+                return;
+            }
+            auto pitch = camera->getPitch();
+            auto yaw   = camera->getYaw();
 
             sdHandle->setCameraPitch(pitch);
             sdHandle->setCameraYaw(yaw);
@@ -1505,16 +1516,18 @@ MainController::onCreateNewAssetDefinition
 
 void MainController::onMainVolumeChanged(int vol)
 {
-    auto log = spdlog::get("MainController");
+   auto log = spdlog::get("MainController");
    if (mDreamProjectModel != nullptr)
    {
        auto project = mDreamProjectModel->getProject();
        if (project != nullptr)
        {
-           auto runtime = project->getProjectRuntime();
+           weak_ptr<ProjectRuntime> runtimeWeak = project->getProjectRuntime();
+           auto runtime = runtimeWeak.lock();
            if (runtime != nullptr)
            {
-               auto audio = runtime->getAudioComponent();
+               weak_ptr<AudioComponent> audioWeak = runtime->getAudioComponent();
+               auto audio = audioWeak.lock();
                if (audio != nullptr)
                {
                    auto volume = vol/100.0f;
@@ -1741,7 +1754,6 @@ MainController::openProject
         return;
     }
 
-    mMainWindowHandle->clearOpenGLComponentRuntime();
 
     updateWindowTitle(mProjectDirectory);
 
@@ -2183,17 +2195,19 @@ MainController::onSceneObjectProperty_CaptureTranslation
     auto log = spdlog::get("MainController");
     log->info( "CaptureTranslation");
     shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
-    if (pHandle)
+    if (pHandle != nullptr)
     {
-        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
-        if (prHandle)
+        weak_ptr<ProjectRuntime> prHandleWeak = pHandle->getProjectRuntime();
+        auto prHandle = prHandleWeak.lock();
+        if (prHandle != nullptr)
         {
-            shared_ptr<SceneRuntime> srHandle = prHandle->getActiveSceneRuntime();
-            if (srHandle)
+            weak_ptr<SceneRuntime> srHandleWeak = prHandle->getActiveSceneRuntime();
+            auto srHandle = srHandleWeak.lock();
+            if (srHandle != nullptr)
             {
-                shared_ptr<SceneObjectRuntime> sorHandle;
-                sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
-                if (sorHandle)
+                weak_ptr<SceneObjectRuntime> sorHandleWeak = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
+                auto sorHandle = sorHandleWeak.lock();
+                if (sorHandle != nullptr)
                 {
                     sodHandle->getTransform()->setTranslation(sorHandle->getTranslation());
                 }
@@ -2213,15 +2227,17 @@ MainController::onSceneObjectProperty_CaptureOrientation
     shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
-        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
-        if (prHandle)
+        weak_ptr<ProjectRuntime> prHandleWeak = pHandle->getProjectRuntime();
+        auto prHandle = prHandleWeak.lock();
+        if (prHandle != nullptr)
         {
-            shared_ptr<SceneRuntime> srHandle = prHandle->getActiveSceneRuntime();
-            if (srHandle)
+            weak_ptr<SceneRuntime> srHandleWeak = prHandle->getActiveSceneRuntime();
+            auto srHandle = srHandleWeak.lock();
+            if (srHandle != nullptr)
             {
-                shared_ptr<SceneObjectRuntime> sorHandle;
-                sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
-                if (sorHandle)
+                weak_ptr<SceneObjectRuntime> sorHandleWeak = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
+                auto sorHandle = sorHandleWeak.lock();
+                if (sorHandle != nullptr)
                 {
                     sodHandle->getTransform()->setOrientation(sorHandle->getOrientation());
                 }
@@ -2241,15 +2257,17 @@ MainController::onSceneObjectProperty_CaptureScale
     shared_ptr<Project> pHandle = mDreamProjectModel->getProject();
     if (pHandle)
     {
-        shared_ptr<ProjectRuntime> prHandle = pHandle->getProjectRuntime();
-        if (prHandle)
+        weak_ptr<ProjectRuntime> prHandleWeak = pHandle->getProjectRuntime();
+        auto prHandle = prHandleWeak.lock();
+        if (prHandle != nullptr)
         {
-            shared_ptr<SceneRuntime> srHandle = prHandle->getActiveSceneRuntime();
-            if (srHandle)
+            weak_ptr<SceneRuntime> srHandleWeak = prHandle->getActiveSceneRuntime();
+            auto srHandle = srHandleWeak.lock();
+            if (srHandle != nullptr)
             {
-                shared_ptr<SceneObjectRuntime> sorHandle;
-                sorHandle = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
-                if (sorHandle)
+                weak_ptr<SceneObjectRuntime> sorHandleWeak = srHandle->getSceneObjectRuntimeByUuid(sodHandle->getUuid());
+                auto sorHandle = sorHandleWeak.lock();
+                if (sorHandle != nullptr)
                 {
                     sodHandle->getTransform()->setScale(sorHandle->getScale());
                 }

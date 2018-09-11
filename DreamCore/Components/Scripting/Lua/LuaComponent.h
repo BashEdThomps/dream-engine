@@ -73,7 +73,6 @@ namespace Dream
 
         // API Exposure Methods ======================================================
 
-        void exposeDreamBase() override;
         void exposePathComponent() override;
         void exposePathInstance() override;
         void exposeAssimpModelInstance() override;
@@ -87,7 +86,6 @@ namespace Dream
         void exposeAudioInstance() override;
         void exposeLightInstance() override;
         void exposeScriptInstance() override;
-        void exposeMath() override;
         void exposePhysicsComponent() override;
         void exposePhysicsObjectInstance() override;
         void exposeShaderInstance() override;

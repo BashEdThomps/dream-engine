@@ -78,7 +78,7 @@ signals:
     void notifyProjectWidgetsEnabledChanged(bool enabled);
     void notifyStatusBarProjectLoaded(QString);
     void notifyNoSceneSelected();
-    void notifyPlayingScene(shared_ptr<SceneRuntime> scene);
+    void notifyPlayingScene(weak_ptr<SceneRuntime> scene);
     //void notifyStoppedScene(SceneDefinition* scene);
 
     void notifyScenegraphUpdated();

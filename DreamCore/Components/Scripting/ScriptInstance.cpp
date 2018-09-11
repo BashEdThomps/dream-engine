@@ -28,7 +28,8 @@ namespace Dream
         shared_ptr<SceneObjectRuntime> transform
     )
         : IAssetInstance(definition,transform),
-          mError(false)
+          mError(false),
+          mInitialised(false)
     {
         setLogClassName("ScriptInstance");
         auto log = getLog();
@@ -72,6 +73,16 @@ namespace Dream
     (bool err)
     {
         mError = err;
+    }
+
+    bool ScriptInstance::getInitialised() const
+    {
+        return mInitialised;
+    }
+
+    void ScriptInstance::setInitialised(bool initialised)
+    {
+        mInitialised = initialised;
     }
 
 

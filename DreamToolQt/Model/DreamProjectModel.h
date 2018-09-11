@@ -67,7 +67,7 @@ public:
     void closeProject();
 
     bool startSceneRuntimeFromDefinition(shared_ptr<SceneDefinition> definition);
-    shared_ptr<SceneRuntime> stopActiveSceneRuntime();
+    void stopActiveSceneRuntime();
     void setupHeartbeatTimer();
 
     shared_ptr<IAssetDefinition> getAssetDefinitionByUuid(string uuid);

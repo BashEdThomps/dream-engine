@@ -158,8 +158,6 @@ public:
 
     void setupMenu_Asset_NewDefinition();
 
-    void clearOpenGLComponentRuntime();
-
 signals:
     void notifyActionNew(QString);
     void notifyActionOpen(QString);

@@ -32,13 +32,13 @@ namespace Dream
         virtual ~IComponent();
         virtual bool init() = 0;
         virtual void updateComponent() = 0;
-        void setTime(shared_ptr<Time>);
+        void setTime(weak_ptr<Time>);
 
         long long getUpdateEndTime() const;
         long long getUpdateBeginTime() const;
         long long getUpdateTime() const;
         long long getYieldedTime() const;
-        void setActiveSceneRuntime(shared_ptr<SceneRuntime> runtime);
+        void setActiveSceneRuntime(weak_ptr<SceneRuntime> runtime);
 
     protected:
         void beginUpdate();
@@ -51,8 +51,8 @@ namespace Dream
         long long mUpdateEndTime;
         bool mBusy;
 
-        shared_ptr<Time> mTime;
-        shared_ptr<SceneRuntime> mActiveSceneRuntime;
+        weak_ptr<Time> mTime;
+        weak_ptr<SceneRuntime> mActiveSceneRuntime;
 
     }; // End of IComponent
 

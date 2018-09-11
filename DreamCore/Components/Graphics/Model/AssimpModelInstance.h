@@ -60,8 +60,8 @@ namespace Dream
     {
     public:
         AssimpModelInstance(
-            shared_ptr<AssimpCache>,
-            shared_ptr<MaterialCache>,
+            weak_ptr<AssimpCache>,
+            weak_ptr<MaterialCache>,
             shared_ptr<IAssetDefinition>,
             shared_ptr<SceneObjectRuntime>
         );
@@ -81,8 +81,8 @@ namespace Dream
 
     private:
         // Variables
-        shared_ptr<AssimpCache> mModelCache;
-        shared_ptr<MaterialCache> mMaterialCache;
+        weak_ptr<AssimpCache> mModelCache;
+        weak_ptr<MaterialCache> mMaterialCache;
 
         vector<shared_ptr<AssimpMesh>> mMeshes;
         string mDirectory;

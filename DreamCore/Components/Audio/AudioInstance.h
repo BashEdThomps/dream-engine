@@ -17,6 +17,7 @@ using std::vector;
 namespace Dream
 {
     class AudioDefinition;
+    class AudioComponent;
 
     class AudioInstance : public IAssetInstance
     {
@@ -28,9 +29,10 @@ namespace Dream
         ALuint mSource;
         ALuint mBuffer;
         AudioStatus mStatus;
+        weak_ptr<AudioComponent> mAudioComponent;
 
     public:
-        AudioInstance(shared_ptr<AudioDefinition>,shared_ptr<SceneObjectRuntime>);
+        AudioInstance(weak_ptr<AudioComponent> comp, shared_ptr<AudioDefinition>,shared_ptr<SceneObjectRuntime>);
 
         void setLooping(bool);
         bool isLooping();
@@ -45,6 +47,10 @@ namespace Dream
 
         void setSource(ALuint source);
         ALuint getSource();
+
+        void play();
+        void pause();
+        void stop();
     };
 
 } // End of Dream

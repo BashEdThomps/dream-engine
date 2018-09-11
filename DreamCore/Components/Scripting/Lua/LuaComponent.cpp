@@ -43,7 +43,6 @@
 #include "../../../Project/ProjectRuntime.h"
 #include "../../../Scene/SceneRuntime.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../../Utilities/Math.h"
 #include "../../../../NanoVG/src/nanovg.h"
 
 #define SOL_CHECK_ARGUMENTS 1
@@ -74,6 +73,7 @@ namespace Dream
         auto log = getLog();
         log->trace( "Destroying Object" );
         mScriptMap.clear();
+        lua_close(mState);
     }
 
     bool
@@ -83,9 +83,8 @@ namespace Dream
         auto log = getLog();
         log->info( "Initialising LuaComponent" );
         mState = luaL_newstate();
-        //luaL_openlibs(mState);
         sol::state_view sView(mState);
-        sView.open_libraries(sol::lib::base, sol::lib::package);
+        sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math);
         log->info( "Got a sol state" );
         exposeAPI();
         return false;
@@ -143,27 +142,6 @@ namespace Dream
            return false;
         }
 
-        sol::function onInitFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INIT_FUNCTION];
-
-        auto initResult = onInitFunction(sceneObject);
-
-        if (!initResult.valid())
-        {
-            // An error has occured
-           sol::error err = initResult;
-           std::string what = err.what();
-           log->error("Could not execute onInit in lua script: {}",what);
-           scriptInstance->setError(true);
-           return false;
-        }
-
-        /*
-        sol::function onInputFunction  = solStateView[Constants::LUA_INPUT_FUNCTION];
-        sol::function onEventFunction  = solStateView[Constants::LUA_EVENT_FUNCTION];
-        sol::function onUpdateFunction = solStateView[Constants::LUA_UPDATE_FUNCTION];
-        sol::function onNanoVGFunction = solStateView[Constants::LUA_NANOVG_FUNCTION];
-        */
-
         log->info("Loaded Script Successfully");
 
         return true;
@@ -179,24 +157,33 @@ namespace Dream
 
         for (auto entry : mScriptMap)
         {
-            auto key = entry.first;
+            auto sceneObj = entry.first;
+            auto scriptObj =  entry.second;
 
-            if (!executeScriptUpdate(key))
+            if (!scriptObj->getInitialised())
             {
-                return;
-            }
-
-            if (key->hasFocus())
-            {
-                if (!executeScriptInput(key))
+                if(!executeScriptInit(sceneObj))
                 {
                     return;
                 }
             }
 
-            if (key->hasEvents())
+            if (!executeScriptUpdate(sceneObj))
             {
-                if (!executeScriptEvent(key))
+                return;
+            }
+
+            if (sceneObj->hasFocus())
+            {
+                if (!executeScriptInput(sceneObj))
+                {
+                    return;
+                }
+            }
+
+            if (sceneObj->hasEvents())
+            {
+                if (!executeScriptEvent(sceneObj))
                 {
                     return;
                 }
@@ -291,7 +278,30 @@ namespace Dream
             return false;
         }
 
+        if (scriptInstance->getInitialised())
+        {
+            log->error("Script has all ready been initialised {}",scriptInstance->getNameAndUuidString());
+            return false;
+        }
+
         log->info("Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
+        sol::state_view solStateView(mState);
+
+        sol::function onInitFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INIT_FUNCTION];
+
+        auto initResult = onInitFunction(sceneObject);
+
+        if (!initResult.valid())
+        {
+            // An error has occured
+           sol::error err = initResult;
+           std::string what = err.what();
+           log->error("Could not execute onInit in lua script: {}",what);
+           scriptInstance->setError(true);
+           return false;
+        }
+
+        scriptInstance->setInitialised(true);
 
         return true;
     }
@@ -311,8 +321,22 @@ namespace Dream
         }
 
         log->info("Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
+        sol::state_view solStateView(mState);
 
-        //scriptInstance->callOnInputFunction(mInputMap);
+        sol::function onInputFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INPUT_FUNCTION];
+
+        auto result = onInputFunction(sceneObject,mInputMap);
+
+
+        if (!result.valid())
+        {
+            // An error has occured
+           sol::error err = result;
+           std::string what = err.what();
+           log->error("Could not execute onInput in lua script: {}",what);
+           scriptInstance->setError(true);
+           return false;
+        }
 
         return true;
     }
@@ -333,34 +357,28 @@ namespace Dream
 
         log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
 
-        //scriptInstance->callOnEventFunction(sceneObject->getEventQueue());
+        sol::state_view solStateView(mState);
+
+        sol::function onEventFunction = solStateView[sceneObject->getUuid()][Constants::LUA_EVENT_FUNCTION];
+
+        auto result = onEventFunction(sceneObject,sceneObject->getEventQueue());
+
+        if (!result.valid())
+        {
+            // An error has occured
+           sol::error err = result;
+           std::string what = err.what();
+           log->error("Could not execute onEvent in lua script: {}",what);
+           scriptInstance->setError(true);
+           return false;
+        }
 
         return true;
     }
 
     // API Exposure Methods ======================================================
 
-    void
-    LuaComponent::exposeDreamBase
-    ()
-    {
-        /*
-        debugRegisteringClass("Dream base classes");
-        stateView.new_usertype<Dream::DreamObject>("DreamObject");
-        stateView.new_usertype<Dream::IDefinition>("IDefinition");
-        stateView.new_usertype<IRuntime>("IRuntime");
-        stateView.new_usertype<IComponent>("IComponent");
-        stateView.new_usertype<IAssetDefinition>("IAssetDefinition");
-        stateView.new_usertype<IAssetInstance>("IAssetInstance");
-        stateView.new_usertype<IWindowComponent>("IWindowComponent",
-            "getWidth",       &IWindowComponent::getWidth,
-            "getHeight",      &IWindowComponent::getHeight,
-            "setShouldClose", &IWindowComponent::setShouldClose,
-            "getMouseX",      &IWindowComponent::getMouseX,
-            "getMouseY",      &IWindowComponent::getMouseY
-        );
-        */
-    }
+
 
     void
     LuaComponent::exposeProjectRuntime
@@ -377,7 +395,9 @@ namespace Dream
             "getTime",&ProjectRuntime::getTime,
             "getCamera",&ProjectRuntime::getCamera
         );
-        stateView["Runtime"] = mProjectRuntime.get();
+        stateView["Runtime"] = mProjectRuntime;
+        stateView["Time"] = mProjectRuntime->getTime();
+        stateView["Camera"] = mProjectRuntime->getCamera();
     }
 
     void
@@ -537,22 +557,6 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeMath
-    ()
-    {
-        debugRegisteringClass("Math");
-        sol::state_view stateView(mState);
-        stateView.new_usertype<Math>("Math",
-            "degreesToRadians",&Math::degreesToRadians,
-            "radiansToDegrees",&Math::radiansToDegrees,
-            "pow",&Math::_pow,
-            "sin",&Math::_sinf,
-            "cos",&Math::_cosf,
-            "sqrt",&Math::_sqrtf
-        );
-    }
-
-    void
     LuaComponent::exposeSceneObjectRuntime
     ()
     {
@@ -691,11 +695,7 @@ namespace Dream
     {
         debugRegisteringClass("AudioComponent");
         sol::state_view stateView(mState);
-        stateView.new_usertype<AudioComponent>("AudioComponent",
-            "play",&AudioComponent::playAudioAsset,
-            "pause",&AudioComponent::pauseAudioAsset,
-            "stop",&AudioComponent::stopAudioAsset
-        );
+        stateView.new_usertype<AudioComponent>("AudioComponent");
     }
 
 
@@ -713,17 +713,18 @@ namespace Dream
         debugRegisteringClass("AudioInstance");
         sol::state_view stateView(mState);
         stateView.new_usertype<AudioInstance>("AudioInstance",
-            "getStatus",&AudioInstance::getStatus
+            "getStatus",&AudioInstance::getStatus,
+            "play",&AudioInstance::play,
+            "pause",&AudioInstance::pause,
+            "stop",&AudioInstance::stop
+
         );
-                /*
-            mState.new_usertype<AudioStatus>("AudioStatus")
-                .enum_("AudioStatus")
-                [
-                    value("PLAYING", AudioStatus::PLAYING),
-                    value("PAUSED",  AudioStatus::PAUSED),
-                    value("STOPPED", AudioStatus::STOPPED)
-                ]
-                        */
+
+        stateView["AudioStatus"] = stateView.create_table_with(
+            "PLAYING", AudioStatus::PLAYING,
+            "PAUSED",  AudioStatus::PAUSED,
+            "STOPPED", AudioStatus::STOPPED
+        );
     }
 
     void
@@ -741,39 +742,35 @@ namespace Dream
             "GetFloatPrevious",&gainput::InputMap::GetFloatPrevious,
             "GetFloatDelta",&gainput::InputMap::GetFloatDelta
         );
-        /*
-                    .enum_("InputSource")
-                    [
-                        value("FaceButtonNorth", InputSource::FaceButtonNorth),
-                        value("FaceButtonEast", InputSource::FaceButtonEast),
-                        value("FaceButtonWest", InputSource::FaceButtonWest),
-                        value("FaceButtonSouth", InputSource::FaceButtonSouth),
+        stateView["InputSource"] = stateView.create_table_with(
+            "FaceButtonNorth", InputSource::FaceButtonNorth,
+            "FaceButtonEast", InputSource::FaceButtonEast,
+            "FaceButtonWest", InputSource::FaceButtonWest,
+            "FaceButtonSouth", InputSource::FaceButtonSouth,
 
-                        value("FaceHome", InputSource::FaceHome),
-                        value("FaceStart", InputSource::FaceStart),
-                        value("FaceSelect", InputSource::FaceSelect),
+            "FaceHome", InputSource::FaceHome,
+            "FaceStart", InputSource::FaceStart,
+            "FaceSelect", InputSource::FaceSelect,
 
-                        value("ShoulderLeft", InputSource::ShoulderLeft),
-                        value("ShoulderRight", InputSource::ShoulderRight),
+            "ShoulderLeft", InputSource::ShoulderLeft,
+            "ShoulderRight", InputSource::ShoulderRight,
 
-                        value("TriggerLeft", InputSource::TriggerLeft),
-                        value("TriggerRight", InputSource::TriggerRight),
+            "TriggerLeft", InputSource::TriggerLeft,
+            "TriggerRight", InputSource::TriggerRight,
 
-                        value("DPadNorth", InputSource::DPadNorth),
-                        value("DPadSouth", InputSource::DPadSouth),
-                        value("DPadEast", InputSource::DPadEast),
-                        value("DPadWest", InputSource::DPadWest),
+            "DPadNorth", InputSource::DPadNorth,
+            "DPadSouth", InputSource::DPadSouth,
+            "DPadEast", InputSource::DPadEast,
+            "DPadWest", InputSource::DPadWest,
 
-                        value("AnalogLeftStickX", InputSource::AnalogLeftStickX),
-                        value("AnalogLeftStickY", InputSource::AnalogLeftStickY),
-                        value("AnalogLeftButton", InputSource::AnalogLeftButton),
+            "AnalogLeftStickX", InputSource::AnalogLeftStickX,
+            "AnalogLeftStickY", InputSource::AnalogLeftStickY,
+            "AnalogLeftButton", InputSource::AnalogLeftButton,
 
-                        value("AnalogRightStickX", InputSource::AnalogRightStickX),
-                        value("AnalogRightStickY", InputSource::AnalogRightStickY),
-                        value("AnalogRightButton", InputSource::AnalogRightButton)
-                    ]
-        ];
-        */
+            "AnalogRightStickX", InputSource::AnalogRightStickX,
+            "AnalogRightStickY", InputSource::AnalogRightStickY,
+            "AnalogRightButton", InputSource::AnalogRightButton
+        );
     }
 
     void

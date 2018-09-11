@@ -38,8 +38,12 @@ namespace Dream
         void loadExtraAttributes(json);
         bool getError();
         void setError(bool);
+        bool getInitialised() const;
+        void setInitialised(bool initialised);
+
     private:
         bool mError;
+        bool mInitialised;
 
     }; // End of ScriptInstance
 } // End of Dream

@@ -22,8 +22,8 @@ namespace Dream
 {
 
     WavAudioInstance::WavAudioInstance
-    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
-        : AudioInstance(definition, transform)
+    (weak_ptr<AudioComponent> comp, shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
+        : AudioInstance(comp, definition, transform)
 
     {
         setLogClassName("WavAudioInstance") ;

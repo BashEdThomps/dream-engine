@@ -2,12 +2,14 @@
 
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "AudioDefinition.h"
+#include "AudioComponent.h"
 
 namespace Dream
 {
     AudioInstance::AudioInstance
-    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
-        : IAssetInstance(definition, transform)
+    (weak_ptr<AudioComponent> component, shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
+        : IAssetInstance(definition, transform),
+          mAudioComponent(component)
     {
         setStatus(UNKNOWN);
         setLooping(false);
@@ -76,6 +78,33 @@ namespace Dream
     ()
     {
         return mSource;
+    }
+
+    void AudioInstance::play()
+    {
+       auto comp = mAudioComponent.lock();
+       if (comp)
+       {
+           comp->playAudioAsset(dynamic_pointer_cast<AudioInstance>(shared_from_this()));
+       }
+    }
+
+    void AudioInstance::pause()
+    {
+       auto comp = mAudioComponent.lock();
+       if (comp)
+       {
+           comp->pauseAudioAsset(dynamic_pointer_cast<AudioInstance>(shared_from_this()));
+       }
+    }
+
+    void AudioInstance::stop()
+    {
+       auto comp = mAudioComponent.lock();
+       if (comp)
+       {
+           comp->stopAudioAsset(dynamic_pointer_cast<AudioInstance>(shared_from_this()));
+       }
     }
 
     void

@@ -69,7 +69,7 @@ namespace Dream
         log->info( "Destructing" );
     }
 
-    shared_ptr<IWindowComponent>
+    weak_ptr<IWindowComponent>
     ProjectRuntime::getWindowComponent
     ()
     {
@@ -83,7 +83,7 @@ namespace Dream
         mDone = done;
     }
 
-    shared_ptr<Time>
+    weak_ptr<Time>
     ProjectRuntime::getTime
     ()
     {
@@ -276,49 +276,49 @@ namespace Dream
         return mDone;
     }
 
-    shared_ptr<PathComponent>
+    weak_ptr<PathComponent>
     ProjectRuntime::getPathComponent
     ()
     {
         return mPathComponent;
     }
 
-    shared_ptr<AudioComponent>
+    weak_ptr<AudioComponent>
     ProjectRuntime::getAudioComponent
     ()
     {
         return mAudioComponent;
     }
 
-    shared_ptr<PhysicsComponent>
+    weak_ptr<PhysicsComponent>
     ProjectRuntime::getPhysicsComponent
     ()
     {
         return mPhysicsComponent;
     }
 
-    shared_ptr<GraphicsComponent>
+    weak_ptr<GraphicsComponent>
     ProjectRuntime::getGraphicsComponent
     ()
     {
         return mGraphicsComponent;
     }
 
-    shared_ptr<NanoVGComponent>
+    weak_ptr<NanoVGComponent>
     ProjectRuntime::getNanoVGComponent
     ()
     {
        return mNanoVGComponent;
     }
 
-    shared_ptr<Camera>
+    weak_ptr<Camera>
     ProjectRuntime::getCamera
     ()
     {
         return mCamera;
     }
 
-    shared_ptr<IScriptComponent>
+    weak_ptr<IScriptComponent>
     ProjectRuntime::getScriptComponent
     ()
     {
@@ -366,7 +366,7 @@ namespace Dream
         auto log = getLog();
         log->info(
             "\n====================\nReady to draw @ {}\n====================",
-            getTime()->now()
+            mTime->now()
         );
 
         log->info("UpdateGraphics Called @" , mTime->getFrameTimeDelta());
@@ -390,17 +390,17 @@ namespace Dream
         auto log = getLog();
         log->info("CollectGarbage Called @ {}", mTime->getFrameTimeDelta());
         // Cleanup Old
-        mActiveSceneRuntime.get()->collectGarbage();
+        mActiveSceneRuntime->collectGarbage();
     }
 
     bool
     ProjectRuntime::hasActiveSceneRuntime
     ()
     {
-        return mActiveSceneRuntime.get() != nullptr;
+        return mActiveSceneRuntime != nullptr;
     }
 
-    shared_ptr<SceneRuntime>
+    weak_ptr<SceneRuntime>
     ProjectRuntime::getActiveSceneRuntime
     ()
     {
@@ -411,7 +411,7 @@ namespace Dream
     ProjectRuntime::updateAll
     ()
     {
-        if (mActiveSceneRuntime)
+        if (mActiveSceneRuntime != nullptr)
         {
             updateLogic();
             updateGraphics();
@@ -419,7 +419,7 @@ namespace Dream
         }
     }
 
-    shared_ptr<SceneRuntime>
+    weak_ptr<SceneRuntime>
     ProjectRuntime::constructActiveSceneRuntime
     (shared_ptr<SceneDefinition> sceneDefinition)
     {
@@ -427,7 +427,7 @@ namespace Dream
         if (sceneDefinition == nullptr)
         {
             log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
-            return nullptr;
+            return weak_ptr<SceneRuntime>();
         }
 
         // Load the new scene
@@ -450,7 +450,7 @@ namespace Dream
         return mActiveSceneRuntime;
     }
 
-    shared_ptr<Project>
+    weak_ptr<Project>
     ProjectRuntime::getProject
     ()
     {
@@ -465,28 +465,28 @@ namespace Dream
         initComponents();
     }
 
-    shared_ptr<FontCache>
+    weak_ptr<FontCache>
     ProjectRuntime::getFontCache
     ()
     {
         return mFontCache;
     }
 
-    shared_ptr<ShaderCache>
+    weak_ptr<ShaderCache>
     ProjectRuntime::getShaderCache
     ()
     {
         return mShaderCache;
     }
 
-    shared_ptr<MaterialCache>
+    weak_ptr<MaterialCache>
     ProjectRuntime::getTextureCache
     ()
     {
         return mTextureCache;
     }
 
-    shared_ptr<AssimpCache>
+    weak_ptr<AssimpCache>
     ProjectRuntime::getModelCache
     ()
     {

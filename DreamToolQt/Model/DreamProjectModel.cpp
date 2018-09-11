@@ -149,10 +149,12 @@ DreamProjectModel::startSceneRuntimeFromDefinition
     }
     log->info("\n===== DreamModel - Start Scene =====");
 
-    shared_ptr<ProjectRuntime> prHandle = mProject->createProjectRuntime();
+    weak_ptr<ProjectRuntime> prHandleWeak = mProject->createProjectRuntime();
+    auto prHandle = prHandleWeak.lock();
     if (prHandle != nullptr)
     {
-        shared_ptr<SceneRuntime> srHandle = prHandle->constructActiveSceneRuntime(definition);
+        weak_ptr<SceneRuntime> srHandleWeak = prHandle->constructActiveSceneRuntime(definition);
+        auto srHandle = srHandleWeak.lock();
         if (srHandle != nullptr)
         {
             mWindowComponent->setProjectRuntime(mProject->getProjectRuntime());
@@ -177,20 +179,18 @@ DreamProjectModel::setSelectedSceneDefinition
     mSelectedScene = selectedScene;
 }
 
-shared_ptr<SceneRuntime>
+void
 DreamProjectModel::stopActiveSceneRuntime
 ()
 {
-    mWindowComponent->setProjectRuntime(nullptr);
-
     if (mProject)
     {
-        shared_ptr<ProjectRuntime> prHandle = mProject->getProjectRuntime();
+        weak_ptr<ProjectRuntime> prHandleWeak = mProject->getProjectRuntime();
+        auto prHandle = prHandleWeak.lock();
         if (prHandle)
         {
-            shared_ptr<SceneRuntime> srHandle = nullptr;
-            srHandle = prHandle->getActiveSceneRuntime();
-
+            weak_ptr<SceneRuntime> srHandleWeak = prHandle->getActiveSceneRuntime();
+            auto srHandle = srHandleWeak.lock();
             if (srHandle)
             {
                 srHandle->setState(SCENE_STATE_STOPPED);
@@ -206,7 +206,6 @@ DreamProjectModel::stopActiveSceneRuntime
             mHeartbeatTimer.reset();
         }
     }
-    return nullptr;
 }
 
 void
@@ -219,10 +218,15 @@ void DreamProjectModel::setPhysicsDebug(bool enabled)
 {
     if (mProject)
     {
-        shared_ptr<ProjectRuntime> prHandle = mProject->getProjectRuntime();
+        weak_ptr<ProjectRuntime> prHandleWeak = mProject->getProjectRuntime();
+        auto prHandle = prHandleWeak.lock();
         if (prHandle)
         {
-            prHandle->getPhysicsComponent()->setDebug(enabled);
+            auto physics = prHandle->getPhysicsComponent().lock();
+            if (physics != nullptr)
+            {
+                physics->setDebug(enabled);
+            }
         }
     }
 }

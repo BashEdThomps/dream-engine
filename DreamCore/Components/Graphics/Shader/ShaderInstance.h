@@ -117,10 +117,10 @@ namespace Dream
         GLuint mShaderProgram;
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
-        shared_ptr<ShaderCache> mCache;
+        weak_ptr<ShaderCache> mCache;
     public:
         ShaderInstance(
-           shared_ptr<ShaderCache> cache,
+           weak_ptr<ShaderCache> cache,
            shared_ptr<ShaderDefinition>,
            shared_ptr<SceneObjectRuntime>
         );

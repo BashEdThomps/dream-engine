@@ -131,13 +131,20 @@ namespace DreamSDL
 
         mEvents.clear();
         SDL_Event event;
+        auto asr = mActiveSceneRuntime.lock();
+
+        if (asr == nullptr)
+        {
+            log->error("No active scene runtime");
+            return;
+        }
 
         while(SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)
             {
                 log->info("SDL_QUIT Event");
-                mActiveSceneRuntime->setState(Dream::SCENE_STATE_STOPPED);
+                asr->setState(Dream::SCENE_STATE_STOPPED);
                 break;
             }
             else if (event.type == SDL_WINDOWEVENT)

@@ -57,21 +57,25 @@ namespace Dream
     ()
     {
                 beginUpdate();
-                mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
-                (
-                    function< void* (shared_ptr<SceneObjectRuntime>) >
+                auto activeSceneRuntime = mActiveSceneRuntime.lock();
+                if (activeSceneRuntime != nullptr)
+                {
+                    activeSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                     (
-                        [&](shared_ptr<SceneObjectRuntime> currentSceneObject)
-                        {
-                            if (currentSceneObject->hasPathInstance())
+                        function< shared_ptr<SceneObjectRuntime> (shared_ptr<SceneObjectRuntime>) >
+                        (
+                            [&](shared_ptr<SceneObjectRuntime> currentSceneObject)
                             {
-                                shared_ptr<PathInstance> animInstance = currentSceneObject->getPathInstance();
-                                // TODO: Fix dis
+                                if (currentSceneObject->hasPathInstance())
+                                {
+                                    shared_ptr<PathInstance> animInstance = currentSceneObject->getPathInstance();
+                                    // TODO: Fix dis
+                                }
+                                return nullptr;
                             }
-                            return nullptr;
-                        }
-                    )
-                );
+                        )
+                    );
+                }
                 endUpdate();
     }
 } // End of Dream

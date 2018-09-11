@@ -34,7 +34,7 @@ namespace Dream
     }
 
 
-    void IComponent::setTime(shared_ptr<Time> time)
+    void IComponent::setTime(weak_ptr<Time> time)
     {
         mTime = time;
     }
@@ -43,14 +43,16 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Updating Component");
-        mUpdateBeginTime = mTime->nowLL();
+        auto timeHandle = mTime.lock();
+        mUpdateBeginTime = timeHandle->nowLL();
         setBusy(true);
     }
 
     void IComponent::endUpdate()
     {
         auto log = getLog();
-        mUpdateEndTime =  mTime->nowLL();
+        auto timeHandle = mTime.lock();
+        mUpdateEndTime =  timeHandle->nowLL();
         setBusy(false);
         log->info("Update Complete in {}",getUpdateTime());
     }
@@ -85,7 +87,7 @@ namespace Dream
         return mUpdateEndTime;
     }
 
-    void IComponent::setActiveSceneRuntime(shared_ptr<SceneRuntime> runtime)
+    void IComponent::setActiveSceneRuntime(weak_ptr<SceneRuntime> runtime)
     {
        mActiveSceneRuntime = runtime;
     }

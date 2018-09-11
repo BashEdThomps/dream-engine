@@ -75,7 +75,6 @@ namespace Dream
         // API Exposure Methods ======================================================
         void debugRegisteringClass(string className);
         void exposeAPI();
-        virtual void exposeDreamBase() = 0;
         virtual void exposePathComponent() = 0;
         virtual void exposePathInstance() = 0;
         virtual void exposeAssimpModelInstance() = 0;
@@ -89,7 +88,6 @@ namespace Dream
         virtual void exposeAudioInstance() = 0;
         virtual void exposeLightInstance() = 0;
         virtual void exposeScriptInstance() = 0;
-        virtual void exposeMath() = 0;
         virtual void exposePhysicsComponent() = 0;
         virtual void exposePhysicsObjectInstance() = 0;
         virtual void exposeShaderInstance() = 0;

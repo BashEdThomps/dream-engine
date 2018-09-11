@@ -32,7 +32,7 @@ namespace Dream
         norm = (mNormalTexture   == nullptr) ? 0 : mNormalTexture->id;
 
         auto log = getLog();
-        log->info(
+        log->debug(
             "Material Parameters\n"
             "Name....................{}\n"
             "TwoSided................{}\n"

@@ -12,6 +12,7 @@
 #include <QOpenGLContext>
 
 using namespace Dream;
+using std::weak_ptr;
 
 class WindowInputState
 {
@@ -50,7 +51,7 @@ public:
     void updateComponent() override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
-    void setProjectRuntime(shared_ptr<ProjectRuntime> prHandle);
+    void setProjectRuntime(weak_ptr<ProjectRuntime> prHandle);
     void setGridHandle(Grid* grid);
     void setSelectionHighlighterHandle(SelectionHighlighter* highlighter);
     void setRelationshipTreeHandle(RelationshipTree* tree);
@@ -63,7 +64,6 @@ public:
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
-    void clearProjectRuntimeHandle();
 
     bool getControlScene() const;
     void setControlScene(bool controlScene);
@@ -78,7 +78,7 @@ protected:
 
 private:
     bool mControlScene;
-    shared_ptr<ProjectRuntime> mProjectRuntimeHandle;
+    weak_ptr<ProjectRuntime> mProjectRuntimeHandle;
     Grid *mGridHandle;
     SelectionHighlighter *mSelectionHighlighterHandle;
     RelationshipTree *mRelationshipTreeHandle;
@@ -93,6 +93,6 @@ private:
     vector<double> mFrameTimes;
     size_t mMaxFrameTimeValues;
     double averageFrameTime();
-    void moveSelectedSceneObject(shared_ptr<SceneObjectRuntime> selected);
+    void moveSelectedSceneObject(weak_ptr<SceneObjectRuntime> selected);
     void moveCamera();
 };

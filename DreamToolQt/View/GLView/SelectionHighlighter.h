@@ -30,14 +30,14 @@ public:
     explicit SelectionHighlighter(QObject *parent = nullptr);
     ~SelectionHighlighter() override;
 
-    void setSelectedSceneObjectRuntimeHandle(shared_ptr<SceneObjectRuntime> object);
-    shared_ptr<SceneObjectRuntime> getSelectedObject();
+    void setSelectedSceneObjectRuntimeHandle(weak_ptr<SceneObjectRuntime> object);
+    weak_ptr<SceneObjectRuntime> getSelectedObject();
     void init() override;
     void draw() override;
     void initShader() override;
 
 private:
-    shared_ptr<SceneObjectRuntime> mSelectedObjectHandle;
+    weak_ptr<SceneObjectRuntime> mSelectedObjectHandle;
     void updateVertexBuffer();
     vec3 mSelectionColour;
     vec3 mXColour;

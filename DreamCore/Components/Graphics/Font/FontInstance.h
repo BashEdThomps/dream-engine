@@ -41,7 +41,7 @@ namespace Dream
     {
     private:
         int mSize;
-        shared_ptr<FontCache> mCache;
+        weak_ptr<FontCache> mCache;
         shared_ptr<FT_Face> mFontFace;
         vector<float> mColour;
         string mText;
@@ -49,7 +49,7 @@ namespace Dream
         void generateCharacterMap();
     public:
         FontInstance(
-            shared_ptr<FontCache>,
+            weak_ptr<FontCache>,
             shared_ptr<FontDefinition>,
             shared_ptr<SceneObjectRuntime>
         );

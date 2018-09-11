@@ -27,7 +27,7 @@ namespace Dream
 {
 
     FontInstance::FontInstance
-    (shared_ptr<FontCache> cache, shared_ptr<FontDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
+    (weak_ptr<FontCache> cache, shared_ptr<FontDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           mCache(cache)
 
@@ -55,13 +55,19 @@ namespace Dream
         string path = projectPath + mDefinition->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
 
-            log->info("Loading font from ", path );
+        log->info("Loading font from ", path );
 
-        if (mCache->getFreeTypeLib())
+        auto cache = mCache.lock();
+        if (cache == nullptr)
         {
+            log->error("Cannot load font, Cache is not set");
+            return false;
+        }
 
+        if (cache->getFreeTypeLib())
+        {
             mFontFace.reset(new FT_Face());
-            if (FT_New_Face(*mCache->getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
+            if (FT_New_Face(*cache->getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
             {
                 log->error("Unable to create font. Error calling FT_New_Face" );
             }
@@ -102,7 +108,11 @@ namespace Dream
         }
 
         log->info("FontInstance: Red: {}\nGreen: {}\nBlue: {}\nSize: {}\n",red,green,blue,mSize);
-        mCache->getCharMap(dynamic_pointer_cast<FontDefinition>(mDefinition),mFontFace);
+        auto cache = mCache.lock();
+        if (cache != nullptr)
+        {
+            cache->getCharMap(dynamic_pointer_cast<FontDefinition>(mDefinition),mFontFace);
+        }
         log->info("FontInstance: Finished loading extra attributes" );
         return;
     }
@@ -175,10 +185,15 @@ namespace Dream
     FontInstance::getCharMap
     ()
     {
-        return mCache->getCharMap
-        (
-            dynamic_pointer_cast<FontDefinition>(mDefinition),
-            mFontFace
-        );
+        auto cache = mCache.lock();
+        if (cache)
+        {
+            return cache->getCharMap
+            (
+                dynamic_pointer_cast<FontDefinition>(mDefinition),
+                mFontFace
+            );
+        }
+        return map<GLchar,FontCharacter>();
     }
 } // End Dream

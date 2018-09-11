@@ -92,20 +92,27 @@ namespace Dream
 
         if (hasPhysicsObjectInstance())
         {
-            mSceneRuntime
+            auto physicsComp = mSceneRuntime
                 ->getProjectRuntime()
-                ->getPhysicsComponent()
-                ->removePhysicsObjectInstance(getPhysicsObjectInstance());
+                ->getPhysicsComponent().lock();
+           if (physicsComp != nullptr)
+           {
+                physicsComp->removePhysicsObjectInstance(getPhysicsObjectInstance());
+           }
         }
 
         if (hasScriptInstance())
         {
+            auto scriptComp =
             mSceneRuntime
                 ->getProjectRuntime()
-                ->getScriptComponent()
-                ->removeFromScriptMap(
+                ->getScriptComponent().lock();
+            if(scriptComp != nullptr)
+            {
+                scriptComp->removeFromScriptMap(
                     dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
                 );
+            }
         }
     }
 
@@ -464,12 +471,12 @@ namespace Dream
     SceneObjectRuntime::createAssetInstanceFromAssetDefinitionByUuid
     (string uuid)
     {
-        shared_ptr<IAssetDefinition> assetDefinition = mSceneRuntime
-            ->getProjectRuntime()
-                ->getProject()
-                    ->getProjectDefinition()
-                        ->getAssetDefinitionByUuid(uuid);
-        createAssetInstance(assetDefinition);
+        auto project = mSceneRuntime->getProjectRuntime()->getProject().lock();
+        if (project != nullptr)
+        {
+            auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+            createAssetInstance(assetDefinition);
+        }
     }
 
     void
@@ -477,7 +484,12 @@ namespace Dream
     (shared_ptr<IAssetDefinition> definition)
     {
         auto log = getLog();
-        mProjectPath = mSceneRuntime->getProjectRuntime()->getProject()->getProjectPath();
+        auto projectWeak = mSceneRuntime->getProjectRuntime()->getProject();
+        auto project = projectWeak.lock();
+        if (project != nullptr)
+        {
+            mProjectPath = project->getProjectPath();
+        }
 
         log->info( "Creating Asset Intance of: ({}) {}", definition->getType() ,  definition->getName());
 
@@ -556,14 +568,18 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Audio asset instance." );
-        // hottest trainwreck 2017!
-        mAudioInstance = shared_ptr<AudioInstance>(
-            mSceneRuntime
-                ->getProjectRuntime()
-                    ->getAudioComponent()
-                        ->newAudioInstance(definition,dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()))
+        auto audioCompWeak = mSceneRuntime->getProjectRuntime()->getAudioComponent();
+        auto audioComp = audioCompWeak.lock();
+        if (audioComp != nullptr)
+        {
+            mAudioInstance = shared_ptr<AudioInstance>(
+                audioComp->newAudioInstance(
+                    definition,
+                    dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+                )
         );
         mAudioInstance->load(mProjectPath);
+        }
     }
 
     void
@@ -604,13 +620,15 @@ namespace Dream
             )
         );
         mScriptInstance->load(mProjectPath);
-        mSceneRuntime
-            ->getProjectRuntime()
-            ->getScriptComponent()
-            ->addToScriptMap(
+        auto scriptCompWeak = mSceneRuntime->getProjectRuntime()->getScriptComponent();
+        auto scriptComp = scriptCompWeak.lock();
+        if (scriptComp != nullptr)
+        {
+            scriptComp->addToScriptMap(
                 dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()),
                 mScriptInstance
             );
+        }
     }
 
     void

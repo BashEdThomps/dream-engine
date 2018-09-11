@@ -46,8 +46,8 @@ namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
     (
-        shared_ptr<AssimpCache> modelCache,
-        shared_ptr<MaterialCache> texCache,
+        weak_ptr<AssimpCache> modelCache,
+        weak_ptr<MaterialCache> texCache,
         shared_ptr<IAssetDefinition> definition,
         shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
@@ -85,7 +85,13 @@ namespace Dream
         string path = projectPath + mDefinition->getAssetPath();
         log->info( "Loading Model - {}" , path);
 
-        auto model = mModelCache->getModelFromCache(path);
+        auto modelCache = mModelCache.lock();
+        if (modelCache == nullptr)
+        {
+            return false;
+        }
+
+        auto model = modelCache->getModelFromCache(path);
 
         if (model == nullptr)
         {
@@ -261,55 +267,58 @@ namespace Dream
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
 
+        shared_ptr<AssimpMesh> aMesh;
+
         // Material info Colours
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
         aiString name;
-        aiGetMaterialString(material,  AI_MATKEY_NAME,               &name);
+        aiGetMaterialString(material, AI_MATKEY_NAME, &name);
 
-        shared_ptr<AssimpMaterial> aMaterial = mMaterialCache->getMaterialByName(name);
-
-        if (aMaterial == nullptr)
+        auto matCache = mMaterialCache.lock();
+        if(matCache != nullptr)
         {
-            log->info("Creating Material {}", name.C_Str());
-            aMaterial = make_shared<AssimpMaterial>();
+            shared_ptr<AssimpMaterial> aMaterial = matCache->getMaterialByName(name);
 
-            aMaterial->mName = name;
-            aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
-            aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial->mShadingModel);
-            aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial->mEnableWireframe);
-            aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial->mBlendFunc);
-            aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial->mOpacity);
-            aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial->mBumpScaling);
-            aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mHardness);
-            aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial->mReflectivity);
-            aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial->mShininessStrength);
-            aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial->mColorDiffuse);
-            aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial->mColorAmbient);
-            aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial->mColorSpecular);
-            aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
-            aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
-            aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
+            if (aMaterial == nullptr)
+            {
+                log->info("Creating Material {}", name.C_Str());
+                aMaterial = make_shared<AssimpMaterial>();
+                aMaterial->mName = name;
+                aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
+                aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial->mShadingModel);
+                aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial->mEnableWireframe);
+                aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial->mBlendFunc);
+                aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial->mOpacity);
+                aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial->mBumpScaling);
+                aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mHardness);
+                aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial->mReflectivity);
+                aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial->mShininessStrength);
+                aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial->mColorDiffuse);
+                aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial->mColorAmbient);
+                aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial->mColorSpecular);
+                aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
+                aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
+                aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
+                matCache->addMaterialToCache(aMaterial);
+                processTextureData(mesh,scene, aMaterial.get());
+            }
 
-            mMaterialCache->addMaterialToCache(aMaterial);
+            log->info( "Using Material {}" , aMaterial->mName.C_Str());
+            aMaterial->debug();
 
-            processTextureData(mesh,scene, aMaterial.get());
+            BoundingBox box;
+            updateBoundingBox(box, mesh);
+            aMesh = make_shared<AssimpMesh>(
+                dynamic_pointer_cast<AssimpModelInstance>(shared_from_this()),
+                string(mesh->mName.C_Str()),
+                vertices,
+                indices,
+                aMaterial
+            );
+            aMesh->setBoundingBox(box);
 
         }
-
-        log->info( "Using Material {}" , aMaterial->mName.C_Str());
-        aMaterial->debug();
-
-        BoundingBox box;
-        updateBoundingBox(box, mesh);
-        auto aMesh = make_shared<AssimpMesh>(
-            dynamic_pointer_cast<AssimpModelInstance>(shared_from_this()),
-            string(mesh->mName.C_Str()),
-            vertices,
-            indices,
-            aMaterial
-        );
-        aMesh->setBoundingBox(box);
         return aMesh;
     }
 
@@ -319,7 +328,12 @@ namespace Dream
     {
         aiString str;
         mat->GetTexture(type, 0, &str);
-        return mMaterialCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+        auto matCache = mMaterialCache.lock();
+        if (matCache)
+        {
+            return matCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+        }
+        return shared_ptr<Texture>();
     }
 
     void

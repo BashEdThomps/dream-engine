@@ -837,13 +837,6 @@ void MainWindowController::addRightDockWidget(QWidget* widget)
 }
 
 void
-MainWindowController::clearOpenGLComponentRuntime
-()
-{
-    mWindowComponentHandle->clearProjectRuntimeHandle();
-}
-
-void
 MainWindowController::onSceneStopped
 (shared_ptr<SceneDefinition> scene)
 {

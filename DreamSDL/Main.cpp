@@ -60,7 +60,7 @@ int main(int argc, const char** argv)
 
     log->info("√ Definition Loading Complete... Creating Runtime");
 
-    //spdlog::set_level(spdlog::level::off);
+    spdlog::set_level(spdlog::level::off);
 
     shared_ptr<ProjectRuntime> pr = project->createProjectRuntime();
     shared_ptr<ProjectDefinition> pd = project->getProjectDefinition();
@@ -74,7 +74,14 @@ int main(int argc, const char** argv)
 
     log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
 
-    shared_ptr<SceneRuntime> sr = pr->constructActiveSceneRuntime(startupSceneDefinition);
+    weak_ptr<SceneRuntime> srWeak = pr->constructActiveSceneRuntime(startupSceneDefinition);
+
+    auto sr = srWeak.lock();
+    if (sr == nullptr)
+    {
+        log->error("Unable to creae/lock scene runtime, gotta go...");
+        return -1;
+    }
 
     // Run the project
     unsigned int frames = 0;

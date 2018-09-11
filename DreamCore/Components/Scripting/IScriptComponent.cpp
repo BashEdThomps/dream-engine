@@ -183,14 +183,11 @@ namespace Dream
     IScriptComponent::exposeAPI
     ()
     {
-        // Dream Base
-        exposeDreamBase();
         // Runtimes
         exposeProjectRuntime();
         exposeSceneObjectRuntime();
         // Dream Misc
         exposeEvent();
-        exposeMath();
         exposeTime();
         exposeTransform3D();
         // Audio

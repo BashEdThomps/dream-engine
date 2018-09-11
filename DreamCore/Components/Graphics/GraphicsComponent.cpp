@@ -105,8 +105,6 @@ namespace Dream
         clearFontQueue();
         clearModelQueue();
         clearLightQueue();
-
-        mActiveSceneRuntime = nullptr;
     }
 
     bool
@@ -227,14 +225,16 @@ namespace Dream
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Clear the colorbuffer
-        if (mActiveSceneRuntime)
+        auto activeSceneRuntime =  mActiveSceneRuntime.lock();
+        if (activeSceneRuntime != nullptr)
         {
+            auto clearColour = activeSceneRuntime->getClearColour();
             glClearColor
             (
-                mActiveSceneRuntime->getClearColour()[Constants::RED_INDEX],
-                mActiveSceneRuntime->getClearColour()[Constants::GREEN_INDEX],
-                mActiveSceneRuntime->getClearColour()[Constants::BLUE_INDEX],
-                mActiveSceneRuntime->getClearColour()[Constants::ALPHA_INDEX]
+                clearColour[Constants::RED_INDEX],
+                clearColour[Constants::GREEN_INDEX],
+                clearColour[Constants::BLUE_INDEX],
+                clearColour[Constants::ALPHA_INDEX]
             );
         }
         else
@@ -266,15 +266,17 @@ namespace Dream
         checkGLError();
 
         // Clear the colorbuffer
-        if (mActiveSceneRuntime)
+        auto activeSceneRuntime = mActiveSceneRuntime.lock();
+        if (activeSceneRuntime)
         {
+            auto clearColour = activeSceneRuntime->getClearColour();
             glClearColor
-                    (
-                        mActiveSceneRuntime->getClearColour()[Constants::RED_INDEX],
-                    mActiveSceneRuntime->getClearColour()[Constants::GREEN_INDEX],
-                    mActiveSceneRuntime->getClearColour()[Constants::BLUE_INDEX],
-                    mActiveSceneRuntime->getClearColour()[Constants::ALPHA_INDEX]
-                    );
+            (
+                clearColour[Constants::RED_INDEX],
+                clearColour[Constants::GREEN_INDEX],
+                clearColour[Constants::BLUE_INDEX],
+                clearColour[Constants::ALPHA_INDEX]
+            );
         }
         else
         {
@@ -349,7 +351,8 @@ namespace Dream
             clearFontQueue();
             clearLightQueue();
 
-            mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+            auto activeSceneRuntime = mActiveSceneRuntime.lock();
+            activeSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                     (
                         function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
                         (
