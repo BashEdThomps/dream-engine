@@ -75,6 +75,10 @@ namespace Dream
         const static string PROJECT_WINDOW_HEIGHT;
         const static int    PROJECT_DEFAULT_WINDOW_WIDTH;
         const static int    PROJECT_DEFAULT_WINDOW_HEIGHT;
+        const static string PROJECT_CAPTURE_JOYSTICK;
+        const static string PROJECT_CAPTURE_KEYBOARD;
+        const static string PROJECT_CAPTURE_MOUSE;
+
         // Asset ================================================================
         const static string UUID;
         const static string NAME;

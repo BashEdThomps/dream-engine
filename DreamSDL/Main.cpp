@@ -1,15 +1,18 @@
 
 #include <iostream>
 #include <thread>
-#include "include/DreamSDL.h"
-#include <memory>
 
+#include "Window/SDLWindowComponent.h"
 #include <DreamCore.h>
+
+#include <memory>
 
 #define MINIMUM_ARGUMENTS 3
 
 using std::cout;
 using std::cerr;
+using std::weak_ptr;
+using std::shared_ptr;
 using std::unique_ptr;
 using Dream::Constants;
 using Dream::Project;
@@ -33,11 +36,12 @@ int main(int argc, const char** argv)
 
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
+
     auto log = spdlog::stdout_color_mt("Main");
 
     shared_ptr<SDLWindowComponent> windowComponent = make_shared<SDLWindowComponent>();
 
-    auto project = make_shared<Project>(windowComponent);
+    std::unique_ptr<Project> project(new Project(windowComponent));
 
     log->trace("Starting...");
 
@@ -60,11 +64,20 @@ int main(int argc, const char** argv)
 
     log->info("√ Definition Loading Complete... Creating Runtime");
 
-    spdlog::set_level(spdlog::level::off);
+    //spdlog::set_level(spdlog::level::off);
 
-    shared_ptr<ProjectRuntime> pr = project->createProjectRuntime();
-    shared_ptr<ProjectDefinition> pd = project->getProjectDefinition();
-    shared_ptr<SceneDefinition> startupSceneDefinition = pd->getStartupSceneDefinition();
+    weak_ptr<ProjectRuntime> pr = project->createProjectRuntime();
+    weak_ptr<ProjectDefinition> pd = project->getProjectDefinition();
+
+    auto pdLocked = pd.lock();
+    if (pdLocked == nullptr)
+    {
+        log->error("Could not lock project definition");
+        return 1;
+    }
+    weak_ptr<SceneDefinition> startupSceneDefinitionWeak  = pdLocked->getStartupSceneDefinition();
+
+    auto startupSceneDefinition = startupSceneDefinitionWeak.lock();
 
     if (startupSceneDefinition == nullptr)
     {

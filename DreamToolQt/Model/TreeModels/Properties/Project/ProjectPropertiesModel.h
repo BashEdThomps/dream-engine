@@ -32,6 +32,7 @@ public:
     void createRoot() override;
     void createProperties() override;
     void createDelegateConnections() override;
+    void crateInputCaptureProperties();
 
 protected:
     void createNameProperty();

@@ -175,6 +175,9 @@ namespace Dream
         j[Constants::PROJECT_AUTHOR] = "";
         j[Constants::PROJECT_DESCRIPTION] = "";
         j[Constants::PROJECT_STARTUP_SCENE] = "";
+        j[Constants::PROJECT_CAPTURE_JOYSTICK] = false;
+        j[Constants::PROJECT_CAPTURE_MOUSE] = false;
+        j[Constants::PROJECT_CAPTURE_KEYBOARD] = false;
 
         j[Constants::PROJECT_WINDOW_SIZE] = json::object();
         j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = Constants::PROJECT_DEFAULT_WINDOW_WIDTH;

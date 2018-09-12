@@ -486,6 +486,7 @@ namespace Dream
         auto log = getLog();
         auto projectWeak = mSceneRuntime->getProjectRuntime()->getProject();
         auto project = projectWeak.lock();
+
         if (project != nullptr)
         {
             mProjectPath = project->getProjectPath();

@@ -23,7 +23,7 @@
 namespace Dream
 {
     InputEvent::InputEvent
-    (InputSource source)
+    (JSInputSource source)
         : DreamObject("InputEvent"),
           mSource(source),
           mKeyEventType(KEY_NONE),
@@ -45,7 +45,7 @@ namespace Dream
         log->trace( "Destructing" );
     }
 
-    InputSource
+    JSInputSource
     InputEvent::getSource
     ()
     {
@@ -54,7 +54,7 @@ namespace Dream
 
     void
     InputEvent::setSource
-    (InputSource source)
+    (JSInputSource source)
     {
         mSource = source;
     }

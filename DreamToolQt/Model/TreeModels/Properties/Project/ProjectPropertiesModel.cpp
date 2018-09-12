@@ -68,14 +68,55 @@ ProjectPropertiesModel::createProperties
     createDescriptionProperty();
     createStartupSceneProperty();
     createWindowSizeProperty();
-    // TODO
+    crateInputCaptureProperties();
 }
 
 void
 ProjectPropertiesModel::createDelegateConnections
 ()
 {
-    // TODO
+}
+
+void ProjectPropertiesModel::crateInputCaptureProperties()
+{
+    auto icItem = new ProjectPropertiesItem
+    (
+        "Input Capture",
+        mProjectDefinitionHandle,
+        PROJECT_PROPERTY_NAME
+    );
+
+    icItem->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Keyboard",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_CAPTURE_KEYBOARD
+        )
+    );
+
+    icItem->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Mouse",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_CAPTURE_MOUSE
+        )
+    );
+
+    icItem->appendChild
+    (
+        new ProjectPropertiesItem
+        (
+            "Joystick",
+            mProjectDefinitionHandle,
+            PROJECT_PROPERTY_CAPTURE_JOYSTICK
+        )
+    );
+
+    mRootItem->appendChild(icItem);
 }
 
 void

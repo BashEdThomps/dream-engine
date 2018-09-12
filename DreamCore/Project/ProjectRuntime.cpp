@@ -49,6 +49,8 @@ using std::endl;
 
 namespace Dream
 {
+
+
     ProjectRuntime::ProjectRuntime
     (shared_ptr<Project> project, shared_ptr<IWindowComponent> windowComponent)
         : IRuntime(project->getProjectDefinition()),
@@ -56,7 +58,6 @@ namespace Dream
           mProject(project),
           mWindowComponent(windowComponent)
     {
-
         setLogClassName("ProjectRuntime");
         auto log = getLog();
         log->info( "Constructing" );
@@ -168,7 +169,13 @@ namespace Dream
     bool ProjectRuntime::initInputComponent()
     {
         auto log = getLog();
-        mInputComponent = make_shared<InputComponent>();
+        auto projectDef = dynamic_pointer_cast<ProjectDefinition>(mDefinition);
+        mInputComponent = make_shared<InputComponent>
+        (
+            projectDef->getCaptureKeyboard(),
+            projectDef->getCaptureMouse(),
+            projectDef->getCaptureJoystick()
+        );
         if (!mInputComponent->init())
         {
             log->error( "Unable to initialise InputComponent." );
@@ -430,10 +437,15 @@ namespace Dream
             return weak_ptr<SceneRuntime>();
         }
 
+
         // Load the new scene
         log->info( "Loading SceneRuntime" );
 
-        mActiveSceneRuntime = make_shared<SceneRuntime>(sceneDefinition , dynamic_pointer_cast<ProjectRuntime>(shared_from_this()));
+        mActiveSceneRuntime = make_shared<SceneRuntime>(
+            sceneDefinition ,
+            dynamic_pointer_cast<ProjectRuntime>(shared_from_this())
+        );
+
         mActiveSceneRuntime->useDefinition(sceneDefinition);
 
         if (mGraphicsComponent != nullptr)
@@ -499,4 +511,5 @@ namespace Dream
     {
         mActiveSceneRuntime.reset();
     }
+
 }

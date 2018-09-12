@@ -90,6 +90,44 @@ namespace Dream
         return false;
     }
 
+    bool
+    LuaComponent::createScript
+    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<ScriptInstance> script)
+    {
+        auto log = getLog();
+        if (script == nullptr)
+        {
+            log->error( "Load Failed, ScriptInstance is NULL" );
+            return false;
+        }
+
+        if (sceneObject == nullptr)
+        {
+            log->error( "Load Failed, SceneObjectRuntime is NULL" );
+            return false;
+        }
+
+        if (script->getLoadedFlag())
+        {
+            log->info( "Script {} is already loaded" , script->getNameAndUuidString());
+            return false;
+        }
+
+        log->info( "Loading script '{}' for '{}'" , script->getName(),sceneObject->getName());
+        log->info( "Loading script from {}" , script->getAbsolutePath());
+
+        if (!loadScript(sceneObject))
+        {
+            return false;
+        }
+
+        log->info( "Loaded {} successfully" , sceneObject->getUuid());
+
+        script->setLoadedFlag(true);
+
+        return true;
+    }
+
     /*
      * Instanciate the script and put into global registry
      */
@@ -228,7 +266,6 @@ namespace Dream
         log->info("Calling onUpdate for {}",sceneObject->getNameAndUuidString() );
 
         sol::state_view solStateView(mState);
-
         sol::function onUpdateFunction = solStateView[sceneObject->getUuid()][Constants::LUA_UPDATE_FUNCTION];
 
         auto result = onUpdateFunction(sceneObject);
@@ -285,8 +322,8 @@ namespace Dream
         }
 
         log->info("Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
-        sol::state_view solStateView(mState);
 
+        sol::state_view solStateView(mState);
         sol::function onInitFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INIT_FUNCTION];
 
         auto initResult = onInitFunction(sceneObject);
@@ -321,12 +358,11 @@ namespace Dream
         }
 
         log->info("Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
-        sol::state_view solStateView(mState);
 
+        sol::state_view solStateView(mState);
         sol::function onInputFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INPUT_FUNCTION];
 
         auto result = onInputFunction(sceneObject,mInputMap);
-
 
         if (!result.valid())
         {
@@ -358,7 +394,6 @@ namespace Dream
         log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
 
         sol::state_view solStateView(mState);
-
         sol::function onEventFunction = solStateView[sceneObject->getUuid()][Constants::LUA_EVENT_FUNCTION];
 
         auto result = onEventFunction(sceneObject,sceneObject->getEventQueue());
@@ -742,34 +777,35 @@ namespace Dream
             "GetFloatPrevious",&gainput::InputMap::GetFloatPrevious,
             "GetFloatDelta",&gainput::InputMap::GetFloatDelta
         );
+
         stateView["InputSource"] = stateView.create_table_with(
-            "FaceButtonNorth", InputSource::FaceButtonNorth,
-            "FaceButtonEast", InputSource::FaceButtonEast,
-            "FaceButtonWest", InputSource::FaceButtonWest,
-            "FaceButtonSouth", InputSource::FaceButtonSouth,
+            "FaceButtonNorth", JSInputSource::FaceButtonNorth,
+            "FaceButtonEast", JSInputSource::FaceButtonEast,
+            "FaceButtonWest", JSInputSource::FaceButtonWest,
+            "FaceButtonSouth", JSInputSource::FaceButtonSouth,
 
-            "FaceHome", InputSource::FaceHome,
-            "FaceStart", InputSource::FaceStart,
-            "FaceSelect", InputSource::FaceSelect,
+            "FaceHome", JSInputSource::FaceHome,
+            "FaceStart", JSInputSource::FaceStart,
+            "FaceSelect", JSInputSource::FaceSelect,
 
-            "ShoulderLeft", InputSource::ShoulderLeft,
-            "ShoulderRight", InputSource::ShoulderRight,
+            "ShoulderLeft", JSInputSource::ShoulderLeft,
+            "ShoulderRight", JSInputSource::ShoulderRight,
 
-            "TriggerLeft", InputSource::TriggerLeft,
-            "TriggerRight", InputSource::TriggerRight,
+            "TriggerLeft", JSInputSource::TriggerLeft,
+            "TriggerRight", JSInputSource::TriggerRight,
 
-            "DPadNorth", InputSource::DPadNorth,
-            "DPadSouth", InputSource::DPadSouth,
-            "DPadEast", InputSource::DPadEast,
-            "DPadWest", InputSource::DPadWest,
+            "DPadNorth", JSInputSource::DPadNorth,
+            "DPadSouth", JSInputSource::DPadSouth,
+            "DPadEast", JSInputSource::DPadEast,
+            "DPadWest", JSInputSource::DPadWest,
 
-            "AnalogLeftStickX", InputSource::AnalogLeftStickX,
-            "AnalogLeftStickY", InputSource::AnalogLeftStickY,
-            "AnalogLeftButton", InputSource::AnalogLeftButton,
+            "AnalogLeftStickX", JSInputSource::AnalogLeftStickX,
+            "AnalogLeftStickY", JSInputSource::AnalogLeftStickY,
+            "AnalogLeftButton", JSInputSource::AnalogLeftButton,
 
-            "AnalogRightStickX", InputSource::AnalogRightStickX,
-            "AnalogRightStickY", InputSource::AnalogRightStickY,
-            "AnalogRightButton", InputSource::AnalogRightButton
+            "AnalogRightStickX", JSInputSource::AnalogRightStickX,
+            "AnalogRightStickY", JSInputSource::AnalogRightStickY,
+            "AnalogRightButton", JSInputSource::AnalogRightButton
         );
     }
 
@@ -965,5 +1001,58 @@ namespace Dream
         stateView.new_usertype<glm::mat4>("mat4");
     }
 
+    void
+    LuaComponent::setInputMap
+    (shared_ptr<gainput::InputMap> map)
+    {
+        mInputMap = map;
+    }
+
+    // API Exposure Methods ======================================================
+
+    void
+    LuaComponent::debugRegisteringClass
+    (string className)
+    {
+        auto log = getLog();
+        log->info( "Registering Class {}",  className );
+        return;
+    }
+
+    void
+    LuaComponent::exposeAPI
+    ()
+    {
+        // Runtimes
+        exposeProjectRuntime();
+        exposeSceneObjectRuntime();
+        // Dream Misc
+        exposeEvent();
+        exposeTime();
+        exposeTransform3D();
+        // Audio
+        exposeAudioComponent();
+        exposeAudioInstance();
+        // Graphics
+        exposeGraphicsComponent();
+        exposeAssimpModelInstance();
+        exposeCamera();
+        exposeFontInstance();
+        exposeLightInstance();
+        exposeShaderInstance();
+        exposeSpriteInstance();
+        exposeNanoVG();
+        exposeGLM();
+        // Input
+        exposeGainput();
+        // Path
+        exposePathComponent();
+        exposePathInstance();
+        // Script
+        exposeScriptInstance();
+        // Physics
+        exposePhysicsComponent();
+        exposePhysicsObjectInstance();
+    }
 } // End of Dream
 

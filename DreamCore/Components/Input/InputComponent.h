@@ -9,7 +9,7 @@ using std::vector;
 
 namespace Dream
 {
-    enum InputSource
+    enum JSInputSource
     {
         FaceButtonNorth,
         FaceButtonEast,
@@ -40,10 +40,20 @@ namespace Dream
         AnalogRightButton
     };
 
+    enum KeyboardInputSource
+    {
+
+    };
+
+    enum MouseInputSource
+    {
+
+    };
+
     class InputComponent : public IComponent
     {
     public:
-        InputComponent();
+        InputComponent(bool useKeyboard = false, bool useMouse = false, bool useJoystick = false);
         ~InputComponent() override;
 
         bool init() override;
@@ -53,6 +63,9 @@ namespace Dream
 
     private:
         const static float ANALOG_DEAD_ZONE;
+        bool mUseKeyboard;
+        bool mUseMouse;
+        bool mUseJoystick;
         shared_ptr<InputMap> mInputMap;
         InputManager mInputManager;
         vector<DeviceId> mDevices;

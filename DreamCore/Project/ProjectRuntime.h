@@ -83,8 +83,6 @@ namespace Dream
         shared_ptr<FontCache> mFontCache;
         shared_ptr<ShaderCache> mShaderCache;
         shared_ptr<ScriptCache> mScriptCache;
-
-
     public: // Public Functions
         ProjectRuntime(shared_ptr<Project> parentProject, shared_ptr<IWindowComponent> wc = nullptr);
         ~ProjectRuntime() override;

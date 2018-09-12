@@ -50,11 +50,9 @@ namespace Dream
 
        virtual ~IScriptComponent() override;
 
-        bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>);
+        virtual bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>) = 0;
         virtual bool loadScript(shared_ptr<SceneObjectRuntime>) = 0;
-        bool updateNanoVG();
-        void updateComponent() override;
-        void stackDump();
+        virtual bool updateNanoVG() = 0;
 
         virtual bool executeScriptInit  (shared_ptr<SceneObjectRuntime>) = 0;
         virtual bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>) = 0;
@@ -64,7 +62,7 @@ namespace Dream
 
         virtual void removeFromScriptMap(shared_ptr<SceneObjectRuntime>) = 0;
         virtual void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>) = 0;
-        void setInputMap(shared_ptr<gainput::InputMap> map);
+        virtual void setInputMap(shared_ptr<gainput::InputMap> map) = 0;
 
     protected:// Variables
         shared_ptr<ScriptCache> mScriptCache;
@@ -73,8 +71,8 @@ namespace Dream
         shared_ptr<gainput::InputMap> mInputMap;
 
         // API Exposure Methods ======================================================
-        void debugRegisteringClass(string className);
-        void exposeAPI();
+        virtual void debugRegisteringClass(string className) = 0;
+        virtual void exposeAPI() = 0;
         virtual void exposePathComponent() = 0;
         virtual void exposePathInstance() = 0;
         virtual void exposeAssimpModelInstance() = 0;

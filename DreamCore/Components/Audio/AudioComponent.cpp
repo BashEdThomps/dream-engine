@@ -71,7 +71,7 @@ namespace Dream
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
-        vector<float> position = {0.0f,0.0f,0.0f};
+        vec3 position = {0.0f,0.0f,0.0f};
         setListenerPosition(position);
         return true;
     }
@@ -134,16 +134,16 @@ namespace Dream
 
     void
     AudioComponent::setSourcePosision
-    (ALuint sourceId, vector<float> position)
+    (ALuint sourceId, vec3 pos)
     {
-        alSource3f(sourceId, AL_POSITION, position[0],position[1],position[2]);
+        alSource3f(sourceId, AL_POSITION, pos.x, pos.y, pos.z);
     }
 
     void
     AudioComponent::setListenerPosition
-    (vector<float> position)
+    (vec3 pos)
     {
-        alListener3f(AL_POSITION, position[0],position[1],position[2]);
+        alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
     }
 
     void
@@ -204,11 +204,7 @@ namespace Dream
 
                     auto transform = audioAsset->getSceneObjectRuntime()->getTransform();
 
-                    vector<float> position = {
-                        transform->getTranslation().x,
-                        transform->getTranslation().y,
-                        transform->getTranslation().z,
-                    };
+                    vec3 tx = transform->getTranslation();
                     vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                     alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
                             static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
@@ -217,8 +213,7 @@ namespace Dream
                         AL_BUFFER,
                         static_cast<ALint>(audioAsset->getBuffer())
                     );
-                    setSourcePosision(audioAsset->getSource(), position);
-                    //audioAsset->getAudioDataBuffer().clear();
+                    setSourcePosision(audioAsset->getSource(), tx);
                 }
                 mPlayQueue.push_back(audioAsset);
                 log->info("Pushed {} to play queue" , audioAsset->getNameAndUuidString());

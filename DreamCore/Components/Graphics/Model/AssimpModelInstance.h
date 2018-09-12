@@ -92,7 +92,6 @@ namespace Dream
         // Methods
         void loadModel(string);
         void loadShaders();
-        //vector<Texture> loadMaterialTextures(aiMaterial*, aiTextureType, string);
         shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType, string);
 
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
@@ -102,7 +101,6 @@ namespace Dream
         shared_ptr<AssimpMesh> processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        //vector<Texture> processTextureData(aiMesh* mesh, const aiScene* scene);
         void processTextureData(aiMesh* mesh, const aiScene* scene, AssimpMaterial* material);
         map<string,unique_ptr<ShaderInstance>> mMaterialShaderMap;
     }; // End of AssimpModelInstance

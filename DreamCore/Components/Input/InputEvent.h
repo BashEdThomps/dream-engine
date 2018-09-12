@@ -22,7 +22,7 @@
 
 namespace Dream
 {
-    enum InputSource
+    enum JSInputSource
     {
         INPUT_SOURCE_KEYBOARD,
         INPUT_SOURCE_MOUSE,
@@ -57,11 +57,11 @@ namespace Dream
     class InputEvent : public DreamObject
     {
     public:
-        InputEvent(InputSource source = INPUT_SOURCE_NONE);
+        InputEvent(JSInputSource source = INPUT_SOURCE_NONE);
         ~InputEvent();
 
-        InputSource getSource();
-        void setSource(InputSource source);
+        JSInputSource getSource();
+        void setSource(JSInputSource source);
 
         MouseEventType getMouseEventType();
         void setMouseEventType(MouseEventType type);
@@ -88,7 +88,7 @@ namespace Dream
         void setButton(char);
 
     private:
-        InputSource mSource;
+        JSInputSource mSource;
         KeyEventType mKeyEventType;
         MouseEventType mMouseEventType;
         GamepadEventType mGamepadEventType;

@@ -117,5 +117,6 @@ namespace Dream
         void setCameraYaw(float yaw);
         float getCameraPitch();
         float getCameraYaw();
+
     };
 }

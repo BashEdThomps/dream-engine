@@ -477,4 +477,46 @@ namespace Dream
         }
         return shaders;
     }
+
+    bool ProjectDefinition::getCaptureKeyboard()
+    {
+       if (mJson[Constants::PROJECT_CAPTURE_KEYBOARD].is_null())
+       {
+            mJson[Constants::PROJECT_CAPTURE_KEYBOARD] = false;
+       }
+       return mJson[Constants::PROJECT_CAPTURE_KEYBOARD];
+    }
+
+    void ProjectDefinition::setCaptureKeyboard(bool cap)
+    {
+       mJson[Constants::PROJECT_CAPTURE_KEYBOARD] = cap;
+    }
+
+    bool ProjectDefinition::getCaptureMouse()
+    {
+        if (mJson[Constants::PROJECT_CAPTURE_MOUSE].is_null())
+       {
+            mJson[Constants::PROJECT_CAPTURE_MOUSE] = false;
+       }
+       return mJson[Constants::PROJECT_CAPTURE_MOUSE];
+    }
+
+    void ProjectDefinition::setCaptureMouse(bool cap)
+    {
+       mJson[Constants::PROJECT_CAPTURE_MOUSE] = cap;
+    }
+
+    bool ProjectDefinition::getCaptureJoystick()
+    {
+       if (mJson[Constants::PROJECT_CAPTURE_JOYSTICK].is_null())
+       {
+            mJson[Constants::PROJECT_CAPTURE_JOYSTICK] = false;
+       }
+       return mJson[Constants::PROJECT_CAPTURE_JOYSTICK];
+    }
+
+    void ProjectDefinition::setCaptureJoystick(bool cap)
+    {
+       mJson[Constants::PROJECT_CAPTURE_JOYSTICK] = cap;
+    }
 }

@@ -77,6 +77,15 @@ namespace Dream
         map<AssetType,vector<shared_ptr<IAssetDefinition>>> getAssetDefinitionsMap();
         vector<shared_ptr<ShaderDefinition>> getShaderAssetDefinitionVector();
 
+        bool getCaptureKeyboard();
+        void setCaptureKeyboard(bool);
+
+        bool getCaptureMouse();
+        void setCaptureMouse(bool);
+
+        bool getCaptureJoystick();
+        void setCaptureJoystick(bool);
+
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();

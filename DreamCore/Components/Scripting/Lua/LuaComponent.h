@@ -57,7 +57,13 @@ namespace Dream
         bool init() override;
         void updateComponent() override;
         bool loadScript(shared_ptr<SceneObjectRuntime>) override;
-        bool updateNanoVG();
+        bool createScript(shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>) override;
+        void exposeAPI() override;
+        void debugRegisteringClass(string) override;
+        void setInputMap(shared_ptr<gainput::InputMap>) override;
+
+
+        bool updateNanoVG() override;
 
         bool executeScriptInit  (shared_ptr<SceneObjectRuntime>) override;
         bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>) override;

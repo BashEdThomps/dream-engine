@@ -72,6 +72,15 @@ ProjectPropertiesItem::data
         case PROJECT_PROPERTY_AUTHOR:
             return QVariant(QString::fromStdString(proj->getAuthor()));
 
+        case PROJECT_PROPERTY_CAPTURE_JOYSTICK:
+            return QVariant(proj->getCaptureJoystick());
+
+        case PROJECT_PROPERTY_CAPTURE_KEYBOARD:
+            return QVariant(proj->getCaptureKeyboard());
+
+        case PROJECT_PROPERTY_CAPTURE_MOUSE:
+            return QVariant(proj->getCaptureMouse());
+
         // Not Used
         case PROJECT_PROPERTY_WINDOW_SIZE:
         case PROJECT_PROPERTY_NONE:
@@ -94,6 +103,18 @@ ProjectPropertiesItem::setData
 
     switch (getProperty())
     {
+        case PROJECT_PROPERTY_CAPTURE_KEYBOARD:
+            proj->setCaptureKeyboard(value.toBool());
+            break;
+
+        case PROJECT_PROPERTY_CAPTURE_MOUSE:
+            proj->setCaptureMouse(value.toBool());
+            break;
+
+        case PROJECT_PROPERTY_CAPTURE_JOYSTICK:
+            proj->setCaptureJoystick(value.toBool());
+            break;
+
         case PROJECT_PROPERTY_DESCRIPTION:
             proj->setDescription(value.toString().toStdString());
             break;

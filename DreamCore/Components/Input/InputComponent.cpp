@@ -3,8 +3,11 @@
 
 namespace Dream
 {
-    InputComponent::InputComponent()
-        : IComponent ()
+    InputComponent::InputComponent(bool useKeyboard, bool useMouse, bool useJoystick)
+        : IComponent (),
+          mUseKeyboard(useKeyboard),
+          mUseMouse(useMouse),
+          mUseJoystick(useJoystick)
     {
         setLogClassName("InputComponent");
         auto log = getLog();
@@ -21,45 +24,64 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Initialising...");
-        auto gamepad = mInputManager.CreateDevice<InputDevicePad>();
 
-        mDevices.push_back(gamepad);
         mInputMap = make_shared<InputMap>(mInputManager);
 
-        // Face Buttons
-        mInputMap->MapBool(FaceButtonSouth,gamepad,PadButtonA);
-        mInputMap->MapBool(FaceButtonEast,gamepad,PadButtonB);
-        mInputMap->MapBool(FaceButtonWest,gamepad,PadButtonX);
-        mInputMap->MapBool(FaceButtonNorth,gamepad,PadButtonY);
+        if (mUseKeyboard)
+        {
+            log->info("Creating Keyboard Device");
+            auto keyboardDevice = mInputManager.CreateDevice<InputDeviceKeyboard>();
+            mDevices.push_back(keyboardDevice);
+        }
 
-        // Left Analog
-        mInputMap->MapFloat(AnalogLeftStickX,gamepad,PadButtonLeftStickX);
-        mInputMap->MapFloat(AnalogLeftStickY,gamepad,PadButtonLeftStickY);
-        mInputMap->MapBool(AnalogLeftButton,gamepad,PadButtonL3);
+        if (mUseMouse)
+        {
+            log->info("Creating Mouse Device");
+            auto mouseDevice = mInputManager.CreateDevice<InputDeviceMouse>();
+            mDevices.push_back(mouseDevice);
+        }
 
-        // Right Analog
-        mInputMap->MapFloat(AnalogRightStickX,gamepad,PadButtonRightStickX);
-        mInputMap->MapFloat(AnalogRightStickY,gamepad,PadButtonRightStickY);
-        mInputMap->MapBool(AnalogRightButton,gamepad,PadButtonR3);
+        if (mUseJoystick)
+        {
+            log->info("Creating Joystick Device");
+            auto gamepad = mInputManager.CreateDevice<InputDevicePad>();
+            mDevices.push_back(gamepad);
 
-        // Shoulders
-        mInputMap->MapBool(ShoulderLeft,gamepad,PadButtonL1);
-        mInputMap->MapBool(ShoulderRight,gamepad,PadButtonR1);
+            // Face Buttons
+            mInputMap->MapBool(FaceButtonSouth,gamepad,PadButtonA);
+            mInputMap->MapBool(FaceButtonEast,gamepad,PadButtonB);
+            mInputMap->MapBool(FaceButtonWest,gamepad,PadButtonX);
+            mInputMap->MapBool(FaceButtonNorth,gamepad,PadButtonY);
 
-        // Triggers
-        mInputMap->MapFloat(TriggerLeft,gamepad,PadButtonAxis4);
-        mInputMap->MapFloat(TriggerRight,gamepad,PadButtonAxis5);
+            // Left Analog
+            mInputMap->MapFloat(AnalogLeftStickX,gamepad,PadButtonLeftStickX);
+            mInputMap->MapFloat(AnalogLeftStickY,gamepad,PadButtonLeftStickY);
+            mInputMap->MapBool(AnalogLeftButton,gamepad,PadButtonL3);
 
-        // DPad
-        mInputMap->MapBool(DPadNorth,gamepad,PadButtonUp);
-        mInputMap->MapBool(DPadSouth,gamepad,PadButtonDown);
-        mInputMap->MapBool(DPadEast,gamepad,PadButtonRight);
-        mInputMap->MapBool(DPadWest,gamepad,PadButtonLeft);
+            // Right Analog
+            mInputMap->MapFloat(AnalogRightStickX,gamepad,PadButtonRightStickX);
+            mInputMap->MapFloat(AnalogRightStickY,gamepad,PadButtonRightStickY);
+            mInputMap->MapBool(AnalogRightButton,gamepad,PadButtonR3);
 
-        // Extra
-        mInputMap->MapBool(FaceHome,gamepad,PadButtonHome);
-        mInputMap->MapBool(FaceStart,gamepad,PadButtonStart);
-        mInputMap->MapBool(FaceSelect,gamepad,PadButtonSelect);
+            // Shoulders
+            mInputMap->MapBool(ShoulderLeft,gamepad,PadButtonL1);
+            mInputMap->MapBool(ShoulderRight,gamepad,PadButtonR1);
+
+            // Triggers
+            mInputMap->MapFloat(TriggerLeft,gamepad,PadButtonAxis4);
+            mInputMap->MapFloat(TriggerRight,gamepad,PadButtonAxis5);
+
+            // DPad
+            mInputMap->MapBool(DPadNorth,gamepad,PadButtonUp);
+            mInputMap->MapBool(DPadSouth,gamepad,PadButtonDown);
+            mInputMap->MapBool(DPadEast,gamepad,PadButtonRight);
+            mInputMap->MapBool(DPadWest,gamepad,PadButtonLeft);
+
+            // Extra
+            mInputMap->MapBool(FaceHome,gamepad,PadButtonHome);
+            mInputMap->MapBool(FaceStart,gamepad,PadButtonStart);
+            mInputMap->MapBool(FaceSelect,gamepad,PadButtonSelect);
+        }
 
         return true;
     }
@@ -128,10 +150,8 @@ namespace Dream
              mInputMap->GetFloat(AnalogRightStickX),
              mInputMap->GetFloat(AnalogRightStickY),
              mInputMap->GetBool(AnalogRightButton)
-
         );
         */
-
         endUpdate();
     }
 

@@ -29,6 +29,7 @@
     #include <AL/alc.h>
 #endif
 
+#include <glm/vec3.hpp>
 #include "AudioStatus.h"
 #include "../IComponent.h"
 
@@ -58,8 +59,8 @@ namespace Dream
         bool init() override;
         void updateComponent() override;
 
-        void setSourcePosision(ALuint, vector<float>);
-        void setListenerPosition(vector<float>);
+        void setSourcePosision(ALuint, glm::vec3);
+        void setListenerPosition(glm::vec3);
 
         void pushToPlayQueue(shared_ptr<AudioInstance>);
         void pushToPauseQueue(shared_ptr<AudioInstance>);

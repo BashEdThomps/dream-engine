@@ -2,16 +2,16 @@
 Dream is a 3D Multimedia and Game Engine.
 
 ## Key Features
-* Written in C++
 * Platform Independant
+* Written in C++
 * OpenGL Graphics
 * OpenAL Audio
-* Scriptable in Jvascript with V8  
-* Uses Bullet Physics & Collision Libraries
-* Included Project Editor Written in Qt
+* Bullet Physics & Collision
+* Lua Scripting
+* Gainput Input Handling
+* Project Editor Written in Qt/C++
 
 ## Architecture
-This section give an architectural overview of the engine.
 
 ### Project
 Projects are the highest level of object in Dream. 
@@ -44,6 +44,6 @@ A Project contains one or more Scenes that are to be displayed. A Scene is compo
 ### SceneObjects
 SceneObjects are used to construct a 'Scenegraph' that describes the relationship of objects in the Scene. A scene has a single 'Root' SceneObject. SceneObjects are assigned arranged with a parent-child relationship, through which they can inherit their transformation. Each SceneObject is assigned zero or more 'Assets' to use at runtime.
 
+## DreamTool
 
-# DreamTool
 DreamTool is the project editor for Dream. It is cross-platrofm, written in Qt.

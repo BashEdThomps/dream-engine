@@ -1,6 +1,2 @@
-#ifndef DREAMSDL_H
-#define DREAMSDL_H
-
+#pragma once
 #include "../Window/SDLWindowComponent.h"
-
-#endif // DREAMSDL_H

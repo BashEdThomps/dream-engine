@@ -21,6 +21,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QCheckBox>
 
 #include "ProjectPropertiesModel.h"
 #include "ProjectPropertiesItem.h"
@@ -76,6 +77,11 @@ ProjectPropertiesTreeDelegate::createEditor
         case PROJECT_PROPERTY_AUTHOR:
         case PROJECT_PROPERTY_NONE:
             return new QLineEdit(parent);
+
+        case PROJECT_PROPERTY_CAPTURE_JOYSTICK:
+        case PROJECT_PROPERTY_CAPTURE_KEYBOARD:
+        case PROJECT_PROPERTY_CAPTURE_MOUSE:
+            return new QCheckBox(parent);
     }
     return new QLineEdit(parent);
 }
@@ -106,6 +112,12 @@ ProjectPropertiesTreeDelegate::setEditorData
             break;
         case PROJECT_PROPERTY_WINDOW_SIZE:
             break;
+
+        case PROJECT_PROPERTY_CAPTURE_KEYBOARD:
+        case PROJECT_PROPERTY_CAPTURE_MOUSE:
+        case PROJECT_PROPERTY_CAPTURE_JOYSTICK:
+            static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
+            break;
     }
 }
 
@@ -132,6 +144,12 @@ ProjectPropertiesTreeDelegate::setModelData
             model->setData(index,static_cast<QLineEdit*>(editor)->text());
             break;
         case PROJECT_PROPERTY_WINDOW_SIZE:
+            break;
+
+        case PROJECT_PROPERTY_CAPTURE_KEYBOARD:
+        case PROJECT_PROPERTY_CAPTURE_MOUSE:
+        case PROJECT_PROPERTY_CAPTURE_JOYSTICK:
+            model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
             break;
     }
 }
