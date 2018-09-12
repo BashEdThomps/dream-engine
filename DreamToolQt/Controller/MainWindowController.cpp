@@ -29,7 +29,7 @@
 
 #include "View/QOpenGLWindowComponent.h"
 #include <spdlog/spdlog.h>
-
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 using std::pair;
 using std::begin;

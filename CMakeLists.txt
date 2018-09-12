@@ -33,7 +33,7 @@ endif ()
 
 if(UNIX)
     message("Building for a *nix OS")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth=4096 --std=c++17")
 endif()
 
 if (APPLE)

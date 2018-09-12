@@ -1,5 +1,6 @@
 #include "MaterialShaderFormController.h"
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <DreamCore.h>
 #include <assimp/scene.h>
 #include <QMessageBox>

@@ -5,8 +5,6 @@ file(GLOB_RECURSE SRC "*.h" "*.cpp")
 
 find_package(BULLET     REQUIRED)
 find_package(SDL2       REQUIRED)
-find_package(SDL2_mixer REQUIRED)
-find_package(SDL2_image REQUIRED)
 find_package(OPENGL     REQUIRED)
 find_package(GLM        REQUIRED)
 find_package(GLEW       REQUIRED)
@@ -25,8 +23,6 @@ include_directories(
   ${BULLET_INCLUDE_DIR}
   ${LUA_INCLUDE_DIR}
   ${SDL2_INCLUDE_DIR}
-  ${SDLMIXER_INCLUDE_DIR}
-  ${SDL2_IMAGE_INCLUDE_DIR}
   ${FREETYPE_INCLUDE_DIR_ft2build}
 )
 
@@ -45,8 +41,6 @@ target_link_libraries(
   ${assimp_LIBRARIES}
   ${BULLET_LIBRARY}
   ${SDL2_LIBRARY}
-  ${SDLMIXER_LIBRARY}
-  ${SDL2_IMAGE_LIBRARY}
   ${LUA_LIBRARIES}
   ${FREETYPE_LIBRARIES}
 )

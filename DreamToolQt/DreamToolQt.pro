@@ -176,11 +176,12 @@ macx: LIBS += \
 LIBS += \
     -L/opt/octronic/builds/Dream/DreamCore \
     -L/opt/octronic/builds/Dream/SOIL \
+    -L/usr/lib/x86_64-linux-gnu \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
     -lfreetype \
     -lGLEW \
-    -lAssimp \
+    -lassimp \
     -ltinyspline -ltinysplinecpp
 
 INCLUDEPATH += \

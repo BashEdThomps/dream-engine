@@ -15,7 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <strings.h>
+#include <string>
+#include  <sstream>
 #include "IAssetDefinition.h"
 #include "../Common/Constants.h"
 

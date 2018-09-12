@@ -501,7 +501,6 @@ namespace Dream
         j[Constants::TRANSFORM_TRANSLATION][Constants::Z] = getTranslationZ();
         // Orientation
         j[Constants::TRANSFORM_ORIENTATION] = json::object();
-
         j[Constants::TRANSFORM_ORIENTATION][Constants::W] = mOrientation.w;
         j[Constants::TRANSFORM_ORIENTATION][Constants::X] = mOrientation.x;
         j[Constants::TRANSFORM_ORIENTATION][Constants::Y] = mOrientation.y;

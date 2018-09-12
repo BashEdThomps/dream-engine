@@ -1,5 +1,6 @@
 #include "MaterialShaderTableModel.h"
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include "DreamCore.h"
 
 using Dream::ModelDefinition;

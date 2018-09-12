@@ -49,8 +49,6 @@ using std::endl;
 
 namespace Dream
 {
-
-
     ProjectRuntime::ProjectRuntime
     (shared_ptr<Project> project, shared_ptr<IWindowComponent> windowComponent)
         : IRuntime(project->getProjectDefinition()),

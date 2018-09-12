@@ -1,19 +1,12 @@
-
 #include <iostream>
 #include <thread>
-
+#include <memory>
 #include "Window/SDLWindowComponent.h"
 #include <DreamCore.h>
 
-#include <memory>
-
 #define MINIMUM_ARGUMENTS 3
 
-using std::cout;
-using std::cerr;
-using std::weak_ptr;
 using std::shared_ptr;
-using std::unique_ptr;
 using Dream::Constants;
 using Dream::Project;
 using Dream::SceneState;
@@ -33,15 +26,13 @@ void showUsage(const char** argv)
 
 int main(int argc, const char** argv)
 {
-
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
 
     auto log = spdlog::stdout_color_mt("Main");
 
     shared_ptr<SDLWindowComponent> windowComponent = make_shared<SDLWindowComponent>();
-
-    std::unique_ptr<Project> project(new Project(windowComponent));
+    shared_ptr<Project> project = make_shared<Project>(windowComponent);
 
     log->trace("Starting...");
 
@@ -66,18 +57,23 @@ int main(int argc, const char** argv)
 
     //spdlog::set_level(spdlog::level::off);
 
-    weak_ptr<ProjectRuntime> pr = project->createProjectRuntime();
-    weak_ptr<ProjectDefinition> pd = project->getProjectDefinition();
+    shared_ptr<ProjectRuntime> pr = project->createProjectRuntime();
 
-    auto pdLocked = pd.lock();
-    if (pdLocked == nullptr)
+    if (pr == nullptr)
+    {
+        log->error("Unable to lock project runtime");
+        return 1;
+    }
+
+    shared_ptr<ProjectDefinition> pd = project->getProjectDefinition();
+
+    if (pd == nullptr)
     {
         log->error("Could not lock project definition");
         return 1;
     }
-    weak_ptr<SceneDefinition> startupSceneDefinitionWeak  = pdLocked->getStartupSceneDefinition();
 
-    auto startupSceneDefinition = startupSceneDefinitionWeak.lock();
+    shared_ptr<SceneDefinition> startupSceneDefinition  = pd->getStartupSceneDefinition();
 
     if (startupSceneDefinition == nullptr)
     {
@@ -87,12 +83,11 @@ int main(int argc, const char** argv)
 
     log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
 
-    weak_ptr<SceneRuntime> srWeak = pr->constructActiveSceneRuntime(startupSceneDefinition);
+    auto sr = pr->constructActiveSceneRuntime(startupSceneDefinition).lock();
 
-    auto sr = srWeak.lock();
     if (sr == nullptr)
     {
-        log->error("Unable to creae/lock scene runtime, gotta go...");
+        log->error("Unable to create scene runtime, gotta go...");
         return -1;
     }
 
