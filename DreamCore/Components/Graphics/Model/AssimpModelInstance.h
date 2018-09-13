@@ -62,13 +62,13 @@ namespace Dream
         AssimpModelInstance(
             weak_ptr<AssimpCache>,
             weak_ptr<MaterialCache>,
-            shared_ptr<IAssetDefinition>,
-            shared_ptr<SceneObjectRuntime>
+            weak_ptr<IAssetDefinition>,
+            weak_ptr<SceneObjectRuntime>
         );
         ~AssimpModelInstance() override;
         bool load(string) override;
         void draw(
-            shared_ptr<ShaderInstance>,
+            weak_ptr<ShaderInstance>,
             vec3 transorm,
             vec3 camPos,
             float maxDistance,
@@ -102,7 +102,7 @@ namespace Dream
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
         void processTextureData(aiMesh* mesh, const aiScene* scene, AssimpMaterial* material);
-        map<string,unique_ptr<ShaderInstance>> mMaterialShaderMap;
+        map<string,shared_ptr<ShaderInstance>> mMaterialShaderMap;
     }; // End of AssimpModelInstance
 
 } // End of Dream

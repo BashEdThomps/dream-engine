@@ -27,7 +27,7 @@ namespace Dream
 {
 
     FontInstance::FontInstance
-    (weak_ptr<FontCache> cache, shared_ptr<FontDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
+    (weak_ptr<FontCache> cache, weak_ptr<FontDefinition> definition, weak_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           mCache(cache)
 
@@ -117,7 +117,7 @@ namespace Dream
         return;
     }
 
-    shared_ptr<FT_Face>
+    weak_ptr<FT_Face>
     FontInstance::getFontFace
     ()
     {

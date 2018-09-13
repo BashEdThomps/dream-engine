@@ -46,7 +46,7 @@ namespace Dream
         vector<float> mGravity;
         vector<float> mClearColour;
         vector<float> mAmbientColour;
-        shared_ptr<ProjectRuntime> mProjectRuntime;
+        weak_ptr<ProjectRuntime> mProjectRuntime;
 
         vector<shared_ptr<SceneObjectRuntime>> mSceneObjectRuntimeCleanUpQueue;
         shared_ptr<SceneObjectRuntime> mRootSceneObjectRuntime;
@@ -59,7 +59,7 @@ namespace Dream
         bool mPhysicsDebug;
 
     public:
-        SceneRuntime(shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> parent = nullptr);
+        SceneRuntime(shared_ptr<SceneDefinition> sd, weak_ptr<ProjectRuntime> parent);
         ~SceneRuntime() override;
 
         SceneState getState();
@@ -94,7 +94,7 @@ namespace Dream
 
         int countSceneObjectRuntimes();
 
-        shared_ptr<ProjectRuntime> getProjectRuntime();
+        weak_ptr<ProjectRuntime> getProjectRuntime();
 
         void showScenegraph();
 

@@ -19,13 +19,13 @@
 
 namespace Dream
 {
-    shared_ptr<IDefinition> IRuntime::getDefinition()
+    weak_ptr<IDefinition> IRuntime::getDefinition()
     {
         return mDefinition;
     }
 
     IRuntime::IRuntime
-    (shared_ptr<IDefinition> def, string uuid, string name)
+    (weak_ptr<IDefinition> def, string uuid, string name)
         : // Init List
           DreamObject("IRuntime"),
           mDefinition(def),

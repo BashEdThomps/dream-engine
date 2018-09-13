@@ -22,7 +22,7 @@ namespace Dream
 {
 
     WavAudioInstance::WavAudioInstance
-    (weak_ptr<AudioComponent> comp, shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
+    (weak_ptr<AudioComponent> comp, weak_ptr<AudioDefinition> definition, weak_ptr<SceneObjectRuntime> transform)
         : AudioInstance(comp, definition, transform)
 
     {

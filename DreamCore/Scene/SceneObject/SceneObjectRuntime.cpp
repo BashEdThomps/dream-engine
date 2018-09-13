@@ -688,7 +688,7 @@ namespace Dream
         log->info( "Creating Font Asset instance." );
         mFontInstance = make_shared<FontInstance>
         (
-            mSceneRuntime->getProjectRuntime()->getFontCache(),
+            mSceneRuntime->getProjectRuntime().lock()->getFontCache(),
             definition,
             dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
         );

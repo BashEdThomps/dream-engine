@@ -31,11 +31,11 @@ namespace Dream
     class IRuntime : public DreamObject
     {
     protected:
-        shared_ptr<IDefinition> mDefinition;
+        weak_ptr<IDefinition> mDefinition;
         string mUuid;
         string mName;
     public:
-        IRuntime(shared_ptr<IDefinition> def, string uuid = "", string name = "");
+        IRuntime(weak_ptr<IDefinition> def, string uuid = "", string name = "");
         virtual ~IRuntime();
 
         string getUuid();
@@ -48,9 +48,9 @@ namespace Dream
 
         string getNameAndUuidString();
 
-        virtual void useDefinition(shared_ptr<IDefinition>) = 0;
+        virtual void useDefinition(weak_ptr<IDefinition>) = 0;
 
         virtual void collectGarbage() = 0;
-        shared_ptr<IDefinition> getDefinition();
+        weak_ptr<IDefinition> getDefinition();
     };
 }

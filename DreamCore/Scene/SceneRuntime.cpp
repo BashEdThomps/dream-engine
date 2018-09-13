@@ -39,7 +39,7 @@
 namespace Dream
 {
     SceneRuntime::SceneRuntime
-    (shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> project)
+    (shared_ptr<SceneDefinition> sd, weak_ptr<ProjectRuntime> project)
         : // Init list
           IRuntime(sd),
           mGravity({0,0,0}),
@@ -218,7 +218,7 @@ namespace Dream
         ));
     }
 
-    shared_ptr<ProjectRuntime>
+    weak_ptr<ProjectRuntime>
     SceneRuntime::getProjectRuntime
     ()
     {

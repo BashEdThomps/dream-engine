@@ -24,7 +24,7 @@
 #pragma once
 
 #ifdef __APPLE__
-#include <nlohmann/json.hpp>
+    #include <nlohmann/json.hpp>
 #else
 #include <json.hpp>
 #endif
@@ -45,12 +45,12 @@ namespace Dream
     {
 
     public:
-        IAssetDefinition(shared_ptr<ProjectDefinition>, json);
+        IAssetDefinition(weak_ptr<ProjectDefinition>, json);
         static AssetType getAssetType(json);
 
         virtual ~IAssetDefinition();
 
-        shared_ptr<ProjectDefinition> getProject();
+        weak_ptr<ProjectDefinition> getProject();
         void showStatus();
 
         void setType(string);
@@ -77,7 +77,7 @@ namespace Dream
         string getProjectPath();
 
     protected:
-        shared_ptr<ProjectDefinition> mProjectDefinition;
+        weak_ptr<ProjectDefinition> mProjectDefinition;
 
     }; // End of AssetDefinition
 

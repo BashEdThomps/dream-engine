@@ -190,87 +190,66 @@ namespace Dream
 
     void
     AudioComponent::pushToPlayQueue
-    (shared_ptr<AudioInstance> audioAsset)
+    (weak_ptr<AudioInstance> audioAssetWeak)
     {
         auto log = getLog();
-        try
+        if (find(mPlayQueue.begin(),mPlayQueue.end(), audioAssetWeak) == mPlayQueue.end())
         {
-            if (find(mPlayQueue.begin(),mPlayQueue.end(), audioAsset) == mPlayQueue.end())
+            auto audioAsset = audioAssetWeak.lock();
+            if (audioAsset == nullptr)
             {
-                if (audioAsset->getSource() == 0 && audioAsset->getBuffer() == 0)
-                {
-                    audioAsset->setBuffer(generateBuffers(1));
-                    audioAsset->setSource(generateSources(1));
-
-                    auto transform = audioAsset->getSceneObjectRuntime()->getTransform();
-
-                    vec3 tx = transform->getTranslation();
-                    vector<char>  bufferData = audioAsset->getAudioDataBuffer();
-                    alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
-                            static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
-                    alSourcei(
-                        audioAsset->getSource(),
-                        AL_BUFFER,
-                        static_cast<ALint>(audioAsset->getBuffer())
-                    );
-                    setSourcePosision(audioAsset->getSource(), tx);
-                }
-                mPlayQueue.push_back(audioAsset);
-                log->info("Pushed {} to play queue" , audioAsset->getNameAndUuidString());
+                log->error("pushToPlayQueue: Invalid audio asset");
+                return;
             }
-        }
-        catch (const exception &ex)
-        {
-            log->error(
-                "Unable to push asset to play queue {}\n{}",
-                audioAsset->getNameAndUuidString(),
-                ex.what()
-            );
+
+            if (audioAsset->getSource() == 0 && audioAsset->getBuffer() == 0)
+            {
+                audioAsset->setBuffer(generateBuffers(1));
+                audioAsset->setSource(generateSources(1));
+
+                auto sort = audioAsset->getSceneObjectRuntime().lock();
+
+                if (sort == nullptr) return;
+
+                auto transform = sort->getTransform();
+
+                vec3 tx = transform->getTranslation();
+                vector<char>  bufferData = audioAsset->getAudioDataBuffer();
+                alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
+                        static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
+                alSourcei(
+                    audioAsset->getSource(),
+                    AL_BUFFER,
+                    static_cast<ALint>(audioAsset->getBuffer())
+                );
+                setSourcePosision(audioAsset->getSource(), tx);
+            }
+            mPlayQueue.push_back(audioAssetWeak);
+            log->info("Pushed audio asset to play queue");
         }
     }
 
     void
     AudioComponent::pushToPauseQueue
-    (shared_ptr<AudioInstance> audioAsset)
+    (weak_ptr<AudioInstance> audioAsset)
     {
         auto log = getLog();
-        try
+        if (find(mPauseQueue.begin(),mPauseQueue.end(), audioAsset) == mPauseQueue.end())
         {
-            if (find(mPauseQueue.begin(),mPauseQueue.end(), audioAsset) == mPauseQueue.end())
-            {
-                mPauseQueue.push_back(audioAsset);
-                log->info("Pushed {} to play queue", audioAsset->getNameAndUuidString());
-            }
-        }
-        catch (const exception &ex)
-        {
-            log->error(
-                "Unable to push asset to pause queue {}\n{}",
-                audioAsset->getNameAndUuidString(),ex.what()
-            );
+            mPauseQueue.push_back(audioAsset);
+            log->info("Pushed audio asset to play queue");
         }
     }
 
     void
     AudioComponent::pushToStopQueue
-    (shared_ptr<AudioInstance> asset)
+    (weak_ptr<AudioInstance> asset)
     {
         auto log = getLog();
-        try
+        if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
         {
-            if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
-            {
-                mStopQueue.push_back(asset);
-                log->info("Pushed " , asset->getNameAndUuidString() , " to stop queue.");;
-            }
-        }
-        catch (const exception &ex)
-        {
-            log->error
-            (
-                "Unable to push asset to stop queue {}\n{}",
-                asset->getNameAndUuidString(),ex.what()
-            );
+            mStopQueue.push_back(asset);
+            log->info("Pushed audio asset to stop queue.");
         }
     }
 
@@ -289,8 +268,13 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Updating Play Queue");
-        for (shared_ptr<AudioInstance> audioAsset : mPlayQueue)
+        for (weak_ptr<AudioInstance> aWeak : mPlayQueue)
         {
+            auto audioAsset = aWeak.lock();
+            if (audioAsset == nullptr)
+            {
+                continue;
+            }
             if (getAudioStatus(audioAsset) != PLAYING)
             {
                 playSource(audioAsset->getSource());
@@ -310,8 +294,13 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Updating Pause Queue");
-        for (shared_ptr<AudioInstance> audioAsset : mPauseQueue)
+        for (weak_ptr<AudioInstance> aWeak : mPauseQueue)
         {
+            auto audioAsset = aWeak.lock();
+            if (audioAsset == nullptr)
+            {
+                continue;
+            }
             if (getAudioStatus(audioAsset) != PAUSED)
             {
                 pauseSource(audioAsset->getSource());
@@ -332,8 +321,13 @@ namespace Dream
         auto log = getLog();
         log->info("Updating Stop Queue");
 
-        for (shared_ptr<AudioInstance> audioAsset : mStopQueue)
+        for (weak_ptr<AudioInstance> aWeak : mStopQueue)
         {
+            auto audioAsset = aWeak.lock();
+            if (audioAsset == nullptr)
+            {
+                continue;
+            }
             if (getAudioStatus(audioAsset) != STOPPED)
             {
                 stopSource(audioAsset->getSource());
@@ -349,21 +343,21 @@ namespace Dream
 
     void
     AudioComponent::playAudioAsset
-    (shared_ptr<AudioInstance> asset)
+    (weak_ptr<AudioInstance> asset)
     {
         pushToPlayQueue(asset);
     }
 
     void
     AudioComponent::pauseAudioAsset
-    (shared_ptr<AudioInstance> asset)
+    (weak_ptr<AudioInstance> asset)
     {
         pushToPauseQueue(asset);
     }
 
     void
     AudioComponent::stopAudioAsset
-    (shared_ptr<AudioInstance> asset)
+    (weak_ptr<AudioInstance> asset)
     {
         pushToStopQueue(asset);
     }
@@ -379,97 +373,89 @@ namespace Dream
 
     vector<char>
     AudioComponent::getAudioBuffer
-    (shared_ptr<AudioInstance> audioAsset, int offset, int length)
+    (weak_ptr<AudioInstance> aWeak, int offset, int length)
     {
-        auto log = getLog();
+        auto audioAsset = aWeak.lock();
         vector<char> retval = vector<char>(length);
-        try
+        if (audioAsset == nullptr)
         {
-            vector<char> audioData = audioAsset->getAudioDataBuffer();
-            char* dataBegin = &audioData[0];
-            retval.insert(retval.begin(), dataBegin, dataBegin+length);
+            return retval;
         }
-        catch (const exception &ex)
-        {
-            log->error
-            (
-                "Unable to get buffer data for {}\n{}",
-                audioAsset->getNameAndUuidString(),
-                ex.what()
-            );
-        }
+
+        vector<char> audioData = audioAsset->getAudioDataBuffer();
+        char* dataBegin = &audioData[0];
+        retval.insert(retval.begin(), dataBegin, dataBegin+length);
+
         return retval;
     }
 
     float
     AudioComponent::getSampleOffset
-    (shared_ptr<AudioInstance> audioAsset)
+    (weak_ptr<AudioInstance> aWeak )
     {
-        auto log = getLog();
-        try
+        auto audioAsset = aWeak.lock();
+        if (audioAsset == nullptr)
         {
-            return getSampleOffset(audioAsset->getSource());
+            return 0.0f;
         }
-        catch (const exception &ex)
-        {
-            log->error(
-                "Could not get sample offset for asset {}\n{}" ,
-                audioAsset->getNameAndUuidString(),
-                ex.what()
-            );
-        }
-        return 0.0f;
+        return getSampleOffset(audioAsset->getSource());
     }
 
     AudioStatus
     AudioComponent::getAudioStatus
-    (shared_ptr<AudioInstance> audioAsset)
+    (weak_ptr<AudioInstance> aWeak)
     {
         auto log = getLog();
-        try
+        auto audioAsset = aWeak.lock();
+        if (audioAsset == nullptr)
         {
-            int state;
-            alGetSourcei(audioAsset->getSource(), AL_SOURCE_STATE, &state);
-            switch (state)
-            {
-                case AL_STOPPED:
-                    return STOPPED;
-                case AL_PLAYING:
-                    return PLAYING;
-                case AL_PAUSED:
-                    return PAUSED;
-                default:
-                    log->error("Unknown Audio State for {} " , audioAsset->getNameAndUuidString());
-                    return UNKNOWN;
-            }
+            return UNKNOWN;
         }
-        catch (const exception &ex)
+
+        int state;
+        alGetSourcei(audioAsset->getSource(), AL_SOURCE_STATE, &state);
+        switch (state)
         {
-           log->error(
-              "Unable to get state of asset {} {} ",
-              audioAsset->getNameAndUuidString(),
-              ex.what()
-            );
+            case AL_STOPPED:
+                return STOPPED;
+            case AL_PLAYING:
+                return PLAYING;
+            case AL_PAUSED:
+                return PAUSED;
+            default:
+                log->error("Unknown Audio State for {} " , audioAsset->getNameAndUuidString());
+                return UNKNOWN;
         }
-        return UNKNOWN;
     }
 
     shared_ptr<AudioInstance>
     AudioComponent::newAudioInstance
-    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> rt)
+    (weak_ptr<AudioDefinition> defWeak, weak_ptr<SceneObjectRuntime> rtWeak)
     {
         auto log = getLog();
+        auto definition = defWeak.lock();
+        auto rt = rtWeak.lock();
+
+        if (definition == nullptr || rt == nullptr)
+        {
+           return nullptr;
+        }
+
         if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
-            auto ai = make_shared<WavAudioInstance>(dynamic_pointer_cast<AudioComponent>(shared_from_this()),definition,rt);
-            return ai;
+            return make_shared<WavAudioInstance>(
+                dynamic_pointer_cast<AudioComponent>(shared_from_this()),definition,rt
+            );
         }
         else if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
-            auto ai = make_shared<OggAudioInstance>(dynamic_pointer_cast<AudioComponent>(shared_from_this()), definition,rt);
-            return ai;
+            return make_shared<OggAudioInstance>(
+                dynamic_pointer_cast<AudioComponent>(shared_from_this()), definition,rt
+            );
         }
+
         log->error("Error, unrecognised audio format {}", definition->getFormat());
+
         return nullptr;
 
     }

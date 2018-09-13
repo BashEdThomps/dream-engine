@@ -48,8 +48,8 @@ namespace Dream
     (
         weak_ptr<AssimpCache> modelCache,
         weak_ptr<MaterialCache> texCache,
-        shared_ptr<IAssetDefinition> definition,
-        shared_ptr<SceneObjectRuntime> transform)
+        weak_ptr<IAssetDefinition> definition,
+        weak_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           mModelCache(modelCache),
           mMaterialCache(texCache)
@@ -112,7 +112,7 @@ namespace Dream
 
     void
     AssimpModelInstance::draw
-    (shared_ptr<ShaderInstance> shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
+    (weak_ptr<ShaderInstance> shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
     {
         auto log = getLog();
         for(shared_ptr<AssimpMesh> mesh : mMeshes)
@@ -229,7 +229,6 @@ namespace Dream
     (aiMesh* mesh,const aiScene* scene, AssimpMaterial* aMaterial)
     {
         auto log = getLog();
-        vector<Texture> textures;
         // Process material
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         aiString name;
@@ -317,7 +316,6 @@ namespace Dream
                 aMaterial
             );
             aMesh->setBoundingBox(box);
-
         }
         return aMesh;
     }
@@ -333,7 +331,7 @@ namespace Dream
         {
             return matCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
         }
-        return shared_ptr<Texture>();
+        return nullptr;
     }
 
     void
@@ -423,7 +421,4 @@ namespace Dream
     {
         return mModelMatrix;
     }
-
-
-
 } // End of Dream

@@ -191,7 +191,7 @@ namespace Dream
         bool applyToAll
         (function<bool(shared_ptr<SceneObjectRuntime>)>);
 
-        void useDefinition(shared_ptr<IDefinition> iDefinition) override;
+        void useDefinition(weak_ptr<IDefinition> iDefinition) override;
 
         bool followsCamera() const;
         void setFollowsCamera(bool followsCamera);

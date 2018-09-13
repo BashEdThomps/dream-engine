@@ -32,7 +32,7 @@ namespace Dream
         weak_ptr<AudioComponent> mAudioComponent;
 
     public:
-        AudioInstance(weak_ptr<AudioComponent> comp, shared_ptr<AudioDefinition>,shared_ptr<SceneObjectRuntime>);
+        AudioInstance(weak_ptr<AudioComponent> comp, weak_ptr<AudioDefinition>, weak_ptr<SceneObjectRuntime>);
 
         void setLooping(bool);
         bool isLooping();

@@ -50,8 +50,8 @@ namespace Dream
     public:
         FontInstance(
             weak_ptr<FontCache>,
-            shared_ptr<FontDefinition>,
-            shared_ptr<SceneObjectRuntime>
+            weak_ptr<FontDefinition>,
+            weak_ptr<SceneObjectRuntime>
         );
 
         ~FontInstance();
@@ -59,7 +59,7 @@ namespace Dream
         bool load(string);
         void loadExtraAttributes(json);
 
-        shared_ptr<FT_Face> getFontFace();
+        weak_ptr<FT_Face> getFontFace();
 
         void setText(string);
         string getText();

@@ -177,12 +177,15 @@ LIBS += \
     -L/opt/octronic/builds/Dream/DreamCore \
     -L/opt/octronic/builds/Dream/SOIL \
     -L/usr/lib/x86_64-linux-gnu \
+    -L/usr/local/lib \
+    -L/usr/lib \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
     -lfreetype \
     -lGLEW \
     -lassimp \
-    -ltinyspline -ltinysplinecpp
+    -ltinyspline \
+    -ltinysplinecpp
 
 INCLUDEPATH += \
     $$PWD/../DreamCore/include \

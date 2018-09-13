@@ -66,7 +66,7 @@ namespace Dream
         LightType mType;
 
     public:
-        LightInstance(shared_ptr<LightDefinition>, shared_ptr<SceneObjectRuntime>);
+        LightInstance(weak_ptr<LightDefinition>, weak_ptr<SceneObjectRuntime>);
         ~LightInstance() override;
 
         bool load(string) override;
