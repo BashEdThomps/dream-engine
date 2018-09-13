@@ -1,0 +1,26 @@
+Build Dependencies for Dream/DreamTool
+
+DreamCore:
+	Ubuntu:
+
+	sudo apt-get -y install  \
+		libassimp-dev    \
+		libbullet-dev    \
+		libglew-dev      \
+		libglm-dev       \
+		libopenal-dev    \ 
+		libvorbis-dev    \
+		libalut-dev      \
+		liblua5.3-dev    \
+		libfreetype6-dev \ 
+		libsdl2-dev      \
+		nlohmann-json-dev 
+Manual:
+	spdlog - https://github.com/gabime/spdlog
+	Gainput - https://github.com/jkuhlmann/gainput
+	TinySpline - https://github.com/msteinbeck/tinyspline
+
+DreamToolQt:
+	qt5-default
+	qt5-qmake
+
