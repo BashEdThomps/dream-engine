@@ -45,12 +45,12 @@ namespace Dream
     {
 
     public:
-        IAssetDefinition(weak_ptr<ProjectDefinition>, json);
+        IAssetDefinition(shared_ptr<ProjectDefinition>, json);
         static AssetType getAssetType(json);
 
         virtual ~IAssetDefinition();
 
-        weak_ptr<ProjectDefinition> getProject();
+        shared_ptr<ProjectDefinition> getProject();
         void showStatus();
 
         void setType(string);
@@ -77,7 +77,7 @@ namespace Dream
         string getProjectPath();
 
     protected:
-        weak_ptr<ProjectDefinition> mProjectDefinition;
+        shared_ptr<ProjectDefinition> mProjectDefinition;
 
     }; // End of AssetDefinition
 

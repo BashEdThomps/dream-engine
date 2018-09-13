@@ -43,15 +43,15 @@ namespace Dream
         const static char CHAR_MAP_START;
         const static char CHAR_MAP_END;
         shared_ptr<FT_Library> mFreeTypeLib;
-        map<weak_ptr<FontDefinition>, map<GLchar, FontCharacter>> mCache;
-        map<GLchar, FontCharacter> generateCharMap(weak_ptr<FontDefinition>, weak_ptr<FT_Face> face);
+        map<shared_ptr<FontDefinition>, map<GLchar, FontCharacter>> mCache;
+        map<GLchar, FontCharacter> generateCharMap(shared_ptr<FontDefinition>, shared_ptr<FT_Face> face);
 
     public:
         FontCache();
         ~FontCache();
 
-        weak_ptr<FT_Library> getFreeTypeLib();
-        map<GLchar, FontCharacter> getCharMap(weak_ptr<FontDefinition>, weak_ptr<FT_Face> face);
+        shared_ptr<FT_Library> getFreeTypeLib();
+        map<GLchar, FontCharacter> getCharMap(shared_ptr<FontDefinition>, shared_ptr<FT_Face> face);
 
     };
 }

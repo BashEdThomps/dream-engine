@@ -190,12 +190,11 @@ namespace Dream
 
     void
     AudioComponent::pushToPlayQueue
-    (weak_ptr<AudioInstance> audioAssetWeak)
+    (shared_ptr<AudioInstance> audioAsset)
     {
         auto log = getLog();
-        if (find(mPlayQueue.begin(),mPlayQueue.end(), audioAssetWeak) == mPlayQueue.end())
+        if (find(mPlayQueue.begin(),mPlayQueue.end(), audioAsset) == mPlayQueue.end())
         {
-            auto audioAsset = audioAssetWeak.lock();
             if (audioAsset == nullptr)
             {
                 log->error("pushToPlayQueue: Invalid audio asset");
@@ -207,7 +206,7 @@ namespace Dream
                 audioAsset->setBuffer(generateBuffers(1));
                 audioAsset->setSource(generateSources(1));
 
-                auto sort = audioAsset->getSceneObjectRuntime().lock();
+                auto sort = audioAsset->getSceneObjectRuntime();
 
                 if (sort == nullptr) return;
 
@@ -224,14 +223,14 @@ namespace Dream
                 );
                 setSourcePosision(audioAsset->getSource(), tx);
             }
-            mPlayQueue.push_back(audioAssetWeak);
+            mPlayQueue.push_back(audioAsset);
             log->info("Pushed audio asset to play queue");
         }
     }
 
     void
     AudioComponent::pushToPauseQueue
-    (weak_ptr<AudioInstance> audioAsset)
+    (shared_ptr<AudioInstance> audioAsset)
     {
         auto log = getLog();
         if (find(mPauseQueue.begin(),mPauseQueue.end(), audioAsset) == mPauseQueue.end())
@@ -243,7 +242,7 @@ namespace Dream
 
     void
     AudioComponent::pushToStopQueue
-    (weak_ptr<AudioInstance> asset)
+    (shared_ptr<AudioInstance> asset)
     {
         auto log = getLog();
         if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
@@ -268,9 +267,8 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Updating Play Queue");
-        for (weak_ptr<AudioInstance> aWeak : mPlayQueue)
+        for (shared_ptr<AudioInstance> audioAsset : mPlayQueue)
         {
-            auto audioAsset = aWeak.lock();
             if (audioAsset == nullptr)
             {
                 continue;
@@ -294,9 +292,8 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Updating Pause Queue");
-        for (weak_ptr<AudioInstance> aWeak : mPauseQueue)
+        for (shared_ptr<AudioInstance> audioAsset : mPauseQueue)
         {
-            auto audioAsset = aWeak.lock();
             if (audioAsset == nullptr)
             {
                 continue;
@@ -321,9 +318,8 @@ namespace Dream
         auto log = getLog();
         log->info("Updating Stop Queue");
 
-        for (weak_ptr<AudioInstance> aWeak : mStopQueue)
+        for (shared_ptr<AudioInstance> audioAsset : mStopQueue)
         {
-            auto audioAsset = aWeak.lock();
             if (audioAsset == nullptr)
             {
                 continue;
@@ -343,21 +339,21 @@ namespace Dream
 
     void
     AudioComponent::playAudioAsset
-    (weak_ptr<AudioInstance> asset)
+    (shared_ptr<AudioInstance> asset)
     {
         pushToPlayQueue(asset);
     }
 
     void
     AudioComponent::pauseAudioAsset
-    (weak_ptr<AudioInstance> asset)
+    (shared_ptr<AudioInstance> asset)
     {
         pushToPauseQueue(asset);
     }
 
     void
     AudioComponent::stopAudioAsset
-    (weak_ptr<AudioInstance> asset)
+    (shared_ptr<AudioInstance> asset)
     {
         pushToStopQueue(asset);
     }
@@ -373,9 +369,8 @@ namespace Dream
 
     vector<char>
     AudioComponent::getAudioBuffer
-    (weak_ptr<AudioInstance> aWeak, int offset, int length)
+    (shared_ptr<AudioInstance> audioAsset, int offset, int length)
     {
-        auto audioAsset = aWeak.lock();
         vector<char> retval = vector<char>(length);
         if (audioAsset == nullptr)
         {
@@ -391,9 +386,8 @@ namespace Dream
 
     float
     AudioComponent::getSampleOffset
-    (weak_ptr<AudioInstance> aWeak )
+    (shared_ptr<AudioInstance> audioAsset )
     {
-        auto audioAsset = aWeak.lock();
         if (audioAsset == nullptr)
         {
             return 0.0f;
@@ -403,10 +397,9 @@ namespace Dream
 
     AudioStatus
     AudioComponent::getAudioStatus
-    (weak_ptr<AudioInstance> aWeak)
+    (shared_ptr<AudioInstance> audioAsset)
     {
         auto log = getLog();
-        auto audioAsset = aWeak.lock();
         if (audioAsset == nullptr)
         {
             return UNKNOWN;
@@ -430,11 +423,9 @@ namespace Dream
 
     shared_ptr<AudioInstance>
     AudioComponent::newAudioInstance
-    (weak_ptr<AudioDefinition> defWeak, weak_ptr<SceneObjectRuntime> rtWeak)
+    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> rt)
     {
         auto log = getLog();
-        auto definition = defWeak.lock();
-        auto rt = rtWeak.lock();
 
         if (definition == nullptr || rt == nullptr)
         {

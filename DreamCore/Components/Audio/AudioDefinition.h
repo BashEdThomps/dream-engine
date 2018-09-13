@@ -25,7 +25,7 @@ namespace  Dream
     class AudioDefinition : public IAssetDefinition
     {
     public:
-        AudioDefinition(weak_ptr<ProjectDefinition> pd, json js);
+        AudioDefinition(shared_ptr<ProjectDefinition> pd, json js);
 
         bool isFormatWav();
         bool isFormatOgg();

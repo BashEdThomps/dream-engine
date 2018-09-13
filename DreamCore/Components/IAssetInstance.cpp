@@ -23,7 +23,7 @@
 namespace Dream
 {
     IAssetInstance::IAssetInstance
-    (weak_ptr<IAssetDefinition> definition, weak_ptr<SceneObjectRuntime> runtime)
+    (shared_ptr<IAssetDefinition> definition, shared_ptr<SceneObjectRuntime> runtime)
           : DreamObject("IAssetInstance"),
             mLoaded(false),
             mAbsolutePath(""),

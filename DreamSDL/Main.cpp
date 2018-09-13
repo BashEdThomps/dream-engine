@@ -83,7 +83,7 @@ int main(int argc, const char** argv)
 
     log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
 
-    auto sr = pr->constructActiveSceneRuntime(startupSceneDefinition).lock();
+    auto sr = pr->constructActiveSceneRuntime(startupSceneDefinition);
 
     if (sr == nullptr)
     {

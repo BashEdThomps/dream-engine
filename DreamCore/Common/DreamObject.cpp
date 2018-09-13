@@ -10,17 +10,6 @@ namespace Dream
     DreamObject::DreamObject(string classname) :_CLASSNAME_(classname) {}
     DreamObject::~DreamObject(){}
 
-    DreamObject* DreamObject::getRawPtr()
-    {
-        return this;
-    }
-
-    weak_ptr<DreamObject>
-    DreamObject::getWeakPtr()
-    {
-        return shared_from_this();
-    }
-
     void DreamObject::setLogClassName(string name)
     {
        _CLASSNAME_ = name;

@@ -225,10 +225,9 @@ namespace Dream
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Clear the colorbuffer
-        auto activeSceneRuntime =  mActiveSceneRuntime.lock();
-        if (activeSceneRuntime != nullptr)
+        if (mActiveSceneRuntime != nullptr)
         {
-            auto clearColour = activeSceneRuntime->getClearColour();
+            auto clearColour = mActiveSceneRuntime->getClearColour();
             glClearColor
             (
                 clearColour[Constants::RED_INDEX],
@@ -266,10 +265,9 @@ namespace Dream
         checkGLError();
 
         // Clear the colorbuffer
-        auto activeSceneRuntime = mActiveSceneRuntime.lock();
-        if (activeSceneRuntime)
+        if (mActiveSceneRuntime)
         {
-            auto clearColour = activeSceneRuntime->getClearColour();
+            auto clearColour = mActiveSceneRuntime->getClearColour();
             glClearColor
             (
                 clearColour[Constants::RED_INDEX],
@@ -351,8 +349,7 @@ namespace Dream
             clearFontQueue();
             clearLightQueue();
 
-            auto activeSceneRuntime = mActiveSceneRuntime.lock();
-            activeSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+            mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                     (
                         function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
                         (

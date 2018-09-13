@@ -61,7 +61,7 @@ namespace Dream
 
         for (auto definitionMapPair : mCache)
         {
-            weak_ptr<FontDefinition> fd = definitionMapPair.first;
+            shared_ptr<FontDefinition> fd = definitionMapPair.first;
             for (auto glCharFontCharMap : definitionMapPair.second)
             {
                 FontCharacter fChar = glCharFontCharMap.second;
@@ -76,7 +76,7 @@ namespace Dream
 
     map<GLchar,FontCharacter>
     FontCache::getCharMap
-    (weak_ptr<FontDefinition> definition, weak_ptr<FT_Face> face)
+    (shared_ptr<FontDefinition> definition, shared_ptr<FT_Face> face)
     {
         auto log = getLog();
         auto it = mCache.find(definition);
@@ -93,7 +93,7 @@ namespace Dream
     }
 
 
-    weak_ptr<FT_Library>
+    shared_ptr<FT_Library>
     FontCache::getFreeTypeLib
     ()
     {
@@ -102,7 +102,7 @@ namespace Dream
 
     map<GLchar,FontCharacter>
     FontCache::generateCharMap
-    (weak_ptr<FontDefinition> definition, weak_ptr<FT_Face> fontFace)
+    (shared_ptr<FontDefinition> definition, shared_ptr<FT_Face> fontFace)
     {
         auto log = getLog();
         log->info("Generating Character Map...");
@@ -169,7 +169,7 @@ namespace Dream
 
         log->info("Finished Generating Character Map.");
 
-        mCache.insert(pair<weak_ptr<FontDefinition>,map<GLchar,FontCharacter>>(definition,charMap));
+        mCache.insert(pair<shared_ptr<FontDefinition>,map<GLchar,FontCharacter>>(definition,charMap));
         return charMap;
     }
 

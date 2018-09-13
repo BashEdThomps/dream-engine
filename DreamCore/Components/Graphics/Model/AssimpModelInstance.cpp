@@ -46,10 +46,10 @@ namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
     (
-        weak_ptr<AssimpCache> modelCache,
-        weak_ptr<MaterialCache> texCache,
-        weak_ptr<IAssetDefinition> definition,
-        weak_ptr<SceneObjectRuntime> transform)
+        shared_ptr<AssimpCache> modelCache,
+        shared_ptr<MaterialCache> texCache,
+        shared_ptr<IAssetDefinition> definition,
+        shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           mModelCache(modelCache),
           mMaterialCache(texCache)
@@ -85,13 +85,12 @@ namespace Dream
         string path = projectPath + mDefinition->getAssetPath();
         log->info( "Loading Model - {}" , path);
 
-        auto modelCache = mModelCache.lock();
-        if (modelCache == nullptr)
+        if (mModelCache == nullptr)
         {
             return false;
         }
 
-        auto model = modelCache->getModelFromCache(path);
+        auto model = mModelCache->getModelFromCache(path);
 
         if (model == nullptr)
         {
@@ -112,7 +111,7 @@ namespace Dream
 
     void
     AssimpModelInstance::draw
-    (weak_ptr<ShaderInstance> shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
+    (shared_ptr<ShaderInstance> shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
     {
         auto log = getLog();
         for(shared_ptr<AssimpMesh> mesh : mMeshes)
@@ -274,10 +273,9 @@ namespace Dream
         aiString name;
         aiGetMaterialString(material, AI_MATKEY_NAME, &name);
 
-        auto matCache = mMaterialCache.lock();
-        if(matCache != nullptr)
+        if(mMaterialCache != nullptr)
         {
-            shared_ptr<AssimpMaterial> aMaterial = matCache->getMaterialByName(name);
+            shared_ptr<AssimpMaterial> aMaterial = mMaterialCache->getMaterialByName(name);
 
             if (aMaterial == nullptr)
             {
@@ -299,7 +297,7 @@ namespace Dream
                 aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
                 aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
                 aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
-                matCache->addMaterialToCache(aMaterial);
+                mMaterialCache->addMaterialToCache(aMaterial);
                 processTextureData(mesh,scene, aMaterial.get());
             }
 
@@ -326,10 +324,9 @@ namespace Dream
     {
         aiString str;
         mat->GetTexture(type, 0, &str);
-        auto matCache = mMaterialCache.lock();
-        if (matCache)
+        if (mMaterialCache)
         {
-            return matCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+            return mMaterialCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
         }
         return nullptr;
     }

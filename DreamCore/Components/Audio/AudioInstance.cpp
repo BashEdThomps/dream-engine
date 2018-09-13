@@ -7,9 +7,9 @@
 namespace Dream
 {
     AudioInstance::AudioInstance
-    (weak_ptr<AudioComponent> component,
-     weak_ptr<AudioDefinition> definition,
-     weak_ptr<SceneObjectRuntime> transform)
+    (shared_ptr<AudioComponent> component,
+     shared_ptr<AudioDefinition> definition,
+     shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition, transform),
           mAudioComponent(component)
     {
@@ -84,29 +84,17 @@ namespace Dream
 
     void AudioInstance::play()
     {
-       auto comp = mAudioComponent.lock();
-       if (comp)
-       {
-           comp->playAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
-       }
+       mAudioComponent->playAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
     }
 
     void AudioInstance::pause()
     {
-       auto comp = mAudioComponent.lock();
-       if (comp)
-       {
-           comp->pauseAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
-       }
+       mAudioComponent->pauseAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
     }
 
     void AudioInstance::stop()
     {
-       auto comp = mAudioComponent.lock();
-       if (comp)
-       {
-           comp->stopAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
-       }
+       mAudioComponent->stopAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
     }
 
     void

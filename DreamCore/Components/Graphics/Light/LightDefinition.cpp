@@ -22,7 +22,7 @@
 namespace Dream
 {
     LightDefinition::LightDefinition
-    (weak_ptr<ProjectDefinition> pd, json js)
+    (shared_ptr<ProjectDefinition> pd, json js)
         : IAssetDefinition(pd,js) {}
 
     void

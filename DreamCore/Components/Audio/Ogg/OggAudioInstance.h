@@ -28,7 +28,7 @@ namespace Dream
     {
 
     public:
-        OggAudioInstance(weak_ptr<AudioComponent>, weak_ptr<AudioDefinition>, weak_ptr<SceneObjectRuntime>);
+        OggAudioInstance(shared_ptr<AudioComponent>, shared_ptr<AudioDefinition>, shared_ptr<SceneObjectRuntime>);
         ~OggAudioInstance() override;
 
         bool load(string) override;

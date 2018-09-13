@@ -57,10 +57,9 @@ namespace Dream
     ()
     {
                 beginUpdate();
-                auto activeSceneRuntime = mActiveSceneRuntime.lock();
-                if (activeSceneRuntime != nullptr)
+                if (mActiveSceneRuntime != nullptr)
                 {
-                    activeSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+                    mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                     (
                         function< shared_ptr<SceneObjectRuntime> (shared_ptr<SceneObjectRuntime>) >
                         (

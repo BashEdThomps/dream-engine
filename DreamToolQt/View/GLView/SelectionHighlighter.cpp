@@ -60,10 +60,9 @@ SelectionHighlighter::init
 
 void
 SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
-(weak_ptr<SceneObjectRuntime> selectedWeak)
+(shared_ptr<SceneObjectRuntime> selected)
 {
     auto log = spdlog::get("SelectionHighlighter");
-    auto selected = selectedWeak.lock();
     if (selected != nullptr)
     {
         log->info("Selecting {}",selected->getNameAndUuidString());
@@ -77,11 +76,10 @@ SelectionHighlighter::updateVertexBuffer
 ()
 {
     auto log = spdlog::get("SelectionHighlighter");
-    auto selected = mSelectedObjectHandle.lock();
     log->info("Updating Vertex Buffer") ;
     mVertexBuffer.clear();
 
-    if (selected == nullptr)
+    if (mSelectedObjectHandle == nullptr)
     {
         log->info("No object selected");
         return;
@@ -89,9 +87,9 @@ SelectionHighlighter::updateVertexBuffer
 
     BoundingBox bounds;
 
-    if (selected->hasModelInstance())
+    if (mSelectedObjectHandle->hasModelInstance())
     {
-        bounds = selected->getModelInstance()->getBoundingBox();
+        bounds = mSelectedObjectHandle->getModelInstance()->getBoundingBox();
     }
 
     log->info("Minimum Bounds {},{},{}",bounds.minimum.x ,bounds.minimum.y, bounds.minimum.z);
@@ -265,8 +263,7 @@ SelectionHighlighter::draw
         }
 
         // Set the model matrix
-        auto selectedPtr = mSelectedObjectHandle.lock();
-        if (selectedPtr != nullptr)
+        if (mSelectedObjectHandle != nullptr)
         {
             GLint modelUniform = glGetUniformLocation(mShaderProgram, "model");
             if (modelUniform == -1)
@@ -277,15 +274,14 @@ SelectionHighlighter::draw
             else
             {
                 mat4 modelMatrix(1.0f);
-                if (selectedPtr->hasModelInstance())
+                if (mSelectedObjectHandle->hasModelInstance())
                 {
-                   modelMatrix = selectedPtr->getModelInstance()->getModelMatrix();
+                   modelMatrix = mSelectedObjectHandle->getModelInstance()->getModelMatrix();
                 }
                 else
                 {
                     // Get raw data
-                    weak_ptr<Transform3D> transformWeak = selectedPtr->getTransform();
-                    auto transform = transformWeak.lock();
+                    shared_ptr<Transform3D> transform = mSelectedObjectHandle->getTransform();
                     vec3 translationValue = transform->getTranslation();
                     quat rotValue = transform->getOrientation();
                     vec3 scaleValue = transform->getScale();
@@ -309,18 +305,21 @@ SelectionHighlighter::draw
 
         // Vertex Positions
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(
-                    0, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(LineVertex)),
-                    static_cast<GLvoid*>(0)
-                    );
+        glVertexAttribPointer
+        (
+            0, 3, GL_FLOAT, GL_FALSE,
+            static_cast<GLint>(sizeof(LineVertex)),
+            static_cast<GLvoid*>(0)
+        );
+
         // Vertex Colors
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(
-                    1, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(LineVertex)),
-                    (GLvoid*)offsetof(LineVertex, Color)
-                    );
+        glVertexAttribPointer
+        (
+            1, 3, GL_FLOAT, GL_FALSE,
+            static_cast<GLint>(sizeof(LineVertex)),
+            (GLvoid*)offsetof(LineVertex, Color)
+        );
         // Draw
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
 
@@ -424,7 +423,7 @@ SelectionHighlighter::initShader
     glDeleteShader(fragmentShader);
 }
 
-weak_ptr<SceneObjectRuntime>
+shared_ptr<SceneObjectRuntime>
 SelectionHighlighter::getSelectedObject
 ()
 {

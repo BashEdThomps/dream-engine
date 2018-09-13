@@ -31,7 +31,7 @@ namespace Dream
     const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
 
     ShaderInstance::ShaderInstance
-    (weak_ptr<ShaderCache> cache,
+    (shared_ptr<ShaderCache> cache,
      shared_ptr<ShaderDefinition> definition,
      shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
@@ -141,12 +141,11 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        auto cache = mCache.lock();
-        if (cache == nullptr)
+        if (mCache == nullptr)
         {
             return false;
         }
-        mShaderProgram = cache->getShader(mDefinition->getUuid());
+        mShaderProgram = mCache->getShader(mDefinition->getUuid());
 
         if (mShaderProgram == 0)
         {
@@ -217,7 +216,7 @@ namespace Dream
             // Delete the shaders as they're linked into our program now and no longer necessery
             glDeleteShader(mVertexShader);
             glDeleteShader(mFragmentShader);
-            cache->putShader(mDefinition->getUuid(),mShaderProgram);
+            mCache->putShader(mDefinition->getUuid(),mShaderProgram);
         }
 
         mLoaded = (mShaderProgram != 0);

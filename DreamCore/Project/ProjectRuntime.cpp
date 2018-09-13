@@ -68,7 +68,7 @@ namespace Dream
         log->info( "Destructing" );
     }
 
-    weak_ptr<IWindowComponent>
+    shared_ptr<IWindowComponent>
     ProjectRuntime::getWindowComponent
     ()
     {
@@ -82,7 +82,7 @@ namespace Dream
         mDone = done;
     }
 
-    weak_ptr<Time>
+    shared_ptr<Time>
     ProjectRuntime::getTime
     ()
     {
@@ -281,49 +281,49 @@ namespace Dream
         return mDone;
     }
 
-    weak_ptr<PathComponent>
+    shared_ptr<PathComponent>
     ProjectRuntime::getPathComponent
     ()
     {
         return mPathComponent;
     }
 
-    weak_ptr<AudioComponent>
+    shared_ptr<AudioComponent>
     ProjectRuntime::getAudioComponent
     ()
     {
         return mAudioComponent;
     }
 
-    weak_ptr<PhysicsComponent>
+    shared_ptr<PhysicsComponent>
     ProjectRuntime::getPhysicsComponent
     ()
     {
         return mPhysicsComponent;
     }
 
-    weak_ptr<GraphicsComponent>
+    shared_ptr<GraphicsComponent>
     ProjectRuntime::getGraphicsComponent
     ()
     {
         return mGraphicsComponent;
     }
 
-    weak_ptr<NanoVGComponent>
+    shared_ptr<NanoVGComponent>
     ProjectRuntime::getNanoVGComponent
     ()
     {
        return mNanoVGComponent;
     }
 
-    weak_ptr<Camera>
+    shared_ptr<Camera>
     ProjectRuntime::getCamera
     ()
     {
         return mCamera;
     }
 
-    weak_ptr<IScriptComponent>
+    shared_ptr<IScriptComponent>
     ProjectRuntime::getScriptComponent
     ()
     {
@@ -405,7 +405,7 @@ namespace Dream
         return mActiveSceneRuntime != nullptr;
     }
 
-    weak_ptr<SceneRuntime>
+    shared_ptr<SceneRuntime>
     ProjectRuntime::getActiveSceneRuntime
     ()
     {
@@ -424,7 +424,7 @@ namespace Dream
         }
     }
 
-    weak_ptr<SceneRuntime>
+    shared_ptr<SceneRuntime>
     ProjectRuntime::constructActiveSceneRuntime
     (shared_ptr<SceneDefinition> sceneDefinition)
     {
@@ -432,7 +432,7 @@ namespace Dream
         if (sceneDefinition == nullptr)
         {
             log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
-            return weak_ptr<SceneRuntime>();
+            return shared_ptr<SceneRuntime>();
         }
 
 
@@ -460,7 +460,7 @@ namespace Dream
         return mActiveSceneRuntime;
     }
 
-    weak_ptr<Project>
+    shared_ptr<Project>
     ProjectRuntime::getProject
     ()
     {
@@ -475,28 +475,28 @@ namespace Dream
         initComponents();
     }
 
-    weak_ptr<FontCache>
+    shared_ptr<FontCache>
     ProjectRuntime::getFontCache
     ()
     {
         return mFontCache;
     }
 
-    weak_ptr<ShaderCache>
+    shared_ptr<ShaderCache>
     ProjectRuntime::getShaderCache
     ()
     {
         return mShaderCache;
     }
 
-    weak_ptr<MaterialCache>
+    shared_ptr<MaterialCache>
     ProjectRuntime::getTextureCache
     ()
     {
         return mTextureCache;
     }
 
-    weak_ptr<AssimpCache>
+    shared_ptr<AssimpCache>
     ProjectRuntime::getModelCache
     ()
     {

@@ -131,7 +131,7 @@ namespace DreamSDL
 
         mEvents.clear();
         SDL_Event event;
-        auto asr = mActiveSceneRuntime.lock();
+        auto asr = mActiveSceneRuntime;
 
         if (asr == nullptr)
         {

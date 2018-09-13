@@ -162,17 +162,15 @@ namespace Dream
             auto log = getLog();
             log->info( "Update Called" );
 
-            auto asr = mActiveSceneRuntime.lock();
-            populatePhysicsWorld(asr);
+            populatePhysicsWorld(mActiveSceneRuntime);
             btScalar stepValue = 0.0;
-            auto time = mTime.lock();
-            if (time != nullptr )
+            if (mTime != nullptr )
             {
                 log->error("I don't haveTime for this");
             }
-            stepValue = static_cast<btScalar>(time->getFrameTimeDelta());
+            stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
             mDynamicsWorld->stepSimulation(stepValue);
-            checkContactManifolds(asr);
+            checkContactManifolds(mActiveSceneRuntime);
             // Put debug info to queue, no GL calls made
             if (mDebug)
             {

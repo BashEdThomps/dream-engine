@@ -21,7 +21,7 @@
 namespace Dream
 {
     AudioDefinition::AudioDefinition
-    (weak_ptr<ProjectDefinition> pd, json js)
+    (shared_ptr<ProjectDefinition> pd, json js)
         : IAssetDefinition(pd,js)
     {
 

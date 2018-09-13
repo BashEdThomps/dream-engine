@@ -149,12 +149,10 @@ DreamProjectModel::startSceneRuntimeFromDefinition
     }
     log->info("\n===== DreamModel - Start Scene =====");
 
-    weak_ptr<ProjectRuntime> prHandleWeak = mProject->createProjectRuntime();
-    auto prHandle = prHandleWeak.lock();
+    shared_ptr<ProjectRuntime> prHandle = mProject->createProjectRuntime();
     if (prHandle != nullptr)
     {
-        weak_ptr<SceneRuntime> srHandleWeak = prHandle->constructActiveSceneRuntime(definition);
-        auto srHandle = srHandleWeak.lock();
+        shared_ptr<SceneRuntime> srHandle = prHandle->constructActiveSceneRuntime(definition);
         if (srHandle != nullptr)
         {
             mWindowComponent->setProjectRuntime(mProject->getProjectRuntime());
@@ -185,12 +183,10 @@ DreamProjectModel::stopActiveSceneRuntime
 {
     if (mProject)
     {
-        weak_ptr<ProjectRuntime> prHandleWeak = mProject->getProjectRuntime();
-        auto prHandle = prHandleWeak.lock();
+        shared_ptr<ProjectRuntime> prHandle = mProject->getProjectRuntime();
         if (prHandle)
         {
-            weak_ptr<SceneRuntime> srHandleWeak = prHandle->getActiveSceneRuntime();
-            auto srHandle = srHandleWeak.lock();
+            shared_ptr<SceneRuntime> srHandle = prHandle->getActiveSceneRuntime();
             if (srHandle)
             {
                 srHandle->setState(SCENE_STATE_STOPPED);
@@ -218,11 +214,10 @@ void DreamProjectModel::setPhysicsDebug(bool enabled)
 {
     if (mProject)
     {
-        weak_ptr<ProjectRuntime> prHandleWeak = mProject->getProjectRuntime();
-        auto prHandle = prHandleWeak.lock();
+        shared_ptr<ProjectRuntime> prHandle = mProject->getProjectRuntime();
         if (prHandle)
         {
-            auto physics = prHandle->getPhysicsComponent().lock();
+            auto physics = prHandle->getPhysicsComponent();
             if (physics != nullptr)
             {
                 physics->setDebug(enabled);

@@ -23,7 +23,7 @@ namespace Dream
 
   SpriteInstance::SpriteInstance
   (
-    weak_ptr<MaterialCache> cache,
+    shared_ptr<MaterialCache> cache,
     shared_ptr<SpriteDefinition> definition,
     shared_ptr<SceneObjectRuntime> transform
     )
@@ -52,10 +52,9 @@ namespace Dream
     string directory = path.substr(0, path.find_last_of('/'));
     log->info( "SpriteInstance: Loading sprite from {}" , path );
 
-    auto cache = mCache.lock();
-    if (cache != nullptr)
+    if (mCache != nullptr)
     {
-        shared_ptr<Texture> tex = cache->loadTextureFromFile("sprite",directory.c_str(),"sprite");
+        shared_ptr<Texture> tex = mCache->loadTextureFromFile("sprite",directory.c_str(),"sprite");
         mTexture = tex->id;
         mWidth = tex->width;
         mHeight = tex->height;

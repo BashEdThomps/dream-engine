@@ -94,7 +94,7 @@ namespace Dream
         {
             auto physicsComp = mSceneRuntime
                 ->getProjectRuntime()
-                ->getPhysicsComponent().lock();
+                ->getPhysicsComponent();
            if (physicsComp != nullptr)
            {
                 physicsComp->removePhysicsObjectInstance(getPhysicsObjectInstance());
@@ -106,7 +106,7 @@ namespace Dream
             auto scriptComp =
             mSceneRuntime
                 ->getProjectRuntime()
-                ->getScriptComponent().lock();
+                ->getScriptComponent();
             if(scriptComp != nullptr)
             {
                 scriptComp->removeFromScriptMap(
@@ -471,7 +471,7 @@ namespace Dream
     SceneObjectRuntime::createAssetInstanceFromAssetDefinitionByUuid
     (string uuid)
     {
-        auto project = mSceneRuntime->getProjectRuntime()->getProject().lock();
+        auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project != nullptr)
         {
             auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
@@ -484,8 +484,7 @@ namespace Dream
     (shared_ptr<IAssetDefinition> definition)
     {
         auto log = getLog();
-        auto projectWeak = mSceneRuntime->getProjectRuntime()->getProject();
-        auto project = projectWeak.lock();
+        auto project = mSceneRuntime->getProjectRuntime()->getProject();
 
         if (project != nullptr)
         {
@@ -569,8 +568,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Audio asset instance." );
-        auto audioCompWeak = mSceneRuntime->getProjectRuntime()->getAudioComponent();
-        auto audioComp = audioCompWeak.lock();
+        auto audioComp = mSceneRuntime->getProjectRuntime()->getAudioComponent();
         if (audioComp != nullptr)
         {
             mAudioInstance = shared_ptr<AudioInstance>(
@@ -621,8 +619,7 @@ namespace Dream
             )
         );
         mScriptInstance->load(mProjectPath);
-        auto scriptCompWeak = mSceneRuntime->getProjectRuntime()->getScriptComponent();
-        auto scriptComp = scriptCompWeak.lock();
+        auto scriptComp = mSceneRuntime->getProjectRuntime()->getScriptComponent();
         if (scriptComp != nullptr)
         {
             scriptComp->addToScriptMap(
@@ -688,7 +685,7 @@ namespace Dream
         log->info( "Creating Font Asset instance." );
         mFontInstance = make_shared<FontInstance>
         (
-            mSceneRuntime->getProjectRuntime().lock()->getFontCache(),
+            mSceneRuntime->getProjectRuntime()->getFontCache(),
             definition,
             dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
         );
@@ -710,7 +707,7 @@ namespace Dream
 
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
-            if ((*it))
+            if (*it)
             {
                 retval = retval || (*it)->applyToAll(funk);
             }

@@ -39,7 +39,7 @@
 namespace Dream
 {
     SceneRuntime::SceneRuntime
-    (shared_ptr<SceneDefinition> sd, weak_ptr<ProjectRuntime> project)
+    (shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> project)
         : // Init list
           IRuntime(sd),
           mGravity({0,0,0}),
@@ -218,7 +218,7 @@ namespace Dream
         ));
     }
 
-    weak_ptr<ProjectRuntime>
+    shared_ptr<ProjectRuntime>
     SceneRuntime::getProjectRuntime
     ()
     {
@@ -260,20 +260,20 @@ namespace Dream
         setCameraMovementSpeed(sceneDefinition->getCameraMovementSpeed());
 
         // Propogate to project where required
-        auto gfx = mProjectRuntime->getGraphicsComponent().lock();
+        auto gfx = mProjectRuntime->getGraphicsComponent();
         if (gfx != nullptr)
         {
             gfx->setActiveSceneRuntime(dynamic_pointer_cast<SceneRuntime>(shared_from_this()));
         }
 
-        auto physics = mProjectRuntime->getPhysicsComponent().lock();
+        auto physics = mProjectRuntime->getPhysicsComponent();
         if (physics != nullptr)
         {
             physics->setGravity(getGravity());
             physics->setDebug(getPhysicsDebug());
         }
 
-        auto camera = mProjectRuntime->getCamera().lock();
+        auto camera = mProjectRuntime->getCamera();
 
         if (camera != nullptr)
         {

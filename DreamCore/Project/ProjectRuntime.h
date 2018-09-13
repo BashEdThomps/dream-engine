@@ -25,7 +25,7 @@
 #include "../Common/IRuntime.h"
 
 using std::string;
-using std::weak_ptr;
+using std::shared_ptr;
 using std::shared_ptr;
 using std::vector;
 
@@ -65,7 +65,7 @@ namespace Dream
         shared_ptr<Time> mTime;
         shared_ptr<Camera> mCamera;
         shared_ptr<SceneRuntime> mActiveSceneRuntime;
-        weak_ptr<Project> mProject;
+        shared_ptr<Project> mProject;
 
         // Components
         shared_ptr<AudioComponent> mAudioComponent;
@@ -90,18 +90,18 @@ namespace Dream
         void setDone(bool);
         bool isDone();
 
-        weak_ptr<Camera> getCamera();
-        weak_ptr<Time> getTime();
+        shared_ptr<Camera> getCamera();
+        shared_ptr<Time> getTime();
 
-        weak_ptr<PathComponent> getPathComponent();
-        weak_ptr<AudioComponent> getAudioComponent();
-        weak_ptr<PhysicsComponent> getPhysicsComponent();
-        weak_ptr<GraphicsComponent> getGraphicsComponent();
-        weak_ptr<NanoVGComponent> getNanoVGComponent();
-        weak_ptr<IWindowComponent> getWindowComponent();
-        weak_ptr<IScriptComponent> getScriptComponent();
-        weak_ptr<Project> getProject();
-        weak_ptr<InputComponent> getInputComponent();
+        shared_ptr<PathComponent> getPathComponent();
+        shared_ptr<AudioComponent> getAudioComponent();
+        shared_ptr<PhysicsComponent> getPhysicsComponent();
+        shared_ptr<GraphicsComponent> getGraphicsComponent();
+        shared_ptr<NanoVGComponent> getNanoVGComponent();
+        shared_ptr<IWindowComponent> getWindowComponent();
+        shared_ptr<IScriptComponent> getScriptComponent();
+        shared_ptr<Project> getProject();
+        shared_ptr<InputComponent> getInputComponent();
 
         bool initComponents();
 
@@ -119,19 +119,19 @@ namespace Dream
         int getWindowHeight();
         void setWindowHeight(int);
 
-        weak_ptr<SceneRuntime> constructActiveSceneRuntime
+        shared_ptr<SceneRuntime> constructActiveSceneRuntime
         (shared_ptr<SceneDefinition> sceneDefinition);
 
         bool hasActiveSceneRuntime();
-        weak_ptr<SceneRuntime> getActiveSceneRuntime();
+        shared_ptr<SceneRuntime> getActiveSceneRuntime();
         void resetActiveSceneRuntime();
 
         void useDefinition(shared_ptr<IDefinition>) override;
 
-        weak_ptr<FontCache> getFontCache();
-        weak_ptr<ShaderCache> getShaderCache();
-        weak_ptr<MaterialCache> getTextureCache();
-        weak_ptr<AssimpCache> getModelCache();
+        shared_ptr<FontCache> getFontCache();
+        shared_ptr<ShaderCache> getShaderCache();
+        shared_ptr<MaterialCache> getTextureCache();
+        shared_ptr<AssimpCache> getModelCache();
 
     private: // Member Functions
         bool initPathComponent();

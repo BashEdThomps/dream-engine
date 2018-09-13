@@ -60,15 +60,15 @@ namespace Dream
     {
     public:
         AssimpModelInstance(
-            weak_ptr<AssimpCache>,
-            weak_ptr<MaterialCache>,
-            weak_ptr<IAssetDefinition>,
-            weak_ptr<SceneObjectRuntime>
+            shared_ptr<AssimpCache>,
+            shared_ptr<MaterialCache>,
+            shared_ptr<IAssetDefinition>,
+            shared_ptr<SceneObjectRuntime>
         );
         ~AssimpModelInstance() override;
         bool load(string) override;
         void draw(
-            weak_ptr<ShaderInstance>,
+            shared_ptr<ShaderInstance>,
             vec3 transorm,
             vec3 camPos,
             float maxDistance,
@@ -81,8 +81,8 @@ namespace Dream
 
     private:
         // Variables
-        weak_ptr<AssimpCache> mModelCache;
-        weak_ptr<MaterialCache> mMaterialCache;
+        shared_ptr<AssimpCache> mModelCache;
+        shared_ptr<MaterialCache> mMaterialCache;
 
         vector<shared_ptr<AssimpMesh>> mMeshes;
         string mDirectory;

@@ -27,7 +27,7 @@ namespace Dream
 {
 
     FontInstance::FontInstance
-    (weak_ptr<FontCache> cache, weak_ptr<FontDefinition> definition, weak_ptr<SceneObjectRuntime> transform)
+    (shared_ptr<FontCache> cache, shared_ptr<FontDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
         : IAssetInstance(definition,transform),
           mCache(cache)
 
@@ -57,17 +57,16 @@ namespace Dream
 
         log->info("Loading font from ", path );
 
-        auto cache = mCache.lock();
-        if (cache == nullptr)
+        if (mCache == nullptr)
         {
             log->error("Cannot load font, Cache is not set");
             return false;
         }
 
-        if (cache->getFreeTypeLib())
+        if (mCache->getFreeTypeLib())
         {
             mFontFace.reset(new FT_Face());
-            if (FT_New_Face(*cache->getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
+            if (FT_New_Face(*mCache->getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
             {
                 log->error("Unable to create font. Error calling FT_New_Face" );
             }
@@ -108,16 +107,15 @@ namespace Dream
         }
 
         log->info("FontInstance: Red: {}\nGreen: {}\nBlue: {}\nSize: {}\n",red,green,blue,mSize);
-        auto cache = mCache.lock();
-        if (cache != nullptr)
+        if (mCache != nullptr)
         {
-            cache->getCharMap(dynamic_pointer_cast<FontDefinition>(mDefinition),mFontFace);
+            mCache->getCharMap(dynamic_pointer_cast<FontDefinition>(mDefinition),mFontFace);
         }
         log->info("FontInstance: Finished loading extra attributes" );
         return;
     }
 
-    weak_ptr<FT_Face>
+    shared_ptr<FT_Face>
     FontInstance::getFontFace
     ()
     {
@@ -185,10 +183,9 @@ namespace Dream
     FontInstance::getCharMap
     ()
     {
-        auto cache = mCache.lock();
-        if (cache)
+        if (mCache)
         {
-            return cache->getCharMap
+            return mCache->getCharMap
             (
                 dynamic_pointer_cast<FontDefinition>(mDefinition),
                 mFontFace

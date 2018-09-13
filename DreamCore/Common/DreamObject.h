@@ -7,7 +7,7 @@
 
 using std::enable_shared_from_this;
 using std::shared_ptr;
-using std::weak_ptr;
+using std::shared_ptr;
 using std::string;
 using namespace spdlog;
 
@@ -19,8 +19,6 @@ namespace Dream
     public:
         DreamObject(string classname);
         virtual ~DreamObject();
-        DreamObject* getRawPtr();
-        weak_ptr<DreamObject> getWeakPtr();
 
         void setLogClassName(string);
         string getClassName();
