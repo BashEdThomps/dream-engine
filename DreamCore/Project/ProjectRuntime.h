@@ -84,24 +84,26 @@ namespace Dream
         shared_ptr<ShaderCache> mShaderCache;
         shared_ptr<ScriptCache> mScriptCache;
     public: // Public Functions
-        ProjectRuntime(shared_ptr<Project> parentProject, shared_ptr<IWindowComponent> wc = nullptr);
+        ProjectRuntime(
+            const shared_ptr<Project>& parentProject,
+            const shared_ptr<IWindowComponent>& wc = nullptr);
         ~ProjectRuntime() override;
 
         void setDone(bool);
         bool isDone();
 
-        shared_ptr<Camera> getCamera();
-        shared_ptr<Time> getTime();
+        const shared_ptr<Camera>& getCamera();
+        const shared_ptr<Time>& getTime();
 
-        shared_ptr<PathComponent> getPathComponent();
-        shared_ptr<AudioComponent> getAudioComponent();
-        shared_ptr<PhysicsComponent> getPhysicsComponent();
-        shared_ptr<GraphicsComponent> getGraphicsComponent();
-        shared_ptr<NanoVGComponent> getNanoVGComponent();
-        shared_ptr<IWindowComponent> getWindowComponent();
-        shared_ptr<IScriptComponent> getScriptComponent();
-        shared_ptr<Project> getProject();
-        shared_ptr<InputComponent> getInputComponent();
+        const shared_ptr<PathComponent>& getPathComponent();
+        const shared_ptr<AudioComponent>& getAudioComponent();
+        const shared_ptr<PhysicsComponent>& getPhysicsComponent();
+        const shared_ptr<GraphicsComponent>& getGraphicsComponent();
+        const shared_ptr<NanoVGComponent>& getNanoVGComponent();
+        const shared_ptr<IWindowComponent>& getWindowComponent();
+        const shared_ptr<IScriptComponent>& getScriptComponent();
+        const shared_ptr<Project>& getProject();
+        const shared_ptr<InputComponent>& getInputComponent();
 
         bool initComponents();
 
@@ -120,18 +122,18 @@ namespace Dream
         void setWindowHeight(int);
 
         shared_ptr<SceneRuntime> constructActiveSceneRuntime
-        (shared_ptr<SceneDefinition> sceneDefinition);
+        (const shared_ptr<SceneDefinition>& sceneDefinition);
 
         bool hasActiveSceneRuntime();
-        shared_ptr<SceneRuntime> getActiveSceneRuntime();
+        const shared_ptr<SceneRuntime>& getActiveSceneRuntime();
         void resetActiveSceneRuntime();
 
         void useDefinition(shared_ptr<IDefinition>) override;
 
-        shared_ptr<FontCache> getFontCache();
-        shared_ptr<ShaderCache> getShaderCache();
-        shared_ptr<MaterialCache> getTextureCache();
-        shared_ptr<AssimpCache> getModelCache();
+        const shared_ptr<FontCache>& getFontCache();
+        const shared_ptr<ShaderCache>& getShaderCache();
+        const shared_ptr<MaterialCache>& getTextureCache();
+        const shared_ptr<AssimpCache>& getModelCache();
 
     private: // Member Functions
         bool initPathComponent();

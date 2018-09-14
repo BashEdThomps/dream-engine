@@ -68,9 +68,10 @@ using glm::vec3;
 
 namespace Dream
 {
-    SceneObjectRuntime::SceneObjectRuntime(shared_ptr<SceneObjectDefinition> sd, shared_ptr<SceneRuntime> sr)
-        : // Init list
-          IRuntime(sd),
+    SceneObjectRuntime::SceneObjectRuntime(
+        const shared_ptr<SceneObjectDefinition>& sd,
+        const shared_ptr<SceneRuntime>& sr
+    ): IRuntime(sd),
           mSceneRuntime(sr),
           mParentRuntime(nullptr),
           mLoaded(false),
@@ -209,42 +210,42 @@ namespace Dream
         return getTransform()->getTranslation();
     }
 
-    shared_ptr<PathInstance>
+    const shared_ptr<PathInstance>&
     SceneObjectRuntime::getPathInstance
     ()
     {
         return mPathInstance;
     }
 
-    shared_ptr<AudioInstance>
+    const shared_ptr<AudioInstance>&
     SceneObjectRuntime::getAudioInstance
     ()
     {
         return mAudioInstance;
     }
 
-    shared_ptr<AssimpModelInstance>
+    const shared_ptr<AssimpModelInstance>&
     SceneObjectRuntime::getModelInstance
     ()
     {
         return mModelInstance;
     }
 
-    shared_ptr<ScriptInstance>
+    const shared_ptr<ScriptInstance>&
     SceneObjectRuntime::getScriptInstance
     ()
     {
         return mScriptInstance;
     }
 
-    shared_ptr<ShaderInstance>
+    const shared_ptr<ShaderInstance>&
     SceneObjectRuntime::getShaderInstance
     ()
     {
         return mShaderInstance;
     }
 
-    shared_ptr<LightInstance>
+    const shared_ptr<LightInstance>&
     SceneObjectRuntime::getLightInstance
     ()
     {
@@ -307,14 +308,14 @@ namespace Dream
         return mAssetDefinitionUuidLoadQueue;
     }
 
-    shared_ptr<FontInstance>
+    const shared_ptr<FontInstance>&
     SceneObjectRuntime::getFontInstance
     ()
     {
         return mFontInstance;
     }
 
-    shared_ptr<PhysicsObjectInstance>
+    const shared_ptr<PhysicsObjectInstance>&
     SceneObjectRuntime::getPhysicsObjectInstance
     ()
     {
@@ -381,7 +382,7 @@ namespace Dream
         mHasFocus = focus;
     }
 
-    shared_ptr<SpriteInstance>
+    const shared_ptr<SpriteInstance>&
     SceneObjectRuntime::getSpriteInstance
     ()
     {
@@ -481,7 +482,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createAssetInstance
-    (shared_ptr<IAssetDefinition> definition)
+    (const shared_ptr<IAssetDefinition>& definition)
     {
         auto log = getLog();
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
@@ -544,7 +545,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createPhysicsObjectInstance
-    (shared_ptr<PhysicsObjectDefinition> definition)
+    (const shared_ptr<PhysicsObjectDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Physics Object Asset Instance." );
@@ -554,7 +555,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createPathInstance
-    (shared_ptr<PathDefinition> definition)
+    (const shared_ptr<PathDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Path asset instance." );
@@ -564,7 +565,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createAudioInstance
-    (shared_ptr<AudioDefinition> definition)
+    (const shared_ptr<AudioDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Audio asset instance." );
@@ -583,7 +584,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createModelInstance
-    (shared_ptr<ModelDefinition> definition)
+    (const shared_ptr<ModelDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Model asset instance." );
@@ -608,7 +609,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createScriptInstance
-    (shared_ptr<ScriptDefinition> definition)
+    (const shared_ptr<ScriptDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Script asset instance." );
@@ -631,7 +632,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createShaderInstance
-    (shared_ptr<ShaderDefinition> definition)
+    (const shared_ptr<ShaderDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Shader asset instance." );
@@ -646,7 +647,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createLightInstance
-    (shared_ptr<LightDefinition> definition)
+    (const shared_ptr<LightDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Light Asset instance." );
@@ -659,7 +660,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createSpriteInstance
-    (shared_ptr<SpriteDefinition> definition)
+    (const shared_ptr<SpriteDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Sprite Asset instance." );
@@ -679,7 +680,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createFontInstance
-    (shared_ptr<FontDefinition> definition)
+    (const shared_ptr<FontDefinition>& definition)
     {
         auto log = getLog();
         log->info( "Creating Font Asset instance." );
@@ -767,7 +768,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::isParentOf
-    (shared_ptr<SceneObjectRuntime> child)
+    (const shared_ptr<SceneObjectRuntime>&  child)
     {
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -781,26 +782,27 @@ namespace Dream
 
     void
     SceneObjectRuntime::setParentRuntime
-    (shared_ptr<SceneObjectRuntime> parent)
+    (const shared_ptr<SceneObjectRuntime>& parent)
     {
         mParentRuntime = parent;
     }
 
-    shared_ptr<SceneObjectRuntime>
+    const shared_ptr<SceneObjectRuntime>&
     SceneObjectRuntime::getParentRuntime
     ()
     {
         return mParentRuntime;
     }
 
-    shared_ptr<SceneRuntime>
+    const shared_ptr<SceneRuntime>&
     SceneObjectRuntime::getSceneRuntime
     ()
     {
         return mSceneRuntime;
     }
 
-    shared_ptr<SceneObjectDefinition> SceneObjectRuntime::getSceneObjectDefinition()
+    shared_ptr<SceneObjectDefinition>
+    SceneObjectRuntime::getSceneObjectDefinition()
     {
        return dynamic_pointer_cast<SceneObjectDefinition>(getDefinition());
     }
@@ -831,7 +833,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::loadChildrenFromDefinition
-    (shared_ptr<SceneObjectDefinition> definition)
+    (const shared_ptr<SceneObjectDefinition>& definition)
     {
         vector<shared_ptr<SceneObjectDefinition>> definitions = definition->getChildDefinitionsList();
         for

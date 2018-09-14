@@ -29,8 +29,8 @@ namespace Dream
 
     SceneObjectDefinition::SceneObjectDefinition
     (
-            shared_ptr<SceneObjectDefinition> parent,
-            shared_ptr<SceneDefinition> sceneDefinition,
+            const shared_ptr<SceneObjectDefinition>& parent,
+            const shared_ptr<SceneDefinition>& sceneDefinition,
             json jsonData,
             bool randomUuid
             )
@@ -205,7 +205,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::addChildSceneObjectDefinition
-    (shared_ptr<SceneObjectDefinition> child)
+    (const shared_ptr<SceneObjectDefinition>& child)
     {
         mChildDefinitions.push_back(child);
     }
@@ -271,7 +271,7 @@ namespace Dream
     }
 
 
-    shared_ptr<SceneDefinition>
+    const shared_ptr<SceneDefinition>&
     SceneObjectDefinition::getSceneDefinition
     ()
     {
@@ -319,7 +319,7 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_STATIC];
     }
 
-    shared_ptr<SceneObjectDefinition> SceneObjectDefinition::getParentSceneObject() const
+    const shared_ptr<SceneObjectDefinition>& SceneObjectDefinition::getParentSceneObject() const
     {
         return mParentSceneObject;
     }

@@ -60,15 +60,15 @@ namespace Dream
     {
     public:
         AssimpModelInstance(
-            shared_ptr<AssimpCache>,
-            shared_ptr<MaterialCache>,
-            shared_ptr<IAssetDefinition>,
-            shared_ptr<SceneObjectRuntime>
+            const shared_ptr<AssimpCache>&,
+            const shared_ptr<MaterialCache>&,
+            const shared_ptr<IAssetDefinition>&,
+            const shared_ptr<SceneObjectRuntime>&
         );
         ~AssimpModelInstance() override;
         bool load(string) override;
         void draw(
-            shared_ptr<ShaderInstance>,
+            const shared_ptr<ShaderInstance>&,
             vec3 transorm,
             vec3 camPos,
             float maxDistance,

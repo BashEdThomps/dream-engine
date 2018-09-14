@@ -59,7 +59,10 @@ namespace Dream
         bool mPhysicsDebug;
 
     public:
-        SceneRuntime(shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> parent);
+        SceneRuntime(
+            const shared_ptr<SceneDefinition>& sd,
+            const shared_ptr<ProjectRuntime>& parent
+        );
         ~SceneRuntime() override;
 
         SceneState getState();
@@ -75,7 +78,7 @@ namespace Dream
         void setAmbientColour(vector<float> ambientColour);
 
         vector<shared_ptr<SceneObjectRuntime>> getSceneObjectRuntimeCleanUpQueue();
-        void addSceneObjectRuntimeToCleanUpQueue(shared_ptr<SceneObjectRuntime>);
+        void addSceneObjectRuntimeToCleanUpQueue(const shared_ptr<SceneObjectRuntime>&);
         void clearSceneObjectRuntimeCleanUpQueue();
         void processSceneObjectRuntimeCleanUpQueue();
 
@@ -86,19 +89,19 @@ namespace Dream
         void setDeleteFlagOnAllSceneObjectRuntimes();
 
         bool hasRootSceneObjectRuntime();
-        void setRootSceneObjectRuntime(shared_ptr<SceneObjectRuntime> sceneObject);
-        shared_ptr<SceneObjectRuntime> getRootSceneObjectRuntime();
+        void setRootSceneObjectRuntime(const shared_ptr<SceneObjectRuntime>& sceneObject);
+        const shared_ptr<SceneObjectRuntime>& getRootSceneObjectRuntime();
 
         shared_ptr<SceneObjectRuntime> getSceneObjectRuntimeByName(string);
         shared_ptr<SceneObjectRuntime> getSceneObjectRuntimeByUuid(string);
 
         int countSceneObjectRuntimes();
 
-        shared_ptr<ProjectRuntime> getProjectRuntime();
+        const shared_ptr<ProjectRuntime>& getProjectRuntime();
 
         void showScenegraph();
 
-        int countChildrenOfSceneObjectRuntime(shared_ptr<SceneObjectRuntime>);
+        int countChildrenOfSceneObjectRuntime(const shared_ptr<SceneObjectRuntime>&);
 
         void collectGarbage() override;
 

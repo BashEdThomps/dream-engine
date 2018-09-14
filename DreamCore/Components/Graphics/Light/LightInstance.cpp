@@ -7,8 +7,8 @@ namespace Dream
 {
     LightInstance::LightInstance
     (
-        shared_ptr<LightDefinition> definition,
-        shared_ptr<SceneObjectRuntime> transform
+        const shared_ptr<LightDefinition>& definition,
+        const shared_ptr<SceneObjectRuntime>& transform
     ) : IAssetInstance(definition,transform),
         mAmbient(glm::vec3(0.0f,0.0f,0.0f)),
         mDiffuse(glm::vec3(0.0f,0.0f,0.0f)),

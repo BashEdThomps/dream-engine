@@ -46,10 +46,10 @@ namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
     (
-        shared_ptr<AssimpCache> modelCache,
-        shared_ptr<MaterialCache> texCache,
-        shared_ptr<IAssetDefinition> definition,
-        shared_ptr<SceneObjectRuntime> transform)
+        const shared_ptr<AssimpCache>& modelCache,
+        const shared_ptr<MaterialCache>& texCache,
+        const shared_ptr<IAssetDefinition>& definition,
+        const shared_ptr<SceneObjectRuntime>& transform)
         : IAssetInstance(definition,transform),
           mModelCache(modelCache),
           mMaterialCache(texCache)
@@ -111,10 +111,15 @@ namespace Dream
 
     void
     AssimpModelInstance::draw
-    (shared_ptr<ShaderInstance> shader, vec3 transform, vec3 camPos, float maxDistance, bool alwaysDraw)
-    {
+    (
+        const shared_ptr<ShaderInstance>& shader,
+        vec3 transform,
+        vec3 camPos,
+        float maxDistance,
+        bool alwaysDraw
+    ) {
         auto log = getLog();
-        for(shared_ptr<AssimpMesh> mesh : mMeshes)
+        for(const shared_ptr<AssimpMesh>& mesh : mMeshes)
         {
             vec3 center = transform + mesh->getBoundingBox().getCenter();
             float distance = glm::distance(center,camPos);
@@ -334,9 +339,7 @@ namespace Dream
     void
     AssimpModelInstance::loadExtraAttributes
     (json)
-    {
-
-    }
+    {}
 
     BoundingBox
     AssimpModelInstance::getBoundingBox

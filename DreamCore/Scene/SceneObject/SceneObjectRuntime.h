@@ -87,31 +87,31 @@ namespace Dream
         bool mHasFocus;
 
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
-        void loadChildrenFromDefinition(shared_ptr<SceneObjectDefinition> definition);
+        void loadChildrenFromDefinition(const shared_ptr<SceneObjectDefinition>& definition);
         bool mFollowsCamera;
 
         void initialTransform();
     public:
-        SceneObjectRuntime(shared_ptr<SceneObjectDefinition> sd, shared_ptr<SceneRuntime> sceneRuntime = nullptr);
+        SceneObjectRuntime(const shared_ptr<SceneObjectDefinition>& sd, const shared_ptr<SceneRuntime>& sceneRuntime = nullptr);
         ~SceneObjectRuntime() override;
 
         void collectGarbage() override;
 
-        shared_ptr<SceneRuntime> getSceneRuntime();
+        const shared_ptr<SceneRuntime>& getSceneRuntime();
         shared_ptr<SceneObjectDefinition> getSceneObjectDefinition();
 
         void createAssetInstances();
         void createAssetInstanceFromAssetDefinitionByUuid(string);
-        void createAssetInstance(shared_ptr<IAssetDefinition>);
-        void createPathInstance(shared_ptr<PathDefinition>);
-        void createAudioInstance(shared_ptr<AudioDefinition>);
-        void createModelInstance(shared_ptr<ModelDefinition>);
-        void createScriptInstance(shared_ptr<ScriptDefinition>);
-        void createShaderInstance(shared_ptr<ShaderDefinition>);
-        void createPhysicsObjectInstance(shared_ptr<PhysicsObjectDefinition>);
-        void createLightInstance(shared_ptr<LightDefinition>);
-        void createFontInstance(shared_ptr<FontDefinition>);
-        void createSpriteInstance(shared_ptr<SpriteDefinition>);
+        void createAssetInstance(const shared_ptr<IAssetDefinition>&);
+        void createPathInstance(const shared_ptr<PathDefinition>&);
+        void createAudioInstance(const shared_ptr<AudioDefinition>&);
+        void createModelInstance(const shared_ptr<ModelDefinition>&);
+        void createScriptInstance(const shared_ptr<ScriptDefinition>&);
+        void createShaderInstance(const shared_ptr<ShaderDefinition>&);
+        void createPhysicsObjectInstance(const shared_ptr<PhysicsObjectDefinition>&);
+        void createLightInstance(const shared_ptr<LightDefinition>&);
+        void createFontInstance(const shared_ptr<FontDefinition>&);
+        void createSpriteInstance(const shared_ptr<SpriteDefinition>&);
 
         quat getOrientation();
 
@@ -132,15 +132,15 @@ namespace Dream
 
         void resetTransform();
 
-        shared_ptr<PathInstance> getPathInstance();
-        shared_ptr<AudioInstance> getAudioInstance();
-        shared_ptr<AssimpModelInstance> getModelInstance();
-        shared_ptr<ScriptInstance> getScriptInstance();
-        shared_ptr<ShaderInstance> getShaderInstance();
-        shared_ptr<PhysicsObjectInstance> getPhysicsObjectInstance();
-        shared_ptr<LightInstance> getLightInstance();
-        shared_ptr<SpriteInstance> getSpriteInstance();
-        shared_ptr<FontInstance> getFontInstance();
+        const shared_ptr<PathInstance>& getPathInstance();
+        const shared_ptr<AudioInstance>& getAudioInstance();
+        const shared_ptr<AssimpModelInstance>& getModelInstance();
+        const shared_ptr<ScriptInstance>& getScriptInstance();
+        const shared_ptr<ShaderInstance>& getShaderInstance();
+        const shared_ptr<PhysicsObjectInstance>& getPhysicsObjectInstance();
+        const shared_ptr<LightInstance>& getLightInstance();
+        const shared_ptr<SpriteInstance>& getSpriteInstance();
+        const shared_ptr<FontInstance>& getFontInstance();
 
         bool hasPathInstance();
         bool hasAudioInstance();
@@ -176,17 +176,17 @@ namespace Dream
 
         int countAllChildren();
         size_t countChildren();
-        void addChildRuntime(shared_ptr<SceneObjectRuntime>);
-        void removeChildRuntime(shared_ptr<SceneObjectRuntime>);
+        void addChildRuntime(const shared_ptr<SceneObjectRuntime>&);
+        void removeChildRuntime(const shared_ptr<SceneObjectRuntime>&);
         vector<shared_ptr<SceneObjectRuntime>> getChildRuntimes();
-        bool isChildOf(shared_ptr<SceneObjectRuntime>);
+        bool isChildOf(const shared_ptr<SceneObjectRuntime>&);
 
-        bool isParentOf(shared_ptr<SceneObjectRuntime> child);
-        void setParentRuntime(shared_ptr<SceneObjectRuntime> parent);
-        shared_ptr<SceneObjectRuntime> getParentRuntime();
+        bool isParentOf(const shared_ptr<SceneObjectRuntime>& child);
+        void setParentRuntime(const shared_ptr<SceneObjectRuntime>& parent);
+        const shared_ptr<SceneObjectRuntime>& getParentRuntime();
 
         shared_ptr<SceneObjectRuntime> applyToAll
-        (function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>);
+        (function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime> )>);
 
         bool applyToAll
         (function<bool(shared_ptr<SceneObjectRuntime>)>);

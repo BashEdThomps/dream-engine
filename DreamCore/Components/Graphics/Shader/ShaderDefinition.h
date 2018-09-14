@@ -25,6 +25,6 @@ namespace Dream
     class ShaderDefinition : public IAssetDefinition
     {
     public:
-        ShaderDefinition(shared_ptr<ProjectDefinition> pd, json js);
+        ShaderDefinition(const shared_ptr<ProjectDefinition>& pd, json js);
     };
 }

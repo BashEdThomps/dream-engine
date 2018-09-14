@@ -44,8 +44,8 @@ namespace Dream
 
     public:
         SceneObjectDefinition(
-            shared_ptr<SceneObjectDefinition> parent,
-            shared_ptr<SceneDefinition> sceneDefinition,
+            const shared_ptr<SceneObjectDefinition>& parent,
+            const shared_ptr<SceneDefinition>& sceneDefinition,
             json data, bool randomUuid = false
         );
 
@@ -71,14 +71,14 @@ namespace Dream
         void showStatus() override;
 
         vector<shared_ptr<SceneObjectDefinition>> getChildDefinitionsList();
-        void addChildSceneObjectDefinition(shared_ptr<SceneObjectDefinition> child);
+        void addChildSceneObjectDefinition(const shared_ptr<SceneObjectDefinition>& child);
         void removeChildSceneObjectDefinition(shared_ptr<SceneObjectDefinition> child);
         shared_ptr<SceneObjectDefinition> createNewChildSceneObjectDefinition(json* def = nullptr);
 
-        shared_ptr<SceneDefinition> getSceneDefinition();
+        const shared_ptr<SceneDefinition>& getSceneDefinition();
         json getJson() override;
 
-        shared_ptr<SceneObjectDefinition> getParentSceneObject() const;
+        const shared_ptr<SceneObjectDefinition>& getParentSceneObject() const;
         shared_ptr<SceneObjectDefinition> duplicate();
 
         bool getAlwaysDraw();

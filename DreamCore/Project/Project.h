@@ -56,11 +56,11 @@ namespace Dream
 
         // Public Methods
     public:
-        Project(shared_ptr<IWindowComponent> wc = nullptr);
+        Project(const shared_ptr<IWindowComponent>& wc = nullptr);
         ~Project();
 
-        shared_ptr<ProjectRuntime> getProjectRuntime();
-        shared_ptr<ProjectDefinition> getProjectDefinition();
+        const shared_ptr<ProjectRuntime>& getProjectRuntime();
+        const shared_ptr<ProjectDefinition>& getProjectDefinition();
 
         bool openFromFileReader(string directory, FileReader &fileReader);
         bool openFromArgumentParser(ArgumentParser &parser);

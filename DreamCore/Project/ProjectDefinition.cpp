@@ -414,13 +414,13 @@ namespace Dream
     ()
     {
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
-        for (shared_ptr<IAssetDefinition> ad : getAssetDefinitionsList())
+        for (const shared_ptr<IAssetDefinition>& ad : getAssetDefinitionsList())
         {
             mJson[Constants::PROJECT_ASSET_ARRAY].push_back(ad->getJson());
         }
 
         mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
-        for (shared_ptr<SceneDefinition> sd : getSceneDefinitionsList())
+        for (const shared_ptr<SceneDefinition>& sd : getSceneDefinitionsList())
         {
             mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sd->getJson());
         }
@@ -469,7 +469,7 @@ namespace Dream
         vector<shared_ptr<ShaderDefinition>> shaders;
         for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
         {
-            shared_ptr<IAssetDefinition> next = (*it);
+            const shared_ptr<IAssetDefinition>& next = (*it);
             if (next->getType() == Constants::ASSET_TYPE_SHADER)
             {
                 shaders.push_back(dynamic_pointer_cast<ShaderDefinition>(next));

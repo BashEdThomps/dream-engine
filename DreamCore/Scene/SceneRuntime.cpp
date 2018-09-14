@@ -39,7 +39,9 @@
 namespace Dream
 {
     SceneRuntime::SceneRuntime
-    (shared_ptr<SceneDefinition> sd, shared_ptr<ProjectRuntime> project)
+    (
+        const shared_ptr<SceneDefinition>& sd,
+        const shared_ptr<ProjectRuntime>& project)
         : // Init list
           IRuntime(sd),
           mGravity({0,0,0}),
@@ -120,15 +122,16 @@ namespace Dream
     SceneRuntime::getSceneObjectRuntimeByUuid
     (string uuid)
     {
-        return mRootSceneObjectRuntime->applyToAll(
-            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
-                ([&](shared_ptr<SceneObjectRuntime> currentRuntime)
+        return mRootSceneObjectRuntime->applyToAll
+        (
+            function<const shared_ptr<SceneObjectRuntime>&(const shared_ptr<SceneObjectRuntime>&)>
+            ([&](const shared_ptr<SceneObjectRuntime>& currentRuntime)
+            {
+                if (currentRuntime->hasUuid(uuid))
                 {
-                    if (currentRuntime->hasUuid(uuid))
-                    {
-                        return currentRuntime;
-                    }
-                return shared_ptr<SceneObjectRuntime>(nullptr);
+                    return currentRuntime;
+                }
+            return shared_ptr<SceneObjectRuntime>(nullptr);
             }
         ));
     }
@@ -137,9 +140,10 @@ namespace Dream
     SceneRuntime::getSceneObjectRuntimeByName
     (string name)
     {
-        return mRootSceneObjectRuntime->applyToAll(
-            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
-            ([&](shared_ptr<SceneObjectRuntime> currentRuntime)
+        return mRootSceneObjectRuntime->applyToAll
+        (
+            function<const shared_ptr<SceneObjectRuntime>(const shared_ptr<SceneObjectRuntime>&)>
+            ([&](const shared_ptr<SceneObjectRuntime>& currentRuntime)
             {
                 if (currentRuntime->hasName(name))
                 {
@@ -190,12 +194,12 @@ namespace Dream
 
     void
     SceneRuntime::setRootSceneObjectRuntime
-    (shared_ptr<SceneObjectRuntime> root)
+    (const shared_ptr<SceneObjectRuntime>& root)
     {
         mRootSceneObjectRuntime = root;
     }
 
-    shared_ptr<SceneObjectRuntime>
+    const shared_ptr<SceneObjectRuntime>&
     SceneRuntime::getRootSceneObjectRuntime
     ()
     {
@@ -209,8 +213,8 @@ namespace Dream
         auto log = getLog();
         log->info( "Collecting Garbage {}" , getNameAndUuidString() );
         mRootSceneObjectRuntime->applyToAll(
-            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
-            ([&](shared_ptr<SceneObjectRuntime> runt)
+            function<const shared_ptr<SceneObjectRuntime>&(const shared_ptr<SceneObjectRuntime>&)>
+            ([&](const shared_ptr<SceneObjectRuntime>& runt)
             {
                 runt->collectGarbage();
                 return nullptr;
@@ -218,7 +222,7 @@ namespace Dream
         ));
     }
 
-    shared_ptr<ProjectRuntime>
+    const shared_ptr<ProjectRuntime>&
     SceneRuntime::getProjectRuntime
     ()
     {

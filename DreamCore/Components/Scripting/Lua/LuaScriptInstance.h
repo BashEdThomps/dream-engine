@@ -32,8 +32,8 @@ namespace Dream
 
     public:
         LuaScriptInstance(
-            shared_ptr<ScriptDefinition>,
-            shared_ptr<SceneObjectRuntime>
+            const shared_ptr<ScriptDefinition>&,
+            const shared_ptr<SceneObjectRuntime>&
         );
         ~LuaScriptInstance(void);
         bool load(string);

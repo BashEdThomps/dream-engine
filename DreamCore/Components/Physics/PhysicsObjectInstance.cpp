@@ -67,7 +67,9 @@ namespace Dream
     }
 
     PhysicsObjectInstance::PhysicsObjectInstance
-    (shared_ptr<PhysicsObjectDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
+    (
+        const shared_ptr<PhysicsObjectDefinition>& definition,
+        const shared_ptr<SceneObjectRuntime>& transform)
         : IAssetInstance(definition,transform),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
@@ -131,7 +133,10 @@ namespace Dream
 
     void
     PhysicsObjectInstance::loadExtraAttributes
-    (nlohmann::json jsonData, shared_ptr<IAssetDefinition> definition, bool isChild)
+    (
+        nlohmann::json jsonData,
+        const shared_ptr<IAssetDefinition>& definition,
+        bool isChild)
     {
     }
 
@@ -184,7 +189,7 @@ namespace Dream
 
     btCollisionShape*
     PhysicsObjectInstance::createCollisionShape
-    (shared_ptr<PhysicsObjectDefinition> pod, string projectPath)
+    (const shared_ptr<PhysicsObjectDefinition>& pod, string projectPath)
     {
         auto log = getLog();
         string format = pod->getFormat();

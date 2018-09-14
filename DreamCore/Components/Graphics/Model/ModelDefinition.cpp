@@ -28,7 +28,7 @@ using nlohmann::json;
 namespace Dream
 {
     ModelDefinition::ModelDefinition
-    (shared_ptr<ProjectDefinition> pd, json js)
+    (const shared_ptr<ProjectDefinition>& pd, json js)
         : IAssetDefinition(pd,js)
     {
 

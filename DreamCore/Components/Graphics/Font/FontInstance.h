@@ -49,9 +49,9 @@ namespace Dream
         void generateCharacterMap();
     public:
         FontInstance(
-            shared_ptr<FontCache>,
-            shared_ptr<FontDefinition>,
-            shared_ptr<SceneObjectRuntime>
+            const shared_ptr<FontCache>&,
+            const shared_ptr<FontDefinition>&,
+            const shared_ptr<SceneObjectRuntime>&
         );
 
         ~FontInstance();

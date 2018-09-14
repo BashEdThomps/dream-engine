@@ -23,7 +23,9 @@
 namespace Dream
 {
     IAssetInstance::IAssetInstance
-    (shared_ptr<IAssetDefinition> definition, shared_ptr<SceneObjectRuntime> runtime)
+    (
+        const shared_ptr<IAssetDefinition>& definition,
+        const shared_ptr<SceneObjectRuntime>& runtime)
           : DreamObject("IAssetInstance"),
             mLoaded(false),
             mAbsolutePath(""),
@@ -86,7 +88,7 @@ namespace Dream
         mLoaded = loaded;
     }
 
-    shared_ptr<SceneObjectRuntime>
+    const shared_ptr<SceneObjectRuntime>&
     IAssetInstance::getSceneObjectRuntime
     ()
     {

@@ -20,7 +20,7 @@
 namespace Dream
 {
     SpriteDefinition::SpriteDefinition
-    (shared_ptr<ProjectDefinition> pd, json js)
+    (const shared_ptr<ProjectDefinition>& pd, json js)
         : IAssetDefinition(pd,js)
     {
 

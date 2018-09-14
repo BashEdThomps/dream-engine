@@ -91,6 +91,6 @@ namespace Dream
         void loadAssetDefinitions();
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
-        shared_ptr<IAssetDefinition>createAssetDefinitionInstance(json assetDefinitionJs);
+        shared_ptr<IAssetDefinition> createAssetDefinitionInstance(json assetDefinitionJs);
     };
 }

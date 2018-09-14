@@ -35,7 +35,11 @@ namespace Dream
         string mUuid;
         string mName;
     public:
-        IRuntime(shared_ptr<IDefinition> def, string uuid = "", string name = "");
+        IRuntime(
+            const shared_ptr<IDefinition>& def,
+            string uuid = "",
+            string name = ""
+        );
         virtual ~IRuntime();
 
         string getUuid();
@@ -51,6 +55,6 @@ namespace Dream
         virtual void useDefinition(shared_ptr<IDefinition>) = 0;
 
         virtual void collectGarbage() = 0;
-        shared_ptr<IDefinition> getDefinition();
+        const shared_ptr<IDefinition>& getDefinition();
     };
 }

@@ -15,7 +15,10 @@ namespace Dream
         float mIntensity;
 
     public:
-        ParticleEmitterInstance(shared_ptr<ParticleEmitterDefinition>, shared_ptr<SceneObjectRuntime>);
+        ParticleEmitterInstance(
+            const shared_ptr<ParticleEmitterDefinition>&,
+            const shared_ptr<SceneObjectRuntime>&
+        );
         ~ParticleEmitterInstance();
 
         bool load(string);

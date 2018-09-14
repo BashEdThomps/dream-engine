@@ -45,12 +45,12 @@ namespace Dream
     {
 
     public:
-        IAssetDefinition(shared_ptr<ProjectDefinition>, json);
+        IAssetDefinition(const shared_ptr<ProjectDefinition>&, json);
         static AssetType getAssetType(json);
 
         virtual ~IAssetDefinition();
 
-        shared_ptr<ProjectDefinition> getProject();
+        const shared_ptr<ProjectDefinition>& getProject();
         void showStatus();
 
         void setType(string);

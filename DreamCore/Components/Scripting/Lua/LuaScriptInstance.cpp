@@ -24,8 +24,8 @@ namespace Dream
 
     LuaScriptInstance::LuaScriptInstance
     (
-        shared_ptr<ScriptDefinition> definition,
-        shared_ptr<SceneObjectRuntime> transform
+        const shared_ptr<ScriptDefinition>& definition,
+        const shared_ptr<SceneObjectRuntime>& transform
     )
         : ScriptInstance(definition,transform)
     {

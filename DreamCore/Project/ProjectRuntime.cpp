@@ -50,7 +50,9 @@ using std::endl;
 namespace Dream
 {
     ProjectRuntime::ProjectRuntime
-    (shared_ptr<Project> project, shared_ptr<IWindowComponent> windowComponent)
+    (
+        const shared_ptr<Project>& project,
+        const shared_ptr<IWindowComponent>& windowComponent)
         : IRuntime(project->getProjectDefinition()),
           mDone(false),
           mProject(project),
@@ -68,7 +70,7 @@ namespace Dream
         log->info( "Destructing" );
     }
 
-    shared_ptr<IWindowComponent>
+    const shared_ptr<IWindowComponent>&
     ProjectRuntime::getWindowComponent
     ()
     {
@@ -82,7 +84,7 @@ namespace Dream
         mDone = done;
     }
 
-    shared_ptr<Time>
+    const shared_ptr<Time>&
     ProjectRuntime::getTime
     ()
     {
@@ -281,49 +283,49 @@ namespace Dream
         return mDone;
     }
 
-    shared_ptr<PathComponent>
+    const shared_ptr<PathComponent>&
     ProjectRuntime::getPathComponent
     ()
     {
         return mPathComponent;
     }
 
-    shared_ptr<AudioComponent>
+    const shared_ptr<AudioComponent>&
     ProjectRuntime::getAudioComponent
     ()
     {
         return mAudioComponent;
     }
 
-    shared_ptr<PhysicsComponent>
+    const shared_ptr<PhysicsComponent>&
     ProjectRuntime::getPhysicsComponent
     ()
     {
         return mPhysicsComponent;
     }
 
-    shared_ptr<GraphicsComponent>
+    const shared_ptr<GraphicsComponent>&
     ProjectRuntime::getGraphicsComponent
     ()
     {
         return mGraphicsComponent;
     }
 
-    shared_ptr<NanoVGComponent>
+    const shared_ptr<NanoVGComponent>&
     ProjectRuntime::getNanoVGComponent
     ()
     {
        return mNanoVGComponent;
     }
 
-    shared_ptr<Camera>
+    const shared_ptr<Camera>&
     ProjectRuntime::getCamera
     ()
     {
         return mCamera;
     }
 
-    shared_ptr<IScriptComponent>
+    const shared_ptr<IScriptComponent>&
     ProjectRuntime::getScriptComponent
     ()
     {
@@ -405,7 +407,7 @@ namespace Dream
         return mActiveSceneRuntime != nullptr;
     }
 
-    shared_ptr<SceneRuntime>
+    const shared_ptr<SceneRuntime>&
     ProjectRuntime::getActiveSceneRuntime
     ()
     {
@@ -426,13 +428,13 @@ namespace Dream
 
     shared_ptr<SceneRuntime>
     ProjectRuntime::constructActiveSceneRuntime
-    (shared_ptr<SceneDefinition> sceneDefinition)
+    (const shared_ptr<SceneDefinition>& sceneDefinition)
     {
         auto log = getLog();
         if (sceneDefinition == nullptr)
         {
             log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
-            return shared_ptr<SceneRuntime>();
+            return nullptr;
         }
 
 
@@ -444,7 +446,7 @@ namespace Dream
             dynamic_pointer_cast<ProjectRuntime>(shared_from_this())
         );
 
-        mActiveSceneRuntime->useDefinition(sceneDefinition);
+        mActiveSceneRuntime->useDefinition(dynamic_pointer_cast<SceneDefinition>(sceneDefinition));
 
         if (mGraphicsComponent != nullptr)
         {
@@ -460,7 +462,7 @@ namespace Dream
         return mActiveSceneRuntime;
     }
 
-    shared_ptr<Project>
+    const shared_ptr<Project>&
     ProjectRuntime::getProject
     ()
     {
@@ -475,28 +477,28 @@ namespace Dream
         initComponents();
     }
 
-    shared_ptr<FontCache>
+    const shared_ptr<FontCache>&
     ProjectRuntime::getFontCache
     ()
     {
         return mFontCache;
     }
 
-    shared_ptr<ShaderCache>
+    const shared_ptr<ShaderCache>&
     ProjectRuntime::getShaderCache
     ()
     {
         return mShaderCache;
     }
 
-    shared_ptr<MaterialCache>
+    const shared_ptr<MaterialCache>&
     ProjectRuntime::getTextureCache
     ()
     {
         return mTextureCache;
     }
 
-    shared_ptr<AssimpCache>
+    const shared_ptr<AssimpCache>&
     ProjectRuntime::getModelCache
     ()
     {

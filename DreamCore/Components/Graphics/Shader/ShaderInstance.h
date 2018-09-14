@@ -120,9 +120,9 @@ namespace Dream
         shared_ptr<ShaderCache> mCache;
     public:
         ShaderInstance(
-           shared_ptr<ShaderCache> cache,
-           shared_ptr<ShaderDefinition>,
-           shared_ptr<SceneObjectRuntime>
+           const shared_ptr<ShaderCache>& cache,
+           const shared_ptr<ShaderDefinition>&,
+           const shared_ptr<SceneObjectRuntime>&
         );
         ~ShaderInstance() override;
 
@@ -148,10 +148,10 @@ namespace Dream
         GLint getUniformLocation(string name);
 
         void addUniform(UniformType type, string name, int count, void* data);
-        void bindLight(shared_ptr<LightInstance> light);
+        void bindLight(const shared_ptr<LightInstance>& light);
 
         void syncUniforms();
-        void bindMaterial(shared_ptr<AssimpMaterial> material);
+        void bindMaterial(const shared_ptr<AssimpMaterial>& material);
     }; // End of ShaderInstance
 
 } // End of Dream

@@ -51,7 +51,7 @@
 namespace Dream
 {
     Project::Project
-    (shared_ptr<IWindowComponent> windowComponent)
+    (const shared_ptr<IWindowComponent>& windowComponent)
         : DreamObject("Project"),
           mWindowComponent(windowComponent)
     {
@@ -224,14 +224,14 @@ namespace Dream
         return loadSuccess;
     }
 
-    shared_ptr<ProjectRuntime>
+    const shared_ptr<ProjectRuntime>&
     Project::getProjectRuntime
     ()
     {
         return mRuntime;
     }
 
-    shared_ptr<ProjectDefinition>
+    const shared_ptr<ProjectDefinition>&
     Project::getProjectDefinition
     ()
     {

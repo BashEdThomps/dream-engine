@@ -49,7 +49,11 @@ namespace Dream
         shared_ptr<SceneObjectRuntime> mSceneObjectRuntime;
         string mUuid;
     public:
-        IAssetInstance(shared_ptr<IAssetDefinition>, shared_ptr<SceneObjectRuntime> runtime);
+        IAssetInstance
+        (
+            const shared_ptr<IAssetDefinition>& asset,
+            const shared_ptr<SceneObjectRuntime>& runtime
+        );
         virtual ~IAssetInstance();
 
         string getUuid();
@@ -66,7 +70,7 @@ namespace Dream
         bool getLoadedFlag();
         void setLoadedFlag(bool);
 
-        shared_ptr<SceneObjectRuntime> getSceneObjectRuntime();
+        const shared_ptr<SceneObjectRuntime>& getSceneObjectRuntime();
 
     }; // End of IAssetInstance
 

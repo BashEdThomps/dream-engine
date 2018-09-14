@@ -27,8 +27,11 @@ namespace Dream
 {
 
     FontInstance::FontInstance
-    (shared_ptr<FontCache> cache, shared_ptr<FontDefinition> definition, shared_ptr<SceneObjectRuntime> transform)
-        : IAssetInstance(definition,transform),
+    (
+        const shared_ptr<FontCache>& cache,
+        const shared_ptr<FontDefinition>& definition,
+        const shared_ptr<SceneObjectRuntime>& transform
+    ) : IAssetInstance(definition,transform),
           mCache(cache)
 
     {

@@ -40,7 +40,7 @@ namespace Dream
     class PhysicsObjectDefinition : public IAssetDefinition
     {
     public:
-        PhysicsObjectDefinition(shared_ptr<ProjectDefinition> pd, json js);
+        PhysicsObjectDefinition(const shared_ptr<ProjectDefinition>& pd, json js);
 
         // Physics
         void  setMass(float mass);

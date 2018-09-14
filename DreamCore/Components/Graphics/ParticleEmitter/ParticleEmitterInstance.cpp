@@ -7,8 +7,8 @@ namespace Dream
 {
     ParticleEmitterInstance::ParticleEmitterInstance
     (
-        shared_ptr<ParticleEmitterDefinition> definition,
-        shared_ptr<SceneObjectRuntime> transform
+        const shared_ptr<ParticleEmitterDefinition>& definition,
+        const shared_ptr<SceneObjectRuntime>& transform
     ) : IAssetInstance(definition,transform),
         mColor(glm::vec3(0.0f,0.0f,0.0f)),
         mIntensity(0.0f)
