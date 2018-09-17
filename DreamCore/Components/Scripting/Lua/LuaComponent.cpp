@@ -607,9 +607,13 @@ namespace Dream
         sol::state_view stateView(mState);
         stateView.new_usertype<PhysicsObjectInstance>("PhysicsObjectInstance",
             "getUuid", &PhysicsObjectInstance::getUuid,
+            "getLinearVelocity", &PhysicsObjectInstance::getLinearVelocity,
             "setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity,
             "setLinearFactor", &PhysicsObjectInstance::setLinearFactor,
-            "setAngularFactor", &PhysicsObjectInstance::setAngularFactor
+            "setAngularFactor", &PhysicsObjectInstance::setAngularFactor,
+            "getRestitution", &PhysicsObjectInstance::getRestitution,
+            "setRestitution", &PhysicsObjectInstance::setRestitution
+
         );
     }
 
@@ -644,7 +648,10 @@ namespace Dream
             "hasShader",&SceneObjectRuntime::hasShaderInstance,
             "hasLight",&SceneObjectRuntime::hasLightInstance,
             "hasFont",&SceneObjectRuntime::hasFontInstance,
-            "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance
+            "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance,
+            "getDeleted",&SceneObjectRuntime::getDeleted,
+            "setDeleted",&SceneObjectRuntime::setDeleted
+
         );
     }
 
@@ -849,17 +856,15 @@ namespace Dream
     {
         auto log = getLog();
         map<SceneObjectRuntime*,ScriptInstance*>::iterator iter;
+        sol::state_view stateView(mState);
         for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
         {
-            if ((*iter).first == sceneObject)
+            auto sObj = (*iter).first;
+            if (sObj == sceneObject)
             {
-                /*
-                string id = (*iter).first->getUuid();
-                object reg = registry(mState);
-                reg[id] = nil;
-                */
+                stateView[sObj->getUuid()] = sol::lua_nil;
 
-                string name = (*iter).first->getNameAndUuidString();
+                string name = sObj->getNameAndUuidString();
                 log->info( "Removed script for {}" , name );
 
                 mScriptMap.erase(iter++);

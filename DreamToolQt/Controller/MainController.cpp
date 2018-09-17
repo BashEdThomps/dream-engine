@@ -75,9 +75,7 @@ MainController::MainController
 
     setupUI();
     setupConnections();
-
-    mScriptEditor.setProjectDirectoryModelHandle(&mProjectDirectoryModel);
-    mScriptEditor.setTemplatesModelHandle(&mTemplatesModel);
+    mMainWindowHandle->setTemplatesModelHandle(&mTemplatesModel);
 }
 
 MainController::~MainController
@@ -1757,7 +1755,6 @@ MainController::openProject
         return;
     }
 
-
     updateWindowTitle(mProjectDirectory);
 
     ProjectDefinition* currentProject = mDreamProjectModel->getProject()->getProjectDefinition();
@@ -1773,11 +1770,13 @@ MainController::openProject
 
     mScenegraphTreeModel.reset(new ScenegraphTreeModel(currentProject,mMainWindowHandle->getScenegraphTreeView()));
     mMainWindowHandle->getScenegraphTreeView()->setModel(mScenegraphTreeModel.get());
+    mMainWindowHandle->setProjectDirectoryModel(&mProjectDirectoryModel);
 
     mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(currentProject,mMainWindowHandle->getAssetDefinitionTreeView()));
     mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
     mSelectedSceneDefinitionHandle = currentProject->getStartupSceneDefinition();
     mDreamProjectModel->setSelectedSceneDefinition(mSelectedSceneDefinitionHandle);
+
     if (mSelectedSceneDefinitionHandle != nullptr)
     {
         log->info("Set selected scene to startup scene {}",mSelectedSceneDefinitionHandle->getNameAndUuidString());
@@ -1797,7 +1796,6 @@ MainController::openProject
 
     setActionsEnabled_ValidProject(true);
     connectUI_TreeViewModels();
-
 }
 
 string
@@ -2001,7 +1999,7 @@ void
 MainController::onAssetDefinitionProperty_EditScript
 (IAssetDefinition* adHandle)
 {
-    mScriptEditor.openScript(dynamic_cast<ScriptDefinition*>(adHandle));
+    mMainWindowHandle->openScriptEditor(dynamic_cast<ScriptDefinition*>(adHandle));
 }
 
 void
@@ -2010,7 +2008,7 @@ MainController::onAssetDefinitionProperty_EditShader
 {
     auto log = spdlog::get("MainController");
     log->info( "EditShader");
-    mScriptEditor.openShader(dynamic_cast<ShaderDefinition*>(adHandle));
+    mMainWindowHandle->openShaderEditor(dynamic_cast<ShaderDefinition*>(adHandle));
 }
 
 void

@@ -2,6 +2,7 @@
 
 #include "../IAssetInstance.h"
 
+#include <glm/glm.hpp>
 #include <string>
 #include <map>
 #include <vector>
@@ -11,6 +12,7 @@
 using std::string;
 using std::map;
 using std::vector;
+using glm::vec3;
 
 using nlohmann::json;
 
@@ -57,6 +59,9 @@ namespace Dream
 
         void setLinearFactor(float x, float y, float z);
         void setAngularFactor(float x, float y, float z);
+        vec3 getLinearVelocity();
+        float getRestitution() const;
+        void setRestitution(float r);
     protected:
         void loadExtraAttributes(json) override;
         void loadExtraAttributes(json, IAssetDefinition*, bool);

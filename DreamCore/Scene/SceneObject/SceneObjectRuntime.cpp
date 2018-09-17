@@ -85,6 +85,7 @@ namespace Dream
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
         mLoaded(false),
+        mDeleted(false),
         mHasFocus(false),
         mFollowsCamera(false)
     {
@@ -509,7 +510,32 @@ namespace Dream
     void SceneObjectRuntime::collectGarbage()
     {
         auto log = getLog();
-        log->info( "Collecting Garbage {}" ,getNameAndUuidString() );
+        log->info("Collecting Garbage {}" ,getNameAndUuidString());
+
+        vector<SceneObjectRuntime*> toDelete;
+
+        for (auto child : mChildRuntimes)
+        {
+           if (child->getDeleted())
+           {
+                toDelete.push_back(child);
+           }
+        }
+
+        for (auto child : toDelete)
+        {
+            log->critical("Deleting child {}",child->getNameAndUuidString());
+            mChildRuntimes.erase
+            (
+                find
+                (
+                    mChildRuntimes.begin(),
+                    mChildRuntimes.end(),
+                    child
+                )
+            );
+            delete child;
+        }
     }
 
     bool
@@ -955,11 +981,21 @@ namespace Dream
             }
         }
     }
+
+    bool SceneObjectRuntime::getDeleted() const
+    {
+        return mDeleted;
+    }
+
+    void SceneObjectRuntime::setDeleted(bool deleted)
+    {
+        mDeleted = deleted;
+    }
+
     void
     SceneObjectRuntime::walk
     (float leftStickX, float leftStickY)
     {
 
     }
-
 }

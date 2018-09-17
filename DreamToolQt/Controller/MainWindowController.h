@@ -36,6 +36,7 @@
 #include "../View/QOpenGLWindowComponent.h"
 #include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.h"
 #include "../Model/TreeModels/Scenegraph/ScenegraphTreeItem.h"
+#include "../Controller/EditorTabController.h"
 
 using std::unique_ptr;
 using std::map;
@@ -118,6 +119,7 @@ public:
 
     QOpenGLWindowComponent* getWindowComponent();
 
+    void setProjectDirectoryModel(ProjectDirectoryModel* dirModel);
     void addRightDockWidget(QWidget* widget);
 
     QTreeView* getScenegraphTreeView();
@@ -158,6 +160,12 @@ public:
 
     void setupMenu_Asset_NewDefinition();
 
+    void openScriptEditor(ScriptDefinition* scriptDefinitionHandle);
+    void openShaderEditor(ShaderDefinition* shaderDefinitionHandle);
+
+
+    void setTemplatesModelHandle(TemplatesModel* templatesModelHandle);
+
 signals:
     void notifyActionNew(QString);
     void notifyActionOpen(QString);
@@ -178,12 +186,16 @@ public slots:
 
     void keyPressEvent(QKeyEvent*) override;
     void keyReleaseEvent(QKeyEvent*) override;
-
-protected:
+    protected:
     void setupUiFeatures();
+
+    int  isEditorTabOpen(IAssetDefinition* definition);
+    void setupEditorTabCloseButtonSignal();
 
 protected slots:
     void onMainVolumeChanged(int);
+    void onEditorTabCloseRequested(int index);
+
 private slots:
     void onScenegraphContextMenuRequested(const QPoint& point);
     void onAsseetDefinitionContextMenuRequested(const QPoint& point);
@@ -203,6 +215,8 @@ private slots:
 
 private:
     ProjectDefinition* mProjectDefinitionHandle;
+    ProjectDirectoryModel* mProjectDirectoryModelHandle;
+    TemplatesModel* mTemplatesModelHandle;
     bool shouldPassKey(int key);
     void setupGL(QWidget *parent);
     QOpenGLWindowComponent* mWindowComponentHandle;
@@ -215,6 +229,7 @@ private:
     void setupMenu_Debug();
     QSlider mVolumeSlider;
     QDockWidget mRightDockWidget;
+    vector<shared_ptr<EditorTabController>> mEditorTabForms;
 };
 
 

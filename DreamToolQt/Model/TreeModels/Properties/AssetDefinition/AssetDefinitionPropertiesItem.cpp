@@ -74,6 +74,9 @@ AssetDefinitionPropertiesItem::setData
 
     switch(getProperty())
     {
+
+
+
         case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
             dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->setSplineType(value.toString().toStdString());
             break;
@@ -126,6 +129,9 @@ AssetDefinitionPropertiesItem::setData
             break;
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
             dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setControllableCharacter(value.toBool());
+            break;
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
+            dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setRestitution(value.toFloat());
             break;
             // Common
         case ASSET_DEFINITION_PROPERTY_NAME:
@@ -297,6 +303,9 @@ AssetDefinitionPropertiesItem::data
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getKinematic());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getControllableCharacter());
+
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
+            return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getRestitution());
 
             // Audio
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:

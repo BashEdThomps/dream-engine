@@ -182,6 +182,8 @@ namespace Dream
             mRigidBody->setActivationState(DISABLE_DEACTIVATION);
         }
 
+        setRestitution(pod->getRestitution());
+
         mLoaded = (mRigidBody != nullptr);
 
         return mLoaded;
@@ -375,6 +377,14 @@ namespace Dream
         mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
 
+    vec3
+    PhysicsObjectInstance::getLinearVelocity
+    ()
+    {
+        auto lv = mRigidBody->getLinearVelocity();
+        return vec3(lv.x(), lv.y(), lv.z());
+    }
+
     PhysicsObjectDefinition*
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
@@ -395,6 +405,21 @@ namespace Dream
     (float x, float y, float z)
     {
         mRigidBody->setAngularFactor(btVector3(x,y,z));
+    }
+
+    void
+    PhysicsObjectInstance::setRestitution
+    (float r)
+    {
+       mRigidBody->setRestitution(r);
+    }
+
+    float
+    PhysicsObjectInstance::getRestitution
+    ()
+    const
+    {
+       return mRigidBody->getRestitution();
     }
 
 } // End of Dream

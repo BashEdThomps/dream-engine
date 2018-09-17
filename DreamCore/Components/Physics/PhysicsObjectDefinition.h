@@ -86,10 +86,12 @@ namespace Dream
         void removeCompoundChild(CompoundChildDefinition def);
         vector<CompoundChildDefinition> getCompoundChildren();
 
+        float getRestitution();
+        void setRestitution(float r);
+
     protected:
         void makeCompoundChildren();
         void makeHalfExtentsObject();
         void makeNormalObject();
-
     };
 }

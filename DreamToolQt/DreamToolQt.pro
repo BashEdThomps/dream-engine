@@ -72,10 +72,9 @@ SOURCES += \
     Model/TreeModels/Properties/AbstractPropertiesModel.cpp \
     Model/MacOSOpenModel.cpp \
     Model/TreeModels/TreeModelToolButton.cpp \
-    Controller/ScriptEditorController.cpp \
     View/SyntaxHighlighters/GLSLHighlighter.cpp \
     View/SyntaxHighlighters/LuaHighlighter.cpp \
-    Controller/ScriptEditorTabController.cpp \
+    Controller/EditorTabController.cpp \
     Controller/MainWindowController.cpp \
     View/CodeEditorWidget.cpp \
     Model/MaterialShaderTableModel.cpp \
@@ -133,10 +132,9 @@ HEADERS  += \
     Model/TreeModels/Properties/Project/ProjectPropertiesTreeDelegate.h \
     Model/MacOSOpenModel.h \
     Model/TreeModels/TreeModelToolButton.h \
-    Controller/ScriptEditorController.h \
     View/SyntaxHighlighters/GLSLHighlighter.h \
     View/SyntaxHighlighters/LuaHighlighter.h \
-    Controller/ScriptEditorTabController.h \
+    Controller/EditorTabController.h \
     Controller/MainWindowController.h \
     View/CodeEditorWidget.h \
     Model/MaterialShaderTableModel.h \
@@ -150,10 +148,9 @@ HEADERS  += \
 
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
-    View/ScriptEditorForm.ui \
-    View/ScriptEditorTabForm.ui \
     View/MaterialShaderTableForm.ui \
-    View/PathEditorTableForm.ui
+    View/PathEditorTableForm.ui \
+    View/EditorTabForm.ui
 
 RESOURCES += \
     Resources/Resources.qrc

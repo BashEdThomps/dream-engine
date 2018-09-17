@@ -141,6 +141,7 @@ AssetDefinitionPropertiesModel::createProperties
         createPhysicsMarginProperty();
         createPhysicsKinematicProperty();
         createPhysicsControllableProperty();
+        createPhysicsRestitutionProperty();
 
         if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_BOX)
         {
@@ -755,6 +756,22 @@ AssetDefinitionPropertiesModel::createPhysicsControllableProperty
         )
     );
 }
+
+void
+AssetDefinitionPropertiesModel::createPhysicsRestitutionProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Restitution",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION
+        )
+    );
+}
+
 
 void
 AssetDefinitionPropertiesModel::createPhysicsNormalProperty

@@ -165,6 +165,9 @@ namespace Dream
         void walk(float,float);
         void drive(float,float);
 
+        bool getDeleted() const;
+        void setDeleted(bool deleted);
+
     private:
 
         AudioInstance* mAudioInstance;
@@ -188,6 +191,7 @@ namespace Dream
 
         bool mLoaded;
         bool mHasFocus;
+        bool mDeleted;
 
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
         void loadChildrenFromDefinition(SceneObjectDefinition* definition);

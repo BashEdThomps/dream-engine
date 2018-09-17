@@ -30,6 +30,7 @@
 #include "View/QOpenGLWindowComponent.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include "../Model/ProjectDirectoryModel.h"
 
 using std::pair;
 using std::begin;
@@ -56,6 +57,8 @@ MainWindowController::MainWindowController
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
       mProjectDefinitionHandle(nullptr),
+      mProjectDirectoryModelHandle(nullptr),
+      mTemplatesModelHandle(nullptr),
       mWindowComponentHandle(nullptr)
 {
     auto log = spdlog::get("MainWindowController");
@@ -525,6 +528,11 @@ MainWindowController::onMenu_Debug_LogLevelChanged
     spdlog::set_level(spdlog::level::from_str(level.toLower().toStdString()));
 }
 
+void MainWindowController::setTemplatesModelHandle(TemplatesModel* templatesModelHandle)
+{
+    mTemplatesModelHandle = templatesModelHandle;
+}
+
 
 void
 MainWindowController::createAssetsMenu
@@ -834,6 +842,11 @@ MainWindowController::getWindowComponent
     return mWindowComponentHandle;
 }
 
+void MainWindowController::setProjectDirectoryModel(ProjectDirectoryModel* dirModel)
+{
+   mProjectDirectoryModelHandle = dirModel;
+}
+
 void MainWindowController::addRightDockWidget(QWidget* widget)
 {
     mRightDockWidget.setWidget(widget);
@@ -1031,4 +1044,158 @@ DeleteAssetDefinitionAction::DeleteAssetDefinitionAction
     : QAction(icon,text,parent)
 {
 
+}
+
+int
+MainWindowController::isEditorTabOpen
+(IAssetDefinition* definition)
+{
+    for (shared_ptr<EditorTabController> tab : mEditorTabForms)
+    {
+       if (tab->getAssetDefinitionHandle() == definition)
+       {
+           return ui->rightTabWidget->indexOf(tab.get())+1;
+       }
+    }
+    return -1;
+}
+
+void
+MainWindowController::onEditorTabCloseRequested
+(int index)
+{
+    auto tabWidget = mEditorTabForms.at(index);
+
+    if (tabWidget->hasTextChanged())
+    {
+        int response = QMessageBox::question
+        (
+            this,
+            "Save before closing?",
+            "File contents has changed. Do you want to save before closing?"
+        );
+
+        if (response == QMessageBox::Yes)
+        {
+            tabWidget->onSaveButtonClicked(true);
+        }
+    }
+
+    ui->rightTabWidget->removeTab(index);
+    mEditorTabForms.erase(mEditorTabForms.begin() + index);
+}
+
+void
+MainWindowController::openScriptEditor
+(ScriptDefinition* scriptDefinitionHandle)
+{
+    auto log = spdlog::get("EditorController");
+
+    int index = isEditorTabOpen(scriptDefinitionHandle);
+    if (index > -1)
+    {
+        ui->rightTabWidget->setCurrentIndex(index);
+        return;
+    }
+
+    if (mProjectDirectoryModelHandle != nullptr)
+    {
+        //clearExistingTabs();
+        auto form = make_shared<EditorTabController>
+        (
+            QString::fromStdString(scriptDefinitionHandle->getFormat()),
+            scriptDefinitionHandle,
+            mTemplatesModelHandle,
+            mProjectDirectoryModelHandle
+        );
+
+        QByteArray data = mProjectDirectoryModelHandle->readScriptData(scriptDefinitionHandle);
+        form->useLuaHighlighter();
+        form->setPlainText(QString(data));
+        form->setAssetDefinitionHandle(scriptDefinitionHandle);
+        mEditorTabForms.push_back(form);
+
+        int index = ui->rightTabWidget->addTab
+        (
+            form.get(),
+            QString::fromStdString(scriptDefinitionHandle->getName())
+            .append(" (%1)")
+            .arg(QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA))
+        );
+
+        ui->rightTabWidget->setCurrentIndex(ui->rightTabWidget->count()-1);
+    }
+}
+
+
+
+void
+MainWindowController::openShaderEditor
+(ShaderDefinition* shaderDefinitionHandle)
+{
+    auto log = spdlog::get("EditorController");
+    int index = isEditorTabOpen(shaderDefinitionHandle);
+
+    if (index > -1)
+    {
+        ui->rightTabWidget->setCurrentIndex(index);
+        return;
+    }
+
+    if (mProjectDirectoryModelHandle != nullptr)
+    {
+        //clearExistingTabs();
+        ShaderFileTuple data = mProjectDirectoryModelHandle->readShaderData(shaderDefinitionHandle);
+
+        auto vertexForm = make_shared<EditorTabController>(
+            QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME),
+            shaderDefinitionHandle,
+            mTemplatesModelHandle,
+            mProjectDirectoryModelHandle
+        );
+
+        auto fragmentForm = make_shared<EditorTabController>(
+            QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME),
+            shaderDefinitionHandle,
+            mTemplatesModelHandle,
+            mProjectDirectoryModelHandle
+        );
+
+        vertexForm->useGLSLHighlighter();
+        vertexForm->setPlainText(data.vertexShader);
+        vertexForm->setAssetDefinitionHandle(shaderDefinitionHandle);
+
+        fragmentForm->useGLSLHighlighter();
+        fragmentForm->setPlainText(data.fragmentShader);
+        fragmentForm->setAssetDefinitionHandle(shaderDefinitionHandle);
+
+        mEditorTabForms.push_back(vertexForm);
+        mEditorTabForms.push_back(fragmentForm);
+
+        ui->rightTabWidget->addTab(
+                    vertexForm.get(),
+                    QString::fromStdString(shaderDefinitionHandle->getName())
+                    .append(" (%1)")
+                    .arg(QString::fromStdString(Constants::SHADER_VERTEX))
+                    );
+
+        ui->rightTabWidget->addTab(
+                    fragmentForm.get(),
+                    QString::fromStdString(shaderDefinitionHandle->getName())
+                    .append(" (%1)")
+                    .arg(QString::fromStdString(Constants::SHADER_FRAGMENT))
+                    );
+
+        ui->rightTabWidget->setCurrentIndex(ui->rightTabWidget->count()-1);
+    }
+}
+
+void
+MainWindowController::setupEditorTabCloseButtonSignal
+()
+{
+    connect(
+        ui->rightTabWidget,SIGNAL(tabCloseRequested(int)),
+        this, SLOT(onEditorTabCloseRequested(int))
+    );
 }

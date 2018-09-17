@@ -291,7 +291,7 @@ namespace Dream
     (SceneRuntime* scene)
     {
         auto log = getLog();
-        log->critical("Checking contact manifolds");
+        log->trace("Checking contact manifolds");
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
         for (int i=0;i<numManifolds;i++)
         {

@@ -28,7 +28,6 @@
 #include <QSurfaceFormat>
 
 #include "PreferencesDialogController.h"
-#include "ScriptEditorController.h"
 
 #include "../Model/DreamProjectModel.h"
 #include "../Model/ProjectDirectoryModel.h"
@@ -239,7 +238,6 @@ private: // Variables
     unique_ptr<DreamProjectModel> mDreamProjectModel;
     unique_ptr<MacOSOpenModel> mMacOsOpenModel;
 
-    ScriptEditorController mScriptEditor;
     QDir mLastDirectory;
     MaterialShaderFormController mMaterialShaderTableController;
     PathEditorFormController mPathEditorFormController;

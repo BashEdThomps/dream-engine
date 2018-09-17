@@ -78,6 +78,7 @@ private:
     void createPhysicsBvhTriangleMeshFileProperty();
     void createPhysicsHeightProperty();
     void createPhysicsControllableProperty();
+    void createPhysicsRestitutionProperty();
 
     void createSpriteTileSizeProperty();
     void createSpriteFileProperty();

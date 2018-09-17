@@ -291,6 +291,26 @@ namespace Dream
         mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
     }
 
+    float
+    PhysicsObjectDefinition::getRestitution
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_RESTITUTION].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_RESTITUTION] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_RESTITUTION];
+
+    }
+
+    void
+    PhysicsObjectDefinition::setRestitution
+    (float r)
+    {
+        mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
+    }
+
+
     void
     PhysicsObjectDefinition::addCompoundChild
     (CompoundChildDefinition def)
