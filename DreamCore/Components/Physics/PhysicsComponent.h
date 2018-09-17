@@ -47,7 +47,7 @@ namespace Dream
     class PhysicsComponent : public IComponent
     {
     protected:
-        shared_ptr<PhysicsDebugDrawer> mDebugDrawer;
+        PhysicsDebugDrawer* mDebugDrawer;
         btDynamicsWorld *mDynamicsWorld;
         btBroadphaseInterface *mBroadphase;
         btDefaultCollisionConfiguration *mCollisionConfiguration;
@@ -59,18 +59,18 @@ namespace Dream
     public:
         PhysicsComponent();
         ~PhysicsComponent() override;
-        void populatePhysicsWorld(shared_ptr<SceneRuntime> scene);
+        void populatePhysicsWorld(SceneRuntime* scene);
         void setGravity(vector<float>);
         void setDebug(bool);
         bool init() override;
         void updateComponent() override;
-        void addPhysicsObjectInstance(shared_ptr<PhysicsObjectInstance>);
+        void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
-        void removePhysicsObjectInstance(shared_ptr<PhysicsObjectInstance>);
+        void removePhysicsObjectInstance(PhysicsObjectInstance*);
         void setViewProjectionMatrix(mat4, mat4);
-        void checkContactManifolds(shared_ptr<SceneRuntime> scene);
-        shared_ptr<SceneObjectRuntime> getSceneObjectRuntime(shared_ptr<SceneRuntime> scene, const btCollisionObject*);
+        void checkContactManifolds(SceneRuntime* scene);
+        SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
     };// End of PhysicsComponent
 

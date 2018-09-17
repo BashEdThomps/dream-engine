@@ -12,6 +12,7 @@ ScriptEditorTabController::ScriptEditorTabController(QString fileType, QWidget *
       mTextHasChanged(false),
       mAssetDefinitionHandle(nullptr),
       mTextEdit(nullptr)
+
 {
     auto log = spdlog::get("ScriptEditorTabController");
     if (log == nullptr)
@@ -42,14 +43,14 @@ ScriptEditorTabController::~ScriptEditorTabController
 
 void
 ScriptEditorTabController::setAssetDefinitionHandle
-(shared_ptr<IAssetDefinition> definitionHandle)
+(IAssetDefinition* definitionHandle)
 {
     auto log = spdlog::get("ScriptEditorTabController");
     log->info("Using asset {}", definitionHandle->getNameAndUuidString());
     mAssetDefinitionHandle = definitionHandle;
 }
 
-shared_ptr<IAssetDefinition> ScriptEditorTabController::getAssetDefinitionHandle()
+IAssetDefinition* ScriptEditorTabController::getAssetDefinitionHandle()
 {
    return mAssetDefinitionHandle;
 }
@@ -89,7 +90,7 @@ void ScriptEditorTabController::onTextChanged()
    mTextHasChanged = true;
 }
 
-QString ScriptEditorTabController::getFileType() const
+QString ScriptEditorTabController::getFileType()
 {
     return mFileType;
 }

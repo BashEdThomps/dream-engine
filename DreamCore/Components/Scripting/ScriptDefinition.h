@@ -25,7 +25,7 @@ namespace Dream
     class ScriptDefinition : public IAssetDefinition
     {
     public:
-        ScriptDefinition(const shared_ptr<ProjectDefinition>& pd, json js);
+        ScriptDefinition(ProjectDefinition* pd, json js);
         virtual ~ScriptDefinition();
 
         bool isFormatLua();

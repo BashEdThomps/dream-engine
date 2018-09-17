@@ -41,9 +41,9 @@ LuaHighlighter::LuaHighlighter(QTextDocument *parent)
      */
     HighlightingRule rule;
 
-    constantFormat.setForeground(Qt::darkGreen);
+    antFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegExp("[-+]?(?:(?:\\d+\\.\\d+)|(?:\\.\\d+)|(?:\\d+\\.?))");
-    rule.format = constantFormat;
+    rule.format = antFormat;
     highlightingRules.append(rule);
 
     classFormat.setForeground(Qt::darkMagenta);

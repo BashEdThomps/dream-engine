@@ -26,9 +26,9 @@
 namespace Dream
 {
     OggAudioInstance::OggAudioInstance
-    (const shared_ptr<AudioComponent>& comp,
-     const shared_ptr<AudioDefinition>& definition,
-     const shared_ptr<SceneObjectRuntime>& parent)
+    (AudioComponent* comp,
+     AudioDefinition* definition,
+     SceneObjectRuntime* parent)
         : AudioInstance(comp, definition,parent)
     {
         setLogClassName("OggAudioInstance");

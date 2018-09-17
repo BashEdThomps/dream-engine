@@ -36,11 +36,11 @@ namespace Dream
     {
 
     private:
-        shared_ptr<SceneObjectDefinition> mRootSceneObjectDefinition;
-        shared_ptr<ProjectDefinition> mProjectDefinition;
+        SceneObjectDefinition* mRootSceneObjectDefinition;
+        ProjectDefinition* mProjectDefinition;
 
     public:
-        SceneDefinition(shared_ptr<ProjectDefinition> project, json data);
+        SceneDefinition(ProjectDefinition* project, json data);
         ~SceneDefinition() override;
 
         void showStatus() override;
@@ -91,9 +91,9 @@ namespace Dream
         void setAmbientColourB(float);
         void setAmbientColourA(float);
 
-        shared_ptr<SceneObjectDefinition> getRootSceneObjectDefinition();
-        shared_ptr<ProjectDefinition> getProjectDefinition();
-        shared_ptr<SceneObjectDefinition> createNewRootSceneObjectDefinition();
+        SceneObjectDefinition* getRootSceneObjectDefinition();
+        ProjectDefinition* getProjectDefinition();
+        SceneObjectDefinition* createNewRootSceneObjectDefinition();
 
         json getJson() override;
 

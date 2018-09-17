@@ -27,7 +27,8 @@ MaterialShaderTableModel::~MaterialShaderTableModel()
 
 int
 MaterialShaderTableModel::rowCount
-(const QModelIndex& parent) const
+(const QModelIndex& parent)
+const
 {
     Q_UNUSED(parent)
     auto log = spdlog::get("MaterialShaderTableModel");
@@ -47,7 +48,8 @@ MaterialShaderTableModel::rowCount
 
 int
 MaterialShaderTableModel::columnCount
-(const QModelIndex& parent) const
+(const  QModelIndex& parent)
+const
 {
     Q_UNUSED(parent)
     return 2;
@@ -55,7 +57,8 @@ MaterialShaderTableModel::columnCount
 
 QVariant
 MaterialShaderTableModel::data
-(const QModelIndex& index, int role) const
+(const  QModelIndex& index, int role)
+const
 {
     auto log = spdlog::get("MaterialShaderTableModel");
 
@@ -99,7 +102,7 @@ MaterialShaderTableModel::data
 
 void
 MaterialShaderTableModel::setModelDefinition
-(shared_ptr<ModelDefinition> def)
+(ModelDefinition* def)
 {
     auto log = spdlog::get("MaterialShaderTableModel");
     log->info("setModelDefinition");
@@ -111,7 +114,8 @@ MaterialShaderTableModel::setModelDefinition
 
 QVariant
 MaterialShaderTableModel::headerData
-(int section, Qt::Orientation orientation, int role) const
+(int section, Qt::Orientation orientation, int role)
+const
 {
     if (role != Qt::DisplayRole)
              return QVariant();
@@ -131,7 +135,7 @@ MaterialShaderTableModel::headerData
 
 bool
 MaterialShaderTableModel::setData
-(const QModelIndex& index, const QVariant& value, int role)
+(const QModelIndex& index,const  QVariant& value, int role)
 {
     Q_UNUSED(role)
     auto log = spdlog::get("MaterialShaderTableModel");
@@ -160,7 +164,10 @@ MaterialShaderTableModel::setData
 
 
 
-Qt::ItemFlags MaterialShaderTableModel::flags(const QModelIndex &index) const
+Qt::ItemFlags
+MaterialShaderTableModel::flags
+(const QModelIndex &index)
+const
 {
     if (!index.isValid())
         return Qt::ItemIsEnabled;

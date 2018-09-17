@@ -52,7 +52,8 @@ ScenePropertiesTreeDelegate::~ScenePropertiesTreeDelegate
 
 QWidget*
 ScenePropertiesTreeDelegate::createEditor
-(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index) const
+(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index)
+const
 {
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
     QDoubleSpinBox *spinbox = nullptr;
@@ -117,7 +118,8 @@ ScenePropertiesTreeDelegate::createEditor
 
 void
 ScenePropertiesTreeDelegate::setEditorData
-(QWidget *editor, const QModelIndex &index) const
+(QWidget *editor, const QModelIndex &index)
+const
 {
     QVariant value = index.model()->data(index, Qt::DisplayRole);
 
@@ -177,7 +179,8 @@ ScenePropertiesTreeDelegate::setEditorData
 
 void
 ScenePropertiesTreeDelegate::setModelData
-(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
+const
 {
     ScenePropertiesItem* spiHandle = static_cast<ScenePropertiesItem*>(index.internalPointer());
     switch (spiHandle->getProperty())
@@ -237,7 +240,8 @@ ScenePropertiesTreeDelegate::setModelData
 
 void
 ScenePropertiesTreeDelegate::updateEditorGeometry
-(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&) const
+(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&)
+const
 {
     editor->setGeometry(option.rect);
 }
@@ -285,7 +289,8 @@ void ScenePropertiesTreeDelegate::onButton_ChooseClearColour(bool)
 
 QWidget*
 ScenePropertiesTreeDelegate::createCameraAllCaptureButton
-(QWidget* parent) const
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Capture");
@@ -303,7 +308,8 @@ ScenePropertiesTreeDelegate::createCameraAllCaptureButton
 
 QWidget*
 ScenePropertiesTreeDelegate::createCameraTranslationCaptureButton
-(QWidget* parent) const
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Capture Translation");
@@ -319,7 +325,8 @@ ScenePropertiesTreeDelegate::createCameraTranslationCaptureButton
 
 QWidget*
 ScenePropertiesTreeDelegate::createCameraLookAtCaptureButton
-(QWidget* parent) const
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Capture Look At");
@@ -333,7 +340,10 @@ ScenePropertiesTreeDelegate::createCameraLookAtCaptureButton
     return button;
 }
 
-QWidget*ScenePropertiesTreeDelegate::createAmbientColourPaletteButton(QWidget* parent) const
+QWidget*
+ScenePropertiesTreeDelegate::createAmbientColourPaletteButton
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
@@ -347,7 +357,10 @@ QWidget*ScenePropertiesTreeDelegate::createAmbientColourPaletteButton(QWidget* p
     return button;
 }
 
-QWidget*ScenePropertiesTreeDelegate::createClearColourPaletteButton(QWidget* parent) const
+QWidget*
+ScenePropertiesTreeDelegate::createClearColourPaletteButton
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");

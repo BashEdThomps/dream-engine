@@ -25,8 +25,9 @@ using Dream::Constants;
 using Dream::IAssetDefinition;
 
 AssetDefinitionTreeModel::AssetDefinitionTreeModel
-(shared_ptr<ProjectDefinition> project, QObject *parent)
-    : QAbstractItemModel(parent)
+(ProjectDefinition* project, QObject *parent)
+    : QAbstractItemModel(parent),
+      mProjectHandle(project)
 {
     auto log = spdlog::get("AssetDefinitionTreeModel");
     if (log==nullptr)
@@ -34,7 +35,6 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel
         log = spdlog::stdout_color_mt("AssetDefinitionTreeModel");
     }
     log->info("Constructing");
-    mProjectHandle = project;
     setupModelData();
     mAssetDefinitionIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_Object.svg"));
 }
@@ -48,7 +48,8 @@ AssetDefinitionTreeModel::~AssetDefinitionTreeModel
 
 int
 AssetDefinitionTreeModel::columnCount
-(const QModelIndex &parent) const
+(const QModelIndex &parent)
+const
 {
     if (parent.isValid())
     {
@@ -62,7 +63,8 @@ AssetDefinitionTreeModel::columnCount
 
 QVariant
 AssetDefinitionTreeModel::data
-(const QModelIndex &index, int role) const
+(const QModelIndex &index, int role)
+const
 {
     if (!index.isValid())
     {
@@ -98,7 +100,8 @@ AssetDefinitionTreeModel::data
 
 Qt::ItemFlags
 AssetDefinitionTreeModel::flags
-(const QModelIndex &index) const
+(const QModelIndex &index)
+const
 {
     if (!index.isValid())
     {
@@ -116,7 +119,8 @@ AssetDefinitionTreeModel::flags
 
 QVariant
 AssetDefinitionTreeModel::headerData
-(int section, Qt::Orientation orientation, int role) const
+(int section, Qt::Orientation orientation, int role)
+const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
@@ -127,7 +131,8 @@ AssetDefinitionTreeModel::headerData
 
 QModelIndex
 AssetDefinitionTreeModel::index
-(int row, int column, const QModelIndex &parent) const
+(int row, int column,const  QModelIndex &parent)
+const
 {
     if (!hasIndex(row, column, parent))
     {
@@ -159,7 +164,8 @@ AssetDefinitionTreeModel::index
 
 QModelIndex
 AssetDefinitionTreeModel::parent
-(const QModelIndex &index) const
+(const QModelIndex &index)
+const
 {
     if (!index.isValid())
     {
@@ -184,7 +190,8 @@ AssetDefinitionTreeModel::parent
 
 int
 AssetDefinitionTreeModel::rowCount
-(const QModelIndex &parent) const
+(const QModelIndex &parent)
+const
 {
     AssetDefinitionTreeItem *parentItem;
 
@@ -315,7 +322,7 @@ AssetDefinitionTreeModel::setupModelData
     );
     mRootItem->appendChild(spriteTreeItem);
 
-    for (shared_ptr<IAssetDefinition> definition : mProjectHandle->getAssetDefinitionsList())
+    for (IAssetDefinition* definition : mProjectHandle->getAssetDefinitionsList())
     {
         if (definition->getType().compare(Constants::ASSET_TYPE_PATH) == 0)
         {
@@ -449,7 +456,7 @@ void AssetDefinitionTreeModel::forceDataChanged()
 }
 
 
-bool AssetDefinitionTreeModel::setData(const QModelIndex& index, const QVariant& value, int role)
+bool AssetDefinitionTreeModel::setData(const QModelIndex& index,const  QVariant& value, int role)
 {
     if (!index.isValid())
     {
@@ -461,7 +468,7 @@ bool AssetDefinitionTreeModel::setData(const QModelIndex& index, const QVariant&
     switch (data->getType())
     {
         case ASSET_DEFINITION:
-            dynamic_pointer_cast<IAssetDefinition>(data->getAssetDefinition())->setName(nameString);
+            dynamic_cast<IAssetDefinition*>(data->getAssetDefinition())->setName(nameString);
             break;
         case ASSET_TREE_NODE:
             break;

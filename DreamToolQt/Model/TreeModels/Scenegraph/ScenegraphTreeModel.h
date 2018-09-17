@@ -32,14 +32,14 @@ class ScenegraphTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit ScenegraphTreeModel(shared_ptr<ProjectDefinition>project, QObject *parent = nullptr);
+    explicit ScenegraphTreeModel(ProjectDefinition *project, QObject *parent = nullptr);
     ~ScenegraphTreeModel() override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex &index, int role) const  override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex &index) const override;
+    QModelIndex index(int row, int column,  const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex &index) const  override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role) override;
@@ -51,14 +51,14 @@ public:
     void setupModelData();
     void forceDataChanged();
 
-    const static QString SO_MIME_TYPE;
+     static QString SO_MIME_TYPE;
 
 signals:
     void notifyExpandRequested();
 
 private:
-    void appendSceneObjects(shared_ptr<SceneObjectDefinition>parentSceneObject, ScenegraphTreeItem* parentTreeNode);
-    shared_ptr<ProjectDefinition>mProjectDefinitionHandle;
+    void appendSceneObjects(SceneObjectDefinition *parentSceneObject, ScenegraphTreeItem* parentTreeNode);
+    ProjectDefinition *mProjectDefinitionHandle;
     unique_ptr<ScenegraphTreeItem> mRootItem;
     unique_ptr<QIcon> mProjectIcon;
     unique_ptr<QIcon> mSceneIcon;

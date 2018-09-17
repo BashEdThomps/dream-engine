@@ -28,21 +28,25 @@ using std::map;
 
 namespace Dream
 {
-    class Event : public DreamObject
+    class SceneObjectRuntime;
+
+    class Event
+            : public DreamObject
     {
 
     private:
       map<string,string> mAttributes;
+      SceneObjectRuntime* mSender;
 
     public:
-      Event(string,string);
+      Event(SceneObjectRuntime*,string);
       ~Event();
 
-      string getSender();
-      string getType();
+      SceneObjectRuntime* getSender() const;
+      string getType() const;
 
       void setAttribute(string,string);
-      string getAttribute(string);
+      string getAttribute(string) const;
 
     }; // End of Event
 

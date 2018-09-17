@@ -24,8 +24,8 @@ namespace Dream
 
     ScriptInstance::ScriptInstance
     (
-        const shared_ptr<ScriptDefinition>& definition,
-        const shared_ptr<SceneObjectRuntime>& transform
+        ScriptDefinition* definition,
+        SceneObjectRuntime* transform
     )
         : IAssetInstance(definition,transform),
           mError(false),

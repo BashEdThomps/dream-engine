@@ -20,7 +20,7 @@
 namespace Dream
 {
     PathDefinition::PathDefinition
-    (const shared_ptr<ProjectDefinition>& pd, json js)
+    (ProjectDefinition* pd, json js)
         : IAssetDefinition(pd,js)
     {
 

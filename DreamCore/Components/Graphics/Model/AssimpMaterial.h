@@ -35,9 +35,9 @@ namespace Dream
         aiColor4D mColorEmissive;
         aiColor4D mColorTransparent;
         aiColor4D mColorReflective;
-        shared_ptr<Texture> mDiffuseTexture;
-        shared_ptr<Texture> mSpecularTexture;
-        shared_ptr<Texture> mNormalTexture;
+        Texture* mDiffuseTexture;
+        Texture* mSpecularTexture;
+        Texture* mNormalTexture;
         bool operator==(const AssimpMaterial& other);
         void debug();
     };

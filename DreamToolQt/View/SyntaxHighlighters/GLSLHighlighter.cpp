@@ -33,8 +33,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "GLSLHighlighter.h"
 
-GlslSyntaxHighlighter::GlslSyntaxHighlighter(QTextDocument *parent) :
-        QSyntaxHighlighter(parent)
+GlslSyntaxHighlighter::GlslSyntaxHighlighter
+(QTextDocument *parent)
+    : QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
 
@@ -140,7 +141,7 @@ GlslSyntaxHighlighter::GlslSyntaxHighlighter(QTextDocument *parent) :
 
     /* Storage class */
     QStringList glslStorageClass;
-    glslStorageClass.append("const");
+    glslStorageClass.append("");
     glslStorageClass.append("attribute");
     glslStorageClass.append("varying");
     glslStorageClass.append("uniform");
@@ -306,8 +307,9 @@ GlslSyntaxHighlighter::GlslSyntaxHighlighter(QTextDocument *parent) :
     commentEndExpression = QRegExp("\\*/");
 }
 
-void GlslSyntaxHighlighter::addPatternFromList(QStringList &list,
-        QTextCharFormat &format)
+void
+GlslSyntaxHighlighter::addPatternFromList
+(QStringList &list, QTextCharFormat &format)
 {
     HighlightingRule rule;
 
@@ -318,14 +320,19 @@ void GlslSyntaxHighlighter::addPatternFromList(QStringList &list,
     }
 }
 
-void GlslSyntaxHighlighter::highlightBlock(const QString &text)
+void
+GlslSyntaxHighlighter::highlightBlock
+(const QString &text)
 {
-    foreach (HighlightingRule rule, highlightingRules) {
+    foreach (HighlightingRule rule, highlightingRules)
+    {
         QRegExp &expression = rule.pattern;
         int index = rule.pattern.indexIn(text);
-        while (index >= 0) {
+        while (index >= 0)
+        {
             int length = expression.matchedLength();
-            if (length <= 0) {
+            if (length <= 0)
+            {
                 fprintf(stderr,
                         "length==0 for " "%s" " mathcing in " "%s" " at %d\n",
                         expression.pattern().toUtf8().data(),
@@ -338,17 +345,22 @@ void GlslSyntaxHighlighter::highlightBlock(const QString &text)
     setCurrentBlockState(0);
 
     int startIndex = 0;
-    if (previousBlockState() != 1) {
+    if (previousBlockState() != 1)
+    {
         startIndex = commentStartExpression.indexIn(text);
     }
 
-    while (startIndex >= 0) {
+    while (startIndex >= 0)
+    {
         int endIndex = commentEndExpression.indexIn(text, startIndex);
         int commentLength;
-        if (endIndex == -1) {
+        if (endIndex == -1)
+        {
             setCurrentBlockState(1);
             commentLength = text.length() - startIndex;
-        } else {
+        }
+        else
+        {
             commentLength = endIndex - startIndex
                     + commentEndExpression.matchedLength();
         }

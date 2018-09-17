@@ -32,7 +32,7 @@ using Dream::LightDefinition;
 using Dream::LightType;
 
 AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
-(shared_ptr<IAssetDefinition> definition, QTreeView* parent)
+(IAssetDefinition* definition, QTreeView* parent)
     : AbstractPropertiesModel(new AssetDefinitionPropertiesTreeDelegate(this, parent), parent),
       mAssetDefinitionHandle(definition)
 {
@@ -98,7 +98,7 @@ AssetDefinitionPropertiesModel::createProperties
     }
     else if (mAssetDefinitionHandle->isTypeLight())
     {
-        auto lightDef = dynamic_pointer_cast<LightDefinition>(mAssetDefinitionHandle);
+        auto lightDef = dynamic_cast<LightDefinition*>(mAssetDefinitionHandle);
 
         createLightAmbientProperty();
         createLightDiffuseProperty();
@@ -249,7 +249,7 @@ AssetDefinitionPropertiesModel::createFormatProperty
     mRootItem->appendChild(formatProperty);
 }
 
-shared_ptr<IAssetDefinition>
+IAssetDefinition*
 AssetDefinitionPropertiesModel::getAssetDefinitionHandle
 ()
 {
@@ -1096,7 +1096,7 @@ AssetDefinitionPropertiesModel::onButton_EditShader
 
 void
 AssetDefinitionPropertiesModel::onCombo_ScriptTemplateChanged
-(const QString& templateName)
+( QString& templateName)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
     log->info("Script Template Changed");
@@ -1105,7 +1105,7 @@ AssetDefinitionPropertiesModel::onCombo_ScriptTemplateChanged
 
 void
 AssetDefinitionPropertiesModel::onCombo_ShaderTemplateChanged
-(const QString& templateName)
+( QString& templateName)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
     log->info("Shader Template Changed");

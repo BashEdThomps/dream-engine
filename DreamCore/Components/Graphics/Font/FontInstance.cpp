@@ -23,21 +23,22 @@
 #include "FontDefinition.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
+using std::unique_ptr;
+
 namespace Dream
 {
 
     FontInstance::FontInstance
     (
-        const shared_ptr<FontCache>& cache,
-        const shared_ptr<FontDefinition>& definition,
-        const shared_ptr<SceneObjectRuntime>& transform
+        FontCache* cache,
+        FontDefinition* definition,
+        SceneObjectRuntime* transform
     ) : IAssetInstance(definition,transform),
           mCache(cache)
 
     {
         setLogClassName("FontInstance");
-        mColour = {1,1,1};
-        mFontFace = nullptr;
+        mColour = vec3{1,1,1};
         setText("NO_TEXT_SET");
     }
 
@@ -68,8 +69,8 @@ namespace Dream
 
         if (mCache->getFreeTypeLib())
         {
-            mFontFace.reset(new FT_Face());
-            if (FT_New_Face(*mCache->getFreeTypeLib(),path.c_str(),0,mFontFace.get()))
+            mFontFace = new FT_Face();
+            if (FT_New_Face(*mCache->getFreeTypeLib(),path.c_str(),0,mFontFace))
             {
                 log->error("Unable to create font. Error calling FT_New_Face" );
             }
@@ -101,24 +102,21 @@ namespace Dream
 
         mSize = jsonData[Constants::FONT_SIZE];
 
-        if (mFontFace)
+        if (mFontFace != nullptr)
         {
-            FT_Set_Pixel_Sizes(
-                        *mFontFace,0,
-                        static_cast<FT_UInt>(mSize)
-                        );
+            FT_Set_Pixel_Sizes(*mFontFace,0,static_cast<FT_UInt>(mSize));
         }
 
         log->info("FontInstance: Red: {}\nGreen: {}\nBlue: {}\nSize: {}\n",red,green,blue,mSize);
         if (mCache != nullptr)
         {
-            mCache->getCharMap(dynamic_pointer_cast<FontDefinition>(mDefinition),mFontFace);
+            mCache->getCharMap(dynamic_cast<FontDefinition*>(mDefinition),mFontFace);
         }
         log->info("FontInstance: Finished loading extra attributes" );
         return;
     }
 
-    shared_ptr<FT_Face>
+    FT_Face*
     FontInstance::getFontFace
     ()
     {
@@ -158,28 +156,16 @@ namespace Dream
     FontInstance::setColour
     (float red, float green, float blue)
     {
-        mColour[Constants::RED_INDEX] = red;
-        mColour[Constants::GREEN_INDEX] = green;
-        mColour[Constants::BLUE_INDEX] = blue;
+        mColour.r = red;
+        mColour.g = green;
+        mColour.b = blue;
     }
 
-    vector<float>
+    vec3
     FontInstance::getColour
     ()
     {
         return mColour;
-    }
-
-    vec3
-    FontInstance::getColourAsVec3
-    ()
-    {
-        return vec3
-        (
-            mColour[Constants::RED_INDEX],
-            mColour[Constants::GREEN_INDEX],
-            mColour[Constants::BLUE_INDEX]
-        );
     }
 
     map<GLchar,FontCharacter>
@@ -188,11 +174,7 @@ namespace Dream
     {
         if (mCache)
         {
-            return mCache->getCharMap
-            (
-                dynamic_pointer_cast<FontDefinition>(mDefinition),
-                mFontFace
-            );
+            return mCache->getCharMap(dynamic_cast<FontDefinition*>(mDefinition),mFontFace);
         }
         return map<GLchar,FontCharacter>();
     }

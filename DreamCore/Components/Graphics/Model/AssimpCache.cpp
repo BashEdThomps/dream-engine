@@ -40,7 +40,9 @@ namespace Dream
     ()
     {
         auto log = getLog();
-            log->info("Destructing" );
+
+        log->info("Destructing" );
+
         for (auto imp : mCache)
         {
             if (imp.second != nullptr)
@@ -48,6 +50,7 @@ namespace Dream
                 delete imp.second;
             }
         }
+        mCache.clear();
     }
 
     Importer*

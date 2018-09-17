@@ -16,8 +16,8 @@ namespace Dream
 
     public:
         ParticleEmitterInstance(
-            const shared_ptr<ParticleEmitterDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            ParticleEmitterDefinition*,
+            SceneObjectRuntime*
         );
         ~ParticleEmitterInstance();
 

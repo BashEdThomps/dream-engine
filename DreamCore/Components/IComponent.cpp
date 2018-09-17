@@ -21,25 +21,30 @@
 namespace Dream
 {
 
-    IComponent::IComponent()
-        :DreamObject("IComponent")
+    IComponent::IComponent
+    () : DreamObject("IComponent")
     {
 
     }
 
 
-    IComponent::~IComponent()
+    IComponent::~IComponent
+    ()
     {
 
     }
 
 
-    void IComponent::setTime(shared_ptr<Time> time)
+    void
+    IComponent::setTime
+    (Time* time)
     {
         mTime = time;
     }
 
-    void IComponent::beginUpdate()
+    void
+    IComponent::beginUpdate
+    ()
     {
         auto log = getLog();
         log->info("Updating Component");
@@ -47,7 +52,9 @@ namespace Dream
         setBusy(true);
     }
 
-    void IComponent::endUpdate()
+    void
+    IComponent::endUpdate
+    ()
     {
         auto log = getLog();
         mUpdateEndTime =  mTime->nowLL();
@@ -55,37 +62,55 @@ namespace Dream
         log->info("Update Complete in {}",getUpdateTime());
     }
 
-    void IComponent::setBusy(bool complete)
+    void
+    IComponent::setBusy
+    (bool complete)
     {
        mBusy = complete;
     }
 
-    bool IComponent::isBusy()
+    bool
+    IComponent::isBusy
+    ()
     {
        return mBusy;
     }
 
-    long long IComponent::getUpdateBeginTime() const
+    long long
+    IComponent::getUpdateBeginTime
+    ()
+    const
     {
         return mUpdateBeginTime;
     }
 
-    long long IComponent::getUpdateTime() const
+    long long
+    IComponent::getUpdateTime
+    ()
+    const
     {
         return mUpdateEndTime-mUpdateBeginTime;
     }
 
-    long long IComponent::getYieldedTime() const
+    long long
+    IComponent::getYieldedTime
+    ()
+    const
     {
        return abs(mUpdateBeginTime-mUpdateEndTime);
     }
 
-    long long IComponent::getUpdateEndTime() const
+    long long
+    IComponent::getUpdateEndTime
+    ()
+    const
     {
         return mUpdateEndTime;
     }
 
-    void IComponent::setActiveSceneRuntime(shared_ptr<SceneRuntime> runtime)
+    void
+    IComponent::setActiveSceneRuntime
+    (SceneRuntime* runtime)
     {
        mActiveSceneRuntime = runtime;
     }

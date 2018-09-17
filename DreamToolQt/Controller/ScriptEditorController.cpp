@@ -13,7 +13,10 @@ using Dream::IAssetDefinition;
 ScriptEditorController::ScriptEditorController
 (QWidget* parent) : QWidget(parent),
     mProjectDirectoryModelHandle(nullptr),
-    mTemplatesModelHandle(nullptr)
+    mTemplatesModelHandle(nullptr),
+    mTabWidget(nullptr),
+    mSaveButton(nullptr),
+    mRevertButton(nullptr)
 {
     auto log = spdlog::get("ScriptEditorController");
     if (log == nullptr)
@@ -48,7 +51,7 @@ void ScriptEditorController::setupRevertSaveSignals()
 
 void
 ScriptEditorController::openScript
-(shared_ptr<ScriptDefinition> scriptDefinitionHandle)
+(ScriptDefinition* scriptDefinitionHandle)
 {
     auto log = spdlog::get("ScriptEditorController");
 
@@ -93,7 +96,7 @@ void ScriptEditorController::setupCloseButtonSignal()
 
 void
 ScriptEditorController::openShader
-(shared_ptr<ShaderDefinition> shaderDefinitionHandle)
+(ShaderDefinition* shaderDefinitionHandle)
 {
     auto log = spdlog::get("ScriptEditorController");
     int index = isAssetOpen(shaderDefinitionHandle);
@@ -202,7 +205,7 @@ ScriptEditorController::onRevertButtonClicked
         return;
     }
     auto currentWidgetHandle = mTabForms.at(tabIndex).get();
-    shared_ptr<IAssetDefinition> adHandle = currentWidgetHandle->getAssetDefinitionHandle();
+    IAssetDefinition* adHandle = currentWidgetHandle->getAssetDefinitionHandle();
     if (adHandle != nullptr)
     {
         int result = QMessageBox::question(
@@ -231,7 +234,7 @@ ScriptEditorController::onSaveButtonClicked
     }
 
     auto currentWidgetHandle = mTabForms.at(tabIndex).get();
-    shared_ptr<IAssetDefinition> adHandle = currentWidgetHandle->getAssetDefinitionHandle();
+    IAssetDefinition* adHandle = currentWidgetHandle->getAssetDefinitionHandle();
     if (adHandle != nullptr)
     {
         log->info("Saving {}",adHandle->getNameAndUuidString());
@@ -312,7 +315,7 @@ ScriptEditorController::onComboTemplateChanged
 
 int
 ScriptEditorController::isAssetOpen
-(shared_ptr<IAssetDefinition> definition)
+(IAssetDefinition* definition)
 {
     for (shared_ptr<ScriptEditorTabController> tab : mTabForms)
     {

@@ -126,18 +126,18 @@ public:
     AssetDefinitionPropertiesItem
     (
         QString title,
-        shared_ptr<IAssetDefinition> adHandle,
+        IAssetDefinition* adHandle,
         AssetDefinitionProperty property = ASSET_DEFINITION_PROPERTY_NONE,
         AbstractPropertiesItem *parent = nullptr
     );
     ~AssetDefinitionPropertiesItem() override;
 
-    bool setData(int column,const QVariant &value) override;
+    bool setData(int column, const QVariant &value) override;
     QVariant data(int column) override;
     AssetDefinitionProperty getProperty();
-    shared_ptr<IAssetDefinition> getAssetDefinitionHandle();
+    IAssetDefinition* getAssetDefinitionHandle();
 
 private:
-    shared_ptr<IAssetDefinition> mAssetDefinitionHandle;
+    IAssetDefinition* mAssetDefinitionHandle;
     AssetDefinitionProperty mProperty;
 };

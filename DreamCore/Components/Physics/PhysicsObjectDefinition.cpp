@@ -20,7 +20,7 @@
 namespace Dream
 {
     PhysicsObjectDefinition::PhysicsObjectDefinition
-    (const shared_ptr<ProjectDefinition>& pd, json js)
+    (ProjectDefinition* pd, json js)
         : IAssetDefinition(pd,js)
     {
 
@@ -187,7 +187,6 @@ namespace Dream
     {
         makeNormalObject();
         mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
-
     }
 
     float

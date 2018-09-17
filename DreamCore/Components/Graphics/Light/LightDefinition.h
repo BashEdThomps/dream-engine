@@ -36,7 +36,7 @@ namespace Dream
     class LightDefinition : public IAssetDefinition
     {
     public:
-        LightDefinition(const shared_ptr<ProjectDefinition>& pd, json js);
+        LightDefinition(ProjectDefinition* pd, json js);
 
         void setDiffuse(vec3);
         vec3 getDiffuse();

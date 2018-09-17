@@ -51,21 +51,21 @@ GenericTreeItem::child
 
 int
 GenericTreeItem::childCount
-() const
+()
 {
     return mChildItems.count();
 }
 
 int
 GenericTreeItem::columnCount
-() const
+()
 {
     return 1;
 }
 
 QVariant
 GenericTreeItem::data
-(int column) const
+(int column)
 {
     switch (column)
     {
@@ -83,17 +83,17 @@ GenericTreeItem::parentItem
     return mParentItem;
 }
 
-QString GenericTreeItem::getTitle() const
+QString GenericTreeItem::getTitle()
 {
     return mTitle;
 }
 
 int
 GenericTreeItem::row
-() const
+()
 {
     if (mParentItem)
-        return mParentItem->mChildItems.indexOf(const_cast<GenericTreeItem*>(this));
+        return mParentItem->mChildItems.indexOf(this);
 
     return 0;
 }

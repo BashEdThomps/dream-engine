@@ -34,7 +34,7 @@ using std::cerr;
 namespace Dream
 {
     PhysicsMotionState::PhysicsMotionState
-    (shared_ptr<Transform3D> dreamTransform)
+    (Transform3D* dreamTransform)
         : btMotionState(),
           DreamObject("PhysicsMotionState"),
           mDreamTransform(dreamTransform)
@@ -52,7 +52,7 @@ namespace Dream
 
     void
     PhysicsMotionState::setTransform
-    (shared_ptr<Transform3D> transform)
+    (Transform3D* transform)
     {
         auto log = getLog();
         log->info( "setTransform called" );

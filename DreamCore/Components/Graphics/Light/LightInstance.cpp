@@ -7,8 +7,8 @@ namespace Dream
 {
     LightInstance::LightInstance
     (
-        const shared_ptr<LightDefinition>& definition,
-        const shared_ptr<SceneObjectRuntime>& transform
+        LightDefinition* definition,
+        SceneObjectRuntime* transform
     ) : IAssetInstance(definition,transform),
         mAmbient(glm::vec3(0.0f,0.0f,0.0f)),
         mDiffuse(glm::vec3(0.0f,0.0f,0.0f)),
@@ -204,7 +204,7 @@ namespace Dream
     {
         auto log = getLog();
 
-        auto lightDef = dynamic_pointer_cast<LightDefinition>(mDefinition);
+        auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
 
         mAmbient = lightDef->getAmbient();
         mDiffuse = lightDef->getDiffuse();

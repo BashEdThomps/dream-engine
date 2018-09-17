@@ -51,9 +51,13 @@
 namespace Dream
 {
     Project::Project
-    (const shared_ptr<IWindowComponent>& windowComponent)
+    (IWindowComponent* windowComponent)
         : DreamObject("Project"),
-          mWindowComponent(windowComponent)
+          mDefinition(nullptr),
+          mRuntime(nullptr),
+          mWindowComponent(windowComponent),
+          mProjectPath("")
+
     {
         getLog()->trace("Constructing");
     }
@@ -62,9 +66,15 @@ namespace Dream
     {
         auto log = getLog();
         log->trace("Destructing");
+
+        if (mRuntime != nullptr)
+        {
+            delete mRuntime;
+        }
+
         if (mDefinition != nullptr)
         {
-            log->info(mDefinition->getNameAndUuidString());
+            delete mDefinition;
         }
     }
 
@@ -88,7 +98,7 @@ namespace Dream
         log->info("Project path", projectPath);
 
         mProjectPath = projectPath;
-        mDefinition = make_shared<ProjectDefinition>(projectJson);
+        mDefinition = new ProjectDefinition(projectJson);
         mDefinition->loadChildDefinitions();
         return true;
     }
@@ -154,17 +164,17 @@ namespace Dream
         return loadSuccess;
     }
 
-    shared_ptr<ProjectRuntime>
+    ProjectRuntime*
     Project::createProjectRuntime
     ()
     {
         auto log = getLog();
-        mRuntime = make_shared<ProjectRuntime>(dynamic_pointer_cast<Project>(shared_from_this()), mWindowComponent);
-        mRuntime->useDefinition(nullptr);
+        mRuntime = new ProjectRuntime(this, mWindowComponent);
+        mRuntime->useDefinition();
         return mRuntime;
     }
 
-    shared_ptr<ProjectDefinition>
+    ProjectDefinition*
     Project::createNewProjectDefinition
     (string name)
     {
@@ -186,7 +196,7 @@ namespace Dream
         j[Constants::PROJECT_ASSET_ARRAY] = json::array();
         j[Constants::PROJECT_SCENE_ARRAY] = json::array();
 
-        return make_shared<ProjectDefinition>(j);
+        return new ProjectDefinition(j);
     }
 
     bool
@@ -200,9 +210,8 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Resetting project runtime");
-        mRuntime.reset();
-        log->debug("Runtime now has {} references", mRuntime.use_count());
-
+        delete mRuntime;
+        mRuntime = nullptr;
     }
 
     bool
@@ -224,14 +233,14 @@ namespace Dream
         return loadSuccess;
     }
 
-    const shared_ptr<ProjectRuntime>&
+    ProjectRuntime*
     Project::getProjectRuntime
     ()
     {
         return mRuntime;
     }
 
-    const shared_ptr<ProjectDefinition>&
+    ProjectDefinition*
     Project::getProjectDefinition
     ()
     {

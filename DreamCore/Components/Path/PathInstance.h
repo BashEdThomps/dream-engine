@@ -26,8 +26,8 @@ namespace Dream
 
     public:
         PathInstance(
-            const shared_ptr<PathDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            PathDefinition*,
+            SceneObjectRuntime*
         );
         ~PathInstance() override;
         bool load(string) override;

@@ -36,8 +36,6 @@
 #include "../Components/Graphics/Sprite/SpriteDefinition.h"
 #include "../Components/Scripting/ScriptDefinition.h"
 
-using std::make_shared;
-
 namespace Dream
 {
     ProjectDefinition::ProjectDefinition(json data)
@@ -56,6 +54,8 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing {}",getNameAndUuidString() );
+        deleteSceneDefinitions();
+        deleteAssetDefinitions();
     }
 
     void
@@ -171,7 +171,7 @@ namespace Dream
     }
 
 
-    shared_ptr<IAssetDefinition>
+    IAssetDefinition*
     ProjectDefinition::createAssetDefinitionInstance
     (json assetDefinitionJs)
     {
@@ -181,23 +181,23 @@ namespace Dream
         switch (type)
         {
             case PATH:
-                return make_shared<PathDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new PathDefinition(this,assetDefinitionJs);
             case AUDIO:
-                return make_shared<AudioDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new AudioDefinition(this,assetDefinitionJs);
             case FONT:
-                return make_shared<FontDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new FontDefinition(this,assetDefinitionJs);
             case LIGHT:
-                return make_shared<LightDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new LightDefinition(this,assetDefinitionJs);
             case MODEL:
-                return make_shared<ModelDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new ModelDefinition(this,assetDefinitionJs);
             case PHYSICS_OBJECT:
-                return make_shared<PhysicsObjectDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new PhysicsObjectDefinition(this,assetDefinitionJs);
             case SCRIPT:
-                return make_shared<ScriptDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new ScriptDefinition(this,assetDefinitionJs);
             case SHADER:
-                return make_shared<ShaderDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new ShaderDefinition(this,assetDefinitionJs);
             case SPRITE:
-                return make_shared<SpriteDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),assetDefinitionJs);
+                return new SpriteDefinition(this,assetDefinitionJs);
             case NONE:
                 log->error( "Unable to create Asset Definition. Unknown Type" );
                 return nullptr;
@@ -208,7 +208,7 @@ namespace Dream
     ProjectDefinition::loadAssetDefinition
     (json assetDefinitionJs)
     {
-        shared_ptr<IAssetDefinition> newDef = createAssetDefinitionInstance(assetDefinitionJs);
+        IAssetDefinition* newDef = createAssetDefinitionInstance(assetDefinitionJs);
         if (newDef != nullptr)
         {
             mAssetDefinitions.push_back(newDef);
@@ -217,7 +217,7 @@ namespace Dream
 
     void
     ProjectDefinition::removeAssetDefinition
-    (shared_ptr<IAssetDefinition> assetDefinition)
+    (IAssetDefinition* assetDefinition)
     {
         auto log = getLog();
         log->info(
@@ -250,7 +250,7 @@ namespace Dream
         return mAssetDefinitions.size();
     }
 
-    shared_ptr<IAssetDefinition>
+    IAssetDefinition*
     ProjectDefinition::getAssetDefinitionByUuid
     (string uuid)
     {
@@ -268,8 +268,7 @@ namespace Dream
     ProjectDefinition::loadSceneDefinition
     (json scene)
     {
-        auto so = make_shared<SceneDefinition>
-        (dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),scene);
+        auto so = new SceneDefinition(this,scene);
         so->loadRootSceneObjectDefinition();
         mSceneDefinitions.push_back(so);
     }
@@ -281,7 +280,7 @@ namespace Dream
         return mSceneDefinitions.size();
     }
 
-    shared_ptr<SceneDefinition>
+    SceneDefinition*
     ProjectDefinition::getSceneDefinitionByName
     (string name)
     {
@@ -295,7 +294,7 @@ namespace Dream
         return nullptr;
     }
 
-    shared_ptr<SceneDefinition>
+    SceneDefinition*
     ProjectDefinition::getSceneDefinitionByUuid
     (string uuid)
     {
@@ -309,11 +308,11 @@ namespace Dream
         return nullptr;
     }
 
-    vector<shared_ptr<SceneDefinition>>
+    vector<SceneDefinition*>
     ProjectDefinition::getSceneDefinitionsList
     ()
     {
-        vector<shared_ptr<SceneDefinition>> list;
+        vector<SceneDefinition*> list;
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
             list.push_back((*it));
@@ -323,7 +322,7 @@ namespace Dream
 
     void
     ProjectDefinition::removeSceneDefinition
-    (shared_ptr<SceneDefinition> sceneDef)
+    (SceneDefinition* sceneDef)
     {
         auto log = getLog();
         log->info(
@@ -350,11 +349,11 @@ namespace Dream
         }
     }
 
-    vector<shared_ptr<IAssetDefinition>>
+    vector<IAssetDefinition*>
     ProjectDefinition::getAssetDefinitionsList
     ()
     {
-        vector<shared_ptr<IAssetDefinition>> definitionsList;
+        vector<IAssetDefinition*> definitionsList;
         for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
         {
             definitionsList.push_back((*it));
@@ -362,7 +361,7 @@ namespace Dream
         return definitionsList;
     }
 
-    shared_ptr<SceneDefinition>
+    SceneDefinition*
     ProjectDefinition::createNewSceneDefinition
     ()
     {
@@ -371,13 +370,13 @@ namespace Dream
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
         Transform3D camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
-        auto sd = make_shared<SceneDefinition>(dynamic_pointer_cast<ProjectDefinition>(shared_from_this()),scene);
+        auto sd = new SceneDefinition(this,scene);
         sd->createNewRootSceneObjectDefinition();
         mSceneDefinitions.push_back(sd);
         return sd;
     }
 
-    shared_ptr<IAssetDefinition>
+    IAssetDefinition*
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
@@ -393,13 +392,13 @@ namespace Dream
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
-        shared_ptr<IAssetDefinition> ad = createAssetDefinitionInstance(assetDefinitionJson);
+        IAssetDefinition* ad = createAssetDefinitionInstance(assetDefinitionJson);
         mAssetDefinitions.push_back(ad);
 
         return ad;
     }
 
-    shared_ptr<SceneDefinition>
+    SceneDefinition*
     ProjectDefinition::getStartupSceneDefinition
     ()
     {
@@ -414,13 +413,13 @@ namespace Dream
     ()
     {
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
-        for (const shared_ptr<IAssetDefinition>& ad : getAssetDefinitionsList())
+        for (IAssetDefinition* ad : getAssetDefinitionsList())
         {
             mJson[Constants::PROJECT_ASSET_ARRAY].push_back(ad->getJson());
         }
 
         mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
-        for (const shared_ptr<SceneDefinition>& sd : getSceneDefinitionsList())
+        for (SceneDefinition* sd : getSceneDefinitionsList())
         {
             mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sd->getJson());
         }
@@ -428,12 +427,12 @@ namespace Dream
         return mJson;
     }
 
-    map<AssetType, vector<shared_ptr<IAssetDefinition>>>
+    map<AssetType, vector<IAssetDefinition*>>
     ProjectDefinition::getAssetDefinitionsMap
     ()
     {
-        vector<shared_ptr<IAssetDefinition>> ads = getAssetDefinitionsList();
-        map<AssetType,vector<shared_ptr<IAssetDefinition>>> handlesMap;
+        vector<IAssetDefinition*> ads = getAssetDefinitionsList();
+        map<AssetType,vector<IAssetDefinition*>> handlesMap;
 
         auto begins =  begin(ads);
         auto ends = end(ads);
@@ -452,9 +451,9 @@ namespace Dream
             if (typeVector == endMap)
             {
                 // Create it
-                vector<shared_ptr<IAssetDefinition>> typeVector;
+                vector<IAssetDefinition*> typeVector;
                 handlesMap.insert(
-                    std::pair<AssetType,vector<shared_ptr<IAssetDefinition>>>
+                    std::pair<AssetType,vector<IAssetDefinition*>>
                     (currentType,typeVector)
                 );
             }
@@ -464,15 +463,17 @@ namespace Dream
         return handlesMap;
     }
 
-    vector<shared_ptr<ShaderDefinition>> ProjectDefinition::getShaderAssetDefinitionVector()
+    vector<ShaderDefinition*>
+    ProjectDefinition::getShaderAssetDefinitionVector
+    ()
     {
-        vector<shared_ptr<ShaderDefinition>> shaders;
+        vector<ShaderDefinition*> shaders;
         for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
         {
-            const shared_ptr<IAssetDefinition>& next = (*it);
+            IAssetDefinition* next = (*it);
             if (next->getType() == Constants::ASSET_TYPE_SHADER)
             {
-                shaders.push_back(dynamic_pointer_cast<ShaderDefinition>(next));
+                shaders.push_back(dynamic_cast<ShaderDefinition*>(next));
             }
         }
         return shaders;
@@ -517,6 +518,24 @@ namespace Dream
 
     void ProjectDefinition::setCaptureJoystick(bool cap)
     {
-       mJson[Constants::PROJECT_CAPTURE_JOYSTICK] = cap;
+        mJson[Constants::PROJECT_CAPTURE_JOYSTICK] = cap;
+    }
+
+    void ProjectDefinition::deleteAssetDefinitions()
+    {
+       for (auto ad : mAssetDefinitions)
+       {
+           delete ad;
+       }
+       mAssetDefinitions.clear();
+    }
+
+    void ProjectDefinition::deleteSceneDefinitions()
+    {
+       for (auto sd : mSceneDefinitions)
+       {
+           delete sd;
+       }
+       mSceneDefinitions.clear();
     }
 }

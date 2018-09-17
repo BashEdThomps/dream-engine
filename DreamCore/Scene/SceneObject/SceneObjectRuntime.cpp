@@ -69,20 +69,29 @@ using glm::vec3;
 namespace Dream
 {
     SceneObjectRuntime::SceneObjectRuntime(
-        const shared_ptr<SceneObjectDefinition>& sd,
-        const shared_ptr<SceneRuntime>& sr
+        SceneObjectDefinition* sd,
+        SceneRuntime* sr
     ): IRuntime(sd),
-          mSceneRuntime(sr),
-          mParentRuntime(nullptr),
-          mLoaded(false),
-          mHasFocus(false),
-          mFollowsCamera(false)
-
+        mAudioInstance(nullptr),
+        mPathInstance(nullptr),
+        mModelInstance(nullptr),
+        mShaderInstance(nullptr),
+        mLightInstance(nullptr),
+        mSpriteInstance(nullptr),
+        mScriptInstance(nullptr),
+        mPhysicsObjectInstance(nullptr),
+        mFontInstance(nullptr),
+        mTransform(nullptr),
+        mSceneRuntime(sr),
+        mParentRuntime(nullptr),
+        mLoaded(false),
+        mHasFocus(false),
+        mFollowsCamera(false)
     {
         setLogClassName("SceneObjectRuntime");
         auto log = getLog();
         log->trace( "Constructing Object" );
-        mTransform = make_shared<Transform3D>();
+        mTransform = new Transform3D();
     }
 
     SceneObjectRuntime::~SceneObjectRuntime
@@ -90,6 +99,56 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object" );
+
+        for (auto child : mChildRuntimes)
+        {
+            if (child != nullptr)
+            {
+                delete child;
+            }
+        }
+        mChildRuntimes.clear();
+
+        if (mAudioInstance != nullptr)
+        {
+            delete mAudioInstance;
+            mAudioInstance = nullptr;
+        }
+
+        if (mPathInstance != nullptr)
+        {
+            delete mPathInstance;
+            mPathInstance = nullptr;
+        }
+
+        if (mModelInstance != nullptr)
+        {
+            delete mModelInstance;
+            mModelInstance = nullptr;
+        }
+
+        if (mShaderInstance != nullptr)
+        {
+            delete mShaderInstance;
+            mShaderInstance = nullptr;
+        }
+
+        if (mLightInstance != nullptr)
+        {
+            delete mLightInstance;
+            mLightInstance = nullptr;
+        }
+
+        if (mSpriteInstance != nullptr)
+        {
+            delete mSpriteInstance;
+            mSpriteInstance = nullptr;
+        }
+        if (mFontInstance != nullptr)
+        {
+            delete mFontInstance;
+            mFontInstance = nullptr;
+        }
 
         if (hasPhysicsObjectInstance())
         {
@@ -110,10 +169,14 @@ namespace Dream
                 ->getScriptComponent();
             if(scriptComp != nullptr)
             {
-                scriptComp->removeFromScriptMap(
-                    dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
-                );
+                scriptComp->removeFromScriptMap(this);
             }
+        }
+
+        if (mTransform != nullptr)
+        {
+            delete mTransform;
+            mTransform = nullptr;
         }
     }
 
@@ -210,42 +273,42 @@ namespace Dream
         return getTransform()->getTranslation();
     }
 
-    const shared_ptr<PathInstance>&
+    PathInstance*
     SceneObjectRuntime::getPathInstance
     ()
     {
         return mPathInstance;
     }
 
-    const shared_ptr<AudioInstance>&
+    AudioInstance*
     SceneObjectRuntime::getAudioInstance
     ()
     {
         return mAudioInstance;
     }
 
-    const shared_ptr<AssimpModelInstance>&
+    AssimpModelInstance*
     SceneObjectRuntime::getModelInstance
     ()
     {
         return mModelInstance;
     }
 
-    const shared_ptr<ScriptInstance>&
+    ScriptInstance*
     SceneObjectRuntime::getScriptInstance
     ()
     {
         return mScriptInstance;
     }
 
-    const shared_ptr<ShaderInstance>&
+    ShaderInstance*
     SceneObjectRuntime::getShaderInstance
     ()
     {
         return mShaderInstance;
     }
 
-    const shared_ptr<LightInstance>&
+    LightInstance*
     SceneObjectRuntime::getLightInstance
     ()
     {
@@ -308,14 +371,14 @@ namespace Dream
         return mAssetDefinitionUuidLoadQueue;
     }
 
-    const shared_ptr<FontInstance>&
+    FontInstance*
     SceneObjectRuntime::getFontInstance
     ()
     {
         return mFontInstance;
     }
 
-    const shared_ptr<PhysicsObjectInstance>&
+    PhysicsObjectInstance*
     SceneObjectRuntime::getPhysicsObjectInstance
     ()
     {
@@ -325,6 +388,7 @@ namespace Dream
     string
     SceneObjectRuntime::getTransformType
     ()
+    const
     {
         return mTransform->getTransformType();
     }
@@ -336,7 +400,7 @@ namespace Dream
         mTransform->setTransformType(transformType);
     }
 
-    shared_ptr<Transform3D>
+    Transform3D*
     SceneObjectRuntime::getTransform
     ()
     {
@@ -347,7 +411,7 @@ namespace Dream
     SceneObjectRuntime::initialTransform()
     {
         auto log = getLog();
-        shared_ptr<Transform3D> initial = dynamic_pointer_cast<SceneObjectDefinition>(mDefinition)->getTransform();
+        Transform3D* initial = dynamic_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
         if (initial->isTypeOffset())
         {
             log->info("Inheriting Offset Transform for {}",getNameAndUuidString());
@@ -363,7 +427,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::setTransform
-    (shared_ptr<Transform3D> transform)
+    (Transform3D* transform)
     {
         mTransform = transform;
     }
@@ -371,6 +435,7 @@ namespace Dream
     bool
     SceneObjectRuntime::hasFocus
     ()
+    const
     {
         return mHasFocus;
     }
@@ -382,7 +447,7 @@ namespace Dream
         mHasFocus = focus;
     }
 
-    const shared_ptr<SpriteInstance>&
+    SpriteInstance*
     SceneObjectRuntime::getSpriteInstance
     ()
     {
@@ -392,6 +457,7 @@ namespace Dream
     bool
     SceneObjectRuntime::getLoadedFlag
     ()
+    const
     {
         return mLoaded;
     }
@@ -406,26 +472,37 @@ namespace Dream
     bool
     SceneObjectRuntime::hasEvents
     ()
+    const
     {
-        return !mEventQueue.empty();
+        return mEventQueue.size() > 0;
     }
 
     void
-    SceneObjectRuntime::sendEvent
+    SceneObjectRuntime::addEvent
     (Event event)
     {
+        auto log = getLog();
+        log->critical
+        (
+            "Event posted from {} to {}",
+            event.getSender()->getNameAndUuidString(),
+            getNameAndUuidString()
+        );
         mEventQueue.push_back(event);
     }
 
     vector<Event>
     SceneObjectRuntime::getEventQueue
     ()
+    const
     {
         return mEventQueue;
     }
 
     void SceneObjectRuntime::clearEventQueue()
     {
+        auto log = getLog();
+        log->debug("Clearing event queue");
         mEventQueue.clear();
     }
 
@@ -433,7 +510,6 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Collecting Garbage {}" ,getNameAndUuidString() );
-        clearEventQueue();
     }
 
     bool
@@ -482,7 +558,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::createAssetInstance
-    (const shared_ptr<IAssetDefinition>& definition)
+    (IAssetDefinition* definition)
     {
         auto log = getLog();
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
@@ -501,39 +577,39 @@ namespace Dream
 
         if(definition->isTypePath())
         {
-            createPathInstance(dynamic_pointer_cast<PathDefinition>(definition));
+            createPathInstance(dynamic_cast<PathDefinition*>(definition));
         }
         else if (definition->isTypeAudio())
         {
-            createAudioInstance(dynamic_pointer_cast<AudioDefinition>(definition));
+            createAudioInstance(dynamic_cast<AudioDefinition*>(definition));
         }
         else if (definition->isTypeModel())
         {
-            createModelInstance(dynamic_pointer_cast<ModelDefinition>(definition));
+            createModelInstance(dynamic_cast<ModelDefinition*>(definition));
         }
         else if (definition->isTypeScript())
         {
-            createScriptInstance(dynamic_pointer_cast<ScriptDefinition>(definition));
+            createScriptInstance(dynamic_cast<ScriptDefinition*>(definition));
         }
         else if (definition->isTypeShader())
         {
-            createShaderInstance(dynamic_pointer_cast<ShaderDefinition>(definition));
+            createShaderInstance(dynamic_cast<ShaderDefinition*>(definition));
         }
         else if (definition->isTypePhysicsObject())
         {
-            createPhysicsObjectInstance(dynamic_pointer_cast<PhysicsObjectDefinition>(definition));
+            createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(definition));
         }
         else if (definition->isTypeLight())
         {
-            createLightInstance(dynamic_pointer_cast<LightDefinition>(definition));
+            createLightInstance(dynamic_cast<LightDefinition*>(definition));
         }
         else if (definition->isTypeSprite())
         {
-            createSpriteInstance(dynamic_pointer_cast<SpriteDefinition>(definition));
+            createSpriteInstance(dynamic_cast<SpriteDefinition*>(definition));
         }
         else if (definition->isTypeFont())
         {
-            createFontInstance(dynamic_pointer_cast<FontDefinition>(definition));
+            createFontInstance(dynamic_cast<FontDefinition*>(definition));
         }
         else
         {
@@ -545,130 +621,110 @@ namespace Dream
 
     void
     SceneObjectRuntime::createPhysicsObjectInstance
-    (const shared_ptr<PhysicsObjectDefinition>& definition)
+    (PhysicsObjectDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Physics Object Asset Instance." );
-        mPhysicsObjectInstance = make_shared<PhysicsObjectInstance>(definition, dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
+        mPhysicsObjectInstance = new PhysicsObjectInstance(definition, this);
         mPhysicsObjectInstance->load(mProjectPath);
     }
 
     void
     SceneObjectRuntime::createPathInstance
-    (const shared_ptr<PathDefinition>& definition)
+    (PathDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Path asset instance." );
-        mPathInstance = make_shared<PathInstance>(definition,dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
+        mPathInstance = new PathInstance(definition,this);
         mPathInstance->load(mProjectPath);
     }
 
     void
     SceneObjectRuntime::createAudioInstance
-    (const shared_ptr<AudioDefinition>& definition)
+    (AudioDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Audio asset instance." );
         auto audioComp = mSceneRuntime->getProjectRuntime()->getAudioComponent();
         if (audioComp != nullptr)
         {
-            mAudioInstance = shared_ptr<AudioInstance>(
-                audioComp->newAudioInstance(
-                    definition,
-                    dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
-                )
-        );
-        mAudioInstance->load(mProjectPath);
+            mAudioInstance = audioComp->newAudioInstance(definition,this);
+            mAudioInstance->load(mProjectPath);
         }
     }
 
     void
     SceneObjectRuntime::createModelInstance
-    (const shared_ptr<ModelDefinition>& definition)
+    (ModelDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Model asset instance." );
-        mModelInstance = make_shared<AssimpModelInstance>
-        (
+        mModelInstance = new AssimpModelInstance(
             mSceneRuntime->getProjectRuntime()->getModelCache(),
             mSceneRuntime->getProjectRuntime()->getTextureCache(),
             definition,
-            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+            this
         );
-
-        try
-        {
-            mModelInstance->load(mProjectPath);
-        }
-        catch (std::exception e)
-        {
-            log->error("Exception while loading model resource {}",e.what());
-            return;
-        }
+        mModelInstance->load(mProjectPath);
     }
 
     void
     SceneObjectRuntime::createScriptInstance
-    (const shared_ptr<ScriptDefinition>& definition)
+    (ScriptDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Script asset instance." );
-        mScriptInstance = dynamic_pointer_cast<ScriptInstance>(
-            make_shared<LuaScriptInstance>(
-                definition,
-                dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
-            )
+        mScriptInstance = new LuaScriptInstance(
+            definition,
+            this
         );
         mScriptInstance->load(mProjectPath);
         auto scriptComp = mSceneRuntime->getProjectRuntime()->getScriptComponent();
         if (scriptComp != nullptr)
         {
-            scriptComp->addToScriptMap(
-                dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()),
-                mScriptInstance
-            );
+            scriptComp->addToScriptMap(this,mScriptInstance);
         }
     }
 
     void
     SceneObjectRuntime::createShaderInstance
-    (const shared_ptr<ShaderDefinition>& definition)
+    (ShaderDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Shader asset instance." );
-        mShaderInstance = make_shared<ShaderInstance>
+        mShaderInstance = new ShaderInstance
         (
             mSceneRuntime->getProjectRuntime()->getShaderCache(),
             definition,
-            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+            this
         );
         mShaderInstance->load(mProjectPath);
     }
 
     void
     SceneObjectRuntime::createLightInstance
-    (const shared_ptr<LightDefinition>& definition)
+    (LightDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Light Asset instance." );
-        mLightInstance = make_shared<LightInstance>(
+        mLightInstance = new LightInstance(
             definition,
-            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+            this
         );
         mLightInstance->load(mProjectPath);
     }
 
     void
     SceneObjectRuntime::createSpriteInstance
-    (const shared_ptr<SpriteDefinition>& definition)
+    (SpriteDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Sprite Asset instance." );
-        mSpriteInstance = make_shared<SpriteInstance>
+        mSpriteInstance = new SpriteInstance
         (
             mSceneRuntime->getProjectRuntime()->getTextureCache(),
             definition,
-            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+            this
         );
         mSpriteInstance->load(mProjectPath);
     }
@@ -680,22 +736,22 @@ namespace Dream
 
     void
     SceneObjectRuntime::createFontInstance
-    (const shared_ptr<FontDefinition>& definition)
+    (FontDefinition* definition)
     {
         auto log = getLog();
         log->info( "Creating Font Asset instance." );
-        mFontInstance = make_shared<FontInstance>
+        mFontInstance = new FontInstance
         (
             mSceneRuntime->getProjectRuntime()->getFontCache(),
             definition,
-            dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this())
+            this
         );
         mFontInstance->load(mProjectPath);
     }
 
     bool
     SceneObjectRuntime::applyToAll
-    (function<bool(shared_ptr<SceneObjectRuntime>)> funk)
+    (function<bool(SceneObjectRuntime*)> funk)
     {
         auto log = getLog();
         log->trace(
@@ -704,7 +760,7 @@ namespace Dream
             mChildRuntimes.size()
         );
 
-        bool retval = funk(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
+        bool retval = funk(this);
 
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -716,9 +772,9 @@ namespace Dream
         return retval;
     }
 
-    shared_ptr<SceneObjectRuntime>
+    SceneObjectRuntime*
     SceneObjectRuntime::applyToAll
-    (function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)> funk)
+    (function<SceneObjectRuntime*(SceneObjectRuntime*)> funk)
     {
         auto log = getLog();
         log->trace(
@@ -727,7 +783,7 @@ namespace Dream
             mChildRuntimes.size()
         );
 
-        shared_ptr<SceneObjectRuntime> retval = funk(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
+        SceneObjectRuntime* retval = funk(this);
 
         if (retval != nullptr)
         {
@@ -748,7 +804,7 @@ namespace Dream
         return nullptr;
     }
 
-    shared_ptr<SceneObjectRuntime>
+    SceneObjectRuntime*
     SceneObjectRuntime::getChildRuntimeByUuid
     (string uuid)
     {
@@ -768,7 +824,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::isParentOf
-    (const shared_ptr<SceneObjectRuntime>&  child)
+    (SceneObjectRuntime*  child)
     {
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -782,36 +838,36 @@ namespace Dream
 
     void
     SceneObjectRuntime::setParentRuntime
-    (const shared_ptr<SceneObjectRuntime>& parent)
+    (SceneObjectRuntime* parent)
     {
         mParentRuntime = parent;
     }
 
-    const shared_ptr<SceneObjectRuntime>&
+    SceneObjectRuntime*
     SceneObjectRuntime::getParentRuntime
     ()
     {
         return mParentRuntime;
     }
 
-    const shared_ptr<SceneRuntime>&
+    SceneRuntime*
     SceneObjectRuntime::getSceneRuntime
     ()
     {
         return mSceneRuntime;
     }
 
-    shared_ptr<SceneObjectDefinition>
+    SceneObjectDefinition*
     SceneObjectRuntime::getSceneObjectDefinition()
     {
-       return dynamic_pointer_cast<SceneObjectDefinition>(getDefinition());
+       return dynamic_cast<SceneObjectDefinition*>(getDefinition());
     }
 
     void
     SceneObjectRuntime::useDefinition
-    (shared_ptr<IDefinition> iDefinition)
+    ()
     {
-        auto def = dynamic_pointer_cast<SceneObjectDefinition>(iDefinition);
+        auto def = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto log = getLog();
         log->info( "Using Definition {}", def->getNameAndUuidString());
         setName(def->getName());
@@ -833,15 +889,15 @@ namespace Dream
 
     void
     SceneObjectRuntime::loadChildrenFromDefinition
-    (const shared_ptr<SceneObjectDefinition>& definition)
+    (SceneObjectDefinition* definition)
     {
-        vector<shared_ptr<SceneObjectDefinition>> definitions = definition->getChildDefinitionsList();
+        vector<SceneObjectDefinition*> definitions = definition->getChildDefinitionsList();
         for
         (auto it = begin(definitions); it != end(definitions); it++)
         {
-            shared_ptr<SceneObjectRuntime> child = make_shared<SceneObjectRuntime>(*it, mSceneRuntime);
-            child->setParentRuntime(dynamic_pointer_cast<SceneObjectRuntime>(shared_from_this()));
-            child->useDefinition(*it);
+            SceneObjectRuntime* child = new SceneObjectRuntime(*it, mSceneRuntime);
+            child->setParentRuntime(this);
+            child->useDefinition();
             mChildRuntimes.push_back(child);
         }
     }

@@ -29,24 +29,24 @@ namespace Dream
         ALuint mSource;
         ALuint mBuffer;
         AudioStatus mStatus;
-        shared_ptr<AudioComponent> mAudioComponent;
+        AudioComponent* mAudioComponent;
 
     public:
-        AudioInstance(shared_ptr<AudioComponent> comp, shared_ptr<AudioDefinition>, shared_ptr<SceneObjectRuntime>);
+        AudioInstance(AudioComponent* comp, AudioDefinition*, SceneObjectRuntime*);
 
         void setLooping(bool);
-        bool isLooping();
+        bool isLooping() const ;
 
-        vector<ALchar> getAudioDataBuffer();
-        ALsizei getFrequency();
-        ALenum  getFormat();
-        AudioStatus getStatus();
+        vector<ALchar> getAudioDataBuffer()const ;
+        ALsizei getFrequency()const ;
+        ALenum  getFormat()const ;
+        AudioStatus getStatus() ;
         void setStatus(AudioStatus);
         void   setBuffer(ALuint buffer);
-        ALuint getBuffer();
+        ALuint getBuffer()const ;
 
         void setSource(ALuint source);
-        ALuint getSource();
+        ALuint getSource() const;
 
         void play();
         void pause();

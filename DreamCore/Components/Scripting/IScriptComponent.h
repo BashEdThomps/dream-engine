@@ -44,31 +44,31 @@ namespace Dream
     {
     public: // Methods
         IScriptComponent(
-            shared_ptr<ProjectRuntime> project,
-            shared_ptr<ScriptCache> cache
+            ProjectRuntime* project,
+            ScriptCache* cache
         );
 
        virtual ~IScriptComponent() override;
 
-        virtual bool createScript(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>) = 0;
-        virtual bool loadScript(shared_ptr<SceneObjectRuntime>) = 0;
+        virtual bool createScript(SceneObjectRuntime*,ScriptInstance*) = 0;
+        virtual bool loadScript(SceneObjectRuntime*) = 0;
         virtual bool updateNanoVG() = 0;
 
-        virtual bool executeScriptInit  (shared_ptr<SceneObjectRuntime>) = 0;
-        virtual bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>) = 0;
-        virtual bool executeScriptNanoVG(shared_ptr<SceneObjectRuntime>) = 0;
-        virtual bool executeScriptInput (shared_ptr<SceneObjectRuntime>) = 0;
-        virtual bool executeScriptEvent (shared_ptr<SceneObjectRuntime>) = 0;
+        virtual bool executeScriptInit  (SceneObjectRuntime*) = 0;
+        virtual bool executeScriptUpdate(SceneObjectRuntime*) = 0;
+        virtual bool executeScriptNanoVG(SceneObjectRuntime*) = 0;
+        virtual bool executeScriptInput (SceneObjectRuntime*) = 0;
+        virtual bool executeScriptEvent (SceneObjectRuntime*) = 0;
 
-        virtual void removeFromScriptMap(shared_ptr<SceneObjectRuntime>) = 0;
-        virtual void addToScriptMap(shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>) = 0;
-        virtual void setInputMap(shared_ptr<gainput::InputMap> map) = 0;
+        virtual void removeFromScriptMap(SceneObjectRuntime*) = 0;
+        virtual void addToScriptMap(SceneObjectRuntime*,ScriptInstance*) = 0;
+        virtual void setInputMap(gainput::InputMap* map) = 0;
 
     protected:// Variables
-        shared_ptr<ScriptCache> mScriptCache;
-        shared_ptr<ProjectRuntime> mProjectRuntime;
-        map<shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>> mScriptMap;
-        shared_ptr<gainput::InputMap> mInputMap;
+        ScriptCache* mScriptCache;
+        ProjectRuntime* mProjectRuntime;
+        map<SceneObjectRuntime*, ScriptInstance*> mScriptMap;
+        gainput::InputMap* mInputMap;
 
         // API Exposure Methods ======================================================
         virtual void debugRegisteringClass(string className) = 0;

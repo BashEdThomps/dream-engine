@@ -26,10 +26,10 @@ public:
     ~MaterialShaderFormController() override;
 
     void setProjectPath(QString projectPath);
-    void setModelDefinition(shared_ptr<ModelDefinition> def);
+    void setModelDefinition(ModelDefinition* def);
     void getAllUpInYourFace();
 
-    void setShaderHandlesVector(vector<shared_ptr<ShaderDefinition>> shaders);
+    void setShaderHandlesVector(vector<ShaderDefinition*> shaders);
 private slots:
     void onAddButtonClicked(bool);
     void onRemoveButtonClicked(bool);
@@ -41,7 +41,7 @@ private:
 
 protected:
     unique_ptr<MaterialShaderTableDelegate> mTableDelegate;
-    shared_ptr<ModelDefinition> mModelDefinitionHandle;
+    ModelDefinition* mModelDefinitionHandle;
     QString mProjectPath;
     MaterialShaderTableModel mTableModel;
     Ui::MaterialShaderTableForm mUi;

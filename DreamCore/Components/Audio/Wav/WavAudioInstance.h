@@ -45,9 +45,9 @@ namespace Dream
 
     public:
         WavAudioInstance(
-            const shared_ptr<AudioComponent>&,
-            const shared_ptr<AudioDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            AudioComponent*,
+            AudioDefinition*,
+            SceneObjectRuntime*
         );
         ~WavAudioInstance() override;
 

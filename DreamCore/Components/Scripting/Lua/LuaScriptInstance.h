@@ -32,13 +32,13 @@ namespace Dream
 
     public:
         LuaScriptInstance(
-            const shared_ptr<ScriptDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            ScriptDefinition*,
+            SceneObjectRuntime*
         );
-        ~LuaScriptInstance(void);
-        bool load(string);
+        ~LuaScriptInstance() override;
+        bool load(string) override;
         void update();
-        void loadExtraAttributes(nlohmann::json);
+        void loadExtraAttributes(nlohmann::json) override;
 
     }; // End of LuaScriptInstance
 } // End of Dream

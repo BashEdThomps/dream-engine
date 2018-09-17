@@ -27,7 +27,8 @@ PathEditorTableModel::~PathEditorTableModel()
 
 int
 PathEditorTableModel::rowCount
-(const QModelIndex& parent) const
+(const QModelIndex& parent)
+const
 {
     Q_UNUSED(parent)
     auto log = spdlog::get("PathEditorTableModel");
@@ -44,7 +45,8 @@ PathEditorTableModel::rowCount
 
 int
 PathEditorTableModel::columnCount
-(const QModelIndex& parent) const
+(const  QModelIndex& parent)
+const
 {
     Q_UNUSED(parent)
     return 4;
@@ -52,7 +54,8 @@ PathEditorTableModel::columnCount
 
 QVariant
 PathEditorTableModel::data
-(const QModelIndex& index, int role) const
+(const QModelIndex& index, int role)
+const
 {
     auto log = spdlog::get("PathEditorTableModel");
 
@@ -95,7 +98,7 @@ PathEditorTableModel::data
 
 void
 PathEditorTableModel::setPathDefinition
-(shared_ptr<PathDefinition> def)
+(PathDefinition* def)
 {
     auto log = spdlog::get("PathEditorTableModel");
     log->trace("setPathDefinition");
@@ -107,7 +110,8 @@ PathEditorTableModel::setPathDefinition
 
 QVariant
 PathEditorTableModel::headerData
-(int section, Qt::Orientation orientation, int role) const
+(int section, Qt::Orientation orientation, int role)
+const
 {
     if (role != Qt::DisplayRole)
              return QVariant();
@@ -157,7 +161,10 @@ PathEditorTableModel::setData
     return true;
 }
 
-Qt::ItemFlags PathEditorTableModel::flags(const QModelIndex &index) const
+Qt::ItemFlags
+PathEditorTableModel::flags
+(const  QModelIndex &index)
+const
 {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
@@ -172,7 +179,7 @@ Qt::ItemFlags PathEditorTableModel::flags(const QModelIndex &index) const
 
 bool
 PathEditorTableModel::insertRows
-(int row, int count, const QModelIndex& index)
+(int row, int count,const   QModelIndex& index)
 {
     Q_UNUSED(index)
     auto log = spdlog::get("PathEditorTableModel");
@@ -199,7 +206,7 @@ PathEditorTableModel::insertRows
 
 bool
 PathEditorTableModel::removeRows
-(int row, int count, const QModelIndex& parent)
+(int row, int count,const   QModelIndex& parent)
 {
     Q_UNUSED(parent)
     if (row < 0 || count < 1)

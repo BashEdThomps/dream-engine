@@ -26,7 +26,7 @@ using std::endl;
 namespace Dream
 {
     IAssetDefinition::IAssetDefinition
-    (const shared_ptr<ProjectDefinition>& parent, json jsonDef)
+    (ProjectDefinition* parent, json jsonDef)
         : IDefinition(jsonDef),
           mProjectDefinition(parent)
     {
@@ -216,7 +216,7 @@ namespace Dream
         log->info( mJson.dump(1) );
     }
 
-    const shared_ptr<ProjectDefinition>&
+    ProjectDefinition*
     IAssetDefinition::getProject
     ()
     {

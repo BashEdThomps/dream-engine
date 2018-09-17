@@ -25,8 +25,6 @@
 #include "../Common/IRuntime.h"
 
 using std::string;
-using std::shared_ptr;
-using std::shared_ptr;
 using std::vector;
 
 namespace Dream
@@ -62,48 +60,48 @@ namespace Dream
     private: // Member Variables
         bool mDone;
 
-        shared_ptr<Time> mTime;
-        shared_ptr<Camera> mCamera;
-        shared_ptr<SceneRuntime> mActiveSceneRuntime;
-        shared_ptr<Project> mProject;
+        Time* mTime;
+        Camera* mCamera;
+        SceneRuntime* mActiveSceneRuntime;
+        Project* mProject;
 
         // Components
-        shared_ptr<AudioComponent> mAudioComponent;
-        shared_ptr<InputComponent> mInputComponent;
-        shared_ptr<GraphicsComponent> mGraphicsComponent;
-        shared_ptr<PhysicsComponent> mPhysicsComponent;
-        shared_ptr<PathComponent> mPathComponent;
-        shared_ptr<IScriptComponent> mScriptComponent;
-        shared_ptr<NanoVGComponent> mNanoVGComponent;
-        shared_ptr<IWindowComponent> mWindowComponent;
+        AudioComponent* mAudioComponent;
+        InputComponent* mInputComponent;
+        GraphicsComponent* mGraphicsComponent;
+        PhysicsComponent* mPhysicsComponent;
+        PathComponent* mPathComponent;
+        IScriptComponent* mScriptComponent;
+        NanoVGComponent* mNanoVGComponent;
+        IWindowComponent* mWindowComponent;
 
         // Caches
-        shared_ptr<MaterialCache> mTextureCache;
-        shared_ptr<AssimpCache> mModelCache;
-        shared_ptr<FontCache> mFontCache;
-        shared_ptr<ShaderCache> mShaderCache;
-        shared_ptr<ScriptCache> mScriptCache;
+        MaterialCache* mTextureCache;
+        AssimpCache* mModelCache;
+        FontCache* mFontCache;
+        ShaderCache* mShaderCache;
+        ScriptCache* mScriptCache;
     public: // Public Functions
         ProjectRuntime(
-            const shared_ptr<Project>& parentProject,
-            const shared_ptr<IWindowComponent>& wc = nullptr);
+            Project* parentProject,
+            IWindowComponent* wc = nullptr);
         ~ProjectRuntime() override;
 
         void setDone(bool);
         bool isDone();
 
-        const shared_ptr<Camera>& getCamera();
-        const shared_ptr<Time>& getTime();
+        Camera* getCamera();
+        Time* getTime();
 
-        const shared_ptr<PathComponent>& getPathComponent();
-        const shared_ptr<AudioComponent>& getAudioComponent();
-        const shared_ptr<PhysicsComponent>& getPhysicsComponent();
-        const shared_ptr<GraphicsComponent>& getGraphicsComponent();
-        const shared_ptr<NanoVGComponent>& getNanoVGComponent();
-        const shared_ptr<IWindowComponent>& getWindowComponent();
-        const shared_ptr<IScriptComponent>& getScriptComponent();
-        const shared_ptr<Project>& getProject();
-        const shared_ptr<InputComponent>& getInputComponent();
+        PathComponent* getPathComponent();
+        AudioComponent* getAudioComponent();
+        PhysicsComponent* getPhysicsComponent();
+        GraphicsComponent* getGraphicsComponent();
+        NanoVGComponent* getNanoVGComponent();
+        IWindowComponent* getWindowComponent();
+        IScriptComponent* getScriptComponent();
+        Project* getProject();
+        InputComponent* getInputComponent();
 
         bool initComponents();
 
@@ -121,19 +119,18 @@ namespace Dream
         int getWindowHeight();
         void setWindowHeight(int);
 
-        shared_ptr<SceneRuntime> constructActiveSceneRuntime
-        (const shared_ptr<SceneDefinition>& sceneDefinition);
+        SceneRuntime* constructActiveSceneRuntime(SceneDefinition* sceneDefinition);
 
         bool hasActiveSceneRuntime();
-        const shared_ptr<SceneRuntime>& getActiveSceneRuntime();
+        SceneRuntime* getActiveSceneRuntime();
         void resetActiveSceneRuntime();
 
-        void useDefinition(shared_ptr<IDefinition>) override;
+        void useDefinition() override;
 
-        const shared_ptr<FontCache>& getFontCache();
-        const shared_ptr<ShaderCache>& getShaderCache();
-        const shared_ptr<MaterialCache>& getTextureCache();
-        const shared_ptr<AssimpCache>& getModelCache();
+        FontCache* getFontCache();
+        ShaderCache* getShaderCache();
+        MaterialCache* getTextureCache();
+        AssimpCache* getModelCache();
 
     private: // Member Functions
         bool initPathComponent();
@@ -144,6 +141,9 @@ namespace Dream
         bool initWindowComponent();
         bool initScriptComponent();
         bool initCaches();
+
+        void deleteCaches();
+        void deleteComponents();
     };
 
 } // End Dream

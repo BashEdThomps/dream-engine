@@ -31,17 +31,17 @@ class AssetDefinitionPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    AssetDefinitionPropertiesModel(shared_ptr<IAssetDefinition> definition, QTreeView *parent = nullptr);
+    AssetDefinitionPropertiesModel(IAssetDefinition* definition, QTreeView *parent = nullptr);
     ~AssetDefinitionPropertiesModel() override;
 
     void createRoot() override;
     void createProperties() override;
     void createDelegateConnections() override;
 
-    shared_ptr<IAssetDefinition> getAssetDefinitionHandle();
+    IAssetDefinition* getAssetDefinitionHandle();
 
 private:
-    shared_ptr<IAssetDefinition> mAssetDefinitionHandle;
+    IAssetDefinition* mAssetDefinitionHandle;
 
     void createFormatProperty();
     void createTypeProperty();
@@ -98,9 +98,9 @@ public slots:
     void onButton_ModelFile();
     void onButton_ModelAdditionalFiles();
     void onButton_EditScript();
-    void onCombo_ScriptTemplateChanged(const QString&);
+    void onCombo_ScriptTemplateChanged( QString&);
     void onButton_EditShader();
-    void onCombo_ShaderTemplateChanged(const QString&);
+    void onCombo_ShaderTemplateChanged( QString&);
     void onButton_PhysicsBvhTriangleMeshFile();
     void onButton_LightChooseAmbient();
     void onButton_LightChooseSpecular();
@@ -108,20 +108,20 @@ public slots:
     void onButton_ModelMaterialShaderMap();
     void onButton_PathList();
 signals:
-    void notifyButton_RemoveFiles(shared_ptr<IAssetDefinition>);
-    void notifyButton_AudioFile(shared_ptr<IAssetDefinition>);
-    void notifyButton_FontFile(shared_ptr<IAssetDefinition>);
-    void notifyButton_ModelFile(shared_ptr<IAssetDefinition>);
-    void notifyButton_ModelAdditionalFiles(shared_ptr<IAssetDefinition>);
-    void notifyButton_EditScript(shared_ptr<IAssetDefinition>);
-    void notifyCombo_ScriptTemplateChanged(shared_ptr<IAssetDefinition>, const QString&);
-    void notifyButton_EditShader(shared_ptr<IAssetDefinition>);
-    void notifyCombo_ShaderTemplateChanged(shared_ptr<IAssetDefinition>, const QString&);
-    void notifyButton_PhysicsBvhTriangleMeshFile(shared_ptr<IAssetDefinition>);
-    void notifyButton_ModelMaterialShaderMap(shared_ptr<IAssetDefinition>);
-    void notifyButton_PathList(shared_ptr<IAssetDefinition>);
+    void notifyButton_RemoveFiles(IAssetDefinition*);
+    void notifyButton_AudioFile(IAssetDefinition*);
+    void notifyButton_FontFile(IAssetDefinition*);
+    void notifyButton_ModelFile(IAssetDefinition*);
+    void notifyButton_ModelAdditionalFiles(IAssetDefinition*);
+    void notifyButton_EditScript(IAssetDefinition*);
+    void notifyCombo_ScriptTemplateChanged(IAssetDefinition*,  QString&);
+    void notifyButton_EditShader(IAssetDefinition*);
+    void notifyCombo_ShaderTemplateChanged(IAssetDefinition*,  QString&);
+    void notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition*);
+    void notifyButton_ModelMaterialShaderMap(IAssetDefinition*);
+    void notifyButton_PathList(IAssetDefinition*);
 
-    void notifyButton_LightChooseAmbient(shared_ptr<IAssetDefinition>);
-    void notifyButton_LightChooseSpecular(shared_ptr<IAssetDefinition>);
-    void notifyButton_LightChooseDiffuse(shared_ptr<IAssetDefinition>);
+    void notifyButton_LightChooseAmbient(IAssetDefinition*);
+    void notifyButton_LightChooseSpecular(IAssetDefinition*);
+    void notifyButton_LightChooseDiffuse(IAssetDefinition*);
 };

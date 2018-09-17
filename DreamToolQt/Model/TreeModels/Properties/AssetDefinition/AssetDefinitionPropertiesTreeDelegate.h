@@ -33,10 +33,10 @@ public:
     AssetDefinitionPropertiesTreeDelegate(AssetDefinitionPropertiesModel* model, QObject *parent = nullptr);
     ~AssetDefinitionPropertiesTreeDelegate() override;
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const  override;
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
-    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const  QModelIndex &index) const  override;
 
 public slots:
     void onButton_PathList(bool clicked);
@@ -77,22 +77,22 @@ signals:
 protected:
     AssetDefinitionPropertiesModel *mModelHandle;
 
-    QWidget *createFormatComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const;
-    QWidget *createTypeComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const ;
-    QWidget *createFontFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
-    QWidget *createModelFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
-    QWidget *createAudioFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
-    QWidget *createModelAdditionalFilesButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
-    QWidget *createOpenShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
-    QWidget *createOpenScriptInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
-    QWidget *createRemoveFilesButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
-    QWidget *createPhysicsBvhTriangleMeshFileButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
-    QWidget *createFontColourDialogButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
-    QWidget *createModelMaterialShaderButton(AssetDefinitionPropertiesItem* adItem, QWidget *parent) const;
-    QWidget *createLightAmbientPaletteButton(QWidget* parent) const;
-    QWidget *createLightDiffusePaletteButton(QWidget* parent) const;
-    QWidget *createLightSpecularPaletteButton(QWidget* parent) const;
-    QWidget *createPathListButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
-    QWidget *createPathTypeComboBox(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const;
+    QWidget* createFormatComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr) const;
+    QWidget* createTypeComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr)  const;
+    QWidget* createFontFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
+    QWidget* createModelFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
+    QWidget* createAudioFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
+    QWidget* createModelAdditionalFilesButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
+    QWidget* createOpenShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget* createOpenScriptInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget* createRemoveFilesButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget* createPhysicsBvhTriangleMeshFileButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
+    QWidget* createFontColourDialogButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;
+    QWidget* createModelMaterialShaderButton(AssetDefinitionPropertiesItem* adItem, QWidget *parent) const;
+    QWidget* createLightAmbientPaletteButton(QWidget* parent) const;
+    QWidget* createLightDiffusePaletteButton(QWidget* parent) const;
+    QWidget* createLightSpecularPaletteButton(QWidget* parent) const;
+    QWidget* createPathListButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
+    QWidget* createPathTypeComboBox(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const;
 
 };

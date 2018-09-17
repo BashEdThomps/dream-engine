@@ -91,12 +91,12 @@ namespace Dream
         }
     }
 
-    bool Transform3D::isTypeOffset()
+    bool Transform3D::isTypeOffset() const
     {
        return getTransformType().compare(Constants::TRANSFORM_TYPE_OFFSET) == 0;
     }
 
-    bool Transform3D::isTypeAbsolute()
+    bool Transform3D::isTypeAbsolute() const
     {
        return getTransformType().compare(Constants::TRANSFORM_TYPE_ABSOLUTE) == 0;
     }
@@ -106,6 +106,7 @@ namespace Dream
     vec3
     Transform3D::getTranslation
     ()
+    const
     {
         return mTranslation;
     }
@@ -150,6 +151,7 @@ namespace Dream
     float
     Transform3D::getTranslationX
     ()
+    const
     {
         return mTranslation.x;
     }
@@ -157,6 +159,7 @@ namespace Dream
     float
     Transform3D::getTranslationY
     ()
+    const
     {
         return mTranslation.y;
     }
@@ -164,6 +167,7 @@ namespace Dream
     float
     Transform3D::getTranslationZ
     ()
+    const
     {
         return mTranslation.z;
     }
@@ -194,6 +198,7 @@ namespace Dream
     vec3
     Transform3D::getRotation
     ()
+    const
     {
         return eulerAngles(mOrientation);
     }
@@ -348,6 +353,7 @@ namespace Dream
     vec3
     Transform3D::getScale
     ()
+    const
     {
         return mScale;
     }
@@ -369,6 +375,7 @@ namespace Dream
     float
     Transform3D::getScaleX
     ()
+    const
     {
         return mScale.x;
     }
@@ -376,6 +383,7 @@ namespace Dream
     float
     Transform3D::getScaleY
     ()
+    const
     {
         return mScale.y;
     }
@@ -383,6 +391,7 @@ namespace Dream
     float
     Transform3D::getScaleZ
     ()
+    const
     {
         return mScale.z;
     }
@@ -441,6 +450,7 @@ namespace Dream
     string
     Transform3D::getTransformType
     ()
+    const
     {
         return mTransformType;
     }
@@ -483,6 +493,7 @@ namespace Dream
     btVector3
     Transform3D::getRotationAsBtVector3
     ()
+    const
     {
         return btVector3(getRotationX(),getRotationY(),getRotationZ());
     }
@@ -513,7 +524,9 @@ namespace Dream
         return j;
     }
 
-    void Transform3D::offsetFrom(shared_ptr<Transform3D> parent, shared_ptr<Transform3D> initial)
+    void
+    Transform3D::offsetFrom
+    (Transform3D* parent, Transform3D* initial)
     {
         auto log = getLog();
         log->trace(
@@ -536,7 +549,7 @@ namespace Dream
        setScale(initial->getScale());
     }
 
-    glm::mat4 Transform3D::asMat4()
+    glm::mat4 Transform3D::asMat4() const
     {
        mat4 trans = glm::translate(mat4(1), mTranslation);
        mat4 rot = mat4_cast(mOrientation);

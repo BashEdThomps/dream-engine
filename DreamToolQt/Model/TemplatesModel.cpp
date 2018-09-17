@@ -25,9 +25,9 @@
 
 using Dream::Constants;
 
-const QString TemplatesModel::TEMPLATE_ROOT_PATH = ":/templates/";
-const QString TemplatesModel::TEMPLATE_SCRIPT_PATH = "script/";
-const QString TemplatesModel::TEMPLATE_SHADER_PATH = "shader/";
+ QString TemplatesModel::TEMPLATE_ROOT_PATH = ":/templates/";
+ QString TemplatesModel::TEMPLATE_SCRIPT_PATH = "script/";
+ QString TemplatesModel::TEMPLATE_SHADER_PATH = "shader/";
 
 TemplatesModel::TemplatesModel
 (QObject *parent)

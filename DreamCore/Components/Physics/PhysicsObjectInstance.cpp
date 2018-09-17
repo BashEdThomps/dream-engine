@@ -68,8 +68,8 @@ namespace Dream
 
     PhysicsObjectInstance::PhysicsObjectInstance
     (
-        const shared_ptr<PhysicsObjectDefinition>& definition,
-        const shared_ptr<SceneObjectRuntime>& transform)
+        PhysicsObjectDefinition* definition,
+        SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
@@ -135,7 +135,7 @@ namespace Dream
     PhysicsObjectInstance::loadExtraAttributes
     (
         nlohmann::json jsonData,
-        const shared_ptr<IAssetDefinition>& definition,
+        IAssetDefinition* definition,
         bool isChild)
     {
     }
@@ -145,7 +145,7 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        auto pod = dynamic_pointer_cast<PhysicsObjectDefinition>(mDefinition);
+        auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
         loadExtraAttributes(pod->getJson(),mDefinition,false);
         mCollisionShape = createCollisionShape(pod,projectPath);
         if (!mCollisionShape)
@@ -189,7 +189,7 @@ namespace Dream
 
     btCollisionShape*
     PhysicsObjectInstance::createCollisionShape
-    (const shared_ptr<PhysicsObjectDefinition>& pod, string projectPath)
+    (PhysicsObjectDefinition* pod, string projectPath)
     {
         auto log = getLog();
         string format = pod->getFormat();
@@ -375,11 +375,26 @@ namespace Dream
         mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
 
-    shared_ptr<PhysicsObjectDefinition>
+    PhysicsObjectDefinition*
     PhysicsObjectInstance::getAssetDefinitionByUuid
     (string uuid)
     {
         auto proj = mDefinition->getProject();
-        return dynamic_pointer_cast<PhysicsObjectDefinition>(proj->getAssetDefinitionByUuid(uuid));
+        return dynamic_cast<PhysicsObjectDefinition*>(proj->getAssetDefinitionByUuid(uuid));
     }
+
+    void
+    PhysicsObjectInstance::setLinearFactor
+    (float x, float y, float z)
+    {
+        mRigidBody->setLinearFactor(btVector3(x,y,z));
+    }
+
+    void
+    PhysicsObjectInstance::setAngularFactor
+    (float x, float y, float z)
+    {
+        mRigidBody->setAngularFactor(btVector3(x,y,z));
+    }
+
 } // End of Dream

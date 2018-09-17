@@ -23,9 +23,9 @@ namespace Dream
 
   SpriteInstance::SpriteInstance
   (
-    shared_ptr<MaterialCache> cache,
-    shared_ptr<SpriteDefinition> definition,
-    shared_ptr<SceneObjectRuntime> transform
+    MaterialCache* cache,
+    SpriteDefinition* definition,
+    SceneObjectRuntime* transform
     )
       : IAssetInstance(definition,transform),
 
@@ -54,7 +54,7 @@ namespace Dream
 
     if (mCache != nullptr)
     {
-        shared_ptr<Texture> tex = mCache->loadTextureFromFile("sprite",directory.c_str(),"sprite");
+        Texture* tex = mCache->loadTextureFromFile("sprite",directory.c_str(),"sprite");
         mTexture = tex->id;
         mWidth = tex->width;
         mHeight = tex->height;

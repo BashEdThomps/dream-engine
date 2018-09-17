@@ -51,28 +51,28 @@ namespace Dream
     class LuaComponent : public IScriptComponent
     {
     public: // Methods
-        LuaComponent(shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache);
+        LuaComponent(ProjectRuntime* project, ScriptCache* cache);
        ~LuaComponent() override;
 
         bool init() override;
         void updateComponent() override;
-        bool loadScript(shared_ptr<SceneObjectRuntime>) override;
-        bool createScript(shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>) override;
+        bool loadScript(SceneObjectRuntime*) override;
+        bool createScript(SceneObjectRuntime*, ScriptInstance*) override;
         void exposeAPI() override;
         void debugRegisteringClass(string) override;
-        void setInputMap(shared_ptr<gainput::InputMap>) override;
+        void setInputMap(gainput::InputMap*) override;
 
 
         bool updateNanoVG() override;
 
-        bool executeScriptInit  (shared_ptr<SceneObjectRuntime>) override;
-        bool executeScriptUpdate(shared_ptr<SceneObjectRuntime>) override;
-        bool executeScriptNanoVG(shared_ptr<SceneObjectRuntime>) override;
-        bool executeScriptInput (shared_ptr<SceneObjectRuntime>) override;
-        bool executeScriptEvent (shared_ptr<SceneObjectRuntime>) override;
+        bool executeScriptInit  (SceneObjectRuntime*) override;
+        bool executeScriptUpdate(SceneObjectRuntime*) override;
+        bool executeScriptNanoVG(SceneObjectRuntime*) override;
+        bool executeScriptInput (SceneObjectRuntime*) override;
+        bool executeScriptEvent (SceneObjectRuntime*) override;
 
-        void removeFromScriptMap(shared_ptr<SceneObjectRuntime>) override;
-        void addToScriptMap(shared_ptr<SceneObjectRuntime>, shared_ptr<ScriptInstance>) override;
+        void removeFromScriptMap(SceneObjectRuntime*) override;
+        void addToScriptMap(SceneObjectRuntime*, ScriptInstance*) override;
 
     private:
         lua_State* mState;

@@ -23,9 +23,9 @@ namespace Dream
 
     WavAudioInstance::WavAudioInstance
     (
-        const shared_ptr<AudioComponent>& comp,
-        const shared_ptr<AudioDefinition>& definition,
-        const shared_ptr<SceneObjectRuntime>& transform
+        AudioComponent* comp,
+        AudioDefinition* definition,
+        SceneObjectRuntime* transform
     ) : AudioInstance(comp, definition, transform)
 
     {

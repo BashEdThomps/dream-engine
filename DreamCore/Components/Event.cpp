@@ -22,10 +22,13 @@
 
 namespace Dream
 {
-    Event::Event(string sender, string type)
-        : DreamObject("Event")
+    Event::Event
+    (
+        SceneObjectRuntime* sender,
+        string type
+    ) : DreamObject("Event"),
+        mSender(sender)
     {
-        setAttribute(Constants::EVENT_SENDER,sender);
         setAttribute(Constants::EVENT_TYPE,type);
     }
 
@@ -36,12 +39,18 @@ namespace Dream
         mAttributes.clear();
     }
 
-    string Event::getSender()
+    SceneObjectRuntime*
+    Event::getSender
+    ()
+    const
     {
-        return getAttribute(Constants::EVENT_SENDER);
+        return mSender;
     }
 
-    string Event::getType()
+    string
+    Event::getType
+    ()
+    const
     {
         return getAttribute(Constants::EVENT_TYPE);
     }
@@ -51,7 +60,10 @@ namespace Dream
         mAttributes.insert(pair<string,string>(key,value));
     }
 
-    string Event::getAttribute(string key)
+    string
+    Event::getAttribute
+    (string key)
+    const
     {
         for (pair<string,string> it : mAttributes)
         {

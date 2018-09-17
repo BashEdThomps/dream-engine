@@ -18,6 +18,11 @@ namespace Dream
     {
         auto log = getLog();
         log->trace("Destructing");
+        if (mInputMap == nullptr)
+        {
+            delete mInputMap;
+            mInputMap = nullptr;
+        }
     }
 
     bool InputComponent::init()
@@ -25,13 +30,19 @@ namespace Dream
         auto log = getLog();
         log->info("Initialising...");
 
-        mInputMap = make_shared<InputMap>(mInputManager);
+        mInputMap = new InputMap(mInputManager);
 
         if (mUseKeyboard)
         {
             log->info("Creating Keyboard Device");
             auto keyboardDevice = mInputManager.CreateDevice<InputDeviceKeyboard>();
             mDevices.push_back(keyboardDevice);
+            mInputMap->MapBool(Key_UP,keyboardDevice,KeyUp);
+            mInputMap->MapBool(Key_DOWN,keyboardDevice,KeyDown);
+            mInputMap->MapBool(Key_LEFT,keyboardDevice,KeyLeft);
+            mInputMap->MapBool(Key_RIGHT,keyboardDevice,KeyRight);
+            mInputMap->MapBool(Key_RETURN,keyboardDevice,KeyReturn);
+            mInputMap->MapBool(Key_SPACE,keyboardDevice,KeySpace);
         }
 
         if (mUseMouse)
@@ -90,9 +101,31 @@ namespace Dream
     {
         auto log = getLog();
         beginUpdate();
+        if (mInputMap == nullptr)
+        {
+            log->error("Cannot update with null input map");
+            endUpdate();
+            return;
+        }
         mInputManager.Update();
-        /*
-        log->warn(
+
+        debugKeyboard();
+
+        endUpdate();
+    }
+
+    void
+    InputComponent::debugGamepad
+    ()
+    const
+    {
+        if (!mUseKeyboard)
+        {
+            return;
+        }
+
+        auto log = getLog();
+        log->trace(
             "Gamepad State\n"
 
             "FaceButtonNorth.....{}\n"
@@ -151,11 +184,53 @@ namespace Dream
              mInputMap->GetFloat(AnalogRightStickY),
              mInputMap->GetBool(AnalogRightButton)
         );
-        */
-        endUpdate();
     }
 
-    shared_ptr<InputMap> InputComponent::getInputMap() const
+    void
+    InputComponent::debugKeyboard
+    ()
+    const
+    {
+        if (!mUseKeyboard)
+        {
+            return;
+        }
+
+        auto log = getLog();
+        log->trace
+        (
+            "Keyboard State\n"
+            "Up....................{}\n"
+            "Down..................{}\n"
+            "Left..................{}\n"
+            "Right.................{}\n"
+
+            "Space.................{}\n"
+            "Return................{}\n",
+
+            mInputMap->GetBool(Key_UP),
+            mInputMap->GetBool(Key_DOWN),
+            mInputMap->GetBool(Key_LEFT),
+            mInputMap->GetBool(Key_RIGHT),
+
+            mInputMap->GetBool(Key_SPACE),
+            mInputMap->GetBool(Key_RETURN)
+        );
+
+    }
+
+    void
+    InputComponent::debugMouse
+    ()
+    const
+    {
+        if (!mUseMouse)
+        {
+            return;
+        }
+    }
+
+    InputMap* InputComponent::getInputMap() const
     {
         return mInputMap;
     }

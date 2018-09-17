@@ -61,13 +61,13 @@ namespace Dream
                 {
                     mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
                     (
-                        function< shared_ptr<SceneObjectRuntime> (shared_ptr<SceneObjectRuntime>) >
+                        function< SceneObjectRuntime* (SceneObjectRuntime*) >
                         (
-                            [&](shared_ptr<SceneObjectRuntime> currentSceneObject)
+                            [&](SceneObjectRuntime* currentSceneObject)
                             {
                                 if (currentSceneObject->hasPathInstance())
                                 {
-                                    shared_ptr<PathInstance> animInstance = currentSceneObject->getPathInstance();
+                                    PathInstance* animInstance = currentSceneObject->getPathInstance();
                                     // TODO: Fix dis
                                 }
                                 return nullptr;

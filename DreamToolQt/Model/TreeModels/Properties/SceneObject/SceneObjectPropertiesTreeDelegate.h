@@ -45,24 +45,24 @@ public:
     SceneObjectPropertiesTreeDelegate(SceneObjectPropertiesModel* model, QObject* parent = nullptr);
     ~SceneObjectPropertiesTreeDelegate() override;
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-    void setEditorData(QWidget *editor, const QModelIndex &index) const override;
-    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
-    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    QWidget *createEditor(QWidget *parent,const  QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    void setEditorData(QWidget *editor,const  QModelIndex &index) const override;
+    void setModelData(QWidget *editor, QAbstractItemModel *model,const  QModelIndex &index) const override;
+    void updateEditorGeometry(QWidget *editor,const  QStyleOptionViewItem &option,const  QModelIndex &index) const override;
 
 public slots:
     void onButton_CaptureTranslation(bool);
     void onButton_CaptureOrientation(bool);
     void onButton_CaptureScale(bool);
-    void onButton_RemoveAsset(bool,shared_ptr<DreamObject>);
-    void onButton_RemoveChild(bool,shared_ptr<DreamObject>);
+    void onButton_RemoveAsset(bool, DreamObject*);
+    void onButton_RemoveChild(bool, DreamObject*);
 
 signals:
     void notifyButton_CaptureTranslation();
     void notifyButton_CaptureOrientation();
     void notifyButton_CaptureScale();
-    void notifyButton_RemoveAsset(shared_ptr<IDefinition>);
-    void notifyButton_RemoveChild(shared_ptr<IDefinition>);
+    void notifyButton_RemoveAsset(IDefinition*);
+    void notifyButton_RemoveChild(IDefinition*);
 
 protected:
     SceneObjectPropertiesModel *mModelHandle;
@@ -71,6 +71,6 @@ protected:
     QWidget* createCaptureOrientationButton(QWidget* parent) const;
     QWidget* createCaptureScaleButton(QWidget* parent) const;
     QWidget* createTransformTypeComboBox(QWidget* parent) const;
-    QWidget* createRemoveAssetDefinitionButton(shared_ptr<IAssetDefinition> adHandle, QWidget* parent) const;
-    QWidget* createRemoveChildButton(shared_ptr<SceneObjectDefinition> sodHandle, QWidget* parent) const;
+    QWidget* createRemoveAssetDefinitionButton(IAssetDefinition* adHandle, QWidget* parent) const;
+    QWidget* createRemoveChildButton(SceneObjectDefinition* sodHandle, QWidget* parent) const;
 };

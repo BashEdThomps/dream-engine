@@ -51,12 +51,27 @@ namespace Dream
 {
     ProjectRuntime::ProjectRuntime
     (
-        const shared_ptr<Project>& project,
-        const shared_ptr<IWindowComponent>& windowComponent)
+        Project* project,
+        IWindowComponent* windowComponent)
         : IRuntime(project->getProjectDefinition()),
           mDone(false),
+          mTime(nullptr),
+          mCamera(nullptr),
+          mActiveSceneRuntime(nullptr),
           mProject(project),
-          mWindowComponent(windowComponent)
+          mAudioComponent(nullptr),
+          mInputComponent(nullptr),
+          mGraphicsComponent(nullptr),
+          mPhysicsComponent(nullptr),
+          mPathComponent(nullptr),
+          mScriptComponent(nullptr),
+          mNanoVGComponent(nullptr),
+          mWindowComponent(windowComponent),
+          mTextureCache(nullptr),
+          mModelCache(nullptr),
+          mFontCache(nullptr),
+          mShaderCache(nullptr),
+          mScriptCache(nullptr)
     {
         setLogClassName("ProjectRuntime");
         auto log = getLog();
@@ -68,9 +83,31 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Destructing" );
+
+        if (mActiveSceneRuntime != nullptr)
+        {
+            delete mActiveSceneRuntime;
+            mActiveSceneRuntime = nullptr;
+        }
+
+        deleteComponents();
+
+        if (mTime != nullptr)
+        {
+            delete mTime;
+            mTime = nullptr;
+        }
+
+        if (mCamera != nullptr)
+        {
+            delete mCamera;
+            mCamera = nullptr;
+        }
+
+        deleteCaches();
     }
 
-    const shared_ptr<IWindowComponent>&
+    IWindowComponent*
     ProjectRuntime::getWindowComponent
     ()
     {
@@ -84,7 +121,7 @@ namespace Dream
         mDone = done;
     }
 
-    const shared_ptr<Time>&
+    Time*
     ProjectRuntime::getTime
     ()
     {
@@ -98,7 +135,7 @@ namespace Dream
         auto log = getLog();
         log->info( "Initialising Components..." );
 
-        mTime = make_shared<Time>();
+        mTime = new Time();
 
         if (!initWindowComponent())
         {
@@ -157,7 +194,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mAudioComponent = make_shared<AudioComponent>();
+        mAudioComponent = new AudioComponent();
         if (!mAudioComponent->init())
         {
             log->error( "Unable to initialise AudioComponent." );
@@ -169,13 +206,15 @@ namespace Dream
     bool ProjectRuntime::initInputComponent()
     {
         auto log = getLog();
-        auto projectDef = dynamic_pointer_cast<ProjectDefinition>(mDefinition);
-        mInputComponent = make_shared<InputComponent>
+        auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+        mInputComponent =
+        new InputComponent
         (
             projectDef->getCaptureKeyboard(),
             projectDef->getCaptureMouse(),
             projectDef->getCaptureJoystick()
         );
+
         if (!mInputComponent->init())
         {
             log->error( "Unable to initialise InputComponent." );
@@ -189,7 +228,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mPhysicsComponent = make_shared<PhysicsComponent>();
+        mPhysicsComponent = new PhysicsComponent();
         mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
         {
@@ -204,8 +243,8 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mCamera = make_shared<Camera>();
-        mGraphicsComponent = make_shared<GraphicsComponent>(mCamera,mWindowComponent);
+        mCamera = new Camera();
+        mGraphicsComponent = new GraphicsComponent(mCamera,mWindowComponent);
         mGraphicsComponent->setTime(mTime);
 
         if (!mGraphicsComponent->init())
@@ -214,7 +253,7 @@ namespace Dream
             return false;
         }
 
-        mNanoVGComponent = make_shared<NanoVGComponent>(mWindowComponent);
+        mNanoVGComponent = new NanoVGComponent(mWindowComponent);
         if (!mNanoVGComponent->init())
         {
             log->error( "Unable to initialise NanoVG Component.");
@@ -228,7 +267,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mPathComponent = make_shared<PathComponent>();
+        mPathComponent = new PathComponent();
         mPathComponent->setTime(mTime);
         if (!mPathComponent->init())
         {
@@ -244,9 +283,9 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mScriptComponent = dynamic_pointer_cast<IScriptComponent>(
-            make_shared<LuaComponent>(
-                dynamic_pointer_cast<ProjectRuntime>(shared_from_this()),
+        mScriptComponent = dynamic_cast<IScriptComponent*>(
+            new LuaComponent(
+                dynamic_cast<ProjectRuntime*>(this),
                 mScriptCache
             )
         );
@@ -260,6 +299,11 @@ namespace Dream
         if (mInputComponent != nullptr)
         {
             mScriptComponent->setInputMap(mInputComponent->getInputMap());
+            log->info("Passed InputMap to ScriptComponent");
+        }
+        else
+        {
+            log->error("Cannot pass InputMap to ScriptComponent, nullptr");
         }
         return true;
     }
@@ -268,12 +312,85 @@ namespace Dream
     ProjectRuntime::initCaches
     ()
     {
-        mFontCache = make_shared<FontCache>();
-        mModelCache = make_shared<AssimpCache>();
-        mShaderCache = make_shared<ShaderCache>();
-        mTextureCache = make_shared<MaterialCache>();
-        mScriptCache = make_shared<ScriptCache>();
+        mFontCache    = new FontCache();
+        mModelCache   = new AssimpCache();
+        mShaderCache  = new ShaderCache();
+        mTextureCache = new MaterialCache();
+        mScriptCache  = new ScriptCache();
         return true;
+    }
+
+    void ProjectRuntime::deleteCaches()
+    {
+        if (mFontCache != nullptr)
+        {
+            delete mFontCache;
+            mFontCache = nullptr;
+        }
+
+        if (mModelCache != nullptr)
+        {
+            delete mModelCache;
+            mModelCache = nullptr;
+        }
+
+        if (mShaderCache != nullptr)
+        {
+            delete mShaderCache;
+            mShaderCache = nullptr;
+        }
+
+        if (mTextureCache != nullptr)
+        {
+            delete mTextureCache;
+            mTextureCache = nullptr;
+        }
+
+        if (mScriptCache != nullptr)
+        {
+            delete mScriptCache;
+            mScriptCache = nullptr;
+        }
+
+    }
+
+    void ProjectRuntime::deleteComponents()
+    {
+        if (mAudioComponent != nullptr)
+        {
+            delete mAudioComponent;
+            mAudioComponent = nullptr;
+        }
+        if (mInputComponent != nullptr)
+        {
+            delete mInputComponent;
+            mInputComponent = nullptr;
+        }
+        if (mGraphicsComponent != nullptr)
+        {
+            delete mGraphicsComponent;
+            mGraphicsComponent = nullptr;
+        }
+        if (mPhysicsComponent != nullptr)
+        {
+            delete mPhysicsComponent;
+            mPhysicsComponent = nullptr;
+        }
+        if (mPathComponent != nullptr)
+        {
+            delete mPathComponent;
+            mPathComponent = nullptr;
+        }
+        if (mScriptComponent != nullptr)
+        {
+            delete mScriptComponent;
+            mScriptComponent = nullptr;
+        }
+        if (mNanoVGComponent != nullptr)
+        {
+            delete mNanoVGComponent;
+            mNanoVGComponent = nullptr;
+        }
     }
 
     bool
@@ -283,49 +400,49 @@ namespace Dream
         return mDone;
     }
 
-    const shared_ptr<PathComponent>&
+    PathComponent*
     ProjectRuntime::getPathComponent
     ()
     {
         return mPathComponent;
     }
 
-    const shared_ptr<AudioComponent>&
+    AudioComponent*
     ProjectRuntime::getAudioComponent
     ()
     {
         return mAudioComponent;
     }
 
-    const shared_ptr<PhysicsComponent>&
+    PhysicsComponent*
     ProjectRuntime::getPhysicsComponent
     ()
     {
         return mPhysicsComponent;
     }
 
-    const shared_ptr<GraphicsComponent>&
+    GraphicsComponent*
     ProjectRuntime::getGraphicsComponent
     ()
     {
         return mGraphicsComponent;
     }
 
-    const shared_ptr<NanoVGComponent>&
+    NanoVGComponent*
     ProjectRuntime::getNanoVGComponent
     ()
     {
        return mNanoVGComponent;
     }
 
-    const shared_ptr<Camera>&
+    Camera*
     ProjectRuntime::getCamera
     ()
     {
         return mCamera;
     }
 
-    const shared_ptr<IScriptComponent>&
+    IScriptComponent*
     ProjectRuntime::getScriptComponent
     ()
     {
@@ -407,7 +524,7 @@ namespace Dream
         return mActiveSceneRuntime != nullptr;
     }
 
-    const shared_ptr<SceneRuntime>&
+    SceneRuntime*
     ProjectRuntime::getActiveSceneRuntime
     ()
     {
@@ -426,9 +543,9 @@ namespace Dream
         }
     }
 
-    shared_ptr<SceneRuntime>
+    SceneRuntime*
     ProjectRuntime::constructActiveSceneRuntime
-    (const shared_ptr<SceneDefinition>& sceneDefinition)
+    (SceneDefinition* sceneDefinition)
     {
         auto log = getLog();
         if (sceneDefinition == nullptr)
@@ -441,12 +558,12 @@ namespace Dream
         // Load the new scene
         log->info( "Loading SceneRuntime" );
 
-        mActiveSceneRuntime = make_shared<SceneRuntime>(
-            sceneDefinition ,
-            dynamic_pointer_cast<ProjectRuntime>(shared_from_this())
+        mActiveSceneRuntime = new SceneRuntime(
+            sceneDefinition,
+            this
         );
 
-        mActiveSceneRuntime->useDefinition(dynamic_pointer_cast<SceneDefinition>(sceneDefinition));
+        mActiveSceneRuntime->useDefinition();
 
         if (mGraphicsComponent != nullptr)
         {
@@ -462,7 +579,7 @@ namespace Dream
         return mActiveSceneRuntime;
     }
 
-    const shared_ptr<Project>&
+    Project*
     ProjectRuntime::getProject
     ()
     {
@@ -471,34 +588,34 @@ namespace Dream
 
     void
     ProjectRuntime::useDefinition
-    (shared_ptr<IDefinition>)
+    ()
     {
         initCaches();
         initComponents();
     }
 
-    const shared_ptr<FontCache>&
+    FontCache*
     ProjectRuntime::getFontCache
     ()
     {
         return mFontCache;
     }
 
-    const shared_ptr<ShaderCache>&
+    ShaderCache*
     ProjectRuntime::getShaderCache
     ()
     {
         return mShaderCache;
     }
 
-    const shared_ptr<MaterialCache>&
+    MaterialCache*
     ProjectRuntime::getTextureCache
     ()
     {
         return mTextureCache;
     }
 
-    const shared_ptr<AssimpCache>&
+    AssimpCache*
     ProjectRuntime::getModelCache
     ()
     {
@@ -509,7 +626,6 @@ namespace Dream
     ProjectRuntime::resetActiveSceneRuntime
     ()
     {
-        mActiveSceneRuntime.reset();
+        delete mActiveSceneRuntime;
     }
-
 }

@@ -42,7 +42,12 @@ namespace Dream
 
     enum KeyboardInputSource
     {
-
+        Key_UP,
+        Key_DOWN,
+        Key_LEFT,
+        Key_RIGHT,
+        Key_SPACE,
+        Key_RETURN
     };
 
     enum MouseInputSource
@@ -59,14 +64,18 @@ namespace Dream
         bool init() override;
         void updateComponent() override;
 
-        shared_ptr<InputMap> getInputMap() const;
+        InputMap* getInputMap() const;
+
+        void debugKeyboard() const;
+        void debugMouse() const;
+        void debugGamepad() const;
 
     private:
         const static float ANALOG_DEAD_ZONE;
         bool mUseKeyboard;
         bool mUseMouse;
         bool mUseJoystick;
-        shared_ptr<InputMap> mInputMap;
+        InputMap* mInputMap;
         InputManager mInputManager;
         vector<DeviceId> mDevices;
     };

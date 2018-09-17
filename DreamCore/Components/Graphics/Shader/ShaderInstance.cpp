@@ -31,9 +31,9 @@ namespace Dream
     const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
 
     ShaderInstance::ShaderInstance
-    (const shared_ptr<ShaderCache>& cache,
-     const shared_ptr<ShaderDefinition>& definition,
-     const shared_ptr<SceneObjectRuntime>& transform)
+    (ShaderCache* cache,
+     ShaderDefinition* definition,
+     SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mPointLightCount(0),
           mPointLightCountLocation(UNIFORM_NOT_FOUND),
@@ -298,7 +298,7 @@ namespace Dream
         mUniformVector.push_back(newUniform);
     }
 
-    void ShaderInstance::bindMaterial(const shared_ptr<AssimpMaterial>& material)
+    void ShaderInstance::bindMaterial(AssimpMaterial* material)
     {
         checkGLError();
         auto log = getLog();
@@ -347,7 +347,7 @@ namespace Dream
 
     }
 
-    void ShaderInstance::bindLight(const shared_ptr<LightInstance>& light)
+    void ShaderInstance::bindLight(LightInstance* light)
     {
         auto log = getLog();
         log->info("Binding light {} ({})",light->getNameAndUuidString(),light->getType());

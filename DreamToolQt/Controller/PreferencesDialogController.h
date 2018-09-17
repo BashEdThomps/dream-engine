@@ -27,8 +27,8 @@ class PreferencesDialogController : public QObject
 {
     Q_OBJECT
 public:
-    explicit PreferencesDialogController(QObject *parent = 0);
-    ~PreferencesDialogController();
+    explicit PreferencesDialogController(QObject *parent = nullptr);
+    ~PreferencesDialogController() override;
     void showDialog();
     void hideDialog();
     PreferencesModel& getPreferencesModel();

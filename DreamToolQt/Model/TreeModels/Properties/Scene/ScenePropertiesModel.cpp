@@ -28,7 +28,7 @@ using Dream::Transform3D;
 using Dream::Constants;
 
 ScenePropertiesModel::ScenePropertiesModel
-(shared_ptr<SceneDefinition> scene, QTreeView* parent)
+(SceneDefinition* scene, QTreeView* parent)
     : AbstractPropertiesModel(new ScenePropertiesTreeDelegate(this,parent), parent),
       mSceneDefinitionHandle(scene)
 {

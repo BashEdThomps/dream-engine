@@ -23,11 +23,11 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-const string PreferencesModel::PREFERENCES_DIRECTORY_NAME = "DreamTool";
-const string PreferencesModel::PREFERENCES_FILE_NAME = "preferences.json";
+ string PreferencesModel::PREFERENCES_DIRECTORY_NAME = "DreamTool";
+ string PreferencesModel::PREFERENCES_FILE_NAME = "preferences.json";
 
-const string PreferencesModel::JSON_DEFAULT_PROJECT_DIRECTORY = "default_project_directory";
-const string PreferencesModel::JSON_EXTERNAL_TEXT_EDITOR_PATH = "external_text_editor_path";
+ string PreferencesModel::JSON_DEFAULT_PROJECT_DIRECTORY = "default_project_directory";
+ string PreferencesModel::JSON_EXTERNAL_TEXT_EDITOR_PATH = "external_text_editor_path";
 
 PreferencesModel::PreferencesModel
 (QObject *parent)

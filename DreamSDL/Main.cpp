@@ -7,6 +7,7 @@
 #define MINIMUM_ARGUMENTS 3
 
 using std::shared_ptr;
+using std::unique_ptr;
 using Dream::Constants;
 using Dream::Project;
 using Dream::SceneState;
@@ -31,8 +32,8 @@ int main(int argc, const char** argv)
 
     auto log = spdlog::stdout_color_mt("Main");
 
-    shared_ptr<SDLWindowComponent> windowComponent = make_shared<SDLWindowComponent>();
-    shared_ptr<Project> project = make_shared<Project>(windowComponent);
+    SDLWindowComponent* windowComponent = new SDLWindowComponent();
+    Project* project = new Project(windowComponent);
 
     log->trace("Starting...");
 
@@ -55,9 +56,8 @@ int main(int argc, const char** argv)
 
     log->info("√ Definition Loading Complete... Creating Runtime");
 
-    spdlog::set_level(spdlog::level::off);
 
-    shared_ptr<ProjectRuntime> pr = project->createProjectRuntime();
+    ProjectRuntime* pr = project->createProjectRuntime();
 
     if (pr == nullptr)
     {
@@ -65,7 +65,7 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    shared_ptr<ProjectDefinition> pd = project->getProjectDefinition();
+    ProjectDefinition* pd = project->getProjectDefinition();
 
     if (pd == nullptr)
     {
@@ -73,7 +73,7 @@ int main(int argc, const char** argv)
         return 1;
     }
 
-    shared_ptr<SceneDefinition> startupSceneDefinition  = pd->getStartupSceneDefinition();
+    SceneDefinition* startupSceneDefinition  = pd->getStartupSceneDefinition();
 
     if (startupSceneDefinition == nullptr)
     {
@@ -90,6 +90,8 @@ int main(int argc, const char** argv)
         log->error("Unable to create scene runtime, gotta go...");
         return -1;
     }
+
+    //spdlog::set_level(spdlog::level::off);
 
     // Run the project
     unsigned int frames = 0;
@@ -117,5 +119,7 @@ int main(int argc, const char** argv)
 
     spdlog::set_level(spdlog::level::trace);
     log->info("Run is done. Performing stack-based clean up");
+    delete project;
+    delete windowComponent;
     return 0;
 }

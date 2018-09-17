@@ -190,7 +190,7 @@ namespace Dream
 
     void
     AudioComponent::pushToPlayQueue
-    (shared_ptr<AudioInstance> audioAsset)
+    (AudioInstance* audioAsset)
     {
         auto log = getLog();
         if (find(mPlayQueue.begin(),mPlayQueue.end(), audioAsset) == mPlayQueue.end())
@@ -230,7 +230,7 @@ namespace Dream
 
     void
     AudioComponent::pushToPauseQueue
-    (shared_ptr<AudioInstance> audioAsset)
+    (AudioInstance* audioAsset)
     {
         auto log = getLog();
         if (find(mPauseQueue.begin(),mPauseQueue.end(), audioAsset) == mPauseQueue.end())
@@ -242,7 +242,7 @@ namespace Dream
 
     void
     AudioComponent::pushToStopQueue
-    (shared_ptr<AudioInstance> asset)
+    (AudioInstance* asset)
     {
         auto log = getLog();
         if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
@@ -267,7 +267,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Updating Play Queue");
-        for (shared_ptr<AudioInstance> audioAsset : mPlayQueue)
+        for (AudioInstance* audioAsset : mPlayQueue)
         {
             if (audioAsset == nullptr)
             {
@@ -292,7 +292,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info("Updating Pause Queue");
-        for (shared_ptr<AudioInstance> audioAsset : mPauseQueue)
+        for (AudioInstance* audioAsset : mPauseQueue)
         {
             if (audioAsset == nullptr)
             {
@@ -318,7 +318,7 @@ namespace Dream
         auto log = getLog();
         log->info("Updating Stop Queue");
 
-        for (shared_ptr<AudioInstance> audioAsset : mStopQueue)
+        for (AudioInstance* audioAsset : mStopQueue)
         {
             if (audioAsset == nullptr)
             {
@@ -337,30 +337,10 @@ namespace Dream
         mStopQueue.clear();
     }
 
-    void
-    AudioComponent::playAudioAsset
-    (shared_ptr<AudioInstance> asset)
-    {
-        pushToPlayQueue(asset);
-    }
-
-    void
-    AudioComponent::pauseAudioAsset
-    (shared_ptr<AudioInstance> asset)
-    {
-        pushToPauseQueue(asset);
-    }
-
-    void
-    AudioComponent::stopAudioAsset
-    (shared_ptr<AudioInstance> asset)
-    {
-        pushToStopQueue(asset);
-    }
-
     float
     AudioComponent::getSampleOffset
     (ALuint source)
+    const
     {
         float sampleOffset;
         alGetSourcef(source, AL_SAMPLE_OFFSET, &sampleOffset );
@@ -369,7 +349,8 @@ namespace Dream
 
     vector<char>
     AudioComponent::getAudioBuffer
-    (shared_ptr<AudioInstance> audioAsset, int offset, int length)
+    (AudioInstance* audioAsset, int offset, int length)
+    const
     {
         vector<char> retval = vector<char>(length);
         if (audioAsset == nullptr)
@@ -386,7 +367,8 @@ namespace Dream
 
     float
     AudioComponent::getSampleOffset
-    (shared_ptr<AudioInstance> audioAsset )
+    (AudioInstance* audioAsset )
+    const
     {
         if (audioAsset == nullptr)
         {
@@ -397,7 +379,8 @@ namespace Dream
 
     AudioStatus
     AudioComponent::getAudioStatus
-    (shared_ptr<AudioInstance> audioAsset)
+    (AudioInstance* audioAsset)
+    const
     {
         auto log = getLog();
         if (audioAsset == nullptr)
@@ -421,9 +404,9 @@ namespace Dream
         }
     }
 
-    shared_ptr<AudioInstance>
+    AudioInstance*
     AudioComponent::newAudioInstance
-    (shared_ptr<AudioDefinition> definition, shared_ptr<SceneObjectRuntime> rt)
+    (AudioDefinition* definition, SceneObjectRuntime* rt)
     {
         auto log = getLog();
 
@@ -434,15 +417,11 @@ namespace Dream
 
         if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
-            return make_shared<WavAudioInstance>(
-                dynamic_pointer_cast<AudioComponent>(shared_from_this()),definition,rt
-            );
+            return new WavAudioInstance(this, definition,rt);
         }
         else if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
-            return make_shared<OggAudioInstance>(
-                dynamic_pointer_cast<AudioComponent>(shared_from_this()), definition,rt
-            );
+            return new OggAudioInstance(this, definition,rt);
         }
 
         log->error("Error, unrecognised audio format {}", definition->getFormat());

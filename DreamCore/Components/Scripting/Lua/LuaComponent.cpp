@@ -58,7 +58,7 @@ using std::string;
 namespace Dream
 {
     LuaComponent::LuaComponent
-    (shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache)
+    (ProjectRuntime* project, ScriptCache* cache)
         : IScriptComponent(project, cache)
 
     {
@@ -87,12 +87,12 @@ namespace Dream
         sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math);
         log->info( "Got a sol state" );
         exposeAPI();
-        return false;
+        return true;
     }
 
     bool
     LuaComponent::createScript
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<ScriptInstance> script)
+    (SceneObjectRuntime* sceneObject, ScriptInstance* script)
     {
         auto log = getLog();
         if (script == nullptr)
@@ -133,14 +133,14 @@ namespace Dream
      */
     bool
     LuaComponent::loadScript
-    (shared_ptr<SceneObjectRuntime> sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
 
         log->info( "loadScript called for {}", id );
 
-        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
+        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -175,7 +175,8 @@ namespace Dream
            // An error has occured
            sol::error err = exec_result;
            std::string what = err.what();
-           log->error("Could not execute lua script: {}",what);
+           log->critical("{}:\nCould not execute lua script:\n{}",
+                      sceneObject->getNameAndUuidString(),what);
            scriptInstance->setError(true);
            return false;
         }
@@ -200,30 +201,20 @@ namespace Dream
 
             if (!scriptObj->getInitialised())
             {
-                if(!executeScriptInit(sceneObj))
+                executeScriptInit(sceneObj);
+            }
+            else
+            {
+                executeScriptUpdate(sceneObj);
+
+                if (sceneObj->hasFocus())
                 {
-                    return;
+                    executeScriptInput(sceneObj);
                 }
-            }
 
-            if (!executeScriptUpdate(sceneObj))
-            {
-                return;
-            }
-
-            if (sceneObj->hasFocus())
-            {
-                if (!executeScriptInput(sceneObj))
+                if (sceneObj->hasEvents())
                 {
-                    return;
-                }
-            }
-
-            if (sceneObj->hasEvents())
-            {
-                if (!executeScriptEvent(sceneObj))
-                {
-                    return;
+                    executeScriptEvent(sceneObj);
                 }
             }
         }
@@ -239,7 +230,7 @@ namespace Dream
 
         for (auto entry : mScriptMap)
         {
-            shared_ptr<SceneObjectRuntime> key = entry.first;
+            SceneObjectRuntime* key = entry.first;
 
             if (!executeScriptNanoVG(key))
             {
@@ -251,11 +242,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptUpdate
-    (shared_ptr<SceneObjectRuntime> sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
+        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -275,7 +266,12 @@ namespace Dream
             // An error has occured
            sol::error err = result;
            std::string what = err.what();
-           log->error("Could not execute onUpdate in lua script: {}",what);
+           log->critical
+            (
+               "{}:\nCould not execute onUpdate in lua script:\n{}",
+                sceneObject->getNameAndUuidString(),
+                what
+            );
            scriptInstance->setError(true);
            return false;
         }
@@ -285,11 +281,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptNanoVG
-    (shared_ptr<SceneObjectRuntime> sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
+        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -303,11 +299,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptInit
-    (shared_ptr<SceneObjectRuntime> sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
+        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError() )
         {
@@ -333,7 +329,12 @@ namespace Dream
             // An error has occured
            sol::error err = initResult;
            std::string what = err.what();
-           log->error("Could not execute onInit in lua script: {}",what);
+           log->critical
+           (
+                "{}\nCould not execute onInit in lua script:\n{}",
+                sceneObject->getNameAndUuidString(),
+                what
+            );
            scriptInstance->setError(true);
            return false;
         }
@@ -345,11 +346,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptInput
-    (shared_ptr<SceneObjectRuntime> sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
+        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -369,7 +370,14 @@ namespace Dream
             // An error has occured
            sol::error err = result;
            std::string what = err.what();
-           log->error("Could not execute onInput in lua script: {}",what);
+           log->critical
+            (
+                "{}:\n"
+                "Could not execute onInput in lua script:\n"
+                "{}",
+                sceneObject->getNameAndUuidString(),
+                what
+            );
            scriptInstance->setError(true);
            return false;
         }
@@ -379,11 +387,11 @@ namespace Dream
 
     bool
     LuaComponent::executeScriptEvent
-    (shared_ptr<SceneObjectRuntime> sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
         string id = sceneObject->getUuid();
-        shared_ptr<LuaScriptInstance> scriptInstance = dynamic_pointer_cast<LuaScriptInstance>(sceneObject->getScriptInstance());
+        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
 
         if (scriptInstance->getError())
         {
@@ -391,22 +399,34 @@ namespace Dream
             return false;
         }
 
-        log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
+        log->critical( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
 
         sol::state_view solStateView(mState);
         sol::function onEventFunction = solStateView[sceneObject->getUuid()][Constants::LUA_EVENT_FUNCTION];
 
-        auto result = onEventFunction(sceneObject,sceneObject->getEventQueue());
-
-        if (!result.valid())
+        for (Event e : sceneObject->getEventQueue())
         {
-            // An error has occured
-           sol::error err = result;
-           std::string what = err.what();
-           log->error("Could not execute onEvent in lua script: {}",what);
-           scriptInstance->setError(true);
-           return false;
+            auto result = onEventFunction(sceneObject,e);
+
+            if (!result.valid())
+            {
+                // An error has occured
+               sol::error err = result;
+               std::string what = err.what();
+               log->error
+                (
+                   "{}:\n"
+                   "Could not execute onEvent in lua script:\n"
+                   "{}",
+                    sceneObject->getNameAndUuidString(),
+                    what
+                );
+               scriptInstance->setError(true);
+               return false;
+            }
         }
+
+        sceneObject->clearEventQueue();
 
         return true;
     }
@@ -431,8 +451,6 @@ namespace Dream
             "getCamera",&ProjectRuntime::getCamera
         );
         stateView["Runtime"] = mProjectRuntime;
-        stateView["Time"] = mProjectRuntime->getTime();
-        stateView["Camera"] = mProjectRuntime->getCamera();
     }
 
     void
@@ -460,6 +478,8 @@ namespace Dream
             "setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation),
             "orbit",&Camera::orbit
         );
+
+        stateView["Camera"] = mProjectRuntime->getCamera();
 
         /*
             .enum_("CameraMovement")
@@ -587,7 +607,9 @@ namespace Dream
         sol::state_view stateView(mState);
         stateView.new_usertype<PhysicsObjectInstance>("PhysicsObjectInstance",
             "getUuid", &PhysicsObjectInstance::getUuid,
-            "setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity
+            "setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity,
+            "setLinearFactor", &PhysicsObjectInstance::setLinearFactor,
+            "setAngularFactor", &PhysicsObjectInstance::setAngularFactor
         );
     }
 
@@ -599,6 +621,7 @@ namespace Dream
         sol::state_view stateView(mState);
         stateView.new_usertype<SceneObjectRuntime>("SceneObjectRuntime",
             "getName",&SceneObjectRuntime::getName,
+            "getNameAndUuidString",&SceneObjectRuntime::getNameAndUuidString,
             "getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid,
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
@@ -699,6 +722,8 @@ namespace Dream
             "now",&Time::now,
             "nowLL",&Time::nowLL
         );
+
+        stateView["Time"] = mProjectRuntime->getTime();
     }
 
     void
@@ -755,7 +780,7 @@ namespace Dream
 
         );
 
-        stateView["AudioStatus"] = stateView.create_table_with(
+        stateView.new_enum("AudioStatus",
             "PLAYING", AudioStatus::PLAYING,
             "PAUSED",  AudioStatus::PAUSED,
             "STOPPED", AudioStatus::STOPPED
@@ -778,7 +803,7 @@ namespace Dream
             "GetFloatDelta",&gainput::InputMap::GetFloatDelta
         );
 
-        stateView["InputSource"] = stateView.create_table_with(
+        stateView.new_enum("JSInputSource",
             "FaceButtonNorth", JSInputSource::FaceButtonNorth,
             "FaceButtonEast", JSInputSource::FaceButtonEast,
             "FaceButtonWest", JSInputSource::FaceButtonWest,
@@ -807,14 +832,23 @@ namespace Dream
             "AnalogRightStickY", JSInputSource::AnalogRightStickY,
             "AnalogRightButton", JSInputSource::AnalogRightButton
         );
+
+        stateView.new_enum("KBInputSource",
+            "Key_UP",     KeyboardInputSource::Key_UP,
+            "Key_DOWN",   KeyboardInputSource::Key_DOWN,
+            "Key_LEFT",   KeyboardInputSource::Key_LEFT,
+            "Key_RIGHT",  KeyboardInputSource::Key_RIGHT,
+            "Key_SPACE",  KeyboardInputSource::Key_SPACE,
+            "Key_RETURN", KeyboardInputSource::Key_RETURN
+        );
     }
 
     void
     LuaComponent::removeFromScriptMap
-    (shared_ptr<SceneObjectRuntime> sceneObject)
+    (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
-        map<shared_ptr<SceneObjectRuntime>,shared_ptr<ScriptInstance>>::iterator iter;
+        map<SceneObjectRuntime*,ScriptInstance*>::iterator iter;
         for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
         {
             if ((*iter).first == sceneObject)
@@ -836,7 +870,7 @@ namespace Dream
 
     void
     LuaComponent::addToScriptMap
-    (shared_ptr<SceneObjectRuntime> sceneObject, shared_ptr<ScriptInstance> script)
+    (SceneObjectRuntime* sceneObject, ScriptInstance* script)
     {
         auto log = getLog();
         log->info(
@@ -848,10 +882,7 @@ namespace Dream
         if (createScript(sceneObject,script))
         {
             mScriptMap.insert(
-                pair<
-                    shared_ptr<SceneObjectRuntime>,
-                    shared_ptr<ScriptInstance>
-                >(sceneObject,script)
+                pair<SceneObjectRuntime*,ScriptInstance*>(sceneObject,script)
             );
         }
     }
@@ -1003,7 +1034,7 @@ namespace Dream
 
     void
     LuaComponent::setInputMap
-    (shared_ptr<gainput::InputMap> map)
+    (gainput::InputMap* map)
     {
         mInputMap = map;
     }

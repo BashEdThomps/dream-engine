@@ -50,20 +50,20 @@ class AddAssetToSceneObjectAction : public QAction
 {
 public:
     AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHadle, QObject *parent = nullptr);
+    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, QObject *parent = nullptr);
 
     AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHadle, const QString &text, QObject *parent = nullptr);
+    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, const QString &text, QObject *parent = nullptr);
 
     AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHadle, const QIcon &icon, const QString &text, QObject *parent = nullptr);
+    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, const QIcon &icon, const QString &text, QObject *parent = nullptr);
 
-    ScenegraphTreeItem* getItemHandle() const;
-    shared_ptr<IAssetDefinition> getAssetDefinitionHandle() const;
+    ScenegraphTreeItem* getItemHandle() ;
+    IAssetDefinition* getAssetDefinitionHandle() ;
 
 private:
     ScenegraphTreeItem* mItemHandle;
-    shared_ptr<IAssetDefinition> mAssetDefinitionHandle;
+    IAssetDefinition* mAssetDefinitionHandle;
 
 };
 
@@ -74,20 +74,20 @@ public:
     ScenegraphMenuAction(ScenegraphTreeItem* itemHandle, const QString &text, QObject *parent = nullptr);
     ScenegraphMenuAction(ScenegraphTreeItem* itemHandle, const QIcon &icon, const QString &text, QObject *parent = nullptr);
 
-    ScenegraphTreeItem* getItemHandle() const;
+    ScenegraphTreeItem* getItemHandle() ;
 private:
     ScenegraphTreeItem* mItemHandle;
 
 };
 
-class CreateAssetAction : public QAction
+class CreateAssetDefinitionAction : public QAction
 {
 public:
-    CreateAssetAction(QString type,QObject *parent = nullptr);
-    CreateAssetAction(QString type,const QString &text, QObject *parent = nullptr);
-    CreateAssetAction(QString type,const QIcon &icon, const QString &text, QObject *parent = nullptr);
+    CreateAssetDefinitionAction(QString type, QObject *parent = nullptr);
+    CreateAssetDefinitionAction(QString type, const QString &text, QObject *parent = nullptr);
+    CreateAssetDefinitionAction(QString type, const QIcon &icon, const QString &text, QObject *parent = nullptr);
 
-    QString getType() const;
+    QString getType() ;
 
 private:
     QString mType;
@@ -103,9 +103,9 @@ public:
     (const QString &text, QObject *parent = nullptr);
 
     DeleteAssetDefinitionAction
-    (const QIcon &icon, const QString &text, QObject *parent = nullptr);
+    (const QIcon &icon,const QString &text, QObject *parent = nullptr);
 
-    shared_ptr<IAssetDefinition> mItemHandle;
+    IAssetDefinition* mItemHandle;
 };
 
 class MainWindowController : public QMainWindow
@@ -172,8 +172,8 @@ public slots:
     void onInvalidProjectDirectory(QString directory);
     void onNoSceneSelected();
     void showStatusBarMessage(QString msg);
-    void onSceneStopped(shared_ptr<SceneDefinition> scene);
-    void onProjectDefinitionChanged(shared_ptr<ProjectDefinition>);
+    void onSceneStopped(SceneDefinition* scene);
+    void onProjectDefinitionChanged(ProjectDefinition*);
     void onScenegraphTreeExpandRequested();
 
     void keyPressEvent(QKeyEvent*) override;
@@ -202,7 +202,7 @@ private slots:
     void onMenu_Debug_LogLevelChanged(bool);
 
 private:
-    shared_ptr<ProjectDefinition> mProjectDefinitionHandle;
+    ProjectDefinition* mProjectDefinitionHandle;
     bool shouldPassKey(int key);
     void setupGL(QWidget *parent);
     QOpenGLWindowComponent* mWindowComponentHandle;

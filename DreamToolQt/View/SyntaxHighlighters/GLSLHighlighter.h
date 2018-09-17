@@ -47,7 +47,8 @@ protected:
 private:
     void addPatternFromList(QStringList &list, QTextCharFormat &format);
 
-    struct HighlightingRule {
+    struct HighlightingRule
+    {
         QRegExp pattern;
         QTextCharFormat format;
     };

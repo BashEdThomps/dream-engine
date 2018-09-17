@@ -41,11 +41,11 @@ public:
 
     void appendChild(AbstractPropertiesItem *child);
     AbstractPropertiesItem *child(int row);
-    int childCount() const;
-    int childNumber() const;
+    int childCount() ;
+    int childNumber() ;
 
-    int row() const;
-    int columnCount() const;
+    int row() ;
+    int columnCount() ;
 
     AbstractPropertiesItem *parentItem();
     void setParent(AbstractPropertiesItem* parent);
@@ -53,7 +53,7 @@ public:
     void setDelegate(QItemDelegate* delegate);
     QItemDelegate* getDelegate();
 
-    virtual bool setData(int column, const QVariant &value) = 0;
+    virtual bool setData(int column,const  QVariant &value) = 0;
     virtual QVariant data(int column) = 0;
 
 protected:

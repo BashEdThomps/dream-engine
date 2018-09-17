@@ -27,9 +27,9 @@ public:
     CheckBoxDelegate(QObject* parent = nullptr);
     ~CheckBoxDelegate();
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-    void setEditorData(QWidget *editor, const QModelIndex &index) const override;
-    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
-    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    QWidget *createEditor(QWidget *parent,  QStyleOptionViewItem &option,  QModelIndex &index)  override;
+    void setEditorData(QWidget *editor,  QModelIndex &index)  override;
+    void setModelData(QWidget *editor, QAbstractItemModel *model,  QModelIndex &index)  override;
+    void updateEditorGeometry(QWidget *editor,  QStyleOptionViewItem &option,  QModelIndex &index)  override;
 
 };

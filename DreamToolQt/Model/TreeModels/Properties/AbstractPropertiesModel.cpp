@@ -45,7 +45,6 @@ AbstractPropertiesModel::~AbstractPropertiesModel
 AbstractPropertiesItem*
 AbstractPropertiesModel::getItem
 (const QModelIndex &index)
-const
 {
     if (index.isValid())
     {
@@ -59,7 +58,7 @@ const
 }
 
 bool AbstractPropertiesModel::setHeaderData
-(int section, Qt::Orientation orientation, const QVariant &value, int role)
+(int section, Qt::Orientation orientation,const  QVariant &value, int role)
 {
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
     {
@@ -78,7 +77,7 @@ bool AbstractPropertiesModel::setHeaderData
 
 bool
 AbstractPropertiesModel::setData
-(const QModelIndex &index, const QVariant &value, int role)
+(const QModelIndex &index,const   QVariant &value, int role)
 {
     AbstractPropertiesItem *item = getItem(index);
     bool result = item->setData(index.column(), value);
@@ -93,7 +92,7 @@ AbstractPropertiesModel::setData
 
 QModelIndex
 AbstractPropertiesModel::parent
-(const QModelIndex &index)
+(const  QModelIndex &index)
 const
 {
     if (!index.isValid())
@@ -119,7 +118,7 @@ const
 
 int
 AbstractPropertiesModel::columnCount
-(const QModelIndex &parent)
+(const  QModelIndex &parent)
 const
 {
     if (parent.isValid())
@@ -135,7 +134,7 @@ const
 
 QVariant
 AbstractPropertiesModel::data
-(const QModelIndex &index, int role)
+(const  QModelIndex &index, int role)
 const
 {
     if (!index.isValid())
@@ -161,7 +160,8 @@ const
 
 Qt::ItemFlags
 AbstractPropertiesModel::flags
-(const QModelIndex &index) const
+(const  QModelIndex &index)
+const
 {
     if (!index.isValid())
     {
@@ -196,7 +196,7 @@ const
 
 QModelIndex
 AbstractPropertiesModel::index
-(int row, int column, const QModelIndex &parent)
+(int row, int column,const   QModelIndex &parent)
 const
 {
     if (!hasIndex(row, column, parent))
@@ -228,7 +228,8 @@ const
 
 int
 AbstractPropertiesModel::rowCount
-(const QModelIndex &parent) const
+(const  QModelIndex &parent)
+const
 {
     AbstractPropertiesItem *parentItem;
     if (parent.column() > 0)

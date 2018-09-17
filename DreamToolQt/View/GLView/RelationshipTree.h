@@ -28,10 +28,11 @@ class RelationshipTree : public GLDrawable
 {
 public:
     RelationshipTree(QObject* parent);
-    ~RelationshipTree();
+    ~RelationshipTree() override;
     void init() override;
     void setRootSceneObjectHandle(SceneObject*);
     void setLeafSceneObjectHandle(SceneObject*);
+    void clearRuntime();
 protected:
     vec3 mEdgeColour;
     vec3 mNodeColour;

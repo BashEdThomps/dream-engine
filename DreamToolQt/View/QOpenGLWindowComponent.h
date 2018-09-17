@@ -10,6 +10,7 @@
 #include <QOpenGLWidget>
 #include <QSurfaceFormat>
 #include <QOpenGLContext>
+#include <QIcon>
 
 using namespace Dream;
 using std::shared_ptr;
@@ -51,7 +52,7 @@ public:
     void updateComponent() override;
     void getCurrentDimensions() override;
     void swapBuffers() override;
-    void setProjectRuntime(shared_ptr<ProjectRuntime> prHandle);
+    void setProjectRuntime(ProjectRuntime* prHandle);
     void setGridHandle(Grid* grid);
     void setSelectionHighlighterHandle(SelectionHighlighter* highlighter);
     void setRelationshipTreeHandle(RelationshipTree* tree);
@@ -65,8 +66,9 @@ public:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
-    bool getControlScene() const;
+    bool getControlScene() ;
     void setControlScene(bool controlScene);
+    void clearRuntime();
 
 protected:
     void initializeGL() override;
@@ -78,10 +80,10 @@ protected:
 
 private:
     bool mControlScene;
-    shared_ptr<ProjectRuntime> mProjectRuntimeHandle;
+    ProjectRuntime* mProjectRuntimeHandle;
     Grid *mGridHandle;
-    SelectionHighlighter *mSelectionHighlighterHandle;
-    RelationshipTree *mRelationshipTreeHandle;
+    SelectionHighlighter* mSelectionHighlighterHandle;
+    RelationshipTree* mRelationshipTreeHandle;
     PathPointViewer* mPathPointViewerHandle;
     volatile bool mPaintInProgress;
 
@@ -93,6 +95,7 @@ private:
     vector<double> mFrameTimes;
     size_t mMaxFrameTimeValues;
     double averageFrameTime();
-    void moveSelectedSceneObject(shared_ptr<SceneObjectRuntime> selected);
+    void moveSelectedSceneObject(SceneObjectRuntime* selected);
     void moveCamera();
+    void showIdleScreen();
 };

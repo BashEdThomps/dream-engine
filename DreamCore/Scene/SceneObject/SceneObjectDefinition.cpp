@@ -29,8 +29,8 @@ namespace Dream
 
     SceneObjectDefinition::SceneObjectDefinition
     (
-            const shared_ptr<SceneObjectDefinition>& parent,
-            const shared_ptr<SceneDefinition>& sceneDefinition,
+            SceneObjectDefinition* parent,
+            SceneDefinition* sceneDefinition,
             json jsonData,
             bool randomUuid
             )
@@ -47,7 +47,7 @@ namespace Dream
             mJson[Constants::UUID] = Uuid::generateUuid();
             log->trace( "With new UUID",getNameAndUuidString());
         }
-        mTransform = make_shared<Transform3D>(jsonData[Constants::TRANSFORM]);
+        mTransform = new Transform3D(jsonData[Constants::TRANSFORM]);
     }
 
     SceneObjectDefinition::~SceneObjectDefinition
@@ -57,9 +57,17 @@ namespace Dream
         log->trace( "Destructing {}",
                     getNameAndUuidString()
                     );
+
+        if (mTransform != nullptr)
+        {
+            delete mTransform;
+            mTransform = nullptr;
+        }
+
+        deleteChildSceneObjectDefinitions();
     }
 
-    shared_ptr<Transform3D>
+    Transform3D*
     SceneObjectDefinition::getTransform
     ()
     {
@@ -68,7 +76,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::setTransform
-    (shared_ptr<Transform3D> tform)
+    (Transform3D* tform)
     {
         mTransform = tform;
     }
@@ -112,7 +120,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::addAssetDefinitionToLoadQueue
-    (shared_ptr<IAssetDefinition> ad)
+    (IAssetDefinition* ad)
     {
         addAssetDefinitionUuidToLoadQueue(ad->getUuid());
     }
@@ -144,7 +152,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::removeAssetDefinitionFromLoadQueue
-    (shared_ptr<IAssetDefinition> ad)
+    (IAssetDefinition* ad)
     {
         removeAssetDefinitionUuidFromLoadQueue(ad->getUuid());
     }
@@ -184,19 +192,29 @@ namespace Dream
         {
             for (json childDefinition : childrenArray)
             {
-                auto sod = make_shared<SceneObjectDefinition>(
-                            dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
-                            mSceneDefinition,
-                            childDefinition,
-                            randomUuid
-                            );
+                auto sod = new SceneObjectDefinition
+                (
+                    this,
+                    mSceneDefinition,
+                    childDefinition,
+                    randomUuid
+                );
                 sod->loadChildSceneObjectDefinitions();
                 mChildDefinitions.push_back(sod);
             }
         }
     }
 
-    vector<shared_ptr<SceneObjectDefinition>>
+    void SceneObjectDefinition::deleteChildSceneObjectDefinitions()
+    {
+       for (auto child : mChildDefinitions)
+       {
+           delete child;
+       }
+       mChildDefinitions.clear();
+    }
+
+    vector<SceneObjectDefinition*>
     SceneObjectDefinition::getChildDefinitionsList
     ()
     {
@@ -205,14 +223,14 @@ namespace Dream
 
     void
     SceneObjectDefinition::addChildSceneObjectDefinition
-    (const shared_ptr<SceneObjectDefinition>& child)
+    (SceneObjectDefinition* child)
     {
         mChildDefinitions.push_back(child);
     }
 
     void
     SceneObjectDefinition::removeChildSceneObjectDefinition
-    (shared_ptr<SceneObjectDefinition> child)
+    (SceneObjectDefinition* child)
     {
         auto log = getLog();
         auto iter = begin(mChildDefinitions);
@@ -233,7 +251,7 @@ namespace Dream
         }
     }
 
-    shared_ptr<SceneObjectDefinition>
+    SceneObjectDefinition*
     SceneObjectDefinition::createNewChildSceneObjectDefinition
     (json* fromJson)
     {
@@ -257,21 +275,21 @@ namespace Dream
             defJson = json::parse(fromJson->dump());
         }
 
-        shared_ptr<SceneObjectDefinition> soDefinition;
-        soDefinition = make_shared<SceneObjectDefinition>
-                (
-                    dynamic_pointer_cast<SceneObjectDefinition>(shared_from_this()),
-                    mSceneDefinition,
-                    defJson,
-                    true
-                    );
+        SceneObjectDefinition* soDefinition;
+        soDefinition = new SceneObjectDefinition
+        (
+            this,
+            mSceneDefinition,
+            defJson,
+            true
+        );
         addChildSceneObjectDefinition(soDefinition);
 
         return soDefinition;
     }
 
 
-    const shared_ptr<SceneDefinition>&
+    SceneDefinition*
     SceneObjectDefinition::getSceneDefinition
     ()
     {
@@ -284,7 +302,7 @@ namespace Dream
     {
         mJson[Constants::SCENE_OBJECT_CHILDREN] = json::array();
         mJson[Constants::TRANSFORM] = mTransform->getJson();
-        for (shared_ptr<SceneObjectDefinition> sod : mChildDefinitions)
+        for (SceneObjectDefinition* sod : mChildDefinitions)
         {
             mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sod->getJson());
         }
@@ -319,12 +337,15 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_STATIC];
     }
 
-    const shared_ptr<SceneObjectDefinition>& SceneObjectDefinition::getParentSceneObject() const
+    SceneObjectDefinition*
+    SceneObjectDefinition::getParentSceneObject
+    () const
     {
         return mParentSceneObject;
     }
 
-    shared_ptr<SceneObjectDefinition> SceneObjectDefinition::duplicate()
+    SceneObjectDefinition*
+    SceneObjectDefinition::duplicate()
     {
         auto log = getLog();
         // Nothing to assign duplicate to
@@ -334,7 +355,7 @@ namespace Dream
             return nullptr;
         }
 
-        auto newSOD = make_shared<SceneObjectDefinition>(mParentSceneObject,mSceneDefinition,getJson(),true);
+        auto newSOD = new SceneObjectDefinition(mParentSceneObject,mSceneDefinition,getJson(),true);
         newSOD->loadChildSceneObjectDefinitions(true);
         newSOD->setUuid(Uuid::generateUuid());
         string name = newSOD->getName();
@@ -366,6 +387,4 @@ namespace Dream
         mParentSceneObject->addChildSceneObjectDefinition(newSOD);
         return newSOD;
     }
-
-
 }

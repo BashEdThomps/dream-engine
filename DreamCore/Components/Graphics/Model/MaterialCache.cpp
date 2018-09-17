@@ -34,34 +34,42 @@ namespace Dream
 
         flushRawTextureImageData();
 
-        for (shared_ptr<Texture> texture : mTextureCache)
+        for (Texture* texture : mTextureCache)
         {
             glDeleteTextures(1,&texture->id);
             checkGLError();
+            delete texture;
         }
+        mTextureCache.clear();
+
+        for (AssimpMaterial* mat : mMaterialCache)
+        {
+            delete mat;
+        }
+        mMaterialCache.clear();
         return;
     }
 
-    vector<shared_ptr<Texture>>&
+    vector<Texture*>&
     MaterialCache::getTextureCache
     ()
     {
         return mTextureCache;
     }
 
-    vector<shared_ptr<AssimpMaterial>>&
+    vector<AssimpMaterial*>&
     MaterialCache::getMaterialCache
     ()
     {
         return mMaterialCache;
     }
 
-    shared_ptr<AssimpMaterial>
+    AssimpMaterial*
     MaterialCache::getMaterialByName
     (aiString name)
     {
         auto log = getLog();
-        for (shared_ptr<AssimpMaterial> material : mMaterialCache)
+        for (AssimpMaterial* material : mMaterialCache)
         {
             if (material->mName == name)
             {
@@ -72,14 +80,14 @@ namespace Dream
         return nullptr;
     }
 
-    void MaterialCache::addMaterialToCache(shared_ptr<AssimpMaterial> mat)
+    void MaterialCache::addMaterialToCache(AssimpMaterial* mat)
     {
         auto log = getLog();
         log->info("Adding material to map {}", mat->mName.C_Str());
         mMaterialCache.push_back(mat);
     }
 
-    shared_ptr<Texture>
+    Texture*
     MaterialCache::loadTextureFromFile
     (const char* file_c, const char* directory_c, const char* type)
     {
@@ -90,7 +98,7 @@ namespace Dream
         string directory = string(directory_c);
         filename = directory + '/' + filename;
 
-        for (shared_ptr<Texture> nextTexture : mTextureCache)
+        for (Texture* nextTexture : mTextureCache)
         {
             if (nextTexture->path == filename && nextTexture->type == type)
             {
@@ -110,7 +118,7 @@ namespace Dream
 
         // Check image data against existing textures
 
-        for (shared_ptr<Texture> nextTexture : mTextureCache)
+        for (Texture* nextTexture : mTextureCache)
         {
             if (nextTexture->width == width &&
                 nextTexture->height == height &&
@@ -146,7 +154,7 @@ namespace Dream
 
         checkGLError();
 
-        auto texture = make_shared<Texture>();
+        auto texture = new Texture();
         texture->path = filename;
         texture->id = textureID;
         texture->type = type;
@@ -158,9 +166,16 @@ namespace Dream
         return texture;
     }
 
+    AssimpMaterial*MaterialCache::newAssimpMaterial()
+    {
+        auto newAM = new AssimpMaterial();
+        addMaterialToCache(newAM);
+        return newAM;
+    }
+
     void MaterialCache::flushRawTextureImageData()
     {
-       for (shared_ptr<Texture> t : mTextureCache)
+       for (Texture* t : mTextureCache)
        {
         SOIL_free_image_data(t->image);
        }

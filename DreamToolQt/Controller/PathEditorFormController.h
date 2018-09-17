@@ -25,7 +25,7 @@ public:
     ~PathEditorFormController() override;
 
     void setProjectPath(QString projectPath);
-    void setPathDefinition(shared_ptr<PathDefinition> def);
+    void setPathDefinition(PathDefinition* def);
     void getAllUpInYourFace();
 
 public slots:
@@ -35,7 +35,7 @@ private slots:
     void onAddButtonClicked(bool);
     void onRemoveButtonClicked(bool);
     void onTableChanged();
-    void onTableSelectionChanged(const QItemSelection&, const QItemSelection&);
+    void onTableSelectionChanged( QItemSelection&,  QItemSelection&);
     void onPathVisibleButtonClicked(bool);
     void onTangentVisibleButtonClicked(bool);
     void onTangentIndexChanged(int val);
@@ -52,7 +52,7 @@ private:
     void populate();
 
 protected:
-    shared_ptr<PathDefinition> mPathDefinitionHandle;
+    PathDefinition* mPathDefinitionHandle;
     QString mProjectPath;
     PathEditorTableModel mTableModel;
     Ui::PathEditorTableForm mUi;

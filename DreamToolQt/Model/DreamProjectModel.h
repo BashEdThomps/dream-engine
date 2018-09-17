@@ -46,15 +46,15 @@ public:
     DreamProjectModel
     (
         QObject *parent = nullptr,
-        shared_ptr<QOpenGLWindowComponent> windowComponent = nullptr
+        QOpenGLWindowComponent* windowComponent = nullptr
     );
     ~DreamProjectModel() override;
 
     bool loadProject(QString path);
-    shared_ptr<Project> getProject();
+    Project* getProject();
 
-    vector<shared_ptr<SceneDefinition>> getScenes();
-    vector<shared_ptr<IAssetDefinition>> getAssetDefinitions();
+    vector<SceneDefinition*> getScenes();
+    vector<IAssetDefinition*> getAssetDefinitions();
 
     void setProjectName(string name);
     void setProjectAuthor(string author);
@@ -66,27 +66,27 @@ public:
     void setPhysicsDebug(bool enabled);
     void closeProject();
 
-    bool startSceneRuntimeFromDefinition(shared_ptr<SceneDefinition> definition);
+    bool startSceneRuntimeFromDefinition(SceneDefinition* definition);
     void stopActiveSceneRuntime();
     void setupHeartbeatTimer();
 
-    shared_ptr<IAssetDefinition> getAssetDefinitionByUuid(string uuid);
-    shared_ptr<SceneDefinition> getSceneDefinitionByUuid(string uuid);
+    IAssetDefinition* getAssetDefinitionByUuid(string uuid);
+    SceneDefinition* getSceneDefinitionByUuid(string uuid);
 
-    shared_ptr<SceneDefinition> getSelectedSceneDefinition();
-    void setSelectedSceneDefinition(shared_ptr<SceneDefinition> selectedScene);
+    SceneDefinition* getSelectedSceneDefinition();
+    void setSelectedSceneDefinition(SceneDefinition* selectedScene);
 
-    shared_ptr<IDefinition> createNewAssetDefinition(AssetType type);
+    IDefinition* createNewAssetDefinition(AssetType type);
 
 signals:
-    void notifySelectedSceneChanged(shared_ptr<SceneDefinition> scene);
+    void notifySelectedSceneChanged(SceneDefinition* scene);
 
 private:
     // Owned Objects
-    shared_ptr<Project> mProject;
-    shared_ptr<QTimer>  mHeartbeatTimer;
+    Project* mProject;
+    QTimer*  mHeartbeatTimer;
 
     // Handles
-    shared_ptr<QOpenGLWindowComponent> mWindowComponent;
-    shared_ptr<SceneDefinition> mSelectedScene;
+    QOpenGLWindowComponent* mWindowComponent;
+    SceneDefinition* mSelectedScene;
 };

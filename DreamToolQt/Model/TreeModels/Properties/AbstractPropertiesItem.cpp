@@ -72,12 +72,12 @@ AbstractPropertiesItem *AbstractPropertiesItem::child(int row)
     return mChildItems.value(row);
 }
 
-int AbstractPropertiesItem::childCount() const
+int AbstractPropertiesItem::childCount()
 {
     return mChildItems.count();
 }
 
-int AbstractPropertiesItem::columnCount() const
+int AbstractPropertiesItem::columnCount()
 {
     return 2;
 }
@@ -87,20 +87,20 @@ AbstractPropertiesItem *AbstractPropertiesItem::parentItem()
     return mParentItemHandle;
 }
 
-int AbstractPropertiesItem::row() const
+int AbstractPropertiesItem::row()
 {
     if (mParentItemHandle)
     {
-        return mParentItemHandle->mChildItems.indexOf(const_cast<AbstractPropertiesItem*>(this));
+        return mParentItemHandle->mChildItems.indexOf(dynamic_cast<AbstractPropertiesItem*>(this));
     }
     return 0;
 }
 
-int AbstractPropertiesItem::childNumber() const
+int AbstractPropertiesItem::childNumber()
 {
     if (mParentItemHandle)
     {
-        return mParentItemHandle->mChildItems.indexOf(const_cast<AbstractPropertiesItem*>(this));
+        return mParentItemHandle->mChildItems.indexOf(dynamic_cast<AbstractPropertiesItem*>(this));
     }
     return 0;
 }

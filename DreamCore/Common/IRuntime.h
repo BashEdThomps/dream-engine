@@ -31,12 +31,12 @@ namespace Dream
     class IRuntime : public DreamObject
     {
     protected:
-        shared_ptr<IDefinition> mDefinition;
+        IDefinition* mDefinition;
         string mUuid;
         string mName;
     public:
         IRuntime(
-            const shared_ptr<IDefinition>& def,
+            IDefinition* def,
             string uuid = "",
             string name = ""
         );
@@ -52,9 +52,9 @@ namespace Dream
 
         string getNameAndUuidString();
 
-        virtual void useDefinition(shared_ptr<IDefinition>) = 0;
+        virtual void useDefinition() = 0;
 
         virtual void collectGarbage() = 0;
-        const shared_ptr<IDefinition>& getDefinition();
+        IDefinition* getDefinition();
     };
 }

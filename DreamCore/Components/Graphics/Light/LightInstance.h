@@ -67,8 +67,8 @@ namespace Dream
 
     public:
         LightInstance(
-            const shared_ptr<LightDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            LightDefinition*,
+            SceneObjectRuntime*
         );
         ~LightInstance() override;
 

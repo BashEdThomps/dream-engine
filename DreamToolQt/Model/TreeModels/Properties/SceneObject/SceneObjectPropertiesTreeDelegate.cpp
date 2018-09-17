@@ -56,7 +56,8 @@ SceneObjectPropertiesTreeDelegate::~SceneObjectPropertiesTreeDelegate
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createEditor
-(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+(QWidget *parent, const  QStyleOptionViewItem &option, const QModelIndex &index)
+const
 {
     SceneObjectPropertiesItem* sopItem = static_cast<SceneObjectPropertiesItem*>(index.internalPointer());
     QDoubleSpinBox* spinbox = nullptr;
@@ -103,7 +104,8 @@ SceneObjectPropertiesTreeDelegate::createEditor
 
 void
 SceneObjectPropertiesTreeDelegate::setEditorData
-(QWidget *editor, const QModelIndex &index) const
+(QWidget *editor,const  QModelIndex &index)
+const
 {
     QVariant value = index.model()->data(index, Qt::DisplayRole);
 
@@ -153,7 +155,8 @@ SceneObjectPropertiesTreeDelegate::setEditorData
 }
 
 void SceneObjectPropertiesTreeDelegate::setModelData
-(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
+const
 {
     SceneObjectPropertiesItem* sopItem = static_cast<SceneObjectPropertiesItem*>(index.internalPointer());
     switch (sopItem->getProperty())
@@ -201,7 +204,8 @@ void SceneObjectPropertiesTreeDelegate::setModelData
 
 void
 SceneObjectPropertiesTreeDelegate::updateEditorGeometry
-(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+(QWidget *editor,const  QStyleOptionViewItem &option,const  QModelIndex &index)
+const
 {
     editor->setGeometry(option.rect);
 }
@@ -235,27 +239,28 @@ SceneObjectPropertiesTreeDelegate::onButton_CaptureScale
 
 void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveAsset
-(bool, shared_ptr<DreamObject> vHandle)
+(bool, DreamObject* vHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
     log->info("RemoveAsset");
-    shared_ptr<IAssetDefinition> adHandle = dynamic_pointer_cast<IAssetDefinition>(vHandle);
+    IAssetDefinition* adHandle = dynamic_cast<IAssetDefinition*>(vHandle);
     emit notifyButton_RemoveAsset(adHandle);
 }
 
 void
 SceneObjectPropertiesTreeDelegate::onButton_RemoveChild
-(bool, shared_ptr<DreamObject> vHandle)
+(bool, DreamObject* vHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
     log->info("RemoveChild");
-    shared_ptr<SceneObjectDefinition> sodHandle = dynamic_pointer_cast<SceneObjectDefinition>(vHandle);
+    SceneObjectDefinition* sodHandle = dynamic_cast<SceneObjectDefinition*>(vHandle);
     emit notifyButton_RemoveChild(sodHandle);
 }
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createTransformTypeComboBox
-(QWidget* parent) const
+(QWidget* parent)
+const
 {
     QComboBox *combo = new QComboBox(parent);
     combo->addItem(QString::fromStdString(Constants::TRANSFORM_TYPE_ABSOLUTE));
@@ -317,7 +322,7 @@ const
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createRemoveAssetDefinitionButton
-(shared_ptr<IAssetDefinition> adHandle, QWidget *parent)
+(IAssetDefinition* adHandle, QWidget *parent)
 const
 {
     TreeModelToolButton* button = new TreeModelToolButton(adHandle,parent);
@@ -325,16 +330,16 @@ const
     connect
     (
         button,
-        SIGNAL(notifyClickedWithData(bool,shared_ptr<DreamObject>)),
+        SIGNAL(notifyClickedWithData(bool,DreamObject*)),
         this,
-        SLOT(onButton_RemoveAsset(bool,shared_ptr<DreamObject>))
+        SLOT(onButton_RemoveAsset(bool,DreamObject*))
     );
     return button;
 }
 
 QWidget*
 SceneObjectPropertiesTreeDelegate::createRemoveChildButton
-(shared_ptr<SceneObjectDefinition> sodHandle, QWidget *parent)
+(SceneObjectDefinition* sodHandle, QWidget *parent)
 const
 {
    TreeModelToolButton* button = new TreeModelToolButton(sodHandle,parent);
@@ -342,9 +347,9 @@ const
    connect
     (
         button,
-        SIGNAL(notifyClickedWithData(bool,shared_ptr<DreamObject>)),
+        SIGNAL(notifyClickedWithData(bool,DreamObject*)),
         this,
-        SLOT(onButton_RemoveChild(bool,shared_ptr<DreamObject>))
+        SLOT(onButton_RemoveChild(bool,DreamObject*))
     );
    return button;
 }

@@ -41,7 +41,7 @@ void PathEditorFormController::setProjectPath(QString projectPath)
 
 void
 PathEditorFormController::setPathDefinition
-(shared_ptr<PathDefinition> def)
+(PathDefinition* def)
 {
     mPathDefinitionHandle = def;
     populate();
@@ -78,7 +78,7 @@ void PathEditorFormController::onTableChanged()
 
 void
 PathEditorFormController::onTableSelectionChanged
-(const QItemSelection& sel, const QItemSelection& desel)
+( QItemSelection& sel,  QItemSelection& desel)
 {
     Q_UNUSED(desel)
     auto log = spdlog::get("PathEditorFormController");
@@ -125,9 +125,9 @@ PathEditorFormController::populate
         mUi.tableView->setModel(&mTableModel);
         connect(
         mUi.tableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+            SIGNAL(selectionChanged(const QItemSelection &,const  QItemSelection &)),
             this,
-            SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &))
+            SLOT(onTableSelectionChanged(const QItemSelection &,const  QItemSelection &))
         );
         mUi.tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     }

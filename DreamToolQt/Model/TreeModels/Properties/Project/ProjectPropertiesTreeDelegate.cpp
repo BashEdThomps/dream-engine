@@ -46,9 +46,9 @@ ProjectPropertiesTreeDelegate::createStartupSceneComboBox
 const
 {
     QComboBox* retval = new QComboBox(parent);
-    shared_ptr<ProjectDefinition> pdHandle =  ppiItem->getProjectDefinition();
+    ProjectDefinition* pdHandle =  ppiItem->getProjectDefinition();
     QStringList sceneList;
-    for (shared_ptr<SceneDefinition> sdHandle : pdHandle->getSceneDefinitionsList())
+    for (SceneDefinition* sdHandle : pdHandle->getSceneDefinitionsList())
     {
         sceneList << QString::fromStdString(sdHandle->getName());
     }
@@ -58,7 +58,8 @@ const
 
 QWidget*
 ProjectPropertiesTreeDelegate::createEditor
-(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index) const
+(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index)
+const
 {
     ProjectPropertiesItem* ppi = static_cast<ProjectPropertiesItem*>(index.internalPointer());
 
@@ -88,7 +89,8 @@ ProjectPropertiesTreeDelegate::createEditor
 
 void
 ProjectPropertiesTreeDelegate::setEditorData
-(QWidget *editor, const QModelIndex &index) const
+(QWidget *editor,const  QModelIndex &index)
+const
 {
     QVariant value = index.model()->data(index, Qt::DisplayRole);
     ProjectPropertiesItem* ppi = static_cast<ProjectPropertiesItem*>(index.internalPointer());
@@ -123,7 +125,8 @@ ProjectPropertiesTreeDelegate::setEditorData
 
 void
 ProjectPropertiesTreeDelegate::setModelData
-(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+(QWidget *editor, QAbstractItemModel *model,const   QModelIndex &index)
+const
 {
     ProjectPropertiesItem* ppi = static_cast<ProjectPropertiesItem*>(index.internalPointer());
     switch(ppi->getProperty())
@@ -156,7 +159,8 @@ ProjectPropertiesTreeDelegate::setModelData
 
 void
 ProjectPropertiesTreeDelegate::updateEditorGeometry
-(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&) const
+(QWidget *editor, const  QStyleOptionViewItem &option, const  QModelIndex&)
+const
 {
     editor->setGeometry(option.rect);
 }

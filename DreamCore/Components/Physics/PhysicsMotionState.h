@@ -27,13 +27,13 @@ namespace Dream
     class PhysicsMotionState : public btMotionState, DreamObject
     {
     protected:
-        shared_ptr<Transform3D> mDreamTransform;
+        Transform3D* mDreamTransform;
 
     public:
-        PhysicsMotionState(shared_ptr<Transform3D>);
+        PhysicsMotionState(Transform3D*);
         ~PhysicsMotionState();
 
-        void setTransform(shared_ptr<Transform3D>);
+        void setTransform(Transform3D*);
 
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);

@@ -21,6 +21,7 @@
 #define GLM_FORCE_RADIANS
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <memory>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -28,6 +29,7 @@
 #include "../../IAssetInstance.h"
 
 using std::string;
+using std::unique_ptr;
 using nlohmann::json;
 using glm::vec3;
 
@@ -41,17 +43,17 @@ namespace Dream
     {
     private:
         int mSize;
-        shared_ptr<FontCache> mCache;
-        shared_ptr<FT_Face> mFontFace;
-        vector<float> mColour;
+        FontCache* mCache;
+        FT_Face* mFontFace;
+        vec3 mColour;
         string mText;
     private: // Methods
         void generateCharacterMap();
     public:
         FontInstance(
-            const shared_ptr<FontCache>&,
-            const shared_ptr<FontDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            FontCache*,
+            FontDefinition*,
+            SceneObjectRuntime*
         );
 
         ~FontInstance();
@@ -59,14 +61,13 @@ namespace Dream
         bool load(string);
         void loadExtraAttributes(json);
 
-        shared_ptr<FT_Face> getFontFace();
+        FT_Face* getFontFace();
 
         void setText(string);
         string getText();
 
         void setColour(float,float,float);
-        vector<float> getColour();
-        vec3 getColourAsVec3();
+        vec3 getColour();
 
         void setSize(int);
         int getWidth();

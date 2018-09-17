@@ -27,15 +27,15 @@ class TreeModelToolButton : public QToolButton
 {
     Q_OBJECT
 public:
-    TreeModelToolButton(shared_ptr<DreamObject> data, QWidget* parent);
-    shared_ptr<DreamObject> getData() const;
+    TreeModelToolButton(DreamObject* data, QWidget* parent);
+    DreamObject* getData() ;
 
 signals:
-    void notifyClickedWithData(bool,shared_ptr<DreamObject>);
+    void notifyClickedWithData(bool,DreamObject*);
 
 public slots:
     void onClicked(bool);
 
 protected:
-    shared_ptr<DreamObject> mData;
+    DreamObject* mData;
 };

@@ -29,9 +29,9 @@ namespace Dream
 
     public:
         OggAudioInstance(
-            const shared_ptr<AudioComponent>&,
-            const shared_ptr<AudioDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            AudioComponent*,
+            AudioDefinition*,
+            SceneObjectRuntime*
         );
         ~OggAudioInstance() override;
 

@@ -31,13 +31,13 @@ public:
 
     void appendChild(GenericTreeItem *child);
     GenericTreeItem *child(int row);
-    int childCount() const;
-    int columnCount() const;
-    QVariant data(int column) const;
-    int row() const;
+    int childCount() ;
+    int columnCount() ;
+    QVariant data(int column) ;
+    int row() ;
     GenericTreeItem *parentItem();
 
-    QString getTitle() const;
+    QString getTitle() ;
 
 protected:
     QList<GenericTreeItem*> mChildItems;

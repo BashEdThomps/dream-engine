@@ -80,7 +80,7 @@ public:
     ScenePropertiesItem
     (
             QString title,
-            shared_ptr<SceneDefinition> sdHandle,
+            SceneDefinition* sdHandle,
             SceneProperty property = SCENE_PROPERTY_NONE,
             QItemDelegate* delegate = nullptr,
             AbstractPropertiesItem *parent = nullptr
@@ -88,11 +88,11 @@ public:
 
     ~ScenePropertiesItem() override;
 
-    bool setData(int column, const QVariant &value) override;
+    bool setData(int column,const  QVariant &value) override;
     QVariant data(int column) override;
     SceneProperty getProperty();
 
 private:
-    shared_ptr<SceneDefinition> mSceneDefinitionHandle;
+    SceneDefinition* mSceneDefinitionHandle;
     SceneProperty mProperty;
 };

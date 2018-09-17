@@ -21,12 +21,11 @@ class MaterialShaderTableDelegate : public QItemDelegate
 public:
     MaterialShaderTableDelegate(QObject* parent  = nullptr);
     ~MaterialShaderTableDelegate() override;
-    QWidget*createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-    void setShaderDefinitions(const vector<shared_ptr<ShaderDefinition>>& shaderDefinitions);
-
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const  override;
+    void setShaderDefinitions(vector<ShaderDefinition*>& shaderDefinitions);
     void setMaterialList(vector<string> materialList);
 protected:
-    vector<shared_ptr<ShaderDefinition>> mShaderDefinitions;
+    vector<ShaderDefinition*> mShaderDefinitions;
     vector<string> mMaterialList;
 };
 

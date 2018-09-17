@@ -60,7 +60,7 @@ SelectionHighlighter::init
 
 void
 SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
-(shared_ptr<SceneObjectRuntime> selected)
+(SceneObjectRuntime* selected)
 {
     auto log = spdlog::get("SelectionHighlighter");
     if (selected != nullptr)
@@ -281,7 +281,7 @@ SelectionHighlighter::draw
                 else
                 {
                     // Get raw data
-                    shared_ptr<Transform3D> transform = mSelectedObjectHandle->getTransform();
+                    Transform3D* transform = mSelectedObjectHandle->getTransform();
                     vec3 translationValue = transform->getTranslation();
                     quat rotValue = transform->getOrientation();
                     vec3 scaleValue = transform->getScale();
@@ -423,7 +423,12 @@ SelectionHighlighter::initShader
     glDeleteShader(fragmentShader);
 }
 
-shared_ptr<SceneObjectRuntime>
+void SelectionHighlighter::clearRuntime()
+{
+   mSelectedObjectHandle = nullptr;
+}
+
+SceneObjectRuntime*
 SelectionHighlighter::getSelectedObject
 ()
 {

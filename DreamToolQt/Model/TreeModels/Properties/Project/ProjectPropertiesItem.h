@@ -1,5 +1,5 @@
 /*
- * ProjectPropertiesItem.h
+ * ProjectDefinitionPropertiesItem.h
  *
  * Created: 29 2017 by Ashley
  *
@@ -51,7 +51,7 @@ public:
     ProjectPropertiesItem
     (
         QString title,
-        shared_ptr<ProjectDefinition> pdHandle,
+        ProjectDefinition* pdHandle,
         ProjectProperty property = PROJECT_PROPERTY_NONE,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
@@ -62,9 +62,9 @@ public:
     bool setData(int column, const QVariant &value) override;
 
     ProjectProperty getProperty();
-    shared_ptr<ProjectDefinition> getProjectDefinition();
+    ProjectDefinition* getProjectDefinition();
 
 private:
-    shared_ptr<ProjectDefinition> mProjectDefinitionHandle;
+    ProjectDefinition* mProjectDefinitionHandle;
     ProjectProperty mProperty;
 };

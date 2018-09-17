@@ -19,14 +19,16 @@
 
 namespace Dream
 {
-    const shared_ptr<IDefinition>& IRuntime::getDefinition()
+    IDefinition*
+    IRuntime::getDefinition
+    ()
     {
         return mDefinition;
     }
 
     IRuntime::IRuntime
     (
-        const shared_ptr<IDefinition>& def,
+        IDefinition* def,
         string uuid,
         string name
     )

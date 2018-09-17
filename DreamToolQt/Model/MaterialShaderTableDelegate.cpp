@@ -25,7 +25,8 @@ MaterialShaderTableDelegate::~MaterialShaderTableDelegate()
 
 QWidget*
 MaterialShaderTableDelegate::createEditor
-(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+(QWidget* parent, const QStyleOptionViewItem& option, const  QModelIndex& index)
+const
 {
     Q_UNUSED(option)
 
@@ -60,7 +61,7 @@ MaterialShaderTableDelegate::createEditor
 
 void
 MaterialShaderTableDelegate::setShaderDefinitions
-(const vector<shared_ptr<ShaderDefinition>>& shaderDefinitions)
+( vector<ShaderDefinition*>& shaderDefinitions)
 {
     mShaderDefinitions = shaderDefinitions;
 }

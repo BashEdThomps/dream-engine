@@ -23,7 +23,7 @@
 ProjectPropertiesItem::ProjectPropertiesItem
 (
     QString title,
-    shared_ptr<ProjectDefinition> pdHandle,
+    ProjectDefinition* pdHandle,
     ProjectProperty property,
     QItemDelegate* delegate,
     AbstractPropertiesItem *parent
@@ -152,7 +152,7 @@ ProjectPropertiesItem::getProperty
     return mProperty;
 }
 
-shared_ptr<ProjectDefinition>
+ProjectDefinition*
 ProjectPropertiesItem::getProjectDefinition
 ()
 {

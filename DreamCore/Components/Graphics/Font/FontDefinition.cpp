@@ -20,7 +20,7 @@
 namespace Dream
 {
     FontDefinition::FontDefinition
-    (const shared_ptr<ProjectDefinition>& pd, json js)
+    (ProjectDefinition* pd, json js)
         :IAssetDefinition(pd,js)
     {
         makeColourObject();

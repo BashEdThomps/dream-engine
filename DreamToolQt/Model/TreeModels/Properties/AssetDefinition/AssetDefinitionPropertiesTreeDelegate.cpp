@@ -42,7 +42,6 @@ AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
 (AssetDefinitionPropertiesModel* model, QObject* parent)
     : QItemDelegate (parent),
       mModelHandle(model)
-
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
     if (log==nullptr)
@@ -216,7 +215,8 @@ const
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createPathTypeComboBox
-(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const
+(AssetDefinitionPropertiesItem* assetDef, QWidget* parent)
+const
 {
     QComboBox *editor = new QComboBox(parent);
     QStringList list ;
@@ -227,7 +227,7 @@ AssetDefinitionPropertiesTreeDelegate::createPathTypeComboBox
     }
 
     editor->addItems(list);
-    auto pathDef = dynamic_pointer_cast<PathDefinition>(assetDef->getAssetDefinitionHandle());
+    auto pathDef = dynamic_cast<PathDefinition*>(assetDef->getAssetDefinitionHandle());
     string type = pathDef->getSplineType();
     int typeIndex = editor->findText(QString::fromStdString(type));
     editor->setCurrentIndex(typeIndex);
@@ -451,7 +451,8 @@ const
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createLightDiffusePaletteButton
-(QWidget* parent) const
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
@@ -467,7 +468,8 @@ AssetDefinitionPropertiesTreeDelegate::createLightDiffusePaletteButton
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createLightAmbientPaletteButton
-(QWidget* parent) const
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
@@ -484,7 +486,8 @@ AssetDefinitionPropertiesTreeDelegate::createLightAmbientPaletteButton
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createLightSpecularPaletteButton
-(QWidget* parent) const
+(QWidget* parent)
+const
 {
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
@@ -619,7 +622,7 @@ const
 
 void
 AssetDefinitionPropertiesTreeDelegate::setModelData
-(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
+(QWidget *editor, QAbstractItemModel *model,const  QModelIndex &index)
 const
 {
     AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
@@ -711,7 +714,7 @@ const
 
 void
 AssetDefinitionPropertiesTreeDelegate::updateEditorGeometry
-(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex&)
+(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex&)
 const
 {
     editor->setGeometry(option.rect);

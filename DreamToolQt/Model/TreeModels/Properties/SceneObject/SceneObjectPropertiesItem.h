@@ -71,7 +71,7 @@ public:
     SceneObjectPropertiesItem
     (
         QString name,
-        shared_ptr<SceneObjectDefinition> sodHandle,
+        SceneObjectDefinition* sodHandle,
         SceneObjectProperty property = SCENE_OBJECT_PROPERTY_NONE,
         QItemDelegate* delegate = nullptr,
         AbstractPropertiesItem *parent = nullptr
@@ -79,21 +79,21 @@ public:
 
     ~SceneObjectPropertiesItem() override;
 
-    shared_ptr<SceneObjectDefinition> getSceneObjectDefinitionHandle();
+    SceneObjectDefinition* getSceneObjectDefinitionHandle();
     SceneObjectProperty getProperty();
 
-    bool setData(int column, const QVariant &value) override;
+    bool setData(int column, const  QVariant &value) override;
     QVariant data(int column) override;
 
-    shared_ptr<SceneObjectDefinition> getTargetSceneObjectDefinitionHandle() const;
-    void setTargetSceneObjectDefinitionHandle(shared_ptr<SceneObjectDefinition> targetSceneObjectDefinitionHandle);
+    SceneObjectDefinition* getTargetSceneObjectDefinitionHandle() ;
+    void setTargetSceneObjectDefinitionHandle(SceneObjectDefinition* targetSceneObjectDefinitionHandle);
 
-    shared_ptr<IAssetDefinition> getTargetAssetDefinitionHandle() const;
-    void setTargetAssetDefinitionHandle(shared_ptr<IAssetDefinition> targetAssetDefinitionHandle);
+    IAssetDefinition* getTargetAssetDefinitionHandle() ;
+    void setTargetAssetDefinitionHandle(IAssetDefinition* targetAssetDefinitionHandle);
 
 private:
     SceneObjectProperty mProperty;
-    shared_ptr<SceneObjectDefinition> mSceneObjectDefinitionHandle;
-    shared_ptr<SceneObjectDefinition> mTargetSceneObjectDefinitionHandle;
-    shared_ptr<IAssetDefinition> mTargetAssetDefinitionHandle;
+    SceneObjectDefinition* mSceneObjectDefinitionHandle;
+    SceneObjectDefinition* mTargetSceneObjectDefinitionHandle;
+    IAssetDefinition* mTargetAssetDefinitionHandle;
 };

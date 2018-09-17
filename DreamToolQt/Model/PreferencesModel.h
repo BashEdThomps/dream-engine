@@ -54,10 +54,10 @@ private: // Member Functions
 
 private: // Variables
     json mJson;
-    const static string PREFERENCES_FILE_NAME;
-    const static string PREFERENCES_DIRECTORY_NAME;
-    const static string JSON_DEFAULT_PROJECT_DIRECTORY;
-    const static string JSON_EXTERNAL_TEXT_EDITOR_PATH;
+     static string PREFERENCES_FILE_NAME;
+     static string PREFERENCES_DIRECTORY_NAME;
+     static string JSON_DEFAULT_PROJECT_DIRECTORY;
+     static string JSON_EXTERNAL_TEXT_EDITOR_PATH;
 
 signals:
     void notifyDefaultProjectDirectoryChanged(QString directory);

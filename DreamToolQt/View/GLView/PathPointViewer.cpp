@@ -70,7 +70,7 @@ PathPointViewer::init
 
 void
 PathPointViewer::setPathDefinition
-(shared_ptr<PathDefinition> selected)
+(PathDefinition* selected)
 {
     auto log = spdlog::get("PathPointViewer");
     if (selected != nullptr)
@@ -113,7 +113,7 @@ PathPointViewer::updateVertexBuffer
     }
 }
 
-bool PathPointViewer::getDrawTangent() const
+bool PathPointViewer::getDrawTangent()
 {
     return mDrawTangent;
 }
@@ -123,12 +123,17 @@ void PathPointViewer::setDrawTangent(bool drawTangent)
     mDrawTangent = drawTangent;
 }
 
-size_t PathPointViewer::getTangentIndex() const
+void PathPointViewer::clearRuntime()
+{
+   mPathDefinition = nullptr;
+}
+
+size_t PathPointViewer::getTangentIndex()
 {
     return mTangentIndex;
 }
 
-void PathPointViewer::setTangentIndex(const size_t& tangentIndex)
+void PathPointViewer::setTangentIndex( size_t& tangentIndex)
 {
     mTangentIndex = tangentIndex;
 }

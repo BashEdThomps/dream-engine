@@ -22,7 +22,7 @@
 #include <QDebug>
 
 ProjectPropertiesModel::ProjectPropertiesModel
-(shared_ptr<ProjectDefinition> project,QTreeView* parent)
+(ProjectDefinition* project,QTreeView* parent)
     : AbstractPropertiesModel(new ProjectPropertiesTreeDelegate(this,parent), parent),
        mProjectDefinitionHandle(project)
 {

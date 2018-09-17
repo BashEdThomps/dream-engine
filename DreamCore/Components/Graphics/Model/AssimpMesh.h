@@ -24,8 +24,8 @@ namespace Dream
     class AssimpMesh : public DreamObject
     {
     private:
-        shared_ptr<AssimpModelInstance> mParent;
-        shared_ptr<AssimpMaterial> mMaterial;
+        AssimpModelInstance* mParent;
+        AssimpMaterial* mMaterial;
         string  mName;
 
         GLuint mVAO;
@@ -33,29 +33,29 @@ namespace Dream
         GLuint mIBO;
 
         vector<Vertex>  mVertices;
-        vector<GLuint>  mIndices;
+        vector<GLuint> mIndices;
         BoundingBox mBoundingBox;
 
-        void bindTextures(shared_ptr<ShaderInstance>);
-        void bindTexture(shared_ptr<Texture> material);
+        void bindTextures(ShaderInstance*);
+        void bindTexture (Texture* material);
         void unbindTextures();
-        void bindDiffuse(shared_ptr<ShaderInstance>);
-        void bindSpecular(shared_ptr<ShaderInstance>);
-        void bindAmbient(shared_ptr<ShaderInstance> shader);
-        void bindOpacity(shared_ptr<ShaderInstance> shader);
+        void bindDiffuse(ShaderInstance*);
+        void bindSpecular(ShaderInstance*);
+        void bindAmbient(ShaderInstance* shader);
+        void bindOpacity(ShaderInstance* shader);
 
     public:
         AssimpMesh
         (
-            shared_ptr<AssimpModelInstance> parent,
+            AssimpModelInstance* parent,
             string name,
             vector<Vertex> vertexArray,
             vector<GLuint> indexArray,
-            shared_ptr<AssimpMaterial> material
+            AssimpMaterial* material
         );
 
         ~AssimpMesh();
-        void draw(shared_ptr<ShaderInstance>);
+        void draw(ShaderInstance*);
         void init();
 
         string getName() const;

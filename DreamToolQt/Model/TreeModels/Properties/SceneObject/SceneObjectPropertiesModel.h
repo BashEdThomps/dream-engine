@@ -35,7 +35,7 @@ class SceneObjectPropertiesModel : public AbstractPropertiesModel
 {
     Q_OBJECT
 public:
-    SceneObjectPropertiesModel(shared_ptr<SceneObjectDefinition> sceneObject,QTreeView* parent = nullptr);
+    SceneObjectPropertiesModel(SceneObjectDefinition* sceneObject,QTreeView* parent = nullptr);
     ~SceneObjectPropertiesModel() override;
 
     void createRoot() override;
@@ -59,17 +59,17 @@ public slots:
     void onButton_CaptureTranslation();
     void onButton_CaptureOrientation();
     void onButton_CaptureScale();
-    void onButton_RemoveAsset(shared_ptr<IDefinition>);
-    void onButton_RemoveChild(shared_ptr<IDefinition>);
+    void onButton_RemoveAsset(IDefinition*);
+    void onButton_RemoveChild(IDefinition*);
 
 signals:
-    void notifyButton_CaptureTranslation(shared_ptr<SceneObjectDefinition>);
-    void notifyButton_CaptureOrientation(shared_ptr<SceneObjectDefinition>);
-    void notifyButton_CaptureScale(shared_ptr<SceneObjectDefinition>);
+    void notifyButton_CaptureTranslation(SceneObjectDefinition*);
+    void notifyButton_CaptureOrientation(SceneObjectDefinition*);
+    void notifyButton_CaptureScale(SceneObjectDefinition*);
 
-    void notifyButton_RemoveAsset(shared_ptr<SceneObjectDefinition>, shared_ptr<IDefinition>);
-    void notifyButton_RemoveChild(shared_ptr<SceneObjectDefinition>, shared_ptr<IDefinition>);
+    void notifyButton_RemoveAsset(SceneObjectDefinition*, IDefinition*);
+    void notifyButton_RemoveChild(SceneObjectDefinition*, IDefinition*);
 
 private:
-    shared_ptr<SceneObjectDefinition> mSceneObjectDefinitionHandle;
+    SceneObjectDefinition* mSceneObjectDefinitionHandle;
 };

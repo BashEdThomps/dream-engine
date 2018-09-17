@@ -29,7 +29,7 @@ using Dream::Constants;
 using Dream::Uuid;
 
 ProjectDirectoryModel::ProjectDirectoryModel
-(shared_ptr<ProjectDefinition> pdHandle, QObject* parent)
+(ProjectDefinition* pdHandle, QObject* parent)
     : QObject(parent),
       mProjectDefinitionHandle(pdHandle)
 {
@@ -612,13 +612,13 @@ ProjectDirectoryModel::getProjectDirectoryName
 
 bool
 ProjectDirectoryModel::assetMainFileExists
-(shared_ptr<IAssetDefinition> adHandle, QString format)
+(IAssetDefinition* adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).exists();
 }
 
-bool ProjectDirectoryModel::deleteMainAssetFile(shared_ptr<IAssetDefinition> adHandle, QString format)
+bool ProjectDirectoryModel::deleteMainAssetFile(IAssetDefinition* adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).remove();
@@ -732,7 +732,7 @@ ProjectDirectoryModel::getProjectName
 
 QString
 ProjectDirectoryModel::getAssetDataPath
-(shared_ptr<IAssetDefinition>  adHandle)
+(IAssetDefinition*  adHandle)
 {
     QString assetDataPath;
 
@@ -765,7 +765,7 @@ ProjectDirectoryModel::touchFile
 
 bool
 ProjectDirectoryModel::writeAssetData
-(QString data, shared_ptr<IAssetDefinition>  adHandle, QString fileName, bool overwrite)
+(QString data, IAssetDefinition*  adHandle, QString fileName, bool overwrite)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
 
@@ -782,7 +782,7 @@ ProjectDirectoryModel::writeAssetData
     return retval;
 }
 
-QByteArray ProjectDirectoryModel::readScriptData(shared_ptr<ScriptDefinition> scriptDef)
+QByteArray ProjectDirectoryModel::readScriptData(ScriptDefinition* scriptDef)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     log->info( "readScriptData for {}", scriptDef->getNameAndUuidString());
@@ -797,7 +797,7 @@ QByteArray ProjectDirectoryModel::readScriptData(shared_ptr<ScriptDefinition> sc
     return data;
 }
 
-ShaderFileTuple ProjectDirectoryModel::readShaderData(shared_ptr<ShaderDefinition> shaderDef)
+ShaderFileTuple ProjectDirectoryModel::readShaderData(ShaderDefinition* shaderDef)
 {
     ShaderFileTuple shaderData;
     auto log = spdlog::get("ProjectDirectoryModel");
@@ -824,7 +824,7 @@ ShaderFileTuple ProjectDirectoryModel::readShaderData(shared_ptr<ShaderDefinitio
 
 QString
 ProjectDirectoryModel::createAssetTargetPath
-(shared_ptr<IAssetDefinition>  adHandle, QString format)
+(IAssetDefinition*  adHandle, QString format)
 {
     QString assetFileTargetPath;
     auto log = spdlog::get("ProjectDirectoryModel");
@@ -872,7 +872,7 @@ ProjectDirectoryModel::createAssetTargetPath
 
 bool
 ProjectDirectoryModel::copyMainAssetFile
-(shared_ptr<IAssetDefinition>  adHandle, QFile& assetSourceFile, QString format)
+(IAssetDefinition*  adHandle, QFile& assetSourceFile, QString format)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
@@ -895,7 +895,7 @@ ProjectDirectoryModel::copyMainAssetFile
 
 bool
 ProjectDirectoryModel::deleteAssetDataDirectory
-(shared_ptr<IAssetDefinition>  adHandle)
+(IAssetDefinition*  adHandle)
 {
 
     auto log = spdlog::get("ProjectDirectoryModel");
@@ -906,7 +906,7 @@ ProjectDirectoryModel::deleteAssetDataDirectory
 
 bool
 ProjectDirectoryModel::copyAdditionalFile
-(shared_ptr<IAssetDefinition>  adHandle, QFile& assetSourceFile)
+(IAssetDefinition*  adHandle, QFile& assetSourceFile)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     QString assetFileTargetPath = createAssetTargetPath
@@ -928,7 +928,7 @@ ProjectDirectoryModel::copyAdditionalFile
     return copyResult;
 }
 
-shared_ptr<ProjectDefinition>
+ProjectDefinition*
 ProjectDirectoryModel::getProjectDefinition
 ()
 {
@@ -937,7 +937,7 @@ ProjectDirectoryModel::getProjectDefinition
 
 void
 ProjectDirectoryModel::setProjectDefinitionHandle
-(shared_ptr<ProjectDefinition> projectDefinitionHandle)
+(ProjectDefinition* projectDefinitionHandle)
 {
     mProjectDefinitionHandle = projectDefinitionHandle;
 }

@@ -55,15 +55,15 @@ namespace Dream
     Transform3D(glm::mat4 fromMatrix);
     explicit Transform3D(json j);
 
-    bool isTypeOffset();
-    bool isTypeAbsolute();
+    bool isTypeOffset() const;
+    bool isTypeAbsolute() const;
 
-    vec3 getTranslation();
+    vec3 getTranslation() const;
     void setTranslation(vec3);
     void setTranslation(float, float, float);
-    float getTranslationX();
-    float getTranslationY();
-    float getTranslationZ();
+    float getTranslationX() const;
+    float getTranslationY() const;
+    float getTranslationZ() const;
     void setTranslationX(float);
     void setTranslationY(float);
     void setTranslationZ(float);
@@ -88,7 +88,7 @@ namespace Dream
     void setOrientation(float,float,float,float);
     void setOrientation(quat);
 
-    vec3 getRotation();
+    vec3 getRotation() const;
     void setRotation(float, float, float);
     void setRotation(vec3 rot);
     float getRotationX() const;
@@ -97,19 +97,19 @@ namespace Dream
     void setRotationX(float);
     void setRotationY(float);
     void setRotationZ(float);
-    btVector3 getRotationAsBtVector3();
+    btVector3 getRotationAsBtVector3() const;
 
-    vec3 getScale();
+    vec3 getScale() const;
     void setScale(vec3);
     void setScale(float, float, float);
-    float getScaleX();
-    float getScaleY();
-    float getScaleZ();
+    float getScaleX() const;
+    float getScaleY() const;
+    float getScaleZ() const;
     void setScaleX(float);
     void setScaleY(float);
     void setScaleZ(float);
 
-    string getTransformType();
+    string getTransformType() const;
     void setTransformType(string);
 
     void translateByX(float);
@@ -124,12 +124,12 @@ namespace Dream
     void scaleByY(float);
     void scaleByZ(float);
 
-    glm::mat4 asMat4();
+    glm::mat4 asMat4() const;
     void setFromMat4(glm::mat4 mat);
 
     json getJson();
 
-    void offsetFrom(shared_ptr<Transform3D>, shared_ptr<Transform3D>);
+    void offsetFrom(Transform3D*, Transform3D*);
   };
 
 } // End of Dream

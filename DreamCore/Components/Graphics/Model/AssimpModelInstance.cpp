@@ -46,10 +46,10 @@ namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
     (
-        const shared_ptr<AssimpCache>& modelCache,
-        const shared_ptr<MaterialCache>& texCache,
-        const shared_ptr<IAssetDefinition>& definition,
-        const shared_ptr<SceneObjectRuntime>& transform)
+        AssimpCache* modelCache,
+        MaterialCache* texCache,
+        IAssetDefinition* definition,
+        SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mModelCache(modelCache),
           mMaterialCache(texCache)
@@ -74,6 +74,13 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object");
+
+        for (auto mesh : mMeshes)
+        {
+            delete mesh;
+        }
+        mMeshes.clear();
+
         return;
     }
 
@@ -112,14 +119,14 @@ namespace Dream
     void
     AssimpModelInstance::draw
     (
-        const shared_ptr<ShaderInstance>& shader,
+        ShaderInstance* shader,
         vec3 transform,
         vec3 camPos,
         float maxDistance,
         bool alwaysDraw
     ) {
         auto log = getLog();
-        for(const shared_ptr<AssimpMesh>& mesh : mMeshes)
+        for(AssimpMesh* mesh : mMeshes)
         {
             vec3 center = transform + mesh->getBoundingBox().getCenter();
             float distance = glm::distance(center,camPos);
@@ -262,7 +269,7 @@ namespace Dream
         }
     }
 
-    shared_ptr<AssimpMesh>
+    AssimpMesh*
     AssimpModelInstance::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
@@ -270,7 +277,7 @@ namespace Dream
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
 
-        shared_ptr<AssimpMesh> aMesh;
+        AssimpMesh* aMesh = nullptr;
 
         // Material info Colours
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -280,12 +287,12 @@ namespace Dream
 
         if(mMaterialCache != nullptr)
         {
-            shared_ptr<AssimpMaterial> aMaterial = mMaterialCache->getMaterialByName(name);
+            AssimpMaterial* aMaterial = mMaterialCache->getMaterialByName(name);
 
             if (aMaterial == nullptr)
             {
                 log->info("Creating Material {}", name.C_Str());
-                aMaterial = make_shared<AssimpMaterial>();
+                aMaterial = mMaterialCache->newAssimpMaterial();
                 aMaterial->mName = name;
                 aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
                 aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial->mShadingModel);
@@ -302,8 +309,7 @@ namespace Dream
                 aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
                 aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
                 aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
-                mMaterialCache->addMaterialToCache(aMaterial);
-                processTextureData(mesh,scene, aMaterial.get());
+                processTextureData(mesh,scene, aMaterial);
             }
 
             log->info( "Using Material {}" , aMaterial->mName.C_Str());
@@ -311,8 +317,8 @@ namespace Dream
 
             BoundingBox box;
             updateBoundingBox(box, mesh);
-            aMesh = make_shared<AssimpMesh>(
-                dynamic_pointer_cast<AssimpModelInstance>(shared_from_this()),
+            aMesh = new AssimpMesh(
+                dynamic_cast<AssimpModelInstance*>(this),
                 string(mesh->mName.C_Str()),
                 vertices,
                 indices,
@@ -323,7 +329,7 @@ namespace Dream
         return aMesh;
     }
 
-    shared_ptr<Texture>
+    Texture*
     AssimpModelInstance::loadMaterialTexture
     (aiMaterial* mat, aiTextureType type, string typeName)
     {

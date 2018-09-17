@@ -32,8 +32,8 @@ namespace Dream
 
     public:
         ScriptInstance(
-            const shared_ptr<ScriptDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            ScriptDefinition*,
+            SceneObjectRuntime*
         );
         ~ScriptInstance(void);
         bool load(string);

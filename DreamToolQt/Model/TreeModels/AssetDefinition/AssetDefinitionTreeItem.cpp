@@ -24,7 +24,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
 (
         QString title,
         AssetDefinitionTreeItemType type,
-        shared_ptr<IAssetDefinition> definition,
+        IAssetDefinition* definition,
         AssetDefinitionTreeItem *parent
 )
     : GenericTreeItem(title, parent),
@@ -34,7 +34,7 @@ AssetDefinitionTreeItem::AssetDefinitionTreeItem
     //qDebug() << "AssetDefinitionTreeItem: Constructing";
 }
 
-shared_ptr<IAssetDefinition> AssetDefinitionTreeItem::getAssetDefinition()
+IAssetDefinition* AssetDefinitionTreeItem::getAssetDefinition()
 {
    return mDefinition;
 }
@@ -42,7 +42,7 @@ shared_ptr<IAssetDefinition> AssetDefinitionTreeItem::getAssetDefinition()
 AssetDefinitionTreeItemType
 AssetDefinitionTreeItem::getType
 ()
-const
+
 {
     return mType;
 }
@@ -57,7 +57,7 @@ AssetDefinitionTreeItem::setType
 QVariant
 AssetDefinitionTreeItem::data
 (int)
-const
+
 {
     switch (getType())
     {

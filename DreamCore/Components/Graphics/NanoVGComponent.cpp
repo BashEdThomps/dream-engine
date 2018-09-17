@@ -10,7 +10,7 @@
 namespace Dream
 {
 
-    NanoVGComponent::NanoVGComponent(shared_ptr<IWindowComponent> windowComponent)
+    NanoVGComponent::NanoVGComponent(IWindowComponent* windowComponent)
         : IComponent(),
           mWindowComponent(windowComponent)
     {

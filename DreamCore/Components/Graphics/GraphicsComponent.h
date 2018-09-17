@@ -77,49 +77,49 @@ namespace Dream
         GLuint mFontVBO;
         GLuint mFontVAO;
 
-        shared_ptr<Camera> mCamera;
+        Camera* mCamera;
 
         float mMinimumDraw;
         float mMaximumDraw;
         float mMeshCullDistance;
 
-        vector<shared_ptr<SceneObjectRuntime>> mSpriteQueue;
-        vector<shared_ptr<SceneObjectRuntime>> mModelQueue;
-        vector<shared_ptr<SceneObjectRuntime>> mFontQueue;
-        vector<shared_ptr<LightInstance>>      mLightQueue;
-        shared_ptr<IWindowComponent> mWindowComponent;
+        vector<SceneObjectRuntime*>  mSpriteQueue;
+        vector<SceneObjectRuntime*>  mModelQueue;
+        vector<SceneObjectRuntime*>  mFontQueue;
+        vector<LightInstance*>       mLightQueue;
+        IWindowComponent*            mWindowComponent;
     public:
-        GraphicsComponent(shared_ptr<Camera>,shared_ptr<IWindowComponent>);
+        GraphicsComponent(Camera*,IWindowComponent*);
         ~GraphicsComponent() override;
 
         void clearSpriteQueue();
-        void addToSpriteQueue(shared_ptr<SceneObjectRuntime>);
+        void addToSpriteQueue(SceneObjectRuntime*);
         void drawSpriteQueue();
 
-        void addToLightQueue(shared_ptr<LightInstance>);
+        void addToLightQueue(LightInstance*);
         void clearLightQueue();
 
         void clearModelQueue();
-        void addToModelQueue(shared_ptr<SceneObjectRuntime>);
+        void addToModelQueue(SceneObjectRuntime*);
         void drawModelQueue();
         void preModelRender();
         void postModelRender();
 
         void clearFontQueue();
-        void addToFontQueue(shared_ptr<SceneObjectRuntime>);
+        void addToFontQueue(SceneObjectRuntime*);
         void drawFontQueue();
         void preFontRender();
         void postFontRender();
 
         bool init(void) override;
         void updateComponent() override;
-        void drawSprite(shared_ptr<SceneObjectRuntime>);
-        void drawFont(shared_ptr<SceneObjectRuntime>);
-        void drawModel(shared_ptr<SceneObjectRuntime>);
+        void drawSprite(SceneObjectRuntime*);
+        void drawFont(SceneObjectRuntime*);
+        void drawModel(SceneObjectRuntime*);
         void create2DVertexObjects();
         void createFontVertexObjects();
         void setWindowShouldClose(bool);
-        shared_ptr<Camera> getCamera();
+        Camera* getCamera();
         mat4 getViewMatrix();
         mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();

@@ -34,8 +34,8 @@ namespace Dream
     class ProjectDefinition : public IDefinition
     {
     private:
-        vector<shared_ptr<SceneDefinition>> mSceneDefinitions;
-        vector<shared_ptr<IAssetDefinition>> mAssetDefinitions;
+        vector<SceneDefinition*> mSceneDefinitions;
+        vector<IAssetDefinition*> mAssetDefinitions;
     public:
         ProjectDefinition(json data);
         ~ProjectDefinition() override;
@@ -48,7 +48,7 @@ namespace Dream
 
         string getStartupSceneUuid();
         void setStartupSceneUuid(string sceneUuid);
-        shared_ptr<SceneDefinition> getStartupSceneDefinition();
+        SceneDefinition* getStartupSceneDefinition();
 
         int getWindowWidth();
         void setWindowWidth(int width);
@@ -60,22 +60,22 @@ namespace Dream
 
         void showStatus() override;
         size_t countAssetDefinitions();
-        shared_ptr<IAssetDefinition> getAssetDefinitionByUuid(string uuid);
+        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
 
         size_t countScenesDefinitions();
-        shared_ptr<SceneDefinition> getSceneDefinitionByUuid(string uuid);
-        shared_ptr<SceneDefinition> getSceneDefinitionByName(string uuid);
-        vector<shared_ptr<SceneDefinition>> getSceneDefinitionsList();
-        void removeSceneDefinition(shared_ptr<SceneDefinition> sceneDef);
+        SceneDefinition* getSceneDefinitionByUuid(string uuid);
+        SceneDefinition* getSceneDefinitionByName(string uuid);
+        vector<SceneDefinition*> getSceneDefinitionsList();
+        void removeSceneDefinition(SceneDefinition* sceneDef);
 
-        void removeAssetDefinition(shared_ptr<IAssetDefinition> assetDef);
-        vector<shared_ptr<IAssetDefinition>> getAssetDefinitionsList();
-        shared_ptr<SceneDefinition> createNewSceneDefinition();
-        shared_ptr<IAssetDefinition> createNewAssetDefinition(AssetType type);
+        void removeAssetDefinition(IAssetDefinition* assetDef);
+        vector<IAssetDefinition*> getAssetDefinitionsList();
+        SceneDefinition* createNewSceneDefinition();
+        IAssetDefinition* createNewAssetDefinition(AssetType type);
         json getJson() override;
 
-        map<AssetType,vector<shared_ptr<IAssetDefinition>>> getAssetDefinitionsMap();
-        vector<shared_ptr<ShaderDefinition>> getShaderAssetDefinitionVector();
+        map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionsMap();
+        vector<ShaderDefinition*> getShaderAssetDefinitionVector();
 
         bool getCaptureKeyboard();
         void setCaptureKeyboard(bool);
@@ -86,11 +86,14 @@ namespace Dream
         bool getCaptureJoystick();
         void setCaptureJoystick(bool);
 
+        void deleteAssetDefinitions();
+        void deleteSceneDefinitions();
+
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
-        shared_ptr<IAssetDefinition> createAssetDefinitionInstance(json assetDefinitionJs);
+        IAssetDefinition* createAssetDefinitionInstance(json assetDefinitionJs);
     };
 }

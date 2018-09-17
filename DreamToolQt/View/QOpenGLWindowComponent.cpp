@@ -36,6 +36,7 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
     : QOpenGLWidget(parent),
       IWindowComponent(),
       mControlScene(false),
+      mProjectRuntimeHandle(nullptr),
       mGridHandle(nullptr),
       mSelectionHighlighterHandle(nullptr),
       mRelationshipTreeHandle(nullptr),
@@ -53,7 +54,6 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
         log = spdlog::stdout_color_mt("QOpenGLWindowComponent");
     }
     log->info("Constructing");
-    //setFormat(format);
 }
 
 QOpenGLWindowComponent::~QOpenGLWindowComponent
@@ -93,13 +93,42 @@ QOpenGLWindowComponent::resizeGL
 }
 
 void
+QOpenGLWindowComponent::showIdleScreen
+()
+{
+    auto log = spdlog::get("QOpenGLWindowComponent");
+    log->info("showIdleScreen");
+    glClearColor(0.5f,0.5f,0.5f,1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    QPainter painter(this);
+
+    QPointF center(mWidth/2.0,mHeight/2.0);
+    QPointF textPos;
+
+    QFont font("Arial", 36);
+    painter.setPen(Qt::white);
+    painter.setFont(font);
+
+    QString text = "No Scene Running";
+    QFontMetrics fm(font);
+    int stringWidth = fm.width(text);
+    int stringHeight = fm.height();
+
+    textPos.setX(center.x()-(stringWidth/2.0));
+    textPos.setY(center.y());
+
+    painter.drawText(textPos, text);
+    painter.end();
+}
+
+void
 QOpenGLWindowComponent::paintGL
 ()
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (mPaintInProgress)
     {
-
         log->trace("PaintGL all ready in progress");
         return;
     }
@@ -113,7 +142,7 @@ QOpenGLWindowComponent::paintGL
         {
             mPaintInProgress = true;
             updateInputState();
-            shared_ptr<SceneRuntime> sRuntime = mProjectRuntimeHandle->getActiveSceneRuntime();
+            SceneRuntime* sRuntime = mProjectRuntimeHandle->getActiveSceneRuntime();
 
             if (sRuntime == nullptr)
             {
@@ -132,7 +161,7 @@ QOpenGLWindowComponent::paintGL
 
                 mProjectRuntimeHandle->updateGraphics();
 
-                shared_ptr<GraphicsComponent> gfxRuntime = mProjectRuntimeHandle->getGraphicsComponent();
+                GraphicsComponent* gfxRuntime = mProjectRuntimeHandle->getGraphicsComponent();
 
                 if (gfxRuntime == nullptr)
                 {
@@ -222,8 +251,7 @@ QOpenGLWindowComponent::paintGL
     // If no active scene, blank screen
     else
     {
-        glClearColor(0.0f,0.0f,0.0f,0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        showIdleScreen();
     }
 }
 
@@ -351,7 +379,7 @@ QOpenGLWindowComponent::drawStats()
     painter.end();
 }
 
-bool QOpenGLWindowComponent::getControlScene() const
+bool QOpenGLWindowComponent::getControlScene()
 {
     return mControlScene;
 }
@@ -361,6 +389,16 @@ void QOpenGLWindowComponent::setControlScene(bool controlScene)
     auto log = spdlog::get("QOpenGLWindowComponent");
     log->info("Scene Control Enabled {}",controlScene);
     mControlScene = controlScene;
+}
+
+void QOpenGLWindowComponent::clearRuntime()
+{
+    mProjectRuntimeHandle = nullptr;
+    mSelectionHighlighterHandle->clearRuntime();
+    mRelationshipTreeHandle->clearRuntime();
+    mPathPointViewerHandle->clearRuntime();
+    mPaintInProgress = false;
+    paintGL();
 }
 
 double QOpenGLWindowComponent::averageFrameTime()
@@ -388,7 +426,7 @@ void QOpenGLWindowComponent::swapBuffers(){}
 
 void
 QOpenGLWindowComponent::setProjectRuntime
-(shared_ptr<ProjectRuntime> engine)
+(ProjectRuntime* engine)
 {
     mProjectRuntimeHandle = engine;
 }
@@ -427,13 +465,12 @@ QOpenGLWindowComponent::wheelEvent
     {
         auto log = spdlog::get("QOpenGLWindowComponent");
         log->trace("WheelEvent");
-        auto projectRuntime = mProjectRuntimeHandle;
-        if (projectRuntime)
+        if (mProjectRuntimeHandle != nullptr)
         {
             QPoint pos = event->pixelDelta();
             int x = static_cast<int>( pos.x() );
             int y = static_cast<int>( pos.y() );
-            shared_ptr<Camera> cam = projectRuntime->getCamera();
+            Camera* cam = mProjectRuntimeHandle->getCamera();
             if (cam != nullptr)
             {
                 cam->processMouseMovement(x,-y,true);
@@ -458,7 +495,7 @@ QOpenGLWindowComponent::mouseMoveEvent
 
 void
 QOpenGLWindowComponent::moveSelectedSceneObject
-(shared_ptr<SceneObjectRuntime> selected)
+(SceneObjectRuntime* selected)
 {
     if (mControlScene)
     {
@@ -469,7 +506,7 @@ QOpenGLWindowComponent::moveSelectedSceneObject
             return;
         }
 
-        shared_ptr<Transform3D> transform = selected->getTransform();
+        Transform3D* transform = selected->getTransform();
 
         if (transform == nullptr)
         {
@@ -534,7 +571,7 @@ QOpenGLWindowComponent::updateInputState
             return;
         }
 
-        shared_ptr<SceneObjectRuntime> selectedPtr;
+        SceneObjectRuntime* selectedPtr;
 
         if (mSelectionHighlighterHandle)
         {
@@ -559,8 +596,8 @@ QOpenGLWindowComponent::moveCamera
         return;
     }
 
-    shared_ptr<Camera> cam = mProjectRuntimeHandle->getCamera();
-    shared_ptr<Time> time =  mProjectRuntimeHandle->getTime();
+    Camera* cam = mProjectRuntimeHandle->getCamera();
+    Time* time =  mProjectRuntimeHandle->getTime();
 
     float deltaTime = 0.0;
     if (time != nullptr)

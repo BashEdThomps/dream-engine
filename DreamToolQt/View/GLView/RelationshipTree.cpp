@@ -63,3 +63,9 @@ RelationshipTree::setLeafSceneObjectHandle
 {
     mLeafSceneObjectHandle = root;
 }
+
+void RelationshipTree::clearRuntime()
+{
+    mRootSceneObjectHandle = nullptr;
+    mLeafSceneObjectHandle = nullptr;
+}

@@ -38,14 +38,14 @@ void MaterialShaderFormController::setProjectPath(QString projectPath)
 
 void
 MaterialShaderFormController::setShaderHandlesVector
-(vector<shared_ptr<ShaderDefinition>> shaders)
+(vector<ShaderDefinition*> shaders)
 {
     mTableDelegate->setShaderDefinitions(shaders);
 }
 
 void
 MaterialShaderFormController::setModelDefinition
-(shared_ptr<ModelDefinition> def)
+(ModelDefinition* def)
 {
     mModelDefinitionHandle = def;
     populate();
@@ -94,7 +94,7 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
         return;
     }
 
-    const aiScene* scene = model->GetScene();
+     const aiScene* scene = model->GetScene();
 
     if(scene == nullptr)
     {

@@ -24,7 +24,7 @@ namespace Dream
     class FontDefinition : public IAssetDefinition
     {
     public:
-        FontDefinition(const shared_ptr<ProjectDefinition>& pd, json js);
+        FontDefinition(ProjectDefinition* pd, json js);
 
         void  setColourRed(float);
         float getColourRed();

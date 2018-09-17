@@ -13,8 +13,7 @@ using namespace spdlog;
 
 namespace Dream
 {
-    class DreamObject :
-            public enable_shared_from_this<DreamObject>
+    class DreamObject
     {
     public:
         DreamObject(string classname);

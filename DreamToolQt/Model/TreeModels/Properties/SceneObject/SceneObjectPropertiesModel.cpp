@@ -29,7 +29,7 @@ using Dream::IAssetDefinition;
 using Dream::SceneObjectDefinition;
 
 SceneObjectPropertiesModel::SceneObjectPropertiesModel
-(shared_ptr<SceneObjectDefinition> sceneObject, QTreeView *parent)
+(SceneObjectDefinition* sceneObject, QTreeView *parent)
     : AbstractPropertiesModel(new SceneObjectPropertiesTreeDelegate(this,parent), parent)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
@@ -115,17 +115,17 @@ SceneObjectPropertiesModel::createDelegateConnections
     connect
     (
         delegate,
-        SIGNAL(notifyButton_RemoveAsset(shared_ptr<IDefinition>)),
+        SIGNAL(notifyButton_RemoveAsset(IDefinition*)),
         this,
-        SLOT(onButton_RemoveAsset(shared_ptr<IDefinition>))
+        SLOT(onButton_RemoveAsset(IDefinition*))
     );
 
     connect
     (
         delegate,
-        SIGNAL(notifyButton_RemoveChild(shared_ptr<IDefinition>)),
+        SIGNAL(notifyButton_RemoveChild(IDefinition*)),
         this,
-        SLOT(onButton_RemoveChild(shared_ptr<IDefinition>))
+        SLOT(onButton_RemoveChild(IDefinition*))
     );
 }
 
@@ -371,7 +371,7 @@ SceneObjectPropertiesModel::createAssetInstancesProperty
 
     for (std::string adUuid : definitionsToLoad)
     {
-       shared_ptr<IAssetDefinition> definition = mSceneObjectDefinitionHandle
+       IAssetDefinition* definition = mSceneObjectDefinitionHandle
            ->getSceneDefinition()
                ->getProjectDefinition()
                 ->getAssetDefinitionByUuid(adUuid);
@@ -403,7 +403,7 @@ SceneObjectPropertiesModel::createChildrenProperty
     );
     mRootItem->appendChild(childrenItem);
 
-    for (shared_ptr<SceneObjectDefinition> child : mSceneObjectDefinitionHandle->getChildDefinitionsList())
+    for (SceneObjectDefinition* child : mSceneObjectDefinitionHandle->getChildDefinitionsList())
     {
         SceneObjectPropertiesItem *childItem = new SceneObjectPropertiesItem
         (
@@ -459,7 +459,7 @@ SceneObjectPropertiesModel::onButton_CaptureScale
 
 void
 SceneObjectPropertiesModel::onButton_RemoveAsset
-(shared_ptr<IDefinition> adHandle)
+(IDefinition* adHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
     log->info("RemoveAsset");
@@ -468,7 +468,7 @@ SceneObjectPropertiesModel::onButton_RemoveAsset
 
 void
 SceneObjectPropertiesModel::onButton_RemoveChild
-(shared_ptr<IDefinition> sodHandle)
+(IDefinition* sodHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
     log->info("RemoveChild");

@@ -49,7 +49,7 @@
 namespace Dream
 {
     IScriptComponent::IScriptComponent
-    (shared_ptr<ProjectRuntime> project, shared_ptr<ScriptCache> cache)
+    (ProjectRuntime* project, ScriptCache* cache)
         : IComponent(),
           mScriptCache(cache),
           mProjectRuntime(project)

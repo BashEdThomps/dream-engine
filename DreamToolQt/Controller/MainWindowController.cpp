@@ -55,7 +55,8 @@ MainWindowController::MainWindowController
 (QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      mProjectDefinitionHandle(nullptr)
+      mProjectDefinitionHandle(nullptr),
+      mWindowComponentHandle(nullptr)
 {
     auto log = spdlog::get("MainWindowController");
     if (log == nullptr)
@@ -173,9 +174,11 @@ MainWindowController::onAsseetDefinitionContextMenuRequested
     }
 }
 
-void MainWindowController::onCreateAssetDefinitionAction()
+void
+MainWindowController::onCreateAssetDefinitionAction
+()
 {
-    CreateAssetAction* caa = dynamic_cast<CreateAssetAction*>(sender());
+    CreateAssetDefinitionAction* caa = dynamic_cast<CreateAssetDefinitionAction*>(sender());
     auto log = spdlog::get("MainWindowController");
     log->info("Create Asset Definition of type {}", caa->getType().toStdString());
     emit notifyCreateNewAssetDefinition(caa->getType());
@@ -185,15 +188,15 @@ shared_ptr<QMenu>
 MainWindowController::createAssetDefinitionTreeContextMenu
 (AssetDefinitionTreeItem* item)
 {
-    shared_ptr<IAssetDefinition> assetDef;
+    IAssetDefinition* assetDef;
     auto menu = make_shared<QMenu>();
     QAction* nameAction = nullptr;
-    CreateAssetAction* createAction = nullptr;
+    CreateAssetDefinitionAction* createAction = nullptr;
     DeleteAssetDefinitionAction* deleteAction = nullptr;
     switch (item->getType())
     {
         case ASSET_DEFINITION:
-            assetDef = dynamic_pointer_cast<IAssetDefinition>(item->getAssetDefinition());
+            assetDef = dynamic_cast<IAssetDefinition*>(item->getAssetDefinition());
             nameAction = new QAction(QString::fromStdString(assetDef->getName()),menu.get());
             nameAction->setEnabled(false);
             menu->addAction(nameAction);
@@ -203,7 +206,7 @@ MainWindowController::createAssetDefinitionTreeContextMenu
             menu->addAction(deleteAction);
             break;
         case ASSET_TREE_NODE:
-            createAction = new CreateAssetAction
+            createAction = new CreateAssetDefinitionAction
             (
                 item->getTitle(),
                 QString("New %1 Asset").arg(item->getTitle()),
@@ -233,9 +236,9 @@ shared_ptr<QMenu>
 MainWindowController::createScenegraphTreeContextMenu
 (ScenegraphTreeItem* item)
 {
-    shared_ptr<ProjectDefinition> projectDef = nullptr;
-    shared_ptr<SceneDefinition> sceneDef = nullptr;
-    shared_ptr<SceneObjectDefinition> sceneObjectDef = nullptr;
+    ProjectDefinition* projectDef = nullptr;
+    SceneDefinition* sceneDef = nullptr;
+    SceneObjectDefinition* sceneObjectDef = nullptr;
 
     ScenegraphMenuAction* titleAction = nullptr;
     ScenegraphMenuAction* deleteAction = nullptr;
@@ -247,7 +250,7 @@ MainWindowController::createScenegraphTreeContextMenu
     switch (item->getType())
     {
         case SCENEGRAPH_PROJECT:
-            projectDef = dynamic_pointer_cast<ProjectDefinition>(item->getItem());
+            projectDef = dynamic_cast<ProjectDefinition*>(item->getItem());
 
             titleAction = new ScenegraphMenuAction(item, QString::fromStdString(projectDef->getName()),menu.get());
             titleAction->setEnabled(false);
@@ -260,7 +263,7 @@ MainWindowController::createScenegraphTreeContextMenu
 
             break;
         case SCENEGRAPH_SCENE:
-            sceneDef = dynamic_pointer_cast<SceneDefinition>(item->getItem());
+            sceneDef = dynamic_cast<SceneDefinition*>(item->getItem());
 
             titleAction = new ScenegraphMenuAction(item,QString::fromStdString(sceneDef->getName()),menu.get());
             titleAction->setEnabled(false);
@@ -273,7 +276,7 @@ MainWindowController::createScenegraphTreeContextMenu
 
             break;
         case SCENEGRAPH_SCENE_OBJECT:
-            sceneObjectDef = dynamic_pointer_cast<SceneObjectDefinition>(item->getItem());
+            sceneObjectDef = dynamic_cast<SceneObjectDefinition*>(item->getItem());
 
             titleAction = new ScenegraphMenuAction(item, QString::fromStdString(sceneObjectDef->getName()),menu.get());
             titleAction->setEnabled(false);
@@ -312,7 +315,7 @@ MainWindowController::onScenegraphMenuAddNewSceneTriggered
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
 
     // Only triggered by project item
-    auto projectDefHandle = dynamic_pointer_cast<ProjectDefinition>(action->getItemHandle()->getItem());
+    auto projectDefHandle = dynamic_cast<ProjectDefinition*>(action->getItemHandle()->getItem());
     auto newScene = projectDefHandle->createNewSceneDefinition();
     log->info("Created new scene {} for project {}", newScene->getNameAndUuidString(), projectDefHandle->getNameAndUuidString());
     emit notifyScenegraphTreeDataChanged();
@@ -327,7 +330,7 @@ MainWindowController::onScenegraphMenuDeleteSceneTriggered
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
 
     // Only triggered by project item
-    auto sceneDefHandle = dynamic_pointer_cast<SceneDefinition>(action->getItemHandle()->getItem());
+    auto sceneDefHandle = dynamic_cast<SceneDefinition*>(action->getItemHandle()->getItem());
     auto parentProjectHandle = sceneDefHandle->getProjectDefinition();
     parentProjectHandle->removeSceneDefinition(sceneDefHandle);
     log->info("Deleted scene from project {}",parentProjectHandle->getNameAndUuidString());
@@ -349,7 +352,7 @@ MainWindowController::onScenegraphMenuAddSceneObjectTriggered
         case SCENEGRAPH_SCENE:
             break;
         case SCENEGRAPH_SCENE_OBJECT:
-            auto sceneObjectDefinitionHandle = dynamic_pointer_cast<SceneObjectDefinition>(
+            auto sceneObjectDefinitionHandle = dynamic_cast<SceneObjectDefinition*>(
                 action->getItemHandle()->getItem()
             );
             auto newSceneObject = sceneObjectDefinitionHandle->createNewChildSceneObjectDefinition();
@@ -377,7 +380,8 @@ void MainWindowController::onScenegraphMenuDuplicateSceneObjectTriggered()
         case SCENEGRAPH_SCENE:
             break;
         case SCENEGRAPH_SCENE_OBJECT:
-            auto sceneObjectDefinitionHandle = dynamic_pointer_cast<SceneObjectDefinition>(
+            auto sceneObjectDefinitionHandle = dynamic_cast<SceneObjectDefinition*>
+            (
                 action->getItemHandle()->getItem()
             );
             auto duplicateSO = sceneObjectDefinitionHandle->duplicate();
@@ -399,7 +403,7 @@ MainWindowController::onScenegraphMenuDeleteSceneObjectTriggered
     log->info("Scenegraph Menu: Delete Scene Object");
 
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
-    auto sceneObjectDefinitionHandle = dynamic_pointer_cast<SceneObjectDefinition>(
+    auto sceneObjectDefinitionHandle = dynamic_cast<SceneObjectDefinition*>(
         action->getItemHandle()->getItem()
     );
     auto parentSceneObject = sceneObjectDefinitionHandle->getParentSceneObject();
@@ -449,11 +453,11 @@ void MainWindowController::onAddAssetToSceneObjectTriggered()
 {
     auto log = spdlog::get("MainWindowController");
     auto action = dynamic_cast<AddAssetToSceneObjectAction*>(sender());
-    shared_ptr<IAssetDefinition> adHandle = action->getAssetDefinitionHandle();
+    IAssetDefinition* adHandle = action->getAssetDefinitionHandle();
     ScenegraphTreeItem* treeItemHandle = action->getItemHandle();
     if (treeItemHandle->getType() == SCENEGRAPH_SCENE_OBJECT)
     {
-        auto sceneObjHandle = dynamic_pointer_cast<SceneObjectDefinition>(treeItemHandle->getItem());
+        auto sceneObjHandle = dynamic_cast<SceneObjectDefinition*>(treeItemHandle->getItem());
         log->info("Adding asset {} to object {}",adHandle->getNameAndUuidString(),sceneObjHandle->getNameAndUuidString());
         sceneObjHandle->addAssetDefinitionToLoadQueue(adHandle);
     }
@@ -509,7 +513,9 @@ MainWindowController::onAssetDefinitionTreeViewActivated
     }
 }
 
-void MainWindowController::onMenu_Debug_LogLevelChanged(bool)
+void
+MainWindowController::onMenu_Debug_LogLevelChanged
+(bool)
 {
     auto log = spdlog::get("MainWindowController");
     auto action = dynamic_cast<QAction*>(sender());
@@ -539,9 +545,9 @@ MainWindowController::createAssetsMenu
 
             QMenu* currentMenu = menu->addMenu(currentTypeReadable);
 
-            vector<shared_ptr<IAssetDefinition>> currentVector = currentAssetMapPair->second;
+            vector<IAssetDefinition*> currentVector = currentAssetMapPair->second;
 
-            for (shared_ptr<IAssetDefinition> currentDefinition : currentVector )
+            for (IAssetDefinition* currentDefinition : currentVector )
             {
                 QAction* nextAssetAction = new AddAssetToSceneObjectAction(
                     item,
@@ -838,7 +844,7 @@ void MainWindowController::addRightDockWidget(QWidget* widget)
 
 void
 MainWindowController::onSceneStopped
-(shared_ptr<SceneDefinition> scene)
+(SceneDefinition* scene)
 {
     if (scene)
     {
@@ -856,7 +862,7 @@ MainWindowController::onSceneStopped
 
 void
 MainWindowController::onProjectDefinitionChanged
-(shared_ptr<ProjectDefinition> def)
+(ProjectDefinition* def)
 {
     mProjectDefinitionHandle = def;
 }
@@ -913,25 +919,25 @@ MainWindowController::keyReleaseEvent
     }
 }
 
-CreateAssetAction::CreateAssetAction
+CreateAssetDefinitionAction::CreateAssetDefinitionAction
 (QString type, QObject* parent)
     : QAction(parent),
       mType(type) {}
 
-CreateAssetAction::CreateAssetAction
-(QString type, const QString& text, QObject* parent)
+CreateAssetDefinitionAction::CreateAssetDefinitionAction
+(QString type,const  QString& text, QObject* parent)
     : QAction(text,parent),
       mType(type)
 {}
 
-CreateAssetAction::CreateAssetAction
+CreateAssetDefinitionAction::CreateAssetDefinitionAction
 (QString type, const QIcon& icon, const QString& text, QObject* parent)
     : QAction(icon,text,parent),
       mType(type) {}
 
 QString
-CreateAssetAction::
-getType() const
+CreateAssetDefinitionAction::getType
+()
 {
     return mType;
 }
@@ -941,7 +947,7 @@ ScenegraphMenuAction::ScenegraphMenuAction
     : QAction(parent), mItemHandle(itemHandle) {}
 
 ScenegraphMenuAction::ScenegraphMenuAction
-(ScenegraphTreeItem *itemHandle, const QString& text, QObject* parent)
+(ScenegraphTreeItem *itemHandle,const  QString& text, QObject* parent)
     : QAction(text,parent), mItemHandle(itemHandle) {}
 
 ScenegraphMenuAction::ScenegraphMenuAction
@@ -950,13 +956,13 @@ ScenegraphMenuAction::ScenegraphMenuAction
 
 ScenegraphTreeItem*
 ScenegraphMenuAction::getItemHandle
-() const
+()
 {
    return mItemHandle;
 }
 
 AddAssetToSceneObjectAction::AddAssetToSceneObjectAction
-(ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHandle, QObject* parent)
+(ScenegraphTreeItem* itemHandle, IAssetDefinition* adHandle, QObject* parent)
     : QAction(parent),
       mItemHandle(itemHandle),
       mAssetDefinitionHandle(adHandle)
@@ -965,7 +971,7 @@ AddAssetToSceneObjectAction::AddAssetToSceneObjectAction
 }
 
 AddAssetToSceneObjectAction::AddAssetToSceneObjectAction
-(ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHandle, const QString& text, QObject* parent)
+(ScenegraphTreeItem* itemHandle, IAssetDefinition* adHandle, const QString& text, QObject* parent)
     : QAction(text,parent),
       mItemHandle(itemHandle),
       mAssetDefinitionHandle(adHandle)
@@ -975,7 +981,7 @@ AddAssetToSceneObjectAction::AddAssetToSceneObjectAction
 }
 
 AddAssetToSceneObjectAction::AddAssetToSceneObjectAction
-(ScenegraphTreeItem* itemHandle, shared_ptr<IAssetDefinition> adHandle, const QIcon& icon, const QString& text, QObject* parent)
+(ScenegraphTreeItem* itemHandle, IAssetDefinition* adHandle, const QIcon& icon, const QString& text, QObject* parent)
 : QAction(icon,text,parent),
       mItemHandle(itemHandle),
       mAssetDefinitionHandle(adHandle)
@@ -986,14 +992,14 @@ AddAssetToSceneObjectAction::AddAssetToSceneObjectAction
 
 ScenegraphTreeItem*
 AddAssetToSceneObjectAction::getItemHandle
-() const
+()
 {
     return mItemHandle;
 }
 
-shared_ptr<IAssetDefinition>
+IAssetDefinition*
 AddAssetToSceneObjectAction::getAssetDefinitionHandle
-() const
+()
 {
     return mAssetDefinitionHandle;
 }

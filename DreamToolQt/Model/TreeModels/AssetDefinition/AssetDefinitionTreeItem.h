@@ -47,18 +47,18 @@ public:
     (
         QString title,
         AssetDefinitionTreeItemType type,
-        shared_ptr<IAssetDefinition> definiion,
+        IAssetDefinition* definiion,
         AssetDefinitionTreeItem *parentItem = nullptr
     );
 
-    shared_ptr<IAssetDefinition> getAssetDefinition();
+    IAssetDefinition* getAssetDefinition();
 
-    AssetDefinitionTreeItemType getType() const;
+    AssetDefinitionTreeItemType getType() ;
     void setType(AssetDefinitionTreeItemType type);
-    QVariant data(int column) const;
+    QVariant data(int column) ;
 
 private:
-    shared_ptr<IAssetDefinition> mDefinition;
+    IAssetDefinition* mDefinition;
     AssetDefinitionTreeItemType mType;
 
 };

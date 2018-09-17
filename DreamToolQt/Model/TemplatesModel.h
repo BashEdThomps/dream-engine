@@ -24,9 +24,9 @@ class TemplatesModel : public QObject
 {
     Q_OBJECT
 private:
-    static const QString TEMPLATE_ROOT_PATH;
-    static const QString TEMPLATE_SCRIPT_PATH;
-    static const QString TEMPLATE_SHADER_PATH;
+    static  QString TEMPLATE_ROOT_PATH;
+    static  QString TEMPLATE_SCRIPT_PATH;
+    static  QString TEMPLATE_SHADER_PATH;
 public:
     explicit TemplatesModel(QObject *parent = nullptr);
     ~TemplatesModel() override;

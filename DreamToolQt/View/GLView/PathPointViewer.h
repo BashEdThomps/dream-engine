@@ -31,7 +31,7 @@ public:
     explicit PathPointViewer(QObject *parent = nullptr);
     ~PathPointViewer() override;
 
-    void setPathDefinition(shared_ptr<PathDefinition> object);
+    void setPathDefinition(PathDefinition* object);
     void init() override;
     void draw() override;
     void initShader() override;
@@ -39,11 +39,12 @@ public:
     vector<vec3> generateSplinePoints();
     void setPathVisible(bool visible);
 
-    size_t getTangentIndex() const;
-    void setTangentIndex(const size_t& tangentIndex);
+    size_t getTangentIndex() ;
+    void setTangentIndex( size_t& tangentIndex);
 
-    bool getDrawTangent() const;
+    bool getDrawTangent() ;
     void setDrawTangent(bool drawTangent);
+    void clearRuntime();
 
 public slots:
     void onUpdateRequested();
@@ -58,7 +59,7 @@ signals:
     void notifyNumberOfTangentsChanged(int);
 
 private:
-    shared_ptr<PathDefinition> mPathDefinition;
+    PathDefinition* mPathDefinition;
     unique_ptr<PathInstance> mPathInstance;
     void updateVertexBuffer();
     vec3 mSelectedColour;

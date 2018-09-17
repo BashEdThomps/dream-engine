@@ -47,7 +47,7 @@ class ProjectDirectoryModel : public QObject
 {
     Q_OBJECT
 public:
-    ProjectDirectoryModel(shared_ptr<ProjectDefinition> pdHanndle = nullptr, QObject* parent = nullptr);
+    ProjectDirectoryModel(ProjectDefinition* pdHanndle = nullptr, QObject* parent = nullptr);
     ~ProjectDirectoryModel() override;
 
     bool createProjectDirectory();
@@ -91,26 +91,26 @@ public:
     QString getProjectFileAbsolutePath();
     QString getProjectDirectoryName();
 
-    bool assetMainFileExists(shared_ptr<IAssetDefinition> adHandle, QString format = "" );
-    bool deleteMainAssetFile(shared_ptr<IAssetDefinition> adHandle, QString format = "" );
-    bool copyMainAssetFile(shared_ptr<IAssetDefinition> adHandle, QFile& assetFile, QString format = "" );
-    bool deleteAssetDataDirectory(shared_ptr<IAssetDefinition> adHandle);
-    bool copyAdditionalFile(shared_ptr<IAssetDefinition> adHandle, QFile& assetFile);
+    bool assetMainFileExists(IAssetDefinition* adHandle, QString format = "" );
+    bool deleteMainAssetFile(IAssetDefinition* adHandle, QString format = "" );
+    bool copyMainAssetFile(IAssetDefinition* adHandle, QFile& assetFile, QString format = "" );
+    bool deleteAssetDataDirectory(IAssetDefinition* adHandle);
+    bool copyAdditionalFile(IAssetDefinition* adHandle, QFile& assetFile);
 
-    shared_ptr<ProjectDefinition> getProjectDefinition();
-    void setProjectDefinitionHandle(shared_ptr<ProjectDefinition> projectDefinitionHandle);
+    ProjectDefinition* getProjectDefinition();
+    void setProjectDefinitionHandle(ProjectDefinition* projectDefinitionHandle);
 
-    QString createAssetTargetPath(shared_ptr<IAssetDefinition> adHandle, QString format = "");
-    QString getAssetDataPath(shared_ptr<IAssetDefinition> adHandle);
+    QString createAssetTargetPath(IAssetDefinition* adHandle, QString format = "");
+    QString getAssetDataPath(IAssetDefinition* adHandle);
 
     void touchFile(QString filePath);
-    bool writeAssetData(QString data, shared_ptr<IAssetDefinition> definition,QString fileName = "", bool overwrite = true);
+    bool writeAssetData(QString data, IAssetDefinition* definition,QString fileName = "", bool overwrite = true);
 
-    QByteArray readScriptData(shared_ptr<ScriptDefinition> scriptDef);
-    ShaderFileTuple readShaderData(shared_ptr<ShaderDefinition> shaderDef);
+    QByteArray readScriptData(ScriptDefinition* scriptDef);
+    ShaderFileTuple readShaderData(ShaderDefinition* shaderDef);
 
 private: // Variables
-    shared_ptr<ProjectDefinition> mProjectDefinitionHandle;
+    ProjectDefinition* mProjectDefinitionHandle;
     QString mAbsolutePath;
     QDir mProjectDirectory;
     QDir mAssetsDirectory;

@@ -30,7 +30,7 @@
 namespace Dream
 {
     SceneDefinition::SceneDefinition
-    (shared_ptr<ProjectDefinition> projectDefinition, json data)
+    (ProjectDefinition* projectDefinition, json data)
         : IDefinition(data),
           mProjectDefinition(projectDefinition)
     {
@@ -44,6 +44,11 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing {}", getNameAndUuidString() );
+        if (mRootSceneObjectDefinition != nullptr)
+        {
+            delete mRootSceneObjectDefinition;
+            mRootSceneObjectDefinition = nullptr;
+        }
     }
 
     void
@@ -66,10 +71,10 @@ namespace Dream
             return;
         }
 
-        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>
+        mRootSceneObjectDefinition = new SceneObjectDefinition
         (
             nullptr,
-            dynamic_pointer_cast<SceneDefinition>(shared_from_this()),
+            this,
             rsoJson
         );
         mRootSceneObjectDefinition->loadChildSceneObjectDefinitions();
@@ -382,21 +387,21 @@ namespace Dream
         mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = a;
     }
 
-    shared_ptr<SceneObjectDefinition>
+    SceneObjectDefinition*
     SceneDefinition::getRootSceneObjectDefinition
     ()
     {
         return mRootSceneObjectDefinition;
     }
 
-    shared_ptr<ProjectDefinition>
+    ProjectDefinition*
     SceneDefinition::getProjectDefinition
     ()
     {
         return mProjectDefinition;
     }
 
-    shared_ptr<SceneObjectDefinition>
+    SceneObjectDefinition*
     SceneDefinition::createNewRootSceneObjectDefinition
     ()
     {
@@ -405,10 +410,10 @@ namespace Dream
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
         Transform3D transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
-        mRootSceneObjectDefinition = make_shared<SceneObjectDefinition>
+        mRootSceneObjectDefinition = new SceneObjectDefinition
         (
             nullptr,
-            dynamic_pointer_cast<SceneDefinition>(shared_from_this()),
+            this,
             rootDefJson
         );
         return mRootSceneObjectDefinition;

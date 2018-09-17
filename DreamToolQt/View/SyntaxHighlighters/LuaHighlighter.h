@@ -54,5 +54,5 @@ public:
         QTextCharFormat multiLineCommentFormat;
         QTextCharFormat quotationFormat;
         QTextCharFormat functionFormat;
-        QTextCharFormat constantFormat;
+        QTextCharFormat antFormat;
 };

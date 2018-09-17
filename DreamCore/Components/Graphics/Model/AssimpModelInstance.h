@@ -60,15 +60,15 @@ namespace Dream
     {
     public:
         AssimpModelInstance(
-            const shared_ptr<AssimpCache>&,
-            const shared_ptr<MaterialCache>&,
-            const shared_ptr<IAssetDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            AssimpCache*,
+            MaterialCache*,
+            IAssetDefinition*,
+            SceneObjectRuntime*
         );
         ~AssimpModelInstance() override;
         bool load(string) override;
         void draw(
-            const shared_ptr<ShaderInstance>&,
+            ShaderInstance*,
             vec3 transorm,
             vec3 camPos,
             float maxDistance,
@@ -81,10 +81,10 @@ namespace Dream
 
     private:
         // Variables
-        shared_ptr<AssimpCache> mModelCache;
-        shared_ptr<MaterialCache> mMaterialCache;
+        AssimpCache* mModelCache;
+        MaterialCache* mMaterialCache;
 
-        vector<shared_ptr<AssimpMesh>> mMeshes;
+        vector<AssimpMesh*> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
@@ -92,17 +92,17 @@ namespace Dream
         // Methods
         void loadModel(string);
         void loadShaders();
-        shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType, string);
+        Texture* loadMaterialTexture(aiMaterial*, aiTextureType, string);
 
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
         void initBoundingBox();
 
         void processNode(aiNode*, const aiScene*);
-        shared_ptr<AssimpMesh> processMesh(aiMesh*, const aiScene*);
+        AssimpMesh* processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
         void processTextureData(aiMesh* mesh, const aiScene* scene, AssimpMaterial* material);
-        map<string,shared_ptr<ShaderInstance>> mMaterialShaderMap;
+        map<string,ShaderInstance*> mMaterialShaderMap;
     }; // End of AssimpModelInstance
 
 } // End of Dream

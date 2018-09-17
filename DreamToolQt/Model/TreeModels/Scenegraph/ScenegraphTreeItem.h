@@ -42,16 +42,16 @@ public:
     (
         QString title,
         ScenegraphTreeItemType type,
-        shared_ptr<IDefinition> item,
+        IDefinition* item,
         ScenegraphTreeItem* parentItem = nullptr
     );
 
     ~ScenegraphTreeItem();
 
-    shared_ptr<IDefinition> getItem() const;
-    ScenegraphTreeItemType getType() const;
-    QVariant data(int column) const;
+    IDefinition* getItem() ;
+    ScenegraphTreeItemType getType() ;
+    QVariant data(int column) ;
 private:
-    shared_ptr<IDefinition> mItem;
+    IDefinition* mItem;
     ScenegraphTreeItemType mType;
 };

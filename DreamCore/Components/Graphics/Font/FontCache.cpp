@@ -24,6 +24,9 @@
 #include "FontCharacter.h"
 #include "FontDefinition.h"
 #include "../../../Common/Constants.h"
+#include <memory>
+
+using std::unique_ptr;
 
 namespace Dream
 {
@@ -31,7 +34,8 @@ namespace Dream
     const char FontCache::CHAR_MAP_END = 0x7F;
 
     FontCache::FontCache
-    () : DreamObject ("FontCache")
+    () : DreamObject ("FontCache"),
+        mFreeTypeLib(nullptr)
     {
         auto log = getLog();
         log->trace("Constructing");
@@ -40,11 +44,11 @@ namespace Dream
         {
             log->info("Initialising FreeType");
 
-            mFreeTypeLib.reset(new FT_Library());
-            if (FT_Init_FreeType(mFreeTypeLib.get()))
+            mFreeTypeLib = new FT_Library();
+            if (FT_Init_FreeType(mFreeTypeLib))
             {
                 log->error("FontCache:: Fatal Error! Could not initialise FreeType library");
-                mFreeTypeLib.reset();
+                mFreeTypeLib = nullptr;
             }
         }
     }
@@ -53,15 +57,18 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        if (mFreeTypeLib)
+        // Close Lib
+        if (mFreeTypeLib != nullptr)
         {
             log->trace("Destroying FreeType");
-            FT_Done_FreeType(*mFreeTypeLib.get());
+            FT_Done_FreeType(*mFreeTypeLib);
+            mFreeTypeLib = nullptr;
         }
 
+        // Clear Cache
         for (auto definitionMapPair : mCache)
         {
-            shared_ptr<FontDefinition> fd = definitionMapPair.first;
+            FontDefinition* fd = definitionMapPair.first;
             for (auto glCharFontCharMap : definitionMapPair.second)
             {
                 FontCharacter fChar = glCharFontCharMap.second;
@@ -71,12 +78,14 @@ namespace Dream
                 );
                 glDeleteTextures(1, &fChar.TextureID);
             }
+            definitionMapPair.second.clear();
         }
+        mCache.clear();
     }
 
     map<GLchar,FontCharacter>
     FontCache::getCharMap
-    (shared_ptr<FontDefinition> definition, shared_ptr<FT_Face> face)
+    (FontDefinition* definition, FT_Face* face)
     {
         auto log = getLog();
         auto it = mCache.find(definition);
@@ -93,16 +102,17 @@ namespace Dream
     }
 
 
-    shared_ptr<FT_Library>
+    FT_Library*
     FontCache::getFreeTypeLib
     ()
+    const
     {
         return mFreeTypeLib;
     }
 
     map<GLchar,FontCharacter>
     FontCache::generateCharMap
-    (shared_ptr<FontDefinition> definition, shared_ptr<FT_Face> fontFace)
+    (FontDefinition* definition, FT_Face* fontFace)
     {
         auto log = getLog();
         log->info("Generating Character Map...");
@@ -169,7 +179,7 @@ namespace Dream
 
         log->info("Finished Generating Character Map.");
 
-        mCache.insert(pair<shared_ptr<FontDefinition>,map<GLchar,FontCharacter>>(definition,charMap));
+        mCache.insert(pair<FontDefinition*,map<GLchar,FontCharacter>>(definition,charMap));
         return charMap;
     }
 

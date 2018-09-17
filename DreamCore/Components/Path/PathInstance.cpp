@@ -15,8 +15,8 @@ namespace Dream
 
     PathInstance::PathInstance
     (
-        const shared_ptr<PathDefinition>& definition,
-        const shared_ptr<SceneObjectRuntime>& runtime
+        PathDefinition* definition,
+        SceneObjectRuntime* runtime
     ) : IAssetInstance(definition,runtime),
           mWrapPath(true),
           mCurrentIndex(0),
@@ -45,7 +45,7 @@ namespace Dream
     PathInstance::load
     (string)
     {
-        auto animDef = dynamic_pointer_cast<PathDefinition>(mDefinition);
+        auto animDef = dynamic_cast<PathDefinition*>(mDefinition);
         auto log = getLog();
         log->info(
             "Loading {} spline with {} control points for {} ",
@@ -83,7 +83,7 @@ namespace Dream
     PathInstance::generate
     ()
     {
-        auto animDef = dynamic_pointer_cast<PathDefinition>(mDefinition);
+        auto animDef = dynamic_cast<PathDefinition*>(mDefinition);
         auto log = getLog();
         auto splineType = animDef->getSplineTypeEnum();
 

@@ -40,10 +40,9 @@ namespace Dream
 {
     SceneRuntime::SceneRuntime
     (
-        const shared_ptr<SceneDefinition>& sd,
-        const shared_ptr<ProjectRuntime>& project)
-        : // Init list
-          IRuntime(sd),
+        SceneDefinition* sd,
+        ProjectRuntime* project
+    ) :   IRuntime(sd),
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
@@ -60,6 +59,12 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing " );
+
+        if (mRootSceneObjectRuntime != nullptr)
+        {
+            delete mRootSceneObjectRuntime;
+            mRootSceneObjectRuntime = nullptr;
+        }
     }
 
     SceneState
@@ -118,38 +123,38 @@ namespace Dream
         mAmbientColour = ambientColour;
     }
 
-    shared_ptr<SceneObjectRuntime>
+    SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeByUuid
     (string uuid)
     {
         return mRootSceneObjectRuntime->applyToAll
         (
-            function<const shared_ptr<SceneObjectRuntime>&(const shared_ptr<SceneObjectRuntime>&)>
-            ([&](const shared_ptr<SceneObjectRuntime>& currentRuntime)
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            ([&](SceneObjectRuntime* currentRuntime)
             {
                 if (currentRuntime->hasUuid(uuid))
                 {
                     return currentRuntime;
                 }
-            return shared_ptr<SceneObjectRuntime>(nullptr);
+            return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
     }
 
-    shared_ptr<SceneObjectRuntime>
+    SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeByName
     (string name)
     {
         return mRootSceneObjectRuntime->applyToAll
         (
-            function<const shared_ptr<SceneObjectRuntime>(const shared_ptr<SceneObjectRuntime>&)>
-            ([&](const shared_ptr<SceneObjectRuntime>& currentRuntime)
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            ([&](SceneObjectRuntime* currentRuntime)
             {
                 if (currentRuntime->hasName(name))
                 {
                     return currentRuntime;
                 }
-                return shared_ptr<SceneObjectRuntime>(nullptr);
+            return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
     }
@@ -160,11 +165,11 @@ namespace Dream
     {
         int count = 0;
         mRootSceneObjectRuntime->applyToAll(
-            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
-            ([&](shared_ptr<SceneObjectRuntime>)
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            ([&](SceneObjectRuntime*)
             {
                 count++;
-                return nullptr;
+                return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
         return count;
@@ -182,8 +187,8 @@ namespace Dream
         }
 
         mRootSceneObjectRuntime->applyToAll(
-            function<shared_ptr<SceneObjectRuntime>(shared_ptr<SceneObjectRuntime>)>
-            ([&](shared_ptr<SceneObjectRuntime>)
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            ([&](SceneObjectRuntime*)
             {
                 log->info("showScenegraph not implemented");
                 //obj->showStatus();
@@ -194,12 +199,12 @@ namespace Dream
 
     void
     SceneRuntime::setRootSceneObjectRuntime
-    (const shared_ptr<SceneObjectRuntime>& root)
+    (SceneObjectRuntime* root)
     {
         mRootSceneObjectRuntime = root;
     }
 
-    const shared_ptr<SceneObjectRuntime>&
+    SceneObjectRuntime*
     SceneRuntime::getRootSceneObjectRuntime
     ()
     {
@@ -213,16 +218,16 @@ namespace Dream
         auto log = getLog();
         log->info( "Collecting Garbage {}" , getNameAndUuidString() );
         mRootSceneObjectRuntime->applyToAll(
-            function<const shared_ptr<SceneObjectRuntime>&(const shared_ptr<SceneObjectRuntime>&)>
-            ([&](const shared_ptr<SceneObjectRuntime>& runt)
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            ([&](SceneObjectRuntime* runt)
             {
                 runt->collectGarbage();
-                return nullptr;
+                return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
     }
 
-    const shared_ptr<ProjectRuntime>&
+    ProjectRuntime*
     SceneRuntime::getProjectRuntime
     ()
     {
@@ -238,11 +243,11 @@ namespace Dream
 
     void
     SceneRuntime::useDefinition
-    (shared_ptr<IDefinition> iDefinition)
+    ()
     {
         auto log = getLog();
 
-        auto sceneDefinition = dynamic_pointer_cast<SceneDefinition>(iDefinition);
+        auto sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
         if (sceneDefinition == nullptr)
         {
@@ -265,10 +270,11 @@ namespace Dream
 
         // Propogate to project where required
         auto gfx = mProjectRuntime->getGraphicsComponent();
-        if (gfx != nullptr)
+        if (gfx == nullptr)
         {
-            gfx->setActiveSceneRuntime(dynamic_pointer_cast<SceneRuntime>(shared_from_this()));
+            log->error("Graphics Component is null");
         }
+        gfx->setActiveSceneRuntime(this);
 
         auto physics = mProjectRuntime->getPhysicsComponent();
         if (physics != nullptr)
@@ -290,11 +296,8 @@ namespace Dream
 
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
-        auto sor = make_shared<SceneObjectRuntime>(
-            sod,
-            dynamic_pointer_cast<SceneRuntime>(shared_from_this())
-        );
-        sor->useDefinition(sod);
+        auto sor = new SceneObjectRuntime(sod,this);
+        sor->useDefinition();
         setRootSceneObjectRuntime(sor);
         setState(SCENE_STATE_LOADED);
     }

@@ -49,25 +49,25 @@ namespace Dream
     {
         // Variables
     private:
-        shared_ptr<ProjectDefinition> mDefinition;
-        shared_ptr<ProjectRuntime> mRuntime;
-        shared_ptr<IWindowComponent> mWindowComponent;
+        ProjectDefinition* mDefinition;
+        ProjectRuntime* mRuntime;
+        IWindowComponent* mWindowComponent;
         string mProjectPath;
 
         // Public Methods
     public:
-        Project(const shared_ptr<IWindowComponent>& wc = nullptr);
+        Project(IWindowComponent* wc = nullptr);
         ~Project();
 
-        const shared_ptr<ProjectRuntime>& getProjectRuntime();
-        const shared_ptr<ProjectDefinition>& getProjectDefinition();
+        ProjectRuntime* getProjectRuntime();
+        ProjectDefinition* getProjectDefinition();
 
         bool openFromFileReader(string directory, FileReader &fileReader);
         bool openFromArgumentParser(ArgumentParser &parser);
         bool openFromDirectory(string directory);
 
-        shared_ptr<ProjectRuntime> createProjectRuntime();
-        static shared_ptr<ProjectDefinition> createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
+        ProjectRuntime* createProjectRuntime();
+        static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
 
         bool hasProjectRuntime();
         void resetProjectRuntime();

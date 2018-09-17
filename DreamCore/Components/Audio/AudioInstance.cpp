@@ -7,9 +7,9 @@
 namespace Dream
 {
     AudioInstance::AudioInstance
-    (shared_ptr<AudioComponent> component,
-     shared_ptr<AudioDefinition> definition,
-     shared_ptr<SceneObjectRuntime> transform)
+    (AudioComponent* component,
+     AudioDefinition* definition,
+     SceneObjectRuntime* transform)
         : IAssetInstance(definition, transform),
           mAudioComponent(component)
     {
@@ -29,6 +29,7 @@ namespace Dream
     bool
     AudioInstance::isLooping
     ()
+    const
     {
         return mLooping;
     }
@@ -36,6 +37,7 @@ namespace Dream
     std::vector<ALchar>
     AudioInstance::getAudioDataBuffer
     ()
+    const
     {
         return mAudioDataBuffer;
     }
@@ -43,6 +45,7 @@ namespace Dream
     ALsizei
     AudioInstance::getFrequency
     ()
+    const
     {
         return mFrequency;
     }
@@ -50,6 +53,7 @@ namespace Dream
     ALenum
     AudioInstance::getFormat
     ()
+    const
     {
         return mFormat;
     }
@@ -64,6 +68,7 @@ namespace Dream
     ALuint
     AudioInstance::getBuffer
     ()
+    const
     {
         return mBuffer;
     }
@@ -78,23 +83,24 @@ namespace Dream
     ALuint
     AudioInstance::getSource
     ()
+    const
     {
         return mSource;
     }
 
     void AudioInstance::play()
     {
-       mAudioComponent->playAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
+       mAudioComponent->pushToPlayQueue(this);
     }
 
     void AudioInstance::pause()
     {
-       mAudioComponent->pauseAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
+       mAudioComponent->pushToPauseQueue(this);
     }
 
     void AudioInstance::stop()
     {
-       mAudioComponent->stopAudioAsset(static_pointer_cast<AudioInstance>(shared_from_this()));
+       mAudioComponent->pushToStopQueue(this);
     }
 
     void

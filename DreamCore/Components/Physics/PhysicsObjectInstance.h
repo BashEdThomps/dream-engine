@@ -40,12 +40,12 @@ namespace Dream
 
     public:
         PhysicsObjectInstance(
-            const shared_ptr<PhysicsObjectDefinition>&,
-            const shared_ptr<SceneObjectRuntime>&
+            PhysicsObjectDefinition*,
+            SceneObjectRuntime*
         );
         ~PhysicsObjectInstance() override;
         bool load(string) override;
-        btCollisionShape* createCollisionShape(const shared_ptr<PhysicsObjectDefinition>&, string projectPath);
+        btCollisionShape* createCollisionShape(PhysicsObjectDefinition*, string projectPath);
         btCollisionShape* getCollisionShape();
         btRigidBody* getRigidBody();
         void getWorldTransform(btTransform&);
@@ -55,12 +55,14 @@ namespace Dream
         bool isInPhysicsWorld();
         void setInPhysicsWorld(bool inPhysicsWorld);
 
+        void setLinearFactor(float x, float y, float z);
+        void setAngularFactor(float x, float y, float z);
     protected:
         void loadExtraAttributes(json) override;
-        void loadExtraAttributes(json, const shared_ptr<IAssetDefinition>&, bool);
+        void loadExtraAttributes(json, IAssetDefinition*, bool);
         void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
         void processAssimpMesh(aiMesh*, btTriangleMesh*);
-        shared_ptr<PhysicsObjectDefinition> getAssetDefinitionByUuid(string);
+        PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
 
     }; // End of PhysicsObjectInstance
 } // End of Dream

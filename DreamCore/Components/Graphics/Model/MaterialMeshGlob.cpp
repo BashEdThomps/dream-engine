@@ -95,9 +95,9 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        bindTexture(mMaterial->mDiffuseTexture.get());
-        bindTexture(mMaterial->mSpecularTexture.get());
-        bindTexture(mMaterial->mNormalTexture.get());
+        bindTexture(mMaterial->mDiffuseTexture);
+        bindTexture(mMaterial->mSpecularTexture);
+        bindTexture(mMaterial->mNormalTexture);
         glActiveTexture(GL_TEXTURE0);
     }
 
