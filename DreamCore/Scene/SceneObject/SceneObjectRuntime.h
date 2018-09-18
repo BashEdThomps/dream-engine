@@ -168,6 +168,9 @@ namespace Dream
         bool getDeleted() const;
         void setDeleted(bool deleted);
 
+        bool getHidden() const;
+        void setHidden(bool hidden);
+
     private:
 
         AudioInstance* mAudioInstance;
@@ -192,6 +195,7 @@ namespace Dream
         bool mLoaded;
         bool mHasFocus;
         bool mDeleted;
+        bool mHidden;
 
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
         void loadChildrenFromDefinition(SceneObjectDefinition* definition);

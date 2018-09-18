@@ -48,8 +48,7 @@ EditorTabController::EditorTabController
     doc->setDefaultFont(font);
 
     mSaveButton = mForm.saveButton;
-    mRevertButton = mForm.revertButton;
-    setupRevertSaveSignals();
+    setupSaveSignals();
     createTemplatesComboBox(mForm.templateComboBox);
     connect(mTextEdit,SIGNAL(textChanged()),this,SLOT(onTextChanged()));
 }
@@ -129,10 +128,9 @@ void EditorTabController::clearTextChanged()
     mTextHasChanged = false;
 }
 
-void EditorTabController::setupRevertSaveSignals()
+void EditorTabController::setupSaveSignals()
 {
     connect(mSaveButton,SIGNAL(clicked(bool)),this,SLOT(onSaveButtonClicked(bool)));
-    connect(mRevertButton,SIGNAL(clicked(bool)),this,SLOT(onRevertButtonClicked(bool)));
 }
 
 void
@@ -229,11 +227,6 @@ EditorTabController::onSaveButtonClicked
 {
     Q_UNUSED(checked)
     auto log = spdlog::get("EditorTabController");
-    int tabIndex = mTabWidget->currentIndex();
-    if (tabIndex < 0)
-    {
-        return;
-    }
 
     if (mAssetDefinitionHandle != nullptr)
     {
@@ -244,7 +237,8 @@ EditorTabController::onSaveButtonClicked
 
         if (mAssetDefinitionHandle->isTypeShader())
         {
-            writeResult = mProjectDirectoryModelHandle->writeAssetData(
+            writeResult = mProjectDirectoryModelHandle->writeAssetData
+            (
                 data,
                 mAssetDefinitionHandle,
                 mFileFormat
@@ -257,48 +251,21 @@ EditorTabController::onSaveButtonClicked
 
         if (writeResult)
         {
-            QMessageBox::information(
-                    this,
-                    "Asset Saved",
-                    QString("Successfully saved %1")
-                    .arg(QString::fromStdString(mAssetDefinitionHandle->getName()))
-                    );
+            emit msgToStatusBar
+            (
+                QString("Saved %1")
+                    .arg(QString::fromStdString(mAssetDefinitionHandle->getNameAndUuidString()))
+            );
         }
         else
         {
-            QMessageBox::critical(
+            QMessageBox::critical
+            (
                 this,
                 "Save Failed",
                 QString("Unable to save %1")
                 .arg(QString::fromStdString(mAssetDefinitionHandle->getName()))
             );
-        }
-    }
-}
-
-void
-EditorTabController::onRevertButtonClicked
-(bool checked)
-{
-    Q_UNUSED(checked)
-    auto log = spdlog::get("EditorTabController");
-    int tabIndex = mTabWidget->currentIndex();
-    if (tabIndex < 0)
-    {
-        return;
-    }
-
-    if (mAssetDefinitionHandle != nullptr)
-    {
-        int result = QMessageBox::question(
-                    this,
-                    "Revert File",
-                    "Are you sure you want to revert to the last saved state?"
-                    );
-
-        if (result == QMessageBox::Ok)
-        {
-            log->info("Reverting {} back to saved state",mAssetDefinitionHandle->getNameAndUuidString());
         }
     }
 }

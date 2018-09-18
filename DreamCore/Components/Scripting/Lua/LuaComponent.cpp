@@ -84,7 +84,12 @@ namespace Dream
         log->info( "Initialising LuaComponent" );
         mState = luaL_newstate();
         sol::state_view sView(mState);
-        sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math);
+        sView.open_libraries(
+            sol::lib::base,
+            sol::lib::package,
+            sol::lib::math,
+            sol::lib::string
+        );
         log->info( "Got a sol state" );
         exposeAPI();
         return true;
@@ -650,8 +655,9 @@ namespace Dream
             "hasFont",&SceneObjectRuntime::hasFontInstance,
             "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance,
             "getDeleted",&SceneObjectRuntime::getDeleted,
-            "setDeleted",&SceneObjectRuntime::setDeleted
-
+            "setDeleted",&SceneObjectRuntime::setDeleted,
+            "getHidden",&SceneObjectRuntime::getHidden,
+            "setHidden",&SceneObjectRuntime::setHidden
         );
     }
 
@@ -752,7 +758,7 @@ namespace Dream
             "getSender",&Event::getSender,
             "getType",&Event::getType,
             "getAttribute",&Event::getAttribute,
-            "setAttribute",&Event::setAttribute
+            "getData",&Event::getData
         );
     }
 

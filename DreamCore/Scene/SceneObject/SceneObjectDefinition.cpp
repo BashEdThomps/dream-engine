@@ -337,6 +337,21 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_STATIC];
     }
 
+    void SceneObjectDefinition::setHidden(bool d)
+    {
+        mJson[Constants::SCENE_OBJECT_HIDDEN] = d;
+    }
+
+    bool SceneObjectDefinition::getHidden()
+    {
+        if (mJson[Constants::SCENE_OBJECT_HIDDEN].is_null())
+        {
+            mJson[Constants::SCENE_OBJECT_HIDDEN] = false;
+        }
+        return mJson[Constants::SCENE_OBJECT_HIDDEN];
+    }
+
+
     SceneObjectDefinition*
     SceneObjectDefinition::getParentSceneObject
     () const

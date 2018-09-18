@@ -88,6 +88,9 @@ namespace Dream
         bool getStatic();
 
         void loadChildSceneObjectDefinitions(bool randomUuid = false);
+        void setHidden(bool d);
+        bool getHidden();
+
     private:
         void deleteChildSceneObjectDefinitions();
     };

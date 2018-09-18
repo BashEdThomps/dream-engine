@@ -35,7 +35,7 @@ private slots:
     void onAddButtonClicked(bool);
     void onRemoveButtonClicked(bool);
     void onTableChanged();
-    void onTableSelectionChanged( QItemSelection&,  QItemSelection&);
+    void onTableSelectionChanged(const QItemSelection&,const  QItemSelection&);
     void onPathVisibleButtonClicked(bool);
     void onTangentVisibleButtonClicked(bool);
     void onTangentIndexChanged(int val);

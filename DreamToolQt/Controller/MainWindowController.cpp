@@ -111,6 +111,7 @@ void MainWindowController::setupUiFeatures()
     volLabel->setFixedSize(QSize(16,16));
     ui->statusBar->addPermanentWidget(volLabel,1);
     ui->statusBar->addPermanentWidget(&mVolumeSlider,1);
+    setupEditorTabCloseButtonSignal();
 
     ui->scenegraphTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(
@@ -1064,7 +1065,16 @@ void
 MainWindowController::onEditorTabCloseRequested
 (int index)
 {
-    auto tabWidget = mEditorTabForms.at(index);
+    auto log = spdlog::get("MainWindowController");
+    log->info("Requesting closure of tab {}",index);
+
+    int editorIndex = index-1;
+    if (editorIndex < 0)
+    {
+        return;
+    }
+
+    auto tabWidget = mEditorTabForms.at(editorIndex);
 
     if (tabWidget->hasTextChanged())
     {
@@ -1082,7 +1092,7 @@ MainWindowController::onEditorTabCloseRequested
     }
 
     ui->rightTabWidget->removeTab(index);
-    mEditorTabForms.erase(mEditorTabForms.begin() + index);
+    mEditorTabForms.erase(mEditorTabForms.begin() + editorIndex);
 }
 
 void
@@ -1092,6 +1102,7 @@ MainWindowController::openScriptEditor
     auto log = spdlog::get("EditorController");
 
     int index = isEditorTabOpen(scriptDefinitionHandle);
+
     if (index > -1)
     {
         ui->rightTabWidget->setCurrentIndex(index);
@@ -1109,6 +1120,13 @@ MainWindowController::openScriptEditor
             mProjectDirectoryModelHandle
         );
 
+        connect(
+            form.get(),
+            SIGNAL(msgToStatusBar(QString)),
+            this,
+            SLOT(showStatusBarMessage(QString))
+        );
+
         QByteArray data = mProjectDirectoryModelHandle->readScriptData(scriptDefinitionHandle);
         form->useLuaHighlighter();
         form->setPlainText(QString(data));
@@ -1123,7 +1141,7 @@ MainWindowController::openScriptEditor
             .arg(QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA))
         );
 
-        ui->rightTabWidget->setCurrentIndex(ui->rightTabWidget->count()-1);
+        ui->rightTabWidget->setCurrentIndex(index);
     }
 }
 
@@ -1154,6 +1172,18 @@ MainWindowController::openShaderEditor
             mProjectDirectoryModelHandle
         );
 
+        connect(
+            vertexForm.get(),
+            SIGNAL(msgToStatusBar(QString)),
+            this,
+            SLOT(showStatusBarMessage(QString))
+        );
+
+        vertexForm->setPlainText(data.vertexShader);
+        //vertexForm->useGLSLHighlighter();
+
+        mEditorTabForms.push_back(vertexForm);
+
         auto fragmentForm = make_shared<EditorTabController>(
             QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME),
             shaderDefinitionHandle,
@@ -1161,32 +1191,33 @@ MainWindowController::openShaderEditor
             mProjectDirectoryModelHandle
         );
 
-        vertexForm->useGLSLHighlighter();
-        vertexForm->setPlainText(data.vertexShader);
-        vertexForm->setAssetDefinitionHandle(shaderDefinitionHandle);
+        connect(
+            fragmentForm.get(),
+            SIGNAL(msgToStatusBar(QString)),
+            this,
+            SLOT(showStatusBarMessage(QString))
+        );
 
-        fragmentForm->useGLSLHighlighter();
         fragmentForm->setPlainText(data.fragmentShader);
-        fragmentForm->setAssetDefinitionHandle(shaderDefinitionHandle);
+        //fragmentForm->useGLSLHighlighter();
 
-        mEditorTabForms.push_back(vertexForm);
         mEditorTabForms.push_back(fragmentForm);
 
-        ui->rightTabWidget->addTab(
+        int vertIndex = ui->rightTabWidget->addTab(
                     vertexForm.get(),
                     QString::fromStdString(shaderDefinitionHandle->getName())
                     .append(" (%1)")
                     .arg(QString::fromStdString(Constants::SHADER_VERTEX))
                     );
 
-        ui->rightTabWidget->addTab(
+        int fragIndex = ui->rightTabWidget->addTab(
                     fragmentForm.get(),
                     QString::fromStdString(shaderDefinitionHandle->getName())
                     .append(" (%1)")
                     .arg(QString::fromStdString(Constants::SHADER_FRAGMENT))
                     );
 
-        ui->rightTabWidget->setCurrentIndex(ui->rightTabWidget->count()-1);
+        ui->rightTabWidget->setCurrentIndex(vertIndex);
     }
 }
 

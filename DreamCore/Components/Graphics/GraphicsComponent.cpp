@@ -355,6 +355,12 @@ namespace Dream
                         (
                             [&](SceneObjectRuntime* object)
                             {
+
+                            if (object->getHidden())
+                            {
+                                return nullptr;
+                            }
+
                             // Models
                             if (object->hasModelInstance())
                             {

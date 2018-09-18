@@ -85,8 +85,9 @@ namespace Dream
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
         mLoaded(false),
-        mDeleted(false),
         mHasFocus(false),
+        mDeleted(false),
+        mHidden(false),
         mFollowsCamera(false)
     {
         setLogClassName("SceneObjectRuntime");
@@ -901,6 +902,7 @@ namespace Dream
         setFollowsCamera(def->followsCamera());
         setAssetDefinitionLoadQueue(def->getAssetDefinitionLoadQueue());
         setHasFocus(def->hasFocus());
+        setHidden(def->getHidden());
         initialTransform();
         createAssetInstances();
         loadChildrenFromDefinition(def);
@@ -990,6 +992,16 @@ namespace Dream
     void SceneObjectRuntime::setDeleted(bool deleted)
     {
         mDeleted = deleted;
+    }
+
+    bool SceneObjectRuntime::getHidden() const
+    {
+        return mHidden;
+    }
+
+    void SceneObjectRuntime::setHidden(bool hidden)
+    {
+        mHidden = hidden;
     }
 
     void

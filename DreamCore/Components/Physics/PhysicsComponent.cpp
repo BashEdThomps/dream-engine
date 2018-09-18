@@ -310,10 +310,55 @@ namespace Dream
                 if (sObjA != nullptr && sObjB != nullptr)
                 {
                     log->info("Contact Manifold Found. Sending Event");
-                    Event fromA(sObjA,Constants::EVENT_TYPE_COLLISION);
-                    Event fromB(sObjB,Constants::EVENT_TYPE_COLLISION);
-                    sObjA->addEvent(fromB);
-                    sObjB->addEvent(fromA);
+
+                    Event aHitsB(sObjA,Constants::EVENT_TYPE_COLLISION);
+                    Event bHitsA(sObjB,Constants::EVENT_TYPE_COLLISION);
+
+                    int numContacts = contactManifold->getNumContacts();
+                    for (int j=0;j<numContacts;j++)
+                    {
+                        btManifoldPoint& pt = contactManifold->getContactPoint(j);
+                        if (pt.getDistance()>0.f)
+                        {
+                            continue;
+                        }
+
+                        auto ptA = pt.getPositionWorldOnA();
+                        auto ptB = pt.getPositionWorldOnB();
+                        auto impulse = pt.getAppliedImpulse();
+
+                        json aHitsBData =
+                        {
+                            { "impulse", impulse },
+
+                            { "pos",
+                              {
+                                {"x", ptB.x()},
+                                {"y", ptB.y()},
+                                {"z", ptB.z()},
+                              }
+                            }
+                        };
+                        aHitsB.setData(aHitsBData.dump());
+
+                        json bHitsAData =
+                        {
+                            { "impulse", impulse },
+
+                            { "pos",
+                              {
+                                {"x", ptA.x()},
+                                {"y", ptA.y()},
+                                {"z", ptA.z()},
+                              }
+                            }
+                        };
+                        bHitsA.setData(bHitsAData.dump());
+
+                     }
+
+                    sObjB->addEvent(aHitsB);
+                    sObjA->addEvent(bHitsA);
                 }
                 else
                 {
@@ -326,19 +371,7 @@ namespace Dream
             }
 
 
-            /*
-           * More detail about contact.
-           * Not needed for simple collison detection.
-          int numContacts = contactManifold->getNumContacts();
-          for (int j=0;j<numContacts;j++) {
-              btManifoldPoint& pt = contactManifold->getContactPoint(j);
-              if (pt.getDistance()<0.f) {
-                  const btVector3& ptA = pt.getPositionWorldOnA();
-                  const btVector3& ptB = pt.getPositionWorldOnB();
-                  const btVector3& normalOnB = pt.m_normalWorldOnB;
-              }
-          }
-          */
+
         }
     }
 

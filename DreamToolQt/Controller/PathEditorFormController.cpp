@@ -78,7 +78,7 @@ void PathEditorFormController::onTableChanged()
 
 void
 PathEditorFormController::onTableSelectionChanged
-( QItemSelection& sel,  QItemSelection& desel)
+(const QItemSelection& sel,const  QItemSelection& desel)
 {
     Q_UNUSED(desel)
     auto log = spdlog::get("PathEditorFormController");

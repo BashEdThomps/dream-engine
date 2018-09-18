@@ -5,7 +5,7 @@
 #include <QSyntaxHighlighter>
 
 #include <QTextEdit>
-#include "ui_ScriptEditorTabForm.h"
+#include "ui_EditorTabForm.h"
 
 namespace Dream
 {
@@ -59,15 +59,17 @@ public:
     void setTemplatesModelHandle(TemplatesModel* templatesModelHandle);
 
 protected:
-    void setupRevertSaveSignals();
+    void setupSaveSignals();
     void createTemplatesComboBox(QComboBox* editor);
     void setupCloseButtonSignal();
 
 public slots:
     void onTextChanged();
-    void onRevertButtonClicked(bool);
     void onSaveButtonClicked(bool);
     void onComboTemplateChanged(const QString&);
+
+signals:
+    void msgToStatusBar(QString);
 
 
 private:
@@ -79,9 +81,7 @@ private:
 
     // Widgets
     shared_ptr<QSyntaxHighlighter> mHighlighter;
-    Ui::ScriptEditorTabForm mForm;
-    QTabWidget* mTabWidget;
-    QPushButton* mSaveButton;
-    QPushButton* mRevertButton;
+    Ui::EditorTabForm mForm;
+    QToolButton* mSaveButton;
     CodeEditorWidget* mTextEdit;
 };

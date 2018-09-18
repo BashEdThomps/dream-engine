@@ -183,6 +183,7 @@ namespace Dream
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
     const string Constants::SCENE_OBJECT_ALWAYS_DRAW = "always_draw";
     const string Constants::SCENE_OBJECT_STATIC = "static";
+    const string Constants::SCENE_OBJECT_HIDDEN = "hidden";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";

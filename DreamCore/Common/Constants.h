@@ -158,6 +158,7 @@ namespace Dream
         const static string SCENE_OBJECT_ASSET_INSTANCES;
         const static string SCENE_OBJECT_ALWAYS_DRAW;
         const static string SCENE_OBJECT_STATIC;
+        const static string SCENE_OBJECT_HIDDEN;
 
         // Transform ============================================================
         const static string TRANSFORM;

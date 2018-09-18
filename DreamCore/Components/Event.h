@@ -37,6 +37,7 @@ namespace Dream
     private:
       map<string,string> mAttributes;
       SceneObjectRuntime* mSender;
+      string mData;
 
     public:
       Event(SceneObjectRuntime*,string);
@@ -48,6 +49,8 @@ namespace Dream
       void setAttribute(string,string);
       string getAttribute(string) const;
 
+      string getData() const;
+      void setData(const string& data);
     }; // End of Event
 
 } // End of Dream
