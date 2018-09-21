@@ -404,7 +404,7 @@ namespace Dream
             return false;
         }
 
-        log->critical( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
+        log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
 
         sol::state_view solStateView(mState);
         sol::function onEventFunction = solStateView[sceneObject->getUuid()][Constants::LUA_EVENT_FUNCTION];
@@ -481,6 +481,8 @@ namespace Dream
             "setLookAt",static_cast<void(Camera::*)(float,float,float)>(&Camera::setLookAt),
             "setLookAt",static_cast<void(Camera::*)(vec3)>( &Camera::setLookAt),
             "setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation),
+            "setTranslation",static_cast<void(Camera::*)(vec3)>(&Camera::setTranslation),
+            "getTranslation",&Camera::getTranslation,
             "orbit",&Camera::orbit
         );
 
@@ -612,13 +614,18 @@ namespace Dream
         sol::state_view stateView(mState);
         stateView.new_usertype<PhysicsObjectInstance>("PhysicsObjectInstance",
             "getUuid", &PhysicsObjectInstance::getUuid,
+
             "getLinearVelocity", &PhysicsObjectInstance::getLinearVelocity,
             "setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity,
+
             "setLinearFactor", &PhysicsObjectInstance::setLinearFactor,
             "setAngularFactor", &PhysicsObjectInstance::setAngularFactor,
-            "getRestitution", &PhysicsObjectInstance::getRestitution,
-            "setRestitution", &PhysicsObjectInstance::setRestitution
 
+            "getRestitution", &PhysicsObjectInstance::getRestitution,
+            "setRestitution", &PhysicsObjectInstance::setRestitution,
+
+            "getFriction", &PhysicsObjectInstance::getFriction,
+            "setFriction", &PhysicsObjectInstance::setFriction
         );
     }
 
@@ -634,10 +641,12 @@ namespace Dream
             "getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid,
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
+            "addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad,
+
             "getTransform",&SceneObjectRuntime::getTransform,
             "setTransform",&SceneObjectRuntime::setTransform,
-            "addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad,
             "walk",&SceneObjectRuntime::walk,
+
             "getPath",&SceneObjectRuntime::getPathInstance,
             "getAudio",&SceneObjectRuntime::getAudioInstance,
             "getSprite",&SceneObjectRuntime::getSpriteInstance,
@@ -646,6 +655,7 @@ namespace Dream
             "getLight",&SceneObjectRuntime::getLightInstance,
             "getFont",&SceneObjectRuntime::getFontInstance,
             "getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance,
+
             "hasPath",&SceneObjectRuntime::hasPathInstance,
             "hasAudio",&SceneObjectRuntime::hasAudioInstance,
             "hasSprite",&SceneObjectRuntime::hasSpriteInstance,
@@ -654,10 +664,25 @@ namespace Dream
             "hasLight",&SceneObjectRuntime::hasLightInstance,
             "hasFont",&SceneObjectRuntime::hasFontInstance,
             "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance,
+
             "getDeleted",&SceneObjectRuntime::getDeleted,
             "setDeleted",&SceneObjectRuntime::setDeleted,
+
             "getHidden",&SceneObjectRuntime::getHidden,
-            "setHidden",&SceneObjectRuntime::setHidden
+            "setHidden",&SceneObjectRuntime::setHidden,
+
+            "removeAudio", &SceneObjectRuntime::removeAudioInstance,
+            "removePath", &SceneObjectRuntime::removePathInstance,
+            "removeModel", &SceneObjectRuntime::removeModelInstance,
+            "removeShader", &SceneObjectRuntime::removeShaderInstance,
+            "removeLight", &SceneObjectRuntime::removeLightInstance,
+            "removeSprite", &SceneObjectRuntime::removeSpriteInstance,
+            "removeScript", &SceneObjectRuntime::removeScriptInstance,
+            "removePhysicsObject", &SceneObjectRuntime::removePhysicsObjectInstance,
+            "removeFont", &SceneObjectRuntime::removeFontInstance,
+
+            "addEvent",&SceneObjectRuntime::addEvent
+
         );
     }
 
@@ -755,6 +780,7 @@ namespace Dream
         debugRegisteringClass("Event");
         sol::state_view stateView(mState);
         stateView.new_usertype<Event>("Event",
+            sol::constructors<Event(SceneObjectRuntime*,string)>(),
             "getSender",&Event::getSender,
             "getType",&Event::getType,
             "getAttribute",&Event::getAttribute,
@@ -816,43 +842,34 @@ namespace Dream
             "GetFloatDelta",&gainput::InputMap::GetFloatDelta
         );
 
-        stateView.new_enum("JSInputSource",
-            "FaceButtonNorth", JSInputSource::FaceButtonNorth,
-            "FaceButtonEast", JSInputSource::FaceButtonEast,
-            "FaceButtonWest", JSInputSource::FaceButtonWest,
-            "FaceButtonSouth", JSInputSource::FaceButtonSouth,
-
-            "FaceHome", JSInputSource::FaceHome,
-            "FaceStart", JSInputSource::FaceStart,
-            "FaceSelect", JSInputSource::FaceSelect,
-
-            "ShoulderLeft", JSInputSource::ShoulderLeft,
-            "ShoulderRight", JSInputSource::ShoulderRight,
-
-            "TriggerLeft", JSInputSource::TriggerLeft,
-            "TriggerRight", JSInputSource::TriggerRight,
-
-            "DPadNorth", JSInputSource::DPadNorth,
-            "DPadSouth", JSInputSource::DPadSouth,
-            "DPadEast", JSInputSource::DPadEast,
-            "DPadWest", JSInputSource::DPadWest,
-
-            "AnalogLeftStickX", JSInputSource::AnalogLeftStickX,
-            "AnalogLeftStickY", JSInputSource::AnalogLeftStickY,
-            "AnalogLeftButton", JSInputSource::AnalogLeftButton,
-
-            "AnalogRightStickX", JSInputSource::AnalogRightStickX,
-            "AnalogRightStickY", JSInputSource::AnalogRightStickY,
-            "AnalogRightButton", JSInputSource::AnalogRightButton
-        );
-
-        stateView.new_enum("KBInputSource",
-            "Key_UP",     KeyboardInputSource::Key_UP,
-            "Key_DOWN",   KeyboardInputSource::Key_DOWN,
-            "Key_LEFT",   KeyboardInputSource::Key_LEFT,
-            "Key_RIGHT",  KeyboardInputSource::Key_RIGHT,
-            "Key_SPACE",  KeyboardInputSource::Key_SPACE,
-            "Key_RETURN", KeyboardInputSource::Key_RETURN
+        stateView.new_enum("InputSource",
+            "JS_FaceButtonNorth",   InputSource::JS_FaceButtonNorth,
+            "JS_FaceButtonEast",    InputSource::JS_FaceButtonEast,
+            "JS_FaceButtonWest",    InputSource::JS_FaceButtonWest,
+            "JS_FaceButtonSouth",   InputSource::JS_FaceButtonSouth,
+            "JS_FaceHome",          InputSource::JS_FaceHome,
+            "JS_FaceStart",         InputSource::JS_FaceStart,
+            "JS_FaceSelect",        InputSource::JS_FaceSelect,
+            "JS_ShoulderLeft",      InputSource::JS_ShoulderLeft,
+            "JS_ShoulderRight",     InputSource::JS_ShoulderRight,
+            "JS_TriggerLeft",       InputSource::JS_TriggerLeft,
+            "JS_TriggerRight",      InputSource::JS_TriggerRight,
+            "JS_DPadNorth",         InputSource::JS_DPadNorth,
+            "JS_DPadSouth",         InputSource::JS_DPadSouth,
+            "JS_DPadEast",          InputSource::JS_DPadEast,
+            "JS_DPadWest",          InputSource::JS_DPadWest,
+            "JS_AnalogLeftStickX",  InputSource::JS_AnalogLeftStickX,
+            "JS_AnalogLeftStickY",  InputSource::JS_AnalogLeftStickY,
+            "JS_AnalogLeftButton",  InputSource::JS_AnalogLeftButton,
+            "JS_AnalogRightStickX", InputSource::JS_AnalogRightStickX,
+            "JS_AnalogRightStickY", InputSource::JS_AnalogRightStickY,
+            "JS_AnalogRightButton", InputSource::JS_AnalogRightButton,
+            "KB_UP",     InputSource::KB_UP,
+            "KB_DOWN",   InputSource::KB_DOWN,
+            "KB_LEFT",   InputSource::KB_LEFT,
+            "KB_RIGHT",  InputSource::KB_RIGHT,
+            "KB_SPACE",  InputSource::KB_SPACE,
+            "KB_RETURN", InputSource::KB_RETURN
         );
     }
 

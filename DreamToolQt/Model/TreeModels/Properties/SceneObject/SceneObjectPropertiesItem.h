@@ -33,6 +33,7 @@ using Dream::IAssetDefinition;
 
 enum SceneObjectProperty
 {
+    SCENE_OBJECT_PROPERTY_UUID,
     SCENE_OBJECT_PROPERTY_NAME,
 
     SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE,

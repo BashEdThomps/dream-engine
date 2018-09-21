@@ -1180,7 +1180,7 @@ MainWindowController::openShaderEditor
         );
 
         vertexForm->setPlainText(data.vertexShader);
-        //vertexForm->useGLSLHighlighter();
+        vertexForm->useGLSLHighlighter();
 
         mEditorTabForms.push_back(vertexForm);
 
@@ -1199,7 +1199,7 @@ MainWindowController::openShaderEditor
         );
 
         fragmentForm->setPlainText(data.fragmentShader);
-        //fragmentForm->useGLSLHighlighter();
+        fragmentForm->useGLSLHighlighter();
 
         mEditorTabForms.push_back(fragmentForm);
 

@@ -73,6 +73,7 @@ const
             return createCaptureOrientationButton(parent);
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             return createCaptureScaleButton(parent);
+        case SCENE_OBJECT_PROPERTY_UUID:
         case SCENE_OBJECT_PROPERTY_NAME:
             return new QLineEdit(parent);
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
@@ -123,6 +124,7 @@ const
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
+        case SCENE_OBJECT_PROPERTY_UUID:
         case SCENE_OBJECT_PROPERTY_NAME:
             static_cast<QLineEdit*>(editor)->setText(value.toString());
             break;
@@ -171,6 +173,7 @@ const
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
+        case SCENE_OBJECT_PROPERTY_UUID:
         case SCENE_OBJECT_PROPERTY_NAME:
             model->setData(index, static_cast<QLineEdit*>(editor)->text());
             break;
@@ -197,9 +200,7 @@ const
             break;
         case SCENE_OBJECT_PROPERTY_NONE:
             break;
-
     }
-
 }
 
 void

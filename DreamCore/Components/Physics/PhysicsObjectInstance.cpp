@@ -183,6 +183,7 @@ namespace Dream
         }
 
         setRestitution(pod->getRestitution());
+        setFriction(pod->getFriction());
 
         mLoaded = (mRigidBody != nullptr);
 
@@ -414,12 +415,22 @@ namespace Dream
        mRigidBody->setRestitution(r);
     }
 
+    float PhysicsObjectInstance::getFriction() const
+    {
+        return mRigidBody->getFriction();
+    }
+
+    void PhysicsObjectInstance::setFriction(float friction)
+    {
+        mRigidBody->setFriction(friction);
+    }
+
     float
     PhysicsObjectInstance::getRestitution
     ()
     const
     {
-       return mRigidBody->getRestitution();
+        return mRigidBody->getRestitution();
     }
 
 } // End of Dream

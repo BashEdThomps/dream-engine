@@ -41,7 +41,8 @@ namespace Dream
           mSpotLightCountLocation(UNIFORM_NOT_FOUND),
           mDirectionalLightCount(0),
           mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
-          mCache(cache)
+          mCache(cache),
+          mNeedsRebind(true)
     {
 
         setLogClassName("ShaderInstance");
@@ -238,14 +239,17 @@ namespace Dream
         mPointLightCount = 0;
         mSpotLightCount = 0;
         mDirectionalLightCount = 0;
-        GLint currentShader = 0;
-        glGetIntegerv(GL_CURRENT_PROGRAM,&currentShader);
-        if (static_cast<GLuint>(currentShader) != mShaderProgram)
+        if (CurrentShaderProgram != mShaderProgram)
         {
             auto log = spdlog::get("ShaderInstance");
-            log->debug("Switching Shader Program from {} to {} for {}",
-                          currentShader,mShaderProgram,getNameAndUuidString());
+            log->debug(
+                "Switching Shader Program from {} to {} for {}",
+                CurrentShaderProgram,
+                mShaderProgram,
+                getNameAndUuidString()
+            );
             glUseProgram(mShaderProgram);
+            CurrentShaderProgram = mShaderProgram;
         }
     }
 
@@ -307,43 +311,56 @@ namespace Dream
         {
             return;
         }
+
         if (material->mDiffuseTexture != nullptr)
         {
             id = material->mDiffuseTexture->id;
-            log->info("Found Diffuse Texture, binding {}",id);
-            glActiveTexture(GL_TEXTURE0);
-            checkGLError();
-            glBindTexture(GL_TEXTURE_2D, id);
-            checkGLError();
-            GLuint diffuseIndex = 0;
-            addUniform(INT1, "material.diffuse", 1, &diffuseIndex);
+            if (CurrentTexture0 != id)
+            {
+                log->info("Found Diffuse Texture, binding {}",id);
+                glActiveTexture(GL_TEXTURE0);
+                checkGLError();
+                glBindTexture(GL_TEXTURE_2D, id);
+                checkGLError();
+                GLuint diffuseIndex = 0;
+                addUniform(INT1, "material.diffuse", 1, &diffuseIndex);
+                CurrentTexture0 = id;
+            }
         }
 
         if (material->mSpecularTexture != nullptr)
         {
             id =  material->mSpecularTexture->id;
-            log->info("Found Specular Texture, binding {}",id);
-            glActiveTexture(GL_TEXTURE1);
-            checkGLError();
-            glBindTexture(GL_TEXTURE_2D, id);
-            checkGLError();
-            GLuint specularIndex = 1;
-            addUniform(INT1, "material.specular", 1, &specularIndex);
+            if (CurrentTexture1 != id)
+            {
+                log->info("Found Specular Texture, binding {}",id);
+                glActiveTexture(GL_TEXTURE1);
+                checkGLError();
+                glBindTexture(GL_TEXTURE_2D, id);
+                checkGLError();
+                GLuint specularIndex = 1;
+                addUniform(INT1, "material.specular", 1, &specularIndex);
+                addUniform(FLOAT1, "material.shininess", 1, &material->mShininessStrength);
+                CurrentTexture1 = id;
+            }
         }
 
         if (material->mNormalTexture != nullptr)
         {
             id =  material->mNormalTexture->id;
-            log->info("Found Normal Texture, binding {}",id);
-            glActiveTexture(GL_TEXTURE2);
-            checkGLError();
-            glBindTexture(GL_TEXTURE_2D, id);
-            checkGLError();
-            GLuint normalIndex = 2;
-            addUniform(INT1, "material.normalMap", 1, &normalIndex);
+            if (CurrentTexture2 != id)
+            {
+                log->info("Found Normal Texture, binding {}",id);
+                glActiveTexture(GL_TEXTURE2);
+                checkGLError();
+                glBindTexture(GL_TEXTURE_2D, id);
+                checkGLError();
+                GLuint normalIndex = 2;
+                addUniform(INT1, "material.normalMap", 1, &normalIndex);
+                CurrentTexture2 = id;
+            }
         }
 
-        addUniform(FLOAT1, "material.shininess", 1, &material->mShininessStrength);
 
     }
 
@@ -452,6 +469,7 @@ namespace Dream
     ()
     {
         glUseProgram(0);
+        CurrentShaderProgram = 0;
     }
 
     // GL Syncros ==============================================================
@@ -499,6 +517,13 @@ namespace Dream
 
         for (const shared_ptr<ShaderUniform>& uniform : mUniformVector)
         {
+            if (!uniform->getNeedsUpdate())
+            {
+                continue;
+            }
+
+            log->critical("Uniform {} needs update",uniform->getName());
+
             if (uniform->getCount() == 0)
             {
                 continue;
@@ -567,6 +592,7 @@ namespace Dream
                 }
                 checkGLError();
             }
+            uniform->setNeedsUpdate(false);
         }
     }
 
@@ -576,8 +602,8 @@ namespace Dream
         : DreamObject ("ShaderUniform"),
           mType(type),
           mName(name),
-          mCount(count)
-
+          mCount(count),
+          mNeedsUpdate(true)
     {
         auto log = getLog();
         log->info("Constructing uniform {}, count {}",mName,count);
@@ -697,6 +723,7 @@ namespace Dream
     void ShaderUniform::setCount(int count)
     {
         mCount = count;
+        setNeedsUpdate(true);
     }
 
     GLint ShaderUniform::getLocation() const
@@ -707,6 +734,17 @@ namespace Dream
     void ShaderUniform::setLocation(GLint location)
     {
         mLocation = location;
+        setNeedsUpdate(true);
+    }
+
+    bool ShaderUniform::getNeedsUpdate() const
+    {
+        return mNeedsUpdate;
+    }
+
+    void ShaderUniform::setNeedsUpdate(bool needsUpdate)
+    {
+        mNeedsUpdate = needsUpdate;
     }
 
     void* ShaderUniform::getData() const
@@ -716,49 +754,56 @@ namespace Dream
 
     void ShaderUniform::setData(void* data)
     {
+        size_t size = 0;
         switch (mType)
         {
             case Dream::INT1:
-                memcpy(mData,data,sizeof(GLint)*static_cast<unsigned long>(mCount));
+                size = sizeof(GLint)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::INT2:
-                memcpy(mData,data,sizeof(ivec2)*static_cast<unsigned long>(mCount));
+                size = sizeof(ivec2)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::INT3:
-                memcpy(mData,data,sizeof(ivec3)*static_cast<unsigned long>(mCount));
+                size = sizeof(ivec3)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::INT4:
-                memcpy(mData,data,sizeof(ivec4)*static_cast<unsigned long>(mCount));
+                size = sizeof(ivec4)*static_cast<unsigned long>(mCount);
                 break;
 
             case Dream::UINT1:
-                memcpy(mData,data,sizeof(GLuint)*static_cast<unsigned long>(mCount));
+                size = sizeof(GLuint)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::UINT2:
-                memcpy(mData,data,sizeof(uvec2)*static_cast<unsigned long>(mCount));
+                size = sizeof(uvec2)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::UINT3:
-                memcpy(mData,data,sizeof(uvec3)*static_cast<unsigned long>(mCount));
+                size = sizeof(uvec3)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::UINT4:
-                memcpy(mData,data,sizeof(uvec4)*static_cast<unsigned long>(mCount));
+                size = sizeof(uvec4)*static_cast<unsigned long>(mCount);
                 break;
 
             case Dream::FLOAT1:
-                memcpy(mData,data,sizeof(GLfloat)*static_cast<unsigned long>(mCount));
+                size = sizeof(GLfloat)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::FLOAT2:
-                memcpy(mData,data,sizeof(vec2)*static_cast<unsigned long>(mCount));
+                size = sizeof(vec2)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::FLOAT3:
-                memcpy(mData,data,sizeof(vec3)*static_cast<unsigned long>(mCount));
+                size = sizeof(vec3)*static_cast<unsigned long>(mCount);
                 break;
             case Dream::FLOAT4:
-                memcpy(mData,data,sizeof(vec4)*static_cast<unsigned long>(mCount));
+                size = sizeof(vec4)*static_cast<unsigned long>(mCount);
                 break;
 
         }
 
+        if (size > 0)
+        {
+            if (memcmp(mData,data,size) == 0) return;
+            memcpy(mData,data,size);
+            setNeedsUpdate(true);
+        }
     }
 
     string ShaderUniform::getName() const
@@ -769,6 +814,7 @@ namespace Dream
     void ShaderUniform::setName(const string& name)
     {
         mName = name;
+        setNeedsUpdate(true);
     }
 
     UniformType ShaderUniform::getType() const
@@ -779,10 +825,16 @@ namespace Dream
     void ShaderUniform::setType(const UniformType& type)
     {
         mType = type;
+        setNeedsUpdate(true);
     }
     const char* ShaderInstance::UNIFORM_POINT_LIGHT_COUNT = "pointLightCount";
     const char* ShaderInstance::UNIFORM_SPOT_LIGHT_COUNT = "spotLightCount";
     const char* ShaderInstance::UNIFORM_DIRECTIONAL_LIGHT_COUNT = "directionalLightCount";
     const unsigned int ShaderInstance::MAX_LIGHTS = 10;
+
+    GLuint ShaderInstance::CurrentTexture0 = 0;
+    GLuint ShaderInstance::CurrentTexture1 = 0;
+    GLuint ShaderInstance::CurrentTexture2 = 0;
+    GLuint ShaderInstance::CurrentShaderProgram = 0;
 
 } // End of Dream

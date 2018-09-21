@@ -22,21 +22,11 @@
 
 namespace Dream
 {
-    string Event::getData() const
-    {
-        return mData;
-    }
-
-    void Event::setData(const string& data)
-    {
-        mData = data;
-    }
-
     Event::Event
     (
-            SceneObjectRuntime* sender,
-            string type
-            ) : DreamObject("Event"),
+        SceneObjectRuntime* sender,
+        string type
+    ) : DreamObject("Event"),
         mSender(sender)
     {
         setAttribute(Constants::EVENT_TYPE,type);
@@ -83,6 +73,16 @@ namespace Dream
             }
         }
         return "";
+    }
+
+    string Event::getData() const
+    {
+        return mData;
+    }
+
+    void Event::setData(const string& data)
+    {
+        mData = data;
     }
 
 } // End of Dream

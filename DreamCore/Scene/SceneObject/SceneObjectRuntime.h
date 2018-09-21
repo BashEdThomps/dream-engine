@@ -171,6 +171,16 @@ namespace Dream
         bool getHidden() const;
         void setHidden(bool hidden);
 
+        void removeAudioInstance();
+        void removePathInstance();
+        void removeModelInstance();
+        void removeShaderInstance();
+        void removeLightInstance();
+        void removeSpriteInstance();
+        void removeScriptInstance();
+        void removePhysicsObjectInstance();
+        void removeFontInstance();
+
     private:
 
         AudioInstance* mAudioInstance;

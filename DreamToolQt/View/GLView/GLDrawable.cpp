@@ -113,7 +113,7 @@ GLDrawable::draw
             log->info("Drawing {} lines", mVertexBuffer.size()/2);
 
         // Enable shader program
-        glUseProgram(mShaderProgram);
+        useShader();
 
         // Set the projection matrix
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
@@ -165,9 +165,15 @@ GLDrawable::draw
         // Revert State
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        glUseProgram(0);
         postRender();
     }
+}
+
+void GLDrawable::useShader()
+{
+    // Enable shader program
+    glUseProgram(mShaderProgram);
+    ShaderInstance::CurrentShaderProgram = mShaderProgram;
 }
 
 void
@@ -257,7 +263,6 @@ GLDrawable::initShader
     // Delete the shaders as they're linked into our program now and no longer necessery
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    glUseProgram(0);
 }
 
 void

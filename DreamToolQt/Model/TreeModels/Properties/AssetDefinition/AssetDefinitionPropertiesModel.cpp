@@ -142,6 +142,7 @@ AssetDefinitionPropertiesModel::createProperties
         createPhysicsKinematicProperty();
         createPhysicsControllableProperty();
         createPhysicsRestitutionProperty();
+        createPhysicsFrictionProperty();
 
         if (mAssetDefinitionHandle->getFormat() == Constants::COLLISION_SHAPE_BOX)
         {
@@ -771,6 +772,22 @@ AssetDefinitionPropertiesModel::createPhysicsRestitutionProperty
         )
     );
 }
+
+void
+AssetDefinitionPropertiesModel::createPhysicsFrictionProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Friction",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION
+        )
+    );
+}
+
 
 
 void

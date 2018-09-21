@@ -68,6 +68,7 @@ SceneObjectPropertiesModel::createProperties
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
     log->info("CreateProperties");
+    createUuidProperty();
     createNameProperty();
     createTranslationProperty();
     createOrientationProperty();
@@ -126,6 +127,23 @@ SceneObjectPropertiesModel::createDelegateConnections
         SIGNAL(notifyButton_RemoveChild(IDefinition*)),
         this,
         SLOT(onButton_RemoveChild(IDefinition*))
+    );
+}
+
+void
+SceneObjectPropertiesModel::createUuidProperty
+()
+{
+    auto log = spdlog::get("SceneObjectPropertiesModel");
+    log->info("createUuid");
+    mRootItem->appendChild
+    (
+        new SceneObjectPropertiesItem
+        (
+            "UUID",
+            mSceneObjectDefinitionHandle,
+            SCENE_OBJECT_PROPERTY_UUID
+        )
     );
 }
 

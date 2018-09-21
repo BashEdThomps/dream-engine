@@ -42,6 +42,7 @@ public:
     void createProperties() override;
     void createDelegateConnections() override;
 
+    void createUuidProperty();
     void createNameProperty();
     void createTranslationProperty();
     void createOrientationProperty();

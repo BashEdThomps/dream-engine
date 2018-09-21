@@ -254,6 +254,7 @@ namespace Dream
     const string Constants::ASSET_ATTR_KINEMATIC = "kinematic";
     const string Constants::ASSET_ATTR_CONTROLLABLE = "controllable";
     const string Constants::ASSET_ATTR_RESTITUTION = "restitution";
+    const string Constants::ASSET_ATTR_FRICTION = "friction";
 
     const string Constants::COLLISION_SHAPE_SPHERE = "btShpereShape";
     const string Constants::COLLISION_SHAPE_BOX = "btBoxShape";

@@ -80,6 +80,9 @@ SceneObjectPropertiesItem::setData
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
+        case SCENE_OBJECT_PROPERTY_UUID:
+            mSceneObjectDefinitionHandle->setUuid(value.toString().toStdString());
+            break;
         case SCENE_OBJECT_PROPERTY_NAME:
             mSceneObjectDefinitionHandle->setName(value.toString().toStdString());
             break;
@@ -161,8 +164,10 @@ SceneObjectPropertiesItem::data
             break;
         case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
             break;
+        case SCENE_OBJECT_PROPERTY_UUID:
+            return QString::fromStdString(mSceneObjectDefinitionHandle->getUuid());
         case SCENE_OBJECT_PROPERTY_NAME:
-            return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getName()));
+            return QString::fromStdString(mSceneObjectDefinitionHandle->getName());
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
             return QVariant(mSceneObjectDefinitionHandle->getTransform()->getTranslationX());
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
@@ -184,7 +189,7 @@ SceneObjectPropertiesItem::data
         case SCENE_OBJECT_PROPERTY_SCALE_Z:
             return QVariant(mSceneObjectDefinitionHandle->getTransform()->getScaleZ());
         case SCENE_OBJECT_PROPERTY_TRANSFORM_TYPE:
-            return QVariant(QString::fromStdString(mSceneObjectDefinitionHandle->getTransform()->getTransformType()));
+            return QString::fromStdString(mSceneObjectDefinitionHandle->getTransform()->getTransformType());
         case SCENE_OBJECT_PROPERTY_HAS_FOCUS:
             return QVariant(mSceneObjectDefinitionHandle->hasFocus());
         case SCENE_OBJECT_PROPERTY_FOLLOWS_CAMERA:

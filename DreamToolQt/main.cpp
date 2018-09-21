@@ -23,8 +23,12 @@
 #include <spdlog/spdlog.h>
 
 #include <DreamCore.h>
+#include <QTextStream>
+#include <iostream>
 
 using Dream::Constants;
+using std::cerr;
+using std::endl;
 
 int main(int argc, char *argv[])
 {
@@ -32,6 +36,19 @@ int main(int argc, char *argv[])
     spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
 
     QApplication a(argc, argv);
+
+    QFile f(":qdarkstyle/style.qss");
+    if (!f.exists())
+    {
+        cerr << "Unable to set stylesheet, file not found" << endl;
+    }
+    else
+    {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        qApp->setStyleSheet(ts.readAll());
+    }
+
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );
     glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0

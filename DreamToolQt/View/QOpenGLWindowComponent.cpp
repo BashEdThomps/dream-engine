@@ -98,7 +98,10 @@ QOpenGLWindowComponent::showIdleScreen
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     log->info("showIdleScreen");
-    glClearColor(0.5f,0.5f,0.5f,1.0f);
+    QColor clear(35,38,41);
+    double r,g,b;
+    clear.getRgbF(&r,&g,&b);
+    glClearColor(r,g,b,1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     QPainter painter(this);
@@ -181,7 +184,6 @@ QOpenGLWindowComponent::paintGL
                         if (!mGridHandle->isInitialised())
                         {
                             mGridHandle->init();
-
                             checkGLError();
                         }
                         mGridHandle->setViewMatrix(viewMatrix);
@@ -243,7 +245,7 @@ QOpenGLWindowComponent::paintGL
                     mPathPointViewerHandle->draw();
                     checkGLError();
                 }
-                drawStats();
+                //drawStats();
             }
             mPaintInProgress = false;
         }
@@ -377,6 +379,7 @@ QOpenGLWindowComponent::drawStats()
     }
     painter.drawText(topLeftX, topLeftY,getWidth(), getHeight(), Qt::AlignLeft,text);
     painter.end();
+    ShaderInstance::CurrentShaderProgram = 0;
 }
 
 bool QOpenGLWindowComponent::getControlScene()

@@ -177,7 +177,11 @@ namespace Dream
     {
        for (Texture* t : mTextureCache)
        {
-        SOIL_free_image_data(t->image);
+           if (t->image != nullptr)
+           {
+               SOIL_free_image_data(t->image);
+               t->image = nullptr;
+           }
        }
     }
 

@@ -53,13 +53,25 @@ namespace Dream
             log->info("Stopping source {}" , source);
             alSourceStop(source);
         }
+
         deleteAllSources();
         deleteAllBuffers();
-        if (mDevice)
+
+        alcMakeContextCurrent(nullptr);
+
+        if (mContext != nullptr)
+        {
+            alcDestroyContext(mContext);
+            mContext = nullptr;
+        }
+
+        if (mDevice != nullptr)
         {
             alcCloseDevice(mDevice);
             mDevice = nullptr;
         }
+
+
     }
 
     bool

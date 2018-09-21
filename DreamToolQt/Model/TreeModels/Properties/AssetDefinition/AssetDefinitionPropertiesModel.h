@@ -79,6 +79,7 @@ private:
     void createPhysicsHeightProperty();
     void createPhysicsControllableProperty();
     void createPhysicsRestitutionProperty();
+    void createPhysicsFrictionProperty();
 
     void createSpriteTileSizeProperty();
     void createSpriteFileProperty();

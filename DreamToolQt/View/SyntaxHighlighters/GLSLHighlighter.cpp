@@ -46,13 +46,13 @@ GlslSyntaxHighlighter::GlslSyntaxHighlighter
     statementFormat.setForeground(QColor(255, 0, 0));
     statementFormat.setFontWeight(QFont::Bold);
 
-    commentFormat.setForeground(QColor(0, 0, 205));
+    commentFormat.setForeground(QColor(150,150,150));
 
     preprocessorFormat.setForeground(QColor(205, 0, 205));
 
     numberFormat.setForeground(QColor(205, 0, 0));
 
-    typesFormat.setForeground(QColor(0, 0, 255));
+    typesFormat.setForeground(QColor(255, 165, 0));
     typesFormat.setFontWeight(QFont::Bold);
 
     swizzleFormat.setForeground(QColor(205, 0, 205));
@@ -137,6 +137,8 @@ GlslSyntaxHighlighter::GlslSyntaxHighlighter
     glslTypes.append("vec4");
     glslTypes.append("vec4");
     glslTypes.append("struct");
+    glslTypes.append("mat3");
+    glslTypes.append("mat4");
     addPatternFromList(glslTypes, typesFormat);
 
     /* Storage class */
@@ -337,6 +339,7 @@ GlslSyntaxHighlighter::highlightBlock
                         "length==0 for " "%s" " mathcing in " "%s" " at %d\n",
                         expression.pattern().toUtf8().data(),
                         text.toUtf8().data(), index);
+                break;
             }
             setFormat(index, length, rule.format);
             index = expression.indexIn(text, index + length);

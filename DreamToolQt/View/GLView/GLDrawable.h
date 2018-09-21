@@ -67,4 +67,5 @@ protected: // Variables
     GLuint mShaderProgram;
     bool mInitialised;
     void addLineVertex(LineVertex lv);
+    void useShader();
 };

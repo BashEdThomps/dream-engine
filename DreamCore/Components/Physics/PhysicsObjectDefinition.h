@@ -89,6 +89,9 @@ namespace Dream
         float getRestitution();
         void setRestitution(float r);
 
+        float getFriction();
+        void  setFriction(float r);
+
     protected:
         void makeCompoundChildren();
         void makeHalfExtentsObject();

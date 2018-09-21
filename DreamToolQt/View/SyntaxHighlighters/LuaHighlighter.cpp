@@ -41,22 +41,22 @@ LuaHighlighter::LuaHighlighter(QTextDocument *parent)
      */
     HighlightingRule rule;
 
-    antFormat.setForeground(Qt::darkGreen);
+    antFormat.setForeground(Qt::green);
     rule.pattern = QRegExp("[-+]?(?:(?:\\d+\\.\\d+)|(?:\\.\\d+)|(?:\\d+\\.?))");
     rule.format = antFormat;
     highlightingRules.append(rule);
 
-    classFormat.setForeground(Qt::darkMagenta);
+    classFormat.setForeground(Qt::cyan);
     rule.pattern = QRegExp("\\b[A-Za-z][A-Za-z0-9_]*\\b");
     rule.format = classFormat;
     highlightingRules.append(rule);
 
-    functionFormat.setForeground(Qt::blue);
+    functionFormat.setForeground(Qt::yellow);
     rule.pattern = QRegExp("\\b[A-Za-z0-9_]+ *(?=\\()");
     rule.format = functionFormat;
     highlightingRules.append(rule);
 
-    keywordFormat.setForeground(Qt::darkBlue);
+    keywordFormat.setForeground(QColor(255,165,0));
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
     keywordPatterns
@@ -73,7 +73,7 @@ LuaHighlighter::LuaHighlighter(QTextDocument *parent)
         highlightingRules.append(rule);
     }
 
-    quotationFormat.setForeground(Qt::darkGreen);
+    quotationFormat.setForeground(Qt::green);
     rule.pattern = QRegExp("\"[^\"]*\"");
     rule.format = quotationFormat;
     highlightingRules.append(rule);
@@ -82,7 +82,7 @@ LuaHighlighter::LuaHighlighter(QTextDocument *parent)
     rule.format = quotationFormat;
     highlightingRules.append(rule);
 
-    singleLineCommentFormat.setForeground(Qt::gray);
+    singleLineCommentFormat.setForeground(Qt::lightGray);
     singleLineCommentFormat.setFontItalic(true);
     rule.pattern = QRegExp("--[^\n]*");
     rule.format = singleLineCommentFormat;

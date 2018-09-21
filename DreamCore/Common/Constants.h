@@ -229,6 +229,7 @@ namespace Dream
         const static string ASSET_ATTR_KINEMATIC;
         const static string ASSET_ATTR_CONTROLLABLE;
         const static string ASSET_ATTR_RESTITUTION;
+        const static string ASSET_ATTR_FRICTION;
 
         const static string COLLISION_SHAPE_SPHERE;
         const static string COLLISION_SHAPE_BOX;

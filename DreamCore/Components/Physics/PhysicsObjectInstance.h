@@ -62,6 +62,9 @@ namespace Dream
         vec3 getLinearVelocity();
         float getRestitution() const;
         void setRestitution(float r);
+        float getFriction() const;
+        void setFriction(float friction);
+
     protected:
         void loadExtraAttributes(json) override;
         void loadExtraAttributes(json, IAssetDefinition*, bool);

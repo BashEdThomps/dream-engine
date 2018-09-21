@@ -86,13 +86,16 @@ namespace Dream
         GLint getLocation() const;
         void setLocation(GLint location);
 
+        bool getNeedsUpdate() const;
+        void setNeedsUpdate(bool needsUpdate);
+
     private:
         UniformType mType;
         string mName;
         void* mData;
         int mCount;
         GLint mLocation;
-
+        bool mNeedsUpdate;
     };
 
 
@@ -118,6 +121,7 @@ namespace Dream
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
         ShaderCache* mCache;
+        bool mNeedsRebind;
     public:
         ShaderInstance(
            ShaderCache* cache,
@@ -125,6 +129,11 @@ namespace Dream
            SceneObjectRuntime* rt
         );
         ~ShaderInstance() override;
+
+        static GLuint CurrentTexture0;
+        static GLuint CurrentTexture1;
+        static GLuint CurrentTexture2;
+        static GLuint CurrentShaderProgram;
 
 
         bool load(string) override;

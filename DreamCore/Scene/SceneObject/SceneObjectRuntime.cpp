@@ -111,58 +111,93 @@ namespace Dream
         }
         mChildRuntimes.clear();
 
+        removeAudioInstance();
+        removePathInstance();
+        removeModelInstance();
+        removeShaderInstance();
+        removeLightInstance();
+        removeSpriteInstance();
+        removeScriptInstance();
+        removePhysicsObjectInstance();
+        removeFontInstance();
+
+        if (mTransform != nullptr)
+        {
+            delete mTransform;
+            mTransform = nullptr;
+        }
+    }
+
+    void
+    SceneObjectRuntime::removeAudioInstance
+    ()
+    {
         if (mAudioInstance != nullptr)
         {
             delete mAudioInstance;
             mAudioInstance = nullptr;
         }
+    }
 
+    void
+    SceneObjectRuntime::removePathInstance
+    ()
+    {
         if (mPathInstance != nullptr)
         {
             delete mPathInstance;
             mPathInstance = nullptr;
         }
+    }
 
+    void
+    SceneObjectRuntime::removeModelInstance
+    ()
+    {
         if (mModelInstance != nullptr)
         {
             delete mModelInstance;
             mModelInstance = nullptr;
         }
+    }
 
+    void
+    SceneObjectRuntime::removeShaderInstance
+    ()
+    {
         if (mShaderInstance != nullptr)
         {
             delete mShaderInstance;
             mShaderInstance = nullptr;
         }
+    }
 
+    void
+    SceneObjectRuntime::removeLightInstance
+    ()
+    {
         if (mLightInstance != nullptr)
         {
             delete mLightInstance;
             mLightInstance = nullptr;
         }
+    }
 
+    void
+    SceneObjectRuntime::removeSpriteInstance
+    ()
+    {
         if (mSpriteInstance != nullptr)
         {
             delete mSpriteInstance;
             mSpriteInstance = nullptr;
         }
-        if (mFontInstance != nullptr)
-        {
-            delete mFontInstance;
-            mFontInstance = nullptr;
-        }
+    }
 
-        if (hasPhysicsObjectInstance())
-        {
-            auto physicsComp = mSceneRuntime
-                ->getProjectRuntime()
-                ->getPhysicsComponent();
-           if (physicsComp != nullptr)
-           {
-                physicsComp->removePhysicsObjectInstance(getPhysicsObjectInstance());
-           }
-        }
-
+    void
+    SceneObjectRuntime::removeScriptInstance
+    ()
+    {
         if (hasScriptInstance())
         {
             auto scriptComp =
@@ -174,11 +209,32 @@ namespace Dream
                 scriptComp->removeFromScriptMap(this);
             }
         }
+    }
 
-        if (mTransform != nullptr)
+    void
+    SceneObjectRuntime::removePhysicsObjectInstance
+    ()
+    {
+        if (hasPhysicsObjectInstance())
         {
-            delete mTransform;
-            mTransform = nullptr;
+            auto physicsComp = mSceneRuntime
+                ->getProjectRuntime()
+                ->getPhysicsComponent();
+           if (physicsComp != nullptr)
+           {
+                physicsComp->removePhysicsObjectInstance(getPhysicsObjectInstance());
+           }
+        }
+    }
+
+    void
+    SceneObjectRuntime::removeFontInstance
+    ()
+    {
+        if (mFontInstance != nullptr)
+        {
+            delete mFontInstance;
+            mFontInstance = nullptr;
         }
     }
 
@@ -484,7 +540,7 @@ namespace Dream
     (Event event)
     {
         auto log = getLog();
-        log->critical
+        log->debug
         (
             "Event posted from {} to {}",
             event.getSender()->getNameAndUuidString(),
@@ -525,7 +581,7 @@ namespace Dream
 
         for (auto child : toDelete)
         {
-            log->critical("Deleting child {}",child->getNameAndUuidString());
+            log->debug("Deleting child {}",child->getNameAndUuidString());
             mChildRuntimes.erase
             (
                 find

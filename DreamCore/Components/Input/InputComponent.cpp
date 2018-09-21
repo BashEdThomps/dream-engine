@@ -37,12 +37,12 @@ namespace Dream
             log->info("Creating Keyboard Device");
             auto keyboardDevice = mInputManager.CreateDevice<InputDeviceKeyboard>();
             mDevices.push_back(keyboardDevice);
-            mInputMap->MapBool(Key_UP,keyboardDevice,KeyUp);
-            mInputMap->MapBool(Key_DOWN,keyboardDevice,KeyDown);
-            mInputMap->MapBool(Key_LEFT,keyboardDevice,KeyLeft);
-            mInputMap->MapBool(Key_RIGHT,keyboardDevice,KeyRight);
-            mInputMap->MapBool(Key_RETURN,keyboardDevice,KeyReturn);
-            mInputMap->MapBool(Key_SPACE,keyboardDevice,KeySpace);
+            mInputMap->MapBool(KB_UP,keyboardDevice,KeyUp);
+            mInputMap->MapBool(KB_DOWN,keyboardDevice,KeyDown);
+            mInputMap->MapBool(KB_LEFT,keyboardDevice,KeyLeft);
+            mInputMap->MapBool(KB_RIGHT,keyboardDevice,KeyRight);
+            mInputMap->MapBool(KB_RETURN,keyboardDevice,KeyReturn);
+            mInputMap->MapBool(KB_SPACE,keyboardDevice,KeySpace);
         }
 
         if (mUseMouse)
@@ -59,39 +59,39 @@ namespace Dream
             mDevices.push_back(gamepad);
 
             // Face Buttons
-            mInputMap->MapBool(FaceButtonSouth,gamepad,PadButtonA);
-            mInputMap->MapBool(FaceButtonEast,gamepad,PadButtonB);
-            mInputMap->MapBool(FaceButtonWest,gamepad,PadButtonX);
-            mInputMap->MapBool(FaceButtonNorth,gamepad,PadButtonY);
+            mInputMap->MapBool(JS_FaceButtonSouth,gamepad,PadButtonA);
+            mInputMap->MapBool(JS_FaceButtonEast,gamepad,PadButtonB);
+            mInputMap->MapBool(JS_FaceButtonWest,gamepad,PadButtonX);
+            mInputMap->MapBool(JS_FaceButtonNorth,gamepad,PadButtonY);
 
             // Left Analog
-            mInputMap->MapFloat(AnalogLeftStickX,gamepad,PadButtonLeftStickX);
-            mInputMap->MapFloat(AnalogLeftStickY,gamepad,PadButtonLeftStickY);
-            mInputMap->MapBool(AnalogLeftButton,gamepad,PadButtonL3);
+            mInputMap->MapFloat(JS_AnalogLeftStickX,gamepad,PadButtonLeftStickX);
+            mInputMap->MapFloat(JS_AnalogLeftStickY,gamepad,PadButtonLeftStickY);
+            mInputMap->MapBool (JS_AnalogLeftButton,gamepad,PadButtonL3);
 
             // Right Analog
-            mInputMap->MapFloat(AnalogRightStickX,gamepad,PadButtonRightStickX);
-            mInputMap->MapFloat(AnalogRightStickY,gamepad,PadButtonRightStickY);
-            mInputMap->MapBool(AnalogRightButton,gamepad,PadButtonR3);
+            mInputMap->MapFloat(JS_AnalogRightStickX,gamepad,PadButtonRightStickX);
+            mInputMap->MapFloat(JS_AnalogRightStickY,gamepad,PadButtonRightStickY);
+            mInputMap->MapBool (JS_AnalogRightButton,gamepad,PadButtonR3);
 
             // Shoulders
-            mInputMap->MapBool(ShoulderLeft,gamepad,PadButtonL1);
-            mInputMap->MapBool(ShoulderRight,gamepad,PadButtonR1);
+            mInputMap->MapBool(JS_ShoulderLeft,gamepad,PadButtonL1);
+            mInputMap->MapBool(JS_ShoulderRight,gamepad,PadButtonR1);
 
             // Triggers
-            mInputMap->MapFloat(TriggerLeft,gamepad,PadButtonAxis4);
-            mInputMap->MapFloat(TriggerRight,gamepad,PadButtonAxis5);
+            mInputMap->MapFloat(JS_TriggerLeft,gamepad,PadButtonAxis4);
+            mInputMap->MapFloat(JS_TriggerRight,gamepad,PadButtonAxis5);
 
             // DPad
-            mInputMap->MapBool(DPadNorth,gamepad,PadButtonUp);
-            mInputMap->MapBool(DPadSouth,gamepad,PadButtonDown);
-            mInputMap->MapBool(DPadEast,gamepad,PadButtonRight);
-            mInputMap->MapBool(DPadWest,gamepad,PadButtonLeft);
+            mInputMap->MapBool(JS_DPadNorth,gamepad,PadButtonUp);
+            mInputMap->MapBool(JS_DPadSouth,gamepad,PadButtonDown);
+            mInputMap->MapBool(JS_DPadEast,gamepad,PadButtonRight);
+            mInputMap->MapBool(JS_DPadWest,gamepad,PadButtonLeft);
 
             // Extra
-            mInputMap->MapBool(FaceHome,gamepad,PadButtonHome);
-            mInputMap->MapBool(FaceStart,gamepad,PadButtonStart);
-            mInputMap->MapBool(FaceSelect,gamepad,PadButtonSelect);
+            mInputMap->MapBool(JS_FaceHome,gamepad,PadButtonHome);
+            mInputMap->MapBool(JS_FaceStart,gamepad,PadButtonStart);
+            mInputMap->MapBool(JS_FaceSelect,gamepad,PadButtonSelect);
         }
 
         return true;
@@ -156,34 +156,49 @@ namespace Dream
             "AnalogRightStickY...{}\n"
             "AnalogRightButton...{}\n",
 
-             mInputMap->GetBool(FaceButtonNorth),
-             mInputMap->GetBool(FaceButtonEast),
-             mInputMap->GetBool(FaceButtonWest),
-             mInputMap->GetBool(FaceButtonSouth),
+             mInputMap->GetBool (JS_FaceButtonNorth),
+             mInputMap->GetBool (JS_FaceButtonEast),
+             mInputMap->GetBool (JS_FaceButtonWest),
+             mInputMap->GetBool (JS_FaceButtonSouth),
 
-             mInputMap->GetBool(FaceHome),
-             mInputMap->GetBool(FaceStart),
-             mInputMap->GetBool(FaceSelect),
+             mInputMap->GetBool (JS_FaceHome),
+             mInputMap->GetBool (JS_FaceStart),
+             mInputMap->GetBool (JS_FaceSelect),
 
-             mInputMap->GetBool(ShoulderLeft),
-             mInputMap->GetBool(ShoulderRight),
+             mInputMap->GetBool (JS_ShoulderLeft),
+             mInputMap->GetBool (JS_ShoulderRight),
 
-             mInputMap->GetFloat(TriggerLeft),
-             mInputMap->GetFloat(TriggerRight),
+             mInputMap->GetFloat(JS_TriggerLeft),
+             mInputMap->GetFloat(JS_TriggerRight),
 
-             mInputMap->GetBool(DPadNorth),
-             mInputMap->GetBool(DPadSouth),
-             mInputMap->GetBool(DPadEast),
-             mInputMap->GetBool(DPadWest),
+             mInputMap->GetBool (JS_DPadNorth),
+             mInputMap->GetBool (JS_DPadSouth),
+             mInputMap->GetBool (JS_DPadEast),
+             mInputMap->GetBool (JS_DPadWest),
 
-             mInputMap->GetFloat(AnalogLeftStickX),
-             mInputMap->GetFloat(AnalogLeftStickY),
-             mInputMap->GetBool(AnalogLeftButton),
+             mInputMap->GetFloat(JS_AnalogLeftStickX),
+             mInputMap->GetFloat(JS_AnalogLeftStickY),
+             mInputMap->GetBool (JS_AnalogLeftButton),
 
-             mInputMap->GetFloat(AnalogRightStickX),
-             mInputMap->GetFloat(AnalogRightStickY),
-             mInputMap->GetBool(AnalogRightButton)
-        );
+             mInputMap->GetFloat(JS_AnalogRightStickX),
+             mInputMap->GetFloat(JS_AnalogRightStickY),
+             mInputMap->GetBool (JS_AnalogRightButton)
+                    );
+    }
+
+    bool InputComponent::usingKeyboard() const
+    {
+        return mUseKeyboard;
+    }
+
+    bool InputComponent::usingMouse() const
+    {
+        return mUseMouse;
+    }
+
+    bool InputComponent::usingJoystick() const
+    {
+       return mUseJoystick;
     }
 
     void
@@ -208,13 +223,13 @@ namespace Dream
             "Space.................{}\n"
             "Return................{}\n",
 
-            mInputMap->GetBool(Key_UP),
-            mInputMap->GetBool(Key_DOWN),
-            mInputMap->GetBool(Key_LEFT),
-            mInputMap->GetBool(Key_RIGHT),
+            mInputMap->GetBool(KB_UP),
+            mInputMap->GetBool(KB_DOWN),
+            mInputMap->GetBool(KB_LEFT),
+            mInputMap->GetBool(KB_RIGHT),
 
-            mInputMap->GetBool(Key_SPACE),
-            mInputMap->GetBool(Key_RETURN)
+            mInputMap->GetBool(KB_SPACE),
+            mInputMap->GetBool(KB_RETURN)
         );
 
     }

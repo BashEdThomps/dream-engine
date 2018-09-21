@@ -681,7 +681,6 @@ namespace Dream
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // Cleanup
         glBindVertexArray(0);
-        glUseProgram(0);
     }
 
     void

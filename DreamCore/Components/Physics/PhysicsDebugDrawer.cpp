@@ -239,6 +239,7 @@ namespace Dream
 
         // Enable shader program
         glUseProgram(mShaderProgram);
+        ShaderInstance::CurrentShaderProgram = mShaderProgram;
 
         // Set the projection matrix
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
@@ -292,7 +293,6 @@ namespace Dream
         // Unbind
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        glUseProgram(0);
         postRender();
         // Clear old buffer
         mVertexBuffer.clear();

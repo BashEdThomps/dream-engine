@@ -310,6 +310,25 @@ namespace Dream
         mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
     }
 
+    float
+    PhysicsObjectDefinition::getFriction
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_FRICTION].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_FRICTION] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_FRICTION];
+
+    }
+
+    void
+    PhysicsObjectDefinition::setFriction
+    (float r)
+    {
+        mJson[Constants::ASSET_ATTR_FRICTION] = r;
+    }
+
 
     void
     PhysicsObjectDefinition::addCompoundChild

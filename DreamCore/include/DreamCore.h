@@ -21,6 +21,7 @@
 #include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/Shader/ShaderInstance.h"
 #include "../Components/Scripting/IScriptComponent.h"
 #include "../Components/Scripting/Lua/LuaComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"

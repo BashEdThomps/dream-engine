@@ -565,6 +565,8 @@ namespace Dream
 
         mActiveSceneRuntime->useDefinition();
 
+        mTextureCache->flushRawTextureImageData();
+
         if (mGraphicsComponent != nullptr)
         {
             mGraphicsComponent->setMeshCullDistance(sceneDefinition->getMeshCullDistance());

@@ -317,7 +317,7 @@ PathPointViewer::draw
         log->info("Drawing all - {} lines", mVertexBuffer.size()/2);
 
         // Enable shader program
-        glUseProgram(mShaderProgram);
+        useShader();
 
         // Set the projection matrix
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
@@ -385,7 +385,6 @@ PathPointViewer::draw
         // Revert State
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        glUseProgram(0);
         postRender();
         glLineWidth(1);
     }

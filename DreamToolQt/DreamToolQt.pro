@@ -10,6 +10,8 @@ QT += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
+# Set your required SDK version here
+QMAKE_MAC_SDK = macosx10.14
 
 TARGET = DreamToolQt
 TEMPLATE = app
@@ -84,8 +86,6 @@ SOURCES += \
     Model/PathEditorTableModel.cpp \
     Controller/PathEditorFormController.cpp
 
-
-
 HEADERS  += \
     \
     Controller/MainController.h \
@@ -144,8 +144,6 @@ HEADERS  += \
     Controller/PathEditorFormController.h \
     Model/PathEditorTableModel.h
 
-
-
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
     View/MaterialShaderTableForm.ui \
@@ -153,7 +151,8 @@ FORMS += View/MainWindow.ui \
     View/EditorTabForm.ui
 
 RESOURCES += \
-    Resources/Resources.qrc
+    Resources/Resources.qrc \
+    qdarkstyle/style.qrc
 
 ICON = Resources/icons/Ag.icns
 
