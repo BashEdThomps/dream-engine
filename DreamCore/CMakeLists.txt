@@ -17,6 +17,7 @@ find_package(spdlog REQUIRED)
 find_package(Lua REQUIRED)
 find_package(Gainput REQUIRED)
 find_package(TinySpline REQUIRED)
+find_package(SOIL REQUIRED)
 
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
@@ -43,6 +44,7 @@ include_directories(
     ${FREETYPE_INCLUDE_DIR_ft2build}
     ${GAINPUT_INCLUDE_DIR}
     ${TINY_SPLINE_INCLUDE_DIR}
+    ${SOIL_INCLUDE_DIR}
 )
 
 add_library(DreamCore SHARED ${SRC_DIR})
@@ -51,8 +53,7 @@ target_link_libraries(
     DreamCore
     -lpthread
     -ldl
-    SOIL
-    NanoVG
+    ${SOIL_LIB}
     ${TINY_SPLINE_LIB}
     ${TINY_SPLINE_CPP_LIB}
     ${GAINPUT_LIB}

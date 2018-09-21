@@ -52,11 +52,9 @@ namespace Dream
 
         virtual bool createScript(SceneObjectRuntime*,ScriptInstance*) = 0;
         virtual bool loadScript(SceneObjectRuntime*) = 0;
-        virtual bool updateNanoVG() = 0;
 
         virtual bool executeScriptInit  (SceneObjectRuntime*) = 0;
         virtual bool executeScriptUpdate(SceneObjectRuntime*) = 0;
-        virtual bool executeScriptNanoVG(SceneObjectRuntime*) = 0;
         virtual bool executeScriptInput (SceneObjectRuntime*) = 0;
         virtual bool executeScriptEvent (SceneObjectRuntime*) = 0;
 
@@ -93,7 +91,6 @@ namespace Dream
         virtual void exposeSceneObjectRuntime() = 0;
         virtual void exposeTime() = 0;
         virtual void exposeTransform3D() = 0;
-        virtual void exposeNanoVG() = 0;
         virtual void exposeGLM() = 0;
 
     }; // End of IScriptComponent

@@ -2,8 +2,6 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream)
 
-set(DREAM_BUILD_SOIL    ON)
-set(DREAM_BUILD_NANOVG  ON)
 set(DREAM_BUILD_CORE    ON)
 set(DREAM_BUILD_SDL     ON)
 
@@ -42,16 +40,6 @@ if (APPLE)
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
     #set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
     set(CMAKE_MACOSX_RPATH 1)
-endif()
-
-# SOIL Library
-if (DREAM_BUILD_SOIL)
-    add_subdirectory(SOIL)
-endif()
-
-# NanoVG Library
-if (DREAM_BUILD_NANOVG)
-    add_subdirectory (NanoVG)
 endif()
 
 # DreamCore Library

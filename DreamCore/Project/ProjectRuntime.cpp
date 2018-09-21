@@ -33,7 +33,6 @@
 #include "../Components/Graphics/Camera.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 
@@ -65,7 +64,6 @@ namespace Dream
           mPhysicsComponent(nullptr),
           mPathComponent(nullptr),
           mScriptComponent(nullptr),
-          mNanoVGComponent(nullptr),
           mWindowComponent(windowComponent),
           mTextureCache(nullptr),
           mModelCache(nullptr),
@@ -253,12 +251,6 @@ namespace Dream
             return false;
         }
 
-        mNanoVGComponent = new NanoVGComponent(mWindowComponent);
-        if (!mNanoVGComponent->init())
-        {
-            log->error( "Unable to initialise NanoVG Component.");
-            return false;
-        }
         return true;
     }
 
@@ -386,11 +378,6 @@ namespace Dream
             delete mScriptComponent;
             mScriptComponent = nullptr;
         }
-        if (mNanoVGComponent != nullptr)
-        {
-            delete mNanoVGComponent;
-            mNanoVGComponent = nullptr;
-        }
     }
 
     bool
@@ -426,13 +413,6 @@ namespace Dream
     ()
     {
         return mGraphicsComponent;
-    }
-
-    NanoVGComponent*
-    ProjectRuntime::getNanoVGComponent
-    ()
-    {
-       return mNanoVGComponent;
     }
 
     Camera*
@@ -499,7 +479,6 @@ namespace Dream
         mGraphicsComponent->drawModelQueue();
         mGraphicsComponent->drawFontQueue();
         mGraphicsComponent->drawSpriteQueue();
-        // mScriptComponent->updateNanoVG();
         mPhysicsComponent->setViewProjectionMatrix(
             mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
         );

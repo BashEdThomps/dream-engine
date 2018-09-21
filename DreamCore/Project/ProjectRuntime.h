@@ -36,7 +36,6 @@ namespace Dream
     class AudioComponent;
     class InputComponent;
     class GraphicsComponent;
-    class NanoVGComponent;
     class IWindowComponent;
     class PhysicsComponent;
     class IScriptComponent;
@@ -72,7 +71,6 @@ namespace Dream
         PhysicsComponent* mPhysicsComponent;
         PathComponent* mPathComponent;
         IScriptComponent* mScriptComponent;
-        NanoVGComponent* mNanoVGComponent;
         IWindowComponent* mWindowComponent;
 
         // Caches
@@ -97,7 +95,6 @@ namespace Dream
         AudioComponent* getAudioComponent();
         PhysicsComponent* getPhysicsComponent();
         GraphicsComponent* getGraphicsComponent();
-        NanoVGComponent* getNanoVGComponent();
         IWindowComponent* getWindowComponent();
         IScriptComponent* getScriptComponent();
         Project* getProject();

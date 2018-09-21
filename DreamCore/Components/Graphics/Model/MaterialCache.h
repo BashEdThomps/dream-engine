@@ -22,7 +22,7 @@
 #include <vector>
 #include <map>
 
-#include <SOIL.h>
+#include <SOIL/SOIL.h>
 #include <GL/glew.h>
 
 #include "Texture.h"

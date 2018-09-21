@@ -11,19 +11,20 @@ find_package(GLEW       REQUIRED)
 find_package(assimp     REQUIRED)
 find_package(Lua        REQUIRED)
 find_package(FREETYPE   REQUIRED)
+find_package(SOIL       REQUIRED)
 
 include_directories(
-  ${SOIL_INCLUDE_DIRS}
-  ${DreamCore_INCLUDE_DIRS}
-
-  ${OPENGL_INCLUDE_DIR}
-  ${GLEW_INCLUDE_DIRS}
-  ${assimp_INCLUDE_DIRS}
-  ${GLM_INCLUDE_DIR}
-  ${BULLET_INCLUDE_DIR}
-  ${LUA_INCLUDE_DIR}
-  ${SDL2_INCLUDE_DIR}
-  ${FREETYPE_INCLUDE_DIR_ft2build}
+    ${SOIL_INCLUDE_DIRS}
+    ${DreamCore_INCLUDE_DIRS}
+    ${OPENGL_INCLUDE_DIR}
+    ${GLEW_INCLUDE_DIRS}
+    ${assimp_INCLUDE_DIRS}
+    ${GLM_INCLUDE_DIR}
+    ${BULLET_INCLUDE_DIR}
+    ${LUA_INCLUDE_DIR}
+    ${SDL2_INCLUDE_DIR}
+    ${FREETYPE_INCLUDE_DIR_ft2build}
+    ${SOIL_INCLUDE_DIR}
 )
 
 add_executable (
@@ -32,15 +33,15 @@ add_executable (
 )
 
 target_link_libraries(
-  ${PROJECT_NAME}
-  SOIL
-  DreamCore
-  -lpthread
-  -ldl
-  ${GLEW_LIBRARIES}
-  ${assimp_LIBRARIES}
-  ${BULLET_LIBRARY}
-  ${SDL2_LIBRARY}
-  ${LUA_LIBRARIES}
-  ${FREETYPE_LIBRARIES}
+    ${PROJECT_NAME}
+    DreamCore
+    -lpthread
+    -ldl
+    ${SOIL_LIB}
+    ${GLEW_LIBRARIES}
+    ${assimp_LIBRARIES}
+    ${BULLET_LIBRARY}
+    ${SDL2_LIBRARY}
+    ${LUA_LIBRARIES}
+    ${FREETYPE_LIBRARIES}
 )

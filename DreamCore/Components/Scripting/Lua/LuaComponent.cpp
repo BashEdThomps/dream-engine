@@ -32,7 +32,6 @@
 #include "../../Graphics/Camera.h"
 #include "../../Graphics/Font/FontInstance.h"
 #include "../../Graphics/GraphicsComponent.h"
-#include "../../Graphics/NanoVGComponent.h"
 #include "../../Graphics/Light/LightInstance.h"
 #include "../../Graphics/Shader/ShaderInstance.h"
 #include "../../Graphics/Sprite/SpriteInstance.h"
@@ -43,7 +42,6 @@
 #include "../../../Project/ProjectRuntime.h"
 #include "../../../Scene/SceneRuntime.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../../../NanoVG/src/nanovg.h"
 
 #define SOL_CHECK_ARGUMENTS 1
 //#define SOL_SAFE_FUNCTION 1
@@ -227,25 +225,6 @@ namespace Dream
     }
 
     bool
-    LuaComponent::updateNanoVG
-    ()
-    {
-        auto log = getLog();
-        log->info("UpdateNanoVG Called");
-
-        for (auto entry : mScriptMap)
-        {
-            SceneObjectRuntime* key = entry.first;
-
-            if (!executeScriptNanoVG(key))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool
     LuaComponent::executeScriptUpdate
     (SceneObjectRuntime* sceneObject)
     {
@@ -281,24 +260,6 @@ namespace Dream
            return false;
         }
 
-        return true;
-    }
-
-    bool
-    LuaComponent::executeScriptNanoVG
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
-
-        if (scriptInstance->getError())
-        {
-            log->error("Cannot execute NanoVG {} in error state", scriptInstance->getNameAndUuidString());
-            return false;
-        }
-
-        log->info("Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
         return true;
     }
 
@@ -449,7 +410,6 @@ namespace Dream
         stateView.new_usertype<ProjectRuntime>("ProjectRuntime",
             "getAudioComponent",&ProjectRuntime::getAudioComponent,
             "getGraphicsComponent",&ProjectRuntime::getGraphicsComponent,
-            "getNanoVGComponent",&ProjectRuntime::getNanoVGComponent,
             "getPhysicsComponent",&ProjectRuntime::getPhysicsComponent,
             "getWindowComponent",&ProjectRuntime::getWindowComponent,
             "getTime",&ProjectRuntime::getTime,
@@ -915,131 +875,6 @@ namespace Dream
         }
     }
 
-    void
-    LuaComponent::exposeNanoVG
-    ()
-    {
-        /*
-        debugRegisteringClass("NanoVG");
-        [
-                mState.new_usertype<NVGcolor>("NVGcolor"),
-                mState.new_usertype<NVGpaint>("NVGpaint"),
-                mState.new_usertype<NVGglyphPosition>("NVGglyphPosition"),
-                mState.new_usertype<NVGtextRow>("NVGtextRow"),
-                mState.new_usertype<NanoVGComponent>("NanoVG")
-                .enum_("NVGsolidity")
-                [
-                value("NVG_SOLID",NVG_SOLID),
-                value("NVG_HOLE",NVG_HOLE)
-                ]
-                .enum_("NVGImageFlags")
-                [
-                value("NVG_IMAGE_GENERATE_MIPMAPS",NVG_IMAGE_GENERATE_MIPMAPS),
-                value("NVG_IMAGE_REPEATX",NVG_IMAGE_REPEATX),
-                value("NVG_IMAGE_REPEATY",NVG_IMAGE_REPEATY),
-                value("NVG_IMAGE_FLIPY",NVG_IMAGE_FLIPY),
-                value("NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED),
-                value("NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST)
-                ]
-                "BeginFrame",&NanoVGComponent::BeginFrame)
-                "CancelFrame",&NanoVGComponent::CancelFrame)
-                "EndFrame",&NanoVGComponent::EndFrame)
-                "GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation)
-                "GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc)
-                "GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate)
-                "RGB",&NanoVGComponent::RGB)
-                "RGBf",&NanoVGComponent::RGBf)
-                "RGBA",&NanoVGComponent::RGBA)
-                "RGBAf",&NanoVGComponent::RGBAf)
-                "LerpRGBA",&NanoVGComponent::LerpRGBA)
-                "TransRGBA",&NanoVGComponent::TransRGBA)
-                "TransRGBAf",&NanoVGComponent::TransRGBAf)
-                "HSL",&NanoVGComponent::HSL)
-                "HSLA",&NanoVGComponent::HSLA)
-                "Save",&NanoVGComponent::Save)
-                "Restore",&NanoVGComponent::Restore)
-                "Reset",&NanoVGComponent::Reset)
-                "ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias)
-                "StrokeColor",&NanoVGComponent::StrokeColor)
-                "StrokePaint",&NanoVGComponent::StrokePaint)
-                "FillColor",&NanoVGComponent::FillColor)
-                "FillPaint",&NanoVGComponent::FillPaint)
-                "MiterLimit",&NanoVGComponent::MiterLimit)
-                "StrokeWidth",&NanoVGComponent::StrokeWidth)
-                "LineCap",&NanoVGComponent::LineCap)
-                "LineJoin",&NanoVGComponent::LineJoin)
-                "GlobalAlpha",&NanoVGComponent::GlobalAlpha)
-                "ResetTransform",&NanoVGComponent::ResetTransform)
-                "Transform",&NanoVGComponent::Transform)
-                "Translate",&NanoVGComponent::Translate)
-                "Rotate",&NanoVGComponent::Rotate)
-                "SkewX",&NanoVGComponent::SkewX)
-                "SkewY",&NanoVGComponent::SkewY)
-                "Scale;",&NanoVGComponent::Scale)
-                "CurrentTransform",&NanoVGComponent::CurrentTransform)
-                "TransformIdentity",&NanoVGComponent::TransformIdentity)
-                "TransformTranslate",&NanoVGComponent::TransformTranslate)
-                "TransformScale",&NanoVGComponent::TransformScale)
-                "TransformRotate",&NanoVGComponent::TransformRotate)
-                "TransformSkewX",&NanoVGComponent::TransformSkewX)
-                "TransformSkewY",&NanoVGComponent::TransformSkewY)
-                "TransformMultiply",&NanoVGComponent::TransformMultiply)
-                "TransformPremultiply",&NanoVGComponent::TransformPremultiply)
-                "TransformInverse",&NanoVGComponent::TransformInverse)
-                "TransformPoint",&NanoVGComponent::TransformPoint)
-                "DegToRad",&NanoVGComponent::DegToRad)
-                "RadToDeg",&NanoVGComponent::RadToDeg)
-                "CreateImage",&NanoVGComponent::CreateImage)
-                "CreateImageMem",&NanoVGComponent::CreateImageMem)
-                "CreateImageRGBA",&NanoVGComponent::CreateImageRGBA)
-                "UpdateImage",&NanoVGComponent::UpdateImage)
-                "ImageSize",&NanoVGComponent::ImageSize)
-                "DeleteImage",&NanoVGComponent::DeleteImage)
-                "LinearGradient",&NanoVGComponent::LinearGradient)
-                "BoxGradient",&NanoVGComponent::BoxGradient)
-                "RadialGradient",&NanoVGComponent::RadialGradient)
-                "ImagePattern",&NanoVGComponent::ImagePattern)
-                "Scissor",&NanoVGComponent::Scissor)
-                "IntersectScissor",&NanoVGComponent::IntersectScissor)
-                "ResetScissor",&NanoVGComponent::ResetScissor)
-                "BeginPath",&NanoVGComponent::BeginPath)
-                "MoveTo",&NanoVGComponent::MoveTo)
-                "LineTo",&NanoVGComponent::LineTo)
-                "BezierTo",&NanoVGComponent::BezierTo)
-                "QuadTo",&NanoVGComponent::QuadTo)
-                "ArcTo",&NanoVGComponent::ArcTo)
-                "ClosePath",&NanoVGComponent::ClosePath)
-                "PathWinding",&NanoVGComponent::PathWinding)
-                "Arc",&NanoVGComponent::Arc)
-                "Rect",&NanoVGComponent::Rect)
-                "RoundedRect",&NanoVGComponent::RoundedRect)
-                "RoundedRectVarying",&NanoVGComponent::RoundedRectVarying)
-                "Ellipse",&NanoVGComponent::Ellipse)
-                "Circle",&NanoVGComponent::Circle)
-                "Fill",&NanoVGComponent::Fill)
-                "Stroke",&NanoVGComponent::Stroke)
-                "CreateFont",&NanoVGComponent::CreateFont)
-                "CreateFontMem",&NanoVGComponent::CreateFontMem)
-                "FindFont",&NanoVGComponent::FindFont)
-                "AddFallbackFontId",&NanoVGComponent::AddFallbackFontId)
-                "AddFallbackFont",&NanoVGComponent::AddFallbackFont)
-                "FontSize",&NanoVGComponent::FontSize)
-                "FontBlur",&NanoVGComponent::FontBlur)
-                "TextLetterSpacing",&NanoVGComponent::TextLetterSpacing)
-                "TextLineHeight",&NanoVGComponent::TextLineHeight)
-                "TextAlign",&NanoVGComponent::TextAlign)
-                "FontFaceId",&NanoVGComponent::FontFaceId)
-                "FontFace",&NanoVGComponent::FontFace)
-                "Text",&NanoVGComponent::Text)
-                "TextBox",&NanoVGComponent::TextBox)
-                "TextBounds",&NanoVGComponent::TextBounds)
-                "TextBoxBounds",&NanoVGComponent::TextBoxBounds)
-                "TextGlyphPositions",&NanoVGComponent::TextGlyphPositions)
-                "TextMetrics",&NanoVGComponent::TextMetrics)
-                "TextBreakLines",&NanoVGComponent::TextBreakLines)
-                */
-    }
-
     void LuaComponent::exposeGLM()
     {
         debugRegisteringClass("GLM");
@@ -1100,7 +935,6 @@ namespace Dream
         exposeLightInstance();
         exposeShaderInstance();
         exposeSpriteInstance();
-        exposeNanoVG();
         exposeGLM();
         // Input
         exposeGainput();

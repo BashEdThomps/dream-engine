@@ -63,11 +63,9 @@ namespace Dream
         void setInputMap(gainput::InputMap*) override;
 
 
-        bool updateNanoVG() override;
 
         bool executeScriptInit  (SceneObjectRuntime*) override;
         bool executeScriptUpdate(SceneObjectRuntime*) override;
-        bool executeScriptNanoVG(SceneObjectRuntime*) override;
         bool executeScriptInput (SceneObjectRuntime*) override;
         bool executeScriptEvent (SceneObjectRuntime*) override;
 
@@ -99,7 +97,6 @@ namespace Dream
         void exposeSceneObjectRuntime() override;
         void exposeTime() override;
         void exposeTransform3D() override;
-        void exposeNanoVG() override;
         void exposeGLM() override;
     }; // End of LuaComponent
 

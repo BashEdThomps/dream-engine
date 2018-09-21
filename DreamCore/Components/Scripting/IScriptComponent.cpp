@@ -31,7 +31,6 @@
 #include "../Graphics/Camera.h"
 #include "../Graphics/Font/FontInstance.h"
 #include "../Graphics/GraphicsComponent.h"
-#include "../Graphics/NanoVGComponent.h"
 #include "../Graphics/Light/LightInstance.h"
 #include "../Graphics/Shader/ShaderInstance.h"
 #include "../Graphics/Sprite/SpriteInstance.h"
@@ -43,7 +42,6 @@
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../Utilities/Math.h"
-#include "../../../NanoVG/src/nanovg.h"
 
 
 namespace Dream
