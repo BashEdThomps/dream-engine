@@ -55,6 +55,7 @@ const vector<int> MainWindowController::mKeysPassedToWindow =
 MainWindowController::MainWindowController
 (QWidget *parent)
     : QMainWindow(parent),
+      LuaPrintListener(),
       ui(new Ui::MainWindow),
       mProjectDefinitionHandle(nullptr),
       mProjectDirectoryModelHandle(nullptr),
@@ -78,6 +79,9 @@ MainWindowController::MainWindowController
     setActionsEnabled_Scene_Playback(false);
     setActionsEnabled_Scene_Modification(false);
     setActionEnabled_File_Save(false);
+    LuaComponent::AddPrintListener(this);
+    ui->leftRightSplitter->setStretchFactor(1,4);
+    ui->previewDebugSplitter->setStretchFactor(1,1);
 }
 
 void MainWindowController::setupMenu_Debug()
@@ -93,8 +97,6 @@ void MainWindowController::setupMenu_Debug()
 
 void MainWindowController::setupUiFeatures()
 {
-    ui->dataGLSplitter->setStretchFactor(1,10);
-
     ui->scenegraphPropertiesSplitter->setStretchFactor(3,1);
 
     mVolumeSlider.setOrientation(Qt::Horizontal);
@@ -691,7 +693,7 @@ MainWindowController::setupMenu_Asset_NewDefinition
 
 void
 MainWindowController::setupGL
-(QWidget *parent)
+(QWidget*)
 {
     QSurfaceFormat glFormat;
     glFormat.setVersion( 3, 2 );
@@ -705,6 +707,13 @@ MainWindowController::~MainWindowController
 ()
 {
     delete ui;
+}
+
+void
+MainWindowController::onPrint
+(string str)
+{
+   ui->debugOutputTextEdit->appendPlainText(QString::fromStdString(str));
 }
 
 QAction*
@@ -888,13 +897,10 @@ void MainWindowController::onScenegraphTreeExpandRequested()
     ui->scenegraphTreeView->expandAll();
 }
 
-
 void
 MainWindowController::keyPressEvent
 (QKeyEvent* ke)
 {
-    //qDebug() << "MainWindow:" << ke->key() << "pressed";
-
     if (shouldPassKey(ke->key()))
     {
         mWindowComponentHandle->keyPressEvent(ke);
@@ -905,24 +911,10 @@ MainWindowController::keyPressEvent
     }
 }
 
-bool
-MainWindowController::shouldPassKey
-(int key)
-{
-    return std::find
-            (
-                begin(mKeysPassedToWindow),
-                end(mKeysPassedToWindow),
-                key
-                ) != end(mKeysPassedToWindow);
-}
-
 void
 MainWindowController::keyReleaseEvent
 (QKeyEvent* ke)
 {
-    //qDebug() << "MainWindow:" << ke->key() << " released";
-
     if (shouldPassKey(ke->key()))
     {
         mWindowComponentHandle->keyReleaseEvent(ke);
@@ -932,6 +924,18 @@ MainWindowController::keyReleaseEvent
         QMainWindow::keyReleaseEvent(ke);
     }
 }
+
+bool
+MainWindowController::shouldPassKey
+(int key)
+{
+    return std::find(
+        begin(mKeysPassedToWindow),
+        end(mKeysPassedToWindow),
+        key
+    ) != end(mKeysPassedToWindow);
+}
+
 
 CreateAssetDefinitionAction::CreateAssetDefinitionAction
 (QString type, QObject* parent)

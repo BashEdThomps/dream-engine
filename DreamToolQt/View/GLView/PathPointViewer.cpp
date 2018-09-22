@@ -113,32 +113,44 @@ PathPointViewer::updateVertexBuffer
     }
 }
 
-bool PathPointViewer::getDrawTangent()
+bool
+PathPointViewer::getDrawTangent
+()
 {
     return mDrawTangent;
 }
 
-void PathPointViewer::setDrawTangent(bool drawTangent)
+void
+PathPointViewer::setDrawTangent
+(bool drawTangent)
 {
     mDrawTangent = drawTangent;
 }
 
-void PathPointViewer::clearRuntime()
+void
+PathPointViewer::clearRuntime
+()
 {
-   mPathDefinition = nullptr;
+    mPathDefinition = nullptr;
 }
 
-size_t PathPointViewer::getTangentIndex()
+size_t
+PathPointViewer::getTangentIndex
+()
 {
     return mTangentIndex;
 }
 
-void PathPointViewer::setTangentIndex( size_t& tangentIndex)
+void
+PathPointViewer::setTangentIndex
+(size_t& tangentIndex)
 {
     mTangentIndex = tangentIndex;
 }
 
-void PathPointViewer::generateSpline()
+void
+PathPointViewer::generateSpline
+()
 {
     if (mPathInstance == nullptr)
     {
@@ -304,17 +316,17 @@ void
 PathPointViewer::draw
 ()
 {
+    auto log = spdlog::get("PathPointViewer");
     if (!mVisible)
     {
+        log->critical("Not visible");
         return;
     }
 
-    auto log = spdlog::get("PathPointViewer");
     if (!mVertexBuffer.empty())
     {
         preRender();
-        glLineWidth(4);
-        log->info("Drawing all - {} lines", mVertexBuffer.size()/2);
+        log->critical("Drawing all - {} lines", mVertexBuffer.size()/2);
 
         // Enable shader program
         useShader();
@@ -354,7 +366,7 @@ PathPointViewer::draw
             }
             else
             {
-                mat4 modelMatrix;
+                mat4 modelMatrix(1.0);
                 glUniformMatrix4fv(modelUniform, 1, GL_FALSE, value_ptr(modelMatrix));
             }
         }
@@ -386,7 +398,6 @@ PathPointViewer::draw
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         postRender();
-        glLineWidth(1);
     }
 }
 
@@ -474,18 +485,24 @@ PathPointViewer::initShader
     glDeleteShader(fragmentShader);
 }
 
-void PathPointViewer::onUpdateRequested()
+void
+PathPointViewer::onUpdateRequested
+()
 {
     updateVertexBuffer();
 }
 
-void PathPointViewer::onSelectionChanged(int index)
+void
+PathPointViewer::onSelectionChanged
+(int index)
 {
     mSelectedCp = index;
     updateVertexBuffer();
 }
 
-void PathPointViewer::onTangentIndexChanged(int val)
+void
+PathPointViewer::onTangentIndexChanged
+(int val)
 {
     auto log = spdlog::get("PathPointViewer");
     log->critical("onTangentIndexChanged {}",val);
@@ -493,7 +510,9 @@ void PathPointViewer::onTangentIndexChanged(int val)
     updateVertexBuffer();
 }
 
-void PathPointViewer::onTangentVisibilityChanged(bool draw)
+void
+PathPointViewer::onTangentVisibilityChanged
+(bool draw)
 {
     auto log = spdlog::get("PathPointViewer");
     log->critical("onTangentVisibilityChanged {}",draw);
@@ -501,7 +520,17 @@ void PathPointViewer::onTangentVisibilityChanged(bool draw)
     updateVertexBuffer();
 }
 
-void PathPointViewer::setPathVisible(bool visible)
+void
+PathPointViewer::setPathVisible
+(bool visible)
 {
     mVisible = visible;
+}
+
+bool
+PathPointViewer::getPathVisible
+()
+const
+{
+   return mVisible;
 }

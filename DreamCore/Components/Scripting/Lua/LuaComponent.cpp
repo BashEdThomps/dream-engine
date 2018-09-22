@@ -53,6 +53,29 @@ using std::cout;
 using std::cerr;
 using std::string;
 
+static int l_my_print(lua_State* L)
+{
+    int nargs = lua_gettop(L);
+    stringstream stream;
+    for (int i=1; i <= nargs; ++i)
+    {
+        stream << lua_tostring(L, i);
+    }
+
+    string out = stream.str();
+    for (auto listener : Dream::LuaComponent::PrintListeners)
+    {
+        listener->onPrint(out);
+    }
+    return 0;
+}
+
+static const struct luaL_Reg printlib [] =
+{
+  {"print", l_my_print},
+  {nullptr, nullptr} /* end of array */
+};
+
 namespace Dream
 {
     LuaComponent::LuaComponent
@@ -88,6 +111,12 @@ namespace Dream
             sol::lib::math,
             sol::lib::string
         );
+        // Register print callback
+
+        lua_getglobal(mState, "_G");
+        luaL_setfuncs(mState, printlib, 0);
+        lua_pop(mState, 1);
+
         log->info( "Got a sol state" );
         exposeAPI();
         return true;
@@ -947,5 +976,15 @@ namespace Dream
         exposePhysicsComponent();
         exposePhysicsObjectInstance();
     }
+
+    vector<LuaPrintListener*> LuaComponent::PrintListeners;
+
+    void LuaComponent::AddPrintListener(LuaPrintListener* listener)
+    {
+        PrintListeners.push_back(listener);
+    }
+
+    LuaPrintListener::~LuaPrintListener(){}
+
 } // End of Dream
 

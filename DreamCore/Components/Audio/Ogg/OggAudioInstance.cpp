@@ -109,11 +109,4 @@ namespace Dream
         return true;
     }
 
-    void
-    OggAudioInstance::loadExtraAttributes
-    (nlohmann::json json)
-    {
-
-    }
-
 } // End of Dream

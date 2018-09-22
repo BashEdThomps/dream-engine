@@ -1,10 +1,11 @@
 #pragma once
 
 #include <DreamCore.h>
-#include "../View/GLView/Grid.h"
-#include "../View/GLView/SelectionHighlighter.h"
-#include "../View/GLView/RelationshipTree.h"
-#include "../View/GLView/PathPointViewer.h"
+#include "GLView/Grid.h"
+#include "GLView/SelectionHighlighter.h"
+#include "GLView/RelationshipTree.h"
+#include "GLView/PathPointViewer.h"
+#include "WindowInputState.h"
 
 
 #include <QOpenGLWidget>
@@ -15,31 +16,7 @@
 using namespace Dream;
 using std::shared_ptr;
 
-class WindowInputState
-{
-public:
-    WindowInputState();
 
-    int  mouseLastX;
-    int  mouseLastY;
-
-    int mouseWheelLastX;
-    int mouseWheelLastY;
-
-    bool shiftPressed;
-    bool altPressed;
-    bool ctrlPressed;
-
-    bool wPressed;
-    bool aPressed;
-    bool sPressed;
-    bool dPressed;
-
-    bool upPressed;
-    bool downPressed;
-    bool leftPressed;
-    bool rightPressed;
-};
 
 class QOpenGLWindowComponent : public QOpenGLWidget, public IWindowComponent
 {

@@ -242,4 +242,5 @@ private: // Variables
     MaterialShaderFormController mMaterialShaderTableController;
     PathEditorFormController mPathEditorFormController;
     void connectPathEditorSignals();
+    int mLastVolume;
 };

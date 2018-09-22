@@ -48,9 +48,21 @@ namespace Dream
     class SceneObjectRuntime;
     class Event;
 
+    class LuaPrintListener
+    {
+    public:
+        virtual ~LuaPrintListener();
+        virtual void onPrint(string) = 0;
+    };
+
+
     class LuaComponent : public IScriptComponent
     {
     public: // Methods
+
+        static vector<LuaPrintListener*> PrintListeners;
+        static void AddPrintListener(LuaPrintListener* listener);
+
         LuaComponent(ProjectRuntime* project, ScriptCache* cache);
        ~LuaComponent() override;
 
@@ -61,8 +73,6 @@ namespace Dream
         void exposeAPI() override;
         void debugRegisteringClass(string) override;
         void setInputMap(gainput::InputMap*) override;
-
-
 
         bool executeScriptInit  (SceneObjectRuntime*) override;
         bool executeScriptUpdate(SceneObjectRuntime*) override;

@@ -17,6 +17,7 @@ namespace Dream
         setLooping(false);
         setBuffer(0);
         setSource(0);
+        loadExtraAttributes(json::object());
     }
 
     void
@@ -24,6 +25,7 @@ namespace Dream
     (bool looping)
     {
         mLooping = looping;
+        alSourcei(mSource, AL_LOOPING, mLooping ? 1 : 0);
     }
 
     bool
@@ -116,4 +118,12 @@ namespace Dream
     {
         return mStatus;
     }
+
+    void
+    AudioInstance::loadExtraAttributes
+    (nlohmann::json)
+    {
+        mLooping = dynamic_cast<AudioDefinition*>(mDefinition)->getLoop();
+    }
+
 } // End of Dream

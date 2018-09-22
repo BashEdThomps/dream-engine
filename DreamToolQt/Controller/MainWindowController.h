@@ -109,13 +109,15 @@ public:
     IAssetDefinition* mItemHandle;
 };
 
-class MainWindowController : public QMainWindow
+class MainWindowController : public QMainWindow, public LuaPrintListener
 {
     Q_OBJECT
 public:
     explicit MainWindowController(QWidget *parent = nullptr);
     ~MainWindowController( ) override;
     Ui::MainWindow *ui;
+
+    void onPrint(std::string) override;
 
     QOpenGLWindowComponent* getWindowComponent();
 

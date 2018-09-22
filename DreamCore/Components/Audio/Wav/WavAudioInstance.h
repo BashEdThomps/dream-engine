@@ -54,7 +54,6 @@ namespace Dream
         long getFileSize(FILE* inFile);
 
         bool load(string) override;
-        void loadExtraAttributes(json) override;
 
     }; // End WavAudioInstance
 

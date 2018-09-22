@@ -38,6 +38,7 @@ public:
 
     vector<vec3> generateSplinePoints();
     void setPathVisible(bool visible);
+    bool getPathVisible() const;
 
     size_t getTangentIndex() ;
     void setTangentIndex( size_t& tangentIndex);

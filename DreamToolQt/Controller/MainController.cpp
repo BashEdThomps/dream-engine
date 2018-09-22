@@ -53,7 +53,8 @@ MainController::MainController
       mSelectedAssetDefinitionHandle(nullptr),
       mSelectedSceneDefinitionHandle(nullptr),
       mSelectedSceneObjectDefinitionHandle(nullptr),
-      mLastDirectory(QDir::home())
+      mLastDirectory(QDir::home()),
+      mLastVolume(100)
 {
     auto log = spdlog::get("MainController");
 
@@ -873,7 +874,12 @@ MainController::onAction_Scene_Play
     SceneDefinition* sceneDefinitionHandle = mDreamProjectModel->getSelectedSceneDefinition();
     if (sceneDefinitionHandle)
     {
-        mDreamProjectModel->startSceneRuntimeFromDefinition(sceneDefinitionHandle);
+        auto result = mDreamProjectModel->startSceneRuntimeFromDefinition(sceneDefinitionHandle);
+        if(result)
+        {
+
+            onMainVolumeChanged(mLastVolume);
+        }
     }
     else
     {
@@ -1520,6 +1526,7 @@ MainController::onCreateNewAssetDefinition
 void MainController::onMainVolumeChanged(int vol)
 {
    auto log = spdlog::get("MainController");
+   mLastVolume = vol;
    if (mDreamProjectModel != nullptr)
    {
        auto project = mDreamProjectModel->getProject();
@@ -2188,7 +2195,6 @@ MainController::onAssetDefinitionProperty_PathList
     log->info("Opening PathList Widget");
     mPathEditorFormController.setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
     mPathPointViewer->setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
-    //mPathEditorFormController.getAllUpInYourFace();
     mMainWindowHandle->addRightDockWidget(&mPathEditorFormController);
 }
 
@@ -2285,7 +2291,6 @@ MainController::onSceneObjectProperty_RemoveAsset
                 sodHandle->getNameAndUuidString()
                 );
     sodHandle->removeAssetDefinitionFromLoadQueue(dynamic_cast<IAssetDefinition*>(adHandle));
-
     mPropertiesModel->forceDataChanged();
     mMainWindowHandle->getPropertiesTreeView()->update();
 }
@@ -2302,6 +2307,5 @@ MainController::onSceneObjectProperty_RemoveChild
                 );
     sodHandle->removeChildSceneObjectDefinition(dynamic_cast<SceneObjectDefinition*>(sodChildHandle));
     onUI_ScenegraphUpdated();
-
     mPropertiesModel->forceDataChanged();
 }

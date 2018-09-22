@@ -17,6 +17,8 @@ using Dream::AssimpCache;
 using Dream::Project;
 using std::unique_ptr;
 
+class WindowInputState;
+
 class PathEditorFormController : public QWidget
 {
     Q_OBJECT
@@ -27,6 +29,9 @@ public:
     void setProjectPath(QString projectPath);
     void setPathDefinition(PathDefinition* def);
     void getAllUpInYourFace();
+
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
 public slots:
     void onNumberOfTangentsChanged(int num);

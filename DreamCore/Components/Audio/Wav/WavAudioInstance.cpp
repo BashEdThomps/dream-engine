@@ -140,11 +140,4 @@ namespace Dream
         return fileSize;
     }
 
-    void
-    WavAudioInstance::loadExtraAttributes
-    (json json)
-    {
-        return;
-    }
-
 } // End of Dream

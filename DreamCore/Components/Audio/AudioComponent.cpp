@@ -234,6 +234,8 @@ namespace Dream
                     static_cast<ALint>(audioAsset->getBuffer())
                 );
                 setSourcePosision(audioAsset->getSource(), tx);
+
+                alSourcei(audioAsset->getSource(), AL_LOOPING, audioAsset->isLooping() ? 1 : 0 );
             }
             mPlayQueue.push_back(audioAsset);
             log->info("Pushed audio asset to play queue");

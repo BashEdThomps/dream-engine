@@ -51,6 +51,10 @@ namespace Dream
         void play();
         void pause();
         void stop();
+
+        // IAssetInstance interface
+    public:
+        void loadExtraAttributes(nlohmann::json) override;
     };
 
 } // End of Dream

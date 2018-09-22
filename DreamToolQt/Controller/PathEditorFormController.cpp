@@ -3,6 +3,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <DreamCore.h>
 #include <QMessageBox>
+#include "../View/WindowInputState.h"
 
 PathEditorFormController::PathEditorFormController
 (QWidget *parent)
@@ -160,4 +161,11 @@ PathEditorFormController::closeEvent
 {
     emit notifyCloseEvent();
     QWidget::closeEvent(event);
+}
+
+void
+PathEditorFormController::processInput
+(WindowInputState* state)
+{
+
 }

@@ -84,7 +84,8 @@ SOURCES += \
     Controller/MaterialShaderFormController.cpp \
     View/GLView/PathPointViewer.cpp \
     Model/PathEditorTableModel.cpp \
-    Controller/PathEditorFormController.cpp
+    Controller/PathEditorFormController.cpp \
+    View/WindowInputState.cpp
 
 HEADERS  += \
     \
@@ -142,7 +143,8 @@ HEADERS  += \
     Controller/MaterialShaderFormController.h \
     View/GLView/PathPointViewer.h \
     Controller/PathEditorFormController.h \
-    Model/PathEditorTableModel.h
+    Model/PathEditorTableModel.h \
+    View/WindowInputState.h
 
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
