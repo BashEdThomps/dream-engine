@@ -152,18 +152,8 @@ SceneObjectPropertiesItem::data
     {
         case SCENE_OBJECT_PROPERTY_ALWAYS_DRAW:
             return QVariant(mSceneObjectDefinitionHandle->getAlwaysDraw());
-
-        case SCENE_OBJECT_PROPERTY_CHILD:
-            break;
         case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
             return QVariant(QString::fromStdString(Constants::getAssetTypeReadableNameFromString(getTargetAssetDefinitionHandle()->getType())));
-
-        case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
-            break;
-        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
-            break;
-        case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
-            break;
         case SCENE_OBJECT_PROPERTY_UUID:
             return QString::fromStdString(mSceneObjectDefinitionHandle->getUuid());
         case SCENE_OBJECT_PROPERTY_NAME:
@@ -196,6 +186,13 @@ SceneObjectPropertiesItem::data
             return QVariant(mSceneObjectDefinitionHandle->followsCamera());
         case SCENE_OBJECT_PROPERTY_STATIC:
             return QVariant(mSceneObjectDefinitionHandle->getStatic());
+
+        case SCENE_OBJECT_PROPERTY_CHILD:
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_CHILD_LIST:
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION_LIST:
         case SCENE_OBJECT_PROPERTY_NONE:
             return QVariant();
 

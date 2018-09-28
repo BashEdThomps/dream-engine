@@ -163,16 +163,6 @@ const
     SceneObjectPropertiesItem* sopItem = static_cast<SceneObjectPropertiesItem*>(index.internalPointer());
     switch (sopItem->getProperty())
     {
-        case SCENE_OBJECT_PROPERTY_CHILD:
-            break;
-        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
-            break;
-        case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
-            break;
-        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
-            break;
-        case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
-            break;
         case SCENE_OBJECT_PROPERTY_UUID:
         case SCENE_OBJECT_PROPERTY_NAME:
             model->setData(index, static_cast<QLineEdit*>(editor)->text());
@@ -198,7 +188,15 @@ const
         case SCENE_OBJECT_PROPERTY_STATIC:
             model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
             break;
+
+        case SCENE_OBJECT_PROPERTY_CHILD:
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION:
+        case SCENE_OBJECT_PROPERTY_TRANSLATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_ORIENTATION_CAPTURE:
+        case SCENE_OBJECT_PROPERTY_SCALE_CAPTURE:
         case SCENE_OBJECT_PROPERTY_NONE:
+        case SCENE_OBJECT_PROPERTY_CHILD_LIST:
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION_LIST:
             break;
     }
 }

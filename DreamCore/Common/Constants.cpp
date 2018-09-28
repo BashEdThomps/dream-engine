@@ -319,6 +319,7 @@ namespace Dream
 
     // Audio ====================================================================
     const size_t Constants::AUDIO_BUFFER_SIZE = 32768;
+    const string Constants::ASSET_ATTR_SPECTRUM_ANALYSER = "spectrum_analyser";
 
     // Window ===================================================================
     const int Constants::DEFAULT_SCREEN_WIDTH  = 1280;

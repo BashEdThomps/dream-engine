@@ -771,9 +771,11 @@ namespace Dream
         stateView.new_usertype<Event>("Event",
             sol::constructors<Event(SceneObjectRuntime*,string)>(),
             "getSender",&Event::getSender,
+
             "getType",&Event::getType,
-            "getAttribute",&Event::getAttribute,
-            "getData",&Event::getData
+
+            "getString",&Event::getString,
+            "setString",&Event::setString
         );
     }
 

@@ -129,6 +129,7 @@ namespace Dream
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
         const static string ASSET_FORMAT_SPRITE_IMAGE_READABLE;
+
         // Scene ================================================================
         const static string SCENE_NOTES;
         const static string SCENE_ROOT_SCENE_OBJECT;
@@ -294,6 +295,7 @@ namespace Dream
 
         // Audio ================================================================
         const static size_t AUDIO_BUFFER_SIZE;
+        const static string ASSET_ATTR_SPECTRUM_ANALYSER;
 
         // Window ===============================================================
         const static int DEFAULT_SCREEN_WIDTH;

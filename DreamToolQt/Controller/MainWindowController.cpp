@@ -31,6 +31,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include "../Model/ProjectDirectoryModel.h"
+#include "PathEditorFormController.h"
+#include "AudioToolsFormController.h"
 
 using std::pair;
 using std::begin;
@@ -56,11 +58,12 @@ MainWindowController::MainWindowController
 (QWidget *parent)
     : QMainWindow(parent),
       LuaPrintListener(),
-      ui(new Ui::MainWindow),
+      mUi(new Ui::MainWindow),
       mProjectDefinitionHandle(nullptr),
       mProjectDirectoryModelHandle(nullptr),
       mTemplatesModelHandle(nullptr),
-      mWindowComponentHandle(nullptr)
+      mWindowComponentHandle(nullptr),
+      mPathEditorFormControllerHandle(nullptr)
 {
     auto log = spdlog::get("MainWindowController");
     if (log == nullptr)
@@ -70,7 +73,7 @@ MainWindowController::MainWindowController
 
     log->info("Constructing");
 
-    ui->setupUi(this);
+    mUi->setupUi(this);
     setupUiFeatures();
 
     setupGL(parent);
@@ -80,24 +83,24 @@ MainWindowController::MainWindowController
     setActionsEnabled_Scene_Modification(false);
     setActionEnabled_File_Save(false);
     LuaComponent::AddPrintListener(this);
-    ui->leftRightSplitter->setStretchFactor(1,4);
-    ui->previewDebugSplitter->setStretchFactor(1,1);
+    //mUi->leftRightSplitter->setStretchFactor(1,4);
+    //mUi->previewDebugSplitter->setStretchFactor(1,1);
 }
 
 void MainWindowController::setupMenu_Debug()
 {
-    connect(ui->actionLogLevelTrace,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
-    connect(ui->actionLogLevelDebug,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
-    connect(ui->actionLogLevelInfo,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
-    connect(ui->actionLogLevelWarn,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
-    connect(ui->actionLogLevelError,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
-    connect(ui->actionLogLevelCritical,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
-    connect(ui->actionLogLevelOff,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(mUi->actionLogLevelTrace,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(mUi->actionLogLevelDebug,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(mUi->actionLogLevelInfo,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(mUi->actionLogLevelWarn,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(mUi->actionLogLevelError,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(mUi->actionLogLevelCritical,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
+    connect(mUi->actionLogLevelOff,SIGNAL(triggered(bool)),this,SLOT(onMenu_Debug_LogLevelChanged(bool))) ;
 }
 
 void MainWindowController::setupUiFeatures()
 {
-    ui->scenegraphPropertiesSplitter->setStretchFactor(3,1);
+    mUi->scenegraphPropertiesSplitter->setStretchFactor(3,1);
 
     mVolumeSlider.setOrientation(Qt::Horizontal);
     mVolumeSlider.setMinimum(0);
@@ -111,41 +114,65 @@ void MainWindowController::setupUiFeatures()
     QLabel* volLabel = new QLabel();
     volLabel->setPixmap(volIcon->pixmap(QSize(16,16)));
     volLabel->setFixedSize(QSize(16,16));
-    ui->statusBar->addPermanentWidget(volLabel,1);
-    ui->statusBar->addPermanentWidget(&mVolumeSlider,1);
+    mUi->statusBar->addPermanentWidget(volLabel,1);
+    mUi->statusBar->addPermanentWidget(&mVolumeSlider,1);
     setupEditorTabCloseButtonSignal();
 
-    ui->scenegraphTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    auto browserTitle = new QLabel("Project Browser");
+    browserTitle->setMinimumHeight(24);
+    mUi->projectBrowserDockWidget->setTitleBarWidget(browserTitle);
+
+    auto luaDebugTitle = new QLabel("Lua Log");
+    luaDebugTitle->setMinimumHeight(24);
+    mUi->luaDebugDockWidget->setTitleBarWidget(luaDebugTitle);
+
+    mUi->scenegraphTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(
-        ui->scenegraphTreeView,
+        mUi->scenegraphTreeView,
         SIGNAL(customContextMenuRequested(const QPoint &)),
         this,
         SLOT(onScenegraphContextMenuRequested(const QPoint &))
     );
-    ui->assetDefinitionTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    mUi->assetDefinitionTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(
-        ui->assetDefinitionTreeView,
+        mUi->assetDefinitionTreeView,
         SIGNAL(customContextMenuRequested(const QPoint &)),
         this,
         SLOT(onAsseetDefinitionContextMenuRequested(const QPoint &))
     );
     connect(
-        ui->assetDefinitionTreeView,
+        mUi->assetDefinitionTreeView,
         SIGNAL(activated(const QModelIndex&)),
         this,
         SLOT(onAssetDefinitionTreeViewActivated(const QModelIndex&))
     );
     connect(
-        ui->scenegraphTreeView,
+        mUi->scenegraphTreeView,
         SIGNAL(activated(const QModelIndex&)),
         this,
         SLOT(onScenegraphTreeViewActivated(const QModelIndex&))
     );
     connect(
-        ui->propertiesTreeView,
+        mUi->propertiesTreeView,
         SIGNAL(activated(const QModelIndex&)),
         this,
         SLOT(onPropertiesTreeViewActivated(const QModelIndex&))
+    );
+
+    connect
+    (
+        mUi->actionLuaLog,
+        SIGNAL(triggered(bool)),
+        this,
+        SLOT(onActionLuaLogTriggered(bool))
+    );
+
+    connect
+    (
+        mUi->actionScripting,
+        SIGNAL(triggered(bool)),
+        this,
+        SLOT(onActionScriptingTriggered(bool))
     );
 }
 
@@ -155,12 +182,12 @@ MainWindowController::onScenegraphContextMenuRequested
 {
     auto log = spdlog::get("MainWindowController");
     log->info("SceneGraph Context Menu Requested {},{}",point.x(),point.y());
-    QModelIndex index = ui->scenegraphTreeView->indexAt(point);
+    QModelIndex index = mUi->scenegraphTreeView->indexAt(point);
     if (index.isValid())
     {
         auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
         auto contextMenu = createScenegraphTreeContextMenu(item);
-        contextMenu->exec(ui->scenegraphTreeView->mapToGlobal(point));
+        contextMenu->exec(mUi->scenegraphTreeView->mapToGlobal(point));
     }
 }
 
@@ -171,12 +198,12 @@ MainWindowController::onAsseetDefinitionContextMenuRequested
 
     auto log = spdlog::get("MainWindowController");
     log->info("Asset Definition Context Menu Requested {},{}",point.x(),point.y());
-    QModelIndex index = ui->assetDefinitionTreeView->indexAt(point);
+    QModelIndex index = mUi->assetDefinitionTreeView->indexAt(point);
     if (index.isValid())
     {
         auto item = static_cast<AssetDefinitionTreeItem*>(index.internalPointer());
         auto contextMenu = createAssetDefinitionTreeContextMenu(item);
-        contextMenu->exec(ui->assetDefinitionTreeView->mapToGlobal(point));
+        contextMenu->exec(mUi->assetDefinitionTreeView->mapToGlobal(point));
     }
 }
 
@@ -531,6 +558,25 @@ MainWindowController::onMenu_Debug_LogLevelChanged
     spdlog::set_level(spdlog::level::from_str(level.toLower().toStdString()));
 }
 
+void
+MainWindowController::onActionLuaLogTriggered
+(bool checked)
+{
+    mUi->luaDebugDockWidget->toggleViewAction()->triggered(checked);
+}
+
+void
+MainWindowController::onActionScriptingTriggered
+(bool checked)
+{
+    emit notifyActionScriptingTriggered(checked);
+}
+
+void MainWindowController::setPathEditorFormControllerHandle(PathEditorFormController* pathEditorFormControllerHandle)
+{
+    mPathEditorFormControllerHandle = pathEditorFormControllerHandle;
+}
+
 void MainWindowController::setTemplatesModelHandle(TemplatesModel* templatesModelHandle)
 {
     mTemplatesModelHandle = templatesModelHandle;
@@ -578,11 +624,11 @@ void
 MainWindowController::setActionsEnabled_Scene_Modification
 (bool enabled)
 {
-    ui->actionSceneMenuNewScene->setEnabled(enabled);
-    ui->actionSceneNewSceneObject->setEnabled(enabled);
-    ui->actionSceneRemoveScene->setEnabled(enabled);
+    mUi->actionSceneMenuNewScene->setEnabled(enabled);
+    mUi->actionSceneNewSceneObject->setEnabled(enabled);
+    mUi->actionSceneRemoveScene->setEnabled(enabled);
 
-    ui->actionAssetMenuAddAssetToSelectedSceneObject->setEnabled(enabled);
+    mUi->actionAssetMenuAddAssetToSelectedSceneObject->setEnabled(enabled);
 
     mMenu_Asset_NewDefinition->setEnabled(enabled);
     setActionEnabled_Debug_DumpProjectDefinitionJson(enabled);
@@ -592,16 +638,16 @@ void
 MainWindowController::setActionsEnabled_Scene_Playback
 (bool enabled)
 {
-    ui->actionPlay->setEnabled(enabled);
-    ui->actionStop->setEnabled(enabled);
-    ui->actionReload->setEnabled(enabled);
+    mUi->actionPlay->setEnabled(enabled);
+    mUi->actionStop->setEnabled(enabled);
+    mUi->actionReload->setEnabled(enabled);
 }
 
 void
 MainWindowController::setActionEnabled_File_Open
 (bool enabled)
 {
-    ui->actionOpen->setEnabled(enabled);
+    mUi->actionOpen->setEnabled(enabled);
 }
 
 QAction*
@@ -615,35 +661,35 @@ QAction*
 MainWindowController::getAction_Scene_NewScene
 ()
 {
-    return ui->actionSceneMenuNewScene;
+    return mUi->actionSceneMenuNewScene;
 }
 
 QAction*
 MainWindowController::getAction_Scene_NewSceneObject
 ()
 {
-    return ui->actionSceneNewSceneObject;
+    return mUi->actionSceneNewSceneObject;
 }
 
 QAction*
 MainWindowController::getAction_ControlScene
 ()
 {
-    return ui->actionControl;
+    return mUi->actionControl;
 }
 
 QAction*
 MainWindowController::getAction_Asset_AddToSelectedSceneObject
 ()
 {
-    return ui->actionAssetMenuAddAssetToSelectedSceneObject;
+    return mUi->actionAssetMenuAddAssetToSelectedSceneObject;
 }
 
 QAction*
 MainWindowController::getAction_Debug_DumpProjectDefinitionJson
 ()
 {
-    return ui->actionDebug_DumpProjectDefinitionJson;
+    return mUi->actionDebug_DumpProjectDefinitionJson;
 }
 
 void
@@ -651,21 +697,21 @@ MainWindowController::setActionEnabled_Debug_DumpProjectDefinitionJson
 (bool enabled)
 {
 
-    ui->actionDebug_DumpProjectDefinitionJson->setEnabled(enabled);
+    mUi->actionDebug_DumpProjectDefinitionJson->setEnabled(enabled);
 }
 
 void
 MainWindowController::setActionEnabled_File_Save
 (bool enabled)
 {
-    ui->actionSave->setEnabled(enabled);
+    mUi->actionSave->setEnabled(enabled);
 }
 
 void
 MainWindowController::setActionEnabled_File_New
 (bool enabled)
 {
-    ui->actionNew->setEnabled(enabled);
+    mUi->actionNew->setEnabled(enabled);
 }
 
 void
@@ -688,7 +734,7 @@ MainWindowController::setupMenu_Asset_NewDefinition
         mActionMap_Asset_NewDefinition.insert(pair<AssetType,QAction*>(typePair.first, typeAction));
     }
 
-    ui->menuAsset->addMenu(mMenu_Asset_NewDefinition.get());
+    mUi->menuAsset->addMenu(mMenu_Asset_NewDefinition.get());
 }
 
 void
@@ -699,49 +745,49 @@ MainWindowController::setupGL
     glFormat.setVersion( 3, 2 );
     glFormat.setProfile( QSurfaceFormat::CoreProfile );
     glFormat.setSamples(4);
-    mWindowComponentHandle = ui->openGLWidget;
+    mWindowComponentHandle = mUi->openGLWidget;
     mWindowComponentHandle->setFormat(glFormat);
 }
 
 MainWindowController::~MainWindowController
 ()
 {
-    delete ui;
+    delete mUi;
 }
 
 void
 MainWindowController::onPrint
 (string str)
 {
-   ui->debugOutputTextEdit->appendPlainText(QString::fromStdString(str));
+   mUi->debugOutputTextEdit->appendPlainText(QString::fromStdString(str));
 }
 
 QAction*
 MainWindowController::getAction_File_New
 ()
 {
-    return ui->actionNew;
+    return mUi->actionNew;
 }
 
 QAction*
 MainWindowController::getAction_File_Open
 ()
 {
-    return ui->actionOpen;
+    return mUi->actionOpen;
 }
 
 QAction*
 MainWindowController::getAction_File_CloseProject
 ()
 {
-    return ui->actionCloseProject;
+    return mUi->actionCloseProject;
 }
 
 QAction*
 MainWindowController::getAction_View_TogglePhysicsDebug
 ()
 {
-    return ui->actionTogglePhysicsDebug;
+    return mUi->actionTogglePhysicsDebug;
 }
 
 
@@ -749,21 +795,21 @@ QAction*
 MainWindowController::getAction_File_Save
 ()
 {
-    return ui->actionSave;
+    return mUi->actionSave;
 }
 
 QAction*
 MainWindowController::getAction_Scene_Play
 ()
 {
-    return ui->actionPlay;
+    return mUi->actionPlay;
 }
 
 QAction*
 MainWindowController::getAction_Scene_Stop
 ()
 {
-    return ui->actionStop;
+    return mUi->actionStop;
 }
 
 void
@@ -793,56 +839,56 @@ QTreeView*
 MainWindowController::getScenegraphTreeView
 ()
 {
-    return ui->scenegraphTreeView;
+    return mUi->scenegraphTreeView;
 }
 
 QTreeView*
 MainWindowController::getPropertiesTreeView
 ()
 {
-    return ui->propertiesTreeView;
+    return mUi->propertiesTreeView;
 }
 
 QTreeView*
 MainWindowController::getAssetDefinitionTreeView
 ()
 {
-    return ui->assetDefinitionTreeView;
+    return mUi->assetDefinitionTreeView;
 }
 
 QAction*
 MainWindowController::getAction_Preferences
 ()
 {
-    return ui->actionPreferences;
+    return mUi->actionPreferences;
 }
 
 void
 MainWindowController::showStatusBarMessage
 (QString msg)
 {
-    ui->statusBar->showMessage(msg);
+    mUi->statusBar->showMessage(msg);
 }
 
 QAction*
 MainWindowController::getAction_Scene_Reload
 ()
 {
-    return ui->actionReload;
+    return mUi->actionReload;
 }
 
 QAction*
 MainWindowController::getAction_View_ToggleGrid
 ()
 {
-    return ui->actionToggleGrid;
+    return mUi->actionToggleGrid;
 }
 
 QAction*
 MainWindowController::getAction_View_ToggleDebug
 ()
 {
-    return ui->actionToggleDebug;
+    return mUi->actionToggleDebug;
 }
 
 QOpenGLWindowComponent*
@@ -861,7 +907,7 @@ void MainWindowController::addRightDockWidget(QWidget* widget)
 {
     mRightDockWidget.setWidget(widget);
     addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, &mRightDockWidget);
-    //mRightDockWidget.setVisible(true);
+    connect(&mRightDockWidget, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(onRightDockWidgetClosed(QCloseEvent*)));
     mRightDockWidget.show();
 }
 
@@ -894,7 +940,6 @@ void MainWindowController::onScenegraphTreeExpandRequested()
 {
     auto log = spdlog::get("MainWindowController");
     log->trace("onScenegraphTreeExpandRequested()");
-    ui->scenegraphTreeView->expandAll();
 }
 
 void
@@ -903,7 +948,14 @@ MainWindowController::keyPressEvent
 {
     if (shouldPassKey(ke->key()))
     {
-        mWindowComponentHandle->keyPressEvent(ke);
+        if (mPathEditorFormControllerHandle)
+        {
+            mPathEditorFormControllerHandle->keyPressEvent(ke);
+        }
+        else
+        {
+            mWindowComponentHandle->keyPressEvent(ke);
+        }
     }
     else
     {
@@ -917,12 +969,29 @@ MainWindowController::keyReleaseEvent
 {
     if (shouldPassKey(ke->key()))
     {
-        mWindowComponentHandle->keyReleaseEvent(ke);
+        if (mPathEditorFormControllerHandle)
+        {
+            mPathEditorFormControllerHandle->keyReleaseEvent(ke);
+        }
+        else
+        {
+            mWindowComponentHandle->keyReleaseEvent(ke);
+        }
     }
     else
     {
         QMainWindow::keyReleaseEvent(ke);
     }
+}
+
+void
+MainWindowController::onRightTabWidgetClosed
+(QCloseEvent*)
+{
+    auto log = spdlog::get("MainWindowController");
+    log->critical("Right tab widget closed");
+    emit notifyRightTabWidgetClosed();
+    mPathEditorFormControllerHandle = nullptr;
 }
 
 bool
@@ -1055,11 +1124,11 @@ int
 MainWindowController::isEditorTabOpen
 (IAssetDefinition* definition)
 {
-    for (shared_ptr<EditorTabController> tab : mEditorTabForms)
+    for (auto tab : mEditorTabForms)
     {
-       if (tab->getAssetDefinitionHandle() == definition)
+       if (tab->getDefinitionHandle() == definition)
        {
-           return ui->rightTabWidget->indexOf(tab.get())+1;
+           return mUi->rightTabWidget->indexOf(tab.get())+1;
        }
     }
     return -1;
@@ -1080,22 +1149,31 @@ MainWindowController::onEditorTabCloseRequested
 
     auto tabWidget = mEditorTabForms.at(editorIndex);
 
-    if (tabWidget->hasTextChanged())
+    auto type = tabWidget->getDefinitionHandle()->getType();
+    if (type == Constants::ASSET_TYPE_SCRIPT || type == Constants::ASSET_TYPE_SHADER)
     {
-        int response = QMessageBox::question
-        (
-            this,
-            "Save before closing?",
-            "File contents has changed. Do you want to save before closing?"
-        );
-
-        if (response == QMessageBox::Yes)
+        auto tab = dynamic_pointer_cast<TextEditorTabController>(tabWidget);
+        if (tab->hasTextChanged())
         {
-            tabWidget->onSaveButtonClicked(true);
+            int response = QMessageBox::question
+            (
+                this,
+                "Save before closing?",
+                "File contents has changed. Do you want to save before closing?"
+            );
+
+            if (response == QMessageBox::Yes)
+            {
+                tab->onSaveButtonClicked(true);
+            }
         }
     }
+    else if (type == Constants::ASSET_TYPE_AUDIO)
+    {
+        // Audio stuff here
+    }
 
-    ui->rightTabWidget->removeTab(index);
+    mUi->rightTabWidget->removeTab(index);
     mEditorTabForms.erase(mEditorTabForms.begin() + editorIndex);
 }
 
@@ -1103,20 +1181,20 @@ void
 MainWindowController::openScriptEditor
 (ScriptDefinition* scriptDefinitionHandle)
 {
-    auto log = spdlog::get("EditorController");
+    auto log = spdlog::get("MainWindowController");
 
     int index = isEditorTabOpen(scriptDefinitionHandle);
 
     if (index > -1)
     {
-        ui->rightTabWidget->setCurrentIndex(index);
+        mUi->rightTabWidget->setCurrentIndex(index);
         return;
     }
 
     if (mProjectDirectoryModelHandle != nullptr)
     {
         //clearExistingTabs();
-        auto form = make_shared<EditorTabController>
+        auto form = make_shared<TextEditorTabController>
         (
             QString::fromStdString(scriptDefinitionHandle->getFormat()),
             scriptDefinitionHandle,
@@ -1134,10 +1212,10 @@ MainWindowController::openScriptEditor
         QByteArray data = mProjectDirectoryModelHandle->readScriptData(scriptDefinitionHandle);
         form->useLuaHighlighter();
         form->setPlainText(QString(data));
-        form->setAssetDefinitionHandle(scriptDefinitionHandle);
+        form->setDefinitionHandle(scriptDefinitionHandle);
         mEditorTabForms.push_back(form);
 
-        int index = ui->rightTabWidget->addTab
+        int index = mUi->rightTabWidget->addTab
         (
             form.get(),
             QString::fromStdString(scriptDefinitionHandle->getName())
@@ -1145,7 +1223,7 @@ MainWindowController::openScriptEditor
             .arg(QString::fromStdString(Constants::ASSET_FORMAT_SCRIPT_LUA))
         );
 
-        ui->rightTabWidget->setCurrentIndex(index);
+        mUi->rightTabWidget->setCurrentIndex(index);
     }
 }
 
@@ -1155,12 +1233,12 @@ void
 MainWindowController::openShaderEditor
 (ShaderDefinition* shaderDefinitionHandle)
 {
-    auto log = spdlog::get("EditorController");
+    auto log = spdlog::get("MainWindowController");
     int index = isEditorTabOpen(shaderDefinitionHandle);
 
     if (index > -1)
     {
-        ui->rightTabWidget->setCurrentIndex(index);
+        mUi->rightTabWidget->setCurrentIndex(index);
         return;
     }
 
@@ -1169,7 +1247,7 @@ MainWindowController::openShaderEditor
         //clearExistingTabs();
         ShaderFileTuple data = mProjectDirectoryModelHandle->readShaderData(shaderDefinitionHandle);
 
-        auto vertexForm = make_shared<EditorTabController>(
+        auto vertexForm = make_shared<TextEditorTabController>(
             QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME),
             shaderDefinitionHandle,
             mTemplatesModelHandle,
@@ -1188,7 +1266,7 @@ MainWindowController::openShaderEditor
 
         mEditorTabForms.push_back(vertexForm);
 
-        auto fragmentForm = make_shared<EditorTabController>(
+        auto fragmentForm = make_shared<TextEditorTabController>(
             QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME),
             shaderDefinitionHandle,
             mTemplatesModelHandle,
@@ -1207,22 +1285,69 @@ MainWindowController::openShaderEditor
 
         mEditorTabForms.push_back(fragmentForm);
 
-        int vertIndex = ui->rightTabWidget->addTab(
+        int vertIndex = mUi->rightTabWidget->addTab(
                     vertexForm.get(),
                     QString::fromStdString(shaderDefinitionHandle->getName())
                     .append(" (%1)")
                     .arg(QString::fromStdString(Constants::SHADER_VERTEX))
                     );
 
-        int fragIndex = ui->rightTabWidget->addTab(
+        int fragIndex = mUi->rightTabWidget->addTab(
                     fragmentForm.get(),
                     QString::fromStdString(shaderDefinitionHandle->getName())
                     .append(" (%1)")
                     .arg(QString::fromStdString(Constants::SHADER_FRAGMENT))
                     );
 
-        ui->rightTabWidget->setCurrentIndex(vertIndex);
+        mUi->rightTabWidget->setCurrentIndex(vertIndex);
     }
+}
+
+void
+MainWindowController::openAudioEventEditor
+(AudioDefinition* adHandle)
+{
+    auto log = spdlog::get("MainWindowController");
+    log->info("Opening audio editor tab for  {}",adHandle->getNameAndUuidString());
+    int index = isAudioEditorTabOpen(adHandle);
+
+    if (index > -1)
+    {
+        log->info("All ready open in tab {}",index);
+        mUi->rightTabWidget->setCurrentIndex(index);
+        return;
+    }
+
+    auto form = make_shared<AudioToolsFormController>(adHandle,mProjectDirectoryModelHandle, mUi->rightTabWidget);
+    index = mUi->rightTabWidget->addTab
+    (
+        form.get(),
+        QString::fromStdString(adHandle->getName())
+    );
+
+    log->info("Created new tab at {}",index);
+
+    mEditorTabForms.push_back(form);
+    mUi->rightTabWidget->setCurrentIndex(index);
+}
+
+int
+MainWindowController::isAudioEditorTabOpen
+(AudioDefinition* adHandle)
+{
+    auto log = spdlog::get("MainWindowController");
+
+    log->info("There are {} editor tabs open",mEditorTabForms.size());
+
+    for (shared_ptr<AbstractEditorWidget> tab : mEditorTabForms)
+    {
+       if (tab->getDefinitionHandle() == adHandle)
+       {
+           return mUi->rightTabWidget->indexOf(tab.get())+1;
+       }
+    }
+    log->info("Didn't find the a tab for this editor");
+    return -1;
 }
 
 void
@@ -1230,7 +1355,7 @@ MainWindowController::setupEditorTabCloseButtonSignal
 ()
 {
     connect(
-        ui->rightTabWidget,SIGNAL(tabCloseRequested(int)),
+        mUi->rightTabWidget,SIGNAL(tabCloseRequested(int)),
         this, SLOT(onEditorTabCloseRequested(int))
     );
 }

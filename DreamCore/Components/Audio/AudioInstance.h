@@ -5,14 +5,17 @@
 #include "../IAssetInstance.h"
 
 #ifdef __APPLE__
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
+    #include <OpenAL/al.h>
+    #include <OpenAL/alc.h>
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+    #include <AL/al.h>
+    #include <AL/alc.h>
 #endif
 
+#include <glm/glm.hpp>
+
 using std::vector;
+#include "SpectrumAnalyser.h"
 
 namespace Dream
 {
@@ -30,6 +33,10 @@ namespace Dream
         ALuint mBuffer;
         AudioStatus mStatus;
         AudioComponent* mAudioComponent;
+        long long mStartTime;
+        unique_ptr<SpectrumAnalyser> mSpectrumAnalyser;
+        int mLastSampleOffset;
+        int mChannels;
 
     public:
         AudioInstance(AudioComponent* comp, AudioDefinition*, SceneObjectRuntime*);
@@ -52,9 +59,14 @@ namespace Dream
         void pause();
         void stop();
 
-        // IAssetInstance interface
-    public:
         void loadExtraAttributes(nlohmann::json) override;
+        void loadSpectrumAnalyser();
+        void setSourcePosision(glm::vec3 pos);
+        long long getStartTime() const;
+        void setStartTime(long long startTime);
+        void setVolume(float volume);
+        void updateFFT();
+        int getChannels() const;
     };
 
 } // End of Dream

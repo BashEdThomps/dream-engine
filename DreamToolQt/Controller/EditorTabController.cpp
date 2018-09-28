@@ -13,7 +13,7 @@
 using std::make_shared;
 using Dream::Constants;
 
-EditorTabController::EditorTabController
+TextEditorTabController::TextEditorTabController
 (
     QString fileFormat,
     IAssetDefinition* assetDefinition,
@@ -21,11 +21,9 @@ EditorTabController::EditorTabController
     ProjectDirectoryModel* dirModel,
     QWidget *parent
 )
-    : QWidget(parent),
+    : AbstractEditorWidget(assetDefinition, dirModel, parent),
       mTextHasChanged(false),
       mFileFormat(fileFormat),
-      mAssetDefinitionHandle(assetDefinition),
-      mProjectDirectoryModelHandle(dirModel),
       mTemplatesModelHandle(templatesModel),
       mTextEdit(nullptr)
 
@@ -53,7 +51,7 @@ EditorTabController::EditorTabController
     connect(mTextEdit,SIGNAL(textChanged()),this,SLOT(onTextChanged()));
 }
 
-EditorTabController::~EditorTabController
+TextEditorTabController::~TextEditorTabController
 ()
 {
     auto log = spdlog::get("EditorTabController");
@@ -61,23 +59,7 @@ EditorTabController::~EditorTabController
 }
 
 void
-EditorTabController::setAssetDefinitionHandle
-(IAssetDefinition* definitionHandle)
-{
-    auto log = spdlog::get("EditorTabController");
-    log->info("Using asset {}", definitionHandle->getNameAndUuidString());
-    mAssetDefinitionHandle = definitionHandle;
-}
-
-IAssetDefinition*
-EditorTabController::getAssetDefinitionHandle
-()
-{
-   return mAssetDefinitionHandle;
-}
-
-void
-EditorTabController::useLuaHighlighter
+TextEditorTabController::useLuaHighlighter
 ()
 {
     auto log = spdlog::get("EditorTabController");
@@ -86,7 +68,7 @@ EditorTabController::useLuaHighlighter
 }
 
 void
-EditorTabController::useGLSLHighlighter
+TextEditorTabController::useGLSLHighlighter
 ()
 {
     auto log = spdlog::get("EditorTabController");
@@ -95,7 +77,7 @@ EditorTabController::useGLSLHighlighter
 }
 
 void
-EditorTabController::setPlainText
+TextEditorTabController::setPlainText
 (QString data)
 {
     mTextEdit->setPlainText(data);
@@ -103,45 +85,45 @@ EditorTabController::setPlainText
 }
 
 QString
-EditorTabController::getPlainText
+TextEditorTabController::getPlainText
 ()
 {
     return mTextEdit->toPlainText();
 }
 
 bool
-EditorTabController::hasTextChanged
+TextEditorTabController::hasTextChanged
 ()
 {
     return mTextHasChanged;
 }
 
 void
-EditorTabController::onTextChanged
+TextEditorTabController::onTextChanged
 ()
 {
    mTextHasChanged = true;
 }
 
-void EditorTabController::clearTextChanged()
+void TextEditorTabController::clearTextChanged()
 {
     mTextHasChanged = false;
 }
 
-void EditorTabController::setupSaveSignals()
+void TextEditorTabController::setupSaveSignals()
 {
     connect(mSaveButton,SIGNAL(clicked(bool)),this,SLOT(onSaveButtonClicked(bool)));
 }
 
 void
-EditorTabController::setProjectDirectoryModelHandle
+TextEditorTabController::setProjectDirectoryModelHandle
 (ProjectDirectoryModel* projectDirectoryModelHandle)
 {
     mProjectDirectoryModelHandle = projectDirectoryModelHandle;
 }
 
 void
-EditorTabController::onComboTemplateChanged
+TextEditorTabController::onComboTemplateChanged
 (const QString& templateName)
 {
     auto log = spdlog::get("EditorTabController");
@@ -173,14 +155,14 @@ EditorTabController::onComboTemplateChanged
 }
 
 void
-EditorTabController::setTemplatesModelHandle
+TextEditorTabController::setTemplatesModelHandle
 (TemplatesModel* templatesModelHandle)
 {
     mTemplatesModelHandle = templatesModelHandle;
 }
 
 void
-EditorTabController::createTemplatesComboBox
+TextEditorTabController::createTemplatesComboBox
 (QComboBox* editor)
 {
     auto log = spdlog::get("EditorTabController");
@@ -222,31 +204,31 @@ EditorTabController::createTemplatesComboBox
 }
 
 void
-EditorTabController::onSaveButtonClicked
+TextEditorTabController::onSaveButtonClicked
 (bool checked)
 {
     Q_UNUSED(checked)
     auto log = spdlog::get("EditorTabController");
 
-    if (mAssetDefinitionHandle != nullptr)
+    if (mDefinitionHandle != nullptr)
     {
-        log->info("Saving {}",mAssetDefinitionHandle->getNameAndUuidString());
+        log->info("Saving {}",mDefinitionHandle->getNameAndUuidString());
         QString data = getPlainText();
 
         bool writeResult = false;
 
-        if (mAssetDefinitionHandle->isTypeShader())
+        if (mDefinitionHandle->isTypeShader())
         {
             writeResult = mProjectDirectoryModelHandle->writeAssetData
             (
                 data,
-                mAssetDefinitionHandle,
+                mDefinitionHandle,
                 mFileFormat
             );
         }
-        else if (mAssetDefinitionHandle->isTypeScript())
+        else if (mDefinitionHandle->isTypeScript())
         {
-            writeResult = mProjectDirectoryModelHandle->writeAssetData(data,mAssetDefinitionHandle);
+            writeResult = mProjectDirectoryModelHandle->writeAssetData(data,mDefinitionHandle);
         }
 
         if (writeResult)
@@ -254,7 +236,7 @@ EditorTabController::onSaveButtonClicked
             emit msgToStatusBar
             (
                 QString("Saved %1")
-                    .arg(QString::fromStdString(mAssetDefinitionHandle->getNameAndUuidString()))
+                    .arg(QString::fromStdString(mDefinitionHandle->getNameAndUuidString()))
             );
         }
         else
@@ -264,7 +246,7 @@ EditorTabController::onSaveButtonClicked
                 this,
                 "Save Failed",
                 QString("Unable to save %1")
-                .arg(QString::fromStdString(mAssetDefinitionHandle->getName()))
+                .arg(QString::fromStdString(mDefinitionHandle->getName()))
             );
         }
     }

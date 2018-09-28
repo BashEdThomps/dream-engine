@@ -5,6 +5,8 @@ project(DreamCore)
 file(GLOB_RECURSE SRC_DIR "*.cpp")
 file(GLOB_RECURSE INC_DIR "*.h")
 
+set(OggVorbis_FIND_QUIETLY FALSE)
+
 find_package(assimp REQUIRED)
 find_package(BULLET REQUIRED)
 find_package(GLEW REQUIRED)
@@ -18,6 +20,7 @@ find_package(Lua REQUIRED)
 find_package(Gainput REQUIRED)
 find_package(TinySpline REQUIRED)
 find_package(SOIL REQUIRED)
+find_package(FFTW3 REQUIRED)
 
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
@@ -45,6 +48,7 @@ include_directories(
     ${GAINPUT_INCLUDE_DIR}
     ${TINY_SPLINE_INCLUDE_DIR}
     ${SOIL_INCLUDE_DIR}
+    ${FFTW3_INCLUDE_DIRS}
 )
 
 add_library(DreamCore SHARED ${SRC_DIR})
@@ -66,6 +70,7 @@ target_link_libraries(
     ${GLEW_LIBRARIES}
     ${BULLET_LIBRARY}
     ${FREETYPE_LIBRARIES}
+    ${FFTW3_LIBRARIES}
 )
 
 set(

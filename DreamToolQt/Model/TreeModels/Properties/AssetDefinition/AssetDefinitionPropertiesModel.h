@@ -49,6 +49,8 @@ private:
     void createRemoveFilesProperty();
 
     void createAudioLoopProperty();
+    void createAudioFFTProperty();
+    void createAudioEventsProperty();
     void createAudioFileProperty();
 
     void createFontColorProperty();
@@ -96,6 +98,7 @@ private:
 public slots:
     void onButton_RemoveFiles();
     void onButton_AudioFile();
+    void onButton_AudioEvents();
     void onButton_FontFile();
     void onButton_ModelFile();
     void onButton_ModelAdditionalFiles();
@@ -112,6 +115,7 @@ public slots:
 signals:
     void notifyButton_RemoveFiles(IAssetDefinition*);
     void notifyButton_AudioFile(IAssetDefinition*);
+    void notifyButton_AudioEvents(IAssetDefinition*);
     void notifyButton_FontFile(IAssetDefinition*);
     void notifyButton_ModelFile(IAssetDefinition*);
     void notifyButton_ModelAdditionalFiles(IAssetDefinition*);

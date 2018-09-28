@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/dialog-ok.png</file>
         <file>images/document-new.png</file>
         <file>images/document-open.png</file>
         <file>images/document-save.png</file>
@@ -35,5 +34,7 @@
         <file>templates/shader/Phong/glsl.frag</file>
         <file>templates/shader/Phong/glsl.vert</file>
         <file>templates/script/Javascript/js</file>
+        <file>svg/comment-alt-solid.svg</file>
+        <file>svg/file-signature-solid.svg</file>
     </qresource>
 </RCC>

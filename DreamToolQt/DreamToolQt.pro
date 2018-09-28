@@ -6,7 +6,7 @@
 
 QMAKE_CXXFLAGS_WARN_ON = -Wno-ignored-qualifiers # Not available in GCC? -Wno-address-of-packed-member
 
-QT += core gui opengl
+QT += core gui opengl multimedia
 
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
@@ -31,7 +31,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     \
-    Controller/MainController.cpp \
     \
     Model/DreamProjectModel.cpp \
     Model/ProjectDirectoryModel.cpp \
@@ -85,11 +84,14 @@ SOURCES += \
     View/GLView/PathPointViewer.cpp \
     Model/PathEditorTableModel.cpp \
     Controller/PathEditorFormController.cpp \
-    View/WindowInputState.cpp
+    View/WindowInputState.cpp \
+    Controller/ApplicationController.cpp \
+    View/WaveformWidget.cpp \
+    Controller/AudioToolsFormController.cpp \
+    Controller/AbstractEditorWidget.cpp
 
 HEADERS  += \
     \
-    Controller/MainController.h \
     \
     Model/DreamProjectModel.h \
     Model/ProjectDirectoryModel.h \
@@ -144,13 +146,19 @@ HEADERS  += \
     View/GLView/PathPointViewer.h \
     Controller/PathEditorFormController.h \
     Model/PathEditorTableModel.h \
-    View/WindowInputState.h
+    View/WindowInputState.h \
+    Controller/ApplicationController.h \
+    Controller/UIActions.h \
+    View/WaveformWidget.h \
+    Controller/AudioToolsFormController.h \
+    Controller/AbstractEditorWidget.h
 
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
     View/MaterialShaderTableForm.ui \
     View/PathEditorTableForm.ui \
-    View/EditorTabForm.ui
+    View/EditorTabForm.ui \
+    View/AudioToolsForm.ui
 
 RESOURCES += \
     Resources/Resources.qrc \
@@ -169,7 +177,8 @@ macx: LIBS += \
     -llua.5.3 \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lSOIL \
-    -lFreeType
+    -lFreeType \
+    -logg
 
 LIBS += \
     -L/opt/octronic/builds/Dream/DreamCore \
@@ -183,7 +192,8 @@ LIBS += \
     -lGLEW \
     -lassimp \
     -ltinyspline \
-    -ltinysplinecpp
+    -ltinysplinecpp \
+    -logg
 
 INCLUDEPATH += \
     $$PWD/../DreamCore/include \

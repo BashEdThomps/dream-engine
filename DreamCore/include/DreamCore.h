@@ -20,6 +20,8 @@
 
 #include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
+#include "../Components/Audio/Ogg/OggAudioInstance.h"
+#include "../Components/Audio/Wav/WavAudioInstance.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/Shader/ShaderInstance.h"
 #include "../Components/Scripting/IScriptComponent.h"

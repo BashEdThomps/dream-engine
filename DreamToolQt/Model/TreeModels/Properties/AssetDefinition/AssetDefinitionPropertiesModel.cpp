@@ -86,6 +86,8 @@ AssetDefinitionPropertiesModel::createProperties
     else if (mAssetDefinitionHandle->isTypeAudio())
     {
         createAudioLoopProperty();
+        createAudioFFTProperty();
+        createAudioEventsProperty();
         createAudioFileProperty();
         createRemoveFilesProperty();
     }
@@ -274,6 +276,36 @@ AssetDefinitionPropertiesModel::createAudioLoopProperty
 }
 
 void
+AssetDefinitionPropertiesModel::createAudioFFTProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "FFT",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_AUDIO_FFT
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createAudioEventsProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Event Editor",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS
+        )
+    );
+}
+
+void
 AssetDefinitionPropertiesModel::createAudioFileProperty
 ()
 {
@@ -287,6 +319,7 @@ AssetDefinitionPropertiesModel::createAudioFileProperty
         )
     );
 }
+
 
 void
 AssetDefinitionPropertiesModel::createFontColorProperty
@@ -984,6 +1017,13 @@ AssetDefinitionPropertiesModel::createDelegateConnections
     delegate = static_cast<AssetDefinitionPropertiesTreeDelegate*>(mDelegateHandle);
 
     // Audio
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_AudioEvents()),
+        this,
+        SLOT(onButton_AudioEvents())
+    );
 
     connect
     (
@@ -1160,6 +1200,13 @@ void AssetDefinitionPropertiesModel::onButton_PathList()
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
     log->info("Path List Button Clicked");
     emit notifyButton_PathList(mAssetDefinitionHandle);
+}
+
+void
+AssetDefinitionPropertiesModel::onButton_AudioEvents
+()
+{
+    emit notifyButton_AudioEvents(mAssetDefinitionHandle);
 }
 
 void

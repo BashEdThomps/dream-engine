@@ -77,6 +77,7 @@ public:
     void setSelectedSceneDefinition(SceneDefinition* selectedScene);
 
     IDefinition* createNewAssetDefinition(AssetType type);
+    void setScriptingEnabled(bool disabled);
 
 signals:
     void notifySelectedSceneChanged(SceneDefinition* scene);
@@ -89,4 +90,5 @@ private:
     // Handles
     QOpenGLWindowComponent* mWindowComponent;
     SceneDefinition* mSelectedScene;
+    bool mScriptingEnabled;
 };

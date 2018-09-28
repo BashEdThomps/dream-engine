@@ -147,6 +147,24 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createAudioEventsButton
+(AssetDefinitionPropertiesItem*, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Events Editor...");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_AudioEvents(bool))
+    );
+    return editor;
+}
+
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createFontFileButton
 (AssetDefinitionPropertiesItem*, QWidget* parent)
 const
@@ -335,6 +353,7 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
             return new QCheckBox(parent);
 
             // QDoubleSpinBox all range
@@ -405,6 +424,9 @@ const
 
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
             return createAudioFileButton(adItem,parent);
+
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
+            return createAudioEventsButton(adItem,parent);
 
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
             return createFontFileButton(adItem,parent);
@@ -547,6 +569,7 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
             static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
             break;
 
@@ -608,6 +631,7 @@ const
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
@@ -636,6 +660,7 @@ const
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
             model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
             break;
 
@@ -706,6 +731,7 @@ const
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
@@ -736,6 +762,15 @@ AssetDefinitionPropertiesTreeDelegate::onButton_PathList
 }
 
 void
+AssetDefinitionPropertiesTreeDelegate::onButton_AudioEvents
+(bool)
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->info("AudioEvents was clicked");
+    emit notifyButton_AudioEvents();
+}
+
+void
 AssetDefinitionPropertiesTreeDelegate::onButton_AudioFile
 (bool)
 {
@@ -743,6 +778,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_AudioFile
     log->info("AudioFile was clicked");
     emit notifyButton_AudioFile();
 }
+
 
 void
 AssetDefinitionPropertiesTreeDelegate::onButton_FontFile

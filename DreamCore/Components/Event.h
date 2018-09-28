@@ -22,9 +22,11 @@
 #include <map>
 
 #include "../Common/DreamObject.h"
+#include <json/json.hpp>
 
 using std::string;
 using std::map;
+using nlohmann::json;
 
 namespace Dream
 {
@@ -35,9 +37,8 @@ namespace Dream
     {
 
     private:
-      map<string,string> mAttributes;
+      json mData;
       SceneObjectRuntime* mSender;
-      string mData;
 
     public:
       Event(SceneObjectRuntime*,string);
@@ -46,11 +47,14 @@ namespace Dream
       SceneObjectRuntime* getSender() const;
       string getType() const;
 
-      void setAttribute(string,string);
-      string getAttribute(string) const;
+      void setString(string,string);
+      string getString(string) const;
+
+      void setJson(string, json);
+      json getJson(string) const;
 
       string getData() const;
-      void setData(const string& data);
+
     }; // End of Event
 
 } // End of Dream

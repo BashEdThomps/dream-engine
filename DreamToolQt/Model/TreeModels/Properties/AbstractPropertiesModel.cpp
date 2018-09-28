@@ -258,6 +258,6 @@ void AbstractPropertiesModel::forceDataChanged()
    createProperties();
    createDelegateConnections();
    endResetModel();
-   mTreeViewHandle->expandAll();
+   //mTreeViewHandle->expandAll();
    emit dataChanged(QModelIndex(), QModelIndex());
 }

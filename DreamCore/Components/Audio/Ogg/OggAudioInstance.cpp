@@ -46,6 +46,7 @@ namespace Dream
     {
         auto log = getLog();
         string absPath = projectPath+mDefinition->getAssetPath();
+        setAbsolutePath(absPath);
         log->info("Loading Instance: {}", absPath);
 
         // 0 for Little-Endian, 1 for Big-Endian
@@ -77,10 +78,12 @@ namespace Dream
         // Check the number of channels... always use 16-bit samples
         if (oggInfo->channels == 1)
         {
+            mChannels = 1;
             mFormat = AL_FORMAT_MONO16;
         }
         else
         {
+            mChannels = 2;
             mFormat = AL_FORMAT_STEREO16;
         }
 
@@ -106,7 +109,9 @@ namespace Dream
 
         // Clean up!
         ov_clear(&oggFile);
+        //loadSpectrumAnalyser();
         return true;
     }
-
 } // End of Dream
+
+

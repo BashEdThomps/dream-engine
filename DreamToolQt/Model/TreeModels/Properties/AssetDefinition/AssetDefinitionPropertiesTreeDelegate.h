@@ -41,6 +41,7 @@ public:
 public slots:
     void onButton_PathList(bool clicked);
     void onButton_AudioFile(bool clicked);
+    void onButton_AudioEvents(bool clicked);
     void onButton_FontFile(bool clicked);
     void onButton_ModelFile(bool clicked);
     void onButton_ModelAdditionalFiles(bool clicked);
@@ -58,6 +59,7 @@ public slots:
 signals:
     void notifyButton_PathList();
     void notifyButton_AudioFile();
+    void notifyButton_AudioEvents();
     void notifyButton_FontFile();
     void notifyButton_ModelFile();
     void notifyButton_ModelAdditionalFiles();
@@ -81,6 +83,7 @@ protected:
     QWidget* createTypeComboBox(AssetDefinitionPropertiesItem *item, QWidget *parent = nullptr)  const;
     QWidget* createFontFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget* createModelFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
+    QWidget* createAudioEventsButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget* createAudioFileButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget* createModelAdditionalFilesButton(AssetDefinitionPropertiesItem *adItem, QWidget *parent) const;
     QWidget* createOpenShaderInEditorButton(AssetDefinitionPropertiesItem* adItem, QWidget* parent) const;

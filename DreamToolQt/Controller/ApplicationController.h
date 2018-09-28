@@ -37,9 +37,9 @@
 #include "../Model/MacOSOpenModel.h"
 #include "../Model/TemplatesModel.h"
 
-#include "../Controller/MainWindowController.h"
-#include "../Controller/PathEditorFormController.h"
-#include "../Controller/MaterialShaderFormController.h"
+#include "MainWindowController.h"
+#include "PathEditorFormController.h"
+#include "MaterialShaderFormController.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
@@ -51,17 +51,18 @@ using Dream::SceneRuntime;
 using Dream::ScriptDefinition;
 using Dream::ShaderDefinition;
 
-class MainController : public QObject
+class ApplicationController : public QObject
 {
     Q_OBJECT
 public:
-    MainController(MainWindowController* parent);
-    ~MainController();
+    ApplicationController(QObject* parent = nullptr);
+    ~ApplicationController();
 
     Grid *getGridHandle();
     SelectionHighlighter *getSelectionHighlighterHandle();
     RelationshipTree *getRelationshipTreeHandle();
     PathPointViewer* getPathPointViewerHandle();
+    PathEditorFormController* getPathEditorFormControllerHandle();
     void forceScenegraphTreeDataChanged();
 
 signals:
@@ -133,6 +134,7 @@ public slots:
     void onAction_Asset_NewDefinition_Sprite();
     void onAction_Debug_DumpProjectDefinitionJson(bool toggled);
 
+    void onAssetDefinitionProperty_AudioEvents(IAssetDefinition* adHandle);
     void onAssetDefinitionProperty_AudioFile(IAssetDefinition* adHandle);
 
     void onAssetDefinitionProperty_FontFile(IAssetDefinition* adHandle);
@@ -173,6 +175,8 @@ public slots:
     void onPathVisibilityChanged(bool visible);
 
 
+    void onActionScriptingTriggered(bool checked);
+
 protected:
     void showImportResultDialog(bool success, IAssetDefinition* adHandle, QString source);
     void forceAssetDefinitionTreeDataChanged();
@@ -205,12 +209,12 @@ private: // Methods
 
     void connectUI();
     void connectUI_TreeViewModels();
+    void connectUI_PathEditorSignals();
 
     string getSceneNameFromModelIndex(int index);
 
 private: // Variables
-    MainWindowController *mMainWindowHandle;
-    QOpenGLWindowComponent* mWindowComponent;
+    MainWindowController mMainWindowHandle;
 
     ProjectDefinition* mSelectedProjectDefinitionHandle;
     IAssetDefinition* mSelectedAssetDefinitionHandle;
@@ -227,7 +231,7 @@ private: // Variables
 
     unique_ptr<AssetDefinitionTreeModel> mAssetDefinitionTreeModel;
     unique_ptr<ScenegraphTreeModel> mScenegraphTreeModel;
-    unique_ptr<AbstractPropertiesModel> mPropertiesModel;
+    unique_ptr<AbstractPropertiesModel> mPropertiesTreeModel;
 
     unique_ptr<Grid> mGrid;
     unique_ptr<SelectionHighlighter> mSelectionHighlighter;
@@ -241,6 +245,5 @@ private: // Variables
     QDir mLastDirectory;
     MaterialShaderFormController mMaterialShaderTableController;
     PathEditorFormController mPathEditorFormController;
-    void connectPathEditorSignals();
     int mLastVolume;
 };

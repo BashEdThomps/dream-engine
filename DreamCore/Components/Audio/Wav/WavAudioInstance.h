@@ -50,11 +50,8 @@ namespace Dream
             SceneObjectRuntime*
         );
         ~WavAudioInstance() override;
-
         long getFileSize(FILE* inFile);
-
         bool load(string) override;
-
     }; // End WavAudioInstance
 
 } // End of Dream

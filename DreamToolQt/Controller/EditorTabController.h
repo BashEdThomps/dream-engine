@@ -1,7 +1,7 @@
 #pragma once
 
+#include "AbstractEditorWidget.h"
 #include <memory>
-#include <QWidget>
 #include <QSyntaxHighlighter>
 
 #include <QTextEdit>
@@ -9,7 +9,6 @@
 
 namespace Dream
 {
-    class IAssetDefinition;
     class ScriptDefinition;
     class ShaderDefinition;
 }
@@ -24,11 +23,11 @@ using Dream::ScriptDefinition;
 using Dream::ShaderDefinition;
 using Dream::IAssetDefinition;
 
-class EditorTabController : public QWidget
+class TextEditorTabController : public AbstractEditorWidget
 {
     Q_OBJECT
 public:
-    explicit EditorTabController
+    explicit TextEditorTabController
     (
         QString fileFormat,
         IAssetDefinition* assetDefinition,
@@ -37,10 +36,8 @@ public:
         QWidget *parent = nullptr
     );
 
-    ~EditorTabController() override;
+    ~TextEditorTabController() override;
 
-    void setAssetDefinitionHandle(IAssetDefinition* definitionHandle);
-    IAssetDefinition* getAssetDefinitionHandle();
     void useLuaHighlighter();
     void useGLSLHighlighter();
     void setPlainText(QString data);
@@ -75,8 +72,6 @@ signals:
 private:
     bool mTextHasChanged;
     QString mFileFormat;
-    IAssetDefinition* mAssetDefinitionHandle;
-    ProjectDirectoryModel* mProjectDirectoryModelHandle;
     TemplatesModel* mTemplatesModelHandle;
 
     // Widgets

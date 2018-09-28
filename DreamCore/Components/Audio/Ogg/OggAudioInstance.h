@@ -36,7 +36,6 @@ namespace Dream
         ~OggAudioInstance() override;
 
         bool load(string) override;
-
     }; // End of OggAudio
 
 } // End of Dream

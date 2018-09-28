@@ -339,7 +339,7 @@ namespace Dream
                               }
                             }
                         };
-                        aHitsB.setData(aHitsBData.dump());
+                        aHitsB.setJson("physics",aHitsBData);
 
                         json bHitsAData =
                         {
@@ -353,7 +353,7 @@ namespace Dream
                               }
                             }
                         };
-                        bHitsA.setData(bHitsAData.dump());
+                        bHitsA.setJson("physics",bHitsAData);
 
                      }
 

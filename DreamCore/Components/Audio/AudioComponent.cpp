@@ -30,6 +30,7 @@
 #include "Ogg/OggAudioInstance.h"
 
 #include "AudioDefinition.h"
+#include "../Time.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
@@ -70,8 +71,6 @@ namespace Dream
             alcCloseDevice(mDevice);
             mDevice = nullptr;
         }
-
-
     }
 
     bool
@@ -267,10 +266,18 @@ namespace Dream
     }
 
     void
+    AudioComponent::pushToFFTQueue
+    (AudioInstance* ai)
+    {
+       mFFTQueue.push_back(ai);
+    }
+
+    void
     AudioComponent::updateComponent
     ()
     {
         beginUpdate();
+        updateFFT();
         updatePlayQueue();
         updatePauseQueue();
         updateStopQueue();
@@ -290,6 +297,7 @@ namespace Dream
             if (getAudioStatus(audioAsset) != PLAYING)
             {
                 playSource(audioAsset->getSource());
+                audioAsset->setStartTime(mTime->nowLL());
                 audioAsset->setStatus(PLAYING);
             }
             else
@@ -351,19 +359,40 @@ namespace Dream
         mStopQueue.clear();
     }
 
-    float
+    void AudioComponent::updateFFT()
+    {
+       for (AudioInstance* ai : mFFTQueue)
+       {
+          ai->updateFFT();
+       }
+    }
+
+    ALint
     AudioComponent::getSampleOffset
     (ALuint source)
     const
     {
-        float sampleOffset;
-        alGetSourcef(source, AL_SAMPLE_OFFSET, &sampleOffset );
+        ALint sampleOffset;
+        alGetSourcei(source, AL_SAMPLE_OFFSET, &sampleOffset );
+        //cout << "Current Offset " << sampleOffset << endl;
         return sampleOffset;
+    }
+
+    ALint
+    AudioComponent::getSampleOffset
+    (AudioInstance* audioAsset )
+    const
+    {
+        if (audioAsset == nullptr)
+        {
+            return 0;
+        }
+        return getSampleOffset(audioAsset->getSource());
     }
 
     vector<char>
     AudioComponent::getAudioBuffer
-    (AudioInstance* audioAsset, int offset, int length)
+    (AudioInstance* audioAsset, size_t offset, size_t length)
     const
     {
         vector<char> retval = vector<char>(length);
@@ -373,22 +402,10 @@ namespace Dream
         }
 
         vector<char> audioData = audioAsset->getAudioDataBuffer();
-        char* dataBegin = &audioData[0];
+        char* dataBegin = &audioData[0+offset];
         retval.insert(retval.begin(), dataBegin, dataBegin+length);
 
         return retval;
-    }
-
-    float
-    AudioComponent::getSampleOffset
-    (AudioInstance* audioAsset )
-    const
-    {
-        if (audioAsset == nullptr)
-        {
-            return 0.0f;
-        }
-        return getSampleOffset(audioAsset->getSource());
     }
 
     AudioStatus

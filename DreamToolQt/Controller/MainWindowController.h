@@ -36,7 +36,9 @@
 #include "../View/QOpenGLWindowComponent.h"
 #include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.h"
 #include "../Model/TreeModels/Scenegraph/ScenegraphTreeItem.h"
-#include "../Controller/EditorTabController.h"
+#include "AbstractEditorWidget.h"
+#include "EditorTabController.h"
+#include "UIActions.h"
 
 using std::unique_ptr;
 using std::map;
@@ -47,67 +49,7 @@ namespace Ui
     class MainWindow;
 }
 
-class AddAssetToSceneObjectAction : public QAction
-{
-public:
-    AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, QObject *parent = nullptr);
-
-    AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, const QString &text, QObject *parent = nullptr);
-
-    AddAssetToSceneObjectAction
-    (ScenegraphTreeItem* itemHandle, IAssetDefinition* adHadle, const QIcon &icon, const QString &text, QObject *parent = nullptr);
-
-    ScenegraphTreeItem* getItemHandle() ;
-    IAssetDefinition* getAssetDefinitionHandle() ;
-
-private:
-    ScenegraphTreeItem* mItemHandle;
-    IAssetDefinition* mAssetDefinitionHandle;
-
-};
-
-class ScenegraphMenuAction : public QAction
-{
-public:
-    ScenegraphMenuAction(ScenegraphTreeItem* itemHandle, QObject *parent = nullptr);
-    ScenegraphMenuAction(ScenegraphTreeItem* itemHandle, const QString &text, QObject *parent = nullptr);
-    ScenegraphMenuAction(ScenegraphTreeItem* itemHandle, const QIcon &icon, const QString &text, QObject *parent = nullptr);
-
-    ScenegraphTreeItem* getItemHandle() ;
-private:
-    ScenegraphTreeItem* mItemHandle;
-
-};
-
-class CreateAssetDefinitionAction : public QAction
-{
-public:
-    CreateAssetDefinitionAction(QString type, QObject *parent = nullptr);
-    CreateAssetDefinitionAction(QString type, const QString &text, QObject *parent = nullptr);
-    CreateAssetDefinitionAction(QString type, const QIcon &icon, const QString &text, QObject *parent = nullptr);
-
-    QString getType() ;
-
-private:
-    QString mType;
-};
-
-class DeleteAssetDefinitionAction : public QAction
-{
-public:
-    DeleteAssetDefinitionAction
-    (QObject *parent = nullptr);
-
-    DeleteAssetDefinitionAction
-    (const QString &text, QObject *parent = nullptr);
-
-    DeleteAssetDefinitionAction
-    (const QIcon &icon,const QString &text, QObject *parent = nullptr);
-
-    IAssetDefinition* mItemHandle;
-};
+class PathEditorFormController;
 
 class MainWindowController : public QMainWindow, public LuaPrintListener
 {
@@ -115,7 +57,6 @@ class MainWindowController : public QMainWindow, public LuaPrintListener
 public:
     explicit MainWindowController(QWidget *parent = nullptr);
     ~MainWindowController( ) override;
-    Ui::MainWindow *ui;
 
     void onPrint(std::string) override;
 
@@ -152,21 +93,20 @@ public:
     QAction* getAction_View_ToggleDebug();
     QAction* getAction_View_TogglePhysicsDebug();
     QAction* getAction_View_ToggleHighlightSelected();
-
     QAction* getAction_Asset_NewDefinition(AssetType type);
     QAction* getAction_Asset_AddToSelectedSceneObject();
     QAction* getAction_ControlScene();
-
     QAction* getAction_Debug_DumpProjectDefinitionJson();
+
     void setActionEnabled_Debug_DumpProjectDefinitionJson(bool enabled);
-
     void setupMenu_Asset_NewDefinition();
-
     void openScriptEditor(ScriptDefinition* scriptDefinitionHandle);
     void openShaderEditor(ShaderDefinition* shaderDefinitionHandle);
 
-
+    void openAudioEventEditor(AudioDefinition* adHandle);
     void setTemplatesModelHandle(TemplatesModel* templatesModelHandle);
+
+    void setPathEditorFormControllerHandle(PathEditorFormController* pathEditorFormControllerHandle);
 
 signals:
     void notifyActionNew(QString);
@@ -178,6 +118,9 @@ signals:
     void notifyMainVolumeChanged(int);
     void notifyAssetDefinitionTreeDataChanged();
 
+    void notifyActionScriptingTriggered(bool checked);
+    void notifyRightTabWidgetClosed();
+
 public slots:
     void onInvalidProjectDirectory(QString directory);
     void onNoSceneSelected();
@@ -185,20 +128,25 @@ public slots:
     void onSceneStopped(SceneDefinition* scene);
     void onProjectDefinitionChanged(ProjectDefinition*);
     void onScenegraphTreeExpandRequested();
-
     void keyPressEvent(QKeyEvent*) override;
     void keyReleaseEvent(QKeyEvent*) override;
-    protected:
-    void setupUiFeatures();
+    void onRightTabWidgetClosed(QCloseEvent*);
 
+protected:
+    void setupUiFeatures();
     int  isEditorTabOpen(IAssetDefinition* definition);
+    int isAudioEditorTabOpen(AudioDefinition* adHandle);
     void setupEditorTabCloseButtonSignal();
+    shared_ptr<QMenu> createAssetDefinitionTreeContextMenu(AssetDefinitionTreeItem*);
+    shared_ptr<QMenu> createScenegraphTreeContextMenu(ScenegraphTreeItem*);
+    void createAssetsMenu(QMenu* menu,ScenegraphTreeItem* item);
+    void setupMenu_Debug();
+    bool shouldPassKey(int key);
+    void setupGL(QWidget *parent);
 
 protected slots:
     void onMainVolumeChanged(int);
     void onEditorTabCloseRequested(int index);
-
-private slots:
     void onScenegraphContextMenuRequested(const QPoint& point);
     void onAsseetDefinitionContextMenuRequested(const QPoint& point);
     void onCreateAssetDefinitionAction();
@@ -209,29 +157,28 @@ private slots:
     void onScenegraphMenuDeleteSceneObjectTriggered();
     void onAssetDefinitionMenuDeleteTriggered();
     void onAddAssetToSceneObjectTriggered();
-
     void onScenegraphTreeViewActivated(const QModelIndex &index);
     void onPropertiesTreeViewActivated(const QModelIndex &index);
     void onAssetDefinitionTreeViewActivated(const QModelIndex &index);
     void onMenu_Debug_LogLevelChanged(bool);
+    void onActionLuaLogTriggered(bool);
+    void onActionScriptingTriggered(bool);
 
 private:
+    const static vector<int> mKeysPassedToWindow;
+
+    Ui::MainWindow* mUi;
     ProjectDefinition* mProjectDefinitionHandle;
     ProjectDirectoryModel* mProjectDirectoryModelHandle;
     TemplatesModel* mTemplatesModelHandle;
-    bool shouldPassKey(int key);
-    void setupGL(QWidget *parent);
     QOpenGLWindowComponent* mWindowComponentHandle;
-    const static vector<int> mKeysPassedToWindow;
     map<AssetType,QAction*> mActionMap_Asset_NewDefinition;
     unique_ptr<QMenu> mMenu_Asset_NewDefinition;
-    shared_ptr<QMenu> createAssetDefinitionTreeContextMenu(AssetDefinitionTreeItem*);
-    shared_ptr<QMenu> createScenegraphTreeContextMenu(ScenegraphTreeItem*);
-    void createAssetsMenu(QMenu* menu,ScenegraphTreeItem* item);
-    void setupMenu_Debug();
     QSlider mVolumeSlider;
     QDockWidget mRightDockWidget;
-    vector<shared_ptr<EditorTabController>> mEditorTabForms;
+    vector<shared_ptr<AbstractEditorWidget>> mEditorTabForms;
+    int mLastVolume;
+    PathEditorFormController* mPathEditorFormControllerHandle;
 };
 
 

@@ -26,12 +26,16 @@ namespace  Dream
     {
     public:
         AudioDefinition(ProjectDefinition* pd, json js);
+        ~AudioDefinition() override;
 
         bool isFormatWav();
         bool isFormatOgg();
 
         void setLoop(bool);
         bool getLoop();
+
+        bool getSpectrumAnalyser();
+        void setSpectrumAnalyser(bool);
     };
 
 }

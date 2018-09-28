@@ -27,7 +27,8 @@ DreamProjectModel::DreamProjectModel
       mProject(nullptr),
       mHeartbeatTimer(nullptr),
       mWindowComponent(windowComponent),
-      mSelectedScene(nullptr)
+      mSelectedScene(nullptr),
+      mScriptingEnabled(true)
 {
     auto log = spdlog::get("DreamProjectModel");
     if (log == nullptr)
@@ -160,6 +161,7 @@ DreamProjectModel::startSceneRuntimeFromDefinition
     ProjectRuntime* prHandle = mProject->createProjectRuntime();
     if (prHandle != nullptr)
     {
+        prHandle->setScriptingEnabled(mScriptingEnabled);
         SceneRuntime* srHandle = prHandle->constructActiveSceneRuntime(definition);
         if (srHandle != nullptr)
         {
@@ -260,4 +262,18 @@ DreamProjectModel::createNewAssetDefinition
         }
     }
     return nullptr;
+}
+
+void
+DreamProjectModel::setScriptingEnabled(bool enabled)
+{
+   mScriptingEnabled = enabled;
+   if (mProject)
+   {
+       auto prHandle = mProject->getProjectRuntime();
+       if (prHandle)
+       {
+           prHandle->setScriptingEnabled(enabled);
+       }
+   }
 }

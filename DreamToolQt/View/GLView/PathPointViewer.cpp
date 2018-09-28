@@ -204,10 +204,10 @@ PathPointViewer::generateNode
     y = cp[Constants::Y];
     z = cp[Constants::Z];
 
-    log->critical("Generating node cube for {} at ({},{},{})",index,x,y,z);
+    log->trace("Generating node cube for {} at ({},{},{})",index,x,y,z);
 
     vec3 colour = (mSelectedCp ==  index ? mSelectedColour : mUnselectedColour);
-    log->critical("Selected? {}",mSelectedCp == index);
+    log->trace("Selected? {}",mSelectedCp == index);
 
     // Top Quad
 
@@ -319,14 +319,14 @@ PathPointViewer::draw
     auto log = spdlog::get("PathPointViewer");
     if (!mVisible)
     {
-        log->critical("Not visible");
+        log->trace("Not visible");
         return;
     }
 
     if (!mVertexBuffer.empty())
     {
         preRender();
-        log->critical("Drawing all - {} lines", mVertexBuffer.size()/2);
+        log->trace("Drawing all - {} lines", mVertexBuffer.size()/2);
 
         // Enable shader program
         useShader();
@@ -505,7 +505,7 @@ PathPointViewer::onTangentIndexChanged
 (int val)
 {
     auto log = spdlog::get("PathPointViewer");
-    log->critical("onTangentIndexChanged {}",val);
+    log->trace("onTangentIndexChanged {}",val);
     mTangentIndex = static_cast<size_t>(val);
     updateVertexBuffer();
 }
@@ -515,7 +515,7 @@ PathPointViewer::onTangentVisibilityChanged
 (bool draw)
 {
     auto log = spdlog::get("PathPointViewer");
-    log->critical("onTangentVisibilityChanged {}",draw);
+    log->trace("onTangentVisibilityChanged {}",draw);
     mDrawTangent = draw;
     updateVertexBuffer();
 }

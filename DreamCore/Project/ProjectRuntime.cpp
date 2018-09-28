@@ -50,8 +50,8 @@ namespace Dream
 {
     ProjectRuntime::ProjectRuntime
     (
-        Project* project,
-        IWindowComponent* windowComponent)
+            Project* project,
+            IWindowComponent* windowComponent)
         : IRuntime(project->getProjectDefinition()),
           mDone(false),
           mTime(nullptr),
@@ -69,7 +69,8 @@ namespace Dream
           mModelCache(nullptr),
           mFontCache(nullptr),
           mShaderCache(nullptr),
-          mScriptCache(nullptr)
+          mScriptCache(nullptr),
+          mScriptingEnabled(true)
     {
         setLogClassName("ProjectRuntime");
         auto log = getLog();
@@ -435,15 +436,18 @@ namespace Dream
     {
         auto log = getLog();
 
-        log->info("UpdateLogic Called @ {}",  mTime->now());
+        log->info("UpdateLogic Called @ {}",  mTime->nowLL());
 
         mTime->updateFrameTime();
 
         mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime);
         mInputComponent->updateComponent();
 
-        mScriptComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-        mScriptComponent->updateComponent();
+        if (mScriptingEnabled)
+        {
+            mScriptComponent->setActiveSceneRuntime(mActiveSceneRuntime);
+            mScriptComponent->updateComponent();
+        }
 
         mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
         mPathComponent->updateComponent();
@@ -469,11 +473,14 @@ namespace Dream
     {
         auto log = getLog();
         log->info(
-            "\n====================\nReady to draw @ {}\n====================",
-            mTime->now()
+            "\n"
+            "====================\n"
+            "Ready to draw @ {}\n"
+            "====================",
+            mTime->nowLL()
         );
 
-        log->info("UpdateGraphics Called @" , mTime->getFrameTimeDelta());
+        log->info("UpdateGraphics Called @ {}" , mTime->nowLL());
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->handleResize();
         mGraphicsComponent->drawModelQueue();
@@ -491,8 +498,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("CollectGarbage Called @ {}", mTime->getFrameTimeDelta());
-        // Cleanup Old
+        log->info("CollectGarbage Called @ {}", mTime->nowLL());
         mActiveSceneRuntime->collectGarbage();
     }
 
@@ -608,5 +614,15 @@ namespace Dream
     ()
     {
         delete mActiveSceneRuntime;
+    }
+
+    bool ProjectRuntime::getScriptingEnabled() const
+    {
+        return mScriptingEnabled;
+    }
+
+    void ProjectRuntime::setScriptingEnabled(bool en)
+    {
+        mScriptingEnabled = en;
     }
 }

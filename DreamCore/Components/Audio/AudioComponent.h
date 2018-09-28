@@ -48,6 +48,7 @@ namespace Dream
         vector<AudioInstance*> mPlayQueue;
         vector<AudioInstance*> mPauseQueue;
         vector<AudioInstance*> mStopQueue;
+        vector<AudioInstance*> mFFTQueue;
         vector<ALuint> mSources;
         vector<ALuint> mBuffers;
         ALCdevice*  mDevice;
@@ -62,17 +63,19 @@ namespace Dream
         void setSourcePosision(ALuint, glm::vec3);
         void setListenerPosition(glm::vec3);
 
-        void pushToPlayQueue (AudioInstance*);
+        void pushToPlayQueue(AudioInstance*);
         void pushToPauseQueue(AudioInstance*);
-        void pushToStopQueue (AudioInstance*);
+        void pushToStopQueue(AudioInstance*);
+        void pushToFFTQueue(AudioInstance*);
 
         AudioStatus getAudioStatus(AudioInstance*) const;
 
-        float getSampleOffset(ALuint) const;
-        float getSampleOffset(AudioInstance*) const;
-        vector<char> getAudioBuffer(AudioInstance*, ALint, ALint) const;
+        ALint getSampleOffset(ALuint) const;
+        ALint getSampleOffset(AudioInstance*) const;
+        vector<char> getAudioBuffer(AudioInstance*, size_t, size_t) const;
         AudioInstance* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
         void setVolume(float);
+
 
     protected:
         ALuint generateBuffers(size_t);
@@ -88,6 +91,7 @@ namespace Dream
         void updatePlayQueue();
         void updatePauseQueue();
         void updateStopQueue();
+        void updateFFT();
 
         void deleteAllSources();
         void deleteAllBuffers();

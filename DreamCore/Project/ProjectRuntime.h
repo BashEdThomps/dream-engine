@@ -79,6 +79,8 @@ namespace Dream
         FontCache* mFontCache;
         ShaderCache* mShaderCache;
         ScriptCache* mScriptCache;
+        bool mScriptingEnabled;
+
     public: // Public Functions
         ProjectRuntime(
             Project* parentProject,
@@ -128,6 +130,9 @@ namespace Dream
         ShaderCache* getShaderCache();
         MaterialCache* getTextureCache();
         AssimpCache* getModelCache();
+
+        bool getScriptingEnabled() const;
+        void setScriptingEnabled(bool);
 
     private: // Member Functions
         bool initPathComponent();

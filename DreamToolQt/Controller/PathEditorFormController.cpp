@@ -3,7 +3,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <DreamCore.h>
 #include <QMessageBox>
-#include "../View/WindowInputState.h"
+#include <QKeyEvent>
 
 PathEditorFormController::PathEditorFormController
 (QWidget *parent)
@@ -35,7 +35,9 @@ PathEditorFormController::~PathEditorFormController
     log->trace("Destructing");
 }
 
-void PathEditorFormController::setProjectPath(QString projectPath)
+void
+PathEditorFormController::setProjectPath
+(QString projectPath)
 {
     mProjectPath = projectPath;
 }
@@ -69,7 +71,9 @@ PathEditorFormController::onRemoveButtonClicked
     emit notifyTableChanged();
 }
 
-void PathEditorFormController::onTableChanged()
+void
+PathEditorFormController::onTableChanged
+()
 {
 
     auto log = spdlog::get("PathEditorFormController");
@@ -93,22 +97,29 @@ PathEditorFormController::onTableSelectionChanged
         return;
     }
 
-    int row = indexes.first().row();
+    mSelectedIndex = indexes.first();
+    int row = mSelectedIndex.row();
     log->critical("Selected row {}",row);
     emit notifySelectedRowChanged(row);
 }
 
-void PathEditorFormController::onPathVisibleButtonClicked(bool visible)
+void
+PathEditorFormController::onPathVisibleButtonClicked
+(bool visible)
 {
     emit notifyPathVisibilityChanged(visible);
 }
 
-void PathEditorFormController::onTangentVisibleButtonClicked(bool visible)
+void
+PathEditorFormController::onTangentVisibleButtonClicked
+(bool visible)
 {
    emit notifyTangentVisibilityChanged(visible);
 }
 
-void PathEditorFormController::onTangentIndexChanged(int val)
+void
+PathEditorFormController::onTangentIndexChanged
+(int val)
 {
    emit notifyTangentIndexChanged(val);
 }
@@ -139,13 +150,135 @@ PathEditorFormController::populate
 }
 
 void
-PathEditorFormController::getAllUpInYourFace
+PathEditorFormController::updateNodeFromEvent
 ()
 {
-    show();
-    activateWindow();
-    raise();
-    setFocus();
+   if (mSelectedIndex.row() > -1)
+   {
+        // X
+        if (mInputState.aPressed || mInputState.dPressed)
+        {
+            auto idx = mTableModel.index(mSelectedIndex.row(),1);
+
+            QVariant data = mTableModel.data(idx, Qt::DisplayRole);
+            int current = data.toInt();
+            if (mInputState.dPressed) { current += 1; }
+            if (mInputState.aPressed) { current -= 1; }
+
+            mTableModel.setData(idx, current, Qt::EditRole);
+        }
+
+        //  y
+        if (mInputState.wPressed || mInputState.sPressed)
+        {
+            auto idx = mTableModel.index(mSelectedIndex.row(),2);
+
+            QVariant data = mTableModel.data(idx, Qt::DisplayRole);
+            int current = data.toInt();
+            if (mInputState.wPressed) { current += 1; }
+            if (mInputState.sPressed) { current -= 1; }
+
+            mTableModel.setData(idx, current, Qt::EditRole);
+        }
+
+        // Z
+        if (mInputState.upPressed || mInputState.downPressed)
+        {
+            auto idx = mTableModel.index(mSelectedIndex.row(),3);
+
+            QVariant data = mTableModel.data(idx, Qt::DisplayRole);
+            int current = data.toInt();
+            if (mInputState.upPressed) { current += 1; }
+            if (mInputState.downPressed) { current -= 1; }
+
+            mTableModel.setData(idx, current, Qt::EditRole);
+        }
+
+   }
+}
+
+void
+PathEditorFormController::keyPressEvent
+(QKeyEvent* event)
+{
+    auto log = spdlog::get("PathEditorFormController");
+    log->critical("Got key press event");
+    switch (event->key())
+    {
+        case Qt::Key_W:
+            mInputState.wPressed = true;
+            break;
+        case Qt::Key_A:
+            mInputState.aPressed = true;
+            break;
+        case Qt::Key_S:
+            mInputState.sPressed = true;
+            break;
+        case Qt::Key_D:
+            mInputState.dPressed = true;
+            break;
+        case Qt::Key_Shift:
+            mInputState.shiftPressed = true;
+            break;
+        case Qt::Key_Alt:
+            mInputState.altPressed = true;
+            break;
+        case Qt::Key_Up:
+            mInputState.upPressed = true;
+            break;
+        case Qt::Key_Down:
+            mInputState.downPressed = true;
+            break;
+        case Qt::Key_Left:
+            mInputState.leftPressed = true;
+            break;
+        case Qt::Key_Right:
+            mInputState.rightPressed = true;
+            break;
+    }
+    updateNodeFromEvent();
+}
+
+void
+PathEditorFormController::keyReleaseEvent
+(QKeyEvent* event)
+{
+    auto log = spdlog::get("PathEditorFormController");
+    log->critical("Got key release event");
+     switch (event->key())
+    {
+        case Qt::Key_W:
+            mInputState.wPressed = false;
+            break;
+        case Qt::Key_A:
+            mInputState.aPressed = false;
+            break;
+        case Qt::Key_S:
+            mInputState.sPressed = false;
+            break;
+        case Qt::Key_D:
+            mInputState.dPressed = false;
+            break;
+        case Qt::Key_Shift:
+            mInputState.shiftPressed = false;
+            break;
+        case Qt::Key_Alt:
+            mInputState.altPressed = false;
+            break;
+        case Qt::Key_Up:
+            mInputState.upPressed = false;
+            break;
+        case Qt::Key_Down:
+            mInputState.downPressed = false;
+            break;
+        case Qt::Key_Left:
+            mInputState.leftPressed = false;
+            break;
+        case Qt::Key_Right:
+            mInputState.rightPressed = false;
+            break;
+    }
+    updateNodeFromEvent();
 }
 
 void PathEditorFormController::onNumberOfTangentsChanged(int num)
@@ -161,11 +294,4 @@ PathEditorFormController::closeEvent
 {
     emit notifyCloseEvent();
     QWidget::closeEvent(event);
-}
-
-void
-PathEditorFormController::processInput
-(WindowInputState* state)
-{
-
 }

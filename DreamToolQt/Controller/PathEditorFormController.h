@@ -5,6 +5,8 @@
 #include "Model/PathEditorTableModel.h"
 #include "ui_PathEditorTableForm.h"
 #include "DreamCore.h"
+#include "../View/WindowInputState.h"
+#include <QModelIndex>
 
 
 namespace Dream
@@ -28,7 +30,6 @@ public:
 
     void setProjectPath(QString projectPath);
     void setPathDefinition(PathDefinition* def);
-    void getAllUpInYourFace();
 
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
@@ -55,12 +56,15 @@ signals:
 
 private:
     void populate();
+    void updateNodeFromEvent();
 
 protected:
     PathDefinition* mPathDefinitionHandle;
     QString mProjectPath;
     PathEditorTableModel mTableModel;
     Ui::PathEditorTableForm mUi;
+    WindowInputState mInputState;
+    QModelIndex mSelectedIndex;
 
     // QWidget interface
 protected:

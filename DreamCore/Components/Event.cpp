@@ -29,14 +29,13 @@ namespace Dream
     ) : DreamObject("Event"),
         mSender(sender)
     {
-        setAttribute(Constants::EVENT_TYPE,type);
+        mData[Constants::EVENT_TYPE] = type;
     }
 
     Event::~Event()
     {
         auto log = getLog();
         log->info("Destroying Object");
-        mAttributes.clear();
     }
 
     SceneObjectRuntime*
@@ -52,37 +51,44 @@ namespace Dream
     ()
     const
     {
-        return getAttribute(Constants::EVENT_TYPE);
+        return mData[Constants::EVENT_TYPE];
     }
 
-    void Event::setAttribute(string key, string value)
+    void
+    Event::setJson
+    (string key, nlohmann::json value)
     {
-        mAttributes.insert(pair<string,string>(key,value));
+        mData[key] = value;
     }
 
-    string
-    Event::getAttribute
+    nlohmann::json
+    Event::getJson
     (string key)
     const
     {
-        for (pair<string,string> it : mAttributes)
+       if (mData[key].is_null()) return nlohmann::json();
+       return mData[key];
+    }
+
+    void Event::setString(string key, string value)
+    {
+        mData[key] = value;
+    }
+
+    string
+    Event::getString
+    (string key)
+    const
+    {
+        if (mData.find(key) == mData.end() || mData[key].is_null())
         {
-            if (it.first.compare(key)==0)
-            {
-                return it.second;
-            }
+            return "";
         }
-        return "";
+        return mData[key].dump();
     }
 
     string Event::getData() const
     {
-        return mData;
+        return mData.dump();
     }
-
-    void Event::setData(const string& data)
-    {
-        mData = data;
-    }
-
 } // End of Dream

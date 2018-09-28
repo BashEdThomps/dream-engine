@@ -522,7 +522,7 @@ namespace Dream
                 continue;
             }
 
-            log->critical("Uniform {} needs update",uniform->getName());
+            log->trace("Uniform {} needs update",uniform->getName());
 
             if (uniform->getCount() == 0)
             {

@@ -3,15 +3,35 @@
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
+#include "SpectrumAnalyser.h"
 
 namespace Dream
 {
+    long long AudioInstance::getStartTime() const
+    {
+        return mStartTime;
+    }
+
+    void AudioInstance::setStartTime(long long startTime)
+    {
+        mStartTime = startTime;
+    }
+
+    int AudioInstance::getChannels() const
+    {
+        return mChannels;
+    }
+    
     AudioInstance::AudioInstance
     (AudioComponent* component,
      AudioDefinition* definition,
      SceneObjectRuntime* transform)
         : IAssetInstance(definition, transform),
-          mAudioComponent(component)
+          mAudioComponent(component),
+          mStartTime(-1),
+          mSpectrumAnalyser(nullptr),
+          mLastSampleOffset(0),
+          mChannels(-1)
     {
         setStatus(UNKNOWN);
         setLooping(false);
@@ -123,7 +143,49 @@ namespace Dream
     AudioInstance::loadExtraAttributes
     (nlohmann::json)
     {
-        mLooping = dynamic_cast<AudioDefinition*>(mDefinition)->getLoop();
     }
 
+    void AudioInstance::loadSpectrumAnalyser()
+    {
+        auto log = getLog();
+        auto def = dynamic_cast<AudioDefinition*>(mDefinition);
+        mLooping = def->getLoop();
+        if (def->getSpectrumAnalyser())
+        {
+            mSpectrumAnalyser.reset(new SpectrumAnalyser(this));
+            mSpectrumAnalyser->setSampleRate(mFrequency);
+            mSpectrumAnalyser->setSourceStereo(mFormat == AL_FORMAT_STEREO16);
+            // Currently Arbitrary, from example
+            mSpectrumAnalyser->setParameters(mFrequency/9,1024);
+            log->critical("Creating Spectrum Analyser for {} with sample rate {}",getNameAndUuidString(),mFrequency);
+        }
+        mAudioComponent->pushToFFTQueue(this);
+    }
+
+    void
+    AudioInstance::setSourcePosision
+    (glm::vec3 pos)
+    {
+        alSource3f(mSource, AL_POSITION, pos.x, pos.y, pos.z);
+    }
+
+    void
+    AudioInstance::setVolume
+    (float volume)
+    {
+        alSourcef(mSource, AL_GAIN,volume);
+    }
+
+    void
+    AudioInstance::updateFFT
+    ()
+    {
+        if (mSpectrumAnalyser != nullptr)
+        {
+            auto currentSample = mAudioComponent->getSampleOffset(mSource);
+            // TODO - be less of a clown about this
+            mSpectrumAnalyser->onData(&mAudioDataBuffer[mLastSampleOffset],currentSample-mLastSampleOffset);
+            mLastSampleOffset = currentSample;
+        }
+    }
 } // End of Dream

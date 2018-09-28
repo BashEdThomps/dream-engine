@@ -82,8 +82,8 @@ namespace Dream
         mPhysicsObjectInstance(nullptr),
         mFontInstance(nullptr),
         mTransform(nullptr),
-        mSceneRuntime(sr),
-        mParentRuntime(nullptr),
+        mSceneRuntimeHandle(sr),
+        mParentRuntimeHandle(nullptr),
         mLoaded(false),
         mHasFocus(false),
         mDeleted(false),
@@ -201,13 +201,19 @@ namespace Dream
         if (hasScriptInstance())
         {
             auto scriptComp =
-            mSceneRuntime
+            mSceneRuntimeHandle
                 ->getProjectRuntime()
                 ->getScriptComponent();
             if(scriptComp != nullptr)
             {
                 scriptComp->removeFromScriptMap(this);
             }
+        }
+
+        if (mScriptInstance != nullptr)
+        {
+            delete mScriptInstance;
+            mScriptInstance = nullptr;
         }
     }
 
@@ -217,13 +223,19 @@ namespace Dream
     {
         if (hasPhysicsObjectInstance())
         {
-            auto physicsComp = mSceneRuntime
+            auto physicsComp = mSceneRuntimeHandle
                 ->getProjectRuntime()
                 ->getPhysicsComponent();
            if (physicsComp != nullptr)
            {
                 physicsComp->removePhysicsObjectInstance(getPhysicsObjectInstance());
            }
+        }
+
+        if (mPhysicsObjectInstance != nullptr)
+        {
+            delete mPhysicsObjectInstance;
+            mPhysicsObjectInstance = nullptr;
         }
     }
 
@@ -631,7 +643,7 @@ namespace Dream
     SceneObjectRuntime::createAssetInstanceFromAssetDefinitionByUuid
     (string uuid)
     {
-        auto project = mSceneRuntime->getProjectRuntime()->getProject();
+        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
         if (project != nullptr)
         {
             auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
@@ -644,7 +656,7 @@ namespace Dream
     (IAssetDefinition* definition)
     {
         auto log = getLog();
-        auto project = mSceneRuntime->getProjectRuntime()->getProject();
+        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
 
         if (project != nullptr)
         {
@@ -653,9 +665,9 @@ namespace Dream
 
         log->info( "Creating Asset Intance of: ({}) {}", definition->getType() ,  definition->getName());
 
-        if (mParentRuntime)
+        if (mParentRuntimeHandle)
         {
-            log->info( " for {} " ,mParentRuntime->getNameAndUuidString());
+            log->info( " for {} " ,mParentRuntimeHandle->getNameAndUuidString());
         }
 
         if(definition->isTypePath())
@@ -728,7 +740,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info( "Creating Audio asset instance." );
-        auto audioComp = mSceneRuntime->getProjectRuntime()->getAudioComponent();
+        auto audioComp = mSceneRuntimeHandle->getProjectRuntime()->getAudioComponent();
         if (audioComp != nullptr)
         {
             mAudioInstance = audioComp->newAudioInstance(definition,this);
@@ -743,8 +755,8 @@ namespace Dream
         auto log = getLog();
         log->info( "Creating Model asset instance." );
         mModelInstance = new AssimpModelInstance(
-            mSceneRuntime->getProjectRuntime()->getModelCache(),
-            mSceneRuntime->getProjectRuntime()->getTextureCache(),
+            mSceneRuntimeHandle->getProjectRuntime()->getModelCache(),
+            mSceneRuntimeHandle->getProjectRuntime()->getTextureCache(),
             definition,
             this
         );
@@ -762,7 +774,7 @@ namespace Dream
             this
         );
         mScriptInstance->load(mProjectPath);
-        auto scriptComp = mSceneRuntime->getProjectRuntime()->getScriptComponent();
+        auto scriptComp = mSceneRuntimeHandle->getProjectRuntime()->getScriptComponent();
         if (scriptComp != nullptr)
         {
             scriptComp->addToScriptMap(this,mScriptInstance);
@@ -777,7 +789,7 @@ namespace Dream
         log->info( "Creating Shader asset instance." );
         mShaderInstance = new ShaderInstance
         (
-            mSceneRuntime->getProjectRuntime()->getShaderCache(),
+            mSceneRuntimeHandle->getProjectRuntime()->getShaderCache(),
             definition,
             this
         );
@@ -805,7 +817,7 @@ namespace Dream
         log->info( "Creating Sprite Asset instance." );
         mSpriteInstance = new SpriteInstance
         (
-            mSceneRuntime->getProjectRuntime()->getTextureCache(),
+            mSceneRuntimeHandle->getProjectRuntime()->getTextureCache(),
             definition,
             this
         );
@@ -825,7 +837,7 @@ namespace Dream
         log->info( "Creating Font Asset instance." );
         mFontInstance = new FontInstance
         (
-            mSceneRuntime->getProjectRuntime()->getFontCache(),
+            mSceneRuntimeHandle->getProjectRuntime()->getFontCache(),
             definition,
             this
         );
@@ -923,21 +935,21 @@ namespace Dream
     SceneObjectRuntime::setParentRuntime
     (SceneObjectRuntime* parent)
     {
-        mParentRuntime = parent;
+        mParentRuntimeHandle = parent;
     }
 
     SceneObjectRuntime*
     SceneObjectRuntime::getParentRuntime
     ()
     {
-        return mParentRuntime;
+        return mParentRuntimeHandle;
     }
 
     SceneRuntime*
     SceneObjectRuntime::getSceneRuntime
     ()
     {
-        return mSceneRuntime;
+        return mSceneRuntimeHandle;
     }
 
     SceneObjectDefinition*
@@ -979,7 +991,7 @@ namespace Dream
         for
         (auto it = begin(definitions); it != end(definitions); it++)
         {
-            SceneObjectRuntime* child = new SceneObjectRuntime(*it, mSceneRuntime);
+            SceneObjectRuntime* child = new SceneObjectRuntime(*it, mSceneRuntimeHandle);
             child->setParentRuntime(this);
             child->useDefinition();
             mChildRuntimes.push_back(child);

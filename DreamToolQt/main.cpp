@@ -17,7 +17,7 @@
  */
 
 #include "Controller/MainWindowController.h"
-#include "Controller/MainController.h"
+#include "Controller/ApplicationController.h"
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <spdlog/spdlog.h>
@@ -54,8 +54,6 @@ int main(int argc, char *argv[])
     glFormat.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     glFormat.setSamples(4);
     QSurfaceFormat::setDefaultFormat(glFormat);
-    MainWindowController mainWindow;
-    MainController mainController(&mainWindow);
-    mainWindow.show();
+    ApplicationController mainController;
     return a.exec();
 }

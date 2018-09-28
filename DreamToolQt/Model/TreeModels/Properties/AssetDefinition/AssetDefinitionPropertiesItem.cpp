@@ -149,6 +149,9 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->setLoop(value.toBool());
             break;
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
+            dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->setSpectrumAnalyser(value.toBool());
+            break;
 
             // Font
         case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
@@ -237,6 +240,7 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
@@ -315,6 +319,8 @@ AssetDefinitionPropertiesItem::data
             // Audio
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             return QVariant(dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->getLoop());
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
+            return QVariant(dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->getSpectrumAnalyser());
 
             // Font
         case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
@@ -392,6 +398,7 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
         case ASSET_DEFINITION_PROPERTY_FONT_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:

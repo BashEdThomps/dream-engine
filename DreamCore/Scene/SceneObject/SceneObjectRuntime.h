@@ -198,8 +198,8 @@ namespace Dream
         vector<string> mAssetDefinitionUuidLoadQueue;
         vector<SceneObjectRuntime*> mChildRuntimes;
 
-        SceneRuntime* mSceneRuntime;
-        SceneObjectRuntime* mParentRuntime;
+        SceneRuntime* mSceneRuntimeHandle;
+        SceneObjectRuntime* mParentRuntimeHandle;
         string mProjectPath;
 
         bool mLoaded;

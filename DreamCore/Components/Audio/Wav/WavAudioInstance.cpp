@@ -45,6 +45,7 @@ namespace Dream
     {
         auto log = getLog();
         string absPath = projectPath + mDefinition->getAssetPath();
+        setAbsolutePath(absPath);
         log->info("Loading wav file from {}", absPath);
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
@@ -71,10 +72,12 @@ namespace Dream
             mFrequency = mWavHeader.SamplesPerSecond;
             if (mWavHeader.NumOfChannels == 1)
             {
+                mChannels = 1;
                 mFormat = AL_FORMAT_MONO16;
             }
             else
             {
+                mChannels = 2;
                 mFormat = AL_FORMAT_STEREO16;
             }
             log->info("Read {} bytes", mAudioDataBuffer.size());
@@ -85,9 +88,9 @@ namespace Dream
             log->info(
                 "Status...\n"
                 "\tFile size is: {} bytes\n"
-                "\tRIFF header: {}{}{}{}\n"
-                "\tWAVE header: {}{}{}{}\n"
-                "\tFMT: {}{}{}{}\n"
+                "\tRIFF header: {} {} {} {}\n"
+                "\tWAVE header: {} {} {} {}\n"
+                "\tFMT: {} {} {} {}\n"
                 "\tData size: {}\n"
                 "\tSampling Rate: {}\n"
                 "\tBits used: {}\n"
@@ -96,35 +99,24 @@ namespace Dream
                 "\tData length: {}\n"
                 "\tAudio Format: {}\n"
                 "\tBlock align: {}\n"
-                "\tData string: {}{}{}{}\n",
+                "\tData string: {} {} {} {}\n",
                   filelength,
-                  mWavHeader.RIFF[0] ,
-                  mWavHeader.RIFF[1],
-                  mWavHeader.RIFF[2] ,
-                  mWavHeader.RIFF[3],
-                  mWavHeader.WAVE[0],
-                  mWavHeader.WAVE[1] ,
-                  mWavHeader.WAVE[2],
-                  mWavHeader.WAVE[3] ,
-                  mWavHeader.fmt[0],
-                  mWavHeader.fmt[1] ,
-                  mWavHeader.fmt[2],
-                  mWavHeader.fmt[3] ,
-                  mWavHeader.ChunkSize ,
-                  mWavHeader.SamplesPerSecond ,
-                  mWavHeader.BitsPerSample ,
-                  mWavHeader.NumOfChannels ,
-                  mWavHeader.BytesPerSecond ,
+                  mWavHeader.RIFF[0], mWavHeader.RIFF[1], mWavHeader.RIFF[2], mWavHeader.RIFF[3],
+                  mWavHeader.WAVE[0], mWavHeader.WAVE[1], mWavHeader.WAVE[2], mWavHeader.WAVE[3],
+                  mWavHeader.fmt[0], mWavHeader.fmt[1], mWavHeader.fmt[2], mWavHeader.fmt[3] ,
+                  mWavHeader.ChunkSize,
+                  mWavHeader.SamplesPerSecond,
+                  mWavHeader.BitsPerSample,
+                  mWavHeader.NumOfChannels,
+                  mWavHeader.BytesPerSecond,
                   mWavHeader.Subchunk2Size,
-                  mWavHeader.AudioFormat ,
+                  mWavHeader.AudioFormat,
                   mWavHeader.BlockAlign,
-                  mWavHeader.Subchunk2ID[0] ,
-                  mWavHeader.Subchunk2ID[1],
-                  mWavHeader.Subchunk2ID[2] ,
-                  mWavHeader.Subchunk2ID[3]
+                  mWavHeader.Subchunk2ID[0], mWavHeader.Subchunk2ID[1], mWavHeader.Subchunk2ID[2], mWavHeader.Subchunk2ID[3]
             );
         }
         fclose(wavFile);
+        //loadSpectrumAnalyser();
         return true;
     }
 

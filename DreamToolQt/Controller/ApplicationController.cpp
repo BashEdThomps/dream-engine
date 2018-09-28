@@ -1,5 +1,5 @@
 /*
- * MainController.cpp
+ * ApplicationController.cpp
  *
  * Created: 14 2017 by Ashley
  *
@@ -16,7 +16,7 @@
  * this file belongs to.
  */
 
-#include "MainController.h"
+#include "ApplicationController.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -44,11 +44,9 @@ using std::cout;
 
 // Constructors/Destructors =====================================================
 
-MainController::MainController
-(MainWindowController* parent)
+ApplicationController::ApplicationController
+(QObject* parent)
     : QObject(parent),
-      mMainWindowHandle(parent),
-      mWindowComponent(parent->getWindowComponent()),
       mSelectedProjectDefinitionHandle(nullptr),
       mSelectedAssetDefinitionHandle(nullptr),
       mSelectedSceneDefinitionHandle(nullptr),
@@ -56,16 +54,16 @@ MainController::MainController
       mLastDirectory(QDir::home()),
       mLastVolume(100)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
 
     if (!log)
     {
-        log = spdlog::stdout_color_mt("MainController");
+        log = spdlog::stdout_color_mt("ApplicationController");
     }
 
     log->info( "Constructing Object");
 
-    mDreamProjectModel.reset(new DreamProjectModel(this,mWindowComponent));
+    mDreamProjectModel.reset(new DreamProjectModel(this,mMainWindowHandle.getWindowComponent()));
 
     mMacOsOpenModel.reset(
         new MacOSOpenModel(
@@ -76,62 +74,67 @@ MainController::MainController
 
     setupUI();
     setupConnections();
-    mMainWindowHandle->setTemplatesModelHandle(&mTemplatesModel);
+    mMainWindowHandle.setTemplatesModelHandle(&mTemplatesModel);
+    mMainWindowHandle.show();
 }
 
-MainController::~MainController
+ApplicationController::~ApplicationController
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Destroying Object");
 }
 
 // Setup ========================================================================
 
 void
-MainController::setupUI
+ApplicationController::setupUI
 ()
 {
     setupUI_GLWidgets();
     connect(
-        mMainWindowHandle,
+        &mMainWindowHandle,
         SIGNAL(notifyCreateNewAssetDefinition(QString)),
         this,
         SLOT(onCreateNewAssetDefinition(QString))
     );
     connect(
-        mMainWindowHandle,
+        &mMainWindowHandle,
         SIGNAL(notifyScenegraphTreeDataChanged()),
         this,
         SLOT(onScenegraphTreeDataChanged())
     );
 
      connect(
-        mMainWindowHandle,
+        &mMainWindowHandle,
         SIGNAL(notifyAssetDefinitionTreeDataChanged()),
         this,
         SLOT(onAssetDefinitionTreeDataChanged())
     );
     connect(
-        mMainWindowHandle,
+        &mMainWindowHandle,
         SIGNAL(notifyPropertiesTreeDataChanged()),
         this,
         SLOT(onPropertiesTreeDataChanged())
     );
     connect(
-        this, SIGNAL(notifyProjectDefinitionChanged(ProjectDefinition*)),
-        mMainWindowHandle, SLOT(onProjectDefinitionChanged(ProjectDefinition*))
+        this,
+        SIGNAL(notifyProjectDefinitionChanged(ProjectDefinition*)),
+        &mMainWindowHandle,
+        SLOT(onProjectDefinitionChanged(ProjectDefinition*))
     );
     connect
     (
-        mMainWindowHandle, SIGNAL(notifyMainVolumeChanged(int)),
-        this, SLOT(onMainVolumeChanged(int))
+        &mMainWindowHandle,
+        SIGNAL(notifyMainVolumeChanged(int)),
+        this,
+        SLOT(onMainVolumeChanged(int))
     );
     // Path List Form
-    connectPathEditorSignals();
+    connectUI_PathEditorSignals();
 }
 
-void MainController::connectPathEditorSignals()
+void ApplicationController::connectUI_PathEditorSignals()
 {
     connect
     (
@@ -184,37 +187,38 @@ void MainController::connectPathEditorSignals()
 }
 
 void
-MainController::setupUI_GLWidgets
+ApplicationController::setupUI_GLWidgets
 ()
 {
+    auto windowComp =  mMainWindowHandle.getWindowComponent();
     mGrid.reset(new Grid(this));
-    mWindowComponent->setGridHandle(getGridHandle());
+    windowComp->setGridHandle(getGridHandle());
 
     mSelectionHighlighter.reset(new SelectionHighlighter(this));
-    mWindowComponent->setSelectionHighlighterHandle(getSelectionHighlighterHandle());
+    windowComp->setSelectionHighlighterHandle(getSelectionHighlighterHandle());
 
     mRelationshipTree.reset(new RelationshipTree(this));
-    mWindowComponent->setRelationshipTreeHandle(getRelationshipTreeHandle());
+    windowComp->setRelationshipTreeHandle(getRelationshipTreeHandle());
 
     mPathPointViewer.reset(new PathPointViewer(this));
-    mWindowComponent->setPathPointViewerHandle(getPathPointViewerHandle());
+    windowComp->setPathPointViewerHandle(getPathPointViewerHandle());
 }
 
 void
-MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
+ApplicationController::setupUI_AssetDefinitionPropertiesTreeViewModel
 (AssetDefinitionTreeItem* item)
 {
-    auto log = spdlog::get("MainController");
-    QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
+    auto log = spdlog::get("ApplicationController");
+    QTreeView *propertiesTreeView = mMainWindowHandle.getPropertiesTreeView();
 
-    mPropertiesModel.reset(nullptr);
+    mPropertiesTreeModel.reset(nullptr);
 
     switch(item->getType())
     {
         case AssetDefinitionTreeItemType::ASSET_DEFINITION:
             log->info( "Selected an asset definition");
             mSelectedAssetDefinitionHandle = static_cast<AssetDefinitionTreeItem*>(item)->getAssetDefinition();
-            mPropertiesModel.reset(
+            mPropertiesTreeModel.reset(
                 new AssetDefinitionPropertiesModel(
                     mSelectedAssetDefinitionHandle,
                     propertiesTreeView
@@ -223,17 +227,24 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
 
             // Audio File
             connect
-                    (
-                        mPropertiesModel.get(),
-                        SIGNAL(notifyButton_AudioFile(IAssetDefinition* )),
-                        this,
-                        SLOT(onAssetDefinitionProperty_AudioFile(IAssetDefinition* ))
-                        );
+            (
+                mPropertiesTreeModel.get(),
+                SIGNAL(notifyButton_AudioFile(IAssetDefinition* )),
+                this,
+                SLOT(onAssetDefinitionProperty_AudioFile(IAssetDefinition* ))
+            );
+            connect
+            (
+                mPropertiesTreeModel.get(),
+                SIGNAL(notifyButton_AudioEvents(IAssetDefinition* )),
+                this,
+                SLOT(onAssetDefinitionProperty_AudioEvents(IAssetDefinition* ))
+            );
 
             // Font File
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_FontFile(IAssetDefinition* )),
                         this,
                         SLOT(onAssetDefinitionProperty_FontFile(IAssetDefinition* ))
@@ -242,7 +253,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Model File
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_ModelFile(IAssetDefinition* )),
                         this,
                         SLOT(onAssetDefinitionProperty_ModelFile(IAssetDefinition* ))
@@ -251,7 +262,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Model Additional Files
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_ModelAdditionalFiles(IAssetDefinition* )),
                         this,
                         SLOT(onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition* ))
@@ -260,7 +271,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Remove Files
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_RemoveFiles(IAssetDefinition* )),
                         this,
                         SLOT(onAssetDefinitionProperty_RemoveFiles(IAssetDefinition* ))
@@ -268,7 +279,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Model Material/Shader Map
             connect
             (
-                mPropertiesModel.get(),
+                mPropertiesTreeModel.get(),
                 SIGNAL(notifyButton_ModelMaterialShaderMap(IAssetDefinition* )),
                 this,
                 SLOT(onAssetDefinitionProperty_ModelMaterialShaderMap(IAssetDefinition* ))
@@ -277,7 +288,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Edit Script
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_EditScript(IAssetDefinition* )),
                         this,
                         SLOT(onAssetDefinitionProperty_EditScript(IAssetDefinition* ))
@@ -286,7 +297,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Edit Vertex Shader
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_EditShader(IAssetDefinition* )),
                         this,
                         SLOT(onAssetDefinitionProperty_EditShader(IAssetDefinition* ))
@@ -295,7 +306,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Script Template
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyCombo_ScriptTemplateChanged(IAssetDefinition* ,QString&)),
                         this,
                         SLOT(onAssetDefinitionProperty_ScriptTemplateChanged(IAssetDefinition* ,QString&))
@@ -304,7 +315,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Shader Template
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyCombo_ShaderTemplateChanged(IAssetDefinition* ,QString&)),
                         this,
                         SLOT(onAssetDefinitionProperty_ShaderTemplateChanged(IAssetDefinition* ,QString&))
@@ -313,7 +324,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // PhysicsObject Mesh File
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_PhysicsBvhTriangleMeshFile(IAssetDefinition* )),
                         this,
                         SLOT(onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition* ))
@@ -322,21 +333,21 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Light Colour
             connect
             (
-                mPropertiesModel.get(),
+                mPropertiesTreeModel.get(),
                 SIGNAL(notifyButton_LightChooseAmbient(IAssetDefinition* )),
                 this,
                 SLOT(onAssetDefinitionProperty_LightChooseAmbient(IAssetDefinition* ))
             );
             connect
             (
-                mPropertiesModel.get(),
+                mPropertiesTreeModel.get(),
                 SIGNAL(notifyButton_LightChooseDiffuse(IAssetDefinition* )),
                 this,
                 SLOT(onAssetDefinitionProperty_LightChooseDiffuse(IAssetDefinition* ))
             );
             connect
             (
-                mPropertiesModel.get(),
+                mPropertiesTreeModel.get(),
                 SIGNAL(notifyButton_LightChooseSpecular(IAssetDefinition* )),
                 this,
                 SLOT(onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition* ))
@@ -344,7 +355,7 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             // Path List
             connect
             (
-                mPropertiesModel.get(),
+                mPropertiesTreeModel.get(),
                 SIGNAL(notifyButton_PathList(IAssetDefinition* )),
                 this,
                 SLOT(onAssetDefinitionProperty_PathList(IAssetDefinition* ))
@@ -356,27 +367,27 @@ MainController::setupUI_AssetDefinitionPropertiesTreeViewModel
             break;
     }
 
-    if (mPropertiesModel)
+    if (mPropertiesTreeModel)
     {
-        propertiesTreeView->setModel(mPropertiesModel.get());
+        propertiesTreeView->setModel(mPropertiesTreeModel.get());
     }
 }
 
 void
-MainController::setupUI_ScenegraphPropertiesTreeViewModel
+ApplicationController::setupUI_ScenegraphPropertiesTreeViewModel
 (ScenegraphTreeItem *item)
 {
-    auto log = spdlog::get("MainController");
-    QTreeView *propertiesTreeView = mMainWindowHandle->getPropertiesTreeView();
+    auto log = spdlog::get("ApplicationController");
+    QTreeView *propertiesTreeView = mMainWindowHandle.getPropertiesTreeView();
 
-    mPropertiesModel.reset(nullptr);
+    mPropertiesTreeModel.reset(nullptr);
 
     switch(item->getType())
     {
         case ScenegraphTreeItemType::SCENEGRAPH_PROJECT:
             log->info( "Selected a project");
             mSelectedProjectDefinitionHandle = mDreamProjectModel->getProject()->getProjectDefinition();
-            mPropertiesModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
+            mPropertiesTreeModel.reset(new ProjectPropertiesModel(mSelectedProjectDefinitionHandle,propertiesTreeView));
             emit notifyProjectDefinitionChanged(mSelectedProjectDefinitionHandle);
             break;
 
@@ -390,14 +401,14 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 
             if (mSelectedSceneDefinitionHandle != nullptr)
             {
-                mPropertiesModel.reset(new ScenePropertiesModel(mSelectedSceneDefinitionHandle,propertiesTreeView));
+                mPropertiesTreeModel.reset(new ScenePropertiesModel(mSelectedSceneDefinitionHandle,propertiesTreeView));
             }
 
 
             // Capture Camera Translation
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_CaptureCameraTranslation(SceneDefinition* )),
                         this,
                         SLOT(onSceneProperty_CaptureCameraTranslation(SceneDefinition* ))
@@ -406,7 +417,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             // Capture Camera Orientation
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_CaptureCameraLookAt(SceneDefinition* )),
                         this,
                         SLOT(onSceneProperty_CaptureCameraLookAt(SceneDefinition* ))
@@ -415,13 +426,13 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             // Choose Clear Colour
             connect
                     (
-                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseClearColour(SceneDefinition* )),
+                        mPropertiesTreeModel.get(), SIGNAL(notifyButton_ChooseClearColour(SceneDefinition* )),
                         this, SLOT(onSceneProperty_ChooseClearColour(SceneDefinition* ))
                         );
             // Choose Ambient Colour
             connect
                     (
-                        mPropertiesModel.get(), SIGNAL(notifyButton_ChooseAmbientColour(SceneDefinition* )),
+                        mPropertiesTreeModel.get(), SIGNAL(notifyButton_ChooseAmbientColour(SceneDefinition* )),
                         this, SLOT(onSceneProperty_ChooseAmbientColour(SceneDefinition* ))
                         );
             break;
@@ -432,13 +443,13 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
                 static_cast<ScenegraphTreeItem*>(item)->getItem()
             );
 
-            mPropertiesModel.reset(
+            mPropertiesTreeModel.reset(
                 new SceneObjectPropertiesModel(mSelectedSceneObjectDefinitionHandle,propertiesTreeView)
             );
 
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_CaptureTranslation(SceneObjectDefinition*)),
                         this,
                         SLOT(onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*))
@@ -446,7 +457,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_CaptureOrientation(SceneObjectDefinition*)),
                         this,
                         SLOT(onSceneObjectProperty_CaptureOrientation(SceneObjectDefinition*))
@@ -454,7 +465,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_CaptureScale(SceneObjectDefinition*)),
                         this,
                         SLOT(onSceneObjectProperty_CaptureScale(SceneObjectDefinition*))
@@ -462,7 +473,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_RemoveAsset(SceneObjectDefinition*,IDefinition* )),
                         this,
                         SLOT(onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*,IDefinition* ))
@@ -470,7 +481,7 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
 
             connect
                     (
-                        mPropertiesModel.get(),
+                        mPropertiesTreeModel.get(),
                         SIGNAL(notifyButton_RemoveChild(SceneObjectDefinition*,IDefinition*)),
                         this,
                         SLOT(onSceneObjectProperty_RemoveChild(SceneObjectDefinition*,IDefinition*))
@@ -507,14 +518,14 @@ MainController::setupUI_ScenegraphPropertiesTreeViewModel
             break;
     }
 
-    if (mPropertiesModel)
+    if (mPropertiesTreeModel)
     {
-        propertiesTreeView->setModel(mPropertiesModel.get());
+        propertiesTreeView->setModel(mPropertiesTreeModel.get());
     }
 }
 
 void
-MainController::setupConnections
+ApplicationController::setupConnections
 ()
 {
     connectMenus();
@@ -524,7 +535,7 @@ MainController::setupConnections
 // Signal/Slot Connectors =======================================================
 
 void
-MainController::connectMenus
+ApplicationController::connectMenus
 ()
 {
     connectPreferences();
@@ -536,78 +547,78 @@ MainController::connectMenus
 }
 
 void
-MainController::connectPreferences
+ApplicationController::connectPreferences
 ()
 {
     connect
             (
-                mMainWindowHandle->getAction_Preferences(),SIGNAL(triggered()),
+                mMainWindowHandle.getAction_Preferences(),SIGNAL(triggered()),
                 this, SLOT(onAction_Preferences())
                 );
 }
 
 void
-MainController::connectFileMenu
+ApplicationController::connectFileMenu
 ()
 {
     // actionNew
     connect
             (
-                mMainWindowHandle->getAction_File_New(), SIGNAL(triggered()),
+                mMainWindowHandle.getAction_File_New(), SIGNAL(triggered()),
                 this, SLOT(onAction_File_New())
                 );
 
     // actionOpen
     connect
             (
-                mMainWindowHandle->getAction_File_Open(), SIGNAL(triggered()),
+                mMainWindowHandle.getAction_File_Open(), SIGNAL(triggered()),
                 this, SLOT(onAction_File_Open())
                 );
 
     // actionSave
     connect
             (
-                mMainWindowHandle->getAction_File_Save(), SIGNAL(triggered()),
+                mMainWindowHandle.getAction_File_Save(), SIGNAL(triggered()),
                 this, SLOT(onAction_File_Save())
                 );
 
     // actionCloseProject
     connect
             (
-                mMainWindowHandle->getAction_File_CloseProject(), SIGNAL(triggered()),
+                mMainWindowHandle.getAction_File_CloseProject(), SIGNAL(triggered()),
                 this, SLOT(onAction_File_Close())
                 );
 }
 
 void
-MainController::connectSceneMenu
+ApplicationController::connectSceneMenu
 ()
 {
     // actionPlay
     connect
             (
-                mMainWindowHandle->getAction_Scene_Play(), SIGNAL(triggered()),
+                mMainWindowHandle.getAction_Scene_Play(), SIGNAL(triggered()),
                 this, SLOT(onAction_Scene_Play())
                 );
 
     // actionReload
     connect
             (
-                mMainWindowHandle->getAction_Scene_Reload(), SIGNAL(triggered()),
+                mMainWindowHandle.getAction_Scene_Reload(), SIGNAL(triggered()),
                 this, SLOT(onAction_Scene_Reload())
                 );
 
     // actionStop
     connect
             (
-                mMainWindowHandle->getAction_Scene_Stop(), SIGNAL(triggered()),
+                mMainWindowHandle.getAction_Scene_Stop(), SIGNAL(triggered()),
                 this, SLOT(onAction_Scene_Stop())
                 );
 
     // New Scene
     connect
             (
-                mMainWindowHandle->getAction_Scene_NewScene(),
+                mMainWindowHandle.getAction_Scene_NewScene(),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Scene_NewScene())
@@ -616,7 +627,7 @@ MainController::connectSceneMenu
     // New Scene Object
     connect
             (
-                mMainWindowHandle->getAction_Scene_NewSceneObject(),
+                mMainWindowHandle.getAction_Scene_NewSceneObject(),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Scene_NewSceneObject())
@@ -625,7 +636,7 @@ MainController::connectSceneMenu
     // Connect Control Scene
     connect
     (
-        mMainWindowHandle->getAction_ControlScene(),
+        mMainWindowHandle.getAction_ControlScene(),
         SIGNAL(toggled(bool)),
         this,
         SLOT(onAction_ControlSceneTriggered(bool))
@@ -633,13 +644,13 @@ MainController::connectSceneMenu
 }
 
 void
-MainController::connectAssetMenu
+ApplicationController::connectAssetMenu
 ()
 {
     // Assets Menu -> Add To Selected SceneObject
     connect
             (
-                mMainWindowHandle->getAction_Asset_AddToSelectedSceneObject(),
+                mMainWindowHandle.getAction_Asset_AddToSelectedSceneObject(),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_AddToSelectedSceneObjectDefinition())
@@ -648,7 +659,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Path
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::PATH),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::PATH),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Path())
@@ -657,7 +668,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Audio
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::AUDIO),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::AUDIO),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Audio())
@@ -666,7 +677,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Font
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::FONT),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::FONT),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Font())
@@ -675,7 +686,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Light
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::LIGHT),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::LIGHT),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Light())
@@ -684,7 +695,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Model
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::MODEL),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::MODEL),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Model())
@@ -693,7 +704,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Physics Object
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::PHYSICS_OBJECT),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::PHYSICS_OBJECT),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_PhysicsObject())
@@ -702,7 +713,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Script
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SCRIPT),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SCRIPT),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Script())
@@ -711,7 +722,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Shader
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SHADER),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SHADER),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Shader())
@@ -720,7 +731,7 @@ MainController::connectAssetMenu
     // Asset Menu -> New Definition -> Sprite
     connect
             (
-                mMainWindowHandle->getAction_Asset_NewDefinition(AssetType::SPRITE),
+                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SPRITE),
                 SIGNAL(triggered()),
                 this,
                 SLOT(onAction_Asset_NewDefinition_Sprite())
@@ -728,39 +739,39 @@ MainController::connectAssetMenu
 }
 
 void
-MainController::connectViewMenu
+ApplicationController::connectViewMenu
 ()
 {
     // Action Toggle Grid
     connect
             (
-                mMainWindowHandle->getAction_View_ToggleGrid(),SIGNAL(triggered(bool)),
+                mMainWindowHandle.getAction_View_ToggleGrid(),SIGNAL(triggered(bool)),
                 this,SLOT(onAction_View_ToggleGrid(bool))
                 );
 
     // Action Toggle Debug
     connect
             (
-                mMainWindowHandle->getAction_View_ToggleDebug(),SIGNAL(triggered(bool)),
+                mMainWindowHandle.getAction_View_ToggleDebug(),SIGNAL(triggered(bool)),
                 this,SLOT(onAction_View_ToggleDebug(bool))
                 );
 
     // Action Toggle Physics Debug
     connect
             (
-                mMainWindowHandle->getAction_View_TogglePhysicsDebug(),SIGNAL(triggered(bool)),
+                mMainWindowHandle.getAction_View_TogglePhysicsDebug(),SIGNAL(triggered(bool)),
                 this,SLOT(onAction_View_TogglePhysicsDebug(bool))
                 );
 
 }
 
 void
-MainController::connectDebugMenu
+ApplicationController::connectDebugMenu
 ()
 {
     connect
             (
-                mMainWindowHandle->getAction_Debug_DumpProjectDefinitionJson(),
+                mMainWindowHandle.getAction_Debug_DumpProjectDefinitionJson(),
                 SIGNAL(triggered(bool)),
                 this,
                 SLOT(onAction_Debug_DumpProjectDefinitionJson(bool))
@@ -768,20 +779,22 @@ MainController::connectDebugMenu
 }
 
 void
-MainController::connectUI
+ApplicationController::connectUI
 ()
 {
     // Status Bar
     connect
-        (
-        this, SIGNAL(notifyStatusBarProjectLoaded(QString)),
-        mMainWindowHandle, SLOT(showStatusBarMessage(QString))
-        );
+    (
+        this,
+        SIGNAL(notifyStatusBarProjectLoaded(QString)),
+        &mMainWindowHandle,
+        SLOT(showStatusBarMessage(QString))
+    );
     // Project Directory Changed
     connect
             (
                 this, SIGNAL(notifyProjectDirectoryChanged(QString)),
-                mMainWindowHandle, SLOT(setWindowTitle(QString))
+                &mMainWindowHandle, SLOT(setWindowTitle(QString))
                 );
     // Valid Scene Selected
     connect
@@ -793,68 +806,75 @@ MainController::connectUI
     connect
             (
                 this, SIGNAL(notifyInvalidProjectDirectory(QString)),
-                mMainWindowHandle, SLOT(onInvalidProjectDirectory(QString))
+                &mMainWindowHandle, SLOT(onInvalidProjectDirectory(QString))
                 );
     // No Scene Selected
     connect
             (
                 this,SIGNAL(notifyNoSceneSelected()),
-                mMainWindowHandle, SLOT(onNoSceneSelected())
+                &mMainWindowHandle, SLOT(onNoSceneSelected())
                 );
+    connect
+    (
+        &mMainWindowHandle,
+        SIGNAL(notifyActionScriptingTriggered(bool)),
+        this,
+        SLOT(onActionScriptingTriggered(bool))
+    );
 }
 
 void
-MainController::connectUI_TreeViewModels
+ApplicationController::connectUI_TreeViewModels
 ()
 {
     // projectTreeView
     connect
             (
-                mMainWindowHandle->getScenegraphTreeView()->selectionModel(),
+                mMainWindowHandle.getScenegraphTreeView()->selectionModel(),
                 SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
                 this, SLOT(onUI_ScenegraphTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
                 );
      connect(
         mScenegraphTreeModel.get(),
         SIGNAL(notifyExpandRequested()),
-        mMainWindowHandle,
+        &mMainWindowHandle,
         SLOT(onScenegraphTreeExpandRequested())
     );
 
     // assetDefinitionTreeView
     connect
             (
-                mMainWindowHandle->getAssetDefinitionTreeView()->selectionModel(),
+                mMainWindowHandle.getAssetDefinitionTreeView()->selectionModel(),
                 SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
                 this, SLOT(onUI_AssetDefinitionTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
                 );
 
-    mMainWindowHandle->getScenegraphTreeView()->expandAll();
-    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+   // mMainWindowHandle.getScenegraphTreeView()->expandAll();
+   // mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
 }
 
 void
-MainController::updateWindowTitle
+ApplicationController::updateWindowTitle
 (QString msg)
 {
     emit notifyProjectDirectoryChanged("Dream Tool :: " + msg);
 }
 
 void
-MainController::setActionsEnabled_ValidProject
+ApplicationController::setActionsEnabled_ValidProject
 (bool enabled)
 {
-    mMainWindowHandle->setActionsEnabled_Scene_Playback(enabled);
-    mMainWindowHandle->setActionsEnabled_Scene_Modification(enabled);
-    mMainWindowHandle->setActionEnabled_File_Save(enabled);
+    mMainWindowHandle.setActionsEnabled_Scene_Playback(enabled);
+    mMainWindowHandle.setActionsEnabled_Scene_Modification(enabled);
+    mMainWindowHandle.setActionEnabled_File_Save(enabled);
 }
 
 QStringListModel*
-MainController::getSceneNamesListModel
+ApplicationController::getSceneNamesListModel
 (vector<SceneDefinition*> sceneList)
 {
     QStringList sceneNameList;
-    mSceneListModel.reset(new QStringListModel(mMainWindowHandle));
+    mSceneListModel.reset(new QStringListModel(&mMainWindowHandle));
 
     for (auto scene : sceneList)
     {
@@ -866,10 +886,10 @@ MainController::getSceneNamesListModel
 }
 
 void
-MainController::onAction_Scene_Play
+ApplicationController::onAction_Scene_Play
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "onReloadProject Clicked");
     SceneDefinition* sceneDefinitionHandle = mDreamProjectModel->getSelectedSceneDefinition();
     if (sceneDefinitionHandle)
@@ -888,7 +908,7 @@ MainController::onAction_Scene_Play
 }
 
 void
-MainController::onAction_Scene_Reload
+ApplicationController::onAction_Scene_Reload
 ()
 {
     onAction_Scene_Stop();
@@ -896,24 +916,26 @@ MainController::onAction_Scene_Reload
 }
 
 void
-MainController::onAction_Scene_Stop
+ApplicationController::onAction_Scene_Stop
 ()
 {
-    mWindowComponent->clearRuntime();
+    auto windowComp = mMainWindowHandle.getWindowComponent();
+    windowComp->clearRuntime();
     mDreamProjectModel->stopActiveSceneRuntime();
 }
 
 void
-MainController::onAction_ControlSceneTriggered
+ApplicationController::onAction_ControlSceneTriggered
 (bool activated)
 {
-    auto log = spdlog::get("MainController");
-    log->critical("Scene Control Enabled {}",activated);
-   mWindowComponent->setControlScene(activated);
+   auto log = spdlog::get("ApplicationController");
+   auto windowComp = mMainWindowHandle.getWindowComponent();
+   log->critical("Scene Control Enabled {}",activated);
+   windowComp->setControlScene(activated);
 }
 
 void
-MainController::onUI_ScenegraphTreeViewSelectionChanged
+ApplicationController::onUI_ScenegraphTreeViewSelectionChanged
 (const QItemSelection& selected,const QItemSelection& deselected)
 {
     Q_UNUSED(deselected)
@@ -922,12 +944,12 @@ MainController::onUI_ScenegraphTreeViewSelectionChanged
     {
         ScenegraphTreeItem *selected = static_cast<ScenegraphTreeItem*>(indexes.at(0).internalPointer());
         setupUI_ScenegraphPropertiesTreeViewModel(selected);
-        mMainWindowHandle->getPropertiesTreeView()->expandAll();
+        //mMainWindowHandle.getPropertiesTreeView()->expandAll();
     }
 }
 
 void
-MainController::onUI_AssetDefinitionTreeViewSelectionChanged
+ApplicationController::onUI_AssetDefinitionTreeViewSelectionChanged
 (const QItemSelection& selected,const QItemSelection& deselected)
 {
     Q_UNUSED(deselected)
@@ -936,7 +958,7 @@ MainController::onUI_AssetDefinitionTreeViewSelectionChanged
     {
         AssetDefinitionTreeItem *selected = static_cast<AssetDefinitionTreeItem*>(indexes.at(0).internalPointer());
         setupUI_AssetDefinitionPropertiesTreeViewModel(selected);
-        mMainWindowHandle->getPropertiesTreeView()->expandAll();
+        //mMainWindowHandle.getPropertiesTreeView()->expandAll();
     }
 }
 
@@ -945,9 +967,10 @@ MainController::onUI_AssetDefinitionTreeViewSelectionChanged
 // File Menu
 
 void
-MainController::onAction_File_New ()
+ApplicationController::onAction_File_New
+()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::Directory);
     openDialog.setLabelText(QFileDialog::Accept, "Create Project");
@@ -967,7 +990,7 @@ MainController::onAction_File_New ()
         {
             auto result = QMessageBox::question
             (
-                mMainWindowHandle,
+                &mMainWindowHandle,
                 "Directory not empty",
                 "The chosen directory is not empty.\n\n Are you sure you want to create a project here?"
             );
@@ -992,7 +1015,7 @@ MainController::onAction_File_New ()
 }
 
 void
-MainController::onAction_File_Open
+ApplicationController::onAction_File_Open
 ()
 {
     QFileDialog openDialog;
@@ -1017,32 +1040,32 @@ MainController::onAction_File_Open
 }
 
 void
-MainController::onAction_File_Save
+ApplicationController::onAction_File_Save
 ()
 {
     bool saveResult = mProjectDirectoryModel.writeProjectFile();
     if(saveResult)
     {
-        emit notifyStatusBarProjectLoaded(
-                    QString::fromStdString(
-                        "Successfuly Saved Project: " +
-                        mDreamProjectModel->getProject()->getProjectDefinition()->getNameAndUuidString()
-                        )
-                    );
+        emit notifyStatusBarProjectLoaded (
+            QString::fromStdString (
+                "Successfuly Saved Project: " +
+                mDreamProjectModel->getProject()->getProjectDefinition()->getNameAndUuidString()
+            )
+        );
     }
     else
     {
-        emit notifyStatusBarProjectLoaded(
-                    QString::fromStdString(
-                        "Error Saving Project: " +
-                        mDreamProjectModel->getProject()->getProjectDefinition()->getNameAndUuidString()
-                        )
-                    );
+        emit notifyStatusBarProjectLoaded (
+            QString::fromStdString (
+                "Error Saving Project: " +
+                mDreamProjectModel->getProject()->getProjectDefinition()->getNameAndUuidString()
+            )
+        );
     }
 }
 
 void
-MainController::onAction_File_Close
+ApplicationController::onAction_File_Close
 ()
 {
     mSelectedProjectDefinitionHandle = nullptr;
@@ -1050,13 +1073,13 @@ MainController::onAction_File_Close
     mSelectedSceneDefinitionHandle = nullptr;
     mSelectedSceneObjectDefinitionHandle = nullptr;
 
-    mMainWindowHandle->getScenegraphTreeView()->setModel(nullptr);
+    mMainWindowHandle.getScenegraphTreeView()->setModel(nullptr);
     mScenegraphTreeModel.reset();
 
-    mMainWindowHandle->getAssetDefinitionTreeView()->setModel(nullptr);
+    mMainWindowHandle.getAssetDefinitionTreeView()->setModel(nullptr);
     mAssetDefinitionTreeModel.reset();
 
-    mMainWindowHandle->getPropertiesTreeView()->setModel(nullptr);
+    mMainWindowHandle.getPropertiesTreeView()->setModel(nullptr);
 
     mDreamProjectModel->closeProject();
 
@@ -1066,40 +1089,40 @@ MainController::onAction_File_Close
 // View Menu
 
 void
-MainController::onAction_View_ToggleGrid
+ApplicationController::onAction_View_ToggleGrid
 (bool enabled)
 {
-    mWindowComponent->setGridEnabled(enabled);
+    mMainWindowHandle.getWindowComponent()->setGridEnabled(enabled);
 }
 
 void
-MainController::onAction_View_ToggleDebug
+ApplicationController::onAction_View_ToggleDebug
 (bool enabled)
 {
     mDreamProjectModel->setDebug(enabled);
 }
 
 void
-MainController::onAction_View_TogglePhysicsDebug
+ApplicationController::onAction_View_TogglePhysicsDebug
 (bool enable)
 {
     mDreamProjectModel->setPhysicsDebug(enable);
 }
 
 void
-MainController::onAction_View_ToggleSelectionHighlighter
+ApplicationController::onAction_View_ToggleSelectionHighlighter
 (bool enabled)
 {
-    mWindowComponent->setSelectionHighlighterEnabled(enabled);
+    mMainWindowHandle.getWindowComponent()->setSelectionHighlighterEnabled(enabled);
 }
 
 // Scene Menu
 
 void
-MainController::onAction_Scene_NewScene
+ApplicationController::onAction_Scene_NewScene
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "onScenegraphAddSceneAction");
     Project* pHandle = mDreamProjectModel->getProject();
     if (pHandle)
@@ -1117,10 +1140,10 @@ MainController::onAction_Scene_NewScene
 }
 
 void
-MainController::onAction_Scene_NewSceneObject
+ApplicationController::onAction_Scene_NewSceneObject
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "onScenegraphAddSceneObjectAction");
     if (mSelectedSceneObjectDefinitionHandle)
     {
@@ -1133,10 +1156,10 @@ MainController::onAction_Scene_NewSceneObject
 // Asset Menu
 
 void
-MainController::onAction_Asset_AddToSelectedSceneObjectDefinition
+ApplicationController::onAction_Asset_AddToSelectedSceneObjectDefinition
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "onAction_Asset_AddToSelectedSceneObjectDefinition ");
     if (mSelectedSceneObjectDefinitionHandle && mSelectedAssetDefinitionHandle)
     {
@@ -1148,10 +1171,10 @@ MainController::onAction_Asset_AddToSelectedSceneObjectDefinition
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Path
+ApplicationController::onAction_Asset_NewDefinition_Path
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Path Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(PATH))
     {
@@ -1160,10 +1183,10 @@ MainController::onAction_Asset_NewDefinition_Path
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Audio
+ApplicationController::onAction_Asset_NewDefinition_Audio
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Audio Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(AUDIO))
     {
@@ -1172,10 +1195,10 @@ MainController::onAction_Asset_NewDefinition_Audio
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Font
+ApplicationController::onAction_Asset_NewDefinition_Font
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Font Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(FONT))
     {
@@ -1184,10 +1207,10 @@ MainController::onAction_Asset_NewDefinition_Font
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Light
+ApplicationController::onAction_Asset_NewDefinition_Light
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Light Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(LIGHT))
     {
@@ -1196,10 +1219,10 @@ MainController::onAction_Asset_NewDefinition_Light
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Model
+ApplicationController::onAction_Asset_NewDefinition_Model
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Model Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(MODEL))
     {
@@ -1208,10 +1231,10 @@ MainController::onAction_Asset_NewDefinition_Model
 }
 
 void
-MainController::onAction_Asset_NewDefinition_PhysicsObject
+ApplicationController::onAction_Asset_NewDefinition_PhysicsObject
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Physics Object Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(PHYSICS_OBJECT))
     {
@@ -1220,10 +1243,10 @@ MainController::onAction_Asset_NewDefinition_PhysicsObject
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Script
+ApplicationController::onAction_Asset_NewDefinition_Script
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Script Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(SCRIPT))
     {
@@ -1232,10 +1255,10 @@ MainController::onAction_Asset_NewDefinition_Script
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Shader
+ApplicationController::onAction_Asset_NewDefinition_Shader
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Shader Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(SHADER))
     {
@@ -1244,10 +1267,10 @@ MainController::onAction_Asset_NewDefinition_Shader
 }
 
 void
-MainController::onAction_Asset_NewDefinition_Sprite
+ApplicationController::onAction_Asset_NewDefinition_Sprite
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Creating new Sprite Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(SPRITE))
     {
@@ -1256,10 +1279,10 @@ MainController::onAction_Asset_NewDefinition_Sprite
 }
 
 void
-MainController::onAssetDefinitionProperty_ModelFile
+ApplicationController::onAssetDefinitionProperty_ModelFile
 (IAssetDefinition* adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(mLastDirectory);
@@ -1280,7 +1303,7 @@ MainController::onAssetDefinitionProperty_ModelFile
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
                     (
-                        mMainWindowHandle,
+                        &mMainWindowHandle,
                         "Overwrite Existing File?",
                         "An asset file all ready exists. Do you want to replace it?"
                         );
@@ -1306,10 +1329,10 @@ MainController::onAssetDefinitionProperty_ModelFile
 }
 
 void
-MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
+ApplicationController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
 (IAssetDefinition*  adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(mLastDirectory);
@@ -1330,7 +1353,7 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
                     (
-                        mMainWindowHandle,
+                        &mMainWindowHandle,
                         "Overwrite Existing File?",
                         "An asset file all ready exists. Do you want to replace it?"
                         );
@@ -1355,10 +1378,10 @@ MainController::onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile
 }
 
 void
-MainController::onSceneProperty_CaptureCameraTranslation
+ApplicationController::onSceneProperty_CaptureCameraTranslation
 (SceneDefinition*  sdHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "CaptureCameraTranslation");
     Project* pHandle = mDreamProjectModel->getProject();
 
@@ -1375,7 +1398,7 @@ MainController::onSceneProperty_CaptureCameraTranslation
 
             auto translation = camera->getTranslation();
             sdHandle->setCameraTranslation(translation);
-            mMainWindowHandle->showStatusBarMessage(
+            mMainWindowHandle.showStatusBarMessage(
                 QString("Captured Camera Translation x:%1, y:%2, z:%3")
                         .arg(QString::number(translation.x, 'G', 5))
                         .arg(QString::number(translation.y, 'G', 5))
@@ -1391,10 +1414,10 @@ MainController::onSceneProperty_CaptureCameraTranslation
 }
 
 void
-MainController::onSceneProperty_CaptureCameraLookAt
+ApplicationController::onSceneProperty_CaptureCameraLookAt
 (SceneDefinition* sdHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "CaptureCameraLookAt");
     Project* pHandle = mDreamProjectModel->getProject();
 
@@ -1413,7 +1436,7 @@ MainController::onSceneProperty_CaptureCameraLookAt
 
             sdHandle->setCameraPitch(pitch);
             sdHandle->setCameraYaw(yaw);
-            mMainWindowHandle->showStatusBarMessage(
+            mMainWindowHandle.showStatusBarMessage(
                 QString("Captured Camera LookAt pitch: %1, yaw:%2")
                         .arg(QString::number(pitch, 'G', 5))
                         .arg(QString::number(yaw, 'G', 5))
@@ -1429,9 +1452,9 @@ MainController::onSceneProperty_CaptureCameraLookAt
 
 
 
-void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition*  sceneDef)
+void ApplicationController::onSceneProperty_ChooseAmbientColour(SceneDefinition*  sceneDef)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Choose Ambient Colour");
 
     QColor currentColour;
@@ -1445,7 +1468,12 @@ void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition*  scene
 
             );
 
-    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Ambient Colour",QColorDialog::ShowAlphaChannel);
+    auto chosenColour = QColorDialog::getColor (
+        currentColour,
+        &mMainWindowHandle,
+        "Ambient Colour",
+        QColorDialog::ShowAlphaChannel
+    );
 
     if (chosenColour.isValid())
     {
@@ -1458,10 +1486,10 @@ void MainController::onSceneProperty_ChooseAmbientColour(SceneDefinition*  scene
 }
 
 void
-MainController::onSceneProperty_ChooseClearColour
+ApplicationController::onSceneProperty_ChooseClearColour
 (SceneDefinition*  sceneDef)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Choose Clear Colour");
     QColor currentColour;
     auto colour = sceneDef->getClearColour();
@@ -1471,7 +1499,11 @@ MainController::onSceneProperty_ChooseClearColour
             static_cast<double>(colour[2]) // b
             );
 
-    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Clear Colour");
+    auto chosenColour = QColorDialog::getColor (
+        currentColour,
+        &mMainWindowHandle,
+        "Clear Colour"
+    );
 
     if (chosenColour.isValid())
     {
@@ -1482,10 +1514,10 @@ MainController::onSceneProperty_ChooseClearColour
 }
 
 void
-MainController::onCreateNewAssetDefinition
+ApplicationController::onCreateNewAssetDefinition
 (QString type)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info("Creating new asset definition {}",type.toStdString());
     AssetType assetType = Constants::getAssetTypeEnumFromString(type.toStdString());
 
@@ -1523,9 +1555,9 @@ MainController::onCreateNewAssetDefinition
     }
 }
 
-void MainController::onMainVolumeChanged(int vol)
+void ApplicationController::onMainVolumeChanged(int vol)
 {
-   auto log = spdlog::get("MainController");
+   auto log = spdlog::get("ApplicationController");
    mLastVolume = vol;
    if (mDreamProjectModel != nullptr)
    {
@@ -1547,21 +1579,34 @@ void MainController::onMainVolumeChanged(int vol)
    }
 }
 
-void MainController::onPathEditorClosed()
+void ApplicationController::onPathEditorClosed()
 {
+    auto log = spdlog::get("ApplicationController");
+    log->critical("Path editor was closed");
     mPathPointViewer->setPathDefinition(nullptr);
+    mMainWindowHandle.setPathEditorFormControllerHandle(nullptr);
 }
 
-void MainController::onPathVisibilityChanged(bool visible)
+void ApplicationController::onPathVisibilityChanged(bool visible)
 {
-   mPathPointViewer->setPathVisible(visible);
+    mPathPointViewer->setPathVisible(visible);
 }
 
 void
-MainController::onAssetDefinitionProperty_ModelAdditionalFiles
+ApplicationController::onActionScriptingTriggered
+(bool checked)
+{
+    if (mDreamProjectModel)
+    {
+        mDreamProjectModel->setScriptingEnabled(checked);
+    }
+}
+
+void
+ApplicationController::onAssetDefinitionProperty_ModelAdditionalFiles
 (IAssetDefinition*  adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFiles);
     openDialog.setDirectory(mLastDirectory);
@@ -1586,12 +1631,12 @@ MainController::onAssetDefinitionProperty_ModelAdditionalFiles
 
 // UI Signal/Slot Handlers ======================================================
 void
-MainController::onUI_SelectedSceneChanged
+ApplicationController::onUI_SelectedSceneChanged
 (SceneDefinition* scene)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     mDreamProjectModel->setSelectedSceneDefinition(scene);
-    mMainWindowHandle->showStatusBarMessage(
+    mMainWindowHandle.showStatusBarMessage(
                 QString("Selected Scene: %1").
                 arg(QString::fromStdString(scene->getName())
                     )
@@ -1599,75 +1644,75 @@ MainController::onUI_SelectedSceneChanged
 }
 
 void
-MainController::onUI_ScenegraphUpdated
+ApplicationController::onUI_ScenegraphUpdated
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "updating scenegraph tree model");
     mScenegraphTreeModel->setupModelData();
-    mMainWindowHandle->getScenegraphTreeView()->expandAll();
+    //mMainWindowHandle.getScenegraphTreeView()->expandAll();
 }
 
 void
-MainController::onUI_AssetDefinitionsUpdated
+ApplicationController::onUI_AssetDefinitionsUpdated
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "updating scenegraph tree model");
     mAssetDefinitionTreeModel->setupModelData();
-    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+    //mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
 }
 
 void
-MainController::onUI_ProjectNameChanged
+ApplicationController::onUI_ProjectNameChanged
 (QString name)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Name set to {}" , name.toStdString());
     mDreamProjectModel->setProjectName(name.toStdString());
 }
 
 void
-MainController::onUI_ProjectAuthorChanged
+ApplicationController::onUI_ProjectAuthorChanged
 (QString author)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Author set to " , author.toStdString());
     mDreamProjectModel->setProjectAuthor(author.toStdString());
 }
 
 void
-MainController::onUI_ProjectDescriptionChanged
+ApplicationController::onUI_ProjectDescriptionChanged
 (QString desc)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Description set to " , desc.toStdString());
     mDreamProjectModel->setProjectDescription(desc.toStdString());
 }
 
 void
-MainController::onUI_ProjectWindowWidthChanged
+ApplicationController::onUI_ProjectWindowWidthChanged
 (QString width)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Window Width set to " , width.toStdString());
     mDreamProjectModel->setProjectWindowWidth(width.toInt());
 }
 
 void
-MainController::onUI_ProjectWindowHeightChanged
+ApplicationController::onUI_ProjectWindowHeightChanged
 (QString height)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Window Height set to {}" , height.toStdString());
     mDreamProjectModel->setProjectWindowHeight(height.toInt());
 }
 
 void
-MainController::onUI_ProjectStartupSceneChanged
+ApplicationController::onUI_ProjectStartupSceneChanged
 (QString startupSceneIndex)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     string sceneName = getSceneNameFromModelIndex(startupSceneIndex.toInt());
     log->info( "startupScene set to {} {}" , startupSceneIndex.toStdString() ,  sceneName);
     SceneDefinition*  sceneHandle = mDreamProjectModel->getProject()
@@ -1679,60 +1724,79 @@ MainController::onUI_ProjectStartupSceneChanged
 // Object Handle Getters ========================================================
 
 RelationshipTree*
-MainController::getRelationshipTreeHandle
+ApplicationController::getRelationshipTreeHandle
 ()
 {
     return mRelationshipTree.get();
 }
 
-PathPointViewer* MainController::getPathPointViewerHandle()
+PathPointViewer*
+ApplicationController::getPathPointViewerHandle
+()
 {
-   return mPathPointViewer.get();
+    return mPathPointViewer.get();
 }
 
-void MainController::forceScenegraphTreeDataChanged()
+PathEditorFormController*
+ApplicationController::getPathEditorFormControllerHandle
+()
+{
+   return &mPathEditorFormController;
+}
+
+void
+ApplicationController::forceScenegraphTreeDataChanged
+()
 {
     mScenegraphTreeModel->forceDataChanged();
-    mMainWindowHandle->getScenegraphTreeView()->expandAll();
+    //mMainWindowHandle.getScenegraphTreeView()->expandAll();
 }
 
-void MainController::forceAssetDefinitionTreeDataChanged()
+void
+ApplicationController::forceAssetDefinitionTreeDataChanged
+()
 {
     mAssetDefinitionTreeModel->forceDataChanged();
-    mMainWindowHandle->getAssetDefinitionTreeView()->expandAll();
+    //mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
 }
 
-void MainController::onScenegraphTreeDataChanged()
+void
+ApplicationController::onScenegraphTreeDataChanged
+()
 {
     forceScenegraphTreeDataChanged();
 }
 
-void MainController::onAssetDefinitionTreeDataChanged()
+void
+ApplicationController::onAssetDefinitionTreeDataChanged
+()
 {
     forceAssetDefinitionTreeDataChanged();
 }
 
-void MainController::onPropertiesTreeDataChanged()
+void
+ApplicationController::onPropertiesTreeDataChanged
+()
 {
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
 void
-MainController::onAction_Preferences
+ApplicationController::onAction_Preferences
 ()
 {
     mPreferencesDialogController.showDialog();
 }
 
 Grid*
-MainController::getGridHandle
+ApplicationController::getGridHandle
 ()
 {
     return mGrid.get();
 }
 
 SelectionHighlighter*
-MainController::getSelectionHighlighterHandle
+ApplicationController::getSelectionHighlighterHandle
 ()
 {
     return mSelectionHighlighter.get();
@@ -1741,10 +1805,10 @@ MainController::getSelectionHighlighterHandle
 // Misc =========================================================================
 
 void
-MainController::openProject
+ApplicationController::openProject
 ()
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     bool loadResult = mDreamProjectModel->loadProject(mProjectDirectory);
 
     mProjectDirectoryModel.setProjectDefinitionHandle
@@ -1775,12 +1839,12 @@ MainController::openProject
     emit notifyProjectWidgetsEnabledChanged(true);
     emit notifyProjectDefinitionChanged(currentProject);
 
-    mScenegraphTreeModel.reset(new ScenegraphTreeModel(currentProject,mMainWindowHandle->getScenegraphTreeView()));
-    mMainWindowHandle->getScenegraphTreeView()->setModel(mScenegraphTreeModel.get());
-    mMainWindowHandle->setProjectDirectoryModel(&mProjectDirectoryModel);
+    mScenegraphTreeModel.reset(new ScenegraphTreeModel(currentProject,mMainWindowHandle.getScenegraphTreeView()));
+    mMainWindowHandle.getScenegraphTreeView()->setModel(mScenegraphTreeModel.get());
+    mMainWindowHandle.setProjectDirectoryModel(&mProjectDirectoryModel);
 
-    mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(currentProject,mMainWindowHandle->getAssetDefinitionTreeView()));
-    mMainWindowHandle->getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
+    mAssetDefinitionTreeModel.reset(new AssetDefinitionTreeModel(currentProject,mMainWindowHandle.getAssetDefinitionTreeView()));
+    mMainWindowHandle.getAssetDefinitionTreeView()->setModel(mAssetDefinitionTreeModel.get());
     mSelectedSceneDefinitionHandle = currentProject->getStartupSceneDefinition();
     mDreamProjectModel->setSelectedSceneDefinition(mSelectedSceneDefinitionHandle);
 
@@ -1806,14 +1870,14 @@ MainController::openProject
 }
 
 string
-MainController::getSceneNameFromModelIndex
+ApplicationController::getSceneNameFromModelIndex
 (int index)
 {
     return mSceneListModel->stringList().at(index).toStdString();
 }
 
 void
-MainController::onAction_Debug_DumpProjectDefinitionJson
+ApplicationController::onAction_Debug_DumpProjectDefinitionJson
 (bool toggled)
 {
     Q_UNUSED(toggled)
@@ -1825,10 +1889,19 @@ MainController::onAction_Debug_DumpProjectDefinitionJson
 }
 
 void
-MainController::onAssetDefinitionProperty_AudioFile
+ApplicationController::onAssetDefinitionProperty_AudioEvents
 (IAssetDefinition*  adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
+    mMainWindowHandle.openAudioEventEditor(dynamic_cast<AudioDefinition*>(adHandle));
+}
+
+
+void
+ApplicationController::onAssetDefinitionProperty_AudioFile
+(IAssetDefinition*  adHandle)
+{
+    auto log = spdlog::get("ApplicationController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(mLastDirectory);
@@ -1852,7 +1925,7 @@ MainController::onAssetDefinitionProperty_AudioFile
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
                     (
-                        mMainWindowHandle,
+                        &mMainWindowHandle,
                         "Overwrite Existing File?",
                         "An asset file all ready exists. Do you want to replace it?"
                         );
@@ -1879,11 +1952,11 @@ MainController::onAssetDefinitionProperty_AudioFile
 
     }
 
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
 void
-MainController::showImportResultDialog
+ApplicationController::showImportResultDialog
 (bool success, IAssetDefinition*  adHandle, QString source)
 {
     if (!success)
@@ -1891,7 +1964,7 @@ MainController::showImportResultDialog
         ;
         QMessageBox::critical
                 (
-                    mMainWindowHandle,
+                    &mMainWindowHandle,
                     QString("Import Failed"),
                     QString("Unable to import\n\n%1\n\nnto\n\n%2")
                     .arg(source,QString::fromStdString(adHandle->getAssetPath()))
@@ -1901,7 +1974,7 @@ MainController::showImportResultDialog
     {
         QMessageBox::information
                 (
-                    mMainWindowHandle,
+                    &mMainWindowHandle,
                     QString("Import Success"),
                     QString("Successfuly imported\n\n%1\n\nto\n\n%2")
                     .arg(source,QString::fromStdString(adHandle->getAssetPath()))
@@ -1910,10 +1983,10 @@ MainController::showImportResultDialog
 }
 
 void
-MainController::onAssetDefinitionProperty_FontFile
+ApplicationController::onAssetDefinitionProperty_FontFile
 (IAssetDefinition*  adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     QFileDialog openDialog;
     openDialog.setFileMode(QFileDialog::ExistingFile);
     openDialog.setDirectory(mLastDirectory);
@@ -1939,7 +2012,7 @@ MainController::onAssetDefinitionProperty_FontFile
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
                     (
-                        mMainWindowHandle,
+                        &mMainWindowHandle,
                         "Overwrite Existing File?",
                         "An asset file all ready exists. Do you want to replace it?"
                         );
@@ -1967,12 +2040,12 @@ MainController::onAssetDefinitionProperty_FontFile
 }
 
 void
-MainController::onAssetDefinitionProperty_RemoveFiles
+ApplicationController::onAssetDefinitionProperty_RemoveFiles
 (IAssetDefinition*  adHandle)
 {
     auto result = QMessageBox::question
             (
-                mMainWindowHandle,
+                &mMainWindowHandle,
                 "Remove Asset Data?",
                 "Are you sure you want to delete the asset data?"
                 );
@@ -1983,13 +2056,13 @@ MainController::onAssetDefinitionProperty_RemoveFiles
         return;
     }
 
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
-void MainController::onAssetDefinitionProperty_ModelMaterialShaderMap
+void ApplicationController::onAssetDefinitionProperty_ModelMaterialShaderMap
 (IAssetDefinition* adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info("Opening Material/Shader Map Widget");
     mMaterialShaderTableController.setProjectPath(mProjectDirectoryModel.getProjectDirectoryAbsolutePath());
     mMaterialShaderTableController.setModelDefinition(dynamic_cast<ModelDefinition*>(adHandle));
@@ -1999,31 +2072,31 @@ void MainController::onAssetDefinitionProperty_ModelMaterialShaderMap
         mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinition();
     }
     mMaterialShaderTableController.setShaderHandlesVector(mSelectedProjectDefinitionHandle->getShaderAssetDefinitionVector());
-    mMainWindowHandle->addRightDockWidget(&mMaterialShaderTableController);
+    mMainWindowHandle.addRightDockWidget(&mMaterialShaderTableController);
 }
 
 void
-MainController::onAssetDefinitionProperty_EditScript
+ApplicationController::onAssetDefinitionProperty_EditScript
 (IAssetDefinition* adHandle)
 {
-    mMainWindowHandle->openScriptEditor(dynamic_cast<ScriptDefinition*>(adHandle));
+    mMainWindowHandle.openScriptEditor(dynamic_cast<ScriptDefinition*>(adHandle));
 }
 
 void
-MainController::onAssetDefinitionProperty_EditShader
+ApplicationController::onAssetDefinitionProperty_EditShader
 (IAssetDefinition* adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "EditShader");
-    mMainWindowHandle->openShaderEditor(dynamic_cast<ShaderDefinition*>(adHandle));
+    mMainWindowHandle.openShaderEditor(dynamic_cast<ShaderDefinition*>(adHandle));
 }
 
 void
-MainController::onAssetDefinitionProperty_ScriptTemplateChanged
+ApplicationController::onAssetDefinitionProperty_ScriptTemplateChanged
 (IAssetDefinition* adHandle,  QString& templateName)
 {
     // TODO - Move this to the script editor window
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Script Template Changed");
     auto result = QMessageBox::Yes;
 
@@ -2031,7 +2104,7 @@ MainController::onAssetDefinitionProperty_ScriptTemplateChanged
     {
         result = QMessageBox::question
         (
-            mMainWindowHandle,
+            &mMainWindowHandle,
             "Load Script Template",
             "Are you sure you want to load this template? Any existing data will be lost."
         );
@@ -2053,10 +2126,10 @@ MainController::onAssetDefinitionProperty_ScriptTemplateChanged
 }
 
 void
-MainController::onAssetDefinitionProperty_ShaderTemplateChanged
+ApplicationController::onAssetDefinitionProperty_ShaderTemplateChanged
 (IAssetDefinition* adHandle,  QString& templateName)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Shader Template Changed");
 
     QString fragmentContent = mTemplatesModel.getShaderTemplate
@@ -2088,10 +2161,10 @@ MainController::onAssetDefinitionProperty_ShaderTemplateChanged
                 );
 }
 
-void MainController::onAssetDefinitionProperty_LightChooseAmbient
+void ApplicationController::onAssetDefinitionProperty_LightChooseAmbient
 (IAssetDefinition* def)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Choose Diffuse Colour");
 
     QColor currentColour;
@@ -2104,7 +2177,11 @@ void MainController::onAssetDefinitionProperty_LightChooseAmbient
         static_cast<double>(colour.b)
     );
 
-    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Ambient Colour");
+    auto chosenColour = QColorDialog::getColor (
+        currentColour,
+        &mMainWindowHandle,
+        "Ambient Colour"
+    );
 
     if (chosenColour.isValid())
     {
@@ -2117,14 +2194,14 @@ void MainController::onAssetDefinitionProperty_LightChooseAmbient
         );
     }
 
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
 void
-MainController::onAssetDefinitionProperty_LightChooseDiffuse
+ApplicationController::onAssetDefinitionProperty_LightChooseDiffuse
 (IAssetDefinition*  def)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Choose Diffuse Colour");
 
     QColor currentColour;
@@ -2137,7 +2214,11 @@ MainController::onAssetDefinitionProperty_LightChooseDiffuse
         static_cast<double>(colour.b)
     );
 
-    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Diffuse Colour");
+    auto chosenColour = QColorDialog::getColor (
+        currentColour,
+        &mMainWindowHandle,
+        "Diffuse Colour"
+    );
 
     if (chosenColour.isValid())
     {
@@ -2150,14 +2231,14 @@ MainController::onAssetDefinitionProperty_LightChooseDiffuse
         );
     }
 
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
 void
-MainController::onAssetDefinitionProperty_LightChooseSpecular
+ApplicationController::onAssetDefinitionProperty_LightChooseSpecular
 (IAssetDefinition*  def)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "Choose Specular Colour");
 
     QColor currentColour;
@@ -2170,7 +2251,11 @@ MainController::onAssetDefinitionProperty_LightChooseSpecular
         static_cast<double>(colour.b)
     );
 
-    auto chosenColour = QColorDialog::getColor(currentColour,mMainWindowHandle,"Specular Colour");
+    auto chosenColour = QColorDialog::getColor (
+        currentColour,
+        &mMainWindowHandle,
+        "Specular Colour"
+    );
 
     if (chosenColour.isValid())
     {
@@ -2183,26 +2268,27 @@ MainController::onAssetDefinitionProperty_LightChooseSpecular
         );
     }
 
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
 
 void
-MainController::onAssetDefinitionProperty_PathList
+ApplicationController::onAssetDefinitionProperty_PathList
 (IAssetDefinition*  adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info("Opening PathList Widget");
     mPathEditorFormController.setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
     mPathPointViewer->setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
-    mMainWindowHandle->addRightDockWidget(&mPathEditorFormController);
+    mMainWindowHandle.setPathEditorFormControllerHandle(&mPathEditorFormController);
+    mMainWindowHandle.addRightDockWidget(&mPathEditorFormController);
 }
 
 void
-MainController::onSceneObjectProperty_CaptureTranslation
+ApplicationController::onSceneObjectProperty_CaptureTranslation
 (SceneObjectDefinition* sodHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "CaptureTranslation");
     Project* pHandle = mDreamProjectModel->getProject();
     if (pHandle != nullptr)
@@ -2222,14 +2308,14 @@ MainController::onSceneObjectProperty_CaptureTranslation
         }
     }
 
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
 void
-MainController::onSceneObjectProperty_CaptureOrientation
+ApplicationController::onSceneObjectProperty_CaptureOrientation
 (SceneObjectDefinition* sodHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "CaptureOrientation");
     Project* pHandle = mDreamProjectModel->getProject();
     if (pHandle)
@@ -2249,14 +2335,14 @@ MainController::onSceneObjectProperty_CaptureOrientation
         }
     }
 
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }
 
 void
-MainController::onSceneObjectProperty_CaptureScale
+ApplicationController::onSceneObjectProperty_CaptureScale
 (SceneObjectDefinition* sodHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info( "CaptureScale");
     Project* pHandle = mDreamProjectModel->getProject();
     if (pHandle)
@@ -2276,30 +2362,30 @@ MainController::onSceneObjectProperty_CaptureScale
         }
     }
 
-   mPropertiesModel->forceDataChanged();
+   mPropertiesTreeModel->forceDataChanged();
 
 }
 
 void
-MainController::onSceneObjectProperty_RemoveAsset
+ApplicationController::onSceneObjectProperty_RemoveAsset
 (SceneObjectDefinition* sodHandle,IDefinition*  adHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info(
                 "RemoveAsset {} from {}",
                 adHandle->getNameAndUuidString(),
                 sodHandle->getNameAndUuidString()
                 );
     sodHandle->removeAssetDefinitionFromLoadQueue(dynamic_cast<IAssetDefinition*>(adHandle));
-    mPropertiesModel->forceDataChanged();
-    mMainWindowHandle->getPropertiesTreeView()->update();
+    mPropertiesTreeModel->forceDataChanged();
+    mMainWindowHandle.getPropertiesTreeView()->update();
 }
 
 void
-MainController::onSceneObjectProperty_RemoveChild
+ApplicationController::onSceneObjectProperty_RemoveChild
 (SceneObjectDefinition* sodHandle, IDefinition* sodChildHandle)
 {
-    auto log = spdlog::get("MainController");
+    auto log = spdlog::get("ApplicationController");
     log->info(
                 "RemoveChild {} from {}",
                 sodChildHandle->getNameAndUuidString(),
@@ -2307,5 +2393,5 @@ MainController::onSceneObjectProperty_RemoveChild
                 );
     sodHandle->removeChildSceneObjectDefinition(dynamic_cast<SceneObjectDefinition*>(sodChildHandle));
     onUI_ScenegraphUpdated();
-    mPropertiesModel->forceDataChanged();
+    mPropertiesTreeModel->forceDataChanged();
 }

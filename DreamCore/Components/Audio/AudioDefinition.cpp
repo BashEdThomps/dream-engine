@@ -27,6 +27,8 @@ namespace Dream
 
     }
 
+    AudioDefinition::~AudioDefinition(){}
+
     bool
     AudioDefinition::isFormatWav
     ()
@@ -59,5 +61,21 @@ namespace Dream
         return mJson[Constants::ASSET_ATTR_LOOP];
     }
 
+    bool
+    AudioDefinition::getSpectrumAnalyser
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER];
+    }
 
+    void
+    AudioDefinition::setSpectrumAnalyser
+    (bool sa)
+    {
+        mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = sa;
+    }
 }
