@@ -21,7 +21,7 @@ namespace Dream
     {
         return mChannels;
     }
-    
+
     AudioInstance::AudioInstance
     (AudioComponent* component,
      AudioDefinition* definition,
@@ -38,6 +38,7 @@ namespace Dream
         setBuffer(0);
         setSource(0);
         loadExtraAttributes(json::object());
+        generateEventList();
     }
 
     void
@@ -158,8 +159,8 @@ namespace Dream
             // Currently Arbitrary, from example
             mSpectrumAnalyser->setParameters(mFrequency/9,1024);
             log->critical("Creating Spectrum Analyser for {} with sample rate {}",getNameAndUuidString(),mFrequency);
+            mAudioComponent->pushToUpdateQueue(this);
         }
-        mAudioComponent->pushToFFTQueue(this);
     }
 
     void
@@ -186,6 +187,66 @@ namespace Dream
             // TODO - be less of a clown about this
             mSpectrumAnalyser->onData(&mAudioDataBuffer[mLastSampleOffset],currentSample-mLastSampleOffset);
             mLastSampleOffset = currentSample;
+        }
+    }
+    void
+    AudioInstance::generateEventList
+    ()
+    {
+        auto ad = dynamic_cast<AudioDefinition*>(mDefinition);
+        auto nMarkers = ad->countMarkers();
+
+        if (nMarkers == 0)
+        {
+           return;
+        }
+
+        mMarkerEvents.clear();
+
+        for (int markerIndex = 0; markerIndex< nMarkers; markerIndex++)
+        {
+            auto log = getLog();
+            log->info("Generating events for marker {}", markerIndex);
+            auto markerStart = ad->getMarkerSampleIndex(markerIndex);
+            auto count = ad->getMarkerRepeat(markerIndex);
+            auto step = ad->getMarkerRepeatPeriod(markerIndex);
+            auto markerName = ad->getMarkerName(markerIndex);
+
+            auto next = markerStart;
+            log->info("Marker {}'s is : ", markerIndex, next);
+            Event e(mSceneObjectRuntime,"audio");
+            e.setString("name",markerName);
+            e.setNumber("time",markerStart);
+            mMarkerEvents.push_back(e);
+
+            for (int repeatIndex=1; repeatIndex<=count; repeatIndex++)
+            {
+                auto next = markerStart + (repeatIndex*step);
+                log->info("Marker {}'s {}th step is : ", markerIndex, repeatIndex, next);
+                Event e(mSceneObjectRuntime,"audio");
+                e.setString("name",markerName);
+                e.setNumber("time",next);
+                mMarkerEvents.push_back(e);
+            }
+        }
+
+        mAudioComponent->pushToUpdateQueue(this);
+    }
+
+    void
+    AudioInstance::updateMarkers
+    ()
+    {
+        auto currentSample = mAudioComponent->getSampleOffset(mSource);
+        if (!mMarkerEvents.empty())
+        {
+            Event e = mMarkerEvents.at(0);
+            auto time = e.getNumber("time");
+            if (currentSample > time)
+            {
+                mSceneObjectRuntime->addEvent(e);
+                mMarkerEvents.pop_front();
+            }
         }
     }
 } // End of Dream

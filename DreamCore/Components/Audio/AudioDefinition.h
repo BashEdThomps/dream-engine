@@ -21,6 +21,44 @@
 
 namespace  Dream
 {
+    /*
+    class AudioEventMarker
+    {
+    public:
+        // No-Args Constructor
+        AudioEventMarker()
+            : index(-1),
+              name(""),
+              sampleIndex(-1)
+        {}
+
+        // Args Constructor
+        AudioEventMarker(int idx, string n, int sIndex)
+            : index(idx),
+              name(n),
+              sampleIndex(sIndex)
+        {}
+
+        // Copy Constructor
+        AudioEventMarker(const AudioEventMarker& other)
+        {
+            index = other.index;
+            name = other.name;
+            sampleIndex = other.sampleIndex;
+        }
+
+        bool operator==(const AudioEventMarker& other)
+        {
+            return index == other.index &&
+                   name.compare(other.name) == 0 &&
+                   sampleIndex == other.sampleIndex;
+        }
+
+        int index;
+        string name;
+        int sampleIndex;
+    };
+    */
 
     class AudioDefinition : public IAssetDefinition
     {
@@ -36,6 +74,23 @@ namespace  Dream
 
         bool getSpectrumAnalyser();
         void setSpectrumAnalyser(bool);
+
+        int createMarker();
+        void removeMarker(const int index);
+        int countMarkers();
+
+        string getMarkerName(int index);
+        void setMarkerName(int index, string name);
+
+        int getMarkerSampleIndex(int index);
+        void setMarkerSampleIndex(int index, int smpl);
+
+        int getMarkerRepeat(int index);
+        void setMarkerRepeat(int index, int repeat);
+
+        int getMarkerRepeatPeriod(int index);
+        void setMarkerRepeatPeriod(int index, int rp);
+
     };
 
 }

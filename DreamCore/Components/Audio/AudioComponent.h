@@ -48,7 +48,7 @@ namespace Dream
         vector<AudioInstance*> mPlayQueue;
         vector<AudioInstance*> mPauseQueue;
         vector<AudioInstance*> mStopQueue;
-        vector<AudioInstance*> mFFTQueue;
+        vector<AudioInstance*> mUpdateQueue;
         vector<ALuint> mSources;
         vector<ALuint> mBuffers;
         ALCdevice*  mDevice;
@@ -66,7 +66,7 @@ namespace Dream
         void pushToPlayQueue(AudioInstance*);
         void pushToPauseQueue(AudioInstance*);
         void pushToStopQueue(AudioInstance*);
-        void pushToFFTQueue(AudioInstance*);
+        void pushToUpdateQueue(AudioInstance*);
 
         AudioStatus getAudioStatus(AudioInstance*) const;
 
@@ -91,7 +91,7 @@ namespace Dream
         void updatePlayQueue();
         void updatePauseQueue();
         void updateStopQueue();
-        void updateFFT();
+        void updateInstances();
 
         void deleteAllSources();
         void deleteAllBuffers();

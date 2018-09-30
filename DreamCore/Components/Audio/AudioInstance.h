@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <deque>
 #include "AudioStatus.h"
 #include "../IAssetInstance.h"
+#include "../Event.h"
 
 #ifdef __APPLE__
     #include <OpenAL/al.h>
@@ -15,6 +17,7 @@
 #include <glm/glm.hpp>
 
 using std::vector;
+using std::deque;
 #include "SpectrumAnalyser.h"
 
 namespace Dream
@@ -37,7 +40,9 @@ namespace Dream
         unique_ptr<SpectrumAnalyser> mSpectrumAnalyser;
         int mLastSampleOffset;
         int mChannels;
+        deque<Event> mMarkerEvents;
 
+        void generateEventList();
     public:
         AudioInstance(AudioComponent* comp, AudioDefinition*, SceneObjectRuntime*);
 
@@ -67,6 +72,7 @@ namespace Dream
         void setVolume(float volume);
         void updateFFT();
         int getChannels() const;
+        void updateMarkers();
     };
 
 } // End of Dream

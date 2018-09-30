@@ -55,6 +55,9 @@ namespace Dream
 
       string getData() const;
 
+      void setNumber(string name, double number);
+      double getNumber(string name);
+
     }; // End of Event
 
 } // End of Dream

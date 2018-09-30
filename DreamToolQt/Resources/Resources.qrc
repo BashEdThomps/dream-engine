@@ -36,5 +36,6 @@
         <file>templates/script/Javascript/js</file>
         <file>svg/comment-alt-solid.svg</file>
         <file>svg/file-signature-solid.svg</file>
+        <file>audio/click.wav</file>
     </qresource>
 </RCC>

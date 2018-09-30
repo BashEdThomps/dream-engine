@@ -3,6 +3,11 @@
 #include "AbstractEditorWidget.h"
 #include <QMediaPlayer>
 #include "ui_AudioToolsForm.h"
+#include <QBuffer>
+#include <QAudioOutput>
+#include <QThread>
+#include "../Model/AudioMarkersTableModel.h"
+#include "PCMPlayer.h"
 
 namespace Dream
 {
@@ -26,10 +31,26 @@ public:
     ~AudioToolsFormController() override;
 
 protected:
+    void generateEventList(int);
+
+
     Ui::AudioToolsForm mUi;
     shared_ptr<AudioInstance> mAudioInstance;
     vector<char> mAudioSamples;
-    QMediaPlayer mMediaPlayer;
     int mChannels;
     int mFrequency;
+    shared_ptr<AudioMarkersTableModel> mTableModel;
+    PCMPlayer mPlayer;
+    vector<int> mMarkerEvents;
+
+protected slots:
+    void onPlayButtonClicked(bool);
+    void onStopButtonClicked(bool);
+    void onTableSelectionChanged(const QItemSelection&,const QItemSelection&);
+    void onMarkerSelectionChanged(int);
+    void onSampleOffsetChanged(int smpl);
 };
+
+
+
+

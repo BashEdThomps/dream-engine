@@ -88,7 +88,11 @@ SOURCES += \
     Controller/ApplicationController.cpp \
     View/WaveformWidget.cpp \
     Controller/AudioToolsFormController.cpp \
-    Controller/AbstractEditorWidget.cpp
+    Controller/AbstractEditorWidget.cpp \
+    Controller/PCMPlayer.cpp \
+    Model/AudioMarkersTableModel.cpp \
+    Controller/WavFile.cpp \
+    View/ADSRWidget.cpp
 
 HEADERS  += \
     \
@@ -151,7 +155,11 @@ HEADERS  += \
     Controller/UIActions.h \
     View/WaveformWidget.h \
     Controller/AudioToolsFormController.h \
-    Controller/AbstractEditorWidget.h
+    Controller/AbstractEditorWidget.h \
+    Controller/PCMPlayer.h \
+    Model/AudioMarkersTableModel.h \
+    Controller/WavFile.h \
+    View/ADSRWidget.h
 
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
@@ -168,6 +176,7 @@ ICON = Resources/icons/Ag.icns
 
 macx: LIBS += \
     -framework OpenGL \
+    -framework OpenAL \
     -L/opt/octronic/builds/Dream/DreamCore \
     -L/opt/octronic/builds/Dream/SOIL \
     -L/usr/local/lib \

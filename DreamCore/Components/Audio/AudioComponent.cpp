@@ -266,10 +266,13 @@ namespace Dream
     }
 
     void
-    AudioComponent::pushToFFTQueue
+    AudioComponent::pushToUpdateQueue
     (AudioInstance* ai)
     {
-       mFFTQueue.push_back(ai);
+        if (find(mUpdateQueue.begin(), mUpdateQueue.end(), ai) == mUpdateQueue.end())
+        {
+            mUpdateQueue.push_back(ai);
+        }
     }
 
     void
@@ -277,7 +280,7 @@ namespace Dream
     ()
     {
         beginUpdate();
-        updateFFT();
+        updateInstances();
         updatePlayQueue();
         updatePauseQueue();
         updateStopQueue();
@@ -359,11 +362,14 @@ namespace Dream
         mStopQueue.clear();
     }
 
-    void AudioComponent::updateFFT()
+    void
+    AudioComponent::updateInstances
+    ()
     {
-       for (AudioInstance* ai : mFFTQueue)
+       for (AudioInstance* ai : mUpdateQueue)
        {
           ai->updateFFT();
+          ai->updateMarkers();
        }
     }
 

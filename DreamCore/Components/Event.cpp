@@ -91,4 +91,15 @@ namespace Dream
     {
         return mData.dump();
     }
+
+    void Event::setNumber(string name, double number)
+    {
+       mData[name] = number;
+    }
+
+    double
+    Event::getNumber(string name)
+    {
+       return mData[name];
+    }
 } // End of Dream

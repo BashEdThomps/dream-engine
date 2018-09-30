@@ -296,6 +296,12 @@ namespace Dream
         // Audio ================================================================
         const static size_t AUDIO_BUFFER_SIZE;
         const static string ASSET_ATTR_SPECTRUM_ANALYSER;
+        const static string ASSET_ATTR_AUDIO_EVENT_MARKERS;
+        const static string ASSET_ATTR_AUDIO_EM_INDEX;
+        const static string ASSET_ATTR_AUDIO_EM_S_INDEX;
+        const static string ASSET_ATTR_AUDIO_EM_NAME;
+        const static string ASSET_ATTR_AUDIO_EM_REPEAT;
+        const static string ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD;
 
         // Window ===============================================================
         const static int DEFAULT_SCREEN_WIDTH;

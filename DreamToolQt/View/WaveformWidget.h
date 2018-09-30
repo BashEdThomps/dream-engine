@@ -3,6 +3,8 @@
 #include <QWidget>
 #include <vector>
 #include <QColor>
+#include <DreamCore.h>
+#include "../Model/AudioMarkersTableModel.h"
 
 using namespace std;
 
@@ -14,87 +16,58 @@ public:
     float max;
 };
 
+using Dream::AudioEventMarker;
+
 class WWMarker
 {
-
 public:
+    // 0Args Const
+    WWMarker(int idx) : index(idx)
+    {}
 
-    WWMarker()
-        : mIndex(0),
-          mName("NewMarker"),
-          mSampleIndex(0)
+    // Copy Const
+    WWMarker(const WWMarker& other)
+      : index(other.index),
+        point(other.point),
+        rect(other.rect)
+    {}
+
+    bool operator==(const WWMarker& other)
     {
-
+        return other.index == this->index;
     }
 
-    QString getName() const
-    {
-        return mName;
-    }
-
-    void setName(const QString& name)
-    {
-        mName = name;
-    }
-
-    size_t getIndex() const
-    {
-        return mIndex;
-    }
-
-    void setIndex(size_t index)
-    {
-        mIndex = index;
-    }
-
-    QPoint& getPoint()
-    {
-        return mPoint;
-    }
-
-    void setPoint(const QPoint& point)
-    {
-        mPoint = point;
-    }
-
-    QRect& getRect()
-    {
-        return mRect;
-    }
-
-    void setRect(const QRect& rect)
-    {
-        mRect = rect;
-    }
-
-    size_t getSampleIndex() const
-    {
-        return mSampleIndex;
-    }
-
-    void setSampleIndex(const size_t& sampleIndex)
-    {
-        mSampleIndex = sampleIndex;
-    }
-
-private:
-    QPoint mPoint;
-    QRect mRect;
-    size_t mIndex;
-    QString mName;
-    size_t mSampleIndex;
+    int index;
+    QPoint point;
+    QRect rect;
 };
 
 class WaveformWidget : public QWidget
 {
     Q_OBJECT
+
+    enum EditMode
+    {
+        EDIT_MODE_NONE,
+        EDIT_MODE_MOVE_MARKER,
+        EDIT_MODE_MOVE_REPEATER
+    };
+
+    void removeMarker(int marker);
 public:
     explicit WaveformWidget(QWidget *parent = nullptr);
 
-    WWMarker* markerClashes(shared_ptr<WWMarker> mkr);
-    WWMarker* markerAtLocation(QPoint p);
+    int markerClashes(WWMarker& mkr);
+    int markerAtLocation(QPoint p);
     void setData(int channels, int frequency,vector<char>&);
+    void setModel(AudioMarkersTableModel* tableModel);
+    AudioMarkersTableModel* getTableModel() const;
+    void setTableModel(AudioMarkersTableModel* tableModel);
+    int getCurrentSamplePos() const;
+    void setCurrentSamplePos(int currentSamplePos);
 
+    int getSelectedMarker() const;
+    void setSelectedMarker(int selectedMarker);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -103,24 +76,39 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
+
     SamplePair takeSample(float* fromHere, int amount);
     float scaleSample(short sample);
+    int sampleToWidgetX(int sampleNum);
+    int widgetXToSample(int x);
+
     void drawZeroCrossingLine(QPainter& painter);
     void drawCursor(QPainter& painter);
     void drawMarkers(QPainter& painter);
     void drawBackground(QPainter& painter);
     void drawWaveform(QPainter& painter);
     void drawTimes(QPainter& painter);
-    int sampleToWidgetX(size_t sampleNum);
-    size_t widgetXToSample(int x);
+    void drawPlaybackPosition(QPainter& painter);
+    void drawRepeaters(QPainter& painter);
+
+
+public slots:
+    void onSampleOffsetChanged(int);
+
+signals:
+    void notifyScrubToSampleChanged(int);
+    void notifyMarkerSelectionChanged(int);
 
 protected:
     QPoint mMousePos;
     vector<float> mData;
     int mFrequency;
     int mChannels;
-    vector<shared_ptr<WWMarker>> mMarkers;
-    WWMarker* mSelectedMarker;
+    vector<WWMarker> mMarkers;
+    int  mSelectedMarker;
+    QRect mRepeaterFlag;
+    EditMode mEditMode;
+
     bool mMouseButton1Pressed;
     int mAreaStart;
     int mAreaEnd;
@@ -132,10 +120,18 @@ protected:
     QColor mBackgroundColour;
     QColor mLineColour;
     QColor mTextColour;
+    QColor mPlaybackPositionColour;
+    QColor mRepeatColour;
 
     float mZoomSpeed;
+    float mZoomSpeedMin;
+    float mZoomSpeedMax;
+    float mZoomSpeedScale;
 
     QFont mFont;
     QFontMetrics mFontMetrics;
     int mPadding;
+    AudioMarkersTableModel* mTableModel;
+    int mCurrentSamplePos;
+    bool mouseOverRepeaterFlag();
 };

@@ -7,19 +7,19 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <limits>
+#include <QDebug>
 
 using namespace std;
 
-WaveformWidget::WaveformWidget(QWidget *parent) :
-
-    QWidget(parent),
+WaveformWidget::WaveformWidget(QWidget *parent)
+    : QWidget(parent),
     mFrequency(-1),
     mChannels(-1),
-    mSelectedMarker(nullptr),
+    mSelectedMarker(-1),
+    mEditMode(EDIT_MODE_NONE),
     mMouseButton1Pressed(false),
     mAreaStart(0),
     mAreaEnd(0),
-    mZoomSpeed(5.0f),
 
     mWaveformColour(QColor(61, 174, 233)),
     mMarkerColour(QColor(255,165,0)),
@@ -28,9 +28,19 @@ WaveformWidget::WaveformWidget(QWidget *parent) :
     mBackgroundColour(QColor(35,38,41)),
     mLineColour(QColor(192,192,192)),
     mTextColour(QColor(0,0,0)),
+    mPlaybackPositionColour(QColor(255,0,0)),
+    mRepeatColour(QColor(24,70,93)),
+
+    mZoomSpeed(10.0f),
+    mZoomSpeedMin(10.0f),
+    mZoomSpeedMax(30.0f),
+    mZoomSpeedScale(0.5f),
+
     mFont(QFont("Sans",12)),
     mFontMetrics(QFontMetrics(mFont)),
-    mPadding(2)
+    mPadding(2),
+    mTableModel(nullptr),
+    mCurrentSamplePos(0)
 {
     auto log = spdlog::get("WaveformWidget");
     if (log == nullptr)
@@ -65,13 +75,16 @@ WaveformWidget::paintEvent
     if (!mData.empty())
     {
         drawWaveform(painter);
+        drawZeroCrossingLine(painter);
         drawMarkers(painter);
+        drawRepeaters(painter);
     }
 
+    drawPlaybackPosition(painter);
     drawCursor(painter);
-    drawZeroCrossingLine(painter);
     drawTimes(painter);
 }
+
 void
 WaveformWidget::drawTimes
 (QPainter& painter)
@@ -94,6 +107,16 @@ WaveformWidget::drawTimes
     painter.drawText(0,height(),startTimeStr);
     auto endTimeX = width()-mFontMetrics.boundingRect(endTimeStr).width();
     painter.drawText(endTimeX,height(),endTimeStr);
+}
+
+void
+WaveformWidget::drawPlaybackPosition
+(QPainter& painter)
+{
+    painter.setPen(mPlaybackPositionColour);
+    auto x = sampleToWidgetX(mCurrentSamplePos);
+    painter.drawLine(x,0,x,height());
+
 }
 
 void
@@ -123,10 +146,12 @@ WaveformWidget::drawWaveform
        float minBarHeight = halfHeight * minAmplitude;
        float maxBarHeight = halfHeight * maxAmplitude;
 
-       painter.drawLine(
+        QList<QLine> lines;
+       lines.push_back(QLine(
            i, static_cast<int>(halfHeight+minBarHeight),
            i, static_cast<int>(halfHeight+maxBarHeight)
-        );
+        ));
+       painter.drawLines(&lines[0],lines.count());
 
        dataPtr+=step;
     }
@@ -136,10 +161,11 @@ void
 WaveformWidget::drawMarkers
 (QPainter& painter)
 {
-    for (auto marker : mMarkers)
+    auto audioDef = mTableModel->getAudioDefinitionHandle();
+    for (WWMarker& marker : mMarkers)
     {
         //auto p = marker->getPoint();
-        auto p = QPoint(sampleToWidgetX(marker->getSampleIndex()),0);
+        auto p = QPoint(sampleToWidgetX(audioDef->getMarkerSampleIndex(marker.index)),0);
 
         if (p.x() == -1)
         {
@@ -147,8 +173,8 @@ WaveformWidget::drawMarkers
         }
 
          auto text = QString("%1: %2")
-            .arg(marker->getIndex())
-            .arg(marker->getName());
+            .arg(marker.index)
+            .arg(QString::fromStdString(audioDef->getMarkerName(marker.index)));
 
         auto textBR =  mFontMetrics.boundingRect(text);
         auto textWidth = textBR.width()+(mPadding*2);
@@ -160,29 +186,29 @@ WaveformWidget::drawMarkers
         x = (x < 0 ? 0 : x);
         x = (x > width()-textWidth ? width()-textWidth : x);
 
-        marker->setRect(QRect(x, 0,textWidth, textHeight));
+        marker.rect = QRect(x, 0,textWidth, textHeight);
 
-        while (markerClashes(marker) != nullptr)
+        while (markerClashes(marker) > -1)
         {
-            auto newR = marker->getRect();
-            newR.setTop(marker->getRect().top() + textHeight+mPadding);
-            newR.setBottom(marker->getRect().bottom() + textHeight+mPadding);
-            marker->setRect(newR);
+            auto newR = marker.rect;
+            newR.setTop(marker.rect.top() + textHeight+mPadding);
+            newR.setBottom(marker.rect.bottom() + textHeight+mPadding);
+            marker.rect = newR;
         }
 
         QColor currentColour =  (
-            marker.get() == mSelectedMarker ?
+            marker.index == mSelectedMarker ?
             mSelectedMarkerColour :
             mMarkerColour
         );
 
-        painter.fillRect(marker->getRect(), currentColour);
+        painter.fillRect(marker.rect, currentColour);
 
         painter.setPen(currentColour);
         painter.drawLine(p.x(),0,p.x(),height());
 
         painter.setPen(mTextColour);
-        auto markerRect = marker->getRect();
+        auto markerRect = marker.rect;
         painter.setFont(mFont);
         painter.drawText(
             markerRect.x()+mPadding,
@@ -210,13 +236,77 @@ WaveformWidget::drawZeroCrossingLine
 }
 
 void
+WaveformWidget::drawRepeaters
+(QPainter& painter)
+{
+   if (mSelectedMarker < 0) return;
+
+   auto ad = mTableModel->getAudioDefinitionHandle();
+   auto start = ad->getMarkerSampleIndex(mSelectedMarker);
+   auto numRepeats = ad->getMarkerRepeat(mSelectedMarker);
+   auto period = ad->getMarkerRepeatPeriod(mSelectedMarker);
+
+   painter.setPen(mRepeatColour);
+   auto bottom = height();
+   for (int i=0; i<numRepeats; i++)
+   {
+      auto x = start + (period*(i+1));
+      auto sx = sampleToWidgetX(x);
+
+      // Off screen
+      if (sx < 0 || sx > width()) continue;
+
+      //qDebug() << "Drawind repeater x: " << x << " sx: " << sx;
+      if (i == 0)
+      {
+        mRepeaterFlag = QRect(sx, 0, 20, 20);
+        painter.fillRect(mRepeaterFlag, mRepeatColour);
+      }
+      painter.drawLine(sx,0,sx,bottom);
+   }
+}
+
+bool
+WaveformWidget::mouseOverRepeaterFlag
+()
+{
+    return mRepeaterFlag.contains(mMousePos);
+}
+
+void
 WaveformWidget::mouseMoveEvent
 (QMouseEvent* event)
 {
+    auto log = spdlog::get("WaveformWidget");
     mMousePos = event->pos();
-    if (mSelectedMarker != nullptr && mMouseButton1Pressed)
+    if (mSelectedMarker > -1 && mMouseButton1Pressed)
     {
-        mSelectedMarker->setSampleIndex(widgetXToSample(mMousePos.x()));
+        auto sampleIndex = widgetXToSample(mMousePos.x());
+        log->critical("Marker Drag Event, sample {}", sampleIndex);
+        auto ad = mTableModel->getAudioDefinitionHandle();
+
+        switch (mEditMode)
+        {
+            case WaveformWidget::EDIT_MODE_NONE:
+                break;
+            case WaveformWidget::EDIT_MODE_MOVE_MARKER:
+                ad->setMarkerSampleIndex(mSelectedMarker, sampleIndex);
+                break;
+            case WaveformWidget::EDIT_MODE_MOVE_REPEATER:
+                auto markerSample = ad->getMarkerSampleIndex(mSelectedMarker);
+                auto offset = sampleIndex - markerSample;
+                ad->setMarkerRepeatPeriod(mSelectedMarker, offset);
+
+                break;
+
+        }
+
+        mTableModel->update();
+    }
+    else if (mMouseButton1Pressed)
+    {
+        auto sampleIndex = widgetXToSample(mMousePos.x());
+        emit notifyScrubToSampleChanged(sampleIndex);
     }
     update();
 }
@@ -228,6 +318,7 @@ WaveformWidget::mouseReleaseEvent
     if (event->button() == Qt::MouseButton::LeftButton)
     {
         mMouseButton1Pressed = false;
+        mEditMode = EDIT_MODE_NONE;
     }
 }
 
@@ -235,11 +326,27 @@ void
 WaveformWidget::mousePressEvent
 (QMouseEvent* event)
 {
-    WWMarker* markerPtr = markerAtLocation(event->pos());
-    mSelectedMarker = markerPtr;
+    auto log = spdlog::get("WaveformWidget");
+    auto pos = event->pos();
+    log->critical("Mouse Press Event {},{}",pos.x(),pos.y());
+
     if (event->button() == Qt::MouseButton::LeftButton)
     {
         mMouseButton1Pressed = true;
+        if (mSelectedMarker > -1 && mouseOverRepeaterFlag())
+        {
+            mEditMode = EDIT_MODE_MOVE_REPEATER;
+        }
+        else
+        {
+            auto lastMarker = mSelectedMarker;
+            mSelectedMarker = markerAtLocation(pos);
+            if (lastMarker != mSelectedMarker)
+            {
+               emit notifyMarkerSelectionChanged(mSelectedMarker);
+            }
+            mEditMode = EDIT_MODE_MOVE_MARKER;
+        }
     }
     update();
 }
@@ -248,35 +355,74 @@ void
 WaveformWidget::mouseDoubleClickEvent
 (QMouseEvent* event)
 {
-    WWMarker* markerPtr = markerAtLocation(event->pos());
+    int markerIndex = markerAtLocation(event->pos());
 
-    if (markerPtr == nullptr)
+    if (markerIndex < 0)
     {
-        shared_ptr<WWMarker> marker = make_shared<WWMarker>();
-        marker->setPoint(event->pos());
-        marker->setSampleIndex(widgetXToSample(event->pos().x()));
-        marker->setIndex(mMarkers.size()+1);
-        mMarkers.push_back(marker);
+        qDebug() << "WW: Creating new marker";
+        auto ad = mTableModel->getAudioDefinitionHandle();
+        auto newID = ad->createMarker();
+        WWMarker newMkr(newID);
+        newMkr.point = event->pos();
+        ad->setMarkerName(newID, "New Marker");
+        ad->setMarkerSampleIndex(newID, widgetXToSample(event->pos().x()));
+        mMarkers.push_back(newMkr);
+        mTableModel->insertRows(newID-1,1,QModelIndex());
+        mTableModel->update();
+
+
     }
     else
     {
-        mSelectedMarker = markerPtr;
+        if (mSelectedMarker == markerIndex)
+        {
+            removeMarker(mSelectedMarker);
+        }
     }
     update();
 }
 
-WWMarker*
+void
+WaveformWidget::removeMarker
+(int marker)
+{
+   auto itr = find_if(mMarkers.begin(),mMarkers.end(), [&](const WWMarker& m)
+   {
+      return m.index == marker;
+   });
+
+   if (itr != mMarkers.end())
+   {
+        mTableModel->getAudioDefinitionHandle()->removeMarker(marker);
+        mMarkers.erase(itr);
+        mSelectedMarker = -1;
+        mTableModel->update();
+        update();
+   }
+}
+
+int
 WaveformWidget::markerAtLocation
 (QPoint p)
 {
-    for (shared_ptr<WWMarker> nextMarker: mMarkers)
+    auto log = spdlog::get("WaveformWidget");
+    log->critical("Getting marker");
+    for (WWMarker& nextMarker: mMarkers)
     {
-        if (nextMarker->getRect().contains(p))
+        auto rect = nextMarker.rect;
+        log->critical(
+            "Testing marker {} with rect {},{} {},{}",
+            nextMarker.index,
+            rect.left(),  rect.top(),
+            rect.right(), rect.bottom()
+        );
+        if (rect.contains(p))
         {
-            return nextMarker.get();
+            log->critical("This one matches");
+            return nextMarker.index;
         }
     }
-    return nullptr;
+    return -1;
 }
 
 float
@@ -319,22 +465,32 @@ WaveformWidget::setData
    mAreaEnd = static_cast<int>(mData.size());
 }
 
-WWMarker* WaveformWidget::markerClashes(shared_ptr<WWMarker> mkr)
+int
+WaveformWidget::markerClashes
+(WWMarker& mkr)
 {
-    QRect thisRect = mkr->getRect();
-    for (shared_ptr<WWMarker> nextMarker: mMarkers)
+    auto ad = mTableModel->getAudioDefinitionHandle();
+    QRect thisRect = mkr.rect;
+    for (WWMarker& nextMarker: mMarkers)
     {
         if (mkr == nextMarker)
         {
            continue;
         }
 
-        if (thisRect.intersects(nextMarker->getRect()))
+        // Off screen
+        auto sample = ad->getMarkerSampleIndex(nextMarker.index);
+        if (sample < mAreaStart || sample > mAreaEnd)
         {
-            return nextMarker.get();
+            continue;
+        }
+
+        if (thisRect.intersects(nextMarker.rect))
+        {
+            return nextMarker.index;
         }
     }
-    return nullptr;
+    return -1;
 
 }
 
@@ -366,8 +522,18 @@ WaveformWidget::wheelEvent
         else if (dy < 0) // Zoom Out
         {
            mAreaStart -= absDy;
-       mAreaEnd += absDy;
-    }
+           mAreaEnd += absDy;
+        }
+
+        mZoomSpeed += dy*mZoomSpeedScale;
+        if (mZoomSpeed < mZoomSpeedMin)
+        {
+            mZoomSpeed = mZoomSpeedMin;
+        }
+        else if (mZoomSpeed > mZoomSpeedMax)
+        {
+            mZoomSpeed = mZoomSpeedMax;
+        }
 
         if (mAreaStart < 0) mAreaStart = 0;
 
@@ -413,38 +579,85 @@ WaveformWidget::wheelEvent
     update();
 }
 
-size_t
+int
 WaveformWidget::widgetXToSample
 (int x)
 {
-    if (x < 0)       return static_cast<size_t>(mAreaStart);
-    if (x > width()) return static_cast<size_t>(mAreaEnd);
+    if (x < 0)       return mAreaStart;
+    if (x > width()) return mAreaEnd;
 
     auto log = spdlog::get("WaveformWidget");
     float range = mAreaEnd-mAreaStart;
     float percent = static_cast<float>(x)/static_cast<float>(width());
     float sampleOffset = range * percent;
-    size_t retval = mAreaStart + trunc(sampleOffset);
-    log->critical("widget X {} to sample {}",x,retval);
+    int retval = mAreaStart + static_cast<int>(trunc(sampleOffset));
+    //log->critical("widget X {} to sample {}",x,retval);
     return retval;
+}
+
+void WaveformWidget::onSampleOffsetChanged(int pos)
+{
+   mCurrentSamplePos = pos;
+   update();
+}
+
+int WaveformWidget::getSelectedMarker() const
+{
+    return mSelectedMarker;
+}
+
+void WaveformWidget::setSelectedMarker(int selectedMarker)
+{
+    mSelectedMarker = selectedMarker;
+}
+
+int WaveformWidget::getCurrentSamplePos() const
+{
+    return mCurrentSamplePos;
+}
+
+void WaveformWidget::setCurrentSamplePos(int currentSamplePos)
+{
+    mCurrentSamplePos = currentSamplePos;
+}
+
+AudioMarkersTableModel*
+WaveformWidget::getTableModel
+()
+const
+{
+    return mTableModel;
+}
+
+void
+WaveformWidget::setTableModel
+(AudioMarkersTableModel* tableModel)
+{
+    mTableModel = tableModel;
+    auto ad = mTableModel->getAudioDefinitionHandle();
+    for (int i=0; i < ad->countMarkers(); i++)
+    {
+        WWMarker viewMarker(i);
+        mMarkers.push_back(viewMarker);
+    }
 }
 
 int
 WaveformWidget::sampleToWidgetX
-(size_t sampleNum)
+(int sampleNum)
 {
     auto log = spdlog::get("WaveformWidget");
     if (sampleNum<mAreaStart || sampleNum>mAreaEnd)
     {
         return -1;
     }
-    log->critical("Sample is in range");
+    //log->critical("Sample is in range");
 
     int sRange = mAreaEnd-mAreaStart;
     float samplePercent = static_cast<float>(sampleNum-mAreaStart)/sRange;
     int wRange = width();
 
     int retval = static_cast<int>(wRange*samplePercent);
-    log->critical("sample {} to widget X {}",sampleNum,retval);
+    //log->critical("sample {} to widget X {}",sampleNum,retval);
     return retval;
 }
