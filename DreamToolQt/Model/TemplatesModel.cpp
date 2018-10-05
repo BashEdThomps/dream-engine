@@ -38,16 +38,16 @@ TemplatesModel::TemplatesModel
     {
         log = spdlog::stdout_color_mt("TemplatesModel");
     }
-    log->info("Constructing");
-    log->info("Scripts found: {}", getScriptTemplateNames().join(":").toStdString());
-    log->info("Shaders found: {}", getShaderTemplateNames().join(":").toStdString());
+    log->debug("Constructing");
+    log->debug("Scripts found: {}", getScriptTemplateNames().join(":").toStdString());
+    log->debug("Shaders found: {}", getShaderTemplateNames().join(":").toStdString());
 }
 
 TemplatesModel::~TemplatesModel
 ()
 {
     auto log = spdlog::get("TemplatesModel");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 QString
@@ -55,12 +55,12 @@ TemplatesModel::getScriptTemplate
 (QString templateName, QString filename)
 {
     auto log = spdlog::get("TemplatesModel");
-    log->info("Getting script template {}" , templateName.toStdString());
+    log->debug("Getting script template {}" , templateName.toStdString());
 
     QDir templatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SCRIPT_PATH);
     QString scriptAbsPath = QDir(templatesDir.filePath(templateName)).filePath(filename);
 
-    log->info("from {}" , scriptAbsPath.toStdString());
+    log->debug("from {}" , scriptAbsPath.toStdString());
 
     QFile scriptFile(scriptAbsPath);
     if (scriptFile.exists())
@@ -68,7 +68,7 @@ TemplatesModel::getScriptTemplate
         scriptFile.open(QIODevice::ReadOnly);
         QString templateContent = scriptFile.readAll();
         scriptFile.close();
-        log->info("Got Script {}",templateContent.toStdString());
+        log->debug("Got Script {}",templateContent.toStdString());
         return templateContent;
     }
 
@@ -88,12 +88,12 @@ TemplatesModel::getShaderTemplate
 (QString templateName, QString fileName)
 {
     auto log = spdlog::get("TemplatesModel");
-    log->info("Getting shader template {} file {}" , templateName.toStdString(), fileName.toStdString());
+    log->debug("Getting shader template {} file {}" , templateName.toStdString(), fileName.toStdString());
 
     QDir templatesDir(TEMPLATE_ROOT_PATH+TEMPLATE_SHADER_PATH);
     QString absPath = QDir(templatesDir.filePath(templateName)).filePath(fileName);
 
-    log->info("from {}", absPath.toStdString());
+    log->debug("from {}", absPath.toStdString());
 
     QFile scriptFile(absPath);
     if (scriptFile.exists())
@@ -101,7 +101,7 @@ TemplatesModel::getShaderTemplate
         scriptFile.open(QIODevice::ReadOnly);
         QString templateContent = scriptFile.readAll();
         scriptFile.close();
-        log->info("TemplateModel: Got {}\n{}",fileName.toStdString(), templateContent.toStdString());
+        log->debug("TemplateModel: Got {}\n{}",fileName.toStdString(), templateContent.toStdString());
         return templateContent;
     }
 

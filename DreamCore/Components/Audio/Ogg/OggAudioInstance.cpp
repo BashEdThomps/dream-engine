@@ -47,7 +47,7 @@ namespace Dream
         auto log = getLog();
         string absPath = projectPath+mDefinition->getAssetPath();
         setAbsolutePath(absPath);
-        log->info("Loading Instance: {}", absPath);
+        log->debug("Loading Instance: {}", absPath);
 
         // 0 for Little-Endian, 1 for Big-Endian
         int endian = 0;
@@ -86,6 +86,8 @@ namespace Dream
             mChannels = 2;
             mFormat = AL_FORMAT_STEREO16;
         }
+
+        setLooping(dynamic_cast<AudioDefinition*>(mDefinition)->getLoop());
 
         // The frequency of the sampling rate
         mFrequency = oggInfo->rate;

@@ -71,7 +71,7 @@ MainWindowController::MainWindowController
         log = spdlog::stdout_color_mt("MainWindowController");
     }
 
-    log->info("Constructing");
+    log->debug("Constructing");
 
     mUi->setupUi(this);
     setupUiFeatures();
@@ -181,7 +181,7 @@ MainWindowController::onScenegraphContextMenuRequested
 (const QPoint &point)
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("SceneGraph Context Menu Requested {},{}",point.x(),point.y());
+    log->debug("SceneGraph Context Menu Requested {},{}",point.x(),point.y());
     QModelIndex index = mUi->scenegraphTreeView->indexAt(point);
     if (index.isValid())
     {
@@ -197,7 +197,7 @@ MainWindowController::onAsseetDefinitionContextMenuRequested
 {
 
     auto log = spdlog::get("MainWindowController");
-    log->info("Asset Definition Context Menu Requested {},{}",point.x(),point.y());
+    log->debug("Asset Definition Context Menu Requested {},{}",point.x(),point.y());
     QModelIndex index = mUi->assetDefinitionTreeView->indexAt(point);
     if (index.isValid())
     {
@@ -213,7 +213,7 @@ MainWindowController::onCreateAssetDefinitionAction
 {
     CreateAssetDefinitionAction* caa = dynamic_cast<CreateAssetDefinitionAction*>(sender());
     auto log = spdlog::get("MainWindowController");
-    log->info("Create Asset Definition of type {}", caa->getType().toStdString());
+    log->debug("Create Asset Definition of type {}", caa->getType().toStdString());
     emit notifyCreateNewAssetDefinition(caa->getType());
 }
 
@@ -344,13 +344,13 @@ MainWindowController::onScenegraphMenuAddNewSceneTriggered
 ()
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Scenegraph Menu: Add New Scene");
+    log->debug("Scenegraph Menu: Add New Scene");
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
 
     // Only triggered by project item
     auto projectDefHandle = dynamic_cast<ProjectDefinition*>(action->getItemHandle()->getItem());
     auto newScene = projectDefHandle->createNewSceneDefinition();
-    log->info("Created new scene {} for project {}", newScene->getNameAndUuidString(), projectDefHandle->getNameAndUuidString());
+    log->debug("Created new scene {} for project {}", newScene->getNameAndUuidString(), projectDefHandle->getNameAndUuidString());
     emit notifyScenegraphTreeDataChanged();
 }
 
@@ -359,14 +359,14 @@ MainWindowController::onScenegraphMenuDeleteSceneTriggered
 ()
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Scenegraph Menu: Delete Scene");
+    log->debug("Scenegraph Menu: Delete Scene");
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
 
     // Only triggered by project item
     auto sceneDefHandle = dynamic_cast<SceneDefinition*>(action->getItemHandle()->getItem());
     auto parentProjectHandle = sceneDefHandle->getProjectDefinition();
     parentProjectHandle->removeSceneDefinition(sceneDefHandle);
-    log->info("Deleted scene from project {}",parentProjectHandle->getNameAndUuidString());
+    log->debug("Deleted scene from project {}",parentProjectHandle->getNameAndUuidString());
     emit notifyScenegraphTreeDataChanged();
 }
 
@@ -375,7 +375,7 @@ MainWindowController::onScenegraphMenuAddSceneObjectTriggered
 ()
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Scenegraph Menu: Add Scene Object");
+    log->debug("Scenegraph Menu: Add Scene Object");
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
 
     switch (action->getItemHandle()->getType())
@@ -389,7 +389,7 @@ MainWindowController::onScenegraphMenuAddSceneObjectTriggered
                 action->getItemHandle()->getItem()
             );
             auto newSceneObject = sceneObjectDefinitionHandle->createNewChildSceneObjectDefinition();
-            log->info(
+            log->debug(
                 "Created scene object {} for {}",
                 newSceneObject->getNameAndUuidString(),
                 sceneObjectDefinitionHandle->getNameAndUuidString()
@@ -402,7 +402,7 @@ MainWindowController::onScenegraphMenuAddSceneObjectTriggered
 void MainWindowController::onScenegraphMenuDuplicateSceneObjectTriggered()
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Scenegraph Menu: Duplicate Scene Object");
+    log->debug("Scenegraph Menu: Duplicate Scene Object");
 
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
 
@@ -418,7 +418,7 @@ void MainWindowController::onScenegraphMenuDuplicateSceneObjectTriggered()
                 action->getItemHandle()->getItem()
             );
             auto duplicateSO = sceneObjectDefinitionHandle->duplicate();
-            log->info(
+            log->debug(
                 "Duplicated scene object {} to {}",
                 sceneObjectDefinitionHandle->getNameAndUuidString(),
                 duplicateSO->getNameAndUuidString()
@@ -433,7 +433,7 @@ MainWindowController::onScenegraphMenuDeleteSceneObjectTriggered
 ()
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Scenegraph Menu: Delete Scene Object");
+    log->debug("Scenegraph Menu: Delete Scene Object");
 
     auto action = dynamic_cast<ScenegraphMenuAction*>(sender());
     auto sceneObjectDefinitionHandle = dynamic_cast<SceneObjectDefinition*>(
@@ -444,7 +444,7 @@ MainWindowController::onScenegraphMenuDeleteSceneObjectTriggered
     if (parentSceneObject != nullptr)
     {
         parentSceneObject->removeChildSceneObjectDefinition(sceneObjectDefinitionHandle);
-        log->info(
+        log->debug(
             "Deleted scene object from {}",
             parentSceneObject->getNameAndUuidString()
         );
@@ -461,14 +461,14 @@ MainWindowController::onAssetDefinitionMenuDeleteTriggered
 ()
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Delete AssetDefinition");
+    log->debug("Delete AssetDefinition");
 
     auto action = dynamic_cast<DeleteAssetDefinitionAction*>(sender());
     auto assetDefinitionHandle = action->mItemHandle;
 
     if (assetDefinitionHandle != nullptr)
     {
-        log->info(
+        log->debug(
             "Deleting Asset Definition scene object from {}",
             assetDefinitionHandle->getNameAndUuidString()
         );
@@ -491,7 +491,7 @@ void MainWindowController::onAddAssetToSceneObjectTriggered()
     if (treeItemHandle->getType() == SCENEGRAPH_SCENE_OBJECT)
     {
         auto sceneObjHandle = dynamic_cast<SceneObjectDefinition*>(treeItemHandle->getItem());
-        log->info("Adding asset {} to object {}",adHandle->getNameAndUuidString(),sceneObjHandle->getNameAndUuidString());
+        log->debug("Adding asset {} to object {}",adHandle->getNameAndUuidString(),sceneObjHandle->getNameAndUuidString());
         sceneObjHandle->addAssetDefinitionToLoadQueue(adHandle);
     }
     emit notifyScenegraphTreeDataChanged();
@@ -506,11 +506,11 @@ MainWindowController::onScenegraphTreeViewActivated
     if (index.isValid())
     {
         auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
-        log->info("Valid index in current tree {}",item->getTitle().toStdString());
+        log->debug("Valid index in current tree {}",item->getTitle().toStdString());
     }
     else
     {
-        log->info("No valid index in current tree");
+        log->debug("No valid index in current tree");
     }
 }
 
@@ -522,11 +522,11 @@ MainWindowController::onPropertiesTreeViewActivated
     if (index.isValid())
     {
         auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
-        log->info("Valid index in current tree {}",item->getTitle().toStdString());
+        log->debug("Valid index in current tree {}",item->getTitle().toStdString());
     }
     else
     {
-        log->info("No valid index in current tree");
+        log->debug("No valid index in current tree");
     }
 }
 
@@ -538,11 +538,11 @@ MainWindowController::onAssetDefinitionTreeViewActivated
     if (index.isValid())
     {
         auto item = static_cast<ScenegraphTreeItem*>(index.internalPointer());
-        log->info("Valid index in current tree {}",item->getTitle().toStdString());
+        log->debug("Valid index in current tree {}",item->getTitle().toStdString());
     }
     else
     {
-        log->info("No valid index in current tree");
+        log->debug("No valid index in current tree");
     }
 }
 
@@ -1095,7 +1095,7 @@ AddAssetToSceneObjectAction::getAssetDefinitionHandle
 void MainWindowController::onMainVolumeChanged(int vol)
 {
    auto log = spdlog::get("MainWindowController");
-   log->info("Volume changed to {}",vol);
+   log->debug("Volume changed to {}",vol);
    emit notifyMainVolumeChanged(vol);
 }
 
@@ -1139,7 +1139,7 @@ MainWindowController::onEditorTabCloseRequested
 (int index)
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Requesting closure of tab {}",index);
+    log->debug("Requesting closure of tab {}",index);
 
     int editorIndex = index-1;
     if (editorIndex < 0)
@@ -1308,12 +1308,12 @@ MainWindowController::openAudioEventEditor
 (AudioDefinition* adHandle)
 {
     auto log = spdlog::get("MainWindowController");
-    log->info("Opening audio editor tab for  {}",adHandle->getNameAndUuidString());
+    log->debug("Opening audio editor tab for  {}",adHandle->getNameAndUuidString());
     int index = isAudioEditorTabOpen(adHandle);
 
     if (index > -1)
     {
-        log->info("All ready open in tab {}",index);
+        log->debug("All ready open in tab {}",index);
         mUi->rightTabWidget->setCurrentIndex(index);
         return;
     }
@@ -1325,7 +1325,7 @@ MainWindowController::openAudioEventEditor
         QString::fromStdString(adHandle->getName())
     );
 
-    log->info("Created new tab at {}",index);
+    log->debug("Created new tab at {}",index);
 
     mEditorTabForms.push_back(form);
     mUi->rightTabWidget->setCurrentIndex(index);
@@ -1337,7 +1337,7 @@ MainWindowController::isAudioEditorTabOpen
 {
     auto log = spdlog::get("MainWindowController");
 
-    log->info("There are {} editor tabs open",mEditorTabForms.size());
+    log->debug("There are {} editor tabs open",mEditorTabForms.size());
 
     for (shared_ptr<AbstractEditorWidget> tab : mEditorTabForms)
     {
@@ -1346,7 +1346,7 @@ MainWindowController::isAudioEditorTabOpen
            return mUi->rightTabWidget->indexOf(tab.get())+1;
        }
     }
-    log->info("Didn't find the a tab for this editor");
+    log->debug("Didn't find the a tab for this editor");
     return -1;
 }
 

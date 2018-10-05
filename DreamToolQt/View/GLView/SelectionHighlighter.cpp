@@ -39,14 +39,14 @@ SelectionHighlighter::SelectionHighlighter
     {
         log = spdlog::stdout_color_mt("SelectionHighlighter");
     }
-    log->info("Constructing Object");
+    log->debug("Constructing Object");
 }
 
 SelectionHighlighter::~SelectionHighlighter
 ()
 {
     auto log = spdlog::get("SelectionHighlighter");
-    log->info("Destructing Object");
+    log->debug("Destructing Object");
 }
 
 void
@@ -54,7 +54,7 @@ SelectionHighlighter::init
 ()
 {
     auto log = spdlog::get("SelectionHighlighter");
-    log->info("Initialising");
+    log->debug("Initialising");
     initGLDrawable();
 }
 
@@ -65,7 +65,7 @@ SelectionHighlighter::setSelectedSceneObjectRuntimeHandle
     auto log = spdlog::get("SelectionHighlighter");
     if (selected != nullptr)
     {
-        log->info("Selecting {}",selected->getNameAndUuidString());
+        log->debug("Selecting {}",selected->getNameAndUuidString());
     }
     mSelectedObjectHandle = selected;
     updateVertexBuffer();
@@ -76,12 +76,12 @@ SelectionHighlighter::updateVertexBuffer
 ()
 {
     auto log = spdlog::get("SelectionHighlighter");
-    log->info("Updating Vertex Buffer") ;
+    log->debug("Updating Vertex Buffer") ;
     mVertexBuffer.clear();
 
     if (mSelectedObjectHandle == nullptr)
     {
-        log->info("No object selected");
+        log->debug("No object selected");
         return;
     }
 
@@ -92,8 +92,8 @@ SelectionHighlighter::updateVertexBuffer
         bounds = mSelectedObjectHandle->getModelInstance()->getBoundingBox();
     }
 
-    log->info("Minimum Bounds {},{},{}",bounds.minimum.x ,bounds.minimum.y, bounds.minimum.z);
-    log->info("Maximum Bounds {},{},{}",bounds.maximum.x ,bounds.maximum.y, bounds.maximum.z);
+    log->debug("Minimum Bounds {},{},{}",bounds.minimum.x ,bounds.minimum.y, bounds.minimum.z);
+    log->debug("Maximum Bounds {},{},{}",bounds.maximum.x ,bounds.maximum.y, bounds.maximum.z);
 
     // Top Quad
 
@@ -235,7 +235,7 @@ SelectionHighlighter::draw
     {
         preRender();
         glLineWidth(4);
-        log->info("Drawing all - {} lines", mVertexBuffer.size()/2);
+        log->debug("Drawing all - {} lines", mVertexBuffer.size()/2);
 
         useShader();
 
@@ -337,7 +337,7 @@ SelectionHighlighter::initShader
 ()
 {
     auto log = spdlog::get("SelectionHighlighter");
-    log->info("Initialising shader");
+    log->debug("Initialising shader");
 
     string vertexShaderSource;
     string fragmentShaderSource;

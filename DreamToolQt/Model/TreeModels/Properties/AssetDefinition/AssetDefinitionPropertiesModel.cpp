@@ -41,7 +41,7 @@ AssetDefinitionPropertiesModel::AssetDefinitionPropertiesModel
     {
         log = spdlog::stdout_color_mt("AssetDefinitionPropertiesModel");
     }
-    log->info( "Constructing");
+    log->debug( "Constructing");
     createRoot();
     createProperties();
     createDelegateConnections();
@@ -51,7 +51,7 @@ AssetDefinitionPropertiesModel::~AssetDefinitionPropertiesModel
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info( "Destructing");
+    log->debug( "Destructing");
 }
 
 void
@@ -73,6 +73,7 @@ AssetDefinitionPropertiesModel::createProperties
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    createUuidProperty();
     createNameProperty();
     createTypeProperty();
     createFormatProperty();
@@ -106,7 +107,7 @@ AssetDefinitionPropertiesModel::createProperties
         createLightDiffuseProperty();
         createLightSpecularProperty();
 
-        log->info("Light Type is {}",lightDef->getFormat());
+        log->debug("Light Type is {}",lightDef->getFormat());
 
         switch (lightDef->getType())
         {
@@ -185,6 +186,21 @@ AssetDefinitionPropertiesModel::createProperties
         createSpriteFileProperty();
         createRemoveFilesProperty();
     }
+}
+
+void
+AssetDefinitionPropertiesModel::createUuidProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "UUID",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_UUID
+        )
+    );
 }
 
 void
@@ -394,7 +410,7 @@ AssetDefinitionPropertiesModel::createLightAmbientProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Creating Light Ambient Properties");
+    log->debug("Creating Light Ambient Properties");
     auto ambientProperty = new AssetDefinitionPropertiesItem
     (
         "Ambient",
@@ -402,7 +418,7 @@ AssetDefinitionPropertiesModel::createLightAmbientProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT
     );
 
-    log->info("Creating Light Colour Property red");
+    log->debug("Creating Light Colour Property red");
     auto colourPropertyRed = new AssetDefinitionPropertiesItem
     (
         "Red",
@@ -410,7 +426,7 @@ AssetDefinitionPropertiesModel::createLightAmbientProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED
     );
 
-    log->info("Creating Light Colour Property green");
+    log->debug("Creating Light Colour Property green");
     auto colourPropertyGreen = new AssetDefinitionPropertiesItem
     (
         "Green",
@@ -418,7 +434,7 @@ AssetDefinitionPropertiesModel::createLightAmbientProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN
     );
 
-    log->info("Creating Light Colour Property blue");
+    log->debug("Creating Light Colour Property blue");
     auto colourPropertyBlue = new AssetDefinitionPropertiesItem
     (
         "Blue",
@@ -438,7 +454,7 @@ AssetDefinitionPropertiesModel::createLightDiffuseProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Creating Light Colour Properties");
+    log->debug("Creating Light Colour Properties");
     auto diffuseProperty = new AssetDefinitionPropertiesItem
     (
         "Diffuse",
@@ -446,7 +462,7 @@ AssetDefinitionPropertiesModel::createLightDiffuseProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE
     );
 
-    log->info("Creating Light Colour Property red");
+    log->debug("Creating Light Colour Property red");
     auto colourPropertyRed = new AssetDefinitionPropertiesItem
     (
         "Red",
@@ -454,7 +470,7 @@ AssetDefinitionPropertiesModel::createLightDiffuseProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED
     );
 
-    log->info("Creating Light Colour Property green");
+    log->debug("Creating Light Colour Property green");
     auto colourPropertyGreen = new AssetDefinitionPropertiesItem
     (
         "Green",
@@ -462,7 +478,7 @@ AssetDefinitionPropertiesModel::createLightDiffuseProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN
     );
 
-    log->info("Creating Light Colour Property blue");
+    log->debug("Creating Light Colour Property blue");
     auto colourPropertyBlue = new AssetDefinitionPropertiesItem
     (
         "Blue",
@@ -481,7 +497,7 @@ AssetDefinitionPropertiesModel::createLightSpecularProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Creating Light Specular Properties");
+    log->debug("Creating Light Specular Properties");
     auto colourProperty = new AssetDefinitionPropertiesItem
     (
         "Specular",
@@ -489,7 +505,7 @@ AssetDefinitionPropertiesModel::createLightSpecularProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR
     );
 
-    log->info("Creating Light Colour Property red");
+    log->debug("Creating Light Colour Property red");
     auto colourPropertyRed = new AssetDefinitionPropertiesItem
     (
         "Red",
@@ -497,7 +513,7 @@ AssetDefinitionPropertiesModel::createLightSpecularProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED
     );
 
-    log->info("Creating Light Colour Property green");
+    log->debug("Creating Light Colour Property green");
     auto colourPropertyGreen = new AssetDefinitionPropertiesItem
     (
         "Green",
@@ -505,7 +521,7 @@ AssetDefinitionPropertiesModel::createLightSpecularProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN
     );
 
-    log->info("Creating Light Colour Property blue");
+    log->debug("Creating Light Colour Property blue");
     auto colourPropertyBlue = new AssetDefinitionPropertiesItem
     (
         "Blue",
@@ -525,7 +541,7 @@ AssetDefinitionPropertiesModel::createLightDirectionProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Creating Light Direction Properties");
+    log->debug("Creating Light Direction Properties");
     auto directionProperty = new AssetDefinitionPropertiesItem
     (
         "Direction",
@@ -533,7 +549,7 @@ AssetDefinitionPropertiesModel::createLightDirectionProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION
     );
 
-    log->info("Creating Light Colour Property red");
+    log->debug("Creating Light Colour Property red");
     auto colourPropertyRed = new AssetDefinitionPropertiesItem
     (
         "X",
@@ -541,7 +557,7 @@ AssetDefinitionPropertiesModel::createLightDirectionProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X
     );
 
-    log->info("Creating Light Colour Property green");
+    log->debug("Creating Light Colour Property green");
     auto colourPropertyGreen = new AssetDefinitionPropertiesItem
     (
         "Y",
@@ -549,7 +565,7 @@ AssetDefinitionPropertiesModel::createLightDirectionProperty
         ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y
     );
 
-    log->info("Creating Light Colour Property blue");
+    log->debug("Creating Light Colour Property blue");
     auto colourPropertyBlue = new AssetDefinitionPropertiesItem
     (
         "Z",
@@ -644,7 +660,7 @@ AssetDefinitionPropertiesModel::createPhysicsBvhTriangleMeshFileProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("AssetDefintionPropertiesModel: Creating Physics BvhTriangleMesh File Property");
+    log->debug("AssetDefintionPropertiesModel: Creating Physics BvhTriangleMesh File Property");
 
     AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
     (
@@ -660,7 +676,7 @@ AssetDefinitionPropertiesModel::createModelFileProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("AssetDefintionPropertiesModel: Creating Model Assimp File Delegate");
+    log->debug("AssetDefintionPropertiesModel: Creating Model Assimp File Delegate");
 
     AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
     (
@@ -676,7 +692,7 @@ AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Create Model Additional Files Delegate");
+    log->debug("Create Model Additional Files Delegate");
     AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
     (
         "Additional Files",
@@ -692,7 +708,7 @@ AssetDefinitionPropertiesModel::createModelMaterialShaderProperty
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Create Model Material/Shader Delegate");
+    log->debug("Create Model Material/Shader Delegate");
     AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
     (
         "Shader Map",
@@ -1146,7 +1162,7 @@ AssetDefinitionPropertiesModel::onButton_RemoveFiles
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("RemoveFiles");
+    log->debug("RemoveFiles");
     emit notifyButton_RemoveFiles(mAssetDefinitionHandle);
 }
 
@@ -1155,7 +1171,7 @@ AssetDefinitionPropertiesModel::onButton_EditScript
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("EditScript");
+    log->debug("EditScript");
     emit notifyButton_EditScript(mAssetDefinitionHandle);
 }
 
@@ -1164,7 +1180,7 @@ AssetDefinitionPropertiesModel::onButton_EditShader
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("EditShader");
+    log->debug("EditShader");
     emit notifyButton_EditShader(mAssetDefinitionHandle);
 }
 
@@ -1173,7 +1189,7 @@ AssetDefinitionPropertiesModel::onCombo_ScriptTemplateChanged
 ( QString& templateName)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Script Template Changed");
+    log->debug("Script Template Changed");
     emit notifyCombo_ScriptTemplateChanged(mAssetDefinitionHandle,templateName);
 }
 
@@ -1182,7 +1198,7 @@ AssetDefinitionPropertiesModel::onCombo_ShaderTemplateChanged
 ( QString& templateName)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Shader Template Changed");
+    log->debug("Shader Template Changed");
     emit notifyCombo_ShaderTemplateChanged(mAssetDefinitionHandle,templateName);
 }
 
@@ -1191,14 +1207,14 @@ AssetDefinitionPropertiesModel::onButton_ModelMaterialShaderMap
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Material Shader Map Clicked");
+    log->debug("Material Shader Map Clicked");
     emit notifyButton_ModelMaterialShaderMap(mAssetDefinitionHandle);
 }
 
 void AssetDefinitionPropertiesModel::onButton_PathList()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->info("Path List Button Clicked");
+    log->debug("Path List Button Clicked");
     emit notifyButton_PathList(mAssetDefinitionHandle);
 }
 

@@ -19,13 +19,6 @@
 
 namespace Dream
 {
-    IDefinition*
-    IRuntime::getDefinition
-    ()
-    {
-        return mDefinition;
-    }
-
     IRuntime::IRuntime
     (
         IDefinition* def,
@@ -94,6 +87,13 @@ namespace Dream
     (string uuid)
     {
         return getUuid().compare(uuid) == 0;
+    }
+
+    IDefinition*
+    IRuntime::getDefinition
+    ()
+    {
+        return mDefinition;
     }
 
 }

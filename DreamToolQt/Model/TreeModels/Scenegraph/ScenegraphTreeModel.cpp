@@ -36,7 +36,7 @@ ScenegraphTreeModel::ScenegraphTreeModel
 
     mProjectDefinitionHandle = project;
 
-    log->info("Constructing for {}",mProjectDefinitionHandle->getNameAndUuidString());
+    log->debug("Constructing for {}",mProjectDefinitionHandle->getNameAndUuidString());
 
     mProjectIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_boxes.svg"));
     mSceneIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_clapper.svg"));
@@ -49,7 +49,7 @@ ScenegraphTreeModel::~ScenegraphTreeModel
 {
     auto log = spdlog::get("ScenegraphTreeModel");
 
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 int
@@ -219,7 +219,7 @@ ScenegraphTreeModel::setupModelData
 {
     auto log = spdlog::get("ScenegraphTreeModel");
     emit beginResetModel();
-    log->info("Setting up project {}",mProjectDefinitionHandle->getNameAndUuidString());
+    log->debug("Setting up project {}",mProjectDefinitionHandle->getNameAndUuidString());
 
     mRootItem.reset
     (
@@ -243,7 +243,7 @@ ScenegraphTreeModel::setupModelData
 
     for (SceneDefinition* sceneHandle : mProjectDefinitionHandle->getSceneDefinitionsList())
     {
-        log->info("Adding Scene {}",sceneHandle->getNameAndUuidString());
+        log->debug("Adding Scene {}",sceneHandle->getNameAndUuidString());
 
         ScenegraphTreeItem *nextScene = new ScenegraphTreeItem
         (
@@ -335,7 +335,7 @@ const
 bool ScenegraphTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,const  QModelIndex& parent)
 {
     auto log = spdlog::get("ScenegraphTreeModel");
-    log->info("Scenegraph Drop Detected!");
+    log->debug("Scenegraph Drop Detected!");
 
     if(!canDropMimeData(data, action, row, column, parent))
     {
@@ -351,11 +351,11 @@ bool ScenegraphTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction act
 
     if (action == Qt::MoveAction)
     {
-        log->info("MoveAction");
+        log->debug("MoveAction");
     }
     else if (action == Qt::CopyAction)
     {
-        log->info("CopyAction");
+        log->debug("CopyAction");
     }
 
     int beginRow;
@@ -417,7 +417,7 @@ const
     }
     QMimeData* mimeData = QAbstractItemModel::mimeData(indexes);
     mimeData->setText(QString::fromStdString(sceneObjects.dump()));
-    log->info("Moving mime data {}",sceneObjects.dump());
+    log->debug("Moving mime data {}",sceneObjects.dump());
     return mimeData;
 }
 

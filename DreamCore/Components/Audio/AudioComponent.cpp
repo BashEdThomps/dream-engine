@@ -51,7 +51,7 @@ namespace Dream
         log->trace("Destructing");
         for (ALuint source : mSources)
         {
-            log->info("Stopping source {}" , source);
+            log->debug("Stopping source {}" , source);
             alSourceStop(source);
         }
 
@@ -78,7 +78,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Initialising...");
+        log->debug("Initialising...");
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
@@ -110,9 +110,64 @@ namespace Dream
         auto log = getLog();
         for (ALuint buffer : mBuffers)
         {
-            log->info("Deleting buffer {}" , buffer);
+            log->debug("Deleting buffer {}" , buffer);
             deleteBuffers(1, buffer);
         }
+    }
+
+    void
+    AudioComponent::removeBufferFromComponent
+    (ALuint buffer)
+    {
+        for (auto it = mBuffers.begin(); it != mBuffers.end(); it++)
+        {
+            if ((*it) == buffer)
+            {
+                mBuffers.erase(it);
+                break;
+            }
+        }
+    }
+
+    void
+    AudioComponent::removeSourceFromComponent
+    (ALuint source)
+    {
+       for (auto it = mSources.begin(); it != mSources.end(); it++)
+       {
+           if ((*it) == source)
+           {
+               mSources.erase(it);
+               break;
+           }
+       }
+
+       for (auto it = mPlayQueue.begin(); it != mPlayQueue.end(); it++)
+       {
+           if ((*it)->getSource() == source)
+           {
+               mPlayQueue.erase(it);
+               break;
+           }
+       }
+
+       for (auto it = mPauseQueue.begin(); it != mPauseQueue.end(); it++)
+       {
+           if ((*it)->getSource() == source)
+           {
+               mPauseQueue.erase(it);
+               break;
+           }
+       }
+
+       for (auto it = mStopQueue.begin(); it != mStopQueue.end(); it++)
+       {
+           if ((*it)->getSource() == source)
+           {
+               mStopQueue.erase(it);
+               break;
+           }
+       }
     }
 
     ALuint
@@ -138,7 +193,7 @@ namespace Dream
         auto log = getLog();
         for (ALuint source : mSources)
         {
-            log->info("Deleting buffer {}" , source);
+            log->debug("Deleting buffer {}" , source);
             deleteSources(1, source);
         }
     }
@@ -161,6 +216,7 @@ namespace Dream
     AudioComponent::deleteBuffers
     (int count, ALuint buffer)
     {
+        removeBufferFromComponent(buffer);
         alDeleteBuffers(count, &buffer);
     }
 
@@ -168,6 +224,7 @@ namespace Dream
     AudioComponent::deleteSources
     (int count, ALuint source)
     {
+        removeSourceFromComponent(source);
         alDeleteSources(count, &source);
     }
 
@@ -176,7 +233,7 @@ namespace Dream
     (ALuint source)
     {
         auto log = getLog();
-        log->info(  "Playing source {}" , source);
+        log->debug(  "Playing source {}" , source);
         alSourcePlay(source);
     }
 
@@ -185,7 +242,7 @@ namespace Dream
     (ALuint source)
     {
         auto log = getLog();
-        log->info(  "Stopping source {}" , source);
+        log->debug(  "Stopping source {}" , source);
         alSourceStop(source);
     }
 
@@ -194,7 +251,7 @@ namespace Dream
     (ALuint source)
     {
         auto log = getLog();
-        log->info(  "Pausing source {}" , source);
+        log->debug(  "Pausing source {}" , source);
         alSourcePause(source);
     }
 
@@ -237,7 +294,7 @@ namespace Dream
                 alSourcei(audioAsset->getSource(), AL_LOOPING, audioAsset->isLooping() ? 1 : 0 );
             }
             mPlayQueue.push_back(audioAsset);
-            log->info("Pushed audio asset to play queue");
+            log->debug("Pushed audio asset to play queue");
         }
     }
 
@@ -249,7 +306,7 @@ namespace Dream
         if (find(mPauseQueue.begin(),mPauseQueue.end(), audioAsset) == mPauseQueue.end())
         {
             mPauseQueue.push_back(audioAsset);
-            log->info("Pushed audio asset to play queue");
+            log->debug("Pushed audio asset to play queue");
         }
     }
 
@@ -261,7 +318,7 @@ namespace Dream
         if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
         {
             mStopQueue.push_back(asset);
-            log->info("Pushed audio asset to stop queue.");
+            log->debug("Pushed audio asset to stop queue.");
         }
     }
 
@@ -290,7 +347,7 @@ namespace Dream
     void AudioComponent::updatePlayQueue()
     {
         auto log = getLog();
-        log->info("Updating Play Queue");
+        log->debug("Updating Play Queue");
         for (AudioInstance* audioAsset : mPlayQueue)
         {
             if (audioAsset == nullptr)
@@ -305,7 +362,7 @@ namespace Dream
             }
             else
             {
-                log->info("" , audioAsset->getNameAndUuidString() , " is already playing");
+                log->debug("" , audioAsset->getNameAndUuidString() , " is already playing");
             }
         }
         mPlayQueue.clear();
@@ -316,7 +373,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Updating Pause Queue");
+        log->debug("Updating Pause Queue");
         for (AudioInstance* audioAsset : mPauseQueue)
         {
             if (audioAsset == nullptr)
@@ -330,7 +387,7 @@ namespace Dream
             }
             else
             {
-                log->info("{} is already paused", audioAsset->getNameAndUuidString());
+                log->debug("{} is already paused", audioAsset->getNameAndUuidString());
             }
         }
         mPauseQueue.clear();
@@ -341,7 +398,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Updating Stop Queue");
+        log->debug("Updating Stop Queue");
 
         for (AudioInstance* audioAsset : mStopQueue)
         {
@@ -356,7 +413,7 @@ namespace Dream
             }
             else
             {
-                log->info("" , audioAsset->getNameAndUuidString() , " is already stopped");
+                log->debug("" , audioAsset->getNameAndUuidString() , " is already stopped");
             }
         }
         mStopQueue.clear();

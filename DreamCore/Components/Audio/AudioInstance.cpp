@@ -7,20 +7,7 @@
 
 namespace Dream
 {
-    long long AudioInstance::getStartTime() const
-    {
-        return mStartTime;
-    }
 
-    void AudioInstance::setStartTime(long long startTime)
-    {
-        mStartTime = startTime;
-    }
-
-    int AudioInstance::getChannels() const
-    {
-        return mChannels;
-    }
 
     AudioInstance::AudioInstance
     (AudioComponent* component,
@@ -39,6 +26,15 @@ namespace Dream
         setSource(0);
         loadExtraAttributes(json::object());
         generateEventList();
+    }
+
+    AudioInstance::~AudioInstance()
+    {
+       if (mAudioComponent != nullptr)
+       {
+          mAudioComponent->deleteBuffers(1,mBuffer);
+          mAudioComponent->deleteSources(1,mSource);
+       }
     }
 
     void
@@ -113,17 +109,20 @@ namespace Dream
 
     void AudioInstance::play()
     {
-       mAudioComponent->pushToPlayQueue(this);
+        if (mAudioComponent != nullptr)
+            mAudioComponent->pushToPlayQueue(this);
     }
 
     void AudioInstance::pause()
     {
-       mAudioComponent->pushToPauseQueue(this);
+        if (mAudioComponent != nullptr)
+            mAudioComponent->pushToPauseQueue(this);
     }
 
     void AudioInstance::stop()
     {
-       mAudioComponent->pushToStopQueue(this);
+        if (mAudioComponent != nullptr)
+            mAudioComponent->pushToStopQueue(this);
     }
 
     void
@@ -150,7 +149,6 @@ namespace Dream
     {
         auto log = getLog();
         auto def = dynamic_cast<AudioDefinition*>(mDefinition);
-        mLooping = def->getLoop();
         if (def->getSpectrumAnalyser())
         {
             mSpectrumAnalyser.reset(new SpectrumAnalyser(this));
@@ -159,7 +157,10 @@ namespace Dream
             // Currently Arbitrary, from example
             mSpectrumAnalyser->setParameters(mFrequency/9,1024);
             log->critical("Creating Spectrum Analyser for {} with sample rate {}",getNameAndUuidString(),mFrequency);
-            mAudioComponent->pushToUpdateQueue(this);
+            if (mAudioComponent != nullptr)
+            {
+                mAudioComponent->pushToUpdateQueue(this);
+            }
         }
     }
 
@@ -189,6 +190,7 @@ namespace Dream
             mLastSampleOffset = currentSample;
         }
     }
+
     void
     AudioInstance::generateEventList
     ()
@@ -206,23 +208,24 @@ namespace Dream
         for (int markerIndex = 0; markerIndex< nMarkers; markerIndex++)
         {
             auto log = getLog();
-            log->info("Generating events for marker {}", markerIndex);
+            log->debug("Generating events for marker {}", markerIndex);
             auto markerStart = ad->getMarkerSampleIndex(markerIndex);
             auto count = ad->getMarkerRepeat(markerIndex);
             auto step = ad->getMarkerRepeatPeriod(markerIndex);
             auto markerName = ad->getMarkerName(markerIndex);
 
             auto next = markerStart;
-            log->info("Marker {}'s is : ", markerIndex, next);
+            log->debug("Marker {}'s is : ", markerIndex, next);
             Event e(mSceneObjectRuntime,"audio");
             e.setString("name",markerName);
             e.setNumber("time",markerStart);
             mMarkerEvents.push_back(e);
 
-            for (int repeatIndex=1; repeatIndex<=count; repeatIndex++)
+            for (int i=0; i<count; i++)
             {
+                auto repeatIndex = i+1;
                 auto next = markerStart + (repeatIndex*step);
-                log->info("Marker {}'s {}th step is : ", markerIndex, repeatIndex, next);
+                log->debug("Marker {}'s {}th step is : ", markerIndex, repeatIndex, next);
                 Event e(mSceneObjectRuntime,"audio");
                 e.setString("name",markerName);
                 e.setNumber("time",next);
@@ -230,23 +233,65 @@ namespace Dream
             }
         }
 
-        mAudioComponent->pushToUpdateQueue(this);
+        std::sort(
+            mMarkerEvents.begin(),
+            mMarkerEvents.end(),
+            [](Event& first, Event& second)
+            {
+                return first.getNumber("time") < second.getNumber("time");
+            }
+        );
+
+        mMarkerEventsCache = mMarkerEvents;
+
+        if (mAudioComponent != nullptr)
+        {
+            mAudioComponent->pushToUpdateQueue(this);
+        }
     }
 
     void
     AudioInstance::updateMarkers
     ()
     {
+        auto log = getLog();
         auto currentSample = mAudioComponent->getSampleOffset(mSource);
-        if (!mMarkerEvents.empty())
+        // has just looped, restore cached events
+        if (mLooping && mLastSampleOffset > currentSample)
         {
-            Event e = mMarkerEvents.at(0);
-            auto time = e.getNumber("time");
+            log->critical("Just Looped");
+           mMarkerEvents = mMarkerEventsCache;
+        }
+
+        for (auto it = mMarkerEvents.begin(); it != mMarkerEvents.end();)
+        {
+            auto time = (*it).getNumber("time");
             if (currentSample > time)
             {
-                mSceneObjectRuntime->addEvent(e);
+                mSceneObjectRuntime->addEvent((*it));
+                it++;
                 mMarkerEvents.pop_front();
             }
+            else
+            {
+                break;
+            }
         }
+        mLastSampleOffset = currentSample;
+    }
+
+    long long AudioInstance::getStartTime() const
+    {
+        return mStartTime;
+    }
+
+    void AudioInstance::setStartTime(long long startTime)
+    {
+        mStartTime = startTime;
+    }
+
+    int AudioInstance::getChannels() const
+    {
+        return mChannels;
     }
 } // End of Dream

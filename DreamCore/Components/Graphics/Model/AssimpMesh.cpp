@@ -106,7 +106,7 @@ namespace Dream
             nextTexture = GL_TEXTURE2;
         }
 
-        log->info(
+        log->debug(
               "Binding Material {} with GL Texture {} to unit {} for {} in {}",
               name,
               t->id,
@@ -203,7 +203,7 @@ namespace Dream
         // Draw mesh
         glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
 
-        log->info("Completed a mesh draw");
+        log->debug("Completed a mesh draw");
     }
 
     void

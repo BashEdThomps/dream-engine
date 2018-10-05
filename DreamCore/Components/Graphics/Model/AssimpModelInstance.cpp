@@ -94,6 +94,7 @@ namespace Dream
 
         if (mModelCache == nullptr)
         {
+            log->error("Cannot load model, cache is nullptr");
             return false;
         }
 
@@ -101,6 +102,7 @@ namespace Dream
 
         if (model == nullptr)
         {
+            log->error("Could not get model from cache, load failed");
             return false;
         }
 
@@ -108,6 +110,7 @@ namespace Dream
 
         if(scene == nullptr)
         {
+            log->error("Could not get assimp scene from model. Loading failed");
             return false;
         }
         mDirectory = path.substr(0, path.find_last_of('/'));
@@ -132,7 +135,7 @@ namespace Dream
             float distance = glm::distance(center,camPos);
             if (!alwaysDraw && distance > maxDistance)
             {
-                log->info("Mesh exceeds max distance, skipping");
+                log->debug("Mesh exceeds max distance, skipping");
                 continue;
             }
             mesh->draw(shader);
@@ -245,26 +248,26 @@ namespace Dream
         aiString name;
         aiGetMaterialString(material,AI_MATKEY_NAME,&name);
 
-        log->info("Loading Textures {} for {}",name.C_Str(), getNameAndUuidString());
+        log->debug("Loading Textures {} for {}",name.C_Str(), getNameAndUuidString());
 
         // Diffuse Textures
         if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
         {
-            log->info("Loading Diffuse Texture {} for {}",name.C_Str(), getNameAndUuidString());
+            log->debug("Loading Diffuse Texture {} for {}",name.C_Str(), getNameAndUuidString());
             aMaterial->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
         }
 
         // Specular Textures
         if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
         {
-            log->info("Loading Specular {} for {}",name.C_Str(), getNameAndUuidString());
+            log->debug("Loading Specular {} for {}",name.C_Str(), getNameAndUuidString());
             aMaterial->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
         }
 
         // Normal Textures
         if(material->GetTextureCount(aiTextureType_NORMALS) > 0)
         {
-            log->info("Loading Normal {} for {}",name.C_Str(), getNameAndUuidString());
+            log->debug("Loading Normal {} for {}",name.C_Str(), getNameAndUuidString());
             aMaterial->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS, "texture_normals");
         }
     }
@@ -291,7 +294,7 @@ namespace Dream
 
             if (aMaterial == nullptr)
             {
-                log->info("Creating Material {}", name.C_Str());
+                log->debug("Creating Material {}", name.C_Str());
                 aMaterial = mMaterialCache->newAssimpMaterial();
                 aMaterial->mName = name;
                 aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
@@ -312,7 +315,7 @@ namespace Dream
                 processTextureData(mesh,scene, aMaterial);
             }
 
-            log->info( "Using Material {}" , aMaterial->mName.C_Str());
+            log->debug( "Using Material {}" , aMaterial->mName.C_Str());
             aMaterial->debug();
 
             BoundingBox box;
@@ -359,7 +362,7 @@ namespace Dream
     (BoundingBox& box, aiMesh* mesh)
     {
         auto log = getLog();
-        log->info( "Updating bounding box for {}", getNameAndUuidString() );
+        log->debug( "Updating bounding box for {}", getNameAndUuidString() );
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {

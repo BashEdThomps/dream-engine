@@ -34,7 +34,7 @@ TextEditorTabController::TextEditorTabController
 
         log = spdlog::stdout_color_mt("EditorTabController");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
     mForm.setupUi(this);
     mTextEdit = mForm.textEdit;
     mTextEdit->setUndoRedoEnabled(true);
@@ -55,7 +55,7 @@ TextEditorTabController::~TextEditorTabController
 ()
 {
     auto log = spdlog::get("EditorTabController");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 void
@@ -63,7 +63,7 @@ TextEditorTabController::useLuaHighlighter
 ()
 {
     auto log = spdlog::get("EditorTabController");
-    log->info("Using LuaSyntaxHighlighter");
+    log->debug("Using LuaSyntaxHighlighter");
     mHighlighter = make_shared<LuaHighlighter>(mTextEdit->document());
 }
 
@@ -72,7 +72,7 @@ TextEditorTabController::useGLSLHighlighter
 ()
 {
     auto log = spdlog::get("EditorTabController");
-    log->info("Using GLSLSyntaxHighlighter");
+    log->debug("Using GLSLSyntaxHighlighter");
     mHighlighter = make_shared<GlslSyntaxHighlighter>(mTextEdit->document());
 }
 
@@ -127,7 +127,7 @@ TextEditorTabController::onComboTemplateChanged
 (const QString& templateName)
 {
     auto log = spdlog::get("EditorTabController");
-    log->info("Selected template {}",templateName.toStdString());
+    log->debug("Selected template {}",templateName.toStdString());
 
     // Get file type
 
@@ -179,7 +179,7 @@ TextEditorTabController::createTemplatesComboBox
     )->item(promptIndex)->setEnabled(false);
 
     QStringList scriptTemplates = mTemplatesModelHandle->getScriptTemplateNames();
-    log->info("Got script templates {}",scriptTemplates.count());
+    log->debug("Got script templates {}",scriptTemplates.count());
     editor->addItems(scriptTemplates);
 
     QString shaderPrompt = "Shader Templates";
@@ -191,7 +191,7 @@ TextEditorTabController::createTemplatesComboBox
     )->item(shaderPromptIndex)->setEnabled(false);
 
     QStringList shaderTemplates = mTemplatesModelHandle->getShaderTemplateNames();
-    log->info("Got shader templates {}",shaderTemplates.count());
+    log->debug("Got shader templates {}",shaderTemplates.count());
     editor->addItems(shaderTemplates);
 
     connect
@@ -212,7 +212,7 @@ TextEditorTabController::onSaveButtonClicked
 
     if (mDefinitionHandle != nullptr)
     {
-        log->info("Saving {}",mDefinitionHandle->getNameAndUuidString());
+        log->debug("Saving {}",mDefinitionHandle->getNameAndUuidString());
         QString data = getPlainText();
 
         bool writeResult = false;

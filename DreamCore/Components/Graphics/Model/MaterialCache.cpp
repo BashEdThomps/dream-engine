@@ -73,7 +73,7 @@ namespace Dream
         {
             if (material->mName == name)
             {
-                log->info("Found existing material {}", name.C_Str());
+                log->debug("Found existing material {}", name.C_Str());
                 return material;
             }
         }
@@ -83,7 +83,7 @@ namespace Dream
     void MaterialCache::addMaterialToCache(AssimpMaterial* mat)
     {
         auto log = getLog();
-        log->info("Adding material to map {}", mat->mName.C_Str());
+        log->debug("Adding material to map {}", mat->mName.C_Str());
         mMaterialCache.push_back(mat);
     }
 
@@ -92,7 +92,7 @@ namespace Dream
     (const char* file_c, const char* directory_c, const char* type)
     {
         auto log = getLog();
-        log->info( "Loading from: {}/{}", directory_c , file_c );
+        log->debug( "Loading from: {}/{}", directory_c , file_c );
         //Generate texture ID and load texture data
         string filename = string(file_c);
         string directory = string(directory_c);
@@ -102,7 +102,7 @@ namespace Dream
         {
             if (nextTexture->path == filename && nextTexture->type == type)
             {
-                log->info("Found cached texture by filename");
+                log->debug("Found cached texture by filename");
                 return nextTexture;
             }
         }
@@ -124,22 +124,25 @@ namespace Dream
                 nextTexture->height == height &&
                 nextTexture->channels == channels)
             {
-                log->info("Found Similar Texture, comparing data");
-                int compare = memcmp(nextTexture->image, image, static_cast<size_t>(width*height*channels));
-                if (compare == 0)
+                log->debug("Found Similar Texture, comparing data");
+                if (nextTexture->image != nullptr)
                 {
-                    log->info("Found cached texture with data match for {}",filename);
-                    SOIL_free_image_data(image);
-                    return nextTexture;
+                    int compare = memcmp(nextTexture->image, image, static_cast<size_t>(width*height*channels));
+                    if (compare == 0)
+                    {
+                        log->debug("Found cached texture with data match for {}",filename);
+                        SOIL_free_image_data(image);
+                        return nextTexture;
+                    }
                 }
             }
         }
-        log->info("Didn't find cached texture matching {}",filename);
+        log->debug("Didn't find cached texture matching {}",filename);
 
-        log->info("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
+        log->debug("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
         // Assign texture to ID
         glBindTexture(GL_TEXTURE_2D, textureID);
-        log->info("Bound to texture id {}",textureID);
+        log->debug("Bound to texture id {}",textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
         glGenerateMipmap(GL_TEXTURE_2D);

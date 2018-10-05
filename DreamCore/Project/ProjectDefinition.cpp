@@ -63,7 +63,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info(mJson.dump(1) );
+        log->debug(mJson.dump(1) );
     }
 
     void
@@ -149,7 +149,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Loading AssetDefinitions from JSON" );
+        log->debug( "Loading AssetDefinitions from JSON" );
 
         for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
@@ -162,7 +162,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Loading ScenesDefinitions from JSON" );
+        log->debug( "Loading ScenesDefinitions from JSON" );
 
         for (nlohmann::json it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
@@ -220,7 +220,7 @@ namespace Dream
     (IAssetDefinition* assetDefinition)
     {
         auto log = getLog();
-        log->info(
+        log->debug(
                     "Removing AssetDefinition {} from {}",
                     assetDefinition->getNameAndUuidString(),
                     getNameAndUuidString()
@@ -231,7 +231,7 @@ namespace Dream
         {
             if ((*iter) == assetDefinition)
             {
-                log->info(
+                log->debug(
                             "Found AssetDefinition to {} remove from {}",
                             assetDefinition->getNameAndUuidString(),
                             getNameAndUuidString()
@@ -325,7 +325,7 @@ namespace Dream
     (SceneDefinition* sceneDef)
     {
         auto log = getLog();
-        log->info(
+        log->debug(
                     "Removing SceneDefinition {} from {}",
                     sceneDef->getNameAndUuidString(),
                     getNameAndUuidString()
@@ -337,7 +337,7 @@ namespace Dream
         {
             if ((*iter) == sceneDef)
             {
-                log->info(
+                log->debug(
                             "Found scene to {} remove from {}",
                             sceneDef->getNameAndUuidString(),
                             getNameAndUuidString()
@@ -385,7 +385,7 @@ namespace Dream
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
         {
-            log->info( "Creating new AssetDefinition with default Format {}", defaultFormat);
+            log->debug( "Creating new AssetDefinition with default Format {}", defaultFormat);
         }
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
@@ -404,7 +404,7 @@ namespace Dream
     {
         auto log = getLog();
         string startupScene = getStartupSceneUuid();
-        log->info("Finding startup scene {}", startupScene);
+        log->debug("Finding startup scene {}", startupScene);
         return getSceneDefinitionByName(startupScene);
     }
 

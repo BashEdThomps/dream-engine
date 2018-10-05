@@ -76,13 +76,13 @@ namespace Dream
         AudioInstance* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
         void setVolume(float);
 
+        void deleteBuffers(int, ALuint);
+        void deleteSources(int, ALuint);
+
 
     protected:
         ALuint generateBuffers(size_t);
         ALuint generateSources(size_t);
-
-        void deleteBuffers(int, ALuint);
-        void deleteSources(int, ALuint);
 
         void playSource(ALuint);
         void stopSource(ALuint);
@@ -95,6 +95,9 @@ namespace Dream
 
         void deleteAllSources();
         void deleteAllBuffers();
+
+        void removeBufferFromComponent(ALuint);
+        void removeSourceFromComponent(ALuint);
 
     }; // End of AudioComponent
 

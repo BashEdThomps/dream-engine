@@ -46,7 +46,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Destroying Object" );
+        log->debug("Destroying Object" );
 
         return;
     }
@@ -59,7 +59,7 @@ namespace Dream
         string path = projectPath + mDefinition->getAssetPath();
         string directory = path.substr(0, path.find_last_of('/'));
 
-        log->info("Loading font from ", path );
+        log->debug("Loading font from ", path );
 
         if (mCache == nullptr)
         {
@@ -107,12 +107,12 @@ namespace Dream
             FT_Set_Pixel_Sizes(*mFontFace,0,static_cast<FT_UInt>(mSize));
         }
 
-        log->info("FontInstance: Red: {}\nGreen: {}\nBlue: {}\nSize: {}\n",red,green,blue,mSize);
+        log->debug("FontInstance: Red: {}\nGreen: {}\nBlue: {}\nSize: {}\n",red,green,blue,mSize);
         if (mCache != nullptr)
         {
             mCache->getCharMap(dynamic_cast<FontDefinition*>(mDefinition),mFontFace);
         }
-        log->info("FontInstance: Finished loading extra attributes" );
+        log->debug("FontInstance: Finished loading extra attributes" );
         return;
     }
 

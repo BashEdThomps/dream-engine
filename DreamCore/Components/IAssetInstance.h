@@ -47,7 +47,6 @@ namespace Dream
         string mAbsolutePath;
         IAssetDefinition* mDefinition;
         SceneObjectRuntime* mSceneObjectRuntime;
-        string mUuid;
     public:
         IAssetInstance
         (

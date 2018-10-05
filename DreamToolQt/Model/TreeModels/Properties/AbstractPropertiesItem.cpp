@@ -30,7 +30,7 @@ AbstractPropertiesItem::AbstractPropertiesItem
     {
         log = spdlog::stdout_color_mt("AbstractPropertiesItem");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
     setDelegate(delegate);
 }
 
@@ -39,7 +39,7 @@ AbstractPropertiesItem::~AbstractPropertiesItem
 {
 
     auto log = spdlog::get("AbstractPropertiesItem");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 void AbstractPropertiesItem::setParent(AbstractPropertiesItem* parent)

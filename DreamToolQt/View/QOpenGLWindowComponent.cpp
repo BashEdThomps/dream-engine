@@ -31,14 +31,14 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
     {
         log = spdlog::stdout_color_mt("QOpenGLWindowComponent");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
 }
 
 QOpenGLWindowComponent::~QOpenGLWindowComponent
 ()
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
-    log->info("Destructing");
+    log->debug("Destructing");
     mGridHandle = nullptr;
     mSelectionHighlighterHandle = nullptr;
     mRelationshipTreeHandle = nullptr;
@@ -51,14 +51,14 @@ QOpenGLWindowComponent::initializeGL
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     // get context opengl-version
-    log->info("OpenGL Version: {}.{}", format().majorVersion(), format().minorVersion());
-    log->info("Context valid: {}",  context()->isValid());
-    log->info("Really used OpenGl: {}.{}", context()->format().majorVersion(), context()->format().minorVersion());
-    log->info("OpenGl information:");
-    log->info("VENDOR:       {}", static_cast<const unsigned char*>(glGetString(GL_VENDOR)));
-    log->info("RENDERDER:    {}", static_cast<const unsigned char*>(glGetString(GL_RENDERER)));
-    log->info("VERSION:      {}", static_cast<const unsigned char*>(glGetString(GL_VERSION)));
-    log->info("GLSL VERSION: {}", static_cast<const unsigned char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    log->debug("OpenGL Version: {}.{}", format().majorVersion(), format().minorVersion());
+    log->debug("Context valid: {}",  context()->isValid());
+    log->debug("Really used OpenGl: {}.{}", context()->format().majorVersion(), context()->format().minorVersion());
+    log->debug("OpenGl information:");
+    log->debug("VENDOR:       {}", static_cast<const unsigned char*>(glGetString(GL_VENDOR)));
+    log->debug("RENDERDER:    {}", static_cast<const unsigned char*>(glGetString(GL_RENDERER)));
+    log->debug("VERSION:      {}", static_cast<const unsigned char*>(glGetString(GL_VERSION)));
+    log->debug("GLSL VERSION: {}", static_cast<const unsigned char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 }
 
 void
@@ -75,7 +75,7 @@ QOpenGLWindowComponent::showIdleScreen
 ()
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
-    log->info("showIdleScreen");
+    log->debug("showIdleScreen");
     QColor clear(35,38,41);
     double r,g,b;
     clear.getRgbF(&r,&g,&b);
@@ -368,7 +368,7 @@ bool QOpenGLWindowComponent::getControlScene()
 void QOpenGLWindowComponent::setControlScene(bool controlScene)
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
-    log->info("Scene Control Enabled {}",controlScene);
+    log->debug("Scene Control Enabled {}",controlScene);
     mControlScene = controlScene;
 }
 

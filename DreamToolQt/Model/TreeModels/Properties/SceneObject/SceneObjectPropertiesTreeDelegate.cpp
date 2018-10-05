@@ -75,6 +75,8 @@ const
             return createCaptureScaleButton(parent);
         case SCENE_OBJECT_PROPERTY_UUID:
         case SCENE_OBJECT_PROPERTY_NAME:
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION_LIST:
+        case SCENE_OBJECT_PROPERTY_CHILD_LIST:
             return new QLineEdit(parent);
         case SCENE_OBJECT_PROPERTY_TRANSLATION_X:
         case SCENE_OBJECT_PROPERTY_TRANSLATION_Y:
@@ -151,6 +153,8 @@ const
             static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
             break;
         case SCENE_OBJECT_PROPERTY_NONE:
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION_LIST:
+        case SCENE_OBJECT_PROPERTY_CHILD_LIST:
             break;
 
     }
@@ -214,7 +218,7 @@ SceneObjectPropertiesTreeDelegate::onButton_CaptureTranslation
 (bool)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
-    log->info("CaptureTranslation");
+    log->debug("CaptureTranslation");
     emit notifyButton_CaptureTranslation();
 }
 
@@ -223,7 +227,7 @@ SceneObjectPropertiesTreeDelegate::onButton_CaptureOrientation
 (bool)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
-    log->info("CaptureOrientation");
+    log->debug("CaptureOrientation");
     emit notifyButton_CaptureOrientation();
 }
 
@@ -232,7 +236,7 @@ SceneObjectPropertiesTreeDelegate::onButton_CaptureScale
 (bool)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
-    log->info("CaptureScale");
+    log->debug("CaptureScale");
     emit notifyButton_CaptureScale();
 }
 
@@ -241,7 +245,7 @@ SceneObjectPropertiesTreeDelegate::onButton_RemoveAsset
 (bool, DreamObject* vHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
-    log->info("RemoveAsset");
+    log->debug("RemoveAsset");
     IAssetDefinition* adHandle = dynamic_cast<IAssetDefinition*>(vHandle);
     emit notifyButton_RemoveAsset(adHandle);
 }
@@ -251,7 +255,7 @@ SceneObjectPropertiesTreeDelegate::onButton_RemoveChild
 (bool, DreamObject* vHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesTreeDelegate");
-    log->info("RemoveChild");
+    log->debug("RemoveChild");
     SceneObjectDefinition* sodHandle = dynamic_cast<SceneObjectDefinition*>(vHandle);
     emit notifyButton_RemoveChild(sodHandle);
 }

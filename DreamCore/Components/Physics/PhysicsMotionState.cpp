@@ -55,7 +55,7 @@ namespace Dream
     (Transform3D* transform)
     {
         auto log = getLog();
-        log->info( "setTransform called" );
+        log->debug( "setTransform called" );
         mDreamTransform = transform;
     }
 
@@ -64,7 +64,7 @@ namespace Dream
     (btTransform &worldTrans) const
     {
         auto log = getLog();
-        log->info( "getWorldTransform called" );
+        log->debug( "getWorldTransform called" );
         worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
         worldTrans.setRotation(mDreamTransform->getOrientationAsBtQuaternion());
     }
@@ -74,7 +74,7 @@ namespace Dream
     (const btTransform &worldTrans)
     {
         auto log = getLog();
-        log->info( "setWorldTransform called" );
+        log->debug( "setWorldTransform called" );
 
         // Translation
         btVector3 pos = worldTrans.getOrigin();
@@ -89,7 +89,7 @@ namespace Dream
     (btTransform &trans)
     {
         auto log = getLog();
-        log->info( "setKinematicPos called" );
+        log->debug( "setKinematicPos called" );
         btVector3 pos = trans.getOrigin();
         mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
     }

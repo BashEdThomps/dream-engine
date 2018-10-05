@@ -129,10 +129,10 @@ PathEditorFormController::populate
 ()
 {
     auto log = spdlog::get("PathEditorFormController");
-    log->info("Populating");
+    log->debug("Populating");
     if (mPathDefinitionHandle != nullptr)
     {
-        log->info("PathDefinition is present");
+        log->debug("PathDefinition is present");
         mTableModel.setPathDefinition(mPathDefinitionHandle);
         mUi.tableView->setModel(&mTableModel);
         connect(
@@ -169,27 +169,27 @@ PathEditorFormController::updateNodeFromEvent
         }
 
         //  y
-        if (mInputState.wPressed || mInputState.sPressed)
+        if (mInputState.upPressed || mInputState.downPressed)
         {
             auto idx = mTableModel.index(mSelectedIndex.row(),2);
 
             QVariant data = mTableModel.data(idx, Qt::DisplayRole);
             int current = data.toInt();
-            if (mInputState.wPressed) { current += 1; }
-            if (mInputState.sPressed) { current -= 1; }
+            if (mInputState.upPressed) { current += 1; }
+            if (mInputState.downPressed) { current -= 1; }
 
             mTableModel.setData(idx, current, Qt::EditRole);
         }
 
         // Z
-        if (mInputState.upPressed || mInputState.downPressed)
+        if (mInputState.wPressed || mInputState.sPressed)
         {
             auto idx = mTableModel.index(mSelectedIndex.row(),3);
 
             QVariant data = mTableModel.data(idx, Qt::DisplayRole);
             int current = data.toInt();
-            if (mInputState.upPressed) { current += 1; }
-            if (mInputState.downPressed) { current -= 1; }
+            if (mInputState.wPressed) { current += 1; }
+            if (mInputState.sPressed) { current -= 1; }
 
             mTableModel.setData(idx, current, Qt::EditRole);
         }

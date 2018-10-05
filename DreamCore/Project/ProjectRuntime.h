@@ -49,6 +49,7 @@ namespace Dream
     class FontCache;
     class ShaderCache;
     class ComponentThread;
+    class IAssetDefinition;
 
     class Time;
 
@@ -134,6 +135,7 @@ namespace Dream
         bool getScriptingEnabled() const;
         void setScriptingEnabled(bool);
 
+        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
     private: // Member Functions
         bool initPathComponent();
         bool initAudioComponent();

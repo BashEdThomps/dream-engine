@@ -35,7 +35,7 @@ namespace Dream
     Event::~Event()
     {
         auto log = getLog();
-        log->info("Destroying Object");
+        log->debug("Destroying Object");
     }
 
     SceneObjectRuntime*

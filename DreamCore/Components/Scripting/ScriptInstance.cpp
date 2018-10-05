@@ -50,7 +50,7 @@ namespace Dream
     {
         auto log = getLog();
         mAbsolutePath = projectPath + mDefinition->getAssetPath();
-        log->info( "Script at {}" , mAbsolutePath );
+        log->debug( "Script at {}" , mAbsolutePath );
         return mAbsolutePath.size() != 0;
     }
 

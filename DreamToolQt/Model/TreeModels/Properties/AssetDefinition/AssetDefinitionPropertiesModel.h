@@ -45,6 +45,7 @@ private:
 
     void createFormatProperty();
     void createTypeProperty();
+    void createUuidProperty();
     void createNameProperty();
     void createRemoveFilesProperty();
 

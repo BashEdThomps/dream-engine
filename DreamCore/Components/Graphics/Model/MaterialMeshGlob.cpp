@@ -133,7 +133,7 @@ namespace Dream
             nextTexture = GL_TEXTURE2;
         }
 
-        log->info(
+        log->debug(
               "Binding Material {} with GL Texture {} to unit {}",
               name,
               t->id,

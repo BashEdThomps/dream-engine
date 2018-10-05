@@ -42,7 +42,7 @@ namespace Dream
     (
         SceneDefinition* sd,
         ProjectRuntime* project
-    ) :   IRuntime(sd),
+    ) :   IRuntime(sd, sd->getName(),sd->getUuid()),
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
@@ -182,7 +182,7 @@ namespace Dream
         auto log = getLog();
         if (!mRootSceneObjectRuntime)
         {
-            log->info( "Scenegraph is empty (no root SceneObjectRuntime)" );
+            log->debug( "Scenegraph is empty (no root SceneObjectRuntime)" );
             return;
         }
 
@@ -190,7 +190,7 @@ namespace Dream
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
             ([&](SceneObjectRuntime*)
             {
-                log->info("showScenegraph not implemented");
+                log->debug("showScenegraph not implemented");
                 //obj->showStatus();
                 return nullptr;
             }
@@ -216,7 +216,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Collecting Garbage {}" , getNameAndUuidString() );
+        log->debug( "Collecting Garbage {}" , getNameAndUuidString() );
         mRootSceneObjectRuntime->applyToAll(
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
             ([&](SceneObjectRuntime* runt)
@@ -254,7 +254,7 @@ namespace Dream
             return;
         }
 
-        log->info( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
+        log->debug( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
 
         // Assign Runtime attributes from Definition
         setName(sceneDefinition->getName());

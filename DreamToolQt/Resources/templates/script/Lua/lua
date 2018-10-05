@@ -16,7 +16,3 @@ end
 function onEvent(sceneObject, event)
   -- Handle Dream Events Here
 end
-
-function onNanoVG(sceneObject)
-    -- Do NanoVG Drawing Calls Here
-end

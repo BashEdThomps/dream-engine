@@ -181,6 +181,7 @@ namespace Dream
         void removePhysicsObjectInstance();
         void removeFontInstance();
 
+        void replaceAssetUuid(string uuid);
     private:
 
         AudioInstance* mAudioInstance;

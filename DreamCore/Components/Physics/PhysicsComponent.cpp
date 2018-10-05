@@ -51,7 +51,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Destroying Object" );
+        log->debug( "Destroying Object" );
 
         int i;
 
@@ -76,17 +76,17 @@ namespace Dream
             }
             if (body && body->getMotionState())
             {
-                log->info( "Deleting a motion state" );
+                log->debug( "Deleting a motion state" );
                 delete body->getMotionState();
             }
-            log->info( "Deleting a collision object" );
+            log->debug( "Deleting a collision object" );
             mDynamicsWorld->removeCollisionObject(obj);
             delete obj;
         }
 
         for (btCollisionShape* shape : shapes)
         {
-            log->info( "Deleting Shape" );
+            log->debug( "Deleting Shape" );
             delete shape;
         }
 
@@ -129,7 +129,7 @@ namespace Dream
     (vector<float> gravity)
     {
         auto log = getLog();
-        log->info("Setting Gravity" , String::floatVectorToString(gravity) );
+        log->debug("Setting Gravity" , String::floatVectorToString(gravity) );
         mGravity = btVector3(gravity[0],gravity[1],gravity[2]);
         if (mDynamicsWorld != nullptr)
         {
@@ -141,7 +141,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Initialising Component");
+        log->debug( "Initialising Component");
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -159,7 +159,7 @@ namespace Dream
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
         mDynamicsWorld->setDebugDrawer(mDebugDrawer);
 
-        log->info("Finished initialising PhysicsComponent");
+        log->debug("Finished initialising PhysicsComponent");
         return true;
     }
 
@@ -169,7 +169,7 @@ namespace Dream
     {
             beginUpdate();
             auto log = getLog();
-            log->info( "Update Called" );
+            log->debug( "Update Called" );
 
             populatePhysicsWorld(mActiveSceneRuntime);
             btScalar stepValue = 0.0;
@@ -194,7 +194,7 @@ namespace Dream
     (btRigidBody *rigidBody)
     {
         auto log = getLog();
-        log->info( "Adding Rigid Body to Dynamics World" );
+        log->debug( "Adding Rigid Body to Dynamics World" );
         if (rigidBody != nullptr)
         {
             mDynamicsWorld->addRigidBody(rigidBody);
@@ -203,7 +203,7 @@ namespace Dream
         {
             log->error("Unable to add rigid body to dynamics world, nullptr");
         }
-        log->info( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
+        log->debug( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
     }
 
     void
@@ -218,7 +218,7 @@ namespace Dream
     (btRigidBody *rigidBody)
     {
         auto log = getLog();
-        log->info( "Removing Rigid Body from Dynamics World" );
+        log->debug( "Removing Rigid Body from Dynamics World" );
         if (rigidBody != nullptr)
         {
             mDynamicsWorld->removeRigidBody(rigidBody);
@@ -309,7 +309,7 @@ namespace Dream
 
                 if (sObjA != nullptr && sObjB != nullptr)
                 {
-                    log->info("Contact Manifold Found. Sending Event");
+                    log->debug("Contact Manifold Found. Sending Event");
 
                     Event aHitsB(sObjA,Constants::EVENT_TYPE_COLLISION);
                     Event bHitsA(sObjB,Constants::EVENT_TYPE_COLLISION);

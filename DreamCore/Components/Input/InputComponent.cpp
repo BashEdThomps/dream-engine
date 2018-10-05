@@ -28,13 +28,13 @@ namespace Dream
     bool InputComponent::init()
     {
         auto log = getLog();
-        log->info("Initialising...");
+        log->debug("Initialising...");
 
         mInputMap = new InputMap(mInputManager);
 
         if (mUseKeyboard)
         {
-            log->info("Creating Keyboard Device");
+            log->debug("Creating Keyboard Device");
             auto keyboardDevice = mInputManager.CreateDevice<InputDeviceKeyboard>();
             mDevices.push_back(keyboardDevice);
             mInputMap->MapBool(KB_UP,keyboardDevice,KeyUp);
@@ -47,14 +47,14 @@ namespace Dream
 
         if (mUseMouse)
         {
-            log->info("Creating Mouse Device");
+            log->debug("Creating Mouse Device");
             auto mouseDevice = mInputManager.CreateDevice<InputDeviceMouse>();
             mDevices.push_back(mouseDevice);
         }
 
         if (mUseJoystick)
         {
-            log->info("Creating Joystick Device");
+            log->debug("Creating Joystick Device");
             auto gamepad = mInputManager.CreateDevice<InputDevicePad>();
             mDevices.push_back(gamepad);
 

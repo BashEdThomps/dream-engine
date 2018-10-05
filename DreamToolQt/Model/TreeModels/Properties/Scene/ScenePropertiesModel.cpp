@@ -37,7 +37,7 @@ ScenePropertiesModel::ScenePropertiesModel
     {
         log = spdlog::stderr_color_mt("ScenePropertiesModel");
     }
-    log->info("Constructor called");
+    log->debug("Constructor called");
     createRoot();
     createProperties();
     createDelegateConnections();
@@ -47,7 +47,7 @@ ScenePropertiesModel::~ScenePropertiesModel
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("Desstructor called");
+    log->debug("Desstructor called");
 }
 
 void
@@ -55,7 +55,7 @@ ScenePropertiesModel::createRoot
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("craeteRoot");
+    log->debug("craeteRoot");
     mRootItem.reset
     (
         new ScenePropertiesItem
@@ -71,7 +71,7 @@ ScenePropertiesModel::createProperties
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("createProperties");
+    log->debug("createProperties");
     createNameProperties();
     createNotesProperties();
     createCameraProperties();
@@ -122,7 +122,7 @@ ScenePropertiesModel::createNameProperties
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("createNameProperties");
+    log->debug("createNameProperties");
     mRootItem->appendChild
     (
         new ScenePropertiesItem
@@ -139,7 +139,7 @@ ScenePropertiesModel::createNotesProperties
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("createNotesProperties");
+    log->debug("createNotesProperties");
     mRootItem->appendChild
     (
         new ScenePropertiesItem
@@ -156,11 +156,11 @@ ScenePropertiesModel::createCameraProperties
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("createCameraProperties");
+    log->debug("createCameraProperties");
     ScenePropertiesItem *cameraProperty = new ScenePropertiesItem("Camera",mSceneDefinitionHandle,SCENE_PROPERTY_CAMERA);
     mRootItem->appendChild(cameraProperty);
     {
-        log->info("createCameraProperties translation");
+        log->debug("createCameraProperties translation");
         ScenePropertiesItem* cameraTranslationProperty = new ScenePropertiesItem
         (
             "Translation",
@@ -201,7 +201,7 @@ ScenePropertiesModel::createCameraProperties
             );
         }
 
-        log->info("createCameraProperties LookAt");
+        log->debug("createCameraProperties LookAt");
         ScenePropertiesItem *cameraLookAtProperty = new ScenePropertiesItem
         (
             "Orientation",
@@ -265,7 +265,7 @@ ScenePropertiesModel::createCameraProperties
         );
 
 
-        log->info("createCameraProperties speed");
+        log->debug("createCameraProperties speed");
 
         cameraProperty->appendChild
         (
@@ -321,14 +321,14 @@ ScenePropertiesModel::createRenderingProperties
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("createRenderingProperties");
+    log->debug("createRenderingProperties");
     vector<float> clear = mSceneDefinitionHandle->getClearColour();
 
     auto renderingProperty = new ScenePropertiesItem("Rendering",mSceneDefinitionHandle);
     mRootItem->appendChild(renderingProperty);
     {
 
-        log->info("createRenderingProperties (ClearColour)");
+        log->debug("createRenderingProperties (ClearColour)");
         // Clear Color
         auto clearColorProperty = new ScenePropertiesItem("Clear Colour", mSceneDefinitionHandle,SCENE_PROPERTY_CLEAR_PARENT);
         renderingProperty->appendChild(clearColorProperty);
@@ -364,7 +364,7 @@ ScenePropertiesModel::createRenderingProperties
         );
     }
 
-    log->info("createRenderingProperties (AmbientLight)");
+    log->debug("createRenderingProperties (AmbientLight)");
     vector<float> ambient = mSceneDefinitionHandle->getAmbientColour();
 
     auto *ambientLightProperty = new ScenePropertiesItem(
@@ -419,7 +419,7 @@ ScenePropertiesModel::createPhysicsProperties
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("createPhysicsProperties");
+    log->debug("createPhysicsProperties");
     ScenePropertiesItem *physicsProperty = new ScenePropertiesItem("Physics",mSceneDefinitionHandle);
     mRootItem->appendChild(physicsProperty);
     {
@@ -467,7 +467,7 @@ ScenePropertiesModel::onButton_CaptureCameraTranslation
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("CaptureCameraTranslation");
+    log->debug("CaptureCameraTranslation");
     emit notifyButton_CaptureCameraTranslation(mSceneDefinitionHandle);
 }
 
@@ -476,21 +476,21 @@ ScenePropertiesModel::onButton_CaptureCameraLookAt
 ()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("CaptureCameraLookAt");
+    log->debug("CaptureCameraLookAt");
     emit notifyButton_CaptureCameraLookAt(mSceneDefinitionHandle);
 }
 
 void ScenePropertiesModel::onButton_ChooseClearColour()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("Choose Clear Colour");
+    log->debug("Choose Clear Colour");
     emit notifyButton_ChooseClearColour(mSceneDefinitionHandle);
 }
 
 void ScenePropertiesModel::onButton_ChooseAmbientColour()
 {
     auto log = spdlog::get("ScenePropertiesModel");
-    log->info("Choose Ambient Colour");
+    log->debug("Choose Ambient Colour");
     emit notifyButton_ChooseAmbientColour(mSceneDefinitionHandle);
 
 }

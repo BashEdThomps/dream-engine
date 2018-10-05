@@ -33,7 +33,7 @@ namespace Dream
         :DreamObject ("AssimpCache")
     {
         auto log = getLog();
-            log->info("Contructing" );
+            log->debug("Contructing" );
     }
 
     AssimpCache::~AssimpCache
@@ -41,7 +41,7 @@ namespace Dream
     {
         auto log = getLog();
 
-        log->info("Destructing" );
+        log->debug("Destructing" );
 
         for (auto imp : mCache)
         {
@@ -62,12 +62,12 @@ namespace Dream
         {
             if (it.first.compare(path) == 0)
             {
-                    log->info("Found cached scene for {}", path );
+                    log->debug("Found cached scene for {}", path );
                 return it.second;
             }
         }
 
-          log->info("Loading {} from disk",  path);
+          log->debug("Loading {} from disk",  path);
 
         Importer* importer = new Importer();
         importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);

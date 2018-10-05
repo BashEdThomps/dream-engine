@@ -18,6 +18,7 @@
 #include "IAssetInstance.h"
 
 #include "IAssetDefinition.h"
+#include "../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../Utilities/Uuid.h"
 
 namespace Dream
@@ -30,8 +31,7 @@ namespace Dream
             mLoaded(false),
             mAbsolutePath(""),
             mDefinition(definition),
-            mSceneObjectRuntime(runtime),
-            mUuid(Uuid::generateUuid())
+            mSceneObjectRuntime(runtime)
     {}
 
     IAssetInstance::~IAssetInstance
@@ -50,7 +50,7 @@ namespace Dream
     IAssetInstance::getUuid
     ()
     {
-        return mUuid;
+        return mDefinition->getUuid();
     }
 
     string

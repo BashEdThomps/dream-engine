@@ -38,7 +38,7 @@ PreferencesModel::PreferencesModel
     {
         log = spdlog::stdout_color_mt("PreferencesModel");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
 
     createPreferencesDirectory();
 
@@ -48,7 +48,7 @@ PreferencesModel::PreferencesModel
         {
             if (loadPreferencesFile())
             {
-                log->info("Created Initial Preferences file");
+                log->debug("Created Initial Preferences file");
             }
         }
         else
@@ -58,7 +58,7 @@ PreferencesModel::PreferencesModel
     }
     else
     {
-        log->info("Initialised from existing preferences file");
+        log->debug("Initialised from existing preferences file");
     }
 }
 
@@ -70,12 +70,12 @@ PreferencesModel::createPreferencesDirectory
     QDir dir(getPreferencesDirectoryPath());
     if (!dir.exists())
     {
-        log->info("Creating Preferences Directory {}", getPreferencesDirectoryPath().toStdString());
+        log->debug("Creating Preferences Directory {}", getPreferencesDirectoryPath().toStdString());
         return QDir().mkdir(getPreferencesDirectoryPath());
     }
     else
     {
-        log->info("Found Preferences Directory {}",  getPreferencesDirectoryPath().toStdString());
+        log->debug("Found Preferences Directory {}",  getPreferencesDirectoryPath().toStdString());
     }
     return true;
 }
@@ -112,7 +112,7 @@ PreferencesModel::savePreferenecsFile
 ()
 {
     auto log = spdlog::get("PreferencesModel");
-    log->info("Saving Preferences To {}" , getPreferencesFilePath().toStdString());
+    log->debug("Saving Preferences To {}" , getPreferencesFilePath().toStdString());
     if (mJson.is_null())
     {
         setDefaultPreferences();
@@ -129,7 +129,7 @@ PreferencesModel::loadPreferencesFile
 ()
 {
     auto log = spdlog::get("PreferencesModel");
-    log->info("Loading Preferences From {}",  getPreferencesFilePath().toStdString());
+    log->debug("Loading Preferences From {}",  getPreferencesFilePath().toStdString());
     QFile prefFile(getPreferencesFilePath());
     if (prefFile.exists())
     {

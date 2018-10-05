@@ -47,7 +47,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Updating Component");
+        log->debug("Updating Component");
         mUpdateBeginTime = mTime->nowLL();
         setBusy(true);
     }
@@ -59,7 +59,7 @@ namespace Dream
         auto log = getLog();
         mUpdateEndTime =  mTime->nowLL();
         setBusy(false);
-        log->info("Update Complete in {}",getUpdateTime());
+        log->debug("Update Complete in {}",getUpdateTime());
     }
 
     void

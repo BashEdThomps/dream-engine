@@ -52,7 +52,11 @@ namespace Dream
     (
             Project* project,
             IWindowComponent* windowComponent)
-        : IRuntime(project->getProjectDefinition()),
+        : IRuntime(
+              project->getProjectDefinition(),
+              project->getProjectDefinition()->getName(),
+              project->getProjectDefinition()->getUuid()
+          ),
           mDone(false),
           mTime(nullptr),
           mCamera(nullptr),
@@ -74,14 +78,14 @@ namespace Dream
     {
         setLogClassName("ProjectRuntime");
         auto log = getLog();
-        log->info( "Constructing" );
+        log->debug( "Constructing" );
     }
 
     ProjectRuntime::~ProjectRuntime
     ()
     {
         auto log = getLog();
-        log->info( "Destructing" );
+        log->debug( "Destructing" );
 
         if (mActiveSceneRuntime != nullptr)
         {
@@ -132,7 +136,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Initialising Components..." );
+        log->debug( "Initialising Components..." );
 
         mTime = new Time();
 
@@ -170,7 +174,7 @@ namespace Dream
         {
             return false;
         }
-        log->info( "Successfuly created Components." );
+        log->debug( "Successfuly created Components." );
 
         return true;
     }
@@ -292,7 +296,7 @@ namespace Dream
         if (mInputComponent != nullptr)
         {
             mScriptComponent->setInputMap(mInputComponent->getInputMap());
-            log->info("Passed InputMap to ScriptComponent");
+            log->debug("Passed InputMap to ScriptComponent");
         }
         else
         {
@@ -436,7 +440,7 @@ namespace Dream
     {
         auto log = getLog();
 
-        log->info("UpdateLogic Called @ {}",  mTime->nowLL());
+        log->debug("UpdateLogic Called @ {}",  mTime->nowLL());
 
         mTime->updateFrameTime();
 
@@ -472,7 +476,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info(
+        log->debug(
             "\n"
             "====================\n"
             "Ready to draw @ {}\n"
@@ -480,7 +484,7 @@ namespace Dream
             mTime->nowLL()
         );
 
-        log->info("UpdateGraphics Called @ {}" , mTime->nowLL());
+        log->debug("UpdateGraphics Called @ {}" , mTime->nowLL());
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->handleResize();
         mGraphicsComponent->drawModelQueue();
@@ -498,7 +502,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("CollectGarbage Called @ {}", mTime->nowLL());
+        log->debug("CollectGarbage Called @ {}", mTime->nowLL());
         mActiveSceneRuntime->collectGarbage();
     }
 
@@ -541,7 +545,7 @@ namespace Dream
 
 
         // Load the new scene
-        log->info( "Loading SceneRuntime" );
+        log->debug( "Loading SceneRuntime" );
 
         mActiveSceneRuntime = new SceneRuntime(
             sceneDefinition,
@@ -624,5 +628,16 @@ namespace Dream
     void ProjectRuntime::setScriptingEnabled(bool en)
     {
         mScriptingEnabled = en;
+    }
+
+    IAssetDefinition*
+    ProjectRuntime::getAssetDefinitionByUuid
+    (string uuid)
+    {
+        if (mProject != nullptr)
+        {
+            return mProject->getAssetDefinitionByUuid(uuid);
+        }
+        return nullptr;
     }
 }

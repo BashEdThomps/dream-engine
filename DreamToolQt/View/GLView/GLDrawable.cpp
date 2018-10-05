@@ -37,14 +37,14 @@ GLDrawable::GLDrawable
     {
         log = spdlog::stdout_color_mt("GLDrawable");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
 }
 
 GLDrawable::~GLDrawable
 ()
 {
     auto log = spdlog::get("GLDrawable");
-    log->info("Destroying");
+    log->debug("Destroying");
     if (mVao > 0)
     {
         glDeleteVertexArrays(1,&mVao);
@@ -72,7 +72,7 @@ GLDrawable::initGLDrawable
 ()
 {
     auto log = spdlog::get("GLDrawable");
-    log->info("Initialising");
+    log->debug("Initialising");
     initShader();
     initVaoVbo();
     mInitialised = true;
@@ -110,7 +110,7 @@ GLDrawable::draw
     if (!mVertexBuffer.empty())
     {
         preRender();
-            log->info("Drawing {} lines", mVertexBuffer.size()/2);
+            log->debug("Drawing {} lines", mVertexBuffer.size()/2);
 
         // Enable shader program
         useShader();
@@ -181,7 +181,7 @@ GLDrawable::initShader
 ()
 {
     auto log = spdlog::get("GLDrawable");
-    log->info("Initialising Shader");
+    log->debug("Initialising Shader");
 
     string vertexShaderSource;
     string fragmentShaderSource;

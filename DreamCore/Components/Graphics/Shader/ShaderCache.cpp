@@ -28,7 +28,7 @@ namespace Dream
         {
             if (it.first.compare(uuid) == 0)
             {
-                log->info( "Found Shader " , uuid );
+                log->debug( "Found Shader " , uuid );
                 return it.second;
             }
         }

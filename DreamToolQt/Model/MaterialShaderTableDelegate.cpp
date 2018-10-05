@@ -14,13 +14,13 @@ MaterialShaderTableDelegate::MaterialShaderTableDelegate
     {
        log=spdlog::stdout_color_mt("MaterialShaderTableDelegate");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
 }
 
 MaterialShaderTableDelegate::~MaterialShaderTableDelegate()
 {
     auto log = spdlog::get("MaterialShaderTableDelegate");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 QWidget*
@@ -40,11 +40,11 @@ const
     {
         case 0:
            name = index.data().toString();
-           log->info("Creating QLineEdit Delegate for {}",name.toStdString());
+           log->debug("Creating QLineEdit Delegate for {}",name.toStdString());
            widget = new QLineEdit(name, parent);
            break;
         case 1:
-            log->info("Creating QComboBox Delegate for {}",name.toStdString());
+            log->debug("Creating QComboBox Delegate for {}",name.toStdString());
             widget = new QComboBox(parent);
             combo = dynamic_cast<QComboBox*>(widget);
             for (auto shaderDef : mShaderDefinitions)

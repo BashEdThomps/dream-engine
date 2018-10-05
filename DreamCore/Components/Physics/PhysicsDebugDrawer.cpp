@@ -7,7 +7,7 @@ namespace Dream
     () : DreamObject ("PhysicsDebugDrawer")
     {
         auto log = getLog();
-        log->info( "Constructing Object" );
+        log->debug( "Constructing Object" );
 
         mDebugMode = 0;
         mShaderProgram = 0;
@@ -17,7 +17,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Destroying Object" );
+        log->debug( "Destroying Object" );
     }
 
     void
@@ -187,7 +187,7 @@ namespace Dream
     (const btVector3& p, btScalar radius, const btVector3& color)
     {
         auto log = getLog();
-        log->info( "Draw Sphere is not implemented" );
+        log->debug( "Draw Sphere is not implemented" );
     }
 
     void
@@ -195,7 +195,7 @@ namespace Dream
     (const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha)
     {
         auto log = getLog();
-        log->info( "Draw Triangle is not implemented" );
+        log->debug( "Draw Triangle is not implemented" );
     }
 
     void
@@ -210,7 +210,7 @@ namespace Dream
     (const btVector3& location,const char* textString)
     {
         auto log = getLog();
-        log->info( "Draw 3DText is not implemented" );
+        log->debug( "Draw 3DText is not implemented" );
     }
 
     void
@@ -218,7 +218,7 @@ namespace Dream
     (const char* warningString)
     {
         auto log = getLog();
-        log->info( warningString );
+        log->debug( warningString );
     }
 
     void
@@ -226,7 +226,7 @@ namespace Dream
     (const btVector3& pointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
     {
         auto log = getLog();
-        log->info( "Draw Contact Point is not implemented" );
+        log->debug( "Draw Contact Point is not implemented" );
     }
 
     void
@@ -235,7 +235,7 @@ namespace Dream
     {
         auto log = getLog();
         preRender();
-        log->info( "Drawing {} lines" , mVertexBuffer.size()/2 );
+        log->debug( "Drawing {} lines" , mVertexBuffer.size()/2 );
 
         // Enable shader program
         glUseProgram(mShaderProgram);

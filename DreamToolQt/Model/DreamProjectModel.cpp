@@ -153,10 +153,10 @@ DreamProjectModel::startSceneRuntimeFromDefinition
     auto log = spdlog::get("DreamProjectModel");
     if (!definition)
     {
-        log->info("No SceneDefinition selected");
+        log->debug("No SceneDefinition selected");
         return false;
     }
-    log->info("\n===== DreamModel - Start Scene =====");
+    log->debug("\n===== DreamModel - Start Scene =====");
 
     ProjectRuntime* prHandle = mProject->createProjectRuntime();
     if (prHandle != nullptr)

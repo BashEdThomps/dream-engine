@@ -46,7 +46,7 @@ namespace Dream
         auto log = getLog();
         string absPath = projectPath + mDefinition->getAssetPath();
         setAbsolutePath(absPath);
-        log->info("Loading wav file from {}", absPath);
+        log->debug("Loading wav file from {}", absPath);
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
 
@@ -58,7 +58,7 @@ namespace Dream
 
         //Read the header
         size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
-        log->info("Header Read {} bytes" ,bytesRead);
+        log->debug("Header Read {} bytes" ,bytesRead);
         if (bytesRead > 0)
         {
             //Read the data
@@ -80,12 +80,15 @@ namespace Dream
                 mChannels = 2;
                 mFormat = AL_FORMAT_STEREO16;
             }
-            log->info("Read {} bytes", mAudioDataBuffer.size());
+
+            setLooping(dynamic_cast<AudioDefinition*>(mDefinition)->getLoop());
+
+            log->debug("Read {} bytes", mAudioDataBuffer.size());
             delete [] buffer;
             buffer = NULL;
             filelength = getFileSize(wavFile);
 
-            log->info(
+            log->debug(
                 "Status...\n"
                 "\tFile size is: {} bytes\n"
                 "\tRIFF header: {} {} {} {}\n"

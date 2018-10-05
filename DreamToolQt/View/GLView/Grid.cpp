@@ -43,14 +43,14 @@ Grid::Grid
     {
         log = spdlog::stdout_color_mt("Grid");
     }
-    log->info("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
+    log->debug("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
 }
 
 Grid::~Grid
 ()
 {
     auto log = spdlog::get("Grid");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 void
@@ -69,7 +69,7 @@ Grid::initMajorGridData
 {
 
     auto log = spdlog::get("Grid");
-    log->info("Init Major Data");
+    log->debug("Init Major Data");
     float halfSize = (mSize/2.0f);
 
     // Major Grid
@@ -107,7 +107,7 @@ Grid::initMinorGridData
 ()
 {
     auto log = spdlog::get("Grid");
-    log->info("Init Minor Data");
+    log->debug("Init Minor Data");
     float halfSize = (mSize/2.0f);
 
     // Minor Grid

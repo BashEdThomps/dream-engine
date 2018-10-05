@@ -16,13 +16,13 @@ MaterialShaderTableModel::MaterialShaderTableModel
     {
         log=spdlog::stdout_color_mt("MaterialShaderTableModel");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
 }
 
 MaterialShaderTableModel::~MaterialShaderTableModel()
 {
     auto log = spdlog::get("MaterialShaderTableModel");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 int
@@ -32,7 +32,7 @@ const
 {
     Q_UNUSED(parent)
     auto log = spdlog::get("MaterialShaderTableModel");
-    log->info("rowCount");
+    log->debug("rowCount");
 
 
     if (mModelDefinitionHandle == nullptr)
@@ -41,7 +41,7 @@ const
     }
 
     int rows = mModelDefinitionHandle->getMaterialShaders()->size();
-    log->info("{} rows",rows);
+    log->debug("{} rows",rows);
     return rows;
 
 }
@@ -89,11 +89,11 @@ const
         {
             case 0:
                 valStr = pair[Constants::ASSET_ATTR_MODEL_MATERIAL];;
-                log->info("Getting col 0 (material) {}",valStr);
+                log->debug("Getting col 0 (material) {}",valStr);
                 return QString::fromStdString(valStr);
             case 1:
                 valStr = pair[Constants::ASSET_ATTR_MODEL_SHADER];
-                log->info("Getting col 0 (shader) {}", valStr);
+                log->debug("Getting col 0 (shader) {}", valStr);
                 return QString::fromStdString(valStr);
         }
     }
@@ -105,7 +105,7 @@ MaterialShaderTableModel::setModelDefinition
 (ModelDefinition* def)
 {
     auto log = spdlog::get("MaterialShaderTableModel");
-    log->info("setModelDefinition");
+    log->debug("setModelDefinition");
 
     beginResetModel();
     mModelDefinitionHandle = def;
@@ -139,7 +139,7 @@ MaterialShaderTableModel::setData
 {
     Q_UNUSED(role)
     auto log = spdlog::get("MaterialShaderTableModel");
-    log->info("SetData");
+    log->debug("SetData");
 
     if (mModelDefinitionHandle != nullptr)
     {
@@ -149,11 +149,11 @@ MaterialShaderTableModel::setData
         switch(index.column())
         {
             case 0:
-                log->info("setting row {} col 0 material to {}",index.row(),valStr);
+                log->debug("setting row {} col 0 material to {}",index.row(),valStr);
                 list->at(index.row())[Constants::ASSET_ATTR_MODEL_MATERIAL] = valStr;
                 break;
             case 1:
-                log->info("setting row {} col 1 shader to {}",index.row(),valStr);
+                log->debug("setting row {} col 1 shader to {}",index.row(),valStr);
                 list->at(index.row())[Constants::ASSET_ATTR_MODEL_SHADER] = valStr;
                 break;
         }

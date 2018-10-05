@@ -71,7 +71,7 @@ namespace Dream
     SceneObjectRuntime::SceneObjectRuntime(
         SceneObjectDefinition* sd,
         SceneRuntime* sr
-    ): IRuntime(sd),
+    ):  IRuntime(sd, sd->getName(), sd->getUuid()),
         mAudioInstance(nullptr),
         mPathInstance(nullptr),
         mModelInstance(nullptr),
@@ -154,8 +154,10 @@ namespace Dream
     SceneObjectRuntime::removeModelInstance
     ()
     {
+        auto log = getLog();
         if (mModelInstance != nullptr)
         {
+            log->info("Deleting ModelInstance for {}",getNameAndUuidString());
             delete mModelInstance;
             mModelInstance = nullptr;
         }
@@ -484,7 +486,7 @@ namespace Dream
         Transform3D* initial = dynamic_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
         if (initial->isTypeOffset())
         {
-            log->info("Inheriting Offset Transform for {}",getNameAndUuidString());
+            log->debug("Inheriting Offset Transform for {}",getNameAndUuidString());
             mTransform->offsetFrom(getParentRuntime()->getTransform(), initial);
         }
         else
@@ -579,7 +581,7 @@ namespace Dream
     void SceneObjectRuntime::collectGarbage()
     {
         auto log = getLog();
-        log->info("Collecting Garbage {}" ,getNameAndUuidString());
+        log->debug("Collecting Garbage {}" ,getNameAndUuidString());
 
         vector<SceneObjectRuntime*> toDelete;
 
@@ -643,6 +645,8 @@ namespace Dream
     SceneObjectRuntime::createAssetInstanceFromAssetDefinitionByUuid
     (string uuid)
     {
+        auto log = getLog();
+        log->info("Creating asset instance from uuid {}", uuid);
         auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
         if (project != nullptr)
         {
@@ -650,6 +654,21 @@ namespace Dream
             createAssetInstance(assetDefinition);
         }
     }
+
+    void
+    SceneObjectRuntime::replaceAssetUuid
+    (string uuid)
+    {
+        auto log = getLog();
+        log->info("REPLACING asset instance from uuid {}", uuid);
+        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
+        if (project != nullptr)
+        {
+            auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+            createAssetInstance(assetDefinition);
+        }
+    }
+
 
     void
     SceneObjectRuntime::createAssetInstance
@@ -663,12 +682,12 @@ namespace Dream
             mProjectPath = project->getProjectPath();
         }
 
-        log->info( "Creating Asset Intance of: ({}) {}", definition->getType() ,  definition->getName());
-
-        if (mParentRuntimeHandle)
-        {
-            log->info( " for {} " ,mParentRuntimeHandle->getNameAndUuidString());
-        }
+        log->debug(
+            "Creating Asset Intance of: ({}) {} for {}",
+            definition->getType(),
+            definition->getName(),
+            getNameAndUuidString()
+        );
 
         if(definition->isTypePath())
         {
@@ -718,9 +737,14 @@ namespace Dream
     SceneObjectRuntime::createPhysicsObjectInstance
     (PhysicsObjectDefinition* definition)
     {
+        removePhysicsObjectInstance();
         auto log = getLog();
-        log->info( "Creating Physics Object Asset Instance." );
-        mPhysicsObjectInstance = new PhysicsObjectInstance(definition, this);
+        log->debug( "Creating Physics Object Asset Instance." );
+        mPhysicsObjectInstance = new PhysicsObjectInstance(
+            definition,
+            mSceneRuntimeHandle->getProjectRuntime()->getPhysicsComponent(),
+            this
+        );
         mPhysicsObjectInstance->load(mProjectPath);
     }
 
@@ -729,7 +753,8 @@ namespace Dream
     (PathDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Path asset instance." );
+        log->debug( "Creating Path asset instance." );
+        removePathInstance();
         mPathInstance = new PathInstance(definition,this);
         mPathInstance->load(mProjectPath);
     }
@@ -739,12 +764,17 @@ namespace Dream
     (AudioDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Audio asset instance." );
         auto audioComp = mSceneRuntimeHandle->getProjectRuntime()->getAudioComponent();
         if (audioComp != nullptr)
         {
+            removeAudioInstance();
+            log->debug( "Creating Audio asset instance." );
             mAudioInstance = audioComp->newAudioInstance(definition,this);
             mAudioInstance->load(mProjectPath);
+        }
+        else
+        {
+            log->error("Cannot create AudioInstance. AudioComponent is nullptr");
         }
     }
 
@@ -753,6 +783,7 @@ namespace Dream
     (ModelDefinition* definition)
     {
         auto log = getLog();
+        removeModelInstance();
         log->info( "Creating Model asset instance." );
         mModelInstance = new AssimpModelInstance(
             mSceneRuntimeHandle->getProjectRuntime()->getModelCache(),
@@ -768,7 +799,8 @@ namespace Dream
     (ScriptDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Script asset instance." );
+        removeScriptInstance();
+        log->debug( "Creating Script asset instance." );
         mScriptInstance = new LuaScriptInstance(
             definition,
             this
@@ -786,7 +818,8 @@ namespace Dream
     (ShaderDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Shader asset instance." );
+        removeShaderInstance();
+        log->debug( "Creating Shader asset instance." );
         mShaderInstance = new ShaderInstance
         (
             mSceneRuntimeHandle->getProjectRuntime()->getShaderCache(),
@@ -801,7 +834,8 @@ namespace Dream
     (LightDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Light Asset instance." );
+        removeLightInstance();
+        log->debug( "Creating Light Asset instance." );
         mLightInstance = new LightInstance(
             definition,
             this
@@ -814,7 +848,8 @@ namespace Dream
     (SpriteDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Sprite Asset instance." );
+        removeSpriteInstance();
+        log->debug( "Creating Sprite Asset instance." );
         mSpriteInstance = new SpriteInstance
         (
             mSceneRuntimeHandle->getProjectRuntime()->getTextureCache(),
@@ -824,17 +859,15 @@ namespace Dream
         mSpriteInstance->load(mProjectPath);
     }
 
-    quat SceneObjectRuntime::getOrientation()
-    {
-       return mTransform->getOrientation();
-    }
+
 
     void
     SceneObjectRuntime::createFontInstance
     (FontDefinition* definition)
     {
         auto log = getLog();
-        log->info( "Creating Font Asset instance." );
+        removeFontInstance();
+        log->debug( "Creating Font Asset instance." );
         mFontInstance = new FontInstance
         (
             mSceneRuntimeHandle->getProjectRuntime()->getFontCache(),
@@ -842,6 +875,13 @@ namespace Dream
             this
         );
         mFontInstance->load(mProjectPath);
+    }
+
+    quat
+    SceneObjectRuntime::getOrientation
+    ()
+    {
+       return mTransform->getOrientation();
     }
 
     bool
@@ -964,7 +1004,7 @@ namespace Dream
     {
         auto def = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto log = getLog();
-        log->info( "Using Definition {}", def->getNameAndUuidString());
+        log->debug( "Using Definition {}", def->getNameAndUuidString());
         setName(def->getName());
         setUuid(def->getUuid());
         setFollowsCamera(def->followsCamera());

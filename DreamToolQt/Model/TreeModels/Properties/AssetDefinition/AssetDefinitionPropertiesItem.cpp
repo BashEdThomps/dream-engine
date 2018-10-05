@@ -135,6 +135,9 @@ AssetDefinitionPropertiesItem::setData
             dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->setFriction(value.toFloat());
             break;
             // Common
+        case ASSET_DEFINITION_PROPERTY_UUID:
+            mAssetDefinitionHandle->setUuid(value.toString().toStdString());
+            break;
         case ASSET_DEFINITION_PROPERTY_NAME:
             mAssetDefinitionHandle->setName(value.toString().toStdString());
             break;
@@ -377,6 +380,8 @@ AssetDefinitionPropertiesItem::data
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDirectionZ());
 
             // Common
+        case ASSET_DEFINITION_PROPERTY_UUID:
+            return QVariant(QString::fromStdString(mAssetDefinitionHandle->getUuid()));
         case ASSET_DEFINITION_PROPERTY_NAME:
             return QVariant(QString::fromStdString(mAssetDefinitionHandle->getName()));
         case ASSET_DEFINITION_PROPERTY_TYPE:

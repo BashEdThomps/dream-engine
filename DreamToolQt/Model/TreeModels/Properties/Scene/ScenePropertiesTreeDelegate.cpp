@@ -39,7 +39,7 @@ ScenePropertiesTreeDelegate::ScenePropertiesTreeDelegate
     {
         log = spdlog::stdout_color_mt("ScenePropertiesTreeDelegate");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
     setClipping(true);
 }
 
@@ -47,7 +47,7 @@ ScenePropertiesTreeDelegate::~ScenePropertiesTreeDelegate
 ()
 {
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
-    log->info("Constructing");
+    log->debug("Constructing");
 }
 
 QWidget*
@@ -251,7 +251,7 @@ ScenePropertiesTreeDelegate::onButton_CaptureCameraTranslation
 (bool)
 {
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
-    log->info("CaptureCameraTranslation");
+    log->debug("CaptureCameraTranslation");
     emit notifyButton_CaptureCameraTranslation();
 }
 
@@ -260,14 +260,14 @@ ScenePropertiesTreeDelegate::onButton_CaptureCameraLookAt
 (bool)
 {
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
-    log->info("CaptureCameraLookAt");
+    log->debug("CaptureCameraLookAt");
     emit notifyButton_CaptureCameraLookAt();
 }
 
 void ScenePropertiesTreeDelegate::onButton_CaptureCameraAll(bool)
 {
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
-    log->info("CaptureCameraAll");
+    log->debug("CaptureCameraAll");
     emit notifyButton_CaptureCameraTranslation();
     emit notifyButton_CaptureCameraLookAt();
 }
@@ -275,7 +275,7 @@ void ScenePropertiesTreeDelegate::onButton_CaptureCameraAll(bool)
 void ScenePropertiesTreeDelegate::onButton_ChooseAmbientColour(bool)
 {
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
-    log->info("ChooseAmbientColour");
+    log->debug("ChooseAmbientColour");
     emit notifyButton_ChooseAmbientColour();
 }
 
@@ -283,7 +283,7 @@ void ScenePropertiesTreeDelegate::onButton_ChooseClearColour(bool)
 {
     auto log = spdlog::get("ScenePropertiesTreeDelegate");
 
-    log->info("ChooseClearColour");
+    log->debug("ChooseClearColour");
     emit notifyButton_ChooseClearColour();
 }
 

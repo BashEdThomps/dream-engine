@@ -47,7 +47,7 @@ namespace Dream
     {
         auto animDef = dynamic_cast<PathDefinition*>(mDefinition);
         auto log = getLog();
-        log->info(
+        log->debug(
             "Loading {} spline with {} control points for {} ",
             animDef->getSplineType(),
             animDef->numberOfControlPoints(),
@@ -141,8 +141,8 @@ namespace Dream
                 ts_bspline_eval(&derivative, u, &net3);
                 ts_deboornet_result(&net3, &result3);
 
-                log->info("Generating with u={}",u);
-                log->info("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
+                log->debug("Generating with u={}",u);
+                log->debug("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
 
                 for (i = 0; i < ts_deboornet_dimension(&net2); i++)
                 {
@@ -178,7 +178,7 @@ namespace Dream
 
         }
 
-        log->info("Finished Loading spline for {}",getNameAndUuidString());
+        log->debug("Finished Loading spline for {}",getNameAndUuidString());
     }
 
     void PathInstance::loadExtraAttributes(nlohmann::json)

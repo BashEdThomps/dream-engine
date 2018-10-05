@@ -38,7 +38,7 @@ SceneObjectPropertiesModel::SceneObjectPropertiesModel
         log = spdlog::stdout_color_mt("SceneObjectPropertiesModel");
     }
 
-    log->info("Constructor called");
+    log->debug("Constructor called");
     mSceneObjectDefinitionHandle = sceneObject;
     createRoot();
     createProperties();
@@ -49,7 +49,7 @@ SceneObjectPropertiesModel::~SceneObjectPropertiesModel
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("Destructor called");
+    log->debug("Destructor called");
 }
 
 void
@@ -57,7 +57,7 @@ SceneObjectPropertiesModel::createRoot
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("CreateRoot");
+    log->debug("CreateRoot");
     QString name = QString::fromStdString(mSceneObjectDefinitionHandle->getName());
     mRootItem.reset(new SceneObjectPropertiesItem(name,mSceneObjectDefinitionHandle));
 }
@@ -67,7 +67,7 @@ SceneObjectPropertiesModel::createProperties
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("CreateProperties");
+    log->debug("CreateProperties");
     createUuidProperty();
     createNameProperty();
     createTranslationProperty();
@@ -135,7 +135,7 @@ SceneObjectPropertiesModel::createUuidProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createUuid");
+    log->debug("createUuid");
     mRootItem->appendChild
     (
         new SceneObjectPropertiesItem
@@ -153,7 +153,7 @@ SceneObjectPropertiesModel::createNameProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createName");
+    log->debug("createName");
     mRootItem->appendChild
     (
         new SceneObjectPropertiesItem
@@ -170,7 +170,7 @@ SceneObjectPropertiesModel::createTranslationProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createTranslationProperty");
+    log->debug("createTranslationProperty");
     SceneObjectPropertiesItem *translationItem = new SceneObjectPropertiesItem
     (
         "Translation",
@@ -215,7 +215,7 @@ SceneObjectPropertiesModel::createOrientationProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("create Orientation Property");
+    log->debug("create Orientation Property");
     SceneObjectPropertiesItem *rotationItem = new SceneObjectPropertiesItem
     (
         "Orientation",
@@ -271,7 +271,7 @@ SceneObjectPropertiesModel::createScaleProperty
 {
 
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createScaleProperty");
+    log->debug("createScaleProperty");
     SceneObjectPropertiesItem *scaleItem = new SceneObjectPropertiesItem
     (
         "Scale",
@@ -316,7 +316,7 @@ SceneObjectPropertiesModel::createTransformTypeProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createTransformTypeProperty");
+    log->debug("createTransformTypeProperty");
     SceneObjectPropertiesItem *transformTypeItem = new SceneObjectPropertiesItem
     (
         "Transform Type",
@@ -331,7 +331,7 @@ SceneObjectPropertiesModel::createFollowsCameraProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createFollowsCameraProperty");
+    log->debug("createFollowsCameraProperty");
     mRootItem->appendChild
     (
         new SceneObjectPropertiesItem
@@ -348,7 +348,7 @@ SceneObjectPropertiesModel::createHasFocusProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createHasFocusProperty");
+    log->debug("createHasFocusProperty");
     SceneObjectPropertiesItem *hasFocusItem = new SceneObjectPropertiesItem
     (
         "Has Focus",
@@ -361,7 +361,7 @@ SceneObjectPropertiesModel::createHasFocusProperty
 void SceneObjectPropertiesModel::createAlwaysDrawProperty()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createAlwaysDrawProperty");
+    log->debug("createAlwaysDrawProperty");
     SceneObjectPropertiesItem *hasFocusItem = new SceneObjectPropertiesItem
     (
         "Always Draw",
@@ -377,7 +377,7 @@ SceneObjectPropertiesModel::createAssetInstancesProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createAssetInstancesProperty");
+    log->debug("createAssetInstancesProperty");
     vector<string> definitionsToLoad = mSceneObjectDefinitionHandle->getAssetDefinitionLoadQueue();
     SceneObjectPropertiesItem *assetDefItem = new SceneObjectPropertiesItem
     (
@@ -413,7 +413,7 @@ SceneObjectPropertiesModel::createChildrenProperty
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createChildrenProperty");
+    log->debug("createChildrenProperty");
     SceneObjectPropertiesItem *childrenItem = new SceneObjectPropertiesItem(
         "Children",
         mSceneObjectDefinitionHandle,
@@ -437,7 +437,7 @@ SceneObjectPropertiesModel::createChildrenProperty
 void SceneObjectPropertiesModel::createStaticProperty()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("createStaticProperty");
+    log->debug("createStaticProperty");
     SceneObjectPropertiesItem *hasFocusItem = new SceneObjectPropertiesItem
     (
         "Static",
@@ -453,7 +453,7 @@ SceneObjectPropertiesModel::onButton_CaptureTranslation
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("CaptureTranslation");
+    log->debug("CaptureTranslation");
     emit notifyButton_CaptureTranslation(mSceneObjectDefinitionHandle);
 }
 
@@ -462,7 +462,7 @@ SceneObjectPropertiesModel::onButton_CaptureOrientation
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("Capture Orientation");
+    log->debug("Capture Orientation");
     emit notifyButton_CaptureOrientation(mSceneObjectDefinitionHandle);
 }
 
@@ -471,7 +471,7 @@ SceneObjectPropertiesModel::onButton_CaptureScale
 ()
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("CaptureScale");
+    log->debug("CaptureScale");
     emit notifyButton_CaptureScale(mSceneObjectDefinitionHandle);
 }
 
@@ -480,7 +480,7 @@ SceneObjectPropertiesModel::onButton_RemoveAsset
 (IDefinition* adHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("RemoveAsset");
+    log->debug("RemoveAsset");
     emit notifyButton_RemoveAsset(mSceneObjectDefinitionHandle,adHandle);
 }
 
@@ -489,6 +489,6 @@ SceneObjectPropertiesModel::onButton_RemoveChild
 (IDefinition* sodHandle)
 {
     auto log = spdlog::get("SceneObjectPropertiesModel");
-    log->info("RemoveChild");
+    log->debug("RemoveChild");
     emit notifyButton_RemoveChild(mSceneObjectDefinitionHandle,sodHandle);
 }

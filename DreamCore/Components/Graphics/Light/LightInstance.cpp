@@ -30,7 +30,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Destroying Object" );
+        log->debug("Destroying Object" );
     }
 
     vec3 LightInstance::getAmbient() const

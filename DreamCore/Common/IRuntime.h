@@ -37,8 +37,8 @@ namespace Dream
     public:
         IRuntime(
             IDefinition* def,
-            string uuid = "",
-            string name = ""
+            string uuid,
+            string name
         );
         virtual ~IRuntime();
 

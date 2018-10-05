@@ -31,7 +31,7 @@ AbstractPropertiesModel::AbstractPropertiesModel(QItemDelegate* delegate, QTreeV
     {
         log = spdlog::stderr_color_mt("AbstractPropertiesModel");
     }
-    log->info("PropertiesModel: Constructing");
+    log->debug("PropertiesModel: Constructing");
     mTreeViewHandle->setItemDelegateForColumn(1,delegate);
 }
 
@@ -39,7 +39,7 @@ AbstractPropertiesModel::~AbstractPropertiesModel
 ()
 {
     auto log = spdlog::get("AbstractPropertiesModel");
-    log->info("PropertiesModel: Destructing");
+    log->debug("PropertiesModel: Destructing");
 }
 
 AbstractPropertiesItem*
@@ -252,7 +252,7 @@ const
 void AbstractPropertiesModel::forceDataChanged()
 {
    auto log = spdlog::get("AbstractPropertiesModel");
-   log->info("Force Data Changed");
+   log->debug("Force Data Changed");
    beginResetModel();
    createRoot();
    createProperties();

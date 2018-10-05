@@ -66,12 +66,16 @@ using glm::scale;
 
 namespace Dream
 {
-    void GraphicsComponent::setMinimumDraw(float minimumDraw)
+    void
+    GraphicsComponent::setMinimumDraw
+    (float minimumDraw)
     {
         mMinimumDraw = minimumDraw;
     }
 
-    void GraphicsComponent::setMaximumDraw(float maximumDraw)
+    void
+    GraphicsComponent::setMaximumDraw
+    (float maximumDraw)
     {
         mMaximumDraw = maximumDraw;
     }
@@ -86,10 +90,7 @@ namespace Dream
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
           mMeshCullDistance(2500.0f),
-          mWindowComponent(windowComponent),
-          mModelQueueType(LINEAR)
-
-
+          mWindowComponent(windowComponent)
     {
         setLogClassName("GraphicsComponent");
         auto log = getLog();
@@ -112,8 +113,8 @@ namespace Dream
     (void)
     {
         auto log = getLog();
-        log->info("Initialising");
-        log->info("Initialising GLEW");
+        log->debug("Initialising");
+        log->debug("Initialising GLEW");
 
         glewExperimental = GL_TRUE;
         GLenum glewInitResult = glewInit();
@@ -126,10 +127,11 @@ namespace Dream
 
         checkGLError();
 
-        log->info(
-                    "OpenGL Version {}, Shader Version {}",
-                    glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION)
-                    );
+        log->debug(
+            "OpenGL Version {}, Shader Version {}",
+            glGetString(GL_VERSION),
+            glGetString(GL_SHADING_LANGUAGE_VERSION)
+        );
 
         onWindowDimensionsChanged();
         checkGLError();
@@ -143,7 +145,7 @@ namespace Dream
         createFontVertexObjects();
         checkGLError();
 
-        log->info("Initialisation Done.");
+        log->debug("Initialisation Done.");
         return true;
     }
 
@@ -157,13 +159,11 @@ namespace Dream
         int windowWidth  = mWindowComponent->getWidth();
         int windowHeight = mWindowComponent->getHeight();
 
-        {
-            log->info
-                    (
-                        "Window Dimensions Changed! {}x{}",
-                        windowWidth , windowHeight
-                        );
-        }
+        log->debug
+        (
+            "Window Dimensions Changed! {}x{}",
+            windowWidth , windowHeight
+        );
 
         glViewport(0, 0, windowWidth, windowHeight);
 
@@ -198,12 +198,17 @@ namespace Dream
         );
     }
 
-    float GraphicsComponent::getMeshCullDistance() const
+    float
+    GraphicsComponent::getMeshCullDistance
+    ()
+    const
     {
         return mMeshCullDistance;
     }
 
-    void GraphicsComponent::setMeshCullDistance(float meshCullDistance)
+    void
+    GraphicsComponent::setMeshCullDistance
+    (float meshCullDistance)
     {
         mMeshCullDistance = meshCullDistance;
     }
@@ -213,14 +218,12 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Pre Render" );
+        log->debug("Pre Render" );
         checkGLError();
 
         glEnable(GL_DEPTH_TEST);
-
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -249,7 +252,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Post Render" );
+        log->debug("Post Render" );
         checkGLError();
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
@@ -261,27 +264,11 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Pre Render" );
-        checkGLError();
-
-        // Clear the colorbuffer
-        if (mActiveSceneRuntime)
-        {
-            auto clearColour = mActiveSceneRuntime->getClearColour();
-            glClearColor
-            (
-                clearColour[Constants::RED_INDEX],
-                clearColour[Constants::GREEN_INDEX],
-                clearColour[Constants::BLUE_INDEX],
-                clearColour[Constants::ALPHA_INDEX]
-            );
-        }
-        else
-        {
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
-        }
-
-        checkGLError();
+        log->debug("Pre Render" );
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     void
@@ -289,21 +276,19 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Post Render" );
+        log->debug("Post Render" );
         checkGLError();
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
         checkGLError();
     }
 
-
-
     void
     GraphicsComponent::create2DVertexObjects
     ()
     {
         auto log = getLog();
-        log->info("Creating 2D VAO/VBO" );
+        log->debug("Creating 2D VAO/VBO" );
         // Generate
         glGenVertexArrays(1, &mSpriteQuadVAO);
         glGenBuffers(1, &mSpriteVBO);
@@ -323,7 +308,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Creating Font VAO/VBO" );
+        log->debug("Creating Font VAO/VBO" );
         // Generate
         glGenVertexArrays(1, &mFontVAO);
         glGenBuffers(1, &mFontVBO);
@@ -335,8 +320,7 @@ namespace Dream
     {
         beginUpdate();
         auto log = getLog();
-        log->info("GraphicsComponrnt: updateComponent() Called" );
-
+        log->debug("GraphicsComponrnt: updateComponent() Called" );
 
         // View transform
         mViewMatrix = mCamera->getViewMatrix();
@@ -350,75 +334,75 @@ namespace Dream
             clearLightQueue();
 
             mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+                (
+                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
                     (
-                        function<SceneObjectRuntime*(SceneObjectRuntime*)>
-                        (
-                            [&](SceneObjectRuntime* object)
-                            {
+                        [&](SceneObjectRuntime* object)
+                        {
 
-                            if (object->getHidden())
-                            {
-                                return nullptr;
-                            }
-
-                            // Models
-                            if (object->hasModelInstance())
-                            {
-                                if (object->hasShaderInstance())
-                                {
-                                    addToModelQueue(object);
-                                }
-                                else
-                                {
-                                    log->error("Object {} has model, but no shader assigned." , object->getUuid());
-                                }
-                            }
-
-                            // Sprites
-                            if (object->hasSpriteInstance())
-                            {
-                                if (object->hasShaderInstance())
-                                {
-                                    addToSpriteQueue(object);
-                                }
-                                else
-                                {
-                                    log->error(
-                                    "Object {} has sprite, but no shader assigned.",
-                                    object->getUuid()
-                                    );
-                                }
-                            }
-
-                            // Fonts
-                            if (object->hasFontInstance())
-                            {
-                                if (object->hasShaderInstance())
-                                {
-                                    addToFontQueue(object);
-                                }
-                                else
-                                {
-                                    log->error(
-                                    "Object {} has font, but no shader assigned.",
-                                    object->getUuid()
-                                    );
-                                }
-                            }
-
-                            // Lights
-                            if (object->hasLightInstance())
-                            {
-                                LightInstance* light = object->getLightInstance();
-                                log->info("Adding light instance to queue {}",light->getNameAndUuidString());
-                                addToLightQueue(light);
-                            }
-
+                        if (object->getHidden())
+                        {
                             return nullptr;
                         }
-                    )
-                );
-        }
+
+                        // Models
+                        if (object->hasModelInstance())
+                        {
+                            if (object->hasShaderInstance())
+                            {
+                                addToModelQueue(object);
+                            }
+                            else
+                            {
+                                log->error("Object {} has model, but no shader assigned." , object->getUuid());
+                            }
+                        }
+
+                        // Sprites
+                        if (object->hasSpriteInstance())
+                        {
+                            if (object->hasShaderInstance())
+                            {
+                                addToSpriteQueue(object);
+                            }
+                            else
+                            {
+                                log->error(
+                                "Object {} has sprite, but no shader assigned.",
+                                object->getUuid()
+                                );
+                            }
+                        }
+
+                        // Fonts
+                        if (object->hasFontInstance())
+                        {
+                            if (object->hasShaderInstance())
+                            {
+                                addToFontQueue(object);
+                            }
+                            else
+                            {
+                                log->error(
+                                "Object {} has font, but no shader assigned.",
+                                object->getUuid()
+                                );
+                            }
+                        }
+
+                        // Lights
+                        if (object->hasLightInstance())
+                        {
+                            LightInstance* light = object->getLightInstance();
+                            log->debug("Adding light instance to queue {}",light->getNameAndUuidString());
+                            addToLightQueue(light);
+                        }
+
+                        return nullptr;
+                    }
+                )
+            );
+    }
         endUpdate();
     }
 
@@ -427,7 +411,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Clear 2D Queue" );
+        log->debug("Clear 2D Queue" );
         mSpriteQueue.clear();
     }
 
@@ -436,7 +420,7 @@ namespace Dream
     (SceneObjectRuntime* object)
     {
         auto log = getLog();
-        log->info("Adding {} to Sprite Queue",object->getNameAndUuidString());
+        log->debug("Adding {} to Sprite Queue",object->getNameAndUuidString());
         mSpriteQueue.push_back(object);
     }
 
@@ -448,7 +432,7 @@ namespace Dream
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
-        log->info("Draw 2D Queue" );
+        log->debug("Draw 2D Queue" );
         for (SceneObjectRuntime* sceneObj : mSpriteQueue)
         {
             drawSprite(sceneObj);
@@ -462,60 +446,61 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Clear 3D Queue" );
+        log->debug("Clear 3D Queue" );
         mModelQueue.clear();
     }
 
 
-        /* INTERMISSION =========================================================
-         *
-         * Let's think about rendering pipeline optimisation...
-         *
-         * I want to order my rendering quque in such a way that it minimises shader
-         * changes. Using one shader per ModelInstance is OK but I'm moving to a
-         * 1-shader-per-material approach to allow ModelInstances to be rendered
-         * with multiple shaders, depending on their material.
-         *
-         * Each ModelIinstance has a table of Materials present within the model and the
-         * ShaderInstance that said material want's to be rendered with.
-         *
-         * Using this data I can find all of the meshes in the scene that want to
-         * use any given shader. Then I can build a data structure that holds the
-         * relationship of ShaderInstance to vector<Mesh>. These meshes can be
-         * ordered by distance to implement draw distance limiting.
-         *
-         * e.g
-         *
-         * // Meshes in Frustum OrderedBy Distance Ascending
-         *
-         * vector<Mesh> mMeshes;
-         *
-         * for (Mesh m : mMeshes)
-         * {
-         *     if (mesh.radiusFromCamera() > RenderDistanceMax) break;
-         *
-         *     addToVBO(mMesh)
-         * }
-         *
-         * setupShader(currentShader)
-         * render(currentShader,VBO);
-         *  setTextures()    \
-         *  setUniforms()     \ etc...
-         *  setVariables()   /
-         *
-         * For each ShaderInstance I can setup the shader and render the vector of
-         * meshes (Possibly globbed into a single VBO) in order from furthest to
-         * or vice cersa. without switching shaders.
-         *
-         * The goal is to have each shader used only once per frame.
-         *
-         * The initial map can be built at load-time rather than once per frame,
-         * then meshes ordered by distance once per frame as this is dynamic, but
-         * mesh's material/shader will never change.
-         *
-         * =======================================================================
-         */
-
+    /* INTERMISSION =========================================================
+     *
+     * We hope you're enjoying tonights show.
+     *
+     * Let's think about rendering pipeline optimisation...
+     *
+     * I want to order my rendering quque in such a way that it minimises shader
+     * changes. Using one shader per ModelInstance is OK but I'm moving to a
+     * 1-shader-per-material approach to allow ModelInstances to be rendered
+     * with multiple shaders, depending on their material.
+     *
+     * Each ModelIinstance has a table of Materials present within the model and the
+     * ShaderInstance that said material want's to be rendered with.
+     *
+     * Using this data I can find all of the meshes in the scene that want to
+     * use any given shader. Then I can build a data structure that holds the
+     * relationship of ShaderInstance to vector<Mesh>. These meshes can be
+     * ordered by distance to implement draw distance limiting.
+     *
+     * e.g
+     *
+     * // Meshes in Frustum OrderedBy Distance Ascending
+     *
+     * vector<Mesh> mMeshes;
+     *
+     * for (Mesh m : mMeshes)
+     * {
+     *     if (mesh.radiusFromCamera() > RenderDistanceMax) break;
+     *
+     *     addToVBO(mMesh)
+     * }
+     *
+     * setupShader(currentShader)
+     * render(currentShader,VBO);
+     *  setTextures()    \
+     *  setUniforms()     \ etc...
+     *  setVariables()   /
+     *
+     * For each ShaderInstance I can setup the shader and render the vector of
+     * meshes (Possibly globbed into a single VBO) in order from furthest to
+     * or vice cersa. without switching shaders.
+     *
+     * The goal is to have each shader used only once per frame.
+     *
+     * The initial map can be built at load-time rather than once per frame,
+     * then meshes ordered by distance once per frame as this is dynamic, but
+     * mesh's material/shader will never change.
+     *
+     * =======================================================================
+     */
 
 
     void
@@ -523,25 +508,22 @@ namespace Dream
     (SceneObjectRuntime* object)
     {
         auto log = getLog();
-        log->info("Adding {} to 3D Queue",object->getNameAndUuidString());
-        switch(mModelQueueType)
-        {
-            case LINEAR:
-                mModelQueue.push_back(object);
-                break;
-            case OPTIMISED:
-                break;
-        }
+        log->debug("Adding {} to 3D Queue",object->getNameAndUuidString());
+        mModelQueue.push_back(object);
     }
 
 
-    void GraphicsComponent::debugOptimisedModelQueue()
+    void
+    GraphicsComponent::debugOptimisedModelQueue
+    ()
     {
         auto log = getLog();
         log->critical("Optimised Model Queue");
     }
 
-    void GraphicsComponent::handleResize()
+    void
+    GraphicsComponent::handleResize
+    ()
     {
         if (mWindowComponent->sizeHasChanged())
         {
@@ -553,10 +535,9 @@ namespace Dream
     GraphicsComponent::drawModelQueue
     ()
     {
-
         auto log = getLog();
         preModelRender();
-        log->info("Draw 3D Queue" );
+        log->debug("Draw 3D Queue" );
         for (SceneObjectRuntime* it : mModelQueue)
         {
             drawModel(it);
@@ -570,7 +551,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Clear Font Queue" );
+        log->debug("Clear Font Queue" );
         mFontQueue.clear();
     }
 
@@ -579,7 +560,7 @@ namespace Dream
     (SceneObjectRuntime* object)
     {
         auto log = getLog();
-        log->info("Adding {} to Font Queue",
+        log->debug("Adding {} to Font Queue",
                   object->getNameAndUuidString());
         mFontQueue.push_back(object);
     }
@@ -590,7 +571,7 @@ namespace Dream
     {
         auto log = getLog();
         preFontRender();
-        log->info("Draw Font Queue" );
+        log->debug("Draw Font Queue" );
         for (SceneObjectRuntime* it : mFontQueue)
         {
             drawFont(it);
@@ -618,7 +599,7 @@ namespace Dream
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
-        log->info("Drawing Sprite {}", sceneObject->getNameAndUuidString() );
+        log->debug("Drawing Sprite {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
         SpriteInstance* sprite = sceneObject->getSpriteInstance();
@@ -688,7 +669,7 @@ namespace Dream
     (SceneObjectRuntime* sceneObject)
     {
         auto log = getLog();
-        log->info("Drawing Font {}", sceneObject->getNameAndUuidString() );
+        log->debug("Drawing Font {}", sceneObject->getNameAndUuidString() );
 
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
@@ -698,8 +679,8 @@ namespace Dream
         shader->setProjectionMatrix(mProjectionMatrix);
         checkGLError();
 
-        shader->setViewMatrix(mViewMatrix);
-        checkGLError();
+        //shader->setViewMatrix(mViewMatrix);
+        //checkGLError();
 
         vec3 fontColour = font->getColour();
         GLint fontColourLocation = glGetUniformLocation(shader->getShaderProgram(),"textColour");
@@ -709,12 +690,11 @@ namespace Dream
         }
         else
         {
-            log->info("Font: Unable to set textColour uniform");
+            log->error("Font: Unable to set textColour uniform");
         }
 
         // calculate the model matrix
         vec3 fontTranslation = sceneObject->getTranslation();
-        vec3 camTranslation = mCamera->getRelativeTranslation(fontTranslation.z);
         float advance = 0;
         //mat4 rotationMatrix = mCamera->getRelativeRotation(translation);
 
@@ -723,14 +703,7 @@ namespace Dream
         map<GLchar,FontCharacter> charMap = font->getCharMap();
         for (string::const_iterator c = text.begin(); c != text.end(); c++)
         {
-            mat4 modelMatrix;
-
-            if (sceneObject->followsCamera())
-            {
-                log->info("Font: Applying Camera Transform" );
-                //modelMatrix *= rotationMatrix;
-                modelMatrix = translate(modelMatrix,camTranslation);
-            }
+            mat4 modelMatrix(1.f);
 
             modelMatrix = translate(modelMatrix,vec3(fontTranslation.x+advance,fontTranslation.y,fontTranslation.z));
 
@@ -780,7 +753,7 @@ namespace Dream
                 )
             };
 
-            log->info("Font texture is {}" , ch.TextureID );
+            log->debug("Font texture is {}" , ch.TextureID );
             // Setup Texture
             glActiveTexture(GL_TEXTURE0);
             checkGLError();
@@ -828,7 +801,7 @@ namespace Dream
         auto log = getLog();
         checkGLError();
 
-        log->info("Drawing Model " , sceneObject->getNameAndUuidString() );
+        log->debug("Drawing Model " , sceneObject->getNameAndUuidString() );
 
         // Get Assets
         AssimpModelInstance* model = sceneObject->getModelInstance();
@@ -836,7 +809,7 @@ namespace Dream
         shader->use();
 
         // Set Point Light Values
-        log->info("The scene has {} lights", mLightQueue.size());
+        log->debug("The scene has {} lights", mLightQueue.size());
         for (size_t i=0; i < mLightQueue.size(); i++)
         {
             auto light = mLightQueue.at(i);

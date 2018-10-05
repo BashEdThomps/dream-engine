@@ -45,7 +45,7 @@ namespace Dream
       {
          if (it.first == path)
          {
-             log->info("Found script in cache {}", path);
+             log->debug("Found script in cache {}", path);
              return it.second;
          }
       }
@@ -63,7 +63,7 @@ namespace Dream
             log->error("Error reading  script into cache from path '{}'", path);
            return "";
         }
-        log->info("Inserting script ", path);
+        log->debug("Inserting script ", path);
         string content = reader.getContentsAsString();
         mScriptCache.insert(pair<string,string>(path,content));
         return content;

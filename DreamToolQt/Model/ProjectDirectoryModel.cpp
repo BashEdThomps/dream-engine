@@ -38,7 +38,7 @@ ProjectDirectoryModel::ProjectDirectoryModel
     {
         log = spdlog::stdout_color_mt("ProjectDirectoryModel");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
 
 }
 
@@ -46,7 +46,7 @@ ProjectDirectoryModel::~ProjectDirectoryModel
 ()
 {
     auto log = spdlog::get("ProjectDirectoryModel");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 bool
@@ -54,7 +54,7 @@ ProjectDirectoryModel::inflateFromDirectory
 (QString absolutePath)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
-    log->info("Inflating from project tree in {}", absolutePath.toStdString());
+    log->debug("Inflating from project tree in {}", absolutePath.toStdString());
 
     mAbsolutePath = absolutePath;
 
@@ -141,7 +141,7 @@ ProjectDirectoryModel::createNewProjectTree
 (QString absolutePath)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
-    log->info("Creating new project tree in {}", absolutePath.toStdString());
+    log->debug("Creating new project tree in {}", absolutePath.toStdString());
     mAbsolutePath = absolutePath;
     mProjectDirectory = QDir(mAbsolutePath);
 
@@ -149,7 +149,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createProjectDirectory())
         {
-            log->info("Unable to create directory {}", mAbsolutePath.toStdString());
+            log->debug("Unable to create directory {}", mAbsolutePath.toStdString());
             return false;
         }
     }
@@ -158,7 +158,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createAssetsDirectory())
         {
-            log->info("Unable to create directory {}",getAssetsDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getAssetsDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -167,7 +167,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createPathDirectory())
         {
-            log->info("Unable to create directory {}",getPathDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getPathDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -176,7 +176,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createAudioDirectory())
         {
-            log->info("Unable to create directory {}",getPathDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getPathDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -185,7 +185,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createFontDirectory())
         {
-            log->info("Unable to create directory {}",getFontDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getFontDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -194,7 +194,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createModelDirectory())
         {
-            log->info("Unable to create directory {}",getModelDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getModelDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -203,7 +203,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createPhysicsObjectDirectory())
         {
-            log->info("Unable to create directory {}",getPhysicsObjectDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getPhysicsObjectDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -212,7 +212,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createScriptDirectory())
         {
-            log->info("Unable to create directory {}", getScriptDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}", getScriptDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -221,7 +221,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createShaderDirectory())
         {
-            log->info("Unable to create directory {}",getShaderDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getShaderDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -230,7 +230,7 @@ ProjectDirectoryModel::createNewProjectTree
     {
         if (!createSpriteDirectory())
         {
-            log->info("Unable to create directory {}",getSpriteDirectoryAbsolutePath().toStdString());
+            log->debug("Unable to create directory {}",getSpriteDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -243,19 +243,19 @@ bool ProjectDirectoryModel::writeProjectFile()
     auto log = spdlog::get("ProjectDirectoryModel");
     if (!mProjectDefinitionHandle)
     {
-        log->info("No ProjectDefinition set");
+        log->debug("No ProjectDefinition set");
         return false;
     }
 
     QByteArray projectFileData = mProjectDefinitionHandle->getJson().dump(1).c_str();
 
-    log->info("Writing project file to {}",getProjectFileAbsolutePath().toStdString());
+    log->debug("Writing project file to {}",getProjectFileAbsolutePath().toStdString());
 
     QFile projectFile(getProjectFileAbsolutePath());
 
     if (!projectFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
-        log->info("Unable to open project file for modification");
+        log->debug("Unable to open project file for modification");
         return false;
     }
 
@@ -272,7 +272,7 @@ ProjectDirectoryModel::createProjectDirectory
 ()
 {
     auto log = spdlog::get("ProjectDirectoryModel");
-    log->info("Creating project directory {}",mAbsolutePath.toStdString());
+    log->debug("Creating project directory {}",mAbsolutePath.toStdString());
     return QDir().mkpath(mAbsolutePath);
 }
 
@@ -472,7 +472,7 @@ ProjectDirectoryModel::projectFileExists
                 file.baseName() == projInfo.fileName() &&
                 file.completeSuffix().remove("\"") == jsonSuffix.remove("."))
             {
-                log->info("Found Project File: {}", file.fileName().toStdString());
+                log->debug("Found Project File: {}", file.fileName().toStdString());
                 return true;
             }
         }
@@ -757,7 +757,7 @@ ProjectDirectoryModel::touchFile
 (QString assetFileTargetPath)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
-    log->info("Touching file" , assetFileTargetPath.toStdString());
+    log->debug("Touching file" , assetFileTargetPath.toStdString());
     QFile newFile(assetFileTargetPath);
     newFile.open(QIODevice::ReadWrite);
     newFile.close();
@@ -772,7 +772,7 @@ ProjectDirectoryModel::writeAssetData
     bool retval = false;
     QString absPath = createAssetTargetPath(adHandle,fileName);
     QFile file(absPath);
-    log->info("Write Asset Data to {}",absPath.toStdString());
+    log->debug("Write Asset Data to {}",absPath.toStdString());
     if (!file.exists() || overwrite)
     {
         file.open(QIODevice::ReadWrite | QIODevice::Truncate);
@@ -785,11 +785,11 @@ ProjectDirectoryModel::writeAssetData
 QByteArray ProjectDirectoryModel::readScriptData(ScriptDefinition* scriptDef)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
-    log->info( "readScriptData for {}", scriptDef->getNameAndUuidString());
+    log->debug( "readScriptData for {}", scriptDef->getNameAndUuidString());
     QString filePath = createAssetTargetPath(scriptDef);
     touchFile(filePath);
 
-    log->info("Opening Lua Script {}",filePath.toStdString());
+    log->debug("Opening Lua Script {}",filePath.toStdString());
     QFile scriptFile(filePath);
     scriptFile.open(QFile::ReadOnly);
     QByteArray data = scriptFile.readAll();
@@ -801,11 +801,11 @@ ShaderFileTuple ProjectDirectoryModel::readShaderData(ShaderDefinition* shaderDe
 {
     ShaderFileTuple shaderData;
     auto log = spdlog::get("ProjectDirectoryModel");
-    log->info( "readShaderData for {}", shaderDef->getNameAndUuidString());
+    log->debug( "readShaderData for {}", shaderDef->getNameAndUuidString());
 
     QString vertexFilePath = createAssetTargetPath(shaderDef, QString::fromStdString(Constants::SHADER_VERTEX_FILE_NAME));
     touchFile(vertexFilePath);
-    log->info("Opening Vertex Shader {}",vertexFilePath.toStdString());
+    log->debug("Opening Vertex Shader {}",vertexFilePath.toStdString());
     QFile vertexFile(vertexFilePath);
     vertexFile.open(QFile::ReadOnly);
     shaderData.vertexShader = vertexFile.readAll();
@@ -813,7 +813,7 @@ ShaderFileTuple ProjectDirectoryModel::readShaderData(ShaderDefinition* shaderDe
 
     QString fragmentFilePath = createAssetTargetPath(shaderDef, QString::fromStdString(Constants::SHADER_FRAGMENT_FILE_NAME));
     touchFile(fragmentFilePath);
-    log->info("Opening Fragment Shader {}",fragmentFilePath.toStdString());
+    log->debug("Opening Fragment Shader {}",fragmentFilePath.toStdString());
     QFile fragmentFile(fragmentFilePath);
     fragmentFile.open(QFile::ReadOnly);
     shaderData.fragmentShader = fragmentFile.readAll();
@@ -834,12 +834,12 @@ ProjectDirectoryModel::createAssetTargetPath
                 QString::fromStdString(adHandle->getAssetTypeDirectory())
                 );
 
-    log->info("Using path {}", assetFileTargetPath.toStdString());
+    log->debug("Using path {}", assetFileTargetPath.toStdString());
 
     // Create uuid directory
     QDir typeDir(assetFileTargetPath);
 
-    log->info("Full asset path is {}",typeDir.absolutePath().toStdString());
+    log->debug("Full asset path is {}",typeDir.absolutePath().toStdString());
 
     if (!typeDir.mkpath(QString::fromStdString(adHandle->getUuid())))
     {
@@ -850,23 +850,23 @@ ProjectDirectoryModel::createAssetTargetPath
     // Update to add uuid to path
     assetFileTargetPath = QDir(assetFileTargetPath).filePath(QString::fromStdString(adHandle->getUuid()));
 
-    log->info("Created path {}", assetFileTargetPath.toStdString());
+    log->debug("Created path {}", assetFileTargetPath.toStdString());
 
     // Update to add "Format" to path
     if (format.isEmpty())
     {
-        log->info("No format argument passed, using format: {}", adHandle->getFormat());
+        log->debug("No format argument passed, using format: {}", adHandle->getFormat());
         assetFileTargetPath = QDir(assetFileTargetPath).filePath(
                     QString::fromStdString(adHandle->getFormat())
                     );
     }
     else
     {
-        log->info("Format argument passed, using format: {}", format.toStdString());
+        log->debug("Format argument passed, using format: {}", format.toStdString());
         assetFileTargetPath = QDir(assetFileTargetPath).filePath(format);
     }
 
-    log->info("Returning absolute path: {}",assetFileTargetPath.toStdString());
+    log->debug("Returning absolute path: {}",assetFileTargetPath.toStdString());
     return assetFileTargetPath;
 }
 
@@ -877,7 +877,7 @@ ProjectDirectoryModel::copyMainAssetFile
     auto log = spdlog::get("ProjectDirectoryModel");
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
 
-    log->info(
+    log->debug(
          "Copying asset file for {}, with format {} from {} to {}",
          adHandle->getNameAndUuidString(),
          adHandle->getFormat(),
@@ -900,7 +900,7 @@ ProjectDirectoryModel::deleteAssetDataDirectory
 
     auto log = spdlog::get("ProjectDirectoryModel");
     QString assetDataPath = getAssetDataPath(adHandle);
-    log->info( "ProjectDirectoryModel: Deleting Asset Data Directory {}",assetDataPath.toStdString());
+    log->debug( "ProjectDirectoryModel: Deleting Asset Data Directory {}",assetDataPath.toStdString());
     return QDir(assetDataPath).removeRecursively();
 }
 
@@ -915,7 +915,7 @@ ProjectDirectoryModel::copyAdditionalFile
                 QFileInfo(assetSourceFile.fileName()).fileName()
                 );
 
-    log->info("Copying asset file for {} from {} to {}",
+    log->debug("Copying asset file for {} from {} to {}",
               adHandle->getNameAndUuidString(),
               assetSourceFile.fileName().toStdString(),
               assetFileTargetPath.toStdString());

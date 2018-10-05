@@ -33,14 +33,14 @@ RelationshipTree::RelationshipTree
 
         log = spdlog::stdout_color_mt("RelationshipTree");
     }
-    log->info("Constructing Object");
+    log->debug("Constructing Object");
 }
 
 RelationshipTree::~RelationshipTree
 ()
 {
     auto log = spdlog::get("RelationshipTree");
-    log->info("Denstructing Object");
+    log->debug("Denstructing Object");
 }
 
 void

@@ -167,7 +167,7 @@ namespace Dream
             fragmentReader->readIntoString();
             mFragmentShaderSource = fragmentReader->getContentsAsString();
             delete fragmentReader;
-            log->info(
+            log->debug(
                         "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
                         mDefinition->getNameAndUuidString(),
                         absVertexPath,
@@ -296,7 +296,7 @@ namespace Dream
                 return;
             }
         }
-        log->info("Creating uniform {}", name);
+        log->debug("Creating uniform {}", name);
         auto newUniform = make_shared<ShaderUniform>(type,name,count,data);
         newUniform->setLocation(glGetUniformLocation(mShaderProgram, name.c_str()));
         mUniformVector.push_back(newUniform);
@@ -317,7 +317,7 @@ namespace Dream
             id = material->mDiffuseTexture->id;
             if (CurrentTexture0 != id)
             {
-                log->info("Found Diffuse Texture, binding {}",id);
+                log->debug("Found Diffuse Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE0);
                 checkGLError();
                 glBindTexture(GL_TEXTURE_2D, id);
@@ -333,7 +333,7 @@ namespace Dream
             id =  material->mSpecularTexture->id;
             if (CurrentTexture1 != id)
             {
-                log->info("Found Specular Texture, binding {}",id);
+                log->debug("Found Specular Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE1);
                 checkGLError();
                 glBindTexture(GL_TEXTURE_2D, id);
@@ -350,7 +350,7 @@ namespace Dream
             id =  material->mNormalTexture->id;
             if (CurrentTexture2 != id)
             {
-                log->info("Found Normal Texture, binding {}",id);
+                log->debug("Found Normal Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE2);
                 checkGLError();
                 glBindTexture(GL_TEXTURE_2D, id);
@@ -367,7 +367,7 @@ namespace Dream
     void ShaderInstance::bindLight(LightInstance* light)
     {
         auto log = getLog();
-        log->info("Binding light {} ({})",light->getNameAndUuidString(),light->getType());
+        log->debug("Binding light {} ({})",light->getNameAndUuidString(),light->getType());
         DirLight dirData;
         SpotLight spotData;
         PointLight pointData;
@@ -411,7 +411,7 @@ namespace Dream
                     log->error("Max dir lights bound");
                     return;
                 }
-                log->info("Binding dir light {}", mDirectionalLightCount);
+                log->debug("Binding dir light {}", mDirectionalLightCount);
                 dirData = light->getDirectionalLightData();
                 addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].direction",1, &dirData.direction);
                 addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].ambient",1,   &dirData.ambient);
@@ -426,7 +426,7 @@ namespace Dream
                     log->error("Max point lights bound");
                     return;
                 }
-                log->info("Binding point light {}", mPointLightCount);
+                log->debug("Binding point light {}", mPointLightCount);
                 pointData = light->getPointLightData();
                 addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].ambient",1,   &pointData.ambient);
                 addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].diffuse",1,   &pointData.diffuse);
@@ -444,7 +444,7 @@ namespace Dream
                     log->error("Max spot lights bound");
                     return;
                 }
-                log->info("Binding spot light {}", mSpotLightCount);
+                log->debug("Binding spot light {}", mSpotLightCount);
                 spotData = light->getSpotLightData();
                 addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].ambient",1,     &spotData.ambient);
                 addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].diffuse",1,     &spotData.diffuse);
@@ -478,7 +478,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Synchronising uniforms for {}",getNameAndUuidString());
+        log->debug("Synchronising uniforms for {}",getNameAndUuidString());
         GLuint prog = getShaderProgram();
 
         // Sync lighting uniforms
@@ -606,7 +606,7 @@ namespace Dream
           mNeedsUpdate(true)
     {
         auto log = getLog();
-        log->info("Constructing uniform {}, count {}",mName,count);
+        log->debug("Constructing uniform {}, count {}",mName,count);
         switch (type)
         {
             case Dream::INT1:

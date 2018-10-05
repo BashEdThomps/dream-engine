@@ -102,7 +102,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Initialising LuaComponent" );
+        log->debug( "Initialising LuaComponent" );
         mState = luaL_newstate();
         sol::state_view sView(mState);
         sView.open_libraries(
@@ -117,7 +117,7 @@ namespace Dream
         luaL_setfuncs(mState, printlib, 0);
         lua_pop(mState, 1);
 
-        log->info( "Got a sol state" );
+        log->debug( "Got a sol state" );
         exposeAPI();
         return true;
     }
@@ -141,19 +141,19 @@ namespace Dream
 
         if (script->getLoadedFlag())
         {
-            log->info( "Script {} is already loaded" , script->getNameAndUuidString());
+            log->debug( "Script {} is already loaded" , script->getNameAndUuidString());
             return false;
         }
 
-        log->info( "Loading script '{}' for '{}'" , script->getName(),sceneObject->getName());
-        log->info( "Loading script from {}" , script->getAbsolutePath());
+        log->debug( "Loading script '{}' for '{}'" , script->getName(),sceneObject->getName());
+        log->debug( "Loading script from {}" , script->getAbsolutePath());
 
         if (!loadScript(sceneObject))
         {
             return false;
         }
 
-        log->info( "Loaded {} successfully" , sceneObject->getUuid());
+        log->debug( "Loaded {} successfully" , sceneObject->getUuid());
 
         script->setLoadedFlag(true);
 
@@ -170,7 +170,7 @@ namespace Dream
         auto log = getLog();
         string id = sceneObject->getUuid();
 
-        log->info( "loadScript called for {}", id );
+        log->debug( "loadScript called for {}", id );
 
         LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
 
@@ -183,7 +183,7 @@ namespace Dream
         string path = scriptInstance->getAbsolutePath();
         string script = mScriptCache->getScript(path);
 
-        log->info( "calling scriptLoadFromString in lua for {}" , id );
+        log->debug( "calling scriptLoadFromString in lua for {}" , id );
 
         sol::state_view solStateView(mState);
         sol::environment environment(mState, sol::create, solStateView.globals());
@@ -213,7 +213,7 @@ namespace Dream
            return false;
         }
 
-        log->info("Loaded Script Successfully");
+        log->debug("Loaded Script Successfully");
 
         return true;
     }
@@ -224,7 +224,7 @@ namespace Dream
     {
         beginUpdate();
         auto log = getLog();
-        log->info( "Update Called" );
+        log->debug( "Update Called" );
 
         for (auto entry : mScriptMap)
         {
@@ -267,7 +267,7 @@ namespace Dream
             return false;
         }
 
-        log->info("Calling onUpdate for {}",sceneObject->getNameAndUuidString() );
+        log->debug("Calling onUpdate for {}",sceneObject->getNameAndUuidString() );
 
         sol::state_view solStateView(mState);
         sol::function onUpdateFunction = solStateView[sceneObject->getUuid()][Constants::LUA_UPDATE_FUNCTION];
@@ -312,7 +312,7 @@ namespace Dream
             return false;
         }
 
-        log->info("Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
+        log->debug("Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
 
         sol::state_view solStateView(mState);
         sol::function onInitFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INIT_FUNCTION];
@@ -353,7 +353,7 @@ namespace Dream
             return false;
         }
 
-        log->info("Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
+        log->debug("Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
 
         sol::state_view solStateView(mState);
         sol::function onInputFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INPUT_FUNCTION];
@@ -394,7 +394,7 @@ namespace Dream
             return false;
         }
 
-        log->info( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
+        log->debug( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
 
         sol::state_view solStateView(mState);
         sol::function onEventFunction = solStateView[sceneObject->getUuid()][Constants::LUA_EVENT_FUNCTION];
@@ -442,7 +442,8 @@ namespace Dream
             "getPhysicsComponent",&ProjectRuntime::getPhysicsComponent,
             "getWindowComponent",&ProjectRuntime::getWindowComponent,
             "getTime",&ProjectRuntime::getTime,
-            "getCamera",&ProjectRuntime::getCamera
+            "getCamera",&ProjectRuntime::getCamera,
+            "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid
         );
         stateView["Runtime"] = mProjectRuntime;
     }
@@ -476,16 +477,12 @@ namespace Dream
         );
 
         stateView["Camera"] = mProjectRuntime->getCamera();
-
-        /*
-            .enum_("CameraMovement")
-            [
-                value("FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD),
-                value("BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD),
-                value("LEFT",     Constants::CAMERA_MOVEMENT_LEFT),
-                value("RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT)
-            ]
-        */
+        stateView.new_enum("CameraMovement",
+            "FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD,
+            "BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD,
+            "LEFT",     Constants::CAMERA_MOVEMENT_LEFT,
+            "RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT
+        );
     }
 
     void
@@ -550,29 +547,28 @@ namespace Dream
         debugRegisteringClass("ShaderInstance");
         sol::state_view stateView(mState);
         stateView.new_usertype<ShaderInstance>("ShaderInstance",
-            "getUuid", &ShaderInstance::getUuid
+            "getUuid", &ShaderInstance::getUuid,
+            "addUniform",&ShaderInstance::addUniform
+
         );
 
         debugRegisteringClass("ShaderUniform");
 
         stateView.new_usertype<ShaderUniform>("ShaderUniform");
-        /*
-                .enum_("UniformType")
-                [
-                    value("INT1",UniformType::INT1),
-                    value("INT2",UniformType::INT2),
-                    value("INT3",UniformType::INT3),
-                    value("INT4",UniformType::INT4),
-                    value("UINT1",UniformType::UINT1),
-                    value("UINT2",UniformType::UINT2),
-                    value("UINT3",UniformType::UINT3),
-                    value("UINT4",UniformType::UINT4),
-                    value("FLOAT1",UniformType::FLOAT1),
-                    value("FLOAT2",UniformType::FLOAT2),
-                    value("FLOAT3",UniformType::FLOAT3),
-                    value("FLOAT4",UniformType::FLOAT4)
-                ]
-                */
+        stateView.new_enum("UniformType",
+            "INT1",UniformType::INT1,
+            "INT2",UniformType::INT2,
+            "INT3",UniformType::INT3,
+            "INT4",UniformType::INT4,
+            "UINT1",UniformType::UINT1,
+            "UINT2",UniformType::UINT2,
+            "UINT3",UniformType::UINT3,
+            "UINT4",UniformType::UINT4,
+            "FLOAT1",UniformType::FLOAT1,
+            "FLOAT2",UniformType::FLOAT2,
+            "FLOAT3",UniformType::FLOAT3,
+            "FLOAT4",UniformType::FLOAT4
+        );
     }
 
     void
@@ -603,6 +599,9 @@ namespace Dream
         sol::state_view stateView(mState);
         stateView.new_usertype<PhysicsObjectInstance>("PhysicsObjectInstance",
             "getUuid", &PhysicsObjectInstance::getUuid,
+
+            "getMass", &PhysicsObjectInstance::getMass,
+            "setMass", &PhysicsObjectInstance::setMass,
 
             "getLinearVelocity", &PhysicsObjectInstance::getLinearVelocity,
             "setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity,
@@ -670,7 +669,9 @@ namespace Dream
             "removePhysicsObject", &SceneObjectRuntime::removePhysicsObjectInstance,
             "removeFont", &SceneObjectRuntime::removeFontInstance,
 
-            "addEvent",&SceneObjectRuntime::addEvent
+            "addEvent",&SceneObjectRuntime::addEvent,
+
+            "replaceAssetUuid",&SceneObjectRuntime::replaceAssetUuid
 
         );
     }
@@ -879,7 +880,7 @@ namespace Dream
                 stateView[sObj->getUuid()] = sol::lua_nil;
 
                 string name = sObj->getNameAndUuidString();
-                log->info( "Removed script for {}" , name );
+                log->debug( "Removed script for {}" , name );
 
                 mScriptMap.erase(iter++);
                 break;
@@ -892,7 +893,7 @@ namespace Dream
     (SceneObjectRuntime* sceneObject, ScriptInstance* script)
     {
         auto log = getLog();
-        log->info(
+        log->debug(
                     "Adding {} to script map for {}",
                     script->getNameAndUuidString(),
                     sceneObject->getNameAndUuidString()
@@ -927,6 +928,15 @@ namespace Dream
     }
 
     void
+    LuaComponent::exposeIDefinition
+    ()
+    {
+        sol::state_view stateView(mState);
+        stateView.new_usertype<IDefinition>("IDefinition");
+
+    }
+
+    void
     LuaComponent::setInputMap
     (gainput::InputMap* map)
     {
@@ -940,7 +950,7 @@ namespace Dream
     (string className)
     {
         auto log = getLog();
-        log->info( "Registering Class {}",  className );
+        log->debug( "Registering Class {}",  className );
         return;
     }
 
@@ -948,6 +958,8 @@ namespace Dream
     LuaComponent::exposeAPI
     ()
     {
+        // Definitions
+        exposeIDefinition();
         // Runtimes
         exposeProjectRuntime();
         exposeSceneObjectRuntime();

@@ -108,6 +108,7 @@ namespace Dream
         void exposeTime() override;
         void exposeTransform3D() override;
         void exposeGLM() override;
+        void exposeIDefinition();
     }; // End of LuaComponent
 
 } // End of Dream

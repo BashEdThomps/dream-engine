@@ -22,7 +22,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Destroying Object" );
+        log->debug("Destroying Object" );
         return;
     }
 

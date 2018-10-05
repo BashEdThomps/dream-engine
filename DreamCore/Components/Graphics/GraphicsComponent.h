@@ -47,12 +47,6 @@ namespace Dream
     class AssimpMesh;
     class AssimpMaterial;
 
-    enum ModelQueueType
-    {
-        OPTIMISED,
-        LINEAR
-    };
-
     class GraphicsComponent : public IComponent
     {
     private:
@@ -126,7 +120,6 @@ namespace Dream
         void handleResize();
         float getMeshCullDistance() const;
         void setMeshCullDistance(float meshCullDistance);
-        ModelQueueType mModelQueueType;
         void debugOptimisedModelQueue();
         void setMinimumDraw(float minimumDraw);
         void setMaximumDraw(float maximumDraw);

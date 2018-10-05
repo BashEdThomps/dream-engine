@@ -42,7 +42,7 @@ namespace Dream
 
         if (mFreeTypeLib == nullptr)
         {
-            log->info("Initialising FreeType");
+            log->debug("Initialising FreeType");
 
             mFreeTypeLib = new FT_Library();
             if (FT_Init_FreeType(mFreeTypeLib))
@@ -72,7 +72,7 @@ namespace Dream
             for (auto glCharFontCharMap : definitionMapPair.second)
             {
                 FontCharacter fChar = glCharFontCharMap.second;
-                log->info(
+                log->debug(
                     "Deleting GL texture {} for character {} of font {}",
                     fChar.TextureID, glCharFontCharMap.first ,fd->getNameAndUuidString()
                 );
@@ -91,12 +91,12 @@ namespace Dream
         auto it = mCache.find(definition);
         if (it != end(mCache))
         {
-            log->info("Found {} in cache", definition->getNameAndUuidString());
+            log->debug("Found {} in cache", definition->getNameAndUuidString());
             return mCache[definition];
         }
         else
         {
-            log->info("Generating New Font {}",definition->getNameAndUuidString());
+            log->debug("Generating New Font {}",definition->getNameAndUuidString());
             return generateCharMap(definition,face);
         }
     }
@@ -115,7 +115,7 @@ namespace Dream
     (FontDefinition* definition, FT_Face* fontFace)
     {
         auto log = getLog();
-        log->info("Generating Character Map...");
+        log->debug("Generating Character Map...");
 
         map<GLchar, FontCharacter> charMap;
 
@@ -123,7 +123,7 @@ namespace Dream
 
         for (GLubyte c = CHAR_MAP_START; c < CHAR_MAP_END; c++)
         {
-            log->info("FreeType: load Glyph for char {}", c);
+            log->debug("FreeType: load Glyph for char {}", c);
 
             // Load character glyph
             if (FT_Load_Char(*fontFace, c, FT_LOAD_RENDER))
@@ -136,7 +136,7 @@ namespace Dream
             GLuint texture;
             glGenTextures(1, &texture);
 
-            log->info("Using Texture {}" ,texture);
+            log->debug("Using Texture {}" ,texture);
 
             // Bind current texture
             glBindTexture(GL_TEXTURE_2D, texture);
@@ -153,7 +153,7 @@ namespace Dream
                         (*fontFace)->glyph->bitmap.buffer // Data
                         );
 
-            log->info("Char Texture Buffered");
+            log->debug("Char Texture Buffered");
 
             // Set texture options
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);//GL_CLAMP_TO_EDGE);
@@ -161,7 +161,7 @@ namespace Dream
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            log->info("Texture options set");
+            log->debug("Texture options set");
 
             // Now store character for later use
             FontCharacter character = FontCharacter(
@@ -172,12 +172,12 @@ namespace Dream
                         );
             charMap.insert(pair<GLchar, FontCharacter>(c, character));
 
-            log->info("Texture inserted into map");
+            log->debug("Texture inserted into map");
         }
 
         FT_Done_Face(*fontFace);
 
-        log->info("Finished Generating Character Map.");
+        log->debug("Finished Generating Character Map.");
 
         mCache.insert(pair<FontDefinition*,map<GLchar,FontCharacter>>(definition,charMap));
         return charMap;

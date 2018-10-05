@@ -22,6 +22,7 @@
 #include <assimp/Importer.hpp>
 
 #include "../../../Common/DreamObject.h"
+#include "AssimpMesh.h"
 
 using std::string;
 using std::map;
@@ -33,9 +34,11 @@ namespace Dream
     {
     private:
         map<string,Importer*> mCache;
+        map<string,vector<AssimpMesh*>> mMeshMap;
     public:
         AssimpCache();
         ~AssimpCache();
         Importer* getModelFromCache(string);
+        vector<AssimpMesh*> getMeshVector(string);
     };
 }

@@ -28,7 +28,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( "Time: Update Called" );
+        log->debug( "Time: Update Called" );
         mLastTime    = mCurrentTime;
         mCurrentTime = high_resolution_clock::now();
         mTimeDelta   = mCurrentTime-mLastTime;
@@ -40,7 +40,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info
+        log->debug
         (
            "Time: "
            "\tCurrent Time: {}"

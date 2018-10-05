@@ -39,7 +39,7 @@ namespace Dream
   ()
   {
       auto log = getLog();
-            log->info( "SpriteInstance: Destroying Object" );
+            log->debug( "SpriteInstance: Destroying Object" );
       return;
   }
 
@@ -50,7 +50,7 @@ namespace Dream
     auto log = getLog();
     string path = projectPath + mDefinition->getAssetPath();
     string directory = path.substr(0, path.find_last_of('/'));
-    log->info( "SpriteInstance: Loading sprite from {}" , path );
+    log->debug( "SpriteInstance: Loading sprite from {}" , path );
 
     if (mCache != nullptr)
     {

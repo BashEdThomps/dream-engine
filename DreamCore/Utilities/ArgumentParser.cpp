@@ -53,7 +53,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mDreamPath = string(mArgv[i+1]);
-                    log->info( "Got Dream Path {}" , mDreamPath );
+                    log->debug( "Got Dream Path {}" , mDreamPath );
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mProjectUUID = string(mArgv[i+1]);
-                    log->info( "Got Project UUID {}" , mProjectUUID );
+                    log->debug( "Got Project UUID {}" , mProjectUUID );
                 }
                 else
                 {
@@ -78,7 +78,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mHttpUrl = string(mArgv[i+1]);
-                    log->info( "Loading project over HTTP from {}" , mHttpUrl );
+                    log->debug( "Loading project over HTTP from {}" , mHttpUrl );
                 }
                 else
                 {
@@ -96,10 +96,10 @@ namespace Dream
 
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
-        log->info( "Got Project Path {}" , mProjectPath );
+        log->debug( "Got Project Path {}" , mProjectPath );
         mProjectFilePath = mProjectPath + Constants::PROJECT_PATH_SEP + mProjectUUID + Constants::PROJECT_EXTENSION;
 
-        log->info( "Got Project File Path {} " , mProjectFilePath );
+        log->debug( "Got Project File Path {} " , mProjectFilePath );
     }
 
     string

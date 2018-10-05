@@ -41,11 +41,12 @@ namespace Dream
         int mLastSampleOffset;
         int mChannels;
         deque<Event> mMarkerEvents;
+        deque<Event> mMarkerEventsCache;
 
         void generateEventList();
     public:
         AudioInstance(AudioComponent* comp, AudioDefinition*, SceneObjectRuntime*);
-
+        ~AudioInstance() override;
         void setLooping(bool);
         bool isLooping() const ;
 

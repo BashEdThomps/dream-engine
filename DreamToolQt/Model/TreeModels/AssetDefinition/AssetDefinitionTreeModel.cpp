@@ -34,7 +34,7 @@ AssetDefinitionTreeModel::AssetDefinitionTreeModel
     {
         log = spdlog::stdout_color_mt("AssetDefinitionTreeModel");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
     setupModelData();
     mAssetDefinitionIcon = unique_ptr<QIcon>(new QIcon(":svg/noun_Object.svg"));
 }
@@ -43,7 +43,7 @@ AssetDefinitionTreeModel::~AssetDefinitionTreeModel
 ()
 {
     auto log = spdlog::get("AssetDefinitionTreeModel");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 int

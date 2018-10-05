@@ -25,7 +25,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info("Destroying Object");
+        log->debug("Destroying Object");
         return;
     }
 
@@ -303,7 +303,7 @@ namespace Dream
         {
             mZoom = Constants::CAMERA_ZOOM_MAX;
         }
-        log->info("Zoom is {}" ,mZoom );
+        log->debug("Zoom is {}" ,mZoom );
     }
 
     void

@@ -31,7 +31,7 @@ PreferencesDialogController::PreferencesDialogController
     {
         log = spdlog::stderr_color_mt("PreferencesDialogController");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
     setupLayout();
     setupDialog();
     setupValues();
@@ -42,7 +42,7 @@ PreferencesDialogController::~PreferencesDialogController
 ()
 {
     auto log = spdlog::get("PreferencesDialogController");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 void

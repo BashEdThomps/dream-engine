@@ -48,14 +48,14 @@ AssetDefinitionPropertiesTreeDelegate::AssetDefinitionPropertiesTreeDelegate
     {
         log=spdlog::stdout_color_mt("AssetDefinitionPropertiesTreeDelegate");
     }
-    log->info("Constructing");
+    log->debug("Constructing");
 }
 
 AssetDefinitionPropertiesTreeDelegate::~AssetDefinitionPropertiesTreeDelegate
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("Destructing");
+    log->debug("Destructing");
 }
 
 QWidget*
@@ -107,7 +107,7 @@ AssetDefinitionPropertiesTreeDelegate::createFormatComboBox
 const
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("createEditor");
+    log->debug("createEditor");
     QComboBox *editor = new QComboBox(parent);
     editor->setDuplicatesEnabled(false);
     editor->setEditable(false);
@@ -458,6 +458,7 @@ const
         case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_UUID:
         case ASSET_DEFINITION_PROPERTY_NAME:
         case ASSET_DEFINITION_PROPERTY_NONE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
@@ -612,6 +613,7 @@ const
             static_cast<QDoubleSpinBox*>(editor)->setValue(value.toDouble());
             break;
 
+        case ASSET_DEFINITION_PROPERTY_UUID:
         case ASSET_DEFINITION_PROPERTY_NAME:
             static_cast<QLineEdit*>(editor)->setText(value.toString());
             break;
@@ -706,6 +708,7 @@ const
             break;
 
             // QLineEdit
+        case ASSET_DEFINITION_PROPERTY_UUID:
         case ASSET_DEFINITION_PROPERTY_NAME:
             model->setData(index,static_cast<QLineEdit*>(editor)->text());
             break;
@@ -757,7 +760,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_PathList
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("Path List was clicked");
+    log->debug("Path List was clicked");
     emit notifyButton_PathList();
 }
 
@@ -766,7 +769,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_AudioEvents
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("AudioEvents was clicked");
+    log->debug("AudioEvents was clicked");
     emit notifyButton_AudioEvents();
 }
 
@@ -775,7 +778,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_AudioFile
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("AudioFile was clicked");
+    log->debug("AudioFile was clicked");
     emit notifyButton_AudioFile();
 }
 
@@ -785,7 +788,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_FontFile
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("FontFile was clicked");
+    log->debug("FontFile was clicked");
     emit notifyButton_FontFile();
 }
 
@@ -794,7 +797,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_ModelFile
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("ModelFile was clicked");
+    log->debug("ModelFile was clicked");
     emit notifyButton_ModelFile();
 }
 
@@ -803,7 +806,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_PhysicsBvhTriangleMeshFile
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("PhysicsBvhTriangleMeshFile was clicked");
+    log->debug("PhysicsBvhTriangleMeshFile was clicked");
     emit notifyButton_PhysicsBvhTriangleMeshFile();
 }
 
@@ -812,7 +815,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_ModelAdditionalFiles
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("ModelAdditionalFiles was clicked");
+    log->debug("ModelAdditionalFiles was clicked");
     emit notifyButton_ModelAdditionalFiles();
 }
 
@@ -821,7 +824,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_RemoveFiles
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("RemoveFiles was clicked");
+    log->debug("RemoveFiles was clicked");
     emit notifyButton_RemoveFiles();
 }
 
@@ -830,7 +833,7 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditShader
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("EditShader was clicked");
+    log->debug("EditShader was clicked");
     emit notifyButton_EditShader();
 }
 
@@ -839,6 +842,6 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
 (bool)
 {
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
-    log->info("EditScript was clicked");
+    log->debug("EditScript was clicked");
     emit notifyButton_EditScript();
 }

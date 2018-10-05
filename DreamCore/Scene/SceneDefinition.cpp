@@ -56,7 +56,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( mJson.dump(1) );
+        log->debug( mJson.dump(1) );
     }
 
     void

@@ -37,7 +37,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-         log->info( "FileReader: Destroying reader for {}" , mPath );
+         log->debug( "FileReader: Destroying reader for {}" , mPath );
     }
 
     string

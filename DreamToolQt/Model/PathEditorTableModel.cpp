@@ -183,11 +183,11 @@ PathEditorTableModel::insertRows
 {
     Q_UNUSED(index)
     auto log = spdlog::get("PathEditorTableModel");
-    log->info("insertRows");
+    log->debug("insertRows");
 
     if (mPathDefinitionHandle != nullptr)
     {
-        log->info("inserting {} rows at {}", count, row);
+        log->debug("inserting {} rows at {}", count, row);
         beginInsertRows(QModelIndex(),row, row+count-1);
         for (int i=0; i<count; i++)
         {
@@ -198,7 +198,7 @@ PathEditorTableModel::insertRows
     }
     else
     {
-        log->info("No PathDefinition Pointer");
+        log->debug("No PathDefinition Pointer");
     }
     emit changed();
     return true;
@@ -215,7 +215,7 @@ PathEditorTableModel::removeRows
     }
 
     auto log = spdlog::get("PathEditorTableModel");
-    log->info("Removing row(s) from {} count {}",row,count);
+    log->debug("Removing row(s) from {} count {}",row,count);
     if (mPathDefinitionHandle != nullptr)
     {
         if (mPathDefinitionHandle->getControlPoints()->empty())

@@ -97,7 +97,7 @@ namespace Dream
                 string materialNameStr = materialName;
                 if (material.compare(materialNameStr) == 0)
                 {
-                    log->info("Removing material form {} shader map {}",getName(),material);
+                    log->debug("Removing material form {} shader map {}",getName(),material);
                     shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
                 }
             }

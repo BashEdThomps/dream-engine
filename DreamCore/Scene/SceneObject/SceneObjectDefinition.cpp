@@ -137,7 +137,7 @@ namespace Dream
     (string uuid)
     {
         auto log = getLog();
-        log->info("Attempting to remove instance of {} from {}",uuid,getNameAndUuidString());
+        log->debug("Attempting to remove instance of {} from {}",uuid,getNameAndUuidString());
         auto iter = find
                 (
                     begin(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
@@ -179,7 +179,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->info( mJson.dump(1) );
+        log->debug( mJson.dump(1) );
     }
 
     void
@@ -239,7 +239,7 @@ namespace Dream
         {
             if ((*iter) == child)
             {
-                log->info(
+                log->debug(
                             "Found child to {} remove from {}",
                             child->getNameAndUuidString(),
                             getNameAndUuidString()
@@ -256,13 +256,13 @@ namespace Dream
     (json* fromJson)
     {
         auto log = getLog();
-        log->info("Creating new child scene object");
+        log->debug("Creating new child scene object");
 
         json defJson;
 
         if (fromJson == nullptr)
         {
-            log->info("from scratch");
+            log->debug("from scratch");
             defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
 
             Transform3D transform;
@@ -271,7 +271,7 @@ namespace Dream
         }
         else
         {
-            log->info("from template copy");
+            log->debug("from template copy");
             defJson = json::parse(fromJson->dump());
         }
 

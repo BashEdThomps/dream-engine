@@ -129,6 +129,8 @@ SceneObjectPropertiesItem::setData
             mSceneObjectDefinitionHandle->setStatic(value.toBool());
             break;
         case SCENE_OBJECT_PROPERTY_NONE:
+        case SCENE_OBJECT_PROPERTY_ASSET_DEFINITION_LIST:
+        case SCENE_OBJECT_PROPERTY_CHILD_LIST:
             break;
     }
 

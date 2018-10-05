@@ -9,6 +9,7 @@
 
 #include "../../Project/ProjectDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "PhysicsComponent.h"
 
 #include "PhysicsObjectDefinition.h"
 
@@ -25,7 +26,7 @@ namespace Dream
         {
             log = spdlog::stdout_color_mt("PhysicsObjectModelCache");
         }
-        log->info("Clearing Assimp model cache");
+        log->debug("Clearing Assimp model cache");
         AssimpModelCache.clear();
     }
 
@@ -41,11 +42,11 @@ namespace Dream
         {
             if (it.first.compare(path) == 0)
             {
-                log->info( "Found cached scene for {} ", path );
+                log->debug( "Found cached scene for {} ", path );
                 return it.second;
             }
         }
-        log->info( "Loading {} from disk", path);
+        log->debug( "Loading {} from disk", path);
         const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
@@ -69,8 +70,10 @@ namespace Dream
     PhysicsObjectInstance::PhysicsObjectInstance
     (
         PhysicsObjectDefinition* definition,
+        PhysicsComponent* comp,
         SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
+          mPhysicsComponentHandle(comp),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
          mRigidBody(nullptr),
@@ -245,7 +248,7 @@ namespace Dream
         {
             // Load Collision Data
             string path = projectPath+pod->getAssetPath();
-            log->info( "Loading collision geometry from {}", path );
+            log->debug( "Loading collision geometry from {}", path );
             const aiScene* scene = getModelFromCache(path);
             btTriangleMesh *triMesh = new btTriangleMesh();
             processAssimpNode(scene->mRootNode, scene, triMesh);
@@ -415,14 +418,36 @@ namespace Dream
        mRigidBody->setRestitution(r);
     }
 
-    float PhysicsObjectInstance::getFriction() const
+    float
+    PhysicsObjectInstance::getFriction
+    () const
     {
         return mRigidBody->getFriction();
     }
 
-    void PhysicsObjectInstance::setFriction(float friction)
+    void
+    PhysicsObjectInstance::setFriction
+    (float friction)
     {
         mRigidBody->setFriction(friction);
+    }
+
+    float
+    PhysicsObjectInstance::getMass
+    () const
+    {
+       return mRigidBody->getInvMass();
+    }
+
+    void
+    PhysicsObjectInstance::setMass
+    (float mass)
+    {
+        mPhysicsComponentHandle->removeRigidBody(mRigidBody);
+        btVector3 inertia(0.0f,0.0f,0.0f);
+        mRigidBody->getCollisionShape()->calculateLocalInertia(mass,inertia);
+        mRigidBody->setMassProps(mass,inertia);
+        mPhysicsComponentHandle->addRigidBody(mRigidBody);
     }
 
     float

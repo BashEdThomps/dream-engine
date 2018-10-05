@@ -75,6 +75,7 @@ namespace Dream
         string getProjectPath();
 
         bool hasProjectDefinition();
+        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
     }; // End of Project
 
 } // End of Dream

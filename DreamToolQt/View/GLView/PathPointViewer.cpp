@@ -49,14 +49,14 @@ PathPointViewer::PathPointViewer
     {
         log = spdlog::stdout_color_mt("PathPointViewer");
     }
-    log->info("Constructing Object");
+    log->debug("Constructing Object");
 }
 
 PathPointViewer::~PathPointViewer
 ()
 {
     auto log = spdlog::get("PathPointViewer");
-    log->info("Destructing Object");
+    log->debug("Destructing Object");
 }
 
 void
@@ -64,7 +64,7 @@ PathPointViewer::init
 ()
 {
     auto log = spdlog::get("PathPointViewer");
-    log->info("Initialising");
+    log->debug("Initialising");
     initGLDrawable();
 }
 
@@ -75,11 +75,11 @@ PathPointViewer::setPathDefinition
     auto log = spdlog::get("PathPointViewer");
     if (selected != nullptr)
     {
-        log->info("Selecting {}",selected->getNameAndUuidString());
+        log->debug("Selecting {}",selected->getNameAndUuidString());
     }
     else
     {
-        log->info("Path selection cleared");
+        log->debug("Path selection cleared");
     }
     mPathDefinition = selected;
     updateVertexBuffer();
@@ -90,12 +90,12 @@ PathPointViewer::updateVertexBuffer
 ()
 {
     auto log = spdlog::get("PathPointViewer");
-    log->info("Updating Vertex Buffer") ;
+    log->debug("Updating Vertex Buffer") ;
     mVertexBuffer.clear();
 
     if (mPathDefinition == nullptr)
     {
-        log->info("No object selected");
+        log->debug("No object selected");
         return;
     }
 
@@ -406,7 +406,7 @@ PathPointViewer::initShader
 ()
 {
     auto log = spdlog::get("PathPointViewer");
-    log->info("Initialising shader");
+    log->debug("Initialising shader");
 
     string vertexShaderSource;
     string fragmentShaderSource;

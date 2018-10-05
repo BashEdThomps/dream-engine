@@ -23,6 +23,7 @@ namespace Dream
 {
     class PhysicsMotionState;
     class PhysicsObjectDefinition;
+    class PhysicsComponent;
 
     class PhysicsObjectInstance : public IAssetInstance
     {
@@ -39,10 +40,12 @@ namespace Dream
         btRigidBody *mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
         bool mInPhysicsWorld;
+        PhysicsComponent* mPhysicsComponentHandle;
 
     public:
         PhysicsObjectInstance(
             PhysicsObjectDefinition*,
+            PhysicsComponent*,
             SceneObjectRuntime*
         );
         ~PhysicsObjectInstance() override;
@@ -64,6 +67,9 @@ namespace Dream
         void setRestitution(float r);
         float getFriction() const;
         void setFriction(float friction);
+        float getMass() const;
+        void setMass(float mass);
+
 
     protected:
         void loadExtraAttributes(json) override;

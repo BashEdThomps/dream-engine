@@ -39,7 +39,7 @@ namespace Dream
     PathComponent::~PathComponent
     ()
     {
-        getLog()->info("Destroying Object");
+        getLog()->debug("Destroying Object");
     }
 
 

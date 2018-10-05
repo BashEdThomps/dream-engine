@@ -83,7 +83,7 @@ namespace Dream
     (string projectPath, FileReader &reader)
     {
         auto log = getLog();
-        log->info("Loading project from FileReader", reader.getPath());
+        log->debug("Loading project from FileReader", reader.getPath());
 
         string projectJsonStr = reader.getContentsAsString();
 
@@ -95,7 +95,7 @@ namespace Dream
 
         json projectJson = json::parse(projectJsonStr);
 
-        log->info("Project path", projectPath);
+        log->debug("Project path", projectPath);
 
         mProjectPath = projectPath;
         mDefinition = new ProjectDefinition(projectJson);
@@ -134,13 +134,13 @@ namespace Dream
             if (dotJsonIndex != string::npos)
             {
                 projectFileName = filename.substr(0,dotJsonIndex);
-                log->info( "Project: openFromDirectory - Found project file ",
+                log->debug( "Project: openFromDirectory - Found project file ",
                            projectFileName
                            );
             }
             else if (filename.compare(Constants::ASSET_DIR) == 0)
             {
-                log->info( "Project: openFromDirectory - Found asset directory " );
+                log->debug( "Project: openFromDirectory - Found asset directory " );
                 hasAssetDirectory = true;
             }
         }
@@ -152,7 +152,7 @@ namespace Dream
         }
 
         {
-            log->info( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
+            log->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
         }
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
@@ -226,7 +226,7 @@ namespace Dream
     (ArgumentParser &parser)
     {
         auto log = getLog();
-        log->info( "Project: Loading from ArgumentParser" );
+        log->debug( "Project: Loading from ArgumentParser" );
         FileReader projectFileReader(parser.getProjectFilePath());
         projectFileReader.readIntoString();
         bool loadSuccess = openFromFileReader(parser.getProjectPath(), projectFileReader);
@@ -252,6 +252,15 @@ namespace Dream
     ()
     {
         return mProjectPath;
+    }
+
+    IAssetDefinition* Project::getAssetDefinitionByUuid(string uuid)
+    {
+        if (mDefinition != nullptr)
+        {
+            return dynamic_cast<ProjectDefinition*>(mDefinition)
+                ->getAssetDefinitionByUuid(uuid);
+        }
     }
 
 

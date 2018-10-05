@@ -29,7 +29,7 @@ WaveformWidget::WaveformWidget(QWidget *parent)
     mLineColour(QColor(192,192,192)),
     mTextColour(QColor(0,0,0)),
     mPlaybackPositionColour(QColor(255,0,0)),
-    mRepeatColour(QColor(24,70,93)),
+    mRepeatColour(QColor(200,200,200)),
 
     mZoomSpeed(10.0f),
     mZoomSpeedMin(10.0f),
