@@ -66,20 +66,6 @@ using glm::scale;
 
 namespace Dream
 {
-    void
-    GraphicsComponent::setMinimumDraw
-    (float minimumDraw)
-    {
-        mMinimumDraw = minimumDraw;
-    }
-
-    void
-    GraphicsComponent::setMaximumDraw
-    (float maximumDraw)
-    {
-        mMaximumDraw = maximumDraw;
-    }
-
     GraphicsComponent::GraphicsComponent
     (
         Camera* camera,
@@ -603,7 +589,7 @@ namespace Dream
 
         // Get Assets
         SpriteInstance* sprite = sceneObject->getSpriteInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject->getShaderInstance();
         // Get arguments
         vec2 size = vec2(sprite->getWidth(),sprite->getHeight());
 
@@ -673,7 +659,7 @@ namespace Dream
 
         // Get Assets
         FontInstance* font = sceneObject->getFontInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        shared_ptr<ShaderInstance> shader = sceneObject->getShaderInstance();
         shader->use();
 
         shader->setProjectionMatrix(mProjectionMatrix);
@@ -805,7 +791,7 @@ namespace Dream
 
         // Get Assets
         AssimpModelInstance* model = sceneObject->getModelInstance();
-        ShaderInstance* shader = sceneObject->getShaderInstance();
+        const shared_ptr<ShaderInstance> shader = sceneObject->getShaderInstance();
         shader->use();
 
         // Set Point Light Values
@@ -872,5 +858,19 @@ namespace Dream
     ()
     {
         return mCamera;
+    }
+
+    void
+    GraphicsComponent::setMinimumDraw
+    (float minimumDraw)
+    {
+        mMinimumDraw = minimumDraw;
+    }
+
+    void
+    GraphicsComponent::setMaximumDraw
+    (float maximumDraw)
+    {
+        mMaximumDraw = maximumDraw;
     }
 } // End of Dream

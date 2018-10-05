@@ -38,18 +38,18 @@ namespace Dream
     class AssimpMesh;
     class MaterialCache : public DreamObject
     {
-        vector<Texture*> mTextureCache;
-        vector<AssimpMaterial*> mMaterialCache;
+        vector<shared_ptr<Texture>> mTextureCache;
+        vector<shared_ptr<AssimpMaterial>> mMaterialCache;
     public:
         MaterialCache();
         ~MaterialCache();
 
-        vector<Texture*>& getTextureCache();
-        vector<AssimpMaterial*>& getMaterialCache();
-        Texture* loadTextureFromFile(const char*, const char*, const char*);
-        AssimpMaterial* newAssimpMaterial();
-        AssimpMaterial* getMaterialByName(aiString name);
-        void addMaterialToCache(AssimpMaterial* mat);
+        vector<shared_ptr<Texture>>& getTextureCache();
+        vector<shared_ptr<AssimpMaterial>>& getMaterialCache();
+        shared_ptr<Texture> loadTextureFromFile(const char*, const char*, const char*);
+        shared_ptr<AssimpMaterial> newAssimpMaterial();
+        shared_ptr<AssimpMaterial> getMaterialByName(aiString name);
+        void addMaterialToCache(shared_ptr<AssimpMaterial> mat);
         void flushRawTextureImageData();
     };
 

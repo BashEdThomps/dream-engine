@@ -39,14 +39,17 @@
 #include "../../Components/Physics/PhysicsComponent.h"
 #include "../../Components/IAssetDefinition.h"
 
-#include "../../Components/Path/PathDefinition.h"
 #include "../../Components/Audio/AudioDefinition.h"
+
 #include "../../Components/Graphics/Font/FontDefinition.h"
 #include "../../Components/Graphics/Light/LightDefinition.h"
 #include "../../Components/Graphics/Model/ModelDefinition.h"
-#include "../../Components/Physics/PhysicsObjectDefinition.h"
 #include "../../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../../Components/Graphics/Sprite/SpriteDefinition.h"
+#include "../../Components/Graphics/Shader/ShaderCache.h"
+
+#include "../../Components/Path/PathDefinition.h"
+#include "../../Components/Physics/PhysicsObjectDefinition.h"
 
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptInstance.h"
@@ -63,7 +66,7 @@
 
 using std::vector;
 using std::flush;
-
+using std::make_shared;
 using glm::vec3;
 
 namespace Dream
@@ -114,7 +117,7 @@ namespace Dream
         removeAudioInstance();
         removePathInstance();
         removeModelInstance();
-        removeShaderInstance();
+        //removeShaderInstance();
         removeLightInstance();
         removeSpriteInstance();
         removeScriptInstance();
@@ -163,6 +166,7 @@ namespace Dream
         }
     }
 
+    /*
     void
     SceneObjectRuntime::removeShaderInstance
     ()
@@ -173,6 +177,7 @@ namespace Dream
             mShaderInstance = nullptr;
         }
     }
+    */
 
     void
     SceneObjectRuntime::removeLightInstance
@@ -373,7 +378,7 @@ namespace Dream
         return mScriptInstance;
     }
 
-    ShaderInstance*
+    const shared_ptr<ShaderInstance>&
     SceneObjectRuntime::getShaderInstance
     ()
     {
@@ -818,15 +823,17 @@ namespace Dream
     (ShaderDefinition* definition)
     {
         auto log = getLog();
-        removeShaderInstance();
+        //removeShaderInstance();
         log->debug( "Creating Shader asset instance." );
-        mShaderInstance = new ShaderInstance
-        (
-            mSceneRuntimeHandle->getProjectRuntime()->getShaderCache(),
-            definition,
-            this
-        );
-        mShaderInstance->load(mProjectPath);
+
+        auto shaderCache = mSceneRuntimeHandle->getProjectRuntime()->getShaderCache();
+        mShaderInstance = shaderCache->getShader(definition->getUuid());
+        if (mShaderInstance == nullptr)
+        {
+            mShaderInstance = make_shared<ShaderInstance>(definition,this);
+            mShaderInstance->load(mProjectPath);
+            shaderCache->putShader(definition->getUuid(), mShaderInstance);
+        }
     }
 
     void

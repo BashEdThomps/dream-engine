@@ -39,8 +39,7 @@ namespace Dream
     class IAssetDefinition;
     class SceneObjectRuntime;
 
-    class IAssetInstance :
-        public DreamObject
+    class IAssetInstance : public DreamObject
     {
     protected:
         bool mLoaded;

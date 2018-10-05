@@ -38,12 +38,12 @@
 
 struct aiScene;
 struct aiMaterial;
-struct aiMesh;
 struct aiNode;
 
 using nlohmann::json;
 using glm::mat4;
 using Assimp::Importer;
+
 
 namespace Dream
 {
@@ -56,6 +56,8 @@ namespace Dream
     class Texture;
     class AssimpMaterial;
 
+    typedef  std::pair<shared_ptr<AssimpMaterial>,vector<shared_ptr<AssimpMesh>>> MaterialMeshPair ;
+
     class AssimpModelInstance : public IAssetInstance
     {
     public:
@@ -65,10 +67,11 @@ namespace Dream
             IAssetDefinition*,
             SceneObjectRuntime*
         );
+
         ~AssimpModelInstance() override;
         bool load(string) override;
         void draw(
-            ShaderInstance*,
+            const shared_ptr<ShaderInstance>&,
             vec3 transorm,
             vec3 camPos,
             float maxDistance,
@@ -84,7 +87,8 @@ namespace Dream
         AssimpCache* mModelCache;
         MaterialCache* mMaterialCache;
 
-        vector<AssimpMesh*> mMeshes;
+        vector<shared_ptr<AssimpMesh>> mMeshes;
+        map<shared_ptr<AssimpMaterial>,vector<shared_ptr<AssimpMesh>>> mMaterialMeshMap;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
@@ -92,16 +96,15 @@ namespace Dream
         // Methods
         void loadModel(string);
         void loadShaders();
-        Texture* loadMaterialTexture(aiMaterial*, aiTextureType, string);
+        shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType, string);
 
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
-        void initBoundingBox();
 
         void processNode(aiNode*, const aiScene*);
-        AssimpMesh* processMesh(aiMesh*, const aiScene*);
+        shared_ptr<AssimpMesh> processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        void processTextureData(aiMesh* mesh, const aiScene* scene, AssimpMaterial* material);
+        void processTextureData(aiMesh* mesh, const aiScene* scene, shared_ptr<AssimpMaterial> material);
         map<string,ShaderInstance*> mMaterialShaderMap;
     }; // End of AssimpModelInstance
 

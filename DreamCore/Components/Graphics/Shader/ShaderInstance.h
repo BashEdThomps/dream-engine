@@ -37,8 +37,6 @@ using nlohmann::json;
 using glm::mat4;
 using glm::vec3;
 
-
-
 namespace Dream
 {
     class ShaderCache;
@@ -120,11 +118,9 @@ namespace Dream
         GLuint mShaderProgram;
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
-        ShaderCache* mCache;
         bool mNeedsRebind;
     public:
         ShaderInstance(
-           ShaderCache* cache,
            ShaderDefinition* def,
            SceneObjectRuntime* rt
         );
@@ -160,7 +156,7 @@ namespace Dream
         void bindLight(LightInstance* light);
 
         void syncUniforms();
-        void bindMaterial(AssimpMaterial* material);
+        void bindMaterial(const shared_ptr<AssimpMaterial>& material);
     }; // End of ShaderInstance
 
 } // End of Dream

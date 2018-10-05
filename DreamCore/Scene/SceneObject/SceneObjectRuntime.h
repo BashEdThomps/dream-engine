@@ -28,6 +28,7 @@
 
 using std::vector;
 using std::function;
+using std::shared_ptr;
 
 using nlohmann::json;
 using glm::vec3;
@@ -107,7 +108,7 @@ namespace Dream
         AudioInstance* getAudioInstance();
         AssimpModelInstance* getModelInstance();
         ScriptInstance* getScriptInstance();
-        ShaderInstance* getShaderInstance();
+        const shared_ptr<ShaderInstance>& getShaderInstance();
         PhysicsObjectInstance* getPhysicsObjectInstance();
         LightInstance* getLightInstance();
         SpriteInstance* getSpriteInstance();
@@ -174,7 +175,7 @@ namespace Dream
         void removeAudioInstance();
         void removePathInstance();
         void removeModelInstance();
-        void removeShaderInstance();
+        //void removeShaderInstance();
         void removeLightInstance();
         void removeSpriteInstance();
         void removeScriptInstance();
@@ -187,7 +188,7 @@ namespace Dream
         AudioInstance* mAudioInstance;
         PathInstance* mPathInstance;
         AssimpModelInstance* mModelInstance;
-        ShaderInstance* mShaderInstance;
+        shared_ptr<ShaderInstance> mShaderInstance;
         LightInstance* mLightInstance;
         SpriteInstance* mSpriteInstance;
         ScriptInstance* mScriptInstance;

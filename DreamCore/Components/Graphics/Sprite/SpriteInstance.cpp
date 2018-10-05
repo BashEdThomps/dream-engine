@@ -54,7 +54,7 @@ namespace Dream
 
     if (mCache != nullptr)
     {
-        Texture* tex = mCache->loadTextureFromFile("sprite",directory.c_str(),"sprite");
+        const shared_ptr<Texture> tex = mCache->loadTextureFromFile("sprite",directory.c_str(),"sprite");
         mTexture = tex->id;
         mWidth = tex->width;
         mHeight = tex->height;

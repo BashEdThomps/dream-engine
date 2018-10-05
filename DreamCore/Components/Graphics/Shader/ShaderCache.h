@@ -24,6 +24,7 @@
 
 #include "../../../Common/Constants.h"
 #include "../../../Common/DreamObject.h"
+#include "ShaderInstance.h"
 
 using namespace std;
 
@@ -33,12 +34,12 @@ namespace Dream
     {
 
     private:
-        map<string,GLuint> mCache;
+        map<string,shared_ptr<ShaderInstance>> mCache;
     public:
         ShaderCache();
         ~ShaderCache();
 
-        GLuint getShader(string);
-        void   putShader(string,GLuint);
+        shared_ptr<ShaderInstance> getShader(string);
+        void  putShader(string,shared_ptr<ShaderInstance>);
     };
 }

@@ -27,9 +27,9 @@ namespace Dream
     void AssimpMaterial::debug()
     {
         GLuint diff, spec, norm;
-        diff = (mDiffuseTexture  == nullptr) ? 0 : mDiffuseTexture->id;
-        spec = (mSpecularTexture == nullptr) ? 0 : mSpecularTexture->id;
-        norm = (mNormalTexture   == nullptr) ? 0 : mNormalTexture->id;
+        diff = (mDiffuseTexture  == nullptr ? 0 : mDiffuseTexture->id);
+        spec = (mSpecularTexture == nullptr ? 0 : mSpecularTexture->id);
+        norm = (mNormalTexture   == nullptr ? 0 : mNormalTexture->id);
 
         auto log = getLog();
         log->debug(
@@ -41,15 +41,18 @@ namespace Dream
             "BlendFunc...............{}\n"
             "Opacity.................{}\n"
             "BumpScaling.............{}\n"
-            "Hardness...............{}\n"
+            "Hardness................{}\n"
             "Reflectivity............{}\n"
             "ShininessStrength.......{}\n"
             "RefractI................{}\n"
+
             "DiffuseColour...........({},{},{})\n"
             "AmbientColour...........({},{},{})\n"
             "SpecularColour..........({},{},{})\n"
             "EmissiveColour..........({},{},{})\n"
+            "TransparentColour.......({},{},{})\n"
             "ReflectiveColour........({},{},{})\n"
+
             "DiffuseTexture..........{}\n"
             "SpecularTexture.........{}\n"
             "NormalTexture...........{}\n",
@@ -64,13 +67,17 @@ namespace Dream
             mReflectivity,
             mShininessStrength,
             mRefracti,
+
             mColorDiffuse.r, mColorDiffuse.g, mColorDiffuse.b,
             mColorAmbient.r, mColorAmbient.g, mColorAmbient.b,
             mColorSpecular.r, mColorSpecular.g, mColorSpecular.b,
             mColorEmissive.r, mColorEmissive.g, mColorEmissive.b,
             mColorTransparent.r, mColorTransparent.g, mColorTransparent.b,
             mColorReflective.r, mColorReflective.g, mColorReflective.b,
-            diff,spec,norm
+
+            diff,
+            spec,
+            norm
         );
 
     }

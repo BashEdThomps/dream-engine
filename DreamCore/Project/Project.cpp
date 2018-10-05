@@ -261,6 +261,7 @@ namespace Dream
             return dynamic_cast<ProjectDefinition*>(mDefinition)
                 ->getAssetDefinitionByUuid(uuid);
         }
+        return nullptr;
     }
 
 

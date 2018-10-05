@@ -19,28 +19,7 @@
 
 namespace Dream
 {
-    GLuint
-    ShaderCache::getShader
-    (string uuid)
-    {
-        auto log = getLog();
-        for(pair<string,GLuint> it : mCache)
-        {
-            if (it.first.compare(uuid) == 0)
-            {
-                log->debug( "Found Shader " , uuid );
-                return it.second;
-            }
-        }
-        return 0;
-    }
 
-    void
-    ShaderCache::putShader
-    (string uuid, GLuint shaderProgram)
-    {
-        mCache.insert(pair<string,GLuint>(uuid,shaderProgram));
-    }
 
     ShaderCache::ShaderCache
     ()
@@ -55,13 +34,31 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing" );
-
-        for (pair<string,GLuint> shaderPair : mCache)
-        {
-            glDeleteProgram(shaderPair.second);
-        }
-
         mCache.clear();
     }
 
+    shared_ptr<ShaderInstance>
+    ShaderCache::getShader
+    (string uuid)
+    {
+        auto log = getLog();
+        for(auto it : mCache)
+        {
+            if (it.first.compare(uuid) == 0)
+            {
+                log->debug( "Found Shader " , uuid );
+                return it.second;
+            }
+        }
+        return nullptr;
+    }
+
+    void
+    ShaderCache::putShader
+    (string uuid, shared_ptr<ShaderInstance> shaderProgram)
+    {
+        mCache.insert(
+            pair<string,shared_ptr<ShaderInstance>>(uuid,shaderProgram)
+        );
+    }
 } // End of Dream

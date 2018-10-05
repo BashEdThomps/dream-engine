@@ -57,16 +57,8 @@ namespace Dream
         setLogClassName("AssimpModelInstance");
         auto log = getLog();
         log->trace( "Constructing {}", definition->getNameAndUuidString() );
-        initBoundingBox();
+        mBoundingBox.init();
         return;
-    }
-
-    void
-    AssimpModelInstance::initBoundingBox
-    ()
-    {
-        mBoundingBox.maximum = vec3(numeric_limits<float>::min());
-        mBoundingBox.minimum = vec3(numeric_limits<float>::max());
     }
 
     AssimpModelInstance::~AssimpModelInstance
@@ -75,11 +67,14 @@ namespace Dream
         auto log = getLog();
         log->trace( "Destroying Object");
 
+        /*
         for (auto mesh : mMeshes)
         {
             delete mesh;
         }
+        */
         mMeshes.clear();
+        mMaterialMeshMap.clear();
 
         return;
     }
@@ -113,6 +108,7 @@ namespace Dream
             log->error("Could not get assimp scene from model. Loading failed");
             return false;
         }
+
         mDirectory = path.substr(0, path.find_last_of('/'));
         processNode(scene->mRootNode, scene);
         mLoaded = true;
@@ -122,14 +118,14 @@ namespace Dream
     void
     AssimpModelInstance::draw
     (
-        ShaderInstance* shader,
+        const shared_ptr<ShaderInstance>& shader,
         vec3 transform,
         vec3 camPos,
         float maxDistance,
         bool alwaysDraw
     ) {
         auto log = getLog();
-        for(AssimpMesh* mesh : mMeshes)
+        for(auto mesh : mMeshes)
         {
             vec3 center = transform + mesh->getBoundingBox().getCenter();
             float distance = glm::distance(center,camPos);
@@ -150,8 +146,9 @@ namespace Dream
         for(GLuint i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            updateBoundingBox(mBoundingBox, mesh);
-            mMeshes.push_back(processMesh(mesh, scene));
+            mBoundingBox.updateFromMesh(mesh);
+            auto aMesh = processMesh(mesh, scene);
+            mMeshes.push_back(aMesh);
         }
         // Then do the same for each of its children
         for(GLuint i = 0; i < node->mNumChildren; i++)
@@ -170,10 +167,19 @@ namespace Dream
         {
             Vertex vertex;
             // Process vertex positions, normals and texture coordinates
+            // TODO - Optimise with memcpy if speed is REALLLLY an issue here,
+            // otherwise... nah. Profile it first.
 
-            vertex.Position.x = mesh->mVertices[i].x;
-            vertex.Position.y = mesh->mVertices[i].y;
-            vertex.Position.z = mesh->mVertices[i].z;
+            if (mesh->mVertices)
+            {
+                vertex.Position.x = mesh->mVertices[i].x;
+                vertex.Position.y = mesh->mVertices[i].y;
+                vertex.Position.z = mesh->mVertices[i].z;
+            }
+            else
+            {
+                vertex.Position = glm::vec3(0.0f);
+            }
 
             if (mesh->mNormals)
             {
@@ -224,7 +230,6 @@ namespace Dream
     AssimpModelInstance::processIndexData
     (aiMesh* mesh)
     {
-
         vector<GLuint> indices;
         // Process indices
         for(GLuint i = 0; i < mesh->mNumFaces; i++)
@@ -240,7 +245,7 @@ namespace Dream
 
     void
     AssimpModelInstance::processTextureData
-    (aiMesh* mesh,const aiScene* scene, AssimpMaterial* aMaterial)
+    (aiMesh* mesh,const aiScene* scene, shared_ptr<AssimpMaterial> aMaterial)
     {
         auto log = getLog();
         // Process material
@@ -272,7 +277,7 @@ namespace Dream
         }
     }
 
-    AssimpMesh*
+    shared_ptr<AssimpMesh>
     AssimpModelInstance::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
@@ -280,7 +285,6 @@ namespace Dream
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
 
-        AssimpMesh* aMesh = nullptr;
 
         // Material info Colours
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -290,7 +294,7 @@ namespace Dream
 
         if(mMaterialCache != nullptr)
         {
-            AssimpMaterial* aMaterial = mMaterialCache->getMaterialByName(name);
+            shared_ptr<AssimpMaterial> aMaterial = mMaterialCache->getMaterialByName(name);
 
             if (aMaterial == nullptr)
             {
@@ -314,13 +318,18 @@ namespace Dream
                 aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
                 processTextureData(mesh,scene, aMaterial);
             }
+            else
+            {
+                log->debug("Found existing material");
+            }
 
             log->debug( "Using Material {}" , aMaterial->mName.C_Str());
             aMaterial->debug();
 
             BoundingBox box;
-            updateBoundingBox(box, mesh);
-            aMesh = new AssimpMesh(
+            box.updateFromMesh(mesh);
+            auto aMesh = make_shared<AssimpMesh>
+            (
                 dynamic_cast<AssimpModelInstance*>(this),
                 string(mesh->mName.C_Str()),
                 vertices,
@@ -328,11 +337,12 @@ namespace Dream
                 aMaterial
             );
             aMesh->setBoundingBox(box);
+            return aMesh;
         }
-        return aMesh;
+        return nullptr;
     }
 
-    Texture*
+    shared_ptr<Texture>
     AssimpModelInstance::loadMaterialTexture
     (aiMaterial* mat, aiTextureType type, string typeName)
     {
@@ -357,65 +367,7 @@ namespace Dream
         return mBoundingBox;
     }
 
-    void
-    AssimpModelInstance::updateBoundingBox
-    (BoundingBox& box, aiMesh* mesh)
-    {
-        auto log = getLog();
-        log->debug( "Updating bounding box for {}", getNameAndUuidString() );
 
-        for (unsigned int i=0; i < mesh->mNumVertices; i++)
-        {
-            aiVector3D vertex = mesh->mVertices[i];
-
-            // Maximum
-            if (box.maximum.x < vertex.x)
-            {
-                box.maximum.x = vertex.x;
-            }
-
-            if (box.maximum.y < vertex.y)
-            {
-                box.maximum.y = vertex.y;
-            }
-
-            if (box.maximum.z < vertex.z)
-            {
-                box.maximum.z = vertex.z;
-            }
-
-            // Maximum
-            if (box.minimum.x > vertex.x)
-            {
-                box.minimum.x = vertex.x;
-            }
-
-            if (box.minimum.y > vertex.y)
-            {
-                box.minimum.y = vertex.y;
-            }
-
-            if (box.minimum.z > vertex.z)
-            {
-                box.minimum.z = vertex.z;
-            }
-        }
-
-        float maxBound;
-        maxBound = (
-                    box.maximum.x > box.maximum.y ?
-                        box.maximum.x :
-                        box.maximum.y
-                        );
-
-        maxBound = (
-                    maxBound > box.maximum.z ?
-                        maxBound :
-                        box.maximum.z
-                        );
-
-        mBoundingBox.maxDimension = maxBound;
-    }
 
     void
     AssimpModelInstance::setModelMatrix

@@ -31,8 +31,7 @@ namespace Dream
     const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
 
     ShaderInstance::ShaderInstance
-    (ShaderCache* cache,
-     ShaderDefinition* definition,
+    (ShaderDefinition* definition,
      SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mPointLightCount(0),
@@ -41,7 +40,6 @@ namespace Dream
           mSpotLightCountLocation(UNIFORM_NOT_FOUND),
           mDirectionalLightCount(0),
           mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
-          mCache(cache),
           mNeedsRebind(true)
     {
 
@@ -56,6 +54,7 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object" );
+        glDeleteProgram(mShaderProgram);
     }
 
     GLuint
@@ -142,83 +141,74 @@ namespace Dream
     (string projectPath)
     {
         auto log = getLog();
-        if (mCache == nullptr)
-        {
-            return false;
-        }
-        mShaderProgram = mCache->getShader(mDefinition->getUuid());
 
-        if (mShaderProgram == 0)
+        string mVertexShaderSource;
+        string mFragmentShaderSource;
+        GLuint mVertexShader = 0;
+        GLuint mFragmentShader = 0;
+        // 1. Open Shader Files into Memory
+        FileReader *vertexReader, *fragmentReader;
+        string absVertexPath, absFragmentPath;
+        absVertexPath   = projectPath+mDefinition->getAssetPath() + Constants::SHADER_VERTEX;
+        absFragmentPath = projectPath+mDefinition->getAssetPath() + Constants::SHADER_FRAGMENT;
+        vertexReader = new FileReader(absVertexPath);
+        vertexReader->readIntoString();
+        mVertexShaderSource = vertexReader->getContentsAsString();
+        delete vertexReader;
+        fragmentReader = new FileReader(absFragmentPath);
+        fragmentReader->readIntoString();
+        mFragmentShaderSource = fragmentReader->getContentsAsString();
+        delete fragmentReader;
+        log->debug(
+                    "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
+                    mDefinition->getNameAndUuidString(),
+                    absVertexPath,
+                    mVertexShaderSource,
+                    absFragmentPath,
+                    mFragmentShaderSource
+                    );
+        // 2. Compile shaders
+        GLint success;
+        GLchar infoLog[512];
+        // Vertex Shader
+        mVertexShader = glCreateShader(GL_VERTEX_SHADER);
+        const char *vSource = mVertexShaderSource.c_str();
+        glShaderSource(mVertexShader, 1, &vSource, nullptr);
+        glCompileShader(mVertexShader);
+        // Print compile errors if any
+        glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
+        if (!success)
         {
-            string mVertexShaderSource;
-            string mFragmentShaderSource;
-            GLuint mVertexShader = 0;
-            GLuint mFragmentShader = 0;
-            // 1. Open Shader Files into Memory
-            FileReader *vertexReader, *fragmentReader;
-            string absVertexPath, absFragmentPath;
-            absVertexPath   = projectPath+mDefinition->getAssetPath() + Constants::SHADER_VERTEX;
-            absFragmentPath = projectPath+mDefinition->getAssetPath() + Constants::SHADER_FRAGMENT;
-            vertexReader = new FileReader(absVertexPath);
-            vertexReader->readIntoString();
-            mVertexShaderSource = vertexReader->getContentsAsString();
-            delete vertexReader;
-            fragmentReader = new FileReader(absFragmentPath);
-            fragmentReader->readIntoString();
-            mFragmentShaderSource = fragmentReader->getContentsAsString();
-            delete fragmentReader;
-            log->debug(
-                        "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
-                        mDefinition->getNameAndUuidString(),
-                        absVertexPath,
-                        mVertexShaderSource,
-                        absFragmentPath,
-                        mFragmentShaderSource
-                        );
-            // 2. Compile shaders
-            GLint success;
-            GLchar infoLog[512];
-            // Vertex Shader
-            mVertexShader = glCreateShader(GL_VERTEX_SHADER);
-            const char *vSource = mVertexShaderSource.c_str();
-            glShaderSource(mVertexShader, 1, &vSource, nullptr);
-            glCompileShader(mVertexShader);
-            // Print compile errors if any
-            glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
-            if (!success)
-            {
-                glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
-                log->error( "SHADER VERTEX COMPILATION FAILED\n {}" ,infoLog );
-            }
-            // Fragment Shader
-            mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-            const char *fSource = mFragmentShaderSource.c_str();
-            glShaderSource(mFragmentShader, 1, &fSource, nullptr);
-            glCompileShader(mFragmentShader);
-            // Print compile errors if any
-            glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
-            if (!success)
-            {
-                glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
-                log->error( "SHADER FRAGMENT COMPILATION FAILED\n {}" , infoLog );
-            }
-            // Shader Program
-            mShaderProgram = glCreateProgram();
-            glAttachShader(mShaderProgram, mVertexShader);
-            glAttachShader(mShaderProgram, mFragmentShader);
-            glLinkProgram(mShaderProgram);
-            // Print linking errors if any
-            glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
-            if (!success)
-            {
-                glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-                log->error( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
-            }
-            // Delete the shaders as they're linked into our program now and no longer necessery
-            glDeleteShader(mVertexShader);
-            glDeleteShader(mFragmentShader);
-            mCache->putShader(mDefinition->getUuid(),mShaderProgram);
+            glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
+            log->error( "SHADER VERTEX COMPILATION FAILED\n {}" ,infoLog );
         }
+        // Fragment Shader
+        mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        const char *fSource = mFragmentShaderSource.c_str();
+        glShaderSource(mFragmentShader, 1, &fSource, nullptr);
+        glCompileShader(mFragmentShader);
+        // Print compile errors if any
+        glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
+            log->error( "SHADER FRAGMENT COMPILATION FAILED\n {}" , infoLog );
+        }
+        // Shader Program
+        mShaderProgram = glCreateProgram();
+        glAttachShader(mShaderProgram, mVertexShader);
+        glAttachShader(mShaderProgram, mFragmentShader);
+        glLinkProgram(mShaderProgram);
+        // Print linking errors if any
+        glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
+        if (!success)
+        {
+            glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
+            log->error( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+        }
+        // Delete the shaders as they're linked into our program now and no longer necessery
+        glDeleteShader(mVertexShader);
+        glDeleteShader(mFragmentShader);
 
         mLoaded = (mShaderProgram != 0);
 
@@ -302,7 +292,7 @@ namespace Dream
         mUniformVector.push_back(newUniform);
     }
 
-    void ShaderInstance::bindMaterial(AssimpMaterial* material)
+    void ShaderInstance::bindMaterial(const shared_ptr<AssimpMaterial>& material)
     {
         checkGLError();
         auto log = getLog();

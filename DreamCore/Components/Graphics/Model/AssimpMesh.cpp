@@ -10,7 +10,7 @@ namespace Dream
         string name,
         vector<Vertex> vertices,
         vector<GLuint> indices,
-        AssimpMaterial* material
+        shared_ptr<AssimpMaterial> material
     ) : DreamObject("AssimpMesh"),
         mParent(parent),
         mMaterial(material),
@@ -62,7 +62,7 @@ namespace Dream
 
     void
     AssimpMesh::bindTextures
-    (ShaderInstance*)
+    (const shared_ptr<ShaderInstance>&)
     {
         auto log = getLog();
         bindTexture(mMaterial->mDiffuseTexture);
@@ -71,7 +71,7 @@ namespace Dream
         glActiveTexture(GL_TEXTURE0);
     }
 
-    void AssimpMesh::bindTexture(Texture* t)
+    void AssimpMesh::bindTexture(const shared_ptr<Texture>& t)
     {
         if (t == nullptr)
         {
@@ -136,7 +136,7 @@ namespace Dream
 
     void
     AssimpMesh::bindDiffuse
-    (ShaderInstance* shader)
+    (const shared_ptr<ShaderInstance>& shader)
     {
         auto log = getLog();
         aiColor4D diff = mMaterial->mColorDiffuse;
@@ -147,7 +147,7 @@ namespace Dream
 
     void
     AssimpMesh::bindSpecular
-    (ShaderInstance* shader)
+    (const shared_ptr<ShaderInstance>& shader)
     {
         auto log = getLog();
         aiColor4D spec = mMaterial->mColorSpecular;
@@ -164,7 +164,7 @@ namespace Dream
 
     void
     AssimpMesh::bindAmbient
-    (ShaderInstance* shader)
+    (const shared_ptr<ShaderInstance>& shader)
     {
         auto log = getLog();
         aiColor4D amb = mMaterial->mColorAmbient;
@@ -179,14 +179,14 @@ namespace Dream
 
     void
     AssimpMesh::bindOpacity
-    (ShaderInstance* shader)
+    (const shared_ptr<ShaderInstance>& shader)
     {
         shader->addUniform(FLOAT1,"materialOpacity",1,&mMaterial->mOpacity);
     }
 
     void
     AssimpMesh::draw
-    (ShaderInstance* shader)
+    (const shared_ptr<ShaderInstance>& shader)
     {
         auto log = getLog();
 

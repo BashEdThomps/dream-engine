@@ -412,6 +412,13 @@ namespace Dream
     }
 
     void
+    PhysicsObjectInstance::setAngularVelocity
+    (float x, float y, float z)
+    {
+        mRigidBody->setAngularVelocity(btVector3(x,y,z));
+    }
+
+    void
     PhysicsObjectInstance::setRestitution
     (float r)
     {

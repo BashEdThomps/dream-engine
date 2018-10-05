@@ -101,7 +101,6 @@ namespace DreamSDL
     ()
     {
         auto log = spdlog::get("SDLWindowComponent");
-        //Use OpenGL 3.2 core
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -159,9 +158,7 @@ namespace DreamSDL
             }
             else
             {
-                SDL_Event e;
-                memcpy(&e,&event,sizeof(SDL_Event));
-                mEvents.push_back(e);
+                mEvents.push_back(event);
             }
         }
         log->info("{} events", mEvents.size());

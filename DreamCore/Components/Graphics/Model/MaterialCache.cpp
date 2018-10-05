@@ -34,42 +34,44 @@ namespace Dream
 
         flushRawTextureImageData();
 
-        for (Texture* texture : mTextureCache)
+        for (auto texture : mTextureCache)
         {
             glDeleteTextures(1,&texture->id);
             checkGLError();
-            delete texture;
+            //delete texture;
         }
         mTextureCache.clear();
 
-        for (AssimpMaterial* mat : mMaterialCache)
+        /*
+        for (auto mat : mMaterialCache)
         {
             delete mat;
         }
+        */
         mMaterialCache.clear();
         return;
     }
 
-    vector<Texture*>&
+    vector<shared_ptr<Texture>>&
     MaterialCache::getTextureCache
     ()
     {
         return mTextureCache;
     }
 
-    vector<AssimpMaterial*>&
+    vector<shared_ptr<AssimpMaterial>>&
     MaterialCache::getMaterialCache
     ()
     {
         return mMaterialCache;
     }
 
-    AssimpMaterial*
+    shared_ptr<AssimpMaterial>
     MaterialCache::getMaterialByName
     (aiString name)
     {
         auto log = getLog();
-        for (AssimpMaterial* material : mMaterialCache)
+        for (auto material : mMaterialCache)
         {
             if (material->mName == name)
             {
@@ -80,14 +82,14 @@ namespace Dream
         return nullptr;
     }
 
-    void MaterialCache::addMaterialToCache(AssimpMaterial* mat)
+    void MaterialCache::addMaterialToCache(shared_ptr<AssimpMaterial> mat)
     {
         auto log = getLog();
         log->debug("Adding material to map {}", mat->mName.C_Str());
         mMaterialCache.push_back(mat);
     }
 
-    Texture*
+    shared_ptr<Texture>
     MaterialCache::loadTextureFromFile
     (const char* file_c, const char* directory_c, const char* type)
     {
@@ -98,7 +100,7 @@ namespace Dream
         string directory = string(directory_c);
         filename = directory + '/' + filename;
 
-        for (Texture* nextTexture : mTextureCache)
+        for (auto nextTexture : mTextureCache)
         {
             if (nextTexture->path == filename && nextTexture->type == type)
             {
@@ -106,9 +108,6 @@ namespace Dream
                 return nextTexture;
             }
         }
-
-        GLuint textureID;
-        glGenTextures(1, &textureID);
 
         int width = 0;
         int height = 0;
@@ -118,7 +117,7 @@ namespace Dream
 
         // Check image data against existing textures
 
-        for (Texture* nextTexture : mTextureCache)
+        for (auto nextTexture : mTextureCache)
         {
             if (nextTexture->width == width &&
                 nextTexture->height == height &&
@@ -141,6 +140,8 @@ namespace Dream
 
         log->debug("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
         // Assign texture to ID
+        GLuint textureID;
+        glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
         log->debug("Bound to texture id {}",textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
@@ -157,7 +158,7 @@ namespace Dream
 
         checkGLError();
 
-        auto texture = new Texture();
+        auto texture = make_shared<Texture>();
         texture->path = filename;
         texture->id = textureID;
         texture->type = type;
@@ -169,16 +170,18 @@ namespace Dream
         return texture;
     }
 
-    AssimpMaterial*MaterialCache::newAssimpMaterial()
+    shared_ptr<AssimpMaterial>
+    MaterialCache::newAssimpMaterial
+    ()
     {
-        auto newAM = new AssimpMaterial();
+        auto newAM = make_shared<AssimpMaterial>();
         addMaterialToCache(newAM);
         return newAM;
     }
 
     void MaterialCache::flushRawTextureImageData()
     {
-       for (Texture* t : mTextureCache)
+       for (auto t : mTextureCache)
        {
            if (t->image != nullptr)
            {

@@ -609,6 +609,8 @@ namespace Dream
             "setLinearFactor", &PhysicsObjectInstance::setLinearFactor,
             "setAngularFactor", &PhysicsObjectInstance::setAngularFactor,
 
+            "setAngularVelocity", &PhysicsObjectInstance::setAngularVelocity,
+
             "getRestitution", &PhysicsObjectInstance::getRestitution,
             "setRestitution", &PhysicsObjectInstance::setRestitution,
 
@@ -658,16 +660,6 @@ namespace Dream
 
             "getHidden",&SceneObjectRuntime::getHidden,
             "setHidden",&SceneObjectRuntime::setHidden,
-
-            "removeAudio", &SceneObjectRuntime::removeAudioInstance,
-            "removePath", &SceneObjectRuntime::removePathInstance,
-            "removeModel", &SceneObjectRuntime::removeModelInstance,
-            "removeShader", &SceneObjectRuntime::removeShaderInstance,
-            "removeLight", &SceneObjectRuntime::removeLightInstance,
-            "removeSprite", &SceneObjectRuntime::removeSpriteInstance,
-            "removeScript", &SceneObjectRuntime::removeScriptInstance,
-            "removePhysicsObject", &SceneObjectRuntime::removePhysicsObjectInstance,
-            "removeFont", &SceneObjectRuntime::removeFontInstance,
 
             "addEvent",&SceneObjectRuntime::addEvent,
 

@@ -107,7 +107,7 @@ int main(int argc, const char** argv)
 
         if (SDL_GetTicks() > time + one_sec)
         {
-            //cout << "FPS: " <<  frames << endl;
+            cout << "FPS: " <<  frames << endl;
             frames = 0;
             time = SDL_GetTicks();
         }
@@ -117,7 +117,7 @@ int main(int argc, const char** argv)
         }
     }
 
-    //spdlog::set_level(spdlog::level::trace);
+    spdlog::set_level(spdlog::level::trace);
     log->info("Run is done. Performing stack-based clean up");
     delete project;
     delete windowComponent;
