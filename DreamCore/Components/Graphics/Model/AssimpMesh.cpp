@@ -61,130 +61,6 @@ namespace Dream
     }
 
     void
-    AssimpMesh::bindTextures
-    (const shared_ptr<ShaderInstance>&)
-    {
-        auto log = getLog();
-        bindTexture(mMaterial->mDiffuseTexture);
-        bindTexture(mMaterial->mSpecularTexture);
-        bindTexture(mMaterial->mNormalTexture);
-        glActiveTexture(GL_TEXTURE0);
-    }
-
-    void AssimpMesh::bindTexture(const shared_ptr<Texture>& t)
-    {
-        if (t == nullptr)
-        {
-            return;
-        }
-
-        auto log = getLog();
-        string name = t->type;
-        GLuint nextTexture = 0;
-
-        if (t->id == 0)
-        {
-            return;
-        }
-
-        if(name == "texture_diffuse")
-        {
-            // Activate proper texture unit before binding
-            log->critical("Binding diffuse texture");
-            nextTexture = GL_TEXTURE0;
-        }
-        else if(name == "texture_specular")
-        {
-            // Activate proper texture unit before binding
-            log->critical("Binding specular texture");
-            nextTexture = GL_TEXTURE1;
-        }
-        else if (name == "texture_normals")
-        {
-            // Activate proper texture unit before binding
-            log->critical("Binding normals texture");
-            nextTexture = GL_TEXTURE2;
-        }
-
-        log->debug(
-              "Binding Material {} with GL Texture {} to unit {} for {} in {}",
-              name,
-              t->id,
-              nextTexture,
-              getName(),
-              mParent->getNameAndUuidString()
-         );
-
-        glActiveTexture(nextTexture);
-        glBindTexture(GL_TEXTURE_2D, t->id);
-    }
-
-    void
-    AssimpMesh::unbindTextures
-    ()
-    {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,0);
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D,0);
-
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D,0);
-
-    }
-
-    void
-    AssimpMesh::bindDiffuse
-    (const shared_ptr<ShaderInstance>& shader)
-    {
-        auto log = getLog();
-        aiColor4D diff = mMaterial->mColorDiffuse;
-        auto diffuse = vec4(diff.r, diff.g, diff.b, diff.a);
-        log->trace("Material Diffuse for {}: ({},{},{},{})",getName(),diff.r, diff.g, diff.b, diff.a);
-        shader->addUniform(FLOAT4,"materialDiffuseColour",1,&diffuse);
-    }
-
-    void
-    AssimpMesh::bindSpecular
-    (const shared_ptr<ShaderInstance>& shader)
-    {
-        auto log = getLog();
-        aiColor4D spec = mMaterial->mColorSpecular;
-        auto specular = vec4(spec.r, spec.g, spec.b, spec.a);
-        log->trace(
-            "Material Specular for {}: ({},{},{},{}) strength {}",
-            getName(),
-            spec.r, spec.g, spec.b, spec.a,
-            mMaterial->mShininessStrength
-        );
-        shader->addUniform(FLOAT4,"materialSpecularColour",1,&specular);
-        shader->addUniform(FLOAT1,"materialShininess",1,&mMaterial->mShininessStrength);
-    }
-
-    void
-    AssimpMesh::bindAmbient
-    (const shared_ptr<ShaderInstance>& shader)
-    {
-        auto log = getLog();
-        aiColor4D amb = mMaterial->mColorAmbient;
-        log->trace(
-            "Material Ambient for {}: ({},{},{},{})",
-            getName(),
-            amb.r, amb.g, amb.b, amb.a
-        );
-        auto ambient = vec4(amb.r, amb.g, amb.b, amb.a);
-        shader->addUniform(FLOAT4,"materialAmbientColour",1,&ambient);
-    }
-
-    void
-    AssimpMesh::bindOpacity
-    (const shared_ptr<ShaderInstance>& shader)
-    {
-        shader->addUniform(FLOAT1,"materialOpacity",1,&mMaterial->mOpacity);
-    }
-
-    void
     AssimpMesh::draw
     (const shared_ptr<ShaderInstance>& shader)
     {
@@ -254,5 +130,12 @@ namespace Dream
                     (GLvoid*)offsetof(Vertex, Bitangent)
                     );
         glBindVertexArray(0);
+    }
+
+    const shared_ptr<AssimpMaterial>&
+    AssimpMesh::getMaterial
+    ()
+    {
+       return mMaterial;
     }
 } // End of Dream

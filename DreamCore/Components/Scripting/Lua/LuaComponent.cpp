@@ -30,11 +30,10 @@
 #include "../../Audio/AudioInstance.h"
 #include "../../Graphics/Model/AssimpModelInstance.h"
 #include "../../Graphics/Camera.h"
-#include "../../Graphics/Font/FontInstance.h"
 #include "../../Graphics/GraphicsComponent.h"
+#include "../../Graphics/NanoVGComponent.h"
 #include "../../Graphics/Light/LightInstance.h"
 #include "../../Graphics/Shader/ShaderInstance.h"
-#include "../../Graphics/Sprite/SpriteInstance.h"
 #include "../../Input/InputComponent.h"
 #include "../../Physics/PhysicsComponent.h"
 #include "../../Physics/PhysicsObjectInstance.h"
@@ -254,6 +253,26 @@ namespace Dream
     }
 
     bool
+    LuaComponent::updateNanoVG
+    ()
+    {
+        auto log = getLog();
+        log->info( "UpdateNanoVG Called" );
+        mProjectRuntime->getNanoVGComponent()->BeginFrame();
+        for (pair<SceneObjectRuntime*,ScriptInstance*> entry : mScriptMap)
+        {
+            SceneObjectRuntime* key = entry.first;
+            if (!executeScriptNanoVG(key))
+            {
+                continue;
+            }
+        }
+        mProjectRuntime->getNanoVGComponent()->EndFrame();
+        return true;
+    }
+
+    // Function Execution =======================================================
+    bool
     LuaComponent::executeScriptUpdate
     (SceneObjectRuntime* sceneObject)
     {
@@ -399,7 +418,7 @@ namespace Dream
         sol::state_view solStateView(mState);
         sol::function onEventFunction = solStateView[sceneObject->getUuid()][Constants::LUA_EVENT_FUNCTION];
 
-        for (Event e : sceneObject->getEventQueue())
+        for (const Event& e : sceneObject->getEventQueue())
         {
             auto result = onEventFunction(sceneObject,e);
 
@@ -417,7 +436,7 @@ namespace Dream
                     what
                 );
                scriptInstance->setError(true);
-               return false;
+               break;
             }
         }
 
@@ -426,9 +445,44 @@ namespace Dream
         return true;
     }
 
+    bool
+    LuaComponent::executeScriptNanoVG
+    (SceneObjectRuntime* sceneObject)
+    {
+        auto log = getLog();
+        string id = sceneObject->getUuid();
+        auto* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
+        if (scriptInstance->getError())
+        {
+            log->error( "Cannot execute NanoVG {} in error state", scriptInstance->getNameAndUuidString());
+            return false;
+        }
+
+        log->info( "Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
+
+        sol::state_view solStateView(mState);
+        sol::function onNanoVGFunction = solStateView[sceneObject->getUuid()][Constants::LUA_NANOVG_FUNCTION];
+
+        auto initResult = onNanoVGFunction(sceneObject);
+
+        if (!initResult.valid())
+        {
+            // An error has occured
+           sol::error err = initResult;
+           std::string what = err.what();
+           log->critical
+           (
+                "{}\nCould not execute onInit in lua script:\n{}",
+                sceneObject->getNameAndUuidString(),
+                what
+            );
+           scriptInstance->setError(true);
+           return false;
+        }
+        return true;
+    }
+
     // API Exposure Methods ======================================================
-
-
 
     void
     LuaComponent::exposeProjectRuntime
@@ -443,8 +497,13 @@ namespace Dream
             "getWindowComponent",&ProjectRuntime::getWindowComponent,
             "getTime",&ProjectRuntime::getTime,
             "getCamera",&ProjectRuntime::getCamera,
-            "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid
+            "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid,
+            "getAssetPath",&ProjectRuntime::getAssetAbsolutePath,
+            "getSceneObject",&ProjectRuntime::getSceneObjectRuntimeByUuid,
+            "windowWidth",&ProjectRuntime::getWindowWidth,
+            "windowHeight",&ProjectRuntime::getWindowHeight
         );
+
         stateView["Runtime"] = mProjectRuntime;
     }
 
@@ -511,18 +570,6 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeFontInstance
-    ()
-    {
-        debugRegisteringClass("FontInstance");
-        sol::state_view stateView(mState);
-        stateView.new_usertype<FontInstance>("FontInstance",
-            "setText",&FontInstance::setText,
-            "getText",&FontInstance::getText
-        );
-    }
-
-    void
     LuaComponent::exposeGraphicsComponent
     ()
     {
@@ -569,15 +616,6 @@ namespace Dream
             "FLOAT3",UniformType::FLOAT3,
             "FLOAT4",UniformType::FLOAT4
         );
-    }
-
-    void
-    LuaComponent::exposeSpriteInstance
-    ()
-    {
-        debugRegisteringClass("SpriteInstance");
-        sol::state_view stateView(mState);
-        stateView.new_usertype<SpriteInstance>("SpriteInstance");
     }
 
     void
@@ -639,20 +677,16 @@ namespace Dream
 
             "getPath",&SceneObjectRuntime::getPathInstance,
             "getAudio",&SceneObjectRuntime::getAudioInstance,
-            "getSprite",&SceneObjectRuntime::getSpriteInstance,
             "getModel",&SceneObjectRuntime::getModelInstance,
             "getShader",&SceneObjectRuntime::getShaderInstance,
             "getLight",&SceneObjectRuntime::getLightInstance,
-            "getFont",&SceneObjectRuntime::getFontInstance,
             "getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance,
 
             "hasPath",&SceneObjectRuntime::hasPathInstance,
             "hasAudio",&SceneObjectRuntime::hasAudioInstance,
-            "hasSprite",&SceneObjectRuntime::hasSpriteInstance,
             "hasModel",&SceneObjectRuntime::hasModelInstance,
             "hasShader",&SceneObjectRuntime::hasShaderInstance,
             "hasLight",&SceneObjectRuntime::hasLightInstance,
-            "hasFont",&SceneObjectRuntime::hasFontInstance,
             "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance,
 
             "getDeleted",&SceneObjectRuntime::getDeleted,
@@ -781,7 +815,6 @@ namespace Dream
         stateView.new_usertype<AudioComponent>("AudioComponent");
     }
 
-
     void
     LuaComponent::exposeScriptInstance
     ()
@@ -855,6 +888,134 @@ namespace Dream
             "KB_SPACE",  InputSource::KB_SPACE,
             "KB_RETURN", InputSource::KB_RETURN
         );
+    }
+
+    void
+    LuaComponent::exposeNanoVG()
+    {
+        debugRegisteringClass("NanoVG");
+        sol::state_view stateView(mState);
+
+        stateView.new_usertype<NVGcolor>("NVGcolor");
+        stateView.new_usertype<NVGpaint>("NVGpaint");
+        stateView.new_usertype<NVGglyphPosition>("NVGglyphPosition");
+        stateView.new_usertype<NVGtextRow>("NVGtextRow");
+
+        stateView.new_enum("NVGsolidity",
+            "NVG_SOLID",NVG_SOLID,
+            "NVG_HOLE",NVG_HOLE
+        );
+        stateView.new_enum("NVGImageFlags",
+            "NVG_IMAGE_GENERATE_MIPMAPS",NVG_IMAGE_GENERATE_MIPMAPS,
+            "NVG_IMAGE_REPEATX",NVG_IMAGE_REPEATX,
+            "NVG_IMAGE_REPEATY",NVG_IMAGE_REPEATY,
+            "NVG_IMAGE_FLIPY",NVG_IMAGE_FLIPY,
+            "NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED,
+            "NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST
+        );
+        stateView.new_usertype<NanoVGComponent>("NanoVGComponent",
+        /*
+            "BeginFrame",&NanoVGComponent::BeginFrame,
+            "CancelFrame",&NanoVGComponent::CancelFrame,
+            "EndFrame",&NanoVGComponent::EndFrame,
+        */
+            "GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation,
+            "GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc,
+            "GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate,
+            "RGB",&NanoVGComponent::RGB,
+            "RGBf",&NanoVGComponent::RGBf,
+            "RGBA",&NanoVGComponent::RGBA,
+            "RGBAf",&NanoVGComponent::RGBAf,
+            "LerpRGBA",&NanoVGComponent::LerpRGBA,
+            "TransRGBA",&NanoVGComponent::TransRGBA,
+            "TransRGBAf",&NanoVGComponent::TransRGBAf,
+            "HSL",&NanoVGComponent::HSL,
+            "HSLA",&NanoVGComponent::HSLA,
+            "Save",&NanoVGComponent::Save,
+            "Restore",&NanoVGComponent::Restore,
+            "Reset",&NanoVGComponent::Reset,
+            "ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias,
+            "StrokeColor",&NanoVGComponent::StrokeColor,
+            "StrokePaint",&NanoVGComponent::StrokePaint,
+            "FillColor",&NanoVGComponent::FillColor,
+            "FillPaint",&NanoVGComponent::FillPaint,
+            "MiterLimit",&NanoVGComponent::MiterLimit,
+            "StrokeWidth",&NanoVGComponent::StrokeWidth,
+            "LineCap",&NanoVGComponent::LineCap,
+            "LineJoin",&NanoVGComponent::LineJoin,
+            "GlobalAlpha",&NanoVGComponent::GlobalAlpha,
+            "ResetTransform",&NanoVGComponent::ResetTransform,
+            "Transform",&NanoVGComponent::Transform,
+            "Translate",&NanoVGComponent::Translate,
+            "Rotate",&NanoVGComponent::Rotate,
+            "SkewX",&NanoVGComponent::SkewX,
+            "SkewY",&NanoVGComponent::SkewY,
+            "Scale;",&NanoVGComponent::Scale,
+            "CurrentTransform",&NanoVGComponent::CurrentTransform,
+            "TransformIdentity",&NanoVGComponent::TransformIdentity,
+            "TransformTranslate",&NanoVGComponent::TransformTranslate,
+            "TransformScale",&NanoVGComponent::TransformScale,
+            "TransformRotate",&NanoVGComponent::TransformRotate,
+            "TransformSkewX",&NanoVGComponent::TransformSkewX,
+            "TransformSkewY",&NanoVGComponent::TransformSkewY,
+            "TransformMultiply",&NanoVGComponent::TransformMultiply,
+            "TransformPremultiply",&NanoVGComponent::TransformPremultiply,
+            "TransformInverse",&NanoVGComponent::TransformInverse,
+            "TransformPoint",&NanoVGComponent::TransformPoint,
+            "DegToRad",&NanoVGComponent::DegToRad,
+            "RadToDeg",&NanoVGComponent::RadToDeg,
+            "CreateImage",&NanoVGComponent::CreateImage,
+            "CreateImageMem",&NanoVGComponent::CreateImageMem,
+            "CreateImageRGBA",&NanoVGComponent::CreateImageRGBA,
+            "UpdateImage",&NanoVGComponent::UpdateImage,
+            "ImageSize",&NanoVGComponent::ImageSize,
+            "DeleteImage",&NanoVGComponent::DeleteImage,
+            "LinearGradient",&NanoVGComponent::LinearGradient,
+            "BoxGradient",&NanoVGComponent::BoxGradient,
+            "RadialGradient",&NanoVGComponent::RadialGradient,
+            "ImagePattern",&NanoVGComponent::ImagePattern,
+            "Scissor",&NanoVGComponent::Scissor,
+            "IntersectScissor",&NanoVGComponent::IntersectScissor,
+            "ResetScissor",&NanoVGComponent::ResetScissor,
+            "BeginPath",&NanoVGComponent::BeginPath,
+            "MoveTo",&NanoVGComponent::MoveTo,
+            "LineTo",&NanoVGComponent::LineTo,
+            "BezierTo",&NanoVGComponent::BezierTo,
+            "QuadTo",&NanoVGComponent::QuadTo,
+            "ArcTo",&NanoVGComponent::ArcTo,
+            "ClosePath",&NanoVGComponent::ClosePath,
+            "PathWinding",&NanoVGComponent::PathWinding,
+            "Arc",&NanoVGComponent::Arc,
+            "Rect",&NanoVGComponent::Rect,
+            "RoundedRect",&NanoVGComponent::RoundedRect,
+            "RoundedRectVarying",&NanoVGComponent::RoundedRectVarying,
+            "Ellipse",&NanoVGComponent::Ellipse,
+            "Circle",&NanoVGComponent::Circle,
+            "Fill",&NanoVGComponent::Fill,
+            "Stroke",&NanoVGComponent::Stroke,
+            "CreateFont",&NanoVGComponent::CreateFont,
+            "CreateFontMem",&NanoVGComponent::CreateFontMem,
+            "FindFont",&NanoVGComponent::FindFont,
+            "AddFallbackFontId",&NanoVGComponent::AddFallbackFontId,
+            "AddFallbackFont",&NanoVGComponent::AddFallbackFont,
+            "FontSize",&NanoVGComponent::FontSize,
+            "FontBlur",&NanoVGComponent::FontBlur,
+            "TextLetterSpacing",&NanoVGComponent::TextLetterSpacing,
+            "TextLineHeight",&NanoVGComponent::TextLineHeight,
+            "TextAlign",&NanoVGComponent::TextAlign,
+            "FontFaceId",&NanoVGComponent::FontFaceId,
+            "FontFace",&NanoVGComponent::FontFace,
+            "Text",static_cast<float (NanoVGComponent::*)(float,float,const char*)>(&NanoVGComponent::Text),
+            "TextBox",&NanoVGComponent::TextBox,
+            "TextBounds",&NanoVGComponent::TextBounds,
+            "TextBoxBounds",&NanoVGComponent::TextBoxBounds,
+            "TextGlyphPositions",&NanoVGComponent::TextGlyphPositions,
+            "TextMetrics",&NanoVGComponent::TextMetrics,
+            "TextBreakLines",&NanoVGComponent::TextBreakLines
+        );
+
+        stateView["NanoVG"] = mProjectRuntime->getNanoVGComponent();
+
     }
 
     void
@@ -966,11 +1127,10 @@ namespace Dream
         exposeGraphicsComponent();
         exposeAssimpModelInstance();
         exposeCamera();
-        exposeFontInstance();
         exposeLightInstance();
         exposeShaderInstance();
-        exposeSpriteInstance();
         exposeGLM();
+        exposeNanoVG();
         // Input
         exposeGainput();
         // Path
@@ -985,7 +1145,9 @@ namespace Dream
 
     vector<LuaPrintListener*> LuaComponent::PrintListeners;
 
-    void LuaComponent::AddPrintListener(LuaPrintListener* listener)
+    void
+    LuaComponent::AddPrintListener
+    (LuaPrintListener* listener)
     {
         PrintListeners.push_back(listener);
     }

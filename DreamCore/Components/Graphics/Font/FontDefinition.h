@@ -25,24 +25,7 @@ namespace Dream
     {
     public:
         FontDefinition(ProjectDefinition* pd, json js);
-
-        void  setColourRed(float);
-        float getColourRed();
-
-        void  setColourGreen(float);
-        float getColourGreen();
-
-        void  setColourBlue(float);
-        float getColourBlue();
-
-        void  setColourAlpha(float);
-        float getColourAlpha();
-
-        void  setSize(float);
-        float getSize();
-
-    protected:
-        void makeColourObject();
     };
 
 }
+

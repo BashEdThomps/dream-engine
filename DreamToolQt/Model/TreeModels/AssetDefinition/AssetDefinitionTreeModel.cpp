@@ -312,16 +312,6 @@ AssetDefinitionTreeModel::setupModelData
     );
     mRootItem->appendChild(shaderTreeItem);
 
-    AssetDefinitionTreeItem* spriteTreeItem =
-    new AssetDefinitionTreeItem
-    (
-        QString("Sprite"),
-        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
-        nullptr,
-        mRootItem.get()
-    );
-    mRootItem->appendChild(spriteTreeItem);
-
     for (IAssetDefinition* definition : mProjectHandle->getAssetDefinitionsList())
     {
         if (definition->getType().compare(Constants::ASSET_TYPE_PATH) == 0)
@@ -425,19 +415,6 @@ AssetDefinitionTreeModel::setupModelData
                     AssetDefinitionTreeItemType::ASSET_DEFINITION,
                     definition,
                     shaderTreeItem
-                )
-            );
-        }
-        else if (definition->getType().compare(Constants::ASSET_TYPE_SPRITE) == 0)
-        {
-            spriteTreeItem->appendChild
-            (
-                new AssetDefinitionTreeItem
-                (
-                    QString::fromStdString(definition->getName()),
-                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
-                    definition,
-                    spriteTreeItem
                 )
             );
         }

@@ -40,6 +40,7 @@ namespace Dream
     class IWindowComponent;
     class PhysicsComponent;
     class IScriptComponent;
+    class NanoVGComponent;
     class Transform3D;
     class Camera;
     class SceneRuntime;
@@ -47,10 +48,10 @@ namespace Dream
     class MaterialCache;
     class ScriptCache;
     class AssimpCache;
-    class FontCache;
     class ShaderCache;
     class ComponentThread;
     class IAssetDefinition;
+    class SceneObjectRuntime;
 
     class Time;
 
@@ -70,15 +71,15 @@ namespace Dream
         AudioComponent* mAudioComponent;
         InputComponent* mInputComponent;
         GraphicsComponent* mGraphicsComponent;
+        NanoVGComponent* mNanoVGComponent;
         PhysicsComponent* mPhysicsComponent;
         PathComponent* mPathComponent;
         IScriptComponent* mScriptComponent;
         IWindowComponent* mWindowComponent;
 
         // Caches
-        MaterialCache* mTextureCache;
+        MaterialCache* mMaterialCache;
         AssimpCache* mModelCache;
-        FontCache* mFontCache;
         ShaderCache* mShaderCache;
         ScriptCache* mScriptCache;
         bool mScriptingEnabled;
@@ -99,6 +100,7 @@ namespace Dream
         AudioComponent* getAudioComponent();
         PhysicsComponent* getPhysicsComponent();
         GraphicsComponent* getGraphicsComponent();
+        NanoVGComponent* getNanoVGComponent();
         IWindowComponent* getWindowComponent();
         IScriptComponent* getScriptComponent();
         Project* getProject();
@@ -126,9 +128,8 @@ namespace Dream
         SceneRuntime* getActiveSceneRuntime();
         void resetActiveSceneRuntime();
 
-        void useDefinition() override;
+        bool useDefinition() override;
 
-        FontCache* getFontCache();
         ShaderCache* getShaderCache();
         MaterialCache* getTextureCache();
         AssimpCache* getModelCache();
@@ -137,12 +138,17 @@ namespace Dream
         void setScriptingEnabled(bool);
 
         IAssetDefinition* getAssetDefinitionByUuid(string uuid);
+        string getAssetAbsolutePath(string uuid);
+
+        SceneObjectRuntime* getSceneObjectRuntimeByUuid(string uuid);
+
     private: // Member Functions
         bool initPathComponent();
         bool initAudioComponent();
         bool initInputComponent();
         bool initPhysicsComponent();
         bool initGraphicsComponent();
+        bool initNanoVGComponent();
         bool initWindowComponent();
         bool initScriptComponent();
         bool initCaches();

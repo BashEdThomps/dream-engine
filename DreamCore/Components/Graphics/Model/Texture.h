@@ -21,6 +21,7 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <assimp/types.h>
+#include <assimp/material.h>
 
 namespace Dream
 {
@@ -28,7 +29,7 @@ namespace Dream
   struct Texture
   {
     GLuint id = 0;
-    string type = "";
+    aiTextureType type = aiTextureType_UNKNOWN;
     string path = "";
     int width = 0;
     int height = 0;
@@ -39,6 +40,6 @@ namespace Dream
 
   inline bool Texture::operator==(const Texture& other)
   {
-     return this->id == other.id;
+     return this->id == other.id && this->type == other.type;
   }
 } // end of Dream

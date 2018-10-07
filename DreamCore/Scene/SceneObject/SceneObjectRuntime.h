@@ -43,8 +43,6 @@ namespace Dream
     class AssimpModelInstance;
     class LightInstance;
     class ShaderInstance;
-    class SpriteInstance;
-    class FontInstance;
     class PhysicsObjectInstance;
     class ScriptInstance;
     class SceneRuntime;
@@ -54,12 +52,10 @@ namespace Dream
     class PathDefinition;
     class AudioDefinition;
     class LightDefinition;
-    class FontDefinition;
     class ModelDefinition;
     class PhysicsObjectDefinition;
     class ScriptDefinition;
     class ShaderDefinition;
-    class SpriteDefinition;
 
     class SceneObjectRuntime : public IRuntime
     {
@@ -72,18 +68,16 @@ namespace Dream
         SceneRuntime* getSceneRuntime();
         SceneObjectDefinition* getSceneObjectDefinition();
 
-        void createAssetInstances();
-        void createAssetInstanceFromAssetDefinitionByUuid(string);
-        void createAssetInstance        (IAssetDefinition*);
-        void createPathInstance         (PathDefinition*);
-        void createAudioInstance        (AudioDefinition*);
-        void createModelInstance        (ModelDefinition*);
-        void createScriptInstance       (ScriptDefinition*);
-        void createShaderInstance       (ShaderDefinition*);
-        void createPhysicsObjectInstance(PhysicsObjectDefinition*);
-        void createLightInstance        (LightDefinition*);
-        void createFontInstance         (FontDefinition*);
-        void createSpriteInstance       (SpriteDefinition*);
+        bool createAssetInstances();
+        bool createAssetInstanceFromAssetDefinitionByUuid(string);
+        bool createAssetInstance        (IAssetDefinition*);
+        bool createPathInstance         (PathDefinition*);
+        bool createAudioInstance        (AudioDefinition*);
+        bool createModelInstance        (ModelDefinition*);
+        bool createScriptInstance       (ScriptDefinition*);
+        bool createShaderInstance       (ShaderDefinition*);
+        bool createPhysicsObjectInstance(PhysicsObjectDefinition*);
+        bool createLightInstance        (LightDefinition*);
 
         quat getOrientation();
 
@@ -106,13 +100,11 @@ namespace Dream
 
         PathInstance*  getPathInstance();
         AudioInstance* getAudioInstance();
-        AssimpModelInstance* getModelInstance();
+        const shared_ptr<AssimpModelInstance>& getModelInstance();
         ScriptInstance* getScriptInstance();
         const shared_ptr<ShaderInstance>& getShaderInstance();
         PhysicsObjectInstance* getPhysicsObjectInstance();
         LightInstance* getLightInstance();
-        SpriteInstance* getSpriteInstance();
-        FontInstance* getFontInstance();
 
         bool hasPathInstance();
         bool hasAudioInstance();
@@ -121,8 +113,6 @@ namespace Dream
         bool hasShaderInstance();
         bool hasPhysicsObjectInstance();
         bool hasLightInstance();
-        bool hasSpriteInstance();
-        bool hasFontInstance();
 
         void addAssetDefinitionUuidToLoad(string);
         vector<string> getAssetDefinitionUuidsToLoad();
@@ -141,7 +131,7 @@ namespace Dream
 
         bool hasEvents() const;
         void addEvent(Event);
-        vector<Event> getEventQueue() const;
+        const vector<Event>& getEventQueue() const;
         void clearEventQueue();
 
         SceneObjectRuntime* getChildRuntimeByUuid(string);
@@ -159,7 +149,7 @@ namespace Dream
         SceneObjectRuntime* applyToAll(function<SceneObjectRuntime*(SceneObjectRuntime*)>);
         bool applyToAll(function<bool(SceneObjectRuntime*)>);
 
-        void useDefinition() override;
+        bool useDefinition() override;
 
         bool followsCamera() const;
         void setFollowsCamera(bool followsCamera);
@@ -177,24 +167,21 @@ namespace Dream
         void removeModelInstance();
         //void removeShaderInstance();
         void removeLightInstance();
-        void removeSpriteInstance();
         void removeScriptInstance();
         void removePhysicsObjectInstance();
-        void removeFontInstance();
 
-        void replaceAssetUuid(string uuid);
+        bool replaceAssetUuid(string uuid);
     private:
 
         AudioInstance* mAudioInstance;
         PathInstance* mPathInstance;
-        AssimpModelInstance* mModelInstance;
-        shared_ptr<ShaderInstance> mShaderInstance;
         LightInstance* mLightInstance;
-        SpriteInstance* mSpriteInstance;
         ScriptInstance* mScriptInstance;
         PhysicsObjectInstance* mPhysicsObjectInstance;
-        FontInstance* mFontInstance;
         Transform3D* mTransform;
+
+        shared_ptr<AssimpModelInstance> mModelInstance;
+        shared_ptr<ShaderInstance> mShaderInstance;
 
         vector<Event> mEventQueue;
         vector<string> mAssetDefinitionUuidLoadQueue;
@@ -210,7 +197,7 @@ namespace Dream
         bool mHidden;
 
         void setAssetDefinitionLoadQueue(vector<string> loadQueue);
-        void loadChildrenFromDefinition(SceneObjectDefinition* definition);
+        bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
         bool mFollowsCamera;
 
         void initialTransform();

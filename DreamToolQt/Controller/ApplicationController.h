@@ -131,7 +131,6 @@ public slots:
     void onAction_Asset_NewDefinition_PhysicsObject();
     void onAction_Asset_NewDefinition_Script();
     void onAction_Asset_NewDefinition_Shader();
-    void onAction_Asset_NewDefinition_Sprite();
     void onAction_Debug_DumpProjectDefinitionJson(bool toggled);
 
     void onAssetDefinitionProperty_AudioEvents(IAssetDefinition* adHandle);

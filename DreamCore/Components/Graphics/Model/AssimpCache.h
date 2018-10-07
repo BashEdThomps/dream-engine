@@ -18,27 +18,30 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <vector>
 #include <assimp/Importer.hpp>
 
 #include "../../../Common/DreamObject.h"
 #include "AssimpMesh.h"
 
 using std::string;
-using std::map;
-using ::Assimp::Importer;
+using std::vector;
 
 namespace Dream
 {
+    class MaterialCache;
+    class ModelDefinition;
+    class SceneObjectRuntime;
+
     class AssimpCache : public DreamObject
     {
     private:
-        map<string,Importer*> mCache;
-        map<string,vector<AssimpMesh*>> mMeshMap;
+        vector<shared_ptr<AssimpModelInstance>> mCache;
     public:
-        AssimpCache();
+        AssimpCache(MaterialCache*);
         ~AssimpCache();
-        Importer* getModelFromCache(string);
-        vector<AssimpMesh*> getMeshVector(string);
+        shared_ptr<AssimpModelInstance> getModelFromCache(string, ModelDefinition*,SceneObjectRuntime*);
+    protected:
+        MaterialCache* mMaterialCacheHandle;
     };
 }

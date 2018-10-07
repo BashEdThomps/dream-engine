@@ -33,6 +33,7 @@
 #include "../Components/Graphics/Camera.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 
@@ -42,7 +43,6 @@
 #include "../Components/Graphics/Model/AssimpCache.h"
 #include "../Components/Graphics/Model/MaterialCache.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
-#include "../Components/Graphics/Font/FontCache.h"
 
 using std::endl;
 
@@ -65,13 +65,13 @@ namespace Dream
           mAudioComponent(nullptr),
           mInputComponent(nullptr),
           mGraphicsComponent(nullptr),
+          mNanoVGComponent(nullptr),
           mPhysicsComponent(nullptr),
           mPathComponent(nullptr),
           mScriptComponent(nullptr),
           mWindowComponent(windowComponent),
-          mTextureCache(nullptr),
+          mMaterialCache(nullptr),
           mModelCache(nullptr),
-          mFontCache(nullptr),
           mShaderCache(nullptr),
           mScriptCache(nullptr),
           mScriptingEnabled(true)
@@ -150,6 +150,11 @@ namespace Dream
             return false;
         }
 
+        if(!initNanoVGComponent())
+        {
+            return false;
+        }
+
         if (!initInputComponent())
         {
             return false;
@@ -184,6 +189,12 @@ namespace Dream
     ()
     {
         auto log = getLog();
+        if (!mWindowComponent)
+        {
+            log->critical("Window component is null");
+            return false;
+        }
+
         if (!mWindowComponent->init())
         {
             log->error( "Unable to initialise WindowComponent" );
@@ -260,6 +271,24 @@ namespace Dream
     }
 
     bool
+    ProjectRuntime::initNanoVGComponent
+    ()
+    {
+        auto log = getLog();
+        mNanoVGComponent = new NanoVGComponent(mWindowComponent);
+        mNanoVGComponent->setTime(mTime);
+
+        if (!mNanoVGComponent->init())
+        {
+            log->error( "Unable to initialise Graphics Component." );
+            return false;
+        }
+
+        return true;
+    }
+
+
+    bool
     ProjectRuntime::initPathComponent
     ()
     {
@@ -309,22 +338,16 @@ namespace Dream
     ProjectRuntime::initCaches
     ()
     {
-        mFontCache    = new FontCache();
-        mModelCache   = new AssimpCache();
+        getLog()->trace("initialising caches");
+        mMaterialCache = new MaterialCache();
+        mModelCache   = new AssimpCache(mMaterialCache);
         mShaderCache  = new ShaderCache();
-        mTextureCache = new MaterialCache();
         mScriptCache  = new ScriptCache();
         return true;
     }
 
     void ProjectRuntime::deleteCaches()
     {
-        if (mFontCache != nullptr)
-        {
-            delete mFontCache;
-            mFontCache = nullptr;
-        }
-
         if (mModelCache != nullptr)
         {
             delete mModelCache;
@@ -337,10 +360,10 @@ namespace Dream
             mShaderCache = nullptr;
         }
 
-        if (mTextureCache != nullptr)
+        if (mMaterialCache != nullptr)
         {
-            delete mTextureCache;
-            mTextureCache = nullptr;
+            delete mMaterialCache;
+            mMaterialCache = nullptr;
         }
 
         if (mScriptCache != nullptr)
@@ -367,6 +390,11 @@ namespace Dream
         {
             delete mGraphicsComponent;
             mGraphicsComponent = nullptr;
+        }
+        if (mNanoVGComponent != nullptr)
+        {
+            delete mNanoVGComponent;
+            mNanoVGComponent = nullptr;
         }
         if (mPhysicsComponent != nullptr)
         {
@@ -418,6 +446,13 @@ namespace Dream
     ()
     {
         return mGraphicsComponent;
+    }
+
+    NanoVGComponent*
+    ProjectRuntime::getNanoVGComponent
+    ()
+    {
+       return mNanoVGComponent;
     }
 
     Camera*
@@ -488,13 +523,55 @@ namespace Dream
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->handleResize();
         mGraphicsComponent->drawModelQueue();
-        mGraphicsComponent->drawFontQueue();
-        mGraphicsComponent->drawSpriteQueue();
+
+        mScriptComponent->updateNanoVG();
+        ShaderInstance::InvalidateState();
+
         mPhysicsComponent->setViewProjectionMatrix(
             mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
         );
         mPhysicsComponent->drawDebug();
         mWindowComponent->swapBuffers();
+    }
+
+    int
+    ProjectRuntime::getWindowWidth
+    ()
+    {
+       if (mWindowComponent != nullptr)
+       {
+           return mWindowComponent->getWidth();
+       }
+    }
+
+    void
+    ProjectRuntime::setWindowWidth
+    (int w)
+    {
+       if (mWindowComponent != nullptr)
+       {
+           mWindowComponent->setWidth(w);
+       }
+    }
+
+    int
+    ProjectRuntime::getWindowHeight
+    ()
+    {
+       if (mWindowComponent != nullptr)
+       {
+           return mWindowComponent->getHeight();
+       }
+    }
+
+    void
+    ProjectRuntime::setWindowHeight
+    (int h)
+    {
+       if (mWindowComponent != nullptr)
+       {
+            mWindowComponent->setHeight(h);
+       }
     }
 
     void
@@ -552,9 +629,14 @@ namespace Dream
             this
         );
 
-        mActiveSceneRuntime->useDefinition();
+        if (!mActiveSceneRuntime->useDefinition())
+        {
+            delete mActiveSceneRuntime;
+            mActiveSceneRuntime = nullptr;
+            return nullptr;
+        }
 
-        mTextureCache->flushRawTextureImageData();
+        mMaterialCache->flushRawTextureImageData();
 
         if (mGraphicsComponent != nullptr)
         {
@@ -577,19 +659,13 @@ namespace Dream
         return mProject;
     }
 
-    void
+    bool
     ProjectRuntime::useDefinition
     ()
     {
-        initCaches();
-        initComponents();
-    }
-
-    FontCache*
-    ProjectRuntime::getFontCache
-    ()
-    {
-        return mFontCache;
+        if (!initCaches()) return false;
+        if (!initComponents()) return false;
+        return true;
     }
 
     ShaderCache*
@@ -603,7 +679,7 @@ namespace Dream
     ProjectRuntime::getTextureCache
     ()
     {
-        return mTextureCache;
+        return mMaterialCache;
     }
 
     AssimpCache*
@@ -639,5 +715,25 @@ namespace Dream
             return mProject->getAssetDefinitionByUuid(uuid);
         }
         return nullptr;
+    }
+
+    string
+    ProjectRuntime::getAssetAbsolutePath
+    (string uuid)
+    {
+        auto def = getAssetDefinitionByUuid(uuid);
+        return mProject->getProjectPath()+def->getAssetPath();
+    }
+
+    SceneObjectRuntime*
+    ProjectRuntime::getSceneObjectRuntimeByUuid
+    (string uuid)
+    {
+        if (mActiveSceneRuntime == nullptr)
+        {
+            return nullptr;
+        }
+
+        return mActiveSceneRuntime->getSceneObjectRuntimeByUuid(uuid);
     }
 }

@@ -52,11 +52,13 @@ namespace Dream
 
         virtual bool createScript(SceneObjectRuntime*,ScriptInstance*) = 0;
         virtual bool loadScript(SceneObjectRuntime*) = 0;
+        virtual bool updateNanoVG() = 0;
 
         virtual bool executeScriptInit  (SceneObjectRuntime*) = 0;
         virtual bool executeScriptUpdate(SceneObjectRuntime*) = 0;
         virtual bool executeScriptInput (SceneObjectRuntime*) = 0;
         virtual bool executeScriptEvent (SceneObjectRuntime*) = 0;
+        virtual bool executeScriptNanoVG(SceneObjectRuntime*) = 0;
 
         virtual void removeFromScriptMap(SceneObjectRuntime*) = 0;
         virtual void addToScriptMap(SceneObjectRuntime*,ScriptInstance*) = 0;
@@ -77,7 +79,6 @@ namespace Dream
         virtual void exposeCamera() = 0;
         virtual void exposeProjectRuntime() = 0;
         virtual void exposeEvent() = 0;
-        virtual void exposeFontInstance() = 0;
         virtual void exposeGraphicsComponent() = 0;
         virtual void exposeGainput() = 0;
         virtual void exposeAudioComponent() = 0;
@@ -87,11 +88,12 @@ namespace Dream
         virtual void exposePhysicsComponent() = 0;
         virtual void exposePhysicsObjectInstance() = 0;
         virtual void exposeShaderInstance() = 0;
-        virtual void exposeSpriteInstance() = 0;
         virtual void exposeSceneObjectRuntime() = 0;
         virtual void exposeTime() = 0;
         virtual void exposeTransform3D() = 0;
         virtual void exposeGLM() = 0;
+        virtual void exposeIDefinition() = 0;
+        virtual void exposeNanoVG() = 0;
 
     }; // End of IScriptComponent
 

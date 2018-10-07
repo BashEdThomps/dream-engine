@@ -232,7 +232,7 @@ namespace Dream
         if (CurrentShaderProgram != mShaderProgram)
         {
             auto log = spdlog::get("ShaderInstance");
-            log->debug(
+            log->info(
                 "Switching Shader Program from {} to {} for {}",
                 CurrentShaderProgram,
                 mShaderProgram,
@@ -257,7 +257,11 @@ namespace Dream
     ShaderInstance::bindVertexArray
     (GLuint vao)
     {
-        glBindVertexArray(vao);
+        if (CurrentVAO != vao)
+        {
+            glBindVertexArray(vao);
+            CurrentVAO = vao;
+        }
     }
 
     void
@@ -281,12 +285,12 @@ namespace Dream
         {
             if (uniform->getName().compare(name) == 0)
             {
-                log->trace("Updating uniform {}", uniform->getName());
+                log->info("Updating uniform {}", uniform->getName());
                 uniform->setData(data);
                 return;
             }
         }
-        log->debug("Creating uniform {}", name);
+        log->info("Creating uniform {}", name);
         auto newUniform = make_shared<ShaderUniform>(type,name,count,data);
         newUniform->setLocation(glGetUniformLocation(mShaderProgram, name.c_str()));
         mUniformVector.push_back(newUniform);
@@ -307,7 +311,7 @@ namespace Dream
             id = material->mDiffuseTexture->id;
             if (CurrentTexture0 != id)
             {
-                log->debug("Found Diffuse Texture, binding {}",id);
+                log->info("Found Diffuse Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE0);
                 checkGLError();
                 glBindTexture(GL_TEXTURE_2D, id);
@@ -323,7 +327,7 @@ namespace Dream
             id =  material->mSpecularTexture->id;
             if (CurrentTexture1 != id)
             {
-                log->debug("Found Specular Texture, binding {}",id);
+                log->info("Found Specular Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE1);
                 checkGLError();
                 glBindTexture(GL_TEXTURE_2D, id);
@@ -340,7 +344,7 @@ namespace Dream
             id =  material->mNormalTexture->id;
             if (CurrentTexture2 != id)
             {
-                log->debug("Found Normal Texture, binding {}",id);
+                log->info("Found Normal Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE2);
                 checkGLError();
                 glBindTexture(GL_TEXTURE_2D, id);
@@ -351,7 +355,21 @@ namespace Dream
             }
         }
 
-
+        if (material->mDisplacementTexture != nullptr)
+        {
+            id =  material->mDisplacementTexture->id;
+            if (CurrentTexture3 != id)
+            {
+                log->info("Found Normal Texture, binding {}",id);
+                glActiveTexture(GL_TEXTURE3);
+                checkGLError();
+                glBindTexture(GL_TEXTURE_2D, id);
+                checkGLError();
+                GLuint normalIndex = 3;
+                addUniform(INT1, "material.displacementMap", 1, &normalIndex);
+                CurrentTexture3 = id;
+            }
+        }
     }
 
     void ShaderInstance::bindLight(LightInstance* light)
@@ -649,7 +667,6 @@ namespace Dream
                 mData = new vec4[count];
                 memcpy(mData,data,sizeof(vec4)*static_cast<unsigned long>(count));
                 break;
-
         }
     }
 
@@ -785,7 +802,6 @@ namespace Dream
             case Dream::FLOAT4:
                 size = sizeof(vec4)*static_cast<unsigned long>(mCount);
                 break;
-
         }
 
         if (size > 0)
@@ -825,6 +841,22 @@ namespace Dream
     GLuint ShaderInstance::CurrentTexture0 = 0;
     GLuint ShaderInstance::CurrentTexture1 = 0;
     GLuint ShaderInstance::CurrentTexture2 = 0;
+    GLuint ShaderInstance::CurrentTexture3 = 0;
     GLuint ShaderInstance::CurrentShaderProgram = 0;
+    GLuint ShaderInstance::CurrentVAO = 0;
+    GLuint ShaderInstance::CurrentVBO = 0;
+
+    void
+    ShaderInstance::InvalidateState
+    ()
+    {
+        CurrentTexture0 = 0;
+        CurrentTexture1 = 0;
+        CurrentTexture2 = 0;
+        CurrentTexture3 = 0;
+        CurrentShaderProgram = 0;
+        CurrentVAO = 0;
+        CurrentVBO = 0;
+    }
 
 } // End of Dream

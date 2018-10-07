@@ -112,7 +112,6 @@ namespace Dream
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
     const string Constants::ASSET_TYPE_SCRIPT = "script";
     const string Constants::ASSET_TYPE_SHADER = "shader";
-    const string Constants::ASSET_TYPE_SPRITE = "sprite";
     const string Constants::ASSET_FORMAT = "format";
     const string Constants::ASSET_FORMAT_SCRIPT_LUA = "lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
@@ -130,7 +129,6 @@ namespace Dream
     const string Constants::ASSET_ATTR_LIGHT_QUADRATIC = "quadratic";
     const string Constants::ASSET_ATTR_LIGHT_CUTOFF = "cutoff";
     const string Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF = "outer_cutoff";
-    const string Constants::ASSET_FORMAT_SPRITE_IMAGE = "image";
 
     const string Constants::ASSET_TYPE_PATH_READABLE = "Path";
     const string Constants::ASSET_TYPE_AUDIO_READABLE = "Audio";
@@ -140,7 +138,6 @@ namespace Dream
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE = "Physics Object";
     const string Constants::ASSET_TYPE_SCRIPT_READABLE = "Script";
     const string Constants::ASSET_TYPE_SHADER_READABLE = "Shader";
-    const string Constants::ASSET_TYPE_SPRITE_READABLE = "Sprite";
     const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
 
     const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
@@ -153,7 +150,6 @@ namespace Dream
     const string Constants::ASSET_FORMAT_LIGHT_POINT_READABLE = "Point Light";
     const string Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE = "Directional Light";
     const string Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE = "Spotlight";
-    const string Constants::ASSET_FORMAT_SPRITE_IMAGE_READABLE = "Sprite Image";
 
     // Scene ====================================================================
     const string Constants::SCENE_NOTES = "notes";
@@ -194,10 +190,6 @@ namespace Dream
     const string Constants::TRANSFORM_TYPE_ABSOLUTE = "absolute";
     const string Constants::TRANSFORM_TYPE_OFFSET = "offset";
 
-    // Font =====================================================================
-    const string Constants::FONT_SIZE = "size";
-    const string Constants::FONT_COLOUR = "colour";
-
     // Generic ==================================================================
     const string Constants::X = "x";
     const string Constants::Y = "y";
@@ -236,11 +228,6 @@ namespace Dream
     const string Constants::DREAM_PATH_TYPE_OPEN = "open";
     const string Constants::DREAM_PATH_TYPE_CLAMPED = "clamped";
     const string Constants::DREAM_PATH_TYPE_BEZIER = "bezier";
-
-    // Sprite ===================================================================
-    const string Constants::SPRITE_TILE_SIZE   = "tileSize";
-    const string Constants::SPRITE_TILE_WIDTH  = "width";
-    const string Constants::SPRITE_TILE_HEIGHT = "height";
 
     // Physics ==================================================================
     const string Constants::ASSET_ATTR_MASS   = "mass";
@@ -361,8 +348,7 @@ namespace Dream
         {AssetType::MODEL,          ASSET_TYPE_MODEL},
         {AssetType::PHYSICS_OBJECT, ASSET_TYPE_PHYSICS_OBJECT},
         {AssetType::SCRIPT,         ASSET_TYPE_SCRIPT},
-        {AssetType::SHADER,         ASSET_TYPE_SHADER},
-        {AssetType::SPRITE,         ASSET_TYPE_SPRITE}
+        {AssetType::SHADER,         ASSET_TYPE_SHADER}
     };
 
     map<AssetType,vector<string>> Constants::DREAM_ASSET_FORMATS_MAP =
@@ -429,12 +415,6 @@ namespace Dream
                 ASSET_FORMAT_SHADER_GLSL
             }
         },
-        {
-            AssetType::SPRITE,
-            {
-                ASSET_FORMAT_SPRITE_IMAGE
-            }
-        }
     };
 
     string
@@ -459,8 +439,6 @@ namespace Dream
                 return ASSET_TYPE_SCRIPT;
             case SHADER:
                 return ASSET_TYPE_SHADER;
-            case SPRITE:
-                return ASSET_TYPE_SPRITE;
             case NONE:
                 return "";
         }
@@ -511,11 +489,6 @@ namespace Dream
         {
             return SHADER;
         }
-        else if (type.compare(ASSET_TYPE_SPRITE) == 0 ||
-                 type.compare(ASSET_TYPE_SPRITE_READABLE) == 0)
-        {
-            return SPRITE;
-        }
         return NONE;
     }
 
@@ -554,10 +527,6 @@ namespace Dream
         else if (type.compare(ASSET_TYPE_SHADER) == 0)
         {
             return ASSET_TYPE_SHADER_READABLE;
-        }
-        else if (type.compare(ASSET_TYPE_SPRITE) == 0)
-        {
-            return ASSET_TYPE_SPRITE_READABLE;
         }
         return "";
     }
@@ -607,11 +576,6 @@ namespace Dream
         else if (format.compare(ASSET_FORMAT_LIGHT_SPOTLIGHT) == 0)
         {
            return ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
-        }
-        // Sprite
-        else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE) == 0)
-        {
-           return ASSET_FORMAT_SPRITE_IMAGE_READABLE;
         }
         // Path
         else if (format.compare(ASSET_FORMAT_PATH_DREAM) == 0)
@@ -711,10 +675,6 @@ namespace Dream
         {
            return ASSET_FORMAT_LIGHT_SPOTLIGHT;
         }
-        else if (format.compare(ASSET_FORMAT_SPRITE_IMAGE_READABLE) == 0)
-        {
-           return ASSET_FORMAT_SPRITE_IMAGE;
-        }
         else if (format.compare(ASSET_FORMAT_PATH_DREAM_READABLE) == 0)
         {
             return ASSET_FORMAT_PATH_DREAM;
@@ -773,7 +733,8 @@ namespace Dream
 
     shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_color_mt("Constants");
 
-    vector<string> Constants::DREAM_ANIMATION_SPLINE_TYPES {
+    vector<string> Constants::DREAM_ANIMATION_SPLINE_TYPES
+    {
         DREAM_PATH_TYPE_OPEN,
         DREAM_PATH_TYPE_BEZIER,
         DREAM_PATH_TYPE_CLAMPED

@@ -357,7 +357,7 @@ QOpenGLWindowComponent::drawStats()
     }
     painter.drawText(topLeftX, topLeftY,getWidth(), getHeight(), Qt::AlignLeft,text);
     painter.end();
-    ShaderInstance::CurrentShaderProgram = 0;
+    ShaderInstance::InvalidateState();
 }
 
 bool QOpenGLWindowComponent::getControlScene()

@@ -94,8 +94,6 @@ AssetDefinitionPropertiesModel::createProperties
     }
     else if (mAssetDefinitionHandle->isTypeFont())
     {
-        createFontColorProperty();
-        createFontSizeProperty();
         createFontFileProperty();
         createRemoveFilesProperty();
     }
@@ -178,12 +176,6 @@ AssetDefinitionPropertiesModel::createProperties
     else if (mAssetDefinitionHandle->isTypeShader())
     {
         createShaderEditProperties();
-        createRemoveFilesProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypeSprite())
-    {
-        createSpriteTileSizeProperty();
-        createSpriteFileProperty();
         createRemoveFilesProperty();
     }
 }
@@ -332,60 +324,6 @@ AssetDefinitionPropertiesModel::createAudioFileProperty
             "Audio File",
             mAssetDefinitionHandle,
             ASSET_DEFINITION_PROPERTY_AUDIO_FILE
-        )
-    );
-}
-
-
-void
-AssetDefinitionPropertiesModel::createFontColorProperty
-()
-{
-    auto colour = new AssetDefinitionPropertiesItem
-    (
-        "Colour",
-        mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_FONT_COLOUR
-    );
-
-    auto red = new AssetDefinitionPropertiesItem
-    (
-        "Red",
-        mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED
-    );
-
-    auto green = new AssetDefinitionPropertiesItem
-    (
-        "Green",
-        mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN
-    );
-
-    auto blue = new AssetDefinitionPropertiesItem
-    (
-        "Blue",
-        mAssetDefinitionHandle,
-        ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE
-    );
-
-    colour->appendChild(red);
-    colour->appendChild(green);
-    colour->appendChild(blue);
-    mRootItem->appendChild(colour);
-}
-
-void
-AssetDefinitionPropertiesModel::createFontSizeProperty
-()
-{
-    mRootItem->appendChild
-    (
-        new AssetDefinitionPropertiesItem
-        (
-            "Size",
-            mAssetDefinitionHandle,
-            ASSET_DEFINITION_PROPERTY_FONT_SIZE
         )
     );
 }
@@ -940,20 +878,6 @@ AssetDefinitionPropertiesModel::createPhysicsKinematicProperty
             ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC
         )
     );
-}
-
-void
-AssetDefinitionPropertiesModel::createSpriteTileSizeProperty
-()
-{
-
-}
-
-void
-AssetDefinitionPropertiesModel::createSpriteFileProperty
-()
-{
-
 }
 
 void

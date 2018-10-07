@@ -33,7 +33,6 @@
 #include "../Components/Graphics/Model/ModelDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
-#include "../Components/Graphics/Sprite/SpriteDefinition.h"
 #include "../Components/Scripting/ScriptDefinition.h"
 
 namespace Dream
@@ -184,8 +183,6 @@ namespace Dream
                 return new PathDefinition(this,assetDefinitionJs);
             case AUDIO:
                 return new AudioDefinition(this,assetDefinitionJs);
-            case FONT:
-                return new FontDefinition(this,assetDefinitionJs);
             case LIGHT:
                 return new LightDefinition(this,assetDefinitionJs);
             case MODEL:
@@ -196,12 +193,13 @@ namespace Dream
                 return new ScriptDefinition(this,assetDefinitionJs);
             case SHADER:
                 return new ShaderDefinition(this,assetDefinitionJs);
-            case SPRITE:
-                return new SpriteDefinition(this,assetDefinitionJs);
+            case FONT:
+                return new FontDefinition(this,assetDefinitionJs);
             case NONE:
                 log->error( "Unable to create Asset Definition. Unknown Type" );
-                return nullptr;
+                break;
         }
+        return nullptr;
     }
 
     void

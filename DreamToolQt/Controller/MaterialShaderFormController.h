@@ -45,5 +45,5 @@ protected:
     QString mProjectPath;
     MaterialShaderTableModel mTableModel;
     Ui::MaterialShaderTableForm mUi;
-    static AssimpCache mAssimpCache;
+    //static AssimpCache mAssimpCache;
 };

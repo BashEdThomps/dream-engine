@@ -225,7 +225,7 @@ namespace Dream
             {
                 auto repeatIndex = i+1;
                 auto next = markerStart + (repeatIndex*step);
-                log->debug("Marker {}'s {}th step is : ", markerIndex, repeatIndex, next);
+                log->debug("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
                 Event e(mSceneObjectRuntime,"audio");
                 e.setString("name",markerName);
                 e.setNumber("time",next);

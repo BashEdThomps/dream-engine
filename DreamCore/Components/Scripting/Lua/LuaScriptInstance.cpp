@@ -39,7 +39,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->trace("Destructing ", mDefinition->getNameAndUuidString() );
+        log->trace("Destructing {}", mDefinition->getNameAndUuidString() );
     }
 
     bool

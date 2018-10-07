@@ -46,7 +46,8 @@ namespace Dream
           mGravity({0,0,0}),
           mClearColour({0,0,0,0}),
           mAmbientColour({0,0,0}),
-          mProjectRuntime(project)
+          mProjectRuntime(project),
+          mRootSceneObjectRuntime(nullptr)
     {
 
         setLogClassName("SceneRuntime");
@@ -241,7 +242,7 @@ namespace Dream
         return mRootSceneObjectRuntime != nullptr;
     }
 
-    void
+    bool
     SceneRuntime::useDefinition
     ()
     {
@@ -251,7 +252,7 @@ namespace Dream
 
         if (sceneDefinition == nullptr)
         {
-            return;
+            return false;
         }
 
         log->debug( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
@@ -273,33 +274,46 @@ namespace Dream
         if (gfx == nullptr)
         {
             log->error("Graphics Component is null");
+            return false;
         }
         gfx->setActiveSceneRuntime(this);
 
         auto physics = mProjectRuntime->getPhysicsComponent();
-        if (physics != nullptr)
+        if (physics == nullptr)
         {
-            physics->setGravity(getGravity());
-            physics->setDebug(getPhysicsDebug());
+            log->error("Physics component is null");
+            return false;
         }
+
+        physics->setGravity(getGravity());
+        physics->setDebug(getPhysicsDebug());
 
         auto camera = mProjectRuntime->getCamera();
 
-        if (camera != nullptr)
+        if (camera == nullptr)
         {
-            camera->setTranslation(getCameraTranslation());
-            camera->setPitch(getCameraPitch());
-            camera->setYaw(getCameraYaw());
-            camera->updateCameraVectors();
-            camera->setMovementSpeed(getCameraMovementSpeed());
+            log->error("Camera is null");
+            return false;
         }
+        camera->setTranslation(getCameraTranslation());
+        camera->setPitch(getCameraPitch());
+        camera->setYaw(getCameraYaw());
+        camera->updateCameraVectors();
+        camera->setMovementSpeed(getCameraMovementSpeed());
 
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
         auto sor = new SceneObjectRuntime(sod,this);
-        sor->useDefinition();
+        if (!sor->useDefinition())
+        {
+            log->error("Error using scene object runtime definition");
+            delete sor;
+            sor = nullptr;
+            return false;
+        }
         setRootSceneObjectRuntime(sor);
         setState(SCENE_STATE_LOADED);
+        return true;
     }
 
     bool

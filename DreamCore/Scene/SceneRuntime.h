@@ -81,7 +81,7 @@ namespace Dream
 
         void createAllAssetInstances();
 
-        void useDefinition() override;
+        bool useDefinition() override;
 
         void setDeleteFlagOnAllSceneObjectRuntimes();
 

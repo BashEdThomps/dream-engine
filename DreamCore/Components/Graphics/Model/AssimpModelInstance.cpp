@@ -34,24 +34,22 @@
 #include "../../../Common/Constants.h"
 #include "ModelDefinition.h"
 
-#include "AssimpCache.h"
 #include "AssimpMaterial.h"
 #include <memory>
 
 using std::shared_ptr;
 using std::make_shared;
 using std::numeric_limits;
+using ::Assimp::Importer;
 
 namespace Dream
 {
     AssimpModelInstance::AssimpModelInstance
     (
-        AssimpCache* modelCache,
         MaterialCache* texCache,
         IAssetDefinition* definition,
         SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
-          mModelCache(modelCache),
           mMaterialCache(texCache)
     {
         setLogClassName("AssimpModelInstance");
@@ -66,16 +64,8 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object");
-
-        /*
-        for (auto mesh : mMeshes)
-        {
-            delete mesh;
-        }
-        */
         mMeshes.clear();
         mMaterialMeshMap.clear();
-
         return;
     }
 
@@ -87,17 +77,11 @@ namespace Dream
         string path = projectPath + mDefinition->getAssetPath();
         log->info( "Loading Model - {}" , path);
 
-        if (mModelCache == nullptr)
-        {
-            log->error("Cannot load model, cache is nullptr");
-            return false;
-        }
-
-        auto model = mModelCache->getModelFromCache(path);
+        auto model = loadImporter(path);
 
         if (model == nullptr)
         {
-            log->error("Could not get model from cache, load failed");
+            log->error("Could not get model importer, load failed");
             return false;
         }
 
@@ -149,6 +133,8 @@ namespace Dream
             mBoundingBox.updateFromMesh(mesh);
             auto aMesh = processMesh(mesh, scene);
             mMeshes.push_back(aMesh);
+            addMesh(aMesh);
+            //mMeshes.push_back(aMesh);
         }
         // Then do the same for each of its children
         for(GLuint i = 0; i < node->mNumChildren; i++)
@@ -259,21 +245,28 @@ namespace Dream
         if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
         {
             log->debug("Loading Diffuse Texture {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterial->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
+            aMaterial->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE);
         }
 
         // Specular Textures
         if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
         {
             log->debug("Loading Specular {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterial->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
+            aMaterial->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR);
         }
 
         // Normal Textures
         if(material->GetTextureCount(aiTextureType_NORMALS) > 0)
         {
             log->debug("Loading Normal {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterial->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS, "texture_normals");
+            aMaterial->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS);
+        }
+
+        // Displacement Texture
+        if (material->GetTextureCount(aiTextureType_DISPLACEMENT) > 0)
+        {
+            log->debug("Loading Displacement {} for {}",name.C_Str(), getNameAndUuidString());
+            aMaterial->mDisplacementTexture = loadMaterialTexture(material, aiTextureType_DISPLACEMENT);
         }
     }
 
@@ -344,13 +337,13 @@ namespace Dream
 
     shared_ptr<Texture>
     AssimpModelInstance::loadMaterialTexture
-    (aiMaterial* mat, aiTextureType type, string typeName)
+    (aiMaterial* mat, aiTextureType type)
     {
         aiString str;
         mat->GetTexture(type, 0, &str);
         if (mMaterialCache)
         {
-            return mMaterialCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(),typeName.c_str());
+            return mMaterialCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(), type);
         }
         return nullptr;
     }
@@ -367,8 +360,6 @@ namespace Dream
         return mBoundingBox;
     }
 
-
-
     void
     AssimpModelInstance::setModelMatrix
     (glm::mat4 modelMatrix)
@@ -381,5 +372,47 @@ namespace Dream
     ()
     {
         return mModelMatrix;
+    }
+
+    void
+    AssimpModelInstance::addMesh
+    (const shared_ptr<AssimpMesh>& mesh)
+    {
+       const auto material = mesh->getMaterial();
+       auto mapEnd = mMaterialMeshMap.end();
+       auto index = mMaterialMeshMap.find(material);
+
+       if (index == mapEnd)
+       {
+           vector<const shared_ptr<AssimpMesh>> meshVector;
+           meshVector.push_back(mesh);
+           mMaterialMeshMap.insert(MaterialMeshVectorPair(material,meshVector));
+       }
+       else
+       {
+           auto vec = (*index).second;
+           vec.push_back(mesh);
+       }
+    }
+
+    shared_ptr<Importer>
+    AssimpModelInstance::loadImporter
+    (string path)
+    {
+        auto log = getLog();
+
+        log->debug("Loading {} from disk",  path);
+
+        auto importer = make_shared<Importer>();
+        importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
+        const aiScene* scene = importer->GetScene();
+        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+        {
+            log->error( "Error {}" ,importer->GetErrorString() );
+            return nullptr;
+        }
+
+        return importer;
     }
 } // End of Dream

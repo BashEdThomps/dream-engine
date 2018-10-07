@@ -47,48 +47,31 @@ namespace Dream
     class AssimpMesh;
     class AssimpMaterial;
 
+    typedef map<const shared_ptr<AssimpModelInstance>, vector<SceneObjectRuntime*>> ModelSoVectorMap;
+    typedef std::pair<const shared_ptr<AssimpModelInstance>,vector<SceneObjectRuntime*>> ModelSoVectorPair;
+
     class GraphicsComponent : public IComponent
     {
     private:
         mat4 mProjectionMatrix;
-        mat4 mViewMatrix;
         mat4 mOrthoProjection;
-
-        GLfloat mSpriteVertices[24] =
-        {
-            // Pos      // Tex
-            0.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 0.0f
-        };
-
-        GLuint mSpriteVBO;
-        GLuint mSpriteQuadVAO;
-
-        GLuint mFontVBO;
-        GLuint mFontVAO;
+        mat4 mViewMatrix;
 
         Camera* mCamera;
 
         float mMinimumDraw;
         float mMaximumDraw;
         float mMeshCullDistance;
+        bool mUpdateInstanceMapFlag;
 
-        vector<SceneObjectRuntime*>  mSpriteQueue;
-        vector<SceneObjectRuntime*>  mModelQueue;
-        vector<SceneObjectRuntime*>  mFontQueue;
-        vector<LightInstance*>       mLightQueue;
-        IWindowComponent*            mWindowComponent;
+        vector<SceneObjectRuntime*> mModelQueue;
+        vector<LightInstance*> mLightQueue;
+
+        ModelSoVectorMap mInstanceMap;
+        IWindowComponent* mWindowComponent;
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
         ~GraphicsComponent() override;
-
-        void clearSpriteQueue();
-        void addToSpriteQueue(SceneObjectRuntime*);
-        void drawSpriteQueue();
 
         void addToLightQueue(LightInstance*);
         void clearLightQueue();
@@ -105,13 +88,11 @@ namespace Dream
         void preFontRender();
         void postFontRender();
 
+        void addToInstanceMap(SceneObjectRuntime*);
+
         bool init(void) override;
         void updateComponent() override;
-        void drawSprite(SceneObjectRuntime*);
-        void drawFont(SceneObjectRuntime*);
         void drawModel(SceneObjectRuntime*);
-        void create2DVertexObjects();
-        void createFontVertexObjects();
         void setWindowShouldClose(bool);
         Camera* getCamera();
         mat4 getViewMatrix();
@@ -123,5 +104,7 @@ namespace Dream
         void debugOptimisedModelQueue();
         void setMinimumDraw(float minimumDraw);
         void setMaximumDraw(float maximumDraw);
+        bool getUpdateInstanceMapFlag() const;
+        void setUpdateInstanceMapFlag(bool updateInstanceMapFlag);
     }; // End of GraphicsComponent
 } // End of Dream

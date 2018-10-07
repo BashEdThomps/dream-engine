@@ -19,6 +19,7 @@
 #include "Event.h"
 
 #include "../Common/Constants.h"
+#include "../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
@@ -35,7 +36,7 @@ namespace Dream
     Event::~Event()
     {
         auto log = getLog();
-        log->debug("Destroying Object");
+        log->debug("Destroying event");
     }
 
     SceneObjectRuntime*

@@ -21,6 +21,7 @@ find_package(Gainput REQUIRED)
 find_package(TinySpline REQUIRED)
 find_package(SOIL REQUIRED)
 find_package(FFTW3 REQUIRED)
+find_package(NanoVG REQUIRED)
 
 message("Using Lua: "                )
 message("\t L @ " ${LUA_LIBRARIES}   )
@@ -65,6 +66,7 @@ target_link_libraries(
     ${OPENAL_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${OGGVORBIS_LIBRARIES}
+    ${NANOVG_LIB}
     ${ALUT_LIBRARY}
     ${assimp_LIBRARIES}
     ${GLEW_LIBRARIES}

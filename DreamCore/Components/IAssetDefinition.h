@@ -68,7 +68,6 @@ namespace Dream
         bool isTypeShader();
         bool isTypePhysicsObject();
         bool isTypeLight();
-        bool isTypeSprite();
         bool isTypeFont();
 
         string getAssetPath();

@@ -68,6 +68,7 @@ namespace Dream
 
         bool init() override;
         void updateComponent() override;
+        bool updateNanoVG() override;
         bool loadScript(SceneObjectRuntime*) override;
         bool createScript(SceneObjectRuntime*, ScriptInstance*) override;
         void exposeAPI() override;
@@ -78,6 +79,7 @@ namespace Dream
         bool executeScriptUpdate(SceneObjectRuntime*) override;
         bool executeScriptInput (SceneObjectRuntime*) override;
         bool executeScriptEvent (SceneObjectRuntime*) override;
+        bool executeScriptNanoVG(SceneObjectRuntime*) override;
 
         void removeFromScriptMap(SceneObjectRuntime*) override;
         void addToScriptMap(SceneObjectRuntime*, ScriptInstance*) override;
@@ -93,7 +95,6 @@ namespace Dream
         void exposeCamera() override;
         void exposeProjectRuntime() override;
         void exposeEvent() override;
-        void exposeFontInstance() override;
         void exposeGraphicsComponent() override;
         void exposeGainput() override;
         void exposeAudioComponent() override;
@@ -103,12 +104,12 @@ namespace Dream
         void exposePhysicsComponent() override;
         void exposePhysicsObjectInstance() override;
         void exposeShaderInstance() override;
-        void exposeSpriteInstance() override;
         void exposeSceneObjectRuntime() override;
         void exposeTime() override;
         void exposeTransform3D() override;
         void exposeGLM() override;
-        void exposeIDefinition();
+        void exposeIDefinition() override;
+        void exposeNanoVG() override;
     }; // End of LuaComponent
 
 } // End of Dream

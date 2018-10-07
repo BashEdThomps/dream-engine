@@ -52,7 +52,7 @@ namespace Dream
 
         string getNameAndUuidString();
 
-        virtual void useDefinition() = 0;
+        virtual bool useDefinition() = 0;
 
         virtual void collectGarbage() = 0;
         IDefinition* getDefinition();

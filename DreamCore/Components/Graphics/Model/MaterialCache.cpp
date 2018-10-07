@@ -91,7 +91,7 @@ namespace Dream
 
     shared_ptr<Texture>
     MaterialCache::loadTextureFromFile
-    (const char* file_c, const char* directory_c, const char* type)
+    (const char* file_c, const char* directory_c, const aiTextureType type)
     {
         auto log = getLog();
         log->debug( "Loading from: {}/{}", directory_c , file_c );

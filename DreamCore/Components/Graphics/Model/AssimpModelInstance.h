@@ -51,18 +51,17 @@ namespace Dream
     class MaterialCache;
     class ShaderInstance;
     class AssimpMesh;
-    class AssimpCache;
     class Vertex;
     class Texture;
     class AssimpMaterial;
 
-    typedef  std::pair<shared_ptr<AssimpMaterial>,vector<shared_ptr<AssimpMesh>>> MaterialMeshPair ;
+    typedef map<const shared_ptr<AssimpMaterial>,vector<const shared_ptr<AssimpMesh>>> MaterialMeshVectorMap;
+    typedef std::pair<const shared_ptr<AssimpMaterial>,vector<const shared_ptr<AssimpMesh>>> MaterialMeshVectorPair ;
 
     class AssimpModelInstance : public IAssetInstance
     {
     public:
         AssimpModelInstance(
-            AssimpCache*,
             MaterialCache*,
             IAssetDefinition*,
             SceneObjectRuntime*
@@ -84,19 +83,21 @@ namespace Dream
 
     private:
         // Variables
-        AssimpCache* mModelCache;
         MaterialCache* mMaterialCache;
+        map<string,ShaderInstance*> mMaterialShaderMap;
 
         vector<shared_ptr<AssimpMesh>> mMeshes;
-        map<shared_ptr<AssimpMaterial>,vector<shared_ptr<AssimpMesh>>> mMaterialMeshMap;
+        MaterialMeshVectorMap mMaterialMeshMap;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
 
         // Methods
         void loadModel(string);
+        shared_ptr<Importer> loadImporter(string path);
         void loadShaders();
-        shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType, string);
+        void addMesh(const shared_ptr<AssimpMesh>&);
+        shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType);
 
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
 
@@ -105,7 +106,6 @@ namespace Dream
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
         void processTextureData(aiMesh* mesh, const aiScene* scene, shared_ptr<AssimpMaterial> material);
-        map<string,ShaderInstance*> mMaterialShaderMap;
     }; // End of AssimpModelInstance
 
 } // End of Dream

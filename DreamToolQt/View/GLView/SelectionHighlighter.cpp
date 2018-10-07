@@ -24,6 +24,7 @@ using Dream::AssimpModelInstance;
 using glm::quat;
 using glm::mat4;
 using Dream::Transform3D;
+using Dream::ShaderInstance;
 
 SelectionHighlighter::SelectionHighlighter
 (QObject *parent)
@@ -299,10 +300,12 @@ SelectionHighlighter::draw
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+        ShaderInstance::CurrentVBO = mVbo;
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
 
         // Vertex Array
         glBindVertexArray(mVao);
+        ShaderInstance::CurrentVAO=mVao;
 
         // Vertex Positions
         glEnableVertexAttribArray(0);
@@ -325,8 +328,8 @@ SelectionHighlighter::draw
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
 
         // Revert State
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        //glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //glBindVertexArray(0);
         postRender();
         glLineWidth(1);
     }

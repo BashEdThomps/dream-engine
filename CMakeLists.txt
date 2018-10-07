@@ -4,6 +4,7 @@ project (Dream)
 
 set(DREAM_BUILD_CORE    ON)
 set(DREAM_BUILD_SDL     ON)
+set(DREAM_BUILD_GLFW    OFF)
 
 set(
   CMAKE_MODULE_PATH
@@ -52,4 +53,7 @@ if (DREAM_BUILD_SDL)
     add_subdirectory (DreamSDL)
 endif()
 
-
+# DreamGLFW Executable
+if (DREAM_BUILD_GLFW)
+    add_subdirectory (DreamGLFW)
+endif()

@@ -24,6 +24,7 @@
 using Dream::AssimpModelInstance;
 using Dream::Constants;
 using Dream::Transform3D;
+using Dream::ShaderInstance;
 
 using glm::quat;
 using glm::mat4;
@@ -373,9 +374,11 @@ PathPointViewer::draw
 
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
+        ShaderInstance::CurrentVBO = mVbo;
 
         // Vertex Array
         glBindVertexArray(mVao);
+        ShaderInstance::CurrentVAO = mVao;
 
         // Vertex Positions
         glEnableVertexAttribArray(0);

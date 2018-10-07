@@ -54,8 +54,6 @@ private:
     void createAudioEventsProperty();
     void createAudioFileProperty();
 
-    void createFontColorProperty();
-    void createFontSizeProperty();
     void createFontFileProperty();
 
     void createLightAmbientProperty();
@@ -83,9 +81,6 @@ private:
     void createPhysicsControllableProperty();
     void createPhysicsRestitutionProperty();
     void createPhysicsFrictionProperty();
-
-    void createSpriteTileSizeProperty();
-    void createSpriteFileProperty();
 
     void createShaderEditProperties();
     void createShaderEditFilesProperty();

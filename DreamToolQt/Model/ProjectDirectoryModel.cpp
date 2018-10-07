@@ -120,13 +120,6 @@ ProjectDirectoryModel::inflateFromDirectory
         return false;
     }
 
-    mSpriteDirectory = QDir(getSpriteDirectoryAbsolutePath());
-    mSpriteDirectory.makeAbsolute();
-    if (!spriteDirectoryExists())
-    {
-        return false;
-    }
-
     if (!projectFileExists())
     {
         return false;
@@ -222,15 +215,6 @@ ProjectDirectoryModel::createNewProjectTree
         if (!createShaderDirectory())
         {
             log->debug("Unable to create directory {}",getShaderDirectoryAbsolutePath().toStdString());
-            return false;
-        }
-    }
-
-    if (!spriteDirectoryExists())
-    {
-        if (!createSpriteDirectory())
-        {
-            log->debug("Unable to create directory {}",getSpriteDirectoryAbsolutePath().toStdString());
             return false;
         }
     }
@@ -434,25 +418,6 @@ ProjectDirectoryModel::createShaderDirectory
     return result;
 }
 
-
-bool
-ProjectDirectoryModel::createSpriteDirectory
-()
-{
-    bool result = false;
-    if (assetsDirectoryExists())
-    {
-        result = mAssetsDirectory.mkdir(QString::fromStdString(Constants::ASSET_TYPE_SPRITE));
-
-        if (result)
-        {
-            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
-        }
-
-    }
-    return result;
-}
-
 bool
 ProjectDirectoryModel::projectFileExists
 ()
@@ -585,17 +550,6 @@ ProjectDirectoryModel::getShaderDirectoryAbsolutePath
 }
 
 QString
-ProjectDirectoryModel::getSpriteDirectoryAbsolutePath
-()
-{
-    if (assetsDirectoryExists())
-    {
-        return mAssetsDirectory.filePath(QString::fromStdString(Constants::ASSET_TYPE_SPRITE));
-    }
-    return QString();
-}
-
-QString
 ProjectDirectoryModel::getProjectFileAbsolutePath
 ()
 {
@@ -708,17 +662,6 @@ ProjectDirectoryModel::shaderDirectoryExists
     if (assetsDirectoryExists())
     {
         return mAssetsDirectory.exists(QString::fromStdString(Constants::ASSET_TYPE_SHADER));
-    }
-    return false;
-}
-
-bool
-ProjectDirectoryModel::spriteDirectoryExists
-()
-{
-    if (assetsDirectoryExists())
-    {
-        return mAssetsDirectory.exists(QString::fromStdString(Constants::ASSET_TYPE_SPRITE));
     }
     return false;
 }

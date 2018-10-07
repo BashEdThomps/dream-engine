@@ -38,7 +38,6 @@ namespace Dream
         PHYSICS_OBJECT,
         SCRIPT,
         SHADER,
-        SPRITE,
         NONE
     };
 
@@ -91,7 +90,6 @@ namespace Dream
         const static string ASSET_TYPE_PHYSICS_OBJECT;
         const static string ASSET_TYPE_SCRIPT;
         const static string ASSET_TYPE_SHADER;
-        const static string ASSET_TYPE_SPRITE;
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_SCRIPT_LUA;
         const static string ASSET_FORMAT_SCRIPT_JS;
@@ -104,7 +102,6 @@ namespace Dream
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT;
-        const static string ASSET_FORMAT_SPRITE_IMAGE;
         const static string ASSET_DEFINITION_DEFAULT_NAME;
 
         const static string ASSET_TYPE_PATH_READABLE;
@@ -115,7 +112,6 @@ namespace Dream
         const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         const static string ASSET_TYPE_SCRIPT_READABLE;
         const static string ASSET_TYPE_SHADER_READABLE;
-        const static string ASSET_TYPE_SPRITE_READABLE;
         const static string ASSET_FORMAT_READABLE;
         const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;
         const static string ASSET_FORMAT_SCRIPT_JS_READABLE;
@@ -128,7 +124,6 @@ namespace Dream
         const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
-        const static string ASSET_FORMAT_SPRITE_IMAGE_READABLE;
 
         // Scene ================================================================
         const static string SCENE_NOTES;
@@ -170,10 +165,6 @@ namespace Dream
         const static string TRANSFORM_TYPE_ABSOLUTE;
         const static string TRANSFORM_TYPE_OFFSET;
 
-        // Font =================================================================
-        const static string FONT_SIZE;
-        const static string FONT_COLOUR;
-
         // Generic ==============================================================
         const static string X;
         const static string Y;
@@ -212,11 +203,6 @@ namespace Dream
         const static string DREAM_PATH_TYPE_CLAMPED;
         const static string DREAM_PATH_TYPE_BEZIER;
         const static string ASSET_ATTR_STEP_SCALAR;
-
-        // Sprite ===============================================================
-        const static string SPRITE_TILE_SIZE;
-        const static string SPRITE_TILE_WIDTH;
-        const static string SPRITE_TILE_HEIGHT;
 
         // Physics ==============================================================
         const static string ASSET_ATTR_MASS;

@@ -354,16 +354,16 @@ namespace Dream
             {
                 continue;
             }
-            if (getAudioStatus(audioAsset) != PLAYING)
-            {
+            //if (getAudioStatus(audioAsset) != PLAYING)
+            //{
                 playSource(audioAsset->getSource());
                 audioAsset->setStartTime(mTime->nowLL());
                 audioAsset->setStatus(PLAYING);
-            }
-            else
-            {
-                log->debug("" , audioAsset->getNameAndUuidString() , " is already playing");
-            }
+            //}
+            //else
+            //{
+            //    log->debug("" , audioAsset->getNameAndUuidString() , " is already playing");
+           // }
         }
         mPlayQueue.clear();
     }

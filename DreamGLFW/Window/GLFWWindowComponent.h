@@ -1,5 +1,5 @@
 /*
- * SpriteDefinition.h
+ * GLFWWindowComponent.h
  *
  * Created: 11 2017 by Ashley
  *
@@ -18,13 +18,32 @@
 
 #pragma once
 
-#include "../../IAssetDefinition.h"
+#include <DreamCore.h>
+#include <GLFW/glfw3.h>
+#include <memory>
 
-namespace Dream
+using std::unique_ptr;
+using Dream::IWindowComponent;
+using Dream::SceneRuntime;
+
+namespace DreamGLFW
 {
-    class SpriteDefinition : public IAssetDefinition
+    class GLFWWindowComponent : public IWindowComponent
     {
     public:
-        SpriteDefinition(ProjectDefinition* pd, json js);
-    };
-}
+        GLFWWindowComponent();
+        ~GLFWWindowComponent() override;
+
+        void updateComponent() override;
+        void getCurrentDimensions() override;
+        void swapBuffers() override;
+        bool init() override;
+
+    private:
+        bool initGLFW();
+        bool initGL();
+        GLFWwindow* mWindow;
+
+    }; // End of GLFWWindowComponent
+
+} // End of Dream

@@ -72,6 +72,8 @@ MaterialShaderFormController::onRemoveButtonClicked
 
 void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
 {
+
+     /*
     auto log = spdlog::get("MaterialShaderTableController");
     log->debug("Read Mateerials from Model Button Clicked");
 
@@ -84,7 +86,7 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
     string assetPath = mModelDefinitionHandle->getAssetPath();
     string absolutePath = mProjectPath.toStdString()+assetPath;
     log->debug("Reading model from {}",absolutePath);
-    auto model = mAssimpCache.getModelFromCache(absolutePath);
+    auto model = mAssimpCache.getModelFromCache(mProjectPath.toStdString(), mModelDefinitionHandle, nullptr);
 
     if (model == nullptr)
     {
@@ -93,8 +95,9 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
         QMessageBox::warning(this, "No Model Available","Cannot populate materials, model data not found.");
         return;
     }
+    return;
 
-     const aiScene* scene = model->GetScene();
+    const aiScene* scene = model->GetScene();
 
     if(scene == nullptr)
     {
@@ -104,6 +107,7 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
 
     processAssimpNode(scene->mRootNode, scene);
     mUi.tableView->update();
+    */
 }
 
 void
@@ -169,4 +173,4 @@ MaterialShaderFormController::processAssimpNode
     return materialCount;
 }
 
-AssimpCache MaterialShaderFormController::mAssimpCache;
+//AssimpCache MaterialShaderFormController::mAssimpCache;

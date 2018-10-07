@@ -38,6 +38,7 @@ namespace Dream
         shared_ptr<Texture> mDiffuseTexture;
         shared_ptr<Texture> mSpecularTexture;
         shared_ptr<Texture> mNormalTexture;
+        shared_ptr<Texture> mDisplacementTexture;
         bool operator==(const AssimpMaterial& other);
         void debug();
     };

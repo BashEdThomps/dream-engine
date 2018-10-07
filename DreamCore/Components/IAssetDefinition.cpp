@@ -144,14 +144,6 @@ namespace Dream
         return getType().compare(Constants::ASSET_TYPE_SHADER) == 0;
     }
 
-    bool
-    IAssetDefinition::isTypeSprite
-    ()
-    {
-        return getType().compare(Constants::ASSET_TYPE_SPRITE) == 0;
-    }
-
-
     string
     IAssetDefinition::getAssetTypeDirectory
     ()
@@ -175,10 +167,6 @@ namespace Dream
         else if (isTypeShader())
         {
             return Constants::ASSET_TYPE_SHADER;
-        }
-        else if (isTypeSprite())
-        {
-            return Constants::ASSET_TYPE_SPRITE;
         }
         else if (isTypeFont())
         {

@@ -36,14 +36,6 @@ namespace Dream
         vector<GLuint> mIndices;
         BoundingBox mBoundingBox;
 
-        void bindTextures(const shared_ptr<ShaderInstance>&);
-        void bindTexture (const shared_ptr<Texture>& material);
-        void unbindTextures();
-        void bindDiffuse(const shared_ptr<ShaderInstance>&);
-        void bindSpecular(const shared_ptr<ShaderInstance>&);
-        void bindAmbient(const shared_ptr<ShaderInstance>&);
-        void bindOpacity(const shared_ptr<ShaderInstance>&);
-
     public:
         AssimpMesh
         (
@@ -57,6 +49,8 @@ namespace Dream
         ~AssimpMesh();
         void draw(const shared_ptr<ShaderInstance>&);
         void init();
+
+        const shared_ptr<AssimpMaterial>& getMaterial();
 
         string getName() const;
         void setName(const string& name);

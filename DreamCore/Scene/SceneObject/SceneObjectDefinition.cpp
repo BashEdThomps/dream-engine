@@ -54,9 +54,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->trace( "Destructing {}",
-                    getNameAndUuidString()
-                    );
+        log->trace( "Destructing {}", getNameAndUuidString() );
 
         if (mTransform != nullptr)
         {
@@ -239,11 +237,12 @@ namespace Dream
         {
             if ((*iter) == child)
             {
-                log->debug(
-                            "Found child to {} remove from {}",
-                            child->getNameAndUuidString(),
-                            getNameAndUuidString()
-                            );
+                log->debug
+                (
+                    "Found child to {} remove from {}",
+                    child->getNameAndUuidString(),
+                    getNameAndUuidString()
+                );
                 mChildDefinitions.erase(iter);
                 return;
             }

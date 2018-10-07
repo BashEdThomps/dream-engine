@@ -17,69 +17,50 @@
  */
 
 #include "AssimpCache.h"
-
-#include "../../../Common/Constants.h"
-
 #include <iostream>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+#include "AssimpModelInstance.h"
+#include "ModelDefinition.h"
+#include "../../../Common/Constants.h"
 
 using std::pair;
 
 namespace Dream
 {
     AssimpCache::AssimpCache
-    ()
-        :DreamObject ("AssimpCache")
+    (MaterialCache* matCache)
+        :DreamObject ("AssimpCache"),
+          mMaterialCacheHandle(matCache)
     {
         auto log = getLog();
-            log->debug("Contructing" );
+        log->debug("Contructing" );
     }
 
     AssimpCache::~AssimpCache
     ()
     {
         auto log = getLog();
-
         log->debug("Destructing" );
-
-        for (auto imp : mCache)
-        {
-            if (imp.second != nullptr)
-            {
-                delete imp.second;
-            }
-        }
         mCache.clear();
     }
 
-    Importer*
+    shared_ptr<AssimpModelInstance>
     AssimpCache::getModelFromCache
-    (string path)
+    (string projectPath, ModelDefinition* def, SceneObjectRuntime* rt)
     {
         auto log = getLog();
-        for (pair<string,Importer*> it : mCache)
+        for (auto& ami : mCache)
         {
-            if (it.first.compare(path) == 0)
+            if (ami->getUuid().compare(def->getUuid()) == 0)
             {
-                    log->debug("Found cached scene for {}", path );
-                return it.second;
+                log->debug("Found cached model for {}", def->getUuid());
+                return ami;
             }
         }
 
-          log->debug("Loading {} from disk",  path);
-
-        Importer* importer = new Importer();
-        importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-
-        const aiScene* scene = importer->GetScene();
-        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-        {
-            log->error( "Error {}" ,importer->GetErrorString() );
-            return nullptr;
-        }
-
-        mCache.insert(pair<string,Importer*>(path,importer));
-        return importer;
+        log->debug("Loading {} from disk",  def->getUuid());
+        auto model = make_shared<AssimpModelInstance>(mMaterialCacheHandle,def,rt);
+        model->load(projectPath);
+        mCache.push_back(model);
+        return model;
     }
 }

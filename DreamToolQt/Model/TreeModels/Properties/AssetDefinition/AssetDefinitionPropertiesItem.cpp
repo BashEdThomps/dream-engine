@@ -27,7 +27,6 @@ using Dream::ModelDefinition;
 using Dream::PhysicsObjectDefinition;
 using Dream::ScriptDefinition;
 using Dream::ShaderDefinition;
-using Dream::SpriteDefinition;
 
 AssetDefinitionPropertiesItem::AssetDefinitionPropertiesItem
 (
@@ -156,20 +155,6 @@ AssetDefinitionPropertiesItem::setData
             dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->setSpectrumAnalyser(value.toBool());
             break;
 
-            // Font
-        case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
-            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setSize(value.toFloat());
-            break;
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
-            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourRed(value.toFloat());
-            break;
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
-            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourGreen(value.toFloat());
-            break;
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-            dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->setColourBlue(value.toFloat());
-            break;
-
             // Light
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
             dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->setAmbientRed(value.toFloat());
@@ -238,7 +223,6 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
         case ASSET_DEFINITION_PROPERTY_PATH_LIST:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
@@ -249,7 +233,6 @@ AssetDefinitionPropertiesItem::setData
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
-        case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
         case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
             break;
@@ -325,16 +308,6 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
             return QVariant(dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->getSpectrumAnalyser());
 
-            // Font
-        case ASSET_DEFINITION_PROPERTY_FONT_SIZE:
-            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getSize());
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_RED:
-            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getColourRed());
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_GREEN:
-            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getColourGreen());
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR_BLUE:
-            return QVariant(dynamic_cast<FontDefinition*>(mAssetDefinitionHandle)->getColourBlue());
-
             // Light
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getAmbientRed());
@@ -397,7 +370,6 @@ AssetDefinitionPropertiesItem::data
 
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
-        case ASSET_DEFINITION_PROPERTY_FONT_COLOUR:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
@@ -409,7 +381,6 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
         case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
-        case ASSET_DEFINITION_PROPERTY_SPRITE_FILE:
         case ASSET_DEFINITION_PROPERTY_NONE:
         case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
             return QVariant();

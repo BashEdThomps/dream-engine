@@ -59,7 +59,6 @@ public:
     bool createPhysicsObjectDirectory();
     bool createScriptDirectory();
     bool createShaderDirectory();
-    bool createSpriteDirectory();
     bool writeProjectFile();
     bool inflateFromDirectory(QString absolutePath);
     bool createNewProjectTree(QString absolutePath);
@@ -73,7 +72,6 @@ public:
     bool physicsObjectDirectoryExists();
     bool scriptDirectoryExists();
     bool shaderDirectoryExists();
-    bool spriteDirectoryExists();
 
     bool projectFileExists();
     bool isValidProject();
@@ -87,7 +85,6 @@ public:
     QString getPhysicsObjectDirectoryAbsolutePath();
     QString getScriptDirectoryAbsolutePath();
     QString getShaderDirectoryAbsolutePath();
-    QString getSpriteDirectoryAbsolutePath();
     QString getProjectFileAbsolutePath();
     QString getProjectDirectoryName();
 
@@ -121,7 +118,6 @@ private: // Variables
     QDir mPhysicsObjetDirectory;
     QDir mScriptDirectory;
     QDir mShaderDirectory;
-    QDir mSpriteDirectory;
     QString getProjectName();
 
 };

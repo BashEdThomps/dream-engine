@@ -129,8 +129,11 @@ namespace Dream
         static GLuint CurrentTexture0;
         static GLuint CurrentTexture1;
         static GLuint CurrentTexture2;
+        static GLuint CurrentTexture3;
         static GLuint CurrentShaderProgram;
-
+        static GLuint CurrentVAO;
+        static GLuint CurrentVBO;
+        static void InvalidateState();
 
         bool load(string) override;
         void loadExtraAttributes(json) override;

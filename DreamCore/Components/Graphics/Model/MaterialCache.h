@@ -29,6 +29,7 @@
 #include "../../../Common/Constants.h"
 #include "../../../Common/DreamObject.h"
 #include "AssimpMaterial.h"
+#include <assimp/material.h>
 
 
 using namespace std;
@@ -46,7 +47,7 @@ namespace Dream
 
         vector<shared_ptr<Texture>>& getTextureCache();
         vector<shared_ptr<AssimpMaterial>>& getMaterialCache();
-        shared_ptr<Texture> loadTextureFromFile(const char*, const char*, const char*);
+        shared_ptr<Texture> loadTextureFromFile(const char*, const char*, const aiTextureType);
         shared_ptr<AssimpMaterial> newAssimpMaterial();
         shared_ptr<AssimpMaterial> getMaterialByName(aiString name);
         void addMaterialToCache(shared_ptr<AssimpMaterial> mat);

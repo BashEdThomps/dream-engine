@@ -727,15 +727,6 @@ ApplicationController::connectAssetMenu
                 this,
                 SLOT(onAction_Asset_NewDefinition_Shader())
                 );
-
-    // Asset Menu -> New Definition -> Sprite
-    connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SPRITE),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Sprite())
-                );
 }
 
 void
@@ -1267,18 +1258,6 @@ ApplicationController::onAction_Asset_NewDefinition_Shader
 }
 
 void
-ApplicationController::onAction_Asset_NewDefinition_Sprite
-()
-{
-    auto log = spdlog::get("ApplicationController");
-    log->debug( "Creating new Sprite Asset Definition");
-    if (mDreamProjectModel->createNewAssetDefinition(SPRITE))
-    {
-        onUI_AssetDefinitionsUpdated();
-    }
-}
-
-void
 ApplicationController::onAssetDefinitionProperty_ModelFile
 (IAssetDefinition* adHandle)
 {
@@ -1546,9 +1525,6 @@ ApplicationController::onCreateNewAssetDefinition
             break;
         case SHADER:
             onAction_Asset_NewDefinition_Shader();
-            break;
-        case SPRITE:
-            onAction_Asset_NewDefinition_Sprite();
             break;
         case NONE:
             break;

@@ -170,7 +170,12 @@ namespace Dream
     {
         auto log = getLog();
         mRuntime = new ProjectRuntime(this, mWindowComponent);
-        mRuntime->useDefinition();
+        if (!mRuntime->useDefinition())
+        {
+            log->critical("Failed to create project runtime");
+            delete mRuntime;
+            mRuntime = nullptr;
+        }
         return mRuntime;
     }
 
