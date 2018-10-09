@@ -27,7 +27,7 @@
 #include "../Path/PathInstance.h"
 #include "../Audio/AudioComponent.h"
 #include "../Audio/AudioInstance.h"
-#include "../Graphics/Model/AssimpModelInstance.h"
+#include "../Graphics/Model/ModelInstance.h"
 #include "../Graphics/Camera.h"
 #include "../Graphics/GraphicsComponent.h"
 #include "../Graphics/Light/LightInstance.h"

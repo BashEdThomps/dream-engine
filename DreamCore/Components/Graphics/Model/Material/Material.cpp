@@ -1,10 +1,10 @@
-#include "AssimpMaterial.h"
-#include "AssimpMesh.h"
+#include "Material.h"
+#include "../ModelMesh.h"
 
 namespace Dream
 {
-    AssimpMaterial::AssimpMaterial()
-        : DreamObject ("AssimpMaterial"),
+    Material::Material()
+        : DreamObject ("Material"),
           mDiffuseTexture(nullptr),
           mSpecularTexture(nullptr),
           mNormalTexture(nullptr)
@@ -13,23 +13,42 @@ namespace Dream
         log->trace("Constructing");
     }
 
-    AssimpMaterial::~AssimpMaterial()
+    Material::~Material()
     {
         auto log = getLog();
         log->trace("Destructing");
     }
 
-    bool AssimpMaterial::operator==(const AssimpMaterial& other)
+    void
+    Material::addMesh
+    (const shared_ptr<ModelMesh> mesh)
+    {
+       mUsedBy.push_back(mesh);
+    }
+
+    void
+    Material::clearMeshes
+    ()
+    {
+       mUsedBy.clear();
+    }
+
+    bool
+    Material::operator==
+    (const Material& other)
     {
         return mName.operator==(other.mName);
     }
 
-    void AssimpMaterial::debug()
+    void
+    Material::debug
+    ()
     {
-        GLuint diff, spec, norm;
+        GLuint diff, spec, norm, disp;
         diff = (mDiffuseTexture  == nullptr ? 0 : mDiffuseTexture->id);
         spec = (mSpecularTexture == nullptr ? 0 : mSpecularTexture->id);
         norm = (mNormalTexture   == nullptr ? 0 : mNormalTexture->id);
+        disp = (mDisplacementTexture == nullptr ? 0 : mDisplacementTexture->id);
 
         auto log = getLog();
         log->debug(
@@ -55,7 +74,9 @@ namespace Dream
 
             "DiffuseTexture..........{}\n"
             "SpecularTexture.........{}\n"
-            "NormalTexture...........{}\n",
+            "NormalTexture...........{}\n"
+            "DisplacementTexture.....{}\n"
+            "Meshes..................{}",
             mName.C_Str(),
             mTwoSided,
             mShadingModel,
@@ -67,18 +88,40 @@ namespace Dream
             mReflectivity,
             mShininessStrength,
             mRefracti,
-
             mColorDiffuse.r, mColorDiffuse.g, mColorDiffuse.b,
             mColorAmbient.r, mColorAmbient.g, mColorAmbient.b,
             mColorSpecular.r, mColorSpecular.g, mColorSpecular.b,
             mColorEmissive.r, mColorEmissive.g, mColorEmissive.b,
             mColorTransparent.r, mColorTransparent.g, mColorTransparent.b,
             mColorReflective.r, mColorReflective.g, mColorReflective.b,
-
             diff,
             spec,
-            norm
-        );
+            norm,
+            disp,
+            mUsedBy.size()
+                    );
+    }
 
+    void
+    Material::logMeshes
+    ()
+    {
+        auto log = getLog();
+        log->debug("\tMeshes for material {} : {}",mName.C_Str(),mUsedBy.size());
+        for (auto mesh : mUsedBy)
+        {
+            log->debug("\t\t{}", mesh->getName());
+            mesh->logInstances();
+        }
+    }
+
+    void
+    Material::draw
+    (ShaderInstance* shader)
+    {
+       for (auto mesh : mUsedBy)
+       {
+           mesh->drawInstances(shader);
+       }
     }
 }

@@ -121,6 +121,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>10</number>
+     </property>
      <item>
       <widget class="QSlider" name="tangentIndexSlider">
        <property name="orientation">
@@ -160,6 +163,9 @@
        <property name="cornerButtonEnabled">
         <bool>true</bool>
        </property>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
       </widget>
      </item>
     </layout>

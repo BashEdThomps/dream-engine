@@ -105,8 +105,30 @@ namespace Dream
         log->error("Could not remove {} from {} shader map, object not found",getName(), material);
     }
 
-    void ModelDefinition::clearMaterialShaderList()
+    void
+    ModelDefinition::clearMaterialShaderList
+    ()
     {
         mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].clear();
+    }
+
+    string
+    ModelDefinition::getShaderForMaterial
+    (string mat)
+    {
+        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST];
+        for (auto nextShader : shaderMap)
+        {
+            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MATERIAL];
+            if (materialName.is_string())
+            {
+                string materialNameStr = materialName;
+                if (mat.compare(materialNameStr) == 0)
+                {
+                    return nextShader[Constants::ASSET_ATTR_MODEL_SHADER];
+                }
+            }
+        }
+        return "";
     }
 }

@@ -14,7 +14,7 @@ namespace Dream
 }
 
 using Dream::ModelDefinition;
-using Dream::AssimpCache;
+using Dream::ModelCache;
 using Dream::Project;
 using std::unique_ptr;
 
@@ -27,13 +27,9 @@ public:
 
     void setProjectPath(QString projectPath);
     void setModelDefinition(ModelDefinition* def);
-    void getAllUpInYourFace();
-
     void setShaderHandlesVector(vector<ShaderDefinition*> shaders);
-private slots:
-    void onAddButtonClicked(bool);
-    void onRemoveButtonClicked(bool);
-    void onReadMaterialsButtonClicked(bool);
+    void readMaterials();
+    Ui::MaterialShaderTableForm mUi;
 
 private:
     void populate();
@@ -44,6 +40,5 @@ protected:
     ModelDefinition* mModelDefinitionHandle;
     QString mProjectPath;
     MaterialShaderTableModel mTableModel;
-    Ui::MaterialShaderTableForm mUi;
-    //static AssimpCache mAssimpCache;
+    shared_ptr<Importer> loadImporter(string path);
 };

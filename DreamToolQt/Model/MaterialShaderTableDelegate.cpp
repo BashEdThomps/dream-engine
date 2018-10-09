@@ -66,7 +66,53 @@ MaterialShaderTableDelegate::setShaderDefinitions
     mShaderDefinitions = shaderDefinitions;
 }
 
-void MaterialShaderTableDelegate::setMaterialList(vector<string> materialList)
+void
+MaterialShaderTableDelegate::setMaterialList
+(vector<string> materialList)
 {
    mMaterialList = materialList;
+}
+
+
+void
+MaterialShaderTableDelegate::setModelData
+(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+{
+    QLineEdit* lineEdit = nullptr;
+    QComboBox* comboBox = nullptr;
+
+    switch (index.column())
+    {
+        case 0:
+            lineEdit = dynamic_cast<QLineEdit*>(editor);
+            model->setData(index,lineEdit->text());
+            break;
+        case 1:
+            comboBox = dynamic_cast<QComboBox*>(editor);
+            model->setData(index,comboBox->currentData());
+            break;
+    }
+}
+
+
+void
+MaterialShaderTableDelegate::setEditorData
+(QWidget* editor, const QModelIndex& index)
+const
+{
+    QLineEdit* lineEdit = nullptr;
+    QComboBox* comboBox = nullptr;
+
+    switch (index.column())
+    {
+        case 0:
+            lineEdit = dynamic_cast<QLineEdit*>(editor);
+            lineEdit->setText(index.data().toString());
+            break;
+        case 1:
+            comboBox = dynamic_cast<QComboBox*>(editor);
+            comboBox->setCurrentIndex(comboBox->findData(index.data()));
+            break;
+    }
+
 }

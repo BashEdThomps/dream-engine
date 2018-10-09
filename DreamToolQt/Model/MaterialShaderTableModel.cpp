@@ -94,7 +94,7 @@ const
             case 1:
                 valStr = pair[Constants::ASSET_ATTR_MODEL_SHADER];
                 log->debug("Getting col 0 (shader) {}", valStr);
-                return QString::fromStdString(valStr);
+                return getShaderNameFromUuid(valStr);
         }
     }
     return QVariant();
@@ -162,8 +162,6 @@ MaterialShaderTableModel::setData
     return true;
 }
 
-
-
 Qt::ItemFlags
 MaterialShaderTableModel::flags
 (const QModelIndex &index)
@@ -178,4 +176,26 @@ const
     }
 
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+}
+
+void
+MaterialShaderTableModel::setShaderDefinitions
+(vector<ShaderDefinition*>& shaderDefinitions)
+{
+    mShaderDefinitions = shaderDefinitions;
+}
+
+QString
+MaterialShaderTableModel::getShaderNameFromUuid
+(string uuid)
+const
+{
+  for (auto sDef : mShaderDefinitions)
+  {
+      if (sDef->getUuid().compare(uuid) == 0)
+      {
+          return QString::fromStdString(sDef->getName());
+      }
+  }
+  return QString();
 }

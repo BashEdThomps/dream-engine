@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "ShaderCache.h"
+#include "ShaderDefinition.h"
 
 namespace Dream
 {
@@ -38,7 +39,7 @@ namespace Dream
     }
 
     shared_ptr<ShaderInstance>
-    ShaderCache::getShader
+    ShaderCache::getShaderByUuid
     (string uuid)
     {
         auto log = getLog();
@@ -53,12 +54,70 @@ namespace Dream
         return nullptr;
     }
 
-    void
-    ShaderCache::putShader
-    (string uuid, shared_ptr<ShaderInstance> shaderProgram)
+    shared_ptr<ShaderInstance>
+    ShaderCache::getShaderFromCache
+    (string projectPath, ShaderDefinition* definition, SceneObjectRuntime* runt)
     {
-        mCache.insert(
-            pair<string,shared_ptr<ShaderInstance>>(uuid,shaderProgram)
-        );
+        auto log = getLog();
+        auto uuid = definition->getUuid();
+        auto shaderInstance = getShaderByUuid(uuid);
+        if (shaderInstance != nullptr)
+        {
+            log->debug("Found shader {} in cache", uuid);
+            return shaderInstance;
+        }
+        log->debug("Loading new shader {}, path: {}",uuid,projectPath);
+        shaderInstance = make_shared<ShaderInstance>(definition,runt);
+        if(shaderInstance->load(projectPath))
+        {
+            mCache.insert
+            (
+                pair<string,shared_ptr<ShaderInstance>>
+                (
+                    uuid,
+                    shaderInstance
+                )
+            );
+            return shaderInstance;
+        }
+        else
+        {
+            log->error("Error while loading shader {}", uuid);
+        }
+        return nullptr;
+    }
+
+    void
+    ShaderCache::logShaders
+    ()
+    {
+        auto log = getLog();
+        log->debug("Contents of shader cache");
+        for (auto shaderPair : mCache)
+        {
+            log->debug("{}",shaderPair.second->getNameAndUuidString());
+            shaderPair.second->logMaterials();
+        }
+    }
+
+    void
+    ShaderCache::draw
+    (
+        mat4 viewMatrix,
+        mat4 projectionMatrix,
+        vec3 viewPos,
+        vector<LightInstance*> lightQueue
+    )
+    {
+        for (auto shaderPair : mCache)
+        {
+            auto shader = shaderPair.second;
+            shader->use();
+            shader->setViewMatrix(viewMatrix);
+            shader->setProjectionMatrix(projectionMatrix);
+            shader->setViewerPosition(viewPos);
+            shader->bindLightQueue(lightQueue);
+            shader->draw();
+        }
     }
 } // End of Dream

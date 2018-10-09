@@ -49,25 +49,24 @@ namespace Dream
 {
     class Texture;
     class MaterialCache;
+    class ShaderCache;
     class ShaderInstance;
-    class AssimpMesh;
+    class ModelMesh;
     class Vertex;
     class Texture;
-    class AssimpMaterial;
+    class Material;
 
-    typedef map<const shared_ptr<AssimpMaterial>,vector<const shared_ptr<AssimpMesh>>> MaterialMeshVectorMap;
-    typedef std::pair<const shared_ptr<AssimpMaterial>,vector<const shared_ptr<AssimpMesh>>> MaterialMeshVectorPair ;
-
-    class AssimpModelInstance : public IAssetInstance
+    class ModelInstance : public IAssetInstance
     {
     public:
-        AssimpModelInstance(
+        ModelInstance(
+            ShaderCache*,
             MaterialCache*,
             IAssetDefinition*,
             SceneObjectRuntime*
         );
 
-        ~AssimpModelInstance() override;
+        ~ModelInstance() override;
         bool load(string) override;
         void draw(
             const shared_ptr<ShaderInstance>&,
@@ -81,13 +80,16 @@ namespace Dream
         void setModelMatrix(mat4);
         mat4 getModelMatrix();
 
+        void addInstance(SceneObjectRuntime*);
+        void removeInstance(SceneObjectRuntime*);
+
     private:
         // Variables
         MaterialCache* mMaterialCache;
+        ShaderCache* mShaderCache;
         map<string,ShaderInstance*> mMaterialShaderMap;
 
-        vector<shared_ptr<AssimpMesh>> mMeshes;
-        MaterialMeshVectorMap mMaterialMeshMap;
+        vector<shared_ptr<ModelMesh>> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
@@ -96,16 +98,15 @@ namespace Dream
         void loadModel(string);
         shared_ptr<Importer> loadImporter(string path);
         void loadShaders();
-        void addMesh(const shared_ptr<AssimpMesh>&);
         shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType);
 
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
 
         void processNode(aiNode*, const aiScene*);
-        shared_ptr<AssimpMesh> processMesh(aiMesh*, const aiScene*);
+        shared_ptr<ModelMesh> processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        void processTextureData(aiMesh* mesh, const aiScene* scene, shared_ptr<AssimpMaterial> material);
+        void processTextureData(aiMesh* mesh, const aiScene* scene, shared_ptr<Material> material);
     }; // End of AssimpModelInstance
 
 } // End of Dream

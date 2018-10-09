@@ -63,7 +63,7 @@ public:
     QOpenGLWindowComponent* getWindowComponent();
 
     void setProjectDirectoryModel(ProjectDirectoryModel* dirModel);
-    void addRightDockWidget(QWidget* widget);
+    QDockWidget* addRightDockWidget(QWidget* widget);
 
     QTreeView* getScenegraphTreeView();
     QTreeView* getPropertiesTreeView();

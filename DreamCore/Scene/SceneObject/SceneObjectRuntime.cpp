@@ -30,8 +30,8 @@
 #include "../../Components/Path/PathInstance.h"
 #include "../../Components/Audio/AudioInstance.h"
 #include "../../Components/Audio/AudioComponent.h"
-#include "../../Components/Graphics/Model/AssimpModelInstance.h"
-#include "../../Components/Graphics/Model/AssimpCache.h"
+#include "../../Components/Graphics/Model/ModelInstance.h"
+#include "../../Components/Graphics/Model/ModelCache.h"
 #include "../../Components/Graphics/Shader/ShaderInstance.h"
 #include "../../Components/Graphics/Light/LightInstance.h"
 #include "../../Components/Physics/PhysicsObjectInstance.h"
@@ -75,12 +75,12 @@ namespace Dream
     ):  IRuntime(sd, sd->getName(), sd->getUuid()),
         mAudioInstance(nullptr),
         mPathInstance(nullptr),
-        mModelInstance(nullptr),
-        mShaderInstance(nullptr),
         mLightInstance(nullptr),
         mScriptInstance(nullptr),
         mPhysicsObjectInstance(nullptr),
         mTransform(nullptr),
+        mModelInstance(nullptr),
+        mShaderInstance(nullptr),
         mSceneRuntimeHandle(sr),
         mParentRuntimeHandle(nullptr),
         mLoaded(false),
@@ -112,7 +112,7 @@ namespace Dream
 
         removeAudioInstance();
         removePathInstance();
-        //removeModelInstance();
+        removeModelInstance();
         //removeShaderInstance();
         removeLightInstance();
         removeScriptInstance();
@@ -152,14 +152,11 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        /*
         if (mModelInstance != nullptr)
         {
             log->info("Deleting ModelInstance for {}",getNameAndUuidString());
-            delete mModelInstance;
-            mModelInstance = nullptr;
+            mModelInstance->removeInstance(this);
         }
-        */
     }
 
     /*
@@ -338,7 +335,7 @@ namespace Dream
         return mAudioInstance;
     }
 
-    const shared_ptr<AssimpModelInstance>&
+    const shared_ptr<ModelInstance>&
     SceneObjectRuntime::getModelInstance
     ()
     {
@@ -616,6 +613,42 @@ namespace Dream
         return createAssetInstance(assetDefinition);
     }
 
+    IAssetDefinition*
+    SceneObjectRuntime::getAssetDefinitionByUuid
+    (string uuid)
+    {
+        auto log = getLog();
+        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
+        if (project == nullptr)
+        {
+            log->error("Project is not found");
+            return nullptr;
+        }
+        auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+        if (assetDefinition == nullptr)
+        {
+            log->error("AssetDefinition not found");
+        }
+        return assetDefinition;
+    }
+
+    string
+    SceneObjectRuntime::getProjectPath
+    ()
+    {
+        auto log = getLog();
+        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
+
+        if (project == nullptr)
+        {
+            log->error("Project is null");
+            return "";
+        }
+
+        return project->getProjectPath();
+    }
+
+
     bool
     SceneObjectRuntime::replaceAssetUuid
     (string uuid)
@@ -755,6 +788,10 @@ namespace Dream
         if (cache != nullptr)
         {
             mModelInstance = cache->getModelFromCache(mProjectPath, definition,this);
+            if (mModelInstance != nullptr)
+            {
+                mModelInstance->addInstance(this);
+            }
         }
         return mModelInstance != nullptr;
     }
@@ -766,10 +803,7 @@ namespace Dream
         auto log = getLog();
         removeScriptInstance();
         log->debug("Creating Script asset instance.");
-        mScriptInstance = new LuaScriptInstance(
-            definition,
-            this
-        );
+        mScriptInstance = new LuaScriptInstance(definition, this);
         bool result = mScriptInstance->load(mProjectPath);
         if (!result)
         {
@@ -795,23 +829,8 @@ namespace Dream
         log->debug( "Creating Shader asset instance." );
 
         auto shaderCache = mSceneRuntimeHandle->getProjectRuntime()->getShaderCache();
-        mShaderInstance = shaderCache->getShader(definition->getUuid());
-        if (mShaderInstance == nullptr)
-        {
-            // Not found in cache, try to load
-            mShaderInstance = make_shared<ShaderInstance>(definition,this);
-            if(mShaderInstance->load(mProjectPath))
-            {
-                shaderCache->putShader(definition->getUuid(), mShaderInstance);
-                return true;
-            }
-        }
-        else
-        {
-            // Found in cache
-            return true;
-        }
-        return false;
+        mShaderInstance = shaderCache->getShaderFromCache(mProjectPath, definition, this);
+        return mShaderInstance != nullptr;
     }
 
     bool

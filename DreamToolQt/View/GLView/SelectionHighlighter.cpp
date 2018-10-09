@@ -19,7 +19,7 @@
 #include "SelectionHighlighter.h"
 #include <spdlog/spdlog.h>
 
-using Dream::AssimpModelInstance;
+using Dream::ModelInstance;
 
 using glm::quat;
 using glm::mat4;

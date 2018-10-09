@@ -40,7 +40,7 @@ namespace Dream
     class Event;
     class AudioInstance;
     class PathInstance;
-    class AssimpModelInstance;
+    class ModelInstance;
     class LightInstance;
     class ShaderInstance;
     class PhysicsObjectInstance;
@@ -100,7 +100,7 @@ namespace Dream
 
         PathInstance*  getPathInstance();
         AudioInstance* getAudioInstance();
-        const shared_ptr<AssimpModelInstance>& getModelInstance();
+        const shared_ptr<ModelInstance>& getModelInstance();
         ScriptInstance* getScriptInstance();
         const shared_ptr<ShaderInstance>& getShaderInstance();
         PhysicsObjectInstance* getPhysicsObjectInstance();
@@ -171,6 +171,8 @@ namespace Dream
         void removePhysicsObjectInstance();
 
         bool replaceAssetUuid(string uuid);
+        IAssetDefinition*getAssetDefinitionByUuid(string uuid);
+        string getProjectPath();
     private:
 
         AudioInstance* mAudioInstance;
@@ -180,7 +182,7 @@ namespace Dream
         PhysicsObjectInstance* mPhysicsObjectInstance;
         Transform3D* mTransform;
 
-        shared_ptr<AssimpModelInstance> mModelInstance;
+        shared_ptr<ModelInstance> mModelInstance;
         shared_ptr<ShaderInstance> mShaderInstance;
 
         vector<Event> mEventQueue;

@@ -47,7 +47,7 @@ namespace Dream
     class SceneDefinition;
     class MaterialCache;
     class ScriptCache;
-    class AssimpCache;
+    class ModelCache;
     class ShaderCache;
     class ComponentThread;
     class IAssetDefinition;
@@ -79,7 +79,7 @@ namespace Dream
 
         // Caches
         MaterialCache* mMaterialCache;
-        AssimpCache* mModelCache;
+        ModelCache* mModelCache;
         ShaderCache* mShaderCache;
         ScriptCache* mScriptCache;
         bool mScriptingEnabled;
@@ -132,7 +132,7 @@ namespace Dream
 
         ShaderCache* getShaderCache();
         MaterialCache* getTextureCache();
-        AssimpCache* getModelCache();
+        ModelCache* getModelCache();
 
         bool getScriptingEnabled() const;
         void setScriptingEnabled(bool);

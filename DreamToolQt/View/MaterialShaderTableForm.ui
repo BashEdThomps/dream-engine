@@ -32,10 +32,10 @@
    <item>
     <widget class="QTableView" name="tableView">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Plain</enum>
      </property>
      <property name="showDropIndicator" stdset="0">
       <bool>false</bool>
@@ -43,12 +43,18 @@
      <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
-     <property name="wordWrap">
+     <property name="showGrid">
       <bool>false</bool>
      </property>
-     <property name="cornerButtonEnabled">
+     <property name="wordWrap">
       <bool>true</bool>
      </property>
+     <property name="cornerButtonEnabled">
+      <bool>false</bool>
+     </property>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
     </widget>
    </item>
   </layout>

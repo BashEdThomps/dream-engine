@@ -183,7 +183,7 @@ namespace Dream
              mInputMap->GetFloat(JS_AnalogRightStickX),
              mInputMap->GetFloat(JS_AnalogRightStickY),
              mInputMap->GetBool (JS_AnalogRightButton)
-                    );
+        );
     }
 
     bool InputComponent::usingKeyboard() const

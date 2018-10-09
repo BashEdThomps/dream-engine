@@ -4,19 +4,22 @@
 #include "Texture.h"
 #include <vector>
 #include <memory>
-#include "../Vertex.h"
-#include "../../../Common/DreamObject.h"
+#include "../../../../Common/DreamObject.h"
 
 using namespace std;
 
 namespace Dream
 {
-    class AssimpMesh;
-    class AssimpMaterial : public DreamObject
+    class ModelMesh;
+    class ShaderInstance;
+
+    class Material : public DreamObject
     {
     public:
-        AssimpMaterial();
-        ~AssimpMaterial() override;
+        Material();
+        ~Material() override;
+        void addMesh(const shared_ptr<ModelMesh> mesh);
+        void clearMeshes();
 
         aiString mName;
         int mTwoSided = -1;
@@ -39,7 +42,10 @@ namespace Dream
         shared_ptr<Texture> mSpecularTexture;
         shared_ptr<Texture> mNormalTexture;
         shared_ptr<Texture> mDisplacementTexture;
-        bool operator==(const AssimpMaterial& other);
+        bool operator==(const Material& other);
         void debug();
+        vector<const shared_ptr<ModelMesh>> mUsedBy;
+        void logMeshes();
+        void draw(ShaderInstance*);
     };
 }

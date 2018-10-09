@@ -20,6 +20,7 @@ namespace Dream
           mLastSampleOffset(0),
           mChannels(-1)
     {
+        setLogClassName("AudioInstance");
         setStatus(UNKNOWN);
         setLooping(false);
         setBuffer(0);
@@ -156,7 +157,7 @@ namespace Dream
             mSpectrumAnalyser->setSourceStereo(mFormat == AL_FORMAT_STEREO16);
             // Currently Arbitrary, from example
             mSpectrumAnalyser->setParameters(mFrequency/9,1024);
-            log->critical("Creating Spectrum Analyser for {} with sample rate {}",getNameAndUuidString(),mFrequency);
+            log->trace("Creating Spectrum Analyser for {} with sample rate {}",getNameAndUuidString(),mFrequency);
             if (mAudioComponent != nullptr)
             {
                 mAudioComponent->pushToUpdateQueue(this);
@@ -208,14 +209,14 @@ namespace Dream
         for (int markerIndex = 0; markerIndex< nMarkers; markerIndex++)
         {
             auto log = getLog();
-            log->debug("Generating events for marker {}", markerIndex);
+            log->trace("Generating events for marker {}", markerIndex);
             auto markerStart = ad->getMarkerSampleIndex(markerIndex);
             auto count = ad->getMarkerRepeat(markerIndex);
             auto step = ad->getMarkerRepeatPeriod(markerIndex);
             auto markerName = ad->getMarkerName(markerIndex);
 
             auto next = markerStart;
-            log->debug("Marker {}'s is : ", markerIndex, next);
+            log->trace("Marker {}'s is : ", markerIndex, next);
             Event e(mSceneObjectRuntime,"audio");
             e.setString("name",markerName);
             e.setNumber("time",markerStart);
@@ -225,7 +226,7 @@ namespace Dream
             {
                 auto repeatIndex = i+1;
                 auto next = markerStart + (repeatIndex*step);
-                log->debug("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
+                log->trace("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
                 Event e(mSceneObjectRuntime,"audio");
                 e.setString("name",markerName);
                 e.setNumber("time",next);
@@ -259,7 +260,7 @@ namespace Dream
         // has just looped, restore cached events
         if (mLooping && mLastSampleOffset > currentSample)
         {
-            log->critical("Just Looped");
+            log->debug("Just Looped");
            mMarkerEvents = mMarkerEventsCache;
         }
 

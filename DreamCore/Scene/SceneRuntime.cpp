@@ -30,8 +30,11 @@
 #include "SceneObject/SceneObjectRuntime.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/Shader/ShaderCache.h"
 #include "../Components/Graphics/Camera.h"
+
 #include "../Components/Physics/PhysicsComponent.h"
+
 #include "../Components/Scripting/IScriptComponent.h"
 
 
@@ -313,6 +316,7 @@ namespace Dream
         }
         setRootSceneObjectRuntime(sor);
         setState(SCENE_STATE_LOADED);
+        mProjectRuntime->getShaderCache()->logShaders();
         return true;
     }
 

@@ -59,14 +59,14 @@ namespace Dream
         return mTextureCache;
     }
 
-    vector<shared_ptr<AssimpMaterial>>&
+    vector<shared_ptr<Material>>&
     MaterialCache::getMaterialCache
     ()
     {
         return mMaterialCache;
     }
 
-    shared_ptr<AssimpMaterial>
+    shared_ptr<Material>
     MaterialCache::getMaterialByName
     (aiString name)
     {
@@ -82,10 +82,10 @@ namespace Dream
         return nullptr;
     }
 
-    void MaterialCache::addMaterialToCache(shared_ptr<AssimpMaterial> mat)
+    void MaterialCache::addMaterialToCache(shared_ptr<Material> mat)
     {
         auto log = getLog();
-        log->debug("Adding material to map {}", mat->mName.C_Str());
+        log->debug("Adding material to cache {}", mat->mName.C_Str());
         mMaterialCache.push_back(mat);
     }
 
@@ -170,13 +170,29 @@ namespace Dream
         return texture;
     }
 
-    shared_ptr<AssimpMaterial>
-    MaterialCache::newAssimpMaterial
-    ()
+    shared_ptr<Material>
+    MaterialCache::newMaterial
+    (aiMaterial* material)
     {
-        auto newAM = make_shared<AssimpMaterial>();
-        addMaterialToCache(newAM);
-        return newAM;
+        auto aMaterial = make_shared<Material>();
+        aiGetMaterialString(material,  AI_MATKEY_NAME,               &aMaterial->mName);
+        aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
+        aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial->mShadingModel);
+        aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial->mEnableWireframe);
+        aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial->mBlendFunc);
+        aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial->mOpacity);
+        aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial->mBumpScaling);
+        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mHardness);
+        aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial->mReflectivity);
+        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial->mShininessStrength);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial->mColorDiffuse);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial->mColorAmbient);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial->mColorSpecular);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
+        aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
+        addMaterialToCache(aMaterial);
+        return aMaterial;
     }
 
     void MaterialCache::flushRawTextureImageData()

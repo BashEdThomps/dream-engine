@@ -3,6 +3,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <DreamCore.h>
 #include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include <QMessageBox>
 
 MaterialShaderFormController::MaterialShaderFormController
@@ -40,6 +41,7 @@ void
 MaterialShaderFormController::setShaderHandlesVector
 (vector<ShaderDefinition*> shaders)
 {
+    mTableModel.setShaderDefinitions(shaders);
     mTableDelegate->setShaderDefinitions(shaders);
 }
 
@@ -51,29 +53,9 @@ MaterialShaderFormController::setModelDefinition
     populate();
 }
 
-void
-MaterialShaderFormController::onAddButtonClicked
-(bool)
-{
-    auto log = spdlog::get("MaterialShaderTableController");
-    log->debug("Add Button Clicked");
-    mTableModel.insertRows(mTableModel.rowCount(QModelIndex()),1,QModelIndex());
-}
-
-void
-MaterialShaderFormController::onRemoveButtonClicked
-(bool)
-{
-    auto log = spdlog::get("MaterialShaderTableController");
-    log->debug("Remove Button Clicked");
-    auto selected = mUi.tableView->currentIndex();
-    mTableModel.removeRows(selected.row(),1,QModelIndex());
-}
-
-void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
+void MaterialShaderFormController::readMaterials()
 {
 
-     /*
     auto log = spdlog::get("MaterialShaderTableController");
     log->debug("Read Mateerials from Model Button Clicked");
 
@@ -86,7 +68,7 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
     string assetPath = mModelDefinitionHandle->getAssetPath();
     string absolutePath = mProjectPath.toStdString()+assetPath;
     log->debug("Reading model from {}",absolutePath);
-    auto model = mAssimpCache.getModelFromCache(mProjectPath.toStdString(), mModelDefinitionHandle, nullptr);
+    auto model = loadImporter(absolutePath);
 
     if (model == nullptr)
     {
@@ -95,7 +77,6 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
         QMessageBox::warning(this, "No Model Available","Cannot populate materials, model data not found.");
         return;
     }
-    return;
 
     const aiScene* scene = model->GetScene();
 
@@ -107,7 +88,6 @@ void MaterialShaderFormController::onReadMaterialsButtonClicked(bool)
 
     processAssimpNode(scene->mRootNode, scene);
     mUi.tableView->update();
-    */
 }
 
 void
@@ -119,7 +99,7 @@ MaterialShaderFormController::populate
    if (mModelDefinitionHandle != nullptr)
    {
        log->debug("ModelDefinition is present");
-       onReadMaterialsButtonClicked(true);
+       readMaterials();
        mTableModel.setModelDefinition(mModelDefinitionHandle);
        mUi.tableView->setModel(&mTableModel);
        mUi.tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -128,14 +108,6 @@ MaterialShaderFormController::populate
    {
     log->error("Cannot populate MaterialShader table, model definition is null");
    }
-}
-
-void MaterialShaderFormController::getAllUpInYourFace()
-{
-    show();
-    activateWindow();
-    raise();
-    setFocus();
 }
 
 int
@@ -173,4 +145,23 @@ MaterialShaderFormController::processAssimpNode
     return materialCount;
 }
 
-//AssimpCache MaterialShaderFormController::mAssimpCache;
+shared_ptr<Importer>
+MaterialShaderFormController::loadImporter
+(string path)
+{
+    auto log = spdlog::get("MaterialShaderTableController");
+
+    log->debug("Loading {} from disk",  path);
+
+    auto importer = make_shared<Importer>();
+    importer->ReadFile(path, aiProcess_Triangulate);
+
+    const aiScene* scene = importer->GetScene();
+    if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    {
+        log->error( "Error {}" ,importer->GetErrorString() );
+        return nullptr;
+    }
+
+    return importer;
+}

@@ -22,26 +22,28 @@
 #include <assimp/Importer.hpp>
 
 #include "../../../Common/DreamObject.h"
-#include "AssimpMesh.h"
+#include "ModelMesh.h"
 
 using std::string;
 using std::vector;
 
 namespace Dream
 {
+    class ShaderCache;
     class MaterialCache;
     class ModelDefinition;
     class SceneObjectRuntime;
 
-    class AssimpCache : public DreamObject
+    class ModelCache : public DreamObject
     {
     private:
-        vector<shared_ptr<AssimpModelInstance>> mCache;
+        vector<shared_ptr<ModelInstance>> mCache;
     public:
-        AssimpCache(MaterialCache*);
-        ~AssimpCache();
-        shared_ptr<AssimpModelInstance> getModelFromCache(string, ModelDefinition*,SceneObjectRuntime*);
+        ModelCache(ShaderCache*, MaterialCache*);
+        ~ModelCache();
+        shared_ptr<ModelInstance> getModelFromCache(string, ModelDefinition*,SceneObjectRuntime*);
     protected:
+        ShaderCache* mShaderCacheHandle;
         MaterialCache* mMaterialCacheHandle;
     };
 }

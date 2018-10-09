@@ -24,6 +24,9 @@ public:
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const  override;
     void setShaderDefinitions(vector<ShaderDefinition*>& shaderDefinitions);
     void setMaterialList(vector<string> materialList);
+    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
+    void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+
 protected:
     vector<ShaderDefinition*> mShaderDefinitions;
     vector<string> mMaterialList;

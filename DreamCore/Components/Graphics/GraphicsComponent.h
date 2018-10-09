@@ -38,17 +38,15 @@ namespace Dream
 {
     class IWindowComponent;
     class Camera;
-    class AssimpModelInstance;
+    class ModelInstance;
     class ShaderInstance;
     class LightInstance;
     class SceneRuntime;
     class SceneObjectRuntime;
     class Texture;
-    class AssimpMesh;
-    class AssimpMaterial;
-
-    typedef map<const shared_ptr<AssimpModelInstance>, vector<SceneObjectRuntime*>> ModelSoVectorMap;
-    typedef std::pair<const shared_ptr<AssimpModelInstance>,vector<SceneObjectRuntime*>> ModelSoVectorPair;
+    class ModelMesh;
+    class Material;
+    class ShaderCache;
 
     class GraphicsComponent : public IComponent
     {
@@ -62,13 +60,12 @@ namespace Dream
         float mMinimumDraw;
         float mMaximumDraw;
         float mMeshCullDistance;
-        bool mUpdateInstanceMapFlag;
 
         vector<SceneObjectRuntime*> mModelQueue;
         vector<LightInstance*> mLightQueue;
 
-        ModelSoVectorMap mInstanceMap;
         IWindowComponent* mWindowComponent;
+        ShaderCache* mShaderCacheHandle;
     public:
         GraphicsComponent(Camera*,IWindowComponent*);
         ~GraphicsComponent() override;
@@ -106,5 +103,7 @@ namespace Dream
         void setMaximumDraw(float maximumDraw);
         bool getUpdateInstanceMapFlag() const;
         void setUpdateInstanceMapFlag(bool updateInstanceMapFlag);
+        void setShaderCache(ShaderCache* cache);
+
     }; // End of GraphicsComponent
 } // End of Dream

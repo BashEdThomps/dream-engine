@@ -21,7 +21,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-using Dream::AssimpModelInstance;
+using Dream::ModelInstance;
 using Dream::Constants;
 using Dream::Transform3D;
 using Dream::ShaderInstance;

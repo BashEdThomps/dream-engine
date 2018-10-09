@@ -30,5 +30,6 @@ namespace Dream
         json* getMaterialShaders();
         void removeMaterialShader(string material);
         void clearMaterialShaderList();
+        string getShaderForMaterial(string mat);
     };
 }

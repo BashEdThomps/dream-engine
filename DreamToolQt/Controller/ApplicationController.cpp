@@ -2048,7 +2048,10 @@ void ApplicationController::onAssetDefinitionProperty_ModelMaterialShaderMap
         mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinition();
     }
     mMaterialShaderTableController.setShaderHandlesVector(mSelectedProjectDefinitionHandle->getShaderAssetDefinitionVector());
-    mMainWindowHandle.addRightDockWidget(&mMaterialShaderTableController);
+    auto dw = mMainWindowHandle.addRightDockWidget(&mMaterialShaderTableController);
+    auto title = new QLabel(QString("Material Shader Map (%1)").arg(QString::fromStdString(adHandle->getName())));
+    title->setMinimumHeight(24);
+    dw->setTitleBarWidget(title);
 }
 
 void
@@ -2257,7 +2260,10 @@ ApplicationController::onAssetDefinitionProperty_PathList
     mPathEditorFormController.setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
     mPathPointViewer->setPathDefinition(dynamic_cast<PathDefinition*>(adHandle));
     mMainWindowHandle.setPathEditorFormControllerHandle(&mPathEditorFormController);
-    mMainWindowHandle.addRightDockWidget(&mPathEditorFormController);
+    auto dw = mMainWindowHandle.addRightDockWidget(&mPathEditorFormController);
+    auto title = new QLabel(QString("Path Editor (%1)").arg(QString::fromStdString(adHandle->getName())));
+    title->setMinimumHeight(24);
+    dw->setTitleBarWidget(title);
 }
 
 void

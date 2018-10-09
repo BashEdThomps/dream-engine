@@ -7,9 +7,9 @@
 #include <glm/glm.hpp>
 #include <assimp/types.h>
 
-#include "Texture.h"
+#include "Material/Texture.h"
 
-#include "AssimpMaterial.h"
+#include "Material/Material.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
 #include "../BoundingBox.h"
@@ -19,13 +19,13 @@
 
 namespace Dream
 {
-    class AssimpModelInstance;
+    class ModelInstance;
 
-    class AssimpMesh : public DreamObject
+    class ModelMesh : public DreamObject
     {
     private:
-        AssimpModelInstance* mParent;
-        shared_ptr<AssimpMaterial> mMaterial;
+        ModelInstance* mParent;
+        shared_ptr<Material> mMaterial;
         string  mName;
 
         GLuint mVAO;
@@ -35,22 +35,26 @@ namespace Dream
         vector<Vertex>  mVertices;
         vector<GLuint> mIndices;
         BoundingBox mBoundingBox;
+        vector<SceneObjectRuntime*> mInstances;
 
     public:
-        AssimpMesh
+        ModelMesh
         (
-            AssimpModelInstance* parent,
+            ModelInstance* parent,
             string name,
             vector<Vertex> vertexArray,
             vector<GLuint> indexArray,
-            shared_ptr<AssimpMaterial> material
+            shared_ptr<Material> material
         );
 
-        ~AssimpMesh();
+        ~ModelMesh();
         void draw(const shared_ptr<ShaderInstance>&);
         void init();
+        void logInstances();
+        void addInstance(SceneObjectRuntime* runt);
+        void removeInstance(SceneObjectRuntime* runt);
 
-        const shared_ptr<AssimpMaterial>& getMaterial();
+        const shared_ptr<Material>& getMaterial();
 
         string getName() const;
         void setName(const string& name);
@@ -58,5 +62,7 @@ namespace Dream
         void setBoundingBox(const BoundingBox& boundingBox);
         vector<Vertex> getVertices() const;
         vector<GLuint> getIndices() const;
+        GLuint getVAO() const;
+        void drawInstances(ShaderInstance* shader);
     };
 }

@@ -15,7 +15,7 @@ namespace Dream
 }
 
 using Dream::PathDefinition;
-using Dream::AssimpCache;
+using Dream::ModelCache;
 using Dream::Project;
 using std::unique_ptr;
 

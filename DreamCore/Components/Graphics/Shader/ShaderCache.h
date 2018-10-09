@@ -35,11 +35,22 @@ namespace Dream
 
     private:
         map<string,shared_ptr<ShaderInstance>> mCache;
+        shared_ptr<ShaderInstance> getShaderByUuid(string);
+
     public:
         ShaderCache();
         ~ShaderCache();
 
-        shared_ptr<ShaderInstance> getShader(string);
-        void  putShader(string,shared_ptr<ShaderInstance>);
+
+        shared_ptr<ShaderInstance> getShaderFromCache
+        (
+            string projectPath,
+            ShaderDefinition* definition,
+            SceneObjectRuntime* runt
+        );
+
+        void logShaders();
+
+        void draw(mat4 viewMatrix, mat4 projectionMatrix, vec3 viewPos, vector<LightInstance*> lightQueue);
     };
 }

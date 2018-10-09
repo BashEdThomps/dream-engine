@@ -26,9 +26,9 @@
 #include <GL/glew.h>
 
 #include "Texture.h"
-#include "../../../Common/Constants.h"
-#include "../../../Common/DreamObject.h"
-#include "AssimpMaterial.h"
+#include "../../../../Common/Constants.h"
+#include "../../../../Common/DreamObject.h"
+#include "Material.h"
 #include <assimp/material.h>
 
 
@@ -36,21 +36,21 @@ using namespace std;
 
 namespace Dream
 {
-    class AssimpMesh;
+    class ModelMesh;
     class MaterialCache : public DreamObject
     {
         vector<shared_ptr<Texture>> mTextureCache;
-        vector<shared_ptr<AssimpMaterial>> mMaterialCache;
+        vector<shared_ptr<Material>> mMaterialCache;
     public:
         MaterialCache();
         ~MaterialCache();
 
         vector<shared_ptr<Texture>>& getTextureCache();
-        vector<shared_ptr<AssimpMaterial>>& getMaterialCache();
+        vector<shared_ptr<Material>>& getMaterialCache();
         shared_ptr<Texture> loadTextureFromFile(const char*, const char*, const aiTextureType);
-        shared_ptr<AssimpMaterial> newAssimpMaterial();
-        shared_ptr<AssimpMaterial> getMaterialByName(aiString name);
-        void addMaterialToCache(shared_ptr<AssimpMaterial> mat);
+        shared_ptr<Material> newMaterial(aiMaterial* mat);
+        shared_ptr<Material> getMaterialByName(aiString name);
+        void addMaterialToCache(shared_ptr<Material> mat);
         void flushRawTextureImageData();
     };
 

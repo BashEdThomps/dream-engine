@@ -32,9 +32,9 @@
 
 #include "Light/LightInstance.h"
 
-#include "Model/AssimpModelInstance.h"
-#include "Model/AssimpMesh.h"
-#include "Model/MaterialCache.h"
+#include "Model/ModelInstance.h"
+#include "Model/ModelMesh.h"
+#include "Model/Material/MaterialCache.h"
 
 #include "Shader/ShaderInstance.h"
 #include "Shader/ShaderCache.h"
@@ -70,8 +70,8 @@ namespace Dream
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
           mMeshCullDistance(2500.0f),
-          mUpdateInstanceMapFlag(true),
-          mWindowComponent(windowComponent)
+          mWindowComponent(windowComponent),
+          mShaderCacheHandle(nullptr)
     {
         setLogClassName("GraphicsComponent");
         auto log = getLog();
@@ -233,26 +233,6 @@ namespace Dream
     }
 
     void
-    GraphicsComponent::addToInstanceMap
-    (SceneObjectRuntime* runtime)
-    {
-       auto model = runtime->getModelInstance();
-       auto mapEnd = mInstanceMap.end();
-       auto iter = mInstanceMap.find(model);
-
-       if (iter == mapEnd)
-       {
-          vector<SceneObjectRuntime*> vec;
-          vec.push_back(runtime);
-          mInstanceMap.insert(ModelSoVectorPair(model,vec));
-       }
-       else
-       {
-           (*iter).second.push_back(runtime);
-       }
-    }
-
-    void
     GraphicsComponent::updateComponent
     ()
     {
@@ -287,10 +267,6 @@ namespace Dream
                             if (object->hasShaderInstance())
                             {
                                 addToModelQueue(object);
-                                if (mUpdateInstanceMapFlag)
-                                {
-                                    addToInstanceMap(object);
-                                }
                             }
                             else
                             {
@@ -311,7 +287,6 @@ namespace Dream
                 )
             );
         }
-        mUpdateInstanceMapFlag=false;
         endUpdate();
     }
 
@@ -412,11 +387,27 @@ namespace Dream
         auto log = getLog();
         preModelRender();
         log->debug("Draw 3D Queue" );
+
+        /*
         for (SceneObjectRuntime* it : mModelQueue)
         {
             drawModel(it);
             checkGLError();
         }
+        */
+
+        if (mShaderCacheHandle != nullptr)
+        {
+            mShaderCacheHandle->draw
+            (
+                mViewMatrix,
+                mProjectionMatrix,
+                mCamera->getTranslation(),
+                mLightQueue
+            );
+
+        }
+
         postModelRender();
     }
 
@@ -444,18 +435,13 @@ namespace Dream
         log->debug("Drawing Model " , sceneObject->getNameAndUuidString() );
 
         // Get Assets
-        const shared_ptr<AssimpModelInstance>& model = sceneObject->getModelInstance();
+        const shared_ptr<ModelInstance>& model = sceneObject->getModelInstance();
         const shared_ptr<ShaderInstance>& shader = sceneObject->getShaderInstance();
         shader->use();
 
         // Set Point Light Values
         log->debug("The scene has {} lights", mLightQueue.size());
-        for (size_t i=0; i < mLightQueue.size(); i++)
-        {
-            auto light = mLightQueue.at(i);
-            shader->bindLight(light);
-            checkGLError();
-        }
+        shader->bindLightQueue(mLightQueue);
 
         vec3 cameraTranslation = mCamera->getTranslation();
         shader->addUniform(FLOAT3,"viewPos",1,&cameraTranslation);
@@ -469,9 +455,11 @@ namespace Dream
         checkGLError();
 
         // calculate the model matrix
+        mat4 modelMatrix = sceneObject->getTransform()->asMat4();
+        vec3 objTranslation = sceneObject->getTranslation();
+        /*
         mat4 modelMatrix = mat4(1.0f);
         // Get raw data
-        vec3 objTranslation = sceneObject->getTranslation();
         quat objOrientation = sceneObject->getTransform()->getOrientation();
         vec3 objScale       = sceneObject->getScale();
         // Translate
@@ -482,6 +470,7 @@ namespace Dream
         // Scale
         modelMatrix = scale(modelMatrix, objScale);
         model->setModelMatrix(modelMatrix);
+        */
 
         // Pass model matrix to shader
         shader->setModelMatrix(modelMatrix);
@@ -528,13 +517,11 @@ namespace Dream
         mMaximumDraw = maximumDraw;
     }
 
-    bool GraphicsComponent::getUpdateInstanceMapFlag() const
+    void
+    GraphicsComponent::setShaderCache
+    (ShaderCache* cache)
     {
-        return mUpdateInstanceMapFlag;
+        mShaderCacheHandle = cache;
     }
 
-    void GraphicsComponent::setUpdateInstanceMapFlag(bool updateInstanceMapFlag)
-    {
-        mUpdateInstanceMapFlag = updateInstanceMapFlag;
-    }
 } // End of Dream

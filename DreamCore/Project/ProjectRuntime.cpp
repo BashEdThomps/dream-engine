@@ -40,8 +40,8 @@
 #include "../Components/Scripting/IScriptComponent.h"
 #include "../Components/Scripting/Lua/LuaComponent.h"
 
-#include "../Components/Graphics/Model/AssimpCache.h"
-#include "../Components/Graphics/Model/MaterialCache.h"
+#include "../Components/Graphics/Model/ModelCache.h"
+#include "../Components/Graphics/Model/Material/MaterialCache.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
 
 using std::endl;
@@ -260,7 +260,7 @@ namespace Dream
         mCamera = new Camera();
         mGraphicsComponent = new GraphicsComponent(mCamera,mWindowComponent);
         mGraphicsComponent->setTime(mTime);
-
+        mGraphicsComponent->setShaderCache(mShaderCache);
         if (!mGraphicsComponent->init())
         {
             log->error( "Unable to initialise Graphics Component." );
@@ -340,8 +340,8 @@ namespace Dream
     {
         getLog()->trace("initialising caches");
         mMaterialCache = new MaterialCache();
-        mModelCache   = new AssimpCache(mMaterialCache);
         mShaderCache  = new ShaderCache();
+        mModelCache   = new ModelCache(mShaderCache, mMaterialCache);
         mScriptCache  = new ScriptCache();
         return true;
     }
@@ -542,6 +542,7 @@ namespace Dream
        {
            return mWindowComponent->getWidth();
        }
+       return 0;
     }
 
     void
@@ -562,6 +563,7 @@ namespace Dream
        {
            return mWindowComponent->getHeight();
        }
+       return 0;
     }
 
     void
@@ -682,7 +684,7 @@ namespace Dream
         return mMaterialCache;
     }
 
-    AssimpCache*
+    ModelCache*
     ProjectRuntime::getModelCache
     ()
     {

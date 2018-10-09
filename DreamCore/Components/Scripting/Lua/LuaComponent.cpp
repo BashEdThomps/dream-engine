@@ -28,7 +28,7 @@
 #include "../../Path/PathInstance.h"
 #include "../../Audio/AudioComponent.h"
 #include "../../Audio/AudioInstance.h"
-#include "../../Graphics/Model/AssimpModelInstance.h"
+#include "../../Graphics/Model/ModelInstance.h"
 #include "../../Graphics/Camera.h"
 #include "../../Graphics/GraphicsComponent.h"
 #include "../../Graphics/NanoVGComponent.h"
@@ -786,7 +786,7 @@ namespace Dream
     {
         debugRegisteringClass("AssimpModelInstance");
         sol::state_view stateView(mState);
-        stateView.new_usertype<AssimpModelInstance>("AssimpModelInstance");
+        stateView.new_usertype<ModelInstance>("AssimpModelInstance");
     }
 
     void

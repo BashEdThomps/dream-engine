@@ -903,12 +903,15 @@ void MainWindowController::setProjectDirectoryModel(ProjectDirectoryModel* dirMo
    mProjectDirectoryModelHandle = dirModel;
 }
 
-void MainWindowController::addRightDockWidget(QWidget* widget)
+QDockWidget*
+MainWindowController::addRightDockWidget
+(QWidget* widget)
 {
     mRightDockWidget.setWidget(widget);
     addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, &mRightDockWidget);
     connect(&mRightDockWidget, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(onRightDockWidgetClosed(QCloseEvent*)));
     mRightDockWidget.show();
+    return &mRightDockWidget;
 }
 
 void

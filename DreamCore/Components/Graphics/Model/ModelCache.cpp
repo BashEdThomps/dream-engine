@@ -16,9 +16,9 @@
  * this file belongs to.
  */
 
-#include "AssimpCache.h"
+#include "ModelCache.h"
 #include <iostream>
-#include "AssimpModelInstance.h"
+#include "ModelInstance.h"
 #include "ModelDefinition.h"
 #include "../../../Common/Constants.h"
 
@@ -26,16 +26,17 @@ using std::pair;
 
 namespace Dream
 {
-    AssimpCache::AssimpCache
-    (MaterialCache* matCache)
+    ModelCache::ModelCache
+    (ShaderCache* shaderCache, MaterialCache* matCache)
         :DreamObject ("AssimpCache"),
+          mShaderCacheHandle(shaderCache),
           mMaterialCacheHandle(matCache)
     {
         auto log = getLog();
         log->debug("Contructing" );
     }
 
-    AssimpCache::~AssimpCache
+    ModelCache::~ModelCache
     ()
     {
         auto log = getLog();
@@ -43,8 +44,8 @@ namespace Dream
         mCache.clear();
     }
 
-    shared_ptr<AssimpModelInstance>
-    AssimpCache::getModelFromCache
+    shared_ptr<ModelInstance>
+    ModelCache::getModelFromCache
     (string projectPath, ModelDefinition* def, SceneObjectRuntime* rt)
     {
         auto log = getLog();
@@ -58,7 +59,7 @@ namespace Dream
         }
 
         log->debug("Loading {} from disk",  def->getUuid());
-        auto model = make_shared<AssimpModelInstance>(mMaterialCacheHandle,def,rt);
+        auto model = make_shared<ModelInstance>(mShaderCacheHandle, mMaterialCacheHandle,def,rt);
         model->load(projectPath);
         mCache.push_back(model);
         return model;

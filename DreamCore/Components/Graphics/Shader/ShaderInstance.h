@@ -31,6 +31,7 @@
 #include "../../../Common/Constants.h"
 #include "../../../Common/DreamObject.h"
 #include "../../IAssetInstance.h"
+#include "ShaderUniform.h"
 
 using std::string;
 using nlohmann::json;
@@ -41,61 +42,8 @@ namespace Dream
 {
     class ShaderCache;
     class ShaderDefinition;
-    class AssimpMaterial;
+    class Material;
     class LightInstance;
-
-    enum UniformType
-    {
-        // Int
-        INT1,
-        INT2,
-        INT3,
-        INT4,
-        // uInt
-        UINT1,
-        UINT2,
-        UINT3,
-        UINT4,
-        // Float
-        FLOAT1,
-        FLOAT2,
-        FLOAT3,
-        FLOAT4,
-    };
-
-    class ShaderUniform : public DreamObject
-    {
-    public:
-        ShaderUniform(UniformType type, string name, int count, void* data);
-        ShaderUniform(const ShaderUniform&) = delete;
-        ~ShaderUniform() override;
-
-        bool operator==(const ShaderUniform& other) const;
-
-        UniformType getType() const;
-        void setType(const UniformType& type);
-        string getName() const;
-        void setName(const string& name);
-        void* getData() const;
-        void setData(void* data);
-        int getCount() const;
-        void setCount(int count);
-
-        GLint getLocation() const;
-        void setLocation(GLint location);
-
-        bool getNeedsUpdate() const;
-        void setNeedsUpdate(bool needsUpdate);
-
-    private:
-        UniformType mType;
-        string mName;
-        void* mData;
-        int mCount;
-        GLint mLocation;
-        bool mNeedsUpdate;
-    };
-
 
     class ShaderInstance : public IAssetInstance
     {
@@ -119,6 +67,8 @@ namespace Dream
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
         bool mNeedsRebind;
+        vector<const shared_ptr<Material>> mMaterials;
+
     public:
         ShaderInstance(
            ShaderDefinition* def,
@@ -159,7 +109,17 @@ namespace Dream
         void bindLight(LightInstance* light);
 
         void syncUniforms();
-        void bindMaterial(const shared_ptr<AssimpMaterial>& material);
+
+        void bindMaterial(const shared_ptr<Material>& material);
+        void bindLightQueue(vector<LightInstance*> lightQueue);
+        void bindInstances(vector<SceneObjectRuntime*> instances);
+
+        void addMaterial(const shared_ptr<Material> material);
+
+        void logMaterials();
+
+        void draw();
+
     }; // End of ShaderInstance
 
 } // End of Dream

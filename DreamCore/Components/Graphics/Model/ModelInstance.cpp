@@ -1,5 +1,5 @@
 /*
-* Dream::Asset::Model::AssimpModelInstance
+* Dream::Asset::Model::ModelInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "AssimpModelInstance.h"
+#include "ModelInstance.h"
 
 #include <limits>
 
@@ -25,16 +25,19 @@
 #include "glm/glm.hpp"
 #include <SOIL/SOIL.h>
 
-#include "AssimpMesh.h"
-#include "Texture.h"
-#include "MaterialCache.h"
+#include "ModelMesh.h"
+#include "Material/Texture.h"
+#include "Material/MaterialCache.h"
 
 #include "../BoundingBox.h"
 #include "../Shader/ShaderInstance.h"
+#include "../Shader/ShaderCache.h"
+#include "../Shader/ShaderDefinition.h"
 #include "../../../Common/Constants.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "ModelDefinition.h"
 
-#include "AssimpMaterial.h"
+#include "Material/Material.h"
 #include <memory>
 
 using std::shared_ptr;
@@ -44,33 +47,34 @@ using ::Assimp::Importer;
 
 namespace Dream
 {
-    AssimpModelInstance::AssimpModelInstance
+    ModelInstance::ModelInstance
     (
+        ShaderCache* shaderCache,
         MaterialCache* texCache,
         IAssetDefinition* definition,
         SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
-          mMaterialCache(texCache)
+          mMaterialCache(texCache),
+          mShaderCache(shaderCache)
     {
-        setLogClassName("AssimpModelInstance");
+        setLogClassName("ModelInstance");
         auto log = getLog();
         log->trace( "Constructing {}", definition->getNameAndUuidString() );
         mBoundingBox.init();
         return;
     }
 
-    AssimpModelInstance::~AssimpModelInstance
+    ModelInstance::~ModelInstance
     ()
     {
         auto log = getLog();
         log->trace( "Destroying Object");
         mMeshes.clear();
-        mMaterialMeshMap.clear();
         return;
     }
 
     bool
-    AssimpModelInstance::load
+    ModelInstance::load
     (string projectPath)
     {
         auto log = getLog();
@@ -100,7 +104,7 @@ namespace Dream
     }
 
     void
-    AssimpModelInstance::draw
+    ModelInstance::draw
     (
         const shared_ptr<ShaderInstance>& shader,
         vec3 transform,
@@ -123,7 +127,7 @@ namespace Dream
     }
 
     void
-    AssimpModelInstance::processNode
+    ModelInstance::processNode
     (aiNode* node, const aiScene* scene)
     {
         // Process all the node's meshes (if any)
@@ -132,9 +136,10 @@ namespace Dream
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
             mBoundingBox.updateFromMesh(mesh);
             auto aMesh = processMesh(mesh, scene);
-            mMeshes.push_back(aMesh);
-            addMesh(aMesh);
-            //mMeshes.push_back(aMesh);
+            if (aMesh != nullptr)
+            {
+                mMeshes.push_back(aMesh);
+            }
         }
         // Then do the same for each of its children
         for(GLuint i = 0; i < node->mNumChildren; i++)
@@ -144,7 +149,7 @@ namespace Dream
     }
 
     vector<Vertex>
-    AssimpModelInstance::processVertexData
+    ModelInstance::processVertexData
     (aiMesh* mesh)
     {
 
@@ -213,7 +218,7 @@ namespace Dream
     }
 
     vector<GLuint>
-    AssimpModelInstance::processIndexData
+    ModelInstance::processIndexData
     (aiMesh* mesh)
     {
         vector<GLuint> indices;
@@ -230,8 +235,8 @@ namespace Dream
     }
 
     void
-    AssimpModelInstance::processTextureData
-    (aiMesh* mesh,const aiScene* scene, shared_ptr<AssimpMaterial> aMaterial)
+    ModelInstance::processTextureData
+    (aiMesh* mesh,const aiScene* scene, shared_ptr<Material> aMaterial)
     {
         auto log = getLog();
         // Process material
@@ -270,16 +275,15 @@ namespace Dream
         }
     }
 
-    shared_ptr<AssimpMesh>
-    AssimpModelInstance::processMesh
+    shared_ptr<ModelMesh>
+    ModelInstance::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
         auto log = getLog();
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
 
-
-        // Material info Colours
+        // Load any new materials
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
         aiString name;
@@ -287,29 +291,45 @@ namespace Dream
 
         if(mMaterialCache != nullptr)
         {
-            shared_ptr<AssimpMaterial> aMaterial = mMaterialCache->getMaterialByName(name);
+            shared_ptr<Material> aMaterial = mMaterialCache->getMaterialByName(name);
 
             if (aMaterial == nullptr)
             {
                 log->debug("Creating Material {}", name.C_Str());
-                aMaterial = mMaterialCache->newAssimpMaterial();
-                aMaterial->mName = name;
-                aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
-                aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial->mShadingModel);
-                aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial->mEnableWireframe);
-                aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial->mBlendFunc);
-                aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial->mOpacity);
-                aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial->mBumpScaling);
-                aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mHardness);
-                aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial->mReflectivity);
-                aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial->mShininessStrength);
-                aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial->mColorDiffuse);
-                aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial->mColorAmbient);
-                aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial->mColorSpecular);
-                aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
-                aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
-                aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
+                aMaterial = mMaterialCache->newMaterial(material);
                 processTextureData(mesh,scene, aMaterial);
+
+                // Get the shader for the material
+                auto modelDef = dynamic_cast<ModelDefinition*>(mDefinition);
+                auto shaderUuid = modelDef->getShaderForMaterial(aMaterial->mName.C_Str());
+
+                log->debug("Getting shader for uuid {}",shaderUuid);
+                auto shaderDef = mSceneObjectRuntime->getAssetDefinitionByUuid(shaderUuid);
+
+                if (shaderDef == nullptr)
+                {
+                    log->error("Could not find shader definition for {}",shaderUuid);
+                    return nullptr;
+                }
+
+                auto shader = mShaderCache->getShaderFromCache
+                (
+                    mSceneObjectRuntime->getProjectPath(),
+                    dynamic_cast<ShaderDefinition*>(shaderDef),
+                    mSceneObjectRuntime
+
+                );
+
+                // Assign the material the specified shader
+                if (shader != nullptr)
+                {
+                    shader->addMaterial(aMaterial);
+                }
+                else
+                {
+                    log->critical("Could not register mesh, Shader was not found in caceh");
+                    return nullptr;
+                }
             }
             else
             {
@@ -317,26 +337,36 @@ namespace Dream
             }
 
             log->debug( "Using Material {}" , aMaterial->mName.C_Str());
-            aMaterial->debug();
 
             BoundingBox box;
             box.updateFromMesh(mesh);
-            auto aMesh = make_shared<AssimpMesh>
+            auto aMesh = make_shared<ModelMesh>
             (
-                dynamic_cast<AssimpModelInstance*>(this),
+                this,
                 string(mesh->mName.C_Str()),
                 vertices,
                 indices,
                 aMaterial
             );
+
             aMesh->setBoundingBox(box);
+
+            // Assign mesh to material
+            aMaterial->addMesh(aMesh);
+            aMaterial->debug();
+
+
             return aMesh;
+        }
+        else
+        {
+            log->critical("Material Cache is nullptr");
         }
         return nullptr;
     }
 
     shared_ptr<Texture>
-    AssimpModelInstance::loadMaterialTexture
+    ModelInstance::loadMaterialTexture
     (aiMaterial* mat, aiTextureType type)
     {
         aiString str;
@@ -349,54 +379,53 @@ namespace Dream
     }
 
     void
-    AssimpModelInstance::loadExtraAttributes
+    ModelInstance::loadExtraAttributes
     (json)
     {}
 
     BoundingBox
-    AssimpModelInstance::getBoundingBox
+    ModelInstance::getBoundingBox
     ()
     {
         return mBoundingBox;
     }
 
     void
-    AssimpModelInstance::setModelMatrix
+    ModelInstance::setModelMatrix
     (glm::mat4 modelMatrix)
     {
         mModelMatrix = modelMatrix;
     }
 
     glm::mat4
-    AssimpModelInstance::getModelMatrix
+    ModelInstance::getModelMatrix
     ()
     {
         return mModelMatrix;
     }
 
     void
-    AssimpModelInstance::addMesh
-    (const shared_ptr<AssimpMesh>& mesh)
+    ModelInstance::addInstance
+    (SceneObjectRuntime* inst)
     {
-       const auto material = mesh->getMaterial();
-       auto mapEnd = mMaterialMeshMap.end();
-       auto index = mMaterialMeshMap.find(material);
+        for (auto mesh : mMeshes)
+        {
+            mesh->addInstance(inst);
+        }
+    }
 
-       if (index == mapEnd)
-       {
-           vector<const shared_ptr<AssimpMesh>> meshVector;
-           meshVector.push_back(mesh);
-           mMaterialMeshMap.insert(MaterialMeshVectorPair(material,meshVector));
-       }
-       else
-       {
-           auto vec = (*index).second;
-           vec.push_back(mesh);
-       }
+    void
+    ModelInstance::removeInstance
+    (SceneObjectRuntime* inst)
+    {
+        for (auto mesh : mMeshes)
+        {
+            mesh->removeInstance(inst);
+        }
     }
 
     shared_ptr<Importer>
-    AssimpModelInstance::loadImporter
+    ModelInstance::loadImporter
     (string path)
     {
         auto log = getLog();
@@ -415,4 +444,5 @@ namespace Dream
 
         return importer;
     }
+
 } // End of Dream

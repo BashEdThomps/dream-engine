@@ -7,7 +7,7 @@
 #include "../Components/Path/PathDefinition.h"
 #include "../Components/Audio/AudioDefinition.h"
 #include "../Components/Graphics/Light/LightDefinition.h"
-#include "../Components/Graphics/Model/AssimpCache.h"
+#include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Model/ModelDefinition.h"
 #include "../Components/Graphics/Font/FontDefinition.h"
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
@@ -29,7 +29,7 @@
 
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Graphics/BoundingBox.h"
-#include "../Components/Graphics/Model/AssimpModelInstance.h"
+#include "../Components/Graphics/Model/ModelInstance.h"
 
 #include "../Components/Window/IWindowComponent.h"
 

@@ -36,5 +36,7 @@
         <file>svg/comment-alt-solid.svg</file>
         <file>svg/file-signature-solid.svg</file>
         <file>audio/click.wav</file>
+        <file>templates/shader/Phong POM/glsl.frag</file>
+        <file>templates/shader/Phong POM/glsl.vert</file>
     </qresource>
 </RCC>

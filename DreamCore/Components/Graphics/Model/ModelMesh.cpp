@@ -1,17 +1,34 @@
-#include "AssimpMesh.h"
-#include "AssimpModelInstance.h"
+#include "ModelMesh.h"
+#include "ModelInstance.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
 
-    AssimpMesh::AssimpMesh
+    GLuint ModelMesh::getVAO() const
+    {
+        return mVAO;
+    }
+
+    void
+    ModelMesh::drawInstances
+    (ShaderInstance* shader)
+    {
+        shader->bindVertexArray(mVAO);
+        shader->bindInstances(mInstances);
+        shader->syncUniforms();
+        auto size = static_cast<GLsizei>(mInstances.size());
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
+    }
+
+    ModelMesh::ModelMesh
     (
-        AssimpModelInstance* parent,
+        ModelInstance* parent,
         string name,
         vector<Vertex> vertices,
         vector<GLuint> indices,
-        shared_ptr<AssimpMaterial> material
-    ) : DreamObject("AssimpMesh"),
+        shared_ptr<Material> material
+    ) : DreamObject("ModelMesh"),
         mParent(parent),
         mMaterial(material),
         mName(name),
@@ -23,45 +40,57 @@ namespace Dream
         init();
     }
 
-    AssimpMesh::~AssimpMesh
+    ModelMesh::~ModelMesh
     ()
     {
         auto log = getLog();
         log->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
     }
 
-    string AssimpMesh::getName() const
+    string
+    ModelMesh::getName
+    () const
     {
         return mName;
     }
 
-    void AssimpMesh::setName(const string& name)
+    void
+    ModelMesh::setName
+    (const string& name)
     {
         mName = name;
     }
 
-    BoundingBox AssimpMesh::getBoundingBox() const
+    BoundingBox
+    ModelMesh::getBoundingBox
+    () const
     {
         return mBoundingBox;
     }
 
-    void AssimpMesh::setBoundingBox(const BoundingBox& boundingBox)
+    void
+    ModelMesh::setBoundingBox
+    (const BoundingBox& boundingBox)
     {
         mBoundingBox = boundingBox;
     }
 
-    vector<Vertex> AssimpMesh::getVertices() const
+    vector<Vertex>
+    ModelMesh::getVertices
+    () const
     {
         return mVertices;
     }
 
-    vector<GLuint> AssimpMesh::getIndices() const
+    vector<GLuint>
+    ModelMesh::getIndices
+    () const
     {
         return mIndices;
     }
 
     void
-    AssimpMesh::draw
+    ModelMesh::draw
     (const shared_ptr<ShaderInstance>& shader)
     {
         auto log = getLog();
@@ -83,7 +112,7 @@ namespace Dream
     }
 
     void
-    AssimpMesh::init
+    ModelMesh::init
     ()
     {
         glGenVertexArrays(1, &mVAO);
@@ -132,10 +161,44 @@ namespace Dream
         glBindVertexArray(0);
     }
 
-    const shared_ptr<AssimpMaterial>&
-    AssimpMesh::getMaterial
+    void
+    ModelMesh::logInstances
+    ()
+    {
+       auto log = getLog();
+       for (auto instance : mInstances)
+       {
+           log->debug("\t\t\tInstance for {}", instance->getNameAndUuidString());
+       }
+    }
+
+    void
+    ModelMesh::addInstance
+    (SceneObjectRuntime* runt)
+    {
+        auto log = getLog();
+        log->debug("Adding instance of mesh for {}", runt->getNameAndUuidString());
+        mInstances.push_back(runt);
+    }
+
+    void
+    ModelMesh::removeInstance
+    (SceneObjectRuntime* runt)
+    {
+       auto log = getLog();
+       log->debug("Removing instance of mesh for {}", runt->getNameAndUuidString());
+       auto itr = find (mInstances.begin(), mInstances.end(), runt);
+       if (itr != mInstances.end())
+       {
+           mInstances.erase(itr);
+       }
+    }
+
+    const shared_ptr<Material>&
+    ModelMesh::getMaterial
     ()
     {
        return mMaterial;
     }
+
 } // End of Dream
